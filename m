@@ -2,120 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 799325F102E
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 18:43:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD5F85F1030
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 18:43:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231515AbiI3QnF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 12:43:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43950 "EHLO
+        id S231549AbiI3Qnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 12:43:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230257AbiI3QnC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 12:43:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443971879F1
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 09:42:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1664556178;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=i/Hi2H2QkXwsrhZWS4QrafWlR40mZ8RNk8o6d3aH3Lk=;
-        b=a0BMdPr8lQqO3BxNn091FJAZLgmgEoCzgqUhcX/I/iiCQYd2g2qG1USAV1768zXxZdMF8/
-        ug7j/x5HAkge8ajUVv4ftnE3+A1pUrhQAZMXEgMMIPVLrCNWRr5TWE3A7AFu4raw9LcbBu
-        SgFScyPGfuziDCPuyetggrlhIDri2OQ=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-608-3wSyLbMSOCKt6QxhL6-g2A-1; Fri, 30 Sep 2022 12:42:57 -0400
-X-MC-Unique: 3wSyLbMSOCKt6QxhL6-g2A-1
-Received: by mail-wm1-f71.google.com with SMTP id g8-20020a05600c4ec800b003b4bcbdb63cso2298958wmq.7
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 09:42:56 -0700 (PDT)
+        with ESMTP id S232235AbiI3Qnl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 12:43:41 -0400
+Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15DB6198686
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 09:43:40 -0700 (PDT)
+Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-324ec5a9e97so49687997b3.7
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 09:43:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=2oQDtouYC9WEKv48uT0kLmtjhnea4jelKk0fBgM03W0=;
+        b=QbZ3WiNX62sPsNx6sLqR7iv/BxknvdUPmjvNURilIRgF5fKp0PNRo6FqEkXtEi1MoR
+         MVMx4659tJhrcUg6jT8OmZmo8BGrPg6yxpEMlnyN+gCr1TllvEGiTzUUdAxr1R0XDn4L
+         ZQUqtI6YD9BpAHLsaF30j1Jtddiyen6vxzRtnMV+Ro6ZOLD3GbmQXdHXa1RvoD80Me7L
+         Xhu3R962CDbubg5m8aIegFEY6E5k/DTXr3mO2ESNfTEzdpKXYCEqrOQpFQzP6OvUh41c
+         1c6hAuHZeCRSnAiZchDyNibIjaGseE2XYFojQlIHz5v7kkIvanYpqj9qQRzWPwitcoIF
+         mWrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=i/Hi2H2QkXwsrhZWS4QrafWlR40mZ8RNk8o6d3aH3Lk=;
-        b=5BXSqUyLxOnDGRK7RXVZPUz4Dt6AepE/MFcY9F4YwxHW/zyjmRGBKaE8OG8+Il5wJ5
-         eCTxga0zMgzFJVNY76BO1mUZnv/Uft1ebGsV8m7tizOlrEnuigwEtCmx8/fe4oSQ0AVo
-         /797w3k0N0nRkEu2xArq4+BCbQkWh+3nfm5dbOaGXLDcAefPgGQy+5L3xoKyR/7YCt5J
-         uSWTBd3apTkb1bVzsnU5tubrNgs6DSCSFkHtMQzESBzRR9cIfncsJz+1St3dVuLv4m3M
-         40Gg2m2IgKGDDYmsBeIpKiQvvbg1L99enEhRjlrWFpoItnXHy4aosIGyiZHhCqrftKRn
-         nWRQ==
-X-Gm-Message-State: ACrzQf34AnE3B+DgxEBQRPGkcVLi9LG9m9KMRIMY4/U3C/6spiJJvAYr
-        rjuxmSWsm0xHsjqAs+rbWkBg8qF8ORAExJzD5GusssEYaaWrbmQAlDFQHJVZom9pLmDsZpDNDdE
-        yo6GJhWpSdluLtnU2
-X-Received: by 2002:adf:c583:0:b0:22c:df60:dfda with SMTP id m3-20020adfc583000000b0022cdf60dfdamr3695519wrg.499.1664556174835;
-        Fri, 30 Sep 2022 09:42:54 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM6ViJCNAm6ede/BGwwKgwOiMQbLpDU0b7QKSl2NIYaWzj0vdaFJI4vBNqrmewebA8ok7f62gA==
-X-Received: by 2002:adf:c583:0:b0:22c:df60:dfda with SMTP id m3-20020adfc583000000b0022cdf60dfdamr3695508wrg.499.1664556174664;
-        Fri, 30 Sep 2022 09:42:54 -0700 (PDT)
-Received: from localhost.localdomain ([92.62.32.42])
-        by smtp.gmail.com with ESMTPSA id x12-20020a05600c2d0c00b003b51369fbbbsm7659352wmf.4.2022.09.30.09.42.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Sep 2022 09:42:54 -0700 (PDT)
-Date:   Fri, 30 Sep 2022 18:42:51 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        David Ahern <dsahern@kernel.org>
-Subject: Re: [PATCHv5 net-next 3/4] rtnetlink: Honour NLM_F_ECHO flag in
- rtnl_newlink_create
-Message-ID: <20220930164251.GG10057@localhost.localdomain>
-References: <20220930094506.712538-1-liuhangbin@gmail.com>
- <20220930094506.712538-4-liuhangbin@gmail.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=2oQDtouYC9WEKv48uT0kLmtjhnea4jelKk0fBgM03W0=;
+        b=PzvWIw+v4WAW3A6UgR0dg4pzBrc9yqD2zmIBtcQfk4ZJAV7wr9ZyuHwD+rfdgsGkoe
+         TzV6b/G0dHePfgM2gTa1dnR0RgxKDC/NUD4/e3TNLpiJfuKhVrUCgxunRhC4HRDD1THo
+         XKXRrbymtQzv6yGuAG8HF0FXVXwys6IFlsTf3srBYRtpKHr7Ky0AHy3J94GQhEvoT8q2
+         qaP3HwJPQL6PrEnBVJf2xCYhlsA1vZnEU1t6Wi8eT3l4kq5Jn1fNcUGBYvHHu2WCt4OW
+         W34T3gAAiRADHMfZkcgV2zt+fgMLpbzuzMrbvcIYHvPqnAYFSfXQAhZb0K0um+AgRTp9
+         ReLA==
+X-Gm-Message-State: ACrzQf2tNVW5cPYDK0iYbKNdfWysvTUM/tZu+gIVfCN4624tFlKQqIcb
+        LQIlm0XLM833Kzcn+Yfcdidaw1lTWfeM/2OArbx3pReVjUvrQg==
+X-Google-Smtp-Source: AMsMyM7WE99BcmGnWmGHiNDMv8TFIwgrNj8I5YdhDnaSeS8ylNOnyFY65qgpI1q9yoA579jrXORTEHs6O4bXvGuMJ6g=
+X-Received: by 2002:a0d:ea85:0:b0:355:58b2:5a48 with SMTP id
+ t127-20020a0dea85000000b0035558b25a48mr7369286ywe.332.1664556219077; Fri, 30
+ Sep 2022 09:43:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220930094506.712538-4-liuhangbin@gmail.com>
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <6b6f65957c59f86a353fc09a5127e83a32ab5999.1664350652.git.pabeni@redhat.com>
+ <166450446690.30186.16482162810476880962.git-patchwork-notify@kernel.org>
+In-Reply-To: <166450446690.30186.16482162810476880962.git-patchwork-notify@kernel.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 30 Sep 2022 09:43:26 -0700
+Message-ID: <CANn89iJ=_e9-P4dvRcMzJYqpTBQ5kevEvaYFH1JVvSdv4sguhA@mail.gmail.com>
+Subject: Re: [PATCH net-next v4] net: skb: introduce and use a single page
+ frag cache
+To:     patchwork-bot+netdevbpf@kernel.org
+Cc:     Paolo Abeni <pabeni@redhat.com>, netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander Duyck <alexanderduyck@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 30, 2022 at 05:45:05PM +0800, Hangbin Liu wrote:
-> This patch use the new helper rtnl_configure_link_notify() for
-> rtnl_newlink_create(), so that the kernel could reply unicast
-> when userspace set NLM_F_ECHO flag to request the new created
-> interface info.
-> 
-> Suggested-by: Guillaume Nault <gnault@redhat.com>
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> ---
->  net/core/rtnetlink.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-> index 1558921bd4da..da9a6fd156d8 100644
-> --- a/net/core/rtnetlink.c
-> +++ b/net/core/rtnetlink.c
-> @@ -3318,10 +3318,12 @@ static int rtnl_group_changelink(const struct sk_buff *skb,
->  static int rtnl_newlink_create(struct sk_buff *skb, struct ifinfomsg *ifm,
->  			       const struct rtnl_link_ops *ops,
->  			       struct nlattr **tb, struct nlattr **data,
-> -			       struct netlink_ext_ack *extack)
-> +			       struct netlink_ext_ack *extack,
-> +			       struct nlmsghdr *nlh)
+On Thu, Sep 29, 2022 at 7:21 PM <patchwork-bot+netdevbpf@kernel.org> wrote:
+>
+> Hello:
+>
+> This patch was applied to netdev/net-next.git (master)
+> by Jakub Kicinski <kuba@kernel.org>:
+>
+> On Wed, 28 Sep 2022 10:43:09 +0200 you wrote:
+> > After commit 3226b158e67c ("net: avoid 32 x truesize under-estimation
+> > for tiny skbs") we are observing 10-20% regressions in performance
+> > tests with small packets. The perf trace points to high pressure on
+> > the slab allocator.
+> >
+> > This change tries to improve the allocation schema for small packets
+> > using an idea originally suggested by Eric: a new per CPU page frag is
+> > introduced and used in __napi_alloc_skb to cope with small allocation
+> > requests.
+> >
+> > [...]
+>
+> Here is the summary with links:
+>   - [net-next,v4] net: skb: introduce and use a single page frag cache
+>     https://git.kernel.org/netdev/net-next/c/dbae2b062824
+>
 
-'nlh' could be const here too. Also, since we've started being picky
-about the order of parameters, let's put 'nlh' right before 'tb' to
-follow what other functions generally do.
+Paolo, this patch adds a regression for TCP RPC workloads (aka TCP_RR)
 
->  {
->  	unsigned char name_assign_type = NET_NAME_USER;
->  	struct net *net = sock_net(skb->sk);
-> +	u32 pid = NETLINK_CB(skb).portid;
+Before the patch, cpus servicing NIC interrupts were allocating
+SLAB/SLUB objects for incoming packets,
+but they were also freeing skbs from TCP rtx queues when ACK packets
+were processed. SLAB/SLUB caches
+were efficient (hit ratio close to 100%)
 
-s/pid/portid/
+After the patch, these CPU only free skbs from TCP rtx queues and
+constantly have to drain their alien caches,
+thus competing with the mm spinlocks. RX skbs allocations being done
+by page frag allocation only left kfree(~1KB) calls.
 
+One way to avoid the asymmetric behavior would be to switch TCP to
+also use page frags for TX skbs,
+allocated from tcp_stream_alloc_skb()
