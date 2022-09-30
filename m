@@ -2,160 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 48C405F10FD
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 19:37:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBB795F1107
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 19:39:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231956AbiI3Rho (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 13:37:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44504 "EHLO
+        id S232109AbiI3Rjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 13:39:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231426AbiI3Rhn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 13:37:43 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868E31DBEEA;
-        Fri, 30 Sep 2022 10:37:42 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id h7so7867810wru.10;
-        Fri, 30 Sep 2022 10:37:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date;
-        bh=4DpRehj64wbjbBKzPjGMiI2BBSTE79pTuDiNAxSu6DI=;
-        b=Q+yuIbNZLqL1Jdi8evRRwF8ncYYX5SQbBpfF+NnMkWBe4HvN+aTBBOnBG7aWFhjT7e
-         BjGJB3HXDnyn+aPH7Nd7vKgDikN7rTCrnTweu/PQfs3hD2r671IcofuvBs3weGIYmufn
-         6+xBijHDTvvF+UWIWVtW2zWlBU3LkudlmZYx/XerHaARq8CIb6u0wcATmxtZyOJSxpw2
-         1w+16GAlmjRSjg3P0L1g2t0YBtFiMBHTC9nNB8nL8dyrBgHzciXBGZVFjBOgpAhtwBJS
-         D/cm94IdS2ZSwIT6UWhN60UlePAkUpew7aRezro6DNOXJCCxeEpOR6aJ/3QPIBensAy1
-         usyw==
+        with ESMTP id S230375AbiI3Rjp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 13:39:45 -0400
+Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 014FE63F8;
+        Fri, 30 Sep 2022 10:39:37 -0700 (PDT)
+Received: by mail-qk1-f174.google.com with SMTP id 3so3257924qka.5;
+        Fri, 30 Sep 2022 10:39:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=4DpRehj64wbjbBKzPjGMiI2BBSTE79pTuDiNAxSu6DI=;
-        b=taaZZWi03wB7Ze32q8GCXIv/8u+p26ngdt5vJqjFPfPN/3z8eEmwXHSeatlCYeH05o
-         79+YvTqWl1g9aBdX19bCbBbWifwGb86QbKPyi0weVfMs6zn+vQc4mWwRpRvVvZnBUR9S
-         16LV7LKvLbL+ihSHEVaNgpI6bqvqYpSdkMKbL3/h/pbyTEOFnHUjK04Jni1wbddH14MQ
-         JnYwiFL5ypNpnGt/vtkZcwHDxNg1NArYc5qtC77phu1vlWIdZ+IiNwx9VTfjEr4y6e6e
-         fEDRUSsxxVXAH3inlIp6jAf0UkfwMDoWOwxBqeignoqmRsdu/4QzsNXRR13HBGlqeNJm
-         HhEA==
-X-Gm-Message-State: ACrzQf0yrxTB4K2pOamNQ8KQDtQVz1ifH4CaeJj0y7H9nzo4C0cEbQXo
-        /xEHFvDpFQAXNn7u1Jqwc00=
-X-Google-Smtp-Source: AMsMyM4pYq9Ma/gyFQ/ttIX3J+Nka2o7KD3K3QUfaCql7zhOjdxPmhURcdTBheiwr1dSiX2K6U4CgA==
-X-Received: by 2002:a5d:684f:0:b0:228:d83f:5e3c with SMTP id o15-20020a5d684f000000b00228d83f5e3cmr6521226wrw.318.1664559460858;
-        Fri, 30 Sep 2022 10:37:40 -0700 (PDT)
-Received: from krava ([193.85.244.190])
-        by smtp.gmail.com with ESMTPSA id p3-20020a5d4e03000000b002238ea5750csm1701501wrt.72.2022.09.30.10.37.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Sep 2022 10:37:40 -0700 (PDT)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Fri, 30 Sep 2022 19:37:38 +0200
-To:     Artem Savkov <asavkov@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jbenc@redhat.com
-Subject: Re: [PATCH bpf-next] selftests/bpf: make libbpf_probe_prog_types
- testcase aware of kernel configuration
-Message-ID: <YzcpYjkv8RBaZQcM@krava>
-References: <20220930110900.75492-1-asavkov@redhat.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=N8mI8UTtYw4tqhx/SpyLW2KXywh682BjJEpPuPB5RK8=;
+        b=zza6M3ytDEKAzydyndqKGKalgkEdTflvG+1mVsOmpzJVSEfQyM1NmEn0S1pOg53NiD
+         n/oKD0SJf++HmZZOxUNk1xbMU3bRVVVEPkWuQ/LRqYNiRangkq8Cv0vcmzWrUv0sE+eF
+         ylZZEiuf9HiDn3otQKqX+Gt4ZRdzOtbLICSZzYpXc3Bn5CMALFP1gRWoeFJDHrXI9dEw
+         vzTiteAg/odRDSxTW0++J+kmhxVN0+IZOeWFg8kSpiCrbFxBnJK7Kw2pwwsKWQQ18Y+9
+         oP9yfzSwcQdb2PnGJ91lhFK55L/UKW076ReFyudxrgfX4R6Aas6AcWUcvQ1UoDnDgKwE
+         sRMg==
+X-Gm-Message-State: ACrzQf3heoTHuLle29KFoFXqqdcVVzcLFeyqdrSGJR3fLN/BZBK2uQyc
+        q/JzPuKmsdju9DRQIrk3cF+FvFuzKujEzwH56jg=
+X-Google-Smtp-Source: AMsMyM5Be2M9430vaNDQKWi5Jn7X5sqcjjBRWlaB305zeNKwPI8Niz3+jSeejZPUTnTD+6uF7YXR9Lo8HGSlB5J32Ng=
+X-Received: by 2002:a05:620a:46ac:b0:6ce:3e55:fc21 with SMTP id
+ bq44-20020a05620a46ac00b006ce3e55fc21mr6841047qkb.285.1664559576163; Fri, 30
+ Sep 2022 10:39:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220930110900.75492-1-asavkov@redhat.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220928210059.891387-1-daniel.lezcano@linaro.org>
+ <d0be3159-8094-aed1-d9b1-c4b16d88d67c@linaro.org> <CAJZ5v0hOFoe0KqEimFv9pgmiAOzuRoLjdqoScr53ErNFU4AAPA@mail.gmail.com>
+ <ae86fc5a-0521-3dde-c2ea-8679c0ec4831@linaro.org> <CAJZ5v0jrWamTTXcHabSk=6cmm4pEx0_ebiECKZRfrX_vS85YYg@mail.gmail.com>
+In-Reply-To: <CAJZ5v0jrWamTTXcHabSk=6cmm4pEx0_ebiECKZRfrX_vS85YYg@mail.gmail.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Fri, 30 Sep 2022 19:39:25 +0200
+Message-ID: <CAJZ5v0gnfK2MBuzZi-C03VVO+b4dthckJcdj3zLo3q-qAUyy_g@mail.gmail.com>
+Subject: Re: [PATCH v7 00/29] Rework the trip points creation
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        "Zhang, Rui" <rui.zhang@intel.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Peter Kaestle <peter@piie.net>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Amit Kucheria <amitk@kernel.org>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Broadcom Kernel Team <bcm-kernel-feedback-list@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Lukasz Luba <lukasz.luba@arm.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Eduardo Valentin <edubezval@gmail.com>,
+        Keerthy <j-keerthy@ti.com>,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Antoine Tenart <atenart@kernel.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Platform Driver <platform-driver-x86@vger.kernel.org>,
+        linux-rpi-kernel@lists.infradead.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux Samsung SoC <linux-samsung-soc@vger.kernel.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        Linux OMAP Mailing List <linux-omap@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 30, 2022 at 01:09:00PM +0200, Artem Savkov wrote:
-> At the moment libbpf_probe_prog_types test iterates over all available
-> BPF_PROG_TYPE regardless of kernel configuration which can exclude some
-> of those. Unfortunately there is no direct way to tell which types are
-> available, but we can look at struct bpf_ctx_onvert to tell which ones
-> are available.
-> 
-> Signed-off-by: Artem Savkov <asavkov@redhat.com>
-> ---
->  .../selftests/bpf/prog_tests/libbpf_probes.c  | 33 +++++++++++++++++--
->  1 file changed, 31 insertions(+), 2 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/bpf/prog_tests/libbpf_probes.c b/tools/testing/selftests/bpf/prog_tests/libbpf_probes.c
-> index 9f766ddd946ab..753ddf79cf5e0 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/libbpf_probes.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/libbpf_probes.c
-> @@ -4,12 +4,29 @@
->  #include <test_progs.h>
->  #include <bpf/btf.h>
->  
-> +static int find_type_in_ctx_convert(struct btf *btf,
-> +				    const char *prog_type_name,
-> +				    const struct btf_type *t)
-> +{
-> +	const struct btf_member *m;
-> +	size_t cmplen = strlen(prog_type_name);
-> +	int i, n;
-> +
-> +	for (m = btf_members(t), i = 0, n = btf_vlen(t); i < n; m++, i++) {
-> +		const char *member_name = btf__str_by_offset(btf, m->name_off);
-> +
-> +		if (!strncmp(prog_type_name, member_name, cmplen))
-> +			return 1;
-> +	}
-> +	return 0;
-> +}
-> +
->  void test_libbpf_probe_prog_types(void)
->  {
->  	struct btf *btf;
-> -	const struct btf_type *t;
-> +	const struct btf_type *t, *context_convert_t;
->  	const struct btf_enum *e;
-> -	int i, n, id;
-> +	int i, n, id, context_convert_id;
->  
->  	btf = btf__parse("/sys/kernel/btf/vmlinux", NULL);
->  	if (!ASSERT_OK_PTR(btf, "btf_parse"))
-> @@ -23,6 +40,14 @@ void test_libbpf_probe_prog_types(void)
->  	if (!ASSERT_OK_PTR(t, "bpf_prog_type_enum"))
->  		goto cleanup;
->  
-> +	context_convert_id = btf__find_by_name_kind(btf, "bpf_ctx_convert",
-> +						    BTF_KIND_STRUCT);
-> +	if (!ASSERT_GT(context_convert_id, 0, "bpf_ctx_convert_id"))
-> +		goto cleanup;
-> +	context_convert_t = btf__type_by_id(btf, context_convert_id);
-> +	if (!ASSERT_OK_PTR(t, "bpf_ctx_convert_type"))
+On Thu, Sep 29, 2022 at 9:35 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
+>
+> On Thu, Sep 29, 2022 at 4:57 PM Daniel Lezcano
+> <daniel.lezcano@linaro.org> wrote:
+> >
+> > On 29/09/2022 15:58, Rafael J. Wysocki wrote:
+> > > On Thu, Sep 29, 2022 at 2:26 PM Daniel Lezcano
+> > > <daniel.lezcano@linaro.org> wrote:
+> > >>
+> > >>
+> > >> Hi Rafael,
+> > >>
+> > >> are you happy with the changes?
+> > >
+> > > I'll have a look and let you know.
+> >
+> > Great, thanks
+>
+> Well, because you have not added the history of changes to the
+> patches, that will take more time than it would otherwise.
 
-ASSERT_OK_PTR should check context_convert_t ?
+Done.  I've sent ACKs and still had a comment on one patch (minor but
+still).  When that is addressed, the four initial core patches should
+be good to go in.
 
-I wonder if we could traverse bpf_ctx_convert members directly
-instead of bpf_prog_type enum, but maybe there'd be other issues
-
-jirka
-
-> +		goto cleanup;
-> +
->  	for (e = btf_enum(t), i = 0, n = btf_vlen(t); i < n; e++, i++) {
->  		const char *prog_type_name = btf__str_by_offset(btf, e->name_off);
->  		enum bpf_prog_type prog_type = (enum bpf_prog_type)e->val;
-> @@ -31,6 +56,10 @@ void test_libbpf_probe_prog_types(void)
->  		if (prog_type == BPF_PROG_TYPE_UNSPEC)
->  			continue;
->  
-> +		if (!find_type_in_ctx_convert(btf, prog_type_name,
-> +					      context_convert_t))
-> +			continue;
-> +
->  		if (!test__start_subtest(prog_type_name))
->  			continue;
->  
-> -- 
-> 2.37.3
-> 
+I'm trusting you regarding the thermal/of changes (even though I think
+that it would be good if someone involved in that code could review
+them) and if you are confident about all of the driver changes, they
+are fine with me too.
