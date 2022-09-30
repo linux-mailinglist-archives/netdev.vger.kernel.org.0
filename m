@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03F095F056F
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 09:00:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A4B65F056D
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 09:00:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230346AbiI3HAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 03:00:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49836 "EHLO
+        id S230204AbiI3HA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 03:00:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230126AbiI3HA3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 03:00:29 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E5B75F226
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 00:00:14 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id jo24so2651370plb.13
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 00:00:14 -0700 (PDT)
+        with ESMTP id S230126AbiI3HAY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 03:00:24 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EFAF580A9
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 00:00:18 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id v186so3465881pfv.11
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 00:00:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=+Ohx9jnypWm6cbjJURl/Y0UEtgqOZE+o2e/OUHVKNso=;
-        b=IbO7aB1z/0QDTuBFiONwXyTIbjqigT2vt1iJywLkBW2eVXgrR9orNUklqeo1Un2HOl
-         UO3JXgRme86GCFo5+TQ/klYEqGvth3ZZsJrNpHc0DtDfHv055kpjDVgvyhd/IW3Ucx9Y
-         TV1Z50ReF/Qrum37MXQfacQct5REodoNnBAI8X3IAO1XMtjWx3xX1aXvLie0fagwdLb+
-         Gn+ybsKhZ8HpH+9HN/bRnUzW4AzCPCv7tvg/HnolJi56UObhYE61jWYvHWw1OFssHZPP
-         Gv4Zu84pIJxuwal5WEC0yL+EgkbAdwQBJnnR/n/6NkWLSql+oI8QNXvQKGgDlfXKp1Gt
-         2QoQ==
+        bh=mcCCCYYMIuK+7UN+/Zbe2o9HY7Kwn36bEy3DrF3VO4w=;
+        b=nxtOxYUg2H27HnXJLQif8wqJT9ZmRGURaVbAR8vdaUKBP16OXa42nt2k4MQb0mv6GF
+         U8nPe9Rm+PKhtUhpw+krmEdfNvDXx714i2YvW1+UgTanjNkh1WeFAFojZyie3CZIncXz
+         zVYi8fByeegZlZTTJ8m375VaPNIKBxE4dwVp5jbVCMZThZ5skSRVbgXYDxcV+qZ+mY6Z
+         NGxUE3+9Dqap0WYiDVZuOIqj1pgJfwvv4MZcRXkXVpXS5QjHrKpXoQ4rEB3pf12RURJ5
+         CjwLhPv7MYUfIQ8eM/WLbT4RKMA91kKHZAQ2iXiKZGGpIckHId3J8pbi5QnVI0SviRSF
+         QvGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=+Ohx9jnypWm6cbjJURl/Y0UEtgqOZE+o2e/OUHVKNso=;
-        b=vhhffFqIFfr3Kx6hUkOcAMA8a5NTM+XkB6pji2lmdWH5a/a2lPoMvy21xWlC9Di84L
-         sZBQBbwM/3oHhHC60c3PnPx+6gUIz1TjHxQOnxJTlwCkXTHT9vwXsgR77Sspj6DD+Jmz
-         Ia+huKncveb8jItSelvO7xqsG3LJsg3WPNtZHfXeJwwLoEUNA/vDcxkfuM4zhF/QnsLB
-         i/AgLz4W8sRbFXtRIOO/IMnGgayRlcnGDcRUZj/H4MgqW8PHfXTnBgFdjynLS72l1mTE
-         vXvQ9mMoL/uUI5yCCgcrqQW7FRg2LM0K3qcyMnpi2Knz/fiRC88aZtBRu38g7BAWRTog
-         Eb4Q==
-X-Gm-Message-State: ACrzQf3uSv6tbjQoD437q9wgQmWNNneLxpm3zrM0jm+WxOj6XoW6ce9d
-        X4xzwv2HgVl9KVLbm7ZchfbhymGGVezVMw==
-X-Google-Smtp-Source: AMsMyM4euVln9X1pUa2j1+M59x2GMsWs02jvWYUjIBsQg407dlzGcN273WZXN+TiGIPQnWBO2vUkxw==
-X-Received: by 2002:a17:902:bd0b:b0:17a:374:f47e with SMTP id p11-20020a170902bd0b00b0017a0374f47emr7401791pls.147.1664521213859;
-        Fri, 30 Sep 2022 00:00:13 -0700 (PDT)
+        bh=mcCCCYYMIuK+7UN+/Zbe2o9HY7Kwn36bEy3DrF3VO4w=;
+        b=4k0dNf1+lCcvtG1JEu/BOZUmDXXYI5ycSVA0y2pISVLy/hBYzP6T8lzos53UlAla5Q
+         oySfISQ0GVX8CCRT+yjhlQmA9gG3rukF0bAKwIZK5Ygc24i+BmsZUatWtxDhOpnbtrXS
+         R5iFiH3zjRF0cxz9FrA7qCYk9LueExU1x+8ohjtcGi0Umy8Q/k2Y9QKHx7s9HxsjfMsQ
+         ZiXMNMjuNtX37F2HUVNgQj0RsCJlICrqCbDBb8OOa4HqVXmbDqmrpTb6a3XVBz4vl8Yq
+         evSGpKr7kP38FZ+nKomJn/Eci5N50YXzf60C6QJjVo+OkGF+dYCCvFmWfQn3JjX600Hs
+         ZGmQ==
+X-Gm-Message-State: ACrzQf2MXXnZNbnVrjqnhV+Ts0Phw2A97wFY3olu49bY/2B7dfabqEYR
+        OVwhu75XbpJMEC4l5xBHMqJrCiVJluMzaQ==
+X-Google-Smtp-Source: AMsMyM5RqrnOv4WwtuSNoKVAUQUHOXdZ0wG0JSQPhZU2di1rbhz43Y2AEkvftI8Qia4jRkYek6bCGg==
+X-Received: by 2002:a05:6a00:c86:b0:542:7c38:4a59 with SMTP id a6-20020a056a000c8600b005427c384a59mr7599289pfv.74.1664521218308;
+        Fri, 30 Sep 2022 00:00:18 -0700 (PDT)
 Received: from Laptop-X1.redhat.com ([43.228.180.230])
-        by smtp.gmail.com with ESMTPSA id j13-20020a63594d000000b0041c0c9c0072sm998268pgm.64.2022.09.30.00.00.10
+        by smtp.gmail.com with ESMTPSA id j13-20020a63594d000000b0041c0c9c0072sm998268pgm.64.2022.09.30.00.00.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Sep 2022 00:00:13 -0700 (PDT)
+        Fri, 30 Sep 2022 00:00:17 -0700 (PDT)
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -62,9 +62,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Guillaume Nault <gnault@redhat.com>,
         David Ahern <dsahern@kernel.org>,
         Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv4 net-next 1/4] rtnetlink: add new helper rtnl_configure_link_notify()
-Date:   Fri, 30 Sep 2022 14:59:54 +0800
-Message-Id: <20220930065957.694263-2-liuhangbin@gmail.com>
+Subject: [PATCHv4 net-next 2/4] net: add new helper unregister_netdevice_many_notify
+Date:   Fri, 30 Sep 2022 14:59:55 +0800
+Message-Id: <20220930065957.694263-3-liuhangbin@gmail.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220930065957.694263-1-liuhangbin@gmail.com>
 References: <20220930065957.694263-1-liuhangbin@gmail.com>
@@ -80,248 +80,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch update rtnl_configure_link() to rtnl_configure_link_nlh() by
-adding parameter netlink message header and port id so we can notify the
-userspace about the new link info if NLM_F_ECHO flag is set.
+Add new helper unregister_netdevice_many_notify(), pass netlink message
+header and port id, which could be used to notify userspace when flag
+NLM_F_ECHO is set.
 
-The rtnl_configure_link() will be a wrapper of the new function. The new
-call chain looks like:
+Make the unregister_netdevice_many() as a wrapper of new function
+unregister_netdevice_many_notify().
 
-- rtnl_configure_link_notify()
-  - __dev_notify_flags()
-    - rtmsg_ifinfo_nlh()
-      - rtmsg_ifinfo_event()
-        - rtmsg_ifinfo_build_skb()
-        - rtmsg_ifinfo_send()
-
-All the functions in this call chain will add parameter nlh and pid, so
-we can use them in the last call rtnl_notify().
-
+Suggested-by: Guillaume Nault <gnault@redhat.com>
 Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
- include/linux/netdevice.h |  2 +-
- include/linux/rtnetlink.h |  6 ++++--
- net/core/dev.c            | 14 ++++++-------
- net/core/rtnetlink.c      | 41 ++++++++++++++++++++++++++-------------
- 4 files changed, 40 insertions(+), 23 deletions(-)
+ include/linux/netdevice.h |  2 ++
+ net/core/dev.c            | 16 +++++++++++++---
+ 2 files changed, 15 insertions(+), 3 deletions(-)
 
 diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index eddf8ee270e7..a71d378945e3 100644
+index a71d378945e3..150d7e90b2fc 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -3856,7 +3856,7 @@ int __dev_change_flags(struct net_device *dev, unsigned int flags,
- int dev_change_flags(struct net_device *dev, unsigned int flags,
- 		     struct netlink_ext_ack *extack);
- void __dev_notify_flags(struct net_device *, unsigned int old_flags,
--			unsigned int gchanges);
-+			unsigned int gchanges, u32 pid, struct nlmsghdr *nlh);
- int dev_set_alias(struct net_device *, const char *, size_t);
- int dev_get_alias(const struct net_device *, char *, size_t);
- int __dev_change_net_namespace(struct net_device *dev, struct net *net,
-diff --git a/include/linux/rtnetlink.h b/include/linux/rtnetlink.h
-index ae2c6a3cec5d..ef703b4484a7 100644
---- a/include/linux/rtnetlink.h
-+++ b/include/linux/rtnetlink.h
-@@ -21,12 +21,14 @@ extern int rtnl_put_cacheinfo(struct sk_buff *skb, struct dst_entry *dst,
- void rtmsg_ifinfo(int type, struct net_device *dev, unsigned change, gfp_t flags);
- void rtmsg_ifinfo_newnet(int type, struct net_device *dev, unsigned int change,
- 			 gfp_t flags, int *new_nsid, int new_ifindex);
-+void rtmsg_ifinfo_nlh(int type, struct net_device *dev, unsigned int change,
-+		      gfp_t flags, u32 pid, struct nlmsghdr *nlh);
- struct sk_buff *rtmsg_ifinfo_build_skb(int type, struct net_device *dev,
- 				       unsigned change, u32 event,
- 				       gfp_t flags, int *new_nsid,
--				       int new_ifindex);
-+				       int new_ifindex, u32 pid, u32 seq);
- void rtmsg_ifinfo_send(struct sk_buff *skb, struct net_device *dev,
--		       gfp_t flags);
-+		       gfp_t flags, u32 pid, struct nlmsghdr *nlh);
+@@ -3026,6 +3026,8 @@ static inline int dev_direct_xmit(struct sk_buff *skb, u16 queue_id)
  
- 
- /* RTNL is used as a global lock for all changes to network configuration  */
+ int register_netdevice(struct net_device *dev);
+ void unregister_netdevice_queue(struct net_device *dev, struct list_head *head);
++void unregister_netdevice_many_notify(struct list_head *head,
++				      struct nlmsghdr *nlh, u32 pid);
+ void unregister_netdevice_many(struct list_head *head);
+ static inline void unregister_netdevice(struct net_device *dev)
+ {
 diff --git a/net/core/dev.c b/net/core/dev.c
-index fa53830d0683..89cf082317dd 100644
+index 89cf082317dd..7e625b37880f 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -8347,7 +8347,7 @@ static int __dev_set_promiscuity(struct net_device *dev, int inc, bool notify)
- 		dev_change_rx_flags(dev, IFF_PROMISC);
- 	}
- 	if (notify)
--		__dev_notify_flags(dev, old_flags, IFF_PROMISC);
-+		__dev_notify_flags(dev, old_flags, IFF_PROMISC, 0, NULL);
- 	return 0;
- }
- 
-@@ -8402,7 +8402,7 @@ static int __dev_set_allmulti(struct net_device *dev, int inc, bool notify)
- 		dev_set_rx_mode(dev);
- 		if (notify)
- 			__dev_notify_flags(dev, old_flags,
--					   dev->gflags ^ old_gflags);
-+					   dev->gflags ^ old_gflags, 0, NULL);
- 	}
- 	return 0;
- }
-@@ -8565,12 +8565,12 @@ int __dev_change_flags(struct net_device *dev, unsigned int flags,
- }
- 
- void __dev_notify_flags(struct net_device *dev, unsigned int old_flags,
--			unsigned int gchanges)
-+			unsigned int gchanges, u32 pid, struct nlmsghdr *nlh)
+@@ -10779,11 +10779,14 @@ EXPORT_SYMBOL(unregister_netdevice_queue);
+ /**
+  *	unregister_netdevice_many - unregister many devices
+  *	@head: list of devices
++ *	@nlh: netlink message header
++ *	@pid: destination netlink portid for reports
+  *
+  *  Note: As most callers use a stack allocated list_head,
+  *  we force a list_del() to make sure stack wont be corrupted later.
+  */
+-void unregister_netdevice_many(struct list_head *head)
++void unregister_netdevice_many_notify(struct list_head *head,
++				      struct nlmsghdr *nlh, u32 pid)
  {
- 	unsigned int changes = dev->flags ^ old_flags;
- 
- 	if (gchanges)
--		rtmsg_ifinfo(RTM_NEWLINK, dev, gchanges, GFP_ATOMIC);
-+		rtmsg_ifinfo_nlh(RTM_NEWLINK, dev, gchanges, GFP_ATOMIC, pid, nlh);
- 
- 	if (changes & IFF_UP) {
- 		if (dev->flags & IFF_UP)
-@@ -8612,7 +8612,7 @@ int dev_change_flags(struct net_device *dev, unsigned int flags,
- 		return ret;
- 
- 	changes = (old_flags ^ dev->flags) | (old_gflags ^ dev->gflags);
--	__dev_notify_flags(dev, old_flags, changes);
-+	__dev_notify_flags(dev, old_flags, changes, 0, NULL);
- 	return ret;
- }
- EXPORT_SYMBOL(dev_change_flags);
-@@ -10845,7 +10845,7 @@ void unregister_netdevice_many(struct list_head *head)
+ 	struct net_device *dev, *tmp;
+ 	LIST_HEAD(close_head);
+@@ -10845,7 +10848,8 @@ void unregister_netdevice_many(struct list_head *head)
  		if (!dev->rtnl_link_ops ||
  		    dev->rtnl_link_state == RTNL_LINK_INITIALIZED)
  			skb = rtmsg_ifinfo_build_skb(RTM_DELLINK, dev, ~0U, 0,
--						     GFP_KERNEL, NULL, 0);
-+						     GFP_KERNEL, NULL, 0, 0, 0);
+-						     GFP_KERNEL, NULL, 0, 0, 0);
++						     GFP_KERNEL, NULL, 0,
++						     pid, nlh ? nlh->nlmsg_seq : 0);
  
  		/*
  		 *	Flush the unicast and multicast chains
-@@ -10860,7 +10860,7 @@ void unregister_netdevice_many(struct list_head *head)
+@@ -10860,7 +10864,7 @@ void unregister_netdevice_many(struct list_head *head)
  			dev->netdev_ops->ndo_uninit(dev);
  
  		if (skb)
--			rtmsg_ifinfo_send(skb, dev, GFP_KERNEL);
-+			rtmsg_ifinfo_send(skb, dev, GFP_KERNEL, 0, NULL);
+-			rtmsg_ifinfo_send(skb, dev, GFP_KERNEL, 0, NULL);
++			rtmsg_ifinfo_send(skb, dev, GFP_KERNEL, pid, nlh);
  
  		/* Notifier chain MUST detach us all upper devices. */
  		WARN_ON(netdev_has_any_upper_dev(dev));
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 74864dc46a7e..0caff4ef67e5 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -3180,7 +3180,8 @@ static int rtnl_dellink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	return err;
- }
+@@ -10883,6 +10887,12 @@ void unregister_netdevice_many(struct list_head *head)
  
--int rtnl_configure_link(struct net_device *dev, const struct ifinfomsg *ifm)
-+int rtnl_configure_link_notify(struct net_device *dev, const struct ifinfomsg *ifm,
-+			       struct nlmsghdr *nlh, u32 pid)
- {
- 	unsigned int old_flags;
- 	int err;
-@@ -3194,13 +3195,18 @@ int rtnl_configure_link(struct net_device *dev, const struct ifinfomsg *ifm)
- 	}
- 
- 	if (dev->rtnl_link_state == RTNL_LINK_INITIALIZED) {
--		__dev_notify_flags(dev, old_flags, (old_flags ^ dev->flags));
-+		__dev_notify_flags(dev, old_flags, (old_flags ^ dev->flags), pid, nlh);
- 	} else {
- 		dev->rtnl_link_state = RTNL_LINK_INITIALIZED;
--		__dev_notify_flags(dev, old_flags, ~0U);
-+		__dev_notify_flags(dev, old_flags, ~0U, pid, nlh);
- 	}
- 	return 0;
+ 	list_del(head);
  }
++EXPORT_SYMBOL(unregister_netdevice_many_notify);
 +
-+int rtnl_configure_link(struct net_device *dev, const struct ifinfomsg *ifm)
++void unregister_netdevice_many(struct list_head *head)
 +{
-+	return rtnl_configure_link_notify(dev, ifm, NULL, 0);
++	unregister_netdevice_many_notify(head, NULL, 0);
 +}
- EXPORT_SYMBOL(rtnl_configure_link);
+ EXPORT_SYMBOL(unregister_netdevice_many);
  
- struct net_device *rtnl_create_link(struct net *net, const char *ifname,
-@@ -3896,7 +3902,7 @@ static int rtnl_dump_all(struct sk_buff *skb, struct netlink_callback *cb)
- struct sk_buff *rtmsg_ifinfo_build_skb(int type, struct net_device *dev,
- 				       unsigned int change,
- 				       u32 event, gfp_t flags, int *new_nsid,
--				       int new_ifindex)
-+				       int new_ifindex, u32 pid, u32 seq)
- {
- 	struct net *net = dev_net(dev);
- 	struct sk_buff *skb;
-@@ -3907,7 +3913,7 @@ struct sk_buff *rtmsg_ifinfo_build_skb(int type, struct net_device *dev,
- 		goto errout;
- 
- 	err = rtnl_fill_ifinfo(skb, dev, dev_net(dev),
--			       type, 0, 0, change, 0, 0, event,
-+			       type, pid, seq, change, 0, 0, event,
- 			       new_nsid, new_ifindex, -1, flags);
- 	if (err < 0) {
- 		/* -EMSGSIZE implies BUG in if_nlmsg_size() */
-@@ -3922,16 +3928,18 @@ struct sk_buff *rtmsg_ifinfo_build_skb(int type, struct net_device *dev,
- 	return NULL;
- }
- 
--void rtmsg_ifinfo_send(struct sk_buff *skb, struct net_device *dev, gfp_t flags)
-+void rtmsg_ifinfo_send(struct sk_buff *skb, struct net_device *dev, gfp_t flags,
-+		       u32 pid, struct nlmsghdr *nlh)
- {
- 	struct net *net = dev_net(dev);
- 
--	rtnl_notify(skb, net, 0, RTNLGRP_LINK, NULL, flags);
-+	rtnl_notify(skb, net, pid, RTNLGRP_LINK, nlh, flags);
- }
- 
- static void rtmsg_ifinfo_event(int type, struct net_device *dev,
- 			       unsigned int change, u32 event,
--			       gfp_t flags, int *new_nsid, int new_ifindex)
-+			       gfp_t flags, int *new_nsid, int new_ifindex,
-+			       u32 pid, struct nlmsghdr *nlh)
- {
- 	struct sk_buff *skb;
- 
-@@ -3939,23 +3947,30 @@ static void rtmsg_ifinfo_event(int type, struct net_device *dev,
- 		return;
- 
- 	skb = rtmsg_ifinfo_build_skb(type, dev, change, event, flags, new_nsid,
--				     new_ifindex);
-+				     new_ifindex, pid, nlh ? nlh->nlmsg_seq : 0);
- 	if (skb)
--		rtmsg_ifinfo_send(skb, dev, flags);
-+		rtmsg_ifinfo_send(skb, dev, flags, pid, nlh);
- }
- 
- void rtmsg_ifinfo(int type, struct net_device *dev, unsigned int change,
- 		  gfp_t flags)
- {
- 	rtmsg_ifinfo_event(type, dev, change, rtnl_get_event(0), flags,
--			   NULL, 0);
-+			   NULL, 0, 0, NULL);
- }
- 
- void rtmsg_ifinfo_newnet(int type, struct net_device *dev, unsigned int change,
- 			 gfp_t flags, int *new_nsid, int new_ifindex)
- {
- 	rtmsg_ifinfo_event(type, dev, change, rtnl_get_event(0), flags,
--			   new_nsid, new_ifindex);
-+			   new_nsid, new_ifindex, 0, NULL);
-+}
-+
-+void rtmsg_ifinfo_nlh(int type, struct net_device *dev, unsigned int change,
-+		      gfp_t flags, u32 pid, struct nlmsghdr *nlh)
-+{
-+	rtmsg_ifinfo_event(type, dev, change, rtnl_get_event(0), flags,
-+			   NULL, 0, pid, nlh);
- }
- 
- static int nlmsg_populate_fdb_fill(struct sk_buff *skb,
-@@ -6140,7 +6155,7 @@ static int rtnetlink_event(struct notifier_block *this, unsigned long event, voi
- 	case NETDEV_CHANGELOWERSTATE:
- 	case NETDEV_CHANGE_TX_QUEUE_LEN:
- 		rtmsg_ifinfo_event(RTM_NEWLINK, dev, 0, rtnl_get_event(event),
--				   GFP_KERNEL, NULL, 0);
-+				   GFP_KERNEL, NULL, 0, 0, NULL);
- 		break;
- 	default:
- 		break;
+ /**
 -- 
 2.37.2
 
