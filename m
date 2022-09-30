@@ -2,112 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD5F85F1030
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 18:43:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F9065F1033
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 18:44:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231549AbiI3Qnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 12:43:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44602 "EHLO
+        id S232211AbiI3QoT convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 30 Sep 2022 12:44:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232235AbiI3Qnl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 12:43:41 -0400
-Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15DB6198686
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 09:43:40 -0700 (PDT)
-Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-324ec5a9e97so49687997b3.7
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 09:43:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=2oQDtouYC9WEKv48uT0kLmtjhnea4jelKk0fBgM03W0=;
-        b=QbZ3WiNX62sPsNx6sLqR7iv/BxknvdUPmjvNURilIRgF5fKp0PNRo6FqEkXtEi1MoR
-         MVMx4659tJhrcUg6jT8OmZmo8BGrPg6yxpEMlnyN+gCr1TllvEGiTzUUdAxr1R0XDn4L
-         ZQUqtI6YD9BpAHLsaF30j1Jtddiyen6vxzRtnMV+Ro6ZOLD3GbmQXdHXa1RvoD80Me7L
-         Xhu3R962CDbubg5m8aIegFEY6E5k/DTXr3mO2ESNfTEzdpKXYCEqrOQpFQzP6OvUh41c
-         1c6hAuHZeCRSnAiZchDyNibIjaGseE2XYFojQlIHz5v7kkIvanYpqj9qQRzWPwitcoIF
-         mWrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=2oQDtouYC9WEKv48uT0kLmtjhnea4jelKk0fBgM03W0=;
-        b=PzvWIw+v4WAW3A6UgR0dg4pzBrc9yqD2zmIBtcQfk4ZJAV7wr9ZyuHwD+rfdgsGkoe
-         TzV6b/G0dHePfgM2gTa1dnR0RgxKDC/NUD4/e3TNLpiJfuKhVrUCgxunRhC4HRDD1THo
-         XKXRrbymtQzv6yGuAG8HF0FXVXwys6IFlsTf3srBYRtpKHr7Ky0AHy3J94GQhEvoT8q2
-         qaP3HwJPQL6PrEnBVJf2xCYhlsA1vZnEU1t6Wi8eT3l4kq5Jn1fNcUGBYvHHu2WCt4OW
-         W34T3gAAiRADHMfZkcgV2zt+fgMLpbzuzMrbvcIYHvPqnAYFSfXQAhZb0K0um+AgRTp9
-         ReLA==
-X-Gm-Message-State: ACrzQf2tNVW5cPYDK0iYbKNdfWysvTUM/tZu+gIVfCN4624tFlKQqIcb
-        LQIlm0XLM833Kzcn+Yfcdidaw1lTWfeM/2OArbx3pReVjUvrQg==
-X-Google-Smtp-Source: AMsMyM7WE99BcmGnWmGHiNDMv8TFIwgrNj8I5YdhDnaSeS8ylNOnyFY65qgpI1q9yoA579jrXORTEHs6O4bXvGuMJ6g=
-X-Received: by 2002:a0d:ea85:0:b0:355:58b2:5a48 with SMTP id
- t127-20020a0dea85000000b0035558b25a48mr7369286ywe.332.1664556219077; Fri, 30
- Sep 2022 09:43:39 -0700 (PDT)
+        with ESMTP id S232245AbiI3QoL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 12:44:11 -0400
+Received: from relay.hostedemail.com (smtprelay0011.hostedemail.com [216.40.44.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAFCE1D7BFF;
+        Fri, 30 Sep 2022 09:44:02 -0700 (PDT)
+Received: from omf19.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay03.hostedemail.com (Postfix) with ESMTP id 84EE9A01CA;
+        Fri, 30 Sep 2022 16:44:00 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf19.hostedemail.com (Postfix) with ESMTPA id 11C3C20025;
+        Fri, 30 Sep 2022 16:43:50 +0000 (UTC)
+Message-ID: <76e4463b9ea5946e7af045363d888b966ba5e209.camel@perches.com>
+Subject: Re: [PATCH] net: prestera: acl: Add check for kmemdup
+From:   Joe Perches <joe@perches.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jiasheng Jiang <jiasheng@iscas.ac.cn>, pabeni@redhat.com,
+        davem@davemloft.net, tchornyi@marvell.com, edumazet@google.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Volodymyr Mytnyk <vmytnyk@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Date:   Fri, 30 Sep 2022 09:43:54 -0700
+In-Reply-To: <20220930084431.508ce665@kernel.org>
+References: <20220930050317.32706-1-jiasheng@iscas.ac.cn>
+         <20220930072952.2d337b3a@kernel.org>
+         <e9a52823ea98a0e4a23c38e83d7872faed8c1d6c.camel@perches.com>
+         <20220930084431.508ce665@kernel.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-References: <6b6f65957c59f86a353fc09a5127e83a32ab5999.1664350652.git.pabeni@redhat.com>
- <166450446690.30186.16482162810476880962.git-patchwork-notify@kernel.org>
-In-Reply-To: <166450446690.30186.16482162810476880962.git-patchwork-notify@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 30 Sep 2022 09:43:26 -0700
-Message-ID: <CANn89iJ=_e9-P4dvRcMzJYqpTBQ5kevEvaYFH1JVvSdv4sguhA@mail.gmail.com>
-Subject: Re: [PATCH net-next v4] net: skb: introduce and use a single page
- frag cache
-To:     patchwork-bot+netdevbpf@kernel.org
-Cc:     Paolo Abeni <pabeni@redhat.com>, netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander Duyck <alexanderduyck@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Rspamd-Server: rspamout04
+X-Rspamd-Queue-Id: 11C3C20025
+X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,
+        SPF_NONE,UNPARSEABLE_RELAY autolearn=no autolearn_force=no
+        version=3.4.6
+X-Stat-Signature: 61ufoabfa7a45mcu4iki6kenwd33xat9
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX198I0hx4mTrSvxM4pQ8CA9Ck5yCI/sE/Eo=
+X-HE-Tag: 1664556230-106461
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 29, 2022 at 7:21 PM <patchwork-bot+netdevbpf@kernel.org> wrote:
->
-> Hello:
->
-> This patch was applied to netdev/net-next.git (master)
-> by Jakub Kicinski <kuba@kernel.org>:
->
-> On Wed, 28 Sep 2022 10:43:09 +0200 you wrote:
-> > After commit 3226b158e67c ("net: avoid 32 x truesize under-estimation
-> > for tiny skbs") we are observing 10-20% regressions in performance
-> > tests with small packets. The perf trace points to high pressure on
-> > the slab allocator.
-> >
-> > This change tries to improve the allocation schema for small packets
-> > using an idea originally suggested by Eric: a new per CPU page frag is
-> > introduced and used in __napi_alloc_skb to cope with small allocation
-> > requests.
-> >
-> > [...]
->
-> Here is the summary with links:
->   - [net-next,v4] net: skb: introduce and use a single page frag cache
->     https://git.kernel.org/netdev/net-next/c/dbae2b062824
->
+On Fri, 2022-09-30 at 08:44 -0700, Jakub Kicinski wrote:
+> On Fri, 30 Sep 2022 08:20:47 -0700 Joe Perches wrote:
+> > IMO: If Volodymyr wants to be a maintainer here, he should put
+> > his email as an entry in the MAINTAINERS file for the subsystem.
+> 
+> It's about Fixes tags, unfortunately having everyone of note listed 
+> in MAINTAINERS is pretty much impossible. Even tho we are trying.
+> 
+> > > > Maybe there is a problem of the script that misses one.  
+> > 
+> > I don't think so.  Maybe you have more evidence...
+> 
+> I'll CC you when I tell people to CC authors of patches under Fixes
+> going forward, I don't have a list going back.
+> 
+> > > > Anyway, I have already submitted the same patch and added
+> > > > "vmytnyk@marvell.com" this time.  
+> > > 
+> > > Ha! So you do indeed use it in a way I wasn't expecting :S
+> > > Thanks for the explanation.
+> > > 
+> > > Joe, would you be okay to add a "big fat warning" to get_maintainer
+> > > when people try to use the -f flag?  
+> > 
+> > No, not really.  -f isn't required when the file is in git anyway.
+> 
+> Ah. Yeah. I'd make it error out when run on a source file without -f :S
+> 
+> > > Maybe we can also change the message
+> > > that's displayed when the script is run without arguments to not
+> > > mention -f?  
+> > 
+> > I think that's a poor idea as frequently the script isn't used
+> > on patches but simply to identify the maintainers of a particular
+> > file or subsystem.
+> 
+> Identify the maintainers and report a bug, or something else? As a
+> maintainer I can tell you that I don't see bug reports as often as I
+> see trivial patches from noobs which miss CCs. And I personally don't
+> think I ever used get_maintainer on anything else than a patch.
+> 
+> > > We're getting quite a few fixes which don't CC author, I'm guessing
+> > > Jiasheng's approach may be a common one.  
+> > 
+> > There's no great way to identify "author" or "original submitter"
+> > and frequently the "original submitter" isn't a maintainer anyway.
+> 
+> Confusing sentence. We want for people who s-o-b'd the commit under
+> Fixes to be CCed.
 
-Paolo, this patch adds a regression for TCP RPC workloads (aka TCP_RR)
+If a file or a file modified by a patch is listed in the MAINTAINERS,
+git history isn't used unless --git is specified.
 
-Before the patch, cpus servicing NIC interrupts were allocating
-SLAB/SLUB objects for incoming packets,
-but they were also freeing skbs from TCP rtx queues when ACK packets
-were processed. SLAB/SLUB caches
-were efficient (hit ratio close to 100%)
+For a patch, maybe the author and other SOBs of a commit specified
+by a "Fixes:" line SHA-1 in the commit message could be added automatically.
 
-After the patch, these CPU only free skbs from TCP rtx queues and
-constantly have to drain their alien caches,
-thus competing with the mm spinlocks. RX skbs allocations being done
-by page frag allocation only left kfree(~1KB) calls.
 
-One way to avoid the asymmetric behavior would be to switch TCP to
-also use page frags for TX skbs,
-allocated from tcp_stream_alloc_skb()
