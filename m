@@ -2,51 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B78C5F0F71
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 18:01:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 214735F0F74
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 18:01:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231858AbiI3QBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 12:01:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33838 "EHLO
+        id S231862AbiI3QBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 12:01:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231862AbiI3QAe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 12:00:34 -0400
+        with ESMTP id S231879AbiI3QAh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 12:00:37 -0400
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C1F73304
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 09:00:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 176DD925A1
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 09:00:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1664553628; x=1696089628;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=dQ8gHgXfrlWUWr09xMTVaafO69+hUvU9xOkm3ErfMoQ=;
-  b=dtLIby4bbKdB5qpksqj2+W7KIReDtuy0xZzXkoVVokimYd7pfGidfHm1
-   VKjee4wcWoRR8X06Hb+uo7q1pgYNgmiaNxqjgSxCaBm9wrJs8R+f/4vF5
-   xssgOFSrLxCv7MxsEm4d/JZXwdRE/Txams0twCOGrXbIqllsYprxZs2TH
-   xVB0xPAWrue1SJsGWuy0WncQSYDtPQMEoN4i1ZqmAvnz1L59mF9PryAMy
-   e8mf1ovuYaEd/Q3XdHYr6gWJNoGrWlo2DsILO5wHDlRPd11QoWaI/LQRo
-   PpVmsSmE+una2aiRsUsURl7aK8abxsJKkbx/Tf+oVuv01MtubaP/gjGKG
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10486"; a="303132488"
+  t=1664553631; x=1696089631;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=VByxH30YMrFFT03SK19iwWzFpOXOu0TywF/XLaKQObI=;
+  b=IL6mpJo9eLdSbs6cnVaFcLId/ktIPQKUEUXudna5IhWf9pkUlX7M0AtR
+   7MgBwP4KhENiNYum97UgkDZS5oxwRmQuKWWmGUHo1D01+hRRsWQnV+D6I
+   5MhdudZgCWbO2ug+soCiuCsws5I3MuTUXBoSSdJEE7RhffhAeZG2ktj9m
+   QOPmdEkVX9FV4bzzoYxRLJAAUI7zxKoxZQrG3Ybp1v5EY70k0zMN6wfxa
+   AcL2bcCA5HMTgJlrUi9rlP0Feu/BxI4h5NwUIFfzJcGEY/VMMBCwdKjvX
+   XfUtpRcIIpa6izi4uOzQoRWjSqc1k6MPTZhyxJ+fQ90RmSnUGGcrjECO5
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10486"; a="303132489"
 X-IronPort-AV: E=Sophos;i="5.93,358,1654585200"; 
-   d="scan'208";a="303132488"
+   d="scan'208";a="303132489"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2022 09:00:27 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10486"; a="655996107"
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2022 09:00:28 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10486"; a="655996108"
 X-IronPort-AV: E=Sophos;i="5.93,358,1654585200"; 
-   d="scan'208";a="655996107"
+   d="scan'208";a="655996108"
 Received: from cmforest-mobl1.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.22.5])
   by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2022 09:00:27 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev
-Subject: [PATCH net-next 0/4] mptcp: Fastclose edge cases and error handling
-Date:   Fri, 30 Sep 2022 08:59:30 -0700
-Message-Id: <20220930155934.404466-1-mathew.j.martineau@linux.intel.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
+        kuba@kernel.org, edumazet@google.com, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 1/4] mptcp: propagate fastclose error
+Date:   Fri, 30 Sep 2022 08:59:31 -0700
+Message-Id: <20220930155934.404466-2-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220930155934.404466-1-mathew.j.martineau@linux.intel.com>
+References: <20220930155934.404466-1-mathew.j.martineau@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -59,34 +61,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-MPTCP has existing code to use the MP_FASTCLOSE option header, which
-works like a RST for the MPTCP-level connection (regular RSTs only
-affect specific subflows in MPTCP). This series has some improvements
-for fastclose.
+From: Paolo Abeni <pabeni@redhat.com>
 
-Patch 1 aligns fastclose socket error handling with TCP RST behavior on
-TCP sockets.
+When an mptcp socket is closed due to an incoming FASTCLOSE
+option, so specific sk_err is set and later syscall will
+fail usually with EPIPE.
 
-Patch 2 adds use of MP_FASTCLOSE in some more edge cases, like file
-descriptor close, FIN_WAIT timeout, and when the socket has unread data.
+Align the current fastclose error handling with TCP reset,
+properly setting the socket error according to the current
+msk state and propagating such error.
 
-Patch 3 updates the fastclose self tests.
+Additionally sendmsg() is currently not handling properly
+the sk_err, always returning EPIPE.
 
-Patch 4 does not change any code, just fixes some outdated comments.
+Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+---
+ net/mptcp/protocol.c | 47 +++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 36 insertions(+), 11 deletions(-)
 
-Paolo Abeni (4):
-  mptcp: propagate fastclose error
-  mptcp: use fastclose on more edge scenarios
-  selftests: mptcp: update and extend fastclose test-cases
-  mptcp: update misleading comments.
-
- net/mptcp/protocol.c                          | 124 ++++++++++++------
- .../selftests/net/mptcp/mptcp_connect.c       |  65 +++++++--
- .../testing/selftests/net/mptcp/mptcp_join.sh |  90 ++++++++++---
- 3 files changed, 217 insertions(+), 62 deletions(-)
-
-
-base-commit: 0f5ef005310d4820926c76bc1e94d4d2a0e49d97
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 760404b15cd0..cad0346c9281 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -1707,7 +1707,7 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 			goto out;
+ 		} else if (ret) {
+ 			release_sock(ssk);
+-			goto out;
++			goto do_error;
+ 		}
+ 		release_sock(ssk);
+ 	}
+@@ -1717,9 +1717,13 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	if ((1 << sk->sk_state) & ~(TCPF_ESTABLISHED | TCPF_CLOSE_WAIT)) {
+ 		ret = sk_stream_wait_connect(sk, &timeo);
+ 		if (ret)
+-			goto out;
++			goto do_error;
+ 	}
+ 
++	ret = -EPIPE;
++	if (unlikely(sk->sk_err || (sk->sk_shutdown & SEND_SHUTDOWN)))
++		goto do_error;
++
+ 	pfrag = sk_page_frag(sk);
+ 
+ 	while (msg_data_left(msg)) {
+@@ -1728,11 +1732,6 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 		bool dfrag_collapsed;
+ 		size_t psize, offset;
+ 
+-		if (sk->sk_err || (sk->sk_shutdown & SEND_SHUTDOWN)) {
+-			ret = -EPIPE;
+-			goto out;
+-		}
+-
+ 		/* reuse tail pfrag, if possible, or carve a new one from the
+ 		 * page allocator
+ 		 */
+@@ -1764,7 +1763,7 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 		if (copy_page_from_iter(dfrag->page, offset, psize,
+ 					&msg->msg_iter) != psize) {
+ 			ret = -EFAULT;
+-			goto out;
++			goto do_error;
+ 		}
+ 
+ 		/* data successfully copied into the write queue */
+@@ -1796,7 +1795,7 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 		__mptcp_push_pending(sk, msg->msg_flags);
+ 		ret = sk_stream_wait_memory(sk, &timeo);
+ 		if (ret)
+-			goto out;
++			goto do_error;
+ 	}
+ 
+ 	if (copied)
+@@ -1804,7 +1803,14 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 
+ out:
+ 	release_sock(sk);
+-	return copied ? : ret;
++	return copied;
++
++do_error:
++	if (copied)
++		goto out;
++
++	copied = sk_stream_error(sk, msg->msg_flags, ret);
++	goto out;
+ }
+ 
+ static int __mptcp_recvmsg_mskq(struct mptcp_sock *msk,
+@@ -2441,12 +2447,31 @@ static void mptcp_check_fastclose(struct mptcp_sock *msk)
+ 		unlock_sock_fast(tcp_sk, slow);
+ 	}
+ 
++	/* Mirror the tcp_reset() error propagation */
++	switch (sk->sk_state) {
++	case TCP_SYN_SENT:
++		sk->sk_err = ECONNREFUSED;
++		break;
++	case TCP_CLOSE_WAIT:
++		sk->sk_err = EPIPE;
++		break;
++	case TCP_CLOSE:
++		return;
++	default:
++		sk->sk_err = ECONNRESET;
++	}
++
+ 	inet_sk_state_store(sk, TCP_CLOSE);
+ 	sk->sk_shutdown = SHUTDOWN_MASK;
+ 	smp_mb__before_atomic(); /* SHUTDOWN must be visible first */
+ 	set_bit(MPTCP_WORK_CLOSE_SUBFLOW, &msk->flags);
+ 
+-	mptcp_close_wake_up(sk);
++	/* the calling mptcp_worker will properly destroy the socket */
++	if (sock_flag(sk, SOCK_DEAD))
++		return;
++
++	sk->sk_state_change(sk);
++	sk_error_report(sk);
+ }
+ 
+ static void __mptcp_retrans(struct sock *sk)
 -- 
 2.37.3
 
