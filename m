@@ -2,58 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BA5A5F04D2
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 08:32:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22DAD5F04CE
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 08:31:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229892AbiI3GcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 02:32:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35374 "EHLO
+        id S230311AbiI3GbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 02:31:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230079AbiI3GcG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 02:32:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C978140F29;
-        Thu, 29 Sep 2022 23:32:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C119FB82750;
-        Fri, 30 Sep 2022 06:32:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 319D5C433D6;
-        Fri, 30 Sep 2022 06:31:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664519522;
-        bh=T9dC/HN79/DV+nRzTJI8gIGMCmG0JWdym4OCQAzTBEk=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=reDRkwVCoNYdIzvsrLWowvtxCgc4rqmladYi3QzhXsRjvU2U2j5dzga9Kf+8BnqFZ
-         9SsNdsIDqMLdNRY0hm+ElHdd1lHAZP20oEqT8nnTdvlJBy8fngkAX2/M+aMB2JUda3
-         JNIrL98ycwrNZYsjfMPMSGktC8NZ5lma+J3mBeam2KZ47tsXHrJUcGMiEysc/KyDUE
-         2LULu9lh+vyhNRodgdNHJ69RhXOZzKeAXpgPQSvfJgx0sMxjGjVQUmtS95tEZCTMp/
-         yIqn/oR4/zG6UeS5J1ns0nMzL/mpqZBGoBaBhItnxVKm0TfWFsgC11uSi4lrKNe9hl
-         f1H/+3yKoG3GA==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH][next] carl9170: Replace zero-length array with
- DECLARE_FLEX_ARRAY() helper
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <YzIdWc8QSdZFHBYg@work>
-References: <YzIdWc8QSdZFHBYg@work>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Christian Lamparter <chunkeey@googlemail.com>,
+        with ESMTP id S230091AbiI3GbV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 02:31:21 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9767112261B;
+        Thu, 29 Sep 2022 23:31:19 -0700 (PDT)
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Mf0cy72YSzlVkF;
+        Fri, 30 Sep 2022 14:26:58 +0800 (CST)
+Received: from dggpeml500006.china.huawei.com (7.185.36.76) by
+ dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 30 Sep 2022 14:31:17 +0800
+Received: from localhost.localdomain (10.175.112.70) by
+ dggpeml500006.china.huawei.com (7.185.36.76) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 30 Sep 2022 14:31:17 +0800
+From:   Zhang Changzhong <zhangchangzhong@huawei.com>
+To:     Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        <kernel@pengutronix.de>, Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <166451949633.6083.142608063936593125.kvalo@kernel.org>
-Date:   Fri, 30 Sep 2022 06:31:59 +0000 (UTC)
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        "Jakub Kicinski" <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
+CC:     Zhang Changzhong <zhangchangzhong@huawei.com>,
+        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next] can: j1939: j1939_session_tx_eoma(): fix debug info
+Date:   Fri, 30 Sep 2022 14:52:08 +0800
+Message-ID: <1664520728-4644-1-git-send-email-zhangchangzhong@huawei.com>
+X-Mailer: git-send-email 1.8.3.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.70]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml500006.china.huawei.com (7.185.36.76)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,28 +54,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Gustavo A. R. Silva" <gustavoars@kernel.org> wrote:
+Use "%s" instead of "%p" to print function name in debug info.
 
-> Zero-length arrays are deprecated and we are moving towards adopting
-> C99 flexible-array members, instead. So, replace zero-length arrays
-> declarations in anonymous union with the new DECLARE_FLEX_ARRAY()
-> helper macro.
-> 
-> This helper allows for flexible-array members in unions.
-> 
-> Link: https://github.com/KSPP/linux/issues/193
-> Link: https://github.com/KSPP/linux/issues/215
-> Link: https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> Reviewed-by: Kees Cook <keescook@chromium.org>
-> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+---
+ net/can/j1939/transport.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Patch applied to ath-next branch of ath.git, thanks.
-
-9ec6e20776ab carl9170: Replace zero-length array with DECLARE_FLEX_ARRAY() helper
-
+diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
+index d7d86c9..6ec48a4 100644
+--- a/net/can/j1939/transport.c
++++ b/net/can/j1939/transport.c
+@@ -985,7 +985,7 @@ static int j1939_session_tx_eoma(struct j1939_session *session)
+ 	/* wait for the EOMA packet to come in */
+ 	j1939_tp_set_rxtimeout(session, 1250);
+ 
+-	netdev_dbg(session->priv->ndev, "%p: 0x%p\n", __func__, session);
++	netdev_dbg(session->priv->ndev, "%s: 0x%p\n", __func__, session);
+ 
+ 	return 0;
+ }
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/YzIdWc8QSdZFHBYg@work/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.9.5
 
