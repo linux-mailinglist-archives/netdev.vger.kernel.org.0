@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D9C8F5F03F6
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 06:56:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A5C85F03F7
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 06:56:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230490AbiI3Ez5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 00:55:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41662 "EHLO
+        id S230507AbiI3Ezm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 00:55:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230456AbiI3Ezb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 00:55:31 -0400
-Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E9951176E0
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 21:55:06 -0700 (PDT)
-Received: by mail-qk1-x736.google.com with SMTP id s9so2183403qkg.4
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 21:55:06 -0700 (PDT)
+        with ESMTP id S230193AbiI3Ez3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 00:55:29 -0400
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E06B115BDE
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 21:55:07 -0700 (PDT)
+Received: by mail-qk1-x72e.google.com with SMTP id i17so2167360qkk.12
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 21:55:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=6CT5sAkmztiOhQ7AJtMRLp79aMPquFfDN7VlnvRx+zY=;
-        b=UASnhgJSYfBF7HqeFSxp/19B1AvZLvz5BU3fc3HGt3TeNr5dV0x+PrGPAUjCOx4Xvn
-         IhN0bOs9J2cQTVJ/3d5EgG5XofcMh4MDSkvLiOuaH+t9i8r32pprnM9l3AT/2kKSdBOC
-         8Wiw8Uud+1jxpez79VTYW4towzmqCO4gTOvyN4P8juzp5xfvfsOGuo9z/8NBQeykaldW
-         RG78yOFoIyLJnr5dI1Hh8b3CDlg9ArevUpE99F3ilq2i5JpcjHDep2qzO1wMvzdde+Jh
-         orLWsJwPj7qN8ieI6P5Lax43+E4VF7lBVIHw9yV2zgQbS6lnCJbmebKXskroLjsS8ZVV
-         NwLQ==
+        bh=bc+iFbFWXwF9CHw32ftfzShfDEeqnlGNgX0fMuKNr/k=;
+        b=gVBjV19gqR0nBEFrgldD/UjuPKw/7T3Bkq4W4ur1WaYob+4c9NqKvO3iv78yhAsxbj
+         G5LDFaiQ8401+obQhmWMqUkqCxEHFMyJf6qtv9Aqh5KptWPMrFvpLROwW66wb7DQlDG9
+         uijFF3fK4Ln6f5H91ajcuoZpRnVuLOgMGUz7J3g5S680sU48W41AEJNzrKrhzHTZ/PJw
+         gftJ8wUVBnV5guPLcubvR4Rn2Oay5khpAUHfjganIUyM5SJhN3GB+PhAM+ykkCj4SHLR
+         N+iU2ILSJ8BKCxzYtUdK7CpNVIr1hw6BFTAuDqF+W6MYIGKof1y3/JsRJHnPqJFKMtMv
+         KxMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=6CT5sAkmztiOhQ7AJtMRLp79aMPquFfDN7VlnvRx+zY=;
-        b=JLWA2QGnDvs3YfdTiY87aCZLTaoo1lckMdRtcP8+pRqcGd5FDYLCn+Iflg/nNo7ShZ
-         GBZv6RpbRkPI8rfJXG7jmDZaDjPfZD5a/REdvnq216PVRReHHUNxqYnVR1zvZOv2K3IH
-         naZ+BI5tRaQe0RVuoXR7JRXOR+T2C5eBeJgASKfgDRbIYssHEb0YbpkAbI+R52sMjeAL
-         tAwQQf6S1WImKVIvVh9zeh9lWE6j7x0B+Yh4xBkYr+B+vMed965D/AzkB9T7UHxwGr/u
-         i5L6JGRle9itTEESLLnccD7tiwARsRnI5o8MQxjtBpGqohNbFqUsc2hFXtk+pdl35lIn
-         DiHw==
-X-Gm-Message-State: ACrzQf1GfhL2HZldo8N1OtABYM8FQBH0vu+mwGU9H4cu07cfOfD78CJe
-        Cna0iv3KGxFOVMHY/OSawrQ=
-X-Google-Smtp-Source: AMsMyM54tvN3nPyioNt4Kro1FRh8V1LI3HWChmE/+Z7ZGUVCXR/rmtH5VvLAbz5BWDk3Og/ozvYEsg==
-X-Received: by 2002:ae9:f810:0:b0:6ce:3cf5:42cc with SMTP id x16-20020ae9f810000000b006ce3cf542ccmr4626866qkh.216.1664513634639;
-        Thu, 29 Sep 2022 21:53:54 -0700 (PDT)
+        bh=bc+iFbFWXwF9CHw32ftfzShfDEeqnlGNgX0fMuKNr/k=;
+        b=4oBvW0ElFcV1+aoRTmUUYIZ32/oBg8dhSRS4NhT+9lPd2nD0VPXOq8eWUE8cS+CPbG
+         uqh173E8EYa4E0rdPeo+iLgn6UMVGcf1Q7y5PuHXIhmsiQnLDPPnDlPFtGiXrmcMnX9y
+         WIpMxA7TNFkk1ki7ix+orT3//Df2W8xz5tj7Y3amKCZz7z+APItDt+MPbQ0AyrMFhWe8
+         eg7tFmEBfnwSFn5mC2OtoH5G2a9RrEB/v2VoP7qUMP8CdU/C3UdCkw4kmMR4wqgHJqx1
+         dBjnUsJPPX7wLFbEw1HCM14O4e/z335sBYl3Ti8XTOINE/7YyHTIPNkJhDaW9BijiX4C
+         t5oQ==
+X-Gm-Message-State: ACrzQf0RDRwFg4bM//p3bHojWUIgNtkb0LL00kgtV2bWo0d2KfpNfBhy
+        sborVBlA4Kn+VielhnlnTqI=
+X-Google-Smtp-Source: AMsMyM6gOoa0Df/hfET+CznaLC1kv8anmVQ/M69K9cT95Au92Puh82Yd7HbcISK1Y7uqFVMqGGFBrQ==
+X-Received: by 2002:a05:620a:4013:b0:6ce:a0ff:13da with SMTP id h19-20020a05620a401300b006cea0ff13damr4776600qko.530.1664513636032;
+        Thu, 29 Sep 2022 21:53:56 -0700 (PDT)
 Received: from mubashirq.c.googlers.com.com (74.206.145.34.bc.googleusercontent.com. [34.145.206.74])
-        by smtp.gmail.com with ESMTPSA id de9-20020a05620a370900b006bb82221013sm1550059qkb.0.2022.09.29.21.53.54
+        by smtp.gmail.com with ESMTPSA id de9-20020a05620a370900b006bb82221013sm1550059qkb.0.2022.09.29.21.53.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Sep 2022 21:53:54 -0700 (PDT)
+        Thu, 29 Sep 2022 21:53:55 -0700 (PDT)
 From:   Mubashir Adnan Qureshi <mubashirmaq@gmail.com>
 To:     David Miller <davem@davemloft.net>
 Cc:     netdev@vger.kernel.org, kuba@kernel.org,
@@ -55,9 +55,9 @@ Cc:     netdev@vger.kernel.org, kuba@kernel.org,
         Yuchung Cheng <ycheng@google.com>,
         Neal Cardwell <ncardwell@google.com>,
         Eric Dumazet <edumazet@google.com>
-Subject: [PATCH net-next v2 3/5] tcp: add support for PLB in DCTCP
-Date:   Fri, 30 Sep 2022 04:53:18 +0000
-Message-Id: <20220930045320.5252-4-mubashirmaq@gmail.com>
+Subject: [PATCH net-next v2 4/5] tcp: add u32 counter in tcp_sock and an SNMP counter for PLB
+Date:   Fri, 30 Sep 2022 04:53:19 +0000
+Message-Id: <20220930045320.5252-5-mubashirmaq@gmail.com>
 X-Mailer: git-send-email 2.38.0.rc1.362.ged0d419d3c-goog
 In-Reply-To: <20220930045320.5252-1-mubashirmaq@gmail.com>
 References: <20220929142447.3821638-1-mubashirmaq@gmail.com>
@@ -76,82 +76,118 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Mubashir Adnan Qureshi <mubashirq@google.com>
 
-PLB support is added to TCP DCTCP code. As DCTCP uses ECN as the
-congestion signal, PLB also uses ECN to make decisions whether to change
-the path or not upon sustained congestion.
+A u32 counter is added to tcp_sock for counting the number of PLB
+triggered rehashes for a TCP connection. An SNMP counter is also
+added to count overall PLB triggered rehash events for a host. These
+counters are hooked up to PLB implementation for DCTCP.
+
+TCP_NLA_REHASH is added to SCM_TIMESTAMPING_OPT_STATS that reports
+the rehash attempts triggered due to PLB or timeouts. This gives
+a historical view of sustained congestion or timeouts experienced
+by the TCP connection.
 
 Signed-off-by: Mubashir Adnan Qureshi <mubashirq@google.com>
 Signed-off-by: Yuchung Cheng <ycheng@google.com>
 Signed-off-by: Neal Cardwell <ncardwell@google.com>
 Reviewed-by: Eric Dumazet <edumazet@google.com>
 ---
- net/ipv4/tcp_dctcp.c | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
+ include/linux/tcp.h       | 1 +
+ include/uapi/linux/snmp.h | 1 +
+ include/uapi/linux/tcp.h  | 1 +
+ net/ipv4/proc.c           | 1 +
+ net/ipv4/tcp.c            | 3 +++
+ net/ipv4/tcp_plb.c        | 2 ++
+ 6 files changed, 9 insertions(+)
 
-diff --git a/net/ipv4/tcp_dctcp.c b/net/ipv4/tcp_dctcp.c
-index 2a6c0dd665a4..e0a2ca7456ff 100644
---- a/net/ipv4/tcp_dctcp.c
-+++ b/net/ipv4/tcp_dctcp.c
-@@ -54,6 +54,7 @@ struct dctcp {
- 	u32 next_seq;
- 	u32 ce_state;
- 	u32 loss_cwnd;
-+	struct tcp_plb_state plb;
+diff --git a/include/linux/tcp.h b/include/linux/tcp.h
+index a9fbe22732c3..332870bb09fc 100644
+--- a/include/linux/tcp.h
++++ b/include/linux/tcp.h
+@@ -417,6 +417,7 @@ struct tcp_sock {
+ 		u32		  probe_seq_start;
+ 		u32		  probe_seq_end;
+ 	} mtu_probe;
++	u32     plb_rehash;     /* PLB-triggered rehash attempts */
+ 	u32	mtu_info; /* We received an ICMP_FRAG_NEEDED / ICMPV6_PKT_TOOBIG
+ 			   * while socket was owned by user.
+ 			   */
+diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
+index 4d7470036a8b..6600cb0164c2 100644
+--- a/include/uapi/linux/snmp.h
++++ b/include/uapi/linux/snmp.h
+@@ -292,6 +292,7 @@ enum
+ 	LINUX_MIB_TCPDSACKIGNOREDDUBIOUS,	/* TCPDSACKIgnoredDubious */
+ 	LINUX_MIB_TCPMIGRATEREQSUCCESS,		/* TCPMigrateReqSuccess */
+ 	LINUX_MIB_TCPMIGRATEREQFAILURE,		/* TCPMigrateReqFailure */
++	LINUX_MIB_TCPPLBREHASH,			/* TCPPLBRehash */
+ 	__LINUX_MIB_MAX
  };
  
- static unsigned int dctcp_shift_g __read_mostly = 4; /* g = 1/2^4 */
-@@ -91,6 +92,8 @@ static void dctcp_init(struct sock *sk)
- 		ca->ce_state = 0;
+diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
+index 8fc09e8638b3..c9abe86eda5f 100644
+--- a/include/uapi/linux/tcp.h
++++ b/include/uapi/linux/tcp.h
+@@ -315,6 +315,7 @@ enum {
+ 	TCP_NLA_BYTES_NOTSENT,	/* Bytes in write queue not yet sent */
+ 	TCP_NLA_EDT,		/* Earliest departure time (CLOCK_MONOTONIC) */
+ 	TCP_NLA_TTL,		/* TTL or hop limit of a packet received */
++	TCP_NLA_REHASH,         /* PLB and timeout triggered rehash attempts */
+ };
  
- 		dctcp_reset(tp, ca);
-+		tcp_plb_init(sk, &ca->plb);
-+
- 		return;
+ /* for TCP_MD5SIG socket option */
+diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
+index 5386f460bd20..f88daace9de3 100644
+--- a/net/ipv4/proc.c
++++ b/net/ipv4/proc.c
+@@ -297,6 +297,7 @@ static const struct snmp_mib snmp4_net_list[] = {
+ 	SNMP_MIB_ITEM("TCPDSACKIgnoredDubious", LINUX_MIB_TCPDSACKIGNOREDDUBIOUS),
+ 	SNMP_MIB_ITEM("TCPMigrateReqSuccess", LINUX_MIB_TCPMIGRATEREQSUCCESS),
+ 	SNMP_MIB_ITEM("TCPMigrateReqFailure", LINUX_MIB_TCPMIGRATEREQFAILURE),
++	SNMP_MIB_ITEM("TCPPLBRehash", LINUX_MIB_TCPPLBREHASH),
+ 	SNMP_MIB_SENTINEL
+ };
+ 
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 648b5c54bb32..685c06c6d33f 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -3173,6 +3173,7 @@ int tcp_disconnect(struct sock *sk, int flags)
+ 	tp->sacked_out = 0;
+ 	tp->tlp_high_seq = 0;
+ 	tp->last_oow_ack_time = 0;
++	tp->plb_rehash = 0;
+ 	/* There's a bubble in the pipe until at least the first ACK. */
+ 	tp->app_limited = ~0U;
+ 	tp->rack.mstamp = 0;
+@@ -3969,6 +3970,7 @@ static size_t tcp_opt_stats_get_size(void)
+ 		nla_total_size(sizeof(u32)) + /* TCP_NLA_BYTES_NOTSENT */
+ 		nla_total_size_64bit(sizeof(u64)) + /* TCP_NLA_EDT */
+ 		nla_total_size(sizeof(u8)) + /* TCP_NLA_TTL */
++		nla_total_size(sizeof(u32)) + /* TCP_NLA_REHASH */
+ 		0;
+ }
+ 
+@@ -4045,6 +4047,7 @@ struct sk_buff *tcp_get_timestamping_opt_stats(const struct sock *sk,
+ 		nla_put_u8(stats, TCP_NLA_TTL,
+ 			   tcp_skb_ttl_or_hop_limit(ack_skb));
+ 
++	nla_put_u32(stats, TCP_NLA_REHASH, tp->plb_rehash + tp->timeout_rehash);
+ 	return stats;
+ }
+ 
+diff --git a/net/ipv4/tcp_plb.c b/net/ipv4/tcp_plb.c
+index 26ffc5a45f53..04f4cac8645b 100644
+--- a/net/ipv4/tcp_plb.c
++++ b/net/ipv4/tcp_plb.c
+@@ -73,6 +73,8 @@ void tcp_plb_check_rehash(struct sock *sk, struct tcp_plb_state *plb)
+ 	if (!plb->pause_until && (can_idle_rehash || can_force_rehash)) {
+ 		sk_rethink_txhash(sk);
+ 		plb->consec_cong_rounds = 0;
++		tcp_sk(sk)->plb_rehash++;
++		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPPLBREHASH);
  	}
- 
-@@ -117,14 +120,28 @@ static void dctcp_update_alpha(struct sock *sk, u32 flags)
- 
- 	/* Expired RTT */
- 	if (!before(tp->snd_una, ca->next_seq)) {
-+		u32 delivered = tp->delivered - ca->old_delivered;
- 		u32 delivered_ce = tp->delivered_ce - ca->old_delivered_ce;
- 		u32 alpha = ca->dctcp_alpha;
-+		u32 ce_ratio = 0;
-+
-+		if (delivered > 0) {
-+			/* dctcp_alpha keeps EWMA of fraction of ECN marked
-+			 * packets. Because of EWMA smoothing, PLB reaction can
-+			 * be slow so we use ce_ratio which is an instantaneous
-+			 * measure of congestion. ce_ratio is the fraction of
-+			 * ECN marked packets in the previous RTT.
-+			 */
-+			if (delivered_ce > 0)
-+				ce_ratio = (delivered_ce << TCP_PLB_SCALE) / delivered;
-+			tcp_plb_update_state(sk, &ca->plb, (int)ce_ratio);
-+			tcp_plb_check_rehash(sk, &ca->plb);
-+		}
- 
- 		/* alpha = (1 - g) * alpha + g * F */
- 
- 		alpha -= min_not_zero(alpha, alpha >> dctcp_shift_g);
- 		if (delivered_ce) {
--			u32 delivered = tp->delivered - ca->old_delivered;
- 
- 			/* If dctcp_shift_g == 1, a 32bit value would overflow
- 			 * after 8 M packets.
-@@ -172,8 +189,12 @@ static void dctcp_cwnd_event(struct sock *sk, enum tcp_ca_event ev)
- 		dctcp_ece_ack_update(sk, ev, &ca->prior_rcv_nxt, &ca->ce_state);
- 		break;
- 	case CA_EVENT_LOSS:
-+		tcp_plb_update_state_upon_rto(sk, &ca->plb);
- 		dctcp_react_to_loss(sk);
- 		break;
-+	case CA_EVENT_TX_START:
-+		tcp_plb_check_rehash(sk, &ca->plb); /* Maybe rehash when inflight is 0 */
-+		break;
- 	default:
- 		/* Don't care for the rest. */
- 		break;
+ }
+ EXPORT_SYMBOL_GPL(tcp_plb_check_rehash);
 -- 
 2.38.0.rc1.362.ged0d419d3c-goog
 
