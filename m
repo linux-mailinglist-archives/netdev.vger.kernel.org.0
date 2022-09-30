@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D922D5F0D68
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 16:21:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FAF75F0D69
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 16:22:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231956AbiI3OV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 10:21:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47096 "EHLO
+        id S232114AbiI3OV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 10:21:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231950AbiI3OV2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 10:21:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12D5B1A3AC7
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 07:21:16 -0700 (PDT)
+        with ESMTP id S232037AbiI3OVb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 10:21:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7B731A3AC1
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 07:21:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 763A26233F
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 14:21:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66EBFC433D6;
-        Fri, 30 Sep 2022 14:21:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F1F41B828F7
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 14:21:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51BF2C43470;
+        Fri, 30 Sep 2022 14:21:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664547674;
-        bh=SuKTETuz8WXsX3BeLrSrrtAcbZYiXxxskWZ4YH1+5Is=;
-        h=From:To:Cc:Subject:Date:From;
-        b=IIvlB/RsjP1u8boqRcKo+WKhh7LpxsKwidpJafMR4BLFbwMA4in1cfNCGbRcsKJd4
-         HikQpSO2dgEKODD+MVCLzoZwFnc9gUorsmaCsirgGkYNKnVTyapAkBrWpRouvKe34n
-         P9GITcmNXfBgEYaarsrB02QLbcSCLKrJBkvf9KCgOMp+vZ/qFTi9h1SbV3CGg4vI1i
-         qqXOAd4AOOYCldOyhOpES5SEJoUFr57U6OoMFiupU+BZ9H08elUQO3l9RzqzymBHcp
-         crH3VMGuYGQ5J9mDR4o43RPF5PHM58UUkOOnLf6Ibcn8VHqAiBUweCkovsCVa7iOHu
-         l06IKCXDV7caQ==
+        s=k20201202; t=1664547676;
+        bh=GJFnnF0TtALxPPD9AXhLEsIwaMU0bK4YL23useYsObw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rYZioOAHNFKUrsD3fyjAF2L8ZTFAZ9U2iuBntcm5JOhAHtywxI4LAkHdbWFd+FVeL
+         I/Cfnjo2HVepKJMPMVupclMxQzoNZKpmUdTlcYikBns8hH175Hair4FyKeaXwh2uY6
+         dWL2aMYOmCRgs0eyhJW2rXQQUp/1ZGxql+310YC9R2rPbtkk2ODnUZf87mpzoA451J
+         cUYviOzf8POo9ZzDdZuL2BRg3NQlfb1TyDF0eWMfHptTJZnE6DwYEpFQD56mkV5Mh2
+         lO6XQQRABxdOaJxaUs+MYVetLY7VVLCe4Ne1JEgxZjZtltJiCvXXv3TUbnhC1C905u
+         k3ep7A2X5kzyw==
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
 To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -38,10 +38,12 @@ Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
         Andrew Lunn <andrew@lunn.ch>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH net-next 00/12] RollBall / Hilink / Turris 10G copper SFP support
-Date:   Fri, 30 Sep 2022 16:20:58 +0200
-Message-Id: <20220930142110.15372-1-kabel@kernel.org>
+Subject: [PATCH net-next 01/12] net: phylink: add ability to validate a set of interface modes
+Date:   Fri, 30 Sep 2022 16:20:59 +0200
+Message-Id: <20220930142110.15372-2-kabel@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220930142110.15372-1-kabel@kernel.org>
+References: <20220930142110.15372-1-kabel@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -54,64 +56,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 
-I am resurrecting my attempt to add support for RollBall / Hilink /
-Turris 10G copper SFPs modules.
+Rather than having the ability to validate all supported interface
+modes or a single interface mode, introduce the ability to validate
+a subset of supported modes.
 
-The modules contain Marvell 88X3310 PHY, which can communicate with
-the system via sgmii, 2500base-x, 5gbase-r, 10gbase-r or usxgmii mode.
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+[ rebased on current net-next ]
+Signed-off-by: Marek Behún <kabel@kernel.org>
+---
+ drivers/net/phy/phylink.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
 
-Some of the patches I've taken from Russell King's net-queue [1]
-(with some rebasing).
-
-The important change from my previous attempts are:
-- I am including the changes needed to phylink and marvell10g driver,
-  so that the 88X3310 PHY is configured to use PHY modes supported by
-  the host (the PHY defaults to use 10gbase-r only on host's side)
-- I have changed the patch that informs phylib about the interfaces
-  supported by the host (patch 5 of this series): it now fills in the
-  phydev->host_interfaces member only when connecting a PHY that is
-  inside a SFP module. This may change in the future.
-
-Marek
-
-[1] http://git.armlinux.org.uk/cgit/linux-arm.git/?h=net-queue
-
-Marek Behún (7):
-  net: phylink: pass supported host PHY interface modes to phylib for
-    SFP's PHYs
-  net: phy: marvell10g: Use tabs instead of spaces for indentation
-  net: phylink: allow attaching phy for SFP modules on 802.3z mode
-  net: sfp: Add and use macros for SFP quirks definitions
-  net: sfp: create/destroy I2C mdiobus before PHY probe/after PHY
-    release
-  net: phy: mdio-i2c: support I2C MDIO protocol for RollBall SFP modules
-  net: sfp: add support for multigig RollBall transceivers
-
-Russell King (3):
-  net: sfp: augment SFP parsing with phy_interface_t bitmap
-  net: phylink: use phy_interface_t bitmaps for optical modules
-  net: phy: marvell10g: select host interface configuration
-
-Russell King (Oracle) (2):
-  net: phylink: add ability to validate a set of interface modes
-  net: phylink: rename phylink_sfp_config()
-
- drivers/net/mdio/mdio-i2c.c       | 310 +++++++++++++++++++++++++++++-
- drivers/net/phy/at803x.c          |   3 +-
- drivers/net/phy/marvell-88x2222.c |   3 +-
- drivers/net/phy/marvell.c         |   3 +-
- drivers/net/phy/marvell10g.c      | 133 ++++++++++++-
- drivers/net/phy/phylink.c         | 210 +++++++++++++++-----
- drivers/net/phy/sfp-bus.c         |  75 ++++++--
- drivers/net/phy/sfp.c             | 179 +++++++++++------
- drivers/net/phy/sfp.h             |   3 +-
- include/linux/mdio/mdio-i2c.h     |  10 +-
- include/linux/phy.h               |   4 +
- include/linux/sfp.h               |   5 +-
- 12 files changed, 797 insertions(+), 141 deletions(-)
-
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index d0af026c9afa..2cf388fad1be 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -637,8 +637,9 @@ static int phylink_validate_mac_and_pcs(struct phylink *pl,
+ 	return phylink_is_empty_linkmode(supported) ? -EINVAL : 0;
+ }
+ 
+-static int phylink_validate_any(struct phylink *pl, unsigned long *supported,
+-				struct phylink_link_state *state)
++static int phylink_validate_mask(struct phylink *pl, unsigned long *supported,
++				 struct phylink_link_state *state,
++				 const unsigned long *interfaces)
+ {
+ 	__ETHTOOL_DECLARE_LINK_MODE_MASK(all_adv) = { 0, };
+ 	__ETHTOOL_DECLARE_LINK_MODE_MASK(all_s) = { 0, };
+@@ -647,7 +648,7 @@ static int phylink_validate_any(struct phylink *pl, unsigned long *supported,
+ 	int intf;
+ 
+ 	for (intf = 0; intf < PHY_INTERFACE_MODE_MAX; intf++) {
+-		if (test_bit(intf, pl->config->supported_interfaces)) {
++		if (test_bit(intf, interfaces)) {
+ 			linkmode_copy(s, supported);
+ 
+ 			t = *state;
+@@ -668,12 +669,14 @@ static int phylink_validate_any(struct phylink *pl, unsigned long *supported,
+ static int phylink_validate(struct phylink *pl, unsigned long *supported,
+ 			    struct phylink_link_state *state)
+ {
+-	if (!phy_interface_empty(pl->config->supported_interfaces)) {
++	const unsigned long *interfaces = pl->config->supported_interfaces;
++
++	if (!phy_interface_empty(interfaces)) {
+ 		if (state->interface == PHY_INTERFACE_MODE_NA)
+-			return phylink_validate_any(pl, supported, state);
++			return phylink_validate_mask(pl, supported, state,
++						     interfaces);
+ 
+-		if (!test_bit(state->interface,
+-			      pl->config->supported_interfaces))
++		if (!test_bit(state->interface, interfaces))
+ 			return -EINVAL;
+ 	}
+ 
 -- 
 2.35.1
 
