@@ -2,135 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D27AF5F09E3
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 13:19:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 583455F09D6
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 13:17:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232055AbiI3LTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 07:19:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49662 "EHLO
+        id S229735AbiI3LRU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 07:17:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231869AbiI3LTA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 07:19:00 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15729F3C7F
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 04:06:05 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id h7so6275418wru.10
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 04:06:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=DcsCImqzPTtzDW+tcf53orV9UGxO9/x924I5Tz5lCW0=;
-        b=DOBegeC3Tt/LD6Tc9/ludEXVJJkVcz3y+SfHVxnl0ptEwm4PI+2nPrOBrXdMm8QVFd
-         pICuieo3rxj5ujEO3EdSjl8QIIBduUUj2S2SXewt0KEQqmFICZA+yiEDy1gBL2cRBaMi
-         w+Lx2ZJ83Id/0aQ9MUUi46pyGWmNKXxCGmPt5MEt2/wdo7r26mNhIltCc6PGdnEi5LOm
-         SdC5J69g1+3uNzK0iylzlMkX5e2NLutOXzBQHDo8PcjtOcwj0SJP1rZKoZgTB1HJzzYH
-         VwXHPci5W2EmUoVi8TC6259gf/DqPb0gbiJUbZK3QOWCwtsgUhyekEOCfzmQAIKyUHbg
-         snqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=DcsCImqzPTtzDW+tcf53orV9UGxO9/x924I5Tz5lCW0=;
-        b=ssGjVbkQYfJD1ZBiWjU65BaU/8vNUoNCcX8DzOUIMaEmOIMoSnXvmQL6CpV12N4NqJ
-         ZgYl79AbIRyRQBIsrUHERWXmfK1Xjfv+hvi3HG1QZZx1FSnp3aCq8o6Tk+FjEvQZ1mpg
-         2YBN9lnL7iGGI2s3PZg4oKQG5hwqJFDCGa3U925kjiYFwvJD7Fw1Pi8KuQuLKEJzhDz/
-         Hh9EGxcVq9JmMxS3adSOfid78le8TRAJkCtajvrkX0jhxm8unlTVbtPCASpT8mo6lfvw
-         tQvhdAwKIOAsMXVSaqlseyvab5rabl9ShiHaKVz+RXUBbNEqCvLGETYvG57k1x0UpHhP
-         OjzA==
-X-Gm-Message-State: ACrzQf1N4nO00lBsIiaIjUlhXwoSArAU5Zl3z7CoC2EWEtoDp2TpcZyv
-        +tMfbxcLKBK132txTB1dhO8Zq/sI2GCB3A==
-X-Google-Smtp-Source: AMsMyM7LPvp0NeJoE5RQplQmz7PBBSJnZe0CoB01Qld704XlCb2Nvam4kDeGgajbxjzMgF1x9G0ZWg==
-X-Received: by 2002:a2e:908a:0:b0:26b:fd3:1870 with SMTP id l10-20020a2e908a000000b0026b0fd31870mr2628888ljg.120.1664533573044;
-        Fri, 30 Sep 2022 03:26:13 -0700 (PDT)
-Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id d15-20020ac25ecf000000b004979e231fafsm253439lfq.38.2022.09.30.03.26.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 30 Sep 2022 03:26:12 -0700 (PDT)
-Message-ID: <9999a1a3-cda0-2759-f6f4-9bc7414f9ee4@linaro.org>
-Date:   Fri, 30 Sep 2022 12:26:11 +0200
+        with ESMTP id S232185AbiI3LQt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 07:16:49 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAC89A7228;
+        Fri, 30 Sep 2022 04:00:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3821DCE24CD;
+        Fri, 30 Sep 2022 11:00:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 62C0FC433D7;
+        Fri, 30 Sep 2022 11:00:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664535617;
+        bh=A1VlmBks7Q6/XSUEg+ijZ59ILJPGN/96FVPihsuhx5s=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=EPnN/kIgrTs7JjxqPKJTSARH+5KVU69JrDCJQq5DCqGhvs1WrT3FoSWGnu1kD1J4e
+         wDT6gKO72I8TdjCX+3oir32uslqQvxYFJnHrGk06byHAGCkriPUPGosDeGW90f5pKC
+         3y+aSpNSgPrbfS6Uai7zqVQB7tERxGxrVjeTEMwx8lK6gXG+SX+jX02GFndcIzbnNe
+         Ryq1DyU7h71fPHb0lBxKGMpK6Oom0IFeDdBojjLIKPE050RFl727Y+oeYV705JaYmZ
+         kdj9Eomo/UYjPFn8GqtMS7vH2ctwDuDGsrUCJtkiOMya//6MWdR03o1oE2KWdYqXR8
+         u91ZVH8+7gLmg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 45FC1E49FA5;
+        Fri, 30 Sep 2022 11:00:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: [PATCH v2 3/4] dt-bindings: net: qcom,ethqos: Convert bindings to
- yaml
-To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>,
-        devicetree@vger.kernel.org
-Cc:     linux-arm-msm@vger.kernel.org, agross@kernel.org,
-        bhupesh.linux@gmail.com, linux-kernel@vger.kernel.org,
-        robh+dt@kernel.org, netdev@vger.kernel.org,
-        Bjorn Andersson <andersson@kernel.org>,
-        Rob Herring <robh@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        David Miller <davem@davemloft.net>
-References: <20220929060405.2445745-1-bhupesh.sharma@linaro.org>
- <20220929060405.2445745-4-bhupesh.sharma@linaro.org>
- <4e896382-c666-55c6-f50b-5c442e428a2b@linaro.org>
- <1163e862-d36a-9b5e-2019-c69be41cc220@linaro.org>
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1163e862-d36a-9b5e-2019-c69be41cc220@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v4 0/6] tsnep: multi queue support and some other
+ improvements
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166453561728.12525.13335744248938169663.git-patchwork-notify@kernel.org>
+Date:   Fri, 30 Sep 2022 11:00:17 +0000
+References: <20220927195842.44641-1-gerhard@engleder-embedded.com>
+In-Reply-To: <20220927195842.44641-1-gerhard@engleder-embedded.com>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30/09/2022 10:12, Bhupesh Sharma wrote:
->>> +  snps,reset-gpio:
->>> +    maxItems: 1
->>
->> Why is this one here? It's already in snps,dwmac.
->>
->> Actually this applies to several other properties. You have
->> unevaluatedProperties:false, so you do not have to duplicate snps,dwmac.
->> You only need to constrain it, like we said about interrupts in your
->> previous patch.
-> 
-> I was actually getting errors like the following without the same:
-> 
-> arm64/boot/dts/qcom/qcs404-evb-1000.dtb: ethernet@7a80000: Unevaluated 
-> properties are not allowed ('snps,tso' was unexpected)
-> 	From schema: Documentation/devicetree/bindings/net/qcom,ethqos.yaml
-> 
-> So, its not clear to me that even though 'snps,dwmac.yaml' is referenced 
-> here, the property appears as unevaluated.
+Hello:
 
-Because snps,tso is not allowed, but the rest is.
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
+On Tue, 27 Sep 2022 21:58:36 +0200 you wrote:
+> Add support for additional TX/RX queues along with RX flow classification
+> support.
 > 
->>> +
->>> +  power-domains:
->>> +    maxItems: 1
->>> +
->>> +  resets:
->>> +    maxItems: 1
->>> +
->>> +  rx-fifo-depth:
->>> +    $ref: /schemas/types.yaml#/definitions/uint32
->>> +
->>> +  tx-fifo-depth:
->>> +    $ref: /schemas/types.yaml#/definitions/uint32
->>> +
->>> +  snps,tso:
->>> +    type: boolean
->>> +    description: Enables the TSO feature (otherwise managed by MAC HW capability register).
->>
->> You add here several new properties. Mention in commit msg changes from
->> pure conversion with answer to "why".
+> Binding is extended to allow additional interrupts for additional TX/RX
+> queues. Also dma-coherent is allowed as minor improvement.
 > 
-> Right, most of them are to avoid the make dtbs_check errors / warnings 
-> like the one mentioned above.
+> RX path optimisation is done by using page pool as preparations for future
+> XDP support.
+> 
+> [...]
 
-All of them should not be here.
+Here is the summary with links:
+  - [net-next,v4,1/6] dt-bindings: net: tsnep: Allow dma-coherent
+    https://git.kernel.org/netdev/net-next/c/ff46c610abd6
+  - [net-next,v4,2/6] dt-bindings: net: tsnep: Allow additional interrupts
+    https://git.kernel.org/netdev/net-next/c/60e1b494ef88
+  - [net-next,v4,3/6] tsnep: Move interrupt from device to queue
+    (no matching commit)
+  - [net-next,v4,4/6] tsnep: Support multiple TX/RX queue pairs
+    https://git.kernel.org/netdev/net-next/c/762031375d5c
+  - [net-next,v4,5/6] tsnep: Add EtherType RX flow classification support
+    https://git.kernel.org/netdev/net-next/c/308ce1426509
+  - [net-next,v4,6/6] tsnep: Use page pool for RX
+    https://git.kernel.org/netdev/net-next/c/bb837a37db8d
 
-Best regards,
-Krzysztof
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
