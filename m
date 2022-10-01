@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E44815F81BB
-	for <lists+netdev@lfdr.de>; Sat,  8 Oct 2022 02:58:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 477E25F81BE
+	for <lists+netdev@lfdr.de>; Sat,  8 Oct 2022 02:58:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229598AbiJHA6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 20:58:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34020 "EHLO
+        id S229852AbiJHA6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 20:58:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229729AbiJHA5Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 20:57:24 -0400
+        with ESMTP id S229751AbiJHA50 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 20:57:26 -0400
 Received: from mailgw.kylinos.cn (unknown [124.126.103.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C7D2127932;
-        Fri,  7 Oct 2022 17:57:13 -0700 (PDT)
-X-UUID: fce92f2a55cc483780487057d5ad1af0-20221001
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 782A2127BE8;
+        Fri,  7 Oct 2022 17:57:15 -0700 (PDT)
+X-UUID: 94da04da695f40ebb0f6b5fc684e47b6-20221001
 X-Spam-Fingerprint: 0
 X-GW-Reason: 13103
 X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HMTDkurrpnIDopoHlrqHmoLg=
@@ -22,24 +22,24 @@ X-Content-Feature: ica/max.line-size 85
         audit/email.address 1
         dict/adv 1
         meta/cnt.alert 1
-X-CPASD-INFO: 690cf27dc8564868aaabb9a4162dbd69@f4lqg5NkZZSPWHeCg3uBcoGSkZKSZYG
-        Dc3BSlJCUYlmVhH5xTV5uYFV9fWtVYV9dYVR6eGxQYmBgZFJ4i3-XblBgXoZgUZB3hXtqg5ZgZw==
-X-CLOUD-ID: 690cf27dc8564868aaabb9a4162dbd69
-X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,OB:0.0,URL:-5,TVAL:180.
+X-CPASD-INFO: 81be6827bab043debdb2f7aa5fe0e2a7@gYGchWNqYGeOgaR8g3avn4KVkmKWY4G
+        wd6CFYZNijVeVhH5xTV5uYFV9fWtVYV9dYVR6eGxQYmBgZFJ4i3-XblBhXoZgUZB3h3OchWdmYg==
+X-CLOUD-ID: 81be6827bab043debdb2f7aa5fe0e2a7
+X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,OB:1.0,URL:-5,TVAL:180.
         0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:156.0,IP:-2.0,MAL:-5.0,PHF:-5.0,PHC:-5
-        .0,SPF:4.0,EDMS:-5,IPLABEL:-2.0,FROMTO:1,AD:0,FFOB:0.0,CFOB:0.0,SPC:0,SIG:-5,
-        AUF:14,DUF:6107,ACD:96,DCD:96,SL:0,EISP:0,AG:0,CFC:0.433,CFSR:0.081,UAT:0,RAF
+        .0,SPF:4.0,EDMS:-5,IPLABEL:-2.0,FROMTO:1,AD:0,FFOB:1.0,CFOB:1.0,SPC:0,SIG:-5,
+        AUF:15,DUF:6109,ACD:96,DCD:96,SL:0,EISP:0,AG:0,CFC:0.433,CFSR:0.081,UAT:0,RAF
         :0,IMG:-5.0,DFA:0,DTA:0,IBL:-2.0,ADI:-5,SBL:0,REDM:0,REIP:0,ESB:0,ATTNUM:0,EA
         F:0,CID:-5.0,VERSION:2.3.17
-X-CPASD-ID: fce92f2a55cc483780487057d5ad1af0-20221001
+X-CPASD-ID: 94da04da695f40ebb0f6b5fc684e47b6-20221001
 X-CPASD-BLOCK: 1000
 X-CPASD-STAGE: 1
-X-UUID: fce92f2a55cc483780487057d5ad1af0-20221001
+X-UUID: 94da04da695f40ebb0f6b5fc684e47b6-20221001
 X-User: jianghaoran@kylinos.cn
 Received: from localhost.localdomain [(183.242.54.212)] by mailgw
         (envelope-from <jianghaoran@kylinos.cn>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES128-GCM-SHA256 128/128)
-        with ESMTP id 411241914; Sat, 01 Oct 2022 08:54:23 +0800
+        with ESMTP id 1887482894; Sat, 01 Oct 2022 09:02:15 +0800
 From:   jianghaoran <jianghaoran@kylinos.cn>
 To:     jianghaoran@kylinos.cn
 Cc:     davem@davemloft.net, edumazet@google.com, jhs@mojatatu.com,
@@ -47,8 +47,8 @@ Cc:     davem@davemloft.net, edumazet@google.com, jhs@mojatatu.com,
         netdev@vger.kernel.org, pabeni@redhat.com,
         vinicius.gomes@intel.com, vladimir.oltean@nxp.com
 Subject: [PATCH] taprio: Set the value of picos_per_byte before fill sched_entry
-Date:   Sat,  1 Oct 2022 08:49:50 +0800
-Message-Id: <20221001004950.43471-1-jianghaoran@kylinos.cn>
+Date:   Sat,  1 Oct 2022 08:57:41 +0800
+Message-Id: <20221001005741.51159-1-jianghaoran@kylinos.cn>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <7b707ba4-c3f2-dd17-e3f2-e4d143b76245@kylinos.cn>
 References: <7b707ba4-c3f2-dd17-e3f2-e4d143b76245@kylinos.cn>
