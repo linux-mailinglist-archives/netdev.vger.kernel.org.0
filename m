@@ -2,71 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A3895F1A0A
-	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 07:49:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 535335F1A15
+	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 08:02:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229469AbiJAFrb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Oct 2022 01:47:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60770 "EHLO
+        id S229478AbiJAGBw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Oct 2022 02:01:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbiJAFra (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 01:47:30 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3925E2B24E
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 22:47:27 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id 130-20020a1c0288000000b003b494ffc00bso5599089wmc.0
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 22:47:27 -0700 (PDT)
+        with ESMTP id S229445AbiJAGBu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 02:01:50 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B83C9D4A97
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 23:01:48 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id rk17so12932363ejb.1
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 23:01:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=Kyb2X4uCHXKuVg8roYPGr870rePi13E6LThzOWMSSjQ=;
-        b=rx3qPq58caH+zXlyP5pHnDpMACOhHNsptQruEtJ6FyUlt7uxQ1aOUQHZCldHspYrE/
-         CghI3aqF5hu1zsOBtfxOrNhVYnq0PMXVZplT7f6a5nIxHYL7g8PWTQ/mKOc3Ma9QSgaU
-         gEIIrA5MeDB9Q5Dr1VR1s1KMnEmqP34tnNfuee27SIDDH3i/xDLv9/XxNmkSroblTy6s
-         jwMdyFQfEi8GhJBtPJKdxBC/5zHYmbw3/tVq84CCwpISiwOpwY4WeNXUTeOCr02TMzo1
-         KPT5n4MmJYUBN2H+hj8bPD5jfr1vs13AfQ4Wu4GW4mHAEeNb41XtJKFGpWq+N16CtH64
-         t/bQ==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=3UF6B9Awp+vGtj4cPKd5v182qZWF99iVXDSy1FoymlE=;
+        b=aeMhJcP3ByEINH3LBYydoD54RuXyfeZiiHO4RYy0mCkOLYuW5/NZ1fdGki6qMqAhGH
+         yaZhOrmrFyIZBfk30a7CMoprGlkGaUrTCKzK+NH7xPB9vb/ohsKaKGFydk4ud1fWOHy6
+         DytIaQzZZdeD1OgYCtAoPwYUA3L6Pb/3wjbACItlbIq+4/d+kAA1BIJN1fhv6iBXZekw
+         gEc43HOXlgGag6nMofME6c/9ZtW5cri7rjo5NGGOs1daeED+3SJo/LOpU2d8TP8Lcy8h
+         FYKEz765esYqw01TbFQKWPoqQL6DeOxBL30k7uR28VSAr9C68LPBA2jw+Lp3gnicOCmE
+         0vWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=Kyb2X4uCHXKuVg8roYPGr870rePi13E6LThzOWMSSjQ=;
-        b=wL21NZ1ISyASqSK+eCTqc3rdAvqDRCKPdksBAhNhRT87ZnZoxl+qGBRfJ0Gn58Csgc
-         fUE/IrI1FgVgI9T09x+/ayZz4/ROSHEMeTVpwpwDVkxgqJ80ch0uWl0JlICuGqe6z8+y
-         uRz25FcLjQQQ60HnwbRO+dmj/NuqdP1QHGaMLSJa1Q+ohm18WmzLVzfe6qGtab4II2fp
-         QWN0aq/Z9fV8yC++byHRyiP9A3PnUzRbTlugVir3BGFNnuV13IllE8x1LdpB3sFrpfyM
-         4alytbvhGNzX6u7Nxc13SDETIvxULogGqXGWa8qRvqztkBFLe8F7zXPhFYcs0bni3hw2
-         Y8zQ==
-X-Gm-Message-State: ACrzQf0iBMotbTHVUzcK7yLvJwKSqOOQIFSnwgkz88LetxUdWdGzpvMf
-        HkKFgIQ7oricNBOE3I+vs7Ddwg==
-X-Google-Smtp-Source: AMsMyM6KigH+LzH4Pix/cjcYO4sdy1TowdY2XSLO+trnCOI0ryHEARAOuTHYrw2xlEgzFxDGrtMihQ==
-X-Received: by 2002:a05:600c:444b:b0:3b4:cb9e:bd93 with SMTP id v11-20020a05600c444b00b003b4cb9ebd93mr774148wmn.39.1664603246203;
-        Fri, 30 Sep 2022 22:47:26 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=3UF6B9Awp+vGtj4cPKd5v182qZWF99iVXDSy1FoymlE=;
+        b=1dj0Tk2PyF4vGzC+v1yIuGODb9vMIFfrzeYzslH3IoxuGMrZdzGBeM6/cl8L/hIRMN
+         PhP7v1XadUX86HrroLYYmsNdxIb9j45O22BBYSuuoiLmup/hwhnjHcWX8ebROleHNanX
+         N/lUHFQqsVIE7Xtceqxq3KFi47+iA60e/40mli9KyF2AzzKqTj9Sb1slTbzA3/C+B5TM
+         2CayLS01T9ZD6n2tNn7dPaq/+0nCSsSR5/OdjkW///SFK5OX/H4wAY0WrwUnLhkJNQqX
+         RNWI83IWW7Yh2ihnvMUKbqn+l/16ydH5yEWrXjrT9jn4SJpXplBpDi0mpnwT1LFpdq3p
+         WWRg==
+X-Gm-Message-State: ACrzQf0pMNEXoYs/toJFh2o/d0WyiiANcTzMf5EJLlhFhjgatXyYEXTC
+        /MkLT2XstlsZAtnCK77mM5UszjKLPBiEJpQK
+X-Google-Smtp-Source: AMsMyM71py6FQpNGo4HRXP6LEEQOvcs3GOo8bpJDcK3y2Kud1CPox5PFq1d7/m1NQXY4Jrzu2/c0HQ==
+X-Received: by 2002:a17:906:5d07:b0:781:c281:f6e4 with SMTP id g7-20020a1709065d0700b00781c281f6e4mr8707026ejt.744.1664604107231;
+        Fri, 30 Sep 2022 23:01:47 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id r18-20020a05600c35d200b003a84375d0d1sm9405920wmq.44.2022.09.30.22.47.24
+        by smtp.gmail.com with ESMTPSA id r4-20020aa7cfc4000000b0044f21c69608sm2931796edy.10.2022.09.30.23.01.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Sep 2022 22:47:25 -0700 (PDT)
-Date:   Sat, 1 Oct 2022 07:47:24 +0200
+        Fri, 30 Sep 2022 23:01:46 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Vadim Fedorenko <vfedorenko@novek.ru>,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Vadim Fedorenko <vadfed@fb.com>, Aya Levin <ayal@nvidia.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-clk@vger.kernel.org
-Subject: Re: [RFC PATCH v2 0/3] Create common DPLL/clock configuration API
-Message-ID: <YzfUbKtWlxuq+FzI@nanopsycho>
-References: <20220626192444.29321-1-vfedorenko@novek.ru>
- <YzWESUXPwcCo67LP@nanopsycho>
- <6b80b6c8-29fd-4c2a-e963-1f273d866f12@novek.ru>
- <Yzap9cfSXvSLA+5y@nanopsycho>
- <20220930073312.23685d5d@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, tariqt@nvidia.com, moshe@nvidia.com,
+        saeedm@nvidia.com
+Subject: [patch net-next 00/13] net: fix netdev to devlink_port linkage and expose to user
+Date:   Sat,  1 Oct 2022 08:01:32 +0200
+Message-Id: <20221001060145.3199964-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220930073312.23685d5d@kernel.org>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
@@ -76,27 +67,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Sep 30, 2022 at 04:33:12PM CEST, kuba@kernel.org wrote:
->On Fri, 30 Sep 2022 10:33:57 +0200 Jiri Pirko wrote:
->> >> Also, did you consider usage of sysfs? Why it isn't a better fit than
->> >> netlink?  
->> >
->> >We already have sysfs implemented in the ptp_ocp driver. But it looks like
->> >more hardware is going to be available soon with almost the same functions,
->> >so it would be great to have common protocol to configure such devices.  
->> 
->> Sure, but more hw does not mean you can't use sysfs. Take netdev as an
->> example. The sysfs exposed for it is implemented net/core/net-sysfs.c
->> and is exposed for all netdev instances, no matter what the
->> driver/hardware is.
->
->Wait, *you* are suggesting someone uses sysfs instead of netlink?
->
->Could you say more because I feel like that's kicking the absolute.
+From: Jiri Pirko <jiri@nvidia.com>
 
-I don't understand why that would be a problem. What I'm trying to say
-is, perhaps sysfs is a better API for this purpose. The API looks very
-neat and there is no probabilito of huge grow. Also, with sysfs, you
-don't need userspace app to do basic work with the api. In this case, I
-don't see why the app is needed. These are 2 biggest arguments for sysfs
-in this case as I see it.
+Currently, the info about linkage from netdev to the related
+devlink_port instance is done using ndo_get_devlink_port().
+This is not sufficient, as it is up to the driver to implement it and
+some of them don't do that. Also it leads to a lot of unnecessary
+boilerplate code in all the drivers.
+
+Instead of that, introduce a possibility for driver to expose this
+relationship by new SET_NETDEV_DEVLINK_PORT macro which stores it into
+dev->devlink_port. It is ensured by the driver init/fini flows that
+the devlink_port pointer does not change during the netdev lifetime.
+Devlink port is always registered before netdev register and
+unregistered after netdev unregister.
+
+Benefit from this linkage setup and remove explicit calls from driver
+to devlink_port_type_eth_set() and clear(). Many of the driver
+didn't use it correctly anyway. Let the devlink.c to track associated
+netdev events and adjust type and type pointer accordingly. Also
+use this events to to keep track on ifname change and remove RTNL lock
+taking from devlink_nl_port_fill().
+
+Finally, remove the ndo_get_devlink_port() ndo which is no longer used
+and expose devlink_port handle as a new netdev netlink attribute to the
+user. That way, during the ifname->devlink_port lookup, userspace app
+does not have to dump whole devlink port list and instead it can just
+do a simple RTM_GETLINK query.
+
+Jiri Pirko (13):
+  net: devlink: convert devlink port type-specific pointers to union
+  net: devlink: move port_type_warn_schedule() call to
+    __devlink_port_type_set()
+  net: devlink: move port_type_netdev_checks() call to
+    __devlink_port_type_set()
+  net: devlink: take RTNL in port_fill() function only if it is not held
+  net: devlink: track netdev with devlink_port assigned
+  net: make drivers to use SET_NETDEV_DEVLINK_PORT to set devlink_port
+  net: devlink: remove netdev arg from devlink_port_type_eth_set()
+  net: devlink: remove net namespace check from devlink_nl_port_fill()
+  net: devlink: store copy netdevice ifindex and ifname to allow
+    port_fill() without RTNL held
+  net: devlink: add not cleared type warning to port unregister
+  net: devlink: use devlink_port pointer instead of ndo_get_devlink_port
+  net: remove unused ndo_get_devlink_port
+  net: expose devlink port over rtnetlink
+
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  14 +-
+ .../freescale/dpaa2/dpaa2-eth-devlink.c       |  11 +-
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |   1 +
+ .../ethernet/fungible/funeth/funeth_main.c    |  13 +-
+ drivers/net/ethernet/intel/ice/ice_devlink.c  |  14 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     |  18 +-
+ drivers/net/ethernet/intel/ice/ice_repr.c     |  12 +-
+ .../marvell/prestera/prestera_devlink.c       |  17 --
+ .../marvell/prestera/prestera_devlink.h       |   5 -
+ .../ethernet/marvell/prestera/prestera_main.c |   5 +-
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    |   9 +-
+ drivers/net/ethernet/mellanox/mlx4/main.c     |   2 +-
+ .../ethernet/mellanox/mlx5/core/en/devlink.c  |  17 --
+ .../ethernet/mellanox/mlx5/core/en/devlink.h  |   2 -
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/en_rep.c  |  41 +---
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  20 +-
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |   6 +-
+ drivers/net/ethernet/mellanox/mlxsw/minimal.c |  18 +-
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |  16 +-
+ drivers/net/ethernet/mscc/ocelot_net.c        |  11 +-
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c    |   1 -
+ drivers/net/ethernet/netronome/nfp/nfp_app.h  |   2 -
+ .../net/ethernet/netronome/nfp/nfp_devlink.c  |  23 +-
+ .../ethernet/netronome/nfp/nfp_net_common.c   |   2 -
+ .../net/ethernet/netronome/nfp/nfp_net_main.c |  11 +-
+ .../net/ethernet/netronome/nfp/nfp_net_repr.c |   1 -
+ drivers/net/ethernet/netronome/nfp/nfp_port.h |   2 -
+ .../ethernet/pensando/ionic/ionic_devlink.c   |   2 +-
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c      |  14 +-
+ drivers/net/netdevsim/dev.c                   |   2 -
+ drivers/net/netdevsim/netdev.c                |  10 +-
+ include/linux/netdevice.h                     |  19 +-
+ include/net/devlink.h                         |  32 ++-
+ include/uapi/linux/if_link.h                  |   2 +
+ net/core/dev.c                                |  11 +-
+ net/core/devlink.c                            | 205 +++++++++++++-----
+ net/core/net-sysfs.c                          |   4 +-
+ net/core/rtnetlink.c                          |  39 ++++
+ net/dsa/dsa2.c                                |   9 -
+ net/dsa/slave.c                               |   9 +-
+ net/ethtool/ioctl.c                           |  11 +-
+ 42 files changed, 286 insertions(+), 381 deletions(-)
+
+-- 
+2.37.1
+
