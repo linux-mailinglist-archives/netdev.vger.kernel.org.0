@@ -2,115 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 544BD5F1F80
-	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 22:41:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B7F25F1F89
+	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 22:51:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229781AbiJAUlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Oct 2022 16:41:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35776 "EHLO
+        id S229616AbiJAUvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Oct 2022 16:51:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229717AbiJAUlG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 16:41:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C8324C61F
-        for <netdev@vger.kernel.org>; Sat,  1 Oct 2022 13:40:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B62B2B80923
-        for <netdev@vger.kernel.org>; Sat,  1 Oct 2022 20:40:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 755B6C433D7;
-        Sat,  1 Oct 2022 20:40:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664656818;
-        bh=273lW9UVV4o+kJc3X/wdsUTY0elTKU5QXfJMSpCqEqc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=a9bnimhC9GPgSXk8/zxteErVYqTau1alIBgGV7zlbFWEuFrVbkWavQewoDRcA1+24
-         CTCjogEykXL+HjvJd0kbo3l1NEastKeTQD5F7ODZ3LboWa9xlW7PCppRl5iF1xcEab
-         xF5suEaHEDawhgAbCbhnQ4CAsOzPiLaMxXwWAZ7FpphYssLM+jpaxjh/THiz6RUtIF
-         j0OeKOoZapBtNO766alNVPIbEAAqPqhExeQz6gChMB9oSgIaQdSjm1/8bjetHe4J0o
-         pHVHsqs1BdD7AgKiNJz+XVignEG7YWMRBh4q7vzXBUTMXzNB61hEazGKqQcZuJ47Ei
-         7j+ltSFXZpOkw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 59BD1E4D013;
-        Sat,  1 Oct 2022 20:40:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229448AbiJAUvI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 16:51:08 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 645EE5924D
+        for <netdev@vger.kernel.org>; Sat,  1 Oct 2022 13:51:07 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id gf8so4418253pjb.5
+        for <netdev@vger.kernel.org>; Sat, 01 Oct 2022 13:51:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=lvoYBwdyN+zV8Zt3OjnrnXSmchk9Wqzb6BScZlzl89Y=;
+        b=p8XWvClaZPLjovSoL1AxzUXZ65XXqPjJUQnoN/tTixS9AhwCBJ24ZYHs1ef84rDUgR
+         kuqbG8oK/ndHsKGt4b8khWnH8ijD2AlTRK2UGs6i2FJi24W4pIk+EB97O52r587FHHEM
+         L0450sMKqYMZnLgz8RfZpiQlLFUwt46HvfWLOf98Du1ANVFKATuqy3r5afPJGctzyXrr
+         JCCtgUqwP8/2pi2SXZY9lFPIadYxvzfEz6x508dRLDhI9/9WhcZe5iE31lX4BtQ+z3LY
+         r+o6thHr+ELm1eXPx3IUOC2b0zetMr5uYC+T7yeqFRQi/9LcGr7H9VcLfYjOdyaJiw/H
+         uc9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=lvoYBwdyN+zV8Zt3OjnrnXSmchk9Wqzb6BScZlzl89Y=;
+        b=LxMBgZeYdxb/lWvL1NYZyO937rAZxgOd+chkSA3MYbZbY4Q1L2VCJp/hN8SNFJ3EiT
+         a0wzDRNOin9mBuytzHUYjTl9phB5IHLWx+nRiJu/UfphB0TzUd6n1yQqZ0V39Fvbdq8/
+         K5OaRltd9zqZJFCvTOXoxlkYdeYRmSGCehUeLnIrq94PLMAI0xL31hF+R6QBqvKtsDGM
+         xxcM0YVa6HDX+TMqAxtHzUSP0SLc/npqOdKsYRPCsOs9uWx6wXUjuiP/1VtrpZsJIPhA
+         K+bBiV3e7VHA9IZspbTkXEkhHUW1Vse5lAXj4/FIpsxDfMHz8E79XJkp8NFXZkrz6k0/
+         3BGg==
+X-Gm-Message-State: ACrzQf22awGsuwxsREmpTlyjeE9+XDdzVgVJjkVeuf0FNq0Pr1KXhZr5
+        2XuPGarDY9F/riD7XM5laXo=
+X-Google-Smtp-Source: AMsMyM4sjCxzkl3ZHohbJ9/lrRe6Z9dDTFeAfvt8LEn4f6JRRhHpP9iyuJhER7ZLTV2FUWgWgoV07A==
+X-Received: by 2002:a17:902:cf03:b0:179:b7fe:dc90 with SMTP id i3-20020a170902cf0300b00179b7fedc90mr15754570plg.112.1664657466669;
+        Sat, 01 Oct 2022 13:51:06 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:73b5:9ed8:32d2:8e2f])
+        by smtp.gmail.com with ESMTPSA id bd12-20020a170902830c00b0017bbd845c17sm4282534plb.158.2022.10.01.13.51.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 01 Oct 2022 13:51:06 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Willy Tarreau <w@1wt.eu>
+Subject: [PATCH net-next] once: add DO_ONCE_SLOW() for sleepable contexts
+Date:   Sat,  1 Oct 2022 13:51:02 -0700
+Message-Id: <20221001205102.2319658-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.38.0.rc1.362.ged0d419d3c-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/16] mlx5 xsk updates part3 2022-09-30
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166465681836.29087.4279285983955394531.git-patchwork-notify@kernel.org>
-Date:   Sat, 01 Oct 2022 20:40:18 +0000
-References: <20220930162903.62262-1-saeed@kernel.org>
-In-Reply-To: <20220930162903.62262-1-saeed@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, saeedm@nvidia.com, netdev@vger.kernel.org,
-        tariqt@nvidia.com
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Eric Dumazet <edumazet@google.com>
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Christophe Leroy reported a ~80ms latency spike
+happening at first TCP connect() time.
 
-On Fri, 30 Sep 2022 09:28:47 -0700 you wrote:
-> From: Saeed Mahameed <saeedm@nvidia.com>
-> 
-> The gist of this 4 part series is in this patchset's last patch
-> 
-> This series contains performance optimizations. XSK starts using the
-> batching allocator, and XSK data path gets separated from the regular
-> RX, allowing to drop some branches not relevant for non-XSK use cases.
-> Some minor optimizations for indirect calls and need_wakeup are also
-> included.
-> 
-> [...]
+This is because __inet_hash_connect() uses get_random_once()
+to populate a perturbation table which became quite big
+after commit 4c2c8f03a5ab ("tcp: increase source port perturb table to 2^16")
 
-Here is the summary with links:
-  - [net-next,01/16] net/mlx5e: xsk: Use mlx5e_trigger_napi_icosq for XSK wakeup
-    https://git.kernel.org/netdev/net-next/c/d54d7194ba48
-  - [net-next,02/16] net/mlx5e: xsk: Drop the check for XSK state in mlx5e_xsk_wakeup
-    https://git.kernel.org/netdev/net-next/c/8cbcafcee191
-  - [net-next,03/16] net/mlx5e: Introduce wqe_index_mask for legacy RQ
-    https://git.kernel.org/netdev/net-next/c/a064c609849b
-  - [net-next,04/16] net/mlx5e: Make the wqe_index_mask calculation more exact
-    https://git.kernel.org/netdev/net-next/c/5758c3145b88
-  - [net-next,05/16] net/mlx5e: Use partial batches in legacy RQ
-    https://git.kernel.org/netdev/net-next/c/42847fed5552
-  - [net-next,06/16] net/mlx5e: xsk: Use partial batches in legacy RQ with XSK
-    https://git.kernel.org/netdev/net-next/c/3f5fe0b2e606
-  - [net-next,07/16] net/mlx5e: Remove the outer loop when allocating legacy RQ WQEs
-    https://git.kernel.org/netdev/net-next/c/0b4822323745
-  - [net-next,08/16] net/mlx5e: xsk: Split out WQE allocation for legacy XSK RQ
-    https://git.kernel.org/netdev/net-next/c/a2e5ba242c33
-  - [net-next,09/16] net/mlx5e: xsk: Use xsk_buff_alloc_batch on legacy RQ
-    https://git.kernel.org/netdev/net-next/c/259bbc64367a
-  - [net-next,10/16] net/mlx5e: xsk: Use xsk_buff_alloc_batch on striding RQ
-    https://git.kernel.org/netdev/net-next/c/cf544517c469
-  - [net-next,11/16] net/mlx5e: Use non-XSK page allocator in SHAMPO
-    https://git.kernel.org/netdev/net-next/c/132857d9124c
-  - [net-next,12/16] net/mlx5e: Call mlx5e_page_release_dynamic directly where possible
-    https://git.kernel.org/netdev/net-next/c/96d37d861a09
-  - [net-next,13/16] net/mlx5e: Optimize RQ page deallocation
-    https://git.kernel.org/netdev/net-next/c/ddb7afeee28b
-  - [net-next,14/16] net/mlx5e: xsk: Support XDP metadata on XSK RQs
-    https://git.kernel.org/netdev/net-next/c/a752b2edb5c1
-  - [net-next,15/16] net/mlx5e: Introduce the mlx5e_flush_rq function
-    https://git.kernel.org/netdev/net-next/c/d9ba64deb2f1
-  - [net-next,16/16] net/mlx5e: xsk: Use queue indices starting from 0 for XSK queues
-    https://git.kernel.org/netdev/net-next/c/3db4c85cde7a
+get_random_once() uses DO_ONCE(), which block hard irqs for the duration
+of the operation.
 
-You are awesome, thank you!
+This patch adds DO_ONCE_SLOW() which uses a mutex instead of a spinlock
+for operations where we prefer to stay in process context.
+
+Then __inet_hash_connect() can use get_random_slow_once()
+to populate its perturbation table.
+
+Fixes: 4c2c8f03a5ab ("tcp: increase source port perturb table to 2^16")
+Fixes: 190cc82489f4 ("tcp: change source port randomizarion at connect() time")
+Reported-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Link: https://lore.kernel.org/netdev/CANn89iLAEYBaoYajy0Y9UmGFff5GPxDUoG-ErVB2jDdRNQ5Tug@mail.gmail.com/T/#t
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Willy Tarreau <w@1wt.eu>
+---
+ include/linux/once.h       | 28 ++++++++++++++++++++++++++++
+ lib/once.c                 | 30 ++++++++++++++++++++++++++++++
+ net/ipv4/inet_hashtables.c |  4 ++--
+ 3 files changed, 60 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/once.h b/include/linux/once.h
+index b14d8b309d52b198bb144689fe67d9ed235c2b3e..176ab75b42df740a738d04d8480821a0b3b65ba9 100644
+--- a/include/linux/once.h
++++ b/include/linux/once.h
+@@ -5,10 +5,18 @@
+ #include <linux/types.h>
+ #include <linux/jump_label.h>
+ 
++/* Helpers used from arbitrary contexts.
++ * Hard irqs are blocked, be cautious.
++ */
+ bool __do_once_start(bool *done, unsigned long *flags);
+ void __do_once_done(bool *done, struct static_key_true *once_key,
+ 		    unsigned long *flags, struct module *mod);
+ 
++/* Variant for process contexts only. */
++bool __do_once_slow_start(bool *done);
++void __do_once_slow_done(bool *done, struct static_key_true *once_key,
++			 struct module *mod);
++
+ /* Call a function exactly once. The idea of DO_ONCE() is to perform
+  * a function call such as initialization of random seeds, etc, only
+  * once, where DO_ONCE() can live in the fast-path. After @func has
+@@ -52,7 +60,27 @@ void __do_once_done(bool *done, struct static_key_true *once_key,
+ 		___ret;							     \
+ 	})
+ 
++/* Variant of DO_ONCE() for process/sleepable contexts. */
++#define DO_ONCE_SLOW(func, ...)						     \
++	({								     \
++		bool ___ret = false;					     \
++		static bool __section(".data.once") ___done = false;	     \
++		static DEFINE_STATIC_KEY_TRUE(___once_key);		     \
++		if (static_branch_unlikely(&___once_key)) {		     \
++			___ret = __do_once_slow_start(&___done);	     \
++			if (unlikely(___ret)) {				     \
++				func(__VA_ARGS__);			     \
++				__do_once_slow_done(&___done, &___once_key,  \
++						    THIS_MODULE);	     \
++			}						     \
++		}							     \
++		___ret;							     \
++	})
++
+ #define get_random_once(buf, nbytes)					     \
+ 	DO_ONCE(get_random_bytes, (buf), (nbytes))
+ 
++#define get_random_slow_once(buf, nbytes)				     \
++	DO_ONCE_SLOW(get_random_bytes, (buf), (nbytes))
++
+ #endif /* _LINUX_ONCE_H */
+diff --git a/lib/once.c b/lib/once.c
+index 59149bf3bfb4a97e4fa7febee737155d700bae48..351f66aad310a47f17d0636da0ed5b2b4460522d 100644
+--- a/lib/once.c
++++ b/lib/once.c
+@@ -66,3 +66,33 @@ void __do_once_done(bool *done, struct static_key_true *once_key,
+ 	once_disable_jump(once_key, mod);
+ }
+ EXPORT_SYMBOL(__do_once_done);
++
++static DEFINE_MUTEX(once_mutex);
++
++bool __do_once_slow_start(bool *done)
++	__acquires(once_mutex)
++{
++	mutex_lock(&once_mutex);
++	if (*done) {
++		mutex_unlock(&once_mutex);
++		/* Keep sparse happy by restoring an even lock count on
++		 * this mutex. In case we return here, we don't call into
++		 * __do_once_done but return early in the DO_ONCE_SLOW() macro.
++		 */
++		__acquire(once_mutex);
++		return false;
++	}
++
++	return true;
++}
++EXPORT_SYMBOL(__do_once_slow_start);
++
++void __do_once_slow_done(bool *done, struct static_key_true *once_key,
++			 struct module *mod)
++	__releases(once_mutex)
++{
++	*done = true;
++	mutex_unlock(&once_mutex);
++	once_disable_jump(once_key, mod);
++}
++EXPORT_SYMBOL(__do_once_slow_done);
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index 49db8c597eea83a27e91edc429c2c4779b0a5cd7..dc1c5629cd0d61716d6d99131c57b49717785709 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -958,8 +958,8 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 	if (likely(remaining > 1))
+ 		remaining &= ~1U;
+ 
+-	net_get_random_once(table_perturb,
+-			    INET_TABLE_PERTURB_SIZE * sizeof(*table_perturb));
++	get_random_slow_once(table_perturb,
++			     INET_TABLE_PERTURB_SIZE * sizeof(*table_perturb));
+ 	index = port_offset & (INET_TABLE_PERTURB_SIZE - 1);
+ 
+ 	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.38.0.rc1.362.ged0d419d3c-goog
 
