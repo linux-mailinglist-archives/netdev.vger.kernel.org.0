@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 490C25F1FCC
-	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 23:33:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E04E45F1FD4
+	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 23:37:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229511AbiJAVc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Oct 2022 17:32:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40092 "EHLO
+        id S229621AbiJAVhF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Oct 2022 17:37:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbiJAVc5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 17:32:57 -0400
+        with ESMTP id S229517AbiJAVhE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 17:37:04 -0400
 Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A6383B965;
-        Sat,  1 Oct 2022 14:32:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3FC40BFD;
+        Sat,  1 Oct 2022 14:37:03 -0700 (PDT)
 Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id ABDF018847C2;
-        Sat,  1 Oct 2022 21:32:52 +0000 (UTC)
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id DADE018847BE;
+        Sat,  1 Oct 2022 21:37:01 +0000 (UTC)
 Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 9DC972500015;
-        Sat,  1 Oct 2022 21:32:52 +0000 (UTC)
+        by mailout.gigahost.dk (Postfix) with ESMTP id 982B02500015;
+        Sat,  1 Oct 2022 21:37:01 +0000 (UTC)
 Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 97C309EC0002; Sat,  1 Oct 2022 21:32:52 +0000 (UTC)
+        id 885FB9EC0007; Sat,  1 Oct 2022 21:37:01 +0000 (UTC)
 X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-Date:   Sat, 01 Oct 2022 23:32:52 +0200
+Date:   Sat, 01 Oct 2022 23:37:01 +0200
 From:   netdev@kapio-technology.com
 To:     Ido Schimmel <idosch@nvidia.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
@@ -60,13 +60,14 @@ Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org,
         bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH iproute2-next 1/2] bridge: link: enable MacAuth/MAB
+Subject: Re: [PATCH iproute2-next 2/2] bridge: fdb: enable FDB blackhole
  feature
-In-Reply-To: <YzhV0hU9v7oQ+g+K@shredder>
+In-Reply-To: <YzhfDgqjBvhqNUHX@shredder>
 References: <20220929152137.167626-1-netdev@kapio-technology.com>
- <YzhV0hU9v7oQ+g+K@shredder>
+ <20220929152137.167626-2-netdev@kapio-technology.com>
+ <YzhfDgqjBvhqNUHX@shredder>
 User-Agent: Gigahost Webmail
-Message-ID: <00f5b024d242b948e1e198dfe95d73bc@kapio-technology.com>
+Message-ID: <587ec2fc832ca454a474e4f296841a58@kapio-technology.com>
 X-Sender: netdev@kapio-technology.com
 Content-Type: text/plain; charset=US-ASCII;
  format=flowed
@@ -79,13 +80,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-10-01 16:59, Ido Schimmel wrote:
-> On Thu, Sep 29, 2022 at 05:21:36PM +0200, Hans Schultz wrote:
->> The MAB feature can be enabled on a locked port with the command:
->> bridge link set dev <DEV> mab on
+On 2022-10-01 17:38, Ido Schimmel wrote:
+
 > 
-> Please provide regular and JSON output in the commit message.
+> I'm not sure the last sentence belongs in the man page. We have no way
+> of knowing if it is true and it can change with time.
+> 
+> How about:
+> 
+> "this entry will silently discard all matching packets. The entry must
+> be added as a local permanent entry."
 > 
 
-How would the JSON version look like in this example?
-
+Fine with me...
