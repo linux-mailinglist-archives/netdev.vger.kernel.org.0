@@ -2,94 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C7DDA5F1CB7
-	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 16:26:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF5B65F1CC8
+	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 16:31:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229660AbiJAO0o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Oct 2022 10:26:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35614 "EHLO
+        id S229505AbiJAObk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Oct 2022 10:31:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229464AbiJAO0l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 10:26:41 -0400
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9C643E69
-        for <netdev@vger.kernel.org>; Sat,  1 Oct 2022 07:26:40 -0700 (PDT)
-Received: by mail-io1-f70.google.com with SMTP id u9-20020a5edd49000000b006a0f03934e9so4513061iop.4
-        for <netdev@vger.kernel.org>; Sat, 01 Oct 2022 07:26:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=Je8P4OmrMwwcd92gAPOyOtWipPfjQ5H1rtE8DydHvww=;
-        b=Thk7amMffEMzz1ZyDxjC1cAIMK8T5t40KgL/LcDt0qSx1oKMffRXUlFKX/tEEZyEHM
-         pscKjUYepM43WyNBNN94NTr48fs7GOuOoZeoJAHcB5WJ3DUU5A9nHywve2EuFK2ZfMYy
-         Dy5C+BujrAeeRle6p5qxdP/oKeNqoO/LMFFeZQrbKGZtUqejXGZWi0T1VTWeRT8FHHJI
-         01igC2bRa5MjvuUhDFabRbMeQ8KYpwI0f/bHvUQJEuMZrmlOnOwwsV4tyrHJ4SDLy2wd
-         tKHNnUdNPSetp12cg1LPQ5GJEYnhMBC/4FKLx9YKLawHbZTQJ//Riax64AlOPUrZDw18
-         o07Q==
-X-Gm-Message-State: ACrzQf2bP952BSlactzSIQZbRNtVHvv5nALX5ilnBxWquG+dnHcd4/Ki
-        EfEMcuX50XaVk8o1mjRv6Z3vAk2+KAJdrKcdMAezXkZ7CHx8
-X-Google-Smtp-Source: AMsMyM6yjQnXyMZg6FdGm3jJkyCZ8gcr1C+5wXJunpfQ3BcRsspMMODg2aYqalBfSkeMFWBu4lcUoRu4C1AoD1R+dkwtfnq58sr/
+        with ESMTP id S229462AbiJAObk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 10:31:40 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D029B275C0
+        for <netdev@vger.kernel.org>; Sat,  1 Oct 2022 07:31:38 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oedWh-0008C6-0X; Sat, 01 Oct 2022 16:31:35 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oedWf-0040gV-St; Sat, 01 Oct 2022 16:31:32 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oedWd-004tVR-E3; Sat, 01 Oct 2022 16:31:31 +0200
+Date:   Sat, 1 Oct 2022 16:31:31 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Douglas Miller <dougmill@linux.ibm.com>
+Cc:     netdev@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, kernel@pengutronix.de
+Subject: Strangeness in ehea network driver's shutdown
+Message-ID: <20221001143131.6ondbff4r7ygokf2@pengutronix.de>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1baf:b0:2f5:a7b0:65a8 with SMTP id
- n15-20020a056e021baf00b002f5a7b065a8mr6085915ili.227.1664634400029; Sat, 01
- Oct 2022 07:26:40 -0700 (PDT)
-Date:   Sat, 01 Oct 2022 07:26:40 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000001850d105e9f9e6de@google.com>
-Subject: [syzbot] WARNING: lock held when returning to user space in ieee80211_change_mac
-From:   syzbot <syzbot+4ef359e6b423499fa4e1@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com,
-        johannes@sipsolutions.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="rkjaq67m5pqy2dhl"
+Content-Disposition: inline
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+
+--rkjaq67m5pqy2dhl
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
 Hello,
 
-syzbot found the following issue on:
+while doing some cleanup I stumbled over a problem in the ehea network
+driver.
 
-HEAD commit:    6627a2074d5c net/smc: Support SO_REUSEPORT
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=10183a70880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d4d64087513b5aa1
-dashboard link: https://syzkaller.appspot.com/bug?extid=4ef359e6b423499fa4e1
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+In the driver's probe function (ehea_probe_adapter() via
+ehea_register_memory_hooks()) a reboot notifier is registered. When this
+notifier is triggered (ehea_reboot_notifier()) it unregisters the
+driver. I'm unsure what is the order of the actions triggered by that.
+Maybe the driver is unregistered twice if there are two bound devices?
+Or the reboot notifier is called under a lock and unregistering the
+driver (and so the devices) tries to unregister the notifier that is
+currently locked and so results in a deadlock? Maybe Greg or Rafael can
+tell about the details here?
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Whatever the effect is, it's strange. It makes me wonder why it's
+necessary to free all the resources of the driver on reboot?! I don't
+know anything about the specifics of the affected machines, but I guess
+doing just the necessary stuff on reboot would be easier to understand,
+quicker to execute and doesn't have such strange side effects.
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/9ecb75606956/disk-6627a207.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/1073865fcb40/vmlinux-6627a207.xz
+With my lack of knowledge about the machine, the best I can do is report
+my findings. So don't expect a patch or testing from my side.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+4ef359e6b423499fa4e1@syzkaller.appspotmail.com
+Best regards
+Uwe
 
-================================================
-WARNING: lock held when returning to user space!
-6.0.0-rc6-syzkaller-01407-g6627a2074d5c #0 Not tainted
-------------------------------------------------
-syz-executor.3/10164 is leaving the kernel with locks still held!
-1 lock held by syz-executor.3/10164:
- #0: ffff888147acaa88 (&local->mtx){+.+.}-{3:3}, at: ieee80211_can_powered_addr_change net/mac80211/iface.c:217 [inline]
- #0: ffff888147acaa88 (&local->mtx){+.+.}-{3:3}, at: ieee80211_change_mac+0x9b4/0xf40 net/mac80211/iface.c:264
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
+--rkjaq67m5pqy2dhl
+Content-Type: application/pgp-signature; name="signature.asc"
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+-----BEGIN PGP SIGNATURE-----
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmM4Tz8ACgkQwfwUeK3K
+7AnIcQf+LTX5DG1gse6ihncTx1hMDIGxXlHIZN92lK63idGxxMVDq6UqV3XYWvxa
+Hh/RNbtEkRWx1gS8KZlykrH0qjpw6+FLi9Bt349BVQzxNnxLvzMY1nnnO5mc/hy0
+ghWjw7jxVXqCqIdLIlnGmHmDrcgPJY7x+/orZhVt0IBa/ttEZO1Jejv6e+0mr8EZ
+Nyv+HtBTdH1XOaxw5cGdW2ajZOQLkBLmWUt6ZRPWVajUu9sA74wPOCM6vHwmTTXt
+hC2QgMX0awTvQuvXZgBVr3PrJa7kydmiY5gqEF1+KZJPUfcjepWm+H2U0ox0XDLo
+mzY8b0mwe/CXWf8WH/CGdGXM9b2Y6A==
+=U6Oc
+-----END PGP SIGNATURE-----
+
+--rkjaq67m5pqy2dhl--
