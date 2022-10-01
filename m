@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF1A35F1B66
-	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 11:35:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEBB55F1B69
+	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 11:35:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229658AbiJAJfX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Oct 2022 05:35:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54356 "EHLO
+        id S229779AbiJAJf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Oct 2022 05:35:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229722AbiJAJex (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 05:34:53 -0400
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60127.outbound.protection.outlook.com [40.107.6.127])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6D8512AC9;
+        with ESMTP id S229719AbiJAJfN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 05:35:13 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60119.outbound.protection.outlook.com [40.107.6.119])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D27FC13FB8;
         Sat,  1 Oct 2022 02:34:46 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ks0q1nfSyRWNnU9ktA9e/g+Rh3RvCSKUWRci5PLZr6SWEa4tbSfwqUaLegCt8eBuThglm6bXyTACYvewlsr+EDYF0/qJINzvMql40Bx6CFwVWqceO6s24G0PFChVqrKzdIH27updJAxjdgd5Qbv7pdot8pB9NqmM+ov6poMO80wh0EeCSQOFC0NGXtMjXM/PqQA19taJiFvzyhfBhaLeYpRr6vim0CXbmTbjYtNc+wvq/K8CoQDEVdgKQapqn1neyMjK3i+j+0CKzVzL7xKq/w234tXibJTxU0MUMamBPy67IHLmsvmb+56Rrse4jDdVhUvCjn1MqBsjkOPCJRow4Q==
+ b=bqyUGtpRRBDaSK1JfFBvksrkYP/eNYJhXqR/yn6rDt0Xn+pbQrztjAUfaNntIt9+vYpA8ppqAuGJ6B/ce+LgB9tfOfSKBWCd9CRLdKOGfJbWFdtkEZCzAkr1h6wdNNmcg3rK+oPlEylkJR6QTqdLGG0Sch6Pc8QBjzxYgp0FeH+AibA7vckagS+aFFF1ZYD4DcYHSW2xIKrEdFBcMU9lbwuLpBEckB3xYtOptl2hUDD/J3bLgheDLzlvqccvzdlQ61LQQxY0IVMJMGG0bKdg+rn3DhCSZOGMLd9yZtXNdyZjfjnkGweWDazx4OED4gVkPgvK/AhJpgq8RbpcSDjOsQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3upemnDjOLGjatZA1k1pwI8OtUkhKLglwq9vxw09Qzw=;
- b=Pei5IfV2kDUNdmBz1N8deuHqffp+oKa65taqJt/Q4hq/8T5NxTreESrdYyr7l5FbVWwVM2thSKm+1hRR9O6R7AT5A+2WRmMjyxAIbQvWRDMSAzyXo9S33cDzWH7M+SssFn5s2eKX8INQSHEEDpgwhzlv/glaYCPyuhJ/zE+oGNOxMWoc0D1pXhd9gXngJINHhwe6cICWwrJ4yX0RbU9VgxQHcXS4JHQpZ+AWaECndrv77iOhNWXepeobSJFHrADU31OtgAahLCyY1eKvoqsSwQJdKlxmjbRXHJGH0Mndm4RtmGllTykO8VUN5LMFPK0bepBd/lsmTmigjAFc/kPWQg==
+ bh=BzZ5pmTFpTYgRh9zkvuydu4yU6ZedKHkRiL2eV9+/Lc=;
+ b=WU46vJue5Fs34y5fXmk1LnZu+Xq2iwvW3A2vPACmdGcEKtHDv3X1G8TbeeOXVXkzTCsKtYY30K3epOVz8JLMcbmfDb2gGlBnQUo/THz+GXKRj/CAVoH+bRF3LF0j0785gXazzn1SmqHkyp0gK38iMdhODjADJoVzeGKvvfttaLAs8wkWebE7/0Dex5Fu/csJjK0GHZkLqDmHy3DL3hxx6gss+YhAGLVCNbx1i4k1vPEVoaeb2PL1JU2zKT2drJ1iU4arT8RX7c+Gu+ubGnNmJ2akwnzXZqq+fGVOU2W+pP/ldDMKJQ3SMMEDz9DF8Z9wQ+EMn6/PfZ6uZyLn6CTK2g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
  dkim=pass header.d=plvision.eu; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3upemnDjOLGjatZA1k1pwI8OtUkhKLglwq9vxw09Qzw=;
- b=Zq/+UrvYpGthroRjYqWiEgvydvqMPDd0l48EOyskd64pfREPejbhmcbT+I0Y+iU+uvKE0HD9vmV1aBkSOwJHRMNl+Q0aJOH/WaSW0e0jN8s+oRM9Em/D4FCKNVVjW5ACup2eUYDCD9CQAPEVVByVvHFcGR9IUhGAgz1ZRhVqx8A=
+ bh=BzZ5pmTFpTYgRh9zkvuydu4yU6ZedKHkRiL2eV9+/Lc=;
+ b=OymoVoZv/xdrKyPcAycChZPDH2vkYHYPu37AHzS8LI1Mh5afELATfTzO4p7u6luCHZoRkjOoNPVfYER5W3wi9R+PgLqOyXcXAMUsduVzS07knuaogAY/SwBJJUo5UIKR+8QLJxo1+If6NuPvPdk4sPQrc1TLmkQU6HS2vieMzxQ=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=plvision.eu;
 Received: from PAXP190MB1789.EURP190.PROD.OUTLOOK.COM (2603:10a6:102:283::6)
  by VI1P190MB0733.EURP190.PROD.OUTLOOK.COM (2603:10a6:800:121::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.23; Sat, 1 Oct
- 2022 09:34:31 +0000
+ 2022 09:34:32 +0000
 Received: from PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
  ([fe80::8ee:1a5c:9187:3bc0]) by PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
  ([fe80::8ee:1a5c:9187:3bc0%2]) with mapi id 15.20.5676.024; Sat, 1 Oct 2022
- 09:34:31 +0000
+ 09:34:32 +0000
 From:   Yevhen Orlov <yevhen.orlov@plvision.eu>
 To:     netdev@vger.kernel.org
 Cc:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
@@ -52,10 +52,12 @@ Cc:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
         Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
         Stephen Hemminger <stephen@networkplumber.org>,
         linux-kernel@vger.kernel.org,
-        Yevhen Orlov <yevhen.orlov@plvision.eu>
-Subject: [PATCH net-next v7 3/9] net: marvell: prestera: Add strict cleanup of fib arbiter
-Date:   Sat,  1 Oct 2022 12:34:11 +0300
-Message-Id: <20221001093417.22388-4-yevhen.orlov@plvision.eu>
+        Yevhen Orlov <yevhen.orlov@plvision.eu>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Subject: [PATCH net-next v7 4/9] net: marvell: prestera: add delayed wq and flush wq on deinit
+Date:   Sat,  1 Oct 2022 12:34:12 +0300
+Message-Id: <20221001093417.22388-5-yevhen.orlov@plvision.eu>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20221001093417.22388-1-yevhen.orlov@plvision.eu>
 References: <20221001093417.22388-1-yevhen.orlov@plvision.eu>
@@ -66,51 +68,51 @@ X-ClientProxiedBy: AS9PR06CA0696.eurprd06.prod.outlook.com
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PAXP190MB1789:EE_|VI1P190MB0733:EE_
-X-MS-Office365-Filtering-Correlation-Id: c7a8ccd2-835d-435f-7455-08daa3902484
+X-MS-Office365-Filtering-Correlation-Id: da7a90bb-4772-4734-ae47-08daa3902532
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3FRY7lnPfGbaBUevJiMChZabPDltK770af7d2sy31kX2RamMOtJLzlTJtNYN4d5urpixoQyW7NR1z6uWthkv0HBTDl3+zPt5eiJHJCJGKKVcePGEitEjUlBZy/8dbmz60clJIHOi5mAjV2sJEBkkko8WfU2FwtDfs6eXyv3jzdfxepyha4QBN/neYGiz1pdR1h2tx5hr6Aic8WFtama1pLvKSmKu3d160hPwe9DVDXCCmWwiwx4coHfPH2UVybjEuOLncPyO7Q5afzIGD7gr19Rp6h+/fSZyhJaCvaymBjhj5oOVHaBJXC1AU70z6Len3etJ0pAX+b5qbDsoOo9qMM8igBuotNPgcaMIreH+8OpudlZJrRNWKzfTcy0lqBIxLHRCcPixhe1R4gt3IJEqdJ9F5QIFH7dm5Q8buv834mzzEluxNYl5EdpQnh1VvDOWA1Z72tJ7fiyMFeWOMQDK3qbO9Fq0fl77jI55JNf+fWWuvFDMd1aNOsggm/EM6B9bd/YUSiyCIeeQ4yErCtbZ+Dqec94E1DEtkswv90UNrRrqJIpicQWsUO4GlY2NumWsu8g3fzvZeAKFr8H1ddVAqyOnVrcXFXcI6fhxI+6dRnpb8mx+ecGJWOQYOp5+QnBPGBS4bdpitLpi0xo96dlhVen6Pr/wrXNN/3eryPsM0JUd6CU8wsrxUnIKaowZfOA1uojKeuml1KhUJiKrB1LZsx7Xxv5cCZT+JfZLq5vMUn/tVHku0FEnnBjiq3v2N7E9
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXP190MB1789.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(396003)(39830400003)(366004)(346002)(136003)(451199015)(66574015)(38350700002)(38100700002)(5660300002)(86362001)(26005)(8936002)(6506007)(6512007)(36756003)(8676002)(52116002)(4326008)(66946007)(66476007)(66556008)(6666004)(83380400001)(107886003)(41300700001)(44832011)(1076003)(186003)(6916009)(2616005)(2906002)(478600001)(316002)(6486002)(54906003);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: WLB1X0b4hQcW6kbRfMUxvK/6mFZil2aWuGZDqFIpt3WfDBoM0YEl6wDqRSBEKS8Mc2xlVDMTXwLnfARrPxI4YuK8JXmDC9hI0eb+TmhynqIDigGYmBmZWEnpW88JcmFR4g4f69MKyThqa6w7z6MXg17qtT/hBsDxldnDvH5yYwqZ+ojBOLcnVuaeQPt7QcTRyneH5mbYuWKcu1z8huiaTQMbVTHrM9i68+CKAsoKUZgAJgOg4Ti6GZhGRuYD7xS3Zv2eoeRLXh2CsuYPNQb/H1lrL9/cTo5rc6rtLWC6j+nsAND4oAvjcPVimAbR7O1CiNbrGXIwM3IiJCpym6rhqQ856ugmaZ0e5xnpZtb+/+dFYWyt1T31WuAbAjdiKdOY0FJtiP63wjux8l9Jy95aCz7exWivHjFWIIxYu8aWYN3X7UOAhCrH6hbiHAzVDXCLMSODTfAYUfnqB4dKiDqHWJhcUxdOqmPygjDEr7bTuyWkN8i81tzm40v/nSUEpoA1iiCpNFhAcQJ+31gTfj/WwLdRBae6t+IbH0PQql0TYNelQPD8opkgEfxEjNQ1KGz9dJ+hEnbj1pHLlsKsyM+zfofpCljIMfKB1LZblxdoc9REdnGf8fQxSmc65Byc6xysDLS+d4XoEEsSNZRgi++YNFevpw2VKgjWJ+mrQtZlyHVIhp5oFCssIaBUiOFx5OhhaqAlt2SFjTdGX/aHMjOeZd3euGp6LDaQ1XSSXgvp20d3U22ciqQFccUPl8KqiO1l
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXP190MB1789.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(396003)(39830400003)(366004)(346002)(136003)(451199015)(66574015)(38350700002)(38100700002)(5660300002)(86362001)(26005)(7416002)(8936002)(6506007)(6512007)(36756003)(8676002)(52116002)(4326008)(66946007)(66476007)(66556008)(6666004)(107886003)(41300700001)(44832011)(1076003)(186003)(6916009)(2616005)(2906002)(478600001)(316002)(6486002)(54906003);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/vTWym4DLe1FTRWIX86eBq/YaHFBLJOnWU3SaQMENJMmgb+dhpdB6KeoS6xV?=
- =?us-ascii?Q?/590dJSQLPaq5Ejb4sxvr+8+//jZ5BecwqXcDi3bSXQa4rEtdveTVR19MPdk?=
- =?us-ascii?Q?ZomNShUEuE5q66VXEIsRfV021eSRYCk1nxn7lnh77ph+v27wgnXqL4s/WEke?=
- =?us-ascii?Q?WXisNK+LYvVXk+/iAfT3u/8L65eBmXDbKRuNouzEOEB6IqBEIpjv1Q5Im8aC?=
- =?us-ascii?Q?1h/lYlDwvu+5PnTTI4kcCKyq3fdyaz9k/NPmNe5J0uZ/zSu+UNvwTFYapAsG?=
- =?us-ascii?Q?SOSDSKulhP0wPYDFxMCb+ow4KOj4/OpuckOhdHjTFUBHkHf+jgvAvfVug8ve?=
- =?us-ascii?Q?ehG312UL0ez5y/qUz1hgl63OIMKwC1ntXBbRvTmueZinZ2wRwoLkRhUiE4EZ?=
- =?us-ascii?Q?OeVDesvsWnz4h81L11nev4aaeCl0FIuVxa7j0iI84w0FOlKYyvPoPi3Ai9W5?=
- =?us-ascii?Q?28jkqDdA21d89NYdvHVV+OWrlPyGEFmT6sxFDwv0pbBeVat29V/FWxbvl1Fi?=
- =?us-ascii?Q?KpulF5+2HM+5EG4ftSWvUo80l+6GuS49/ZSgOAKYFeEMn621kDEso9X0Ncsz?=
- =?us-ascii?Q?jCEftLVQJjFJ4eUNDi15m/MOfKReBoYQfhy1H9KnUzEmIRHKpOUPA6C7ewcR?=
- =?us-ascii?Q?sUc3DLft48bQXoH8XKENoCvB3TzV3guWc6D/g6/NJ2CBN2VkMSt+Rcahoqoe?=
- =?us-ascii?Q?T7Hv7vRVd9hcwRqf1pI/c81J7x1tInVskpPV55epTTYa0T9ynP3lKZKKArda?=
- =?us-ascii?Q?G2QbER/moPCYhF9Qq78ibgQ6BpxdfU38QCI9gOPhOEcdJmtBd2MUPbdpTXuN?=
- =?us-ascii?Q?1beQIgPMKKvdDAm/hA6rsUIAOc6cDL4sFMHPmBKa8WZSAznQC4ohwzHorUMJ?=
- =?us-ascii?Q?s6P7CEzoEtGPxrkZ5fJRxJFzd5ZdiEUL/X9en+DN31Kco+1wZIcbobrd8uc+?=
- =?us-ascii?Q?B8BXtBW7o1s4ryp44eIfZUPmAlH7pShRnus2eWrXKN1Jmi5OcbLTxChffFX2?=
- =?us-ascii?Q?O9nfMd0yHqLdY/v5k7d0HrS9Rsfx7sUncXZ5Q325kx7Kh07JDb5IVl6cJ8xB?=
- =?us-ascii?Q?C36AktuVMOqxY7LT3uk0XyphobyJRBu1gL45qdJbGItSoWNxjnsYRyWdwz1I?=
- =?us-ascii?Q?WJ92C+tw3oxtr1ytcbK9sX5U6Egtzk5XlkTDCT1EEL21sJTCq/0zYaQ5KNFZ?=
- =?us-ascii?Q?v4Rce+5PLUlMde4dmPS1cY5vbJS30fiwOEJVLe/RmsHNRPQd32keJFroYEg0?=
- =?us-ascii?Q?Sjvkanl8RCG9CjyG2x2Ky0ETbcsPpDW58YQ2zBrG6t7tSjmtCN3W6Rs+eKZr?=
- =?us-ascii?Q?n17sZnkaVG+PKFFDl2f5dCx/cq3UscJDaJ6kXsxRC8dGhncsoDVBgKKhKh7A?=
- =?us-ascii?Q?e9/xOa4L9XbvIp+gJMphyyFHZVut+LhsO+PkKOHuSihwjItMJroBn4ZFW+BO?=
- =?us-ascii?Q?++yn2KH0LBpDdJ0HpPvyyeCldQGBXWN7LUXaauAhtmwgjJ2qmYcw1Z9b8e8L?=
- =?us-ascii?Q?vciZ8HgLVi3sqxF6V+Ltqhhnllbr36Q2L92MpcFjv4dzVrtPYo3coqBG5+hu?=
- =?us-ascii?Q?zGlAlmrUDm0RBSLajDRSD3VOQxQgAXEPrRoyIiuieK5YDE3i8DD76XHC9Z21?=
- =?us-ascii?Q?fA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?M7uvSL586MP6BcchzsNKRS4FmvGXGyA8oaje46W+gb1XYm7zvFrwuq66SRhq?=
+ =?us-ascii?Q?73EmxvwtyEIaVkTPXQQ2f3CX52fupp8D50mxSF6s4pRjeGzV/DWkIs/9E5hD?=
+ =?us-ascii?Q?WMv7laXroC07hGyyvkEQUlnfUwiTrlr9VPME+6HNMr9jGcxXsxgIveYAVYCj?=
+ =?us-ascii?Q?5z+QLRTdoLrpPnonPvLBhnNjD6GqTLsgIzNSCNQ0iH5KJy+62T2kgv+IuVY9?=
+ =?us-ascii?Q?+6k/Gh/Kh/R1v5PvIHyjlJ+Vdj9cGS5LmbQH7Q09Ys4+TCfrJRPb77fGlXzT?=
+ =?us-ascii?Q?wRbZ2a5XrmFpcBY6mr9HoTDbNtE+VFJg/FjFRgRPe/FPIpQjlUFEl31/0Sfe?=
+ =?us-ascii?Q?C7G7x565zWI6SHLCfaL1UYOUJ42qsE2Uvi0C7/vaIHS29PIiY5L9E+n49d+0?=
+ =?us-ascii?Q?jZziOT7lWzoCmPo5OGYAZG0oa4G4hy04M5GbdwDtigZ5wEy7OEED62lYc4hu?=
+ =?us-ascii?Q?5973kPK1ZHhNkIHTbyQxiz/ExDyFbxhWwtSncAx1bCqf4VWRrOaJASoRKA3h?=
+ =?us-ascii?Q?UtvlfdIS3R+9EDjKuhbUyGb8RQYuqjHEfT1+PFGfcRYzREQpNphJSEEmEq1k?=
+ =?us-ascii?Q?ILYg3fKA6dcYm1NdNHzJ6zhcXngUx2Pq/8wAH93v6/4GUYzL8VUsTh3AvXmK?=
+ =?us-ascii?Q?ifeHLehulVSz2EvVcHCttwWU8ralwpuR4eeUnGTKbAMtwTHUjJiHUHq41gXq?=
+ =?us-ascii?Q?XoPC3pC/nQ4S0SZ4gSXP1zclKltdnWEAglnjeWR/4p49TIm0Eg77aaclERDO?=
+ =?us-ascii?Q?zLB0n8p9Fz4PIozOJJIaCUirZiUtVGEKGJ+xIVlKoahW4s/nYR7wvD+rHH3L?=
+ =?us-ascii?Q?VBMhB0Jw6MO459pvmC0niDpmANFij7vvvFxNIyNuqymg3afB4s5/esvskIRs?=
+ =?us-ascii?Q?SaPlyuBaWAiaiZ4QM8WBJ1ZsrixaLtJpk3dvnWFhhxQB75zXAo7DqD2qLglY?=
+ =?us-ascii?Q?uSUz9bgYcA3m9CT22YvhD9kIwYC1ex5hSbfa0wtCb3P0mqcZt9D1FyfeHcD+?=
+ =?us-ascii?Q?2LnOQy/7PUzDkjA4IbNT56U6oM1RFNBwB1CjcB9+MP5LRFNP3P7XaQ3xIW3H?=
+ =?us-ascii?Q?q0bWDBd2trXAJnh2Fk2c5jEObRiieJaVTSXOj7MNq0zZuG3goAVadPGEc47Z?=
+ =?us-ascii?Q?Jx50vopgfIVHG8pjoCyM9P6ahdHiq9CZGZTyjGQI3ES5G5QD5o8TWgVtohLK?=
+ =?us-ascii?Q?7AW84kJI783+WCM0kjGR70ICacW5mSlcPwlRDJhc1RAqV3AdZq5oEl3FCxPR?=
+ =?us-ascii?Q?EOoPE4w66HXaxampJ94DMCyYm04BIwGZf3n50ng0I2d70BW+BkfMBHkdfC/L?=
+ =?us-ascii?Q?pojko7W0gMgw9xF147l8/MuVPtmJk2TTa4L5+h5GECPZohK/UV7tyVZ3l2JN?=
+ =?us-ascii?Q?40cRBY13WqOomiKQ7HWPg7UqoUBxRB1AN5nnUQqfMHVV9IURlYDXSTv3bxR7?=
+ =?us-ascii?Q?YljCVkIGQbpvY16dKOEDeCxKIS2eIdwE/5ZiqARZ04shS7wdkX4/Oo6cU2CV?=
+ =?us-ascii?Q?nizWdZ2BFnqoMXK9HS/oUJv39g7mvzRrA3LMYZxxUY4FODKorKhbfJ/JsTtL?=
+ =?us-ascii?Q?eULjxZAxs8hfVnE+533mLYiuPh5BpPVEQk6crdVKFGajJxQnDRoi2ps3jjPR?=
+ =?us-ascii?Q?UA=3D=3D?=
 X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: c7a8ccd2-835d-435f-7455-08daa3902484
+X-MS-Exchange-CrossTenant-Network-Message-Id: da7a90bb-4772-4734-ae47-08daa3902532
 X-MS-Exchange-CrossTenant-AuthSource: PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Oct 2022 09:34:31.0874
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Oct 2022 09:34:32.2449
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OcalUrTGDIaYluWCsbORixl/mnSlYCAS596rzF5QcAtnFFrTTy7tUkrccYdCga8AdBVfXQexdlyAj4GGtObuDblmkotiDF9Fws7AVr9bx2A=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5clAu39+5WEq0LhXFG1VTFUCnheacDcBFGCMqfkfaDgkE7re2tq6rDMswjjMApzmSl3ds6dineVQ0mc5bmX9kL7cXfyoNWpcw1bi6y9/ieo=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1P190MB0733
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -122,90 +124,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This will, ensure, that there is no more, preciously allocated fib_cache
-entries left after deinit.
-Will be used to free allocated resources of nexthop routes, that points
-to "not our" port (e.g. eth0).
+Flushing workqueues ensures, that no more pending works, related to just
+unregistered or deinitialized notifiers. After that we can free memory.
 
+Delayed wq will be used for neighbours in next patches.
+
+Co-developed-by: Taras Chornyi <tchornyi@marvell.com>
+Signed-off-by: Taras Chornyi <tchornyi@marvell.com>
+Co-developed-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
 Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
 ---
- .../marvell/prestera/prestera_router.c        | 42 ++++++++++++++++++-
- 1 file changed, 41 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/marvell/prestera/prestera.h      |  2 ++
+ drivers/net/ethernet/marvell/prestera/prestera_main.c | 11 +++++++++++
+ .../net/ethernet/marvell/prestera/prestera_router.c   |  1 +
+ 3 files changed, 14 insertions(+)
 
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera.h b/drivers/net/ethernet/marvell/prestera/prestera.h
+index 903e2e13e687..fe0d6001a6b6 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera.h
++++ b/drivers/net/ethernet/marvell/prestera/prestera.h
+@@ -367,6 +367,8 @@ int prestera_port_cfg_mac_write(struct prestera_port *port,
+ struct prestera_port *prestera_port_dev_lower_find(struct net_device *dev);
+ 
+ void prestera_queue_work(struct work_struct *work);
++void prestera_queue_delayed_work(struct delayed_work *work, unsigned long delay);
++void prestera_queue_drain(void);
+ 
+ int prestera_port_learning_set(struct prestera_port *port, bool learn_enable);
+ int prestera_port_uc_flood_set(struct prestera_port *port, bool flood);
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_main.c b/drivers/net/ethernet/marvell/prestera/prestera_main.c
+index 3956d6d5df3c..c0794603a733 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_main.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_main.c
+@@ -36,6 +36,17 @@ void prestera_queue_work(struct work_struct *work)
+ 	queue_work(prestera_owq, work);
+ }
+ 
++void prestera_queue_delayed_work(struct delayed_work *work, unsigned long delay)
++{
++	queue_delayed_work(prestera_wq, work, delay);
++}
++
++void prestera_queue_drain(void)
++{
++	drain_workqueue(prestera_wq);
++	drain_workqueue(prestera_owq);
++}
++
+ int prestera_port_learning_set(struct prestera_port *port, bool learn)
+ {
+ 	return prestera_hw_port_learning_set(port, learn);
 diff --git a/drivers/net/ethernet/marvell/prestera/prestera_router.c b/drivers/net/ethernet/marvell/prestera/prestera_router.c
-index a8548b9f9cf1..b4fd8276bbce 100644
+index b4fd8276bbce..9625c5870847 100644
 --- a/drivers/net/ethernet/marvell/prestera/prestera_router.c
 +++ b/drivers/net/ethernet/marvell/prestera/prestera_router.c
-@@ -72,14 +72,21 @@ prestera_kern_fib_cache_find(struct prestera_switch *sw,
- 	return fib_cache;
- }
- 
-+static void
-+__prestera_kern_fib_cache_destruct(struct prestera_switch *sw,
-+				   struct prestera_kern_fib_cache *fib_cache)
-+{
-+	fib_info_put(fib_cache->fi);
-+}
-+
- static void
- prestera_kern_fib_cache_destroy(struct prestera_switch *sw,
- 				struct prestera_kern_fib_cache *fib_cache)
- {
--	fib_info_put(fib_cache->fi);
- 	rhashtable_remove_fast(&sw->router->kern_fib_cache_ht,
- 			       &fib_cache->ht_node,
- 			       __prestera_kern_fib_cache_ht_params);
-+	__prestera_kern_fib_cache_destruct(sw, fib_cache);
- 	kfree(fib_cache);
- }
- 
-@@ -336,6 +343,36 @@ prestera_k_arb_fib_evt(struct prestera_switch *sw,
- 	return 0;
- }
- 
-+static void __prestera_k_arb_abort_fib_ht_cb(void *ptr, void *arg)
-+{
-+	struct prestera_kern_fib_cache *fib_cache = ptr;
-+	struct prestera_switch *sw = arg;
-+
-+	__prestera_k_arb_fib_lpm_offload_set(sw, fib_cache,
-+					     false, false,
-+					     false);
-+	/* No need to destroy lpm.
-+	 * It will be aborted by destroy_ht
-+	 */
-+	__prestera_kern_fib_cache_destruct(sw, fib_cache);
-+	kfree(fib_cache);
-+}
-+
-+static void prestera_k_arb_abort(struct prestera_switch *sw)
-+{
-+	/* Function to remove all arbiter entries and related hw objects. */
-+	/* Sequence:
-+	 *   1) Clear arbiter tables, but don't touch hw
-+	 *   2) Clear hw
-+	 * We use such approach, because arbiter object is not directly mapped
-+	 * to hw. So deletion of one arbiter object may even lead to creation of
-+	 * hw object (e.g. in case of overlapped routes).
-+	 */
-+	rhashtable_free_and_destroy(&sw->router->kern_fib_cache_ht,
-+				    __prestera_k_arb_abort_fib_ht_cb,
-+				    sw);
-+}
-+
- static int __prestera_inetaddr_port_event(struct net_device *port_dev,
- 					  unsigned long event,
- 					  struct netlink_ext_ack *extack)
-@@ -602,6 +639,9 @@ void prestera_router_fini(struct prestera_switch *sw)
+@@ -639,6 +639,7 @@ void prestera_router_fini(struct prestera_switch *sw)
  	unregister_fib_notifier(&init_net, &sw->router->fib_nb);
  	unregister_inetaddr_notifier(&sw->router->inetaddr_nb);
  	unregister_inetaddr_validator_notifier(&sw->router->inetaddr_valid_nb);
-+
-+	prestera_k_arb_abort(sw);
-+
- 	kfree(sw->router->nhgrp_hw_state_cache);
- 	rhashtable_destroy(&sw->router->kern_fib_cache_ht);
- 	prestera_router_hw_fini(sw);
++	prestera_queue_drain();
+ 
+ 	prestera_k_arb_abort(sw);
+ 
 -- 
 2.17.1
 
