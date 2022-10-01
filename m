@@ -2,102 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD5FB5F1CA2
-	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 16:18:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7DDA5F1CB7
+	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 16:26:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229530AbiJAOSg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Oct 2022 10:18:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44798 "EHLO
+        id S229660AbiJAO0o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Oct 2022 10:26:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229482AbiJAOSe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 10:18:34 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 270DD3D59B;
-        Sat,  1 Oct 2022 07:18:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 01402CE01D0;
-        Sat,  1 Oct 2022 14:18:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 940EFC433D6;
-        Sat,  1 Oct 2022 14:18:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664633909;
-        bh=CKkGHr+sdWpXHrqOxQ/cqxBF9+kksWpN2DsUF+exBS4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gDiEogvtf5TTgvs8BmlxSclEAjVqM9fTiq+o5fcwKxVdeFAQ6Pfkui85Ed3eaqiQe
-         RzMUCQ5iBSLhnk/g2ffGL/WO1kg4sLz0xBOmhAagicxCbn2dqjj1NHlkRyfPWPkvRi
-         NsaR7jK6405n2TAWqYTy/isr6oyCzqdljbJTkR+DMO55hjncaznzXa7ryXaAoJKoN7
-         0JJz5a2bB5ByK1YE/LAPq4i6LpVNhSq1VJrhsQcHioZ/GWeMgJd4DFLA+FQ668GuRM
-         Ww+iyYMmfJpONDVLmFHkqj3Eyo5eWxl5GkzmNgFCmhwTdpkFe5OneWzYYQvEdMZg7G
-         dzPcAgXkK14Ag==
-Date:   Sat, 1 Oct 2022 07:18:27 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Vadim Fedorenko <vfedorenko@novek.ru>,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Vadim Fedorenko <vadfed@fb.com>, Aya Levin <ayal@nvidia.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-clk@vger.kernel.org, Gal Pressman <gal@nvidia.com>
-Subject: Re: [RFC PATCH v2 0/3] Create common DPLL/clock configuration API
-Message-ID: <20221001071827.202fe4c1@kernel.org>
-In-Reply-To: <YzfUbKtWlxuq+FzI@nanopsycho>
-References: <20220626192444.29321-1-vfedorenko@novek.ru>
-        <YzWESUXPwcCo67LP@nanopsycho>
-        <6b80b6c8-29fd-4c2a-e963-1f273d866f12@novek.ru>
-        <Yzap9cfSXvSLA+5y@nanopsycho>
-        <20220930073312.23685d5d@kernel.org>
-        <YzfUbKtWlxuq+FzI@nanopsycho>
+        with ESMTP id S229464AbiJAO0l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 10:26:41 -0400
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9C643E69
+        for <netdev@vger.kernel.org>; Sat,  1 Oct 2022 07:26:40 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id u9-20020a5edd49000000b006a0f03934e9so4513061iop.4
+        for <netdev@vger.kernel.org>; Sat, 01 Oct 2022 07:26:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=Je8P4OmrMwwcd92gAPOyOtWipPfjQ5H1rtE8DydHvww=;
+        b=Thk7amMffEMzz1ZyDxjC1cAIMK8T5t40KgL/LcDt0qSx1oKMffRXUlFKX/tEEZyEHM
+         pscKjUYepM43WyNBNN94NTr48fs7GOuOoZeoJAHcB5WJ3DUU5A9nHywve2EuFK2ZfMYy
+         Dy5C+BujrAeeRle6p5qxdP/oKeNqoO/LMFFeZQrbKGZtUqejXGZWi0T1VTWeRT8FHHJI
+         01igC2bRa5MjvuUhDFabRbMeQ8KYpwI0f/bHvUQJEuMZrmlOnOwwsV4tyrHJ4SDLy2wd
+         tKHNnUdNPSetp12cg1LPQ5GJEYnhMBC/4FKLx9YKLawHbZTQJ//Riax64AlOPUrZDw18
+         o07Q==
+X-Gm-Message-State: ACrzQf2bP952BSlactzSIQZbRNtVHvv5nALX5ilnBxWquG+dnHcd4/Ki
+        EfEMcuX50XaVk8o1mjRv6Z3vAk2+KAJdrKcdMAezXkZ7CHx8
+X-Google-Smtp-Source: AMsMyM6yjQnXyMZg6FdGm3jJkyCZ8gcr1C+5wXJunpfQ3BcRsspMMODg2aYqalBfSkeMFWBu4lcUoRu4C1AoD1R+dkwtfnq58sr/
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6e02:1baf:b0:2f5:a7b0:65a8 with SMTP id
+ n15-20020a056e021baf00b002f5a7b065a8mr6085915ili.227.1664634400029; Sat, 01
+ Oct 2022 07:26:40 -0700 (PDT)
+Date:   Sat, 01 Oct 2022 07:26:40 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000001850d105e9f9e6de@google.com>
+Subject: [syzbot] WARNING: lock held when returning to user space in ieee80211_change_mac
+From:   syzbot <syzbot+4ef359e6b423499fa4e1@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com,
+        johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 1 Oct 2022 07:47:24 +0200 Jiri Pirko wrote:
-> >> Sure, but more hw does not mean you can't use sysfs. Take netdev as an
-> >> example. The sysfs exposed for it is implemented net/core/net-sysfs.c
-> >> and is exposed for all netdev instances, no matter what the
-> >> driver/hardware is.  
-> >
-> >Wait, *you* are suggesting someone uses sysfs instead of netlink?
-> >
-> >Could you say more because I feel like that's kicking the absolute.  
-> 
-> I don't understand why that would be a problem. 
+Hello,
 
-Why did you do devlink over netlink then?
-The bus device is already there in sysfs.
+syzbot found the following issue on:
 
-> What I'm trying to say
-> is, perhaps sysfs is a better API for this purpose. The API looks very
-> neat and there is no probabilito of huge grow.
+HEAD commit:    6627a2074d5c net/smc: Support SO_REUSEPORT
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=10183a70880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d4d64087513b5aa1
+dashboard link: https://syzkaller.appspot.com/bug?extid=4ef359e6b423499fa4e1
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-"this API is nice and small" said everyone about every new API ever,
-APIs grow.
+Unfortunately, I don't have any reproducer for this issue yet.
 
-> Also, with sysfs, you
-> don't need userspace app to do basic work with the api. In this case, I
-> don't see why the app is needed.
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/9ecb75606956/disk-6627a207.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/1073865fcb40/vmlinux-6627a207.xz
 
-Yes, with the YAML specs you don't need a per-family APP.
-A generic app can support any family, just JSON in JSON out.
-DPLL-nl will come with a YAML spec.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+4ef359e6b423499fa4e1@syzkaller.appspotmail.com
 
-> These are 2 biggest arguments for sysfs in this case as I see it.
+================================================
+WARNING: lock held when returning to user space!
+6.0.0-rc6-syzkaller-01407-g6627a2074d5c #0 Not tainted
+------------------------------------------------
+syz-executor.3/10164 is leaving the kernel with locks still held!
+1 lock held by syz-executor.3/10164:
+ #0: ffff888147acaa88 (&local->mtx){+.+.}-{3:3}, at: ieee80211_can_powered_addr_change net/mac80211/iface.c:217 [inline]
+ #0: ffff888147acaa88 (&local->mtx){+.+.}-{3:3}, at: ieee80211_change_mac+0x9b4/0xf40 net/mac80211/iface.c:264
 
-2 biggest arguments? Is "this API is small" one of the _biggest_
-arguments you see? I don't think it's an argument at all. The OCP PTP
-driver started small and now its not small. And the files don't even
-follow sysfs rules. Trust me, we have some experience here :/
 
-As I said to you in private I feel like there may be some political
-games being played here, so I'd like to urge you to focus on real
-issues.
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
