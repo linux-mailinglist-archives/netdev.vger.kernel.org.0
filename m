@@ -2,61 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E8BA75F1E9D
-	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 20:32:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C3775F1E99
+	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 20:32:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229559AbiJAS1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Oct 2022 14:27:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44586 "EHLO
+        id S229599AbiJAS1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Oct 2022 14:27:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229538AbiJAS11 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 14:27:27 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F1CB5C9CD
-        for <netdev@vger.kernel.org>; Sat,  1 Oct 2022 11:27:26 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id g2so4653938qkk.1
-        for <netdev@vger.kernel.org>; Sat, 01 Oct 2022 11:27:26 -0700 (PDT)
+        with ESMTP id S229561AbiJAS12 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 14:27:28 -0400
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD3A5C9D6
+        for <netdev@vger.kernel.org>; Sat,  1 Oct 2022 11:27:27 -0700 (PDT)
+Received: by mail-qk1-x72c.google.com with SMTP id i3so4654423qkl.3
+        for <netdev@vger.kernel.org>; Sat, 01 Oct 2022 11:27:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
          :cc:subject:date;
-        bh=rTNvKKhCSgGusT4IEZ7IoRdy/2qk4DcxbZUSFVz3G3I=;
-        b=VbhnhCOcyS8OgmTXQz+tuOXd+rZezCWMfg8VRC3Uwf8mXPH8eBLwGfAidZU96wODWK
-         K0tkTDf9YHMuM2QrhdIaUiNLFfgZvB3VU5WHw6AGxG3amqyL3yWqibaqkigR83JbwwRH
-         8kG3EV+FMQYh5oyergOZlCcBSJKr1oK1SSUG0=
+        bh=AXCTHbBM3xy5mO2JxnEAE9h4oLwYFoZPkYVZQMX59X8=;
+        b=iE3Zw8AtvHyTSo7yjZ5TTZfVdsni3QUcVgtD3eK1ctc9SR5ugX9C6dXx0/G50K9qsn
+         bX2oWqY2ovdpruGCmz8YPVm4lDzhgoj8oQD1sr+ZTvYcYxCeQ60tIJ9Nw3OnKTiaYU1F
+         M68Iax9PXCrGQYvhpxt2HXFu260lh7AuLWPdE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=references:in-reply-to:message-id:date:subject:cc:to:from
          :x-gm-message-state:from:to:cc:subject:date;
-        bh=rTNvKKhCSgGusT4IEZ7IoRdy/2qk4DcxbZUSFVz3G3I=;
-        b=U01tfIqheG4dIkOMri5V/6oTFy3YM/SK4kjN06ZwuiJOhxUw+VfQ8jl9pR3rYOZxw/
-         otRu2ejP1z1ubkSkhYhE9Jl1JwlaTZCtY6r9YMTNzOojzqCHyyxeplHkSVjT0hBlWmpm
-         xyPVwmdHRYs/UMFOzK3AMXVH6BuwbEQG8zo7fsRHoR7UZUMCYf2XPZBhNYjZ1ZGGw+0V
-         jIJIKnAgNiB+tjDNAjdm4XNabQOun90AnNuR+tk45ezJ88GcYuyOdo3Rz8M5ptVmGanP
-         zLaeQECZK88kTsSleQQINkQbUHODyHCJykJvXKckS7H6Gb9ymIO4RIC1y028q5tzMBe9
-         gqLA==
-X-Gm-Message-State: ACrzQf1JH59QdY3HdWIn+LbyHzbU89klXEcbtknJuNnkT8y8UdezKUu6
-        T7y+rsnq9mhnPgC9+NkCTDLD/nZ+hHEUojap
-X-Google-Smtp-Source: AMsMyM57ERLtcVyrc0n3YqkccJhuTeqwTk3ok9dCsrRozvYHFiN3cE8k/kKTmMR8NHXIqWTyvg6Vzg==
-X-Received: by 2002:a05:620a:4919:b0:6cf:5a4c:e3a3 with SMTP id ed25-20020a05620a491900b006cf5a4ce3a3mr9893599qkb.309.1664648845226;
-        Sat, 01 Oct 2022 11:27:25 -0700 (PDT)
+        bh=AXCTHbBM3xy5mO2JxnEAE9h4oLwYFoZPkYVZQMX59X8=;
+        b=POSk8IkCusRrRO8THA+74A2Ga22WgZuVZO4dRLJTiAVNUahcsbwN2Stf/xkemg37TN
+         mfSXotSS46+B/3KpzeqlJgJdWAyRIbyqcEXzyszdHBqT0hGEI/AoI0+4l46gSpIkoOM0
+         Rrj7coa9xQDgWgDbpB/UBq8hSAFkl4yIj0tF5MV3K3iGjb3EsrjNB52++1X5GVcLUxWH
+         lMX9QGTcr5TrdllDYH6lb5g7CN1fN6FmMr+Lz5AV9WRE/NVc9ZxjigaFBwfZDEvzlpIs
+         JpZnDnwl/VyixQ1FgqILqFyDtY8lVLKxMkX3nkSCvLdbusPiMD76yz8NsT1az+WWTwIi
+         inEg==
+X-Gm-Message-State: ACrzQf0GI32/5f4GMMAjQ0PFQO9i/9vLpQKKdd+oDcTOA4vuCZwWGqCp
+        IrWu3nTauUgtZ6sawHnHs8/y7Q==
+X-Google-Smtp-Source: AMsMyM6LPL1pnCl/DUK66Qy1LDXMpiG8RZ9o07C7/W1DKidVlAdRPcHl1aN95ECt0bOnnvibBCPyaA==
+X-Received: by 2002:a05:620a:4447:b0:6c6:c438:1ced with SMTP id w7-20020a05620a444700b006c6c4381cedmr10215496qkp.658.1664648846871;
+        Sat, 01 Oct 2022 11:27:26 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id h14-20020a05620a400e00b006ce3f1af120sm6652830qko.44.2022.10.01.11.27.23
+        by smtp.gmail.com with ESMTPSA id h14-20020a05620a400e00b006ce3f1af120sm6652830qko.44.2022.10.01.11.27.25
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 01 Oct 2022 11:27:24 -0700 (PDT)
+        Sat, 01 Oct 2022 11:27:26 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, gospo@broadcom.com, vikas.gupta@broadcom.com,
-        Ido Schimmel <idosch@idosch.org>
-Subject: [PATCH net-next v2 2/3] bnxt_en: add .get_module_eeprom_by_page() support
-Date:   Sat,  1 Oct 2022 14:27:10 -0400
-Message-Id: <1664648831-7965-3-git-send-email-michael.chan@broadcom.com>
+        pabeni@redhat.com, gospo@broadcom.com, vikas.gupta@broadcom.com
+Subject: [PATCH net-next v2 3/3] bnxt_en: check and resize NVRAM UPDATE entry before flashing
+Date:   Sat,  1 Oct 2022 14:27:11 -0400
+Message-Id: <1664648831-7965-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1664648831-7965-1-git-send-email-michael.chan@broadcom.com>
 References: <1664648831-7965-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000001e5c3605e9fd4385"
+        boundary="000000000000373c3e05e9fd43d0"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -67,148 +66,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000001e5c3605e9fd4385
+--000000000000373c3e05e9fd43d0
 
 From: Vikas Gupta <vikas.gupta@broadcom.com>
 
-Add support for .get_module_eeprom_by_page() callback which
-implements generic solution for module`s eeprom access.
+Resize of the UPDATE entry is required if the image to
+be flashed is larger than the available space. Add this step,
+otherwise flashing larger firmware images by ethtool or devlink
+may fail.
 
-v2: Simplification suggested by Ido Schimmel
-
-Link: https://lore.kernel.org/netdev/YzVJ%2FvKJugoz15yV@shredder/
-Cc: Ido Schimmel <idosch@idosch.org>
+Reviewed-by: Andy Gospodarek <andrew.gospodarek@broadcom.com>
 Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  1 +
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 56 ++++++++++++++++---
- 2 files changed, 50 insertions(+), 7 deletions(-)
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 32 +++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index b1b17f911300..91a1ba0a914d 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -2116,6 +2116,7 @@ struct bnxt {
- #define BNXT_PHY_FL_NO_FCS		PORT_PHY_QCAPS_RESP_FLAGS_NO_FCS
- #define BNXT_PHY_FL_NO_PAUSE		(PORT_PHY_QCAPS_RESP_FLAGS2_PAUSE_UNSUPPORTED << 8)
- #define BNXT_PHY_FL_NO_PFC		(PORT_PHY_QCAPS_RESP_FLAGS2_PFC_UNSUPPORTED << 8)
-+#define BNXT_PHY_FL_BANK_SEL		(PORT_PHY_QCAPS_RESP_FLAGS2_BANK_ADDR_SUPPORTED << 8)
- 
- 	u8			num_tests;
- 	struct bnxt_test_info	*test_info;
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index f57e524c7e30..092cd4f98a6d 100644
+index 092cd4f98a6d..6dc3c3279acf 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -3146,8 +3146,9 @@ static int bnxt_get_eee(struct net_device *dev, struct ethtool_eee *edata)
- }
+@@ -2514,6 +2514,7 @@ static int bnxt_flash_firmware_from_file(struct net_device *dev,
+ #define MSG_INTERNAL_ERR "PKG install error : Internal error"
+ #define MSG_NO_PKG_UPDATE_AREA_ERR "PKG update area not created in nvram"
+ #define MSG_NO_SPACE_ERR "PKG insufficient update area in nvram"
++#define MSG_RESIZE_UPDATE_ERR "Resize UPDATE entry error"
+ #define MSG_ANTI_ROLLBACK_ERR "HWRM_NVM_INSTALL_UPDATE failure due to Anti-rollback detected"
+ #define MSG_GENERIC_FAILURE_ERR "HWRM_NVM_INSTALL_UPDATE failure"
  
- static int bnxt_read_sfp_module_eeprom_info(struct bnxt *bp, u16 i2c_addr,
--					    u16 page_number, u16 start_addr,
--					    u16 data_length, u8 *buf)
-+					    u16 page_number, u8 bank,
-+					    u16 start_addr, u16 data_length,
-+					    u8 *buf)
- {
- 	struct hwrm_port_phy_i2c_read_output *output;
- 	struct hwrm_port_phy_i2c_read_input *req;
-@@ -3168,8 +3169,13 @@ static int bnxt_read_sfp_module_eeprom_info(struct bnxt *bp, u16 i2c_addr,
- 		data_length -= xfer_size;
- 		req->page_offset = cpu_to_le16(start_addr + byte_offset);
- 		req->data_length = xfer_size;
--		req->enables = cpu_to_le32(start_addr + byte_offset ?
--				 PORT_PHY_I2C_READ_REQ_ENABLES_PAGE_OFFSET : 0);
-+		req->enables =
-+			cpu_to_le32((start_addr + byte_offset ?
-+				     PORT_PHY_I2C_READ_REQ_ENABLES_PAGE_OFFSET :
-+				     0) |
-+				    (bank ?
-+				     PORT_PHY_I2C_READ_REQ_ENABLES_BANK_NUMBER :
-+				     0));
- 		rc = hwrm_req_send(bp, req);
- 		if (!rc)
- 			memcpy(buf + byte_offset, output->data, xfer_size);
-@@ -3199,7 +3205,7 @@ static int bnxt_get_module_info(struct net_device *dev,
- 	if (bp->hwrm_spec_code < 0x10202)
- 		return -EOPNOTSUPP;
+@@ -2564,6 +2565,32 @@ static int nvm_update_err_to_stderr(struct net_device *dev, u8 result,
+ #define BNXT_NVM_MORE_FLAG	(cpu_to_le16(NVM_MODIFY_REQ_FLAGS_BATCH_MODE))
+ #define BNXT_NVM_LAST_FLAG	(cpu_to_le16(NVM_MODIFY_REQ_FLAGS_BATCH_LAST))
  
--	rc = bnxt_read_sfp_module_eeprom_info(bp, I2C_DEV_ADDR_A0, 0, 0,
-+	rc = bnxt_read_sfp_module_eeprom_info(bp, I2C_DEV_ADDR_A0, 0, 0, 0,
- 					      SFF_DIAG_SUPPORT_OFFSET + 1,
- 					      data);
- 	if (!rc) {
-@@ -3244,7 +3250,7 @@ static int bnxt_get_module_eeprom(struct net_device *dev,
- 	if (start < ETH_MODULE_SFF_8436_LEN) {
- 		if (start + eeprom->len > ETH_MODULE_SFF_8436_LEN)
- 			length = ETH_MODULE_SFF_8436_LEN - start;
--		rc = bnxt_read_sfp_module_eeprom_info(bp, I2C_DEV_ADDR_A0, 0,
-+		rc = bnxt_read_sfp_module_eeprom_info(bp, I2C_DEV_ADDR_A0, 0, 0,
- 						      start, length, data);
- 		if (rc)
- 			return rc;
-@@ -3256,12 +3262,47 @@ static int bnxt_get_module_eeprom(struct net_device *dev,
- 	/* Read A2 portion of the EEPROM */
- 	if (length) {
- 		start -= ETH_MODULE_SFF_8436_LEN;
--		rc = bnxt_read_sfp_module_eeprom_info(bp, I2C_DEV_ADDR_A2, 0,
-+		rc = bnxt_read_sfp_module_eeprom_info(bp, I2C_DEV_ADDR_A2, 0, 0,
- 						      start, length, data);
- 	}
- 	return rc;
- }
- 
-+static int bnxt_get_module_eeprom_by_page(struct net_device *dev,
-+					  const struct ethtool_module_eeprom *page_data,
-+					  struct netlink_ext_ack *extack)
++static int bnxt_resize_update_entry(struct net_device *dev, size_t fw_size,
++				    struct netlink_ext_ack *extack)
 +{
-+	struct bnxt *bp = netdev_priv(dev);
++	u32 item_len;
 +	int rc;
 +
-+	if (bp->link_info.module_status >
-+	    PORT_PHY_QCFG_RESP_MODULE_STATUS_WARNINGMSG) {
-+		NL_SET_ERR_MSG_MOD(extack, "Phy status unknown");
-+		return -EIO;
-+	}
-+
-+	if (bp->hwrm_spec_code < 0x10202) {
-+		NL_SET_ERR_MSG_MOD(extack, "Unsupported hwrm spec");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (page_data->bank && !(bp->phy_flags & BNXT_PHY_FL_BANK_SEL)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Firmware not capable for bank selection");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	rc = bnxt_read_sfp_module_eeprom_info(bp, page_data->i2c_address << 1,
-+					      page_data->page, page_data->bank,
-+					      page_data->offset,
-+					      page_data->length,
-+					      page_data->data);
++	rc = bnxt_find_nvram_item(dev, BNX_DIR_TYPE_UPDATE,
++				  BNX_DIR_ORDINAL_FIRST, BNX_DIR_EXT_NONE, NULL,
++				  &item_len, NULL);
 +	if (rc) {
-+		NL_SET_ERR_MSG_MOD(extack, "Module`s eeprom read failed");
++		BNXT_NVM_ERR_MSG(dev, extack, MSG_NO_PKG_UPDATE_AREA_ERR);
 +		return rc;
 +	}
-+	return page_data->length;
++
++	if (fw_size > item_len) {
++		rc = bnxt_flash_nvram(dev, BNX_DIR_TYPE_UPDATE,
++				      BNX_DIR_ORDINAL_FIRST, 0, 1,
++				      round_up(fw_size, 4096), NULL, 0);
++		if (rc) {
++			BNXT_NVM_ERR_MSG(dev, extack, MSG_RESIZE_UPDATE_ERR);
++			return rc;
++		}
++	}
++	return 0;
 +}
 +
- static int bnxt_nway_reset(struct net_device *dev)
+ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware *fw,
+ 				   u32 install_type, struct netlink_ext_ack *extack)
  {
- 	int rc = 0;
-@@ -4071,6 +4112,7 @@ const struct ethtool_ops bnxt_ethtool_ops = {
- 	.set_eee		= bnxt_set_eee,
- 	.get_module_info	= bnxt_get_module_info,
- 	.get_module_eeprom	= bnxt_get_module_eeprom,
-+	.get_module_eeprom_by_page = bnxt_get_module_eeprom_by_page,
- 	.nway_reset		= bnxt_nway_reset,
- 	.set_phys_id		= bnxt_set_phys_id,
- 	.self_test		= bnxt_self_test,
+@@ -2580,6 +2607,11 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
+ 	u16 index;
+ 	int rc;
+ 
++	/* resize before flashing larger image than available space */
++	rc = bnxt_resize_update_entry(dev, fw->size, extack);
++	if (rc)
++		return rc;
++
+ 	bnxt_hwrm_fw_set_time(bp);
+ 
+ 	rc = hwrm_req_init(bp, modify, HWRM_NVM_MODIFY);
 -- 
 2.18.1
 
 
---0000000000001e5c3605e9fd4385
+--000000000000373c3e05e9fd43d0
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -279,13 +214,13 @@ hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
 E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIKEt9gjE+8GSVk7uC0S74rxoh6T/whFb
-BB0qZ1JGKFfNMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTAw
-MTE4MjcyNVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINZcTcKpxUrnhS1EVl0Pbk57cRm+JPBO
+PVn6Rz48hAJXMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTAw
+MTE4MjcyN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCtA53/1Z+ZTo+etZJjK5wnXWVzfpXpNW5kGE4LtWlmYff/UQbv
-LqJiU/0GHrCtAysaAdBldz4MXUvgajY260O8zMXeTcDZBt4p3r6SCSEv2WXnpqFyTiOazpaDVhIs
-I7PICt5gsR4w7Jv5w2BpEvrjOHNoG1RE1O1r6FmA1KPY3kr7OVRqCziZvSc4Uh+si6xmP0RBTNoO
-pwazIShLq2e6YbICSUbVvM7W1PbeRIHBA/vrsnIBMr+fcXOlvpNmGZjQ2wrXLj94YT4hKyAAtoYh
-YgcZT4iXk4d8HGTjA+JBLxf4cHUP/SDVpF+PbOHrkk4LV2seUxNjB1GXJf0Z+V/A
---0000000000001e5c3605e9fd4385--
+ATANBgkqhkiG9w0BAQEFAASCAQB70ATF7Lqit9UUF2xUFfpbY4OwH+igStYoM2bk+1hR2ft03J2n
+HJkWUfSw3QznXPUocTZzSdjJn+1lh33uM/KC/H9AQxsc675xPlCNsZCWmzZQCfveBuXlz1iN3HM9
+uktlXDjy/8nTik6IulfyYerwh1GB9OAvgbPMmWqvCMEBjOK4/99U56jA051N/V9xNC1GCeHuZwVm
+WEvhb7ORohd+otEQy/LRPRdjLC1Qc/8E7F8dzPpSZt+JXjhqld4INLGOcDNFxGC1GLlGrmJyKj/i
+VqLK7a/swkRQoYw3md1zNx6ZbJnE4Kmy8w9fIV6WG9YsYVNBOIglLQtkWA0OlHMh
+--000000000000373c3e05e9fd43d0--
