@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 045655F1A17
-	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 08:02:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF1AD5F1A18
+	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 08:02:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229506AbiJAGB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Oct 2022 02:01:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39710 "EHLO
+        id S229515AbiJAGCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Oct 2022 02:02:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiJAGBz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 02:01:55 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D57D4A97
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 23:01:53 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id lc7so12965977ejb.0
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 23:01:53 -0700 (PDT)
+        with ESMTP id S229501AbiJAGB4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 02:01:56 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FDEC237C4
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 23:01:54 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id rk17so12932777ejb.1
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 23:01:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=MLLT0DBq3qYfb0FI3RhPrSoc4c7bXFy4BPeqput8f2o=;
-        b=MwdwRh2zqV0mkdtyz7MKxXhMny+sjeMbVAa0xYUOKmYePSPcecdiI8BxQ4YfxRk8sG
-         fQ2m2yVnZ7EF5g/n2SvZDkBOlK/aYScNNwKXc7RI0KP5F/cf7hM9BwSA9MJYUQSMcM7L
-         liOT4xXq9nEBMYXAR81VU++xhLvDA2sFcefEcArCOcWHHXKJ0AaMM007/W1r+M5ey8sH
-         g6sPLMN0dgI91RuIFwC8WKz3CqzTxP6D1fGy58puAx5Q6BQyJLdZKF65NBBDAl40x8sm
-         JhlxWGUHcXTtddwBfJnAAe9iGIQ7M7LTOV+60qp+S1WxyBylEduGIMDk9bQR4stOdbBi
-         CCoA==
+        bh=4OPPORshq4VgAOLtcB/+XK7KZeUHC5ZInXXdg8Odd/s=;
+        b=AzkTZ89fl8aPymoclqcsP8UTFDzOv3gP2WvV4c0ACKWbWv/KfWm4gJRcDne/Iyvw4c
+         +obMFZINpNM3CVE8udRYdoGx6ugt1KKR9qcsHdC9Vh0LvDmsneaZSWPUHJY0UNOIK+yG
+         dPQPs9bTaI+pFCEvmNiDUODqpLiYQ2mGzgJeNlD1wZkSaZGqnPR5a0YjS1JCD9mlEW1x
+         mOOC4XehZDV2qc+Z6VGz7Z56HqEFUp42V+zI/PeUvYfgXdEly7yrAJSKU8Q96Z+7ajZC
+         ThcCaXSW/6O1wWAB5WucKYvjdxBol0zyB0phZZeJUReXjsdTA4f+aGJAzPmyE/oqPJHC
+         2bNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=MLLT0DBq3qYfb0FI3RhPrSoc4c7bXFy4BPeqput8f2o=;
-        b=CxNDNxbYNvOV197XO6vNb5Os+fwZ038S9B0P47AxA/xzht96vieXBFloJeSGN3KUCn
-         Etj0czepXXN6kLFEzVDI8MIvmuHsJ7YUGKny/glCzSse4CXEglZKsWcclTNWDd/CAM0X
-         H/pVkRF5CS41ErNOfFDi6Q1yY0moc/mTNUgDmqG7KYM6ppx2eK97ppwM1weSOQG1ItQR
-         mRiFDfwwv+jTYJFKBaqe9Q5RE75wi8wuXEaVk/xjC8OB+DVyCP2hqG3DiMIOcEIN5EDw
-         di2eei+oyaatWITQ9EBo/m30EfgqcHGbtATUQewzDFF5I1W7Zkk8Sv+c+sSRE1MqXJno
-         Mcng==
-X-Gm-Message-State: ACrzQf24OzzX1gROPVjHYTT1TAJkdLvjdxYXhx9rnZnL0hF0lwvoJ7R5
-        d48wxX5d5Wn+k9uiXmSXUygg58u4UEtod9Rn
-X-Google-Smtp-Source: AMsMyM473fwiqFQJGfFPJBX5p0wPH8mbbuNHJlYTU5tySts6UNMIWHO76rzVqlf+CY0xIp/e7XcpHQ==
-X-Received: by 2002:a17:907:94d0:b0:783:d969:f30c with SMTP id dn16-20020a17090794d000b00783d969f30cmr8703630ejc.165.1664604112415;
-        Fri, 30 Sep 2022 23:01:52 -0700 (PDT)
+        bh=4OPPORshq4VgAOLtcB/+XK7KZeUHC5ZInXXdg8Odd/s=;
+        b=UJdFyNFCXENP4+Jmgt0G1Iaf8V7bJhQ/Rz6hdKDBd+4vD1oJfHT3BmTmYheteCBf5N
+         ddnlfZCIHaSEezOFcz3qQQ6g1QGx78VtxOczPhKlkuBhi5+devuVwWADI6xVM95bwpyB
+         vlIxjkBNBtVwIu6thVkz76qmS43mgWZC+puy+qYaNl2imsHtktGMhPrvdRt6XHNNQJY7
+         5HbB1EveR0rVe7j60dkSnlEOfx3UzU83RuQFNgnMFFAxC41ZoyW8XBSXXoOuOQaBEkgF
+         J4fvoqIh9SYdSXpQMD7cI/tpUy2zAU9v0mKFsEG1ZMncoemDQgN2K7bHwQPJZlnjxIH2
+         3pxQ==
+X-Gm-Message-State: ACrzQf1JKG8wh4LvoKOdZk5Hz8Z414KSIF8nLZLT7g5feK3/FtOasc2g
+        MIphYxyBBcI7K3OGyVW/8rab9syMdmCZCEzg
+X-Google-Smtp-Source: AMsMyM6nnzBqqNgXI4gji6wb85EIugA2Xx0/R9s+b4EB0LiYTgv8l9A0h4fHGaMz/H4d3a0h+nN40A==
+X-Received: by 2002:a17:907:3dab:b0:783:4b01:1ffe with SMTP id he43-20020a1709073dab00b007834b011ffemr8705761ejc.107.1664604114054;
+        Fri, 30 Sep 2022 23:01:54 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id u4-20020aa7d884000000b00456cbd8c65bsm2973434edq.6.2022.09.30.23.01.51
+        by smtp.gmail.com with ESMTPSA id v18-20020a50d092000000b00457e5a760e3sm2957519edd.54.2022.09.30.23.01.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Sep 2022 23:01:51 -0700 (PDT)
+        Fri, 30 Sep 2022 23:01:53 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, tariqt@nvidia.com, moshe@nvidia.com,
         saeedm@nvidia.com
-Subject: [patch net-next 03/13] net: devlink: move port_type_netdev_checks() call to __devlink_port_type_set()
-Date:   Sat,  1 Oct 2022 08:01:35 +0200
-Message-Id: <20221001060145.3199964-4-jiri@resnulli.us>
+Subject: [patch net-next 04/13] net: devlink: take RTNL in port_fill() function only if it is not held
+Date:   Sat,  1 Oct 2022 08:01:36 +0200
+Message-Id: <20221001060145.3199964-5-jiri@resnulli.us>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20221001060145.3199964-1-jiri@resnulli.us>
 References: <20221001060145.3199964-1-jiri@resnulli.us>
@@ -72,103 +72,171 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-As __devlink_port_type_set() is going to be called directly from netdevice
-notifier event handle in one of the follow-up patches, move the
-port_type_netdev_checks() call there.
+Follow-up patch is going to introduce a netdevice notifier event
+processing which is called with RTNL mutex held. Processing of this will
+eventually lead to call to port_notity() and port_fill() which currently
+takes RTNL mutex internally. So as a temporary solution, propagate a
+bool indicating if the mutex is already held. This will go away in one
+of the follow-up patches.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- net/core/devlink.c | 63 ++++++++++++++++++++++++----------------------
- 1 file changed, 33 insertions(+), 30 deletions(-)
+ net/core/devlink.c | 46 +++++++++++++++++++++++++++++++---------------
+ 1 file changed, 31 insertions(+), 15 deletions(-)
 
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 218cb1cdb50e..e49ec10d613f 100644
+index e49ec10d613f..ee14520d4690 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -9994,33 +9994,6 @@ void devlink_port_unregister(struct devlink_port *devlink_port)
- }
- EXPORT_SYMBOL_GPL(devlink_port_unregister);
- 
--static void __devlink_port_type_set(struct devlink_port *devlink_port,
--				    enum devlink_port_type type,
--				    void *type_dev)
--{
--	ASSERT_DEVLINK_PORT_REGISTERED(devlink_port);
--
--	if (type == DEVLINK_PORT_TYPE_NOTSET)
--		devlink_port_type_warn_schedule(devlink_port);
--	else
--		devlink_port_type_warn_cancel(devlink_port);
--
--	spin_lock_bh(&devlink_port->type_lock);
--	devlink_port->type = type;
--	switch (type) {
--	case DEVLINK_PORT_TYPE_ETH:
--		devlink_port->type_eth.netdev = type_dev;
--		break;
--	case DEVLINK_PORT_TYPE_IB:
--		devlink_port->type_ib.ibdev = type_dev;
--		break;
--	default:
--		break;
--	}
--	spin_unlock_bh(&devlink_port->type_lock);
--	devlink_port_notify(devlink_port, DEVLINK_CMD_PORT_NEW);
--}
--
- static void devlink_port_type_netdev_checks(struct devlink_port *devlink_port,
- 					    struct net_device *netdev)
+@@ -1278,7 +1278,8 @@ devlink_nl_port_function_attrs_put(struct sk_buff *msg, struct devlink_port *por
+ static int devlink_nl_port_fill(struct sk_buff *msg,
+ 				struct devlink_port *devlink_port,
+ 				enum devlink_command cmd, u32 portid, u32 seq,
+-				int flags, struct netlink_ext_ack *extack)
++				int flags, struct netlink_ext_ack *extack,
++				bool rtnl_held)
  {
-@@ -10058,6 +10031,38 @@ static void devlink_port_type_netdev_checks(struct devlink_port *devlink_port,
+ 	struct devlink *devlink = devlink_port->devlink;
+ 	void *hdr;
+@@ -1293,7 +1294,8 @@ static int devlink_nl_port_fill(struct sk_buff *msg,
+ 		goto nla_put_failure;
+ 
+ 	/* Hold rtnl lock while accessing port's netdev attributes. */
+-	rtnl_lock();
++	if (!rtnl_held)
++		rtnl_lock();
+ 	spin_lock_bh(&devlink_port->type_lock);
+ 	if (nla_put_u16(msg, DEVLINK_ATTR_PORT_TYPE, devlink_port->type))
+ 		goto nla_put_failure_type_locked;
+@@ -1321,7 +1323,8 @@ static int devlink_nl_port_fill(struct sk_buff *msg,
+ 			goto nla_put_failure_type_locked;
  	}
+ 	spin_unlock_bh(&devlink_port->type_lock);
+-	rtnl_unlock();
++	if (!rtnl_held)
++		rtnl_unlock();
+ 	if (devlink_nl_port_attrs_put(msg, devlink_port))
+ 		goto nla_put_failure;
+ 	if (devlink_nl_port_function_attrs_put(msg, devlink_port, extack))
+@@ -1336,14 +1339,15 @@ static int devlink_nl_port_fill(struct sk_buff *msg,
+ 
+ nla_put_failure_type_locked:
+ 	spin_unlock_bh(&devlink_port->type_lock);
+-	rtnl_unlock();
++	if (!rtnl_held)
++		rtnl_unlock();
+ nla_put_failure:
+ 	genlmsg_cancel(msg, hdr);
+ 	return -EMSGSIZE;
  }
  
-+static void __devlink_port_type_set(struct devlink_port *devlink_port,
-+				    enum devlink_port_type type,
-+				    void *type_dev)
+-static void devlink_port_notify(struct devlink_port *devlink_port,
+-				enum devlink_command cmd)
++static void __devlink_port_notify(struct devlink_port *devlink_port,
++				  enum devlink_command cmd, bool rtnl_held)
+ {
+ 	struct devlink *devlink = devlink_port->devlink;
+ 	struct sk_buff *msg;
+@@ -1358,7 +1362,8 @@ static void devlink_port_notify(struct devlink_port *devlink_port,
+ 	if (!msg)
+ 		return;
+ 
+-	err = devlink_nl_port_fill(msg, devlink_port, cmd, 0, 0, 0, NULL);
++	err = devlink_nl_port_fill(msg, devlink_port, cmd, 0, 0, 0, NULL,
++				   rtnl_held);
+ 	if (err) {
+ 		nlmsg_free(msg);
+ 		return;
+@@ -1368,6 +1373,12 @@ static void devlink_port_notify(struct devlink_port *devlink_port,
+ 				0, DEVLINK_MCGRP_CONFIG, GFP_KERNEL);
+ }
+ 
++static void devlink_port_notify(struct devlink_port *devlink_port,
++				enum devlink_command cmd)
 +{
-+	struct net_device *netdev = type_dev;
-+
-+	ASSERT_DEVLINK_PORT_REGISTERED(devlink_port);
-+
-+	if (type == DEVLINK_PORT_TYPE_NOTSET) {
-+		devlink_port_type_warn_schedule(devlink_port);
-+	} else {
-+		devlink_port_type_warn_cancel(devlink_port);
-+		if (type == DEVLINK_PORT_TYPE_ETH && netdev)
-+			devlink_port_type_netdev_checks(devlink_port, netdev);
-+	}
-+
-+	spin_lock_bh(&devlink_port->type_lock);
-+	devlink_port->type = type;
-+	switch (type) {
-+	case DEVLINK_PORT_TYPE_ETH:
-+		devlink_port->type_eth.netdev = netdev;
-+		break;
-+	case DEVLINK_PORT_TYPE_IB:
-+		devlink_port->type_ib.ibdev = type_dev;
-+		break;
-+	default:
-+		break;
-+	}
-+	spin_unlock_bh(&devlink_port->type_lock);
-+	devlink_port_notify(devlink_port, DEVLINK_CMD_PORT_NEW);
++	__devlink_port_notify(devlink_port, cmd, false);
 +}
 +
- /**
-  *	devlink_port_type_eth_set - Set port type to Ethernet
-  *
-@@ -10067,9 +10072,7 @@ static void devlink_port_type_netdev_checks(struct devlink_port *devlink_port,
- void devlink_port_type_eth_set(struct devlink_port *devlink_port,
- 			       struct net_device *netdev)
+ static void devlink_rate_notify(struct devlink_rate *devlink_rate,
+ 				enum devlink_command cmd)
  {
--	if (netdev)
--		devlink_port_type_netdev_checks(devlink_port, netdev);
--	else
-+	if (!netdev)
- 		dev_warn(devlink_port->devlink->dev,
+@@ -1531,7 +1542,7 @@ static int devlink_nl_cmd_port_get_doit(struct sk_buff *skb,
+ 
+ 	err = devlink_nl_port_fill(msg, devlink_port, DEVLINK_CMD_PORT_NEW,
+ 				   info->snd_portid, info->snd_seq, 0,
+-				   info->extack);
++				   info->extack, false);
+ 	if (err) {
+ 		nlmsg_free(msg);
+ 		return err;
+@@ -1561,7 +1572,8 @@ static int devlink_nl_cmd_port_get_dumpit(struct sk_buff *msg,
+ 						   DEVLINK_CMD_NEW,
+ 						   NETLINK_CB(cb->skb).portid,
+ 						   cb->nlh->nlmsg_seq,
+-						   NLM_F_MULTI, cb->extack);
++						   NLM_F_MULTI, cb->extack,
++						   false);
+ 			if (err) {
+ 				devl_unlock(devlink);
+ 				devlink_put(devlink);
+@@ -1773,7 +1785,8 @@ static int devlink_port_new_notify(struct devlink *devlink,
+ 	}
+ 
+ 	err = devlink_nl_port_fill(msg, devlink_port, DEVLINK_CMD_NEW,
+-				   info->snd_portid, info->snd_seq, 0, NULL);
++				   info->snd_portid, info->snd_seq, 0, NULL,
++				   false);
+ 	if (err)
+ 		goto out;
+ 
+@@ -10033,7 +10046,7 @@ static void devlink_port_type_netdev_checks(struct devlink_port *devlink_port,
+ 
+ static void __devlink_port_type_set(struct devlink_port *devlink_port,
+ 				    enum devlink_port_type type,
+-				    void *type_dev)
++				    void *type_dev, bool rtnl_held)
+ {
+ 	struct net_device *netdev = type_dev;
+ 
+@@ -10060,7 +10073,7 @@ static void __devlink_port_type_set(struct devlink_port *devlink_port,
+ 		break;
+ 	}
+ 	spin_unlock_bh(&devlink_port->type_lock);
+-	devlink_port_notify(devlink_port, DEVLINK_CMD_PORT_NEW);
++	__devlink_port_notify(devlink_port, DEVLINK_CMD_PORT_NEW, rtnl_held);
+ }
+ 
+ /**
+@@ -10077,7 +10090,8 @@ void devlink_port_type_eth_set(struct devlink_port *devlink_port,
  			 "devlink port type for port %d set to Ethernet without a software interface reference, device type not supported by the kernel?\n",
  			 devlink_port->index);
+ 
+-	__devlink_port_type_set(devlink_port, DEVLINK_PORT_TYPE_ETH, netdev);
++	__devlink_port_type_set(devlink_port, DEVLINK_PORT_TYPE_ETH, netdev,
++				false);
+ }
+ EXPORT_SYMBOL_GPL(devlink_port_type_eth_set);
+ 
+@@ -10090,7 +10104,8 @@ EXPORT_SYMBOL_GPL(devlink_port_type_eth_set);
+ void devlink_port_type_ib_set(struct devlink_port *devlink_port,
+ 			      struct ib_device *ibdev)
+ {
+-	__devlink_port_type_set(devlink_port, DEVLINK_PORT_TYPE_IB, ibdev);
++	__devlink_port_type_set(devlink_port, DEVLINK_PORT_TYPE_IB, ibdev,
++				false);
+ }
+ EXPORT_SYMBOL_GPL(devlink_port_type_ib_set);
+ 
+@@ -10101,7 +10116,8 @@ EXPORT_SYMBOL_GPL(devlink_port_type_ib_set);
+  */
+ void devlink_port_type_clear(struct devlink_port *devlink_port)
+ {
+-	__devlink_port_type_set(devlink_port, DEVLINK_PORT_TYPE_NOTSET, NULL);
++	__devlink_port_type_set(devlink_port, DEVLINK_PORT_TYPE_NOTSET, NULL,
++				false);
+ }
+ EXPORT_SYMBOL_GPL(devlink_port_type_clear);
+ 
 -- 
 2.37.1
 
