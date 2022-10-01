@@ -2,71 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E2DED5F1BE8
-	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 12:57:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DFDC5F1C05
+	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 13:45:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229574AbiJAK5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Oct 2022 06:57:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58076 "EHLO
+        id S229606AbiJALpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Oct 2022 07:45:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiJAK5W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 06:57:22 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B451FE0B
-        for <netdev@vger.kernel.org>; Sat,  1 Oct 2022 03:57:21 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id sd10so13771766ejc.2
-        for <netdev@vger.kernel.org>; Sat, 01 Oct 2022 03:57:21 -0700 (PDT)
+        with ESMTP id S229631AbiJALpI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 07:45:08 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 445F511C3D;
+        Sat,  1 Oct 2022 04:45:04 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id b2so13862366eja.6;
+        Sat, 01 Oct 2022 04:45:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=Dv3nH3BcBCs0ykNI472gOzF7Cz2mnKNGWzzpIQZlWPk=;
-        b=P2nyEkAKnM0n7AV32wacJXwlrtktXZ2fwyBsHDjEn8nOet3o2FrN7f7tpaW2wlPUja
-         mKWEv0B7cv1ejPsR7MwuGV7S+5dfu6yDWeZFcH07u0jQy7LxMdHzpP2vNczaYI9t7wBB
-         S2rk8RWXjZA2XIAU/nQ/fy/18UgRHdCfpwDg8cdroUOn9QyIwjLLGgpWBY/p9R16ReFW
-         0AgakbTfVtFZVxjP6nH536zYBFJjvtHA0f9LX3CmzJ2PEiNKt+USTFL4u9k0s5rnWPRv
-         PNCE6iIXq9EXsGVSdu8XwqsiDlsl0w7SyBQY6FMa1wXnAipNUl+Nr5xla+2pWJx7Dc1N
-         e9CA==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=Mr7X2WnFPUKxw49YLL1+0tXDMwH946yH3S0ttQDPmfQ=;
+        b=odTgrjAO/C/Ba+rKFx4oG8ymfKRZ3xdBqsQN8G2NnRG3lAmrOKrC22fIwPgeird/BP
+         KkG+D6DmcTiPXyyUIwoUDl+ZwzeocB+hXLWM8NHISWQCfrTbXgf4YXZaHOqLY+dl09+n
+         7KTXaV98iYTW/IDi/wLatEDZe3JupQc0SzmQqkKbu8I4/CPWD8/DRb4jVJzOWoaEadRM
+         K1wEDxMvR6bIT18uGIMXH2C1Y5kkY9DyFp0qCEeivH3X9FhxJJfVy7/Xy5S+svlxT9cR
+         HfSk6awiuN9nHgWtDCL94Z6jrU+UFIfIAPL3kAHSdy2fg+4Fpqnf7uO5Ckp3f+uXeKIr
+         xbBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=Dv3nH3BcBCs0ykNI472gOzF7Cz2mnKNGWzzpIQZlWPk=;
-        b=SFizjMdf0bqFan+lE452UoP1xSVXRC+1cxulyYZkZGGI8DXb/3jnvl6g1OcZyDHfau
-         HpS55B+DT5bdm3MTJVkzN2r7VnsB7PsqpTfCafLS5yi8jviyRMUwUODdRNpI+nZLpQte
-         gkk9jJo711iJlurR/fVou1T+CT36S9Y1pkDEjRKTmz5GaKqKl77lhphn7TDl+9J/AWzp
-         mlnpdqOvJbzeywHD7aAr87rzr88Kj4Ysto9+YUovpRMV1V8EqFVVKTD0T2gi1j2VWCiR
-         7mEOD2bqoJmkaCBA61w/5/OKbn/PQw0HYkl+i1S1sf+EY54K9MowBKzUUyRNCSlMBzxm
-         /FmQ==
-X-Gm-Message-State: ACrzQf2fRNQsrmBtuyHDCBI6yx4ecAYudPPsQjhOyBZOKOS+Lka40+Ot
-        +iMGmVTzCUaqdjWaHLjglgs=
-X-Google-Smtp-Source: AMsMyM4lGkghEdyNrEvWnHapL3zuQj725eZLxThV+/b9PTYRgizJttqb/oH83CWXXu/CFR7YXksyFg==
-X-Received: by 2002:a17:906:fe46:b0:730:ca2b:cb7b with SMTP id wz6-20020a170906fe4600b00730ca2bcb7bmr9668235ejb.703.1664621840124;
-        Sat, 01 Oct 2022 03:57:20 -0700 (PDT)
-Received: from satellite.lan ([2001:470:70b8:1337:82ac:8598:1a68:da6b])
-        by smtp.gmail.com with ESMTPSA id 26-20020a170906329a00b0077f5e96129fsm2522059ejw.158.2022.10.01.03.57.18
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=Mr7X2WnFPUKxw49YLL1+0tXDMwH946yH3S0ttQDPmfQ=;
+        b=L7CJCzFsf4t9060HvvKAKcf3sSC3awwsReeiJKcOD1qliDox6Xq0Y/n3iqYf6A6c0F
+         X5xqIYs5Xsm+P46rB218aux+ZbkfRMGT5RUj1iBSXRLhYWdowPjRmC3ePyrvdPIvCyGi
+         Dczyl97ER68+J6Bl3zDNDaJ6uXcxS1EYVLoPU1P1QeejCXb5gWpKcwhB4Jb3MzZTZ77Z
+         TPQIXTySK1slgA0TOuyq+VR5RiR65RfnYJ8fi4Bn+EE5HDUXJxDpSrVWbIZ8EK5CaohG
+         3W3pIy+Z9W1ZKcFF/6/e62AoXLnkci2r8fj+VCwNMhokpl2vCnvpjYGyR/O0DPltRbKa
+         JAiQ==
+X-Gm-Message-State: ACrzQf2XueYoySE3cl6ws1DK0XicFFxF0bJ5t/LVrKLTjH9o1ysYr6sK
+        GOrelWpnnA74CWP1C11CDPk=
+X-Google-Smtp-Source: AMsMyM4LewyPrAYgiZ3F0uulV2j5Jrz6BmalD7P4y+9jUOX2982b4b/uLYG3BQaC7dJfgMDWDNDSQQ==
+X-Received: by 2002:a17:907:70b:b0:740:ef93:2ffb with SMTP id xb11-20020a170907070b00b00740ef932ffbmr9219256ejb.93.1664624702600;
+        Sat, 01 Oct 2022 04:45:02 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id la11-20020a170907780b00b00741a0c3f4cdsm2581140ejc.189.2022.10.01.04.45.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 01 Oct 2022 03:57:19 -0700 (PDT)
-From:   Maxim Mikityanskiy <maxtram95@gmail.com>
-To:     M Chetan Kumar <m.chetan.kumar@intel.com>,
-        Intel Corporation <linuxwwan@intel.com>
-Cc:     Loic Poulain <loic.poulain@linaro.org>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Maxim Mikityanskiy <maxtram95@gmail.com>
-Subject: [PATCH net] net: wwan: iosm: Call mutex_init before locking it
-Date:   Sat,  1 Oct 2022 13:57:13 +0300
-Message-Id: <20221001105713.160666-1-maxtram95@gmail.com>
-X-Mailer: git-send-email 2.37.3
+        Sat, 01 Oct 2022 04:45:01 -0700 (PDT)
+Date:   Sat, 1 Oct 2022 14:44:58 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     jianghaoran <jianghaoran@kylinos.cn>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH V2] taprio: Set the value of picos_per_byte before fill
+ sched_entry
+Message-ID: <20221001114458.mjt3qkollggmgdwo@skbuf>
+References: <20220928065830.1544954-1-jianghaoran@kylinos.cn>
+ <20220928065830.1544954-1-jianghaoran@kylinos.cn>
+ <20221001080626.464349-1-jianghaoran@kylinos.cn>
+ <20221001080626.464349-1-jianghaoran@kylinos.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221001080626.464349-1-jianghaoran@kylinos.cn>
+ <20221001080626.464349-1-jianghaoran@kylinos.cn>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,41 +75,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-wwan_register_ops calls wwan_create_default_link, which ends up in the
-ipc_wwan_newlink callback that locks ipc_wwan->if_mutex. However, this
-mutex is not yet initialized by that point. Fix it by moving mutex_init
-above the wwan_register_ops call. This also makes the order of
-operations in ipc_wwan_init symmetric to ipc_wwan_deinit.
+Hi Jianghao,
 
-Fixes: 83068395bbfc ("net: iosm: create default link via WWAN core")
-Signed-off-by: Maxim Mikityanskiy <maxtram95@gmail.com>
----
- drivers/net/wwan/iosm/iosm_ipc_wwan.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+On Sat, Oct 01, 2022 at 04:06:26PM +0800, jianghaoran wrote:
+> If the value of picos_per_byte is set after fill sched_entry,
+> as a result, the min_duration calculated by length_to_duration is 0,
+> and the validity of the input interval cannot be judged,
+> too small intervals couldn't allow any packet to be transmitted.
+> It will appear like commit b5b73b26b3ca ("taprio:
+> Fix allowing too small intervals") described problem.
+> Here is a further modification of this problem.
+> 
+> example configuration which will not be able to transmit:
+> 
+> tc qdisc replace dev enp5s0f0 parent root handle 100 taprio \
+>               num_tc 3 \
+>               map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
+>               queues 1@0 1@1 2@2 \
+>               base-time  1528743495910289987 \
+>               sched-entry S 01 9 \
+> 	      sched-entry S 02 9 \
+> 	      sched-entry S 04 9 \
+>               clockid CLOCK_TAI
+> 
+> Fixes: b5b73b26b3ca ("taprio: Fix allowing too small intervals")
+> Signed-off-by: jianghaoran <jianghaoran@kylinos.cn>
+> ---
 
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_wwan.c b/drivers/net/wwan/iosm/iosm_ipc_wwan.c
-index 27151148c782..4712f01a7e33 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_wwan.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_wwan.c
-@@ -323,15 +323,16 @@ struct iosm_wwan *ipc_wwan_init(struct iosm_imem *ipc_imem, struct device *dev)
- 	ipc_wwan->dev = dev;
- 	ipc_wwan->ipc_imem = ipc_imem;
- 
-+	mutex_init(&ipc_wwan->if_mutex);
-+
- 	/* WWAN core will create a netdev for the default IP MUX channel */
- 	if (wwan_register_ops(ipc_wwan->dev, &iosm_wwan_ops, ipc_wwan,
- 			      IP_MUX_SESSION_DEFAULT)) {
-+		mutex_destroy(&ipc_wwan->if_mutex);
- 		kfree(ipc_wwan);
- 		return NULL;
- 	}
- 
--	mutex_init(&ipc_wwan->if_mutex);
--
- 	return ipc_wwan;
- }
- 
--- 
-2.37.3
+I think this is just a symptomatic treatment of a bigger problem with
+the solution Vinicius tried to implement.
 
+One can still change the qdisc on an interface whose link is down, and
+the determination logic will still be bypassed, thereby allowing the 9
+ns schedule intervals to be accepted as valid.
+
+Is your problem that the 9 ns intervals will kill the kernel due to the
+frequent hrtimers, or that no packets will be dequeued from the qdisc?
+
+If the latter, I was working on a feature called queueMaxSDU, where one
+can limit the MTU per traffic class. Packets exceeding the max MTU are
+dropped at the enqueue() level (therefore, before being accepted into
+the Qdisc queues). The problem here, really, is that we accept packets
+in enqueue() which will never be eligible in dequeue(). We have the
+exact same problem with gates which are forever closed (in your own
+example, that would be gates 3 and higher).
+
+Currently, I only added support for user space to input queueMaxSDU into
+the kernel over netlink, as well as for the basic qdisc_drop() mechanism
+based on skb->len. But I was thinking that the kernel should have a
+mechanism to automatically reduce the queueMaxSDU to an even lower value
+than specified by the user, if the gate intervals don't accept MTU sized
+packets. The "operational" queueMaxSDU is determined by the current link
+speed and the smallest contiguous interval corresponding to each traffic
+class.
+
+In fact, if you search for vsc9959_tas_guard_bands_update(), you'll see
+most of the logic already being written, but just for an offloading
+device driver. I was thinking I should generalize this logic and push it
+into taprio.
+
+If your problem is the former (9ns hrtimers kill the kernel, how do we
+avoid them?), then it's pretty hard to make a judgement that works for
+all link speeds (taprio will still accept the interval as valid for a
+100Gbps interface, because theoretically, the transmission time of
+ETH_ZLEN bytes is still below 9 ns. I don't know how one can realistically
+deal with that in a generic way.
+
+Given that it's so easy to bypass taprio's restriction by having the
+link down, I don't think it makes much sense to keep pretending that it
+works, and submit this as a bug fix :)
+
+I was going to move vsc9959_tas_guard_bands_update() into taprio anyway,
+although I'm not sure if in this kernel development cycle. If you're
+interested, I can keep you on CC.
