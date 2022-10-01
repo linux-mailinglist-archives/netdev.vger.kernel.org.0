@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C2A165F1D20
-	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 17:01:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F12CA5F1D3B
+	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 17:39:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229798AbiJAPBP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Oct 2022 11:01:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49692 "EHLO
+        id S229625AbiJAPjH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Oct 2022 11:39:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229789AbiJAPA2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 11:00:28 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2042.outbound.protection.outlook.com [40.107.223.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9265DFF0;
-        Sat,  1 Oct 2022 07:59:39 -0700 (PDT)
+        with ESMTP id S229603AbiJAPjE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 11:39:04 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2080.outbound.protection.outlook.com [40.107.237.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D49394056E;
+        Sat,  1 Oct 2022 08:39:03 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=K7psDqoiLrowETsTxbDZucWtUpb2mUHcWHZ/Um/FFlTgW9TE0mUJSXbFci8emjjpSghiTUGZ2Dn/tUzaes7Rb0My7JWngbxTkf1sHltjM+WOczbq2XZANY/7wogff69h4tm1SSBqQg0bNgN7bw39xUwVOAaWsi4wNgzGjmH2VdisWIbe0rWEnwHgqMUm3Pl14cvcpohmyLD9nAbsqIF8XHNyBxHZJWnIXOh9JAEux/GKWdb0D8FL3czFEs78ApsQMvGhMNnw6HuItZlod22QPrWOm9npCLGhkjU2bdQwGlZEyTDBYU8s2KYQ9VSGjpxy318COXOXCeSNDwmMrZgNoQ==
+ b=K3/3qaofO0bPOolyxZz/VCTciEqlYAjXR7jHc6OnMHVMc0sABxzCKPo6LtNROaUZgpfhqjRPgRDesq5c2araJnSXBBwY7a4nEv1n64mEzBhZKpwVZ5vWQUqPb0uRbUymi4DGRl4gx0Dg1cPDuBKIVTbBHoKt8DiqMbcE8Nx+MnEp+eFHSyjoJMNMkVJVGAqHrNZXOZq369ByHPIJqD0DxLQySlemIH9xYT/PH/8emkLSRkVOKMOpFN/tP+mI3eGig57fsUj8VjcHWs9n7WbUnNa5B8mtzAsaAr7Sc2OxyrhIIc6oTxN/mn7qQgXJHzkXshnx76wvvowbAcFEhJdkbQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2QUVH/3JWJBP1Si9vvcJT87VjRoHeZjTl52mdbSoxgw=;
- b=TE+6YkcHhrwW7w898bcmvKzB+S22NxNzgcAzMmZW7bt/MCR2rcZ3wl59BorYqp5+jmeO0ijo04ANNL3vLCGfMTvQLWqx0pktHJM5CmB1BcCeVDITUxEv33C5ULtWNnTSgsFwxuHBPPfsaFoH0zojjzeWUkLcwS78DSuKP/pqbu8iwCWZE7fyZSf932f35MPTyuAsMWc69PmdKMp2HFAAWFMqU7JQjjI3fq0fq3RnUe1H0p289VcyRA4xL0dDgWa4/bgGz3kj9vAN9HlHK3piCMQ7QHz+EztZVp2BH/53eXT/oJvCX7v7zxEYMoVZrMu48R7C7AfDEYxVhQRny5u5BQ==
+ bh=cyKks1BOcDw6FiARq/bviVPjXI8r6mHUo7uFPUGgDiM=;
+ b=AoCYpg9zB3IRB4AXBh1ue8EwQMC7id8zQvMgI5zq8gs0/j8f/8+05kOEX3Tpyv2qlkAskZIO6rS7Uwn646lN5sAdmUFS/dQUPihNAinmPEdAqCrNZhB/2TWpuOvKhwnpBzTKDPkmzGc6r83jWt34yaan5pdLJux4diV80WXZcdRSU2hvyb+4fEnIRAA8ZLt4lKCweE4nu/B75zeITD0O/JoK9+J9N2BjdGMyzjFzd/umAHYNrcB9imMs/RCf0NGiLvGhqwTDVAaOEiZqSnOtuM/qUvnbDXLEy3N68wk/xxTrWwZDvmFNrRd84kQuoRsTi0+3vMDR+s07Va9UI5ZmoQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2QUVH/3JWJBP1Si9vvcJT87VjRoHeZjTl52mdbSoxgw=;
- b=USMNnR/qN7Z3fY3yO1iVK0D94ithP1oQyipv/JjHMJYXs2hFjMPbTrJ1Urjea4PfrBLjf5OJbo58XXEgJN7IZIWLTNCGNd9h8c0+fIxuuddXqudo75M/Sh/IBf6CXpkWxbw64fviflvVYbo66GFFzCSXmwss2FkleHVNM8EdhUGLDTEToy6eocHwdHE4HZZIePGcNLdT/iUXCmvQoFVysoVLhhJasAatfkazxswEB0lcQJ++zGp3ChX+lpCoxtQogPCa9amyEuX3RcvrxvudqcBnLZ/4mt8n53MxTykkxSMlYu0VZa3Ba/vv1HfK3Tkaseq7lor0YfMAyb11kBCf1g==
+ bh=cyKks1BOcDw6FiARq/bviVPjXI8r6mHUo7uFPUGgDiM=;
+ b=HTySrFSDXTDsAakvTPk2v02Ivu0mzS9B1NbkFM7vpfU9wZB4rjzPCM9q3zGunu4DYfuKveTd/K/2BDXdAQ5O4QSGhS1FsJWUiLefI4LBXDdEmaV+/7PZMAAe+z+R+WC5Y8pBM9XBlZwxYT0mZ9KYJFY5HXQWi36WbkWgN94dr8u4Ld+6UvUARDdi8Kp8PHXLxelDSH1QSRgLB+87npOrzMd92CE8L0P67Y2TdX0zNrGAd13PrwhngB0YH76AXlvZ7RgV19mja3AtjHnN7COoo4Ap0f4eANkviFf20NMzqnZt88n4F+tYFsaYtuPHBVG0z5VxhyVUdFLFhi4JXhwT5A==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by SA0PR12MB4397.namprd12.prod.outlook.com (2603:10b6:806:93::10) with
+ by BL1PR12MB5221.namprd12.prod.outlook.com (2603:10b6:208:30b::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.24; Sat, 1 Oct
- 2022 14:59:37 +0000
+ 2022 15:39:01 +0000
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::8f0b:1a79:520a:64c5]) by CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::8f0b:1a79:520a:64c5%7]) with mapi id 15.20.5676.024; Sat, 1 Oct 2022
- 14:59:37 +0000
-Date:   Sat, 1 Oct 2022 17:59:30 +0300
+ 15:39:01 +0000
+Date:   Sat, 1 Oct 2022 18:38:54 +0300
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     Hans Schultz <netdev@kapio-technology.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
@@ -76,64 +76,65 @@ Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org,
         bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH iproute2-next 1/2] bridge: link: enable MacAuth/MAB
+Subject: Re: [PATCH iproute2-next 2/2] bridge: fdb: enable FDB blackhole
  feature
-Message-ID: <YzhV0hU9v7oQ+g+K@shredder>
+Message-ID: <YzhfDgqjBvhqNUHX@shredder>
 References: <20220929152137.167626-1-netdev@kapio-technology.com>
+ <20220929152137.167626-2-netdev@kapio-technology.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220929152137.167626-1-netdev@kapio-technology.com>
-X-ClientProxiedBy: VE1PR03CA0037.eurprd03.prod.outlook.com
- (2603:10a6:803:118::26) To CY5PR12MB6179.namprd12.prod.outlook.com
+In-Reply-To: <20220929152137.167626-2-netdev@kapio-technology.com>
+X-ClientProxiedBy: VI1PR0701CA0046.eurprd07.prod.outlook.com
+ (2603:10a6:800:90::32) To CY5PR12MB6179.namprd12.prod.outlook.com
  (2603:10b6:930:24::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|SA0PR12MB4397:EE_
-X-MS-Office365-Filtering-Correlation-Id: 06cc9ebb-d8e4-4ec6-098b-08daa3bd8ef6
+X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|BL1PR12MB5221:EE_
+X-MS-Office365-Filtering-Correlation-Id: 152f15be-7377-43d7-3f71-08daa3c31025
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: c5Tp3T8kDJxs/a2oW3BY0X2cul3FxQtdDqvPcOp2MZdDRCHqkQMztlRK/TITHLDuq3eujk1X1EDT9YPdV6XoeOL17HGpZidaW+hbOyInJIKGQKF4R8CvUQ4q99u8GLgSd2yBrjOo5HhSvQ577KScf0lTAMvmwx9AGWNRPjX9aHcJDjZm8jYIYysOZQpDe6PO8Syh/7FjQVWgZWaoaCmnzNv04skyEDZqDSv60pqBfl6s2JYNhV2nQZ3BN624djLTYPWu8D48c6U0lL+UYQ5nRPTKIpDO6DS66Wo2pBH3bygnoBs4zJYAV4rbFCiZVkh8CsuFdVm+Gzm4bX4jzXcCFOlzB2WtguGhx3CN+khajmCOdOtQOf7Dk/aPJXaeXWEDp0OUBfdCMWiZaNZuMOVLLC4fZ1EI/CtHuxGv0BUQxX7u+X+1YmthXlcl+0cC04+koiq2G+PvJPlUBKLMABZpYbLPArsk2GijfkRUBaqX4MBlTJiqWMuZmEq8ZF3XRuYw3seJRZaeJO4vFs3VEd3iJIksod/TH69sJsm5rzqy5RWALzpPWcAz3zD4qUCHkLYbiBbGzpprt1KyXYJMLQRJGZLx5bdp040Jq07VUOWFbvd5YjEsasbKBRG5cr8PwQfDYMhN4AeVG+S/Nrhq69aBOeZQ3rwI+ylwt8ZTqRI8i3i9LG0S59g+ohm09CkNgMZqv1CVQkPd7f2BccSgLLBmAA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(366004)(396003)(39860400002)(376002)(346002)(136003)(451199015)(86362001)(8676002)(38100700002)(66946007)(66476007)(66556008)(4326008)(33716001)(6916009)(54906003)(316002)(7416002)(41300700001)(8936002)(30864003)(5660300002)(7406005)(83380400001)(2906002)(186003)(66574015)(478600001)(6486002)(9686003)(26005)(6512007)(6506007)(6666004);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 1kYjBKQMZlwpRYt3F8IgL8ePMEwBmM3rgXuu5PDyZxaZPVTNHr7ZHU/uE6LlciVJHIi2qHVNL5rtUWmtjJ8U5I9pwByTsCTow4H7RhaKWCkWaQake4VfB7n78WK8WV3rKMDdUvQqiA5LMxHax3Rv66whqNHCdUuLZGoYa+cIjLqsszzR0PZ+Wdcf9e382c+psMyn47DNiImunnp7HBG7T0YvrMxlsDJo5IZke0ozBYp6MQyW7m4+4WVeq8ra3qyCdpOKDHvakZJFhKi1Vh/y0lImWUTk3Sxptp+12edXaynXPkhlQA4bkzdZB4/krpC49xS5mALcZUVsU1fMYQrM/1328qqJVP1XOD0jMlSlxJ19eFgXklv7+2jRQ9mPSTQZvZ1z1etu/QclboYZZ7sLi2QKEY2tlawVPYUxrm2DXnVOnM11qXM176TtzPAkU/ROA+cZwXPTIeijVrbCesbq/hYDSw35/UNw8Jx3TwdYhAf9CSrapwwtVVNx7CvFtI1M4h0XHvGBNfqIy4i0OB4bzxZlvCJxIbiTDpxDIk46sRn5FqZRkcneKndQcpOsIEIpMBn0fMTYLMo7sH7VTl2EiayJG2Gn5tCtZOma7j1o3KHi1Z1eOZ6uUrCja+M1+y30ZUcNhzHZpw5JZZHE0Z8v8k9aeLYoQ5l/wc3ixxXg4uTWSqJSTGQ372Sg/vQNRYu5Lbzy5tA7zdOsxAHxrSpZBQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(366004)(136003)(396003)(376002)(39860400002)(346002)(451199015)(86362001)(478600001)(6486002)(66946007)(8676002)(66556008)(66476007)(4326008)(41300700001)(7406005)(316002)(54906003)(6916009)(5660300002)(33716001)(7416002)(8936002)(38100700002)(186003)(6506007)(6666004)(9686003)(6512007)(26005)(83380400001)(2906002)(66574015);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QBqNhlpY6s5QyPFUBT197d6z9B8uc5pvisnSDHk3RsLpI6i1hazFqv3I4bIb?=
- =?us-ascii?Q?HPnFHYXdjSMduZ3pxoyNMb67T5KHarBFa4qLINWLfpA+vttMGyRaIj3KeZEq?=
- =?us-ascii?Q?Ucw9OitVlG5ajZ2M6YZR8bwl+NfStdtX9HSi/mKqqJPbTjALk3TzCV67fAZf?=
- =?us-ascii?Q?0/crP1gXfS3Ol6CNpYmXP2jyG7o/3+sa5dR0mFCkHKsb58jFPdRKHKbO2/ex?=
- =?us-ascii?Q?zcBj2qjohWo3sX56Yon1T8G8rRxX1iIlSdHITxPD0vNJCSbAl2xmSXd87nZD?=
- =?us-ascii?Q?8HOTbSiscFbXYAPRH3dMW6DHB2d7Z9TbBmsBHL1zameE0xfLyklxM4iOUd1s?=
- =?us-ascii?Q?Qn66zy1wOGBE74EzfVkXWNShWY6xSnurahGiN/HGd1v6VJoVlqnKX91qztZF?=
- =?us-ascii?Q?stbwY0QfuqmTor4r29WvnFeYSzGnROOTh8VlF0kQsUjpnGeLCxTP5UvO81l7?=
- =?us-ascii?Q?i77NO5At+VTheqzjtjPktOP2L7E2OoZwyDVYLaQHGQ4yYpcwvT8Ak3B8z8os?=
- =?us-ascii?Q?B/Xk5MvwL3/TgLSY1XISwCvV26byW/xfV8uCOV3ReAOU8gDuT83qJ+ejj5nG?=
- =?us-ascii?Q?uaBj9RUJUE90V5Wd3vQ92m6tdGxTXdoe5zTePLB2IoB+4/tmGc1EKpaVYnkU?=
- =?us-ascii?Q?Uw9ZhhO2iMBe3pZTVYajn3ggALkz6gEVOlOo8h2901Kjn9nTGBnof3pRjTYa?=
- =?us-ascii?Q?313GdMT5tekaX+c/ctROSi8r5+Gn8wcpukNau9Xev67dQXaGJLr2av9isLRz?=
- =?us-ascii?Q?hkoXwQqBRt+BYT0ozO77fLlZj22WyGwXfnhDgW2MhbUd9zgX9j03VyT3E389?=
- =?us-ascii?Q?9FVskDGYkNNLL1nhS0EvjYgs53nber6FBOBk8kmsDLs1CRNUiNvCP3RhhobN?=
- =?us-ascii?Q?d0jjQdh+ffCPA031ypXm0QNR01KWr9faRUkTwh6G25RVAnNyr9mHLthX5KAw?=
- =?us-ascii?Q?y1x+7iqpslEeEf09n39d5W4iMY3PbidiGnluo8zASV0VcyfQ4zc+bfw2X6T1?=
- =?us-ascii?Q?KoEBBHtiso2CQTWT0vI/LiAIeLpJZMtH4u3egmBYYSep4KtmYmhz7vJ9fuWv?=
- =?us-ascii?Q?OKY8FZKqyCmGeZAKYyibtUoYMvuerD8Waag7Znuq/uYB4kfOcJuFNZn7yG3o?=
- =?us-ascii?Q?4+lmyzzr/53U9nkGQAjd1va4rxAUCuaP9Zhg7AOZtEMDI5KwTzzjDJOOsUeg?=
- =?us-ascii?Q?f7kAE0MfXhE7SpqfWUHkyEPENZFX2Y/TWQU32ssu5MgEg1DQZt604tQyjoGa?=
- =?us-ascii?Q?JSe1q7jWOGM8CyvK2jBq7jdtBoHI5vWZKA71pIVwPBDPdhUf/Na8Ck9PCbnG?=
- =?us-ascii?Q?bq5ihmGIWBxTOOHWPjqZdfHyHoANaTo7Jjnivqw2CMSrs7HA5mljmU4zpd3M?=
- =?us-ascii?Q?wsI41ZBiUBtRidlQFKm0JwHxnEGhI+J5jwc2Cmwcu+ByYqILTr44FpvsMc//?=
- =?us-ascii?Q?Qd5zOcAzNOF2P7CWYEOypBi0p5nw3p6Fl6vwWQjrMNvY+9vb3WTt+m5aIM5m?=
- =?us-ascii?Q?+sULAD9kOQPRa0ALShCiftDr161NloYvY6IHb+Dm6cNqjsQ5g+eQ5n67JFx9?=
- =?us-ascii?Q?y29S/ywp9lfySFjIXGpsXD7UJvtJguE6ThO7NtJs?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pM1KdrDYzrgSiJtNS0oND06t9ev7G8eQ3qLrHyBdNhvVjAM/ZWZ3gOPXi2re?=
+ =?us-ascii?Q?QNyIGtxD1Gx5WaNHV1GDevrc948uTTNQ1Lt5T7s65Kqgx7QX9kMTSwFqOHWT?=
+ =?us-ascii?Q?4/qbmSShRiEoTCz+tGmvwZ1/d216G3Ld+XDneBqjmYJkJUlwC9oLWjWzCu5m?=
+ =?us-ascii?Q?Y2Pt6/Jz5SOc8gqTDSeAvGjQqbJCviaQxELQcmKz4H4GkzpV1vD/5FAJB+GN?=
+ =?us-ascii?Q?ZlafxgifAU4dJXE5SpASYK4Sldl7Vo9T9MbjMbJtthxUSVRAldDYm3ngKq0t?=
+ =?us-ascii?Q?sNYI/7YugQCob5fY6NdRUg2fYXRXVvv0dPAePA8n6ZBlGvMizU0fukzSTUGc?=
+ =?us-ascii?Q?uwmEcNPDGHpVjTJSoNNCKOYE1cQekO+8NYgiU2S3dul5DXM7aFIWdRf2mvdR?=
+ =?us-ascii?Q?QupzT2oOqewpCzbkGF06RlahCmgvrPk5VLGcIPsGS8QcC2Sl6My1KTxEGoKG?=
+ =?us-ascii?Q?FbmcBC3ZuDE0aCqrJTGSiI0n3q6ylbAJzWf8bNNRnhtL0TicebO9sp9QEp7h?=
+ =?us-ascii?Q?64Makp0/FNHsk9yzzxG81JWv1Nfqefyn9hw/ZjKBgL2XAD7jIH+oCn2crwlt?=
+ =?us-ascii?Q?cdxzeGuBR900KvB3ZqXaY5v/4sBBJxaWB+a/h7SaCmHChndO7tloxysT78yR?=
+ =?us-ascii?Q?gAQX57Dgycm+ni4HYAo0m89ausxs4ujsKr/4fGMK+5IC84+NNqqH8qGu//Ns?=
+ =?us-ascii?Q?up8aeprkj3Nj+Mg/4nNJnYwvhF3Xdt2gajcxiwljGBw7gzyeRjPNJZPN3JCJ?=
+ =?us-ascii?Q?hMGh+4uwuvZX4tqVDQAViouQ0/xXFGbVwuygLZscfr1n9f1GUE7w0Xlm/UBm?=
+ =?us-ascii?Q?fzFgWTsJVkj5roKYILymeQ/R7KnCNeRueDHwoRm/0F6xWBWpHSyZqWbndt77?=
+ =?us-ascii?Q?UvEMn2IEEHlZc1W0LbfkzLKcu+9KpYeTcUXhVv6waM0wAadMOUazrXLWKEVB?=
+ =?us-ascii?Q?kORqSawJDFJqiidrOqZZECg0KzYHmKlhudvqFFsxjMpxTZyl6Y72OII9Cnl9?=
+ =?us-ascii?Q?UyYklFOn4wMD/A5GEbb40VDj5dvo6Fg9CjZJLbV5OdQrXkyUNo78iT7WZkpd?=
+ =?us-ascii?Q?X61ND1tKJ6aCsk8d0MJiG99pk7CmtIZ6XOIgMOBiL5vJKH8I6nOzO1RgxuBs?=
+ =?us-ascii?Q?FaIEJn6hc8+EQd0cAG8siUeEIaV1iiRf/sbjFNRoE0upZlhHDuNrNZxcQCOd?=
+ =?us-ascii?Q?24R60HTWydu8iZazly1kOGyUwzMMNQ9PTbeZq9NkGAsAhq1pbWTSttNmOVWV?=
+ =?us-ascii?Q?3wzDusuJYe7ra/CUc1xTb4vgmalrnMCUNgcqzMpM3LgvrFqSlXmCiqE81TMB?=
+ =?us-ascii?Q?RhJhTeU3or8/zNjRV4vN1FFuI5oNtWuZYpV/kXHQjeQ1IaB6i03NYDc8OgKy?=
+ =?us-ascii?Q?LnL6GzEa5dDORcKdPZTwYi95ZKai7MFRUHAKLp/gta8sBI37PIoy2nYuOraB?=
+ =?us-ascii?Q?WqxtzV2/fpcKWo1lMNEufo4s+EN5X5UfDuWJsonWlIrWrA+TK50MD36zNM9i?=
+ =?us-ascii?Q?pMq3qYzkLAyCb6Yrnh8VngdKWSzEBuKpydLQ2ndYxcPaA+Au3yWGqJZuJlDX?=
+ =?us-ascii?Q?AIaCDpmEPqHZ3KnyRQiuAQZlX6+kiOcqWEVcR7xG?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 06cc9ebb-d8e4-4ec6-098b-08daa3bd8ef6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 152f15be-7377-43d7-3f71-08daa3c31025
 X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Oct 2022 14:59:37.2106
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Oct 2022 15:39:01.2735
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: d9S1+D9n8LhnvMoSzxOop7gbQvU9VWg7tLuzvkAqzxTCxjPF5+JUNq+T3DNNuqF1rSAuV8aI/1uus5IQ79Gj4w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4397
+X-MS-Exchange-CrossTenant-UserPrincipalName: gCqWlzNW1Vs459NiGTABipFxE0b+2WrHauJ+mrNcm7pBBL3+pe9rxWT67K/VEuVMNyBgJJiroeqeoN/ODEo2cg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5221
 X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -144,322 +145,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 29, 2022 at 05:21:36PM +0200, Hans Schultz wrote:
-> The MAB feature can be enabled on a locked port with the command:
-> bridge link set dev <DEV> mab on
+On Thu, Sep 29, 2022 at 05:21:37PM +0200, Hans Schultz wrote:
+> Block traffic to a specific host with the command:
+> bridge fdb add <MAC> vlan <vid> dev br0 blackhole
 
-Please provide regular and JSON output in the commit message.
+Please add an example with regular and JSON output.
 
+> 
+> The blackhole FDB entries can be added, deleted and replaced with
+> ordinary FDB entries.
 > 
 > Signed-off-by: Hans Schultz <netdev@kapio-technology.com>
 > ---
->  bridge/fdb.c                   | 17 +++++++++++++++--
->  bridge/link.c                  | 21 ++++++++++++++++++---
->  include/uapi/linux/if_link.h   |  1 +
->  include/uapi/linux/neighbour.h |  7 ++++++-
-
-IIRC, in the past David asked to either not send the uAPI files or send
-them as a first patch which he then uses as a hint to sync the files
-himself.
-
->  ip/iplink_bridge_slave.c       | 16 +++++++++++++---
->  man/man8/bridge.8              | 10 ++++++++++
->  man/man8/ip-link.8.in          |  8 ++++++++
->  7 files changed, 71 insertions(+), 9 deletions(-)
+>  bridge/fdb.c                   | 7 ++++++-
+>  include/uapi/linux/neighbour.h | 4 ++++
+>  man/man8/bridge.8              | 6 ++++++
+>  3 files changed, 16 insertions(+), 1 deletion(-)
 > 
 > diff --git a/bridge/fdb.c b/bridge/fdb.c
-> index 5f71bde0..0fbe9bd3 100644
+> index 0fbe9bd3..2160f1c2 100644
 > --- a/bridge/fdb.c
 > +++ b/bridge/fdb.c
-> @@ -93,7 +93,7 @@ static int state_a2n(unsigned int *s, const char *arg)
->  	return 0;
->  }
->  
-> -static void fdb_print_flags(FILE *fp, unsigned int flags)
-> +static void fdb_print_flags(FILE *fp, unsigned int flags, __u8 ext_flags)
->  {
->  	open_json_array(PRINT_JSON,
->  			is_json_context() ?  "flags" : "");
-> @@ -116,6 +116,9 @@ static void fdb_print_flags(FILE *fp, unsigned int flags)
+> @@ -38,7 +38,7 @@ static void usage(void)
+>  	fprintf(stderr,
+>  		"Usage: bridge fdb { add | append | del | replace } ADDR dev DEV\n"
+>  		"              [ self ] [ master ] [ use ] [ router ] [ extern_learn ]\n"
+> -		"              [ sticky ] [ local | static | dynamic ] [ vlan VID ]\n"
+> +		"              [ sticky ] [ local | static | dynamic ] [blackhole] [ vlan VID ]\n"
+
+[ blackhole ]
+
+>  		"              { [ dst IPADDR ] [ port PORT] [ vni VNI ] | [ nhid NHID ] }\n"
+>  		"	       [ via DEV ] [ src_vni VNI ]\n"
+>  		"       bridge fdb [ show [ br BRDEV ] [ brport DEV ] [ vlan VID ]\n"
+> @@ -116,6 +116,9 @@ static void fdb_print_flags(FILE *fp, unsigned int flags, __u8 ext_flags)
 >  	if (flags & NTF_STICKY)
 >  		print_string(PRINT_ANY, NULL, "%s ", "sticky");
 >  
-> +	if (ext_flags & NTF_EXT_LOCKED)
-> +		print_string(PRINT_ANY, NULL, "%s ", "locked");
+> +	if (ext_flags & NTF_EXT_BLACKHOLE)
+> +		print_string(PRINT_ANY, NULL, "%s ", "blackhole");
 > +
->  	close_json_array(PRINT_JSON, NULL);
->  }
-
-This is a separate change. Make one patch for the MAB option and another
-for the new "locked" FDB flag.
-
+>  	if (ext_flags & NTF_EXT_LOCKED)
+>  		print_string(PRINT_ANY, NULL, "%s ", "locked");
 >  
-> @@ -144,6 +147,7 @@ int print_fdb(struct nlmsghdr *n, void *arg)
->  	struct ndmsg *r = NLMSG_DATA(n);
->  	int len = n->nlmsg_len;
->  	struct rtattr *tb[NDA_MAX+1];
-> +	__u32 ext_flags = 0;
->  	__u16 vid = 0;
->  
->  	if (n->nlmsg_type != RTM_NEWNEIGH && n->nlmsg_type != RTM_DELNEIGH) {
-> @@ -170,6 +174,9 @@ int print_fdb(struct nlmsghdr *n, void *arg)
->  	parse_rtattr(tb, NDA_MAX, NDA_RTA(r),
->  		     n->nlmsg_len - NLMSG_LENGTH(sizeof(*r)));
->  
-> +	if (tb[NDA_FLAGS_EXT])
-> +		ext_flags = rta_getattr_u32(tb[NDA_FLAGS_EXT]);
-> +
->  	if (tb[NDA_VLAN])
->  		vid = rta_getattr_u16(tb[NDA_VLAN]);
->  
-> @@ -266,7 +273,7 @@ int print_fdb(struct nlmsghdr *n, void *arg)
->  	if (show_stats && tb[NDA_CACHEINFO])
->  		fdb_print_stats(fp, RTA_DATA(tb[NDA_CACHEINFO]));
->  
-> -	fdb_print_flags(fp, r->ndm_flags);
-> +	fdb_print_flags(fp, r->ndm_flags, ext_flags);
->  
->  
->  	if (tb[NDA_MASTER])
-> @@ -414,6 +421,7 @@ static int fdb_modify(int cmd, int flags, int argc, char **argv)
->  	char *endptr;
->  	short vid = -1;
->  	__u32 nhid = 0;
-> +	__u32 ext_flags = 0;
->  
->  	while (argc > 0) {
->  		if (strcmp(*argv, "dev") == 0) {
-> @@ -527,6 +535,11 @@ static int fdb_modify(int cmd, int flags, int argc, char **argv)
->  	if (dst_ok)
->  		addattr_l(&req.n, sizeof(req), NDA_DST, &dst.data, dst.bytelen);
->  
-> +	if (ext_flags &&
-> +	    addattr_l(&req.n, sizeof(req), NDA_FLAGS_EXT, &ext_flags,
-> +		      sizeof(ext_flags)) < 0)
-> +		return -1;
-> +
-
-I believe this belongs with the "blackhole" patch.
-
->  	if (vid >= 0)
->  		addattr16(&req.n, sizeof(req), NDA_VLAN, vid);
->  	if (nhid > 0)
-> diff --git a/bridge/link.c b/bridge/link.c
-> index 3810fa04..dd69d7c3 100644
-> --- a/bridge/link.c
-> +++ b/bridge/link.c
-> @@ -181,9 +181,14 @@ static void print_protinfo(FILE *fp, struct rtattr *attr)
->  		if (prtb[IFLA_BRPORT_ISOLATED])
->  			print_on_off(PRINT_ANY, "isolated", "isolated %s ",
->  				     rta_getattr_u8(prtb[IFLA_BRPORT_ISOLATED]));
-> -		if (prtb[IFLA_BRPORT_LOCKED])
-> -			print_on_off(PRINT_ANY, "locked", "locked %s ",
-> -				     rta_getattr_u8(prtb[IFLA_BRPORT_LOCKED]));
-> +		if (prtb[IFLA_BRPORT_LOCKED]) {
-> +			if (prtb[IFLA_BRPORT_MAB] && rta_getattr_u8(prtb[IFLA_BRPORT_MAB]))
-> +				print_on_off(PRINT_ANY, "locked mab", "locked mab %s ",
-> +					     rta_getattr_u8(prtb[IFLA_BRPORT_LOCKED]));
-> +			else
-> +				print_on_off(PRINT_ANY, "locked", "locked %s ",
-> +					     rta_getattr_u8(prtb[IFLA_BRPORT_LOCKED]));
-> +		}
-
-These a separate flags and need to be dumped independently. The fact
-that MAB can only be enabled when the port is locked is enforced by the
-kernel.
-
->  	} else
->  		print_stp_state(rta_getattr_u8(attr));
->  }
-> @@ -281,6 +286,7 @@ static void usage(void)
->  		"                               [ vlan_tunnel {on | off} ]\n"
->  		"                               [ isolated {on | off} ]\n"
->  		"                               [ locked {on | off} ]\n"
-> +		"                               [ mab {on | off} ]\n"
->  		"                               [ hwmode {vepa | veb} ]\n"
->  		"                               [ backup_port DEVICE ] [ nobackup_port ]\n"
->  		"                               [ self ] [ master ]\n"
-> @@ -312,6 +318,7 @@ static int brlink_modify(int argc, char **argv)
->  	__s8 bcast_flood = -1;
->  	__s8 mcast_to_unicast = -1;
->  	__s8 locked = -1;
-> +	__s8 macauth = -1;
->  	__s8 isolated = -1;
->  	__s8 hairpin = -1;
->  	__s8 bpdu_guard = -1;
-> @@ -437,6 +444,11 @@ static int brlink_modify(int argc, char **argv)
->  			locked = parse_on_off("locked", *argv, &ret);
->  			if (ret)
->  				return ret;
-> +		} else if (strcmp(*argv, "mab") == 0) {
-> +			NEXT_ARG();
-> +			macauth = parse_on_off("mab", *argv, &ret);
-> +			if (ret)
-> +				return ret;
->  		} else if (strcmp(*argv, "backup_port") == 0) {
->  			NEXT_ARG();
->  			backup_port_idx = ll_name_to_index(*argv);
-> @@ -520,6 +532,9 @@ static int brlink_modify(int argc, char **argv)
->  	if (locked >= 0)
->  		addattr8(&req.n, sizeof(req), IFLA_BRPORT_LOCKED, locked);
->  
-> +	if (macauth >= 0)
-> +		addattr8(&req.n, sizeof(req), IFLA_BRPORT_MAB, macauth);
-> +
->  	if (backup_port_idx != -1)
->  		addattr32(&req.n, sizeof(req), IFLA_BRPORT_BACKUP_PORT,
->  			  backup_port_idx);
-> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-> index 7494cffb..58a002de 100644
-> --- a/include/uapi/linux/if_link.h
-> +++ b/include/uapi/linux/if_link.h
-> @@ -559,6 +559,7 @@ enum {
->  	IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT,
->  	IFLA_BRPORT_MCAST_EHT_HOSTS_CNT,
->  	IFLA_BRPORT_LOCKED,
-> +	IFLA_BRPORT_MAB,
->  	__IFLA_BRPORT_MAX
->  };
->  #define IFLA_BRPORT_MAX (__IFLA_BRPORT_MAX - 1)
+> @@ -493,6 +496,8 @@ static int fdb_modify(int cmd, int flags, int argc, char **argv)
+>  			req.ndm.ndm_flags |= NTF_EXT_LEARNED;
+>  		} else if (matches(*argv, "sticky") == 0) {
+>  			req.ndm.ndm_flags |= NTF_STICKY;
+> +		} else if (matches(*argv, "blackhole") == 0) {
+> +			ext_flags |= NTF_EXT_BLACKHOLE;
+>  		} else {
+>  			if (strcmp(*argv, "to") == 0)
+>  				NEXT_ARG();
 > diff --git a/include/uapi/linux/neighbour.h b/include/uapi/linux/neighbour.h
-> index a998bf76..4dda051b 100644
+> index 4dda051b..cc7d540e 100644
 > --- a/include/uapi/linux/neighbour.h
 > +++ b/include/uapi/linux/neighbour.h
-> @@ -52,7 +52,8 @@ enum {
->  #define NTF_STICKY	(1 << 6)
->  #define NTF_ROUTER	(1 << 7)
+> @@ -54,6 +54,7 @@ enum {
 >  /* Extended flags under NDA_FLAGS_EXT: */
-> -#define NTF_EXT_MANAGED	(1 << 0)
-> +#define NTF_EXT_MANAGED		(1 << 0)
-> +#define NTF_EXT_LOCKED		(1 << 1)
+>  #define NTF_EXT_MANAGED		(1 << 0)
+>  #define NTF_EXT_LOCKED		(1 << 1)
+> +#define NTF_EXT_BLACKHOLE	(1 << 2)
 >  
 >  /*
 >   *	Neighbor Cache Entry States.
-> @@ -86,6 +87,10 @@ enum {
->   * NTF_EXT_MANAGED flagged neigbor entries are managed by the kernel on behalf
->   * of a user space control plane, and automatically refreshed so that (if
->   * possible) they remain in NUD_REACHABLE state.
+> @@ -91,6 +92,9 @@ enum {
+>   * NTF_EXT_LOCKED flagged FDB entries are placeholder entries used with the
+>   * locked port feature, that ensures that an entry exists while at the same
+>   * time dropping packets on ingress with src MAC and VID matching the entry.
 > + *
-> + * NTF_EXT_LOCKED flagged FDB entries are placeholder entries used with the
-> + * locked port feature, that ensures that an entry exists while at the same
-> + * time dropping packets on ingress with src MAC and VID matching the entry.
+> + * NTF_EXT_BLACKHOLE flagged FDB entries ensure that no forwarding is allowed
+> + * from any port to the destination MAC, VID pair associated with it.
 >   */
 >  
 >  struct nda_cacheinfo {
-> diff --git a/ip/iplink_bridge_slave.c b/ip/iplink_bridge_slave.c
-> index 98d17213..0c0894eb 100644
-> --- a/ip/iplink_bridge_slave.c
-> +++ b/ip/iplink_bridge_slave.c
-> @@ -44,6 +44,7 @@ static void print_explain(FILE *f)
->  		"			[ vlan_tunnel {on | off} ]\n"
->  		"			[ isolated {on | off} ]\n"
->  		"			[ locked {on | off} ]\n"
-> +		"                       [ mab {on | off} ]\n"
->  		"			[ backup_port DEVICE ] [ nobackup_port ]\n"
->  	);
->  }
-> @@ -284,9 +285,14 @@ static void bridge_slave_print_opt(struct link_util *lu, FILE *f,
->  		print_on_off(PRINT_ANY, "isolated", "isolated %s ",
->  			     rta_getattr_u8(tb[IFLA_BRPORT_ISOLATED]));
->  
-> -	if (tb[IFLA_BRPORT_LOCKED])
-> -		print_on_off(PRINT_ANY, "locked", "locked %s ",
-> -			     rta_getattr_u8(tb[IFLA_BRPORT_LOCKED]));
-> +	if (tb[IFLA_BRPORT_LOCKED]) {
-> +		if (tb[IFLA_BRPORT_MAB] && rta_getattr_u8(tb[IFLA_BRPORT_MAB]))
-> +			print_on_off(PRINT_ANY, "locked mab", "locked mab %s ",
-> +				     rta_getattr_u8(tb[IFLA_BRPORT_LOCKED]));
-> +		else
-> +			print_on_off(PRINT_ANY, "locked", "locked %s ",
-> +				     rta_getattr_u8(tb[IFLA_BRPORT_LOCKED]));
-> +	}
-
-Same comment as before.
-
->  
->  	if (tb[IFLA_BRPORT_BACKUP_PORT]) {
->  		int backup_p = rta_getattr_u32(tb[IFLA_BRPORT_BACKUP_PORT]);
-> @@ -411,6 +417,10 @@ static int bridge_slave_parse_opt(struct link_util *lu, int argc, char **argv,
->  			NEXT_ARG();
->  			bridge_slave_parse_on_off("locked", *argv, n,
->  						  IFLA_BRPORT_LOCKED);
-> +		} else if (matches(*argv, "mab") == 0) {
-> +			NEXT_ARG();
-> +			bridge_slave_parse_on_off("mab", *argv, n,
-> +						  IFLA_BRPORT_MAB);
->  		} else if (matches(*argv, "backup_port") == 0) {
->  			int ifindex;
->  
 > diff --git a/man/man8/bridge.8 b/man/man8/bridge.8
-> index d4df772e..40250477 100644
+> index 40250477..af2e7db2 100644
 > --- a/man/man8/bridge.8
 > +++ b/man/man8/bridge.8
-> @@ -54,6 +54,7 @@ bridge \- show / manipulate bridge addresses and devices
->  .BR vlan_tunnel " { " on " | " off " } ] [ "
->  .BR isolated " { " on " | " off " } ] [ "
->  .BR locked " { " on " | " off " } ] [ "
-> +.BR mab " { " on " | " off " } ] [ "
->  .B backup_port
->  .IR  DEVICE " ] ["
->  .BR nobackup_port " ] [ "
-> @@ -580,6 +581,15 @@ The common use is that hosts are allowed access through authentication
->  with the IEEE 802.1X protocol or based on whitelists or like setups.
->  By default this flag is off.
->  
-> +.TP
-> +.RB "mab on " or " mab off "
-> +Enables or disables the MAB/MacAuth feature. This feature can only be
-> +activated on a port that is in locked mode, and when enabled it extends the
+> @@ -699,6 +699,12 @@ controller learnt dynamic entry. Kernel will not age such an entry.
+>  - this entry will not change its port due to learning.
+>  .sp
 
-s/activated/enabled/
-
-> +locked port feature so that MAC address can get access through a locked
-
-s/MAC address/a host/ ?
-
-> +port based on acceptlists, thus it is a much simpler procedure for a
-> +device to become authorized than f.ex. the 802.1X protocol, and is used
-> +for devices that are not capable of password or crypto based authorization
-> +methods.
-
-This is a high level description of the option, but it is missing the
-part that ties it to the "locked" FDB entries.
-
-Speaking of which, the "locked" flag needs to be described in
-man/man8/bridge.8 (in a different patch)
+Need to patch the "SYNOPSIS" section as well
 
 >  
->  .TP
->  .BI backup_port " DEVICE"
-> diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
-> index fc9d62fc..187ca7ca 100644
-> --- a/man/man8/ip-link.8.in
-> +++ b/man/man8/ip-link.8.in
-> @@ -2454,6 +2454,9 @@ the following additional arguments are supported:
->  .BR isolated " { " on " | " off " }"
->  ] [
->  .BR locked " { " on " | " off " }"
-> +] [
-> +.BR mab " { " on " | " off " }"
-> +] [
->  .BR backup_port " DEVICE"
->  ] [
->  .BR nobackup_port " ]"
-> @@ -2560,6 +2563,11 @@ default this flag is off.
->  behind the port cannot communicate through the port unless a FDB entry
->  representing the host is in the FDB. By default this flag is off.
->  
-> +.BR mab " { " on " | " off " }"
-> +- enables or disables the MAB/MacAuth feature on a locked port. It is
-> +thus possible for a device to gain authorization on a locked port based
-> +on acceptlists.
+> +.B blackhole
+> +- this is an entry that denies all forwarding from any port to a destination
+> +matching the entry. It can be added by userspace, but the flag is mostly set
+> +from a hardware driver.
 
-Why not just copy-paste the previous description?
+I'm not sure the last sentence belongs in the man page. We have no way
+of knowing if it is true and it can change with time.
 
+How about:
+
+"this entry will silently discard all matching packets. The entry must
+be added as a local permanent entry."
+
+> +.sp
 > +
->  .BI backup_port " DEVICE"
->  - if the port loses carrier all traffic will be redirected to the
->  configured backup port
+>  .in -8
+>  The next command line parameters apply only
+>  when the specified device
 > -- 
 > 2.34.1
 > 
