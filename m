@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C10025F81B2
-	for <lists+netdev@lfdr.de>; Sat,  8 Oct 2022 02:57:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A4FB5F81B6
+	for <lists+netdev@lfdr.de>; Sat,  8 Oct 2022 02:57:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229675AbiJHA5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 20:57:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34416 "EHLO
+        id S229702AbiJHA5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 20:57:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229660AbiJHA5U (ORCPT
+        with ESMTP id S229687AbiJHA5U (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 20:57:20 -0400
 Received: from mailgw.kylinos.cn (unknown [124.126.103.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BD2611C277;
-        Fri,  7 Oct 2022 17:57:08 -0700 (PDT)
-X-UUID: 2e6f80898a5c41f8866d6d9bed4e872a-20221001
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E6D2125858;
+        Fri,  7 Oct 2022 17:57:09 -0700 (PDT)
+X-UUID: fe8c2c4b80e74fd98e579588e1c09b39-20221001
 X-Spam-Fingerprint: 0
 X-GW-Reason: 13103
 X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HMTDkurrpnIDopoHlrqHmoLg=
@@ -22,24 +22,24 @@ X-Content-Feature: ica/max.line-size 85
         audit/email.address 1
         dict/adv 1
         meta/cnt.alert 1
-X-CPASD-INFO: 7554b5489029491fa74e15d78a97ff87@gIVvVI9nYmhlUHSFg3x8oIFoZJVhYYS
-        GeptZZ5SWZFeVhH5xTV5uYFV9fWtVYV9dYVR6eGxQYmBgZFJ4i3-XblBgXoZgUZB3hndvVJJjZA==
-X-CLOUD-ID: 7554b5489029491fa74e15d78a97ff87
-X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,OB:0.0,URL:-5,TVAL:169.
+X-CPASD-INFO: f5736cd0f30642d4ba2a96f8f9695e82@r4VxU2OVkmCSU3KCg3WvboKSYpFpYoa
+        HqHNWamOVZFKVhH5xTV5uYFV9fWtVYV9dYVR6eGxQYmBgZFJ4i3-XblBhXoZgUZB3tXdxU2eRlA==
+X-CLOUD-ID: f5736cd0f30642d4ba2a96f8f9695e82
+X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,OB:1.0,URL:-5,TVAL:169.
         0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:165.0,IP:-2.0,MAL:-5.0,PHF:-5.0,PHC:-5
-        .0,SPF:4.0,EDMS:-5,IPLABEL:-2.0,FROMTO:1,AD:0,FFOB:0.0,CFOB:0.0,SPC:0,SIG:-5,
-        AUF:22,DUF:6125,ACD:97,DCD:97,SL:0,EISP:0,AG:0,CFC:0.427,CFSR:0.076,UAT:0,RAF
+        .0,SPF:4.0,EDMS:-5,IPLABEL:-2.0,FROMTO:1,AD:0,FFOB:1.0,CFOB:1.0,SPC:0,SIG:-5,
+        AUF:23,DUF:6126,ACD:97,DCD:97,SL:0,EISP:0,AG:0,CFC:0.427,CFSR:0.076,UAT:0,RAF
         :0,IMG:-5.0,DFA:0,DTA:0,IBL:-2.0,ADI:-5,SBL:0,REDM:0,REIP:0,ESB:0,ATTNUM:0,EA
         F:0,CID:-5.0,VERSION:2.3.17
-X-CPASD-ID: 2e6f80898a5c41f8866d6d9bed4e872a-20221001
+X-CPASD-ID: fe8c2c4b80e74fd98e579588e1c09b39-20221001
 X-CPASD-BLOCK: 1000
 X-CPASD-STAGE: 1
-X-UUID: 2e6f80898a5c41f8866d6d9bed4e872a-20221001
+X-UUID: fe8c2c4b80e74fd98e579588e1c09b39-20221001
 X-User: jianghaoran@kylinos.cn
 Received: from localhost.localdomain [(183.242.54.212)] by mailgw
         (envelope-from <jianghaoran@kylinos.cn>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES128-GCM-SHA256 128/128)
-        with ESMTP id 1843868145; Sat, 01 Oct 2022 15:53:20 +0800
+        with ESMTP id 1005103208; Sat, 01 Oct 2022 15:55:44 +0800
 From:   jianghaoran <jianghaoran@kylinos.cn>
 To:     jianghaoran@kylinos.cn
 Cc:     davem@davemloft.net, edumazet@google.com, jhs@mojatatu.com,
@@ -48,8 +48,8 @@ Cc:     davem@davemloft.net, edumazet@google.com, jhs@mojatatu.com,
         vinicius.gomes@intel.com, xiyou.wangcong@gmail.com,
         vladimir.oltean@nxp.com
 Subject: [PATCH V2] taprio: Set the value of picos_per_byte before fill sched_entry
-Date:   Sat,  1 Oct 2022 15:48:47 +0800
-Message-Id: <20221001074847.446858-1-jianghaoran@kylinos.cn>
+Date:   Sat,  1 Oct 2022 15:51:11 +0800
+Message-Id: <20221001075111.449321-1-jianghaoran@kylinos.cn>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220928065830.1544954-1-jianghaoran@kylinos.cn>
 References: <20220928065830.1544954-1-jianghaoran@kylinos.cn>
