@@ -2,79 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A84055F1FB3
-	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 23:16:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 490C25F1FCC
+	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 23:33:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229547AbiJAVP6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Oct 2022 17:15:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43380 "EHLO
+        id S229511AbiJAVc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Oct 2022 17:32:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbiJAVP5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 17:15:57 -0400
-Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 71A372D1FE
-        for <netdev@vger.kernel.org>; Sat,  1 Oct 2022 14:15:54 -0700 (PDT)
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 291LFTri015900;
-        Sat, 1 Oct 2022 23:15:29 +0200
-Date:   Sat, 1 Oct 2022 23:15:29 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>
-Subject: Re: [PATCH net-next] once: add DO_ONCE_SLOW() for sleepable contexts
-Message-ID: <20221001211529.GC15441@1wt.eu>
-References: <20221001205102.2319658-1-eric.dumazet@gmail.com>
+        with ESMTP id S229453AbiJAVc5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 17:32:57 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A6383B965;
+        Sat,  1 Oct 2022 14:32:55 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id ABDF018847C2;
+        Sat,  1 Oct 2022 21:32:52 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 9DC972500015;
+        Sat,  1 Oct 2022 21:32:52 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id 97C309EC0002; Sat,  1 Oct 2022 21:32:52 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221001205102.2319658-1-eric.dumazet@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Date:   Sat, 01 Oct 2022 23:32:52 +0200
+From:   netdev@kapio-technology.com
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Hans Schultz <schultz.hans@gmail.com>,
+        Joachim Wiberg <troglobit@gmail.com>,
+        Amit Cohen <amcohen@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH iproute2-next 1/2] bridge: link: enable MacAuth/MAB
+ feature
+In-Reply-To: <YzhV0hU9v7oQ+g+K@shredder>
+References: <20220929152137.167626-1-netdev@kapio-technology.com>
+ <YzhV0hU9v7oQ+g+K@shredder>
+User-Agent: Gigahost Webmail
+Message-ID: <00f5b024d242b948e1e198dfe95d73bc@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
-
-On Sat, Oct 01, 2022 at 01:51:02PM -0700, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On 2022-10-01 16:59, Ido Schimmel wrote:
+> On Thu, Sep 29, 2022 at 05:21:36PM +0200, Hans Schultz wrote:
+>> The MAB feature can be enabled on a locked port with the command:
+>> bridge link set dev <DEV> mab on
 > 
-> Christophe Leroy reported a ~80ms latency spike
-> happening at first TCP connect() time.
-
-Seeing Christophe's message also made me wonder if we didn't break
-something back then :-/
-
-> This is because __inet_hash_connect() uses get_random_once()
-> to populate a perturbation table which became quite big
-> after commit 4c2c8f03a5ab ("tcp: increase source port perturb table to 2^16")
+> Please provide regular and JSON output in the commit message.
 > 
-> get_random_once() uses DO_ONCE(), which block hard irqs for the duration
-> of the operation.
-> 
-> This patch adds DO_ONCE_SLOW() which uses a mutex instead of a spinlock
-> for operations where we prefer to stay in process context.
 
-That's a nice improvement I think. I was wondering if, for this special
-case, we *really* need an exclusive DO_ONCE(). I mean, we're getting
-random bytes, we really do not care if two CPUs change them in parallel
-provided that none uses them before the table is entirely filled. Thus
-that could probably end up as something like:
+How would the JSON version look like in this example?
 
-    if (!atomic_read(&done)) {
-        get_random_bytes(array);
-        atomic_set(&done, 1);
-    }
-
-In any case, your solution remains cleaner and more robust, though.
-
-Thanks,
-Willy
