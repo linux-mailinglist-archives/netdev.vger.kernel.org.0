@@ -2,72 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 96F1A5F17D0
-	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 03:01:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D00245F17F8
+	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 03:07:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233009AbiJABBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 21:01:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37504 "EHLO
+        id S233129AbiJABHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 21:07:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232909AbiJABAu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 21:00:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6377962C
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 17:59:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CB5660BC7
-        for <netdev@vger.kernel.org>; Sat,  1 Oct 2022 00:59:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3115C433D6;
-        Sat,  1 Oct 2022 00:59:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664585983;
-        bh=V1d8o4cuVLbPRw3xs5Z0YD2UtCx1P6AZ5xZiEnBBt6o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rQia9DIMizXdYpp8B0wQ4TjMIwUZHOtvbSegVmtezKXkGPhd81dciY97dGFRj460O
-         3+j3yYxbp1yvE82M3YKbGtV6Akfz8VTnrDFM9+T4vgoWYSIAs5fKd5L3wHpr6oz9Ja
-         RM5cGTEjXxCZ1GAEcSBpx9+8EcjwleZq3Mh+aeAHsoftNohpb9GkP7iG0CoT/Yb4kh
-         3i4tXcJ1cAmQ0jDc6v5CBQO1fPoidpMoVDSzFNg6Krcli6MTESlUu/vXraqmbWuQOp
-         XKMuhAL3KkdC5TxcBhIlU2pfjO21W/MgDZeDKZMiEVKVEnXdztim0XuJFK4rc+xF3d
-         +WQzzQt6hgkvg==
-Date:   Fri, 30 Sep 2022 17:59:42 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Yang <mmyangfl@gmail.com>
-Cc:     Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S233165AbiJABGq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 21:06:46 -0400
+Received: from mail-pf1-x462.google.com (mail-pf1-x462.google.com [IPv6:2607:f8b0:4864:20::462])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90E83141B13
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 18:02:39 -0700 (PDT)
+Received: by mail-pf1-x462.google.com with SMTP id a80so5612881pfa.4
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 18:02:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:message-id:date:subject:cc:to:from
+         :dkim-signature:x-gm-message-state:from:to:cc:subject:date;
+        bh=975yxtLp4mG5EqALM6a2Zs4xoum0EiIXsp3+otaUT9U=;
+        b=UuMxt0VyjhB+pwIgd9c739LGhTsPS8qhkHdjrxtNb+RK3S1zCWh80pbYSuiGBsYHTU
+         pp3gRpSL6SRrnJvjAOzfG+XvaUNijrKsG15Pfo2RugNLxiKx1zkre0N8cK8s/4r+UR0Z
+         qEP+xYVd9JQkNIfhGaT7+T4lE1YHROuoZ5jo7hW47VTmwN/L2WW/OzxXY8qLaMRQJdDB
+         h45z/PyE048oy0X7yIFLLceGu8yzFhy0SjvHLdgM+naQNV9Jjt9GaehBgmwuReVHYOe4
+         91/vlLp9iAxJ5AWVTbUBINC5eZBU25jaUB17U2306w5Fm4cY/bnC2MguOzIZ0E0rC9Yg
+         Io/A==
+X-Gm-Message-State: ACrzQf3lpCKaT8Pm/xPZKws0yw6LkbgPOCVj1tsijo/RtwSzSc18waGO
+        IVN0b0z9GzqP96sZZfD7oRolQOLcRM/Xv2oR8vJi9d0df2Ic
+X-Google-Smtp-Source: AMsMyM5a/0A2bZd6QBnYJlbBx+J+8VhIoDaOlNfiDFMXNOF/7V0AwiZwprR4k8pFIxGV9Yl7brdXnLZEFgXw
+X-Received: by 2002:a05:6a00:1990:b0:545:aa9e:be3d with SMTP id d16-20020a056a00199000b00545aa9ebe3dmr11672411pfl.59.1664586123955;
+        Fri, 30 Sep 2022 18:02:03 -0700 (PDT)
+Received: from smtp.aristanetworks.com (smtp.aristanetworks.com. [54.193.82.35])
+        by smtp-relay.gmail.com with ESMTPS id je17-20020a170903265100b00179fece74bdsm91369plb.61.2022.09.30.18.02.03
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 30 Sep 2022 18:02:03 -0700 (PDT)
+X-Relaying-Domain: arista.com
+Received: from chmeee (unknown [10.95.71.70])
+        by smtp.aristanetworks.com (Postfix) with ESMTPS id 7BD81301BD60;
+        Fri, 30 Sep 2022 18:02:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
+        s=Arista-B; t=1664586123;
+        bh=975yxtLp4mG5EqALM6a2Zs4xoum0EiIXsp3+otaUT9U=;
+        h=From:To:Cc:Subject:Date:From;
+        b=X0XY1NcyoLDVDZoGtgkw3Tff5sOg7HOprbfAn6PdDYIzMclwC8uaBKHHevkhDzgf+
+         jGYxz2vvib0towwM/ZBOsJ0A2j3vzaf5AmTUyYNnYnaAqvtxwqDcMu6wWjWiDexiEn
+         ZbEdPdWbSUSKztjQaecNxMRlG175F1UscpOUJcj8=
+Received: from kevmitch by chmeee with local (Exim 4.96)
+        (envelope-from <kevmitch@chmeee>)
+        id 1oeQtG-00180f-06;
+        Fri, 30 Sep 2022 18:02:02 -0700
+From:   Kevin Mitchell <kevmitch@arista.com>
+Cc:     kevmitch@arista.com, "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH v4] net: mv643xx_eth: support MII/GMII/RGMII modes for
- Kirkwood
-Message-ID: <20220930175942.76db1900@kernel.org>
-In-Reply-To: <20220930222540.966357-1-mmyangfl@gmail.com>
-References: <20220930213534.962336-1-mmyangfl@gmail.com>
-        <20220930222540.966357-1-mmyangfl@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Antoine Tenart <atenart@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] netdevice: don't warn when capping txqueue 0
+Date:   Fri, 30 Sep 2022 18:00:41 -0700
+Message-Id: <20221001010039.269004-1-kevmitch@arista.com>
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat,  1 Oct 2022 06:25:39 +0800 David Yang wrote:
-> Support mode switch properly, which is not available before.
-> 
-> If SoC has two Ethernet controllers, by setting both of them into MII
-> mode, the first controller enters GMII mode, while the second
-> controller is effectively disabled. This requires configuring (and
-> maybe enabling) the second controller in the device tree, even though
-> it cannot be used.
+With commit d7dac083414e ("net-sysfs: update the queue counts in the
+unregistration path"), we started seeing the following warning message
+during our stress test that streams packets out of a device while
+registering and unregistering it:
 
-Well, this version does not build:
+et3_11_1 selects TX queue 0, but real number of TX queues is 0
 
-drivers/net/ethernet/marvell/mv643xx_eth.c:1252:38: error: member reference type 'struct device' is not a pointer; did you mean to use '.'?
-            of_device_is_compatible(dev->dev->of_node,
-                                    ~~~~~~~~^~
-                                            .
+The issue is that remove_queue_kobjects() is setting real_num_tx_queues
+to 0 before the last few packets are queued. When netdev_cap_txqueue()
+is called to cap queue = 0, it emits this message.
+
+However, when queue == real_num_tx_queues == 0, this message doesn't
+make much sense because 0 is the fallback value returned
+anyway. Therefore, omit the warning when queue is already the fallback
+value of 0.
+
+Fixes: d7dac083414e ("net-sysfs: update the queue counts in the unregistration path")
+Link: https://lore.kernel.org/r/YzOjEqBMtF+Ib72v@chmeee/
+Signed-off-by: Kevin Mitchell <kevmitch@arista.com>
+---
+ include/linux/netdevice.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 05d6f3facd5a..3fd1e50b6bf5 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -3493,7 +3493,7 @@ static inline void netdev_reset_queue(struct net_device *dev_queue)
+  */
+ static inline u16 netdev_cap_txqueue(struct net_device *dev, u16 queue_index)
+ {
+-	if (unlikely(queue_index >= dev->real_num_tx_queues)) {
++	if (unlikely(queue_index > 0 && queue_index >= dev->real_num_tx_queues)) {
+ 		net_warn_ratelimited("%s selects TX queue %d, but real number of TX queues is %d\n",
+ 				     dev->name, queue_index,
+ 				     dev->real_num_tx_queues);
+-- 
+2.37.2
+
