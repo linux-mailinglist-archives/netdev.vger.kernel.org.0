@@ -2,147 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD3C95F1C39
-	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 14:51:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD5FB5F1CA2
+	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 16:18:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229525AbiJAMv2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Oct 2022 08:51:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51924 "EHLO
+        id S229530AbiJAOSg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Oct 2022 10:18:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiJAMv1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 08:51:27 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9AE4E2BA6
-        for <netdev@vger.kernel.org>; Sat,  1 Oct 2022 05:51:25 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id 3so6274016pga.1
-        for <netdev@vger.kernel.org>; Sat, 01 Oct 2022 05:51:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=6CiQZZpfJa5bf7nfDlOQwTClOn8mQ3Dzv15tBFfsV6Y=;
-        b=FZZi4JJvugZnmbVREL09i5x0+O/2pTiE6mCTST5LjwmKKog6jjoDGGz1qZZpWwrHn7
-         L5bVEvL3izEZKduKrLR8loEsZZL9AEP6sOWkEJbec1pOrYcgv93kuzzd/hm4xc7Mi4t/
-         muJN7hpZXVCvjCYDLL01EeIUBIFC0k33dOp6sfupNPlGs6di2UEjKUuBXRI/jhBT4Xid
-         KwjkdrAkdXPrXkKyvEKengdqzWVrMjaGra2cbo6zKrEYsW3Tm+/Mpoy5txzp8pegOpoU
-         +cT7fcU1tbwzuxrHommdBtw2YXEjN7b5RiQeo09pMp9VXfsirvpEtv7jC4TJPw3mSCX3
-         lnqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=6CiQZZpfJa5bf7nfDlOQwTClOn8mQ3Dzv15tBFfsV6Y=;
-        b=wIkvsgnyHLvTxyWwToqF1hF7EQx1afCdW2ElPKgSzy179C0iSiha3J5zbezEZnF5i+
-         w0U6/lVNeakkzg8ABaFBNupOp9uTHmWR6cBNISCvI9MIvU5Lg3F5GotLgKkVqRiR6BdG
-         rLkjniKqpW9xEahk5fFKj7pbx63qacwnS6oyP8TCOc+Ax8O6Iv71vtoTiNp3G5t4ab4E
-         f6K4voYsEjJY6zQIEHeIAz/lG0wWgRtHqU6kYMXydotEOT+Hg7RL9UO2yQRJHfslLnHA
-         xt1WZefQGQPTs1xscF8VshAmojsqtyPszKraPDpb/eCfDjMEnWVH+UxSoOax0Ou797xS
-         BR8Q==
-X-Gm-Message-State: ACrzQf0/0E/4tCI434je2n7VnZym79ePJAVKAeL+DHZc2HiitClGI2Mn
-        AEDF92arLcmj0+C4m6piddlP3ystum5B2g==
-X-Google-Smtp-Source: AMsMyM4jrSzLFdGh1E4kc2Vu0hBud0A6y+gW1mm08FiuSBpA3/yRUEBGukegVaqZHKN0BJ3H19hglQ==
-X-Received: by 2002:a63:cf56:0:b0:43c:a0a1:f749 with SMTP id b22-20020a63cf56000000b0043ca0a1f749mr11412954pgj.24.1664628685191;
-        Sat, 01 Oct 2022 05:51:25 -0700 (PDT)
-Received: from ?IPV6:2401:4900:1f3b:3adb:24f8:ac24:2282:1dc7? ([2401:4900:1f3b:3adb:24f8:ac24:2282:1dc7])
-        by smtp.gmail.com with ESMTPSA id l6-20020a170903244600b0017832c8cc85sm3813403pls.292.2022.10.01.05.51.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 01 Oct 2022 05:51:24 -0700 (PDT)
-Message-ID: <0aeb2c5e-9a5e-90c6-a974-f2a0b866d64f@linaro.org>
-Date:   Sat, 1 Oct 2022 18:21:18 +0530
+        with ESMTP id S229482AbiJAOSe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 10:18:34 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 270DD3D59B;
+        Sat,  1 Oct 2022 07:18:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 01402CE01D0;
+        Sat,  1 Oct 2022 14:18:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 940EFC433D6;
+        Sat,  1 Oct 2022 14:18:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664633909;
+        bh=CKkGHr+sdWpXHrqOxQ/cqxBF9+kksWpN2DsUF+exBS4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=gDiEogvtf5TTgvs8BmlxSclEAjVqM9fTiq+o5fcwKxVdeFAQ6Pfkui85Ed3eaqiQe
+         RzMUCQ5iBSLhnk/g2ffGL/WO1kg4sLz0xBOmhAagicxCbn2dqjj1NHlkRyfPWPkvRi
+         NsaR7jK6405n2TAWqYTy/isr6oyCzqdljbJTkR+DMO55hjncaznzXa7ryXaAoJKoN7
+         0JJz5a2bB5ByK1YE/LAPq4i6LpVNhSq1VJrhsQcHioZ/GWeMgJd4DFLA+FQ668GuRM
+         Ww+iyYMmfJpONDVLmFHkqj3Eyo5eWxl5GkzmNgFCmhwTdpkFe5OneWzYYQvEdMZg7G
+         dzPcAgXkK14Ag==
+Date:   Sat, 1 Oct 2022 07:18:27 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Vadim Fedorenko <vfedorenko@novek.ru>,
+        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Vadim Fedorenko <vadfed@fb.com>, Aya Levin <ayal@nvidia.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-clk@vger.kernel.org, Gal Pressman <gal@nvidia.com>
+Subject: Re: [RFC PATCH v2 0/3] Create common DPLL/clock configuration API
+Message-ID: <20221001071827.202fe4c1@kernel.org>
+In-Reply-To: <YzfUbKtWlxuq+FzI@nanopsycho>
+References: <20220626192444.29321-1-vfedorenko@novek.ru>
+        <YzWESUXPwcCo67LP@nanopsycho>
+        <6b80b6c8-29fd-4c2a-e963-1f273d866f12@novek.ru>
+        <Yzap9cfSXvSLA+5y@nanopsycho>
+        <20220930073312.23685d5d@kernel.org>
+        <YzfUbKtWlxuq+FzI@nanopsycho>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v2 3/4] dt-bindings: net: qcom,ethqos: Convert bindings to
- yaml
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        devicetree@vger.kernel.org
-Cc:     linux-arm-msm@vger.kernel.org, agross@kernel.org,
-        bhupesh.linux@gmail.com, linux-kernel@vger.kernel.org,
-        robh+dt@kernel.org, netdev@vger.kernel.org,
-        Bjorn Andersson <andersson@kernel.org>,
-        Rob Herring <robh@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        David Miller <davem@davemloft.net>
-References: <20220929060405.2445745-1-bhupesh.sharma@linaro.org>
- <20220929060405.2445745-4-bhupesh.sharma@linaro.org>
- <4e896382-c666-55c6-f50b-5c442e428a2b@linaro.org>
- <1163e862-d36a-9b5e-2019-c69be41cc220@linaro.org>
- <9999a1a3-cda0-2759-f6f4-9bc7414f9ee4@linaro.org>
-From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
-In-Reply-To: <9999a1a3-cda0-2759-f6f4-9bc7414f9ee4@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/30/22 3:56 PM, Krzysztof Kozlowski wrote:
-> On 30/09/2022 10:12, Bhupesh Sharma wrote:
->>>> +  snps,reset-gpio:
->>>> +    maxItems: 1
->>>
->>> Why is this one here? It's already in snps,dwmac.
->>>
->>> Actually this applies to several other properties. You have
->>> unevaluatedProperties:false, so you do not have to duplicate snps,dwmac.
->>> You only need to constrain it, like we said about interrupts in your
->>> previous patch.
->>
->> I was actually getting errors like the following without the same:
->>
->> arm64/boot/dts/qcom/qcs404-evb-1000.dtb: ethernet@7a80000: Unevaluated
->> properties are not allowed ('snps,tso' was unexpected)
->> 	From schema: Documentation/devicetree/bindings/net/qcom,ethqos.yaml
->>
->> So, its not clear to me that even though 'snps,dwmac.yaml' is referenced
->> here, the property appears as unevaluated.
+On Sat, 1 Oct 2022 07:47:24 +0200 Jiri Pirko wrote:
+> >> Sure, but more hw does not mean you can't use sysfs. Take netdev as an
+> >> example. The sysfs exposed for it is implemented net/core/net-sysfs.c
+> >> and is exposed for all netdev instances, no matter what the
+> >> driver/hardware is.  
+> >
+> >Wait, *you* are suggesting someone uses sysfs instead of netlink?
+> >
+> >Could you say more because I feel like that's kicking the absolute.  
 > 
-> Because snps,tso is not allowed, but the rest is.
-> 
->>
->>>> +
->>>> +  power-domains:
->>>> +    maxItems: 1
->>>> +
->>>> +  resets:
->>>> +    maxItems: 1
->>>> +
->>>> +  rx-fifo-depth:
->>>> +    $ref: /schemas/types.yaml#/definitions/uint32
->>>> +
->>>> +  tx-fifo-depth:
->>>> +    $ref: /schemas/types.yaml#/definitions/uint32
->>>> +
->>>> +  snps,tso:
->>>> +    type: boolean
->>>> +    description: Enables the TSO feature (otherwise managed by MAC HW capability register).
->>>
->>> You add here several new properties. Mention in commit msg changes from
->>> pure conversion with answer to "why".
->>
->> Right, most of them are to avoid the make dtbs_check errors / warnings
->> like the one mentioned above.
-> 
-> All of them should not be here.
+> I don't understand why that would be a problem. 
 
-I guess only 'snps,reset-gpio' need not be replicated here, as for 
-others I still see 'dtbs_check' error, if they are not replicated here:
+Why did you do devlink over netlink then?
+The bus device is already there in sysfs.
 
+> What I'm trying to say
+> is, perhaps sysfs is a better API for this purpose. The API looks very
+> neat and there is no probabilito of huge grow.
 
-arch/arm64/boot/dts/qcom/sm8150-hdk.dtb: ethernet@20000: Unevaluated 
-properties are not allowed ('power-domains', 'resets', 'rx-fifo-depth', 
-'tx-fifo-depth' were unexpected)
-	From schema: /Documentation/devicetree/bindings/net/qcom,ethqos.yaml
+"this API is nice and small" said everyone about every new API ever,
+APIs grow.
 
-Am I missing something here?
+> Also, with sysfs, you
+> don't need userspace app to do basic work with the api. In this case, I
+> don't see why the app is needed.
 
-Thanks.
+Yes, with the YAML specs you don't need a per-family APP.
+A generic app can support any family, just JSON in JSON out.
+DPLL-nl will come with a YAML spec.
 
+> These are 2 biggest arguments for sysfs in this case as I see it.
+
+2 biggest arguments? Is "this API is small" one of the _biggest_
+arguments you see? I don't think it's an argument at all. The OCP PTP
+driver started small and now its not small. And the files don't even
+follow sysfs rules. Trust me, we have some experience here :/
+
+As I said to you in private I feel like there may be some political
+games being played here, so I'd like to urge you to focus on real
+issues.
