@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 157E85F19E6
+	by mail.lfdr.de (Postfix) with ESMTP id 623855F19E7
 	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 07:00:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229486AbiJAFAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Oct 2022 01:00:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43090 "EHLO
+        id S229494AbiJAFAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Oct 2022 01:00:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiJAFA2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 01:00:28 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AA495725B
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 22:00:21 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28UBdBUp022993;
-        Fri, 30 Sep 2022 22:00:14 -0700
+        with ESMTP id S229459AbiJAFA3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Oct 2022 01:00:29 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 596C757BCF
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 22:00:23 -0700 (PDT)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2913XLK3032675;
+        Fri, 30 Sep 2022 22:00:16 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=YaIe+iD0ghaU6oeVQ6iNKGCs1Dxd3Al8P13Z9+ESlLA=;
- b=htKjiyYcebSvl41/ZRuenP+6d/LSpvTU7uyZ2DE+SHPS4rniI82lceexl4xzfNqetPhe
- iobgtunTHaPLwGqLgQEmwNjZ3TT1aIAUDdkcd69BMHbGQNayuyfevqZIE/WtHVLJbOfV
- cEuOgDwlo1FFBi+F4KLRWgzVrKHUQUBl5XfWx1FTdp6wT3OQbRoSQ/yYvdG3i2ZKXcUP
- XpXo/2LhN0f5orfLv4VGpFTxZVo1JGfQ/9FlkVJ8rb//F610teMfURJv9GD6nVOB805c
- pSnd8+MSuxFLpSrULYJA9fHFTwkGPZAV3Csj5Exu6Wm1ccwihKlSWs01jaKDqGGHqFoT dQ== 
+ content-type; s=pfpt0220; bh=+L5OHLHZMU7Eq7/owInsRCgi3EiyorEkf5S32NjXfBk=;
+ b=IpAOiaBSRJsmGbEHFJDWkHRowqd19Yq7x9y0EzhDEY4TjQa7nngjNZl8b7eKSY+1Upu6
+ NPwX26gY40cKn3c5A8zn5ovF02wX1lFxDRM8MJen82sk6RIQdXAnBazL+TvmPILl6JbM
+ NQr2gxUsL8rA7uIs+u5s4/uxo4PEPw/iUj8YPTLwQdMVsHF/cIHuacbpHNay9rGoz+im
+ ZWQKNynyyyAuDWO3mRpBoM1V9Peup3faxOPE3901VsKQ+0ksunC2p8rtLerLRxGuIRzC
+ 3aVo27f1KZAqFPStwx+8igDkPjx/r84F5gIV3LXhtHYXa/tJaDeZpbNAuAMR9YOQaNrO CA== 
 Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3jw1rt9fjk-1
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3jx18bamau-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 30 Sep 2022 22:00:13 -0700
+        Fri, 30 Sep 2022 22:00:16 -0700
 Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Fri, 30 Sep
- 2022 22:00:11 -0700
+ 2022 22:00:14 -0700
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 30 Sep 2022 22:00:11 -0700
+ Transport; Fri, 30 Sep 2022 22:00:14 -0700
 Received: from hyd1358.marvell.com (unknown [10.29.37.11])
-        by maili.marvell.com (Postfix) with ESMTP id 668CC3F70A6;
-        Fri, 30 Sep 2022 22:00:08 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id CAD483F70AC;
+        Fri, 30 Sep 2022 22:00:11 -0700 (PDT)
 From:   Subbaraya Sundeep <sbhatta@marvell.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
         <pabeni@redhat.com>, <netdev@vger.kernel.org>
@@ -45,16 +45,16 @@ CC:     <sgoutham@marvell.com>, <naveenm@marvell.com>,
         Geetha sowjanya <gakula@marvell.com>,
         Vamsi Attunuru <vattunuru@marvell.com>,
         "Subbaraya Sundeep" <sbhatta@marvell.com>
-Subject: [net-next PATCH v3 1/8] octeontx2-af: cn10k: Introduce driver for macsec block.
-Date:   Sat, 1 Oct 2022 10:29:42 +0530
-Message-ID: <1664600389-5758-2-git-send-email-sbhatta@marvell.com>
+Subject: [net-next PATCH v3 2/8] octeontx2-af: cn10k: mcs: Add mailboxes for port related operations
+Date:   Sat, 1 Oct 2022 10:29:43 +0530
+Message-ID: <1664600389-5758-3-git-send-email-sbhatta@marvell.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1664600389-5758-1-git-send-email-sbhatta@marvell.com>
 References: <1664600389-5758-1-git-send-email-sbhatta@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Proofpoint-GUID: bNn5lN2bijwDipISrh2G-dh8S1TvgyGH
-X-Proofpoint-ORIG-GUID: bNn5lN2bijwDipISrh2G-dh8S1TvgyGH
+X-Proofpoint-ORIG-GUID: pQKLKAkfDwiHxsn0EpSHdkylYOz15VQy
+X-Proofpoint-GUID: pQKLKAkfDwiHxsn0EpSHdkylYOz15VQy
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
  definitions=2022-10-01_03,2022-09-29_03,2022-06-22_01
@@ -69,816 +69,497 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Geetha sowjanya <gakula@marvell.com>
 
-CN10K-B and CNF10K-B has macsec block(MCS) to encrypt and
-decrypt packets at MAC level. This block is a global resource
-with hardware resources like SecYs, SCs and SAs and is in
-between NIX block and RPM LMAC. CN10K-B silicon has only one MCS
-block which receives packets from all LMACS whereas CNF10K-B has
-seven MCS blocks for seven LMACs. Both MCS blocks are
-similar in operation except for few register offsets and some
-configurations require writing to different registers. Those
-differences between IPs are handled using separate ops.
-This patch adds basic driver and does the initial hardware
-calibration and parser configuration.
+There are set of configurations to be done at MCS port level like
+bringing port out of reset, making port as operational or bypass.
+This patch adds all the port related mailbox message handlers
+so that AF consumers can use them.
 
 Signed-off-by: Geetha sowjanya <gakula@marvell.com>
 Signed-off-by: Vamsi Attunuru <vattunuru@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/Makefile |   2 +-
- drivers/net/ethernet/marvell/octeontx2/af/mcs.c    | 368 +++++++++++++++++++++
- drivers/net/ethernet/marvell/octeontx2/af/mcs.h    |  92 ++++++
- .../ethernet/marvell/octeontx2/af/mcs_cnf10kb.c    |  65 ++++
- .../net/ethernet/marvell/octeontx2/af/mcs_reg.h    |  78 +++++
- .../net/ethernet/marvell/octeontx2/af/mcs_rvu_if.c |  52 +++
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c    |  14 +
- drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |   8 +
- 8 files changed, 678 insertions(+), 1 deletion(-)
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/mcs.c
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/mcs.h
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/mcs_cnf10kb.c
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/mcs_reg.h
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/mcs_rvu_if.c
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.h   | 111 +++++++++++++++++-
+ drivers/net/ethernet/marvell/octeontx2/af/mcs.c    |  94 +++++++++++++++
+ drivers/net/ethernet/marvell/octeontx2/af/mcs.h    |  10 ++
+ .../net/ethernet/marvell/octeontx2/af/mcs_reg.h    |  36 ++++++
+ .../net/ethernet/marvell/octeontx2/af/mcs_rvu_if.c | 129 ++++++++++++++++++++-
+ 5 files changed, 376 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/Makefile b/drivers/net/ethernet/marvell/octeontx2/af/Makefile
-index 4020356..3cf4c82 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/Makefile
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/Makefile
-@@ -11,4 +11,4 @@ rvu_mbox-y := mbox.o rvu_trace.o
- rvu_af-y := cgx.o rvu.o rvu_cgx.o rvu_npa.o rvu_nix.o \
- 		  rvu_reg.o rvu_npc.o rvu_debugfs.o ptp.o rvu_npc_fs.o \
- 		  rvu_cpt.o rvu_devlink.o rpm.o rvu_cn10k.o rvu_switch.o \
--		  rvu_sdp.o rvu_npc_hash.o
-+		  rvu_sdp.o rvu_npc_hash.o mcs.o mcs_rvu_if.o mcs_cnf10kb.o
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mcs.c b/drivers/net/ethernet/marvell/octeontx2/af/mcs.c
-new file mode 100644
-index 0000000..259ccb4
---- /dev/null
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mcs.c
-@@ -0,0 +1,368 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Marvell MCS driver
-+ *
-+ * Copyright (C) 2022 Marvell.
-+ */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+index e26c3b0..207cd4f 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+@@ -293,9 +293,21 @@ M(NIX_BANDPROF_ALLOC,	0x801d, nix_bandprof_alloc, nix_bandprof_alloc_req, \
+ M(NIX_BANDPROF_FREE,	0x801e, nix_bandprof_free, nix_bandprof_free_req,   \
+ 				msg_rsp)				    \
+ M(NIX_BANDPROF_GET_HWINFO, 0x801f, nix_bandprof_get_hwinfo, msg_req,		\
+-				nix_bandprof_get_hwinfo_rsp)
+-
+-/* Messages initiated by AF (range 0xC00 - 0xDFF) */
++				nix_bandprof_get_hwinfo_rsp)		    \
++/* MCS mbox IDs (range 0xA000 - 0xBFFF) */					\
++M(MCS_SET_ACTIVE_LMAC,	0xa00a,	mcs_set_active_lmac, mcs_set_active_lmac,	\
++				msg_rsp)					\
++M(MCS_GET_HW_INFO,	0xa00b,	mcs_get_hw_info, msg_req, mcs_hw_info)		\
++M(MCS_SET_LMAC_MODE,	0xa013, mcs_set_lmac_mode, mcs_set_lmac_mode, msg_rsp)	\
++M(MCS_PORT_RESET,	0xa018, mcs_port_reset, mcs_port_reset_req, msg_rsp)	\
++M(MCS_PORT_CFG_SET,	0xa019, mcs_port_cfg_set, mcs_port_cfg_set_req, msg_rsp)\
++M(MCS_PORT_CFG_GET,	0xa020, mcs_port_cfg_get, mcs_port_cfg_get_req,		\
++				mcs_port_cfg_get_rsp)				\
++M(MCS_CUSTOM_TAG_CFG_GET, 0xa021, mcs_custom_tag_cfg_get,			\
++				  mcs_custom_tag_cfg_get_req,			\
++				  mcs_custom_tag_cfg_get_rsp)
 +
-+#include <linux/bitfield.h>
-+#include <linux/delay.h>
-+#include <linux/device.h>
-+#include <linux/module.h>
-+#include <linux/pci.h>
-+
-+#include "mcs.h"
-+#include "mcs_reg.h"
-+
-+#define DRV_NAME	"Marvell MCS Driver"
-+
-+#define PCI_CFG_REG_BAR_NUM	0
-+
-+static const struct pci_device_id mcs_id_table[] = {
-+	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, PCI_DEVID_CN10K_MCS) },
-+	{ 0, }  /* end of table */
++/* Messages initiated by AF (range 0xC00 - 0xEFF) */
+ #define MBOX_UP_CGX_MESSAGES						\
+ M(CGX_LINK_EVENT,	0xC00, cgx_link_event, cgx_link_info_msg, msg_rsp)
+ 
+@@ -1657,4 +1669,97 @@ enum cgx_af_status {
+ 	LMAC_AF_ERR_EXACT_MATCH_TBL_LOOK_UP_FAILED = -1110,
+ };
+ 
++enum mcs_direction {
++	MCS_RX,
++	MCS_TX,
 +};
 +
-+static LIST_HEAD(mcs_list);
++struct mcs_hw_info {
++	struct mbox_msghdr hdr;
++	u8 num_mcs_blks;	/* Number of MCS blocks */
++	u8 tcam_entries;	/* RX/TX Tcam entries per mcs block */
++	u8 secy_entries;	/* RX/TX SECY entries per mcs block */
++	u8 sc_entries;		/* RX/TX SC CAM entries per mcs block */
++	u8 sa_entries;		/* PN table entries = SA entries */
++	u64 rsvd[16];
++};
 +
-+static void *alloc_mem(struct mcs *mcs, int n)
++struct mcs_set_active_lmac {
++	struct mbox_msghdr hdr;
++	u32 lmac_bmap;	/* bitmap of active lmac per mcs block */
++	u8 mcs_id;
++	u16 chan_base; /* MCS channel base */
++	u64 rsvd;
++};
++
++struct mcs_set_lmac_mode {
++	struct mbox_msghdr hdr;
++	u8 mode;	/* 1:Bypass 0:Operational */
++	u8 lmac_id;
++	u8 mcs_id;
++	u64 rsvd;
++};
++
++struct mcs_port_reset_req {
++	struct mbox_msghdr hdr;
++	u8 reset;
++	u8 mcs_id;
++	u8 port_id;
++	u64 rsvd;
++};
++
++struct mcs_port_cfg_set_req {
++	struct mbox_msghdr hdr;
++	u8 cstm_tag_rel_mode_sel;
++	u8 custom_hdr_enb;
++	u8 fifo_skid;
++	u8 port_mode;
++	u8 port_id;
++	u8 mcs_id;
++	u64 rsvd;
++};
++
++struct mcs_port_cfg_get_req {
++	struct mbox_msghdr hdr;
++	u8 port_id;
++	u8 mcs_id;
++	u64 rsvd;
++};
++
++struct mcs_port_cfg_get_rsp {
++	struct mbox_msghdr hdr;
++	u8 cstm_tag_rel_mode_sel;
++	u8 custom_hdr_enb;
++	u8 fifo_skid;
++	u8 port_mode;
++	u8 port_id;
++	u8 mcs_id;
++	u64 rsvd;
++};
++
++struct mcs_custom_tag_cfg_get_req {
++	struct mbox_msghdr hdr;
++	u8 mcs_id;
++	u8 dir;
++	u64 rsvd;
++};
++
++struct mcs_custom_tag_cfg_get_rsp {
++	struct mbox_msghdr hdr;
++	u16 cstm_etype[8];
++	u8 cstm_indx[8];
++	u8 cstm_etype_en;
++	u8 mcs_id;
++	u8 dir;
++	u64 rsvd;
++};
++
++/* MCS mailbox error codes
++ * Range 1201 - 1300.
++ */
++enum mcs_af_status {
++	MCS_AF_ERR_INVALID_MCSID        = -1201,
++	MCS_AF_ERR_NOT_MAPPED           = -1202,
++};
++
+ #endif /* MBOX_H */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mcs.c b/drivers/net/ethernet/marvell/octeontx2/af/mcs.c
+index 259ccb4..555f3b2 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mcs.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/mcs.c
+@@ -107,6 +107,100 @@ struct mcs *mcs_get_pdata(int mcs_id)
+ 	return NULL;
+ }
+ 
++void mcs_set_port_cfg(struct mcs *mcs, struct mcs_port_cfg_set_req *req)
 +{
-+	return devm_kcalloc(mcs->dev, n, sizeof(u16), GFP_KERNEL);
-+}
++	u64 val = 0;
 +
-+static int mcs_alloc_struct_mem(struct mcs *mcs, struct mcs_rsrc_map *res)
-+{
-+	struct hwinfo *hw = mcs->hw;
-+	int err;
++	mcs_reg_write(mcs, MCSX_PAB_RX_SLAVE_PORT_CFGX(req->port_id),
++		      req->port_mode & MCS_PORT_MODE_MASK);
 +
-+	res->flowid2pf_map = alloc_mem(mcs, hw->tcam_entries);
-+	if (!res->flowid2pf_map)
-+		return -ENOMEM;
-+
-+	res->secy2pf_map = alloc_mem(mcs, hw->secy_entries);
-+	if (!res->secy2pf_map)
-+		return -ENOMEM;
-+
-+	res->sc2pf_map = alloc_mem(mcs, hw->sc_entries);
-+	if (!res->sc2pf_map)
-+		return -ENOMEM;
-+
-+	res->sa2pf_map = alloc_mem(mcs, hw->sa_entries);
-+	if (!res->sa2pf_map)
-+		return -ENOMEM;
-+
-+	res->flowid2secy_map = alloc_mem(mcs, hw->tcam_entries);
-+	if (!res->flowid2secy_map)
-+		return -ENOMEM;
-+
-+	res->flow_ids.max = hw->tcam_entries - MCS_RSRC_RSVD_CNT;
-+	err = rvu_alloc_bitmap(&res->flow_ids);
-+	if (err)
-+		return err;
-+
-+	res->secy.max = hw->secy_entries - MCS_RSRC_RSVD_CNT;
-+	err = rvu_alloc_bitmap(&res->secy);
-+	if (err)
-+		return err;
-+
-+	res->sc.max = hw->sc_entries;
-+	err = rvu_alloc_bitmap(&res->sc);
-+	if (err)
-+		return err;
-+
-+	res->sa.max = hw->sa_entries;
-+	err = rvu_alloc_bitmap(&res->sa);
-+	if (err)
-+		return err;
-+
-+	return 0;
-+}
-+
-+int mcs_get_blkcnt(void)
-+{
-+	struct mcs *mcs;
-+	int idmax = -ENODEV;
-+
-+	/* Check MCS block is present in hardware */
-+	if (!pci_dev_present(mcs_id_table))
-+		return 0;
-+
-+	list_for_each_entry(mcs, &mcs_list, mcs_list)
-+		if (mcs->mcs_id > idmax)
-+			idmax = mcs->mcs_id;
-+
-+	if (idmax < 0)
-+		return 0;
-+
-+	return idmax + 1;
-+}
-+
-+struct mcs *mcs_get_pdata(int mcs_id)
-+{
-+	struct mcs *mcs_dev;
-+
-+	list_for_each_entry(mcs_dev, &mcs_list, mcs_list) {
-+		if (mcs_dev->mcs_id == mcs_id)
-+			return mcs_dev;
-+	}
-+	return NULL;
-+}
-+
-+/* Set lmac to bypass/operational mode */
-+void mcs_set_lmac_mode(struct mcs *mcs, int lmac_id, u8 mode)
-+{
-+	u64 reg;
-+
-+	reg = MCSX_MCS_TOP_SLAVE_CHANNEL_CFG(lmac_id * 2);
-+	mcs_reg_write(mcs, reg, (u64)mode);
-+}
-+
-+void cn10kb_mcs_parser_cfg(struct mcs *mcs)
-+{
-+	u64 reg, val;
-+
-+	/* VLAN CTag */
-+	val = BIT_ULL(0) | (0x8100ull & 0xFFFF) << 1 | BIT_ULL(17);
-+	/* RX */
-+	reg = MCSX_PEX_RX_SLAVE_VLAN_CFGX(0);
-+	mcs_reg_write(mcs, reg, val);
-+
-+	/* TX */
-+	reg = MCSX_PEX_TX_SLAVE_VLAN_CFGX(0);
-+	mcs_reg_write(mcs, reg, val);
-+
-+	/* VLAN STag */
-+	val = BIT_ULL(0) | (0x88a8ull & 0xFFFF) << 1 | BIT_ULL(18);
-+	/* RX */
-+	reg = MCSX_PEX_RX_SLAVE_VLAN_CFGX(1);
-+	mcs_reg_write(mcs, reg, val);
-+
-+	/* TX */
-+	reg = MCSX_PEX_TX_SLAVE_VLAN_CFGX(1);
-+	mcs_reg_write(mcs, reg, val);
-+}
-+
-+static void mcs_lmac_init(struct mcs *mcs, int lmac_id)
-+{
-+	u64 reg;
-+
-+	/* Port mode 25GB */
-+	reg = MCSX_PAB_RX_SLAVE_PORT_CFGX(lmac_id);
-+	mcs_reg_write(mcs, reg, 0);
++	req->cstm_tag_rel_mode_sel &= 0x3;
 +
 +	if (mcs->hw->mcs_blks > 1) {
-+		reg = MCSX_PAB_RX_SLAVE_FIFO_SKID_CFGX(lmac_id);
-+		mcs_reg_write(mcs, reg, 0xe000e);
-+		return;
-+	}
++		req->fifo_skid &= MCS_PORT_FIFO_SKID_MASK;
++		val = (u32)req->fifo_skid << 0x10;
++		val |= req->fifo_skid;
++		mcs_reg_write(mcs, MCSX_PAB_RX_SLAVE_FIFO_SKID_CFGX(req->port_id), val);
++		mcs_reg_write(mcs, MCSX_PEX_TX_SLAVE_CUSTOM_TAG_REL_MODE_SEL(req->port_id),
++			      req->cstm_tag_rel_mode_sel);
++		val = mcs_reg_read(mcs, MCSX_PEX_RX_SLAVE_PEX_CONFIGURATION);
 +
-+	reg = MCSX_PAB_TX_SLAVE_PORT_CFGX(lmac_id);
-+	mcs_reg_write(mcs, reg, 0);
++		if (req->custom_hdr_enb)
++			val |= BIT_ULL(req->port_id);
++		else
++			val &= ~BIT_ULL(req->port_id);
++
++		mcs_reg_write(mcs, MCSX_PEX_RX_SLAVE_PEX_CONFIGURATION, val);
++	} else {
++		val = mcs_reg_read(mcs, MCSX_PEX_TX_SLAVE_PORT_CONFIG(req->port_id));
++		val |= (req->cstm_tag_rel_mode_sel << 2);
++		mcs_reg_write(mcs, MCSX_PEX_TX_SLAVE_PORT_CONFIG(req->port_id), val);
++	}
 +}
 +
-+int mcs_set_lmac_channels(int mcs_id, u16 base)
++void mcs_get_port_cfg(struct mcs *mcs, struct mcs_port_cfg_get_req *req,
++		      struct mcs_port_cfg_get_rsp *rsp)
 +{
-+	struct mcs *mcs;
-+	int lmac;
-+	u64 cfg;
++	u64 reg = 0;
 +
-+	mcs = mcs_get_pdata(mcs_id);
-+	if (!mcs)
-+		return -ENODEV;
-+	for (lmac = 0; lmac < mcs->hw->lmac_cnt; lmac++) {
-+		cfg = mcs_reg_read(mcs, MCSX_LINK_LMACX_CFG(lmac));
-+		cfg &= ~(MCSX_LINK_LMAC_BASE_MASK | MCSX_LINK_LMAC_RANGE_MASK);
-+		cfg |=	FIELD_PREP(MCSX_LINK_LMAC_RANGE_MASK, ilog2(16));
-+		cfg |=	FIELD_PREP(MCSX_LINK_LMAC_BASE_MASK, base);
-+		mcs_reg_write(mcs, MCSX_LINK_LMACX_CFG(lmac), cfg);
-+		base += 16;
++	rsp->port_mode = mcs_reg_read(mcs, MCSX_PAB_RX_SLAVE_PORT_CFGX(req->port_id)) &
++			 MCS_PORT_MODE_MASK;
++
++	if (mcs->hw->mcs_blks > 1) {
++		reg = MCSX_PAB_RX_SLAVE_FIFO_SKID_CFGX(req->port_id);
++		rsp->fifo_skid = mcs_reg_read(mcs, reg) & MCS_PORT_FIFO_SKID_MASK;
++		reg = MCSX_PEX_TX_SLAVE_CUSTOM_TAG_REL_MODE_SEL(req->port_id);
++		rsp->cstm_tag_rel_mode_sel = mcs_reg_read(mcs, reg) & 0x3;
++		if (mcs_reg_read(mcs, MCSX_PEX_RX_SLAVE_PEX_CONFIGURATION) & BIT_ULL(req->port_id))
++			rsp->custom_hdr_enb = 1;
++	} else {
++		reg = MCSX_PEX_TX_SLAVE_PORT_CONFIG(req->port_id);
++		rsp->cstm_tag_rel_mode_sel = mcs_reg_read(mcs, reg) >> 2;
 +	}
-+	return 0;
++
++	rsp->port_id = req->port_id;
++	rsp->mcs_id = req->mcs_id;
 +}
 +
-+static int mcs_x2p_calibration(struct mcs *mcs)
++void mcs_get_custom_tag_cfg(struct mcs *mcs, struct mcs_custom_tag_cfg_get_req *req,
++			    struct mcs_custom_tag_cfg_get_rsp *rsp)
 +{
-+	unsigned long timeout = jiffies + usecs_to_jiffies(20000);
-+	int i, err = 0;
-+	u64 val;
++	u64 reg = 0, val = 0;
++	u8 idx;
 +
-+	/* set X2P calibration */
-+	val = mcs_reg_read(mcs, MCSX_MIL_GLOBAL);
-+	val |= BIT_ULL(5);
-+	mcs_reg_write(mcs, MCSX_MIL_GLOBAL, val);
++	for (idx = 0; idx < MCS_MAX_CUSTOM_TAGS; idx++) {
++		if (mcs->hw->mcs_blks > 1)
++			reg  = (req->dir == MCS_RX) ? MCSX_PEX_RX_SLAVE_CUSTOM_TAGX(idx) :
++				MCSX_PEX_TX_SLAVE_CUSTOM_TAGX(idx);
++		else
++			reg = (req->dir == MCS_RX) ? MCSX_PEX_RX_SLAVE_VLAN_CFGX(idx) :
++				MCSX_PEX_TX_SLAVE_VLAN_CFGX(idx);
 +
-+	/* Wait for calibration to complete */
-+	while (!(mcs_reg_read(mcs, MCSX_MIL_RX_GBL_STATUS) & BIT_ULL(0))) {
-+		if (time_before(jiffies, timeout)) {
-+			usleep_range(80, 100);
-+			continue;
++		val = mcs_reg_read(mcs, reg);
++		if (mcs->hw->mcs_blks > 1) {
++			rsp->cstm_etype[idx] = val & GENMASK(15, 0);
++			rsp->cstm_indx[idx] = (val >> 0x16) & 0x3;
++			reg = (req->dir == MCS_RX) ? MCSX_PEX_RX_SLAVE_ETYPE_ENABLE :
++				MCSX_PEX_TX_SLAVE_ETYPE_ENABLE;
++			rsp->cstm_etype_en = mcs_reg_read(mcs, reg) & 0xFF;
 +		} else {
-+			err = -EBUSY;
-+			dev_err(mcs->dev, "MCS X2P calibration failed..ignoring\n");
-+			return err;
++			rsp->cstm_etype[idx] = (val >> 0x1) & GENMASK(15, 0);
++			rsp->cstm_indx[idx] = (val >> 0x11) & 0x3;
++			rsp->cstm_etype_en |= (val & 0x1) << idx;
 +		}
 +	}
 +
-+	val = mcs_reg_read(mcs, MCSX_MIL_RX_GBL_STATUS);
-+	for (i = 0; i < mcs->hw->mcs_x2p_intf; i++) {
-+		if (val & BIT_ULL(1 + i))
-+			continue;
-+		err = -EBUSY;
-+		dev_err(mcs->dev, "MCS:%d didn't respond to X2P calibration\n", i);
-+	}
-+	/* Clear X2P calibrate */
-+	mcs_reg_write(mcs, MCSX_MIL_GLOBAL, mcs_reg_read(mcs, MCSX_MIL_GLOBAL) & ~BIT_ULL(5));
-+
-+	return err;
++	rsp->mcs_id = req->mcs_id;
++	rsp->dir = req->dir;
 +}
 +
-+static void mcs_set_external_bypass(struct mcs *mcs, u8 bypass)
++void mcs_reset_port(struct mcs *mcs, u8 port_id, u8 reset)
 +{
-+	u64 val;
++	u64 reg = MCSX_MCS_TOP_SLAVE_PORT_RESET(port_id);
 +
-+	/* Set MCS to external bypass */
-+	val = mcs_reg_read(mcs, MCSX_MIL_GLOBAL);
-+	if (bypass)
-+		val |= BIT_ULL(6);
-+	else
-+		val &= ~BIT_ULL(6);
-+	mcs_reg_write(mcs, MCSX_MIL_GLOBAL, val);
++	mcs_reg_write(mcs, reg, reset & 0x1);
 +}
 +
-+static void mcs_global_cfg(struct mcs *mcs)
-+{
-+	/* Disable external bypass */
-+	mcs_set_external_bypass(mcs, false);
-+
-+	/* Set MCS to perform standard IEEE802.1AE macsec processing */
-+	if (mcs->hw->mcs_blks == 1) {
-+		mcs_reg_write(mcs, MCSX_IP_MODE, BIT_ULL(3));
-+		return;
-+	}
-+
-+	mcs_reg_write(mcs, MCSX_BBE_RX_SLAVE_CAL_ENTRY, 0xe4);
-+	mcs_reg_write(mcs, MCSX_BBE_RX_SLAVE_CAL_LEN, 4);
-+}
-+
-+void cn10kb_mcs_set_hw_capabilities(struct mcs *mcs)
-+{
-+	struct hwinfo *hw = mcs->hw;
-+
-+	hw->tcam_entries = 128;		/* TCAM entries */
-+	hw->secy_entries  = 128;	/* SecY entries */
-+	hw->sc_entries = 128;		/* SC CAM entries */
-+	hw->sa_entries = 256;		/* SA entries */
-+	hw->lmac_cnt = 20;		/* lmacs/ports per mcs block */
-+	hw->mcs_x2p_intf = 5;		/* x2p clabration intf */
-+	hw->mcs_blks = 1;		/* MCS blocks */
-+}
-+
-+static struct mcs_ops cn10kb_mcs_ops = {
-+	.mcs_set_hw_capabilities	= cn10kb_mcs_set_hw_capabilities,
-+	.mcs_parser_cfg			= cn10kb_mcs_parser_cfg,
-+};
-+
-+static int mcs_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-+{
-+	struct device *dev = &pdev->dev;
-+	int lmac, err = 0;
-+	struct mcs *mcs;
-+
-+	mcs = devm_kzalloc(dev, sizeof(*mcs), GFP_KERNEL);
-+	if (!mcs)
-+		return -ENOMEM;
-+
-+	mcs->hw = devm_kzalloc(dev, sizeof(struct hwinfo), GFP_KERNEL);
-+	if (!mcs->hw)
-+		return -ENOMEM;
-+
-+	err = pci_enable_device(pdev);
-+	if (err) {
-+		dev_err(dev, "Failed to enable PCI device\n");
-+		pci_set_drvdata(pdev, NULL);
-+		return err;
-+	}
-+
-+	err = pci_request_regions(pdev, DRV_NAME);
-+	if (err) {
-+		dev_err(dev, "PCI request regions failed 0x%x\n", err);
-+		goto exit;
-+	}
-+
-+	mcs->reg_base = pcim_iomap(pdev, PCI_CFG_REG_BAR_NUM, 0);
-+	if (!mcs->reg_base) {
-+		dev_err(dev, "mcs: Cannot map CSR memory space, aborting\n");
-+		err = -ENOMEM;
-+		goto exit;
-+	}
-+
-+	pci_set_drvdata(pdev, mcs);
-+	mcs->pdev = pdev;
-+	mcs->dev = &pdev->dev;
-+
-+	if (pdev->subsystem_device == PCI_SUBSYS_DEVID_CN10K_B)
-+		mcs->mcs_ops = &cn10kb_mcs_ops;
-+	else
-+		mcs->mcs_ops = cnf10kb_get_mac_ops();
-+
-+	/* Set hardware capabilities */
-+	mcs->mcs_ops->mcs_set_hw_capabilities(mcs);
-+
-+	mcs_global_cfg(mcs);
-+
-+	/* Perform X2P clibration */
-+	err = mcs_x2p_calibration(mcs);
-+	if (err)
-+		goto err_x2p;
-+
-+	mcs->mcs_id = (pci_resource_start(pdev, PCI_CFG_REG_BAR_NUM) >> 24)
-+			& MCS_ID_MASK;
-+
-+	/* Set mcs tx side resources */
-+	err = mcs_alloc_struct_mem(mcs, &mcs->tx);
-+	if (err)
-+		goto err_x2p;
-+
-+	/* Set mcs rx side resources */
-+	err = mcs_alloc_struct_mem(mcs, &mcs->rx);
-+	if (err)
-+		goto err_x2p;
-+
-+	/* per port config */
-+	for (lmac = 0; lmac < mcs->hw->lmac_cnt; lmac++)
-+		mcs_lmac_init(mcs, lmac);
-+
-+	/* Parser configuration */
-+	mcs->mcs_ops->mcs_parser_cfg(mcs);
-+
-+	list_add(&mcs->mcs_list, &mcs_list);
-+
-+	return 0;
-+
-+err_x2p:
-+	/* Enable external bypass */
-+	mcs_set_external_bypass(mcs, true);
-+exit:
-+	pci_release_regions(pdev);
-+	pci_disable_device(pdev);
-+	pci_set_drvdata(pdev, NULL);
-+	return err;
-+}
-+
-+static void mcs_remove(struct pci_dev *pdev)
-+{
-+	struct mcs *mcs = pci_get_drvdata(pdev);
-+
-+	/* Set MCS to external bypass */
-+	mcs_set_external_bypass(mcs, true);
-+	pci_free_irq_vectors(pdev);
-+	pci_release_regions(pdev);
-+	pci_disable_device(pdev);
-+	pci_set_drvdata(pdev, NULL);
-+}
-+
-+struct pci_driver mcs_driver = {
-+	.name = DRV_NAME,
-+	.id_table = mcs_id_table,
-+	.probe = mcs_probe,
-+	.remove = mcs_remove,
-+};
+ /* Set lmac to bypass/operational mode */
+ void mcs_set_lmac_mode(struct mcs *mcs, int lmac_id, u8 mode)
+ {
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mcs.h b/drivers/net/ethernet/marvell/octeontx2/af/mcs.h
-new file mode 100644
-index 0000000..002fee8
---- /dev/null
+index 002fee8..c11d507 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mcs.h
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/mcs.h
-@@ -0,0 +1,92 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Marvell CN10K MCS driver
-+ *
-+ * Copyright (C) 2022 Marvell.
-+ */
+@@ -17,6 +17,10 @@
+ 
+ #define MCS_ID_MASK			0x7
+ 
++#define MCS_PORT_MODE_MASK		0x3
++#define MCS_PORT_FIFO_SKID_MASK		0x3F
++#define MCS_MAX_CUSTOM_TAGS		0x8
 +
-+#ifndef MCS_H
-+#define MCS_H
-+
-+#include <linux/bits.h>
-+#include "rvu.h"
-+
-+#define PCI_DEVID_CN10K_MCS		0xA096
-+
-+#define MCSX_LINK_LMAC_RANGE_MASK	GENMASK_ULL(19, 16)
-+#define MCSX_LINK_LMAC_BASE_MASK	GENMASK_ULL(11, 0)
-+
-+#define MCS_ID_MASK			0x7
-+
-+/* Reserved resources for default bypass entry */
-+#define MCS_RSRC_RSVD_CNT		1
-+
-+struct mcs_rsrc_map {
-+	u16 *flowid2pf_map;
-+	u16 *secy2pf_map;
-+	u16 *sc2pf_map;
-+	u16 *sa2pf_map;
-+	u16 *flowid2secy_map;	/* bitmap flowid mapped to secy*/
-+	struct rsrc_bmap	flow_ids;
-+	struct rsrc_bmap	secy;
-+	struct rsrc_bmap	sc;
-+	struct rsrc_bmap	sa;
-+};
-+
-+struct hwinfo {
-+	u8 tcam_entries;
-+	u8 secy_entries;
-+	u8 sc_entries;
-+	u16 sa_entries;
-+	u8 mcs_x2p_intf;
-+	u8 lmac_cnt;
-+	u8 mcs_blks;
-+	unsigned long	lmac_bmap; /* bitmap of enabled mcs lmac */
-+};
-+
-+struct mcs {
-+	void __iomem		*reg_base;
-+	struct pci_dev		*pdev;
-+	struct device		*dev;
-+	struct hwinfo		*hw;
-+	struct mcs_rsrc_map	tx;
-+	struct mcs_rsrc_map	rx;
-+	u8			mcs_id;
-+	struct mcs_ops		*mcs_ops;
-+	struct list_head	mcs_list;
-+};
-+
-+struct mcs_ops {
-+	void	(*mcs_set_hw_capabilities)(struct mcs *mcs);
-+	void	(*mcs_parser_cfg)(struct mcs *mcs);
-+};
-+
-+extern struct pci_driver mcs_driver;
-+
-+static inline void mcs_reg_write(struct mcs *mcs, u64 offset, u64 val)
-+{
-+	writeq(val, mcs->reg_base + offset);
-+}
-+
-+static inline u64 mcs_reg_read(struct mcs *mcs, u64 offset)
-+{
-+	return readq(mcs->reg_base + offset);
-+}
-+
-+/* MCS APIs */
-+struct mcs *mcs_get_pdata(int mcs_id);
-+int mcs_get_blkcnt(void);
-+int mcs_set_lmac_channels(int mcs_id, u16 base);
-+
-+int mcs_install_flowid_bypass_entry(struct mcs *mcs);
-+void mcs_set_lmac_mode(struct mcs *mcs, int lmac_id, u8 mode);
-+
-+/* CN10K-B APIs */
-+void cn10kb_mcs_set_hw_capabilities(struct mcs *mcs);
-+void cn10kb_mcs_parser_cfg(struct mcs *mcs);
-+
-+/* CNF10K-B APIs */
-+struct mcs_ops *cnf10kb_get_mac_ops(void);
-+void cnf10kb_mcs_set_hw_capabilities(struct mcs *mcs);
-+void cnf10kb_mcs_parser_cfg(struct mcs *mcs);
-+
-+#endif /* MCS_H */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mcs_cnf10kb.c b/drivers/net/ethernet/marvell/octeontx2/af/mcs_cnf10kb.c
-new file mode 100644
-index 0000000..62c83a3e
---- /dev/null
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mcs_cnf10kb.c
-@@ -0,0 +1,65 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Marvell MCS driver
-+ *
-+ * Copyright (C) 2022 Marvell.
-+ */
-+
-+#include "mcs.h"
-+#include "mcs_reg.h"
-+
-+static struct mcs_ops cnf10kb_mcs_ops   = {
-+	.mcs_set_hw_capabilities	= cnf10kb_mcs_set_hw_capabilities,
-+	.mcs_parser_cfg			= cnf10kb_mcs_parser_cfg,
-+};
-+
-+struct mcs_ops *cnf10kb_get_mac_ops(void)
-+{
-+	return &cnf10kb_mcs_ops;
-+}
-+
-+void cnf10kb_mcs_set_hw_capabilities(struct mcs *mcs)
-+{
-+	struct hwinfo *hw = mcs->hw;
-+
-+	hw->tcam_entries = 64;		/* TCAM entries */
-+	hw->secy_entries  = 64;		/* SecY entries */
-+	hw->sc_entries = 64;		/* SC CAM entries */
-+	hw->sa_entries = 128;		/* SA entries */
-+	hw->lmac_cnt = 4;		/* lmacs/ports per mcs block */
-+	hw->mcs_x2p_intf = 1;		/* x2p clabration intf */
-+	hw->mcs_blks = 7;		/* MCS blocks */
-+}
-+
-+void cnf10kb_mcs_parser_cfg(struct mcs *mcs)
-+{
-+	u64 reg, val;
-+
-+	/* VLAN Ctag */
-+	val = (0x8100ull & 0xFFFF) | BIT_ULL(20) | BIT_ULL(22);
-+
-+	reg = MCSX_PEX_RX_SLAVE_CUSTOM_TAGX(0);
-+	mcs_reg_write(mcs, reg, val);
-+
-+	reg = MCSX_PEX_TX_SLAVE_CUSTOM_TAGX(0);
-+	mcs_reg_write(mcs, reg, val);
-+
-+	/* VLAN STag */
-+	val = (0x88a8ull & 0xFFFF) | BIT_ULL(20) | BIT_ULL(23);
-+
-+	/* RX */
-+	reg = MCSX_PEX_RX_SLAVE_CUSTOM_TAGX(1);
-+	mcs_reg_write(mcs, reg, val);
-+
-+	/* TX */
-+	reg = MCSX_PEX_TX_SLAVE_CUSTOM_TAGX(1);
-+	mcs_reg_write(mcs, reg, val);
-+
-+	/* Enable custom tage 0 and 1 and sectag */
-+	val = BIT_ULL(0) | BIT_ULL(1) | BIT_ULL(12);
-+
-+	reg = MCSX_PEX_RX_SLAVE_ETYPE_ENABLE;
-+	mcs_reg_write(mcs, reg, val);
-+
-+	reg = MCSX_PEX_TX_SLAVE_ETYPE_ENABLE;
-+	mcs_reg_write(mcs, reg, val);
-+}
+ /* Reserved resources for default bypass entry */
+ #define MCS_RSRC_RSVD_CNT		1
+ 
+@@ -79,6 +83,12 @@ int mcs_set_lmac_channels(int mcs_id, u16 base);
+ 
+ int mcs_install_flowid_bypass_entry(struct mcs *mcs);
+ void mcs_set_lmac_mode(struct mcs *mcs, int lmac_id, u8 mode);
++void mcs_reset_port(struct mcs *mcs, u8 port_id, u8 reset);
++void mcs_set_port_cfg(struct mcs *mcs, struct mcs_port_cfg_set_req *req);
++void mcs_get_port_cfg(struct mcs *mcs, struct mcs_port_cfg_get_req *req,
++		      struct mcs_port_cfg_get_rsp *rsp);
++void mcs_get_custom_tag_cfg(struct mcs *mcs, struct mcs_custom_tag_cfg_get_req *req,
++			    struct mcs_custom_tag_cfg_get_rsp *rsp);
+ 
+ /* CN10K-B APIs */
+ void cn10kb_mcs_set_hw_capabilities(struct mcs *mcs);
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mcs_reg.h b/drivers/net/ethernet/marvell/octeontx2/af/mcs_reg.h
-new file mode 100644
-index 0000000..61bf8ab
---- /dev/null
+index 61bf8ab..1ce3442 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mcs_reg.h
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/mcs_reg.h
-@@ -0,0 +1,78 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Marvell MCS driver
-+ *
-+ * Copyright (C) 2022 Marvell.
-+ */
-+
-+#ifndef MCS_REG_H
-+#define MCS_REG_H
-+
-+#include <linux/bits.h>
-+
-+/* Registers */
-+#define MCSX_IP_MODE					0x900c8ull
-+
-+#define MCSX_MCS_TOP_SLAVE_CHANNEL_CFG(a) ({		\
+@@ -11,6 +11,15 @@
+ 
+ /* Registers */
+ #define MCSX_IP_MODE					0x900c8ull
++#define MCSX_MCS_TOP_SLAVE_PORT_RESET(a) ({	\
 +	u64 offset;					\
 +							\
-+	offset = 0x808ull;				\
++	offset = 0x408ull;				\
 +	if (mcs->hw->mcs_blks > 1)			\
-+		offset = 0xa68ull;			\
++		offset = 0xa28ull;			\
 +	offset += (a) * 0x8ull;				\
 +	offset; })
 +
-+#define MCSX_MIL_GLOBAL	({				\
+ 
+ #define MCSX_MCS_TOP_SLAVE_CHANNEL_CFG(a) ({		\
+ 	u64 offset;					\
+@@ -29,6 +38,23 @@
+ 		offset = 0x60000ull;			\
+ 	offset; })
+ 
++#define MCSX_MIL_RX_LMACX_CFG(a) ({			\
 +	u64 offset;					\
 +							\
-+	offset = 0x80000ull;				\
++	offset = 0x900a8ull;				\
 +	if (mcs->hw->mcs_blks > 1)			\
-+		offset = 0x60000ull;			\
-+	offset; })
-+
-+#define MCSX_LINK_LMACX_CFG(a) ({			\
-+	u64 offset;					\
-+							\
-+	offset = 0x90000ull;				\
-+	if (mcs->hw->mcs_blks > 1)			\
-+		offset = 0x70000ull;			\
++		offset = 0x700a8ull;			\
 +	offset += (a) * 0x800ull;			\
 +	offset; })
 +
-+#define MCSX_MIL_RX_GBL_STATUS ({			\
++#define MCSX_HIL_GLOBAL ({				\
 +	u64 offset;					\
 +							\
-+	offset = 0x800c8ull;				\
++	offset = 0xc0000ull;				\
 +	if (mcs->hw->mcs_blks > 1)			\
-+		offset = 0x600c8ull;			\
++		offset = 0xa0000ull;			\
 +	offset; })
 +
-+/* PAB */
-+#define MCSX_PAB_RX_SLAVE_PORT_CFGX(a) ({	\
-+	u64 offset;				\
-+						\
-+	offset = 0x1718ull;			\
-+	if (mcs->hw->mcs_blks > 1)		\
-+		offset = 0x280ull;		\
-+	offset += (a) * 0x40ull;		\
+ #define MCSX_LINK_LMACX_CFG(a) ({			\
+ 	u64 offset;					\
+ 							\
+@@ -61,6 +87,16 @@
+ /* PEX registers */
+ #define MCSX_PEX_RX_SLAVE_VLAN_CFGX(a)          (0x3b58ull + (a) * 0x8ull)
+ #define MCSX_PEX_TX_SLAVE_VLAN_CFGX(a)          (0x46f8ull + (a) * 0x8ull)
++#define MCSX_PEX_TX_SLAVE_CUSTOM_TAG_REL_MODE_SEL(a)	(0x788ull + (a) * 0x8ull)
++#define MCSX_PEX_TX_SLAVE_PORT_CONFIG(a)		(0x4738ull + (a) * 0x8ull)
++
++#define MCSX_PEX_RX_SLAVE_PEX_CONFIGURATION ({		\
++	u64 offset;					\
++							\
++	offset = 0x3b50ull;				\
++	if (mcs->hw->mcs_blks > 1)			\
++		offset = 0x4c0ull;			\
 +	offset; })
-+
-+#define MCSX_PAB_TX_SLAVE_PORT_CFGX(a)			(0x2930ull + (a) * 0x40ull)
-+
-+/* PEX registers */
-+#define MCSX_PEX_RX_SLAVE_VLAN_CFGX(a)          (0x3b58ull + (a) * 0x8ull)
-+#define MCSX_PEX_TX_SLAVE_VLAN_CFGX(a)          (0x46f8ull + (a) * 0x8ull)
-+
-+/* CNF10K-B */
-+#define MCSX_PEX_RX_SLAVE_CUSTOM_TAGX(a)        (0x4c8ull + (a) * 0x8ull)
-+#define MCSX_PEX_TX_SLAVE_CUSTOM_TAGX(a)        (0x748ull + (a) * 0x8ull)
-+#define MCSX_PEX_RX_SLAVE_ETYPE_ENABLE          0x6e8ull
-+#define MCSX_PEX_TX_SLAVE_ETYPE_ENABLE          0x968ull
-+
-+/* BEE */
-+#define MCSX_BBE_RX_SLAVE_PADDING_CTL			0xe08ull
-+#define MCSX_BBE_TX_SLAVE_PADDING_CTL			0x12f8ull
-+#define MCSX_BBE_RX_SLAVE_CAL_ENTRY			0x180ull
-+#define MCSX_BBE_RX_SLAVE_CAL_LEN			0x188ull
-+#define MCSX_PAB_RX_SLAVE_FIFO_SKID_CFGX(a)		(0x290ull + (a) * 0x40ull)
-+
-+#endif
+ 
+ /* CNF10K-B */
+ #define MCSX_PEX_RX_SLAVE_CUSTOM_TAGX(a)        (0x4c8ull + (a) * 0x8ull)
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mcs_rvu_if.c b/drivers/net/ethernet/marvell/octeontx2/af/mcs_rvu_if.c
-new file mode 100644
-index 0000000..c3f5b39
---- /dev/null
+index c3f5b39..9eaa8ee 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mcs_rvu_if.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/mcs_rvu_if.c
-@@ -0,0 +1,52 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Marvell CN10K MCS driver
-+ *
-+ * Copyright (C) 2022 Marvell.
-+ */
-+
-+#include <linux/types.h>
-+#include <linux/device.h>
-+#include <linux/module.h>
-+#include <linux/pci.h>
-+
-+#include "mcs.h"
-+#include "rvu.h"
-+#include "lmac_common.h"
-+
-+static void rvu_mcs_set_lmac_bmap(struct rvu *rvu)
+@@ -13,6 +13,126 @@
+ #include "rvu.h"
+ #include "lmac_common.h"
+ 
++int rvu_mbox_handler_mcs_set_lmac_mode(struct rvu *rvu,
++				       struct mcs_set_lmac_mode *req,
++				       struct msg_rsp *rsp)
 +{
-+	struct mcs *mcs = mcs_get_pdata(0);
-+	unsigned long lmac_bmap;
-+	int cgx, lmac, port;
++	struct mcs *mcs;
 +
-+	for (port = 0; port < mcs->hw->lmac_cnt; port++) {
-+		cgx = port / rvu->hw->lmac_per_cgx;
-+		lmac = port % rvu->hw->lmac_per_cgx;
-+		if (!is_lmac_valid(rvu_cgx_pdata(cgx, rvu), lmac))
-+			continue;
-+		set_bit(port, &lmac_bmap);
-+	}
-+	mcs->hw->lmac_bmap = lmac_bmap;
++	if (req->mcs_id >= rvu->mcs_blk_cnt)
++		return MCS_AF_ERR_INVALID_MCSID;
++
++	mcs = mcs_get_pdata(req->mcs_id);
++
++	if (BIT_ULL(req->lmac_id) & mcs->hw->lmac_bmap)
++		mcs_set_lmac_mode(mcs, req->lmac_id, req->mode);
++
++	return 0;
 +}
 +
-+int rvu_mcs_init(struct rvu *rvu)
++int rvu_mbox_handler_mcs_get_hw_info(struct rvu *rvu,
++				     struct msg_req *req,
++				     struct mcs_hw_info *rsp)
 +{
-+	struct rvu_hwinfo *hw = rvu->hw;
-+	int err = 0;
-+
-+	rvu->mcs_blk_cnt = mcs_get_blkcnt();
++	struct mcs *mcs;
 +
 +	if (!rvu->mcs_blk_cnt)
-+		return 0;
++		return MCS_AF_ERR_NOT_MAPPED;
 +
-+	/* Needed only for CN10K-B */
-+	if (rvu->mcs_blk_cnt == 1) {
-+		err = mcs_set_lmac_channels(0, hw->cgx_chan_base);
-+		if (err)
-+			return err;
-+		/* Set active lmacs */
-+		rvu_mcs_set_lmac_bmap(rvu);
-+	}
-+
-+	return err;
++	/* MCS resources are same across all blocks */
++	mcs = mcs_get_pdata(0);
++	rsp->num_mcs_blks = rvu->mcs_blk_cnt;
++	rsp->tcam_entries = mcs->hw->tcam_entries;
++	rsp->secy_entries = mcs->hw->secy_entries;
++	rsp->sc_entries = mcs->hw->sc_entries;
++	rsp->sa_entries = mcs->hw->sa_entries;
++	return 0;
 +}
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-index 7282a82..5d74641 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-@@ -16,6 +16,7 @@
- #include "rvu.h"
- #include "rvu_reg.h"
- #include "ptp.h"
-+#include "mcs.h"
++
++int rvu_mbox_handler_mcs_port_reset(struct rvu *rvu, struct mcs_port_reset_req *req,
++				    struct msg_rsp *rsp)
++{
++	struct mcs *mcs;
++
++	if (req->mcs_id >= rvu->mcs_blk_cnt)
++		return MCS_AF_ERR_INVALID_MCSID;
++
++	mcs = mcs_get_pdata(req->mcs_id);
++
++	mcs_reset_port(mcs, req->port_id, req->reset);
++
++	return 0;
++}
++
++int rvu_mbox_handler_mcs_set_active_lmac(struct rvu *rvu,
++					 struct mcs_set_active_lmac *req,
++					 struct msg_rsp *rsp)
++{
++	struct mcs *mcs;
++
++	if (req->mcs_id >= rvu->mcs_blk_cnt)
++		return MCS_AF_ERR_INVALID_MCSID;
++
++	mcs = mcs_get_pdata(req->mcs_id);
++	if (!mcs)
++		return MCS_AF_ERR_NOT_MAPPED;
++
++	mcs->hw->lmac_bmap = req->lmac_bmap;
++	mcs_set_lmac_channels(req->mcs_id, req->chan_base);
++	return 0;
++}
++
++int rvu_mbox_handler_mcs_port_cfg_set(struct rvu *rvu, struct mcs_port_cfg_set_req *req,
++				      struct msg_rsp *rsp)
++{
++	struct mcs *mcs;
++
++	if (req->mcs_id >= rvu->mcs_blk_cnt)
++		return MCS_AF_ERR_INVALID_MCSID;
++
++	mcs = mcs_get_pdata(req->mcs_id);
++
++	if (mcs->hw->lmac_cnt <= req->port_id || !(mcs->hw->lmac_bmap & BIT_ULL(req->port_id)))
++		return -EINVAL;
++
++	mcs_set_port_cfg(mcs, req);
++
++	return 0;
++}
++
++int rvu_mbox_handler_mcs_port_cfg_get(struct rvu *rvu, struct mcs_port_cfg_get_req *req,
++				      struct mcs_port_cfg_get_rsp *rsp)
++{
++	struct mcs *mcs;
++
++	if (req->mcs_id >= rvu->mcs_blk_cnt)
++		return MCS_AF_ERR_INVALID_MCSID;
++
++	mcs = mcs_get_pdata(req->mcs_id);
++
++	if (mcs->hw->lmac_cnt <= req->port_id || !(mcs->hw->lmac_bmap & BIT_ULL(req->port_id)))
++		return -EINVAL;
++
++	mcs_get_port_cfg(mcs, req, rsp);
++
++	return 0;
++}
++
++int rvu_mbox_handler_mcs_custom_tag_cfg_get(struct rvu *rvu, struct mcs_custom_tag_cfg_get_req *req,
++					    struct mcs_custom_tag_cfg_get_rsp *rsp)
++{
++	struct mcs *mcs;
++
++	if (req->mcs_id >= rvu->mcs_blk_cnt)
++		return MCS_AF_ERR_INVALID_MCSID;
++
++	mcs = mcs_get_pdata(req->mcs_id);
++
++	mcs_get_custom_tag_cfg(mcs, req, rsp);
++
++	return 0;
++}
++
+ static void rvu_mcs_set_lmac_bmap(struct rvu *rvu)
+ {
+ 	struct mcs *mcs = mcs_get_pdata(0);
+@@ -32,7 +152,8 @@ static void rvu_mcs_set_lmac_bmap(struct rvu *rvu)
+ int rvu_mcs_init(struct rvu *rvu)
+ {
+ 	struct rvu_hwinfo *hw = rvu->hw;
+-	int err = 0;
++	int lmac, err = 0, mcs_id;
++	struct mcs *mcs;
  
- #include "rvu_trace.h"
- #include "rvu_npc_hash.h"
-@@ -1159,6 +1160,12 @@ static int rvu_setup_hw_resources(struct rvu *rvu)
+ 	rvu->mcs_blk_cnt = mcs_get_blkcnt();
  
- 	rvu_program_channels(rvu);
+@@ -48,5 +169,11 @@ int rvu_mcs_init(struct rvu *rvu)
+ 		rvu_mcs_set_lmac_bmap(rvu);
+ 	}
  
-+	err = rvu_mcs_init(rvu);
-+	if (err) {
-+		dev_err(rvu->dev, "%s: Failed to initialize mcs\n", __func__);
-+		goto nix_err;
++	for (mcs_id = 0; mcs_id < rvu->mcs_blk_cnt; mcs_id++) {
++		mcs = mcs_get_pdata(mcs_id);
++		for (lmac = 0; lmac < mcs->hw->lmac_cnt; lmac++)
++			mcs_set_lmac_mode(mcs, lmac, 0);
 +	}
 +
- 	return 0;
- 
- nix_err:
-@@ -3354,12 +3361,18 @@ static int __init rvu_init_module(void)
- 	if (err < 0)
- 		goto ptp_err;
- 
-+	err = pci_register_driver(&mcs_driver);
-+	if (err < 0)
-+		goto mcs_err;
-+
- 	err =  pci_register_driver(&rvu_driver);
- 	if (err < 0)
- 		goto rvu_err;
- 
- 	return 0;
- rvu_err:
-+	pci_unregister_driver(&mcs_driver);
-+mcs_err:
- 	pci_unregister_driver(&ptp_driver);
- ptp_err:
- 	pci_unregister_driver(&cgx_driver);
-@@ -3370,6 +3383,7 @@ static int __init rvu_init_module(void)
- static void __exit rvu_cleanup_module(void)
- {
- 	pci_unregister_driver(&rvu_driver);
-+	pci_unregister_driver(&mcs_driver);
- 	pci_unregister_driver(&ptp_driver);
- 	pci_unregister_driver(&cgx_driver);
+ 	return err;
  }
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-index d15bc44..9a150da 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-@@ -25,6 +25,8 @@
- /* Subsystem Device ID */
- #define PCI_SUBSYS_DEVID_96XX                  0xB200
- #define PCI_SUBSYS_DEVID_CN10K_A	       0xB900
-+#define PCI_SUBSYS_DEVID_CNF10K_B              0xBC00
-+#define PCI_SUBSYS_DEVID_CN10K_B               0xBD00
- 
- /* PCI BAR nos */
- #define	PCI_AF_REG_BAR_NUM			0
-@@ -497,6 +499,8 @@ struct rvu {
- 
- 	struct ptp		*ptp;
- 
-+	int			mcs_blk_cnt;
-+
- #ifdef CONFIG_DEBUG_FS
- 	struct rvu_debugfs	rvu_dbg;
- #endif
-@@ -868,4 +872,8 @@ void rvu_switch_update_rules(struct rvu *rvu, u16 pcifunc);
- int rvu_npc_set_parse_mode(struct rvu *rvu, u16 pcifunc, u64 mode, u8 dir,
- 			   u64 pkind, u8 var_len_off, u8 var_len_off_mask,
- 			   u8 shift_dir);
-+
-+/* CN10K MCS */
-+int rvu_mcs_init(struct rvu *rvu);
-+
- #endif /* RVU_H */
 -- 
 2.7.4
 
