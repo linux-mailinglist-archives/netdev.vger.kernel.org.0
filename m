@@ -2,55 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 533A95F17AF
-	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 02:55:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96F1A5F17D0
+	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 03:01:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231745AbiJAAzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 20:55:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55042 "EHLO
+        id S233009AbiJABBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 21:01:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229730AbiJAAy7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 20:54:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15A4E2F01B;
-        Fri, 30 Sep 2022 17:54:56 -0700 (PDT)
+        with ESMTP id S232909AbiJABAu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 21:00:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6377962C
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 17:59:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 92EC9B827A1;
-        Sat,  1 Oct 2022 00:54:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A773AC433D6;
-        Sat,  1 Oct 2022 00:54:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CB5660BC7
+        for <netdev@vger.kernel.org>; Sat,  1 Oct 2022 00:59:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3115C433D6;
+        Sat,  1 Oct 2022 00:59:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664585694;
-        bh=o/Ev9gMwsPF3krUN9RG4ffs3+D3ve0KjtmBjCHaIChs=;
+        s=k20201202; t=1664585983;
+        bh=V1d8o4cuVLbPRw3xs5Z0YD2UtCx1P6AZ5xZiEnBBt6o=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WHKr5jJRh8dZmcthCHMQkPI7gwSvG8FD3SmcU4HrLLbvrBNkppUemBQOcFD9q4C9k
-         616tzgVI5FOe3/9Owy6uRjRHpPruRXOr1CSAbv3gFHxj0UezFxjCWbsIr0ghCifHHV
-         PsU6kGaKcaBm93yrnHnGqG8aW2Cud4gdo6SPSyMudECIR5LkgUfdf3MN0JP9WcGvXg
-         MYoujwePJLub6u2KcmKHl4nQgWDFKYmYAsZ3bxW+SUrfyYYzNh+PfVQ99lGwQAxICe
-         omttKelWJfTBE6s6nSmgU9tWyDlM9nHKp0eTINJMzNZBY6IKkaFhgO6TrQpbzty84B
-         ZOr6+43JMeG/Q==
-Date:   Fri, 30 Sep 2022 17:54:52 -0700
+        b=rQia9DIMizXdYpp8B0wQ4TjMIwUZHOtvbSegVmtezKXkGPhd81dciY97dGFRj460O
+         3+j3yYxbp1yvE82M3YKbGtV6Akfz8VTnrDFM9+T4vgoWYSIAs5fKd5L3wHpr6oz9Ja
+         RM5cGTEjXxCZ1GAEcSBpx9+8EcjwleZq3Mh+aeAHsoftNohpb9GkP7iG0CoT/Yb4kh
+         3i4tXcJ1cAmQ0jDc6v5CBQO1fPoidpMoVDSzFNg6Krcli6MTESlUu/vXraqmbWuQOp
+         XKMuhAL3KkdC5TxcBhIlU2pfjO21W/MgDZeDKZMiEVKVEnXdztim0XuJFK4rc+xF3d
+         +WQzzQt6hgkvg==
+Date:   Fri, 30 Sep 2022 17:59:42 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Petr Machata <petrm@nvidia.com>
-Cc:     Daniel Machon <daniel.machon@microchip.com>,
-        <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <maxime.chevallier@bootlin.com>, <thomas.petazzoni@bootlin.com>,
-        <edumazet@google.com>, <pabeni@redhat.com>,
-        <lars.povlsen@microchip.com>, <Steen.Hegelund@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, <joe@perches.com>,
-        <linux@armlinux.org.uk>, <horatiu.vultur@microchip.com>,
-        <Julia.Lawall@inria.fr>, <vladimir.oltean@nxp.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH net-next v2 1/6] net: dcb: add new pcp selector to app
- object
-Message-ID: <20220930175452.1937dadd@kernel.org>
-In-Reply-To: <87leq1uiyc.fsf@nvidia.com>
-References: <20220929185207.2183473-1-daniel.machon@microchip.com>
-        <20220929185207.2183473-2-daniel.machon@microchip.com>
-        <87leq1uiyc.fsf@nvidia.com>
+To:     David Yang <mmyangfl@gmail.com>
+Cc:     Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH v4] net: mv643xx_eth: support MII/GMII/RGMII modes for
+ Kirkwood
+Message-ID: <20220930175942.76db1900@kernel.org>
+In-Reply-To: <20220930222540.966357-1-mmyangfl@gmail.com>
+References: <20220930213534.962336-1-mmyangfl@gmail.com>
+        <20220930222540.966357-1-mmyangfl@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -63,43 +56,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 30 Sep 2022 14:20:50 +0200 Petr Machata wrote:
-> > @@ -1495,7 +1536,7 @@ static int dcbnl_ieee_set(struct net_device *netdev, struct nlmsghdr *nlh,
-> >  		nla_for_each_nested(attr, ieee[DCB_ATTR_IEEE_APP_TABLE], rem) {
-> >  			struct dcb_app *app_data;
-> >
-> > -			if (nla_type(attr) != DCB_ATTR_IEEE_APP)
-> > +			if (!dcbnl_app_attr_type_validate(nla_type(attr)))  
+On Sat,  1 Oct 2022 06:25:39 +0800 David Yang wrote:
+> Support mode switch properly, which is not available before.
 > 
-> Oh no! It wasn't validating the DCB_ATTR_IEEE_APP_TABLE nest against a
-> policy! Instead it was just skipping whatever is not DCB_ATTR_IEEE_APP.
-> 
-> So userspace was permitted to shove random crap down here, and it would
-> just quietly be ignored. We can't start reinterpreting some of that crap
-> as information. We also can't start bouncing it.
+> If SoC has two Ethernet controllers, by setting both of them into MII
+> mode, the first controller enters GMII mode, while the second
+> controller is effectively disabled. This requires configuring (and
+> maybe enabling) the second controller in the device tree, even though
+> it cannot be used.
 
-Are you saying that we can't start interpreting new attr types?
+Well, this version does not build:
 
-"Traditionally" netlink ignored new attr types so from that perspective
-starting to interpret new types is pretty "run of the mill" for netlink.
-IOW *_deprecated() parsing routines do not use NL_VALIDATE_MAXTYPE.
-
-That does put netlink in a bit of a special category when it comes to
-input validation, but really putting in a random but valid attr is much
-harder than not initializing a struct member. Is there user space which
-does that?
-
-Sorry if I'm misinterpreting the situation.
-
-> This needs to be done differently.
-> 
-> One API "hole" that I see is that payload with size < struct dcb_app
-> gets bounced.
-> 
-> We can pack the new stuff into a smaller payload. The inner attribute
-> would not be DCB_ATTR_DCB_APP, but say DCB_ATTR_DCB_PCP, which would
-> imply the selector. The payload can be struct { u8 prio; u16 proto; }.
-> This would have been bounced by the old UAPI, so we know no userspace
-> makes use of that.
-> 
-> We can treat the output similarly.
+drivers/net/ethernet/marvell/mv643xx_eth.c:1252:38: error: member reference type 'struct device' is not a pointer; did you mean to use '.'?
+            of_device_is_compatible(dev->dev->of_node,
+                                    ~~~~~~~~^~
+                                            .
