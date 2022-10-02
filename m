@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D57C65F2167
-	for <lists+netdev@lfdr.de>; Sun,  2 Oct 2022 07:14:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 832F05F2169
+	for <lists+netdev@lfdr.de>; Sun,  2 Oct 2022 07:14:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229630AbiJBFOX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Oct 2022 01:14:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34320 "EHLO
+        id S229675AbiJBFOq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Oct 2022 01:14:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229592AbiJBFOO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Oct 2022 01:14:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC3D551A23
-        for <netdev@vger.kernel.org>; Sat,  1 Oct 2022 22:14:07 -0700 (PDT)
+        with ESMTP id S229646AbiJBFOP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Oct 2022 01:14:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 280D252090
+        for <netdev@vger.kernel.org>; Sat,  1 Oct 2022 22:14:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 06CA260E04
-        for <netdev@vger.kernel.org>; Sun,  2 Oct 2022 05:14:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 596AAC433B5;
-        Sun,  2 Oct 2022 05:14:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD595B8075B
+        for <netdev@vger.kernel.org>; Sun,  2 Oct 2022 05:14:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58760C433D7;
+        Sun,  2 Oct 2022 05:14:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664687646;
-        bh=pBsYphoR/hq0SV+iO+MtiSYa3Yf3FGYBOfY2l5HuYz8=;
+        s=k20201202; t=1664687647;
+        bh=v+ZiVtfxyhUwI0OL+TNoshPOxwK2xlkrOp+1Dhewy7A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qU7eJJidieMwv9FjrR3v/r/gOctJb8PziFkVQ4Sjv678cn1xCZEkeFUFIuq/pIeyN
-         FNBoUaKoHY40eO4+LMJHiKAhaSZ873MfxbHlZ9eRl59tTXAlxy+BQe014ZtXl/6q7a
-         b4W3kDazpHLg3h8YOtesEnipBr4pHUqDCnJTL92oniWohZMyRs/CBA3622H82m7vOU
-         8B3e4eId42aP8qc4UoFofiQL0w+iQYUOvuaVo2g2QZQqFWYo/o+VdWDE95L5GzcdVU
-         Rsr/vuFiOWLVPN336n8nybzfmCmK8IiRulgtNJ1gYEjvwduWsgdHlt65Iyf+iEy5rY
-         gwjAbz2FvLqxA==
+        b=nf98N4L+INR72wUUOFc2AL3qO0PhanKoOFavOaY9l+YfMKuAvuxCZ6fZqIoAms/oD
+         vvNlT+U0SOKo2o9mOSl/z1rWAWy12UxfZWjxF9exxP4zkSa2V+ADEYuv4Tt6OlliPm
+         sCPdFn77hnhEuxybNPiO43KhsKxijGZ6VkSHUGuHFc6xT0C962pr+3tO1eUIfVQhg2
+         fLqp+sV4nAbg/hCLM2xlW6fWkL9hPX0hQi0hw2aDcq8tFsZ5gYGQ0cebbuSC6NwBVd
+         1FvjIs7BkMS9Jkowa5ijZtp+IfUHqr/LpNA5O7kF4SyZn1uiqge/m/14NY5cO2zXnb
+         VdEXDKDpiiK/A==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,10 +38,11 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
+        Maher Sanalla <msanalla@nvidia.com>,
         Moshe Shemesh <moshe@nvidia.com>
-Subject: [PATCH net-next 11/15] net/mlx5: Start health poll at earlier stage of driver load
-Date:   Sat,  1 Oct 2022 21:56:28 -0700
-Message-Id: <20221002045632.291612-12-saeed@kernel.org>
+Subject: [PATCH net-next 12/15] net/mlx5: Set default grace period based on function type
+Date:   Sat,  1 Oct 2022 21:56:29 -0700
+Message-Id: <20221002045632.291612-13-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221002045632.291612-1-saeed@kernel.org>
 References: <20221002045632.291612-1-saeed@kernel.org>
@@ -56,142 +57,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Moshe Shemesh <moshe@nvidia.com>
+From: Maher Sanalla <msanalla@nvidia.com>
 
-Start health poll at earlier stage, so if fw fatal issue occurred before
-or during initialization commands such as init_hca or set_hca_cap the
-poll health can detect and indicate that the driver is already in error
-state.
+Currently, driver sets the same grace period for fw fatal health reporter
+to any type of function.
 
-Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
+Since the lower level functions are more vulnerable to fw fatal errors as a
+result of parent function closure/reload, set a smaller grace period for
+the lower level functions, as follows:
+
+1. For ECPF: 180 seconds.
+2. For PF: 60 seconds.
+3. For VF/SF: 30 seconds.
+
+Signed-off-by: Maher Sanalla <msanalla@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/health.c    | 11 ++++++++---
- drivers/net/ethernet/mellanox/mlx5/core/main.c  | 17 ++++++++++-------
- include/linux/mlx5/driver.h                     |  1 +
- 3 files changed, 19 insertions(+), 10 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/health.c   | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/health.c b/drivers/net/ethernet/mellanox/mlx5/core/health.c
-index 59205ba2ef7b..5bfc54a10621 100644
+index 5bfc54a10621..86ed87d704f7 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/health.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/health.c
-@@ -843,9 +843,6 @@ void mlx5_start_health_poll(struct mlx5_core_dev *dev)
+@@ -702,11 +702,25 @@ static const struct devlink_health_reporter_ops mlx5_fw_fatal_reporter_ops = {
+ 		.dump = mlx5_fw_fatal_reporter_dump,
+ };
  
- 	health->timer.expires = jiffies + msecs_to_jiffies(poll_interval_ms);
- 	add_timer(&health->timer);
--
--	if (mlx5_core_is_pf(dev) && MLX5_CAP_MCAM_REG(dev, mrtc))
--		queue_delayed_work(health->wq, &health->update_fw_log_ts_work, 0);
- }
- 
- void mlx5_stop_health_poll(struct mlx5_core_dev *dev, bool disable_health)
-@@ -862,6 +859,14 @@ void mlx5_stop_health_poll(struct mlx5_core_dev *dev, bool disable_health)
- 	del_timer_sync(&health->timer);
- }
- 
-+void mlx5_start_health_fw_log_up(struct mlx5_core_dev *dev)
-+{
-+	struct mlx5_core_health *health = &dev->priv.health;
+-#define MLX5_REPORTER_FW_GRACEFUL_PERIOD 1200000
++#define MLX5_FW_REPORTER_ECPF_GRACEFUL_PERIOD 180000
++#define MLX5_FW_REPORTER_PF_GRACEFUL_PERIOD 60000
++#define MLX5_FW_REPORTER_VF_GRACEFUL_PERIOD 30000
++#define MLX5_FW_REPORTER_DEFAULT_GRACEFUL_PERIOD MLX5_FW_REPORTER_VF_GRACEFUL_PERIOD
 +
-+	if (mlx5_core_is_pf(dev) && MLX5_CAP_MCAM_REG(dev, mrtc))
-+		queue_delayed_work(health->wq, &health->update_fw_log_ts_work, 0);
-+}
-+
- void mlx5_drain_health_wq(struct mlx5_core_dev *dev)
+ static void mlx5_fw_reporters_create(struct mlx5_core_dev *dev)
  {
  	struct mlx5_core_health *health = &dev->priv.health;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index daa7442f31c9..0b459d841c3a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -1092,7 +1092,7 @@ static void mlx5_cleanup_once(struct mlx5_core_dev *dev)
- 	mlx5_devcom_unregister_device(dev->priv.devcom);
- }
- 
--static int mlx5_function_setup(struct mlx5_core_dev *dev, u64 timeout)
-+static int mlx5_function_setup(struct mlx5_core_dev *dev, bool boot, u64 timeout)
- {
- 	int err;
- 
-@@ -1130,10 +1130,12 @@ static int mlx5_function_setup(struct mlx5_core_dev *dev, u64 timeout)
- 
- 	mlx5_cmd_set_state(dev, MLX5_CMDIF_STATE_UP);
- 
-+	mlx5_start_health_poll(dev);
+ 	struct devlink *devlink = priv_to_devlink(dev);
++	u64 grace_period;
 +
- 	err = mlx5_core_enable_hca(dev, 0);
- 	if (err) {
- 		mlx5_core_err(dev, "enable hca failed\n");
--		goto err_cmd_cleanup;
-+		goto stop_health_poll;
- 	}
++	if (mlx5_core_is_ecpf(dev)) {
++		grace_period = MLX5_FW_REPORTER_ECPF_GRACEFUL_PERIOD;
++	} else if (mlx5_core_is_pf(dev)) {
++		grace_period = MLX5_FW_REPORTER_PF_GRACEFUL_PERIOD;
++	} else {
++		/* VF or SF */
++		grace_period = MLX5_FW_REPORTER_DEFAULT_GRACEFUL_PERIOD;
++	}
  
- 	err = mlx5_core_set_issi(dev);
-@@ -1185,8 +1187,7 @@ static int mlx5_function_setup(struct mlx5_core_dev *dev, u64 timeout)
- 		mlx5_core_err(dev, "query hca failed\n");
- 		goto reclaim_boot_pages;
- 	}
--
--	mlx5_start_health_poll(dev);
-+	mlx5_start_health_fw_log_up(dev);
- 
- 	return 0;
- 
-@@ -1194,6 +1195,8 @@ static int mlx5_function_setup(struct mlx5_core_dev *dev, u64 timeout)
- 	mlx5_reclaim_startup_pages(dev);
- err_disable_hca:
- 	mlx5_core_disable_hca(dev, 0);
-+stop_health_poll:
-+	mlx5_stop_health_poll(dev, boot);
- err_cmd_cleanup:
- 	mlx5_cmd_set_state(dev, MLX5_CMDIF_STATE_DOWN);
- 	mlx5_cmd_cleanup(dev);
-@@ -1205,7 +1208,6 @@ static int mlx5_function_teardown(struct mlx5_core_dev *dev, bool boot)
- {
- 	int err;
- 
--	mlx5_stop_health_poll(dev, boot);
- 	err = mlx5_cmd_teardown_hca(dev);
- 	if (err) {
- 		mlx5_core_err(dev, "tear_down_hca failed, skip cleanup\n");
-@@ -1213,6 +1215,7 @@ static int mlx5_function_teardown(struct mlx5_core_dev *dev, bool boot)
- 	}
- 	mlx5_reclaim_startup_pages(dev);
- 	mlx5_core_disable_hca(dev, 0);
-+	mlx5_stop_health_poll(dev, boot);
- 	mlx5_cmd_set_state(dev, MLX5_CMDIF_STATE_DOWN);
- 	mlx5_cmd_cleanup(dev);
- 
-@@ -1362,7 +1365,7 @@ int mlx5_init_one(struct mlx5_core_dev *dev)
- 	mutex_lock(&dev->intf_state_mutex);
- 	dev->state = MLX5_DEVICE_STATE_UP;
- 
--	err = mlx5_function_setup(dev, mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT));
-+	err = mlx5_function_setup(dev, true, mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT));
- 	if (err)
- 		goto err_function;
- 
-@@ -1450,7 +1453,7 @@ int mlx5_load_one_devl_locked(struct mlx5_core_dev *dev, bool recovery)
- 		timeout = mlx5_tout_ms(dev, FW_PRE_INIT_ON_RECOVERY_TIMEOUT);
- 	else
- 		timeout = mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT);
--	err = mlx5_function_setup(dev, timeout);
-+	err = mlx5_function_setup(dev, false, timeout);
- 	if (err)
- 		goto err_function;
- 
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index 285f301a6390..a12929bc31b2 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -1017,6 +1017,7 @@ void mlx5_health_cleanup(struct mlx5_core_dev *dev);
- int mlx5_health_init(struct mlx5_core_dev *dev);
- void mlx5_start_health_poll(struct mlx5_core_dev *dev);
- void mlx5_stop_health_poll(struct mlx5_core_dev *dev, bool disable_health);
-+void mlx5_start_health_fw_log_up(struct mlx5_core_dev *dev);
- void mlx5_drain_health_wq(struct mlx5_core_dev *dev);
- void mlx5_trigger_health_work(struct mlx5_core_dev *dev);
- int mlx5_frag_buf_alloc_node(struct mlx5_core_dev *dev, int size,
+ 	health->fw_reporter =
+ 		devlink_health_reporter_create(devlink, &mlx5_fw_reporter_ops,
+@@ -718,7 +732,7 @@ static void mlx5_fw_reporters_create(struct mlx5_core_dev *dev)
+ 	health->fw_fatal_reporter =
+ 		devlink_health_reporter_create(devlink,
+ 					       &mlx5_fw_fatal_reporter_ops,
+-					       MLX5_REPORTER_FW_GRACEFUL_PERIOD,
++					       grace_period,
+ 					       dev);
+ 	if (IS_ERR(health->fw_fatal_reporter))
+ 		mlx5_core_warn(dev, "Failed to create fw fatal reporter, err = %ld\n",
 -- 
 2.37.3
 
