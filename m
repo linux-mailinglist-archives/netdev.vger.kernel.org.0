@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24C635F2166
-	for <lists+netdev@lfdr.de>; Sun,  2 Oct 2022 07:14:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D57C65F2167
+	for <lists+netdev@lfdr.de>; Sun,  2 Oct 2022 07:14:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229563AbiJBFOW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Oct 2022 01:14:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34304 "EHLO
+        id S229630AbiJBFOX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Oct 2022 01:14:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbiJBFON (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Oct 2022 01:14:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B4251A14
+        with ESMTP id S229592AbiJBFOO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Oct 2022 01:14:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC3D551A23
         for <netdev@vger.kernel.org>; Sat,  1 Oct 2022 22:14:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F1AF60DF3
-        for <netdev@vger.kernel.org>; Sun,  2 Oct 2022 05:14:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63964C433D7;
-        Sun,  2 Oct 2022 05:14:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 06CA260E04
+        for <netdev@vger.kernel.org>; Sun,  2 Oct 2022 05:14:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 596AAC433B5;
+        Sun,  2 Oct 2022 05:14:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664687645;
-        bh=PYgtbWgzEyKgZsa9miztgRty2qRP+ainQ9wggM91+5k=;
+        s=k20201202; t=1664687646;
+        bh=pBsYphoR/hq0SV+iO+MtiSYa3Yf3FGYBOfY2l5HuYz8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LO+riRdL/3NqiF65WRw3P1Iksj1e7wROzlHa/Mt7mbfzf4Yj/YsrPpSJ8aiv86+X7
-         vV2znnPZUInlfVGoeytnBI8geU2dQMD/S1/G5K4XylTPn7z4A+AOR2UcZIrukoNzSE
-         PjvdqAhS57GGOJ+svQ7rp63uzY7nSJCqs8Au8/Kl7/dQZAKvWZc/dwiIXb17f0qkX3
-         dy4mZf6V/dIFQNfVQKmNd7eUM/2/Q9L0KCsjvUTjw/D9R06K9EvLjONImzlyI14UXp
-         JxGFgpvLH6YzXzZX8L3aMt/14DHj1EWCM3MwBLEuKJn63bNuJxdSZ7GHzvbgKtg2CN
-         VbOUn5cCjhTHg==
+        b=qU7eJJidieMwv9FjrR3v/r/gOctJb8PziFkVQ4Sjv678cn1xCZEkeFUFIuq/pIeyN
+         FNBoUaKoHY40eO4+LMJHiKAhaSZ873MfxbHlZ9eRl59tTXAlxy+BQe014ZtXl/6q7a
+         b4W3kDazpHLg3h8YOtesEnipBr4pHUqDCnJTL92oniWohZMyRs/CBA3622H82m7vOU
+         8B3e4eId42aP8qc4UoFofiQL0w+iQYUOvuaVo2g2QZQqFWYo/o+VdWDE95L5GzcdVU
+         Rsr/vuFiOWLVPN336n8nybzfmCmK8IiRulgtNJ1gYEjvwduWsgdHlt65Iyf+iEy5rY
+         gwjAbz2FvLqxA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>, Gal Pressman <gal@nvidia.com>
-Subject: [PATCH net-next 10/15] net/mlx5e: Expose rx_oversize_pkts_buffer counter
-Date:   Sat,  1 Oct 2022 21:56:27 -0700
-Message-Id: <20221002045632.291612-11-saeed@kernel.org>
+        Tariq Toukan <tariqt@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>
+Subject: [PATCH net-next 11/15] net/mlx5: Start health poll at earlier stage of driver load
+Date:   Sat,  1 Oct 2022 21:56:28 -0700
+Message-Id: <20221002045632.291612-12-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221002045632.291612-1-saeed@kernel.org>
 References: <20221002045632.291612-1-saeed@kernel.org>
@@ -55,135 +56,142 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Gal Pressman <gal@nvidia.com>
+From: Moshe Shemesh <moshe@nvidia.com>
 
-Add the rx_oversize_pkts_buffer counter to ethtool statistics.
-This counter exposes the number of dropped received packets due to
-length which arrived to RQ and exceed software buffer size allocated by
-the device for incoming traffic. It might imply that the device MTU is
-larger than the software buffers size.
+Start health poll at earlier stage, so if fw fatal issue occurred before
+or during initialization commands such as init_hca or set_hca_cap the
+poll health can detect and indicate that the driver is already in error
+state.
 
-Signed-off-by: Gal Pressman <gal@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en_main.c |  3 ++-
- .../ethernet/mellanox/mlx5/core/en_stats.c    | 21 ++++++++++++++++++-
- .../ethernet/mellanox/mlx5/core/en_stats.h    |  4 ++++
- include/linux/mlx5/mlx5_ifc.h                 |  8 +++++--
- 4 files changed, 32 insertions(+), 4 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/health.c    | 11 ++++++++---
+ drivers/net/ethernet/mellanox/mlx5/core/main.c  | 17 ++++++++++-------
+ include/linux/mlx5/driver.h                     |  1 +
+ 3 files changed, 19 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index d4f03ff7b0e1..364f04309149 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -3699,7 +3699,8 @@ mlx5e_get_stats(struct net_device *dev, struct rtnl_link_stats64 *stats)
- 	stats->rx_length_errors =
- 		PPORT_802_3_GET(pstats, a_in_range_length_errors) +
- 		PPORT_802_3_GET(pstats, a_out_of_range_length_field) +
--		PPORT_802_3_GET(pstats, a_frame_too_long_errors);
-+		PPORT_802_3_GET(pstats, a_frame_too_long_errors) +
-+		VNIC_ENV_GET(&priv->stats.vnic, eth_wqe_too_small);
- 	stats->rx_crc_errors =
- 		PPORT_802_3_GET(pstats, a_frame_check_sequence_errors);
- 	stats->rx_frame_errors = PPORT_802_3_GET(pstats, a_alignment_errors);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-index 575717186912..03c1841970f1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-@@ -641,17 +641,26 @@ static const struct counter_desc vnic_env_stats_dev_oob_desc[] = {
- 		VNIC_ENV_OFF(vport_env.internal_rq_out_of_buffer) },
- };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/health.c b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+index 59205ba2ef7b..5bfc54a10621 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/health.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+@@ -843,9 +843,6 @@ void mlx5_start_health_poll(struct mlx5_core_dev *dev)
  
-+static const struct counter_desc vnic_env_stats_drop_desc[] = {
-+	{ "rx_oversize_pkts_buffer",
-+		VNIC_ENV_OFF(vport_env.eth_wqe_too_small) },
-+};
+ 	health->timer.expires = jiffies + msecs_to_jiffies(poll_interval_ms);
+ 	add_timer(&health->timer);
+-
+-	if (mlx5_core_is_pf(dev) && MLX5_CAP_MCAM_REG(dev, mrtc))
+-		queue_delayed_work(health->wq, &health->update_fw_log_ts_work, 0);
+ }
+ 
+ void mlx5_stop_health_poll(struct mlx5_core_dev *dev, bool disable_health)
+@@ -862,6 +859,14 @@ void mlx5_stop_health_poll(struct mlx5_core_dev *dev, bool disable_health)
+ 	del_timer_sync(&health->timer);
+ }
+ 
++void mlx5_start_health_fw_log_up(struct mlx5_core_dev *dev)
++{
++	struct mlx5_core_health *health = &dev->priv.health;
 +
- #define NUM_VNIC_ENV_STEER_COUNTERS(dev) \
- 	(MLX5_CAP_GEN(dev, nic_receive_steering_discard) ? \
- 	 ARRAY_SIZE(vnic_env_stats_steer_desc) : 0)
- #define NUM_VNIC_ENV_DEV_OOB_COUNTERS(dev) \
- 	(MLX5_CAP_GEN(dev, vnic_env_int_rq_oob) ? \
- 	 ARRAY_SIZE(vnic_env_stats_dev_oob_desc) : 0)
-+#define NUM_VNIC_ENV_DROP_COUNTERS(dev) \
-+	(MLX5_CAP_GEN(dev, eth_wqe_too_small) ? \
-+	 ARRAY_SIZE(vnic_env_stats_drop_desc) : 0)
- 
- static MLX5E_DECLARE_STATS_GRP_OP_NUM_STATS(vnic_env)
++	if (mlx5_core_is_pf(dev) && MLX5_CAP_MCAM_REG(dev, mrtc))
++		queue_delayed_work(health->wq, &health->update_fw_log_ts_work, 0);
++}
++
+ void mlx5_drain_health_wq(struct mlx5_core_dev *dev)
  {
- 	return NUM_VNIC_ENV_STEER_COUNTERS(priv->mdev) +
--		NUM_VNIC_ENV_DEV_OOB_COUNTERS(priv->mdev);
-+	       NUM_VNIC_ENV_DEV_OOB_COUNTERS(priv->mdev) +
-+	       NUM_VNIC_ENV_DROP_COUNTERS(priv->mdev);
+ 	struct mlx5_core_health *health = &dev->priv.health;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index daa7442f31c9..0b459d841c3a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1092,7 +1092,7 @@ static void mlx5_cleanup_once(struct mlx5_core_dev *dev)
+ 	mlx5_devcom_unregister_device(dev->priv.devcom);
  }
  
- static MLX5E_DECLARE_STATS_GRP_OP_FILL_STRS(vnic_env)
-@@ -665,6 +674,11 @@ static MLX5E_DECLARE_STATS_GRP_OP_FILL_STRS(vnic_env)
- 	for (i = 0; i < NUM_VNIC_ENV_DEV_OOB_COUNTERS(priv->mdev); i++)
- 		strcpy(data + (idx++) * ETH_GSTRING_LEN,
- 		       vnic_env_stats_dev_oob_desc[i].format);
+-static int mlx5_function_setup(struct mlx5_core_dev *dev, u64 timeout)
++static int mlx5_function_setup(struct mlx5_core_dev *dev, bool boot, u64 timeout)
+ {
+ 	int err;
+ 
+@@ -1130,10 +1130,12 @@ static int mlx5_function_setup(struct mlx5_core_dev *dev, u64 timeout)
+ 
+ 	mlx5_cmd_set_state(dev, MLX5_CMDIF_STATE_UP);
+ 
++	mlx5_start_health_poll(dev);
 +
-+	for (i = 0; i < NUM_VNIC_ENV_DROP_COUNTERS(priv->mdev); i++)
-+		strcpy(data + (idx++) * ETH_GSTRING_LEN,
-+		       vnic_env_stats_drop_desc[i].format);
-+
- 	return idx;
- }
+ 	err = mlx5_core_enable_hca(dev, 0);
+ 	if (err) {
+ 		mlx5_core_err(dev, "enable hca failed\n");
+-		goto err_cmd_cleanup;
++		goto stop_health_poll;
+ 	}
  
-@@ -679,6 +693,11 @@ static MLX5E_DECLARE_STATS_GRP_OP_FILL_STATS(vnic_env)
- 	for (i = 0; i < NUM_VNIC_ENV_DEV_OOB_COUNTERS(priv->mdev); i++)
- 		data[idx++] = MLX5E_READ_CTR32_BE(priv->stats.vnic.query_vnic_env_out,
- 						  vnic_env_stats_dev_oob_desc, i);
-+
-+	for (i = 0; i < NUM_VNIC_ENV_DROP_COUNTERS(priv->mdev); i++)
-+		data[idx++] = MLX5E_READ_CTR32_BE(priv->stats.vnic.query_vnic_env_out,
-+						  vnic_env_stats_drop_desc, i);
-+
- 	return idx;
- }
+ 	err = mlx5_core_set_issi(dev);
+@@ -1185,8 +1187,7 @@ static int mlx5_function_setup(struct mlx5_core_dev *dev, u64 timeout)
+ 		mlx5_core_err(dev, "query hca failed\n");
+ 		goto reclaim_boot_pages;
+ 	}
+-
+-	mlx5_start_health_poll(dev);
++	mlx5_start_health_fw_log_up(dev);
  
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
-index 99e321bfb744..9f781085be47 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
-@@ -273,6 +273,10 @@ struct mlx5e_qcounter_stats {
- 	u32 rx_if_down_packets;
- };
+ 	return 0;
  
-+#define VNIC_ENV_GET(vnic_env_stats, c) \
-+	MLX5_GET(query_vnic_env_out, (vnic_env_stats)->query_vnic_env_out, \
-+		 vport_env.c)
-+
- struct mlx5e_vnic_env_stats {
- 	__be64 query_vnic_env_out[MLX5_ST_SZ_QW(query_vnic_env_out)];
- };
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 1ad762e22d86..06574d430ff5 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -1491,7 +1491,9 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+@@ -1194,6 +1195,8 @@ static int mlx5_function_setup(struct mlx5_core_dev *dev, u64 timeout)
+ 	mlx5_reclaim_startup_pages(dev);
+ err_disable_hca:
+ 	mlx5_core_disable_hca(dev, 0);
++stop_health_poll:
++	mlx5_stop_health_poll(dev, boot);
+ err_cmd_cleanup:
+ 	mlx5_cmd_set_state(dev, MLX5_CMDIF_STATE_DOWN);
+ 	mlx5_cmd_cleanup(dev);
+@@ -1205,7 +1208,6 @@ static int mlx5_function_teardown(struct mlx5_core_dev *dev, bool boot)
+ {
+ 	int err;
  
- 	u8         reserved_at_120[0xa];
- 	u8         log_max_ra_req_dc[0x6];
--	u8         reserved_at_130[0x9];
-+	u8         reserved_at_130[0x2];
-+	u8         eth_wqe_too_small[0x1];
-+	u8         reserved_at_133[0x6];
- 	u8         vnic_env_cq_overrun[0x1];
- 	u8         log_max_ra_res_dc[0x6];
+-	mlx5_stop_health_poll(dev, boot);
+ 	err = mlx5_cmd_teardown_hca(dev);
+ 	if (err) {
+ 		mlx5_core_err(dev, "tear_down_hca failed, skip cleanup\n");
+@@ -1213,6 +1215,7 @@ static int mlx5_function_teardown(struct mlx5_core_dev *dev, bool boot)
+ 	}
+ 	mlx5_reclaim_startup_pages(dev);
+ 	mlx5_core_disable_hca(dev, 0);
++	mlx5_stop_health_poll(dev, boot);
+ 	mlx5_cmd_set_state(dev, MLX5_CMDIF_STATE_DOWN);
+ 	mlx5_cmd_cleanup(dev);
  
-@@ -3537,7 +3539,9 @@ struct mlx5_ifc_vnic_diagnostic_statistics_bits {
+@@ -1362,7 +1365,7 @@ int mlx5_init_one(struct mlx5_core_dev *dev)
+ 	mutex_lock(&dev->intf_state_mutex);
+ 	dev->state = MLX5_DEVICE_STATE_UP;
  
- 	u8         cq_overrun[0x20];
+-	err = mlx5_function_setup(dev, mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT));
++	err = mlx5_function_setup(dev, true, mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT));
+ 	if (err)
+ 		goto err_function;
  
--	u8         reserved_at_220[0xde0];
-+	u8         eth_wqe_too_small[0x20];
-+
-+	u8         reserved_at_220[0xdc0];
- };
+@@ -1450,7 +1453,7 @@ int mlx5_load_one_devl_locked(struct mlx5_core_dev *dev, bool recovery)
+ 		timeout = mlx5_tout_ms(dev, FW_PRE_INIT_ON_RECOVERY_TIMEOUT);
+ 	else
+ 		timeout = mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT);
+-	err = mlx5_function_setup(dev, timeout);
++	err = mlx5_function_setup(dev, false, timeout);
+ 	if (err)
+ 		goto err_function;
  
- struct mlx5_ifc_traffic_counter_bits {
+diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
+index 285f301a6390..a12929bc31b2 100644
+--- a/include/linux/mlx5/driver.h
++++ b/include/linux/mlx5/driver.h
+@@ -1017,6 +1017,7 @@ void mlx5_health_cleanup(struct mlx5_core_dev *dev);
+ int mlx5_health_init(struct mlx5_core_dev *dev);
+ void mlx5_start_health_poll(struct mlx5_core_dev *dev);
+ void mlx5_stop_health_poll(struct mlx5_core_dev *dev, bool disable_health);
++void mlx5_start_health_fw_log_up(struct mlx5_core_dev *dev);
+ void mlx5_drain_health_wq(struct mlx5_core_dev *dev);
+ void mlx5_trigger_health_work(struct mlx5_core_dev *dev);
+ int mlx5_frag_buf_alloc_node(struct mlx5_core_dev *dev, int size,
 -- 
 2.37.3
 
