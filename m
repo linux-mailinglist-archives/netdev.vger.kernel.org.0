@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFCE35F2160
-	for <lists+netdev@lfdr.de>; Sun,  2 Oct 2022 07:14:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09E945F2161
+	for <lists+netdev@lfdr.de>; Sun,  2 Oct 2022 07:14:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229626AbiJBFOO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Oct 2022 01:14:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33996 "EHLO
+        id S229637AbiJBFOP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Oct 2022 01:14:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229577AbiJBFOE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Oct 2022 01:14:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D037351413
-        for <netdev@vger.kernel.org>; Sat,  1 Oct 2022 22:14:02 -0700 (PDT)
+        with ESMTP id S229593AbiJBFOI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Oct 2022 01:14:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A41ED51422
+        for <netdev@vger.kernel.org>; Sat,  1 Oct 2022 22:14:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 08D7A60DF3
-        for <netdev@vger.kernel.org>; Sun,  2 Oct 2022 05:14:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55E55C433C1;
-        Sun,  2 Oct 2022 05:14:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1164660DEA
+        for <netdev@vger.kernel.org>; Sun,  2 Oct 2022 05:14:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62D91C433D7;
+        Sun,  2 Oct 2022 05:14:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664687641;
-        bh=TFMj1IbBKROezWY260tWLS8LECNhXm4lptmmhspvN8U=;
+        s=k20201202; t=1664687642;
+        bh=a2oWzGJoQerKpFD9aYfARPf+9oO9sTwEtgVoGfS+fYI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QbUt/3cm7uIMdD1UC88sKie/Vrtkzcqio0g7E2Mv2dQUdp5zi1CgRu4Nx+QUxf1CC
-         E7hTLWDVHhwMiLBx/6mTUqfxDPpLhJgtm8bLqmmCCtt1KJLUmRZZWelk0VjLi8ctZf
-         QLKBP/6cbwxdzLtKnWT3tdcfzzdGXXuNHEa/FYevvomxX/ylyFL9QoSGeSe9vFizE0
-         UQ/pzyengQ1ovp/b0qBp9CYCeQpxkcyH/upg166ViN7lQOBtrvrRExRFn1oQkV6Z8l
-         BiQPp2bCVUDqnRuC3gqn47T1plFqymCvIAaTW7WCaowLV0rNO0bsSfdHP+c9SKEM4v
-         9/GBk6KdaCGBg==
+        b=KbTLSmXO61U5ewPGJbILkj7DsxaunOf2LcEzK+137svetyVKLYKEaCQJD4vNxUMDH
+         PHY3Pg3VEe5XHBK7QUbffw6j5xW/aHoaLDhZEg0w86r4L8Mj1+JOM8m9FV6Wn7VxeK
+         Q6WFtnWBVUqP+nsDmgWnIIQwAjgqiJcsn+bbhaDVMV1XI/IHLa5dD3lx132DUaYP0t
+         Or+WQFsMqvBT/OdjKEYv5wu03MYJbcUx1XCih3CubEXMyiRzlOzccqq84czUWbPoVY
+         oYqYoBWKzJKtbj7epFes1F1qpJ259o8TG08JP47M5bJXOxia46Fpo9g6yWTD9kw0ND
+         g5Ab8aGAHT5Xw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: [PATCH net-next 06/15] net/mlx5e: Improve MTT/KSM alignment
-Date:   Sat,  1 Oct 2022 21:56:23 -0700
-Message-Id: <20221002045632.291612-7-saeed@kernel.org>
+Subject: [PATCH net-next 07/15] net/mlx5e: xsk: Use KLM to protect frame overrun in unaligned mode
+Date:   Sat,  1 Oct 2022 21:56:24 -0700
+Message-Id: <20221002045632.291612-8-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221002045632.291612-1-saeed@kernel.org>
 References: <20221002045632.291612-1-saeed@kernel.org>
@@ -58,127 +58,266 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-Make mlx5e_mpwrq_mtts_per_wqe take into account that KSM requires
-smaller alignment than MTT.
+XSK RQs support striding RQ linear mode, but the stride size may be
+bigger than the XSK frame size, because:
 
-Ensure that there is always an even amount of MTTs in a UMR WQE, so that
-complete octwords are formed, and no garbage is mapped.
+1. The stride size must be a power of two.
 
-Drop extra alignment in MLX5_MTT_OCTW that may cause setting too big
-ucseg->xlt_octowords, also leading to mapping garbage.
+2. The stride size must be equal to the UMR page size. Each XSK frame is
+treated as a separate page, because they aren't necessarily adjacent in
+physical memory, so the driver can't put more than one stride per page.
 
-Generalize some calculations by introducing the MLX5_OCTWORD constant.
+3. The minimal MTT page size is 4096 on older firmware.
+
+That means that if XSK frame size is 2048 or not a power of two, the
+strides may be bigger than XSK frames. Normally, it's not a problem if
+the hardware enforces the MTU. However, traffic between vports skips the
+hardware MTU check, and oversized packets may be received.
+
+If an oversized packet is bigger than the XSK frame but not bigger than
+the stride, it will cause overwriting of the adjacent UMEM region. If
+the packet takes more than one stride, they can be recycled for reuse,
+so it's not a problem when the XSK frame size matches the stride size.
+
+Work around the above issue by leveraging KLM to make a more
+fine-grained mapping. The beginning of each stride is mapped to the
+frame memory, and the padding up to the closest power of two is mapped
+to the overflow page that doesn't belong to UMEM. This way, application
+data corruption won't happen upon receiving packets bigger than MTU.
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h        |  6 +-----
- drivers/net/ethernet/mellanox/mlx5/core/en/params.c | 10 +++++++++-
- drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c |  3 ++-
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c   | 13 +++++--------
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c     |  2 +-
- 5 files changed, 18 insertions(+), 16 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |  1 +
+ .../ethernet/mellanox/mlx5/core/en/params.c   | 45 +++++++++++++++++--
+ .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   | 27 +++++++++--
+ .../net/ethernet/mellanox/mlx5/core/en_main.c | 27 +++++++++--
+ 4 files changed, 90 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index a2d09f30acd1..93607db1dea4 100644
+index 93607db1dea4..7c6861d6148d 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -109,12 +109,8 @@ struct page_pool;
- #define MLX5_MPWRQ_MAX_PAGES_PER_WQE \
- 	rounddown_pow_of_two(MLX5_UMR_MAX_MTT_SPACE / sizeof(struct mlx5_mtt))
+@@ -680,6 +680,7 @@ struct mlx5e_hw_gro_data {
+ enum mlx5e_mpwrq_umr_mode {
+ 	MLX5E_MPWRQ_UMR_MODE_ALIGNED,
+ 	MLX5E_MPWRQ_UMR_MODE_UNALIGNED,
++	MLX5E_MPWRQ_UMR_MODE_OVERSIZED,
+ };
  
--#define MLX5_ALIGN_MTTS(mtts)		(ALIGN(mtts, 8))
--#define MLX5_ALIGNED_MTTS_OCTW(mtts)	((mtts) / 2)
--#define MLX5_MTT_OCTW(mtts)		(MLX5_ALIGNED_MTTS_OCTW(MLX5_ALIGN_MTTS(mtts)))
--#define MLX5_KSM_OCTW(ksms)             (ksms)
- #define MLX5E_MAX_RQ_NUM_MTTS	\
--	(ALIGN_DOWN(U16_MAX, 4) * 2) /* So that MLX5_MTT_OCTW(num_mtts) fits into u16 */
-+	(ALIGN_DOWN(U16_MAX, 4) * 2) /* Fits into u16 and aligned by WQEBB. */
- #define MLX5E_MAX_RQ_NUM_KSMS (U16_MAX - 1) /* So that num_ksms fits into u16. */
- #define MLX5E_ORDER2_MAX_PACKET_MTU (order_base_2(10 * 1024))
- 
+ struct mlx5e_rq {
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-index b57855bf7629..e8c3b8abf941 100644
+index e8c3b8abf941..203448ee9594 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-@@ -91,6 +91,13 @@ u8 mlx5e_mpwrq_pages_per_wqe(struct mlx5_core_dev *mdev, u8 page_shift,
- 
- 	pages_per_wqe = log_wqe_sz > page_shift ? (1 << (log_wqe_sz - page_shift)) : 1;
- 
-+	/* Two MTTs are needed to form an octword. The number of MTTs is encoded
-+	 * in octwords in a UMR WQE, so we need at least two to avoid mapping
-+	 * garbage addresses.
-+	 */
-+	if (WARN_ON_ONCE(pages_per_wqe < 2 && umr_mode == MLX5E_MPWRQ_UMR_MODE_ALIGNED))
-+		pages_per_wqe = 2;
-+
- 	/* Sanity check for further calculations to succeed. */
- 	BUILD_BUG_ON(MLX5_MPWRQ_MAX_PAGES_PER_WQE > 64);
- 	if (WARN_ON_ONCE(pages_per_wqe > MLX5_MPWRQ_MAX_PAGES_PER_WQE))
-@@ -131,7 +138,8 @@ u8 mlx5e_mpwrq_mtts_per_wqe(struct mlx5_core_dev *mdev, u8 page_shift,
- 	 * MTU. These oversize packets are dropped by the driver at a later
- 	 * stage.
+@@ -36,8 +36,28 @@ mlx5e_mpwrq_umr_mode(struct mlx5_core_dev *mdev, struct mlx5e_xsk_param *xsk)
+ 	 * 1. MTT - direct mapping in page granularity.
+ 	 * 2. KSM - indirect mapping to another MKey to arbitrary addresses, but
+ 	 *    all mappings have the same size.
++	 * 3. KLM - indirect mapping to another MKey to arbitrary addresses, and
++	 *    mappings can have different sizes.
  	 */
--	return MLX5_ALIGN_MTTS(pages_per_wqe + 1);
-+	return ALIGN(pages_per_wqe + 1,
-+		     MLX5_SEND_WQE_BB / mlx5e_mpwrq_umr_entry_size(umr_mode));
++	u8 page_shift = mlx5e_mpwrq_page_shift(mdev, xsk);
+ 	bool unaligned = xsk ? xsk->unaligned : false;
++	bool oversized = false;
++
++	if (xsk) {
++		oversized = xsk->chunk_size < (1 << page_shift);
++		WARN_ON_ONCE(xsk->chunk_size > (1 << page_shift));
++	}
++
++	/* XSK frame size doesn't match the UMR page size, either because the
++	 * frame size is not a power of two, or it's smaller than the minimal
++	 * page size supported by the firmware.
++	 * It's possible to receive packets bigger than MTU in certain setups.
++	 * To avoid writing over the XSK frame boundary, the top region of each
++	 * stride is mapped to a garbage page, resulting in two mappings of
++	 * different sizes per frame.
++	 */
++	if (oversized)
++		return MLX5E_MPWRQ_UMR_MODE_OVERSIZED;
+ 
+ 	/* XSK frames can start at arbitrary unaligned locations, but they all
+ 	 * have the same size which is a power of two. It allows to optimize to
+@@ -60,6 +80,8 @@ u8 mlx5e_mpwrq_umr_entry_size(enum mlx5e_mpwrq_umr_mode mode)
+ 		return sizeof(struct mlx5_mtt);
+ 	case MLX5E_MPWRQ_UMR_MODE_UNALIGNED:
+ 		return sizeof(struct mlx5_ksm);
++	case MLX5E_MPWRQ_UMR_MODE_OVERSIZED:
++		return sizeof(struct mlx5_klm) * 2;
+ 	}
+ 	WARN_ONCE(1, "MPWRQ UMR mode %d is not known\n", mode);
+ 	return 0;
+@@ -145,11 +167,21 @@ u8 mlx5e_mpwrq_mtts_per_wqe(struct mlx5_core_dev *mdev, u8 page_shift,
+ u32 mlx5e_mpwrq_max_num_entries(struct mlx5_core_dev *mdev,
+ 				enum mlx5e_mpwrq_umr_mode umr_mode)
+ {
+-	if (umr_mode == MLX5E_MPWRQ_UMR_MODE_UNALIGNED)
+-		return min(MLX5E_MAX_RQ_NUM_KSMS,
+-			   1 << MLX5_CAP_GEN(mdev, log_max_klm_list_size));
++	/* Same limits apply to KSMs and KLMs. */
++	u32 klm_limit = min(MLX5E_MAX_RQ_NUM_KSMS,
++			    1 << MLX5_CAP_GEN(mdev, log_max_klm_list_size));
+ 
+-	return MLX5E_MAX_RQ_NUM_MTTS;
++	switch (umr_mode) {
++	case MLX5E_MPWRQ_UMR_MODE_ALIGNED:
++		return MLX5E_MAX_RQ_NUM_MTTS;
++	case MLX5E_MPWRQ_UMR_MODE_UNALIGNED:
++		return klm_limit;
++	case MLX5E_MPWRQ_UMR_MODE_OVERSIZED:
++		/* Each entry is two KLMs. */
++		return klm_limit / 2;
++	}
++	WARN_ONCE(1, "MPWRQ UMR mode %d is not known\n", umr_mode);
++	return 0;
  }
  
- u32 mlx5e_mpwrq_max_num_entries(struct mlx5_core_dev *mdev,
+ static u8 mlx5e_mpwrq_max_log_rq_size(struct mlx5_core_dev *mdev, u8 page_shift,
+@@ -1084,6 +1116,11 @@ static u8 mlx5e_build_icosq_log_wq_sz(struct mlx5_core_dev *mdev,
+ 			xsk.unaligned = true;
+ 			max_xsk_wqebbs = max(max_xsk_wqebbs,
+ 				mlx5e_mpwrq_total_umr_wqebbs(mdev, params, &xsk));
++
++			/* XSK unaligned mode, frame size is not equal to stride size. */
++			xsk.chunk_size -= 1;
++			max_xsk_wqebbs = max(max_xsk_wqebbs,
++				mlx5e_mpwrq_total_umr_wqebbs(mdev, params, &xsk));
+ 		}
+ 
+ 		wqebbs += max_xsk_wqebbs;
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-index e12a856331b8..4b2df2895505 100644
+index 4b2df2895505..78d746704345 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-@@ -66,9 +66,10 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
- 	umr_wqe->ctrl.opmod_idx_opcode =
- 		cpu_to_be32((icosq->pc << MLX5_WQE_CTRL_WQE_INDEX_SHIFT) | MLX5_OPCODE_UMR);
+@@ -41,7 +41,15 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
+ 	umr_wqe = mlx5_wq_cyc_get_wqe(wq, pi);
+ 	memcpy(umr_wqe, &rq->mpwqe.umr_wqe, sizeof(struct mlx5e_umr_wqe));
  
-+	/* Optimized for speed: keep in sync with mlx5e_mpwrq_umr_entry_size. */
+-	if (unlikely(rq->mpwqe.umr_mode == MLX5E_MPWRQ_UMR_MODE_UNALIGNED)) {
++	if (likely(rq->mpwqe.umr_mode == MLX5E_MPWRQ_UMR_MODE_ALIGNED)) {
++		for (i = 0; i < batch; i++) {
++			dma_addr_t addr = xsk_buff_xdp_get_frame_dma(wi->alloc_units[i].xsk);
++
++			umr_wqe->inline_mtts[i] = (struct mlx5_mtt) {
++				.ptag = cpu_to_be64(addr | MLX5_EN_WR),
++			};
++		}
++	} else if (unlikely(rq->mpwqe.umr_mode == MLX5E_MPWRQ_UMR_MODE_UNALIGNED)) {
+ 		for (i = 0; i < batch; i++) {
+ 			dma_addr_t addr = xsk_buff_xdp_get_frame_dma(wi->alloc_units[i].xsk);
+ 
+@@ -51,11 +59,22 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
+ 			};
+ 		}
+ 	} else {
++		__be32 pad_size = cpu_to_be32((1 << rq->mpwqe.page_shift) -
++					      rq->xsk_pool->chunk_size);
++		__be32 frame_size = cpu_to_be32(rq->xsk_pool->chunk_size);
++
+ 		for (i = 0; i < batch; i++) {
+ 			dma_addr_t addr = xsk_buff_xdp_get_frame_dma(wi->alloc_units[i].xsk);
+ 
+-			umr_wqe->inline_mtts[i] = (struct mlx5_mtt) {
+-				.ptag = cpu_to_be64(addr | MLX5_EN_WR),
++			umr_wqe->inline_klms[i << 1] = (struct mlx5_klm) {
++				.key = rq->mkey_be,
++				.va = cpu_to_be64(addr),
++				.bcount = frame_size,
++			};
++			umr_wqe->inline_klms[(i << 1) + 1] = (struct mlx5_klm) {
++				.key = rq->mkey_be,
++				.va = cpu_to_be64(rq->wqe_overflow.addr),
++				.bcount = pad_size,
+ 			};
+ 		}
+ 	}
+@@ -70,6 +89,8 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
  	offset = ix * rq->mpwqe.mtts_per_wqe;
  	if (likely(rq->mpwqe.umr_mode == MLX5E_MPWRQ_UMR_MODE_ALIGNED))
--		offset = MLX5_ALIGNED_MTTS_OCTW(offset);
-+		offset = offset * sizeof(struct mlx5_mtt) / MLX5_OCTWORD;
+ 		offset = offset * sizeof(struct mlx5_mtt) / MLX5_OCTWORD;
++	else if (unlikely(rq->mpwqe.umr_mode == MLX5E_MPWRQ_UMR_MODE_OVERSIZED))
++		offset = offset * sizeof(struct mlx5_klm) * 2 / MLX5_OCTWORD;
  	umr_wqe->uctrl.xlt_offset = cpu_to_be16(offset);
  
  	icosq->db.wqe_info[pi] = (struct mlx5e_icosq_wqe_info) {
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index b5a416ff1603..2093b6cc6c7c 100644
+index 2093b6cc6c7c..ae728745379d 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -205,14 +205,11 @@ static void mlx5e_disable_blocking_events(struct mlx5e_priv *priv)
- 
- static u16 mlx5e_mpwrq_umr_octowords(u32 entries, enum mlx5e_mpwrq_umr_mode umr_mode)
+@@ -299,6 +299,8 @@ static u8 mlx5e_mpwrq_access_mode(enum mlx5e_mpwrq_umr_mode umr_mode)
+ 		return MLX5_MKC_ACCESS_MODE_MTT;
+ 	case MLX5E_MPWRQ_UMR_MODE_UNALIGNED:
+ 		return MLX5_MKC_ACCESS_MODE_KSM;
++	case MLX5E_MPWRQ_UMR_MODE_OVERSIZED:
++		return MLX5_MKC_ACCESS_MODE_KLMS;
+ 	}
+ 	WARN_ONCE(1, "MPWRQ UMR mode %d is not known\n", umr_mode);
+ 	return 0;
+@@ -307,10 +309,12 @@ static u8 mlx5e_mpwrq_access_mode(enum mlx5e_mpwrq_umr_mode umr_mode)
+ static int mlx5e_create_umr_mkey(struct mlx5_core_dev *mdev,
+ 				 u32 npages, u8 page_shift, u32 *umr_mkey,
+ 				 dma_addr_t filler_addr,
+-				 enum mlx5e_mpwrq_umr_mode umr_mode)
++				 enum mlx5e_mpwrq_umr_mode umr_mode,
++				 u32 xsk_chunk_size)
  {
--	switch (umr_mode) {
--	case MLX5E_MPWRQ_UMR_MODE_ALIGNED:
--		return MLX5_MTT_OCTW(entries);
--	case MLX5E_MPWRQ_UMR_MODE_UNALIGNED:
--		return MLX5_KSM_OCTW(entries);
--	}
--	WARN_ONCE(1, "MPWRQ UMR mode %d is not known\n", umr_mode);
--	return 0;
-+	u8 umr_entry_size = mlx5e_mpwrq_umr_entry_size(umr_mode);
-+
-+	WARN_ON_ONCE(entries * umr_entry_size % MLX5_OCTWORD);
-+
-+	return entries * umr_entry_size / MLX5_OCTWORD;
+ 	struct mlx5_mtt *mtt;
+ 	struct mlx5_ksm *ksm;
++	struct mlx5_klm *klm;
+ 	u32 octwords;
+ 	int inlen;
+ 	void *mkc;
+@@ -347,7 +351,8 @@ static int mlx5e_create_umr_mkey(struct mlx5_core_dev *mdev,
+ 	MLX5_SET(mkc, mkc, pd, mdev->mlx5e_res.hw_objs.pdn);
+ 	MLX5_SET64(mkc, mkc, len, npages << page_shift);
+ 	MLX5_SET(mkc, mkc, translations_octword_size, octwords);
+-	MLX5_SET(mkc, mkc, log_page_size, page_shift);
++	if (umr_mode != MLX5E_MPWRQ_UMR_MODE_OVERSIZED)
++		MLX5_SET(mkc, mkc, log_page_size, page_shift);
+ 	MLX5_SET(create_mkey_in, in, translations_octword_actual_size, octwords);
+ 
+ 	/* Initialize the mkey with all MTTs pointing to a default
+@@ -357,6 +362,21 @@ static int mlx5e_create_umr_mkey(struct mlx5_core_dev *mdev,
+ 	 * to the default page.
+ 	 */
+ 	switch (umr_mode) {
++	case MLX5E_MPWRQ_UMR_MODE_OVERSIZED:
++		klm = MLX5_ADDR_OF(create_mkey_in, in, klm_pas_mtt);
++		for (i = 0; i < npages; i++) {
++			klm[i << 1] = (struct mlx5_klm) {
++				.va = cpu_to_be64(filler_addr),
++				.bcount = cpu_to_be32(xsk_chunk_size),
++				.key = cpu_to_be32(mdev->mlx5e_res.hw_objs.mkey),
++			};
++			klm[(i << 1) + 1] = (struct mlx5_klm) {
++				.va = cpu_to_be64(filler_addr),
++				.bcount = cpu_to_be32((1 << page_shift) - xsk_chunk_size),
++				.key = cpu_to_be32(mdev->mlx5e_res.hw_objs.mkey),
++			};
++		}
++		break;
+ 	case MLX5E_MPWRQ_UMR_MODE_UNALIGNED:
+ 		ksm = MLX5_ADDR_OF(create_mkey_in, in, klm_pas_mtt);
+ 		for (i = 0; i < npages; i++)
+@@ -415,6 +435,7 @@ static int mlx5e_create_umr_klm_mkey(struct mlx5_core_dev *mdev,
+ 
+ static int mlx5e_create_rq_umr_mkey(struct mlx5_core_dev *mdev, struct mlx5e_rq *rq)
+ {
++	u32 xsk_chunk_size = rq->xsk_pool ? rq->xsk_pool->chunk_size : 0;
+ 	u32 wq_size = mlx5_wq_ll_get_size(&rq->mpwqe.wq);
+ 	u32 num_entries, max_num_entries;
+ 	u32 umr_mkey;
+@@ -432,7 +453,7 @@ static int mlx5e_create_rq_umr_mkey(struct mlx5_core_dev *mdev, struct mlx5e_rq
+ 
+ 	err = mlx5e_create_umr_mkey(mdev, num_entries, rq->mpwqe.page_shift,
+ 				    &umr_mkey, rq->wqe_overflow.addr,
+-				    rq->mpwqe.umr_mode);
++				    rq->mpwqe.umr_mode, xsk_chunk_size);
+ 	rq->mpwqe.umr_mkey_be = cpu_to_be32(umr_mkey);
+ 	return err;
  }
- 
- static inline void mlx5e_build_umr_wqe(struct mlx5e_rq *rq,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index b61604d87701..58084650151f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -682,7 +682,7 @@ static int mlx5e_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
- 		cpu_to_be32((sq->pc << MLX5_WQE_CTRL_WQE_INDEX_SHIFT) |
- 			    MLX5_OPCODE_UMR);
- 
--	offset = MLX5_ALIGNED_MTTS_OCTW(ix * rq->mpwqe.mtts_per_wqe);
-+	offset = (ix * rq->mpwqe.mtts_per_wqe) * sizeof(struct mlx5_mtt) / MLX5_OCTWORD;
- 	umr_wqe->uctrl.xlt_offset = cpu_to_be16(offset);
- 
- 	sq->db.wqe_info[pi] = (struct mlx5e_icosq_wqe_info) {
 -- 
 2.37.3
 
