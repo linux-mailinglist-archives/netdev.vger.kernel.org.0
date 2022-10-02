@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 183015F215F
-	for <lists+netdev@lfdr.de>; Sun,  2 Oct 2022 07:14:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E98A35F2163
+	for <lists+netdev@lfdr.de>; Sun,  2 Oct 2022 07:14:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229590AbiJBFOI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Oct 2022 01:14:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33874 "EHLO
+        id S229650AbiJBFOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Oct 2022 01:14:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229563AbiJBFOB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Oct 2022 01:14:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BA265072C
-        for <netdev@vger.kernel.org>; Sat,  1 Oct 2022 22:14:00 -0700 (PDT)
+        with ESMTP id S229602AbiJBFOI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Oct 2022 01:14:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 742345141B
+        for <netdev@vger.kernel.org>; Sat,  1 Oct 2022 22:14:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DFB6C60DF1
-        for <netdev@vger.kernel.org>; Sun,  2 Oct 2022 05:13:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40A30C433D6;
-        Sun,  2 Oct 2022 05:13:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D25E1B8075B
+        for <netdev@vger.kernel.org>; Sun,  2 Oct 2022 05:14:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EDD4C433D7;
+        Sun,  2 Oct 2022 05:14:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664687639;
-        bh=bp4apwkRdM/7E35vx3icWWDxeG5guxOKFc552bYI9Mw=;
+        s=k20201202; t=1664687640;
+        bh=eXVEyuHkmI7fjfoxLtnFBy5GxzAGnaKHVS+BUya24wY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TMOoijqK0SBa3rzwWkTsWv8dnSXa0+B1gb7iFGqjAXWvW+FyoROAvUaBZHVQ6b7oN
-         +LqkX2NSum1rCJ8CmMN4hyv8GLcZEd4ceb5u29+MeauLhmy/23WrIASgstjvdP+YQL
-         S3IbGP7fEu3BBEX55C0QtWmt2B1XRLTvV5kGAqi24G1i+jd+7X7bRRSwRzg6WKB1Xa
-         Q4N5CQz1IKwDT1GMT4iEXUsJfZI+LndeEIKaveRBGDggfq5iYgFT6beAq+vU1POqT3
-         fvS3x4ynZyqBXPTLQ/ZWLt5ckVir04K36dBup/Uo+zgJoLWMx8HA3FBR4pu34YmWfw
-         BKVCfILQhi48A==
+        b=rCzcLtYoBDV6iFsOz8rMApRvvX5kMDO1Zcwfagftcfwkj3KX4qSBF9qkZ0YDZ7dXx
+         WqXyIhETvjeJKeiRZeMGkxu8iukbtmdZBkK6fUSf3+met8gl44I5mxzxAYFyLMO9XM
+         Ib4CLBzV+Bw6YpRV+yxTZg+B1AqFvZMdyd+NNWVsJ6jzLkXzzj3VGpmlMNI4YWgv84
+         08GuB+xZzGUjt6TPioRbnoJ1T7oQIesolg7oKQmJXf7AOJn3mhIR9idRp7oXjM/DDI
+         b9be5Y4WMX5jYy8R6xlJPw+S2/A2xBjuuDKDMhA4wCefYu1LmzKjUnDsc5koQ1xP/F
+         +ggiTDVGZgvgg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: [PATCH net-next 04/15] net/mlx5e: xsk: Improve need_wakeup logic
-Date:   Sat,  1 Oct 2022 21:56:21 -0700
-Message-Id: <20221002045632.291612-5-saeed@kernel.org>
+Subject: [PATCH net-next 05/15] net/mlx5e: xsk: Use umr_mode to calculate striding RQ parameters
+Date:   Sat,  1 Oct 2022 21:56:22 -0700
+Message-Id: <20221002045632.291612-6-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221002045632.291612-1-saeed@kernel.org>
 References: <20221002045632.291612-1-saeed@kernel.org>
@@ -58,159 +58,629 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-XSK need_wakeup mechanism allows the driver to stop busy waiting for
-buffers when the fill ring is empty, yield to the application and signal
-it that the driver needs to be waken up after the application refills
-the fill ring.
-
-Add protection against the race condition on the RX (refill) side: if
-the application refills buffers after xskrq->post_wqes is called, but
-before mlx5e_xsk_update_rx_wakeup, NAPI will exit, skipping taking these
-buffers to the hardware WQ, and the application won't wake it up again.
-
-Optimize the whole need_wakeup logic, removing unneeded flows, to
-compensate for this new check.
+Instead of passing the unaligned flag, pass an enum that indicates the
+UMR mode. The next commit will add the third mode (KLM for certain
+configurations of XSK), which will be added to this enum instead of
+adding another bool flag everywhere.
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/xsk/rx.h   | 14 --------
- .../ethernet/mellanox/mlx5/core/en/xsk/tx.h   | 12 -------
- .../net/ethernet/mellanox/mlx5/core/en_rx.c   |  1 +
- .../net/ethernet/mellanox/mlx5/core/en_txrx.c | 33 ++++++++++++-------
- 4 files changed, 23 insertions(+), 37 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |   9 +-
+ .../ethernet/mellanox/mlx5/core/en/params.c   | 126 ++++++++++++------
+ .../ethernet/mellanox/mlx5/core/en/params.h   |  24 +++-
+ .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   |   4 +-
+ .../ethernet/mellanox/mlx5/core/en_ethtool.c  |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |  72 +++++++---
+ include/linux/mlx5/driver.h                   |   4 +
+ 7 files changed, 171 insertions(+), 72 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
-index 84a496a8d72f..087c943bd8e9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
-@@ -5,7 +5,6 @@
- #define __MLX5_EN_XSK_RX_H__
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+index 9e6347a67fd2..a2d09f30acd1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+@@ -681,6 +681,11 @@ struct mlx5e_hw_gro_data {
+ 	int second_ip_id;
+ };
  
- #include "en.h"
--#include <net/xdp_sock_drv.h>
++enum mlx5e_mpwrq_umr_mode {
++	MLX5E_MPWRQ_UMR_MODE_ALIGNED,
++	MLX5E_MPWRQ_UMR_MODE_UNALIGNED,
++};
++
+ struct mlx5e_rq {
+ 	/* data path */
+ 	union {
+@@ -708,7 +713,7 @@ struct mlx5e_rq {
+ 			u8                     pages_per_wqe;
+ 			u8                     umr_wqebbs;
+ 			u8                     mtts_per_wqe;
+-			u8                     unaligned;
++			u8                     umr_mode;
+ 			struct mlx5e_shampo_hd *shampo;
+ 		} mpwqe;
+ 	};
+@@ -1008,7 +1013,7 @@ struct mlx5e_profile {
+ void mlx5e_build_ptys2ethtool_map(void);
  
- /* RX data path */
+ bool mlx5e_check_fragmented_striding_rq_cap(struct mlx5_core_dev *mdev, u8 page_shift,
+-					    bool unaligned);
++					    enum mlx5e_mpwrq_umr_mode umr_mode);
  
-@@ -21,17 +20,4 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
- 					      struct mlx5e_wqe_frag_info *wi,
- 					      u32 cqe_bcnt);
- 
--static inline bool mlx5e_xsk_update_rx_wakeup(struct mlx5e_rq *rq, bool alloc_err)
--{
--	if (!xsk_uses_need_wakeup(rq->xsk_pool))
--		return alloc_err;
--
--	if (unlikely(alloc_err))
--		xsk_set_rx_need_wakeup(rq->xsk_pool);
--	else
--		xsk_clear_rx_need_wakeup(rq->xsk_pool);
--
--	return false;
--}
--
- #endif /* __MLX5_EN_XSK_RX_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.h
-index a05085035f23..9c505158b975 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.h
-@@ -5,7 +5,6 @@
- #define __MLX5_EN_XSK_TX_H__
- 
- #include "en.h"
--#include <net/xdp_sock_drv.h>
- 
- /* TX data path */
- 
-@@ -13,15 +12,4 @@ int mlx5e_xsk_wakeup(struct net_device *dev, u32 qid, u32 flags);
- 
- bool mlx5e_xsk_tx(struct mlx5e_xdpsq *sq, unsigned int budget);
- 
--static inline void mlx5e_xsk_update_tx_wakeup(struct mlx5e_xdpsq *sq)
--{
--	if (!xsk_uses_need_wakeup(sq->xsk_pool))
--		return;
--
--	if (sq->pc != sq->cc)
--		xsk_clear_tx_need_wakeup(sq->xsk_pool);
--	else
--		xsk_set_tx_need_wakeup(sq->xsk_pool);
--}
--
- #endif /* __MLX5_EN_XSK_TX_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 5835d86be8d8..b61604d87701 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -41,6 +41,7 @@
- #include <net/gro.h>
- #include <net/udp.h>
- #include <net/tcp.h>
-+#include <net/xdp_sock_drv.h>
- #include "en.h"
- #include "en/txrx.h"
- #include "en_tc.h"
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-index 833be29170a1..9a458a5d9853 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-@@ -31,6 +31,7 @@
-  */
- 
- #include <linux/irq.h>
-+#include <net/xdp_sock_drv.h>
- #include "en.h"
- #include "en/txrx.h"
- #include "en/xdp.h"
-@@ -86,26 +87,36 @@ void mlx5e_trigger_irq(struct mlx5e_icosq *sq)
- 
- static bool mlx5e_napi_xsk_post(struct mlx5e_xdpsq *xsksq, struct mlx5e_rq *xskrq)
- {
-+	bool need_wakeup = xsk_uses_need_wakeup(xskrq->xsk_pool);
- 	bool busy_xsk = false, xsk_rx_alloc_err;
- 
--	/* Handle the race between the application querying need_wakeup and the
--	 * driver setting it:
--	 * 1. Update need_wakeup both before and after the TX. If it goes to
--	 * "yes", it can only happen with the first update.
--	 * 2. If the application queried need_wakeup before we set it, the
--	 * packets will be transmitted anyway, even w/o a wakeup.
--	 * 3. Give a chance to clear need_wakeup after new packets were queued
--	 * for TX.
-+	/* If SQ is empty, there are no TX completions to trigger NAPI, so set
-+	 * need_wakeup. Do it before queuing packets for TX to avoid race
-+	 * condition with userspace.
- 	 */
--	mlx5e_xsk_update_tx_wakeup(xsksq);
-+	if (need_wakeup && xsksq->pc == xsksq->cc)
-+		xsk_set_tx_need_wakeup(xsksq->xsk_pool);
- 	busy_xsk |= mlx5e_xsk_tx(xsksq, MLX5E_TX_XSK_POLL_BUDGET);
--	mlx5e_xsk_update_tx_wakeup(xsksq);
-+	/* If we queued some packets for TX, no need for wakeup anymore. */
-+	if (need_wakeup && xsksq->pc != xsksq->cc)
-+		xsk_clear_tx_need_wakeup(xsksq->xsk_pool);
- 
-+	/* If WQ is empty, RX won't trigger NAPI, so set need_wakeup. Do it
-+	 * before refilling to avoid race condition with userspace.
-+	 */
-+	if (need_wakeup && !mlx5e_rqwq_get_cur_sz(xskrq))
-+		xsk_set_rx_need_wakeup(xskrq->xsk_pool);
- 	xsk_rx_alloc_err = INDIRECT_CALL_2(xskrq->post_wqes,
- 					   mlx5e_post_rx_mpwqes,
- 					   mlx5e_post_rx_wqes,
- 					   xskrq);
--	busy_xsk |= mlx5e_xsk_update_rx_wakeup(xskrq, xsk_rx_alloc_err);
-+	/* Ask for wakeup if WQ is not full after refill. */
-+	if (!need_wakeup)
-+		busy_xsk |= xsk_rx_alloc_err;
-+	else if (xsk_rx_alloc_err)
-+		xsk_set_rx_need_wakeup(xskrq->xsk_pool);
-+	else
-+		xsk_clear_rx_need_wakeup(xskrq->xsk_pool);
- 
- 	return busy_xsk;
+ void mlx5e_shampo_dealloc_hd(struct mlx5e_rq *rq, u16 len, u16 start, bool close);
+ void mlx5e_get_stats(struct net_device *dev, struct rtnl_link_stats64 *stats);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+index ac4d70bb21e8..b57855bf7629 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+@@ -27,9 +27,48 @@ u8 mlx5e_mpwrq_page_shift(struct mlx5_core_dev *mdev, struct mlx5e_xsk_param *xs
+ 	return max(req_page_shift, min_page_shift);
  }
+ 
+-u8 mlx5e_mpwrq_log_wqe_sz(struct mlx5_core_dev *mdev, u8 page_shift, bool unaligned)
++enum mlx5e_mpwrq_umr_mode
++mlx5e_mpwrq_umr_mode(struct mlx5_core_dev *mdev, struct mlx5e_xsk_param *xsk)
++{
++	/* Different memory management schemes use different mechanisms to map
++	 * user-mode memory. The stricter guarantees we have, the faster
++	 * mechanisms we use:
++	 * 1. MTT - direct mapping in page granularity.
++	 * 2. KSM - indirect mapping to another MKey to arbitrary addresses, but
++	 *    all mappings have the same size.
++	 */
++	bool unaligned = xsk ? xsk->unaligned : false;
++
++	/* XSK frames can start at arbitrary unaligned locations, but they all
++	 * have the same size which is a power of two. It allows to optimize to
++	 * one KSM per frame.
++	 */
++	if (unaligned)
++		return MLX5E_MPWRQ_UMR_MODE_UNALIGNED;
++
++	/* XSK: frames are naturally aligned, MTT can be used.
++	 * Non-XSK: Allocations happen in units of CPU pages, therefore, the
++	 * mappings are naturally aligned.
++	 */
++	return MLX5E_MPWRQ_UMR_MODE_ALIGNED;
++}
++
++u8 mlx5e_mpwrq_umr_entry_size(enum mlx5e_mpwrq_umr_mode mode)
+ {
+-	u8 umr_entry_size = unaligned ? sizeof(struct mlx5_ksm) : sizeof(struct mlx5_mtt);
++	switch (mode) {
++	case MLX5E_MPWRQ_UMR_MODE_ALIGNED:
++		return sizeof(struct mlx5_mtt);
++	case MLX5E_MPWRQ_UMR_MODE_UNALIGNED:
++		return sizeof(struct mlx5_ksm);
++	}
++	WARN_ONCE(1, "MPWRQ UMR mode %d is not known\n", mode);
++	return 0;
++}
++
++u8 mlx5e_mpwrq_log_wqe_sz(struct mlx5_core_dev *mdev, u8 page_shift,
++			  enum mlx5e_mpwrq_umr_mode umr_mode)
++{
++	u8 umr_entry_size = mlx5e_mpwrq_umr_entry_size(umr_mode);
+ 	u8 max_pages_per_wqe, max_log_mpwqe_size;
+ 	u16 max_wqe_size;
+ 
+@@ -44,9 +83,10 @@ u8 mlx5e_mpwrq_log_wqe_sz(struct mlx5_core_dev *mdev, u8 page_shift, bool unalig
+ 	return min_t(u8, max_log_mpwqe_size, MLX5_MPWRQ_MAX_LOG_WQE_SZ);
+ }
+ 
+-u8 mlx5e_mpwrq_pages_per_wqe(struct mlx5_core_dev *mdev, u8 page_shift, bool unaligned)
++u8 mlx5e_mpwrq_pages_per_wqe(struct mlx5_core_dev *mdev, u8 page_shift,
++			     enum mlx5e_mpwrq_umr_mode umr_mode)
+ {
+-	u8 log_wqe_sz = mlx5e_mpwrq_log_wqe_sz(mdev, page_shift, unaligned);
++	u8 log_wqe_sz = mlx5e_mpwrq_log_wqe_sz(mdev, page_shift, umr_mode);
+ 	u8 pages_per_wqe;
+ 
+ 	pages_per_wqe = log_wqe_sz > page_shift ? (1 << (log_wqe_sz - page_shift)) : 1;
+@@ -59,10 +99,11 @@ u8 mlx5e_mpwrq_pages_per_wqe(struct mlx5_core_dev *mdev, u8 page_shift, bool una
+ 	return pages_per_wqe;
+ }
+ 
+-u16 mlx5e_mpwrq_umr_wqe_sz(struct mlx5_core_dev *mdev, u8 page_shift, bool unaligned)
++u16 mlx5e_mpwrq_umr_wqe_sz(struct mlx5_core_dev *mdev, u8 page_shift,
++			   enum mlx5e_mpwrq_umr_mode umr_mode)
+ {
+-	u8 umr_entry_size = unaligned ? sizeof(struct mlx5_ksm) : sizeof(struct mlx5_mtt);
+-	u8 pages_per_wqe = mlx5e_mpwrq_pages_per_wqe(mdev, page_shift, unaligned);
++	u8 pages_per_wqe = mlx5e_mpwrq_pages_per_wqe(mdev, page_shift, umr_mode);
++	u8 umr_entry_size = mlx5e_mpwrq_umr_entry_size(umr_mode);
+ 	u16 umr_wqe_sz;
+ 
+ 	umr_wqe_sz = sizeof(struct mlx5e_umr_wqe) +
+@@ -73,25 +114,30 @@ u16 mlx5e_mpwrq_umr_wqe_sz(struct mlx5_core_dev *mdev, u8 page_shift, bool unali
+ 	return umr_wqe_sz;
+ }
+ 
+-u8 mlx5e_mpwrq_umr_wqebbs(struct mlx5_core_dev *mdev, u8 page_shift, bool unaligned)
++u8 mlx5e_mpwrq_umr_wqebbs(struct mlx5_core_dev *mdev, u8 page_shift,
++			  enum mlx5e_mpwrq_umr_mode umr_mode)
+ {
+-	return DIV_ROUND_UP(mlx5e_mpwrq_umr_wqe_sz(mdev, page_shift, unaligned),
++	return DIV_ROUND_UP(mlx5e_mpwrq_umr_wqe_sz(mdev, page_shift, umr_mode),
+ 			    MLX5_SEND_WQE_BB);
+ }
+ 
+-u8 mlx5e_mpwrq_mtts_per_wqe(struct mlx5_core_dev *mdev, u8 page_shift, bool unaligned)
++u8 mlx5e_mpwrq_mtts_per_wqe(struct mlx5_core_dev *mdev, u8 page_shift,
++			    enum mlx5e_mpwrq_umr_mode umr_mode)
+ {
++	u8 pages_per_wqe = mlx5e_mpwrq_pages_per_wqe(mdev, page_shift, umr_mode);
++
+ 	/* Add another page as a buffer between WQEs. This page will absorb
+ 	 * write overflow by the hardware, when receiving packets larger than
+ 	 * MTU. These oversize packets are dropped by the driver at a later
+ 	 * stage.
+ 	 */
+-	return MLX5_ALIGN_MTTS(mlx5e_mpwrq_pages_per_wqe(mdev, page_shift, unaligned) + 1);
++	return MLX5_ALIGN_MTTS(pages_per_wqe + 1);
+ }
+ 
+-u32 mlx5e_mpwrq_max_num_entries(struct mlx5_core_dev *mdev, bool unaligned)
++u32 mlx5e_mpwrq_max_num_entries(struct mlx5_core_dev *mdev,
++				enum mlx5e_mpwrq_umr_mode umr_mode)
+ {
+-	if (unaligned)
++	if (umr_mode == MLX5E_MPWRQ_UMR_MODE_UNALIGNED)
+ 		return min(MLX5E_MAX_RQ_NUM_KSMS,
+ 			   1 << MLX5_CAP_GEN(mdev, log_max_klm_list_size));
+ 
+@@ -99,18 +145,19 @@ u32 mlx5e_mpwrq_max_num_entries(struct mlx5_core_dev *mdev, bool unaligned)
+ }
+ 
+ static u8 mlx5e_mpwrq_max_log_rq_size(struct mlx5_core_dev *mdev, u8 page_shift,
+-				      bool unaligned)
++				      enum mlx5e_mpwrq_umr_mode umr_mode)
+ {
+-	u8 mtts_per_wqe = mlx5e_mpwrq_mtts_per_wqe(mdev, page_shift, unaligned);
+-	u32 max_entries = mlx5e_mpwrq_max_num_entries(mdev, unaligned);
++	u8 mtts_per_wqe = mlx5e_mpwrq_mtts_per_wqe(mdev, page_shift, umr_mode);
++	u32 max_entries = mlx5e_mpwrq_max_num_entries(mdev, umr_mode);
+ 
+ 	return ilog2(max_entries / mtts_per_wqe);
+ }
+ 
+-u8 mlx5e_mpwrq_max_log_rq_pkts(struct mlx5_core_dev *mdev, u8 page_shift, bool unaligned)
++u8 mlx5e_mpwrq_max_log_rq_pkts(struct mlx5_core_dev *mdev, u8 page_shift,
++			       enum mlx5e_mpwrq_umr_mode umr_mode)
+ {
+-	return mlx5e_mpwrq_max_log_rq_size(mdev, page_shift, unaligned) +
+-		mlx5e_mpwrq_log_wqe_sz(mdev, page_shift, unaligned) -
++	return mlx5e_mpwrq_max_log_rq_size(mdev, page_shift, umr_mode) +
++		mlx5e_mpwrq_log_wqe_sz(mdev, page_shift, umr_mode) -
+ 		MLX5E_ORDER2_MAX_PACKET_MTU;
+ }
+ 
+@@ -171,10 +218,10 @@ static u8 mlx5e_mpwqe_log_pkts_per_wqe(struct mlx5_core_dev *mdev,
+ 				       struct mlx5e_xsk_param *xsk)
+ {
+ 	u32 linear_stride_sz = mlx5e_rx_get_linear_stride_sz(mdev, params, xsk, true);
++	enum mlx5e_mpwrq_umr_mode umr_mode = mlx5e_mpwrq_umr_mode(mdev, xsk);
+ 	u8 page_shift = mlx5e_mpwrq_page_shift(mdev, xsk);
+-	bool unaligned = xsk ? xsk->unaligned : false;
+ 
+-	return mlx5e_mpwrq_log_wqe_sz(mdev, page_shift, unaligned) -
++	return mlx5e_mpwrq_log_wqe_sz(mdev, page_shift, umr_mode) -
+ 		order_base_2(linear_stride_sz);
+ }
+ 
+@@ -200,10 +247,11 @@ bool mlx5e_rx_is_linear_skb(struct mlx5_core_dev *mdev,
+ 
+ static bool mlx5e_verify_rx_mpwqe_strides(struct mlx5_core_dev *mdev,
+ 					  u8 log_stride_sz, u8 log_num_strides,
+-					  u8 page_shift, bool unaligned)
++					  u8 page_shift,
++					  enum mlx5e_mpwrq_umr_mode umr_mode)
+ {
+ 	if (log_stride_sz + log_num_strides !=
+-	    mlx5e_mpwrq_log_wqe_sz(mdev, page_shift, unaligned))
++	    mlx5e_mpwrq_log_wqe_sz(mdev, page_shift, umr_mode))
+ 		return false;
+ 
+ 	if (log_stride_sz < MLX5_MPWQE_LOG_STRIDE_SZ_BASE ||
+@@ -223,8 +271,8 @@ bool mlx5e_rx_mpwqe_is_linear_skb(struct mlx5_core_dev *mdev,
+ 				  struct mlx5e_params *params,
+ 				  struct mlx5e_xsk_param *xsk)
+ {
++	enum mlx5e_mpwrq_umr_mode umr_mode = mlx5e_mpwrq_umr_mode(mdev, xsk);
+ 	u8 page_shift = mlx5e_mpwrq_page_shift(mdev, xsk);
+-	bool unaligned = xsk ? xsk->unaligned : false;
+ 	u8 log_num_strides;
+ 	u8 log_stride_sz;
+ 	u8 log_wqe_sz;
+@@ -233,7 +281,7 @@ bool mlx5e_rx_mpwqe_is_linear_skb(struct mlx5_core_dev *mdev,
+ 		return false;
+ 
+ 	log_stride_sz = order_base_2(mlx5e_rx_get_linear_stride_sz(mdev, params, xsk, true));
+-	log_wqe_sz = mlx5e_mpwrq_log_wqe_sz(mdev, page_shift, unaligned);
++	log_wqe_sz = mlx5e_mpwrq_log_wqe_sz(mdev, page_shift, umr_mode);
+ 
+ 	if (log_wqe_sz < log_stride_sz)
+ 		return false;
+@@ -242,19 +290,19 @@ bool mlx5e_rx_mpwqe_is_linear_skb(struct mlx5_core_dev *mdev,
+ 
+ 	return mlx5e_verify_rx_mpwqe_strides(mdev, log_stride_sz,
+ 					     log_num_strides, page_shift,
+-					     unaligned);
++					     umr_mode);
+ }
+ 
+ u8 mlx5e_mpwqe_get_log_rq_size(struct mlx5_core_dev *mdev,
+ 			       struct mlx5e_params *params,
+ 			       struct mlx5e_xsk_param *xsk)
+ {
++	enum mlx5e_mpwrq_umr_mode umr_mode = mlx5e_mpwrq_umr_mode(mdev, xsk);
+ 	u8 log_pkts_per_wqe, page_shift, max_log_rq_size;
+-	bool unaligned = xsk ? xsk->unaligned : false;
+ 
+ 	log_pkts_per_wqe = mlx5e_mpwqe_log_pkts_per_wqe(mdev, params, xsk);
+ 	page_shift = mlx5e_mpwrq_page_shift(mdev, xsk);
+-	max_log_rq_size = mlx5e_mpwrq_max_log_rq_size(mdev, page_shift, unaligned);
++	max_log_rq_size = mlx5e_mpwrq_max_log_rq_size(mdev, page_shift, umr_mode);
+ 
+ 	/* Numbers are unsigned, don't subtract to avoid underflow. */
+ 	if (params->log_rq_mtu_frames <
+@@ -308,10 +356,10 @@ u8 mlx5e_mpwqe_get_log_num_strides(struct mlx5_core_dev *mdev,
+ 				   struct mlx5e_params *params,
+ 				   struct mlx5e_xsk_param *xsk)
+ {
++	enum mlx5e_mpwrq_umr_mode umr_mode = mlx5e_mpwrq_umr_mode(mdev, xsk);
+ 	u8 page_shift = mlx5e_mpwrq_page_shift(mdev, xsk);
+-	bool unaligned = xsk ? xsk->unaligned : false;
+ 
+-	return mlx5e_mpwrq_log_wqe_sz(mdev, page_shift, unaligned) -
++	return mlx5e_mpwrq_log_wqe_sz(mdev, page_shift, umr_mode) -
+ 		mlx5e_mpwqe_get_log_stride_size(mdev, params, xsk);
+ }
+ 
+@@ -460,9 +508,10 @@ bool slow_pci_heuristic(struct mlx5_core_dev *mdev)
+ 
+ int mlx5e_mpwrq_validate_regular(struct mlx5_core_dev *mdev, struct mlx5e_params *params)
+ {
++	enum mlx5e_mpwrq_umr_mode umr_mode = mlx5e_mpwrq_umr_mode(mdev, NULL);
+ 	u8 page_shift = mlx5e_mpwrq_page_shift(mdev, NULL);
+ 
+-	if (!mlx5e_check_fragmented_striding_rq_cap(mdev, page_shift, false))
++	if (!mlx5e_check_fragmented_striding_rq_cap(mdev, page_shift, umr_mode))
+ 		return -EOPNOTSUPP;
+ 
+ 	if (params->xdp_prog && !mlx5e_rx_mpwqe_is_linear_skb(mdev, params, NULL))
+@@ -474,11 +523,12 @@ int mlx5e_mpwrq_validate_regular(struct mlx5_core_dev *mdev, struct mlx5e_params
+ int mlx5e_mpwrq_validate_xsk(struct mlx5_core_dev *mdev, struct mlx5e_params *params,
+ 			     struct mlx5e_xsk_param *xsk)
+ {
++	enum mlx5e_mpwrq_umr_mode umr_mode = mlx5e_mpwrq_umr_mode(mdev, xsk);
+ 	u8 page_shift = mlx5e_mpwrq_page_shift(mdev, xsk);
+ 	bool unaligned = xsk ? xsk->unaligned : false;
+ 	u16 max_mtu_pkts;
+ 
+-	if (!mlx5e_check_fragmented_striding_rq_cap(mdev, page_shift, xsk->unaligned))
++	if (!mlx5e_check_fragmented_striding_rq_cap(mdev, page_shift, umr_mode))
+ 		return -EOPNOTSUPP;
+ 
+ 	if (!mlx5e_rx_mpwqe_is_linear_skb(mdev, params, xsk))
+@@ -781,16 +831,16 @@ int mlx5e_build_rq_param(struct mlx5_core_dev *mdev,
+ 	case MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ: {
+ 		u8 log_wqe_num_of_strides = mlx5e_mpwqe_get_log_num_strides(mdev, params, xsk);
+ 		u8 log_wqe_stride_size = mlx5e_mpwqe_get_log_stride_size(mdev, params, xsk);
++		enum mlx5e_mpwrq_umr_mode umr_mode = mlx5e_mpwrq_umr_mode(mdev, xsk);
+ 		u8 page_shift = mlx5e_mpwrq_page_shift(mdev, xsk);
+-		bool unaligned = xsk ? xsk->unaligned : false;
+ 
+ 		if (!mlx5e_verify_rx_mpwqe_strides(mdev, log_wqe_stride_size,
+ 						   log_wqe_num_of_strides,
+-						   page_shift, unaligned)) {
++						   page_shift, umr_mode)) {
+ 			mlx5_core_err(mdev,
+-				      "Bad RX MPWQE params: log_stride_size %u, log_num_strides %u, unaligned %d\n",
++				      "Bad RX MPWQE params: log_stride_size %u, log_num_strides %u, umr_mode %d\n",
+ 				      log_wqe_stride_size, log_wqe_num_of_strides,
+-				      unaligned);
++				      umr_mode);
+ 			return -EINVAL;
+ 		}
+ 
+@@ -974,11 +1024,11 @@ static u32 mlx5e_mpwrq_total_umr_wqebbs(struct mlx5_core_dev *mdev,
+ 					struct mlx5e_params *params,
+ 					struct mlx5e_xsk_param *xsk)
+ {
++	enum mlx5e_mpwrq_umr_mode umr_mode = mlx5e_mpwrq_umr_mode(mdev, xsk);
+ 	u8 page_shift = mlx5e_mpwrq_page_shift(mdev, xsk);
+-	bool unaligned = xsk ? xsk->unaligned : false;
+ 	u8 umr_wqebbs;
+ 
+-	umr_wqebbs = mlx5e_mpwrq_umr_wqebbs(mdev, page_shift, unaligned);
++	umr_wqebbs = mlx5e_mpwrq_umr_wqebbs(mdev, page_shift, umr_mode);
+ 
+ 	return umr_wqebbs * (1 << mlx5e_mpwqe_get_log_rq_size(mdev, params, xsk));
+ }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
+index a3952afdcbe4..034debd140bc 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
+@@ -56,13 +56,23 @@ struct mlx5e_create_sq_param {
+ /* Striding RQ dynamic parameters */
+ 
+ u8 mlx5e_mpwrq_page_shift(struct mlx5_core_dev *mdev, struct mlx5e_xsk_param *xsk);
+-u8 mlx5e_mpwrq_log_wqe_sz(struct mlx5_core_dev *mdev, u8 page_shift, bool unaligned);
+-u8 mlx5e_mpwrq_pages_per_wqe(struct mlx5_core_dev *mdev, u8 page_shift, bool unaligned);
+-u16 mlx5e_mpwrq_umr_wqe_sz(struct mlx5_core_dev *mdev, u8 page_shift, bool unaligned);
+-u8 mlx5e_mpwrq_umr_wqebbs(struct mlx5_core_dev *mdev, u8 page_shift, bool unaligned);
+-u8 mlx5e_mpwrq_mtts_per_wqe(struct mlx5_core_dev *mdev, u8 page_shift, bool unaligned);
+-u32 mlx5e_mpwrq_max_num_entries(struct mlx5_core_dev *mdev, bool unaligned);
+-u8 mlx5e_mpwrq_max_log_rq_pkts(struct mlx5_core_dev *mdev, u8 page_shift, bool unaligned);
++enum mlx5e_mpwrq_umr_mode
++mlx5e_mpwrq_umr_mode(struct mlx5_core_dev *mdev, struct mlx5e_xsk_param *xsk);
++u8 mlx5e_mpwrq_umr_entry_size(enum mlx5e_mpwrq_umr_mode mode);
++u8 mlx5e_mpwrq_log_wqe_sz(struct mlx5_core_dev *mdev, u8 page_shift,
++			  enum mlx5e_mpwrq_umr_mode umr_mode);
++u8 mlx5e_mpwrq_pages_per_wqe(struct mlx5_core_dev *mdev, u8 page_shift,
++			     enum mlx5e_mpwrq_umr_mode umr_mode);
++u16 mlx5e_mpwrq_umr_wqe_sz(struct mlx5_core_dev *mdev, u8 page_shift,
++			   enum mlx5e_mpwrq_umr_mode umr_mode);
++u8 mlx5e_mpwrq_umr_wqebbs(struct mlx5_core_dev *mdev, u8 page_shift,
++			  enum mlx5e_mpwrq_umr_mode umr_mode);
++u8 mlx5e_mpwrq_mtts_per_wqe(struct mlx5_core_dev *mdev, u8 page_shift,
++			    enum mlx5e_mpwrq_umr_mode umr_mode);
++u32 mlx5e_mpwrq_max_num_entries(struct mlx5_core_dev *mdev,
++				enum mlx5e_mpwrq_umr_mode umr_mode);
++u8 mlx5e_mpwrq_max_log_rq_pkts(struct mlx5_core_dev *mdev, u8 page_shift,
++			       enum mlx5e_mpwrq_umr_mode umr_mode);
+ 
+ /* Parameter calculations */
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
+index aebc1d5a9004..e12a856331b8 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
+@@ -41,7 +41,7 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
+ 	umr_wqe = mlx5_wq_cyc_get_wqe(wq, pi);
+ 	memcpy(umr_wqe, &rq->mpwqe.umr_wqe, sizeof(struct mlx5e_umr_wqe));
+ 
+-	if (unlikely(rq->mpwqe.unaligned)) {
++	if (unlikely(rq->mpwqe.umr_mode == MLX5E_MPWRQ_UMR_MODE_UNALIGNED)) {
+ 		for (i = 0; i < batch; i++) {
+ 			dma_addr_t addr = xsk_buff_xdp_get_frame_dma(wi->alloc_units[i].xsk);
+ 
+@@ -67,7 +67,7 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
+ 		cpu_to_be32((icosq->pc << MLX5_WQE_CTRL_WQE_INDEX_SHIFT) | MLX5_OPCODE_UMR);
+ 
+ 	offset = ix * rq->mpwqe.mtts_per_wqe;
+-	if (likely(!rq->mpwqe.unaligned))
++	if (likely(rq->mpwqe.umr_mode == MLX5E_MPWRQ_UMR_MODE_ALIGNED))
+ 		offset = MLX5_ALIGNED_MTTS_OCTW(offset);
+ 	umr_wqe->uctrl.xlt_offset = cpu_to_be16(offset);
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+index 26f1ac4683e7..24aa25da482b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+@@ -314,7 +314,9 @@ void mlx5e_ethtool_get_ringparam(struct mlx5e_priv *priv,
+ 	/* Limitation for regular RQ. XSK RQ may clamp the queue length in
+ 	 * mlx5e_mpwqe_get_log_rq_size.
+ 	 */
+-	u8 max_log_mpwrq_pkts = mlx5e_mpwrq_max_log_rq_pkts(priv->mdev, PAGE_SHIFT, false);
++	u8 max_log_mpwrq_pkts = mlx5e_mpwrq_max_log_rq_pkts(priv->mdev,
++							    PAGE_SHIFT,
++							    MLX5E_MPWRQ_UMR_MODE_ALIGNED);
+ 
+ 	param->rx_max_pending = 1 << min_t(u8, MLX5E_PARAMS_MAXIMUM_LOG_RQ_SIZE,
+ 					   max_log_mpwrq_pkts);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 3ee8295c2115..b5a416ff1603 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -69,7 +69,7 @@
+ #include "en/trap.h"
+ 
+ bool mlx5e_check_fragmented_striding_rq_cap(struct mlx5_core_dev *mdev, u8 page_shift,
+-					    bool unaligned)
++					    enum mlx5e_mpwrq_umr_mode umr_mode)
+ {
+ 	u16 umr_wqebbs, max_wqebbs;
+ 	bool striding_rq_umr;
+@@ -79,7 +79,7 @@ bool mlx5e_check_fragmented_striding_rq_cap(struct mlx5_core_dev *mdev, u8 page_
+ 	if (!striding_rq_umr)
+ 		return false;
+ 
+-	umr_wqebbs = mlx5e_mpwrq_umr_wqebbs(mdev, page_shift, unaligned);
++	umr_wqebbs = mlx5e_mpwrq_umr_wqebbs(mdev, page_shift, umr_mode);
+ 	max_wqebbs = mlx5e_get_max_sq_aligned_wqebbs(mdev);
+ 	/* Sanity check; should never happen, because mlx5e_mpwrq_umr_wqebbs is
+ 	 * calculated from mlx5e_get_max_sq_aligned_wqebbs.
+@@ -203,6 +203,18 @@ static void mlx5e_disable_blocking_events(struct mlx5e_priv *priv)
+ 	mlx5_blocking_notifier_unregister(priv->mdev, &priv->blocking_events_nb);
+ }
+ 
++static u16 mlx5e_mpwrq_umr_octowords(u32 entries, enum mlx5e_mpwrq_umr_mode umr_mode)
++{
++	switch (umr_mode) {
++	case MLX5E_MPWRQ_UMR_MODE_ALIGNED:
++		return MLX5_MTT_OCTW(entries);
++	case MLX5E_MPWRQ_UMR_MODE_UNALIGNED:
++		return MLX5_KSM_OCTW(entries);
++	}
++	WARN_ONCE(1, "MPWRQ UMR mode %d is not known\n", umr_mode);
++	return 0;
++}
++
+ static inline void mlx5e_build_umr_wqe(struct mlx5e_rq *rq,
+ 				       struct mlx5e_icosq *sq,
+ 				       struct mlx5e_umr_wqe *wqe)
+@@ -213,7 +225,7 @@ static inline void mlx5e_build_umr_wqe(struct mlx5e_rq *rq,
+ 	u8 ds_cnt;
+ 
+ 	ds_cnt = DIV_ROUND_UP(mlx5e_mpwrq_umr_wqe_sz(rq->mdev, rq->mpwqe.page_shift,
+-						     rq->mpwqe.unaligned),
++						     rq->mpwqe.umr_mode),
+ 			      MLX5_SEND_WQE_DS);
+ 
+ 	cseg->qpn_ds    = cpu_to_be32((sq->sqn << MLX5_WQE_CTRL_QPN_SHIFT) |
+@@ -221,8 +233,7 @@ static inline void mlx5e_build_umr_wqe(struct mlx5e_rq *rq,
+ 	cseg->umr_mkey  = rq->mpwqe.umr_mkey_be;
+ 
+ 	ucseg->flags = MLX5_UMR_TRANSLATION_OFFSET_EN | MLX5_UMR_INLINE;
+-	octowords = rq->mpwqe.unaligned ? MLX5_KSM_OCTW(rq->mpwqe.pages_per_wqe) :
+-					  MLX5_MTT_OCTW(rq->mpwqe.pages_per_wqe);
++	octowords = mlx5e_mpwrq_umr_octowords(rq->mpwqe.pages_per_wqe, rq->mpwqe.umr_mode);
+ 	ucseg->xlt_octowords = cpu_to_be16(octowords);
+ 	ucseg->mkey_mask     = cpu_to_be64(MLX5_MKEY_MASK_FREE);
+ }
+@@ -283,9 +294,23 @@ static int mlx5e_rq_alloc_mpwqe_info(struct mlx5e_rq *rq, int node)
+ 	return 0;
+ }
+ 
++
++static u8 mlx5e_mpwrq_access_mode(enum mlx5e_mpwrq_umr_mode umr_mode)
++{
++	switch (umr_mode) {
++	case MLX5E_MPWRQ_UMR_MODE_ALIGNED:
++		return MLX5_MKC_ACCESS_MODE_MTT;
++	case MLX5E_MPWRQ_UMR_MODE_UNALIGNED:
++		return MLX5_MKC_ACCESS_MODE_KSM;
++	}
++	WARN_ONCE(1, "MPWRQ UMR mode %d is not known\n", umr_mode);
++	return 0;
++}
++
+ static int mlx5e_create_umr_mkey(struct mlx5_core_dev *mdev,
+ 				 u32 npages, u8 page_shift, u32 *umr_mkey,
+-				 dma_addr_t filler_addr, bool unaligned)
++				 dma_addr_t filler_addr,
++				 enum mlx5e_mpwrq_umr_mode umr_mode)
+ {
+ 	struct mlx5_mtt *mtt;
+ 	struct mlx5_ksm *ksm;
+@@ -296,14 +321,16 @@ static int mlx5e_create_umr_mkey(struct mlx5_core_dev *mdev,
+ 	int err;
+ 	int i;
+ 
+-	if (unaligned && !MLX5_CAP_GEN(mdev, fixed_buffer_size)) {
++	if (umr_mode == MLX5E_MPWRQ_UMR_MODE_UNALIGNED &&
++	    !MLX5_CAP_GEN(mdev, fixed_buffer_size)) {
+ 		mlx5_core_warn(mdev, "Unaligned AF_XDP requires fixed_buffer_size capability\n");
+ 		return -EINVAL;
+ 	}
+ 
++	octwords = mlx5e_mpwrq_umr_octowords(npages, umr_mode);
++
+ 	inlen = MLX5_FLEXIBLE_INLEN(mdev, MLX5_ST_SZ_BYTES(create_mkey_in),
+-				    unaligned ? sizeof(*ksm) : sizeof(*mtt),
+-				    npages);
++				    MLX5_OCTWORD, octwords);
+ 	if (inlen < 0)
+ 		return inlen;
+ 
+@@ -311,16 +338,13 @@ static int mlx5e_create_umr_mkey(struct mlx5_core_dev *mdev,
+ 	if (!in)
+ 		return -ENOMEM;
+ 
+-	octwords = unaligned ? MLX5_KSM_OCTW(npages) : MLX5_MTT_OCTW(npages);
+-
+ 	mkc = MLX5_ADDR_OF(create_mkey_in, in, memory_key_mkey_entry);
+ 
+ 	MLX5_SET(mkc, mkc, free, 1);
+ 	MLX5_SET(mkc, mkc, umr_en, 1);
+ 	MLX5_SET(mkc, mkc, lw, 1);
+ 	MLX5_SET(mkc, mkc, lr, 1);
+-	MLX5_SET(mkc, mkc, access_mode_1_0,
+-		 unaligned ? MLX5_MKC_ACCESS_MODE_KSM : MLX5_MKC_ACCESS_MODE_MTT);
++	MLX5_SET(mkc, mkc, access_mode_1_0, mlx5e_mpwrq_access_mode(umr_mode));
+ 	mlx5e_mkey_set_relaxed_ordering(mdev, mkc);
+ 	MLX5_SET(mkc, mkc, qpn, 0xffffff);
+ 	MLX5_SET(mkc, mkc, pd, mdev->mlx5e_res.hw_objs.pdn);
+@@ -335,19 +359,22 @@ static int mlx5e_create_umr_mkey(struct mlx5_core_dev *mdev,
+ 	 * the RQ's pool, while the gaps (wqe_overflow) remain mapped
+ 	 * to the default page.
+ 	 */
+-	if (unaligned) {
++	switch (umr_mode) {
++	case MLX5E_MPWRQ_UMR_MODE_UNALIGNED:
+ 		ksm = MLX5_ADDR_OF(create_mkey_in, in, klm_pas_mtt);
+ 		for (i = 0; i < npages; i++)
+ 			ksm[i] = (struct mlx5_ksm) {
+ 				.key = cpu_to_be32(mdev->mlx5e_res.hw_objs.mkey),
+ 				.va = cpu_to_be64(filler_addr),
+ 			};
+-	} else {
++		break;
++	case MLX5E_MPWRQ_UMR_MODE_ALIGNED:
+ 		mtt = MLX5_ADDR_OF(create_mkey_in, in, klm_pas_mtt);
+ 		for (i = 0; i < npages; i++)
+ 			mtt[i] = (struct mlx5_mtt) {
+ 				.ptag = cpu_to_be64(filler_addr),
+ 			};
++		break;
+ 	}
+ 
+ 	err = mlx5_core_create_mkey(mdev, umr_mkey, in, inlen);
+@@ -396,7 +423,7 @@ static int mlx5e_create_rq_umr_mkey(struct mlx5_core_dev *mdev, struct mlx5e_rq
+ 	u32 umr_mkey;
+ 	int err;
+ 
+-	max_num_entries = mlx5e_mpwrq_max_num_entries(mdev, rq->mpwqe.unaligned);
++	max_num_entries = mlx5e_mpwrq_max_num_entries(mdev, rq->mpwqe.umr_mode);
+ 
+ 	/* Shouldn't overflow, the result is at most MLX5E_MAX_RQ_NUM_MTTS. */
+ 	if (WARN_ON_ONCE(check_mul_overflow(wq_size, (u32)rq->mpwqe.mtts_per_wqe,
+@@ -408,7 +435,7 @@ static int mlx5e_create_rq_umr_mkey(struct mlx5_core_dev *mdev, struct mlx5e_rq
+ 
+ 	err = mlx5e_create_umr_mkey(mdev, num_entries, rq->mpwqe.page_shift,
+ 				    &umr_mkey, rq->wqe_overflow.addr,
+-				    rq->mpwqe.unaligned);
++				    rq->mpwqe.umr_mode);
+ 	rq->mpwqe.umr_mkey_be = cpu_to_be32(umr_mkey);
+ 	return err;
+ }
+@@ -644,16 +671,16 @@ static int mlx5e_alloc_rq(struct mlx5e_params *params,
+ 		wq_sz = mlx5_wq_ll_get_size(&rq->mpwqe.wq);
+ 
+ 		rq->mpwqe.page_shift = mlx5e_mpwrq_page_shift(mdev, xsk);
+-		rq->mpwqe.unaligned = xsk ? xsk->unaligned : false;
++		rq->mpwqe.umr_mode = mlx5e_mpwrq_umr_mode(mdev, xsk);
+ 		rq->mpwqe.pages_per_wqe =
+ 			mlx5e_mpwrq_pages_per_wqe(mdev, rq->mpwqe.page_shift,
+-						  rq->mpwqe.unaligned);
++						  rq->mpwqe.umr_mode);
+ 		rq->mpwqe.umr_wqebbs =
+ 			mlx5e_mpwrq_umr_wqebbs(mdev, rq->mpwqe.page_shift,
+-					       rq->mpwqe.unaligned);
++					       rq->mpwqe.umr_mode);
+ 		rq->mpwqe.mtts_per_wqe =
+ 			mlx5e_mpwrq_mtts_per_wqe(mdev, rq->mpwqe.page_shift,
+-						 rq->mpwqe.unaligned);
++						 rq->mpwqe.umr_mode);
+ 
+ 		pool_size = rq->mpwqe.pages_per_wqe <<
+ 			mlx5e_mpwqe_get_log_rq_size(mdev, params, xsk);
+@@ -5012,7 +5039,8 @@ static void mlx5e_build_nic_netdev(struct net_device *netdev)
+ 	if (!!MLX5_CAP_ETH(mdev, lro_cap) &&
+ 	    !MLX5_CAP_ETH(mdev, tunnel_lro_vxlan) &&
+ 	    !MLX5_CAP_ETH(mdev, tunnel_lro_gre) &&
+-	    mlx5e_check_fragmented_striding_rq_cap(mdev, PAGE_SHIFT, false))
++	    mlx5e_check_fragmented_striding_rq_cap(mdev, PAGE_SHIFT,
++						   MLX5E_MPWRQ_UMR_MODE_ALIGNED))
+ 		netdev->vlan_features    |= NETIF_F_LRO;
+ 
+ 	netdev->hw_features       = netdev->vlan_features;
+diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
+index f8ecb33105d3..285f301a6390 100644
+--- a/include/linux/mlx5/driver.h
++++ b/include/linux/mlx5/driver.h
+@@ -1288,4 +1288,8 @@ static inline bool mlx5_get_roce_state(struct mlx5_core_dev *dev)
+ 	return mlx5_is_roce_on(dev);
+ }
+ 
++enum {
++	MLX5_OCTWORD = 16,
++};
++
+ #endif /* MLX5_DRIVER_H */
 -- 
 2.37.3
 
