@@ -2,46 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA9345F2164
-	for <lists+netdev@lfdr.de>; Sun,  2 Oct 2022 07:14:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24C635F2166
+	for <lists+netdev@lfdr.de>; Sun,  2 Oct 2022 07:14:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229655AbiJBFOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Oct 2022 01:14:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34278 "EHLO
+        id S229563AbiJBFOW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Oct 2022 01:14:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229614AbiJBFON (ORCPT
+        with ESMTP id S229617AbiJBFON (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 2 Oct 2022 01:14:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 772DE5143B
-        for <netdev@vger.kernel.org>; Sat,  1 Oct 2022 22:14:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B4251A14
+        for <netdev@vger.kernel.org>; Sat,  1 Oct 2022 22:14:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AD8C60DFC
-        for <netdev@vger.kernel.org>; Sun,  2 Oct 2022 05:14:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C46AC433B5;
-        Sun,  2 Oct 2022 05:14:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F1AF60DF3
+        for <netdev@vger.kernel.org>; Sun,  2 Oct 2022 05:14:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63964C433D7;
+        Sun,  2 Oct 2022 05:14:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664687644;
-        bh=QWnZvIEpj6ZoQbRfaWQo0KPVlQ0hpjq8YrdQQ17kj+U=;
+        s=k20201202; t=1664687645;
+        bh=PYgtbWgzEyKgZsa9miztgRty2qRP+ainQ9wggM91+5k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KtQI2rpLVu5h8FH6LdWMgVp+LsjZXalqYtz0E7u6zMiQRA1WFwN/NsKFcEX+0d9AY
-         vJnA8nkhzDXzOTgAxZ69ftlGsuEL/aPops341wCRf2GCUDsyOB7C9fxEQ3MpChB0HF
-         hVtjeBmFUL72ZT0ClTRcePe6vGPLVr8Cy7zdd4s/qh8clTFQWSeq7Sjkrmg47qlEkU
-         68a8jQvICQYG6de4uTiYQveS7qnmtNAo3zhRU/ttx3on0XN+fJxUaPytoYci38nlr4
-         aw7vxuU57p/p+f++dYU5E9IFNAAdeWkTfX520yQ1NHlXoIyXGs/baUUHpVirfuS//3
-         aX2rz8uv30+Mg==
+        b=LO+riRdL/3NqiF65WRw3P1Iksj1e7wROzlHa/Mt7mbfzf4Yj/YsrPpSJ8aiv86+X7
+         vV2znnPZUInlfVGoeytnBI8geU2dQMD/S1/G5K4XylTPn7z4A+AOR2UcZIrukoNzSE
+         PjvdqAhS57GGOJ+svQ7rp63uzY7nSJCqs8Au8/Kl7/dQZAKvWZc/dwiIXb17f0qkX3
+         dy4mZf6V/dIFQNfVQKmNd7eUM/2/Q9L0KCsjvUTjw/D9R06K9EvLjONImzlyI14UXp
+         JxGFgpvLH6YzXzZX8L3aMt/14DHj1EWCM3MwBLEuKJn63bNuJxdSZ7GHzvbgKtg2CN
+         VbOUn5cCjhTHg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: [PATCH net-next 09/15] net/mlx5e: xsk: Optimize for unaligned mode with 3072-byte frames
-Date:   Sat,  1 Oct 2022 21:56:26 -0700
-Message-Id: <20221002045632.291612-10-saeed@kernel.org>
+        Tariq Toukan <tariqt@nvidia.com>, Gal Pressman <gal@nvidia.com>
+Subject: [PATCH net-next 10/15] net/mlx5e: Expose rx_oversize_pkts_buffer counter
+Date:   Sat,  1 Oct 2022 21:56:27 -0700
+Message-Id: <20221002045632.291612-11-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221002045632.291612-1-saeed@kernel.org>
 References: <20221002045632.291612-1-saeed@kernel.org>
@@ -56,196 +55,135 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@nvidia.com>
+From: Gal Pressman <gal@nvidia.com>
 
-When XSK frame size is 3072 (or another power of two multiplied by 3),
-KLM mechanism for NIC virtual memory page mapping can be optimized by
-replacing it with KSM.
+Add the rx_oversize_pkts_buffer counter to ethtool statistics.
+This counter exposes the number of dropped received packets due to
+length which arrived to RQ and exceed software buffer size allocated by
+the device for incoming traffic. It might imply that the device MTU is
+larger than the software buffers size.
 
-Before this change, two KLM entries were needed to map an XSK frame that
-is not a power of two: one entry maps the UMEM memory up to the frame
-length, the other maps the rest of the stride to the garbage page.
-
-When the frame length divided by 3 is a power of two, it can be mapped
-using 3 KSM entries, and the fourth will map the rest of the stride to
-the garbage page. All 4 KSM entries are of the same size, which allows
-for a much faster lookup.
-
-Frame size 3072 is useful in certain use cases, because it allows
-packing 4 frames into 3 pages. Generally speaking, other frame sizes
-equal to PAGE_SIZE minus a power of two can be optimized in a similar
-way, but it will require many more KSMs per frame, which slows down UMRs
-a little bit, but more importantly may hit the limit for the maximum
-number of KSM entries.
-
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Signed-off-by: Gal Pressman <gal@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |  1 +
- .../ethernet/mellanox/mlx5/core/en/params.c   | 20 ++++++++++++++-
- .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   | 25 +++++++++++++++++++
- .../net/ethernet/mellanox/mlx5/core/en_main.c | 18 +++++++++++--
- 4 files changed, 61 insertions(+), 3 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |  3 ++-
+ .../ethernet/mellanox/mlx5/core/en_stats.c    | 21 ++++++++++++++++++-
+ .../ethernet/mellanox/mlx5/core/en_stats.h    |  4 ++++
+ include/linux/mlx5/mlx5_ifc.h                 |  8 +++++--
+ 4 files changed, 32 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index 7c6861d6148d..26a23047f1f3 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -681,6 +681,7 @@ enum mlx5e_mpwrq_umr_mode {
- 	MLX5E_MPWRQ_UMR_MODE_ALIGNED,
- 	MLX5E_MPWRQ_UMR_MODE_UNALIGNED,
- 	MLX5E_MPWRQ_UMR_MODE_OVERSIZED,
-+	MLX5E_MPWRQ_UMR_MODE_TRIPLE,
- };
- 
- struct mlx5e_rq {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-index 203448ee9594..29dd3a04c154 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-@@ -56,8 +56,16 @@ mlx5e_mpwrq_umr_mode(struct mlx5_core_dev *mdev, struct mlx5e_xsk_param *xsk)
- 	 * stride is mapped to a garbage page, resulting in two mappings of
- 	 * different sizes per frame.
- 	 */
--	if (oversized)
-+	if (oversized) {
-+		/* An optimization for frame sizes equal to 3 * power_of_two.
-+		 * 3 KSMs point to the frame, and one KSM points to the garbage
-+		 * page, which works faster than KLM.
-+		 */
-+		if (xsk->chunk_size % 3 == 0 && is_power_of_2(xsk->chunk_size / 3))
-+			return MLX5E_MPWRQ_UMR_MODE_TRIPLE;
-+
- 		return MLX5E_MPWRQ_UMR_MODE_OVERSIZED;
-+	}
- 
- 	/* XSK frames can start at arbitrary unaligned locations, but they all
- 	 * have the same size which is a power of two. It allows to optimize to
-@@ -82,6 +90,8 @@ u8 mlx5e_mpwrq_umr_entry_size(enum mlx5e_mpwrq_umr_mode mode)
- 		return sizeof(struct mlx5_ksm);
- 	case MLX5E_MPWRQ_UMR_MODE_OVERSIZED:
- 		return sizeof(struct mlx5_klm) * 2;
-+	case MLX5E_MPWRQ_UMR_MODE_TRIPLE:
-+		return sizeof(struct mlx5_ksm) * 4;
- 	}
- 	WARN_ONCE(1, "MPWRQ UMR mode %d is not known\n", mode);
- 	return 0;
-@@ -179,6 +189,9 @@ u32 mlx5e_mpwrq_max_num_entries(struct mlx5_core_dev *mdev,
- 	case MLX5E_MPWRQ_UMR_MODE_OVERSIZED:
- 		/* Each entry is two KLMs. */
- 		return klm_limit / 2;
-+	case MLX5E_MPWRQ_UMR_MODE_TRIPLE:
-+		/* Each entry is four KSMs. */
-+		return klm_limit / 4;
- 	}
- 	WARN_ONCE(1, "MPWRQ UMR mode %d is not known\n", umr_mode);
- 	return 0;
-@@ -1121,6 +1134,11 @@ static u8 mlx5e_build_icosq_log_wq_sz(struct mlx5_core_dev *mdev,
- 			xsk.chunk_size -= 1;
- 			max_xsk_wqebbs = max(max_xsk_wqebbs,
- 				mlx5e_mpwrq_total_umr_wqebbs(mdev, params, &xsk));
-+
-+			/* XSK unaligned mode, frame size is a triple power of two. */
-+			xsk.chunk_size = (1 << frame_shift) / 4 * 3;
-+			max_xsk_wqebbs = max(max_xsk_wqebbs,
-+				mlx5e_mpwrq_total_umr_wqebbs(mdev, params, &xsk));
- 		}
- 
- 		wqebbs += max_xsk_wqebbs;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-index 78d746704345..c91b54d9ff27 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-@@ -58,6 +58,29 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
- 				.va = cpu_to_be64(addr),
- 			};
- 		}
-+	} else if (likely(rq->mpwqe.umr_mode == MLX5E_MPWRQ_UMR_MODE_TRIPLE)) {
-+		u32 mapping_size = 1 << (rq->mpwqe.page_shift - 2);
-+
-+		for (i = 0; i < batch; i++) {
-+			dma_addr_t addr = xsk_buff_xdp_get_frame_dma(wi->alloc_units[i].xsk);
-+
-+			umr_wqe->inline_ksms[i << 2] = (struct mlx5_ksm) {
-+				.key = rq->mkey_be,
-+				.va = cpu_to_be64(addr),
-+			};
-+			umr_wqe->inline_ksms[(i << 2) + 1] = (struct mlx5_ksm) {
-+				.key = rq->mkey_be,
-+				.va = cpu_to_be64(addr + mapping_size),
-+			};
-+			umr_wqe->inline_ksms[(i << 2) + 2] = (struct mlx5_ksm) {
-+				.key = rq->mkey_be,
-+				.va = cpu_to_be64(addr + mapping_size * 2),
-+			};
-+			umr_wqe->inline_ksms[(i << 2) + 3] = (struct mlx5_ksm) {
-+				.key = rq->mkey_be,
-+				.va = cpu_to_be64(rq->wqe_overflow.addr),
-+			};
-+		}
- 	} else {
- 		__be32 pad_size = cpu_to_be32((1 << rq->mpwqe.page_shift) -
- 					      rq->xsk_pool->chunk_size);
-@@ -91,6 +114,8 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
- 		offset = offset * sizeof(struct mlx5_mtt) / MLX5_OCTWORD;
- 	else if (unlikely(rq->mpwqe.umr_mode == MLX5E_MPWRQ_UMR_MODE_OVERSIZED))
- 		offset = offset * sizeof(struct mlx5_klm) * 2 / MLX5_OCTWORD;
-+	else if (unlikely(rq->mpwqe.umr_mode == MLX5E_MPWRQ_UMR_MODE_TRIPLE))
-+		offset = offset * sizeof(struct mlx5_ksm) * 4 / MLX5_OCTWORD;
- 	umr_wqe->uctrl.xlt_offset = cpu_to_be16(offset);
- 
- 	icosq->db.wqe_info[pi] = (struct mlx5e_icosq_wqe_info) {
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index ae728745379d..d4f03ff7b0e1 100644
+index d4f03ff7b0e1..364f04309149 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -301,6 +301,8 @@ static u8 mlx5e_mpwrq_access_mode(enum mlx5e_mpwrq_umr_mode umr_mode)
- 		return MLX5_MKC_ACCESS_MODE_KSM;
- 	case MLX5E_MPWRQ_UMR_MODE_OVERSIZED:
- 		return MLX5_MKC_ACCESS_MODE_KLMS;
-+	case MLX5E_MPWRQ_UMR_MODE_TRIPLE:
-+		return MLX5_MKC_ACCESS_MODE_KSM;
- 	}
- 	WARN_ONCE(1, "MPWRQ UMR mode %d is not known\n", umr_mode);
- 	return 0;
-@@ -322,7 +324,8 @@ static int mlx5e_create_umr_mkey(struct mlx5_core_dev *mdev,
- 	int err;
- 	int i;
+@@ -3699,7 +3699,8 @@ mlx5e_get_stats(struct net_device *dev, struct rtnl_link_stats64 *stats)
+ 	stats->rx_length_errors =
+ 		PPORT_802_3_GET(pstats, a_in_range_length_errors) +
+ 		PPORT_802_3_GET(pstats, a_out_of_range_length_field) +
+-		PPORT_802_3_GET(pstats, a_frame_too_long_errors);
++		PPORT_802_3_GET(pstats, a_frame_too_long_errors) +
++		VNIC_ENV_GET(&priv->stats.vnic, eth_wqe_too_small);
+ 	stats->rx_crc_errors =
+ 		PPORT_802_3_GET(pstats, a_frame_check_sequence_errors);
+ 	stats->rx_frame_errors = PPORT_802_3_GET(pstats, a_alignment_errors);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+index 575717186912..03c1841970f1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+@@ -641,17 +641,26 @@ static const struct counter_desc vnic_env_stats_dev_oob_desc[] = {
+ 		VNIC_ENV_OFF(vport_env.internal_rq_out_of_buffer) },
+ };
  
--	if (umr_mode == MLX5E_MPWRQ_UMR_MODE_UNALIGNED &&
-+	if ((umr_mode == MLX5E_MPWRQ_UMR_MODE_UNALIGNED ||
-+	     umr_mode == MLX5E_MPWRQ_UMR_MODE_TRIPLE) &&
- 	    !MLX5_CAP_GEN(mdev, fixed_buffer_size)) {
- 		mlx5_core_warn(mdev, "Unaligned AF_XDP requires fixed_buffer_size capability\n");
- 		return -EINVAL;
-@@ -351,7 +354,9 @@ static int mlx5e_create_umr_mkey(struct mlx5_core_dev *mdev,
- 	MLX5_SET(mkc, mkc, pd, mdev->mlx5e_res.hw_objs.pdn);
- 	MLX5_SET64(mkc, mkc, len, npages << page_shift);
- 	MLX5_SET(mkc, mkc, translations_octword_size, octwords);
--	if (umr_mode != MLX5E_MPWRQ_UMR_MODE_OVERSIZED)
-+	if (umr_mode == MLX5E_MPWRQ_UMR_MODE_TRIPLE)
-+		MLX5_SET(mkc, mkc, log_page_size, page_shift - 2);
-+	else if (umr_mode != MLX5E_MPWRQ_UMR_MODE_OVERSIZED)
- 		MLX5_SET(mkc, mkc, log_page_size, page_shift);
- 	MLX5_SET(create_mkey_in, in, translations_octword_actual_size, octwords);
++static const struct counter_desc vnic_env_stats_drop_desc[] = {
++	{ "rx_oversize_pkts_buffer",
++		VNIC_ENV_OFF(vport_env.eth_wqe_too_small) },
++};
++
+ #define NUM_VNIC_ENV_STEER_COUNTERS(dev) \
+ 	(MLX5_CAP_GEN(dev, nic_receive_steering_discard) ? \
+ 	 ARRAY_SIZE(vnic_env_stats_steer_desc) : 0)
+ #define NUM_VNIC_ENV_DEV_OOB_COUNTERS(dev) \
+ 	(MLX5_CAP_GEN(dev, vnic_env_int_rq_oob) ? \
+ 	 ARRAY_SIZE(vnic_env_stats_dev_oob_desc) : 0)
++#define NUM_VNIC_ENV_DROP_COUNTERS(dev) \
++	(MLX5_CAP_GEN(dev, eth_wqe_too_small) ? \
++	 ARRAY_SIZE(vnic_env_stats_drop_desc) : 0)
  
-@@ -392,6 +397,15 @@ static int mlx5e_create_umr_mkey(struct mlx5_core_dev *mdev,
- 				.ptag = cpu_to_be64(filler_addr),
- 			};
- 		break;
-+	case MLX5E_MPWRQ_UMR_MODE_TRIPLE:
-+		ksm = MLX5_ADDR_OF(create_mkey_in, in, klm_pas_mtt);
-+		for (i = 0; i < npages * 4; i++) {
-+			ksm[i] = (struct mlx5_ksm) {
-+				.key = cpu_to_be32(mdev->mlx5e_res.hw_objs.mkey),
-+				.va = cpu_to_be64(filler_addr),
-+			};
-+		}
-+		break;
- 	}
+ static MLX5E_DECLARE_STATS_GRP_OP_NUM_STATS(vnic_env)
+ {
+ 	return NUM_VNIC_ENV_STEER_COUNTERS(priv->mdev) +
+-		NUM_VNIC_ENV_DEV_OOB_COUNTERS(priv->mdev);
++	       NUM_VNIC_ENV_DEV_OOB_COUNTERS(priv->mdev) +
++	       NUM_VNIC_ENV_DROP_COUNTERS(priv->mdev);
+ }
  
- 	err = mlx5_core_create_mkey(mdev, umr_mkey, in, inlen);
+ static MLX5E_DECLARE_STATS_GRP_OP_FILL_STRS(vnic_env)
+@@ -665,6 +674,11 @@ static MLX5E_DECLARE_STATS_GRP_OP_FILL_STRS(vnic_env)
+ 	for (i = 0; i < NUM_VNIC_ENV_DEV_OOB_COUNTERS(priv->mdev); i++)
+ 		strcpy(data + (idx++) * ETH_GSTRING_LEN,
+ 		       vnic_env_stats_dev_oob_desc[i].format);
++
++	for (i = 0; i < NUM_VNIC_ENV_DROP_COUNTERS(priv->mdev); i++)
++		strcpy(data + (idx++) * ETH_GSTRING_LEN,
++		       vnic_env_stats_drop_desc[i].format);
++
+ 	return idx;
+ }
+ 
+@@ -679,6 +693,11 @@ static MLX5E_DECLARE_STATS_GRP_OP_FILL_STATS(vnic_env)
+ 	for (i = 0; i < NUM_VNIC_ENV_DEV_OOB_COUNTERS(priv->mdev); i++)
+ 		data[idx++] = MLX5E_READ_CTR32_BE(priv->stats.vnic.query_vnic_env_out,
+ 						  vnic_env_stats_dev_oob_desc, i);
++
++	for (i = 0; i < NUM_VNIC_ENV_DROP_COUNTERS(priv->mdev); i++)
++		data[idx++] = MLX5E_READ_CTR32_BE(priv->stats.vnic.query_vnic_env_out,
++						  vnic_env_stats_drop_desc, i);
++
+ 	return idx;
+ }
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
+index 99e321bfb744..9f781085be47 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
+@@ -273,6 +273,10 @@ struct mlx5e_qcounter_stats {
+ 	u32 rx_if_down_packets;
+ };
+ 
++#define VNIC_ENV_GET(vnic_env_stats, c) \
++	MLX5_GET(query_vnic_env_out, (vnic_env_stats)->query_vnic_env_out, \
++		 vport_env.c)
++
+ struct mlx5e_vnic_env_stats {
+ 	__be64 query_vnic_env_out[MLX5_ST_SZ_QW(query_vnic_env_out)];
+ };
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index 1ad762e22d86..06574d430ff5 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -1491,7 +1491,9 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+ 
+ 	u8         reserved_at_120[0xa];
+ 	u8         log_max_ra_req_dc[0x6];
+-	u8         reserved_at_130[0x9];
++	u8         reserved_at_130[0x2];
++	u8         eth_wqe_too_small[0x1];
++	u8         reserved_at_133[0x6];
+ 	u8         vnic_env_cq_overrun[0x1];
+ 	u8         log_max_ra_res_dc[0x6];
+ 
+@@ -3537,7 +3539,9 @@ struct mlx5_ifc_vnic_diagnostic_statistics_bits {
+ 
+ 	u8         cq_overrun[0x20];
+ 
+-	u8         reserved_at_220[0xde0];
++	u8         eth_wqe_too_small[0x20];
++
++	u8         reserved_at_220[0xdc0];
+ };
+ 
+ struct mlx5_ifc_traffic_counter_bits {
 -- 
 2.37.3
 
