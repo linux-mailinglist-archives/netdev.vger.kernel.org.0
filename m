@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC1D65F23CC
+	by mail.lfdr.de (Postfix) with ESMTP id 967F05F23CB
 	for <lists+netdev@lfdr.de>; Sun,  2 Oct 2022 17:17:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229808AbiJBPRL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Oct 2022 11:17:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43372 "EHLO
+        id S229458AbiJBPRM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Oct 2022 11:17:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229500AbiJBPRK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Oct 2022 11:17:10 -0400
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B146833407;
-        Sun,  2 Oct 2022 08:17:09 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id y2so5426910qkl.11;
-        Sun, 02 Oct 2022 08:17:09 -0700 (PDT)
+        with ESMTP id S229830AbiJBPRL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Oct 2022 11:17:11 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AAB733864;
+        Sun,  2 Oct 2022 08:17:10 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id s9so5436090qkg.4;
+        Sun, 02 Oct 2022 08:17:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=8ZKGMOLdHUAvHD8TfSpISeaa/lAswlSVkZZOT061oTg=;
-        b=mkEy48eyEGRPo8CfBjpdFTfmcBVqCWeN8cTxbHoo75VCJrwfGohcqR9yEsrqzz92W1
-         LqnboddvlVk5Q4A/fj/eBpAjyMYyhK1cS32pecPMKjg6PE8PouJ3/ae2RJavQNQt489L
-         LuCBoSrEVzYuwE78Mk+oZ3frCOYY0qRGblc4H9czKHEvBsOXiZUCMcQs+p63CI1iNOCV
-         glqbs3bikIjqMg106+WDVG1mbTy9hTVRtyi2cxnEoHBsFQ+E3ehEq0fkC9XkoZUawNHw
-         Bx8f7QNVyyB4GdguQJ5FcxakvGeJcOiREQPjtKsrCBqL7Tn+PW99TqlBX2Urkf3NvTRM
-         Y65w==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=fV1Ona2rkqeX6csTC7RYzdntmz4GfbK8LbfIp3z1Fs8=;
+        b=G/zMplfp0K57ITzf+XaN07ra+ZH4RZPd7WO+CnXqFCTTQjpL5UlSLRhShBj+tnkwRo
+         FE3VkiOiXCvg3FCqVhN1Dvo9VFkbBDSR1OT0xx9iQHU2jUrn7ur+b9etPVAOXt/6QplM
+         /O5ablA+T0kDaB+sMx2xoB6pNolB2ITeayWBHRU2iQmn/qVoXMnSB1btQpcxhVGUIw0M
+         vD2WvRxmw1OWVHV5gRvH1NG+mPkOrq0XREDNqT0+bpPtz/LwyqlV62tFBNxrJtgVJD4/
+         sWhCXwqzJiclBV2Ybi256f5S/+w0HWc/7Y8D1Mdnw/SHVS46bbQqe8EPAkoHLEPxpvU2
+         0d2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=8ZKGMOLdHUAvHD8TfSpISeaa/lAswlSVkZZOT061oTg=;
-        b=YWDB9qpBn87otQBSvIulMHh5a9TN6+LV1g1NawRcPCYCq8bKn6PadjgFxxASdfLgS9
-         w64Ojy+HjDTGckIAIVrWfj5ak0kb5Cpfa7mL8RD6LQ8Gc3OKzn2Te6cVg0518wyLMBne
-         VchezQ89sn1ZrLWGPYPfrTuv47qk35d67XVhSIpCcJlvUT2yxSBn1jm+DjDg19I1f5ae
-         739HFz6wFV8zbTutSA1SyjnEWNibI1b902zz2kRC1hx8j4oQJrWlCvoJcD3P7kvjn/te
-         KTcu1s9kbF1AoruQTHZzVrV50Cr7ChjwGGYQXdV4hoknm9JlHZw+jpcFTWIp1tUXHAaB
-         8pNw==
-X-Gm-Message-State: ACrzQf1ub2BFWQ00wuo4H2XJf8Yf6NnfVJhlPNDoonB5nDyoE/sNnILb
-        lQMvB00kdhoajYGADIs6Qap1Xc6wasI=
-X-Google-Smtp-Source: AMsMyM5FDsljRN+aBNt1iCHT/YyDVVvc2OJQaBZwEo+K8M0iQIF6ZForQnJfEEVftfJ+ZS+A4m6iQg==
-X-Received: by 2002:a05:620a:1714:b0:6ce:7c5f:5f6f with SMTP id az20-20020a05620a171400b006ce7c5f5f6fmr11448474qkb.298.1664723828648;
-        Sun, 02 Oct 2022 08:17:08 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=fV1Ona2rkqeX6csTC7RYzdntmz4GfbK8LbfIp3z1Fs8=;
+        b=xOv5T7YBW9JwqzADQ2QQMC0dMrN8aI/9AR3vbzSNlkjhj9Y0EugYOHY8V7dmfDj1K2
+         9EKN7DHg6ODWpJ8GXcJIcQ45dubHREeQV5uTOql4cDBV/BrZFrDXMPPPPbeuThcR82H6
+         lr8LcmXJJONlvhn08CazIiiFcXKoJ1uDq8t6cDR5mK5iS5FVCNb5Y3GpIHdFvTUVyOlU
+         YMFr6I1c0sfQVNFlOKx7uIjUkO8rCTMqar9WjsF7EcywSQg70tSaxfuCh8tbC0sF7xU+
+         e3gGZ8riyDFLNRIBjtZuHRpKc6JrK1xdkztt4cuZedvoS1XeMQMnr27/J59AujAbMlt5
+         WAkQ==
+X-Gm-Message-State: ACrzQf3JJfFSODiuIGaS32QZ5MS+m0XFg1CLr0pQzjHu10TszquTuBL9
+        rOaqO7yDYfdNKDkQbvfdnpPRx7Vv+rw=
+X-Google-Smtp-Source: AMsMyM4xA5XUE9ryqOCcdY+Mc/qGE6Qf5J1Txjl2rd7wequShwf/kPe8S+zdfbEGEhidQL7Ib638Xg==
+X-Received: by 2002:a37:e116:0:b0:6cf:4dbd:18f1 with SMTP id c22-20020a37e116000000b006cf4dbd18f1mr11500782qkm.120.1664723829575;
+        Sun, 02 Oct 2022 08:17:09 -0700 (PDT)
 Received: from localhost ([2601:4c1:c100:2270:ec09:fca7:de7a:72aa])
-        by smtp.gmail.com with ESMTPSA id q25-20020a37f719000000b006cf14cc6740sm4401430qkj.70.2022.10.02.08.17.07
+        by smtp.gmail.com with ESMTPSA id q34-20020a05620a2a6200b006b8d1914504sm8865459qkp.22.2022.10.02.08.17.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 02 Oct 2022 08:17:08 -0700 (PDT)
+        Sun, 02 Oct 2022 08:17:09 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -57,10 +58,12 @@ To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Kuniyuki Iwashima <kuniyu@amazon.com>,
         Petr Machata <petrm@nvidia.com>, linux-kernel@vger.kernel.org
 Cc:     Yury Norov <yury.norov@gmail.com>
-Subject: [PATCH 0/4] net: drop netif_attrmask_next*()
-Date:   Sun,  2 Oct 2022 08:16:58 -0700
-Message-Id: <20221002151702.3932770-1-yury.norov@gmail.com>
+Subject: [PATCH 1/4] net: move setup code out of mutex in __netif_set_xps_queue()
+Date:   Sun,  2 Oct 2022 08:16:59 -0700
+Message-Id: <20221002151702.3932770-2-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20221002151702.3932770-1-yury.norov@gmail.com>
+References: <20221002151702.3932770-1-yury.norov@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -73,22 +76,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-netif_attrmask_next_and() generates warnings if CONFIG_DEBUG_PER_CPU_MAPS
-is enabled. It is used in a single place. netif_attrmask_next() is not
-used at all. With some rework of __netif_set_xps_queue(), we can drop
-both functions, switch the code to well-tested bitmap API and fix the
-warning.
+maps_sz, nr_ids and online_mask may be set out of the mutex.
 
-Yury Norov (4):
-  net: move setup code out of mutex in __netif_set_xps_queue()
-  net: merge XPS_CPU_DEV_MAPS_SIZE and XPS_RXQ_DEV_MAPS_SIZE macros
-  net: initialize online_mask unconditionally in __netif_set_xps_queue()
-  net: fix opencoded for_each_and_bit() in __netif_set_xps_queue()
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+---
+ net/core/dev.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
- include/linux/netdevice.h | 53 ++-------------------------------------
- net/core/dev.c            | 34 +++++++++++++------------
- 2 files changed, 20 insertions(+), 67 deletions(-)
-
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 56c8b0921c9f..b848a75026c4 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -2563,9 +2563,6 @@ int __netif_set_xps_queue(struct net_device *dev, const unsigned long *mask,
+ 			return -EINVAL;
+ 	}
+ 
+-	mutex_lock(&xps_map_mutex);
+-
+-	dev_maps = xmap_dereference(dev->xps_maps[type]);
+ 	if (type == XPS_RXQS) {
+ 		maps_sz = XPS_RXQ_DEV_MAPS_SIZE(num_tc, dev->num_rx_queues);
+ 		nr_ids = dev->num_rx_queues;
+@@ -2579,6 +2576,10 @@ int __netif_set_xps_queue(struct net_device *dev, const unsigned long *mask,
+ 	if (maps_sz < L1_CACHE_BYTES)
+ 		maps_sz = L1_CACHE_BYTES;
+ 
++	mutex_lock(&xps_map_mutex);
++
++	dev_maps = xmap_dereference(dev->xps_maps[type]);
++
+ 	/* The old dev_maps could be larger or smaller than the one we're
+ 	 * setting up now, as dev->num_tc or nr_ids could have been updated in
+ 	 * between. We could try to be smart, but let's be safe instead and only
 -- 
 2.34.1
 
