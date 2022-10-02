@@ -2,48 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C1A55F2647
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 00:51:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5DD55F268C
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 00:54:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229681AbiJBWvp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Oct 2022 18:51:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52852 "EHLO
+        id S230325AbiJBWy2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Oct 2022 18:54:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229935AbiJBWus (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Oct 2022 18:50:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64E9F1274C;
-        Sun,  2 Oct 2022 15:50:22 -0700 (PDT)
+        with ESMTP id S230260AbiJBWxm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Oct 2022 18:53:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29A8216592;
+        Sun,  2 Oct 2022 15:51:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A512CB80DAF;
-        Sun,  2 Oct 2022 22:50:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54954C433B5;
-        Sun,  2 Oct 2022 22:50:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B9E6760F1F;
+        Sun,  2 Oct 2022 22:51:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6EFAC433C1;
+        Sun,  2 Oct 2022 22:51:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664751018;
-        bh=lGWll2ZLCWNFayanlIW957ru5Q6QTijFAVemujlKJ1U=;
+        s=k20201202; t=1664751081;
+        bh=J3qP/71WZE3twwF9thKP8f6NNZtN+8NAb36zETMPdVo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dc3N2lDCwKzfw0jBI3rrHXH1zLDITD5Ph2hOK3Zs27H7Qc5HsSUPnJwbt5to6A3et
-         EX7zxhAlHJUQn20rfeq2dop34uw1qzDjOJFsfzf//o7N2bjfHHzQB1YJ6H3/i3wlzI
-         fS/ocMZvGPkv1gKN2ciMbdN1jQFdYeYOWKb+k1Bl0gnxv443VE7wbLzDyNOPq3OX8N
-         oToRhLGA3YpxSuLtZkLLrqfjclEmD5uK85b+N9vmJgIs8+h7glsOssHLbI/A2wrKSK
-         FCdRj9cErfscqJ0ZX+LLlnOkX3JejVLPTCExgSeb7cnW+ZI/+/NozD/Gz3d5lxMfdy
-         5HrvaCgn7KucQ==
+        b=Ne8F0wtIycjJhU7vnricQfH5GWv4Kw30n9t0VxXynd6DlkXGHUK14pUsv2bycRgOs
+         ry5ARj6cz/+mdhwd+Ch3GbPAFQtQk6zA2tPuY10wS0oskLWwigB/4pC+OymUrnU+HW
+         LxLGEsWeJvxKM6uTdZBmXyz0YkjJUxCAVBHLW7PEFTgGA/ZNoVYN7tz1NSPI8N7W/p
+         DCgCHoX1GaldTpsbQgKEmaK7h2ks+Np/gHhV1x7AiZAJRtDO1TDKZdwCfzz7OJtwH+
+         7TmgyQgF5+YJWqDxqztBKb6R2574n8WmwdLe4qb/U9hncX6twzNn/5BAsZ/P0BqajY
+         Hgh1RutkrdMsg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jianglei Nie <niejianglei2021@163.com>,
+Cc:     Haimin Zhang <tcs.kernel@gmail.com>,
+        Haimin Zhang <tcs_kernel@tencent.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, irusskikh@marvell.com,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        Sasha Levin <sashal@kernel.org>, alex.aring@gmail.com,
+        stefan@datenfreihafen.org, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wpan@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 21/29] net: atlantic: fix potential memory leak in aq_ndev_close()
-Date:   Sun,  2 Oct 2022 18:49:14 -0400
-Message-Id: <20221002224922.238837-21-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 10/20] net/ieee802154: fix uninit value bug in dgram_sendmsg
+Date:   Sun,  2 Oct 2022 18:50:49 -0400
+Message-Id: <20221002225100.239217-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221002224922.238837-1-sashal@kernel.org>
-References: <20221002224922.238837-1-sashal@kernel.org>
+In-Reply-To: <20221002225100.239217-1-sashal@kernel.org>
+References: <20221002225100.239217-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -57,40 +59,171 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jianglei Nie <niejianglei2021@163.com>
+From: Haimin Zhang <tcs.kernel@gmail.com>
 
-[ Upstream commit 65e5d27df61283e5390f04b09dc79cd832f95607 ]
+[ Upstream commit 94160108a70c8af17fa1484a37e05181c0e094af ]
 
-If aq_nic_stop() fails, aq_ndev_close() returns err without calling
-aq_nic_deinit() to release the relevant memory and resource, which
-will lead to a memory leak.
+There is uninit value bug in dgram_sendmsg function in
+net/ieee802154/socket.c when the length of valid data pointed by the
+msg->msg_name isn't verified.
 
-We can fix it by deleting the if condition judgment and goto statement to
-call aq_nic_deinit() directly after aq_nic_stop() to fix the memory leak.
+We introducing a helper function ieee802154_sockaddr_check_size to
+check namelen. First we check there is addr_type in ieee802154_addr_sa.
+Then, we check namelen according to addr_type.
 
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+Also fixed in raw_bind, dgram_bind, dgram_connect.
+
+Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/aquantia/atlantic/aq_main.c | 3 ---
- 1 file changed, 3 deletions(-)
+ include/net/ieee802154_netdev.h | 37 +++++++++++++++++++++++++++++
+ net/ieee802154/socket.c         | 42 ++++++++++++++++++---------------
+ 2 files changed, 60 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_main.c b/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-index 88595863d8bc..8a0af371e7dc 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-@@ -94,11 +94,8 @@ static int aq_ndev_close(struct net_device *ndev)
- 	int err = 0;
+diff --git a/include/net/ieee802154_netdev.h b/include/net/ieee802154_netdev.h
+index d0d188c3294b..a8994f307fc3 100644
+--- a/include/net/ieee802154_netdev.h
++++ b/include/net/ieee802154_netdev.h
+@@ -15,6 +15,22 @@
+ #ifndef IEEE802154_NETDEVICE_H
+ #define IEEE802154_NETDEVICE_H
  
- 	err = aq_nic_stop(aq_nic);
--	if (err < 0)
--		goto err_exit;
- 	aq_nic_deinit(aq_nic, true);
- 
--err_exit:
- 	return err;
++#define IEEE802154_REQUIRED_SIZE(struct_type, member) \
++	(offsetof(typeof(struct_type), member) + \
++	sizeof(((typeof(struct_type) *)(NULL))->member))
++
++#define IEEE802154_ADDR_OFFSET \
++	offsetof(typeof(struct sockaddr_ieee802154), addr)
++
++#define IEEE802154_MIN_NAMELEN (IEEE802154_ADDR_OFFSET + \
++	IEEE802154_REQUIRED_SIZE(struct ieee802154_addr_sa, addr_type))
++
++#define IEEE802154_NAMELEN_SHORT (IEEE802154_ADDR_OFFSET + \
++	IEEE802154_REQUIRED_SIZE(struct ieee802154_addr_sa, short_addr))
++
++#define IEEE802154_NAMELEN_LONG (IEEE802154_ADDR_OFFSET + \
++	IEEE802154_REQUIRED_SIZE(struct ieee802154_addr_sa, hwaddr))
++
+ #include <net/af_ieee802154.h>
+ #include <linux/netdevice.h>
+ #include <linux/skbuff.h>
+@@ -165,6 +181,27 @@ static inline void ieee802154_devaddr_to_raw(void *raw, __le64 addr)
+ 	memcpy(raw, &temp, IEEE802154_ADDR_LEN);
  }
  
++static inline int
++ieee802154_sockaddr_check_size(struct sockaddr_ieee802154 *daddr, int len)
++{
++	struct ieee802154_addr_sa *sa;
++
++	sa = &daddr->addr;
++	if (len < IEEE802154_MIN_NAMELEN)
++		return -EINVAL;
++	switch (sa->addr_type) {
++	case IEEE802154_ADDR_SHORT:
++		if (len < IEEE802154_NAMELEN_SHORT)
++			return -EINVAL;
++		break;
++	case IEEE802154_ADDR_LONG:
++		if (len < IEEE802154_NAMELEN_LONG)
++			return -EINVAL;
++		break;
++	}
++	return 0;
++}
++
+ static inline void ieee802154_addr_from_sa(struct ieee802154_addr *a,
+ 					   const struct ieee802154_addr_sa *sa)
+ {
+diff --git a/net/ieee802154/socket.c b/net/ieee802154/socket.c
+index 7bb9ef35c570..fd5862f9e26a 100644
+--- a/net/ieee802154/socket.c
++++ b/net/ieee802154/socket.c
+@@ -200,8 +200,9 @@ static int raw_bind(struct sock *sk, struct sockaddr *_uaddr, int len)
+ 	int err = 0;
+ 	struct net_device *dev = NULL;
+ 
+-	if (len < sizeof(*uaddr))
+-		return -EINVAL;
++	err = ieee802154_sockaddr_check_size(uaddr, len);
++	if (err < 0)
++		return err;
+ 
+ 	uaddr = (struct sockaddr_ieee802154 *)_uaddr;
+ 	if (uaddr->family != AF_IEEE802154)
+@@ -493,7 +494,8 @@ static int dgram_bind(struct sock *sk, struct sockaddr *uaddr, int len)
+ 
+ 	ro->bound = 0;
+ 
+-	if (len < sizeof(*addr))
++	err = ieee802154_sockaddr_check_size(addr, len);
++	if (err < 0)
+ 		goto out;
+ 
+ 	if (addr->family != AF_IEEE802154)
+@@ -564,8 +566,9 @@ static int dgram_connect(struct sock *sk, struct sockaddr *uaddr,
+ 	struct dgram_sock *ro = dgram_sk(sk);
+ 	int err = 0;
+ 
+-	if (len < sizeof(*addr))
+-		return -EINVAL;
++	err = ieee802154_sockaddr_check_size(addr, len);
++	if (err < 0)
++		return err;
+ 
+ 	if (addr->family != AF_IEEE802154)
+ 		return -EINVAL;
+@@ -604,6 +607,7 @@ static int dgram_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
+ 	struct ieee802154_mac_cb *cb;
+ 	struct dgram_sock *ro = dgram_sk(sk);
+ 	struct ieee802154_addr dst_addr;
++	DECLARE_SOCKADDR(struct sockaddr_ieee802154*, daddr, msg->msg_name);
+ 	int hlen, tlen;
+ 	int err;
+ 
+@@ -612,10 +616,20 @@ static int dgram_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+-	if (!ro->connected && !msg->msg_name)
+-		return -EDESTADDRREQ;
+-	else if (ro->connected && msg->msg_name)
+-		return -EISCONN;
++	if (msg->msg_name) {
++		if (ro->connected)
++			return -EISCONN;
++		if (msg->msg_namelen < IEEE802154_MIN_NAMELEN)
++			return -EINVAL;
++		err = ieee802154_sockaddr_check_size(daddr, msg->msg_namelen);
++		if (err < 0)
++			return err;
++		ieee802154_addr_from_sa(&dst_addr, &daddr->addr);
++	} else {
++		if (!ro->connected)
++			return -EDESTADDRREQ;
++		dst_addr = ro->dst_addr;
++	}
+ 
+ 	if (!ro->bound)
+ 		dev = dev_getfirstbyhwtype(sock_net(sk), ARPHRD_IEEE802154);
+@@ -651,16 +665,6 @@ static int dgram_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
+ 	cb = mac_cb_init(skb);
+ 	cb->type = IEEE802154_FC_TYPE_DATA;
+ 	cb->ackreq = ro->want_ack;
+-
+-	if (msg->msg_name) {
+-		DECLARE_SOCKADDR(struct sockaddr_ieee802154*,
+-				 daddr, msg->msg_name);
+-
+-		ieee802154_addr_from_sa(&dst_addr, &daddr->addr);
+-	} else {
+-		dst_addr = ro->dst_addr;
+-	}
+-
+ 	cb->secen = ro->secen;
+ 	cb->secen_override = ro->secen_override;
+ 	cb->seclevel = ro->seclevel;
 -- 
 2.35.1
 
