@@ -2,196 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37CF15F3563
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 20:14:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8544B5F3586
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 20:23:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229662AbiJCSO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 14:14:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58352 "EHLO
+        id S229805AbiJCSXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 14:23:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbiJCSOZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 14:14:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32B0737406;
-        Mon,  3 Oct 2022 11:14:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AB66A6109E;
-        Mon,  3 Oct 2022 18:14:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AC3CC433C1;
-        Mon,  3 Oct 2022 18:14:22 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="ilMor0hX"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1664820860;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Wbr6l1liVmpcbEEJMAT6hI4uzp1OCJusYxnU8Enxb70=;
-        b=ilMor0hXio3FM4v1IMLimDb9gSp0hShBpprwWJ/WJu4B4v4BoXjiFcZJqmgT0mOfCd5BOH
-        HRqzURIybiJ9Kt9MtC8kiA9zHJgcGTP3M0/rPifcBjVfi9MVAwJhtugUV5iYhJh2AgZ2o7
-        1KJT2A75xAz6Lw4FVQJ5gYpi7uuW1dU=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 80901fbe (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Mon, 3 Oct 2022 18:14:19 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kuba@kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>
-Subject: [PATCH] once: rename _SLOW to _SLEEPABLE
-Date:   Mon,  3 Oct 2022 20:14:13 +0200
-Message-Id: <20221003181413.1221968-1-Jason@zx2c4.com>
-In-Reply-To: <CAHmME9oh1aFCMBeV-vvtfMoCx4N5r_tABp79tkPNNLJnc1ug7Q@mail.gmail.com>
-References: <CAHmME9oh1aFCMBeV-vvtfMoCx4N5r_tABp79tkPNNLJnc1ug7Q@mail.gmail.com>
+        with ESMTP id S229811AbiJCSXP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 14:23:15 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D79933DBE5;
+        Mon,  3 Oct 2022 11:23:08 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 3303218847DA;
+        Mon,  3 Oct 2022 18:23:05 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 2131F25002BC;
+        Mon,  3 Oct 2022 18:23:05 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id 039A69EC0002; Mon,  3 Oct 2022 18:23:04 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Date:   Mon, 03 Oct 2022 20:23:04 +0200
+From:   netdev@kapio-technology.com
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Hans Schultz <schultz.hans@gmail.com>,
+        Joachim Wiberg <troglobit@gmail.com>,
+        Amit Cohen <amcohen@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH iproute2-next 2/2] bridge: fdb: enable FDB blackhole
+ feature
+In-Reply-To: <YzhfDgqjBvhqNUHX@shredder>
+References: <20220929152137.167626-1-netdev@kapio-technology.com>
+ <20220929152137.167626-2-netdev@kapio-technology.com>
+ <YzhfDgqjBvhqNUHX@shredder>
+User-Agent: Gigahost Webmail
+Message-ID: <d4d110223244b27ade43fa50326be2d7@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The _SLOW designation wasn't really descriptive of anything. This is
-meant to be called from process context when it's possible to sleep. So
-name this more aptly _SLEEPABLE, which better fits its intended use.
+On 2022-10-01 17:38, Ido Schimmel wrote:
+> 
+> Need to patch the "SYNOPSIS" section as well
+> 
 
-Fixes: 62c07983bef9 ("once: add DO_ONCE_SLOW() for sleepable contexts")
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Eric Dumazet <eric.dumazet@gmail.com>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- include/linux/once.h       | 38 +++++++++++++++++++-------------------
- lib/once.c                 | 10 +++++-----
- net/ipv4/inet_hashtables.c |  4 ++--
- 3 files changed, 26 insertions(+), 26 deletions(-)
+Does this look right to you for the addition to the "SYNOPSIS"?...
 
-diff --git a/include/linux/once.h b/include/linux/once.h
-index 176ab75b42df..bc714d414448 100644
---- a/include/linux/once.h
-+++ b/include/linux/once.h
-@@ -13,9 +13,9 @@ void __do_once_done(bool *done, struct static_key_true *once_key,
- 		    unsigned long *flags, struct module *mod);
- 
- /* Variant for process contexts only. */
--bool __do_once_slow_start(bool *done);
--void __do_once_slow_done(bool *done, struct static_key_true *once_key,
--			 struct module *mod);
-+bool __do_once_sleepable_start(bool *done);
-+void __do_once_sleepable_done(bool *done, struct static_key_true *once_key,
-+			      struct module *mod);
- 
- /* Call a function exactly once. The idea of DO_ONCE() is to perform
-  * a function call such as initialization of random seeds, etc, only
-@@ -61,26 +61,26 @@ void __do_once_slow_done(bool *done, struct static_key_true *once_key,
- 	})
- 
- /* Variant of DO_ONCE() for process/sleepable contexts. */
--#define DO_ONCE_SLOW(func, ...)						     \
--	({								     \
--		bool ___ret = false;					     \
--		static bool __section(".data.once") ___done = false;	     \
--		static DEFINE_STATIC_KEY_TRUE(___once_key);		     \
--		if (static_branch_unlikely(&___once_key)) {		     \
--			___ret = __do_once_slow_start(&___done);	     \
--			if (unlikely(___ret)) {				     \
--				func(__VA_ARGS__);			     \
--				__do_once_slow_done(&___done, &___once_key,  \
--						    THIS_MODULE);	     \
--			}						     \
--		}							     \
--		___ret;							     \
-+#define DO_ONCE_SLEEPABLE(func, ...)						\
-+	({									\
-+		bool ___ret = false;						\
-+		static bool __section(".data.once") ___done = false;		\
-+		static DEFINE_STATIC_KEY_TRUE(___once_key);			\
-+		if (static_branch_unlikely(&___once_key)) {			\
-+			___ret = __do_once_sleepable_start(&___done);		\
-+			if (unlikely(___ret)) {					\
-+				func(__VA_ARGS__);				\
-+				__do_once_sleepable_done(&___done, &___once_key,\
-+						    THIS_MODULE);		\
-+			}							\
-+		}								\
-+		___ret;								\
- 	})
- 
- #define get_random_once(buf, nbytes)					     \
- 	DO_ONCE(get_random_bytes, (buf), (nbytes))
- 
--#define get_random_slow_once(buf, nbytes)				     \
--	DO_ONCE_SLOW(get_random_bytes, (buf), (nbytes))
-+#define get_random_sleepable_once(buf, nbytes)				     \
-+	DO_ONCE_SLEEPABLE(get_random_bytes, (buf), (nbytes))
- 
- #endif /* _LINUX_ONCE_H */
-diff --git a/lib/once.c b/lib/once.c
-index 351f66aad310..2c306f0e891e 100644
---- a/lib/once.c
-+++ b/lib/once.c
-@@ -69,7 +69,7 @@ EXPORT_SYMBOL(__do_once_done);
- 
- static DEFINE_MUTEX(once_mutex);
- 
--bool __do_once_slow_start(bool *done)
-+bool __do_once_sleepable_start(bool *done)
- 	__acquires(once_mutex)
- {
- 	mutex_lock(&once_mutex);
-@@ -77,7 +77,7 @@ bool __do_once_slow_start(bool *done)
- 		mutex_unlock(&once_mutex);
- 		/* Keep sparse happy by restoring an even lock count on
- 		 * this mutex. In case we return here, we don't call into
--		 * __do_once_done but return early in the DO_ONCE_SLOW() macro.
-+		 * __do_once_done but return early in the DO_ONCE_SLEEPABLE() macro.
- 		 */
- 		__acquire(once_mutex);
- 		return false;
-@@ -85,9 +85,9 @@ bool __do_once_slow_start(bool *done)
- 
- 	return true;
- }
--EXPORT_SYMBOL(__do_once_slow_start);
-+EXPORT_SYMBOL(__do_once_sleepable_start);
- 
--void __do_once_slow_done(bool *done, struct static_key_true *once_key,
-+void __do_once_sleepable_done(bool *done, struct static_key_true *once_key,
- 			 struct module *mod)
- 	__releases(once_mutex)
- {
-@@ -95,4 +95,4 @@ void __do_once_slow_done(bool *done, struct static_key_true *once_key,
- 	mutex_unlock(&once_mutex);
- 	once_disable_jump(once_key, mod);
- }
--EXPORT_SYMBOL(__do_once_slow_done);
-+EXPORT_SYMBOL(__do_once_sleepable_done);
-diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index dc1c5629cd0d..a0ad34e4f044 100644
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -958,8 +958,8 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
- 	if (likely(remaining > 1))
- 		remaining &= ~1U;
- 
--	get_random_slow_once(table_perturb,
--			     INET_TABLE_PERTURB_SIZE * sizeof(*table_perturb));
-+	get_random_sleepable_once(table_perturb,
-+				  INET_TABLE_PERTURB_SIZE * sizeof(*table_perturb));
- 	index = port_offset & (INET_TABLE_PERTURB_SIZE - 1);
- 
- 	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
--- 
-2.37.3
+bridge fdb { add | del } LLADR dev BRDEV [ self ] [ local ] [ blackhole 
+]
 
