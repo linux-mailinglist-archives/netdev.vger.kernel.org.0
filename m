@@ -2,100 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF92E5F28DA
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 08:56:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B8EC5F28E4
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 09:00:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229705AbiJCG4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 02:56:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50342 "EHLO
+        id S229704AbiJCHAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 03:00:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229725AbiJCG4e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 02:56:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44EBDA1B6
-        for <netdev@vger.kernel.org>; Sun,  2 Oct 2022 23:56:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1664780190;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=8ZBicwUKsvtaRkaZY3oUqaPDULjldiOgTy47Jjj1bT4=;
-        b=RObIm19SY/cYBNgrS28as/iZO1tEfvVdTte7u7Y0Pn7MxVOllcxkbEAfoQqGmGEgL70gF9
-        RcaYbtXWkn6zWQgp3OOzSku46hmgSneWvgoUP3BkdVoUU08DAznHhf2b5K9nIdLvMvukOT
-        LNlvs0DiNjpFvCmz8LhMhuBLRlksKME=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-554-7Gjv7yeBOTuEh7uYyEfOEg-1; Mon, 03 Oct 2022 02:56:27 -0400
-X-MC-Unique: 7Gjv7yeBOTuEh7uYyEfOEg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S229710AbiJCHAV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 03:00:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27037DF1C;
+        Mon,  3 Oct 2022 00:00:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2404F3C025C3;
-        Mon,  3 Oct 2022 06:56:27 +0000 (UTC)
-Received: from samus.usersys.redhat.com (unknown [10.43.17.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id DBB452166B26;
-        Mon,  3 Oct 2022 06:56:25 +0000 (UTC)
-Date:   Mon, 3 Oct 2022 08:56:24 +0200
-From:   Artem Savkov <asavkov@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jbenc@redhat.com
-Subject: Re: [PATCH bpf-next] selftests/bpf: make libbpf_probe_prog_types
- testcase aware of kernel configuration
-Message-ID: <YzqHmHRjxAc4Nndc@samus.usersys.redhat.com>
-Mail-Followup-To: Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jbenc@redhat.com
-References: <20220930110900.75492-1-asavkov@redhat.com>
- <CAEf4BzZpkgXi9Y6x-_-6mDDW12GvTj0Y_e7cpQMqF3dtiBBhpA@mail.gmail.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE95160F80;
+        Mon,  3 Oct 2022 07:00:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 54FAAC433B5;
+        Mon,  3 Oct 2022 07:00:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664780415;
+        bh=qZ17h429eDqUgwv/aGG3SQHS7BjHvVN6jcPIWDLcYAQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=R53ANWsdp78RakxCBEjxbBu1d5cN6J48MgxmDE/iK5QUj/X4qGB2fLCM/UXKPaRHU
+         1Qde8nkVZv+xI6+Y3DaGz0AM7EWIOHSbvqAuCPVAt44V5RvLM4QvcXElj4iH25O5IP
+         1U+DKS2r/pDjeb6vJUfZI7zOuuyWL9V4nc8fEechn0gXF5XbdYyh9W0a0cdE2UTjaw
+         juVY0DIKYpo8woIBDKwJJlAIoz3hHlYFrcepz0m9Cyvp/VcoxeDWGwQNGLIBE/vOnJ
+         BmXfdQv/bbEsQ+jaGAC7VNeUBFH88K+OMVMFIjuWSqJ21zXjphrP/zqkPwa1QdLY69
+         765M3f1KacwPQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3AF5AE49FA7;
+        Mon,  3 Oct 2022 07:00:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZpkgXi9Y6x-_-6mDDW12GvTj0Y_e7cpQMqF3dtiBBhpA@mail.gmail.com>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: rds: don't hold sock lock when cancelling work from
+ rds_tcp_reset_callbacks()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166478041523.16664.6828494970350493146.git-patchwork-notify@kernel.org>
+Date:   Mon, 03 Oct 2022 07:00:15 +0000
+References: <3de97b2d-1c15-5dda-4fe2-78311a91d861@I-love.SAKURA.ne.jp>
+In-Reply-To: <3de97b2d-1c15-5dda-4fe2-78311a91d861@I-love.SAKURA.ne.jp>
+To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc:     santosh.shilimkar@oracle.com, davem@davemloft.net,
+        sowmini.varadhan@oracle.com, hdanton@sina.com,
+        syzkaller-bugs@googlegroups.com,
+        syzbot+78c55c7bc6f66e53dce2@syzkaller.appspotmail.com,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 30, 2022 at 04:06:41PM -0700, Andrii Nakryiko wrote:
-> On Fri, Sep 30, 2022 at 4:09 AM Artem Savkov <asavkov@redhat.com> wrote:
-> >
-> > At the moment libbpf_probe_prog_types test iterates over all available
-> > BPF_PROG_TYPE regardless of kernel configuration which can exclude some
-> > of those. Unfortunately there is no direct way to tell which types are
-> > available, but we can look at struct bpf_ctx_onvert to tell which ones
-> > are available.
-> >
-> > Signed-off-by: Artem Savkov <asavkov@redhat.com>
-> > ---
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Thu, 29 Sep 2022 00:25:37 +0900 you wrote:
+> syzbot is reporting lockdep warning at rds_tcp_reset_callbacks() [1], for
+> commit ac3615e7f3cffe2a ("RDS: TCP: Reduce code duplication in
+> rds_tcp_reset_callbacks()") added cancel_delayed_work_sync() into a section
+> protected by lock_sock() without realizing that rds_send_xmit() might call
+> lock_sock().
 > 
-> Many selftests assume correct kernel configuration which is encoded in
-> config and config.<arch> files. So it seems fair to assume that all
-> defined program types are available on kernel-under-test.
+> We don't need to protect cancel_delayed_work_sync() using lock_sock(), for
+> even if rds_{send,recv}_worker() re-queued this work while __flush_work()
+>  from cancel_delayed_work_sync() was waiting for this work to complete,
+> retried rds_{send,recv}_worker() is no-op due to the absence of RDS_CONN_UP
+> bit.
+> 
+> [...]
 
-Ok. Wasn't sure if this is the assumption being made.
+Here is the summary with links:
+  - net: rds: don't hold sock lock when cancelling work from rds_tcp_reset_callbacks()
+    https://git.kernel.org/netdev/net/c/a91b750fd662
 
-> If someone is running selftests under custom more minimal kernel they
-> can use denylist to ignore specific prog type subtests?
-
-Thanks for the suggestion. Denylist is a bit too broad in this case as
-it means we'll be disabling the whole libbpf_probe_prog_types test while
-only a single type is a problem. Looks like we'll have to live with a
-downstream-only patch in this case.
-
+You are awesome, thank you!
 -- 
- Artem
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
