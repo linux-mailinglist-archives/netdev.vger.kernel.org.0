@@ -2,72 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88C415F3562
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 20:13:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 236CB5F3567
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 20:16:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229884AbiJCSNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 14:13:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57394 "EHLO
+        id S229798AbiJCSP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 14:15:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230026AbiJCSNU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 14:13:20 -0400
-Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA482BE34
-        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 11:13:16 -0700 (PDT)
-Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-13207a86076so9645514fac.3
-        for <netdev@vger.kernel.org>; Mon, 03 Oct 2022 11:13:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=KAs5TktNgqDwCFtnLFoqnF5GPiDw8jq4bhTzJL6oC2o=;
-        b=bstPVNkcw2cwlhviw1F6eW68R9NRurdhXZiUO028nbGbM1ZwsBym9A8bSp1cSmlcT4
-         3P551Z9VCP12ptRQAnW7tWsjo6iZH1maYjIfF16NkQR5R+Eh5hu9DmgxevDPKNPHNc8V
-         6xaNaDXg2cJ33Y71Lw+I5ooVBJvCflYiOim1lwYPKdxawP003EHtI4ef6rzkfVMk2eFx
-         WQ2fkaqJvG1HabYCa0itDr0dyL5uDHoDHovBX4rBVHhX88WGg910mBvnqXSyWJJ+xntr
-         KHoJKrK2nnlOAbt4m5g8IpINWvzQjR2yG9CJa1Tca6ut+VtELzulzx9qIbUfiMYFvzib
-         K0xQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=KAs5TktNgqDwCFtnLFoqnF5GPiDw8jq4bhTzJL6oC2o=;
-        b=JLJdYh0UfwFvkNtQVBZQdsbW+df/gAdffDxeKZzVeodajTvJlWDbdd5msUXZUT62Nb
-         8pRnsfOBobgZ2uq10aHrW3qHuyEjLS4mDesvrlQQvE5mYHvdqxr50gn7Ltdmr8fGdK92
-         gOj+vt8tDrvPW7rXxc6ZLGm0W05yCp4G8sbUSS2Mi4DTQlYXqQ7so05z4bGLYXS3fTOV
-         HX5e9+IO0s66K9grsqIiNMVC3h265yHYKa2n4RCchW001TTSjB2M5+SDNQS47TtNlGGo
-         eVRretfVu1Ewfn8gie4lm6z2CGPm1ETLiIYjxoqiWcFXgtJ/17zbe6ISm5Y8xZO6K+P9
-         o2Fw==
-X-Gm-Message-State: ACrzQf21e+9CYcmhFXHGb3Vj1Fpu9qMqAkxynQBvqtN9Gd+0V5HQAYfi
-        qfJYSVVwO73QqSfUscjD4vU=
-X-Google-Smtp-Source: AMsMyM6F2IXP4LX8GhMu4aX6BqKtDnh/n/EXeX6CgKPJh4L/z4rXFiLkVIWrB+w5uiBqz455pSaWVg==
-X-Received: by 2002:a05:6870:5626:b0:127:5f1b:12d2 with SMTP id m38-20020a056870562600b001275f1b12d2mr6168186oao.248.1664820796129;
-        Mon, 03 Oct 2022 11:13:16 -0700 (PDT)
-Received: from localhost ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id b17-20020a056870d1d100b00127a6357bd5sm3072951oac.49.2022.10.03.11.13.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Oct 2022 11:13:15 -0700 (PDT)
-Date:   Mon, 3 Oct 2022 11:11:05 -0700
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229451AbiJCSP6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 14:15:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EEF62AC5F
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 11:15:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1157FB811B2
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 18:15:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DE1DC433D6
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 18:15:52 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="fCdiazUD"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1664820949;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Wbr6l1liVmpcbEEJMAT6hI4uzp1OCJusYxnU8Enxb70=;
+        b=fCdiazUDhYNgNa1I1Q19XMuMKfCfoFfD7qteXwKHMjYzRuzKwv+OKAxK8ZsPSm5a3HWMVg
+        3OW8fbWn7lHBZ8KAlzoaJgm6r8hqt0Vp/a0RHsRwNRWoKTkIbl3YWPAK1pKfCARk/GHoIL
+        P09RzFEzagxJlHVb2sD43dMPruNvZtk=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id f8f02928 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
+        for <netdev@vger.kernel.org>;
+        Mon, 3 Oct 2022 18:15:49 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kuba@kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Menglong Dong <imagedong@tencent.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Petr Machata <petrm@nvidia.com>
-Subject: Re: [PATCH 0/4] net: drop netif_attrmask_next*()
-Message-ID: <YzsluT4ET0zyjCtp@yury-laptop>
-References: <20221002151702.3932770-1-yury.norov@gmail.com>
- <20221003095048.1a683ba7@kernel.org>
+        Christophe Leroy <christophe.leroy@csgroup.eu>
+Subject: [PATCH net-next] once: rename _SLOW to _SLEEPABLE
+Date:   Mon,  3 Oct 2022 20:14:13 +0200
+Message-Id: <20221003181413.1221968-1-Jason@zx2c4.com>
+In-Reply-To: <CAHmME9oh1aFCMBeV-vvtfMoCx4N5r_tABp79tkPNNLJnc1ug7Q@mail.gmail.com>
+References: <CAHmME9oh1aFCMBeV-vvtfMoCx4N5r_tABp79tkPNNLJnc1ug7Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221003095048.1a683ba7@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,23 +61,138 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 03, 2022 at 09:50:48AM -0700, Jakub Kicinski wrote:
-> On Sun,  2 Oct 2022 08:16:58 -0700 Yury Norov wrote:
-> > netif_attrmask_next_and() generates warnings if CONFIG_DEBUG_PER_CPU_MAPS
-> > is enabled.
-> 
-> Could you describe the nature of the warning? Is it a false positive 
-> or a legit warning?
-> 
-> If the former perhaps we should defer until after the next merge window.
+The _SLOW designation wasn't really descriptive of anything. This is
+meant to be called from process context when it's possible to sleep. So
+name this more aptly _SLEEPABLE, which better fits its intended use.
 
-The problem is that netif_attrmask_next_and() is called with
-n == nr_cpu_ids-1, which triggers cpu_max_bits_warn() after this:
+Fixes: 62c07983bef9 ("once: add DO_ONCE_SLOW() for sleepable contexts")
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Eric Dumazet <eric.dumazet@gmail.com>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ include/linux/once.h       | 38 +++++++++++++++++++-------------------
+ lib/once.c                 | 10 +++++-----
+ net/ipv4/inet_hashtables.c |  4 ++--
+ 3 files changed, 26 insertions(+), 26 deletions(-)
 
-https://lore.kernel.org/netdev/20220926103437.322f3c6c@kernel.org/
+diff --git a/include/linux/once.h b/include/linux/once.h
+index 176ab75b42df..bc714d414448 100644
+--- a/include/linux/once.h
++++ b/include/linux/once.h
+@@ -13,9 +13,9 @@ void __do_once_done(bool *done, struct static_key_true *once_key,
+ 		    unsigned long *flags, struct module *mod);
+ 
+ /* Variant for process contexts only. */
+-bool __do_once_slow_start(bool *done);
+-void __do_once_slow_done(bool *done, struct static_key_true *once_key,
+-			 struct module *mod);
++bool __do_once_sleepable_start(bool *done);
++void __do_once_sleepable_done(bool *done, struct static_key_true *once_key,
++			      struct module *mod);
+ 
+ /* Call a function exactly once. The idea of DO_ONCE() is to perform
+  * a function call such as initialization of random seeds, etc, only
+@@ -61,26 +61,26 @@ void __do_once_slow_done(bool *done, struct static_key_true *once_key,
+ 	})
+ 
+ /* Variant of DO_ONCE() for process/sleepable contexts. */
+-#define DO_ONCE_SLOW(func, ...)						     \
+-	({								     \
+-		bool ___ret = false;					     \
+-		static bool __section(".data.once") ___done = false;	     \
+-		static DEFINE_STATIC_KEY_TRUE(___once_key);		     \
+-		if (static_branch_unlikely(&___once_key)) {		     \
+-			___ret = __do_once_slow_start(&___done);	     \
+-			if (unlikely(___ret)) {				     \
+-				func(__VA_ARGS__);			     \
+-				__do_once_slow_done(&___done, &___once_key,  \
+-						    THIS_MODULE);	     \
+-			}						     \
+-		}							     \
+-		___ret;							     \
++#define DO_ONCE_SLEEPABLE(func, ...)						\
++	({									\
++		bool ___ret = false;						\
++		static bool __section(".data.once") ___done = false;		\
++		static DEFINE_STATIC_KEY_TRUE(___once_key);			\
++		if (static_branch_unlikely(&___once_key)) {			\
++			___ret = __do_once_sleepable_start(&___done);		\
++			if (unlikely(___ret)) {					\
++				func(__VA_ARGS__);				\
++				__do_once_sleepable_done(&___done, &___once_key,\
++						    THIS_MODULE);		\
++			}							\
++		}								\
++		___ret;								\
+ 	})
+ 
+ #define get_random_once(buf, nbytes)					     \
+ 	DO_ONCE(get_random_bytes, (buf), (nbytes))
+ 
+-#define get_random_slow_once(buf, nbytes)				     \
+-	DO_ONCE_SLOW(get_random_bytes, (buf), (nbytes))
++#define get_random_sleepable_once(buf, nbytes)				     \
++	DO_ONCE_SLEEPABLE(get_random_bytes, (buf), (nbytes))
+ 
+ #endif /* _LINUX_ONCE_H */
+diff --git a/lib/once.c b/lib/once.c
+index 351f66aad310..2c306f0e891e 100644
+--- a/lib/once.c
++++ b/lib/once.c
+@@ -69,7 +69,7 @@ EXPORT_SYMBOL(__do_once_done);
+ 
+ static DEFINE_MUTEX(once_mutex);
+ 
+-bool __do_once_slow_start(bool *done)
++bool __do_once_sleepable_start(bool *done)
+ 	__acquires(once_mutex)
+ {
+ 	mutex_lock(&once_mutex);
+@@ -77,7 +77,7 @@ bool __do_once_slow_start(bool *done)
+ 		mutex_unlock(&once_mutex);
+ 		/* Keep sparse happy by restoring an even lock count on
+ 		 * this mutex. In case we return here, we don't call into
+-		 * __do_once_done but return early in the DO_ONCE_SLOW() macro.
++		 * __do_once_done but return early in the DO_ONCE_SLEEPABLE() macro.
+ 		 */
+ 		__acquire(once_mutex);
+ 		return false;
+@@ -85,9 +85,9 @@ bool __do_once_slow_start(bool *done)
+ 
+ 	return true;
+ }
+-EXPORT_SYMBOL(__do_once_slow_start);
++EXPORT_SYMBOL(__do_once_sleepable_start);
+ 
+-void __do_once_slow_done(bool *done, struct static_key_true *once_key,
++void __do_once_sleepable_done(bool *done, struct static_key_true *once_key,
+ 			 struct module *mod)
+ 	__releases(once_mutex)
+ {
+@@ -95,4 +95,4 @@ void __do_once_slow_done(bool *done, struct static_key_true *once_key,
+ 	mutex_unlock(&once_mutex);
+ 	once_disable_jump(once_key, mod);
+ }
+-EXPORT_SYMBOL(__do_once_slow_done);
++EXPORT_SYMBOL(__do_once_sleepable_done);
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index dc1c5629cd0d..a0ad34e4f044 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -958,8 +958,8 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 	if (likely(remaining > 1))
+ 		remaining &= ~1U;
+ 
+-	get_random_slow_once(table_perturb,
+-			     INET_TABLE_PERTURB_SIZE * sizeof(*table_perturb));
++	get_random_sleepable_once(table_perturb,
++				  INET_TABLE_PERTURB_SIZE * sizeof(*table_perturb));
+ 	index = port_offset & (INET_TABLE_PERTURB_SIZE - 1);
+ 
+ 	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
+-- 
+2.37.3
 
-Underlying bitmap layer handles this correctly, so this wouldn't make
-problems for people. But this is not a false-positive.
-
-Thanks,
-Yury
