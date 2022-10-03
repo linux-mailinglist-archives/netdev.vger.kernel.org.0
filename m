@@ -2,181 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD2FD5F29F9
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 09:29:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFAA95F2B4F
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 09:56:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230346AbiJCH3S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 03:29:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44398 "EHLO
+        id S232202AbiJCH46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 03:56:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231358AbiJCH2u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 03:28:50 -0400
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4900414016
-        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 00:19:53 -0700 (PDT)
-Received: by mail-il1-f198.google.com with SMTP id g10-20020a056e021e0a00b002f9db676704so1227340ila.14
-        for <netdev@vger.kernel.org>; Mon, 03 Oct 2022 00:19:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=CkqP2d1fPEgRUJDcFTqNFXZTppAl/lOomNbbZEWiEns=;
-        b=ZMC4I5gFXjVCDj/qA46KuoeryFciqUKWc7Swxu9Y7xQ3u5w8iQnAD2r2tbgKLIJ0un
-         qdwpXX3BZd2OVoalTBwFlqHidUXuH+l1oA38Nuv93uWzKYgbG/A3Bi853O95XTk6GuZK
-         10d7OUMeC1+FxD4lBMiKbBmwpJld4ZQp3iitqoJU+wGoYniDg1jdaplQPqLdV8Jx745t
-         XLm/4IrvA00DhvTh4DICqM7IyrJ2p/TpBwBONZfdDzAn5wNWPLD0m8FR28XekTBh2Jr6
-         1RPlymVYpM1pzsSYPYmZ8kuNOlfqKr3cNy5qK5IXD1j/RAUbaPlG3F1Q3UItldwZbGcA
-         yKKw==
-X-Gm-Message-State: ACrzQf1SoLFoHh8AgLdT0xx1zBsxTcBxB7OfC2AHPYjOVgt548+xvqH+
-        scCmqVCGP7Qtt++wqstnebam3PE9TkzTujRB6RIpNGAbyUn2
-X-Google-Smtp-Source: AMsMyM5C3CEbYW69hFAqUOIWkUAdFOh3SKHNxgqGN6gazoXYeXn0GqNq8xfW7R6MjfTxL/bu1rewfTuvWeLkN8RaPDihJ6A3u5LH
+        with ESMTP id S231128AbiJCH4J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 03:56:09 -0400
+Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AE6750714
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 00:33:21 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id 69A0732005C1;
+        Mon,  3 Oct 2022 03:19:49 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Mon, 03 Oct 2022 03:19:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; t=1664781589; x=1664867989; bh=0X7sayyMLs4u8AAhyQUE6pwBWybq
+        1g8do51vA28fWdg=; b=v2qATUsJolciytbFLjv8I8+SMfuMi3RtgowHH8T9dxBS
+        UQEz9oi1ZxMg/kPW3Rw2SvZudP5cThzcoqUIlLzc0mN9OXx0CajFs42ls8Hdqudw
+        yMET2Py77gzrF8/2YG7IPw6/URDo7dLXRBnJ5VTyj1Q9F1JDdyVc6e97n0wjaJjy
+        mI/vKRn+/twt2ehm3aQFh38s8eljj43qrhemtk/yZsNDh41N0rEE4kYIy2CZ/V6j
+        qYzSwjx5MLqirGPU3lggCQGZwd66GXrXY5BoTN6WoGk0c0gqwO5Q4JmT0O5cgO7Q
+        R99gVaRauJQJJ9DFZWmxWNcDq3+XCEG+Z69Oibg5ig==
+X-ME-Sender: <xms:FI06Ywh9keq7x4meNdcCywYZ147ZsE6w2Fs2x5p1l5ruhFfbra8e9g>
+    <xme:FI06Y5CInREhEsEkI9BOGHV9ic50v9o04_etvW6jRiLs8wotQg-vwJ601gbLvMbGT
+    URNEJt6f5Ut_DE>
+X-ME-Received: <xmr:FI06Y4Hd5MQL1x_fat6JpnUbbPtkmDgLNua8vFJ7Q0UcYU-2txJAZcjdn9X_>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfeehkedguddulecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkugho
+    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrg
+    htthgvrhhnpedvudefveekheeugeeftddvveefgfduieefudeifefgleekheegleegjeej
+    geeghfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:FI06YxSiQ8o2u3X5uma33qZZN_VpW2w4yYQox_jXtyq_oAUTmUR3DQ>
+    <xmx:FI06Y9y-HeEhJaEfsvI7Sm6iUNpwxqyY8_ZebsVEbY9EzboiyE-YTQ>
+    <xmx:FI06Y_6H2s43ZQhqFBOraHqe3SEXZ1ybnF07e4dvKvjVF-r2bATuOQ>
+    <xmx:FY06Ywq3mXhyQQ9_dKY9r5vhKGuzTwgjaILRe7Ql3hjF0vyy2Lr6FA>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 3 Oct 2022 03:19:48 -0400 (EDT)
+Date:   Mon, 3 Oct 2022 10:19:45 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Vikas Gupta <vikas.gupta@broadcom.com>
+Cc:     Michael Chan <michael.chan@broadcom.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, gospo@broadcom.com
+Subject: Re: [PATCH net-next v2 2/3] bnxt_en: add
+ .get_module_eeprom_by_page() support
+Message-ID: <YzqNEc6biKKrfugK@shredder>
+References: <1664648831-7965-1-git-send-email-michael.chan@broadcom.com>
+ <1664648831-7965-3-git-send-email-michael.chan@broadcom.com>
+ <YzmvdxQpWviawxuj@shredder>
+ <CAHLZf_sEB=dR2skpVuTD-r=SW4ZF9aOUKuNxibrjAKFe=v5+=Q@mail.gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:cd03:0:b0:2f9:463e:279d with SMTP id
- z3-20020a92cd03000000b002f9463e279dmr7178837iln.223.1664781518584; Mon, 03
- Oct 2022 00:18:38 -0700 (PDT)
-Date:   Mon, 03 Oct 2022 00:18:38 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000000b46aa05ea1c2721@google.com>
-Subject: [syzbot] possible deadlock in discov_off
-From:   syzbot <syzbot+f047480b1e906b46a3f4@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, johan.hedberg@gmail.com,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
-        marcel@holtmann.org, netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHLZf_sEB=dR2skpVuTD-r=SW4ZF9aOUKuNxibrjAKFe=v5+=Q@mail.gmail.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sun, Oct 02, 2022 at 09:51:10PM +0530, Vikas Gupta wrote:
+> On Sun, Oct 2, 2022 at 9:04 PM Ido Schimmel <idosch@idosch.org> wrote:
+> >
+> > On Sat, Oct 01, 2022 at 02:27:10PM -0400, Michael Chan wrote:
+> > > +static int bnxt_get_module_eeprom_by_page(struct net_device *dev,
+> > > +                                       const struct ethtool_module_eeprom *page_data,
+> > > +                                       struct netlink_ext_ack *extack)
+> > > +{
+> > > +     struct bnxt *bp = netdev_priv(dev);
+> > > +     int rc;
+> > > +
+> > > +     if (bp->link_info.module_status >
+> > > +         PORT_PHY_QCFG_RESP_MODULE_STATUS_WARNINGMSG) {
+> > > +             NL_SET_ERR_MSG_MOD(extack, "Phy status unknown");
+> >
+> > Can you make this more helpful to users? The comment above this check in
+> > bnxt_get_module_info() suggests that it is possible:
+> 
+> Do you mean that we should elaborate something like
+> NL_SET_ERR_MSG_MOD(extack, "Module may be not inserted or powered down
+> or 10G Base-T");
 
-syzbot found the following issue on:
+Yes, but even then the exact error is unknown and you would need
+something like drgn / kprobes to retrieve the specific module_state for
+debug. You can do something like the following (in a separate function):
 
-HEAD commit:    c3e0e1e23c70 Merge tag 'irq_urgent_for_v6.0' of git://git...
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=14471d38880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=755695d26ad09807
-dashboard link: https://syzkaller.appspot.com/bug?extid=f047480b1e906b46a3f4
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+if (bp->link_info.module_status <=
+    PORT_PHY_QCFG_RESP_MODULE_STATUS_WARNINGMSG)
+        return 0;
 
-Unfortunately, I don't have any reproducer for this issue yet.
+switch (bp->link_info.module_status) {
+case PORT_PHY_QCFG_RESP_MODULE_STATUS_PWRDOWN:
+	NL_SET_ERR_MSG_MOD(extack, "Transceiver module is powering down");
+	break;
+case PORT_PHY_QCFG_RESP_MODULE_STATUS_NOTINSERTED:
+	NL_SET_ERR_MSG_MOD(extack, "Transceiver module not inserted");
+	break;
+case PORT_PHY_QCFG_RESP_MODULE_STATUS_CURRENTFAULT:
+	NL_SET_ERR_MSG_MOD(extack, "... something that explains what this means ...");
+	break;
+default:
+	NL_SET_ERR_MSG_MOD(extack, "Unknown error");
+	break;
+}
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/67576e43d5c7/disk-c3e0e1e2.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/e568fb42b955/vmlinux-c3e0e1e2.xz
+return -EINVAL;
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+f047480b1e906b46a3f4@syzkaller.appspotmail.com
+> 
+> >
+> > /* No point in going further if phy status indicates
+> >  * module is not inserted or if it is powered down or
+> >  * if it is of type 10GBase-T
+> >  */
+> > if (bp->link_info.module_status >
+> >         PORT_PHY_QCFG_RESP_MODULE_STATUS_WARNINGMSG)
+> >
+> > > +             return -EIO;
+> > > +     }
+> > > +
+> > > +     if (bp->hwrm_spec_code < 0x10202) {
+> > > +             NL_SET_ERR_MSG_MOD(extack, "Unsupported hwrm spec");
+> >
+> > Likewise. As a user I do not know what "hwrm spec" means... Maybe:
+> >
+> > NL_SET_ERR_MSG_MOD(extack, "Firmware version too old");
+> >
+> >
+> > > +             return -EOPNOTSUPP;
+> > > +     }
+> > > +
+> > > +     if (page_data->bank && !(bp->phy_flags & BNXT_PHY_FL_BANK_SEL)) {
+> > > +             NL_SET_ERR_MSG_MOD(extack, "Firmware not capable for bank selection");
+> > > +             return -EOPNOTSUPP;
+> >
+> > What happens if you have an old firmware that does not support this
+> > functionality and user space tries to dump page 10h from bank 1 of a
+> > CMIS module that supports multiple banks?
+> >
+> > I wanted to say that you would see the wrong information (from bank 0)
+> > because the legacy operations do not support banks and bank 0 is
+> > assumed. However, because only pages 10h-ffh are banked, user space will
+> > get an error from the following check in fallback_set_params():
+> >
+> > if (request->page)
+> >         offset = request->page * ETH_MODULE_EEPROM_PAGE_LEN + offset;
+> >
+> > [...]
+> >
+> > if (offset >= modinfo->eeprom_len)
+> >         return -EINVAL;
+> >
+> > I believe it makes sense to be more explicit about it and return an
+> > error in fallback_set_params() in case bank is not 0. Please follow up
+> > if the above analysis is correct.
+> 
+> So older firmware do not understand bank > 0 and hence it returns to
+> EOPNOTSUPP, which goes to fallback_set_params() and fails for
+> if (offset >= modinfo->eeprom_len)
+>         return -EINVAL
+> As we are not setting modinfo->eeprom_len for CMIS modules in get_module_eeprom.
+> With the above said userspace gets EINVAL.
+> Let me know if my understanding is correct?
 
-======================================================
-WARNING: possible circular locking dependency detected
-6.0.0-rc7-syzkaller-00081-gc3e0e1e23c70 #0 Not tainted
-------------------------------------------------------
-kworker/u5:5/3650 is trying to acquire lock:
-ffff88807606c078 (&hdev->lock){+.+.}-{3:3}, at: discov_off+0x88/0x1a0 net/bluetooth/mgmt.c:1033
+Yes. Basically there is no point for ethtool to even try to invoke the
+legacy operations when bank is not zero:
 
-but task is already holding lock:
-ffffc90003f5fda8 ((work_completion)(&(&hdev->discov_off)->work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
+diff --git a/net/ethtool/eeprom.c b/net/ethtool/eeprom.c
+index 1c94bb8ea03f..1d6a35c8b6f0 100644
+--- a/net/ethtool/eeprom.c
++++ b/net/ethtool/eeprom.c
+@@ -60,6 +60,9 @@ static int eeprom_fallback(struct eeprom_req_info *request,
+ 	u8 *data;
+ 	int err;
+ 
++	if (request->bank)
++		return -EINVAL;
++
+ 	modinfo.cmd = ETHTOOL_GMODULEINFO;
+ 	err = ethtool_get_module_info_call(dev, &modinfo);
+ 	if (err < 0)
 
-which lock already depends on the new lock.
-
-
-the existing dependency chain (in reverse order) is:
-
--> #1 ((work_completion)(&(&hdev->discov_off)->work)){+.+.}-{0:0}:
-       __flush_work+0x105/0xae0 kernel/workqueue.c:3069
-       __cancel_work_timer+0x3f9/0x570 kernel/workqueue.c:3160
-       mgmt_index_removed+0x218/0x340 net/bluetooth/mgmt.c:8952
-       hci_unregister_dev+0x34f/0x4e0 net/bluetooth/hci_core.c:2688
-       vhci_release+0x7c/0xf0 drivers/bluetooth/hci_vhci.c:568
-       __fput+0x277/0x9d0 fs/file_table.c:320
-       task_work_run+0xdd/0x1a0 kernel/task_work.c:177
-       exit_task_work include/linux/task_work.h:38 [inline]
-       do_exit+0xad5/0x29b0 kernel/exit.c:795
-       do_group_exit+0xd2/0x2f0 kernel/exit.c:925
-       get_signal+0x238c/0x2610 kernel/signal.c:2857
-       arch_do_signal_or_restart+0x82/0x2300 arch/x86/kernel/signal.c:869
-       exit_to_user_mode_loop kernel/entry/common.c:166 [inline]
-       exit_to_user_mode_prepare+0x15f/0x250 kernel/entry/common.c:201
-       __syscall_exit_to_user_mode_work kernel/entry/common.c:283 [inline]
-       syscall_exit_to_user_mode+0x19/0x50 kernel/entry/common.c:294
-       do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
-       entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
--> #0 (&hdev->lock){+.+.}-{3:3}:
-       check_prev_add kernel/locking/lockdep.c:3095 [inline]
-       check_prevs_add kernel/locking/lockdep.c:3214 [inline]
-       validate_chain kernel/locking/lockdep.c:3829 [inline]
-       __lock_acquire+0x2a43/0x56d0 kernel/locking/lockdep.c:5053
-       lock_acquire kernel/locking/lockdep.c:5666 [inline]
-       lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
-       __mutex_lock_common kernel/locking/mutex.c:603 [inline]
-       __mutex_lock+0x12f/0x1350 kernel/locking/mutex.c:747
-       discov_off+0x88/0x1a0 net/bluetooth/mgmt.c:1033
-       process_one_work+0x991/0x1610 kernel/workqueue.c:2289
-       worker_thread+0x665/0x1080 kernel/workqueue.c:2436
-       kthread+0x2e4/0x3a0 kernel/kthread.c:376
-       ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
-
-other info that might help us debug this:
-
- Possible unsafe locking scenario:
-
-       CPU0                    CPU1
-       ----                    ----
-  lock((work_completion)(&(&hdev->discov_off)->work));
-                               lock(&hdev->lock);
-                               lock((work_completion)(&(&hdev->discov_off)->work));
-  lock(&hdev->lock);
-
- *** DEADLOCK ***
-
-2 locks held by kworker/u5:5/3650:
- #0: ffff88807a95e938 ((wq_completion)hci0){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff88807a95e938 ((wq_completion)hci0){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff88807a95e938 ((wq_completion)hci0){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff88807a95e938 ((wq_completion)hci0){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff88807a95e938 ((wq_completion)hci0){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff88807a95e938 ((wq_completion)hci0){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc90003f5fda8 ((work_completion)(&(&hdev->discov_off)->work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
-
-stack backtrace:
-CPU: 0 PID: 3650 Comm: kworker/u5:5 Not tainted 6.0.0-rc7-syzkaller-00081-gc3e0e1e23c70 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/22/2022
-Workqueue: hci0 discov_off
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2175
- check_prev_add kernel/locking/lockdep.c:3095 [inline]
- check_prevs_add kernel/locking/lockdep.c:3214 [inline]
- validate_chain kernel/locking/lockdep.c:3829 [inline]
- __lock_acquire+0x2a43/0x56d0 kernel/locking/lockdep.c:5053
- lock_acquire kernel/locking/lockdep.c:5666 [inline]
- lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
- __mutex_lock_common kernel/locking/mutex.c:603 [inline]
- __mutex_lock+0x12f/0x1350 kernel/locking/mutex.c:747
- discov_off+0x88/0x1a0 net/bluetooth/mgmt.c:1033
- process_one_work+0x991/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e4/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Not sure how many will actually hit it. I expect drivers supporting
+modules with banked pages to implement the new ethtool operation.
