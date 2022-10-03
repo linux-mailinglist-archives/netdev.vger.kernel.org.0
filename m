@@ -2,61 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B86B5F2CFA
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 11:13:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B53F5F2CFB
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 11:13:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229764AbiJCJNl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 05:13:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54400 "EHLO
+        id S229897AbiJCJNm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 05:13:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231329AbiJCJNW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 05:13:22 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06880E03D
-        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 02:12:35 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id a3so3461330wrt.0
-        for <netdev@vger.kernel.org>; Mon, 03 Oct 2022 02:12:35 -0700 (PDT)
+        with ESMTP id S230456AbiJCJNX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 05:13:23 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65C49EE0F
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 02:12:37 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id 130-20020a1c0288000000b003b494ffc00bso8116468wmc.0
+        for <netdev@vger.kernel.org>; Mon, 03 Oct 2022 02:12:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ggTkD+Yqw0Fv0Bh205GoC9DmyUFhUon4k03CUdcVnYo=;
-        b=Ra1dAAy1YOW/r9W6AjPqG3casFoMej+VZcZuXMVvv0DpCd5JoO59THDl43z7nkgKGm
-         h3o3+K4gHaXGbfzSq5Qe1Qa+SVEB10aiGQrITE06pXx2HQeAxcDQPUQ9VzBvIgBqumkt
-         Hd52rAnXJYh6h+HxQA9ctOGQtvUi0xtM0MNUfshh5PHwb6SH4l47MOSidI985gf1xkW+
-         VpqCQLHA1G2uFdTwJkS9+L5V6pDcuzyo8qo8swHZn7Mh1aO+dM/xQUH0X6BssQTBEeeh
-         S3TtQrtteIwOz8ktILC/cabXb6HaTu9ZpW+KkvzFG9TYC722BJVNxwybikwcCI0apxub
-         YHYA==
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=54JWM5pLwKiTSAJLU69TQfpkRk7rLxcr8W/QvMNGq6w=;
+        b=OtlcFl3WhWcku7oWZbD51TYhWHTCWq39FDrocBm/Toz5T6jXoaUi8488iElFLn35P+
+         nNdrKHyCpD0SlaxMp2CmesQLZ+6T+5Bzt4YSawc4QNYRJNHpLSNVLGxcgP6sNMsNS9PF
+         VXAbNQkNhfcbLoG01KIn3fy7uQyYBOnFdjrT4Dblz1SdVRxMiN3Rq1phfuS69Zyj8Igq
+         u5k8PhD9HOGUuIhzqQNf6tSY/bE1LjBxz6JeGc62purOB+uf2M6LRmoeSbxIagjlF/rT
+         RXe1QQzywjnQ21el07wuXd5+pRW5O/9CJmrzMcXowgtcgf68TJWzufeZ9RBO+kBbatSG
+         c8MA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ggTkD+Yqw0Fv0Bh205GoC9DmyUFhUon4k03CUdcVnYo=;
-        b=LnuJFl56MnXdy4Z26s1tk7y03fHyZKh0l4GhQXHpf4/r6bR9POIFcMWEBj+z/NV1jl
-         pFU/ycoP2GWO06qJ1RbymOtAvbAuoogLODdwGEVy4s5R3ghmSeus39qHKalYhl9qIiBV
-         iCoMKSzB+TMaL860tFHBkqaqPBhiTNqcTea+657u/O5hiuycOD0SPInqg0FkL9y/VZMs
-         09O0PpfnvxmwTTuq5sTXTdIzJglu5reeT8EOBe2TnOLb6bjpTWga4N7yY7i89KzZSPjC
-         bqrdY8Ow5hUIZjMhzirhQOFOde89H4iH25/VXWhwAuALhqSPxqHwdQwwReyAQa64XmNW
-         jD4A==
-X-Gm-Message-State: ACrzQf04UKz/lCljBItXQ5zD27nBRFROjdb4P1Zq3RS59egT4Cm2f93l
-        DfX1JDTHT1/hYCEMgzLq7o3NRbcEakCllg==
-X-Google-Smtp-Source: AMsMyM5KyXkvcAqrZcFaWizPVq5jTZQGR1YOo562Y+BMEXKt+kPof+KZA+8O5GbHxAUtnS13zzXw7w==
-X-Received: by 2002:a05:6000:1f1d:b0:22a:feb9:18a7 with SMTP id bv29-20020a0560001f1d00b0022afeb918a7mr11635156wrb.152.1664788353918;
-        Mon, 03 Oct 2022 02:12:33 -0700 (PDT)
+         :subject:date;
+        bh=54JWM5pLwKiTSAJLU69TQfpkRk7rLxcr8W/QvMNGq6w=;
+        b=7CqHuKf+jl4hyYwmpp5paqkNLpyk5YbZbP7FLLRst9MGN2oEqENBktp153xeT9GN5W
+         cozqPwrpFuZi+x9RKE70XeCFyOL8ep2H4+QZzGfNDpNA4ssHCY3Enj55nR34hAYODa6w
+         kfj2B4ljCMu02jWjGSC8tGIQPsAdKmTGSDCneXubQv9ZiYaKZ5ih9X9AxRxeih306ytE
+         W0iJTRfgTC8LJKK5owYb323/rqVyHclCH54Q3d94gFGk9jBQXTk8bdbYPGvUcG6l9UPB
+         0HCU723aiCG82YeZ0tDnBtAWlSypjQ7JUaNKfO/oR6Q4iP2XV8WVm2MuXhQM5hidRXuP
+         gYgw==
+X-Gm-Message-State: ACrzQf0QguyGX+2PDAOjmMlGDnf1QHE+Ri9tQ3fEjCi8Riiag8/aijpe
+        2DdVJF0dGF5oM68Heg/2yjtu6m+Av62H6A==
+X-Google-Smtp-Source: AMsMyM4FPhSrdkIGcvIUaR0jMK8al1WN9OlHz5ViSnniVlVsrZQD+Wb1FGCGVTV4j9+BFcVnChjq2A==
+X-Received: by 2002:a05:600c:247:b0:3b4:7644:42b4 with SMTP id 7-20020a05600c024700b003b4764442b4mr6450419wmj.5.1664788355574;
+        Mon, 03 Oct 2022 02:12:35 -0700 (PDT)
 Received: from jimi.localdomain ([213.57.189.88])
-        by smtp.gmail.com with ESMTPSA id bx10-20020a5d5b0a000000b00228fa832b7asm9512887wrb.52.2022.10.03.02.12.32
+        by smtp.gmail.com with ESMTPSA id bx10-20020a5d5b0a000000b00228fa832b7asm9512887wrb.52.2022.10.03.02.12.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Oct 2022 02:12:33 -0700 (PDT)
+        Mon, 03 Oct 2022 02:12:35 -0700 (PDT)
 From:   Eyal Birger <eyal.birger@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     dsahern@gmail.com, stephen@networkplumber.org,
         steffen.klassert@secunet.com, nicolas.dichtel@6wind.com,
         razor@blackwall.org, Eyal Birger <eyal.birger@gmail.com>
-Subject: [PATCH iproute2-next 1/2] ip: xfrm: support "external" (`collect_md`) mode in xfrm interfaces
-Date:   Mon,  3 Oct 2022 12:12:11 +0300
-Message-Id: <20221003091212.4017603-2-eyal.birger@gmail.com>
+Subject: [PATCH iproute2-next 2/2] ip: xfrm: support adding xfrm metadata as lwtunnel info in routes
+Date:   Mon,  3 Oct 2022 12:12:12 +0300
+Message-Id: <20221003091212.4017603-3-eyal.birger@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221003091212.4017603-1-eyal.birger@gmail.com>
 References: <20221003091212.4017603-1-eyal.birger@gmail.com>
@@ -72,117 +71,234 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Support for collect metadata mode was introduced in kernel commit
-abc340b38ba2 ("xfrm: interface: support collect metadata mode")
+Support for xfrm metadata as lwtunnel metadata was added in kernel commit
+2c2493b9da91 ("xfrm: lwtunnel: add lwtunnel support for xfrm interfaces in collect_md mode")
 
-This commit adds support for creating xfrm interfaces in this
-mode.
+This commit adds the respective support in lwt routes.
 
-Example use:
+Example use (consider ipsec1 as an xfrm interface in "external" mode):
 
-ip link add ipsec1 type xfrm external
+ip route add 10.1.0.0/24 dev ipsec1 encap xfrm if_id 1
+
+Or in the context of vrf, one can also specify the "link" property:
+
+ip route add 10.1.0.0/24 dev ipsec1 encap xfrm if_id 1 link_dev eth15
 
 Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
 ---
- include/uapi/linux/if_link.h |  1 +
- ip/link_xfrm.c               | 18 ++++++++++++++++++
- man/man8/ip-link.8.in        |  7 +++++++
- 3 files changed, 26 insertions(+)
+ include/uapi/linux/lwtunnel.h | 10 +++++
+ ip/iproute.c                  |  5 ++-
+ ip/iproute_lwtunnel.c         | 83 +++++++++++++++++++++++++++++++++++
+ man/man8/ip-route.8.in        | 11 +++++
+ 4 files changed, 107 insertions(+), 2 deletions(-)
 
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 7494cffb..153fcb96 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -693,6 +693,7 @@ enum {
- 	IFLA_XFRM_UNSPEC,
- 	IFLA_XFRM_LINK,
- 	IFLA_XFRM_IF_ID,
-+	IFLA_XFRM_COLLECT_METADATA,
- 	__IFLA_XFRM_MAX
+diff --git a/include/uapi/linux/lwtunnel.h b/include/uapi/linux/lwtunnel.h
+index 78f0ecd1..9d22961b 100644
+--- a/include/uapi/linux/lwtunnel.h
++++ b/include/uapi/linux/lwtunnel.h
+@@ -15,6 +15,7 @@ enum lwtunnel_encap_types {
+ 	LWTUNNEL_ENCAP_SEG6_LOCAL,
+ 	LWTUNNEL_ENCAP_RPL,
+ 	LWTUNNEL_ENCAP_IOAM6,
++	LWTUNNEL_ENCAP_XFRM,
+ 	__LWTUNNEL_ENCAP_MAX,
  };
  
-diff --git a/ip/link_xfrm.c b/ip/link_xfrm.c
-index f6c961e6..7046eb99 100644
---- a/ip/link_xfrm.c
-+++ b/ip/link_xfrm.c
-@@ -18,6 +18,7 @@ static void xfrm_print_help(struct link_util *lu, int argc, char **argv,
- {
- 	fprintf(f,
- 		"Usage: ... %-4s dev [ PHYS_DEV ] [ if_id IF-ID ]\n"
-+		"		[ external ]\n"
- 		"\n"
- 		"Where: IF-ID := { 0x1..0xffffffff }\n",
- 		lu->id);
-@@ -27,6 +28,7 @@ static int xfrm_parse_opt(struct link_util *lu, int argc, char **argv,
- 			  struct nlmsghdr *n)
- {
- 	unsigned int link = 0;
-+	bool metadata = false;
- 	__u32 if_id = 0;
+@@ -111,4 +112,13 @@ enum {
  
- 	while (argc > 0) {
-@@ -43,6 +45,8 @@ static int xfrm_parse_opt(struct link_util *lu, int argc, char **argv,
- 				invarg("if_id value is invalid", *argv);
- 			else
- 				addattr32(n, 1024, IFLA_XFRM_IF_ID, if_id);
-+		} else if (!matches(*argv, "external")) {
-+			metadata = true;
- 		} else {
- 			xfrm_print_help(lu, argc, argv, stderr);
- 			return -1;
-@@ -50,6 +54,15 @@ static int xfrm_parse_opt(struct link_util *lu, int argc, char **argv,
- 		argc--; argv++;
+ #define LWT_BPF_MAX_HEADROOM 256
+ 
++enum {
++	LWT_XFRM_UNSPEC,
++	LWT_XFRM_IF_ID,
++	LWT_XFRM_LINK,
++	__LWT_XFRM_MAX,
++};
++
++#define LWT_XFRM_MAX (__LWT_XFRM_MAX - 1)
++
+ #endif /* _LWTUNNEL_H_ */
+diff --git a/ip/iproute.c b/ip/iproute.c
+index 8b2d1fbe..b4b9d1b2 100644
+--- a/ip/iproute.c
++++ b/ip/iproute.c
+@@ -102,8 +102,8 @@ static void usage(void)
+ 		"TIME := NUMBER[s|ms]\n"
+ 		"BOOL := [1|0]\n"
+ 		"FEATURES := ecn\n"
+-		"ENCAPTYPE := [ mpls | ip | ip6 | seg6 | seg6local | rpl | ioam6 ]\n"
+-		"ENCAPHDR := [ MPLSLABEL | SEG6HDR | SEG6LOCAL | IOAM6HDR ]\n"
++		"ENCAPTYPE := [ mpls | ip | ip6 | seg6 | seg6local | rpl | ioam6 | xfrm ]\n"
++		"ENCAPHDR := [ MPLSLABEL | SEG6HDR | SEG6LOCAL | IOAM6HDR | XFRMINFO ]\n"
+ 		"SEG6HDR := [ mode SEGMODE ] segs ADDR1,ADDRi,ADDRn [hmac HMACKEYID] [cleanup]\n"
+ 		"SEGMODE := [ encap | encap.red | inline | l2encap | l2encap.red ]\n"
+ 		"SEG6LOCAL := action ACTION [ OPTIONS ] [ count ]\n"
+@@ -116,6 +116,7 @@ static void usage(void)
+ 		"FLAVORS := { FLAVOR[,FLAVOR] }\n"
+ 		"FLAVOR := { psp | usp | usd | next-csid }\n"
+ 		"IOAM6HDR := trace prealloc type IOAM6_TRACE_TYPE ns IOAM6_NAMESPACE size IOAM6_TRACE_SIZE\n"
++		"XFRMINFO := if_id IF_ID [ link_dev LINK ]\n"
+ 		"ROUTE_GET_FLAGS := [ fibmatch ]\n");
+ 	exit(-1);
+ }
+diff --git a/ip/iproute_lwtunnel.c b/ip/iproute_lwtunnel.c
+index 86128c9b..bf4468b6 100644
+--- a/ip/iproute_lwtunnel.c
++++ b/ip/iproute_lwtunnel.c
+@@ -58,6 +58,8 @@ static const char *format_encap_type(int type)
+ 		return "rpl";
+ 	case LWTUNNEL_ENCAP_IOAM6:
+ 		return "ioam6";
++	case LWTUNNEL_ENCAP_XFRM:
++		return "xfrm";
+ 	default:
+ 		return "unknown";
  	}
+@@ -96,6 +98,8 @@ static int read_encap_type(const char *name)
+ 		return LWTUNNEL_ENCAP_RPL;
+ 	else if (strcmp(name, "ioam6") == 0)
+ 		return LWTUNNEL_ENCAP_IOAM6;
++	else if (strcmp(name, "xfrm") == 0)
++		return LWTUNNEL_ENCAP_XFRM;
+ 	else if (strcmp(name, "help") == 0)
+ 		encap_type_usage();
  
-+	if (metadata) {
-+		if (if_id || link) {
-+			fprintf(stderr, "xfrmi: both 'external' and if_id/link cannot be specified\n");
-+			return -1;
+@@ -814,6 +818,24 @@ static void print_encap_bpf(FILE *fp, struct rtattr *encap)
+ 			   " %u ", rta_getattr_u32(tb[LWT_BPF_XMIT_HEADROOM]));
+ }
+ 
++static void print_encap_xfrm(FILE *fp, struct rtattr *encap)
++{
++	struct rtattr *tb[LWT_XFRM_MAX+1];
++
++	parse_rtattr_nested(tb, LWT_XFRM_MAX, encap);
++
++	if (tb[LWT_XFRM_IF_ID])
++		print_uint(PRINT_ANY, "if_id", "if_id %lu ",
++			   rta_getattr_u32(tb[LWT_XFRM_IF_ID]));
++
++	if (tb[LWT_XFRM_LINK]) {
++		int link = rta_getattr_u32(tb[LWT_XFRM_LINK]);
++
++		print_string(PRINT_ANY, "link_dev", "link_dev %s ",
++			     ll_index_to_name(link));
++	}
++}
++
+ void lwt_print_encap(FILE *fp, struct rtattr *encap_type,
+ 			  struct rtattr *encap)
+ {
+@@ -854,6 +876,9 @@ void lwt_print_encap(FILE *fp, struct rtattr *encap_type,
+ 	case LWTUNNEL_ENCAP_IOAM6:
+ 		print_encap_ioam6(fp, encap);
+ 		break;
++	case LWTUNNEL_ENCAP_XFRM:
++		print_encap_xfrm(fp, encap);
++		break;
+ 	}
+ }
+ 
+@@ -2129,6 +2154,61 @@ static int parse_encap_bpf(struct rtattr *rta, size_t len, int *argcp,
+ 	return 0;
+ }
+ 
++static void lwt_xfrm_usage(void)
++{
++	fprintf(stderr, "Usage: ip route ... encap xfrm if_id IF_ID [ link_dev LINK ]\n");
++	exit(-1);
++}
++
++static int parse_encap_xfrm(struct rtattr *rta, size_t len,
++			    int *argcp, char ***argvp)
++{
++	int if_id_ok = 0, link_ok = 0;
++	char **argv = *argvp;
++	int argc = *argcp;
++	int ret = 0;
++
++	while (argc > 0) {
++		if (!strcmp(*argv, "if_id")) {
++			__u32 if_id;
++
++			NEXT_ARG();
++			if (if_id_ok++)
++				duparg2("if_id", *argv);
++			if (get_u32(&if_id, *argv, 0) || if_id == 0)
++				invarg("\"if_id\" value is invalid\n", *argv);
++			ret = rta_addattr32(rta, len, LWT_XFRM_IF_ID, if_id);
++		} else if (!strcmp(*argv, "link_dev")) {
++			int link;
++
++			NEXT_ARG();
++			if (link_ok++)
++				duparg2("link_dev", *argv);
++			link = ll_name_to_index(*argv);
++			if (!link)
++				exit(nodev(*argv));
++			ret = rta_addattr32(rta, len, LWT_XFRM_LINK, link);
++		} else if (!strcmp(*argv, "help")) {
++			lwt_xfrm_usage();
 +		}
-+		addattr(n, 1024, IFLA_XFRM_COLLECT_METADATA);
-+		return 0;
++		if (ret)
++			break;
++		argc--; argv++;
 +	}
 +
- 	if (!if_id)
- 		missarg("IF_ID");
- 
-@@ -65,6 +78,11 @@ static void xfrm_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
- 	if (!tb)
- 		return;
- 
-+	if (tb[IFLA_XFRM_COLLECT_METADATA]) {
-+		print_bool(PRINT_ANY, "external", "external ", true);
-+		return;
-+	}
++	if (!if_id_ok)
++		lwt_xfrm_usage();
 +
- 	if (tb[IFLA_XFRM_IF_ID]) {
- 		__u32 id = rta_getattr_u32(tb[IFLA_XFRM_IF_ID]);
- 
-diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
-index fc9d62fc..6dcc8504 100644
---- a/man/man8/ip-link.8.in
-+++ b/man/man8/ip-link.8.in
-@@ -1957,6 +1957,7 @@ For a link of type
- the following additional arguments are supported:
- 
- .BI "ip link add " DEVICE " type xfrm dev " PHYS_DEV " [ if_id " IF_ID " ]"
-+.BR "[ external ]"
- 
- .in +8
++	/* argv is currently the first unparsed argument,
++	 * but the lwt_parse_encap() caller will move to the next,
++	 * so step back
++	 */
++	*argcp = argc + 1;
++	*argvp = argv - 1;
++
++	return ret;
++}
++
+ int lwt_parse_encap(struct rtattr *rta, size_t len, int *argcp, char ***argvp,
+ 		    int encap_attr, int encap_type_attr)
+ {
+@@ -2180,6 +2260,9 @@ int lwt_parse_encap(struct rtattr *rta, size_t len, int *argcp, char ***argvp,
+ 	case LWTUNNEL_ENCAP_IOAM6:
+ 		ret = parse_encap_ioam6(rta, len, &argc, &argv);
+ 		break;
++	case LWTUNNEL_ENCAP_XFRM:
++		ret = parse_encap_xfrm(rta, len, &argc, &argv);
++		break;
+ 	default:
+ 		fprintf(stderr, "Error: unsupported encap type\n");
+ 		break;
+diff --git a/man/man8/ip-route.8.in b/man/man8/ip-route.8.in
+index bd38b7d8..194dc780 100644
+--- a/man/man8/ip-route.8.in
++++ b/man/man8/ip-route.8.in
+@@ -738,6 +738,9 @@ is a string specifying the supported encapsulation type. Namely:
  .sp
-@@ -1969,6 +1970,12 @@ the following additional arguments are supported:
- policies. Policies must be configured with the same key. If not set, the key defaults to
- 0 and will match any policies which similarly do not have a lookup key configuration.
- 
+ .BI ioam6
+ - encapsulation type IPv6 IOAM
 +.sp
-+.BI external
-+- make this device externally controlled. This flag is mutually exclusive with the
-+.BR dev " and " if_id
-+options.
-+
- .in -8
++.BI xfrm
++- encapsulation type XFRM
  
- .TP
+ .in -8
+ .I ENCAPHDR
+@@ -1024,6 +1027,14 @@ mode.
+ .B size
+ .I IOAM6_TRACE_SIZE
+ - Size, in octets, of the pre-allocated trace data block.
++.in -2
++
++.B xfrm
++.in +2
++.B if_id
++.I IF_ID
++.B  " [ link_dev
++.IR LINK_DEV " ] "
+ .in -4
+ 
+ .in -8
 -- 
 2.34.1
 
