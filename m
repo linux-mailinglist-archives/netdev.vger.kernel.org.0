@@ -2,106 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 317495F3205
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 16:36:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B49C35F3212
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 16:40:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229767AbiJCOgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 10:36:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35188 "EHLO
+        id S229698AbiJCOkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 10:40:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229848AbiJCOgV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 10:36:21 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D17FF4F65E
-        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 07:36:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 13775CE0CDD
-        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 14:36:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB122C433C1;
-        Mon,  3 Oct 2022 14:36:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664807765;
-        bh=0JqUoLvIQH2mIhdmVj6Sti5ypPz0DytlvqJw+03RmJc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Y3wgcp2O9BT0OaRYasoC+mCN4N+wURF0su/BVo4PLjgW9QV8MLpe0V6tGmjJciuu0
-         KfHCRtzpqU1Hm8BUR+Iqvh8GU7k9MHFhlnTdWR+70bzAS4DqCkRGV6idC/0Buc8NX7
-         JH75VqDPx6gau8MKWPPdsiwoXubqCORqTeTuyNHiHvRa0SXRLB4vjqcRf/V8aZBWj2
-         /rdem0RnVg0mY/6XbDfvheb3LY+Oj6nwkNXUvzLNjW8rdVd7dPMG+THmksmNreD0lw
-         gCJO6E7l5mNq9k/9/CKyJ5EkeSnSZh8+TGOL4hdYV7DCH/ZtWGOXuM49ARzfB7T8+k
-         wMI4c7AVuwvaA==
-Date:   Mon, 3 Oct 2022 07:36:03 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Rui Sousa <rui.sousa@nxp.com>,
-        Ferenc Fejes <ferenc.fejes@ericsson.com>
-Subject: Re: [RFC PATCH net-next 0/7] 802.1Q Frame Preemption and 802.3 MAC
- Merge support via ethtool
-Message-ID: <20221003073603.1d98c206@kernel.org>
-In-Reply-To: <20221001155337.ycodmomj7wz4s5rx@skbuf>
-References: <20220816222920.1952936-1-vladimir.oltean@nxp.com>
-        <20220816203417.45f95215@kernel.org>
-        <20220817115008.t56j2vkd6ludcuu6@skbuf>
-        <20220817114642.4de48b52@kernel.org>
-        <20221001155337.ycodmomj7wz4s5rx@skbuf>
+        with ESMTP id S229507AbiJCOku (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 10:40:50 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8754624F3D
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 07:40:49 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id p202so8228768iod.6
+        for <netdev@vger.kernel.org>; Mon, 03 Oct 2022 07:40:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=3ATwN/R4sLKE0rBIuoc0I59cS8qmfRx9bRJl8D57Smg=;
+        b=b0n3iH2RFlvyBheTuYQ0nUVf+HpGNdlmS2O5bSizTsO9sRPs1F5XsNvUgvmoYNLxaH
+         MFb+/nYVRyg/cHeRd4EaB0foYRJdy1bZnj8AO2ahtDbL6Ncp6PNqU/WYX1+Q6rMySidL
+         OZwpFQsV0+3j+Dvw98DHvvBI0elUpv4A1cy3S775ty3fP7TBiuS4EmDYCvrZf8WbnmHt
+         JIonXFSLLWL+lNU5oNRhmJmIEguXeQ5hRU577fvZtR8cYvF8JTnCTWVRdTvnHSQIzwWe
+         IRh6OXLVhi4UITJdwFENprM1G3MTuI1aTOW6mUUNp2aTn4gpJiJx5o+3222v7tFh4ipQ
+         NdyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=3ATwN/R4sLKE0rBIuoc0I59cS8qmfRx9bRJl8D57Smg=;
+        b=Rk+DmBitfxcTF4/vpr/H41YWP2TbgkpWHijih827rU4MK9sEREcwFG2g15uosqP0xl
+         r/xp2rksacwtV56VuURDfMip5SHjGO5QyBSHNNyG3D7oQh/DbopE/21b6q4r/GYN0jIO
+         LN8eAXBrlgwHq1P7a6RJHGQ5/y6yxb4IcUhm03NGM08dZB418vL+PYdTGCyzxzjSO0GP
+         T1AkVrDkCI3ILTbAiZKlMlRvQ0lQeMJkeV2noLQ8b7VmU8T38awqNVZeUega+xp9sXmZ
+         vsziGLk+mgtn8SeRqbupKv6fCImmXttLTindvvjzn0GkSHHLlC4SAodcYHSNPMmb9doR
+         b7iQ==
+X-Gm-Message-State: ACrzQf1p52dtQC+eR1ssZ20ilPBgrXA8DDSDB0CbJfCDHMcVashsCETm
+        3SBI36xWis/TJh7umphkqY4=
+X-Google-Smtp-Source: AMsMyM7GtzP8sNKZYtJOBD/a3O+0D14YcXQW/jufgP1y1WAjrMe0DU66UT8/0y9S+/iotwDT2tgw3g==
+X-Received: by 2002:a05:6638:2686:b0:35a:413a:b7a0 with SMTP id o6-20020a056638268600b0035a413ab7a0mr10351341jat.224.1664808048944;
+        Mon, 03 Oct 2022 07:40:48 -0700 (PDT)
+Received: from ?IPV6:2601:282:800:dc80:38e6:13c8:49a3:2476? ([2601:282:800:dc80:38e6:13c8:49a3:2476])
+        by smtp.googlemail.com with ESMTPSA id y4-20020a056e02118400b002eacd14e68esm3897548ili.71.2022.10.03.07.40.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 03 Oct 2022 07:40:48 -0700 (PDT)
+Message-ID: <f7251b13-dbf2-f86c-6c2a-2c037b208017@gmail.com>
+Date:   Mon, 3 Oct 2022 08:40:47 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.0
+Subject: Re: [PATCH iproute2-next] iplink_bridge: Add no_linklocal_learn
+ option support
+Content-Language: en-US
+To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, razor@blackwall.org,
+        netdev@kapio-technology.com, mlxsw@nvidia.com
+References: <20221001143551.1291987-1-idosch@nvidia.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20221001143551.1291987-1-idosch@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 1 Oct 2022 15:53:38 +0000 Vladimir Oltean wrote:
-> > Add a attribute to ETHTOOL_MSG_STATS_GET, let's call it
-> > ETHTOOL_A_STATS_EXPRESS, a flag.  
-> 
-> I'll add this to the UAPI and to internal data structures, ok?
-> 
-> enum ethtool_stats_src {
-> 	ETHTOOL_STATS_SRC_AGGREGATE = 0,
-> 	ETHTOOL_STATS_SRC_EMAC,
-> 	ETHTOOL_STATS_SRC_PMAC,
-> };
+On 10/1/22 8:35 AM, Ido Schimmel wrote:
+> @@ -159,6 +160,18 @@ static int bridge_parse_opt(struct link_util *lu, int argc, char **argv,
+>  			if (len < 0)
+>  				return -1;
+>  			addattr_l(n, 1024, IFLA_BR_GROUP_ADDR, llabuf, len);
+> +		} else if (matches(*argv, "no_linklocal_learn") == 0) {
 
-Yup!
+changed matches to strcmp and applied to iproute2-next
 
-> > Plumb thru to all the stats callback an extra argument 
-> > (a structure for future extensibility) with a bool pMAC;
-> > 
-> > Add a capability field to ethtool_ops to announce that
-> > driver will pay attention to the bool pMAC / has support.  
-> 
-> You mean capability field as in ethtool_ops::supported_coalesce_params,
-> right? (we discussed about this separately).
-> This won't fit the enetc driver very well. Some enetc ports on the NXP
-> LS1028A support the MM layer (port 0, port 2) and some don't (port 1,
-> port 3). Yet they share the same PF driver. So populating mm_supported =
-> true in the const struct enetc_pf_ethtool_ops isn't going to cover both.
-> I can, however, key on my ethtool_ops :: get_mm_state() function which
-> lets the driver report a "bool supported". Is this ok?
 
-That happens, I think about the capability in the ops as driver caps
-rather than HW caps. The driver can still return -EOPNOTSUPP, but it
-guarantees to check the field's value. 
+> +			__u32 no_ll_learn_bit = 1 << BR_BOOLOPT_NO_LL_LEARN;
+> +			__u8 no_ll_learn;
+> +
+> +			NEXT_ARG();
+> +			if (get_u8(&no_ll_learn, *argv, 0))
+> +				invarg("invalid no_linklocal_learn", *argv);
+> +			bm.optmask |= 1 << BR_BOOLOPT_NO_LL_LEARN;
+> +			if (no_ll_learn)
+> +				bm.optval |= no_ll_learn_bit;
+> +			else
+> +				bm.optval &= ~no_ll_learn_bit;
+>  		} else if (matches(*argv, "fdb_flush") == 0) {
+>  			addattr(n, 1024, IFLA_BR_FDB_FLUSH);
+>  		} else if (matches(*argv, "vlan_default_pvid") == 0) {
 
-Most (all but one) datacenter NIC vendors have uber-drivers for all
-their HW generations these days, static per-driver caps can't map to 
-HW caps in my world.
-
-So weak preference for sticking to that model to avoid confusion about
-the semantics of existing caps vs caps which should use a function call.
