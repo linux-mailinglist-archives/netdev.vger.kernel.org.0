@@ -2,88 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDE935F33EB
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 18:54:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA13B5F3426
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 19:06:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229536AbiJCQyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 12:54:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33950 "EHLO
+        id S229536AbiJCRGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 13:06:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbiJCQyo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 12:54:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33606D128
-        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 09:54:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB2E2B811C3
-        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 16:54:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04CA1C433C1;
-        Mon,  3 Oct 2022 16:54:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664816080;
-        bh=+v2jPWVEQ/TtazQe6m1HmphsmdFvLBLXMqWrk5tLdnI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=THTiY2eKegenbx1Le1mLA6hbj6/17iJrRkPRXUIhkLf69cXN7poaYD/adKZNzIFTz
-         S1OlXxpjylDLEhRSizDKPVtJb3IxTQZVk5OuH60FUKxk9DxXuPRX3oxRHPN+J8EbzV
-         bRwN2QLiZKzQmra8YrWyFEUvGFL1lHqgq35fqxe6M94gBvQU6zEM4gsniTnXJNQaHZ
-         tpxPcjPKmP+uaWql8aAwOlb2djp/77tNDvhDjQovCfLsQ7VNw6fztSXwS4qr6y5gvK
-         GVwsYP7oaTWfMweI3CH9WEXCCYmoy9mWh9ZmVA/M8c3wen9/GAcj8EhL6ulVPYhRMk
-         HbqJTZWmt6w5Q==
-Date:   Mon, 3 Oct 2022 09:54:38 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org, "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Siva Reddy Kallam <siva.kallam@broadcom.com>,
-        Prashant Sreedharan <prashant@broadcom.com>,
-        Michael Chan <mchan@broadcom.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Vivek Thampi <vithampi@vmware.com>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-        Jie Wang <wangjie125@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Eran Ben Elisha <eranbe@nvidia.com>,
-        Aya Levin <ayal@nvidia.com>,
-        Cai Huoqing <cai.huoqing@linux.dev>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Wan Jiabing <wanjiabing@vivo.com>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>, Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [net-next v2 0/9] ptp: convert drivers to .adjfine
-Message-ID: <20221003095438.404360f8@kernel.org>
-In-Reply-To: <20220930204851.1910059-1-jacob.e.keller@intel.com>
-References: <20220930204851.1910059-1-jacob.e.keller@intel.com>
+        with ESMTP id S229535AbiJCRGs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 13:06:48 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2CDB2C674
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 10:06:39 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id s17so2202756ljs.12
+        for <netdev@vger.kernel.org>; Mon, 03 Oct 2022 10:06:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=r0Z5yE/2rNF+pvpyQXUAi3Xvmkjk0yqwlZznS4MM2b4=;
+        b=bau++nGklIo7U08JXPGNo3iOg9p0MFPrhIGm0KZl+ya7g2hPNx7gGTLCiIuVKymW3y
+         Cn33CpKQaCpuXY297INCjISDyjOnMyXKZawwlAC6UsW1zHLOrUcJGHoEOpf5SxNbhfW9
+         HnLTGTbwhVN3mek7dbcybwTPKSYXhuS/35AQyKT9J6XoRNG15VlkkDQgHy1azjXp12pA
+         mWeprimevmA4Jf3l7W9MvnwcYFpCGHxA9p38NS1ZqMyELUnyejIkKwvCp8w+lzIuQidV
+         nMbmPQRcjScml/4s0F0rBwKzmFLw8PqwzYRjTOHJdQcVLW7QTohqJxipR9fAOt7PJpX5
+         DTgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=r0Z5yE/2rNF+pvpyQXUAi3Xvmkjk0yqwlZznS4MM2b4=;
+        b=X/y7Jw0eOx0vb9PrjhZGb8TG5RCysnQv1wdaN4VtsTwy0yAYP2/4dUjxJeIQglxCKv
+         TqRMFx+pKy1NepNw2FTkEFKt8sq4v/seP8T/CQAUXFBrLRXZG0ecdPPHZbzlEeBC5XPc
+         qV/lpJniQVLVDLWUG5t2upvPf4ZTOkM7rO2LpMN63VrGsob2ReXYvBLFHrD8aTE9u9Dw
+         puSyz0WgqzX8wTjEJRZ0nWf4gPdPivJRF+L45f/X5F0BOOU/2IfmFpIoAh5AYpCNpSxd
+         ZPdS/qKQI7lmiK4Yxw1u+8j2IdLtC/EYlz/cHDO4uCHVkScCbPsQcLkaAND4P/nRJRjL
+         nOGA==
+X-Gm-Message-State: ACrzQf1Tqr8o8qJ9DB4Fe8Y8/tnnc5kzd/5XF6ZrMM66h6WY2lXgjMjX
+        NE99Rcq9k7AgG+lIp1lNg3euug==
+X-Google-Smtp-Source: AMsMyM7TbQ/E+ZeZ5oQBBxqIr8itrpHEL8mApGbB0maUJCo2oyUmFAOIHhyw+pcmNK06WwQGFr+9bw==
+X-Received: by 2002:a2e:80d4:0:b0:26d:e557:a9ca with SMTP id r20-20020a2e80d4000000b0026de557a9camr858442ljg.311.1664816797323;
+        Mon, 03 Oct 2022 10:06:37 -0700 (PDT)
+Received: from fedora.. ([78.10.207.2])
+        by smtp.gmail.com with ESMTPSA id z3-20020a056512370300b004a2386b8cebsm659145lfr.210.2022.10.03.10.06.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 Oct 2022 10:06:36 -0700 (PDT)
+From:   =?UTF-8?q?Micha=C5=82=20Grzelak?= <mig@semihalf.com>
+To:     mw@semihalf.com
+Cc:     davem@davemloft.net, devicetree@vger.kernel.org,
+        edumazet@google.com, krzysztof.kozlowski+dt@linaro.org,
+        krzysztof.kozlowski@linaro.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
+        mig@semihalf.com, netdev@vger.kernel.org, pabeni@redhat.com,
+        robh+dt@kernel.org, upstream@semihalf.com
+Subject: Re: [PATCH v2] dt-bindings: net: marvell,pp2: convert to json-schema
+Date:   Mon,  3 Oct 2022 19:06:13 +0200
+Message-Id: <20221003170613.132548-1-mig@semihalf.com>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <CAPv3WKcW+O_CYd2vY2xhTKojVobo=Bm5tdFdJ8w33FHximPTcA@mail.gmail.com>
+References: <CAPv3WKcW+O_CYd2vY2xhTKojVobo=Bm5tdFdJ8w33FHximPTcA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -91,8 +74,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 30 Sep 2022 13:48:42 -0700 Jacob Keller wrote:
-> Many drivers implementing PTP have not yet migrated to the new .adjfine
-> frequency adjustment implementation.
+On 02/10/2022 10:23, Marcin Wojtas wrote:
+>niedz., 2 paź 2022 o 10:00 Krzysztof Kozlowski
+><krzysztof.kozlowski@linaro.org> napisał(a):
+>>
+>> On 01/10/2022 17:53, Michał Grzelak wrote:
+>> > Hi Krzysztof,
+>> >
+>> > Thanks for your comments and time spent on reviewing my patch.
+>> > All of those improvements will be included in next version.
+>> > Also, I would like to know your opinion about one.
+>> >
+>> >>> +
+>> >>> +  marvell,system-controller:
+>> >>> +    $ref: /schemas/types.yaml#/definitions/phandle
+>> >>> +    description: a phandle to the system controller.
+>> >>> +
+>> >>> +patternProperties:
+>> >>> +  '^eth[0-9a-f]*(@.*)?$':
+>> >>
+>> >> The name should be "(ethernet-)?port", unless anything depends on
+>> >> particular naming?
+>> >
+>> > What do you think about pattern "^(ethernet-)?eth[0-9a-f]+(@.*)?$"?
+>> > It resembles pattern found in net/ethernet-phy.yaml like
+>> > properties:$nodename:pattern:"^ethernet-phy(@[a-f0-9]+)?$", while
+>> > still passing `dt_binding_check' and `dtbs_check'. It should also
+>> > comply with your comment.
+>>
+>> Node names like ethernet-eth do not make much sense because they contain
+>> redundant ethernet or eth. AFAIK, all other bindings like that call
+>> these ethernet-ports (or sometimes shorter - ports). Unless this device
+>> is different than all others?
+>>
+>
+>IMO "^(ethernet-)?port@[0-9]+$" for the subnodes' names could be fine
+>(as long as we don't have to modify the existing .dtsi files) - there
+>is no dependency in the driver code on that.
 
-On a scale of 1 to 10 - how much do you care about this being in v6.1?
+Indeed, driver's code isn't dependent; however, there is a dependency
+on 'eth[0-2]' name in all relevant .dts and .dtsi files, e.g.:
+
+https://github.com/torvalds/linux/blob/master/arch/arm/boot/dts/armada-375.dtsi#L190
+https://github.com/torvalds/linux/blob/master/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi#L72
+
+Ports under 'ethernet' node are named eth[0-2], thus those and all .dts files 
+including the above would have to be modified to pass through `dtbs_check'.
+
+Best regards,
+Michał
