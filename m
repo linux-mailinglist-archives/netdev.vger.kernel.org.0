@@ -2,94 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEB5E5F28AB
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 08:50:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E5465F28B3
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 08:52:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229623AbiJCGuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 02:50:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34102 "EHLO
+        id S229672AbiJCGw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 02:52:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbiJCGuR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 02:50:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6827C2ED43;
-        Sun,  2 Oct 2022 23:50:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0624560F6E;
-        Mon,  3 Oct 2022 06:50:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 57670C433D6;
-        Mon,  3 Oct 2022 06:50:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664779815;
-        bh=V2P7kwlsrGZE2V4ECHAUq/VePelKIk1jRNADkuCLl4I=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=T+yWnssR8KhLJdq7jyOxdODXMREcYzd2069eA4wJbTi5hKNXlx4XM8mbzR5LwwEWO
-         DtayH0mlKbJyQLorJxmVPJTP8Zx1g+mFhSWRsfERiRonTm8tDSNRltIdOZJKADU3tH
-         9BsJB1UB/wVJf2X6m/wWtklMUgCtDpB8QNl2byvcvam8NF6PwFdHSzQOPvgE9QOXVL
-         EsIMz+PFmRJbq1i5Jqf6uXYmyIhliijoyvd1qQE2nYYw15rym1djIe5Lb7kCnTj1Xj
-         BABtntll2rLMkViHcqa2Li9PkIHABuK4EmH3j4Rga4C0feC9HeCXDSxebmJ5EBmCBu
-         Xnz6fGt41IArw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 35563E49FA3;
-        Mon,  3 Oct 2022 06:50:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229660AbiJCGw0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 02:52:26 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C4683ECC2
+        for <netdev@vger.kernel.org>; Sun,  2 Oct 2022 23:52:25 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1ofFJ9-0000yq-GU; Mon, 03 Oct 2022 08:52:07 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1ofFJ8-004K5d-Mz; Mon, 03 Oct 2022 08:52:05 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1ofFJ5-00GJkN-C0; Mon, 03 Oct 2022 08:52:03 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+        David Jander <david@protonic.nl>,
+        Luka Perkov <luka.perkov@sartura.hr>,
+        Robert Marko <robert.marko@sartura.hr>
+Subject: [PATCH net-next v8 0/7] add generic PSE support 
+Date:   Mon,  3 Oct 2022 08:51:55 +0200
+Message-Id: <20221003065202.3889095-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/3] refactor duplicate codes in bind_class hook
- function
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166477981521.11707.12979052518388996247.git-patchwork-notify@kernel.org>
-Date:   Mon, 03 Oct 2022 06:50:15 +0000
-References: <20220927124855.252023-1-shaozhengchao@huawei.com>
-In-Reply-To: <20220927124855.252023-1-shaozhengchao@huawei.com>
-To:     shaozhengchao <shaozhengchao@huawei.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
-        jolsa@kernel.org, weiyongjun1@huawei.com, yuehaibing@huawei.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Add generic support for the Ethernet Power Sourcing Equipment.
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+changes are listed within patches.
 
-On Tue, 27 Sep 2022 20:48:52 +0800 you wrote:
-> All the bind_class callback duplicate the same logic, so we can refactor
-> them. First, ensure n arg not empty before call bind_class hook function.
-> Then, add tc_cls_bind_class() helper. Last, use tc_cls_bind_class() in
-> filter.
-> 
-> Zhengchao Shao (3):
->   net: sched: ensure n arg not empty before call bind_class
->   net: sched: cls_api: introduce tc_cls_bind_class() helper
->   net: sched: use tc_cls_bind_class() in filter
-> 
-> [...]
+Oleksij Rempel (7):
+  dt-bindings: net: phy: add PoDL PSE property
+  net: add framework to support Ethernet PSE and PDs devices
+  net: mdiobus: fwnode_mdiobus_register_phy() rework error handling
+  net: mdiobus: search for PSE nodes by parsing PHY nodes.
+  ethtool: add interface to interact with Ethernet Power Equipment
+  dt-bindings: net: pse-dt: add bindings for regulator based PoDL PSE
+    controller
+  net: pse-pd: add regulator based PSE driver
 
-Here is the summary with links:
-  - [net-next,1/3] net: sched: ensure n arg not empty before call bind_class
-    https://git.kernel.org/netdev/net-next/c/4e6263ec8bc9
-  - [net-next,2/3] net: sched: cls_api: introduce tc_cls_bind_class() helper
-    https://git.kernel.org/netdev/net-next/c/402963e34a70
-  - [net-next,3/3] net: sched: use tc_cls_bind_class() in filter
-    https://git.kernel.org/netdev/net-next/c/cc9039a13494
+ .../devicetree/bindings/net/ethernet-phy.yaml |   6 +
+ .../net/pse-pd/podl-pse-regulator.yaml        |  40 +++
+ .../bindings/net/pse-pd/pse-controller.yaml   |  33 ++
+ Documentation/networking/ethtool-netlink.rst  |  59 ++++
+ drivers/net/Kconfig                           |   2 +
+ drivers/net/Makefile                          |   1 +
+ drivers/net/mdio/fwnode_mdio.c                |  58 +++-
+ drivers/net/phy/phy_device.c                  |   2 +
+ drivers/net/pse-pd/Kconfig                    |  22 ++
+ drivers/net/pse-pd/Makefile                   |   6 +
+ drivers/net/pse-pd/pse_core.c                 | 314 ++++++++++++++++++
+ drivers/net/pse-pd/pse_regulator.c            | 147 ++++++++
+ include/linux/phy.h                           |   2 +
+ include/linux/pse-pd/pse.h                    | 129 +++++++
+ include/uapi/linux/ethtool.h                  |  45 +++
+ include/uapi/linux/ethtool_netlink.h          |  16 +
+ net/ethtool/Makefile                          |   3 +-
+ net/ethtool/common.h                          |   1 +
+ net/ethtool/netlink.c                         |  17 +
+ net/ethtool/netlink.h                         |   4 +
+ net/ethtool/pse-pd.c                          | 185 +++++++++++
+ 21 files changed, 1080 insertions(+), 12 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/pse-pd/podl-pse-regulator.yaml
+ create mode 100644 Documentation/devicetree/bindings/net/pse-pd/pse-controller.yaml
+ create mode 100644 drivers/net/pse-pd/Kconfig
+ create mode 100644 drivers/net/pse-pd/Makefile
+ create mode 100644 drivers/net/pse-pd/pse_core.c
+ create mode 100644 drivers/net/pse-pd/pse_regulator.c
+ create mode 100644 include/linux/pse-pd/pse.h
+ create mode 100644 net/ethtool/pse-pd.c
 
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.30.2
 
