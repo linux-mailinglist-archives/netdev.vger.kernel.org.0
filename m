@@ -2,90 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 99CB95F3521
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 20:01:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B37A25F3526
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 20:01:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229851AbiJCSBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 14:01:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36830 "EHLO
+        id S229943AbiJCSBf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 14:01:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229660AbiJCSBO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 14:01:14 -0400
-Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A092237E9;
-        Mon,  3 Oct 2022 11:01:13 -0700 (PDT)
-Received: by mail-oi1-f181.google.com with SMTP id n83so12072218oif.11;
-        Mon, 03 Oct 2022 11:01:13 -0700 (PDT)
+        with ESMTP id S229904AbiJCSB2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 14:01:28 -0400
+Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 336172BE34;
+        Mon,  3 Oct 2022 11:01:21 -0700 (PDT)
+Received: by mail-oo1-f45.google.com with SMTP id c17-20020a4aa4d1000000b0047653e7c5f3so7243432oom.1;
+        Mon, 03 Oct 2022 11:01:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=m1zFXN2JJGvZeq/8qjss/E/W9fw3IBmQxvPNQVYVDx4=;
-        b=6nmFJwpl67cRyrsCYlW1eIBgZkXoXzuEiXBT4m3U4fEneN+HPGgLNTiAv6XDyvhx2Q
-         s8H4xcHI1aFFhvLZ3O4zGi+GuVCQeANlSRccEyJ2cSmNE+ABITiRNlybA8Mb2ZnUhIcw
-         Me3qLfrRZce0ZFwi97M2hI4Oxl1km34JzX4u1DB+paudc01Dm7WIBAbNbh4f5u2yHmrI
-         kPwwu7W206Hxjb4q51E0nJhWZlP+T1nHp+q7jyK04QlgqtdYeOZIa8jGRLmHbB81bcFX
-         5vmu36R6EVKHO3mT95t62LqpF46hmxzf6yKycMpMn0Bf92DeQLwJqnSKg9mhZveveVM6
-         xzsA==
-X-Gm-Message-State: ACrzQf0Y1F6EQuK+UPCp0lGCYZ0TSaNLvTPFxbNsmliGgzRwoZc5fpwP
-        DSBYJutEJEZBPSBbyqfIfw==
-X-Google-Smtp-Source: AMsMyM4PAICfXmmI1z1IcWuhxgQ56/ikvQR6/qr9KoVdamltyOh1R2hTtCH5TioIaOMy2uO2qhegbw==
-X-Received: by 2002:a05:6808:bca:b0:350:b366:157 with SMTP id o10-20020a0568080bca00b00350b3660157mr4592151oik.3.1664820072465;
-        Mon, 03 Oct 2022 11:01:12 -0700 (PDT)
+        bh=TFv9P5jQ9zifFnLwFf++mqfW7DNNGIgHHIkwyTFAQZo=;
+        b=eB3d+ky/kQaF5j/LDrE5ZPK2Mm5owR29+IZL9XFvPgjf7fWUgj+1YII/U3YP2l79E2
+         Nr+dwjx3iXtKqhcnU6rfIcijyOVinyZncJFTKvU/09HgL4fKOGx1eWF8YO+6leIVbiHh
+         AkhTbdQckZvcYnqXfz9uAqUWY0rLx4jc10T1wG2IREZ3scKoSOERgg/9eqBz5Ej2sF/9
+         MkpTa1Vz8JgX4YCEF+INwRF6/m/48786RgFvwJ3iZulSlIaNks0LpQS3pEABs+ppz3mr
+         W7XgDymlpsdvHMebhv26uV6puirQDZSWWppCY4wEoLAQg2OHTfythx+GQtURpmaT1ilE
+         dg+w==
+X-Gm-Message-State: ACrzQf0HRGLQSySYtcQKpUryBlw+z/xQzEntu7SFig5+fkH5QdLzrTrk
+        Gb8aqGGXh//NmAVLXyP382Ighu++lA==
+X-Google-Smtp-Source: AMsMyM4NeG/hFaHjh2k/7Qg0r/xi5qa6+tQbM7yB3A0IWWC2dcK/CxPRblA68lN7FiO/OLM0vjHrdg==
+X-Received: by 2002:a9d:4e88:0:b0:654:1012:85bd with SMTP id v8-20020a9d4e88000000b00654101285bdmr8247324otk.136.1664820080360;
+        Mon, 03 Oct 2022 11:01:20 -0700 (PDT)
 Received: from macbook.herring.priv (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id z10-20020a05683010ca00b0065742df07e2sm2550027oto.26.2022.10.03.11.01.11
+        by smtp.gmail.com with ESMTPSA id z11-20020a056830128b00b00639749ef262sm2538200otp.9.2022.10.03.11.01.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Oct 2022 11:01:11 -0700 (PDT)
-Received: (nullmailer pid 2514797 invoked by uid 1000);
-        Mon, 03 Oct 2022 18:01:10 -0000
-Date:   Mon, 3 Oct 2022 13:01:10 -0500
+        Mon, 03 Oct 2022 11:01:19 -0700 (PDT)
+Received: (nullmailer pid 2515061 invoked by uid 1000);
+        Mon, 03 Oct 2022 18:01:18 -0000
+Date:   Mon, 3 Oct 2022 13:01:18 -0500
 From:   Rob Herring <robh@kernel.org>
 To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Paolo Abeni <pabeni@redhat.com>,
+Cc:     Jakub Kicinski <kuba@kernel.org>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        linux-doc@vger.kernel.org, netdev@vger.kernel.org,
-        Robert Marko <robert.marko@sartura.hr>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        David Jander <david@protonic.nl>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>, kernel@pengutronix.de,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        linux-doc@vger.kernel.org, Luka Perkov <luka.perkov@sartura.hr>,
+        Rob Herring <robh+dt@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH net-next v8 1/7] dt-bindings: net: phy: add PoDL PSE
- property
-Message-ID: <166482007034.2514738.15249257928598328667.robh@kernel.org>
+        Jonathan Corbet <corbet@lwn.net>, Andrew Lunn <andrew@lunn.ch>,
+        David Jander <david@protonic.nl>, linux-kernel@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, Robert Marko <robert.marko@sartura.hr>
+Subject: Re: [PATCH net-next v8 6/7] dt-bindings: net: pse-dt: add bindings
+ for regulator based PoDL PSE controller
+Message-ID: <166482007742.2514990.4199800576904693685.robh@kernel.org>
 References: <20221003065202.3889095-1-o.rempel@pengutronix.de>
- <20221003065202.3889095-2-o.rempel@pengutronix.de>
+ <20221003065202.3889095-7-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221003065202.3889095-2-o.rempel@pengutronix.de>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+In-Reply-To: <20221003065202.3889095-7-o.rempel@pengutronix.de>
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,
         FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 03 Oct 2022 08:51:56 +0200, Oleksij Rempel wrote:
-> Add property to reference node representing a PoDL Power Sourcing Equipment.
+On Mon, 03 Oct 2022 08:52:01 +0200, Oleksij Rempel wrote:
+> Add bindings for the regulator based Ethernet PoDL PSE controller and
+> generic bindings for all PSE controllers.
 > 
 > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 > ---
+> changes v6:
+> - add description of PSE controller
+> - change "^ethernet-pse(@[a-f0-9]+)?$" to "^ethernet-pse(@.*)?$"
 > changes v5:
-> - rename ieee802.3-pse to pses
-> - rename phandle-array to phandle
-> - add maxItems: 1
+> - rename to podl-pse-regulator.yaml
+> - remove compatible description
+> - remove "-1" on node name
+> - add pse-controller.yaml for common properties
+> changes v4:
+> - rename to PSE regulator
+> - drop currently unused properties
+> - use own compatible for PoDL PSE
+> changes v2:
+> - rename compatible to more generic "ieee802.3-pse"
+> - add class and type properties for PoDL and PoE variants
+> - add pairs property
 > ---
->  Documentation/devicetree/bindings/net/ethernet-phy.yaml | 6 ++++++
->  1 file changed, 6 insertions(+)
+>  .../net/pse-pd/podl-pse-regulator.yaml        | 40 +++++++++++++++++++
+>  .../bindings/net/pse-pd/pse-controller.yaml   | 33 +++++++++++++++
+>  2 files changed, 73 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/pse-pd/podl-pse-regulator.yaml
+>  create mode 100644 Documentation/devicetree/bindings/net/pse-pd/pse-controller.yaml
 > 
 
 Reviewed-by: Rob Herring <robh@kernel.org>
