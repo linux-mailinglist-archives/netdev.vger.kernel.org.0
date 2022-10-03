@@ -2,96 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DA3B5F2E50
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 11:43:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35B455F2E4E
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 11:43:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229576AbiJCJnR convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 3 Oct 2022 05:43:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39806 "EHLO
+        id S230111AbiJCJnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 05:43:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230218AbiJCJmt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 05:42:49 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2B752467
-        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 02:37:18 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-164-EXXU3AVOMbmkJ1Ef--quHg-1; Mon, 03 Oct 2022 10:36:53 +0100
-X-MC-Unique: EXXU3AVOMbmkJ1Ef--quHg-1
-Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
- (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Mon, 3 Oct
- 2022 10:36:46 +0100
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.040; Mon, 3 Oct 2022 10:36:46 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Al Viro' <viro@zeniv.linux.org.uk>
-CC:     "'Eric W. Biederman'" <ebiederm@xmission.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>
-Subject: RE: [CFT][PATCH] proc: Update /proc/net to point at the accessing
- threads network namespace
-Thread-Topic: [CFT][PATCH] proc: Update /proc/net to point at the accessing
- threads network namespace
-Thread-Index: AQHY1Ogi381Lc0KOOEGaF1/0a4qSLq34eHYAgAGjVQCAAk+PUA==
-Date:   Mon, 3 Oct 2022 09:36:46 +0000
-Message-ID: <592405fa149247f58d05a213b8c6f711@AcuMS.aculab.com>
-References: <YzXrOFpPStEwZH/O@ZenIV>
- <CAHk-=wjLgM06JrS21W4g2VquqCLab+qu_My67cv6xuH7NhgHpw@mail.gmail.com>
- <YzXzXNAgcJeJ3M0d@ZenIV> <YzYK7k3tgZy3Pwht@ZenIV>
- <CAHk-=wihPFFE5KcsmOnOm1CALQDWqC1JTvrwSGBS08N5avVmEA@mail.gmail.com>
- <871qrt4ymg.fsf@email.froward.int.ebiederm.org>
- <87ill53igy.fsf_-_@email.froward.int.ebiederm.org>
- <ea14288676b045c29960651a649d66b9@AcuMS.aculab.com>
- <87a66g25wm.fsf@email.froward.int.ebiederm.org>
- <9bf5e96b383e4a979618cb0f729cb833@AcuMS.aculab.com> <YzjJNnzRTiSpwXHV@ZenIV>
-In-Reply-To: <YzjJNnzRTiSpwXHV@ZenIV>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S230095AbiJCJmo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 05:42:44 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93F805D106
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 02:37:23 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id a10so3479456wrm.12
+        for <netdev@vger.kernel.org>; Mon, 03 Oct 2022 02:37:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:reply-to:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date;
+        bh=Q8HsbswI3QqKaypIhrCURYuxm++N+iwkePdXUrgZS0g=;
+        b=J1hPz6JGKnbPJmfQ/556Ni7Ls2TTgViYmOj1iB4hzJ5mIj1RDK2MOIL7GuGu7AYWnV
+         uPrQGubyngwpBepyk8SXbzyvxc6WJpp1BX6iBMrhluSXPPonBe+keRNGt/Q/YePwpvLW
+         XDVOC8EdbiEpu9JE2Qfp70cWWaQJlmQ6FZrdw/stV6DPT3QAj7lSWNzW/flqe7D0f0Eq
+         IQbT1s5dbjtksdKFCQLstD8ys+nVKxAY/8YW3eHuGxi8Nx2PBbLDV94/LEGBNuZI70zR
+         zZvByr2MBfgylAGD2IH9YYRClKRRlwU9n4k+LZQH3D0o+jYntoYcTUL6GOgNkLsKRaCF
+         7OGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:reply-to:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date;
+        bh=Q8HsbswI3QqKaypIhrCURYuxm++N+iwkePdXUrgZS0g=;
+        b=sU7lpJ6l47ptNkaoNAINeuDuNfMPAYwmzdTjDIl3hcYUvcHvrkgmoy6/y5vAy02HYq
+         r0SkuuCujhYTdNNs3vrLD3QVnF4miaTf25o3w0eW3ymEqJCX/J43Q6oFHrduWM4TXJlW
+         jzxBvWx442RFSElchk1T6TEl3Zs94A+VEjOF8Rtn5MAyaJhrl2jg1Ep8Oy71/WqOgrir
+         b2h2pCFRT2gLhmYpCQQTfLVFtGR1S4t0Uu4ZskDBmTyJ+KWJBdXEE1WA2rQjGHlSzbGJ
+         nnuCeZvSPLEZ18AFtdvkA4mbF6x8GItu6mAgzRkL82CU6PObzOqntPxPiquPubExCfYt
+         oHAQ==
+X-Gm-Message-State: ACrzQf0kvLIZHkxMPgcvKHgnhWc35zQybRPlbZ1PVisaG7hJ2XpYRPOp
+        C6mM07uwOaHTM6ZGwo5DgNIfPQ==
+X-Google-Smtp-Source: AMsMyM4tXPm55GNY/9hl0jSM45V2OU0LCclf4w8jWcrGtbK1z9coRTEOPEpeH6w16Eh0guS02TN6pA==
+X-Received: by 2002:a05:6000:1866:b0:228:e373:ad68 with SMTP id d6-20020a056000186600b00228e373ad68mr11961510wri.605.1664789838976;
+        Mon, 03 Oct 2022 02:37:18 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:b41:c160:14ee:4d35:8c33:e753? ([2a01:e0a:b41:c160:14ee:4d35:8c33:e753])
+        by smtp.gmail.com with ESMTPSA id f13-20020a7bc8cd000000b003a62052053csm18769378wml.18.2022.10.03.02.37.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 03 Oct 2022 02:37:18 -0700 (PDT)
+Message-ID: <4c04b1a9-d8e7-169e-d337-c061f6e600c2@6wind.com>
+Date:   Mon, 3 Oct 2022 11:37:18 +0200
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH iproute2-next 2/2] ip: xfrm: support adding xfrm metadata
+ as lwtunnel info in routes
 Content-Language: en-US
+To:     Eyal Birger <eyal.birger@gmail.com>, netdev@vger.kernel.org
+Cc:     dsahern@gmail.com, stephen@networkplumber.org,
+        steffen.klassert@secunet.com, razor@blackwall.org
+References: <20221003091212.4017603-1-eyal.birger@gmail.com>
+ <20221003091212.4017603-3-eyal.birger@gmail.com>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+In-Reply-To: <20221003091212.4017603-3-eyal.birger@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-...
-> * ability to chroot(2) had always been equivalent to ability to undo
-> chroot(2).  If you want to prevent getting out of there, you need
-> (among other things) to prevent the processes to be confined from
-> further chroot(2).
 
-Not always, certainly not historically.
-chroot() inside a chroot() just constrained you further.
-If fchdir() and openat() have broken that it is a serious
-problem.
+Le 03/10/2022 à 11:12, Eyal Birger a écrit :
+> Support for xfrm metadata as lwtunnel metadata was added in kernel commit
+> 2c2493b9da91 ("xfrm: lwtunnel: add lwtunnel support for xfrm interfaces in collect_md mode")
+> 
+> This commit adds the respective support in lwt routes.
+> 
+> Example use (consider ipsec1 as an xfrm interface in "external" mode):
+> 
+> ip route add 10.1.0.0/24 dev ipsec1 encap xfrm if_id 1
+> 
+> Or in the context of vrf, one can also specify the "link" property:
+> 
+> ip route add 10.1.0.0/24 dev ipsec1 encap xfrm if_id 1 link_dev eth15
+> 
+> Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
 
-NetBSD certainly has checks to detect (log and fix)
-programs that have (or might) escape from chroots.
-
-unshare() seems to create a 'shadow' inode structure
-for the chroot's "/" so at least some of the tests
-when following ".." fail to detect it.
-
-I also thought containers relied on the same scheme?
-(But I'm too old fashioned to have looked into them!)
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+Reviewed-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
