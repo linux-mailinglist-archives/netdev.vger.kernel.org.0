@@ -2,56 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9752D5F3356
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 18:20:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3FA35F3361
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 18:22:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229821AbiJCQU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 12:20:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40182 "EHLO
+        id S229445AbiJCQWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 12:22:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229817AbiJCQUS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 12:20:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F219715FF4;
-        Mon,  3 Oct 2022 09:20:16 -0700 (PDT)
+        with ESMTP id S229494AbiJCQWc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 12:22:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 119101DF2B
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 09:22:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5631C61152;
-        Mon,  3 Oct 2022 16:20:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A758BC433C1;
-        Mon,  3 Oct 2022 16:20:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664814015;
-        bh=o82mYUcMzZJ88bp9X2SIyeZOFEstJnAckAGwFH9r32k=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=NCrsFb7wlu0Dw+DyPRN18s/WcSrwLtwUXOYwniQVuO0JTwbAFl4rkehuamgfOm4/l
-         lUKYxbUNA0r2fEB1sPtWMsPWhWkw8+W6bSKzyluT0asrHAI1UFGSEk8zgh+BVaUKOB
-         kZd+dWpg8FawsUjM+Fn4r5YlCZLMWBP5VwdLKfSaVAEPsi03l5c/67ELJZNnH4+XWW
-         310xpaLzPX8Zih2R6vKaMnrrWnTvjM/z0P8vPWam3CKYy4N9NaJLl4U5kUgIJ1oHob
-         jytRiiTCMpKMTx0ryf2T6dW8Y7K2mdImmjCmG62QsJJFXlhIRz87QsWq1Y+R/KHu+G
-         s9bsq/Cg3kKpQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 897E6E4D03C;
-        Mon,  3 Oct 2022 16:20:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A472661148
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 16:22:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8970EC433D6;
+        Mon,  3 Oct 2022 16:22:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1664814150;
+        bh=ka2xbNQQ4V4EQHeddHLZAFlcdwwBm3lkPpxZageiyZQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jWV382j3kbZD2lEFN6fBCRj+zwkncTR72BjI2L+jWG8ffBW7IBAvNY9lrvDJXZLoM
+         cCzVn9TwqKEFuArodXO3QjLdiG4yhJ3Z4MR32AVuAMpB2LJPiCTRtt9h/Qc78pOkee
+         W7TuET/9V1pbon6Eip4rkTuHD//ELyJDB/E6zCVM=
+Date:   Mon, 3 Oct 2022 18:22:27 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] net: mvpp2: fix mvpp2 debugfs leak
+Message-ID: <YzsMQyPJ+I0FqVOA@kroah.com>
+References: <E1ofOAB-00CzkG-UO@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 bpf-next] net: netfilter: move bpf_ct_set_nat_info kfunc in
- nf_nat_bpf.c
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166481401555.8397.6441469984124928795.git-patchwork-notify@kernel.org>
-Date:   Mon, 03 Oct 2022 16:20:15 +0000
-References: <51a65513d2cda3eeb0754842e8025ab3966068d8.1664490511.git.lorenzo@kernel.org>
-In-Reply-To: <51a65513d2cda3eeb0754842e8025ab3966068d8.1664490511.git.lorenzo@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
-        pablo@netfilter.org, fw@strlen.de, netfilter-devel@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com,
-        memxor@gmail.com, nathan@kernel.org, martin.lau@linux.dev,
-        ykaliuta@redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <E1ofOAB-00CzkG-UO@rmk-PC.armlinux.org.uk>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -61,30 +55,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to bpf/bpf-next.git (master)
-by Alexei Starovoitov <ast@kernel.org>:
-
-On Fri, 30 Sep 2022 00:38:43 +0200 you wrote:
-> Remove circular dependency between nf_nat module and nf_conntrack one
-> moving bpf_ct_set_nat_info kfunc in nf_nat_bpf.c
+On Mon, Oct 03, 2022 at 05:19:27PM +0100, Russell King (Oracle) wrote:
+> When mvpp2 is unloaded, the driver specific debugfs directory is not
+> removed, which technically leads to a memory leak. However, this
+> directory is only created when the first device is probed, so the
+> hardware is present. Removing the module is only something a developer
+> would to when e.g. testing out changes, so the module would be
+> reloaded. So this memory leak is minor.
 > 
-> Fixes: 0fabd2aa199f ("net: netfilter: add bpf_ct_set_nat_info kfunc helper")
-> Suggested-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> Tested-by: Nathan Chancellor <nathan@kernel.org>
-> Tested-by: Yauheni Kaliuta <ykaliuta@redhat.com>
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> The original attempt in commit fe2c9c61f668 ("net: mvpp2: debugfs: fix
+> memory leak when using debugfs_lookup()") that was labelled as a memory
+> leak fix was not, it fixed a refcount leak, but in doing so created a
+> problem when the module is reloaded - the directory already exists, but
+> mvpp2_root is NULL, so we lose all debugfs entries. This fix has been
+> reverted.
 > 
-> [...]
+> This is the alternative fix, where we remove the offending directory
+> whenever the driver is unloaded.
+> 
+> Fixes: 21da57a23125 ("net: mvpp2: add a debugfs interface for the Header Parser")
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-Here is the summary with links:
-  - [v2,bpf-next] net: netfilter: move bpf_ct_set_nat_info kfunc in nf_nat_bpf.c
-    https://git.kernel.org/bpf/bpf-next/c/820dc0523e05
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Thanks for fixing this up properly.
 
-
+greg k-h
