@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E96265F28FE
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 09:10:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18CC05F2900
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 09:10:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229542AbiJCHKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 03:10:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43324 "EHLO
+        id S229699AbiJCHKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 03:10:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229749AbiJCHKQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 03:10:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5AFF1AF0B
-        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 00:10:15 -0700 (PDT)
+        with ESMTP id S229732AbiJCHK2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 03:10:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9611429808
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 00:10:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C5FF60F9C
-        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 07:10:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CAA6AC433D7;
-        Mon,  3 Oct 2022 07:10:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D39AFB80E64
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 07:10:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 89743C433C1;
+        Mon,  3 Oct 2022 07:10:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664781014;
-        bh=PWf6W1I3JNzkRZQvmcE5AbcnlOYFy0TtrM+YCdPjjsw=;
+        s=k20201202; t=1664781024;
+        bh=8IbQUWlOjgrRgQaqf/L1Z0No822EtKVrlSh+LhbprAw=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=XErWpKsXzdNcOvtEb4pIgqG5vQcMNfsiFsNReiRyrQx6Z9wF0G+RXYjraDS44fVzq
-         Nc6m4Px9Yo5dZRJcyU9IYH4Dm450kuTn2qSrv9OaC833v4V9EqgIDOj8sENrMwsq2h
-         cMNv7XkloVHCPzCOSIkC+JeEnnaSDntBdoJRxeWvgMnoWkOQosPZgFfS8VDvUnAJLd
-         RVspA+9R1ZWw5LaHOm1SgIlGqrKpaMa7oPI6BoAQiCjjTe/daq6xYeyEHAJGtnB8jN
-         LpAoADCv2hMR3Vutyinml/DlblN8tISRb5o6XWOGGJd/1/DJz8BtFd/axGdiYe42pa
-         hk3xlnr0gf99A==
+        b=U0+ZTHd5loch8ZPJ+F/Djm3fVTcmITqbVP/BvcOjDL1ML39s+1Dc4mOFd9PTgZlkg
+         Q5Bp8WGlAJDPaB2WxCImigxf/dPjIr0/9pRrL30bS3TCBEnS5OWWsR8aWpIoH9KwRi
+         ayyiaeOuK9h8LcqUvvoU79SE9OzPZwA+UYJOM+a94Ye6GlL/RF64VdOZBM1UdvGocC
+         KUiOE5Xv6DB7S9090zSP7zGeQXH3gn/GSdBGh94m3QhALPdVkjBbF0uhT3HLumFGP3
+         FqzT++Nqudr5Kdc7WOogKewxOzU0zQd7mXcp/x2vAY6IeP2Q0gWDza92UgsNjFmYmB
+         lo2WoUPMV5pwQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AEFB7E49FA3;
-        Mon,  3 Oct 2022 07:10:14 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 75E09E4D03B;
+        Mon,  3 Oct 2022 07:10:24 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v1 net] af_unix: Fix memory leaks of the whole sk due to OOB
- skb.
+Subject: Re: [PATCH 01/24] selftests/net: Refactor xfrm_fill_key() to use array of
+ structs
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166478101471.21968.3096623187565669750.git-patchwork-notify@kernel.org>
-Date:   Mon, 03 Oct 2022 07:10:14 +0000
-References: <20220929155204.6816-1-kuniyu@amazon.com>
-In-Reply-To: <20220929155204.6816-1-kuniyu@amazon.com>
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, rao.shoaib@oracle.com, kuni1840@gmail.com,
-        netdev@vger.kernel.org, syzkaller@googlegroups.com
+Message-Id: <166478102447.21968.3239077651352259753.git-patchwork-notify@kernel.org>
+Date:   Mon, 03 Oct 2022 07:10:24 +0000
+References: <20221002081712.757515-2-steffen.klassert@secunet.com>
+In-Reply-To: <20221002081712.757515-2-steffen.klassert@secunet.com>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, herbert@gondor.apana.org.au,
+        netdev@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -59,38 +58,69 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+This series was applied to netdev/net-next.git (master)
+by Steffen Klassert <steffen.klassert@secunet.com>:
 
-On Thu, 29 Sep 2022 08:52:04 -0700 you wrote:
-> syzbot reported a sequence of memory leaks, and one of them indicated we
-> failed to free a whole sk:
+On Sun, 2 Oct 2022 10:16:49 +0200 you wrote:
+> From: Gautam Menghani <gautammenghani201@gmail.com>
 > 
->   unreferenced object 0xffff8880126e0000 (size 1088):
->     comm "syz-executor419", pid 326, jiffies 4294773607 (age 12.609s)
->     hex dump (first 32 bytes):
->       00 00 00 00 00 00 00 00 7d 00 00 00 00 00 00 00  ........}.......
->       01 00 07 40 00 00 00 00 00 00 00 00 00 00 00 00  ...@............
->     backtrace:
->       [<000000006fefe750>] sk_prot_alloc+0x64/0x2a0 net/core/sock.c:1970
->       [<0000000074006db5>] sk_alloc+0x3b/0x800 net/core/sock.c:2029
->       [<00000000728cd434>] unix_create1+0xaf/0x920 net/unix/af_unix.c:928
->       [<00000000a279a139>] unix_create+0x113/0x1d0 net/unix/af_unix.c:997
->       [<0000000068259812>] __sock_create+0x2ab/0x550 net/socket.c:1516
->       [<00000000da1521e1>] sock_create net/socket.c:1566 [inline]
->       [<00000000da1521e1>] __sys_socketpair+0x1a8/0x550 net/socket.c:1698
->       [<000000007ab259e1>] __do_sys_socketpair net/socket.c:1751 [inline]
->       [<000000007ab259e1>] __se_sys_socketpair net/socket.c:1748 [inline]
->       [<000000007ab259e1>] __x64_sys_socketpair+0x97/0x100 net/socket.c:1748
->       [<000000007dedddc1>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->       [<000000007dedddc1>] do_syscall_64+0x38/0x90 arch/x86/entry/common.c:80
->       [<000000009456679f>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> A TODO in net/ipsec.c asks to refactor the code in xfrm_fill_key() to
+> use set/map to avoid manually comparing each algorithm with the "name"
+> parameter passed to the function as an argument. This patch refactors
+> the code to create an array of structs where each struct contains the
+> algorithm name and its corresponding key length.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v1,net] af_unix: Fix memory leaks of the whole sk due to OOB skb.
-    https://git.kernel.org/netdev/net/c/7a62ed61367b
+  - [01/24] selftests/net: Refactor xfrm_fill_key() to use array of structs
+    https://git.kernel.org/netdev/net-next/c/93d7c52a6eb9
+  - [02/24] xfrm: Drop unused argument
+    https://git.kernel.org/netdev/net-next/c/0de1978852df
+  - [03/24] net: allow storing xfrm interface metadata in metadata_dst
+    https://git.kernel.org/netdev/net-next/c/5182a5d48c3d
+  - [04/24] xfrm: interface: support collect metadata mode
+    https://git.kernel.org/netdev/net-next/c/abc340b38ba2
+  - [05/24] xfrm: lwtunnel: add lwtunnel support for xfrm interfaces in collect_md mode
+    https://git.kernel.org/netdev/net-next/c/2c2493b9da91
+  - [06/24] xfrm: propagate extack to all netlink doit handlers
+    https://git.kernel.org/netdev/net-next/c/3bec6c3e83b5
+  - [07/24] xfrm: add extack support to verify_newpolicy_info
+    https://git.kernel.org/netdev/net-next/c/ec2b4f01536d
+  - [08/24] xfrm: add extack to verify_policy_dir
+    https://git.kernel.org/netdev/net-next/c/24fc544fb525
+  - [09/24] xfrm: add extack to verify_policy_type
+    https://git.kernel.org/netdev/net-next/c/fb7deaba40cf
+  - [10/24] xfrm: add extack to validate_tmpl
+    https://git.kernel.org/netdev/net-next/c/d37bed89f082
+  - [11/24] xfrm: add extack to verify_sec_ctx_len
+    https://git.kernel.org/netdev/net-next/c/08a717e48037
+  - [12/24] xfrm: add extack support to verify_newsa_info
+    https://git.kernel.org/netdev/net-next/c/6999aae17a7b
+  - [13/24] xfrm: add extack to verify_replay
+    https://git.kernel.org/netdev/net-next/c/785b87b22085
+  - [14/24] xfrm: add extack to verify_one_alg, verify_auth_trunc, verify_aead
+    https://git.kernel.org/netdev/net-next/c/1fc8fde55391
+  - [15/24] xfrm: add extack support to xfrm_dev_state_add
+    https://git.kernel.org/netdev/net-next/c/adb5c33e4d4c
+  - [16/24] xfrm: add extack to attach_*
+    https://git.kernel.org/netdev/net-next/c/2b9168266d15
+  - [17/24] xfrm: add extack to __xfrm_init_state
+    https://git.kernel.org/netdev/net-next/c/741f9a106498
+  - [18/24] xfrm: add extack support to xfrm_init_replay
+    https://git.kernel.org/netdev/net-next/c/1cf9a3ae3e2d
+  - [19/24] xfrm: pass extack down to xfrm_type ->init_state
+    https://git.kernel.org/netdev/net-next/c/e1e10b44cf28
+  - [20/24] xfrm: ah: add extack to ah_init_state, ah6_init_state
+    https://git.kernel.org/netdev/net-next/c/ef87a4f84b10
+  - [21/24] xfrm: esp: add extack to esp_init_state, esp6_init_state
+    https://git.kernel.org/netdev/net-next/c/67c44f93c951
+  - [22/24] xfrm: tunnel: add extack to ipip_init_state, xfrm6_tunnel_init_state
+    https://git.kernel.org/netdev/net-next/c/25ec92cd042a
+  - [23/24] xfrm: ipcomp: add extack to ipcomp{4,6}_init_state
+    https://git.kernel.org/netdev/net-next/c/6ee55320520e
+  - [24/24] xfrm: mip6: add extack to mip6_destopt_init_state, mip6_rthdr_init_state
+    https://git.kernel.org/netdev/net-next/c/28b5dbd5dcf7
 
 You are awesome, thank you!
 -- 
