@@ -2,49 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B48075F33E7
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 18:51:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDE935F33EB
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 18:54:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229536AbiJCQu7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 12:50:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59804 "EHLO
+        id S229536AbiJCQyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 12:54:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229571AbiJCQuy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 12:50:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB6019C3F
-        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 09:50:51 -0700 (PDT)
+        with ESMTP id S229647AbiJCQyo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 12:54:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33606D128
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 09:54:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D82FC61165
-        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 16:50:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBC63C433D6;
-        Mon,  3 Oct 2022 16:50:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB2E2B811C3
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 16:54:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04CA1C433C1;
+        Mon,  3 Oct 2022 16:54:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664815850;
-        bh=M6OQU2c9sA9fyD1VlXVE2QN90dkjRfa19tpbQyQrGHM=;
+        s=k20201202; t=1664816080;
+        bh=+v2jPWVEQ/TtazQe6m1HmphsmdFvLBLXMqWrk5tLdnI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dQnmfbQ1fFRiNS7UyvYR8IYvkKCNIgTS/Q9KOSUQXEq6nyfPg4Mku5jDxR/3Zx3tY
-         cDq1cPiI35BBievrFyDc5WLmHM07J2JReTVJsX0f/qMVaqVv0Q2ePrlVYzMz/46U/f
-         gyp/KWN0HTisQoetoa/c3r2Z3Z/hdlzlbtVYYtimIZaI7REIWUvdVhUgySvrPTJuct
-         +OfMb86YsjMndx+M+KeWVtJlh55q5J9B2CVZzU/okUTYC1nZTu+yzcMG67au1fiH1K
-         /HYlZe+DnnND5VJC+pQXVOjC3qf/n6g0n5Kqvy1pcPCCrlpd6DX/NfOpQY0QC/gfMM
-         sHpY4mgyKALIg==
-Date:   Mon, 3 Oct 2022 09:50:48 -0700
+        b=THTiY2eKegenbx1Le1mLA6hbj6/17iJrRkPRXUIhkLf69cXN7poaYD/adKZNzIFTz
+         S1OlXxpjylDLEhRSizDKPVtJb3IxTQZVk5OuH60FUKxk9DxXuPRX3oxRHPN+J8EbzV
+         bRwN2QLiZKzQmra8YrWyFEUvGFL1lHqgq35fqxe6M94gBvQU6zEM4gsniTnXJNQaHZ
+         tpxPcjPKmP+uaWql8aAwOlb2djp/77tNDvhDjQovCfLsQ7VNw6fztSXwS4qr6y5gvK
+         GVwsYP7oaTWfMweI3CH9WEXCCYmoy9mWh9ZmVA/M8c3wen9/GAcj8EhL6ulVPYhRMk
+         HbqJTZWmt6w5Q==
+Date:   Mon, 3 Oct 2022 09:54:38 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Menglong Dong <imagedong@tencent.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Petr Machata <petrm@nvidia.com>
-Subject: Re: [PATCH 0/4] net: drop netif_attrmask_next*()
-Message-ID: <20221003095048.1a683ba7@kernel.org>
-In-Reply-To: <20221002151702.3932770-1-yury.norov@gmail.com>
-References: <20221002151702.3932770-1-yury.norov@gmail.com>
+        Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Prashant Sreedharan <prashant@broadcom.com>,
+        Michael Chan <mchan@broadcom.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vivek Thampi <vithampi@vmware.com>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        Jie Wang <wangjie125@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Eran Ben Elisha <eranbe@nvidia.com>,
+        Aya Levin <ayal@nvidia.com>,
+        Cai Huoqing <cai.huoqing@linux.dev>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>, Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [net-next v2 0/9] ptp: convert drivers to .adjfine
+Message-ID: <20221003095438.404360f8@kernel.org>
+In-Reply-To: <20220930204851.1910059-1-jacob.e.keller@intel.com>
+References: <20220930204851.1910059-1-jacob.e.keller@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,17 +91,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun,  2 Oct 2022 08:16:58 -0700 Yury Norov wrote:
-> netif_attrmask_next_and() generates warnings if CONFIG_DEBUG_PER_CPU_MAPS
-> is enabled.
+On Fri, 30 Sep 2022 13:48:42 -0700 Jacob Keller wrote:
+> Many drivers implementing PTP have not yet migrated to the new .adjfine
+> frequency adjustment implementation.
 
-Could you describe the nature of the warning? Is it a false positive 
-or a legit warning?
-
-If the former perhaps we should defer until after the next merge window.
-
-> It is used in a single place. netif_attrmask_next() is not
-> used at all. With some rework of __netif_set_xps_queue(), we can drop
-> both functions, switch the code to well-tested bitmap API and fix the
-> warning.
-
+On a scale of 1 to 10 - how much do you care about this being in v6.1?
