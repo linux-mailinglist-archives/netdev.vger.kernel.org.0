@@ -2,40 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 236CB5F3567
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 20:16:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37CF15F3563
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 20:14:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229798AbiJCSP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 14:15:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37166 "EHLO
+        id S229662AbiJCSO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 14:14:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbiJCSP6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 14:15:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EEF62AC5F
-        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 11:15:55 -0700 (PDT)
+        with ESMTP id S229507AbiJCSOZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 14:14:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32B0737406;
+        Mon,  3 Oct 2022 11:14:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1157FB811B2
-        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 18:15:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DE1DC433D6
-        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 18:15:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB66A6109E;
+        Mon,  3 Oct 2022 18:14:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AC3CC433C1;
+        Mon,  3 Oct 2022 18:14:22 +0000 (UTC)
 Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="fCdiazUD"
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="ilMor0hX"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1664820949;
+        t=1664820860;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
         bh=Wbr6l1liVmpcbEEJMAT6hI4uzp1OCJusYxnU8Enxb70=;
-        b=fCdiazUDhYNgNa1I1Q19XMuMKfCfoFfD7qteXwKHMjYzRuzKwv+OKAxK8ZsPSm5a3HWMVg
-        3OW8fbWn7lHBZ8KAlzoaJgm6r8hqt0Vp/a0RHsRwNRWoKTkIbl3YWPAK1pKfCARk/GHoIL
-        P09RzFEzagxJlHVb2sD43dMPruNvZtk=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id f8f02928 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
-        for <netdev@vger.kernel.org>;
-        Mon, 3 Oct 2022 18:15:49 +0000 (UTC)
+        b=ilMor0hXio3FM4v1IMLimDb9gSp0hShBpprwWJ/WJu4B4v4BoXjiFcZJqmgT0mOfCd5BOH
+        HRqzURIybiJ9Kt9MtC8kiA9zHJgcGTP3M0/rPifcBjVfi9MVAwJhtugUV5iYhJh2AgZ2o7
+        1KJT2A75xAz6Lw4FVQJ5gYpi7uuW1dU=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 80901fbe (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Mon, 3 Oct 2022 18:14:19 +0000 (UTC)
 From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         kuba@kernel.org
@@ -44,7 +43,7 @@ Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
         "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Christophe Leroy <christophe.leroy@csgroup.eu>
-Subject: [PATCH net-next] once: rename _SLOW to _SLEEPABLE
+Subject: [PATCH] once: rename _SLOW to _SLEEPABLE
 Date:   Mon,  3 Oct 2022 20:14:13 +0200
 Message-Id: <20221003181413.1221968-1-Jason@zx2c4.com>
 In-Reply-To: <CAHmME9oh1aFCMBeV-vvtfMoCx4N5r_tABp79tkPNNLJnc1ug7Q@mail.gmail.com>
@@ -53,7 +52,7 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
