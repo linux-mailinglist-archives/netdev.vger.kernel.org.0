@@ -2,135 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBA595F3482
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 19:29:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C2AB5F34A7
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 19:38:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229571AbiJCR3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 13:29:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40730 "EHLO
+        id S229853AbiJCRiW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 13:38:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiJCR3d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 13:29:33 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7B2D17AB6
-        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 10:29:31 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id o7so10337162lfk.7
-        for <netdev@vger.kernel.org>; Mon, 03 Oct 2022 10:29:31 -0700 (PDT)
+        with ESMTP id S229947AbiJCRhT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 13:37:19 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADC1A6332
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 10:37:11 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id 8-20020a17090a0b8800b00205d8564b11so10540394pjr.5
+        for <netdev@vger.kernel.org>; Mon, 03 Oct 2022 10:37:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=D/fZmUSeupPl5TA1An+5fKtJeTIV2CBPNXJdyZ0NK1c=;
-        b=Uq+Hm+d7n3APDB5EBW5GcCZWg9vmHxe9tVYc8CoupCmOi3pYq/b4Q6k1GN9x+qp9r+
-         JccSl+imhnMwBFgBaUoWsyrJHs73LPchcoCmxlNiyEB45cjJuM52X+IPazhGOMPJLdRn
-         PYGPOiZPxI1bZsoSDDDM6kqhSGnzFhuU59OnG9akkpiMSNUzaO0W9UIbDjs/MGG0/Jh6
-         b8+48SqFJRjfpiwDWlk1mzBBf8bK0upqyU+e1F6Tl12G0CyCWh0pwBAA429yrnVhULA4
-         0lVPsheo51ajZXju8C9ae+xCklNjewTPI3buE9gnFd5KtsfqY7h5ZPs0fvWUU+VkqGaP
-         xT/A==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=EtsGcYQ2hYsnLGIRLDK8RHNpJBn3J7IjnhcJ8rXtZ88=;
+        b=QdO1w6zNxRtupb0V/8gy4wA6vSn2cwCQGQt0GvHae2vHo3/e3ewsf9I2tU8Rfn//oc
+         vr/2byjPKIFjR2n5f0B5ZFJEM7JDtzEXCya35ckHH9iGPozys/V2iM/1NfH76s9wQnSP
+         PFGsorB3ppmSrnDfP8473FgyCBEtHkVGpQaPhrhCM3fzhSqadzLQWkol+ZLPTDM6c09l
+         T32Aod2gj+YFhXcFS1mfBiGBmbqqmM7UNx6/R4ZZK3LAi5F9CwpWRSBCJfShG5xhaDPC
+         STYRNaJxr/ygcbp2zVfoe/WDdgqYahymUgsAs0tbGk1qSYjwSMrEBBxpySkyyuhNqBwn
+         bUbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=D/fZmUSeupPl5TA1An+5fKtJeTIV2CBPNXJdyZ0NK1c=;
-        b=bPPbcY3PKxjErcXL42cF/iO8IqgOkmrQQHEE+7MSIhCI0DRXNn0ehAUYmttwqb7uOS
-         JAqU7hT9VXxcyntLu4AjzjBw7l6NLEvgMIRxfzKDDlYqbq1LwBIgf5wGhfBuf1SKvJiv
-         axfYwKJfL0pGZOo/UKUTv+Bt/wI5IC2vfxys1HmoOaR3EyqRvJ8IDK/G/NHeAskSU+mT
-         KDasMnt6ggkn3J3csYFMbwF/h2Ul0kKhItqhfHv9rB3F4AyZJB3Ke0pp1awXIHmW7otI
-         VGcv4XulyV4pILhJnHMhCyamq0TZ2AxeFHoSX0lCefvjjk7EkTmX0k7BtO2Jb/L0kMPj
-         H3ZQ==
-X-Gm-Message-State: ACrzQf2YOxSWt4cFQbuUIL2CuoLJDPX7YZKD6Z778K9BD3xqKUFSJj5J
-        FBliXiwI1LqrYO2FVl0Plss+95SdDk2DKQ==
-X-Google-Smtp-Source: AMsMyM4+gyTTKBhBGjjlxdjoWx6AngDl0e9fE6aqjqfrpPKRSPkHli2+Zkt7P4vuveNqnJqEkpFSzg==
-X-Received: by 2002:a05:6512:33c3:b0:4a2:4c1a:a07 with SMTP id d3-20020a05651233c300b004a24c1a0a07mr935559lfg.551.1664818170172;
-        Mon, 03 Oct 2022 10:29:30 -0700 (PDT)
-Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id u1-20020a056512128100b0049b8c0571e5sm1537519lfs.113.2022.10.03.10.29.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Oct 2022 10:29:29 -0700 (PDT)
-Message-ID: <5ea6145b-ed59-8deb-df7c-57e26e4ecb20@linaro.org>
-Date:   Mon, 3 Oct 2022 19:29:28 +0200
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=EtsGcYQ2hYsnLGIRLDK8RHNpJBn3J7IjnhcJ8rXtZ88=;
+        b=PItAiL/i7EA2F8U/qTMzKjeH+i8umGGcNOnOlSBi5jSh7SVSGkBt/J1lnlWh1PDF2X
+         oVpIwms9ZrX0KqMQBp3ybXQQ3u5rUb1JdhBLMteWGeyeYsUO+Jg6YEHGNE7y/XZp963h
+         LO3r62RMVBsLgXsj8kkCX/M8/DJYYjJKbShCHHz4INrv1yLgkV5huzwB73e0bcfPMnNX
+         nybXhnJfCK9jlTzUTWW3KlyE4l6s+02qAyXZeDja/xjYPkXyWSli1q02CxVandmZI9bJ
+         OnSGU5/TqnCgK29zHaRiY2XbP29OzCQavpJvDNI9aFrQIdYH7/Y1dhmlfdQkUodTTmZE
+         vh5A==
+X-Gm-Message-State: ACrzQf1Lp+LJ8dDVCQaRckNzDBUchvLnn3hjbsIg6vg59KLP5DUhRRpK
+        dRqy+2ovWDi4g5zFF5WhIwAh8jG6LHma2A==
+X-Google-Smtp-Source: AMsMyM4v8C2IR8UhJeqnPeiBnfSDFZRWag6UQWyE6f/pmY4ayrYjrXJKrEbJbeP9O5xtdqWiHwHHXw==
+X-Received: by 2002:a17:902:8548:b0:179:e4db:42e0 with SMTP id d8-20020a170902854800b00179e4db42e0mr23217888plo.0.1664818631192;
+        Mon, 03 Oct 2022 10:37:11 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id l8-20020a170903244800b00176683cde9bsm5059947pls.294.2022.10.03.10.37.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 Oct 2022 10:37:10 -0700 (PDT)
+Date:   Mon, 3 Oct 2022 10:37:06 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Prashant Sreedharan <prashant@broadcom.com>,
+        Michael Chan <mchan@broadcom.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Vivek Thampi <vithampi@vmware.com>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        Jie Wang <wangjie125@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Eran Ben Elisha <eranbe@nvidia.com>,
+        Aya Levin <ayal@nvidia.com>,
+        Cai Huoqing <cai.huoqing@linux.dev>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>, Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [net-next v2 0/9] ptp: convert drivers to .adjfine
+Message-ID: <Yzsdwo+LGuW/t6HA@hoboy.vegasvil.org>
+References: <20220930204851.1910059-1-jacob.e.keller@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: [PATCH v2] dt-bindings: net: marvell,pp2: convert to json-schema
-To:     =?UTF-8?Q?Micha=c5=82_Grzelak?= <mig@semihalf.com>, mw@semihalf.com
-Cc:     davem@davemloft.net, devicetree@vger.kernel.org,
-        edumazet@google.com, krzysztof.kozlowski+dt@linaro.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux@armlinux.org.uk, netdev@vger.kernel.org, pabeni@redhat.com,
-        robh+dt@kernel.org, upstream@semihalf.com
-References: <CAPv3WKcW+O_CYd2vY2xhTKojVobo=Bm5tdFdJ8w33FHximPTcA@mail.gmail.com>
- <20221003170613.132548-1-mig@semihalf.com>
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221003170613.132548-1-mig@semihalf.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220930204851.1910059-1-jacob.e.keller@intel.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03/10/2022 19:06, Michał Grzelak wrote:
-> On 02/10/2022 10:23, Marcin Wojtas wrote:
->> niedz., 2 paź 2022 o 10:00 Krzysztof Kozlowski
->> <krzysztof.kozlowski@linaro.org> napisał(a):
->>>
->>> On 01/10/2022 17:53, Michał Grzelak wrote:
->>>> Hi Krzysztof,
->>>>
->>>> Thanks for your comments and time spent on reviewing my patch.
->>>> All of those improvements will be included in next version.
->>>> Also, I would like to know your opinion about one.
->>>>
->>>>>> +
->>>>>> +  marvell,system-controller:
->>>>>> +    $ref: /schemas/types.yaml#/definitions/phandle
->>>>>> +    description: a phandle to the system controller.
->>>>>> +
->>>>>> +patternProperties:
->>>>>> +  '^eth[0-9a-f]*(@.*)?$':
->>>>>
->>>>> The name should be "(ethernet-)?port", unless anything depends on
->>>>> particular naming?
->>>>
->>>> What do you think about pattern "^(ethernet-)?eth[0-9a-f]+(@.*)?$"?
->>>> It resembles pattern found in net/ethernet-phy.yaml like
->>>> properties:$nodename:pattern:"^ethernet-phy(@[a-f0-9]+)?$", while
->>>> still passing `dt_binding_check' and `dtbs_check'. It should also
->>>> comply with your comment.
->>>
->>> Node names like ethernet-eth do not make much sense because they contain
->>> redundant ethernet or eth. AFAIK, all other bindings like that call
->>> these ethernet-ports (or sometimes shorter - ports). Unless this device
->>> is different than all others?
->>>
->>
->> IMO "^(ethernet-)?port@[0-9]+$" for the subnodes' names could be fine
->> (as long as we don't have to modify the existing .dtsi files) - there
->> is no dependency in the driver code on that.
+On Fri, Sep 30, 2022 at 01:48:42PM -0700, Jacob Keller wrote:
+> Many drivers implementing PTP have not yet migrated to the new .adjfine
+> frequency adjustment implementation.
 > 
-> Indeed, driver's code isn't dependent; however, there is a dependency
-> on 'eth[0-2]' name in all relevant .dts and .dtsi files, e.g.:
+> A handful of these drivers use hardware with a simple increment value which
+> is adjusted by multiplying by the adjustment factor and then dividing by
+> 1 billion. This calculation is very easy to convert to .adjfine, by simply
+> updating the divisor.
 > 
-> https://github.com/torvalds/linux/blob/master/arch/arm/boot/dts/armada-375.dtsi#L190
-> https://github.com/torvalds/linux/blob/master/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi#L72
-> 
-> Ports under 'ethernet' node are named eth[0-2], thus those and all .dts files 
-> including the above would have to be modified to pass through `dtbs_check'.
+> Introduce new helper functions, diff_by_scaled_ppm and adjust_by_scaled_ppm
+> which perform the most common calculations used by drivers for this purpose.
 
-I didn't get it. What is the "dependency"? Usage of some names is not a
-dependency... Old bindings were not precising any specific name of
-subnodes, therefore I commented to change it. If the DTS already use
-some other name, you can change them if none of upstream implementations
-(BSD, bootloaders, firmware, Linux kernel) depend on it.
+For the series:
 
-Best regards,
-Krzysztof
-
+Acked-by: Richard Cochran <richardcochran@gmail.com>
