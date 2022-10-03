@@ -2,126 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 810875F2E3E
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 11:37:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ECBC5F2E53
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 11:43:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229708AbiJCJhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 05:37:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34654 "EHLO
+        id S229923AbiJCJn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 05:43:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230144AbiJCJhU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 05:37:20 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2079.outbound.protection.outlook.com [40.107.220.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1B9D5D139;
-        Mon,  3 Oct 2022 02:32:27 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=I4hNM5ZBwDJriD75i77sxiLguPA27/BGgIneJilqABV28FfnjZRVtoaA8IM+sS18gPmqZCXIquuw5hwpfL/PtTE7Tn7uBXd0LQy+c8eZ3Ag5zQuWG4ET7UQc7pVahMZAaI+EVIECLC5MJZp3pXlW3MySF/fyHCoBx6C0EJnKqYgaXuyTtmTU5//53bZ6/pAdayIzCfc5dp59cY+Ohl3L/SygUOzOW80DneNMzG1rJhCTgIB2upRqUpywTRsYciwd92URXOKcqDrQh0tp+gdi10RH7iV1AflCzxhCDQu/jYvTeK4Y2mErx+zqPxkQ3Vedj4J8wo+vyNnd6xUBKp86Lw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EeA/MXG8e5XmjU1iQtc3+GePiSmb2h9FrtvQ+s/RQbc=;
- b=ckJ6FslRQ+2K7PZvXG9dzq+lRAGp0Fl4SVHdpB4fqGrxVOhJyVZ5i1Ovja5FR1GdJ2MR1LgKAsKIefqeY5OgOh80qGah77RFcp7DkCtbzzjoy8H9NtzPMLiCcB1nQXc7jQCNy2aR16nUckExvedIRjvCHhReTmtfPrwvOhTs9kM7HR/FIkrXM9CW2vV/S8gmTRmUN6wH4TzZ91ybzRJ6Q2HKkKbJtTxTb9XRap4qib0ZeFJD0ZmtfAF4eBlAT7tpxjq9exw8YUm9JfGUo7aOihdHFtPmKYEFAupnKDwvIMEe3Hq1rg4CeRqxmf3rzJ0MF7Ku+ieZUezw4nTtRAWtGg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EeA/MXG8e5XmjU1iQtc3+GePiSmb2h9FrtvQ+s/RQbc=;
- b=2eXCiz1aDPQft9acMDmsZFXovl0QDuOTRXBS4+AIGXLfd12HOwYBE6zQpKaZ/jOsZEkhtSWgtQI21Ejf7e89B3eyf7B6re3WfeOaxgEEpcWmfaXOOYr7DA1WIsbwv8U76t6fsXmhNBzKM4FVgMtF8tOzBZt8NP7kd2sYgc8lfn4=
-Received: from MW5PR12MB5598.namprd12.prod.outlook.com (2603:10b6:303:193::11)
- by PH7PR12MB7305.namprd12.prod.outlook.com (2603:10b6:510:209::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.28; Mon, 3 Oct
- 2022 09:29:01 +0000
-Received: from MW5PR12MB5598.namprd12.prod.outlook.com
- ([fe80::f099:96c9:82e4:600f]) by MW5PR12MB5598.namprd12.prod.outlook.com
- ([fe80::f099:96c9:82e4:600f%6]) with mapi id 15.20.5676.024; Mon, 3 Oct 2022
- 09:29:00 +0000
-From:   "Gaddam, Sarath Babu Naidu" <sarath.babu.naidu.gaddam@amd.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "yangbo.lu@nxp.com" <yangbo.lu@nxp.com>,
-        "Pandey, Radhey Shyam" <radhey.shyam.pandey@amd.com>,
-        "Sarangi, Anirudha" <anirudha.sarangi@amd.com>,
-        "Katakam, Harini" <harini.katakam@amd.com>
-Subject: RE: [RFC PATCH] dt-bindings: net: ethernet-controller: Add
- ptimer_handle
-Thread-Topic: [RFC PATCH] dt-bindings: net: ethernet-controller: Add
- ptimer_handle
-Thread-Index: AQHY0/zQrGhXct8GIk+5NMkHMGtsKK34W9kAgAPrvpA=
-Date:   Mon, 3 Oct 2022 09:29:00 +0000
-Message-ID: <MW5PR12MB55988BE28F8879AF78B4441E875B9@MW5PR12MB5598.namprd12.prod.outlook.com>
-References: <20220929121249.18504-1-sarath.babu.naidu.gaddam@amd.com>
- <20220930192200.GA693073-robh@kernel.org>
-In-Reply-To: <20220930192200.GA693073-robh@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: MW5PR12MB5598:EE_|PH7PR12MB7305:EE_
-x-ms-office365-filtering-correlation-id: 512534ca-d612-4e21-699f-08daa521b49b
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: nXbVBWoM1DHPsUNZTE5radCu7hEp6ZTsKkseJLey3IibFmvciSStt5c+Zm0R8ZjnRpT2s3FWTJNejHxrDUVpKqMJT3+F9xw/g9cMSTH0OtriNOmN4gnWxs3Kq9z3/SjTaqrsSHHsLy/gWTQm9iHXSYiVgTvUmfTR3KAIZzxs4ZlwurgFm6PlO4jhMKvey6wystHvm9iboVFHCKyQdP7hR689Fb/IEeKe57dAL3/oI0Bgn2MJOclhBPWokAUGSNIV1IuubG0HufOGtKMXhPDqY2aWepdN+bwbUSL/cxDRJCcsCCem0KGg9f0e75xM5RID/ZA0Zu+HMx/Ik4NNKk6N5rlcqbzn61BzBuG8yMql7RNvAnp3GTccwu6DzbgICM3WCk2JuwkZBcAw1DOSa1c+EKWBB1OwvyUJdTKuysDP9Vji9U5+SAQO4LV/sAQfAegsA2epKbx44s9JZe2NhCBpuR7n39WJ2QOEC3CDpaKuYi92VwspPEi/5m5CVh5dJMtecgjF3CaOtrfPwyrSnQUuLtvP/r+bLQPyuuQkVHBai9wbW9az/aoDvP3sE2BmyZaV/DWvaQ1cVCmdSnClFqtXZ+7rTwaR1Q9ENh84GPT0MnCpHUn/vHacKMePo41gxSHMNRSTA6bad4uKsynlDLDxkzGaHKDNX2zU64ZOXbP8Gf39l5hh5wCaD2TQBQjRaIIdI87N9QJpaMGpKlUyLcE60AQB/V/xuoFQteh6Mmw9BxepL2X055hfsDnYPW7kC+XrV49bVsEVBd4H7s/yAtuNutekQmYACVlN5YqR9lOt/cc=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW5PR12MB5598.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(136003)(396003)(376002)(366004)(346002)(451199015)(6506007)(66446008)(66556008)(7696005)(64756008)(66476007)(9686003)(26005)(8676002)(54906003)(6916009)(4326008)(53546011)(478600001)(316002)(76116006)(966005)(66946007)(71200400001)(38100700002)(55016003)(122000001)(86362001)(33656002)(38070700005)(83380400001)(186003)(5660300002)(7416002)(8936002)(41300700001)(52536014)(2906002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Jmcf2Hmk3bb5XiX+i3QWV1IZEoYFtoL58rkvMxHVEF2j/NXjLM/O8Concg3H?=
- =?us-ascii?Q?xryUD74xXSrQ7OLKeptpdZxq0L+I1MKGYYey05w8VhNdZOAayamehVf058VD?=
- =?us-ascii?Q?9DKDlQINEu88Hn5ktNYGWlpwWuWUO18ViNoCm3HWAkT+WVxidOf+Rnp02dag?=
- =?us-ascii?Q?ZMMBS3Vc3u/3iKrVd0XKlHXcioAeWLtD9KcIOuLY2QSx47uG+X0/S3FEimfB?=
- =?us-ascii?Q?CjoHkPyqpdyXK4Ep+zunKX8YOZIhplppKu2S1fOrzqIJ8Rnv2utb/VKgG3/o?=
- =?us-ascii?Q?s4K/2p7mUOVevGWySnpAkh39ixiy0a5Z/Hr0pbtc6mg+7RWXPYvSEoBKc8NT?=
- =?us-ascii?Q?LcNzhZUqQcSZ76+D4qJSrlBicuAZNvg6EsgSlFKvkocHq+bhGh9sURqa4GKl?=
- =?us-ascii?Q?Dq+XV4WesS/D7tvzr5WZXsNjqoMN1tYZiyxE1LqTq4wgBfXUoW59a/TWfC2K?=
- =?us-ascii?Q?Y8u0k75Xun6vxrnGDC3I9eC58M7y6ENxz6EKyl9TbejHyoItKzxo31ahZ3FV?=
- =?us-ascii?Q?R54PlwD7DqD27OULAvv5EA/Rr1Hbj732vDe/IleaXzTaFF5KrqwoLvhZF/xv?=
- =?us-ascii?Q?WJtuNXOT+LrczNzkFo30QoD+yJr++LNsxHFhKqlCoi2t/e9Fap3t0xWKXR4v?=
- =?us-ascii?Q?D4vVdZfutsAxX7dGEHnnWZ2GYTMEGBaPUsv9AjgdwMnkAktqzZji8kT6pehx?=
- =?us-ascii?Q?teV0Uv4dOGg7VV33WgnnpfgLuFhsc3gWUIX+mJpDmzUbYZckCV/lcREPS21d?=
- =?us-ascii?Q?xxWDd2hGcatXpO5E+Q6kdfypfMUXClmFk/La7XjwbYU7vMBYJjqBceVMszCs?=
- =?us-ascii?Q?QAdHF/QGDWsaySVtW8AjE+klEcXYJMuIwLfhzb8T09hsUBnqQUa4vtYacuFf?=
- =?us-ascii?Q?A3LS0iAogrp39bfI29QIwooAGtn5XY+SQXNS6ubL+BBiYQzxHN3pEhUMSfcm?=
- =?us-ascii?Q?L3Y7v3+yIpQhpb6BiL9/loV4cs8rduT+iOzRWIoHyKDAAa/ysLKtitwp8GVv?=
- =?us-ascii?Q?936c1AuIMyvTLjuzAu5mn794aqNJNeja9T3zov/OSGMIGaeMu/LFS/z7lV6l?=
- =?us-ascii?Q?xjats9xclDOvxIMHabPO/fkoDMVD+cR2wggdDAdrFblnvHXQd2Pvo7a1pDah?=
- =?us-ascii?Q?Oy6j/NjhbxghZIwEoCITBp84mTHOuJ8cwyen5W/UJIgymVocfoPmkb+PxENN?=
- =?us-ascii?Q?VAysNjAaxKL/lMX0rVQ6pWunfI23y/hmXS1YgYhSJecUbakSYMt0MYUayUZ5?=
- =?us-ascii?Q?wzgSDLvJgQKEbfqK4ozCY4PoeR7sUtaEZ809uSSRynY+sTKKLCIZfX7ytXTV?=
- =?us-ascii?Q?JcOjrhkEnRMhsMNQwDyO//rdhEAHEs96JK+8ys28P2oprGdK/at19nujJDiB?=
- =?us-ascii?Q?1iB+jgBbtezJu9M05Cgyll9+6XtnZRZWvmcm0A9IJyR6abQ+e6JX1ddfSf3w?=
- =?us-ascii?Q?8B4ZsKBp1Odk92X/6a/m1C5NHsO1qOQWinmSKYlNTX5GiQHr1sQR8X0hRiGp?=
- =?us-ascii?Q?nOQ+Z1VY2gFWZRgnHjxfT0SXwdoFNUP2qb6SwczliwT/z3CflfBDFzzFPtTP?=
- =?us-ascii?Q?s0+jsYnrh9NkFTbxjgo=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S230434AbiJCJnZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 05:43:25 -0400
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 651345F7D2
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 02:38:04 -0700 (PDT)
+Received: by mail-lf1-f46.google.com with SMTP id 25so5450835lft.9
+        for <netdev@vger.kernel.org>; Mon, 03 Oct 2022 02:38:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=8nV0XrY8LZwpXKpS4srGP447Rz/X7Xn90y9nTiydLdc=;
+        b=XwqTitDaS7EOxqP2oFBSsCw/UYztR/Ok4NhYrMv/PXJpDxBSKCfOoAC1yF5MH4ayqx
+         bBXdYQVXTzyCzwo7Tw3maWoqXJCGatYGHWCB0XewyXzsyATJtvq+NT7xlz9/TqJqOdRa
+         SbNkAaavG9yoxdm51YftNldYVbUKBKEogb109Xdcdlf4TF/lvs485wGTz9MpO6WnrIhB
+         ZhKOyQ2COtEjB17EofmtSpHCwg5VBAZnPYivmYWIkiAGmYxCWLFTCPauuo/uS1qoHZ09
+         Zn6yIDwxjk6j1M5bIEpyIQc+M0UP9jrsPbU7Xd5kKIRsEkCsJLcymTFRMi6ty0/KB4C+
+         yaKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=8nV0XrY8LZwpXKpS4srGP447Rz/X7Xn90y9nTiydLdc=;
+        b=5+1lLySVgZLtLUFHvOVY1RXICPuw0AuOnbzsc1777Z86vTztCOCWppj4kfj6y8dSq+
+         39n6e30IPIj4Cm3LkoAzhRmfPG6TG+bR3Kiq6hhS+RrNq7pyFdHpc2yUdSAJBHp6P8Qp
+         Ac4C7ggMV8xDIgua+mqJ+bzy+eRG8whZNAlWnAvjbWx4Qup/ldFrcqS1g3jUOUc53YdK
+         i2T4JW65eSTzAnAj3c2bmJc0YMV+PbYqiKrtqsYQLz1BS0JLSGosp9AQx9q4+ervnkdc
+         O/znPbB0fR26TumU75SnBBEaz4CJRq/shoYx3irpnpmLI8+RjOV0431sev/c+NaB63Rp
+         cI0w==
+X-Gm-Message-State: ACrzQf1Ps997nhd1lwKT6PBz+p7UjUwQg3DRe2nYeuTdFahlnNu3cy7G
+        nL0SBvmCOWbaeptgHU/qWcS80A==
+X-Google-Smtp-Source: AMsMyM5pTl0qUUUrQmICcRfAVFgObBRocvyvNf1nO9MIfn8wkSwOtyrbuiWQdIfrfDViIIdeS2Vw+g==
+X-Received: by 2002:ac2:558b:0:b0:4a2:2706:43f6 with SMTP id v11-20020ac2558b000000b004a2270643f6mr2874558lfg.601.1664789579388;
+        Mon, 03 Oct 2022 02:32:59 -0700 (PDT)
+Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id i2-20020a2ea362000000b0026c2fec2f8esm841555ljn.84.2022.10.03.02.32.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 03 Oct 2022 02:32:58 -0700 (PDT)
+Message-ID: <2e68d64f-766c-0a52-9df8-74f0681a5973@linaro.org>
+Date:   Mon, 3 Oct 2022 11:32:58 +0200
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW5PR12MB5598.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 512534ca-d612-4e21-699f-08daa521b49b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Oct 2022 09:29:00.8309
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: SWke1wvPLxQ3AGvGVsW3dkUvOKhgdKpALeVdV+sVYeFlD2kGKvbCou9sV1Tsyoe8Wu2+XjNTa8lod77EHZAO8A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7305
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+Subject: Re: [PATCH v2 3/4] dt-bindings: net: qcom,ethqos: Convert bindings to
+ yaml
+Content-Language: en-US
+To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>
+Cc:     devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        agross@kernel.org, bhupesh.linux@gmail.com,
+        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
+        netdev@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>,
+        Rob Herring <robh@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        David Miller <davem@davemloft.net>
+References: <20220929060405.2445745-1-bhupesh.sharma@linaro.org>
+ <20220929060405.2445745-4-bhupesh.sharma@linaro.org>
+ <4e896382-c666-55c6-f50b-5c442e428a2b@linaro.org>
+ <1163e862-d36a-9b5e-2019-c69be41cc220@linaro.org>
+ <9999a1a3-cda0-2759-f6f4-9bc7414f9ee4@linaro.org>
+ <0aeb2c5e-9a5e-90c6-a974-f2a0b866d64f@linaro.org>
+ <ca62fc03-8acc-73fc-3b15-bd95fe8e05a4@linaro.org>
+ <CAH=2Nty1BfaTWbE-PZQPiRtAco=5xhvJT3QbpqYsABxZxBzF3w@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAH=2Nty1BfaTWbE-PZQPiRtAco=5xhvJT3QbpqYsABxZxBzF3w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -129,110 +86,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+Richard Cochran
+On 03/10/2022 10:29, Bhupesh Sharma wrote:
+> On Sun, 2 Oct 2022 at 13:24, Krzysztof Kozlowski
+> <krzysztof.kozlowski@linaro.org> wrote:
+>>
+>> On 01/10/2022 14:51, Bhupesh Sharma wrote:
+>>>>> Right, most of them are to avoid the make dtbs_check errors / warnings
+>>>>> like the one mentioned above.
+>>>>
+>>>> All of them should not be here.
+>>>
+>>> I guess only 'snps,reset-gpio' need not be replicated here, as for
+>>> others I still see 'dtbs_check' error, if they are not replicated here:
+>>>
+>>>
+>>> arch/arm64/boot/dts/qcom/sm8150-hdk.dtb: ethernet@20000: Unevaluated
+>>> properties are not allowed ('power-domains', 'resets', 'rx-fifo-depth',
+>>> 'tx-fifo-depth' were unexpected)
+>>>       From schema: /Documentation/devicetree/bindings/net/qcom,ethqos.yaml
+>>>
+>>> Am I missing something here?
+>>
+>> Probably the snps,dwmac schema failed. It is then considered
+>> unevaluated, so such properties are unknown for qcom,ethqos schema. Run
+>> check with snps,dwmac and fix all errors first.
+> 
+> Running dt_binding_check DT_SCHEMA_FILES=net/snps,dwmac.yaml
+> reports no error currently.
 
-> -----Original Message-----
-> From: Rob Herring <robh@kernel.org>
-> Sent: Saturday, October 1, 2022 12:52 AM
-> To: Gaddam, Sarath Babu Naidu <sarath.babu.naidu.gaddam@amd.com>
-> Cc: davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
-> pabeni@redhat.com; krzysztof.kozlowski+dt@linaro.org;
-> netdev@vger.kernel.org; devicetree@vger.kernel.org; linux-
-> kernel@vger.kernel.org; yangbo.lu@nxp.com; Pandey, Radhey Shyam
-> <radhey.shyam.pandey@amd.com>; Sarangi, Anirudha
-> <anirudha.sarangi@amd.com>; Katakam, Harini <harini.katakam@amd.com>
-> Subject: Re: [RFC PATCH] dt-bindings: net: ethernet-controller: Add
-> ptimer_handle
->=20
-> On Thu, Sep 29, 2022 at 06:12:49AM -0600, Sarath Babu Naidu Gaddam wrote:
-> > There is currently no standard property to pass PTP device index
-> > information to ethernet driver when they are independent.
-> >
-> > ptimer_handle property will contain phandle to PTP timer node.
->=20
-> ptimer_handle or ptimer-handle? One matches conventions.
->=20
-> However, 'handle' is redundant and 'ptimer' is vague. 'ptp-timer'
-> instead? (Humm, looking at fsl-fman.txt after writing everything here, it=
-'s
-> already using that name! So why are you making something new?)
+Then it's something in your commits. I don't know what you wrote, as you
+did not sent a commit. I cannot reproduce your errors after removing
+unneeded power-domains.
 
-Thanks for the review.
-I think Freescale driver uses "ptimer-handle" but I also see Freescale DT=20
-documentation refers to "ptp-timer".
-=20
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
-tree/Documentation/devicetree/bindings/net/fsl-fman.txt#n320
+Just to clarify - I am testing only the dt_binding_check (so only the
+examples - I assume they are meaningful).
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
-tree/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c#n467
-
-it will be good to agree on a generic property name to link to PTP phandle
-to Ethernet node for any driver to use.=20
-
->=20
-> However, for anything common, I'd like to see multiple examples and users=
-.
-> Do we have any custom bindings for this purpose already (besides FSL)?
-
-AFAIK There are no other examples. We plan to use this in Xilinx axienet. =
-=20
-
->=20
-> Could an ethernet device ever need more than 1 timer? Could a provider
-> provide multiple timers? IOW, does this need to follow standard
-> provider/consumer pattern of 'foos' and '#foo-cells'?
-
-No, Even In systems with multiple timers ethernet uses timestamps only
-from one associated PTP timer.
-
->=20
-> > Freescale driver currently has this implementation, but it will be good
-> > to agree on a generic (optional) property name to link to PTP phandle
-> > to Ethernet node. In future or any current ethernet driver wants to
-> > use this method of reading the PHC index,they can simply use
->=20
-> What's PHC index?
-
-PHC(PTP Hardware clock) index is a number which is used by ptp4l
-application. When a PTP device registers with a kernel, device node
-will be created in the /dev.For example, /dev/ptp0, /dev/ptp1.
-
-When PTP and Ethernet are in the same device driver, This PHC index
-Information is internally accessible. When they are independent drivers,
-PTP DT node should be linked to ethernet node so that PTP timer
-information such as PHC index is accessible.  =20
-
->=20
-> > this generic name and point their own PTP timer node, instead of
-> > creating seperate property names in each ethernet driver DT node.
-> >
-> > axiethernet driver uses this method when PTP support is integrated.
-> >
-> > Example:
-> > 	fman0: fman@1a00000 {
-> > 		ptimer-handle =3D <&ptp_timer0>;
-> > 	}
-> >
-> > 	ptp_timer0: ptp-timer@1afe000 {
-> > 		compatible =3D "fsl,fman-ptp-timer";
-> > 		reg =3D <0x0 0x1afe000 0x0 0x1000>;
-> > 	}
-> >
-> > Signed-off-by: Sarath Babu Naidu Gaddam
-> > <sarath.babu.naidu.gaddam@amd.com>
-> > ---
-> > We want binding to be reviewed/accepted and then make changes in
-> > freescale binding documentation to use this generic binding.
->=20
-> You can't just change the binding you are using. That's an ABI break.
->=20
-Apologies for confusion. I am not proposing a change to the property
-name.I am simply trying to document the correct DT property name=20
-used in Freescale and then move it to generic ethernet-controller.yaml.
-
-Thanks,
-Sarath
-
-
+Best regards,
+Krzysztof
 
