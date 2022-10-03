@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3965F5F2F0D
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 12:52:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D8885F2F0F
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 12:52:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229788AbiJCKwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 06:52:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54086 "EHLO
+        id S229821AbiJCKwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 06:52:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbiJCKwO (ORCPT
+        with ESMTP id S229469AbiJCKwO (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 06:52:14 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A82A53D3C
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B24543E3
         for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 03:52:12 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id 13so21267321ejn.3
+Received: by mail-ej1-x62e.google.com with SMTP id hy2so21226718ejc.8
         for <netdev@vger.kernel.org>; Mon, 03 Oct 2022 03:52:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=4OPPORshq4VgAOLtcB/+XK7KZeUHC5ZInXXdg8Odd/s=;
-        b=bauJcDPqR46fWMGBsYLbYIbXmPW0QA10kJoJIJznCsriYz4uMwYkSWL3QSi6mPs13e
-         czLTu8i8gQ7jxiMS8nz/zRQCRrrv7INsjudV+B8M1qid4IuL3/eELolKhPnycp2iliaw
-         Jqa7seL63VuueJNMoOuR4X5ZLh5zlfhiM2Ltor18akMntXhrOu4UxcOJDDDhR0NhWoEm
-         ERt7v0oW3r2BIlzjmzD9Oxqdqb62CGLYNp531AcOrkV5I2o4kVxRdchqcjY9YqJtRkMa
-         R2R2biZ9Z9DJAArHIoszsYat4LL0WwmQLykWd1gB9dJwtTnVeswVtJ8/AO6hy0+Nkmla
-         Sbjw==
+        bh=ie+6qF2aCB87176zpji06g2ppHuTxmRu7J82hOzBGYU=;
+        b=EqUd6XBsFXIQfFIgW1FZTsJp0ctHvVCamZvlGRwW3XQ8j0hAIVxiD8pVLGr0fEip+p
+         CGJhpuHu6LEQP2Xj+izhOz8KtnDoOdjo3gNYOo3IGkgqk9DQDxSrtmucfro9TVUXNycS
+         kkraKesYwOlibotYYYfVMZVgITwAdN9MKtQHC0DvOzPYjCCBrHVu0haKjtoJ08Q84z+v
+         teEb1O+O8j1zQrKRBXMXA60kkp4H0BPh3rwCXnl8btZNQBEAomW9LdTRkkhl/NokIBY3
+         +JfdaPQkkjvrnjWVC3Uuhxn7RLNd8K1SwXVBbAK3K1eYtiG2WqSuqcXhAHEd7JYMu62i
+         doqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=4OPPORshq4VgAOLtcB/+XK7KZeUHC5ZInXXdg8Odd/s=;
-        b=o2AMUDP1JOr9ZbZtG12/fpVyyrGn437rCM6v6hVTJBlSb0DZn3aAPSzHVhOCkUvIgH
-         Pn7uXXE4XS3OUvUos5vwnmCbGA9CLSxunSjjeZwu73yvC99oReO3uKQkGj0kbQyX7Sqo
-         dc08QRW8gN9XieD5az+IBpZZSwVvVEqU2WIZOkW1LElE5wL9B/5yrl7Bw4uVyAlOFMuR
-         q2Sln5h7trHrD4q1voNbHQm0YMZBh1skM8iWOfvV1dwa8thiDuXXkbYaEt+3blHDBYsK
-         7AAP4fWNq1OKBQp4gdDBFUeGtB9R4NYdHKMXsqFcnhx1IzSv9zb7qK4lQ7ZKTBHDvG7D
-         D+1Q==
-X-Gm-Message-State: ACrzQf0Q+HIEo7NypJsOjaaRWnXO5BXcC/KHyH0g7S++0LiifusiFJ7T
-        fPSH3ksyAhdvzyRxkVQalm0LrbOpYg0mVCMM6hc=
-X-Google-Smtp-Source: AMsMyM6JODTwTOrYmZ1nEMbc+sjpwa5QxGONjhVKB4Uxy26PtxJKsA84awOuFB/0RTEToz4gMijqTQ==
-X-Received: by 2002:a17:907:2723:b0:789:ae01:6fbd with SMTP id d3-20020a170907272300b00789ae016fbdmr6563974ejl.731.1664794330970;
-        Mon, 03 Oct 2022 03:52:10 -0700 (PDT)
+        bh=ie+6qF2aCB87176zpji06g2ppHuTxmRu7J82hOzBGYU=;
+        b=zXF0RmD8koo4nIxCrOmZSDWnA7333rAEzD2A2lXjUHXjFh8mDcOntzsvvNI/lSD7/0
+         3lftwe18jsuy6KuGCIMCRl8d/6GMndSu134RelXYM9rgcX0FS7vv5UwhQ0fs9kcsapSQ
+         wFWr4nXns7Wmd2k/54l4NiWo8MFvGx5+jco5lCsty7lL9PiMZiM8gRxrwh8vreVnGDMw
+         roAJ0yuQnMyqLh7AguLbRuYOXfI/C2fpBKVar3QL//zpgRmuZjbYYcR/C2oLUzJSo2eT
+         hjx72MSO94zyICVV8buaElTLpB+lpdPe1AymY2ylk3/vFSP3R9vSYjgfaBJw1499vevm
+         MGKg==
+X-Gm-Message-State: ACrzQf1f8Zxa7Asg5zwItjFVi2d8PXSLvApj6AQFWxzvQjdwyWzSRaTR
+        tqvpL2VKzV/Q6tvSu59OJXWeWhpCj3+tJxtSqzM=
+X-Google-Smtp-Source: AMsMyM5FxVIbNbVVo6QYYrsFOuZwEX/8n0QF1/AAnI+WJrB/r7xm9tHNq4R0q7cHmEPaiH/m1Ds14Q==
+X-Received: by 2002:a17:907:a06:b0:77b:6eca:c089 with SMTP id bb6-20020a1709070a0600b0077b6ecac089mr14225225ejc.362.1664794332260;
+        Mon, 03 Oct 2022 03:52:12 -0700 (PDT)
 Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id c10-20020a170906d18a00b0077a1dd3e7b7sm5281261ejz.102.2022.10.03.03.52.10
+        by smtp.gmail.com with ESMTPSA id r4-20020aa7cfc4000000b0044f21c69608sm7170126edy.10.2022.10.03.03.52.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Oct 2022 03:52:10 -0700 (PDT)
+        Mon, 03 Oct 2022 03:52:11 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, tariqt@nvidia.com, moshe@nvidia.com,
         saeedm@nvidia.com, linux-rdma@vger.kernel.org
-Subject: [patch net-next v2 04/13] net: devlink: take RTNL in port_fill() function only if it is not held
-Date:   Mon,  3 Oct 2022 12:51:55 +0200
-Message-Id: <20221003105204.3315337-5-jiri@resnulli.us>
+Subject: [patch net-next v2 05/13] net: devlink: track netdev with devlink_port assigned
+Date:   Mon,  3 Oct 2022 12:51:56 +0200
+Message-Id: <20221003105204.3315337-6-jiri@resnulli.us>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20221003105204.3315337-1-jiri@resnulli.us>
 References: <20221003105204.3315337-1-jiri@resnulli.us>
@@ -72,171 +72,233 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Follow-up patch is going to introduce a netdevice notifier event
-processing which is called with RTNL mutex held. Processing of this will
-eventually lead to call to port_notity() and port_fill() which currently
-takes RTNL mutex internally. So as a temporary solution, propagate a
-bool indicating if the mutex is already held. This will go away in one
-of the follow-up patches.
+Currently, ethernet drivers are using devlink_port_type_eth_set() and
+devlink_port_type_clear() to set devlink port type and link to related
+netdev.
+
+Instead of calling them directly, let the driver use
+SET_NETDEV_DEVLINK_PORT macro to assign devlink_port pointer and let
+devlink to track it. Note the devlink port pointer is static during
+the time netdevice is registered.
+
+In devlink code, use per-namespace netdev notifier to track
+the netdevices with devlink_port assigned and change the internal
+devlink_port type and related type pointer accordingly.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- net/core/devlink.c | 46 +++++++++++++++++++++++++++++++---------------
- 1 file changed, 31 insertions(+), 15 deletions(-)
+v1->v2:
+- added kdoc for devlink_port struct field
+---
+ include/linux/netdevice.h | 19 ++++++++++
+ net/core/dev.c            | 11 +++---
+ net/core/devlink.c        | 75 ++++++++++++++++++++++++++++++++++++---
+ 3 files changed, 97 insertions(+), 8 deletions(-)
 
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index eddf8ee270e7..bbb93be49063 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -1999,6 +1999,11 @@ enum netdev_ml_priv_type {
+  *					registered
+  *	@offload_xstats_l3:	L3 HW stats for this netdevice.
+  *
++ *	@devlink_port:	Pointer to related devlink port structure.
++ *			Assigned by a driver before netdev registration using
++ *			SET_NETDEV_DEVLINK_PORT macro. This pointer is static
++ *			during the time netdevice is registered.
++ *
+  *	FIXME: cleanup struct net_device such that network protocol info
+  *	moves out.
+  */
+@@ -2349,9 +2354,22 @@ struct net_device {
+ 	netdevice_tracker	watchdog_dev_tracker;
+ 	netdevice_tracker	dev_registered_tracker;
+ 	struct rtnl_hw_stats64	*offload_xstats_l3;
++
++	struct devlink_port	*devlink_port;
+ };
+ #define to_net_dev(d) container_of(d, struct net_device, dev)
+ 
++/*
++ * Driver should use this to assign devlink port instance to a netdevice
++ * before it registers the netdevice. Therefore devlink_port is static
++ * during the netdev lifetime after it is registered.
++ */
++#define SET_NETDEV_DEVLINK_PORT(dev, _devlink_port)		\
++({								\
++	WARN_ON(dev->reg_state != NETREG_UNINITIALIZED);	\
++	((dev)->devlink_port = (_devlink_port));		\
++})
++
+ static inline bool netif_elide_gro(const struct net_device *dev)
+ {
+ 	if (!(dev->features & NETIF_F_GRO) || dev->xdp_prog)
+@@ -2785,6 +2803,7 @@ enum netdev_cmd {
+ 	NETDEV_PRE_TYPE_CHANGE,
+ 	NETDEV_POST_TYPE_CHANGE,
+ 	NETDEV_POST_INIT,
++	NETDEV_PRE_UNINIT,
+ 	NETDEV_RELEASE,
+ 	NETDEV_NOTIFY_PEERS,
+ 	NETDEV_JOIN,
+diff --git a/net/core/dev.c b/net/core/dev.c
+index fa53830d0683..1b45aa5c976e 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -1621,10 +1621,10 @@ const char *netdev_cmd_to_name(enum netdev_cmd cmd)
+ 	N(UP) N(DOWN) N(REBOOT) N(CHANGE) N(REGISTER) N(UNREGISTER)
+ 	N(CHANGEMTU) N(CHANGEADDR) N(GOING_DOWN) N(CHANGENAME) N(FEAT_CHANGE)
+ 	N(BONDING_FAILOVER) N(PRE_UP) N(PRE_TYPE_CHANGE) N(POST_TYPE_CHANGE)
+-	N(POST_INIT) N(RELEASE) N(NOTIFY_PEERS) N(JOIN) N(CHANGEUPPER)
+-	N(RESEND_IGMP) N(PRECHANGEMTU) N(CHANGEINFODATA) N(BONDING_INFO)
+-	N(PRECHANGEUPPER) N(CHANGELOWERSTATE) N(UDP_TUNNEL_PUSH_INFO)
+-	N(UDP_TUNNEL_DROP_INFO) N(CHANGE_TX_QUEUE_LEN)
++	N(POST_INIT) N(PRE_UNINIT) N(RELEASE) N(NOTIFY_PEERS) N(JOIN)
++	N(CHANGEUPPER) N(RESEND_IGMP) N(PRECHANGEMTU) N(CHANGEINFODATA)
++	N(BONDING_INFO) N(PRECHANGEUPPER) N(CHANGELOWERSTATE)
++	N(UDP_TUNNEL_PUSH_INFO) N(UDP_TUNNEL_DROP_INFO) N(CHANGE_TX_QUEUE_LEN)
+ 	N(CVLAN_FILTER_PUSH_INFO) N(CVLAN_FILTER_DROP_INFO)
+ 	N(SVLAN_FILTER_PUSH_INFO) N(SVLAN_FILTER_DROP_INFO)
+ 	N(PRE_CHANGEADDR) N(OFFLOAD_XSTATS_ENABLE) N(OFFLOAD_XSTATS_DISABLE)
+@@ -10103,6 +10103,7 @@ int register_netdevice(struct net_device *dev)
+ 	return ret;
+ 
+ err_uninit:
++	call_netdevice_notifiers(NETDEV_PRE_UNINIT, dev);
+ 	if (dev->netdev_ops->ndo_uninit)
+ 		dev->netdev_ops->ndo_uninit(dev);
+ 	if (dev->priv_destructor)
+@@ -10856,6 +10857,8 @@ void unregister_netdevice_many(struct list_head *head)
+ 		netdev_name_node_alt_flush(dev);
+ 		netdev_name_node_free(dev->name_node);
+ 
++		call_netdevice_notifiers(NETDEV_PRE_UNINIT, dev);
++
+ 		if (dev->netdev_ops->ndo_uninit)
+ 			dev->netdev_ops->ndo_uninit(dev);
+ 
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index e49ec10d613f..ee14520d4690 100644
+index ee14520d4690..87aa39bc481e 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -1278,7 +1278,8 @@ devlink_nl_port_function_attrs_put(struct sk_buff *msg, struct devlink_port *por
- static int devlink_nl_port_fill(struct sk_buff *msg,
- 				struct devlink_port *devlink_port,
- 				enum devlink_command cmd, u32 portid, u32 seq,
--				int flags, struct netlink_ext_ack *extack)
-+				int flags, struct netlink_ext_ack *extack,
-+				bool rtnl_held)
- {
- 	struct devlink *devlink = devlink_port->devlink;
- 	void *hdr;
-@@ -1293,7 +1294,8 @@ static int devlink_nl_port_fill(struct sk_buff *msg,
- 		goto nla_put_failure;
+@@ -71,6 +71,7 @@ struct devlink {
+ 	refcount_t refcount;
+ 	struct completion comp;
+ 	struct rcu_head rcu;
++	struct notifier_block netdevice_nb;
+ 	char priv[] __aligned(NETDEV_ALIGN);
+ };
  
- 	/* Hold rtnl lock while accessing port's netdev attributes. */
--	rtnl_lock();
-+	if (!rtnl_held)
-+		rtnl_lock();
- 	spin_lock_bh(&devlink_port->type_lock);
- 	if (nla_put_u16(msg, DEVLINK_ATTR_PORT_TYPE, devlink_port->type))
- 		goto nla_put_failure_type_locked;
-@@ -1321,7 +1323,8 @@ static int devlink_nl_port_fill(struct sk_buff *msg,
- 			goto nla_put_failure_type_locked;
- 	}
- 	spin_unlock_bh(&devlink_port->type_lock);
--	rtnl_unlock();
-+	if (!rtnl_held)
-+		rtnl_unlock();
- 	if (devlink_nl_port_attrs_put(msg, devlink_port))
- 		goto nla_put_failure;
- 	if (devlink_nl_port_function_attrs_put(msg, devlink_port, extack))
-@@ -1336,14 +1339,15 @@ static int devlink_nl_port_fill(struct sk_buff *msg,
- 
- nla_put_failure_type_locked:
- 	spin_unlock_bh(&devlink_port->type_lock);
--	rtnl_unlock();
-+	if (!rtnl_held)
-+		rtnl_unlock();
- nla_put_failure:
- 	genlmsg_cancel(msg, hdr);
- 	return -EMSGSIZE;
+@@ -9615,6 +9616,9 @@ void devlink_set_features(struct devlink *devlink, u64 features)
  }
+ EXPORT_SYMBOL_GPL(devlink_set_features);
  
--static void devlink_port_notify(struct devlink_port *devlink_port,
--				enum devlink_command cmd)
-+static void __devlink_port_notify(struct devlink_port *devlink_port,
-+				  enum devlink_command cmd, bool rtnl_held)
- {
- 	struct devlink *devlink = devlink_port->devlink;
- 	struct sk_buff *msg;
-@@ -1358,7 +1362,8 @@ static void devlink_port_notify(struct devlink_port *devlink_port,
- 	if (!msg)
- 		return;
- 
--	err = devlink_nl_port_fill(msg, devlink_port, cmd, 0, 0, 0, NULL);
-+	err = devlink_nl_port_fill(msg, devlink_port, cmd, 0, 0, 0, NULL,
-+				   rtnl_held);
- 	if (err) {
- 		nlmsg_free(msg);
- 		return;
-@@ -1368,6 +1373,12 @@ static void devlink_port_notify(struct devlink_port *devlink_port,
- 				0, DEVLINK_MCGRP_CONFIG, GFP_KERNEL);
- }
- 
-+static void devlink_port_notify(struct devlink_port *devlink_port,
-+				enum devlink_command cmd)
-+{
-+	__devlink_port_notify(devlink_port, cmd, false);
-+}
++static int devlink_netdevice_event(struct notifier_block *nb,
++				   unsigned long event, void *ptr);
 +
- static void devlink_rate_notify(struct devlink_rate *devlink_rate,
- 				enum devlink_command cmd)
- {
-@@ -1531,7 +1542,7 @@ static int devlink_nl_cmd_port_get_doit(struct sk_buff *skb,
- 
- 	err = devlink_nl_port_fill(msg, devlink_port, DEVLINK_CMD_PORT_NEW,
- 				   info->snd_portid, info->snd_seq, 0,
--				   info->extack);
-+				   info->extack, false);
- 	if (err) {
- 		nlmsg_free(msg);
- 		return err;
-@@ -1561,7 +1572,8 @@ static int devlink_nl_cmd_port_get_dumpit(struct sk_buff *msg,
- 						   DEVLINK_CMD_NEW,
- 						   NETLINK_CB(cb->skb).portid,
- 						   cb->nlh->nlmsg_seq,
--						   NLM_F_MULTI, cb->extack);
-+						   NLM_F_MULTI, cb->extack,
-+						   false);
- 			if (err) {
- 				devl_unlock(devlink);
- 				devlink_put(devlink);
-@@ -1773,7 +1785,8 @@ static int devlink_port_new_notify(struct devlink *devlink,
- 	}
- 
- 	err = devlink_nl_port_fill(msg, devlink_port, DEVLINK_CMD_NEW,
--				   info->snd_portid, info->snd_seq, 0, NULL);
-+				   info->snd_portid, info->snd_seq, 0, NULL,
-+				   false);
- 	if (err)
- 		goto out;
- 
-@@ -10033,7 +10046,7 @@ static void devlink_port_type_netdev_checks(struct devlink_port *devlink_port,
- 
- static void __devlink_port_type_set(struct devlink_port *devlink_port,
- 				    enum devlink_port_type type,
--				    void *type_dev)
-+				    void *type_dev, bool rtnl_held)
- {
- 	struct net_device *netdev = type_dev;
- 
-@@ -10060,7 +10073,7 @@ static void __devlink_port_type_set(struct devlink_port *devlink_port,
- 		break;
- 	}
- 	spin_unlock_bh(&devlink_port->type_lock);
--	devlink_port_notify(devlink_port, DEVLINK_CMD_PORT_NEW);
-+	__devlink_port_notify(devlink_port, DEVLINK_CMD_PORT_NEW, rtnl_held);
- }
- 
  /**
-@@ -10077,7 +10090,8 @@ void devlink_port_type_eth_set(struct devlink_port *devlink_port,
- 			 "devlink port type for port %d set to Ethernet without a software interface reference, device type not supported by the kernel?\n",
- 			 devlink_port->index);
+  *	devlink_alloc_ns - Allocate new devlink instance resources
+  *	in specific namespace
+@@ -9645,10 +9649,13 @@ struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
  
--	__devlink_port_type_set(devlink_port, DEVLINK_PORT_TYPE_ETH, netdev);
-+	__devlink_port_type_set(devlink_port, DEVLINK_PORT_TYPE_ETH, netdev,
-+				false);
+ 	ret = xa_alloc_cyclic(&devlinks, &devlink->index, devlink, xa_limit_31b,
+ 			      &last_id, GFP_KERNEL);
+-	if (ret < 0) {
+-		kfree(devlink);
+-		return NULL;
+-	}
++	if (ret < 0)
++		goto err_xa_alloc;
++
++	devlink->netdevice_nb.notifier_call = devlink_netdevice_event;
++	ret = register_netdevice_notifier_net(net, &devlink->netdevice_nb);
++	if (ret)
++		goto err_register_netdevice_notifier;
+ 
+ 	devlink->dev = dev;
+ 	devlink->ops = ops;
+@@ -9675,6 +9682,12 @@ struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
+ 	init_completion(&devlink->comp);
+ 
+ 	return devlink;
++
++err_register_netdevice_notifier:
++	xa_erase(&devlinks, devlink->index);
++err_xa_alloc:
++	kfree(devlink);
++	return NULL;
  }
- EXPORT_SYMBOL_GPL(devlink_port_type_eth_set);
+ EXPORT_SYMBOL_GPL(devlink_alloc_ns);
  
-@@ -10090,7 +10104,8 @@ EXPORT_SYMBOL_GPL(devlink_port_type_eth_set);
- void devlink_port_type_ib_set(struct devlink_port *devlink_port,
- 			      struct ib_device *ibdev)
- {
--	__devlink_port_type_set(devlink_port, DEVLINK_PORT_TYPE_IB, ibdev);
-+	__devlink_port_type_set(devlink_port, DEVLINK_PORT_TYPE_IB, ibdev,
-+				false);
- }
- EXPORT_SYMBOL_GPL(devlink_port_type_ib_set);
+@@ -9828,6 +9841,10 @@ void devlink_free(struct devlink *devlink)
+ 	WARN_ON(!list_empty(&devlink->port_list));
  
-@@ -10101,7 +10116,8 @@ EXPORT_SYMBOL_GPL(devlink_port_type_ib_set);
-  */
- void devlink_port_type_clear(struct devlink_port *devlink_port)
- {
--	__devlink_port_type_set(devlink_port, DEVLINK_PORT_TYPE_NOTSET, NULL);
-+	__devlink_port_type_set(devlink_port, DEVLINK_PORT_TYPE_NOTSET, NULL,
-+				false);
+ 	xa_destroy(&devlink->snapshot_ids);
++
++	unregister_netdevice_notifier_net(devlink_net(devlink),
++					  &devlink->netdevice_nb);
++
+ 	xa_erase(&devlinks, devlink->index);
+ 
+ 	kfree(devlink);
+@@ -10121,6 +10138,56 @@ void devlink_port_type_clear(struct devlink_port *devlink_port)
  }
  EXPORT_SYMBOL_GPL(devlink_port_type_clear);
  
++static int devlink_netdevice_event(struct notifier_block *nb,
++				   unsigned long event, void *ptr)
++{
++	struct net_device *netdev = netdev_notifier_info_to_dev(ptr);
++	struct devlink_port *devlink_port = netdev->devlink_port;
++	struct devlink *devlink;
++
++	devlink = container_of(nb, struct devlink, netdevice_nb);
++
++	if (!devlink_port || devlink_port->devlink != devlink)
++		return NOTIFY_OK;
++
++	switch (event) {
++	case NETDEV_POST_INIT:
++		/* Set the type but not netdev pointer. It is going to be set
++		 * later on by NETDEV_REGISTER event. Happens once during
++		 * netdevice register
++		 */
++		__devlink_port_type_set(devlink_port, DEVLINK_PORT_TYPE_ETH,
++					NULL, true);
++		break;
++	case NETDEV_REGISTER:
++		/* Set the netdev on top of previously set type. Note this
++		 * event happens also during net namespace change so here
++		 * we take into account netdev pointer appearing in this
++		 * namespace.
++		 */
++		__devlink_port_type_set(devlink_port, DEVLINK_PORT_TYPE_ETH,
++					netdev, true);
++		break;
++	case NETDEV_UNREGISTER:
++		/* Clear netdev pointer, but not the type. This event happens
++		 * also during net namespace change so we need to clear
++		 * pointer to netdev that is going to another net namespace.
++		 */
++		__devlink_port_type_set(devlink_port, DEVLINK_PORT_TYPE_ETH,
++					NULL, true);
++		break;
++	case NETDEV_PRE_UNINIT:
++		/* Clear the type and the netdev pointer. Happens one during
++		 * netdevice unregister.
++		 */
++		__devlink_port_type_set(devlink_port, DEVLINK_PORT_TYPE_NOTSET,
++					NULL, true);
++		break;
++	}
++
++	return NOTIFY_OK;
++}
++
+ static int __devlink_port_attrs_set(struct devlink_port *devlink_port,
+ 				    enum devlink_port_flavour flavour)
+ {
 -- 
 2.37.1
 
