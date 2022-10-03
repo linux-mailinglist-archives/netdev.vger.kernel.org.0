@@ -2,151 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0186E5F2BBB
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 10:26:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 744A85F2BAC
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 10:24:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231388AbiJCI0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 04:26:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36860 "EHLO
+        id S231143AbiJCIYe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 04:24:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229770AbiJCI0V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 04:26:21 -0400
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on20619.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e83::619])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEABB23392;
-        Mon,  3 Oct 2022 01:00:06 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MrbMilKgCmmyy9vxPwY1lMFaLZ/vL22ySH6W7wYgLK7+vkl/gBBoQ2FwDamEsldcJqnxXeobvDeIVIAMh1EuIinDxJgp2WOiTpYunZZVGeF135DFYd/u9bBfAEKGfoRb0JGqjnpzgXegpnfuBo2DG8/Fwmb2BAldh4Xo//acQLKLY92Jy2yrh8ff9oEuvrQOGkmmtXPiFapbG1QohAOltmUvwzyvGG5stW+SHkv851zDNCPT/uf9JXwemcfjAlZ1iSPpmeEbvT/COsq3QB3Dlj2f+rZdP1B2aiuhwIC+4I/8pRXBqGBvAmJUGD9qhxkyiJOo3CiR3xOFk2PeEOG0jw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BwJRc/I2+eCjgkQidCQEwBwTjXycCDCY3M+z/4eY52U=;
- b=OxXPvfg1AD7oBDjy17clGZeu3q9m1iaqOYzpgQMN/O2A08NscOKfICRggl+bWAfNS46DbAvZLhl/iY0eTVeH1AT78hx7+QViOZVTOQUoX6+skpd+oVkc8L0evKk+LKQRjMOjZYmNzXMjQdn/u0qN9jXFQBPNhWFCOZRfpb/foQ7nDQzbBLLAYo5lK8BU4dniZs4/dcZns33/IMwOELwzYXQav1dPRDVSj/uEr+xDrNnFCMbnlEj6a+B/91zZQe5V2kR4hBlNwkchLiH9+WTCXcCOQATlB2fUNJo5ZSOFn4NpXW1AuQQyOSa5opi5iOksaxr2881Utne2j1UAUWUwRQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=lists.infradead.org
- smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BwJRc/I2+eCjgkQidCQEwBwTjXycCDCY3M+z/4eY52U=;
- b=KEQCh7975sd1HQ1Bc2SAK5bS1HHZcD/mRpQCGpFte0gkd+KR2rlF5h9nAp+UDvMw05M8GRP6zsewVscavIVZ7yYaKfs5kmur53aTm4smDEEDDKX9g6vKvd9vZfJPgKdWCVaKjLxuJAlbiybyPLQ/pYlpPiSXrDQ4YBZV5qi+Gj3JOMYulxLEXMpNbvQiMa/hrmFrr0A/GM016xqR3ZcLwv7sKjUWQ/MF+97LXT3N2Qb7xVUhw56Dcgkn9AIPrXVZm5UQhm2qRGzlyBLoXrO6ucYvKaRTWt/CsoSVX25hPzok+/7ZdgOGrGmzJYy4NPtn9fiac27ew5s+e+QazYd4IQ==
-Received: from DM6PR02CA0161.namprd02.prod.outlook.com (2603:10b6:5:332::28)
- by DM4PR12MB6302.namprd12.prod.outlook.com (2603:10b6:8:a4::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.19; Mon, 3 Oct
- 2022 07:58:57 +0000
-Received: from DM6NAM11FT079.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:332:cafe::90) by DM6PR02CA0161.outlook.office365.com
- (2603:10b6:5:332::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.24 via Frontend
- Transport; Mon, 3 Oct 2022 07:58:57 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- DM6NAM11FT079.mail.protection.outlook.com (10.13.173.4) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5676.17 via Frontend Transport; Mon, 3 Oct 2022 07:58:57 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Mon, 3 Oct 2022
- 00:58:53 -0700
-Received: from yaviefel (10.126.230.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Mon, 3 Oct 2022
- 00:58:49 -0700
-References: <20220929185207.2183473-1-daniel.machon@microchip.com>
- <20220929185207.2183473-2-daniel.machon@microchip.com>
- <87leq1uiyc.fsf@nvidia.com> <20220930175452.1937dadd@kernel.org>
-User-agent: mu4e 1.6.6; emacs 28.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Petr Machata <petrm@nvidia.com>,
-        Daniel Machon <daniel.machon@microchip.com>,
-        <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <maxime.chevallier@bootlin.com>, <thomas.petazzoni@bootlin.com>,
-        <edumazet@google.com>, <pabeni@redhat.com>,
-        <lars.povlsen@microchip.com>, <Steen.Hegelund@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, <joe@perches.com>,
-        <linux@armlinux.org.uk>, <horatiu.vultur@microchip.com>,
-        <Julia.Lawall@inria.fr>, <vladimir.oltean@nxp.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH net-next v2 1/6] net: dcb: add new pcp selector to app
- object
-Date:   Mon, 3 Oct 2022 09:52:59 +0200
-In-Reply-To: <20220930175452.1937dadd@kernel.org>
-Message-ID: <87pmf9xrrd.fsf@nvidia.com>
+        with ESMTP id S230510AbiJCIYA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 04:24:00 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E0321B78B
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 00:58:36 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id i21-20020a056e021d1500b002f9e4f8eab7so1045121ila.7
+        for <netdev@vger.kernel.org>; Mon, 03 Oct 2022 00:58:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=r2viLVPjnSHunJS5AMToNZyoSKI7yDr8nQFXgPohi0Q=;
+        b=SVCOYiIUqTRQN/Y+Yr9Qih4/oke23ncRKENOZctwtVWUEn2fInnUUBXxJVq1u1oKOn
+         gItKM8QwtkTH+HeA8XizdICFuIIXQ/omROfvsxO4ajFD/Az+VO3/CsukcYivXHck3hA/
+         VEsxnu/OsDImyN7Mxrd5jwGx/rxI/QxwIM9SsI/LBFy6gQL99TmUKB9iWKKh/QReYNIR
+         ViOd3EH2lKD2ryBZeQsKBjAizG8ztccLy/Uogd0svS0CecTxzAUBoH/lGD+iOFtmYkVE
+         cf52ydhe/t1DC3+wzN4HLDwIbjJYWi+OBAATla8KY5bHnASI9SrzKVAID+goF2GT2wSh
+         QR/g==
+X-Gm-Message-State: ACrzQf3YAseb1wUtewXH6tMIg+ut8xNZJA5pxKWOTg9g4PoVXq/p2+x5
+        GDx8JZmqOw3xHFRogfZWsiSitBKx5XQCIW7KZZj8i3uzw5aE
+X-Google-Smtp-Source: AMsMyM5DvDjqQ2hB5GvaVhDBENn7N+ou2fyn/cEIKaByb2wSXTPS1saI5r7mYAK6fKn0hKlI4A8xY+5ZPUvnXF8kAtm7s59/5iyd
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT079:EE_|DM4PR12MB6302:EE_
-X-MS-Office365-Filtering-Correlation-Id: a03366ee-4b9f-49e8-4c94-08daa5152021
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ifD2mQKH9rJNXQbhUjpCYojIq28W8coKY1aYliVycpBRaUYTs/cKy1S75RoUxe9WIy6MTWib6z0mXHWEmnmo/j4j+dyAI0gW5eCZpFNLRz/Z27ofzAUh0OXnPBpRWjK4G5JABpYEJvPEZlIAoVYkhjAtSCt3p7EB9ZB4DJhraYV5xDXEaFmWwr3SXe+FNbkrQy1mTk/+ozye82OW3X0iLpO3SvRV78hVzwgk2bl6N3cEK2VNqIkdVsC9fzM30XA5uzRedFqIaTa1cxPRk8qDUm+zR/+awN3l6pmVGJc/zuJV2r0TAbrfw63T7Z/c1vaOppljFjnQ8m1RsKU7oX42FG3HnUvABxxWpg/DmNhI+6b2Nhl+fppKgO9apdWmSl7Ja2Iez6UmoKbs/ejiMYwcZ/OgB80/rig4O1M3WTbx21FfdqiLsfKCXjIwCadXAzA1chowmHPCuaGVoKTJ4X0URQHxKM2YDJiFdnWspj3ndgsm/LBQaSxVG5PDIL1gMQK/LwX6UGX0umei4ak2rhHY++8gjbBQKP1tgwy4O8KPHqUTGxlGVQxrBB1zd6jJpSC4+HTkqhjIH2WDvh/7Y5hCjxQ0y9iP6W6d8yVKvZ5WzuUBe4uX9Y8nF9gVz3NsrVRDFYKva0iaHpeI29lEroQsV9TvUMuRonQ11tIhYYeyD9cLy8b5rYQCiVZlSdkvK5WGDm7y/oj32OIjh+olUymf8SrNuwkGWaU3D70vkBdB1WpyWvnS5q/uaa/mWmL0h3prUkdWs0URyyoVUV7+722K1Q==
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(376002)(39860400002)(136003)(396003)(346002)(451199015)(36840700001)(40470700004)(46966006)(2906002)(6916009)(54906003)(40480700001)(26005)(36756003)(40460700003)(86362001)(82740400003)(7636003)(356005)(36860700001)(70206006)(70586007)(41300700001)(4326008)(8936002)(7416002)(336012)(8676002)(5660300002)(47076005)(2616005)(16526019)(83380400001)(478600001)(316002)(82310400005)(426003)(186003)(6666004);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Oct 2022 07:58:57.6733
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a03366ee-4b9f-49e8-4c94-08daa5152021
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT079.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6302
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        SPF_HELO_PASS,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6638:2402:b0:35a:1e83:e43b with SMTP id
+ z2-20020a056638240200b0035a1e83e43bmr9870205jat.146.1664783853237; Mon, 03
+ Oct 2022 00:57:33 -0700 (PDT)
+Date:   Mon, 03 Oct 2022 00:57:33 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000333b8205ea1cb208@google.com>
+Subject: [syzbot] general protection fault in mpls_dev_notify
+From:   syzbot <syzbot+8bc17b3c5f031a4f9c7a@syzkaller.appspotmail.com>
+To:     bigeasy@linutronix.de, bpoirier@nvidia.com, davem@davemloft.net,
+        edumazet@google.com, gongruiqi1@huawei.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
+        victor.erminpour@oracle.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
-Jakub Kicinski <kuba@kernel.org> writes:
+syzbot found the following issue on:
 
-> On Fri, 30 Sep 2022 14:20:50 +0200 Petr Machata wrote:
->> > @@ -1495,7 +1536,7 @@ static int dcbnl_ieee_set(struct net_device *netdev, struct nlmsghdr *nlh,
->> >  		nla_for_each_nested(attr, ieee[DCB_ATTR_IEEE_APP_TABLE], rem) {
->> >  			struct dcb_app *app_data;
->> >
->> > -			if (nla_type(attr) != DCB_ATTR_IEEE_APP)
->> > +			if (!dcbnl_app_attr_type_validate(nla_type(attr)))  
->> 
->> Oh no! It wasn't validating the DCB_ATTR_IEEE_APP_TABLE nest against a
->> policy! Instead it was just skipping whatever is not DCB_ATTR_IEEE_APP.
->> 
->> So userspace was permitted to shove random crap down here, and it would
->> just quietly be ignored. We can't start reinterpreting some of that crap
->> as information. We also can't start bouncing it.
->
-> Are you saying that we can't start interpreting new attr types?
->
-> "Traditionally" netlink ignored new attr types so from that perspective
-> starting to interpret new types is pretty "run of the mill" for netlink.
-> IOW *_deprecated() parsing routines do not use NL_VALIDATE_MAXTYPE.
->
-> That does put netlink in a bit of a special category when it comes to
-> input validation, but really putting in a random but valid attr is much
-> harder than not initializing a struct member. Is there user space which
-> does that?
->
-> Sorry if I'm misinterpreting the situation.
+HEAD commit:    87dbdc230d16 libbpf: Don't require full struct enum64 in U..
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=12b84b40880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=42e1b6f9cf3a9e87
+dashboard link: https://syzkaller.appspot.com/bug?extid=8bc17b3c5f031a4f9c7a
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-I assumed the policy is much more strict with changes like this. If you
-think it's OK, I'm fine with it as well.
+Unfortunately, I don't have any reproducer for this issue yet.
 
-The userspace (lldpad in particular) is doing the opposite thing BTW:
-assuming everything in the nest is a DCB_ATTR_IEEE_APP. When we start
-emitting the new attribute, it will get confused.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+8bc17b3c5f031a4f9c7a@syzkaller.appspotmail.com
+
+bond0 (unregistering): (slave bond_slave_1): Releasing backup interface
+bond0 (unregistering): (slave bond_slave_0): Releasing backup interface
+bond0 (unregistering): Released all slaves
+general protection fault, probably for non-canonical address 0xdffffc0000000004: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000020-0x0000000000000027]
+CPU: 0 PID: 1188 Comm: kworker/u4:5 Not tainted 6.0.0-rc3-syzkaller-00907-g87dbdc230d16 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 08/26/2022
+Workqueue: netns cleanup_net
+RIP: 0010:mpls_dev_sysctl_unregister net/mpls/af_mpls.c:1440 [inline]
+RIP: 0010:mpls_dev_notify+0x5b1/0x9b0 net/mpls/af_mpls.c:1653
+Code: 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 d2 03 00 00 48 b8 00 00 00 00 00 fc ff df 48 8b 6b 18 48 8d 7d 20 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 e4 03 00 00 4c 8b 75 20 48 89 ef e8 d9 8f dd ff
+RSP: 0018:ffffc900053ef988 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: ffff888025615480 RCX: 0000000000000000
+RDX: 0000000000000004 RSI: ffffffff892de450 RDI: 0000000000000020
+RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000000 R12: ffff888021f38378
+R13: ffff88804c6b0000 R14: 0000000000000000 R15: ffff888021f38000
+FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f24d03faa70 CR3: 0000000075674000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:87
+ call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1945
+ call_netdevice_notifiers_extack net/core/dev.c:1983 [inline]
+ call_netdevice_notifiers net/core/dev.c:1997 [inline]
+ unregister_netdevice_many+0xa62/0x1980 net/core/dev.c:10860
+ default_device_exit_batch+0x449/0x590 net/core/dev.c:11354
+ ops_exit_list+0x125/0x170 net/core/net_namespace.c:168
+ cleanup_net+0x4ea/0xb00 net/core/net_namespace.c:595
+ process_one_work+0x991/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e4/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:mpls_dev_sysctl_unregister net/mpls/af_mpls.c:1440 [inline]
+RIP: 0010:mpls_dev_notify+0x5b1/0x9b0 net/mpls/af_mpls.c:1653
+Code: 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 d2 03 00 00 48 b8 00 00 00 00 00 fc ff df 48 8b 6b 18 48 8d 7d 20 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 e4 03 00 00 4c 8b 75 20 48 89 ef e8 d9 8f dd ff
+RSP: 0018:ffffc900053ef988 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: ffff888025615480 RCX: 0000000000000000
+RDX: 0000000000000004 RSI: ffffffff892de450 RDI: 0000000000000020
+RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000000 R12: ffff888021f38378
+R13: ffff88804c6b0000 R14: 0000000000000000 R15: ffff888021f38000
+FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005587a8b96950 CR3: 00000000257b2000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	48 89 fa             	mov    %rdi,%rdx
+   3:	48 c1 ea 03          	shr    $0x3,%rdx
+   7:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1)
+   b:	0f 85 d2 03 00 00    	jne    0x3e3
+  11:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+  18:	fc ff df
+  1b:	48 8b 6b 18          	mov    0x18(%rbx),%rbp
+  1f:	48 8d 7d 20          	lea    0x20(%rbp),%rdi
+  23:	48 89 fa             	mov    %rdi,%rdx
+  26:	48 c1 ea 03          	shr    $0x3,%rdx
+* 2a:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
+  2e:	0f 85 e4 03 00 00    	jne    0x418
+  34:	4c 8b 75 20          	mov    0x20(%rbp),%r14
+  38:	48 89 ef             	mov    %rbp,%rdi
+  3b:	e8 d9 8f dd ff       	callq  0xffdd9019
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
