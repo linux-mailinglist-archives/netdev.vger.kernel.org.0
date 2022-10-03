@@ -2,51 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 704165F39BA
-	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 01:20:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B127A5F39D0
+	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 01:26:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229526AbiJCXUn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 19:20:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46670 "EHLO
+        id S229639AbiJCX0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 19:26:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiJCXUl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 19:20:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADAA517067;
-        Mon,  3 Oct 2022 16:20:40 -0700 (PDT)
+        with ESMTP id S229626AbiJCXZ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 19:25:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0B9C2A972
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 16:25:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6992FB8167C;
-        Mon,  3 Oct 2022 23:20:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2C05BC433D6;
-        Mon,  3 Oct 2022 23:20:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 877D961070
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 23:25:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9263C433C1;
+        Mon,  3 Oct 2022 23:25:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664839238;
-        bh=k425Xjxkin7H+lrC5qeqR8mR6OOZLhlcwBQDRdFJ83k=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=S77kczZywGXNkYCfG3CfgW+7jmUuej/hZE4JVzRjgpwFYV6JVSjtCcYP4BYLzvRB4
-         GK7axcN9p4Ewi2xBZhXPblv3Zm/R/EMeTFWgiI0ATBPMsFtW2o9qk9PQudLHlTr7v6
-         81uuxip79gZZjWVsG1/Kk3aQT03qbi3WGMvrfZoiApk07mvnrYr+8/BPsyVmNL/HfM
-         QCv65vmD6RFYz9V1uWjgz4qXK1WzhJOVJpo+YO8kFiv6YHMYn3qvyHLiUtaVYvp4j+
-         6cknYjbEyYLQ3ZM7tygXiXpRXPj3HvMCAaXSxVDLB7eaQo4FjYU3Og4CosruGm0x9S
-         /UMSFK7OJK2og==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 100E5E49FA3;
-        Mon,  3 Oct 2022 23:20:38 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1664839557;
+        bh=sa6x2Y4X6FDtYWE8yoh+ksR16giNzpHhvQbHrMQesk0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MKfIS3GoYOvkfkaqvc+r1p8Pw+wURwoyotK9SroARKWfBpu/+q9ZQOwOlpgpukFoX
+         ttsT+NmvDqAKE3XgmzXPiyMMQvpAuaNM2Pztfll4w8KM8xGxk462taC9ZJn0DL2pG6
+         SeQzlvfA17I0Zicth+3ADGG9GmI4IkNIFXHFlt0psnIqItZ6vpoTbH8T2ps1z1nQnI
+         zPOf3PeBb+bRplvZrp5bd7e2EjjXolJktJOiEF6jlRKeWCMF97bbd3ugsEYcnC+VhC
+         4R/aM1vgL/PNqRIuFGdP29org0MWgah29EDAqPIKpQQf87a+0VfjgXUZVOYcE7PTAT
+         OKadKIPbVxmvw==
+Date:   Mon, 3 Oct 2022 16:25:56 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Menglong Dong <imagedong@tencent.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Petr Machata <petrm@nvidia.com>
+Subject: Re: [PATCH 0/4] net: drop netif_attrmask_next*()
+Message-ID: <20221003162556.10a80858@kernel.org>
+In-Reply-To: <YzsluT4ET0zyjCtp@yury-laptop>
+References: <20221002151702.3932770-1-yury.norov@gmail.com>
+        <20221003095048.1a683ba7@kernel.org>
+        <YzsluT4ET0zyjCtp@yury-laptop>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: bpf-next 2022-10-03
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166483923806.13941.4495861277266405348.git-patchwork-notify@kernel.org>
-Date:   Mon, 03 Oct 2022 23:20:38 +0000
-References: <20221003194915.11847-1-daniel@iogearbox.net>
-In-Reply-To: <20221003194915.11847-1-daniel@iogearbox.net>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, ast@kernel.org, andrii@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -56,28 +59,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This pull request was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Mon,  3 Oct 2022 21:49:15 +0200 you wrote:
-> Hi David, hi Jakub, hi Paolo, hi Eric,
+On Mon, 3 Oct 2022 11:11:05 -0700 Yury Norov wrote:
+> On Mon, Oct 03, 2022 at 09:50:48AM -0700, Jakub Kicinski wrote:
+> > On Sun,  2 Oct 2022 08:16:58 -0700 Yury Norov wrote:  
+> > > netif_attrmask_next_and() generates warnings if CONFIG_DEBUG_PER_CPU_MAPS
+> > > is enabled.  
+> > 
+> > Could you describe the nature of the warning? Is it a false positive 
+> > or a legit warning?
+> > 
+> > If the former perhaps we should defer until after the next merge window.  
 > 
-> The following pull-request contains BPF updates for your *net-next* tree.
+> The problem is that netif_attrmask_next_and() is called with
+> n == nr_cpu_ids-1, which triggers cpu_max_bits_warn() after this:
 > 
-> We've added 143 non-merge commits during the last 27 day(s) which contain
-> a total of 151 files changed, 8321 insertions(+), 1402 deletions(-).
-> 
-> [...]
+> https://lore.kernel.org/netdev/20220926103437.322f3c6c@kernel.org/
 
-Here is the summary with links:
-  - pull-request: bpf-next 2022-10-03
-    https://git.kernel.org/netdev/net-next/c/a08d97a1935b
+I see. Is that patch merged and on it's way? Perhaps we can just revert
+it and try again after the merge window?
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+> Underlying bitmap layer handles this correctly, so this wouldn't make
+> problems for people. But this is not a false-positive.
