@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA7345F32F2
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 17:55:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62B065F32DF
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 17:47:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229639AbiJCPy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 11:54:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46922 "EHLO
+        id S229620AbiJCPr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 11:47:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229511AbiJCPy5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 11:54:57 -0400
-Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 594A295B0;
-        Mon,  3 Oct 2022 08:54:55 -0700 (PDT)
+        with ESMTP id S229548AbiJCPrY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 11:47:24 -0400
+Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6D402EF01;
+        Mon,  3 Oct 2022 08:47:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1664812495; x=1696348495;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=JYNeyQRFj4W4/UHAdKZYi73ciakVUoIyk26IBToySv8=;
-  b=KjQv5T0Ch+vmFP+7f2SAh/qpNsI0j+UpIyu5hwZ5TixdscJheLWphT1c
-   NEX1tcnEXkS2OyEqJdtcw1hVOnnGzvlf6apfrVyhY3d2qfp/aUgX/900S
-   nPSvwhGWkw81LinYPJvPuEB/+QrIH2e/e+un/cKtebjgALBV6oi4KXdDK
-   4=;
+  t=1664812043; x=1696348043;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=JpC+VIgFCKMP4Dco+OF4SIAfPdUi+cxpvQFmjgko8JU=;
+  b=fgps/CbfIDrLPg7qcpBna1eNB7zITILVpSPxmY0mG+3cncqRIDiLkfPP
+   Vk8XsAUYk+xgUyrV8Sv8g+lgrZbEqec/aeqXU0ry87oNN0QkAjwQ7FOwk
+   u4ckZlWMfJwA5ufYqTS2afq8Es1ux1WdAQ4PIKJERB5hs2F5XXP8nJ8Yl
+   g=;
 X-IronPort-AV: E=Sophos;i="5.93,365,1654560000"; 
-   d="scan'208";a="1060297196"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-7a21ed79.us-east-1.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Oct 2022 15:44:56 +0000
+   d="scan'208";a="265513457"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1d-54a073b7.us-east-1.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Oct 2022 15:45:03 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1d-7a21ed79.us-east-1.amazon.com (Postfix) with ESMTPS id 2A10C22237F;
-        Mon,  3 Oct 2022 15:44:52 +0000 (UTC)
+        by email-inbound-relay-iad-1d-54a073b7.us-east-1.amazon.com (Postfix) with ESMTPS id DBBB68FF04;
+        Mon,  3 Oct 2022 15:44:59 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Mon, 3 Oct 2022 15:44:52 +0000
+ id 15.0.1497.38; Mon, 3 Oct 2022 15:44:59 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.161.69) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Mon, 3 Oct 2022 15:44:47 +0000
+ Mon, 3 Oct 2022 15:44:53 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -48,20 +48,22 @@ To:     "David S. Miller" <davem@davemloft.net>,
 CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
         <netdev@vger.kernel.org>, <syzkaller-bugs@googlegroups.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH RESEND v3 net 0/5] tcp/udp: Fix memory leaks and data races around IPV6_ADDRFORM.
-Date:   Mon, 3 Oct 2022 08:44:20 -0700
-Message-ID: <20221003154425.49458-1-kuniyu@amazon.com>
+        <linux-kernel@vger.kernel.org>, syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH RESEND v3 net 1/5] tcp/udp: Fix memory leak in ipv6_renew_options().
+Date:   Mon, 3 Oct 2022 08:44:21 -0700
+Message-ID: <20221003154425.49458-2-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20221003154425.49458-1-kuniyu@amazon.com>
+References: <20221003154425.49458-1-kuniyu@amazon.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Originating-IP: [10.43.161.69]
 X-ClientProxiedBy: EX13D11UWC001.ant.amazon.com (10.43.162.151) To
  EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,58 +71,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series fixes some memory leaks and data races caused in the
-same scenario where one thread converts an IPv6 socket into IPv4
-with IPV6_ADDRFORM and another accesses the socket concurrently.
+syzbot reported a memory leak [0] related to IPV6_ADDRFORM.
 
-Note patch 1 and 5 conflict with these commits in net-next, respectively.
+The scenario is that while one thread is converting an IPv6 socket into
+IPv4 with IPV6_ADDRFORM, another thread calls do_ipv6_setsockopt() and
+allocates memory to inet6_sk(sk)->XXX after conversion.
 
-  * 24426654ed3a ("bpf: net: Avoid sk_setsockopt() taking sk lock when called from bpf")
-  * 34704ef024ae ("bpf: net: Change do_tcp_getsockopt() to take the sockptr_t argument")
+Then, the converted sk with (tcp|udp)_prot never frees the IPv6 resources,
+which inet6_destroy_sock() should have cleaned up.
 
+setsockopt(IPV6_ADDRFORM)                 setsockopt(IPV6_DSTOPTS)
++-----------------------+                 +----------------------+
+- do_ipv6_setsockopt(sk, ...)
+  - lock_sock(sk)                         - do_ipv6_setsockopt(sk, ...)
+  - WRITE_ONCE(sk->sk_prot, &tcp_prot)      ^._ called via tcpv6_prot
+  - xchg(&np->opt, NULL)                        before WRITE_ONCE()
+  - txopt_put(opt)
+  - release_sock(sk)
+                                            - lock_sock(sk)
+                                            - ipv6_set_opt_hdr(sk, ...)
+                                              - ipv6_update_options(sk, opt)
+                                                - xchg(&inet6_sk(sk)->opt, opt)
+                                                  ^._ opt is never freed.
 
-Changes:
-  v3 (Resend):
-    * Patch 2 & 3:
-      * CC blamed commits' -EHOSTUNREACH authors to make patchwork happy
+                                            - release_sock(sk)
 
-  v3: https://lore.kernel.org/netdev/20220929012542.55424-1-kuniyu@amazon.com/
-    * Patch 2:
-      * Add comment for np->rxopt.all = 0
-      * Add inet6_cleanup_sock()
-    * Patch 3:
-      * Call inet6_cleanup_sock() instead of inet6_destroy_sock()
+Since IPV6_DSTOPTS allocates options under lock_sock(), we can avoid this
+memory leak by testing whether sk_family is changed by IPV6_ADDRFORM after
+acquiring the lock.
 
-  v2: https://lore.kernel.org/netdev/20220928002741.64237-1-kuniyu@amazon.com/
-    * Patch 3:
-      * Move inet6_destroy_sock() from sk_prot->destroy()
-        to sk->sk_destruct() and fix CONFIG_IPV6=m build failure
-    * Patch 5:
-      * Add WRITE_ONCE()s in tcp_v6_connect()
-      * Add Reported-by tags and KCSAN log in changelog
+This issue exists from the initial commit between IPV6_ADDRFORM and
+IPV6_PKTOPTIONS.
 
-  v1: https://lore.kernel.org/netdev/20220927161209.32939-1-kuniyu@amazon.com/
+[0]:
+BUG: memory leak
+unreferenced object 0xffff888009ab9f80 (size 96):
+  comm "syz-executor583", pid 328, jiffies 4294916198 (age 13.034s)
+  hex dump (first 32 bytes):
+    01 00 00 00 48 00 00 00 08 00 00 00 00 00 00 00  ....H...........
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<000000002ee98ae1>] kmalloc include/linux/slab.h:605 [inline]
+    [<000000002ee98ae1>] sock_kmalloc+0xb3/0x100 net/core/sock.c:2566
+    [<0000000065d7b698>] ipv6_renew_options+0x21e/0x10b0 net/ipv6/exthdrs.c:1318
+    [<00000000a8c756d7>] ipv6_set_opt_hdr net/ipv6/ipv6_sockglue.c:354 [inline]
+    [<00000000a8c756d7>] do_ipv6_setsockopt.constprop.0+0x28b7/0x4350 net/ipv6/ipv6_sockglue.c:668
+    [<000000002854d204>] ipv6_setsockopt+0xdf/0x190 net/ipv6/ipv6_sockglue.c:1021
+    [<00000000e69fdcf8>] tcp_setsockopt+0x13b/0x2620 net/ipv4/tcp.c:3789
+    [<0000000090da4b9b>] __sys_setsockopt+0x239/0x620 net/socket.c:2252
+    [<00000000b10d192f>] __do_sys_setsockopt net/socket.c:2263 [inline]
+    [<00000000b10d192f>] __se_sys_setsockopt net/socket.c:2260 [inline]
+    [<00000000b10d192f>] __x64_sys_setsockopt+0xbe/0x160 net/socket.c:2260
+    [<000000000a80d7aa>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<000000000a80d7aa>] do_syscall_64+0x38/0x90 arch/x86/entry/common.c:80
+    [<000000004562b5c6>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+---
+ net/ipv6/ipv6_sockglue.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Kuniyuki Iwashima (5):
-  tcp/udp: Fix memory leak in ipv6_renew_options().
-  udp: Call inet6_destroy_sock() in setsockopt(IPV6_ADDRFORM).
-  tcp/udp: Call inet6_destroy_sock() in IPv6 sk->sk_destruct().
-  ipv6: Fix data races around sk->sk_prot.
-  tcp: Fix data races around icsk->icsk_af_ops.
-
- include/net/ipv6.h       |  2 ++
- include/net/udp.h        |  2 +-
- net/core/sock.c          |  6 ++++--
- net/ipv4/af_inet.c       | 23 ++++++++++++++++-------
- net/ipv4/tcp.c           | 10 ++++++----
- net/ipv4/udp.c           |  8 ++++++--
- net/ipv6/af_inet6.c      | 15 ++++++++++++++-
- net/ipv6/ipv6_sockglue.c | 34 +++++++++++++++++++---------------
- net/ipv6/tcp_ipv6.c      |  6 ++++--
- net/ipv6/udp.c           | 15 ++++++++++++++-
- 10 files changed, 86 insertions(+), 35 deletions(-)
-
+diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
+index e0dcc7a193df..b61066ac8648 100644
+--- a/net/ipv6/ipv6_sockglue.c
++++ b/net/ipv6/ipv6_sockglue.c
+@@ -419,6 +419,12 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
+ 		rtnl_lock();
+ 	lock_sock(sk);
+ 
++	/* Another thread has converted the socket into IPv4 with
++	 * IPV6_ADDRFORM concurrently.
++	 */
++	if (unlikely(sk->sk_family != AF_INET6))
++		goto unlock;
++
+ 	switch (optname) {
+ 
+ 	case IPV6_ADDRFORM:
+@@ -994,6 +1000,7 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
+ 		break;
+ 	}
+ 
++unlock:
+ 	release_sock(sk);
+ 	if (needs_rtnl)
+ 		rtnl_unlock();
 -- 
 2.30.2
 
