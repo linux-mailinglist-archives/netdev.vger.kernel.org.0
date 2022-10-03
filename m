@@ -2,273 +2,253 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 09A255F28B7
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 08:52:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A91465F28CD
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 08:54:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229689AbiJCGwb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 02:52:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37572 "EHLO
+        id S229801AbiJCGyF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 02:54:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229663AbiJCGw0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 02:52:26 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 233E63ECF8
-        for <netdev@vger.kernel.org>; Sun,  2 Oct 2022 23:52:25 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1ofFJ9-0000yo-GS; Mon, 03 Oct 2022 08:52:07 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1ofFJ8-004K5V-Au; Mon, 03 Oct 2022 08:52:04 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1ofFJ5-00GJlO-HV; Mon, 03 Oct 2022 08:52:03 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-        David Jander <david@protonic.nl>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Robert Marko <robert.marko@sartura.hr>
-Subject: [PATCH net-next v8 7/7] net: pse-pd: add regulator based PSE driver
-Date:   Mon,  3 Oct 2022 08:52:02 +0200
-Message-Id: <20221003065202.3889095-8-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221003065202.3889095-1-o.rempel@pengutronix.de>
-References: <20221003065202.3889095-1-o.rempel@pengutronix.de>
+        with ESMTP id S229716AbiJCGxr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 02:53:47 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8143FEC9;
+        Sun,  2 Oct 2022 23:52:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1664779978; x=1696315978;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=32eNzk2rDmHyC+LBY/gMofTRRxfx3PdRxeai54qgqAQ=;
+  b=U6l78ATmk4dYdZLO//12idICzRYUO40X5SkMifOi+jex+BSZ+4ET6uoX
+   dOYyxeCdlmCDQTUVm1/K/raN8S0f8Ol10lU7m8k9falAgkjtZOw7/+aMi
+   ETzHNnKTYslXlTqlTk4pN8evtBMCy8FewZju2w/H7abgR3a9ZhJ+0ry4G
+   FLUV5vUYYSN9NJHxzJIrBlGleEtI6xZuO9ILnDsDfhe6S+QEyJw8l/3bX
+   1ZRD40kFSuwYBxhxcOGNzTELldcPpZpJL89+T+jNqRSTju/R386VYvwKG
+   1PqaAUeFKOwT2l3XQa7Sj8ihxGYFkHGKPqttbaYj68CWhTk0Fnu7Kti9N
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,364,1654585200"; 
+   d="scan'208";a="182937782"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Oct 2022 23:52:46 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Sun, 2 Oct 2022 23:52:45 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.12 via Frontend
+ Transport; Sun, 2 Oct 2022 23:52:44 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=O8AGbORRGcEa5qMC9YDqAUJ0p/iniQyBpol3FkS4Xzh36sJ6MwCt/u3xmmwDdsGS6f4x4ZDmAwe3Qzv1wXWtgjvsFijdoPE1yJBqV8nSW5U0pHFsmVuP3F7ETKx59Q/IlR+ljAsFHu0VUy69RCACqJ0oWbuto83lGOc4/4InrKN2/rJ42N8vgerEvjyGH45HZ/99DNT/TC/T5QF/2gPlvgE11bGRPtevF4H4SWoEuMHv2nn9roqjr1CDnA5/QlrtpXVwht0hdd9pmMLH+5zxzy7NgJSX0d2ZdOAqI7R+boVLlxCUHAoCVzjsh3bl4MWheuyGkWDm3JStG8psJzEIIA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vrP29YBXnPjZa6pAiMs4OUpMXumyt17hAvorH0X/TQk=;
+ b=FizkHHRhG5MPQLPb6A+nDhVRtKsuulcZLb39avf7Dj7l3WIIjOlfxSrOQJT7bqul6yk8ztoTvTjUOMc1quyzaER+5us5selQ0HVCdW8m6wX0x5E6glk3/0onXGgpZYSbmmE7SUQ45UUeUW+b4zJzQ9WE613+ext6jiWWN6CkEk6qHLWgIrVkU+rnoAjF5M/rHF3F3UEIc2jRYILIueywsMHxiPUgn4Yk8ZvGS6MO/7e2Q6UE7GWzs1VnXSe7ahd+7KUl81vWvmJ+WoWZoSejbEcPrSsJ/hW/SwAOhRR/5szrj8t88GzA/bP6QDSeFAZM/ncgmTCrx4grt10MzrS9YA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vrP29YBXnPjZa6pAiMs4OUpMXumyt17hAvorH0X/TQk=;
+ b=bqiL83xXu+Nj0Ul7Dz2x198tRzou1cyjtrYtSKL8cI0QUHKr2TIv2CzeRerLhL3SZlIzQYUSHqpX7v9qnz49n3ezFGA39MuEsnhGx24Ti1wz3mSwDVtDak6M68dyOmZJXlqYDHnujZ4KvMVW8XFqnuWFk6+hvlkdhODes+/ZiCw=
+Received: from PH0PR11MB5580.namprd11.prod.outlook.com (2603:10b6:510:e5::10)
+ by PH7PR11MB7003.namprd11.prod.outlook.com (2603:10b6:510:20a::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.28; Mon, 3 Oct
+ 2022 06:52:40 +0000
+Received: from PH0PR11MB5580.namprd11.prod.outlook.com
+ ([fe80::782e:76ed:b02d:c99a]) by PH0PR11MB5580.namprd11.prod.outlook.com
+ ([fe80::782e:76ed:b02d:c99a%5]) with mapi id 15.20.5676.028; Mon, 3 Oct 2022
+ 06:52:40 +0000
+From:   <Daniel.Machon@microchip.com>
+To:     <petrm@nvidia.com>
+CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
+        <maxime.chevallier@bootlin.com>, <thomas.petazzoni@bootlin.com>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <Lars.Povlsen@microchip.com>, <Steen.Hegelund@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, <joe@perches.com>,
+        <linux@armlinux.org.uk>, <Horatiu.Vultur@microchip.com>,
+        <Julia.Lawall@inria.fr>, <vladimir.oltean@nxp.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH net-next v2 4/6] net: microchip: sparx5: add support for
+ apptrust
+Thread-Topic: [PATCH net-next v2 4/6] net: microchip: sparx5: add support for
+ apptrust
+Thread-Index: AQHY1DNZUjZtLK0dzEirZyaNJNiZ+634H/uAgAQj3gA=
+Date:   Mon, 3 Oct 2022 06:52:40 +0000
+Message-ID: <YzqJEESxhwkcayjs@DEN-LT-70577>
+References: <20220929185207.2183473-1-daniel.machon@microchip.com>
+ <20220929185207.2183473-5-daniel.machon@microchip.com>
+ <87zgegu9kq.fsf@nvidia.com>
+In-Reply-To: <87zgegu9kq.fsf@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR11MB5580:EE_|PH7PR11MB7003:EE_
+x-ms-office365-filtering-correlation-id: 5ac33ba4-3d5d-4de4-c8c2-08daa50bdd75
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 3JtRC9PALIstT/VaSMo8+ICdRCs5nQxX2yAaLYM4XmMEgExifo5y1ouXwFmRuXBGFJD+2/BD0LSg0dZ738IvQTup5VjO7sk06qGlXehq+y1FIUhx1lcRDgVD4vD7H3jTxtDlvZbSq87PeyoWL1EpWF4bYMll8Zp9NkZuoLPzgkvJL7RGLSVUJI9Xpcb5tYeRj3dTOzQ7Hlnky4joYNW0fCQ+dhNCDBNlsDhiN/gV8/6bSAKhv2AvyahJfzOfrT/VfVQoIXr+xAIT4GG1HBsN84+KxQak9aEH40xGqzIJaG3e0eND0a2QOW2wbBYMk6U8U7yNe8TIHFdGioH8XAL11g+x1Y2lRbJrzyUyxeA2CQnrUBpB5hxOuZvB99zLpTrWqGoV6z4QZn7tyzRPxyWa8FRBTtI8E9nj0MLOOHs6hfOt6V4BKzn95tO26WEW3m5PQdTzTN6b6YXLSn3at/k6OB1i+WwKJ8aLWvrsAdJnBSYamPZZOnKMUHTC8M+y4Y+nCCOk7GD1UwoW7di1wrpvKeV2Fx7uAE8wTx3HU1+qLNpRK0Ku29s29cLClY2rCFjD8x91kIn2ik0HQkcE5E3JHg5gUIPYnZ6Rws8TLPiV0MsNRNS4tTafiIb5XcSo02FRHIoXvDGbrstF6ZYvTXpEeNV4ksTI1L87r2o7Tb7taKOwTiUZSKOPLl94sU05jniZrP6gpLwFaZzUwi/4H/bntXroMGVK/b3aNYzYw3itPi116ePEjZERFUo4rErarAPIxNYdrfEdmZodQDG41BpodA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5580.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(136003)(396003)(39860400002)(376002)(346002)(366004)(451199015)(7416002)(8936002)(5660300002)(41300700001)(54906003)(33716001)(6486002)(38070700005)(91956017)(71200400001)(9686003)(478600001)(4326008)(6512007)(76116006)(26005)(6916009)(6506007)(316002)(2906002)(64756008)(66556008)(66476007)(66446008)(8676002)(83380400001)(66946007)(186003)(86362001)(122000001)(38100700002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?PdCDmJfpfRTkWX6vxT1JJdofJD5+c6GyatKIaFTxcWNZZFJQM+lEUQ4j06ZW?=
+ =?us-ascii?Q?eiBe5D1bBl5gOkDuAZMQLldAhMaVvU0leJBVCJ6c4OGI4xG0UN27sWyq8IVF?=
+ =?us-ascii?Q?6WWZEWsGTg1EjruixsoRHBHMQSSPTj3ByOgtvZch1x0bqGxS1AeDpwvplPt4?=
+ =?us-ascii?Q?5ZaSrP5sHa0g3Fbn0WQcIhiRmfqMiUDN/6ZQyHlrgh78ZIgds4BpqdIaNKZx?=
+ =?us-ascii?Q?d8oY3tfxUG5GJJgBZRxkEPSG4BSyXFalAhZ2LH8FwMv7qF0f+wmu3QqGBeJ2?=
+ =?us-ascii?Q?2x05kUEq4AQSlXEGiCczYfyJP3FldCwEhOKtUO3KJjdv52SKUIvGQ2kQHKwq?=
+ =?us-ascii?Q?ARrSdChL8Fb2FpNEntWSM/UQ4J3FHHtV4J+PDLWvsYJYIXFV8WGmJyt+X+9H?=
+ =?us-ascii?Q?XQJiUFdyVoZVk6QVX3G22KjTzDraXwqgYz4cR4UC2hgDA9eRIdw+slggW8V7?=
+ =?us-ascii?Q?U5OEnT1xAynPQTR7mTvtUQYTdkoI4FtLKFJNleFN2kYo0WG8V7okbK5o6Han?=
+ =?us-ascii?Q?+y55tchxyUINbO4X6tWrIpSiO/jluFyq7U3X+swdLPYrOtxU6Ao/mSo4lM7M?=
+ =?us-ascii?Q?iWZkPmxRtcb7ioLFxe4wJ+7iOxtIxQ+L6nuFB6zIZmXTYBQZ9W0aaWJYDrUj?=
+ =?us-ascii?Q?eUby1zERymv8+nbIuHhStWBx96Ie3l2VgS9LRKDkqfxUv2Un6cC7X078ozOt?=
+ =?us-ascii?Q?1ey8wc3oUSsirq/vR955H0KRuUbh/UsfLv0ZNoJSDQONCbWywC5ITYSvZw7O?=
+ =?us-ascii?Q?Vk9HSHYNodfBZijQu/hsKsVaqXEzWhGfkSjxeVUv0GsRuJ6CFiZ0180GGk+F?=
+ =?us-ascii?Q?zrbqicO/84v9Z2F8q+je1NOGTdt1BncSINqZgvwV1yfNvLnjPV1uDCfnA68f?=
+ =?us-ascii?Q?5JXiA0jvyoYfG65HhrZzwGXisogXKJdGpPM5yXDRcalubvOUsq/FUiYboUVa?=
+ =?us-ascii?Q?QH/bDY39awJSp01pHTK7MvjZ1D29v6PELNzfE6d90jyTgeb48pFGeBt8Ug7z?=
+ =?us-ascii?Q?fcChjEK7Jdiasp7xuu2hfShy62AZtT8ZMhDvaDYaPIkKLl006B9dUAycYcS4?=
+ =?us-ascii?Q?krfOMkr48EALTGT3UX2fQJrjlJ9TB9ClFsaYrfjNvec1iYKVPLcrlutzS+kx?=
+ =?us-ascii?Q?dh4FfFkqefK+YYoLVq6FM+ZNlfRj0BUiIgeUxE+50iIDlZ2pnkiEpPD3zj49?=
+ =?us-ascii?Q?H4ajVNLJWsqaf1Wp28wFhpEn0sx6cfCya+z+Q11x50f30UeQB4oCCMjXNJ4P?=
+ =?us-ascii?Q?k3jHteaoLObVPD0G96lzOlrQ2nDoXV1GtI0iOnFwhdMdoJimCTARLPoXhiHX?=
+ =?us-ascii?Q?6mpIH4s7qlVFzkPxUtlJLtq+Nzwi1fdqUo9gBbho4Ca+nqQo4CDvTpqDhjD4?=
+ =?us-ascii?Q?0afqcZNwPLofncaJ5OpYyYyt5yIx2WOZmL+OHlvPEcHWt45yVUkhjDNkCWws?=
+ =?us-ascii?Q?8fjtcL+5cWgQTUdQnXkt+nav87aasDZkRagYvkaNBffCgi+hk4kJFZQAxM4C?=
+ =?us-ascii?Q?GSV7FKQDWlyK0CFrSu/nj8oyVskU+3iZanaeMlwDJPTNNUvpe046baleBjf8?=
+ =?us-ascii?Q?JtdR0CAwx+XNwrty/cHGBVyrvcgG3uQUXu99szfPS6sAVMr96OPkUpOziHfb?=
+ =?us-ascii?Q?+UFFr/1m8BxDGGSvlM5yyO8=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <60338EEAB13D4E4F84E1B1B2752D1930@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5580.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5ac33ba4-3d5d-4de4-c8c2-08daa50bdd75
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Oct 2022 06:52:40.4429
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 22b6suNOsO5JVSS3Vs/CysvHqdezmNG/3dLAAy85aqYAgp08P/WEk5OGmWWq09p2B0EMzuoFf/rrqBDt9KJ9ABwnD/l+O09renwzH1dY/JY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB7003
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add generic, regulator based PSE driver to support simple Power Sourcing
-Equipment without automatic classification support.
+> > Make use of set/getapptrust() to implement per-selector trust and trust
+> > order.
+> >
+> > Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
+> > ---
+> >  .../ethernet/microchip/sparx5/sparx5_dcb.c    | 116 ++++++++++++++++++
+> >  .../ethernet/microchip/sparx5/sparx5_main.h   |   3 +
+> >  .../ethernet/microchip/sparx5/sparx5_port.c   |   4 +-
+> >  .../ethernet/microchip/sparx5/sparx5_port.h   |   2 +
+> >  .../ethernet/microchip/sparx5/sparx5_qos.c    |   4 +
+> >  5 files changed, 127 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c b/drive=
+rs/net/ethernet/microchip/sparx5/sparx5_dcb.c
+> > index db17c124dac8..10aeb422b1ae 100644
+> > --- a/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c
+> > +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c
+> > @@ -8,6 +8,22 @@
+> >
+> >  #include "sparx5_port.h"
+> >
+> > +static const struct sparx5_dcb_apptrust {
+> > +     u8 selectors[256];
+> > +     int nselectors;
+> > +     char *names;
+>=20
+> I think this should be just "name".
 
-This driver was tested on 10Bast-T1L switch with regulator based PoDL PSE.
+I dont think so. This is a str representation of all the selector values.
+"names" makes more sense to me.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
-changes v5:
-- use dev_err_probe on devm_regulator_get_exclusive() error
-- add __maybe_unused to the of_device_id
-changes v4:
-- rename to pse_regulator
-changes v2:
-- add regulator_enable test to the probe
-- migrate to the new PSE ethtool API
----
- drivers/net/pse-pd/Kconfig         |  11 +++
- drivers/net/pse-pd/Makefile        |   2 +
- drivers/net/pse-pd/pse_regulator.c | 147 +++++++++++++++++++++++++++++
- 3 files changed, 160 insertions(+)
- create mode 100644 drivers/net/pse-pd/pse_regulator.c
+>=20
+> > +} *apptrust[SPX5_PORTS];
+> > +
+> > +/* Sparx5 supported apptrust configurations */
+> > +static const struct sparx5_dcb_apptrust apptrust_conf[4] =3D {
+> > +     /* Empty *must* be first */
+> > +     { { 0                         }, 0, "empty"    },
+> > +     { { IEEE_8021QAZ_APP_SEL_DSCP }, 1, "dscp"     },
+> > +     { { DCB_APP_SEL_PCP           }, 1, "pcp"      },
+> > +     { { IEEE_8021QAZ_APP_SEL_DSCP,
+> > +         DCB_APP_SEL_PCP           }, 2, "dscp pcp" },
+> > +};
+> > +
+> >  /* Validate app entry.
+> >   *
+> >   * Check for valid selectors and valid protocol and priority ranges.
+> > @@ -37,12 +53,59 @@ static int sparx5_dcb_app_validate(struct net_devic=
+e *dev,
+> >       return err;
+> >  }
+> >
+> > +/* Validate apptrust configuration.
+> > + *
+> > + * Return index of supported apptrust configuration if valid, otherwis=
+e return
+> > + * error.
+> > + */
+> > +static int sparx5_dcb_apptrust_validate(struct net_device *dev, u8 *se=
+lectors,
+> > +                                     int nselectors, int *err)
+> > +{
+> > +     bool match;
+> > +     int i, ii;
+> > +
+> > +     for (i =3D 0; i < ARRAY_SIZE(apptrust_conf); i++) {
+>=20
+> I would do this here:
+>=20
+>     if (apptrust_conf[i].nselectors !=3D nselectors) continue;
+>=20
+> to avoid having to think about the semantics of comparing to all those
+> zeroes in apptrust_conf.selectors array.
 
-diff --git a/drivers/net/pse-pd/Kconfig b/drivers/net/pse-pd/Kconfig
-index 49c7f0bcff52..73d163704068 100644
---- a/drivers/net/pse-pd/Kconfig
-+++ b/drivers/net/pse-pd/Kconfig
-@@ -9,3 +9,14 @@ menuconfig PSE_CONTROLLER
- 	  Generic Power Sourcing Equipment Controller support.
- 
- 	  If unsure, say no.
-+
-+if PSE_CONTROLLER
-+
-+config PSE_REGULATOR
-+	tristate "Regulator based PSE controller"
-+	help
-+	  This module provides support for simple regulator based Ethernet Power
-+	  Sourcing Equipment without automatic classification support. For
-+	  example for basic implementation of PoDL (802.3bu) specification.
-+
-+endif
-diff --git a/drivers/net/pse-pd/Makefile b/drivers/net/pse-pd/Makefile
-index cfa780c7801d..1b8aa4c70f0b 100644
---- a/drivers/net/pse-pd/Makefile
-+++ b/drivers/net/pse-pd/Makefile
-@@ -2,3 +2,5 @@
- # Makefile for Linux PSE drivers
- 
- obj-$(CONFIG_PSE_CONTROLLER) += pse_core.o
-+
-+obj-$(CONFIG_PSE_REGULATOR) += pse_regulator.o
-diff --git a/drivers/net/pse-pd/pse_regulator.c b/drivers/net/pse-pd/pse_regulator.c
-new file mode 100644
-index 000000000000..e2bf8306ca90
---- /dev/null
-+++ b/drivers/net/pse-pd/pse_regulator.c
-@@ -0,0 +1,147 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+//
-+// Driver for the regulator based Ethernet Power Sourcing Equipment, without
-+// auto classification support.
-+//
-+// Copyright (c) 2022 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
-+//
-+
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+#include <linux/pse-pd/pse.h>
-+#include <linux/regulator/consumer.h>
-+
-+struct pse_reg_priv {
-+	struct pse_controller_dev pcdev;
-+	struct regulator *ps; /*power source */
-+	enum ethtool_podl_pse_admin_state admin_state;
-+};
-+
-+static struct pse_reg_priv *to_pse_reg(struct pse_controller_dev *pcdev)
-+{
-+	return container_of(pcdev, struct pse_reg_priv, pcdev);
-+}
-+
-+static int
-+pse_reg_ethtool_set_config(struct pse_controller_dev *pcdev, unsigned long id,
-+			   struct netlink_ext_ack *extack,
-+			   const struct pse_control_config *config)
-+{
-+	struct pse_reg_priv *priv = to_pse_reg(pcdev);
-+	int ret;
-+
-+	if (priv->admin_state == config->admin_cotrol)
-+		return 0;
-+
-+	switch (config->admin_cotrol) {
-+	case ETHTOOL_PODL_PSE_ADMIN_STATE_ENABLED:
-+		ret = regulator_enable(priv->ps);
-+		break;
-+	case ETHTOOL_PODL_PSE_ADMIN_STATE_DISABLED:
-+		ret = regulator_disable(priv->ps);
-+		break;
-+	default:
-+		dev_err(pcdev->dev, "Unknown admin state %i\n",
-+			config->admin_cotrol);
-+		ret = -ENOTSUPP;
-+	}
-+
-+	if (ret)
-+		return ret;
-+
-+	priv->admin_state = config->admin_cotrol;
-+
-+	return 0;
-+}
-+
-+static int
-+pse_reg_ethtool_get_status(struct pse_controller_dev *pcdev, unsigned long id,
-+			   struct netlink_ext_ack *extack,
-+			   struct pse_control_status *status)
-+{
-+	struct pse_reg_priv *priv = to_pse_reg(pcdev);
-+	int ret;
-+
-+	ret = regulator_is_enabled(priv->ps);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (!ret)
-+		status->podl_pw_status = ETHTOOL_PODL_PSE_PW_D_STATUS_DISABLED;
-+	else
-+		status->podl_pw_status =
-+			ETHTOOL_PODL_PSE_PW_D_STATUS_DELIVERING;
-+
-+	status->podl_admin_state = priv->admin_state;
-+
-+	return 0;
-+}
-+
-+static const struct pse_controller_ops pse_reg_ops = {
-+	.ethtool_get_status = pse_reg_ethtool_get_status,
-+	.ethtool_set_config = pse_reg_ethtool_set_config,
-+};
-+
-+static int
-+pse_reg_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct pse_reg_priv *priv;
-+	int ret;
-+
-+	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	if (!pdev->dev.of_node)
-+		return -ENOENT;
-+
-+	priv->ps = devm_regulator_get_exclusive(dev, "pse");
-+	if (IS_ERR(priv->ps))
-+		return dev_err_probe(dev, PTR_ERR(priv->ps),
-+				     "failed to get PSE regulator.\n");
-+
-+	platform_set_drvdata(pdev, priv);
-+
-+	ret = regulator_is_enabled(priv->ps);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (ret)
-+		priv->admin_state = ETHTOOL_PODL_PSE_ADMIN_STATE_ENABLED;
-+	else
-+		priv->admin_state = ETHTOOL_PODL_PSE_ADMIN_STATE_DISABLED;
-+
-+	priv->pcdev.owner = THIS_MODULE;
-+	priv->pcdev.ops = &pse_reg_ops;
-+	priv->pcdev.dev = dev;
-+	ret = devm_pse_controller_register(dev, &priv->pcdev);
-+	if (ret) {
-+		dev_err(dev, "failed to register PSE controller (%pe)\n",
-+			ERR_PTR(ret));
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static const __maybe_unused struct of_device_id pse_reg_of_match[] = {
-+	{ .compatible = "podl-pse-regulator", },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, pse_reg_of_match);
-+
-+static struct platform_driver pse_reg_driver = {
-+	.probe		= pse_reg_probe,
-+	.driver		= {
-+		.name		= "PSE regulator",
-+		.of_match_table = of_match_ptr(pse_reg_of_match),
-+	},
-+};
-+module_platform_driver(pse_reg_driver);
-+
-+MODULE_AUTHOR("Oleksij Rempel <kernel@pengutronix.de>");
-+MODULE_DESCRIPTION("regulator based Ethernet Power Sourcing Equipment");
-+MODULE_LICENSE("GPL v2");
-+MODULE_ALIAS("platform:pse-regulator");
--- 
-2.30.2
+Yes, that would be good.
 
+>=20
+> > +             match =3D true;
+> > +             for (ii =3D 0; ii < nselectors; ii++) {
+> > +                     if (apptrust_conf[i].selectors[ii] !=3D
+> > +                         *(selectors + ii)) {
+> > +                             match =3D false;
+> > +                             break;
+> > +                     }
+> > +             }
+> > +             if (match)
+> > +                     break;
+> > +     }
+> > +
+> > +     /* Requested trust configuration is not supported */
+> > +     if (!match) {
+> > +             netdev_err(dev, "Valid apptrust configurations are:\n");
+> > +             for (i =3D 0; i < ARRAY_SIZE(apptrust_conf); i++)
+> > +                     pr_info("order: %s\n", apptrust_conf[i].names);
+> > +             *err =3D -EOPNOTSUPP;
+> > +     }
+> > +
+> > +     return i;
+> > +}=
