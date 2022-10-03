@@ -2,55 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 16BCD5F31F5
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 16:28:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 317495F3205
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 16:36:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229995AbiJCO2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 10:28:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49862 "EHLO
+        id S229767AbiJCOgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 10:36:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229996AbiJCO2h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 10:28:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C4652820;
-        Mon,  3 Oct 2022 07:28:35 -0700 (PDT)
+        with ESMTP id S229848AbiJCOgV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 10:36:21 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D17FF4F65E
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 07:36:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1DF68B8111E;
-        Mon,  3 Oct 2022 14:28:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7321AC433D7;
-        Mon,  3 Oct 2022 14:28:32 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 13775CE0CDD
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 14:36:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB122C433C1;
+        Mon,  3 Oct 2022 14:36:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664807312;
-        bh=KiWuybmiF7uvPLLFgNL60QPrAM2Z2mtgDKNIzJdnU/0=;
+        s=k20201202; t=1664807765;
+        bh=0JqUoLvIQH2mIhdmVj6Sti5ypPz0DytlvqJw+03RmJc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=er90k8ag8Q5ROjVrSvYnSnPVhtC2sq/FRmTxxQL0Db/KsTmbDgVvro4wuljid6469
-         eibKDZAGNZuxZjjAlTQGjpYPkyO4sXbN8AHomC7W1/n0G3KUsdQ2Ixk38ufPFb7BAW
-         9n7bwR6G0WZg43iulWMSZaNjJgVmlkFYRwMpsqNBiCePBjL57NLRUBQTSVuevimt6s
-         w6zwwg+V0xAHmWZEzmUajYyjpfylMAgF8ESPhT/tnRwcwBGUF4+tMKftKmiGOT5dzW
-         CwrGYU/VzSlGzGKgvYt1LsRrBoLT4QTduXCK9TB8anTPcaBXx8xkqjs7giqMUESdSo
-         +UF+Hik5Br1ZQ==
-Date:   Mon, 3 Oct 2022 07:28:31 -0700
+        b=Y3wgcp2O9BT0OaRYasoC+mCN4N+wURF0su/BVo4PLjgW9QV8MLpe0V6tGmjJciuu0
+         KfHCRtzpqU1Hm8BUR+Iqvh8GU7k9MHFhlnTdWR+70bzAS4DqCkRGV6idC/0Buc8NX7
+         JH75VqDPx6gau8MKWPPdsiwoXubqCORqTeTuyNHiHvRa0SXRLB4vjqcRf/V8aZBWj2
+         /rdem0RnVg0mY/6XbDfvheb3LY+Oj6nwkNXUvzLNjW8rdVd7dPMG+THmksmNreD0lw
+         gCJO6E7l5mNq9k/9/CKyJ5EkeSnSZh8+TGOL4hdYV7DCH/ZtWGOXuM49ARzfB7T8+k
+         wMI4c7AVuwvaA==
+Date:   Mon, 3 Oct 2022 07:36:03 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>, Vadim Fedorenko <vadfed@fb.com>
-Cc:     Vadim Fedorenko <vfedorenko@novek.ru>,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Aya Levin <ayal@nvidia.com>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        Gal Pressman <gal@nvidia.com>
-Subject: Re: [RFC PATCH v2 0/3] Create common DPLL/clock configuration API
-Message-ID: <20221003072831.3b6fb150@kernel.org>
-In-Reply-To: <Yzmhm4jSn/5EtG2l@nanopsycho>
-References: <20220626192444.29321-1-vfedorenko@novek.ru>
-        <YzWESUXPwcCo67LP@nanopsycho>
-        <6b80b6c8-29fd-4c2a-e963-1f273d866f12@novek.ru>
-        <Yzap9cfSXvSLA+5y@nanopsycho>
-        <20220930073312.23685d5d@kernel.org>
-        <YzfUbKtWlxuq+FzI@nanopsycho>
-        <20221001071827.202fe4c1@kernel.org>
-        <Yzmhm4jSn/5EtG2l@nanopsycho>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Rui Sousa <rui.sousa@nxp.com>,
+        Ferenc Fejes <ferenc.fejes@ericsson.com>
+Subject: Re: [RFC PATCH net-next 0/7] 802.1Q Frame Preemption and 802.3 MAC
+ Merge support via ethtool
+Message-ID: <20221003073603.1d98c206@kernel.org>
+In-Reply-To: <20221001155337.ycodmomj7wz4s5rx@skbuf>
+References: <20220816222920.1952936-1-vladimir.oltean@nxp.com>
+        <20220816203417.45f95215@kernel.org>
+        <20220817115008.t56j2vkd6ludcuu6@skbuf>
+        <20220817114642.4de48b52@kernel.org>
+        <20221001155337.ycodmomj7wz4s5rx@skbuf>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -63,22 +66,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2 Oct 2022 16:35:07 +0200 Jiri Pirko wrote:
->>> What I'm trying to say
->>> is, perhaps sysfs is a better API for this purpose. The API looks very
->>> neat and there is no probabilito of huge grow.  
->>
->> "this API is nice and small" said everyone about every new API ever,
->> APIs grow.  
+On Sat, 1 Oct 2022 15:53:38 +0000 Vladimir Oltean wrote:
+> > Add a attribute to ETHTOOL_MSG_STATS_GET, let's call it
+> > ETHTOOL_A_STATS_EXPRESS, a flag.  
 > 
-> Sure, what what are the odds.
+> I'll add this to the UAPI and to internal data structures, ok?
+> 
+> enum ethtool_stats_src {
+> 	ETHTOOL_STATS_SRC_AGGREGATE = 0,
+> 	ETHTOOL_STATS_SRC_EMAC,
+> 	ETHTOOL_STATS_SRC_PMAC,
+> };
 
-The pins were made into full objects now, and we also model muxes.
+Yup!
 
-Vadim, could you share the link to the GH repo? 
+> > Plumb thru to all the stats callback an extra argument 
+> > (a structure for future extensibility) with a bool pMAC;
+> > 
+> > Add a capability field to ethtool_ops to announce that
+> > driver will pay attention to the bool pMAC / has support.  
+> 
+> You mean capability field as in ethtool_ops::supported_coalesce_params,
+> right? (we discussed about this separately).
+> This won't fit the enetc driver very well. Some enetc ports on the NXP
+> LS1028A support the MM layer (port 0, port 2) and some don't (port 1,
+> port 3). Yet they share the same PF driver. So populating mm_supported =
+> true in the const struct enetc_pf_ethtool_ops isn't going to cover both.
+> I can, however, key on my ethtool_ops :: get_mm_state() function which
+> lets the driver report a "bool supported". Is this ok?
 
-What's your feeling on posting the latest patches upstream as RFC,
-whatever state things are in right now?
+That happens, I think about the capability in the ops as driver caps
+rather than HW caps. The driver can still return -EOPNOTSUPP, but it
+guarantees to check the field's value. 
 
-My preference would be to move the development to the list at this
-stage, FWIW.
+Most (all but one) datacenter NIC vendors have uber-drivers for all
+their HW generations these days, static per-driver caps can't map to 
+HW caps in my world.
+
+So weak preference for sticking to that model to avoid confusion about
+the semantics of existing caps vs caps which should use a function call.
