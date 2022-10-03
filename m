@@ -2,93 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B0B9B5F2E4D
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 11:42:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DA3B5F2E50
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 11:43:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230127AbiJCJmq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 05:42:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37638 "EHLO
+        id S229576AbiJCJnR convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 3 Oct 2022 05:43:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229658AbiJCJmS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 05:42:18 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4446E13D30
-        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 02:36:57 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id n35-20020a05600c502300b003b4924c6868so6801242wmr.1
-        for <netdev@vger.kernel.org>; Mon, 03 Oct 2022 02:36:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:reply-to:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date;
-        bh=aQJndaG6DPfbP06I/qvyeeVURu4TalD1jxBNk4UvYpc=;
-        b=KBZWqY4DZ9BGd/jECxy88fQ6ADsHFdgfNUX6E7tJlX0yd86w8ifrwL+fIzm+CQUu7R
-         PARWOp+Oaw3QTOoH/L+PRkr4WX6QqpW3t6jVFWU4NZOeZbXrrpoFtsVLkNLbMJGhdknH
-         YqLUDlPZu7UtMdpnC8g1HwXcHsWJTZnXAp5tDhhFzlK0p0V2b2EuEyVSVAPmzCzCVOED
-         DE75FEuvWbaA2qlsT1e+PxaWO6x54rMxSfsQMuN3rEYWYJ5CuDpDRAe5INeed3/xmQ3B
-         ZH0AUA7I1EbARsz64tzDv6sz3l60jra5yVLJbG0f7Ar1wVCBipv8illJ5wD6v1NYEbMm
-         iEUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:reply-to:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date;
-        bh=aQJndaG6DPfbP06I/qvyeeVURu4TalD1jxBNk4UvYpc=;
-        b=uJglcxyHa+GNYObnN7DhLwKjRSfgOaNakDHPKHDD+Zo+zWj7Pi2b3EAl7x7MEY7HSL
-         rqzIT4yHFHVCOZFue8VZ+UwErNOkH6T0vTm42IX6to37u0HeZJWiToJq8Elj5H2PNY5d
-         imGYRfW9QkfM5r2bjjiSvSTAnHWieA4zV+ePsjTZtjSFxZH/Hx1qGK/FkdimRn4T5cZC
-         WhJIkIdse3vVvBqKRmAERJ/dXyLV3JlTFjH6VCvZfAqdq+oCOb9VkD2xP3Hxgi0zmyHc
-         7iwYTGiWKtVJZ+74tyfIpvEOhfr47TiAZGjkN5KVn0/pgIOfxqYGMxyP3CskZsDovZMS
-         vnsA==
-X-Gm-Message-State: ACrzQf0zcoQdD5inIJUJ0kXOWuHJ8XqbbNZvADfPvV1S85B7xgu35QbC
-        DIiAShOhNzbzP5MuANBnSXcKt0MGZRayQQ==
-X-Google-Smtp-Source: AMsMyM6kpXSYPlP3HTNtV0iDiDxHX7gifIKNHHVXBuoD8SBqeI5RheXhTpx4LcRttf255j6Bw58asw==
-X-Received: by 2002:a05:600c:3c82:b0:3b5:60a6:c80f with SMTP id bg2-20020a05600c3c8200b003b560a6c80fmr6470538wmb.199.1664789801111;
-        Mon, 03 Oct 2022 02:36:41 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:b41:c160:14ee:4d35:8c33:e753? ([2a01:e0a:b41:c160:14ee:4d35:8c33:e753])
-        by smtp.gmail.com with ESMTPSA id e3-20020a5d5943000000b0022dd3aab6bfsm8435671wri.57.2022.10.03.02.36.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Oct 2022 02:36:40 -0700 (PDT)
-Message-ID: <02b6b55e-d9a3-fbed-c053-e87730f7f270@6wind.com>
-Date:   Mon, 3 Oct 2022 11:36:40 +0200
+        with ESMTP id S230218AbiJCJmt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 05:42:49 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2B752467
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 02:37:18 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-164-EXXU3AVOMbmkJ1Ef--quHg-1; Mon, 03 Oct 2022 10:36:53 +0100
+X-MC-Unique: EXXU3AVOMbmkJ1Ef--quHg-1
+Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
+ (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Mon, 3 Oct
+ 2022 10:36:46 +0100
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.040; Mon, 3 Oct 2022 10:36:46 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Al Viro' <viro@zeniv.linux.org.uk>
+CC:     "'Eric W. Biederman'" <ebiederm@xmission.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>
+Subject: RE: [CFT][PATCH] proc: Update /proc/net to point at the accessing
+ threads network namespace
+Thread-Topic: [CFT][PATCH] proc: Update /proc/net to point at the accessing
+ threads network namespace
+Thread-Index: AQHY1Ogi381Lc0KOOEGaF1/0a4qSLq34eHYAgAGjVQCAAk+PUA==
+Date:   Mon, 3 Oct 2022 09:36:46 +0000
+Message-ID: <592405fa149247f58d05a213b8c6f711@AcuMS.aculab.com>
+References: <YzXrOFpPStEwZH/O@ZenIV>
+ <CAHk-=wjLgM06JrS21W4g2VquqCLab+qu_My67cv6xuH7NhgHpw@mail.gmail.com>
+ <YzXzXNAgcJeJ3M0d@ZenIV> <YzYK7k3tgZy3Pwht@ZenIV>
+ <CAHk-=wihPFFE5KcsmOnOm1CALQDWqC1JTvrwSGBS08N5avVmEA@mail.gmail.com>
+ <871qrt4ymg.fsf@email.froward.int.ebiederm.org>
+ <87ill53igy.fsf_-_@email.froward.int.ebiederm.org>
+ <ea14288676b045c29960651a649d66b9@AcuMS.aculab.com>
+ <87a66g25wm.fsf@email.froward.int.ebiederm.org>
+ <9bf5e96b383e4a979618cb0f729cb833@AcuMS.aculab.com> <YzjJNnzRTiSpwXHV@ZenIV>
+In-Reply-To: <YzjJNnzRTiSpwXHV@ZenIV>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH iproute2-next 1/2] ip: xfrm: support "external"
- (`collect_md`) mode in xfrm interfaces
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
 Content-Language: en-US
-To:     Eyal Birger <eyal.birger@gmail.com>, netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, stephen@networkplumber.org,
-        steffen.klassert@secunet.com, razor@blackwall.org
-References: <20221003091212.4017603-1-eyal.birger@gmail.com>
- <20221003091212.4017603-2-eyal.birger@gmail.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-In-Reply-To: <20221003091212.4017603-2-eyal.birger@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+...
+> * ability to chroot(2) had always been equivalent to ability to undo
+> chroot(2).  If you want to prevent getting out of there, you need
+> (among other things) to prevent the processes to be confined from
+> further chroot(2).
 
-Le 03/10/2022 à 11:12, Eyal Birger a écrit :
-> Support for collect metadata mode was introduced in kernel commit
-> abc340b38ba2 ("xfrm: interface: support collect metadata mode")
-> 
-> This commit adds support for creating xfrm interfaces in this
-> mode.
-> 
-> Example use:
-> 
-> ip link add ipsec1 type xfrm external
-> 
-> Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
+Not always, certainly not historically.
+chroot() inside a chroot() just constrained you further.
+If fchdir() and openat() have broken that it is a serious
+problem.
 
-Reviewed-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+NetBSD certainly has checks to detect (log and fix)
+programs that have (or might) escape from chroots.
+
+unshare() seems to create a 'shadow' inode structure
+for the chroot's "/" so at least some of the tests
+when following ".." fail to detect it.
+
+I also thought containers relied on the same scheme?
+(But I'm too old fashioned to have looked into them!)
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
