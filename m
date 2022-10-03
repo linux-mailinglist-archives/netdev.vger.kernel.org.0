@@ -2,103 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5135D5F364F
-	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 21:30:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 120FB5F3684
+	for <lists+netdev@lfdr.de>; Mon,  3 Oct 2022 21:41:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229704AbiJCTaj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Oct 2022 15:30:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40216 "EHLO
+        id S229717AbiJCTlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Oct 2022 15:41:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229679AbiJCTah (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 15:30:37 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A6CD2FFEA
-        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 12:30:35 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id z13-20020a7bc7cd000000b003b5054c6f9bso9628889wmk.2
-        for <netdev@vger.kernel.org>; Mon, 03 Oct 2022 12:30:35 -0700 (PDT)
+        with ESMTP id S229794AbiJCTk5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Oct 2022 15:40:57 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCBFD476E7
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 12:40:54 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id a2so4290891ejx.10
+        for <netdev@vger.kernel.org>; Mon, 03 Oct 2022 12:40:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
-         :subject:date;
-        bh=IpAyGd+P1NAu/iylRs5OH9L2DuNjwygjPVOrrq5MbPU=;
-        b=luv4qaWNrW7frjbYsDTywhCzf1AxFBi55hDEDQPBumu9TsEDjS+bThoh84Rzh/SWRZ
-         NDFkSSbmRaVO/gQkr6lj7j3zHo1SepeUKjuzjW8r98ONMpOV9nyHbm/aEr/UnUyFrKEO
-         uzyg/imHSpZ242bLvdxu995Bp5Ee3SdjeoGA41RSR2aXzJndj/g/L/4DBAshdy8eIcBH
-         sRkuZ4hf1/N9gMkh0gHyX4jgRiWVdMAewhIlktkTeH60E1rgJlmvF626GYXKtWV1I/O7
-         ruMvNrkiVwZ7EO72OlHYi3ZRCieIXfF1r9WHqQjgMj2FmpVopI2qu/nv18DuI1Wm4jjw
-         1CFA==
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=7ZLCyV1XU+1W3eDd7/CmSFyAO+fA3pewktRa/83aHzU=;
+        b=pYFEs9nuJmbl4b8v/8wrZQgGXosa7KIL9+iFOV6M5w0qs278SWgv6Q5/qHdyPFm+fz
+         pM+TIj8acM/SsBdd+yYDHVw7XIfeXKVMW3T+dpGcI0NzyHXuQNWhBTwljdsW5B9Wal/o
+         HdYf0j8l5J09BPDfag8LjbDRE/2nPV/VzrUN18OnTuGv2C0za3ywbbzJBj/nDVCjyZ0N
+         MRRTcl61VuqtHHojHlSf1A0S5gz52p8JYcgnDTZR/JNPqR82noukQC6LE+oX1e4VxskR
+         kdTv/fWycv1Iy5q0nrpIoQ5JNS77t/QadlARw6w6BCZdRfrrgQcPzK08ZB9rqboKaPLR
+         dg6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=IpAyGd+P1NAu/iylRs5OH9L2DuNjwygjPVOrrq5MbPU=;
-        b=jYW0RrZEPOlvZgeTrYZDl6qDxohJf6HsSUQ93F1Rv9+MtQU2RMG4m2Q5aYSQJDoPsy
-         q5T5BOeptmHeCdlxtXso6+28xFZVgcieDNP36XaeX+uNBT5/Mk7hpiOlH9uR59yXdRZs
-         Enz7i7yuy/CzqMow1EI0I86xuPeo+jfKp1OoGgo8OderUGRnI/mP5UH8l1Zi57KkyYrS
-         DsVQYzAea8EvWp19mRBxbWCGQc0zlDjstLFmIhgy0mrOrgAA+MGgM6QTaur2kOvYy5ua
-         aYQsFGPFzkZAoxGWW6Svi9m8JNzLMUyefmxZ8UPePE+vzMXzqUhnVnK4S66gEFHIIGiw
-         7rbQ==
-X-Gm-Message-State: ACrzQf3qIhtMJ+sUI51zfTvXJQSikWMEwVv20zP8rVdXGxLx6hQYznrp
-        gEpEk1AVKlT40+IKFh4pzsk=
-X-Google-Smtp-Source: AMsMyM4esJmvpMHLbfxtXHyDrO8bjcWq/L2OQ7zZafQ69GPGnQ/pbEN2e9gyghKzIuTTkUNClhWMJQ==
-X-Received: by 2002:a05:600c:22c7:b0:3b4:92ba:ff99 with SMTP id 7-20020a05600c22c700b003b492baff99mr8382557wmg.190.1664825433654;
-        Mon, 03 Oct 2022 12:30:33 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
-        by smtp.gmail.com with ESMTPSA id p8-20020a05600c05c800b003b332a7b898sm11857913wmd.45.2022.10.03.12.30.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Oct 2022 12:30:33 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next 3/6] sfc: optional logging of TC offload
- errors
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-net-drivers@amd.com,
-        davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
-        habetsm.xilinx@gmail.com
-References: <cover.1664218348.git.ecree.xilinx@gmail.com>
- <a1ff1d57bcd5a8229dd5f2147b09c4b2b896ecc9.1664218348.git.ecree.xilinx@gmail.com>
- <20220928104426.1edd2fa2@kernel.org>
- <b4359f7e-2625-1662-0a78-9dd65bfc8078@gmail.com>
- <20220928113253.1823c7e1@kernel.org>
- <cd10c58a-5b82-10a3-8cf8-4c08f85f87e6@gmail.com>
- <20220928120754.5671c0d7@kernel.org>
- <bc338a78-a6da-78ad-ca70-d350e8e13422@gmail.com>
- <20220928181504.234644e3@kernel.org>
- <16da471c-076b-90b3-3935-abd31c6ef4d3@gmail.com>
- <20220930071951.61f81da6@kernel.org>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <f4ee3271-7180-c408-2b04-cec8e784176c@gmail.com>
-Date:   Mon, 3 Oct 2022 20:30:32 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=7ZLCyV1XU+1W3eDd7/CmSFyAO+fA3pewktRa/83aHzU=;
+        b=QAl3Xb7eNFYxX/WXgS4bPusFsSnQIH3wfdkH+Mx53U1K/Ol9LZTbXARNhq82dv0Fjf
+         fKnvtL66vsutc+J1Fpf+ZfcHj9rX8193XW60/pHaBMn9apopEclXQ31pTTuofWuO42/c
+         2VkMd17+h/YCJkeltfzPjDuvthmgVJEaCr11WvEAXl5QlhdjMlLHhoH6kh2Mxbaios5x
+         BUalErg4K8vGveIeHNZMr/zVfYlH7C4kPYDYjpjPRtccypu6Rs6HQLZBMRyHXOBNFxsh
+         YrQzcaMLG4tlhln/94oYkNXCg1kbjYD8LdTV1ZeVr2apj67Hb4edvVTXxIF6QVK7kLcQ
+         Z6Gg==
+X-Gm-Message-State: ACrzQf1Arob5aEneVdhEFH/EUsNPWhpqWr/tvU7PE+k/f1njWMKtAlyh
+        yS76dFA327kjk/T0UHBaFkaLvH6g0NfBRTfQ5e/LOw==
+X-Google-Smtp-Source: AMsMyM6tkVq2MdhMLHKwX56llqPV2lSc3XgaBqz998rQO2+KN9GxC4vKqSdg4b2CGaUnhasP4SgpivwfDofqxILhhk8=
+X-Received: by 2002:a17:906:58c8:b0:6fe:91d5:18d2 with SMTP id
+ e8-20020a17090658c800b006fe91d518d2mr16531848ejs.190.1664826053241; Mon, 03
+ Oct 2022 12:40:53 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20220930071951.61f81da6@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220921001630.56765-1-konrad.dybcio@somainline.org>
+ <83b90478-3974-28e6-cf13-35fc4f62e0db@marcan.st> <13b8c67c-399c-d1a6-4929-61aea27aa57d@somainline.org>
+ <0e65a8b2-0827-af1e-602c-76d9450e3d11@marcan.st> <7fd077c5-83f8-02e2-03c1-900a47f05dc1@somainline.org>
+ <CACRpkda3uryD6TOEaTi3pPX5No40LBWoyHR4VcEuKw4iYT0dqA@mail.gmail.com>
+ <20220922133056.eo26da4npkg6bpf2@bang-olufsen.dk> <CACRpkdYwJLO18t08zqu_Y1gaSpZJMc+3MFxRUtQzLkJF2MqmqQ@mail.gmail.com>
+ <87wn9q35tp.fsf_-_@kernel.org>
+In-Reply-To: <87wn9q35tp.fsf_-_@kernel.org>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 3 Oct 2022 21:40:41 +0200
+Message-ID: <CACRpkda_dWNs9u4W4bvzD+riGCjbCYtCy5aWADzK+w2zaanOfA@mail.gmail.com>
+Subject: Re: Stockholm syndrome with Linux wireless?
+To:     Kalle Valo <kvalo@kernel.org>, Peter Robinson <perobins@redhat.com>
+Cc:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Hector Martin <marcan@marcan.st>,
+        "~postmarketos/upstreaming@lists.sr.ht" 
+        <~postmarketos/upstreaming@lists.sr.ht>,
+        "martin.botka@somainline.org" <martin.botka@somainline.org>,
+        "angelogioacchino.delregno@somainline.org" 
+        <angelogioacchino.delregno@somainline.org>,
+        "marijn.suijten@somainline.org" <marijn.suijten@somainline.org>,
+        "jamipkettunen@somainline.org" <jamipkettunen@somainline.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Marek Vasut <marex@denx.de>,
+        "Zhao, Jiaqing" <jiaqing.zhao@intel.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Soon Tak Lee <soontak.lee@cypress.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "brcm80211-dev-list.pdl@broadcom.com" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        "SHA-cyfmac-dev-list@infineon.com" <SHA-cyfmac-dev-list@infineon.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30/09/2022 15:19, Jakub Kicinski wrote:
-> On Fri, 30 Sep 2022 10:03:01 +0100 Edward Cree wrote:
->> It has one (do_trace_netlink_extack()), but sadly that won't play
->>  so well with formatted extacks since AIUI trace needs a constant
->>  string (I'm just giving it the format string in my prototype).
->> But yeah it's better than nothing.
-> 
-> We can add a new one which copies the data. Presumably we'd have a "set
-> an extack msg which needs to be freed" helper were we could place it?
-> It'd mean we cut off at a static length but good enough, I say.
+On Mon, Sep 26, 2022 at 10:20 AM Kalle Valo <kvalo@kernel.org> wrote:
 
-Hmm, seems I was wrong about the tracepoint, the machinery already
- handles a dynamic string just fine.
-I should have an RFC patch ready in a few days.
+> Thanks, this was a good read! I'm always interested about user and
+> downstream feedback, both good and bad :) But I didn't get the Stockholm
+> syndrome comment in the end, what does he mean with that?
 
--ed
+That refers to this:
+https://en.wikipedia.org/wiki/Stockholm_syndrome
+
+What I think Peter means is we can't have a situation where the
+community is held hostage by low quality wireless vendors and
+even start sympathize with their development process and level
+of support.
+
+> BTW we have a wireless workshop in netdevconf 0x16, it would be great to
+> have there a this kind of session discussing user pain points:
+>
+> https://netdevconf.info/0x16/session.html?Wireless-Workshop
+
+I added Peter to the thread.
+
+Yours,
+Linus Walleij
