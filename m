@@ -2,132 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D47EB5F3EE3
-	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 10:53:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD9605F3F36
+	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 11:10:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230388AbiJDIxx convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 4 Oct 2022 04:53:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54246 "EHLO
+        id S230418AbiJDJKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Oct 2022 05:10:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229829AbiJDIxv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 04:53:51 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 802F163C0
-        for <netdev@vger.kernel.org>; Tue,  4 Oct 2022 01:53:50 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-190-cqLT9I1YPuuRISROdDhghw-1; Tue, 04 Oct 2022 09:53:41 +0100
-X-MC-Unique: cqLT9I1YPuuRISROdDhghw-1
-Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
- (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Tue, 4 Oct
- 2022 09:53:39 +0100
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.040; Tue, 4 Oct 2022 09:53:39 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     "'Eric W. Biederman'" <ebiederm@xmission.com>
-CC:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>
-Subject: RE: [CFT][PATCH] proc: Update /proc/net to point at the accessing
- threads network namespace
-Thread-Topic: [CFT][PATCH] proc: Update /proc/net to point at the accessing
- threads network namespace
-Thread-Index: AQHY10qd381Lc0KOOEGaF1/0a4qSLq397Oxw
-Date:   Tue, 4 Oct 2022 08:53:39 +0000
-Message-ID: <8be364fd938a4ac9959b4c01120cac97@AcuMS.aculab.com>
-References: <dacfc18d6667421d97127451eafe4f29@AcuMS.aculab.com>
-        <CAHk-=wgS_XpzEL140ovgLwGv6yXvV7Pu9nKJbCuo5pnRfcEbvg@mail.gmail.com>
-        <YzXo/DIwq65ypHNH@ZenIV> <YzXrOFpPStEwZH/O@ZenIV>
-        <CAHk-=wjLgM06JrS21W4g2VquqCLab+qu_My67cv6xuH7NhgHpw@mail.gmail.com>
-        <YzXzXNAgcJeJ3M0d@ZenIV> <YzYK7k3tgZy3Pwht@ZenIV>
-        <CAHk-=wihPFFE5KcsmOnOm1CALQDWqC1JTvrwSGBS08N5avVmEA@mail.gmail.com>
-        <871qrt4ymg.fsf@email.froward.int.ebiederm.org>
-        <87ill53igy.fsf_-_@email.froward.int.ebiederm.org>
-        <ea14288676b045c29960651a649d66b9@AcuMS.aculab.com>
-        <87a66g25wm.fsf@email.froward.int.ebiederm.org>
-        <9bf5e96b383e4a979618cb0f729cb833@AcuMS.aculab.com>
- <87fsg4ygxc.fsf@email.froward.int.ebiederm.org>
-In-Reply-To: <87fsg4ygxc.fsf@email.froward.int.ebiederm.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S229722AbiJDJKG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 05:10:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC9513D46;
+        Tue,  4 Oct 2022 02:10:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 947EBB81915;
+        Tue,  4 Oct 2022 09:10:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F5E4C433C1;
+        Tue,  4 Oct 2022 09:10:02 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Z678509s"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1664874600;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=0hs1IsEGUyjMwHR9WwV4memFIy/AoaL6RbQhrgEup2Q=;
+        b=Z678509smGM8bP3SS+4I0Ud/8nidvLu/4oLEwSHnqjBVEGYZ/zPA1KzGywhdogUM7cYDkD
+        VoAOZYof5XkRVkYTnhum700euhCfZMtuT1pWFKA0ug9BT6Hob62sOtr3Z2ULGYQimeTXTK
+        BNl0vMaIgzH0hzWQfp/Th9/ZDJTNYRs=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 0c34866b (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Tue, 4 Oct 2022 09:09:59 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        bpf@vger.kernel.org, netdev@vger.kernel.org, kuba@kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH] bpf: unify function pointer type of dispatcher
+Date:   Tue,  4 Oct 2022 11:09:41 +0200
+Message-Id: <20221004090941.1360595-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric W. Biederman
-> Sent: 03 October 2022 18:07
-> 
-> David Laight <David.Laight@ACULAB.COM> writes:
-> 
-> > From: Eric W. Biederman
-...
-> > Part of the problem is that changing the net namespace isn't
-> > enough, you also have to remount /sys - which isn't entirely
-> > trivial.
-> 
-> Yes.  That is actually a much more maintainable model.  But it is still
-> imperfect.    I was thinking about the proc/net directories when
-> I made my comment.  Unlike proc where we have task ids there is nothing
-> in /proc that can do anything.
-> 
-> > It might be possibly to mount a network namespace version
-> > of /sys on a different mountpoint - I've not tried very
-> > hard to do that.
-> 
-> It is a bug if that doesn't work.
+The __bpf_prog_run() function takes a bpf_dispatcher_fn as its last
+argument, which are usually generated by use of the
+DEFINE_BPF_DISPATCHER() macro. The last argument of a bpf_dispatcher_fn
+is an open coded function pointer. The DEFINE_BPF_DISPATCHER() macro, on the
+other hand, has as its last argument a bpf_func_t, rather than an open
+coded function pointer. Unify these two signatures by using bpf_func_t
+in both places, since it's the same as the open coded function pointer.
 
-The difficultly is picking the 'spell'.
-I think you need to run mount after switching to the namespace.
-But you don't want the unshare() that 'ip netns exec' does.
-So I think it needs a silly wrapper program.
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ include/linux/filter.h | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-> >> > Notwithstanding the apparmor issues, /proc/net could actuall be
-> >> > a symlink to (say) /proc/net_namespaces/namespace_name with
-> >> > readlink returning the name based on the threads actual namespace.
-> >>
-> >> There really aren't good names for namespaces at the kernel level.  As
-> >> one of their use cases is to make process migration possible between
-> >> machines.  So any kernel level name would need to be migrated as well.
-> >> So those kernel level names would need a name in another namespace,
-> >> or an extra namespace would have to be created for those names.
-> >
-> > Network namespaces do seem to have names.
-> > Although I gave up working out how to change to a named network
-> > namespace from within the kernel (especially in a non-GPL module).
-> 
-> Network namespaces have mount points.  The mount points have names.
-> 
-> It is just a matter of finding the right filesystem and calling
-> sys_rename().
-
-I wanted to lookup a net namespace by name - so I could create
-a kernel socket in a namespace specified in configuration data.
-Not change the name of a namespace.
-
-I ended up only giving a few options - basically saving the
-namespace of code that called into the driver.
-(Harder in a non-gpl driver since you can't directly hold/release
-the namespace itself - fortunately you can create a socket!)
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index 527ae1d64e27..25e85cfc28b8 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -569,8 +569,7 @@ DECLARE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
+ 
+ typedef unsigned int (*bpf_dispatcher_fn)(const void *ctx,
+ 					  const struct bpf_insn *insnsi,
+-					  unsigned int (*bpf_func)(const void *,
+-								   const struct bpf_insn *));
++					  bpf_func_t bpf_func);
+ 
+ static __always_inline u32 __bpf_prog_run(const struct bpf_prog *prog,
+ 					  const void *ctx,
+-- 
+2.37.3
 
