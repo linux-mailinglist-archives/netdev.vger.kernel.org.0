@@ -2,99 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 156705F4952
-	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 20:35:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1A9A5F496B
+	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 20:48:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229813AbiJDSfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Oct 2022 14:35:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37408 "EHLO
+        id S229929AbiJDSsw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Oct 2022 14:48:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229680AbiJDSfT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 14:35:19 -0400
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C55692AE25;
-        Tue,  4 Oct 2022 11:35:14 -0700 (PDT)
-Received: by mail-qt1-x82b.google.com with SMTP id r20so8668662qtn.12;
-        Tue, 04 Oct 2022 11:35:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=H4GdClrHvsjvyos0RzMbAPP6/VNtDsrWcC1gWDDZt+4=;
-        b=Q+Jdf4LTwInIWOZIOzui61L352WiAkhWcH/cwSpwIx9nepkjJSaOQxdNIRtoixkp3H
-         tu+sCwwFDnSq+7h+4traIZAT/7w5qTDT0dpBEsNt4P8JXNWQlBLYQSeurirXX3uM70bl
-         GxDIglfkzAPA24o9/D3rhTFesrQnDINoBVdKXN4qKUQYwVroAplzYExUtyxzu2iDgRB/
-         8POmIOSbMbuuRp4HJjKKWVaN7i9HhoaKk+kR6RiaYyx9mS+gCk6uimiVs3AS5EH+H4g0
-         2+P9gL/eocRyx/cq347v1uRDVh+NILohg/21UvJZXkA8RmzEl3u+MiAkpvPFGwCtOJNN
-         rR6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=H4GdClrHvsjvyos0RzMbAPP6/VNtDsrWcC1gWDDZt+4=;
-        b=NHrNz3pNFf+vWB9iRH1tzGuZVFCdCN+ydHXCYd5E0AksujaYGhFckDKg3+xtE5SezL
-         kUO9E10c2VZkqZuL5P+8VeRo7/78DW8gEjIELeBqpkDjFi5X29IvQUeQKQc3pKuBA1YC
-         4huLe1nWHao5tNyR0Z5QlYD4TIH+8rKFBY6IC/ueXnxr6xfh0T9H9VUVKBI3ygJhM/Mn
-         iQ+xZIwUzcBD5goov3VxllCPWqEtQOrDdwHbbiy1OYHhvkZILWBpkkAcTPK3rweBPeuF
-         Uhsl68bq8I+pNHmUfmQMN+XmYhG6wJrQ6B03axoW64pisBC9Sv0OK46y3AijzAIXJqyg
-         PQwQ==
-X-Gm-Message-State: ACrzQf0e3CpQZpE5q0tiDO6JBejwzw2WDqoNHuur2CfG/GAPZa3fGT7s
-        X3HMGfifzd+omSGnkYXh3UeA8Xuz1Uc=
-X-Google-Smtp-Source: AMsMyM5ZWjdkkI5t9VHNCznY9xmiz9sIjIamZcqNRl4gpmtRMOxopJhYZBoheCrxPCyfuRS28cZ9nA==
-X-Received: by 2002:a05:622a:1046:b0:35c:dde0:6735 with SMTP id f6-20020a05622a104600b0035cdde06735mr20653870qte.689.1664908513575;
-        Tue, 04 Oct 2022 11:35:13 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id bq38-20020a05620a46a600b006a6ebde4799sm15218518qkb.90.2022.10.04.11.35.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 04 Oct 2022 11:35:12 -0700 (PDT)
-Message-ID: <a495dd76-060a-210a-1a11-55333d67180c@gmail.com>
-Date:   Tue, 4 Oct 2022 11:35:08 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net-next] docs: networking: phy: add missing space
-Content-Language: en-US
-To:     Paolo Abeni <pabeni@redhat.com>,
-        Casper Andersson <casper.casan@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229816AbiJDSst (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 14:48:49 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B8936A4B6;
+        Tue,  4 Oct 2022 11:48:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=dF82zEweBR6fURXs87QKoPIU10/wyDMoBMuKcKxbCsw=; b=d0wFHXUGjqakfSh7afsSgf3RRB
+        OT8a0L76nJh3fk/DCEhHtF8iYPeVQKVOexG133WwReAh9NXuOBwZEnIx4Xl0kyKihbyxUPx4i+zQj
+        eC7ERK6/BNr8qbSs005EU7PeROav2iTSEeZHTFgg8KAUMFjmoEUygbP/zfVQpD6X5iKMRxAQWok2f
+        xZum0cUHhxAjlt1XkKUV3P8B3sezjfw1r/IRycgtAnbFOAB8hqK3XAPJuEiy6gm6rfLS8HhJjBLal
+        7Rl1eizXkUJ8P/kGvr0f1heBrU3HvvB1jK8W5DoveYwiFIS31Dxb/pMBufvlD7LJnoKqKTpiHlc5b
+        9V3vvf9A==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34586)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ofmy4-0008Le-Nz; Tue, 04 Oct 2022 19:48:36 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ofmy0-0004bi-Eh; Tue, 04 Oct 2022 19:48:32 +0100
+Date:   Tue, 4 Oct 2022 19:48:32 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org
-References: <20221004073242.304425-1-casper.casan@gmail.com>
- <6645ba3ba389dc6da8d16f063210441337db9249.camel@redhat.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <6645ba3ba389dc6da8d16f063210441337db9249.camel@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        Camelia Alexandra Groza <camelia.groza@nxp.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "linuxppc-dev @ lists . ozlabs . org" <linuxppc-dev@lists.ozlabs.org>
+Subject: Re: [PATCH net-next v6 6/9] net: dpaa: Convert to phylink
+Message-ID: <YzyAADoHpExvo6XE@shell.armlinux.org.uk>
+References: <20220930200933.4111249-1-sean.anderson@seco.com>
+ <20220930200933.4111249-7-sean.anderson@seco.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220930200933.4111249-7-sean.anderson@seco.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/4/22 03:30, Paolo Abeni wrote:
-> On Tue, 2022-10-04 at 09:32 +0200, Casper Andersson wrote:
->> Missing space between "pins'" and "strength"
->>
->> Signed-off-by: Casper Andersson <casper.casan@gmail.com>
->> ---
-> 
-> The merge window has now started (after Linus tagged 6.0)
-> and will last until he tags 6.1-rc1 (two weeks from now). During this
-> time we'll not be taking any patches for net-next so
-> please repost in around 2 weeks.
+On Fri, Sep 30, 2022 at 04:09:30PM -0400, Sean Anderson wrote:
+> +static void memac_validate(struct phylink_config *config,
+> +			   unsigned long *supported,
+> +			   struct phylink_link_state *state)
+> +{
+> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
+> +	struct fman_mac *memac = fman_config_to_mac(config)->fman_mac;
+> +
+> +	phylink_generic_validate(config, supported, state);
+> +
+> +	if (phy_interface_mode_is_rgmii(state->interface) &&
+> +	    memac->rgmii_no_half_duplex) {
+> +		phylink_caps_to_linkmodes(mask, MAC_10HD | MAC_100HD);
+> +		linkmode_andnot(supported, supported, mask);
+> +		linkmode_andnot(state->advertising, state->advertising, mask);
+> +	}
+> +}
 
-It is a documentation patch, therefore not functionally touching code, 
-maybe that could count as an exception?
+Having been through the rest of this with a fine tooth comb, nothing
+else stands out with the exception of the above, which I think could
+be done better with this patch:
+
+http://git.armlinux.org.uk/cgit/linux-arm.git/commit/?h=net-queue&id=e65a47c4053255bd51715d5550e21c869971258c
+
+Since the above would become:
+
+static void memac_validate(struct phylink_config *config,
+			   unsigned long *supported,
+			   struct phylink_link_state *state)
+{
+	struct mac_device *mac_dev = fman_config_to_mac(config);
+	struct fman_mac *memac = mac_dev->fman_mac;
+	unsigned long caps;
+
+	caps = mac_dev->phylink_config.capabilities;
+
+	if (phy_interface_mode_is_rgmii(state->interface) &&
+	    memac->rgmii_no_half_duplex)
+		caps &= ~(MAC_10HD | MAC_100HD);
+
+	phylink_validate_mask_caps(supported, state, caps);
+}
+
+If you want to pick up my patch that adds this helper into your series,
+please do.
+
 -- 
-Florian
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
