@@ -2,49 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F47A5F3D79
-	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 09:51:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 391A25F3D7E
+	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 09:52:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229697AbiJDHvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Oct 2022 03:51:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53016 "EHLO
+        id S229853AbiJDHwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Oct 2022 03:52:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229643AbiJDHvM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 03:51:12 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A4BA2B624;
-        Tue,  4 Oct 2022 00:51:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=Uf9y1Q5FeZRo3Kn1eduleYE4tdmn/F4uNHOsG12u5R8=;
-        t=1664869871; x=1666079471; b=Ygcy8V3w9RADDTIhY8JdG3s8rA6LhfYERJHjik4A4C3V4U1
-        0OmykRGmP3iKo/YZLoohbTRQI7oQm+KidH4lb3qXKT94BOiPZ5kPLPu/ddvy/CXhH7kMPGHEn6lqE
-        e0WvTe/MEIwvMhEm4go8SIReMCM9mJ3Qb7v6npq9vwvfABWA5Joe6V0AYgIrswvIJsujiokBenZbR
-        z8pU1n8OuBg5WxbsAeneEu1Vy+wLh+NgEfqoC05NP6ZTqRvOBnYDeWz+0y5EGQn1y5LLsRJdAnZHB
-        olGrd+dPjvyZcn1D55MEIX6bYCpdPJ61j+DXhNr7qKzuwIZAcoTHp1bZ07JCVdeQ==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.96)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1ofcho-00F5x0-1m;
-        Tue, 04 Oct 2022 09:51:08 +0200
-Message-ID: <62b8bf6f739d1e6e0320864ed0660c9c52b767c4.camel@sipsolutions.net>
-Subject: Re: doc warnings in *80211
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        linux-wireless@vger.kernel.org
-Date:   Tue, 04 Oct 2022 09:51:07 +0200
-In-Reply-To: <20221003191128.68bfc844@kernel.org>
-References: <20221003191128.68bfc844@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+        with ESMTP id S229643AbiJDHwr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 03:52:47 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ED412B629;
+        Tue,  4 Oct 2022 00:52:46 -0700 (PDT)
+Received: from [192.168.10.9] (unknown [39.45.148.204])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: usama.anjum)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 01F2D6602294;
+        Tue,  4 Oct 2022 08:52:42 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1664869964;
+        bh=R6l9T5BM52dcR1rvtAnSOR0sTeiXruJN2cxHdJAe5ZY=;
+        h=Date:Cc:To:From:Subject:From;
+        b=CkBj9peD5/eQeSHFXfLAg/YLU/jvMp4CukTv+9PnxQpjqFUwXRkWWUMmXzvVma8cb
+         Oa9tRZOjBQGdgRkIkDekKrU4ttcqMxz+C3oInmjV49bq+OJPZht98sLxBFfdi7j+uZ
+         tcizwg1nkwuLyUEd1mzlCAI8LvWZH9Gmq8xZD0Oay/4GPNwcvBY2kMbjyD+uZwRUI3
+         l9oVdntpezgHbu0iWtGr++TJoY5R7PmjoI0RCR/9ASfOB8PVWkW43des2E+Z9F1w0P
+         k61e+iUcci6hhEo8kLXZg3gfhrLZJd/6iVVgbk6CpRaB9L9gdfS3QOYym/KjlA9Vhd
+         5iENahn47BRHg==
+Message-ID: <28270724-1c20-5b28-e5cf-ffe29a85ce4c@collabora.com>
+Date:   Tue, 4 Oct 2022 12:52:38 +0500
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Cc:     usama.anjum@collabora.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        Collabora Kernel ML <kernel@collabora.com>,
+        kernel-janitors <kernel-janitors@vger.kernel.org>
+Content-Language: en-US
+To:     =?UTF-8?Q?Tomislav_Po=c5=beega?= <pozega.tomislav@gmail.com>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Kalle Valo <kvalo@kernel.org>
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+Subject: [Bug report] Probably variable is being overwritten
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -54,32 +59,27 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
 
-> doing basic sanity checks before submitting the net-next PR I spotted
-> that we have these warnings when building documentation on net-next:
->=20
-> Documentation/driver-api/80211/cfg80211:48: ./include/net/cfg80211.h:6960=
-: WARNING: Duplicate C declaration, also defined at driver-api/80211/cfg802=
-11:6924.
-> Declaration is '.. c:function:: void cfg80211_rx_assoc_resp (struct net_d=
-evice *dev, struct cfg80211_rx_assoc_resp *data)'.
-
-Hmm. That's interesting. I guess it cannot distinguish between the type
-of identifier?
-
-struct cfg80211_rx_assoc_resp vs. cfg80211_rx_assoc_resp()
-
-Not sure what do about it - rename one of them?
-
-> Documentation/driver-api/80211/mac80211:109: ./include/net/mac80211.h:504=
-6: WARNING: Duplicate C declaration, also defined at driver-api/80211/mac80=
-211:1065.
-> Declaration is '.. c:function:: void ieee80211_tx_status (struct ieee8021=
-1_hw *hw, struct sk_buff *skb)'.
-
-Same here actually!
-
-I don't think either of these is new.
-
-johannes
+A bit in rfb0r1 is being cleared and result is stored in rfval. Then the
+first bit is being set without reusing the rfval. It is probably bug or
+dead code? The same pattern can be seen repeated below as well.
 
 
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
+b/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
+index cbbb1a4849cf..4857e3818418 100644
+--- a/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
++++ b/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
+@@ -8844,7 +8844,7 @@ static void rt2800_rxiq_calibration(struct
+rt2x00_dev *rt2x00dev)
+        for (ch_idx = 0; ch_idx < 2; ch_idx = ch_idx + 1) {
+                if (ch_idx == 0) {
+                        rfval = rfb0r1 & (~0x3);
+-                       rfval = rfb0r1 | 0x1;
++                       rfval = rfval | 0x1;
+                        rt2800_rfcsr_write_bank(rt2x00dev, 0, 1, rfval);
+                        rfval = rfb0r2 & (~0x33);
+                        rfval = rfb0r2 | 0x11;
+
+
+-- 
+Muhammad Usama Anjum
