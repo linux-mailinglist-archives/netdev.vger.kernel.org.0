@@ -2,135 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 852DD5F43D3
-	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 15:00:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7E8E5F43E3
+	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 15:04:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230003AbiJDNAz convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 4 Oct 2022 09:00:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40158 "EHLO
+        id S229684AbiJDNEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Oct 2022 09:04:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230282AbiJDNAG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 09:00:06 -0400
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77F1961D77
-        for <netdev@vger.kernel.org>; Tue,  4 Oct 2022 05:57:22 -0700 (PDT)
-Received: by mail-io1-f72.google.com with SMTP id d24-20020a05660225d800b006a466ec7746so8902971iop.3
-        for <netdev@vger.kernel.org>; Tue, 04 Oct 2022 05:57:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:to:from:subject:message-id:in-reply-to
-         :date:mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=ZaaERZiNeWPg1VEtskzRzem7azoo+jAPc6Nm8v1Mjr0=;
-        b=sWVKpH5D+YNdUsMrwqIomQaYXhtumogbU8mDahiU7KOvfkmyDqk8WFRtzhztJ8ZGa2
-         2wJoCNw7W0k71C28XUXLxah9FHybSINVAmANHgOjBbA+7rSx3W8s3SAtT27kkuIDaUbB
-         LIYXM3Mc3KyD/JZMS9EQt4KsATERby+bnRG4wPYryER/qXkQwrxFcmsGsxjwNUQZ6n/V
-         sNT8Duj0mTSSOpbqMn4t9JgX1mfvzDLs1HSpG3SNNOTdzpRAwdzBdy3VXn5AWLrkzNhD
-         2E3/ZN/i2vALIrJIuQAJ77rj+rn5prTEyXyQGeCdCd/lBKo3t9mURXTAx9vjzFrPOO9I
-         4dUg==
-X-Gm-Message-State: ACrzQf36b5FHzZcoFz/WMGQaTWH+6GUo/3UE9uADG3MaPAuM4L0IP6y3
-        Buu2c91I80aC4+TeKA3di/7X8CF0XXTR0a5zrVzurKuS1NnD
-X-Google-Smtp-Source: AMsMyM4kteE+NL4GAcjpCLq1LwFAhSOn3ZAssS5MrlayLf6b/No6LrtmBBCgIgSa0qYCffeg++X/hyr53V5k5Q4P1mQiqhP4JPvH
+        with ESMTP id S230003AbiJDNEO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 09:04:14 -0400
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB923DFA9;
+        Tue,  4 Oct 2022 06:03:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=dVELfXXKaUTmoJi2M9apcMe3aQMNvoEJTLoWDD56CtU=; b=QUwLAfMLOiMchFX/9mW7ciLofG
+        a/OkgpR/X5Z24OhzCyY86Fo+bwBchjMffoz8li4DQ9wRiIWtsI+bEDEXlCPl5JDarnfvdCIJlcjOZ
+        fm7ewLLvjRKUyTEhHY38bRbmddwGsylLIAdPLhF90nLO9ceyb8xwk9LptYwE4MVr46TsOWkZp36S+
+        SfL0oVdJLuqM1RpW1xWWkW2SzQUhElcVverDWHm1lUYvmH5zJ26Hx97p95iL+yTYSORthBUhcLPuz
+        o5NEv9w19B0DiqB6jpLnhlGjRhANsqfbx2YCiZgwZCK0FjKUo4znXg44vQm50H+BQomTjrTqpGC3S
+        1+EW6vVNW8Di/WESbPl4J5ppmOwz+aD9N88BOQ9NE+0BcfDflSLkP1xJqpaR+3rDCWA6SMGC+vhXv
+        ZmAgqIKF4tQH5znwGs0+Yc0v7xCV6qOG47jy/HfaQ6u7vY/qMtBw/5godIJq8KraBGvcPAEi6L7jY
+        wBqxW2d6yyip/Nt1dhcRMOap8Z+saxLiovKkMPG+ydo9rfTA22UPYKcS391aET4i+HDu6fLQLpj1s
+        Mn7Z5a6hffG9pt7Donok4gWSEKIKfs688ldwXsXjXCYDeNwwIzqQsVZUxRbe1huh7NZ0vk1pNqYS3
+        kxfLSRr1TQjHTr/IyoSsWLyw2H5kEoTK5vB2YBBTs=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     Dominique Martinet <asmadeus@codewreck.org>,
+        Leon Romanovsky <leon@kernel.org>
+Cc:     v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        syzbot+67d13108d855f451cafc@syzkaller.appspotmail.com,
+        davem@davemloft.net, edumazet@google.com, ericvh@gmail.com,
+        kuba@kernel.org, lucho@ionkov.net, netdev@vger.kernel.org,
+        syzbot+de52531662ebb8823b26@syzkaller.appspotmail.com
+Subject: Re: [PATCH 2/2] 9p: destroy client in symmetric order
+Date:   Tue, 04 Oct 2022 15:03:08 +0200
+Message-ID: <4813311.ZYo2F6apM6@silver>
+In-Reply-To: <YzV5J9NmL7hijFTR@unreal>
+References: <cover.1664442592.git.leonro@nvidia.com> <YzVzjR4Yz3Oo3JS+@codewreck.org>
+ <YzV5J9NmL7hijFTR@unreal>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:168b:b0:6a2:c6d1:d4e4 with SMTP id
- s11-20020a056602168b00b006a2c6d1d4e4mr11282718iow.190.1664888241655; Tue, 04
- Oct 2022 05:57:21 -0700 (PDT)
-Date:   Tue, 04 Oct 2022 05:57:21 -0700
-In-Reply-To: <PH8PR10MB6290511E9C0A3D20E1C222EEC25A9@PH8PR10MB6290.namprd10.prod.outlook.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000003c183505ea350059@google.com>
-Subject: Re: [syzbot] upstream boot error: WARNING in netlink_ack
-From:   syzbot <syzbot+3a080099974c271cd7e9@syzkaller.appspotmail.com>
-To:     bpf@vger.kernel.org, davem@davemloft.net, dvyukov@google.com,
-        edumazet@google.com, fw@strlen.de,
-        harshit.m.mogalapalli@oracle.com, keescook@chromium.org,
-        kuba@kernel.org, linux-hardening@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
-        vegard.nossum@oracle.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Donnerstag, 29. September 2022 12:53:27 CEST Leon Romanovsky wrote:
+> On Thu, Sep 29, 2022 at 07:29:33PM +0900, Dominique Martinet wrote:
+> > Leon Romanovsky wrote on Thu, Sep 29, 2022 at 12:37:56PM +0300:
+> > > Make sure that all variables are initialized and released in correct
+> > > order.
+> > 
+> > Haven't tried running or compiling, comments out of my head that might
+> > be wrong below
+> > 
+> > > Reported-by: syzbot+de52531662ebb8823b26@syzkaller.appspotmail.com
+> > 
+> > You're adding this report tag but I don't see how you fix that failure.
+> > What you need is p9_tag_cleanup(clnt) from p9_client_destroy -- I assume
+> > this isn't possible for any fid to be allocated at this point so the fid
+> > destroying loop is -probably- optional.
+> > 
+> > I would assume it is needed from p9_client_version failures.
+> > 
+> > > Signed-off-by: Leon Romanovsky <leon@kernel.org>
+> > > ---
+> > > 
+> > >  net/9p/client.c | 37 ++++++++++++-------------------------
+> > >  1 file changed, 12 insertions(+), 25 deletions(-)
+> > > 
+> > > diff --git a/net/9p/client.c b/net/9p/client.c
+> > > index aaa37b07e30a..8277e33506e7 100644
+> > > --- a/net/9p/client.c
+> > > +++ b/net/9p/client.c
+> > > @@ -179,7 +179,6 @@ static int parse_opts(char *opts, struct p9_client
+> > > *clnt)> > 
+> > >  				goto free_and_return;
+> > >  			
+> > >  			}
+> > > 
+> > > -			v9fs_put_trans(clnt->trans_mod);
+> > 
+> > Pretty sure you'll be "leaking transports" if someone tries to pass
+> > trans=foo multiple times; this can't be removed...(continues below)...
+> 
+> It is pity, you are right.
+> 
+> Thanks
 
-syzbot tried to test the proposed patch but the build/boot failed:
+Hi Leon,
 
-asset storage also requires dashboard client
+have you planned a v2 on this? Just asking, so that we know whether to go 
+forward.
 
-syzkaller build log:
-go env (err=<nil>)
-GO111MODULE="auto"
-GOARCH="amd64"
-GOBIN=""
-GOCACHE="/syzkaller/.cache/go-build"
-GOENV="/syzkaller/.config/go/env"
-GOEXE=""
-GOEXPERIMENT=""
-GOFLAGS=""
-GOHOSTARCH="amd64"
-GOHOSTOS="linux"
-GOINSECURE=""
-GOMODCACHE="/syzkaller/jobs/linux/gopath/pkg/mod"
-GONOPROXY=""
-GONOSUMDB=""
-GOOS="linux"
-GOPATH="/syzkaller/jobs/linux/gopath"
-GOPRIVATE=""
-GOPROXY="https://proxy.golang.org,direct"
-GOROOT="/usr/local/go"
-GOSUMDB="sum.golang.org"
-GOTMPDIR=""
-GOTOOLDIR="/usr/local/go/pkg/tool/linux_amd64"
-GOVCS=""
-GOVERSION="go1.17"
-GCCGO="gccgo"
-AR="ar"
-CC="gcc"
-CXX="g++"
-CGO_ENABLED="1"
-GOMOD="/syzkaller/jobs/linux/gopath/src/github.com/google/syzkaller/go.mod"
-CGO_CFLAGS="-g -O2"
-CGO_CPPFLAGS=""
-CGO_CXXFLAGS="-g -O2"
-CGO_FFLAGS="-g -O2"
-CGO_LDFLAGS="-g -O2"
-PKG_CONFIG="pkg-config"
-GOGCCFLAGS="-fPIC -m64 -pthread -fmessage-length=0 -fdebug-prefix-map=/tmp/go-build46036865=/tmp/go-build -gno-record-gcc-switches"
+Best regards,
+Christian Schoenebeck
 
-git status (err=<nil>)
-HEAD detached at feb563518
-nothing to commit, working tree clean
-
-
-go list -f '{{.Stale}}' ./sys/syz-sysgen | grep -q false || go install ./sys/syz-sysgen
-make .descriptions
-bin/syz-sysgen
-touch .descriptions
-GOOS=linux GOARCH=amd64 go build "-ldflags=-s -w -X github.com/google/syzkaller/prog.GitRevision=feb5635181eb12a6e3516172a3f5af06a3bc93e1 -X 'github.com/google/syzkaller/prog.gitRevisionDate=20220930-160315'" "-tags=syz_target syz_os_linux syz_arch_amd64 " -o ./bin/linux_amd64/syz-fuzzer github.com/google/syzkaller/syz-fuzzer
-GOOS=linux GOARCH=amd64 go build "-ldflags=-s -w -X github.com/google/syzkaller/prog.GitRevision=feb5635181eb12a6e3516172a3f5af06a3bc93e1 -X 'github.com/google/syzkaller/prog.gitRevisionDate=20220930-160315'" "-tags=syz_target syz_os_linux syz_arch_amd64 " -o ./bin/linux_amd64/syz-execprog github.com/google/syzkaller/tools/syz-execprog
-GOOS=linux GOARCH=amd64 go build "-ldflags=-s -w -X github.com/google/syzkaller/prog.GitRevision=feb5635181eb12a6e3516172a3f5af06a3bc93e1 -X 'github.com/google/syzkaller/prog.gitRevisionDate=20220930-160315'" "-tags=syz_target syz_os_linux syz_arch_amd64 " -o ./bin/linux_amd64/syz-stress github.com/google/syzkaller/tools/syz-stress
-mkdir -p ./bin/linux_amd64
-gcc -o ./bin/linux_amd64/syz-executor executor/executor.cc \
-	-m64 -O2 -pthread -Wall -Werror -Wparentheses -Wunused-const-variable -Wframe-larger-than=16384 -Wno-stringop-overflow -Wno-array-bounds -Wno-format-overflow -static-pie -fpermissive -w -DGOOS_linux=1 -DGOARCH_amd64=1 \
-	-DHOSTGOOS_linux=1 -DGIT_REVISION=\"feb5635181eb12a6e3516172a3f5af06a3bc93e1\"
-
-
-
-Tested on:
-
-commit:         725737e7 Merge tag 'statx-dioalign-for-linus' of git:/..
-git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-kernel config:  https://syzkaller.appspot.com/x/.config?x=36e3ab6ff9643877
-dashboard link: https://syzkaller.appspot.com/bug?extid=3a080099974c271cd7e9
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=12302bb8880000
 
