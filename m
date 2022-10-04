@@ -2,121 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 631675F45E0
-	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 16:46:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 639655F462D
+	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 17:08:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229929AbiJDOqQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Oct 2022 10:46:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56000 "EHLO
+        id S229611AbiJDPI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Oct 2022 11:08:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229808AbiJDOqM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 10:46:12 -0400
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C78C55F13C;
-        Tue,  4 Oct 2022 07:46:09 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 3BFC65C0156;
-        Tue,  4 Oct 2022 10:46:06 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 04 Oct 2022 10:46:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm1; t=1664894766; x=1664981166; bh=Y1VGbCsu5o
-        5kYEKIpKet6zL2OfYtDvzVRcqdfrxnqAE=; b=iwKLWJO4vqTKd6vNwZzNUz4x5M
-        pSsYDoygZrLWW2YPA51tEw3zRZyzwr7+ixf13W1hw1yXCaXy7mDp4nClSEmXVknn
-        wqHnv9KmxdPIw/U/Rd+MZEXD97KOmAVCVc8fiBivwxJtD4bKzNyy2P6MP8MjCvaZ
-        q7JQoZm/+X+APZkF1LMjyLrD58SKQL6CP52HFRVayPv6xABIQqOTgf7utYl9+MYv
-        uTCcd1cpZzOuJZBS0Elur82rYwjeglSA5McwBImxqiZ9zDJZZLUmcYwt1V3RvOx0
-        I6awsigweDd8hQStS6WcRFB4I9myL+6n2doex4YK5SjzO91oCLuqTduTOx4A==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; t=1664894766; x=1664981166; bh=Y1VGbCsu5o5kYEKIpKet6zL2OfYt
-        DvzVRcqdfrxnqAE=; b=v6Aqx7DxvoPBuS1l/9/rpc13i4iWrrrMq8f3sqVDNvOD
-        xiGDRU/3QM5ti+e5dC2wpfVh5FPRsm54LzxJl4rohrobBqsuZgoNGBCWQHYAoC/+
-        l+IAKtrpCfNuvvHqqhMB9sabJt4Tqy/kmMcFyk7p3Amxutx9LQHOk5N+pteSUo+v
-        Q2Lgc85dKtggip6/85fsgGOsBwFDyyUmBHvc95Z1wIts5LYSGunjuFrv95Ys28ds
-        ZmJV9GVv5bvKhA28jP0cgHHtLcN1lEtHbcf2p8a6zVdXmIMOlWVLiYQvuC093e9E
-        jVdDKpU7yIcENw5SAZIi9t8mI7sJzy1Pt63sG3yWcg==
-X-ME-Sender: <xms:Lkc8Y88lVVljlxgzGiEajDnZqlZ_RLRIMPCFZzhVy4ovkbw1Frl8Ug>
-    <xme:Lkc8Y0svAy68AmeJuarh2ewuDWGH7Ds3aW2mku2PzU65RJEuO9ughPtHP_0yYRbNS
-    VlimS_pGWNHLzEX6Q>
-X-ME-Received: <xmr:Lkc8YyDdXA6o__IOp-rKWjhML3bGxPFr_x9SalMZ3ztLvhWd6LaggjOLZGeGEjeCw2Oft7GYl2sOOcojgCDuGRAyqBbUZlsSxdT6N2A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfeeiuddgkeduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    gfrhhlucfvnfffucdlfeehmdenucfjughrpeffhffvvefukfhfgggtuggjsehttdertddt
-    tddvnecuhfhrohhmpeffrghnihgvlhcuighuuceougiguhesugiguhhuuhdrgiihiieqne
-    cuggftrfgrthhtvghrnhepheeltedvgffhgfduudelleeguddtueefgfefvdeukeffvdeg
-    uddtvdeuteehteevnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvg
-    hrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegugihusegugihuuhhurdig
-    hiii
-X-ME-Proxy: <xmx:Lkc8Y8dSmGqe8dk8Lq-ccl7MzLQu3wB7ebVanmXUvyQO4JtnUsYzig>
-    <xmx:Lkc8YxPN8VoTgAqFosl7_D_mDO0ls9q-2_rcF4s82Ld89l4qYa0Vkg>
-    <xmx:Lkc8Y2n_nf9JbpgaqVY8bZxYaHQFF_xPuJWuC76gzgZp1gmo1NBj7w>
-    <xmx:Lkc8YyqJ1RsmJ5K-Lyqn1F_4u2UDDU_gvqeAf3kl7CX7cmt9Y1s4bg>
-Feedback-ID: i6a694271:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 4 Oct 2022 10:46:05 -0400 (EDT)
-Date:   Tue, 4 Oct 2022 08:46:03 -0600
-From:   Daniel Xu <dxu@dxuuu.xyz>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Martin KaFai Lau <martin.lau@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>, bpf@vger.kernel.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: WARN: multiple IDs found for 'nf_conn': 92168, 117897 - using
- 92168
-Message-ID: <20221004144603.obymbke3oarhgnnz@kashmir.localdomain>
-References: <20221003190545.6b7c7aba@kernel.org>
- <20221003214941.6f6ea10d@kernel.org>
+        with ESMTP id S229496AbiJDPI2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 11:08:28 -0400
+Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47D9A5AC6B;
+        Tue,  4 Oct 2022 08:08:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1664896105; x=1696432105;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=/5qQt6Ot5CenKNhYH38rGblgAfedEEAR7Mk5oEVODkI=;
+  b=Ertd/EigvYmCes8jQMwciWa9jnnGrQdDkk4TA1StZ9uC10DEEZ9qs+Gt
+   iyAbcrUfimPo66dgEIKoEX1ZLeYp0Zv9SZUKGGkCb059nwi5bxWGgzrLC
+   hs+n23440743ymI+BQ3oDOJU0T4zusSYh0d8BgqKuZb9BkpRk5kwKI/3+
+   Q=;
+X-IronPort-AV: E=Sophos;i="5.95,158,1661817600"; 
+   d="scan'208";a="1060718463"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-7d0c7241.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Oct 2022 14:55:41 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2c-7d0c7241.us-west-2.amazon.com (Postfix) with ESMTPS id 37CF745C8F;
+        Tue,  4 Oct 2022 14:55:41 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Tue, 4 Oct 2022 14:55:40 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.35) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
+ Tue, 4 Oct 2022 14:55:34 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <pabeni@redhat.com>
+CC:     <davem@davemloft.net>, <dsahern@kernel.org>, <edumazet@google.com>,
+        <kuba@kernel.org>, <kuni1840@gmail.com>, <kuniyu@amazon.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <syzkaller-bugs@googlegroups.com>, <vyasevic@redhat.com>,
+        <yoshfuji@linux-ipv6.org>
+Subject: Re: [PATCH RESEND v3 net 3/5] tcp/udp: Call inet6_destroy_sock() in IPv6 sk->sk_destruct().
+Date:   Tue, 4 Oct 2022 07:55:24 -0700
+Message-ID: <20221004145524.32829-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <122af5c891fcc65fb6179ec53a89374daa4600aa.camel@redhat.com>
+References: <122af5c891fcc65fb6179ec53a89374daa4600aa.camel@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221003214941.6f6ea10d@kernel.org>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FROM_SUSPICIOUS_NTLD,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,
-        SPF_PASS,T_PDS_OTHER_BAD_TLD autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.35]
+X-ClientProxiedBy: EX13D08UWB004.ant.amazon.com (10.43.161.232) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
-
-On Mon, Oct 03, 2022 at 09:49:41PM -0700, Jakub Kicinski wrote:
-> On Mon, 3 Oct 2022 19:05:45 -0700 Jakub Kicinski wrote:
-> > Hi Jiri,
-> > 
-> > I get the following warning after merging up all the trees:
-> > 
-> > vmlinux.o: warning: objtool: ___ksymtab+bpf_dispatcher_xdp_func+0x0: data relocation to !ENDBR: bpf_dispatcher_xdp_func+0x0
-> > vmlinux.o: warning: objtool: bpf_dispatcher_xdp+0xa0: data relocation to !ENDBR: bpf_dispatcher_xdp_func+0x0
-> > 
-> > $ gcc --version
-> > gcc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-15)
-> > 
-> > 
-> > Is this known?
+From:   Paolo Abeni <pabeni@redhat.com>
+Date:   Tue, 04 Oct 2022 12:21:20 +0200
+> Hello,
 > 
-> Also hit this:
+> On Mon, 2022-10-03 at 08:44 -0700, Kuniyuki Iwashima wrote:
+> [...]
+> > @@ -1723,7 +1736,7 @@ struct proto udpv6_prot = {
+> >  	.connect		= ip6_datagram_connect,
+> >  	.disconnect		= udp_disconnect,
+> >  	.ioctl			= udp_ioctl,
+> > -	.init			= udp_init_sock,
+> > +	.init			= udpv6_init_sock,
+> >  	.destroy		= udpv6_destroy_sock,
+> >  	.setsockopt		= udpv6_setsockopt,
+> >  	.getsockopt		= udpv6_getsockopt,
 > 
-> WARN: multiple IDs found for 'nf_conn': 92168, 117897 - using 92168
-> WARN: multiple IDs found for 'nf_conn': 92168, 121226 - using 92168
+> It looks like even UDPv6 lite can be ADDRFORMed to ipv4, so I guess we
+> need a similar chunk for udplitev6_prot? With that we can unexport 
+> udp_init_sock, I guess.
 
-I believe this is now-fixed pahole bug. See:
-https://lore.kernel.org/bpf/20220907023559.22juhtyl3qh2gsym@kashmir.localdomain/
-
-That being said, I didn't manage to find a pahole commit that directly
-addresses the issue, so maybe upgrading pahole perturbed enough things
-for this warning to go away?
-
-If the warning is back on pahole master I can take another look.
-
-Thanks,
-Daniel
+Good catch!
+Yes, I'll add that changes in v4.
+Thank you.
