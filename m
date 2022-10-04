@@ -2,91 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 639655F462D
-	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 17:08:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9F915F4613
+	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 16:59:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229611AbiJDPI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Oct 2022 11:08:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58298 "EHLO
+        id S229840AbiJDO7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Oct 2022 10:59:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229496AbiJDPI2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 11:08:28 -0400
-Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47D9A5AC6B;
-        Tue,  4 Oct 2022 08:08:25 -0700 (PDT)
+        with ESMTP id S229635AbiJDO7H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 10:59:07 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0737C2A408
+        for <netdev@vger.kernel.org>; Tue,  4 Oct 2022 07:59:06 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id g1so21497638lfu.12
+        for <netdev@vger.kernel.org>; Tue, 04 Oct 2022 07:59:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1664896105; x=1696432105;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=/5qQt6Ot5CenKNhYH38rGblgAfedEEAR7Mk5oEVODkI=;
-  b=Ertd/EigvYmCes8jQMwciWa9jnnGrQdDkk4TA1StZ9uC10DEEZ9qs+Gt
-   iyAbcrUfimPo66dgEIKoEX1ZLeYp0Zv9SZUKGGkCb059nwi5bxWGgzrLC
-   hs+n23440743ymI+BQ3oDOJU0T4zusSYh0d8BgqKuZb9BkpRk5kwKI/3+
-   Q=;
-X-IronPort-AV: E=Sophos;i="5.95,158,1661817600"; 
-   d="scan'208";a="1060718463"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-7d0c7241.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Oct 2022 14:55:41 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2c-7d0c7241.us-west-2.amazon.com (Postfix) with ESMTPS id 37CF745C8F;
-        Tue,  4 Oct 2022 14:55:41 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Tue, 4 Oct 2022 14:55:40 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.35) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Tue, 4 Oct 2022 14:55:34 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <pabeni@redhat.com>
-CC:     <davem@davemloft.net>, <dsahern@kernel.org>, <edumazet@google.com>,
-        <kuba@kernel.org>, <kuni1840@gmail.com>, <kuniyu@amazon.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <syzkaller-bugs@googlegroups.com>, <vyasevic@redhat.com>,
-        <yoshfuji@linux-ipv6.org>
-Subject: Re: [PATCH RESEND v3 net 3/5] tcp/udp: Call inet6_destroy_sock() in IPv6 sk->sk_destruct().
-Date:   Tue, 4 Oct 2022 07:55:24 -0700
-Message-ID: <20221004145524.32829-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <122af5c891fcc65fb6179ec53a89374daa4600aa.camel@redhat.com>
-References: <122af5c891fcc65fb6179ec53a89374daa4600aa.camel@redhat.com>
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=lVtlIVL7v00lpuub/CfBNDZ0hMYF+JuUwf/X+UhXUO4=;
+        b=NP4ROSveCZTJ9Cd0ZTdpDL0smFIIHBIiySg8/8G33GBt5X/DCc9yefGlFE2BTA+8Rh
+         MiyTb2K/UctgULmfOF1YnFHubsVNbzk2lK1VDMXf7CP0D1fWdLxUtMQs8+1Ncek97I9+
+         3IpNw4PXKZ0c2SZoU/dMxHU4A5P0NbgDmmJO+86yMkOEGoRqtVf+YB4lKtwAq3acTSqC
+         dEyk+gTyDjD8gUpd7u70SK2WCyBtbdbe7Pzg3ARK8TMTN7i/mvspnRPRQLudCeTkMORB
+         GG2FJjYPI1z5I0hB2JtHuVX8sqnQD6O5Ja3gM4LEjFS/CHqteB18NN92iKK5dvHcDmT1
+         vytA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=lVtlIVL7v00lpuub/CfBNDZ0hMYF+JuUwf/X+UhXUO4=;
+        b=IvzK5qpqJmubVAcjFO8dv6DUDQQIOBsoYkon/TblUkth1mDr4kSxz7C8B2rWRiZiIx
+         TPQR+QdaREMUM1KQcdha8SPWSTcK9KZVl7WFn5MfGSgQjnZWclggeCU2nilr8wUqEX0s
+         +iXqxjHgbUCQegaUn2rmyDJNRaLhefRgIG8N0ElmhwpGpckh7CNeiKdA96S6ydwqOKDd
+         0x3T8fHjJ+ZEWEv329S0IcC8xq9yA/fC2PMgNT9yu7KUi4G2A9DYA7yQEtzxspzQsxVf
+         TdqqI+3NGDLicWA+4BbIN9n967fJf/8mciaftLKXQ73tw4seKOmEG+fwdO3/JTvc++Wh
+         Hhuw==
+X-Gm-Message-State: ACrzQf2A+r/x6++tFu8wLVWBr5YLProjdOhPyoHNRpe3SbzVyrKpI15R
+        PoUNrI62PsnkDQcG66Cem4w3Dw==
+X-Google-Smtp-Source: AMsMyM7tieTxdgCsebyEy7HTDKvB7J+NxVU5ZG+XitQv9Icjg5/1JC/wuVSA/QE2kEYAageux+iPnA==
+X-Received: by 2002:ac2:57c9:0:b0:49c:3e64:de95 with SMTP id k9-20020ac257c9000000b0049c3e64de95mr9520407lfo.452.1664895544372;
+        Tue, 04 Oct 2022 07:59:04 -0700 (PDT)
+Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id p13-20020a2eb98d000000b0026c297a9e11sm497925ljp.133.2022.10.04.07.59.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Oct 2022 07:59:03 -0700 (PDT)
+Message-ID: <6444e5d1-0fc9-03e2-9b2a-ec19fa1e7757@linaro.org>
+Date:   Tue, 4 Oct 2022 16:59:02 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.35]
-X-ClientProxiedBy: EX13D08UWB004.ant.amazon.com (10.43.161.232) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+Subject: Re: [PATCH v3 net-next 12/14] dt-bindings: net: dsa: ocelot: add
+ ocelot-ext documentation
+Content-Language: en-US
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Colin Foster <colin.foster@in-advantage.com>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Lee Jones <lee@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+References: <20220926002928.2744638-1-colin.foster@in-advantage.com>
+ <20220926002928.2744638-13-colin.foster@in-advantage.com>
+ <ec63b5aa-3dec-3c27-e987-25e36b1632ba@linaro.org>
+ <20221004121517.4j5637hnioepsxgd@skbuf>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221004121517.4j5637hnioepsxgd@skbuf>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Paolo Abeni <pabeni@redhat.com>
-Date:   Tue, 04 Oct 2022 12:21:20 +0200
-> Hello,
+On 04/10/2022 14:15, Vladimir Oltean wrote:
+> On Tue, Oct 04, 2022 at 01:19:33PM +0200, Krzysztof Kozlowski wrote:
+>>> +  # Ocelot-ext VSC7512
+>>> +  - |
+>>> +    spi {
+>>> +        soc@0 {
+>>
+>> soc in spi is a bit confusing.
 > 
-> On Mon, 2022-10-03 at 08:44 -0700, Kuniyuki Iwashima wrote:
-> [...]
-> > @@ -1723,7 +1736,7 @@ struct proto udpv6_prot = {
-> >  	.connect		= ip6_datagram_connect,
-> >  	.disconnect		= udp_disconnect,
-> >  	.ioctl			= udp_ioctl,
-> > -	.init			= udp_init_sock,
-> > +	.init			= udpv6_init_sock,
-> >  	.destroy		= udpv6_destroy_sock,
-> >  	.setsockopt		= udpv6_setsockopt,
-> >  	.getsockopt		= udpv6_getsockopt,
-> 
-> It looks like even UDPv6 lite can be ADDRFORMed to ipv4, so I guess we
-> need a similar chunk for udplitev6_prot? With that we can unexport 
-> udp_init_sock, I guess.
+> Do you have a better suggestion for a node name? This is effectively a
+> container for peripherals which would otherwise live under a /soc node,
 
-Good catch!
-Yes, I'll add that changes in v4.
-Thank you.
+/soc node implies it does not live under /spi node. Otherwise it would
+be /spi/soc, right?
+
+> if they were accessed over MMIO by the internal microprocessor of the
+> SoC, rather than by an external processor over SPI.
+> 
+>> How is this example different than previous one (existing soc example)?
+>> If by compatible and number of ports, then there is no much value here.
+> 
+> The positioning relative to the other nodes is what's different.
+
+Positioning of nodes is not worth another example, if everything else is
+the same. What is here exactly tested or shown by example? Using a
+device in SPI controller?
+
+Best regards,
+Krzysztof
+
