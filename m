@@ -2,235 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB5365F3FA3
-	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 11:30:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10D755F3FF7
+	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 11:40:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230499AbiJDJaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Oct 2022 05:30:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51414 "EHLO
+        id S231352AbiJDJkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Oct 2022 05:40:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231305AbiJDJ3Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 05:29:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06E9B32
-        for <netdev@vger.kernel.org>; Tue,  4 Oct 2022 02:29:23 -0700 (PDT)
+        with ESMTP id S229631AbiJDJjI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 05:39:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A30138
+        for <netdev@vger.kernel.org>; Tue,  4 Oct 2022 02:36:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1664875762;
+        s=mimecast20190719; t=1664876179;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Ykp8QrHtYsQs2S4pDXqZoKDJOJ31ef1hCy5o4M7urP8=;
-        b=Mnwmf9wAB6XlL+y8ba3ztVFzOxnaGohWZU1rpP/1VQFqOpOYtU0F621p0z783ImK7KAf1x
-        cn9CmNVuVwqNlvCvtmguUmpAs8NtD1YqpAwQbQVxrhIoXWCCkxWirrp/+pmojySCwGCZ6S
-        l+Nq/jGU0TG2WR0gp9O2uRR2uNZ1J84=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=5+/fBSOuvj7TaWlAMwBkpH+OOamgAoEsUE6L/aWHraA=;
+        b=IspTTi8i8c7YyKK8Ugu0epdTLVKFwVftc9Mn/t9sVVNvmAw/cni5AfiIz6necCl5/bd5BW
+        uAECA8qqztsGxcAXcJhfpBxSPaOgVKeYhBsE7Xvj2wC2HiadBQUgMsuho6PwCUjiFmnmXX
+        M9ryiZiAviIkBd2YVJz8r4R1YGaopKI=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-34-cQP2kQQXNcCXR6mMvxsp4g-1; Tue, 04 Oct 2022 05:29:21 -0400
-X-MC-Unique: cQP2kQQXNcCXR6mMvxsp4g-1
-Received: by mail-ej1-f71.google.com with SMTP id xj11-20020a170906db0b00b0077b6ecb23fcso4487876ejb.5
-        for <netdev@vger.kernel.org>; Tue, 04 Oct 2022 02:29:21 -0700 (PDT)
+ us-mta-27-a63NRn9bO92qPgETEDJ88Q-1; Tue, 04 Oct 2022 05:36:18 -0400
+X-MC-Unique: a63NRn9bO92qPgETEDJ88Q-1
+Received: by mail-wm1-f69.google.com with SMTP id j14-20020a05600c1c0e00b003bd44dc4c5cso421105wms.2
+        for <netdev@vger.kernel.org>; Tue, 04 Oct 2022 02:36:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :to:subject:cc:user-agent:mime-version:date:message-id:from
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=Ykp8QrHtYsQs2S4pDXqZoKDJOJ31ef1hCy5o4M7urP8=;
-        b=cQe3cErVrfI6ETk+CcyaedeHqqJPI3HojglS07GAuO0Y0FPIl5SBB0PuZ/AEpuuf85
-         iwcd8E06aW8Wa9ZdeZUfSGMwN5BQip80K+38n1hKDklRBR0mV1LDDXO+pjGM7wP90vbr
-         7n6M+O02KLXvNkF39FvIeqY3vu0qUV/6xdANmFyfsOS5fscUJkWh37gBGC6kLatlKXo2
-         y91VbU6w7f4JLQ6nZYZjgIth5UJERf16zJnQuN/jzVFE6fGtj4285VBlyax+NuglDlhT
-         Pkb7JU03UoJKyzC0J0rvBQVTf2ocVn4YBaaZl2wYMH3ei+Q6/VWRvGfUrrWnihISO/LY
-         0ZEw==
-X-Gm-Message-State: ACrzQf1tR8hNKsTo54fvv3FkHnTzgoazjYT4w2Rez/Qh9Xe7P45C1sBY
-        SmanGRO6JQphhd6zdBTfr+t131tebw/3uA+++l17JK9rr6FTPRE3MzmBdBcdOF74Qj4xH4Iu228
-        FATzFUt09tq5L6zxp
-X-Received: by 2002:a17:907:94c6:b0:787:9157:a87a with SMTP id dn6-20020a17090794c600b007879157a87amr18836612ejc.5.1664875760571;
-        Tue, 04 Oct 2022 02:29:20 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM6cThDfxYHG1OMCjFWh4ItxMOvFuQgMEeYE0kVhTCrd7yVLHYXv9BY5w4ToxgN2BkWsaSrLtA==
-X-Received: by 2002:a17:907:94c6:b0:787:9157:a87a with SMTP id dn6-20020a17090794c600b007879157a87amr18836585ejc.5.1664875760199;
-        Tue, 04 Oct 2022 02:29:20 -0700 (PDT)
-Received: from [192.168.41.81] (83-90-141-187-cable.dk.customer.tdc.net. [83.90.141.187])
-        by smtp.gmail.com with ESMTPSA id n16-20020a05640205d000b00454546561cfsm1261361edx.82.2022.10.04.02.29.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 04 Oct 2022 02:29:19 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <35fcfb25-583a-e923-6eee-e8bbcc19db17@redhat.com>
-Date:   Tue, 4 Oct 2022 11:29:17 +0200
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=5+/fBSOuvj7TaWlAMwBkpH+OOamgAoEsUE6L/aWHraA=;
+        b=FCPTgGRKur8BIEj0rW3hq2lQ+RjBWAldTxi+ogeH+lGPw9acxxzvTt8VH+CPodhHUi
+         N0nuuG3WWXowxXi0bpwlCGxBWmTpt7MLl6gHSBmhHlW8MwxXbsRH2ZAY75QaoJKXdw8x
+         Iy9y0MgiH9V/53KKOe4XEm47xcY74w6/waRDOIuK9H0Qf1LwMJsXbjRUm8YWQP1Yvo3b
+         SBBGJdgBPzb0Hxn6IQ2GGx5bPGWHaqTell7F+24em959/vgfDWQjCBeYaBdDpGRxqW2B
+         3uIauSv0K04QynrLMHf4WjJfo/EvmWdB2spnylBBB/UPd7iBhcKYKVNTdVAybKD4bbB1
+         4DqA==
+X-Gm-Message-State: ACrzQf1KfIDOtmtBfKCZZoEf7v6eNDV9pwecVYKoacmXUMTAiXP9uhy0
+        MMJZtjuSh95B+ju0XOQhzUDE+LC3sQ4XTCqRHnvCRBAMaIFw3wLQWJb5VAblPf2vqsJMckJzrY5
+        EJmVgwPWzaiIpSuR4
+X-Received: by 2002:a05:6000:1d8b:b0:22a:c046:946d with SMTP id bk11-20020a0560001d8b00b0022ac046946dmr15704455wrb.249.1664876176839;
+        Tue, 04 Oct 2022 02:36:16 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM58ShqSt9Uy1Ms63LJUwKLKxMzOwINvDcN7gbpiFrVBU7s+wKH1BRG8aaQeGB1UOOKj/LB4OQ==
+X-Received: by 2002:a05:6000:1d8b:b0:22a:c046:946d with SMTP id bk11-20020a0560001d8b00b0022ac046946dmr15704438wrb.249.1664876176420;
+        Tue, 04 Oct 2022 02:36:16 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-97-71.dyn.eolo.it. [146.241.97.71])
+        by smtp.gmail.com with ESMTPSA id v1-20020a7bcb41000000b003b27f644488sm13984554wmj.29.2022.10.04.02.36.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Oct 2022 02:36:15 -0700 (PDT)
+Message-ID: <f3d875d44afaf43250dca8f9614cab119bdf5d2c.camel@redhat.com>
+Subject: Re: [PATCH net v3 2/2] selftests: add selftest for chaining of tc
+ ingress handling to egress
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Paul Blakey <paulb@nvidia.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Vlad Buslov <vladbu@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Date:   Tue, 04 Oct 2022 11:36:14 +0200
+In-Reply-To: <1664706272-10164-3-git-send-email-paulb@nvidia.com>
+References: <1664706272-10164-1-git-send-email-paulb@nvidia.com>
+         <1664706272-10164-3-git-send-email-paulb@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Cc:     brouer@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        xdp-hints@xdp-project.net, larysa.zaremba@intel.com,
-        memxor@gmail.com, Lorenzo Bianconi <lorenzo@kernel.org>,
-        mtahhan@redhat.com,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        dave@dtucker.co.uk, Magnus Karlsson <magnus.karlsson@intel.com>,
-        bjorn@kernel.org
-Subject: Re: [PATCH RFCv2 bpf-next 00/18] XDP-hints: XDP gaining access to HW
- offload hints via BTF
-To:     sdf@google.com
-References: <166256538687.1434226.15760041133601409770.stgit@firesoul>
- <Yzt2YhbCBe8fYHWQ@google.com>
-Content-Language: en-US
-In-Reply-To: <Yzt2YhbCBe8fYHWQ@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
-On 04/10/2022 01.55, sdf@google.com wrote:
-> On 09/07, Jesper Dangaard Brouer wrote:
->> This patchset expose the traditional hardware offload hints to XDP and
->> rely on BTF to expose the layout to users.
+On Sun, 2022-10-02 at 13:24 +0300, Paul Blakey wrote:
+> This test runs a simple ingress tc setup between two veth pairs,
+> then adds a egress->ingress rule to test the chaining of tc ingress
+> pipeline to tc egress piepline.
 > 
->> Main idea is that the kernel and NIC drivers simply defines the struct
->> layouts they choose to use for XDP-hints. These XDP-hints structs gets
->> naturally and automatically described via BTF and implicitly exported to
->> users. NIC drivers populate and records their own BTF ID as the last
->> member in XDP metadata area (making it easily accessible by AF_XDP
->> userspace at a known negative offset from packet data start).
+> Signed-off-by: Paul Blakey <paulb@nvidia.com>
+> ---
+>  .../net/test_ingress_egress_chaining.sh       | 81 +++++++++++++++++++
+>  1 file changed, 81 insertions(+)
+>  create mode 100644 tools/testing/selftests/net/test_ingress_egress_chaining.sh
 > 
->> Naming conventions for the structs (xdp_hints_*) is used such that
->> userspace can find and decode the BTF layout and match against the
->> provided BTF IDs. Thus, no new UAPI interfaces are needed for exporting
->> what XDP-hints a driver supports.
-> 
->> The patch "i40e: Add xdp_hints_union" introduce the idea of creating a
->> union named "xdp_hints_union" in every driver, which contains all
->> xdp_hints_* struct this driver can support. This makes it easier/quicker
->> to find and parse the relevant BTF types.  (Seeking input before fixing
->> up all drivers in patchset).
-> 
-> 
->> The main different from RFC-v1:
->>   - Drop idea of BTF "origin" (vmlinux, module or local)
->>   - Instead to use full 64-bit BTF ID that combine object+type ID
-> 
->> I've taken some of Alexandr/Larysa's libbpf patches and integrated
->> those.
-> 
->> Patchset exceeds netdev usually max 15 patches rule. My excuse is three
->> NIC drivers (i40e, ixgbe and mvneta) gets XDP-hints support and which
->> required some refactoring to remove the SKB dependencies.
-> 
-> Hey Jesper,
-> 
-> I took a quick look at the series. 
-Appreciate that! :-)
+> diff --git a/tools/testing/selftests/net/test_ingress_egress_chaining.sh b/tools/testing/selftests/net/test_ingress_egress_chaining.sh
+> new file mode 100644
+> index 000000000000..4775f5657e68
+> --- /dev/null
+> +++ b/tools/testing/selftests/net/test_ingress_egress_chaining.sh
+> @@ -0,0 +1,81 @@
+> +#!/bin/bash
+> +# SPDX-License-Identifier: GPL-2.0
+> +
+> +# This test runs a simple ingress tc setup between two veth pairs,
+> +# and chains a single egress rule to test ingress chaining to egress.
+> +#
+> +# Kselftest framework requirement - SKIP code is 4.
+> +ksft_skip=4
+> +
+> +if [ "$(id -u)" -ne 0 ];then
+> +	echo "SKIP: Need root privileges"
+> +	exit $ksft_skip
+> +fi
+> +
+> +if [ ! -x "$(command -v iperf)" ]; then
+> +	echo "SKIP: Could not run test without iperf tool"
 
-> Do we really need the enum with the flags?
+You just need to establish a TCP connection towards a given IP, right?
 
-The primary reason for using enum is that these gets exposed as BTF.
-The proposal is that userspace/BTF need to obtain the flags via BTF,
-such that they don't become UAPI, but something we can change later.
+Than you can use the existing self-tests program:
 
-> We might eventually hit that "first 16 bits are reserved" issue?
-> 
-> Instead of exposing enum with the flags, why not solve it as follows:
-> a. We define UAPI struct xdp_rx_hints with _all_ possible hints
+# listener:
+./udpgso_bench_rx -t & 
 
-How can we know _all_ possible hints from the beginning(?).
+# client:
+./udpgso_bench_tx -t -l <transfer time> -4  -D <listener IP>
 
-UAPI + central struct dictating all possible hints, will limit innovation.
+and avoid dependencies on external tools.
 
-> b. Each device defines much denser <device>_xdp_rx_hints struct with the
->     metadata that it supports
+> +	exit $ksft_skip
+> +fi
+> +
+> +needed_mods="act_mirred cls_flower sch_ingress"
+> +for mod in $needed_mods; do
+> +	modinfo $mod &>/dev/null || { echo "SKIP: Need act_mirred module"; exit $ksft_skip; }
+> +done
+> +
+> +ns="ns$((RANDOM%899+100))"
+> +veth1="veth1$((RANDOM%899+100))"
+> +veth2="veth2$((RANDOM%899+100))"
+> +peer1="peer1$((RANDOM%899+100))"
+> +peer2="peer2$((RANDOM%899+100))"
+> +
+> +function fail() {
+> +	echo "FAIL: $@" >> /dev/stderr
+> +	exit 1
+> +}
+> +
+> +function cleanup() {
+> +	killall -q -9 iperf
+> +	ip link del $veth1 &> /dev/null
+> +	ip link del $veth2 &> /dev/null
+> +	ip netns del $ns &> /dev/null
+> +}
+> +trap cleanup EXIT
+> +
+> +function config() {
+> +	echo "Setup veth pairs [$veth1, $peer1], and veth pair [$veth2, $peer2]"
+> +	ip link add $veth1 type veth peer name $peer1
+> +	ip link add $veth2 type veth peer name $peer2
+> +	ifconfig $peer1 5.5.5.6/24 up
 
-Thus, the NIC device is limited to what is defined in UAPI struct
-xdp_rx_hints.  Again this limits innovation.
+Please use the modern 'ip addr' syntax. More importantly, it's better
+if you move both peers in separate netns, to avoid 'random' self-test
+failure due to the specific local routing configuration.
 
-> c. The subset of fields in <device>_xdp_rx_hints should match the ones from
->     xdp_rx_hints (we essentially standardize on the field names/sizes)
-> d. We expose <device>_xdp_rx_hints btf id via netlink for each device
+Additionally you could pick addresses from tests blocks (192.0.2.0/24,
+198.51.100.0/24, 203.0.113.0/24) or at least from private ranges.
 
-For this proposed design you would still need more than one BTF ID or
-<device>_xdp_rx_hints struct's, because not all packets contains all
-hints. The most common case is HW timestamping, which some HW only
-supports for PTP frames.
+> +	ip netns add $ns
+> +	ip link set dev $peer2 netns $ns
+> +	ip netns exec $ns ifconfig $peer2 5.5.5.5/24 up
+> +	ifconfig $veth2 0 up
+> +	ifconfig $veth1 0 up
 
-Plus, I don't see a need to expose anything via netlink, as we can just
-use the existing BTF information from the module.  Thus, avoiding to
-creating more UAPI.
+Please use 'ip link' ...
 
-> e. libbpf will query and do offset relocations for
->     xdp_rx_hints -> <device>_xdp_rx_hints at load time
-> 
-> Would that work? Then it seems like we can replace bitfields with the 
+> +
+> +	echo "Add tc filter ingress->egress forwarding $veth1 <-> $veth2"
+> +	tc qdisc add dev $veth2 ingress
+> +	tc qdisc add dev $veth1 ingress
+> +	tc filter add dev $veth2 ingress prio 1 proto all flower \
+> +		action mirred egress redirect dev $veth1
+> +	tc filter add dev $veth1 ingress prio 1 proto all flower \
+> +		action mirred egress redirect dev $veth2
+> +
+> +	echo "Add tc filter egress->ingress forwarding $peer1 -> $veth1, bypassing the veth pipe"
+> +	tc qdisc add dev $peer1 clsact
+> +	tc filter add dev $peer1 egress prio 20 proto ip flower \
+> +		action mirred ingress redirect dev $veth1
+> +}
+> +
+> +function test_run() {
+> +	echo "Run iperf"
+> +	iperf -s -D
 
-I used to be a fan of bitfields, until I discovered that they are bad
-for performance, because compilers cannot optimize these.
+Depending on the timing, the server can create the listener socket
+after that the client tried to connect, causing random failures. 
 
-> following:
-> 
->    if (bpf_core_field_exists(struct xdp_rx_hints, vlan_tci)) {
->      /* use that hint */
+You should introduce some explicit, small, delay to give the server the
+time to start-up, e.g.:
 
-Fairly often a VLAN will not be set in packets, so we still have to read
-and check a bitfield/flag if the VLAN value is valid. (Guess it is
-implicit in above code).
+# start server
+sleep 0.2
+# start client
 
->    }
-> 
-> All we need here is for libbpf to, again, do xdp_rx_hints ->
-> <device>_xdp_rx_hints translation before it evaluates 
-> bpf_core_field_exists()?
-> 
-> Thoughts? Any downsides? Am I missing something?
-> 
 
-Well, the downside is primarily that this design limits innovation.
+Thanks!
 
-Each time a NIC driver want to introduce a new hardware hint, they have
-to update the central UAPI xdp_rx_hints struct first.
-
-The design in the patchset is to open for innovation.  Driver can extend
-their own xdp_hints_<driver>_xxx struct(s).  They still have to land
-their patches upstream, but avoid mangling a central UAPI struct. As
-upstream we review driver changes and should focus on sane struct member
-naming(+size) especially if this "sounds" like a hint/feature that more
-driver are likely to support.  With help from BTF relocations, a new
-driver can support same hint/feature if naming(+size) match (without
-necessary the same offset in the struct).
-
-> Also, about the TX side: I feel like the same can be applied there,
-> the program works with xdp_tx_hints and libbpf will rewrite to
-> <device>_xdp_tx_hints. xdp_tx_hints might have fields like "has_tx_vlan:1";
-> those, presumably, can be relocatable by libbpf as well?
-> 
-
-Good to think ahead for TX-side, even-though I think we should focus on
-landing RX-side first.
-
-I notice your naming xdp_rx_hints vs. xdp_tx_hints.  I have named the
-common struct xdp_hints_common, without a RX/TX direction indication.
-Maybe this is wrong of me, but my thinking was that most of the common
-hints can be directly used as TX-side hints.  I'm hoping TX-side
-xdp-hints will need to do little-to-non adjustment, before using the
-hints as TX "instruction".  I'm hoping that XDP-redirect will just work
-and xmit driver can use XDP-hints area.
-
-Please correct me if I'm wrong.
-The checksum fields hopefully translates to similar TX offload "actions".
-The VLAN offload hint should translate directly to TX-side.
-
-I can easily be convinced we should name it xdp_hints_rx_common from the
-start, but then I will propose that xdp_hints_tx_common have the
-checksum and VLAN fields+flags at same locations, such that we don't
-take any performance hint for moving them to "TX-side" hints, making
-XDP-redirect just work.
-
---Jesper
+Paolo
 
