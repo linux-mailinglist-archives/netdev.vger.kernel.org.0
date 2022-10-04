@@ -2,145 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EAD246020A5
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 03:56:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC92560216C
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 04:50:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230310AbiJRB4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 21:56:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57606 "EHLO
+        id S230046AbiJRCuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 22:50:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229885AbiJRB4S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 21:56:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4276C57248;
-        Mon, 17 Oct 2022 18:56:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D22EA6134F;
-        Tue, 18 Oct 2022 01:56:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43951C43470;
-        Tue, 18 Oct 2022 01:56:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666058176;
-        bh=FOFyrGguuAOD/IHXQEvTGpKrPLp+v+QdALq0Zhe3cVU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=RLdSFgN1hi/d3+qjFng384+/YgqBUngmj69R/qQHdJSIEv9vWG9xJqMFaDizSinXy
-         Phps5SsVpVqfGTgKFY5hj0TAEVOMSCvCphlQJoopszIcCg3V10M3CQqT8tgqIeuGB1
-         Za8kSwFrhXB1AqfxAQw/y1mfUHk8tE1DGM2o6hMAfX4EX7GsnW0iQ0mlC+zhIFC4yC
-         wAugcTUc76sF3vxPd60LkR2A9fa5XNEHZ5O5abJW1ZJrHtXNaOowyV/VhEFsMTR5mz
-         X+RuSa5HxLHdSWjeiuEH7hcDkfqlGXRDWZIQzTVj7U5TFiav/cFF8N8oC9mkbB+Ieb
-         BsX9LGiArh5oQ==
-Received: by mail-oi1-f176.google.com with SMTP id g130so14130622oia.13;
-        Mon, 17 Oct 2022 18:56:16 -0700 (PDT)
-X-Gm-Message-State: ACrzQf31QP1oh9Fh0QA/+XW58cIaot4b//aQLhp53GYt5l7A015ar/fo
-        g43xk4rLwlBJBlFgJUwR1QHV6mUy111lfNrBaG4=
-X-Google-Smtp-Source: AMsMyM7iCW1MDbycsw+DlbQixQNxQ7zwZfAvDGS5mz8uTUYhYpyIc3SPVD51yQqot0rQjmd/FO1S9OOK+7Fn41Vlat4=
-X-Received: by 2002:a05:6808:10c3:b0:354:db1e:c4a8 with SMTP id
- s3-20020a05680810c300b00354db1ec4a8mr14273459ois.112.1666058175349; Mon, 17
- Oct 2022 18:56:15 -0700 (PDT)
+        with ESMTP id S229949AbiJRCuD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 22:50:03 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 332E639B95;
+        Mon, 17 Oct 2022 19:49:55 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id c24so12537271pls.9;
+        Mon, 17 Oct 2022 19:49:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=MYWDNHPcGSdBQ0TtCNfLbSU+DkA9tEuGDYIVvPAI7/0=;
+        b=S644mYldkDdn9IzogmrtxPMghIHrRnYMwInUFSkWmIfIV6u5cT5zDrzmrXP9yXo7dE
+         RW0Ve/cxIWCwnv/chDNanT6+qidZGMSdTjz58MD1+sPu2wfHDyKuA8aKkh4MhpwWgg2g
+         1XbmqYyrckRGQq1PCvfutsF43+BQaJi9bebuOVXFQsFB++cM5yYMJKpVdn6FoN1G9NSL
+         59780SnjTOu6VZ1Wr8YBr6GGvwDXlrOLZ67N6pa7XybsVZNTWxZZXsWlFrpGeBpGI1Nz
+         hJqdVGQCcWN06UOlhDahBxTAHs8Q6vqstdu4SRVObuFqU8kq1AIChAwTEHJpzg0Ud6ff
+         8SXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MYWDNHPcGSdBQ0TtCNfLbSU+DkA9tEuGDYIVvPAI7/0=;
+        b=sCTmv59JKd+jddnJUKwKQ9OZpPfUcpcyOqQw31+N/cc7ckUxRiGOvxcMsKePrhXgzi
+         DcaXdx4P9N1OMgfyCJeE4ieQ292D5eNIM5i9zZxBbqR1CChU8shJQ+hWrSZ176VLyz7j
+         +hujGFTCNBhUb0NGb9fwynXX1jQYMeS+gmnCGS9lmg9cx8vvohFeSOD20EW9Hgth21qG
+         GSzoR6QUvzgkajO5/BA5Amu8hBs/80gETzgIDMABP3WRs1lRBK8GqDx9XdswxhKS43kx
+         7a+5lW9cO5B0K5u+RCb46Rnh1WuLOuCjTyMh2wTl1CbhZotCJBGAt+ntxu1TCtBQJK1o
+         mLfQ==
+X-Gm-Message-State: ACrzQf1fRuUhQ8XgioK3av7DylLGrX/cQ5du1zs2XvZAcMi9BnR6FL7X
+        KgiMb6eZhYW1S4BbwW1wuek6eCjv8+nQOjFa
+X-Google-Smtp-Source: AMsMyM4ZMpYISHTX0CfUx5VRSORVl3Y3s0KqqFAEcuJ9LVkZMBd1zeNk4ESkh1fJ07etLJLfq0r5BQ==
+X-Received: by 2002:a17:902:d2cf:b0:185:4bbd:1970 with SMTP id n15-20020a170902d2cf00b001854bbd1970mr854860plc.88.1666061393807;
+        Mon, 17 Oct 2022 19:49:53 -0700 (PDT)
+Received: from localhost (ec2-52-52-7-82.us-west-1.compute.amazonaws.com. [52.52.7.82])
+        by smtp.gmail.com with ESMTPSA id u5-20020a170902714500b00178323e689fsm7287963plm.171.2022.10.17.19.49.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Oct 2022 19:49:53 -0700 (PDT)
+Date:   Tue, 4 Oct 2022 21:55:55 +0000
+From:   Bobby Eshleman <bobbyeshleman@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Bobby Eshleman <bobby.eshleman@gmail.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] vsock: replace virtio_vsock_pkt with sk_buff
+Message-ID: <Yzyr60cn468ph8Io@bullseye>
+References: <20221006011946.85130-1-bobby.eshleman@bytedance.com>
+ <20221006025956-mutt-send-email-mst@kernel.org>
+ <20221006073410.ahhqhlhah4lo47o7@sgarzare-redhat>
+ <Yzoou4UwOv5lh0hE@bullseye>
+ <Y0sO5yNqQkFQucjb@pop-os.localdomain>
 MIME-Version: 1.0
-References: <20221015130548.3634468-1-guoren@kernel.org> <20221015165017.GA1034513@roeck-us.net>
- <CAJF2gTR1eBhdd1uhJReSZxfc4vyt9n9MbaG7XQjAJcvdaFbbXQ@mail.gmail.com>
- <3e3e23a4-574a-166f-78fe-9113abec4d6b@roeck-us.net> <CAJF2gTTz=Whg+heB95doVnQWVvjNC1bCx1bYLMW4CtybABBGNA@mail.gmail.com>
- <20221017125320.18b54147@kernel.org>
-In-Reply-To: <20221017125320.18b54147@kernel.org>
-From:   Guo Ren <guoren@kernel.org>
-Date:   Tue, 18 Oct 2022 09:56:02 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTSQrH-sZqSo+0Ky=4cJOKFV8BxzR2e7W6sUnGN=0rj40Q@mail.gmail.com>
-Message-ID: <CAJF2gTSQrH-sZqSo+0Ky=4cJOKFV8BxzR2e7W6sUnGN=0rj40Q@mail.gmail.com>
-Subject: Re: [PATCH] Revert "cpumask: fix checking valid cpu range"
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     andriy.shevchenko@linux.intel.com, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, linux@rasmusvillemoes.dk,
-        yury.norov@gmail.com, caraitto@google.com, willemb@google.com,
-        jonolson@google.com, amritha.nambiar@intel.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Guo Ren <guoren@linux.alibaba.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y0sO5yNqQkFQucjb@pop-os.localdomain>
+X-Spam-Status: No, score=1.3 required=5.0 tests=BAYES_00,DATE_IN_PAST_96_XX,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 18, 2022 at 3:53 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Mon, 17 Oct 2022 10:56:05 +0800 Guo Ren wrote:
-> > Ping Jakub Kicinski <kuba@kernel.org>.
-> >
-> > You seem to miss this Revert fixup on cpumask_check(n + 1).
-> >
-> > Your patch has merged in v6.1-rc1, but that is not enough.
-> > https://lore.kernel.org/netdev/166582921612.1299.769135677399153914.git-patchwork-notify@kernel.org/T/#m0111a76380626b2f91e072ecdd5827578d5cbf60
-> >
-> > Without the patch, there still is a warning.
->
-> Sorry, I don't know what you mean. I was only putting a workaround back
-> into the core networking code - I'm guessing this patch will silence
-> the warning that comes from virtio? I haven't looked into that one.
+On Sat, Oct 15, 2022 at 12:49:59PM -0700, Cong Wang wrote:
+> On Mon, Oct 03, 2022 at 12:11:39AM +0000, Bobby Eshleman wrote:
+> > On Thu, Oct 06, 2022 at 09:34:10AM +0200, Stefano Garzarella wrote:
+> > > On Thu, Oct 06, 2022 at 03:08:12AM -0400, Michael S. Tsirkin wrote:
+> > > > On Wed, Oct 05, 2022 at 06:19:44PM -0700, Bobby Eshleman wrote:
+> > > > > This patch replaces the struct virtio_vsock_pkt with struct sk_buff.
+> > > > > 
+> > > > > Using sk_buff in vsock benefits it by a) allowing vsock to be extended
+> > > > > for socket-related features like sockmap, b) vsock may in the future
+> > > > > use other sk_buff-dependent kernel capabilities, and c) vsock shares
+> > > > > commonality with other socket types.
+> > > > > 
+> > > > > This patch is taken from the original series found here:
+> > > > > https://lore.kernel.org/all/cover.1660362668.git.bobby.eshleman@bytedance.com/
+> > > > > 
+> > > > > Small-sized packet throughput improved by ~5% (from 18.53 Mb/s to 19.51
+> > > > > Mb/s). Tested using uperf, 16B payloads, 64 threads, 100s, averaged from
+> > > > > 10 test runs (n=10). This improvement is likely due to packet merging.
+> > > > > 
+> > > > > Large-sized packet throughput decreases ~9% (from 27.25 Gb/s to 25.04
+> > > > > Gb/s). Tested using uperf, 64KB payloads, 64 threads, 100s, averaged
+> > > > > from 10 test runs (n=10).
+> > > > > 
+> > > > > Medium-sized packet throughput decreases ~5% (from 4.0 Gb/s to 3.81
+> > > > > Gb/s). Tested using uperf, 4k to 8k payload sizes picked randomly
+> > > > > according to normal distribution, 64 threads, 100s, averaged from 10
+> > > > > test runs (n=10).
+> > > > 
+> > > > It is surprizing to me that the original vsock code managed to outperform
+> > > > the new one, given that to my knowledge we did not focus on optimizing it.
+> > > 
+> > > Yeah mee to.
+> > > 
+> > 
+> > Indeed.
+> > 
+> > > From this numbers maybe the allocation cost has been reduced as it performs
+> > > better with small packets. But with medium to large packets we perform
+> > > worse, perhaps because previously we were allocating a contiguous buffer up
+> > > to 64k?
+> > > Instead alloc_skb() could allocate non-contiguous pages ? (which would solve
+> > > the problems we saw a few days ago)
+> > > 
+> > 
+> > I think this would be the case with alloc_skb_with_frags(), but
+> > internally alloc_skb() uses kmalloc() for the payload and sk_buff_head
+> > slab allocations for the sk_buff itself (all the more confusing to me,
+> > as the prior allocator also uses two separate allocations per packet).
+> 
+> I think it is related to your implementation of
+> virtio_transport_add_to_queue(), where you introduced much more
+> complicated logic than before:
+> 
+> -	spin_lock_bh(&vsock->send_pkt_list_lock);
+> -	list_add_tail(&pkt->list, &vsock->send_pkt_list);
+> -	spin_unlock_bh(&vsock->send_pkt_list_lock);
+> -
+> +	virtio_transport_add_to_queue(&vsock->send_pkt_queue, skb);
+> 
 
-Without the patch, Linux-v6.1-rc1 would warn when
-CONFIG_DEBUG_PER_CPU_MAPS was enabled.
+I wish it were that easy, but I included this change because it actually
+boosts performance.
 
-[    2.130438] virtio_blk virtio0: 1/0/0 default/read/poll queues
-[    2.137585] virtio_blk virtio0: [vda] 122880 512-byte logical
-blocks (62.9 MB/60.0 MiB)
-[    2.196181] lkdtm: No crash points registered, enable through debugfs
-[    2.246658] ------------[ cut here ]------------
-[    2.247468] WARNING: CPU: 3 PID: 1 at include/linux/cpumask.h:110
-__netif_set_xps_queue+0x14e/0x792
-[    2.248738] Modules linked in:
-[    2.249323] CPU: 3 PID: 1 Comm: swapper/0 Not tainted 6.1.0-rc1 #336
-[    2.250038] Hardware name: riscv-virtio,qemu (DT)
-[    2.250697] epc : __netif_set_xps_queue+0x14e/0x792
-[    2.251538]  ra : __netif_set_xps_queue+0x56c/0x792
-[    2.252029] epc : ffffffff806f2972 ra : ffffffff806f2d90 sp :
-ff600000023279d0
-[    2.252664]  gp : ffffffff81603d88 tp : ff600000023a0000 t0 :
-ff60000003068a40
-[    2.253270]  t1 : 0000000000000003 t2 : 0000000000000000 s0 :
-ff60000002327a90
-[    2.253878]  s1 : 0000000000000000 a0 : ff60000003068a00 a1 :
-ff60000003068a00
-[    2.254491]  a2 : ff600000030687e8 a3 : 0000000000000004 a4 :
-0000000000000000
-[    2.255521]  a5 : 0000000000000000 a6 : 0000000000000000 a7 :
-0000000000000000
-[    2.256506]  s2 : 0000000000000000 s3 : 0000000000000000 s4 :
-ff60000002327aa0
-[    2.257161]  s5 : ffffffff816071c0 s6 : 0000000000000000 s7 :
-0000000000000001
-[    2.257761]  s8 : 0000000000000000 s9 : 0000000000000004 s10:
-ff600000030687c0
-[    2.258369]  s11: 0000000000000004 t3 : 0000000000000000 t4 :
-0000000000000014
-[    2.259368]  t5 : 0000000000000000 t6 : 0000000000000000
-[    2.260270] status: 0000000200000120 badaddr: 0000000000000000
-cause: 0000000000000003
-[    2.261200] [<ffffffff805d941e>] virtnet_set_affinity+0x14a/0x1c0
-[    2.261837] [<ffffffff805db734>] virtnet_probe+0x832/0xf1e
-[    2.262319] [<ffffffff804ff5d0>] virtio_dev_probe+0x164/0x2de
-[    2.263055] [<ffffffff8054d478>] really_probe+0x82/0x224
-[    2.263858] [<ffffffff8054d674>] __driver_probe_device+0x5a/0xaa
-[    2.264445] [<ffffffff8054d6f0>] driver_probe_device+0x2c/0xb8
-[    2.264987] [<ffffffff8054dd1a>] __driver_attach+0x76/0x108
-[    2.265495] [<ffffffff8054b436>] bus_for_each_dev+0x52/0x9a
-[    2.265996] [<ffffffff8054ce40>] driver_attach+0x1a/0x28
-[    2.266475] [<ffffffff8054c94a>] bus_add_driver+0x154/0x1c2
-[    2.267383] [<ffffffff8054e546>] driver_register+0x52/0x108
-[    2.268198] [<ffffffff804ff0d4>] register_virtio_driver+0x1c/0x2c
-[    2.268778] [<ffffffff80a291a0>] virtio_net_driver_init+0x7a/0xb0
-[    2.269323] [<ffffffff80002854>] do_one_initcall+0x66/0x2e4
-[    2.269834] [<ffffffff80a01226>] kernel_init_freeable+0x28a/0x304
-[    2.270372] [<ffffffff808cc8b6>] kernel_init+0x1e/0x110
-[    2.271099] [<ffffffff80003d42>] ret_from_exception+0x0/0x10
-[    2.272015] ---[ end trace 0000000000000000 ]---
+For 16B payloads, this change improves throughput from 16 Mb/s to 20Mb/s
+in my test harness, and reduces the memory usage of the kmalloc-512 and
+skbuff_head_cache slab caches by ~50MB at cache size peak (total slab
+cache size from ~540MB to ~390MB), but typically (not at peak) the slab
+cache size when this merging is used keeps the memory slab caches closer
+to ~150MB smaller. Tests done using uperf.
 
--- 
-Best Regards
- Guo Ren
+For payloads greater than GOOD_COPY_LEN I don't see any any notable
+difference between the skb code with merging and the skb code without
+merging in terms of throughput. I assume this is because the skb->len
+comparison with GOOD_COPY_LEN should short circuit the expression and
+the other memory operations should not occur.
+
+> A simple list_add_tail() is definitely faster than your
+> virtio_transport_skbs_can_merge() check. So, why do you have to merge
+> skb while we don't merge virtio_vsock_pkt?
+> 
+
+sk_buff is over twice the size of virtio_vsock_pkt (96B vs 232B). It
+seems wise to reduce the footprint in other ways to try and keep it
+comparable.
+
+> _If_ you are trying to mimic TCP, I think you are doing it wrong, it can
+> be much more efficient if you could do the merge in sendmsg() before skb
+> is even allocated, see tcp_sendmsg_locked().
+
+I'll definitely give it a read, merging before allocating an skb sounds
+better.
+
+Best,
+Bobby
