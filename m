@@ -2,97 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DD555F408D
-	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 12:08:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE7075F4092
+	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 12:12:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229945AbiJDKH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Oct 2022 06:07:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55844 "EHLO
+        id S230055AbiJDKM0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Oct 2022 06:12:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229943AbiJDKHz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 06:07:55 -0400
-X-Greylist: delayed 591 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 04 Oct 2022 03:07:53 PDT
-Received: from forward101p.mail.yandex.net (forward101p.mail.yandex.net [77.88.28.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B84527B33;
-        Tue,  4 Oct 2022 03:07:52 -0700 (PDT)
-Received: from myt5-2f5ba0466eb8.qloud-c.yandex.net (myt5-2f5ba0466eb8.qloud-c.yandex.net [IPv6:2a02:6b8:c12:1c83:0:640:2f5b:a046])
-        by forward101p.mail.yandex.net (Yandex) with ESMTP id 6D10859CFCF7;
-        Tue,  4 Oct 2022 12:50:42 +0300 (MSK)
-Received: by myt5-2f5ba0466eb8.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id rEpJMfzEhn-ofhSNNBN;
-        Tue, 04 Oct 2022 12:50:41 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail; t=1664877041;
-        bh=K8cBt2opq8Vz5IgFqg7H0MSu8Z+lhRpJxKBpnfGhoQk=;
-        h=Message-Id:Date:Cc:Subject:To:From;
-        b=aksGLhJC7WE4wNfc3JzF+seDDz2hQKmsQioY3ZrS+jepS+I3EXJXG2xyh2Ob4jZtx
-         ZquskaeqVqgbeoicM3Nor8mVHw9TjpfOeu4RrmDzd7wLKzY3bwYxIeGSUEVDOODikY
-         MlcX+iJUN3C0EmcHcVogdHRtGCC3I5e9PODQ44/4=
-Authentication-Results: myt5-2f5ba0466eb8.qloud-c.yandex.net; dkim=pass header.i=@yandex.ru
-From:   Peter Kosyh <pkosyh@yandex.ru>
-To:     Ajit Khaparde <ajit.khaparde@broadcom.com>
-Cc:     Peter Kosyh <pkosyh@yandex.ru>,
-        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
-        Somnath Kotur <somnath.kotur@broadcom.com>,
+        with ESMTP id S229643AbiJDKMY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 06:12:24 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD9AC28711;
+        Tue,  4 Oct 2022 03:12:23 -0700 (PDT)
+Received: from lenovo.Home (unknown [39.45.148.204])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: usama.anjum)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 713DC6601A43;
+        Tue,  4 Oct 2022 11:12:17 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1664878342;
+        bh=i0FOyOJitjB3rivlOUVsPgHHrU9fXSmrQW1VoDwnAqk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=LGloIE8hXSiui08//z5wEic2e+LZAD8ZPaHHFGl6eL4NpDKnSc2Ce0vKDoJ8ko6QP
+         yI+SXxdH9JGKcWbunxKhdBonWb9nf2oE3XmmCbl1K8EJU/v6JNyVsQFgTJk//jafLf
+         vRsYOpTvivWUNIS0nhD4XInIZynwBBeTXa8jV/7zzcr+MCsQTnTtQ1jMLWujkq5FZY
+         D6IAIFoUhNADowuBLyNdyjHqASBzg9q4W2H74Y4B28TlJ4ZclAiwHmrGBxVrbAaOI7
+         99bGMV6OgaRdx5019SZw7hC7sFSmIO+cqI0pfczgEv5kyqOQHBOHFy0Z2t1qqFJJIx
+         0TOM37dCXltRg==
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+To:     "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Long Li <longli@microsoft.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
-Subject: [PATCH] net: benet: use snprintf instead sprintf and IFNAMSIZ instead hardcoded constant.
-Date:   Tue,  4 Oct 2022 12:50:34 +0300
-Message-Id: <20221004095034.377665-1-pkosyh@yandex.ru>
-X-Mailer: git-send-email 2.37.0
+        Paolo Abeni <pabeni@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Ajay Sharma <sharmaajay@microsoft.com>
+Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        kernel@collabora.com, kernel-janitors@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: mana: store return status in signed variable
+Date:   Tue,  4 Oct 2022 15:11:57 +0500
+Message-Id: <20221004101200.758009-1-usama.anjum@collabora.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_BL_SPAMCOP_NET,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-printf to array 'eqo->desc' of size 32 may cause buffer overflow when
-using non-standard IFNAMSIZ.
+The mana_adev_idx_alloc() can return negative value. Save its return
+value in ret which is signed variable and check if it is correct value.
 
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
-
-Signed-off-by: Peter Kosyh <pkosyh@yandex.ru>
+Fixes: ee928282bfa7 ("net: mana: Add support for auxiliary device")
+Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
 ---
- drivers/net/ethernet/emulex/benet/be.h      | 2 +-
- drivers/net/ethernet/emulex/benet/be_main.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/microsoft/mana/mana_en.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/emulex/benet/be.h b/drivers/net/ethernet/emulex/benet/be.h
-index 61fe9625bed1..857a25f45fc8 100644
---- a/drivers/net/ethernet/emulex/benet/be.h
-+++ b/drivers/net/ethernet/emulex/benet/be.h
-@@ -179,7 +179,7 @@ static inline void queue_tail_inc(struct be_queue_info *q)
+diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
+index 7ca313c7b7b3..1c59502d34b5 100644
+--- a/drivers/net/ethernet/microsoft/mana/mana_en.c
++++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
+@@ -2203,11 +2203,10 @@ static int add_adev(struct gdma_dev *gd)
+ 		return -ENOMEM;
  
- struct be_eq_obj {
- 	struct be_queue_info q;
--	char desc[32];
-+	char desc[IFNAMSIZ+16];
+ 	adev = &madev->adev;
+-	adev->id = mana_adev_idx_alloc();
+-	if (adev->id < 0) {
+-		ret = adev->id;
++	ret = mana_adev_idx_alloc();
++	if (ret < 0)
+ 		goto idx_fail;
+-	}
++	adev->id = ret;
  
- 	struct be_adapter *adapter;
- 	struct napi_struct napi;
-diff --git a/drivers/net/ethernet/emulex/benet/be_main.c b/drivers/net/ethernet/emulex/benet/be_main.c
-index 414362febbb9..8e75a14da595 100644
---- a/drivers/net/ethernet/emulex/benet/be_main.c
-+++ b/drivers/net/ethernet/emulex/benet/be_main.c
-@@ -3485,7 +3485,7 @@ static int be_msix_register(struct be_adapter *adapter)
- 	int status, i, vec;
- 
- 	for_all_evt_queues(adapter, eqo, i) {
--		sprintf(eqo->desc, "%s-q%d", netdev->name, i);
-+		snprintf(eqo->desc, sizeof(eqo->desc), "%s-q%d", netdev->name, i);
- 		vec = be_msix_vec_get(adapter, eqo);
- 		status = request_irq(vec, be_msix, 0, eqo->desc, eqo);
- 		if (status)
+ 	adev->name = "rdma";
+ 	adev->dev.parent = gd->gdma_context->dev;
 -- 
-2.37.0
+2.30.2
 
