@@ -1,69 +1,72 @@
 Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from out1.vger.email (unknown [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 599D65F3CFA
-	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 08:56:23 +0200 (CEST)
+Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
+	by mail.lfdr.de (Postfix) with ESMTP id DB0E25F3D4B
+	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 09:32:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229660AbiJDG4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Oct 2022 02:56:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37350 "EHLO
+        id S229839AbiJDHc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Oct 2022 03:32:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229673AbiJDG4U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 02:56:20 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 151412DABB
-        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 23:56:19 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id z23so10047758ejw.12
-        for <netdev@vger.kernel.org>; Mon, 03 Oct 2022 23:56:19 -0700 (PDT)
+        with ESMTP id S229830AbiJDHcr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 03:32:47 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC3C14D246;
+        Tue,  4 Oct 2022 00:32:45 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id s10so14346926ljp.5;
+        Tue, 04 Oct 2022 00:32:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=+tcn9B7Ym8UONbEc5EvJpUWZ3bzMEiRSGSgK5uDh3Sc=;
-        b=ic3g3krgCZxWT2MmFGd0e131DBRZaVGX4SX7ueo5RYe4yrJOBu9UjJJq21eTtuHlwI
-         1Us8YtCkExouFVIhzLrZ9mVKOEl94t/XEDZf3W6D6dXA0kHGbQs8lcPlDcewdjmbysMi
-         LFyHjWHAQC7KfkcXPfBLaOA9ugwVn+xqRP8iS/55+yFCkZje+bwyOrdxjXYfyiutl0UK
-         jHQywcdko5pN9iNdp662Xz6HO3+5Wkis+09uKcYCo8wVyXFWAUUiCDJMNUony8sGOZyL
-         epr7+7wMqHYwzNMX8hpr1oOI0LvViTzA4NnbzsRWN+pYkSnlgaoPeNX/plVi/7fpaoI5
-         NT8A==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:organization:mime-version:message-id:date
+         :subject:to:from:from:to:cc:subject:date;
+        bh=bSZFC1cY9nLrecV4EA48kyYz5HoUOeNFW38JRZTVhww=;
+        b=Y71rSsGxZZF4I98WfGsuUuEifQ2bIFzz11uLE/+OFkHWKEY1Z0GxBNh1cIlpmKoZ9M
+         hTRkMFPkaC996DS/71Ih2ju6SYsuO56600XeUG926gYcw25aAaWoikIV7L/R+fJ2o63I
+         Oh/arQTl9CiyOJow3bxH6bfr/dNKK2J/dEQGoQzpCZQqEGJ/NAOvD708U7LJ+TRCzgiB
+         +ECVvXRFgvGMR65AzHDL5tUO9NgnJS6ELyl27QtrgiQSqCJ6CaAkq57LUlLPO4KJDpW0
+         hTE35S605lpYiP8/s4FpU3oCF4DkxP9yr8Z9iKZn2k8R78TfG5lInqWUeGICVKpNDVhS
+         DGiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=+tcn9B7Ym8UONbEc5EvJpUWZ3bzMEiRSGSgK5uDh3Sc=;
-        b=1veztsEolhJ2DnlubFwwlwsT4SlIMCrv5LzqaCUM1K8dcAK3nI/PxcLs/SaFddfnig
-         vYTBC33GVER+49T6W78hFCHHjm9+ITUU+KGmkNOzCmMUGQVeykafuV0U2CqT++82kZZV
-         xWZFMcefmI/3nmFPdUFi5PldePa9U8bSXvTkmtPUxzt+c5GNnTrw/BY+3eSIGKDnBeLN
-         3cN5jlUyhJx8DGH3G00KI2Zasv7VlnCSPYgQ1yiAVgz23IjkSmCJvCmtFcPP6N6nc3V6
-         eqW0pQgoqohNJqqazPas1x39X3GPx3N0DgEV3BoXSU5iHirhxDv2XWWsd6FU6sOAzaAh
-         euHA==
-X-Gm-Message-State: ACrzQf1wFWO8i5XGhcXFpLWhi5p1PKLAHKeWBSnY7xUvWTLRdCGOWS1H
-        VUDfsF7qX0FT4Wasg9qttP7/Wg==
-X-Google-Smtp-Source: AMsMyM6q7CanQFsXNr9PR5MUNCDJkkeS0Fb8NDXZLxXrJWUQ38BsN/3e2MM+M6lhZxSoagpmZvRbMA==
-X-Received: by 2002:a17:907:724e:b0:783:5fba:4298 with SMTP id ds14-20020a170907724e00b007835fba4298mr19360005ejc.28.1664866577564;
-        Mon, 03 Oct 2022 23:56:17 -0700 (PDT)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id g25-20020a056402321900b004542e65337asm1046089eda.51.2022.10.03.23.56.16
+        h=content-transfer-encoding:organization:mime-version:message-id:date
+         :subject:to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=bSZFC1cY9nLrecV4EA48kyYz5HoUOeNFW38JRZTVhww=;
+        b=uFV0KSHTueJ2mIQHUar86BDFY/BfotRkYuF8Lo01qF9dbTCKthWLknZD2yHiMryjRS
+         VJA7IOrrZk1Cyo9o79nJCUQRHzxBmSZ2Qm999BvH+WMK278pRlcfRUpamtOa4IDtctQk
+         61+YlesM4BTaA0E+QkqIHqKnlErzPhFn78uwmq+jdrfeCWZ/MkBGJ8hJcsof2aRLh5vs
+         SCxPhN7i12NZZQxYVxGrvPJ6zjS7h538jjwtf2Cy41nqXP66Jr5rw56Vj80/XCSoJEWN
+         Nc682rUOwlMQKNDtJxRRlJC21QAUidI7m7uxsJXjuUsX67d+dfr+g3IBD2Dw6RiVU22t
+         4uSA==
+X-Gm-Message-State: ACrzQf0DY/bm4nwvFfUSW43+rWnsY/FkZByUQaQAacp3x975YO6P17+W
+        DYIrcWxmFXn0XsvCR1LHD2g=
+X-Google-Smtp-Source: AMsMyM4S/YM2hA9QKc1xz5D4NvWaMce/dcV+6cyNywzQ3XCQ9M4R4vKL48euuUitCExphPsOvk7gFQ==
+X-Received: by 2002:a2e:3517:0:b0:26d:e2be:8c41 with SMTP id z23-20020a2e3517000000b0026de2be8c41mr1969365ljz.104.1664868764023;
+        Tue, 04 Oct 2022 00:32:44 -0700 (PDT)
+Received: from wse-c0155.labs.westermo.se (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id i19-20020a056512225300b00499bf7605afsm1800229lfu.143.2022.10.04.00.32.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Oct 2022 23:56:16 -0700 (PDT)
-Date:   Tue, 4 Oct 2022 08:56:16 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        edumazet@google.com, tariqt@nvidia.com, moshe@nvidia.com,
-        saeedm@nvidia.com, linux-rdma@vger.kernel.org
-Subject: Re: [patch net-next v2 00/13] net: fix netdev to devlink_port
- linkage and expose to user
-Message-ID: <YzvZEDTM1FVOX9BC@nanopsycho>
-References: <20221003105204.3315337-1-jiri@resnulli.us>
- <20221003094556.1f16a255@kernel.org>
+        Tue, 04 Oct 2022 00:32:43 -0700 (PDT)
+From:   Casper Andersson <casper.casan@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: [PATCH net-next] docs: networking: phy: add missing space
+Date:   Tue,  4 Oct 2022 09:32:42 +0200
+Message-Id: <20221004073242.304425-1-casper.casan@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221003094556.1f16a255@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Organization: Westermo Network Technologies AB
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,36 +74,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Oct 03, 2022 at 06:45:56PM CEST, kuba@kernel.org wrote:
->On Mon,  3 Oct 2022 12:51:51 +0200 Jiri Pirko wrote:
->> Currently, the info about linkage from netdev to the related
->> devlink_port instance is done using ndo_get_devlink_port().
->> This is not sufficient, as it is up to the driver to implement it and
->> some of them don't do that. Also it leads to a lot of unnecessary
->> boilerplate code in all the drivers.
->> 
->> Instead of that, introduce a possibility for driver to expose this
->> relationship by new SET_NETDEV_DEVLINK_PORT macro which stores it into
->> dev->devlink_port. It is ensured by the driver init/fini flows that
->> the devlink_port pointer does not change during the netdev lifetime.
->> Devlink port is always registered before netdev register and
->> unregistered after netdev unregister.
->> 
->> Benefit from this linkage setup and remove explicit calls from driver
->> to devlink_port_type_eth_set() and clear(). Many of the driver
->> didn't use it correctly anyway. Let the devlink.c to track associated
->> netdev events and adjust type and type pointer accordingly. Also
->> use this events to to keep track on ifname change and remove RTNL lock
->> taking from devlink_nl_port_fill().
->> 
->> Finally, remove the ndo_get_devlink_port() ndo which is no longer used
->> and expose devlink_port handle as a new netdev netlink attribute to the
->> user. That way, during the ifname->devlink_port lookup, userspace app
->> does not have to dump whole devlink port list and instead it can just
->> do a simple RTM_GETLINK query.
->
->Would you be okay if we deferred until 6.2?
->
->It's technically past the deadline and some odd driver could regress.
+Missing space between "pins'" and "strength"
 
-Sure.
+Signed-off-by: Casper Andersson <casper.casan@gmail.com>
+---
+ Documentation/networking/phy.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Documentation/networking/phy.rst b/Documentation/networking/phy.rst
+index 06f4fcdb58b6..d11329a08984 100644
+--- a/Documentation/networking/phy.rst
++++ b/Documentation/networking/phy.rst
+@@ -120,7 +120,7 @@ required delays, as defined per the RGMII standard, several options may be
+ available:
+ 
+ * Some SoCs may offer a pin pad/mux/controller capable of configuring a given
+-  set of pins'strength, delays, and voltage; and it may be a suitable
++  set of pins' strength, delays, and voltage; and it may be a suitable
+   option to insert the expected 2ns RGMII delay.
+ 
+ * Modifying the PCB design to include a fixed delay (e.g: using a specifically
+-- 
+2.34.1
+
