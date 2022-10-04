@@ -2,178 +2,324 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C7B15F485B
-	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 19:26:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15CF35F48BB
+	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 19:41:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229611AbiJDR0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Oct 2022 13:26:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42754 "EHLO
+        id S229810AbiJDRlK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Oct 2022 13:41:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbiJDR0s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 13:26:48 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2040.outbound.protection.outlook.com [40.107.21.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FDB922B2B;
-        Tue,  4 Oct 2022 10:26:46 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ly1dSco3EAqNvvNp3nxQW1Z1Xfjzv4GiWq5BCg1TcoFz5+adfsdtOJyls4MoWGQNe+WYCa0Ajr+krfno7Qmq2SiW0uPVuYf10hW5Kw6Yb0suZ3kVPTST60cR+I6a0akngPQgQcDAzyC/I7OM9HEMCEw4O3lyIiPrWFZFAyzcYXMIoVF86YAX2KmR5mXeuIm49nfc4AjYNWIa0xQk8qAV5hHzyaLvEMfCU6ef/aNb7qrQTC7wQuPJ+Yxh+/yTk7t+6LrISXCUyfToxzTxfYeEtyFlRHV8SaNsbr4SXOvT5CZUj+zBUhs+0Z5i8ip78DKX2ey3DlpByUENB9G3NyvEaw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mJSNABsyz6HetKHJs6v3G+u29BVyi/7ZyKsv6qRrqU0=;
- b=OjUFhseKrQwJOAA77DQMVAvy+HT1V9+iA5TRrf4DNI980hCq8K8AdTC+rO6tGOM9wrQLwLm4t9wAu0khHZL5llrKlylOLE9F8ED4iTvj2VAX/x5HqJQWboSsZsukS34EDe/ks4D7fs+/wFznx2/9ANQQiNL7M60toPXbqdc4cGB8ibEg33SnAPtTv4wMWs3X+zhaCixRqmDroch6rm4Qv3Nv9gbi75m9KcZZzDfaXfAx5zIEgKP+KdXci5rPb2DdlNZeuSsFAFNngQUs7i81TqbmRjru0ANoKCmnxk4i8DPmXkywgLStlf67ivdhqTuAMQOGssKqbWxjhibrWlMglw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mJSNABsyz6HetKHJs6v3G+u29BVyi/7ZyKsv6qRrqU0=;
- b=wCnWhQ9UASP4ICdZYm6ZUjBxhma3r5GbNtD11AS8jAI7uJYai18Guhn8QYPK+nC/9s1m11yYl7HIXB4lOm23aZ8URw5AWqn5QgJx5jQL4iuH6A2jSFrKtGrtV1QaD+HoNo04OLShXBKKTg964fssUrL2vp+X4riTickohU0Sqa4mGIICOMlyhy3uYA6aRqpKs59h/758JTan6m77d1UwJqnl0q8UR1TJ9tCGZwZEHNGQzuWkYOE6HYMYCtUZMHOz3QlZkpglFQB1JEbc3EYRtuPDSPYZDACE/BhhJkeM84PVU80qnuhOYGVW88cDDf2PqHEnGrfS1YvaL/tfU8Hazg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seco.com;
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
- by PAXPR03MB8273.eurprd03.prod.outlook.com (2603:10a6:102:23c::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.28; Tue, 4 Oct
- 2022 17:26:43 +0000
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::204a:de22:b651:f86d]) by DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::204a:de22:b651:f86d%6]) with mapi id 15.20.5676.031; Tue, 4 Oct 2022
- 17:26:43 +0000
-Subject: Re: [PATCH net-next v6 0/9] [RFT] net: dpaa: Convert to phylink
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        Camelia Alexandra Groza <camelia.groza@nxp.com>,
-        netdev@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        with ESMTP id S230148AbiJDRkj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 13:40:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79CD9631FF
+        for <netdev@vger.kernel.org>; Tue,  4 Oct 2022 10:40:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1664905231;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ULxQFbuCAwyt4xCTVls3KLkLPtU4PF2MV4GysgDgtvE=;
+        b=ValyZAHpzx6ZSl3gswTIMG3dIKpi31zUBJGj0WT7kg4m3RuCTI7bjw5tHUNti2rkssNd0K
+        rEPeMKYiMU43MuJDGmvwB4EMgNS9iHip3zsh7enWn7CjAtsesSYxu4EtCfJJrS7QvoPNDe
+        psYEGQCGZne9A77VNkzyFY3p6bjLfyY=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-253-gSPtupapMoGVaQS0UW6L-Q-1; Tue, 04 Oct 2022 13:40:30 -0400
+X-MC-Unique: gSPtupapMoGVaQS0UW6L-Q-1
+Received: by mail-ej1-f71.google.com with SMTP id xh12-20020a170906da8c00b007413144e87fso5279964ejb.14
+        for <netdev@vger.kernel.org>; Tue, 04 Oct 2022 10:40:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=ULxQFbuCAwyt4xCTVls3KLkLPtU4PF2MV4GysgDgtvE=;
+        b=kf3A9RxWDM4eT5MTO4zgugWHF2BNB66JUTCW1iZn0y2tsOodjKl3RUsPPh1rf0ykae
+         B+wzSGoGeyAnRppT8WIl1X7VlSbss8As7RBkCDyKLCpv8nf3eKqrMfiBGwRJ03GrzsZb
+         Z6S02Yqbv4PKFCQqxsgdYACbguy2XyQVGrJsHpppYZvluUVXhGISNzz21xBZeOhfc/cZ
+         Oo6cCtvXpB8Fcugj6AITNve7n6Kd4H4jin69pkeSBwJVYcmfe7j3BHnrM0tKqoZyeCGt
+         2Vgc0ejgT0xDj8JB9ESk09vr2sdsPu7NSASa6z/e9DcmEN13crEtl4/BANymFC7OjONY
+         iBcA==
+X-Gm-Message-State: ACrzQf1kq/Em9y86Gh+tam87aMDWLmY+b+Db/sYmbN7GrC9pjCwWD1nv
+        ptdpv0wMx5LxwVTRBsyNqOeL8v4YcW9Duzv4n/uCHZYc8dojRAo/j53BVxorXJoMQLX2BhWFCoj
+        pS7w4O20AsYMqsLky
+X-Received: by 2002:a05:6402:428a:b0:42e:8f7e:1638 with SMTP id g10-20020a056402428a00b0042e8f7e1638mr24577744edc.228.1664905228952;
+        Tue, 04 Oct 2022 10:40:28 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM48meecWvYQG5X9uqsz1GXj/nSC2i59cHlSdS+Ua0zRzzrDnixdBLLyRAadNUEcQDRJGxOBcw==
+X-Received: by 2002:a05:6402:428a:b0:42e:8f7e:1638 with SMTP id g10-20020a056402428a00b0042e8f7e1638mr24577723edc.228.1664905228649;
+        Tue, 04 Oct 2022 10:40:28 -0700 (PDT)
+Received: from localhost (net-37-117-136-211.cust.vodafonedsl.it. [37.117.136.211])
+        by smtp.gmail.com with ESMTPSA id bt8-20020a170906b14800b0073dd1ac2fc8sm7379632ejb.195.2022.10.04.10.40.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Oct 2022 10:40:28 -0700 (PDT)
+Date:   Tue, 4 Oct 2022 19:40:27 +0200
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "linuxppc-dev @ lists . ozlabs . org" <linuxppc-dev@lists.ozlabs.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Li Yang <leoyang.li@nxp.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org
-References: <20220930200933.4111249-1-sean.anderson@seco.com>
- <0b47fd86-f775-e6ad-4e5f-e40479f2d301@seco.com>
- <20221004095245.1e9918bf@kernel.org>
-From:   Sean Anderson <sean.anderson@seco.com>
-Message-ID: <bf6b58ed-a42f-9848-993f-e074779e8264@seco.com>
-Date:   Tue, 4 Oct 2022 13:26:35 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <20221004095245.1e9918bf@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SA9PR03CA0022.namprd03.prod.outlook.com
- (2603:10b6:806:20::27) To DB7PR03MB4972.eurprd03.prod.outlook.com
- (2603:10a6:10:7d::22)
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        wizhao@redhat.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net] net/sched: act_mirred: use the backlog for mirred
+ ingress
+Message-ID: <YzxwCy7R0MdWZuO4@dcaratti.users.ipa.redhat.com>
+References: <33dc43f587ec1388ba456b4915c75f02a8aae226.1663945716.git.dcaratti@redhat.com>
+ <YzCZMHYmk53mQ+HK@pop-os.localdomain>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DB7PR03MB4972:EE_|PAXPR03MB8273:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3104820d-3653-41e3-abd5-08daa62d9b43
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Gn5zobhnfM8s07aQxD8/t2cxPW9fzbDaAX3AsgXMiloeyNmwK5cGguL6ga6VcVEHu4CtYXgkXtelXsPjVoIlWGAqxeOrb5q5/I32gOg0TVyrwwWa3QRudZSdPngmtC73WOK0KuC+jTYIuRubaEEz0q3Dtw8OX6UIvitnGwynIsNDEjPCjIhUarWzWvKZvj+3yMLaycmE6/f/UarpEi42ntOHkTwddPCFvolJUAwqtwLc+Pa386j6GHGuF7i8NqOXcbude3wYNPYrfS6re+6Qik6Ku89BjimG1OFNFiDNJw8KJMfL5i39/kLXZ9kN9hN7mqLGT1K0QDacXm+L2egVXXtI1TwF0jYPwJgyJVDFq785JwpSTReag/5of9426yYHAuIsu0ZYbca9WgKX62IOfXqKF8jH8OtOIWbswSHscsYlsmTRGkFYCex6FGHqXxJVb+6VPUSPaJ7B5oGJLnj+aJnKD5HIjDHourbrU/VF/uiYsUEbpQ6hF1eyRw2ssDHM4tiqvVYWnBYtm87Mk3tff0BS8LdfHD0KxwMYMv1bWWOp3fEUc9bb1m16yQRwmsDdvvyIPu18gQq85ez9PcQJHb9FLKxM9zSorAKpBjbVdt5Ja1AoruTVZ5nKLyvKSFnArw2WCGYwT+kJPSbbj0YFZ+e9WBNqgU+sSHNoJO36cKJC4+AVveQW/xHkxVD2BIaaO5yF5EYK0+PzTYLIkRI1MS4BByf1wBrjff+RBs0b65qJL65OadwXVKAbZdRECvQDxr0r4TU4bZ+HVXzS0lNwyGmKXtdULkn7DN2iyP4q9iYjNnT/MEGjCXoTftUVNdiGMCweMBeYNJLf1iH5gHoqww==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(396003)(346002)(366004)(39850400004)(376002)(451199015)(2616005)(86362001)(31696002)(38350700002)(83380400001)(7416002)(38100700002)(41300700001)(186003)(5660300002)(44832011)(66946007)(6916009)(4326008)(2906002)(6506007)(6666004)(8936002)(26005)(52116002)(53546011)(66556008)(6512007)(66476007)(54906003)(316002)(8676002)(478600001)(6486002)(31686004)(36756003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SlN3N2tkQVk2bkowVHFhRnQxblZLTzVaYTlCbGxRMFozWkkwNmo5OUtHekFl?=
- =?utf-8?B?TDQyR1NPYWdaZjdRWkFTWk1rNEpSTktOTkRvdU9ncHNNdHNZbjZkczhqSGs3?=
- =?utf-8?B?NWM0WDBLUTB0QmJLS0ZUYTlyVlhVb0wrOXhhZWZwZE5NQThvOHA0RTZsMG05?=
- =?utf-8?B?SXJaUjlWRlF3TUdydFJvZzFBZmQyZEZISEVtem53R0xDWUNRZWFFa2JYWVAx?=
- =?utf-8?B?TGprQy9CeXQ2bit4NWRQMHBCdmZIa2szdGZyWWc2Tm5ucUROVXRhRDNvSEhB?=
- =?utf-8?B?Q0NIV2R4T0RrRWdleU52bmpYZjF0aXM4YWJiT0h1bUdQaFZBdWo4dmlZWlZv?=
- =?utf-8?B?QlR1OUQxUjFqNVdnLzJSZVRCa3B2NllhS010NzcrME5CTFA4NnJzaHZKUWp2?=
- =?utf-8?B?QnBKZnVSMTU3TWI4dXhqa2hNUWx5dkVndkE3aDUzNTA2NFI0bldudHZRNGlm?=
- =?utf-8?B?YzlSbjhFdkFoR00yVVJ5eDEyamd5bzluSlRoSkZ3b3RHcXdUL29FM0pyMjZH?=
- =?utf-8?B?S2Nzdm1sb2pGYjRtTXFtYnJLdDd0U1Flc0ZWYmwvR1l1K0Q4Zi9Yd1doa1lh?=
- =?utf-8?B?dWpWNXRkQWpxR2RLeHpNQ3pITlVHQ0RpUlZmam82YlZSUTNCc0UwclRUdzRt?=
- =?utf-8?B?MnlIcUgySytuVTZXdnN2L2ozcytPSER6V1pYOVpTV28wQ3NqUFlLM2tya3dD?=
- =?utf-8?B?dGhYZktIbThYSGNtSG95dlExZ1dGZHhQNEUzRkthaTgwQnR2bzRFTndJSHJE?=
- =?utf-8?B?UlJTN3dqQmRrZ1JJK0hJdG9ZSkFsdVhDWGNEKzlLWE80YS9sd3ZqdG9lc2Yz?=
- =?utf-8?B?bHdVejJ6a3gvVWVDTmIvZE03OGVGaGc1SzhkSXpSSVFQbHNPMTZPQ0J4bWdw?=
- =?utf-8?B?MytxY3dKdWZtMjVqSlFQb3QxTllvOGVGUWxadlI1c0Q4Y2tLa3RVYm1JRGFR?=
- =?utf-8?B?T2hUNEd4Zk9sTDRsek9FZlJ0b01YMndXbzZQU3ZVQTVXQ2lucTFSb3BOSlR5?=
- =?utf-8?B?dHRXVHJTSDVZVE0reFFKYTFoeEJpUWp2WmRsRmFkN0NhcjJUa01GbHQ0endS?=
- =?utf-8?B?MVFlckFDbCtrUXZKL3VFREpYS2hqVzhKV1NDTlhzV3ZJdTg2RGFGWnd2dStC?=
- =?utf-8?B?NmNRT2NoRmRTZXk2a1VZazlXbFBYS1lCTVl5ZG5ZbERvclpmcEhEcGh1Z0xw?=
- =?utf-8?B?ekk4RTJULytLVVBmNzZSV0U1M1dibHh5SlIwM0RhYzE0NnRaaDhnbHVoaXB0?=
- =?utf-8?B?SFdmRjVZd2U0dk9oaThoMituYWZ0RW16clRMSTZ0SHpOOEsxaFhNNVk0VVdL?=
- =?utf-8?B?a05KNFZ6QVJyNkh6bCticW94OWl3am9NM3RFY1lONEZ3Y0lOQTlBdjRHTDZV?=
- =?utf-8?B?RS9vcm9VUWZFeWl4MzN1Z1Jud0p2TW9HbXV0UlZ6QkxGY3E5SU1oZHkxcndD?=
- =?utf-8?B?dlc3NkVaQUZKR3F2YkIzODg4b0p3eHZYRHhlSU1RS2xONnRIZmlnUUJxK0xx?=
- =?utf-8?B?bDBHRTk4dWhNdVBRcnl0aEZ5VDl6OENZTWsrek1iQWlMajhzL0NpdkkxQ1Nz?=
- =?utf-8?B?MHlFcTdLeXJXSjFwdm1iUnY5elRacUswdHVTcWJpckZkcFBRdWlPOFl2bnlK?=
- =?utf-8?B?b0lzMy94N3NkeDdrajVPVHlrNWtIb2hDZ2xvblI0cDNKT2NSQ2tKbFo1RXFj?=
- =?utf-8?B?STNDM3RrYi9pMzlqK0xSRE1TRHZhNm5WZHdsK1ovNW92MjBFeWJKTE1kNzV0?=
- =?utf-8?B?ZklRVVpVemtSdERJYXdPcmJMcVVBNUJudG9BR0VXTG9pUGRZQ2JVSmx0RjM5?=
- =?utf-8?B?ejBIWVNTKzZVckVudE84Sjh3SG5SVWxnZ0FPMDBZenFORWFXelVHekg1eHJS?=
- =?utf-8?B?d3ZzWUk4WjlOUjIvemZHVExUTXBURXdaSENSNWpUb3VJL3FDeFNQUTUxSWxj?=
- =?utf-8?B?Vm5WT0xoZ255aUJHcXdXbGdabmRnaXE4bC9vMmc1RHFiTDA0bGZ5VzZLRmdO?=
- =?utf-8?B?TUVic1RwZ1R4Wkl3SVdpczBqM25kL0JGUGdwZ3RrWVJoZXhZWG5QZEJia3FV?=
- =?utf-8?B?bkUwUkp6a2hVbDBWNVp2QnM5VkVnTnJaNWhMMHdhbzdnbzFqcVZUT1hFbG96?=
- =?utf-8?B?R3JERjM2SGJCVEJBak1XRmt0SEFCajJhbm5Ib05wR0w4MWVqQmRTTXZQNUpp?=
- =?utf-8?B?S3c9PQ==?=
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3104820d-3653-41e3-abd5-08daa62d9b43
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Oct 2022 17:26:43.6707
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rAe1rSMw2LZqdq5D+/3jOLlKawv49VQCWQDQTsLQ2aocye4TXPvbRcS5MXLRNV2/5CE9WHNd0pWTc6mW1vbnww==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR03MB8273
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YzCZMHYmk53mQ+HK@pop-os.localdomain>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+hello Cong, thanks for looking at this!
+
+On Sun, Sep 25, 2022 at 11:08:48AM -0700, Cong Wang wrote:
+> On Fri, Sep 23, 2022 at 05:11:12PM +0200, Davide Caratti wrote:
+> > William reports kernel soft-lockups on some OVS topologies when TC mirred
+> > "egress-to-ingress" action is hit by local TCP traffic. Indeed, using the
+> > mirred action in egress-to-ingress can easily produce a dmesg splat like:
+> > 
+> >  ============================================
+> >  WARNING: possible recursive locking detected
+
+[...]
+
+> >  6.0.0-rc4+ #511 Not tainted
+> >  --------------------------------------------
+> >  nc/1037 is trying to acquire lock:
+> >  ffff950687843cb0 (slock-AF_INET/1){+.-.}-{2:2}, at: tcp_v4_rcv+0x1023/0x1160
+> > 
+> >  but task is already holding lock:
+> >  ffff950687846cb0 (slock-AF_INET/1){+.-.}-{2:2}, at: tcp_v4_rcv+0x1023/0x1160
+
+FTR, this is:
+
+2091         sk_incoming_cpu_update(sk);
+2092
+2093         bh_lock_sock_nested(sk); <--- the lock reported in the splat
+2094         tcp_segs_in(tcp_sk(sk), skb);
+2095         ret = 0;
+2096         if (!sock_owned_by_user(sk)) {
+
+> BTW, have you thought about solving the above lockdep warning in TCP
+> layer?
+
+yes, but that doesn't look like a trivial fix at all - and I doubt it's
+worth doing it just to make mirred and TCP "friends". Please note:
+on current kernel this doesn't just result in a lockdep warning: using
+iperf3 on unpatched kernels it's possible to see a real deadlock, like:
+
+WARRNING: possible circular locking dependency detected
+ 6.0.0-rc4+ #511 Not tainted
+ ------------------------------------------------------
+ iperf3/1021 is trying to acquire lock:
+ ffff976005c5a630 (slock-AF_INET6/1){+...}-{2:2}, at: tcp_v4_rcv+0x1023/0x1160
+
+ but task is already holding lock:
+ ffff97607b06e0b0 (slock-AF_INET/1){+.-.}-{2:2}, at: tcp_v4_rcv+0x1023/0x1160
+
+ which lock already depends on the new lock.
 
 
-On 10/4/22 12:52 PM, Jakub Kicinski wrote:
-> On Tue, 4 Oct 2022 11:28:19 -0400 Sean Anderson wrote:
->> I noticed that this series was marked "RFC" in patchwork.
-> 
-> Because the cover letter has RTF in the subject, presumably.
-> 
->> I consider this series ready to apply. I am requesting *testing*, in
->> particular on 10gec/dtsec boards (P-series). Since no one seems to
->> have tried that over the past 4 months that I've been working on this
->> series, perhaps the best way for it to get tested is to apply it...
-> 
-> You know the situation the best as the author, you should make 
-> a clear call on the nature of the posting. It's either RFC/RFT 
-> or a ready-to-go-in posting.
+ the existing dependency chain (in reverse order) is:
 
-Well, I consider the memac stuff to be well tested, but I don't
-have 10gec/dtsec hardware. I was hoping that someone with the hardware
-might look at this series if I stuck RFT in the subject. I suspect
-there are still some bugs in those drivers.
+ -> #1 (slock-AF_INET/1){+.-.}-{2:2}:
+        lock_acquire+0xd5/0x310
+        _raw_spin_lock_nested+0x39/0x70
+        tcp_v4_rcv+0x1023/0x1160
+        ip_protocol_deliver_rcu+0x4d/0x280
+        ip_local_deliver_finish+0xac/0x160
+        ip_local_deliver+0x71/0x220
+        ip_rcv+0x5a/0x200
+        __netif_receive_skb_one_core+0x89/0xa0
+        netif_receive_skb+0x1c1/0x400
+        tcf_mirred_act+0x2a5/0x610 [act_mirred]
+        tcf_action_exec+0xb3/0x210
+        fl_classify+0x1f7/0x240 [cls_flower]
+        tcf_classify+0x7b/0x320
+        __dev_queue_xmit+0x3a4/0x11b0
+        ip_finish_output2+0x3b8/0xa10
+        ip_output+0x7f/0x260
+        __ip_queue_xmit+0x1ce/0x610
+        __tcp_transmit_skb+0xabc/0xc80
+        tcp_rcv_established+0x284/0x810
+        tcp_v4_do_rcv+0x1f3/0x370
+        tcp_v4_rcv+0x10bc/0x1160
+        ip_protocol_deliver_rcu+0x4d/0x280
+        ip_local_deliver_finish+0xac/0x160
+        ip_local_deliver+0x71/0x220
+        ip_rcv+0x5a/0x200
+        __netif_receive_skb_one_core+0x89/0xa0
+        netif_receive_skb+0x1c1/0x400
+        tcf_mirred_act+0x2a5/0x610 [act_mirred]
+        tcf_action_exec+0xb3/0x210
+        fl_classify+0x1f7/0x240 [cls_flower]
+        tcf_classify+0x7b/0x320
+        __dev_queue_xmit+0x3a4/0x11b0
+        ip_finish_output2+0x3b8/0xa10
+        ip_output+0x7f/0x260
+        __ip_queue_xmit+0x1ce/0x610
+        __tcp_transmit_skb+0xabc/0xc80
+        tcp_write_xmit+0x229/0x12c0
+        __tcp_push_pending_frames+0x32/0xf0
+        tcp_sendmsg_locked+0x297/0xe10
+        tcp_sendmsg+0x27/0x40
+        sock_sendmsg+0x58/0x70
+        sock_write_iter+0x9a/0x100
+        vfs_write+0x481/0x4f0
+        ksys_write+0xc2/0xe0
+        do_syscall_64+0x3a/0x90
+        entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-> Maybe in smaller subsystems you can post an RFC/RTF and then it 
-> gets applied after some time without a repost but we don't do that.
-> The normal processing time for a patch is 1-3 days while we like
-> to give people a week to test. So the patches would have to rot in 
-> the review queue for extra half a week. At our patch rate this is
-> unsustainable.
-> 
+ -> #0 (slock-AF_INET6/1){+...}-{2:2}:
+        check_prevs_add+0x185/0xf50
+        __lock_acquire+0x11eb/0x1620
+        lock_acquire+0xd5/0x310
+        _raw_spin_lock_nested+0x39/0x70
+        tcp_v4_rcv+0x1023/0x1160
+        ip_protocol_deliver_rcu+0x4d/0x280
+        ip_local_deliver_finish+0xac/0x160
+        ip_local_deliver+0x71/0x220
+        ip_rcv+0x5a/0x200
+        __netif_receive_skb_one_core+0x89/0xa0
+        netif_receive_skb+0x1c1/0x400
+        tcf_mirred_act+0x2a5/0x610 [act_mirred]
+        tcf_action_exec+0xb3/0x210
+        fl_classify+0x1f7/0x240 [cls_flower]
+        tcf_classify+0x7b/0x320
+        __dev_queue_xmit+0x3a4/0x11b0
+        ip_finish_output2+0x3b8/0xa10
+        ip_output+0x7f/0x260
+        __ip_queue_xmit+0x1ce/0x610
+        __tcp_transmit_skb+0xabc/0xc80
+        tcp_rcv_established+0x284/0x810
+        tcp_v4_do_rcv+0x1f3/0x370
+        tcp_v4_rcv+0x10bc/0x1160
+        ip_protocol_deliver_rcu+0x4d/0x280
+        ip_local_deliver_finish+0xac/0x160
+        ip_local_deliver+0x71/0x220
+        ip_rcv+0x5a/0x200
+        __netif_receive_skb_one_core+0x89/0xa0
+        netif_receive_skb+0x1c1/0x400
+        tcf_mirred_act+0x2a5/0x610 [act_mirred]
+        tcf_action_exec+0xb3/0x210
+        fl_classify+0x1f7/0x240 [cls_flower]
+        tcf_classify+0x7b/0x320
+        __dev_queue_xmit+0x3a4/0x11b0
+        ip_finish_output2+0x3b8/0xa10
+        ip_output+0x7f/0x260
+        __ip_queue_xmit+0x1ce/0x610
+        __tcp_transmit_skb+0xabc/0xc80
+        tcp_write_xmit+0x229/0x12c0
+        __tcp_push_pending_frames+0x32/0xf0
+        tcp_sendmsg_locked+0x297/0xe10
+        tcp_sendmsg+0x27/0x40
+        sock_sendmsg+0x42/0x70
+        sock_write_iter+0x9a/0x100
+        vfs_write+0x481/0x4f0
+        ksys_write+0xc2/0xe0
+        do_syscall_64+0x3a/0x90
+        entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-Well, I have gotten reviews for the device tree stuff, but the core
-changes (what I consider to be the actual content of the series) is
-missing Reviewed-bys. I don't anticipate making any major changes to
-the series unless I get some feedback one way or another. If having
-RFT in the subject is preventing that review, I will remove it.
+ other info that might help us debug this:
 
---Sean
+  Possible unsafe locking scenario:
+
+        CPU0                    CPU1
+        ----                    ----
+   lock(slock-AF_INET/1);
+                                lock(slock-AF_INET6/1);
+                                lock(slock-AF_INET/1);
+   lock(slock-AF_INET6/1);
+
+  *** DEADLOCK ***
+
+ 12 locks held by iperf3/1021:
+  #0: ffff976005c5a6c0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: tcp_sendmsg+0x19/0x40
+  #1: ffffffffbca07320 (rcu_read_lock){....}-{1:2}, at: __ip_queue_xmit+0x5/0x610
+  #2: ffffffffbca072e0 (rcu_read_lock_bh){....}-{1:2}, at: ip_finish_output2+0xaa/0xa10
+  #3: ffffffffbca072e0 (rcu_read_lock_bh){....}-{1:2}, at: __dev_queue_xmit+0x72/0x11b0
+  #4: ffffffffbca07320 (rcu_read_lock){....}-{1:2}, at: netif_receive_skb+0x181/0x400
+  #5: ffffffffbca07320 (rcu_read_lock){....}-{1:2}, at: ip_local_deliver_finish+0x54/0x160
+  #6: ffff97607b06e0b0 (slock-AF_INET/1){+.-.}-{2:2}, at: tcp_v4_rcv+0x1023/0x1160
+  #7: ffffffffbca07320 (rcu_read_lock){....}-{1:2}, at: __ip_queue_xmit+0x5/0x610
+  #8: ffffffffbca072e0 (rcu_read_lock_bh){....}-{1:2}, at: ip_finish_output2+0xaa/0xa10
+  #9: ffffffffbca072e0 (rcu_read_lock_bh){....}-{1:2}, at: __dev_queue_xmit+0x72/0x11b0
+  #10: ffffffffbca07320 (rcu_read_lock){....}-{1:2}, at: netif_receive_skb+0x181/0x400
+  #11: ffffffffbca07320 (rcu_read_lock){....}-{1:2}, at: ip_local_deliver_finish+0x54/0x160
+
+ [...]
+
+ kernel:watchdog: BUG: soft lockup - CPU#1 stuck for 26s! [swapper/1:0]
+
+Moreover, even if we improve TCP locking in order to avoid lockups for
+this simple topology, I suspect that TCP will experience some packet
+losses: when mirred detects 4 nested calls of tcf_mirred_act(), the kernel
+will protect against excessive stack growth and drop the skb (that can
+also be a full TSO packet). Probably the protocol can recover, but the
+performance will be certainly non-optimal.
+
+> Which also means we can no longer know the RX path status any more,
+> right? I mean if we have filters on ingress, we can't know whether they
+> drop this packet or not, after this patch? To me, this at least breaks
+> users' expectation.
+
+Fair point! Then maybe we don't need to change the whole TC mirred ingress:
+since the problem only affects egress to ingress, we can preserve the call
+to netif_recive_skb() on ingress->ingress, and just use the backlog in the
+egress->ingress direction _ that has been broken since the very beginning
+and got similar fixes in the past [1]. Something like:
+
+-- >8 --
+--- a/net/sched/act_mirred.c
++++ b/net/sched/act_mirred.c
+@@ -205,12 +205,14 @@ static int tcf_mirred_init(struct net *net, struct nlattr *nla,
+        return err;
+ }
+
+-static int tcf_mirred_forward(bool want_ingress, struct sk_buff *skb)
++static int tcf_mirred_forward(bool want_ingress, bool at_ingress, struct sk_buff *skb)
+ {
+        int err;
+
+        if (!want_ingress)
+                err = tcf_dev_queue_xmit(skb, dev_queue_xmit);
++       else if (!at_ingress)
++               err = netif_rx(skb);
+        else
+                err = netif_receive_skb(skb);
+
+@@ -306,7 +308,7 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
+                /* let's the caller reinsert the packet, if possible */
+                if (use_reinsert) {
+                        res->ingress = want_ingress;
+-                       err = tcf_mirred_forward(res->ingress, skb);
++                       err = tcf_mirred_forward(res->ingress, at_ingress, skb);
+                        if (err)
+                                tcf_action_inc_overlimit_qstats(&m->common);
+                        __this_cpu_dec(mirred_rec_level);
+@@ -314,7 +316,7 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
+                }
+        }
+
+-       err = tcf_mirred_forward(want_ingress, skb2);
++       err = tcf_mirred_forward(want_ingress, at_ingress, skb2);
+        if (err) {
+ out:
+                tcf_action_inc_overlimit_qstats(&m->common);
+-- >8 --
+
+WDYT? Any feedback appreciated, thanks!
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=f799ada6bf2397c351220088b9b0980125c77280
+
+-- 
+davide
+
