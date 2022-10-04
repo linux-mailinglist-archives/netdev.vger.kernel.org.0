@@ -2,98 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB0E25F3D4B
-	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 09:32:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F47A5F3D79
+	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 09:51:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229839AbiJDHc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Oct 2022 03:32:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55846 "EHLO
+        id S229697AbiJDHvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Oct 2022 03:51:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229830AbiJDHcr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 03:32:47 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC3C14D246;
-        Tue,  4 Oct 2022 00:32:45 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id s10so14346926ljp.5;
-        Tue, 04 Oct 2022 00:32:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:organization:mime-version:message-id:date
-         :subject:to:from:from:to:cc:subject:date;
-        bh=bSZFC1cY9nLrecV4EA48kyYz5HoUOeNFW38JRZTVhww=;
-        b=Y71rSsGxZZF4I98WfGsuUuEifQ2bIFzz11uLE/+OFkHWKEY1Z0GxBNh1cIlpmKoZ9M
-         hTRkMFPkaC996DS/71Ih2ju6SYsuO56600XeUG926gYcw25aAaWoikIV7L/R+fJ2o63I
-         Oh/arQTl9CiyOJow3bxH6bfr/dNKK2J/dEQGoQzpCZQqEGJ/NAOvD708U7LJ+TRCzgiB
-         +ECVvXRFgvGMR65AzHDL5tUO9NgnJS6ELyl27QtrgiQSqCJ6CaAkq57LUlLPO4KJDpW0
-         hTE35S605lpYiP8/s4FpU3oCF4DkxP9yr8Z9iKZn2k8R78TfG5lInqWUeGICVKpNDVhS
-         DGiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:organization:mime-version:message-id:date
-         :subject:to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=bSZFC1cY9nLrecV4EA48kyYz5HoUOeNFW38JRZTVhww=;
-        b=uFV0KSHTueJ2mIQHUar86BDFY/BfotRkYuF8Lo01qF9dbTCKthWLknZD2yHiMryjRS
-         VJA7IOrrZk1Cyo9o79nJCUQRHzxBmSZ2Qm999BvH+WMK278pRlcfRUpamtOa4IDtctQk
-         61+YlesM4BTaA0E+QkqIHqKnlErzPhFn78uwmq+jdrfeCWZ/MkBGJ8hJcsof2aRLh5vs
-         SCxPhN7i12NZZQxYVxGrvPJ6zjS7h538jjwtf2Cy41nqXP66Jr5rw56Vj80/XCSoJEWN
-         Nc682rUOwlMQKNDtJxRRlJC21QAUidI7m7uxsJXjuUsX67d+dfr+g3IBD2Dw6RiVU22t
-         4uSA==
-X-Gm-Message-State: ACrzQf0DY/bm4nwvFfUSW43+rWnsY/FkZByUQaQAacp3x975YO6P17+W
-        DYIrcWxmFXn0XsvCR1LHD2g=
-X-Google-Smtp-Source: AMsMyM4S/YM2hA9QKc1xz5D4NvWaMce/dcV+6cyNywzQ3XCQ9M4R4vKL48euuUitCExphPsOvk7gFQ==
-X-Received: by 2002:a2e:3517:0:b0:26d:e2be:8c41 with SMTP id z23-20020a2e3517000000b0026de2be8c41mr1969365ljz.104.1664868764023;
-        Tue, 04 Oct 2022 00:32:44 -0700 (PDT)
-Received: from wse-c0155.labs.westermo.se (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id i19-20020a056512225300b00499bf7605afsm1800229lfu.143.2022.10.04.00.32.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Oct 2022 00:32:43 -0700 (PDT)
-From:   Casper Andersson <casper.casan@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: [PATCH net-next] docs: networking: phy: add missing space
-Date:   Tue,  4 Oct 2022 09:32:42 +0200
-Message-Id: <20221004073242.304425-1-casper.casan@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229643AbiJDHvM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 03:51:12 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A4BA2B624;
+        Tue,  4 Oct 2022 00:51:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=Uf9y1Q5FeZRo3Kn1eduleYE4tdmn/F4uNHOsG12u5R8=;
+        t=1664869871; x=1666079471; b=Ygcy8V3w9RADDTIhY8JdG3s8rA6LhfYERJHjik4A4C3V4U1
+        0OmykRGmP3iKo/YZLoohbTRQI7oQm+KidH4lb3qXKT94BOiPZ5kPLPu/ddvy/CXhH7kMPGHEn6lqE
+        e0WvTe/MEIwvMhEm4go8SIReMCM9mJ3Qb7v6npq9vwvfABWA5Joe6V0AYgIrswvIJsujiokBenZbR
+        z8pU1n8OuBg5WxbsAeneEu1Vy+wLh+NgEfqoC05NP6ZTqRvOBnYDeWz+0y5EGQn1y5LLsRJdAnZHB
+        olGrd+dPjvyZcn1D55MEIX6bYCpdPJ61j+DXhNr7qKzuwIZAcoTHp1bZ07JCVdeQ==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1ofcho-00F5x0-1m;
+        Tue, 04 Oct 2022 09:51:08 +0200
+Message-ID: <62b8bf6f739d1e6e0320864ed0660c9c52b767c4.camel@sipsolutions.net>
+Subject: Re: doc warnings in *80211
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        linux-wireless@vger.kernel.org
+Date:   Tue, 04 Oct 2022 09:51:07 +0200
+In-Reply-To: <20221003191128.68bfc844@kernel.org>
+References: <20221003191128.68bfc844@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-Organization: Westermo Network Technologies AB
-Content-Transfer-Encoding: 8bit
+X-malware-bazaar: not-scanned
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Missing space between "pins'" and "strength"
+Hi,
 
-Signed-off-by: Casper Andersson <casper.casan@gmail.com>
----
- Documentation/networking/phy.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> doing basic sanity checks before submitting the net-next PR I spotted
+> that we have these warnings when building documentation on net-next:
+>=20
+> Documentation/driver-api/80211/cfg80211:48: ./include/net/cfg80211.h:6960=
+: WARNING: Duplicate C declaration, also defined at driver-api/80211/cfg802=
+11:6924.
+> Declaration is '.. c:function:: void cfg80211_rx_assoc_resp (struct net_d=
+evice *dev, struct cfg80211_rx_assoc_resp *data)'.
 
-diff --git a/Documentation/networking/phy.rst b/Documentation/networking/phy.rst
-index 06f4fcdb58b6..d11329a08984 100644
---- a/Documentation/networking/phy.rst
-+++ b/Documentation/networking/phy.rst
-@@ -120,7 +120,7 @@ required delays, as defined per the RGMII standard, several options may be
- available:
- 
- * Some SoCs may offer a pin pad/mux/controller capable of configuring a given
--  set of pins'strength, delays, and voltage; and it may be a suitable
-+  set of pins' strength, delays, and voltage; and it may be a suitable
-   option to insert the expected 2ns RGMII delay.
- 
- * Modifying the PCB design to include a fixed delay (e.g: using a specifically
--- 
-2.34.1
+Hmm. That's interesting. I guess it cannot distinguish between the type
+of identifier?
+
+struct cfg80211_rx_assoc_resp vs. cfg80211_rx_assoc_resp()
+
+Not sure what do about it - rename one of them?
+
+> Documentation/driver-api/80211/mac80211:109: ./include/net/mac80211.h:504=
+6: WARNING: Duplicate C declaration, also defined at driver-api/80211/mac80=
+211:1065.
+> Declaration is '.. c:function:: void ieee80211_tx_status (struct ieee8021=
+1_hw *hw, struct sk_buff *skb)'.
+
+Same here actually!
+
+I don't think either of these is new.
+
+johannes
+
 
