@@ -2,84 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 391A25F3D7E
-	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 09:52:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8F675F3DF0
+	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 10:12:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229853AbiJDHwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Oct 2022 03:52:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53946 "EHLO
+        id S229933AbiJDIMa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Oct 2022 04:12:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229643AbiJDHwr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 03:52:47 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ED412B629;
-        Tue,  4 Oct 2022 00:52:46 -0700 (PDT)
-Received: from [192.168.10.9] (unknown [39.45.148.204])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: usama.anjum)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 01F2D6602294;
-        Tue,  4 Oct 2022 08:52:42 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1664869964;
-        bh=R6l9T5BM52dcR1rvtAnSOR0sTeiXruJN2cxHdJAe5ZY=;
-        h=Date:Cc:To:From:Subject:From;
-        b=CkBj9peD5/eQeSHFXfLAg/YLU/jvMp4CukTv+9PnxQpjqFUwXRkWWUMmXzvVma8cb
-         Oa9tRZOjBQGdgRkIkDekKrU4ttcqMxz+C3oInmjV49bq+OJPZht98sLxBFfdi7j+uZ
-         tcizwg1nkwuLyUEd1mzlCAI8LvWZH9Gmq8xZD0Oay/4GPNwcvBY2kMbjyD+uZwRUI3
-         l9oVdntpezgHbu0iWtGr++TJoY5R7PmjoI0RCR/9ASfOB8PVWkW43des2E+Z9F1w0P
-         k61e+iUcci6hhEo8kLXZg3gfhrLZJd/6iVVgbk6CpRaB9L9gdfS3QOYym/KjlA9Vhd
-         5iENahn47BRHg==
-Message-ID: <28270724-1c20-5b28-e5cf-ffe29a85ce4c@collabora.com>
-Date:   Tue, 4 Oct 2022 12:52:38 +0500
+        with ESMTP id S229726AbiJDILy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 04:11:54 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 142901160
+        for <netdev@vger.kernel.org>; Tue,  4 Oct 2022 01:11:03 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2948AFeX4018633, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2948AFeX4018633
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Tue, 4 Oct 2022 16:10:15 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 4 Oct 2022 16:10:42 +0800
+Received: from localhost.localdomain (172.21.182.184) by
+ RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Tue, 4 Oct 2022 16:10:41 +0800
+From:   Chunhao Lin <hau@realtek.com>
+To:     <hkallweit1@gmail.com>
+CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
+        <kuba@kernel.org>, <grundler@chromium.org>,
+        Chunhao Lin <hau@realtek.com>
+Subject: [PATCH net] r8169: fix rtl8125b dmar pte write access not set error
+Date:   Tue, 4 Oct 2022 16:10:37 +0800
+Message-ID: <20221004081037.34064-1-hau@realtek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Cc:     usama.anjum@collabora.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        Collabora Kernel ML <kernel@collabora.com>,
-        kernel-janitors <kernel-janitors@vger.kernel.org>
-Content-Language: en-US
-To:     =?UTF-8?Q?Tomislav_Po=c5=beega?= <pozega.tomislav@gmail.com>,
-        Daniel Golle <daniel@makrotopia.org>,
-        Kalle Valo <kvalo@kernel.org>
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-Subject: [Bug report] Probably variable is being overwritten
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [172.21.182.184]
+X-ClientProxiedBy: RTEXH36504.realtek.com.tw (172.21.6.27) To
+ RTEXMBS04.realtek.com.tw (172.21.6.97)
+X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: trusted connection
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 10/04/2022 07:20:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEwLzQgpFekyCAwMzo1MjowMA==?=
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_PASS,
+        T_SPF_HELO_TEMPERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+When close device, rx will be enabled if wol is enabeld. When open device
+it will cause rx to dma to wrong address after pci_set_master().
 
-A bit in rfb0r1 is being cleared and result is stored in rfval. Then the
-first bit is being set without reusing the rfval. It is probably bug or
-dead code? The same pattern can be seen repeated below as well.
+In this patch, driver will disable tx/rx when close device. If wol is
+eanbled only enable rx filter and disable rxdv_gate to let hardware
+can receive packet to fifo but not to dma it.
 
+Fixes: 120068481405 ("r8169: fix failing WoL")
+Signed-off-by: Chunhao Lin <hau@realtek.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
-b/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
-index cbbb1a4849cf..4857e3818418 100644
---- a/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
-+++ b/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
-@@ -8844,7 +8844,7 @@ static void rt2800_rxiq_calibration(struct
-rt2x00_dev *rt2x00dev)
-        for (ch_idx = 0; ch_idx < 2; ch_idx = ch_idx + 1) {
-                if (ch_idx == 0) {
-                        rfval = rfb0r1 & (~0x3);
--                       rfval = rfb0r1 | 0x1;
-+                       rfval = rfval | 0x1;
-                        rt2800_rfcsr_write_bank(rt2x00dev, 0, 1, rfval);
-                        rfval = rfb0r2 & (~0x33);
-                        rfval = rfb0r2 | 0x11;
-
-
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 1b7fdb4f056b..c09cfbe1d3f0 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -2239,6 +2239,9 @@ static void rtl_wol_enable_rx(struct rtl8169_private *tp)
+ 	if (tp->mac_version >= RTL_GIGA_MAC_VER_25)
+ 		RTL_W32(tp, RxConfig, RTL_R32(tp, RxConfig) |
+ 			AcceptBroadcast | AcceptMulticast | AcceptMyPhys);
++
++	if (tp->mac_version >= RTL_GIGA_MAC_VER_40)
++		RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
+ }
+ 
+ static void rtl_prepare_power_down(struct rtl8169_private *tp)
+@@ -3981,7 +3984,7 @@ static void rtl8169_tx_clear(struct rtl8169_private *tp)
+ 	netdev_reset_queue(tp->dev);
+ }
+ 
+-static void rtl8169_cleanup(struct rtl8169_private *tp, bool going_down)
++static void rtl8169_cleanup(struct rtl8169_private *tp)
+ {
+ 	napi_disable(&tp->napi);
+ 
+@@ -3993,9 +3996,6 @@ static void rtl8169_cleanup(struct rtl8169_private *tp, bool going_down)
+ 
+ 	rtl_rx_close(tp);
+ 
+-	if (going_down && tp->dev->wol_enabled)
+-		goto no_reset;
+-
+ 	switch (tp->mac_version) {
+ 	case RTL_GIGA_MAC_VER_28:
+ 	case RTL_GIGA_MAC_VER_31:
+@@ -4016,7 +4016,7 @@ static void rtl8169_cleanup(struct rtl8169_private *tp, bool going_down)
+ 	}
+ 
+ 	rtl_hw_reset(tp);
+-no_reset:
++
+ 	rtl8169_tx_clear(tp);
+ 	rtl8169_init_ring_indexes(tp);
+ }
+@@ -4027,7 +4027,7 @@ static void rtl_reset_work(struct rtl8169_private *tp)
+ 
+ 	netif_stop_queue(tp->dev);
+ 
+-	rtl8169_cleanup(tp, false);
++	rtl8169_cleanup(tp);
+ 
+ 	for (i = 0; i < NUM_RX_DESC; i++)
+ 		rtl8169_mark_to_asic(tp->RxDescArray + i);
+@@ -4715,7 +4715,7 @@ static void rtl8169_down(struct rtl8169_private *tp)
+ 	pci_clear_master(tp->pci_dev);
+ 	rtl_pci_commit(tp);
+ 
+-	rtl8169_cleanup(tp, true);
++	rtl8169_cleanup(tp);
+ 	rtl_disable_exit_l1(tp);
+ 	rtl_prepare_power_down(tp);
+ }
 -- 
-Muhammad Usama Anjum
+2.25.1
+
