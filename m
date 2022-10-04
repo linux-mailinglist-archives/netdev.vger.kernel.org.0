@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 881395F3C36
-	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 06:49:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C27C45F3C3D
+	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 06:51:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229463AbiJDEtr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Oct 2022 00:49:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57926 "EHLO
+        id S229588AbiJDEvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Oct 2022 00:51:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229523AbiJDEtp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 00:49:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5672D95AC;
-        Mon,  3 Oct 2022 21:49:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 295A261245;
-        Tue,  4 Oct 2022 04:49:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59669C433C1;
-        Tue,  4 Oct 2022 04:49:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664858982;
-        bh=cYH3OaJPZqHaXKJR7nmcNhFlomqAJiw2jvkxABzOjEU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rlUjUxGKzwHAZo6foiGvK856F0mzDo++jVJZ6oG0ftvoU3+aKYUwFTlRntDORQjtK
-         oGQUYUVUc7hln9WGzNr8Cv/+9uh8bZRWclxmpMXQSkLbba1nN63Cc2nOfghfmHiNRs
-         3PWXhOQWY0YtnQmPlJPhrF5p45Yd/XrjuMD/OcuHM0O/E8G3GGTrqtJ4QxvxvDcXFR
-         glfKRrm/8Xy6tT2a+QWx+PwlHimqiozdMh0XTHICZb/AiaBxkytxIOWuIws2wdFV39
-         X26dkp8g7/GgGUZzdPUUHjiQUL2Wvw/XgUW6KZ3Jt0tbvNK1HHBn5tNflN9le3kmcI
-         ymJ9iFYFSYErw==
-Date:   Mon, 3 Oct 2022 21:49:41 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Daniel Xu <dxu@dxuuu.xyz>, Martin KaFai Lau <martin.lau@kernel.org>
-Cc:     Jiri Olsa <jolsa@kernel.org>, bpf@vger.kernel.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: WARN: multiple IDs found for 'nf_conn': 92168, 117897 - using 92168
-Message-ID: <20221003214941.6f6ea10d@kernel.org>
-In-Reply-To: <20221003190545.6b7c7aba@kernel.org>
-References: <20221003190545.6b7c7aba@kernel.org>
+        with ESMTP id S229559AbiJDEvU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 00:51:20 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1831F3D5BD
+        for <netdev@vger.kernel.org>; Mon,  3 Oct 2022 21:51:19 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1ofZtf-0003Qw-Or; Tue, 04 Oct 2022 06:51:11 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1ofZtc-0002B7-RK; Tue, 04 Oct 2022 06:51:08 +0200
+Date:   Tue, 4 Oct 2022 06:51:08 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, kernel test robot <lkp@intel.com>,
+        linux@rempel-privat.de, andrew@lunn.ch, bagasdotme@gmail.com
+Subject: Re: [PATCH net-next] eth: pse: add missing static inlines
+Message-ID: <20221004045108.GA14757@pengutronix.de>
+References: <20221004040327.2034878-1-kuba@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20221004040327.2034878-1-kuba@kernel.org>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,21 +52,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 3 Oct 2022 19:05:45 -0700 Jakub Kicinski wrote:
-> Hi Jiri,
+On Mon, Oct 03, 2022 at 09:03:27PM -0700, Jakub Kicinski wrote:
+> build bot reports missing 'static inline' qualifiers in the header.
 > 
-> I get the following warning after merging up all the trees:
-> 
-> vmlinux.o: warning: objtool: ___ksymtab+bpf_dispatcher_xdp_func+0x0: data relocation to !ENDBR: bpf_dispatcher_xdp_func+0x0
-> vmlinux.o: warning: objtool: bpf_dispatcher_xdp+0xa0: data relocation to !ENDBR: bpf_dispatcher_xdp_func+0x0
-> 
-> $ gcc --version
-> gcc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-15)
-> 
-> 
-> Is this known?
+> Reported-by: kernel test robot <lkp@intel.com>
+> Fixes: 18ff0bcda6d1 ("ethtool: add interface to interact with Ethernet Power Equipment")
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-Also hit this:
+Reviewed-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-WARN: multiple IDs found for 'nf_conn': 92168, 117897 - using 92168
-WARN: multiple IDs found for 'nf_conn': 92168, 121226 - using 92168
+Thank you!
+
+> ---
+> CC: linux@rempel-privat.de
+> CC: andrew@lunn.ch
+> CC: bagasdotme@gmail.com
+> CC: lkp@intel.com
+> ---
+>  include/linux/pse-pd/pse.h | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+> 
+> diff --git a/include/linux/pse-pd/pse.h b/include/linux/pse-pd/pse.h
+> index fd1a916eeeba..fb724c65c77b 100644
+> --- a/include/linux/pse-pd/pse.h
+> +++ b/include/linux/pse-pd/pse.h
+> @@ -110,16 +110,16 @@ static inline void pse_control_put(struct pse_control *psec)
+>  {
+>  }
+>  
+> -int pse_ethtool_get_status(struct pse_control *psec,
+> -			   struct netlink_ext_ack *extack,
+> -			   struct pse_control_status *status)
+> +static inline int pse_ethtool_get_status(struct pse_control *psec,
+> +					 struct netlink_ext_ack *extack,
+> +					 struct pse_control_status *status)
+>  {
+>  	return -ENOTSUPP;
+>  }
+>  
+> -int pse_ethtool_set_config(struct pse_control *psec,
+> -			   struct netlink_ext_ack *extack,
+> -			   const struct pse_control_config *config)
+> +static inline int pse_ethtool_set_config(struct pse_control *psec,
+> +					 struct netlink_ext_ack *extack,
+> +					 const struct pse_control_config *config)
+>  {
+>  	return -ENOTSUPP;
+>  }
+> -- 
+> 2.37.3
+> 
+> 
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
