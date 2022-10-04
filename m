@@ -2,64 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0C825F490E
-	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 20:09:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 232885F491B
+	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 20:15:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229526AbiJDSJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Oct 2022 14:09:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59004 "EHLO
+        id S229904AbiJDSPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Oct 2022 14:15:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229525AbiJDSJE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 14:09:04 -0400
-X-Greylist: delayed 593 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 04 Oct 2022 11:09:02 PDT
-Received: from proxima.lasnet.de (proxima.lasnet.de [78.47.171.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EAE053D3F;
-        Tue,  4 Oct 2022 11:09:02 -0700 (PDT)
-Received: from [IPV6:2003:e9:d724:a710:a294:cd8d:ff93:7c57] (p200300e9d724a710a294cd8dff937c57.dip0.t-ipconnect.de [IPv6:2003:e9:d724:a710:a294:cd8d:ff93:7c57])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id C78CEC025B;
-        Tue,  4 Oct 2022 19:59:05 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1664906346;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wcQMljzpOOiSlN6HV+EDTFylwRneGnH0ZIB/FLIMNIU=;
-        b=wtsmL4wq9w1ltQUAsLgeYQAz3E+qfsChB9tQ3cAxw9jZ+mWQJBgJk87KbtRX1bJ3pWo1EH
-        jdLZYLfg0uzKFwPlHeNrRAYYNwKD0JSleavzEuULYd2AnigWFCfVq1+3GYtF2Tw0Xz0ARv
-        kasuCWiyQ2twKaFcXDtigbkqNnRiq1e2sOLtWX8UWUIZR8Bte7sdEXTIp3ESsCnMpd8bvf
-        1h6yJdxC/6/9DH4KX8sYEnDmtfQypGiZi8EYjkCPYX3UD23LVs9kSowng3hF2Zw5+sCwMj
-        DCrJiaanoqeV/s9GdW2EJfTyckYcHVRPST6BFjqeu+65lgIHdnQAZ0OkY2bPNw==
-Message-ID: <1c374e71-f56e-540e-35d0-e6e82a4dc0e3@datenfreihafen.org>
-Date:   Tue, 4 Oct 2022 19:59:05 +0200
+        with ESMTP id S229509AbiJDSPF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 14:15:05 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A243F015
+        for <netdev@vger.kernel.org>; Tue,  4 Oct 2022 11:15:02 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id a26so4809507pfg.7
+        for <netdev@vger.kernel.org>; Tue, 04 Oct 2022 11:15:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=aurora.tech; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=pjUcIfC4N+MJ+Ls6kt2gg2LjSDSZQ5bQdu/jOyN4X3I=;
+        b=J8GqUqBDAGJ07n1VPd8kiTSe5+ZeiWtvwLsn8aMCy0Yd6NPn9du+TdMGwSCRDDH7N8
+         FCahGQC8VdicvJwlUl1Wuhbiyh2VRLJI35aimx5rvhuYx/c0cCCaQ1nS6v+5Gaytu38/
+         1txn+y9myuhv1qREwZTvqCH0WTXAIi1f+NHLXAyRk9C/Xxl2e1XpRKlyGS554bdzJ4o2
+         Sq3Jc7VjTAsxLP9MrIiiHxhDruvq5mx6wRWvQKuK9SpeEI0sMSD6TBFWv4inE+X826+Q
+         kJBwJycSPBT+i13AUQXoISrUQrHjAKUAlEKcD2g4MHr/6xjbGrbk5QrTZBwhMmrBNmxL
+         KoZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=pjUcIfC4N+MJ+Ls6kt2gg2LjSDSZQ5bQdu/jOyN4X3I=;
+        b=hM2oQVLXBrTdvNq0b6mSu64UgXApjhzO9toAaupvh7jKd89T5k/YdaPsUIxbzZpctj
+         7i9nboAZD0wsAe1f28QF2VStqzKhjbgNGP/0umxZ7RaL92oPe7af1idue5HzrdhA0HeU
+         /+aTQUALDHa/77EBDnPhr9igwgn6t+a6l03fqh7DemjeFrv7ZtCySPBNKSE3D9I/3yzz
+         NMMvmYn98n2VQop7a51S365QzJfdh1pS9iyjoIO4SPEo5BK6fIZt40FkMe8f+sf6dm/H
+         EjI1UN85eKqAdffPGhV/CCzpaMRuJzYujoXIVlbgQwBTP0LO/MAkdDkXgmUU02BbvM7r
+         e+cQ==
+X-Gm-Message-State: ACrzQf1QRjcNaiZhngz1rkbsXbY2WY7svztmzvX02LaIv6G2DvQ15FtU
+        hqKlw5WVLOEwmM8vufdCn9dmdG8LUsKLdVKvio2eZg==
+X-Google-Smtp-Source: AMsMyM4z+7fWGuwn/DVhu6Gk40JZow3QaimXVBJC/i2MbMlaWcExb2uHkDg2CMrN09HkprckJRhI+yHDqsQyg4MUQQU=
+X-Received: by 2002:a63:4283:0:b0:457:dced:8ba3 with SMTP id
+ p125-20020a634283000000b00457dced8ba3mr511199pga.220.1664907301731; Tue, 04
+ Oct 2022 11:15:01 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH] net/ieee802154: reject zero-sized raw_sendmsg()
-Content-Language: en-US
-To:     Alexander Aring <aahringo@redhat.com>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     patchwork-bot+netdevbpf@kernel.org,
-        "David S. Miller" <davem@davemloft.net>, alex.aring@gmail.com,
-        shaozhengchao@huawei.com, ast@kernel.org, sdf@google.com,
-        linux-wpan@vger.kernel.org,
-        syzbot+5ea725c25d06fb9114c4@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <5e89b653-3fc6-25c5-324b-1b15909c0183@I-love.SAKURA.ne.jp>
- <166480021535.14393.17575492399292423045.git-patchwork-notify@kernel.org>
- <4aae5e2b-f4d5-c260-5bf8-435c525f6c97@I-love.SAKURA.ne.jp>
- <CAK-6q+g7JQZkRJhp6qv_H9xGfD4DWnaChmQ7OaWJs3CAjfMnpA@mail.gmail.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <CAK-6q+g7JQZkRJhp6qv_H9xGfD4DWnaChmQ7OaWJs3CAjfMnpA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+References: <20220801133750.7312-1-achaiken@aurora.tech> <CO1PR11MB508966EB7A3CF01A58553536D69A9@CO1PR11MB5089.namprd11.prod.outlook.com>
+ <CAFzL-7tX845o2kJmE4o8EhbeD-=vkR6rmaiz_ZEWfSD4W+iWEA@mail.gmail.com>
+ <CAJmffrqxwFyRGpMRYRYLPi3yrLQgzqnW5UKgbgACGNqoN_hsVQ@mail.gmail.com>
+ <CAJmffrr=J_s9cFw5Q58rvZRWLpsrDnx3RkRXS3oLZDYY3BrNcw@mail.gmail.com>
+ <bd24eeb0-318c-71a4-527f-02832b74250c@intel.com> <0048e66d-6115-4b71-0804-3a0180105431@intel.com>
+In-Reply-To: <0048e66d-6115-4b71-0804-3a0180105431@intel.com>
+From:   Alison Chaiken <achaiken@aurora.tech>
+Date:   Tue, 4 Oct 2022 11:14:50 -0700
+Message-ID: <CAFzL-7v-wLuaunUwKfEy0W+OMkKSXJ8ohecb8_Gok+=eQHdeAA@mail.gmail.com>
+Subject: Re: Fwd: [PATCH] Use ixgbe_ptp_reset on linkup/linkdown for X550
+To:     anthony.l.nguyen@intel.com
+Cc:     Steve Payne <spayne@aurora.tech>, jesse.brandeburg@intel.com,
+        richardcochran@gmail.com, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org,
+        Jacob Keller <jacob.e.keller@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,66 +71,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+How about this Intel X550 PTP fix for 6.1?
 
-On 04.10.22 00:29, Alexander Aring wrote:
-> Hi,
-> 
-> On Mon, Oct 3, 2022 at 8:35 AM Tetsuo Handa
-> <penguin-kernel@i-love.sakura.ne.jp> wrote:
->>
->> On 2022/10/03 21:30, patchwork-bot+netdevbpf@kernel.org wrote:
->>> Hello:
->>>
->>> This patch was applied to netdev/net.git (master)
->>> by David S. Miller <davem@davemloft.net>:
->>>
->>> On Sun, 2 Oct 2022 01:43:44 +0900 you wrote:
->>>> syzbot is hitting skb_assert_len() warning at raw_sendmsg() for ieee802154
->>>> socket. What commit dc633700f00f726e ("net/af_packet: check len when
->>>> min_header_len equals to 0") does also applies to ieee802154 socket.
->>>>
->>>> Link: https://syzkaller.appspot.com/bug?extid=5ea725c25d06fb9114c4
->>>> Reported-by: syzbot <syzbot+5ea725c25d06fb9114c4@syzkaller.appspotmail.com>
->>>> Fixes: fd1894224407c484 ("bpf: Don't redirect packets with invalid pkt_len")
->>>> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
->>>>
->>>> [...]
->>>
->>> Here is the summary with links:
->>>    - net/ieee802154: reject zero-sized raw_sendmsg()
->>>      https://git.kernel.org/netdev/net/c/3a4d061c699b
->>
->>
->> Are you sure that returning -EINVAL is OK?
->>
->> In v2 patch, I changed to return 0, for PF_IEEE802154 socket's zero-sized
->> raw_sendmsg() request was able to return 0.
-> 
-> I currently try to get access to kernel.org wpan repositories and try
-> to rebase/apply your v2 on it. 
+https://lists.osuosl.org/pipermail/intel-wired-lan/Week-of-Mon-20220801/029590.html
 
-This will only work once I merged net into wpan. Which I normally do 
-only after a pull request to avoid merge requests being created.
+Thanks,
+Alison Chaiken
+Aurora Innovation
 
-We have two options here a) reverting this patch and applying v2 of it 
-b) Tetsu sending an incremental patch on top of the applied one to come 
-to the same state as after v2.
-
-
-Then it should be fixed in the next
-> pull request to net. For netdev maintainers, please don't apply wpan
-> patches. Stefan and I will care about it.
-
-Keep in mind that Dave and Jakub do this to help us out because we are 
-sometimes slow on applying patches and getting them to net. Normally 
-this is all fine for clear fixes.
-
-For -next material I agree this should only go through the wpan-next 
-tree for us to coordinate, but for the occasional fix its often faster 
-if it hits net directly. Normally I don't mind that. In this case v2 was 
-overlooked. But this is easily rectified with either of the two options 
-mentioned above.
-
-regards
-Stefan Schmidt
+On Mon, Aug 1, 2022 at 5:26 PM Jacob Keller <jacob.e.keller@intel.com> wrote:
+>
+> On 8/1/2022 4:29 PM, Jacob Keller wrote:
+> >
+> >
+> > On 8/1/2022 4:00 PM, Ilya Evenbach wrote:
+> >>>> -----Original Message-----
+> >>>> From: achaiken@aurora.tech <achaiken@aurora.tech>
+> >>>> Sent: Monday, August 01, 2022 6:38 AM
+> >>>> To: Brandeburg, Jesse <jesse.brandeburg@intel.com>;
+> >>>> richardcochran@gmail.com
+> >>>> Cc: spayne@aurora.tech; achaiken@aurora.tech; alison@she-devel.com;
+> >>>> netdev@vger.kernel.org; intel-wired-lan@lists.osuosl.org
+> >>>> Subject: [PATCH] Use ixgbe_ptp_reset on linkup/linkdown for X550
+> >>>>
+> >>>> From: Steve Payne <spayne@aurora.tech>
+> >>>>
+> >>>> For an unknown reason, when `ixgbe_ptp_start_cyclecounter` is called
+> >>>> from `ixgbe_watchdog_link_is_down` the PHC on the NIC jumps backward
+> >>>> by a seemingly inconsistent amount, which causes discontinuities in
+> >>>> time synchronization. Explicitly reset the NIC's PHC to
+> >>>> `CLOCK_REALTIME` whenever the NIC goes up or down by calling
+> >>>> `ixgbe_ptp_reset` instead of the bare `ixgbe_ptp_start_cyclecounter`.
+> >>>>
+> >>>> Signed-off-by: Steve Payne <spayne@aurora.tech>
+> >>>> Signed-off-by: Alison Chaiken <achaiken@aurora.tech>
+> >>>>
+> >>>
+> >>> Resetting PTP could be a problem if the clock was not being synchronized with the kernel CLOCK_REALTIME,
+> >>
+> >> That is true, but most likely not really important, as the unmitigated
+> >> problem also introduces significant discontinuities in time.
+> >> Basically, this patch does not make things worse.
+> >>
+> >
+> > Sure, but I am trying to see if I can understand *why* things get wonky.
+> > I suspect the issue is caused because of how we're resetting the
+> > cyclecounter.
+> >
+> >>>
+> >>> and does result in some loss of timer precision either way due to the delays involved with setting the time.
+> >>
+> >>  That precision loss is negligible compared to jumps resulting from
+> >> link down/up, and should be corrected by normal PTP operation very
+> >> quickly.
+> >>
+> >
+> > Only if CLOCK_REALTIME is actually being synchronized. Yes, that is
+> > generally true, but its not necessarily guaranteed.
+> >
+> >>>
+> >>> Do you have an example of the clock jump? How much is it?
+> >>
+> >> 2021-02-12T09:24:37.741191+00:00 bench-12 phc2sys: [195230.451]
+> >> CLOCK_REALTIME phc offset        61 s2 freq  -36503 delay   2298
+> >> 2021-02-12T09:24:38.741315+00:00 bench-12 phc2sys: [195231.451]
+> >> CLOCK_REALTIME phc offset       169 s2 freq  -36377 delay   2294
+> >> 2021-02-12T09:24:39.741407+00:00 bench-12 phc2sys: [195232.451]
+> >> CLOCK_REALTIME phc offset 195213702387037 s2 freq +100000000 delay
+> >> 2301
+> >> 2021-02-12T09:24:40.741489+00:00 bench-12 phc2sys: [195233.452]
+> >> CLOCK_REALTIME phc offset 195213591220495 s2 freq +100000000 delay
+> >> 2081
+> >>
+> >
+> > Thanks.
+> >
+> > I think what's actually going on is a bug in the
+> > ixgbe_ptp_start_cyclecounter function where the system time registers
+> > are being reset.
+> >
+> > What hardware are you operating on? Do you know if its an X550 board? It
+> > looks like this has been the case since a9763f3cb54c ("ixgbe: Update PTP
+> > to support X550EM_x devices").
+> >
+> > The start_cyclecounter was never supposed to modify the current time
+> > registers, but resetting it to 0 as it does for X550 devices would give
+> > the exact behavior you're seeing.
+>
+> I just posted an alternative fix which I believe resolves this issue.
+>
+> Thanks,
+> Jake
