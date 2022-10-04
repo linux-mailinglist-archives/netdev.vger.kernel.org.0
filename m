@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 079B25F4C87
+	by mail.lfdr.de (Postfix) with ESMTP id 848E15F4C88
 	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 01:12:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230076AbiJDXMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Oct 2022 19:12:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40894 "EHLO
+        id S229905AbiJDXM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Oct 2022 19:12:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229978AbiJDXMN (ORCPT
+        with ESMTP id S229557AbiJDXMN (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 19:12:13 -0400
 Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39A35564FD;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B1C543DE;
         Tue,  4 Oct 2022 16:12:12 -0700 (PDT)
 Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
         by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92.3)
         (envelope-from <daniel@iogearbox.net>)
-        id 1ofr58-000AJx-Ne; Wed, 05 Oct 2022 01:12:10 +0200
+        id 1ofr59-000AKB-8d; Wed, 05 Oct 2022 01:12:11 +0200
 From:   Daniel Borkmann <daniel@iogearbox.net>
 To:     bpf@vger.kernel.org
 Cc:     razor@blackwall.org, ast@kernel.org, andrii@kernel.org,
@@ -26,9 +26,9 @@ Cc:     razor@blackwall.org, ast@kernel.org, andrii@kernel.org,
         joannelkoong@gmail.com, memxor@gmail.com, toke@redhat.com,
         joe@cilium.io, netdev@vger.kernel.org,
         Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH bpf-next 08/10] libbpf: Add support for BPF tc link
-Date:   Wed,  5 Oct 2022 01:11:41 +0200
-Message-Id: <20221004231143.19190-9-daniel@iogearbox.net>
+Subject: [PATCH bpf-next 09/10] bpftool: Add support for tc fd-based attach types
+Date:   Wed,  5 Oct 2022 01:11:42 +0200
+Message-Id: <20221004231143.19190-10-daniel@iogearbox.net>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20221004231143.19190-1-daniel@iogearbox.net>
 References: <20221004231143.19190-1-daniel@iogearbox.net>
@@ -44,148 +44,141 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement tc BPF link support for libbpf. The bpf_program__attach_fd()
-API has been refactored slightly in order to pass bpf_link_create_opts.
-A new bpf_program__attach_tc() has been added on top of this which allows
-for passing ifindex and prio parameters.
+Add support to dump fd-based attach types via bpftool. This includes both
+the tc BPF link and attach ops programs. Dumped information contain the
+attach location, function entry name, program ID, link ID when applicable
+as well as the attach priority.
 
-New sections are tc/ingress and tc/egress which map to BPF_NET_INGRESS
-and BPF_NET_EGRESS, respectively.
+Example with tc BPF link:
+
+  # ./bpftool net
+  xdp:
+
+  tc:
+  lo(1) bpf/ingress tc_handler_in id 189 link 40 prio 1
+  lo(1) bpf/egress tc_handler_eg id 190 link 39 prio 1
+
+  flow_dissector:
+
+Example with tc BPF attach ops and also one instance of old-style cls_bpf:
+
+  # ./bpftool net
+  xdp:
+
+  tc:
+  lo(1) bpf/ingress tc_handler_in id 201 prio 1
+  lo(1) clsact/ingress tc_handler_old:[203] id 203
+
+  flow_dissector:
 
 Co-developed-by: Nikolay Aleksandrov <razor@blackwall.org>
 Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
 Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 ---
- tools/lib/bpf/bpf.c      |  4 ++++
- tools/lib/bpf/bpf.h      |  3 +++
- tools/lib/bpf/libbpf.c   | 31 ++++++++++++++++++++++++++-----
- tools/lib/bpf/libbpf.h   |  2 ++
- tools/lib/bpf/libbpf.map |  1 +
- 5 files changed, 36 insertions(+), 5 deletions(-)
+ tools/bpf/bpftool/net.c | 76 ++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 72 insertions(+), 4 deletions(-)
 
-diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
-index d1e338ac9a62..f73fdecbb5f8 100644
---- a/tools/lib/bpf/bpf.c
-+++ b/tools/lib/bpf/bpf.c
-@@ -752,6 +752,10 @@ int bpf_link_create(int prog_fd, int target_fd,
- 		if (!OPTS_ZEROED(opts, tracing))
- 			return libbpf_err(-EINVAL);
- 		break;
-+	case BPF_NET_INGRESS:
-+	case BPF_NET_EGRESS:
-+		attr.link_create.tc.priority = OPTS_GET(opts, tc.priority, 0);
-+		break;
- 	default:
- 		if (!OPTS_ZEROED(opts, flags))
- 			return libbpf_err(-EINVAL);
-diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
-index 96de58fecdbc..937583421327 100644
---- a/tools/lib/bpf/bpf.h
-+++ b/tools/lib/bpf/bpf.h
-@@ -334,6 +334,9 @@ struct bpf_link_create_opts {
- 		struct {
- 			__u64 cookie;
- 		} tracing;
-+		struct {
-+			__u32 priority;
-+		} tc;
- 	};
- 	size_t :0;
+diff --git a/tools/bpf/bpftool/net.c b/tools/bpf/bpftool/net.c
+index 526a332c48e6..06658978b092 100644
+--- a/tools/bpf/bpftool/net.c
++++ b/tools/bpf/bpftool/net.c
+@@ -74,6 +74,11 @@ static const char * const attach_type_strings[] = {
+ 	[NET_ATTACH_TYPE_XDP_OFFLOAD]	= "xdpoffload",
  };
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 184ce1684dcd..6eb33e4324ad 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -8474,6 +8474,8 @@ static const struct bpf_sec_def section_defs[] = {
- 	SEC_DEF("kretsyscall+",		KPROBE, 0, SEC_NONE, attach_ksyscall),
- 	SEC_DEF("usdt+",		KPROBE,	0, SEC_NONE, attach_usdt),
- 	SEC_DEF("tc",			SCHED_CLS, 0, SEC_NONE),
-+	SEC_DEF("tc/ingress",		SCHED_CLS, BPF_NET_INGRESS, SEC_ATTACHABLE_OPT),
-+	SEC_DEF("tc/egress",		SCHED_CLS, BPF_NET_EGRESS, SEC_ATTACHABLE_OPT),
- 	SEC_DEF("classifier",		SCHED_CLS, 0, SEC_NONE),
- 	SEC_DEF("action",		SCHED_ACT, 0, SEC_NONE),
- 	SEC_DEF("tracepoint+",		TRACEPOINT, 0, SEC_NONE, attach_tp),
-@@ -11238,11 +11240,10 @@ static int attach_lsm(const struct bpf_program *prog, long cookie, struct bpf_li
- }
  
- static struct bpf_link *
--bpf_program__attach_fd(const struct bpf_program *prog, int target_fd, int btf_id,
--		       const char *target_name)
-+bpf_program__attach_fd_opts(const struct bpf_program *prog,
-+			    const struct bpf_link_create_opts *opts,
-+			    int target_fd, const char *target_name)
- {
--	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts,
--			    .target_btf_id = btf_id);
- 	enum bpf_attach_type attach_type;
- 	char errmsg[STRERR_BUFSIZE];
- 	struct bpf_link *link;
-@@ -11260,7 +11261,7 @@ bpf_program__attach_fd(const struct bpf_program *prog, int target_fd, int btf_id
- 	link->detach = &bpf_link__detach_fd;
- 
- 	attach_type = bpf_program__expected_attach_type(prog);
--	link_fd = bpf_link_create(prog_fd, target_fd, attach_type, &opts);
-+	link_fd = bpf_link_create(prog_fd, target_fd, attach_type, opts);
- 	if (link_fd < 0) {
- 		link_fd = -errno;
- 		free(link);
-@@ -11273,6 +11274,16 @@ bpf_program__attach_fd(const struct bpf_program *prog, int target_fd, int btf_id
- 	return link;
- }
- 
-+static struct bpf_link *
-+bpf_program__attach_fd(const struct bpf_program *prog, int target_fd, int btf_id,
-+		       const char *target_name)
-+{
-+	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts,
-+			    .target_btf_id = btf_id);
++static const char * const attach_loc_strings[] = {
++	[BPF_NET_INGRESS]		= "bpf/ingress",
++	[BPF_NET_EGRESS]		= "bpf/egress",
++};
 +
-+	return bpf_program__attach_fd_opts(prog, &opts, target_fd, target_name);
+ const size_t net_attach_type_size = ARRAY_SIZE(attach_type_strings);
+ 
+ static enum net_attach_type parse_attach_type(const char *str)
+@@ -420,8 +425,69 @@ static int dump_filter_nlmsg(void *cookie, void *msg, struct nlattr **tb)
+ 			      filter_info->devname, filter_info->ifindex);
+ }
+ 
+-static int show_dev_tc_bpf(int sock, unsigned int nl_pid,
+-			   struct ip_devname_ifindex *dev)
++static int __show_dev_tc_bpf_name(__u32 id, char *name, size_t len)
++{
++	struct bpf_prog_info info = {};
++	__u32 ilen = sizeof(info);
++	int fd, ret;
++
++	fd = bpf_prog_get_fd_by_id(id);
++	if (fd < 0)
++		return fd;
++	ret = bpf_obj_get_info_by_fd(fd, &info, &ilen);
++	if (ret < 0)
++		goto out;
++	ret = -ENOENT;
++	if (info.name) {
++		get_prog_full_name(&info, fd, name, len);
++		ret = 0;
++	}
++out:
++	close(fd);
++	return ret;
 +}
 +
- struct bpf_link *
- bpf_program__attach_cgroup(const struct bpf_program *prog, int cgroup_fd)
- {
-@@ -11291,6 +11302,16 @@ struct bpf_link *bpf_program__attach_xdp(const struct bpf_program *prog, int ifi
- 	return bpf_program__attach_fd(prog, ifindex, 0, "xdp");
- }
- 
-+struct bpf_link *bpf_program__attach_tc(const struct bpf_program *prog,
-+					int ifindex, __u32 priority)
++static void __show_dev_tc_bpf(const struct ip_devname_ifindex *dev,
++			      const enum bpf_attach_type loc)
 +{
-+	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts,
-+			    .tc.priority = priority);
++	__u32 i, prog_cnt, attach_flags = 0;
++	char prog_name[MAX_PROG_FULL_NAME];
++	struct bpf_query_info progs[64];
++	int ret;
 +
-+	/* target_fd/target_ifindex use the same field in LINK_CREATE */
-+	return bpf_program__attach_fd_opts(prog, &opts, ifindex, "tc");
++	memset(progs, 0, sizeof(progs));
++	prog_cnt = ARRAY_SIZE(progs);
++	ret = bpf_prog_query(dev->ifindex, loc, 0, &attach_flags,
++			     progs, &prog_cnt);
++	if (ret)
++		return;
++	for (i = 0; i < prog_cnt; i++) {
++		NET_START_OBJECT;
++		NET_DUMP_STR("devname", "%s", dev->devname);
++		NET_DUMP_UINT("ifindex", "(%u)", dev->ifindex);
++		NET_DUMP_STR("kind", " %s", attach_loc_strings[loc]);
++		ret = __show_dev_tc_bpf_name(progs[i].prog_id,
++					     prog_name,
++					     sizeof(prog_name));
++		if (!ret)
++			NET_DUMP_STR("name", " %s", prog_name);
++		NET_DUMP_UINT("id", " id %u", progs[i].prog_id);
++		if (progs[i].link_id)
++			NET_DUMP_UINT("link", " link %u",
++				      progs[i].link_id);
++		NET_DUMP_UINT("prio", " prio %u", progs[i].prio);
++		NET_END_OBJECT_FINAL;
++	}
 +}
 +
- struct bpf_link *bpf_program__attach_freplace(const struct bpf_program *prog,
- 					      int target_fd,
- 					      const char *attach_func_name)
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index eee883f007f9..7e64cec9a1ba 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -645,6 +645,8 @@ bpf_program__attach_netns(const struct bpf_program *prog, int netns_fd);
- LIBBPF_API struct bpf_link *
- bpf_program__attach_xdp(const struct bpf_program *prog, int ifindex);
- LIBBPF_API struct bpf_link *
-+bpf_program__attach_tc(const struct bpf_program *prog, int ifindex, __u32 priority);
-+LIBBPF_API struct bpf_link *
- bpf_program__attach_freplace(const struct bpf_program *prog,
- 			     int target_fd, const char *attach_func_name);
- 
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index 0c94b4862ebb..473ed71829c6 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -378,4 +378,5 @@ LIBBPF_1.1.0 {
- 		user_ring_buffer__reserve_blocking;
- 		user_ring_buffer__submit;
- 		bpf_prog_detach_opts;
-+		bpf_program__attach_tc;
- } LIBBPF_1.0.0;
++static void show_dev_tc_bpf(struct ip_devname_ifindex *dev)
++{
++	__show_dev_tc_bpf(dev, BPF_NET_INGRESS);
++	__show_dev_tc_bpf(dev, BPF_NET_EGRESS);
++}
++
++static int show_dev_tc_bpf_legacy(int sock, unsigned int nl_pid,
++				  struct ip_devname_ifindex *dev)
+ {
+ 	struct bpf_filter_t filter_info;
+ 	struct bpf_tcinfo_t tcinfo;
+@@ -686,8 +752,10 @@ static int do_show(int argc, char **argv)
+ 	if (!ret) {
+ 		NET_START_ARRAY("tc", "%s:\n");
+ 		for (i = 0; i < dev_array.used_len; i++) {
+-			ret = show_dev_tc_bpf(sock, nl_pid,
+-					      &dev_array.devices[i]);
++			show_dev_tc_bpf(&dev_array.devices[i]);
++
++			ret = show_dev_tc_bpf_legacy(sock, nl_pid,
++						     &dev_array.devices[i]);
+ 			if (ret)
+ 				break;
+ 		}
 -- 
 2.34.1
 
