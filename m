@@ -2,125 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9F915F4613
-	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 16:59:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2986F5F467E
+	for <lists+netdev@lfdr.de>; Tue,  4 Oct 2022 17:20:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229840AbiJDO7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Oct 2022 10:59:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44460 "EHLO
+        id S229523AbiJDPUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Oct 2022 11:20:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbiJDO7H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 10:59:07 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0737C2A408
-        for <netdev@vger.kernel.org>; Tue,  4 Oct 2022 07:59:06 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id g1so21497638lfu.12
-        for <netdev@vger.kernel.org>; Tue, 04 Oct 2022 07:59:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=lVtlIVL7v00lpuub/CfBNDZ0hMYF+JuUwf/X+UhXUO4=;
-        b=NP4ROSveCZTJ9Cd0ZTdpDL0smFIIHBIiySg8/8G33GBt5X/DCc9yefGlFE2BTA+8Rh
-         MiyTb2K/UctgULmfOF1YnFHubsVNbzk2lK1VDMXf7CP0D1fWdLxUtMQs8+1Ncek97I9+
-         3IpNw4PXKZ0c2SZoU/dMxHU4A5P0NbgDmmJO+86yMkOEGoRqtVf+YB4lKtwAq3acTSqC
-         dEyk+gTyDjD8gUpd7u70SK2WCyBtbdbe7Pzg3ARK8TMTN7i/mvspnRPRQLudCeTkMORB
-         GG2FJjYPI1z5I0hB2JtHuVX8sqnQD6O5Ja3gM4LEjFS/CHqteB18NN92iKK5dvHcDmT1
-         vytA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=lVtlIVL7v00lpuub/CfBNDZ0hMYF+JuUwf/X+UhXUO4=;
-        b=IvzK5qpqJmubVAcjFO8dv6DUDQQIOBsoYkon/TblUkth1mDr4kSxz7C8B2rWRiZiIx
-         TPQR+QdaREMUM1KQcdha8SPWSTcK9KZVl7WFn5MfGSgQjnZWclggeCU2nilr8wUqEX0s
-         +iXqxjHgbUCQegaUn2rmyDJNRaLhefRgIG8N0ElmhwpGpckh7CNeiKdA96S6ydwqOKDd
-         0x3T8fHjJ+ZEWEv329S0IcC8xq9yA/fC2PMgNT9yu7KUi4G2A9DYA7yQEtzxspzQsxVf
-         TdqqI+3NGDLicWA+4BbIN9n967fJf/8mciaftLKXQ73tw4seKOmEG+fwdO3/JTvc++Wh
-         Hhuw==
-X-Gm-Message-State: ACrzQf2A+r/x6++tFu8wLVWBr5YLProjdOhPyoHNRpe3SbzVyrKpI15R
-        PoUNrI62PsnkDQcG66Cem4w3Dw==
-X-Google-Smtp-Source: AMsMyM7tieTxdgCsebyEy7HTDKvB7J+NxVU5ZG+XitQv9Icjg5/1JC/wuVSA/QE2kEYAageux+iPnA==
-X-Received: by 2002:ac2:57c9:0:b0:49c:3e64:de95 with SMTP id k9-20020ac257c9000000b0049c3e64de95mr9520407lfo.452.1664895544372;
-        Tue, 04 Oct 2022 07:59:04 -0700 (PDT)
-Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id p13-20020a2eb98d000000b0026c297a9e11sm497925ljp.133.2022.10.04.07.59.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 04 Oct 2022 07:59:03 -0700 (PDT)
-Message-ID: <6444e5d1-0fc9-03e2-9b2a-ec19fa1e7757@linaro.org>
-Date:   Tue, 4 Oct 2022 16:59:02 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: [PATCH v3 net-next 12/14] dt-bindings: net: dsa: ocelot: add
- ocelot-ext documentation
-Content-Language: en-US
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Colin Foster <colin.foster@in-advantage.com>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Lee Jones <lee@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229446AbiJDPUv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 11:20:51 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B34A113F21;
+        Tue,  4 Oct 2022 08:20:48 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 274A918847D5;
+        Tue,  4 Oct 2022 15:20:46 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 1C11425002BC;
+        Tue,  4 Oct 2022 15:20:46 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id 1361F9EC000E; Tue,  4 Oct 2022 15:20:46 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+Received: from fujitsu.vestervang (2-104-116-184-cable.dk.customer.tdc.net [2.104.116.184])
+        by smtp.gigahost.dk (Postfix) with ESMTPSA id 2858B9EC000C;
+        Tue,  4 Oct 2022 15:20:45 +0000 (UTC)
+From:   Hans Schultz <netdev@kapio-technology.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Hans Schultz <netdev@kapio-technology.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-References: <20220926002928.2744638-1-colin.foster@in-advantage.com>
- <20220926002928.2744638-13-colin.foster@in-advantage.com>
- <ec63b5aa-3dec-3c27-e987-25e36b1632ba@linaro.org>
- <20221004121517.4j5637hnioepsxgd@skbuf>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221004121517.4j5637hnioepsxgd@skbuf>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Hans Schultz <schultz.hans@gmail.com>,
+        Joachim Wiberg <troglobit@gmail.com>,
+        Amit Cohen <amcohen@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH v2 iproute2-next 1/4] include: uapi: MacAuth and Blackhole feature header changes
+Date:   Tue,  4 Oct 2022 17:20:33 +0200
+Message-Id: <20221004152036.7848-1-netdev@kapio-technology.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Organization: Westermo Network Technologies AB
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04/10/2022 14:15, Vladimir Oltean wrote:
-> On Tue, Oct 04, 2022 at 01:19:33PM +0200, Krzysztof Kozlowski wrote:
->>> +  # Ocelot-ext VSC7512
->>> +  - |
->>> +    spi {
->>> +        soc@0 {
->>
->> soc in spi is a bit confusing.
-> 
-> Do you have a better suggestion for a node name? This is effectively a
-> container for peripherals which would otherwise live under a /soc node,
+Signed-off-by: Hans Schultz <netdev@kapio-technology.com>
+---
+ include/uapi/linux/if_link.h   |  1 +
+ include/uapi/linux/neighbour.h | 11 ++++++++++-
+ 2 files changed, 11 insertions(+), 1 deletion(-)
 
-/soc node implies it does not live under /spi node. Otherwise it would
-be /spi/soc, right?
-
-> if they were accessed over MMIO by the internal microprocessor of the
-> SoC, rather than by an external processor over SPI.
-> 
->> How is this example different than previous one (existing soc example)?
->> If by compatible and number of ports, then there is no much value here.
-> 
-> The positioning relative to the other nodes is what's different.
-
-Positioning of nodes is not worth another example, if everything else is
-the same. What is here exactly tested or shown by example? Using a
-device in SPI controller?
-
-Best regards,
-Krzysztof
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index 7494cffb..58a002de 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -559,6 +559,7 @@ enum {
+ 	IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT,
+ 	IFLA_BRPORT_MCAST_EHT_HOSTS_CNT,
+ 	IFLA_BRPORT_LOCKED,
++	IFLA_BRPORT_MAB,
+ 	__IFLA_BRPORT_MAX
+ };
+ #define IFLA_BRPORT_MAX (__IFLA_BRPORT_MAX - 1)
+diff --git a/include/uapi/linux/neighbour.h b/include/uapi/linux/neighbour.h
+index a998bf76..cc7d540e 100644
+--- a/include/uapi/linux/neighbour.h
++++ b/include/uapi/linux/neighbour.h
+@@ -52,7 +52,9 @@ enum {
+ #define NTF_STICKY	(1 << 6)
+ #define NTF_ROUTER	(1 << 7)
+ /* Extended flags under NDA_FLAGS_EXT: */
+-#define NTF_EXT_MANAGED	(1 << 0)
++#define NTF_EXT_MANAGED		(1 << 0)
++#define NTF_EXT_LOCKED		(1 << 1)
++#define NTF_EXT_BLACKHOLE	(1 << 2)
+ 
+ /*
+  *	Neighbor Cache Entry States.
+@@ -86,6 +88,13 @@ enum {
+  * NTF_EXT_MANAGED flagged neigbor entries are managed by the kernel on behalf
+  * of a user space control plane, and automatically refreshed so that (if
+  * possible) they remain in NUD_REACHABLE state.
++ *
++ * NTF_EXT_LOCKED flagged FDB entries are placeholder entries used with the
++ * locked port feature, that ensures that an entry exists while at the same
++ * time dropping packets on ingress with src MAC and VID matching the entry.
++ *
++ * NTF_EXT_BLACKHOLE flagged FDB entries ensure that no forwarding is allowed
++ * from any port to the destination MAC, VID pair associated with it.
+  */
+ 
+ struct nda_cacheinfo {
+-- 
+2.34.1
 
