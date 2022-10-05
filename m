@@ -2,111 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7038F5F56C1
-	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 16:53:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2044E5F56C3
+	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 16:53:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229817AbiJEOxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Oct 2022 10:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41530 "EHLO
+        id S229819AbiJEOxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Oct 2022 10:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbiJEOxG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 10:53:06 -0400
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1299F39BA3;
-        Wed,  5 Oct 2022 07:53:05 -0700 (PDT)
-Received: from [IPV6:2003:e9:d724:a76b:99bd:9507:55e0:d439] (p200300e9d724a76b99bd950755e0d439.dip0.t-ipconnect.de [IPv6:2003:e9:d724:a76b:99bd:9507:55e0:d439])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id BD0E5C034C;
-        Wed,  5 Oct 2022 16:53:02 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1664981583;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pt0zhfgS5qs+aVmr37oKMneCBk+J0tB9uEZlqrTMhWc=;
-        b=Woaw/7eIrWqKVPbcz+xtUjt1fnlyRBjU6qwXIupP+s+7Td6t/Fteu2oIjL3ozTQhGpn6JR
-        peRiJuRXECOKRZOk8VTSsAyiUx1oExEiWRKHMQUEcZ9K6PG7IWLb0FrHI6W5XmA6EzsKo/
-        QrCRQZX6Lkowgk2YellnWbSzE4rGHtbYeO8sRhsRFyRC0ByPKmIdfXHoc6rd1lu7YR6n5p
-        iG0zcUyRK8MfMZ4xqdF/mbl4pL7deYmkkim/jCwW1WjtEDdt1puSiUJxSig7kfUXu0e01g
-        NtYUv54tyjhGyDFlZW5jl+9ltL7Gc5oaAsteNB3ci+bAhL8I3GEFImD00cGfEA==
-Message-ID: <5568f032-27f3-42c1-80b2-16b80bf55abd@datenfreihafen.org>
-Date:   Wed, 5 Oct 2022 16:53:02 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH] net/ieee802154: reject zero-sized raw_sendmsg()
-Content-Language: en-US
-To:     Alexander Aring <aahringo@redhat.com>
-Cc:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        patchwork-bot+netdevbpf@kernel.org,
-        "David S. Miller" <davem@davemloft.net>, alex.aring@gmail.com,
-        shaozhengchao@huawei.com, ast@kernel.org, sdf@google.com,
-        linux-wpan@vger.kernel.org,
-        syzbot+5ea725c25d06fb9114c4@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com, bpf@vger.kernel.org,
+        with ESMTP id S229576AbiJEOxl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 10:53:41 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAD007C1A0;
+        Wed,  5 Oct 2022 07:53:40 -0700 (PDT)
+Received: from sslproxy04.your-server.de ([78.46.152.42])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1og5mF-0005ZL-B6; Wed, 05 Oct 2022 16:53:39 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1og5mF-000Qle-0f; Wed, 05 Oct 2022 16:53:39 +0200
+Subject: Re: [PATCH bpf-next 01/10] bpf: Add initial fd-based API to attach tc
+ BPF programs
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        bpf@vger.kernel.org
+Cc:     razor@blackwall.org, ast@kernel.org, andrii@kernel.org,
+        martin.lau@linux.dev, john.fastabend@gmail.com,
+        joannelkoong@gmail.com, memxor@gmail.com, joe@cilium.io,
         netdev@vger.kernel.org
-References: <5e89b653-3fc6-25c5-324b-1b15909c0183@I-love.SAKURA.ne.jp>
- <166480021535.14393.17575492399292423045.git-patchwork-notify@kernel.org>
- <4aae5e2b-f4d5-c260-5bf8-435c525f6c97@I-love.SAKURA.ne.jp>
- <CAK-6q+g7JQZkRJhp6qv_H9xGfD4DWnaChmQ7OaWJs3CAjfMnpA@mail.gmail.com>
- <1c374e71-f56e-540e-35d0-e6e82a4dc0e3@datenfreihafen.org>
- <CAK-6q+iqPFxrM7qdmi4xcF8e+2mgqXT9otEwRA+Vh-JfRQ18Wg@mail.gmail.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <CAK-6q+iqPFxrM7qdmi4xcF8e+2mgqXT9otEwRA+Vh-JfRQ18Wg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221004231143.19190-1-daniel@iogearbox.net>
+ <20221004231143.19190-2-daniel@iogearbox.net> <87bkqqimpy.fsf@toke.dk>
+ <3cc8a0c3-7767-12cf-f753-82e2df8ef293@iogearbox.net> <87wn9egx3d.fsf@toke.dk>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <517321e1-7966-1dc2-4177-9be13a9c4fd4@iogearbox.net>
+Date:   Wed, 5 Oct 2022 16:53:38 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <87wn9egx3d.fsf@toke.dk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26680/Wed Oct  5 09:55:19 2022)
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
-
-On 05.10.22 03:49, Alexander Aring wrote:
-> Hi,
+On 10/5/22 4:32 PM, Toke Høiland-Jørgensen wrote:
+> Daniel Borkmann <daniel@iogearbox.net> writes:
+>> On 10/5/22 12:33 PM, Toke Høiland-Jørgensen wrote:
+>>> Daniel Borkmann <daniel@iogearbox.net> writes:
+[...]
+>>>> +/* (Simplified) user return codes for tc prog type.
+>>>> + * A valid tc program must return one of these defined values. All other
+>>>> + * return codes are reserved for future use. Must remain compatible with
+>>>> + * their TC_ACT_* counter-parts. For compatibility in behavior, unknown
+>>>> + * return codes are mapped to TC_NEXT.
+>>>> + */
+>>>> +enum tc_action_base {
+>>>> +	TC_NEXT		= -1,
+>>>> +	TC_PASS		= 0,
+>>>> +	TC_DROP		= 2,
+>>>> +	TC_REDIRECT	= 7,
+>>>> +};
+>>>
+>>> Looking at things like this, though, I wonder if having a separate name
+>>> (at least if it's too prominent) is not just going to be more confusing
+>>> than not? I.e., we go out of our way to make it compatible with existing
+>>> TC-BPF programs (which is a good thing!), so do we really need a
+>>> separate name? Couldn't it just be an implementation detail that "it's
+>>> faster now"?
+>>
+>> Yep, faster is an implementation detail; and developers can stick to existing
+>> opcodes. I added this here given Andrii suggested to add the action codes as
+>> enum so they land in vmlinux BTF. My thinking was that if we go this route,
+>> we could also make them more user friendly. This part is 100% optional,
+>> but for new developers it might lower the barrier a bit I was hoping given
+>> it makes it clear which subset of actions BPF supports explicitly and with
+>> less cryptic name.
 > 
-> On Tue, Oct 4, 2022 at 1:59 PM Stefan Schmidt <stefan@datenfreihafen.org> wrote:
+> Oh, I didn't mean that we shouldn't define these helpers; that's totally
+> fine, and probably useful. Just that when everything is named 'TC'
+> anyway, having a different name (like TCX) is maybe not that important
+> anyway?
+
+I thought about this initially, but then also it has nothing to do with tcx
+given it can just as well be used on both old/new style attachments, thus
+wanted to avoid potential confusion around this.
+
+>>> Oh, and speaking of compatibility should 'tc' (the iproute2 binary) be
+>>> taught how to display these new bpf_link attachments so that users can
+>>> see that they're there?
 >>
->> Hello.
->>
->> On 04.10.22 00:29, Alexander Aring wrote:
->>> pull request to net. For netdev maintainers, please don't apply wpan
->>> patches. Stefan and I will care about it.
->>
->> Keep in mind that Dave and Jakub do this to help us out because we are
->> sometimes slow on applying patches and getting them to net. Normally
->> this is all fine for clear fixes.
->>
+>> Sounds reasonable, I can follow-up with the iproute2 support as well.
 > 
-> If we move getting patches for wpan to net then we should move it
-> completely to that behaviour and not having a mixed setup which does
-> not work, or it works and hope we don't have conflicts and if we have
-> conflicts we need to fix them when doing the pull-request that the
-> next instance has no conflicts because they touched maybe the same
-> code area.
+> Cool!
 
-I do disagree on this. I think there is no need to have it fixed to one 
-way or another (net OR wpan). It has been working fine with this mixed 
-approach for quite a long time. The current issue with v1 being applied 
-instead of v2 is something that could have happened to us when applying 
-to wpan as easily.
-
-If we are quick enough to ack/apply patches hitting the list (1-2 days) 
-its unlikely any of them will be applied to net. Dave and Jakub simply 
-help us to make sure nothing falls through the cracks.
-
-> I think a) would be the fastest way here and I just sent something.
-
-I applied the two patches earlier today and just send out a pull request 
-for net with them.
-
-regards
-Stefan Schmidt
+Thanks,
+Daniel
