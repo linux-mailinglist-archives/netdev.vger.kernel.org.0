@@ -2,85 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EC255F4F8D
-	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 07:44:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4E725F4FD3
+	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 08:37:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229591AbiJEFon (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Oct 2022 01:44:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33952 "EHLO
+        id S229588AbiJEGhD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Oct 2022 02:37:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229719AbiJEFol (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 01:44:41 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E7C5CFF9
-        for <netdev@vger.kernel.org>; Tue,  4 Oct 2022 22:44:36 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2955huX03031805, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2955huX03031805
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Wed, 5 Oct 2022 13:43:56 +0800
-Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 5 Oct 2022 13:44:23 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 5 Oct 2022 13:44:22 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::402d:f52e:eaf0:28a2]) by
- RTEXMBS04.realtek.com.tw ([fe80::402d:f52e:eaf0:28a2%5]) with mapi id
- 15.01.2375.007; Wed, 5 Oct 2022 13:44:22 +0800
-From:   Hau <hau@realtek.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "grundler@chromium.org" <grundler@chromium.org>
-Subject: RE: [PATCH net] r8169: fix rtl8125b dmar pte write access not set error
-Thread-Topic: [PATCH net] r8169: fix rtl8125b dmar pte write access not set
- error
-Thread-Index: AQHY18jMGMKenjvi2k2tTzR0owCm5K3+JisAgAEi+yA=
-Date:   Wed, 5 Oct 2022 05:44:22 +0000
-Message-ID: <25c7b354dff14ed381f91963f134a87c@realtek.com>
-References: <20221004081037.34064-1-hau@realtek.com>
- <840eab89-375a-bb28-9937-aeaa17922048@gmail.com>
-In-Reply-To: <840eab89-375a-bb28-9937-aeaa17922048@gmail.com>
-Accept-Language: zh-TW, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.129]
-x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEwLzUg5LiK5Y2IIDAyOjU5OjAw?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        with ESMTP id S229477AbiJEGhC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 02:37:02 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1219A606AD
+        for <netdev@vger.kernel.org>; Tue,  4 Oct 2022 23:36:56 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1ofy1N-0005gv-M4; Wed, 05 Oct 2022 08:36:45 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1ofy1M-0005Dz-09; Wed, 05 Oct 2022 08:36:44 +0200
+Date:   Wed, 5 Oct 2022 08:36:43 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: pse-pd: PSE_REGULATOR should depend on REGULATOR
+Message-ID: <20221005063643.GB14757@pengutronix.de>
+References: <709caac8873ff2a8b72b92091429be7c1a939959.1664900558.git.geert+renesas@glider.be>
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <709caac8873ff2a8b72b92091429be7c1a939959.1664900558.git.geert+renesas@glider.be>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBPbiAwNC4xMC4yMDIyIDEwOjEwLCBDaHVuaGFvIExpbiB3cm90ZToNCj4gPiBXaGVuIGNsb3Nl
-IGRldmljZSwgcnggd2lsbCBiZSBlbmFibGVkIGlmIHdvbCBpcyBlbmFiZWxkLiBXaGVuIG9wZW4N
-Cj4gPiBkZXZpY2UgaXQgd2lsbCBjYXVzZSByeCB0byBkbWEgdG8gd3JvbmcgYWRkcmVzcyBhZnRl
-ciBwY2lfc2V0X21hc3RlcigpLg0KPiA+DQo+IEhpIEhhdSwNCj4gDQo+IEkgbmV2ZXIgZXhwZXJp
-ZW5jZWQgdGhpcyBwcm9ibGVtLiBJcyBpdCBhbiBlZGdlIGNhc2UgdGhhdCBjYW4gb2NjdXIgdW5k
-ZXINCj4gc3BlY2lmaWMgY2lyY3Vtc3RhbmNlcz8NCj4gDQoNClRoaXMgaXNzdWUgaXMgaGFwcGVu
-IG9uIGdvb2dsZSBjaHJvbWVib29rIHdpdGggSU9NTVUgZW5hYmxlZC4gQmVjYXVzZSByeCBpcyBl
-bmFibGVkIHdoZW4gd29sIGlzIGVuYWJsZWQsIA0Kc28gSSB0aGluayB0aGVyZSBpcyBhIGNoYW5j
-ZSB0aGF0IHRoZSBwYWNrZXQgcmVjZWl2ZSBpbiBkZXZpY2UgY2xvc2Ugd2lsbCBiZSBkbWEgdG8g
-aW52YWxpZCBtZW1vcnkgYWRkcmVzcyB3aGVuDQpkZXZpY2UgaXMgb3Blbi4NCg0KIC0tLS0tLVBs
-ZWFzZSBjb25zaWRlciB0aGUgZW52aXJvbm1lbnQgYmVmb3JlIHByaW50aW5nIHRoaXMgZS1tYWls
-Lg0K
+On Tue, Oct 04, 2022 at 06:23:53PM +0200, Geert Uytterhoeven wrote:
+> The Regulator based PSE controller driver relies on regulator support to
+> be enabled.  If regulator support is disabled, it will still compile
+> fine, but won't operate correctly.
+> 
+> Hence add a dependency on REGULATOR, to prevent asking the user about
+> this driver when configuring a kernel without regulator support.
+> 
+> Fixes: 66741b4e94ca7bb1 ("net: pse-pd: add regulator based PSE driver")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Reviewed-by: Oleksij Rempel <o.rempel@pengutronix.de>
+
+Thank you!
+
+> ---
+>  drivers/net/pse-pd/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/pse-pd/Kconfig b/drivers/net/pse-pd/Kconfig
+> index 73d163704068ac27..687dec49c1e13fa0 100644
+> --- a/drivers/net/pse-pd/Kconfig
+> +++ b/drivers/net/pse-pd/Kconfig
+> @@ -14,6 +14,7 @@ if PSE_CONTROLLER
+>  
+>  config PSE_REGULATOR
+>  	tristate "Regulator based PSE controller"
+> +	depends on REGULATOR || COMPILE_TEST
+>  	help
+>  	  This module provides support for simple regulator based Ethernet Power
+>  	  Sourcing Equipment without automatic classification support. For
+> -- 
+> 2.25.1
+> 
+> 
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
