@@ -2,118 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 309DE5F4D9F
-	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 04:15:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98E165F4E01
+	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 05:03:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229817AbiJECPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Oct 2022 22:15:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58150 "EHLO
+        id S229508AbiJEDDz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Oct 2022 23:03:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229698AbiJECPk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 22:15:40 -0400
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A873E474C7
-        for <netdev@vger.kernel.org>; Tue,  4 Oct 2022 19:15:35 -0700 (PDT)
-Received: by mail-il1-x132.google.com with SMTP id g13so4993468ile.0
-        for <netdev@vger.kernel.org>; Tue, 04 Oct 2022 19:15:35 -0700 (PDT)
+        with ESMTP id S229548AbiJEDDx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 23:03:53 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 192B95D0ED
+        for <netdev@vger.kernel.org>; Tue,  4 Oct 2022 20:03:50 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id gf8so11945329pjb.5
+        for <netdev@vger.kernel.org>; Tue, 04 Oct 2022 20:03:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=bF3rfNlwAuWQX7FF97PUYgRoxYjQCp+FQ9YtbL3rEM8=;
-        b=f2Sydn540oSzJJmHHZb4OXECOqRdiYpOcytDuEJI99EvyNB/U4JiHK1EREcNiLDI4K
-         ALqouMshmN6HqclSyyXUqDwwEvaYQKz1K/5FVU+rlWhk8F01j9nHyO99IQRSfwEqo0gl
-         RlnDxh4l4iedse7nJKLVkoXD3qhY8kp6ueil/iio1d54ckUjsV2plqwr4bw0rdrN5e+X
-         r0RkvHsuCS1RCcF+wRju/9ghvzd9HqYPJ5fqzJlCOLAZRKLuWQn6hlKJ5llvmcxA/EmT
-         jb2c2hTou9LXZSdJQLZb59FkfpzA9P96d4H8WhmhUwC7Baw1D/s3FmDigKver6k3HDri
-         88UQ==
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=aP95bKWiKwfkowGhCeZHvZSzzx4vDFEtGUhbJZ58BVs=;
+        b=iHuEAr1jQRkJk7UMid9KXukN+CUzKUUuqCSfNOTGl1fTgkJ8erSEr2uEnoyxG+LAnW
+         FVLcMAO+3HddaLBf6O7yCrhYfos2jIydv79VyLd7JgXqic5cACZDBcJPm0+eXfHKpmYe
+         86IQGd2pHKUG6MAQttJLLkxkIwZU2GeyIWGrA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=bF3rfNlwAuWQX7FF97PUYgRoxYjQCp+FQ9YtbL3rEM8=;
-        b=VZ737GZzFvd+76c1M7dhoEAZfcOileafGtcyl0Gksqxmwgjvc9NnQnEVNNzP9JgIUI
-         jF5Pnu8vTE1X/ujN651ok0yzt25QDYdHkboGA+shsX/m8C/EnJy63tNAzK9SAD3cvCNS
-         m+6eEnitstkirPL5dXEaGWqT1bgQt5QVL91rkymMcq+VPkZgGXbaU3dZVL2L4GA1bmuQ
-         gkTs7wB+8tve1hL6KGFBjmsrsZhYPS2KGc37OUXeVNRENkZQxWx0WW9ZXjpQXrm0j8TM
-         gCmP2D4doaH9XYDjqaNqcKh+H+6ROz8Q26lppMV8DxyLr2ROAxbb+r9W0ctSk3/kMcTY
-         0fag==
-X-Gm-Message-State: ACrzQf1wEpHGF86Nu7fkNkHc6o7WYFQi1M71vkMuyV8rqJKlmuKpIAv3
-        mJMwDHnNFRd6j04u6n4CQYtmimFPKxS7mrlxAdDJqA==
-X-Google-Smtp-Source: AMsMyM58qwYn1L3swp5KOVyV1TYqz3USmDJ53no2y3Fo2AXus4qnffPbPjgbAJeyRQxcgM6T6ud2uPcXjosICMHQp+A=
-X-Received: by 2002:a92:ca0c:0:b0:2f9:204:7a0d with SMTP id
- j12-20020a92ca0c000000b002f902047a0dmr13639413ils.194.1664936135004; Tue, 04
- Oct 2022 19:15:35 -0700 (PDT)
-MIME-Version: 1.0
-References: <166256538687.1434226.15760041133601409770.stgit@firesoul>
- <Yzt2YhbCBe8fYHWQ@google.com> <35fcfb25-583a-e923-6eee-e8bbcc19db17@redhat.com>
- <CAKH8qBuYVk7QwVOSYrhMNnaKFKGd7M9bopDyNp6-SnN6hSeTDQ@mail.gmail.com>
- <5ccff6fa-0d50-c436-b891-ab797fe7e3c4@linux.dev> <20221004175952.6e4aade7@kernel.org>
- <CAKH8qBtdAeHqbWa33yO-MMgC2+h2qehFn8Y_C6ZC1=YsjQS-Bw@mail.gmail.com> <20221004182451.6804b8ca@kernel.org>
-In-Reply-To: <20221004182451.6804b8ca@kernel.org>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Tue, 4 Oct 2022 19:15:24 -0700
-Message-ID: <CAKH8qBtTPNULZDLd2n1r2o7XZwvs_q5OkNqhdq0A+b5zkHRNMw@mail.gmail.com>
-Subject: Re: [PATCH RFCv2 bpf-next 00/18] XDP-hints: XDP gaining access to HW
- offload hints via BTF
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=aP95bKWiKwfkowGhCeZHvZSzzx4vDFEtGUhbJZ58BVs=;
+        b=z1uwtX36feUOnSlamNhpYZCqk0g5i2bZ39zcO70jX6v0xOhhF+4x8dyEr4dKU5fOFa
+         MmMIBx5crTnBpSicyBm+EtuyFxDSxribNWGtQ3g6ZSlh6KZy905A8Tg1lHS0op4U4FCc
+         BGoPowgNa/9sTHKf7S9RnxXOUCvTXn9/lsRYmjqla2O0q2Uac01WJYq1DrGJKsgDttVk
+         XvCEM9V30KsmRTBnCvBkOzcFeu1jeXE69RkWs2xFFOcZlo4KBa5lDq3pu+MY0vFGHIEV
+         G6TtE2g++jlBVnSHbs7S4XuAfSQofPJqza9ubXsmLbt4u1lPL1D1idN/12OzsgY3EwaU
+         2uNA==
+X-Gm-Message-State: ACrzQf2d1fXHW7PYsZJj5zIul76VBuTwgMb4zqfzCZFf7RSva6aUzZL7
+        k2pUhZJup+X3bgntNxzLt/8NEg==
+X-Google-Smtp-Source: AMsMyM5/tFBSnDzNkaDJGlsm3jS0p7ylLnjrrbXy9Y0O5uixYzXyy7DK60ryooTo24o26tNnFPbbXA==
+X-Received: by 2002:a17:903:22c2:b0:178:3c7c:18af with SMTP id y2-20020a17090322c200b001783c7c18afmr29975895plg.134.1664939030387;
+        Tue, 04 Oct 2022 20:03:50 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id d5-20020a170902654500b0017c7fe4718asm9095256pln.213.2022.10.04.20.03.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Oct 2022 20:03:49 -0700 (PDT)
+Date:   Tue, 4 Oct 2022 20:03:37 -0700
+From:   Kees Cook <keescook@chromium.org>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Martin KaFai Lau <martin.lau@linux.dev>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        brouer@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        xdp-hints@xdp-project.net, larysa.zaremba@intel.com,
-        memxor@gmail.com, Lorenzo Bianconi <lorenzo@kernel.org>,
-        mtahhan@redhat.com,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        dave@dtucker.co.uk, Magnus Karlsson <magnus.karlsson@intel.com>,
-        bjorn@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Cc:     netdev@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [RFC] netlink: split up copies in the ack construction
+Message-ID: <202210041959.3654E4C@keescook>
+References: <202210041600.7C90DF917@keescook>
+ <20221005002814.2233715-1-kuba@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221005002814.2233715-1-kuba@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 4, 2022 at 6:24 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Tue, 4 Oct 2022 18:02:56 -0700 Stanislav Fomichev wrote:
-> > +1, sounds like a good alternative (got your reply while typing)
-> > I'm not too versed in the rx_desc/rx_queue area, but seems like worst
-> > case that bpf_xdp_get_hwtstamp can probably receive a xdp_md ctx and
-> > parse it out from the pre-populated metadata?
->
-> I'd think so, worst case the driver can put xdp_md into a struct
-> and container_of() to get to its own stack with whatever fields
-> it needs.
+On Tue, Oct 04, 2022 at 05:28:14PM -0700, Jakub Kicinski wrote:
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  include/net/netlink.h        | 21 +++++++++++++++++++++
+>  include/uapi/linux/netlink.h |  2 ++
+>  net/netlink/af_netlink.c     | 30 +++++++++++++++++++++---------
+>  3 files changed, 44 insertions(+), 9 deletions(-)
+> 
+> diff --git a/include/net/netlink.h b/include/net/netlink.h
+> index 4418b1981e31..46c40fabd2b5 100644
+> --- a/include/net/netlink.h
+> +++ b/include/net/netlink.h
+> @@ -931,6 +931,27 @@ static inline struct nlmsghdr *nlmsg_put(struct sk_buff *skb, u32 portid, u32 se
+>  	return __nlmsg_put(skb, portid, seq, type, payload, flags);
+>  }
+>  
+> +/**
+> + * nlmsg_append - Add more data to a nlmsg in a skb
+> + * @skb: socket buffer to store message in
+> + * @payload: length of message payload
+> + *
+> + * Append data to an existing nlmsg, used when constructing a message
+> + * with multiple fixed-format headers (which is rare).
+> + * Returns NULL if the tailroom of the skb is insufficient to store
+> + * the extra payload.
+> + */
+> +static inline void *nlmsg_append(struct sk_buff *skb, u32 size)
+> +{
+> +	if (unlikely(skb_tailroom(skb) < NLMSG_ALIGN(size)))
+> +		return NULL;
+> +
+> +	if (NLMSG_ALIGN(size) - size)
+> +		memset(skb_tail_pointer(skb) + size, 0,
+> +		       NLMSG_ALIGN(size) - size);
+> +	return __skb_put(skb, NLMSG_ALIGN(size));
+> +}
+> +
+>  /**
+>   * nlmsg_put_answer - Add a new callback based netlink message to an skb
+>   * @skb: socket buffer to store message in
+> diff --git a/include/uapi/linux/netlink.h b/include/uapi/linux/netlink.h
+> index e2ae82e3f9f7..fba3ca8152fa 100644
+> --- a/include/uapi/linux/netlink.h
+> +++ b/include/uapi/linux/netlink.h
+> @@ -48,6 +48,7 @@ struct sockaddr_nl {
+>   * @nlmsg_flags: Additional flags
+>   * @nlmsg_seq:   Sequence number
+>   * @nlmsg_pid:   Sending process port ID
+> + * @nlmsg_data:  Message payload
+>   */
+>  struct nlmsghdr {
+>  	__u32		nlmsg_len;
+> @@ -55,6 +56,7 @@ struct nlmsghdr {
+>  	__u16		nlmsg_flags;
+>  	__u32		nlmsg_seq;
+>  	__u32		nlmsg_pid;
+> +	__DECLARE_FLEX_ARRAY(char, nlmsg_data);
 
-Ack, seems like something worth exploring then.
+Since the flex array isn't part of a union, it can just be declared
+"normally":
 
-The only issue I see with that is that we'd probably have to extend
-the loading api to pass target xdp device so we can pre-generate
-per-device bytecode for those kfuncs? And this potentially will block
-attaching the same program to different drivers/devices?
-Or, Martin, did you maybe have something better in mind?
+	__u8		nlmsg_data[];
 
-> > Btw, do we also need to think about the redirect case? What happens
-> > when I redirect one frame from a device A with one metadata format to
-> > a device B with another?
->
-> If there is a program on Tx then it'd be trivial - just do the
-> info <-> descriptor translation in the opposite direction than Rx.
-> TBH I'm not sure how it'd be done in the current approach, either.
+I'd also suggest u8 (rather than signed char) because compilers hate us,
+and I've been burned too many times by having char arrays do stupid
+things with the signed bit.
 
-Yeah, I don't think it magically works in any case. I'm just trying to
-understand whether it's something we care to support out of the box or
-can punt to the bpf programs themselves and say "if you care about
-forwarding metadata, somehow agree on the format yourself".
+>  };
+>  
+>  /* Flags values */
+> diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+> index a662e8a5ff84..f8c94454b916 100644
+> --- a/net/netlink/af_netlink.c
+> +++ b/net/netlink/af_netlink.c
+> @@ -2488,19 +2488,25 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
+>  		flags |= NLM_F_ACK_TLVS;
+>  
+>  	skb = nlmsg_new(payload + tlvlen, GFP_KERNEL);
+> -	if (!skb) {
+> -		NETLINK_CB(in_skb).sk->sk_err = ENOBUFS;
+> -		sk_error_report(NETLINK_CB(in_skb).sk);
+> -		return;
+> -	}
+> +	if (!skb)
+> +		goto err_bad_put;
+>  
+>  	rep = nlmsg_put(skb, NETLINK_CB(in_skb).portid, nlh->nlmsg_seq,
+> -			NLMSG_ERROR, payload, flags);
+> +			NLMSG_ERROR, sizeof(*errmsg), flags);
+> +	if (!rep)
+> +		goto err_bad_put;
+>  	errmsg = nlmsg_data(rep);
+>  	errmsg->error = err;
+> -	unsafe_memcpy(&errmsg->msg, nlh, payload > sizeof(*errmsg)
+> -					 ? nlh->nlmsg_len : sizeof(*nlh),
+> -		      /* Bounds checked by the skb layer. */);
+> +	errmsg->msg = *nlh;
+> +
+> +	if (!(flags & NLM_F_CAPPED)) {
+> +		if (!nlmsg_append(skb, nlmsg_len(nlh)))
+> +			goto err_bad_put;
+> +
+> +		/* the nlh + 1 is probably going to make you unhappy? */
+> +		memcpy(errmsg->msg.nlmsg_data, nlh->nlmsg_data,
+> +		       nlmsg_len(nlh));
+> +	}
+>  
+>  	if (tlvlen)
+>  		netlink_ack_tlv_fill(in_skb, skb, nlh, err, extack);
+> @@ -2508,6 +2514,12 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
+>  	nlmsg_end(skb, rep);
+>  
+>  	nlmsg_unicast(in_skb->sk, skb, NETLINK_CB(in_skb).portid);
+> +
+> +	return;
+> +
+> +err_bad_put:
+> +	NETLINK_CB(in_skb).sk->sk_err = ENOBUFS;
+> +	sk_error_report(NETLINK_CB(in_skb).sk);
+>  }
+>  EXPORT_SYMBOL(netlink_ack);
 
-> Now I questioned the BTF way and mentioned the Tx-side program in
-> a single thread, I better stop talking...
+The rest looks great! :) I suspect you'll want to do close to the same
+conversion in net/netfilter/ipset/ip_set_core.c in call_ad() too.
 
-Forget about btf, hail to the new king - kfunc :-D
+-- 
+Kees Cook
