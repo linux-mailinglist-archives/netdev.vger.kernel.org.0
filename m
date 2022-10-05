@@ -2,106 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 113095F5076
-	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 09:51:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CECFF5F507D
+	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 09:54:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229942AbiJEHvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Oct 2022 03:51:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41056 "EHLO
+        id S229959AbiJEHyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Oct 2022 03:54:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229923AbiJEHvO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 03:51:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BAF35D11F;
-        Wed,  5 Oct 2022 00:51:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 404A5B81B49;
-        Wed,  5 Oct 2022 07:51:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E14AAC433C1;
-        Wed,  5 Oct 2022 07:51:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664956270;
-        bh=aE9etRiOEVxYZXgsGYS0VimxiIbgJuJ/6jugX8sMxWU=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=DqV1X5GB+NH9fM/qMl7lhz2eeHtCoZETQS9jk092yvCkqxgMeVfIg/2EdYx+4ZHvJ
-         lpbZZbs8LiR1VkWbqWSimeWK1tvqJdaEx8TMUoAC/DKJ17CQWjw5SWPWGR0JbpwRKp
-         sP1UwPsvInN+I1cC9SfdfJW+Vp9vSqEzUQoXuLB3WyST/s+eiDnqxM6VftliIDX8Nl
-         sGNFS47PiCFW4AicE8/GBti8Mk4m7o182b+0HIzqBTmEcj9VwuMYtbAMq8u4AihFJp
-         k6esy8BbH+2bpSIeLeQM19pyOPGQYicfWZJRUyp2DgtNyPKFBSBQIVGZZx2H3R6bm8
-         CXoSAcHGu+hUA==
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229727AbiJEHyh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 03:54:37 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052F61ED
+        for <netdev@vger.kernel.org>; Wed,  5 Oct 2022 00:54:34 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id y5so4787465lfl.4
+        for <netdev@vger.kernel.org>; Wed, 05 Oct 2022 00:54:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:references:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=HIQiD4rxFsd5dH3nMVqlPOd1Sb3NYZbeQQm1mzSwnV4=;
+        b=lrgyI70bsWbp6T2v7mNCaLIuB2btVF3QBrquibHb4YuoEbB/LL30jCk7wEHi3W7Sto
+         /64YHSSOvR7YECjnltjVOoklXfKYLpzjrfj7hqrt1vPKp2mTQZsj3pYBiNjC3oovOSno
+         Zi60hP/DjPZbTsys7nsfpg5LSgCarbFaHXonOAZxntd3QoWUtfXRYkukAoFyMeC+1tEt
+         or+StY099N0tPoQKBykzlylAFpJH0bmSrvswMN/4fUUOtiw6kYHfs1MBnZ5KxvzrN177
+         P6dlu77ryIf6clf3mfs+9PIztUF1X8eW1cLoi0+cwCka1f3sGtMuOaQsPjsxga87b771
+         wQyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=HIQiD4rxFsd5dH3nMVqlPOd1Sb3NYZbeQQm1mzSwnV4=;
+        b=rtng+ph3SDyDXTIt1fO+Tei9qLkTUbvLNEZso+2Px7o8a5lHZP/hXtkFpYNNUnnEkO
+         PaoMKCXnJ7m6i2/J8WJABvwXoqjkUcCuiutt/0bLfR7RUkCxPfTH8FE6aYo/D1ybxU08
+         dVaeYi7/lTab4WZaJTrqfTll4KK5jWimloSmUuSaLceoXnEfAlmnGdUDOHXrzf4quB8B
+         rdut+QEtFOY3f5uVeRf4oxBdbtFMhgYZ5PPR9pkPfJC2mop8AcpuL/EcClQVlSC9J6ke
+         7rd8tLGW/WpjlZ4+i4cZ5HvZAaRU9pAaZ85zHxHj10J4E3vgNQL4It8G5hxB8iqT3B9v
+         2v2A==
+X-Gm-Message-State: ACrzQf1DB8UD6gd7F9cZ9UP2lkHzvmbJ+sTI5GM+jyaMV+tMI1Vyh8rE
+        tCnUog3iCFUfHd8LbhDKR/0Qng==
+X-Google-Smtp-Source: AMsMyM647KSEfdK1s9YqL1xht+20nnUv8L2EKDFihJnKCCc3CfaHAi84e2yc4z9pIoM+3cSTyI8Bug==
+X-Received: by 2002:a05:6512:1522:b0:4a0:2dd4:bab3 with SMTP id bq34-20020a056512152200b004a02dd4bab3mr11163828lfb.130.1664956472274;
+        Wed, 05 Oct 2022 00:54:32 -0700 (PDT)
+Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id i8-20020a056512318800b00498f1eddad0sm2249573lfe.122.2022.10.05.00.54.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 05 Oct 2022 00:54:31 -0700 (PDT)
+Message-ID: <2ab2940d-36b5-d4b3-da8c-9dc0bded7bd8@linaro.org>
+Date:   Wed, 5 Oct 2022 09:54:30 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] wifi: atmel: Avoid clashing function prototypes
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20221002032428.4091540-1-keescook@chromium.org>
-References: <20221002032428.4091540-1-keescook@chromium.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Simon Kelley <simon@thekelleys.org.uk>,
-        Kees Cook <keescook@chromium.org>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+Subject: Re: [net-next][PATCH v4] dt-bindings: dsa: Add lan9303 yaml
+Content-Language: en-US
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Jerry Ray <jerry.ray@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, linux-hardening@vger.kernel.org
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <166495626187.5945.10399695218838618829.kvalo@kernel.org>
-Date:   Wed,  5 Oct 2022 07:51:06 +0000 (UTC)
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20221003164624.4823-1-jerry.ray@microchip.com>
+ <c1b64758-219b-9251-cea8-d5301f01ee7f@linaro.org>
+In-Reply-To: <c1b64758-219b-9251-cea8-d5301f01ee7f@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kees Cook <keescook@chromium.org> wrote:
+On 03/10/2022 19:48, Krzysztof Kozlowski wrote:
+> On 03/10/2022 18:46, Jerry Ray wrote:
+>> Adding the dt binding yaml for the lan9303 3-port ethernet switch.
+>> The microchip lan9354 3-port ethernet switch will also use the
+>> same binding.
+>>
+>> Signed-off-by: Jerry Ray <jerry.ray@microchip.com>
+>> ---
+>> v3->v4:
+>>  - Addressed v3 community feedback
+>> v2->v3:
+>>  - removed cpu labels
+>>  - now patching against latest net-next
+>> v1->v2:
+>>  - fixed dt_binding_check warning
+>>  - added max-speed setting on the switches 10/100 ports.
+>> ---
+>>  .../devicetree/bindings/net/dsa/lan9303.txt   | 100 -------------
 
-> When built with Control Flow Integrity, function prototypes between
-> caller and function declaration must match. These mismatches are visible
-> at compile time with the new -Wcast-function-type-strict in Clang[1].
-> 
-> Of the 1549 warnings found, 188 come from the atmel driver. For example:
-> 
-> drivers/net/wireless/atmel/atmel.c:2518:2: warning: cast from 'int (*)(struct net_device *, struct iw_request_info *, void *, char *)' to 'iw_handler' (aka 'int (*)(struct net_device *, struct iw_request_info *, union iwreq_data *, char *)') converts to incompatible function type [-Wcast-function-type-strict]
->         (iw_handler) atmel_config_commit,       /* SIOCSIWCOMMIT */
->         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> 
-> The atmel Wireless Extension handler callbacks (iw_handler) use a union
-> for the data argument. Actually use the union and perform explicit
-> member selection in the function body instead of having a function
-> prototype mismatch. There are no resulting binary differences.
-> 
-> This patch is a cleanup based on Brad Spengler/PaX Team's modifications
-> to the atmel driver in their last public patch of grsecurity/PaX based
-> on my understanding of the code. Changes or omissions from the original
-> code are mine and don't reflect the original grsecurity/PaX code.
-> 
-> [1] https://reviews.llvm.org/D134831
-> 
-> Cc: Simon Kelley <simon@thekelleys.org.uk>
-> Cc: Kalle Valo <kvalo@kernel.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+Beside that you got errors reported by kernel test robot.
 
-Patch applied to wireless-next.git, thanks.
-
-8af9d4068e86 wifi: atmel: Avoid clashing function prototypes
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20221002032428.4091540-1-keescook@chromium.org/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Best regards,
+Krzysztof
 
