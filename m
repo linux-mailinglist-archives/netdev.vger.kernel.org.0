@@ -2,211 +2,252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 857075F5953
-	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 19:47:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF2E45F5962
+	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 19:50:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231130AbiJERr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Oct 2022 13:47:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34130 "EHLO
+        id S230476AbiJERuq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Oct 2022 13:50:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230042AbiJERrJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 13:47:09 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C0480BDB;
-        Wed,  5 Oct 2022 10:45:58 -0700 (PDT)
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 295GedKv005552;
-        Wed, 5 Oct 2022 17:45:31 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding;
- s=corp-2022-7-12; bh=PAfKF245rJVuyKQIojRzi3hHRTZzW3nXv15RmqODTr4=;
- b=0aV3/2SVZS5xIpa0qWVT1kpY9eh9NGdlvN9f0B1oWw8FMiSgwZoEZos/o2/kwOsFUVJE
- vRUw9gxI4j7KIc7Usm70B+OjL+GNF9P3NzuC/JZyuHnzFNEpCGgkLjnqe9BMYY2Q55kN
- 4o+2Yf3v7uytSiMWgZC04gUWARuoajok13ftIJg94mwNzfwX7f2NRzdVNs0uzAKV7YWF
- nrS5wX59rVW+vd/o3/g41sj9vh+qs9Vuud/VdN6HEzmRjjGREjwvIpC/KFjL033xj4rU
- A9EbfFZmrc7aQSejPm6rCMKujdD0fyVjjd72mHmNutSJKZxnbSlfmyTEFCKpOOIQuKQK Iw== 
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3k15up1e6x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 05 Oct 2022 17:45:31 +0000
-Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 295HQq3C029578;
-        Wed, 5 Oct 2022 17:45:30 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3jxc05t2t2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 05 Oct 2022 17:45:30 +0000
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 295HjUb6024064;
-        Wed, 5 Oct 2022 17:45:30 GMT
-Received: from rsajanku-mac.us.oracle.com (dhcp-10-159-236-222.vpn.oracle.com [10.159.236.222])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3jxc05t2sa-1;
-        Wed, 05 Oct 2022 17:45:29 +0000
-From:   Rohit Nair <rohit.sajan.kumar@oracle.com>
-To:     leon@kernel.org, jgg@ziepe.ca, saeedm@nvidia.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     manjunath.b.patil@oracle.com, rama.nichanamatlu@oracle.com,
-        rohit.sajan.kumar@oracle.com,
-        Michael Guralnik <michaelgur@nvidia.com>
-Subject: [PATCH 1/1] IB/mlx5: Add a signature check to received EQEs and CQEs
-Date:   Wed,  5 Oct 2022 10:45:20 -0700
-Message-Id: <20221005174521.63619-1-rohit.sajan.kumar@oracle.com>
-X-Mailer: git-send-email 2.36.0
+        with ESMTP id S230350AbiJERum (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 13:50:42 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F361A2F65E
+        for <netdev@vger.kernel.org>; Wed,  5 Oct 2022 10:50:35 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id lx7so16203310pjb.0
+        for <netdev@vger.kernel.org>; Wed, 05 Oct 2022 10:50:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fastly.com; s=google;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=OkjKvJs8S/hQt0MPx2S5vsIaSqgsJN8VUNFF955H+xs=;
+        b=L0bNNyeKXDLplArxxlKGfi8HJ5DW81Y6Xg1JA93SvrFFrH12k33UrYmiJSBuK8xWWq
+         vfFo/ymFU9RSW+gjgGcrdPKVMLXnBlr/ixmZNY/GO+m0eyri4xWuz5nRpF0AUpBBXFMH
+         YR6zjggihIXQyEJIdWPZVRqMrO6UF5wDcvUU8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=OkjKvJs8S/hQt0MPx2S5vsIaSqgsJN8VUNFF955H+xs=;
+        b=f6N7/nZZqqQ74NoQX0Et7NLzIGmAj8HjH0+/c7fYWmCWcbXGBkHoFU+N6AhyHUbnde
+         9xGhi+WLTDlry8IsZFKkKg0rlKdLJRzUOOA/JatWyx3V8o9JWjpDsnTJBtj7rhDaxMDl
+         PnugJGcDhwalIke8ImQVfyQxDt9D/vWlQKXcrJzV7vk37xtIklwIqhTv0OiDw6pBUgo2
+         +pRPLYd2zEBEJmYOkfZSMfiIP5J2prvEyjQT+1ftMYlloAtWnFfmcxF91ApqanRS47RY
+         0GQ+mng29r+GZJSUNEGToCEIivpBd2q71BrioenRIryQID/EYaIBjkGTU0hA/4s7A3ex
+         M2gA==
+X-Gm-Message-State: ACrzQf0WyvS3d68mudjDUTvGFGy6ES34jd2yv0deqrrrVg80DYZWrZF2
+        hmMlK0IGT3sWo19pVMNwQx61cg==
+X-Google-Smtp-Source: AMsMyM64sjcBhnUPXmFGqxUvu6Bxw8rA05JyFLgNLPKiQ4f8D63xMWsASz3Pmz05+qIiqmN+C6MRIQ==
+X-Received: by 2002:a17:90b:1c88:b0:203:8400:13a9 with SMTP id oo8-20020a17090b1c8800b00203840013a9mr935880pjb.46.1664992235120;
+        Wed, 05 Oct 2022 10:50:35 -0700 (PDT)
+Received: from fastly.com (c-73-223-190-181.hsd1.ca.comcast.net. [73.223.190.181])
+        by smtp.gmail.com with ESMTPSA id r18-20020aa79632000000b00561c3ec5346sm3366702pfg.129.2022.10.05.10.50.33
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 05 Oct 2022 10:50:34 -0700 (PDT)
+Date:   Wed, 5 Oct 2022 10:50:32 -0700
+From:   Joe Damato <jdamato@fastly.com>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, anthony.l.nguyen@intel.com,
+        jesse.brandeburg@intel.com
+Subject: Re: [next-queue 2/3] i40e: i40e_clean_tx_irq returns work done
+Message-ID: <20221005175031.GA11626@fastly.com>
+References: <1664958703-4224-1-git-send-email-jdamato@fastly.com>
+ <1664958703-4224-3-git-send-email-jdamato@fastly.com>
+ <Yz1gh6ezOuc1tzH+@boxer>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
- definitions=2022-10-05_05,2022-10-05_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxlogscore=999
- suspectscore=0 phishscore=0 bulkscore=0 malwarescore=0 mlxscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2210050110
-X-Proofpoint-GUID: 7fg1NbIa4R_lG-oT8MZX2aGtcx9eazeq
-X-Proofpoint-ORIG-GUID: 7fg1NbIa4R_lG-oT8MZX2aGtcx9eazeq
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yz1gh6ezOuc1tzH+@boxer>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As PRM defines, the bytewise XOR of the EQE and the EQE index should be
-0xff. Otherwise, we can assume we have a corrupt EQE. The same is
-applicable to CQE as well.
+On Wed, Oct 05, 2022 at 12:46:31PM +0200, Maciej Fijalkowski wrote:
+> On Wed, Oct 05, 2022 at 01:31:42AM -0700, Joe Damato wrote:
+> > Adjust i40e_clean_tx_irq to return the actual number of packets cleaned
+> > and adjust the logic in i40e_napi_poll to check this value.
+> > 
+> > Signed-off-by: Joe Damato <jdamato@fastly.com>
+> > ---
+> >  drivers/net/ethernet/intel/i40e/i40e_txrx.c | 24 +++++++++++++-----------
+> >  drivers/net/ethernet/intel/i40e/i40e_xsk.c  | 12 ++++++------
+> >  drivers/net/ethernet/intel/i40e/i40e_xsk.h  |  2 +-
+> >  3 files changed, 20 insertions(+), 18 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> > index b97c95f..ed88309 100644
+> > --- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> > +++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> > @@ -924,10 +924,10 @@ void i40e_detect_recover_hung(struct i40e_vsi *vsi)
+> >   * @tx_ring: Tx ring to clean
+> >   * @napi_budget: Used to determine if we are in netpoll
+> >   *
+> > - * Returns true if there's any budget left (e.g. the clean is finished)
+> > + * Returns the number of packets cleaned
+> >   **/
+> > -static bool i40e_clean_tx_irq(struct i40e_vsi *vsi,
+> > -			      struct i40e_ring *tx_ring, int napi_budget)
+> > +static int i40e_clean_tx_irq(struct i40e_vsi *vsi,
+> > +			     struct i40e_ring *tx_ring, int napi_budget)
+> >  {
+> >  	int i = tx_ring->next_to_clean;
+> >  	struct i40e_tx_buffer *tx_buf;
+> > @@ -1026,7 +1026,7 @@ static bool i40e_clean_tx_irq(struct i40e_vsi *vsi,
+> >  	i40e_arm_wb(tx_ring, vsi, budget);
+> >  
+> >  	if (ring_is_xdp(tx_ring))
+> > -		return !!budget;
+> > +		return total_packets;
+> >  
+> >  	/* notify netdev of completed buffers */
+> >  	netdev_tx_completed_queue(txring_txq(tx_ring),
+> > @@ -1048,7 +1048,7 @@ static bool i40e_clean_tx_irq(struct i40e_vsi *vsi,
+> >  		}
+> >  	}
+> >  
+> > -	return !!budget;
+> > +	return total_packets;
+> >  }
+> >  
+> >  /**
+> > @@ -2689,10 +2689,12 @@ int i40e_napi_poll(struct napi_struct *napi, int budget)
+> >  			       container_of(napi, struct i40e_q_vector, napi);
+> >  	struct i40e_vsi *vsi = q_vector->vsi;
+> >  	struct i40e_ring *ring;
+> > +	bool tx_clean_complete = true;
+> >  	bool clean_complete = true;
+> >  	bool arm_wb = false;
+> >  	int budget_per_ring;
+> >  	int work_done = 0;
+> > +	int tx_wd = 0;
+> >  
+> >  	if (test_bit(__I40E_VSI_DOWN, vsi->state)) {
+> >  		napi_complete(napi);
+> > @@ -2703,12 +2705,12 @@ int i40e_napi_poll(struct napi_struct *napi, int budget)
+> >  	 * budget and be more aggressive about cleaning up the Tx descriptors.
+> >  	 */
+> >  	i40e_for_each_ring(ring, q_vector->tx) {
+> > -		bool wd = ring->xsk_pool ?
+> > -			  i40e_clean_xdp_tx_irq(vsi, ring) :
+> > -			  i40e_clean_tx_irq(vsi, ring, budget);
+> > +		tx_wd = ring->xsk_pool ?
+> > +			i40e_clean_xdp_tx_irq(vsi, ring) :
+> > +			i40e_clean_tx_irq(vsi, ring, budget);
+> >  
+> > -		if (!wd) {
+> > -			clean_complete = false;
+> > +		if (tx_wd >= budget) {
+> > +			tx_clean_complete = false;
+> 
+> This will break for AF_XDP Tx ZC. AF_XDP Tx ZC in intel drivers ignores
+> budget given by NAPI. If you look at i40e_xmit_zc():
+> 
+> func def:
+> static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
+> 
+> callsite:
+> 	return i40e_xmit_zc(tx_ring, I40E_DESC_UNUSED(tx_ring));
+> 
+> we give free ring space as a budget and with your change we would be
+> returning the amount of processed tx descriptors which you will be
+> comparing against NAPI budget (64, unless you have busy poll enabled with
+> a different batch size). Say you start with empty ring and your HW rings
+> are sized to 1k but there was only 512 AF_XDP descriptors ready for Tx.
+> You produced all of them successfully to ring and you return 512 up to
+> i40e_napi_poll.
 
-Adding a check to verify the EQE and CQE is valid in that aspect and if
-not, dump the CQE and EQE to dmesg to be inspected.
+Good point, my bad.
 
-This patch does not introduce any significant performance degradations
-and has been tested using qperf.
+I've reworked this for the v2 and have given i40e_clean_tx_irq,
+and i40e_clean_xdp_tx_irq an out parameter which will record the number
+TXes cleaned.
 
-Suggested-by: Michael Guralnik <michaelgur@nvidia.com>
-Signed-off-by: Rohit Nair <rohit.sajan.kumar@oracle.com>
----
- drivers/infiniband/hw/mlx5/cq.c              | 40 ++++++++++++++++++++++++++++
- drivers/net/ethernet/mellanox/mlx5/core/eq.c | 39 +++++++++++++++++++++++++++
- 2 files changed, 79 insertions(+)
+I tweaked i40e_xmit_zc to return the number of packets (nb_pkts) and moved
+the boolean to check if that's under the "budget"
+(I40E_DESC_UNUSED(tx_ring)) into i40e_clean_xdp_tx_irq.
 
-diff --git a/drivers/infiniband/hw/mlx5/cq.c b/drivers/infiniband/hw/mlx5/cq.c
-index be189e0..2a6d722 100644
---- a/drivers/infiniband/hw/mlx5/cq.c
-+++ b/drivers/infiniband/hw/mlx5/cq.c
-@@ -441,6 +441,44 @@ static void mlx5_ib_poll_sw_comp(struct mlx5_ib_cq *cq, int num_entries,
- 	}
- }
- 
-+static void verify_cqe(struct mlx5_cqe64 *cqe64, struct mlx5_ib_cq *cq)
-+{
-+	int i = 0;
-+	u64 temp_xor = 0;
-+	struct mlx5_ib_dev *dev = to_mdev(cq->ibcq.device);
-+
-+	u32 cons_index = cq->mcq.cons_index;
-+	u64 *eight_byte_raw_cqe = (u64 *)cqe64;
-+	u8 *temp_bytewise_xor = (u8 *)(&temp_xor);
-+	u8 cqe_bytewise_xor = (cons_index & 0xff) ^
-+				((cons_index & 0xff00) >> 8) ^
-+				((cons_index & 0xff0000) >> 16);
-+
-+	for (i = 0; i < sizeof(struct mlx5_cqe64); i += 8) {
-+		temp_xor ^= *eight_byte_raw_cqe;
-+		eight_byte_raw_cqe++;
-+	}
-+
-+	for (i = 0; i < (sizeof(u64)); i++) {
-+		cqe_bytewise_xor ^= *temp_bytewise_xor;
-+		temp_bytewise_xor++;
-+	}
-+
-+	if (cqe_bytewise_xor == 0xff)
-+		return;
-+
-+	dev_err(&dev->mdev->pdev->dev,
-+		"Faulty CQE - checksum failure: cqe=0x%x cqn=0x%x cqe_bytewise_xor=0x%x\n",
-+		cq->ibcq.cqe, cq->mcq.cqn, cqe_bytewise_xor);
-+	dev_err(&dev->mdev->pdev->dev,
-+		"cons_index=%u arm_sn=%u irqn=%u cqe_size=0x%x\n",
-+		cq->mcq.cons_index, cq->mcq.arm_sn, cq->mcq.irqn, cq->mcq.cqe_sz);
-+
-+	print_hex_dump(KERN_WARNING, "", DUMP_PREFIX_OFFSET,
-+		       16, 1, cqe64, sizeof(*cqe64), false);
-+	BUG();
-+}
-+
- static int mlx5_poll_one(struct mlx5_ib_cq *cq,
- 			 struct mlx5_ib_qp **cur_qp,
- 			 struct ib_wc *wc)
-@@ -463,6 +501,8 @@ static int mlx5_poll_one(struct mlx5_ib_cq *cq,
- 
- 	cqe64 = (cq->mcq.cqe_sz == 64) ? cqe : cqe + 64;
- 
-+	verify_cqe(cqe64, cq);
-+
- 	++cq->mcq.cons_index;
- 
- 	/* Make sure we read CQ entry contents after we've checked the
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-index 229728c..f2a6d8b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-@@ -102,6 +102,43 @@ static struct mlx5_core_cq *mlx5_eq_cq_get(struct mlx5_eq *eq, u32 cqn)
- 	return cq;
- }
- 
-+static void verify_eqe(struct mlx5_eq *eq, struct mlx5_eqe *eqe)
-+{
-+	u64 *eight_byte_raw_eqe = (u64 *)eqe;
-+	u8 eqe_bytewise_xor = (eq->cons_index & 0xff) ^
-+			      ((eq->cons_index & 0xff00) >> 8) ^
-+			      ((eq->cons_index & 0xff0000) >> 16);
-+
-+	int i = 0;
-+	u64 temp_xor = 0;
-+	u8 *temp_bytewise_xor = (u8 *)(&temp_xor);
-+
-+	for (i = 0; i < sizeof(struct mlx5_eqe); i += 8) {
-+		temp_xor ^= *eight_byte_raw_eqe;
-+		eight_byte_raw_eqe++;
-+	}
-+
-+	for (i = 0; i < (sizeof(u64)); i++) {
-+		eqe_bytewise_xor ^= *temp_bytewise_xor;
-+		temp_bytewise_xor++;
-+	}
-+
-+	if (eqe_bytewise_xor == 0xff)
-+		return;
-+
-+	dev_err(&eq->dev->pdev->dev,
-+		"Faulty EQE - checksum failure: ci=0x%x eqe_type=0x%x eqe_bytewise_xor=0x%x",
-+		eq->cons_index, eqe->type, eqe_bytewise_xor);
-+
-+	dev_err(&eq->dev->pdev->dev,
-+		"EQ addr=%p eqn=%u irqn=%u vec_index=%u",
-+		eq, eq->eqn, eq->irqn, eq->vecidx);
-+
-+	print_hex_dump(KERN_WARNING, "", DUMP_PREFIX_OFFSET,
-+		       16, 1, eqe, sizeof(*eqe), false);
-+	BUG();
-+}
-+
- static int mlx5_eq_comp_int(struct notifier_block *nb,
- 			    __always_unused unsigned long action,
- 			    __always_unused void *data)
-@@ -127,6 +164,8 @@ static int mlx5_eq_comp_int(struct notifier_block *nb,
- 		/* Assume (eqe->type) is always MLX5_EVENT_TYPE_COMP */
- 		cqn = be32_to_cpu(eqe->data.comp.cqn) & 0xffffff;
- 
-+		verify_eqe(eq, eqe);
-+
- 		cq = mlx5_eq_cq_get(eq, cqn);
- 		if (likely(cq)) {
- 			++cq->arm_sn;
--- 
-1.8.3.1
+I think that might solve the issues you've described.
 
+
+> >  			continue;
+> >  		}
+> >  		arm_wb |= ring->arm_wb;
+> > @@ -2742,7 +2744,7 @@ int i40e_napi_poll(struct napi_struct *napi, int budget)
+> >  	}
+> >  
+> >  	/* If work not completed, return budget and polling will return */
+> > -	if (!clean_complete) {
+> > +	if (!clean_complete || !tx_clean_complete) {
+> >  		int cpu_id = smp_processor_id();
+> >  
+> >  		/* It is possible that the interrupt affinity has changed but,
+> > diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> > index 790aaeff..925682c 100644
+> > --- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> > +++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> > @@ -531,9 +531,9 @@ static void i40e_set_rs_bit(struct i40e_ring *xdp_ring)
+> >   * @xdp_ring: XDP Tx ring
+> >   * @budget: NAPI budget
+> >   *
+> > - * Returns true if the work is finished.
+> > + * Returns number of packets cleaned
+> >   **/
+> > -static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
+> > +static int i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
+> >  {
+> >  	struct xdp_desc *descs = xdp_ring->xsk_pool->tx_descs;
+> >  	u32 nb_pkts, nb_processed = 0;
+> > @@ -541,7 +541,7 @@ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
+> >  
+> >  	nb_pkts = xsk_tx_peek_release_desc_batch(xdp_ring->xsk_pool, budget);
+> >  	if (!nb_pkts)
+> > -		return true;
+> > +		return 0;
+> >  
+> >  	if (xdp_ring->next_to_use + nb_pkts >= xdp_ring->count) {
+> >  		nb_processed = xdp_ring->count - xdp_ring->next_to_use;
+> > @@ -558,7 +558,7 @@ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
+> >  
+> >  	i40e_update_tx_stats(xdp_ring, nb_pkts, total_bytes);
+> >  
+> > -	return nb_pkts < budget;
+> > +	return nb_pkts;
+> >  }
+> >  
+> >  /**
+> > @@ -582,9 +582,9 @@ static void i40e_clean_xdp_tx_buffer(struct i40e_ring *tx_ring,
+> >   * @vsi: Current VSI
+> >   * @tx_ring: XDP Tx ring
+> >   *
+> > - * Returns true if cleanup/tranmission is done.
+> > + * Returns number of packets cleaned
+> >   **/
+> > -bool i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi, struct i40e_ring *tx_ring)
+> > +int i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi, struct i40e_ring *tx_ring)
+> >  {
+> >  	struct xsk_buff_pool *bp = tx_ring->xsk_pool;
+> >  	u32 i, completed_frames, xsk_frames = 0;
+> > diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.h b/drivers/net/ethernet/intel/i40e/i40e_xsk.h
+> > index 821df24..4e810c2 100644
+> > --- a/drivers/net/ethernet/intel/i40e/i40e_xsk.h
+> > +++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.h
+> > @@ -30,7 +30,7 @@ int i40e_xsk_pool_setup(struct i40e_vsi *vsi, struct xsk_buff_pool *pool,
+> >  bool i40e_alloc_rx_buffers_zc(struct i40e_ring *rx_ring, u16 cleaned_count);
+> >  int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget);
+> >  
+> > -bool i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi, struct i40e_ring *tx_ring);
+> > +int i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi, struct i40e_ring *tx_ring);
+> >  int i40e_xsk_wakeup(struct net_device *dev, u32 queue_id, u32 flags);
+> >  int i40e_realloc_rx_bi_zc(struct i40e_vsi *vsi, bool zc);
+> >  void i40e_clear_rx_bi_zc(struct i40e_ring *rx_ring);
+> > -- 
+> > 2.7.4
+> > 
