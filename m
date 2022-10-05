@@ -2,139 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F04A5F55DC
-	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 15:53:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B53C35F5628
+	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 16:12:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230089AbiJENxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Oct 2022 09:53:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40576 "EHLO
+        id S229750AbiJEOMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Oct 2022 10:12:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiJENxt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 09:53:49 -0400
-Received: from premium237-5.web-hosting.com (premium237-5.web-hosting.com [66.29.146.205])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79BBD5C35A;
-        Wed,  5 Oct 2022 06:53:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sladewatkins.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:Cc:References:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=+yaz2PTOel5SQwAAFZu+4eCM67Glm7cbv/XXj5lQq/Y=; b=ETWp7ebF38ki2Ickf3q2CQ6WPA
-        5H8tJ58EsKagfhjzgz7RyidzFf4VzODb2L5vSR6C+FmoiG3QeJNxuXDF6WlhtCENV0q1QxGdsdK0r
-        4dOf+USrp/T241mTX1HzHdYBIP3iRrKEzt2HjFMmi90CLQBqxcQzfJpEl3inzx6TtkdqcWpvef4cq
-        aHbhweVYO/kGq99DilxRTj/SJIu4S2CD8tblX2y4GyLmbBb3CWAIEBG33jjiGP8ob4GFb3xb89v/r
-        8hqYAbLjpfIwddMevOhjM5fNo01hYzHym5ev26RQRsjxKphnIifyUR6mR+gRLez3mr3xXgn6Dxadz
-        L3joMHbg==;
-Received: from pool-108-4-135-94.albyny.fios.verizon.net ([108.4.135.94]:55095 helo=[192.168.1.30])
-        by premium237.web-hosting.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.95)
-        (envelope-from <srw@sladewatkins.net>)
-        id 1og4qI-00CwCW-N8;
-        Wed, 05 Oct 2022 09:53:46 -0400
-Message-ID: <2e6b2a03-6287-0a23-c187-51fe8e9b7941@sladewatkins.net>
-Date:   Wed, 5 Oct 2022 09:53:44 -0400
+        with ESMTP id S229864AbiJEOMa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 10:12:30 -0400
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05A17786CA;
+        Wed,  5 Oct 2022 07:12:27 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 8A6D2385;
+        Wed,  5 Oct 2022 14:12:27 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 8A6D2385
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1664979147; bh=cPWxFc/53chuPrEn8nKpMvLwM1xRLSdinHoPALwDFnc=;
+        h=From:To:Subject:In-Reply-To:References:Date:From;
+        b=sfapab40Pry1D7GkGr4/ohSk+Nx/lMXmSiSyR4FMuq9NlWhP2GhrWWzWfSWMBTco6
+         SNZwyqvZ4mbXaOtj2iXkk0vsBXxcZ3Lh7AZI+ix7iN775tXpbbhE1FesdlJOGaLmYM
+         DlEExFgBZAIlZfWXf+lWR7/pPJYtpwt2uE7ft3CnNjcwy5DfGjfxIi7ugCIoukyADE
+         in0GxpO+crDcE/0+PuOe2HE99BMa8PboS9YvIXidT0nr8zln7+dlrIzkptH9Wf3QNn
+         vLql9Lxyu2PyqtvHQ9dEdMKhDsqv8Vg5tgQzN0ahgCTIW9zKnK1hIH9YSIkBDASvQb
+         N7mFxemRmHGHg==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Bagas Sanjaya <bagasdotme@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Casper Andersson <casper.casan@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH net-next] docs: networking: phy: add missing space
+In-Reply-To: <30e3cee2-420b-b2bc-9af0-9f7e9c696c57@gmail.com>
+References: <20221004073242.304425-1-casper.casan@gmail.com>
+ <6645ba3ba389dc6da8d16f063210441337db9249.camel@redhat.com>
+ <a495dd76-060a-210a-1a11-55333d67180c@gmail.com>
+ <30e3cee2-420b-b2bc-9af0-9f7e9c696c57@gmail.com>
+Date:   Wed, 05 Oct 2022 08:12:26 -0600
+Message-ID: <8735c2bbqt.fsf@meer.lwn.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.3.1
-Subject: Re: MTU does not change
-Content-Language: en-US
-To:     =?UTF-8?B?0JLRj9GH0LXRgdC70LDQsiDQodCw0LvRjNC90LjQutC+0LI=?= 
-        <snordicstr16@gmail.com>
-References: <CACzz7ux8mGT-d5YPWdkvTw5vg4-LKXUUsunL8sJySOeuYd0G1w@mail.gmail.com>
-Cc:     linux-newbie@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, netdev@vger.kernel.org
-From:   Slade Watkins <srw@sladewatkins.net>
-In-Reply-To: <CACzz7ux8mGT-d5YPWdkvTw5vg4-LKXUUsunL8sJySOeuYd0G1w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - premium237.web-hosting.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - sladewatkins.net
-X-Get-Message-Sender-Via: premium237.web-hosting.com: authenticated_id: srw@sladewatkins.net
-X-Authenticated-Sender: premium237.web-hosting.com: srw@sladewatkins.net
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-From-Rewrite: unmodified, already matched
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey there,
+Bagas Sanjaya <bagasdotme@gmail.com> writes:
 
-On 10/5/22 at 9:47 AM, Вячеслав Сальников wrote:
-> Hi.
-> 
-> I apologize if I wrote in the wrong mail list. I have not found
-> linux-netdev for questions
+> On 10/5/22 01:35, Florian Fainelli wrote:
+>> On 10/4/22 03:30, Paolo Abeni wrote:
+>>> On Tue, 2022-10-04 at 09:32 +0200, Casper Andersson wrote:
+>>>> Missing space between "pins'" and "strength"
+>>>>
+>>>> Signed-off-by: Casper Andersson <casper.casan@gmail.com>
+>>>> ---
+>>>
+>>> The merge window has now started (after Linus tagged 6.0)
+>>> and will last until he tags 6.1-rc1 (two weeks from now). During this
+>>> time we'll not be taking any patches for net-next so
+>>> please repost in around 2 weeks.
+>> 
+>> It is a documentation patch, therefore not functionally touching code, maybe that could count as an exception?
+>
+> I think jon will pick up this patch, maybe as -rc-worthy fixes.
 
-I've Cc'd the netdev and stable lists.
+The networking folks prefer to carry their own documentation patches, so
+I don't normally do that.  I'd be happy to this time with a suitable
+ack.
 
-> 
-> I switched from kernel versions 4.9 to 5.15 and found that the MTU on
-> the interfaces in the bridge does not change.
-> For example:
-> I have the following bridge:
-> bridge      interface
-> br0          sw1
->                 sw2
->                 sw3
-> 
-> And I change with ifconfig MTU.
-> I see that br0 sw1..sw3 has changed MTU from 1500 -> 1982.
-> 
-> But if i send a ping through these interfaces, I get 1500(I added
-> prints for output)
-> I investigated the code and found the reason:
-> The following commit came in the new kernel:
-> https://github.com/torvalds/linux/commit/ac6627a28dbfb5d96736544a00c3938fa7ea6dfb
-> 
-> And the behavior of the MTU setting has changed:
->>
->> Kernel 4.9:
->> if (net->ipv4.sysctl_ip_fwd_use_pmtu ||
->>     ip_mtu_locked(dst) ||
->>     !forwarding)  <--- True
->> return dst_mtu(dst) <--- 1982
->>
->>
->> / 'forwarding = true' case should always honour route mtu /
->> mtu = dst_metric_raw(dst, RTAX_MTU);
->> if (mtu)
->> return mtu;
-> 
-> 
-> 
-> Kernel 5.15:
->>
->> if (READ_ONCE(net->ipv4.sysctl_ip_fwd_use_pmtu) ||
->>     ip_mtu_locked(dst) ||
->>     !forwarding) { <--- True
->> mtu = rt->rt_pmtu;  <--- 0
->> if (mtu && time_before(jiffies, rt->dst.expires)) <-- False
->> goto out;
->> }
->>
->> / 'forwarding = true' case should always honour route mtu /
->> mtu = dst_metric_raw(dst, RTAX_MTU); <---- 1500
->> if (mtu) <--- True
->> goto out;
-> 
-> 
-> Why is rt_pmtu now used instead of dst_mtu?
-> Why is forwarding = False called with dst_metric_raw?
-> Maybe we should add processing when mtu = rt->rt_pmtu == 0?
-> Could this be an error?
-> 
+But honestly, there is nothing urgent about this change, I'd say just
+wait until net-next is open.
 
-Cheers,
--srw
-
+jon
