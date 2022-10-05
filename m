@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDB2C5F58F7
-	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 19:18:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CB2A5F58FF
+	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 19:18:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230134AbiJERSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Oct 2022 13:18:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58390 "EHLO
+        id S230289AbiJERSV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Oct 2022 13:18:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229681AbiJERSN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 13:18:13 -0400
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E165726111;
-        Wed,  5 Oct 2022 10:18:10 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id mx8so4474643qvb.8;
-        Wed, 05 Oct 2022 10:18:10 -0700 (PDT)
+        with ESMTP id S230231AbiJERSQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 13:18:16 -0400
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 493953A157;
+        Wed,  5 Oct 2022 10:18:11 -0700 (PDT)
+Received: by mail-qv1-xf2e.google.com with SMTP id i9so7352929qvu.1;
+        Wed, 05 Oct 2022 10:18:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=ZhAUYVqrdKYklNGIsEXG4znDGVspQ80aq1aJ4554Cc0=;
-        b=XVTKmDU0btvmwiJm2tarmHaZXjec2OSoNYPt63uGtSpVIlbgGxxTyuah0+G6y1HLtX
-         F6klWNxyzedwZVUyRj7krLaQ0z3XH/eNh6t40mdbgi2JqaLqp08TDjZgwgKAOuZ8ZjTy
-         WdVkG4C6pdiufVYjfrv6cpVa9Srhw7wXLPU1t60Udf9RcYKsdthZmwqRdllwo02XTdFh
-         gQOHI3iHD4CWkAD94mzYBD5JKRzRMZ5Im1TtdJTLZe1n5l+BJCd2kX0BWb7BlQ/vAbXB
-         +DhBou99kHHwyokw32MDyYQDxqlC+sXs06p/uFEf9SK9ws1mrI0EsuO/RzdMZ1eqzLzr
-         f+0A==
+        bh=Vs/rP4IDV/yKojwamvZ9fmwsEFJF87oNCRi38myhe58=;
+        b=jwaA/ryGa3BWj7GzdeC5+oqAxFxxpksehzr+ELMt+kPKPf9yhDFyTXsqA3DlIQN7Qb
+         Ed0V5AMHHgwT2SfFitIMsoo1T9K/Or2sMvVGHUtb+Ip/FoU+io9euDo7rTEHHhiZa+47
+         n8TB24IddJqTFQ3prk+pfI/zGfIisvu7KCiN1lxYGkyeuLMJ70H+R0/NftOOvWXyeJRH
+         pgipVPN/N0KNK/xF4e9/QCXZLl4fKknk9G9eIZw4jfk9TMBOeeF1p8Dn9lOwH3ZZRUHT
+         oc6csXvAhg5Fp/Nv8ji9wl/e9ICd7zlMITDj/OoQYrlqc50ywuofnK+D9CYVhvaqYM9C
+         CcjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=ZhAUYVqrdKYklNGIsEXG4znDGVspQ80aq1aJ4554Cc0=;
-        b=GUh1NOpC+kRZs96b6VZQyLzlnmxKH8rru88vtKdR09PVpNwMDGAaKLqXzwYgwGT7Ft
-         /hVz5qS0IYqE/fuotrM6EVOIqblN3KG8kkIn1yFRgKggqs6/NdKQZClRTSo8y9tP9h6X
-         zP/FlC40dTwaa/uLfkZjIFeMqwg8U1PfrfxZ9jjrkksGFC4yGZBaWpNk3ZfFcuCL2c1z
-         lXtscKKRvFIrxpUs9OL/rYj3XbGP/bvD2ZNbwI/eubtGKoCiiwRtykAKbMTToIkDUo8q
-         pb66INSct8elNZeFACBty/jdJBGFsLkcOoUVYI67bVCHi0G9dz64XBg3yIURmyrjBL25
-         Uysw==
-X-Gm-Message-State: ACrzQf2JP0b7JrnMEzrHbnEgpvt/tFalXFWRMyU4cKoMWcArWKf+VVBm
-        g9JD11aBGqSRnxyEN3HLPhs6BpFg7WY=
-X-Google-Smtp-Source: AMsMyM5IYwCwEN1mk5GDaZ6ZOVUMnadpOXpI0I2WBqgbWV4iXT2KsktcL7kQ9PlOgCTMzQKL3g9upA==
-X-Received: by 2002:a05:6214:5018:b0:4b1:c2d9:f0a with SMTP id jo24-20020a056214501800b004b1c2d90f0amr615128qvb.45.1664990267095;
-        Wed, 05 Oct 2022 10:17:47 -0700 (PDT)
+        bh=Vs/rP4IDV/yKojwamvZ9fmwsEFJF87oNCRi38myhe58=;
+        b=tmP03Qyww8njw+Jvy45a3fKPKpD3/bSproiYNPUDTwEHZnAEVbUtx06978xe5iGe9l
+         zqyY0K7mGQHX90Y1o+KijbZ3juI/Yip40KY3P9c5TVsS3R+5Oa9zFWQzWT1wj8CRO9fs
+         fHlVbOqJBLULidFW28mFqSPylToQdanXLe7Q6CKB6uBsvLRfO5DAUp2oOBeP+BLwez2Y
+         1WoqGi9tkxw92A0jX+sPIwvxY0ZNF13i+PMaQ2TnbK2v+AfVo33ZXCi78db9n/RHSp0J
+         cq0KLCYksb+fNDS7X0YitWdP458JBdieaGoTYN9vuV55GCniNBB2/VHrbvFIUDmsBA3U
+         BzBw==
+X-Gm-Message-State: ACrzQf0LKGSiKyopiTjQP4glHLXfboDQjlk7qLNXMO3vISa3+uT/9gGr
+        wstidetkb2um5HZuevtuo9fAFMtC1fc=
+X-Google-Smtp-Source: AMsMyM5r/2zJpIbjtabbsuMXMdw+/w9El5wJ7ps4NSmBwrzKGqk0K8nceMKR3GlL9XY5rpvJnZg7qw==
+X-Received: by 2002:a05:6214:c66:b0:4ac:b026:458b with SMTP id t6-20020a0562140c6600b004acb026458bmr666694qvj.20.1664990268939;
+        Wed, 05 Oct 2022 10:17:48 -0700 (PDT)
 Received: from pop-os.attlocal.net ([2600:1700:65a0:ab60:2bd1:c1af:4b3b:4384])
-        by smtp.gmail.com with ESMTPSA id m13-20020ac85b0d000000b003913996dce3sm1764552qtw.6.2022.10.05.10.17.45
+        by smtp.gmail.com with ESMTPSA id m13-20020ac85b0d000000b003913996dce3sm1764552qtw.6.2022.10.05.10.17.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Oct 2022 10:17:46 -0700 (PDT)
+        Wed, 05 Oct 2022 10:17:48 -0700 (PDT)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     yangpeihao@sjtu.edu.cn, toke@redhat.com, jhs@mojatatu.com,
         jiri@resnulli.us, bpf@vger.kernel.org, sdf@google.com,
         Cong Wang <cong.wang@bytedance.com>
-Subject: [RFC Patch v6 4/5] net_sched: Add kfuncs for storing skb
-Date:   Wed,  5 Oct 2022 10:17:08 -0700
-Message-Id: <20221005171709.150520-5-xiyou.wangcong@gmail.com>
+Subject: [RFC Patch v6 5/5] net_sched: Introduce helper bpf_skb_tc_classify()
+Date:   Wed,  5 Oct 2022 10:17:09 -0700
+Message-Id: <20221005171709.150520-6-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221005171709.150520-1-xiyou.wangcong@gmail.com>
 References: <20221005171709.150520-1-xiyou.wangcong@gmail.com>
@@ -73,112 +73,150 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Cong Wang <cong.wang@bytedance.com>
 
+Introduce an eBPF helper function bpf_skb_tc_classify() to reuse exising
+TC filters on *any* Qdisc to classify the skb.
+
 Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
- net/sched/sch_bpf.c | 81 ++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 80 insertions(+), 1 deletion(-)
+ include/uapi/linux/bpf.h |  1 +
+ net/core/filter.c        | 17 +++++++++-
+ net/sched/cls_api.c      | 69 ++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 86 insertions(+), 1 deletion(-)
 
-diff --git a/net/sched/sch_bpf.c b/net/sched/sch_bpf.c
-index 2998d576708d..6850eb8bb574 100644
---- a/net/sched/sch_bpf.c
-+++ b/net/sched/sch_bpf.c
-@@ -15,6 +15,7 @@
- #include <linux/slab.h>
- #include <linux/filter.h>
- #include <linux/bpf.h>
-+#include <linux/btf_ids.h>
- #include <net/netlink.h>
- #include <net/pkt_sched.h>
- #include <net/pkt_cls.h>
-@@ -468,9 +469,87 @@ static struct Qdisc_ops sch_bpf_qdisc_ops __read_mostly = {
- 	.owner		=	THIS_MODULE,
- };
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index c21fd1f189bc..7ed04736c4e4 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -5650,6 +5650,7 @@ union bpf_attr {
+ 	FN(tcp_raw_check_syncookie_ipv6),	\
+ 	FN(ktime_get_tai_ns),		\
+ 	FN(user_ringbuf_drain),		\
++	FN(skb_tc_classify),		\
+ 	/* */
  
-+__diag_push();
-+__diag_ignore_all("-Wmissing-prototypes",
-+		  "Global functions as their definitions will be in vmlinux BTF");
-+
-+/**
-+ * bpf_skb_acquire - Acquire a reference to an skb. An skb acquired by this
-+ * kfunc which is not stored in a map as a kptr, must be released by calling
-+ * bpf_skb_release().
-+ * @p: The skb on which a reference is being acquired.
-+ */
-+__used noinline
-+struct sk_buff *bpf_skb_acquire(struct sk_buff *p)
-+{
-+	return skb_get(p);
-+}
-+
-+/**
-+ * bpf_skb_kptr_get - Acquire a reference on a struct sk_buff kptr. An skb
-+ * kptr acquired by this kfunc which is not subsequently stored in a map, must
-+ * be released by calling bpf_skb_release().
-+ * @pp: A pointer to an skb kptr on which a reference is being acquired.
-+ */
-+__used noinline
-+struct sk_buff *bpf_skb_kptr_get(struct sk_buff **pp)
-+{
-+	struct sk_buff *p;
-+
-+	rcu_read_lock();
-+	p = READ_ONCE(*pp);
-+	if (p && !refcount_inc_not_zero(&p->users))
-+		p = NULL;
-+	rcu_read_unlock();
-+
-+	return p;
-+}
-+
-+/**
-+ * bpf_skb_release - Release the reference acquired on a struct sk_buff *.
-+ * @p: The skb on which a reference is being released.
-+ */
-+__used noinline void bpf_skb_release(struct sk_buff *p)
-+{
-+	consume_skb(p);
-+}
-+
-+__diag_pop();
-+
-+BTF_SET8_START(skb_kfunc_btf_ids)
-+BTF_ID_FLAGS(func, bpf_skb_acquire, KF_ACQUIRE)
-+BTF_ID_FLAGS(func, bpf_skb_kptr_get, KF_ACQUIRE | KF_KPTR_GET | KF_RET_NULL)
-+BTF_ID_FLAGS(func, bpf_skb_release, KF_RELEASE | KF_TRUSTED_ARGS)
-+BTF_SET8_END(skb_kfunc_btf_ids)
-+
-+static const struct btf_kfunc_id_set skb_kfunc_set = {
-+	.owner = THIS_MODULE,
-+	.set   = &skb_kfunc_btf_ids,
-+};
-+
-+BTF_ID_LIST(skb_kfunc_dtor_ids)
-+BTF_ID(struct, sk_buff)
-+BTF_ID(func, bpf_skb_release)
-+
- static int __init sch_bpf_mod_init(void)
- {
--	return register_qdisc(&sch_bpf_qdisc_ops);
-+	int ret;
-+	const struct btf_id_dtor_kfunc skb_kfunc_dtors[] = {
-+		{
-+			.btf_id       = skb_kfunc_dtor_ids[0],
-+			.kfunc_btf_id = skb_kfunc_dtor_ids[1]
-+		},
-+	};
-+
-+	ret = register_btf_kfunc_id_set(BPF_PROG_TYPE_QDISC, &skb_kfunc_set);
-+	if (ret)
-+		return ret;
-+	ret = register_btf_id_dtor_kfuncs(skb_kfunc_dtors,
-+					  ARRAY_SIZE(skb_kfunc_dtors),
-+					  THIS_MODULE);
-+	if (ret == 0)
-+		return register_qdisc(&sch_bpf_qdisc_ops);
-+	return ret;
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 7a271b77a2cc..d1ed60114794 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -7926,6 +7926,21 @@ tc_cls_act_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 	}
  }
  
- static void __exit sch_bpf_mod_exit(void)
++const struct bpf_func_proto bpf_skb_tc_classify_proto __weak;
++
++static const struct bpf_func_proto *
++tc_qdisc_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
++{
++	switch (func_id) {
++#ifdef CONFIG_NET_CLS_ACT
++	case BPF_FUNC_skb_tc_classify:
++		return &bpf_skb_tc_classify_proto;
++#endif
++	default:
++		return tc_cls_act_func_proto(func_id, prog);
++	}
++}
++
+ static const struct bpf_func_proto *
+ xdp_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ {
+@@ -10656,7 +10671,7 @@ const struct bpf_prog_ops tc_cls_act_prog_ops = {
+ };
+ 
+ const struct bpf_verifier_ops tc_qdisc_verifier_ops = {
+-	.get_func_proto		= tc_cls_act_func_proto,
++	.get_func_proto		= tc_qdisc_func_proto,
+ 	.is_valid_access	= tc_cls_act_is_valid_access,
+ 	.convert_ctx_access	= tc_cls_act_convert_ctx_access,
+ 	.gen_prologue		= tc_cls_act_prologue,
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 50566db45949..64470a8947b1 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -22,6 +22,7 @@
+ #include <linux/idr.h>
+ #include <linux/jhash.h>
+ #include <linux/rculist.h>
++#include <linux/filter.h>
+ #include <net/net_namespace.h>
+ #include <net/sock.h>
+ #include <net/netlink.h>
+@@ -1655,6 +1656,74 @@ int tcf_classify(struct sk_buff *skb,
+ }
+ EXPORT_SYMBOL(tcf_classify);
+ 
++#ifdef CONFIG_BPF_SYSCALL
++BPF_CALL_3(bpf_skb_tc_classify, struct sk_buff *, skb, int, ifindex, u32, handle)
++{
++	struct net *net = dev_net(skb->dev);
++	const struct Qdisc_class_ops *cops;
++	struct tcf_result res = {};
++	struct tcf_block *block;
++	struct tcf_chain *chain;
++	struct net_device *dev;
++	unsigned long cl = 0;
++	struct Qdisc *q;
++	int result;
++
++	rcu_read_lock();
++	dev = dev_get_by_index_rcu(net, ifindex);
++	if (!dev)
++		goto out;
++	q = qdisc_lookup_rcu(dev, handle);
++	if (!q)
++		goto out;
++
++	cops = q->ops->cl_ops;
++	if (!cops)
++		goto out;
++	if (!cops->tcf_block)
++		goto out;
++	if (TC_H_MIN(handle)) {
++		cl = cops->find(q, handle);
++		if (cl == 0)
++			goto out;
++	}
++	block = cops->tcf_block(q, cl, NULL);
++	if (!block)
++		goto out;
++
++	for (chain = tcf_get_next_chain(block, NULL);
++	     chain;
++	     chain = tcf_get_next_chain(block, chain)) {
++		struct tcf_proto *tp;
++
++		result = tcf_classify(skb, NULL, tp, &res, false);
++		if (result  >= 0) {
++			switch (result) {
++			case TC_ACT_QUEUED:
++			case TC_ACT_STOLEN:
++			case TC_ACT_TRAP:
++				fallthrough;
++			case TC_ACT_SHOT:
++				rcu_read_unlock();
++				return 0;
++			}
++		}
++	}
++out:
++	rcu_read_unlock();
++	return res.class;
++}
++
++const struct bpf_func_proto bpf_skb_tc_classify_proto = {
++	.func		= bpf_skb_tc_classify,
++	.gpl_only	= false,
++	.ret_type	= RET_INTEGER,
++	.arg1_type	= ARG_PTR_TO_CTX,
++	.arg2_type	= ARG_ANYTHING,
++	.arg3_type	= ARG_ANYTHING,
++};
++#endif
++
+ struct tcf_chain_info {
+ 	struct tcf_proto __rcu **pprev;
+ 	struct tcf_proto __rcu *next;
 -- 
 2.34.1
 
