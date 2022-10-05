@@ -2,134 +2,260 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (unknown [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F2FC5F59C8
-	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 20:21:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB9B05F59D6
+	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 20:25:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229797AbiJESV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Oct 2022 14:21:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39140 "EHLO
+        id S230094AbiJESZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Oct 2022 14:25:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230325AbiJESV0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 14:21:26 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF5E79EED;
-        Wed,  5 Oct 2022 11:21:24 -0700 (PDT)
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1og91F-000Cse-PZ; Wed, 05 Oct 2022 20:21:21 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1og91F-000Ury-DV; Wed, 05 Oct 2022 20:21:21 +0200
-Subject: Re: [PATCH bpf-next 01/10] bpf: Add initial fd-based API to attach tc
- BPF programs
-To:     sdf@google.com
-Cc:     bpf@vger.kernel.org, razor@blackwall.org, ast@kernel.org,
-        andrii@kernel.org, martin.lau@linux.dev, john.fastabend@gmail.com,
-        joannelkoong@gmail.com, memxor@gmail.com, toke@redhat.com,
-        joe@cilium.io, netdev@vger.kernel.org
-References: <20221004231143.19190-1-daniel@iogearbox.net>
- <20221004231143.19190-2-daniel@iogearbox.net> <YzzWDqAmN5DRTupQ@google.com>
- <dd7b7afd-755b-e980-02b1-cfde0dad1236@iogearbox.net>
- <Yz3FW/H06XS5toBo@google.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <768c85a3-d307-28bb-761f-9cda9b414aae@iogearbox.net>
-Date:   Wed, 5 Oct 2022 20:21:20 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <Yz3FW/H06XS5toBo@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        with ESMTP id S229915AbiJESZi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 14:25:38 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB5BD558CB
+        for <netdev@vger.kernel.org>; Wed,  5 Oct 2022 11:25:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1664994337; x=1696530337;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=FoXD9Bd+eppDXnTNd+xxe9O1at7nVFqEJtgo9eHgXYQ=;
+  b=ecr5f5xrQgotFIgSeVYc3+V3LzFVGT5hAqcL1sqsxZXllw1pfagac4aP
+   6NgyJ6aHpCzCNUxj/7DpSzJm8K3dguewk3aGaFQTSxdVkuuNKou0sXVDX
+   jLPq4KIbRxwk80tkuKcV6CMotbFLEOfrNRjh+8b6veIczl2XMTjKhJ2nz
+   vjWY1RiOWhhqs3wqYc7s8G1ZhlbMYh3/o1xRzTXcxSrNTTTloleZqYbZk
+   8utBr/+6w5qOyG+iYc3cgToHCk3kXHG87iman2iFi76st9S9ucopslKiq
+   iP7cmptsyyBJQHJbuAN0067oAuBTqqqQ67HpYh5cYj9ufVDQHgWRVq/OQ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10491"; a="329653866"
+X-IronPort-AV: E=Sophos;i="5.95,161,1661842800"; 
+   d="scan'208";a="329653866"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2022 11:25:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10491"; a="953277081"
+X-IronPort-AV: E=Sophos;i="5.95,161,1661842800"; 
+   d="scan'208";a="953277081"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmsmga005.fm.intel.com with ESMTP; 05 Oct 2022 11:25:37 -0700
+Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 5 Oct 2022 11:25:37 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 5 Oct 2022 11:25:36 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Wed, 5 Oct 2022 11:25:36 -0700
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.49) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Wed, 5 Oct 2022 11:25:36 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oCH+J56HclyCBPtv5lKJm8HH//upAsWZ00gHwZAU0CxiPWqilzoPp79r4553YvWwxu1RttQ/Nha/JJztdbLGvQJ4Y54V0BSydplHS7H54CCPsFKbG+QD574kyhywjJVXbUebDIkGMHj3T/6/cbLPkCT8/gRcbGZ61obu+jPW6XF9/Q/usQQjehUTOSn40PHH95XeOqTZhuY43ujz74BaxYiWD1tZN01No9TYVYvBNT7tZHGTs8mQj5bbvsQGgqulCDyepNN0lM9mPG1lCDnxSgkxwxdK7whyaKIu+oGJLSjGpZ2NrHivHoTnkCUc5N3G6bjj6M179ibQYg0movnotg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pfU4KrUV4d292pw9tBm/sQl9l4O+YB+reiv68lEVNgM=;
+ b=Qt7V8qLhMf4uwmWtFWRPWtSsf0HWgRHW5EZGisLe+YrPmWnK2W/FEfw0m3j/DJW6mw+nWmC31H/6bYKwd/DklADZmziLU+5TE6PXm2ZPb/fWxM3PpbQBSM14T6G5PN1HmhQTjA1o2R2arD9966ymGGbTjWJOInn0KifdxPBx3VQ1T1f0CSRGRHUJRuegBw1ILIUwVP0kiEVK0T7scjJ8B2OCr4ceLUZrNbcniiUyJ+QQBTxogQ46G+01jOZ3bDyx0MBHA/Lzv9/7bweZWBJdOhsUE3tQB2Cs+naETBrGB2F3YgEswJdGAbzM4hgRy9kSl41jPGrMdttAVmMOkRQAeg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CO1PR11MB4914.namprd11.prod.outlook.com (2603:10b6:303:90::24)
+ by SJ0PR11MB5814.namprd11.prod.outlook.com (2603:10b6:a03:423::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.31; Wed, 5 Oct
+ 2022 18:25:34 +0000
+Received: from CO1PR11MB4914.namprd11.prod.outlook.com
+ ([fe80::a3c0:b3ec:db67:58d1]) by CO1PR11MB4914.namprd11.prod.outlook.com
+ ([fe80::a3c0:b3ec:db67:58d1%7]) with mapi id 15.20.5676.032; Wed, 5 Oct 2022
+ 18:25:34 +0000
+Message-ID: <aab58471-096d-db50-36f2-493a14e0e6da@intel.com>
+Date:   Wed, 5 Oct 2022 11:25:32 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.1
+Subject: Re: [next-queue 1/3] i40e: Store the irq number in i40e_q_vector
 Content-Language: en-US
+To:     Joe Damato <jdamato@fastly.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+CC:     <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
+        <kuba@kernel.org>, <davem@davemloft.net>,
+        <anthony.l.nguyen@intel.com>
+References: <1664958703-4224-1-git-send-email-jdamato@fastly.com>
+ <1664958703-4224-2-git-send-email-jdamato@fastly.com>
+ <Yz1chBm4F8vJPkl2@boxer> <20221005170019.GA6629@fastly.com>
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+In-Reply-To: <20221005170019.GA6629@fastly.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26680/Wed Oct  5 09:55:19 2022)
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-ClientProxiedBy: MW4PR04CA0065.namprd04.prod.outlook.com
+ (2603:10b6:303:6b::10) To CO1PR11MB4914.namprd11.prod.outlook.com
+ (2603:10b6:303:90::24)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PR11MB4914:EE_|SJ0PR11MB5814:EE_
+X-MS-Office365-Filtering-Correlation-Id: 66034a32-9bbd-459e-bdb8-08daa6fefe32
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: NRXx0cNQHitf5MY6EvzBh+WAUQnIA8SA8jPJZqSllMjnaw+rmQ5r1fiNjgPRyopb9q+fvqvFPXkmd3UkdJR8HKlX/40q9f2DZ+RIatoFETQBxKU+r6VXWurAChfDR8yMzm4Cv+ZNpOoCSkTTmJNGpBZ2UZDSyqJMJqUItVEsjzbVXlEEc73fLC+D6V3m4ree68c7i6B7P2kkYfrLL3tSBfHJApHXcHUMJR6Mu7nskdNiSGTQby1L98WY/+0X2JAEPy/o0tKFVCFyP+YubiSWVXPSPJe94U37BJLlNitPfeyuv0cSp6++iNzdG6K4Zt7/0PGrPhtRQUWSyMlzr7dx+ndVpyCGfYU5ENidcoWiVaOTobUlDy3h2ZEhGkTne6t31PnH2Rw/ZoaJW2Zrqy76jEkHyXlhLguk4MOCUgcFX1jOqiLjMXcpdvu36xRfmnom1fess7QZbrccaHzW+TVChsIXAu6jUIR+NnycTAUxHF4z9GR9sJ+4qjVzEQkr4UGyAB6QgjmWncrEElXlC5PxDWjMWKcjCVm1Z7iwUtJ1lclVoqI+FsV44+JwkItDkRWmKmUHl/uLmodIG4smddBlLmkSmnnFX4S1acwuBpXgPRukk8ZaDZ7VuIbuq21DMnLOlAg7CroE0kGFI6SS5RT5Z9NegEJjS+rzboekfH7qnKvvQxBnQvOuUYpaIDHXZeSIQDsqI4DjY7eOm3D6PFHCpkUCmN11HkvP4S/TYg8q/TMBHSxtCf0oVvKRYW4gxqPVPJwhjq6EhhqXi0ozj+un6da5cn5j7N989WWL+pKjtG+HBCNPDlrUpyJwGJ4FU+2eQdeGmzFJ2rIRG32mPVUDsg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4914.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(376002)(136003)(366004)(346002)(39860400002)(451199015)(31686004)(8936002)(41300700001)(186003)(83380400001)(2906002)(38100700002)(478600001)(66946007)(6486002)(66476007)(66556008)(107886003)(36756003)(5660300002)(110136005)(6512007)(26005)(2616005)(8676002)(6506007)(31696002)(86362001)(6636002)(316002)(53546011)(4326008)(82960400001)(44832011)(21314003)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YnlDVHV1YkkrbWl6UWMxUThxNnZOYWpkTlc2ZDBzSUx0TVF1S2xqeWlSanF6?=
+ =?utf-8?B?V0E5TkNkVWNuWUVxcHdJdEJzQWwrVjdCRTJqTmJmUi85VEpUVU1mbFU3dnBx?=
+ =?utf-8?B?TjNHSjZJYXlyTTFrTkVUNnR3alVrMGlqZllrNTZZNnNRVTJFY093bmc5RXpL?=
+ =?utf-8?B?bWRvMFR6WnJETlIwaXFzMHp5UzJSUTBMSkNqODZrUVFMaDFsazV0ZGJYUkp2?=
+ =?utf-8?B?ano5RnZGVVV5WUczRFU5eTVGRDF4QVNRczJydGFKV1llYjVOOXhVNXBrMnhE?=
+ =?utf-8?B?dU9URGtjbVdHOGkrdmdnOUZZUURvUGJIVUJpbWNSbkdnazFIUFhuK3JXajhI?=
+ =?utf-8?B?YTNTRWkyRWdqZ1FMeWxKVmxjdGltRmtKdE54cnpDV01zL3BITUxUUGpKQ1lD?=
+ =?utf-8?B?U1pGYkQ2OUJiSmJET1dwblN6aFlmRzJjL3pPSGJTNjJ0VTdMNTBnRURrcjNx?=
+ =?utf-8?B?TnlqOU9jY1VEVythRkU0VjhpN3JndXVBZU1FNi9wR1J4a2p2YWVYMWppbWVS?=
+ =?utf-8?B?bHZOSHFwWC9pc2V2Slo5RXBWWWtEN1BxZ2p6Wjl4b3g1ZVkxT2hWaS9rMWgy?=
+ =?utf-8?B?STlTTzJoUDh0NnhPQ0dNTmhySkhmYlJyY2VoaXl6RDkxVDQ5R25VYnUxeUxX?=
+ =?utf-8?B?dzYwRU8yZzZjMW54Tng0V0xSRCtxWWhFcGhxcFpLWmVpbU9SSTc2R3BLeFdE?=
+ =?utf-8?B?MWloVHVJYzR6NkM3dWt3bVM4VW9wWUF5WWhKMlJHNEhyckJ0UlUxTGl5THFJ?=
+ =?utf-8?B?S3lZT2VFT081elkzaVYzYW1SVUdxRHZzancyNklPNHp0dW9lR1V1bTAwVnhR?=
+ =?utf-8?B?UVNWWkxkeFdLV25JWEthOWRBVVVHOTg4cGFHTC92UFZGYUFCd2VFY1MreXFI?=
+ =?utf-8?B?cjJRKzZIWndmQjJUNXhOdFZaUmZrNTh5bmMxK29TNmZjQ3o4TzhNeDdNbkts?=
+ =?utf-8?B?WmZ3NXo1eHUyVlpVaFpPSEt5K1FpTjB5aDBCcXg0RWNscTkrNFVvNVpseGw0?=
+ =?utf-8?B?Znh2RW5yL1cwait5Wi9Md3BMYmprdmh5aHhMYms5Q2d6cXA2TXh1MmViSUNl?=
+ =?utf-8?B?Y0JtZ0tOTzJxa3oyMXdGanNOcmhrZEp3NEVqdnhqSk5pU29pc05XMjZzWDcw?=
+ =?utf-8?B?dnJYeXBQOWE3V01QU0FvZGNVUzViNCswck5jamd6SHFpOUtZY0dsQkF3YTQ5?=
+ =?utf-8?B?VGJXdk5xNXNBOGVTb05nVFhjZWE4K0dhNGplZ1p4QU0yRHhqV1FEUEwwaVBo?=
+ =?utf-8?B?TFJiSHhPd1RWdEF5SlhjU3ZtK0daRlhGZXFDSjVrVUZGUGFmWmhJVUVyaFpP?=
+ =?utf-8?B?SlNTZ3pMbXN3QncyUGs3dG5pWkFtSjk2REREUnVtMmRnYUFuSlNlWWRBb2hw?=
+ =?utf-8?B?UU9ORm1GWVlLSHRLaHMybHBVVU1EYlhrS1hOV0twZGhHQ0J2UmdTU3h2bjh2?=
+ =?utf-8?B?Um5INm9CWFdMQ1RMK0M0V09ZT1Y2SWprRlNHQnV0MHRtTldDdEp5aUpGeStQ?=
+ =?utf-8?B?UkdNVkpMKytnM05TNzNMeWlpL2J6NDFWdDNmbENMcHhnVjJoNkUwK3hZWGpE?=
+ =?utf-8?B?WDVTWWJhSUljSHhIbklJL1F5R0t2NnNDanJpVDkrV3FwTlBrcVBkb0hQUlI2?=
+ =?utf-8?B?N2g0cHJwOUtJUERuelRwZGtuTFlSOUVnUENVQ09KMDJOdXN2THlqTkFuYmV4?=
+ =?utf-8?B?d3l5WG4yQlBRWWluSTZHNjNSdnVLRmJ6WTVMUmFBRlJIK1ZJbmRNUjJ2NVB3?=
+ =?utf-8?B?bmcxbnp5ZFEzcVNvZktIL3JVUTRqaEJYRHpSbkpXVDJPLytWLzBqYm5YSmtj?=
+ =?utf-8?B?ZFZ3RXl5clp4dnhWKzdIL1FMUXpDYUN6QTBJSDEvNmtlVlFEVDhzV3h0SW8y?=
+ =?utf-8?B?a3BSTitXSEJPbGcrWHVjalJKSUZ1TDBJQk1FTDZCR2pERHpjd1dqdTcwWjVz?=
+ =?utf-8?B?K0pRMjN2TkkrYnRKekNFR3hnVGhhNXNqNHNDM3FuSlJ4dml2VlNHUzJqZnZ3?=
+ =?utf-8?B?Z2hFYXZHL0xCWlQ3c0huaHB3eDB0WW1saWNzeURMd1IxVEFNYUJycnEwb0RX?=
+ =?utf-8?B?V3hFQlIrUWRwUzBxZ0NZamMySlZHbDd1cXhGa2grdjFzSHpLcHhQbVA2MEQ5?=
+ =?utf-8?B?Z0N3M0hpZWJocXBWQjN3Y09NYzFiVDJtdmdaaUNmb0Q0YXZLVFFMVW81YXNh?=
+ =?utf-8?B?UFE9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 66034a32-9bbd-459e-bdb8-08daa6fefe32
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4914.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Oct 2022 18:25:34.4082
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: g0/3lcrL/v5mwbwZukMSCYFHs6UyPBq7OmlsrIcB9nT0wXvx+XRGH67UfCMNNV3BiLR058NiH6SmkFc/4wu/AkWiV2j0lGFhhiD5SNTm4f8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5814
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-8.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/5/22 7:56 PM, sdf@google.com wrote:
-> On 10/05, Daniel Borkmann wrote:
->> On 10/5/22 2:55 AM, sdf@google.com wrote:
->> > On 10/05, Daniel Borkmann wrote:
->> [...]
->> >
->> > The series looks exciting, haven't had a chance to look deeply, will try
->> > to find some time this week.
+On 10/5/2022 10:00 AM, Joe Damato wrote:
+> On Wed, Oct 05, 2022 at 12:29:24PM +0200, Maciej Fijalkowski wrote:
+>> On Wed, Oct 05, 2022 at 01:31:41AM -0700, Joe Damato wrote:
+>>> Make it easy to figure out the IRQ number for a particular i40e_q_vector by
+>>> storing the assigned IRQ in the structure itself.
+>>>
+>>> Signed-off-by: Joe Damato <jdamato@fastly.com>
+>>> ---
+>>>   drivers/net/ethernet/intel/i40e/i40e.h      | 1 +
+>>>   drivers/net/ethernet/intel/i40e/i40e_main.c | 1 +
+>>>   2 files changed, 2 insertions(+)
+>>>
+>>> diff --git a/drivers/net/ethernet/intel/i40e/i40e.h b/drivers/net/ethernet/intel/i40e/i40e.h
+>>> index 9926c4e..8e1f395 100644
+>>> --- a/drivers/net/ethernet/intel/i40e/i40e.h
+>>> +++ b/drivers/net/ethernet/intel/i40e/i40e.h
+>>> @@ -992,6 +992,7 @@ struct i40e_q_vector {
+>>>   	struct rcu_head rcu;	/* to avoid race with update stats on free */
+>>>   	char name[I40E_INT_NAME_STR_LEN];
+>>>   	bool arm_wb_state;
+>>> +	int irq_num;		/* IRQ assigned to this q_vector */
+>>
+>> This struct looks like a mess in terms of members order. Can you check
+>> with pahole how your patch affects the layout of it? Maybe while at it you
+>> could pack it in a better way?
 > 
->> Great, thanks!
-> 
->> > We've chatted briefly about priority during the talk, let's maybe discuss
->> > it here more?
->> >
->> > I, as a user, still really have no clue about what priority to use.
->> > We have this problem at tc, and we'll seemingly have the same problem
->> > here? I guess it's even more relevant in k8s because internally at G we
->> > can control the users.
->> >
->> > Is it worth at least trying to provide some default bands / guidance?
->> >
->> > For example, having SEC('tc/ingress') receive attach_priority=124 by
->> > default? Maybe we can even have something like 'tc/ingress_first' get
->> > attach_priority=1 and 'tc/ingress_last' with attach_priority=254?
->> > (the names are arbitrary, we can do something better)
->> >
->> > ingress_first/ingress_last can be used by some monitoring jobs. The rest
->> > can use default 124. If somebody really needs a custom priority, then they
->> > can manually use something around 124/2 if they need to trigger before the
->> > 'default' priority or 124+124/2 if they want to trigger after?
->> >
->> > Thoughts? Is it worth it? Do we care?
-> 
->> I think guidance is needed, yes, I can add a few paragraphs to the libbpf
->> header file where we also have the tc BPF link API. I had a brief discussion
->> around this also with developers from datadog as they also use the infra
->> via tc BPF. Overall, its a hard problem, and I don't think there's a good
->> generic solution. The '*_last' is implied by prio=0, so that kernel auto-
->> allocates it, and for libbpf we could add an API for it where the user
->> does not need to specify prio specifically. The 'appending' is reasonable
->> to me given if an application explicitly requests to be added as first
->> (and e.g. enforces policy through tc BPF), but some other 3rd party application
->> prepends itself as first, it can bypass the former, which would be too easy
->> to shoot yourself in the foot. Overall the issue in tc land is that ordering
->> matters, skb packet data could be mangled (e.g. IPs NATed), skb fields can
->> be mangled, and we can have redirect actions (dev A vs. B); the only way I'd
->> see were this is possible if somewhat verifier can annotate the prog when
->> it didn't observe any writes to skb, and no redirect was in play. Then you've
->> kind of replicated the constraints similar to tracing where the attachment
->> can say that ordering doesn't matter if all the progs are in same style.
->> Otherwise, explicit corporation is needed as is today with rest of tc (or
->> as Toke did in libxdp) with multi-attach. In the specific case I mentioned
->> at LPC, it can be made to work given one of the two is only observing traffic
->> at the layer, e.g. it could get prepended if there is guarantee that all
->> return codes are tc_act_unspec so that there is no bypass and then you'll
->> see all traffic or appended to see only traffic which made it past the
->> policy. So it all depends on the applications installing programs, but to
->> solve it generically is not possible given ordering and conflicting actions.
->> So, imho, an _append() API for libbpf can be added along with guidance for
->> developers when to use _append() vs explicit prio.
-> 
-> Agreed, it's a hard problem to solve, especially from the kernel side.
-> Ideally, as Toke mentions on the side thread, there should be some kind
-> of system daemon or some other place where the ordering is described.
-> But let's start with at least some guidance on the current prio.
-> 
-> Might be also a good idea to narrow down the prio range to 0-65k for
-> now? Maybe in the future we'll have some special PRIO_MONITORING_BEFORE_ALL
-> and PRIO_MONITORING_AFTER_ALL that trigger regardless of TC_ACT_UNSPEC?
-> I agree with Toke that it's another problem with the current action based
-> chains that's worth solving somehow (compared to, say, cgroup programs).
+> OK, sure. I used pahole and asked it to reorganize the struct members,
+> which saves 24 bytes.
 
-Makes sense, I'll restrict the range so there's headroom for future
-extensions, the mentioned 0-65k looks very reasonable to me.
+Hi Joe, thanks for your patches,
 
-Thanks,
-Daniel
+Saving 24 bytes is admirable, but these structures are generally 
+optimized in access pattern order (most used at the top) and not so much 
+for "packing efficiency" especially since it has that alignment 
+directive at the bottom which causes each struct to start at it's own 
+cacheline anyway.
+
+
+> 
+> I'll update this commit to include the following reorganization in the v2 of
+> this set:
+> 
+> $ pahole -R -C i40e_q_vector i40e.ko
+> 
+> struct i40e_q_vector {
+> 	struct i40e_vsi *          vsi;                  /*     0     8 */
+> 	u16                        v_idx;                /*     8     2 */
+> 	u16                        reg_idx;              /*    10     2 */
+> 	u8                         num_ringpairs;        /*    12     1 */
+> 	u8                         itr_countdown;        /*    13     1 */
+> 	bool                       arm_wb_state;         /*    14     1 */
+> 
+> 	/* XXX 1 byte hole, try to pack */
+> 
+> 	struct napi_struct         napi;                 /*    16   400 */
+> 	/* --- cacheline 6 boundary (384 bytes) was 32 bytes ago --- */
+> 	struct i40e_ring_container rx;                   /*   416    32 */
+> 	/* --- cacheline 7 boundary (448 bytes) --- */
+> 	struct i40e_ring_container tx;                   /*   448    32 */
+> 	cpumask_t                  affinity_mask;        /*   480    24 */
+> 	struct irq_affinity_notify affinity_notify;      /*   504    56 */
+> 	/* --- cacheline 8 boundary (512 bytes) was 48 bytes ago --- */
+> 	struct callback_head       rcu;                  /*   560    16 */
+> 	/* --- cacheline 9 boundary (576 bytes) --- */
+> 	char                       name[32];             /*   576    32 */
+> 
+> 	/* XXX 4 bytes hole, try to pack */
+> 
+> 	int                        irq_num;              /*   612     4 */
+
+The right spot for this debug item is at the end of the struct, so that 
+part is good.
+
+> 
+> 	/* size: 616, cachelines: 10, members: 14 */
+> 	/* sum members: 611, holes: 2, sum holes: 5 */
+> 	/* last cacheline: 40 bytes */
+> };   /* saved 24 bytes! */
+
+I'd prefer it if you don't do two things at once in a single patch (add 
+members / reorganize).
+
+I know Maciej said this is a mess and I kind of agree with him, but I'm 
+not sure it's a priority for your patch set to fix it now, especially 
+since you're trying to add a debugging assist, and not performance 
+tuning the code.
+
+If you're really wanting to reorganize these structs I'd prefer a bit 
+more diligent effort to prove no inadvertent side effects (like maybe by 
+turning up the interrupt rate and looking at perf data while receiving 
+512 byte packets. The rate should remain the same (or better) and the 
+number of cache misses on these structs should remain roughly the same. 
+Maybe a seperate patch series?
+
+Jesse
