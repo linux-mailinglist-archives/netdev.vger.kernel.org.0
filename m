@@ -2,73 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 018B75F5838
+	by mail.lfdr.de (Postfix) with ESMTP id 766585F5836
 	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 18:18:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229783AbiJEQSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Oct 2022 12:18:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55434 "EHLO
+        id S229808AbiJEQSO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Oct 2022 12:18:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229976AbiJEQSL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 12:18:11 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B838858147;
-        Wed,  5 Oct 2022 09:18:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1664986690; x=1696522690;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=UYfHvpCRI1zbJ4zp2KlFrLkB1BDaE2lezmw/BQ7Cz3Y=;
-  b=FEzsoqtdkkBwKdsYM4cMLmM3jy1c9fhrfm1BkcFGOElYOGLbOe16ps0H
-   3hwdbzUk5s7dcw1991txdHDptrES8msg5RSKJn6SyF0h7My7w5KMy6T93
-   e0oMdYRnUHXIy316Bys0+TG5MSe9qqCbt8pYPbOXbFf8uEjkinbdPaLCw
-   6kVr8Bvytz5yhQnH8ZfeQhR/y3Im8knCmlK1ksESqmiQPQ3q9wuKJa7lU
-   rhI/OtWM0Bv3a1gBKfPEXnpsVrRt6qWnw8/sgELleIOBbu9wMo0Kik+Zy
-   SlUUg1x0SHqWLQmr2UyJd/Ggt0sZGYn+GkN51Uyetp941vzBdjdGNMJSp
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10491"; a="290445161"
-X-IronPort-AV: E=Sophos;i="5.95,161,1661842800"; 
-   d="scan'208";a="290445161"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2022 09:18:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10491"; a="687018947"
-X-IronPort-AV: E=Sophos;i="5.95,161,1661842800"; 
-   d="scan'208";a="687018947"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga008.fm.intel.com with ESMTP; 05 Oct 2022 09:18:08 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 295GI70t014090;
-        Wed, 5 Oct 2022 17:18:08 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        xdp-hints@xdp-project.net
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Subject: XDP Workshop @ Netdev 0x16 -- send me your topics
-Date:   Wed,  5 Oct 2022 18:15:12 +0200
-Message-Id: <20221005161511.55553-1-olek@lass.die.banner.fliegen>
-X-Mailer: git-send-email 2.37.3
+        with ESMTP id S229926AbiJEQSK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 12:18:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F10B043E70;
+        Wed,  5 Oct 2022 09:18:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C4ADE61756;
+        Wed,  5 Oct 2022 16:18:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9AF3C433C1;
+        Wed,  5 Oct 2022 16:18:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664986683;
+        bh=jTFSY/LXZitt+tjuL1epWeJ5HqwW2iI22Nd4jOlij0w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=N9b5dxaxaXLu75NUUrJyaLYNYJiPDXNztIT+lfhNH0q5ScL9Ogw//ZeXbtE6/zUlZ
+         vFN4n/JT4i8phmzEimBYkzU58rHNBfYLIizjtoxGFA0KDI/mPCKTh4L1ShJwbcRd7J
+         RxTZiYFxzmsl0uXyhKAkrtmycf7UivyMLG+M9rN2S8UbgdxLExwnHAfNkjf4v3lcZ+
+         ObVWimCrrrf1Ar3EbrPWAKIZqUAZub1eEwsW/G9XFkOVGNahKiThDwmWHZa57hSK0k
+         v7FsNfzsxlVoFz1H6BMqX0fuSiUBFM8UWhPzAyH4zA8JOHGBD/h5Dk5QAgkwTq6Ztl
+         oxLmrbr/rmhsA==
+Date:   Wed, 5 Oct 2022 09:18:01 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     Daniel Xu <dxu@dxuuu.xyz>,
+        Martin KaFai Lau <martin.lau@kernel.org>,
+        bpf@vger.kernel.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: WARN: multiple IDs found for 'nf_conn': 92168, 117897 - using
+ 92168
+Message-ID: <20221005091801.38cc8732@kernel.org>
+In-Reply-To: <20221005084442.48cb27f1@kernel.org>
+References: <20221003190545.6b7c7aba@kernel.org>
+        <20221003214941.6f6ea10d@kernel.org>
+        <YzvV0CFSi9KvXVlG@krava>
+        <20221004072522.319cd826@kernel.org>
+        <Yz1SSlzZQhVtl1oS@krava>
+        <20221005084442.48cb27f1@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(pls ignore if you ignore Netdevs)
+On Wed, 5 Oct 2022 08:44:42 -0700 Jakub Kicinski wrote:
+> Hm, I was compiling Linus's tree not linux-next.
+> Let me try linux-next right now.
+> 
+> Did you use the 8.5 gcc (which I believe is what comes with 
+> CentOS Stream)?  I only see it there.
 
-Hey,
+Yeah, it's there on linux-next, too.
 
-I'm open for topics/ideas/propos/.* for the XDP Workshop at Netdev
-0x16 (Lisbon, 24-28 Oct 2022, workshop is on 25th, 9 AM WEST), the
-crazier the better. I have some stuff written down already, also
-will publish the agenda on some open resource soon.
-
-Thanks,
-Olek
+Let me grab a fresh VM and try there. Maybe it's my system. Somehow.
