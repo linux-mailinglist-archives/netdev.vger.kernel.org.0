@@ -2,97 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C4E725F4FD3
-	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 08:37:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0DD55F502A
+	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 09:10:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229588AbiJEGhD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Oct 2022 02:37:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36104 "EHLO
+        id S229445AbiJEHKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Oct 2022 03:10:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbiJEGhC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 02:37:02 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1219A606AD
-        for <netdev@vger.kernel.org>; Tue,  4 Oct 2022 23:36:56 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1ofy1N-0005gv-M4; Wed, 05 Oct 2022 08:36:45 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1ofy1M-0005Dz-09; Wed, 05 Oct 2022 08:36:44 +0200
-Date:   Wed, 5 Oct 2022 08:36:43 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229514AbiJEHJ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 03:09:58 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDB11CE3A
+        for <netdev@vger.kernel.org>; Wed,  5 Oct 2022 00:09:55 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id f9-20020a25b089000000b006be298e2a8dso4250036ybj.20
+        for <netdev@vger.kernel.org>; Wed, 05 Oct 2022 00:09:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date;
+        bh=0kv7LZbwVvvTCY0FDOB7BWqbGQ4uCTTTGBzanUoZ/5c=;
+        b=FxjCN8MEoO/P7TtrDCci6qecuNe+mYvoZwwIqXh+ZFVTP9pYumPENqeRRVX1V57FGt
+         VmIhuBShQ85+xuhfo0OJnvaY6jh6xm1uotVlGCTndMdcs7UCmW1WAr0h4F70uMgWMuHH
+         k3Nk+0Q+JLMBV1jELcfeZ78+i74EuDU/xV6DFKsThsGjRsnecnMWhQS44hlzs+JMVg8x
+         9C6f7nQYTmLbYrhnzMUnkSV/gp2YYiGbRQULv4uG6DMgfHXzMUFsn/AVzv7c/JJdPDPv
+         L818cWJ9KOkXTuoXzFyaVhbpFcknI8CnlKiAI7vw+KTQPs6JtDBYUwqXOMHPg2V1MIwK
+         mMMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=0kv7LZbwVvvTCY0FDOB7BWqbGQ4uCTTTGBzanUoZ/5c=;
+        b=WvFWQsSEKA5WsFTSSqXBLsXeEotIr5KmKIZOMCYDdJZlsxExTvpXVyyGFI9Iz8Mraw
+         cEWwUNUY5C2YmBDC/Hh5JdRY01XPkfCIiAAbvLeQPn3/zJUySOrqIPNKWACERGllFOY6
+         DOmxWP+zXiB4BuZQWwuA/ZXSuihd41rJBi/DJY3KGNJNMSjVQf46SDHfTnV0Az/OokwU
+         n2RwUiYUiB5EAL2nGHmeeQurRb7RNy5Y8in+PSw/VgxxgmOQXp+kfPe5n4SnoXNnDrwB
+         nEqemyjgnDa79prcMgmH5T8SAkwY+ByqkOO2dXgMpHGGsurWEbLmq09NqEj+HIGg0HGD
+         6fYg==
+X-Gm-Message-State: ACrzQf3borjnbqKhnWuNDPjJwlsWKtu/Ko262MZtW4Bt1jxat7aLMftA
+        uDqaq2kBniwoFKa0XelNDNz6XPrl7O6x
+X-Google-Smtp-Source: AMsMyM5G6SbVAJC0wRlFyL/5sIT96s+VNQjdmgANHz/PRa0/bVmVUatteDEjIeuOfCNl1UZWWA+w/88KYR5e
+X-Received: from apusaka-p920.tpe.corp.google.com ([2401:fa00:1:17:499:ff69:2084:388d])
+ (user=apusaka job=sendgmr) by 2002:a05:6902:1083:b0:6b1:4a11:9cf5 with SMTP
+ id v3-20020a056902108300b006b14a119cf5mr29727673ybu.537.1664953794404; Wed,
+ 05 Oct 2022 00:09:54 -0700 (PDT)
+Date:   Wed,  5 Oct 2022 15:09:47 +0800
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.38.0.rc1.362.ged0d419d3c-goog
+Message-ID: <20221005150934.1.Ife932473db2eec6f0bc54226c3328e5fa8c5f97b@changeid>
+Subject: [PATCH] Bluetooth: hci_sync: cancel cmd_timer if hci_open failed
+From:   Archie Pusaka <apusaka@google.com>
+To:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>
+Cc:     CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        Abhishek Pandit-Subedi <abhishekpandit@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: pse-pd: PSE_REGULATOR should depend on REGULATOR
-Message-ID: <20221005063643.GB14757@pengutronix.de>
-References: <709caac8873ff2a8b72b92091429be7c1a939959.1664900558.git.geert+renesas@glider.be>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <709caac8873ff2a8b72b92091429be7c1a939959.1664900558.git.geert+renesas@glider.be>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 04, 2022 at 06:23:53PM +0200, Geert Uytterhoeven wrote:
-> The Regulator based PSE controller driver relies on regulator support to
-> be enabled.  If regulator support is disabled, it will still compile
-> fine, but won't operate correctly.
-> 
-> Hence add a dependency on REGULATOR, to prevent asking the user about
-> this driver when configuring a kernel without regulator support.
-> 
-> Fixes: 66741b4e94ca7bb1 ("net: pse-pd: add regulator based PSE driver")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+From: Archie Pusaka <apusaka@chromium.org>
 
-Reviewed-by: Oleksij Rempel <o.rempel@pengutronix.de>
+If a command is already sent, we take care of freeing it, but we
+also need to cancel the timeout as well.
 
-Thank you!
+Signed-off-by: Archie Pusaka <apusaka@chromium.org>
+Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@google.com>
 
-> ---
->  drivers/net/pse-pd/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/pse-pd/Kconfig b/drivers/net/pse-pd/Kconfig
-> index 73d163704068ac27..687dec49c1e13fa0 100644
-> --- a/drivers/net/pse-pd/Kconfig
-> +++ b/drivers/net/pse-pd/Kconfig
-> @@ -14,6 +14,7 @@ if PSE_CONTROLLER
->  
->  config PSE_REGULATOR
->  	tristate "Regulator based PSE controller"
-> +	depends on REGULATOR || COMPILE_TEST
->  	help
->  	  This module provides support for simple regulator based Ethernet Power
->  	  Sourcing Equipment without automatic classification support. For
-> -- 
-> 2.25.1
-> 
-> 
+---
 
+ net/bluetooth/hci_sync.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+index 76c3107c9f91..a011065220e4 100644
+--- a/net/bluetooth/hci_sync.c
++++ b/net/bluetooth/hci_sync.c
+@@ -4696,6 +4696,7 @@ int hci_dev_open_sync(struct hci_dev *hdev)
+ 			hdev->flush(hdev);
+ 
+ 		if (hdev->sent_cmd) {
++			cancel_delayed_work_sync(&hdev->cmd_timer);
+ 			kfree_skb(hdev->sent_cmd);
+ 			hdev->sent_cmd = NULL;
+ 		}
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.38.0.rc1.362.ged0d419d3c-goog
+
