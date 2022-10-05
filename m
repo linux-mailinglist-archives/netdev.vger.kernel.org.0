@@ -2,291 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59ECF5F528C
-	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 12:27:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE9AE5F528E
+	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 12:29:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229477AbiJEK1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Oct 2022 06:27:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33160 "EHLO
+        id S229516AbiJEK3P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Oct 2022 06:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiJEK1p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 06:27:45 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF425004C
-        for <netdev@vger.kernel.org>; Wed,  5 Oct 2022 03:27:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1664965664; x=1696501664;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=yhvj4iauZC2g7vyGiVueCm/BtGPavzt5JF3xNT5HlSU=;
-  b=fv6Vzsu0hLsQfnR5nv/SGFIWXVyjpetT+QMIQtynTdLBr4W1VvmFzABb
-   wyPRCIKMC3Y0sMabuH+7TD9egn/VbdC+uAxj2oeiOz4TdRVcTAKrcjAkP
-   Xqwmu0/BGQO/fDtxbs4h8UFiEz9i/wuteIQnOD374kxO94ttSVMXsPdYU
-   k9NYYWgyYKXOKxv/qZ+MdTk4Stku0xwHogkdUuFvJWpOs7hnK2EfuFgba
-   D5UKsewFaEic5IZ9jLQHLO9sGshVtdC3ri9XCyQxRj1RZr5PsBYV0U6aV
-   sxqi9q0lnirFYV5qWyepDhcOMK1O0r6swyMoQ2w1sWopExBEOC9pJtAHY
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10490"; a="283496013"
-X-IronPort-AV: E=Sophos;i="5.95,159,1661842800"; 
-   d="scan'208";a="283496013"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2022 03:27:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10490"; a="575365143"
-X-IronPort-AV: E=Sophos;i="5.95,159,1661842800"; 
-   d="scan'208";a="575365143"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by orsmga003.jf.intel.com with ESMTP; 05 Oct 2022 03:27:43 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 5 Oct 2022 03:27:43 -0700
-Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 5 Oct 2022 03:27:42 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Wed, 5 Oct 2022 03:27:42 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.42) by
- edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Wed, 5 Oct 2022 03:27:42 -0700
+        with ESMTP id S229450AbiJEK3O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 06:29:14 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2040.outbound.protection.outlook.com [40.107.92.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3085004C
+        for <netdev@vger.kernel.org>; Wed,  5 Oct 2022 03:29:13 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Vk8+5AEzJanCzTwc91U4RPKMDfNdi8ipJM3nS78kxmrMRuO1/XS7JT495KqGcjFdb7nkQfplLPimbvHRmeDOKitclTt4NBsJMfVHvSueeFBlIJcujNVd86HdshcYcCQ5g+RDFT0+hSnw/mIAj+tUTqfUxRHWiJkp7cshUHlhqOZ4CDx80bq34xqC4xXSlaF+XKJoCG5yRKgZBhYTYfrnUx5fHgwRbWsvEz5I1xKrWjGNoWtDwMs3h7ZyfsTwDLTkxPt+dBkIzeWCmBUdZFuAqi4GEa66hKwkXDuiJayYVGgHytwur4UQWYB25RmEJclu0lcyuWmF15XxcAZhZmWL9Q==
+ b=nwkATPtTNGu3PducEFMNkgbju6dvl2V5vy/ZcedYyhvLCUm/+EC9A0h0EsOVq42EB70jiPBuYlQx5Bve2wOHFRNQe8gLn+uueEV9JG4IXUV/y+qvMCxfiUtQfv6DNV0LLPG2ANuj5RONoXR/ZNoyp5+QmXXAJo423kV4htNrmdIA6itgwKrL2VT1uhFJitDuWmVxwVhzn01wOCz/DE5qGChoMt2y7MFVP9lCxM5MUIe9lJoA30n3+zblduiLWnz/yZ6sCSFeOOZ4lieBieVHuTHhMF5Q0cSgbn/cSo2vkOmbeyaF0NaX0q5aigeXUvhuVCTteUGjJEG05sSfGOCr4w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iL6wlWh0ZvJs0btMI0NgnmMLKRQuU7w4z4ei0z38BUA=;
- b=MnBcUIlkfGO//z6KXSj5CxAmwb5Z7frg9HHOzcK3Fg5rsyzXMKzS48/S/ZD/b4/2EQEeu4Nccmjfgwljw7vH3ex0doZbkdnvBy3uYFJmw9a13iVFYRRM6irwr8oexCyQ+8u+cDFMVrnZzSxLzKvgbZmhbFlqKewkJ6ozZ7XPNVK7KxHMiHNlLSK59MocbBkvr7zTPtDuv/0vNU7H6tLtEL060OvK4Tv0Lyn+2HW+UNWvxHAqZb6bO0T4nxmZHHTpNQToFn8isMvnqyBVMsuIj/o2diHJByd7VFEZ9YtuqYEob/vsJV75iSVYpS9okW+V0m6hG6ND/ySl/aSzePuZVg==
+ bh=VsHXqevA5s7mVLGqpfKfKECr8qBlQXee1hGcCAvao0M=;
+ b=VLmktR3Loe5Qf3ZZGpgaEQQEqF6JkRCpUuXosOG7xd7BK2A3ashHV49hA30DOIW1VCK/yMbLcy7xxcnTzHxUlqwgZwvBeN17AYTgNi7ZolPBT9wOKikJZNZQXiGfU77C0EGFdInGUO4Rx6wKqhfqVLBcRm9EsKlryCk9nF3CMi0AdZc6oN1PzrA/088xhqy+xPcDLHfGrsJh61MhPvusOpU57nHD4INv+ZD+2FuU7qOxjCu18TYYLMEdSEo1GfyqDW/bhLyJbueyxBcPpT3wTbZA3zrlJkozbk3H7EIz8szroM3zCln2NglNLmkIETK3Nk7Rf3LU00P5d7M42bS+2A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM4PR11MB6117.namprd11.prod.outlook.com (2603:10b6:8:b3::19) by
- IA1PR11MB6097.namprd11.prod.outlook.com (2603:10b6:208:3d7::17) with
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VsHXqevA5s7mVLGqpfKfKECr8qBlQXee1hGcCAvao0M=;
+ b=KWzusdqp02EKqjCbXKGo+7k5a/53VBdSvbQgTl3nYgTsFoo2Lx/7orrkObpVVg/0LZrZGM9IyZsveAdWdaLmrD3lOj9Qbhhr1VJlmduJ5703nCM/FUMWy2+PiL6oKtUzYzPm7/478+W0BTcPJis5W6LJRBUBnnvhWin46QxysTMTGuqj7dgfiNhem1BBeBoYtZR4VzA3CAoe94WV8C8S8CR74rJs2/9qnKLGHHRMma1oWVgb1b6K/j9tO3f7YS5wYhB7XFp3kl2vkNkm1dyo4zSOZLrAce1SQc8xiFWB3N7R6ILajovefsrZt9NFw+Eg8UAI+iE/Zp18Wxs8hcDV+Q==
+Received: from PH0PR12MB5481.namprd12.prod.outlook.com (2603:10b6:510:d4::15)
+ by BY5PR12MB5015.namprd12.prod.outlook.com (2603:10b6:a03:1db::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.28; Wed, 5 Oct
- 2022 10:27:41 +0000
-Received: from DM4PR11MB6117.namprd11.prod.outlook.com
- ([fe80::6ae9:91fd:f3e0:7923]) by DM4PR11MB6117.namprd11.prod.outlook.com
- ([fe80::6ae9:91fd:f3e0:7923%4]) with mapi id 15.20.5676.028; Wed, 5 Oct 2022
- 10:27:41 +0000
-Date:   Wed, 5 Oct 2022 12:27:30 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Joe Damato <jdamato@fastly.com>
-CC:     <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
-        <kuba@kernel.org>, <davem@davemloft.net>,
-        <anthony.l.nguyen@intel.com>, <jesse.brandeburg@intel.com>
-Subject: Re: [next-queue 3/3] i40e: Add i40e_napi_poll tracepoint
-Message-ID: <Yz1cEtPLzbPkBCtV@boxer>
-References: <1664958703-4224-1-git-send-email-jdamato@fastly.com>
- <1664958703-4224-4-git-send-email-jdamato@fastly.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.24; Wed, 5 Oct
+ 2022 10:29:11 +0000
+Received: from PH0PR12MB5481.namprd12.prod.outlook.com
+ ([fe80::f166:64a7:faf9:659a]) by PH0PR12MB5481.namprd12.prod.outlook.com
+ ([fe80::f166:64a7:faf9:659a%5]) with mapi id 15.20.5676.032; Wed, 5 Oct 2022
+ 10:29:11 +0000
+From:   Parav Pandit <parav@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+CC:     Gavin Li <gavinl@nvidia.com>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "jesse.brandeburg@intel.com" <jesse.brandeburg@intel.com>,
+        "alexander.h.duyck@intel.com" <alexander.h.duyck@intel.com>,
+        "sridhar.samudrala@intel.com" <sridhar.samudrala@intel.com>,
+        "jasowang@redhat.com" <jasowang@redhat.com>,
+        "loseweigh@gmail.com" <loseweigh@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+        Gavi Teitz <gavi@nvidia.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>
+Subject: RE: [PATCH v5 2/2] virtio-net: use mtu size as buffer length for big
+ packets
+Thread-Topic: [PATCH v5 2/2] virtio-net: use mtu size as buffer length for big
+ packets
+Thread-Index: AQHYvagejmrtcrshK0GYXpgvFbRGE63rUekAgAAHfNCAAAOhgIAAJx0AgBRKnTA=
+Date:   Wed, 5 Oct 2022 10:29:10 +0000
+Message-ID: <PH0PR12MB54817CD89ECD1D0856103421DC5D9@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20220901021038.84751-1-gavinl@nvidia.com>
+        <20220901021038.84751-3-gavinl@nvidia.com>
+        <20220922052734-mutt-send-email-mst@kernel.org>
+        <PH0PR12MB5481374E6A14EFC39533F9A8DC4E9@PH0PR12MB5481.namprd12.prod.outlook.com>
+        <20220922060753-mutt-send-email-mst@kernel.org>
+ <20220922053458.66f31136@kernel.org>
+In-Reply-To: <20220922053458.66f31136@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|BY5PR12MB5015:EE_
+x-ms-office365-filtering-correlation-id: 11b93476-caaf-4660-c2f1-08daa6bc714f
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: VGCT7McVY/RQZIxEQlrEyphm8yTutVq2ufNbRX9ewpNmAXEZC7sm1qDElN9Z0NVCZSUvnuMvF0IHOVxJhBlMxxHDDDZ9ciqfcffXcIKV9uxv409tgu2MthF/1xc3wdlspxr75bk21DhGoqVEwJW3s8TnIkSkT04/y7Bx4zJe8owmtR5alXCLRLJU+Cruo1GCTyfUJ01CsC2V1SXukzs534eLkbDgCxaC18thScIEFeIDJtGR0K/e/XoV0bi5JLxG/5cyLne0+zeTAjaV9RwctBiH7XJBlHo4hVm83pMqYaouuYkDAxkpFgFShvk33jO332JKKCEwYmLNc3em3J+hY2/+brJQbsy8PyLTJsm+FBQbmhNmCCwLuywI/q7whHSv0BTfGBdXeRlVHJM3pDP1MuneUyCKArIw6gRzGJLeFHYgPVzSL0aP2HToO7GvOpUcj5iwfgpg3y3sZ7/Gs1NCM/8Tj3TI51Q6YhkYllx6whk0DtsDqtknLxVK7kF03OuIbuELfj7JN+5QDVtAkqcn9xNuZ+IHnVD/7fxxRkDIYv1Bd9v472YmFpShGSOLGHgTy+vVLV9cnQgOS4MoxhDqM2yokSD8qsRXC8dxjGVsfK5Nq4sFdjE26GSX4Hoj0hdadOIWf54knnI6xbyV+VVlo35ZEXut2g4JC8uoB+V/i4C/yJETUTLff0S6SXWLZNdvbXQcYzVbXPs554bbze8PFjlqH1XLBHiKesZRqBEUoL8tgqWgxnhjhNpl2Z1lhWJ5XwnK8xG6iddEgP1d2tMbZTzDWOA3OoAz75x4CQdAG5fzKm0g+5+PcIT7ZT2QPn6T9R6yRZOCdIFth+EJ0Ox1M9NmnSijWuR4/bVaYnMk0VU=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(136003)(396003)(346002)(39860400002)(366004)(451199015)(71200400001)(38070700005)(54906003)(110136005)(966005)(52536014)(86362001)(41300700001)(8936002)(4744005)(7416002)(66556008)(5660300002)(316002)(76116006)(66476007)(33656002)(66446008)(64756008)(8676002)(4326008)(66946007)(9686003)(55016003)(186003)(122000001)(26005)(478600001)(83380400001)(38100700002)(7696005)(6506007)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?sHi7kw61Sqo1aV1bHHP2Oz0k8JHPiulx8YL2y8uoIvaZVjFS9k4JPIuG8VQm?=
+ =?us-ascii?Q?Lmf7IKFeYyFyf+bjepls8H8vcqGLoVC2w14a78VwXl7mvBRyoEM4r0Q1IyfO?=
+ =?us-ascii?Q?vtizbf3eNaXd9+KzTU7c2n9KPRZ4hzjwW38cvI60EkOhhRPZnKOc98oiUf5X?=
+ =?us-ascii?Q?IvUVNnoQoUh8z856wrneF1HrNILengZhBhoj9YR6+v2pVRYMvROO3GhDtE8q?=
+ =?us-ascii?Q?FIcBUqMP+R7CqkX+Fpo/GcuwTFaLCncma34jhKNcOV8CrjkFPz3XDPGzE0cs?=
+ =?us-ascii?Q?pDB9FT5ysFrEc20vsgrZo96yWGNm4BQWXKCMNR0ydOXCUkl4Vz09mgCmQBQp?=
+ =?us-ascii?Q?JNVufYoeybUWchMPJq2xvMi4KHdmA+Ls7JfklyA4g+dmzfMD7YFdUWGnHKPK?=
+ =?us-ascii?Q?uF7GBcFYG8cpa8trRVw86IVRNjZNQmrBcYotqIFUYKs/1LOtVtIXZVjOTs7r?=
+ =?us-ascii?Q?UzTIUu9Re/5Okf9taX3ik54uFufqvoY+a32KTtMm1o90Hq+ZcHTnr3vP5edF?=
+ =?us-ascii?Q?XrrhFJ7aANZvSiDFoQ27KfoAz9FMd8BtLjrW+o1u/ZJJ+Fr8x0MuQ+ri67dE?=
+ =?us-ascii?Q?I2QH37Mj7te3xMO3CG91G5P8pYpJ4Op4nW4fWezt5qMXUG0TNZplyDrw8fHF?=
+ =?us-ascii?Q?O49aC04wGBD3GfH5VQyAZuJJsy/8JJCQq1PKyYTPNByHYlk5VqPsL5BTFLkF?=
+ =?us-ascii?Q?H8pVunXWkDFnNaG3EVDCINkIpc8PLb/JvdaH9ZC56HAgNUaL8trHB17cmmcB?=
+ =?us-ascii?Q?3ecX5CVkogcE3soaWJCgVqn7klDs3uYK0ay4QVzzXgaVm5HZgpsNxYoSZR/+?=
+ =?us-ascii?Q?Cu5zaHBO077x19NC0Zi4MmGkeJD14KBLgLxHDUSVpwwDp8wZMLG2kcFCE0/O?=
+ =?us-ascii?Q?82j63bN87ZcF2ouGpExuWThHXS7z2o/juwN+ED0d2dRASCTEXxLUdnjI+BiN?=
+ =?us-ascii?Q?I802D/X2l9qAUBGaKKCEJpZoUIQgDOpvS+7wJsC0kDuRl2noB8SAeAyA6MDM?=
+ =?us-ascii?Q?oGHuYgLLZqzE+cx6vZ8QyoGOyxD685n2Fx/S3Cemva4WrprbOEyMX/8NsiLt?=
+ =?us-ascii?Q?vmlaxLwO2SPuMQpRxKV/45gLegmtYCWgbR6drNaZxAWVDr8xOjAcp38XSvp6?=
+ =?us-ascii?Q?I7DQupNz233S4ZLW13DqZotPqqke0PFXjbSF+5iYOivT0LD76i2s+l/SifJi?=
+ =?us-ascii?Q?Dg2VrdMgQFfnZ4DINFNPCtDWl+dHq/VMqKg9jRBwqkPMc342LR3V62Aizif9?=
+ =?us-ascii?Q?yCsyg6dZAqyRRqHSIxHqKEzz0HCx5fycRwSyeI1LDwEIjus/caWZelCOenm6?=
+ =?us-ascii?Q?kAIxlkLq5XOCuJu/qzZaBNPO9Nn/QOUc8luyhx4E8zqucs86NKMXlkHzSKAA?=
+ =?us-ascii?Q?drdBlMfyp9V0sfT242yUNXLk3e8ZxoszlN593oIQMr/PV9rxiUtC4oTSHQpC?=
+ =?us-ascii?Q?n3+xjyij9b00euMDfhlnLrYFzXfb0d+LNt5Dw4duEKU1dmcYQg9nffeSyrgj?=
+ =?us-ascii?Q?3n/02omUkHUPPzljdqf9Tqggq/XdMpabQgJUmh5aIuH62IQ0AAixOdAVxnuS?=
+ =?us-ascii?Q?BaR0lxeZFFO5EUwaDxE=3D?=
 Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <1664958703-4224-4-git-send-email-jdamato@fastly.com>
-X-ClientProxiedBy: FR0P281CA0137.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:96::13) To DM4PR11MB6117.namprd11.prod.outlook.com
- (2603:10b6:8:b3::19)
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM4PR11MB6117:EE_|IA1PR11MB6097:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2ed8a085-8886-4aec-7b35-08daa6bc3b74
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mh+DacG9LKmQDXPh/4+z1xowCVnyhcFE0HH3tvpZVtg+0xUSB1Cry+d6zNm3n2fRZwovqsvggeN5ijO8t+CGza4BHFeDin6maEupxMtbE6ab1GekRGc8Cb1Ahw9rvAYS15qFn1d7AAKQmWUC4RnqGgBgizrglYjOjoKuH07zj9xdgLBh/jCMulCxuCCc34X2fGDfPjF0n8RUDg92jZAK+tzJfbnNRUTgafIvrDt6tjcnEAmxK0uUgbvWpHgB3/CwLejVahNSa4k/Y3XYX3OgGtw4z8ein0EKPLNoJqwlo1fNOz3xJWuM1FE/7HQHeZNL9qI8xADzCOmnpla9QfWCFuoKWT6l8tr7uN1c12YmhetWSVSz7E72FrAVI9Cjk/xNq91DiXH04fhEmpyJGqI+06KpLN97G+eAMK9XUzKeyUgIhadqifVCUyQ6vBxz/UA41gpIwE/dS+u0THpxLk7mn2MiNn4szTmk7pvalRTYOWQu4qTGTX+2ZE566RLOtXFTRn8ZNtnhd1OIkBuuMRjnhuPpL9RFazCrKvbdXQmblmTmZZXmTgFD9vVVyNUzeixFP/Pronx/56Xsw078egshGQ4VkFPYdiK9Doc9gH2SxNn0KBVZ9+QJM038Te30w6At4ogZHLq5JC/KGRM/IWXHE5Nxyz1lrtG1ySZpykyBeS3yhH9RcYjX3lO2OZg80IzemWYN/RUuh+Lzo5QR8lVAbQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6117.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(39860400002)(376002)(396003)(366004)(136003)(346002)(451199015)(66946007)(66476007)(41300700001)(83380400001)(66556008)(8676002)(316002)(478600001)(6916009)(4326008)(8936002)(107886003)(6666004)(86362001)(6506007)(26005)(9686003)(6512007)(5660300002)(186003)(33716001)(82960400001)(2906002)(38100700002)(6486002)(44832011);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vCyefIB8v6g/Q3bEm+31itMHGHpQz3aDLz8vqnu9mxKiRJqlGU3jKyww0opQ?=
- =?us-ascii?Q?poQk4yIwDZqroKAvUJ6m52C9jYUYm/wJdlavqH1r+xtHNVuaa2kSQX478wIN?=
- =?us-ascii?Q?rmzpk5mQ6o2ReTWxikOkxqVNaCk0FKVgRsp3nNOFy7mIu1xUvEDJyH0HtB5q?=
- =?us-ascii?Q?m8r7Mvca2iAPT2Q1b9mnvaRllZggqhk03B4at7u3NO0LOlffbePvLgDOL5A6?=
- =?us-ascii?Q?YpzuRbgwjz8o8IWnC1zdusga3yQZrUgZ6ydramVkmqJoWJfLaVt/3sgu7F+k?=
- =?us-ascii?Q?ndrW7WSEglEdPnD7vUzjg1RtA4Kpu/V3rhGisLo8DQ9TOEVbU+ur3GH4PPER?=
- =?us-ascii?Q?R885M9NtmsvVDoFMHLboAul8XSjGNGT7YMPcX27kAKDar6SVPgEryRCANm55?=
- =?us-ascii?Q?KjawisXS8bITBVjWKtJdTNpEAiDNNyNMzmU6X8FW45wDHgO46VriWynWT891?=
- =?us-ascii?Q?XSqAadmUsj5JN+PEy1hIZxZ7qF3Kqc+8L/PbIwNxM/02DehhPLHlYbsZOMx/?=
- =?us-ascii?Q?b+g1SvMJTZbOlOxZnNdV0orfNJwe0uZTCMcJVwG0+1DbHQGEfFmXJDH2MJLP?=
- =?us-ascii?Q?7BR7+YhxWYAClZTU6+f6KfaeJwe5Tx8wyWstG5MTO4Wj0MS6NOfmDYnm11ba?=
- =?us-ascii?Q?6eefIFdtppBsQT9xqrvFVgykaIJyyFzLhKQWkZzhKOybKLMlus215rj9QJJw?=
- =?us-ascii?Q?Ls5XjAy42ymrrkcayx6DYUBD5UypLYAiY4u9KfFuY1gc+11KqsOqwt8UqURP?=
- =?us-ascii?Q?mqUtKvhPyfUah3FnTi2A+gPgrfsblZ0vTm77XWduIK62x348FPVGSkYZD9Ri?=
- =?us-ascii?Q?gMmHdd5kZg+DVGkBYJGT2UPoWYwYkbLG8b87evTue75mCtl9LS3C7bJ9Kr+h?=
- =?us-ascii?Q?MwWYQMnwbz5+PAoQduODSXGjw5cWZHOgxGj0yy5zy/pyal3/HqfV0/pHmujo?=
- =?us-ascii?Q?4n3vM2+NSYcfW4EwZTIOHYT3V84bST1R22mNTMAANnr4qiRyd1fzsXalBGa6?=
- =?us-ascii?Q?NUn59uFOS0GVNjtKPbrQd7YdK0QgtYf/spLmIQySkvORmNZLN55nM4W40lxu?=
- =?us-ascii?Q?xvTWBVfVAflINEQ5h/D2DDnGU/CwXzTGZm085cn7ScgABqit6lOTVivNCW6V?=
- =?us-ascii?Q?TFbp6utCsiTw3q2/wKbxI5BQ7ek+RiX1iYadNbNQRVGWzqWY/hLZgIcrtxq3?=
- =?us-ascii?Q?ve+w+etnH+Td28LINlgOdH6R924R5DXTx2IyJ7FBUvXz1IImAcM3rRXoKYH3?=
- =?us-ascii?Q?AG3/mqlKgQrGMzUuHbV7DiW+RXMhKvPZXhcH6geUqn43uqWKmOwIlYAqkcXc?=
- =?us-ascii?Q?iPs6kDYcbagPFVwdAG3kK9+yGFwwdnd++/saWTHH1v9VgY1ZRZLfU4Q7xlkc?=
- =?us-ascii?Q?qG+jxopjgHRZWNDZL5EJD5LRLfkDwydBfxzoYWV5MDT12qO9xg3p9/5jvO+Q?=
- =?us-ascii?Q?ZbV9eWt3nAgqGQvDKQLjDkJlUVUW1TxO8cT/d8mZ76mfJzA0jga4d+ubxDlz?=
- =?us-ascii?Q?ZWmMMRhgoBKhkK+gCXJMFHO8wabvuIsS1L+kx+TmDW/PZxI2NXznAxAS/tlA?=
- =?us-ascii?Q?+nHDiyuDywOSLA4wGhDy5VnPtAoqJRghmuQVetQsLXzuXThKho3G14g+aYK1?=
- =?us-ascii?Q?Ig=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2ed8a085-8886-4aec-7b35-08daa6bc3b74
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6117.namprd11.prod.outlook.com
+X-OriginatorOrg: Nvidia.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Oct 2022 10:27:40.9304
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 11b93476-caaf-4660-c2f1-08daa6bc714f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Oct 2022 10:29:11.1148
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: RR1K9+d3y52bCTAIj+DSGXgPw03byH6TEV5ZETMmlRURXaAdV3sQtVEeEcBqokjXPKwpKMjXp6qKeI8MsaSUf0Oqe/n7i9C4zNng6c1sM2E=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB6097
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: p2nvX2sR36OgaWterJk8GcBEZ9eRJWoEmjTGIXoXts/hi+b3ADlVGkwGpUfuMV9w6OykuMc+WNcjoR50evPn9w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB5015
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 05, 2022 at 01:31:43AM -0700, Joe Damato wrote:
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Thursday, September 22, 2022 6:05 PM
+>=20
+> On Thu, 22 Sep 2022 06:14:59 -0400 Michael S. Tsirkin wrote:
+> > It's nitpicking to be frank. v6 arrived while I was traveling and I
+> > didn't notice it.  I see Jason acked that so I guess I will just apply
+> > as is.
+>=20
+> Oh, you wanna take it? The split on who takes virtio_net is a touch uncle=
+ar
+> but if it makes more sense here to go via virtio feel free to slap my ack=
+ on the
+> v6.
 
-Hi Joe,
+Michael,
 
-> Add a tracepoint for i40e_napi_poll that allows users to get detailed
-> information about the amount of work done. This information can help users
-> better tune the correct NAPI parameters (like weight and budget), as well
-> as debug NIC settings like rx-usecs and tx-usecs, etc.
-> 
-> An example of the output from this tracepoint:
-> 
-> [...snip...]
-> 
-> 1029.268 :0/0 i40e:i40e_napi_poll(i40e_napi_poll on dev eth1 q
-> i40e-eth1-TxRx-30 irq 172 irq_mask
-> 00000000,00000000,00000000,00000010,00000000,00000000 curr_cpu 68 budget
-> 64 bpr 64 work_done 0 tx_work_done 2 clean_complete 1 tx_clean_complete
-> 1)
-> 	i40e_napi_poll ([i40e])
-> 	i40e_napi_poll ([i40e])
-> 	__napi_poll ([kernel.kallsyms])
-> 	net_rx_action ([kernel.kallsyms])
-> 	__do_softirq ([kernel.kallsyms])
-> 	common_interrupt ([kernel.kallsyms])
-> 	asm_common_interrupt ([kernel.kallsyms])
-> 	intel_idle_irq ([kernel.kallsyms])
-> 	cpuidle_enter_state ([kernel.kallsyms])
-> 	cpuidle_enter ([kernel.kallsyms])
-> 	do_idle ([kernel.kallsyms])
-> 	cpu_startup_entry ([kernel.kallsyms])
-> 	[0x243fd8] ([kernel.kallsyms])
-> 	secondary_startup_64_no_verify ([kernel.kallsyms])
-
-maybe you could also include how to configure this tracepoint for future
-readers?
-
-> 
-> Signed-off-by: Joe Damato <jdamato@fastly.com>
-> ---
->  drivers/net/ethernet/intel/i40e/i40e_trace.h | 50 ++++++++++++++++++++++++++++
->  drivers/net/ethernet/intel/i40e/i40e_txrx.c  |  3 ++
->  2 files changed, 53 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/intel/i40e/i40e_trace.h b/drivers/net/ethernet/intel/i40e/i40e_trace.h
-> index b5b1229..779d046 100644
-> --- a/drivers/net/ethernet/intel/i40e/i40e_trace.h
-> +++ b/drivers/net/ethernet/intel/i40e/i40e_trace.h
-> @@ -55,6 +55,56 @@
->   * being built from shared code.
->   */
->  
-> +#define NO_DEV "(i40e no_device)"
-> +
-> +TRACE_EVENT(i40e_napi_poll,
-> +
-> +	TP_PROTO(struct napi_struct *napi, struct i40e_q_vector *q, int budget,
-> +		 int budget_per_ring, int work_done, int tx_work_done, bool clean_complete,
-> +		 bool tx_clean_complete),
-> +
-> +	TP_ARGS(napi, q, budget, budget_per_ring, work_done, tx_work_done,
-> +		clean_complete, tx_clean_complete),
-> +
-> +	TP_STRUCT__entry(
-> +		__field(int, budget)
-> +		__field(int, budget_per_ring)
-> +		__field(int, work_done)
-> +		__field(int, tx_work_done)
-> +		__field(int, clean_complete)
-> +		__field(int, tx_clean_complete)
-> +		__field(int, irq_num)
-> +		__field(int, curr_cpu)
-> +		__string(qname, q->name)
-> +		__string(dev_name, napi->dev ? napi->dev->name : NO_DEV)
-> +		__bitmask(irq_affinity,	nr_cpumask_bits)
-> +	),
-> +
-> +	TP_fast_assign(
-> +		__entry->budget = budget;
-> +		__entry->budget_per_ring = budget_per_ring;
-> +		__entry->work_done = work_done;
-
-What if rx clean routines failed to do allocation of new rx bufs? then
-this would be misinterpreted. maybe we should change the API to
-
-static bool
-i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget,
-		  unsigned int *processed_pkts);
-
-so you would return failure and at the end do
-	*processed_pkts = total_rx_packets;
-
-then also i would change the naming of tracepoint entry. I'm not a native
-english speaker but having 'done' within the variable name suggests to me
-that it is rather a boolean. what about something like 'rx_cleaned_pkts'
-instead?
-
-Generally I think this is useful, personally I was in need of tracing the
-next_to_clean and next_to_use ring indexes a lot, but that is probably out
-of the scope in here.
-
-> +		__entry->tx_work_done = tx_work_done;
-> +		__entry->clean_complete = clean_complete;
-> +		__entry->tx_clean_complete = tx_clean_complete;
-> +		__entry->irq_num = q->irq_num;
-> +		__entry->curr_cpu = get_cpu();
-> +		__assign_str(qname, q->name);
-> +		__assign_str(dev_name, napi->dev ? napi->dev->name : NO_DEV);
-> +		__assign_bitmask(irq_affinity, cpumask_bits(&q->affinity_mask),
-> +				 nr_cpumask_bits);
-> +	),
-> +
-> +	TP_printk("i40e_napi_poll on dev %s q %s irq %d irq_mask %s curr_cpu %d "
-> +		  "budget %d bpr %d work_done %d tx_work_done %d "
-> +		  "clean_complete %d tx_clean_complete %d",
-> +		__get_str(dev_name), __get_str(qname), __entry->irq_num,
-> +		__get_bitmask(irq_affinity), __entry->curr_cpu, __entry->budget,
-> +		__entry->budget_per_ring, __entry->work_done,
-> +		__entry->tx_work_done,
-> +		__entry->clean_complete, __entry->tx_clean_complete)
-> +);
-> +
->  /* Events related to a vsi & ring */
->  DECLARE_EVENT_CLASS(
->  	i40e_tx_template,
-> diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-> index ed88309..8b72f1b 100644
-> --- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-> +++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-> @@ -2743,6 +2743,9 @@ int i40e_napi_poll(struct napi_struct *napi, int budget)
->  			clean_complete = false;
->  	}
->  
-> +	trace_i40e_napi_poll(napi, q_vector, budget, budget_per_ring, work_done, tx_wd,
-> +			     clean_complete, tx_clean_complete);
-> +
->  	/* If work not completed, return budget and polling will return */
->  	if (!clean_complete || !tx_clean_complete) {
->  		int cpu_id = smp_processor_id();
-> -- 
-> 2.7.4
-> 
+Did you get a chance to take this?
+I don't see it at https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost=
+.git/log/?h=3Dlinux-next
