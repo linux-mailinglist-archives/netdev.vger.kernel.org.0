@@ -2,63 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 58BDF5F5096
-	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 10:03:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8F8F5F50A0
+	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 10:09:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229889AbiJEIDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Oct 2022 04:03:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54990 "EHLO
+        id S229965AbiJEIJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Oct 2022 04:09:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229502AbiJEIDM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 04:03:12 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59A9D32BBF
-        for <netdev@vger.kernel.org>; Wed,  5 Oct 2022 01:03:10 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id bp15so10972962lfb.13
-        for <netdev@vger.kernel.org>; Wed, 05 Oct 2022 01:03:10 -0700 (PDT)
+        with ESMTP id S229890AbiJEIJN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 04:09:13 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26EBC70E65
+        for <netdev@vger.kernel.org>; Wed,  5 Oct 2022 01:09:10 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id bn8so4427215ljb.6
+        for <netdev@vger.kernel.org>; Wed, 05 Oct 2022 01:09:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date;
-        bh=vrT3/YNDGxNw6gcf7qbdcYUNYzCckFpq+zk+UqS9mFk=;
-        b=WsS0OdFvsJAy0ro0nxL688BEJuU3JmND8E16jFH22cGfbaf1AIWMoz6EkYxWN6iQSM
-         5hxEPcrf3BoFRh1Sldd+jZXMIRJDlBjO+j4+qaTzpD6eXvtlyFwbN6R4Ut2D2qejgda0
-         NX75xIlfVDxNMH73MYHk0lG4A9Oh6meZAXZes5Gq0blZVZgJkRWXzQM1B/HfARfQ2QVh
-         RgMwtRhBzhhKwQpteVES8vHyXiVwRUaxFxCoTgzW0JIXizq04G06HcicCgqvG9pUhtUp
-         7W+h1v/gEaRgja1RD4+46f8926lEH2o68CKx54Fd4lo05LmTwY2rSb/vvYcSFhaW/6lb
-         PhVQ==
+        bh=fKZVMBLV4cyNa9DTz4xK4r/4KYXQ4qFmdv6P+6q2hAE=;
+        b=xDsZijxU2udyYZXfP0YdYnMCiJTLXIDfOLMcGcbDPwCu0RuWMfqe5j2uTWmRPni+xy
+         mhDjJ0RTgzZ0Feb2VhJTe0RHt/bA0sGQmvnwzWaJpnSt6zPYm+E9+r8z8qQKp20QQavf
+         7kp0rT6OGMGUlYJP5Wf/RLrRh6eHALKr/hiRnyDdjYccmIkYH73GotozJPrd7UrxzUr3
+         kYlEZHa1s0Xh9IOMHY8XpFcMEBMONczYn+qCm6BJHEMm0sYr/XhQqUXuyd6xhDR1OWij
+         aaiSTgLfH4ByjBBcL2tjMDBLfswZ8QFqd49cqKGlJHRKx8RiT0mSGp/JI06m8hPU7WvH
+         AlOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date;
-        bh=vrT3/YNDGxNw6gcf7qbdcYUNYzCckFpq+zk+UqS9mFk=;
-        b=dr4EDWmjQETmg3okmHRoXT8urhDwAC3WfmqWFPXcofVfRvA3lds4cC1RkI/TW6RymN
-         o0rdjr9CKYS4aZBPNz7SncS9xJgtlksCtO9PWHRZxPTxqq0QG78+hx5lsYyTPpeZcYru
-         BbCAGGilWQG1pSUqwWCLNt/MXKECZoz/TOEq+WURli0T/mbIyFH2aeZcOnOuI8AzkPuR
-         cYvIO0uy9AYDgLr5BOBLIOas7Vh9MZ1XU/PQuAu1wr4+BqwLWpi5wpqzQgrljI89LKNQ
-         vN/KNVduwi8TxN/PY3X14Aretn6e3hVfoJsC6SQE/mPa227rGyg1jy5hMbu72OZVy5Fn
-         X5/w==
-X-Gm-Message-State: ACrzQf0eqO5O2pxBm0JdFxOCw8Vdf5MXis/+ONfSr3ptNE8+/1s04KGo
-        C9cVaIS7jakfccW9ESCG84QfAw==
-X-Google-Smtp-Source: AMsMyM7h1qQF7FFgnsGNplK/Yx7DQ4hYKkUv4Jvk1LXPHxhH+pHuufq529Adf1oaJhGaPYd8oEx6jQ==
-X-Received: by 2002:a05:6512:3185:b0:4a2:3e01:e1fc with SMTP id i5-20020a056512318500b004a23e01e1fcmr4639658lfe.404.1664956988657;
-        Wed, 05 Oct 2022 01:03:08 -0700 (PDT)
+        bh=fKZVMBLV4cyNa9DTz4xK4r/4KYXQ4qFmdv6P+6q2hAE=;
+        b=p2+l3XFPCzF19RjvRMYfNj/W4Vor91RoGqHT/O8Dpz74zG/HxO9dFQ3fWLjTaGFNVT
+         f9DODdnCW83PKluZZv4DBTzlaqxxvqYnKMiEam7v6mvdiBbM8VcpeSQpCIF6q4ajqubu
+         sIfI4NS7InFDYAm1c686VC/lm/Aprgi07xhVMmQjGB1oLXKejrVEnPRrbG7vOMysR1kE
+         l5LsC7tTug0uYlRxucYias3ggOa8d0IHRw57Pi+utyAMlLyJwN6xnldh3NlW1RlugKwb
+         hApBoaV3syojQIc1ms8q9w/x+5nXHX35acdN2aSubsxcc9t29zSfLZS5uh7wB6OxSk/H
+         y+YA==
+X-Gm-Message-State: ACrzQf2g3yJJzQ/BISFSC2Wy7ZRkK6UC8xohBPK527FP4JnD9GzVg/da
+        5h4qQMQoxeijgx8E3UeYCQkPOQ==
+X-Google-Smtp-Source: AMsMyM4eewbzpOumWsknGgIrXWo7yHnFVYt28GJGRa/ZUMTM9+Wwi/Ok1WI3MCBOC0C6gx2HIcSN0A==
+X-Received: by 2002:a05:651c:1069:b0:26c:3e08:25eb with SMTP id y9-20020a05651c106900b0026c3e0825ebmr9136701ljm.441.1664957348366;
+        Wed, 05 Oct 2022 01:09:08 -0700 (PDT)
 Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id g19-20020ac25393000000b0049fb08e91cesm2259763lfh.214.2022.10.05.01.03.05
+        by smtp.gmail.com with ESMTPSA id z3-20020a056512370300b004a2386b8cf4sm1390141lfr.258.2022.10.05.01.09.06
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 05 Oct 2022 01:03:08 -0700 (PDT)
-Message-ID: <455e31be-dc87-39b3-c7fe-22384959c556@linaro.org>
-Date:   Wed, 5 Oct 2022 10:03:04 +0200
+        Wed, 05 Oct 2022 01:09:07 -0700 (PDT)
+Message-ID: <cae8e149-ef1e-66c6-20f5-067e3fd8c586@linaro.org>
+Date:   Wed, 5 Oct 2022 10:09:06 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.3.0
 Subject: Re: [PATCH v3 net-next 12/14] dt-bindings: net: dsa: ocelot: add
  ocelot-ext documentation
 Content-Language: en-US
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Colin Foster <colin.foster@in-advantage.com>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org, netdev@vger.kernel.org,
         Russell King <linux@armlinux.org.uk>,
         Linus Walleij <linus.walleij@linaro.org>,
@@ -72,118 +73,120 @@ Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>
 References: <20220926002928.2744638-1-colin.foster@in-advantage.com>
  <20220926002928.2744638-13-colin.foster@in-advantage.com>
  <ec63b5aa-3dec-3c27-e987-25e36b1632ba@linaro.org>
- <YzzLCYHmTcrHbZcH@colin-ia-desktop>
+ <20221004121517.4j5637hnioepsxgd@skbuf>
+ <6444e5d1-0fc9-03e2-9b2a-ec19fa1e7757@linaro.org>
+ <20221004160135.lqugs6cf5b7fwkxq@skbuf>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <YzzLCYHmTcrHbZcH@colin-ia-desktop>
+In-Reply-To: <20221004160135.lqugs6cf5b7fwkxq@skbuf>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/10/2022 02:08, Colin Foster wrote:
-> Hi Krzysztof,
-> 
-> On Tue, Oct 04, 2022 at 01:19:33PM +0200, Krzysztof Kozlowski wrote:
->> On 26/09/2022 02:29, Colin Foster wrote:
->>> The ocelot-ext driver is another sub-device of the Ocelot / Felix driver
->>> system, which currently supports the four internal copper phys.
+On 04/10/2022 18:01, Vladimir Oltean wrote:
+> On Tue, Oct 04, 2022 at 04:59:02PM +0200, Krzysztof Kozlowski wrote:
+>> On 04/10/2022 14:15, Vladimir Oltean wrote:
+>>> On Tue, Oct 04, 2022 at 01:19:33PM +0200, Krzysztof Kozlowski wrote:
+>>>>> +  # Ocelot-ext VSC7512
+>>>>> +  - |
+>>>>> +    spi {
+>>>>> +        soc@0 {
+>>>>
+>>>> soc in spi is a bit confusing.
 >>>
->>> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> ...
->>> +  # Ocelot-ext VSC7512
->>> +  - |
->>> +    spi {
->>> +        soc@0 {
+>>> Do you have a better suggestion for a node name? This is effectively a
+>>> container for peripherals which would otherwise live under a /soc node,
 >>
->> soc in spi is a bit confusing.
->>
->> Does it even pass the tests? You have unit address but no reg.
+>> /soc node implies it does not live under /spi node. Otherwise it would
+>> be /spi/soc, right?
 > 
-> I omitted those from the documentation. Rob's bot is usually quick to
-> alert me when I forgot to run dt_binding_check and something fails
-> though. I'll double check, but I thought everything passed.
+> Did you read what's written right below? I can explain if you want, but
+> there's no point if you're not going to read or ask other clarification
+> questions.
 > 
->>
->>> +            compatible = "mscc,vsc7512";
->>
->>
->>> +            #address-cells = <1>;
->>> +            #size-cells = <1>;
->>> +
->>> +            ethernet-switch@0 {
->>> +                compatible = "mscc,vsc7512-switch";
->>> +                reg = <0 0>;
->>
->> 0 is the address on which soc bus?
+>>> if they were accessed over MMIO by the internal microprocessor of the
+>>> SoC, rather than by an external processor over SPI.
+> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 > 
-> This one Vladimir brought up as well. The MIPS cousin of this chip
-> is the VSC7514. They have exactly (or almost exactly) the same hardware,
-> except the 7514 has an internal MIPS while the 7512 has an 8051.
-> 
-> Both chips can be controlled externally via SPI or PCIe. This is adding
-> control for the chip via SPI.
-> 
-> For the 7514, you can see there's an array of 20 register ranges that
-> all get mmap'd to 20 different regmaps.
-> 
-> (Documentation/devicetree/bindings/net/mscc,vsc7514-switch.yaml)
-> 
->     switch@1010000 {
->       compatible = "mscc,vsc7514-switch";
->       reg = <0x1010000 0x10000>,
->             <0x1030000 0x10000>,
->             <0x1080000 0x100>,
->             <0x10e0000 0x10000>,
->             <0x11e0000 0x100>,
->             <0x11f0000 0x100>,
->             <0x1200000 0x100>,
->             <0x1210000 0x100>,
->             <0x1220000 0x100>,
->             <0x1230000 0x100>,
->             <0x1240000 0x100>,
->             <0x1250000 0x100>,
->             <0x1260000 0x100>,
->             <0x1270000 0x100>,
->             <0x1280000 0x100>,
->             <0x1800000 0x80000>,
->             <0x1880000 0x10000>,
->             <0x1040000 0x10000>,
->             <0x1050000 0x10000>,
->             <0x1060000 0x10000>,
->             <0x1a0 0x1c4>;
->       reg-names = "sys", "rew", "qs", "ptp", "port0", "port1",
->             "port2", "port3", "port4", "port5", "port6",
->             "port7", "port8", "port9", "port10", "qsys",
->             "ana", "s0", "s1", "s2", "fdma";
-> 
-> 
-> The suggestion was to keep the device trees of the 7512 and 7514 as
-> similar as possible, so this will essentially become:
->     switch@71010000 {
->       compatible = "mscc,vsc7512-switch";
->       reg = <0x71010000 0x10000>,
->             <0x71030000 0x10000>,
->       ...
+> The /spi/soc@0 node actually has a compatible of "mscc,vsc7512" which
+> Colin did not show in the example (it is not "simple-bus"). It is covered
+> by Documentation/devicetree/bindings/mfd/mscc,ocelot.yaml. Still waiting
+> for a better suggestion for how to name the mfd container node.
 
-I don't understand how your answer relates to "reg=<0 0>;". How is it
-going to become 0x71010000 if there is no other reg/ranges set in parent
-nodes. The node has only one IO address, but you say the switch has 20
-addresses...
+Then still the /spi node does not seem related. If I understand
+correctly, your device described in this bindings is a child of soc@0.
+Sounds fine. How that soc@0 is connected to the parent - via SPI or
+whatever - is not related to this binding, is it? It is related to the
+soc binding, but not here.
 
-Are we talking about same hardware?
+> 
+>>>> How is this example different than previous one (existing soc example)?
+>>>> If by compatible and number of ports, then there is no much value here.
+>>>
+>>> The positioning relative to the other nodes is what's different.
+>>
+>> Positioning of nodes is not worth another example, if everything else is
+>> the same. What is here exactly tested or shown by example? Using a
+>> device in SPI controller?
+> 
+> Everything is not the same, it is not the same hardware as what is currenly
+> covered by Documentation/devicetree/bindings/net/dsa/mscc,ocelot.yaml.
+> The "existing soc example" (mscc,vsc9953-switch) has a different port
+> count, integration with a different SERDES, interrupt controller, pin
+> controller, things like that. The examples already differ in port count
+> and phy-mode values, I expect they will start diverging more in the
+> future. If you still believe it's not worth having an example of how to
+> instantiate a SPI-controlled VSC7512 because there also exists an
+> example of an MMIO-controlled VSC9953, then what can I say.
+> 
+> ------ cut here ------
+> 
+> Unrelated to your "existing soc example" (the VSC9953), but relevant and
+> you may want to share your opinion on this:
+> 
+> The same hardware present in the VSC7514 SoC can also be driven by an
+> integrated MIPS processor, and in that case, it is indeed expected that
+> the same dt-bindings cover both the /soc and the /spi/soc@0/ relative
+> positioning of their OF node. This is true for simpler peripherals like
+> "mscc,ocelot-miim", "mscc,ocelot-pinctrl", "mscc,ocelot-sgpio". However
+> it is not true for the main switching IP of the SoC itself.
+> 
+> When driven by a switchdev driver, by the internal MIPS processor (the
+> DMA engine is what is used for packet I/O), the switching IP follows the
+> Documentation/devicetree/bindings/net/mscc,vsc7514-switch.yaml binding
+> document.
+> 
+> When driven by a DSA driver (external processor, host frames are
+> redirected through an Ethernet port instead of DMA controller),
+> the switching IP follows the Documentation/devicetree/bindings/net/dsa/mscc,ocelot.yaml
+> document.
+> 
+> The switching IP is special in this regard because the hardware is not
+> used in the same way. The DSA dt-binding also needs the 'ethernet'
+> phandle to be present in a port node. The different placement of the
+> bindings according to the use case of the hardware is a bit awkward, but
+> is a direct consequence of the separation between DSA and pure switchdev
+> drivers that has existed thus far (and the fact that DSA has its own
+> folder in the dt-bindings, with common properties in dsa.yaml and
+> dsa-port.yaml etc). It is relatively uncommon for a switching IP to have
+> provisioning to be used in both modes, and for Linux to support both
+> modes (using different drivers), yet this is what we have here.
+
+Is there a question here to me? What shall I do with this paragraph? You
+know, I do not have a problem of lack of material to read...
 
 Best regards,
 Krzysztof
