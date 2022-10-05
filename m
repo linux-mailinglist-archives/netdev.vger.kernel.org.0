@@ -2,165 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 559845F4D8A
-	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 03:49:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 309DE5F4D9F
+	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 04:15:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229760AbiJEBtW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Oct 2022 21:49:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56078 "EHLO
+        id S229817AbiJECPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Oct 2022 22:15:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229651AbiJEBtU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 21:49:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2129F26121
-        for <netdev@vger.kernel.org>; Tue,  4 Oct 2022 18:49:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1664934559;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dLTJ61r8dkXDaTvWzIXpLlZQKa1MajTFnqO/8VKqnHg=;
-        b=DQHqjONMyWL1ipqU2abTcxNSJ8WV42RTfl8y51GVjZYWNxHzTcjl9wg5fKj7okzDVH489P
-        kvWMRwRjZOMSZDpN791LHNOgFOlCiqZvr1yW7U8e6wulC4vWJF4i8Ng40g9wvXw/9aG5BK
-        10aiWh7lQ48Yzz1NUYGOc8vBhu0pw9I=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-606-I2V4l0TGNASSuxQ74x4_pA-1; Tue, 04 Oct 2022 21:49:15 -0400
-X-MC-Unique: I2V4l0TGNASSuxQ74x4_pA-1
-Received: by mail-wr1-f70.google.com with SMTP id e11-20020adfa74b000000b0022e39e5c151so2300053wrd.3
-        for <netdev@vger.kernel.org>; Tue, 04 Oct 2022 18:49:15 -0700 (PDT)
+        with ESMTP id S229698AbiJECPk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 22:15:40 -0400
+Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A873E474C7
+        for <netdev@vger.kernel.org>; Tue,  4 Oct 2022 19:15:35 -0700 (PDT)
+Received: by mail-il1-x132.google.com with SMTP id g13so4993468ile.0
+        for <netdev@vger.kernel.org>; Tue, 04 Oct 2022 19:15:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=bF3rfNlwAuWQX7FF97PUYgRoxYjQCp+FQ9YtbL3rEM8=;
+        b=f2Sydn540oSzJJmHHZb4OXECOqRdiYpOcytDuEJI99EvyNB/U4JiHK1EREcNiLDI4K
+         ALqouMshmN6HqclSyyXUqDwwEvaYQKz1K/5FVU+rlWhk8F01j9nHyO99IQRSfwEqo0gl
+         RlnDxh4l4iedse7nJKLVkoXD3qhY8kp6ueil/iio1d54ckUjsV2plqwr4bw0rdrN5e+X
+         r0RkvHsuCS1RCcF+wRju/9ghvzd9HqYPJ5fqzJlCOLAZRKLuWQn6hlKJ5llvmcxA/EmT
+         jb2c2hTou9LXZSdJQLZb59FkfpzA9P96d4H8WhmhUwC7Baw1D/s3FmDigKver6k3HDri
+         88UQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=dLTJ61r8dkXDaTvWzIXpLlZQKa1MajTFnqO/8VKqnHg=;
-        b=IZlFg9nnZsNjnRuzS1Lmdg3WXn2CuAlG8lfni6r2ZIN+Dgw9jIflAxi5xq4SPHU5mr
-         a+Ci8KJaiFTZdZdhv4M8sBgzfiVV5xP/m3SIzrYeivRdQqcD8rvTD3yxn+LnwaaGvvEP
-         kuUilYd25fiq6aS0PLFjljSoUql8Nl+JfHfHnp1BV2r0+bpEJ9bJUWZcPbJhfxt1Hoay
-         JJOVX+V10rJtiKG5aPc6cvys8dlucgfKpKjT/7kuwYSV3GIXZdQfp0cXAHYbaN2Q8lsV
-         XJPytYNbSEpEBuvkFnSM9PF6TkgwIiaTXlXbPjjTTywsXUANL/M/Ij/gJ6HnU5/HGyCw
-         ImxA==
-X-Gm-Message-State: ACrzQf1WHszzA1iFM48Qp0HKCHG9fcG5o3oUwxWVvyKUH8EIg6vvBIMH
-        +ly/i1E1rBtX7WMXNDXr5cP0IJGIC4IM58LyeNYHrORlJVycXNupl8V9ORIaYDVbtDmsfw99Qym
-        8u9xJicTPCRZxelP8tcifOnahcUGMnM+n
-X-Received: by 2002:a5d:4ec5:0:b0:22c:dca3:e84d with SMTP id s5-20020a5d4ec5000000b0022cdca3e84dmr15834671wrv.14.1664934554197;
-        Tue, 04 Oct 2022 18:49:14 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM7JK1zsVfoyuyMRUvvxHLhWflIAu9gCaRBOuvZ9x90b9f30rXDBL32LJ24bXRf5pVn5+FsGD4k/6KDutA1+WdE=
-X-Received: by 2002:a5d:4ec5:0:b0:22c:dca3:e84d with SMTP id
- s5-20020a5d4ec5000000b0022cdca3e84dmr15834664wrv.14.1664934553971; Tue, 04
- Oct 2022 18:49:13 -0700 (PDT)
+        bh=bF3rfNlwAuWQX7FF97PUYgRoxYjQCp+FQ9YtbL3rEM8=;
+        b=VZ737GZzFvd+76c1M7dhoEAZfcOileafGtcyl0Gksqxmwgjvc9NnQnEVNNzP9JgIUI
+         jF5Pnu8vTE1X/ujN651ok0yzt25QDYdHkboGA+shsX/m8C/EnJy63tNAzK9SAD3cvCNS
+         m+6eEnitstkirPL5dXEaGWqT1bgQt5QVL91rkymMcq+VPkZgGXbaU3dZVL2L4GA1bmuQ
+         gkTs7wB+8tve1hL6KGFBjmsrsZhYPS2KGc37OUXeVNRENkZQxWx0WW9ZXjpQXrm0j8TM
+         gCmP2D4doaH9XYDjqaNqcKh+H+6ROz8Q26lppMV8DxyLr2ROAxbb+r9W0ctSk3/kMcTY
+         0fag==
+X-Gm-Message-State: ACrzQf1wEpHGF86Nu7fkNkHc6o7WYFQi1M71vkMuyV8rqJKlmuKpIAv3
+        mJMwDHnNFRd6j04u6n4CQYtmimFPKxS7mrlxAdDJqA==
+X-Google-Smtp-Source: AMsMyM58qwYn1L3swp5KOVyV1TYqz3USmDJ53no2y3Fo2AXus4qnffPbPjgbAJeyRQxcgM6T6ud2uPcXjosICMHQp+A=
+X-Received: by 2002:a92:ca0c:0:b0:2f9:204:7a0d with SMTP id
+ j12-20020a92ca0c000000b002f902047a0dmr13639413ils.194.1664936135004; Tue, 04
+ Oct 2022 19:15:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <5e89b653-3fc6-25c5-324b-1b15909c0183@I-love.SAKURA.ne.jp>
- <166480021535.14393.17575492399292423045.git-patchwork-notify@kernel.org>
- <4aae5e2b-f4d5-c260-5bf8-435c525f6c97@I-love.SAKURA.ne.jp>
- <CAK-6q+g7JQZkRJhp6qv_H9xGfD4DWnaChmQ7OaWJs3CAjfMnpA@mail.gmail.com> <1c374e71-f56e-540e-35d0-e6e82a4dc0e3@datenfreihafen.org>
-In-Reply-To: <1c374e71-f56e-540e-35d0-e6e82a4dc0e3@datenfreihafen.org>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Tue, 4 Oct 2022 21:49:02 -0400
-Message-ID: <CAK-6q+iqPFxrM7qdmi4xcF8e+2mgqXT9otEwRA+Vh-JfRQ18Wg@mail.gmail.com>
-Subject: Re: [PATCH] net/ieee802154: reject zero-sized raw_sendmsg()
-To:     Stefan Schmidt <stefan@datenfreihafen.org>
-Cc:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        patchwork-bot+netdevbpf@kernel.org,
-        "David S. Miller" <davem@davemloft.net>, alex.aring@gmail.com,
-        shaozhengchao@huawei.com, ast@kernel.org, sdf@google.com,
-        linux-wpan@vger.kernel.org,
-        syzbot+5ea725c25d06fb9114c4@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
+References: <166256538687.1434226.15760041133601409770.stgit@firesoul>
+ <Yzt2YhbCBe8fYHWQ@google.com> <35fcfb25-583a-e923-6eee-e8bbcc19db17@redhat.com>
+ <CAKH8qBuYVk7QwVOSYrhMNnaKFKGd7M9bopDyNp6-SnN6hSeTDQ@mail.gmail.com>
+ <5ccff6fa-0d50-c436-b891-ab797fe7e3c4@linux.dev> <20221004175952.6e4aade7@kernel.org>
+ <CAKH8qBtdAeHqbWa33yO-MMgC2+h2qehFn8Y_C6ZC1=YsjQS-Bw@mail.gmail.com> <20221004182451.6804b8ca@kernel.org>
+In-Reply-To: <20221004182451.6804b8ca@kernel.org>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Tue, 4 Oct 2022 19:15:24 -0700
+Message-ID: <CAKH8qBtTPNULZDLd2n1r2o7XZwvs_q5OkNqhdq0A+b5zkHRNMw@mail.gmail.com>
+Subject: Re: [PATCH RFCv2 bpf-next 00/18] XDP-hints: XDP gaining access to HW
+ offload hints via BTF
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Martin KaFai Lau <martin.lau@linux.dev>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>,
+        brouer@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        xdp-hints@xdp-project.net, larysa.zaremba@intel.com,
+        memxor@gmail.com, Lorenzo Bianconi <lorenzo@kernel.org>,
+        mtahhan@redhat.com,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        dave@dtucker.co.uk, Magnus Karlsson <magnus.karlsson@intel.com>,
+        bjorn@kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Tue, Oct 4, 2022 at 1:59 PM Stefan Schmidt <stefan@datenfreihafen.org> wrote:
+On Tue, Oct 4, 2022 at 6:24 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> Hello.
+> On Tue, 4 Oct 2022 18:02:56 -0700 Stanislav Fomichev wrote:
+> > +1, sounds like a good alternative (got your reply while typing)
+> > I'm not too versed in the rx_desc/rx_queue area, but seems like worst
+> > case that bpf_xdp_get_hwtstamp can probably receive a xdp_md ctx and
+> > parse it out from the pre-populated metadata?
 >
-> On 04.10.22 00:29, Alexander Aring wrote:
-> > Hi,
-> >
-> > On Mon, Oct 3, 2022 at 8:35 AM Tetsuo Handa
-> > <penguin-kernel@i-love.sakura.ne.jp> wrote:
-> >>
-> >> On 2022/10/03 21:30, patchwork-bot+netdevbpf@kernel.org wrote:
-> >>> Hello:
-> >>>
-> >>> This patch was applied to netdev/net.git (master)
-> >>> by David S. Miller <davem@davemloft.net>:
-> >>>
-> >>> On Sun, 2 Oct 2022 01:43:44 +0900 you wrote:
-> >>>> syzbot is hitting skb_assert_len() warning at raw_sendmsg() for ieee802154
-> >>>> socket. What commit dc633700f00f726e ("net/af_packet: check len when
-> >>>> min_header_len equals to 0") does also applies to ieee802154 socket.
-> >>>>
-> >>>> Link: https://syzkaller.appspot.com/bug?extid=5ea725c25d06fb9114c4
-> >>>> Reported-by: syzbot <syzbot+5ea725c25d06fb9114c4@syzkaller.appspotmail.com>
-> >>>> Fixes: fd1894224407c484 ("bpf: Don't redirect packets with invalid pkt_len")
-> >>>> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-> >>>>
-> >>>> [...]
-> >>>
-> >>> Here is the summary with links:
-> >>>    - net/ieee802154: reject zero-sized raw_sendmsg()
-> >>>      https://git.kernel.org/netdev/net/c/3a4d061c699b
-> >>
-> >>
-> >> Are you sure that returning -EINVAL is OK?
-> >>
-> >> In v2 patch, I changed to return 0, for PF_IEEE802154 socket's zero-sized
-> >> raw_sendmsg() request was able to return 0.
-> >
-> > I currently try to get access to kernel.org wpan repositories and try
-> > to rebase/apply your v2 on it.
+> I'd think so, worst case the driver can put xdp_md into a struct
+> and container_of() to get to its own stack with whatever fields
+> it needs.
+
+Ack, seems like something worth exploring then.
+
+The only issue I see with that is that we'd probably have to extend
+the loading api to pass target xdp device so we can pre-generate
+per-device bytecode for those kfuncs? And this potentially will block
+attaching the same program to different drivers/devices?
+Or, Martin, did you maybe have something better in mind?
+
+> > Btw, do we also need to think about the redirect case? What happens
+> > when I redirect one frame from a device A with one metadata format to
+> > a device B with another?
 >
-> This will only work once I merged net into wpan. Which I normally do
-> only after a pull request to avoid merge requests being created.
->
+> If there is a program on Tx then it'd be trivial - just do the
+> info <-> descriptor translation in the opposite direction than Rx.
+> TBH I'm not sure how it'd be done in the current approach, either.
 
-ok.
+Yeah, I don't think it magically works in any case. I'm just trying to
+understand whether it's something we care to support out of the box or
+can punt to the bpf programs themselves and say "if you care about
+forwarding metadata, somehow agree on the format yourself".
 
-> We have two options here a) reverting this patch and applying v2 of it
-> b) Tetsu sending an incremental patch on top of the applied one to come
-> to the same state as after v2.
->
->
-> Then it should be fixed in the next
+> Now I questioned the BTF way and mentioned the Tx-side program in
+> a single thread, I better stop talking...
 
-ok.
-
-> > pull request to net. For netdev maintainers, please don't apply wpan
-> > patches. Stefan and I will care about it.
->
-> Keep in mind that Dave and Jakub do this to help us out because we are
-> sometimes slow on applying patches and getting them to net. Normally
-> this is all fine for clear fixes.
->
-
-If we move getting patches for wpan to net then we should move it
-completely to that behaviour and not having a mixed setup which does
-not work, or it works and hope we don't have conflicts and if we have
-conflicts we need to fix them when doing the pull-request that the
-next instance has no conflicts because they touched maybe the same
-code area.
-
-> For -next material I agree this should only go through the wpan-next
-> tree for us to coordinate, but for the occasional fix its often faster
-> if it hits net directly. Normally I don't mind that. In this case v2 was
-> overlooked. But this is easily rectified with either of the two options
-> mentioned above.
->
-
-I think a) would be the fastest way here and I just sent something.
-
-- Alex
-
+Forget about btf, hail to the new king - kfunc :-D
