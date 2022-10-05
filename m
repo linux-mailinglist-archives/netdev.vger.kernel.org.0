@@ -2,151 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CCD765F56B0
-	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 16:48:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7038F5F56C1
+	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 16:53:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229653AbiJEOs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Oct 2022 10:48:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33936 "EHLO
+        id S229817AbiJEOxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Oct 2022 10:53:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229826AbiJEOs5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 10:48:57 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC507822A;
-        Wed,  5 Oct 2022 07:48:56 -0700 (PDT)
-Received: from sslproxy04.your-server.de ([78.46.152.42])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1og5hc-0004Wi-Sp; Wed, 05 Oct 2022 16:48:52 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1og5hc-000CZE-HC; Wed, 05 Oct 2022 16:48:52 +0200
-Subject: Re: [PATCH bpf-next 01/10] bpf: Add initial fd-based API to attach tc
- BPF programs
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        sdf@google.com
-Cc:     bpf@vger.kernel.org, razor@blackwall.org, ast@kernel.org,
-        andrii@kernel.org, martin.lau@linux.dev, john.fastabend@gmail.com,
-        joannelkoong@gmail.com, memxor@gmail.com, joe@cilium.io,
-        netdev@vger.kernel.org
-References: <20221004231143.19190-1-daniel@iogearbox.net>
- <20221004231143.19190-2-daniel@iogearbox.net> <YzzWDqAmN5DRTupQ@google.com>
- <878rluily2.fsf@toke.dk>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <f920e8c7-b328-e74a-8f48-04744a572b55@iogearbox.net>
-Date:   Wed, 5 Oct 2022 16:48:52 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S229576AbiJEOxG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 10:53:06 -0400
+Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1299F39BA3;
+        Wed,  5 Oct 2022 07:53:05 -0700 (PDT)
+Received: from [IPV6:2003:e9:d724:a76b:99bd:9507:55e0:d439] (p200300e9d724a76b99bd950755e0d439.dip0.t-ipconnect.de [IPv6:2003:e9:d724:a76b:99bd:9507:55e0:d439])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id BD0E5C034C;
+        Wed,  5 Oct 2022 16:53:02 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1664981583;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=pt0zhfgS5qs+aVmr37oKMneCBk+J0tB9uEZlqrTMhWc=;
+        b=Woaw/7eIrWqKVPbcz+xtUjt1fnlyRBjU6qwXIupP+s+7Td6t/Fteu2oIjL3ozTQhGpn6JR
+        peRiJuRXECOKRZOk8VTSsAyiUx1oExEiWRKHMQUEcZ9K6PG7IWLb0FrHI6W5XmA6EzsKo/
+        QrCRQZX6Lkowgk2YellnWbSzE4rGHtbYeO8sRhsRFyRC0ByPKmIdfXHoc6rd1lu7YR6n5p
+        iG0zcUyRK8MfMZ4xqdF/mbl4pL7deYmkkim/jCwW1WjtEDdt1puSiUJxSig7kfUXu0e01g
+        NtYUv54tyjhGyDFlZW5jl+9ltL7Gc5oaAsteNB3ci+bAhL8I3GEFImD00cGfEA==
+Message-ID: <5568f032-27f3-42c1-80b2-16b80bf55abd@datenfreihafen.org>
+Date:   Wed, 5 Oct 2022 16:53:02 +0200
 MIME-Version: 1.0
-In-Reply-To: <878rluily2.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Subject: Re: [PATCH] net/ieee802154: reject zero-sized raw_sendmsg()
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26680/Wed Oct  5 09:55:19 2022)
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        patchwork-bot+netdevbpf@kernel.org,
+        "David S. Miller" <davem@davemloft.net>, alex.aring@gmail.com,
+        shaozhengchao@huawei.com, ast@kernel.org, sdf@google.com,
+        linux-wpan@vger.kernel.org,
+        syzbot+5ea725c25d06fb9114c4@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <5e89b653-3fc6-25c5-324b-1b15909c0183@I-love.SAKURA.ne.jp>
+ <166480021535.14393.17575492399292423045.git-patchwork-notify@kernel.org>
+ <4aae5e2b-f4d5-c260-5bf8-435c525f6c97@I-love.SAKURA.ne.jp>
+ <CAK-6q+g7JQZkRJhp6qv_H9xGfD4DWnaChmQ7OaWJs3CAjfMnpA@mail.gmail.com>
+ <1c374e71-f56e-540e-35d0-e6e82a4dc0e3@datenfreihafen.org>
+ <CAK-6q+iqPFxrM7qdmi4xcF8e+2mgqXT9otEwRA+Vh-JfRQ18Wg@mail.gmail.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+In-Reply-To: <CAK-6q+iqPFxrM7qdmi4xcF8e+2mgqXT9otEwRA+Vh-JfRQ18Wg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/5/22 12:50 PM, Toke Høiland-Jørgensen wrote:
-> sdf@google.com writes:
-[...]
->>
->> The series looks exciting, haven't had a chance to look deeply, will try
->> to find some time this week.
->>
->> We've chatted briefly about priority during the talk, let's maybe discuss
->> it here more?
->>
->> I, as a user, still really have no clue about what priority to use.
->> We have this problem at tc, and we'll seemingly have the same problem
->> here? I guess it's even more relevant in k8s because internally at G we
->> can control the users.
->>
->> Is it worth at least trying to provide some default bands / guidance?
->>
->> For example, having SEC('tc/ingress') receive attach_priority=124 by
->> default? Maybe we can even have something like 'tc/ingress_first' get
->> attach_priority=1 and 'tc/ingress_last' with attach_priority=254?
->> (the names are arbitrary, we can do something better)
->>
->> ingress_first/ingress_last can be used by some monitoring jobs. The rest
->> can use default 124. If somebody really needs a custom priority, then they
->> can manually use something around 124/2 if they need to trigger before the
->> 'default' priority or 124+124/2 if they want to trigger after?
->>
->> Thoughts? Is it worth it? Do we care?
+Hello.
+
+On 05.10.22 03:49, Alexander Aring wrote:
+> Hi,
 > 
-> I think we should care :)
+> On Tue, Oct 4, 2022 at 1:59 PM Stefan Schmidt <stefan@datenfreihafen.org> wrote:
+>>
+>> Hello.
+>>
+>> On 04.10.22 00:29, Alexander Aring wrote:
+>>> pull request to net. For netdev maintainers, please don't apply wpan
+>>> patches. Stefan and I will care about it.
+>>
+>> Keep in mind that Dave and Jakub do this to help us out because we are
+>> sometimes slow on applying patches and getting them to net. Normally
+>> this is all fine for clear fixes.
+>>
 > 
-> Having "better" defaults are probably a good idea (so not everything
-> just ends up at priority 1 by default). However, I think ultimately the
-> only robust solution is to make the priority override-able. Users are
-> going to want to combine BPF programs in ways that their authors didn't
-> anticipate, so the actual priority the programs run at should not be the
-> sole choice of the program author.
-> 
-> To use the example that Daniel presented at LPC: Running datadog and
-> cilium at the same time broke cilium because datadog took over the
-> prio-1 hook point. With the bpf_link API what would change is that (a)
-> it would be obvious that something breaks (that is good), and (b) it
-> would be datadog that breaks instead of cilium (because it can no longer
-> just take over the hook, it'll get an error instead). However, (b) means
-> that the user still hasn't gotten what they wanted: the ability to run
-> datadog and cilium at the same time. To do this, they will need to be
-> able to change the priorities of one or both applications.
+> If we move getting patches for wpan to net then we should move it
+> completely to that behaviour and not having a mixed setup which does
+> not work, or it works and hope we don't have conflicts and if we have
+> conflicts we need to fix them when doing the pull-request that the
+> next instance has no conflicts because they touched maybe the same
+> code area.
 
-(Just for the record :) it was an oversight on datadog agent part and it
-got fixed, somehow there was a corner-case race with device creation and
-bpf attachment which lead to this, but 100% it would make it obvious that
-something breaks which is already a good step forward - I just took this
-solely as a real-world example that these things /can/ happen and are
-/tricky/ to debug on top given the 'undefined' behavior resulting from
-this; this can happen to anyone in general ofc. Both sides (cilium, dd)
-are configurable to interoperate cleanly now through daemon config.)
+I do disagree on this. I think there is no need to have it fixed to one 
+way or another (net OR wpan). It has been working fine with this mixed 
+approach for quite a long time. The current issue with v1 being applied 
+instead of v2 is something that could have happened to us when applying 
+to wpan as easily.
 
-> I know cilium at least has a configuration option to change this
-> somewhere, but I don't think relying on every BPF-using application to
-> expose this (each in their own way) is a good solution. I think of
-> priorities more like daemon startup at boot: this is system policy,
-> decided by the equivalent of the init system (and in this analogy we are
-> currently at the 'rc.d' stage of init system design, with the hook
-> priorities).
-> 
-> One way to resolve this is to have a central daemon that implements the
-> policy and does all the program loading on behalf of the users. I think
-> multiple such daemons exist already in more or less public and/or
-> complete states. However, getting everyone to agree on one is also hard,
-> so maybe the kernel needs to expose a mechanism for doing the actual
-> overriding, and then whatever daemon people run can hook into that?
+If we are quick enough to ack/apply patches hitting the list (1-2 days) 
+its unlikely any of them will be applied to net. Dave and Jakub simply 
+help us to make sure nothing falls through the cracks.
 
-I think system policy but also user policy, kind of a mixed bag in the end.
-Just take the policy bpf app vs introspection bpf app as an example: a user
-might want to see either all traffic (thus before policy app), or just
-traffic that policy let through (thus after policy app).
+> I think a) would be the fastest way here and I just sent something.
 
-> Not sure what that mechanism would be? A(nother) BPF hook for overriding
-> priority on load? An LSM hook that rewrites the system call? (can it
-> already do that?) Something else?
+I applied the two patches earlier today and just send out a pull request 
+for net with them.
 
-Yeah, it could be a means to achieve that, some kind of policy agent which
-has awareness of the installed programs and their inter-dependencies resp.
-user intent where it then rewrites the prios dynamically.
-
-> Oh, and also, in the case of TC there's also the additional issue that
-> execution only chains to the next program if the current one returns
-> TC_ACT_UNSPEC; this should probably also be overridable somehow, for the
-> same reasons...
-
-Same category as above, yes.
-
-Thanks,
-Daniel
+regards
+Stefan Schmidt
