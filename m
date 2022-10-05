@@ -2,76 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D18135F4D44
-	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 03:03:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27A105F4D52
+	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 03:20:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229548AbiJEBDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Oct 2022 21:03:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60024 "EHLO
+        id S229566AbiJEBUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Oct 2022 21:20:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229500AbiJEBDK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 21:03:10 -0400
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D1574E850
-        for <netdev@vger.kernel.org>; Tue,  4 Oct 2022 18:03:09 -0700 (PDT)
-Received: by mail-il1-x12a.google.com with SMTP id d14so7684178ilf.2
-        for <netdev@vger.kernel.org>; Tue, 04 Oct 2022 18:03:09 -0700 (PDT)
+        with ESMTP id S229508AbiJEBUE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 21:20:04 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DEF21B9CD
+        for <netdev@vger.kernel.org>; Tue,  4 Oct 2022 18:20:00 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id m81so16187107oia.1
+        for <netdev@vger.kernel.org>; Tue, 04 Oct 2022 18:20:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=yJ/v5flpgbqzzKOS0FYLrm0MIv5XQqM/Le3ziZYOQHI=;
-        b=ZC9ITz6o6buy6WwUn+AaoAusFCkjmocrVpdJxCp5hHjv2CRY8MPtaGrVAMXRv2VGix
-         zYKcn3Z24SHeHcyk1I9x8BUFFVOFPuIk8Wk3ylLe42RZ0NEdKWBXCCzn6Hzy9PsSVBEk
-         xllLfHngj6nxaYhz93NeNw+xexgMO6PfwmmonzAB0ivkRapnTONWOiTCAJqdzuvWLjBk
-         teWXLcTESrPwRpzIvyLZ/iRmUgojm0Ky+LyJkS9cfcsU3CUvu1AXxyYvypkSOTZ8Rvap
-         huqdoPP5WALMw/WBPzo19pm9krfggmqvkQ/J+TWxHu9S6h7XIRo5kDWdzAV+Sh1X51Th
-         Rliw==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=vs2R3sdfHragw4m02Qde1ECtO+7VgByP/jLcSBjBgp0=;
+        b=ero3bgotB7MnH6Z2EuYtj/e0lQi4B24ihjncvf2OxPMpM49hPqHY9cbjApLnf2mIBC
+         U1Si13pgm85pwyeDCA0mt7eUNgWGfp3QG2R+ixyThcnF/+2jl3bWXaujUwezVfgoa6Yf
+         reaKguSdNgeLMyOj/mywiPFgoP8k+/E+LDCbfKGjWOKNFbcMZq4nYOwBWiEk3mP3Byj3
+         8XMYMs9yGY2WzzFE12ooUtbfOCphCL+IdU/OpsUaAkwMbxmwdH/NeQtJ6YUeW4Pd4C5q
+         OL6lI9ty++cb95A2+uOLKdnELyoaYPk/FDJe/KQez2TtakSZnf+yPBBkaf91Rqo7nwqO
+         kMNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=yJ/v5flpgbqzzKOS0FYLrm0MIv5XQqM/Le3ziZYOQHI=;
-        b=TXCXkjmDuA0Z9ocxo7T7+oBjyfwHk2eXqOgHNBuLvtV90Xx3jfFQZ6re4EnL5WFdrF
-         rZiOfg8JZI0viSg0IqJOp5b3RJwPVsmc8LgKiHd69bILq2GC8ieYY1lhtuxOLEMpmLth
-         kF2oW/JBz+/IV24XhUkNpNc4PDsafD1Cq2MHLcb8RiWtULNKjmKAVM1wO3lIf5mTK63H
-         FyxtzmDka85d6HxzMG3W9Z7AMUmeK4yQ9C9oUZea90UZLxTlWnij4CKbUGHMDR9FSLOX
-         +vnk7yDnifXUODqc7/lNKE3NWmDnjwF2CINIet8fb2ECWWUuPWxOd99xYbbmvML3xjh0
-         8wiA==
-X-Gm-Message-State: ACrzQf2kQGP2FnIcquHvORDKSxY1/+I6aS3nQ/9sZH9gtbKa9K+tUjXc
-        qI0d4eIkYEqiyUoJErV5D6hzPUD0UohZY6tg11+JAw==
-X-Google-Smtp-Source: AMsMyM62nBzxdO94Lozo3o57NKTA5aneTHuundWNjPY59L8dQ2zGbFTKjlEmTK3cKl7Np1mP7zA1f10MgH6ZT2e0qZ8=
-X-Received: by 2002:a05:6e02:17cb:b0:2f9:1fb4:ba3b with SMTP id
- z11-20020a056e0217cb00b002f91fb4ba3bmr12821161ilu.257.1664931788439; Tue, 04
- Oct 2022 18:03:08 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=vs2R3sdfHragw4m02Qde1ECtO+7VgByP/jLcSBjBgp0=;
+        b=XP+8q9anwskcBBn9xrRa1HGpI79q7cGLR5ybbx9yNC/afZLTQCBWhFiclfg7kvMUsA
+         0b2OsD9dtY8gLDHgO/G72kvLaTrOFjHuC1UjhxxnZ+XEV9nu4C0IZGs5DW+WHsZaEVY0
+         qqQ9dkUkxnUqIQ0vRb9Vh5mxsT7Uv1b6M2xZaETC4e9DFTcnpgU1MMV8z/xnTjlWxGKI
+         tiGqK3eSY4m2B4IDdbxKGU+I7OtSpRIc0q2gS7slxrD6Ik4YlTIFy5UjEFU1v/Ef4tj4
+         3WRPwYCPdfHF0OcfuWS7ZAy/6xbYwla4zK/2QL7hfB4C2+7BImip/c8JpWb8jhaSHzck
+         B0PA==
+X-Gm-Message-State: ACrzQf2qlgnkUIEowk/I04oqzx7nyYRL78NQvAfoR7b3f8KFCVwbwEpF
+        Ex1SHBpD6xn7/wz89NESf6jfjFh0FjZ2OQ==
+X-Google-Smtp-Source: AMsMyM6aTpPg4l1MdwGUyClcBFgwNpAZg/en3pT6Hp84wizyx8t5zOULBZ709JnpleqeFxr0k7QAjA==
+X-Received: by 2002:a05:6808:e8e:b0:353:eff5:f4a6 with SMTP id k14-20020a0568080e8e00b00353eff5f4a6mr1149721oil.98.1664932799040;
+        Tue, 04 Oct 2022 18:19:59 -0700 (PDT)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id ce4-20020a056830628400b00660a927e3bcsm1631787otb.25.2022.10.04.18.19.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Oct 2022 18:19:58 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, dev@openvswitch.org,
+        ovs-dev@openvswitch.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
+        Ilya Maximets <i.maximets@ovn.org>,
+        Eelco Chaudron <echaudro@redhat.com>
+Subject: [PATCH net-next 0/3] net: add helper support in tc act_ct for ovs offloading
+Date:   Tue,  4 Oct 2022 21:19:53 -0400
+Message-Id: <cover.1664932669.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <166256538687.1434226.15760041133601409770.stgit@firesoul>
- <Yzt2YhbCBe8fYHWQ@google.com> <35fcfb25-583a-e923-6eee-e8bbcc19db17@redhat.com>
- <CAKH8qBuYVk7QwVOSYrhMNnaKFKGd7M9bopDyNp6-SnN6hSeTDQ@mail.gmail.com>
- <5ccff6fa-0d50-c436-b891-ab797fe7e3c4@linux.dev> <20221004175952.6e4aade7@kernel.org>
-In-Reply-To: <20221004175952.6e4aade7@kernel.org>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Tue, 4 Oct 2022 18:02:56 -0700
-Message-ID: <CAKH8qBtdAeHqbWa33yO-MMgC2+h2qehFn8Y_C6ZC1=YsjQS-Bw@mail.gmail.com>
-Subject: Re: [PATCH RFCv2 bpf-next 00/18] XDP-hints: XDP gaining access to HW
- offload hints via BTF
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Martin KaFai Lau <martin.lau@linux.dev>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        brouer@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        xdp-hints@xdp-project.net, larysa.zaremba@intel.com,
-        memxor@gmail.com, Lorenzo Bianconi <lorenzo@kernel.org>,
-        mtahhan@redhat.com,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        dave@dtucker.co.uk, Magnus Karlsson <magnus.karlsson@intel.com>,
-        bjorn@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,27 +79,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 4, 2022 at 5:59 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Tue, 4 Oct 2022 17:25:51 -0700 Martin KaFai Lau wrote:
-> > A intentionally wild question, what does it take for the driver to return the
-> > hints.  Is the rx_desc and rx_queue enough?  When the xdp prog is calling a
-> > kfunc/bpf-helper, like 'hwtstamp = bpf_xdp_get_hwtstamp()', can the driver
-> > replace it with some inline bpf code (like how the inline code is generated for
-> > the map_lookup helper).  The xdp prog can then store the hwstamp in the meta
-> > area in any layout it wants.
->
-> Since you mentioned it... FWIW that was always my preference rather than
-> the BTF magic :)  The jited image would have to be per-driver like we
-> do for BPF offload but that's easy to do from the technical
-> perspective (I doubt many deployments bind the same prog to multiple
-> HW devices)..
+Ilya reported an issue that FTP traffic would be broken when the OVS flow
+with ct(commit,alg=ftp) installed in the OVS kernel module, and it was
+caused by that TC didn't support the ftp helper offloaded from OVS.
 
-+1, sounds like a good alternative (got your reply while typing)
-I'm not too versed in the rx_desc/rx_queue area, but seems like worst
-case that bpf_xdp_get_hwtstamp can probably receive a xdp_md ctx and
-parse it out from the pre-populated metadata?
+This patchset is to add the helper support in act_ct for ovs offloading
+in kernel net/sched.
 
-Btw, do we also need to think about the redirect case? What happens
-when I redirect one frame from a device A with one metadata format to
-a device B with another?
+The 1st patch moves some code from openvswitch into nf_conntrack_helper
+so that it can be used by net/sched in the 3rd patch (Note there are
+still some other common code used in both OVS and TC and I will extract
+it in other patches). The 2nd patch extracts another function in net/
+sched to make the 3rd patch easier to write.
+
+The user space part will be added in another patch, and with it these OVS
+flows (FTP over SNAT) can be used to test this feature:
+
+  table=0, in_port=veth1,tcp,tcp_dst=2121,ct_state=-trk \
+    actions=ct(table=1, nat), normal
+  table=0, in_port=veth2,tcp,ct_state=-trk actions=ct(table=1, nat)
+  table=0, in_port=veth1,tcp,ct_state=-trk actions=ct(table=0, nat)
+  table=0, in_port=veth1,tcp,ct_state=+trk+rel actions=ct(commit, nat),normal
+  table=0, in_port=veth1,tcp,ct_state=+trk+est actions=veth2"
+
+  table=1, in_port=veth1,tcp,tcp_dst=2121,ct_state=+trk+new \
+    actions=ct(commit, nat(src=7.7.16.1), alg=ftp),normal"
+  table=1, in_port=veth1,tcp,tcp_dst=2121,ct_state=+trk+est actions=veth2"
+  table=1, in_port=veth2,tcp,ct_state=+trk+est actions=veth1"
+
+Xin Long (3):
+  net: move the helper function to nf_conntrack_helper for ovs and tc
+  net: sched: call tcf_ct_params_free to free params in tcf_ct_init
+  net: sched: add helper support in act_ct
+
+ include/net/netfilter/nf_conntrack_helper.h |   2 +
+ include/net/tc_act/tc_ct.h                  |   1 +
+ include/uapi/linux/tc_act/tc_ct.h           |   3 +
+ net/netfilter/nf_conntrack_helper.c         |  71 ++++++++++
+ net/openvswitch/conntrack.c                 |  61 +-------
+ net/sched/act_ct.c                          | 148 +++++++++++++++++---
+ 6 files changed, 204 insertions(+), 82 deletions(-)
+
+-- 
+2.31.1
+
