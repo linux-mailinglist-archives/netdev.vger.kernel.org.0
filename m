@@ -2,315 +2,1556 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E7E935F5A1B
-	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 20:49:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 480B25F5A52
+	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 21:04:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230178AbiJEStg convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 5 Oct 2022 14:49:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53294 "EHLO
+        id S230135AbiJETEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Oct 2022 15:04:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231231AbiJESrx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 14:47:53 -0400
-Received: from mail.lixid.net (lixid.tarent.de [193.107.123.118])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8327C2A247
-        for <netdev@vger.kernel.org>; Wed,  5 Oct 2022 11:47:51 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.lixid.net (MTA) with ESMTP id 4599614114E;
-        Wed,  5 Oct 2022 20:47:49 +0200 (CEST)
-Received: from mail.lixid.net ([127.0.0.1])
-        by localhost (mail.lixid.net [127.0.0.1]) (MFA, port 10024) with LMTP
-        id 83n2JP0LuUnT; Wed,  5 Oct 2022 20:47:49 +0200 (CEST)
-Received: from tglase.lan.tarent.de (tglase.lan.tarent.de [172.26.3.108])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.lixid.net (MTA) with ESMTPS id 2955F140EF0;
-        Wed,  5 Oct 2022 20:47:49 +0200 (CEST)
-Received: by tglase.lan.tarent.de (Postfix, from userid 2339)
-        id DB6A222118A; Wed,  5 Oct 2022 20:47:48 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by tglase.lan.tarent.de (Postfix) with ESMTP id C1A8B221187;
-        Wed,  5 Oct 2022 20:47:48 +0200 (CEST)
-Date:   Wed, 5 Oct 2022 20:47:48 +0200 (CEST)
-From:   Thorsten Glaser <t.glaser@tarent.de>
-To:     Haye.Haehne@telekom.de
-cc:     netdev@vger.kernel.org
-Subject: Re: RFH, where did I go wrong?
-In-Reply-To: <FR2P281MB29596B8EA9AC8940C5A95B7690559@FR2P281MB2959.DEUP281.PROD.OUTLOOK.COM>
-Message-ID: <daddd9a0-eb6c-6b93-8831-ddc45685234f@tarent.de>
-References: <FR2P281MB2959684780DC911876D2465590419@FR2P281MB2959.DEUP281.PROD.OUTLOOK.COM> <FR2P281MB2959EBC7E6CE9A1A8D01A01F90419@FR2P281MB2959.DEUP281.PROD.OUTLOOK.COM> <42776059-242c-cf49-c3ed-31e311b91f1c@tarent.de> <CAHNKnsQGwV9Z9dSrKusLV7qE+Xw_4eqEDtHKTVJxuuy6H+pWRA@mail.gmail.com>
- <cd3867e0-b645-c6cd-3464-29ffb142de5e@tarent.de> <FR2P281MB29597303CA232BBEF6E328DF90479@FR2P281MB2959.DEUP281.PROD.OUTLOOK.COM> <d0755144-c038-8332-1084-b62cc9c6499@tarent.de> <FR2P281MB2959289F36EFC955105DD1DF90469@FR2P281MB2959.DEUP281.PROD.OUTLOOK.COM>
- <bd8c8a7f-8a8e-3992-d631-d2f74d38483@tarent.de> <FR2P281MB2959185CA486AB5A5868C4D490529@FR2P281MB2959.DEUP281.PROD.OUTLOOK.COM> <1b62f51-a017-e21-31f3-2ccd72b6c8ad@tarent.de> <FR2P281MB29596B8EA9AC8940C5A95B7690559@FR2P281MB2959.DEUP281.PROD.OUTLOOK.COM>
-Content-Language: de-DE-1901
+        with ESMTP id S231184AbiJETEb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 15:04:31 -0400
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D14AA7FFB0
+        for <netdev@vger.kernel.org>; Wed,  5 Oct 2022 12:04:27 -0700 (PDT)
+Received: by mail-oi1-x22e.google.com with SMTP id w70so4472933oie.2
+        for <netdev@vger.kernel.org>; Wed, 05 Oct 2022 12:04:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=4f0ICfWyI8kHKhWNiXtOzIUTKb5P0gvcoPh1KGUvw6c=;
+        b=f7HuLmX8n96SJCHi4+mzLRoFg7rTJXGxGeTH5vOqVTykDiq1zvWuK1Q/lUn1EHB2MI
+         77R/yjnUmNXqhZwtA4Y2X/p6Pr1i0FlHqQUSNbm8POAqGRGSZJv9JYVi1MW1VNQjHIlb
+         M8+VJLUpNhPSRng2yd2jaBLUfu08AUWLek+JTb799hf00/DS01VZFrY/1oOdSkEXN3Fh
+         BY86eRM41xdPrSoryFpPxIj2XpipFrUK5523R+6Rg3lqBm5JqmLeRSzwVs11mCCPEKvk
+         ggRModXREjjZMxuGmpC/zY+aHwl7pqTqwrVZr9oHmuZi6sOWDihedOcaB3vjnQu9dI15
+         yr7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=4f0ICfWyI8kHKhWNiXtOzIUTKb5P0gvcoPh1KGUvw6c=;
+        b=EqEqOQMEQGQfJH1qgNJG1DSY8lCUWScNN3INdE6B7viHNgPcjYl4DfURBDXLB67Q23
+         c11uke5HGHjAXzNSaaPP6kYfe4qE1ODuOdl6DmRO+xwgd6U9jQw24kfDSURpxSPcGNKT
+         CDRv4gnrCPcs03X32a0mPi8ZNlOpL4uF3OHNgtoeFl20t2ea5u5W51H688i91cYCxCsV
+         xwRJtvCU5fk6YPXfsuZy9y0d71ynJf3766E8ak7iAco4OQ4DN6mej9r4YuHHKT9NUA0J
+         9bUcNlT7OmSt2FCWJEbcJH8EEP4sB7c/wOkfQ2g5DiHHIaTXEUpv4g0L7eUpwbV1qFJi
+         0+qw==
+X-Gm-Message-State: ACrzQf0BBE37+u5lUlE8oqiF00N+MQw0wEiVlcPN1tfuskXDArYvnEWL
+        CJ5Bd2LOOY2TNk8ocymsU9ByTG6ohnCawsA58zHW9A==
+X-Google-Smtp-Source: AMsMyM6mlsJmi+Beo8/P4F5Xb+c9re32V2MyuYs9/IzHi3o/UxboycB0EtB5SFYC+Gc3tVV6JEngYZS8t8SPrsSVhH4=
+X-Received: by 2002:a05:6808:148d:b0:350:7858:63ce with SMTP id
+ e13-20020a056808148d00b00350785863cemr634321oiw.106.1664996666177; Wed, 05
+ Oct 2022 12:04:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221004231143.19190-1-daniel@iogearbox.net> <20221004231143.19190-2-daniel@iogearbox.net>
+In-Reply-To: <20221004231143.19190-2-daniel@iogearbox.net>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Date:   Wed, 5 Oct 2022 15:04:14 -0400
+Message-ID: <CAM0EoM=i_zFMQ5YEtaaWyu-fSE7=wq2LmNTXnwDJoXcBJ9de6g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 01/10] bpf: Add initial fd-based API to attach tc
+ BPF programs
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, razor@blackwall.org, ast@kernel.org,
+        andrii@kernel.org, martin.lau@linux.dev, john.fastabend@gmail.com,
+        joannelkoong@gmail.com, memxor@gmail.com, toke@redhat.com,
+        joe@cilium.io, netdev@vger.kernel.org,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+Daniel,
 
-I finally managed to reproduce it, and this is the full trace, from virsh console
-output from an emulated serial console. (Took multiple test runs of 10 minutes
-each to crash it still…)
++tc maintainers
 
-The beginning of the trace seems a little hard to read because it’s interspersed
-with the list of loaded modules for some reason (crash code not MP-safe?), but
-the basic points (rtnl and sendmsg) are similar; there’s a second trace below
-though which I didn’t see in the screen photos from my colleagues.
+So i perused the slides, very fascinating battle debugging that ;->
 
-I now have some ideas I could try (including those Dave Täht wrote to me in
-private replies), but if this rings with someone or if someone has got a good
-idea how to debug this (the new info here is “nonzero _refcount”) be my guest
-and share.
+Let me see if i can summarize the issue of ownership..
+It seems there were two users each with root access and one decided they want
+to be prio 1 and basically deleted the others programs and added
+themselves to the top?
+And of course both want to be prio 1. Am i correct? And this feature
+basically avoids
+this problem by virtue of fd ownership.
 
-Thanks in advance,
-//mirabilos
+IIUC,  this is an issue of resource contention. Both users who have
+root access think they should be prio 1. Kubernetes has no controls for this?
+For debugging, wouldnt listening to netlink events have caught this?
+I may be misunderstanding - but if both users took advantage of this
+feature seems the root cause is still unresolved i.e  whoever gets there first
+becomes the owner of the highest prio?
 
-[852650.833646] ------------[ cut here ]------------
-[852650.835760] BUG: Bad page state in process swapper/0  pfn:10178
-[852650.837103] kernel BUG at mm/slub.c:305!
-[852650.841016] page:000000009e06fd59 refcount:-1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x10178
-[852650.841019] flags: 0xfffffc0000000()
-[852650.841028] raw: 000fffffc0000000 dead000000000100 dead000000000122 0000000000000000
-[852650.843530] invalid opcode: 0000 [#1] SMP PTI
-[852650.843534] CPU: 2 PID: 4397 Comm: tc Tainted: G           OE     5.10.0-18-amd64 #1 Debian 5.10.140-1
-[852650.843537] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
-[852650.849183] raw: 0000000000000000 0000000000000000 ffffffffffffffff 0000000000000000
-[852650.851804] RIP: 0010:__slab_free+0x21b/0x430
-[852650.856338] page dumped because: nonzero _refcount
-[852650.859047] Code: 44 24 20 e8 07 fc ff ff 44 8b 44 24 20 85 c0 0f 85 37 fe ff ff eb ae 41 f7 46 08 00 0d 21 00 0f 85 17 ff ff ff e9 09 ff ff ff <0f> 0b 80 4c 24 5b 80 45 31 c9 e9 76 fe ff ff f3 90 49 8b 04 24 a8
-[852650.864402] Modules linked in:
-[852650.869306] RSP: 0018:ffffa0f545bcb990 EFLAGS: 00010246
-[852650.873856]  sch_janz(OE)
-[852650.876721]
-[852650.879594]  xt_conntrack
-[852650.895021] RAX: ffff9450c114ef00 RBX: 000000008010000f RCX: ffff9450c114ee00
-[852650.897053]  nft_chain_nat
-[852650.901578] RDX: ffff9450c114ee00 RSI: ffffe246c4045380 RDI: ffff9450c0042600
-[852650.903352]  xt_MASQUERADE
-[852650.905027] RBP: ffffa0f545bcba40 R08: 0000000000000001 R09: ffffffff8e2ec1b1
-[852650.906794]  nf_nat
-[852650.912292] R10: ffff9450c114ee00 R11: ffff944ff5f8c300 R12: ffffe246c4045380
-[852650.914132]  nf_conntrack_netlink
-[852650.920046] R13: ffff9450c114ee00 R14: ffff9450c0042600 R15: ffff9450c114ee00
-[852650.921866]  nf_conntrack
-[852650.926695] FS:  00007f084af58740(0000) GS:ffff94513ad00000(0000) knlGS:0000000000000000
-[852650.928341]  nf_defrag_ipv6
-[852650.933091] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[852650.935495]  nf_defrag_ipv4
-[852650.940282] CR2: 0000555772316de0 CR3: 00000000101cc000 CR4: 0000000000000ee0
-[852650.942128]  xfrm_user
-[852650.948202] Call Trace:
-[852650.950305]  xfrm_algo
-[852650.954000]  ? __free_one_page+0x3a5/0x450
-[852650.955985]  nft_counter
-[852650.960821]  ? kfree_skb+0x41/0xb0
-[852650.962539]  xt_addrtype
-[852650.964695]  kfree+0x410/0x490
-[852650.966410]  nft_compat
-[852650.969219]  kfree_skb+0x41/0xb0
-[852650.970966]  x_tables
-[852650.973479]  __rtnl_unlock+0x34/0x50
-[852650.975417]  nf_tables
-[852650.977653]  netdev_run_todo+0x60/0x360
-[852650.979345]  libcrc32c
-[852650.981765]  rtnetlink_rcv_msg+0x134/0x380
-[852650.983525]  br_netfilter
-[852650.985953]  ? _copy_to_iter+0xb5/0x4c0
-[852650.987597]  bridge
-[852650.990183]  ? __free_one_page+0x3a5/0x450
-[852650.991979]  stp
-[852650.995073]  ? kernel_init_free_pages+0x46/0x60
-[852650.997083]  llc
-[852650.999666]  ? rtnl_calcit.isra.0+0x120/0x120
-[852651.001219]  overlay
-[852651.004233]  netlink_rcv_skb+0x50/0x100
-[852651.005848]  nfnetlink
-[852651.009049]  netlink_unicast+0x209/0x2d0
-[852651.010449]  nfsd auth_rpcgss nfs_acl nfs lockd grace nfs_ssc fscache sunrpc loop kvm_intel kvm drm_kms_helper
-[852651.013943]  netlink_sendmsg+0x250/0x4b0
-[852651.015615]  irqbypass
-[852651.018929]  sock_sendmsg+0x62/0x70
-[852651.020735]  cec
-[852651.023896]  ____sys_sendmsg+0x232/0x270
-[852651.030369]  drm
-[852651.033098]  ? import_iovec+0x2d/0x40
-[852651.035110]  virtio_rng
-[852651.037626]  ? sendmsg_copy_msghdr+0x80/0xa0
-[852651.039206]  virtio_balloon
-[852651.042319]  ___sys_sendmsg+0x75/0xc0
-[852651.044113]  evdev
-[852651.047167]  ? wp_page_copy+0x2fd/0x840
-[852651.049031]  rng_core
-[852651.052467]  ? handle_mm_fault+0x1143/0x1c10
-[852651.054539]  joydev
-[852651.057269]  __sys_sendmsg+0x59/0xa0
-[852651.058931]  serio_raw
-[852651.061516]  do_syscall_64+0x33/0x80
-[852651.063385]  pcspkr
-[852651.066605]  entry_SYSCALL_64_after_hwframe+0x61/0xc6
-[852651.068996]  qemu_fw_cfg
-[852651.071465] RIP: 0033:0x7f084b084fc3
-[852651.073916]  button
-[852651.076976] Code: 64 89 02 48 c7 c0 ff ff ff ff eb b7 66 2e 0f 1f 84 00 00 00 00 00 90 64 8b 04 25 18 00 00 00 85 c0 75 14 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 55 c3 0f 1f 40 00 48 83 ec 28 89 54 24 1c 48
-[852651.078698]  ext4
-[852651.082814] RSP: 002b:00007ffd63fd6708 EFLAGS: 00000246
-[852651.084859]  crc16
-[852651.087757]  ORIG_RAX: 000000000000002e
-[852651.089473]  mbcache
-[852651.106133] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f084b084fc3
-[852651.107962]  jbd2
-[852651.112893] RDX: 0000000000000000 RSI: 00007ffd63fd6770 RDI: 0000000000000003
-[852651.114442]  crc32c_generic
-[852651.117215] RBP: 00000000633dcefa R08: 0000000000000001 R09: 00007f084b156be0
-[852651.118924]  hid_generic usbhid hid virtio_net virtio_blk net_failover failover uhci_hcd ata_generic ehci_hcd ata_piix psmouse usbcore libata crc32c_intel virtio_pci
-[852651.123723] R10: 0000555773f318f0 R11: 0000000000000246 R12: 0000000000000001
-[852651.125316]  virtio_ring
-[852651.130148] R13: 0000000000000004 R14: 00007ffd63fe6a48 R15: 0000555772315f80
-[852651.132112]  i2c_piix4
-[852651.137135] Modules linked in:
-[852651.146865]  virtio
-[852651.151664]  sch_janz(OE)
-[852651.153468]  scsi_mod
-[852651.158290]  xt_conntrack
-[852651.160056]  usb_common
-[852651.162176]  nft_chain_nat
-[852651.163832]  floppy
-[852651.165820]  xt_MASQUERADE
-[852651.167494]  [last unloaded: sch_janz]
-[852651.169464]  nf_nat
-[852651.171178]
-[852651.173168]  nf_conntrack_netlink
-[852651.174807] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G           OE     5.10.0-18-amd64 #1 Debian 5.10.140-1
-[852651.176719]  nf_conntrack
-[852651.179456] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
-[852651.181137]  nf_defrag_ipv6
-[852651.182504] Call Trace:
-[852651.184737]  nf_defrag_ipv4
-[852651.191593]  <IRQ>
-[852651.193439]  xfrm_user
-[852651.198995]  dump_stack+0x6b/0x83
-[852651.201000]  xfrm_algo
-[852651.203174]  bad_page.cold+0x63/0x94
-[852651.205314]  nft_counter xt_addrtype nft_compat x_tables nf_tables libcrc32c br_netfilter bridge stp llc overlay nfnetlink nfsd auth_rpcgss nfs_acl nfs lockd grace nfs_ssc fscache sunrpc loop kvm_intel kvm
-[852651.207205]  get_page_from_freelist+0xc0b/0x1330
-[852651.209090]  drm_kms_helper
-[852651.211501]  ? __napi_alloc_skb+0x3f/0xf0
-[852651.213379]  irqbypass
-[852651.215934]  __alloc_pages_nodemask+0x161/0x310
-[852651.227502]  cec
-[852651.230870]  skb_page_frag_refill+0x8d/0x130
-[852651.232841]  drm
-[852651.235627]  try_fill_recv+0x310/0x700 [virtio_net]
-[852651.237401]  virtio_rng
-[852651.240976]  virtnet_poll+0x34a/0x45a [virtio_net]
-[852651.242446]  virtio_balloon
-[852651.245349]  net_rx_action+0x145/0x3e0
-[852651.246901]  evdev
-[852651.250248]  __do_softirq+0xc5/0x279
-[852651.252027]  rng_core
-[852651.255413]  asm_call_irq_on_stack+0x12/0x20
-[852651.257525]  joydev
-[852651.260184]  </IRQ>
-[852651.261747]  serio_raw
-[852651.264346]  do_softirq_own_stack+0x37/0x50
-[852651.266108]  pcspkr
-[852651.268992]  irq_exit_rcu+0x92/0xc0
-[852651.270695]  qemu_fw_cfg
-[852651.272427]  sysvec_apic_timer_interrupt+0x36/0x80
-[852651.274102]  button
-[852651.277273]  asm_sysvec_apic_timer_interrupt+0x12/0x20
-[852651.278928]  ext4
-[852651.281830] RIP: 0010:native_safe_halt+0xe/0x20
-[852651.283587]  crc16
-[852651.286888] Code: 00 f0 80 48 02 20 48 8b 00 a8 08 75 c0 e9 77 ff ff ff cc cc cc cc cc cc cc cc cc cc e9 07 00 00 00 0f 00 2d a6 39 51 00 fb f4 <c3> cc cc cc cc 66 66 2e 0f 1f 84 00 00 00 00 00 66 90 e9 07 00 00
-[852651.288550]  mbcache
-[852651.292157] RSP: 0018:ffffffff8f203eb8 EFLAGS: 00000212
-[852651.293745]  jbd2
-[852651.296934]
-[852651.298648]  crc32c_generic
-[852651.310456] RAX: ffffffff8e4f6390 RBX: 0000000000000000 RCX: ffff94513ac30a40
-[852651.312430]  hid_generic
-[852651.315540] RDX: 0000000010af973e RSI: ffffffff8f203e50 RDI: 0003077bfb649443
-[852651.317392]  usbhid
-[852651.318707] RBP: ffffffff8f213940 R08: 0000000000000001 R09: 0000000000000001
-[852651.321202]  hid
-[852651.325831] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-[852651.327840]  virtio_net
-[852651.332590] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-[852651.332596]  ? __sched_text_end+0x6/0x6
-[852651.332600]  default_idle+0xa/0x20
-[852651.332603]  default_idle_call+0x3c/0xd0
-[852651.332606]  do_idle+0x20c/0x2b0
-[852651.332610]  cpu_startup_entry+0x19/0x20
-[852651.332621]  start_kernel+0x574/0x599
-[852651.332627]  secondary_startup_64_no_verify+0xb0/0xbb
-[852651.372595]  virtio_blk net_failover failover uhci_hcd ata_generic ehci_hcd ata_piix psmouse usbcore libata crc32c_intel virtio_pci virtio_ring i2c_piix4 virtio scsi_mod usb_common floppy [last unloaded: sch_janz]
-[852651.384220] general protection fault, probably for non-canonical address 0x61a18e4baaf4c70c: 0000 [#2] SMP PTI
-[852651.384301] ---[ end trace 0c5eff17e57064a0 ]---
-[852651.389902] CPU: 0 PID: 12 Comm: ksoftirqd/0 Tainted: G    B D    OE     5.10.0-18-amd64 #1 Debian 5.10.140-1
-[852651.389903] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
-[852651.389909] RIP: 0010:__kmalloc_node_track_caller+0xd7/0x2a0
-[852651.389911] Code: 41 39 ce 74 19 48 8b 0c 24 44 89 f2 44 89 fe 4c 89 e7 e8 5c e8 ff ff 48 89 44 24 08 eb 42 41 8b 4c 24 28 49 8b 3c 24 48 01 c1 <48> 8b 19 48 89 ce 49 33 9c 24 b8 00 00 00 48 8d 4a 01 48 0f ce 48
-[852651.389913] RSP: 0018:ffffa0f54006bb70 EFLAGS: 00010206
-[852651.389915] RAX: 61a18e4baaf4c60c RBX: 00000000ffffffff RCX: 61a18e4baaf4c70c
-[852651.389919] RDX: 00000000011b11c1 RSI: 0000000000082a20 RDI: 0000000000033120
-[852651.392771] RIP: 0010:__slab_free+0x21b/0x430
-[852651.398467] RBP: ffff9450c0042600 R08: ffff94513ac33120 R09: ffff944ff5e31600
-[852651.398469] R10: 0000000000005a00 R11: 0000000000000600 R12: ffff9450c0042600
-[852651.398470] R13: 0000000000000200 R14: 00000000ffffffff R15: 0000000000082a20
-[852651.398473] FS:  0000000000000000(0000) GS:ffff94513ac00000(0000) knlGS:0000000000000000
-[852651.398474] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[852651.398476] CR2: 00007fb16cdc4030 CR3: 00000001043ee000 CR4: 0000000000000ef0
-[852651.398481] Call Trace:
-[852651.398487]  ? __napi_alloc_skb+0x3f/0xf0
-[852651.398491]  __alloc_skb+0x79/0x200
-[852651.403422] Code: 44 24 20 e8 07 fc ff ff 44 8b 44 24 20 85 c0 0f 85 37 fe ff ff eb ae 41 f7 46 08 00 0d 21 00 0f 85 17 ff ff ff e9 09 ff ff ff <0f> 0b 80 4c 24 5b 80 45 31 c9 e9 76 fe ff ff f3 90 49 8b 04 24 a8
-[852651.406803]  __napi_alloc_skb+0x3f/0xf0
-[852651.406810]  page_to_skb+0x61/0x370 [virtio_net]
-[852651.406815]  receive_buf+0xdfe/0x1a20 [virtio_net]
-[852651.406819]  ? inet_gro_receive+0x23a/0x300
-[852651.406825]  ? gro_normal_one+0x31/0xa0
-[852651.417319] RSP: 0018:ffffa0f545bcb990 EFLAGS: 00010246
-[852651.420409]  virtnet_poll+0x14e/0x45a [virtio_net]
-[852651.420414]  net_rx_action+0x145/0x3e0
-[852651.420418]  __do_softirq+0xc5/0x279
-[852651.420422]  run_ksoftirqd+0x2a/0x40
-[852651.420425]  smpboot_thread_fn+0xc5/0x160
-[852651.420428]  ? smpboot_register_percpu_thread+0xf0/0xf0
-[852651.420433]  kthread+0x11b/0x140
-[852651.424873]
-[852651.429080]  ? __kthread_bind_mask+0x60/0x60
-[852651.429084]  ret_from_fork+0x22/0x30
-[852651.429086] Modules linked in: sch_janz(OE) xt_conntrack nft_chain_nat xt_MASQUERADE nf_nat nf_conntrack_netlink nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 xfrm_user xfrm_algo nft_counter xt_addrtype nft_compat x_tables nf_tables libcrc32c
-[852651.431825] RAX: ffff9450c114ef00 RBX: 000000008010000f RCX: ffff9450c114ee00
-[852651.436085]  br_netfilter bridge stp llc overlay nfnetlink nfsd auth_rpcgss nfs_acl nfs lockd grace nfs_ssc fscache sunrpc loop kvm_intel kvm drm_kms_helper irqbypass cec drm virtio_rng virtio_balloon evdev rng_core joydev serio_raw
-[852651.440362] RDX: ffff9450c114ee00 RSI: ffffe246c4045380 RDI: ffff9450c0042600
-[852651.444563]  pcspkr qemu_fw_cfg button ext4 crc16 mbcache jbd2 crc32c_generic hid_generic usbhid hid virtio_net virtio_blk net_failover failover uhci_hcd ata_generic ehci_hcd ata_piix psmouse usbcore libata crc32c_intel virtio_pci virtio_ring i2c_piix4 virtio scsi_mod usb_common floppy [last unloaded: sch_janz]
-[852651.444636] ---[ end trace 0c5eff17e57064a1 ]---
-[852651.449355] RBP: ffffa0f545bcba40 R08: 0000000000000001 R09: ffffffff8e2ec1b1
-[852651.449358] R10: ffff9450c114ee00 R11: ffff944ff5f8c300 R12: ffffe246c4045380
-[852651.452820] RIP: 0010:__slab_free+0x21b/0x430
-[852651.452824] Code: 44 24 20 e8 07 fc ff ff 44 8b 44 24 20 85 c0 0f 85 37 fe ff ff eb ae 41 f7 46 08 00 0d 21 00 0f 85 17 ff ff ff e9 09 ff ff ff <0f> 0b 80 4c 24 5b 80 45 31 c9 e9 76 fe ff ff f3 90 49 8b 04 24 a8
-[852651.457211] R13: ffff9450c114ee00 R14: ffff9450c0042600 R15: ffff9450c114ee00
-[852651.458887] RSP: 0018:ffffa0f545bcb990 EFLAGS: 00010246
-[852651.461412] FS:  00007f084af58740(0000) GS:ffff94513ad00000(0000) knlGS:0000000000000000
-[852651.463607]
-[852651.474096] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[852651.476642] RAX: ffff9450c114ef00 RBX: 000000008010000f RCX: ffff9450c114ee00
-[852651.476643] RDX: ffff9450c114ee00 RSI: ffffe246c4045380 RDI: ffff9450c0042600
-[852651.476646] RBP: ffffa0f545bcba40 R08: 0000000000000001 R09: ffffffff8e2ec1b1
-[852651.479436] CR2: 0000555772316de0 CR3: 00000000101cc000 CR4: 0000000000000ee0
-[852651.482322] R10: ffff9450c114ee00 R11: ffff944ff5f8c300 R12: ffffe246c4045380
-[852651.482325] R13: ffff9450c114ee00 R14: ffff9450c0042600 R15: ffff9450c114ee00
-[852651.631634] FS:  0000000000000000(0000) GS:ffff94513ac00000(0000) knlGS:0000000000000000
-[852651.636352] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[852651.639739] CR2: 00007fb16cdc4030 CR3: 00000001043ee000 CR4: 0000000000000ef0
-[852651.643985] Kernel panic - not syncing: Fatal exception in interrupt
-[852651.647874] Kernel Offset: 0xcc00000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
-[852651.653955] ---[ end Kernel panic - not syncing: Fatal exception in interrupt ]---
+Other comments on just this patch (I will pay attention in detail later):
+My two qualms:
+1) Was bastardizing all things TC_ACT_XXX necessary?
+Maybe you could create #define somewhere visible which refers
+to the TC_ACT_XXX?
+Even these kind of things seems puzzling:
+-#ifdef CONFIG_NET_CLS_ACT
++#ifdef CONFIG_NET_XGRESS
+TC_ACT_*,
+2) Why is xtc_run before tc_run()?
+tc_run() existed before xtc_run() - which is the same arguement
+used when someone new shows up (eg when nftables did)
+
+Probably lesser concern are thing like dev_xtc_entry_fetch()
+which are bpf specific are now in net.
+
+cheers,
+jamal
+
+On Tue, Oct 4, 2022 at 7:12 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> This work refactors and adds a lightweight extension to the tc BPF ingress
+> and egress data path side for allowing BPF programs via an fd-based attach /
+> detach API. The main goal behind this work which we also presented at LPC [0]
+> this year is to eventually add support for BPF links for tc BPF programs in
+> a second step, thus this prep work is required for the latter which allows
+> for a model of safe ownership and program detachment.
+> Given the vast rise
+> in tc BPF users in cloud native / Kubernetes environments, this becomes
+> necessary to avoid hard to debug incidents either through stale leftover
+> programs or 3rd party applications stepping on each others toes. Further
+> details for BPF link rationale in next patch.
+> For the current tc framework, there is no change in behavior with this change
+> and neither does this change touch on tc core kernel APIs. The gist of this
+> patch is that the ingress and egress hook gets a lightweight, qdisc-less
+> extension for BPF to attach its tc BPF programs, in other words, a minimal
+> tc-layer entry point for BPF. As part of the feedback from LPC, there was
+> a suggestion to provide a name for this infrastructure to more easily differ
+> between the classic cls_bpf attachment and the fd-based API. As for most,
+> the XDP vs tc layer is already the default mental model for the pkt processing
+> pipeline. We refactored this with an xtc internal prefix aka 'express traffic
+> control' in order to avoid to deviate too far (and 'express' given its more
+> lightweight/faster entry point).
+
+
+
+> For the ingress and egress xtc points, the device holds a cache-friendly array
+> with programs. Same as with classic tc, programs are attached with a prio that
+> can be specified or auto-allocated through an idr, and the program return code
+> determines whether to continue in the pipeline or to terminate processing.
+> With TC_ACT_UNSPEC code, the processing continues (as the case today). The goal
+> was to have maximum compatibility to existing tc BPF programs, so they don't
+> need to be adapted. Compatibility to call into classic tcf_classify() is also
+> provided in order to allow successive migration or both to cleanly co-exist
+> where needed given its one logical layer. The fd-based API is behind a static
+> key, so that when unused the code is also not entered. The struct xtc_entry's
+> program array is currently static, but could be made dynamic if necessary at
+> a point in future. Desire has also been expressed for future work to adapt
+> similar framework for XDP to allow multi-attach from in-kernel side, too.
+>
+> Tested with tc-testing selftest suite which all passes, as well as the tc BPF
+> tests from the BPF CI.
+>
+>   [0] https://lpc.events/event/16/contributions/1353/
+>
+> Co-developed-by: Nikolay Aleksandrov <razor@blackwall.org>
+> Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> ---
+>  MAINTAINERS                    |   4 +-
+>  include/linux/bpf.h            |   1 +
+>  include/linux/netdevice.h      |  14 +-
+>  include/linux/skbuff.h         |   4 +-
+>  include/net/sch_generic.h      |   2 +-
+>  include/net/xtc.h              | 181 ++++++++++++++++++++++
+>  include/uapi/linux/bpf.h       |  35 ++++-
+>  kernel/bpf/Kconfig             |   1 +
+>  kernel/bpf/Makefile            |   1 +
+>  kernel/bpf/net.c               | 274 +++++++++++++++++++++++++++++++++
+>  kernel/bpf/syscall.c           |  24 ++-
+>  net/Kconfig                    |   5 +
+>  net/core/dev.c                 | 262 +++++++++++++++++++------------
+>  net/core/filter.c              |   4 +-
+>  net/sched/Kconfig              |   4 +-
+>  net/sched/sch_ingress.c        |  48 +++++-
+>  tools/include/uapi/linux/bpf.h |  35 ++++-
+>  17 files changed, 769 insertions(+), 130 deletions(-)
+>  create mode 100644 include/net/xtc.h
+>  create mode 100644 kernel/bpf/net.c
+>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index e55a4d47324c..bb63d8d000ea 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -3850,13 +3850,15 @@ S:      Maintained
+>  F:     kernel/trace/bpf_trace.c
+>  F:     kernel/bpf/stackmap.c
+>
+> -BPF [NETWORKING] (tc BPF, sock_addr)
+> +BPF [NETWORKING] (xtc & tc BPF, sock_addr)
+>  M:     Martin KaFai Lau <martin.lau@linux.dev>
+>  M:     Daniel Borkmann <daniel@iogearbox.net>
+>  R:     John Fastabend <john.fastabend@gmail.com>
+>  L:     bpf@vger.kernel.org
+>  L:     netdev@vger.kernel.org
+>  S:     Maintained
+> +F:     include/net/xtc.h
+> +F:     kernel/bpf/net.c
+>  F:     net/core/filter.c
+>  F:     net/sched/act_bpf.c
+>  F:     net/sched/cls_bpf.c
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index 9e7d46d16032..71e5f43db378 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -1473,6 +1473,7 @@ struct bpf_prog_array_item {
+>         union {
+>                 struct bpf_cgroup_storage *cgroup_storage[MAX_BPF_CGROUP_STORAGE_TYPE];
+>                 u64 bpf_cookie;
+> +               u32 bpf_priority;
+>         };
+>  };
+>
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index eddf8ee270e7..43bbb2303e57 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -1880,8 +1880,7 @@ enum netdev_ml_priv_type {
+>   *
+>   *     @rx_handler:            handler for received packets
+>   *     @rx_handler_data:       XXX: need comments on this one
+> - *     @miniq_ingress:         ingress/clsact qdisc specific data for
+> - *                             ingress processing
+> + *     @xtc_ingress:           BPF/clsact qdisc specific data for ingress processing
+>   *     @ingress_queue:         XXX: need comments on this one
+>   *     @nf_hooks_ingress:      netfilter hooks executed for ingress packets
+>   *     @broadcast:             hw bcast address
+> @@ -1902,8 +1901,7 @@ enum netdev_ml_priv_type {
+>   *     @xps_maps:              all CPUs/RXQs maps for XPS device
+>   *
+>   *     @xps_maps:      XXX: need comments on this one
+> - *     @miniq_egress:          clsact qdisc specific data for
+> - *                             egress processing
+> + *     @xtc_egress:            BPF/clsact qdisc specific data for egress processing
+>   *     @nf_hooks_egress:       netfilter hooks executed for egress packets
+>   *     @qdisc_hash:            qdisc hash table
+>   *     @watchdog_timeo:        Represents the timeout that is used by
+> @@ -2191,8 +2189,8 @@ struct net_device {
+>         rx_handler_func_t __rcu *rx_handler;
+>         void __rcu              *rx_handler_data;
+>
+> -#ifdef CONFIG_NET_CLS_ACT
+> -       struct mini_Qdisc __rcu *miniq_ingress;
+> +#ifdef CONFIG_NET_XGRESS
+> +       struct xtc_entry __rcu  *xtc_ingress;
+>  #endif
+>         struct netdev_queue __rcu *ingress_queue;
+>  #ifdef CONFIG_NETFILTER_INGRESS
+> @@ -2220,8 +2218,8 @@ struct net_device {
+>  #ifdef CONFIG_XPS
+>         struct xps_dev_maps __rcu *xps_maps[XPS_MAPS_MAX];
+>  #endif
+> -#ifdef CONFIG_NET_CLS_ACT
+> -       struct mini_Qdisc __rcu *miniq_egress;
+> +#ifdef CONFIG_NET_XGRESS
+> +       struct xtc_entry __rcu *xtc_egress;
+>  #endif
+>  #ifdef CONFIG_NETFILTER_EGRESS
+>         struct nf_hook_entries __rcu *nf_hooks_egress;
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index 9fcf534f2d92..a9ff7a1996e9 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -955,7 +955,7 @@ struct sk_buff {
+>         __u8                    csum_level:2;
+>         __u8                    dst_pending_confirm:1;
+>         __u8                    mono_delivery_time:1;   /* See SKB_MONO_DELIVERY_TIME_MASK */
+> -#ifdef CONFIG_NET_CLS_ACT
+> +#ifdef CONFIG_NET_XGRESS
+>         __u8                    tc_skip_classify:1;
+>         __u8                    tc_at_ingress:1;        /* See TC_AT_INGRESS_MASK */
+>  #endif
+> @@ -983,7 +983,7 @@ struct sk_buff {
+>         __u8                    slow_gro:1;
+>         __u8                    csum_not_inet:1;
+>
+> -#ifdef CONFIG_NET_SCHED
+> +#if defined(CONFIG_NET_SCHED) || defined(CONFIG_NET_XGRESS)
+>         __u16                   tc_index;       /* traffic control index */
+>  #endif
+>
+> diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+> index d5517719af4e..bc5c1da2d30f 100644
+> --- a/include/net/sch_generic.h
+> +++ b/include/net/sch_generic.h
+> @@ -693,7 +693,7 @@ int skb_do_redirect(struct sk_buff *);
+>
+>  static inline bool skb_at_tc_ingress(const struct sk_buff *skb)
+>  {
+> -#ifdef CONFIG_NET_CLS_ACT
+> +#ifdef CONFIG_NET_XGRESS
+>         return skb->tc_at_ingress;
+>  #else
+>         return false;
+> diff --git a/include/net/xtc.h b/include/net/xtc.h
+> new file mode 100644
+> index 000000000000..627dc18aa433
+> --- /dev/null
+> +++ b/include/net/xtc.h
+> @@ -0,0 +1,181 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/* Copyright (c) 2022 Isovalent */
+> +#ifndef __NET_XTC_H
+> +#define __NET_XTC_H
+> +
+> +#include <linux/idr.h>
+> +#include <linux/bpf.h>
+> +
+> +#include <net/sch_generic.h>
+> +
+> +#define XTC_MAX_ENTRIES 30
+> +/* Adds 1 NULL entry. */
+> +#define XTC_MAX        (XTC_MAX_ENTRIES + 1)
+> +
+> +struct xtc_entry {
+> +       struct bpf_prog_array_item items[XTC_MAX] ____cacheline_aligned;
+> +       struct xtc_entry_pair *parent;
+> +};
+> +
+> +struct mini_Qdisc;
+> +
+> +struct xtc_entry_pair {
+> +       struct rcu_head         rcu;
+> +       struct idr              idr;
+> +       struct mini_Qdisc       *miniq;
+> +       struct xtc_entry        a;
+> +       struct xtc_entry        b;
+> +};
+> +
+> +static inline void xtc_set_ingress(struct sk_buff *skb, bool ingress)
+> +{
+> +#ifdef CONFIG_NET_XGRESS
+> +       skb->tc_at_ingress = ingress;
+> +#endif
+> +}
+> +
+> +#ifdef CONFIG_NET_XGRESS
+> +void xtc_inc(void);
+> +void xtc_dec(void);
+> +
+> +static inline void
+> +dev_xtc_entry_update(struct net_device *dev, struct xtc_entry *entry,
+> +                    bool ingress)
+> +{
+> +       ASSERT_RTNL();
+> +       if (ingress)
+> +               rcu_assign_pointer(dev->xtc_ingress, entry);
+> +       else
+> +               rcu_assign_pointer(dev->xtc_egress, entry);
+> +       synchronize_rcu();
+> +}
+> +
+> +static inline struct xtc_entry *dev_xtc_entry_peer(const struct xtc_entry *entry)
+> +{
+> +       if (entry == &entry->parent->a)
+> +               return &entry->parent->b;
+> +       else
+> +               return &entry->parent->a;
+> +}
+> +
+> +static inline struct xtc_entry *dev_xtc_entry_create(void)
+> +{
+> +       struct xtc_entry_pair *pair = kzalloc(sizeof(*pair), GFP_KERNEL);
+> +
+> +       if (pair) {
+> +               pair->a.parent = pair;
+> +               pair->b.parent = pair;
+> +               idr_init(&pair->idr);
+> +               return &pair->a;
+> +       }
+> +       return NULL;
+> +}
+> +
+> +static inline struct xtc_entry *dev_xtc_entry_fetch(struct net_device *dev,
+> +                                                   bool ingress, bool *created)
+> +{
+> +       struct xtc_entry *entry = ingress ?
+> +               rcu_dereference_rtnl(dev->xtc_ingress) :
+> +               rcu_dereference_rtnl(dev->xtc_egress);
+> +
+> +       *created = false;
+> +       if (!entry) {
+> +               entry = dev_xtc_entry_create();
+> +               if (!entry)
+> +                       return NULL;
+> +               *created = true;
+> +       }
+> +       return entry;
+> +}
+> +
+> +static inline void dev_xtc_entry_clear(struct xtc_entry *entry)
+> +{
+> +       memset(entry->items, 0, sizeof(entry->items));
+> +}
+> +
+> +static inline int dev_xtc_entry_prio_new(struct xtc_entry *entry, u32 prio,
+> +                                        struct bpf_prog *prog)
+> +{
+> +       int ret;
+> +
+> +       if (prio == 0)
+> +               prio = 1;
+> +       ret = idr_alloc_u32(&entry->parent->idr, prog, &prio, U32_MAX,
+> +                           GFP_KERNEL);
+> +       return ret < 0 ? ret : prio;
+> +}
+> +
+> +static inline void dev_xtc_entry_prio_set(struct xtc_entry *entry, u32 prio,
+> +                                         struct bpf_prog *prog)
+> +{
+> +       idr_replace(&entry->parent->idr, prog, prio);
+> +}
+> +
+> +static inline void dev_xtc_entry_prio_del(struct xtc_entry *entry, u32 prio)
+> +{
+> +       idr_remove(&entry->parent->idr, prio);
+> +}
+> +
+> +static inline void dev_xtc_entry_free(struct xtc_entry *entry)
+> +{
+> +       idr_destroy(&entry->parent->idr);
+> +       kfree_rcu(entry->parent, rcu);
+> +}
+> +
+> +static inline u32 dev_xtc_entry_total(struct xtc_entry *entry)
+> +{
+> +       const struct bpf_prog_array_item *item;
+> +       const struct bpf_prog *prog;
+> +       u32 num = 0;
+> +
+> +       item = &entry->items[0];
+> +       while ((prog = READ_ONCE(item->prog))) {
+> +               num++;
+> +               item++;
+> +       }
+> +       return num;
+> +}
+> +
+> +static inline enum tc_action_base xtc_action_code(struct sk_buff *skb, int code)
+> +{
+> +       switch (code) {
+> +       case TC_PASS:
+> +               skb->tc_index = qdisc_skb_cb(skb)->tc_classid;
+> +               fallthrough;
+> +       case TC_DROP:
+> +       case TC_REDIRECT:
+> +               return code;
+> +       case TC_NEXT:
+> +       default:
+> +               return TC_NEXT;
+> +       }
+> +}
+> +
+> +int xtc_prog_attach(const union bpf_attr *attr, struct bpf_prog *prog);
+> +int xtc_prog_detach(const union bpf_attr *attr);
+> +int xtc_prog_query(const union bpf_attr *attr,
+> +                  union bpf_attr __user *uattr);
+> +void dev_xtc_uninstall(struct net_device *dev);
+> +#else
+> +static inline int xtc_prog_attach(const union bpf_attr *attr,
+> +                                 struct bpf_prog *prog)
+> +{
+> +       return -EINVAL;
+> +}
+> +
+> +static inline int xtc_prog_detach(const union bpf_attr *attr)
+> +{
+> +       return -EINVAL;
+> +}
+> +
+> +static inline int xtc_prog_query(const union bpf_attr *attr,
+> +                                union bpf_attr __user *uattr)
+> +{
+> +       return -EINVAL;
+> +}
+> +
+> +static inline void dev_xtc_uninstall(struct net_device *dev)
+> +{
+> +}
+> +#endif /* CONFIG_NET_XGRESS */
+> +#endif /* __NET_XTC_H */
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 51b9aa640ad2..de1f5546bcfe 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -1025,6 +1025,8 @@ enum bpf_attach_type {
+>         BPF_PERF_EVENT,
+>         BPF_TRACE_KPROBE_MULTI,
+>         BPF_LSM_CGROUP,
+> +       BPF_NET_INGRESS,
+> +       BPF_NET_EGRESS,
+>         __MAX_BPF_ATTACH_TYPE
+>  };
+>
+> @@ -1399,14 +1401,20 @@ union bpf_attr {
+>         };
+>
+>         struct { /* anonymous struct used by BPF_PROG_ATTACH/DETACH commands */
+> -               __u32           target_fd;      /* container object to attach to */
+> +               union {
+> +                       __u32   target_fd;      /* container object to attach to */
+> +                       __u32   target_ifindex; /* target ifindex */
+> +               };
+>                 __u32           attach_bpf_fd;  /* eBPF program to attach */
+>                 __u32           attach_type;
+>                 __u32           attach_flags;
+> -               __u32           replace_bpf_fd; /* previously attached eBPF
+> +               union {
+> +                       __u32   attach_priority;
+> +                       __u32   replace_bpf_fd; /* previously attached eBPF
+>                                                  * program to replace if
+>                                                  * BPF_F_REPLACE is used
+>                                                  */
+> +               };
+>         };
+>
+>         struct { /* anonymous struct used by BPF_PROG_TEST_RUN command */
+> @@ -1452,7 +1460,10 @@ union bpf_attr {
+>         } info;
+>
+>         struct { /* anonymous struct used by BPF_PROG_QUERY command */
+> -               __u32           target_fd;      /* container object to query */
+> +               union {
+> +                       __u32   target_fd;      /* container object to query */
+> +                       __u32   target_ifindex; /* target ifindex */
+> +               };
+>                 __u32           attach_type;
+>                 __u32           query_flags;
+>                 __u32           attach_flags;
+> @@ -6038,6 +6049,19 @@ struct bpf_sock_tuple {
+>         };
+>  };
+>
+> +/* (Simplified) user return codes for tc prog type.
+> + * A valid tc program must return one of these defined values. All other
+> + * return codes are reserved for future use. Must remain compatible with
+> + * their TC_ACT_* counter-parts. For compatibility in behavior, unknown
+> + * return codes are mapped to TC_NEXT.
+> + */
+> +enum tc_action_base {
+> +       TC_NEXT         = -1,
+> +       TC_PASS         = 0,
+> +       TC_DROP         = 2,
+> +       TC_REDIRECT     = 7,
+> +};
+> +
+>  struct bpf_xdp_sock {
+>         __u32 queue_id;
+>  };
+> @@ -6804,6 +6828,11 @@ struct bpf_flow_keys {
+>         __be32  flow_label;
+>  };
+>
+> +struct bpf_query_info {
+> +       __u32 prog_id;
+> +       __u32 prio;
+> +};
+> +
+>  struct bpf_func_info {
+>         __u32   insn_off;
+>         __u32   type_id;
+> diff --git a/kernel/bpf/Kconfig b/kernel/bpf/Kconfig
+> index 2dfe1079f772..6a906ff93006 100644
+> --- a/kernel/bpf/Kconfig
+> +++ b/kernel/bpf/Kconfig
+> @@ -31,6 +31,7 @@ config BPF_SYSCALL
+>         select TASKS_TRACE_RCU
+>         select BINARY_PRINTF
+>         select NET_SOCK_MSG if NET
+> +       select NET_XGRESS if NET
+>         select PAGE_POOL if NET
+>         default n
+>         help
+> diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
+> index 341c94f208f4..76c3f9d4e2f3 100644
+> --- a/kernel/bpf/Makefile
+> +++ b/kernel/bpf/Makefile
+> @@ -20,6 +20,7 @@ obj-$(CONFIG_BPF_SYSCALL) += devmap.o
+>  obj-$(CONFIG_BPF_SYSCALL) += cpumap.o
+>  obj-$(CONFIG_BPF_SYSCALL) += offload.o
+>  obj-$(CONFIG_BPF_SYSCALL) += net_namespace.o
+> +obj-$(CONFIG_BPF_SYSCALL) += net.o
+>  endif
+>  ifeq ($(CONFIG_PERF_EVENTS),y)
+>  obj-$(CONFIG_BPF_SYSCALL) += stackmap.o
+> diff --git a/kernel/bpf/net.c b/kernel/bpf/net.c
+> new file mode 100644
+> index 000000000000..ab9a9dee615b
+> --- /dev/null
+> +++ b/kernel/bpf/net.c
+> @@ -0,0 +1,274 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/* Copyright (c) 2022 Isovalent */
+> +
+> +#include <linux/bpf.h>
+> +#include <linux/filter.h>
+> +#include <linux/netdevice.h>
+> +
+> +#include <net/xtc.h>
+> +
+> +static int __xtc_prog_attach(struct net_device *dev, bool ingress, u32 limit,
+> +                            struct bpf_prog *nprog, u32 prio, u32 flags)
+> +{
+> +       struct bpf_prog_array_item *item, *tmp;
+> +       struct xtc_entry *entry, *peer;
+> +       struct bpf_prog *oprog;
+> +       bool created;
+> +       int i, j;
+> +
+> +       ASSERT_RTNL();
+> +
+> +       entry = dev_xtc_entry_fetch(dev, ingress, &created);
+> +       if (!entry)
+> +               return -ENOMEM;
+> +       for (i = 0; i < limit; i++) {
+> +               item = &entry->items[i];
+> +               oprog = item->prog;
+> +               if (!oprog)
+> +                       break;
+> +               if (item->bpf_priority == prio) {
+> +                       if (flags & BPF_F_REPLACE) {
+> +                               /* Pairs with READ_ONCE() in xtc_run_progs(). */
+> +                               WRITE_ONCE(item->prog, nprog);
+> +                               bpf_prog_put(oprog);
+> +                               dev_xtc_entry_prio_set(entry, prio, nprog);
+> +                               return prio;
+> +                       }
+> +                       return -EBUSY;
+> +               }
+> +       }
+> +       if (dev_xtc_entry_total(entry) >= limit)
+> +               return -ENOSPC;
+> +       prio = dev_xtc_entry_prio_new(entry, prio, nprog);
+> +       if (prio < 0) {
+> +               if (created)
+> +                       dev_xtc_entry_free(entry);
+> +               return -ENOMEM;
+> +       }
+> +       peer = dev_xtc_entry_peer(entry);
+> +       dev_xtc_entry_clear(peer);
+> +       for (i = 0, j = 0; i < limit; i++, j++) {
+> +               item = &entry->items[i];
+> +               tmp = &peer->items[j];
+> +               oprog = item->prog;
+> +               if (!oprog) {
+> +                       if (i == j) {
+> +                               tmp->prog = nprog;
+> +                               tmp->bpf_priority = prio;
+> +                       }
+> +                       break;
+> +               } else if (item->bpf_priority < prio) {
+> +                       tmp->prog = oprog;
+> +                       tmp->bpf_priority = item->bpf_priority;
+> +               } else if (item->bpf_priority > prio) {
+> +                       if (i == j) {
+> +                               tmp->prog = nprog;
+> +                               tmp->bpf_priority = prio;
+> +                               tmp = &peer->items[++j];
+> +                       }
+> +                       tmp->prog = oprog;
+> +                       tmp->bpf_priority = item->bpf_priority;
+> +               }
+> +       }
+> +       dev_xtc_entry_update(dev, peer, ingress);
+> +       if (ingress)
+> +               net_inc_ingress_queue();
+> +       else
+> +               net_inc_egress_queue();
+> +       xtc_inc();
+> +       return prio;
+> +}
+> +
+> +int xtc_prog_attach(const union bpf_attr *attr, struct bpf_prog *nprog)
+> +{
+> +       struct net *net = current->nsproxy->net_ns;
+> +       bool ingress = attr->attach_type == BPF_NET_INGRESS;
+> +       struct net_device *dev;
+> +       int ret;
+> +
+> +       if (attr->attach_flags & ~BPF_F_REPLACE)
+> +               return -EINVAL;
+> +       rtnl_lock();
+> +       dev = __dev_get_by_index(net, attr->target_ifindex);
+> +       if (!dev) {
+> +               rtnl_unlock();
+> +               return -EINVAL;
+> +       }
+> +       ret = __xtc_prog_attach(dev, ingress, XTC_MAX_ENTRIES, nprog,
+> +                               attr->attach_priority, attr->attach_flags);
+> +       rtnl_unlock();
+> +       return ret;
+> +}
+> +
+> +static int __xtc_prog_detach(struct net_device *dev, bool ingress, u32 limit,
+> +                            u32 prio)
+> +{
+> +       struct bpf_prog_array_item *item, *tmp;
+> +       struct bpf_prog *oprog, *fprog = NULL;
+> +       struct xtc_entry *entry, *peer;
+> +       int i, j;
+> +
+> +       ASSERT_RTNL();
+> +
+> +       entry = ingress ?
+> +               rcu_dereference_rtnl(dev->xtc_ingress) :
+> +               rcu_dereference_rtnl(dev->xtc_egress);
+> +       if (!entry)
+> +               return -ENOENT;
+> +       peer = dev_xtc_entry_peer(entry);
+> +       dev_xtc_entry_clear(peer);
+> +       for (i = 0, j = 0; i < limit; i++) {
+> +               item = &entry->items[i];
+> +               tmp = &peer->items[j];
+> +               oprog = item->prog;
+> +               if (!oprog)
+> +                       break;
+> +               if (item->bpf_priority != prio) {
+> +                       tmp->prog = oprog;
+> +                       tmp->bpf_priority = item->bpf_priority;
+> +                       j++;
+> +               } else {
+> +                       fprog = oprog;
+> +               }
+> +       }
+> +       if (fprog) {
+> +               dev_xtc_entry_prio_del(peer, prio);
+> +               if (dev_xtc_entry_total(peer) == 0 && !entry->parent->miniq)
+> +                       peer = NULL;
+> +               dev_xtc_entry_update(dev, peer, ingress);
+> +               bpf_prog_put(fprog);
+> +               if (!peer)
+> +                       dev_xtc_entry_free(entry);
+> +               if (ingress)
+> +                       net_dec_ingress_queue();
+> +               else
+> +                       net_dec_egress_queue();
+> +               xtc_dec();
+> +               return 0;
+> +       }
+> +       return -ENOENT;
+> +}
+> +
+> +int xtc_prog_detach(const union bpf_attr *attr)
+> +{
+> +       struct net *net = current->nsproxy->net_ns;
+> +       bool ingress = attr->attach_type == BPF_NET_INGRESS;
+> +       struct net_device *dev;
+> +       int ret;
+> +
+> +       if (attr->attach_flags || !attr->attach_priority)
+> +               return -EINVAL;
+> +       rtnl_lock();
+> +       dev = __dev_get_by_index(net, attr->target_ifindex);
+> +       if (!dev) {
+> +               rtnl_unlock();
+> +               return -EINVAL;
+> +       }
+> +       ret = __xtc_prog_detach(dev, ingress, XTC_MAX_ENTRIES,
+> +                               attr->attach_priority);
+> +       rtnl_unlock();
+> +       return ret;
+> +}
+> +
+> +static void __xtc_prog_detach_all(struct net_device *dev, bool ingress, u32 limit)
+> +{
+> +       struct bpf_prog_array_item *item;
+> +       struct xtc_entry *entry;
+> +       struct bpf_prog *prog;
+> +       int i;
+> +
+> +       ASSERT_RTNL();
+> +
+> +       entry = ingress ?
+> +               rcu_dereference_rtnl(dev->xtc_ingress) :
+> +               rcu_dereference_rtnl(dev->xtc_egress);
+> +       if (!entry)
+> +               return;
+> +       dev_xtc_entry_update(dev, NULL, ingress);
+> +       for (i = 0; i < limit; i++) {
+> +               item = &entry->items[i];
+> +               prog = item->prog;
+> +               if (!prog)
+> +                       break;
+> +               dev_xtc_entry_prio_del(entry, item->bpf_priority);
+> +               bpf_prog_put(prog);
+> +               if (ingress)
+> +                       net_dec_ingress_queue();
+> +               else
+> +                       net_dec_egress_queue();
+> +               xtc_dec();
+> +       }
+> +       dev_xtc_entry_free(entry);
+> +}
+> +
+> +void dev_xtc_uninstall(struct net_device *dev)
+> +{
+> +       __xtc_prog_detach_all(dev, true,  XTC_MAX_ENTRIES + 1);
+> +       __xtc_prog_detach_all(dev, false, XTC_MAX_ENTRIES + 1);
+> +}
+> +
+> +static int
+> +__xtc_prog_query(const union bpf_attr *attr, union bpf_attr __user *uattr,
+> +                struct net_device *dev, bool ingress, u32 limit)
+> +{
+> +       struct bpf_query_info info, __user *uinfo;
+> +       struct bpf_prog_array_item *item;
+> +       struct xtc_entry *entry;
+> +       struct bpf_prog *prog;
+> +       u32 i, flags = 0, cnt;
+> +       int ret = 0;
+> +
+> +       ASSERT_RTNL();
+> +
+> +       entry = ingress ?
+> +               rcu_dereference_rtnl(dev->xtc_ingress) :
+> +               rcu_dereference_rtnl(dev->xtc_egress);
+> +       if (!entry)
+> +               return -ENOENT;
+> +       cnt = dev_xtc_entry_total(entry);
+> +       if (copy_to_user(&uattr->query.attach_flags, &flags, sizeof(flags)))
+> +               return -EFAULT;
+> +       if (copy_to_user(&uattr->query.prog_cnt, &cnt, sizeof(cnt)))
+> +               return -EFAULT;
+> +       uinfo = u64_to_user_ptr(attr->query.prog_ids);
+> +       if (attr->query.prog_cnt == 0 || !uinfo || !cnt)
+> +               /* return early if user requested only program count + flags */
+> +               return 0;
+> +       if (attr->query.prog_cnt < cnt) {
+> +               cnt = attr->query.prog_cnt;
+> +               ret = -ENOSPC;
+> +       }
+> +       for (i = 0; i < limit; i++) {
+> +               item = &entry->items[i];
+> +               prog = item->prog;
+> +               if (!prog)
+> +                       break;
+> +               info.prog_id = prog->aux->id;
+> +               info.prio = item->bpf_priority;
+> +               if (copy_to_user(uinfo + i, &info, sizeof(info)))
+> +                       return -EFAULT;
+> +               if (i + 1 == cnt)
+> +                       break;
+> +       }
+> +       return ret;
+> +}
+> +
+> +int xtc_prog_query(const union bpf_attr *attr, union bpf_attr __user *uattr)
+> +{
+> +       struct net *net = current->nsproxy->net_ns;
+> +       bool ingress = attr->query.attach_type == BPF_NET_INGRESS;
+> +       struct net_device *dev;
+> +       int ret;
+> +
+> +       if (attr->query.query_flags || attr->query.attach_flags)
+> +               return -EINVAL;
+> +       rtnl_lock();
+> +       dev = __dev_get_by_index(net, attr->query.target_ifindex);
+> +       if (!dev) {
+> +               rtnl_unlock();
+> +               return -EINVAL;
+> +       }
+> +       ret = __xtc_prog_query(attr, uattr, dev, ingress, XTC_MAX_ENTRIES);
+> +       rtnl_unlock();
+> +       return ret;
+> +}
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index 7b373a5e861f..a0a670b964bb 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -36,6 +36,8 @@
+>  #include <linux/memcontrol.h>
+>  #include <linux/trace_events.h>
+>
+> +#include <net/xtc.h>
+> +
+>  #define IS_FD_ARRAY(map) ((map)->map_type == BPF_MAP_TYPE_PERF_EVENT_ARRAY || \
+>                           (map)->map_type == BPF_MAP_TYPE_CGROUP_ARRAY || \
+>                           (map)->map_type == BPF_MAP_TYPE_ARRAY_OF_MAPS)
+> @@ -3448,6 +3450,9 @@ attach_type_to_prog_type(enum bpf_attach_type attach_type)
+>                 return BPF_PROG_TYPE_XDP;
+>         case BPF_LSM_CGROUP:
+>                 return BPF_PROG_TYPE_LSM;
+> +       case BPF_NET_INGRESS:
+> +       case BPF_NET_EGRESS:
+> +               return BPF_PROG_TYPE_SCHED_CLS;
+>         default:
+>                 return BPF_PROG_TYPE_UNSPEC;
+>         }
+> @@ -3466,18 +3471,15 @@ static int bpf_prog_attach(const union bpf_attr *attr)
+>
+>         if (CHECK_ATTR(BPF_PROG_ATTACH))
+>                 return -EINVAL;
+> -
+>         if (attr->attach_flags & ~BPF_F_ATTACH_MASK)
+>                 return -EINVAL;
+>
+>         ptype = attach_type_to_prog_type(attr->attach_type);
+>         if (ptype == BPF_PROG_TYPE_UNSPEC)
+>                 return -EINVAL;
+> -
+>         prog = bpf_prog_get_type(attr->attach_bpf_fd, ptype);
+>         if (IS_ERR(prog))
+>                 return PTR_ERR(prog);
+> -
+>         if (bpf_prog_attach_check_attach_type(prog, attr->attach_type)) {
+>                 bpf_prog_put(prog);
+>                 return -EINVAL;
+> @@ -3508,16 +3510,18 @@ static int bpf_prog_attach(const union bpf_attr *attr)
+>
+>                 ret = cgroup_bpf_prog_attach(attr, ptype, prog);
+>                 break;
+> +       case BPF_PROG_TYPE_SCHED_CLS:
+> +               ret = xtc_prog_attach(attr, prog);
+> +               break;
+>         default:
+>                 ret = -EINVAL;
+>         }
+> -
+> -       if (ret)
+> +       if (ret < 0)
+>                 bpf_prog_put(prog);
+>         return ret;
+>  }
+>
+> -#define BPF_PROG_DETACH_LAST_FIELD attach_type
+> +#define BPF_PROG_DETACH_LAST_FIELD replace_bpf_fd
+>
+>  static int bpf_prog_detach(const union bpf_attr *attr)
+>  {
+> @@ -3527,6 +3531,9 @@ static int bpf_prog_detach(const union bpf_attr *attr)
+>                 return -EINVAL;
+>
+>         ptype = attach_type_to_prog_type(attr->attach_type);
+> +       if (ptype != BPF_PROG_TYPE_SCHED_CLS &&
+> +           (attr->attach_flags || attr->replace_bpf_fd))
+> +               return -EINVAL;
+>
+>         switch (ptype) {
+>         case BPF_PROG_TYPE_SK_MSG:
+> @@ -3545,6 +3552,8 @@ static int bpf_prog_detach(const union bpf_attr *attr)
+>         case BPF_PROG_TYPE_SOCK_OPS:
+>         case BPF_PROG_TYPE_LSM:
+>                 return cgroup_bpf_prog_detach(attr, ptype);
+> +       case BPF_PROG_TYPE_SCHED_CLS:
+> +               return xtc_prog_detach(attr);
+>         default:
+>                 return -EINVAL;
+>         }
+> @@ -3598,6 +3607,9 @@ static int bpf_prog_query(const union bpf_attr *attr,
+>         case BPF_SK_MSG_VERDICT:
+>         case BPF_SK_SKB_VERDICT:
+>                 return sock_map_bpf_prog_query(attr, uattr);
+> +       case BPF_NET_INGRESS:
+> +       case BPF_NET_EGRESS:
+> +               return xtc_prog_query(attr, uattr);
+>         default:
+>                 return -EINVAL;
+>         }
+> diff --git a/net/Kconfig b/net/Kconfig
+> index 48c33c222199..b7a9cd174464 100644
+> --- a/net/Kconfig
+> +++ b/net/Kconfig
+> @@ -52,6 +52,11 @@ config NET_INGRESS
+>  config NET_EGRESS
+>         bool
+>
+> +config NET_XGRESS
+> +       select NET_INGRESS
+> +       select NET_EGRESS
+> +       bool
+> +
+>  config NET_REDIRECT
+>         bool
+>
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index fa53830d0683..552b805c27dd 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -107,6 +107,7 @@
+>  #include <net/pkt_cls.h>
+>  #include <net/checksum.h>
+>  #include <net/xfrm.h>
+> +#include <net/xtc.h>
+>  #include <linux/highmem.h>
+>  #include <linux/init.h>
+>  #include <linux/module.h>
+> @@ -154,7 +155,6 @@
+>  #include "dev.h"
+>  #include "net-sysfs.h"
+>
+> -
+>  static DEFINE_SPINLOCK(ptype_lock);
+>  struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly;
+>  struct list_head ptype_all __read_mostly;      /* Taps */
+> @@ -3935,69 +3935,199 @@ int dev_loopback_xmit(struct net *net, struct sock *sk, struct sk_buff *skb)
+>  EXPORT_SYMBOL(dev_loopback_xmit);
+>
+>  #ifdef CONFIG_NET_EGRESS
+> -static struct sk_buff *
+> -sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
+> +static struct netdev_queue *
+> +netdev_tx_queue_mapping(struct net_device *dev, struct sk_buff *skb)
+> +{
+> +       int qm = skb_get_queue_mapping(skb);
+> +
+> +       return netdev_get_tx_queue(dev, netdev_cap_txqueue(dev, qm));
+> +}
+> +
+> +static bool netdev_xmit_txqueue_skipped(void)
+> +{
+> +       return __this_cpu_read(softnet_data.xmit.skip_txqueue);
+> +}
+> +
+> +void netdev_xmit_skip_txqueue(bool skip)
+> +{
+> +       __this_cpu_write(softnet_data.xmit.skip_txqueue, skip);
+> +}
+> +EXPORT_SYMBOL_GPL(netdev_xmit_skip_txqueue);
+> +#endif /* CONFIG_NET_EGRESS */
+> +
+> +#ifdef CONFIG_NET_XGRESS
+> +static int tc_run(struct xtc_entry *entry, struct sk_buff *skb)
+>  {
+> +       int ret = TC_ACT_UNSPEC;
+>  #ifdef CONFIG_NET_CLS_ACT
+> -       struct mini_Qdisc *miniq = rcu_dereference_bh(dev->miniq_egress);
+> -       struct tcf_result cl_res;
+> +       struct mini_Qdisc *miniq = rcu_dereference_bh(entry->parent->miniq);
+> +       struct tcf_result res;
+>
+>         if (!miniq)
+> -               return skb;
+> +               return ret;
+>
+> -       /* qdisc_skb_cb(skb)->pkt_len was already set by the caller. */
+>         tc_skb_cb(skb)->mru = 0;
+>         tc_skb_cb(skb)->post_ct = false;
+> -       mini_qdisc_bstats_cpu_update(miniq, skb);
+>
+> -       switch (tcf_classify(skb, miniq->block, miniq->filter_list, &cl_res, false)) {
+> +       mini_qdisc_bstats_cpu_update(miniq, skb);
+> +       ret = tcf_classify(skb, miniq->block, miniq->filter_list, &res, false);
+> +       /* Only tcf related quirks below. */
+> +       switch (ret) {
+> +       case TC_ACT_SHOT:
+> +               mini_qdisc_qstats_cpu_drop(miniq);
+> +               break;
+>         case TC_ACT_OK:
+>         case TC_ACT_RECLASSIFY:
+> -               skb->tc_index = TC_H_MIN(cl_res.classid);
+> +               skb->tc_index = TC_H_MIN(res.classid);
+>                 break;
+> +       }
+> +#endif /* CONFIG_NET_CLS_ACT */
+> +       return ret;
+> +}
+> +
+> +static DEFINE_STATIC_KEY_FALSE(xtc_needed_key);
+> +
+> +void xtc_inc(void)
+> +{
+> +       static_branch_inc(&xtc_needed_key);
+> +}
+> +EXPORT_SYMBOL_GPL(xtc_inc);
+> +
+> +void xtc_dec(void)
+> +{
+> +       static_branch_dec(&xtc_needed_key);
+> +}
+> +EXPORT_SYMBOL_GPL(xtc_dec);
+> +
+> +static __always_inline enum tc_action_base
+> +xtc_run(const struct xtc_entry *entry, struct sk_buff *skb,
+> +       const bool needs_mac)
+> +{
+> +       const struct bpf_prog_array_item *item;
+> +       const struct bpf_prog *prog;
+> +       int ret = TC_NEXT;
+> +
+> +       if (needs_mac)
+> +               __skb_push(skb, skb->mac_len);
+> +       item = &entry->items[0];
+> +       while ((prog = READ_ONCE(item->prog))) {
+> +               bpf_compute_data_pointers(skb);
+> +               ret = bpf_prog_run(prog, skb);
+> +               if (ret != TC_NEXT)
+> +                       break;
+> +               item++;
+> +       }
+> +       if (needs_mac)
+> +               __skb_pull(skb, skb->mac_len);
+> +       return xtc_action_code(skb, ret);
+> +}
+> +
+> +static __always_inline struct sk_buff *
+> +sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
+> +                  struct net_device *orig_dev, bool *another)
+> +{
+> +       struct xtc_entry *entry = rcu_dereference_bh(skb->dev->xtc_ingress);
+> +       int sch_ret;
+> +
+> +       if (!entry)
+> +               return skb;
+> +       if (*pt_prev) {
+> +               *ret = deliver_skb(skb, *pt_prev, orig_dev);
+> +               *pt_prev = NULL;
+> +       }
+> +
+> +       qdisc_skb_cb(skb)->pkt_len = skb->len;
+> +       xtc_set_ingress(skb, true);
+> +
+> +       if (static_branch_unlikely(&xtc_needed_key)) {
+> +               sch_ret = xtc_run(entry, skb, true);
+> +               if (sch_ret != TC_ACT_UNSPEC)
+> +                       goto ingress_verdict;
+> +       }
+> +       sch_ret = tc_run(entry, skb);
+> +ingress_verdict:
+> +       switch (sch_ret) {
+> +       case TC_ACT_REDIRECT:
+> +               /* skb_mac_header check was done by BPF, so we can safely
+> +                * push the L2 header back before redirecting to another
+> +                * netdev.
+> +                */
+> +               __skb_push(skb, skb->mac_len);
+> +               if (skb_do_redirect(skb) == -EAGAIN) {
+> +                       __skb_pull(skb, skb->mac_len);
+> +                       *another = true;
+> +                       break;
+> +               }
+> +               return NULL;
+>         case TC_ACT_SHOT:
+> -               mini_qdisc_qstats_cpu_drop(miniq);
+> -               *ret = NET_XMIT_DROP;
+> -               kfree_skb_reason(skb, SKB_DROP_REASON_TC_EGRESS);
+> +               kfree_skb_reason(skb, SKB_DROP_REASON_TC_INGRESS);
+>                 return NULL;
+> +       /* used by tc_run */
+>         case TC_ACT_STOLEN:
+>         case TC_ACT_QUEUED:
+>         case TC_ACT_TRAP:
+> -               *ret = NET_XMIT_SUCCESS;
+>                 consume_skb(skb);
+> +               fallthrough;
+> +       case TC_ACT_CONSUMED:
+>                 return NULL;
+> +       }
+> +
+> +       return skb;
+> +}
+> +
+> +static __always_inline struct sk_buff *
+> +sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
+> +{
+> +       struct xtc_entry *entry = rcu_dereference_bh(dev->xtc_egress);
+> +       int sch_ret;
+> +
+> +       if (!entry)
+> +               return skb;
+> +
+> +       /* qdisc_skb_cb(skb)->pkt_len & xtc_set_ingress() was
+> +        * already set by the caller.
+> +        */
+> +       if (static_branch_unlikely(&xtc_needed_key)) {
+> +               sch_ret = xtc_run(entry, skb, false);
+> +               if (sch_ret != TC_ACT_UNSPEC)
+> +                       goto egress_verdict;
+> +       }
+> +       sch_ret = tc_run(entry, skb);
+> +egress_verdict:
+> +       switch (sch_ret) {
+>         case TC_ACT_REDIRECT:
+> +               *ret = NET_XMIT_SUCCESS;
+>                 /* No need to push/pop skb's mac_header here on egress! */
+>                 skb_do_redirect(skb);
+> +               return NULL;
+> +       case TC_ACT_SHOT:
+> +               *ret = NET_XMIT_DROP;
+> +               kfree_skb_reason(skb, SKB_DROP_REASON_TC_EGRESS);
+> +               return NULL;
+> +       /* used by tc_run */
+> +       case TC_ACT_STOLEN:
+> +       case TC_ACT_QUEUED:
+> +       case TC_ACT_TRAP:
+>                 *ret = NET_XMIT_SUCCESS;
+>                 return NULL;
+> -       default:
+> -               break;
+>         }
+> -#endif /* CONFIG_NET_CLS_ACT */
+>
+>         return skb;
+>  }
+> -
+> -static struct netdev_queue *
+> -netdev_tx_queue_mapping(struct net_device *dev, struct sk_buff *skb)
+> -{
+> -       int qm = skb_get_queue_mapping(skb);
+> -
+> -       return netdev_get_tx_queue(dev, netdev_cap_txqueue(dev, qm));
+> -}
+> -
+> -static bool netdev_xmit_txqueue_skipped(void)
+> +#else
+> +static __always_inline struct sk_buff *
+> +sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
+> +                  struct net_device *orig_dev, bool *another)
+>  {
+> -       return __this_cpu_read(softnet_data.xmit.skip_txqueue);
+> +       return skb;
+>  }
+>
+> -void netdev_xmit_skip_txqueue(bool skip)
+> +static __always_inline struct sk_buff *
+> +sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
+>  {
+> -       __this_cpu_write(softnet_data.xmit.skip_txqueue, skip);
+> +       return skb;
+>  }
+> -EXPORT_SYMBOL_GPL(netdev_xmit_skip_txqueue);
+> -#endif /* CONFIG_NET_EGRESS */
+> +#endif /* CONFIG_NET_XGRESS */
+>
+>  #ifdef CONFIG_XPS
+>  static int __get_xps_queue_idx(struct net_device *dev, struct sk_buff *skb,
+> @@ -4181,9 +4311,7 @@ int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+>         skb_update_prio(skb);
+>
+>         qdisc_pkt_len_init(skb);
+> -#ifdef CONFIG_NET_CLS_ACT
+> -       skb->tc_at_ingress = 0;
+> -#endif
+> +       xtc_set_ingress(skb, false);
+>  #ifdef CONFIG_NET_EGRESS
+>         if (static_branch_unlikely(&egress_needed_key)) {
+>                 if (nf_hook_egress_active()) {
+> @@ -5101,68 +5229,6 @@ int (*br_fdb_test_addr_hook)(struct net_device *dev,
+>  EXPORT_SYMBOL_GPL(br_fdb_test_addr_hook);
+>  #endif
+>
+> -static inline struct sk_buff *
+> -sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
+> -                  struct net_device *orig_dev, bool *another)
+> -{
+> -#ifdef CONFIG_NET_CLS_ACT
+> -       struct mini_Qdisc *miniq = rcu_dereference_bh(skb->dev->miniq_ingress);
+> -       struct tcf_result cl_res;
+> -
+> -       /* If there's at least one ingress present somewhere (so
+> -        * we get here via enabled static key), remaining devices
+> -        * that are not configured with an ingress qdisc will bail
+> -        * out here.
+> -        */
+> -       if (!miniq)
+> -               return skb;
+> -
+> -       if (*pt_prev) {
+> -               *ret = deliver_skb(skb, *pt_prev, orig_dev);
+> -               *pt_prev = NULL;
+> -       }
+> -
+> -       qdisc_skb_cb(skb)->pkt_len = skb->len;
+> -       tc_skb_cb(skb)->mru = 0;
+> -       tc_skb_cb(skb)->post_ct = false;
+> -       skb->tc_at_ingress = 1;
+> -       mini_qdisc_bstats_cpu_update(miniq, skb);
+> -
+> -       switch (tcf_classify(skb, miniq->block, miniq->filter_list, &cl_res, false)) {
+> -       case TC_ACT_OK:
+> -       case TC_ACT_RECLASSIFY:
+> -               skb->tc_index = TC_H_MIN(cl_res.classid);
+> -               break;
+> -       case TC_ACT_SHOT:
+> -               mini_qdisc_qstats_cpu_drop(miniq);
+> -               kfree_skb_reason(skb, SKB_DROP_REASON_TC_INGRESS);
+> -               return NULL;
+> -       case TC_ACT_STOLEN:
+> -       case TC_ACT_QUEUED:
+> -       case TC_ACT_TRAP:
+> -               consume_skb(skb);
+> -               return NULL;
+> -       case TC_ACT_REDIRECT:
+> -               /* skb_mac_header check was done by cls/act_bpf, so
+> -                * we can safely push the L2 header back before
+> -                * redirecting to another netdev
+> -                */
+> -               __skb_push(skb, skb->mac_len);
+> -               if (skb_do_redirect(skb) == -EAGAIN) {
+> -                       __skb_pull(skb, skb->mac_len);
+> -                       *another = true;
+> -                       break;
+> -               }
+> -               return NULL;
+> -       case TC_ACT_CONSUMED:
+> -               return NULL;
+> -       default:
+> -               break;
+> -       }
+> -#endif /* CONFIG_NET_CLS_ACT */
+> -       return skb;
+> -}
+> -
+>  /**
+>   *     netdev_is_rx_handler_busy - check if receive handler is registered
+>   *     @dev: device to check
+> @@ -10832,7 +10898,7 @@ void unregister_netdevice_many(struct list_head *head)
+>
+>                 /* Shutdown queueing discipline. */
+>                 dev_shutdown(dev);
+> -
+> +               dev_xtc_uninstall(dev);
+>                 dev_xdp_uninstall(dev);
+>
+>                 netdev_offload_xstats_disable_all(dev);
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index bb0136e7a8e4..ac4bb016c5ee 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -9132,7 +9132,7 @@ static struct bpf_insn *bpf_convert_tstamp_read(const struct bpf_prog *prog,
+>         __u8 value_reg = si->dst_reg;
+>         __u8 skb_reg = si->src_reg;
+>
+> -#ifdef CONFIG_NET_CLS_ACT
+> +#ifdef CONFIG_NET_XGRESS
+>         /* If the tstamp_type is read,
+>          * the bpf prog is aware the tstamp could have delivery time.
+>          * Thus, read skb->tstamp as is if tstamp_type_access is true.
+> @@ -9166,7 +9166,7 @@ static struct bpf_insn *bpf_convert_tstamp_write(const struct bpf_prog *prog,
+>         __u8 value_reg = si->src_reg;
+>         __u8 skb_reg = si->dst_reg;
+>
+> -#ifdef CONFIG_NET_CLS_ACT
+> +#ifdef CONFIG_NET_XGRESS
+>         /* If the tstamp_type is read,
+>          * the bpf prog is aware the tstamp could have delivery time.
+>          * Thus, write skb->tstamp as is if tstamp_type_access is true.
+> diff --git a/net/sched/Kconfig b/net/sched/Kconfig
+> index 1e8ab4749c6c..c1b8f2e7d966 100644
+> --- a/net/sched/Kconfig
+> +++ b/net/sched/Kconfig
+> @@ -382,8 +382,7 @@ config NET_SCH_FQ_PIE
+>  config NET_SCH_INGRESS
+>         tristate "Ingress/classifier-action Qdisc"
+>         depends on NET_CLS_ACT
+> -       select NET_INGRESS
+> -       select NET_EGRESS
+> +       select NET_XGRESS
+>         help
+>           Say Y here if you want to use classifiers for incoming and/or outgoing
+>           packets. This qdisc doesn't do anything else besides running classifiers,
+> @@ -753,6 +752,7 @@ config NET_EMATCH_IPT
+>  config NET_CLS_ACT
+>         bool "Actions"
+>         select NET_CLS
+> +       select NET_XGRESS
+>         help
+>           Say Y here if you want to use traffic control actions. Actions
+>           get attached to classifiers and are invoked after a successful
+> diff --git a/net/sched/sch_ingress.c b/net/sched/sch_ingress.c
+> index 84838128b9c5..3bd37ee898ce 100644
+> --- a/net/sched/sch_ingress.c
+> +++ b/net/sched/sch_ingress.c
+> @@ -13,6 +13,7 @@
+>  #include <net/netlink.h>
+>  #include <net/pkt_sched.h>
+>  #include <net/pkt_cls.h>
+> +#include <net/xtc.h>
+>
+>  struct ingress_sched_data {
+>         struct tcf_block *block;
+> @@ -78,11 +79,19 @@ static int ingress_init(struct Qdisc *sch, struct nlattr *opt,
+>  {
+>         struct ingress_sched_data *q = qdisc_priv(sch);
+>         struct net_device *dev = qdisc_dev(sch);
+> +       struct xtc_entry *entry;
+> +       bool created;
+>         int err;
+>
+>         net_inc_ingress_queue();
+>
+> -       mini_qdisc_pair_init(&q->miniqp, sch, &dev->miniq_ingress);
+> +       entry = dev_xtc_entry_fetch(dev, true, &created);
+> +       if (!entry)
+> +               return -ENOMEM;
+> +
+> +       mini_qdisc_pair_init(&q->miniqp, sch, &entry->parent->miniq);
+> +       if (created)
+> +               dev_xtc_entry_update(dev, entry, true);
+>
+>         q->block_info.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
+>         q->block_info.chain_head_change = clsact_chain_head_change;
+> @@ -93,15 +102,20 @@ static int ingress_init(struct Qdisc *sch, struct nlattr *opt,
+>                 return err;
+>
+>         mini_qdisc_pair_block_init(&q->miniqp, q->block);
+> -
+>         return 0;
+>  }
+>
+>  static void ingress_destroy(struct Qdisc *sch)
+>  {
+>         struct ingress_sched_data *q = qdisc_priv(sch);
+> +       struct net_device *dev = qdisc_dev(sch);
+> +       struct xtc_entry *entry = rtnl_dereference(dev->xtc_ingress);
+>
+>         tcf_block_put_ext(q->block, sch, &q->block_info);
+> +       if (entry && dev_xtc_entry_total(entry) == 0) {
+> +               dev_xtc_entry_update(dev, NULL, true);
+> +               dev_xtc_entry_free(entry);
+> +       }
+>         net_dec_ingress_queue();
+>  }
+>
+> @@ -217,12 +231,20 @@ static int clsact_init(struct Qdisc *sch, struct nlattr *opt,
+>  {
+>         struct clsact_sched_data *q = qdisc_priv(sch);
+>         struct net_device *dev = qdisc_dev(sch);
+> +       struct xtc_entry *entry;
+> +       bool created;
+>         int err;
+>
+>         net_inc_ingress_queue();
+>         net_inc_egress_queue();
+>
+> -       mini_qdisc_pair_init(&q->miniqp_ingress, sch, &dev->miniq_ingress);
+> +       entry = dev_xtc_entry_fetch(dev, true, &created);
+> +       if (!entry)
+> +               return -ENOMEM;
+> +
+> +       mini_qdisc_pair_init(&q->miniqp_ingress, sch, &entry->parent->miniq);
+> +       if (created)
+> +               dev_xtc_entry_update(dev, entry, true);
+>
+>         q->ingress_block_info.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
+>         q->ingress_block_info.chain_head_change = clsact_chain_head_change;
+> @@ -235,7 +257,13 @@ static int clsact_init(struct Qdisc *sch, struct nlattr *opt,
+>
+>         mini_qdisc_pair_block_init(&q->miniqp_ingress, q->ingress_block);
+>
+> -       mini_qdisc_pair_init(&q->miniqp_egress, sch, &dev->miniq_egress);
+> +       entry = dev_xtc_entry_fetch(dev, false, &created);
+> +       if (!entry)
+> +               return -ENOMEM;
+> +
+> +       mini_qdisc_pair_init(&q->miniqp_egress, sch, &entry->parent->miniq);
+> +       if (created)
+> +               dev_xtc_entry_update(dev, entry, false);
+>
+>         q->egress_block_info.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_EGRESS;
+>         q->egress_block_info.chain_head_change = clsact_chain_head_change;
+> @@ -247,9 +275,21 @@ static int clsact_init(struct Qdisc *sch, struct nlattr *opt,
+>  static void clsact_destroy(struct Qdisc *sch)
+>  {
+>         struct clsact_sched_data *q = qdisc_priv(sch);
+> +       struct net_device *dev = qdisc_dev(sch);
+> +       struct xtc_entry *ingress_entry = rtnl_dereference(dev->xtc_ingress);
+> +       struct xtc_entry *egress_entry = rtnl_dereference(dev->xtc_egress);
+>
+>         tcf_block_put_ext(q->egress_block, sch, &q->egress_block_info);
+> +       if (egress_entry && dev_xtc_entry_total(egress_entry) == 0) {
+> +               dev_xtc_entry_update(dev, NULL, false);
+> +               dev_xtc_entry_free(egress_entry);
+> +       }
+> +
+>         tcf_block_put_ext(q->ingress_block, sch, &q->ingress_block_info);
+> +       if (ingress_entry && dev_xtc_entry_total(ingress_entry) == 0) {
+> +               dev_xtc_entry_update(dev, NULL, true);
+> +               dev_xtc_entry_free(ingress_entry);
+> +       }
+>
+>         net_dec_ingress_queue();
+>         net_dec_egress_queue();
+> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+> index 51b9aa640ad2..de1f5546bcfe 100644
+> --- a/tools/include/uapi/linux/bpf.h
+> +++ b/tools/include/uapi/linux/bpf.h
+> @@ -1025,6 +1025,8 @@ enum bpf_attach_type {
+>         BPF_PERF_EVENT,
+>         BPF_TRACE_KPROBE_MULTI,
+>         BPF_LSM_CGROUP,
+> +       BPF_NET_INGRESS,
+> +       BPF_NET_EGRESS,
+>         __MAX_BPF_ATTACH_TYPE
+>  };
+>
+> @@ -1399,14 +1401,20 @@ union bpf_attr {
+>         };
+>
+>         struct { /* anonymous struct used by BPF_PROG_ATTACH/DETACH commands */
+> -               __u32           target_fd;      /* container object to attach to */
+> +               union {
+> +                       __u32   target_fd;      /* container object to attach to */
+> +                       __u32   target_ifindex; /* target ifindex */
+> +               };
+>                 __u32           attach_bpf_fd;  /* eBPF program to attach */
+>                 __u32           attach_type;
+>                 __u32           attach_flags;
+> -               __u32           replace_bpf_fd; /* previously attached eBPF
+> +               union {
+> +                       __u32   attach_priority;
+> +                       __u32   replace_bpf_fd; /* previously attached eBPF
+>                                                  * program to replace if
+>                                                  * BPF_F_REPLACE is used
+>                                                  */
+> +               };
+>         };
+>
+>         struct { /* anonymous struct used by BPF_PROG_TEST_RUN command */
+> @@ -1452,7 +1460,10 @@ union bpf_attr {
+>         } info;
+>
+>         struct { /* anonymous struct used by BPF_PROG_QUERY command */
+> -               __u32           target_fd;      /* container object to query */
+> +               union {
+> +                       __u32   target_fd;      /* container object to query */
+> +                       __u32   target_ifindex; /* target ifindex */
+> +               };
+>                 __u32           attach_type;
+>                 __u32           query_flags;
+>                 __u32           attach_flags;
+> @@ -6038,6 +6049,19 @@ struct bpf_sock_tuple {
+>         };
+>  };
+>
+> +/* (Simplified) user return codes for tc prog type.
+> + * A valid tc program must return one of these defined values. All other
+> + * return codes are reserved for future use. Must remain compatible with
+> + * their TC_ACT_* counter-parts. For compatibility in behavior, unknown
+> + * return codes are mapped to TC_NEXT.
+> + */
+> +enum tc_action_base {
+> +       TC_NEXT         = -1,
+> +       TC_PASS         = 0,
+> +       TC_DROP         = 2,
+> +       TC_REDIRECT     = 7,
+> +};
+> +
+>  struct bpf_xdp_sock {
+>         __u32 queue_id;
+>  };
+> @@ -6804,6 +6828,11 @@ struct bpf_flow_keys {
+>         __be32  flow_label;
+>  };
+>
+> +struct bpf_query_info {
+> +       __u32 prog_id;
+> +       __u32 prio;
+> +};
+> +
+>  struct bpf_func_info {
+>         __u32   insn_off;
+>         __u32   type_id;
+> --
+> 2.34.1
+>
