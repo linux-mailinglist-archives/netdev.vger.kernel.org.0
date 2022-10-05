@@ -2,112 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75ED05F57E2
-	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 17:56:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E67945F57F4
+	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 18:04:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229950AbiJEP4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Oct 2022 11:56:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56050 "EHLO
+        id S230142AbiJEQEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Oct 2022 12:04:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229610AbiJEP4C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 11:56:02 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 593A4792F2;
-        Wed,  5 Oct 2022 08:56:01 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id v130-20020a1cac88000000b003bcde03bd44so1260137wme.5;
-        Wed, 05 Oct 2022 08:56:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=8iRyDbr2Fao2IZ/++yFwguDpgiQWqWc7nZ9QJM6w5YQ=;
-        b=K4j+mqNekxS2juIlcCqo6hEAeHhoFX/mKVwTSY0Cpz09LnVBs2VUyXrtC046TGI/71
-         V67Qpz5Htr3x5WKJqZmajZBqs6cU1c3eqpGkQQngkiLXNzXOzozr4QEd2H5HxDZqLPWc
-         4Uh9pXRkp2EgIyYH+dIZmKbE7CgP9HvH7rooZlVrizqAqkbOfvy1o9RtI17C/8tfMqCV
-         2EpSUDZP+403vRURaT2e9spnrkCnOJQvfyVYju14GDrtoLAqTypUxBYwenvTSTAsYs/h
-         drtqEdY0R1jliV5PWBt94hlfZ89z9/DZtnZUUBI7UllwoZYGAO/cihpghhhBS6NZ31RL
-         mpDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=8iRyDbr2Fao2IZ/++yFwguDpgiQWqWc7nZ9QJM6w5YQ=;
-        b=CttBn8JZWxRGyFoqfm9fgYXcWJRNW8PJdA7FMEZljDvYwLgABRYYOTu1ZuwUz+Euk3
-         B7JX8OpMZ1I1NqtP10e00VFHgKZUnBIoLi8crTDJyC4d3QoUFqpSuNqMQQaeI2QBC8U3
-         X4FuO8sMN0o1GDZy0jr54PHfLcmM5Oheg/zvqC862gz13pr3kEeUVdoQbUjK/ia2/E8P
-         LiQVGQkw1Jvs6mFaOk9/s/3RcBpzSLN+I9EjjDmy+kV4Y8gh9J8X4FThTejgbbg2rzvY
-         COL1DbqD2z7rm7Lypizn7LkTPjvzUPYmfexHpYeYJu4wk9MikOvWhieCIgpTXoLngAnd
-         iUiA==
-X-Gm-Message-State: ACrzQf1ILMDo1SCM1VAFSKYUx+6T5kCw1Z4E3sNtClwUwCUMchQGnjuB
-        FNlya4vK+bOaBNBZKBxOppSxuMlesy1SBVeA
-X-Google-Smtp-Source: AMsMyM5GMv1gas4MsYlqj0uFvpm5cOSxzOJd3Ban7D5L/2vYhJJrYdfZzWqHR3AMmek6LvK1VGf/sw==
-X-Received: by 2002:a05:600c:4f13:b0:3b4:9a07:efdb with SMTP id l19-20020a05600c4f1300b003b49a07efdbmr177506wmq.94.1664985359918;
-        Wed, 05 Oct 2022 08:55:59 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id r6-20020a5d4986000000b0022ccae2fa62sm3429714wrq.22.2022.10.05.08.55.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Oct 2022 08:55:59 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ath9k: Make arrays prof_prio and channelmap static const
-Date:   Wed,  5 Oct 2022 16:55:58 +0100
-Message-Id: <20221005155558.320556-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.37.3
+        with ESMTP id S230128AbiJEQEO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 12:04:14 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE6C77B298
+        for <netdev@vger.kernel.org>; Wed,  5 Oct 2022 09:04:13 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1og6sT-00087I-83; Wed, 05 Oct 2022 18:04:09 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 01B34F5874;
+        Wed,  5 Oct 2022 16:04:06 +0000 (UTC)
+Date:   Wed, 5 Oct 2022 18:04:05 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Stefan =?utf-8?B?TcOkdGpl?= <Stefan.Maetje@esd.eu>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "wg@grandegger.com" <wg@grandegger.com>
+Subject: Re: [PATCH v6 2/4] can: esd: add support for esd GmbH PCIe/402 CAN
+ interface family
+Message-ID: <20221005160405.xcxecyic3nqhuhht@pengutronix.de>
+References: <20211201220328.3079270-1-stefan.maetje@esd.eu>
+ <20211201220328.3079270-3-stefan.maetje@esd.eu>
+ <20220201172508.vvftyw2vy4uq2jpu@pengutronix.de>
+ <fa770d67ed8bb7feea08954ebf25d5c9bebbe700.camel@esd.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ltk2dysu6dygmh2y"
+Content-Disposition: inline
+In-Reply-To: <fa770d67ed8bb7feea08954ebf25d5c9bebbe700.camel@esd.eu>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Don't populate the read-only arrays prof_prio and channelmap
-on the stack but instead make them static const. Also makes the
-object code a little smaller.
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/net/wireless/ath/ath9k/mci.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+--ltk2dysu6dygmh2y
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/net/wireless/ath/ath9k/mci.c b/drivers/net/wireless/ath/ath9k/mci.c
-index 039bf0c35fbe..3363fc4e8966 100644
---- a/drivers/net/wireless/ath/ath9k/mci.c
-+++ b/drivers/net/wireless/ath/ath9k/mci.c
-@@ -266,7 +266,9 @@ static void ath_mci_set_concur_txprio(struct ath_softc *sc)
- 			stomp_txprio[ATH_BTCOEX_STOMP_NONE] =
- 				ATH_MCI_INQUIRY_PRIO;
- 	} else {
--		u8 prof_prio[] = { 50, 90, 94, 52 };/* RFCOMM, A2DP, HID, PAN */
-+		static const u8 prof_prio[] = {
-+			50, 90, 94, 52
-+		}; /* RFCOMM, A2DP, HID, PAN */
- 
- 		stomp_txprio[ATH_BTCOEX_STOMP_LOW] =
- 		stomp_txprio[ATH_BTCOEX_STOMP_NONE] = 0xff;
-@@ -644,7 +646,9 @@ void ath9k_mci_update_wlan_channels(struct ath_softc *sc, bool allow_all)
- 	struct ath_hw *ah = sc->sc_ah;
- 	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
- 	struct ath9k_channel *chan = ah->curchan;
--	u32 channelmap[] = {0x00000000, 0xffff0000, 0xffffffff, 0x7fffffff};
-+	static const u32 channelmap[] = {
-+		0x00000000, 0xffff0000, 0xffffffff, 0x7fffffff
-+	};
- 	int i;
- 	s16 chan_start, chan_end;
- 	u16 wlan_chan;
--- 
-2.37.3
+On 30.09.2022 22:15:59, Stefan M=C3=A4tje wrote:
+> I would like to resume the efforts to bring this driver in the Linux
+> kernel after being kicked off track in February by another project.
 
+\o/
+
+> I did a lot of the changes on the driver you recommended, but some
+> stuff is not yet clear to me. Please see my comments in-line of the
+> email below.
+>=20
+> My local developement is at the moment rebased to
+> linux-can-next:master on 7b584fbb36362340a2d9cfe459e447619eecebea.
+> Should I send a V7 of the patch (rebased to another commit)? How
+> should I proceed?
+
+You can use latest net-next/main as base version.
+
+> You have commented on many type casts that they would not be needed.
+> But all of them had been introduced by me due to warnings of the
+> compiler in the style of "warning: conversion from =E2=80=98u32=E2=80=99 =
+{aka
+> =E2=80=98unsigned int=E2=80=99} to =E2=80=98u8=E2=80=99 {aka =E2=80=98uns=
+igned char=E2=80=99} may change value
+> [-Wconversion]". These are triggered by building the driver with "W=3D3"
+> as recommended in kernel documentation.
+
+Oh? Is there a recommendation for W=3D3? I can only find a W=3D1:
+
+| https://elixir.bootlin.com/linux/v6.0/source/Documentation/process/mainta=
+iner-netdev.rst#L235
+
+> Should these warnings generally be ignored and the casts be removed
+> then?
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--ltk2dysu6dygmh2y
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmM9qvIACgkQrX5LkNig
+012H7AgAiUQMOx+sXOYO27Kq5AYVPjxXpHYC3pL1XTDpXUwF+Q/1CKvfLSYz4XGN
+ayFxYF1AJ7+D7vH5TDorJRrxSpgnTy3QZXKg+IERvrYiqPptGYXi7hE3lrJlTC0T
+5vrpwfV4fvolcaf5D/fjADZyIbP9zfbZkMlu9/CjN0uweV1E0SEulHdthdr58RP2
+x8qao9pHWKuMbPUu8QL57XHV8waAmGiRtuLrMYxv/ZT1SJ/HwZrl7sx8xfLLaSlt
+1V4UT8VEsAnK3fI+NdmT1F8P/uuOT9OI/T6RCcfLMChHMA6lbJZQ1JXH2qS0yNOj
+c3F7Y1RILiQPXhL/r5maSCxMAQkQBg==
+=+S8j
+-----END PGP SIGNATURE-----
+
+--ltk2dysu6dygmh2y--
