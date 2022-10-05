@@ -1,157 +1,167 @@
 Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from out1.vger.email (unknown [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 029A35F5643
-	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 16:20:00 +0200 (CEST)
+Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
+	by mail.lfdr.de (Postfix) with ESMTP id 472665F5674
+	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 16:32:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229771AbiJEOTs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Oct 2022 10:19:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48264 "EHLO
+        id S229721AbiJEOcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Oct 2022 10:32:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbiJEOTp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 10:19:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B30F2A
-        for <netdev@vger.kernel.org>; Wed,  5 Oct 2022 07:19:36 -0700 (PDT)
+        with ESMTP id S229736AbiJEOc3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 10:32:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 300B972EEB
+        for <netdev@vger.kernel.org>; Wed,  5 Oct 2022 07:32:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1664979576;
+        s=mimecast20190719; t=1664980347;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Vkdopemxb6Z46dw820Cf0moMwpkc0fcV+gICJjjuVD8=;
-        b=gaVOxGwLX0YdlhppqAh5dw+Apwv0b+egrlZxPFeuXpOM0+4nDLduwU3mMnfMysKuw2hGYY
-        F1qTA5sYTss/qT0PqP9jQneDO5ciDydgOq635VRmJo9HTakunvlNIgVWeB/7PiZv125Qph
-        DRK2xuZTcNv0D+ISPFkjR2/JfLfQjFw=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=tObMQCdQ5lmhGEfWf1G2BnwejS8NcVQfKMZ4dQuOMzs=;
+        b=Vxw4P2IuHE5f2hkwhPxYjdtVosMxHq3OeUWlpxhRb55uc1DCMMfVU8VCXDMBjeyGI+wtKk
+        V10UBAKmuz8k9GjzWIBUd5IGQ8iNUlZ48BbizRPdEuDwdmJah+9503SBg9pKHD7Ip+xGi3
+        axlPYTT/Lclovj31JWQ87WbUeXf82sA=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-657-kCnn-n5vOhaCtOaxz4tcPg-1; Wed, 05 Oct 2022 10:19:34 -0400
-X-MC-Unique: kCnn-n5vOhaCtOaxz4tcPg-1
-Received: by mail-ed1-f72.google.com with SMTP id v11-20020a056402348b00b004516e0b7eedso13616052edc.8
-        for <netdev@vger.kernel.org>; Wed, 05 Oct 2022 07:19:34 -0700 (PDT)
+ us-mta-422-HK25Oxx3PHO7pthGumj-1A-1; Wed, 05 Oct 2022 10:32:26 -0400
+X-MC-Unique: HK25Oxx3PHO7pthGumj-1A-1
+Received: by mail-ed1-f71.google.com with SMTP id y14-20020a056402440e00b0044301c7ccd9so13612757eda.19
+        for <netdev@vger.kernel.org>; Wed, 05 Oct 2022 07:32:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date;
-        bh=Vkdopemxb6Z46dw820Cf0moMwpkc0fcV+gICJjjuVD8=;
-        b=rkST2puRRcwehgv/zqR5fEWwP8D7Xt7pdDGfmQ9i3pESNmYRPPodew1XvnUETDCRIx
-         NqHFhm5MMi6zezxwLhoqzOVdLfmnAsd5OYNpqBudON9sWBov3FWQxDmr62ffzp8gWP3T
-         HKDZrSpUfxoE9sqVVm/6v+fQk29DULB2RSRJekB4s9jhySput1xAvjYF6IbHAhlxIUBR
-         8BGS2f7HGk9FH1pHzG9QkrDpGENVynVJ3MZUP9wv0JR3s6EhHdVkigOIrYCs1TeCQAe5
-         oskBqffsLw9C0yJE6H/76DVz+ObNr1B+OyFLyohZvxVCgqLBSHEFZcVm9q9/LxndmgWq
-         5LDg==
-X-Gm-Message-State: ACrzQf27nfT6+jhWpb/uZWNJg9YoxbEgDkJ69sk6glH232+xsy/11/1t
-        qhWx1HOtcpq/q+ycsNcXQ5JsII4TvYMnuebUg7XIELkarjwUxiS4qubvXIXaOQReMzpSLW3x6+0
-        H8SgGia5ubgnvd7n8
-X-Received: by 2002:a17:906:fe49:b0:73d:70c5:1a52 with SMTP id wz9-20020a170906fe4900b0073d70c51a52mr24303882ejb.469.1664979573478;
-        Wed, 05 Oct 2022 07:19:33 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM4vPuLz3Q3Ub9HPZp1hFZaBzSZ/qlVOyIBmW79DZsmIc167/r7nCD1F3sRsGclYwUSk6MdJOg==
-X-Received: by 2002:a17:906:fe49:b0:73d:70c5:1a52 with SMTP id wz9-20020a170906fe4900b0073d70c51a52mr24303854ejb.469.1664979573233;
-        Wed, 05 Oct 2022 07:19:33 -0700 (PDT)
-Received: from [192.168.41.81] (83-90-141-187-cable.dk.customer.tdc.net. [83.90.141.187])
-        by smtp.gmail.com with ESMTPSA id 17-20020a170906211100b0077d37a5d401sm8772888ejt.33.2022.10.05.07.19.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 05 Oct 2022 07:19:32 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <55542209-03d7-590f-9ab1-bbbf924d033c@redhat.com>
-Date:   Wed, 5 Oct 2022 16:19:30 +0200
+        h=content-transfer-encoding:mime-version:message-id:date:references
+         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=tObMQCdQ5lmhGEfWf1G2BnwejS8NcVQfKMZ4dQuOMzs=;
+        b=BgJqQkW+lDgll8V1sv+bE7DcisLk38osBoIuBX+PyMDiB+wp7OHtlF/erO92KM1ak0
+         xaC9oKasgGpkDT+lDTAJ6sSEJY4mRL3OQMRL913IY2d8OymBPwP7UWj9qz8o+4pBHQ5v
+         hSYx0wXYvOGFTnZlWU4Q8u8pINae255FwBP26KLX28oZjB0+sCunOYFzn1wPGFY26vhg
+         ubg1uDZk7IyEuiRJCOIyTBElJ4ec9P62BS1GqUqTHUpBRWdU9IBeqveFldJdNrpHbypu
+         S24Wr2jQ/Dl1++afb+eP9e2vngZPdOUX9GTtBzWp8p7rHxf67IToRoJN/U3OSraPstUp
+         VWuQ==
+X-Gm-Message-State: ACrzQf0zEnbSItZaWKCnzOtF5GwfuH2agC8gPuHdOz0Q4cM07e/sr6fo
+        LsdOlxOScQ3i64XHrvgBnmMZM1nr9/DLTBtGszJ20t03RwsJOXX6ek3R6MlQDFKuUcZ4SrjGV5v
+        NbPlwQNJy8oCDlnJn
+X-Received: by 2002:aa7:cfc4:0:b0:459:7fa7:ee29 with SMTP id r4-20020aa7cfc4000000b004597fa7ee29mr43162edy.414.1664980344949;
+        Wed, 05 Oct 2022 07:32:24 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM42hwJh/HghS6gIi4751Sbigc/2qbv0QE2vCVQMGtKvzUxOB4o2QM8m4GamdJlVRWdwnPFMng==
+X-Received: by 2002:aa7:cfc4:0:b0:459:7fa7:ee29 with SMTP id r4-20020aa7cfc4000000b004597fa7ee29mr43132edy.414.1664980344506;
+        Wed, 05 Oct 2022 07:32:24 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id k11-20020a17090632cb00b007030c97ae62sm8767269ejk.191.2022.10.05.07.32.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Oct 2022 07:32:23 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id E996264EBBE; Wed,  5 Oct 2022 16:32:22 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org
+Cc:     razor@blackwall.org, ast@kernel.org, andrii@kernel.org,
+        martin.lau@linux.dev, john.fastabend@gmail.com,
+        joannelkoong@gmail.com, memxor@gmail.com, joe@cilium.io,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next 01/10] bpf: Add initial fd-based API to attach
+ tc BPF programs
+In-Reply-To: <3cc8a0c3-7767-12cf-f753-82e2df8ef293@iogearbox.net>
+References: <20221004231143.19190-1-daniel@iogearbox.net>
+ <20221004231143.19190-2-daniel@iogearbox.net> <87bkqqimpy.fsf@toke.dk>
+ <3cc8a0c3-7767-12cf-f753-82e2df8ef293@iogearbox.net>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 05 Oct 2022 16:32:22 +0200
+Message-ID: <87wn9egx3d.fsf@toke.dk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Cc:     brouer@redhat.com, Martin KaFai Lau <martin.lau@linux.dev>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        xdp-hints@xdp-project.net, larysa.zaremba@intel.com,
-        memxor@gmail.com, Lorenzo Bianconi <lorenzo@kernel.org>,
-        mtahhan@redhat.com,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        dave@dtucker.co.uk, Magnus Karlsson <magnus.karlsson@intel.com>,
-        bjorn@kernel.org
-Subject: Re: [PATCH RFCv2 bpf-next 00/18] XDP-hints: XDP gaining access to HW
- offload hints via BTF
-Content-Language: en-US
-To:     Stanislav Fomichev <sdf@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <166256538687.1434226.15760041133601409770.stgit@firesoul>
- <Yzt2YhbCBe8fYHWQ@google.com>
- <35fcfb25-583a-e923-6eee-e8bbcc19db17@redhat.com>
- <CAKH8qBuYVk7QwVOSYrhMNnaKFKGd7M9bopDyNp6-SnN6hSeTDQ@mail.gmail.com>
- <5ccff6fa-0d50-c436-b891-ab797fe7e3c4@linux.dev>
- <20221004175952.6e4aade7@kernel.org>
- <CAKH8qBtdAeHqbWa33yO-MMgC2+h2qehFn8Y_C6ZC1=YsjQS-Bw@mail.gmail.com>
-In-Reply-To: <CAKH8qBtdAeHqbWa33yO-MMgC2+h2qehFn8Y_C6ZC1=YsjQS-Bw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Daniel Borkmann <daniel@iogearbox.net> writes:
 
-On 05/10/2022 03.02, Stanislav Fomichev wrote:
-> On Tue, Oct 4, 2022 at 5:59 PM Jakub Kicinski <kuba@kernel.org> wrote:
->>
->> On Tue, 4 Oct 2022 17:25:51 -0700 Martin KaFai Lau wrote:
->>> A intentionally wild question, what does it take for the driver to return the
->>> hints.  Is the rx_desc and rx_queue enough?  When the xdp prog is calling a
->>> kfunc/bpf-helper, like 'hwtstamp = bpf_xdp_get_hwtstamp()', can the driver
->>> replace it with some inline bpf code (like how the inline code is generated for
->>> the map_lookup helper).  The xdp prog can then store the hwstamp in the meta
->>> area in any layout it wants.
->>
->> Since you mentioned it... FWIW that was always my preference rather than
->> the BTF magic :)  The jited image would have to be per-driver like we
->> do for BPF offload but that's easy to do from the technical
->> perspective (I doubt many deployments bind the same prog to multiple
->> HW devices)..
+> On 10/5/22 12:33 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> Daniel Borkmann <daniel@iogearbox.net> writes:
+>>=20
+>>> As part of the feedback from LPC, there was a suggestion to provide a
+>>> name for this infrastructure to more easily differ between the classic
+>>> cls_bpf attachment and the fd-based API. As for most, the XDP vs tc
+>>> layer is already the default mental model for the pkt processing
+>>> pipeline. We refactored this with an xtc internal prefix aka 'express
+>>> traffic control' in order to avoid to deviate too far (and 'express'
+>>> given its more lightweight/faster entry point).
+>>=20
+>> Woohoo, bikeshed time! :)
+>>=20
+>> I am OK with having a separate name for this, but can we please pick one
+>> that doesn't sound like 'XDP' when you say it out loud? You really don't
+>> have to mumble much for 'XDP' and 'XTC' to sound exactly alike; this is
+>> bound to lead to confusion!
+>>=20
+>> Alternatives, in the same vein:
+>> - ltc (lightweight)
+>> - etc (extended/express/ebpf/et cetera ;))
+>> - tcx (keep the cool X, but put it at the end)
+>
+> Hehe, yeah agree, I don't have a strong opinion, but tcx (or just sticking
+> with tc) is fully okay to me.
 
-On the technical side we do have the ifindex that can be passed along
-which is currently used for getting XDP hardware offloading to work.
-But last time I tried this, I failed due to BPF tail call maps.
-(It's not going to fly for other reasons, see redirect below).
+Either is fine with me; I don't have any strong opinions either, other
+than "not XTC" ;)
 
-> 
-> +1, sounds like a good alternative (got your reply while typing)
-> I'm not too versed in the rx_desc/rx_queue area, but seems like worst
-> case that bpf_xdp_get_hwtstamp can probably receive a xdp_md ctx and
-> parse it out from the pre-populated metadata?
-> 
-> Btw, do we also need to think about the redirect case? What happens
-> when I redirect one frame from a device A with one metadata format to
-> a device B with another?
+>> [...]
+>>=20
+>>> +/* (Simplified) user return codes for tc prog type.
+>>> + * A valid tc program must return one of these defined values. All oth=
+er
+>>> + * return codes are reserved for future use. Must remain compatible wi=
+th
+>>> + * their TC_ACT_* counter-parts. For compatibility in behavior, unknown
+>>> + * return codes are mapped to TC_NEXT.
+>>> + */
+>>> +enum tc_action_base {
+>>> +	TC_NEXT		=3D -1,
+>>> +	TC_PASS		=3D 0,
+>>> +	TC_DROP		=3D 2,
+>>> +	TC_REDIRECT	=3D 7,
+>>> +};
+>>=20
+>> Looking at things like this, though, I wonder if having a separate name
+>> (at least if it's too prominent) is not just going to be more confusing
+>> than not? I.e., we go out of our way to make it compatible with existing
+>> TC-BPF programs (which is a good thing!), so do we really need a
+>> separate name? Couldn't it just be an implementation detail that "it's
+>> faster now"?
+>
+> Yep, faster is an implementation detail; and developers can stick to exis=
+ting
+> opcodes. I added this here given Andrii suggested to add the action codes=
+ as
+> enum so they land in vmlinux BTF. My thinking was that if we go this rout=
+e,
+> we could also make them more user friendly. This part is 100% optional,
+> but for new developers it might lower the barrier a bit I was hoping given
+> it makes it clear which subset of actions BPF supports explicitly and with
+> less cryptic name.
 
-Exactly the problem.  With XDP redirect the "remote" target device also
-need to interpret this metadata layout.  For RX-side we have the
-immediate case with redirecting into a veth device.   For future TX-side
-this is likely the same kind of issue, but I hope if we can solve this
-for veth redirect use-case, this will keep us future proof.
+Oh, I didn't mean that we shouldn't define these helpers; that's totally
+fine, and probably useful. Just that when everything is named 'TC'
+anyway, having a different name (like TCX) is maybe not that important
+anyway?
 
-For veth use-case I hope that we can use same trick as
-bpf_core_field_exists() to do dead-code elimination based on if a device
-driver is loaded on the system like this pseudo code:
+>> Oh, and speaking of compatibility should 'tc' (the iproute2 binary) be
+>> taught how to display these new bpf_link attachments so that users can
+>> see that they're there?
+>
+> Sounds reasonable, I can follow-up with the iproute2 support as well.
 
+Cool!
 
-  if (bpf_core_type_id_kernel(struct xdp_hints_i40e_timestamp)) {
-    /* check id + extract timestamp */
-  }
-  if (bpf_core_type_id_kernel(struct xdp_hints_ixgbe_timestamp)) {
-    /* check id + extract timestamp */
-  }
-
-If the given device drives doesn't exist on the system, I assume
-bpf_core_type_id_kernel() will return 0 at libbpf relocation/load-time,
-and thus this should cause dead-code elimination.  Should work today AFAIK?
-
---Jesper
+-Toke
 
