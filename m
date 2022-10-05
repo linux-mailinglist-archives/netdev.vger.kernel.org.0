@@ -2,444 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 050B25F5A09
-	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 20:45:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFED95F5A1A
+	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 20:49:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230509AbiJESpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Oct 2022 14:45:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43188 "EHLO
+        id S231165AbiJESsB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Oct 2022 14:48:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233020AbiJESpC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 14:45:02 -0400
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB746814C5
-        for <netdev@vger.kernel.org>; Wed,  5 Oct 2022 11:43:02 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id y15-20020aa78f2f000000b00562674456afso269474pfr.9
-        for <netdev@vger.kernel.org>; Wed, 05 Oct 2022 11:43:02 -0700 (PDT)
+        with ESMTP id S231454AbiJESrd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 14:47:33 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 187DD25CD
+        for <netdev@vger.kernel.org>; Wed,  5 Oct 2022 11:47:32 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id 195so77341pga.1
+        for <netdev@vger.kernel.org>; Wed, 05 Oct 2022 11:47:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=LWoHnxwZ5YMv6UWo8LFZ+JnbPH00J+hdwCUgN3m2CC8=;
-        b=iTmLqcvcyjA2UndngembIehCAIUpF4VV3gJtHSNlJzk55aUTEkBpv6mX5wuAqkXHLl
-         bQB0SU+L5OmzYq994nUJlo6CtblENF8gr5GYL745aWKRA2fPgtBb4vQOZL3KBbyBnOov
-         mMQ23tECX49z6TGmTHXEIC0isdSkJxYdhR0lnEnqkH2TQGi77GEPr/ShbNKgJwWdytc9
-         uKQCXr4/wibEtDMfz43EcEP62+HLKx93QzmBrFgQyeDQ6xcEywm9aKIqWV9QRZCgOpdB
-         W4OsCOTSjrMpRWY6XalgDHtuPxfnRKykRmJNiLFI5x90tywY0EJO8vPnHAbewMy/GBMs
-         aYLA==
+        d=fastly.com; s=google;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=k6pyucbE+OWdAQAbLegTBFSSrsILTlfWNpf/Da7WMt0=;
+        b=c6EA7lfRsgXS6ekMKFNVy943Y0b1ViE+xoxIpQOEfE6M86G4bm8gWZlxJNsiyPOiuD
+         +cMfAjGzkdwzUz/ghgiVVj36EmXestd48oQWCLeTpv4zDDza1iJMDIHspGdO60cmrZkV
+         mXW4GqP9ragjPSOADBIZoITVTc0c4EsJq5dyk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=LWoHnxwZ5YMv6UWo8LFZ+JnbPH00J+hdwCUgN3m2CC8=;
-        b=K1B4lrr7lkFnhZFvSxV8cU6VCpwRElqPxVMKfjVpw0XbLoGyjld2wXiElG2hKRdDJt
-         V7j2L8NYaU5aI/0zu52cM9A0utSh6AcNFFWzL2POZXAQZMXgHinEta607coLAPiW7Poe
-         QRRgFCX1zEhb5wqux7oLH/fmjCQkbprxvjk9WoZpfo+unWsAKFC1EA+nxIldhibyuA8M
-         bgx/Yt+ENkU4E1dQS4E+KR0/o21yx+ZrWLTK6GjiaBBvhbr5bt//e6rZOX+wwRvnKhin
-         S5bac98q3DFHpphoTBF5Hji4N6gNk63araQ+K+j4TDWPouu542mBqoNIA+N09af5Nbnk
-         4B5w==
-X-Gm-Message-State: ACrzQf2uuAEPbjmPVzuEj67KpkNOtw7c+4xJvuxXTtaXwGGp0b9o9hXY
-        aTmXZL9AS6nRsPjoZ/zdC0E/rnM=
-X-Google-Smtp-Source: AMsMyM5FoiOuhaCiandc5Gt+/xWG324mXluktP4GOzjHEKjFkX5poKV1r882AT0DmBY/v0RD+xWuSOY=
-X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a05:6a00:2290:b0:541:f19:5197 with SMTP id
- f16-20020a056a00229000b005410f195197mr1166353pfe.42.1664995382119; Wed, 05
- Oct 2022 11:43:02 -0700 (PDT)
-Date:   Wed, 5 Oct 2022 11:43:00 -0700
-In-Reply-To: <982b9125-f849-5e1c-0082-7239b8c8eebf@redhat.com>
-Mime-Version: 1.0
-References: <166256538687.1434226.15760041133601409770.stgit@firesoul>
- <Yzt2YhbCBe8fYHWQ@google.com> <35fcfb25-583a-e923-6eee-e8bbcc19db17@redhat.com>
- <CAKH8qBuYVk7QwVOSYrhMNnaKFKGd7M9bopDyNp6-SnN6hSeTDQ@mail.gmail.com> <982b9125-f849-5e1c-0082-7239b8c8eebf@redhat.com>
-Message-ID: <Yz3QNM7061WmXDHS@google.com>
-Subject: Re: [PATCH RFCv2 bpf-next 00/18] XDP-hints: XDP gaining access to HW
- offload hints via BTF
-From:   sdf@google.com
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     brouer@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        xdp-hints@xdp-project.net, larysa.zaremba@intel.com,
-        memxor@gmail.com, Lorenzo Bianconi <lorenzo@kernel.org>,
-        mtahhan@redhat.com,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        dave@dtucker.co.uk, Magnus Karlsson <magnus.karlsson@intel.com>,
-        bjorn@kernel.org
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=k6pyucbE+OWdAQAbLegTBFSSrsILTlfWNpf/Da7WMt0=;
+        b=LKF7wbQWXgQx74ID41mqQNk5DKEy9ZnC8kAHyen3jVVmryUDgKCZTYz0+RqXIiZpnX
+         VBmRdmuGQZPukk4XkKn7xMGLyFRH89gIsFTbnfXFEEn8HtH/MuoF7IEJnNmR8K2F6LAG
+         FZ+QI4trP4xErlbfWHZc0OuXFgN59KX16J4owd3srkzkU9qFGo4ChVk8GkitSPauyUzQ
+         uHzBehZ9MOax8KtApej+eXubRt2R8dQtmyGv/4ETFv29fNuDpt3Wj88XpJCUtVZYVbgd
+         hfchfLI6aK631oeQOcvtwxpugarJDBgCjoiM5H+wv5KYsguOD8hv7598Nh6YmmEZnkvn
+         rLkw==
+X-Gm-Message-State: ACrzQf1GbpT5gwRl1v14IjabmPaelxv8iz0Sqvb1XqpT5tR/xc70Ux1u
+        J8PoLlDTAjvPB6+ZrzW+cwCqiA==
+X-Google-Smtp-Source: AMsMyM76Lp/13pWlYLtX6lidA/f/8Z38f1izSXJztC+pp9vxojZ+hudfmLI5Xg5tQwOJii6T3q6y9g==
+X-Received: by 2002:a63:1508:0:b0:438:eb90:52d1 with SMTP id v8-20020a631508000000b00438eb9052d1mr1061157pgl.252.1664995651526;
+        Wed, 05 Oct 2022 11:47:31 -0700 (PDT)
+Received: from fastly.com (c-73-223-190-181.hsd1.ca.comcast.net. [73.223.190.181])
+        by smtp.gmail.com with ESMTPSA id a15-20020a170902b58f00b0017849a2b56asm10816338pls.46.2022.10.05.11.47.30
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 05 Oct 2022 11:47:31 -0700 (PDT)
+Date:   Wed, 5 Oct 2022 11:47:28 -0700
+From:   Joe Damato <jdamato@fastly.com>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, anthony.l.nguyen@intel.com
+Subject: Re: [next-queue 2/3] i40e: i40e_clean_tx_irq returns work done
+Message-ID: <20221005184728.GB15277@fastly.com>
+References: <1664958703-4224-1-git-send-email-jdamato@fastly.com>
+ <1664958703-4224-3-git-send-email-jdamato@fastly.com>
+ <Yz1gh6ezOuc1tzH+@boxer>
+ <20221005175031.GA11626@fastly.com>
+ <e352426f-7a43-6353-5c1d-aa3480f64860@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e352426f-7a43-6353-5c1d-aa3480f64860@intel.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/05, Jesper Dangaard Brouer wrote:
-
-
-> On 04/10/2022 20.26, Stanislav Fomichev wrote:
-> > On Tue, Oct 4, 2022 at 2:29 AM Jesper Dangaard Brouer
-> > <jbrouer@redhat.com> wrote:
-> > >
-> > >
-> > > On 04/10/2022 01.55, sdf@google.com wrote:
-> > > > On 09/07, Jesper Dangaard Brouer wrote:
-> > > > > This patchset expose the traditional hardware offload hints to  
-> XDP and
-> > > > > rely on BTF to expose the layout to users.
-> > > >
-> > > > > Main idea is that the kernel and NIC drivers simply defines the  
-> struct
-> > > > > layouts they choose to use for XDP-hints. These XDP-hints structs  
-> gets
-> > > > > naturally and automatically described via BTF and implicitly  
-> exported to
-> > > > > users. NIC drivers populate and records their own BTF ID as the  
-> last
-> > > > > member in XDP metadata area (making it easily accessible by AF_XDP
-> > > > > userspace at a known negative offset from packet data start).
-> > > >
-> > > > > Naming conventions for the structs (xdp_hints_*) is used such that
-> > > > > userspace can find and decode the BTF layout and match against the
-> > > > > provided BTF IDs. Thus, no new UAPI interfaces are needed for  
-> exporting
-> > > > > what XDP-hints a driver supports.
-> > > >
-> > > > > The patch "i40e: Add xdp_hints_union" introduce the idea of  
-> creating a
-> > > > > union named "xdp_hints_union" in every driver, which contains all
-> > > > > xdp_hints_* struct this driver can support. This makes it  
-> easier/quicker
-> > > > > to find and parse the relevant BTF types.  (Seeking input before  
-> fixing
-> > > > > up all drivers in patchset).
-> > > >
-> > > >
-> > > > > The main different from RFC-v1:
-> > > > >    - Drop idea of BTF "origin" (vmlinux, module or local)
-> > > > >    - Instead to use full 64-bit BTF ID that combine object+type ID
-> > > >
-> > > > > I've taken some of Alexandr/Larysa's libbpf patches and integrated
-> > > > > those.
-> > > >
-> > > > > Patchset exceeds netdev usually max 15 patches rule. My excuse is  
-> three
-> > > > > NIC drivers (i40e, ixgbe and mvneta) gets XDP-hints support and  
-> which
-> > > > > required some refactoring to remove the SKB dependencies.
-> > > >
-> > > > Hey Jesper,
-> > > >
-> > > > I took a quick look at the series.
-> > > Appreciate that! :-)
-> > >
-> > > > Do we really need the enum with the flags?
-> > >
-> > > The primary reason for using enum is that these gets exposed as BTF.
-> > > The proposal is that userspace/BTF need to obtain the flags via BTF,
-> > > such that they don't become UAPI, but something we can change later.
-> > >
-> > > > We might eventually hit that "first 16 bits are reserved" issue?
-> > > >
-> > > > Instead of exposing enum with the flags, why not solve it as  
-> follows:
-> > > > a. We define UAPI struct xdp_rx_hints with _all_ possible hints
-> > >
-> > > How can we know _all_ possible hints from the beginning(?).
-> > >
-> > > UAPI + central struct dictating all possible hints, will limit  
-> innovation.
+On Wed, Oct 05, 2022 at 11:33:23AM -0700, Jesse Brandeburg wrote:
+> On 10/5/2022 10:50 AM, Joe Damato wrote:
+> >On Wed, Oct 05, 2022 at 12:46:31PM +0200, Maciej Fijalkowski wrote:
+> >>On Wed, Oct 05, 2022 at 01:31:42AM -0700, Joe Damato wrote:
+> >>>Adjust i40e_clean_tx_irq to return the actual number of packets cleaned
+> >>>and adjust the logic in i40e_napi_poll to check this value.
+> 
+> it's fine to return the number cleaned but let's keep that data and changes
+> to itself instead of changing the flow of the routine.
+> 
+> 
+> >>>
+> >>>Signed-off-by: Joe Damato <jdamato@fastly.com>
+> >>>---
+> >>>  drivers/net/ethernet/intel/i40e/i40e_txrx.c | 24 +++++++++++++-----------
+> >>>  drivers/net/ethernet/intel/i40e/i40e_xsk.c  | 12 ++++++------
+> >>>  drivers/net/ethernet/intel/i40e/i40e_xsk.h  |  2 +-
+> >>>  3 files changed, 20 insertions(+), 18 deletions(-)
+> >>>
+> >>>diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> >>>index b97c95f..ed88309 100644
+> >>>--- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> >>>+++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> >>>@@ -924,10 +924,10 @@ void i40e_detect_recover_hung(struct i40e_vsi *vsi)
+> >>>   * @tx_ring: Tx ring to clean
+> >>>   * @napi_budget: Used to determine if we are in netpoll
+> >>>   *
+> >>>- * Returns true if there's any budget left (e.g. the clean is finished)
+> >>>+ * Returns the number of packets cleaned
+> >>>   **/
+> >>>-static bool i40e_clean_tx_irq(struct i40e_vsi *vsi,
+> >>>-			      struct i40e_ring *tx_ring, int napi_budget)
+> >>>+static int i40e_clean_tx_irq(struct i40e_vsi *vsi,
+> >>>+			     struct i40e_ring *tx_ring, int napi_budget)
+> >>>  {
+> >>>  	int i = tx_ring->next_to_clean;
+> >>>  	struct i40e_tx_buffer *tx_buf;
+> >>>@@ -1026,7 +1026,7 @@ static bool i40e_clean_tx_irq(struct i40e_vsi *vsi,
+> >>>  	i40e_arm_wb(tx_ring, vsi, budget);
+> >>>  	if (ring_is_xdp(tx_ring))
+> >>>-		return !!budget;
+> >>>+		return total_packets;
+> >>>  	/* notify netdev of completed buffers */
+> >>>  	netdev_tx_completed_queue(txring_txq(tx_ring),
+> >>>@@ -1048,7 +1048,7 @@ static bool i40e_clean_tx_irq(struct i40e_vsi *vsi,
+> >>>  		}
+> >>>  	}
+> >>>-	return !!budget;
+> >>>+	return total_packets;
+> >>>  }
+> >>>  /**
+> >>>@@ -2689,10 +2689,12 @@ int i40e_napi_poll(struct napi_struct *napi, int budget)
+> >>>  			       container_of(napi, struct i40e_q_vector, napi);
+> >>>  	struct i40e_vsi *vsi = q_vector->vsi;
+> >>>  	struct i40e_ring *ring;
+> >>>+	bool tx_clean_complete = true;
+> >>>  	bool clean_complete = true;
+> >>>  	bool arm_wb = false;
+> >>>  	int budget_per_ring;
+> >>>  	int work_done = 0;
+> >>>+	int tx_wd = 0;
+> >>>  	if (test_bit(__I40E_VSI_DOWN, vsi->state)) {
+> >>>  		napi_complete(napi);
+> >>>@@ -2703,12 +2705,12 @@ int i40e_napi_poll(struct napi_struct *napi, int budget)
+> >>>  	 * budget and be more aggressive about cleaning up the Tx descriptors.
+> >>>  	 */
+> >>>  	i40e_for_each_ring(ring, q_vector->tx) {
+> >>>-		bool wd = ring->xsk_pool ?
+> >>>-			  i40e_clean_xdp_tx_irq(vsi, ring) :
+> >>>-			  i40e_clean_tx_irq(vsi, ring, budget);
+> >>>+		tx_wd = ring->xsk_pool ?
+> >>>+			i40e_clean_xdp_tx_irq(vsi, ring) :
+> >>>+			i40e_clean_tx_irq(vsi, ring, budget);
+> >>>-		if (!wd) {
+> >>>-			clean_complete = false;
+> >>>+		if (tx_wd >= budget) {
+> >>>+			tx_clean_complete = false;
+> >>
+> >>This will break for AF_XDP Tx ZC. AF_XDP Tx ZC in intel drivers ignores
+> >>budget given by NAPI. If you look at i40e_xmit_zc():
+> >>
+> >>func def:
+> >>static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
+> >>
+> >>callsite:
+> >>	return i40e_xmit_zc(tx_ring, I40E_DESC_UNUSED(tx_ring));
+> >>
+> >>we give free ring space as a budget and with your change we would be
+> >>returning the amount of processed tx descriptors which you will be
+> >>comparing against NAPI budget (64, unless you have busy poll enabled with
+> >>a different batch size). Say you start with empty ring and your HW rings
+> >>are sized to 1k but there was only 512 AF_XDP descriptors ready for Tx.
+> >>You produced all of them successfully to ring and you return 512 up to
+> >>i40e_napi_poll.
 > >
-> > We don't need to know them all in advance. The same way we don't know
-> > them all for flags enum. That UAPI xdp_rx_hints can be extended any
-> > time some driver needs some new hint offload. The benefit here is that
-> > we have a "common registry" of all offloads and different drivers have
-> > an opportunity to share.
+> >Good point, my bad.
 > >
-> > Think of it like current __sk_buff vs sk_buff. xdp_rx_hints is a fake
-> > uapi struct (__sk_buff) and the access to it gets translated into
-> > <device>_xdp_rx_hints offsets (sk_buff).
+> >I've reworked this for the v2 and have given i40e_clean_tx_irq,
+> >and i40e_clean_xdp_tx_irq an out parameter which will record the number
+> >TXes cleaned.
 > >
-> > > > b. Each device defines much denser <device>_xdp_rx_hints struct  
-> with the
-> > > >      metadata that it supports
-> > >
-> > > Thus, the NIC device is limited to what is defined in UAPI struct
-> > > xdp_rx_hints.  Again this limits innovation.
+> >I tweaked i40e_xmit_zc to return the number of packets (nb_pkts) and moved
+> >the boolean to check if that's under the "budget"
+> >(I40E_DESC_UNUSED(tx_ring)) into i40e_clean_xdp_tx_irq.
 > >
-> > I guess what I'm missing from your series is the bpf/userspace side.
-> > Do you have an example on the bpf side that will work for, say,
-> > xdp_hints_ixgbe_timestamp?
-> >
-> > Suppose, you pass this custom hints btf_id via xdp_md as proposed,
+> >I think that might solve the issues you've described.
+> 
+> Please don't change the flow of this function, transmit clean ups are so
+> cheap that we don't bother counting them or limiting them beyond a maximum
+> (so they don't clean forever)
+> 
+> Basically transmits should not be counted when exiting NAPI, besides that we
+> did "at least one". The only thing that matters to the budget is that we
+> "finished" transmit cleanup or not, which would make sure we rescheduled
+> napi if we weren't finished cleaning (for instance on a 8160 entry tx ring)
+> transmits.
+> 
+> I'd much rather you kept this series to a simple return count of tx cleaned
+> in "out" as you've said you'd do in v2, and then use that data *only* in the
+> context of the new trace event.
+> 
+> That way you're not changing the flow and introducing tough to debug issues
+> in the hot path.
 
-> I just want to reiterate why we place btf_full_id at the "end inline".
-> This makes it easily available for AF_XDP to consume.  Plus, we already
-> have to write info into this metadata cache-line anyway, thus it's
-> almost free.  Moving bpf_full_id into xdp_md, will require expanding
-> both xdp_buff and xdp_frame (+ extra store for converting
-> buff-to-frame). If AF_XDP need this btf_full_id the BPF-prog _could_
-> move/copy it from xdp_md to metadata, but that will just waste cycles,
-> why not just store it once in a known location.
+In the v2 I've been hacking on I've added out params to i40e_clean_tx_irq and
+i40e_clean_xdp_tx_irq, but I avoided adding an out param in i40e_xmit_zc,
+since lifting the boolean out seemed pretty straightforward.
 
-> One option, for convenience, would be to map xdp_md->bpf_full_id to load
-> the btf_full_id value from the metadata.  But that would essentially be
-> syntax-sugar and adds UAPI.
+I'll drop that though in favor of an out param in i40e_xmit_zc, as well, to
+avoid changing the flow of the code.
 
-> > what's the action on the bpf side to consume this?
-> >
-> > If (ctx_hints_btf_id == xdp_hints_ixgbe_timestamp_btf_id /* supposedly
-> > populated at runtime by libbpf? */) {
-
-> See e.g. bpf_core_type_id_kernel(struct xdp_hints_ixgbe_timestamp)
-> AFAIK libbpf will make this a constant at load/setup time, and give us
-> dead-code elimination.
-
-Even with bpf_core_type_id_kernel() you still would have the following:
-
-	if (ctx_hints_btf_id == bpf_core_type_id_kernel(struct xdp_hints_ixgbe)) {
-	} else if (the same for every driver that has custom hints) {
-	}
-
-Toke has a good suggestion on hiding this behind a helper; either
-pre-generated on the libbpf side or a kfunc. We should try to hide
-this per-device logic if possible; otherwise we'll get to per-device
-XDP programs that only work on some special deployments. OTOH, we'll
-probably get there with the hints anyway?
-
-> >    // do something with rx_timestamp
-> >    // also, handle xdp_hints_ixgbe and then xdp_hints_common ?
-> > } else if (ctx_hints_btf_id == xdp_hints_ixgbe) {
-> >    // do something else
-> >    // plus explicitly handle xdp_hints_common here?
-> > } else {
-> >    // handle xdp_hints_common
-> > }
-
-> I added a BPF-helper that can tell us if layout if compatible with
-> xdp_hints_common, which is basically the only UAPI the patchset  
-> introduces.
-> The handle xdp_hints_common code should be common.
-
-> I'm not super happy with the BPF-helper approach, so suggestions are
-> welcome.  E.g. xdp_md/ctx->is_hint_common could be one approach and
-> ctx->has_hint (ctx is often called xdp so it reads xdp->has_hint).
-
-> One feature I need from the BPF-helper is to "disable" the xdp_hints and
-> allow the BPF-prog to use the entire metadata area for something else
-> (avoiding it to be misintrepreted by next prog or after redirect).
-
-As mentioned in the previous emails, let's try to have a bpf side
-example/selftest for the next round? I also feel like xdp_hints_common is
-a bit distracting. It makes the common case easy and it hides the
-discussion/complexity about per-device hints. Maybe we can drop this
-common case at all? Why can't every driver has a custom hints struct?
-If we agree that naming/size will be the same across them (and review
-catches/guaranteed that), why do we even care about having common
-xdp_hints_common struct?
-
-> > What I'd like to avoid is an xdp program targeting specific drivers.
-> > Where possible, we should aim towards something like "if this device
-> > has rx_timestamp offload -> use it without depending too much on
-> > specific btf_ids.
-> >
-
-> I do understand your wish, and adding rx_timestamps to xdp_hints_common
-> would be too easy (and IMHO wasting u64/8-bytes for all packets not
-> needing this timestamp).  Hopefully we can come up with a good solution
-> together.
-
-> One idea would be to extend libbpf to lookup or translate struct name
-
->   struct xdp_hints_DRIVER_timestamp {
->     __u64 rx_timestamp;
->   } __attribute__((preserve_access_index));
-
-> into e.g. xdp_hints_i40e_timestamp, if an ifindex was provided when  
-> loading
-> the XDP prog.  And the bpf_core_type_id_kernel() result of the struct
-> returning id from xdp_hints_i40e_timestamp.
-
-> But this ideas doesn't really work for the veth redirect use-case :-(
-> As veth need to handle xdp_hints from other drivers.
-
-Agreed. If we want redirect to work, then the parsing should be either
-mostly pre-generated by libbpf to include all possible btf ids that
-matter; or done similarly by a kfunc. The idea that we can pre-generate
-per-device bpf program seems to be out of the window now?
-
-> > > > c. The subset of fields in <device>_xdp_rx_hints should match the  
-> ones from
-> > > >      xdp_rx_hints (we essentially standardize on the field  
-> names/sizes)
-> > > > d. We expose <device>_xdp_rx_hints btf id via netlink for each  
-> device
-> > >
-> > > For this proposed design you would still need more than one BTF ID or
-> > > <device>_xdp_rx_hints struct's, because not all packets contains all
-> > > hints. The most common case is HW timestamping, which some HW only
-> > > supports for PTP frames.
-> > >
-> > > Plus, I don't see a need to expose anything via netlink, as we can  
-> just
-> > > use the existing BTF information from the module.  Thus, avoiding to
-> > > creating more UAPI.
-> >
-> > See above. I think even with your series, that btf_id info should also
-> > come via netlink so the programs can query it before loading and do
-> > the required adjustments. Otherwise, I'm not sure I understand what I
-> > need to do with a btf_id that comes via xdp_md/xdp_frame. It seems too
-> > late? I need to know them in advance to at least populate those ids
-> > into the bpf program itself?
-
-> Yes, we need to know these IDs in advance and can.  I don't think we need
-> the netlink interface, as we can already read out the BTF layout and IDs
-> today.  I coded it up in userspace, where the intented consumer is AF_XDP
-> (as libbpf already does this itself).
-
-> See this code:
->   -  
-> https://github.com/xdp-project/bpf-examples/blob/master/BTF-playground/btf_module_ids.c
->   -  
-> https://github.com/xdp-project/bpf-examples/blob/master/BTF-playground/btf_module_read.c
-
-SG, if we can have some convention on the names where we can reliably
-parse out all possible structs with the hints, let's rely solely on
-vmlinux+vmlinux module btf.
-
-> > > > e. libbpf will query and do offset relocations for
-> > > >      xdp_rx_hints -> <device>_xdp_rx_hints at load time
-> > > >
-> > > > Would that work? Then it seems like we can replace bitfields with  
-> the
-> > >
-> > > I used to be a fan of bitfields, until I discovered that they are bad
-> > > for performance, because compilers cannot optimize these.
-> >
-> > Ack, good point, something to keep in mind.
-> >
-> > > > following:
-> > > >
-> > > >     if (bpf_core_field_exists(struct xdp_rx_hints, vlan_tci)) {
-> > > >       /* use that hint */
-> > >
-> > > Fairly often a VLAN will not be set in packets, so we still have to  
-> read
-> > > and check a bitfield/flag if the VLAN value is valid. (Guess it is
-> > > implicit in above code).
-> >
-> > That's a fair point. Then we need two signals?
-> >
-> > 1. Whether this particular offload is supported for the device at all
-> > (via that bpf_core_field_exists or something similar)
-> > 2. Whether this particular packet has particular metadata (via your
-> > proposed flags)
-> >
-> > if (device I'm attaching xdp to has vlan offload) { // via
-> > bpf_core_field_exists?
-> >    if (particular packet comes with a vlan tag) { // via your proposed
-> > bitfield flags?
-> >    }
-> > }
-> >
-> > Or are we assuming that (2) is fast enough and we don't care about
-> > (1)? Because (1) can 'if (0)' the whole branch and make the verifier
-> > remove that part.
-> >
-> > > >     }
-> > > >
-> > > > All we need here is for libbpf to, again, do xdp_rx_hints ->
-> > > > <device>_xdp_rx_hints translation before it evaluates
-> > > > bpf_core_field_exists()?
-> > > >
-> > > > Thoughts? Any downsides? Am I missing something?
-> > > >
-> > >
-> > > Well, the downside is primarily that this design limits innovation.
-> > >
-> > > Each time a NIC driver want to introduce a new hardware hint, they  
-> have
-> > > to update the central UAPI xdp_rx_hints struct first.
-> > >
-> > > The design in the patchset is to open for innovation.  Driver can  
-> extend
-> > > their own xdp_hints_<driver>_xxx struct(s).  They still have to land
-> > > their patches upstream, but avoid mangling a central UAPI struct. As
-> > > upstream we review driver changes and should focus on sane struct  
-> member
-> > > naming(+size) especially if this "sounds" like a hint/feature that  
-> more
-> > > driver are likely to support.  With help from BTF relocations, a new
-> > > driver can support same hint/feature if naming(+size) match (without
-> > > necessary the same offset in the struct).
-> >
-> > The opposite side of this approach is that we'll have 'ixgbe_hints'
-> > with 'rx_timestamp' and 'mvneta_hints' with something like
-> > 'rx_tstamp'.
-
-> Well, as I wrote reviewers should ask drivers to use the same member name.
-
-SG!
-
-> > > > Also, about the TX side: I feel like the same can be applied there,
-> > > > the program works with xdp_tx_hints and libbpf will rewrite to
-> > > > <device>_xdp_tx_hints. xdp_tx_hints might have fields  
-> like "has_tx_vlan:1";
-> > > > those, presumably, can be relocatable by libbpf as well?
-> > > >
-> > >
-> > > Good to think ahead for TX-side, even-though I think we should focus  
-> on
-> > > landing RX-side first.
-> > >
-> > > I notice your naming xdp_rx_hints vs. xdp_tx_hints.  I have named the
-> > > common struct xdp_hints_common, without a RX/TX direction indication.
-> > > Maybe this is wrong of me, but my thinking was that most of the common
-> > > hints can be directly used as TX-side hints.  I'm hoping TX-side
-> > > xdp-hints will need to do little-to-non adjustment, before using the
-> > > hints as TX "instruction".  I'm hoping that XDP-redirect will just  
-> work
-> > > and xmit driver can use XDP-hints area.
-> > >
-> > > Please correct me if I'm wrong.
-> > > The checksum fields hopefully translates to similar TX  
-> offload "actions".
-> > > The VLAN offload hint should translate directly to TX-side.
-> > >
-> > > I can easily be convinced we should name it xdp_hints_rx_common from  
-> the
-> > > start, but then I will propose that xdp_hints_tx_common have the
-> > > checksum and VLAN fields+flags at same locations, such that we don't
-> > > take any performance hint for moving them to "TX-side" hints, making
-> > > XDP-redirect just work.
-> >
-> > Might be good to think about this beforehand. I agree that most of the
-> > layout should hopefully match. However once case that I'm interested
-> > in is rx_timestamp vs tx_timestamp. For rx, I'm getting the timestamp
-> > in the metadata; for tx, I'm merely setting a flag somewhere to
-> > request it for async delivery later (I hope we plan to support that
-> > for af_xdp?). So the layout might be completely different :-(
-> >
-
-> Yes, it is definitely in my plans to support handling at TX-completion
-> time, so you can extract the TX-wire-timestamp.  This is easy for AF_XDP
-> as it has the CQ (Completion Queue) step.
-
-> I'm getting ahead of myself, but for XDP I imagine that driver will
-> populate this xdp_tx_hint in DMA TX-completion function, and we can add
-> a kfunc "not-a-real-hook" to xdp_return_frame that can run another XDP
-> BPF-prog that can inspect the xdp_tx_hint in metadata.
-
-Can we also place that xdp_tx_hint somewhere in the completion ring
-for AF_XDP to consume?
-
-> At this proposed kfunc xdp_return_frame call point, we likely cannot know
-> what driver that produced the xdp_hints metadata either, and thus not lock
-> our design or BTF-reloacations to assume which driver is it loaded on.
-
-> [... cut ... getting too long]
-
-> --Jesper
-
+Thanks for taking a look.
