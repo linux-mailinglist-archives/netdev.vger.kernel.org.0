@@ -2,234 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CB885F4CD6
-	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 01:51:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79A425F4CE2
+	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 02:04:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229564AbiJDXvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Oct 2022 19:51:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35946 "EHLO
+        id S229516AbiJEAEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Oct 2022 20:04:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiJDXvr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 19:51:47 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BA5F3FD5F;
-        Tue,  4 Oct 2022 16:51:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1664927506; x=1696463506;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=j5j93ep56qWM4Aggptg3rLl2Drpk5XL00qe9ecX3sk8=;
-  b=g1gf58HbYRDKaWGkO5+yk3tScaOipwCiJtt5oi7zUiJEHc4w3V7aGxCK
-   Q/86B7351wM1II/cqh71JMqHDBWYjv2MPuJWBzgx/RAbgZKP6pFg5S0KB
-   RmRKyDlTIjH8Ide8iyGPcj04xNzcmRohSiH0bHCh6a25E6WiUgHjTdLfw
-   NHSm2EtMuo6CIo/tJbpfX8zLl6BrgPQ4aFr/4KY96jjQazkqhPr1X1VuT
-   8msslzoZ5EJ5C2a1Fd9gG1eNTjHXazRhYEgoX8Fz9Xuf7ucJCKDL/S+32
-   Q8HwMLQaZM3A/qukPk2n2aDU2VYbTakPQEQ4Y6psPDZdtvbE/UfcX1TMJ
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10490"; a="367170915"
-X-IronPort-AV: E=Sophos;i="5.95,159,1661842800"; 
-   d="scan'208";a="367170915"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Oct 2022 16:51:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10490"; a="713229064"
-X-IronPort-AV: E=Sophos;i="5.95,159,1661842800"; 
-   d="scan'208";a="713229064"
-Received: from lkp-server01.sh.intel.com (HELO d4f44333118a) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 04 Oct 2022 16:51:42 -0700
-Received: from kbuild by d4f44333118a with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1ofrhN-0000ft-1y;
-        Tue, 04 Oct 2022 23:51:41 +0000
-Date:   Wed, 05 Oct 2022 07:51:12 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     netdev@vger.kernel.org, loongarch@lists.linux.dev,
-        linux-spi@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-        bpf@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: [linux-next:master] BUILD REGRESSION
- 4d80748d16c82a9c2c4ea5feea96e476de3cd876
-Message-ID: <633cc6f0.nUuOxmXokJvNe3YF%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        with ESMTP id S229462AbiJEAEG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Oct 2022 20:04:06 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 110866E88B;
+        Tue,  4 Oct 2022 17:04:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 70F2ACE1187;
+        Wed,  5 Oct 2022 00:04:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 761AEC433C1;
+        Wed,  5 Oct 2022 00:04:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664928241;
+        bh=manF1drT7t8VNqMZaxko4/Wv1+ezjZAo1FANb2LeBo4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=R7U+rpdlw0XF48iK14ns5ywPUQidHxWqxg/dvUqtp4QNalw9DOZc7s+3AhksHEqOt
+         aQXTQusE2/xr716FwhcjSCx2MktqdXz7eHI1TvkRwnxymMxrnAwU4hvorEEWRQ7FW/
+         wIRY9stsn89UAmsbvrsMS0kiiSbsJ8SZ5An+PcTlJt4pGVi4fx3Y6ZKiV+Mq2Hk4Gb
+         nMCMNdbluzEIneU+7HAu1V8Lfyk5oip0aCPLRZwcP0ShWKChsUTqeANZdL4SnfDMVH
+         BseormNFJqc+yt/Mf7F+BGOfh2TehJ/YkLnIkKdm/Es23aIQ//oFKx2uAYtJ8N9h75
+         RI0Xop6afxGIg==
+Date:   Tue, 4 Oct 2022 17:04:00 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Dmitry Vyukov <dvyukov@google.com>,
+        syzbot <syzbot+3a080099974c271cd7e9@syzkaller.appspotmail.com>,
+        bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        fw@strlen.de, harshit.m.mogalapalli@oracle.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
+        linux-hardening@vger.kernel.org
+Subject: Re: [syzbot] upstream boot error: WARNING in netlink_ack
+Message-ID: <20221004170400.52c97523@kernel.org>
+In-Reply-To: <202210041600.7C90DF917@keescook>
+References: <000000000000a793cc05ea313b87@google.com>
+        <CACT4Y+a8b-knajrXWs8OnF1ijCansRxEicU=YJz6PRk-JuSKvg@mail.gmail.com>
+        <F58E0701-8F53-46FE-8324-4DEA7A806C20@chromium.org>
+        <20221004104253.29c1f3c7@kernel.org>
+        <202210041600.7C90DF917@keescook>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-branch HEAD: 4d80748d16c82a9c2c4ea5feea96e476de3cd876  Add linux-next specific files for 20221004
+On Tue, 4 Oct 2022 16:40:32 -0700 Kees Cook wrote:
+> On Tue, Oct 04, 2022 at 10:42:53AM -0700, Jakub Kicinski wrote:
+> > This has been weighing on my conscience a little, I don't like how we
+> > still depend on putting one length in the skb and then using a
+> > different one for the actual memcpy(). How would you feel about this
+> > patch on top (untested): =20
+>=20
+> tl;dr: yes, I like it. Please add a nlmsg_contents member. :)
 
-Error/Warning reports:
+Can do, but you'll need to tell me how..
 
-https://lore.kernel.org/linux-mm/202209150141.WgbAKqmX-lkp@intel.com
-https://lore.kernel.org/linux-mm/202209251400.1TMn7RdE-lkp@intel.com
-https://lore.kernel.org/linux-mm/202210010718.2kaVANGb-lkp@intel.com
-https://lore.kernel.org/llvm/202209200834.EFwaTsIj-lkp@intel.com
-https://lore.kernel.org/llvm/202209220019.Yr2VuXhg-lkp@intel.com
+	__DECLARE_FLEX_ARRAY(char, nlmsg_contents)
 
-Error/Warning: (recently discovered and may have been fixed)
+?
 
-ERROR: modpost: "devm_ioremap_resource" [drivers/dma/fsl-edma.ko] undefined!
-ERROR: modpost: "devm_ioremap_resource" [drivers/dma/idma64.ko] undefined!
-ERROR: modpost: "devm_ioremap_resource" [drivers/dma/qcom/hdma.ko] undefined!
-ERROR: modpost: "devm_memremap" [drivers/misc/open-dice.ko] undefined!
-ERROR: modpost: "devm_memunmap" [drivers/misc/open-dice.ko] undefined!
-ERROR: modpost: "devm_platform_ioremap_resource" [drivers/char/xillybus/xillybus_of.ko] undefined!
-ERROR: modpost: "devm_platform_ioremap_resource" [drivers/clk/xilinx/clk-xlnx-clock-wizard.ko] undefined!
-ERROR: modpost: "ioremap" [drivers/tty/ipwireless/ipwireless.ko] undefined!
-ERROR: modpost: "iounmap" [drivers/net/ethernet/8390/pcnet_cs.ko] undefined!
-ERROR: modpost: "iounmap" [drivers/tty/ipwireless/ipwireless.ko] undefined!
-arch/arm64/kernel/alternative.c:199:6: warning: no previous prototype for 'apply_alternatives_vdso' [-Wmissing-prototypes]
-arch/arm64/kernel/alternative.c:295:14: warning: no previous prototype for 'alt_cb_patch_nops' [-Wmissing-prototypes]
-arch/loongarch/kernel/traps.c:250 die() warn: variable dereferenced before check 'regs' (see line 244)
-arch/loongarch/mm/init.c:166:24: warning: variable 'new' set but not used [-Wunused-but-set-variable]
-drivers/platform/loongarch/loongson-laptop.c:377 loongson_laptop_get_brightness() warn: impossible condition '(level < 0) => (0-255 < 0)'
-drivers/spi/spi.c:4215:33: warning: use of uninitialized value '((int *)_38 = PHI <&x(2), _91(3)>)[11]' [CWE-457] [-Wanalyzer-use-of-uninitialized-value]
-include/linux/compiler_types.h:357:45: error: call to '__compiletime_assert_417' declared with attribute error: FIELD_GET: mask is not constant
-kernel/bpf/memalloc.c:500 bpf_mem_alloc_destroy() error: potentially dereferencing uninitialized 'c'.
-net/dsa/port.c:1684 dsa_port_phylink_create() warn: passing zero to 'PTR_ERR'
-pahole: .tmp_vmlinux.btf: No such file or directory
+> > +				 u32 size)
+> > +{
+> > +	if (unlikely(skb_tailroom(skb) < NLMSG_ALIGN(size)))
+> > +		return NULL;
+> > +
+> > +	if (!__builtin_constant_p(size) || NLMSG_ALIGN(size) - size !=3D 0) =
+=20
+>=20
+> why does a fixed size mean no memset?
 
-Error/Warning ids grouped by kconfigs:
+Copy and paste, it seems to originate from:
 
-gcc_recent_errors
-|-- arm-randconfig-c002-20221002
-|   `-- drivers-spi-spi.c:warning:use-of-uninitialized-value-((int-)_38-PHI-x()-_91()-)-CWE
-|-- arm64-allyesconfig
-|   |-- arch-arm64-kernel-alternative.c:warning:no-previous-prototype-for-alt_cb_patch_nops
-|   `-- arch-arm64-kernel-alternative.c:warning:no-previous-prototype-for-apply_alternatives_vdso
-|-- arm64-randconfig-r004-20221002
-|   |-- arch-arm64-kernel-alternative.c:warning:no-previous-prototype-for-alt_cb_patch_nops
-|   `-- arch-arm64-kernel-alternative.c:warning:no-previous-prototype-for-apply_alternatives_vdso
-|-- arm64-randconfig-r016-20221003
-|   |-- arch-arm64-kernel-alternative.c:warning:no-previous-prototype-for-alt_cb_patch_nops
-|   `-- arch-arm64-kernel-alternative.c:warning:no-previous-prototype-for-apply_alternatives_vdso
-|-- i386-randconfig-m021-20221003
-|   `-- net-dsa-port.c-dsa_port_phylink_create()-warn:passing-zero-to-PTR_ERR
-|-- loongarch-buildonly-randconfig-r006-20221003
-|   `-- arch-loongarch-mm-init.c:warning:variable-new-set-but-not-used
-|-- loongarch-randconfig-m031-20221002
-|   `-- arch-loongarch-mm-init.c:warning:variable-new-set-but-not-used
-|-- loongarch-randconfig-m041-20221002
-|   |-- arch-loongarch-kernel-traps.c-die()-warn:variable-dereferenced-before-check-regs-(see-line-)
-|   |-- arch-loongarch-mm-init.c:warning:variable-new-set-but-not-used
-|   |-- drivers-platform-loongarch-loongson-laptop.c-loongson_laptop_get_brightness()-warn:impossible-condition-(level-)-(-)
-|   `-- kernel-bpf-memalloc.c-bpf_mem_alloc_destroy()-error:potentially-dereferencing-uninitialized-c-.
-|-- loongarch-randconfig-r001-20221002
-|   `-- arch-loongarch-mm-init.c:warning:variable-new-set-but-not-used
-|-- m68k-randconfig-r004-20221003
-|   `-- pahole:.tmp_vmlinux.btf:No-such-file-or-directory
-|-- s390-allmodconfig
-|   |-- ERROR:devm_ioremap_resource-drivers-dma-fsl-edma.ko-undefined
-|   |-- ERROR:devm_ioremap_resource-drivers-dma-idma64.ko-undefined
-|   |-- ERROR:devm_ioremap_resource-drivers-dma-qcom-hdma.ko-undefined
-|   |-- ERROR:devm_memremap-drivers-misc-open-dice.ko-undefined
-|   |-- ERROR:devm_memunmap-drivers-misc-open-dice.ko-undefined
-|   |-- ERROR:devm_platform_ioremap_resource-drivers-char-xillybus-xillybus_of.ko-undefined
-|   |-- ERROR:devm_platform_ioremap_resource-drivers-clk-xilinx-clk-xlnx-clock-wizard.ko-undefined
-|   |-- ERROR:ioremap-drivers-tty-ipwireless-ipwireless.ko-undefined
-|   |-- ERROR:iounmap-drivers-net-ethernet-pcnet_cs.ko-undefined
-|   `-- ERROR:iounmap-drivers-tty-ipwireless-ipwireless.ko-undefined
-`-- x86_64-randconfig-a012-20221003
-    `-- include-linux-compiler_types.h:error:call-to-__compiletime_assert_NNN-declared-with-attribute-error:FIELD_GET:mask-is-not-constant
-clang_recent_errors
-|-- arm-randconfig-r022-20221003
-|   |-- drivers-phy-mediatek-phy-mtk-hdmi-mt2701.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:(uns
-|   |-- drivers-phy-mediatek-phy-mtk-hdmi-mt8173.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:(uns
-|   |-- drivers-phy-mediatek-phy-mtk-mipi-dsi-mt8173.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:
-|   `-- drivers-phy-mediatek-phy-mtk-mipi-dsi-mt8183.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:
-|-- mips-randconfig-r003-20221002
-|   |-- drivers-phy-mediatek-phy-mtk-hdmi-mt2701.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:(uns
-|   `-- drivers-phy-mediatek-phy-mtk-hdmi-mt8173.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:(uns
-|-- s390-randconfig-r021-20221002
-|   |-- manage.c:(.text):undefined-reference-to-__tsan_memcpy
-|   |-- s39-linux-ld:setup.c:(.init.text):undefined-reference-to-__tsan_memcpy
-|   |-- s39-linux-ld:trace.c:(.init.text):undefined-reference-to-__tsan_memcpy
-|   |-- trace.c:(.init.text):undefined-reference-to-__tsan_memcpy
-|   `-- workqueue.c:(.init.text):undefined-reference-to-__tsan_memcpy
-|-- s390-randconfig-r026-20221002
-|   `-- ERROR:devm_ioremap_resource-drivers-dma-idma64.ko-undefined
-`-- x86_64-buildonly-randconfig-r005-20221003
-    |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-virtual-virtual_link_hwss.c:warning:no-previous-prototype-for-function-virtual_disable_link_output
-    `-- drivers-iommu-ipmmu-vmsa.c:warning:unused-variable-ipmmu_of_ids
+0c19b0adb8dd ("netlink: avoid memset of 0 bytes sparse warning")
 
-elapsed time: 726m
+Any idea why sparse would not like empty memsets?
 
-configs tested: 58
-configs skipped: 3
+> >  	rep =3D nlmsg_put(skb, NETLINK_CB(in_skb).portid, nlh->nlmsg_seq,
+> > -			NLMSG_ERROR, payload, flags);
+> > +			NLMSG_ERROR, sizeof(*errmsg), flags);
+> > +	if (!rep)
+> > +		goto err_bad_put;
+> >  	errmsg =3D nlmsg_data(rep);
+> >  	errmsg->error =3D err;
+> > -	unsafe_memcpy(&errmsg->msg, nlh, payload > sizeof(*errmsg)
+> > -					 ? nlh->nlmsg_len : sizeof(*nlh),
+> > -		      /* Bounds checked by the skb layer. */);
+> > +	memcpy(&errmsg->msg, nlh, sizeof(*nlh));
+> > +
+> > +	if (!(flags & NLM_F_CAPPED)) { =20
+>=20
+> Should it test this flag, or test if the sizes show the need for "extra"
+> payload length?
+>=20
+> I always found the progression of sizes here to be confusing. "payload"
+> starts as sizeof(*errmsg), and gets nlmsg_len(nlh) added but only when if
+> "(err && !(nlk->flags & NETLINK_F_CAP_ACK)" was true.
 
-gcc tested configs:
-powerpc                           allnoconfig
-arc                                 defconfig
-alpha                               defconfig
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                          rhel-8.3-func
-x86_64                              defconfig
-x86_64                    rhel-8.3-kselftests
-sh                               allmodconfig
-s390                                defconfig
-s390                             allmodconfig
-riscv                randconfig-r042-20221003
-arc                  randconfig-r043-20221003
-x86_64                               rhel-8.3
-arc                              allyesconfig
-i386                                defconfig
-arm                                 defconfig
-alpha                            allyesconfig
-i386                 randconfig-a011-20221003
-x86_64                           rhel-8.3-syz
-i386                 randconfig-a012-20221003
-s390                 randconfig-r044-20221003
-mips                             allyesconfig
-s390                             allyesconfig
-m68k                             allmodconfig
-x86_64                         rhel-8.3-kunit
-powerpc                          allmodconfig
-i386                 randconfig-a013-20221003
-m68k                             allyesconfig
-i386                 randconfig-a015-20221003
-x86_64                           rhel-8.3-kvm
-i386                 randconfig-a014-20221003
-x86_64                           allyesconfig
-ia64                             allmodconfig
-x86_64               randconfig-a011-20221003
-arm                              allyesconfig
-x86_64               randconfig-a012-20221003
-arm64                            allyesconfig
-x86_64               randconfig-a013-20221003
-x86_64               randconfig-a015-20221003
-x86_64               randconfig-a014-20221003
-x86_64               randconfig-a016-20221003
-i386                             allyesconfig
+struct nlmsgerr is one of the least badly documented structs we have in
+netlink so let me start with a copy & paste:
 
-clang tested configs:
-hexagon              randconfig-r045-20221003
-i386                 randconfig-a004-20221003
-hexagon              randconfig-r041-20221003
-i386                 randconfig-a003-20221003
-i386                 randconfig-a002-20221003
-i386                 randconfig-a001-20221003
-i386                 randconfig-a006-20221003
-i386                 randconfig-a005-20221003
-x86_64               randconfig-a002-20221003
-x86_64               randconfig-a001-20221003
-x86_64               randconfig-a004-20221003
-x86_64               randconfig-a006-20221003
-x86_64               randconfig-a003-20221003
-x86_64               randconfig-a005-20221003
-x86_64                          rhel-8.3-rust
+struct nlmsgerr {
+	int		error;
+	struct nlmsghdr msg;
+	/*
+	 * followed by the message contents unless NETLINK_CAP_ACK was set
+	 * or the ACK indicates success (error =3D=3D 0)
+	 * message length is aligned with NLMSG_ALIGN()
+	 */
+	/*
+	 * followed by TLVs defined in enum nlmsgerr_attrs
+	 * if NETLINK_EXT_ACK was set
+	 */
+};
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+*Why* that's the behavior - =F0=9F=A4=B7
+
+> Why is nlmsg_len(nlh) _wrong_ if the rest of its contents are
+> correct?=20
+
+This is an ack message, to be clear, doesn't mean anything was wrong.
+It just carries errno.
+
+> If this was "0" in the other state, the logic would just be:
+>=20
+> 	nlh_bytes =3D nlmsg_len(nlh);
+> 	total  =3D sizeof(*errmsg);
+> 	total +=3D nlh_bytes;
+> 	total +=3D tlvlen;
+>=20
+> and:
+>=20
+> 	nlmsg_new(total, ...);
+> 	... nlmsg_put(..., sizeof(*errmsg), ...);
+> 	...
+> 	errmsg->error =3D err;
+> 	errmsg->nlh =3D *nlh;
+> 	if (nlh_bytes) {
+> 		data =3D nlmsg_append(..., nlh_bytes), ...);
+> 		...
+> 		memcpy(data, nlh->nlmsg_contents, nlh_bytes);
+> 	}
+>=20
+> > +		size_t data_len =3D nlh->nlmsg_len - sizeof(*nlh); =20
+>=20
+> I think data_len here is also "payload - sizeof(*errmsg)"? So if it's
+> >0, we need to append the nlh contents.
+
+I was trying to avoid using payload in case it has overflown :S
+
+> > +		void *data;
+> > +
+> > +		data =3D nlmsg_append(skb, rep, data_len);
+> > +		if (!data)
+> > +			goto err_bad_put;
+> > +
+> > +		/* the nlh + 1 is probably going to make you
+> > unhappy? */ =20
+>=20
+> Right, the compiler may think it is an object no larger than
+> sizeof(*nlh). My earliest attempt at changes here introduced a
+> flex-array for the contents, and split the memcpy:
+> https://lore.kernel.org/lkml/d7251d92-150b-5346-6237-52afc154bb00@rasmusv=
+illemoes.dk/
+> which is basically the solution you have here, except it wasn't having
+> the nlmsg_*-helpers do the bounds checking.
+>=20
+> > +		memcpy(data, nlh + 1, data_len); =20
+>=20
+> So with the struct nlmsghdr::nlmsg_contents member, this becomes:
+>=20
+> 		memcpy(data, nlh->nlmsg_contents, data_len);
+>=20
