@@ -2,68 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CB2A5F58FF
-	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 19:18:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 857075F5953
+	for <lists+netdev@lfdr.de>; Wed,  5 Oct 2022 19:47:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230289AbiJERSV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Oct 2022 13:18:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58512 "EHLO
+        id S231130AbiJERr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Oct 2022 13:47:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230231AbiJERSQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 13:18:16 -0400
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 493953A157;
-        Wed,  5 Oct 2022 10:18:11 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id i9so7352929qvu.1;
-        Wed, 05 Oct 2022 10:18:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=Vs/rP4IDV/yKojwamvZ9fmwsEFJF87oNCRi38myhe58=;
-        b=jwaA/ryGa3BWj7GzdeC5+oqAxFxxpksehzr+ELMt+kPKPf9yhDFyTXsqA3DlIQN7Qb
-         Ed0V5AMHHgwT2SfFitIMsoo1T9K/Or2sMvVGHUtb+Ip/FoU+io9euDo7rTEHHhiZa+47
-         n8TB24IddJqTFQ3prk+pfI/zGfIisvu7KCiN1lxYGkyeuLMJ70H+R0/NftOOvWXyeJRH
-         pgipVPN/N0KNK/xF4e9/QCXZLl4fKknk9G9eIZw4jfk9TMBOeeF1p8Dn9lOwH3ZZRUHT
-         oc6csXvAhg5Fp/Nv8ji9wl/e9ICd7zlMITDj/OoQYrlqc50ywuofnK+D9CYVhvaqYM9C
-         CcjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=Vs/rP4IDV/yKojwamvZ9fmwsEFJF87oNCRi38myhe58=;
-        b=tmP03Qyww8njw+Jvy45a3fKPKpD3/bSproiYNPUDTwEHZnAEVbUtx06978xe5iGe9l
-         zqyY0K7mGQHX90Y1o+KijbZ3juI/Yip40KY3P9c5TVsS3R+5Oa9zFWQzWT1wj8CRO9fs
-         fHlVbOqJBLULidFW28mFqSPylToQdanXLe7Q6CKB6uBsvLRfO5DAUp2oOBeP+BLwez2Y
-         1WoqGi9tkxw92A0jX+sPIwvxY0ZNF13i+PMaQ2TnbK2v+AfVo33ZXCi78db9n/RHSp0J
-         cq0KLCYksb+fNDS7X0YitWdP458JBdieaGoTYN9vuV55GCniNBB2/VHrbvFIUDmsBA3U
-         BzBw==
-X-Gm-Message-State: ACrzQf0LKGSiKyopiTjQP4glHLXfboDQjlk7qLNXMO3vISa3+uT/9gGr
-        wstidetkb2um5HZuevtuo9fAFMtC1fc=
-X-Google-Smtp-Source: AMsMyM5r/2zJpIbjtabbsuMXMdw+/w9El5wJ7ps4NSmBwrzKGqk0K8nceMKR3GlL9XY5rpvJnZg7qw==
-X-Received: by 2002:a05:6214:c66:b0:4ac:b026:458b with SMTP id t6-20020a0562140c6600b004acb026458bmr666694qvj.20.1664990268939;
-        Wed, 05 Oct 2022 10:17:48 -0700 (PDT)
-Received: from pop-os.attlocal.net ([2600:1700:65a0:ab60:2bd1:c1af:4b3b:4384])
-        by smtp.gmail.com with ESMTPSA id m13-20020ac85b0d000000b003913996dce3sm1764552qtw.6.2022.10.05.10.17.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Oct 2022 10:17:48 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     yangpeihao@sjtu.edu.cn, toke@redhat.com, jhs@mojatatu.com,
-        jiri@resnulli.us, bpf@vger.kernel.org, sdf@google.com,
-        Cong Wang <cong.wang@bytedance.com>
-Subject: [RFC Patch v6 5/5] net_sched: Introduce helper bpf_skb_tc_classify()
-Date:   Wed,  5 Oct 2022 10:17:09 -0700
-Message-Id: <20221005171709.150520-6-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221005171709.150520-1-xiyou.wangcong@gmail.com>
-References: <20221005171709.150520-1-xiyou.wangcong@gmail.com>
+        with ESMTP id S230042AbiJERrJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 13:47:09 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C0480BDB;
+        Wed,  5 Oct 2022 10:45:58 -0700 (PDT)
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 295GedKv005552;
+        Wed, 5 Oct 2022 17:45:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding;
+ s=corp-2022-7-12; bh=PAfKF245rJVuyKQIojRzi3hHRTZzW3nXv15RmqODTr4=;
+ b=0aV3/2SVZS5xIpa0qWVT1kpY9eh9NGdlvN9f0B1oWw8FMiSgwZoEZos/o2/kwOsFUVJE
+ vRUw9gxI4j7KIc7Usm70B+OjL+GNF9P3NzuC/JZyuHnzFNEpCGgkLjnqe9BMYY2Q55kN
+ 4o+2Yf3v7uytSiMWgZC04gUWARuoajok13ftIJg94mwNzfwX7f2NRzdVNs0uzAKV7YWF
+ nrS5wX59rVW+vd/o3/g41sj9vh+qs9Vuud/VdN6HEzmRjjGREjwvIpC/KFjL033xj4rU
+ A9EbfFZmrc7aQSejPm6rCMKujdD0fyVjjd72mHmNutSJKZxnbSlfmyTEFCKpOOIQuKQK Iw== 
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3k15up1e6x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 05 Oct 2022 17:45:31 +0000
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 295HQq3C029578;
+        Wed, 5 Oct 2022 17:45:30 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3jxc05t2t2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 05 Oct 2022 17:45:30 +0000
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 295HjUb6024064;
+        Wed, 5 Oct 2022 17:45:30 GMT
+Received: from rsajanku-mac.us.oracle.com (dhcp-10-159-236-222.vpn.oracle.com [10.159.236.222])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3jxc05t2sa-1;
+        Wed, 05 Oct 2022 17:45:29 +0000
+From:   Rohit Nair <rohit.sajan.kumar@oracle.com>
+To:     leon@kernel.org, jgg@ziepe.ca, saeedm@nvidia.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     manjunath.b.patil@oracle.com, rama.nichanamatlu@oracle.com,
+        rohit.sajan.kumar@oracle.com,
+        Michael Guralnik <michaelgur@nvidia.com>
+Subject: [PATCH 1/1] IB/mlx5: Add a signature check to received EQEs and CQEs
+Date:   Wed,  5 Oct 2022 10:45:20 -0700
+Message-Id: <20221005174521.63619-1-rohit.sajan.kumar@oracle.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-10-05_05,2022-10-05_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxlogscore=999
+ suspectscore=0 phishscore=0 bulkscore=0 malwarescore=0 mlxscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2210050110
+X-Proofpoint-GUID: 7fg1NbIa4R_lG-oT8MZX2aGtcx9eazeq
+X-Proofpoint-ORIG-GUID: 7fg1NbIa4R_lG-oT8MZX2aGtcx9eazeq
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,152 +75,138 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
+As PRM defines, the bytewise XOR of the EQE and the EQE index should be
+0xff. Otherwise, we can assume we have a corrupt EQE. The same is
+applicable to CQE as well.
 
-Introduce an eBPF helper function bpf_skb_tc_classify() to reuse exising
-TC filters on *any* Qdisc to classify the skb.
+Adding a check to verify the EQE and CQE is valid in that aspect and if
+not, dump the CQE and EQE to dmesg to be inspected.
 
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+This patch does not introduce any significant performance degradations
+and has been tested using qperf.
+
+Suggested-by: Michael Guralnik <michaelgur@nvidia.com>
+Signed-off-by: Rohit Nair <rohit.sajan.kumar@oracle.com>
 ---
- include/uapi/linux/bpf.h |  1 +
- net/core/filter.c        | 17 +++++++++-
- net/sched/cls_api.c      | 69 ++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 86 insertions(+), 1 deletion(-)
+ drivers/infiniband/hw/mlx5/cq.c              | 40 ++++++++++++++++++++++++++++
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c | 39 +++++++++++++++++++++++++++
+ 2 files changed, 79 insertions(+)
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index c21fd1f189bc..7ed04736c4e4 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -5650,6 +5650,7 @@ union bpf_attr {
- 	FN(tcp_raw_check_syncookie_ipv6),	\
- 	FN(ktime_get_tai_ns),		\
- 	FN(user_ringbuf_drain),		\
-+	FN(skb_tc_classify),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 7a271b77a2cc..d1ed60114794 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -7926,6 +7926,21 @@ tc_cls_act_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+diff --git a/drivers/infiniband/hw/mlx5/cq.c b/drivers/infiniband/hw/mlx5/cq.c
+index be189e0..2a6d722 100644
+--- a/drivers/infiniband/hw/mlx5/cq.c
++++ b/drivers/infiniband/hw/mlx5/cq.c
+@@ -441,6 +441,44 @@ static void mlx5_ib_poll_sw_comp(struct mlx5_ib_cq *cq, int num_entries,
  	}
  }
  
-+const struct bpf_func_proto bpf_skb_tc_classify_proto __weak;
-+
-+static const struct bpf_func_proto *
-+tc_qdisc_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
++static void verify_cqe(struct mlx5_cqe64 *cqe64, struct mlx5_ib_cq *cq)
 +{
-+	switch (func_id) {
-+#ifdef CONFIG_NET_CLS_ACT
-+	case BPF_FUNC_skb_tc_classify:
-+		return &bpf_skb_tc_classify_proto;
-+#endif
-+	default:
-+		return tc_cls_act_func_proto(func_id, prog);
++	int i = 0;
++	u64 temp_xor = 0;
++	struct mlx5_ib_dev *dev = to_mdev(cq->ibcq.device);
++
++	u32 cons_index = cq->mcq.cons_index;
++	u64 *eight_byte_raw_cqe = (u64 *)cqe64;
++	u8 *temp_bytewise_xor = (u8 *)(&temp_xor);
++	u8 cqe_bytewise_xor = (cons_index & 0xff) ^
++				((cons_index & 0xff00) >> 8) ^
++				((cons_index & 0xff0000) >> 16);
++
++	for (i = 0; i < sizeof(struct mlx5_cqe64); i += 8) {
++		temp_xor ^= *eight_byte_raw_cqe;
++		eight_byte_raw_cqe++;
 +	}
++
++	for (i = 0; i < (sizeof(u64)); i++) {
++		cqe_bytewise_xor ^= *temp_bytewise_xor;
++		temp_bytewise_xor++;
++	}
++
++	if (cqe_bytewise_xor == 0xff)
++		return;
++
++	dev_err(&dev->mdev->pdev->dev,
++		"Faulty CQE - checksum failure: cqe=0x%x cqn=0x%x cqe_bytewise_xor=0x%x\n",
++		cq->ibcq.cqe, cq->mcq.cqn, cqe_bytewise_xor);
++	dev_err(&dev->mdev->pdev->dev,
++		"cons_index=%u arm_sn=%u irqn=%u cqe_size=0x%x\n",
++		cq->mcq.cons_index, cq->mcq.arm_sn, cq->mcq.irqn, cq->mcq.cqe_sz);
++
++	print_hex_dump(KERN_WARNING, "", DUMP_PREFIX_OFFSET,
++		       16, 1, cqe64, sizeof(*cqe64), false);
++	BUG();
 +}
 +
- static const struct bpf_func_proto *
- xdp_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- {
-@@ -10656,7 +10671,7 @@ const struct bpf_prog_ops tc_cls_act_prog_ops = {
- };
+ static int mlx5_poll_one(struct mlx5_ib_cq *cq,
+ 			 struct mlx5_ib_qp **cur_qp,
+ 			 struct ib_wc *wc)
+@@ -463,6 +501,8 @@ static int mlx5_poll_one(struct mlx5_ib_cq *cq,
  
- const struct bpf_verifier_ops tc_qdisc_verifier_ops = {
--	.get_func_proto		= tc_cls_act_func_proto,
-+	.get_func_proto		= tc_qdisc_func_proto,
- 	.is_valid_access	= tc_cls_act_is_valid_access,
- 	.convert_ctx_access	= tc_cls_act_convert_ctx_access,
- 	.gen_prologue		= tc_cls_act_prologue,
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 50566db45949..64470a8947b1 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -22,6 +22,7 @@
- #include <linux/idr.h>
- #include <linux/jhash.h>
- #include <linux/rculist.h>
-+#include <linux/filter.h>
- #include <net/net_namespace.h>
- #include <net/sock.h>
- #include <net/netlink.h>
-@@ -1655,6 +1656,74 @@ int tcf_classify(struct sk_buff *skb,
+ 	cqe64 = (cq->mcq.cqe_sz == 64) ? cqe : cqe + 64;
+ 
++	verify_cqe(cqe64, cq);
++
+ 	++cq->mcq.cons_index;
+ 
+ 	/* Make sure we read CQ entry contents after we've checked the
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+index 229728c..f2a6d8b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+@@ -102,6 +102,43 @@ static struct mlx5_core_cq *mlx5_eq_cq_get(struct mlx5_eq *eq, u32 cqn)
+ 	return cq;
  }
- EXPORT_SYMBOL(tcf_classify);
  
-+#ifdef CONFIG_BPF_SYSCALL
-+BPF_CALL_3(bpf_skb_tc_classify, struct sk_buff *, skb, int, ifindex, u32, handle)
++static void verify_eqe(struct mlx5_eq *eq, struct mlx5_eqe *eqe)
 +{
-+	struct net *net = dev_net(skb->dev);
-+	const struct Qdisc_class_ops *cops;
-+	struct tcf_result res = {};
-+	struct tcf_block *block;
-+	struct tcf_chain *chain;
-+	struct net_device *dev;
-+	unsigned long cl = 0;
-+	struct Qdisc *q;
-+	int result;
++	u64 *eight_byte_raw_eqe = (u64 *)eqe;
++	u8 eqe_bytewise_xor = (eq->cons_index & 0xff) ^
++			      ((eq->cons_index & 0xff00) >> 8) ^
++			      ((eq->cons_index & 0xff0000) >> 16);
 +
-+	rcu_read_lock();
-+	dev = dev_get_by_index_rcu(net, ifindex);
-+	if (!dev)
-+		goto out;
-+	q = qdisc_lookup_rcu(dev, handle);
-+	if (!q)
-+		goto out;
++	int i = 0;
++	u64 temp_xor = 0;
++	u8 *temp_bytewise_xor = (u8 *)(&temp_xor);
 +
-+	cops = q->ops->cl_ops;
-+	if (!cops)
-+		goto out;
-+	if (!cops->tcf_block)
-+		goto out;
-+	if (TC_H_MIN(handle)) {
-+		cl = cops->find(q, handle);
-+		if (cl == 0)
-+			goto out;
++	for (i = 0; i < sizeof(struct mlx5_eqe); i += 8) {
++		temp_xor ^= *eight_byte_raw_eqe;
++		eight_byte_raw_eqe++;
 +	}
-+	block = cops->tcf_block(q, cl, NULL);
-+	if (!block)
-+		goto out;
 +
-+	for (chain = tcf_get_next_chain(block, NULL);
-+	     chain;
-+	     chain = tcf_get_next_chain(block, chain)) {
-+		struct tcf_proto *tp;
-+
-+		result = tcf_classify(skb, NULL, tp, &res, false);
-+		if (result  >= 0) {
-+			switch (result) {
-+			case TC_ACT_QUEUED:
-+			case TC_ACT_STOLEN:
-+			case TC_ACT_TRAP:
-+				fallthrough;
-+			case TC_ACT_SHOT:
-+				rcu_read_unlock();
-+				return 0;
-+			}
-+		}
++	for (i = 0; i < (sizeof(u64)); i++) {
++		eqe_bytewise_xor ^= *temp_bytewise_xor;
++		temp_bytewise_xor++;
 +	}
-+out:
-+	rcu_read_unlock();
-+	return res.class;
++
++	if (eqe_bytewise_xor == 0xff)
++		return;
++
++	dev_err(&eq->dev->pdev->dev,
++		"Faulty EQE - checksum failure: ci=0x%x eqe_type=0x%x eqe_bytewise_xor=0x%x",
++		eq->cons_index, eqe->type, eqe_bytewise_xor);
++
++	dev_err(&eq->dev->pdev->dev,
++		"EQ addr=%p eqn=%u irqn=%u vec_index=%u",
++		eq, eq->eqn, eq->irqn, eq->vecidx);
++
++	print_hex_dump(KERN_WARNING, "", DUMP_PREFIX_OFFSET,
++		       16, 1, eqe, sizeof(*eqe), false);
++	BUG();
 +}
 +
-+const struct bpf_func_proto bpf_skb_tc_classify_proto = {
-+	.func		= bpf_skb_tc_classify,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_CTX,
-+	.arg2_type	= ARG_ANYTHING,
-+	.arg3_type	= ARG_ANYTHING,
-+};
-+#endif
+ static int mlx5_eq_comp_int(struct notifier_block *nb,
+ 			    __always_unused unsigned long action,
+ 			    __always_unused void *data)
+@@ -127,6 +164,8 @@ static int mlx5_eq_comp_int(struct notifier_block *nb,
+ 		/* Assume (eqe->type) is always MLX5_EVENT_TYPE_COMP */
+ 		cqn = be32_to_cpu(eqe->data.comp.cqn) & 0xffffff;
+ 
++		verify_eqe(eq, eqe);
 +
- struct tcf_chain_info {
- 	struct tcf_proto __rcu **pprev;
- 	struct tcf_proto __rcu *next;
+ 		cq = mlx5_eq_cq_get(eq, cqn);
+ 		if (likely(cq)) {
+ 			++cq->arm_sn;
 -- 
-2.34.1
+1.8.3.1
 
