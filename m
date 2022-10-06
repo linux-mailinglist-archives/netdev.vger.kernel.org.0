@@ -2,264 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B94785F637A
-	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 11:20:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0688B5F63C0
+	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 11:38:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230289AbiJFJUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Oct 2022 05:20:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42546 "EHLO
+        id S229642AbiJFJit (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Oct 2022 05:38:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230225AbiJFJUA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 05:20:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F3E1409A
-        for <netdev@vger.kernel.org>; Thu,  6 Oct 2022 02:19:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1665047997;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VUnEo3EjbRDMJv+lLUiblmpLO+kFDu16Pv8h+3fxi88=;
-        b=TL19xKCZQq9Gj6M09OOhyuw1YABXXdqAKcDYyVSnrHgWTl8RoLk9lEsDKrEz+dxQCtBROA
-        KW2sqHDySY9dhxM9cQsEVG9nYkZCK+L/3YqmvTazgqK+P6tlhs81zfL4cfugJKzV7Cqh66
-        cML+iDwgEfaKo8w+BaZbqU4pJySM0tg=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-67-P_b5M7XyNv6IItOXpMeWNg-1; Thu, 06 Oct 2022 05:19:56 -0400
-X-MC-Unique: P_b5M7XyNv6IItOXpMeWNg-1
-Received: by mail-wm1-f71.google.com with SMTP id i82-20020a1c3b55000000b003bf635eac31so741116wma.4
-        for <netdev@vger.kernel.org>; Thu, 06 Oct 2022 02:19:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=VUnEo3EjbRDMJv+lLUiblmpLO+kFDu16Pv8h+3fxi88=;
-        b=C/yb+SeHnKIofS/j3NDYt7/DeYY3mmfT3cwCZUy5fP+KxczDEUybyYZGwMUixhJx/L
-         yePOmj6DxhpeYd5avJesk9/PLMd6OgQftrQr7BIw8U75z3uTv7U3oTnZKi6YEjvIQsjZ
-         lSO2DbmIpSjlpysUSml69Z+xOe+fGekXK0oyPjyVdWPeEZeFC83C5mmi111zkGV3yh6Q
-         fxb+eFaDDmvXf88udVFwVxbJfWX/aiHzUI4bNWn4R+AS7B6oN8it7Nmrb+tqgJww21Dt
-         K2slid+pv35PtS9hxeCZcCB9ENGCuM4cGkii+LgOTvlDs5B8O10Ju15o9VhSYkk90cZO
-         ot9g==
-X-Gm-Message-State: ACrzQf0KA2GyA+tJ3QnDghqehgBD4GMqVjkO0XFiiS4zHanmQGXL4iSr
-        zGNaZX106VVXADq3M9vdO8UWglhaRX8zAUJmLCtOt0R25oSn/FnocvG3qZxH0Y/hu2HNLmOeS3H
-        8JDTDOKgSlcCNGtFc
-X-Received: by 2002:a5d:5105:0:b0:22e:3ed0:13bf with SMTP id s5-20020a5d5105000000b0022e3ed013bfmr2383948wrt.645.1665047995024;
-        Thu, 06 Oct 2022 02:19:55 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM6aJewZ7B+lOd/pwlldt8Y7VsgtAmJ96SrJ3HIWfVEjRWQORDGZByh9+bDyVmTLmeFQVXDmig==
-X-Received: by 2002:a5d:5105:0:b0:22e:3ed0:13bf with SMTP id s5-20020a5d5105000000b0022e3ed013bfmr2383931wrt.645.1665047994750;
-        Thu, 06 Oct 2022 02:19:54 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-103-235.dyn.eolo.it. [146.241.103.235])
-        by smtp.gmail.com with ESMTPSA id u10-20020adff88a000000b0022e47b57735sm8223489wrp.97.2022.10.06.02.19.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Oct 2022 02:19:54 -0700 (PDT)
-Message-ID: <d669f9a18ae0b18fbecad7efbd2bc2d789f280f3.camel@redhat.com>
-Subject: Re: [PATCH v4 net 3/5] tcp/udp: Call inet6_destroy_sock() in IPv6
- sk->sk_destruct().
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Cc:     Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, linux-kernel@vger.kernel.org,
-        Vladislav Yasevich <vyasevic@redhat.com>
-Date:   Thu, 06 Oct 2022 11:19:53 +0200
-In-Reply-To: <20221004171802.40968-4-kuniyu@amazon.com>
-References: <20221004171802.40968-1-kuniyu@amazon.com>
-         <20221004171802.40968-4-kuniyu@amazon.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S231468AbiJFJif (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 05:38:35 -0400
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140051.outbound.protection.outlook.com [40.107.14.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1E589A9DD
+        for <netdev@vger.kernel.org>; Thu,  6 Oct 2022 02:38:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UHAdM8n/PO+1cWNMLeWK/VmLoGmpjZS65irJ0YL+EAFdBi879wPkjwodB1wrmp6ZKHw6KCYTNHJDDCjJHNqZae0h5UEbnra6dt4WfNopps+a1UR+0UFptkEkFBz2Z646k5I8KBQvnBrrvYu9AsQghELoEEapxnRypMc45OlzZAsMx/oRmm/KzFUg8/9K7l7JAPWrxSyldTvOxcAcak/2DxgZeFv8NdT/nO3weXgMQSvxRBJKVOl5O2NW7mssgl540VDGRWLyxa6X8r7H9NHjGXaomg+UupVcaFBwRaQX7U++mak/H8l0ol/Cg+JA7cxlHvDT76ldUJCe0uDICqx3Yw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fdDwvh2uMQnqOe9JTjbxmDNExq2sxZezjnh/PGdHJig=;
+ b=ACpbC5kX/KXaDTV9azN61UFAVw8nRDL/hP9IBFMgY+W2nU1rCNS7yRL8Q1HE7mjtv9l6jbdizEu6DJlS6j+3A0E0YuUNXjRDVuhsuYiG2wBfHG+AhzSTUOSG4qTYyTjuDNYVX2WuUV7i3RxR2Q/y6VJmJMdBhdGOWXKBXN4+4PoU71b/at+p/odUTYCuTyIyf4FkMT+SASU3WMEuAtYqnPyuhgZTZF6mb98pz3OS6ZkosKucoSx21SLZ+EuvjUjTjgayxmNDbeBVrqyqdsdDNawYqqcpvFc9lVsQBHJcXbDDZbM5fd+/w6ROwIMCSfmW157ds3gwY1JdkQUCQxT2gw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fdDwvh2uMQnqOe9JTjbxmDNExq2sxZezjnh/PGdHJig=;
+ b=ZKQOa9LYlu0GyBTNJwGEpmuLhqRm5eN5FoG2o5tect4X+aNO3cyXpTvhOVGv9uZIlEOa0pZCAdsOTvGn2oRFOyZCxIJGgtlS7yz941R+EI4jUq46PbTyQnBH/4/6ritdpK3IHkbgBWY9NfUBHDa+X/WcR5xpfEV/AjdzGJzrv1o=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by DB8PR04MB7033.eurprd04.prod.outlook.com (2603:10a6:10:125::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.34; Thu, 6 Oct
+ 2022 09:38:32 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1%7]) with mapi id 15.20.5676.032; Thu, 6 Oct 2022
+ 09:38:32 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "yannick.vignon@nxp.com" <yannick.vignon@nxp.com>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
+Subject: Re: [PATCH net v1] net/sched: taprio: Fix crash when adding child
+ qdisc
+Thread-Topic: [PATCH net v1] net/sched: taprio: Fix crash when adding child
+ qdisc
+Thread-Index: AQHY1RxOd1dFmi5dEk+opmYKbXniaq34lZOAgARaWYCAAdiGgIAAEjkAgAJJ5oA=
+Date:   Thu, 6 Oct 2022 09:38:32 +0000
+Message-ID: <20221006093831.5sngbg5cq3r6lxar@skbuf>
+References: <20220930223042.351022-1-vinicius.gomes@intel.com>
+ <20220930225639.q4hr4vcqhy7zyomk@skbuf> <87v8p04y6o.fsf@intel.com>
+ <20221004213617.7qodtbsr37wkyavj@skbuf> <87pmf7p5yd.fsf@intel.com>
+In-Reply-To: <87pmf7p5yd.fsf@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: VI1PR04MB5136:EE_|DB8PR04MB7033:EE_
+x-ms-office365-filtering-correlation-id: 1e9b5b15-2390-42df-955a-08daa77e8869
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: WFCdK61apgRjsLZMKsuqTX8c5WtTi7COHNWEw8ALXygQGnjNKkH+/M7zLr4jlghd+mHUyhE0pq0OsSzeon6r0cyiLOa04oKtynP/vDw852fLAG3KU0dQ3CqdUn5mda9i7UNbBdEe5KXRcsS/NS8i3YtU9TY7188O25i5BaCaMPMVkE5E52vhVbkpJaxoi4Ci+dH37039H0XFQgROgyuYxoAIE2/44b8qS3+EK7I8Wsye9rROtchcgYXD+p7xcDj17IoVA+NgEWaB7oI+GdCg7gPjQIqqHaUHGknQiBoh2ztAALOVNZaG6wMGMA9VKBBiMD1rHaaVFy7xGya1aGhjn5FULUQtP7HRc3nqaA69wk1z3XYjddynqqj0VU7p4aAFjEvlVdsRajoZQSiW0y2FwywaVK/C5mH7wsOn257vF4y0itfvEZkxjdsLOa3nEfg+e7Mh0EFGe+XbblNFqmODCMkQ8/gg+NDrcuAkqpWO5ZT/D//+HP2KvTO6ecIDmWNF02J0aMq4svwGicdLUzw9HsLIlX8l1XwXmiwf0XXr49Hcac1Zv+pWIZajlGDDdFxX29D7o56cDZS0lo8haItNf7FTazCCIvKmOuj2I0IK+2fzo/SXvSo62Fj3jAsx+QJRFiV06NrY99tXYz13hpqRaeVqz7Hu7/sby3odnLxrTp9bPtpGzFpl7T1GEbt4lg9KaHPGgdvD10wott0NakvXtEJkN5b7a9SlS5sNsUSVZ1oNJLLGYvFGpyndwr0XKIn/rLhtksQBaYsGiHCXTvkOJw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(39860400002)(376002)(396003)(136003)(366004)(346002)(451199015)(6916009)(86362001)(38070700005)(44832011)(4744005)(122000001)(38100700002)(33716001)(1076003)(186003)(6512007)(26005)(6506007)(71200400001)(9686003)(6486002)(478600001)(316002)(66946007)(54906003)(76116006)(66476007)(66446008)(64756008)(8676002)(4326008)(66556008)(8936002)(5660300002)(2906002)(41300700001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Ev8N2zFkwYlggu82wNKmPVbhBtSxVfCuhnYoVL1Le1RSfQUFxYtiavlMY5eI?=
+ =?us-ascii?Q?IElJtKJiwD8cjope4FTnU9nKl90PWSQZTG87TXL3CfkL8DDx2H8KHtq4jRjC?=
+ =?us-ascii?Q?jmMrtFRMnCKCQUdZQaK3D9yXU1qQrNgrpcGc+ABCO3PsDc+XIkiHELU2W4kB?=
+ =?us-ascii?Q?sOrokOejgUUws/xyTXOEh+/b1zZOZsraeZp1bhYsoG5rsnZJQaFxQPbib0vO?=
+ =?us-ascii?Q?eYXn490rk4PpxyidLTzGa+CYjvslKQzZp7ZOXVWd0vOf3lNNEeLvPZ/+7NG2?=
+ =?us-ascii?Q?pwqdN9fCVTO/obWqRGrFpE+P4K7e+GLHVQj2Ah41TEirAyIhGOQg4XehuQZ3?=
+ =?us-ascii?Q?PRf1eceDWUTPHY9yiSrsqMcvsfN+ALTlbztFP3dcaDuL/GmE1hKbmnDkkfjf?=
+ =?us-ascii?Q?WNczz6TX73oTy+iQCOhoHZZ+17Z4BEkZCTnLDm5yad6up+VG4VFew5YpyjGA?=
+ =?us-ascii?Q?o+LgbI7Ymzu/ojUihCbpsWJXuO4FOpD3ImARD4B9s0NKSe9+eDMJ+vcLkncI?=
+ =?us-ascii?Q?BuGPOeSE2rPXhCPPYQf7odTyJ/LkuN6prrM6683/2nRI1/e/xQqW9PIIbqTU?=
+ =?us-ascii?Q?eGatZL0eox2WEcA109RbeAnF5uCua42Vx5jGh+L/j9zqPiQVoMsSVnLzC4nF?=
+ =?us-ascii?Q?jVYIXuIo/1u4VywK5EtRyGZk0bj2uFTxkoFR1RLM4kpmNDMuutnydDcWhUwC?=
+ =?us-ascii?Q?VuwDFmlr9j3RoI1TwiiNVVdAtud0lUZxK8qJiZ7QNKsU7kiRfdawGcy/MgD3?=
+ =?us-ascii?Q?RdIsHoNDdHTczsag1EWXM7eghB+BvcIfCQrd48Bz/lo/NhhU4RKBqto5CTUD?=
+ =?us-ascii?Q?P7P//s6Yh3QidM0QZNgMbJLv45lQK1IMHF0xx3An67mcUHTI3qliVOhdXqaw?=
+ =?us-ascii?Q?hYT4DRxjidf1giq9wLLYIuvTlz5lONClOrTrCAtOn0WwBbDRj13bTAXIsett?=
+ =?us-ascii?Q?nTf46jI8JrdT0dujgJghRzfi9R5rZB/1vMc9JCnZ17EOz74pQGBSsAsmHPGd?=
+ =?us-ascii?Q?DLomhOFNMGyagEuBgXGzIBpw1sND0yfn5bQVMeXe3EPPI7n9PiE/YjWcxfCE?=
+ =?us-ascii?Q?GHerb91H5T6lV0CDKsW6xO81azXm7CEV+oWCKuiu35AaUhTnpZJdieWChcqg?=
+ =?us-ascii?Q?sqOSCHpEGxhFUrWbP46OHMBOft4ZqAAKJJY/QvxTlZCRunq1ISWSDq2nb+u4?=
+ =?us-ascii?Q?zTrtuadUz6TKOR6r0qWuk0zi33g0ebG14Gl4eO91ToG5h9K9pnzE7er2LELX?=
+ =?us-ascii?Q?i7ZN75YDVsa6chpd/H8Rx94dDikDJ7qXpHArxGuaNFllypFM0uDrgLgFEDsW?=
+ =?us-ascii?Q?FuhfhrVu9kOWEpcX31eezbYEIf+rtdKoDjaZb1+jPKW6vjJ8CXjOvxJ2C8vw?=
+ =?us-ascii?Q?4y8mEehC6BTEx95VIAUxZFP1pdFZqCVs+xJj9nlFrJZ5pZpzWVoZNxcp2Du1?=
+ =?us-ascii?Q?CujgyRJ5OLWX+DbbdSfxbg3FUHqNM9ffTqRIqHVVwg8PncLVkiVsT29J/wgm?=
+ =?us-ascii?Q?dsucMzBZ9q57g9k50uMFmS+Bx2e4PkMOJgzMR81+KxfHn72tOd6A4WphwJT3?=
+ =?us-ascii?Q?gVVXDWsKr3DdIUSXsYUrKFlXNhe0eztyoTGo4eeNvSfrk2H/QdZpRtuRFnmC?=
+ =?us-ascii?Q?3w=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <D001C6ED5998504EA2276ECA4845BD1E@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1e9b5b15-2390-42df-955a-08daa77e8869
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Oct 2022 09:38:32.2060
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: zo9t4VDkNZAizEcKs5+a4sdbHcDObPFAnjmRXTbZ9RGd2rTpV0Bo/O6bRPsfbzJnF3qGMnJNbj9Lbgv1aWl+Yw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB7033
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-10-04 at 10:18 -0700, Kuniyuki Iwashima wrote:
-> Originally, inet6_sk(sk)->XXX were changed under lock_sock(), so we were
-> able to clean them up by calling inet6_destroy_sock() during the IPv6 ->
-> IPv4 conversion by IPV6_ADDRFORM.  However, commit 03485f2adcde ("udpv6:
-> Add lockless sendmsg() support") added a lockless memory allocation path,
-> which could cause a memory leak:
-> 
-> setsockopt(IPV6_ADDRFORM)                 sendmsg()
-> +-----------------------+                 +-------+
-> - do_ipv6_setsockopt(sk, ...)             - udpv6_sendmsg(sk, ...)
->   - lock_sock(sk)                           ^._ called via udpv6_prot
->   - WRITE_ONCE(sk->sk_prot, &tcp_prot)          before WRITE_ONCE()
->   - inet6_destroy_sock()
->   - release_sock(sk)                        - ip6_make_skb(sk, ...)
->                                               ^._ lockless fast path for
->                                                   the non-corking case
-> 
->                                               - __ip6_append_data(sk, ...)
->                                                 - ipv6_local_rxpmtu(sk, ...)
->                                                   - xchg(&np->rxpmtu, skb)
->                                                     ^._ rxpmtu is never freed.
-> 
->                                             - lock_sock(sk)
-> 
-> For now, rxpmtu is only the case, but not to miss the future change
-> and a similar bug fixed in commit e27326009a3d ("net: ping6: Fix
-> memleak in ipv6_renew_options()."), let's set a new function to IPv6
-> sk->sk_destruct() and call inet6_cleanup_sock() there.  Since the
-> conversion does not change sk->sk_destruct(), we can guarantee that
-> we can clean up IPv6 resources finally.
-> 
-> We can now remove all inet6_destroy_sock() calls from IPv6 protocol
-> specific ->destroy() functions, but such changes are invasive to
-> backport.  So they can be posted as a follow-up later for net-next.
-> 
-> Fixes: 03485f2adcde ("udpv6: Add lockless sendmsg() support")
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> ---
-> Cc: Vladislav Yasevich <vyasevic@redhat.com>
-> ---
->  include/net/ipv6.h    |  1 +
->  include/net/udp.h     |  2 +-
->  include/net/udplite.h |  8 --------
->  net/ipv4/udp.c        |  9 ++++++---
->  net/ipv4/udplite.c    |  8 ++++++++
->  net/ipv6/af_inet6.c   |  9 ++++++++-
->  net/ipv6/udp.c        | 15 ++++++++++++++-
->  net/ipv6/udp_impl.h   |  1 +
->  net/ipv6/udplite.c    |  9 ++++++++-
->  9 files changed, 47 insertions(+), 15 deletions(-)
-> 
-> diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-> index dfa70789b771..e7ec3e8cd52e 100644
-> --- a/include/net/ipv6.h
-> +++ b/include/net/ipv6.h
-> @@ -1179,6 +1179,7 @@ void ipv6_local_error(struct sock *sk, int err, struct flowi6 *fl6, u32 info);
->  void ipv6_local_rxpmtu(struct sock *sk, struct flowi6 *fl6, u32 mtu);
->  
->  void inet6_cleanup_sock(struct sock *sk);
-> +void inet6_sock_destruct(struct sock *sk);
->  int inet6_release(struct socket *sock);
->  int inet6_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len);
->  int inet6_getname(struct socket *sock, struct sockaddr *uaddr,
-> diff --git a/include/net/udp.h b/include/net/udp.h
-> index 5ee88ddf79c3..fee053bcd17c 100644
-> --- a/include/net/udp.h
-> +++ b/include/net/udp.h
-> @@ -247,7 +247,7 @@ static inline bool udp_sk_bound_dev_eq(struct net *net, int bound_dev_if,
->  }
->  
->  /* net/ipv4/udp.c */
-> -void udp_destruct_sock(struct sock *sk);
-> +void udp_destruct_common(struct sock *sk);
->  void skb_consume_udp(struct sock *sk, struct sk_buff *skb, int len);
->  int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb);
->  void udp_skb_destructor(struct sock *sk, struct sk_buff *skb);
-> diff --git a/include/net/udplite.h b/include/net/udplite.h
-> index 0143b373602e..299c14ce2bb9 100644
-> --- a/include/net/udplite.h
-> +++ b/include/net/udplite.h
-> @@ -25,14 +25,6 @@ static __inline__ int udplite_getfrag(void *from, char *to, int  offset,
->  	return copy_from_iter_full(to, len, &msg->msg_iter) ? 0 : -EFAULT;
->  }
->  
-> -/* Designate sk as UDP-Lite socket */
-> -static inline int udplite_sk_init(struct sock *sk)
-> -{
-> -	udp_init_sock(sk);
-> -	udp_sk(sk)->pcflag = UDPLITE_BIT;
-> -	return 0;
-> -}
-> -
->  /*
->   * 	Checksumming routines
->   */
-> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-> index 560d9eadeaa5..48adb418e404 100644
-> --- a/net/ipv4/udp.c
-> +++ b/net/ipv4/udp.c
-> @@ -1598,7 +1598,7 @@ int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb)
->  }
->  EXPORT_SYMBOL_GPL(__udp_enqueue_schedule_skb);
->  
-> -void udp_destruct_sock(struct sock *sk)
-> +void udp_destruct_common(struct sock *sk)
->  {
->  	/* reclaim completely the forward allocated memory */
->  	struct udp_sock *up = udp_sk(sk);
-> @@ -1611,10 +1611,14 @@ void udp_destruct_sock(struct sock *sk)
->  		kfree_skb(skb);
->  	}
->  	udp_rmem_release(sk, total, 0, true);
-> +}
-> +EXPORT_SYMBOL_GPL(udp_destruct_common);
->  
-> +static void udp_destruct_sock(struct sock *sk)
-> +{
-> +	udp_destruct_common(sk);
->  	inet_sock_destruct(sk);
->  }
-> -EXPORT_SYMBOL_GPL(udp_destruct_sock);
->  
->  int udp_init_sock(struct sock *sk)
->  {
-> @@ -1622,7 +1626,6 @@ int udp_init_sock(struct sock *sk)
->  	sk->sk_destruct = udp_destruct_sock;
->  	return 0;
->  }
-> -EXPORT_SYMBOL_GPL(udp_init_sock);
->  
->  void skb_consume_udp(struct sock *sk, struct sk_buff *skb, int len)
->  {
-> diff --git a/net/ipv4/udplite.c b/net/ipv4/udplite.c
-> index 6e08a76ae1e7..4785ac4a8719 100644
-> --- a/net/ipv4/udplite.c
-> +++ b/net/ipv4/udplite.c
-> @@ -17,6 +17,14 @@
->  struct udp_table 	udplite_table __read_mostly;
->  EXPORT_SYMBOL(udplite_table);
->  
-> +/* Designate sk as UDP-Lite socket */
-> +static inline int udplite_sk_init(struct sock *sk)
+On Tue, Oct 04, 2022 at 03:41:30PM -0700, Vinicius Costa Gomes wrote:
+> I was afraid that this this would happen. I need to stop, grab some tea
+> and think very carefully how to simplify the lifetime handling of the
+> children qdiscs. It has become complicated now that the
+> offloaded/not-offloaded modes are very different internally.
 
-You should avoid the 'inline' specifier in c files.
-
-> +{
-> +	udp_init_sock(sk);
-> +	udp_sk(sk)->pcflag = UDPLITE_BIT;
-> +	return 0;
-> +}
-> +
->  static int udplite_rcv(struct sk_buff *skb)
->  {
->  	return __udp4_lib_rcv(skb, &udplite_table, IPPROTO_UDPLITE);
-> diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-> index 83b9e432f3df..ce5378b78ec9 100644
-> --- a/net/ipv6/af_inet6.c
-> +++ b/net/ipv6/af_inet6.c
-> @@ -109,6 +109,13 @@ static __inline__ struct ipv6_pinfo *inet6_sk_generic(struct sock *sk)
->  	return (struct ipv6_pinfo *)(((u8 *)sk) + offset);
->  }
->  
-> +void inet6_sock_destruct(struct sock *sk)
-> +{
-> +	inet6_cleanup_sock(sk);
-> +	inet_sock_destruct(sk);
-> +}
-> +EXPORT_SYMBOL_GPL(inet6_sock_destruct);
-
-I'm sorry for not noticing this before, but it looks like the above
-export is not needed? only used by udp, which is in the same binary
-(either kernel of ipv6 module) as af_inet6
-
-
-Cheers,
-
-Paolo
-
+Truth be told, it's not like the problem Yannick described in commit
+13511704f8d7 ("net: taprio offload: enforce qdisc to netdev queue
+mapping") is unique only to the offloaded taprio, but I just don't know
+enough about qdiscs to see a different design than what is currently
+implemented.=
