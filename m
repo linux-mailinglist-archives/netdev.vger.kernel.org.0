@@ -2,229 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A9C65F6A06
-	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 16:48:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F29225F6A16
+	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 16:56:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229611AbiJFOst (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Oct 2022 10:48:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56746 "EHLO
+        id S231219AbiJFO4Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Oct 2022 10:56:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231893AbiJFOsT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 10:48:19 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2069.outbound.protection.outlook.com [40.107.220.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1C25B40CF
-        for <netdev@vger.kernel.org>; Thu,  6 Oct 2022 07:47:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=N6VUyhoHPR5XAJX0aPLpJxlm9pIXOof5Cgk0/sh0x9TmudEwJJwGL5nrdQ+npDu8TOBj6oiJKsb3Zpu1hfCOiQxzShniBAzsAuNMfEDNWxuvQ6f8BDPiXhFtM+TxtBZopwMtOuUuO2a3ZiULd0VNz3+v74k0BIRJq88GrZQufl2rR4295djL0w7Zak6ppaceXxfM8DSR5K0MEZzhgzDuYiArJ9x5vBhL380TwPcHSXZhsu3AWuaPU64iC6Cwqw/06IPV8FL1/o9pX2pbEu8NAo83yymAB8U92E/KRLMSh6y1UjQxWkN9ZO52EGlKIWX8e8Wuvxzfkk9HBFaIBJbgiQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9RT65eTBV9MIZ2pnmDFCv9C3uRAG3FvqTCBxg8U4EFw=;
- b=Xvhy6/8HvF8ZOFcln2S0UiJJ4JSCrHlQCmopfnxAc9uCXOz8DKZquwLF46YsTOG1MQ4YUzcfsyOOcByuhmdPL/QF5gM0IkZAEFlam3A07SJIwizF+j2xe6vZ4VuH6lj/24mIcsU2Vr4+ihvPYkyEhd7Hm/NzmDOJbg/5Yasy7XP2l7x6VYss9CgVyqmQsPRnqiqz56yTQ3Ax5kkc3m2VcLOJVd30BcyliyuKOq/7Cs1BpdTJZh5T+4gcedpWdwpv2P3EWMCRIhpEJt5FuCgqlF78z3Ji2sWn3wSrxhgHnocv0IFjpG2Ep+jhoXriBaMCaGugLok+6USxa99onbvR8w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9RT65eTBV9MIZ2pnmDFCv9C3uRAG3FvqTCBxg8U4EFw=;
- b=cyF80kj03j5X1Wu/Wzh8YdYt9FTYxCLU1bYeIaet3nngfL/3tq3SUKO62Im5lXrMQ3hbeHPX1Z6aMMILzqpo/bTChCIOQn47/v2YVcWgb6IrHqG5hu1CPLkFnofKL0s6pKV0KHfX1BIF39GlFNMjH8ck7pOUbbIj30pR+VXqYhw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
- by CH0PR12MB5105.namprd12.prod.outlook.com (2603:10b6:610:bc::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.28; Thu, 6 Oct
- 2022 14:47:46 +0000
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::c175:4c:c0d:1396]) by DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::c175:4c:c0d:1396%4]) with mapi id 15.20.5676.036; Thu, 6 Oct 2022
- 14:47:46 +0000
-Message-ID: <88a61eba-a779-96ae-8210-d31e73ed73a1@amd.com>
-Date:   Thu, 6 Oct 2022 09:47:44 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH net 2/3] amd-xgbe: enable PLL_CTL for fixed PHY modes only
-Content-Language: en-US
-To:     Raju Rangoju <Raju.Rangoju@amd.com>, Shyam-sundar.S-k@amd.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, rrangoju@amd.com
-References: <20221006135440.3680563-1-Raju.Rangoju@amd.com>
- <20221006135440.3680563-3-Raju.Rangoju@amd.com>
-From:   Tom Lendacky <thomas.lendacky@amd.com>
-In-Reply-To: <20221006135440.3680563-3-Raju.Rangoju@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: CH0P223CA0003.NAMP223.PROD.OUTLOOK.COM
- (2603:10b6:610:116::15) To DM4PR12MB5229.namprd12.prod.outlook.com
- (2603:10b6:5:398::12)
+        with ESMTP id S230240AbiJFO4X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 10:56:23 -0400
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36B6CA02FF
+        for <netdev@vger.kernel.org>; Thu,  6 Oct 2022 07:56:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=ZMNLSUf6Qyu+KAvj19SIjC94yMD3cu4FuP71CCwikco=; b=apay3AV+e6EflvSpAGN7446iGx
+        Bx9yWzyD+DGQAT+uEgfm0r+HGI83ma3jW3qE21NDREDulKXM6NCasNtG+1sWcOOWgXaEerqR49wtm
+        HlPJopd0gfUEq09TEjT5Pgj8+7ndP3aBhKZzg3fGY6i0XaNmdt6i7mlPzL25tdjZIKXnNWf45XUyS
+        +fp2+mCr8EV38pbzD7+uqswIfgrbeu9xDUhqJtJjOCyTv5obWbN2cDA+1pa0ZxlYqc7x0DRP0m/HK
+        dWvpCdtU72MvQOMg5P5L5ucqgooiVQ7BGlkBj37mU6SN0L62EWim/0ELgqc3mTy1zSjrH6Qa8d1tg
+        porQub+l5qd9vUOUuSll3cGolp3so4sanafaeaUqA72ECjMRh9m4OOqzWInnn0qsYZmfeA7ef4Ivq
+        YY9bUcKuFA0rD2aWMVD6sUK7nUgs5yfm+1JEp1ofZUKVUKC9O+kkaWox8MJHAVSYaMQ6Lo6wEzapt
+        Nfu5uZozaS44n/GsLFx7ZFgGC9SxT+CHRVld5bE3PIRxdgZqcFIZBJ229bALobHRoXIzNABIdlD/7
+        GvapyEl61a0ogg41frsE48tOijaYVep1bIiYgKT9hZiaCGZ9zaSYIcrNuQnIP779GUqCRsl+TGz2M
+        6UZevLjAGMBdqb6y8fuGxPMmwlY5c2u5dJFPBE8jM=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     Dominique Martinet <asmadeus@codewreck.org>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        syzbot <syzbot+8b41a1365f1106fd0f33@syzkaller.appspotmail.com>,
+        v9fs-developer@lists.sourceforge.net,
+        syzkaller-bugs@googlegroups.com, netdev@vger.kernel.org
+Subject: Re: [PATCH] 9p/trans_fd: always use O_NONBLOCK read/write
+Date:   Thu, 06 Oct 2022 16:55:23 +0200
+Message-ID: <4870107.4IDB3aycit@silver>
+In-Reply-To: <345de429-a88b-7097-d177-adecf9fed342@I-love.SAKURA.ne.jp>
+References: <00000000000039af4d05915a9f56@google.com>
+ <000000000000c1d3ca0593128b24@google.com>
+ <345de429-a88b-7097-d177-adecf9fed342@I-love.SAKURA.ne.jp>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5229:EE_|CH0PR12MB5105:EE_
-X-MS-Office365-Filtering-Correlation-Id: b7d449d5-803f-4bf6-a87b-08daa7a9bb8e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wkpkwxD6/lsGE8Y+YOMvdfDh3YF2z++YTMZE/izuidXezh5GV9YcI/2mi5lY9KpHfnqcssPZXHGXLe67cQtaslmrMigyYSX8hsivDYTLE3vp9ANgSN4YCPRm1J+HSG8+T9iPWn49myMALZDRRK27Uv252lphDKOHgzBj7Lnl3NTKA9XDLQcPioiKKuKlY5HZLmHZQHUspmUjWraB7XCdpszeYZoi2s5QtyVsYnYR0DSjDErv22DVJXlBJznZRjVwHh5hR7zj3YVbPtuRE9CaqsB/civ2QVzFqK0PpuaQJoBE7K3zoDsEacRSKQBYojfxOjJO93HETZfwQa4jeZwvtEzQs12pgE8PGC00bQdIhmrfhmny1xbO7214jLzyXtRQhSMC6KIwWMb3wWEqbSw2j9vPFdmRvGfeXhcLUEDzvF3+3VHTozS+o/abrHni0JkjCA+mLlNsbyQt/doBbHeuhGT8AniCdHoOpv08+VegemMu9Wt3l1vyfy3XQzRzGbxsvtcUB/O9haHMsjKlPTxYHpTYWMNTzX9v/B1XbPQsfbCjitQLFd4Jq7M/dVRWdjL7YQpxlNNPP6OXcl7Xvinx3gOBIydQSb88qREH2vzNME8HanGe5GJWg6H8/4YgWXSZzfdbWSge3FAiJy3NHM30xNbHlJ8p66cTb7PEiO8yq0k5U8e1Oed+VOUjb97vbZNPEXUhxpep9YD/RgLO/0/c7sJHoCpgaDAdWZKVgi0F0t80URbrmazrrm/vKmDJ7l4dMNRR7/KesaU3L9xrQDa+tRHsVhWsJT+SS/088xOG6OE=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(346002)(396003)(366004)(376002)(39860400002)(451199015)(86362001)(6486002)(31696002)(478600001)(316002)(6506007)(53546011)(8676002)(26005)(6512007)(66556008)(66476007)(66946007)(41300700001)(8936002)(31686004)(83380400001)(2906002)(4326008)(2616005)(5660300002)(36756003)(186003)(38100700002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MU1oNzZ3QlFmV09MQm42R1NIN1M5aXYwRHQxWjYrdWhlTlRiUUNPWTVlZU14?=
- =?utf-8?B?Nk1VV0l0d0xqelRjRmNFcHplUDBiMEFETXgvV0VTLzR6QkZ2U1NPYXJRTWo5?=
- =?utf-8?B?Y2x5SEorNk54ZGpiQ2lwdFpVTlRyTzdXb2J0NW1GV0VLbnczcDcwV1FVZUdM?=
- =?utf-8?B?MFh4THQwT0cxVDVLZXVIRUovN0dYSkpuQWt3T1E4TjV4SGNrRDhtSytmVzZi?=
- =?utf-8?B?UEdUdkRTOWJKOEFUMldFaW5BWVBNVDBPdWxUN3J2eDk1ME4vZTVtSHZuSGQr?=
- =?utf-8?B?RU1ZcEQzbDdlbktVM216QVJ4OHFHT1BqdGYwZUpqNXFXbnBxMjlkNm0xeDVU?=
- =?utf-8?B?Nm1rYnNyTEZCbEplRDFtUjQ0MW9SbTJwYnRVSWdZVi80aHErTUFQNTgrMGMy?=
- =?utf-8?B?TUNXQk5QM1VDKzlZbzVpUy93RVBuMXEzMzB2eldkb2ZmUFJBQ3JueTRQZCtl?=
- =?utf-8?B?M1ZWcG9DS0prYVFnZjVOUUx1MnNTb3V1RmR6NlVRVU1BNFNEL0ZoU3VMNWhL?=
- =?utf-8?B?bnpjOEp2ZkpDSlVaRlh2clVRakx6ZXprS09MazlpMmhDc2NmN3U3OC9tL3g4?=
- =?utf-8?B?djVqR3ozdkVLdHlTcE80ZHhmanAwNjI5VVVVTEdTcms3NC9PSzV1ZlpiUjhz?=
- =?utf-8?B?dDZNdFBSeE5NczdJUnlJbFd5N3BmWlZ1aGxOaGt2T1IzM1VCa1poRi85Rkx3?=
- =?utf-8?B?YWhMYnhrbExIVU9xdXRyQU9HazN2UUIzT21FMU40dVRhbHBaOWZnc1FWVFlF?=
- =?utf-8?B?UUxhTENRallwMUJjdHNaYWZCMVpWRlVzaHN1ZXZaWXRqN09maGpwZ0hFUlBh?=
- =?utf-8?B?SFhlaGE1cFVWMmhRVUNUZU1QOXdlaTdMN0w3VlFQNEVvZjBCZVY0YUUzTE81?=
- =?utf-8?B?eTF6REdsS2cyRHJZUmVrbGpCWm51RXoxMUMwWU5tVG1pUTFFK0Z0QmdtaXA4?=
- =?utf-8?B?VUpBQ1FmUCs0dGF3OXEraFhqTnBtYnhPdTg1U0RRK1RveDJrSW1qQlM2QXZt?=
- =?utf-8?B?cmlPZEhqaXVUSnZmRzREMTFhUWRsb0x5UlRXUlozRVBiWklMSFV4ejJ5UGFh?=
- =?utf-8?B?YThNME1NOTE1b3hpdlNtVVJBNHZ1R2RBUDhVakpVbzlKSnZ4bHF4QTdjUkN1?=
- =?utf-8?B?TFpZT3hNYlRXeGI2ZWg4SFN5NExRa2ZMdUh1WitvS2hmWTJSdDl6Rm14cWFB?=
- =?utf-8?B?YUZOTGh4MS9BWFFwcTRXdUNFK0QwQVZDRHVKMmc4Y1lsaFFvTitQRithSUZx?=
- =?utf-8?B?cmk0cS9zWHM1MDB0L3poNTNoYVdYY0krNDlVUGlpaVRmako2aytlREkwQ25S?=
- =?utf-8?B?MnFVVzJ1VWxWYjJLL3lQRU53SmZ0RC90SEFodnVVbU9WOENFUndENExwckFo?=
- =?utf-8?B?YnFpbGIvK0EvVDBMRk5Yajg4UXdxQTNFSkJ6RGJsZk90cm56S2FtUC81QnM5?=
- =?utf-8?B?VDBCcmtGT1lNeEo5eDB2a1pEcmZraU9nelpBTk9YSFUwdDJ1RGhFaDNaTDdu?=
- =?utf-8?B?bkNqRnZCVWZJSko4T1NkSnJaWXgzUnRmWklDYkM2Z0dxU0JPRjRaSUZFbDlx?=
- =?utf-8?B?c1M1RDJKdFM5WTNOQmR2Q0JyUkw4T2orZVA4VUoyR0lYZWhoM3I5SldhNHR3?=
- =?utf-8?B?N0dUUnRWbm95eGlSWVlXUVRsOWpvL1hxSzhZUHJHRUpta1ZEUDhNbDJGb1I5?=
- =?utf-8?B?K0VUNGdUVHBXSEVycElxWVNGclI0Vk9zZUZyQUFiaUJqNlBzQlhlOW5NTWh2?=
- =?utf-8?B?QlVUNUxhT0J5ZXNSUFZ0M29hazh1eTBZdy9veDlJcFFZV1ozY21kanJPczNU?=
- =?utf-8?B?Si9WUmNYRytlUmVIL1gwb1dLWUE5UmU0ZDVBKzU4Y3ppNTdJaU9lbjF1eEd3?=
- =?utf-8?B?dElCK1gxMHVyQ3RmYTJSWUR4NnVadk1SZ1c3SWJLZjlFQ1NkNGlGZkQ5OHli?=
- =?utf-8?B?bUVsZXRWaFZwVjEwM3p6WFdKSmlTMm5RbVZ2QjV3TEFzdXk0SDI2dVFLSS9m?=
- =?utf-8?B?b0pwbVpqeThpZFo1ZElVRmQwOTJCM1BrYXBVaU05SFd4RW1DT094S2xNRjJp?=
- =?utf-8?B?VDhSWHcvL0FNUnVQM0l2aXQ2TkI1bnBuZ1VMc3Vtci8rV240Q1dPb2FrWDZr?=
- =?utf-8?Q?90ai6iT609xrGlyKgdn4sS2q+?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b7d449d5-803f-4bf6-a87b-08daa7a9bb8e
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Oct 2022 14:47:46.5440
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jzXOaxfeUmptrtfKkzt1yOeP3PzuFk/mJegnXqgWi1raKYCazzGzmJ76o2kX7/0B6MEuaYFZZaCWNgx1PROCsA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5105
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/6/22 08:54, Raju Rangoju wrote:
-> PLL control setting(HW RRCM) is needed only in fixed PHY configuration
-> to fix the peer-peer issues. Without the PLL control setting, the link
-> up takes longer time in a fixed phy configuration.
+On Freitag, 26. August 2022 17:27:46 CEST Tetsuo Handa wrote:
+> syzbot is reporting hung task at p9_fd_close() [1], for p9_mux_poll_stop()
+>  from p9_conn_destroy() from p9_fd_close() is failing to interrupt already
+> started kernel_read() from p9_fd_read() from p9_read_work() and/or
+> kernel_write() from p9_fd_write() from p9_write_work() requests.
 > 
-> Driver implements SW RRCM for Autoneg On configuration, hence PLL
-> control setting (HW RRCM) is not needed for AN On configuration, and
-> can be skipped.
+> Since p9_socket_open() sets O_NONBLOCK flag, p9_mux_poll_stop() does not
+> need to interrupt kernel_read()/kernel_write(). However, since p9_fd_open()
+> does not set O_NONBLOCK flag, but pipe blocks unless signal is pending,
+> p9_mux_poll_stop() needs to interrupt kernel_read()/kernel_write() when
+> the file descriptor refers to a pipe. In other words, pipe file descriptor
+> needs to be handled as if socket file descriptor.
 > 
-> Also, PLL re-initialization is not needed for PHY Power Off and RRCM
-> commands. Otherwise, they lead to mailbox errors. Added the changes
-> accordingly.
+> We somehow need to interrupt kernel_read()/kernel_write() on pipes.
 > 
-> Fixes: daf182d360e5 ("net: amd-xgbe: Toggle PLL settings during rate change")
-> Signed-off-by: Raju Rangoju <Raju.Rangoju@amd.com>
+> A minimal change, which this patch is doing, is to set O_NONBLOCK flag
+>  from p9_fd_open(), for O_NONBLOCK flag does not affect reading/writing
+> of regular files. But this approach changes O_NONBLOCK flag on userspace-
+> supplied file descriptors (which might break userspace programs), and
+> O_NONBLOCK flag could be changed by userspace. It would be possible to set
+> O_NONBLOCK flag every time p9_fd_read()/p9_fd_write() is invoked, but still
+> remains small race window for clearing O_NONBLOCK flag.
+> 
+> If we don't want to manipulate O_NONBLOCK flag, we might be able to
+> surround kernel_read()/kernel_write() with set_thread_flag(TIF_SIGPENDING)
+> and recalc_sigpending(). Since p9_read_work()/p9_write_work() works are
+> processed by kernel threads which process global system_wq workqueue,
+> signals could not be delivered from remote threads when p9_mux_poll_stop()
+>  from p9_conn_destroy() from p9_fd_close() is called. Therefore, calling
+> set_thread_flag(TIF_SIGPENDING)/recalc_sigpending() every time would be
+> needed if we count on signals for making kernel_read()/kernel_write()
+> non-blocking.
+> 
+> Link: https://syzkaller.appspot.com/bug?extid=8b41a1365f1106fd0f33 [1]
+> Reported-by: syzbot <syzbot+8b41a1365f1106fd0f33@syzkaller.appspotmail.com>
+> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+> Tested-by: syzbot <syzbot+8b41a1365f1106fd0f33@syzkaller.appspotmail.com>
 > ---
->   drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c | 21 +++++++++++++--------
->   drivers/net/ethernet/amd/xgbe/xgbe.h        | 10 ++++++++++
->   2 files changed, 23 insertions(+), 8 deletions(-)
+> Although syzbot tested that this patch solves hung task problem, syzbot
+> cannot verify that this patch will not break functionality of p9 users.
+> Please test before applying this patch.
 > 
-> diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-> index 19b943eba560..23fbd89a29df 100644
-> --- a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-> +++ b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-> @@ -1979,13 +1979,16 @@ static void xgbe_phy_rx_reset(struct xgbe_prv_data *pdata)
->   
->   static void xgbe_phy_pll_ctrl(struct xgbe_prv_data *pdata, bool enable)
->   {
-> -	XMDIO_WRITE_BITS(pdata, MDIO_MMD_PMAPMD, MDIO_VEND2_PMA_MISC_CTRL0,
-> -			 XGBE_PMA_PLL_CTRL_MASK,
-> -			 enable ? XGBE_PMA_PLL_CTRL_ENABLE
-> -				: XGBE_PMA_PLL_CTRL_DISABLE);
-> +	/* PLL_CTRL feature needs to be enabled for fixed PHY modes (Non-Autoneg) only */
-> +	if (pdata->phy.autoneg == AUTONEG_DISABLE) {
-> +		XMDIO_WRITE_BITS(pdata, MDIO_MMD_PMAPMD, MDIO_VEND2_PMA_MISC_CTRL0,
-> +				 XGBE_PMA_PLL_CTRL_MASK,
-> +				 enable ? XGBE_PMA_PLL_CTRL_ENABLE
-> +					: XGBE_PMA_PLL_CTRL_DISABLE);
->   
-> -	/* Wait for command to complete */
-> -	usleep_range(100, 200);
-> +		/* Wait for command to complete */
-> +		usleep_range(100, 200);
-> +	}
+>  net/9p/trans_fd.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
 
-Rather than indent all this, just add an if that returns at the beginning
-of the function, e.g.:
+I would also prefer this simpler v1 instead of v2 for now. One nitpicking ...
 
-	/* PLL_CTRL feature needs to be enabled for fixed PHY modes (Non-Autoneg) only */
-	if (pdata->phy.autoneg != AUTONEG_DISABLE)
-		return;
+> diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
+> index e758978b44be..9870597da583 100644
+> --- a/net/9p/trans_fd.c
+> +++ b/net/9p/trans_fd.c
+> @@ -821,11 +821,13 @@ static int p9_fd_open(struct p9_client *client, int
+> rfd, int wfd) goto out_free_ts;
+>  	if (!(ts->rd->f_mode & FMODE_READ))
+>  		goto out_put_rd;
+> +	ts->rd->f_flags |= O_NONBLOCK;
 
-Now a general question... is this going to force Autoneg ON to end up
-always going through the RRC path now where it may not have before? In
-other words, there's now an auto-negotiation delay?
+... I think this deserves a short comment like:
 
->   }
->   
->   static void xgbe_phy_perform_ratechange(struct xgbe_prv_data *pdata,
-> @@ -2029,8 +2032,10 @@ static void xgbe_phy_perform_ratechange(struct xgbe_prv_data *pdata,
->   	xgbe_phy_rx_reset(pdata);
->   
->   reenable_pll:
-> -	/* Enable PLL re-initialization */
-> -	xgbe_phy_pll_ctrl(pdata, true);
-> +	/* Enable PLL re-initialization, not needed for PHY Power Off cmd */
+    /* prevent hung task with pipes */
 
-Comment should also include the RRC command...
+Anyway,
 
-> +	if (cmd != XGBE_MAILBOX_CMD_POWER_OFF &&
-> +	    cmd != XGBE_MAILBOX_CMD_RRCM)
-> +		xgbe_phy_pll_ctrl(pdata, true);
->   }
->   
->   static void xgbe_phy_rrc(struct xgbe_prv_data *pdata)
-> diff --git a/drivers/net/ethernet/amd/xgbe/xgbe.h b/drivers/net/ethernet/amd/xgbe/xgbe.h
-> index 49d23abce73d..c7865681790c 100644
-> --- a/drivers/net/ethernet/amd/xgbe/xgbe.h
-> +++ b/drivers/net/ethernet/amd/xgbe/xgbe.h
-> @@ -611,6 +611,16 @@ enum xgbe_mdio_mode {
->   	XGBE_MDIO_MODE_CL45,
->   };
->   
-> +enum XGBE_MAILBOX_CMD {
-> +	XGBE_MAILBOX_CMD_POWER_OFF	= 0,
-> +	XGBE_MAILBOX_CMD_SET_1G		= 1,
-> +	XGBE_MAILBOX_CMD_SET_2_5G	= 2,
-> +	XGBE_MAILBOX_CMD_SET_10G_SFI	= 3,
-> +	XGBE_MAILBOX_CMD_SET_10G_KR	= 4,
-> +	XGBE_MAILBOX_CMD_RRCM		= 5,
-> +	XGBE_MAILBOX_CMD_UNKNOWN	= 6
-> +};
+Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
 
-If you're going to add an enum for the commands, then you should apply
-them everywhere. Creating this enum and updating all the command locations
-should be a pre-patch to this patch.
+>  	ts->wr = fget(wfd);
+>  	if (!ts->wr)
+>  		goto out_put_rd;
+>  	if (!(ts->wr->f_mode & FMODE_WRITE))
+>  		goto out_put_wr;
+> +	ts->wr->f_flags |= O_NONBLOCK;
+> 
+>  	client->trans = ts;
+>  	client->status = Connected;
 
-Thanks,
-Tom
 
-> +
->   struct xgbe_phy {
->   	struct ethtool_link_ksettings lks;
->   
+
