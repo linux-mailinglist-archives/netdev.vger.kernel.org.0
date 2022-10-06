@@ -2,54 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF40E5F5FDC
-	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 06:00:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2F085F5FD8
+	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 06:00:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230106AbiJFEA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Oct 2022 00:00:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43930 "EHLO
+        id S230097AbiJFEA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Oct 2022 00:00:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229751AbiJFEAV (ORCPT
+        with ESMTP id S229791AbiJFEAV (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 00:00:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA5075A3C2;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E685A894;
         Wed,  5 Oct 2022 21:00:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5950CB81FF2;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7644BB81FF1;
         Thu,  6 Oct 2022 04:00:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 120E9C433D7;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1DF46C43141;
         Thu,  6 Oct 2022 04:00:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1665028817;
-        bh=CQqcFZBo7OajSDdbV01LBXwWgFNml+B9012Zp0rP58I=;
+        bh=2o7+0JIT7lCHWuirjo1nk52UnpVL4ZdoD8Gk4AuV/lk=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Q4Wu5yEetzAX3pXo3CviorQB2Gc7xm70podVCurVEG8R4grsAv4CfGhIWndnspZQa
-         LJycq28YG1+7PcKaFFBP4NN6c5/PgyuCaKdadeQXZt7Z536X7SxPv759Q+ZCnc9gKd
-         hnWQ9+2hOir78b2rWdZqv8aXPrElxW463BtxCa4mrhpPKivkH094DXcOtaPDwjbUD1
-         39r1Yq6SXwWFqhTEbi/a+LYrP/V4HWSSXWgxqXtaH9Oh6ayCggd7Ms6BRGdUFISeG/
-         SZtpaKkwDaW69pHXNTHL4FPWpjtg71mU4i76IUOoIpa5Xk48QdDgHLVUrTWBsuyUoe
-         y6fYDJR5ZMnmw==
+        b=Bt8YHyYI6VG1ASx/14odCPjiRLjCfr30I9mXYWhe8A1zjOM8qxCqnCDh+nLZma/ph
+         /Kj7XUTsDVZJrZag6b1BHV+kMcUdyvlJXiknSFsyJLYywNrAYtmsUx5gTHaO0qyEde
+         PF+VzMNoX06IZGeau9OiW2ZbkCRzErVCywpJQ9EkJcoDYs8JU4jIR5e0yLtx/UHzY7
+         RKCtxst7HewVJ7Re02lHOvnoU8zafncTNks0ul0raIvblKuVblKW7eeV1PI+hRnN/p
+         8iP+mwZc0D3A8hFCuAnx2Y63MP277d6QoLoeZW6WJ1FIFzgTeRkmo60WtWhSmnMP9e
+         RxxJv0Byhhk3g==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E1567E21EC2;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id ECB75E524C3;
         Thu,  6 Oct 2022 04:00:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] Revert "net/sched: taprio: make qdisc_leaf() see the
- per-netdev-queue pfifo child qdiscs"
+Subject: Re: [net-next] net: ethernet: adi: adin1110: Add check in netdev_event
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166502881691.31263.4459255074695188698.git-patchwork-notify@kernel.org>
+Message-Id: <166502881696.31263.9790847609578437709.git-patchwork-notify@kernel.org>
 Date:   Thu, 06 Oct 2022 04:00:16 +0000
-References: <20221004220100.1650558-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20221004220100.1650558-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, vinicius.gomes@intel.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        olteanv@gmail.com, kurt@linutronix.de,
-        linux-kernel@vger.kernel.org, muhammad.husaini.zulkifli@intel.com
+References: <20221003111636.54973-1-alexandru.tachici@analog.com>
+In-Reply-To: <20221003111636.54973-1-alexandru.tachici@analog.com>
+To:     Alexandru Tachici <alexandru.tachici@analog.com>
+Cc:     linux-kernel@vger.kernel.org, andrew@lunn.ch,
+        linux@armlinux.org.uk, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -64,21 +61,19 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Wed,  5 Oct 2022 01:01:00 +0300 you wrote:
-> taprio_attach() has this logic at the end, which should have been
-> removed with the blamed patch (which is now being reverted):
+On Mon, 3 Oct 2022 14:16:36 +0300 you wrote:
+> Check whether this driver actually is the intended recipient of
+> upper change event.
 > 
-> 	/* access to the child qdiscs is not needed in offload mode */
-> 	if (FULL_OFFLOAD_IS_ENABLED(q->flags)) {
-> 		kfree(q->qdiscs);
-> 		q->qdiscs = NULL;
-> 	}
-> 
-> [...]
+> Fixes: bc93e19d088b ("net: ethernet: adi: Add ADIN1110 support")
+> Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+> ---
+>  drivers/net/ethernet/adi/adin1110.c | 13 ++++++++-----
+>  1 file changed, 8 insertions(+), 5 deletions(-)
 
 Here is the summary with links:
-  - [net] Revert "net/sched: taprio: make qdisc_leaf() see the per-netdev-queue pfifo child qdiscs"
-    https://git.kernel.org/netdev/net/c/af7b29b1deaa
+  - [net-next] net: ethernet: adi: adin1110: Add check in netdev_event
+    https://git.kernel.org/netdev/net/c/f93719351b0e
 
 You are awesome, thank you!
 -- 
