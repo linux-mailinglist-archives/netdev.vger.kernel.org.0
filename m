@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B753C5F71C5
-	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 01:28:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 328045F71C9
+	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 01:29:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232030AbiJFX2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Oct 2022 19:28:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56308 "EHLO
+        id S232045AbiJFX3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Oct 2022 19:29:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230489AbiJFX2f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 19:28:35 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7203BEB7C9;
-        Thu,  6 Oct 2022 16:28:34 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id sc25so1721940ejc.12;
-        Thu, 06 Oct 2022 16:28:34 -0700 (PDT)
+        with ESMTP id S231862AbiJFX3f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 19:29:35 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63C84EB7E6;
+        Thu,  6 Oct 2022 16:29:33 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id a13so4938815edj.0;
+        Thu, 06 Oct 2022 16:29:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date;
-        bh=SFtTygd13gnjeXlSaquv1ZHXw+HfAHR5AS6QJdlQ3mo=;
-        b=XOqIbegB5myFnnNWstvTjhEHQ8TsH4coI7nVbqq5BXgHJYHCpp0UGkrRqW2DQKalc8
-         Wk89RH1iz23wGkIzyrdPDoiXjEcLG2k8hUqQNBxZZeU7Pikn1/2chwruYkaKCPqRFbUn
-         BdUnGDfUFEOLDDn0qXyRR2nEv+tpA+77bcurMig93yXVeIRcpJ6ajlMc493mTx6xVlnl
-         HxDIEtZ2nTDv6uevLMsY3j/IFOP0WdJbshMJXb5STvkTdBK6rIzsfFxrPrfKHw9nhcNp
-         7xiMBUhT22vtFnJKEpgR1TTC1lJMSkEiOs+8hHnRuuyEZFaodkszY+/XjyvoM6uviCZt
-         RDLw==
+        bh=IVJ+0deY1Eo5hDLD4+mpPE7ASzz+9apYfEsTE2gsvL4=;
+        b=YQxoq5MTTWDsImxgICNAkJzTJGmYVyTn4IL3mOyoE+5FU2enkcqbtpg9MJBSS2RVz6
+         tG3i+zilBW4trZR6zUZ2eqS1zPG+Gx0zQpHiT/h0E+QO1CGCgtaE+yAzNU82shAs+kqY
+         vi58Dk6PAKDYDdqdHf/xVUHVNkDHzxX4zFnaMPp/E4SATtwxkW1Z2pWxu/YamqUxdSMO
+         xH9FbevXvD1jJdZzOjKyFKG7qId6MUIb5oUolAMl0vOrfmpgX7ovPj18Mv+qf1nrO5iT
+         vi8S6Ts5At3W/BsVwVHU/+5cn7YrtY7Ad0cA21IbDgkp3qevIqdSqyn1K1i/mezLRMyQ
+         aZAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=SFtTygd13gnjeXlSaquv1ZHXw+HfAHR5AS6QJdlQ3mo=;
-        b=JrTYJb63t3rfmHyR0Ho1ZMaOD7RhBCP9QfC2iqa9dHG9jgmug7T8tqIKvSt7AFGrhV
-         tBisGHj4E7lC1dCurVGnq4JmP/lhzlAPVdE2VIJCZVhMK6TQh6cm2ZnAxeNPAnhxe5in
-         hdGq+nwGtmM1SafO0wVA/yLoDKBJ0BvdXX8Bv/X5+lnzuYtheui3cwpzA1m981R3xqXU
-         Jn04HrZdZ/0WzCPh4NKXJfT2WQyPO5qK+d988WuRPpvxDHqWch2G5U4etix1gHBBrby8
-         G46OeHkVwS50vCjbPZ5ZRiqt6RIbN9zJf22zPQNXx+vXFh2736ca9CEmie8ULaObXpHO
-         Sn1Q==
-X-Gm-Message-State: ACrzQf3dfSPTCNUs694Yvgcb1FZePRJHXm3pDXEB7Cm9gPnn0DMdgCRH
-        tOmdh7gzTVA1V9ZbPtjSPfIS/aHM9B8e3JEhR8I=
-X-Google-Smtp-Source: AMsMyM5tCyLLkkyqfZa4OjdXfD+Yru8XHsRttziDXU9RaxSsDXdNccmCLUgx1T+2X8xFTnR93pCo245i5yK3vxlekKI=
-X-Received: by 2002:a17:907:1c98:b0:78d:3b06:dc8f with SMTP id
- nb24-20020a1709071c9800b0078d3b06dc8fmr1838226ejc.58.1665098912840; Thu, 06
- Oct 2022 16:28:32 -0700 (PDT)
+        bh=IVJ+0deY1Eo5hDLD4+mpPE7ASzz+9apYfEsTE2gsvL4=;
+        b=BIDREES/RYAPtiOnkWhLIo2JXKUF1JVNIHv/b6TQZNPVkR5vBcm3QRx8pxl7iOkA7/
+         utw2aSI+JTtDsOot8PeKGNDGGdnXjzRlSqEfgMgNCsFBEcrG7C80SqwmgZBO4bOdBwM3
+         6lVwkbrVGKRldwEiVw86KB/YN1pgS7FJfFtwwdcizw42ZI1cEagmHjNxeE1qLbbsbOWE
+         L2ToBoDJ+1Y7yUbvJ1hOExldGYO4uz/v6Hg53kv5Adawgx3atx0BFmhu1WeWt7F+UnxA
+         YgeGdP/lXXiloPR/qmKMRy97CXpy4+jZzKDn7KwerI6wQeO92dIeeyMGPfBoYPafXwOn
+         wd6A==
+X-Gm-Message-State: ACrzQf37IU47y86DUrnoSmDHmiFeJtBescfwgwS+uFqPHJg3rDa6dPfB
+        6mxlCMuhurETfRc++/X7+0Bo8OWScQuUeLsINphliE1i
+X-Google-Smtp-Source: AMsMyM5yrhBKwVakPB924RVM8eIXYSaDlNey5os8PDPf23yL3UhiHevakN24lGzfkJ0/ohxbLffO7DcWDGZuim40WO8=
+X-Received: by 2002:a05:6402:42c3:b0:459:cebb:8d3a with SMTP id
+ i3-20020a05640242c300b00459cebb8d3amr2025530edc.421.1665098971850; Thu, 06
+ Oct 2022 16:29:31 -0700 (PDT)
 MIME-Version: 1.0
 References: <20221004231143.19190-1-daniel@iogearbox.net> <20221004231143.19190-2-daniel@iogearbox.net>
- <20221006050053.pbwo72xtzoza6gfl@macbook-pro-4.dhcp.thefacebook.com> <f355eeba-1b46-749f-c102-65074e7eac27@iogearbox.net>
-In-Reply-To: <f355eeba-1b46-749f-c102-65074e7eac27@iogearbox.net>
+ <20221006050053.pbwo72xtzoza6gfl@macbook-pro-4.dhcp.thefacebook.com> <CAM0EoMnJzP6kbr94utjDT1X=e9G21-uu=Cbqhx2XLfqXE+HDwA@mail.gmail.com>
+In-Reply-To: <CAM0EoMnJzP6kbr94utjDT1X=e9G21-uu=Cbqhx2XLfqXE+HDwA@mail.gmail.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 6 Oct 2022 16:28:21 -0700
-Message-ID: <CAADnVQ+gEY3FjCR=+DmjDR4gp5bOYZUFJQXj4agKFHT9CQPZBw@mail.gmail.com>
+Date:   Thu, 6 Oct 2022 16:29:20 -0700
+Message-ID: <CAADnVQK2tWmZW0=y89mv-r9kO4U2H=azWmbr7g1yqLhU1aX3SQ@mail.gmail.com>
 Subject: Re: [PATCH bpf-next 01/10] bpf: Add initial fd-based API to attach tc
  BPF programs
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf <bpf@vger.kernel.org>,
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
         Nikolay Aleksandrov <razor@blackwall.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
@@ -76,11 +76,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 6, 2022 at 2:29 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+On Thu, Oct 6, 2022 at 7:41 AM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
 >
-> On 10/6/22 7:00 AM, Alexei Starovoitov wrote:
+> On Thu, Oct 6, 2022 at 1:01 AM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
 > > On Wed, Oct 05, 2022 at 01:11:34AM +0200, Daniel Borkmann wrote:
-> [...]
+>
 > >
 > > I cannot help but feel that prio logic copy-paste from old tc, netfilter and friends
 > > is done because "that's how things were done in the past".
@@ -99,56 +101,8 @@ On Thu, Oct 6, 2022 at 2:29 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
 > > Then maybe we can adopt this "as-simple-as-possible" to XDP hooks ?
 > > And allow bpf progs chaining in the kernel with "run_me_first" vs "run_me_anywhere"
 > > in both tcx and xdp ?
-> > Naturally "run_me_first" prog will be the only one. No need for F_REPLACE flags, etc.
-> > The owner of "run_me_first" will update its prog through bpf_link_update.
-> > "run_me_anywhere" will add to the end of the chain.
-> > In XDP for compatibility reasons "run_me_first" will be the default.
-> > Since only one prog can be enqueued with such flag it will match existing single prog behavior.
-> > Well behaving progs will use (like xdp-tcpdump or monitoring progs) will use "run_me_anywhere".
-> > I know it's far from covering plenty of cases that we've discussed for long time,
-> > but prio concept isn't really covering them either.
-> > We've struggled enough with single xdp prog, so certainly not advocating for that.
-> > Another alternative is to do: "queue_at_head" vs "queue_at_tail". Just as simple.
-> > Both simple versions have their pros and cons and don't cover everything,
-> > but imo both are better than prio.
 >
-> Yeah, it's kind of tricky, imho. The 'run_me_first' vs 'run_me_anywhere' are two
-> use cases that should be covered (and actually we kind of do this in this set, too,
-> with the prios via prio=x vs prio=0). Given users will only be consuming the APIs
-> via libs like libbpf, this can also be abstracted this way w/o users having to be
-> aware of prios.
+> You just described the features already offered by tc opcodes + priority.
 
-but the patchset tells different story.
-Prio gets exposed everywhere in uapi all the way to bpftool
-when it's right there for users to understand.
-And that's the main problem with it.
-The user don't want to and don't need to be aware of it,
-but uapi forces them to pick the priority.
-
-> Anyway, where it gets tricky would be when things depend on ordering,
-> e.g. you have BPF progs doing: policy, monitoring, lb, monitoring, encryption, which
-> would be sth you can build today via tc BPF: so policy one acts as a prefilter for
-> various cidr ranges that should be blocked no matter what, then monitoring to sample
-> what goes into the lb, then lb itself which does snat/dnat, then monitoring to see what
-> the corresponding pkt looks that goes to backend, and maybe encryption to e.g. send
-> the result to wireguard dev, so it's encrypted from lb node to backend.
-
-That's all theory. Your cover letter example proves that in
-real life different service pick the same priority.
-They simply don't know any better.
-prio is an unnecessary magic that apps _have_ to pick,
-so they just copy-paste and everyone ends up using the same.
-
-> For such
-> example, you'd need prios as the 'run_me_anywhere' doesn't guarantee order, so there's
-> a case for both scenarios (concrete layout vs loose one), and for latter we could
-> start off with and internal prio around x (e.g. 16k), so there's room to attach in
-> front via fixed prio, but also append to end for 'don't care', and that could be
-> from lib pov the default/main API whereas prio would be some kind of extended one.
-> Thoughts?
-
-If prio was not part of uapi, like kernel internal somehow,
-and there was a user space daemon, systemd, or another bpf prog,
-module, whatever that users would interface to then
-the proposed implementation of prio would totally make sense.
-prio as uapi is not that.
+Ohh, right. All possible mechanisms were available in TC 20 years ago.
+Moving on.
