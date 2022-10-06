@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F0675F6E07
-	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 21:16:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06D265F6DF3
+	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 21:11:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231801AbiJFTQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Oct 2022 15:16:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48012 "EHLO
+        id S231567AbiJFTKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Oct 2022 15:10:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231897AbiJFTQK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 15:16:10 -0400
-Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8021BE2FB;
-        Thu,  6 Oct 2022 12:16:09 -0700 (PDT)
+        with ESMTP id S231207AbiJFTKd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 15:10:33 -0400
+Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A3833A03;
+        Thu,  6 Oct 2022 12:10:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1665083769; x=1696619769;
+  t=1665083430; x=1696619430;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Bbl6AJ1hOgd+mrOqtXeK3biN3hOMbwaxQnGZglGf/fE=;
-  b=hb9RNBwu9l+oQ3mNlTtkTnbcmXtGVOFcxzUy2+tJb16r5AM2TwSAa3VZ
-   bad7vmPZru6tE65gL+qYZyB/0IWkdBcvSsI6P2OwhiM5S1pkfhCz1zYvt
-   0lmAle8IlcdVexCd+T2jhafThZnWq0BZ36MJbyxirzr4Q7FXyB1Oe8lFI
+  bh=L3wZx5jgEpsuCjj5ZBPl/Gm3fBywLYkBk0atiKCIlwM=;
+  b=TYS+ODZav9sLlqixKg3MVPjG9jmJlQ1h+9bF6SuOHoxyX6h5dXaYIv8X
+   z9Mwl5wJSjpBaJo7+woktRyyTTK9ADoi0OQySb/UFZR29GuPZ0/e3Su8l
+   I+Q93zdK1DW0jr6quNhqqo4BkGmDxgPqkYRyikQ5iqHwKxN3KrhzIc5Mw
    A=;
 X-IronPort-AV: E=Sophos;i="5.95,164,1661817600"; 
-   d="scan'208";a="1061594824"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-54c9d11f.us-east-1.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Oct 2022 18:55:07 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1e-54c9d11f.us-east-1.amazon.com (Postfix) with ESMTPS id 83CF3C0F50;
-        Thu,  6 Oct 2022 18:55:04 +0000 (UTC)
+   d="scan'208";a="266911535"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1e-7dac3c4d.us-east-1.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Oct 2022 18:55:24 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1e-7dac3c4d.us-east-1.amazon.com (Postfix) with ESMTPS id B1A9AA0A88;
+        Thu,  6 Oct 2022 18:55:20 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Thu, 6 Oct 2022 18:55:03 +0000
+ id 15.0.1497.38; Thu, 6 Oct 2022 18:55:20 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.161.176) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Thu, 6 Oct 2022 18:54:58 +0000
+ Thu, 6 Oct 2022 18:55:14 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -48,10 +48,10 @@ To:     "David S. Miller" <davem@davemloft.net>,
 CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
         <netdev@vger.kernel.org>, <syzkaller-bugs@googlegroups.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v5 net 4/5] ipv6: Fix data races around sk->sk_prot.
-Date:   Thu, 6 Oct 2022 11:53:48 -0700
-Message-ID: <20221006185349.74777-5-kuniyu@amazon.com>
+        <linux-kernel@vger.kernel.org>, syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH v5 net 5/5] tcp: Fix data races around icsk->icsk_af_ops.
+Date:   Thu, 6 Oct 2022 11:53:49 -0700
+Message-ID: <20221006185349.74777-6-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221006185349.74777-1-kuniyu@amazon.com>
 References: <20221006185349.74777-1-kuniyu@amazon.com>
@@ -61,9 +61,9 @@ Content-Type: text/plain
 X-Originating-IP: [10.43.161.176]
 X-ClientProxiedBy: EX13D18UWA003.ant.amazon.com (10.43.160.238) To
  EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,134 +71,124 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 086d49058cd8 ("ipv6: annotate some data-races around sk->sk_prot")
-fixed some data-races around sk->sk_prot but it was not enough.
+setsockopt(IPV6_ADDRFORM) and tcp_v6_connect() change icsk->icsk_af_ops
+under lock_sock(), but tcp_(get|set)sockopt() read it locklessly.  To
+avoid load/store tearing, we need to add READ_ONCE() and WRITE_ONCE()
+for the reads and writes.
 
-Some functions in inet6_(stream|dgram)_ops still access sk->sk_prot
-without lock_sock() or rtnl_lock(), so they need READ_ONCE() to avoid
-load tearing.
+Thanks to Eric Dumazet for providing the syzbot report:
+
+BUG: KCSAN: data-race in tcp_setsockopt / tcp_v6_connect
+
+write to 0xffff88813c624518 of 8 bytes by task 23936 on cpu 0:
+tcp_v6_connect+0x5b3/0xce0 net/ipv6/tcp_ipv6.c:240
+__inet_stream_connect+0x159/0x6d0 net/ipv4/af_inet.c:660
+inet_stream_connect+0x44/0x70 net/ipv4/af_inet.c:724
+__sys_connect_file net/socket.c:1976 [inline]
+__sys_connect+0x197/0x1b0 net/socket.c:1993
+__do_sys_connect net/socket.c:2003 [inline]
+__se_sys_connect net/socket.c:2000 [inline]
+__x64_sys_connect+0x3d/0x50 net/socket.c:2000
+do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
+entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+read to 0xffff88813c624518 of 8 bytes by task 23937 on cpu 1:
+tcp_setsockopt+0x147/0x1c80 net/ipv4/tcp.c:3789
+sock_common_setsockopt+0x5d/0x70 net/core/sock.c:3585
+__sys_setsockopt+0x212/0x2b0 net/socket.c:2252
+__do_sys_setsockopt net/socket.c:2263 [inline]
+__se_sys_setsockopt net/socket.c:2260 [inline]
+__x64_sys_setsockopt+0x62/0x70 net/socket.c:2260
+do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
+entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+value changed: 0xffffffff8539af68 -> 0xffffffff8539aff8
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 23937 Comm: syz-executor.5 Not tainted
+6.0.0-rc4-syzkaller-00331-g4ed9c1e971b1-dirty #0
+
+Hardware name: Google Google Compute Engine/Google Compute Engine,
+BIOS Google 08/26/2022
 
 Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Reported-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 ---
- net/core/sock.c          |  6 ++++--
- net/ipv4/af_inet.c       | 23 ++++++++++++++++-------
- net/ipv6/ipv6_sockglue.c |  4 ++--
- 3 files changed, 22 insertions(+), 11 deletions(-)
+ net/ipv4/tcp.c           | 10 ++++++----
+ net/ipv6/ipv6_sockglue.c |  3 ++-
+ net/ipv6/tcp_ipv6.c      |  6 ++++--
+ 3 files changed, 12 insertions(+), 7 deletions(-)
 
-diff --git a/net/core/sock.c b/net/core/sock.c
-index eeb6cbac6f49..a3ba0358c77c 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -3610,7 +3610,8 @@ int sock_common_getsockopt(struct socket *sock, int level, int optname,
- {
- 	struct sock *sk = sock->sk;
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 0c51abeee172..f8232811a5be 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -3796,8 +3796,9 @@ int tcp_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,
+ 	const struct inet_connection_sock *icsk = inet_csk(sk);
  
--	return sk->sk_prot->getsockopt(sk, level, optname, optval, optlen);
-+	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
-+	return READ_ONCE(sk->sk_prot)->getsockopt(sk, level, optname, optval, optlen);
+ 	if (level != SOL_TCP)
+-		return icsk->icsk_af_ops->setsockopt(sk, level, optname,
+-						     optval, optlen);
++		/* Paired with WRITE_ONCE() in do_ipv6_setsockopt() and tcp_v6_connect() */
++		return READ_ONCE(icsk->icsk_af_ops)->setsockopt(sk, level, optname,
++								optval, optlen);
+ 	return do_tcp_setsockopt(sk, level, optname, optval, optlen);
  }
- EXPORT_SYMBOL(sock_common_getsockopt);
+ EXPORT_SYMBOL(tcp_setsockopt);
+@@ -4396,8 +4397,9 @@ int tcp_getsockopt(struct sock *sk, int level, int optname, char __user *optval,
+ 	struct inet_connection_sock *icsk = inet_csk(sk);
  
-@@ -3636,7 +3637,8 @@ int sock_common_setsockopt(struct socket *sock, int level, int optname,
- {
- 	struct sock *sk = sock->sk;
- 
--	return sk->sk_prot->setsockopt(sk, level, optname, optval, optlen);
-+	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
-+	return READ_ONCE(sk->sk_prot)->setsockopt(sk, level, optname, optval, optlen);
+ 	if (level != SOL_TCP)
+-		return icsk->icsk_af_ops->getsockopt(sk, level, optname,
+-						     optval, optlen);
++		/* Paired with WRITE_ONCE() in do_ipv6_setsockopt() and tcp_v6_connect() */
++		return READ_ONCE(icsk->icsk_af_ops)->getsockopt(sk, level, optname,
++								optval, optlen);
+ 	return do_tcp_getsockopt(sk, level, optname, USER_SOCKPTR(optval),
+ 				 USER_SOCKPTR(optlen));
  }
- EXPORT_SYMBOL(sock_common_setsockopt);
- 
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index e2c219382345..3dd02396517d 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -558,22 +558,27 @@ int inet_dgram_connect(struct socket *sock, struct sockaddr *uaddr,
- 		       int addr_len, int flags)
- {
- 	struct sock *sk = sock->sk;
-+	const struct proto *prot;
- 	int err;
- 
- 	if (addr_len < sizeof(uaddr->sa_family))
- 		return -EINVAL;
-+
-+	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
-+	prot = READ_ONCE(sk->sk_prot);
-+
- 	if (uaddr->sa_family == AF_UNSPEC)
--		return sk->sk_prot->disconnect(sk, flags);
-+		return prot->disconnect(sk, flags);
- 
- 	if (BPF_CGROUP_PRE_CONNECT_ENABLED(sk)) {
--		err = sk->sk_prot->pre_connect(sk, uaddr, addr_len);
-+		err = prot->pre_connect(sk, uaddr, addr_len);
- 		if (err)
- 			return err;
- 	}
- 
- 	if (data_race(!inet_sk(sk)->inet_num) && inet_autobind(sk))
- 		return -EAGAIN;
--	return sk->sk_prot->connect(sk, uaddr, addr_len);
-+	return prot->connect(sk, uaddr, addr_len);
- }
- EXPORT_SYMBOL(inet_dgram_connect);
- 
-@@ -734,10 +739,11 @@ EXPORT_SYMBOL(inet_stream_connect);
- int inet_accept(struct socket *sock, struct socket *newsock, int flags,
- 		bool kern)
- {
--	struct sock *sk1 = sock->sk;
-+	struct sock *sk1 = sock->sk, *sk2;
- 	int err = -EINVAL;
--	struct sock *sk2 = sk1->sk_prot->accept(sk1, flags, &err, kern);
- 
-+	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
-+	sk2 = READ_ONCE(sk1->sk_prot)->accept(sk1, flags, &err, kern);
- 	if (!sk2)
- 		goto do_err;
- 
-@@ -825,12 +831,15 @@ ssize_t inet_sendpage(struct socket *sock, struct page *page, int offset,
- 		      size_t size, int flags)
- {
- 	struct sock *sk = sock->sk;
-+	const struct proto *prot;
- 
- 	if (unlikely(inet_send_prepare(sk)))
- 		return -EAGAIN;
- 
--	if (sk->sk_prot->sendpage)
--		return sk->sk_prot->sendpage(sk, page, offset, size, flags);
-+	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
-+	prot = READ_ONCE(sk->sk_prot);
-+	if (prot->sendpage)
-+		return prot->sendpage(sk, page, offset, size, flags);
- 	return sock_no_sendpage(sock, page, offset, size, flags);
- }
- EXPORT_SYMBOL(inet_sendpage);
 diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
-index a20edae868fd..d7207a546aec 100644
+index d7207a546aec..532f4478c884 100644
 --- a/net/ipv6/ipv6_sockglue.c
 +++ b/net/ipv6/ipv6_sockglue.c
-@@ -477,7 +477,7 @@ int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
- 				sock_prot_inuse_add(net, sk->sk_prot, -1);
- 				sock_prot_inuse_add(net, &tcp_prot, 1);
+@@ -479,7 +479,8 @@ int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
  
--				/* Paired with READ_ONCE(sk->sk_prot) in net/ipv6/af_inet6.c */
-+				/* Paired with READ_ONCE(sk->sk_prot) in inet6_stream_ops */
+ 				/* Paired with READ_ONCE(sk->sk_prot) in inet6_stream_ops */
  				WRITE_ONCE(sk->sk_prot, &tcp_prot);
- 				icsk->icsk_af_ops = &ipv4_specific;
+-				icsk->icsk_af_ops = &ipv4_specific;
++				/* Paired with READ_ONCE() in tcp_(get|set)sockopt() */
++				WRITE_ONCE(icsk->icsk_af_ops, &ipv4_specific);
  				sk->sk_socket->ops = &inet_stream_ops;
-@@ -492,7 +492,7 @@ int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
- 				sock_prot_inuse_add(net, sk->sk_prot, -1);
- 				sock_prot_inuse_add(net, prot, 1);
- 
--				/* Paired with READ_ONCE(sk->sk_prot) in net/ipv6/af_inet6.c */
-+				/* Paired with READ_ONCE(sk->sk_prot) in inet6_dgram_ops */
- 				WRITE_ONCE(sk->sk_prot, prot);
- 				sk->sk_socket->ops = &inet_dgram_ops;
  				sk->sk_family = PF_INET;
+ 				tcp_sync_mss(sk, icsk->icsk_pmtu_cookie);
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index a8adda623da1..2a3f9296df1e 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -238,7 +238,8 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+ 		sin.sin_port = usin->sin6_port;
+ 		sin.sin_addr.s_addr = usin->sin6_addr.s6_addr32[3];
+ 
+-		icsk->icsk_af_ops = &ipv6_mapped;
++		/* Paired with READ_ONCE() in tcp_(get|set)sockopt() */
++		WRITE_ONCE(icsk->icsk_af_ops, &ipv6_mapped);
+ 		if (sk_is_mptcp(sk))
+ 			mptcpv6_handle_mapped(sk, true);
+ 		sk->sk_backlog_rcv = tcp_v4_do_rcv;
+@@ -250,7 +251,8 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+ 
+ 		if (err) {
+ 			icsk->icsk_ext_hdr_len = exthdrlen;
+-			icsk->icsk_af_ops = &ipv6_specific;
++			/* Paired with READ_ONCE() in tcp_(get|set)sockopt() */
++			WRITE_ONCE(icsk->icsk_af_ops, &ipv6_specific);
+ 			if (sk_is_mptcp(sk))
+ 				mptcpv6_handle_mapped(sk, false);
+ 			sk->sk_backlog_rcv = tcp_v6_do_rcv;
 -- 
 2.30.2
 
