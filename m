@@ -2,96 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 96B7A5F689D
-	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 15:56:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86BC45F68C6
+	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 16:06:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231390AbiJFN4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Oct 2022 09:56:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35932 "EHLO
+        id S230104AbiJFOGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Oct 2022 10:06:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbiJFN4j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 09:56:39 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2065.outbound.protection.outlook.com [40.107.244.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 271239D50E
-        for <netdev@vger.kernel.org>; Thu,  6 Oct 2022 06:56:37 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PKsMo67ZL7H3Kcg6iVcmIpKKFjGJ5QobMloaxcqBWjjtwCBfSV52My9ZL8DQ2LbM8UI+2gdpDFzOLe94xZVnD26T/4Oujf6v4AiArZQo4+diLFihbJ62yKzp8ZClRI2XLwGxvK4AqWigPneEDs8X0410dEcaxq3deOZhiEWOxpCnk19NkXHUNJ3FznIQ/sYCh488sosnGfDsqngQ459Cc8BG/FUSXOp3A0gwrQbt1phL6h1lANyRuCGDsaMcGFRgrCAfu38jdO0Nh44Fls1iGqsPMgdFQRSkITt2NWScggapa1mxDnJMZn1uk/xISLo91C5NqWESAoGsKVRPTNCULg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vEKS6qlYdqBtALbsSV3/yAqZCdHs8i61rltlw5FIVtY=;
- b=VA8G+djhRpw54kh0T0JJ+odnNnstT1C/k7GFjVGkVQJhJ4+Xabm5ErG2WXnM3tZps+FTWfpg4DVy0fCF9lMMvREtru3tISuveysMoWTFQgovQyz8Cyi7ybzOKbhXsoK/SvNFcpWtFm+qMI9/9ucjLyPyRDWYOOfTkdCz1FNtAJmvM65U8gwUu9cv2HA7A9ylLV+eLtNaPfjKk0v/EbBd/dhi4d/0RB9zMMjl2x7E8X29txIEJ6XSQHNPAifN5PztvjKVirYhMVRoCiv3Z0WaZ2ke3ySMHHeicv0pNqGe/clZIXkD0S/lEWbCaWFh0fT47N+x+aJKp7okPlklokhs+w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vEKS6qlYdqBtALbsSV3/yAqZCdHs8i61rltlw5FIVtY=;
- b=HPrVR++c8KDB5IN3Al0aRbH/34KaQ470WZ/iF/Is8+Hi+E3+3WEAOjv8/BWO5xUlJbCU6Eztikx0uH1xQvrM2V5LNO+unswLwXXnBoK+AF//mgjtUE+obBNut1Xq8fjAPDaClJYNmnTbufH2HcQ1rj8T8Zz107jT4+z87ZBrMuU=
-Received: from BL0PR02CA0017.namprd02.prod.outlook.com (2603:10b6:207:3c::30)
- by DM4PR12MB7622.namprd12.prod.outlook.com (2603:10b6:8:109::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.17; Thu, 6 Oct
- 2022 13:56:33 +0000
-Received: from BL02EPF0000C403.namprd05.prod.outlook.com
- (2603:10b6:207:3c:cafe::87) by BL0PR02CA0017.outlook.office365.com
- (2603:10b6:207:3c::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.25 via Frontend
- Transport; Thu, 6 Oct 2022 13:56:33 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BL02EPF0000C403.mail.protection.outlook.com (10.167.241.5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5676.13 via Frontend Transport; Thu, 6 Oct 2022 13:56:33 +0000
-Received: from jatayu.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 6 Oct
- 2022 08:56:30 -0500
-From:   Raju Rangoju <Raju.Rangoju@amd.com>
-To:     <thomas.lendacky@amd.com>, <Shyam-sundar.S-k@amd.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <rrangoju@amd.com>,
-        Raju Rangoju <Raju.Rangoju@amd.com>
-Subject: [PATCH net 3/3] amd-xgbe: fix the SFP compliance codes check for DAC cables
-Date:   Thu, 6 Oct 2022 19:24:40 +0530
-Message-ID: <20221006135440.3680563-4-Raju.Rangoju@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20221006135440.3680563-1-Raju.Rangoju@amd.com>
-References: <20221006135440.3680563-1-Raju.Rangoju@amd.com>
+        with ESMTP id S229484AbiJFOGh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 10:06:37 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD395A571C
+        for <netdev@vger.kernel.org>; Thu,  6 Oct 2022 07:06:35 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id q10so2131769oib.5
+        for <netdev@vger.kernel.org>; Thu, 06 Oct 2022 07:06:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=/jQkJHffPJAM7ep7LaSBFhLqU8olhaEQ7ia8dU1UcoQ=;
+        b=c5ndXtgJu4ckbV7HqvEB4OsD3ZyOEHMoGSwkARbXaSbM7ksoWLJnd1e+1uBig/L7h0
+         vIytibCW1E+o42EqTBkWkVym4NpMbg1AG8RR/bi93hwWnSMMKPfu+oJ5+K5S0H8VmuAj
+         b/AbIIFZ2Drsk2N+G5qDeKRUvantoEQAY3WYrX6aV/91OxEUUiHDFtM0ZfERjiLuvLJX
+         2wv/rmOQS37oMyl+dzkc81RwwKD7TfvSDdtBi7CRjiVWNvllQIXhYOvH0jlXfX9yXoBo
+         mGIlftO+4tEDnSvtpngcRga/QNG+DxMkB95a/ggnIh3sfnfb55RHXK/Z9hs8E+L894FJ
+         Dr8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=/jQkJHffPJAM7ep7LaSBFhLqU8olhaEQ7ia8dU1UcoQ=;
+        b=DjQKWi6eNyyV6G9Cmi4I2gaYP7crZUugzunFH3e3zd1Gzbwwc7Tda8oFd/njoncy+Y
+         Z25LHxIVEfpTDFKqrYhVhJKk9mr8xYa/Rk5JmJzapbgZGdcJ6m51cCu2j79gGJsanU4/
+         U6/jW0tKpEKrgOpI4dBuiuwoHaVRFo8e4Ppp9mA2QI4uKSn2qExccDccbdhTP4M3rZ8V
+         oyRCeZysw+Kj6UoVqTBTQ9cpVMINzh8KmRr682eBuH4ACV4qBB3lw4IgmYZPXB9UtG9e
+         QHQojULG3ukFPiwDVYJdoe13KAbWxZyZuz0ChNQlnNK0z1gugO9lovibxRSWvn/bdQyS
+         w7ew==
+X-Gm-Message-State: ACrzQf3YtAWKHdbVPOj4BlsxDx7ELptmR3VHmfe/vOYg+tvrGpbutDGP
+        n2AVA0P7PlpZc28WSYvt9sfT9hCcL1682b6IZ/Y=
+X-Google-Smtp-Source: AMsMyM4RMp0Vn1BY9OYKRfd1WLmAOLSrvpA8nm+hlcWOfKwQdzoQ4jFg+X27hf4icw3hIPN067ebP70wfaLQS6lZg+8=
+X-Received: by 2002:a05:6808:15a2:b0:350:4f5c:1440 with SMTP id
+ t34-20020a05680815a200b003504f5c1440mr5057008oiw.129.1665065195089; Thu, 06
+ Oct 2022 07:06:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF0000C403:EE_|DM4PR12MB7622:EE_
-X-MS-Office365-Filtering-Correlation-Id: e872ddbe-0727-42a7-a795-08daa7a293c1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: RpTPGoeIQECn218nOI2HSSE46jL+KxIulShZm9EXshT1tfxMwBOTI7GXCMwNq4tdcX5OnrJ9ELN32V7YE7VbMF7vVdx4N0N3tRD0S7dEtgKMcXU5dTzeY8VBnKOkflEgeWNPIdeixPja1QL7MDEuUu2P/Vwguw5W6RBCEAPaFhIPt+J3XDDg0z13Aa/mudrt2ubW2YwFaaVYIJAZk/oMijLHrMfQWZx5UDbPIuScfXelfmUTk/D+t2QdAoH74LpTZyorWxc/dwdRAy9vEy+WyvZcF7ekmSPr3VYIT/oakeX1nIw2kVgtFRUkVY3ndiq8m6KXfht0AXosa+5rNCmM8EJCbqasZT9Oj5MHp9CQbsaD4x02D8hbJ/Sr7BQLSbCF5b3r+bdqxK84DNAhyFo7Nu4zRiw+9AYhS7SRJIPfIlD4WPVT2UjJjWg5VgGzyJXkRDmKJWw+Jf5z3+fQ/RpB/EcM6EZDmbmDfSGJylDwELlnmLoYej05HZVGUuUhd/jyyMX3BPz5MrfB2IDGGLZNEWRl9kw2PhZ/kasfA+RVcp0u7yqBJMTXJM1Qfji6sSPag0cLGQrbQXdXqx8FVYb5DHEjpD4GWI3T39bYicTU5EPZOgwuvD+0YR+XYcmCLmPr11PPLK9ocrVvU/iszPA022NSI/YVFtA0EwDlfPnL02hG+xLhCixeen02VD3nVBnowSBf/jQwRIbmqyvU1qC95+qus3tPUaSdwJBq6V4TDQ7XzoCxXApEjA14oXdFZ8liNBma5op9GepoWOP9v+5T2GTm3X8Z0pssmU16M+BO11M=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(376002)(396003)(136003)(39860400002)(346002)(451199015)(46966006)(40470700004)(36840700001)(83380400001)(186003)(426003)(1076003)(336012)(16526019)(47076005)(2616005)(82740400003)(81166007)(36860700001)(356005)(2906002)(5660300002)(40460700003)(8936002)(110136005)(41300700001)(86362001)(40480700001)(70206006)(7696005)(316002)(26005)(478600001)(8676002)(4326008)(70586007)(54906003)(82310400005)(6666004)(36756003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Oct 2022 13:56:33.1047
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e872ddbe-0727-42a7-a795-08daa7a293c1
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BL02EPF0000C403.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB7622
+References: <cover.1664932669.git.lucien.xin@gmail.com> <bc53ffac4d6be2616d053684fb6670f478b4324b.1664932669.git.lucien.xin@gmail.com>
+ <394a97ff1f8adddbab794e0f61221fefddfe9d3f.camel@redhat.com>
+In-Reply-To: <394a97ff1f8adddbab794e0f61221fefddfe9d3f.camel@redhat.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Thu, 6 Oct 2022 10:05:47 -0400
+Message-ID: <CADvbK_fWoAnftF-xpUfKyLx1-xrG-7RO2wAY5fbjKZdsG1RN0Q@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/3] net: sched: add helper support in act_ct
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     network dev <netdev@vger.kernel.org>, dev@openvswitch.org,
+        ovs-dev@openvswitch.org, davem@davemloft.net, kuba@kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
+        Ilya Maximets <i.maximets@ovn.org>,
+        Eelco Chaudron <echaudro@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -99,54 +78,164 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current XGBE code assumes that offset 3 and 6 of EEPROM SFP DAC
-(passive) cables are NULL. It also assumes the offset 12 is in the
-range 0x64 to 0x68. However, some of the cables (the 5 meter and 7 meter
-molex passive cables have non-zero data at offset 3 and 6, also a value
-0x78 at offset 12. So, fix the sfp compliance codes check to ignore
-those offsets. Also extend the macro XGBE_SFP_BASE_BR_10GBE range to 0x78.
+On Thu, Oct 6, 2022 at 5:57 AM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> On Tue, 2022-10-04 at 21:19 -0400, Xin Long wrote:
+> > This patch is to add helper support in act_ct for OVS actions=ct(alg=xxx)
+> > offloading, which is corresponding to Commit cae3a2627520 ("openvswitch:
+> > Allow attaching helpers to ct action") in OVS kernel part.
+> >
+> > The difference is when adding TC actions family and proto cannot be got
+> > from the filter/match, other than helper name in tb[TCA_CT_HELPER_NAME],
+> > we also need to send the family in tb[TCA_CT_HELPER_FAMILY] and the
+> > proto in tb[TCA_CT_HELPER_PROTO] to kernel.
+> >
+> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > ---
+> >  include/net/tc_act/tc_ct.h        |   1 +
+> >  include/uapi/linux/tc_act/tc_ct.h |   3 +
+> >  net/sched/act_ct.c                | 113 ++++++++++++++++++++++++++++--
+> >  3 files changed, 112 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/include/net/tc_act/tc_ct.h b/include/net/tc_act/tc_ct.h
+> > index 8250d6f0a462..b24ea2d9400b 100644
+> > --- a/include/net/tc_act/tc_ct.h
+> > +++ b/include/net/tc_act/tc_ct.h
+> > @@ -10,6 +10,7 @@
+> >  #include <net/netfilter/nf_conntrack_labels.h>
+> >
+> >  struct tcf_ct_params {
+> > +     struct nf_conntrack_helper *helper;
+> >       struct nf_conn *tmpl;
+> >       u16 zone;
+> >
+> > diff --git a/include/uapi/linux/tc_act/tc_ct.h b/include/uapi/linux/tc_act/tc_ct.h
+> > index 5fb1d7ac1027..6c5200f0ed38 100644
+> > --- a/include/uapi/linux/tc_act/tc_ct.h
+> > +++ b/include/uapi/linux/tc_act/tc_ct.h
+> > @@ -22,6 +22,9 @@ enum {
+> >       TCA_CT_NAT_PORT_MIN,    /* be16 */
+> >       TCA_CT_NAT_PORT_MAX,    /* be16 */
+> >       TCA_CT_PAD,
+> > +     TCA_CT_HELPER_NAME,     /* string */
+> > +     TCA_CT_HELPER_FAMILY,   /* u8 */
+> > +     TCA_CT_HELPER_PROTO,    /* u8 */
+> >       __TCA_CT_MAX
+> >  };
+> >
+> > diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+> > index 193a460a9d7f..f237c27079db 100644
+> > --- a/net/sched/act_ct.c
+> > +++ b/net/sched/act_ct.c
+> > @@ -33,6 +33,7 @@
+> >  #include <net/netfilter/nf_conntrack_acct.h>
+> >  #include <net/netfilter/ipv6/nf_defrag_ipv6.h>
+> >  #include <net/netfilter/nf_conntrack_act_ct.h>
+> > +#include <net/netfilter/nf_conntrack_seqadj.h>
+> >  #include <uapi/linux/netfilter/nf_nat.h>
+> >
+> >  static struct workqueue_struct *act_ct_wq;
+> > @@ -655,7 +656,7 @@ struct tc_ct_action_net {
+> >
+> >  /* Determine whether skb->_nfct is equal to the result of conntrack lookup. */
+> >  static bool tcf_ct_skb_nfct_cached(struct net *net, struct sk_buff *skb,
+> > -                                u16 zone_id, bool force)
+> > +                                struct tcf_ct_params *p, bool force)
+> >  {
+> >       enum ip_conntrack_info ctinfo;
+> >       struct nf_conn *ct;
+> > @@ -665,8 +666,15 @@ static bool tcf_ct_skb_nfct_cached(struct net *net, struct sk_buff *skb,
+> >               return false;
+> >       if (!net_eq(net, read_pnet(&ct->ct_net)))
+> >               goto drop_ct;
+> > -     if (nf_ct_zone(ct)->id != zone_id)
+> > +     if (nf_ct_zone(ct)->id != p->zone)
+> >               goto drop_ct;
+> > +     if (p->helper) {
+> > +             struct nf_conn_help *help;
+> > +
+> > +             help = nf_ct_ext_find(ct, NF_CT_EXT_HELPER);
+> > +             if (help && rcu_access_pointer(help->helper) != p->helper)
+> > +                     goto drop_ct;
+> > +     }
+> >
+> >       /* Force conntrack entry direction. */
+> >       if (force && CTINFO2DIR(ctinfo) != IP_CT_DIR_ORIGINAL) {
+> > @@ -832,6 +840,13 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
+> >
+> >  static void tcf_ct_params_free(struct tcf_ct_params *params)
+> >  {
+> > +     if (params->helper) {
+> > +#if IS_ENABLED(CONFIG_NF_NAT)
+> > +             if (params->ct_action & TCA_CT_ACT_NAT)
+> > +                     nf_nat_helper_put(params->helper);
+> > +#endif
+> > +             nf_conntrack_helper_put(params->helper);
+> > +     }
+>
+> There is exactly the same code chunk in __ovs_ct_free_action(), I guess
+> you can extract a common helper here, too.
+>
+> >       if (params->ct_ft)
+> >               tcf_ct_flow_table_put(params->ct_ft);
+> >       if (params->tmpl)
+> > @@ -1033,6 +1048,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+> >       struct nf_hook_state state;
+> >       int nh_ofs, err, retval;
+> >       struct tcf_ct_params *p;
+> > +     bool add_helper = false;
+> >       bool skip_add = false;
+> >       bool defrag = false;
+> >       struct nf_conn *ct;
+> > @@ -1086,7 +1102,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+> >        * actually run the packet through conntrack twice unless it's for a
+> >        * different zone.
+> >        */
+> > -     cached = tcf_ct_skb_nfct_cached(net, skb, p->zone, force);
+> > +     cached = tcf_ct_skb_nfct_cached(net, skb, p, force);
+> >       if (!cached) {
+> >               if (tcf_ct_flow_table_lookup(p, skb, family)) {
+> >                       skip_add = true;
+> > @@ -1119,6 +1135,22 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+> >       if (err != NF_ACCEPT)
+> >               goto drop;
+> >
+> > +     if (commit && p->helper && !nfct_help(ct)) {
+> > +             err = __nf_ct_try_assign_helper(ct, p->tmpl, GFP_ATOMIC);
+> > +             if (err)
+> > +                     goto drop;
+> > +             add_helper = true;
+> > +             if (p->ct_action & TCA_CT_ACT_NAT && !nfct_seqadj(ct)) {
+> > +                     if (!nfct_seqadj_ext_add(ct))
+> > +                             return -EINVAL;
+>
+> This return looks suspect/wrong. It will confuse the tc action
+> mechanism. I guess you shold do
+>                                 goto drop;
+>
+> even here.
+You're right, will fix it.
 
-Fixes: abf0a1c2b26a ("amd-xgbe: Add support for SFP+ modules")
-Signed-off-by: Raju Rangoju <Raju.Rangoju@amd.com>
----
- drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-index 23fbd89a29df..0387e691be68 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-@@ -238,7 +238,7 @@ enum xgbe_sfp_speed {
- #define XGBE_SFP_BASE_BR_1GBE_MIN		0x0a
- #define XGBE_SFP_BASE_BR_1GBE_MAX		0x0d
- #define XGBE_SFP_BASE_BR_10GBE_MIN		0x64
--#define XGBE_SFP_BASE_BR_10GBE_MAX		0x68
-+#define XGBE_SFP_BASE_BR_10GBE_MAX		0x78
- 
- #define XGBE_SFP_BASE_CU_CABLE_LEN		18
- 
-@@ -1151,7 +1151,10 @@ static void xgbe_phy_sfp_parse_eeprom(struct xgbe_prv_data *pdata)
- 	}
- 
- 	/* Determine the type of SFP */
--	if (sfp_base[XGBE_SFP_BASE_10GBE_CC] & XGBE_SFP_BASE_10GBE_CC_SR)
-+	if (phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE &&
-+	    xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
-+		phy_data->sfp_base = XGBE_SFP_BASE_10000_CR;
-+	else if (sfp_base[XGBE_SFP_BASE_10GBE_CC] & XGBE_SFP_BASE_10GBE_CC_SR)
- 		phy_data->sfp_base = XGBE_SFP_BASE_10000_SR;
- 	else if (sfp_base[XGBE_SFP_BASE_10GBE_CC] & XGBE_SFP_BASE_10GBE_CC_LR)
- 		phy_data->sfp_base = XGBE_SFP_BASE_10000_LR;
-@@ -1167,9 +1170,6 @@ static void xgbe_phy_sfp_parse_eeprom(struct xgbe_prv_data *pdata)
- 		phy_data->sfp_base = XGBE_SFP_BASE_1000_CX;
- 	else if (sfp_base[XGBE_SFP_BASE_1GBE_CC] & XGBE_SFP_BASE_1GBE_CC_T)
- 		phy_data->sfp_base = XGBE_SFP_BASE_1000_T;
--	else if ((phy_data->sfp_cable == XGBE_SFP_CABLE_PASSIVE) &&
--		 xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
--		phy_data->sfp_base = XGBE_SFP_BASE_10000_CR;
- 
- 	switch (phy_data->sfp_base) {
- 	case XGBE_SFP_BASE_1000_T:
--- 
-2.25.1
-
+Thanks.
+>
+> > +             }
+> > +     }
+> > +
+> > +     if (nf_ct_is_confirmed(ct) ? ((!cached && !skip_add) || add_helper) : commit) {
+> > +             if (nf_ct_helper(skb, family) != NF_ACCEPT)
+> > +                     goto drop;
+>
+> With the above change, this chunk closely resamble
+>
+> https://elixir.bootlin.com/linux/latest/source/net/openvswitch/conntrack.c#L1018
+> ...
+> https://elixir.bootlin.com/linux/latest/source/net/openvswitch/conntrack.c#L1042
+>
+> opening to an additional common helper;) Not strictly necessary, just
+> nice to have :)
+>
+>
+> Thanks!
+>
+> Paolo
+>
