@@ -2,119 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C193D5F6BF8
-	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 18:48:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE18E5F6BF9
+	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 18:50:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231144AbiJFQsz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Oct 2022 12:48:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39152 "EHLO
+        id S231152AbiJFQuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Oct 2022 12:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230360AbiJFQsy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 12:48:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2DE1733E4
-        for <netdev@vger.kernel.org>; Thu,  6 Oct 2022 09:48:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E0CD61A2F
-        for <netdev@vger.kernel.org>; Thu,  6 Oct 2022 16:48:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52318C433D6;
-        Thu,  6 Oct 2022 16:48:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665074932;
-        bh=lk2Wr45gOyfdR66oU4K/Wx7t8pVZ/hBfBJ219QJ7rKI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=J7XqPJ273LK0/V5s6rNRst8z9TexwsqVV/Uj1K9Pl0xsydLkFZYWLjvDAMfbdq+KH
-         19GDGU7nrcKGasly34X1+/TrjPjn6poqZa8qyS9UM7P0kMC1oVK/xv33FINEU+0tir
-         I2NSRVBtQaruwxkM19UZQWOjuo03LjBhK71X3uckS86qDFbjFROv55jn/NvbCF097F
-         3XCj2w+NrrFlC+S7zWsPZeiDVFpr7gb8MUBdomnwewoSdF9Exl5kptc4ZpD6ebiCsL
-         gkg0yqNR/odp9C5BmmcZcuA1FIjP4Usepug52GUUgcGiRDn/XdW0TZ+Ii1CwjRCGU3
-         s161OZBCPv0Bw==
-From:   David Ahern <dsahern@kernel.org>
-To:     kuba@kernel.org, davem@davemloft.net, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, idosch@idosch.org,
-        David Ahern <dsahern@kernel.org>,
-        Gwangun Jung <exsociety@gmail.com>
-Subject: [PATCH v3 net] ipv4: Handle attempt to delete multipath route when fib_info contains an nh reference
-Date:   Thu,  6 Oct 2022 10:48:49 -0600
-Message-Id: <20221006164849.9386-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.37.0 (Apple Git-136)
+        with ESMTP id S229636AbiJFQuO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 12:50:14 -0400
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C194557E38
+        for <netdev@vger.kernel.org>; Thu,  6 Oct 2022 09:50:12 -0700 (PDT)
+Received: by mail-oi1-x22d.google.com with SMTP id w70so2690401oie.2
+        for <netdev@vger.kernel.org>; Thu, 06 Oct 2022 09:50:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=COxO5LnrIWzt/jw6mQyRzopKJeQXyul5IJodpgpQm8Y=;
+        b=S6H/x/tg2ka0eQ2HCV0qdhVUwOlj2o7NtpPicRcoNc4nqQg640+CRyRqBxNZ5u9msy
+         R9f/tBnMBcMJPZdSwDPjHMq7qGAE2FbRXkQgbC28foT+GhO/7kE9hvz/F3qy1Ts2q0Wc
+         Fqpk/gPtgMXuZVod42ji11yA5dlhRfggAhsL4F3JoSrrdEf+epY0tmyZVjSRta62OIto
+         i4sEJhDFXAjxX7dONm/7yq15JW8BA6C/ukkRfaXJqhKN/BYK+SeYUkd3kPbPldD2I5SO
+         xQTUva7OihaDTG0Oa4gpBsvxJn8USgFNd62jrIYG9UxiAl6g4BL36QQR92feJHd0Ky0g
+         CPEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=COxO5LnrIWzt/jw6mQyRzopKJeQXyul5IJodpgpQm8Y=;
+        b=wkJPWisIi4Txw5ofKWxot9KepR8sEd4bTg84QHfU1IrjCCpdZDsUdqmA37SH1i1rHT
+         r2iqFWw6ne9fBuDrm90ZHRmK0aLmGQo6OOOzByNLUfgHVbV6Vjvl1kcMX4tCCdW9SbER
+         37r1O1lUro3pT6Vkmi5/bXhFeG5+dsuFre63WiUVZ/aEMOL19jt2C3qgrjBpphBZAdJd
+         z0Gq56FUZ4aeKFEy4MDn+Df6r6vS9jqJpDhrL/hn18GWpsrcih5eWKAmTtG/cR6k2xKQ
+         uqCgSj1ZP+oWSo4Lp1XEXj/oYq2Q0ncQ+Tm296ulifkI8+r8VKmeYOhH/tMeAU8O5td/
+         K3ZA==
+X-Gm-Message-State: ACrzQf3TFoNRLJf0DYwHCEbzCh4V5JyNPzAjFoaRCjbhkxwvu5vw8QJN
+        wH4OGIL4+uw2wN9+NVPrPJhpaqMGX8yrsnKDwTU=
+X-Google-Smtp-Source: AMsMyM58ZhZgde9ueV7y3NHPXDP+PmwB6yXdqsFnHLnMlhyCo7/h8Rd0ocdUDXmlecus06Q4ZutHpcywEMM+rffHHXk=
+X-Received: by 2002:a05:6808:15a2:b0:350:4f5c:1440 with SMTP id
+ t34-20020a05680815a200b003504f5c1440mr5462264oiw.129.1665075012080; Thu, 06
+ Oct 2022 09:50:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <cover.1664932669.git.lucien.xin@gmail.com> <bc53ffac4d6be2616d053684fb6670f478b4324b.1664932669.git.lucien.xin@gmail.com>
+ <Yz7iDEjVbHrPUPT4@salvia>
+In-Reply-To: <Yz7iDEjVbHrPUPT4@salvia>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Thu, 6 Oct 2022 12:49:24 -0400
+Message-ID: <CADvbK_d6ZB_4uMu=t=tN9bdPxj-4D1Y_qM7FwcD8wT2HrL_2Bg@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/3] net: sched: add helper support in act_ct
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     network dev <netdev@vger.kernel.org>, dev@openvswitch.org,
+        ovs-dev@openvswitch.org, davem@davemloft.net, kuba@kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, Florian Westphal <fw@strlen.de>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
+        Ilya Maximets <i.maximets@ovn.org>,
+        Eelco Chaudron <echaudro@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Gwangun Jung reported a slab-out-of-bounds access in fib_nh_match:
-    fib_nh_match+0xf98/0x1130 linux-6.0-rc7/net/ipv4/fib_semantics.c:961
-    fib_table_delete+0x5f3/0xa40 linux-6.0-rc7/net/ipv4/fib_trie.c:1753
-    inet_rtm_delroute+0x2b3/0x380 linux-6.0-rc7/net/ipv4/fib_frontend.c:874
+On Thu, Oct 6, 2022 at 10:11 AM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+>
+> On Tue, Oct 04, 2022 at 09:19:56PM -0400, Xin Long wrote:
+> [...]
+> > @@ -1119,6 +1135,22 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+> >       if (err != NF_ACCEPT)
+> >               goto drop;
+> >
+> > +     if (commit && p->helper && !nfct_help(ct)) {
+> > +             err = __nf_ct_try_assign_helper(ct, p->tmpl, GFP_ATOMIC);
+> > +             if (err)
+> > +                     goto drop;
+> > +             add_helper = true;
+> > +             if (p->ct_action & TCA_CT_ACT_NAT && !nfct_seqadj(ct)) {
+> > +                     if (!nfct_seqadj_ext_add(ct))
+>
+> You can only add ct extensions if ct is !nf_ct_is_confirmed(ct)), is
+> this guaranteed in this codepath?
+This is a good catch, the same issue exists on __nf_ct_try_assign_helper(),
+and also in __ovs_ct_lookup().
 
-Separate nexthop objects are mutually exclusive with the legacy
-multipath spec. Fix fib_nh_match to return if the config for the
-to be deleted route contains a multipath spec while the fib_info
-is using a nexthop object.
+I could trigger the warning on OVS conntrack with the flow:
 
-Fixes: 493ced1ac47c ("ipv4: Allow routes to use nexthop objects")
-Fixes: 6bf92d70e690 ("net: ipv4: fix route with nexthop object delete warning")
-Reported-by: Gwangun Jung <exsociety@gmail.com>
-Signed-off-by: David Ahern <dsahern@kernel.org>
----
-v3:
-- removed nh check in multipath; forgot to remove it in v2
-- fixed expected return code on selftest
+table=0, in_port=veth1,tcp,tcp_dst=2121,ct_state=-trk
+actions=ct(commit, table=1)
+table=1, in_port=veth1,tcp,tcp_dst=2121,ct_state=+trk+new
+actions=ct(commit, alg=ftp),normal
 
-v2:
-- moved the fi->nh check up and added second Fixes tag (Ido's comments)
+I will prepare a fix for ovs conntrack first.
 
- net/ipv4/fib_semantics.c                    | 8 ++++----
- tools/testing/selftests/net/fib_nexthops.sh | 5 +++++
- 2 files changed, 9 insertions(+), 4 deletions(-)
+Thanks.
 
-diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-index 2dc97583d279..e9a7f70a54df 100644
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -888,13 +888,13 @@ int fib_nh_match(struct net *net, struct fib_config *cfg, struct fib_info *fi,
- 		return 1;
- 	}
- 
-+	/* cannot match on nexthop object attributes */
-+	if (fi->nh)
-+		return 1;
-+
- 	if (cfg->fc_oif || cfg->fc_gw_family) {
- 		struct fib_nh *nh;
- 
--		/* cannot match on nexthop object attributes */
--		if (fi->nh)
--			return 1;
--
- 		nh = fib_info_nh(fi, 0);
- 		if (cfg->fc_encap) {
- 			if (fib_encap_match(net, cfg->fc_encap_type,
-diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
-index d5a0dd548989..ee5e98204d3d 100755
---- a/tools/testing/selftests/net/fib_nexthops.sh
-+++ b/tools/testing/selftests/net/fib_nexthops.sh
-@@ -1223,6 +1223,11 @@ ipv4_fcnal()
- 	log_test $rc 0 "Delete nexthop route warning"
- 	run_cmd "$IP route delete 172.16.101.1/32 nhid 12"
- 	run_cmd "$IP nexthop del id 12"
-+
-+	run_cmd "$IP nexthop add id 21 via 172.16.1.6 dev veth1"
-+	run_cmd "$IP ro add 172.16.101.0/24 nhid 21"
-+	run_cmd "$IP ro del 172.16.101.0/24 nexthop via 172.16.1.7 dev veth1 nexthop via 172.16.1.8 dev veth1"
-+	log_test $? 2 "Delete multipath route with only nh id based entry"
- }
- 
- ipv4_grp_fcnal()
--- 
-2.25.1
-
+>
+> > +                             return -EINVAL;
+> > +             }
+> > +     }
+> > +
+> > +     if (nf_ct_is_confirmed(ct) ? ((!cached && !skip_add) || add_helper) : commit) {
+> > +             if (nf_ct_helper(skb, family) != NF_ACCEPT)
+> > +                     goto drop;
+> > +     }
+> > +
+> >       if (commit) {
+> >               tcf_ct_act_set_mark(ct, p->mark, p->mark_mask);
+> >               tcf_ct_act_set_labels(ct, p->labels, p->labels_mask);
