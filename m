@@ -2,49 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8706A5F6D47
-	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 19:56:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF3925F6D58
+	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 20:12:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231552AbiJFR4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Oct 2022 13:56:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39984 "EHLO
+        id S231657AbiJFSM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Oct 2022 14:12:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231542AbiJFR4k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 13:56:40 -0400
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FE38AE840;
-        Thu,  6 Oct 2022 10:56:39 -0700 (PDT)
-Message-ID: <72deafd9-ebd0-e173-0b41-51820a317292@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1665078997;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=U6Oq87YwupaZDOXOv9N6CEe2JLC5UwfpF3YPGpUqBOA=;
-        b=teW779MVKvR1GD61lkSQzUDciAccMBFx7PKlfNR4mhumENKFu+dYbFyJWzSjhAn9Hr2AJW
-        n/MJsZyffG8h/8YfnudG9nWPz83PEQERaOdW4m2vl7Yol4ulhxTkNu26YVNKvfd0pzLBoX
-        DGpmv5iEMSzf/46TD9KIrzrJvkGlFo0=
-Date:   Thu, 6 Oct 2022 10:56:32 -0700
+        with ESMTP id S230386AbiJFSM1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 14:12:27 -0400
+X-Greylist: delayed 16468 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 06 Oct 2022 11:12:26 PDT
+Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9799B86B;
+        Thu,  6 Oct 2022 11:12:26 -0700 (PDT)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
+        t=1665079944; bh=7ra4FxyMkrqZBjrGfQluuyoTdTJeQ8fbwvA0RTXTY1U=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=vEbY2xBJV9JNAureEVzACRYpoGLB9tJBkLEZ7MxkQOBuezTLoAobrEF2Psk3es9Zt
+         j3lGKDsWf3x1GdCmYkzzKbO/yDnP2xq0x1yWE60V2qqWM/BdCzkqTgEdktKoUkKbto
+         QtnIOEk9d7fWX220sVHb22g6iDulzDd1liK5uhPWFBu0B9bOg74Ssm4MMHA5+1++hZ
+         qesyhTgvaUubUdo7WHbyKaFIXjRnBDHXQWByCHIwJE++L30/aFDjPfqD2CNmwEFyKX
+         IGs1tXA0N3LMfknvQ+yoUtCSz0FrNxAcG6lIcCNUIWQAgGgEYs2P47BFPh2XGKjWVb
+         +JA/dkN64fTRQ==
+To:     Colin Ian King <colin.i.king@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ath9k: Make arrays prof_prio and channelmap static const
+In-Reply-To: <20221005155558.320556-1-colin.i.king@gmail.com>
+References: <20221005155558.320556-1-colin.i.king@gmail.com>
+Date:   Thu, 06 Oct 2022 20:12:23 +0200
+X-Clacks-Overhead: GNU Terry Pratchett
+Message-ID: <87k05ces8o.fsf@toke.dk>
 MIME-Version: 1.0
-Subject: Re: [PATCH bpf-next 02/10] bpf: Implement BPF link handling for tc
- BPF programs
-Content-Language: en-US
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     razor@blackwall.org, ast@kernel.org, andrii@kernel.org,
-        john.fastabend@gmail.com, joannelkoong@gmail.com, memxor@gmail.com,
-        toke@redhat.com, joe@cilium.io, netdev@vger.kernel.org,
-        bpf <bpf@vger.kernel.org>
-References: <20221004231143.19190-1-daniel@iogearbox.net>
- <20221004231143.19190-3-daniel@iogearbox.net>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-In-Reply-To: <20221004231143.19190-3-daniel@iogearbox.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,48 +51,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/4/22 4:11 PM, Daniel Borkmann wrote:
+Colin Ian King <colin.i.king@gmail.com> writes:
 
-> @@ -191,7 +202,8 @@ static void __xtc_prog_detach_all(struct net_device *dev, bool ingress, u32 limi
->   		if (!prog)
->   			break;
->   		dev_xtc_entry_prio_del(entry, item->bpf_priority);
-> -		bpf_prog_put(prog);
-> +		if (!item->bpf_id)
-> +			bpf_prog_put(prog);
+> Don't populate the read-only arrays prof_prio and channelmap
+> on the stack but instead make them static const. Also makes the
+> object code a little smaller.
+>
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 
-Should the link->dev be set to NULL somewhere?
-
->   		if (ingress)
->   			net_dec_ingress_queue();
->   		else
-> @@ -244,6 +256,7 @@ __xtc_prog_query(const union bpf_attr *attr, union bpf_attr __user *uattr,
->   		if (!prog)
->   			break;
->   		info.prog_id = prog->aux->id;
-> +		info.link_id = item->bpf_id;
->   		info.prio = item->bpf_priority;
->   		if (copy_to_user(uinfo + i, &info, sizeof(info)))
->   			return -EFAULT;
-> @@ -272,3 +285,90 @@ int xtc_prog_query(const union bpf_attr *attr, union bpf_attr __user *uattr)
->   	rtnl_unlock();
->   	return ret;
->   }
-> +
-
-[ ... ]
-
-> +static void xtc_link_release(struct bpf_link *l)
-> +{
-> +	struct bpf_tc_link *link = container_of(l, struct bpf_tc_link, link);
-> +
-> +	rtnl_lock();
-> +	if (link->dev) {
-> +		WARN_ON(__xtc_prog_detach(link->dev,
-> +					  link->location == BPF_NET_INGRESS,
-> +					  XTC_MAX_ENTRIES, l->id, link->priority));
-> +		link->dev = NULL;
-> +	}
-> +	rtnl_unlock();
-> +}
-
+Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.dk>
