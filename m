@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CD345F60D0
-	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 07:53:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C9445F60D1
+	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 07:53:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230206AbiJFFxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Oct 2022 01:53:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37926 "EHLO
+        id S229468AbiJFFxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Oct 2022 01:53:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229955AbiJFFxN (ORCPT
+        with ESMTP id S230084AbiJFFxN (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 01:53:13 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DDB591AF1C;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DFE4E57E39;
         Wed,  5 Oct 2022 22:53:12 -0700 (PDT)
 Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (linux.microsoft.com [13.77.154.182])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 925D920D5F37;
+        by linux.microsoft.com (Postfix) with ESMTPSA id AA88220D5F38;
         Wed,  5 Oct 2022 22:53:12 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 925D920D5F37
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AA88220D5F38
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
         s=default; t=1665035592;
         bh=Iv/HyXwyWvio7WsumWzIXqsQdEUafXvlyqJC/QOR3Fk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=QEToUoTyDT/3p+8sEHZGJUj2d+89sTYBb8fhscx7+IKa7bzyf9AMtlX2TSIGUcutU
-         wUluGN7ysbql3699ZSzbprmQMI4LjPZsrcq53dcaY1DWvduacbC6kJW+dUrv1tE7SA
-         45s2xCZPGGRjMHBFv242DzWvNNh1E5/xsk5rjYJ8=
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fQgoGmU/B+Xt6CDxjxC4KN+h7idTPWtuB/f4noggdDGXsIqGLtj16F/37PJqw5jtc
+         BZRwHEHIRUd3PUzJ0OyVs4wWER6+wuVrX8pQIkSK1c9IzHHxajf4tRawaOCwG9DivY
+         ZCVvBbzBzvsivw9JLa+RACNkLZpO7xhMosmiecsI=
 From:   Gaurav Kohli <gauravkohli@linux.microsoft.com>
 To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
         wei.liu@kernel.org, decui@microsoft.com,
@@ -32,9 +32,11 @@ To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
         kuba@kernel.org
 Cc:     stable@vger.kernel.org
 Subject: [PATCH v2 net] hv_netvsc: Fix race between VF offering and VF association message from host
-Date:   Wed,  5 Oct 2022 22:52:58 -0700
-Message-Id: <1665035579-13755-1-git-send-email-gauravkohli@linux.microsoft.com>
+Date:   Wed,  5 Oct 2022 22:52:59 -0700
+Message-Id: <1665035579-13755-2-git-send-email-gauravkohli@linux.microsoft.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1665035579-13755-1-git-send-email-gauravkohli@linux.microsoft.com>
+References: <1665035579-13755-1-git-send-email-gauravkohli@linux.microsoft.com>
 X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_MED,
         SPF_HELO_PASS,SPF_PASS,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
