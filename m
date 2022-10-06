@@ -2,193 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06D265F6DF3
-	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 21:11:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F47A5F6E2D
+	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 21:26:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231567AbiJFTKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Oct 2022 15:10:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37506 "EHLO
+        id S231787AbiJFT0X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Oct 2022 15:26:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231207AbiJFTKd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 15:10:33 -0400
-Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A3833A03;
-        Thu,  6 Oct 2022 12:10:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1665083430; x=1696619430;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=L3wZx5jgEpsuCjj5ZBPl/Gm3fBywLYkBk0atiKCIlwM=;
-  b=TYS+ODZav9sLlqixKg3MVPjG9jmJlQ1h+9bF6SuOHoxyX6h5dXaYIv8X
-   z9Mwl5wJSjpBaJo7+woktRyyTTK9ADoi0OQySb/UFZR29GuPZ0/e3Su8l
-   I+Q93zdK1DW0jr6quNhqqo4BkGmDxgPqkYRyikQ5iqHwKxN3KrhzIc5Mw
-   A=;
-X-IronPort-AV: E=Sophos;i="5.95,164,1661817600"; 
-   d="scan'208";a="266911535"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1e-7dac3c4d.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Oct 2022 18:55:24 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1e-7dac3c4d.us-east-1.amazon.com (Postfix) with ESMTPS id B1A9AA0A88;
-        Thu,  6 Oct 2022 18:55:20 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Thu, 6 Oct 2022 18:55:20 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.161.176) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Thu, 6 Oct 2022 18:55:14 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231631AbiJFT0U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 15:26:20 -0400
+X-Greylist: delayed 1186 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 06 Oct 2022 12:26:12 PDT
+Received: from syslogsrv (unknown [217.20.186.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEE029E6AD;
+        Thu,  6 Oct 2022 12:26:12 -0700 (PDT)
+Received: from fg200.ow.s ([172.20.254.44] helo=localhost.localdomain)
+        by syslogsrv with esmtp (Exim 4.90_1)
+        (envelope-from <maksym.glubokiy@plvision.eu>)
+        id 1ogWAN-0004O0-OZ; Thu, 06 Oct 2022 22:04:19 +0300
+From:   Maksym Glubokiy <maksym.glubokiy@plvision.eu>
+To:     Taras Chornyi <tchornyi@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, <syzkaller-bugs@googlegroups.com>,
-        <linux-kernel@vger.kernel.org>, syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH v5 net 5/5] tcp: Fix data races around icsk->icsk_af_ops.
-Date:   Thu, 6 Oct 2022 11:53:49 -0700
-Message-ID: <20221006185349.74777-6-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221006185349.74777-1-kuniyu@amazon.com>
-References: <20221006185349.74777-1-kuniyu@amazon.com>
+        Volodymyr Mytnyk <vmytnyk@marvell.com>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Vadym Kochan <vkochan@marvell.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Maksym Glubokiy <maksym.glubokiy@plvision.eu>
+Subject: [PATCH net] prestera: matchall: do not rollback if rule exists
+Date:   Thu,  6 Oct 2022 22:04:09 +0300
+Message-Id: <20221006190409.881219-1-maksym.glubokiy@plvision.eu>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.161.176]
-X-ClientProxiedBy: EX13D18UWA003.ant.amazon.com (10.43.160.238) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,FSL_HELO_NON_FQDN_1,
+        HELO_NO_DOMAIN,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-setsockopt(IPV6_ADDRFORM) and tcp_v6_connect() change icsk->icsk_af_ops
-under lock_sock(), but tcp_(get|set)sockopt() read it locklessly.  To
-avoid load/store tearing, we need to add READ_ONCE() and WRITE_ONCE()
-for the reads and writes.
+From: Serhiy Boiko <serhiy.boiko@plvision.eu>
 
-Thanks to Eric Dumazet for providing the syzbot report:
+If you try to create a 'mirror' ACL rule on a port that already has a
+mirror rule, prestera_span_rule_add() will fail with EEXIST error.
 
-BUG: KCSAN: data-race in tcp_setsockopt / tcp_v6_connect
+This forces rollback procedure which destroys existing mirror rule on
+hardware leaving it visible in linux.
 
-write to 0xffff88813c624518 of 8 bytes by task 23936 on cpu 0:
-tcp_v6_connect+0x5b3/0xce0 net/ipv6/tcp_ipv6.c:240
-__inet_stream_connect+0x159/0x6d0 net/ipv4/af_inet.c:660
-inet_stream_connect+0x44/0x70 net/ipv4/af_inet.c:724
-__sys_connect_file net/socket.c:1976 [inline]
-__sys_connect+0x197/0x1b0 net/socket.c:1993
-__do_sys_connect net/socket.c:2003 [inline]
-__se_sys_connect net/socket.c:2000 [inline]
-__x64_sys_connect+0x3d/0x50 net/socket.c:2000
-do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
-entry_SYSCALL_64_after_hwframe+0x63/0xcd
+Add an explicit check for EEXIST to prevent the deletion of the existing
+rule but keep user seeing error message:
 
-read to 0xffff88813c624518 of 8 bytes by task 23937 on cpu 1:
-tcp_setsockopt+0x147/0x1c80 net/ipv4/tcp.c:3789
-sock_common_setsockopt+0x5d/0x70 net/core/sock.c:3585
-__sys_setsockopt+0x212/0x2b0 net/socket.c:2252
-__do_sys_setsockopt net/socket.c:2263 [inline]
-__se_sys_setsockopt net/socket.c:2260 [inline]
-__x64_sys_setsockopt+0x62/0x70 net/socket.c:2260
-do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
-entry_SYSCALL_64_after_hwframe+0x63/0xcd
+  $ tc filter add dev sw1p1 ... skip_sw action mirred egress mirror dev sw1p2
+  $ tc filter add dev sw1p1 ... skip_sw action mirred egress mirror dev sw1p3
+  RTNETLINK answers: File exists
+  We have an error talking to the kernel
 
-value changed: 0xffffffff8539af68 -> 0xffffffff8539aff8
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 23937 Comm: syz-executor.5 Not tainted
-6.0.0-rc4-syzkaller-00331-g4ed9c1e971b1-dirty #0
-
-Hardware name: Google Google Compute Engine/Google Compute Engine,
-BIOS Google 08/26/2022
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Reported-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Fixes: 13defa275eef ("net: marvell: prestera: Add matchall support")
+Signed-off-by: Serhiy Boiko <serhiy.boiko@plvision.eu>
+Signed-off-by: Maksym Glubokiy <maksym.glubokiy@plvision.eu>
 ---
- net/ipv4/tcp.c           | 10 ++++++----
- net/ipv6/ipv6_sockglue.c |  3 ++-
- net/ipv6/tcp_ipv6.c      |  6 ++++--
- 3 files changed, 12 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/marvell/prestera/prestera_matchall.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 0c51abeee172..f8232811a5be 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -3796,8 +3796,9 @@ int tcp_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,
- 	const struct inet_connection_sock *icsk = inet_csk(sk);
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_matchall.c b/drivers/net/ethernet/marvell/prestera/prestera_matchall.c
+index 6f2b95a5263e..1da9c1bc1ee9 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_matchall.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_matchall.c
+@@ -96,6 +96,8 @@ int prestera_mall_replace(struct prestera_flow_block *block,
  
- 	if (level != SOL_TCP)
--		return icsk->icsk_af_ops->setsockopt(sk, level, optname,
--						     optval, optlen);
-+		/* Paired with WRITE_ONCE() in do_ipv6_setsockopt() and tcp_v6_connect() */
-+		return READ_ONCE(icsk->icsk_af_ops)->setsockopt(sk, level, optname,
-+								optval, optlen);
- 	return do_tcp_setsockopt(sk, level, optname, optval, optlen);
- }
- EXPORT_SYMBOL(tcp_setsockopt);
-@@ -4396,8 +4397,9 @@ int tcp_getsockopt(struct sock *sk, int level, int optname, char __user *optval,
- 	struct inet_connection_sock *icsk = inet_csk(sk);
- 
- 	if (level != SOL_TCP)
--		return icsk->icsk_af_ops->getsockopt(sk, level, optname,
--						     optval, optlen);
-+		/* Paired with WRITE_ONCE() in do_ipv6_setsockopt() and tcp_v6_connect() */
-+		return READ_ONCE(icsk->icsk_af_ops)->getsockopt(sk, level, optname,
-+								optval, optlen);
- 	return do_tcp_getsockopt(sk, level, optname, USER_SOCKPTR(optval),
- 				 USER_SOCKPTR(optlen));
- }
-diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
-index d7207a546aec..532f4478c884 100644
---- a/net/ipv6/ipv6_sockglue.c
-+++ b/net/ipv6/ipv6_sockglue.c
-@@ -479,7 +479,8 @@ int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
- 
- 				/* Paired with READ_ONCE(sk->sk_prot) in inet6_stream_ops */
- 				WRITE_ONCE(sk->sk_prot, &tcp_prot);
--				icsk->icsk_af_ops = &ipv4_specific;
-+				/* Paired with READ_ONCE() in tcp_(get|set)sockopt() */
-+				WRITE_ONCE(icsk->icsk_af_ops, &ipv4_specific);
- 				sk->sk_socket->ops = &inet_stream_ops;
- 				sk->sk_family = PF_INET;
- 				tcp_sync_mss(sk, icsk->icsk_pmtu_cookie);
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index a8adda623da1..2a3f9296df1e 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -238,7 +238,8 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
- 		sin.sin_port = usin->sin6_port;
- 		sin.sin_addr.s_addr = usin->sin6_addr.s6_addr32[3];
- 
--		icsk->icsk_af_ops = &ipv6_mapped;
-+		/* Paired with READ_ONCE() in tcp_(get|set)sockopt() */
-+		WRITE_ONCE(icsk->icsk_af_ops, &ipv6_mapped);
- 		if (sk_is_mptcp(sk))
- 			mptcpv6_handle_mapped(sk, true);
- 		sk->sk_backlog_rcv = tcp_v4_do_rcv;
-@@ -250,7 +251,8 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
- 
- 		if (err) {
- 			icsk->icsk_ext_hdr_len = exthdrlen;
--			icsk->icsk_af_ops = &ipv6_specific;
-+			/* Paired with READ_ONCE() in tcp_(get|set)sockopt() */
-+			WRITE_ONCE(icsk->icsk_af_ops, &ipv6_specific);
- 			if (sk_is_mptcp(sk))
- 				mptcpv6_handle_mapped(sk, false);
- 			sk->sk_backlog_rcv = tcp_v6_do_rcv;
+ 	list_for_each_entry(binding, &block->binding_list, list) {
+ 		err = prestera_span_rule_add(binding, port, block->ingress);
++		if (err == -EEXIST)
++			return err;
+ 		if (err)
+ 			goto rollback;
+ 	}
 -- 
-2.30.2
+2.25.1
 
