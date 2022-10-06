@@ -2,47 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 064CE5F6FBB
-	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 22:50:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66FEE5F6FC8
+	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 22:54:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232474AbiJFUuB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Oct 2022 16:50:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48630 "EHLO
+        id S232261AbiJFUyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Oct 2022 16:54:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232475AbiJFUtb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 16:49:31 -0400
+        with ESMTP id S229567AbiJFUyJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 16:54:09 -0400
 Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C6ECC2CA7;
-        Thu,  6 Oct 2022 13:49:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCBD02DD9;
+        Thu,  6 Oct 2022 13:54:07 -0700 (PDT)
 Received: from sslproxy05.your-server.de ([78.46.172.2])
         by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92.3)
         (envelope-from <daniel@iogearbox.net>)
-        id 1ogXnr-0002z3-Ld; Thu, 06 Oct 2022 22:49:11 +0200
+        id 1ogXsc-0004TJ-7Q; Thu, 06 Oct 2022 22:54:06 +0200
 Received: from [85.1.206.226] (helo=linux.home)
         by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <daniel@iogearbox.net>)
-        id 1ogXnr-0002UP-8j; Thu, 06 Oct 2022 22:49:11 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Subject: Re: [PATCH bpf-next 01/10] bpf: Add initial fd-based API to attach tc
+        id 1ogXsb-000Qbv-SA; Thu, 06 Oct 2022 22:54:05 +0200
+Subject: Re: [PATCH bpf-next 02/10] bpf: Implement BPF link handling for tc
  BPF programs
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     bpf@vger.kernel.org, razor@blackwall.org, ast@kernel.org,
         andrii@kernel.org, martin.lau@linux.dev, john.fastabend@gmail.com,
         joannelkoong@gmail.com, memxor@gmail.com, toke@redhat.com,
-        joe@cilium.io, netdev@vger.kernel.org,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
+        joe@cilium.io, netdev@vger.kernel.org
 References: <20221004231143.19190-1-daniel@iogearbox.net>
- <20221004231143.19190-2-daniel@iogearbox.net>
- <CAM0EoM=i_zFMQ5YEtaaWyu-fSE7=wq2LmNTXnwDJoXcBJ9de6g@mail.gmail.com>
-Message-ID: <aa8034e8-a64e-3587-1e1f-1d07c69edd98@iogearbox.net>
-Date:   Thu, 6 Oct 2022 22:49:10 +0200
+ <20221004231143.19190-3-daniel@iogearbox.net>
+ <CAEf4Bzak_v01v5Y6dNT_1KAcax_hvVqZM4o+d_w5OJSWeLJz2g@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <5451abc2-3364-80bd-f7ae-9cff2052bad9@iogearbox.net>
+Date:   Thu, 6 Oct 2022 22:54:05 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <CAM0EoM=i_zFMQ5YEtaaWyu-fSE7=wq2LmNTXnwDJoXcBJ9de6g@mail.gmail.com>
+In-Reply-To: <CAEf4Bzak_v01v5Y6dNT_1KAcax_hvVqZM4o+d_w5OJSWeLJz2g@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -57,70 +55,103 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jamal,
+On 10/6/22 5:19 AM, Andrii Nakryiko wrote:
+> On Tue, Oct 4, 2022 at 4:12 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>>
+>> This work adds BPF links for tc. As a recap, a BPF link represents the attachment
+>> of a BPF program to a BPF hook point. The BPF link holds a single reference to
+>> keep BPF program alive. Moreover, hook points do not reference a BPF link, only
+>> the application's fd or pinning does. A BPF link holds meta-data specific to
+>> attachment and implements operations for link creation, (atomic) BPF program
+>> update, detachment and introspection.
+>>
+>> The motivation for BPF links for tc BPF programs is multi-fold, for example:
+>>
+>> - "It's especially important for applications that are deployed fleet-wide
+>>     and that don't "control" hosts they are deployed to. If such application
+>>     crashes and no one notices and does anything about that, BPF program will
+>>     keep running draining resources or even just, say, dropping packets. We
+>>     at FB had outages due to such permanent BPF attachment semantics. With
+>>     fd-based BPF link we are getting a framework, which allows safe, auto-
+>>     detachable behavior by default, unless application explicitly opts in by
+>>     pinning the BPF link." [0]
+>>
+>> -  From Cilium-side the tc BPF programs we attach to host-facing veth devices
+>>     and phys devices build the core datapath for Kubernetes Pods, and they
+>>     implement forwarding, load-balancing, policy, EDT-management, etc, within
+>>     BPF. Currently there is no concept of 'safe' ownership, e.g. we've recently
+>>     experienced hard-to-debug issues in a user's staging environment where
+>>     another Kubernetes application using tc BPF attached to the same prio/handle
+>>     of cls_bpf, wiping all Cilium-based BPF programs from underneath it. The
+>>     goal is to establish a clear/safe ownership model via links which cannot
+>>     accidentally be overridden. [1]
+>>
+>> BPF links for tc can co-exist with non-link attachments, and the semantics are
+>> in line also with XDP links: BPF links cannot replace other BPF links, BPF
+>> links cannot replace non-BPF links, non-BPF links cannot replace BPF links and
+>> lastly only non-BPF links can replace non-BPF links. In case of Cilium, this
+>> would solve mentioned issue of safe ownership model as 3rd party applications
+>> would not be able to accidentally wipe Cilium programs, even if they are not
+>> BPF link aware.
+>>
+>> Earlier attempts [2] have tried to integrate BPF links into core tc machinery
+>> to solve cls_bpf, which has been intrusive to the generic tc kernel API with
+>> extensions only specific to cls_bpf and suboptimal/complex since cls_bpf could
+>> be wiped from the qdisc also. Locking a tc BPF program in place this way, is
+>> getting into layering hacks given the two object models are vastly different.
+>> We chose to implement a prerequisite of the fd-based tc BPF attach API, so
+>> that the BPF link implementation fits in naturally similar to other link types
+>> which are fd-based and without the need for changing core tc internal APIs.
+>>
+>> BPF programs for tc can then be successively migrated from cls_bpf to the new
+>> tc BPF link without needing to change the program's source code, just the BPF
+>> loader mechanics for attaching.
+>>
+>>    [0] https://lore.kernel.org/bpf/CAEf4BzbokCJN33Nw_kg82sO=xppXnKWEncGTWCTB9vGCmLB6pw@mail.gmail.com/
+>>    [1] https://lpc.events/event/16/contributions/1353/
+>>    [2] https://lore.kernel.org/bpf/20210604063116.234316-1-memxor@gmail.com/
+>>
+>> Co-developed-by: Nikolay Aleksandrov <razor@blackwall.org>
+>> Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
+>> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+>> ---
+> 
+> have you considered supporting BPF cookie from the outset? It should
+> be trivial if you remove union from bpf_prog_array_item. If not, then
+> we should reject LINK_CREATE if bpf_cookie is non-zero.
 
-On 10/5/22 9:04 PM, Jamal Hadi Salim wrote:
-[...]
-> Let me see if i can summarize the issue of ownership..
-> It seems there were two users each with root access and one decided they want
-> to be prio 1 and basically deleted the others programs and added
-> themselves to the top?
-> And of course both want to be prio 1. Am i correct? And this feature
-> basically avoids
-> this problem by virtue of fd ownership.
+Haven't considered it yet at this point, but we can add this in subsequent step,
+agree, thus we should reject for now upon create.
 
-Yes and no ;) In the specific example I gave there was an application bug that
-led to this race of one evicting the other, so it was not intentional and also
-not triggered on all the nodes in the cluster, but aside from the example, the
-issue is generic one for tc BPF users. Not fd ownership, but ownership of BPF
-link solves this as it does similarly for other existing BPF infra which is one
-of the motivations as outlined in patch 2 to align this for tc BPF, too.
+>>   include/linux/bpf.h            |   5 +-
+>>   include/net/xtc.h              |  14 ++++
+>>   include/uapi/linux/bpf.h       |   5 ++
+>>   kernel/bpf/net.c               | 116 ++++++++++++++++++++++++++++++---
+>>   kernel/bpf/syscall.c           |   3 +
+>>   tools/include/uapi/linux/bpf.h |   5 ++
+>>   6 files changed, 139 insertions(+), 9 deletions(-)
+>>
+>> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+>> index 71e5f43db378..226a74f65704 100644
+>> --- a/include/linux/bpf.h
+>> +++ b/include/linux/bpf.h
+>> @@ -1473,7 +1473,10 @@ struct bpf_prog_array_item {
+>>          union {
+>>                  struct bpf_cgroup_storage *cgroup_storage[MAX_BPF_CGROUP_STORAGE_TYPE];
+>>                  u64 bpf_cookie;
+>> -               u32 bpf_priority;
+>> +               struct {
+>> +                       u32 bpf_priority;
+>> +                       u32 bpf_id;
+> 
+> this is link_id, is that right? should we name it as such?
 
-> IIUC,  this is an issue of resource contention. Both users who have
-> root access think they should be prio 1. Kubernetes has no controls for this?
-> For debugging, wouldnt listening to netlink events have caught this?
-> I may be misunderstanding - but if both users took advantage of this
-> feature seems the root cause is still unresolved i.e  whoever gets there first
-> becomes the owner of the highest prio?
+Ack, will rename, thanks also for all your other suggestions inthe various patches,
+all make sense to me & will address them!
 
-This is independent of K8s core; system applications for observability, runtime
-enforcement, networking, etc can be deployed as Pods via kube-system namespace into
-the cluster and live in the host netns. These are typically developed independently
-by different groups of people. So it all depends on the use cases these applications
-solve, e.g. if you try to deploy two /main/ CNI plugins which both want to provide
-cluster networking, it won't fly and this is also generally understood by cluster
-operators, but there can be other applications also attaching to tc BPF for more
-specialized functions (f.e. observing traffic flows, setting EDT tstamp for subsequent
-fq, etc) and interoperability can be provided to a certain degree with prio settings &
-unspec combo to continue the pipeline. Netlink events would at best only allow to
-observe the rig being pulled from underneath us, but not prevent it compared to tc
-BPF links, and given the rise of BPF projects we see in K8s space, it's becoming
-more crucial to avoid accidental outage just from deploying a new Pod into a
-running cluster given tc BPF layer becomes more occupied.
-
-> Other comments on just this patch (I will pay attention in detail later):
-> My two qualms:
-> 1) Was bastardizing all things TC_ACT_XXX necessary?
-> Maybe you could create #define somewhere visible which refers
-> to the TC_ACT_XXX?
-
-Optional as mentioned in the other thread. It was suggested having enums which
-become visible via vmlinux BTF as opposed to defines, so my thought was to lower
-barrier for new developers by making the naming and supported subset more obvious
-similar/closer to XDP case. I didn't want to pull in new header, but I can move it
-to pkt_cls.h.
-
-> 2) Why is xtc_run before tc_run()?
-
-It needs to be first in the list because its the only hook point that has an
-'ownership' model in tc BPF layer. If its first we can unequivocally know its
-owner and ensure its never skipped/bypassed/removed by another BPF program either
-intentionally or due to users bugs/errors. If we put it after other hooks like cls_bpf
-we loose the statement because those hooks might 'steal', remove, alter the skb before
-the BPF link ones are executed. Other option is to make this completely flexible, to
-the point that Stan made, that is, tcf_classify() is just callback from the array at
-a fixed position and it's completely up to the user where to add from this layer,
-but we went with former approach.
-
-Thanks,
-Daniel
+>> +               };
+>>          };
+>>   };
+>>
+> 
+> [...]
