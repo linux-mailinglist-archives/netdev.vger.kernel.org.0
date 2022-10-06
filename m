@@ -2,80 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 617175F60E8
-	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 08:15:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 041E25F6134
+	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 08:49:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230038AbiJFGPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Oct 2022 02:15:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36274 "EHLO
+        id S229551AbiJFGtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Oct 2022 02:49:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229801AbiJFGPe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 02:15:34 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91C0032BB2
-        for <netdev@vger.kernel.org>; Wed,  5 Oct 2022 23:15:33 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id bh13so1016648pgb.4
-        for <netdev@vger.kernel.org>; Wed, 05 Oct 2022 23:15:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=kj+F1FdX6TBtLaOY1xSPqr94l0+FKqRuo16DwkvlxEE=;
-        b=PObcqm3IzCwc757kBP2Q7Eyui7OzKd/12rm7vRG+wpuxZ4mPelGW9iVt8ASLClcGaf
-         D3KrdSGtpb/ZV+IvTxZgb1+dsp2/FhGzS256KwEj7fHrEK8KNoqkWLFDpxorI6BpyVp3
-         E+uCHLTgsr0JxeR4WB++S26SFRCGOZhEzxYos=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=kj+F1FdX6TBtLaOY1xSPqr94l0+FKqRuo16DwkvlxEE=;
-        b=6JBxqHvEr/5eof37n03ITzXgnUWmG/OEt6WM+NSHHxlE7W0j4wUxAiqylbsh7Cmml7
-         JDP0rBWaYUgMXz6Uhut1tRtqfHBLMwRL12VAys4bWXHjl5HIB8eMYNhavPLW1bDcTQq+
-         namxzeiYKrAwoGpgUXrykUEaLcOTASm/DBYZDfFJzkLCHbFWnmiT9F1ArfL/5ySAqVbk
-         CPT3OyNvx/hFKegXy37guWhrpfWsTnHY2Uo4kbN7/A+fMeUVLiLdcQBi4uOkoFWUqhsw
-         A+0hcwJvDSbRq8d7rSZSyXp+lxmC/lZ+HsPaLtnfNnqeI4edz925BbB6vWzOuukNTiUq
-         1XIA==
-X-Gm-Message-State: ACrzQf2O8r2yWR0fm7F1i2uUceHc/iZEiXckSWmI2vUsWiMKg+DsUPNf
-        b0TjeKrH5X/lgb78MG/+6KCw5Q==
-X-Google-Smtp-Source: AMsMyM5V4+F5de7QUB2CRoC6OFZ0KmWRsmdDah9tMdCebp8K/z8shaAJiN3iu+cTBS4Xzu2mmaYqPQ==
-X-Received: by 2002:a05:6a00:124e:b0:561:b241:f47f with SMTP id u14-20020a056a00124e00b00561b241f47fmr3570089pfi.72.1665036932903;
-        Wed, 05 Oct 2022 23:15:32 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id i15-20020a63584f000000b004393c5a8006sm873327pgm.75.2022.10.05.23.15.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Oct 2022 23:15:32 -0700 (PDT)
-Date:   Wed, 5 Oct 2022 23:15:31 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-api@vger.kernel.org
-Subject: Re: [PATCH v1 0/5] treewide cleanup of random integer usage
-Message-ID: <202210052310.BF756EBEBE@keescook>
-References: <20221005214844.2699-1-Jason@zx2c4.com>
+        with ESMTP id S229450AbiJFGtT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 02:49:19 -0400
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D668A7DD
+        for <netdev@vger.kernel.org>; Wed,  5 Oct 2022 23:49:18 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id 137E6320092F;
+        Thu,  6 Oct 2022 02:49:14 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Thu, 06 Oct 2022 02:49:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; t=1665038953; x=1665125353; bh=K2MA9MmNhFqB/t7A/RJ/77WX2CVn
+        Md+WjbYI+WjG+6w=; b=u5l1Pt+Lj72SlkAEdqVAJNHy1q/pFwaJY1vs4xrNUh7H
+        I//O8NNI2M2LbR/toWFuHshfi2Gy2y4csETCWenIY/dBWhyPjtJnMqkt5lxn8cC8
+        cAO0tfT77sqGakuf0H/RJKbCLIg/Tqn/zOue6IUngmCKEgMA8GwGwlv8ZnfqOY0D
+        4k3TjmmiwjUjhld4DN444CH+tQt3CX72a3E8jLofd7wr7a8WUVgv2Pf0LTyvwshm
+        k1FpiIMRHnDkZffpoK4YHuiHtdRxownOO2VLgNyDaen/2xgjEY+YUMY7aGGCWOWq
+        TbTPRhNDZovd7Nt/4lzUHltiVZjXu01xPKB4eOFPug==
+X-ME-Sender: <xms:aXo-Y3DuG3WA6773eBj3JoFYa0KUw24xFZoXMZWQCwIMu1FM51fFoA>
+    <xme:aXo-Y9hBUyzNmuHAC2Eku4t8FieXBpUUxUJdJiqYsBA19LfdNxgeYsORa_-KjIhc1
+    nnNqajLnxXSzxg>
+X-ME-Received: <xmr:aXo-YylxG6f42tJDUDA1xoFmQOARsAOPHgWoCm4Ihjmr3q9cBRxltHbCszGLlOciv2w1JZm1lCNm4cU0yVYp4juTEgk>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfeeigedguddugecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkugho
+    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrg
+    htthgvrhhnpedtjeefhefgteevtdejfeeutdduhffhjeeiieffiefhhfekveefteeifffh
+    kedtudenucffohhmrghinhepnhgvgihthhhophhsrdhshhenucevlhhushhtvghrufhiii
+    gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdho
+    rhhg
+X-ME-Proxy: <xmx:aXo-Y5xwCfOBgMs6tQyrgwDhYiopr8Fnd77le2EyyhDAKupK4VI5Tg>
+    <xmx:aXo-Y8TeREoykz7Gx16JublUhER5F-8OSnf25XY3amPdYAAyF67FZA>
+    <xmx:aXo-Y8aNDVUFhncieT-EBe8AoFL9doJbCtsHLitlvdafOAih2Ae4Hg>
+    <xmx:aXo-YyemE79jB89jmR-eBmQDOm1ksbOVW0JQ4ShlCbnMOZ28zXVNTg>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 6 Oct 2022 02:49:12 -0400 (EDT)
+Date:   Thu, 6 Oct 2022 09:49:08 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     David Ahern <dsahern@kernel.org>
+Cc:     kuba@kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        netdev@vger.kernel.org, Gwangun Jung <exsociety@gmail.com>
+Subject: Re: [PATCH net] ipv4: Handle attempt to delete multipath route when
+ fib_info contains an nh reference
+Message-ID: <Yz56ZBVMUC/vmKhP@shredder>
+References: <20221005181257.8897-1-dsahern@kernel.org>
+ <Yz3WE+cBd9YUj7Bp@shredder>
+ <84202713-ec7c-1e5e-8d9f-d36e715c81e4@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221005214844.2699-1-Jason@zx2c4.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <84202713-ec7c-1e5e-8d9f-d36e715c81e4@kernel.org>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 05, 2022 at 11:48:39PM +0200, Jason A. Donenfeld wrote:
-> I've CC'd get_maintainers.pl, which is a pretty big list. Probably some
-> portion of those are going to bounce, too, and everytime you reply to
+On Wed, Oct 05, 2022 at 01:27:59PM -0600, David Ahern wrote:
+> On 10/5/22 1:08 PM, Ido Schimmel wrote:
+> > On Wed, Oct 05, 2022 at 12:12:57PM -0600, David Ahern wrote:
+> >> Gwangun Jung reported a slab-out-of-bounds access in fib_nh_match:
+> >>     fib_nh_match+0xf98/0x1130 linux-6.0-rc7/net/ipv4/fib_semantics.c:961
+> >>     fib_table_delete+0x5f3/0xa40 linux-6.0-rc7/net/ipv4/fib_trie.c:1753
+> >>     inet_rtm_delroute+0x2b3/0x380 linux-6.0-rc7/net/ipv4/fib_frontend.c:874
+> >>
+> >> Separate nexthop objects are mutually exclusive with the legacy
+> >> multipath spec. Fix fib_nh_match to return if the config for the
+> >> to be deleted route contains a multipath spec while the fib_info
+> >> is using a nexthop object.
+> > 
+> > Cool bug... Managed to reproduce with:
+> > 
+> >  # ip nexthop add id 1 blackhole
+> >  # ip route add 192.0.2.0/24 nhid 1
+> >  # ip route del 192.0.2.0/24 nexthop via 198.51.100.1 nexthop via 198.51.100.2
+> 
+> that's what I did as well.
 
-The real problem is that replies may not reach the vger lists:
+:)
 
-Subject: BOUNCE linux-kernel@vger.kernel.org: Header field too long (>8192)
+> 
+> > 
+> > Maybe add to tools/testing/selftests/net/fib_nexthops.sh ?
+> 
+> I have one in my tree, but in my tests nothing blew up or threw an error
+> message. It requires KASAN to be enabled otherwise the test does not
+> trigger anything.
 
-But the originals somehow ended up on lore?
+That's fine. At least our team is running this test as part of
+regression on a variety of machines, some of which run a debug kernel
+with KASAN enabled. The system knows to fail a test if a splat was
+emitted to the kernel log.
 
-https://lore.kernel.org/lkml/20221005214844.2699-1-Jason@zx2c4.com/
+> 
+> > 
+> > Checked IPv6 and I don't think we can hit it there, but I will double
+> > check tomorrow morning.
+> > 
+> >>
+> >> Fixes: 493ced1ac47c ("ipv4: Allow routes to use nexthop objects")
+> >> Reported-by: Gwangun Jung <exsociety@gmail.com>
+> >> Signed-off-by: David Ahern <dsahern@kernel.org>
+> >> ---
+> >>  net/ipv4/fib_semantics.c | 4 ++++
+> >>  1 file changed, 4 insertions(+)
+> >>
+> 
+> > 
+> > There is already such a check above for the non-multipath check, maybe
+> > we can just move it up to cover both cases? Something like:
+> > 
+> > diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+> > index 2dc97583d279..e9a7f70a54df 100644
+> > --- a/net/ipv4/fib_semantics.c
+> > +++ b/net/ipv4/fib_semantics.c
+> > @@ -888,13 +888,13 @@ int fib_nh_match(struct net *net, struct fib_config *cfg, struct fib_info *fi,
+> >  		return 1;
+> >  	}
+> >  
+> > +	/* cannot match on nexthop object attributes */
+> > +	if (fi->nh)
+> > +		return 1;
+> 
+> that should work as well. I went with the simplest change that would
+> definitely not have a negative impact on backports.
 
--- 
-Kees Cook
+Ha, I see this hunk was added by 6bf92d70e690b. Given how overzealous
+the AUTOSEL bot is, I don't expect this fix to be missing from stable
+kernels. If you also blame 6bf92d70e690b (given it was apparently
+incomplete), then it makes it clear to anyone doing the backport that
+6bf92d70e690b is needed as well.
+
+I prefer having the check at the beginning because a) It would have
+avoided this bug b) It directly follows the 'cfg->fc_nh_id' check,
+making it clear that we never match if nexthop ID was not specified, but
+we got a FIB info with a nexthop object.
+
+> 
+> 
+> > +
+> >  	if (cfg->fc_oif || cfg->fc_gw_family) {
+> >  		struct fib_nh *nh;
+> >  
+> > -		/* cannot match on nexthop object attributes */
+> > -		if (fi->nh)
+> > -			return 1;
+> > -
+> >  		nh = fib_info_nh(fi, 0);
+> >  		if (cfg->fc_encap) {
+> >  			if (fib_encap_match(net, cfg->fc_encap_type,
+> 
