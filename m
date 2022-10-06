@@ -2,297 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E8525F5DA6
-	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 02:22:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F5BF5F5DC4
+	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 02:31:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229513AbiJFAWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Oct 2022 20:22:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46490 "EHLO
+        id S229544AbiJFAbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Oct 2022 20:31:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229587AbiJFAWm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 20:22:42 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCD5F7F108;
-        Wed,  5 Oct 2022 17:22:40 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id u21so648474edi.9;
-        Wed, 05 Oct 2022 17:22:40 -0700 (PDT)
+        with ESMTP id S229555AbiJFAbK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 20:31:10 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9960585A8E
+        for <netdev@vger.kernel.org>; Wed,  5 Oct 2022 17:31:09 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id j71so467512pge.2
+        for <netdev@vger.kernel.org>; Wed, 05 Oct 2022 17:31:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=YrkLvKdrdMOrx+cpYZ6CCA8HBjDrdOZUKoe/NVUCeX8=;
-        b=PQSC/5sXml0GmV4o0TCZ+lhd9SyG9zg2SOIiylfARmjl0WZZVWcwZVRX5xBcwjsYIR
-         lzDnOPZd2N3D0ZtbQ54YQAzlv+eo7IcMFRf9o5NgTeCyurzUZkrtUXGFsuu+6Hw55HNI
-         8KZVSmiuUuVB3hyoJRDBQxj0D9DKYAi29Qphs+UuX6gqojFFhGnf48okaKeAjn2+ixtK
-         6++Ga0KglUFqTDKWsbZROwYM18W4rHpy9WwAMwsS4yauDGj4gV+gZXY7oyuw5ZIsxRvl
-         mwtlm075a8lCcRaFvN1FZDEqqFeRHWlYbGiV9S/JySWMtpT3kboz7rGTKGNnFSbPXAsr
-         SA+g==
+        d=fastly.com; s=google;
+        h=user-agent:in-reply-to:content-transfer-encoding
+         :content-disposition:mime-version:references:message-id:subject:cc
+         :to:from:date:from:to:cc:subject:date;
+        bh=tLxHZ4CcgYDIFFbopH9F9PJl1cN7HOhyUtM5x1PUDR4=;
+        b=xhUjWuqLjGV249kMFhiGiZ7hkj07wuYO7+WoWfMkfM26lNqCX7bOWKgt9Hsfgkv5F/
+         kaLg1Y85bmpWROTAptlau05D7tK8eQFCIQ42InP0rcvU++VHcTifAYbW7Um3t9UzQe8D
+         2WVx7eUpKZiJzxUAYW4cfy4CzG++FjVK3gkgs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=YrkLvKdrdMOrx+cpYZ6CCA8HBjDrdOZUKoe/NVUCeX8=;
-        b=zs/XWlfJJFn0kiF7+ldwn9ZuuUnRR+KfrA8XZp16L1C6RnCJUZ8SIAjXboFgt0KpBX
-         ggbwJwwk0qkZQG0nWhTlexF77fTgSBh2HtXshw4TSxTp2DrD1fAK55qrm7aN1/UikCG4
-         KXtx7n1GXY28bi5OdjTb1VvOd3Ak8x1M2KWzPp01wAbLEFsADI0A4zIwGsllXonFg9ve
-         nZpU+MBzG3RFBSnDhuyujif69bfdeUs9bq5yvkXJiz29vpZZ2FSt7H1eA0n1aOzCPYF/
-         8xU23vCdQIEcHImR6lHmWwMl2pOibov9RZz/rxquxDqOqq2Q2KvSCAJpcvYrR0Ht/vv7
-         jDTQ==
-X-Gm-Message-State: ACrzQf3mUrqYibf9wda5+HOGd+qj4pyMVm9scZ1/hJpNQKXqDBRVHHHa
-        tEKWSLl6DP4HlkB5bauz3ppWQfnZjmendBLeBuk=
-X-Google-Smtp-Source: AMsMyM5MLJaB/37lbJo9y2m85z0H3Urw9XGP7TMXJoBuGaeFKG6ktkAPOYzHkLfx0huCG7yvGXrJG2pupXW/bPqkyCo=
-X-Received: by 2002:a05:6402:518e:b0:452:49bc:179f with SMTP id
- q14-20020a056402518e00b0045249bc179fmr2159039edd.224.1665015759216; Wed, 05
- Oct 2022 17:22:39 -0700 (PDT)
+        h=user-agent:in-reply-to:content-transfer-encoding
+         :content-disposition:mime-version:references:message-id:subject:cc
+         :to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=tLxHZ4CcgYDIFFbopH9F9PJl1cN7HOhyUtM5x1PUDR4=;
+        b=q0DrcKa+WnYVdEgmzyWztR9fMzfnzkDSFturl5k2OJxm5WcjFlAS+B4y6JeuX3kWJD
+         EdwHMXNd/TJcwJLnsu/Ktbee+Uf4StKlWAxyuK8GKo+YbMrYrhJeWd+xygI8olpZxeeV
+         QSVlr0bHI6+vf7jCy6PZ6KpA6Ev2oQsE4etVntBC/LucAhI0KDiec2er/lls9ep1+82d
+         J49xTQwCqUQ0tE409dw1p4NDEUZAFAOQhcCIpTNpikkkNJWJQTMMIeGz8ynsZJBQ99l7
+         C+cvlLlt6OIICv9I1lkPHYVPHmgxdWLkUEdx0l61z/Zlr+eCdz8Lnbhto0Zq0B5SjVOQ
+         omVg==
+X-Gm-Message-State: ACrzQf2MJ8H4QZsgevy9pPPHpt34Jkp0fC1OwAwe4fjF3POZfreFAWeB
+        250aOO4i6Kkg+QnmbOcK98quew==
+X-Google-Smtp-Source: AMsMyM5VNa55z0S2bhemdn039W+kQslBsY/aq25sKZ3XrLbAlo3GNGKvcT1fEiWPkPiZEkxcGnAXxA==
+X-Received: by 2002:a05:6a00:194a:b0:55a:a604:28fc with SMTP id s10-20020a056a00194a00b0055aa60428fcmr1988517pfk.47.1665016269023;
+        Wed, 05 Oct 2022 17:31:09 -0700 (PDT)
+Received: from fastly.com (c-73-223-190-181.hsd1.ca.comcast.net. [73.223.190.181])
+        by smtp.gmail.com with ESMTPSA id n63-20020a17090a2cc500b0020ad7678ba0sm1677683pjd.3.2022.10.05.17.31.07
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 05 Oct 2022 17:31:08 -0700 (PDT)
+Date:   Wed, 5 Oct 2022 17:31:05 -0700
+From:   Joe Damato <jdamato@fastly.com>
+To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, anthony.l.nguyen@intel.com,
+        jesse.brandeburg@intel.com, maciej.fijalkowski@intel.com
+Subject: Re: [next-queue v2 2/4] i40e: Record number TXes cleaned during NAPI
+Message-ID: <20221006003104.GA30279@fastly.com>
+References: <1665004913-25656-1-git-send-email-jdamato@fastly.com>
+ <1665004913-25656-3-git-send-email-jdamato@fastly.com>
+ <0cdcc8ee-e28d-f3cc-a65a-6c54ee7ee03e@intel.com>
 MIME-Version: 1.0
-References: <20221004231143.19190-1-daniel@iogearbox.net> <20221004231143.19190-2-daniel@iogearbox.net>
-In-Reply-To: <20221004231143.19190-2-daniel@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 5 Oct 2022 17:22:27 -0700
-Message-ID: <CAEf4BzYo4um9WHCgJvNVwLPVS-vmEORPgKBBKN-Gmbe=fVgS+Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 01/10] bpf: Add initial fd-based API to attach tc
- BPF programs
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, razor@blackwall.org, ast@kernel.org,
-        andrii@kernel.org, martin.lau@linux.dev, john.fastabend@gmail.com,
-        joannelkoong@gmail.com, memxor@gmail.com, toke@redhat.com,
-        joe@cilium.io, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <0cdcc8ee-e28d-f3cc-a65a-6c54ee7ee03e@intel.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 4, 2022 at 4:12 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> This work refactors and adds a lightweight extension to the tc BPF ingress
-> and egress data path side for allowing BPF programs via an fd-based attach /
-> detach API. The main goal behind this work which we also presented at LPC [0]
-> this year is to eventually add support for BPF links for tc BPF programs in
-> a second step, thus this prep work is required for the latter which allows
-> for a model of safe ownership and program detachment. Given the vast rise
-> in tc BPF users in cloud native / Kubernetes environments, this becomes
-> necessary to avoid hard to debug incidents either through stale leftover
-> programs or 3rd party applications stepping on each others toes. Further
-> details for BPF link rationale in next patch.
->
-> For the current tc framework, there is no change in behavior with this change
-> and neither does this change touch on tc core kernel APIs. The gist of this
-> patch is that the ingress and egress hook gets a lightweight, qdisc-less
-> extension for BPF to attach its tc BPF programs, in other words, a minimal
-> tc-layer entry point for BPF. As part of the feedback from LPC, there was
-> a suggestion to provide a name for this infrastructure to more easily differ
-> between the classic cls_bpf attachment and the fd-based API. As for most,
-> the XDP vs tc layer is already the default mental model for the pkt processing
-> pipeline. We refactored this with an xtc internal prefix aka 'express traffic
-> control' in order to avoid to deviate too far (and 'express' given its more
-> lightweight/faster entry point).
->
-> For the ingress and egress xtc points, the device holds a cache-friendly array
-> with programs. Same as with classic tc, programs are attached with a prio that
-> can be specified or auto-allocated through an idr, and the program return code
-> determines whether to continue in the pipeline or to terminate processing.
-> With TC_ACT_UNSPEC code, the processing continues (as the case today). The goal
-> was to have maximum compatibility to existing tc BPF programs, so they don't
-> need to be adapted. Compatibility to call into classic tcf_classify() is also
-> provided in order to allow successive migration or both to cleanly co-exist
-> where needed given its one logical layer. The fd-based API is behind a static
-> key, so that when unused the code is also not entered. The struct xtc_entry's
-> program array is currently static, but could be made dynamic if necessary at
-> a point in future. Desire has also been expressed for future work to adapt
-> similar framework for XDP to allow multi-attach from in-kernel side, too.
->
-> Tested with tc-testing selftest suite which all passes, as well as the tc BPF
-> tests from the BPF CI.
->
->   [0] https://lpc.events/event/16/contributions/1353/
->
-> Co-developed-by: Nikolay Aleksandrov <razor@blackwall.org>
-> Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
-> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> ---
->  MAINTAINERS                    |   4 +-
->  include/linux/bpf.h            |   1 +
->  include/linux/netdevice.h      |  14 +-
->  include/linux/skbuff.h         |   4 +-
->  include/net/sch_generic.h      |   2 +-
->  include/net/xtc.h              | 181 ++++++++++++++++++++++
->  include/uapi/linux/bpf.h       |  35 ++++-
->  kernel/bpf/Kconfig             |   1 +
->  kernel/bpf/Makefile            |   1 +
->  kernel/bpf/net.c               | 274 +++++++++++++++++++++++++++++++++
->  kernel/bpf/syscall.c           |  24 ++-
->  net/Kconfig                    |   5 +
->  net/core/dev.c                 | 262 +++++++++++++++++++------------
->  net/core/filter.c              |   4 +-
->  net/sched/Kconfig              |   4 +-
->  net/sched/sch_ingress.c        |  48 +++++-
->  tools/include/uapi/linux/bpf.h |  35 ++++-
->  17 files changed, 769 insertions(+), 130 deletions(-)
->  create mode 100644 include/net/xtc.h
->  create mode 100644 kernel/bpf/net.c
->
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index e55a4d47324c..bb63d8d000ea 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -3850,13 +3850,15 @@ S:      Maintained
->  F:     kernel/trace/bpf_trace.c
->  F:     kernel/bpf/stackmap.c
->
-> -BPF [NETWORKING] (tc BPF, sock_addr)
-> +BPF [NETWORKING] (xtc & tc BPF, sock_addr)
->  M:     Martin KaFai Lau <martin.lau@linux.dev>
->  M:     Daniel Borkmann <daniel@iogearbox.net>
->  R:     John Fastabend <john.fastabend@gmail.com>
->  L:     bpf@vger.kernel.org
->  L:     netdev@vger.kernel.org
->  S:     Maintained
-> +F:     include/net/xtc.h
-> +F:     kernel/bpf/net.c
->  F:     net/core/filter.c
->  F:     net/sched/act_bpf.c
->  F:     net/sched/cls_bpf.c
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 9e7d46d16032..71e5f43db378 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -1473,6 +1473,7 @@ struct bpf_prog_array_item {
->         union {
->                 struct bpf_cgroup_storage *cgroup_storage[MAX_BPF_CGROUP_STORAGE_TYPE];
->                 u64 bpf_cookie;
-> +               u32 bpf_priority;
+On Wed, Oct 05, 2022 at 07:16:56PM -0500, Samudrala, Sridhar wrote:
+> On 10/5/2022 4:21 PM, Joe Damato wrote:
+> >Update i40e_clean_tx_irq to take an out parameter (tx_cleaned) which stores
+> >the number TXs cleaned.
+> >
+> >Likewise, update i40e_clean_xdp_tx_irq and i40e_xmit_zc to do the same.
+> >
+> >Care has been taken to avoid changing the control flow of any functions
+> >involved.
+> >
+> >Signed-off-by: Joe Damato <jdamato@fastly.com>
+> >---
+> >  drivers/net/ethernet/intel/i40e/i40e_txrx.c | 16 +++++++++++-----
+> >  drivers/net/ethernet/intel/i40e/i40e_xsk.c  | 15 +++++++++++----
+> >  drivers/net/ethernet/intel/i40e/i40e_xsk.h  |  3 ++-
+> >  3 files changed, 24 insertions(+), 10 deletions(-)
+> >
+> >diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> >index b97c95f..a2cc98e 100644
+> >--- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> >+++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> >@@ -923,11 +923,13 @@ void i40e_detect_recover_hung(struct i40e_vsi *vsi)
+> >   * @vsi: the VSI we care about
+> >   * @tx_ring: Tx ring to clean
+> >   * @napi_budget: Used to determine if we are in netpoll
+> >+ * @tx_cleaned: Out parameter set to the number of TXes cleaned
+> >   *
+> >   * Returns true if there's any budget left (e.g. the clean is finished)
+> >   **/
+> >  static bool i40e_clean_tx_irq(struct i40e_vsi *vsi,
+> >-			      struct i40e_ring *tx_ring, int napi_budget)
+> >+			      struct i40e_ring *tx_ring, int napi_budget,
+> >+			      unsigned int *tx_cleaned)
+> >  {
+> >  	int i = tx_ring->next_to_clean;
+> >  	struct i40e_tx_buffer *tx_buf;
+> >@@ -1026,7 +1028,7 @@ static bool i40e_clean_tx_irq(struct i40e_vsi *vsi,
+> >  	i40e_arm_wb(tx_ring, vsi, budget);
+> >  	if (ring_is_xdp(tx_ring))
+> >-		return !!budget;
+> >+		goto out;
+> >  	/* notify netdev of completed buffers */
+> >  	netdev_tx_completed_queue(txring_txq(tx_ring),
+> >@@ -1048,6 +1050,8 @@ static bool i40e_clean_tx_irq(struct i40e_vsi *vsi,
+> >  		}
+> >  	}
+> >+out:
+> >+	*tx_cleaned = total_packets;
+> >  	return !!budget;
+> >  }
+> >@@ -2689,10 +2693,12 @@ int i40e_napi_poll(struct napi_struct *napi, int budget)
+> >  			       container_of(napi, struct i40e_q_vector, napi);
+> >  	struct i40e_vsi *vsi = q_vector->vsi;
+> >  	struct i40e_ring *ring;
+> >+	bool tx_clean_complete = true;
+> >  	bool clean_complete = true;
+> >  	bool arm_wb = false;
+> >  	int budget_per_ring;
+> >  	int work_done = 0;
+> >+	unsigned int tx_cleaned = 0;
+> >  	if (test_bit(__I40E_VSI_DOWN, vsi->state)) {
+> >  		napi_complete(napi);
+> >@@ -2704,11 +2710,11 @@ int i40e_napi_poll(struct napi_struct *napi, int budget)
+> >  	 */
+> >  	i40e_for_each_ring(ring, q_vector->tx) {
+> >  		bool wd = ring->xsk_pool ?
+> >-			  i40e_clean_xdp_tx_irq(vsi, ring) :
+> >-			  i40e_clean_tx_irq(vsi, ring, budget);
+> >+			  i40e_clean_xdp_tx_irq(vsi, ring, &tx_cleaned) :
+> >+			  i40e_clean_tx_irq(vsi, ring, budget, &tx_cleaned);
+> >  		if (!wd) {
+> >-			clean_complete = false;
+> >+			clean_complete = tx_clean_complete = false;
+> >  			continue;
+> >  		}
+> >  		arm_wb |= ring->arm_wb;
+> >diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> >index 790aaeff..f98ce7e4 100644
+> >--- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> >+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> >@@ -530,18 +530,22 @@ static void i40e_set_rs_bit(struct i40e_ring *xdp_ring)
+> >   * i40e_xmit_zc - Performs zero-copy Tx AF_XDP
+> >   * @xdp_ring: XDP Tx ring
+> >   * @budget: NAPI budget
+> >+ * @tx_cleaned: Out parameter of the TX packets processed
+> >   *
+> >   * Returns true if the work is finished.
+> >   **/
+> >-static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
+> >+static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget,
+> >+			 unsigned int *tx_cleaned)
+> >  {
+> >  	struct xdp_desc *descs = xdp_ring->xsk_pool->tx_descs;
+> >  	u32 nb_pkts, nb_processed = 0;
+> >  	unsigned int total_bytes = 0;
+> >  	nb_pkts = xsk_tx_peek_release_desc_batch(xdp_ring->xsk_pool, budget);
+> >-	if (!nb_pkts)
+> >+	if (!nb_pkts) {
+> >+		*tx_cleaned = 0;
+> >  		return true;
+> >+	}
+> >  	if (xdp_ring->next_to_use + nb_pkts >= xdp_ring->count) {
+> >  		nb_processed = xdp_ring->count - xdp_ring->next_to_use;
+> >@@ -558,6 +562,7 @@ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
+> >  	i40e_update_tx_stats(xdp_ring, nb_pkts, total_bytes);
+> >+	*tx_cleaned = nb_pkts;
+> 
+> With XDP, I don't think we should count these as tx_cleaned packets. These are transmitted
+> packets. The tx_cleaned would be the xsk_frames counter in i40e_clean_xdp_tx_irq
+> May be we need 2 counters for xdp.
 
-So this looks unfortunate and unnecessary. You are basically saying no
-BPF cookie for this new TC/XTC/TCX thingy. But there is no need, we
-already reserve 2 * 8 bytes for cgroup_storage, so make bpf_cookie and
-bpf_prio co-exist with
+I think there's two issues you are describing, which are separate in my
+mind.
 
-union {
-    struct bpf_cgroup_storage *cgroup_storage[MAX_BPF_CGROUP_STORAGE_TYPE];
-    struct {
-        u64 bpf_cookie;
-        u32 bpf_priority;
-    };
-}
+  1.) The name "tx_cleaned", and
+  2.) Whether nb_pkts is the right thing to write as the out param.
 
-or is there some problem with that?
+For #1: I'm OK to change the name if that's the blocker here; please
+suggest a suitable alternative that you'll accept.
 
->         };
->  };
->
+For #2: nb_pkts is, IMO, the right value to bubble up to the tracepoint because
+nb_pkts affects clean_complete in i40e_napi_poll which in turn determines
+whether or not polling mode is entered.
 
-[...]
+The purpose of the tracepoint is to determine when/why/how you are entering
+polling mode, so if nb_pkts plays a role in that calculation, it's the
+right number to output.
 
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 51b9aa640ad2..de1f5546bcfe 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -1025,6 +1025,8 @@ enum bpf_attach_type {
->         BPF_PERF_EVENT,
->         BPF_TRACE_KPROBE_MULTI,
->         BPF_LSM_CGROUP,
-> +       BPF_NET_INGRESS,
-> +       BPF_NET_EGRESS,
 
-I can bikeshedding as well :) Shouldn't this be TC/TCX-specific attach
-types? Wouldn't BPF_[X]TC[X]_INGRESS/BPF_[X]TC[X]_EGRESS be more
-appropriate? Because when you think about it XDP is also NET, right,
-so I find NET meaning really TC a bit confusing.
-
->         __MAX_BPF_ATTACH_TYPE
->  };
->
-> @@ -1399,14 +1401,20 @@ union bpf_attr {
->         };
->
->         struct { /* anonymous struct used by BPF_PROG_ATTACH/DETACH commands */
-> -               __u32           target_fd;      /* container object to attach to */
-> +               union {
-> +                       __u32   target_fd;      /* container object to attach to */
-> +                       __u32   target_ifindex; /* target ifindex */
-> +               };
-
-this makes total sense (target can be FD or ifindex, we have that in
-LINK_CREATE as well)
-
->                 __u32           attach_bpf_fd;  /* eBPF program to attach */
->                 __u32           attach_type;
->                 __u32           attach_flags;
-> -               __u32           replace_bpf_fd; /* previously attached eBPF
-> +               union {
-> +                       __u32   attach_priority;
-> +                       __u32   replace_bpf_fd; /* previously attached eBPF
->                                                  * program to replace if
->                                                  * BPF_F_REPLACE is used
->                                                  */
-> +               };
-
-But this union seems 1) unnecessary (we don't have to save those 4
-bytes), but also 2) wouldn't it make sense to support replace_bpf_fd
-with BPF_F_REPLACE (at given prio, if I understand correctly). It's
-equivalent situation to what we had in cgroup programs land before we
-got bpf_link. So staying consistent makes sense, unless I missed
-something?
-
->         };
->
->         struct { /* anonymous struct used by BPF_PROG_TEST_RUN command */
-> @@ -1452,7 +1460,10 @@ union bpf_attr {
->         } info;
->
->         struct { /* anonymous struct used by BPF_PROG_QUERY command */
-> -               __u32           target_fd;      /* container object to query */
-> +               union {
-> +                       __u32   target_fd;      /* container object to query */
-> +                       __u32   target_ifindex; /* target ifindex */
-> +               };
->                 __u32           attach_type;
->                 __u32           query_flags;
->                 __u32           attach_flags;
-> @@ -6038,6 +6049,19 @@ struct bpf_sock_tuple {
->         };
->  };
->
-> +/* (Simplified) user return codes for tc prog type.
-> + * A valid tc program must return one of these defined values. All other
-> + * return codes are reserved for future use. Must remain compatible with
-> + * their TC_ACT_* counter-parts. For compatibility in behavior, unknown
-> + * return codes are mapped to TC_NEXT.
-> + */
-> +enum tc_action_base {
-> +       TC_NEXT         = -1,
-> +       TC_PASS         = 0,
-> +       TC_DROP         = 2,
-> +       TC_REDIRECT     = 7,
-> +};
-> +
->  struct bpf_xdp_sock {
->         __u32 queue_id;
->  };
-> @@ -6804,6 +6828,11 @@ struct bpf_flow_keys {
->         __be32  flow_label;
->  };
->
-> +struct bpf_query_info {
-
-this is something that's returned from BPF_PROG_QUERY command, right?
-Shouldn't it be called bpf_prog_query_info or something like that?
-Just "query_info" is very generic, IMO, but if we are sure that there
-will never be any other "QUERY" command, I guess it might be fine.
-
-> +       __u32 prog_id;
-> +       __u32 prio;
-> +};
-> +
->  struct bpf_func_info {
->         __u32   insn_off;
->         __u32   type_id;
-
-[...]
+> >  	return nb_pkts < budget;
+> >  }
+> >@@ -581,10 +586,12 @@ static void i40e_clean_xdp_tx_buffer(struct i40e_ring *tx_ring,
+> >   * i40e_clean_xdp_tx_irq - Completes AF_XDP entries, and cleans XDP entries
+> >   * @vsi: Current VSI
+> >   * @tx_ring: XDP Tx ring
+> >+ * @tx_cleaned: out parameter of number of TXes cleaned
+> >   *
+> >   * Returns true if cleanup/tranmission is done.
+> >   **/
+> >-bool i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi, struct i40e_ring *tx_ring)
+> >+bool i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi, struct i40e_ring *tx_ring,
+> >+			   unsigned int *tx_cleaned)
+> >  {
+> >  	struct xsk_buff_pool *bp = tx_ring->xsk_pool;
+> >  	u32 i, completed_frames, xsk_frames = 0;
+> >@@ -634,7 +641,7 @@ bool i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi, struct i40e_ring *tx_ring)
+> >  	if (xsk_uses_need_wakeup(tx_ring->xsk_pool))
+> >  		xsk_set_tx_need_wakeup(tx_ring->xsk_pool);
+> >-	return i40e_xmit_zc(tx_ring, I40E_DESC_UNUSED(tx_ring));
+> >+	return i40e_xmit_zc(tx_ring, I40E_DESC_UNUSED(tx_ring), tx_cleaned);
+> >  }
+> >  /**
+> >diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.h b/drivers/net/ethernet/intel/i40e/i40e_xsk.h
+> >index 821df24..396ed11 100644
+> >--- a/drivers/net/ethernet/intel/i40e/i40e_xsk.h
+> >+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.h
+> >@@ -30,7 +30,8 @@ int i40e_xsk_pool_setup(struct i40e_vsi *vsi, struct xsk_buff_pool *pool,
+> >  bool i40e_alloc_rx_buffers_zc(struct i40e_ring *rx_ring, u16 cleaned_count);
+> >  int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget);
+> >-bool i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi, struct i40e_ring *tx_ring);
+> >+bool i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi, struct i40e_ring *tx_ring,
+> >+			   unsigned int *tx_cleaned);
+> >  int i40e_xsk_wakeup(struct net_device *dev, u32 queue_id, u32 flags);
+> >  int i40e_realloc_rx_bi_zc(struct i40e_vsi *vsi, bool zc);
+> >  void i40e_clear_rx_bi_zc(struct i40e_ring *rx_ring);
+> 
