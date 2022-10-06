@@ -2,69 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 014E65F60FD
-	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 08:18:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 617175F60E8
+	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 08:15:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230003AbiJFGSj convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 6 Oct 2022 02:18:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38276 "EHLO
+        id S230038AbiJFGPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Oct 2022 02:15:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229712AbiJFGSg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 02:18:36 -0400
-X-Greylist: delayed 5521 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 05 Oct 2022 23:18:34 PDT
-Received: from mail.kv.npu.gov.ua (h15.195-230-133.ukrpack.net [195.230.133.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E31978B2C1;
-        Wed,  5 Oct 2022 23:18:33 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.kv.npu.gov.ua (Postfix) with ESMTP id B3DDF2068E83;
-        Thu,  6 Oct 2022 01:46:17 +0300 (EEST)
-Received: from mail.kv.npu.gov.ua ([127.0.0.1])
-        by localhost (mail.kv.npu.gov.ua [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id kuaU4-fv3mUP; Thu,  6 Oct 2022 01:46:17 +0300 (EEST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.kv.npu.gov.ua (Postfix) with ESMTP id 5BF4C2068F4B;
-        Thu,  6 Oct 2022 01:10:18 +0300 (EEST)
-X-Virus-Scanned: amavisd-new at kv.npu.gov.ua
-Received: from mail.kv.npu.gov.ua ([127.0.0.1])
-        by localhost (mail.kv.npu.gov.ua [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 1sClteigz3WQ; Thu,  6 Oct 2022 01:10:18 +0300 (EEST)
-Received: from mail.kv.npu.gov.ua (localhost [127.0.0.1])
-        by mail.kv.npu.gov.ua (Postfix) with ESMTP id E1E622066953;
-        Thu,  6 Oct 2022 00:43:49 +0300 (EEST)
-Date:   Thu, 6 Oct 2022 00:43:49 +0300 (EEST)
-From:   MacKenzie Scott <tetiev@kv.npu.gov.ua>
-Reply-To: MacKenzie Scott <mackenziescott@vanstrend.com>
-Message-ID: <981660482.28630.1665006229118.JavaMail.zimbra@kv.npu.gov.ua>
-Subject: Re:
+        with ESMTP id S229801AbiJFGPe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 02:15:34 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91C0032BB2
+        for <netdev@vger.kernel.org>; Wed,  5 Oct 2022 23:15:33 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id bh13so1016648pgb.4
+        for <netdev@vger.kernel.org>; Wed, 05 Oct 2022 23:15:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=kj+F1FdX6TBtLaOY1xSPqr94l0+FKqRuo16DwkvlxEE=;
+        b=PObcqm3IzCwc757kBP2Q7Eyui7OzKd/12rm7vRG+wpuxZ4mPelGW9iVt8ASLClcGaf
+         D3KrdSGtpb/ZV+IvTxZgb1+dsp2/FhGzS256KwEj7fHrEK8KNoqkWLFDpxorI6BpyVp3
+         E+uCHLTgsr0JxeR4WB++S26SFRCGOZhEzxYos=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=kj+F1FdX6TBtLaOY1xSPqr94l0+FKqRuo16DwkvlxEE=;
+        b=6JBxqHvEr/5eof37n03ITzXgnUWmG/OEt6WM+NSHHxlE7W0j4wUxAiqylbsh7Cmml7
+         JDP0rBWaYUgMXz6Uhut1tRtqfHBLMwRL12VAys4bWXHjl5HIB8eMYNhavPLW1bDcTQq+
+         namxzeiYKrAwoGpgUXrykUEaLcOTASm/DBYZDfFJzkLCHbFWnmiT9F1ArfL/5ySAqVbk
+         CPT3OyNvx/hFKegXy37guWhrpfWsTnHY2Uo4kbN7/A+fMeUVLiLdcQBi4uOkoFWUqhsw
+         A+0hcwJvDSbRq8d7rSZSyXp+lxmC/lZ+HsPaLtnfNnqeI4edz925BbB6vWzOuukNTiUq
+         1XIA==
+X-Gm-Message-State: ACrzQf2O8r2yWR0fm7F1i2uUceHc/iZEiXckSWmI2vUsWiMKg+DsUPNf
+        b0TjeKrH5X/lgb78MG/+6KCw5Q==
+X-Google-Smtp-Source: AMsMyM5V4+F5de7QUB2CRoC6OFZ0KmWRsmdDah9tMdCebp8K/z8shaAJiN3iu+cTBS4Xzu2mmaYqPQ==
+X-Received: by 2002:a05:6a00:124e:b0:561:b241:f47f with SMTP id u14-20020a056a00124e00b00561b241f47fmr3570089pfi.72.1665036932903;
+        Wed, 05 Oct 2022 23:15:32 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id i15-20020a63584f000000b004393c5a8006sm873327pgm.75.2022.10.05.23.15.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Oct 2022 23:15:32 -0700 (PDT)
+Date:   Wed, 5 Oct 2022 23:15:31 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-api@vger.kernel.org
+Subject: Re: [PATCH v1 0/5] treewide cleanup of random integer usage
+Message-ID: <202210052310.BF756EBEBE@keescook>
+References: <20221005214844.2699-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-X-Originating-IP: [69.16.157.96]
-X-Mailer: Zimbra 8.8.15_GA_4372 (zclient/8.8.15_GA_4372)
-Thread-Index: LwheVvBw86hvghwHx2pB6dc1/F72fg==
-Thread-Topic: 
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: Yes, score=7.3 required=5.0 tests=BAYES_99,BAYES_999,
-        MISSING_HEADERS,PDS_RDNS_DYNAMIC_FP,RDNS_DYNAMIC,REPLYTO_WITHOUT_TO_CC,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: *  0.2 BAYES_999 BODY: Bayes spam probability is 99.9 to 100%
-        *      [score: 1.0000]
-        *  3.5 BAYES_99 BODY: Bayes spam probability is 99 to 100%
-        *      [score: 1.0000]
-        *  1.0 MISSING_HEADERS Missing To: header
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  1.0 RDNS_DYNAMIC Delivered to internal network by host with
-        *      dynamic-looking rDNS
-        *  1.6 REPLYTO_WITHOUT_TO_CC No description available.
-        *  0.0 PDS_RDNS_DYNAMIC_FP RDNS_DYNAMIC with FP steps
-X-Spam-Level: *******
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221005214844.2699-1-Jason@zx2c4.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Oct 05, 2022 at 11:48:39PM +0200, Jason A. Donenfeld wrote:
+> I've CC'd get_maintainers.pl, which is a pretty big list. Probably some
+> portion of those are going to bounce, too, and everytime you reply to
 
+The real problem is that replies may not reach the vger lists:
 
-こんにちは、最愛の人、私はマッケンジー・スコットです。Amazon の CEO で創設者の元妻です。スコットの財団から世界中の慈善団体、個人、大学に 40 億ドルを寄付し、COVID-19 のパンデミックで経済的に苦しんでいる人々とあなたを即座に支援します。 幸運な当選者の 1 人です。1 億 800 万ドル相当の寄付金を用意しています。興味がある場合は、詳細について私に連絡してください。よろしく、マッケンジー・スコット。
+Subject: BOUNCE linux-kernel@vger.kernel.org: Header field too long (>8192)
+
+But the originals somehow ended up on lore?
+
+https://lore.kernel.org/lkml/20221005214844.2699-1-Jason@zx2c4.com/
+
+-- 
+Kees Cook
