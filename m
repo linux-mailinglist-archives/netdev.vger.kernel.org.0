@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 839025F5F84
-	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 05:21:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D440F5F5F82
+	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 05:21:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230153AbiJFDVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Oct 2022 23:21:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42952 "EHLO
+        id S230217AbiJFDVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Oct 2022 23:21:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230090AbiJFDUU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 23:20:20 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB1AA1FCF4;
-        Wed,  5 Oct 2022 20:19:58 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id 13so1737332ejn.3;
-        Wed, 05 Oct 2022 20:19:58 -0700 (PDT)
+        with ESMTP id S230095AbiJFDUV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Oct 2022 23:20:21 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7C0137184;
+        Wed,  5 Oct 2022 20:20:03 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id qn17so1820761ejb.0;
+        Wed, 05 Oct 2022 20:20:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=VmNVAada1Zq8HNTCy4z/9PlG8SO/4rla6NMn8F5NE+g=;
-        b=o56ekJYEn62hBFnztt0zNtWmCZ0te1Zm8/zaqYxecb7V2C6YMv8OTeTrf6trhwKiBy
-         oC+3XsdJwQk4BdvUlXFfLRhNSXzafu6HSo4jkzIDsdpxX/CSMkd9Tu3PrupjUddfbBVv
-         U+ILvbR/JTyBJ1/tkjkRdt39V5lWOdgItL92UfReWl4DJKYsSsDrbWwwF+3jQgkzJ9Kk
-         f+S/HBrDeLSTpihnUWfaEjOPuceTa5xFOmrs02jg2jRk4ZLDV/WvjUTx+foNs+IM2ajC
-         S2zIlJ4bg71h7Ekjhzki7EzDfmYO/BxqNnoOv8sNN9r9tiidV5W7m+lOIELgIF8R30QL
-         30nQ==
+        bh=kl6vLfdqF2ET91PW5YnTTZdZIlk/zQZbqzIMjm66yoQ=;
+        b=LCGVxeH+I4troi2RSQVpOlQ4NXWo4rUpqYlePzuFwhfd3YM1bvNwKSeMEjZI0q24SP
+         +qtaaZ3R0ASA1zYCA5habCPd53q7y2OOhMZdeuXeVSlceNjJcu+r60+BZ7xbkCZZG02W
+         fzRxSPk9odnHvPGk0Hh3dKWNBrgvEshZgIRsoerQv7DQ9KqX8hvGIMAx7KoiFezmg2BV
+         PvK8gPWyoQW5VD+dxvSetip9GHk5SVZ+Be+WYKHRz6XAtKZraACH0ApGUcON4zKHdOQ8
+         cv43eQvR0hPXZXQJ7ReYg9KnyHC+yjEWxN1z1QL/I6YWcF00RZQs6heW7xJz0/iqukLc
+         TdgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=VmNVAada1Zq8HNTCy4z/9PlG8SO/4rla6NMn8F5NE+g=;
-        b=f1UxkurpdYyIddh4OIe+0H263U/2TWwPPiGl+xT1z9dv39Yg1qvSfqZ/wALMBr9ihi
-         4UnEoK6csDn32vPxHcVvEgky4HI8kZaZFIevFC3Q3mwBP6Ua1V4EJaknqCTlei/5MZoE
-         Pwfww3LuH5EOaHymvmkyL+T+PE0+1rbgMpbAV5ySdpkyhhUx/2/sgK1rKdBjtflu6OeI
-         6G94hChh3lKSB0qimaPnsprtb7ue3fnd0sJXEv+sjHslCIQDl/IigK4R9O+EMn8+Trys
-         LGlvFVFJ+1a0cjM5gAOleRzJ3ckHmKG89628DYkmmGaY8AQM3vb8cRn7ZeTVGrAjyvPL
-         cpTw==
-X-Gm-Message-State: ACrzQf2gXH2FX6IM70va1Vu3gP1rcgWNGVoi0A/cjlS8l6QlneGEOF9+
-        U0owBjDNpt9cGxmwIjCMwQb2DfoLY5zauO7qI6M=
-X-Google-Smtp-Source: AMsMyM644jT/L1Vf0M6Hf5hVc2rbEQobD4fFaRo6MnDIV7ka6HWQ2Q1pvWWvmnUGyEHZtTmLE7sxJgve/oQ6JSAMygA=
-X-Received: by 2002:a17:907:3fa9:b0:782:ed33:df8d with SMTP id
- hr41-20020a1709073fa900b00782ed33df8dmr2182156ejc.745.1665026398368; Wed, 05
- Oct 2022 20:19:58 -0700 (PDT)
+        bh=kl6vLfdqF2ET91PW5YnTTZdZIlk/zQZbqzIMjm66yoQ=;
+        b=hO44sABYmL35LI6TlXR3SAtTyZ8PVEB2SkEYh+SDhMssvY1gihBds1ZSm7EhPwuY0X
+         5mzW++ClvG2BrAwVXslSrchePd5dZScZq08c7WOsPzEQVMnBjUdLBQb2Fe0yFGx+/Yyf
+         PDzv5Dti0RyLEjNCf1rE77mtFc402bY2wtDr0GeTOzPN7DRJHVQXx9zUP9EcnrkhuYY7
+         QLR9IdslXJByET5T7BXsqpjqTbgLikkP+MQ9vichQiQ4tQxV55gM8GZlE4T50n2IqKEy
+         N1Enu7KibtdATzCvmN5yxzxUuLK7V0LYJbT/9urgMj/FUTnMx35I+ezuo67CChZbCdjL
+         k9CA==
+X-Gm-Message-State: ACrzQf3iyDwbjVw3k+SOvyKJUWs+yqiIBAVGKYKA7MfER+RuBNlPXAhM
+        XeAsbJUUlo3txRoW9nQbwgN2eoHv4SyTZ6kYbWE=
+X-Google-Smtp-Source: AMsMyM52AMLw4wsHPohN75FiHI1iNrPiQ09Y5txe8ACilx95hcRB8aI46GleO2bO3O6vJHWyCBcozYbTfkATrZ3ogi4=
+X-Received: by 2002:a17:907:72c1:b0:783:34ce:87b9 with SMTP id
+ du1-20020a17090772c100b0078334ce87b9mr2186260ejc.115.1665026401784; Wed, 05
+ Oct 2022 20:20:01 -0700 (PDT)
 MIME-Version: 1.0
-References: <20221004231143.19190-1-daniel@iogearbox.net> <20221004231143.19190-9-daniel@iogearbox.net>
-In-Reply-To: <20221004231143.19190-9-daniel@iogearbox.net>
+References: <20221004231143.19190-1-daniel@iogearbox.net> <20221004231143.19190-11-daniel@iogearbox.net>
+In-Reply-To: <20221004231143.19190-11-daniel@iogearbox.net>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 5 Oct 2022 20:19:43 -0700
-Message-ID: <CAEf4BzbRKMJRZvF2L+jfMPHo1WFmGFcQ-GPWAD9s=v+r+V3o=Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 08/10] libbpf: Add support for BPF tc link
+Date:   Wed, 5 Oct 2022 20:19:49 -0700
+Message-ID: <CAEf4Bzapj27OtLZPo9Gd8F0LWj+VKiXfRwPhN0uWip+WxhyyVA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 10/10] bpf, selftests: Add various BPF tc link selftests
 To:     Daniel Borkmann <daniel@iogearbox.net>
 Cc:     bpf@vger.kernel.org, razor@blackwall.org, ast@kernel.org,
         andrii@kernel.org, martin.lau@linux.dev, john.fastabend@gmail.com,
@@ -70,179 +70,42 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Tue, Oct 4, 2022 at 4:12 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
 >
-> Implement tc BPF link support for libbpf. The bpf_program__attach_fd()
-> API has been refactored slightly in order to pass bpf_link_create_opts.
-> A new bpf_program__attach_tc() has been added on top of this which allows
-> for passing ifindex and prio parameters.
+> Add a big batch of selftest to extend test_progs with various tc link,
+> attach ops and old-style tc BPF attachments via libbpf APIs. Also test
+> multi-program attachments including mixing the various attach options:
 >
-> New sections are tc/ingress and tc/egress which map to BPF_NET_INGRESS
-> and BPF_NET_EGRESS, respectively.
+>   # ./test_progs -t tc_link
+>   #179     tc_link_base:OK
+>   #180     tc_link_detach:OK
+>   #181     tc_link_mix:OK
+>   #182     tc_link_opts:OK
+>   #183     tc_link_run_base:OK
+>   #184     tc_link_run_chain:OK
+>   Summary: 6/0 PASSED, 0 SKIPPED, 0 FAILED
+>
+> All new and existing test cases pass.
 >
 > Co-developed-by: Nikolay Aleksandrov <razor@blackwall.org>
 > Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
 > Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 > ---
->  tools/lib/bpf/bpf.c      |  4 ++++
->  tools/lib/bpf/bpf.h      |  3 +++
->  tools/lib/bpf/libbpf.c   | 31 ++++++++++++++++++++++++++-----
->  tools/lib/bpf/libbpf.h   |  2 ++
->  tools/lib/bpf/libbpf.map |  1 +
->  5 files changed, 36 insertions(+), 5 deletions(-)
+
+Few small things.
+
+First, please make sure to not use CHECK and CHECK_FAIL.
+
+Second, it's kind of sad that we need to still check
+ENABLE_ATOMICS_TESTS guards. I'd either not do that at all, or I
+wonder if it's cleaner to do it in one header and just re-#define
+__sync_fetch_and_xxx to be no-ops. This will make compilation not
+break. And then tests will just be failing at runtime, which is fine,
+because they can be denylisted. WDYT?
+
+>  .../selftests/bpf/prog_tests/tc_link.c        | 756 ++++++++++++++++++
+>  .../selftests/bpf/progs/test_tc_link.c        |  43 +
+>  2 files changed, 799 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/tc_link.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_tc_link.c
 >
-> diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
-> index d1e338ac9a62..f73fdecbb5f8 100644
-> --- a/tools/lib/bpf/bpf.c
-> +++ b/tools/lib/bpf/bpf.c
-> @@ -752,6 +752,10 @@ int bpf_link_create(int prog_fd, int target_fd,
 
-should we rename target_fd into more generic "target" maybe?
-
->                 if (!OPTS_ZEROED(opts, tracing))
->                         return libbpf_err(-EINVAL);
->                 break;
-> +       case BPF_NET_INGRESS:
-> +       case BPF_NET_EGRESS:
-> +               attr.link_create.tc.priority = OPTS_GET(opts, tc.priority, 0);
-> +               break;
->         default:
->                 if (!OPTS_ZEROED(opts, flags))
->                         return libbpf_err(-EINVAL);
-> diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
-> index 96de58fecdbc..937583421327 100644
-> --- a/tools/lib/bpf/bpf.h
-> +++ b/tools/lib/bpf/bpf.h
-> @@ -334,6 +334,9 @@ struct bpf_link_create_opts {
->                 struct {
->                         __u64 cookie;
->                 } tracing;
-> +               struct {
-> +                       __u32 priority;
-> +               } tc;
->         };
->         size_t :0;
->  };
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 184ce1684dcd..6eb33e4324ad 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -8474,6 +8474,8 @@ static const struct bpf_sec_def section_defs[] = {
->         SEC_DEF("kretsyscall+",         KPROBE, 0, SEC_NONE, attach_ksyscall),
->         SEC_DEF("usdt+",                KPROBE, 0, SEC_NONE, attach_usdt),
->         SEC_DEF("tc",                   SCHED_CLS, 0, SEC_NONE),
-> +       SEC_DEF("tc/ingress",           SCHED_CLS, BPF_NET_INGRESS, SEC_ATTACHABLE_OPT),
-> +       SEC_DEF("tc/egress",            SCHED_CLS, BPF_NET_EGRESS, SEC_ATTACHABLE_OPT),
-
-btw, we could implement optionally the ability to declaratively
-specify priority, so that you could do SEC("tc/ingress:10") or some
-syntax like that, if that seems useful in practice. If you expect that
-prio is going to be dynamic most of the time, then it might not make
-sense to add unnecessary parsing code
-
->         SEC_DEF("classifier",           SCHED_CLS, 0, SEC_NONE),
->         SEC_DEF("action",               SCHED_ACT, 0, SEC_NONE),
->         SEC_DEF("tracepoint+",          TRACEPOINT, 0, SEC_NONE, attach_tp),
-> @@ -11238,11 +11240,10 @@ static int attach_lsm(const struct bpf_program *prog, long cookie, struct bpf_li
->  }
->
->  static struct bpf_link *
-> -bpf_program__attach_fd(const struct bpf_program *prog, int target_fd, int btf_id,
-> -                      const char *target_name)
-> +bpf_program__attach_fd_opts(const struct bpf_program *prog,
-> +                           const struct bpf_link_create_opts *opts,
-> +                           int target_fd, const char *target_name)
-
-let's move opts to be last argument or second to last before
-"target_name", whichever makes more sense to you
-
-also fd part is a lie, and whole double-underscore naming is also bad
-here because this is internal helper. Let's rename this to something
-like bpf_prog_create_link()?
-
->  {
-> -       DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts,
-> -                           .target_btf_id = btf_id);
->         enum bpf_attach_type attach_type;
->         char errmsg[STRERR_BUFSIZE];
->         struct bpf_link *link;
-> @@ -11260,7 +11261,7 @@ bpf_program__attach_fd(const struct bpf_program *prog, int target_fd, int btf_id
->         link->detach = &bpf_link__detach_fd;
->
->         attach_type = bpf_program__expected_attach_type(prog);
-> -       link_fd = bpf_link_create(prog_fd, target_fd, attach_type, &opts);
-> +       link_fd = bpf_link_create(prog_fd, target_fd, attach_type, opts);
->         if (link_fd < 0) {
->                 link_fd = -errno;
->                 free(link);
-> @@ -11273,6 +11274,16 @@ bpf_program__attach_fd(const struct bpf_program *prog, int target_fd, int btf_id
->         return link;
->  }
->
-> +static struct bpf_link *
-> +bpf_program__attach_fd(const struct bpf_program *prog, int target_fd, int btf_id,
-> +                      const char *target_name)
-
-there seems to be only one use case where we have btf_id != 0, so I
-think we should just use LIBBPF_OPTS() explicitly in that one case and
-for all other current uses of bpf_program__attach_fd() just use opts
-variant and pass NULL
-
-> +{
-> +       DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts,
-> +                           .target_btf_id = btf_id);
-> +
-> +       return bpf_program__attach_fd_opts(prog, &opts, target_fd, target_name);
-> +}
-> +
->  struct bpf_link *
->  bpf_program__attach_cgroup(const struct bpf_program *prog, int cgroup_fd)
->  {
-> @@ -11291,6 +11302,16 @@ struct bpf_link *bpf_program__attach_xdp(const struct bpf_program *prog, int ifi
->         return bpf_program__attach_fd(prog, ifindex, 0, "xdp");
->  }
->
-> +struct bpf_link *bpf_program__attach_tc(const struct bpf_program *prog,
-> +                                       int ifindex, __u32 priority)
-> +{
-> +       DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts,
-> +                           .tc.priority = priority);
-> +
-
-nit: please just use shorter LIBBPF_OPTS in new code, nice and short
-
-> +       /* target_fd/target_ifindex use the same field in LINK_CREATE */
-> +       return bpf_program__attach_fd_opts(prog, &opts, ifindex, "tc");
-> +}
-> +
->  struct bpf_link *bpf_program__attach_freplace(const struct bpf_program *prog,
->                                               int target_fd,
->                                               const char *attach_func_name)
-> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> index eee883f007f9..7e64cec9a1ba 100644
-> --- a/tools/lib/bpf/libbpf.h
-> +++ b/tools/lib/bpf/libbpf.h
-> @@ -645,6 +645,8 @@ bpf_program__attach_netns(const struct bpf_program *prog, int netns_fd);
->  LIBBPF_API struct bpf_link *
->  bpf_program__attach_xdp(const struct bpf_program *prog, int ifindex);
->  LIBBPF_API struct bpf_link *
-> +bpf_program__attach_tc(const struct bpf_program *prog, int ifindex, __u32 priority);
-> +LIBBPF_API struct bpf_link *
->  bpf_program__attach_freplace(const struct bpf_program *prog,
->                              int target_fd, const char *attach_func_name);
->
-> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> index 0c94b4862ebb..473ed71829c6 100644
-> --- a/tools/lib/bpf/libbpf.map
-> +++ b/tools/lib/bpf/libbpf.map
-> @@ -378,4 +378,5 @@ LIBBPF_1.1.0 {
->                 user_ring_buffer__reserve_blocking;
->                 user_ring_buffer__submit;
->                 bpf_prog_detach_opts;
-> +               bpf_program__attach_tc;
-
-same about alphabetical order
-
->  } LIBBPF_1.0.0;
-
-> --
-> 2.34.1
->
+[...]
