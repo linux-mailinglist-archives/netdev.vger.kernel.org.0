@@ -2,133 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFF2E5F6D21
-	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 19:43:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A763B5F6D3A
+	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 19:47:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231789AbiJFRnK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Oct 2022 13:43:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43752 "EHLO
+        id S230493AbiJFRrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Oct 2022 13:47:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230039AbiJFRnD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 13:43:03 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83E72B40E8;
-        Thu,  6 Oct 2022 10:43:01 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4MjzLB6Ky2z9t0M;
-        Thu,  6 Oct 2022 19:42:58 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Fq7hDkCWiCvc; Thu,  6 Oct 2022 19:42:58 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4MjzLB4vNFz9syB;
-        Thu,  6 Oct 2022 19:42:58 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 84B508B78B;
-        Thu,  6 Oct 2022 19:42:58 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id mbcF0I0xUYNn; Thu,  6 Oct 2022 19:42:58 +0200 (CEST)
-Received: from [192.168.233.27] (po19210.idsi0.si.c-s.fr [192.168.233.27])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 4E53E8B77D;
-        Thu,  6 Oct 2022 19:42:56 +0200 (CEST)
-Message-ID: <6396875c-146a-acf5-dd9e-7f93ba1b4bc3@csgroup.eu>
-Date:   Thu, 6 Oct 2022 19:42:55 +0200
+        with ESMTP id S229636AbiJFRrL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 13:47:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5DA3B5174
+        for <netdev@vger.kernel.org>; Thu,  6 Oct 2022 10:47:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1665078428;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=B+y8wduK3QfMgdOHpN9KWre0ENB0HamAmdiK58oyOXc=;
+        b=RLAXeLd2TueE7VGzNaYEZak6yApL8TVo5pOoCiIryXB8S2pNCqouYNHe4fFm7UK8+Bk8zn
+        J1xdWgDA36Wpg0i/sjNWESmFQxTLwk2BuMqzP4H0nR6hp/v0ZQuE0qm96HquyA/OQ6H7og
+        Lwe8P43S8yyTqsnnEM5S2jiPrGCstPk=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-308-XCWdwAC5PVGLhKn9-A3Rjw-1; Thu, 06 Oct 2022 13:47:07 -0400
+X-MC-Unique: XCWdwAC5PVGLhKn9-A3Rjw-1
+Received: by mail-ej1-f72.google.com with SMTP id xc12-20020a170907074c00b007416699ea14so1535556ejb.19
+        for <netdev@vger.kernel.org>; Thu, 06 Oct 2022 10:47:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :to:subject:cc:user-agent:mime-version:date:message-id:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=B+y8wduK3QfMgdOHpN9KWre0ENB0HamAmdiK58oyOXc=;
+        b=gKF3KV2groTJJhRaGqaYfxTWVObpVUvfHYwhGeuVItRot1m5QSN9TIXzLfyfseY2lv
+         e5je/J2SVq0hGUwwN9HVqU6Ix39VtLDriSufLb8qvSpWa81JXXWEDk1ujZVkap1A+wcX
+         26JXwH+9qufTsynMHzXUtgssSDfKD+v9u46B36SZ9YuJoJp/xZvqujVWpQQJppyqUiyi
+         wrExPEqe1SywaDhb91fhp/ftvjM5lb6CgaHIKg7l+Ey/VWSeeoRnhOChw29RAOp8lGAO
+         jVYD+nNzHR9PXIHN1vALk986ND9KMd4O3ZcIJninIzCVRor3boJbcY3DuewpPQ3YDuY5
+         D7qA==
+X-Gm-Message-State: ACrzQf1ssNG7UVi9fNyTZdFbX/0x4pkExxqzJkmgeX/tWkX2XkDYm9bu
+        iPTcQS8utzU4Bl0RK7tqbYxqH6/y8WfTDtJiay11m3hUykJlDGKKw7IJVqZ/Ystbt1EQPtPRkhn
+        fFTVbqapLAXeOWaWP
+X-Received: by 2002:a17:906:794b:b0:787:bb35:84cd with SMTP id l11-20020a170906794b00b00787bb3584cdmr846943ejo.428.1665078425975;
+        Thu, 06 Oct 2022 10:47:05 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM6lg0yzavx+mGgIRcjGqtXmVn5OTg1yYRu7aB9cVtFvCh+rxiWW6NISbmvxPn0HjI4X1N5jXw==
+X-Received: by 2002:a17:906:794b:b0:787:bb35:84cd with SMTP id l11-20020a170906794b00b00787bb3584cdmr846906ejo.428.1665078425568;
+        Thu, 06 Oct 2022 10:47:05 -0700 (PDT)
+Received: from [192.168.41.81] (83-90-141-187-cable.dk.customer.tdc.net. [83.90.141.187])
+        by smtp.gmail.com with ESMTPSA id y18-20020a056402359200b00458e40e31c8sm6373631edc.15.2022.10.06.10.47.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 Oct 2022 10:47:04 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <ebbb99a1-c3c8-6d97-4bb3-03f28a0a74b1@redhat.com>
+Date:   Thu, 6 Oct 2022 19:47:02 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.1
-Subject: Re: [PATCH v3 3/5] treewide: use get_random_u32() when possible
-Content-Language: fr-FR
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "patches@lists.linux.dev" <patches@lists.linux.dev>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        =?UTF-8?Q?Christoph_B=c3=b6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>, Christoph Hellwig <hch@lst.de>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dave Airlie <airlied@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Westphal <fw@strlen.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Helge Deller <deller@gmx.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Hugh Dickins <hughd@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "James E . J . Bottomley" <jejb@linux.ibm.com>,
-        Jan Kara <jack@suse.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Jens Axboe <axboe@kernel.dk>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        KP Singh <kpsingh@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Russell King <linux@armlinux.org.uk>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Thomas Graf <tgraf@suug.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        WANG Xuerui <kernel@xen0n.name>, Will Deacon <will@kernel.org>,
-        Yury Norov <yury.norov@gmail.com>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "kasan-dev@googlegroups.com" <kasan-dev@googlegroups.com>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
-        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "loongarch@lists.linux.dev" <loongarch@lists.linux.dev>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgens?= =?UTF-8?Q?en?= 
-        <toke@toke.dk>, Chuck Lever <chuck.lever@oracle.com>,
-        Jan Kara <jack@suse.cz>
-References: <20221006165346.73159-1-Jason@zx2c4.com>
- <20221006165346.73159-4-Jason@zx2c4.com>
- <848ed24c-13ef-6c38-fd13-639b33809194@csgroup.eu>
- <CAHmME9raQ4E00r9r8NyWJ17iSXE_KniTG0onCNAfMmfcGar1eg@mail.gmail.com>
- <f10fcfbf-2da6-cf2d-6027-fbf8b52803e9@csgroup.eu>
-In-Reply-To: <f10fcfbf-2da6-cf2d-6027-fbf8b52803e9@csgroup.eu>
+ Thunderbird/102.3.0
+Cc:     brouer@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        xdp-hints@xdp-project.net, larysa.zaremba@intel.com,
+        memxor@gmail.com, Lorenzo Bianconi <lorenzo@kernel.org>,
+        mtahhan@redhat.com,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        dave@dtucker.co.uk, Magnus Karlsson <magnus.karlsson@intel.com>,
+        bjorn@kernel.org
+Subject: Re: [PATCH RFCv2 bpf-next 00/18] XDP-hints: XDP gaining access to HW
+ offload hints via BTF
+To:     sdf@google.com, Jesper Dangaard Brouer <jbrouer@redhat.com>
+References: <166256538687.1434226.15760041133601409770.stgit@firesoul>
+ <Yzt2YhbCBe8fYHWQ@google.com>
+ <35fcfb25-583a-e923-6eee-e8bbcc19db17@redhat.com>
+ <CAKH8qBuYVk7QwVOSYrhMNnaKFKGd7M9bopDyNp6-SnN6hSeTDQ@mail.gmail.com>
+ <982b9125-f849-5e1c-0082-7239b8c8eebf@redhat.com>
+ <Yz3QNM7061WmXDHS@google.com>
+Content-Language: en-US
+In-Reply-To: <Yz3QNM7061WmXDHS@google.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -137,74 +96,335 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-Le 06/10/2022 à 19:31, Christophe Leroy a écrit :
+On 05/10/2022 20.43, sdf@google.com wrote:
+> On 10/05, Jesper Dangaard Brouer wrote:
 > 
-> 
-> Le 06/10/2022 à 19:24, Jason A. Donenfeld a écrit :
->> Hi Christophe,
->>
->> On Thu, Oct 6, 2022 at 11:21 AM Christophe Leroy
->> <christophe.leroy@csgroup.eu> wrote:
->>> Le 06/10/2022 à 18:53, Jason A. Donenfeld a écrit :
->>>> The prandom_u32() function has been a deprecated inline wrapper around
->>>> get_random_u32() for several releases now, and compiles down to the
->>>> exact same code. Replace the deprecated wrapper with a direct call to
->>>> the real function. The same also applies to get_random_int(), which is
->>>> just a wrapper around get_random_u32().
->>>>
->>>> Reviewed-by: Kees Cook <keescook@chromium.org>
->>>> Acked-by: Toke Høiland-Jørgensen <toke@toke.dk> # for sch_cake
->>>> Acked-by: Chuck Lever <chuck.lever@oracle.com> # for nfsd
->>>> Reviewed-by: Jan Kara <jack@suse.cz> # for ext4
->>>> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
->>>> ---
->>>
->>>> diff --git a/arch/powerpc/kernel/process.c 
->>>> b/arch/powerpc/kernel/process.c
->>>> index 0fbda89cd1bb..9c4c15afbbe8 100644
->>>> --- a/arch/powerpc/kernel/process.c
->>>> +++ b/arch/powerpc/kernel/process.c
->>>> @@ -2308,6 +2308,6 @@ void notrace __ppc64_runlatch_off(void)
->>>>    unsigned long arch_align_stack(unsigned long sp)
->>>>    {
->>>>        if (!(current->personality & ADDR_NO_RANDOMIZE) && 
->>>> randomize_va_space)
->>>> -             sp -= get_random_int() & ~PAGE_MASK;
->>>> +             sp -= get_random_u32() & ~PAGE_MASK;
->>>>        return sp & ~0xf;
->>>
->>> Isn't that a candidate for prandom_u32_max() ?
->>>
->>> Note that sp is deemed to be 16 bytes aligned at all time.
->>
->> Yes, probably. It seemed non-trivial to think about, so I didn't. But
->> let's see here... maybe it's not too bad:
->>
->> If PAGE_MASK is always ~(PAGE_SIZE-1), then ~PAGE_MASK is
->> (PAGE_SIZE-1), so prandom_u32_max(PAGE_SIZE) should yield the same
->> thing? Is that accurate? And holds across platforms (this comes up a
->> few places)? If so, I'll do that for a v4.
->>
-> 
-> On powerpc it is always (from arch/powerpc/include/asm/page.h) :
-> 
-> /*
->   * Subtle: (1 << PAGE_SHIFT) is an int, not an unsigned long. So if we
->   * assign PAGE_MASK to a larger type it gets extended the way we want
->   * (i.e. with 1s in the high bits)
->   */
-> #define PAGE_MASK      (~((1 << PAGE_SHIFT) - 1))
-> 
-> #define PAGE_SIZE        (1UL << PAGE_SHIFT)
-> 
-> 
-> So it would work I guess.
+>> On 04/10/2022 20.26, Stanislav Fomichev wrote:
+>> > On Tue, Oct 4, 2022 at 2:29 AM Jesper Dangaard Brouer
+>> > <jbrouer@redhat.com> wrote:
+>> > >
+>> > >
+>> > > On 04/10/2022 01.55, sdf@google.com wrote:
+>> > > > On 09/07, Jesper Dangaard Brouer wrote:
+>> > > > > This patchset expose the traditional hardware offload hints to XDP and
+>> > > > > rely on BTF to expose the layout to users.
+>> > > >
+>> > > > > Main idea is that the kernel and NIC drivers simply defines the struct
+>> > > > > layouts they choose to use for XDP-hints. These XDP-hints structs gets
+>> > > > > naturally and automatically described via BTF and implicitly exported to
+>> > > > > users. NIC drivers populate and records their own BTF ID as the last
+>> > > > > member in XDP metadata area (making it easily accessible by AF_XDP
+>> > > > > userspace at a known negative offset from packet data start).
+>> > > >
+>> > > > > Naming conventions for the structs (xdp_hints_*) is used such that
+>> > > > > userspace can find and decode the BTF layout and match against the
+>> > > > > provided BTF IDs. Thus, no new UAPI interfaces are needed for  exporting
+>> > > > > what XDP-hints a driver supports.
+>> > > >
+>> > > > > The patch "i40e: Add xdp_hints_union" introduce the idea of creating a
+>> > > > > union named "xdp_hints_union" in every driver, which contains all
+>> > > > > xdp_hints_* struct this driver can support. This makes it easier/quicker
+>> > > > > to find and parse the relevant BTF types.  (Seeking input before fixing
+>> > > > > up all drivers in patchset).
+>> > > >
+[...]
+>> >
+>> > > > b. Each device defines much denser <device>_xdp_rx_hints struct with the
+>> > > >      metadata that it supports
+>> > >
+>> > > Thus, the NIC device is limited to what is defined in UAPI struct
+>> > > xdp_rx_hints.  Again this limits innovation.
+>> >
+>> > I guess what I'm missing from your series is the bpf/userspace side.
+>> > Do you have an example on the bpf side that will work for, say,
+>> > xdp_hints_ixgbe_timestamp?
 
-But taking into account that sp must remain 16 bytes aligned, would it 
-be better to do something like ?
+We have been consuming this from AF_XDP and decoding BTF in userspace
+and checking BTF IDs in our userspace apps.  I will try to codeup
+consuming this from XDP BPF-progs to get a better feel for that.
 
-	sp -= prandom_u32_max(PAGE_SIZE >> 4) << 4;
+>> >
+>> > Suppose, you pass this custom hints btf_id via xdp_md as proposed,
+> 
+>> I just want to reiterate why we place btf_full_id at the "end inline".
+>> This makes it easily available for AF_XDP to consume.  Plus, we already
+>> have to write info into this metadata cache-line anyway, thus it's
+>> almost free.  Moving bpf_full_id into xdp_md, will require expanding
+>> both xdp_buff and xdp_frame (+ extra store for converting
+>> buff-to-frame). If AF_XDP need this btf_full_id the BPF-prog _could_
+>> move/copy it from xdp_md to metadata, but that will just waste cycles,
+>> why not just store it once in a known location.
+> 
+>> One option, for convenience, would be to map xdp_md->bpf_full_id to load
+>> the btf_full_id value from the metadata.  But that would essentially be
+>> syntax-sugar and adds UAPI.
+> 
+>> > what's the action on the bpf side to consume this?
+>> >
+>> > If (ctx_hints_btf_id == xdp_hints_ixgbe_timestamp_btf_id /* supposedly
+>> > populated at runtime by libbpf? */) {
+> 
+>> See e.g. bpf_core_type_id_kernel(struct xdp_hints_ixgbe_timestamp)
+>> AFAIK libbpf will make this a constant at load/setup time, and give us
+>> dead-code elimination.
+> 
+> Even with bpf_core_type_id_kernel() you still would have the following:
+> 
+>      if (ctx_hints_btf_id == bpf_core_type_id_kernel(struct xdp_hints_ixgbe)) {
+>      } else if (the same for every driver that has custom hints) {
+>      }
+> 
+> Toke has a good suggestion on hiding this behind a helper; either
+> pre-generated on the libbpf side or a kfunc. We should try to hide
+> this per-device logic if possible; otherwise we'll get to per-device
+> XDP programs that only work on some special deployments. 
+> OTOH, we'll probably get there with the hints anyway?
 
-	return sp;
+Well yes, hints is trying to let NIC driver innovate and export HW hints
+that are specific for a given driver.  Thus, we should allow code to get
+device specific hints.
 
+I do like this idea of hiding this behind something. Like libbpf could
+detect this and apply CO-RE tricks, e.g. based on the struct name
+starting with xdp_rx_hints___xxx and member rx_timestamp, it could scan
+entire system (all loaded modules) for xdp_rx_hints_* structs and find
+those that contain member rx_timestamp, and then expand that to the
+if-else-if statements matching against IDs and access rx_timestamp at
+correct offset.
+   Unfortunately this auto expansion will add code that isn't needed for
+a XDP BPF-prog loaded on a specific physical device (as some IDs will
+not be able to appear). For the veth case it is useful. Going back to
+ifindex, if a XDP BPF-prog do have ifindex, then we could limit the
+expansion to BTF layouts from that driver.  It just feels like a lot of
+syntax-sugar and magic to hide the driver name e.g.
+"xdp_hints_ixgbe_timestamp" in the C-code.
+
+
+>> >    // do something with rx_timestamp
+>> >    // also, handle xdp_hints_ixgbe and then xdp_hints_common ?
+>> > } else if (ctx_hints_btf_id == xdp_hints_ixgbe) {
+>> >    // do something else
+>> >    // plus explicitly handle xdp_hints_common here?
+>> > } else {
+>> >    // handle xdp_hints_common
+>> > }
+> 
+>> I added a BPF-helper that can tell us if layout if compatible with
+>> xdp_hints_common, which is basically the only UAPI the patchset 
+>> introduces.
+>> The handle xdp_hints_common code should be common.
+>> 
+>> I'm not super happy with the BPF-helper approach, so suggestions are
+>> welcome.  E.g. xdp_md/ctx->is_hint_common could be one approach and
+>> ctx->has_hint (ctx is often called xdp so it reads xdp->has_hint).
+>> 
+>> One feature I need from the BPF-helper is to "disable" the xdp_hints and
+>> allow the BPF-prog to use the entire metadata area for something else
+>> (avoiding it to be misintrepreted by next prog or after redirect).
+>> 
+> As mentioned in the previous emails, let's try to have a bpf side
+> example/selftest for the next round? 
+
+Yes, I do need to add BPF-prog examples and selftests.
+
+I am considering sending next round (still as RFC) without this, to show
+what Maryam and Magnus settled on for AF_XDP desc option flags.
+
+
+> I also feel like xdp_hints_common is
+> a bit distracting. It makes the common case easy and it hides the
+> discussion/complexity about per-device hints. Maybe we can drop this
+> common case at all? Why can't every driver has a custom hints struct?
+> If we agree that naming/size will be the same across them (and review
+> catches/guaranteed that), why do we even care about having common
+> xdp_hints_common struct?
+
+The xdp_hints_common struct is a stepping stone to making this easily
+consumable from C-code that need to generate SKBs and info for
+virtio_net 'hdr' desc.
+
+David Ahern have been begging me for years to just add this statically
+to xdp_frame.  I have been reluctant, because I think we can come up
+with a more flexible (less UAPI fixed) way, that both allows kerne-code
+and BPF-prog to access these fields.  I think of this approach as a
+compromise between these two users.
+
+  Meaning struct xdp_hints_common can be changed anytime in the kernel
+C-code and BPF-prog's must access area via BTF/CO-RE.
+
+
+>> > What I'd like to avoid is an xdp program targeting specific drivers.
+>> > Where possible, we should aim towards something like "if this device
+>> > has rx_timestamp offload -> use it without depending too much on
+>> > specific btf_ids.
+>> >
+> 
+>> I do understand your wish, and adding rx_timestamps to xdp_hints_common
+>> would be too easy (and IMHO wasting u64/8-bytes for all packets not
+>> needing this timestamp).  Hopefully we can come up with a good solution
+>> together.
+> 
+>> One idea would be to extend libbpf to lookup or translate struct name
+> 
+>>   struct xdp_hints_DRIVER_timestamp {
+>>     __u64 rx_timestamp;
+>>   } __attribute__((preserve_access_index));
+> 
+>> into e.g. xdp_hints_i40e_timestamp, if an ifindex was provided when 
+>> loading
+>> the XDP prog.  And the bpf_core_type_id_kernel() result of the struct
+>> returning id from xdp_hints_i40e_timestamp.
+> 
+>> But this ideas doesn't really work for the veth redirect use-case :-(
+>> As veth need to handle xdp_hints from other drivers.
+> 
+> Agreed. If we want redirect to work, then the parsing should be either
+> mostly pre-generated by libbpf to include all possible btf ids that
+> matter; or done similarly by a kfunc. The idea that we can pre-generate
+> per-device bpf program seems to be out of the window now?
+> 
+
+Hmm, the per-device thing could be an optimization that is performed if
+an ifindex have been provided.
+
+BUT for redirect to work, we do need to have the full BTF ID, to
+identify structs coming from other device drivers and their BTF layout.
+We have mentioned redirect into veth several times, but the same goes 
+for redirect into AF_XDP, that needs to identify the BTF layout.
+
+[...]
+>> > See above. I think even with your series, that btf_id info should also
+>> > come via netlink so the programs can query it before loading and do
+>> > the required adjustments. Otherwise, I'm not sure I understand what I
+>> > need to do with a btf_id that comes via xdp_md/xdp_frame. It seems too
+>> > late? I need to know them in advance to at least populate those ids
+>> > into the bpf program itself?
+> 
+>> Yes, we need to know these IDs in advance and can.  I don't think we need
+>> the netlink interface, as we can already read out the BTF layout and IDs
+>> today.  I coded it up in userspace, where the intented consumer is AF_XDP
+>> (as libbpf already does this itself).
+> 
+>> See this code:
+>>   - 
+>> https://github.com/xdp-project/bpf-examples/blob/master/BTF-playground/btf_module_ids.c
+>>   - 
+>> https://github.com/xdp-project/bpf-examples/blob/master/BTF-playground/btf_module_read.c
+> 
+> SG, if we can have some convention on the names where we can reliably
+> parse out all possible structs with the hints, let's rely solely on
+> vmlinux+vmlinux module btf.
+> 
+
+Yes, I am proposing convention on the struct BTF names to find 
+'xdp_hints_*' that the driver can produce.
+
+To make it quicker to find xdp_hints struct in a driver, I am also 
+proposing a 'union' that contains all the xdp_hints struct's.
+
+  - See "[PATCH 14/18] i40e: Add xdp_hints_union".
+
+The BTF effect of this is that each driver will have a xdp_hints_union 
+with same "name".  That points to all the other BTF IDs.
+
+I am wondering if we can leverage this for CO-RE relocations too.
+Then you can define your BPF-prog shadow union with the member 
+rx_timestamp (and __attribute__((preserve_access_index))) and let 
+CO-RE/libbpf do the offset adjustments. (But again we are back to which 
+driver BPF-prog are attached on and veth having to handle all possible 
+drivers)
+
+
+[...]
+>> > > >
+>> > > > All we need here is for libbpf to, again, do xdp_rx_hints ->
+>> > > > <device>_xdp_rx_hints translation before it evaluates
+>> > > > bpf_core_field_exists()?
+>> > > >
+>> > > > Thoughts? Any downsides? Am I missing something?
+>> > > >
+>> > >
+>> > > Well, the downside is primarily that this design limits innovation.
+>> > >
+>> > > Each time a NIC driver want to introduce a new hardware hint, they have
+>> > > to update the central UAPI xdp_rx_hints struct first.
+>> > >
+>> > > The design in the patchset is to open for innovation.  Driver can extend
+>> > > their own xdp_hints_<driver>_xxx struct(s).  They still have to land
+>> > > their patches upstream, but avoid mangling a central UAPI struct. As
+>> > > upstream we review driver changes and should focus on sane struct member
+>> > > naming(+size) especially if this "sounds" like a hint/feature that more
+>> > > driver are likely to support.  With help from BTF relocations, a new
+>> > > driver can support same hint/feature if naming(+size) match (without
+>> > > necessary the same offset in the struct).
+>> >
+>> > The opposite side of this approach is that we'll have 'ixgbe_hints'
+>> > with 'rx_timestamp' and 'mvneta_hints' with something like
+>> > 'rx_tstamp'.
+> 
+>> Well, as I wrote reviewers should ask drivers to use the same member 
+>> name.
+> 
+> SG!
+> 
+>> > > > Also, about the TX side: I feel like the same can be applied there,
+>> > > > the program works with xdp_tx_hints and libbpf will rewrite to
+>> > > > <device>_xdp_tx_hints. xdp_tx_hints might have fields like "has_tx_vlan:1";
+>> > > > those, presumably, can be relocatable by libbpf as well?
+>> > > >
+>> > >
+>> > > Good to think ahead for TX-side, even-though I think we should focus on
+>> > > landing RX-side first.
+>> > >
+>> > > I notice your naming xdp_rx_hints vs. xdp_tx_hints.  I have named the
+>> > > common struct xdp_hints_common, without a RX/TX direction indication.
+>> > > Maybe this is wrong of me, but my thinking was that most of the  common
+>> > > hints can be directly used as TX-side hints.  I'm hoping TX-side
+>> > > xdp-hints will need to do little-to-non adjustment, before using the
+>> > > hints as TX "instruction".  I'm hoping that XDP-redirect will just work
+>> > > and xmit driver can use XDP-hints area.
+>> > >
+>> > > Please correct me if I'm wrong.
+>> > > The checksum fields hopefully translates to similar TX offload "actions".
+>> > > The VLAN offload hint should translate directly to TX-side.
+>> > >
+>> > > I can easily be convinced we should name it xdp_hints_rx_common from the
+>> > > start, but then I will propose that xdp_hints_tx_common have the
+>> > > checksum and VLAN fields+flags at same locations, such that we don't
+>> > > take any performance hint for moving them to "TX-side" hints, making
+>> > > XDP-redirect just work.
+>> >
+>> > Might be good to think about this beforehand. I agree that most of the
+>> > layout should hopefully match. However once case that I'm interested
+>> > in is rx_timestamp vs tx_timestamp. For rx, I'm getting the timestamp
+>> > in the metadata; for tx, I'm merely setting a flag somewhere to
+>> > request it for async delivery later (I hope we plan to support that
+>> > for af_xdp?). So the layout might be completely different :-(
+>> >
+> 
+>> Yes, it is definitely in my plans to support handling at TX-completion
+>> time, so you can extract the TX-wire-timestamp.  This is easy for AF_XDP
+>> as it has the CQ (Completion Queue) step.
+> 
+>> I'm getting ahead of myself, but for XDP I imagine that driver will
+>> populate this xdp_tx_hint in DMA TX-completion function, and we can add
+>> a kfunc "not-a-real-hook" to xdp_return_frame that can run another XDP
+>> BPF-prog that can inspect the xdp_tx_hint in metadata.
+> 
+> Can we also place that xdp_tx_hint somewhere in the completion ring
+> for AF_XDP to consume?
+
+Yes, that is basically what I said above. This will be automatic/easy
+for AF_XDP as it has the CQ (Completion Queue) ring.  The packets in the
+completion ring will still contain the metadata area, which could have
+been populated with the TX-wire-timestamp.
+
+
+>> At this proposed kfunc xdp_return_frame call point, we likely cannot know
+>> what driver that produced the xdp_hints metadata either, and thus not 
+>> lock our design or BTF-reloacations to assume which driver is it loaded on.
+> 
+>> [... cut ... getting too long]
+
+--Jesper
 
