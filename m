@@ -2,246 +2,246 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 951E95F6D01
-	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 19:31:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAE175F6D04
+	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 19:32:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229527AbiJFRbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Oct 2022 13:31:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54226 "EHLO
+        id S229939AbiJFRcy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Oct 2022 13:32:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229610AbiJFRbI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 13:31:08 -0400
-Received: from FRA01-PR2-obe.outbound.protection.outlook.com (mail-eopbgr120041.outbound.protection.outlook.com [40.107.12.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82E0CA4BA5;
-        Thu,  6 Oct 2022 10:31:06 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HfW8MtdiA2DmeGqBAF5zdAwT18ZMAjGIZ5u/br5Zk82+x8qgRFNjBYdqUoVm8BOO0k1hoaMYXXIwRu5xfb1K7tttqxLJcveCd+efePOGlE9Fwx47Mg/OcLtA9rIM75qbummrLwkGLyzP0dVnaXJWtmbZavWc/00UmslDsBj/jQ8LkHsvI+V4n4mc0rFK695VKljsFFrkZg5oa/7msx530Q2Qr6EsZNf72el3kKIHnZYISBVuFL78+MrroZMJ7nhXzYUG5jQvimWz/ekaO4UzDH4PEN8P2QUXrv1ATVSLK3g1IRKuV+d9UH8eLWfK40TwgrtP4gzPJ/vHcbkWKKWarw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kBHgSn82zhLNDnFsZGAKTpJQpnlYJOysvEC5qhsu2go=;
- b=aZy9qBL4N4cHnYB0Sum5nsaUjmOrLHfVP8kq9o5wVd4pjnfYQVTkz48sPdq0EjDA8MGD4Bjj7YXXoCcWybK+lVhYVXic0xzAxrz2N7NQOsZyn1TFqVhJrdStJ42mzbQ3YQpJbUzRPBUeAs7Y9lbQ97Yv4TzjwEtDhsaxrjy04TZAnp2ZUsaNEkiqYCTvYLOs383Pj02qf4Hh9RlpP8syKPqsc2tuqPsk8gVz1f5m6jZYx77RGXLdDp8qZmgtpxKNJ/awBKiuZMQN8BQ6B1cZC3Kt9mYWxJwy8FnDvlaeaVn4TT9cxWDBhPPw6bW7aGmb/f/xoegdyWyUQmkCbvPbOg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=csgroup.eu; dmarc=pass action=none header.from=csgroup.eu;
- dkim=pass header.d=csgroup.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=csgroup.eu;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kBHgSn82zhLNDnFsZGAKTpJQpnlYJOysvEC5qhsu2go=;
- b=Nj1E7tRviuHTCh5OoRVT82L2cbUB8lYrwp5dt2epMOg+FD8odp5NSx1EZRLn5DDGwORC+k6RnBJsxrr/FSELsoyovZpxqb0lHJTUefGwkeDH7Bcv1jnfPN0WVPELLCROC/JurcKd3bArQ2SOvyCHBD6WTIQ+J6VFniupktXEi25eMMwWZsvsNbQeqBWu2R/c7G/m9r6T1jyiGesyT98kdio9OWsBqPJPq94Y2KSjsmvZUcMLd+WowMmxTjSycOgtjDdluKVf5iTRXy4krNsiOd7+U6/iWyrldAlZbLMlNLzYKbf5+lf/BIUf5ttPrd2U4SAMIb9V9intnJQ/c20wIw==
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
- by MR1P264MB1921.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:5::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5676.34; Thu, 6 Oct 2022 17:31:03 +0000
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::c854:380d:c901:45af]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::c854:380d:c901:45af%5]) with mapi id 15.20.5676.036; Thu, 6 Oct 2022
- 17:31:03 +0000
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "patches@lists.linux.dev" <patches@lists.linux.dev>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        =?utf-8?B?Q2hyaXN0b3BoIELDtmhtd2FsZGVy?= 
-        <christoph.boehmwalder@linbit.com>, Christoph Hellwig <hch@lst.de>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dave Airlie <airlied@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Westphal <fw@strlen.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Helge Deller <deller@gmx.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Hugh Dickins <hughd@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "James E . J . Bottomley" <jejb@linux.ibm.com>,
-        Jan Kara <jack@suse.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Jens Axboe <axboe@kernel.dk>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        KP Singh <kpsingh@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Russell King <linux@armlinux.org.uk>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Thomas Graf <tgraf@suug.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        WANG Xuerui <kernel@xen0n.name>, Will Deacon <will@kernel.org>,
-        Yury Norov <yury.norov@gmail.com>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "kasan-dev@googlegroups.com" <kasan-dev@googlegroups.com>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
-        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "loongarch@lists.linux.dev" <loongarch@lists.linux.dev>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        =?utf-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
-        Chuck Lever <chuck.lever@oracle.com>, Jan Kara <jack@suse.cz>
-Subject: Re: [PATCH v3 3/5] treewide: use get_random_u32() when possible
-Thread-Topic: [PATCH v3 3/5] treewide: use get_random_u32() when possible
-Thread-Index: AQHY2aRLUOmMOiRiqUe6k1BKDHReSa4BnNgAgAAAygCAAAHkAA==
-Date:   Thu, 6 Oct 2022 17:31:03 +0000
-Message-ID: <f10fcfbf-2da6-cf2d-6027-fbf8b52803e9@csgroup.eu>
-References: <20221006165346.73159-1-Jason@zx2c4.com>
- <20221006165346.73159-4-Jason@zx2c4.com>
- <848ed24c-13ef-6c38-fd13-639b33809194@csgroup.eu>
- <CAHmME9raQ4E00r9r8NyWJ17iSXE_KniTG0onCNAfMmfcGar1eg@mail.gmail.com>
-In-Reply-To: <CAHmME9raQ4E00r9r8NyWJ17iSXE_KniTG0onCNAfMmfcGar1eg@mail.gmail.com>
-Accept-Language: fr-FR, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.1
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=csgroup.eu;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: MRZP264MB2988:EE_|MR1P264MB1921:EE_
-x-ms-office365-filtering-correlation-id: fde2a9ab-0ffb-48ec-6c82-08daa7c08b1c
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: UsDRemlJL2LCwhr0DPfizsHS0RDWofpRVxb2/DxfeFldzJBJszaIIRCLJEEhhqdPMP5cAggvOG8Ifrj0MvMWsP5I/puOI5rgdLf7sjZVyqKsjTjFlt8MTdmzWJtIiz4r3OouMkC+yL9KGxjeEs3lAUQqJhnhLFwa/ybQprjdyUnR1dB9L1B4PEBVUpygDNaN6Cd/sgaRCCzCUmrJV0rl23q6m2w1JAXM+Qse2+zm26qWkVwc7XdurkhJabcum9cpSTMwN+JiwXwT+inQrjtgOWvR0v9lBeBznTau8e9zSJHp4fvXO8ZYI0DLdvRpOsiVO90qAhi0lsd4Ec/Tc58tjEQ7vXtyt7oPQyP5RHcWkx56mqxKp4a/7eX9h8gVDdjrC73xo+HpPSX8iNsEWlAo6J9egg8+F5NeTpE/Cx+aNYPKlFxhij6fMLrKcpWGCuuKNWGdHJPuRQcssi18S33ULeTmNlw/RkF7byvBNeUdhkoYBqPhReSF5CjcBy9X8LZICccr9seqg9db841IyNhBuOEgibABV4yWmlrOhI8zhKnn06QBvnd5IhugrqoU1jttXpNInRt85nTdsAJAZKATJtdr9vchvlD4zGsGQapCVIHy1gUCd9iJgnfQev7O9B/hOiKLPYfOWPZnwLh3FHxcWluw4SEffaQfjGjoCkzAwn0tgFyhfh6cWQtbftwCUfHt1aW0w42Tcd518X+jsVyycgpdDzZXkb2uT9+Hl6zZMPbxmYFuiLBsq7P7/tyyElwXKu8Wt87MKfb22r8BVJtopiwhQw9qYPf/SDHCtKsUjQ/IkV6EFgFVz71BAvtIgTI+l+RbZIsfmFRHTTzfJDx5yQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(366004)(136003)(39860400002)(396003)(451199015)(6506007)(31686004)(6512007)(53546011)(6486002)(2906002)(76116006)(478600001)(26005)(91956017)(4326008)(8676002)(6916009)(71200400001)(54906003)(316002)(7366002)(66446008)(66556008)(7336002)(7406005)(8936002)(41300700001)(64756008)(44832011)(7416002)(66476007)(66946007)(5660300002)(36756003)(38100700002)(122000001)(31696002)(86362001)(38070700005)(2616005)(186003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?OXRyeGxoZ3RXd1lTSDlKcUlJd1ROTnNTbUYwQWp0OUxPTzE4ZXJUaEw5eVBq?=
- =?utf-8?B?ZVYwUVRkMVFJSWNERU5mQS9yWjdlbU9HcnZMN2FjSlZwQ2srL1pqS3k1UE5F?=
- =?utf-8?B?U2EyQ0IvRzBDbktOSmtwOEwvZ3crZGl2NW1nY2YzWnppTjF1d0dZa1BHcjhW?=
- =?utf-8?B?ajlYV3JLdGJINlRWeCthZjUxSlZhcUNYLzVQK1YvWjVubXc2aktZOFVxWHJu?=
- =?utf-8?B?T21GcjBMVTVGcGpGejFEMXdKU0tXWHZ6b1JoblNsYVVmaGFoQVJZWnl0ckU1?=
- =?utf-8?B?a3dTcnVYeXdJcUpQOWlpNC9kNUU3dVlDUWdnMDZ4eWIyc0x1ZlBjWTBqU0po?=
- =?utf-8?B?ZUdQQnNTRnJPeXRnNkFqWWxsUnZJcHZDa3JPWDZ4Mm5yNEdaVUlCZGc1WnFl?=
- =?utf-8?B?QTVRSGMyMkI5eEhuSFNQc1J0bFJheTRTd0pFVFU0L0ZPcEhTMlhSeG12Q1hJ?=
- =?utf-8?B?a2M5UStQdFZkcVVacU0ySWxHdG1TREtvU3RwNWt1Z2pSaEVDOG5HZXRtT3R2?=
- =?utf-8?B?NElOU2oxK1V1cGZkMjlkTmxFTUk0eGVJdFdNbXJKbGtPWGIrajNzN1kwMUFR?=
- =?utf-8?B?dGV2KzFpNkNKbUtrWXJIK0x5Wllla0FkUE1oRDZ6NVFqKzZ1QjBGcnBhcVpl?=
- =?utf-8?B?cUt4VUllUHQ5ZkRXa0RSek1yVlg3MG1CTS96MDk5RXN6QUVIaVFUeVdwWXV1?=
- =?utf-8?B?dldDYzdwSzNSei9VekIwK0pxVE1yRjNLV2NQSEhSY1FzcXFFc3lSUUpCL3Vr?=
- =?utf-8?B?eFBCUVpidTdmUjRRL1g5MGRMTWowTWsyZko3aGxTSG5JSE1BUTdxQVdJc0ts?=
- =?utf-8?B?RzhMNTYyM2pGL21oeVQzbkxOcHNWeXA0SDg2NkxJelQzbkF1c0NkcEU4dDVm?=
- =?utf-8?B?VWs0bFNWeUNvUGRCV2JQdHRPQTcwY2ZpMXR4ZTFTVjZtZmczOFM0d2VGaHdK?=
- =?utf-8?B?cnJiN3RqYTRIeU10Zm50b25UZHlPclA0UzFRcy92eXBZdGZQdGRxWU9GRkRJ?=
- =?utf-8?B?RDNVaURsdTc2bEk4NnBwTFk3aDZBdEdHMW5PdU0vMDJaRW1DQU5sd1V1VXZC?=
- =?utf-8?B?ajlndkVGamQyUk81cHo0T05zT2t2TmljT3gxM0tFekMrNGFBYWErVExla2po?=
- =?utf-8?B?SG1DMTJCbmk2VW5OUUdXY2JtQVBTTWNjLzJSRXo2NGl6ZzkySDEwL1VZOGpZ?=
- =?utf-8?B?V0RyVCs0WGJ4RThGN0NIVlBwSU1PTnIvQm5Qd0lZSGhwbExEK3QrU0tnOVdF?=
- =?utf-8?B?UTNHNEpwb0lwcnk0L1gwZzZONlo3UTNXd2g5Z28xWWxqaUpCRVBaVmhrWEJ5?=
- =?utf-8?B?bHFLMVpqaUtGdklGdkFwOXRBd0d0SUlyazRsenlmZUJHc0ZHN2x0MysvbGlO?=
- =?utf-8?B?Rk5VNTN3RmVQaWRZWlEzb0IzcitXRUlBbjRnSXk4VzZkZTdodnhEVzBnSDRR?=
- =?utf-8?B?WVNkdHN3OHhTbUxjSlZhY2NhcXhSeUJ1ZHp4RXJHTTNDVlBhdVo1SHJDbkND?=
- =?utf-8?B?TERQWXIwNXo2a0w0K3hwa0k2NTFMdHBDcGFkYmw5ajVnVnlQRkhIeUdPK2xh?=
- =?utf-8?B?dm5tWEtWcU5RdUxKcEVEZi9GdHNtVU9mUWlYY0NjREhXa1RJT3dvWGpVNFY1?=
- =?utf-8?B?Z2k2bkVKbEtlZ0dkQWdlVFFSSHg5VGowZ1hpc1Q3YS9ublZtdGhCK2dhWng4?=
- =?utf-8?B?cUNLT2t2TUNjMWl0amNlNFpPYmJYdmZRZmQ4a2w1UXYzZlZTN3JRd1lueHRH?=
- =?utf-8?B?R00vOW1PdVdjQ3JQMC9SdDZwVEpOYkdxK2QzNXdPTTl4dnFVUkZpemR5WnBB?=
- =?utf-8?B?cmtsNmZ3RUVhWTRwdldIdGFjTmtKVks2R2t2M1RtWHpqaGJxTkh2bTV3azFk?=
- =?utf-8?B?REVDTllReVpRNE4xd29UeDlJaGxtM21YcElaQ1ZGY1RTVTg0Y0ZCWUdMdWgy?=
- =?utf-8?B?bGFiOXpIVm1ZKzBxREpzSENHNTBRdmE4c2dNN0JIaFZBaEN6ZlkybEdKaWRy?=
- =?utf-8?B?S3paUEtvMkZwM25tNFlGZzhWZE43ZURMREc4QzFFQXhibnB5enFnenk1aVkr?=
- =?utf-8?B?aytLUndlRGlkaWpiSnlGbjdmRGpITFJocU4rYUltMnRrOGpiVWMwTXloVUll?=
- =?utf-8?B?NHovTU8rS0kxYlc0SmJtSCs0UlRrQ3NZeHBTdXdscGd6ZElpaFVvMmpxT2Qy?=
- =?utf-8?Q?6H2vxALwWdClO2lEkzBkhMs=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <3A4B84F46BBE6042B54970B24A722C5C@FRAP264.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+        with ESMTP id S229610AbiJFRcx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 13:32:53 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EB55A4BA7
+        for <netdev@vger.kernel.org>; Thu,  6 Oct 2022 10:32:52 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id z20so2308060plb.10
+        for <netdev@vger.kernel.org>; Thu, 06 Oct 2022 10:32:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fastly.com; s=google;
+        h=user-agent:in-reply-to:content-transfer-encoding
+         :content-disposition:mime-version:references:message-id:subject:cc
+         :to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=GqYIbC4MRoi1+A3vrhxjLGpYA/IA7e6nRTLcVncEAC4=;
+        b=TR7GLoD3Du1ThxndDo4BbbTpkI4IEaXnUNawXV5YM/poB8JFiacX+uvs5vRMxF9Qbx
+         Hok4NcKGGQQ8mZzuKBKXoCuXFoRwBVJX9asvjDumZnfZeIfL1gzqCglkwkUQfo1BZ6nm
+         53EVk3Y8xH7Nph9AwpgKegR54ovAy+CwXzV5E=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=user-agent:in-reply-to:content-transfer-encoding
+         :content-disposition:mime-version:references:message-id:subject:cc
+         :to:from:date:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=GqYIbC4MRoi1+A3vrhxjLGpYA/IA7e6nRTLcVncEAC4=;
+        b=NT0ZbGcdjXWL21KPfv/fUFyuhKVvbxnhNuR5R+RnZ/vPBpLc7F9wWCytneejH2jbYF
+         JTPmikcQK4JWsCymp15PugIgvR1YL7zlqurJJa0MQKYb+8MYGwC29OwCvCADPXtXoztS
+         nl35zx9KY6gE7sy8/1lqjgfuhdn++B3jFCa+zJdVAMF+olCjyhPbyMBqBGRujMcjXpem
+         awihnjQrd53rebLBwQ32ik0GQtnJFfsKZbwihuvNw6HVzJm/KKDyK0JvxrTZxzEObK38
+         ZyjAO4BML13voVx8wTTkkLPimcCj1MkKgjvKzxU7ZTGqtdi2GwM7GsA2ZnHfPBHslFeU
+         bVcw==
+X-Gm-Message-State: ACrzQf3HfDL/fURcmxaQYT4YoPSm7lZlYh2JYBNPL44A7wQ4bwEZh3cH
+        m9NB49DtMhAzVFDvk0hG6aLZWlByw/cF7g==
+X-Google-Smtp-Source: AMsMyM4ryp/40vCIKJXkA7rKnztxCc3KrVZqYcKadV3TKHq70LddD27zMa/tjzJ+U4AHnQslbxAtZw==
+X-Received: by 2002:a17:902:8bc3:b0:178:8563:8e42 with SMTP id r3-20020a1709028bc300b0017885638e42mr565794plo.0.1665077571790;
+        Thu, 06 Oct 2022 10:32:51 -0700 (PDT)
+Received: from fastly.com (c-24-6-151-244.hsd1.ca.comcast.net. [24.6.151.244])
+        by smtp.gmail.com with ESMTPSA id o2-20020a17090a3d4200b001fbb0f0b00fsm3106485pjf.35.2022.10.06.10.32.50
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 06 Oct 2022 10:32:51 -0700 (PDT)
+Date:   Thu, 6 Oct 2022 10:32:48 -0700
+From:   Joe Damato <jdamato@fastly.com>
+To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, anthony.l.nguyen@intel.com,
+        jesse.brandeburg@intel.com
+Subject: Re: [next-queue v2 2/4] i40e: Record number TXes cleaned during NAPI
+Message-ID: <20221006173248.GA51751@fastly.com>
+References: <1665004913-25656-1-git-send-email-jdamato@fastly.com>
+ <1665004913-25656-3-git-send-email-jdamato@fastly.com>
+ <0cdcc8ee-e28d-f3cc-a65a-6c54ee7ee03e@intel.com>
+ <20221006003104.GA30279@fastly.com>
+ <20221006010024.GA31170@fastly.com>
+ <Yz7SHod/GPxKWmvw@boxer>
+ <481f7799-0f1c-efa3-bf2c-e22961e5f376@intel.com>
 MIME-Version: 1.0
-X-OriginatorOrg: csgroup.eu
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: fde2a9ab-0ffb-48ec-6c82-08daa7c08b1c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Oct 2022 17:31:03.5645
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: neRWjdjuRnBwVq1QMlO4rqYLbb8Jwd1wlMJVaRE1QRTu08F0tgVgoIK9mVx3edwxYRe1nOYw4YSn/6bU7I4jKW1Tz5OEBLxxLLtrGQCLlR4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MR1P264MB1921
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <481f7799-0f1c-efa3-bf2c-e22961e5f376@intel.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCkxlIDA2LzEwLzIwMjIgw6AgMTk6MjQsIEphc29uIEEuIERvbmVuZmVsZCBhIMOpY3JpdMKg
-Og0KPiBIaSBDaHJpc3RvcGhlLA0KPiANCj4gT24gVGh1LCBPY3QgNiwgMjAyMiBhdCAxMToyMSBB
-TSBDaHJpc3RvcGhlIExlcm95DQo+IDxjaHJpc3RvcGhlLmxlcm95QGNzZ3JvdXAuZXU+IHdyb3Rl
-Og0KPj4gTGUgMDYvMTAvMjAyMiDDoCAxODo1MywgSmFzb24gQS4gRG9uZW5mZWxkIGEgw6ljcml0
-IDoNCj4+PiBUaGUgcHJhbmRvbV91MzIoKSBmdW5jdGlvbiBoYXMgYmVlbiBhIGRlcHJlY2F0ZWQg
-aW5saW5lIHdyYXBwZXIgYXJvdW5kDQo+Pj4gZ2V0X3JhbmRvbV91MzIoKSBmb3Igc2V2ZXJhbCBy
-ZWxlYXNlcyBub3csIGFuZCBjb21waWxlcyBkb3duIHRvIHRoZQ0KPj4+IGV4YWN0IHNhbWUgY29k
-ZS4gUmVwbGFjZSB0aGUgZGVwcmVjYXRlZCB3cmFwcGVyIHdpdGggYSBkaXJlY3QgY2FsbCB0bw0K
-Pj4+IHRoZSByZWFsIGZ1bmN0aW9uLiBUaGUgc2FtZSBhbHNvIGFwcGxpZXMgdG8gZ2V0X3JhbmRv
-bV9pbnQoKSwgd2hpY2ggaXMNCj4+PiBqdXN0IGEgd3JhcHBlciBhcm91bmQgZ2V0X3JhbmRvbV91
-MzIoKS4NCj4+Pg0KPj4+IFJldmlld2VkLWJ5OiBLZWVzIENvb2sgPGtlZXNjb29rQGNocm9taXVt
-Lm9yZz4NCj4+PiBBY2tlZC1ieTogVG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2VuIDx0b2tlQHRva2Uu
-ZGs+ICMgZm9yIHNjaF9jYWtlDQo+Pj4gQWNrZWQtYnk6IENodWNrIExldmVyIDxjaHVjay5sZXZl
-ckBvcmFjbGUuY29tPiAjIGZvciBuZnNkDQo+Pj4gUmV2aWV3ZWQtYnk6IEphbiBLYXJhIDxqYWNr
-QHN1c2UuY3o+ICMgZm9yIGV4dDQNCj4+PiBTaWduZWQtb2ZmLWJ5OiBKYXNvbiBBLiBEb25lbmZl
-bGQgPEphc29uQHp4MmM0LmNvbT4NCj4+PiAtLS0NCj4+DQo+Pj4gZGlmZiAtLWdpdCBhL2FyY2gv
-cG93ZXJwYy9rZXJuZWwvcHJvY2Vzcy5jIGIvYXJjaC9wb3dlcnBjL2tlcm5lbC9wcm9jZXNzLmMN
-Cj4+PiBpbmRleCAwZmJkYTg5Y2QxYmIuLjljNGMxNWFmYmJlOCAxMDA2NDQNCj4+PiAtLS0gYS9h
-cmNoL3Bvd2VycGMva2VybmVsL3Byb2Nlc3MuYw0KPj4+ICsrKyBiL2FyY2gvcG93ZXJwYy9rZXJu
-ZWwvcHJvY2Vzcy5jDQo+Pj4gQEAgLTIzMDgsNiArMjMwOCw2IEBAIHZvaWQgbm90cmFjZSBfX3Bw
-YzY0X3J1bmxhdGNoX29mZih2b2lkKQ0KPj4+ICAgIHVuc2lnbmVkIGxvbmcgYXJjaF9hbGlnbl9z
-dGFjayh1bnNpZ25lZCBsb25nIHNwKQ0KPj4+ICAgIHsNCj4+PiAgICAgICAgaWYgKCEoY3VycmVu
-dC0+cGVyc29uYWxpdHkgJiBBRERSX05PX1JBTkRPTUlaRSkgJiYgcmFuZG9taXplX3ZhX3NwYWNl
-KQ0KPj4+IC0gICAgICAgICAgICAgc3AgLT0gZ2V0X3JhbmRvbV9pbnQoKSAmIH5QQUdFX01BU0s7
-DQo+Pj4gKyAgICAgICAgICAgICBzcCAtPSBnZXRfcmFuZG9tX3UzMigpICYgflBBR0VfTUFTSzsN
-Cj4+PiAgICAgICAgcmV0dXJuIHNwICYgfjB4ZjsNCj4+DQo+PiBJc24ndCB0aGF0IGEgY2FuZGlk
-YXRlIGZvciBwcmFuZG9tX3UzMl9tYXgoKSA/DQo+Pg0KPj4gTm90ZSB0aGF0IHNwIGlzIGRlZW1l
-ZCB0byBiZSAxNiBieXRlcyBhbGlnbmVkIGF0IGFsbCB0aW1lLg0KPiANCj4gWWVzLCBwcm9iYWJs
-eS4gSXQgc2VlbWVkIG5vbi10cml2aWFsIHRvIHRoaW5rIGFib3V0LCBzbyBJIGRpZG4ndC4gQnV0
-DQo+IGxldCdzIHNlZSBoZXJlLi4uIG1heWJlIGl0J3Mgbm90IHRvbyBiYWQ6DQo+IA0KPiBJZiBQ
-QUdFX01BU0sgaXMgYWx3YXlzIH4oUEFHRV9TSVpFLTEpLCB0aGVuIH5QQUdFX01BU0sgaXMNCj4g
-KFBBR0VfU0laRS0xKSwgc28gcHJhbmRvbV91MzJfbWF4KFBBR0VfU0laRSkgc2hvdWxkIHlpZWxk
-IHRoZSBzYW1lDQo+IHRoaW5nPyBJcyB0aGF0IGFjY3VyYXRlPyBBbmQgaG9sZHMgYWNyb3NzIHBs
-YXRmb3JtcyAodGhpcyBjb21lcyB1cCBhDQo+IGZldyBwbGFjZXMpPyBJZiBzbywgSSdsbCBkbyB0
-aGF0IGZvciBhIHY0Lg0KPiANCg0KT24gcG93ZXJwYyBpdCBpcyBhbHdheXMgKGZyb20gYXJjaC9w
-b3dlcnBjL2luY2x1ZGUvYXNtL3BhZ2UuaCkgOg0KDQovKg0KICAqIFN1YnRsZTogKDEgPDwgUEFH
-RV9TSElGVCkgaXMgYW4gaW50LCBub3QgYW4gdW5zaWduZWQgbG9uZy4gU28gaWYgd2UNCiAgKiBh
-c3NpZ24gUEFHRV9NQVNLIHRvIGEgbGFyZ2VyIHR5cGUgaXQgZ2V0cyBleHRlbmRlZCB0aGUgd2F5
-IHdlIHdhbnQNCiAgKiAoaS5lLiB3aXRoIDFzIGluIHRoZSBoaWdoIGJpdHMpDQogICovDQojZGVm
-aW5lIFBBR0VfTUFTSyAgICAgICh+KCgxIDw8IFBBR0VfU0hJRlQpIC0gMSkpDQoNCiNkZWZpbmUg
-UEFHRV9TSVpFCQkoMVVMIDw8IFBBR0VfU0hJRlQpDQoNCg0KU28gaXQgd291bGQgd29yayBJIGd1
-ZXNzLg0KDQpDaHJpc3RvcGhl
+On Thu, Oct 06, 2022 at 09:57:19AM -0500, Samudrala, Sridhar wrote:
+> On 10/6/2022 8:03 AM, Maciej Fijalkowski wrote:
+> >On Wed, Oct 05, 2022 at 06:00:24PM -0700, Joe Damato wrote:
+> >>On Wed, Oct 05, 2022 at 05:31:04PM -0700, Joe Damato wrote:
+> >>>On Wed, Oct 05, 2022 at 07:16:56PM -0500, Samudrala, Sridhar wrote:
+> >>>>On 10/5/2022 4:21 PM, Joe Damato wrote:
+> >>>>>Update i40e_clean_tx_irq to take an out parameter (tx_cleaned) which stores
+> >>>>>the number TXs cleaned.
+> >>>>>
+> >>>>>Likewise, update i40e_clean_xdp_tx_irq and i40e_xmit_zc to do the same.
+> >>>>>
+> >>>>>Care has been taken to avoid changing the control flow of any functions
+> >>>>>involved.
+> >>>>>
+> >>>>>Signed-off-by: Joe Damato <jdamato@fastly.com>
+> >>>>>---
+> >>>>>  drivers/net/ethernet/intel/i40e/i40e_txrx.c | 16 +++++++++++-----
+> >>>>>  drivers/net/ethernet/intel/i40e/i40e_xsk.c  | 15 +++++++++++----
+> >>>>>  drivers/net/ethernet/intel/i40e/i40e_xsk.h  |  3 ++-
+> >>>>>  3 files changed, 24 insertions(+), 10 deletions(-)
+> >>>>>
+> >>>>>diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> >>>>>index b97c95f..a2cc98e 100644
+> >>>>>--- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> >>>>>+++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> >>>>>@@ -923,11 +923,13 @@ void i40e_detect_recover_hung(struct i40e_vsi *vsi)
+> >>>>>   * @vsi: the VSI we care about
+> >>>>>   * @tx_ring: Tx ring to clean
+> >>>>>   * @napi_budget: Used to determine if we are in netpoll
+> >>>>>+ * @tx_cleaned: Out parameter set to the number of TXes cleaned
+> >>>>>   *
+> >>>>>   * Returns true if there's any budget left (e.g. the clean is finished)
+> >>>>>   **/
+> >>>>>  static bool i40e_clean_tx_irq(struct i40e_vsi *vsi,
+> >>>>>-			      struct i40e_ring *tx_ring, int napi_budget)
+> >>>>>+			      struct i40e_ring *tx_ring, int napi_budget,
+> >>>>>+			      unsigned int *tx_cleaned)
+> >>>>>  {
+> >>>>>  	int i = tx_ring->next_to_clean;
+> >>>>>  	struct i40e_tx_buffer *tx_buf;
+> >>>>>@@ -1026,7 +1028,7 @@ static bool i40e_clean_tx_irq(struct i40e_vsi *vsi,
+> >>>>>  	i40e_arm_wb(tx_ring, vsi, budget);
+> >>>>>  	if (ring_is_xdp(tx_ring))
+> >>>>>-		return !!budget;
+> >>>>>+		goto out;
+> >>>>>  	/* notify netdev of completed buffers */
+> >>>>>  	netdev_tx_completed_queue(txring_txq(tx_ring),
+> >>>>>@@ -1048,6 +1050,8 @@ static bool i40e_clean_tx_irq(struct i40e_vsi *vsi,
+> >>>>>  		}
+> >>>>>  	}
+> >>>>>+out:
+> >>>>>+	*tx_cleaned = total_packets;
+> >>>>>  	return !!budget;
+> >>>>>  }
+> >>>>>@@ -2689,10 +2693,12 @@ int i40e_napi_poll(struct napi_struct *napi, int budget)
+> >>>>>  			       container_of(napi, struct i40e_q_vector, napi);
+> >>>>>  	struct i40e_vsi *vsi = q_vector->vsi;
+> >>>>>  	struct i40e_ring *ring;
+> >>>>>+	bool tx_clean_complete = true;
+> >>>>>  	bool clean_complete = true;
+> >>>>>  	bool arm_wb = false;
+> >>>>>  	int budget_per_ring;
+> >>>>>  	int work_done = 0;
+> >>>>>+	unsigned int tx_cleaned = 0;
+> >>>>>  	if (test_bit(__I40E_VSI_DOWN, vsi->state)) {
+> >>>>>  		napi_complete(napi);
+> >>>>>@@ -2704,11 +2710,11 @@ int i40e_napi_poll(struct napi_struct *napi, int budget)
+> >>>>>  	 */
+> >>>>>  	i40e_for_each_ring(ring, q_vector->tx) {
+> >>>>>  		bool wd = ring->xsk_pool ?
+> >>>>>-			  i40e_clean_xdp_tx_irq(vsi, ring) :
+> >>>>>-			  i40e_clean_tx_irq(vsi, ring, budget);
+> >>>>>+			  i40e_clean_xdp_tx_irq(vsi, ring, &tx_cleaned) :
+> >>>>>+			  i40e_clean_tx_irq(vsi, ring, budget, &tx_cleaned);
+> >>>>>  		if (!wd) {
+> >>>>>-			clean_complete = false;
+> >>>>>+			clean_complete = tx_clean_complete = false;
+> >>>>>  			continue;
+> >>>>>  		}
+> >>>>>  		arm_wb |= ring->arm_wb;
+> >>>>>diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> >>>>>index 790aaeff..f98ce7e4 100644
+> >>>>>--- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> >>>>>+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> >>>>>@@ -530,18 +530,22 @@ static void i40e_set_rs_bit(struct i40e_ring *xdp_ring)
+> >>>>>   * i40e_xmit_zc - Performs zero-copy Tx AF_XDP
+> >>>>>   * @xdp_ring: XDP Tx ring
+> >>>>>   * @budget: NAPI budget
+> >>>>>+ * @tx_cleaned: Out parameter of the TX packets processed
+> >>>>>   *
+> >>>>>   * Returns true if the work is finished.
+> >>>>>   **/
+> >>>>>-static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
+> >>>>>+static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget,
+> >>>>>+			 unsigned int *tx_cleaned)
+> >>>>>  {
+> >>>>>  	struct xdp_desc *descs = xdp_ring->xsk_pool->tx_descs;
+> >>>>>  	u32 nb_pkts, nb_processed = 0;
+> >>>>>  	unsigned int total_bytes = 0;
+> >>>>>  	nb_pkts = xsk_tx_peek_release_desc_batch(xdp_ring->xsk_pool, budget);
+> >>>>>-	if (!nb_pkts)
+> >>>>>+	if (!nb_pkts) {
+> >>>>>+		*tx_cleaned = 0;
+> >>>>>  		return true;
+> >>>>>+	}
+> >>>>>  	if (xdp_ring->next_to_use + nb_pkts >= xdp_ring->count) {
+> >>>>>  		nb_processed = xdp_ring->count - xdp_ring->next_to_use;
+> >>>>>@@ -558,6 +562,7 @@ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
+> >>>>>  	i40e_update_tx_stats(xdp_ring, nb_pkts, total_bytes);
+> >>>>>+	*tx_cleaned = nb_pkts;
+> >>>>With XDP, I don't think we should count these as tx_cleaned packets. These are transmitted
+> >>>>packets. The tx_cleaned would be the xsk_frames counter in i40e_clean_xdp_tx_irq
+> >>>>May be we need 2 counters for xdp.
+> >>>I think there's two issues you are describing, which are separate in my
+> >>>mind.
+> >>>
+> >>>   1.) The name "tx_cleaned", and
+> >>>   2.) Whether nb_pkts is the right thing to write as the out param.
+> >>>
+> >>>For #1: I'm OK to change the name if that's the blocker here; please
+> >>>suggest a suitable alternative that you'll accept.
+> >>>
+> >>>For #2: nb_pkts is, IMO, the right value to bubble up to the tracepoint because
+> >>>nb_pkts affects clean_complete in i40e_napi_poll which in turn determines
+> >>>whether or not polling mode is entered.
+> >>>
+> >>>The purpose of the tracepoint is to determine when/why/how you are entering
+> >>>polling mode, so if nb_pkts plays a role in that calculation, it's the
+> >>>right number to output.
+> >>I suppose the alternative is to only fire the tracepoint when *not* in XDP.
+> >>Then the changes to the XDP stuff can be dropped and a separate set of
+> >>tracepoints for XDP can be created in the future.
+> >Let's be clear that it's the AF_XDP quirk that we have in here that actual
+> >xmit happens within NAPI polling routine.
+> >
+> >Sridhar is right with having xsk_frames as tx_cleaned but you're also
+> >right that nb_pkts affects napi polling. But then if you look at Rx side
+> >there is an analogous case with buffer allocation affecting napi polling.
+> 
+> To be correct,  I would suggest 2 out parameters to i40e_clean_xdp_tx_irq()
+> tx_cleaned and xdp_transmitted.  tx_cleaned should be filled in
+> with xsk_frames. Add xdp_transmitted as an out parameter to i40e_xmit_zc()
+> and fill it with nb_pkts.
+
+Sorry, but I don't see the value in the second param. NAPI decides what to
+do based on nb_pkts. That's the only parameter that matters for the purpose
+of NAPI going into poll mode or not, right?
+
+If so: I don't see any reason why a second parameter is necessary.
+
+As I mentioned earlier: if it's just that the name of the parameter isn't
+right (e.g., you want it to be 'tx_processed' instead of 'tx_cleaned') then
+that's an easy fix; I'll just change the name.
+
+It doesn't seem helpful to have xsk_frames as an out parameter for
+i40e_napi_poll tracepoint; that value is not used to determine anything
+about i40e's NAPI.
+
+> I am not completely clear on the reasoning behind setting clean_complete
+> based on number of packets transmitted in case of XDP.
+> >
+> >>That might reduce the complexity a bit, and will probably still be pretty
+> >>useful for people tuning their non-XDP workloads.
+> 
+> This option is fine too.
+
+I'll give Jesse a chance to weigh in before I proceed with spinning a v3.
