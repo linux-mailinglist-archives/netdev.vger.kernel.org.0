@@ -2,60 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FD165F6E15
-	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 21:21:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C92725F6E1A
+	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 21:21:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231207AbiJFTVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Oct 2022 15:21:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56886 "EHLO
+        id S231871AbiJFTVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Oct 2022 15:21:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231676AbiJFTUy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 15:20:54 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 367698D0F8
-        for <netdev@vger.kernel.org>; Thu,  6 Oct 2022 12:20:53 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id c24so2593339plo.3
-        for <netdev@vger.kernel.org>; Thu, 06 Oct 2022 12:20:53 -0700 (PDT)
+        with ESMTP id S232063AbiJFTU4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 15:20:56 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA79A8E99D
+        for <netdev@vger.kernel.org>; Thu,  6 Oct 2022 12:20:54 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id n18-20020a17090ade9200b0020b0012097cso2395606pjv.0
+        for <netdev@vger.kernel.org>; Thu, 06 Oct 2022 12:20:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date;
-        bh=yDdKybISWjOBihvP0li8ufgojX9q5NF4de6wdOs2bcU=;
-        b=ArGG/Gr6+qQRiJ6zFCfTw0V6NXFqPDORtWcQJ4C5zydvkZAFJZaS9aLnRLsbjLtj5K
-         0vlwd04ljmE1egPFm4Oowb5gIGbFuAri0Sk5MZVtPJMP31jQ8me+5KfipLFNfO7n24ng
-         opf2Ds6+LB+1cFDDOUos4/M5x6qZlC5xEfYZU=
+        bh=itZWwPdDaSKLWFxysGkqkMCHBdnDlLrqJO/idiDOslY=;
+        b=JUsE59scSIqOd3RSs+2ERXty4+RKlbVH8hzJHnoRRXfbL9fbsY7AedyXrqpEYhBjwT
+         PmPPKU5rUEu7JvzYlqV5115l1w/JDWCA42QlLydOFhZtfAF/wuUQ0v7nmCkhWQ3Q8cbr
+         ZguKk4CT2DDUv2zNtUDFc5Cn/taJ9NkOhXS4k=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=yDdKybISWjOBihvP0li8ufgojX9q5NF4de6wdOs2bcU=;
-        b=DuzQ/+JnsrSos+F7G6tUfrvEZmo6GyAV+hJ46CnIF/TfOLSlEso+HhOCy06SJj5U6V
-         ZG2fUYEZsbiWyh5nggIPXKsRc0Qm4lGywWlwMSy2bHD5KJPN9ok2Kg95bc2uy9kj4QoX
-         ZbqzVAG9zu5eRiCabVmdp63KNwNTKp3Ge6BdZ+E8dNs9xGQjbTtJinmQNaVIn/Hg7fQs
-         x2iz8W7g5bCLaBmxhzyxPSrO3clcuL1XZ888LonqQI2bztGLqEJRmpRm3siqpqdG+hfV
-         Iflb0AVZN88A0r6hvg8uKe/KiaX/40l8sZcvTe80fGAS36k6Zf4yREcszWSLd3l3fOxT
-         G86Q==
-X-Gm-Message-State: ACrzQf3uhI1vD4aKq+x2whZ3sY8mUoXIelTAGkxjv+fXEnzRGOHqh/YI
-        LljFodaFgwC7Lxpq3fqyczverA==
-X-Google-Smtp-Source: AMsMyM7A2ev3a/+ZEF2jzx3WwYvphECwPlS0TcJLnvqk28CY/FguYSsftr3CIwnX8uAKm5dnpxPgVw==
-X-Received: by 2002:a17:902:aa03:b0:17f:6287:75da with SMTP id be3-20020a170902aa0300b0017f628775damr1326584plb.15.1665084052676;
-        Thu, 06 Oct 2022 12:20:52 -0700 (PDT)
+        bh=itZWwPdDaSKLWFxysGkqkMCHBdnDlLrqJO/idiDOslY=;
+        b=jA0qH4RXznIuXtfInhvyODNpq0SouFx6AQzu5MJtEYM1+OWOO/dUAD2OnZH+rwHc7y
+         2+15RrmV7DcRBVt5TaPtCyFZFT9bzvHS7GgtU6hy1CWnY+kBo+/UE6Q29wgGrrLLHy7V
+         nd/WB4QzxbuF7IZ461ZN1IrmnxIXtcH5ghXL7m239K87OSvmi61gRaBditBR+1Bvdbg5
+         VQwnnnKAjmfPeJA4ddkPEg4bBxw3Mz1Nq5FR9XoxVOcvvp099O3Q0rZnoDFIExcIhHyO
+         N9rqTLnXkZEPeCM4eNr+sRb5Fzk3axs6lJg0XOh+kyqZ+YHbN9JqcHlZo8USocoERV35
+         GuoA==
+X-Gm-Message-State: ACrzQf3dk1j7Aj07mRz4IkiFvcQTmpybN3YQ2rBh06RqcYAv6IG7hBpc
+        vFt5v9yAXxkpVsr+UaPd3O4bDA==
+X-Google-Smtp-Source: AMsMyM6LjYgbdTj0/rBODYHzW0d0fCW4va1+F14dDNVJxWwaaXNv95GiVv6m9nbEEczNin00+ZXvWg==
+X-Received: by 2002:a17:902:ea06:b0:178:23f7:5a18 with SMTP id s6-20020a170902ea0600b0017823f75a18mr1363172plg.21.1665084054303;
+        Thu, 06 Oct 2022 12:20:54 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id c25-20020aa79539000000b00562a0759776sm719705pfp.117.2022.10.06.12.20.51
+        by smtp.gmail.com with ESMTPSA id s13-20020a170902ea0d00b0016d72804664sm12690964plg.205.2022.10.06.12.20.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Oct 2022 12:20:51 -0700 (PDT)
+        Thu, 06 Oct 2022 12:20:53 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Kees Cook <keescook@chromium.org>, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
+To:     Christian Lamparter <chunkeey@googlemail.com>
+Cc:     Kees Cook <keescook@chromium.org>, linux-wireless@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: [PATCH] can: kvaser_usb: Remove -Warray-bounds exception
-Date:   Thu,  6 Oct 2022 12:20:35 -0700
-Message-Id: <20221006192035.1742912-1-keescook@chromium.org>
+Subject: [PATCH] wifi: carl9170: Remove -Warray-bounds exception
+Date:   Thu,  6 Oct 2022 12:20:51 -0700
+Message-Id: <20221006192051.1742930-1-keescook@chromium.org>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -80,20 +79,23 @@ Remove the local work-around.
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- drivers/net/can/usb/kvaser_usb/Makefile |    5 -----
+ drivers/net/wireless/ath/carl9170/Makefile |    5 -----
  1 file changed, 5 deletions(-)
 
-diff --git a/drivers/net/can/usb/kvaser_usb/Makefile b/drivers/net/can/usb/kvaser_usb/Makefile
-index b20d951a0790..cf260044f0b9 100644
---- a/drivers/net/can/usb/kvaser_usb/Makefile
-+++ b/drivers/net/can/usb/kvaser_usb/Makefile
-@@ -1,8 +1,3 @@
- # SPDX-License-Identifier: GPL-2.0-only
- obj-$(CONFIG_CAN_KVASER_USB) += kvaser_usb.o
- kvaser_usb-y = kvaser_usb_core.o kvaser_usb_leaf.o kvaser_usb_hydra.o
+diff --git a/drivers/net/wireless/ath/carl9170/Makefile b/drivers/net/wireless/ath/carl9170/Makefile
+index 7463baa62fa8..1a81868ce26d 100644
+--- a/drivers/net/wireless/ath/carl9170/Makefile
++++ b/drivers/net/wireless/ath/carl9170/Makefile
+@@ -3,8 +3,3 @@ carl9170-objs := main.o usb.o cmd.o mac.o phy.o led.o fw.o tx.o rx.o
+ carl9170-$(CONFIG_CARL9170_DEBUGFS) += debug.o
+ 
+ obj-$(CONFIG_CARL9170) += carl9170.o
 -
 -# FIXME: temporarily silence -Warray-bounds on non W=1+ builds
 -ifndef KBUILD_EXTRA_WARN
--CFLAGS_kvaser_usb_hydra.o += -Wno-array-bounds
+-CFLAGS_cmd.o += -Wno-array-bounds
 -endif
+-- 
+2.34.1
+
 
