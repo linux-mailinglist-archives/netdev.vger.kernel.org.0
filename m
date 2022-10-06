@@ -2,174 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 333985F6FCA
-	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 22:55:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E1CD5F705B
+	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 23:29:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232198AbiJFUy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Oct 2022 16:54:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36162 "EHLO
+        id S232462AbiJFV3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Oct 2022 17:29:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229912AbiJFUy5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 16:54:57 -0400
-Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07EE91AF19;
-        Thu,  6 Oct 2022 13:54:54 -0700 (PDT)
-Message-ID: <460e032d-2fac-6afb-bc4b-30c97f2e31e2@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1665089692;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=98abMbiKy+fpQWvpcc6vpK2JTxE1CDoK7QLRY8INep0=;
-        b=txEv8OOu45UcEab5MCcH3cbOSIXf9CgHeDpqP20f6ierKiTPEF2Ar2I31j/k5Im1m54OYk
-        EvheHUgdoZ+HNKXXX28nfkwKdastpCLr30y6aCz7wXIeOH5KhYVbMH9Quw5nA2OSWlThKv
-        5/UD5uiqmqJchpHPhOMrP1kyrrbFH/s=
-Date:   Thu, 6 Oct 2022 13:54:48 -0700
-MIME-Version: 1.0
+        with ESMTP id S232444AbiJFV3D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 17:29:03 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB87CBA26A;
+        Thu,  6 Oct 2022 14:29:02 -0700 (PDT)
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ogYQO-000EAq-W0; Thu, 06 Oct 2022 23:29:01 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ogYQO-000NRW-Lu; Thu, 06 Oct 2022 23:29:00 +0200
 Subject: Re: [PATCH bpf-next 01/10] bpf: Add initial fd-based API to attach tc
  BPF programs
-Content-Language: en-US
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     razor@blackwall.org, ast@kernel.org, andrii@kernel.org,
-        john.fastabend@gmail.com, joannelkoong@gmail.com, memxor@gmail.com,
-        toke@redhat.com, joe@cilium.io, netdev@vger.kernel.org,
-        bpf <bpf@vger.kernel.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     bpf@vger.kernel.org, razor@blackwall.org, ast@kernel.org,
+        andrii@kernel.org, martin.lau@linux.dev, john.fastabend@gmail.com,
+        joannelkoong@gmail.com, memxor@gmail.com, toke@redhat.com,
+        joe@cilium.io, netdev@vger.kernel.org
 References: <20221004231143.19190-1-daniel@iogearbox.net>
  <20221004231143.19190-2-daniel@iogearbox.net>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-In-Reply-To: <20221004231143.19190-2-daniel@iogearbox.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+ <20221006050053.pbwo72xtzoza6gfl@macbook-pro-4.dhcp.thefacebook.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <f355eeba-1b46-749f-c102-65074e7eac27@iogearbox.net>
+Date:   Thu, 6 Oct 2022 23:29:00 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <20221006050053.pbwo72xtzoza6gfl@macbook-pro-4.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26681/Thu Oct  6 09:58:02 2022)
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/4/22 4:11 PM, Daniel Borkmann wrote:
-> diff --git a/kernel/bpf/net.c b/kernel/bpf/net.c
-> new file mode 100644
-> index 000000000000..ab9a9dee615b
-> --- /dev/null
-> +++ b/kernel/bpf/net.c
-> @@ -0,0 +1,274 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/* Copyright (c) 2022 Isovalent */
-> +
-> +#include <linux/bpf.h>
-> +#include <linux/filter.h>
-> +#include <linux/netdevice.h>
-> +
-> +#include <net/xtc.h>
-> +
-> +static int __xtc_prog_attach(struct net_device *dev, bool ingress, u32 limit,
-> +			     struct bpf_prog *nprog, u32 prio, u32 flags)
-> +{
-> +	struct bpf_prog_array_item *item, *tmp;
-> +	struct xtc_entry *entry, *peer;
-> +	struct bpf_prog *oprog;
-> +	bool created;
-> +	int i, j;
-> +
-> +	ASSERT_RTNL();
-> +
-> +	entry = dev_xtc_entry_fetch(dev, ingress, &created);
-> +	if (!entry)
-> +		return -ENOMEM;
-> +	for (i = 0; i < limit; i++) {
-> +		item = &entry->items[i];
-> +		oprog = item->prog;
-> +		if (!oprog)
-> +			break;
-> +		if (item->bpf_priority == prio) {
-> +			if (flags & BPF_F_REPLACE) {
-> +				/* Pairs with READ_ONCE() in xtc_run_progs(). */
-> +				WRITE_ONCE(item->prog, nprog);
-> +				bpf_prog_put(oprog);
-> +				dev_xtc_entry_prio_set(entry, prio, nprog);
-> +				return prio;
-> +			}
-> +			return -EBUSY;
-> +		}
-> +	}
-> +	if (dev_xtc_entry_total(entry) >= limit)
-> +		return -ENOSPC;
-> +	prio = dev_xtc_entry_prio_new(entry, prio, nprog);
-> +	if (prio < 0) {
-> +		if (created)
-> +			dev_xtc_entry_free(entry);
-> +		return -ENOMEM;
-> +	}
-> +	peer = dev_xtc_entry_peer(entry);
-> +	dev_xtc_entry_clear(peer);
-> +	for (i = 0, j = 0; i < limit; i++, j++) {
-> +		item = &entry->items[i];
-> +		tmp = &peer->items[j];
-> +		oprog = item->prog;
-> +		if (!oprog) {
-> +			if (i == j) {
-> +				tmp->prog = nprog;
-> +				tmp->bpf_priority = prio;
-> +			}
-> +			break;
-> +		} else if (item->bpf_priority < prio) {
-> +			tmp->prog = oprog;
-> +			tmp->bpf_priority = item->bpf_priority;
-> +		} else if (item->bpf_priority > prio) {
-> +			if (i == j) {
-> +				tmp->prog = nprog;
-> +				tmp->bpf_priority = prio;
-> +				tmp = &peer->items[++j];
-> +			}
-> +			tmp->prog = oprog;
-> +			tmp->bpf_priority = item->bpf_priority;
-> +		}
-> +	}
-> +	dev_xtc_entry_update(dev, peer, ingress);
-> +	if (ingress)
-> +		net_inc_ingress_queue();
-> +	else
-> +		net_inc_egress_queue();
-> +	xtc_inc();
-> +	return prio;
-> +}
-> +
-> +int xtc_prog_attach(const union bpf_attr *attr, struct bpf_prog *nprog)
-> +{
-> +	struct net *net = current->nsproxy->net_ns;
-> +	bool ingress = attr->attach_type == BPF_NET_INGRESS;
-> +	struct net_device *dev;
-> +	int ret;
-> +
-> +	if (attr->attach_flags & ~BPF_F_REPLACE)
-> +		return -EINVAL;
+On 10/6/22 7:00 AM, Alexei Starovoitov wrote:
+> On Wed, Oct 05, 2022 at 01:11:34AM +0200, Daniel Borkmann wrote:
+[...]
+> 
+> I cannot help but feel that prio logic copy-paste from old tc, netfilter and friends
+> is done because "that's how things were done in the past".
+> imo it was a well intentioned mistake and all networking things (tc, netfilter, etc)
+> copy-pasted that cumbersome and hard to use concept.
+> Let's throw away that baggage?
+> In good set of cases the bpf prog inserter cares whether the prog is first or not.
+> Since the first prog returning anything but TC_NEXT will be final.
+> I think prog insertion flags: 'I want to run first' vs 'I don't care about order'
+> is good enough in practice. Any complex scheme should probably be programmable
+> as any policy should. For example in Meta we have 'xdp chainer' logic that is similar
+> to libxdp chaining, but we added a feature that allows a prog to jump over another
+> prog and continue the chain. Priority concept cannot express that.
+> Since we'd have to add some "policy program" anyway for use cases like this
+> let's keep things as simple as possible?
+> Then maybe we can adopt this "as-simple-as-possible" to XDP hooks ?
+> And allow bpf progs chaining in the kernel with "run_me_first" vs "run_me_anywhere"
+> in both tcx and xdp ?
+> Naturally "run_me_first" prog will be the only one. No need for F_REPLACE flags, etc.
+> The owner of "run_me_first" will update its prog through bpf_link_update.
+> "run_me_anywhere" will add to the end of the chain.
+> In XDP for compatibility reasons "run_me_first" will be the default.
+> Since only one prog can be enqueued with such flag it will match existing single prog behavior.
+> Well behaving progs will use (like xdp-tcpdump or monitoring progs) will use "run_me_anywhere".
+> I know it's far from covering plenty of cases that we've discussed for long time,
+> but prio concept isn't really covering them either.
+> We've struggled enough with single xdp prog, so certainly not advocating for that.
+> Another alternative is to do: "queue_at_head" vs "queue_at_tail". Just as simple.
+> Both simple versions have their pros and cons and don't cover everything,
+> but imo both are better than prio.
 
-After looking at patch 3, I think it needs to check the attach_priority is non 
-zero when BPF_F_REPLACE is set.
+Yeah, it's kind of tricky, imho. The 'run_me_first' vs 'run_me_anywhere' are two
+use cases that should be covered (and actually we kind of do this in this set, too,
+with the prios via prio=x vs prio=0). Given users will only be consuming the APIs
+via libs like libbpf, this can also be abstracted this way w/o users having to be
+aware of prios. Anyway, where it gets tricky would be when things depend on ordering,
+e.g. you have BPF progs doing: policy, monitoring, lb, monitoring, encryption, which
+would be sth you can build today via tc BPF: so policy one acts as a prefilter for
+various cidr ranges that should be blocked no matter what, then monitoring to sample
+what goes into the lb, then lb itself which does snat/dnat, then monitoring to see what
+the corresponding pkt looks that goes to backend, and maybe encryption to e.g. send
+the result to wireguard dev, so it's encrypted from lb node to backend. For such
+example, you'd need prios as the 'run_me_anywhere' doesn't guarantee order, so there's
+a case for both scenarios (concrete layout vs loose one), and for latter we could
+start off with and internal prio around x (e.g. 16k), so there's room to attach in
+front via fixed prio, but also append to end for 'don't care', and that could be
+from lib pov the default/main API whereas prio would be some kind of extended one.
+Thoughts?
 
-Then the __xtc_prog_attach() should return -ENOENT for BPF_F_REPLACE when prio 
-is not found instead of continuing to dev_xtc_entry_prio_new().
-
-However, all these probably could go away if the decision on the prio discussion 
-is to avoid it.
-
-
-> +	rtnl_lock();
-> +	dev = __dev_get_by_index(net, attr->target_ifindex);
-> +	if (!dev) {
-> +		rtnl_unlock();
-> +		return -EINVAL;
-> +	}
-> +	ret = __xtc_prog_attach(dev, ingress, XTC_MAX_ENTRIES, nprog,
-> +				attr->attach_priority, attr->attach_flags);
-> +	rtnl_unlock();
-> +	return ret;
-> +}
-> +
-
+Thanks,
+Daniel
