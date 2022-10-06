@@ -2,246 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CAE175F6D04
-	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 19:32:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFF2E5F6D21
+	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 19:43:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229939AbiJFRcy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Oct 2022 13:32:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55228 "EHLO
+        id S231789AbiJFRnK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Oct 2022 13:43:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229610AbiJFRcx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 13:32:53 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EB55A4BA7
-        for <netdev@vger.kernel.org>; Thu,  6 Oct 2022 10:32:52 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id z20so2308060plb.10
-        for <netdev@vger.kernel.org>; Thu, 06 Oct 2022 10:32:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fastly.com; s=google;
-        h=user-agent:in-reply-to:content-transfer-encoding
-         :content-disposition:mime-version:references:message-id:subject:cc
-         :to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=GqYIbC4MRoi1+A3vrhxjLGpYA/IA7e6nRTLcVncEAC4=;
-        b=TR7GLoD3Du1ThxndDo4BbbTpkI4IEaXnUNawXV5YM/poB8JFiacX+uvs5vRMxF9Qbx
-         Hok4NcKGGQQ8mZzuKBKXoCuXFoRwBVJX9asvjDumZnfZeIfL1gzqCglkwkUQfo1BZ6nm
-         53EVk3Y8xH7Nph9AwpgKegR54ovAy+CwXzV5E=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=user-agent:in-reply-to:content-transfer-encoding
-         :content-disposition:mime-version:references:message-id:subject:cc
-         :to:from:date:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=GqYIbC4MRoi1+A3vrhxjLGpYA/IA7e6nRTLcVncEAC4=;
-        b=NT0ZbGcdjXWL21KPfv/fUFyuhKVvbxnhNuR5R+RnZ/vPBpLc7F9wWCytneejH2jbYF
-         JTPmikcQK4JWsCymp15PugIgvR1YL7zlqurJJa0MQKYb+8MYGwC29OwCvCADPXtXoztS
-         nl35zx9KY6gE7sy8/1lqjgfuhdn++B3jFCa+zJdVAMF+olCjyhPbyMBqBGRujMcjXpem
-         awihnjQrd53rebLBwQ32ik0GQtnJFfsKZbwihuvNw6HVzJm/KKDyK0JvxrTZxzEObK38
-         ZyjAO4BML13voVx8wTTkkLPimcCj1MkKgjvKzxU7ZTGqtdi2GwM7GsA2ZnHfPBHslFeU
-         bVcw==
-X-Gm-Message-State: ACrzQf3HfDL/fURcmxaQYT4YoPSm7lZlYh2JYBNPL44A7wQ4bwEZh3cH
-        m9NB49DtMhAzVFDvk0hG6aLZWlByw/cF7g==
-X-Google-Smtp-Source: AMsMyM4ryp/40vCIKJXkA7rKnztxCc3KrVZqYcKadV3TKHq70LddD27zMa/tjzJ+U4AHnQslbxAtZw==
-X-Received: by 2002:a17:902:8bc3:b0:178:8563:8e42 with SMTP id r3-20020a1709028bc300b0017885638e42mr565794plo.0.1665077571790;
-        Thu, 06 Oct 2022 10:32:51 -0700 (PDT)
-Received: from fastly.com (c-24-6-151-244.hsd1.ca.comcast.net. [24.6.151.244])
-        by smtp.gmail.com with ESMTPSA id o2-20020a17090a3d4200b001fbb0f0b00fsm3106485pjf.35.2022.10.06.10.32.50
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 06 Oct 2022 10:32:51 -0700 (PDT)
-Date:   Thu, 6 Oct 2022 10:32:48 -0700
-From:   Joe Damato <jdamato@fastly.com>
-To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, anthony.l.nguyen@intel.com,
-        jesse.brandeburg@intel.com
-Subject: Re: [next-queue v2 2/4] i40e: Record number TXes cleaned during NAPI
-Message-ID: <20221006173248.GA51751@fastly.com>
-References: <1665004913-25656-1-git-send-email-jdamato@fastly.com>
- <1665004913-25656-3-git-send-email-jdamato@fastly.com>
- <0cdcc8ee-e28d-f3cc-a65a-6c54ee7ee03e@intel.com>
- <20221006003104.GA30279@fastly.com>
- <20221006010024.GA31170@fastly.com>
- <Yz7SHod/GPxKWmvw@boxer>
- <481f7799-0f1c-efa3-bf2c-e22961e5f376@intel.com>
+        with ESMTP id S230039AbiJFRnD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 13:43:03 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83E72B40E8;
+        Thu,  6 Oct 2022 10:43:01 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4MjzLB6Ky2z9t0M;
+        Thu,  6 Oct 2022 19:42:58 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Fq7hDkCWiCvc; Thu,  6 Oct 2022 19:42:58 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4MjzLB4vNFz9syB;
+        Thu,  6 Oct 2022 19:42:58 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 84B508B78B;
+        Thu,  6 Oct 2022 19:42:58 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id mbcF0I0xUYNn; Thu,  6 Oct 2022 19:42:58 +0200 (CEST)
+Received: from [192.168.233.27] (po19210.idsi0.si.c-s.fr [192.168.233.27])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 4E53E8B77D;
+        Thu,  6 Oct 2022 19:42:56 +0200 (CEST)
+Message-ID: <6396875c-146a-acf5-dd9e-7f93ba1b4bc3@csgroup.eu>
+Date:   Thu, 6 Oct 2022 19:42:55 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.1
+Subject: Re: [PATCH v3 3/5] treewide: use get_random_u32() when possible
+Content-Language: fr-FR
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "patches@lists.linux.dev" <patches@lists.linux.dev>,
+        Andreas Noever <andreas.noever@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        =?UTF-8?Q?Christoph_B=c3=b6hmwalder?= 
+        <christoph.boehmwalder@linbit.com>, Christoph Hellwig <hch@lst.de>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Dave Airlie <airlied@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Westphal <fw@strlen.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Helge Deller <deller@gmx.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Hugh Dickins <hughd@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "James E . J . Bottomley" <jejb@linux.ibm.com>,
+        Jan Kara <jack@suse.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Jens Axboe <axboe@kernel.dk>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        KP Singh <kpsingh@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Marco Elver <elver@google.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Russell King <linux@armlinux.org.uk>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Thomas Graf <tgraf@suug.ch>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        WANG Xuerui <kernel@xen0n.name>, Will Deacon <will@kernel.org>,
+        Yury Norov <yury.norov@gmail.com>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "kasan-dev@googlegroups.com" <kasan-dev@googlegroups.com>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "loongarch@lists.linux.dev" <loongarch@lists.linux.dev>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgens?= =?UTF-8?Q?en?= 
+        <toke@toke.dk>, Chuck Lever <chuck.lever@oracle.com>,
+        Jan Kara <jack@suse.cz>
+References: <20221006165346.73159-1-Jason@zx2c4.com>
+ <20221006165346.73159-4-Jason@zx2c4.com>
+ <848ed24c-13ef-6c38-fd13-639b33809194@csgroup.eu>
+ <CAHmME9raQ4E00r9r8NyWJ17iSXE_KniTG0onCNAfMmfcGar1eg@mail.gmail.com>
+ <f10fcfbf-2da6-cf2d-6027-fbf8b52803e9@csgroup.eu>
+In-Reply-To: <f10fcfbf-2da6-cf2d-6027-fbf8b52803e9@csgroup.eu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <481f7799-0f1c-efa3-bf2c-e22961e5f376@intel.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 06, 2022 at 09:57:19AM -0500, Samudrala, Sridhar wrote:
-> On 10/6/2022 8:03 AM, Maciej Fijalkowski wrote:
-> >On Wed, Oct 05, 2022 at 06:00:24PM -0700, Joe Damato wrote:
-> >>On Wed, Oct 05, 2022 at 05:31:04PM -0700, Joe Damato wrote:
-> >>>On Wed, Oct 05, 2022 at 07:16:56PM -0500, Samudrala, Sridhar wrote:
-> >>>>On 10/5/2022 4:21 PM, Joe Damato wrote:
-> >>>>>Update i40e_clean_tx_irq to take an out parameter (tx_cleaned) which stores
-> >>>>>the number TXs cleaned.
-> >>>>>
-> >>>>>Likewise, update i40e_clean_xdp_tx_irq and i40e_xmit_zc to do the same.
-> >>>>>
-> >>>>>Care has been taken to avoid changing the control flow of any functions
-> >>>>>involved.
-> >>>>>
-> >>>>>Signed-off-by: Joe Damato <jdamato@fastly.com>
-> >>>>>---
-> >>>>>  drivers/net/ethernet/intel/i40e/i40e_txrx.c | 16 +++++++++++-----
-> >>>>>  drivers/net/ethernet/intel/i40e/i40e_xsk.c  | 15 +++++++++++----
-> >>>>>  drivers/net/ethernet/intel/i40e/i40e_xsk.h  |  3 ++-
-> >>>>>  3 files changed, 24 insertions(+), 10 deletions(-)
-> >>>>>
-> >>>>>diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-> >>>>>index b97c95f..a2cc98e 100644
-> >>>>>--- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-> >>>>>+++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-> >>>>>@@ -923,11 +923,13 @@ void i40e_detect_recover_hung(struct i40e_vsi *vsi)
-> >>>>>   * @vsi: the VSI we care about
-> >>>>>   * @tx_ring: Tx ring to clean
-> >>>>>   * @napi_budget: Used to determine if we are in netpoll
-> >>>>>+ * @tx_cleaned: Out parameter set to the number of TXes cleaned
-> >>>>>   *
-> >>>>>   * Returns true if there's any budget left (e.g. the clean is finished)
-> >>>>>   **/
-> >>>>>  static bool i40e_clean_tx_irq(struct i40e_vsi *vsi,
-> >>>>>-			      struct i40e_ring *tx_ring, int napi_budget)
-> >>>>>+			      struct i40e_ring *tx_ring, int napi_budget,
-> >>>>>+			      unsigned int *tx_cleaned)
-> >>>>>  {
-> >>>>>  	int i = tx_ring->next_to_clean;
-> >>>>>  	struct i40e_tx_buffer *tx_buf;
-> >>>>>@@ -1026,7 +1028,7 @@ static bool i40e_clean_tx_irq(struct i40e_vsi *vsi,
-> >>>>>  	i40e_arm_wb(tx_ring, vsi, budget);
-> >>>>>  	if (ring_is_xdp(tx_ring))
-> >>>>>-		return !!budget;
-> >>>>>+		goto out;
-> >>>>>  	/* notify netdev of completed buffers */
-> >>>>>  	netdev_tx_completed_queue(txring_txq(tx_ring),
-> >>>>>@@ -1048,6 +1050,8 @@ static bool i40e_clean_tx_irq(struct i40e_vsi *vsi,
-> >>>>>  		}
-> >>>>>  	}
-> >>>>>+out:
-> >>>>>+	*tx_cleaned = total_packets;
-> >>>>>  	return !!budget;
-> >>>>>  }
-> >>>>>@@ -2689,10 +2693,12 @@ int i40e_napi_poll(struct napi_struct *napi, int budget)
-> >>>>>  			       container_of(napi, struct i40e_q_vector, napi);
-> >>>>>  	struct i40e_vsi *vsi = q_vector->vsi;
-> >>>>>  	struct i40e_ring *ring;
-> >>>>>+	bool tx_clean_complete = true;
-> >>>>>  	bool clean_complete = true;
-> >>>>>  	bool arm_wb = false;
-> >>>>>  	int budget_per_ring;
-> >>>>>  	int work_done = 0;
-> >>>>>+	unsigned int tx_cleaned = 0;
-> >>>>>  	if (test_bit(__I40E_VSI_DOWN, vsi->state)) {
-> >>>>>  		napi_complete(napi);
-> >>>>>@@ -2704,11 +2710,11 @@ int i40e_napi_poll(struct napi_struct *napi, int budget)
-> >>>>>  	 */
-> >>>>>  	i40e_for_each_ring(ring, q_vector->tx) {
-> >>>>>  		bool wd = ring->xsk_pool ?
-> >>>>>-			  i40e_clean_xdp_tx_irq(vsi, ring) :
-> >>>>>-			  i40e_clean_tx_irq(vsi, ring, budget);
-> >>>>>+			  i40e_clean_xdp_tx_irq(vsi, ring, &tx_cleaned) :
-> >>>>>+			  i40e_clean_tx_irq(vsi, ring, budget, &tx_cleaned);
-> >>>>>  		if (!wd) {
-> >>>>>-			clean_complete = false;
-> >>>>>+			clean_complete = tx_clean_complete = false;
-> >>>>>  			continue;
-> >>>>>  		}
-> >>>>>  		arm_wb |= ring->arm_wb;
-> >>>>>diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-> >>>>>index 790aaeff..f98ce7e4 100644
-> >>>>>--- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-> >>>>>+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-> >>>>>@@ -530,18 +530,22 @@ static void i40e_set_rs_bit(struct i40e_ring *xdp_ring)
-> >>>>>   * i40e_xmit_zc - Performs zero-copy Tx AF_XDP
-> >>>>>   * @xdp_ring: XDP Tx ring
-> >>>>>   * @budget: NAPI budget
-> >>>>>+ * @tx_cleaned: Out parameter of the TX packets processed
-> >>>>>   *
-> >>>>>   * Returns true if the work is finished.
-> >>>>>   **/
-> >>>>>-static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
-> >>>>>+static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget,
-> >>>>>+			 unsigned int *tx_cleaned)
-> >>>>>  {
-> >>>>>  	struct xdp_desc *descs = xdp_ring->xsk_pool->tx_descs;
-> >>>>>  	u32 nb_pkts, nb_processed = 0;
-> >>>>>  	unsigned int total_bytes = 0;
-> >>>>>  	nb_pkts = xsk_tx_peek_release_desc_batch(xdp_ring->xsk_pool, budget);
-> >>>>>-	if (!nb_pkts)
-> >>>>>+	if (!nb_pkts) {
-> >>>>>+		*tx_cleaned = 0;
-> >>>>>  		return true;
-> >>>>>+	}
-> >>>>>  	if (xdp_ring->next_to_use + nb_pkts >= xdp_ring->count) {
-> >>>>>  		nb_processed = xdp_ring->count - xdp_ring->next_to_use;
-> >>>>>@@ -558,6 +562,7 @@ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
-> >>>>>  	i40e_update_tx_stats(xdp_ring, nb_pkts, total_bytes);
-> >>>>>+	*tx_cleaned = nb_pkts;
-> >>>>With XDP,�I don't think we should count these as tx_cleaned packets. These are transmitted
-> >>>>packets.�The tx_cleaned would be the xsk_frames counter in i40e_clean_xdp_tx_irq
-> >>>>May be we need 2 counters for xdp.
-> >>>I think there's two issues you are describing, which are separate in my
-> >>>mind.
-> >>>
-> >>>   1.) The name "tx_cleaned", and
-> >>>   2.) Whether nb_pkts is the right thing to write as the out param.
-> >>>
-> >>>For #1: I'm OK to change the name if that's the blocker here; please
-> >>>suggest a suitable alternative that you'll accept.
-> >>>
-> >>>For #2: nb_pkts is, IMO, the right value to bubble up to the tracepoint because
-> >>>nb_pkts affects clean_complete in i40e_napi_poll which in turn determines
-> >>>whether or not polling mode is entered.
-> >>>
-> >>>The purpose of the tracepoint is to determine when/why/how you are entering
-> >>>polling mode, so if nb_pkts plays a role in that calculation, it's the
-> >>>right number to output.
-> >>I suppose the alternative is to only fire the tracepoint when *not* in XDP.
-> >>Then the changes to the XDP stuff can be dropped and a separate set of
-> >>tracepoints for XDP can be created in the future.
-> >Let's be clear that it's the AF_XDP quirk that we have in here that actual
-> >xmit happens within NAPI polling routine.
-> >
-> >Sridhar is right with having xsk_frames as tx_cleaned but you're also
-> >right that nb_pkts affects napi polling. But then if you look at Rx side
-> >there is an analogous case with buffer allocation affecting napi polling.
+
+
+Le 06/10/2022 à 19:31, Christophe Leroy a écrit :
 > 
-> To be correct,� I would suggest 2 out parameters to i40e_clean_xdp_tx_irq()
-> tx_cleaned and xdp_transmitted.� tx_cleaned should be filled in
-> with xsk_frames. Add xdp_transmitted as an out parameter to i40e_xmit_zc()
-> and fill it with nb_pkts.
-
-Sorry, but I don't see the value in the second param. NAPI decides what to
-do based on nb_pkts. That's the only parameter that matters for the purpose
-of NAPI going into poll mode or not, right?
-
-If so: I don't see any reason why a second parameter is necessary.
-
-As I mentioned earlier: if it's just that the name of the parameter isn't
-right (e.g., you want it to be 'tx_processed' instead of 'tx_cleaned') then
-that's an easy fix; I'll just change the name.
-
-It doesn't seem helpful to have xsk_frames as an out parameter for
-i40e_napi_poll tracepoint; that value is not used to determine anything
-about i40e's NAPI.
-
-> I am not completely clear on the reasoning behind setting clean_complete
-> based on number of packets transmitted in case of XDP.
-> >
-> >>That might reduce the complexity a bit, and will probably still be pretty
-> >>useful for people tuning their non-XDP workloads.
 > 
-> This option is fine too.
+> Le 06/10/2022 à 19:24, Jason A. Donenfeld a écrit :
+>> Hi Christophe,
+>>
+>> On Thu, Oct 6, 2022 at 11:21 AM Christophe Leroy
+>> <christophe.leroy@csgroup.eu> wrote:
+>>> Le 06/10/2022 à 18:53, Jason A. Donenfeld a écrit :
+>>>> The prandom_u32() function has been a deprecated inline wrapper around
+>>>> get_random_u32() for several releases now, and compiles down to the
+>>>> exact same code. Replace the deprecated wrapper with a direct call to
+>>>> the real function. The same also applies to get_random_int(), which is
+>>>> just a wrapper around get_random_u32().
+>>>>
+>>>> Reviewed-by: Kees Cook <keescook@chromium.org>
+>>>> Acked-by: Toke Høiland-Jørgensen <toke@toke.dk> # for sch_cake
+>>>> Acked-by: Chuck Lever <chuck.lever@oracle.com> # for nfsd
+>>>> Reviewed-by: Jan Kara <jack@suse.cz> # for ext4
+>>>> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+>>>> ---
+>>>
+>>>> diff --git a/arch/powerpc/kernel/process.c 
+>>>> b/arch/powerpc/kernel/process.c
+>>>> index 0fbda89cd1bb..9c4c15afbbe8 100644
+>>>> --- a/arch/powerpc/kernel/process.c
+>>>> +++ b/arch/powerpc/kernel/process.c
+>>>> @@ -2308,6 +2308,6 @@ void notrace __ppc64_runlatch_off(void)
+>>>>    unsigned long arch_align_stack(unsigned long sp)
+>>>>    {
+>>>>        if (!(current->personality & ADDR_NO_RANDOMIZE) && 
+>>>> randomize_va_space)
+>>>> -             sp -= get_random_int() & ~PAGE_MASK;
+>>>> +             sp -= get_random_u32() & ~PAGE_MASK;
+>>>>        return sp & ~0xf;
+>>>
+>>> Isn't that a candidate for prandom_u32_max() ?
+>>>
+>>> Note that sp is deemed to be 16 bytes aligned at all time.
+>>
+>> Yes, probably. It seemed non-trivial to think about, so I didn't. But
+>> let's see here... maybe it's not too bad:
+>>
+>> If PAGE_MASK is always ~(PAGE_SIZE-1), then ~PAGE_MASK is
+>> (PAGE_SIZE-1), so prandom_u32_max(PAGE_SIZE) should yield the same
+>> thing? Is that accurate? And holds across platforms (this comes up a
+>> few places)? If so, I'll do that for a v4.
+>>
+> 
+> On powerpc it is always (from arch/powerpc/include/asm/page.h) :
+> 
+> /*
+>   * Subtle: (1 << PAGE_SHIFT) is an int, not an unsigned long. So if we
+>   * assign PAGE_MASK to a larger type it gets extended the way we want
+>   * (i.e. with 1s in the high bits)
+>   */
+> #define PAGE_MASK      (~((1 << PAGE_SHIFT) - 1))
+> 
+> #define PAGE_SIZE        (1UL << PAGE_SHIFT)
+> 
+> 
+> So it would work I guess.
 
-I'll give Jesse a chance to weigh in before I proceed with spinning a v3.
+But taking into account that sp must remain 16 bytes aligned, would it 
+be better to do something like ?
+
+	sp -= prandom_u32_max(PAGE_SIZE >> 4) << 4;
+
+	return sp;
+
+
