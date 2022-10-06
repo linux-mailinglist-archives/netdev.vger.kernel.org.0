@@ -2,67 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6FD75F655A
-	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 13:44:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C1435F655B
+	for <lists+netdev@lfdr.de>; Thu,  6 Oct 2022 13:44:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230039AbiJFLoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Oct 2022 07:44:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34868 "EHLO
+        id S230160AbiJFLoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Oct 2022 07:44:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230225AbiJFLoI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 07:44:08 -0400
-Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D79F895CE;
-        Thu,  6 Oct 2022 04:44:07 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VRQLWad_1665056642;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VRQLWad_1665056642)
-          by smtp.aliyun-inc.com;
-          Thu, 06 Oct 2022 19:44:04 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     sgoutham@marvell.com
-Cc:     gakula@marvell.com, sbhatta@marvell.com, hkelam@marvell.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH -next] octeontx2-pf: mcs: remove unneeded semicolon
-Date:   Thu,  6 Oct 2022 19:44:00 +0800
-Message-Id: <20221006114400.4262-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        with ESMTP id S229548AbiJFLoO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Oct 2022 07:44:14 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE4889816
+        for <netdev@vger.kernel.org>; Thu,  6 Oct 2022 04:44:13 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id j16so2303662wrh.5
+        for <netdev@vger.kernel.org>; Thu, 06 Oct 2022 04:44:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date;
+        bh=FcyQcUXi9xALQQ6Lm7VNXiWYStBjH/LCUTADg6v4m+k=;
+        b=Q3ch4MTZezNKbXvxefE+mO0E2ZEd5rYGDEvrJEQerr1h4h1HnHnZCBjPaRNXWrY7hj
+         SQ7sFqnlZPlwOsfNQOscILk490fFDFMYLESkCBSJqKq7Gal65JchQxVe5AgmjtiznIjf
+         mf++BRl2IVjaNGnuvroj9nkVzm4dcpzoo4Fmdg2XWusE6GKEsI5TLcQecBvAI7lAleFn
+         XlLNYamYG7dJrDEdc4ttYMsOnSI+HXSI2VxP3VO9UHa1WV9RxSzCvYRO21aoy/dk7ZQ1
+         rtOs6sGxdHRGMdYzVwuSvWbKybgGxSgrYO8Erdt/ytZzis/LrBOkADWj7lrIIsp2b++X
+         Re+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=FcyQcUXi9xALQQ6Lm7VNXiWYStBjH/LCUTADg6v4m+k=;
+        b=T42kA6c1i2A4a58fapgSoJTICOeDR7INTCh8zYFzE7F6WcEohVmUakuDjHCaSeyqp8
+         OXibuMHmQR4FZJHAjn6AqVXfVEDvUqWaS0ggA3ufuQIpgkkNQNS/BHcb5nUjmGjSKFIX
+         cxhUmgCE3HKwLV+qkm93NCbDt/yQqzc/e5lFd1Vzeqx27w8/+a3z0z79EhTHEOK3iQwh
+         jZIuUEgQaqAMXdi1P1uXues7VRc1A6FitBqDy7xlDDh/r3taLJSirp75xhWh6bkQ9l51
+         KEfLt9SbjoFtkdyTXjA81pmu3vMS6L+qt0b1nhdtz4CURqbgzsG0XHM4drUjINk0V4Yf
+         /PAw==
+X-Gm-Message-State: ACrzQf0kpeoAmjxHW4XwFiJ7YrMyxosfnGOJr8zOnv883vEcbaBFxY7o
+        E7HnhUylC2VXfsZ5Ik/VMnw3j/9/0D5rqpEtpyw=
+X-Google-Smtp-Source: AMsMyM4RXeDkElXLJLfWUQGKyR+hlS59USqWZ3RYd62zRPQo2CfBUDHqTgDcOznHqKlKse0TPalK0L/GqVzY9pJvlIY=
+X-Received: by 2002:a5d:6d86:0:b0:22e:4049:441f with SMTP id
+ l6-20020a5d6d86000000b0022e4049441fmr2969577wrs.198.1665056651922; Thu, 06
+ Oct 2022 04:44:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:adf:f94f:0:0:0:0:0 with HTTP; Thu, 6 Oct 2022 04:44:11 -0700 (PDT)
+Reply-To: linadavid0089@gmail.com
+From:   Lina David <ltchadao@gmail.com>
+Date:   Thu, 6 Oct 2022 12:44:11 +0100
+Message-ID: <CAKVcA9sSaMXPUQ+u6FPAwFJ9vx_=127ogsBVd=zKZrEPSipOng@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=4.9 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
+        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Semicolon is not required after curly braces.
-
-Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=2332
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
----
- drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c
-index 64f3acd7f67b..18420d9a145f 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c
-@@ -133,7 +133,7 @@ static int cn10k_mcs_alloc_rsrc(struct otx2_nic *pfvf, enum mcs_direction dir,
- 	default:
- 		ret = -EINVAL;
- 		goto fail;
--	};
-+	}
- 
- 	mutex_unlock(&mbox->lock);
- 
 -- 
-2.20.1.7.g153144c
-
+Hello,
+how are you?
