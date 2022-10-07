@@ -2,32 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A4EFA5F7590
-	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 10:53:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BDCA5F7593
+	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 10:53:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229735AbiJGIx1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 04:53:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55360 "EHLO
+        id S229783AbiJGIx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 04:53:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229797AbiJGIxV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 04:53:21 -0400
+        with ESMTP id S229800AbiJGIxW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 04:53:22 -0400
 Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A1C7FDB41;
-        Fri,  7 Oct 2022 01:53:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B511162FD;
+        Fri,  7 Oct 2022 01:53:19 -0700 (PDT)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 6AA591BF208;
-        Fri,  7 Oct 2022 08:53:12 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id C6A831BF205;
+        Fri,  7 Oct 2022 08:53:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1665132796;
+        t=1665132798;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=uh+P3R5zCB33IwZ4os0qwmtcfWBN2fhAjbxw11nSeYA=;
-        b=WiP7T7dC4Li9EAOgPEiduB+4pmb1KeQ00SJxPGSqLbpJ2zn/aGGBGC//B7SbmK9jo/X89u
-        Ul7f/MorqhFR+eLl7HMv0wsv69CEALwIO+o5pK4daSA9pg6YcLV/9LNgbsSMWc9NUNcAp5
-        1ahZplu1KSoFiHIKf+Z6n4u7G1xMhQXdR7oc3rQ/2SD3kruHlfnt3gmI0ms6Bem6IeWszr
-        njvxXufbHasfpvoEJVDj4Z9PVc5ZwZBKdeDIUqQhHLRY0XtCS40xMOI7reyZ6rtIs0oNTq
-        hDMkgqMz1GdG9UPbQ/smWFTRdi+17pL5g2EZxcJJrzv+xoonVGJMILctmHFyVg==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7MK4V10vbFBI3AVz/S5EIiJ3u8faPmx5sl9OTZrAey8=;
+        b=l1WnnvBJefmFixPzXoOWMOLFXzYwFbGxjxipYE8GAPr6uYTP3vUCf7GYFOtyStme657wYO
+        6ptRUehfkqfRU5TAsEzQ9HlcSBm7VFeforDE5OT3rC8p3qfdxDrBqSp12VNpEtRzB+SuXg
+        d4otfNjb4H4H+xLlwP+cySilkpFCilsBr7DBKUvM282oqLWRLQgCKHHUpCVFQgrDbFv1vf
+        hhbsvW7kuWW7VU5vI/uuc7l5uQrYHo3leocvJzEZidnJnKcutwqnLIGj/GfFW0bJettiU1
+        WnmlgPpthXK2akjkpJfy2S4az3fM2cwOckwKQGgZw0sCd4p342Hdh0WkSqJ3ZA==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -42,10 +43,12 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan/next v4 0/8] net: ieee802154: Improve filtering support
-Date:   Fri,  7 Oct 2022 10:53:02 +0200
-Message-Id: <20221007085310.503366-1-miquel.raynal@bootlin.com>
+Subject: [PATCH wpan/next v4 1/8] mac802154: Introduce filtering levels
+Date:   Fri,  7 Oct 2022 10:53:03 +0200
+Message-Id: <20221007085310.503366-2-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20221007085310.503366-1-miquel.raynal@bootlin.com>
+References: <20221007085310.503366-1-miquel.raynal@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -58,68 +61,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+The 802154 specification details several filtering levels in which the
+PHY and the MAC could be. The amount of filtering will vary if they are
+in promiscuous mode or in scanning mode. Otherwise they are expected to
+do some very basic checks, such as enforcing the frame validity. Either
+the PHY is able to do so, and the MAC has nothing to do, or the PHY has
+a lower filtering level than expected and the MAC should take over.
 
-A fourth version of this series, where we try to improve filtering
-support to ease scan integration. Will then come a short series about
-the coordinator interfaces and then the proper scan series.
+For now we just define these levels in an enumeration.
 
-Thanks,
-Miquèl
+In a second time, we will add a per-PHY parameter showing the expected
+filtering level as well as a per device current filtering level, and
+will initialize all these fields.
 
-Changes in v4:
-* Added a condition upon which the packets for a given interface would be
-  dropped: in case AACK and/or address filtering was expected, but
-  another interface has disabled it on the PHY.
-* Changed the way Alexander's patch behaves regarding the handling of
-  the different filtering levels. I added a third variable which shows
-  the default filtering level for the interface. There is a second
-  (per-interface) field giving the expected filtering level for this
-  interface and finally we keep the per-PHY actual filtering level
-  information. With this we can safely go back to the right level after
-  a scan and also we can detect any wrong situation where ACKs would not
-  be sent while expected and drop the frames if in this situation.
-* Moved all the additional filtering logic out of the core and put it
-  into hwsim's in-driver receive path, so that it can act like any other
-  transceiver depending on the filtering level requested.
-* Dropped the addition of the support for the ieee802154 promiscuous
-  filtering mode which is anyway not usable yet.
-* Dropped the "net:" prefixes in many patches to fit what Alexander
-  does.
+In a third time, we will use them to apply more filtering by software
+when the PHY is limited.
 
-Changes in v3:
-* Full rework of the way the promiscuous mode is handled, with new
-  filtering levels, one per-phy and the actual one on the device.
-* Dropped all the manual acking, everything is happenging on hardware.
-* Better handling of the Acks in atusb to report the trac status.
+Indeed, if the drivers know they cannot reach the requested level of
+filtering, they will overwrite the "current filtering" parameter so that
+it reflects what they do. Then, in the core, the expected filtering
+level will be used to decide whether some additional software processing
+is needed or not.
 
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+---
+ include/linux/ieee802154.h | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-
-Alexander Aring (2):
-  mac802154: move receive parameters above start
-  mac802154: set filter at drv_start()
-
-Miquel Raynal (6):
-  mac802154: Introduce filtering levels
-  ieee802154: hwsim: Record the address filter values
-  ieee802154: hwsim: Implement address filtering
-  mac802154: Drop IEEE802154_HW_RX_DROP_BAD_CKSUM
-  mac802154: Avoid delivering frames received in a non satisfying
-    filtering mode
-  mac802154: Ensure proper scan-level filtering
-
- drivers/net/ieee802154/mac802154_hwsim.c | 150 +++++++++++-
- include/linux/ieee802154.h               |  24 ++
- include/net/cfg802154.h                  |   7 +-
- include/net/ieee802154_netdev.h          |   8 +
- include/net/mac802154.h                  |   4 -
- net/mac802154/cfg.c                      |   2 +-
- net/mac802154/driver-ops.h               | 281 ++++++++++++++---------
- net/mac802154/ieee802154_i.h             |  12 +
- net/mac802154/iface.c                    |  44 ++--
- net/mac802154/rx.c                       |  25 +-
- 10 files changed, 409 insertions(+), 148 deletions(-)
-
+diff --git a/include/linux/ieee802154.h b/include/linux/ieee802154.h
+index f1f9412b6ac6..0303eb84d596 100644
+--- a/include/linux/ieee802154.h
++++ b/include/linux/ieee802154.h
+@@ -276,6 +276,30 @@ enum {
+ 	IEEE802154_SYSTEM_ERROR = 0xff,
+ };
+ 
++/**
++ * enum ieee802154_filtering_level - Filtering levels applicable to a PHY
++ *
++ * @IEEE802154_FILTERING_NONE: No filtering at all, what is received is
++ *	forwarded to the softMAC
++ * @IEEE802154_FILTERING_1_FCS: First filtering level, frames with an invalid
++ *	FCS should be dropped
++ * @IEEE802154_FILTERING_2_PROMISCUOUS: Second filtering level, promiscuous
++ *	mode as described in the spec, identical in terms of filtering to the
++ *	level one on PHY side, but at the MAC level the frame should be
++ *	forwarded to the upper layer directly
++ * @IEEE802154_FILTERING_3_SCAN: Third filtering level, scan related, where
++ *	only beacons must be processed, all remaining traffic gets dropped
++ * @IEEE802154_FILTERING_4_FRAME_FIELDS: Fourth filtering level actually
++ *	enforcing the validity of the content of the frame with various checks
++ */
++enum ieee802154_filtering_level {
++	IEEE802154_FILTERING_NONE,
++	IEEE802154_FILTERING_1_FCS,
++	IEEE802154_FILTERING_2_PROMISCUOUS,
++	IEEE802154_FILTERING_3_SCAN,
++	IEEE802154_FILTERING_4_FRAME_FIELDS,
++};
++
+ /* frame control handling */
+ #define IEEE802154_FCTL_FTYPE		0x0003
+ #define IEEE802154_FCTL_ACKREQ		0x0020
 -- 
 2.34.1
 
