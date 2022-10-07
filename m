@@ -2,127 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 175875F7633
-	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 11:26:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C75E5F7751
+	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 13:21:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229748AbiJGJ0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 05:26:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59550 "EHLO
+        id S229661AbiJGLVe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 07:21:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229559AbiJGJ0M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 05:26:12 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B844F2513;
-        Fri,  7 Oct 2022 02:26:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1665134771; x=1696670771;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=YIsvu8HuZoKfT0WBNxjXL2VasbVdSxWppe8Gs3rIq6U=;
-  b=lgV+Escms5zyViBvmedV3BHNjjb3FjjYj3Vz3SzYv4k0JXq+4hjSlm7Z
-   r4wxpTH0Ri9xpOMDvtHwj7d93ePr3ndqye1fjavDVQQ+SETk4itjJWcSm
-   wa8rwMZIT/8eJXO8VmESYry5dyAie8TXc4x4yNV3pM5aWwoQPO3bkgpkS
-   5FwlBOd0Tn2PaEuo4c362qsQW98fTFbIC1/XD4vUU2g+dv369hvJQlOyO
-   kia5cm/CgIT7PszSeLeDt+YUCfvMLXWgB9lh/d1JZONjtIsUmsVYuIlsY
-   aADoUXeW7RL6U688rIGXycyhSIPVhJPCvgocB1YG8oOBtTC77bqJsmGC+
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10492"; a="302414297"
-X-IronPort-AV: E=Sophos;i="5.95,166,1661842800"; 
-   d="scan'208";a="302414297"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2022 02:26:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10492"; a="658277156"
-X-IronPort-AV: E=Sophos;i="5.95,166,1661842800"; 
-   d="scan'208";a="658277156"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 07 Oct 2022 02:26:03 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1001)
-        id 6645E17E; Fri,  7 Oct 2022 12:26:23 +0300 (EEST)
-Date:   Fri, 7 Oct 2022 12:26:23 +0300
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Christoph B??hmwalder <christoph.boehmwalder@linbit.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dave Airlie <airlied@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Westphal <fw@strlen.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Helge Deller <deller@gmx.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Hugh Dickins <hughd@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "James E . J . Bottomley" <jejb@linux.ibm.com>,
-        Jan Kara <jack@suse.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Jens Axboe <axboe@kernel.dk>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        KP Singh <kpsingh@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Russell King <linux@armlinux.org.uk>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Thomas Graf <tgraf@suug.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        WANG Xuerui <kernel@xen0n.name>, Will Deacon <will@kernel.org>,
-        Yury Norov <yury.norov@gmail.com>,
-        dri-devel@lists.freedesktop.org, kasan-dev@googlegroups.com,
-        kernel-janitors@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-block@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-mm@kvack.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-nvme@lists.infradead.org, linux-parisc@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-usb@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        loongarch@lists.linux.dev, netdev@vger.kernel.org,
-        sparclinux@vger.kernel.org, x86@kernel.org,
-        Toke H??iland-J??rgensen <toke@toke.dk>,
-        Chuck Lever <chuck.lever@oracle.com>, Jan Kara <jack@suse.cz>
-Subject: Re: [PATCH v3 3/5] treewide: use get_random_u32() when possible
-Message-ID: <Yz/wv0sqBR+J+jy+@black.fi.intel.com>
-References: <20221006165346.73159-1-Jason@zx2c4.com>
- <20221006165346.73159-4-Jason@zx2c4.com>
+        with ESMTP id S229547AbiJGLVc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 07:21:32 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BFC2371B0;
+        Fri,  7 Oct 2022 04:21:31 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id x59so6578440ede.7;
+        Fri, 07 Oct 2022 04:21:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=06DqF0rk4IBMmbj2BVj8q3I6SSewRpjF5QRhHp2MSBs=;
+        b=gWqYxj3TRi1wl1j+iRQ98Q6llfZFDosa5j+xVWX9jNbiEoxWGwYPDNglD769V5eDXm
+         VzYIeFoYEKtU4mS3yQ1JH1zaI563BdcknV+EjHtU+igHAOfCS8jGePJGauUG/d+jS9N2
+         pSt7PIy2CXo+FMigMfBAAB+UwcPBa7emFRrCuznrk0NlEQ1RZyfpHmKJyW/vVHvzmIXQ
+         q/HSw7Misg7Bey3MWwqxi86HL/BnCyFjO3c0mcAx9j0dAUYc8zeGuQ8ihx9ZLhRNrTi6
+         etxuCCG71DWpNcSZlsKVpv9K0wKxbNp3+9w77gL7h8lxaPBWW4dgY9jtRROBcQatExn9
+         1Kjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=06DqF0rk4IBMmbj2BVj8q3I6SSewRpjF5QRhHp2MSBs=;
+        b=6L9WNTFskofZ/5LIA4xltX3eNHhrP2tsGpXhscmd9EOguVDwJ4lf/BjRIFwnc7a8jb
+         5h2VWGk3PytJj/Q2zZtRvkWQ6Az0n8r77KEUTmh8njSoqPOmEdA3fQzeudDOF3gUDPti
+         oypM+BVoNP8UAu3Qw1oOsgr8H6k2kmNFOynuk/zCPXfCFGojRUOdj164Ucoqk79rPogo
+         GzAdgohhNTuA81omthKptnqZK+AKlWDKuQV2bkP41DLHv4XO8A+S1h/y8wn9bRDJ9dBN
+         1//rWGFT0vlCbwVUh/xE1CoGOtaJiP4wTi2XUMVgORxlTEB/TA+ctyxebj5ofSMO5T0k
+         Kzrw==
+X-Gm-Message-State: ACrzQf3khfyGyz+hY+u8P+jjeG0t5tvtAsZib7uNijj688zfjrzvQb34
+        MzL604DlTzqGmLhaQBQ1s9V82Vyad5460BnzijpVbDIv2Zg=
+X-Google-Smtp-Source: AMsMyM6U5nWDHOXWfxXxMzb5IbbG91blCM1b/b1JxPUoKl6NR0gISAp2IgvKP79GKcchLJzL2JEJfWcd2SvmNlpIDTg=
+X-Received: by 2002:a05:6402:42cf:b0:457:ae6f:e443 with SMTP id
+ i15-20020a05640242cf00b00457ae6fe443mr4106572edc.299.1665141689297; Fri, 07
+ Oct 2022 04:21:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221006165346.73159-4-Jason@zx2c4.com>
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+From:   Vyacheslav Salnikov <snordicstr16@gmail.com>
+Date:   Fri, 7 Oct 2022 17:21:18 +0600
+Message-ID: <CACzz7uzbSVpLu8iqBYXTULr2aUW_9FDdkEVozK+r-BiM2rMukw@mail.gmail.com>
+Subject: bridge:fragmented packets dropped by bridge
+To:     netfilter-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 06, 2022 at 10:53:44AM -0600, Jason A. Donenfeld wrote:
->  drivers/thunderbolt/xdomain.c                  |  2 +-
+Hi.
 
-Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+I switched from kernel versions 4.9 to 5.15 and found that the MTU on
+the interfaces in the bridge does not change.
+For example:
+I have the following bridge:
+bridge      interface
+br0          sw1
+               sw2
+               sw3
+
+And I change with ifconfig MTU.
+I see that br0 sw1..sw3 has changed MTU from 1500 -> 1982.
+
+But if i send a ping through these interfaces, I get 1500(I added
+prints for output)
+I investigated the code and found the reason:
+The following commit came in the new kernel:
+https://github.com/torvalds/linux/commit/ac6627a28dbfb5d96736544a00c3938fa7ea6dfb
+
+And the behavior of the MTU setting has changed:
+>
+> Kernel 4.9:
+> if (net->ipv4.sysctl_ip_fwd_use_pmtu ||
+>    ip_mtu_locked(dst) ||
+>    !forwarding)  <--- True
+> return dst_mtu(dst) <--- 1982
+>
+>
+> / 'forwarding = true' case should always honour route mtu /
+> mtu = dst_metric_raw(dst, RTAX_MTU);
+> if (mtu)
+> return mtu;
+
+
+
+Kernel 5.15:
+>
+> if (READ_ONCE(net->ipv4.sysctl_ip_fwd_use_pmtu) ||
+>    ip_mtu_locked(dst) ||
+>    !forwarding) { <--- True
+> mtu = rt->rt_pmtu;  <--- 0
+> if (mtu && time_before(jiffies, rt->dst.expires)) <-- False
+> goto out;
+> }
+>
+> / 'forwarding = true' case should always honour route mtu /
+> mtu = dst_metric_raw(dst, RTAX_MTU); <---- 1500
+> if (mtu) <--- True
+> goto out;
+
+As I see from the code in the end takes mtu from br_dst_default_metrics
+> static const u32 br_dst_default_metrics[RTAX_MAX] = {
+> [RTAX_MTU - 1] = 1500,
+> };
+
+Why is rt_pmtu now used instead of dst_mtu?
+Why is forwarding = False called with dst_metric_raw?
+Maybe we should add processing when mtu = rt->rt_pmtu == 0?
+Could this be an error?
+
+
+I found a thread discussing a similar problem. It suggested porting
+the next patch:
+Signed-off-by: Rundong Ge <rdong.ge@gmail.com>
+---
+ include/net/ip.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/net/ip.h b/include/net/ip.h
+index 29d89de..0512de3 100644
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -450,6 +450,8 @@ static inline unsigned int
+ip_dst_mtu_maybe_forward(const struct dst_entry *dst,
+ static inline unsigned int ip_skb_dst_mtu(struct sock *sk,
+    const struct sk_buff *skb)
+ {
++ if ((skb_dst(skb)->flags & DST_FAKE_RTABLE) && skb->dev)
++ return min(skb->dev->mtu, IP_MAX_MTU);
+  if (!sk || !sk_fullsock(sk) || ip_sk_use_pmtu(sk)) {
+  bool forwarding = IPCB(skb)->flags & IPSKB_FORWARDED;
+
+
+Why was this patch not accepted in the end?
+-- 
+Best regards,
+Slava.
