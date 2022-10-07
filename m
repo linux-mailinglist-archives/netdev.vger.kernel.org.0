@@ -2,151 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C75E5F7751
-	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 13:21:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 842BE5F77B4
+	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 13:53:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229661AbiJGLVe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 07:21:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45270 "EHLO
+        id S229494AbiJGLxk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 07:53:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbiJGLVc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 07:21:32 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BFC2371B0;
-        Fri,  7 Oct 2022 04:21:31 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id x59so6578440ede.7;
-        Fri, 07 Oct 2022 04:21:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=06DqF0rk4IBMmbj2BVj8q3I6SSewRpjF5QRhHp2MSBs=;
-        b=gWqYxj3TRi1wl1j+iRQ98Q6llfZFDosa5j+xVWX9jNbiEoxWGwYPDNglD769V5eDXm
-         VzYIeFoYEKtU4mS3yQ1JH1zaI563BdcknV+EjHtU+igHAOfCS8jGePJGauUG/d+jS9N2
-         pSt7PIy2CXo+FMigMfBAAB+UwcPBa7emFRrCuznrk0NlEQ1RZyfpHmKJyW/vVHvzmIXQ
-         q/HSw7Misg7Bey3MWwqxi86HL/BnCyFjO3c0mcAx9j0dAUYc8zeGuQ8ihx9ZLhRNrTi6
-         etxuCCG71DWpNcSZlsKVpv9K0wKxbNp3+9w77gL7h8lxaPBWW4dgY9jtRROBcQatExn9
-         1Kjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=06DqF0rk4IBMmbj2BVj8q3I6SSewRpjF5QRhHp2MSBs=;
-        b=6L9WNTFskofZ/5LIA4xltX3eNHhrP2tsGpXhscmd9EOguVDwJ4lf/BjRIFwnc7a8jb
-         5h2VWGk3PytJj/Q2zZtRvkWQ6Az0n8r77KEUTmh8njSoqPOmEdA3fQzeudDOF3gUDPti
-         oypM+BVoNP8UAu3Qw1oOsgr8H6k2kmNFOynuk/zCPXfCFGojRUOdj164Ucoqk79rPogo
-         GzAdgohhNTuA81omthKptnqZK+AKlWDKuQV2bkP41DLHv4XO8A+S1h/y8wn9bRDJ9dBN
-         1//rWGFT0vlCbwVUh/xE1CoGOtaJiP4wTi2XUMVgORxlTEB/TA+ctyxebj5ofSMO5T0k
-         Kzrw==
-X-Gm-Message-State: ACrzQf3khfyGyz+hY+u8P+jjeG0t5tvtAsZib7uNijj688zfjrzvQb34
-        MzL604DlTzqGmLhaQBQ1s9V82Vyad5460BnzijpVbDIv2Zg=
-X-Google-Smtp-Source: AMsMyM6U5nWDHOXWfxXxMzb5IbbG91blCM1b/b1JxPUoKl6NR0gISAp2IgvKP79GKcchLJzL2JEJfWcd2SvmNlpIDTg=
-X-Received: by 2002:a05:6402:42cf:b0:457:ae6f:e443 with SMTP id
- i15-20020a05640242cf00b00457ae6fe443mr4106572edc.299.1665141689297; Fri, 07
- Oct 2022 04:21:29 -0700 (PDT)
+        with ESMTP id S229661AbiJGLxd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 07:53:33 -0400
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D232FB7ECB;
+        Fri,  7 Oct 2022 04:53:31 -0700 (PDT)
+Received: from fsav113.sakura.ne.jp (fsav113.sakura.ne.jp [27.133.134.240])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 297Bqjsi041794;
+        Fri, 7 Oct 2022 20:52:45 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav113.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav113.sakura.ne.jp);
+ Fri, 07 Oct 2022 20:52:45 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav113.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 297Bqi3r041791
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Fri, 7 Oct 2022 20:52:45 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <0362d03f-9332-0b37-02e0-2b1b169f4c6f@I-love.SAKURA.ne.jp>
+Date:   Fri, 7 Oct 2022 20:52:44 +0900
 MIME-Version: 1.0
-From:   Vyacheslav Salnikov <snordicstr16@gmail.com>
-Date:   Fri, 7 Oct 2022 17:21:18 +0600
-Message-ID: <CACzz7uzbSVpLu8iqBYXTULr2aUW_9FDdkEVozK+r-BiM2rMukw@mail.gmail.com>
-Subject: bridge:fragmented packets dropped by bridge
-To:     netfilter-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.1
+Subject: Re: [PATCH v2] 9p/trans_fd: perform read/write with TIF_SIGPENDING
+ set
+Content-Language: en-US
+To:     Dominique Martinet <asmadeus@codewreck.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>
+Cc:     Christian Schoenebeck <linux_oss@crudebyte.com>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        syzbot <syzbot+8b41a1365f1106fd0f33@syzkaller.appspotmail.com>,
+        v9fs-developer@lists.sourceforge.net,
+        syzkaller-bugs@googlegroups.com, netdev@vger.kernel.org,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>
+References: <00000000000039af4d05915a9f56@google.com>
+ <345de429-a88b-7097-d177-adecf9fed342@I-love.SAKURA.ne.jp>
+ <4293faaf-8279-77e2-8b1a-aff765416980@I-love.SAKURA.ne.jp>
+ <69253379.JACLdFHAbQ@silver>
+ <e96a8dce-9444-c363-2dfa-83fe5c7012b5@I-love.SAKURA.ne.jp>
+ <YxPlzlJAKObm88p8@codewreck.org>
+ <38d892bd-8ace-c4e9-9d73-777d3828acbc@I-love.SAKURA.ne.jp>
+ <Yz+Di8tJiyPPJUaK@codewreck.org>
+From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <Yz+Di8tJiyPPJUaK@codewreck.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi.
+On 2022/10/07 10:40, Dominique Martinet wrote:
+> Tetsuo Handa wrote on Sun, Sep 04, 2022 at 09:27:22AM +0900:
+>> On 2022/09/04 8:39, Dominique Martinet wrote:
+>>> Is there any reason you spent time working on v2, or is that just
+>>> theorical for not messing with userland fd ?
+>>
+>> Just theoretical for not messing with userland fd, for programs generated
+>> by fuzzers might use fds passed to the mount() syscall. I imagined that
+>> syzbot again reports this problem when it started playing with fcntl().
+>>
+>> For robustness, not messing with userland fd is the better. ;-)
+> 
+> By the way digging this back made me think about this a bit again.
+> My opinion hasn't really changed that if you want to shoot yourself in
+> the foot I don't think we're crossing any priviledge boundary here, but
+> we could probably prevent it by saying the mount call with close that fd
+> and somehow steal it? (drop the fget, close_fd after get_file perhaps?)
+> 
+> That should address your concern about robustess and syzbot will no
+> longer be able to play with fcntl on "our" end of the pipe. I think it's
+> fair to say that once you pass it to the kernel all bets are off, so
+> closing it for the userspace application could make sense, and the mount
+> already survives when short processes do the mount call and immediately
+> exit so it's not like we need that fd to be open...
+> 
+> 
+> What do you think?
 
-I switched from kernel versions 4.9 to 5.15 and found that the MTU on
-the interfaces in the bridge does not change.
-For example:
-I have the following bridge:
-bridge      interface
-br0          sw1
-               sw2
-               sw3
+I found that pipe is using alloc_file_clone() which allocates "struct file"
+instead of just incrementing "struct file"->f_count.
 
-And I change with ifconfig MTU.
-I see that br0 sw1..sw3 has changed MTU from 1500 -> 1982.
+Then, can we add EXPORT_SYMBOL_GPL(alloc_file_clone) to fs/file_table.c and
+use it like
 
-But if i send a ping through these interfaces, I get 1500(I added
-prints for output)
-I investigated the code and found the reason:
-The following commit came in the new kernel:
-https://github.com/torvalds/linux/commit/ac6627a28dbfb5d96736544a00c3938fa7ea6dfb
+  struct file *f;
 
-And the behavior of the MTU setting has changed:
->
-> Kernel 4.9:
-> if (net->ipv4.sysctl_ip_fwd_use_pmtu ||
->    ip_mtu_locked(dst) ||
->    !forwarding)  <--- True
-> return dst_mtu(dst) <--- 1982
->
->
-> / 'forwarding = true' case should always honour route mtu /
-> mtu = dst_metric_raw(dst, RTAX_MTU);
-> if (mtu)
-> return mtu;
+  ts->rd = fget(rfd);
+  if (!ts->rd)
+    goto out_free_ts;
+  if (!(ts->rd->f_mode & FMODE_READ))
+    goto out_put_rd;
+  f = alloc_file_clone(ts->rd, ts->rd->f_flags | O_NONBLOCK, ts->rd->f_op);
+  if (IS_ERR(f))
+    goto out_put_rd;
+  fput(ts->rd);
+  ts->rd = f;
 
+  ts->wr = fget(wfd);
+  if (!ts->wr)
+    goto out_put_rd;
+  if (!(ts->wr->f_mode & FMODE_WRITE))
+    goto out_put_wr;
+  f = alloc_file_clone(ts->wr, ts->wr->f_flags | O_NONBLOCK, ts->wr->f_op);
+  if (IS_ERR(f))
+    goto out_put_wr;
+  fput(ts->wr);
+  ts->wr = f;
 
+ from p9_fd_open() for cloning "struct file" with O_NONBLOCK flag added?
+Just an idea. I don't know whether alloc_file_clone() arguments are correct...
 
-Kernel 5.15:
->
-> if (READ_ONCE(net->ipv4.sysctl_ip_fwd_use_pmtu) ||
->    ip_mtu_locked(dst) ||
->    !forwarding) { <--- True
-> mtu = rt->rt_pmtu;  <--- 0
-> if (mtu && time_before(jiffies, rt->dst.expires)) <-- False
-> goto out;
-> }
->
-> / 'forwarding = true' case should always honour route mtu /
-> mtu = dst_metric_raw(dst, RTAX_MTU); <---- 1500
-> if (mtu) <--- True
-> goto out;
-
-As I see from the code in the end takes mtu from br_dst_default_metrics
-> static const u32 br_dst_default_metrics[RTAX_MAX] = {
-> [RTAX_MTU - 1] = 1500,
-> };
-
-Why is rt_pmtu now used instead of dst_mtu?
-Why is forwarding = False called with dst_metric_raw?
-Maybe we should add processing when mtu = rt->rt_pmtu == 0?
-Could this be an error?
-
-
-I found a thread discussing a similar problem. It suggested porting
-the next patch:
-Signed-off-by: Rundong Ge <rdong.ge@gmail.com>
----
- include/net/ip.h | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/include/net/ip.h b/include/net/ip.h
-index 29d89de..0512de3 100644
---- a/include/net/ip.h
-+++ b/include/net/ip.h
-@@ -450,6 +450,8 @@ static inline unsigned int
-ip_dst_mtu_maybe_forward(const struct dst_entry *dst,
- static inline unsigned int ip_skb_dst_mtu(struct sock *sk,
-    const struct sk_buff *skb)
- {
-+ if ((skb_dst(skb)->flags & DST_FAKE_RTABLE) && skb->dev)
-+ return min(skb->dev->mtu, IP_MAX_MTU);
-  if (!sk || !sk_fullsock(sk) || ip_sk_use_pmtu(sk)) {
-  bool forwarding = IPCB(skb)->flags & IPSKB_FORWARDED;
-
-
-Why was this patch not accepted in the end?
--- 
-Best regards,
-Slava.
