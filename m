@@ -2,66 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A17E5F8142
-	for <lists+netdev@lfdr.de>; Sat,  8 Oct 2022 01:35:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4D585F814B
+	for <lists+netdev@lfdr.de>; Sat,  8 Oct 2022 01:41:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229508AbiJGXfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 19:35:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50478 "EHLO
+        id S229641AbiJGXlp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 19:41:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229642AbiJGXfO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 19:35:14 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD7C3E759;
-        Fri,  7 Oct 2022 16:35:11 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id kg6so14303625ejc.9;
-        Fri, 07 Oct 2022 16:35:11 -0700 (PDT)
+        with ESMTP id S229543AbiJGXlo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 19:41:44 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF7E1A8CC8;
+        Fri,  7 Oct 2022 16:41:42 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id sc25so8236179ejc.12;
+        Fri, 07 Oct 2022 16:41:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=NUn6PJnyQLmWn9QrxA1ZcD4c7d7LYHiBixtS86xNsjA=;
-        b=hRNk3tXL4av3AVjcG3Wd8411Cc6D3emEKNbomu97+X5RNvsIzZ1cHWEJT22CcIpbht
-         97lcD+CuIr5qa037BxbF6RPE4xn8Go2amubDlYYcxwlJvEIGQY5MaaNiqom14m1upG6M
-         TAKAr+vLDQL+e6KcI5BDpPLXL8mLhAnY3uoHIBsIYO4TrZw+H6rekVdCM2RWHnAUfXAL
-         vljJ9AzEH1lszhDYOxUjb0GF52gjRc1Juco3GaxclNcSZeSaEXKnA/u7byqTWI1IH845
-         ZLaVl58i2dUkoL4i5nCxXBouRpp5Ya9ksH20BTdk17yvSCp/TRIDxWAVbft7aw96WOSy
-         fE6w==
+        bh=zHb7dfHUdWwpRTPAV/SA+OabG3x+I/4Hc0w8FBx7mM0=;
+        b=QroeSz07Frf7HBZiuvSGa8KySeJOnhezjeezy+TBTzM9tFcjaWg2KTJFv5v82suBiR
+         LicBs4n+eWkBumfPk8e6rpQZBjxhHlZwtiNEjjjYIQZDKDAC4W7SzvCu22A2O4zhr9/b
+         oUaz1lF6nXQ/h4gwBx+m20W9ZGtUsng/T0LoHI/X/m91svhPxl3ommMkQgf48r237vgD
+         NT9V2yG9RSohb2jINw4tRYITZMmqVqG2CR10hK22yWNJN7kvviq5W7WI//b9JPcIuHuX
+         RlP4Ot5yi0kujxyCN2t5MBPo0/QLuc4UXA7aEqza4W0YsPwnqLBKZAQjKP5W7eqZvcpS
+         w58w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=NUn6PJnyQLmWn9QrxA1ZcD4c7d7LYHiBixtS86xNsjA=;
-        b=Kznyvtex+0gHYrzJsPoZZp2u4m/LPFcPH3fS9b5tV/s9zY+He+NAB/M4NF3tf+dWV+
-         hqA10kY2PfI3NVDtss2EBk0rCMMgqSXxEd5iz3R7+SevjToGcvvhH6IkUYQMTjHFpSv9
-         41UzPaZFlHlcpNH0WrSi/FheZQlY4FwFs3COeVwb+GYfctXwMSFah7pRe0Su21XrNrcC
-         Rn46UuFTd/RAEAzRCSieBe8td/XHM/24bYll8Sj8HzM0BY/O7bFaftcaT2RanysCjpDj
-         F4NFX5Aq8DEOuqsy4nhFgMYUQlbV0TOsU7WoMDVQSSIjhpcV0P3xMGb6YlAp0tbVz6HD
-         TLAQ==
-X-Gm-Message-State: ACrzQf12jMSc+L9PePNYHntmmiOxHQGLuY9T4RdA0QQPNVlale2wQysA
-        nPpfHzsy6GfODt8TcsjDvhD1+AzCCQ/PpeELEvA=
-X-Google-Smtp-Source: AMsMyM4QARoD+FAFVSg2wGdw1KrElxiaesg5AtQlDN394YcRxN5VzeXLufiqxY/2t4XqQwDMJ7EqUeNQnPuWi7+KoP4=
-X-Received: by 2002:a17:907:a421:b0:783:c25a:cee0 with SMTP id
- sg33-20020a170907a42100b00783c25acee0mr5791238ejc.94.1665185709740; Fri, 07
- Oct 2022 16:35:09 -0700 (PDT)
+        bh=zHb7dfHUdWwpRTPAV/SA+OabG3x+I/4Hc0w8FBx7mM0=;
+        b=I4t61+v3g6/EPRGULTpbtUKN9RV8XbtmZMRD0mYm+rp9uIQwZN/UULBnV8MGIVfISA
+         51g8PtvimlnShobehqb3ZDx/jJTsshZlhj/u79oxiz17N82e33yn/58q1xyLbaXUfnZH
+         f5C6fqjYz57/u0fUzXmhRv3U0SaWCVSKpaSCdP20UO9MnXApOduqnVNVYrzA/SBYrfEs
+         WL26ICb3MLMGAk5POv23AL7ubf8aOiRxfIeEWuiWtKfBcjKoZOfUX8szE22gc66m01ec
+         uv+aOBrPE4HWJvzJupeoFPk/BAP2eEqBFMsTm1DZUGSRuC+iQJnf1ecG7Cu5gf3lRKiU
+         upNw==
+X-Gm-Message-State: ACrzQf2TPV+btEfBDVajdC2vnseVeP2J+uFodPwHhgeF78gl8Xwq4Kly
+        LuHvJNv885vbUrLtYqHn8sVHwX03/q1ciPF0dog=
+X-Google-Smtp-Source: AMsMyM4mTIA25/ZYmsWsT38u7nVFuIEaUgxdmrZJQBYC/JyhEe0W4oLkP4anoZ3jM4KZGj7JTEqBSqrnr1K34sbteas=
+X-Received: by 2002:a17:906:7310:b0:782:cfd4:9c07 with SMTP id
+ di16-20020a170906731000b00782cfd49c07mr6264914ejc.708.1665186101036; Fri, 07
+ Oct 2022 16:41:41 -0700 (PDT)
 MIME-Version: 1.0
-References: <20221004231143.19190-1-daniel@iogearbox.net> <20221004231143.19190-2-daniel@iogearbox.net>
- <20221006050053.pbwo72xtzoza6gfl@macbook-pro-4.dhcp.thefacebook.com>
+References: <20221004231143.19190-2-daniel@iogearbox.net> <20221006050053.pbwo72xtzoza6gfl@macbook-pro-4.dhcp.thefacebook.com>
  <f355eeba-1b46-749f-c102-65074e7eac27@iogearbox.net> <CAADnVQ+gEY3FjCR=+DmjDR4gp5bOYZUFJQXj4agKFHT9CQPZBw@mail.gmail.com>
  <14f368eb-9158-68bc-956c-c8371cfcb531@iogearbox.net> <875ygvemau.fsf@toke.dk>
  <Y0BaBUWeTj18V5Xp@google.com> <87tu4fczyv.fsf@toke.dk> <CAADnVQLH9R94iszCmhYeLKnDPy_uiGeyXnEwoADm8_miihwTmQ@mail.gmail.com>
- <8cc9811e-6efe-3aa5-b201-abbd4b10ceb4@iogearbox.net>
-In-Reply-To: <8cc9811e-6efe-3aa5-b201-abbd4b10ceb4@iogearbox.net>
+ <8cc9811e-6efe-3aa5-b201-abbd4b10ceb4@iogearbox.net> <Y0CsATkd2qK1Mu2Z@google.com>
+In-Reply-To: <Y0CsATkd2qK1Mu2Z@google.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 7 Oct 2022 16:34:58 -0700
-Message-ID: <CAADnVQLpcLWrL-URhRgqCQa6XRZzib4BorZ2QKpPC+Uw_JNW=Q@mail.gmail.com>
+Date:   Fri, 7 Oct 2022 16:41:29 -0700
+Message-ID: <CAADnVQKKCu_6fbef5R1nvXw1PsVM0q2KpQog3M_4g51xzVdYOQ@mail.gmail.com>
 Subject: Re: [PATCH bpf-next 01/10] bpf: Add initial fd-based API to attach tc
  BPF programs
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Stanislav Fomichev <sdf@google.com>, bpf <bpf@vger.kernel.org>,
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        bpf <bpf@vger.kernel.org>,
         Nikolay Aleksandrov <razor@blackwall.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
@@ -83,113 +83,162 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 7, 2022 at 12:37 PM Daniel Borkmann <daniel@iogearbox.net> wrot=
-e:
+On Fri, Oct 7, 2022 at 3:45 PM <sdf@google.com> wrote:
 >
-> On 10/7/22 8:59 PM, Alexei Starovoitov wrote:
-> > On Fri, Oct 7, 2022 at 10:20 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
-redhat.com> wrote:
-> [...]
-> >>>> I was thinking a little about how this might work; i.e., how can the
-> >>>> kernel expose the required knobs to allow a system policy to be
-> >>>> implemented without program loading having to talk to anything other
-> >>>> than the syscall API?
-> >>>
-> >>>> How about we only expose prepend/append in the prog attach UAPI, and
-> >>>> then have a kernel function that does the sorting like:
-> >>>
-> >>>> int bpf_add_new_tcx_prog(struct bpf_prog *progs, size_t num_progs, s=
-truct
-> >>>> bpf_prog *new_prog, bool append)
-> >>>
-> >>>> where the default implementation just appends/prepends to the array =
-in
-> >>>> progs depending on the value of 'appen'.
-> >>>
-> >>>> And then use the __weak linking trick (or maybe struct_ops with a me=
-mber
-> >>>> for TXC, another for XDP, etc?) to allow BPF to override the functio=
+> On 10/07, Daniel Borkmann wrote:
+> > On 10/7/22 8:59 PM, Alexei Starovoitov wrote:
+> > > On Fri, Oct 7, 2022 at 10:20 AM Toke H=EF=BF=BDiland-J=EF=BF=BDrgense=
 n
-> >>>> wholesale and implement whatever ordering it wants? I.e., allow it c=
-an
-> >>>> to just shift around the order of progs in the 'progs' array wheneve=
-r a
-> >>>> program is loaded/unloaded?
-> >>>
-> >>>> This way, a userspace daemon can implement any policy it wants by ju=
-st
-> >>>> attaching to that hook, and keeping things like how to express
-> >>>> dependencies as a userspace concern?
-> >>>
-> >>> What if we do the above, but instead of simple global 'attach first/l=
-ast',
-> >>> the default api would be:
-> >>>
-> >>> - attach before <target_fd>
-> >>> - attach after <target_fd>
-> >>> - attach before target_fd=3D-1 =3D=3D first
-> >>> - attach after target_fd=3D-1 =3D=3D last
-> >>>
-> >>> ?
-> >>
-> >> Hmm, the problem with that is that applications don't generally have a=
+> > <toke@redhat.com> wrote:
+> > [...]
+> > > > > > I was thinking a little about how this might work; i.e., how ca=
 n
-> >> fd to another application's BPF programs; and obtaining them from an I=
-D
-> >> is a privileged operation (CAP_SYS_ADMIN). We could have it be "attach
-> >> before target *ID*" instead, which could work I guess? But then the
-> >> problem becomes that it's racy: the ID you're targeting could get
-> >> detached before you attach, so you'll need to be prepared to check tha=
-t
-> >> and retry; and I'm almost certain that applications won't test for thi=
-s,
-> >> so it'll just lead to hard-to-debug heisenbugs. Or am I being too
-> >> pessimistic here?
-> >
-> > I like Stan's proposal and don't see any issue with FD.
-> > It's good to gate specific sequencing with cap_sys_admin.
-> > Also for consistency the FD is better than ID.
-> >
-> > I also like systemd analogy with Before=3D, After=3D.
-> > systemd has a ton more ways to specify deps between Units,
-> > but none of them have absolute numbers (which is what priority is).
-> > The only bit I'd tweak in Stan's proposal is:
-> > - attach before <target_fd>
-> > - attach after <target_fd>
-> > - attach before target_fd=3D0 =3D=3D first
-> > - attach after target_fd=3D0 =3D=3D last
+> > the
+> > > > > > kernel expose the required knobs to allow a system policy to be
+> > > > > > implemented without program loading having to talk to anything
+> > other
+> > > > > > than the syscall API?
+> > > > >
+> > > > > > How about we only expose prepend/append in the prog attach UAPI=
+,
+> > and
+> > > > > > then have a kernel function that does the sorting like:
+> > > > >
+> > > > > > int bpf_add_new_tcx_prog(struct bpf_prog *progs, size_t
+> > num_progs, struct
+> > > > > > bpf_prog *new_prog, bool append)
+> > > > >
+> > > > > > where the default implementation just appends/prepends to the
+> > array in
+> > > > > > progs depending on the value of 'appen'.
+> > > > >
+> > > > > > And then use the __weak linking trick (or maybe struct_ops with=
+ a
+> > member
+> > > > > > for TXC, another for XDP, etc?) to allow BPF to override the
+> > function
+> > > > > > wholesale and implement whatever ordering it wants? I.e., allow
+> > it can
+> > > > > > to just shift around the order of progs in the 'progs' array
+> > whenever a
+> > > > > > program is loaded/unloaded?
+> > > > >
+> > > > > > This way, a userspace daemon can implement any policy it wants =
+by
+> > just
+> > > > > > attaching to that hook, and keeping things like how to express
+> > > > > > dependencies as a userspace concern?
+> > > > >
+> > > > > What if we do the above, but instead of simple global 'attach
+> > first/last',
+> > > > > the default api would be:
+> > > > >
+> > > > > - attach before <target_fd>
+> > > > > - attach after <target_fd>
+> > > > > - attach before target_fd=3D-1 =3D=3D first
+> > > > > - attach after target_fd=3D-1 =3D=3D last
+> > > > >
+> > > > > ?
+> > > >
+> > > > Hmm, the problem with that is that applications don't generally hav=
+e
+> > an
+> > > > fd to another application's BPF programs; and obtaining them from a=
+n
+> > ID
+> > > > is a privileged operation (CAP_SYS_ADMIN). We could have it be "att=
+ach
+> > > > before target *ID*" instead, which could work I guess? But then the
+> > > > problem becomes that it's racy: the ID you're targeting could get
+> > > > detached before you attach, so you'll need to be prepared to check
+> > that
+> > > > and retry; and I'm almost certain that applications won't test for
+> > this,
+> > > > so it'll just lead to hard-to-debug heisenbugs. Or am I being too
+> > > > pessimistic here?
+> > >
+> > > I like Stan's proposal and don't see any issue with FD.
+> > > It's good to gate specific sequencing with cap_sys_admin.
+> > > Also for consistency the FD is better than ID.
+> > >
+> > > I also like systemd analogy with Before=3D, After=3D.
+> > > systemd has a ton more ways to specify deps between Units,
+> > > but none of them have absolute numbers (which is what priority is).
+> > > The only bit I'd tweak in Stan's proposal is:
+> > > - attach before <target_fd>
+> > > - attach after <target_fd>
+> > > - attach before target_fd=3D0 =3D=3D first
+> > > - attach after target_fd=3D0 =3D=3D last
 >
-> I think the before(), after() could work, but the target_fd I have my dou=
-bts
-> that it will be practical. Maybe lets walk through a concrete real exampl=
-e. app_a
-> and app_b shipped via container_a resp container_b. Both want to install =
-tc BPF
-> and we (operator/user) want to say that prog from app_b should only be in=
-serted
-> after the one from app_a, never run before; if no prog_a is installed, we=
- ofc just
-> run prog_b, but if prog_a is inserted, it must be before prog_b given the=
- latter
-> can only run after the former. How would we get to one anothers target fd=
-? One
-> could use the 0, but not if more programs sit before/after.
+> > I think the before(), after() could work, but the target_fd I have my
+> > doubts
+> > that it will be practical. Maybe lets walk through a concrete real
+> > example. app_a
+> > and app_b shipped via container_a resp container_b. Both want to instal=
+l
+> > tc BPF
+> > and we (operator/user) want to say that prog from app_b should only be
+> > inserted
+> > after the one from app_a, never run before; if no prog_a is installed, =
+we
+> > ofc just
+> > run prog_b, but if prog_a is inserted, it must be before prog_b given t=
+he
+> > latter
+> > can only run after the former. How would we get to one anothers target
+> > fd? One
+> > could use the 0, but not if more programs sit before/after.
+>
+> This fd/id has to be definitely abstracted by the loader. With the
+> program, we would ship some metadata like 'run_after:prog_a' for
+> prog_b (where prog_a might be literal function name maybe?).
+> However, this also depends on 'run_before:prog_b' in prog_a (in
+> case it happens to be started after prog_b) :-/
 
-I read your desired use case several times and probably still didn't get it=
-.
-Sounds like prog_b can just do after(fd=3D0) to become last.
-And prog_a can do before(fd=3D0).
-Whichever the order of attaching (a or b) these two will always
-be in a->b order.
-Are you saying that there should be no progs between them?
-Sure, the daemon could iterate the hook progs, discover prog_id,
-get its FD and do before(prog_fd).
-The use case sounds hypothetical.
-Since the first and any prog returning !TC_NEXT will abort
-the chain we'd need __weak nop orchestrator prog to interpret
-retval for anything to be useful.
-With cgroup-skb we did fancy none/override/multi and what for?
-As far as I can see everyone is using 'multi' and all progs are run.
-If we did only 'multi' for cgroup it would be just as fine
-and we would have avoided all the complexity in the kernel.
-Hence I'm advocating for the simplest approach for tcx and xdp.
+Let's not overload libbpf with that.
+I don't see any of that being used.
+If a real use case comes up we'll do that at that time.
+
+> So yeah, some central place might still be needed; in this case, Toke's
+> suggestion on overriding this via bpf seems like the most flexible one.
+>
+> Or maybe libbpf can consult some /etc/bpf.init.d/ directory for those?
+> Not sure if it's too much for libbpf or it's better done by the higher
+> levels? I guess we can rely on the program names and then all we really
+> need is some place to say 'prog X happens before Y' and for the loaders
+> to interpret that.
+
+It's getting into bikeshedding territory.
+We made this mistake with xdp.
+No one could convince anyone of anything and got stuck with
+single prog.
+
+> > To me it sounds reasonable to have the append mode as default mode/API,
+> > and an advanced option to say 'I want to run as 2nd prog, but if someth=
+ing
+> > is already attached as 2nd prog, shift all the others +1 in the array'
+> > which
+> > would relate to your above point, Stan, of being able to stick into any
+> > place in the chain.
+>
+> Replying to your other email here:
+>
+> I'd still prefer, from the user side, to be able to stick my prog into
+> any place for debugging. But you suggestion to shift others for +1 works
+> for me.
+> (although, not sure, for example, what happens if I want to shift right t=
+he
+> program that's at position 65k; aka already last?)
+
+65k progs attached to a single hook?!
+At that point it won't really matter how before() and after()
+are implemented.
+Copy of the whole array is the simplest implementation that would
+work just fine.
+
+I guess I wasn't clear that the absolute position in the array
+is not going to be returned to the user space.
+The user space could grab IDs of all progs attached
+in the existing order. But that order is valid only at that
+very second. Another prog might get inserted anywhere a second later.
+Same thing we do for cgroups.
