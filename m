@@ -2,112 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D2135F7466
-	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 08:55:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3A965F74CC
+	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 09:44:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229713AbiJGGzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 02:55:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35920 "EHLO
+        id S229826AbiJGHo1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 03:44:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229525AbiJGGzB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 02:55:01 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB56C31DE8;
-        Thu,  6 Oct 2022 23:54:59 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29769VtN000863;
-        Fri, 7 Oct 2022 06:54:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : content-transfer-encoding : mime-version; s=pp1;
- bh=+3s0q2l3k+pmPIa6yJMupwL3AFUDNzwzuPb4CD4qF+Y=;
- b=IR1wiBnajJLf4KevyYEZuw8bMBnq4gOapQyVsXf4UFXkrC68bzNpn/9azAR7iuXg9ngT
- 588rmaONNRHg7X1kkXHJ6PQDprNhVMFyi7f1VNC4bewfuv00gwrhGRbXdHd/S2TKEaRi
- rv97KULNYlKhTg2zmYRcMwGNIIKDnXUkNqTe/Hrk/VbCd2gw1A4lqtdFcQEJSqCrj9Dh
- nKer7kb/V0Cr8a8Xbb21o+QVhiLaXFiVBWIllthl/ipnj1U3n4V6wkYTyM0Eiq6+WhfF
- GAZLchcxrwAjOSLtiKTap7qXHb87AfdgTi7bT19+2BYXQFtyUJ4e2b12/6rsZo4vUTUA ug== 
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3k2dvdjfhq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 07 Oct 2022 06:54:55 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2976nxUI017307;
-        Fri, 7 Oct 2022 06:54:53 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma01fra.de.ibm.com with ESMTP id 3jxd68x1an-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 07 Oct 2022 06:54:52 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2976snRB655944
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 7 Oct 2022 06:54:49 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 70F9142042;
-        Fri,  7 Oct 2022 06:54:49 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BC58C42041;
-        Fri,  7 Oct 2022 06:54:45 +0000 (GMT)
-Received: from MBP-von-Wenjia.fritz.box.com (unknown [9.163.62.72])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri,  7 Oct 2022 06:54:45 +0000 (GMT)
-From:   Wenjia Zhang <wenjia@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Wenjia Zhang <wenjia@linux.ibm.com>,
-        Jan Karcher <jaka@linux.ibm.com>,
-        Thorsten Winkler <twinkler@linux.ibm.com>
-Subject: [PATCH] MAINTAINERS: add Jan as SMC maintainer
-Date:   Fri,  7 Oct 2022 08:54:36 +0200
-Message-Id: <20221007065436.33915-1-wenjia@linux.ibm.com>
-X-Mailer: git-send-email 2.35.2
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: OGx9crK4XHUs6v6pBOs_OO2fnEOYL3L7
-X-Proofpoint-ORIG-GUID: OGx9crK4XHUs6v6pBOs_OO2fnEOYL3L7
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        with ESMTP id S229777AbiJGHoZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 03:44:25 -0400
+Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173CBDED00;
+        Fri,  7 Oct 2022 00:44:22 -0700 (PDT)
+Received: from [IPV6:2003:e9:d724:a7dd:f566:73:8aea:58ff] (p200300e9d724a7ddf56600738aea58ff.dip0.t-ipconnect.de [IPv6:2003:e9:d724:a7dd:f566:73:8aea:58ff])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id BBE59C04DF;
+        Fri,  7 Oct 2022 09:44:20 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1665128661;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SIfCLYWhDUFwzue6wEqXVr58o/uqP9e248unx6ieZT4=;
+        b=JmG/vBtX1OZfElT3wzDuzuNmQfLyGGprdLOsVWXFyqynGudWlEzHUKinC+IS1MgcNuKAc3
+        2CBDSCgN3dkuLpueGPY9KmzZ2VFG7XjcyoWlYLtKeksCoPraL5vSfM7ABEB/lduX4Ky7iM
+        eJXPgoAjYSn95Afmrrv/P6GggDVGsEoKE8FNgrXv4ZMjT2d+B26g957iLwOTGxzzUz/oLC
+        tqGbKFNIs0f948I+nexYrXnEwkvr5yuZmQjr5xJYLBtt+mMT9X1Av+MrIwx7In/8K1Q3AS
+        ya7GmvIAmNfFAjlBy4vHfDk3tSv/5pJq0QScMHwtUYVYaGL9Tv+bKZPHctpbvw==
+Message-ID: <75be7065-e9ca-cba0-43e8-e3e0ffae538e@datenfreihafen.org>
+Date:   Fri, 7 Oct 2022 09:44:18 +0200
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
- definitions=2022-10-06_05,2022-10-06_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1015
- priorityscore=1501 adultscore=0 phishscore=0 mlxscore=0 spamscore=0
- mlxlogscore=831 suspectscore=0 bulkscore=0 malwarescore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2210070039
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Subject: Re: [PATCH net OR wpan] net: ieee802154: return -EINVAL for unknown
+ addr type
+Content-Language: en-US
+To:     Alexander Aring <aahringo@redhat.com>, tcs.kernel@gmail.com
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20221006020237.318511-1-aahringo@redhat.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+In-Reply-To: <20221006020237.318511-1-aahringo@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add Jan as maintainer for Shared Memory Communications (SMC)
-Sockets.
+Hello.
 
-Acked-by: Jan Karcher <jaka@linux.ibm.com>
-Acked-by: Alexandra Winter <wintera@linux.ibm.com>
-Signed-off-by: Wenjia Zhang <wenjia@linux.ibm.com>
----
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+On 06.10.22 04:02, Alexander Aring wrote:
+> This patch adds handling to return -EINVAL for an unknown addr type. The
+> current behaviour is to return 0 as successful but the size of an
+> unknown addr type is not defined and should return an error like -EINVAL.
+> 
+> Fixes: 94160108a70c ("net/ieee802154: fix uninit value bug in dgram_sendmsg")
+> Signed-off-by: Alexander Aring <aahringo@redhat.com>
+> ---
+>   include/net/ieee802154_netdev.h | 12 +++++++++---
+>   1 file changed, 9 insertions(+), 3 deletions(-)
+> 
+> diff --git a/include/net/ieee802154_netdev.h b/include/net/ieee802154_netdev.h
+> index a8994f307fc3..03b64bf876a4 100644
+> --- a/include/net/ieee802154_netdev.h
+> +++ b/include/net/ieee802154_netdev.h
+> @@ -185,21 +185,27 @@ static inline int
+>   ieee802154_sockaddr_check_size(struct sockaddr_ieee802154 *daddr, int len)
+>   {
+>   	struct ieee802154_addr_sa *sa;
+> +	int ret = 0;
+>   
+>   	sa = &daddr->addr;
+>   	if (len < IEEE802154_MIN_NAMELEN)
+>   		return -EINVAL;
+>   	switch (sa->addr_type) {
+> +	case IEEE802154_ADDR_NONE:
+> +		break;
+>   	case IEEE802154_ADDR_SHORT:
+>   		if (len < IEEE802154_NAMELEN_SHORT)
+> -			return -EINVAL;
+> +			ret = -EINVAL;
+>   		break;
+>   	case IEEE802154_ADDR_LONG:
+>   		if (len < IEEE802154_NAMELEN_LONG)
+> -			return -EINVAL;
+> +			ret = -EINVAL;
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+>   		break;
+>   	}
+> -	return 0;
+> +	return ret;
+>   }
+>   
+>   static inline void ieee802154_addr_from_sa(struct ieee802154_addr *a,
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 9ca84cb5ab4a..b7105db9fe6c 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -18487,6 +18487,7 @@ F:	drivers/misc/sgi-xp/
- SHARED MEMORY COMMUNICATIONS (SMC) SOCKETS
- M:	Karsten Graul <kgraul@linux.ibm.com>
- M:	Wenjia Zhang <wenjia@linux.ibm.com>
-+M:	Jan Karcher <jaka@linux.ibm.com>
- L:	linux-s390@vger.kernel.org
- S:	Supported
- W:	http://www.ibm.com/developerworks/linux/linux390/
--- 
-2.35.2
+This patch has been applied to the wpan tree and will be
+part of the next pull request to net. Thanks!
 
+regards
+Stefan Schmidt
