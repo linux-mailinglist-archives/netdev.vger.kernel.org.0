@@ -2,95 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CCD95F7AC2
-	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 17:43:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BA735F7B01
+	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 17:48:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229845AbiJGPnU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 11:43:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34306 "EHLO
+        id S229725AbiJGPsf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 11:48:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbiJGPnT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 11:43:19 -0400
-Received: from mail-oo1-xc2b.google.com (mail-oo1-xc2b.google.com [IPv6:2607:f8b0:4864:20::c2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A815D73E4
-        for <netdev@vger.kernel.org>; Fri,  7 Oct 2022 08:43:15 -0700 (PDT)
-Received: by mail-oo1-xc2b.google.com with SMTP id c13-20020a4ac30d000000b0047663e3e16bso3740795ooq.6
-        for <netdev@vger.kernel.org>; Fri, 07 Oct 2022 08:43:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Mozf1uPcQjIidCs+o1oK9uZZ1pk0n9LGediWQVUrKKk=;
-        b=yfonxeDoQSoLXljq7Q6Kh/DpndNLETkhGeSo22PVD1d4Il2TjCdxonzqlVOcodhncW
-         Ur/WEpqD5gav9l8hdcLH3pCNADh5rRK4lgm7BO/a0v6X1Qsgt2bI3yQVUG5ASY08iVnF
-         SBvCxtN7HoIwzBi2u1CR6YcfpWDw6UrfC7h/vZ25QhNb5LSXgQVy3TtZX4yT8ov/9PZz
-         cOTtXsr8ZPl5gDQzpe6N9fcizAtfVeB5d5ATvA8ND8DTo/qgiK6vASecSDaDXJ55EnPF
-         ba3EhSvEC4A4Bcznj4rA9br0Vi4LVjeJeQCtAcbqFZbE6iRN38GLRDI9T0yCAs0A4iCn
-         SgWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Mozf1uPcQjIidCs+o1oK9uZZ1pk0n9LGediWQVUrKKk=;
-        b=tjvycWSPsMuanQKgMX23XKlrMCIx/ljsY0/i90OIGw6RK5QSTriWCGlbYy54WiQwWD
-         JegqAJ4ur/Or4wb4wLa3QEZBblqr905lByUOVMUaxGGLfzHsjHjAA5Q/lgG2Qgy2qpF4
-         4DPLfQClvPuO1GutiKSOcNEgA7N1Nq+RDB0WneS2ZyBQaxTxjYS+8aQWgksxHhKLw9dU
-         UY1Qz99OizDqXrPvTmFzAsEniLHSwhmPLJAqyDEBkJXKzR/VFH1yDtXZlGPK20YK42Ma
-         UMpvrzyEQWsQ36A79/pC0k6irafYta23lxuhLfMtMNC0wATwmVQvI4uDJwZQb4jW6wUX
-         D2aw==
-X-Gm-Message-State: ACrzQf2DSG32n+iZEFvafnJbp50xvGvm9B4Hi96BzkzhGhevBa2sRLmR
-        LsGTmNVUnhyyWiRb5tRWpqMpQI4LVq2w/2BrFGHqGw==
-X-Google-Smtp-Source: AMsMyM7pAYg0CFNhxWoGp+UiHPlxhNQb0zVdYYoXZebQKrrI8iTf46NQA90kLkfVKpN5AnP/TgRvaJjz+QyutI24hIY=
-X-Received: by 2002:a4a:5e47:0:b0:476:2f9e:b30e with SMTP id
- h68-20020a4a5e47000000b004762f9eb30emr2119887oob.46.1665157393773; Fri, 07
- Oct 2022 08:43:13 -0700 (PDT)
+        with ESMTP id S229453AbiJGPsd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 11:48:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BE8024F2D;
+        Fri,  7 Oct 2022 08:48:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B58561D65;
+        Fri,  7 Oct 2022 15:48:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6C3DC433C1;
+        Fri,  7 Oct 2022 15:48:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1665157712;
+        bh=IVrCfu+9kAkOmJoCLZuXN66Vw4CSeE7htFDvsSlA7co=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=oHTLK//A/5yFw/3c6zX9/xOD4a4YHBnsKyQdsMrxyXBO0xBo49rXERJUrp85bgtf5
+         /DQAk0N9+ub/SrvcyIBNSD9In+6MCJDCxTyguw7HeejySDX2i0qohZYAZ6yk6XAsrI
+         oAHmXpOlarN1ho3xPhynfJ7/eUVlyHk+TA2jkNmR8mf2C/kbTf6r6R6hUPITIqk9Cm
+         VuRqTG4Iuqge9rmnk283R09ggyhv07LhCjpUko4RYO5U3dutPtgiUaHYp0So4zHkwD
+         bMzABmBwPEoWDF8nBCTh6R4l1NW5N0b67QHDgfUNF/kXQqfAqhXrqsGxBR26uOgbTj
+         BYXyiNqnhmuIQ==
+Date:   Fri, 7 Oct 2022 10:48:30 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Yuval Mintz <Yuval.Mintz@caviumnetworks.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        linux-rdma@vger.kernel.org, Ram.Amrani@caviumnetworks.com,
+        Michal.Kalderon@caviumnetworks.com, Ariel.Elior@caviumnetworks.com,
+        dledford@redhat.com, Manish Chopra <manishc@marvell.com>,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH net-next 3/7] qed: Add support for RoCE hw init
+Message-ID: <20221007154830.GA2630865@bhelgaas>
 MIME-Version: 1.0
-References: <20221004231143.19190-1-daniel@iogearbox.net> <20221004231143.19190-2-daniel@iogearbox.net>
- <20221006050053.pbwo72xtzoza6gfl@macbook-pro-4.dhcp.thefacebook.com>
- <CAM0EoMnJzP6kbr94utjDT1X=e9G21-uu=Cbqhx2XLfqXE+HDwA@mail.gmail.com> <CAADnVQK2tWmZW0=y89mv-r9kO4U2H=azWmbr7g1yqLhU1aX3SQ@mail.gmail.com>
-In-Reply-To: <CAADnVQK2tWmZW0=y89mv-r9kO4U2H=azWmbr7g1yqLhU1aX3SQ@mail.gmail.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Fri, 7 Oct 2022 11:43:02 -0400
-Message-ID: <CAM0EoMnfnp5ULiHU-E769yg8Gj534WADZAthuY7T=mW8WrKp4g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 01/10] bpf: Add initial fd-based API to attach tc
- BPF programs
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Joanne Koong <joannelkoong@gmail.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Joe Stringer <joe@cilium.io>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1475348401-31392-4-git-send-email-Yuval.Mintz@caviumnetworks.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 6, 2022 at 7:29 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Thu, Oct 6, 2022 at 7:41 AM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+[+cc Manish, linux-pci]
 
-[..]
-> > You just described the features already offered by tc opcodes + priority.
->
-> Ohh, right. All possible mechanisms were available in TC 20 years ago.
-> Moving on.
+On Sat, Oct 01, 2016 at 09:59:57PM +0300, Yuval Mintz wrote:
+> From: Ram Amrani <Ram.Amrani@caviumnetworks.com>
+> 
+> This adds the backbone required for the various HW initalizations
+> which are necessary for the qedr driver - FW notification, resource
+> initializations, etc.
+> ...
 
-Alexei, it is the open source world - you can reinvent bell bottom
-pants, the wheel, etc
-just please dont mutilate or kill small animals along the way.
+> diff --git a/drivers/net/ethernet/qlogic/qed/qed_roce.c b/drivers/net/ethernet/qlogic/qed/qed_roce.c
+> ...
+> +	/* Check atomic operations support in PCI configuration space. */
+> +	pci_read_config_dword(cdev->pdev,
+> +			      cdev->pdev->pcie_cap + PCI_EXP_DEVCTL2,
+> +			      &pci_status_control);
+> +
+> +	if (pci_status_control & PCI_EXP_DEVCTL2_LTR_EN)
+> +		SET_FIELD(dev->dev_caps, QED_RDMA_DEV_CAP_ATOMIC_OP, 1);
 
-cheers,
-jamal
+I don't understand this.
+
+  1) PCI_EXP_DEVCTL2 is a 16-bit register ("word"), not a 32-bit one
+  ("dword").
+
+  2) QED_RDMA_DEV_CAP_ATOMIC_OP is set here but is not read anywhere
+  in this patch.  Is it used by the qed device itself?
+
+  3) PCI_EXP_DEVCTL2_LTR_EN is for Latency Tolerance Reporting and is
+  not related to atomic ops.  I don't know what
+  QED_RDMA_DEV_CAP_ATOMIC_OP means, but possibly one of these was
+  intended instead?
+
+    - PCI_EXP_DEVCAP2_ATOMIC_COMP32 means the device supports 32-bit
+      AtomicOps as a completer.
+    - PCI_EXP_DEVCAP2_ATOMIC_COMP64 means the device supports 64-bit
+      AtomicOps as a completer.
+    - PCI_EXP_DEVCAP2_ATOMIC_COMP128 means the device supports 128-bit
+      AtomicOps as a completer.
+    - PCI_EXP_DEVCTL2_ATOMIC_REQ means the device is allowed to
+      initiate AtomicOps.
+
+(This code is now in qed_rdma.c)
