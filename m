@@ -2,83 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C60AA5F80FC
-	for <lists+netdev@lfdr.de>; Sat,  8 Oct 2022 00:48:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 032645F8101
+	for <lists+netdev@lfdr.de>; Sat,  8 Oct 2022 00:57:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229699AbiJGWsr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 18:48:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33636 "EHLO
+        id S229581AbiJGW5u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 18:57:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229791AbiJGWsZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 18:48:25 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2E4511C27C;
-        Fri,  7 Oct 2022 15:48:13 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id o21so14129692ejm.11;
-        Fri, 07 Oct 2022 15:48:13 -0700 (PDT)
+        with ESMTP id S229445AbiJGW5t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 18:57:49 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F98B459B0
+        for <netdev@vger.kernel.org>; Fri,  7 Oct 2022 15:57:48 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id b15so5549330pje.1
+        for <netdev@vger.kernel.org>; Fri, 07 Oct 2022 15:57:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=fJDQxjYM1KZNjTuhU3CIC9yELCWgPJ3RRsqUfE7thb4=;
-        b=XJ581ZUsegVtmZCBO3f8b+PLbnMfgJl0xkktEvW2S/5nfxBuA7CnP6k5XoUOGIf467
-         G8B8As32VLppyAZmWFAfH/L0FqdsLYq7F8HnuePzISQcX9jkmKOwZKPngO46R+xHRP36
-         tWdRJZBYtuyB5VecepH6jwO2CrMu+4D34VVNOQU0bb2kC+iG40demSUsMDInuYWcI8Lo
-         MwiC1Bj3UPGVelh1atfvuttBF8Av9yqZYcMBuT92jCIeeOWwqlbw5VWrioevg+rTRvrw
-         771fLaaD/d356gS1+jnPbuVCtLYyYwwBrdsJbUO6CMvleAu6C++XxdGDsxsVVkzStWIT
-         nyXA==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ZU76uLwyjU7M+xx35ps05anqLd9LURu85tvF/oVdOAE=;
+        b=D+RhrZP8iAAcJtEj1mzPEpIi5o3ql3Jrop4jCmqVtASWsL6iVh+xUUra/BLPifMk+O
+         QGI81oGDwqkn1tPyxfCr2anAXEXKlRe87CyLx5GARPBVzIic6d7F0nqYtdO6l3Vs9jcb
+         bApLaIz9hcBqv5wRTEyTz1DAgAKTJsyplTjBX0HXhvtg6vohHQrObd/ZOpcZbEwoINpZ
+         0U5nom15Z03kMXwBnvs8G+PlKAG6Hpe2mjkBMkBHKtaSbRDsZ3uP/ZxqOtgCpUC5xBbI
+         Z1gJbswBe++m3LBHne9lu4NOgKoaUqRw24hs2ztOagcLhNTA+Km/sjp6cGgpbbXrqm55
+         vBhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=fJDQxjYM1KZNjTuhU3CIC9yELCWgPJ3RRsqUfE7thb4=;
-        b=R3H48Wrs8C0YVQbEQZsMlUOyZkHB9zOv7VOjZlg4YNMIar0nbGmhV0eXqe/CFUjEuE
-         3bMF1JejEPFUj63IXGRQ5IbWz65T6kZ8ErreGtBvN2JQz64VuD9XcpgzUius8AWI14k3
-         oyNZ8/K3EpYXGnKgy3LSa455gRt3eEP67IPaPzDvAM9niWmMLf9ehWmKJLTXQjSpjZGp
-         ludez+qvkPF5fubJs5EFX/SboETiGNKgIq81e3yg5AYYH3J6IADwRBT5iaqm/KDywT4P
-         EK6wJXOu09p1Zy/H76NgKPcPodKS+LFe/IhbDZz00QQ/EX4sANDYs2YRH7yvyRjkgt5T
-         29vQ==
-X-Gm-Message-State: ACrzQf03sGDsmGiNtQEPRgMOLi14Uze9KKRB+D1+0CWVzYy2f1hBSyse
-        11+48KGt1UupxO1JPsK2rDk=
-X-Google-Smtp-Source: AMsMyM5u9idp1WGwqZ+ohxM42s/jR9JQylMJtbPdybnGyMhq9l+rQdd6Ikr1qeu0NW1UM8ObI4to2w==
-X-Received: by 2002:a17:906:6a2a:b0:782:35ca:c2bc with SMTP id qw42-20020a1709066a2a00b0078235cac2bcmr5825958ejc.556.1665182891568;
-        Fri, 07 Oct 2022 15:48:11 -0700 (PDT)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id a19-20020a509b53000000b004590b29d8afsm2257363edj.84.2022.10.07.15.48.09
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ZU76uLwyjU7M+xx35ps05anqLd9LURu85tvF/oVdOAE=;
+        b=dvRsem/UMwj64md0UVNM/HHzdyCQNjSMyqrLi9oCzmzcHWUxiSfdN8QBfDAsGyS/rQ
+         yxf0svjkxQcSa2uATjzdeXjhutF/Hw0QGp1obZalyYtkK79sMCwjmwgjEpRMATnRpH38
+         /eEuEV32wPBgHRA+OJuW8gyNSDesZQkP//92jxU4OIwIx+LDmAuXnvREHcGegelGkq0J
+         KJOaIu1rGtSAJbyvBKdyjaaScL2+9SUg4LHfxtI3p+JmRkiR825kYsFcTcpyeSkQyc/b
+         HCYDMb/uSQ+IZPY/svkdD7pwFVznBpq3BEy3any9zEGKUs8Cihsczl1bxoUjUBRPEmPA
+         7epw==
+X-Gm-Message-State: ACrzQf2hO9eYeaTHcc6obcQLJylV0LzSHSpkgYpjc+V+vcai6hsH9Hsb
+        FZnMzwJa2BuaD3EOXUpCrog=
+X-Google-Smtp-Source: AMsMyM6kWERb00bqRYmPkxwJIxxhscC3n/V4CLdhHTsufbHKdJL7Gfa8kfL6EFckg6Y0RkWNHuEn9g==
+X-Received: by 2002:a17:902:f60b:b0:178:6a49:d4e3 with SMTP id n11-20020a170902f60b00b001786a49d4e3mr7286982plg.75.1665183467778;
+        Fri, 07 Oct 2022 15:57:47 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:c421:b06a:d31a:2720])
+        by smtp.gmail.com with ESMTPSA id b17-20020a170902d41100b0017bb38e4591sm2018569ple.41.2022.10.07.15.57.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Oct 2022 15:48:10 -0700 (PDT)
-Date:   Sat, 8 Oct 2022 01:48:08 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Lee Jones <lee@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
+        Fri, 07 Oct 2022 15:57:46 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH v3 net-next 12/14] dt-bindings: net: dsa: ocelot: add
- ocelot-ext documentation
-Message-ID: <20221007224808.dgksesjbiptwmqj7@skbuf>
-References: <20220926002928.2744638-1-colin.foster@in-advantage.com>
- <20220926002928.2744638-13-colin.foster@in-advantage.com>
- <20220927202600.hy5dr2s6j4jnmfpg@skbuf>
- <YzN3P6NaDhjA1Qrk@colin-ia-desktop>
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH net] macvlan: enforce a consistent minimal mtu
+Date:   Fri,  7 Oct 2022 15:57:43 -0700
+Message-Id: <20221007225743.1633333-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.38.0.rc1.362.ged0d419d3c-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YzN3P6NaDhjA1Qrk@colin-ia-desktop>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -89,66 +72,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 27, 2022 at 03:20:47PM -0700, Colin Foster wrote:
-> > The mfd driver can use these resources or can choose to ignore them, but
-> > I don't see a reason why the dt-bindings should diverge from vsc7514,
-> > its closest cousin.
-> 
-> This one I can answer. (from November 2021). Also I'm not saying that my
-> interpretation is correct. Historically when there are things up for
-> interpretation, I choose the incorrect path. (case in point... the other
-> part of this email)
-> 
-> https://patchwork.kernel.org/project/netdevbpf/patch/20211125201301.3748513-4-colin.foster@in-advantage.com/#24620755
-> 
-> '''
-> The thing with putting the targets in the device tree is that you're
-> inflicting yourself unnecessary pain. Take a look at
-> Documentation/devicetree/bindings/net/mscc-ocelot.txt, and notice that
-> they mark the "ptp" target as optional because it wasn't needed when
-> they first published the device tree, and now they need to maintain
-> compatibility with those old blobs. To me that is one of the sillier
-> reasons why you would not support PTP, because you don't know where your
-> registers are. And that document is not even up to date, it hasn't been
-> updated when VCAP ES0, IS1, IS2 were added. I don't think that Horatiu
-> even bothered to maintain backwards compatibility when he initially
-> added tc-flower offload for VCAP IS2, and as a result, I did not bother
-> either when extending it for the S0 and S1 targets. At some point
-> afterwards, the Microchip people even stopped complaining and just went
-> along with it. (the story is pretty much told from memory, I'm sorry if
-> I mixed up some facts). It's pretty messy, and that's what you get for
-> creating these micro-maps of registers spread through the guts of the
-> SoC and then a separate reg-name for each. When we worked on the device
-> tree for LS1028A and then T1040, it was very much a conscious decision
-> for the driver to have a single, big register map and split it up pretty
-> much in whichever way it wants to. In fact I think we wouldn't be
-> having the discussion about how to split things right now if we didn't
-> have that flexibility.
-> '''
-> 
-> I'm happy to go any way. The two that make the most sense might be:
-> 
-> micro-maps to make the VSC7512 "switch" portion match the VSC7514. The
-> ethernet switch portion might still have to ignore these...
-> 
-> A 'mega-map' that would also be ignored by the switch. It would be less
-> arbitrary than the <0 0> that I went with. Maybe something like
-> <0x70000000 0x02000000> to at least point to some valid region.
+From: Eric Dumazet <edumazet@google.com>
 
-A mega-map for the switch makes a lot more sense to me, if feasible
-(it should not overlap with the regions of any other peripherals).
-Something isn't quite right to me in having 20 reg-names for a single
-device tree node, and I still stand for just describing the whole range
-and letting the driver split it up according to its needs. I don't know
-why this approach wasn't chosen for the ocelot switch and I did not have
-the patience to map out the addresses that the peripherals use in the
-Microchip SoCs relative to each other, so see if what I'm proposing is
-possible.
+macvlan should enforce a minimal mtu of 68, even at link creation.
 
-But on the other hand this also needs to be balanced with the fact that
-one day, someone might come along with a mscc,vsc7514-switch that's SPI
-controlled, and expect that the dt-bindings for it in DSA mode expect
-the same reg-names that they do in switchdev mode. Or maybe they
-wouldn't expect that, I don't know. In any case, for NXP switches I
-didn't have a compatibility issue with switchdev-mode Ocelot to concern
-myself with, so I went with what made the most sense.
+This patch avoids the current behavior (which could lead to crashes
+in ipv6 stack if the link is brought up)
+
+$ ip link add macvlan1 link eno1 mtu 8 type macvlan  # This should fail !
+$ ip link sh dev macvlan1
+5: macvlan1@eno1: <BROADCAST,MULTICAST> mtu 8 qdisc noop
+    state DOWN mode DEFAULT group default qlen 1000
+    link/ether 02:47:6c:24:74:82 brd ff:ff:ff:ff:ff:ff
+$ ip link set macvlan1 mtu 67
+Error: mtu less than device minimum.
+$ ip link set macvlan1 mtu 68
+$ ip link set macvlan1 mtu 8
+Error: mtu less than device minimum.
+
+Fixes: 91572088e3fd ("net: use core MTU range checking in core net infra")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ drivers/net/macvlan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+index 713e3354cb2eb14cbf4009e67858c261508a037b..8f8f73099de8d8308b45b7e3bf9179e8311182ee 100644
+--- a/drivers/net/macvlan.c
++++ b/drivers/net/macvlan.c
+@@ -1192,7 +1192,7 @@ void macvlan_common_setup(struct net_device *dev)
+ {
+ 	ether_setup(dev);
+ 
+-	dev->min_mtu		= 0;
++	/* ether_setup() has set dev->min_mtu to ETH_MIN_MTU. */
+ 	dev->max_mtu		= ETH_MAX_MTU;
+ 	dev->priv_flags	       &= ~IFF_TX_SKB_SHARING;
+ 	netif_keep_dst(dev);
+-- 
+2.38.0.rc1.362.ged0d419d3c-goog
+
