@@ -2,103 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 744575F78E9
-	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 15:26:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D307D5F78EC
+	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 15:26:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229879AbiJGN0R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 09:26:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51882 "EHLO
+        id S229650AbiJGN0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 09:26:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229875AbiJGN0D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 09:26:03 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2041.outbound.protection.outlook.com [40.107.220.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18BE09C2D6
-        for <netdev@vger.kernel.org>; Fri,  7 Oct 2022 06:26:01 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y/ZF1ZHX0DpYC4HE+XiYte7Bad8/yNZDlKs7Q6Py6PBrt5YumgWSEJSgnRtBUqIjNakBSypjxUeK0T5hI95ck7ow/AqJNqGTXl4UvbnX2r24x44G2rLa4SmE7QJ96B2f3O8e7PqzJTQnxjBm7F8oZ3Pdg7VaN89HA5FEf7m9ZTmn/YOA1viuhnGsU5Dmr1lNqlEx3ctVsCk5kCR7k2HcRQlFJ0lHVFhI4ERyhQlGJ37hXuedFWPbUP4STTGy+Qhge42iqwaaw239YVy9RrxbuCl64iXSSW9gX1ZzBLkpU2yqJbcqEffJaceraybCZ5bKnAM+S68VLuGMqiseUKbM2g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KzrYube0RKL32HMfYnsHerQ8HH37t16kSQHaSnXZxpA=;
- b=QK2AXGVELFWyyasluL/f98MyrdvDFMbbXQ89UuaDzRSQo6kRe2jDw37jAWUyKguBQpF142Iatx7NbFhUBtSSlmscoVW1qyVRuTw3k0Hl3Hjs4krRQ9rlUl76Ut0xswzHB6Cd1JBpQ1ptXCiRSOhD/RVFjYDIA7FoXgcflgBaL17qcQrg47c1cWcr8fBXWwqNH4NI7RqPerQCb301HTMiWPTXR+3eGmm1UThAtYLop+ladXFRworgObsjlIRQV/rCTwZbHHRfOz4Dg9kIRNzW+Sc9ARDrUuszu28TB/4BsdG7ozFmyUqSVvGGYYdYbl52SQOYHp0CCYYoi8xLs662qg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=fail (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=amdcloud.onmicrosoft.com; s=selector1-amdcloud-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KzrYube0RKL32HMfYnsHerQ8HH37t16kSQHaSnXZxpA=;
- b=BqjsK7UC6Ilp0dUOh4FBAvtCzSmQNj54YAn9RS1DyFdMu8+Pz13rRfMFT6qm90VQqGnbB4j+yUvfbC4a6UjUPGAmbDB61aA6UyLTRtzkvQPdQ+UyMfLrSAaF/V9Uab9qSDLCD10PH1PmJtfYfQvAd4IUBingnUCMe2LijYCHC7l6eyKGK479/06kMrA0OwvNp0OBy+1x18f9q9yGlZp6RUVKPKUhtPUVaJdMqr3OufiGCT3OhDrenT5bJNPaEevVoz4rGBdsgBNBYvhmikP9jazxoJjlwmZzg5QH9d74LOCFM0FGqXrzLT2RhnWQba6lHoJdIrr7+c9EvY/NlVgH4w==
-Received: from BN9PR03CA0931.namprd03.prod.outlook.com (2603:10b6:408:108::6)
- by DM4PR12MB5120.namprd12.prod.outlook.com (2603:10b6:5:393::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.23; Fri, 7 Oct
- 2022 13:26:00 +0000
-Received: from BN8NAM11FT097.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:108:cafe::f8) by BN9PR03CA0931.outlook.office365.com
- (2603:10b6:408:108::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.24 via Frontend
- Transport; Fri, 7 Oct 2022 13:26:00 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=fail action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT097.mail.protection.outlook.com (10.13.176.147) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5709.10 via Frontend Transport; Fri, 7 Oct 2022 13:25:59 +0000
-Received: from SATLEXMB05.amd.com (10.181.40.146) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Fri, 7 Oct
- 2022 08:25:59 -0500
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB05.amd.com
- (10.181.40.146) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Fri, 7 Oct
- 2022 08:25:58 -0500
-Received: from xcbecree41x.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28 via Frontend
- Transport; Fri, 7 Oct 2022 08:25:57 -0500
-From:   <ecree@xilinx.com>
-To:     <netdev@vger.kernel.org>, <linux-net-drivers@amd.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <edumazet@google.com>, <habetsm.xilinx@gmail.com>,
-        <johannes@sipsolutions.net>, <marcelo.leitner@gmail.com>,
-        Edward Cree <ecree.xilinx@gmail.com>
-Subject: [RFC PATCH net-next 3/3] sfc: remove 'log-tc-errors' ethtool private flag
-Date:   Fri, 7 Oct 2022 14:25:14 +0100
-Message-ID: <7f21319d25833b4bd8b34615d1aa91465c5a8481.1665147129.git.ecree.xilinx@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <cover.1665147129.git.ecree.xilinx@gmail.com>
-References: <cover.1665147129.git.ecree.xilinx@gmail.com>
+        with ESMTP id S229815AbiJGN0x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 09:26:53 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C22F22315B;
+        Fri,  7 Oct 2022 06:26:49 -0700 (PDT)
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ognNH-000CLU-En; Fri, 07 Oct 2022 15:26:47 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ognNH-0007iZ-3U; Fri, 07 Oct 2022 15:26:47 +0200
+Subject: Re: [PATCH bpf-next 01/10] bpf: Add initial fd-based API to attach tc
+ BPF programs
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Joanne Koong <joannelkoong@gmail.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Joe Stringer <joe@cilium.io>,
+        Network Development <netdev@vger.kernel.org>
+References: <20221004231143.19190-1-daniel@iogearbox.net>
+ <20221004231143.19190-2-daniel@iogearbox.net>
+ <20221006050053.pbwo72xtzoza6gfl@macbook-pro-4.dhcp.thefacebook.com>
+ <f355eeba-1b46-749f-c102-65074e7eac27@iogearbox.net>
+ <CAADnVQ+gEY3FjCR=+DmjDR4gp5bOYZUFJQXj4agKFHT9CQPZBw@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <14f368eb-9158-68bc-956c-c8371cfcb531@iogearbox.net>
+Date:   Fri, 7 Oct 2022 15:26:46 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT097:EE_|DM4PR12MB5120:EE_
-X-MS-Office365-Filtering-Correlation-Id: 07c615aa-f0a4-402c-bdb0-08daa867797c
-X-MS-Exchange-SenderADCheck: 0
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: V+Pk1dSUKp+MX/KbS8SItWj5iAOW/xn+MHJynvazM9PXasYTrZmcxVMDm9Ygpw/FlgF/04CpxKqsAHuzaS0mgGncojILOIePqBepkQe2BJ/aJ7G+lXBVL+8DEk/hyDvgrXa2rStfGWE5rNMRl5SXJDsLvN3A0zVybQUppeNgI+vROICrzYORE4aSjaeeNxbp7bIpt2sqhqTQQnRo52dwsWAz4tcIJARky8u3XWkffQEeVP617NlUSNIQ9n8Fri5T3r59Mi1Z9bM8XmdvAG6aL9AmhIvJ9q2Lfkl/9LNikCYdXzdDm1xd5zRd9H4pBD7i7AkCXNrD5loyrdQc0EPWBfJQ+NtUQCQnSKs+VnwoW/HTyWntByPX6Ks660lwfCt/b14mKsdhEmT0E+LcHBTRS/n0RediZGfu7tY9pkuzTlAacCrv2qmNW3Q94/QDamAdLoQ0UjZSzPlwToRwfDU7kRW2vRIcAbOkDyVLWWxhyFBsbhGLvIKoqR6sASnt0fsfPLf+/7rMuN7Al7zeeAjycrcJHjTXstpBtUVA3ykm5UVb5QasQ8J7p7LTpiY1TbJH8TBl52MrSXTlRqQJNEfp+TDgYmIpUx0z7+b8u1/2+8YetMEw1PbH8trsvfZ7qAZDcOnMjNnYglN6sAkTbp0gmGpSR7n4ES6MQL6BeeDqN1cTy4jt9KmMRNo1dAr/uyR82RAzJqjs3H0fyHhgI7g4ETAFLvBsm3obeLi68vb4xzKC2luYT+/jOG8bh9lCm/qQgFBEYE5+nNv0ec0K2HrUedvATRSVL8MrT1vuzdmcpRc=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(396003)(376002)(39860400002)(136003)(346002)(451199015)(46966006)(36840700001)(40470700004)(8676002)(316002)(36860700001)(81166007)(82310400005)(83380400001)(55446002)(82740400003)(83170400001)(40480700001)(356005)(9686003)(47076005)(70206006)(2906002)(110136005)(2876002)(8936002)(41300700001)(5660300002)(336012)(186003)(42882007)(54906003)(4326008)(40460700003)(478600001)(70586007)(26005)(6666004)(36756003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2022 13:25:59.9037
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 07c615aa-f0a4-402c-bdb0-08daa867797c
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT097.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5120
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=no
+In-Reply-To: <CAADnVQ+gEY3FjCR=+DmjDR4gp5bOYZUFJQXj4agKFHT9CQPZBw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26682/Fri Oct  7 09:58:07 2022)
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -106,130 +64,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Edward Cree <ecree.xilinx@gmail.com>
+On 10/7/22 1:28 AM, Alexei Starovoitov wrote:
+> On Thu, Oct 6, 2022 at 2:29 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>> On 10/6/22 7:00 AM, Alexei Starovoitov wrote:
+>>> On Wed, Oct 05, 2022 at 01:11:34AM +0200, Daniel Borkmann wrote:
+>> [...]
+>>>
+>>> I cannot help but feel that prio logic copy-paste from old tc, netfilter and friends
+>>> is done because "that's how things were done in the past".
+>>> imo it was a well intentioned mistake and all networking things (tc, netfilter, etc)
+>>> copy-pasted that cumbersome and hard to use concept.
+>>> Let's throw away that baggage?
+>>> In good set of cases the bpf prog inserter cares whether the prog is first or not.
+>>> Since the first prog returning anything but TC_NEXT will be final.
+>>> I think prog insertion flags: 'I want to run first' vs 'I don't care about order'
+>>> is good enough in practice. Any complex scheme should probably be programmable
+>>> as any policy should. For example in Meta we have 'xdp chainer' logic that is similar
+>>> to libxdp chaining, but we added a feature that allows a prog to jump over another
+>>> prog and continue the chain. Priority concept cannot express that.
+>>> Since we'd have to add some "policy program" anyway for use cases like this
+>>> let's keep things as simple as possible?
+>>> Then maybe we can adopt this "as-simple-as-possible" to XDP hooks ?
+>>> And allow bpf progs chaining in the kernel with "run_me_first" vs "run_me_anywhere"
+>>> in both tcx and xdp ?
+>>> Naturally "run_me_first" prog will be the only one. No need for F_REPLACE flags, etc.
+>>> The owner of "run_me_first" will update its prog through bpf_link_update.
+>>> "run_me_anywhere" will add to the end of the chain.
+>>> In XDP for compatibility reasons "run_me_first" will be the default.
+>>> Since only one prog can be enqueued with such flag it will match existing single prog behavior.
+>>> Well behaving progs will use (like xdp-tcpdump or monitoring progs) will use "run_me_anywhere".
+>>> I know it's far from covering plenty of cases that we've discussed for long time,
+>>> but prio concept isn't really covering them either.
+>>> We've struggled enough with single xdp prog, so certainly not advocating for that.
+>>> Another alternative is to do: "queue_at_head" vs "queue_at_tail". Just as simple.
+>>> Both simple versions have their pros and cons and don't cover everything,
+>>> but imo both are better than prio.
+>>
+>> Yeah, it's kind of tricky, imho. The 'run_me_first' vs 'run_me_anywhere' are two
+>> use cases that should be covered (and actually we kind of do this in this set, too,
+>> with the prios via prio=x vs prio=0). Given users will only be consuming the APIs
+>> via libs like libbpf, this can also be abstracted this way w/o users having to be
+>> aware of prios.
+> 
+> but the patchset tells different story.
+> Prio gets exposed everywhere in uapi all the way to bpftool
+> when it's right there for users to understand.
+> And that's the main problem with it.
+> The user don't want to and don't need to be aware of it,
+> but uapi forces them to pick the priority.
+> 
+>> Anyway, where it gets tricky would be when things depend on ordering,
+>> e.g. you have BPF progs doing: policy, monitoring, lb, monitoring, encryption, which
+>> would be sth you can build today via tc BPF: so policy one acts as a prefilter for
+>> various cidr ranges that should be blocked no matter what, then monitoring to sample
+>> what goes into the lb, then lb itself which does snat/dnat, then monitoring to see what
+>> the corresponding pkt looks that goes to backend, and maybe encryption to e.g. send
+>> the result to wireguard dev, so it's encrypted from lb node to backend.
+> 
+> That's all theory. Your cover letter example proves that in
+> real life different service pick the same priority.
+> They simply don't know any better.
+> prio is an unnecessary magic that apps _have_ to pick,
+> so they just copy-paste and everyone ends up using the same.
+> 
+>> For such
+>> example, you'd need prios as the 'run_me_anywhere' doesn't guarantee order, so there's
+>> a case for both scenarios (concrete layout vs loose one), and for latter we could
+>> start off with and internal prio around x (e.g. 16k), so there's room to attach in
+>> front via fixed prio, but also append to end for 'don't care', and that could be
+>> from lib pov the default/main API whereas prio would be some kind of extended one.
+>> Thoughts?
+> 
+> If prio was not part of uapi, like kernel internal somehow,
+> and there was a user space daemon, systemd, or another bpf prog,
+> module, whatever that users would interface to then
+> the proposed implementation of prio would totally make sense.
+> prio as uapi is not that.
 
-It no longer does anything now that we're using formatted extacks instead.
-So we can remove the driver's whole get/set priv_flags implementation.
+A good analogy to this issue might be systemd's unit files.. you specify dependencies
+for your own <unit> file via 'Wants=<unitA>', and ordering via 'Before=<unitB>' and
+'After=<unitC>' and they refer to other unit files. I think that is generally okay,
+you don't deal with prio numbers, but rather some kind textual representation. However
+user/operator will have to deal with dependencies/ordering one way or another, the
+problem here is that we deal with kernel and loader talks to kernel directly so it
+has no awareness of what else is running or could be running, so apps needs to deal
+with it somehow (and it cannot without external help). Some kind of system daemon
+(like systemd) also won't fly much given such applications as Pods are typically
+shipped individually as container images, so really only host /netns/ is shared in
+such case but nothing else (base image itself can be alpine, ubuntu, etc, and it has
+its own systemd instance, for example). Maybe BPF links could have user defined
+name, and you'd express dependencies via names, but then again the application/
+loader deals with bpf(2) directly and only kernel is common denominator and apps
+themselves have no awareness of other components that run or might run in the
+system which load bpf (unless they expose config knob).. you mentioned 'xdp chainer'
+at Meta, how do you express dependencies and ordering there? When you deploy a new
+app for XDP to production, I presume you need to know exactly where it's running
+and not just 'ordering doesn't matter, just append to the end', no? I guess we
+generally agree on that, just whether there are better options than prio for uapi
+to express ordering/dependencies. Do you use sth different in mentioned 'xdp chainer'?
 
-Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
----
- drivers/net/ethernet/sfc/ef100_ethtool.c  |  2 --
- drivers/net/ethernet/sfc/ethtool_common.c | 37 -----------------------
- drivers/net/ethernet/sfc/ethtool_common.h |  2 --
- drivers/net/ethernet/sfc/net_driver.h     |  2 --
- 4 files changed, 43 deletions(-)
-
-diff --git a/drivers/net/ethernet/sfc/ef100_ethtool.c b/drivers/net/ethernet/sfc/ef100_ethtool.c
-index 135ece2f1375..702abbe59b76 100644
---- a/drivers/net/ethernet/sfc/ef100_ethtool.c
-+++ b/drivers/net/ethernet/sfc/ef100_ethtool.c
-@@ -43,8 +43,6 @@ const struct ethtool_ops ef100_ethtool_ops = {
- 	.get_pauseparam         = efx_ethtool_get_pauseparam,
- 	.set_pauseparam         = efx_ethtool_set_pauseparam,
- 	.get_sset_count		= efx_ethtool_get_sset_count,
--	.get_priv_flags		= efx_ethtool_get_priv_flags,
--	.set_priv_flags		= efx_ethtool_set_priv_flags,
- 	.self_test		= efx_ethtool_self_test,
- 	.get_strings		= efx_ethtool_get_strings,
- 	.get_link_ksettings	= efx_ethtool_get_link_ksettings,
-diff --git a/drivers/net/ethernet/sfc/ethtool_common.c b/drivers/net/ethernet/sfc/ethtool_common.c
-index 6649a2327d03..a8cbceeb301b 100644
---- a/drivers/net/ethernet/sfc/ethtool_common.c
-+++ b/drivers/net/ethernet/sfc/ethtool_common.c
-@@ -101,14 +101,6 @@ static const struct efx_sw_stat_desc efx_sw_stat_desc[] = {
- 
- #define EFX_ETHTOOL_SW_STAT_COUNT ARRAY_SIZE(efx_sw_stat_desc)
- 
--static const char efx_ethtool_priv_flags_strings[][ETH_GSTRING_LEN] = {
--	"log-tc-errors",
--};
--
--#define EFX_ETHTOOL_PRIV_FLAGS_LOG_TC_ERRS		BIT(0)
--
--#define EFX_ETHTOOL_PRIV_FLAGS_COUNT ARRAY_SIZE(efx_ethtool_priv_flags_strings)
--
- void efx_ethtool_get_drvinfo(struct net_device *net_dev,
- 			     struct ethtool_drvinfo *info)
- {
-@@ -460,8 +452,6 @@ int efx_ethtool_get_sset_count(struct net_device *net_dev, int string_set)
- 		       efx_ptp_describe_stats(efx, NULL);
- 	case ETH_SS_TEST:
- 		return efx_ethtool_fill_self_tests(efx, NULL, NULL, NULL);
--	case ETH_SS_PRIV_FLAGS:
--		return EFX_ETHTOOL_PRIV_FLAGS_COUNT;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -488,39 +478,12 @@ void efx_ethtool_get_strings(struct net_device *net_dev,
- 	case ETH_SS_TEST:
- 		efx_ethtool_fill_self_tests(efx, NULL, strings, NULL);
- 		break;
--	case ETH_SS_PRIV_FLAGS:
--		for (i = 0; i < EFX_ETHTOOL_PRIV_FLAGS_COUNT; i++)
--			strscpy(strings + i * ETH_GSTRING_LEN,
--				efx_ethtool_priv_flags_strings[i],
--				ETH_GSTRING_LEN);
--		break;
- 	default:
- 		/* No other string sets */
- 		break;
- 	}
- }
- 
--u32 efx_ethtool_get_priv_flags(struct net_device *net_dev)
--{
--	struct efx_nic *efx = efx_netdev_priv(net_dev);
--	u32 ret_flags = 0;
--
--	if (efx->log_tc_errs)
--		ret_flags |= EFX_ETHTOOL_PRIV_FLAGS_LOG_TC_ERRS;
--
--	return ret_flags;
--}
--
--int efx_ethtool_set_priv_flags(struct net_device *net_dev, u32 flags)
--{
--	struct efx_nic *efx = efx_netdev_priv(net_dev);
--
--	efx->log_tc_errs =
--		!!(flags & EFX_ETHTOOL_PRIV_FLAGS_LOG_TC_ERRS);
--
--	return 0;
--}
--
- void efx_ethtool_get_stats(struct net_device *net_dev,
- 			   struct ethtool_stats *stats,
- 			   u64 *data)
-diff --git a/drivers/net/ethernet/sfc/ethtool_common.h b/drivers/net/ethernet/sfc/ethtool_common.h
-index 0afc74021a5e..659491932101 100644
---- a/drivers/net/ethernet/sfc/ethtool_common.h
-+++ b/drivers/net/ethernet/sfc/ethtool_common.h
-@@ -27,8 +27,6 @@ int efx_ethtool_fill_self_tests(struct efx_nic *efx,
- int efx_ethtool_get_sset_count(struct net_device *net_dev, int string_set);
- void efx_ethtool_get_strings(struct net_device *net_dev, u32 string_set,
- 			     u8 *strings);
--u32 efx_ethtool_get_priv_flags(struct net_device *net_dev);
--int efx_ethtool_set_priv_flags(struct net_device *net_dev, u32 flags);
- void efx_ethtool_get_stats(struct net_device *net_dev,
- 			   struct ethtool_stats *stats __attribute__ ((unused)),
- 			   u64 *data);
-diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
-index 2e9ba0cfe848..7ef823d7a89a 100644
---- a/drivers/net/ethernet/sfc/net_driver.h
-+++ b/drivers/net/ethernet/sfc/net_driver.h
-@@ -855,7 +855,6 @@ enum efx_xdp_tx_queues_mode {
-  * @timer_max_ns: Interrupt timer maximum value, in nanoseconds
-  * @irq_rx_adaptive: Adaptive IRQ moderation enabled for RX event queues
-  * @irqs_hooked: Channel interrupts are hooked
-- * @log_tc_errs: Error logging for TC filter insertion is enabled
-  * @irq_rx_mod_step_us: Step size for IRQ moderation for RX event queues
-  * @irq_rx_moderation_us: IRQ moderation time for RX event queues
-  * @msg_enable: Log message enable flags
-@@ -1018,7 +1017,6 @@ struct efx_nic {
- 	unsigned int timer_max_ns;
- 	bool irq_rx_adaptive;
- 	bool irqs_hooked;
--	bool log_tc_errs;
- 	unsigned int irq_mod_step_us;
- 	unsigned int irq_rx_moderation_us;
- 	u32 msg_enable;
+Thanks,
+Daniel
