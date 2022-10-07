@@ -2,69 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BB815F7D91
-	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 20:59:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6E825F7D96
+	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 21:00:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229507AbiJGS7m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 14:59:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38898 "EHLO
+        id S229566AbiJGTAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 15:00:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiJGS7l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 14:59:41 -0400
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A39E95B1
-        for <netdev@vger.kernel.org>; Fri,  7 Oct 2022 11:59:40 -0700 (PDT)
-Received: by mail-qt1-x834.google.com with SMTP id g10so1462765qtu.2
-        for <netdev@vger.kernel.org>; Fri, 07 Oct 2022 11:59:40 -0700 (PDT)
+        with ESMTP id S229688AbiJGTAM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 15:00:12 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7995D45994;
+        Fri,  7 Oct 2022 12:00:09 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id s2so8305411edd.2;
+        Fri, 07 Oct 2022 12:00:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=M1mtKAPPcZg/kGWu5/9mS7PSxVW8IExZ5DLsDPW2Nvw=;
-        b=AkIdWNHAOOCyDRBUf7qKK6z5FOEz4NkpwjqHZ3QhXjSENe1feJSvVkf8iHYuTfTyZD
-         T9S3n+8FYR5ufQPLXYmY5443L1qovNug+RQwN9fy/j5pxpI+lnnQN2ILz12etFQIH580
-         JQz2e/EU7mG3YVFJ+HDKIYyk/jYJE0JZrOm00s2n3yCZBnLIa9oJm7A7/d77m99nRntI
-         xPil/Ur3cU0zVRB7YUFA5QVy/OaizONL3wKsRff7WGvKlrmZXunXiGkMiCwh/1868hX+
-         hvq3L2zOJuxK/7zJQ0ghKh16Tq1EUeWHrVFpE0D0eWtYzK3nMLOGafj+sktKNjooZ36X
-         kOJw==
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zttRBgfr1n1gjSk5ZE8JViy+xaR2g3AlGmkJx/xKwlE=;
+        b=IGoe2KBFOTMk+2As/7ocIGTewrmSuRa2gWRq7i2QL1u6q/q2yaM3N/XMOKhMRBSeoO
+         S/DfF/GxfpUF/o/bodKOYo4JzF8IO6BWkN8jnih6FADn/L+oJYGQzYN3rd5hfEEYK6cU
+         4xVqdgncUf7DtVfwOLbsdKTRwGeUyoGvR19YGd8cbfwNcyZOfWqJX4YNNSLYrK7U8+8t
+         pW/jDFUL5ZVrVd+5atXMfYRpmc6LvAsLITm5RSNxOnL7RlCUkWJTNye/vbnP1i8IHDVl
+         uuCC6voc5RnnuH61N/0jGrOnT02vN5vZC/2k8e0CxCTE2Mig5GJq1PVLXLqgt5C8VBr+
+         jkHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=M1mtKAPPcZg/kGWu5/9mS7PSxVW8IExZ5DLsDPW2Nvw=;
-        b=GTsh4jKHmCkmDwgiFMZwuZxOdem8m67gJ1amWclgIfZMUA9tpAGsw1wAr2pCoPBr/B
-         GhCNJhD1Cye30EV6GKETh7EunJ5UMd9GVJ/QVZPpthGhgkei94n9DnO16mx/1vJFC3xL
-         1yuI1xn+s5YqKyrccwzv6gPUtGA3lRpc24CQTgagJQzHQwyXpJ3Y0LsZqOG6eHJWfNkY
-         fEM53p72sSKHs1TFWETofGkb5VxRGwspu20yPwfBt1fL9uJEYegjjcaGz4Mh+Nxisnsp
-         FjvgfGU1G9NaH6wIekFG88Pwg2whcFbqyDphYaeckS8kydPNLAL2QIeZzjSv0nochm0E
-         //0A==
-X-Gm-Message-State: ACrzQf01Uz+rYpVV8urVHROqVGMsvky75r+OxqcVKRHZ8+XwwzhxJnzC
-        PDT/4HBhjl5H7PTawnLwnoEq7B7uYn8=
-X-Google-Smtp-Source: AMsMyM6ydFfkN/v4pEKKgE5uFODKQbsnLHRey9wBPiwpX0IAz5+CRULzgz9MDcBgZHHnGvsUVvV8LA==
-X-Received: by 2002:a05:622a:4cb:b0:388:aaf0:62bd with SMTP id q11-20020a05622a04cb00b00388aaf062bdmr5481244qtx.337.1665169179118;
-        Fri, 07 Oct 2022 11:59:39 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id h7-20020ac85687000000b00391766f84a6sm2657426qta.78.2022.10.07.11.59.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 07 Oct 2022 11:59:38 -0700 (PDT)
-Message-ID: <792d59c8-37db-3d2d-47eb-34801aa20ef7@gmail.com>
-Date:   Fri, 7 Oct 2022 11:59:37 -0700
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=zttRBgfr1n1gjSk5ZE8JViy+xaR2g3AlGmkJx/xKwlE=;
+        b=F0mFMKISTU/rCcUOKow6DjnLInEkLYkxBfUwU5nTwwUclzfXjieE7KCcXujLSFaeFO
+         nUac1qVMCsDIQ1UXljiQgk4tmYmUoen4uJKXsEw1Rqfmfnuz6pSTO9KJeTfFj0K91Yad
+         JfdLfA9pEz45OID2OPBtOQ+UUseuhvytCqiTido4auzslUnFxYWob1QmDOCQGWKKSVa3
+         rj5b3Tvv+9syTHbfsV7YIU3QHw0DM2QPe+WXDxt8YNQtVl+8dJ8W3asLG1JSiFRBXK+5
+         //APxHZWdxZWhUV6G9ntZsvsJQ1gbRbdzSF69yLqrgYXtSfVH4ED/b2lxAo6EUIxd3GV
+         30KQ==
+X-Gm-Message-State: ACrzQf3+Jb5FFxF3tNY1A2Mh3mJwEola5HA5op8Oe4eQrpjK8bNwCMco
+        Dm8vuFWSmkaFlD0aGyBH4jvLRKQTNv4Kho6dbFw=
+X-Google-Smtp-Source: AMsMyM4u+UXBm+WdVPDvTkTujFHi5bkXCRwmHF4FXwgUAqzRiTFLjfKrfePD7+BQ8lRncRul9lDQ7tV8u+O+8pJmedY=
+X-Received: by 2002:a05:6402:3709:b0:459:279e:fdc6 with SMTP id
+ ek9-20020a056402370900b00459279efdc6mr5974218edb.338.1665169207722; Fri, 07
+ Oct 2022 12:00:07 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: netdev development stats for 6.1?
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-References: <20221004212721.069dd189@kernel.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20221004212721.069dd189@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLY,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20221004231143.19190-1-daniel@iogearbox.net> <20221004231143.19190-2-daniel@iogearbox.net>
+ <20221006050053.pbwo72xtzoza6gfl@macbook-pro-4.dhcp.thefacebook.com>
+ <f355eeba-1b46-749f-c102-65074e7eac27@iogearbox.net> <CAADnVQ+gEY3FjCR=+DmjDR4gp5bOYZUFJQXj4agKFHT9CQPZBw@mail.gmail.com>
+ <14f368eb-9158-68bc-956c-c8371cfcb531@iogearbox.net> <875ygvemau.fsf@toke.dk>
+ <Y0BaBUWeTj18V5Xp@google.com> <87tu4fczyv.fsf@toke.dk>
+In-Reply-To: <87tu4fczyv.fsf@toke.dk>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 7 Oct 2022 11:59:55 -0700
+Message-ID: <CAADnVQLH9R94iszCmhYeLKnDPy_uiGeyXnEwoADm8_miihwTmQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 01/10] bpf: Add initial fd-based API to attach tc
+ BPF programs
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Joanne Koong <joannelkoong@gmail.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Joe Stringer <joe@cilium.io>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,138 +83,226 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/4/22 21:27, Jakub Kicinski wrote:
-> Hi!
-> 
-> For a while now I had been curious if we can squeeze any interesting
-> stats from the ML traffic. In particular I was curious "who is helping",
-> who is reviewing the most patches (but based on the emails sent not just
-> review tags).
-> 
-> I quickly wrote a script to scan emails sent to netdev since 5.19 was
-> tagged (~14k) and count any message which has subject starting with
-> '[' as a patch and anything else as a comment/review. It's not very
-> scientific but the result for the most part matches my expectations.
-> 
-> A disclaimer first - this methodology puts me ahead because I send
-> a lot of emails. Most of them are not reviews, so ignore me.
-> 
-> Second question to address upfront is whether publishing stats is
-> useful or mostly risks people treating participation as a competition
-> and trying to game the system? Hard to say, but if even a single person
-> can point to these stats to help justify more time spent reviewing to
-> their management - it's worth it.
-> 
-> That said feedback is very welcome, public or private.
-> 
-> 
-> The stats are by number of threads and number of messages.
-> 
->   Top 10 reviewers (thr):            Top 10 reviewers (msg):
->     1. [320] Jakub Kicinski            1. [538] Jakub Kicinski
->     2. [134] Andrew Lunn               2. [263] Andrew Lunn
->     3. [ 51] Krzysztof Kozlowski       3. [122] Krzysztof Kozlowski
->     4. [ 51] Paolo Abeni               4. [ 80] Rob Herring
->     5. [ 47] Eric Dumazet              5. [ 78] Eric Dumazet
->     6. [ 46] Rob Herring               6. [ 70] Paolo Abeni
->     7. [ 35] Florian Fainelli          7. [ 65] Vladimir Oltean
->     8. [ 35] Kalle Valo                8. [ 58] Ido Schimmel
->     9. [ 32] David Ahern               9. [ 58] Michael S. Tsirkin
->    10. [ 31] Vladimir Oltean          10. [ 57] Russell King
-> 
-> 
-> These seem to make sense, but the volume-centric view shows.
-> Note that the numbers are very close so the exact order is
-> of little importance. The names should be familiar to everyone,
-> I hope :)
-> 
-> 
->   Top 10 authors (thr):              Top 10 authors (msg):
->     1. [ 84] Zhengchao Shao            1. [287] Zhengchao Shao
->     2. [ 52] Vladimir Oltean           2. [232] Vladimir Oltean
->     3. [ 43] Jakub Kicinski            3. [166] Saeed Mahameed
->     4. [ 28] Tony Nguyen               4. [156] Kuniyuki Iwashima
->     5. [ 28] cgel.zte@gmail.com        5. [134] Sean Anderson
->     6. [ 23] Stephen Rothwell          6. [122] Oleksij Rempel
->     7. [ 23] Hangbin Liu               7. [106] Tony Nguyen
->     8. [ 20] Wolfram Sang              8. [ 93] Mattias Forsblad
->     9. [ 20] Kuniyuki Iwashima         9. [ 93] Jian Shen
->    10. [ 20] Jiri Pirko               10. [ 86] Jakub Kicinski
-> 
-> 
-> Here Stephen is probably by accident as I was counting his merge
-> resolutions as patches.
-> 
-> What is clear tho (with the notable exception of Vladimir)
-> - most of the authors are not making the top reviewer list :(
-> 
-> 
-> And here is the part that I was most curious about.
-> Calculate a "score" which is roughly:
->     10 * reviews - 3 * authorship,
-> to see who is a "good citizen":
-> 
->   Top 10 scores (positive):          Top 10 scores (negative):
->     1. [4102] Jakub Kicinski           1. [397] Zhengchao Shao
->     2. [1848] Andrew Lunn              2. [116] Kuniyuki Iwashima
->     3. [737] Krzysztof Kozlowski       3. [105] cgel.zte@gmail.com
->     4. [620] Paolo Abeni               4. [ 93] Mattias Forsblad
->     5. [611] Rob Herring               5. [ 82] Yang Yingliang
->     6. [588] Eric Dumazet              6. [ 82] Sean Anderson
->     7. [429] Florian Fainelli          7. [ 77] Daniel Lezcano
->     8. [418] Kalle Valo                8. [ 68] Stephen Rothwell
->     9. [406] David Ahern               9. [ 67] Arun Ramadoss
->    10. [344] Russell King             10. [ 64] Wang Yufen
-> 
-> 
-> Now looking at companies.
-> 
-> [Using my very rough mapping of people to company based on email
-> domain and manual mapping for major contributors]
-> 
->   Top 7 reviewers (thr):     Top 7 reviewers (msg):
->     1. [369] Meta              1. [640] Meta
->     2. [139] Intel             2. [306] RedHat
->     3. [134] Andrew Lunn       3. [263] Andrew Lunn
->     4. [127] RedHat            4. [243] Intel
->     5. [ 80] nVidia            5. [193] nVidia
->     6. [ 71] Google            6. [134] Linaro
->     7. [ 61] Linaro            7. [121] Google
-> 
->   Top 8 authors (thr):       Top 7 authors (msg):
->     1. [207] Huawei            1. [640] Huawei
->     2. [103] nVidia            2. [496] nVidia
->     3. [ 96] Intel             3. [342] Intel
->     4. [ 94] RedHat            4. [332] RedHat
->     5. [ 75] Google            5. [263] NXP
->     6. [ 60] Microchip         6. [170] Linaro
->     7. [ 59] NXP               7. [157] Amazon
->     8. [ 51] Meta
-> 
-> Top 12 scores (positive):     Top 12 scores (negative):
->     1. [4763] Meta               1. [887] Huawei
->     2. [1848] Andrew Lunn        2. [145] Microchip
->     3. [1432] RedHat             3. [105] ZTE
->     4. [1415] Intel              4. [ 95] Amazon
->     5. [ 680] Linaro             5. [ 93] Mattias Forsblad
->     6. [ 652] Google             6. [ 68] Stephen Rothwell
->     7. [ 627] nVidia             7. [ 59] Wolfram Sang
->     8. [ 609] Rob Herring        8. [ 57] wei.fang@nxp.com
->     9. [ 429] Florian Fainelli   9. [ 56] Arınç ÜNAL
->    10. [ 418] Kalle Valo        10. [ 53] Sean Anderson
->    11. [ 368] Russell King      11. [ 48] Maxime Chevallier
->    12. [ 356] David Ahern       12. [ 46] Jianguo Zhang
-> 
-> 
-> The bot operators top the list of "bad citizens" as they do not
-> contribute to the review process. Microchip and Amazon also seem
-> to send a lot more code than they help to review.
-> 
-> Huge *thank you* to all the reviewers!
+On Fri, Oct 7, 2022 at 10:20 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> sdf@google.com writes:
+>
+> > On 10/07, Toke H=EF=BF=BDiland-J=EF=BF=BDrgensen wrote:
+> >> Daniel Borkmann <daniel@iogearbox.net> writes:
+> >
+> >> > On 10/7/22 1:28 AM, Alexei Starovoitov wrote:
+> >> >> On Thu, Oct 6, 2022 at 2:29 PM Daniel Borkmann <daniel@iogearbox.ne=
+t>
+> >> wrote:
+> >> >>> On 10/6/22 7:00 AM, Alexei Starovoitov wrote:
+> >> >>>> On Wed, Oct 05, 2022 at 01:11:34AM +0200, Daniel Borkmann wrote:
+> >> >>> [...]
+> >> >>>>
+> >> >>>> I cannot help but feel that prio logic copy-paste from old tc,
+> >> netfilter and friends
+> >> >>>> is done because "that's how things were done in the past".
+> >> >>>> imo it was a well intentioned mistake and all networking things (=
+tc,
+> >> netfilter, etc)
+> >> >>>> copy-pasted that cumbersome and hard to use concept.
+> >> >>>> Let's throw away that baggage?
+> >> >>>> In good set of cases the bpf prog inserter cares whether the prog=
+ is
+> >> first or not.
+> >> >>>> Since the first prog returning anything but TC_NEXT will be final=
+.
+> >> >>>> I think prog insertion flags: 'I want to run first' vs 'I don't c=
+are
+> >> about order'
+> >> >>>> is good enough in practice. Any complex scheme should probably be
+> >> programmable
+> >> >>>> as any policy should. For example in Meta we have 'xdp chainer'
+> >> logic that is similar
+> >> >>>> to libxdp chaining, but we added a feature that allows a prog to
+> >> jump over another
+> >> >>>> prog and continue the chain. Priority concept cannot express that=
+.
+> >> >>>> Since we'd have to add some "policy program" anyway for use cases
+> >> like this
+> >> >>>> let's keep things as simple as possible?
+> >> >>>> Then maybe we can adopt this "as-simple-as-possible" to XDP hooks=
+ ?
+> >> >>>> And allow bpf progs chaining in the kernel with "run_me_first"
+> >> vs "run_me_anywhere"
+> >> >>>> in both tcx and xdp ?
+> >> >>>> Naturally "run_me_first" prog will be the only one. No need for
+> >> F_REPLACE flags, etc.
+> >> >>>> The owner of "run_me_first" will update its prog through
+> >> bpf_link_update.
+> >> >>>> "run_me_anywhere" will add to the end of the chain.
+> >> >>>> In XDP for compatibility reasons "run_me_first" will be the defau=
+lt.
+> >> >>>> Since only one prog can be enqueued with such flag it will match
+> >> existing single prog behavior.
+> >> >>>> Well behaving progs will use (like xdp-tcpdump or monitoring prog=
+s)
+> >> will use "run_me_anywhere".
+> >> >>>> I know it's far from covering plenty of cases that we've discusse=
+d
+> >> for long time,
+> >> >>>> but prio concept isn't really covering them either.
+> >> >>>> We've struggled enough with single xdp prog, so certainly not
+> >> advocating for that.
+> >> >>>> Another alternative is to do: "queue_at_head" vs "queue_at_tail".
+> >> Just as simple.
+> >> >>>> Both simple versions have their pros and cons and don't cover
+> >> everything,
+> >> >>>> but imo both are better than prio.
+> >> >>>
+> >> >>> Yeah, it's kind of tricky, imho. The 'run_me_first'
+> >> vs 'run_me_anywhere' are two
+> >> >>> use cases that should be covered (and actually we kind of do this =
+in
+> >> this set, too,
+> >> >>> with the prios via prio=3Dx vs prio=3D0). Given users will only be
+> >> consuming the APIs
+> >> >>> via libs like libbpf, this can also be abstracted this way w/o use=
+rs
+> >> having to be
+> >> >>> aware of prios.
+> >> >>
+> >> >> but the patchset tells different story.
+> >> >> Prio gets exposed everywhere in uapi all the way to bpftool
+> >> >> when it's right there for users to understand.
+> >> >> And that's the main problem with it.
+> >> >> The user don't want to and don't need to be aware of it,
+> >> >> but uapi forces them to pick the priority.
+> >> >>
+> >> >>> Anyway, where it gets tricky would be when things depend on orderi=
+ng,
+> >> >>> e.g. you have BPF progs doing: policy, monitoring, lb, monitoring,
+> >> encryption, which
+> >> >>> would be sth you can build today via tc BPF: so policy one acts as=
+ a
+> >> prefilter for
+> >> >>> various cidr ranges that should be blocked no matter what, then
+> >> monitoring to sample
+> >> >>> what goes into the lb, then lb itself which does snat/dnat, then
+> >> monitoring to see what
+> >> >>> the corresponding pkt looks that goes to backend, and maybe
+> >> encryption to e.g. send
+> >> >>> the result to wireguard dev, so it's encrypted from lb node to
+> >> backend.
+> >> >>
+> >> >> That's all theory. Your cover letter example proves that in
+> >> >> real life different service pick the same priority.
+> >> >> They simply don't know any better.
+> >> >> prio is an unnecessary magic that apps _have_ to pick,
+> >> >> so they just copy-paste and everyone ends up using the same.
+> >> >>
+> >> >>> For such
+> >> >>> example, you'd need prios as the 'run_me_anywhere' doesn't guarant=
+ee
+> >> order, so there's
+> >> >>> a case for both scenarios (concrete layout vs loose one), and for
+> >> latter we could
+> >> >>> start off with and internal prio around x (e.g. 16k), so there's r=
+oom
+> >> to attach in
+> >> >>> front via fixed prio, but also append to end for 'don't care', and
+> >> that could be
+> >> >>> from lib pov the default/main API whereas prio would be some kind =
+of
+> >> extended one.
+> >> >>> Thoughts?
+> >> >>
+> >> >> If prio was not part of uapi, like kernel internal somehow,
+> >> >> and there was a user space daemon, systemd, or another bpf prog,
+> >> >> module, whatever that users would interface to then
+> >> >> the proposed implementation of prio would totally make sense.
+> >> >> prio as uapi is not that.
+> >> >
+> >> > A good analogy to this issue might be systemd's unit files.. you
+> >> specify dependencies
+> >> > for your own <unit> file via 'Wants=3D<unitA>', and ordering
+> >> via 'Before=3D<unitB>' and
+> >> > 'After=3D<unitC>' and they refer to other unit files. I think that i=
+s
+> >> generally okay,
+> >> > you don't deal with prio numbers, but rather some kind textual
+> >> representation. However
+> >> > user/operator will have to deal with dependencies/ordering one way o=
+r
+> >> another, the
+> >> > problem here is that we deal with kernel and loader talks to kernel
+> >> directly so it
+> >> > has no awareness of what else is running or could be running, so app=
+s
+> >> needs to deal
+> >> > with it somehow (and it cannot without external help).
+> >
+> >> I was thinking a little about how this might work; i.e., how can the
+> >> kernel expose the required knobs to allow a system policy to be
+> >> implemented without program loading having to talk to anything other
+> >> than the syscall API?
+> >
+> >> How about we only expose prepend/append in the prog attach UAPI, and
+> >> then have a kernel function that does the sorting like:
+> >
+> >> int bpf_add_new_tcx_prog(struct bpf_prog *progs, size_t num_progs, str=
+uct
+> >> bpf_prog *new_prog, bool append)
+> >
+> >> where the default implementation just appends/prepends to the array in
+> >> progs depending on the value of 'appen'.
+> >
+> >> And then use the __weak linking trick (or maybe struct_ops with a memb=
+er
+> >> for TXC, another for XDP, etc?) to allow BPF to override the function
+> >> wholesale and implement whatever ordering it wants? I.e., allow it can
+> >> to just shift around the order of progs in the 'progs' array whenever =
+a
+> >> program is loaded/unloaded?
+> >
+> >> This way, a userspace daemon can implement any policy it wants by just
+> >> attaching to that hook, and keeping things like how to express
+> >> dependencies as a userspace concern?
+> >
+> > What if we do the above, but instead of simple global 'attach first/las=
+t',
+> > the default api would be:
+> >
+> > - attach before <target_fd>
+> > - attach after <target_fd>
+> > - attach before target_fd=3D-1 =3D=3D first
+> > - attach after target_fd=3D-1 =3D=3D last
+> >
+> > ?
+>
+> Hmm, the problem with that is that applications don't generally have an
+> fd to another application's BPF programs; and obtaining them from an ID
+> is a privileged operation (CAP_SYS_ADMIN). We could have it be "attach
+> before target *ID*" instead, which could work I guess? But then the
+> problem becomes that it's racy: the ID you're targeting could get
+> detached before you attach, so you'll need to be prepared to check that
+> and retry; and I'm almost certain that applications won't test for this,
+> so it'll just lead to hard-to-debug heisenbugs. Or am I being too
+> pessimistic here?
 
-One statistic that I would be curious to have is the ratio of features 
-vs. fixes and who fixes bugs from others versus fixing their own bugs.
+I like Stan's proposal and don't see any issue with FD.
+It's good to gate specific sequencing with cap_sys_admin.
+Also for consistency the FD is better than ID.
 
-Interesting stats and thanks for putting those together!
--- 
-Florian
+I also like systemd analogy with Before=3D, After=3D.
+systemd has a ton more ways to specify deps between Units,
+but none of them have absolute numbers (which is what priority is).
+The only bit I'd tweak in Stan's proposal is:
+- attach before <target_fd>
+- attach after <target_fd>
+- attach before target_fd=3D0 =3D=3D first
+- attach after target_fd=3D0 =3D=3D last
+
+The attach operation needs to be CAP_NET_ADMIN.
+Just like we do for BPF_PROG_TYPE_CGROUP_SKB.
+
+And we can do the same logic for XDP attaching.
+Eventually we can add __weak "orchestrator prog",
+but it would need to not only order progs, but should
+interpret enum tc_action_base return codes at run-time
+between progs too.
