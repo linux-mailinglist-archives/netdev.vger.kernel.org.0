@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DFB245F793B
-	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 15:49:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A3315F793D
+	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 15:50:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229799AbiJGNtt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 09:49:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33350 "EHLO
+        id S229754AbiJGNuf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 09:50:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229754AbiJGNts (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 09:49:48 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 811FE120A9
-        for <netdev@vger.kernel.org>; Fri,  7 Oct 2022 06:49:46 -0700 (PDT)
+        with ESMTP id S229539AbiJGNue (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 09:50:34 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A02359DF9C
+        for <netdev@vger.kernel.org>; Fri,  7 Oct 2022 06:50:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=DpqbCXW0geEwvoWfMhwmzMB6/b9H6N5L/d/czEc01g8=;
-        t=1665150586; x=1666360186; b=nbvVdyhipA2XSgqCM1Cqy3NOh+E3wK93k3kQHYuziwRZRQT
-        yuwjHEGoJFg0udEg/8Oghawy2uDN2qHoyyntjeDH0JclAZkdlhH8ducLabI7VoV7yUeeov3+rwYQQ
-        5Pat0bYBbKzaz90/oJaV8+WGtbmMwughKP/VvPhjbDdgKu9LZecVwxt9caCyYNQPoUIvVeqAYEZqk
-        GGBShAFh29MEgjlNye6Lh2PY6nR+uGkSXdXh1qsD4syKJBExbIUxkHkesWsVAUkDebR9S4S4eFJnL
-        c+w7qixitJYu+Mev5Uxv6Sh4RE15pretMaa4MdYnsIR21RQu6hecZ1VMxsEHjpSg==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.96)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1ognjT-000Osw-2d;
-        Fri, 07 Oct 2022 15:49:43 +0200
-Message-ID: <ff12253b6855305cc3fa518af30e8ac21019b684.camel@sipsolutions.net>
-Subject: Re: [RFC PATCH net-next 1/3] netlink: add support for formatted
- extack messages
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Edward Cree <ecree.xilinx@gmail.com>, ecree@xilinx.com,
-        netdev@vger.kernel.org, linux-net-drivers@amd.com
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, habetsm.xilinx@gmail.com,
-        marcelo.leitner@gmail.com
-Date:   Fri, 07 Oct 2022 15:49:42 +0200
-In-Reply-To: <1aafd0ec-5e01-9b01-61a5-48f3945c3969@gmail.com>
-References: <cover.1665147129.git.ecree.xilinx@gmail.com>
-         <a01a9a1539c22800b2a5827cf234756f13fa6b97.1665147129.git.ecree.xilinx@gmail.com>
-         <34a347be9efca63a76faf6edca6e313b257483b6.camel@sipsolutions.net>
-         <1aafd0ec-5e01-9b01-61a5-48f3945c3969@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=w6Lr3nOIe0/HPba6CG4rMSemtrAtDJOfzoJKXgOiVAc=; b=ZCytZSDf3JdXhrC9r/lt69XCsH
+        +XqtMuFVuc9xdN71Z87+MwJk6UUtnZC1zm4oMTsL+Wx6cbJKo0jcAlWmEn0+msJ5YonY+Qxdi0e7X
+        nrwSlNLYEF0qZc9dXdzRMUalA5KRpWNu1QEd9QumcvRoGYjSpBQIvFP61MDHG2BGJbH//yFAakdlB
+        EOfr0ofRXd0nkzNOSdjPC1OioXgZnCWPOXEbDqQnSkkN6MAI7cbsWYYmL4Obk5UwkbmnJeUKX7FS6
+        +YAWRBz6Y2iVZjQbtLPxiZ/8vsuhJY/8P/k11nhyHfnYAIBOhKQciT4TOPVAz+koByEnNS25ZX2tH
+        WvHGcOjw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34622)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ognkD-0002Uj-0C; Fri, 07 Oct 2022 14:50:29 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ognkB-0007SP-52; Fri, 07 Oct 2022 14:50:27 +0100
+Date:   Fri, 7 Oct 2022 14:50:27 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH net-next] net: sfp: fill also 5gbase-r and 25gbase-r
+ modes in sfp_parse_support()
+Message-ID: <Y0Auo0tL8EmCa+rd@shell.armlinux.org.uk>
+References: <20221007084844.20352-1-kabel@kernel.org>
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20221007084844.20352-1-kabel@kernel.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,48 +58,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2022-10-07 at 14:46 +0100, Edward Cree wrote:
-> On 07/10/2022 14:35, Johannes Berg wrote:
-> >=20
-> > > +#define NL_SET_ERR_MSG_FMT(extack, fmt, args...) do {		\
-> > > +	struct netlink_ext_ack *__extack =3D (extack);		\
-> > > +								\
-> > > +	scnprintf(__extack->_msg_buf, NETLINK_MAX_FMTMSG_LEN,	\
-> > > +		  (fmt), ##args);				\
-> >=20
-> > Maybe that should print some kind of warning if the string was longer
-> > than the buffer? OTOH, I guess the user would notice anyway, and until
-> > you run the code nobody can possibly notice ... too bad then?
-> >=20
-> > Maybe we could at least _statically_ make sure that the *format* string
-> > (fmt) is shorter than say 60 chars or something to give some wiggle roo=
-m
-> > for the print expansion?
-> >=20
-> > 	/* allow 20 chars for format expansion */
-> > 	BUILD_BUG_ON(strlen(fmt) > NETLINK_MAX_FMTMSG_LEN - 20);
-> >=20
-> > might even work? Just as a sanity check.
->=20
-> Hmm, I don't think we want to prohibit the case of (say) a 78-char format
->  string with one %d that's always small-valued in practice.
-> In fact if you have lots of % in the format string the output could be
->  significantly *shorter* than fmt.
-> So while I do like the idea of a sanity check, I don't see how to do it
->  without imposing unnecessary limitations.
->=20
+On Fri, Oct 07, 2022 at 10:48:44AM +0200, Marek Behún wrote:
+> Fill in also 5gbase-r and 25gbase-r PHY interface modes into the
+> phy_interface_t bitmap in sfp_parse_support().
+> 
+> Fixes: fd580c983031 ("net: sfp: augment SFP parsing with phy_interface_t bitmap")
+> Signed-off-by: Marek Behún <kabel@kernel.org>
 
-Yeah, I agree. We could runtime warn but that's also pretty useless.
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-I guess we just have to be careful - but I know from experience that
-won't work ;-)
-
-(and some things like %pM or even %p*H can expand a lot anyway)
-
-Unless maybe we printed a warning together with the full string, so the
-user could recover it? WARN_ON() isn't useful though, the string should
-be enough to understand where it came from.
-
-Anyway just thinking out loud :)
-
-johannes
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
