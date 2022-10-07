@@ -2,134 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BAEC5F7A32
-	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 17:03:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D44025F7A39
+	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 17:05:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229729AbiJGPDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 11:03:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46468 "EHLO
+        id S229925AbiJGPFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 11:05:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229574AbiJGPDb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 11:03:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30BF8DD883
-        for <netdev@vger.kernel.org>; Fri,  7 Oct 2022 08:03:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1665155010;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7Wy5rYDRucQUXXAJqSI7bpMrL8A4N8XBzlm2RZgr8Oo=;
-        b=N1lH9nKYyDoGyNx7zug6xxY8twniUND+NRtJLWPs+SapgBNdNLVvmBmsN1E8bnhXLqMU9M
-        v2UJE5h24AL3x3j7nyvCkVeinggwpjYvaPYMViAZLwB7w8DYG12aZpAe8U6/E7TycUqi0a
-        T0nZ6FDB5wTG/vLNY6lsWyg3+3Rr4ew=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-609-C_sKx7lbOgKEGT9gn5U2ZQ-1; Fri, 07 Oct 2022 11:03:29 -0400
-X-MC-Unique: C_sKx7lbOgKEGT9gn5U2ZQ-1
-Received: by mail-ej1-f72.google.com with SMTP id dm10-20020a170907948a00b00781fa5e140fso2990855ejc.21
-        for <netdev@vger.kernel.org>; Fri, 07 Oct 2022 08:03:29 -0700 (PDT)
+        with ESMTP id S229655AbiJGPFW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 11:05:22 -0400
+Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B177731EF3;
+        Fri,  7 Oct 2022 08:05:17 -0700 (PDT)
+Received: by mail-il1-x129.google.com with SMTP id h18so2654914ilh.3;
+        Fri, 07 Oct 2022 08:05:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=N3UB2+S6iNV+PuAZHciHp5nePjKHIWTaoahZDj7m4Io=;
+        b=FICWIEjxLZ+/dltKbSCq5lsDAk6uDv5/muVS5LntEWF0P7ZyROuPk/xfhT3MKCnjBs
+         SRruhIFi+D9y9Aw4OkkIzE6LJzWaqMeSCQ9E3YLfCLOvPm4dUwOyFOoA+C+elkdzEMHr
+         bDVbkMMbyt5XgVXqCfwrEBmNLt4O0J30KQdepgtatw7zt77szOewrRGiN25R/+2rdu8n
+         2SLTQ2vGvCRigk2OzfrE64TuUMGsRHq99Vh82OcDZUmDi5C3UjYHxDTlUdJOSqoEq7b5
+         /B2OsSsUpE3F+vempvhkWc16H75Bo56VjmLsBCt98xuF0bO71lnAN+0iqd/Itqkx5Qxa
+         c3ZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=7Wy5rYDRucQUXXAJqSI7bpMrL8A4N8XBzlm2RZgr8Oo=;
-        b=Kaooyb+ERox4Hw5R0NF1zayJdPYD4AbVyzScIP5MzT0v2Pxgz3Am0FhYOoqlVPRxH5
-         PIQ0iLgvirFVt8VJ3uCcTQIKHCU7xesrF6gnXC5hzw1NuuJuzQ8FsCb9TWya832UxUSh
-         OHV8wzfseYKw6H+HipEhGYyCcW8Hl5Ire+RgBDTy53I4gB5WrxgLy2pc4OlpRtSnmz/t
-         xb0fo+5FHV3B8fwF+JDZJdt+wJ1UBZa5Rr6zodCHirW63bm2BDQ175TKfi9j+hhAQWVd
-         K70/m+eYu3BVktv+P51w7A05wZAvJArsiZ+Y0HzNkl5thZHnY4ws9hUi5gtGHZdr9YD3
-         WjOA==
-X-Gm-Message-State: ACrzQf1WU8SeK2labq3h6GezNIvGlR46beLFUErYcwe4lxB+srBTVZdR
-        ky9zlUcoT9qmjPphi00mzpH6gJFcUtZA2SsB39W/ardTuiChA9dX2pgvRqTVClQR1lty4fVAtbi
-        umkcEPE8Dlkolx9I2
-X-Received: by 2002:a17:906:2699:b0:781:a473:9791 with SMTP id t25-20020a170906269900b00781a4739791mr4384880ejc.644.1665155003882;
-        Fri, 07 Oct 2022 08:03:23 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM44XXRg9gjGMupF6/axZUHUKBhm3jEa0b/lh/RXNfumdHAo77dyAYFjKmTe0Cp9AxZRma/n9A==
-X-Received: by 2002:a17:906:2699:b0:781:a473:9791 with SMTP id t25-20020a170906269900b00781a4739791mr4384248ejc.644.1665154995893;
-        Fri, 07 Oct 2022 08:03:15 -0700 (PDT)
-Received: from [10.39.192.175] (5920ab7b.static.cust.trined.nl. [89.32.171.123])
-        by smtp.gmail.com with ESMTPSA id s24-20020a170906bc5800b007389c5a45f0sm1343284ejv.148.2022.10.07.08.03.13
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 07 Oct 2022 08:03:14 -0700 (PDT)
-From:   Eelco Chaudron <echaudro@redhat.com>
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     Marcelo Leitner <mleitner@redhat.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Tianyu Yuan <tianyu.yuan@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>, dev@openvswitch.org,
-        oss-drivers <oss-drivers@corigine.com>, netdev@vger.kernel.org,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>
-Subject: Re: [ovs-dev] [PATCH] tests: fix reference output for meter offload
- stats
-Date:   Fri, 07 Oct 2022 17:03:12 +0200
-X-Mailer: MailMate (1.14r5918)
-Message-ID: <7C59A1FE-1005-499A-A87C-4639D896F6D7@redhat.com>
-In-Reply-To: <CAKa-r6sn1oZNn0vrnrthzq_XsxpdHGWyxw_T9b9ND0=DJk64yQ@mail.gmail.com>
-References: <20220914141923.1725821-1-simon.horman@corigine.com>
- <eeb0c590-7364-a00e-69fc-2326678d6bdf@ovn.org>
- <PH0PR13MB4793A85169BB60B8609B192194499@PH0PR13MB4793.namprd13.prod.outlook.com>
- <0aac2127-0b14-187e-0adb-7d6b8fe8cfb1@ovn.org>
- <e71b2bf2-cfd5-52f4-5fd4-1c852f2a8c6c@ovn.org>
- <00D45065-3D74-4C4C-8988-BFE0CEB3BE2F@redhat.com>
- <fe0cd650-0d4a-d871-5c0b-b1c831c8d0cc@ovn.org>
- <CALnP8ZYcGvtP_BV=2gy0v3TtSfD=3nO-uzbG8E1UvjoDYD2+7A@mail.gmail.com>
- <CAKa-r6sn1oZNn0vrnrthzq_XsxpdHGWyxw_T9b9ND0=DJk64yQ@mail.gmail.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=N3UB2+S6iNV+PuAZHciHp5nePjKHIWTaoahZDj7m4Io=;
+        b=Kv2y4XR+71k1X87hbXdkm12VsoycnV6xkm+NXQVmLIZ+cXxrGjsKw0z2/HiV8hwuIZ
+         kDZ+Hm/GjARDTNtp+2zVX5QFRrnAbMNS6bsPQZi+zjqVZFCxLCE0dyX83qb+qNsiwAan
+         7jJ+4gXTyCpD65iZfFC+A0pp3VhS7e1DtEazqnYSUVeIWsnHac6umSPjjIk5J70IaaRc
+         u6ijm0lfTz6Zgwfs8yrJbwqBWcWyd8HJTAT9tA2jy/P9HjKyZa8J389C6erR/sKLtWSk
+         sl2CPI9hgaOeNNl4Py4+V2Ibpvhz2lKmK7bc10Ym9mzT00J7j3fri+hgxxNa/6C5fQ6O
+         jBvQ==
+X-Gm-Message-State: ACrzQf3EfkMP04o5hmD+ixQ490b9/n7Vt/6qDN87HL5R0oi/Vk4/k9ro
+        WeV9JaU+ZoPeZAy7L+vLRYI+1ztrpls=
+X-Google-Smtp-Source: AMsMyM5UJUkkQ7+PXwUoPy1vlfcGid2bJy4kg4orcRdxrsSax1VFbzXbB67rP5TuW2buceZI2SmQLg==
+X-Received: by 2002:a92:cda7:0:b0:2fa:74e:9ca1 with SMTP id g7-20020a92cda7000000b002fa074e9ca1mr2431962ild.323.1665155117033;
+        Fri, 07 Oct 2022 08:05:17 -0700 (PDT)
+Received: from ?IPV6:2601:282:800:dc80:38e6:13c8:49a3:2476? ([2601:282:800:dc80:38e6:13c8:49a3:2476])
+        by smtp.googlemail.com with ESMTPSA id c1-20020a92cf01000000b002eb1137a774sm976579ilo.59.2022.10.07.08.05.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 07 Oct 2022 08:05:16 -0700 (PDT)
+Message-ID: <7518b0ec-ef27-6cc7-65c2-6d4b956b301a@gmail.com>
+Date:   Fri, 7 Oct 2022 09:05:14 -0600
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.1
+Subject: Re: [xdp-hints] Re: [PATCH RFCv2 bpf-next 00/18] XDP-hints: XDP
+ gaining access to HW offload hints via BTF
+Content-Language: en-US
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>, sdf@google.com
+Cc:     brouer@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        xdp-hints@xdp-project.net, larysa.zaremba@intel.com,
+        memxor@gmail.com, Lorenzo Bianconi <lorenzo@kernel.org>,
+        mtahhan@redhat.com,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        dave@dtucker.co.uk, Magnus Karlsson <magnus.karlsson@intel.com>,
+        bjorn@kernel.org
+References: <166256538687.1434226.15760041133601409770.stgit@firesoul>
+ <Yzt2YhbCBe8fYHWQ@google.com>
+ <35fcfb25-583a-e923-6eee-e8bbcc19db17@redhat.com>
+ <CAKH8qBuYVk7QwVOSYrhMNnaKFKGd7M9bopDyNp6-SnN6hSeTDQ@mail.gmail.com>
+ <982b9125-f849-5e1c-0082-7239b8c8eebf@redhat.com>
+ <Yz3QNM7061WmXDHS@google.com>
+ <ebbb99a1-c3c8-6d97-4bb3-03f28a0a74b1@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <ebbb99a1-c3c8-6d97-4bb3-03f28a0a74b1@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 10/6/22 11:47 AM, Jesper Dangaard Brouer wrote:
+> 
+> 
+>> I also feel like xdp_hints_common is
+>> a bit distracting. It makes the common case easy and it hides the
+>> discussion/complexity about per-device hints. Maybe we can drop this
+>> common case at all? Why can't every driver has a custom hints struct?
+>> If we agree that naming/size will be the same across them (and review
+>> catches/guaranteed that), why do we even care about having common
+>> xdp_hints_common struct?
+> 
+> The xdp_hints_common struct is a stepping stone to making this easily
+> consumable from C-code that need to generate SKBs and info for
+> virtio_net 'hdr' desc.
+> 
+> David Ahern have been begging me for years to just add this statically
+> to xdp_frame.  I have been reluctant, because I think we can come up
+> with a more flexible (less UAPI fixed) way, that both allows kerne-code
+> and BPF-prog to access these fields.  I think of this approach as a
+> compromise between these two users.
+> 
 
+Simple implementation for common - standard - networking features; jump
+through hoops to use vendor unique features. Isn't that point of
+standardization?
 
-On 7 Oct 2022, at 16:39, Davide Caratti wrote:
-
-> On Fri, Oct 7, 2022 at 3:21 PM Marcelo Leitner <mleitner@redhat.com> wr=
-ote:
->>
->> (+TC folks and netdev@)
->>
->> On Fri, Oct 07, 2022 at 02:42:56PM +0200, Ilya Maximets wrote:
->>> On 10/7/22 13:37, Eelco Chaudron wrote:
->
-> [...]
->
->> I don't see how we could achieve this without breaking much of the
->> user experience.
->>
->>>
->>> - or create something like act_count - a dummy action that only
->>>   counts packets, and put it in every datapath action from OVS.
->>
->> This seems the easiest and best way forward IMHO. It's actually the
->> 3rd option below but "on demand", considering that tc will already use=
-
->> the stats of the first action as the flow stats (in
->> tcf_exts_dump_stats()), then we can patch ovs to add such action if a
->> meter is also being used (or perhaps even always, because other
->> actions may also drop packets, and for OVS we would really be at the
->> 3rd option below).
-
-Guess we have to add this extra action to each datapath flow offloaded du=
-e to the way flows back and forth translations are handled. Maybe we can =
-do it selectively, but the code might become messier than it already is :=
-(
-
-> Correct me if I'm wrong, but actually act_gact action with "pipe"
-> control action should already do this counting job.
-
-I think we could use that, as we only use TC_ACT_GOTO_CHAIN and TC_ACT_SH=
-OT. And it looks like TC_ACT_SHOT is not decoded correctly :(
-
+There are multiple use cases where vlans and checksumming requests need
+to traverse devices on an XDP redirect.
