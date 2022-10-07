@@ -2,73 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15DCF5F7B1D
-	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 18:00:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE0445F7BCB
+	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 18:47:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229760AbiJGQAB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 12:00:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38264 "EHLO
+        id S229896AbiJGQrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 12:47:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229624AbiJGP77 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 11:59:59 -0400
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 811942648D
-        for <netdev@vger.kernel.org>; Fri,  7 Oct 2022 08:59:54 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id l5so5973919oif.7
-        for <netdev@vger.kernel.org>; Fri, 07 Oct 2022 08:59:54 -0700 (PDT)
+        with ESMTP id S229689AbiJGQrl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 12:47:41 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D260A59A5;
+        Fri,  7 Oct 2022 09:47:40 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id j7so8129786wrr.3;
+        Fri, 07 Oct 2022 09:47:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=7phJ8Bu0o5fGj/CGhfFW//+/olDYZlVnBdrHTNHzDdA=;
-        b=iAIYiJOS7VSLmaxCXlM0CCXPzNVb1Rnc2RLcnqYBt8X8nUewEFESqx7N9jp2XRJA0M
-         iGul9JVWT5gyoLFHE5fRSC2u3hIH4rUUjaOcUbrA4T2SahUeWhsPdYW0U09O5YG5kXhz
-         9paSHPv5fzYYcJdg3vVYEyQZqVDKvpUhq/qYAamnyP1Zkcj++Tx9Dsw/aDAgpZZoxs65
-         4KsQ0Ft02CU1PWGwJK1AT0f7AfYmRiSDsgo6PdMY0pV+irARCribjFC0oL+XOcPxjVQo
-         XQvmBMEwEi7zG/jGa8Zu7586tOoDAj8QHekBRFAANLQLm1et6xcX9DOhsBgYc4ZB46Zx
-         TB0g==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=HiiUNJDOhM1Nd+slN6vUFMPWfVZfoaBty2cdSA5NAn0=;
+        b=kx/dFy1kPcGnmHRof0PzfpQMXCVDWmazurTZ0WxolS437CwJ2okhptOqaHzTgmw2wy
+         0KT0G9gzvE7HnKpvo9xGxydJNK9PJ/OXBVcgG4BZUCTJH+K2E8MxrA293+P4ZRHhpHar
+         jaaWqnC+1TUQjQMs8PVQZJ+XmdaI8UZpvo+RyGBKA4OT5A3hwF+EK27Kz67TNU+eMej0
+         f0fNjlOf8WnTQBFr+vaG51hiV0tUAJnnzEaVOS/WCmV3LMxDgDTgEx2FgBDmGSV1WvkV
+         AcmCDRjU9FFlGtm4WKJ22tauXXID3ItV9kGzk0wCbLHBsLOag1x9pEUbE3bEy9A2Tudq
+         DehA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=7phJ8Bu0o5fGj/CGhfFW//+/olDYZlVnBdrHTNHzDdA=;
-        b=Q0N8iZohMCYTrlVGdGN1hzj0BIx7ZRE/7VNJp8BWm4fhfQwWDQHFaHfY3rJgBdoPq3
-         jnz7r+suPvHhjRCtriF+0SkT2acWfNMPf/9kQP8VJcmZA5hKJUY54sS62mfNYzEEe/MN
-         CADiKnw5xss/2csrLtoCUOF2X2LJI+imskp1M97jU42XbC6sSM1u9xXyvY1guv+2kLzL
-         OmETLxRyPUeX6tDh/+6FHey6TmXgX7WyaHTIYo5uM5BZKMtTr6+x2xwr48XhBkRVbZdT
-         ToCMmzMgnJruN5AkGkJzUmUTFoos0fgCFT74+9M0rcNCRF9MZL+1GRZer6Gm1cgBrbFO
-         fuAw==
-X-Gm-Message-State: ACrzQf1cvnXQbmFHLoSgl1iBFXZ9wBeArYfmFp/KAmxUNiZ1behsoCN8
-        nKwl+s/bHZUZT0bgIx1gLoh//aioOcN3FXop4dl5bQ==
-X-Google-Smtp-Source: AMsMyM5QS6JNyS1OcYtsorK6/pHDjfBZszNUODO9QsS3aLgsKeUvfZVL2rgkJQeTSk/hdY211pHD7WGn76b5yH2b3QU=
-X-Received: by 2002:a05:6808:1997:b0:34f:d372:b790 with SMTP id
- bj23-20020a056808199700b0034fd372b790mr2762500oib.2.1665158393865; Fri, 07
- Oct 2022 08:59:53 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=HiiUNJDOhM1Nd+slN6vUFMPWfVZfoaBty2cdSA5NAn0=;
+        b=D7kh0FqbYTvKjdpB8SyK6QijIvMDasg4gSy4deItb3G4vR4+Cfw/xhrSq20V0/ioXJ
+         s9+x6am8WbsH1ZFIhNEraDkvS1e6yNHA4DIvxZS9DnSiCD5Q1TueCXyfUmuwH+PJ7ysb
+         f/mrc+m2dlep/enpVjytRYKQ7EYE/pRL9BXb6eOhgbA6QC7HNxxdRZGao6VaOgclRpKL
+         K/YGhGQ/Mez4W/mZeRHspEPfrGByB3cYgoruzLsWO+YvcFKsBB1JQ5ZrrQ/OI9nqSDjG
+         7J2VB/NH9d6PmIzRLDrO+O9K4NybC/5YgxYNLAZV3tKXc0i4Jr+v+ECdiKAK1IGFFVAT
+         bTkg==
+X-Gm-Message-State: ACrzQf2AXfcrunmayIsK+//BS72EhDiyArVIjODQJlFFwxwkdV1VMmpc
+        3DQb70iunCY5UWKtzXzV9J0TMLMhdirUrw==
+X-Google-Smtp-Source: AMsMyM7c5Rsrv3mM6eDXZxyB2k9kTwEx6CzvGsPRwnmogHLCPd3/HCv8xYS3KtF9+LA8ulIyZmInPw==
+X-Received: by 2002:a5d:64c3:0:b0:22e:57e7:6230 with SMTP id f3-20020a5d64c3000000b0022e57e76230mr3978538wri.482.1665161258756;
+        Fri, 07 Oct 2022 09:47:38 -0700 (PDT)
+Received: from [192.168.0.17] (33130E93.skybroadband.com. [51.19.14.147])
+        by smtp.gmail.com with ESMTPSA id x13-20020a1c7c0d000000b003c42749b2c4sm151772wmc.15.2022.10.07.09.47.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 07 Oct 2022 09:47:38 -0700 (PDT)
+Message-ID: <1eca7cd0-ad6e-014f-d4e2-490b307ab61d@gmail.com>
+Date:   Fri, 7 Oct 2022 17:47:37 +0100
 MIME-Version: 1.0
-References: <20220914141923.1725821-1-simon.horman@corigine.com>
- <eeb0c590-7364-a00e-69fc-2326678d6bdf@ovn.org> <PH0PR13MB4793A85169BB60B8609B192194499@PH0PR13MB4793.namprd13.prod.outlook.com>
- <0aac2127-0b14-187e-0adb-7d6b8fe8cfb1@ovn.org> <e71b2bf2-cfd5-52f4-5fd4-1c852f2a8c6c@ovn.org>
- <00D45065-3D74-4C4C-8988-BFE0CEB3BE2F@redhat.com> <fe0cd650-0d4a-d871-5c0b-b1c831c8d0cc@ovn.org>
- <CALnP8ZYcGvtP_BV=2gy0v3TtSfD=3nO-uzbG8E1UvjoDYD2+7A@mail.gmail.com>
- <CAKa-r6sn1oZNn0vrnrthzq_XsxpdHGWyxw_T9b9ND0=DJk64yQ@mail.gmail.com> <CALnP8ZaZ5zGD4sP3=SSvC=RBmVOOcc9MdA=aaYRQctaBOhmHfQ@mail.gmail.com>
-In-Reply-To: <CALnP8ZaZ5zGD4sP3=SSvC=RBmVOOcc9MdA=aaYRQctaBOhmHfQ@mail.gmail.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Fri, 7 Oct 2022 11:59:42 -0400
-Message-ID: <CAM0EoM=zWBzivTkEG7uBJepZ0=OZmiuqDF3RmgdWA=FgznRF6g@mail.gmail.com>
-Subject: Re: [ovs-dev] [PATCH] tests: fix reference output for meter offload stats
-To:     Marcelo Leitner <mleitner@redhat.com>
-Cc:     Davide Caratti <dcaratti@redhat.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Tianyu Yuan <tianyu.yuan@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>, dev@openvswitch.org,
-        oss-drivers <oss-drivers@corigine.com>, netdev@vger.kernel.org,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+Subject: Re: [REGRESSION] Unable to NAT own TCP packets from another VRF with
+ tcp_l3mdev_accept = 1
+Content-Language: en-US
+To:     Maximilien Cuony <maximilien.cuony@arcanite.ch>
+Cc:     netdev@vger.kernel.org, Phil Sutter <phil@nwl.cc>,
+        Florian Westphal <fw@strlen.de>,
+        David Ahern <dsahern@kernel.org>,
+        netfilter-devel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+References: <98348818-28c5-4cb2-556b-5061f77e112c@arcanite.ch>
+ <20220930174237.2e89c9e1@kernel.org>
+From:   Mike Manning <mvrmanning@gmail.com>
+In-Reply-To: <20220930174237.2e89c9e1@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,49 +78,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 7, 2022 at 11:01 AM Marcelo Leitner <mleitner@redhat.com> wrote:
->
-> On Fri, Oct 07, 2022 at 04:39:25PM +0200, Davide Caratti wrote:
-> > On Fri, Oct 7, 2022 at 3:21 PM Marcelo Leitner <mleitner@redhat.com> wrote:
-> > >
-> > > (+TC folks and netdev@)
-> > >
-> > > On Fri, Oct 07, 2022 at 02:42:56PM +0200, Ilya Maximets wrote:
-> > > > On 10/7/22 13:37, Eelco Chaudron wrote:
-> >
-> > [...]
-> >
-> > > I don't see how we could achieve this without breaking much of the
-> > > user experience.
-> > >
-> > > >
-> > > > - or create something like act_count - a dummy action that only
-> > > >   counts packets, and put it in every datapath action from OVS.
-> > >
-> > > This seems the easiest and best way forward IMHO. It's actually the
-> > > 3rd option below but "on demand", considering that tc will already use
-> > > the stats of the first action as the flow stats (in
-> > > tcf_exts_dump_stats()), then we can patch ovs to add such action if a
-> > > meter is also being used (or perhaps even always, because other
-> > > actions may also drop packets, and for OVS we would really be at the
-> > > 3rd option below).
-> >
-> > Correct me if I'm wrong, but actually act_gact action with "pipe"
-> > control action should already do this counting job.
->
-> act_gact is so transparent that I never see it/remembers about it :)
-> Yup, although it's not offloadabe with pipe control actio AFAICT.
->
 
-It's mostly how people who offload (not sure about OVS) do it;
-example some of the switches out there.
-The action index, whatever that action is, could be easily mapped
-to a stats index in hardware. If you are sharing action instances
-(eg policer index 32) across multiple flows then of course in hw
-you are using only that one instance of the meter. If you want
-to have extra stats that differentiate between the flows then
-add a gact (PIPE as Davide mentioned) and the only thing it
-will do is count and nothing else.
+> On Wed, 28 Sep 2022 16:02:43 +0200 Maximilien Cuony wrote:
+>
+> However when the issue is present, the SYNACK does arrives on eth2, but 
+> is never "unNATed" back to eth1:
+>
+> 10:25:07.644433 eth0 Out IP 192.168.5.1.48684 > 99.99.99.99.80: Flags 
+> [S], seq 3207393154
+> 10:25:07.644782 eth1 In  IP 192.168.5.1.48684 > 99.99.99.99.80: Flags 
+> [S], seq 3207393154
+> 10:25:07.644793 eth2 Out IP 192.168.1.1.48684 > 99.99.99.99.80: Flags 
+> [S], seq 3207393154
+> 10:25:07.668551 eth2 In  IP 54.36.61.42.80 > 192.168.1.1.48684: Flags 
+> [S.], seq 823335485, ack 3207393155
+>
+> The issue is only with TCP connections. UDP or ICMP works fine.
+>
+> Turing off net.ipv4.tcp_l3mdev_accept back to 0 also fix the issue, but 
+> we need this flag since we use some sockets that does not understand VRFs.
+>
+> We did have a look at the diff and the code of inet_bound_dev_eq, but we 
+> didn't understand much the real problem - but it does seem now that 
+> bound_dev_if if now checked not to be False before the bound_dev_if == 
+> dif || bound_dev_if == sdif comparison, something that was not the case 
+> before (especially since it's dependent on l3mdev_accept).
+>
+> Maybe our setup is wrong and we should not be able to route packets like 
+> that?
+>
+> Thanks a lot and have a nice day!
+>
+> Maximilien Cuony
 
-cheers,
-jamal
+Hi Maximilien,
+
+Apologies that you have now hit this issue. Further to David's reply
+with the link for the rationale behind the change, the bisected commit
+you found restores backwards compatibility with the 4.19 kernel to allow
+a match on an unbound socket when in a VRF if tcp_l3mdev_accept=1, the
+absence of this causing issues for others. Isolation between default and
+other VRFs as introduced by the team I worked for back in 2018 and
+introduced in 5.x kernels remains guaranteed if tcp_l3mdev_accept=0.
+
+There is no appetite so far to introduce yet another kernel parameter to
+control this specific behavior, see e.g.
+https://lore.kernel.org/netdev/f174108c-67c5-3bb6-d558-7e02de701ee2@gmail.com/
+
+Is there any possibility that you could use tcp_l3mdev_accept=0 by
+running any services needed in the VRF with 'ip vrf exec <vrf> <cmd>'?
+
+Is the problem specific to using NAT for eth2 in the VRF, i.e. have you
+tried on another interface in that VRF, or on eth2 without NAT config?
+
+While match on an unbound socket in the VRF is now possible again and
+somehow causing the issue, I would have thought that a bound socket
+should still be chosen due to it having a higher score c.f. compute_score().
+
+No doubt you are doing this, but can I also check that your VRF config
+is correct according to
+https://www.kernel.org/doc/Documentation/networking/vrf.txt , so
+reducing the local lookup preference, etc., e.g.
+
+ip route add table 1200 unreachable default metric 4278198272
+
+ip -6 route add table 1200 unreachable default metric 4278198272
+
+ip rule add pref 32765 from all lookup local
+
+ip rule del pref 0 from all lookup local
+
+(and check output of 'ip rule' & 'ip route ls vrf firewall', no need to 
+reply with this)
+
+Thanks
+
+Mike
+
+
+
+
+
