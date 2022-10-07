@@ -2,77 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 082CB5F7D3E
-	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 20:22:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3CCD5F7D6B
+	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 20:32:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229798AbiJGSWT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 14:22:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41540 "EHLO
+        id S229712AbiJGSc2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 14:32:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229763AbiJGSWS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 14:22:18 -0400
-Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14552C0680;
-        Fri,  7 Oct 2022 11:22:13 -0700 (PDT)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1665166931; bh=1yO3exAMwv1y1zHEN85+kNkgbL2K5cdBLW0UF5GZsE0=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=UOaUNb8l+xPl1i2ImLsV4Awx4Qqd6teobZXrn2Hcn6POxqE8+RwtGaU9xMqwJrBfv
-         +DL/Hzo0mwHsd7MP1FH1LPDbR75C1XaUQiELp/eeeSMQBT2j+mtYjuZMkMHeExL9IF
-         YYJurUKLPVgwyxsLl2GdZbS4awDOx+EpavhwTbLWbymawoD/0G4+mr4t06Ypj0sPsl
-         9OB7N69oqLKSy6hnrJdH4rpzH3QlOQnNbi+DXIqLoSY/sW6/kT5co89+r4vJbb7yH7
-         SzosSUrl1jNiVlwEsczXAax4G4Gan3tOkZevY4tnlB29dzZjVX7sjdrR8uN40TXKsH
-         8j42Rnlg86uQg==
-To:     Fedor Pchelkin <pchelkin@ispras.ru>, Kalle Valo <kvalo@kernel.org>
-Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Brooke Basile <brookebasile@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>
-Subject: Re: [PATCH] ath9k: hif_usb: fix memory leak of urbs in
- ath9k_hif_usb_dealloc_tx_urbs()
-In-Reply-To: <20220725151359.283704-1-pchelkin@ispras.ru>
-References: <20220725151359.283704-1-pchelkin@ispras.ru>
-Date:   Fri, 07 Oct 2022 20:22:11 +0200
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <871qrjtrxo.fsf@toke.dk>
+        with ESMTP id S229547AbiJGSc1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 14:32:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC702CC830
+        for <netdev@vger.kernel.org>; Fri,  7 Oct 2022 11:32:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C354661D40
+        for <netdev@vger.kernel.org>; Fri,  7 Oct 2022 18:32:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D06BCC433D6;
+        Fri,  7 Oct 2022 18:32:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1665167540;
+        bh=2BJjLACV7jP0zfdjhacw1ZeEQqeDat3s4gqrYu8HMoA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Re+fcIP/B64EshfPmsoUxcTtdKxOfzn26i2tQUCvsuPdVrclh4fcYFHoL5mfJ5Him
+         P579ObKCwJ1mRSYL250F2mtb0iUDdoHGTdYOGE0W+snOPOTR4ptTIbz87RU+heVRJv
+         3Mg3c1llja8K89fUu/fq1OQwaMtWPsf7kce4yAxvdAoqggx8MqOxa9YmAHcQpGBrsR
+         LU8vhQQXQ5abWWp96MPuc3lt8EdLsIFsmC8LfNYyTYgoL5gKf5YGje9TrCrteC/xAK
+         mso19YvPHZ3Ec9/JixbIkdBO3YWWAtQmamjBoDsi/TqPmrWrhUu7wDeRydyvSZOOzF
+         seJENHgdFV5Aw==
+Date:   Fri, 7 Oct 2022 11:32:19 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Edward Cree <ecree.xilinx@gmail.com>
+Cc:     Johannes Berg <johannes@sipsolutions.net>, ecree@xilinx.com,
+        netdev@vger.kernel.org, linux-net-drivers@amd.com,
+        davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
+        habetsm.xilinx@gmail.com, marcelo.leitner@gmail.com
+Subject: Re: [RFC PATCH net-next 1/3] netlink: add support for formatted
+ extack messages
+Message-ID: <20221007113219.74aede95@kernel.org>
+In-Reply-To: <1aafd0ec-5e01-9b01-61a5-48f3945c3969@gmail.com>
+References: <cover.1665147129.git.ecree.xilinx@gmail.com>
+        <a01a9a1539c22800b2a5827cf234756f13fa6b97.1665147129.git.ecree.xilinx@gmail.com>
+        <34a347be9efca63a76faf6edca6e313b257483b6.camel@sipsolutions.net>
+        <1aafd0ec-5e01-9b01-61a5-48f3945c3969@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fedor Pchelkin <pchelkin@ispras.ru> writes:
+On Fri, 7 Oct 2022 14:46:46 +0100 Edward Cree wrote:
+> > That "if (__extack)" check seems a bit strange, you've long crashed with
+> > a NPD if it was really NULL?  
+> 
+> Good point, I blindly copied NL_SET_ERR_MSG without thinking.
+> The check should enclose the whole body, will fix in v2.
 
-> Syzkaller reports a long-known leak of urbs in
-> ath9k_hif_usb_dealloc_tx_urbs().
->
-> The cause of the leak is that usb_get_urb() is called but usb_free_urb()
-> (or usb_put_urb()) is not called inside usb_kill_urb() as urb->dev or
-> urb->ep fields have not been initialized and usb_kill_urb() returns
-> immediately.
->
-> The patch removes trying to kill urbs located in hif_dev->tx.tx_buf
-> because hif_dev->tx.tx_buf is not supposed to contain urbs which are in
-> pending state (the pending urbs are stored in hif_dev->tx.tx_pending).
-> The tx.tx_lock is acquired so there should not be any changes in the list.
->
-> Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
->
-> Fixes: 03fb92a432ea ("ath9k: hif_usb: fix race condition between usb_get_=
-urb() and usb_kill_anchored_urbs()")
-> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-
-Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.dk>
+FWIW you can prolly use break; thanks to the do {} while wrapping.
+Maybe that's hacky.
