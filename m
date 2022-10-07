@@ -2,95 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA2D35F7C65
-	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 19:43:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91B5A5F7C6A
+	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 19:46:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229628AbiJGRn3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 13:43:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51450 "EHLO
+        id S229760AbiJGRq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 13:46:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229592AbiJGRn1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 13:43:27 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94EEBD8EDB
-        for <netdev@vger.kernel.org>; Fri,  7 Oct 2022 10:43:26 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id v134so6291412oie.10
-        for <netdev@vger.kernel.org>; Fri, 07 Oct 2022 10:43:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=//pU+B4CdEHUXnP14JIGltVIuBGKM3zOSsugyiB6BLI=;
-        b=aHQGkwWBLhml96bIzFmZ3ubLuJK0cbQjbPIxDHZsY02++EcR84DjhhKisldOYgGml+
-         Q2wVg57JqSSM6P7+cEzqN+jfWdRlJ/XgWZy267JqBPKYOOkZjRLq0wxB4sa4fG5W6S9J
-         Ycd6grWzP00JbXR9jtKiQBt5JnIiX8C+RUOkWEQdL6j6F8ALGJGPR/xzjfBLDuxwmWb2
-         PZ9wjCGHYt2mde+t/P5gagAOoT+bgKHyNOL9FGpuNik3o3hNDti/HlufPjG6KrRUedtD
-         LAfzXCoEXyjHUkCHMNeMjbZ4gEnup9ob88tgcBXlhDVmbUlH9oTbB787lf130onzR2E3
-         gCuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=//pU+B4CdEHUXnP14JIGltVIuBGKM3zOSsugyiB6BLI=;
-        b=RoWrEEca9kRhb0JZrAL4KK59VgUOqEwliijvVc2v2vBOySseoCLgwVtoqvurksrcUd
-         W3zbJx8Mw1WkjlU+Cyb/eEuFLQej/HjdNXdQxmDA171C9kcEHMQZklD2cPWQcu39d17E
-         cScAVLHGvQ8JWaNqNAKD5+oCzNcmcqodNIwFzbEo7VV6xlWued4vNzA+HGasyBtznagj
-         uTVN0y5rHj/ZD1UN6iRhJ3mCJt+6O3PcT+KDnoR+VBfNxjCUHiBdVNYO/21KzMY9gRbQ
-         mXM4ovKON1eKo5S68wgy4pSCbu50/YUpTi5UgZUr0cQTXL9ky/7bCbdrty25+xLZfJpN
-         alfA==
-X-Gm-Message-State: ACrzQf21x+uJBpo6tNfhpMQqQ+ts4r5woM+iUaVePKxc7kgfdfPVjYRN
-        A7d570fbrIOiQanqLw0M0s2HkXyqEU0MprPX1Gjx
-X-Google-Smtp-Source: AMsMyM7RUzL2i9yHohtKY32yxs0duk7SA4vdOvoa1QxpjpNPWjJAIUwj3y8/0uSe2v0sVmSE5cLeJzawMX66Y6K/7rI=
-X-Received: by 2002:a05:6808:218d:b0:354:b8c:f47f with SMTP id
- be13-20020a056808218d00b003540b8cf47fmr3248241oib.172.1665164605928; Fri, 07
- Oct 2022 10:43:25 -0700 (PDT)
+        with ESMTP id S229703AbiJGRqX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 13:46:23 -0400
+Received: from mail.toke.dk (mail.toke.dk [45.145.95.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 535799E2D2;
+        Fri,  7 Oct 2022 10:46:18 -0700 (PDT)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
+        t=1665164776; bh=mRLk8Wk+DDiVinm8rQolXV20DOAXdU/fxJk+haqSNg0=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=Z+uOfdxlAZNS5YyD9TIMUcFoN6qrYTZnk3Jk2J/IaGfOAgh2OmTmcB9xZC+c2Lpy1
+         J9y0x/Ei3rASNCTVvc3abmH9HnZI/6v55IV9Jg0ppN3VX5IzfFxnRyI1Cyqob+Oab+
+         QtdtGhQx3EV65QLmbdvheXPC2Uum2SLx/+cI75N4pI1lTS+su+sAiB0opSX9KSn0Jm
+         b2iKtHZpdT9QhBW6NwskIjp37yGcpOcAZxy9RbHDRqzbAfWFdesl6yeP+o62Vx4unq
+         fRiRXMiTYyYlxhoYQy0lJB1haq8lTj79rjGZwm3DKR8rwI9CtffWVBaBht/Ppu5neb
+         6gq6oyaOblmzA==
+To:     Fedor Pchelkin <pchelkin@ispras.ru>, Kalle Valo <kvalo@kernel.org>
+Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        Sujith Manoharan <Sujith.Manoharan@atheros.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        ldv-project@linuxtesting.org
+Subject: Re: [PATCH] ath9k: hif_usb: Fix use-after-free in
+ ath9k_hif_usb_reg_in_cb()
+In-Reply-To: <20220728162149.212306-1-pchelkin@ispras.ru>
+References: <20220728162149.212306-1-pchelkin@ispras.ru>
+Date:   Fri, 07 Oct 2022 19:46:16 +0200
+X-Clacks-Overhead: GNU Terry Pratchett
+Message-ID: <87ilkvcys7.fsf@toke.dk>
 MIME-Version: 1.0
-References: <CAHC9VhTGE1cf_WtDn4aDUY=E-m--4iZXWiNTwPZrP9AVoq17cw@mail.gmail.com>
-In-Reply-To: <CAHC9VhTGE1cf_WtDn4aDUY=E-m--4iZXWiNTwPZrP9AVoq17cw@mail.gmail.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Fri, 7 Oct 2022 13:43:15 -0400
-Message-ID: <CAHC9VhT2LK_P+_LuBYDEHnkNkAX6fhNArN_N5bF1qwGed+Kyww@mail.gmail.com>
-Subject: Re: SO_PEERSEC protections in sk_getsockopt()?
-To:     Martin KaFai Lau <martin.lau@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 5, 2022 at 4:44 PM Paul Moore <paul@paul-moore.com> wrote:
->
-> Hi Martin,
->
-> In commit 4ff09db1b79b ("bpf: net: Change sk_getsockopt() to take the
-> sockptr_t argument") I see you wrapped the getsockopt value/len
-> pointers with sockptr_t and in the SO_PEERSEC case you pass the
-> sockptr_t:user field to avoid having to update the LSM hook and
-> implementations.  I think that's fine, especially as you note that
-> eBPF does not support fetching the SO_PEERSEC information, but I think
-> it would be good to harden this case to prevent someone from calling
-> sk_getsockopt(SO_PEERSEC) with kernel pointers.  What do you think of
-> something like this?
->
->   static int sk_getsockopt(...)
->   {
->     /* ... */
->     case SO_PEERSEC:
->       if (optval.is_kernel || optlen.is_kernel)
->         return -EINVAL;
->       return security_socket_getpeersec_stream(...);
->     /* ... */
->   }
+Fedor Pchelkin <pchelkin@ispras.ru> writes:
 
-Any thoughts on this Martin, Alexei?  It would be nice to see this
-fixed soon ...
+> It is possible that skb is freed in ath9k_htc_rx_msg(), then
+> usb_submit_urb() fails and we try to free skb again. It causes
+> use-after-free bug. Moreover, if alloc_skb() fails, urb->context becomes
+> NULL but rx_buf is not freed and there can be a memory leak.
+>
+> The patch removes unnecessary nskb and makes skb processing more clear: it
+> is supposed that ath9k_htc_rx_msg() either frees old skb or passes its
+> managing to another callback function.
+>
+> Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
+>
+> Fixes: 3deff76095c4 ("ath9k_htc: Increase URB count for REG_IN pipe")
+> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+> ---
+>  drivers/net/wireless/ath/ath9k/hif_usb.c | 21 ++++++++++-----------
+>  1 file changed, 10 insertions(+), 11 deletions(-)
+>
+> diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
+> index 518deb5098a2..b70128d1594d 100644
+> --- a/drivers/net/wireless/ath/ath9k/hif_usb.c
+> +++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
+> @@ -708,14 +708,13 @@ static void ath9k_hif_usb_reg_in_cb(struct urb *urb)
+>  	struct rx_buf *rx_buf = (struct rx_buf *)urb->context;
+>  	struct hif_device_usb *hif_dev = rx_buf->hif_dev;
+>  	struct sk_buff *skb = rx_buf->skb;
+> -	struct sk_buff *nskb;
+>  	int ret;
+>  
+>  	if (!skb)
+>  		return;
+>  
+>  	if (!hif_dev)
+> -		goto free;
+> +		goto free_skb;
+>  
+>  	switch (urb->status) {
+>  	case 0:
+> @@ -724,7 +723,7 @@ static void ath9k_hif_usb_reg_in_cb(struct urb *urb)
+>  	case -ECONNRESET:
+>  	case -ENODEV:
+>  	case -ESHUTDOWN:
+> -		goto free;
+> +		goto free_skb;
+>  	default:
+>  		skb_reset_tail_pointer(skb);
+>  		skb_trim(skb, 0);
+> @@ -740,20 +739,19 @@ static void ath9k_hif_usb_reg_in_cb(struct urb *urb)
+>  				 skb->len, USB_REG_IN_PIPE);
+>  
+>  
+> -		nskb = alloc_skb(MAX_REG_IN_BUF_SIZE, GFP_ATOMIC);
+> -		if (!nskb) {
+> +		skb = alloc_skb(MAX_REG_IN_BUF_SIZE, GFP_ATOMIC);
+> +		if (!skb) {
 
--- 
-paul-moore.com
+The fix LGTM, but could you please add a comment here stating that the
+ath9k_htc_rx_msg() call above frees the skb (either here, or as part of
+the comment above the call to that function)? Also, please get rid of
+the double blank line while you're fixing things up...
+
+-Toke
