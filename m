@@ -2,206 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 14CB35F79B5
-	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 16:33:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12FCF5F79CC
+	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 16:39:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229638AbiJGOdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 10:33:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44536 "EHLO
+        id S229641AbiJGOjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 10:39:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229627AbiJGOdH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 10:33:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F3891204FB
-        for <netdev@vger.kernel.org>; Fri,  7 Oct 2022 07:33:06 -0700 (PDT)
+        with ESMTP id S229791AbiJGOjn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 10:39:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43C0621B0
+        for <netdev@vger.kernel.org>; Fri,  7 Oct 2022 07:39:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1665153185;
+        s=mimecast20190719; t=1665153577;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=dpyGKzQ4djygt/FjTKUqOv/R5LP+sgmTctNH9D/8PMw=;
-        b=TI23yowpztoTqmNovf2ozGo4LIgeeL/95zoqXLCRpdWV1CeR6tJzjA92A790wEkcYsOgaN
-        ePNuko6XtpipycKMRf27COjxIFjmpcmg3uEbojm8wMBHaWumoTyBVS+P7CN7aBkC06nDje
-        kvFE2+pCbpeYx/Qju2zeGrZKCk5V9to=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=JOx3A6+XTaeuii+sjpdga3MYH7wwQtFa2GwJMRkhlp0=;
+        b=GXzTgupT0sJEz8dbPPN1hUOl9jGtMO1Ncx++IzEXPRWb+YxmrvfIhBgUqJxF9t5MYUSnFo
+        n5Dep/ItOX5gDfpAZ1Wjm3vVndpPGWO0aV+nw84/Gz9/caz8AdW8/EZhJdgTLg0jLCXfoK
+        Leq7B0M1+e0QP2e4xFc9jtyL3ypSVR8=
+Received: from mail-yb1-f200.google.com (mail-yb1-f200.google.com
+ [209.85.219.200]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-530-oTxMxcUIM_2W0aPWHfPWvg-1; Fri, 07 Oct 2022 10:33:01 -0400
-X-MC-Unique: oTxMxcUIM_2W0aPWHfPWvg-1
-Received: by mail-ed1-f70.google.com with SMTP id m10-20020a056402430a00b0045968bb0874so4008602edc.10
-        for <netdev@vger.kernel.org>; Fri, 07 Oct 2022 07:33:01 -0700 (PDT)
+ us-mta-607-0dHlC4PEPjGNoTFT5y6dJg-1; Fri, 07 Oct 2022 10:39:36 -0400
+X-MC-Unique: 0dHlC4PEPjGNoTFT5y6dJg-1
+Received: by mail-yb1-f200.google.com with SMTP id y65-20020a25c844000000b006bb773548d5so4817732ybf.5
+        for <netdev@vger.kernel.org>; Fri, 07 Oct 2022 07:39:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=dpyGKzQ4djygt/FjTKUqOv/R5LP+sgmTctNH9D/8PMw=;
-        b=d8302XIfW7RLbi0vHBdjnuC/EY056kgbgTVqKmIF5SJHbN4y8Un8ZRnlHf4EgvsMd8
-         Fycek+DcvwnLP+zfy9fwUJvkX0tbUe57kIEcmZJ9X+YCW7v8SW65u5QZXxivbM1UtibU
-         m7rVYFvqNSUSjC4eTiMkboZwomcCHOvQ61UhmZCFhuY0cHUNF6qQGCuOItz5tuVtSu3Q
-         +RMGyrdmvVPP0c6Z/gqeIXfNrLiJRj7bHAVD1Cdn0yILnhb+AmN2rdEeqNqKwIqJLg47
-         00gK8w5D30j4JSwgsAw3zdUTUne2gvEoTFpOgN8fIyS7DtlKTenP/58wI/JQ3/hjw6Rz
-         Dw2Q==
-X-Gm-Message-State: ACrzQf0xFoPWhn4GloCd17dWgsdlNcI3YW6SI6wmihFKXri1aAyOHEtf
-        FWnUQPZ5TyawERYtrZPL0arUhYHFI8hBS1LNDk1hzXnjuTmjWsabzxYi1RZ6h7BngrjZeL52gNa
-        SgwlGHZV+S3VdqBFR
-X-Received: by 2002:a17:907:7248:b0:78d:1cb2:41ac with SMTP id ds8-20020a170907724800b0078d1cb241acmr4402150ejc.283.1665153179986;
-        Fri, 07 Oct 2022 07:32:59 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM5sYqCI1WEbWgvHHis0dtP8PDmohalHqLdU03dvkS/1uKY2UTYZRGAkj1JoJCietc85Z/nQ6g==
-X-Received: by 2002:a17:907:7248:b0:78d:1cb2:41ac with SMTP id ds8-20020a170907724800b0078d1cb241acmr4402119ejc.283.1665153179561;
-        Fri, 07 Oct 2022 07:32:59 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id g25-20020a170906539900b0078d3be14d4bsm1368990ejo.11.2022.10.07.07.32.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Oct 2022 07:32:58 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 067FF64EEEE; Fri,  7 Oct 2022 16:32:57 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Joanne Koong <joannelkoong@gmail.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Joe Stringer <joe@cilium.io>,
-        Network Development <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 01/10] bpf: Add initial fd-based API to attach
- tc BPF programs
-In-Reply-To: <14f368eb-9158-68bc-956c-c8371cfcb531@iogearbox.net>
-References: <20221004231143.19190-1-daniel@iogearbox.net>
- <20221004231143.19190-2-daniel@iogearbox.net>
- <20221006050053.pbwo72xtzoza6gfl@macbook-pro-4.dhcp.thefacebook.com>
- <f355eeba-1b46-749f-c102-65074e7eac27@iogearbox.net>
- <CAADnVQ+gEY3FjCR=+DmjDR4gp5bOYZUFJQXj4agKFHT9CQPZBw@mail.gmail.com>
- <14f368eb-9158-68bc-956c-c8371cfcb531@iogearbox.net>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 07 Oct 2022 16:32:57 +0200
-Message-ID: <875ygvemau.fsf@toke.dk>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=JOx3A6+XTaeuii+sjpdga3MYH7wwQtFa2GwJMRkhlp0=;
+        b=zNTMrbL3Ho7cG/joy2QX1TV14sgF3tF6r3Y3U1bDA6A/uldrFfvlcf0VfJ/Pk4S1/Z
+         VDDaYyVgddaAOVHyteect1gQ6e0wjBtckPGdTYP4vxGD9muOBU+cbSQgviX4+yAUSuUI
+         yQy9CTIjhMajgJNxgmPVHDBsieWKt17rqYVPF3HkQaTS6tN8sNzohKUuE0S804heUVEo
+         yg2SDO2uX/7JvdesttFCuzIF4pG1oz54VaKdjT5+UQvNQGtJ/jDzdv8pYSQusqTdy68B
+         t7zRi8pfdX24/d8p3fkXbuvgPTgFWfh75jxQoSaOPD9Adnt6IIJOiUJ99sej7eKie+9i
+         iBig==
+X-Gm-Message-State: ACrzQf1RIxzvW9RW0WBW5uPtU2BWd3QSKrS3+wE1D6KbyJSK0x0nI5pT
+        ccooQToaONYzSpDUUXkM5CbYTd480xHRyDE9/KDE2y4kG0n0fcRup2KwPqFG2iJmLh0pBBw0bHT
+        eS5KJrhqAbUaJZ/xifI4TQuZlIUdkv4dq
+X-Received: by 2002:a25:40ce:0:b0:6be:79b3:51ac with SMTP id n197-20020a2540ce000000b006be79b351acmr4984723yba.635.1665153576323;
+        Fri, 07 Oct 2022 07:39:36 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM5kGmAkEKuaQ/uy01jcRcX7KaaEWRifn3GECX/tCBMwDjkw6bAu/NVD8fsnXMCa8IL1S+qgdfsbQUbQenxPvY4=
+X-Received: by 2002:a25:40ce:0:b0:6be:79b3:51ac with SMTP id
+ n197-20020a2540ce000000b006be79b351acmr4984702yba.635.1665153576089; Fri, 07
+ Oct 2022 07:39:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220914141923.1725821-1-simon.horman@corigine.com>
+ <eeb0c590-7364-a00e-69fc-2326678d6bdf@ovn.org> <PH0PR13MB4793A85169BB60B8609B192194499@PH0PR13MB4793.namprd13.prod.outlook.com>
+ <0aac2127-0b14-187e-0adb-7d6b8fe8cfb1@ovn.org> <e71b2bf2-cfd5-52f4-5fd4-1c852f2a8c6c@ovn.org>
+ <00D45065-3D74-4C4C-8988-BFE0CEB3BE2F@redhat.com> <fe0cd650-0d4a-d871-5c0b-b1c831c8d0cc@ovn.org>
+ <CALnP8ZYcGvtP_BV=2gy0v3TtSfD=3nO-uzbG8E1UvjoDYD2+7A@mail.gmail.com>
+In-Reply-To: <CALnP8ZYcGvtP_BV=2gy0v3TtSfD=3nO-uzbG8E1UvjoDYD2+7A@mail.gmail.com>
+From:   Davide Caratti <dcaratti@redhat.com>
+Date:   Fri, 7 Oct 2022 16:39:25 +0200
+Message-ID: <CAKa-r6sn1oZNn0vrnrthzq_XsxpdHGWyxw_T9b9ND0=DJk64yQ@mail.gmail.com>
+Subject: Re: [ovs-dev] [PATCH] tests: fix reference output for meter offload stats
+To:     Marcelo Leitner <mleitner@redhat.com>
+Cc:     Ilya Maximets <i.maximets@ovn.org>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Tianyu Yuan <tianyu.yuan@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>, dev@openvswitch.org,
+        oss-drivers <oss-drivers@corigine.com>, netdev@vger.kernel.org,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel Borkmann <daniel@iogearbox.net> writes:
-
-> On 10/7/22 1:28 AM, Alexei Starovoitov wrote:
->> On Thu, Oct 6, 2022 at 2:29 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->>> On 10/6/22 7:00 AM, Alexei Starovoitov wrote:
->>>> On Wed, Oct 05, 2022 at 01:11:34AM +0200, Daniel Borkmann wrote:
->>> [...]
->>>>
->>>> I cannot help but feel that prio logic copy-paste from old tc, netfilter and friends
->>>> is done because "that's how things were done in the past".
->>>> imo it was a well intentioned mistake and all networking things (tc, netfilter, etc)
->>>> copy-pasted that cumbersome and hard to use concept.
->>>> Let's throw away that baggage?
->>>> In good set of cases the bpf prog inserter cares whether the prog is first or not.
->>>> Since the first prog returning anything but TC_NEXT will be final.
->>>> I think prog insertion flags: 'I want to run first' vs 'I don't care about order'
->>>> is good enough in practice. Any complex scheme should probably be programmable
->>>> as any policy should. For example in Meta we have 'xdp chainer' logic that is similar
->>>> to libxdp chaining, but we added a feature that allows a prog to jump over another
->>>> prog and continue the chain. Priority concept cannot express that.
->>>> Since we'd have to add some "policy program" anyway for use cases like this
->>>> let's keep things as simple as possible?
->>>> Then maybe we can adopt this "as-simple-as-possible" to XDP hooks ?
->>>> And allow bpf progs chaining in the kernel with "run_me_first" vs "run_me_anywhere"
->>>> in both tcx and xdp ?
->>>> Naturally "run_me_first" prog will be the only one. No need for F_REPLACE flags, etc.
->>>> The owner of "run_me_first" will update its prog through bpf_link_update.
->>>> "run_me_anywhere" will add to the end of the chain.
->>>> In XDP for compatibility reasons "run_me_first" will be the default.
->>>> Since only one prog can be enqueued with such flag it will match existing single prog behavior.
->>>> Well behaving progs will use (like xdp-tcpdump or monitoring progs) will use "run_me_anywhere".
->>>> I know it's far from covering plenty of cases that we've discussed for long time,
->>>> but prio concept isn't really covering them either.
->>>> We've struggled enough with single xdp prog, so certainly not advocating for that.
->>>> Another alternative is to do: "queue_at_head" vs "queue_at_tail". Just as simple.
->>>> Both simple versions have their pros and cons and don't cover everything,
->>>> but imo both are better than prio.
->>>
->>> Yeah, it's kind of tricky, imho. The 'run_me_first' vs 'run_me_anywhere' are two
->>> use cases that should be covered (and actually we kind of do this in this set, too,
->>> with the prios via prio=x vs prio=0). Given users will only be consuming the APIs
->>> via libs like libbpf, this can also be abstracted this way w/o users having to be
->>> aware of prios.
->> 
->> but the patchset tells different story.
->> Prio gets exposed everywhere in uapi all the way to bpftool
->> when it's right there for users to understand.
->> And that's the main problem with it.
->> The user don't want to and don't need to be aware of it,
->> but uapi forces them to pick the priority.
->> 
->>> Anyway, where it gets tricky would be when things depend on ordering,
->>> e.g. you have BPF progs doing: policy, monitoring, lb, monitoring, encryption, which
->>> would be sth you can build today via tc BPF: so policy one acts as a prefilter for
->>> various cidr ranges that should be blocked no matter what, then monitoring to sample
->>> what goes into the lb, then lb itself which does snat/dnat, then monitoring to see what
->>> the corresponding pkt looks that goes to backend, and maybe encryption to e.g. send
->>> the result to wireguard dev, so it's encrypted from lb node to backend.
->> 
->> That's all theory. Your cover letter example proves that in
->> real life different service pick the same priority.
->> They simply don't know any better.
->> prio is an unnecessary magic that apps _have_ to pick,
->> so they just copy-paste and everyone ends up using the same.
->> 
->>> For such
->>> example, you'd need prios as the 'run_me_anywhere' doesn't guarantee order, so there's
->>> a case for both scenarios (concrete layout vs loose one), and for latter we could
->>> start off with and internal prio around x (e.g. 16k), so there's room to attach in
->>> front via fixed prio, but also append to end for 'don't care', and that could be
->>> from lib pov the default/main API whereas prio would be some kind of extended one.
->>> Thoughts?
->> 
->> If prio was not part of uapi, like kernel internal somehow,
->> and there was a user space daemon, systemd, or another bpf prog,
->> module, whatever that users would interface to then
->> the proposed implementation of prio would totally make sense.
->> prio as uapi is not that.
+On Fri, Oct 7, 2022 at 3:21 PM Marcelo Leitner <mleitner@redhat.com> wrote:
 >
-> A good analogy to this issue might be systemd's unit files.. you specify dependencies
-> for your own <unit> file via 'Wants=<unitA>', and ordering via 'Before=<unitB>' and
-> 'After=<unitC>' and they refer to other unit files. I think that is generally okay,
-> you don't deal with prio numbers, but rather some kind textual representation. However
-> user/operator will have to deal with dependencies/ordering one way or another, the
-> problem here is that we deal with kernel and loader talks to kernel directly so it
-> has no awareness of what else is running or could be running, so apps needs to deal
-> with it somehow (and it cannot without external help).
+> (+TC folks and netdev@)
+>
+> On Fri, Oct 07, 2022 at 02:42:56PM +0200, Ilya Maximets wrote:
+> > On 10/7/22 13:37, Eelco Chaudron wrote:
 
-I was thinking a little about how this might work; i.e., how can the
-kernel expose the required knobs to allow a system policy to be
-implemented without program loading having to talk to anything other
-than the syscall API?
+[...]
 
-How about we only expose prepend/append in the prog attach UAPI, and
-then have a kernel function that does the sorting like:
+> I don't see how we could achieve this without breaking much of the
+> user experience.
+>
+> >
+> > - or create something like act_count - a dummy action that only
+> >   counts packets, and put it in every datapath action from OVS.
+>
+> This seems the easiest and best way forward IMHO. It's actually the
+> 3rd option below but "on demand", considering that tc will already use
+> the stats of the first action as the flow stats (in
+> tcf_exts_dump_stats()), then we can patch ovs to add such action if a
+> meter is also being used (or perhaps even always, because other
+> actions may also drop packets, and for OVS we would really be at the
+> 3rd option below).
 
-int bpf_add_new_tcx_prog(struct bpf_prog *progs, size_t num_progs, struct bpf_prog *new_prog, bool append)
+Correct me if I'm wrong, but actually act_gact action with "pipe"
+control action should already do this counting job.
 
-where the default implementation just appends/prepends to the array in
-progs depending on the value of 'appen'.
-
-And then use the __weak linking trick (or maybe struct_ops with a member
-for TXC, another for XDP, etc?) to allow BPF to override the function
-wholesale and implement whatever ordering it wants? I.e., allow it can
-to just shift around the order of progs in the 'progs' array whenever a
-program is loaded/unloaded?
-
-This way, a userspace daemon can implement any policy it wants by just
-attaching to that hook, and keeping things like how to express
-dependencies as a userspace concern?
-
--Toke
+any feedback appreciated, thanks!
+-- 
+davide
 
