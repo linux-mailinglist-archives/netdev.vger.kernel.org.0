@@ -2,114 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 874FF5F759F
-	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 10:54:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68BC25F75A5
+	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 10:54:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229899AbiJGIyF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 04:54:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56116 "EHLO
+        id S229547AbiJGIyw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 04:54:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229865AbiJGIxq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 04:53:46 -0400
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F27111755E;
-        Fri,  7 Oct 2022 01:53:40 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id CBEB11BF20D;
-        Fri,  7 Oct 2022 08:53:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1665132818;
+        with ESMTP id S229808AbiJGIyu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 04:54:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB52A11829
+        for <netdev@vger.kernel.org>; Fri,  7 Oct 2022 01:54:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1665132880;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=eMfsmZ4JLreXYcYVpxJN9ZOZqTgP49RxDVxSHvzYNgU=;
-        b=JhC9NEzFAQbx/7UH6roy/nq/hglTFM+WwUaoNCWoj0ZAAi0lUFV0VYcq1RVxt4/E3GQ35t
-        c7pr1QWg9ntEHDQfpjicrkwq/3rHDUfo5K3byB/9cdbEOFNEI++UbStMLUBveYTBuNtfQ8
-        FLrO3k2+jXJ5ipkiDRgI/CXxGF5we0EEIziB3CU+G7SjnJBJ8Q4OI04+63CTZwRR8GuT47
-        3NDO1cWfv77EIoVqot1M8xOEmY4d/SiZ3wX7UiXG8Ppkiu62snXccESfjR53a3Bb91OrgP
-        5CvMsOaHA+pA9XXF6D6G3+JlLi0cstTiSFq/o1sKfxcVl9N58REIjhM1tvOMGA==
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan/next v4 8/8] mac802154: Ensure proper scan-level filtering
-Date:   Fri,  7 Oct 2022 10:53:10 +0200
-Message-Id: <20221007085310.503366-9-miquel.raynal@bootlin.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221007085310.503366-1-miquel.raynal@bootlin.com>
-References: <20221007085310.503366-1-miquel.raynal@bootlin.com>
+        bh=erTMAY0Lz1mBTM5QiEVhhkwV7oze28OkA0csFjC86zk=;
+        b=I6a8ugkvSOCUnReQ3bECFZSeXJip/9ZuzJWf1ItcXtHV9qyoAsGVFc4lS5IYB/EQI7e423
+        dlsvun8v/YQq63+f+aiLIlDPG5bDYEUUZ+ZJC4oiU8N0NnsjzSypBWhvLR4yHXgJiw7aVe
+        v3dDYMXeRJ85PaDCvXZU8tGHSfI7eBQ=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-475-lIEnzQJnPSq5nGRTyY4J5A-1; Fri, 07 Oct 2022 04:54:36 -0400
+X-MC-Unique: lIEnzQJnPSq5nGRTyY4J5A-1
+Received: by mail-wr1-f72.google.com with SMTP id m20-20020adfa3d4000000b0022e2fa93dd1so1186781wrb.2
+        for <netdev@vger.kernel.org>; Fri, 07 Oct 2022 01:54:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=erTMAY0Lz1mBTM5QiEVhhkwV7oze28OkA0csFjC86zk=;
+        b=yG1nv+CiXd0ZQGLMIHHv4kTvO0PhPLYmOXVSTmaPats4lBfkhQD/sPc4YDf2b0sUry
+         iy/P/b4L2WctSo3TskRkhaJMY7C+kcYFEk21hOIoe+QQmXoaEqYcVg1hpKW0vYhrgBNi
+         yVZF+vMh+rbRRsbXUxXUdGmlo8XiUUVFfv06hBT3KKLEMTkdiKglegiSIuEnSvsiNA8C
+         upqBy7Zoxj4oHJg2/Q2sS9gYPQepiGOf75nHMI8VG+9nFYoLGzngJvyUfMVTC13ICJB6
+         sQNvXryLwAc0Vna6K2ZiB16vDf6d3DZjLUNIiKTpBYlASkU0BubwCxCgTLYuHrlcEO7g
+         f5OQ==
+X-Gm-Message-State: ACrzQf0zA/jeQoJ6vNXTdzy3VgLflNCulBSOJ3N3+o7w3tARsZQH/vLJ
+        L+AYlSFffqDrzo+rLfNvqSat4CFbVCKliscSBna+8L2drXfKznEVqtGP1PadeEjxSFILlKUV32I
+        DFqgu5wgWyo7kwd44
+X-Received: by 2002:adf:a3da:0:b0:22c:d73b:38a5 with SMTP id m26-20020adfa3da000000b0022cd73b38a5mr2354741wrb.541.1665132875068;
+        Fri, 07 Oct 2022 01:54:35 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM4DF1bSRv8hQLgWk5KKniXnteS+urv1Jd80jb6Ho4Z//modUXSHY7aP8w9k2YsEdsxR69AeaA==
+X-Received: by 2002:adf:a3da:0:b0:22c:d73b:38a5 with SMTP id m26-20020adfa3da000000b0022cd73b38a5mr2354728wrb.541.1665132874854;
+        Fri, 07 Oct 2022 01:54:34 -0700 (PDT)
+Received: from localhost.localdomain ([92.62.32.42])
+        by smtp.gmail.com with ESMTPSA id m3-20020a5d64a3000000b00228cbac7a25sm1505933wrp.64.2022.10.07.01.54.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 07 Oct 2022 01:54:34 -0700 (PDT)
+Date:   Fri, 7 Oct 2022 10:54:31 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, robh@kernel.org, johannes@sipsolutions.net,
+        ecree.xilinx@gmail.com, stephen@networkplumber.org, sdf@google.com,
+        f.fainelli@gmail.com, fw@strlen.de, linux-doc@vger.kernel.org,
+        razor@blackwall.org, nicolas.dichtel@6wind.com
+Subject: Re: [PATCH net-next v2 3/7] net: add basic C code generators for
+ Netlink
+Message-ID: <20221007085431.GA3365@localhost.localdomain>
+References: <20220930023418.1346263-1-kuba@kernel.org>
+ <20220930023418.1346263-4-kuba@kernel.org>
+ <20221006125109.GE3328@localhost.localdomain>
+ <20221006075537.0a3b2bb2@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221006075537.0a3b2bb2@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We now have a fine grained filtering information so let's ensure proper
-filtering in scan mode, which means that only beacons are processed.
+On Thu, Oct 06, 2022 at 07:55:37AM -0700, Jakub Kicinski wrote:
+> On Thu, 6 Oct 2022 14:51:09 +0200 Guillaume Nault wrote:
+> > > v2: - use /* */ comments instead of //  
+> > 
+> > Probably not a very interesting feedback, but there
+> > are still many comments generated in the // style.
+> 
+> It's slightly unclear to me what our policy on comments is now.
+> I can fix all up - the motivation for the change in v2 was that
+> in uAPI apparently its completely forbidden to use anything that's 
+> not ANSI C :S
 
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
----
- net/mac802154/rx.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+I didn't realise the v2 comment was for uapi headers only. So I was
+surprised to see // comments in the generated files.
 
-diff --git a/net/mac802154/rx.c b/net/mac802154/rx.c
-index 14bc646b9ab7..4d799b477a7f 100644
---- a/net/mac802154/rx.c
-+++ b/net/mac802154/rx.c
-@@ -34,6 +34,7 @@ ieee802154_subif_frame(struct ieee802154_sub_if_data *sdata,
- 		       struct sk_buff *skb, const struct ieee802154_hdr *hdr)
- {
- 	struct wpan_dev *wpan_dev = &sdata->wpan_dev;
-+	struct wpan_phy *wpan_phy = sdata->local->hw.phy;
- 	__le16 span, sshort;
- 	int rc;
- 
-@@ -42,6 +43,17 @@ ieee802154_subif_frame(struct ieee802154_sub_if_data *sdata,
- 	span = wpan_dev->pan_id;
- 	sshort = wpan_dev->short_addr;
- 
-+	/* Level 3 filtering: Only beacons are accepted during scans */
-+	if (sdata->required_filtering == IEEE802154_FILTERING_3_SCAN &&
-+	    sdata->required_filtering > wpan_phy->filtering) {
-+		if (mac_cb(skb)->type != IEEE802154_FC_TYPE_BEACON) {
-+			dev_dbg(&sdata->dev->dev,
-+				"drop !beacon frame (0x%x) during scan\n",
-+				mac_cb(skb)->type);
-+			goto fail;
-+		}
-+	}
-+
- 	switch (mac_cb(skb)->dest.mode) {
- 	case IEEE802154_ADDR_NONE:
- 		if (hdr->source.mode != IEEE802154_ADDR_NONE)
-@@ -277,10 +289,6 @@ void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb)
- 
- 	ieee802154_monitors_rx(local, skb);
- 
--	/* TODO: Handle upcomming receive path where the PHY is at the
--	 * IEEE802154_FILTERING_NONE level during a scan.
--	 */
--
- 	/* Level 1 filtering: Check the FCS by software when relevant */
- 	if (local->hw.phy->filtering == IEEE802154_FILTERING_NONE) {
- 		crc = crc_ccitt(0, skb->data, skb->len);
--- 
-2.34.1
+> Gotta keep that compatibility with the all important Borland compiler
+> or something?
+
+Personnaly, I like the /* */ style, but I don't think my personnal
+taste should influence this patch set. I genuinely thought you wanted
+to convert all comments, hence my feedback. Feel free to ignore it :).
 
