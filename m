@@ -2,135 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF84D5F798B
-	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 16:08:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A2115F79B0
+	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 16:28:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229993AbiJGOI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 10:08:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34442 "EHLO
+        id S229616AbiJGO16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 10:27:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbiJGOIU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 10:08:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74FBC120EE1;
-        Fri,  7 Oct 2022 07:08:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E2A6961D16;
-        Fri,  7 Oct 2022 14:08:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 070E7C433C1;
-        Fri,  7 Oct 2022 14:08:11 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="nfYgePI9"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1665151688;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GwMExxyHWRhjupCjy80ATuiTjwid+3186g/nbW9UcWo=;
-        b=nfYgePI9KM8BlGnmbR3ouUoTgbqX0bmg+MHxz9qox2mDg1Ao4QNQA34F1ojE6QWVH7lnMZ
-        JCnOmfX2/22xviCjt9MflZdzSKJ6jqjmdSwH6RCVEhuoe4krJ9q8+B6hn4YxZ0DzwoUloS
-        EW51bMUr/eMjeREL5G2BmpFXN0LLrR0=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 7db71c1d (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Fri, 7 Oct 2022 14:08:08 +0000 (UTC)
-Date:   Fri, 7 Oct 2022 08:07:58 -0600
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "patches@lists.linux.dev" <patches@lists.linux.dev>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Christoph =?utf-8?Q?B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>, Christoph Hellwig <hch@lst.de>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dave Airlie <airlied@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Westphal <fw@strlen.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Helge Deller <deller@gmx.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Hugh Dickins <hughd@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "James E . J . Bottomley" <jejb@linux.ibm.com>,
-        Jan Kara <jack@suse.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Jens Axboe <axboe@kernel.dk>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        KP Singh <kpsingh@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Russell King <linux@armlinux.org.uk>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Thomas Graf <tgraf@suug.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        WANG Xuerui <kernel@xen0n.name>, Will Deacon <will@kernel.org>,
-        Yury Norov <yury.norov@gmail.com>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "kasan-dev@googlegroups.com" <kasan-dev@googlegroups.com>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
-        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "loongarch@lists.linux.dev" <loongarch@lists.linux.dev>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Chuck Lever <chuck.lever@oracle.com>, Jan Kara <jack@suse.cz>
-Subject: Re: [PATCH v3 3/5] treewide: use get_random_u32() when possible
-Message-ID: <Y0Ayvov/KQmrIwTS@zx2c4.com>
-References: <20221006165346.73159-1-Jason@zx2c4.com>
- <20221006165346.73159-4-Jason@zx2c4.com>
- <848ed24c-13ef-6c38-fd13-639b33809194@csgroup.eu>
- <CAHmME9raQ4E00r9r8NyWJ17iSXE_KniTG0onCNAfMmfcGar1eg@mail.gmail.com>
- <f10fcfbf-2da6-cf2d-6027-fbf8b52803e9@csgroup.eu>
- <6396875c-146a-acf5-dd9e-7f93ba1b4bc3@csgroup.eu>
- <CAHmME9pE4saqnwxhsAwt-xegYGjsavPOGnHCbZhUXD7kaJ+GAA@mail.gmail.com>
- <501b0fc3-6c67-657f-781e-25ee0283bc2e@csgroup.eu>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+        with ESMTP id S229555AbiJGO1z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 10:27:55 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2084.outbound.protection.outlook.com [40.107.244.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C9021EEDE
+        for <netdev@vger.kernel.org>; Fri,  7 Oct 2022 07:27:52 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MA2sRcHG/VG9yZ8i+OPQL+iJMOPM9EwoSvlubUf371v0dBnmhr0K6btLIyFJa7OpPoR9pD9FM3zcQXeDbwUsh6/l6TY/sSvd6oxVBH6WW9Dlj11NUNYhTQoo3jv0G2MkhkNBhDF83ADfxiXP+DBujlfj0rFGLZsmUTI6xjaXxLD7Xv1jG6XWMSpn2AKKdnH9VbJFJXrj8/AzH8YRpEEhw+Qmn0qT3HqEKz8KQGpUpL3EMbbIZISNDgvwmQOa3gyrEun2BaMrWg1rHvOQBD7yscQzX+C4AeGo9CwdBJG4QJwsPw86ZMUJ9JRDuE4OxCIXbiiqpoheXsgWq5vTNk6wgw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QE24tNrpoVhDU4ksP8jhRp84uYUFnTovu2SQLufAc6I=;
+ b=csD9Iz2ZdexfTonshD+Y9f3dguloBhD3weCyrKzSstbxr8m4gGkz4x7GAfV9Jqm1xXr8NuesZv9JFRXCLZrA/d/c5TnnIoeu7WbVn0ZHA1Qws/SryjxJlFUwwrsxbAUh1Npm14NtHSJIRUDtLUd6IyzRmIog3QztcVrdCijc5DcpVvOMMDDC8pk6vsbcp9mtEvJPja6X55AHMNTnNQLWoIzPLSzY3RgKyrqeHd2Ez2DlGalTfs+d7jlHZXXwJPeO/sPeVKGtW0UVYJrKWWjIZbWsalFyk7WvqTlDd9X0Oxdbdss2cwKHMTzpGrBpHp77nR/fVh58EOXv3t0V0YUYFA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QE24tNrpoVhDU4ksP8jhRp84uYUFnTovu2SQLufAc6I=;
+ b=x64hTJ3X3iFn36vVnXYcrA5RCA+KQp7BhvFLnHNxpzIC305zo1g46hLupLQNwif4hzh0qRE7CfCGkGAxzjXlRqVir/NI7DinBgPpuDQobtwdA0mvUiK+x0cQR7lrdsk9vPRfz89jrTa2n3vjM8qwKf8yBnnpvSkH6tUzSldr7N8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
+ by DS0PR12MB6583.namprd12.prod.outlook.com (2603:10b6:8:d1::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.30; Fri, 7 Oct
+ 2022 14:27:51 +0000
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::ccc6:f300:dfcd:145]) by DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::ccc6:f300:dfcd:145%4]) with mapi id 15.20.5709.015; Fri, 7 Oct 2022
+ 14:27:51 +0000
+Message-ID: <03333e34-cd27-35fc-0f4c-c436b7c2857d@amd.com>
+Date:   Fri, 7 Oct 2022 09:27:49 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net 3/3] amd-xgbe: fix the SFP compliance codes check for
+ DAC cables
+Content-Language: en-US
+To:     Raju Rangoju <Raju.Rangoju@amd.com>, Shyam-sundar.S-k@amd.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, rrangoju@amd.com
+References: <20221006135440.3680563-1-Raju.Rangoju@amd.com>
+ <20221006135440.3680563-4-Raju.Rangoju@amd.com>
+ <d377d924-d205-cd25-e3d0-7521ed8a3ca1@amd.com>
+ <9a8552c2-0a23-ea1d-9d1c-56b7a6c75487@amd.com>
+ <40b3f874-e7fc-4049-65e2-3ed449b956f8@amd.com>
+ <77d8ea25-3557-cd6f-f732-20a046b29661@amd.com>
+From:   Tom Lendacky <thomas.lendacky@amd.com>
+In-Reply-To: <77d8ea25-3557-cd6f-f732-20a046b29661@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <501b0fc3-6c67-657f-781e-25ee0283bc2e@csgroup.eu>
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-ClientProxiedBy: SN7PR18CA0030.namprd18.prod.outlook.com
+ (2603:10b6:806:f3::7) To DM4PR12MB5229.namprd12.prod.outlook.com
+ (2603:10b6:5:398::12)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5229:EE_|DS0PR12MB6583:EE_
+X-MS-Office365-Filtering-Correlation-Id: c3a328a8-88cc-4a95-e2f1-08daa8701d71
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: mfcQIYYqC03h29QjC1P4w5kLcE6tPy1S+2B271YBC2nUi+3AaJFMEzultvFfzHiHknIXxrx9YwQzAt8KCV1AZlaTXUXOsE1Fk7oVcT5X0CAMhMuKOITabvn1+Bu3sGmRSvmO5m6NsD74gik55vjiwl4aKtJFChh9HU9kZRowmOzuD8UYsEMpEPfbGuFyC+wIwlCWG0HCMEIdDmNhxvbW0Z7+/osswN2jKS4nGXjDjMTLul1teohmmUcNOVeOq3Wjc8malrIg0fXnWu7Tnbe88LYZSaXeGbKqOKHS55zZECwdJ6MOdwJCIWbJGaR6W6BdTyAzlBoa3EVMDNgabVX7uVwkgvIMQE7u+W+bnvwwzarWgYzA0TloqUpdCM9VInZxmCimCLEOz8thKbjbd/ywTxDaMrSMB4DBWjpv3OoJ4IqBff+YXUuXA/8bja1jl2EPawHfnnPpZJ7+PmD5hMbRAboTMdMEEIV5HqROnPMM+vKcxfVl85RpTfZcF29US+54mNJLDTiqDtfeL3G54OVyw1QOxD8lULCENIvzfiqrb7+sQxlBiBUKv/WAAWKrZfT7a5E6PAUNzyrDXjY55zKV8BYyfzsx0vWLKy6avh6zLukr17bKfpZiWmHmD2o1j8/WH4jTkyIcSGXNnLKmgGTFd1XqGuqCxaUbIEM0JOR6WjikFryf1lXmwyqNWhbxnJlM0lLKlKIcZ5YwY143oJscM3VMOtBSgSZsg3SDcGd6xau1SEyESQWR9Z5XGOg+4M9HOeChk/2VYFHBIfvCiC1r62TsSHxo8WvUaHKoFBtNDpE=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(136003)(346002)(366004)(396003)(376002)(451199015)(8676002)(6506007)(36756003)(26005)(316002)(86362001)(8936002)(41300700001)(5660300002)(66946007)(4326008)(186003)(2616005)(66556008)(31696002)(53546011)(38100700002)(6486002)(478600001)(66476007)(6512007)(2906002)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RGxLRnRoQUw4UnNjWnlGZ3V0cTNIOWpTa2R5dHFKT2U1QjR3R2NvT2JHMGwv?=
+ =?utf-8?B?S0FRU0NLZWNWdlNITGYvWURnd1NWemlMbzNKVC9oQkwxN2Y3NVZ1UTZMRlBw?=
+ =?utf-8?B?dDRGSEQ5S2dyZWJ0MUQ0Mm9mVXZpU1FoMXBYYWdjcHl5L1pkRTA4U2xGZnlz?=
+ =?utf-8?B?SW4wYWhDcWUrbG15VlpCbVBpeitxUHR6QXB2S3N3eTlpeSswOTNiS0JSTnN6?=
+ =?utf-8?B?NWVYNWVFUm5IdjhnTTFhMHArZmZlU2FIYVk5ODBMTlJQbXJGTk43ZHFHb0l5?=
+ =?utf-8?B?azRvTWFSQ1ZZVWllbjdMbDVQMStnUy9VbFJpN09RenNkQW1SQjdBMEVZd2g1?=
+ =?utf-8?B?TFBZaCt3dllNNGpQZW9UMU5PeE5FcVRIR3U5SHBZRHZvNkxRRFhNSVZYRVp0?=
+ =?utf-8?B?NGVpV1dkVFcxVXFOTUI4NDcxR1J1K3poRHcwS0lJb0lodlBvbndvcHMwVHFa?=
+ =?utf-8?B?RDR0b05hbGpjNzFsaTF0M1E5eDFJT1Y1NC9nZTQ5c0owME1ZeGh1N1VnRmlW?=
+ =?utf-8?B?aFZ3UHpQUEs4WjhjY1pCVGIrTi92cWEzeVJIeXcyWGVUempWY25UQ1lnNDhK?=
+ =?utf-8?B?eExuRHViSTVrRnZLdGltcXlJWTBLWGpGZWx0YURnSzZneEU5SlpxK1dGN2V1?=
+ =?utf-8?B?UmxzL2pER2tCYkVReEo4YVZhSkdQS0JNN3lIZnJ4MUJZTmEzc0FlendvZDNF?=
+ =?utf-8?B?b1ZMYVVlaWxxL080cDI1ZlhReUgvL3QxNGRmM09PRzNmMXprVTEwWGJSemJX?=
+ =?utf-8?B?T2kxRjdaTEt2TWhHQ0dhdFNRV0hpamdIVTZlSk92WkQ0OE01WFRxVmlvOTVC?=
+ =?utf-8?B?VzRkbWplbngzUVBZaHpLNHBYdEc5bE9XcG1mUWhJNjh0Qkw3a0k0K2RXeDFy?=
+ =?utf-8?B?TUwxQ2RTMG9mS041V2cxSWtmQlRWRFZiSENnUlp3bXU4Mit0c3JiU0dUZWFL?=
+ =?utf-8?B?Nm15dy93eFlndXBONEMybDVxZkNObUgvYUpRSXBNajd2UGxPbzBqNzB4Yk80?=
+ =?utf-8?B?RmMxQlYxWkVvdGhlOU9vSExQOG9RN1E5YlFleEJVdmpFcGUwcE1mS0dVNzVj?=
+ =?utf-8?B?T1JUcGU0RjA0cUhITkIvMndmRStjNkJHU29WQ0JheGpZUFdRb2ZzVEsySU1V?=
+ =?utf-8?B?NFBuazhEdnkvRXMrK0JxelEzMTlyMHV3bjVTZ3RleWtSM056Y2lRaFJ5ZnNF?=
+ =?utf-8?B?MDFubUVHeWZZV3c1bzRZYU1ndXR1elh3VEk3TUhDKzN0TU8yd3k5YXJUWFlX?=
+ =?utf-8?B?WXVQdkJ5Yjg1cC9NTnl4bWo3ZTkvUjRjUFhPcXZ3RWFpd3VrZTdmQlJzMjY5?=
+ =?utf-8?B?OTdWNGIraWZ1WTNIdzVQcTdOQkpJMlZ6cGJ6QkRRdUpJaTZsOTlnNkZJOXp0?=
+ =?utf-8?B?TG9zdVJYSTFobUU2UkxvRU1ZdUVXK3J4Q1NGUlV3ZTV4Vm1Eb2hlSEVpbHdN?=
+ =?utf-8?B?U1cycTExS2JVMlJOVXdpYmdyMVNjaFY1U3poT3BSZ05QT202WVU3d295NFg1?=
+ =?utf-8?B?blpJQ0FHTmh6Vk1ISFpxUzJteXppT2lSUU5scmtRZmJvc3YzOFQ0emE2RlZQ?=
+ =?utf-8?B?Z1B5aERXeVFoc1N2SnkrYk52MVp0Y0pTZW4yRnlodUh6U0lTR250blhtdHZO?=
+ =?utf-8?B?cFRtajJFUFBjU3hjM1ZTRjJJR3g4dm55dTU4VlRnVytjekxpM3pUckZmVGNX?=
+ =?utf-8?B?YmZFMjEwd3puSUhVZWdlT2NGS2VLZWpFd0psaFpNRWpMNUZHSzQ1cjA5bnJB?=
+ =?utf-8?B?U1QrSTVEZ2IyazJ0blFlVk1VUkUxVjNMK0NvOVlsMit6bHp4N2pzeGRvV0Mr?=
+ =?utf-8?B?YUVOZFhkRnNnREhvOHZjT1VrNWo3MHJjb2ZVb0pmeUtHeWJKL2xPazRTQTVC?=
+ =?utf-8?B?aHRaeGQ3UXFZRXBhR09ZRGt6UitpV0kzclZwMlU0eThWVDFpb3JKZVJ1ckpZ?=
+ =?utf-8?B?T1MwdkZmQzYrb1BJR3Z2NmJ0cXlScVNjR1R2Uzh0WkVrdEdNTU9wanl3UUZ3?=
+ =?utf-8?B?Vjl5Q3gyVk9nRloxTWxMSjVvOHNscTFseG9YZm05SWpWZjlhdXZBNk1QZWFS?=
+ =?utf-8?B?NkxrUVBxdTNGako2ZjBPM3pic2NmMzExRjFUNThQT0xObGVZTU1vc1VVTmtu?=
+ =?utf-8?Q?sfA76Ml2rMzTYdtwf2wE+wXe5?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c3a328a8-88cc-4a95-e2f1-08daa8701d71
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2022 14:27:51.1558
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: nAzUPFZdB9Rrf6FEThTnFJQW/90k042oLhejO+/eEqcDiQmDOy4QZ4/pzoV++LnV2EFRaisyagW3fG0lsT5OEg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB6583
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -138,90 +129,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 07, 2022 at 04:57:24AM +0000, Christophe Leroy wrote:
+On 10/7/22 07:25, Raju Rangoju wrote:
+> On 10/7/2022 12:34 AM, Tom Lendacky wrote:
+>> On 10/6/22 12:37, Raju Rangoju wrote:
+>>> On 10/6/2022 8:30 PM, Tom Lendacky wrote:
+>>>> On 10/6/22 08:54, Raju Rangoju wrote:
+>>>>> The current XGBE code assumes that offset 3 and 6 of EEPROM SFP DAC
+>>>>> (passive) cables are NULL. It also assumes the offset 12 is in the
+>>>>> range 0x64 to 0x68. However, some of the cables (the 5 meter and 7 meter
+>>>>> molex passive cables have non-zero data at offset 3 and 6, also a value
+>>>>> 0x78 at offset 12. So, fix the sfp compliance codes check to ignore
+>>>>> those offsets. Also extend the macro XGBE_SFP_BASE_BR_10GBE range to 
+>>>>> 0x78.
+>>>>
+>>>> So are these cables going against the specification? Should they be 
+>>>> quirks instead of changing the way code is currently operating? How 
+>>>> many different cables have you found that do this?
+>>>>
+>>>> Why would a passive cable be setting any bit other than passive in 
+>>>> byte 3? Why would byte 6 also have a non-zero value?
+>>>>
+>>>> As for the range, 0x78 puts the cable at 12gbps which kind of seems 
+>>>> outside the normal range of what a 10gbps cable should be reporting.
+>>>>
+>>>
+>>> For the passive cables, the current SFP checks in driver are not 
+>>> expecting any data at offset 3 and 6. Also, the offset 12 is expected 
+>>> to be in the range 0x64 - 0x68. This was holding good for Fiber store 
+>>> cables so far. However, the 5 and 7 meter Molex passive cables have 
+>>> non-zero data at offset 3 and 6, and also a value 0x78 at offset 12.
+>>
+>> The 0x64 - 0x68 BR range was holding well for the various passive cables 
+>> that I tested with. What is the BR value for their other length cables?
 > 
-> 
-> Le 07/10/2022 à 01:36, Jason A. Donenfeld a écrit :
-> > On 10/6/22, Christophe Leroy <christophe.leroy@csgroup.eu> wrote:
-> >>
-> >>
-> >> Le 06/10/2022 à 19:31, Christophe Leroy a écrit :
-> >>>
-> >>>
-> >>> Le 06/10/2022 à 19:24, Jason A. Donenfeld a écrit :
-> >>>> Hi Christophe,
-> >>>>
-> >>>> On Thu, Oct 6, 2022 at 11:21 AM Christophe Leroy
-> >>>> <christophe.leroy@csgroup.eu> wrote:
-> >>>>> Le 06/10/2022 à 18:53, Jason A. Donenfeld a écrit :
-> >>>>>> The prandom_u32() function has been a deprecated inline wrapper around
-> >>>>>> get_random_u32() for several releases now, and compiles down to the
-> >>>>>> exact same code. Replace the deprecated wrapper with a direct call to
-> >>>>>> the real function. The same also applies to get_random_int(), which is
-> >>>>>> just a wrapper around get_random_u32().
-> >>>>>>
-> >>>>>> Reviewed-by: Kees Cook <keescook@chromium.org>
-> >>>>>> Acked-by: Toke Høiland-Jørgensen <toke@toke.dk> # for sch_cake
-> >>>>>> Acked-by: Chuck Lever <chuck.lever@oracle.com> # for nfsd
-> >>>>>> Reviewed-by: Jan Kara <jack@suse.cz> # for ext4
-> >>>>>> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> >>>>>> ---
-> >>>>>
-> >>>>>> diff --git a/arch/powerpc/kernel/process.c
-> >>>>>> b/arch/powerpc/kernel/process.c
-> >>>>>> index 0fbda89cd1bb..9c4c15afbbe8 100644
-> >>>>>> --- a/arch/powerpc/kernel/process.c
-> >>>>>> +++ b/arch/powerpc/kernel/process.c
-> >>>>>> @@ -2308,6 +2308,6 @@ void notrace __ppc64_runlatch_off(void)
-> >>>>>>     unsigned long arch_align_stack(unsigned long sp)
-> >>>>>>     {
-> >>>>>>         if (!(current->personality & ADDR_NO_RANDOMIZE) &&
-> >>>>>> randomize_va_space)
-> >>>>>> -             sp -= get_random_int() & ~PAGE_MASK;
-> >>>>>> +             sp -= get_random_u32() & ~PAGE_MASK;
-> >>>>>>         return sp & ~0xf;
-> >>>>>
-> >>>>> Isn't that a candidate for prandom_u32_max() ?
-> >>>>>
-> >>>>> Note that sp is deemed to be 16 bytes aligned at all time.
-> >>>>
-> >>>> Yes, probably. It seemed non-trivial to think about, so I didn't. But
-> >>>> let's see here... maybe it's not too bad:
-> >>>>
-> >>>> If PAGE_MASK is always ~(PAGE_SIZE-1), then ~PAGE_MASK is
-> >>>> (PAGE_SIZE-1), so prandom_u32_max(PAGE_SIZE) should yield the same
-> >>>> thing? Is that accurate? And holds across platforms (this comes up a
-> >>>> few places)? If so, I'll do that for a v4.
-> >>>>
-> >>>
-> >>> On powerpc it is always (from arch/powerpc/include/asm/page.h) :
-> >>>
-> >>> /*
-> >>>    * Subtle: (1 << PAGE_SHIFT) is an int, not an unsigned long. So if we
-> >>>    * assign PAGE_MASK to a larger type it gets extended the way we want
-> >>>    * (i.e. with 1s in the high bits)
-> >>>    */
-> >>> #define PAGE_MASK      (~((1 << PAGE_SHIFT) - 1))
-> >>>
-> >>> #define PAGE_SIZE        (1UL << PAGE_SHIFT)
-> >>>
-> >>>
-> >>> So it would work I guess.
-> >>
-> >> But taking into account that sp must remain 16 bytes aligned, would it
-> >> be better to do something like ?
-> >>
-> >> 	sp -= prandom_u32_max(PAGE_SIZE >> 4) << 4;
-> >>
-> >> 	return sp;
-> > 
-> > Does this assume that sp is already aligned at the beginning of the
-> > function? I'd assume from the function's name that this isn't the
-> > case?
-> 
-> Ah you are right, I overlooked it.
+> The 1m and 3m cables have the BR value within the range 0x64 - 0x68.
 
-So I think to stay on the safe side, I'm going to go with
-`prandom_u32_max(PAGE_SIZE)`. Sound good?
+That certainly seems like 5 and 7 meter cables have an inconsistent value 
+then, no? A quirk for Molex vendor or the specific part series, e.g. 
+74752- or such in xgbe_phy_sfp_bit_rate() might be a better solution here 
+than expanding the range for all cable vendors.
 
-Jason
+Not sure if others with more SFP+ experience could respond and indicate if 
+0x78 is really valid for a 10Gbps cable.
+
+> 
+>>
+>>>
+>>> Here is the feedback from cable Vendor when asked about the SFP 
+>>> standard for passive cables:
+>>>
+>>> "For DAC cables –The Ethernet code compliance code standard for passive 
+>>> cabling, Offset 3 is “0x0” other offsets  4 and 5 - none of the 
+>>> standards are applicable .
+>>
+>> Ok, so it's not offset 3 that is the issue as none of the bits are set 
+>> and won't trigger on the 10G Ethernet Compliance Codes.
+> 
+> As per the Transceiver compliance codes, offset 3 bits 4,5,6,7 represent 
+> 10Gbps speed. However, 5m and 7m transceivers have none of those bits set.
+
+Right, and passive cables shouldn't. Those bits are:
+
+   Bit 7: 10G Base-ER
+   Bit 6: 10G Base-LRM
+   Bit 5: 10G Base-LR
+   Bit 4: 10G Base-SR
+
+which are all Fiber standards.
+
+> On the other hand, offset 6 is set, so the driver incorrectly assumes the 
+> transceiver as a 1Gbps cable.
+
+Correct, 1000Base-CX is copper, e.g., passive. So, as stated in my 
+previous email, I think moving the passive check up as the first check is 
+reasonable.
+
+Thanks,
+Tom
+
+> 
+> Transceiver details:
+> EEPROM sfp_base offset 0-12:
+> 0:  0x3   1: 0x4   2: 0x21  3: 0x1   4: 0x0   5: 0x0   6: 0x4   7: 0x41
+> 8:  0x84  9: 0x80 10: 0xd5 11: 0x0  12: 0x78
+> 
+> enp7s0f2:   vendor:         Molex Inc.
+> enp7s0f2:   part number:    74752-1701
+> enp7s0f2:   revision level:
+> enp7s0f2:   serial number:  726341570
+> 
+>>> Offset 6 – refers to 1000base-cx which is supported .
+>>
+>> Ok, that makes sense and argues for moving the passive check first, 
+>> although the code doesn't support being able to switch to 1000Base-CX.
+>>
+>>
