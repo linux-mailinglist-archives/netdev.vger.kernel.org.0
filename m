@@ -2,101 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 928005F7FE0
-	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 23:26:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF90E5F7FEE
+	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 23:29:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229602AbiJGVZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 17:25:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50182 "EHLO
+        id S229655AbiJGV32 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 17:29:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbiJGVZ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 17:25:58 -0400
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC13C43612
-        for <netdev@vger.kernel.org>; Fri,  7 Oct 2022 14:25:57 -0700 (PDT)
-Received: by mail-qt1-x835.google.com with SMTP id d27so2603195qtw.8
-        for <netdev@vger.kernel.org>; Fri, 07 Oct 2022 14:25:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=pp3PkNdpP6jrpj+2aY9vM5YFVJap6BN+ylh/P+ZmqCQ=;
-        b=BwwO755p9NGTK+jw/Jm945MjRSatJXV3PX9Bpt7qwsN70+f2/XXunJJXibUP5l9rp7
-         JqP3icDS19X6tdwddnJYvYMh0RXb5feHt50Fe5C5l+nsbiGo20HwjErZoWldsXv1bjYc
-         ZTwPtWBD4MkjPLYXSzbSCfSkoMndRUzjCV62nKy2HFNvczouML9SQgLCDm1fX6c8mPEu
-         w0AuaRC7KiisOCQotAk0rn+zJxm3ttBA/CdnycyimTkiAmiLyIooZIeDDCxHWZXuk6+C
-         DcHnfMCrHdosqEp3Ao+hqKkHvFfCDvYfh+yA5HKyjG76oa8julyR1UENtFgBph1CSmez
-         RWgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=pp3PkNdpP6jrpj+2aY9vM5YFVJap6BN+ylh/P+ZmqCQ=;
-        b=Jtl49zU2Rz2Of23x88BO24SvR2CnZsjMw+EXVNmvF24kTdEyCBDug7SbMM5eAoCkvc
-         1qjsxTFEEgf174pHLbiNWBIYUyqrGFhqWDpiA2vpAFNE6X/eV7zy+CM1s7h1TlDzIYSh
-         kdFV08nYMNVluBJDeCxkBOBd59iqeAc+CnqsVGUimgV0fmB3oIys5wmn1fqcMnKK2jZb
-         +LOnQXLGSboAk6zJhkblLiGYW5IsBSY5KirbqJIaajFO84BHQQcQ7hxiVEUIvSL7bnNF
-         K9WrKtsEw0oBKFBoZx/Xa2FFVF/gVYJNkymxznc5S/F4f775IreNUaOctszwD2gbSuay
-         eAuw==
-X-Gm-Message-State: ACrzQf16UPAn3vUpvax2fr7Pn/hCS1RKZUp9nf1OVJiGllJMyUbn9pUN
-        OBmqLtnsnwAwbVHBkg5GelI=
-X-Google-Smtp-Source: AMsMyM4IVyQL8e1ldgW7ejKvXkivsbYmt0BIXTluu0teimSk6wCTBzk23s9DK5Qw6kAThT9W52E3Dg==
-X-Received: by 2002:a05:622a:390:b0:35d:44ab:c615 with SMTP id j16-20020a05622a039000b0035d44abc615mr6064206qtx.594.1665177957035;
-        Fri, 07 Oct 2022 14:25:57 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id ey23-20020a05622a4c1700b0035cf31005e2sm2897179qtb.73.2022.10.07.14.25.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 07 Oct 2022 14:25:56 -0700 (PDT)
-Message-ID: <3a95403f-0f26-6f64-1cd6-7770808f8514@gmail.com>
-Date:   Fri, 7 Oct 2022 14:25:51 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v3 1/1] net: phylink: add phylink_set_mac_pm() helper
-Content-Language: en-US
-To:     Shenwei Wang <shenwei.wang@nxp.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        with ESMTP id S229628AbiJGV31 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 17:29:27 -0400
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F7A8F25C;
+        Fri,  7 Oct 2022 14:29:26 -0700 (PDT)
+Received: from localhost.localdomain (unknown [46.242.14.200])
+        by mail.ispras.ru (Postfix) with ESMTPSA id 1220440786D8;
+        Fri,  7 Oct 2022 21:29:24 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru 1220440786D8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
+        s=default; t=1665178164;
+        bh=T1srQC60gTAQ5zmFqrvA4KhMvR4V6nXKygZUoh6L5eI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Edli/HVPNdneKVg0Cg20qgzWvhX9XWgJwwhz1fL++uJwWj4ctEYF5r9yVPD6qXnH/
+         wYP0sD++C9vzRuS9iwglZ9kGq8SkE+z8mQ+UYd4nUMzXc0xmP9f3X8xq9g/vwS1jtb
+         vEGQj8jjEoP1SpMZ/mz8aymMEUg+wL4doVr8dJmY=
+From:   Fedor Pchelkin <pchelkin@ispras.ru>
+To:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <kvalo@kernel.org>
+Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, imx@lists.linux.dev
-References: <20221007154246.838404-1-shenwei.wang@nxp.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20221007154246.838404-1-shenwei.wang@nxp.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        lvc-project@linuxtesting.org,
+        Alan Stern <stern@rowland.harvard.edu>
+Subject: [PATCH v3] ath9k: verify the expected usb_endpoints are present
+Date:   Sat,  8 Oct 2022 00:29:16 +0300
+Message-Id: <20221007212916.267004-1-pchelkin@ispras.ru>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <87o7unczd4.fsf@toke.dk>
+References: 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/7/22 08:42, Shenwei Wang wrote:
-> The recent commit
-> 
-> 'commit 47ac7b2f6a1f ("net: phy: Warn about incorrect
-> mdio_bus_phy_resume() state")'
-> 
-> requires the MAC driver explicitly tell the phy driver who is
-> managing the PM, otherwise you will see warning during resume
-> stage.
-> 
-> Add a helper to let the MAC driver has a way to tell the PHY
-> driver it will manage the PM.
-> 
-> Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
+The bug arises when a USB device claims to be an ATH9K but doesn't
+have the expected endpoints. (In this case there was an interrupt
+endpoint where the driver expected a bulk endpoint.) The kernel
+needs to be able to handle such devices without getting an internal error.
 
-This is fine and needed, but first net-next tree is currently closed, 
-and second, you need to submit the user of that helper function in the 
-same patch series.
+usb 1-1: BOGUS urb xfer, pipe 3 != type 1
+WARNING: CPU: 3 PID: 500 at drivers/usb/core/urb.c:493 usb_submit_urb+0xce2/0x1430 drivers/usb/core/urb.c:493
+Modules linked in:
+CPU: 3 PID: 500 Comm: kworker/3:2 Not tainted 5.10.135-syzkaller #0
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-1 04/01/2014
+Workqueue: events request_firmware_work_func
+RIP: 0010:usb_submit_urb+0xce2/0x1430 drivers/usb/core/urb.c:493
+Call Trace:
+ ath9k_hif_usb_alloc_rx_urbs drivers/net/wireless/ath/ath9k/hif_usb.c:908 [inline]
+ ath9k_hif_usb_alloc_urbs+0x75e/0x1010 drivers/net/wireless/ath/ath9k/hif_usb.c:1019
+ ath9k_hif_usb_dev_init drivers/net/wireless/ath/ath9k/hif_usb.c:1109 [inline]
+ ath9k_hif_usb_firmware_cb+0x142/0x530 drivers/net/wireless/ath/ath9k/hif_usb.c:1242
+ request_firmware_work_func+0x12e/0x240 drivers/base/firmware_loader/main.c:1097
+ process_one_work+0x9af/0x1600 kernel/workqueue.c:2279
+ worker_thread+0x61d/0x12f0 kernel/workqueue.c:2425
+ kthread+0x3b4/0x4a0 kernel/kthread.c:313
+ ret_from_fork+0x22/0x30 arch/x86/entry/entry_64.S:299
+
+Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
+
+Suggested-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+---
+v1->v2: use reverse x-mas tree ordering of the variable definitions
+v2->v3: fix tab
+
+ drivers/net/wireless/ath/ath9k/hif_usb.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
+index 4d9002a9d082..7bbbeb411056 100644
+--- a/drivers/net/wireless/ath/ath9k/hif_usb.c
++++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
+@@ -1329,10 +1329,24 @@ static int send_eject_command(struct usb_interface *interface)
+ static int ath9k_hif_usb_probe(struct usb_interface *interface,
+ 			       const struct usb_device_id *id)
+ {
++	struct usb_endpoint_descriptor *bulk_in, *bulk_out, *int_in, *int_out;
+ 	struct usb_device *udev = interface_to_usbdev(interface);
++	struct usb_host_interface *alt;
+ 	struct hif_device_usb *hif_dev;
+ 	int ret = 0;
+    
++	/* Verify the expected endpoints are present */
++	alt = interface->cur_altsetting;
++	if (usb_find_common_endpoints(alt, &bulk_in, &bulk_out, &int_in, &int_out) < 0 ||
++			usb_endpoint_num(bulk_in) != USB_WLAN_RX_PIPE ||
++			usb_endpoint_num(bulk_out) != USB_WLAN_TX_PIPE ||
++			usb_endpoint_num(int_in) != USB_REG_IN_PIPE ||
++			usb_endpoint_num(int_out) != USB_REG_OUT_PIPE) {
++		dev_err(&udev->dev,
++				"ath9k_htc: Device endpoint numbers are not the expected ones\n");
++		return -ENODEV;
++	}
++
+ 	if (id->driver_info == STORAGE_DEVICE)
+ 		return send_eject_command(interface);
+ 
 -- 
-Florian
+2.25.1
+
