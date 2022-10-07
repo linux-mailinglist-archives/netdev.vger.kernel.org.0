@@ -2,198 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91F9F5F79EB
-	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 16:50:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2A145F7A31
+	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 17:01:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229749AbiJGOub (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 10:50:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49158 "EHLO
+        id S229539AbiJGPBo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 11:01:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229772AbiJGOu2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 10:50:28 -0400
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 605DF5A8BB;
-        Fri,  7 Oct 2022 07:50:21 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id CEBF82057B;
-        Fri,  7 Oct 2022 16:50:17 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id fDj5BHZ5B1YY; Fri,  7 Oct 2022 16:50:17 +0200 (CEST)
-Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 3BA0120536;
-        Fri,  7 Oct 2022 16:50:17 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout2.secunet.com (Postfix) with ESMTP id 2CC0480004A;
-        Fri,  7 Oct 2022 16:50:17 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 7 Oct 2022 16:50:17 +0200
-Received: from [172.18.157.49] (172.18.157.49) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Fri, 7 Oct
- 2022 16:50:16 +0200
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-From:   Christian Langrock <christian.langrock@secunet.com>
-Subject: [PATCH ipsec v6] xfrm: replay: Fix ESN wrap around for GSO
-Autocrypt: addr=christian.langrock@secunet.com; keydata=
- mQENBFee7jkBCACkeMIuzZu/KBA1q3kKGr7d9iiZGF5IpJnIE9dMiK3uaz7uM26VSTJVp6jd
- GuSGGGmb81OSLEcIEIsYKXvjblAKUX1A74t3WMRcky3MwJbmN6AkN8QlP45mDddtPRf1ElB2
- S32i9OrEkvw8xcvHYPwbaHenXic4/8fHWEh+vtd/5/5TDTIU/ag9tQfPea13ixXN0PuccMub
- FeUMpwFCg324+Z19iGvfDWWZmQQGlBjc3Q6z0hXOb/deWL/+lPS4t+tTgpmmZO4XkIs+18Kq
- xCVukCbnqV0y+04sj3G1GQ/DlGvZHxwywBceAL7BvmdeXQKAS0KRL5zrghIBCgnUyutDABEB
- AAG0M0NocmlzdGlhbiBMYW5ncm9jayA8Y2hyaXN0aWFuLmxhbmdyb2NrQHNlY3VuZXQuY29t
- PokBNwQTAQgAIQUCV57uOQIbAwULCQgHAgYVCAkKCwIEFgIDAQIeAQIXgAAKCRCjeMdfgutr
- Xu3kCACIBx6UHReBtBciNUPkP3fRaGeSOADIrql72VKD9faLAHTt6w8kvyzb8Ctpa77jswJt
- 21c349mF3maPlpNtpswqH27bTlXYhNcXxcmHPCbNtN3yGUy0UuIJfBMZc8PLqiqYoY5GKD3u
- imeVbDYjgNhebO2f1cUvwY2wTwX6b0tgKVK0xYYTDpXI1/2MVGsjXqak7PQoqVq0sDu0gIAA
- i1QO0Fbb6jIaHj6CEM2hpBTBk8qbkPs/MqYGdLl4oXvkWTLduQjm6dMtjxvIt6WJWZQbLjTe
- QIfc21luNQKDmfT623pVTPPMMAciWfpdw63FblfGcfBnAKCJ8JBj0z9T6/PmuQENBFee7jkB
- CADS7amJPbY2dWpeGtE+I9yLL53lSriP4L6rI9UoEwNM1OkjnB7wFnH8dm8N68K2OJogkHwo
- X2OnzGhxJ28NHRuAh++3hIYY+gU4HMLaX3onDK1oqAdYczhJ7f6UCPbYaghkzJ6Vg/FEWpA8
- u5vG/BX4y+F3/Y98l6mzAX5wLmTapRwdfuRCXRA6jlIHIOwP3NPKK4Pz2E7witsimV1ucN4u
- XFiZ36CUPAiXXlER9iPZnQUSyCobqJOJKm4C7wUNQ1negCXDBd3KjSyzTIafw/oYG4RrWGul
- iI2ig/qTUC8cZdAJTMBjUJR6ugJazMB1Rg17p2GRD0AzUOV2qdqYFqQFABEBAAGJAR8EGAEI
- AAkFAlee7jkCGwwACgkQo3jHX4Lra17vtQgAg2g0JEXVTGT36BDJgVjIUY1evnm1fWwTPpco
- kP/8/aO2ubmlxtWQ2hV5OPfL5nDday2S4Nq5j3kqQq+rvUrORVmvT4WxYZM1fr2nibuzaUbs
- JtxphNpjahrsEcLLTzBW4CbHTaL4YTT+ZD/GDeHoxAh9JfMkdMBXHyWTuw+QSP0pp7WvNsDo
- sukKFyQ0rve9PH2dry6A0oLP7UxtAzEERV2Se0BueZPQuVnU6Cvj3ZStK28JDhMjxIPkZPE5
- kCV8QNF8OsiwymA3aoPKe5Bw0lOcjuuJkxRa5bazyuubX9pIIgTeGsecgpSgpfA9jsEHKFqo
- LuxUA+77VQ5hSydVaQ==
-Message-ID: <6810817b-e6b7-feac-64f8-c83c517ae9a5@secunet.com>
-Date:   Fri, 7 Oct 2022 16:50:15 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        with ESMTP id S229799AbiJGPBi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 11:01:38 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59427DD897
+        for <netdev@vger.kernel.org>; Fri,  7 Oct 2022 08:01:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1665154896;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=EFV6S6f0TjTN8FXxp6obvTNw8TtgyUV+Wd8LBgcgjiQ=;
+        b=i51xduMQhsIprvH4Mdbkljm+bUSPiNnBfcIsEwKbsXS2xOlYhrlQ05XsNzAEvNLeo5mFe5
+        yOVIv/E8M9dYlHcxkWhpTr+xN+Bc+fkUSs4vQDiKaP7EpoLFMc9t4boN4C/jINIjYA5Xp0
+        NBp3Zjw7g4wpJJf+ZqbDnAJEVqlMXAY=
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
+ [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-318-NmxYMbR-MLKpQMQAAcTaxg-1; Fri, 07 Oct 2022 11:01:34 -0400
+X-MC-Unique: NmxYMbR-MLKpQMQAAcTaxg-1
+Received: by mail-io1-f69.google.com with SMTP id d24-20020a05660225d800b006a466ec7746so3383229iop.3
+        for <netdev@vger.kernel.org>; Fri, 07 Oct 2022 08:01:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:in-reply-to:mime-version:references
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=EFV6S6f0TjTN8FXxp6obvTNw8TtgyUV+Wd8LBgcgjiQ=;
+        b=yNCAAFOunDy8KmIdCV+ZqeB5O0lHLRZT4gnRCBiwGAqYX5Y7P5fWGmWzqcntcpJ9ua
+         xqYNX6GqZPTGhhWImffgfuRpj5s8l2S5L26w7+4D3V5+PHWlayC7wa677Iy7nThX6hRk
+         xgJGpCdJTK/48ffsKrr7j9VSc9svVcs4cY56vLIKjcLvkNMfaqLqN3wF3g8hjZKWAJV9
+         J8zhQm2srJK/qraS1uOVvtWTW1fpZ+NCyIdtTiF5TCvPSUXyvKXrdPsTw2SNBTqqNSNz
+         eP+O+rUe+EbILfKfO1AXoKb6oH8aVDm17ucLhEofhIWU2Y8rguFVQWE89FVmEQveozzE
+         Pnkg==
+X-Gm-Message-State: ACrzQf3TVIatBVizUyJ7FIfrrxqA0l5o8UO6+odoyxiYNc9FoA/c9vRS
+        3dUr4iZjan7rxOIp/3UnWIeVYKu798WoyBNdcPCuLvZdi5a9nxitzGhQ+jBDXIavr3OiFVkN4Ju
+        gerhT4iHzztoxLjMI271d4gtuy3biwaQa
+X-Received: by 2002:a05:6e02:1688:b0:2f8:3768:a620 with SMTP id f8-20020a056e02168800b002f83768a620mr2542636ila.98.1665154893892;
+        Fri, 07 Oct 2022 08:01:33 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM5MMKEHny44Sz47Wz5xBo4i5a9Vp7gDSPQ/kY+iuHKtO5nM5NX8XLvCyVklWN94njJYvAQ++wlArEK/HltmjUI=
+X-Received: by 2002:a05:6e02:1688:b0:2f8:3768:a620 with SMTP id
+ f8-20020a056e02168800b002f83768a620mr2542607ila.98.1665154893676; Fri, 07 Oct
+ 2022 08:01:33 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 7 Oct 2022 08:01:33 -0700
+From:   Marcelo Leitner <mleitner@redhat.com>
+References: <20220914141923.1725821-1-simon.horman@corigine.com>
+ <eeb0c590-7364-a00e-69fc-2326678d6bdf@ovn.org> <PH0PR13MB4793A85169BB60B8609B192194499@PH0PR13MB4793.namprd13.prod.outlook.com>
+ <0aac2127-0b14-187e-0adb-7d6b8fe8cfb1@ovn.org> <e71b2bf2-cfd5-52f4-5fd4-1c852f2a8c6c@ovn.org>
+ <00D45065-3D74-4C4C-8988-BFE0CEB3BE2F@redhat.com> <fe0cd650-0d4a-d871-5c0b-b1c831c8d0cc@ovn.org>
+ <CALnP8ZYcGvtP_BV=2gy0v3TtSfD=3nO-uzbG8E1UvjoDYD2+7A@mail.gmail.com> <CAKa-r6sn1oZNn0vrnrthzq_XsxpdHGWyxw_T9b9ND0=DJk64yQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <CAKa-r6sn1oZNn0vrnrthzq_XsxpdHGWyxw_T9b9ND0=DJk64yQ@mail.gmail.com>
+Date:   Fri, 7 Oct 2022 08:01:32 -0700
+Message-ID: <CALnP8ZaZ5zGD4sP3=SSvC=RBmVOOcc9MdA=aaYRQctaBOhmHfQ@mail.gmail.com>
+Subject: Re: [ovs-dev] [PATCH] tests: fix reference output for meter offload stats
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     Ilya Maximets <i.maximets@ovn.org>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Tianyu Yuan <tianyu.yuan@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>, dev@openvswitch.org,
+        oss-drivers <oss-drivers@corigine.com>, netdev@vger.kernel.org,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When using GSO it can happen that the wrong seq_hi is used for the last
-packets before the wrap around. This can lead to double usage of a
-sequence number. To avoid this, we should serialize this last GSO
-packet.
+On Fri, Oct 07, 2022 at 04:39:25PM +0200, Davide Caratti wrote:
+> On Fri, Oct 7, 2022 at 3:21 PM Marcelo Leitner <mleitner@redhat.com> wrote:
+> >
+> > (+TC folks and netdev@)
+> >
+> > On Fri, Oct 07, 2022 at 02:42:56PM +0200, Ilya Maximets wrote:
+> > > On 10/7/22 13:37, Eelco Chaudron wrote:
+>
+> [...]
+>
+> > I don't see how we could achieve this without breaking much of the
+> > user experience.
+> >
+> > >
+> > > - or create something like act_count - a dummy action that only
+> > >   counts packets, and put it in every datapath action from OVS.
+> >
+> > This seems the easiest and best way forward IMHO. It's actually the
+> > 3rd option below but "on demand", considering that tc will already use
+> > the stats of the first action as the flow stats (in
+> > tcf_exts_dump_stats()), then we can patch ovs to add such action if a
+> > meter is also being used (or perhaps even always, because other
+> > actions may also drop packets, and for OVS we would really be at the
+> > 3rd option below).
+>
+> Correct me if I'm wrong, but actually act_gact action with "pipe"
+> control action should already do this counting job.
 
-Fixes: d7dbefc45cf5 ("xfrm: Add xfrm_replay_overflow functions for offloading")
-Co-developed-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Christian Langrock <christian.langrock@secunet.com>
----
-Changes in v6:
- - move overflow check to offloading path to avoid locking issues
+act_gact is so transparent that I never see it/remembers about it :)
+Yup, although it's not offloadabe with pipe control actio AFAICT.
 
-Changes in v5:
- - Fix build
+  Marcelo
 
-Changes in v4:
- - move changelog within comment
- - add reviewer
-
-Changes in v3:
-- fix build
-- remove wrapper function
-
-Changes in v2:
-- switch to bool as return value
-- remove switch case in wrapper function
----
- net/ipv4/esp4_offload.c |  3 +++
- net/ipv6/esp6_offload.c |  3 +++
- net/xfrm/xfrm_device.c  | 15 ++++++++++++++-
- net/xfrm/xfrm_replay.c  |  2 +-
- 4 files changed, 21 insertions(+), 2 deletions(-)
-
-diff --git a/net/ipv4/esp4_offload.c b/net/ipv4/esp4_offload.c
-index 170152772d33..3969fa805679 100644
---- a/net/ipv4/esp4_offload.c
-+++ b/net/ipv4/esp4_offload.c
-@@ -314,6 +314,9 @@ static int esp_xmit(struct xfrm_state *x, struct sk_buff *skb,  netdev_features_
-                        xo->seq.low += skb_shinfo(skb)->gso_segs;
-        }
- 
-+       if (xo->seq.low < seq)
-+               xo->seq.hi++;
-+
-        esp.seqno = cpu_to_be64(seq + ((u64)xo->seq.hi << 32));
- 
-        ip_hdr(skb)->tot_len = htons(skb->len);
-diff --git a/net/ipv6/esp6_offload.c b/net/ipv6/esp6_offload.c
-index 79d43548279c..242f4295940e 100644
---- a/net/ipv6/esp6_offload.c
-+++ b/net/ipv6/esp6_offload.c
-@@ -346,6 +346,9 @@ static int esp6_xmit(struct xfrm_state *x, struct sk_buff *skb,  netdev_features
-                        xo->seq.low += skb_shinfo(skb)->gso_segs;
-        }
- 
-+       if (xo->seq.low < seq)
-+               xo->seq.hi++;
-+
-        esp.seqno = cpu_to_be64(xo->seq.low + ((u64)xo->seq.hi << 32));
- 
-        len = skb->len - sizeof(struct ipv6hdr);
-diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
-index 5f5aafd418af..21269e8f2db4 100644
---- a/net/xfrm/xfrm_device.c
-+++ b/net/xfrm/xfrm_device.c
-@@ -97,6 +97,18 @@ static void xfrm_outer_mode_prep(struct xfrm_state *x, struct sk_buff *skb)
-        }
- }
- 
-+static inline bool xmit_xfrm_check_overflow(struct sk_buff *skb)
-+{
-+       struct xfrm_offload *xo = xfrm_offload(skb);
-+       __u32 seq = xo->seq.low;
-+
-+       seq += skb_shinfo(skb)->gso_segs;
-+       if (unlikely(seq < xo->seq.low))
-+               return true;
-+
-+       return false;
-+}
-+
- struct sk_buff *validate_xmit_xfrm(struct sk_buff *skb, netdev_features_t features, bool *again)
- {
-        int err;
-@@ -134,7 +146,8 @@ struct sk_buff *validate_xmit_xfrm(struct sk_buff *skb, netdev_features_t featur
-                return skb;
-        }
- 
--       if (skb_is_gso(skb) && unlikely(x->xso.dev != dev)) {
-+       if (skb_is_gso(skb) && (unlikely(x->xso.dev != dev) ||
-+                               unlikely(xmit_xfrm_check_overflow(skb)))) {
-                struct sk_buff *segs;
- 
-                /* Packet got rerouted, fixup features and segment it. */
-diff --git a/net/xfrm/xfrm_replay.c b/net/xfrm/xfrm_replay.c
-index 9f4d42eb090f..ce56d659c55a 100644
---- a/net/xfrm/xfrm_replay.c
-+++ b/net/xfrm/xfrm_replay.c
-@@ -714,7 +714,7 @@ static int xfrm_replay_overflow_offload_esn(struct xfrm_state *x, struct sk_buff
-                        oseq += skb_shinfo(skb)->gso_segs;
-                }
- 
--               if (unlikely(oseq < replay_esn->oseq)) {
-+               if (unlikely(xo->seq.low < replay_esn->oseq)) {
-                        XFRM_SKB_CB(skb)->seq.output.hi = ++oseq_hi;
-                        xo->seq.hi = oseq_hi;
-                        replay_esn->oseq_hi = oseq_hi;
-
-base-commit: 0326074ff4652329f2a1a9c8685104576bd8d131
--- 
-2.37.1.223.g6a475b71f8
