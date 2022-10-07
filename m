@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CDA2B5F7CFC
-	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 20:03:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4AED5F7D00
+	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 20:03:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229968AbiJGSDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 14:03:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60744 "EHLO
+        id S230259AbiJGSDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 14:03:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229934AbiJGSCW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 14:02:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD9C6108DD0;
-        Fri,  7 Oct 2022 11:01:57 -0700 (PDT)
+        with ESMTP id S229980AbiJGSDI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 14:03:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C6A5108DDC;
+        Fri,  7 Oct 2022 11:02:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E899B8214F;
-        Fri,  7 Oct 2022 18:01:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A591C433D6;
-        Fri,  7 Oct 2022 18:01:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FABE61747;
+        Fri,  7 Oct 2022 18:02:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82876C4347C;
+        Fri,  7 Oct 2022 18:01:56 +0000 (UTC)
 Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="gIpGeUR7"
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="euNgJxVq"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1665165707;
+        t=1665165715;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=g2hIaC3XOM+KBWgkgbeW6UolDFW2WI2qSTHxKo7C8lY=;
-        b=gIpGeUR7sH1a6vtvGheu2jhFVKZ2WKWz618uTZei7ExED40VBISjDiUH3Wks3xNjWIbn2L
-        KrLDWZgyAe8MER/jEjQGBixBuPnt1RXSzdZ7XCst7BKQWWTcJ2raDjXjyod6bjNA706eue
-        3Th9FAhERXoQMCcsjJ7QVI7AGmu40G8=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 05093213 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Fri, 7 Oct 2022 18:01:46 +0000 (UTC)
+        bh=Oc6/1ZWlb4i/syn+rQnwKmyTrWzXgR+Sp5qDpXPBj58=;
+        b=euNgJxVq1cTLH+PSu4x5kaDU1jWoeunaqhNAUeBuVfaIcPpI59rzVg4T1+9JNuGUdNExgP
+        f1zdMVnZYnXRFhD5QOcswd+kRexoftkpI4LOukNnbJ1/pPDP8R4LAhscxd6h01MoUgtXFL
+        iejlTcwWxyIuqyfxsLZ8OI/C+vckLCo=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 4d33910a (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Fri, 7 Oct 2022 18:01:55 +0000 (UTC)
 From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
 To:     linux-kernel@vger.kernel.org, patches@lists.linux.dev
 Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
@@ -97,10 +97,12 @@ Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
         linux-wireless@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
         loongarch@lists.linux.dev, netdev@vger.kernel.org,
         sparclinux@vger.kernel.org, x86@kernel.org,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-Subject: [PATCH v4 3/6] treewide: use get_random_{u8,u16}() when possible
-Date:   Fri,  7 Oct 2022 12:01:04 -0600
-Message-Id: <20221007180107.216067-4-Jason@zx2c4.com>
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Chuck Lever <chuck.lever@oracle.com>, Jan Kara <jack@suse.cz>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: [PATCH v4 4/6] treewide: use get_random_u32() when possible
+Date:   Fri,  7 Oct 2022 12:01:05 -0600
+Message-Id: <20221007180107.216067-5-Jason@zx2c4.com>
 In-Reply-To: <20221007180107.216067-1-Jason@zx2c4.com>
 References: <20221007180107.216067-1-Jason@zx2c4.com>
 MIME-Version: 1.0
@@ -116,450 +118,1282 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rather than truncate a 32-bit value to a 16-bit value or an 8-bit value,
-simply use the get_random_{u8,u16}() functions, which are faster than
-wasting the additional bytes from a 32-bit value.
+The prandom_u32() function has been a deprecated inline wrapper around
+get_random_u32() for several releases now, and compiles down to the
+exact same code. Replace the deprecated wrapper with a direct call to
+the real function. The same also applies to get_random_int(), which is
+just a wrapper around get_random_u32().
 
 Reviewed-by: Kees Cook <keescook@chromium.org>
 Acked-by: Toke Høiland-Jørgensen <toke@toke.dk> # for sch_cake
+Acked-by: Chuck Lever <chuck.lever@oracle.com> # for nfsd
+Reviewed-by: Jan Kara <jack@suse.cz> # for ext4
+Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com> # for thunderbolt
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- arch/arm/kernel/signal.c                                  | 2 +-
- arch/arm64/kernel/syscall.c                               | 2 +-
- arch/s390/kernel/process.c                                | 2 +-
- arch/sparc/vdso/vma.c                                     | 2 +-
- crypto/testmgr.c                                          | 8 ++++----
- drivers/media/common/v4l2-tpg/v4l2-tpg-core.c             | 2 +-
- drivers/media/test-drivers/vivid/vivid-radio-rx.c         | 4 ++--
- .../net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c   | 2 +-
- drivers/net/hamradio/baycom_epp.c                         | 2 +-
- drivers/net/hamradio/hdlcdrv.c                            | 2 +-
- drivers/net/hamradio/yam.c                                | 2 +-
- drivers/net/wireguard/selftest/allowedips.c               | 4 ++--
- drivers/net/wireless/st/cw1200/wsm.c                      | 2 +-
- drivers/scsi/lpfc/lpfc_hbadisc.c                          | 6 +++---
- lib/cmdline_kunit.c                                       | 4 ++--
- lib/test_vmalloc.c                                        | 2 +-
- net/dccp/ipv4.c                                           | 4 ++--
- net/ipv4/datagram.c                                       | 2 +-
- net/ipv4/ip_output.c                                      | 2 +-
- net/ipv4/tcp_ipv4.c                                       | 4 ++--
- net/mac80211/scan.c                                       | 2 +-
- net/netfilter/nf_nat_core.c                               | 4 ++--
- net/sched/sch_cake.c                                      | 6 +++---
- net/sched/sch_sfb.c                                       | 2 +-
- net/sctp/socket.c                                         | 2 +-
- 25 files changed, 38 insertions(+), 38 deletions(-)
+ Documentation/networking/filter.rst            |  2 +-
+ arch/parisc/kernel/process.c                   |  2 +-
+ arch/parisc/kernel/sys_parisc.c                |  4 ++--
+ arch/s390/mm/mmap.c                            |  2 +-
+ arch/x86/kernel/cpu/amd.c                      |  2 +-
+ drivers/gpu/drm/i915/i915_gem_gtt.c            |  6 +++---
+ drivers/gpu/drm/i915/selftests/i915_selftest.c |  2 +-
+ drivers/gpu/drm/selftests/test-drm_buddy.c     |  2 +-
+ drivers/gpu/drm/selftests/test-drm_mm.c        |  2 +-
+ drivers/infiniband/hw/cxgb4/cm.c               |  4 ++--
+ drivers/infiniband/hw/hfi1/tid_rdma.c          |  2 +-
+ drivers/infiniband/hw/mlx4/mad.c               |  2 +-
+ drivers/infiniband/ulp/ipoib/ipoib_cm.c        |  2 +-
+ drivers/md/raid5-cache.c                       |  2 +-
+ .../media/test-drivers/vivid/vivid-touch-cap.c |  4 ++--
+ drivers/misc/habanalabs/gaudi2/gaudi2.c        |  2 +-
+ drivers/mtd/nand/raw/nandsim.c                 |  2 +-
+ drivers/net/bonding/bond_main.c                |  2 +-
+ drivers/net/ethernet/broadcom/cnic.c           |  2 +-
+ .../chelsio/inline_crypto/chtls/chtls_cm.c     |  2 +-
+ drivers/net/ethernet/rocker/rocker_main.c      |  6 +++---
+ .../wireless/broadcom/brcm80211/brcmfmac/pno.c |  2 +-
+ .../net/wireless/marvell/mwifiex/cfg80211.c    |  4 ++--
+ .../net/wireless/microchip/wilc1000/cfg80211.c |  2 +-
+ .../net/wireless/quantenna/qtnfmac/cfg80211.c  |  2 +-
+ drivers/net/wireless/ti/wlcore/main.c          |  2 +-
+ drivers/nvme/common/auth.c                     |  2 +-
+ drivers/scsi/cxgbi/cxgb4i/cxgb4i.c             |  4 ++--
+ drivers/target/iscsi/cxgbit/cxgbit_cm.c        |  2 +-
+ drivers/thunderbolt/xdomain.c                  |  2 +-
+ drivers/video/fbdev/uvesafb.c                  |  2 +-
+ fs/exfat/inode.c                               |  2 +-
+ fs/ext4/ialloc.c                               |  2 +-
+ fs/ext4/ioctl.c                                |  4 ++--
+ fs/ext4/mmp.c                                  |  2 +-
+ fs/f2fs/namei.c                                |  2 +-
+ fs/fat/inode.c                                 |  2 +-
+ fs/nfsd/nfs4state.c                            |  4 ++--
+ fs/ntfs3/fslog.c                               |  6 +++---
+ fs/ubifs/journal.c                             |  2 +-
+ fs/xfs/libxfs/xfs_ialloc.c                     |  2 +-
+ fs/xfs/xfs_icache.c                            |  2 +-
+ fs/xfs/xfs_log.c                               |  2 +-
+ include/net/netfilter/nf_queue.h               |  2 +-
+ include/net/red.h                              |  2 +-
+ include/net/sock.h                             |  2 +-
+ kernel/bpf/bloom_filter.c                      |  2 +-
+ kernel/bpf/core.c                              |  2 +-
+ kernel/bpf/hashtab.c                           |  2 +-
+ kernel/bpf/verifier.c                          |  2 +-
+ kernel/kcsan/selftest.c                        |  2 +-
+ lib/random32.c                                 |  2 +-
+ lib/reed_solomon/test_rslib.c                  |  6 +++---
+ lib/test_fprobe.c                              |  2 +-
+ lib/test_kprobes.c                             |  2 +-
+ lib/test_min_heap.c                            |  6 +++---
+ lib/test_rhashtable.c                          |  6 +++---
+ mm/shmem.c                                     |  2 +-
+ mm/slab.c                                      |  2 +-
+ net/802/garp.c                                 |  2 +-
+ net/802/mrp.c                                  |  2 +-
+ net/core/pktgen.c                              |  4 ++--
+ net/ipv4/route.c                               |  2 +-
+ net/ipv4/tcp_cdg.c                             |  2 +-
+ net/ipv4/udp.c                                 |  2 +-
+ net/ipv6/ip6_flowlabel.c                       |  2 +-
+ net/ipv6/output_core.c                         |  2 +-
+ net/netfilter/ipvs/ip_vs_conn.c                |  2 +-
+ net/netfilter/xt_statistic.c                   |  2 +-
+ net/openvswitch/actions.c                      |  2 +-
+ net/rds/bind.c                                 |  2 +-
+ net/sched/sch_cake.c                           |  2 +-
+ net/sched/sch_netem.c                          | 18 +++++++++---------
+ net/sunrpc/auth_gss/gss_krb5_wrap.c            |  4 ++--
+ net/sunrpc/xprt.c                              |  2 +-
+ net/unix/af_unix.c                             |  2 +-
+ 76 files changed, 105 insertions(+), 105 deletions(-)
 
-diff --git a/arch/arm/kernel/signal.c b/arch/arm/kernel/signal.c
-index ea128e32e8ca..e07f359254c3 100644
---- a/arch/arm/kernel/signal.c
-+++ b/arch/arm/kernel/signal.c
-@@ -655,7 +655,7 @@ struct page *get_signal_page(void)
- 		 PAGE_SIZE / sizeof(u32));
+diff --git a/Documentation/networking/filter.rst b/Documentation/networking/filter.rst
+index 43cdc4d34745..f69da5074860 100644
+--- a/Documentation/networking/filter.rst
++++ b/Documentation/networking/filter.rst
+@@ -305,7 +305,7 @@ Possible BPF extensions are shown in the following table:
+   vlan_tci                              skb_vlan_tag_get(skb)
+   vlan_avail                            skb_vlan_tag_present(skb)
+   vlan_tpid                             skb->vlan_proto
+-  rand                                  prandom_u32()
++  rand                                  get_random_u32()
+   ===================================   =================================================
  
- 	/* Give the signal return code some randomness */
--	offset = 0x200 + (get_random_int() & 0x7fc);
-+	offset = 0x200 + (get_random_u16() & 0x7fc);
- 	signal_return_offset = offset;
- 
- 	/* Copy signal return handlers into the page */
-diff --git a/arch/arm64/kernel/syscall.c b/arch/arm64/kernel/syscall.c
-index 733451fe7e41..d72e8f23422d 100644
---- a/arch/arm64/kernel/syscall.c
-+++ b/arch/arm64/kernel/syscall.c
-@@ -67,7 +67,7 @@ static void invoke_syscall(struct pt_regs *regs, unsigned int scno,
- 	 *
- 	 * The resulting 5 bits of entropy is seen in SP[8:4].
- 	 */
--	choose_random_kstack_offset(get_random_int() & 0x1FF);
-+	choose_random_kstack_offset(get_random_u16() & 0x1FF);
- }
- 
- static inline bool has_syscall_work(unsigned long flags)
-diff --git a/arch/s390/kernel/process.c b/arch/s390/kernel/process.c
-index 5ec78555dd2e..42af4b3aa02b 100644
---- a/arch/s390/kernel/process.c
-+++ b/arch/s390/kernel/process.c
-@@ -230,7 +230,7 @@ unsigned long arch_align_stack(unsigned long sp)
+ These extensions can also be prefixed with '#'.
+diff --git a/arch/parisc/kernel/process.c b/arch/parisc/kernel/process.c
+index 7c37e09c92da..18c4f0e3e906 100644
+--- a/arch/parisc/kernel/process.c
++++ b/arch/parisc/kernel/process.c
+@@ -288,7 +288,7 @@ __get_wchan(struct task_struct *p)
  
  static inline unsigned long brk_rnd(void)
  {
 -	return (get_random_int() & BRK_RND_MASK) << PAGE_SHIFT;
-+	return (get_random_u16() & BRK_RND_MASK) << PAGE_SHIFT;
++	return (get_random_u32() & BRK_RND_MASK) << PAGE_SHIFT;
  }
  
  unsigned long arch_randomize_brk(struct mm_struct *mm)
-diff --git a/arch/sparc/vdso/vma.c b/arch/sparc/vdso/vma.c
-index cc19e09b0fa1..04ee726859ca 100644
---- a/arch/sparc/vdso/vma.c
-+++ b/arch/sparc/vdso/vma.c
-@@ -354,7 +354,7 @@ static unsigned long vdso_addr(unsigned long start, unsigned int len)
- 	unsigned int offset;
+diff --git a/arch/parisc/kernel/sys_parisc.c b/arch/parisc/kernel/sys_parisc.c
+index 2b34294517a1..848b0702005d 100644
+--- a/arch/parisc/kernel/sys_parisc.c
++++ b/arch/parisc/kernel/sys_parisc.c
+@@ -239,14 +239,14 @@ static unsigned long mmap_rnd(void)
+ 	unsigned long rnd = 0;
  
- 	/* This loses some more bits than a modulo, but is cheaper */
--	offset = get_random_int() & (PTRS_PER_PTE - 1);
-+	offset = get_random_u16() & (PTRS_PER_PTE - 1);
- 	return start + (offset << PAGE_SHIFT);
+ 	if (current->flags & PF_RANDOMIZE)
+-		rnd = get_random_int() & MMAP_RND_MASK;
++		rnd = get_random_u32() & MMAP_RND_MASK;
+ 
+ 	return rnd << PAGE_SHIFT;
  }
  
-diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index be45217acde4..981c637fa2ed 100644
---- a/crypto/testmgr.c
-+++ b/crypto/testmgr.c
-@@ -927,7 +927,7 @@ static void generate_random_bytes(u8 *buf, size_t count)
- 			b = 0xff;
- 			break;
- 		default:
--			b = (u8)prandom_u32();
-+			b = get_random_u8();
- 			break;
- 		}
- 		memset(buf, b, count);
-@@ -935,8 +935,8 @@ static void generate_random_bytes(u8 *buf, size_t count)
- 		break;
- 	case 2:
- 		/* Ascending or descending bytes, plus optional mutations */
--		increment = (u8)prandom_u32();
--		b = (u8)prandom_u32();
-+		increment = get_random_u8();
-+		b = get_random_u8();
- 		for (i = 0; i < count; i++, b += increment)
- 			buf[i] = b;
- 		mutate_buffer(buf, count);
-@@ -944,7 +944,7 @@ static void generate_random_bytes(u8 *buf, size_t count)
- 	default:
- 		/* Fully random bytes */
- 		for (i = 0; i < count; i++)
--			buf[i] = (u8)prandom_u32();
-+			buf[i] = get_random_u8();
+ unsigned long arch_mmap_rnd(void)
+ {
+-	return (get_random_int() & MMAP_RND_MASK) << PAGE_SHIFT;
++	return (get_random_u32() & MMAP_RND_MASK) << PAGE_SHIFT;
+ }
+ 
+ static unsigned long mmap_legacy_base(void)
+diff --git a/arch/s390/mm/mmap.c b/arch/s390/mm/mmap.c
+index 5980ce348832..3327c47bc181 100644
+--- a/arch/s390/mm/mmap.c
++++ b/arch/s390/mm/mmap.c
+@@ -37,7 +37,7 @@ static inline int mmap_is_legacy(struct rlimit *rlim_stack)
+ 
+ unsigned long arch_mmap_rnd(void)
+ {
+-	return (get_random_int() & MMAP_RND_MASK) << PAGE_SHIFT;
++	return (get_random_u32() & MMAP_RND_MASK) << PAGE_SHIFT;
+ }
+ 
+ static unsigned long mmap_base_legacy(unsigned long rnd)
+diff --git a/arch/x86/kernel/cpu/amd.c b/arch/x86/kernel/cpu/amd.c
+index 48276c0e479d..860b60273df3 100644
+--- a/arch/x86/kernel/cpu/amd.c
++++ b/arch/x86/kernel/cpu/amd.c
+@@ -503,7 +503,7 @@ static void bsp_init_amd(struct cpuinfo_x86 *c)
+ 		va_align.flags    = ALIGN_VA_32 | ALIGN_VA_64;
+ 
+ 		/* A random value per boot for bit slice [12:upper_bit) */
+-		va_align.bits = get_random_int() & va_align.mask;
++		va_align.bits = get_random_u32() & va_align.mask;
  	}
- }
  
-diff --git a/drivers/media/common/v4l2-tpg/v4l2-tpg-core.c b/drivers/media/common/v4l2-tpg/v4l2-tpg-core.c
-index 9b7bcdce6e44..303d02b1d71c 100644
---- a/drivers/media/common/v4l2-tpg/v4l2-tpg-core.c
-+++ b/drivers/media/common/v4l2-tpg/v4l2-tpg-core.c
-@@ -870,7 +870,7 @@ static void precalculate_color(struct tpg_data *tpg, int k)
- 		g = tpg_colors[col].g;
- 		b = tpg_colors[col].b;
- 	} else if (tpg->pattern == TPG_PAT_NOISE) {
--		r = g = b = prandom_u32_max(256);
-+		r = g = b = get_random_u8();
- 	} else if (k == TPG_COLOR_RANDOM) {
- 		r = g = b = tpg->qual_offset + prandom_u32_max(196);
- 	} else if (k >= TPG_COLOR_RAMP) {
-diff --git a/drivers/media/test-drivers/vivid/vivid-radio-rx.c b/drivers/media/test-drivers/vivid/vivid-radio-rx.c
-index 232cab508f48..8bd09589fb15 100644
---- a/drivers/media/test-drivers/vivid/vivid-radio-rx.c
-+++ b/drivers/media/test-drivers/vivid/vivid-radio-rx.c
-@@ -104,8 +104,8 @@ ssize_t vivid_radio_rx_read(struct file *file, char __user *buf,
- 				break;
- 			case 2:
- 				rds.block |= V4L2_RDS_BLOCK_ERROR;
--				rds.lsb = prandom_u32_max(256);
--				rds.msb = prandom_u32_max(256);
-+				rds.lsb = get_random_u8();
-+				rds.msb = get_random_u8();
- 				break;
- 			case 3: /* Skip block altogether */
- 				if (i)
-diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-index ddfe9208529a..ac452a0111a9 100644
---- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-@@ -1467,7 +1467,7 @@ static void make_established(struct sock *sk, u32 snd_isn, unsigned int opt)
- 	tp->write_seq = snd_isn;
- 	tp->snd_nxt = snd_isn;
- 	tp->snd_una = snd_isn;
--	inet_sk(sk)->inet_id = prandom_u32();
-+	inet_sk(sk)->inet_id = get_random_u16();
- 	assign_rxopt(sk, opt);
- 
- 	if (tp->rcv_wnd > (RCV_BUFSIZ_M << 10))
-diff --git a/drivers/net/hamradio/baycom_epp.c b/drivers/net/hamradio/baycom_epp.c
-index 7df78a721b04..791b4a53d69f 100644
---- a/drivers/net/hamradio/baycom_epp.c
-+++ b/drivers/net/hamradio/baycom_epp.c
-@@ -438,7 +438,7 @@ static int transmit(struct baycom_state *bc, int cnt, unsigned char stat)
- 			if ((--bc->hdlctx.slotcnt) > 0)
- 				return 0;
- 			bc->hdlctx.slotcnt = bc->ch_params.slottime;
--			if (prandom_u32_max(256) > bc->ch_params.ppersist)
-+			if (get_random_u8() > bc->ch_params.ppersist)
- 				return 0;
+ 	if (cpu_has(c, X86_FEATURE_MWAITX))
+diff --git a/drivers/gpu/drm/i915/i915_gem_gtt.c b/drivers/gpu/drm/i915/i915_gem_gtt.c
+index 329ff75b80b9..7bd1861ddbdf 100644
+--- a/drivers/gpu/drm/i915/i915_gem_gtt.c
++++ b/drivers/gpu/drm/i915/i915_gem_gtt.c
+@@ -137,12 +137,12 @@ static u64 random_offset(u64 start, u64 end, u64 len, u64 align)
+ 	range = round_down(end - len, align) - round_up(start, align);
+ 	if (range) {
+ 		if (sizeof(unsigned long) == sizeof(u64)) {
+-			addr = get_random_long();
++			addr = get_random_u64();
+ 		} else {
+-			addr = get_random_int();
++			addr = get_random_u32();
+ 			if (range > U32_MAX) {
+ 				addr <<= 32;
+-				addr |= get_random_int();
++				addr |= get_random_u32();
+ 			}
  		}
+ 		div64_u64_rem(addr, range, &addr);
+diff --git a/drivers/gpu/drm/i915/selftests/i915_selftest.c b/drivers/gpu/drm/i915/selftests/i915_selftest.c
+index c4e932368b37..39da0fb0d6d2 100644
+--- a/drivers/gpu/drm/i915/selftests/i915_selftest.c
++++ b/drivers/gpu/drm/i915/selftests/i915_selftest.c
+@@ -135,7 +135,7 @@ static int __run_selftests(const char *name,
+ 	int err = 0;
+ 
+ 	while (!i915_selftest.random_seed)
+-		i915_selftest.random_seed = get_random_int();
++		i915_selftest.random_seed = get_random_u32();
+ 
+ 	i915_selftest.timeout_jiffies =
+ 		i915_selftest.timeout_ms ?
+diff --git a/drivers/gpu/drm/selftests/test-drm_buddy.c b/drivers/gpu/drm/selftests/test-drm_buddy.c
+index aca0c491040f..6340a711773f 100644
+--- a/drivers/gpu/drm/selftests/test-drm_buddy.c
++++ b/drivers/gpu/drm/selftests/test-drm_buddy.c
+@@ -974,7 +974,7 @@ static int __init test_drm_buddy_init(void)
+ 	int err;
+ 
+ 	while (!random_seed)
+-		random_seed = get_random_int();
++		random_seed = get_random_u32();
+ 
+ 	pr_info("Testing DRM buddy manager (struct drm_buddy), with random_seed=0x%x\n",
+ 		random_seed);
+diff --git a/drivers/gpu/drm/selftests/test-drm_mm.c b/drivers/gpu/drm/selftests/test-drm_mm.c
+index b768b53c4aee..1dc41d73d17e 100644
+--- a/drivers/gpu/drm/selftests/test-drm_mm.c
++++ b/drivers/gpu/drm/selftests/test-drm_mm.c
+@@ -2463,7 +2463,7 @@ static int __init test_drm_mm_init(void)
+ 	int err;
+ 
+ 	while (!random_seed)
+-		random_seed = get_random_int();
++		random_seed = get_random_u32();
+ 
+ 	pr_info("Testing DRM range manager (struct drm_mm), with random_seed=0x%x max_iterations=%u max_prime=%u\n",
+ 		random_seed, max_iterations, max_prime);
+diff --git a/drivers/infiniband/hw/cxgb4/cm.c b/drivers/infiniband/hw/cxgb4/cm.c
+index 14392c942f49..499a425a3379 100644
+--- a/drivers/infiniband/hw/cxgb4/cm.c
++++ b/drivers/infiniband/hw/cxgb4/cm.c
+@@ -734,7 +734,7 @@ static int send_connect(struct c4iw_ep *ep)
+ 				   &ep->com.remote_addr;
+ 	int ret;
+ 	enum chip_type adapter_type = ep->com.dev->rdev.lldi.adapter_type;
+-	u32 isn = (prandom_u32() & ~7UL) - 1;
++	u32 isn = (get_random_u32() & ~7UL) - 1;
+ 	struct net_device *netdev;
+ 	u64 params;
+ 
+@@ -2469,7 +2469,7 @@ static int accept_cr(struct c4iw_ep *ep, struct sk_buff *skb,
  	}
-diff --git a/drivers/net/hamradio/hdlcdrv.c b/drivers/net/hamradio/hdlcdrv.c
-index 360d041a62c4..6c6f11d3d0aa 100644
---- a/drivers/net/hamradio/hdlcdrv.c
-+++ b/drivers/net/hamradio/hdlcdrv.c
-@@ -377,7 +377,7 @@ void hdlcdrv_arbitrate(struct net_device *dev, struct hdlcdrv_state *s)
- 	if ((--s->hdlctx.slotcnt) > 0)
- 		return;
- 	s->hdlctx.slotcnt = s->ch_params.slottime;
--	if (prandom_u32_max(256) > s->ch_params.ppersist)
-+	if (get_random_u8() > s->ch_params.ppersist)
- 		return;
- 	start_tx(dev, s);
- }
-diff --git a/drivers/net/hamradio/yam.c b/drivers/net/hamradio/yam.c
-index 97a6cc5c7ae8..2ed2f836f09a 100644
---- a/drivers/net/hamradio/yam.c
-+++ b/drivers/net/hamradio/yam.c
-@@ -626,7 +626,7 @@ static void yam_arbitrate(struct net_device *dev)
- 	yp->slotcnt = yp->slot / 10;
  
- 	/* is random > persist ? */
--	if (prandom_u32_max(256) > yp->pers)
-+	if (get_random_u8() > yp->pers)
- 		return;
+ 	if (!is_t4(adapter_type)) {
+-		u32 isn = (prandom_u32() & ~7UL) - 1;
++		u32 isn = (get_random_u32() & ~7UL) - 1;
  
- 	yam_start_tx(dev, yp);
-diff --git a/drivers/net/wireguard/selftest/allowedips.c b/drivers/net/wireguard/selftest/allowedips.c
-index 41db10f9be49..dd897c0740a2 100644
---- a/drivers/net/wireguard/selftest/allowedips.c
-+++ b/drivers/net/wireguard/selftest/allowedips.c
-@@ -310,7 +310,7 @@ static __init bool randomized_test(void)
- 			for (k = 0; k < 4; ++k)
- 				mutated[k] = (mutated[k] & mutate_mask[k]) |
- 					     (~mutate_mask[k] &
--					      prandom_u32_max(256));
-+					      get_random_u8());
- 			cidr = prandom_u32_max(32) + 1;
- 			peer = peers[prandom_u32_max(NUM_PEERS)];
- 			if (wg_allowedips_insert_v4(&t,
-@@ -354,7 +354,7 @@ static __init bool randomized_test(void)
- 			for (k = 0; k < 4; ++k)
- 				mutated[k] = (mutated[k] & mutate_mask[k]) |
- 					     (~mutate_mask[k] &
--					      prandom_u32_max(256));
-+					      get_random_u8());
- 			cidr = prandom_u32_max(128) + 1;
- 			peer = peers[prandom_u32_max(NUM_PEERS)];
- 			if (wg_allowedips_insert_v6(&t,
-diff --git a/drivers/net/wireless/st/cw1200/wsm.c b/drivers/net/wireless/st/cw1200/wsm.c
-index 5a3e7a626702..4a9e4b5d3547 100644
---- a/drivers/net/wireless/st/cw1200/wsm.c
-+++ b/drivers/net/wireless/st/cw1200/wsm.c
-@@ -1594,7 +1594,7 @@ static int cw1200_get_prio_queue(struct cw1200_common *priv,
- 		edca = &priv->edca.params[i];
- 		score = ((edca->aifns + edca->cwmin) << 16) +
- 			((edca->cwmax - edca->cwmin) *
--			 (get_random_int() & 0xFFFF));
-+			 get_random_u16());
- 		if (score < best && (winner < 0 || i != 3)) {
- 			best = score;
- 			winner = i;
-diff --git a/drivers/scsi/lpfc/lpfc_hbadisc.c b/drivers/scsi/lpfc/lpfc_hbadisc.c
-index 2645def612e6..26d1779cb570 100644
---- a/drivers/scsi/lpfc/lpfc_hbadisc.c
-+++ b/drivers/scsi/lpfc/lpfc_hbadisc.c
-@@ -2150,8 +2150,8 @@ lpfc_check_pending_fcoe_event(struct lpfc_hba *phba, uint8_t unreg_fcf)
-  * This function makes an running random selection decision on FCF record to
-  * use through a sequence of @fcf_cnt eligible FCF records with equal
-  * probability. To perform integer manunipulation of random numbers with
-- * size unit32_t, the lower 16 bits of the 32-bit random number returned
-- * from prandom_u32() are taken as the random random number generated.
-+ * size unit32_t, a 16-bit random number returned from get_random_u16() is
-+ * taken as the random random number generated.
-  *
-  * Returns true when outcome is for the newly read FCF record should be
-  * chosen; otherwise, return false when outcome is for keeping the previously
-@@ -2163,7 +2163,7 @@ lpfc_sli4_new_fcf_random_select(struct lpfc_hba *phba, uint32_t fcf_cnt)
- 	uint32_t rand_num;
- 
- 	/* Get 16-bit uniform random number */
--	rand_num = 0xFFFF & prandom_u32();
-+	rand_num = get_random_u16();
- 
- 	/* Decision with probability 1/fcf_cnt */
- 	if ((fcf_cnt * rand_num) < 0xFFFF)
-diff --git a/lib/cmdline_kunit.c b/lib/cmdline_kunit.c
-index a72a2c16066e..d4572dbc9145 100644
---- a/lib/cmdline_kunit.c
-+++ b/lib/cmdline_kunit.c
-@@ -76,7 +76,7 @@ static void cmdline_test_lead_int(struct kunit *test)
- 		int rc = cmdline_test_values[i];
- 		int offset;
- 
--		sprintf(in, "%u%s", get_random_int() % 256, str);
-+		sprintf(in, "%u%s", get_random_u8(), str);
- 		/* Only first '-' after the number will advance the pointer */
- 		offset = strlen(in) - strlen(str) + !!(rc == 2);
- 		cmdline_do_one_test(test, in, rc, offset);
-@@ -94,7 +94,7 @@ static void cmdline_test_tail_int(struct kunit *test)
- 		int rc = strcmp(str, "") ? (strcmp(str, "-") ? 0 : 1) : 1;
- 		int offset;
- 
--		sprintf(in, "%s%u", str, get_random_int() % 256);
-+		sprintf(in, "%s%u", str, get_random_u8());
- 		/*
- 		 * Only first and leading '-' not followed by integer
- 		 * will advance the pointer.
-diff --git a/lib/test_vmalloc.c b/lib/test_vmalloc.c
-index 56ffaa8dd3f6..0131ed2cd1bd 100644
---- a/lib/test_vmalloc.c
-+++ b/lib/test_vmalloc.c
-@@ -80,7 +80,7 @@ static int random_size_align_alloc_test(void)
+ 		skb = get_skb(skb, roundup(sizeof(*rpl5), 16), GFP_KERNEL);
+ 		rpl5 = __skb_put_zero(skb, roundup(sizeof(*rpl5), 16));
+diff --git a/drivers/infiniband/hw/hfi1/tid_rdma.c b/drivers/infiniband/hw/hfi1/tid_rdma.c
+index 2a7abf7a1f7f..18b05ffb415a 100644
+--- a/drivers/infiniband/hw/hfi1/tid_rdma.c
++++ b/drivers/infiniband/hw/hfi1/tid_rdma.c
+@@ -850,7 +850,7 @@ void hfi1_kern_init_ctxt_generations(struct hfi1_ctxtdata *rcd)
  	int i;
  
- 	for (i = 0; i < test_loop_count; i++) {
--		rnd = prandom_u32();
-+		rnd = get_random_u8();
- 
- 		/*
- 		 * Maximum 1024 pages, if PAGE_SIZE is 4096.
-diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
-index da6e3b20cd75..301799e7fa56 100644
---- a/net/dccp/ipv4.c
-+++ b/net/dccp/ipv4.c
-@@ -123,7 +123,7 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- 						    inet->inet_daddr,
- 						    inet->inet_sport,
- 						    inet->inet_dport);
--	inet->inet_id = prandom_u32();
-+	inet->inet_id = get_random_u16();
- 
- 	err = dccp_connect(sk);
- 	rt = NULL;
-@@ -422,7 +422,7 @@ struct sock *dccp_v4_request_recv_sock(const struct sock *sk,
- 	RCU_INIT_POINTER(newinet->inet_opt, rcu_dereference(ireq->ireq_opt));
- 	newinet->mc_index  = inet_iif(skb);
- 	newinet->mc_ttl	   = ip_hdr(skb)->ttl;
--	newinet->inet_id   = prandom_u32();
-+	newinet->inet_id   = get_random_u16();
- 
- 	if (dst == NULL && (dst = inet_csk_route_child_sock(sk, newsk, req)) == NULL)
- 		goto put_and_exit;
-diff --git a/net/ipv4/datagram.c b/net/ipv4/datagram.c
-index ffd57523331f..fefc5d855a66 100644
---- a/net/ipv4/datagram.c
-+++ b/net/ipv4/datagram.c
-@@ -71,7 +71,7 @@ int __ip4_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len
- 	reuseport_has_conns(sk, true);
- 	sk->sk_state = TCP_ESTABLISHED;
- 	sk_set_txhash(sk);
--	inet->inet_id = prandom_u32();
-+	inet->inet_id = get_random_u16();
- 
- 	sk_dst_set(sk, &rt->dst);
- 	err = 0;
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 04e2034f2f8e..a4fbdbff14b3 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -172,7 +172,7 @@ int ip_build_and_send_pkt(struct sk_buff *skb, const struct sock *sk,
- 		 * Avoid using the hashed IP ident generator.
- 		 */
- 		if (sk->sk_protocol == IPPROTO_TCP)
--			iph->id = (__force __be16)prandom_u32();
-+			iph->id = (__force __be16)get_random_u16();
- 		else
- 			__ip_select_ident(net, iph, 1);
+ 	for (i = 0; i < RXE_NUM_TID_FLOWS; i++) {
+-		rcd->flows[i].generation = mask_generation(prandom_u32());
++		rcd->flows[i].generation = mask_generation(get_random_u32());
+ 		kern_set_hw_flow(rcd, KERN_GENERATION_RESERVED, i);
  	}
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 5b019ba2b9d2..747752980983 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -303,7 +303,7 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- 						 inet->inet_daddr);
- 	}
- 
--	inet->inet_id = prandom_u32();
-+	inet->inet_id = get_random_u16();
- 
- 	if (tcp_fastopen_defer_connect(sk, &err))
- 		return err;
-@@ -1523,7 +1523,7 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
- 	inet_csk(newsk)->icsk_ext_hdr_len = 0;
- 	if (inet_opt)
- 		inet_csk(newsk)->icsk_ext_hdr_len = inet_opt->opt.optlen;
--	newinet->inet_id = prandom_u32();
-+	newinet->inet_id = get_random_u16();
- 
- 	/* Set ToS of the new socket based upon the value of incoming SYN.
- 	 * ECT bits are set later in tcp_init_transfer().
-diff --git a/net/mac80211/scan.c b/net/mac80211/scan.c
-index c4f2aeb31da3..6cab549cc421 100644
---- a/net/mac80211/scan.c
-+++ b/net/mac80211/scan.c
-@@ -641,7 +641,7 @@ static void ieee80211_send_scan_probe_req(struct ieee80211_sub_if_data *sdata,
- 		if (flags & IEEE80211_PROBE_FLAG_RANDOM_SN) {
- 			struct ieee80211_hdr *hdr = (void *)skb->data;
- 			struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
--			u16 sn = get_random_u32();
-+			u16 sn = get_random_u16();
- 
- 			info->control.flags |= IEEE80211_TX_CTRL_NO_SEQNO;
- 			hdr->seq_ctrl =
-diff --git a/net/netfilter/nf_nat_core.c b/net/netfilter/nf_nat_core.c
-index 7981be526f26..57c7686ac485 100644
---- a/net/netfilter/nf_nat_core.c
-+++ b/net/netfilter/nf_nat_core.c
-@@ -468,7 +468,7 @@ static void nf_nat_l4proto_unique_tuple(struct nf_conntrack_tuple *tuple,
- 	if (range->flags & NF_NAT_RANGE_PROTO_OFFSET)
- 		off = (ntohs(*keyptr) - ntohs(range->base_proto.all));
- 	else
--		off = prandom_u32();
-+		off = get_random_u16();
- 
- 	attempts = range_size;
- 	if (attempts > max_attempts)
-@@ -490,7 +490,7 @@ static void nf_nat_l4proto_unique_tuple(struct nf_conntrack_tuple *tuple,
- 	if (attempts >= range_size || attempts < 16)
- 		return;
- 	attempts /= 2;
--	off = prandom_u32();
-+	off = get_random_u16();
- 	goto another_round;
+ }
+diff --git a/drivers/infiniband/hw/mlx4/mad.c b/drivers/infiniband/hw/mlx4/mad.c
+index d13ecbdd4391..a37cfac5e23f 100644
+--- a/drivers/infiniband/hw/mlx4/mad.c
++++ b/drivers/infiniband/hw/mlx4/mad.c
+@@ -96,7 +96,7 @@ static void __propagate_pkey_ev(struct mlx4_ib_dev *dev, int port_num,
+ __be64 mlx4_ib_gen_node_guid(void)
+ {
+ #define NODE_GUID_HI	((u64) (((u64)IB_OPENIB_OUI) << 40))
+-	return cpu_to_be64(NODE_GUID_HI | prandom_u32());
++	return cpu_to_be64(NODE_GUID_HI | get_random_u32());
  }
  
-diff --git a/net/sched/sch_cake.c b/net/sched/sch_cake.c
-index a43a58a73d09..637ef1757931 100644
---- a/net/sched/sch_cake.c
-+++ b/net/sched/sch_cake.c
-@@ -2092,11 +2092,11 @@ static struct sk_buff *cake_dequeue(struct Qdisc *sch)
- 
- 		WARN_ON(host_load > CAKE_QUEUES);
- 
--		/* The shifted prandom_u32() is a way to apply dithering to
--		 * avoid accumulating roundoff errors
-+		/* The get_random_u16() is a way to apply dithering to avoid
-+		 * accumulating roundoff errors
- 		 */
- 		flow->deficit += (b->flow_quantum * quantum_div[host_load] +
--				  (prandom_u32() >> 16)) >> 16;
-+				  get_random_u16()) >> 16;
- 		list_move_tail(&flow->flowchain, &b->old_flows);
- 
- 		goto retry;
-diff --git a/net/sched/sch_sfb.c b/net/sched/sch_sfb.c
-index 2829455211f8..7eb70acb4d58 100644
---- a/net/sched/sch_sfb.c
-+++ b/net/sched/sch_sfb.c
-@@ -379,7 +379,7 @@ static int sfb_enqueue(struct sk_buff *skb, struct Qdisc *sch,
- 		goto enqueue;
+ __be64 mlx4_ib_get_new_demux_tid(struct mlx4_ib_demux_ctx *ctx)
+diff --git a/drivers/infiniband/ulp/ipoib/ipoib_cm.c b/drivers/infiniband/ulp/ipoib/ipoib_cm.c
+index fd9d7f2c4d64..a605cf66b83e 100644
+--- a/drivers/infiniband/ulp/ipoib/ipoib_cm.c
++++ b/drivers/infiniband/ulp/ipoib/ipoib_cm.c
+@@ -465,7 +465,7 @@ static int ipoib_cm_req_handler(struct ib_cm_id *cm_id,
+ 		goto err_qp;
  	}
  
--	r = prandom_u32() & SFB_MAX_PROB;
-+	r = get_random_u16() & SFB_MAX_PROB;
+-	psn = prandom_u32() & 0xffffff;
++	psn = get_random_u32() & 0xffffff;
+ 	ret = ipoib_cm_modify_rx_qp(dev, cm_id, p->qp, psn);
+ 	if (ret)
+ 		goto err_modify;
+diff --git a/drivers/md/raid5-cache.c b/drivers/md/raid5-cache.c
+index f4e1cc1ece43..5b0fc783bf01 100644
+--- a/drivers/md/raid5-cache.c
++++ b/drivers/md/raid5-cache.c
+@@ -2993,7 +2993,7 @@ static int r5l_load_log(struct r5l_log *log)
+ 	}
+ create:
+ 	if (create_super) {
+-		log->last_cp_seq = prandom_u32();
++		log->last_cp_seq = get_random_u32();
+ 		cp = 0;
+ 		r5l_log_write_empty_meta_block(log, cp, log->last_cp_seq);
+ 		/*
+diff --git a/drivers/media/test-drivers/vivid/vivid-touch-cap.c b/drivers/media/test-drivers/vivid/vivid-touch-cap.c
+index 792660a85bc1..6cc32eb54f9d 100644
+--- a/drivers/media/test-drivers/vivid/vivid-touch-cap.c
++++ b/drivers/media/test-drivers/vivid/vivid-touch-cap.c
+@@ -210,7 +210,7 @@ static void vivid_fill_buff_noise(__s16 *tch_buf, int size)
  
- 	if (unlikely(r < p_min)) {
- 		if (unlikely(p_min > SFB_MAX_PROB / 2)) {
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index 1e354ba44960..83628c347744 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -9448,7 +9448,7 @@ void sctp_copy_sock(struct sock *newsk, struct sock *sk,
- 	newinet->inet_rcv_saddr = inet->inet_rcv_saddr;
- 	newinet->inet_dport = htons(asoc->peer.port);
- 	newinet->pmtudisc = inet->pmtudisc;
--	newinet->inet_id = prandom_u32();
-+	newinet->inet_id = get_random_u16();
+ 	/* Fill 10% of the values within range -3 and 3, zero the others */
+ 	for (i = 0; i < size; i++) {
+-		unsigned int rand = get_random_int();
++		unsigned int rand = get_random_u32();
  
- 	newinet->uc_ttl = inet->uc_ttl;
- 	newinet->mc_loop = 1;
+ 		if (rand % 10)
+ 			tch_buf[i] = 0;
+@@ -272,7 +272,7 @@ void vivid_fillbuff_tch(struct vivid_dev *dev, struct vivid_buffer *buf)
+ 		return;
+ 
+ 	if (test_pat_idx == 0)
+-		dev->tch_pat_random = get_random_int();
++		dev->tch_pat_random = get_random_u32();
+ 	rand = dev->tch_pat_random;
+ 
+ 	switch (test_pattern) {
+diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2.c b/drivers/misc/habanalabs/gaudi2/gaudi2.c
+index 98336a1a84b0..413b284bf224 100644
+--- a/drivers/misc/habanalabs/gaudi2/gaudi2.c
++++ b/drivers/misc/habanalabs/gaudi2/gaudi2.c
+@@ -2917,7 +2917,7 @@ static void gaudi2_user_interrupt_setup(struct hl_device *hdev)
+ 
+ static inline int gaudi2_get_non_zero_random_int(void)
+ {
+-	int rand = get_random_int();
++	int rand = get_random_u32();
+ 
+ 	return rand ? rand : 1;
+ }
+diff --git a/drivers/mtd/nand/raw/nandsim.c b/drivers/mtd/nand/raw/nandsim.c
+index 50bcf745e816..4bdaf4aa7007 100644
+--- a/drivers/mtd/nand/raw/nandsim.c
++++ b/drivers/mtd/nand/raw/nandsim.c
+@@ -1402,7 +1402,7 @@ static int ns_do_read_error(struct nandsim *ns, int num)
+ 
+ static void ns_do_bit_flips(struct nandsim *ns, int num)
+ {
+-	if (bitflips && prandom_u32() < (1 << 22)) {
++	if (bitflips && get_random_u32() < (1 << 22)) {
+ 		int flips = 1;
+ 		if (bitflips > 1)
+ 			flips = prandom_u32_max(bitflips) + 1;
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 86d42306aa5e..c8543394a3bb 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -4806,7 +4806,7 @@ static u32 bond_rr_gen_slave_id(struct bonding *bond)
+ 
+ 	switch (packets_per_slave) {
+ 	case 0:
+-		slave_id = prandom_u32();
++		slave_id = get_random_u32();
+ 		break;
+ 	case 1:
+ 		slave_id = this_cpu_inc_return(*bond->rr_tx_counter);
+diff --git a/drivers/net/ethernet/broadcom/cnic.c b/drivers/net/ethernet/broadcom/cnic.c
+index f597b313acaa..2198e35d9e18 100644
+--- a/drivers/net/ethernet/broadcom/cnic.c
++++ b/drivers/net/ethernet/broadcom/cnic.c
+@@ -4164,7 +4164,7 @@ static int cnic_cm_init_bnx2_hw(struct cnic_dev *dev)
+ {
+ 	u32 seed;
+ 
+-	seed = prandom_u32();
++	seed = get_random_u32();
+ 	cnic_ctx_wr(dev, 45, 0, seed);
+ 	return 0;
+ }
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
+index ac452a0111a9..b71ce6c5b512 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
++++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
+@@ -1063,7 +1063,7 @@ static void chtls_pass_accept_rpl(struct sk_buff *skb,
+ 	opt2 |= WND_SCALE_EN_V(WSCALE_OK(tp));
+ 	rpl5->opt0 = cpu_to_be64(opt0);
+ 	rpl5->opt2 = cpu_to_be32(opt2);
+-	rpl5->iss = cpu_to_be32((prandom_u32() & ~7UL) - 1);
++	rpl5->iss = cpu_to_be32((get_random_u32() & ~7UL) - 1);
+ 	set_wr_txq(skb, CPL_PRIORITY_SETUP, csk->port_id);
+ 	t4_set_arp_err_handler(skb, sk, chtls_accept_rpl_arp_failure);
+ 	cxgb4_l2t_send(csk->egress_dev, skb, csk->l2t_entry);
+diff --git a/drivers/net/ethernet/rocker/rocker_main.c b/drivers/net/ethernet/rocker/rocker_main.c
+index fc83ec23bd1d..8c3bbafabb07 100644
+--- a/drivers/net/ethernet/rocker/rocker_main.c
++++ b/drivers/net/ethernet/rocker/rocker_main.c
+@@ -129,7 +129,7 @@ static int rocker_reg_test(const struct rocker *rocker)
+ 	u64 test_reg;
+ 	u64 rnd;
+ 
+-	rnd = prandom_u32();
++	rnd = get_random_u32();
+ 	rnd >>= 1;
+ 	rocker_write32(rocker, TEST_REG, rnd);
+ 	test_reg = rocker_read32(rocker, TEST_REG);
+@@ -139,9 +139,9 @@ static int rocker_reg_test(const struct rocker *rocker)
+ 		return -EIO;
+ 	}
+ 
+-	rnd = prandom_u32();
++	rnd = get_random_u32();
+ 	rnd <<= 31;
+-	rnd |= prandom_u32();
++	rnd |= get_random_u32();
+ 	rocker_write64(rocker, TEST_REG64, rnd);
+ 	test_reg = rocker_read64(rocker, TEST_REG64);
+ 	if (test_reg != rnd * 2) {
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pno.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pno.c
+index fabfbb0b40b0..374e1cc07a63 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pno.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pno.c
+@@ -177,7 +177,7 @@ static int brcmf_pno_set_random(struct brcmf_if *ifp, struct brcmf_pno_info *pi)
+ 	memcpy(pfn_mac.mac, mac_addr, ETH_ALEN);
+ 	for (i = 0; i < ETH_ALEN; i++) {
+ 		pfn_mac.mac[i] &= mac_mask[i];
+-		pfn_mac.mac[i] |= get_random_int() & ~(mac_mask[i]);
++		pfn_mac.mac[i] |= get_random_u32() & ~(mac_mask[i]);
+ 	}
+ 	/* Clear multi bit */
+ 	pfn_mac.mac[0] &= 0xFE;
+diff --git a/drivers/net/wireless/marvell/mwifiex/cfg80211.c b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
+index 134114ac1ac0..4fbb5c876b12 100644
+--- a/drivers/net/wireless/marvell/mwifiex/cfg80211.c
++++ b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
+@@ -238,7 +238,7 @@ mwifiex_cfg80211_mgmt_tx(struct wiphy *wiphy, struct wireless_dev *wdev,
+ 	tx_info->pkt_len = pkt_len;
+ 
+ 	mwifiex_form_mgmt_frame(skb, buf, len);
+-	*cookie = prandom_u32() | 1;
++	*cookie = get_random_u32() | 1;
+ 
+ 	if (ieee80211_is_action(mgmt->frame_control))
+ 		skb = mwifiex_clone_skb_for_tx_status(priv,
+@@ -302,7 +302,7 @@ mwifiex_cfg80211_remain_on_channel(struct wiphy *wiphy,
+ 					 duration);
+ 
+ 	if (!ret) {
+-		*cookie = prandom_u32() | 1;
++		*cookie = get_random_u32() | 1;
+ 		priv->roc_cfg.cookie = *cookie;
+ 		priv->roc_cfg.chan = *chan;
+ 
+diff --git a/drivers/net/wireless/microchip/wilc1000/cfg80211.c b/drivers/net/wireless/microchip/wilc1000/cfg80211.c
+index 3ac373d29d93..84b9d3454e57 100644
+--- a/drivers/net/wireless/microchip/wilc1000/cfg80211.c
++++ b/drivers/net/wireless/microchip/wilc1000/cfg80211.c
+@@ -1159,7 +1159,7 @@ static int mgmt_tx(struct wiphy *wiphy,
+ 	const u8 *vendor_ie;
+ 	int ret = 0;
+ 
+-	*cookie = prandom_u32();
++	*cookie = get_random_u32();
+ 	priv->tx_cookie = *cookie;
+ 	mgmt = (const struct ieee80211_mgmt *)buf;
+ 
+diff --git a/drivers/net/wireless/quantenna/qtnfmac/cfg80211.c b/drivers/net/wireless/quantenna/qtnfmac/cfg80211.c
+index 1593e810b3ca..9c5416141d3c 100644
+--- a/drivers/net/wireless/quantenna/qtnfmac/cfg80211.c
++++ b/drivers/net/wireless/quantenna/qtnfmac/cfg80211.c
+@@ -449,7 +449,7 @@ qtnf_mgmt_tx(struct wiphy *wiphy, struct wireless_dev *wdev,
+ {
+ 	struct qtnf_vif *vif = qtnf_netdev_get_priv(wdev->netdev);
+ 	const struct ieee80211_mgmt *mgmt_frame = (void *)params->buf;
+-	u32 short_cookie = prandom_u32();
++	u32 short_cookie = get_random_u32();
+ 	u16 flags = 0;
+ 	u16 freq;
+ 
+diff --git a/drivers/net/wireless/ti/wlcore/main.c b/drivers/net/wireless/ti/wlcore/main.c
+index 3e3922d4c788..28c0f06e311f 100644
+--- a/drivers/net/wireless/ti/wlcore/main.c
++++ b/drivers/net/wireless/ti/wlcore/main.c
+@@ -6100,7 +6100,7 @@ static int wl1271_register_hw(struct wl1271 *wl)
+ 			wl1271_warning("Fuse mac address is zero. using random mac");
+ 			/* Use TI oui and a random nic */
+ 			oui_addr = WLCORE_TI_OUI_ADDRESS;
+-			nic_addr = get_random_int();
++			nic_addr = get_random_u32();
+ 		} else {
+ 			oui_addr = wl->fuse_oui_addr;
+ 			/* fuse has the BD_ADDR, the WLAN addresses are the next two */
+diff --git a/drivers/nvme/common/auth.c b/drivers/nvme/common/auth.c
+index 04bd28f17dcc..d90e4f0c08b7 100644
+--- a/drivers/nvme/common/auth.c
++++ b/drivers/nvme/common/auth.c
+@@ -23,7 +23,7 @@ u32 nvme_auth_get_seqnum(void)
+ 
+ 	mutex_lock(&nvme_dhchap_mutex);
+ 	if (!nvme_dhchap_seqnum)
+-		nvme_dhchap_seqnum = prandom_u32();
++		nvme_dhchap_seqnum = get_random_u32();
+ 	else {
+ 		nvme_dhchap_seqnum++;
+ 		if (!nvme_dhchap_seqnum)
+diff --git a/drivers/scsi/cxgbi/cxgb4i/cxgb4i.c b/drivers/scsi/cxgbi/cxgb4i/cxgb4i.c
+index 53d91bf9c12a..c07d2e3b4bcf 100644
+--- a/drivers/scsi/cxgbi/cxgb4i/cxgb4i.c
++++ b/drivers/scsi/cxgbi/cxgb4i/cxgb4i.c
+@@ -254,7 +254,7 @@ static void send_act_open_req(struct cxgbi_sock *csk, struct sk_buff *skb,
+ 	} else if (is_t5(lldi->adapter_type)) {
+ 		struct cpl_t5_act_open_req *req =
+ 				(struct cpl_t5_act_open_req *)skb->head;
+-		u32 isn = (prandom_u32() & ~7UL) - 1;
++		u32 isn = (get_random_u32() & ~7UL) - 1;
+ 
+ 		INIT_TP_WR(req, 0);
+ 		OPCODE_TID(req) = cpu_to_be32(MK_OPCODE_TID(CPL_ACT_OPEN_REQ,
+@@ -282,7 +282,7 @@ static void send_act_open_req(struct cxgbi_sock *csk, struct sk_buff *skb,
+ 	} else {
+ 		struct cpl_t6_act_open_req *req =
+ 				(struct cpl_t6_act_open_req *)skb->head;
+-		u32 isn = (prandom_u32() & ~7UL) - 1;
++		u32 isn = (get_random_u32() & ~7UL) - 1;
+ 
+ 		INIT_TP_WR(req, 0);
+ 		OPCODE_TID(req) = cpu_to_be32(MK_OPCODE_TID(CPL_ACT_OPEN_REQ,
+diff --git a/drivers/target/iscsi/cxgbit/cxgbit_cm.c b/drivers/target/iscsi/cxgbit/cxgbit_cm.c
+index 3336d2b78bf7..d9204c590d9a 100644
+--- a/drivers/target/iscsi/cxgbit/cxgbit_cm.c
++++ b/drivers/target/iscsi/cxgbit/cxgbit_cm.c
+@@ -1202,7 +1202,7 @@ cxgbit_pass_accept_rpl(struct cxgbit_sock *csk, struct cpl_pass_accept_req *req)
+ 	opt2 |= CONG_CNTRL_V(CONG_ALG_NEWRENO);
+ 
+ 	opt2 |= T5_ISS_F;
+-	rpl5->iss = cpu_to_be32((prandom_u32() & ~7UL) - 1);
++	rpl5->iss = cpu_to_be32((get_random_u32() & ~7UL) - 1);
+ 
+ 	opt2 |= T5_OPT_2_VALID_F;
+ 
+diff --git a/drivers/thunderbolt/xdomain.c b/drivers/thunderbolt/xdomain.c
+index c31c0d94d8b3..76075e29696c 100644
+--- a/drivers/thunderbolt/xdomain.c
++++ b/drivers/thunderbolt/xdomain.c
+@@ -2438,7 +2438,7 @@ int tb_xdomain_init(void)
+ 	tb_property_add_immediate(xdomain_property_dir, "deviceid", 0x1);
+ 	tb_property_add_immediate(xdomain_property_dir, "devicerv", 0x80000100);
+ 
+-	xdomain_property_block_gen = prandom_u32();
++	xdomain_property_block_gen = get_random_u32();
+ 	return 0;
+ }
+ 
+diff --git a/drivers/video/fbdev/uvesafb.c b/drivers/video/fbdev/uvesafb.c
+index 4df6772802d7..285b83c20326 100644
+--- a/drivers/video/fbdev/uvesafb.c
++++ b/drivers/video/fbdev/uvesafb.c
+@@ -167,7 +167,7 @@ static int uvesafb_exec(struct uvesafb_ktask *task)
+ 	memcpy(&m->id, &uvesafb_cn_id, sizeof(m->id));
+ 	m->seq = seq;
+ 	m->len = len;
+-	m->ack = prandom_u32();
++	m->ack = get_random_u32();
+ 
+ 	/* uvesafb_task structure */
+ 	memcpy(m + 1, &task->t, sizeof(task->t));
+diff --git a/fs/exfat/inode.c b/fs/exfat/inode.c
+index a795437b86d0..5590a1e83126 100644
+--- a/fs/exfat/inode.c
++++ b/fs/exfat/inode.c
+@@ -552,7 +552,7 @@ static int exfat_fill_inode(struct inode *inode, struct exfat_dir_entry *info)
+ 	inode->i_uid = sbi->options.fs_uid;
+ 	inode->i_gid = sbi->options.fs_gid;
+ 	inode_inc_iversion(inode);
+-	inode->i_generation = prandom_u32();
++	inode->i_generation = get_random_u32();
+ 
+ 	if (info->attr & ATTR_SUBDIR) { /* directory */
+ 		inode->i_generation &= ~1;
+diff --git a/fs/ext4/ialloc.c b/fs/ext4/ialloc.c
+index 36d5bc595cc2..3956e24fa6e9 100644
+--- a/fs/ext4/ialloc.c
++++ b/fs/ext4/ialloc.c
+@@ -1279,7 +1279,7 @@ struct inode *__ext4_new_inode(struct user_namespace *mnt_userns,
+ 					EXT4_GROUP_INFO_IBITMAP_CORRUPT);
+ 		goto out;
+ 	}
+-	inode->i_generation = prandom_u32();
++	inode->i_generation = get_random_u32();
+ 
+ 	/* Precompute checksum seed for inode metadata */
+ 	if (ext4_has_metadata_csum(sb)) {
+diff --git a/fs/ext4/ioctl.c b/fs/ext4/ioctl.c
+index 3cf3ec4b1c21..99df5b8ae149 100644
+--- a/fs/ext4/ioctl.c
++++ b/fs/ext4/ioctl.c
+@@ -453,8 +453,8 @@ static long swap_inode_boot_loader(struct super_block *sb,
+ 
+ 	inode->i_ctime = inode_bl->i_ctime = current_time(inode);
+ 
+-	inode->i_generation = prandom_u32();
+-	inode_bl->i_generation = prandom_u32();
++	inode->i_generation = get_random_u32();
++	inode_bl->i_generation = get_random_u32();
+ 	ext4_reset_inode_seed(inode);
+ 	ext4_reset_inode_seed(inode_bl);
+ 
+diff --git a/fs/ext4/mmp.c b/fs/ext4/mmp.c
+index 9af68a7ecdcf..588cb09c5291 100644
+--- a/fs/ext4/mmp.c
++++ b/fs/ext4/mmp.c
+@@ -265,7 +265,7 @@ static unsigned int mmp_new_seq(void)
+ 	u32 new_seq;
+ 
+ 	do {
+-		new_seq = prandom_u32();
++		new_seq = get_random_u32();
+ 	} while (new_seq > EXT4_MMP_SEQ_MAX);
+ 
+ 	return new_seq;
+diff --git a/fs/f2fs/namei.c b/fs/f2fs/namei.c
+index bf00d5057abb..939536982c3e 100644
+--- a/fs/f2fs/namei.c
++++ b/fs/f2fs/namei.c
+@@ -50,7 +50,7 @@ static struct inode *f2fs_new_inode(struct user_namespace *mnt_userns,
+ 	inode->i_blocks = 0;
+ 	inode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);
+ 	F2FS_I(inode)->i_crtime = inode->i_mtime;
+-	inode->i_generation = prandom_u32();
++	inode->i_generation = get_random_u32();
+ 
+ 	if (S_ISDIR(inode->i_mode))
+ 		F2FS_I(inode)->i_current_depth = 1;
+diff --git a/fs/fat/inode.c b/fs/fat/inode.c
+index a38238d75c08..1cbcc4608dc7 100644
+--- a/fs/fat/inode.c
++++ b/fs/fat/inode.c
+@@ -523,7 +523,7 @@ int fat_fill_inode(struct inode *inode, struct msdos_dir_entry *de)
+ 	inode->i_uid = sbi->options.fs_uid;
+ 	inode->i_gid = sbi->options.fs_gid;
+ 	inode_inc_iversion(inode);
+-	inode->i_generation = prandom_u32();
++	inode->i_generation = get_random_u32();
+ 
+ 	if ((de->attr & ATTR_DIR) && !IS_FREE(de->name)) {
+ 		inode->i_generation &= ~1;
+diff --git a/fs/nfsd/nfs4state.c b/fs/nfsd/nfs4state.c
+index c5d199d7e6b4..e10c16cd7881 100644
+--- a/fs/nfsd/nfs4state.c
++++ b/fs/nfsd/nfs4state.c
+@@ -4346,8 +4346,8 @@ void nfsd4_init_leases_net(struct nfsd_net *nn)
+ 	nn->nfsd4_grace = 90;
+ 	nn->somebody_reclaimed = false;
+ 	nn->track_reclaim_completes = false;
+-	nn->clverifier_counter = prandom_u32();
+-	nn->clientid_base = prandom_u32();
++	nn->clverifier_counter = get_random_u32();
++	nn->clientid_base = get_random_u32();
+ 	nn->clientid_counter = nn->clientid_base + 1;
+ 	nn->s2s_cp_cl_id = nn->clientid_counter++;
+ 
+diff --git a/fs/ntfs3/fslog.c b/fs/ntfs3/fslog.c
+index e7c494005122..0d611a6c5511 100644
+--- a/fs/ntfs3/fslog.c
++++ b/fs/ntfs3/fslog.c
+@@ -3819,7 +3819,7 @@ int log_replay(struct ntfs_inode *ni, bool *initialized)
+ 		}
+ 
+ 		log_init_pg_hdr(log, page_size, page_size, 1, 1);
+-		log_create(log, l_size, 0, get_random_int(), false, false);
++		log_create(log, l_size, 0, get_random_u32(), false, false);
+ 
+ 		log->ra = ra;
+ 
+@@ -3893,7 +3893,7 @@ int log_replay(struct ntfs_inode *ni, bool *initialized)
+ 
+ 		/* Do some checks based on whether we have a valid log page. */
+ 		if (!rst_info.valid_page) {
+-			open_log_count = get_random_int();
++			open_log_count = get_random_u32();
+ 			goto init_log_instance;
+ 		}
+ 		open_log_count = le32_to_cpu(ra2->open_log_count);
+@@ -4044,7 +4044,7 @@ int log_replay(struct ntfs_inode *ni, bool *initialized)
+ 		memcpy(ra->clients, Add2Ptr(ra2, t16),
+ 		       le16_to_cpu(ra2->ra_len) - t16);
+ 
+-		log->current_openlog_count = get_random_int();
++		log->current_openlog_count = get_random_u32();
+ 		ra->open_log_count = cpu_to_le32(log->current_openlog_count);
+ 		log->ra_size = offsetof(struct RESTART_AREA, clients) +
+ 			       sizeof(struct CLIENT_REC);
+diff --git a/fs/ubifs/journal.c b/fs/ubifs/journal.c
+index 75dab0ae3939..4619652046cf 100644
+--- a/fs/ubifs/journal.c
++++ b/fs/ubifs/journal.c
+@@ -503,7 +503,7 @@ static void mark_inode_clean(struct ubifs_info *c, struct ubifs_inode *ui)
+ static void set_dent_cookie(struct ubifs_info *c, struct ubifs_dent_node *dent)
+ {
+ 	if (c->double_hash)
+-		dent->cookie = (__force __le32) prandom_u32();
++		dent->cookie = (__force __le32) get_random_u32();
+ 	else
+ 		dent->cookie = 0;
+ }
+diff --git a/fs/xfs/libxfs/xfs_ialloc.c b/fs/xfs/libxfs/xfs_ialloc.c
+index 7838b31126e2..94db50eb706a 100644
+--- a/fs/xfs/libxfs/xfs_ialloc.c
++++ b/fs/xfs/libxfs/xfs_ialloc.c
+@@ -805,7 +805,7 @@ xfs_ialloc_ag_alloc(
+ 	 * number from being easily guessable.
+ 	 */
+ 	error = xfs_ialloc_inode_init(args.mp, tp, NULL, newlen, pag->pag_agno,
+-			args.agbno, args.len, prandom_u32());
++			args.agbno, args.len, get_random_u32());
+ 
+ 	if (error)
+ 		return error;
+diff --git a/fs/xfs/xfs_icache.c b/fs/xfs/xfs_icache.c
+index 2bbe7916a998..eae7427062cf 100644
+--- a/fs/xfs/xfs_icache.c
++++ b/fs/xfs/xfs_icache.c
+@@ -596,7 +596,7 @@ xfs_iget_cache_miss(
+ 	 */
+ 	if (xfs_has_v3inodes(mp) &&
+ 	    (flags & XFS_IGET_CREATE) && !xfs_has_ikeep(mp)) {
+-		VFS_I(ip)->i_generation = prandom_u32();
++		VFS_I(ip)->i_generation = get_random_u32();
+ 	} else {
+ 		struct xfs_buf		*bp;
+ 
+diff --git a/fs/xfs/xfs_log.c b/fs/xfs/xfs_log.c
+index 386b0307aed8..ad8652cbf245 100644
+--- a/fs/xfs/xfs_log.c
++++ b/fs/xfs/xfs_log.c
+@@ -3544,7 +3544,7 @@ xlog_ticket_alloc(
+ 	tic->t_curr_res		= unit_res;
+ 	tic->t_cnt		= cnt;
+ 	tic->t_ocnt		= cnt;
+-	tic->t_tid		= prandom_u32();
++	tic->t_tid		= get_random_u32();
+ 	if (permanent)
+ 		tic->t_flags |= XLOG_TIC_PERM_RESERV;
+ 
+diff --git a/include/net/netfilter/nf_queue.h b/include/net/netfilter/nf_queue.h
+index 980daa6e1e3a..c81021ab07aa 100644
+--- a/include/net/netfilter/nf_queue.h
++++ b/include/net/netfilter/nf_queue.h
+@@ -43,7 +43,7 @@ void nf_queue_entry_free(struct nf_queue_entry *entry);
+ static inline void init_hashrandom(u32 *jhash_initval)
+ {
+ 	while (*jhash_initval == 0)
+-		*jhash_initval = prandom_u32();
++		*jhash_initval = get_random_u32();
+ }
+ 
+ static inline u32 hash_v4(const struct iphdr *iph, u32 initval)
+diff --git a/include/net/red.h b/include/net/red.h
+index be11dbd26492..56d0647d7356 100644
+--- a/include/net/red.h
++++ b/include/net/red.h
+@@ -364,7 +364,7 @@ static inline unsigned long red_calc_qavg(const struct red_parms *p,
+ 
+ static inline u32 red_random(const struct red_parms *p)
+ {
+-	return reciprocal_divide(prandom_u32(), p->max_P_reciprocal);
++	return reciprocal_divide(get_random_u32(), p->max_P_reciprocal);
+ }
+ 
+ static inline int red_mark_probability(const struct red_parms *p,
+diff --git a/include/net/sock.h b/include/net/sock.h
+index d08cfe190a78..ca2b26686677 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -2091,7 +2091,7 @@ static inline kuid_t sock_net_uid(const struct net *net, const struct sock *sk)
+ 
+ static inline u32 net_tx_rndhash(void)
+ {
+-	u32 v = prandom_u32();
++	u32 v = get_random_u32();
+ 
+ 	return v ?: 1;
+ }
+diff --git a/kernel/bpf/bloom_filter.c b/kernel/bpf/bloom_filter.c
+index b9ea539a5561..48ee750849f2 100644
+--- a/kernel/bpf/bloom_filter.c
++++ b/kernel/bpf/bloom_filter.c
+@@ -158,7 +158,7 @@ static struct bpf_map *bloom_map_alloc(union bpf_attr *attr)
+ 			attr->value_size / sizeof(u32);
+ 
+ 	if (!(attr->map_flags & BPF_F_ZERO_SEED))
+-		bloom->hash_seed = get_random_int();
++		bloom->hash_seed = get_random_u32();
+ 
+ 	return &bloom->map;
+ }
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index ade6b03b1d9b..f6b3486f001a 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -1211,7 +1211,7 @@ static int bpf_jit_blind_insn(const struct bpf_insn *from,
+ 			      bool emit_zext)
+ {
+ 	struct bpf_insn *to = to_buff;
+-	u32 imm_rnd = get_random_int();
++	u32 imm_rnd = get_random_u32();
+ 	s16 off;
+ 
+ 	BUILD_BUG_ON(BPF_REG_AX  + 1 != MAX_BPF_JIT_REG);
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index 6c530a5e560a..1d36173598a0 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -546,7 +546,7 @@ static struct bpf_map *htab_map_alloc(union bpf_attr *attr)
+ 	if (htab->map.map_flags & BPF_F_ZERO_SEED)
+ 		htab->hashrnd = 0;
+ 	else
+-		htab->hashrnd = get_random_int();
++		htab->hashrnd = get_random_u32();
+ 
+ 	htab_init_buckets(htab);
+ 
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 3eadb14e090b..943af5abdc18 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -13317,7 +13317,7 @@ static int opt_subreg_zext_lo32_rnd_hi32(struct bpf_verifier_env *env,
+ 			    aux[adj_idx].ptr_type == PTR_TO_CTX)
+ 				continue;
+ 
+-			imm_rnd = get_random_int();
++			imm_rnd = get_random_u32();
+ 			rnd_hi32_patch[0] = insn;
+ 			rnd_hi32_patch[1].imm = imm_rnd;
+ 			rnd_hi32_patch[3].dst_reg = load_reg;
+diff --git a/kernel/kcsan/selftest.c b/kernel/kcsan/selftest.c
+index 75712959c84e..58b94deae5c0 100644
+--- a/kernel/kcsan/selftest.c
++++ b/kernel/kcsan/selftest.c
+@@ -26,7 +26,7 @@
+ static bool __init test_requires(void)
+ {
+ 	/* random should be initialized for the below tests */
+-	return prandom_u32() + prandom_u32() != 0;
++	return get_random_u32() + get_random_u32() != 0;
+ }
+ 
+ /*
+diff --git a/lib/random32.c b/lib/random32.c
+index d5d9029362cb..d4f19e1a69d4 100644
+--- a/lib/random32.c
++++ b/lib/random32.c
+@@ -47,7 +47,7 @@
+  *	@state: pointer to state structure holding seeded state.
+  *
+  *	This is used for pseudo-randomness with no outside seeding.
+- *	For more random results, use prandom_u32().
++ *	For more random results, use get_random_u32().
+  */
+ u32 prandom_u32_state(struct rnd_state *state)
+ {
+diff --git a/lib/reed_solomon/test_rslib.c b/lib/reed_solomon/test_rslib.c
+index 4d241bdc88aa..848e7eb5da92 100644
+--- a/lib/reed_solomon/test_rslib.c
++++ b/lib/reed_solomon/test_rslib.c
+@@ -164,7 +164,7 @@ static int get_rcw_we(struct rs_control *rs, struct wspace *ws,
+ 
+ 	/* Load c with random data and encode */
+ 	for (i = 0; i < dlen; i++)
+-		c[i] = prandom_u32() & nn;
++		c[i] = get_random_u32() & nn;
+ 
+ 	memset(c + dlen, 0, nroots * sizeof(*c));
+ 	encode_rs16(rs, c, dlen, c + dlen, 0);
+@@ -178,7 +178,7 @@ static int get_rcw_we(struct rs_control *rs, struct wspace *ws,
+ 	for (i = 0; i < errs; i++) {
+ 		do {
+ 			/* Error value must be nonzero */
+-			errval = prandom_u32() & nn;
++			errval = get_random_u32() & nn;
+ 		} while (errval == 0);
+ 
+ 		do {
+@@ -206,7 +206,7 @@ static int get_rcw_we(struct rs_control *rs, struct wspace *ws,
+ 			/* Erasure with corrupted symbol */
+ 			do {
+ 				/* Error value must be nonzero */
+-				errval = prandom_u32() & nn;
++				errval = get_random_u32() & nn;
+ 			} while (errval == 0);
+ 
+ 			errlocs[errloc] = 1;
+diff --git a/lib/test_fprobe.c b/lib/test_fprobe.c
+index ed70637a2ffa..e0381b3ec410 100644
+--- a/lib/test_fprobe.c
++++ b/lib/test_fprobe.c
+@@ -145,7 +145,7 @@ static unsigned long get_ftrace_location(void *func)
+ static int fprobe_test_init(struct kunit *test)
+ {
+ 	do {
+-		rand1 = prandom_u32();
++		rand1 = get_random_u32();
+ 	} while (rand1 <= div_factor);
+ 
+ 	target = fprobe_selftest_target;
+diff --git a/lib/test_kprobes.c b/lib/test_kprobes.c
+index a5edc2ebc947..eeb1d728d974 100644
+--- a/lib/test_kprobes.c
++++ b/lib/test_kprobes.c
+@@ -341,7 +341,7 @@ static int kprobes_test_init(struct kunit *test)
+ 	stacktrace_driver = kprobe_stacktrace_driver;
+ 
+ 	do {
+-		rand1 = prandom_u32();
++		rand1 = get_random_u32();
+ 	} while (rand1 <= div_factor);
+ 	return 0;
+ }
+diff --git a/lib/test_min_heap.c b/lib/test_min_heap.c
+index d19c8080fd4d..7b01b4387cfb 100644
+--- a/lib/test_min_heap.c
++++ b/lib/test_min_heap.c
+@@ -83,7 +83,7 @@ static __init int test_heapify_all(bool min_heap)
+ 	/* Test with randomly generated values. */
+ 	heap.nr = ARRAY_SIZE(values);
+ 	for (i = 0; i < heap.nr; i++)
+-		values[i] = get_random_int();
++		values[i] = get_random_u32();
+ 
+ 	min_heapify_all(&heap, &funcs);
+ 	err += pop_verify_heap(min_heap, &heap, &funcs);
+@@ -116,7 +116,7 @@ static __init int test_heap_push(bool min_heap)
+ 
+ 	/* Test with randomly generated values. */
+ 	while (heap.nr < heap.size) {
+-		temp = get_random_int();
++		temp = get_random_u32();
+ 		min_heap_push(&heap, &temp, &funcs);
+ 	}
+ 	err += pop_verify_heap(min_heap, &heap, &funcs);
+@@ -158,7 +158,7 @@ static __init int test_heap_pop_push(bool min_heap)
+ 
+ 	/* Test with randomly generated values. */
+ 	for (i = 0; i < ARRAY_SIZE(data); i++) {
+-		temp = get_random_int();
++		temp = get_random_u32();
+ 		min_heap_pop_push(&heap, &temp, &funcs);
+ 	}
+ 	err += pop_verify_heap(min_heap, &heap, &funcs);
+diff --git a/lib/test_rhashtable.c b/lib/test_rhashtable.c
+index 5a1dd4736b56..b358a74ed7ed 100644
+--- a/lib/test_rhashtable.c
++++ b/lib/test_rhashtable.c
+@@ -291,7 +291,7 @@ static int __init test_rhltable(unsigned int entries)
+ 	if (WARN_ON(err))
+ 		goto out_free;
+ 
+-	k = prandom_u32();
++	k = get_random_u32();
+ 	ret = 0;
+ 	for (i = 0; i < entries; i++) {
+ 		rhl_test_objects[i].value.id = k;
+@@ -369,12 +369,12 @@ static int __init test_rhltable(unsigned int entries)
+ 	pr_info("test %d random rhlist add/delete operations\n", entries);
+ 	for (j = 0; j < entries; j++) {
+ 		u32 i = prandom_u32_max(entries);
+-		u32 prand = prandom_u32();
++		u32 prand = get_random_u32();
+ 
+ 		cond_resched();
+ 
+ 		if (prand == 0)
+-			prand = prandom_u32();
++			prand = get_random_u32();
+ 
+ 		if (prand & 1) {
+ 			prand >>= 1;
+diff --git a/mm/shmem.c b/mm/shmem.c
+index 42e5888bf84d..6f2cef73808d 100644
+--- a/mm/shmem.c
++++ b/mm/shmem.c
+@@ -2330,7 +2330,7 @@ static struct inode *shmem_get_inode(struct super_block *sb, struct inode *dir,
+ 		inode_init_owner(&init_user_ns, inode, dir, mode);
+ 		inode->i_blocks = 0;
+ 		inode->i_atime = inode->i_mtime = inode->i_ctime = current_time(inode);
+-		inode->i_generation = prandom_u32();
++		inode->i_generation = get_random_u32();
+ 		info = SHMEM_I(inode);
+ 		memset(info, 0, (char *)inode - (char *)info);
+ 		spin_lock_init(&info->lock);
+diff --git a/mm/slab.c b/mm/slab.c
+index 10e96137b44f..36ed7182bad5 100644
+--- a/mm/slab.c
++++ b/mm/slab.c
+@@ -2380,7 +2380,7 @@ static bool freelist_state_initialize(union freelist_init_state *state,
+ 	unsigned int rand;
+ 
+ 	/* Use best entropy available to define a random shift */
+-	rand = get_random_int();
++	rand = get_random_u32();
+ 
+ 	/* Use a random state if the pre-computed list is not available */
+ 	if (!cachep->random_seq) {
+diff --git a/net/802/garp.c b/net/802/garp.c
+index f6012f8e59f0..c1bb67e25430 100644
+--- a/net/802/garp.c
++++ b/net/802/garp.c
+@@ -407,7 +407,7 @@ static void garp_join_timer_arm(struct garp_applicant *app)
+ {
+ 	unsigned long delay;
+ 
+-	delay = (u64)msecs_to_jiffies(garp_join_time) * prandom_u32() >> 32;
++	delay = (u64)msecs_to_jiffies(garp_join_time) * get_random_u32() >> 32;
+ 	mod_timer(&app->join_timer, jiffies + delay);
+ }
+ 
+diff --git a/net/802/mrp.c b/net/802/mrp.c
+index 35e04cc5390c..3e9fe9f5d9bf 100644
+--- a/net/802/mrp.c
++++ b/net/802/mrp.c
+@@ -592,7 +592,7 @@ static void mrp_join_timer_arm(struct mrp_applicant *app)
+ {
+ 	unsigned long delay;
+ 
+-	delay = (u64)msecs_to_jiffies(mrp_join_time) * prandom_u32() >> 32;
++	delay = (u64)msecs_to_jiffies(mrp_join_time) * get_random_u32() >> 32;
+ 	mod_timer(&app->join_timer, jiffies + delay);
+ }
+ 
+diff --git a/net/core/pktgen.c b/net/core/pktgen.c
+index 5ca4f953034c..c3763056c554 100644
+--- a/net/core/pktgen.c
++++ b/net/core/pktgen.c
+@@ -2464,7 +2464,7 @@ static void mod_cur_headers(struct pktgen_dev *pkt_dev)
+ 		for (i = 0; i < pkt_dev->nr_labels; i++)
+ 			if (pkt_dev->labels[i] & MPLS_STACK_BOTTOM)
+ 				pkt_dev->labels[i] = MPLS_STACK_BOTTOM |
+-					     ((__force __be32)prandom_u32() &
++					     ((__force __be32)get_random_u32() &
+ 						      htonl(0x000fffff));
+ 	}
+ 
+@@ -2568,7 +2568,7 @@ static void mod_cur_headers(struct pktgen_dev *pkt_dev)
+ 
+ 			for (i = 0; i < 4; i++) {
+ 				pkt_dev->cur_in6_daddr.s6_addr32[i] =
+-				    (((__force __be32)prandom_u32() |
++				    (((__force __be32)get_random_u32() |
+ 				      pkt_dev->min_in6_daddr.s6_addr32[i]) &
+ 				     pkt_dev->max_in6_daddr.s6_addr32[i]);
+ 			}
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index 795cbe1de912..1a37a07c7163 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -3664,7 +3664,7 @@ static __net_init int rt_genid_init(struct net *net)
+ {
+ 	atomic_set(&net->ipv4.rt_genid, 0);
+ 	atomic_set(&net->fnhe_genid, 0);
+-	atomic_set(&net->ipv4.dev_addr_genid, get_random_int());
++	atomic_set(&net->ipv4.dev_addr_genid, get_random_u32());
+ 	return 0;
+ }
+ 
+diff --git a/net/ipv4/tcp_cdg.c b/net/ipv4/tcp_cdg.c
+index ddc7ba0554bd..efcd145f06db 100644
+--- a/net/ipv4/tcp_cdg.c
++++ b/net/ipv4/tcp_cdg.c
+@@ -243,7 +243,7 @@ static bool tcp_cdg_backoff(struct sock *sk, u32 grad)
+ 	struct cdg *ca = inet_csk_ca(sk);
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 
+-	if (prandom_u32() <= nexp_u32(grad * backoff_factor))
++	if (get_random_u32() <= nexp_u32(grad * backoff_factor))
+ 		return false;
+ 
+ 	if (use_ineff) {
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 560d9eadeaa5..1a5b2464548e 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -246,7 +246,7 @@ int udp_lib_get_port(struct sock *sk, unsigned short snum,
+ 		inet_get_local_port_range(net, &low, &high);
+ 		remaining = (high - low) + 1;
+ 
+-		rand = prandom_u32();
++		rand = get_random_u32();
+ 		first = reciprocal_scale(rand, remaining) + low;
+ 		/*
+ 		 * force rand to be an odd multiple of UDP_HTABLE_SIZE
+diff --git a/net/ipv6/ip6_flowlabel.c b/net/ipv6/ip6_flowlabel.c
+index ceb85c67ce39..18481eb76a0a 100644
+--- a/net/ipv6/ip6_flowlabel.c
++++ b/net/ipv6/ip6_flowlabel.c
+@@ -220,7 +220,7 @@ static struct ip6_flowlabel *fl_intern(struct net *net,
+ 	spin_lock_bh(&ip6_fl_lock);
+ 	if (label == 0) {
+ 		for (;;) {
+-			fl->label = htonl(prandom_u32())&IPV6_FLOWLABEL_MASK;
++			fl->label = htonl(get_random_u32())&IPV6_FLOWLABEL_MASK;
+ 			if (fl->label) {
+ 				lfl = __fl_lookup(net, fl->label);
+ 				if (!lfl)
+diff --git a/net/ipv6/output_core.c b/net/ipv6/output_core.c
+index 2880dc7d9a49..2685c3f15e9d 100644
+--- a/net/ipv6/output_core.c
++++ b/net/ipv6/output_core.c
+@@ -18,7 +18,7 @@ static u32 __ipv6_select_ident(struct net *net,
+ 	u32 id;
+ 
+ 	do {
+-		id = prandom_u32();
++		id = get_random_u32();
+ 	} while (!id);
+ 
+ 	return id;
+diff --git a/net/netfilter/ipvs/ip_vs_conn.c b/net/netfilter/ipvs/ip_vs_conn.c
+index fb67f1ca2495..8c04bb57dd6f 100644
+--- a/net/netfilter/ipvs/ip_vs_conn.c
++++ b/net/netfilter/ipvs/ip_vs_conn.c
+@@ -1308,7 +1308,7 @@ void ip_vs_random_dropentry(struct netns_ipvs *ipvs)
+ 	 * Randomly scan 1/32 of the whole table every second
+ 	 */
+ 	for (idx = 0; idx < (ip_vs_conn_tab_size>>5); idx++) {
+-		unsigned int hash = prandom_u32() & ip_vs_conn_tab_mask;
++		unsigned int hash = get_random_u32() & ip_vs_conn_tab_mask;
+ 
+ 		hlist_for_each_entry_rcu(cp, &ip_vs_conn_tab[hash], c_list) {
+ 			if (cp->ipvs != ipvs)
+diff --git a/net/netfilter/xt_statistic.c b/net/netfilter/xt_statistic.c
+index 203e24ae472c..b26c1dcfc27b 100644
+--- a/net/netfilter/xt_statistic.c
++++ b/net/netfilter/xt_statistic.c
+@@ -34,7 +34,7 @@ statistic_mt(const struct sk_buff *skb, struct xt_action_param *par)
+ 
+ 	switch (info->mode) {
+ 	case XT_STATISTIC_MODE_RANDOM:
+-		if ((prandom_u32() & 0x7FFFFFFF) < info->u.random.probability)
++		if ((get_random_u32() & 0x7FFFFFFF) < info->u.random.probability)
+ 			ret = !ret;
+ 		break;
+ 	case XT_STATISTIC_MODE_NTH:
+diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
+index 868db4669a29..ca3ebfdb3023 100644
+--- a/net/openvswitch/actions.c
++++ b/net/openvswitch/actions.c
+@@ -1033,7 +1033,7 @@ static int sample(struct datapath *dp, struct sk_buff *skb,
+ 	actions = nla_next(sample_arg, &rem);
+ 
+ 	if ((arg->probability != U32_MAX) &&
+-	    (!arg->probability || prandom_u32() > arg->probability)) {
++	    (!arg->probability || get_random_u32() > arg->probability)) {
+ 		if (last)
+ 			consume_skb(skb);
+ 		return 0;
+diff --git a/net/rds/bind.c b/net/rds/bind.c
+index 5b5fb4ca8d3e..052776ddcc34 100644
+--- a/net/rds/bind.c
++++ b/net/rds/bind.c
+@@ -104,7 +104,7 @@ static int rds_add_bound(struct rds_sock *rs, const struct in6_addr *addr,
+ 			return -EINVAL;
+ 		last = rover;
+ 	} else {
+-		rover = max_t(u16, prandom_u32(), 2);
++		rover = max_t(u16, get_random_u32(), 2);
+ 		last = rover - 1;
+ 	}
+ 
+diff --git a/net/sched/sch_cake.c b/net/sched/sch_cake.c
+index 637ef1757931..48e3e05228a1 100644
+--- a/net/sched/sch_cake.c
++++ b/net/sched/sch_cake.c
+@@ -573,7 +573,7 @@ static bool cobalt_should_drop(struct cobalt_vars *vars,
+ 
+ 	/* Simple BLUE implementation.  Lack of ECN is deliberate. */
+ 	if (vars->p_drop)
+-		drop |= (prandom_u32() < vars->p_drop);
++		drop |= (get_random_u32() < vars->p_drop);
+ 
+ 	/* Overload the drop_next field as an activity timeout */
+ 	if (!vars->count)
+diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
+index 3ca320f1a031..88c1fa2e1d15 100644
+--- a/net/sched/sch_netem.c
++++ b/net/sched/sch_netem.c
+@@ -171,7 +171,7 @@ static inline struct netem_skb_cb *netem_skb_cb(struct sk_buff *skb)
+ static void init_crandom(struct crndstate *state, unsigned long rho)
+ {
+ 	state->rho = rho;
+-	state->last = prandom_u32();
++	state->last = get_random_u32();
+ }
+ 
+ /* get_crandom - correlated random number generator
+@@ -184,9 +184,9 @@ static u32 get_crandom(struct crndstate *state)
+ 	unsigned long answer;
+ 
+ 	if (!state || state->rho == 0)	/* no correlation */
+-		return prandom_u32();
++		return get_random_u32();
+ 
+-	value = prandom_u32();
++	value = get_random_u32();
+ 	rho = (u64)state->rho + 1;
+ 	answer = (value * ((1ull<<32) - rho) + state->last * rho) >> 32;
+ 	state->last = answer;
+@@ -200,7 +200,7 @@ static u32 get_crandom(struct crndstate *state)
+ static bool loss_4state(struct netem_sched_data *q)
+ {
+ 	struct clgstate *clg = &q->clg;
+-	u32 rnd = prandom_u32();
++	u32 rnd = get_random_u32();
+ 
+ 	/*
+ 	 * Makes a comparison between rnd and the transition
+@@ -268,15 +268,15 @@ static bool loss_gilb_ell(struct netem_sched_data *q)
+ 
+ 	switch (clg->state) {
+ 	case GOOD_STATE:
+-		if (prandom_u32() < clg->a1)
++		if (get_random_u32() < clg->a1)
+ 			clg->state = BAD_STATE;
+-		if (prandom_u32() < clg->a4)
++		if (get_random_u32() < clg->a4)
+ 			return true;
+ 		break;
+ 	case BAD_STATE:
+-		if (prandom_u32() < clg->a2)
++		if (get_random_u32() < clg->a2)
+ 			clg->state = GOOD_STATE;
+-		if (prandom_u32() > clg->a3)
++		if (get_random_u32() > clg->a3)
+ 			return true;
+ 	}
+ 
+@@ -632,7 +632,7 @@ static void get_slot_next(struct netem_sched_data *q, u64 now)
+ 
+ 	if (!q->slot_dist)
+ 		next_delay = q->slot_config.min_delay +
+-				(prandom_u32() *
++				(get_random_u32() *
+ 				 (q->slot_config.max_delay -
+ 				  q->slot_config.min_delay) >> 32);
+ 	else
+diff --git a/net/sunrpc/auth_gss/gss_krb5_wrap.c b/net/sunrpc/auth_gss/gss_krb5_wrap.c
+index 5f96e75f9eec..48337687848c 100644
+--- a/net/sunrpc/auth_gss/gss_krb5_wrap.c
++++ b/net/sunrpc/auth_gss/gss_krb5_wrap.c
+@@ -130,8 +130,8 @@ gss_krb5_make_confounder(char *p, u32 conflen)
+ 
+ 	/* initialize to random value */
+ 	if (i == 0) {
+-		i = prandom_u32();
+-		i = (i << 32) | prandom_u32();
++		i = get_random_u32();
++		i = (i << 32) | get_random_u32();
+ 	}
+ 
+ 	switch (conflen) {
+diff --git a/net/sunrpc/xprt.c b/net/sunrpc/xprt.c
+index f8fae7815649..9407007f47ae 100644
+--- a/net/sunrpc/xprt.c
++++ b/net/sunrpc/xprt.c
+@@ -1868,7 +1868,7 @@ xprt_alloc_xid(struct rpc_xprt *xprt)
+ static void
+ xprt_init_xid(struct rpc_xprt *xprt)
+ {
+-	xprt->xid = prandom_u32();
++	xprt->xid = get_random_u32();
+ }
+ 
+ static void
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index bf338b782fc4..35bd8132113f 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -1116,7 +1116,7 @@ static int unix_autobind(struct sock *sk)
+ 	addr->name->sun_family = AF_UNIX;
+ 	refcount_set(&addr->refcnt, 1);
+ 
+-	ordernum = prandom_u32();
++	ordernum = get_random_u32();
+ 	lastnum = ordernum & 0xFFFFF;
+ retry:
+ 	ordernum = (ordernum + 1) & 0xFFFFF;
 -- 
 2.37.3
 
