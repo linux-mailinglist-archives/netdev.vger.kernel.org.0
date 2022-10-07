@@ -2,92 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA6815F744F
-	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 08:44:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D2135F7466
+	for <lists+netdev@lfdr.de>; Fri,  7 Oct 2022 08:55:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229561AbiJGGoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 02:44:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43804 "EHLO
+        id S229713AbiJGGzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 02:55:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbiJGGof (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 02:44:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DDF292
-        for <netdev@vger.kernel.org>; Thu,  6 Oct 2022 23:44:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EBDA61B66
-        for <netdev@vger.kernel.org>; Fri,  7 Oct 2022 06:44:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24EB3C433C1;
-        Fri,  7 Oct 2022 06:44:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665125071;
-        bh=p0uvZMFF7tKgJGPh/q/4NTijhujEdgSvWA2Rf0wh25c=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=U5uPj2+3ODAKTkYoRd76kLNxlmgAJMox3PcAsD8VXRl9PqgO53LnVPpHJOY/rGo8u
-         P1REDe0s6SvQxYHAlTp71271jpRjPhc1XuFJV1wyMGnKH5eVlRC4KLqdiMdSlGx31L
-         MW5EWYUFP8hh6FPYQLJfbcNtFm91hvtWjF3QAJLDLyjKETkAnStYfcJqj3X8sc+PZo
-         QKrq7zGlCsXCa/s3NTHiKywQ5tHDQQMBAMT9XIpXcnwm4ir0b6cNVwDv2wq0K173FY
-         4qj8zF6XCF43ebvXyq6iqESgs5TlidtlLgHrDo37sf4i/Esgsbo1R1Qu1UExv1vHwU
-         MZIAo2Eeb5iiw==
-Date:   Fri, 7 Oct 2022 09:44:27 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org
-Subject: Re: netdev development stats for 6.1?
-Message-ID: <Yz/KyyT/oLsy4lK5@unreal>
-References: <20221004212721.069dd189@kernel.org>
+        with ESMTP id S229525AbiJGGzB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 02:55:01 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB56C31DE8;
+        Thu,  6 Oct 2022 23:54:59 -0700 (PDT)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29769VtN000863;
+        Fri, 7 Oct 2022 06:54:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=+3s0q2l3k+pmPIa6yJMupwL3AFUDNzwzuPb4CD4qF+Y=;
+ b=IR1wiBnajJLf4KevyYEZuw8bMBnq4gOapQyVsXf4UFXkrC68bzNpn/9azAR7iuXg9ngT
+ 588rmaONNRHg7X1kkXHJ6PQDprNhVMFyi7f1VNC4bewfuv00gwrhGRbXdHd/S2TKEaRi
+ rv97KULNYlKhTg2zmYRcMwGNIIKDnXUkNqTe/Hrk/VbCd2gw1A4lqtdFcQEJSqCrj9Dh
+ nKer7kb/V0Cr8a8Xbb21o+QVhiLaXFiVBWIllthl/ipnj1U3n4V6wkYTyM0Eiq6+WhfF
+ GAZLchcxrwAjOSLtiKTap7qXHb87AfdgTi7bT19+2BYXQFtyUJ4e2b12/6rsZo4vUTUA ug== 
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3k2dvdjfhq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 07 Oct 2022 06:54:55 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2976nxUI017307;
+        Fri, 7 Oct 2022 06:54:53 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma01fra.de.ibm.com with ESMTP id 3jxd68x1an-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 07 Oct 2022 06:54:52 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2976snRB655944
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 7 Oct 2022 06:54:49 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 70F9142042;
+        Fri,  7 Oct 2022 06:54:49 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BC58C42041;
+        Fri,  7 Oct 2022 06:54:45 +0000 (GMT)
+Received: from MBP-von-Wenjia.fritz.box.com (unknown [9.163.62.72])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri,  7 Oct 2022 06:54:45 +0000 (GMT)
+From:   Wenjia Zhang <wenjia@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Jan Karcher <jaka@linux.ibm.com>,
+        Thorsten Winkler <twinkler@linux.ibm.com>
+Subject: [PATCH] MAINTAINERS: add Jan as SMC maintainer
+Date:   Fri,  7 Oct 2022 08:54:36 +0200
+Message-Id: <20221007065436.33915-1-wenjia@linux.ibm.com>
+X-Mailer: git-send-email 2.35.2
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: OGx9crK4XHUs6v6pBOs_OO2fnEOYL3L7
+X-Proofpoint-ORIG-GUID: OGx9crK4XHUs6v6pBOs_OO2fnEOYL3L7
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221004212721.069dd189@kernel.org>
-X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_20,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-10-06_05,2022-10-06_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1015
+ priorityscore=1501 adultscore=0 phishscore=0 mlxscore=0 spamscore=0
+ mlxlogscore=831 suspectscore=0 bulkscore=0 malwarescore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2210070039
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 04, 2022 at 09:27:21PM -0700, Jakub Kicinski wrote:
-> Hi!
-> 
-> For a while now I had been curious if we can squeeze any interesting
-> stats from the ML traffic. In particular I was curious "who is helping",
-> who is reviewing the most patches (but based on the emails sent not just
-> review tags).
-> 
-> I quickly wrote a script to scan emails sent to netdev since 5.19 was
-> tagged (~14k) and count any message which has subject starting with
-> '[' as a patch and anything else as a comment/review. It's not very
-> scientific but the result for the most part matches my expectations.
-> 
-> A disclaimer first - this methodology puts me ahead because I send
-> a lot of emails. Most of them are not reviews, so ignore me.
-> 
-> Second question to address upfront is whether publishing stats is
-> useful or mostly risks people treating participation as a competition
-> and trying to game the system? Hard to say, but if even a single person
-> can point to these stats to help justify more time spent reviewing to
-> their management - it's worth it.
-> 
-> That said feedback is very welcome, public or private.
+Add Jan as maintainer for Shared Memory Communications (SMC)
+Sockets.
 
-I think that it is right initiative which will make netdev community
-stronger and wider.
+Acked-by: Jan Karcher <jaka@linux.ibm.com>
+Acked-by: Alexandra Winter <wintera@linux.ibm.com>
+Signed-off-by: Wenjia Zhang <wenjia@linux.ibm.com>
+---
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-As for the feedback, which express my personal view as an outsider in netdev.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 9ca84cb5ab4a..b7105db9fe6c 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -18487,6 +18487,7 @@ F:	drivers/misc/sgi-xp/
+ SHARED MEMORY COMMUNICATIONS (SMC) SOCKETS
+ M:	Karsten Graul <kgraul@linux.ibm.com>
+ M:	Wenjia Zhang <wenjia@linux.ibm.com>
++M:	Jan Karcher <jaka@linux.ibm.com>
+ L:	linux-s390@vger.kernel.org
+ S:	Supported
+ W:	http://www.ibm.com/developerworks/linux/linux390/
+-- 
+2.35.2
 
-I think that more clear goals for that statistics can help to purify
-which tables are actually needed as I'm sure that not all are needed.
-
-My goals are:
-1. See that load spreads more equity. It will indirectly cause to spread
-of the knowledge. The most active reviewers are the most knowledgeable
-developers too.
-2. Push companies to participate in code maintenance (review) and not
-only enjoy from free rides.
-
-Thanks
