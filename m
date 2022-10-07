@@ -2,87 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 711DF5F810B
-	for <lists+netdev@lfdr.de>; Sat,  8 Oct 2022 01:10:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A17E5F8142
+	for <lists+netdev@lfdr.de>; Sat,  8 Oct 2022 01:35:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229642AbiJGXKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 19:10:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39850 "EHLO
+        id S229508AbiJGXfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 19:35:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbiJGXKS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 19:10:18 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7099B6685C;
-        Fri,  7 Oct 2022 16:10:15 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id b2so14291298eja.6;
-        Fri, 07 Oct 2022 16:10:15 -0700 (PDT)
+        with ESMTP id S229642AbiJGXfO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 19:35:14 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD7C3E759;
+        Fri,  7 Oct 2022 16:35:11 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id kg6so14303625ejc.9;
+        Fri, 07 Oct 2022 16:35:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+Ff2Jx6NqQG39IX2GQ6H1L2VLrUXyrTBZ4zR3/wpS5c=;
-        b=TQ5hNUCStSck7y6p1Whdcoa73KeayH7AuFrs4Vax9jNIbKtGXCBkCEef+hIQ6xnu6w
-         aY6IcLczj5cWmILYkbZMZaw6BHtJhX2V8pDIHgxKM1RCwqIWlJ6tztZ+WHlvDEn4BbOF
-         4BehIlne49rE5evLVCO4K6HEIE6T82rct3LWJ4v4FWAdYL7dtxuWU7GHfd3EGTZ0rIJd
-         QiMBMCxMdf1KlekypSIKA9AqbHlSHjBwglLu93SNbeCKQT3cHDSyNB60YyHvYAk7Kkiy
-         aQGHJkPQhA20ArdgC6nmOEzUQn/wlcvveoO0fUq86m528h50e1qBUJEhMuMLTpfmMtCh
-         padQ==
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=NUn6PJnyQLmWn9QrxA1ZcD4c7d7LYHiBixtS86xNsjA=;
+        b=hRNk3tXL4av3AVjcG3Wd8411Cc6D3emEKNbomu97+X5RNvsIzZ1cHWEJT22CcIpbht
+         97lcD+CuIr5qa037BxbF6RPE4xn8Go2amubDlYYcxwlJvEIGQY5MaaNiqom14m1upG6M
+         TAKAr+vLDQL+e6KcI5BDpPLXL8mLhAnY3uoHIBsIYO4TrZw+H6rekVdCM2RWHnAUfXAL
+         vljJ9AzEH1lszhDYOxUjb0GF52gjRc1Juco3GaxclNcSZeSaEXKnA/u7byqTWI1IH845
+         ZLaVl58i2dUkoL4i5nCxXBouRpp5Ya9ksH20BTdk17yvSCp/TRIDxWAVbft7aw96WOSy
+         fE6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+Ff2Jx6NqQG39IX2GQ6H1L2VLrUXyrTBZ4zR3/wpS5c=;
-        b=7KtqB7u6rZyMXOrE20nHvO9nkLIHuKEoFYYyHeSMWNrO5ZDeKmJvxcyuVNtl+gpfrb
-         Q1jSAJuplmro0uiEAVcXHjQLe362R7x2HsK6F9Ee+JGCCnitr4POIxgDq2bWR6fBr6bJ
-         ulu17P2WBdONpPSnyHZlF194juVD52d6u8YDrdDcn0yx7ZXqP44WqaoEzF3RqfEeRooY
-         fRlVhfKywDwl4tYdngAEwoiaXtWQpdBOCLBfvp6nlaFH94sFlRNPBT3F4obTffdOaER4
-         15cqSU9dgBORxF+CnhNjMn37PJs9JVa2boOqZHrV3GYv0nfMH+TniwIj9D1A/0de98T3
-         ki5A==
-X-Gm-Message-State: ACrzQf2nhXbgBs+/AGjk4+D5d6uXBPZ9MJOGKZm+C+4x7Nrkpi5ZRdI7
-        Bcy0ch6bm9SaD+koQGbpEVk=
-X-Google-Smtp-Source: AMsMyM66DYwy3KBDvU1hRrO+OD2oPJcipG0iAaxGdBoANV2842BWfe3qlyxCBJ8EjIHQNyZFVsfo6Q==
-X-Received: by 2002:a17:907:3da2:b0:78d:3b45:11d9 with SMTP id he34-20020a1709073da200b0078d3b4511d9mr5812419ejc.87.1665184213952;
-        Fri, 07 Oct 2022 16:10:13 -0700 (PDT)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id p17-20020a17090653d100b0078d175d6dc5sm1815909ejo.201.2022.10.07.16.10.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Oct 2022 16:10:12 -0700 (PDT)
-Date:   Sat, 8 Oct 2022 02:10:09 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Colin Foster <colin.foster@in-advantage.com>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Lee Jones <lee@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH v3 net-next 12/14] dt-bindings: net: dsa: ocelot: add
- ocelot-ext documentation
-Message-ID: <20221007231009.qgcirfezgib5vu6y@skbuf>
-References: <20220926002928.2744638-1-colin.foster@in-advantage.com>
- <20220926002928.2744638-13-colin.foster@in-advantage.com>
- <ec63b5aa-3dec-3c27-e987-25e36b1632ba@linaro.org>
- <20221004121517.4j5637hnioepsxgd@skbuf>
- <6444e5d1-0fc9-03e2-9b2a-ec19fa1e7757@linaro.org>
- <20221004160135.lqugs6cf5b7fwkxq@skbuf>
- <cae8e149-ef1e-66c6-20f5-067e3fd8c586@linaro.org>
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=NUn6PJnyQLmWn9QrxA1ZcD4c7d7LYHiBixtS86xNsjA=;
+        b=Kznyvtex+0gHYrzJsPoZZp2u4m/LPFcPH3fS9b5tV/s9zY+He+NAB/M4NF3tf+dWV+
+         hqA10kY2PfI3NVDtss2EBk0rCMMgqSXxEd5iz3R7+SevjToGcvvhH6IkUYQMTjHFpSv9
+         41UzPaZFlHlcpNH0WrSi/FheZQlY4FwFs3COeVwb+GYfctXwMSFah7pRe0Su21XrNrcC
+         Rn46UuFTd/RAEAzRCSieBe8td/XHM/24bYll8Sj8HzM0BY/O7bFaftcaT2RanysCjpDj
+         F4NFX5Aq8DEOuqsy4nhFgMYUQlbV0TOsU7WoMDVQSSIjhpcV0P3xMGb6YlAp0tbVz6HD
+         TLAQ==
+X-Gm-Message-State: ACrzQf12jMSc+L9PePNYHntmmiOxHQGLuY9T4RdA0QQPNVlale2wQysA
+        nPpfHzsy6GfODt8TcsjDvhD1+AzCCQ/PpeELEvA=
+X-Google-Smtp-Source: AMsMyM4QARoD+FAFVSg2wGdw1KrElxiaesg5AtQlDN394YcRxN5VzeXLufiqxY/2t4XqQwDMJ7EqUeNQnPuWi7+KoP4=
+X-Received: by 2002:a17:907:a421:b0:783:c25a:cee0 with SMTP id
+ sg33-20020a170907a42100b00783c25acee0mr5791238ejc.94.1665185709740; Fri, 07
+ Oct 2022 16:35:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cae8e149-ef1e-66c6-20f5-067e3fd8c586@linaro.org>
+References: <20221004231143.19190-1-daniel@iogearbox.net> <20221004231143.19190-2-daniel@iogearbox.net>
+ <20221006050053.pbwo72xtzoza6gfl@macbook-pro-4.dhcp.thefacebook.com>
+ <f355eeba-1b46-749f-c102-65074e7eac27@iogearbox.net> <CAADnVQ+gEY3FjCR=+DmjDR4gp5bOYZUFJQXj4agKFHT9CQPZBw@mail.gmail.com>
+ <14f368eb-9158-68bc-956c-c8371cfcb531@iogearbox.net> <875ygvemau.fsf@toke.dk>
+ <Y0BaBUWeTj18V5Xp@google.com> <87tu4fczyv.fsf@toke.dk> <CAADnVQLH9R94iszCmhYeLKnDPy_uiGeyXnEwoADm8_miihwTmQ@mail.gmail.com>
+ <8cc9811e-6efe-3aa5-b201-abbd4b10ceb4@iogearbox.net>
+In-Reply-To: <8cc9811e-6efe-3aa5-b201-abbd4b10ceb4@iogearbox.net>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 7 Oct 2022 16:34:58 -0700
+Message-ID: <CAADnVQLpcLWrL-URhRgqCQa6XRZzib4BorZ2QKpPC+Uw_JNW=Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 01/10] bpf: Add initial fd-based API to attach tc
+ BPF programs
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Stanislav Fomichev <sdf@google.com>, bpf <bpf@vger.kernel.org>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Joanne Koong <joannelkoong@gmail.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Joe Stringer <joe@cilium.io>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -93,70 +83,113 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 05, 2022 at 10:09:06AM +0200, Krzysztof Kozlowski wrote:
-> > The /spi/soc@0 node actually has a compatible of "mscc,vsc7512" which
-> > Colin did not show in the example (it is not "simple-bus"). It is covered
-> > by Documentation/devicetree/bindings/mfd/mscc,ocelot.yaml. Still waiting
-> > for a better suggestion for how to name the mfd container node.
-> 
-> Then still the /spi node does not seem related. If I understand
-> correctly, your device described in this bindings is a child of soc@0.
-> Sounds fine. How that soc@0 is connected to the parent - via SPI or
-> whatever - is not related to this binding, is it? It is related to the
-> soc binding, but not here.
+On Fri, Oct 7, 2022 at 12:37 PM Daniel Borkmann <daniel@iogearbox.net> wrot=
+e:
+>
+> On 10/7/22 8:59 PM, Alexei Starovoitov wrote:
+> > On Fri, Oct 7, 2022 at 10:20 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
+redhat.com> wrote:
+> [...]
+> >>>> I was thinking a little about how this might work; i.e., how can the
+> >>>> kernel expose the required knobs to allow a system policy to be
+> >>>> implemented without program loading having to talk to anything other
+> >>>> than the syscall API?
+> >>>
+> >>>> How about we only expose prepend/append in the prog attach UAPI, and
+> >>>> then have a kernel function that does the sorting like:
+> >>>
+> >>>> int bpf_add_new_tcx_prog(struct bpf_prog *progs, size_t num_progs, s=
+truct
+> >>>> bpf_prog *new_prog, bool append)
+> >>>
+> >>>> where the default implementation just appends/prepends to the array =
+in
+> >>>> progs depending on the value of 'appen'.
+> >>>
+> >>>> And then use the __weak linking trick (or maybe struct_ops with a me=
+mber
+> >>>> for TXC, another for XDP, etc?) to allow BPF to override the functio=
+n
+> >>>> wholesale and implement whatever ordering it wants? I.e., allow it c=
+an
+> >>>> to just shift around the order of progs in the 'progs' array wheneve=
+r a
+> >>>> program is loaded/unloaded?
+> >>>
+> >>>> This way, a userspace daemon can implement any policy it wants by ju=
+st
+> >>>> attaching to that hook, and keeping things like how to express
+> >>>> dependencies as a userspace concern?
+> >>>
+> >>> What if we do the above, but instead of simple global 'attach first/l=
+ast',
+> >>> the default api would be:
+> >>>
+> >>> - attach before <target_fd>
+> >>> - attach after <target_fd>
+> >>> - attach before target_fd=3D-1 =3D=3D first
+> >>> - attach after target_fd=3D-1 =3D=3D last
+> >>>
+> >>> ?
+> >>
+> >> Hmm, the problem with that is that applications don't generally have a=
+n
+> >> fd to another application's BPF programs; and obtaining them from an I=
+D
+> >> is a privileged operation (CAP_SYS_ADMIN). We could have it be "attach
+> >> before target *ID*" instead, which could work I guess? But then the
+> >> problem becomes that it's racy: the ID you're targeting could get
+> >> detached before you attach, so you'll need to be prepared to check tha=
+t
+> >> and retry; and I'm almost certain that applications won't test for thi=
+s,
+> >> so it'll just lead to hard-to-debug heisenbugs. Or am I being too
+> >> pessimistic here?
+> >
+> > I like Stan's proposal and don't see any issue with FD.
+> > It's good to gate specific sequencing with cap_sys_admin.
+> > Also for consistency the FD is better than ID.
+> >
+> > I also like systemd analogy with Before=3D, After=3D.
+> > systemd has a ton more ways to specify deps between Units,
+> > but none of them have absolute numbers (which is what priority is).
+> > The only bit I'd tweak in Stan's proposal is:
+> > - attach before <target_fd>
+> > - attach after <target_fd>
+> > - attach before target_fd=3D0 =3D=3D first
+> > - attach after target_fd=3D0 =3D=3D last
+>
+> I think the before(), after() could work, but the target_fd I have my dou=
+bts
+> that it will be practical. Maybe lets walk through a concrete real exampl=
+e. app_a
+> and app_b shipped via container_a resp container_b. Both want to install =
+tc BPF
+> and we (operator/user) want to say that prog from app_b should only be in=
+serted
+> after the one from app_a, never run before; if no prog_a is installed, we=
+ ofc just
+> run prog_b, but if prog_a is inserted, it must be before prog_b given the=
+ latter
+> can only run after the former. How would we get to one anothers target fd=
+? One
+> could use the 0, but not if more programs sit before/after.
 
-It's an example, it's meant to be informative. It is the first DSA
-driver of its kind. When everybody else ATM puts the ethernet-switch node
-under the &spi controller node, this puts it under &spi/soc@<chip-select>/,
-for reasons that have to do with scalability. If the examples aren't a
-good place to make this more obvious, I don't know why we don't just
-tell people to RTFD.
-
-> > Unrelated to your "existing soc example" (the VSC9953), but relevant and
-> > you may want to share your opinion on this:
-> > 
-> > The same hardware present in the VSC7514 SoC can also be driven by an
-> > integrated MIPS processor, and in that case, it is indeed expected that
-> > the same dt-bindings cover both the /soc and the /spi/soc@0/ relative
-> > positioning of their OF node. This is true for simpler peripherals like
-> > "mscc,ocelot-miim", "mscc,ocelot-pinctrl", "mscc,ocelot-sgpio". However
-> > it is not true for the main switching IP of the SoC itself.
-> > 
-> > When driven by a switchdev driver, by the internal MIPS processor (the
-> > DMA engine is what is used for packet I/O), the switching IP follows the
-> > Documentation/devicetree/bindings/net/mscc,vsc7514-switch.yaml binding
-> > document.
-> > 
-> > When driven by a DSA driver (external processor, host frames are
-> > redirected through an Ethernet port instead of DMA controller),
-> > the switching IP follows the Documentation/devicetree/bindings/net/dsa/mscc,ocelot.yaml
-> > document.
-> > 
-> > The switching IP is special in this regard because the hardware is not
-> > used in the same way. The DSA dt-binding also needs the 'ethernet'
-> > phandle to be present in a port node. The different placement of the
-> > bindings according to the use case of the hardware is a bit awkward, but
-> > is a direct consequence of the separation between DSA and pure switchdev
-> > drivers that has existed thus far (and the fact that DSA has its own
-> > folder in the dt-bindings, with common properties in dsa.yaml and
-> > dsa-port.yaml etc). It is relatively uncommon for a switching IP to have
-> > provisioning to be used in both modes, and for Linux to support both
-> > modes (using different drivers), yet this is what we have here.
-> 
-> Is there a question here to me? What shall I do with this paragraph? You
-> know, I do not have a problem of lack of material to read...
-
-For mscc,vsc7514-switch we have a switchdev driver. For mscc,vsc7512-switch,
-Colin is working on a DSA driver. Their dt-bindings currently live in
-different folders. The mscc,vsc7514-switch can also be used together
-with a DSA driver, and support for that will inevitably be added. When
-it will, how and where do you recommend the dt-bindings should be added?
-In net/dsa/mscc,ocelot.yaml, together with the other switches used in
-DSA mode, or in net/mscc,vsc7514-switch.yaml, because its compatible
-string already exists there? We can't have a compatible string present
-in multiple schemas, right?
-
-This matters because it has implications upon what Colin should do with
-the mscc,vsc7512-switch. If your answer to my question is "add $ref: dsa.yaml#
-to net/mscc,vsc7514-switch.yaml", then I don't see why we wouldn't do
-that now, and wait until the vsc7514 to make that move anyway.
+I read your desired use case several times and probably still didn't get it=
+.
+Sounds like prog_b can just do after(fd=3D0) to become last.
+And prog_a can do before(fd=3D0).
+Whichever the order of attaching (a or b) these two will always
+be in a->b order.
+Are you saying that there should be no progs between them?
+Sure, the daemon could iterate the hook progs, discover prog_id,
+get its FD and do before(prog_fd).
+The use case sounds hypothetical.
+Since the first and any prog returning !TC_NEXT will abort
+the chain we'd need __weak nop orchestrator prog to interpret
+retval for anything to be useful.
+With cgroup-skb we did fancy none/override/multi and what for?
+As far as I can see everyone is using 'multi' and all progs are run.
+If we did only 'multi' for cgroup it would be just as fine
+and we would have avoided all the complexity in the kernel.
+Hence I'm advocating for the simplest approach for tcx and xdp.
