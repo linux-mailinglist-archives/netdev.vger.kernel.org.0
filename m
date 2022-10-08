@@ -2,154 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 331675F8794
-	for <lists+netdev@lfdr.de>; Sat,  8 Oct 2022 23:53:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFB155F87A1
+	for <lists+netdev@lfdr.de>; Sat,  8 Oct 2022 23:54:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229561AbiJHVxW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Oct 2022 17:53:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46610 "EHLO
+        id S229574AbiJHVyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Oct 2022 17:54:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiJHVxV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Oct 2022 17:53:21 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D911E31DF9
-        for <netdev@vger.kernel.org>; Sat,  8 Oct 2022 14:53:19 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id l22so11313596edj.5
-        for <netdev@vger.kernel.org>; Sat, 08 Oct 2022 14:53:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=WWnu/e75grG8zQoYg6HqJPh8lKO50wYkxeDWkUb70dU=;
-        b=JvcRkXAI4sjgMpwbxseElRiKa32DIFX6U2Rqqk+j6wpue/cBLlLhL/djEs8FjhOl/j
-         M6U+23XWPCADU5EW6DI+nbYe682vdWw+dGKc+3sYUJ9gdPB3qr+lxjJfGFJ4AEwK12qb
-         MkeSqdC79HYba1KeS/cbPPg5Q/OI87xX1uFllarL/lGAAZVl9JVW2J3ky36vVLLjYWQk
-         LbSTO7t+Ub1aAJ59v8AKai6HhLShRfx2wR6Wfh7bAiScmSMCSgm5MvTBD+FJj+JWuETc
-         u96bIxwqWv9h7+DhIfUBuWZGzuOsVqI86cqoZobcumyQaQBIAK0CJGDBNakoySkzdlay
-         oZrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WWnu/e75grG8zQoYg6HqJPh8lKO50wYkxeDWkUb70dU=;
-        b=Y7ezCiyO1B8lvnda+hojstUa5mFylFvBv8Hct2v7ac+C0uhYzsrr8McI+zmskPtHXC
-         41AJCQGJDMy8nCP2Hm7cvcWAKnvTaARyHaItkKS5DDCswKMKde9UxMw5SdFJClyymv3l
-         GXVlfcq1gtN6xo/pfWiPt7peLzb3OE/JnUh4hYHmTl6Wk7H2kYFxq1Yyabrn9g4jAUJS
-         k8STXR4t89AkQ1H9/4w14yuK5w3Cacf5QK/HLNP2+8UZp1/KJQecmhL1c96NRj6TO7VL
-         1XuwseabOhvujDq99Y0J51s9TI43VlPYQXxjXSBxuUV8CPF5BGZpxDK5e+lrnNn/6hzI
-         JQ8A==
-X-Gm-Message-State: ACrzQf0vG/aaeEIA8kno8VhjWP6fYslRbESYdiq65e7rUfoCWxvHDZlx
-        PRKFYm12dCNrxR0MxVNV7os=
-X-Google-Smtp-Source: AMsMyM4yF0CdKqSC9UAwNpuHOva7519pBCY5zD9LHyATq6kylYW1FITYsuulP41L7bP/JB3l/a3HIA==
-X-Received: by 2002:aa7:d848:0:b0:458:9ccc:f605 with SMTP id f8-20020aa7d848000000b004589cccf605mr10768383eds.68.1665265998413;
-        Sat, 08 Oct 2022 14:53:18 -0700 (PDT)
-Received: from ?IPV6:2a01:c23:b845:3000:401c:95b2:a7eb:33c5? (dynamic-2a01-0c23-b845-3000-401c-95b2-a7eb-33c5.c23.pool.telefonica.de. [2a01:c23:b845:3000:401c:95b2:a7eb:33c5])
-        by smtp.googlemail.com with ESMTPSA id p4-20020a170906604400b0078015cebd8csm3216126ejj.117.2022.10.08.14.53.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 08 Oct 2022 14:53:17 -0700 (PDT)
-Message-ID: <f9657431-68d7-6d38-d140-a69c203808f2@gmail.com>
-Date:   Sat, 8 Oct 2022 23:53:13 +0200
+        with ESMTP id S229452AbiJHVyG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Oct 2022 17:54:06 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA8C32B8C
+        for <netdev@vger.kernel.org>; Sat,  8 Oct 2022 14:54:03 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-322-B0KkuonxN4-iDxIJpOcDbw-1; Sat, 08 Oct 2022 22:53:36 +0100
+X-MC-Unique: B0KkuonxN4-iDxIJpOcDbw-1
+Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
+ (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Sat, 8 Oct
+ 2022 22:53:33 +0100
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.040; Sat, 8 Oct 2022 22:53:33 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     "'Jason A. Donenfeld'" <Jason@zx2c4.com>,
+        Kees Cook <keescook@chromium.org>
+CC:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "patches@lists.linux.dev" <patches@lists.linux.dev>,
+        Andreas Noever <andreas.noever@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        =?utf-8?B?Q2hyaXN0b3BoIELDtmhtd2FsZGVy?= 
+        <christoph.boehmwalder@linbit.com>, Christoph Hellwig <hch@lst.de>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Dave Airlie" <airlied@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Westphal <fw@strlen.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        "Heiko Carstens" <hca@linux.ibm.com>, Helge Deller <deller@gmx.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        "Hugh Dickins" <hughd@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "James E . J . Bottomley" <jejb@linux.ibm.com>,
+        Jan Kara <jack@suse.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Jens Axboe <axboe@kernel.dk>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "Jozsef Kadlecsik" <kadlec@netfilter.org>,
+        KP Singh <kpsingh@kernel.org>, Marco Elver <elver@google.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "Michael Ellerman" <mpe@ellerman.id.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Richard Weinberger" <richard@nod.at>,
+        Russell King <linux@armlinux.org.uk>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "Thomas Gleixner" <tglx@linutronix.de>,
+        Thomas Graf <tgraf@suug.ch>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        WANG Xuerui <kernel@xen0n.name>, Will Deacon <will@kernel.org>,
+        Yury Norov <yury.norov@gmail.com>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "kasan-dev@googlegroups.com" <kasan-dev@googlegroups.com>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "loongarch@lists.linux.dev" <loongarch@lists.linux.dev>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        =?utf-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
+        Chuck Lever <chuck.lever@oracle.com>, Jan Kara <jack@suse.cz>
+Subject: RE: [PATCH v3 3/5] treewide: use get_random_u32() when possible
+Thread-Topic: [PATCH v3 3/5] treewide: use get_random_u32() when possible
+Thread-Index: AQHY2nYZ0LDp17FxT0u8eu+L+6kCF64FCBzw
+Date:   Sat, 8 Oct 2022 21:53:33 +0000
+Message-ID: <69080fb8cace486db4e28e2e90f1d550@AcuMS.aculab.com>
+References: <20221006165346.73159-1-Jason@zx2c4.com>
+ <20221006165346.73159-4-Jason@zx2c4.com>
+ <848ed24c-13ef-6c38-fd13-639b33809194@csgroup.eu>
+ <CAHmME9raQ4E00r9r8NyWJ17iSXE_KniTG0onCNAfMmfcGar1eg@mail.gmail.com>
+ <f10fcfbf-2da6-cf2d-6027-fbf8b52803e9@csgroup.eu>
+ <6396875c-146a-acf5-dd9e-7f93ba1b4bc3@csgroup.eu>
+ <CAHmME9pE4saqnwxhsAwt-xegYGjsavPOGnHCbZhUXD7kaJ+GAA@mail.gmail.com>
+ <501b0fc3-6c67-657f-781e-25ee0283bc2e@csgroup.eu>
+ <Y0Ayvov/KQmrIwTS@zx2c4.com> <202210071010.52C672FA9@keescook>
+ <Y0BoQmVauPLC2uW5@zx2c4.com>
+In-Reply-To: <Y0BoQmVauPLC2uW5@zx2c4.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net] r8169: fix rtl8125b dmar pte write access not set
- error
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
 Content-Language: en-US
-To:     Chunhao Lin <hau@realtek.com>
-Cc:     netdev@vger.kernel.org, nic_swsd@realtek.com, kuba@kernel.org,
-        grundler@chromium.org
-References: <20221004081037.34064-1-hau@realtek.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-In-Reply-To: <20221004081037.34064-1-hau@realtek.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04.10.2022 10:10, Chunhao Lin wrote:
-> When close device, rx will be enabled if wol is enabeld. When open device
-> it will cause rx to dma to wrong address after pci_set_master().
-> 
-> In this patch, driver will disable tx/rx when close device. If wol is
-> eanbled only enable rx filter and disable rxdv_gate to let hardware
-> can receive packet to fifo but not to dma it.
-> 
-> Fixes: 120068481405 ("r8169: fix failing WoL")
-> Signed-off-by: Chunhao Lin <hau@realtek.com>
-> ---
->  drivers/net/ethernet/realtek/r8169_main.c | 14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> index 1b7fdb4f056b..c09cfbe1d3f0 100644
-> --- a/drivers/net/ethernet/realtek/r8169_main.c
-> +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -2239,6 +2239,9 @@ static void rtl_wol_enable_rx(struct rtl8169_private *tp)
->  	if (tp->mac_version >= RTL_GIGA_MAC_VER_25)
->  		RTL_W32(tp, RxConfig, RTL_R32(tp, RxConfig) |
->  			AcceptBroadcast | AcceptMulticast | AcceptMyPhys);
-> +
-> +	if (tp->mac_version >= RTL_GIGA_MAC_VER_40)
-> +		RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
-
-Wouldn't this be sufficient? Why is the change to rtl8169_cleanup() needed?
-
->  }
->  
->  static void rtl_prepare_power_down(struct rtl8169_private *tp)
-> @@ -3981,7 +3984,7 @@ static void rtl8169_tx_clear(struct rtl8169_private *tp)
->  	netdev_reset_queue(tp->dev);
->  }
->  
-> -static void rtl8169_cleanup(struct rtl8169_private *tp, bool going_down)
-> +static void rtl8169_private (struct rtl8169_private *tp)
->  {
->  	napi_disable(&tp->napi);
->  
-> @@ -3993,9 +3996,6 @@ static void rtl8169_cleanup(struct rtl8169_private *tp, bool going_down)
->  
->  	rtl_rx_close(tp);
->  
-> -	if (going_down && tp->dev->wol_enabled)
-> -		goto no_reset;
-> -
->  	switch (tp->mac_version) {
->  	case RTL_GIGA_MAC_VER_28:
->  	case RTL_GIGA_MAC_VER_31:
-> @@ -4016,7 +4016,7 @@ static void rtl8169_cleanup(struct rtl8169_private *tp, bool going_down)
->  	}
->  
->  	rtl_hw_reset(tp);
-> -no_reset:
-> +
->  	rtl8169_tx_clear(tp);
->  	rtl8169_init_ring_indexes(tp);
->  }
-> @@ -4027,7 +4027,7 @@ static void rtl_reset_work(struct rtl8169_private *tp)
->  
->  	netif_stop_queue(tp->dev);
->  
-> -	rtl8169_cleanup(tp, false);
-> +	rtl8169_cleanup(tp);
->  
->  	for (i = 0; i < NUM_RX_DESC; i++)
->  		rtl8169_mark_to_asic(tp->RxDescArray + i);
-> @@ -4715,7 +4715,7 @@ static void rtl8169_down(struct rtl8169_private *tp)
->  	pci_clear_master(tp->pci_dev);
->  	rtl_pci_commit(tp);
->  
-> -	rtl8169_cleanup(tp, true);
-> +	rtl8169_cleanup(tp);
->  	rtl_disable_exit_l1(tp);
->  	rtl_prepare_power_down(tp);
->  }
+RnJvbTogSmFzb24gQS4gRG9uZW5mZWxkDQo+IFNlbnQ6IDA3IE9jdG9iZXIgMjAyMiAxODo1Ng0K
+Li4uDQo+ID4gR2l2ZW4gdGhlc2Uga2luZHMgb2YgbGVzcyBtZWNoYW5pY2FsIGNoYW5nZXMsIGl0
+IG1heSBtYWtlIHNlbnNlIHRvIHNwbGl0DQo+ID4gdGhlc2UgZnJvbSB0aGUgInRyaXZpYWwiIGNv
+bnZlcnNpb25zIGluIGEgdHJlZXdpZGUgcGF0Y2guIFRoZSBjaGFuY2Ugb2YNCj4gPiBuZWVkaW5n
+IGEgcmV2ZXJ0IGZyb20gdGhlIHNpbXBsZSAxOjEgY29udmVyc2lvbnMgaXMgbXVjaCBsb3dlciB0
+aGFuIHRoZQ0KPiA+IG5lZWQgdG8gcmV2ZXJ0IGJ5LWhhbmQgY2hhbmdlcy4NCj4gPg0KPiA+IFRo
+ZSBDb2NjaSBzY3JpcHQgSSBzdWdnZXN0ZWQgaW4gbXkgdjEgcmV2aWV3IGdldHMgODAlIG9mIHRo
+ZSBmaXJzdA0KPiA+IHBhdGNoLCBmb3IgZXhhbXBsZS4NCj4gDQo+IEknbGwgc3BsaXQgdGhpbmdz
+IHVwIGludG8gYSBtZWNoYW5pY2FsIHN0ZXAgYW5kIGEgbm9uLW1lY2hhbmljYWwgc3RlcC4NCj4g
+R29vZCBpZGVhLg0KDQpJJ2QgYWxzbyBkbyBzb21ldGhpbmcgYWJvdXQgdGhlICdnZXRfcmFuZG9t
+X2ludCgpICYgMycgY2FzZXMuDQooaWUgcmVtYWluZGVyIGJ5IDJebi0xKQ0KVGhlc2UgY2FuIGJl
+IGNvbnZlcnRlZCB0byAnZ2V0X3JhbmRvbV91OCgpICYgMycgKGV0YykuDQpTbyB0aGV5IG9ubHkg
+bmVlZCBvbmUgcmFuZG9tIGJ5dGUgKG5vdCA0KSBhbmQgbm8gbXVsdGlwbHkuDQoNClBvc3NpYmx5
+IHNvbWV0aGluZyBiYXNlZCBvbiAodGhlIHF1aWNrbHkgdHlwZWQsIGFuZCBub3QgQyk6DQojZGVm
+aW5lIGdldF9yYW5kb21fYmVsb3codmFsKSBbDQoJaWYgKGJ1aWx0aW5fY29uc3RhbnQodmFsKSkN
+CgkJQlVJTERfQlVHX09OKCF2YWwgfHwgdmFsID4gMHgxMDAwMDAwMDB1bGwpDQoJCWlmICghKHZh
+bCAmICh2YWwgLSAxKSkgew0KCQkJaWYgKHZhbCA8PSAweDEwMCkNCgkJCQlyZXR1cm4gZ2V0X3Jh
+bmRvbV91OCgpICYgKHZhbCAtIDEpOw0KCQkJaWYgKHZhbCA8PSAweDEwMDAwKQ0KCQkJCXJldHVy
+biBnZXRfcmFuZG9tX3UxNigpICYgKHZhbCAtIDEpOw0KCQkJcmV0dXJuIGdldF9yYW5kb21fdTMy
+KCkgJiAodmFsIC0gMSk7DQoJCX0NCgl9DQoJQlVJTERfQlVHX09OKHNpemVvZiAodmFsKSA+IDQp
+Ow0KCXJldHVybiAoKHU2NClnZXRfcmFuZG9tX3UzMigpICogdmFsKSA+PiAzMjsNCn0NCg0KZ2V0
+X3JhbmRvbV9iZWxvdygpIGlzIGEgbXVjaCBiZXR0ZXIgbmFtZSB0aGFuIHByYW5kb21fdTMyX21h
+eCgpLg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5
+IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRp
+b24gTm86IDEzOTczODYgKFdhbGVzKQ0K
 
