@@ -2,94 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CE235F885D
-	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 00:43:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 392E35F8866
+	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 00:56:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229569AbiJHWns (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Oct 2022 18:43:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40582 "EHLO
+        id S229637AbiJHW4g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Oct 2022 18:56:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbiJHWnr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Oct 2022 18:43:47 -0400
-Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9882D1D0DE;
-        Sat,  8 Oct 2022 15:43:46 -0700 (PDT)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1665269024; bh=QhPBEsxjlXKa98NCQhGojdwNDJyOZ1xIqlZEGWTt4jQ=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=ru2QbgSCAOgWwNHYV+mCYGsCa+EXvU+TJ+rqtewktKM+1fHSwV9zwWMQC0LzEESMD
-         J91kZqKup20HblJ0VcJKOt32ak9mimQCGezLN6fq6xkRAMxpAAROD5bl2P7cF2uAo6
-         +7Dpne9t81YeZK/clA78yHVwT+QWaMX7jehjqO7HH/H2JohIvlVqXOzGmSAifN2bbt
-         y8Xfo9y1c+sPi27v9jouyGvwLoEvy4q3QqMfSCEw5OUeeMo49ROMPNHWOeEArNjLNh
-         xMoEE2LnQxjfPqAIFCUOscbGNIj76EJ09ERctIM7t9SCFahtVCdl3X1mt+AApJzY5M
-         ygGRrMXuXt4bQ==
-To:     Fedor Pchelkin <pchelkin@ispras.ru>, Kalle Valo <kvalo@kernel.org>
-Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
+        with ESMTP id S229459AbiJHW4e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Oct 2022 18:56:34 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFBD133373;
+        Sat,  8 Oct 2022 15:56:33 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id u21so11394370edi.9;
+        Sat, 08 Oct 2022 15:56:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=6VH5NDIzcp7fJXtMgvbmUefDmE2RrqbTEDEbwjqt8MY=;
+        b=F/wCTdaGDtylRoVdcS4cDFh/5sI7hfRCO1QDt3FfK0j9g7Ly6lb9eSMnbOj+dS+JNo
+         KufpOrwPh+bIIb8IOvDDYb8NvPGBcN6+XlEtk39oEhpcXyp/NznrRuS0sJrHJdRntDa6
+         AoUIrAIMw3RMVpXlx9akNgOt4cvqAN4AQwuOoVe6O8ohIN0DOf/t6oLhRbiu3N5Rmwoh
+         CjuGVS0hxUj8iPeDj01u2Xl+5smGOfAyxhcN2ZbrThfR9LIEZiL/42zn7tN62I13kqt0
+         fNlersZj2CWqsZ5jhcaL+mAyKN96MeXMWTvg6SsPzo+/VkgnovTC1fGUL+iw1mzOwtuP
+         Kvbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6VH5NDIzcp7fJXtMgvbmUefDmE2RrqbTEDEbwjqt8MY=;
+        b=SPdI+IqjOCNlS5zOg15x2/S/AKSbzJ1gAj5ORxGOhJslF3J0YFaqjft1r3OllQJyF8
+         OXU4RwNewkeFH3kmT0ViFvsi+B/XPt8lrELTk6ZtRQw+aj6oYxm/YzSgkHSNPvxuRSP6
+         qwAPEPw506Y7v2383G+Kwqun2KMXdLErmjkQpBikog4jYpuZaELQSBEgEMSyLRLofRaW
+         fBI/v+Tq/FIKRfjAUvqHN5B2CpJ6aByFquvrvOM/LICW21uJazwcc626S3ABoBNs3VRE
+         YYxF0n1gPFlZ6PkVqmxvKQFW90LTzzG2qnWvWpKy1etvN8/Xud+UVQnAnHBbQk8gfT8+
+         aYyQ==
+X-Gm-Message-State: ACrzQf1Dge3ochuqRk24iJa5xQ0DH7H73HwPXR60GNml1bnsC5U92Rc/
+        q50848FXYHNHorGJwRnlsTY=
+X-Google-Smtp-Source: AMsMyM5jEUNZygRNI7UaoF+A18zmA52rMmCUAWiCEKe1AsoKggJqzTUhzyh1uqbWh9F6nQEyQXqLAw==
+X-Received: by 2002:a05:6402:1052:b0:459:2c49:1aed with SMTP id e18-20020a056402105200b004592c491aedmr10889998edu.212.1665269792277;
+        Sat, 08 Oct 2022 15:56:32 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id 18-20020a170906201200b0078c213ad441sm3291604ejo.101.2022.10.08.15.56.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 08 Oct 2022 15:56:31 -0700 (PDT)
+Date:   Sun, 9 Oct 2022 01:56:28 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jerry Ray <jerry.ray@microchip.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        lvc-project@linuxtesting.org,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Alan Stern <stern@rowland.harvard.edu>
-Subject: Re: [PATCH v5] ath9k: verify the expected usb_endpoints are present
-In-Reply-To: <20221008211532.74583-1-pchelkin@ispras.ru>
-References: <20221008211532.74583-1-pchelkin@ispras.ru>
-Date:   Sun, 09 Oct 2022 00:43:43 +0200
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <87mta6rl5s.fsf@toke.dk>
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [net-next][PATCH v4] dt-bindings: dsa: Add lan9303 yaml
+Message-ID: <20221008225628.pslsnwilrpvg3xdf@skbuf>
+References: <20221003164624.4823-1-jerry.ray@microchip.com>
+ <20221003164624.4823-1-jerry.ray@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221003164624.4823-1-jerry.ray@microchip.com>
+ <20221003164624.4823-1-jerry.ray@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fedor Pchelkin <pchelkin@ispras.ru> writes:
+On Mon, Oct 03, 2022 at 11:46:24AM -0500, Jerry Ray wrote:
+> ---
+> v3->v4:
+>  - Addressed v3 community feedback
 
-> The bug arises when a USB device claims to be an ATH9K but doesn't
-> have the expected endpoints. (In this case there was an interrupt
-> endpoint where the driver expected a bulk endpoint.) The kernel
-> needs to be able to handle such devices without getting an internal error.
->
-> usb 1-1: BOGUS urb xfer, pipe 3 !=3D type 1
-> WARNING: CPU: 3 PID: 500 at drivers/usb/core/urb.c:493 usb_submit_urb+0xc=
-e2/0x1430 drivers/usb/core/urb.c:493
-> Modules linked in:
-> CPU: 3 PID: 500 Comm: kworker/3:2 Not tainted 5.10.135-syzkaller #0
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-1 04/0=
-1/2014
-> Workqueue: events request_firmware_work_func
-> RIP: 0010:usb_submit_urb+0xce2/0x1430 drivers/usb/core/urb.c:493
-> Call Trace:
->  ath9k_hif_usb_alloc_rx_urbs drivers/net/wireless/ath/ath9k/hif_usb.c:908=
- [inline]
->  ath9k_hif_usb_alloc_urbs+0x75e/0x1010 drivers/net/wireless/ath/ath9k/hif=
-_usb.c:1019
->  ath9k_hif_usb_dev_init drivers/net/wireless/ath/ath9k/hif_usb.c:1109 [in=
-line]
->  ath9k_hif_usb_firmware_cb+0x142/0x530 drivers/net/wireless/ath/ath9k/hif=
-_usb.c:1242
->  request_firmware_work_func+0x12e/0x240 drivers/base/firmware_loader/main=
-.c:1097
->  process_one_work+0x9af/0x1600 kernel/workqueue.c:2279
->  worker_thread+0x61d/0x12f0 kernel/workqueue.c:2425
->  kthread+0x3b4/0x4a0 kernel/kthread.c:313
->  ret_from_fork+0x22/0x30 arch/x86/entry/entry_64.S:299
->
-> Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
->
-> Suggested-by: Alan Stern <stern@rowland.harvard.edu>
-> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+More specifically?
 
-Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.dk>
+> +examples:
+> +  - |
+> +    #include <dt-bindings/gpio/gpio.h>
+> +
+> +    // Ethernet switch connected via mdio to the host
+> +    ethernet {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +        phy-handle = <&lan9303switch>;
+> +        phy-mode = "rmii";
+> +        fixed-link {
+> +            speed = <100>;
+> +            full-duplex;
+> +        };
+
+I see the phy-handle to the switch is inherited from the .txt dt-binding,
+but I don't understand it. The switch is an mdio_device, not a phy_device,
+so what will this do?
+
+Also, any reasonable host driver will error out if it finds a phy-handle
+and a fixed-link in its OF node. So one of phy-handle or fixed-link must
+be dropped, they are bogus.
+
+Even better, just stick to the mdio node as root and drop the DSA master
+OF node, like other DSA dt-binding examples do. You can have dangling
+phandles, so "ethernet = <&ethernet>" below is not an issue.
+
+> +        mdio {
+> +            #address-cells = <1>;
+> +            #size-cells = <0>;
+> +            lan9303switch: switch@0 {
+> +                compatible = "smsc,lan9303-mdio";
+> +                reg = <0>;
+> +                dsa,member = <0 0>;
+
+Redundant, please remove.
+
+> +                ethernet-ports {
+> +                    #address-cells = <1>;
+> +                    #size-cells = <0>;
+> +                        port@0 {
+> +                            reg = <0>;
+> +                            phy-mode = "rmii";
+
+FWIW, RMII has a MAC mode and a PHY mode. Two RMII interfaces connected
+in MAC mode to one another don't work. You'll have problems if you also
+have an RMII PHY connected to one of the xMII ports, and you describe
+phy-mode = "rmii" for both. There exists a "rev-rmii" phy-mode to denote
+an RMII interface working in PHY mode. Wonder if you should be using
+that here.
+
+> +                            ethernet = <&ethernet>;
+> +                            fixed-link {
+> +                                speed = <100>;
+> +                                full-duplex;
+> +                            };
+> +                        };
+> +                        port@1 {
+> +                            reg = <1>;
+> +                            max-speed = <100>;
+> +                            label = "lan1";
+> +                        };
+> +                        port@2 {
+> +                            reg = <2>;
+> +                            max-speed = <100>;
+> +                            label = "lan2";
+> +                        };
+> +                    };
+> +                };
+> +            };
+> +        };
+> +
+> +  - |
+> +    #include <dt-bindings/gpio/gpio.h>
+> +
+> +    // Ethernet switch connected via i2c to the host
+> +    ethernet {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +        phy-mode = "rmii";
+> +            speed = <100>;
+> +        fixed-link {
+> +            full-duplex;
+> +        };
+> +    };
+
+No need for this node.
+
+> +
+> +    i2c {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +        lan9303: switch@1a {
+> +            compatible = "smsc,lan9303-i2c";
+> +            reg = <0x1a>;
+> +            ethernet-ports {
+> +                #address-cells = <1>;
+> +                #size-cells = <0>;
+> +                port@0 {
+> +                    reg = <0>;
+> +                    phy-mode = "rmii";
+> +                    ethernet = <&ethernet>;
+> +                    fixed-link {
+> +                        speed = <100>;
+> +                        full-duplex;
+> +                    };
+> +                };
+> +                port@1 {
+> +                    reg = <1>;
+> +                    max-speed = <100>;
+> +                    label = "lan1";
+> +                };
+> +                port@2 {
+> +                    reg = <2>;
+> +                    max-speed = <100>;
+> +                    label = "lan2";
+> +                };
+> +            };
+> +        };
+> +    };
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 5d58b55c5ae5..89055ff2838a 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -13386,6 +13386,14 @@ L:	netdev@vger.kernel.org
+>  S:	Maintained
+>  F:	drivers/net/ethernet/microchip/lan743x_*
+>  
+> +MICROCHIP LAN9303/LAN9354 ETHERNET SWITCH DRIVER
+> +M:	Jerry Ray <jerry.ray@microchip.com>
+> +M:	UNGLinuxDriver@microchip.com
+> +L:	netdev@vger.kernel.org
+> +S:	Maintained
+> +F:	Documentation/devicetree/bindings/net/dsa/microchip,lan9303.yaml
+> +F:	drivers/net/dsa/lan9303*
+> +
+
+Separate patch please? Changes to the MAINTAINERS file get applied to
+the "net" tree.
+
+>  MICROCHIP LAN966X ETHERNET DRIVER
+>  M:	Horatiu Vultur <horatiu.vultur@microchip.com>
+>  M:	UNGLinuxDriver@microchip.com
+> -- 
+> 2.25.1
+> 
+
