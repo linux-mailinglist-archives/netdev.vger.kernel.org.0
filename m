@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CEAAA5F8812
-	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 00:09:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03E235F882B
+	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 00:19:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229695AbiJHWJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Oct 2022 18:09:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38946 "EHLO
+        id S229638AbiJHWTS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Oct 2022 18:19:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbiJHWJT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Oct 2022 18:09:19 -0400
+        with ESMTP id S229624AbiJHWTM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Oct 2022 18:19:12 -0400
 Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79A0230F42
-        for <netdev@vger.kernel.org>; Sat,  8 Oct 2022 15:09:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E94D433A19
+        for <netdev@vger.kernel.org>; Sat,  8 Oct 2022 15:19:06 -0700 (PDT)
 Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
  relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-98-KtAFQuLTPeKLVd871cru4Q-1; Sat, 08 Oct 2022 23:08:05 +0100
-X-MC-Unique: KtAFQuLTPeKLVd871cru4Q-1
+ uk-mta-78-vsudmffZOXKo2YB6dC4dtQ-1; Sat, 08 Oct 2022 23:18:48 +0100
+X-MC-Unique: vsudmffZOXKo2YB6dC4dtQ-1
 Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
  (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Sat, 8 Oct
- 2022 23:08:03 +0100
+ 2022 23:18:45 +0100
 Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.040; Sat, 8 Oct 2022 23:08:03 +0100
+ id 15.00.1497.040; Sat, 8 Oct 2022 23:18:45 +0100
 From:   David Laight <David.Laight@ACULAB.COM>
 To:     "'Jason A. Donenfeld'" <Jason@zx2c4.com>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
@@ -99,15 +99,18 @@ CC:     Andreas Noever <andreas.noever@gmail.com>,
         "loongarch@lists.linux.dev" <loongarch@lists.linux.dev>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>, Jan Kara <jack@suse.cz>
-Subject: RE: [PATCH v4 2/6] treewide: use prandom_u32_max() when possible
-Thread-Topic: [PATCH v4 2/6] treewide: use prandom_u32_max() when possible
-Thread-Index: AQHY2ncm2NigVNsUqkWyNH5TWnqFQK4FDn2g
-Date:   Sat, 8 Oct 2022 22:08:03 +0000
-Message-ID: <01fafe0e56554b1c9c934c458b93473a@AcuMS.aculab.com>
+        "x86@kernel.org" <x86@kernel.org>,
+        =?utf-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
+        Chuck Lever <chuck.lever@oracle.com>, Jan Kara <jack@suse.cz>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: RE: [PATCH v4 4/6] treewide: use get_random_u32() when possible
+Thread-Topic: [PATCH v4 4/6] treewide: use get_random_u32() when possible
+Thread-Index: AQHY2ncqUPYFdmCx0kGKfFsfF+6dcq4FEdQw
+Date:   Sat, 8 Oct 2022 22:18:45 +0000
+Message-ID: <f1ca1b53bc104065a83da60161a4c7b6@AcuMS.aculab.com>
 References: <20221007180107.216067-1-Jason@zx2c4.com>
- <20221007180107.216067-3-Jason@zx2c4.com>
-In-Reply-To: <20221007180107.216067-3-Jason@zx2c4.com>
+ <20221007180107.216067-5-Jason@zx2c4.com>
+In-Reply-To: <20221007180107.216067-5-Jason@zx2c4.com>
 Accept-Language: en-GB, en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
@@ -129,27 +132,31 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 RnJvbTogSmFzb24gQS4gRG9uZW5mZWxkDQo+IFNlbnQ6IDA3IE9jdG9iZXIgMjAyMiAxOTowMQ0K
-PiANCj4gUmF0aGVyIHRoYW4gaW5jdXJyaW5nIGEgZGl2aXNpb24gb3IgcmVxdWVzdGluZyB0b28g
-bWFueSByYW5kb20gYnl0ZXMgZm9yDQo+IHRoZSBnaXZlbiByYW5nZSwgdXNlIHRoZSBwcmFuZG9t
-X3UzMl9tYXgoKSBmdW5jdGlvbiwgd2hpY2ggb25seSB0YWtlcw0KPiB0aGUgbWluaW11bSByZXF1
-aXJlZCBieXRlcyBmcm9tIHRoZSBSTkcgYW5kIGF2b2lkcyBkaXZpc2lvbnMuDQo+IA0KLi4uDQo+
-IC0tLSBhL2xpYi9jbWRsaW5lX2t1bml0LmMNCj4gKysrIGIvbGliL2NtZGxpbmVfa3VuaXQuYw0K
-PiBAQCAtNzYsNyArNzYsNyBAQCBzdGF0aWMgdm9pZCBjbWRsaW5lX3Rlc3RfbGVhZF9pbnQoc3Ry
-dWN0IGt1bml0ICp0ZXN0KQ0KPiAgCQlpbnQgcmMgPSBjbWRsaW5lX3Rlc3RfdmFsdWVzW2ldOw0K
-PiAgCQlpbnQgb2Zmc2V0Ow0KPiANCj4gLQkJc3ByaW50ZihpbiwgIiV1JXMiLCBwcmFuZG9tX3Uz
-Ml9tYXgoMjU2KSwgc3RyKTsNCj4gKwkJc3ByaW50ZihpbiwgIiV1JXMiLCBnZXRfcmFuZG9tX2lu
-dCgpICUgMjU2LCBzdHIpOw0KPiAgCQkvKiBPbmx5IGZpcnN0ICctJyBhZnRlciB0aGUgbnVtYmVy
-IHdpbGwgYWR2YW5jZSB0aGUgcG9pbnRlciAqLw0KPiAgCQlvZmZzZXQgPSBzdHJsZW4oaW4pIC0g
-c3RybGVuKHN0cikgKyAhIShyYyA9PSAyKTsNCj4gIAkJY21kbGluZV9kb19vbmVfdGVzdCh0ZXN0
-LCBpbiwgcmMsIG9mZnNldCk7DQo+IEBAIC05NCw3ICs5NCw3IEBAIHN0YXRpYyB2b2lkIGNtZGxp
-bmVfdGVzdF90YWlsX2ludChzdHJ1Y3Qga3VuaXQgKnRlc3QpDQo+ICAJCWludCByYyA9IHN0cmNt
-cChzdHIsICIiKSA/IChzdHJjbXAoc3RyLCAiLSIpID8gMCA6IDEpIDogMTsNCj4gIAkJaW50IG9m
-ZnNldDsNCj4gDQo+IC0JCXNwcmludGYoaW4sICIlcyV1Iiwgc3RyLCBwcmFuZG9tX3UzMl9tYXgo
-MjU2KSk7DQo+ICsJCXNwcmludGYoaW4sICIlcyV1Iiwgc3RyLCBnZXRfcmFuZG9tX2ludCgpICUg
-MjU2KTsNCj4gIAkJLyoNCj4gIAkJICogT25seSBmaXJzdCBhbmQgbGVhZGluZyAnLScgbm90IGZv
-bGxvd2VkIGJ5IGludGVnZXINCj4gIAkJICogd2lsbCBhZHZhbmNlIHRoZSBwb2ludGVyLg0KDQpT
-b21ldGhpbmcgaGFzIGdvbmUgYmFja3dhcmRzIGhlcmUuLi4uDQpBbmQgZ2V0X3JhbmRvbV91OCgp
-IGxvb2tzIGEgYmV0dGVyIGZpdC4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBM
-YWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBU
-LCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
+PiANCj4gVGhlIHByYW5kb21fdTMyKCkgZnVuY3Rpb24gaGFzIGJlZW4gYSBkZXByZWNhdGVkIGlu
+bGluZSB3cmFwcGVyIGFyb3VuZA0KPiBnZXRfcmFuZG9tX3UzMigpIGZvciBzZXZlcmFsIHJlbGVh
+c2VzIG5vdywgYW5kIGNvbXBpbGVzIGRvd24gdG8gdGhlDQo+IGV4YWN0IHNhbWUgY29kZS4gUmVw
+bGFjZSB0aGUgZGVwcmVjYXRlZCB3cmFwcGVyIHdpdGggYSBkaXJlY3QgY2FsbCB0bw0KPiB0aGUg
+cmVhbCBmdW5jdGlvbi4gVGhlIHNhbWUgYWxzbyBhcHBsaWVzIHRvIGdldF9yYW5kb21faW50KCks
+IHdoaWNoIGlzDQo+IGp1c3QgYSB3cmFwcGVyIGFyb3VuZCBnZXRfcmFuZG9tX3UzMigpLg0KPiAN
+Ci4uLg0KPiBkaWZmIC0tZ2l0IGEvbmV0LzgwMi9nYXJwLmMgYi9uZXQvODAyL2dhcnAuYw0KPiBp
+bmRleCBmNjAxMmY4ZTU5ZjAuLmMxYmI2N2UyNTQzMCAxMDA2NDQNCj4gLS0tIGEvbmV0LzgwMi9n
+YXJwLmMNCj4gKysrIGIvbmV0LzgwMi9nYXJwLmMNCj4gQEAgLTQwNyw3ICs0MDcsNyBAQCBzdGF0
+aWMgdm9pZCBnYXJwX2pvaW5fdGltZXJfYXJtKHN0cnVjdCBnYXJwX2FwcGxpY2FudCAqYXBwKQ0K
+PiAgew0KPiAgCXVuc2lnbmVkIGxvbmcgZGVsYXk7DQo+IA0KPiAtCWRlbGF5ID0gKHU2NCltc2Vj
+c190b19qaWZmaWVzKGdhcnBfam9pbl90aW1lKSAqIHByYW5kb21fdTMyKCkgPj4gMzI7DQo+ICsJ
+ZGVsYXkgPSAodTY0KW1zZWNzX3RvX2ppZmZpZXMoZ2FycF9qb2luX3RpbWUpICogZ2V0X3JhbmRv
+bV91MzIoKSA+PiAzMjsNCj4gIAltb2RfdGltZXIoJmFwcC0+am9pbl90aW1lciwgamlmZmllcyAr
+IGRlbGF5KTsNCj4gIH0NCj4gDQo+IGRpZmYgLS1naXQgYS9uZXQvODAyL21ycC5jIGIvbmV0Lzgw
+Mi9tcnAuYw0KPiBpbmRleCAzNWUwNGNjNTM5MGMuLjNlOWZlOWY1ZDliZiAxMDA2NDQNCj4gLS0t
+IGEvbmV0LzgwMi9tcnAuYw0KPiArKysgYi9uZXQvODAyL21ycC5jDQo+IEBAIC01OTIsNyArNTky
+LDcgQEAgc3RhdGljIHZvaWQgbXJwX2pvaW5fdGltZXJfYXJtKHN0cnVjdCBtcnBfYXBwbGljYW50
+ICphcHApDQo+ICB7DQo+ICAJdW5zaWduZWQgbG9uZyBkZWxheTsNCj4gDQo+IC0JZGVsYXkgPSAo
+dTY0KW1zZWNzX3RvX2ppZmZpZXMobXJwX2pvaW5fdGltZSkgKiBwcmFuZG9tX3UzMigpID4+IDMy
+Ow0KPiArCWRlbGF5ID0gKHU2NCltc2Vjc190b19qaWZmaWVzKG1ycF9qb2luX3RpbWUpICogZ2V0
+X3JhbmRvbV91MzIoKSA+PiAzMjsNCj4gIAltb2RfdGltZXIoJmFwcC0+am9pbl90aW1lciwgamlm
+ZmllcyArIGRlbGF5KTsNCj4gIH0NCj4gDQoNCkFyZW4ndCB0aG9zZToNCglkZWxheSA9IHByYW5k
+b21fdTMyX21heChtc2Vjc190b19qaWZmaWVzKHh4eF9qb2luX3RpbWUpKTsNCg0KCURhdmlkDQoN
+Ci0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJt
+LCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChX
+YWxlcykNCg==
 
