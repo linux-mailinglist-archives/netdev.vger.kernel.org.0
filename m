@@ -1,92 +1,62 @@
 Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from out1.vger.email (unknown [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB1B25F81EA
-	for <lists+netdev@lfdr.de>; Sat,  8 Oct 2022 03:29:40 +0200 (CEST)
+Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
+	by mail.lfdr.de (Postfix) with ESMTP id D3E6F5F820C
+	for <lists+netdev@lfdr.de>; Sat,  8 Oct 2022 03:40:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229782AbiJHB32 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 21:29:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56212 "EHLO
+        id S229814AbiJHBkg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 21:40:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiJHB3Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 21:29:24 -0400
+        with ESMTP id S229468AbiJHBkb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 21:40:31 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDDADBC604;
-        Fri,  7 Oct 2022 18:29:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 292553C171;
+        Fri,  7 Oct 2022 18:40:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60D8FB8248E;
-        Sat,  8 Oct 2022 01:29:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6C01C433C1;
-        Sat,  8 Oct 2022 01:29:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE307B8242E;
+        Sat,  8 Oct 2022 01:40:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F81CC433D6;
+        Sat,  8 Oct 2022 01:40:20 +0000 (UTC)
 Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="F0WFV840"
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="m7dkF4Qq"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1665192550;
+        t=1665193218;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=2a2X1YlfkZ0pGgKe1BT3qPauqYJUuDonzfwdbODwUj0=;
-        b=F0WFV8408bfDyb840yWHYb2sS5Uszq0PMkkmtmrVRBUNL2FY49DLuZ3A8VZX01cjH92PRw
-        963/yLDTfSbPjK9v/cSx6ClQtvwOaP31xlyhs5+LtAOzyMXtRqv5atZ8HOk8wnFIOFKYJl
-        weXSG5WPTsM48QIVGdJf4b19sbZPAzo=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 08b122db (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Sat, 8 Oct 2022 01:29:09 +0000 (UTC)
-Date:   Fri, 7 Oct 2022 19:28:59 -0600
+        bh=vNH2mnpIcj00WUdnQLlhiavniZvHilK6oGwgWIcL7uw=;
+        b=m7dkF4QqvbJypdgEAbc35NBJnnqvQzB21sgNt0EURJQOR1FGkUsyi73yIMXgdPHVIIUlOg
+        5CTO5f2vbWzw/vm/odmtp7dHuxfMwfhY9ZkhyfcncvX8HsEngEbDzs4FmPwfNkPExdyoZz
+        X0uIWOW2Vu+MHRe3zl9le1EOdBfLqFs=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id f0b17dc7 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Sat, 8 Oct 2022 01:40:18 +0000 (UTC)
+Date:   Fri, 7 Oct 2022 19:40:07 -0600
 From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     "Darrick J. Wong" <djwong@kernel.org>
+To:     Rolf Eike Beer <eike-kernel@sf-tec.de>
 Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Christoph =?utf-8?Q?B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>, Christoph Hellwig <hch@lst.de>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dave Airlie <airlied@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Westphal <fw@strlen.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Helge Deller <deller@gmx.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Hugh Dickins <hughd@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "James E . J . Bottomley" <jejb@linux.ibm.com>,
-        Jan Kara <jack@suse.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Jens Axboe <axboe@kernel.dk>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        KP Singh <kpsingh@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Russell King <linux@armlinux.org.uk>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Thomas Graf <tgraf@suug.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        WANG Xuerui <kernel@xen0n.name>, Will Deacon <will@kernel.org>,
-        Yury Norov <yury.norov@gmail.com>,
-        dri-devel@lists.freedesktop.org, kasan-dev@googlegroups.com,
-        kernel-janitors@vger.kernel.org,
+        andreas.noever@gmail.com, akpm@linux-foundation.org,
+        andriy.shevchenko@linux.intel.com, bp@alien8.de,
+        catalin.marinas@arm.com, christoph.boehmwalder@linbit.com,
+        hch@lst.de, christophe.leroy@csgroup.eu, daniel@iogearbox.net,
+        airlied@redhat.com, dave.hansen@linux.intel.com,
+        davem@davemloft.net, edumazet@google.com, fw@strlen.de,
+        gregkh@linuxfoundation.org, hpa@zytor.com, hca@linux.ibm.com,
+        deller@gmx.de, herbert@gondor.apana.org.au, chenhuacai@kernel.org,
+        hughd@google.com, kuba@kernel.org, jejb@linux.ibm.com,
+        jack@suse.com, jgg@ziepe.ca, axboe@kernel.dk,
+        johannes@sipsolutions.net, corbet@lwn.net, kadlec@netfilter.org,
+        kpsingh@kernel.org, keescook@chromium.org, elver@google.com,
+        mchehab@kernel.org, mpe@ellerman.id.au, pablo@netfilter.org,
+        pabeni@redhat.com, peterz@infradead.org, richard@nod.at,
+        linux@armlinux.org.uk, tytso@mit.edu, tsbogend@alpha.franken.de,
+        tglx@linutronix.de, tgraf@suug.ch, ulf.hansson@linaro.org,
+        vigneshr@ti.com, kernel@xen0n.name, will@kernel.org,
+        yury.norov@gmail.com, dri-devel@lists.freedesktop.org,
+        kasan-dev@googlegroups.com, kernel-janitors@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-block@vger.kernel.org,
         linux-crypto@vger.kernel.org, linux-doc@vger.kernel.org,
         linux-fsdevel@vger.kernel.org, linux-media@vger.kernel.org,
@@ -97,17 +67,18 @@ Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
         linux-um@lists.infradead.org, linux-usb@vger.kernel.org,
         linux-wireless@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
         loongarch@lists.linux.dev, netdev@vger.kernel.org,
-        sparclinux@vger.kernel.org, x86@kernel.org, Jan Kara <jack@suse.cz>
-Subject: Re: [PATCH v4 2/6] treewide: use prandom_u32_max() when possible
-Message-ID: <Y0DSW4AAX/yA3CdI@zx2c4.com>
+        sparclinux@vger.kernel.org, x86@kernel.org, toke@toke.dk,
+        chuck.lever@oracle.com, jack@suse.cz,
+        mika.westerberg@linux.intel.com
+Subject: Re: [PATCH v4 4/6] treewide: use get_random_u32() when possible
+Message-ID: <Y0DU93wMsDwlLmMP@zx2c4.com>
 References: <20221007180107.216067-1-Jason@zx2c4.com>
- <20221007180107.216067-3-Jason@zx2c4.com>
- <Y0CXYjV8qMpJxxBa@magnolia>
+ <20221007180107.216067-5-Jason@zx2c4.com>
+ <3216619.44csPzL39Z@daneel.sf-tec.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Y0CXYjV8qMpJxxBa@magnolia>
+In-Reply-To: <3216619.44csPzL39Z@daneel.sf-tec.de>
 X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
         RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -118,70 +89,115 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 07, 2022 at 02:17:22PM -0700, Darrick J. Wong wrote:
-> On Fri, Oct 07, 2022 at 12:01:03PM -0600, Jason A. Donenfeld wrote:
-> > Rather than incurring a division or requesting too many random bytes for
-> > the given range, use the prandom_u32_max() function, which only takes
-> > the minimum required bytes from the RNG and avoids divisions.
+On Fri, Oct 07, 2022 at 10:34:47PM +0200, Rolf Eike Beer wrote:
+> > diff --git a/arch/parisc/kernel/process.c b/arch/parisc/kernel/process.c
+> > index 7c37e09c92da..18c4f0e3e906 100644
+> > --- a/arch/parisc/kernel/process.c
+> > +++ b/arch/parisc/kernel/process.c
+> > @@ -288,7 +288,7 @@ __get_wchan(struct task_struct *p)
 > > 
-> > Reviewed-by: Kees Cook <keescook@chromium.org>
-> > Reviewed-by: KP Singh <kpsingh@kernel.org>
-> > Reviewed-by: Christoph Böhmwalder <christoph.boehmwalder@linbit.com> # for drbd
-> > Reviewed-by: Jan Kara <jack@suse.cz> # for ext2, ext4, and sbitmap
-> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> > ---
+> >  static inline unsigned long brk_rnd(void)
+> >  {
+> > -	return (get_random_int() & BRK_RND_MASK) << PAGE_SHIFT;
+> > +	return (get_random_u32() & BRK_RND_MASK) << PAGE_SHIFT;
+> >  }
 > 
-> <snip, skip to the xfs part>
+> Can't this be
 > 
-> > diff --git a/fs/xfs/libxfs/xfs_alloc.c b/fs/xfs/libxfs/xfs_alloc.c
-> > index e2bdf089c0a3..6261599bb389 100644
-> > --- a/fs/xfs/libxfs/xfs_alloc.c
-> > +++ b/fs/xfs/libxfs/xfs_alloc.c
-> > @@ -1520,7 +1520,7 @@ xfs_alloc_ag_vextent_lastblock(
-> >  
-> >  #ifdef DEBUG
-> >  	/* Randomly don't execute the first algorithm. */
-> > -	if (prandom_u32() & 1)
-> > +	if (prandom_u32_max(2))
+>   prandom_u32_max(BRK_RND_MASK + 1) << PAGE_SHIFT
 > 
-> I wonder if these usecases (picking 0 or 1 randomly) ought to have a
-> trivial wrapper to make it more obvious that we want boolean semantics:
+> ? More similar code with other masks follows below.
+
+I guess it can, because BRK_RND_MASK happens to have all its lower bits
+set. But as a "_MASK" maybe this isn't a given, and I don't want to
+change intended semantics in this patchset. It's also not more
+efficient, because BRK_RND_MASK is actually an expression:
+
+    #define BRK_RND_MASK        (is_32bit_task() ? 0x07ffUL : 0x3ffffUL)
+
+So at compile-time, the compiler can't prove that it's <= U16_MAX, since
+it isn't always the case, so it'll use get_random_u32() anyway.
+
+[Side note: maybe that compile-time check should become a runtime check,
+ but I'll need to do some benchmarking before changing that and
+ introducing two added branches to every non-constant invocation, so for
+ now it's a compile-time check. Fortunately the vast majority of uses
+ are done on inputs the compiler can prove something about.]
+
 > 
-> static inline bool prandom_bool(void)
-> {
-> 	return prandom_u32_max(2);
-> }
+> > diff --git a/drivers/gpu/drm/i915/i915_gem_gtt.c
+> > b/drivers/gpu/drm/i915/i915_gem_gtt.c index 329ff75b80b9..7bd1861ddbdf
+> > 100644
+> > --- a/drivers/gpu/drm/i915/i915_gem_gtt.c
+> > +++ b/drivers/gpu/drm/i915/i915_gem_gtt.c
+> > @@ -137,12 +137,12 @@ static u64 random_offset(u64 start, u64 end, u64 len,
+> > u64 align) range = round_down(end - len, align) - round_up(start, align);
+> >  	if (range) {
+> >  		if (sizeof(unsigned long) == sizeof(u64)) {
+> > -			addr = get_random_long();
+> > +			addr = get_random_u64();
+> >  		} else {
+> > -			addr = get_random_int();
+> > +			addr = get_random_u32();
+> >  			if (range > U32_MAX) {
+> >  				addr <<= 32;
+> > -				addr |= get_random_int();
+> > +				addr |= get_random_u32();
+> >  			}
+> >  		}
+> >  		div64_u64_rem(addr, range, &addr);
 > 
-> 	if (prandom_bool())
-> 		use_crazy_algorithm(...);
+> How about 
+> 
+>  		if (sizeof(unsigned long) == sizeof(u64) || range > 
+> U32_MAX)
+> 			addr = get_random_u64();
+>  		else
+> 			addr = get_random_u32();
 > 
 
-Yea, I've had a lot of similar ideas there. Part of doing this (initial)
-patchset is to get an intuitive sense of what's actually used and how
-often. On my list for investigation are a get_random_u32_max() to return
-uniform numbers by rejection sampling (prandom_u32_max() doesn't do
-that uniformly) and adding a function for booleans or bits < 8. Possible
-ideas for the latter include:
+Yes, maybe, probably, indeed... But I don't want to go wild and start
+fixing all the weird algorithms everywhere. My goal is to only make
+changes that are "obviously right". But maybe after this lands this is
+something that you or I can submit to the i915 people as an
+optimization.
 
-   bool get_random_bool(void);
-   bool get_random_bool(unsigned int probability);
-   bool get_random_bits(u8 bits_less_than_eight);
+> > diff --git a/drivers/infiniband/hw/cxgb4/cm.c
+> > b/drivers/infiniband/hw/cxgb4/cm.c index 14392c942f49..499a425a3379 100644
+> > --- a/drivers/infiniband/hw/cxgb4/cm.c
+> > +++ b/drivers/infiniband/hw/cxgb4/cm.c
+> > @@ -734,7 +734,7 @@ static int send_connect(struct c4iw_ep *ep)
+> >  				   &ep->com.remote_addr;
+> >  	int ret;
+> >  	enum chip_type adapter_type = ep->com.dev->rdev.lldi.adapter_type;
+> > -	u32 isn = (prandom_u32() & ~7UL) - 1;
+> > +	u32 isn = (get_random_u32() & ~7UL) - 1;
+> >  	struct net_device *netdev;
+> >  	u64 params;
+> > 
+> > @@ -2469,7 +2469,7 @@ static int accept_cr(struct c4iw_ep *ep, struct
+> > sk_buff *skb, }
+> > 
+> >  	if (!is_t4(adapter_type)) {
+> > -		u32 isn = (prandom_u32() & ~7UL) - 1;
+> > +		u32 isn = (get_random_u32() & ~7UL) - 1;
+> 
+> u32 isn = get_random_u32() | 0x7;
 
-With the core of all of those involving the same batching as the current
-get_random_u{8,16,32,64}() functions, but also buffering the latest byte
-and managing how many bits are left in it that haven't been shifted out
-yet.
+Again, maybe so, but same rationale as above.
 
-So API-wise, there are a few ways to go, so hopefully this series will
-start to give a good picture of what's needed.
+> >  static void ns_do_bit_flips(struct nandsim *ns, int num)
+> >  {
+> > -	if (bitflips && prandom_u32() < (1 << 22)) {
+> > +	if (bitflips && get_random_u32() < (1 << 22)) {
+> 
+> Doing "get_random_u16() < (1 << 6)" should have the same probability with only 
+> 2 bytes of random, no?
 
-One thing I've noticed is that most of the prandom_u32_max(2)
-invocations are in debug or test code, so that doesn't need to be
-optimized. But kfence does that too in its hot path, so a
-get_random_bool() function there would in theory lead to an 8x speed-up.
-But I guess I just have to try some things and see.
+That's very clever. (1<<22)/(1<<32) == (1<<6)/(1<<16). But also, same
+rationale as above for not doing that.
 
-Anyway, that is a long way to say, I share you curiosity on the matter
-and I'm looking into it.
+Anyway, I realize this is probably disappointing to read. But also, we
+can come back to those optimization cases later pretty easily.
 
 Jason
