@@ -2,76 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFADB5F8236
-	for <lists+netdev@lfdr.de>; Sat,  8 Oct 2022 03:59:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4691D5F824C
+	for <lists+netdev@lfdr.de>; Sat,  8 Oct 2022 04:06:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229576AbiJHB72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 21:59:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43806 "EHLO
+        id S229713AbiJHCGy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 22:06:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229495AbiJHB71 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 21:59:27 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DFD311C254;
-        Fri,  7 Oct 2022 18:59:26 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MkpCX0LDlzVj19;
-        Sat,  8 Oct 2022 09:55:04 +0800 (CST)
-Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Sat, 8 Oct 2022 09:59:24 +0800
-Received: from [10.67.108.67] (10.67.108.67) by dggpemm500013.china.huawei.com
- (7.185.36.172) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Sat, 8 Oct
- 2022 09:59:24 +0800
-Message-ID: <580db9d2-b1de-e8b8-12c9-11c9fec292ff@huawei.com>
-Date:   Sat, 8 Oct 2022 09:59:21 +0800
+        with ESMTP id S229620AbiJHCGx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 22:06:53 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E742F1144D9
+        for <netdev@vger.kernel.org>; Fri,  7 Oct 2022 19:06:52 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id j16so9560199wrh.5
+        for <netdev@vger.kernel.org>; Fri, 07 Oct 2022 19:06:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=uyaLnl7+CdYSjyf2eWsRsx3DFR2JMTm2tCnCYe0wRY4=;
+        b=b+ImRrPwEhZmnk9gn41856O1dnaGKeniuD6s+7FZjFpM7hF+AiW2LuhLb1/7w6U+4D
+         ViFfZ8z2X0FnbMrb5N2nVTRuZCwBglebbU8Y8Yvm3YdszHYO822rzPaZC8EHT7aAfRsz
+         RFvS/hIQNfzKrS18GTlYuaYgM5CwfQjma7cEV3/DzIqAm021ZUvPtuTj40aA/oAfjR3G
+         lvGk/DI/kkvc3gTzE6HevTqoh0klPwIv2yFU0z/Z+GNdeWEIFBp4DMUbSUEHWCorH5xZ
+         9MYVRlLBzMgMp0TrZW6Y4pWEXYkAYDbRHCca62R2jpqVU5ZffMdZhcDu5YW1O0HnwY18
+         CQVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=uyaLnl7+CdYSjyf2eWsRsx3DFR2JMTm2tCnCYe0wRY4=;
+        b=at94L0zpiKLU/NThdwwP0fcG23+GGRnoWBXPhXp3hPrIBKwC3KTB6Sy8uX6ij1bdv+
+         trGh5xxwFntjav40itW6RNvBWEmbkRuFw+mQ1mpLVit9eQfvxhHSUb/NiVaX+oKNgEdV
+         qXY+/8lmlhPFbJ2wt7SE9hmHGSmQ/vE6krLR7IRHKWoTf3xuQqsyal5JXiA7HfnaqaDN
+         x0+03vNc583F5TkXQcys7++WIo+LX/iCGT0KDnymlLQ8gPmIA4jXZ/2VEG6CEEU4OtVO
+         +Q5CEvTKLKTXf+LHEe8A4tef5XaP897XRcmWceD6rumHolBHFRsa8W0j5wWOMoB2FVwD
+         P+VQ==
+X-Gm-Message-State: ACrzQf2uq5Gx23ax6HKJ87pXMJfnip+930n33zAM8Pxw3Jw1Y09WAVVE
+        KW6kMAzYMAXCi5VH+T2kqoaPgqUbUoX/sFVOaf8=
+X-Google-Smtp-Source: AMsMyM4QNmD2dca3HdfvJk7sOBPkuHQu6WtSHpBRbwe5z2mzKrHc/5XETQwMqmlyOPN3moRNDBXN1atc1NYUUlfUXaA=
+X-Received: by 2002:a5d:588f:0:b0:22b:623:ad04 with SMTP id
+ n15-20020a5d588f000000b0022b0623ad04mr4697847wrf.607.1665194811377; Fri, 07
+ Oct 2022 19:06:51 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0
-Subject: Re: [PATCH -next] net: mvneta: Remove unused variables 'i'
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <pabeni@redhat.com>
-References: <20221010032506.2886099-1-chenzhongjin@huawei.com>
- <20220930085104.1400066b@kernel.org>
-Content-Language: en-US
-From:   Chen Zhongjin <chenzhongjin@huawei.com>
-In-Reply-To: <20220930085104.1400066b@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.108.67]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500013.china.huawei.com (7.185.36.172)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Received: by 2002:adf:eb84:0:0:0:0:0 with HTTP; Fri, 7 Oct 2022 19:06:50 -0700 (PDT)
+From:   David Alex <davidalexman56@gmail.com>
+Date:   Sat, 8 Oct 2022 03:06:50 +0100
+Message-ID: <CABYJXBYQsJK2m986ZUEwBPikmW-6KpkwZYP9uocKRYe5Na4TzA@mail.gmail.com>
+Subject: Re: Video Amazing 5 mins Abs workout for great 6 packs
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=2.9 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,GB_FAKE_RF_SHORT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_PDS_SHORTFWD_URISHRT_FP,T_SHORT_SHORTNER autolearn=no
         autolearn_force=no version=3.4.6
+X-Spam-Level: **
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/9/30 23:51, Jakub Kicinski wrote:
-> On Mon, 10 Oct 2022 11:25:06 +0800 Chen Zhongjin wrote:
->> Reported by Clang [-Wunused-but-set-variable]
->>
->> 'commit cad5d847a093 ("net: mvneta: Fix the CPU choice in mvneta_percpu_elect")'
->> This commit had changed the logic to elect CPU in mvneta_percpu_elect().
->> Now the variable 'i' is not used in this function, so remove it.
-> Please fix the date on your system. Your patches are sent with the date
-> over a week in the future.
->
-> Please note that we have a 24h wait period so you need to wait at least
-> a day before you resend anything.
+-- 
+Amazing 5 mins Abs workout for great 6 packs
+Watch
+https://youtu.be/N5VGUM-_dEQ
 
-Sorry for late reply cuz I'm just back for work today.
-
-Thanks for the tips. I'll fix the date problem and post it after 6.1-rc1.
-
-Best,
-Chen
-
+Please Share...
