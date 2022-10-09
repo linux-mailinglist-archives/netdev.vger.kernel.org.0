@@ -2,51 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F5DA5F932F
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:56:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB80C5F937F
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 01:19:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234008AbiJIW4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:56:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45718 "EHLO
+        id S233480AbiJIXTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 19:19:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234166AbiJIWzH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:55:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6841F10066;
-        Sun,  9 Oct 2022 15:29:48 -0700 (PDT)
+        with ESMTP id S233546AbiJIXSr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 19:18:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CBF34360A;
+        Sun,  9 Oct 2022 15:44:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 55EEBB80DDE;
-        Sun,  9 Oct 2022 22:25:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8047C433C1;
-        Sun,  9 Oct 2022 22:25:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69B0360DB4;
+        Sun,  9 Oct 2022 22:26:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8256C4347C;
+        Sun,  9 Oct 2022 22:26:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354344;
-        bh=/uUdM+oKqHOU5RS8nYx4xunaSoAOYepM1eEAdpERTus=;
+        s=k20201202; t=1665354362;
+        bh=m6NQJ5EmDqzyBSscFVL9+7RWcSwAfWV9TMWJzvPm/kc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nwe7SA5hhhu7fCpaYOiyVRz6J3qZdc+NLkyE2iBich7+Ubol8qHTkIPh0h2OO/VLB
-         TQVjbagOVc58geqpUpD3qDlac8eK9fXxXOjmaDJfRttegPXoudQXdCeE1A8LOBnRpc
-         Q+Xx2+hi3o97niqW4HxmTmK2fl3waLskdCcUooA3pvTbYODZFdb5euPgk+Fd4Uzn5W
-         Mh9FfYzn/TJxu/+wX1+Pj3q/cdRmVZzKZVwvcbHesLA5dzioPIbeAM8fmEioM8OV6a
-         LOwcfFGSCAqJ5+r+/1e0krnJ49m1Mxe2N3/gYqThnTt5HfjdYBh0EG6qzFwmPsF+9U
-         jG3gzgORR7P2g==
+        b=GSg20HMdsH/G0SMMROA9drv8IAux1Jgnl9/E6E8K2hKD+tpKtb6L1IzbhyfJ8ckKo
+         fvdKVpzllF6p3nGNrVwPLCaC7vCUI4418NW9sZ+NempbJ5GKKwrs5FY58+appLmN1v
+         gPozoR5/9JI2imn8E6cklf7XajCbbFrZPvHldrF/SPnRS/mLvylwXKJOykvwog82oX
+         mWaDYRhfgZMjgsnulnEYaX3Z438C18A76jaBLV0CSPQVSVaVECMtujpC53TqSLkwD2
+         3oMX9LWxDDAQGw7R0eyODBt7ZcCJ83ui7nDjFXAHQsEBnUtPsFtPrvSf5HQnMYlnEs
+         qiK5qsACoFRkQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liu Jian <liujian56@huawei.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 22/25] net: If sock is dead don't access sock's sk_wq in sk_stream_wait_memory
-Date:   Sun,  9 Oct 2022 18:24:27 -0400
-Message-Id: <20221009222436.1219411-22-sashal@kernel.org>
+Cc:     Mike Pattrick <mkp@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, pshelar@ovn.org,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, dev@openvswitch.org
+Subject: [PATCH AUTOSEL 4.14 02/23] openvswitch: Fix double reporting of drops in dropwatch
+Date:   Sun,  9 Oct 2022 18:25:32 -0400
+Message-Id: <20221009222557.1219968-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221009222436.1219411-1-sashal@kernel.org>
-References: <20221009222436.1219411-1-sashal@kernel.org>
+In-Reply-To: <20221009222557.1219968-1-sashal@kernel.org>
+References: <20221009222557.1219968-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -60,104 +57,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Liu Jian <liujian56@huawei.com>
+From: Mike Pattrick <mkp@redhat.com>
 
-[ Upstream commit 3f8ef65af927db247418d4e1db49164d7a158fc5 ]
+[ Upstream commit 1100248a5c5ccd57059eb8d02ec077e839a23826 ]
 
-Fixes the below NULL pointer dereference:
+Frames sent to userspace can be reported as dropped in
+ovs_dp_process_packet, however, if they are dropped in the netlink code
+then netlink_attachskb will report the same frame as dropped.
 
-  [...]
-  [   14.471200] Call Trace:
-  [   14.471562]  <TASK>
-  [   14.471882]  lock_acquire+0x245/0x2e0
-  [   14.472416]  ? remove_wait_queue+0x12/0x50
-  [   14.473014]  ? _raw_spin_lock_irqsave+0x17/0x50
-  [   14.473681]  _raw_spin_lock_irqsave+0x3d/0x50
-  [   14.474318]  ? remove_wait_queue+0x12/0x50
-  [   14.474907]  remove_wait_queue+0x12/0x50
-  [   14.475480]  sk_stream_wait_memory+0x20d/0x340
-  [   14.476127]  ? do_wait_intr_irq+0x80/0x80
-  [   14.476704]  do_tcp_sendpages+0x287/0x600
-  [   14.477283]  tcp_bpf_push+0xab/0x260
-  [   14.477817]  tcp_bpf_sendmsg_redir+0x297/0x500
-  [   14.478461]  ? __local_bh_enable_ip+0x77/0xe0
-  [   14.479096]  tcp_bpf_send_verdict+0x105/0x470
-  [   14.479729]  tcp_bpf_sendmsg+0x318/0x4f0
-  [   14.480311]  sock_sendmsg+0x2d/0x40
-  [   14.480822]  ____sys_sendmsg+0x1b4/0x1c0
-  [   14.481390]  ? copy_msghdr_from_user+0x62/0x80
-  [   14.482048]  ___sys_sendmsg+0x78/0xb0
-  [   14.482580]  ? vmf_insert_pfn_prot+0x91/0x150
-  [   14.483215]  ? __do_fault+0x2a/0x1a0
-  [   14.483738]  ? do_fault+0x15e/0x5d0
-  [   14.484246]  ? __handle_mm_fault+0x56b/0x1040
-  [   14.484874]  ? lock_is_held_type+0xdf/0x130
-  [   14.485474]  ? find_held_lock+0x2d/0x90
-  [   14.486046]  ? __sys_sendmsg+0x41/0x70
-  [   14.486587]  __sys_sendmsg+0x41/0x70
-  [   14.487105]  ? intel_pmu_drain_pebs_core+0x350/0x350
-  [   14.487822]  do_syscall_64+0x34/0x80
-  [   14.488345]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-  [...]
+This patch checks for error codes which indicate that the frame has
+already been freed.
 
-The test scenario has the following flow:
-
-thread1                               thread2
------------                           ---------------
- tcp_bpf_sendmsg
-  tcp_bpf_send_verdict
-   tcp_bpf_sendmsg_redir              sock_close
-    tcp_bpf_push_locked                 __sock_release
-     tcp_bpf_push                         //inet_release
-      do_tcp_sendpages                    sock->ops->release
-       sk_stream_wait_memory          	   // tcp_close
-          sk_wait_event                      sk->sk_prot->close
-           release_sock(__sk);
-            ***
-                                                lock_sock(sk);
-                                                  __tcp_close
-                                                    sock_orphan(sk)
-                                                      sk->sk_wq  = NULL
-                                                release_sock
-            ****
-           lock_sock(__sk);
-          remove_wait_queue(sk_sleep(sk), &wait);
-             sk_sleep(sk)
-             //NULL pointer dereference
-             &rcu_dereference_raw(sk->sk_wq)->wait
-
-While waiting for memory in thread1, the socket is released with its wait
-queue because thread2 has closed it. This caused by tcp_bpf_send_verdict
-didn't increase the f_count of psock->sk_redir->sk_socket->file in thread1.
-
-We should check if SOCK_DEAD flag is set on wakeup in sk_stream_wait_memory
-before accessing the wait queue.
-
-Suggested-by: Jakub Sitnicki <jakub@cloudflare.com>
-Signed-off-by: Liu Jian <liujian56@huawei.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Cc: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/bpf/20220823133755.314697-2-liujian56@huawei.com
+Signed-off-by: Mike Pattrick <mkp@redhat.com>
+Link: https://bugzilla.redhat.com/show_bug.cgi?id=2109946
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/stream.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/openvswitch/datapath.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/net/core/stream.c b/net/core/stream.c
-index 3d98774cf128..7b411a91a81c 100644
---- a/net/core/stream.c
-+++ b/net/core/stream.c
-@@ -159,7 +159,8 @@ int sk_stream_wait_memory(struct sock *sk, long *timeo_p)
- 		*timeo_p = current_timeo;
+diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+index 3248cf04d0b3..42616aca0ce4 100644
+--- a/net/openvswitch/datapath.c
++++ b/net/openvswitch/datapath.c
+@@ -276,10 +276,17 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
+ 		upcall.portid = ovs_vport_find_upcall_portid(p, skb);
+ 		upcall.mru = OVS_CB(skb)->mru;
+ 		error = ovs_dp_upcall(dp, skb, key, &upcall, 0);
+-		if (unlikely(error))
+-			kfree_skb(skb);
+-		else
++		switch (error) {
++		case 0:
++		case -EAGAIN:
++		case -ERESTARTSYS:
++		case -EINTR:
+ 			consume_skb(skb);
++			break;
++		default:
++			kfree_skb(skb);
++			break;
++		}
+ 		stats_counter = &stats->n_missed;
+ 		goto out;
  	}
- out:
--	remove_wait_queue(sk_sleep(sk), &wait);
-+	if (!sock_flag(sk, SOCK_DEAD))
-+		remove_wait_queue(sk_sleep(sk), &wait);
- 	return err;
- 
- do_error:
 -- 
 2.35.1
 
