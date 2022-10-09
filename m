@@ -2,48 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B57055F91D4
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:42:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65DBD5F9343
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:59:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232412AbiJIWmF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:42:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47498 "EHLO
+        id S233723AbiJIW7t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:59:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233514AbiJIWkW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:40:22 -0400
+        with ESMTP id S234121AbiJIW5O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:57:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7DAC3D59C;
-        Sun,  9 Oct 2022 15:21:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 035DB1E3;
+        Sun,  9 Oct 2022 15:30:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DEF8860C9B;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DAA260AF5;
+        Sun,  9 Oct 2022 22:20:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFDD7C433D6;
         Sun,  9 Oct 2022 22:20:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5774C43145;
-        Sun,  9 Oct 2022 22:20:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354044;
-        bh=XARdSeZX6xQ7iNIn6+oYLfRF1bbpI2N8i6uwoZRS0Ao=;
+        s=k20201202; t=1665354046;
+        bh=iLQLHvPqcEwuY5Ih0QzkTYBfThB8SUly/2MIBF1Zkog=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NasQZY+40P3eoDcyudUR1WbwDF2FYk8nPI9deZm+dfwID6OpSjiDMmaP0kQSyMml8
-         0veQ1J0nqZ6PA/yz+BYepMdvXeZe7gHJFw1U8Ai+Fj6LcpbSNH+3gHiQJS4H5tgq20
-         uTyRgyvAhJGpmZzjBYOfdeZxV+n9C+Jn1Nv1D5s2KVcPOTc51oJ9rUi8YmQpb3QslS
-         NiM7JjJ7BMBXOssHxoIDnacTMUx1xwmYWv7NfKPluVz/hnDP7ejew/P8NFJjegynxe
-         QqqxQnKea+6Ofg4Zuk64ryw51RsQ+Dss/XeyDaAZbUjnF8th/AH0PSmb3Q36092reB
-         uYqb0aa9ASHEg==
+        b=pFT05x52yRfjekxzpsxGWrMsxzF7/KXs4s8rrLMwTyMhfHqroveTYaA1dgJoztlst
+         PHfYNNDogCOmgy++7hc/Ck4+gIXCegHhoDiBqW9K7G1gAnpcSVHpeTe3aeyq2t28t5
+         oRxb0QH08F1/NimkPxirBzy78AwSIA+n/I+p44jUxxwvqw6Yet51IQEX1NIvZAo/f8
+         /kXb7iEIyQHQ3v+2vCXhzVPJIiLoAO2glURYm7rIRhLwoDmWSn45lQa+MlMX+4GDCi
+         eIp/kzckEepflS5YDU7M8rWFGOCBQSX4Cn+WHwHswuzmfrgr7gh2AZsFZ+jB3jtplR
+         YPfkf69SyByTA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nathan Huckleberry <nhuck@google.com>,
-        Dan Carpenter <error27@gmail.com>, llvm@lists.linux.dev,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+Cc:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, m.chetan.kumar@intel.com,
-        linuxwwan@intel.com, loic.poulain@linaro.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, nathan@kernel.org,
-        ndesaulniers@google.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 29/46] net: wwan: iosm: Fix return type of ipc_wwan_link_transmit
-Date:   Sun,  9 Oct 2022 18:18:54 -0400
-Message-Id: <20221009221912.1217372-29-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 30/46] net: sfp: re-implement soft state polling setup
+Date:   Sun,  9 Oct 2022 18:18:55 -0400
+Message-Id: <20221009221912.1217372-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009221912.1217372-1-sashal@kernel.org>
 References: <20221009221912.1217372-1-sashal@kernel.org>
@@ -60,46 +57,106 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nathan Huckleberry <nhuck@google.com>
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 
-[ Upstream commit 0c9441c430104dcf2cd066aae74dbeefb9f9e1bf ]
+[ Upstream commit 8475c4b70b040f9d8cbc308100f2c4d865f810b3 ]
 
-The ndo_start_xmit field in net_device_ops is expected to be of type
-netdev_tx_t (*ndo_start_xmit)(struct sk_buff *skb, struct net_device *dev).
+Re-implement the decision making for soft state polling. Instead of
+generating the soft state mask in sfp_soft_start_poll() by looking at
+which GPIOs are available, record their availability in
+sfp_sm_mod_probe() in sfp->state_hw_mask.
 
-The mismatched return type breaks forward edge kCFI since the underlying
-function definition does not match the function hook definition.
+This will then allow us to clear bits in sfp->state_hw_mask in module
+specific quirks when the hardware signals should not be used, thereby
+allowing us to switch to using the software state polling.
 
-The return type of ipc_wwan_link_transmit should be changed from int to
-netdev_tx_t.
-
-Reported-by: Dan Carpenter <error27@gmail.com>
-Link: https://github.com/ClangBuiltLinux/linux/issues/1703
-Cc: llvm@lists.linux.dev
-Signed-off-by: Nathan Huckleberry <nhuck@google.com>
-Acked-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Link: https://lore.kernel.org/r/20220912214455.929028-1-nhuck@google.com
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wwan/iosm/iosm_ipc_wwan.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/phy/sfp.c | 38 ++++++++++++++++++++++++++------------
+ 1 file changed, 26 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_wwan.c b/drivers/net/wwan/iosm/iosm_ipc_wwan.c
-index b571d9cedba4..92fb494c7a91 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_wwan.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_wwan.c
-@@ -102,8 +102,8 @@ static int ipc_wwan_link_stop(struct net_device *netdev)
- }
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index 028a5df5c538..e5cbd5b117cc 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -234,6 +234,7 @@ struct sfp {
+ 	bool need_poll;
  
- /* Transmit a packet */
--static int ipc_wwan_link_transmit(struct sk_buff *skb,
--				  struct net_device *netdev)
-+static netdev_tx_t ipc_wwan_link_transmit(struct sk_buff *skb,
-+					  struct net_device *netdev)
+ 	struct mutex st_mutex;			/* Protects state */
++	unsigned int state_hw_mask;
+ 	unsigned int state_soft_mask;
+ 	unsigned int state;
+ 	struct delayed_work poll;
+@@ -499,17 +500,18 @@ static void sfp_soft_set_state(struct sfp *sfp, unsigned int state)
+ static void sfp_soft_start_poll(struct sfp *sfp)
  {
- 	struct iosm_netdev_priv *priv = wwan_netdev_drvpriv(netdev);
- 	struct iosm_wwan *ipc_wwan = priv->ipc_wwan;
+ 	const struct sfp_eeprom_id *id = &sfp->id;
++	unsigned int mask = 0;
+ 
+ 	sfp->state_soft_mask = 0;
+-	if (id->ext.enhopts & SFP_ENHOPTS_SOFT_TX_DISABLE &&
+-	    !sfp->gpio[GPIO_TX_DISABLE])
+-		sfp->state_soft_mask |= SFP_F_TX_DISABLE;
+-	if (id->ext.enhopts & SFP_ENHOPTS_SOFT_TX_FAULT &&
+-	    !sfp->gpio[GPIO_TX_FAULT])
+-		sfp->state_soft_mask |= SFP_F_TX_FAULT;
+-	if (id->ext.enhopts & SFP_ENHOPTS_SOFT_RX_LOS &&
+-	    !sfp->gpio[GPIO_LOS])
+-		sfp->state_soft_mask |= SFP_F_LOS;
++	if (id->ext.enhopts & SFP_ENHOPTS_SOFT_TX_DISABLE)
++		mask |= SFP_F_TX_DISABLE;
++	if (id->ext.enhopts & SFP_ENHOPTS_SOFT_TX_FAULT)
++		mask |= SFP_F_TX_FAULT;
++	if (id->ext.enhopts & SFP_ENHOPTS_SOFT_RX_LOS)
++		mask |= SFP_F_LOS;
++
++	// Poll the soft state for hardware pins we want to ignore
++	sfp->state_soft_mask = ~sfp->state_hw_mask & mask;
+ 
+ 	if (sfp->state_soft_mask & (SFP_F_LOS | SFP_F_TX_FAULT) &&
+ 	    !sfp->need_poll)
+@@ -523,10 +525,11 @@ static void sfp_soft_stop_poll(struct sfp *sfp)
+ 
+ static unsigned int sfp_get_state(struct sfp *sfp)
+ {
+-	unsigned int state = sfp->get_state(sfp);
++	unsigned int soft = sfp->state_soft_mask & (SFP_F_LOS | SFP_F_TX_FAULT);
++	unsigned int state;
+ 
+-	if (state & SFP_F_PRESENT &&
+-	    sfp->state_soft_mask & (SFP_F_LOS | SFP_F_TX_FAULT))
++	state = sfp->get_state(sfp) & sfp->state_hw_mask;
++	if (state & SFP_F_PRESENT && soft)
+ 		state |= sfp_soft_get_state(sfp);
+ 
+ 	return state;
+@@ -1940,6 +1943,15 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
+ 	if (ret < 0)
+ 		return ret;
+ 
++	/* Initialise state bits to use from hardware */
++	sfp->state_hw_mask = SFP_F_PRESENT;
++	if (sfp->gpio[GPIO_TX_DISABLE])
++		sfp->state_hw_mask |= SFP_F_TX_DISABLE;
++	if (sfp->gpio[GPIO_TX_FAULT])
++		sfp->state_hw_mask |= SFP_F_TX_FAULT;
++	if (sfp->gpio[GPIO_LOS])
++		sfp->state_hw_mask |= SFP_F_LOS;
++
+ 	if (!memcmp(id.base.vendor_name, "ALCATELLUCENT   ", 16) &&
+ 	    !memcmp(id.base.vendor_pn, "3FE46541AA      ", 16))
+ 		sfp->module_t_start_up = T_START_UP_BAD_GPON;
+@@ -2565,6 +2577,8 @@ static int sfp_probe(struct platform_device *pdev)
+ 				return PTR_ERR(sfp->gpio[i]);
+ 		}
+ 
++	sfp->state_hw_mask = SFP_F_PRESENT;
++
+ 	sfp->get_state = sfp_gpio_get_state;
+ 	sfp->set_state = sfp_gpio_set_state;
+ 
 -- 
 2.35.1
 
