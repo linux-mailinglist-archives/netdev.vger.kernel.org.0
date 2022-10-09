@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A0FF5F905A
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:24:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2CF55F90EF
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:28:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231515AbiJIWYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:24:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45936 "EHLO
+        id S232206AbiJIW20 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:28:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231704AbiJIWW7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:22:59 -0400
+        with ESMTP id S231812AbiJIW00 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:26:26 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60761392;
-        Sun,  9 Oct 2022 15:17:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D99233D59F;
+        Sun,  9 Oct 2022 15:18:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B502B80DEA;
-        Sun,  9 Oct 2022 22:12:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9747EC43470;
-        Sun,  9 Oct 2022 22:12:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 55DB6B80DE4;
+        Sun,  9 Oct 2022 22:12:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0EC1C433C1;
+        Sun,  9 Oct 2022 22:12:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665353546;
-        bh=YHvVHIJX2HPHSLT4eGLhe20mkccL+miqWFxNvBZc7ac=;
+        s=k20201202; t=1665353576;
+        bh=Cq0O6Lq0YGpcmM8L/xBbBUGYACre6Ya9iOwxDcgfiwU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=chVjI7fLnK9Wm59MtGVvtZnWqtwQBqUUdnvNc+33OulBXSYk1tlV/TZvdjvcqW194
-         ejdfiSoKMwK9Pnj2yDLxRkIcQX3cd0gEY3U1niKBcJdHdyWuGmyIE7sFh0YkC7w+ES
-         wx9jYDX7OK8o/l9LkclAUOeD09MUJ2cHQsRpiRCswk8RctWzMeSmPD1BOcY0/RC/e2
-         ylzbfjLqjE044i4XhglYW2upH967YxMaPUOyjN0uI70BPvuG1zPYu4rg9Bqz+oLq+5
-         3Y3bI2do8ozUIbrq9UWywTVkMef57W93TvZEUeHRGgT/4FQw5hF4+GyfFkmV4Sw/Qt
-         JBuKkT45Bd4UA==
+        b=n9SECNYNYPD/e+wBMW315UieKupYUpByz84uLB/6mEaGLqFCumTXI81JpypWwj6BH
+         JBoa3bUXh/F57tNDjEdBmRSeRs215BwSBUUcl5z0pUh4HQ3Ei0ULEb8rSDIvSKGyLQ
+         xrL8aSa2YO3kB61y4GhOJxOXZMdJtxEeI6+6lHAD3/wLAMPFyoR377OT2S4p+h9//U
+         lu6s4DRf60/LLxm4C1UoPYxKRQnmBrlG80Ruf+kSbvl0Q99vCXsr00gKJp5LLVQ+L6
+         SsOUX+x9g6jtZesvdFPcvCRKd1ITvnwz3AxmC3oWKIhDHyhkGXG4eceroqYwawpcnG
+         9VvhodCfcNlmA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vadim Fedorenko <vfedorenko@novek.ru>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+Cc:     Ziyang Xuan <william.xuanziyang@huawei.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.0 59/77] bnxt_en: replace reset with config timestamps
-Date:   Sun,  9 Oct 2022 18:07:36 -0400
-Message-Id: <20221009220754.1214186-59-sashal@kernel.org>
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.0 61/77] can: bcm: check the result of can_send() in bcm_can_tx()
+Date:   Sun,  9 Oct 2022 18:07:38 -0400
+Message-Id: <20221009220754.1214186-61-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009220754.1214186-1-sashal@kernel.org>
 References: <20221009220754.1214186-1-sashal@kernel.org>
@@ -58,51 +58,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vadim Fedorenko <vfedorenko@novek.ru>
+From: Ziyang Xuan <william.xuanziyang@huawei.com>
 
-[ Upstream commit 8db3d514e96715c897fe793c4d5fc0fd86aca517 ]
+[ Upstream commit 3fd7bfd28cfd68ae80a2fe92ea1615722cc2ee6e ]
 
-Any change to the hardware timestamps configuration triggers nic restart,
-which breaks transmition and reception of network packets for a while.
-But there is no need to fully restart the device because while configuring
-hardware timestamps. The code for changing configuration runs after all
-of the initialisation, when the NIC is actually up and running. This patch
-changes the code that ioctl will only update configuration registers and
-will not trigger carrier status change, but in case of timestamps for
-all rx packetes it fallbacks to close()/open() sequnce because of
-synchronization issues in the hardware. Tested on BCM57504.
+If can_send() fail, it should not update frames_abs counter
+in bcm_can_tx(). Add the result check for can_send() in bcm_can_tx().
 
-Cc: Richard Cochran <richardcochran@gmail.com>
-Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
-Link: https://lore.kernel.org/r/20220922191038.29921-1-vfedorenko@novek.ru
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Suggested-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+Link: https://lore.kernel.org/all/9851878e74d6d37aee2f1ee76d68361a46f89458.1663206163.git.william.xuanziyang@huawei.com
+Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ net/can/bcm.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-index 8e316367f6ce..2132ce63193c 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-@@ -505,9 +505,13 @@ static int bnxt_hwrm_ptp_cfg(struct bnxt *bp)
- 	ptp->tstamp_filters = flags;
+diff --git a/net/can/bcm.c b/net/can/bcm.c
+index e60161bec850..f16271a7ae2e 100644
+--- a/net/can/bcm.c
++++ b/net/can/bcm.c
+@@ -274,6 +274,7 @@ static void bcm_can_tx(struct bcm_op *op)
+ 	struct sk_buff *skb;
+ 	struct net_device *dev;
+ 	struct canfd_frame *cf = op->frames + op->cfsiz * op->currframe;
++	int err;
  
- 	if (netif_running(bp->dev)) {
--		rc = bnxt_close_nic(bp, false, false);
--		if (!rc)
--			rc = bnxt_open_nic(bp, false, false);
-+		if (ptp->rx_filter == HWTSTAMP_FILTER_ALL) {
-+			rc = bnxt_close_nic(bp, false, false);
-+			if (!rc)
-+				rc = bnxt_open_nic(bp, false, false);
-+		} else {
-+			bnxt_ptp_cfg_tstamp_filters(bp);
-+		}
- 		if (!rc && !ptp->tstamp_filters)
- 			rc = -EIO;
- 	}
+ 	/* no target device? => exit */
+ 	if (!op->ifindex)
+@@ -298,11 +299,11 @@ static void bcm_can_tx(struct bcm_op *op)
+ 	/* send with loopback */
+ 	skb->dev = dev;
+ 	can_skb_set_owner(skb, op->sk);
+-	can_send(skb, 1);
++	err = can_send(skb, 1);
++	if (!err)
++		op->frames_abs++;
+ 
+-	/* update statistics */
+ 	op->currframe++;
+-	op->frames_abs++;
+ 
+ 	/* reached last frame? */
+ 	if (op->currframe >= op->nframes)
 -- 
 2.35.1
 
