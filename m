@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CBF35F9165
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:32:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF31E5F916E
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:32:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232629AbiJIWcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:32:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42294 "EHLO
+        id S232736AbiJIWcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:32:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232633AbiJIWaF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:30:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAD1565D5;
-        Sun,  9 Oct 2022 15:19:41 -0700 (PDT)
+        with ESMTP id S232042AbiJIWaT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:30:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6F56FD0B;
+        Sun,  9 Oct 2022 15:19:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E09260C19;
-        Sun,  9 Oct 2022 22:19:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C90BC433D7;
-        Sun,  9 Oct 2022 22:19:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 60832B80D33;
+        Sun,  9 Oct 2022 22:19:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF387C433C1;
+        Sun,  9 Oct 2022 22:19:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665353979;
-        bh=Ejg/7v+bTZwcGpmt1+OnZNJ4KHsjbu7qwQON1oiugCk=;
+        s=k20201202; t=1665353984;
+        bh=KAnZS9WcwRk8bgKwx6yLV74+eQUR9dCSvwpUrV+4pIQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sAM8Nl0gHE8qcwO7LImF4c1BqauYjwGIcyKDtqHHazADOwtAgrugWuTtq7vChu/05
-         msQKFJ/bEFR9pb4Rq0jmFjQNLtVKcQ1ntvkJnaD7GQ4CTKiSZuhE3VVr1lcFsKS4/M
-         r9/dPUOMY0V/QDlMUMsHABspyVqmhLxFoScDigg1n2MdvJGLFfSTbIRXgrs5JVurm6
-         vO/+J6s+sZQCt4/gsO5YQGJOH29fqjcm1WHoRTWawZ6O8dXnP6Oc9OCLMsjL8AqMhY
-         kOp2lYWFxqW7uktJz/Mlev+rqWKnuvvVJGwVvubvOnBXbx73XzhXXturi7wu5Ce0Rx
-         FjSku2oCbhNMg==
+        b=cGNrEkilKJAykfYGO1eDrgJ0MCNqCFMpQWyMGMFwoMRM2jUxwpRVGwbBY8OCPE3l1
+         0ekGokuolmf1tFoYhF6FHeOdB6QQuLBw1EmMhXM9iMLd4IQWA1exc0GMuIgDlC4v33
+         swu0lgmdoA7cZdoM+jbV1W4lLfBb2oiHWq2/Rm5yd1/A7HXjsj6Uqvsmpd2DMTVoMf
+         UmOLSQpBeG7bxqx+PiyA2/ppO2D08HE+hNE8LuU2T1Mnn6T/DRDQkN33PNrgW3X5w4
+         EDy1eblzkGaS3i1GRiVso/JYBuJjR1mqOmrktKZlRfVxwgniepTBg1wpAG/OlCscAa
+         PUvdUYJM3uP2A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jerry Ray <jerry.ray@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, u.kleine-koenig@pengutronix.de,
-        stefan@datenfreihafen.org, mkl@pengutronix.de,
-        bigeasy@linutronix.de, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 09/46] micrel: ksz8851: fixes struct pointer issue
-Date:   Sun,  9 Oct 2022 18:18:34 -0400
-Message-Id: <20221009221912.1217372-9-sashal@kernel.org>
+Cc:     Jiri Pirko <jiri@nvidia.com>,
+        Vikas Gupta <vikas.gupta@broadcom.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, jacob.e.keller@intel.com,
+        johannes@sipsolutions.net, nicolas.dichtel@6wind.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 10/46] genetlink: hold read cb_lock during iteration of genl_fam_idr in genl_bind()
+Date:   Sun,  9 Oct 2022 18:18:35 -0400
+Message-Id: <20221009221912.1217372-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009221912.1217372-1-sashal@kernel.org>
 References: <20221009221912.1217372-1-sashal@kernel.org>
@@ -58,52 +59,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jerry Ray <jerry.ray@microchip.com>
+From: Jiri Pirko <jiri@nvidia.com>
 
-[ Upstream commit fef5de753ff01887cfa50990532c3890fccb9338 ]
+[ Upstream commit 8f1948bdcf2fb50e9092c0950c3c9ac591382101 ]
 
-Issue found during code review. This bug has no impact as long as the
-ks8851_net structure is the first element of the ks8851_net_spi structure.
-As long as the offset to the ks8851_net struct is zero, the container_of()
-macro is subtracting 0 and therefore no damage done. But if the
-ks8851_net_spi struct is ever modified such that the ks8851_net struct
-within it is no longer the first element of the struct, then the bug would
-manifest itself and cause problems.
+In genl_bind(), currently genl_lock and write cb_lock are taken
+for iteration of genl_fam_idr and processing of static values
+stored in struct genl_family. Take just read cb_lock for this task
+as it is sufficient to guard the idr and the struct against
+concurrent genl_register/unregister_family() calls.
 
-struct ks8851_net is contained within ks8851_net_spi.
-ks is contained within kss.
-kss is the priv_data of the netdev structure.
+This will allow to run genl command processing in genl_rcv() and
+mnl_socket_setsockopt(.., NETLINK_ADD_MEMBERSHIP, ..) in parallel.
 
-Signed-off-by: Jerry Ray <jerry.ray@microchip.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: Vikas Gupta <vikas.gupta@broadcom.com>
+Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+Link: https://lore.kernel.org/r/20220825081940.1283335-1-jiri@resnulli.us
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/micrel/ks8851_spi.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ net/netlink/genetlink.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/micrel/ks8851_spi.c b/drivers/net/ethernet/micrel/ks8851_spi.c
-index 479406ecbaa3..13c76352ae8d 100644
---- a/drivers/net/ethernet/micrel/ks8851_spi.c
-+++ b/drivers/net/ethernet/micrel/ks8851_spi.c
-@@ -413,7 +413,8 @@ static int ks8851_probe_spi(struct spi_device *spi)
+diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
+index 57010927e20a..76aed0571e3a 100644
+--- a/net/netlink/genetlink.c
++++ b/net/netlink/genetlink.c
+@@ -1362,7 +1362,7 @@ static int genl_bind(struct net *net, int group)
+ 	unsigned int id;
+ 	int ret = 0;
  
- 	spi->bits_per_word = 8;
+-	genl_lock_all();
++	down_read(&cb_lock);
  
--	ks = netdev_priv(netdev);
-+	kss = netdev_priv(netdev);
-+	ks = &kss->ks8851;
+ 	idr_for_each_entry(&genl_fam_idr, family, id) {
+ 		const struct genl_multicast_group *grp;
+@@ -1383,7 +1383,7 @@ static int genl_bind(struct net *net, int group)
+ 		break;
+ 	}
  
- 	ks->lock = ks8851_lock_spi;
- 	ks->unlock = ks8851_unlock_spi;
-@@ -433,8 +434,6 @@ static int ks8851_probe_spi(struct spi_device *spi)
- 		 IRQ_RXPSI)	/* RX process stop */
- 	ks->rc_ier = STD_IRQ;
+-	genl_unlock_all();
++	up_read(&cb_lock);
+ 	return ret;
+ }
  
--	kss = to_ks8851_spi(ks);
--
- 	kss->spidev = spi;
- 	mutex_init(&kss->lock);
- 	INIT_WORK(&kss->tx_work, ks8851_tx_work);
 -- 
 2.35.1
 
