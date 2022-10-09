@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD5F05F934B
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 01:00:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06A4D5F9326
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:56:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234015AbiJIW7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:59:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48398 "EHLO
+        id S233954AbiJIW4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:56:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234231AbiJIW6E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:58:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A277E4BA76;
-        Sun,  9 Oct 2022 15:30:43 -0700 (PDT)
+        with ESMTP id S233945AbiJIWyX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:54:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D4CF3DF11;
+        Sun,  9 Oct 2022 15:29:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 971D4B80DFC;
-        Sun,  9 Oct 2022 22:27:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0BAEC4347C;
-        Sun,  9 Oct 2022 22:27:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AF2EC60DDD;
+        Sun,  9 Oct 2022 22:27:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B776FC433B5;
+        Sun,  9 Oct 2022 22:27:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354474;
-        bh=f3Kl8PSdbHZnVxN8KcE0aLttwySrFMb8eFbb3/cb1cc=;
+        s=k20201202; t=1665354476;
+        bh=5Iqm60SwyyyRfJTCk22dEZia1Xh8h760FMFhJi50/Ik=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q3sqvlWpQe8MJ/qJaLvofUi7ITJTPX2RNQtoNIX8j+tTG6VETL29xYkIleyRKeB1e
-         ZABmCTUxeYzLyJ5Z9Dq1He96EJhPUF1Sw9Yw/ZKvZDDrlEB+zb6zHiTTRWQBUqIlfw
-         nEUl0WBRR1+1Qw0VTCHG/zsg4gZqMPNbbKW3yXz5qBzGhCBOJaBh7PEHxhmTvM/43s
-         Podu444Xq71LNMo6XqL16p0XmsGPgadZkVNz+SHryFB6tDgyunyfBwFYE3f00BtD93
-         A9IUCbJWWzrWbisKraB1zr4FcDzo3v5m1GHLqVRcwhMiVyA9paiLXYUh9o5kEirrNN
-         tBeh03l/6NMNw==
+        b=tKhTgPc6WWfaRldFG1Yk0pDt+oUTQugUyAL6V0n1yjX+mMuWoPqFY7J1jDsiZ4rJl
+         TLkAHmxbiNJ2GGXUWEIuLglrgduq7e7nR4PZJL0+o0sAoMxwAItHJjKz7f1720ogIC
+         oOaN3x2tMKTup1J1rFWjnflPD/AN2xLJUjdT+P2PVQDlKoFLmCDyDtnToY/8mEanon
+         tjna9fUUg7k1KIYF2RCXXa7nsK7+TVnAFzRYdy/rZrsfvXvxw4XMQj9pP8APrldsZY
+         nblTMVdpkYSEdnf7uE9ou/W/o1MdqlB1zHrJtDNYjjnxl6e8TA4GrBmKkfHTv0f8+w
+         XJQmjiJ9fBLNQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Daniel Golle <daniel@makrotopia.org>,
-        Serge Vasilugin <vasilugin@yandex.ru>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        stf_xl@wp.pl, helmut.schaa@googlemail.com, davem@davemloft.net,
+Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Sungwoo Kim <iam@sung-woo.kim>,
+        Sasha Levin <sashal@kernel.org>, marcel@holtmann.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 14/16] wifi: rt2x00: don't run Rt5592 IQ calibration on MT7620
-Date:   Sun,  9 Oct 2022 18:27:10 -0400
-Message-Id: <20221009222713.1220394-14-sashal@kernel.org>
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 15/16] Bluetooth: L2CAP: Fix user-after-free
+Date:   Sun,  9 Oct 2022 18:27:11 -0400
+Message-Id: <20221009222713.1220394-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009222713.1220394-1-sashal@kernel.org>
 References: <20221009222713.1220394-1-sashal@kernel.org>
@@ -58,36 +58,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Daniel Golle <daniel@makrotopia.org>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[ Upstream commit d3aad83d05aec0cfd7670cf0028f2ad4b81de92e ]
+[ Upstream commit 35fcbc4243aad7e7d020b7c1dfb14bb888b20a4f ]
 
-The function rt2800_iq_calibrate is intended for Rt5592 only.
-Don't call it for MT7620 which has it's own calibration functions.
+This uses l2cap_chan_hold_unless_zero() after calling
+__l2cap_get_chan_blah() to prevent the following trace:
 
-Reported-by: Serge Vasilugin <vasilugin@yandex.ru>
-Signed-off-by: Daniel Golle <daniel@makrotopia.org>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/31a1c34ddbd296b82f38c18c9ae7339059215fdc.1663445157.git.daniel@makrotopia.org
+Bluetooth: l2cap_core.c:static void l2cap_chan_destroy(struct kref
+*kref)
+Bluetooth: chan 0000000023c4974d
+Bluetooth: parent 00000000ae861c08
+==================================================================
+BUG: KASAN: use-after-free in __mutex_waiter_is_first
+kernel/locking/mutex.c:191 [inline]
+BUG: KASAN: use-after-free in __mutex_lock_common
+kernel/locking/mutex.c:671 [inline]
+BUG: KASAN: use-after-free in __mutex_lock+0x278/0x400
+kernel/locking/mutex.c:729
+Read of size 8 at addr ffff888006a49b08 by task kworker/u3:2/389
+
+Link: https://lore.kernel.org/lkml/20220622082716.478486-1-lee.jones@linaro.org
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Sungwoo Kim <iam@sung-woo.kim>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ralink/rt2x00/rt2800lib.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/bluetooth/l2cap_core.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/wireless/ralink/rt2x00/rt2800lib.c b/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
-index 9fc6f1615343..079611ff8def 100644
---- a/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
-+++ b/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
-@@ -3386,7 +3386,8 @@ static void rt2800_config_channel(struct rt2x00_dev *rt2x00dev,
- 		reg = (rf->channel <= 14 ? 0x1c : 0x24) + 2 * rt2x00dev->lna_gain;
- 		rt2800_bbp_write_with_rx_chain(rt2x00dev, 66, reg);
- 
--		rt2800_iq_calibrate(rt2x00dev, rf->channel);
-+		if (rt2x00_rt(rt2x00dev, RT5592))
-+			rt2800_iq_calibrate(rt2x00dev, rf->channel);
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index 42df17fa7f16..ec04a7ea5537 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -4039,6 +4039,12 @@ static int l2cap_connect_create_rsp(struct l2cap_conn *conn,
+ 		}
  	}
  
- 	rt2800_bbp_read(rt2x00dev, 4, &bbp);
++	chan = l2cap_chan_hold_unless_zero(chan);
++	if (!chan) {
++		err = -EBADSLT;
++		goto unlock;
++	}
++
+ 	err = 0;
+ 
+ 	l2cap_chan_lock(chan);
+@@ -4068,6 +4074,7 @@ static int l2cap_connect_create_rsp(struct l2cap_conn *conn,
+ 	}
+ 
+ 	l2cap_chan_unlock(chan);
++	l2cap_chan_put(chan);
+ 
+ unlock:
+ 	mutex_unlock(&conn->chan_lock);
 -- 
 2.35.1
 
