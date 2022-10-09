@@ -2,47 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E285F5F93CA
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 01:46:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A6D35F92D6
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:52:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231134AbiJIXqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 19:46:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42886 "EHLO
+        id S233737AbiJIWwQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:52:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231358AbiJIXpx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 19:45:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EAC85B04A;
-        Sun,  9 Oct 2022 16:16:57 -0700 (PDT)
+        with ESMTP id S233553AbiJIWuO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:50:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD35244566;
+        Sun,  9 Oct 2022 15:26:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1AE1BB80DDC;
-        Sun,  9 Oct 2022 22:26:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61AF2C433D7;
-        Sun,  9 Oct 2022 22:26:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 380BFB80DF3;
+        Sun,  9 Oct 2022 22:26:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C2F3C4347C;
+        Sun,  9 Oct 2022 22:26:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354390;
-        bh=y6mb1eubaJp0f29iWdCtN2LvaUKIi3ax1uLB3dwiWUQ=;
+        s=k20201202; t=1665354395;
+        bh=yqZYWXR6vXSombml3yoWCJDCrW/Il5js3fURJ9axIDs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a5ar6f2SRpQc5NRJdH5WpxFTK1ge9lBHVDwOk9nauJuZAT3CnrZhDCDzfIYeoB3TM
-         WuhrNBE5iSSEwVT1VQgALX8vc6qjxS8LEJbw07ojcKr3Jo9zSqvDHmLlfAJappk8Ru
-         sIFVcyimUygt1pJ0iGHcT8gCBbiVfy19JU35aDoAsH0TLUbgg/0/v2ASAfWHTtBmKR
-         sc8TSInLSgXlOrDyMN4njmG50HPku+GOhnTmc8PuGGQgNy8ugsq1FSRudc6P6WQ2tY
-         DPMfFtoQ2dyJwou3HYK9SgpGrhhyrC1Dwd2g5vlNz+3UBtKuxtwe5dEfC+AQhfCYXp
-         Xbxc58b5e/xkw==
+        b=RuVVKtJF/dNobkazh9bKRi5qTKTuLHsgAnQPrRtwygLxgSunus1sFZTTNCuDOS4hf
+         nnftEMe81uRFs2tcpVfe64BigI2sp7AHouXLgcCwPXN3Ygw2EWIS0ptbnzUyYAOuv2
+         7wS8iYO1e2qiHeVzxXek9TeUCkC40K9W594VHYRX/QfekROPNQrivfpLwXP+22a6ME
+         +bUA47q2e2haCTJ0qk2yjrhPHZ1044YWRwO4CNnfs7jaB6wRU3D79RodW4SGa2LsVY
+         3OePJD+5BwyJnihRq7rasJYSVaHTc06nfAs8zj5Si8MuZPxzVGGBp2WnEPnCYS8LiK
+         jbN6uLBhNmgrw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        syzbot <syzbot+83672956c7aa6af698b3@syzkaller.appspotmail.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Sasha Levin <sashal@kernel.org>, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 11/23] Bluetooth: L2CAP: initialize delayed works at l2cap_chan_create()
-Date:   Sun,  9 Oct 2022 18:25:41 -0400
-Message-Id: <20221009222557.1219968-11-sashal@kernel.org>
+Cc:     Nathan Huckleberry <nhuck@google.com>,
+        Dan Carpenter <error27@gmail.com>, llvm@lists.linux.dev,
+        Nathan Chancellor <nathan@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, ndesaulniers@google.com,
+        khalasa@piap.pl, thomas.lendacky@amd.com, shayagr@amazon.com,
+        wsa+renesas@sang-engineering.com, dmitry.torokhov@gmail.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 12/23] net: davicom: Fix return type of dm9000_start_xmit
+Date:   Sun,  9 Oct 2022 18:25:42 -0400
+Message-Id: <20221009222557.1219968-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009222557.1219968-1-sashal@kernel.org>
 References: <20221009222557.1219968-1-sashal@kernel.org>
@@ -59,80 +61,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+From: Nathan Huckleberry <nhuck@google.com>
 
-[ Upstream commit 2d2cb3066f2c90cd8ca540b36ba7a55e7f2406e0 ]
+[ Upstream commit 0191580b000d50089a0b351f7cdbec4866e3d0d2 ]
 
-syzbot is reporting cancel_delayed_work() without INIT_DELAYED_WORK() at
-l2cap_chan_del() [1], for CONF_NOT_COMPLETE flag (which meant to prevent
-l2cap_chan_del() from calling cancel_delayed_work()) is cleared by timer
-which fires before l2cap_chan_del() is called by closing file descriptor
-created by socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_L2CAP).
+The ndo_start_xmit field in net_device_ops is expected to be of type
+netdev_tx_t (*ndo_start_xmit)(struct sk_buff *skb, struct net_device *dev).
 
-l2cap_bredr_sig_cmd(L2CAP_CONF_REQ) and l2cap_bredr_sig_cmd(L2CAP_CONF_RSP)
-are calling l2cap_ertm_init(chan), and they call l2cap_chan_ready() (which
-clears CONF_NOT_COMPLETE flag) only when l2cap_ertm_init(chan) succeeded.
+The mismatched return type breaks forward edge kCFI since the underlying
+function definition does not match the function hook definition.
 
-l2cap_sock_init() does not call l2cap_ertm_init(chan), and it instead sets
-CONF_NOT_COMPLETE flag by calling l2cap_chan_set_defaults(). However, when
-connect() is requested, "command 0x0409 tx timeout" happens after 2 seconds
- from connect() request, and CONF_NOT_COMPLETE flag is cleared after 4
-seconds from connect() request, for l2cap_conn_start() from
-l2cap_info_timeout() callback scheduled by
+The return type of dm9000_start_xmit should be changed from int to
+netdev_tx_t.
 
-  schedule_delayed_work(&conn->info_timer, L2CAP_INFO_TIMEOUT);
-
-in l2cap_connect() is calling l2cap_chan_ready().
-
-Fix this problem by initializing delayed works used by L2CAP_MODE_ERTM
-mode as soon as l2cap_chan_create() allocates a channel, like I did in
-commit be8597239379f0f5 ("Bluetooth: initialize skb_queue_head at
-l2cap_chan_create()").
-
-Link: https://syzkaller.appspot.com/bug?extid=83672956c7aa6af698b3 [1]
-Reported-by: syzbot <syzbot+83672956c7aa6af698b3@syzkaller.appspotmail.com>
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Reported-by: Dan Carpenter <error27@gmail.com>
+Link: https://github.com/ClangBuiltLinux/linux/issues/1703
+Cc: llvm@lists.linux.dev
+Signed-off-by: Nathan Huckleberry <nhuck@google.com>
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+Link: https://lore.kernel.org/r/20220912194722.809525-1-nhuck@google.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/l2cap_core.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/davicom/dm9000.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index e45a12378bd1..75a76353525c 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -63,6 +63,9 @@ static void l2cap_send_disconn_req(struct l2cap_chan *chan, int err);
- 
- static void l2cap_tx(struct l2cap_chan *chan, struct l2cap_ctrl *control,
- 		     struct sk_buff_head *skbs, u8 event);
-+static void l2cap_retrans_timeout(struct work_struct *work);
-+static void l2cap_monitor_timeout(struct work_struct *work);
-+static void l2cap_ack_timeout(struct work_struct *work);
- 
- static inline u8 bdaddr_type(u8 link_type, u8 bdaddr_type)
+diff --git a/drivers/net/ethernet/davicom/dm9000.c b/drivers/net/ethernet/davicom/dm9000.c
+index 8b07890b0b23..833e27ce4a57 100644
+--- a/drivers/net/ethernet/davicom/dm9000.c
++++ b/drivers/net/ethernet/davicom/dm9000.c
+@@ -1025,7 +1025,7 @@ static void dm9000_send_packet(struct net_device *dev,
+  *  Hardware start transmission.
+  *  Send a packet to media from the upper layer.
+  */
+-static int
++static netdev_tx_t
+ dm9000_start_xmit(struct sk_buff *skb, struct net_device *dev)
  {
-@@ -470,6 +473,9 @@ struct l2cap_chan *l2cap_chan_create(void)
- 	write_unlock(&chan_list_lock);
- 
- 	INIT_DELAYED_WORK(&chan->chan_timer, l2cap_chan_timeout);
-+	INIT_DELAYED_WORK(&chan->retrans_timer, l2cap_retrans_timeout);
-+	INIT_DELAYED_WORK(&chan->monitor_timer, l2cap_monitor_timeout);
-+	INIT_DELAYED_WORK(&chan->ack_timer, l2cap_ack_timeout);
- 
- 	chan->state = BT_OPEN;
- 
-@@ -3154,10 +3160,6 @@ int l2cap_ertm_init(struct l2cap_chan *chan)
- 	chan->rx_state = L2CAP_RX_STATE_RECV;
- 	chan->tx_state = L2CAP_TX_STATE_XMIT;
- 
--	INIT_DELAYED_WORK(&chan->retrans_timer, l2cap_retrans_timeout);
--	INIT_DELAYED_WORK(&chan->monitor_timer, l2cap_monitor_timeout);
--	INIT_DELAYED_WORK(&chan->ack_timer, l2cap_ack_timeout);
--
- 	skb_queue_head_init(&chan->srej_q);
- 
- 	err = l2cap_seq_list_init(&chan->srej_list, chan->tx_win);
+ 	unsigned long flags;
 -- 
 2.35.1
 
