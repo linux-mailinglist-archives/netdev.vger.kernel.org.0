@@ -2,115 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A717F5F8DAD
-	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 21:17:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 523CF5F8DBA
+	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 21:33:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230136AbiJITRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 15:17:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60408 "EHLO
+        id S230274AbiJITdc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 15:33:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229979AbiJITRF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 15:17:05 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11BB823179
-        for <netdev@vger.kernel.org>; Sun,  9 Oct 2022 12:17:04 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id e10-20020a05600c4e4a00b003b4eff4ab2cso7369057wmq.4
-        for <netdev@vger.kernel.org>; Sun, 09 Oct 2022 12:17:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Yzai4QVJ3GUgs63J6wE715M728/JeqEdzrClPYvk1wg=;
-        b=WwUxkjpC1C0b02dQiNJW85YAp9e1Gi7t3oy9Pcl5aYRlZ/DuWQenZN/p+ZuXab/zW+
-         xPf2vW4E3kbtG3S+FVvgDeoZzI0bk8/Bfubpf5JpvSPxD6D+zLIkeuJHNeq11t4B/jIv
-         KzF7RK1hsWtzD24Ya2Xi88OtaXW4pbpFJStlKzGcp675IhhMtHkT33Ae+aSNw3XPaPsZ
-         Ll2V5Zztop9lE3Q6JabD8wBfR+vzvYGJNgd1i7V8UgykUraCo7NDg2MOz+il6kuHI0Lw
-         ByZhWGPuRAHSowA7KG6wPgchxticPlqKcbZoePP1WGVME2mjGC6H5eE+19wCGI2EiEZd
-         kSpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Yzai4QVJ3GUgs63J6wE715M728/JeqEdzrClPYvk1wg=;
-        b=025Iy+NgxsjO2/6ewQIhoMKcxMcvSfFKiF0Til2SuMBaYs3PluZRk2cy0cECaw6ORv
-         t3AdwGzwK0UVtqzhJ8LdJRHdfAmn8YN6IunnWOZcuaH5Wf+/FoIU5/4StjdN21KneOGZ
-         aHT3QPRKuyXxcCEX+I7B1l5kfMTqxndcVTqusK6kO855ktTBBwOY8c6AUauLft5qFBiF
-         +GsJcK46SVSQGHIGfNrB0yWLt912iGDNt+/AbNxiCPmZPEbdRV0rJHalGO5TT+QJaibC
-         MoAP1yUTh+fQlDdai54IdN6RFMxJzxrqA7rufOpyqOJlhNR9vmSuIyE6h7nwlCzmu+zE
-         fEEg==
-X-Gm-Message-State: ACrzQf1AKZcUxAk976YyA8nGpO5TPVJIHK0AMf9AdC7mZ3VQ3SE3Me9F
-        lJEF0HVqo+3yfp8xuaCZB1Hc09vRjmUfPQ==
-X-Google-Smtp-Source: AMsMyM6/fNIAUzXQY+0u9tf9I92UfWAmwM7jvwYYpKbmJ2zOK9yrc9529X5UgAdQxStZbMPvctAl6w==
-X-Received: by 2002:a1c:6a08:0:b0:3c4:a83b:bc4 with SMTP id f8-20020a1c6a08000000b003c4a83b0bc4mr5458659wmc.115.1665343022363;
-        Sun, 09 Oct 2022 12:17:02 -0700 (PDT)
-Received: from jimi.localdomain ([213.57.189.88])
-        by smtp.gmail.com with ESMTPSA id c13-20020a5d4f0d000000b0022cd96b3ba6sm8852620wru.90.2022.10.09.12.17.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 09 Oct 2022 12:17:02 -0700 (PDT)
-From:   Eyal Birger <eyal.birger@gmail.com>
-To:     steffen.klassert@secunet.com
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, monil191989@gmail.com,
-        nicolas.dichtel@6wind.com, stephen@networkplumber.org,
-        Eyal Birger <eyal.birger@gmail.com>
-Subject: [PATCH ipsec,v2] xfrm: fix "disable_policy" on ipv4 early demux
-Date:   Sun,  9 Oct 2022 22:16:43 +0300
-Message-Id: <20221009191643.297623-1-eyal.birger@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229854AbiJITdb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 15:33:31 -0400
+X-Greylist: delayed 533 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 09 Oct 2022 12:33:29 PDT
+Received: from mail.manjaro.org (mail.manjaro.org [116.203.91.91])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50B351DF26;
+        Sun,  9 Oct 2022 12:33:29 -0700 (PDT)
+From:   Furkan Kardame <f.kardame@manjaro.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=manjaro.org; s=2021;
+        t=1665343474;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=0RGT+cnc5KlanDi6/VZkIBN/8bGM2fw81AiU1VLnLLs=;
+        b=Rr81dPcznea03FX/A8ZzAZZVJp9cQsRCOU4yt2tcGuNtGC+PRPtGwZqnyT5lw02Oafwr4L
+        N0TJQ/EB7myu4NWUK7f8ABn4+3v9AE3mfDfma23LKJViZsztHgSHK+JKyvXoVTTBxvTiSs
+        ky7fhyR3MgLeYnnCG50xcPnoAiW6s8hBYKgWik8WBolaOF8CJTpWuIngpntJB6L93OK9Rz
+        vFLx0bqefFoIm7CTfdWVNQSic0RaRnUdqvvvHl6SOT1HrkLHKTtShLrrOz5PmfoXvz4A8h
+        VEW1s9MIMnMy2yqQQSrJTrmZMpxaLzklpn8f+07kePobPgRJ4tqtU0yFekc6BQ==
+To:     pgwipeout@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Furkan Kardame <f.kardame@manjaro.org>
+Subject: [PATCH] net: phy: add support for Motorcomm yt8531C phy
+Date:   Sun,  9 Oct 2022 22:24:05 +0300
+Message-Id: <20221009192405.97118-1-f.kardame@manjaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Authentication-Results: ORIGINATING;
+        auth=pass smtp.auth=f.kardame@manjaro.org smtp.mailfrom=f.kardame@manjaro.org
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The commit in the "Fixes" tag tried to avoid a case where policy check
-is ignored due to dst caching in next hops.
+From: Peter Geis <pgwipeout@gmail.com>
 
-However, when the traffic is locally consumed, the dst may be cached
-in a local TCP or UDP socket as part of early demux. In this case the
-"disable_policy" flag is not checked as ip_route_input_noref() was only
-called before caching, and thus, packets after the initial packet in a
-flow will be dropped if not matching policies.
+This patch adds support for Motorcomm YT8531C which is
+used in OrangePi 3 LTS, OrangePi 4 LTS and OrangePi 800
+Currently being used by Manjaro Arm kernel
 
-Fix by checking the "disable_policy" flag also when a valid dst is
-already available.
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216557
-Reported-by: Monil Patel <monil191989@gmail.com>
-Fixes: e6175a2ed1f1 ("xfrm: fix "disable_policy" flag use when arriving from different devices")
-Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
-
-----
-
-v2: use dev instead of skb->dev
+Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+Signed-off-by: Furkan Kardame <f.kardame@manjaro.org>
 ---
- net/ipv4/ip_input.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/phy/motorcomm.c | 90 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 90 insertions(+)
 
-diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
-index 1b512390b3cf..e880ce77322a 100644
---- a/net/ipv4/ip_input.c
-+++ b/net/ipv4/ip_input.c
-@@ -366,6 +366,11 @@ static int ip_rcv_finish_core(struct net *net, struct sock *sk,
- 					   iph->tos, dev);
- 		if (unlikely(err))
- 			goto drop_error;
-+	} else {
-+		struct in_device *in_dev = __in_dev_get_rcu(dev);
-+
-+		if (in_dev && IN_DEV_ORCONF(in_dev, NOPOLICY))
-+			IPCB(skb)->flags |= IPSKB_NOPOLICY;
- 	}
+diff --git a/drivers/net/phy/motorcomm.c b/drivers/net/phy/motorcomm.c
+index 7e6ac2c5e..cbc8ef15d 100644
+--- a/drivers/net/phy/motorcomm.c
++++ b/drivers/net/phy/motorcomm.c
+@@ -10,6 +10,7 @@
+ #include <linux/phy.h>
  
- #ifdef CONFIG_IP_ROUTE_CLASSID
+ #define PHY_ID_YT8511		0x0000010a
++#define PHY_ID_YT8531		0x4f51e91b
+ 
+ #define YT8511_PAGE_SELECT	0x1e
+ #define YT8511_PAGE		0x1f
+@@ -38,6 +39,38 @@
+ #define YT8511_DELAY_FE_TX_EN	(0xf << 12)
+ #define YT8511_DELAY_FE_TX_DIS	(0x2 << 12)
+ 
++#define YT8531_RGMII_CONFIG1	0xa003
++
++/* TX Gig-E Delay is bits 3:0, default 0x1
++ * TX Fast-E Delay is bits 7:4, default 0xf
++ * RX Delay is bits 13:10, default 0x0
++ * Delay = 150ps * N
++ * On = 2000ps, off = 50ps
++ */
++#define YT8531_DELAY_GE_TX_EN	(0xd << 0)
++#define YT8531_DELAY_GE_TX_DIS	(0x0 << 0)
++#define YT8531_DELAY_FE_TX_EN	(0xd << 4)
++#define YT8531_DELAY_FE_TX_DIS	(0x0 << 4)
++#define YT8531_DELAY_RX_EN	(0xd << 10)
++#define YT8531_DELAY_RX_DIS	(0x0 << 10)
++#define YT8531_DELAY_MASK	(GENMASK(13, 10) | GENMASK(7, 0))
++
++#define YT8531_SYNCE_CFG	0xa012
++
++/* Clk src config is bits 3:1
++ * 3b000 src from pll
++ * 3b001 src from rx_clk
++ * 3b010 src from serdes
++ * 3b011 src from ptp_in
++ * 3b100 src from 25mhz refclk *default*
++ * 3b101 src from 25mhz ssc
++ * Clk rate select is bit 4
++ * 1b0 25mhz clk output *default*
++ * 1b1 125mhz clk output
++ * Clkout enable is bit 6
++ */
++#define YT8531_CLKCFG_125M	(BIT(6) | BIT(4) | (0x0 < 1))
++
+ static int yt8511_read_page(struct phy_device *phydev)
+ {
+ 	return __phy_read(phydev, YT8511_PAGE_SELECT);
+@@ -111,6 +145,51 @@ static int yt8511_config_init(struct phy_device *phydev)
+ 	return phy_restore_page(phydev, oldpage, ret);
+ }
+ 
++static int yt8531_config_init(struct phy_device *phydev)
++{
++	int oldpage, ret = 0;
++	unsigned int val;
++
++	oldpage = phy_select_page(phydev, YT8531_RGMII_CONFIG1);
++	if (oldpage < 0)
++		goto err_restore_page;
++
++	/* set rgmii delay mode */
++	switch (phydev->interface) {
++	case PHY_INTERFACE_MODE_RGMII:
++		val = YT8531_DELAY_RX_DIS | YT8531_DELAY_GE_TX_DIS | YT8531_DELAY_FE_TX_DIS;
++		break;
++	case PHY_INTERFACE_MODE_RGMII_RXID:
++		val = YT8531_DELAY_RX_EN | YT8531_DELAY_GE_TX_DIS | YT8531_DELAY_FE_TX_DIS;
++		break;
++	case PHY_INTERFACE_MODE_RGMII_TXID:
++		val = YT8531_DELAY_RX_DIS | YT8531_DELAY_GE_TX_EN | YT8531_DELAY_FE_TX_EN;
++		break;
++	case PHY_INTERFACE_MODE_RGMII_ID:
++		val = YT8531_DELAY_RX_EN | YT8531_DELAY_GE_TX_EN | YT8531_DELAY_FE_TX_EN;
++		break;
++	default: /* do not support other modes */
++		ret = -EOPNOTSUPP;
++		goto err_restore_page;
++	}
++
++	ret = __phy_modify(phydev, YT8511_PAGE, YT8531_DELAY_MASK, val);
++	if (ret < 0)
++		goto err_restore_page;
++
++	/* set clock mode to 125mhz */
++	ret = __phy_write(phydev, YT8511_PAGE_SELECT, YT8531_SYNCE_CFG);
++	if (ret < 0)
++		goto err_restore_page;
++
++	ret = __phy_write(phydev, YT8511_PAGE, YT8531_CLKCFG_125M);
++	if (ret < 0)
++		goto err_restore_page;
++
++err_restore_page:
++	return phy_restore_page(phydev, oldpage, ret);
++}
++
+ static struct phy_driver motorcomm_phy_drvs[] = {
+ 	{
+ 		PHY_ID_MATCH_EXACT(PHY_ID_YT8511),
+@@ -120,7 +200,16 @@ static struct phy_driver motorcomm_phy_drvs[] = {
+ 		.resume		= genphy_resume,
+ 		.read_page	= yt8511_read_page,
+ 		.write_page	= yt8511_write_page,
++	}, {
++		PHY_ID_MATCH_EXACT(PHY_ID_YT8531),
++		.name		= "YT8531 Gigabit Ethernet",
++		.config_init	= yt8531_config_init,
++		.suspend	= genphy_suspend,
++		.resume		= genphy_resume,
++		.read_page	= yt8511_read_page,
++		.write_page	= yt8511_write_page,
+ 	},
++
+ };
+ 
+ module_phy_driver(motorcomm_phy_drvs);
+@@ -131,6 +220,7 @@ MODULE_LICENSE("GPL");
+ 
+ static const struct mdio_device_id __maybe_unused motorcomm_tbl[] = {
+ 	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8511) },
++	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8531) },
+ 	{ /* sentinal */ }
+ };
+ 
 -- 
-2.34.1
+2.37.3
 
