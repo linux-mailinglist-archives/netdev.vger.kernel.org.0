@@ -2,54 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D65285F90BC
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:27:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B00885F902B
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:21:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232056AbiJIW06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:26:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41140 "EHLO
+        id S230490AbiJIWVw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:21:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231828AbiJIWZ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:25:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C747A3DF2C;
-        Sun,  9 Oct 2022 15:18:31 -0700 (PDT)
+        with ESMTP id S230453AbiJIWTs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:19:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6072133A31;
+        Sun,  9 Oct 2022 15:16:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 105ACB80E03;
-        Sun,  9 Oct 2022 22:16:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F36EC43142;
-        Sun,  9 Oct 2022 22:16:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C7A6160CEC;
+        Sun,  9 Oct 2022 22:16:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 310ACC433D6;
+        Sun,  9 Oct 2022 22:16:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665353809;
-        bh=f2w/2K2Wr7zpiCFVTdrTiVCurVGndA9EOEHywhstOgA=;
+        s=k20201202; t=1665353815;
+        bh=5JkOB+HsRfMjF6JdEuT30fBWd/b3+QMJryRmJUvtxG8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f20Q0bDuKr6MfYaFJ47TtetKT6dJc7bsaCtmPnnomC2MbD9SDcaMh6IE6PW2qd0Ri
-         Y8CvN2xdac2Wwq54hWMYIEF9msNgbDM6GT1P6PfyunzH/4+RJFxqJXfmiNJRmFtLSp
-         zfWvk1e5fUeGRSOZ5MiI+ASLPhLQNSrKkJ/IjSuLIeoMO/JtHVnQgiv2egUpoB10Zs
-         ZBUpFyxOONhP74AmgswZ2bgsmxJkKjnstjPXZLJCxT5gr4dY4oCM2UUpLLe0f6/VGS
-         Xxg1UaDlAZtuCi5K/4CjyB6pPvSgylS1mE359rGaZpI/4CL6N1arKOKM4rIS1t/wnz
-         0NavHxfDhGl3g==
+        b=MIbqmRqHMKp4lJvGxN/pdoiNtsvtHwDodRKSGckg0nar/r7v6OchB8mtBbfRIpChQ
+         E8p0yFlww+69OiBansyCHPm+1iZAON5PsfTsyFyF7AFgn9n2Be8Mzj/iHTnI5K/Szy
+         lGzWSWfI+CP5cFhZwUYZgCEeGN2+BeiHL+3T3bqL3EgjYNkTOIMv4wooE5FrpeRpWo
+         /NxeEYa6yqBRDkys8kOkoG6WD/gagr46qJ2oMffo+vhRHXx8bAtzuOhb55f9bXnR65
+         ERlLisPHuDxfo3p5ccdQrAyjmve82De4ORw6jWRtRY2wCOAYSctP3pTfobASDfcVst
+         icVRkZBXLEL/w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kees Cook <keescook@chromium.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+Cc:     Sergei Antonov <saproj@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Paolo Abeni <pabeni@redhat.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
-        wsa+renesas@sang-engineering.com, horms@verge.net.au,
-        johannes@sipsolutions.net, socketcan@hartkopp.net,
-        petrm@nvidia.com, harshit.m.mogalapalli@oracle.com
-Subject: [PATCH AUTOSEL 5.19 29/73] netlink: Bounds-check struct nlmsgerr creation
-Date:   Sun,  9 Oct 2022 18:14:07 -0400
-Message-Id: <20221009221453.1216158-29-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 30/73] net: ftmac100: fix endianness-related issues from 'sparse'
+Date:   Sun,  9 Oct 2022 18:14:08 -0400
+Message-Id: <20221009221453.1216158-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009221453.1216158-1-sashal@kernel.org>
 References: <20221009221453.1216158-1-sashal@kernel.org>
@@ -66,79 +56,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Sergei Antonov <saproj@gmail.com>
 
-[ Upstream commit 710d21fdff9a98d621cd4e64167f3ef8af4e2fd1 ]
+[ Upstream commit 9df696b3b3a4c96c3219eb87c7bf03fb50e490b8 ]
 
-In preparation for FORTIFY_SOURCE doing bounds-check on memcpy(),
-switch from __nlmsg_put to nlmsg_put(), and explain the bounds check
-for dealing with the memcpy() across a composite flexible array struct.
-Avoids this future run-time warning:
+Sparse found a number of endianness-related issues of these kinds:
 
-  memcpy: detected field-spanning write (size 32) of single field "&errmsg->msg" at net/netlink/af_netlink.c:2447 (size 16)
+.../ftmac100.c:192:32: warning: restricted __le32 degrades to integer
 
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Pablo Neira Ayuso <pablo@netfilter.org>
-Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
-Cc: Florian Westphal <fw@strlen.de>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: syzbot <syzkaller@googlegroups.com>
-Cc: netfilter-devel@vger.kernel.org
-Cc: coreteam@netfilter.org
-Cc: netdev@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220901071336.1418572-1-keescook@chromium.org
-Signed-off-by: David S. Miller <davem@davemloft.net>
+.../ftmac100.c:208:23: warning: incorrect type in assignment (different base types)
+.../ftmac100.c:208:23:    expected unsigned int rxdes0
+.../ftmac100.c:208:23:    got restricted __le32 [usertype]
+
+.../ftmac100.c:249:23: warning: invalid assignment: &=
+.../ftmac100.c:249:23:    left side has type unsigned int
+.../ftmac100.c:249:23:    right side has type restricted __le32
+
+.../ftmac100.c:527:16: warning: cast to restricted __le32
+
+Change type of some fields from 'unsigned int' to '__le32' to fix it.
+
+Signed-off-by: Sergei Antonov <saproj@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220902113749.1408562-1-saproj@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/ipset/ip_set_core.c | 8 +++++---
- net/netlink/af_netlink.c          | 8 +++++---
- 2 files changed, 10 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/faraday/ftmac100.h | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
-index 16ae92054baa..6b31746f9be3 100644
---- a/net/netfilter/ipset/ip_set_core.c
-+++ b/net/netfilter/ipset/ip_set_core.c
-@@ -1719,11 +1719,13 @@ call_ad(struct net *net, struct sock *ctnl, struct sk_buff *skb,
- 		skb2 = nlmsg_new(payload, GFP_KERNEL);
- 		if (!skb2)
- 			return -ENOMEM;
--		rep = __nlmsg_put(skb2, NETLINK_CB(skb).portid,
--				  nlh->nlmsg_seq, NLMSG_ERROR, payload, 0);
-+		rep = nlmsg_put(skb2, NETLINK_CB(skb).portid,
-+				nlh->nlmsg_seq, NLMSG_ERROR, payload, 0);
- 		errmsg = nlmsg_data(rep);
- 		errmsg->error = ret;
--		memcpy(&errmsg->msg, nlh, nlh->nlmsg_len);
-+		unsafe_memcpy(&errmsg->msg, nlh, nlh->nlmsg_len,
-+			      /* Bounds checked by the skb layer. */);
-+
- 		cmdattr = (void *)&errmsg->msg + min_len;
+diff --git a/drivers/net/ethernet/faraday/ftmac100.h b/drivers/net/ethernet/faraday/ftmac100.h
+index fe986f1673fc..8af32f9070f4 100644
+--- a/drivers/net/ethernet/faraday/ftmac100.h
++++ b/drivers/net/ethernet/faraday/ftmac100.h
+@@ -122,9 +122,9 @@
+  * Transmit descriptor, aligned to 16 bytes
+  */
+ struct ftmac100_txdes {
+-	unsigned int	txdes0;
+-	unsigned int	txdes1;
+-	unsigned int	txdes2;	/* TXBUF_BADR */
++	__le32		txdes0;
++	__le32		txdes1;
++	__le32		txdes2;	/* TXBUF_BADR */
+ 	unsigned int	txdes3;	/* not used by HW */
+ } __attribute__ ((aligned(16)));
  
- 		ret = nla_parse(cda, IPSET_ATTR_CMD_MAX, cmdattr,
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index 0cd91f813a3b..d8d3ed2096a3 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -2440,11 +2440,13 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
- 		return;
- 	}
+@@ -143,9 +143,9 @@ struct ftmac100_txdes {
+  * Receive descriptor, aligned to 16 bytes
+  */
+ struct ftmac100_rxdes {
+-	unsigned int	rxdes0;
+-	unsigned int	rxdes1;
+-	unsigned int	rxdes2;	/* RXBUF_BADR */
++	__le32		rxdes0;
++	__le32		rxdes1;
++	__le32		rxdes2;	/* RXBUF_BADR */
+ 	unsigned int	rxdes3;	/* not used by HW */
+ } __attribute__ ((aligned(16)));
  
--	rep = __nlmsg_put(skb, NETLINK_CB(in_skb).portid, nlh->nlmsg_seq,
--			  NLMSG_ERROR, payload, flags);
-+	rep = nlmsg_put(skb, NETLINK_CB(in_skb).portid, nlh->nlmsg_seq,
-+			NLMSG_ERROR, payload, flags);
- 	errmsg = nlmsg_data(rep);
- 	errmsg->error = err;
--	memcpy(&errmsg->msg, nlh, payload > sizeof(*errmsg) ? nlh->nlmsg_len : sizeof(*nlh));
-+	unsafe_memcpy(&errmsg->msg, nlh, payload > sizeof(*errmsg)
-+					 ? nlh->nlmsg_len : sizeof(*nlh),
-+		      /* Bounds checked by the skb layer. */);
- 
- 	if (nlk_has_extack && extack) {
- 		if (extack->_msg) {
 -- 
 2.35.1
 
