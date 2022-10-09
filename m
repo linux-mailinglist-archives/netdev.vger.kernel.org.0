@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A7AE5F8FBA
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:12:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45D285F8FC0
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:12:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231283AbiJIWMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:12:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41884 "EHLO
+        id S230456AbiJIWMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:12:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229854AbiJIWLi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:11:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8C5229C9A;
-        Sun,  9 Oct 2022 15:09:30 -0700 (PDT)
+        with ESMTP id S230453AbiJIWLl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:11:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 371E23056B;
+        Sun,  9 Oct 2022 15:09:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EFCF60CBA;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 73F7860CBB;
+        Sun,  9 Oct 2022 22:09:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2B4BC433C1;
         Sun,  9 Oct 2022 22:09:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10AD1C433D7;
-        Sun,  9 Oct 2022 22:09:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665353368;
-        bh=LQc9Hq9N4qEx7hcxjs71Wwvi8yIcl8MH/VNR5qpvAe8=;
+        s=k20201202; t=1665353369;
+        bh=CPnKM7zg/5Q/YE8kdmtbxIWQTQQLqgqzifqktpcnhWg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m61ZJ8jI5pQvYDmB9kC9GkFiYssCiMi0FJOZSDCUEEKrLt1eRWTufgLfoDFCXYYcS
-         2Nyd7qADC6fa5AT7jPlFCh5x3aKUKYcVBl0pqSmLxb/QN6NIlTTNhTZYJwMMQPFf4O
-         iwcsQNBvF1UGHVSc6IpF24nv3mkGFLBhS69HrC3puHkGTvrmbtQ7PXpxsIulV+2Agk
-         p/lQiunJX9hAxDR7c+Lt9nABfc0Dx6d0M1PP5ysSDSmXBe1S118I+h487rGxf0t2pB
-         yskA4ZEzDH7vy6XCo1g4qCRUGZLRQPt/kAHwrUEg+4+z///cMLnJy6EzZx9gRD6QRc
-         fVcNMfHNpq3PQ==
+        b=FY8nPkOzvz+DEcQ/RLqajGKuMiIiCJ6zKPGSfroW7I2g6hMGtngmv6+uCm2YBsJaT
+         Brnj+DIvSc8Mjk/XGP+Dm79yUUGPuA1dnNRU/XjGGft7PRWuPkdwTLe0nTppqP7l6g
+         0j2eBNxjIkRSyCC7jINu78VPsVAG15fsZJtnsSu0ZHl8ZWVd8xrxHJVtacs73Li1/j
+         iMzezK07XKH8pxBjCpumD7dH4d/A4YF8NU0801x5diBDzb2BBQ5H+vDmEOFx/OIrOS
+         e1xAX3squ6a36MDT3+OY2aDzg/tEY6h2RJcMisUWXmJ0/jNNq3x+7nDYdQO1ZKLqXc
+         6OAN+v7b697ZQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     GUO Zihua <guozihua@huawei.com>, Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, khalasa@piap.pl,
+        Sasha Levin <sashal@kernel.org>, wellslutw@gmail.com,
         davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.0 29/77] net: xscale: Fix return type for implementation of ndo_start_xmit
-Date:   Sun,  9 Oct 2022 18:07:06 -0400
-Message-Id: <20221009220754.1214186-29-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.0 30/77] net: sunplus: Fix return type for implementation of ndo_start_xmit
+Date:   Sun,  9 Oct 2022 18:07:07 -0400
+Message-Id: <20221009220754.1214186-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009220754.1214186-1-sashal@kernel.org>
 References: <20221009220754.1214186-1-sashal@kernel.org>
@@ -58,36 +58,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: GUO Zihua <guozihua@huawei.com>
 
-[ Upstream commit 0dbaf0fa62329d9fe452d9041a707a33f6274f1f ]
+[ Upstream commit 7b620e156097028e4c9b6481a84ec1e1e72877ca ]
 
 Since Linux now supports CFI, it will be a good idea to fix mismatched
 return type for implementation of hooks. Otherwise this might get
 cought out by CFI and cause a panic.
 
-eth_xmit() would return either NETDEV_TX_BUSY or NETDEV_TX_OK, so
-change the return type to netdev_tx_t directly.
+spl2sw_ethernet_start_xmit() would return either NETDEV_TX_BUSY or
+NETDEV_TX_OK, so change the return type to netdev_tx_t directly.
 
 Signed-off-by: GUO Zihua <guozihua@huawei.com>
-Link: https://lore.kernel.org/r/20220902081612.60405-1-guozihua@huawei.com
+Link: https://lore.kernel.org/r/20220902081550.60095-1-guozihua@huawei.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/xscale/ixp4xx_eth.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/sunplus/spl2sw_driver.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/xscale/ixp4xx_eth.c b/drivers/net/ethernet/xscale/ixp4xx_eth.c
-index 3591b9edc9a1..3b05287b6889 100644
---- a/drivers/net/ethernet/xscale/ixp4xx_eth.c
-+++ b/drivers/net/ethernet/xscale/ixp4xx_eth.c
-@@ -841,7 +841,7 @@ static void eth_txdone_irq(void *unused)
- 	}
+diff --git a/drivers/net/ethernet/sunplus/spl2sw_driver.c b/drivers/net/ethernet/sunplus/spl2sw_driver.c
+index 546206640492..38e478aa415c 100644
+--- a/drivers/net/ethernet/sunplus/spl2sw_driver.c
++++ b/drivers/net/ethernet/sunplus/spl2sw_driver.c
+@@ -62,7 +62,8 @@ static int spl2sw_ethernet_stop(struct net_device *ndev)
+ 	return 0;
  }
  
--static int eth_xmit(struct sk_buff *skb, struct net_device *dev)
-+static netdev_tx_t eth_xmit(struct sk_buff *skb, struct net_device *dev)
+-static int spl2sw_ethernet_start_xmit(struct sk_buff *skb, struct net_device *ndev)
++static netdev_tx_t spl2sw_ethernet_start_xmit(struct sk_buff *skb,
++					      struct net_device *ndev)
  {
- 	struct port *port = netdev_priv(dev);
- 	unsigned int txreadyq = port->plat->txreadyq;
+ 	struct spl2sw_mac *mac = netdev_priv(ndev);
+ 	struct spl2sw_common *comm = mac->comm;
 -- 
 2.35.1
 
