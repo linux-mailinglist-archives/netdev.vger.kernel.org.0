@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C4D65F90C4
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:27:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB9205F908F
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:26:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232079AbiJIW1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:27:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42212 "EHLO
+        id S231935AbiJIW0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:26:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231909AbiJIWZ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:25:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F178222AA;
-        Sun,  9 Oct 2022 15:18:17 -0700 (PDT)
+        with ESMTP id S231495AbiJIWYA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:24:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE3C53C8F3;
+        Sun,  9 Oct 2022 15:18:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3694B80DF3;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97FF4B80DF6;
+        Sun,  9 Oct 2022 22:15:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16ED1C43470;
         Sun,  9 Oct 2022 22:15:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36105C433D7;
-        Sun,  9 Oct 2022 22:15:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665353743;
-        bh=4I++Kn9fSoZUHIYC6BYNYv/X7IAgLUe/WFzrPJLmnbY=;
+        s=k20201202; t=1665353745;
+        bh=sOJf2HMfcZ1hjIAO+qoNr5T6ovrDWP07KCEdymXI3QQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qpRIrCNQIp15xrprso+D6NeTNGZIDsVyzC9Lqd7irAHDh/qS699wAet03KMwk4HJV
-         eBwErSp5zYpnFlLlhyLO8bWSqBmCs8PNXKYfZJACDz9k4YSkwLMGpBdQUWKZddTZPH
-         Nn3XOvPqUuC69IaGM8wIpeLDasbh21BMdRh3ZBImoypXIBrOQXlFN078P+dkMxfZcj
-         rK8DPkFLxNC6HKlibEJ1NKEcbMJG7FE6Q0ALgoEc+n7iCtca8as8HuhsHuxJmnBGUv
-         TSwSKTeBvPTKHsCn0ntxMJwzyp+ySjocJS846P2iDpVK/CQlqWgTaWXZctzJKWwLhE
-         DTYq9oy3ZdCeg==
+        b=JC9haYZEUk1xW5ACEVnafhbR71Uc03iZtGuVGBg+oyX4YDt1DGa0te5jh9LGUTYEB
+         r+Cy44CgmCXAYoeUurGjDKii6IAiAZsuj2/Z3dLibC+ugk1p7IKqhw2V5gFI/HwqeM
+         cl/CcavewRS4oQqH3YVlAxuNuucsg7MTusruQccq7yCg7+VPsbRyFW2EmaK632234x
+         5lt893BE7XrwGYR5CTtO3cQe/Xi8ZwYgLCdZkLHYtyjq87rYRyE/YNZIstJdAj4HZJ
+         s5i7gtw5DoAjvGgAilmE5ZpEYr0BQcSQmvv03dea+AorCV7TTT1DDA0zM7nyIrabGF
+         uTVDQCHeG2/5Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, andrew@lunn.ch,
-        vivien.didelot@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 10/73] net: dsa: all DSA masters must be down when changing the tagging protocol
-Date:   Sun,  9 Oct 2022 18:13:48 -0400
-Message-Id: <20221009221453.1216158-10-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, claudiu.manoil@nxp.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 11/73] net: mscc: ocelot: adjust forwarding domain for CPU ports in a LAG
+Date:   Sun,  9 Oct 2022 18:13:49 -0400
+Message-Id: <20221009221453.1216158-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009221453.1216158-1-sashal@kernel.org>
 References: <20221009221453.1216158-1-sashal@kernel.org>
@@ -60,90 +60,112 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit f41ec1fd1c20e2a4e60a4ab8490b3e63423c0a8a ]
+[ Upstream commit 291ac1517af58670740528466ccebe3caefb9093 ]
 
-The fact that the tagging protocol is set and queried from the
-/sys/class/net/<dsa-master>/dsa/tagging file is a bit of a quirk from
-the single CPU port days which isn't aging very well now that DSA can
-have more than a single CPU port. This is because the tagging protocol
-is a switch property, yet in the presence of multiple CPU ports it can
-be queried and set from multiple sysfs files, all of which are handled
-by the same implementation.
+Currently when we have 2 CPU ports configured for DSA tag_8021q mode and
+we put them in a LAG, a PGID dump looks like this:
 
-The current logic ensures that the net device whose sysfs file we're
-changing the tagging protocol through must be down. That net device is
-the DSA master, and this is fine for single DSA master / CPU port setups.
+PGID_SRC[0] = ports 4,
+PGID_SRC[1] = ports 4,
+PGID_SRC[2] = ports 4,
+PGID_SRC[3] = ports 4,
+PGID_SRC[4] = ports 0, 1, 2, 3, 4, 5,
+PGID_SRC[5] = no ports
 
-But exactly because the tagging protocol is per switch [ tree, in fact ]
-and not per DSA master, this isn't fine any longer with multiple CPU
-ports, and we must iterate through the tree and find all DSA masters,
-and make sure that all of them are down.
+(ports 0-3 are user ports, ports 4 and 5 are CPU ports)
+
+There are 2 problems with the configuration above:
+
+- user ports should enable forwarding towards both CPU ports, not just 4,
+  and the aggregation PGIDs should prune one CPU port or the other from
+  the destination port mask, based on a hash computed from packet headers.
+
+- CPU ports should not be allowed to forward towards themselves and also
+  not towards other ports in the same LAG as themselves
+
+The first problem requires fixing up the PGID_SRC of user ports, when
+ocelot_port_assigned_dsa_8021q_cpu_mask() is called. We need to say that
+when a user port is assigned to a tag_8021q CPU port and that port is in
+a LAG, it should forward towards all ports in that LAG.
+
+The second problem requires fixing up the PGID_SRC of port 4, to remove
+ports 4 and 5 (in a LAG) from the allowed destinations.
+
+After this change, the PGID source masks look as follows:
+
+PGID_SRC[0] = ports 4, 5,
+PGID_SRC[1] = ports 4, 5,
+PGID_SRC[2] = ports 4, 5,
+PGID_SRC[3] = ports 4, 5,
+PGID_SRC[4] = ports 0, 1, 2, 3,
+PGID_SRC[5] = no ports
+
+Note that PGID_SRC[5] still looks weird (it should say "0, 1, 2, 3" just
+like PGID_SRC[4] does), but I've tested forwarding through this CPU port
+and it doesn't seem like anything is affected (it appears that PGID_SRC[4]
+is being looked up on forwarding from the CPU, since both ports 4 and 5
+have logical port ID 4). The reason why it looks weird is because
+we've never called ocelot_port_assign_dsa_8021q_cpu() for any user port
+towards port 5 (all user ports are assigned to port 4 which is in a LAG
+with 5).
+
+Since things aren't broken, I'm willing to leave it like that for now
+and just document the oddity.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/dsa/dsa2.c     | 10 +++-------
- net/dsa/dsa_priv.h |  1 -
- net/dsa/master.c   |  2 +-
- 3 files changed, 4 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index cac48a741f27..b2fe62bfe8dd 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -1238,7 +1238,6 @@ static int dsa_tree_bind_tag_proto(struct dsa_switch_tree *dst,
-  * they would have formed disjoint trees (different "dsa,member" values).
-  */
- int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
--			      struct net_device *master,
- 			      const struct dsa_device_ops *tag_ops,
- 			      const struct dsa_device_ops *old_tag_ops)
- {
-@@ -1254,14 +1253,11 @@ int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
- 	 * attempts to change the tagging protocol. If we ever lift the IFF_UP
- 	 * restriction, there needs to be another mutex which serializes this.
- 	 */
--	if (master->flags & IFF_UP)
--		goto out_unlock;
--
- 	list_for_each_entry(dp, &dst->ports, list) {
--		if (!dsa_port_is_user(dp))
--			continue;
-+		if (dsa_port_is_cpu(dp) && (dp->master->flags & IFF_UP))
-+			goto out_unlock;
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 68991b021c56..f6ec299a2b5a 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -2065,6 +2065,16 @@ static int ocelot_bond_get_id(struct ocelot *ocelot, struct net_device *bond)
+ 	return __ffs(bond_mask);
+ }
  
--		if (dp->slave->flags & IFF_UP)
-+		if (dsa_port_is_user(dp) && (dp->slave->flags & IFF_UP))
- 			goto out_unlock;
++/* Returns the mask of user ports assigned to this DSA tag_8021q CPU port.
++ * Note that when CPU ports are in a LAG, the user ports are assigned to the
++ * 'primary' CPU port, the one whose physical port number gives the logical
++ * port number of the LAG.
++ *
++ * We leave PGID_SRC poorly configured for the 'secondary' CPU port in the LAG
++ * (to which no user port is assigned), but it appears that forwarding from
++ * this secondary CPU port looks at the PGID_SRC associated with the logical
++ * port ID that it's assigned to, which *is* configured properly.
++ */
+ static u32 ocelot_dsa_8021q_cpu_assigned_ports(struct ocelot *ocelot,
+ 					       struct ocelot_port *cpu)
+ {
+@@ -2081,9 +2091,15 @@ static u32 ocelot_dsa_8021q_cpu_assigned_ports(struct ocelot *ocelot,
+ 			mask |= BIT(port);
  	}
  
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index d9722e49864b..cc1cc866dc42 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -545,7 +545,6 @@ struct dsa_lag *dsa_tree_lag_find(struct dsa_switch_tree *dst,
- int dsa_tree_notify(struct dsa_switch_tree *dst, unsigned long e, void *v);
- int dsa_broadcast(unsigned long e, void *v);
- int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
--			      struct net_device *master,
- 			      const struct dsa_device_ops *tag_ops,
- 			      const struct dsa_device_ops *old_tag_ops);
- void dsa_tree_master_admin_state_change(struct dsa_switch_tree *dst,
-diff --git a/net/dsa/master.c b/net/dsa/master.c
-index 2851e44c4cf0..32c0a00a8b92 100644
---- a/net/dsa/master.c
-+++ b/net/dsa/master.c
-@@ -307,7 +307,7 @@ static ssize_t tagging_store(struct device *d, struct device_attribute *attr,
- 		 */
- 		goto out;
++	if (cpu->bond)
++		mask &= ~ocelot_get_bond_mask(ocelot, cpu->bond);
++
+ 	return mask;
+ }
  
--	err = dsa_tree_change_tag_proto(cpu_dp->ds->dst, dev, new_tag_ops,
-+	err = dsa_tree_change_tag_proto(cpu_dp->ds->dst, new_tag_ops,
- 					old_tag_ops);
- 	if (err) {
- 		/* On failure the old tagger is restored, so we don't need the
++/* Returns the DSA tag_8021q CPU port that the given port is assigned to,
++ * or the bit mask of CPU ports if said CPU port is in a LAG.
++ */
+ u32 ocelot_port_assigned_dsa_8021q_cpu_mask(struct ocelot *ocelot, int port)
+ {
+ 	struct ocelot_port *ocelot_port = ocelot->ports[port];
+@@ -2092,6 +2108,9 @@ u32 ocelot_port_assigned_dsa_8021q_cpu_mask(struct ocelot *ocelot, int port)
+ 	if (!cpu_port)
+ 		return 0;
+ 
++	if (cpu_port->bond)
++		return ocelot_get_bond_mask(ocelot, cpu_port->bond);
++
+ 	return BIT(cpu_port->index);
+ }
+ EXPORT_SYMBOL_GPL(ocelot_port_assigned_dsa_8021q_cpu_mask);
 -- 
 2.35.1
 
