@@ -2,48 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 863D25F904C
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:23:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31C475F8FE4
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:18:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231575AbiJIWXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:23:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44340 "EHLO
+        id S231364AbiJIWSS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:18:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231779AbiJIWW3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:22:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7ECB3DBCB;
-        Sun,  9 Oct 2022 15:17:32 -0700 (PDT)
+        with ESMTP id S231365AbiJIWR6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:17:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96AB427FCB;
+        Sun,  9 Oct 2022 15:15:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4966AB80DDD;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9535960CF6;
+        Sun,  9 Oct 2022 22:12:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 284AAC433D7;
         Sun,  9 Oct 2022 22:12:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 523B7C433C1;
-        Sun,  9 Oct 2022 22:12:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665353524;
-        bh=3pBU1LDgBjC4lVgA5Q9o0xcuXk0CW2WCoFOa82FRnWY=;
+        s=k20201202; t=1665353527;
+        bh=EV1aWa0RnASqulCvNKmsejHYmsYcScF6Ye+v3g617V4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ClOMThfekhzYnzJxUXuF+xOCDGZ0DAhTT84SDppXwE7f2Z+NHX77tSmL3hEv1nnRL
-         3A0MS1pIpQOU393h0EhcRqw5tagKiH0OPAXYadmjfigfQGCT9Za64yQQ4LRwTY2Syv
-         1SNFBp5x9fS1ju7H9hsH+V78Aft/eDyWof+NbtfEtrp1G+8PhBppKH+sPReq9YOhmD
-         dLWasSoe8plcm8rmlqK4l0DJnqq7tgvsVRtBOnFYO6DaGMiUpNDr6uQPV2AjGDaq7b
-         Z8C3VA8D8aGcaduhEgbt60MsuQ54jMiEaPR7FDiDuaz7yx2a+DI4Sasr4BUIvHuz3S
-         ajLie1X8K8leQ==
+        b=Jew543X4ihkNoveEcCja/BcWNsrh+qufqZbcJ79i405WrJ74mYToeFmX/fXSORpjy
+         7MnTl5FiLucZahuoIWwIHAsMgBNIakW7WqrcxlfsvyIkIMUmm7EPef7rpuxioZP5fy
+         ZwsvdEc9wIEylePMS/FdhfGf4hl7+An3yOx8yG65bQojcXrMZXjPDRjRUcIxROZmRC
+         +8Gssfv4Ahp7QR5b2ghTdqkeuw0cJxe5WvFYtHK+Mkuebh3BePI0dMIaQEwyVmMMTx
+         sqFgVACNvhJkvcVZOcUycYhEYpekvfdPzb0tvSgX6KAxKjNsgBdU8bFnhhuEWJd+8M
+         I+cBGg4cbZcFw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Nathan Huckleberry <nhuck@google.com>,
         Dan Carpenter <error27@gmail.com>, llvm@lists.linux.dev,
         Sergey Ryazanov <ryazanov.s.a@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, m.chetan.kumar@intel.com,
-        linuxwwan@intel.com, loic.poulain@linaro.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, nathan@kernel.org,
-        ndesaulniers@google.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.0 50/77] net: wwan: iosm: Fix return type of ipc_wwan_link_transmit
-Date:   Sun,  9 Oct 2022 18:07:27 -0400
-Message-Id: <20221009220754.1214186-50-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>,
+        chandrashekar.devegowda@intel.com, linuxwwan@intel.com,
+        loic.poulain@linaro.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, nathan@kernel.org, ndesaulniers@google.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.0 51/77] net: wwan: t7xx: Fix return type of t7xx_ccmni_start_xmit
+Date:   Sun,  9 Oct 2022 18:07:28 -0400
+Message-Id: <20221009220754.1214186-51-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009220754.1214186-1-sashal@kernel.org>
 References: <20221009220754.1214186-1-sashal@kernel.org>
@@ -62,7 +63,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nathan Huckleberry <nhuck@google.com>
 
-[ Upstream commit 0c9441c430104dcf2cd066aae74dbeefb9f9e1bf ]
+[ Upstream commit 73c99e26036529e633a0f2d628ad7ddff6594668 ]
 
 The ndo_start_xmit field in net_device_ops is expected to be of type
 netdev_tx_t (*ndo_start_xmit)(struct sk_buff *skb, struct net_device *dev).
@@ -70,7 +71,7 @@ netdev_tx_t (*ndo_start_xmit)(struct sk_buff *skb, struct net_device *dev).
 The mismatched return type breaks forward edge kCFI since the underlying
 function definition does not match the function hook definition.
 
-The return type of ipc_wwan_link_transmit should be changed from int to
+The return type of t7xx_ccmni_start_xmit should be changed from int to
 netdev_tx_t.
 
 Reported-by: Dan Carpenter <error27@gmail.com>
@@ -78,28 +79,26 @@ Link: https://github.com/ClangBuiltLinux/linux/issues/1703
 Cc: llvm@lists.linux.dev
 Signed-off-by: Nathan Huckleberry <nhuck@google.com>
 Acked-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Link: https://lore.kernel.org/r/20220912214455.929028-1-nhuck@google.com
+Link: https://lore.kernel.org/r/20220912214510.929070-1-nhuck@google.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wwan/iosm/iosm_ipc_wwan.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wwan/t7xx/t7xx_netdev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_wwan.c b/drivers/net/wwan/iosm/iosm_ipc_wwan.c
-index 27151148c782..03757ad21d51 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_wwan.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_wwan.c
-@@ -103,8 +103,8 @@ static int ipc_wwan_link_stop(struct net_device *netdev)
+diff --git a/drivers/net/wwan/t7xx/t7xx_netdev.c b/drivers/net/wwan/t7xx/t7xx_netdev.c
+index c6b6547f2c6f..f71d3bc3b237 100644
+--- a/drivers/net/wwan/t7xx/t7xx_netdev.c
++++ b/drivers/net/wwan/t7xx/t7xx_netdev.c
+@@ -74,7 +74,7 @@ static int t7xx_ccmni_send_packet(struct t7xx_ccmni *ccmni, struct sk_buff *skb,
+ 	return 0;
  }
  
- /* Transmit a packet */
--static int ipc_wwan_link_transmit(struct sk_buff *skb,
--				  struct net_device *netdev)
-+static netdev_tx_t ipc_wwan_link_transmit(struct sk_buff *skb,
-+					  struct net_device *netdev)
+-static int t7xx_ccmni_start_xmit(struct sk_buff *skb, struct net_device *dev)
++static netdev_tx_t t7xx_ccmni_start_xmit(struct sk_buff *skb, struct net_device *dev)
  {
- 	struct iosm_netdev_priv *priv = wwan_netdev_drvpriv(netdev);
- 	struct iosm_wwan *ipc_wwan = priv->ipc_wwan;
+ 	struct t7xx_ccmni *ccmni = wwan_netdev_drvpriv(dev);
+ 	int skb_len = skb->len;
 -- 
 2.35.1
 
