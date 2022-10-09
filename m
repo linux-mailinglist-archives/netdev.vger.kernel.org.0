@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82C025F8D9D
-	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 21:00:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A44405F8DA6
+	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 21:10:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230368AbiJITAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 15:00:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39674 "EHLO
+        id S230202AbiJITKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 15:10:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230104AbiJITAS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 15:00:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 925981A836
-        for <netdev@vger.kernel.org>; Sun,  9 Oct 2022 12:00:17 -0700 (PDT)
+        with ESMTP id S230262AbiJITKU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 15:10:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 100BB1EC78
+        for <netdev@vger.kernel.org>; Sun,  9 Oct 2022 12:10:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 205AFB80D8E
-        for <netdev@vger.kernel.org>; Sun,  9 Oct 2022 19:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B8954C433D6;
-        Sun,  9 Oct 2022 19:00:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3097B80D83
+        for <netdev@vger.kernel.org>; Sun,  9 Oct 2022 19:10:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6ABBDC433C1;
+        Sun,  9 Oct 2022 19:10:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665342014;
-        bh=EeM0NvFYt9987G0JmuVI1VOSy1Nwi5UiFs2uC7oy9Po=;
+        s=k20201202; t=1665342615;
+        bh=wyhfpaPr4horUSLI0COY3B51W8oh5usil64Uz2uKsU0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JcD27jy5Pg8WH+qvYTqtA3ewPeVaaivtNvDP+CMDeuh5Ch+kKA8+9mCd1IBqjR47/
-         q2VyjCaYedZ6ByEjvJIHeVoFcixDFqfMwnED7L+kgPVIba3vERvtAebCEEFE/sf5d1
-         oJtftUkSSMIGdRPZmQp3m/azd9n5RFM736C+2hONqZ4NPEOEH9oxvcpqt3nNCpLTG0
-         Ips3yyOfRW+97KSLmtVJjLlGzozorrsWE5qhhtmrx4wgsz6JOsraKDdgq3BFV/PY4A
-         aZLn4328HmSAfLFr6gBblp+XcCpOpYshrlIpYyot5YbnuQS2cnlGxwgNQmWfjGtwgZ
-         WvES/6WMmH6Zg==
+        b=rpTO1RnYyt6LvLDAozTTlXvNo3G3WAhb7Xq/5xGPd0y7thhFKFjgx2U4hBhEhgsoB
+         XVMsFOvf4V41mhYumv5Z7dlExWI/kLrk5+/TLbqyKhYi7udvoiG/T9aKrJTh51BfvM
+         TKHTUfmla5gyL8SI/kwSOCEWveimLPKhqfoLn9/TtbDIVxFC9x+jSBd6pVA+xaOvuX
+         HRmnV1Q7ToWJowSHXAQsyKjyCsgjHofxybOd5idTmPQwmj/NqBBez7zYJitsfJwR7S
+         Qs22BmvtjxgoH13LfHjEZDXaHcB+sDiesKX6auTK+10X77I9/jCPVX7NdIhQ6hoLb0
+         MofZmbb7CTnUg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 94D53E43EFE;
-        Sun,  9 Oct 2022 19:00:14 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4A19CC73FE7;
+        Sun,  9 Oct 2022 19:10:15 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] macvlan: enforce a consistent minimal mtu
+Subject: Re: [PATCH net] net: dsa: fix wrong pointer passed to PTR_ERR() in
+ dsa_port_phylink_create()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166534201460.6058.15297627699542349899.git-patchwork-notify@kernel.org>
-Date:   Sun, 09 Oct 2022 19:00:14 +0000
-References: <20221007225743.1633333-1-eric.dumazet@gmail.com>
-In-Reply-To: <20221007225743.1633333-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, edumazet@google.com,
-        syzkaller@googlegroups.com
+Message-Id: <166534261530.10565.9245107224628879722.git-patchwork-notify@kernel.org>
+Date:   Sun, 09 Oct 2022 19:10:15 +0000
+References: <20221008083942.3244411-1-yangyingliang@huawei.com>
+In-Reply-To: <20221008083942.3244411-1-yangyingliang@huawei.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     netdev@vger.kernel.org, vladimir.oltean@nxp.com, jiri@nvidia.com,
+        kuba@kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -61,19 +61,19 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri,  7 Oct 2022 15:57:43 -0700 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Sat, 8 Oct 2022 16:39:42 +0800 you wrote:
+> Fix wrong pointer passed to PTR_ERR() in dsa_port_phylink_create() to print
+> error message.
 > 
-> macvlan should enforce a minimal mtu of 68, even at link creation.
-> 
-> This patch avoids the current behavior (which could lead to crashes
-> in ipv6 stack if the link is brought up)
-> 
-> [...]
+> Fixes: cf5ca4ddc37a ("net: dsa: don't leave dangling pointers in dp->pl when failing")
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> ---
+>  net/dsa/port.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
 Here is the summary with links:
-  - [net] macvlan: enforce a consistent minimal mtu
-    https://git.kernel.org/netdev/net/c/b64085b00044
+  - [net] net: dsa: fix wrong pointer passed to PTR_ERR() in dsa_port_phylink_create()
+    https://git.kernel.org/netdev/net/c/557f050166e5
 
 You are awesome, thank you!
 -- 
