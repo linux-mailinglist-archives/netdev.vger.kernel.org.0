@@ -2,47 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 021915F9000
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:20:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5426B5F9085
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:25:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231305AbiJIWT5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:19:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55640 "EHLO
+        id S231853AbiJIWZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:25:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231221AbiJIWSI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:18:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FBFA1262D;
-        Sun,  9 Oct 2022 15:15:49 -0700 (PDT)
+        with ESMTP id S231848AbiJIWXu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:23:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84DF52F016;
+        Sun,  9 Oct 2022 15:18:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD5B360C91;
-        Sun,  9 Oct 2022 22:13:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB43AC433D6;
-        Sun,  9 Oct 2022 22:13:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70A77B80D36;
+        Sun,  9 Oct 2022 22:13:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0AABC433D6;
+        Sun,  9 Oct 2022 22:13:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665353589;
-        bh=rfhGV7N9C6ZVl3JruPAcA6LKfJ3cyhGgcnuyB098JMM=;
+        s=k20201202; t=1665353603;
+        bh=M3JkTWTLC3RdhvEFrlNL9DYet52opleSNkWm+4Lv/LA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=owkfe16OXvg5CApnG1iXdLuCwscpAqRTDKAsWQsTsGTwM9UgEBijeFplrm9Aa09/p
-         bAMbo6ltgHrhiC3t0x/QCdt1RksEKAt1A4EVwKRS4GDd8quh3ZslA7Fv4/soSeFBuX
-         IyAGETvlo7QpWKvwiJdEwmSvKOlslZPTkXM/PHpg5kbMqITg5LadORjwhBNzdSgpR3
-         CGBu+CvmZOdzecWbzptTvmDpF9vY5MBbeVlr5XkT9k8AXe5AXuj81UwUFyogBB700O
-         W2t9j7azDynHSkoMMYiXGZBoEkaX/KMcqkhBbX6VRrWmYGB31u9w8fXnYuVuDEKo5r
-         Jxufls86G6VvQ==
+        b=fzGgSJnIlHt2+j9P2dNLJdQ6urQRQCYkbXTizUSiDht3ZLxIKumLSZAMREvBc09es
+         2UyxdgzNY1mxnwIOIXaWuNuCiCeBvIM97ZAdaetSN4LdBjmqprujwKvRGFIwas4K7Z
+         UrC1iLg6+59xzCRlS8GXzywtql7ss0CBmjy1czmvlP2aP266dHogRAqfbQu3eu6KkA
+         TlAIQY3nKJ+msdy6kT6+E/lWyvGUUDYcah61YC6kaRztbJ54tDepHWynLbkXncOBQJ
+         k1GZztLoDGFuF1Szsy60b59jbaJ7cH9jXopCeVrzYklVy08C3TuaHpEHMX/ONmzT7K
+         l1GzLpfbrkzdA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Daniel Golle <daniel@makrotopia.org>,
-        Serge Vasilugin <vasilugin@yandex.ru>,
-        Stanislaw Gruszka <stf_xl@wp.pl>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        helmut.schaa@googlemail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.0 66/77] wifi: rt2x00: correctly set BBP register 86 for MT7620
-Date:   Sun,  9 Oct 2022 18:07:43 -0400
-Message-Id: <20221009220754.1214186-66-sashal@kernel.org>
+Cc:     Liu Jian <liujian56@huawei.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.0 68/77] net: If sock is dead don't access sock's sk_wq in sk_stream_wait_memory
+Date:   Sun,  9 Oct 2022 18:07:45 -0400
+Message-Id: <20221009220754.1214186-68-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009220754.1214186-1-sashal@kernel.org>
 References: <20221009220754.1214186-1-sashal@kernel.org>
@@ -59,38 +60,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Daniel Golle <daniel@makrotopia.org>
+From: Liu Jian <liujian56@huawei.com>
 
-[ Upstream commit c9aada64fe6493461127f1522d7e2f01792d2424 ]
+[ Upstream commit 3f8ef65af927db247418d4e1db49164d7a158fc5 ]
 
-Instead of 0 set the correct value for BBP register 86 for MT7620.
+Fixes the below NULL pointer dereference:
 
-Reported-by: Serge Vasilugin <vasilugin@yandex.ru>
-Signed-off-by: Daniel Golle <daniel@makrotopia.org>
-Acked-by: Stanislaw Gruszka <stf_xl@wp.pl>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/257267247ee4fa7ebc6a5d0c4948b3f8119c0d77.1663445157.git.daniel@makrotopia.org
+  [...]
+  [   14.471200] Call Trace:
+  [   14.471562]  <TASK>
+  [   14.471882]  lock_acquire+0x245/0x2e0
+  [   14.472416]  ? remove_wait_queue+0x12/0x50
+  [   14.473014]  ? _raw_spin_lock_irqsave+0x17/0x50
+  [   14.473681]  _raw_spin_lock_irqsave+0x3d/0x50
+  [   14.474318]  ? remove_wait_queue+0x12/0x50
+  [   14.474907]  remove_wait_queue+0x12/0x50
+  [   14.475480]  sk_stream_wait_memory+0x20d/0x340
+  [   14.476127]  ? do_wait_intr_irq+0x80/0x80
+  [   14.476704]  do_tcp_sendpages+0x287/0x600
+  [   14.477283]  tcp_bpf_push+0xab/0x260
+  [   14.477817]  tcp_bpf_sendmsg_redir+0x297/0x500
+  [   14.478461]  ? __local_bh_enable_ip+0x77/0xe0
+  [   14.479096]  tcp_bpf_send_verdict+0x105/0x470
+  [   14.479729]  tcp_bpf_sendmsg+0x318/0x4f0
+  [   14.480311]  sock_sendmsg+0x2d/0x40
+  [   14.480822]  ____sys_sendmsg+0x1b4/0x1c0
+  [   14.481390]  ? copy_msghdr_from_user+0x62/0x80
+  [   14.482048]  ___sys_sendmsg+0x78/0xb0
+  [   14.482580]  ? vmf_insert_pfn_prot+0x91/0x150
+  [   14.483215]  ? __do_fault+0x2a/0x1a0
+  [   14.483738]  ? do_fault+0x15e/0x5d0
+  [   14.484246]  ? __handle_mm_fault+0x56b/0x1040
+  [   14.484874]  ? lock_is_held_type+0xdf/0x130
+  [   14.485474]  ? find_held_lock+0x2d/0x90
+  [   14.486046]  ? __sys_sendmsg+0x41/0x70
+  [   14.486587]  __sys_sendmsg+0x41/0x70
+  [   14.487105]  ? intel_pmu_drain_pebs_core+0x350/0x350
+  [   14.487822]  do_syscall_64+0x34/0x80
+  [   14.488345]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+  [...]
+
+The test scenario has the following flow:
+
+thread1                               thread2
+-----------                           ---------------
+ tcp_bpf_sendmsg
+  tcp_bpf_send_verdict
+   tcp_bpf_sendmsg_redir              sock_close
+    tcp_bpf_push_locked                 __sock_release
+     tcp_bpf_push                         //inet_release
+      do_tcp_sendpages                    sock->ops->release
+       sk_stream_wait_memory          	   // tcp_close
+          sk_wait_event                      sk->sk_prot->close
+           release_sock(__sk);
+            ***
+                                                lock_sock(sk);
+                                                  __tcp_close
+                                                    sock_orphan(sk)
+                                                      sk->sk_wq  = NULL
+                                                release_sock
+            ****
+           lock_sock(__sk);
+          remove_wait_queue(sk_sleep(sk), &wait);
+             sk_sleep(sk)
+             //NULL pointer dereference
+             &rcu_dereference_raw(sk->sk_wq)->wait
+
+While waiting for memory in thread1, the socket is released with its wait
+queue because thread2 has closed it. This caused by tcp_bpf_send_verdict
+didn't increase the f_count of psock->sk_redir->sk_socket->file in thread1.
+
+We should check if SOCK_DEAD flag is set on wakeup in sk_stream_wait_memory
+before accessing the wait queue.
+
+Suggested-by: Jakub Sitnicki <jakub@cloudflare.com>
+Signed-off-by: Liu Jian <liujian56@huawei.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Cc: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/bpf/20220823133755.314697-2-liujian56@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ralink/rt2x00/rt2800lib.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/core/stream.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ralink/rt2x00/rt2800lib.c b/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
-index b30b062243bb..1a9e27a6d636 100644
---- a/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
-+++ b/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
-@@ -4164,7 +4164,10 @@ static void rt2800_config_channel(struct rt2x00_dev *rt2x00dev,
- 		rt2800_bbp_write(rt2x00dev, 62, 0x37 - rt2x00dev->lna_gain);
- 		rt2800_bbp_write(rt2x00dev, 63, 0x37 - rt2x00dev->lna_gain);
- 		rt2800_bbp_write(rt2x00dev, 64, 0x37 - rt2x00dev->lna_gain);
--		rt2800_bbp_write(rt2x00dev, 86, 0);
-+		if (rt2x00_rt(rt2x00dev, RT6352))
-+			rt2800_bbp_write(rt2x00dev, 86, 0x38);
-+		else
-+			rt2800_bbp_write(rt2x00dev, 86, 0);
+diff --git a/net/core/stream.c b/net/core/stream.c
+index ccc083cdef23..1105057ce00a 100644
+--- a/net/core/stream.c
++++ b/net/core/stream.c
+@@ -159,7 +159,8 @@ int sk_stream_wait_memory(struct sock *sk, long *timeo_p)
+ 		*timeo_p = current_timeo;
  	}
+ out:
+-	remove_wait_queue(sk_sleep(sk), &wait);
++	if (!sock_flag(sk, SOCK_DEAD))
++		remove_wait_queue(sk_sleep(sk), &wait);
+ 	return err;
  
- 	if (rf->channel <= 14) {
+ do_error:
 -- 
 2.35.1
 
