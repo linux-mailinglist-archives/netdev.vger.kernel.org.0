@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9F985F93C6
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 01:46:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 159005F9366
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 01:13:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231917AbiJIXqM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 19:46:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42732 "EHLO
+        id S233294AbiJIXNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 19:13:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232050AbiJIXph (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 19:45:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E071422DB;
-        Sun,  9 Oct 2022 16:16:50 -0700 (PDT)
+        with ESMTP id S231969AbiJIXMm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 19:12:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5047D578A5;
+        Sun,  9 Oct 2022 15:38:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8FB5BB80DEA;
-        Sun,  9 Oct 2022 22:26:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5424DC433D6;
-        Sun,  9 Oct 2022 22:26:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ACCF760C33;
+        Sun,  9 Oct 2022 22:26:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 040C6C433C1;
+        Sun,  9 Oct 2022 22:26:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354371;
-        bh=g6/KZy9uk/Ec/hbzy4oDMSyyUoEcT0ETTf4Do5iL7K4=;
+        s=k20201202; t=1665354377;
+        bh=dldXAdnZpfgGdJ/LZ5o1hkLVakuPLh+B5WRHwUtaWYE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J126dDvY3/pz2m/WgCy8Dc4zthfJaJ4OuJkfZallr5/M2DpSJls/1CRg9eWA1nyZU
-         eEOhg1+Abw4zii4fAEQAQgKvg6rI4paXPnxyLdY+MUKKdN3Z6W5NXk2030QalWJ5ui
-         KnvqNV+LIzarQuxtcajbrd69GBmOQFmnx8KEK7B7JOLdAqCRGQ2PofnVJCt3BegQg8
-         IYS/Ok0kdtm4P9LphfkzKVBYWT1SwvpWyH89a1IplLg+BM5Ss39J+L6Tl6lMYY4Dll
-         lT0Iee+tpUohWBpM/VA/icNBpDPS+XXrgKpVbMxHbs1R7814rVgSEdRtsANCAvQoz7
-         S83821ITTy3ug==
+        b=B4MLTC4OXDLzEJBk3vCsoHp+7SpAB9a/iD6WAE1G3SE95Y6ec1viwLycbD38Y8Xxe
+         JrxYq7CqLtWYyqlDoVpvpPp1uPZUh7CHtzt5erAKXM+RijDLBFd1T75j4aBYEiZtpT
+         G+XNaoP2hsZCiW96cMMhe87FnYa0hRsCjAgPH5jyw0lzdRQc2skliqxLcxKxB/csV0
+         ktmeJET7PPSC2drwuc0/xsz+Zb0neCz0sVUGW+i1odzpvAqwZZT2AQzqe2X1YdsXVO
+         TgYoiXGBJBEsYxEkbNEedUGtd9K80GET5kBgqWfXw4L4hwmSDiiA0FcnP9koAL1CbM
+         hC6ds7XX4mP1Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     GUO Zihua <guozihua@huawei.com>, Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, khalasa@piap.pl,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, olek2@wp.pl,
+        rdunlap@infradead.org, yangyingliang@huawei.com,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 07/23] net: xscale: Fix return type for implementation of ndo_start_xmit
-Date:   Sun,  9 Oct 2022 18:25:37 -0400
-Message-Id: <20221009222557.1219968-7-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 08/23] net: lantiq_etop: Fix return type for implementation of ndo_start_xmit
+Date:   Sun,  9 Oct 2022 18:25:38 -0400
+Message-Id: <20221009222557.1219968-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009222557.1219968-1-sashal@kernel.org>
 References: <20221009222557.1219968-1-sashal@kernel.org>
@@ -58,36 +59,36 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: GUO Zihua <guozihua@huawei.com>
 
-[ Upstream commit 0dbaf0fa62329d9fe452d9041a707a33f6274f1f ]
+[ Upstream commit c8ef3c94bda0e21123202d057d4a299698fa0ed9 ]
 
 Since Linux now supports CFI, it will be a good idea to fix mismatched
 return type for implementation of hooks. Otherwise this might get
 cought out by CFI and cause a panic.
 
-eth_xmit() would return either NETDEV_TX_BUSY or NETDEV_TX_OK, so
+ltq_etop_tx() would return either NETDEV_TX_BUSY or NETDEV_TX_OK, so
 change the return type to netdev_tx_t directly.
 
 Signed-off-by: GUO Zihua <guozihua@huawei.com>
-Link: https://lore.kernel.org/r/20220902081612.60405-1-guozihua@huawei.com
+Link: https://lore.kernel.org/r/20220902081521.59867-1-guozihua@huawei.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/xscale/ixp4xx_eth.c | 2 +-
+ drivers/net/ethernet/lantiq_etop.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/xscale/ixp4xx_eth.c b/drivers/net/ethernet/xscale/ixp4xx_eth.c
-index aee55c03def0..d2aed667c0da 100644
---- a/drivers/net/ethernet/xscale/ixp4xx_eth.c
-+++ b/drivers/net/ethernet/xscale/ixp4xx_eth.c
-@@ -835,7 +835,7 @@ static void eth_txdone_irq(void *unused)
- 	}
+diff --git a/drivers/net/ethernet/lantiq_etop.c b/drivers/net/ethernet/lantiq_etop.c
+index afc810069440..c90886d74fde 100644
+--- a/drivers/net/ethernet/lantiq_etop.c
++++ b/drivers/net/ethernet/lantiq_etop.c
+@@ -464,7 +464,7 @@ ltq_etop_stop(struct net_device *dev)
+ 	return 0;
  }
  
--static int eth_xmit(struct sk_buff *skb, struct net_device *dev)
-+static netdev_tx_t eth_xmit(struct sk_buff *skb, struct net_device *dev)
+-static int
++static netdev_tx_t
+ ltq_etop_tx(struct sk_buff *skb, struct net_device *dev)
  {
- 	struct port *port = netdev_priv(dev);
- 	unsigned int txreadyq = port->plat->txreadyq;
+ 	int queue = skb_get_queue_mapping(skb);
 -- 
 2.35.1
 
