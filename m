@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BCB35F8C97
-	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 19:41:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AFEE5F8C9C
+	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 19:41:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230115AbiJIRld (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 13:41:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49264 "EHLO
+        id S230138AbiJIRlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 13:41:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229863AbiJIRla (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 13:41:30 -0400
+        with ESMTP id S230105AbiJIRlc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 13:41:32 -0400
 Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52628BC25;
-        Sun,  9 Oct 2022 10:41:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 005F4BE3B;
+        Sun,  9 Oct 2022 10:41:29 -0700 (PDT)
 Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id E130918843F5;
-        Sun,  9 Oct 2022 17:41:26 +0000 (UTC)
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 964D218843F7;
+        Sun,  9 Oct 2022 17:41:28 +0000 (UTC)
 Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id D4DE625052CE;
-        Sun,  9 Oct 2022 17:41:26 +0000 (UTC)
+        by mailout.gigahost.dk (Postfix) with ESMTP id 8DC0425052CE;
+        Sun,  9 Oct 2022 17:41:28 +0000 (UTC)
 Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id C66D39EC0005; Sun,  9 Oct 2022 17:41:26 +0000 (UTC)
+        id 76DFA9EC0005; Sun,  9 Oct 2022 17:41:28 +0000 (UTC)
 X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 Received: from fujitsu.vestervang (2-104-116-184-cable.dk.customer.tdc.net [2.104.116.184])
-        by smtp.gigahost.dk (Postfix) with ESMTPSA id C75439120FED;
-        Sun,  9 Oct 2022 17:41:25 +0000 (UTC)
+        by smtp.gigahost.dk (Postfix) with ESMTPSA id 86DF49120FED;
+        Sun,  9 Oct 2022 17:41:27 +0000 (UTC)
 From:   "Hans J. Schultz" <netdev@kapio-technology.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org,
@@ -63,9 +63,9 @@ Cc:     netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org,
         bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH v7 net-next 2/9] net: bridge: add blackhole fdb entry flag
-Date:   Sun,  9 Oct 2022 19:40:45 +0200
-Message-Id: <20221009174052.1927483-3-netdev@kapio-technology.com>
+Subject: [PATCH v7 net-next 3/9] net: switchdev: add support for offloading of the FDB locked flag
+Date:   Sun,  9 Oct 2022 19:40:46 +0200
+Message-Id: <20221009174052.1927483-4-netdev@kapio-technology.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221009174052.1927483-1-netdev@kapio-technology.com>
 References: <20221009174052.1927483-1-netdev@kapio-technology.com>
@@ -80,173 +80,343 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a 'blackhole' fdb flag, ensuring that no forwarding from any port
-to a destination MAC that has a FDB entry with this flag on will occur.
-The packets will thus be dropped.
-
-When the blackhole fdb flag is set, the 'local' flag will also be enabled
-as blackhole entries are not associated with any port.
-
-Thus the command will be alike to:
-bridge fdb add MAC dev br0 local blackhole
+Add support for offloading of the MAB/MacAuth feature flag and the FDB
+locked flag which is used by the Mac-Auth/MAB feature.
 
 Signed-off-by: Hans J. Schultz <netdev@kapio-technology.com>
 ---
- include/uapi/linux/neighbour.h |  4 ++++
- net/bridge/br_fdb.c            | 26 ++++++++++++++++++++------
- net/bridge/br_input.c          |  5 ++++-
- net/bridge/br_private.h        |  1 +
- net/core/rtnetlink.c           |  2 +-
- 5 files changed, 30 insertions(+), 8 deletions(-)
+ include/net/dsa.h         |  2 ++
+ include/net/switchdev.h   |  1 +
+ net/bridge/br.c           |  4 ++--
+ net/bridge/br_fdb.c       | 12 ++++++++++--
+ net/bridge/br_private.h   |  2 +-
+ net/bridge/br_switchdev.c |  3 ++-
+ net/dsa/dsa_priv.h        |  6 ++++--
+ net/dsa/port.c            | 10 ++++++----
+ net/dsa/slave.c           | 10 ++++++++--
+ net/dsa/switch.c          | 16 ++++++++--------
+ 10 files changed, 44 insertions(+), 22 deletions(-)
 
-diff --git a/include/uapi/linux/neighbour.h b/include/uapi/linux/neighbour.h
-index 4dda051b0ba8..cc7d540eb734 100644
---- a/include/uapi/linux/neighbour.h
-+++ b/include/uapi/linux/neighbour.h
-@@ -54,6 +54,7 @@ enum {
- /* Extended flags under NDA_FLAGS_EXT: */
- #define NTF_EXT_MANAGED		(1 << 0)
- #define NTF_EXT_LOCKED		(1 << 1)
-+#define NTF_EXT_BLACKHOLE	(1 << 2)
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index ee369670e20e..e4b641b20713 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -821,6 +821,8 @@ static inline bool dsa_port_tree_same(const struct dsa_port *a,
+ 	return a->ds->dst == b->ds->dst;
+ }
  
- /*
-  *	Neighbor Cache Entry States.
-@@ -91,6 +92,9 @@ enum {
-  * NTF_EXT_LOCKED flagged FDB entries are placeholder entries used with the
-  * locked port feature, that ensures that an entry exists while at the same
-  * time dropping packets on ingress with src MAC and VID matching the entry.
-+ *
-+ * NTF_EXT_BLACKHOLE flagged FDB entries ensure that no forwarding is allowed
-+ * from any port to the destination MAC, VID pair associated with it.
-  */
- 
- struct nda_cacheinfo {
-diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-index 2cf695ee61c5..02243640fda3 100644
---- a/net/bridge/br_fdb.c
-+++ b/net/bridge/br_fdb.c
-@@ -128,6 +128,8 @@ static int fdb_fill_info(struct sk_buff *skb, const struct net_bridge *br,
- 		ndm->ndm_flags |= NTF_STICKY;
- 	if (test_bit(BR_FDB_LOCKED, &fdb->flags))
- 		ext_flags |= NTF_EXT_LOCKED;
-+	if (test_bit(BR_FDB_BLACKHOLE, &fdb->flags))
-+		ext_flags |= NTF_EXT_BLACKHOLE;
- 
- 	if (nla_put(skb, NDA_LLADDR, ETH_ALEN, &fdb->key.addr))
- 		goto nla_put_failure;
-@@ -1018,8 +1020,9 @@ static bool fdb_handle_notify(struct net_bridge_fdb_entry *fdb, u8 notify)
- /* Update (create or replace) forwarding database entry */
- static int fdb_add_entry(struct net_bridge *br, struct net_bridge_port *source,
- 			 const u8 *addr, struct ndmsg *ndm, u16 flags, u16 vid,
--			 struct nlattr *nfea_tb[])
-+			 u32 ext_flags, struct nlattr *nfea_tb[])
- {
-+	bool blackhole = !!(ext_flags & NTF_EXT_BLACKHOLE);
- 	bool is_sticky = !!(ndm->ndm_flags & NTF_STICKY);
- 	bool refresh = !nfea_tb[NFEA_DONT_REFRESH];
- 	struct net_bridge_fdb_entry *fdb;
-@@ -1092,6 +1095,14 @@ static int fdb_add_entry(struct net_bridge *br, struct net_bridge_port *source,
- 		modified = true;
- 	}
- 
-+	if (blackhole != test_bit(BR_FDB_BLACKHOLE, &fdb->flags)) {
-+		change_bit(BR_FDB_BLACKHOLE, &fdb->flags);
-+		modified = true;
-+	}
++#define DSA_FDB_FLAG_LOCKED		(1 << 0)
 +
-+	if (blackhole)
-+		set_bit(BR_FDB_LOCAL, &fdb->flags);
-+
- 	if (test_and_clear_bit(BR_FDB_LOCKED, &fdb->flags))
- 		modified = true;
- 
-@@ -1113,7 +1124,7 @@ static int fdb_add_entry(struct net_bridge *br, struct net_bridge_port *source,
- static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
- 			struct net_bridge_port *p, const unsigned char *addr,
- 			u16 nlh_flags, u16 vid, struct nlattr *nfea_tb[],
--			struct netlink_ext_ack *extack)
-+			u32 ext_flags, struct netlink_ext_ack *extack)
- {
- 	int err = 0;
- 
-@@ -1138,9 +1149,12 @@ static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
- 			return -EINVAL;
- 		}
- 		err = br_fdb_external_learn_add(br, p, addr, vid, true);
-+	} else if ((ext_flags & NTF_EXT_BLACKHOLE) && p) {
-+		NL_SET_ERR_MSG_MOD(extack, "Blackhole FDB entry cannot be applied on a port");
-+		return -EINVAL;
- 	} else {
- 		spin_lock_bh(&br->hash_lock);
--		err = fdb_add_entry(br, p, addr, ndm, nlh_flags, vid, nfea_tb);
-+		err = fdb_add_entry(br, p, addr, ndm, nlh_flags, vid, ext_flags, nfea_tb);
- 		spin_unlock_bh(&br->hash_lock);
- 	}
- 
-@@ -1219,10 +1233,10 @@ int br_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
- 
- 		/* VID was specified, so use it. */
- 		err = __br_fdb_add(ndm, br, p, addr, nlh_flags, vid, nfea_tb,
--				   extack);
-+				   ext_flags, extack);
- 	} else {
- 		err = __br_fdb_add(ndm, br, p, addr, nlh_flags, 0, nfea_tb,
--				   extack);
-+				   ext_flags, extack);
- 		if (err || !vg || !vg->num_vlans)
- 			goto out;
- 
-@@ -1234,7 +1248,7 @@ int br_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
- 			if (!br_vlan_should_use(v))
- 				continue;
- 			err = __br_fdb_add(ndm, br, p, addr, nlh_flags, v->vid,
--					   nfea_tb, extack);
-+					   nfea_tb, ext_flags, extack);
- 			if (err)
- 				goto out;
- 		}
-diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-index 068fced7693c..665d1d6bdc75 100644
---- a/net/bridge/br_input.c
-+++ b/net/bridge/br_input.c
-@@ -193,8 +193,11 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
- 	if (dst) {
- 		unsigned long now = jiffies;
- 
--		if (test_bit(BR_FDB_LOCAL, &dst->flags))
-+		if (test_bit(BR_FDB_LOCAL, &dst->flags)) {
-+			if (unlikely(test_bit(BR_FDB_BLACKHOLE, &dst->flags)))
-+				goto drop;
- 			return br_pass_frame_up(skb);
-+		}
- 
- 		if (now != dst->used)
- 			dst->used = now;
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 4ce8b8e5ae0b..e7a08657c7ed 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -253,6 +253,7 @@ enum {
- 	BR_FDB_NOTIFY,
- 	BR_FDB_NOTIFY_INACTIVE,
- 	BR_FDB_LOCKED,
-+	BR_FDB_BLACKHOLE,
+ typedef int dsa_fdb_dump_cb_t(const unsigned char *addr, u16 vid,
+ 			      bool is_static, void *data);
+ struct dsa_switch_ops {
+diff --git a/include/net/switchdev.h b/include/net/switchdev.h
+index 7dcdc97c0bc3..ca0312b78294 100644
+--- a/include/net/switchdev.h
++++ b/include/net/switchdev.h
+@@ -248,6 +248,7 @@ struct switchdev_notifier_fdb_info {
+ 	u16 vid;
+ 	u8 added_by_user:1,
+ 	   is_local:1,
++	   locked:1,
+ 	   offloaded:1;
  };
  
- struct net_bridge_fdb_key {
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 8008ceb45605..ae641dfea5f2 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -4054,7 +4054,7 @@ int ndo_dflt_fdb_add(struct ndmsg *ndm,
- 	if (tb[NDA_FLAGS_EXT])
- 		ext_flags = nla_get_u32(tb[NDA_FLAGS_EXT]);
+diff --git a/net/bridge/br.c b/net/bridge/br.c
+index 96e91d69a9a8..e0e2df2fa278 100644
+--- a/net/bridge/br.c
++++ b/net/bridge/br.c
+@@ -165,8 +165,8 @@ static int br_switchdev_event(struct notifier_block *unused,
+ 	switch (event) {
+ 	case SWITCHDEV_FDB_ADD_TO_BRIDGE:
+ 		fdb_info = ptr;
+-		err = br_fdb_external_learn_add(br, p, fdb_info->addr,
+-						fdb_info->vid, false);
++		err = br_fdb_external_learn_add(br, p, fdb_info->addr, fdb_info->vid,
++						fdb_info->locked, false);
+ 		if (err) {
+ 			err = notifier_from_errno(err);
+ 			break;
+diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+index 02243640fda3..86fa60cbc26c 100644
+--- a/net/bridge/br_fdb.c
++++ b/net/bridge/br_fdb.c
+@@ -1148,7 +1148,7 @@ static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
+ 					   "FDB entry towards bridge must be permanent");
+ 			return -EINVAL;
+ 		}
+-		err = br_fdb_external_learn_add(br, p, addr, vid, true);
++		err = br_fdb_external_learn_add(br, p, addr, vid, false, true);
+ 	} else if ((ext_flags & NTF_EXT_BLACKHOLE) && p) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Blackhole FDB entry cannot be applied on a port");
+ 		return -EINVAL;
+@@ -1389,7 +1389,7 @@ void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p)
+ }
  
--	if (ext_flags & NTF_EXT_LOCKED) {
-+	if (ext_flags & (NTF_EXT_LOCKED | NTF_EXT_BLACKHOLE)) {
- 		netdev_info(dev, "invalid flags given to default FDB implementation\n");
- 		return err;
- 	}
+ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+-			      const unsigned char *addr, u16 vid,
++			      const unsigned char *addr, u16 vid, bool locked,
+ 			      bool swdev_notify)
+ {
+ 	struct net_bridge_fdb_entry *fdb;
+@@ -1410,6 +1410,9 @@ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+ 		if (!p)
+ 			flags |= BIT(BR_FDB_LOCAL);
+ 
++		if (locked)
++			flags |= BIT(BR_FDB_LOCKED);
++
+ 		fdb = fdb_create(br, p, addr, vid, flags);
+ 		if (!fdb) {
+ 			err = -ENOMEM;
+@@ -1433,6 +1436,11 @@ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+ 			modified = true;
+ 		}
+ 
++		if (locked != test_bit(BR_FDB_LOCKED, &fdb->flags)) {
++			change_bit(BR_FDB_LOCKED, &fdb->flags);
++			modified = true;
++		}
++
+ 		if (swdev_notify)
+ 			set_bit(BR_FDB_ADDED_BY_USER, &fdb->flags);
+ 
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index e7a08657c7ed..3e9f4d1fbd60 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -812,7 +812,7 @@ int br_fdb_sync_static(struct net_bridge *br, struct net_bridge_port *p);
+ void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p);
+ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+ 			      const unsigned char *addr, u16 vid,
+-			      bool swdev_notify);
++			      bool locked, bool swdev_notify);
+ int br_fdb_external_learn_del(struct net_bridge *br, struct net_bridge_port *p,
+ 			      const unsigned char *addr, u16 vid,
+ 			      bool swdev_notify);
+diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
+index 8f3d76c751dd..ccf1b4cffdd0 100644
+--- a/net/bridge/br_switchdev.c
++++ b/net/bridge/br_switchdev.c
+@@ -71,7 +71,7 @@ bool nbp_switchdev_allowed_egress(const struct net_bridge_port *p,
+ }
+ 
+ /* Flags that can be offloaded to hardware */
+-#define BR_PORT_FLAGS_HW_OFFLOAD (BR_LEARNING | BR_FLOOD | \
++#define BR_PORT_FLAGS_HW_OFFLOAD (BR_LEARNING | BR_FLOOD | BR_PORT_MAB | \
+ 				  BR_MCAST_FLOOD | BR_BCAST_FLOOD | BR_PORT_LOCKED | \
+ 				  BR_HAIRPIN_MODE | BR_ISOLATED | BR_MULTICAST_TO_UNICAST)
+ 
+@@ -136,6 +136,7 @@ static void br_switchdev_fdb_populate(struct net_bridge *br,
+ 	item->added_by_user = test_bit(BR_FDB_ADDED_BY_USER, &fdb->flags);
+ 	item->offloaded = test_bit(BR_FDB_OFFLOADED, &fdb->flags);
+ 	item->is_local = test_bit(BR_FDB_LOCAL, &fdb->flags);
++	item->locked = test_bit(BR_FDB_LOCKED, &fdb->flags);
+ 	item->info.dev = (!p || item->is_local) ? br->dev : p->dev;
+ 	item->info.ctx = ctx;
+ }
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 6e65c7ffd6f3..c943e8934063 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -65,6 +65,7 @@ struct dsa_notifier_fdb_info {
+ 	const struct dsa_port *dp;
+ 	const unsigned char *addr;
+ 	u16 vid;
++	u16 fdb_flags;
+ 	struct dsa_db db;
+ };
+ 
+@@ -131,6 +132,7 @@ struct dsa_switchdev_event_work {
+ 	 */
+ 	unsigned char addr[ETH_ALEN];
+ 	u16 vid;
++	u16 fdb_flags;
+ 	bool host_addr;
+ };
+ 
+@@ -241,9 +243,9 @@ int dsa_port_vlan_msti(struct dsa_port *dp,
+ 		       const struct switchdev_vlan_msti *msti);
+ int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu);
+ int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+-		     u16 vid);
++		     u16 vid, u16 fdb_flags);
+ int dsa_port_fdb_del(struct dsa_port *dp, const unsigned char *addr,
+-		     u16 vid);
++		     u16 vid, u16 fdb_flags);
+ int dsa_port_standalone_host_fdb_add(struct dsa_port *dp,
+ 				     const unsigned char *addr, u16 vid);
+ int dsa_port_standalone_host_fdb_del(struct dsa_port *dp,
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index e4a0513816bb..eab32b7a945a 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -304,7 +304,7 @@ static int dsa_port_inherit_brport_flags(struct dsa_port *dp,
+ 					 struct netlink_ext_ack *extack)
+ {
+ 	const unsigned long mask = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
+-				   BR_BCAST_FLOOD | BR_PORT_LOCKED;
++				   BR_BCAST_FLOOD;
+ 	struct net_device *brport_dev = dsa_port_to_bridge_port(dp);
+ 	int flag, err;
+ 
+@@ -328,7 +328,7 @@ static void dsa_port_clear_brport_flags(struct dsa_port *dp)
+ {
+ 	const unsigned long val = BR_FLOOD | BR_MCAST_FLOOD | BR_BCAST_FLOOD;
+ 	const unsigned long mask = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
+-				   BR_BCAST_FLOOD | BR_PORT_LOCKED;
++				   BR_BCAST_FLOOD | BR_PORT_LOCKED | BR_PORT_MAB;
+ 	int flag, err;
+ 
+ 	for_each_set_bit(flag, &mask, 32) {
+@@ -956,12 +956,13 @@ int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu)
+ }
+ 
+ int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+-		     u16 vid)
++		     u16 vid, u16 fdb_flags)
+ {
+ 	struct dsa_notifier_fdb_info info = {
+ 		.dp = dp,
+ 		.addr = addr,
+ 		.vid = vid,
++		.fdb_flags = fdb_flags,
+ 		.db = {
+ 			.type = DSA_DB_BRIDGE,
+ 			.bridge = *dp->bridge,
+@@ -979,12 +980,13 @@ int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+ }
+ 
+ int dsa_port_fdb_del(struct dsa_port *dp, const unsigned char *addr,
+-		     u16 vid)
++		     u16 vid, u16 fdb_flags)
+ {
+ 	struct dsa_notifier_fdb_info info = {
+ 		.dp = dp,
+ 		.addr = addr,
+ 		.vid = vid,
++		.fdb_flags = fdb_flags,
+ 		.db = {
+ 			.type = DSA_DB_BRIDGE,
+ 			.bridge = *dp->bridge,
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 1a59918d3b30..65f0c578ef44 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -3246,6 +3246,7 @@ static void dsa_slave_switchdev_event_work(struct work_struct *work)
+ 		container_of(work, struct dsa_switchdev_event_work, work);
+ 	const unsigned char *addr = switchdev_work->addr;
+ 	struct net_device *dev = switchdev_work->dev;
++	u16 fdb_flags = switchdev_work->fdb_flags;
+ 	u16 vid = switchdev_work->vid;
+ 	struct dsa_switch *ds;
+ 	struct dsa_port *dp;
+@@ -3261,7 +3262,7 @@ static void dsa_slave_switchdev_event_work(struct work_struct *work)
+ 		else if (dp->lag)
+ 			err = dsa_port_lag_fdb_add(dp, addr, vid);
+ 		else
+-			err = dsa_port_fdb_add(dp, addr, vid);
++			err = dsa_port_fdb_add(dp, addr, vid, fdb_flags);
+ 		if (err) {
+ 			dev_err(ds->dev,
+ 				"port %d failed to add %pM vid %d to fdb: %d\n",
+@@ -3277,7 +3278,7 @@ static void dsa_slave_switchdev_event_work(struct work_struct *work)
+ 		else if (dp->lag)
+ 			err = dsa_port_lag_fdb_del(dp, addr, vid);
+ 		else
+-			err = dsa_port_fdb_del(dp, addr, vid);
++			err = dsa_port_fdb_del(dp, addr, vid, fdb_flags);
+ 		if (err) {
+ 			dev_err(ds->dev,
+ 				"port %d failed to delete %pM vid %d from fdb: %d\n",
+@@ -3315,6 +3316,7 @@ static int dsa_slave_fdb_event(struct net_device *dev,
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
+ 	bool host_addr = fdb_info->is_local;
+ 	struct dsa_switch *ds = dp->ds;
++	u16 fdb_flags = 0;
+ 
+ 	if (ctx && ctx != dp)
+ 		return 0;
+@@ -3361,6 +3363,9 @@ static int dsa_slave_fdb_event(struct net_device *dev,
+ 		   orig_dev->name, fdb_info->addr, fdb_info->vid,
+ 		   host_addr ? " as host address" : "");
+ 
++	if (fdb_info->locked)
++		fdb_flags |= DSA_FDB_FLAG_LOCKED;
++
+ 	INIT_WORK(&switchdev_work->work, dsa_slave_switchdev_event_work);
+ 	switchdev_work->event = event;
+ 	switchdev_work->dev = dev;
+@@ -3369,6 +3374,7 @@ static int dsa_slave_fdb_event(struct net_device *dev,
+ 	ether_addr_copy(switchdev_work->addr, fdb_info->addr);
+ 	switchdev_work->vid = fdb_info->vid;
+ 	switchdev_work->host_addr = host_addr;
++	switchdev_work->fdb_flags = fdb_flags;
+ 
+ 	dsa_schedule_work(&switchdev_work->work);
+ 
+diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+index ce56acdba203..dd355556892e 100644
+--- a/net/dsa/switch.c
++++ b/net/dsa/switch.c
+@@ -234,7 +234,7 @@ static int dsa_port_do_mdb_del(struct dsa_port *dp,
+ }
+ 
+ static int dsa_port_do_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+-			       u16 vid, struct dsa_db db)
++			       u16 vid, u16 fdb_flags, struct dsa_db db)
+ {
+ 	struct dsa_switch *ds = dp->ds;
+ 	struct dsa_mac_addr *a;
+@@ -278,7 +278,7 @@ static int dsa_port_do_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+ }
+ 
+ static int dsa_port_do_fdb_del(struct dsa_port *dp, const unsigned char *addr,
+-			       u16 vid, struct dsa_db db)
++			       u16 vid, u16 fdb_flags, struct dsa_db db)
+ {
+ 	struct dsa_switch *ds = dp->ds;
+ 	struct dsa_mac_addr *a;
+@@ -404,8 +404,8 @@ static int dsa_switch_host_fdb_add(struct dsa_switch *ds,
+ 								info->vid,
+ 								info->db);
+ 			} else {
+-				err = dsa_port_do_fdb_add(dp, info->addr,
+-							  info->vid, info->db);
++				err = dsa_port_do_fdb_add(dp, info->addr, info->vid,
++							  info->fdb_flags, info->db);
+ 			}
+ 			if (err)
+ 				break;
+@@ -432,8 +432,8 @@ static int dsa_switch_host_fdb_del(struct dsa_switch *ds,
+ 								info->vid,
+ 								info->db);
+ 			} else {
+-				err = dsa_port_do_fdb_del(dp, info->addr,
+-							  info->vid, info->db);
++				err = dsa_port_do_fdb_del(dp, info->addr, info->vid,
++							  info->fdb_flags, info->db);
+ 			}
+ 			if (err)
+ 				break;
+@@ -452,7 +452,7 @@ static int dsa_switch_fdb_add(struct dsa_switch *ds,
+ 	if (!ds->ops->port_fdb_add)
+ 		return -EOPNOTSUPP;
+ 
+-	return dsa_port_do_fdb_add(dp, info->addr, info->vid, info->db);
++	return dsa_port_do_fdb_add(dp, info->addr, info->vid, info->fdb_flags, info->db);
+ }
+ 
+ static int dsa_switch_fdb_del(struct dsa_switch *ds,
+@@ -464,7 +464,7 @@ static int dsa_switch_fdb_del(struct dsa_switch *ds,
+ 	if (!ds->ops->port_fdb_del)
+ 		return -EOPNOTSUPP;
+ 
+-	return dsa_port_do_fdb_del(dp, info->addr, info->vid, info->db);
++	return dsa_port_do_fdb_del(dp, info->addr, info->vid, info->fdb_flags, info->db);
+ }
+ 
+ static int dsa_switch_lag_fdb_add(struct dsa_switch *ds,
 -- 
 2.34.1
 
