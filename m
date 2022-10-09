@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3466A5F935A
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 01:08:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3354C5F93A1
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 01:41:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233410AbiJIXIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 19:08:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59942 "EHLO
+        id S232087AbiJIXle (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 19:41:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233421AbiJIXHm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 19:07:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62F612611;
-        Sun,  9 Oct 2022 15:34:41 -0700 (PDT)
+        with ESMTP id S230424AbiJIXlL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 19:41:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 375DC9C2D0;
+        Sun,  9 Oct 2022 16:13:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E21F360D2B;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 59E02B80D33;
+        Sun,  9 Oct 2022 22:24:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5BA2C43144;
         Sun,  9 Oct 2022 22:24:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EECECC43149;
-        Sun,  9 Oct 2022 22:23:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354240;
-        bh=/BleCwNH4q+MxKT7DR0P99zio7f8ZwEn9aOrqdQJuJE=;
+        s=k20201202; t=1665354242;
+        bh=cBNw3HRI8ZxmonBa0pb7XC5xRZOkCci7V2ECYh4VxEo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gAZ1kPjeEp6Z03vDE18PEy/X0VAeWqKQ6h4Qg1ZfYs7pLp9DXcIINL7kgTKUWI1Wu
-         dIwsqVOxkm5mmoc1zHeAjhidDImIcsOutgyR6JCO1yOUkQGj4V7hTlrJuMUQgI6fJh
-         +ctYEMjflitX+Pb7HPDAWcSU4zY0n9O+HvzYhtDsio1xPnE4PUkO5pRcsCNI98Apoj
-         /2uFiGNqI0Qi26uzm0TiTf9AY0Rertgtkh1w2uczmoXkt23HgDuj3EDjAryBkdw69i
-         7EqBjHdyNQDakvzmPjw8/8HaX1TtoTvFA2ghaWExNEkFU1kzlaz5reSSjAM0p75z60
-         crS2llDcGSMqg==
+        b=BOyWM+koEoO4iR4SCfEH7Zt9GGImIVphvOx6v51UKPhGjXWG6BVGTvkFQ5suD/M+L
+         QIlwRqx9N2Q6bmGYQmuoSaUnIwKIkUDwhs/16nccJGtl8oW0i2pmlxCJdrrcFimUtN
+         VehFuVjHPji75JNDktWxj3Hn/jkom29YluaAbKa1E6jI1LkvBcc+D95ld2Eby9dV/Y
+         pABTm1rtviJwcyeR9Wuxi70POCTScnAYkI4HPvIfgWg+PhWfxCoCFwNROILTqaHQXj
+         +jPjJpDD9SeoRLva89RQ1r8nRpPIVlFJRYQ/Tjtw8pwKHvYt0clQ1vlyI6BKdvHHDg
+         X1zf4P5B4Ji1w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Hawkins Jiawei <yin31149@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 18/29] Bluetooth: hci_sysfs: Fix attempting to call device_add multiple times
-Date:   Sun,  9 Oct 2022 18:22:53 -0400
-Message-Id: <20221009222304.1218873-18-sashal@kernel.org>
+Cc:     Wen Gong <quic_wgong@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 19/29] wifi: ath10k: reset pointer after memory free to avoid potential use-after-free
+Date:   Sun,  9 Oct 2022 18:22:54 -0400
+Message-Id: <20221009222304.1218873-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009222304.1218873-1-sashal@kernel.org>
 References: <20221009222304.1218873-1-sashal@kernel.org>
@@ -58,64 +58,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Wen Gong <quic_wgong@quicinc.com>
 
-[ Upstream commit 448a496f760664d3e2e79466aa1787e6abc922b5 ]
+[ Upstream commit 1e1cb8e0b73e6f39a9d4a7a15d940b1265387eb5 ]
 
-device_add shall not be called multiple times as stated in its
-documentation:
+When running suspend test, kernel crash happened in ath10k, and it is
+fixed by commit b72a4aff947b ("ath10k: skip ath10k_halt during suspend
+for driver state RESTARTING").
 
- 'Do not call this routine or device_register() more than once for
- any device structure'
+Currently the crash is fixed, but as a common code style, it is better
+to set the pointer to NULL after memory is free.
 
-Syzkaller reports a bug as follows [1]:
-------------[ cut here ]------------
-kernel BUG at lib/list_debug.c:33!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-[...]
-Call Trace:
- <TASK>
- __list_add include/linux/list.h:69 [inline]
- list_add_tail include/linux/list.h:102 [inline]
- kobj_kset_join lib/kobject.c:164 [inline]
- kobject_add_internal+0x18f/0x8f0 lib/kobject.c:214
- kobject_add_varg lib/kobject.c:358 [inline]
- kobject_add+0x150/0x1c0 lib/kobject.c:410
- device_add+0x368/0x1e90 drivers/base/core.c:3452
- hci_conn_add_sysfs+0x9b/0x1b0 net/bluetooth/hci_sysfs.c:53
- hci_le_cis_estabilished_evt+0x57c/0xae0 net/bluetooth/hci_event.c:6799
- hci_le_meta_evt+0x2b8/0x510 net/bluetooth/hci_event.c:7110
- hci_event_func net/bluetooth/hci_event.c:7440 [inline]
- hci_event_packet+0x63d/0xfd0 net/bluetooth/hci_event.c:7495
- hci_rx_work+0xae7/0x1230 net/bluetooth/hci_core.c:4007
- process_one_work+0x991/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e4/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
+This is to address the code style and it will avoid potential bug of
+use-after-free.
 
-Link: https://syzkaller.appspot.com/bug?id=da3246e2d33afdb92d66bc166a0934c5b146404a
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Tested-by: Hawkins Jiawei <yin31149@gmail.com>
+Tested-on: QCA6174 hw3.2 PCI WLAN.RM.4.4.1-00110-QCARMSWP-1
+Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220505092248.787-1-quic_wgong@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_sysfs.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/wireless/ath/ath10k/htt_rx.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/bluetooth/hci_sysfs.c b/net/bluetooth/hci_sysfs.c
-index b69d88b88d2e..ccd2c377bf83 100644
---- a/net/bluetooth/hci_sysfs.c
-+++ b/net/bluetooth/hci_sysfs.c
-@@ -48,6 +48,9 @@ void hci_conn_add_sysfs(struct hci_conn *conn)
+diff --git a/drivers/net/wireless/ath/ath10k/htt_rx.c b/drivers/net/wireless/ath/ath10k/htt_rx.c
+index 760d24a28f39..f6fdb18f0950 100644
+--- a/drivers/net/wireless/ath/ath10k/htt_rx.c
++++ b/drivers/net/wireless/ath/ath10k/htt_rx.c
+@@ -297,12 +297,16 @@ void ath10k_htt_rx_free(struct ath10k_htt *htt)
+ 			  ath10k_htt_get_vaddr_ring(htt),
+ 			  htt->rx_ring.base_paddr);
  
- 	BT_DBG("conn %p", conn);
- 
-+	if (device_is_registered(&conn->dev))
-+		return;
++	ath10k_htt_config_paddrs_ring(htt, NULL);
 +
- 	dev_set_name(&conn->dev, "%s:%d", hdev->name, conn->handle);
+ 	dma_free_coherent(htt->ar->dev,
+ 			  sizeof(*htt->rx_ring.alloc_idx.vaddr),
+ 			  htt->rx_ring.alloc_idx.vaddr,
+ 			  htt->rx_ring.alloc_idx.paddr);
++	htt->rx_ring.alloc_idx.vaddr = NULL;
  
- 	if (device_add(&conn->dev) < 0) {
+ 	kfree(htt->rx_ring.netbufs_ring);
++	htt->rx_ring.netbufs_ring = NULL;
+ }
+ 
+ static inline struct sk_buff *ath10k_htt_rx_netbuf_pop(struct ath10k_htt *htt)
+@@ -823,8 +827,10 @@ int ath10k_htt_rx_alloc(struct ath10k_htt *htt)
+ 			  ath10k_htt_get_rx_ring_size(htt),
+ 			  vaddr_ring,
+ 			  htt->rx_ring.base_paddr);
++	ath10k_htt_config_paddrs_ring(htt, NULL);
+ err_dma_ring:
+ 	kfree(htt->rx_ring.netbufs_ring);
++	htt->rx_ring.netbufs_ring = NULL;
+ err_netbuf:
+ 	return -ENOMEM;
+ }
 -- 
 2.35.1
 
