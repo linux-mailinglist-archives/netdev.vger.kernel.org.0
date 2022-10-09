@@ -2,48 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 624275F92C9
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:51:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A26095F94AC
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 02:00:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233475AbiJIWvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:51:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58090 "EHLO
+        id S231841AbiJJAAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 20:00:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233333AbiJIWts (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:49:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77BF13B943;
-        Sun,  9 Oct 2022 15:26:05 -0700 (PDT)
+        with ESMTP id S230290AbiJIX7p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 19:59:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53FE84BD13;
+        Sun,  9 Oct 2022 16:32:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0EB9AB80DD1;
-        Sun,  9 Oct 2022 22:23:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13AF8C433C1;
-        Sun,  9 Oct 2022 22:23:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 17F9760DC4;
+        Sun,  9 Oct 2022 22:23:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31B34C43142;
+        Sun,  9 Oct 2022 22:23:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354236;
-        bh=0G7pgzAbm2+9YR5/tmvia7bob4tC2qyNvnsTbTuBWPA=;
+        s=k20201202; t=1665354238;
+        bh=xBl/bgLiDs3c5IL9mTapEwdImv2g6Zpj2wxt0hIuwdA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uyE2OdN4qkDH8PrBwfJFAM1VCb7QNAaDMdrlpp27wg3y2sU5QqUueWe6MEHg6WwS5
-         R/sgg41xtCxbvqOPU5ZwIEGtWCJSCrIaeITDpZDl4yVVLOvGYLzVZYEl+CChIpD0x2
-         x+YOvjhzQpAZaA6pJjFBfyzYOM+JaB3Qb7sleiGkxcUaJ4u/ougkNANM+P8GJQuPHB
-         kOnMmZF+P08l769uwRos40Bbv0l/WnzrMDvk67pn65UVCfvLnUk094MHokwBzf2JCh
-         NSQ2/2S4btcZS7lGDqdWDIDWLDOQfp0nRkJ37JLJCJ3X0U2ILWgRiyc0KlRptrV054
-         y51CrhbQNYSqg==
+        b=Yyc+s7S64ffGbLcQrqom06Ad2cUZcDL73gsuJ0rhSuKlTvCsmuxw5fRZK9iOmloiW
+         97X77bTh7q9LUHkgxXc8As2kmqhX6BqznPdWRZtbkXAREVpxH+cEhkge3+IofGODfS
+         MwYFtqI4JDUqWFKkQ57361s7wRs23TP0ptakEV9etxcwxqW3LIbZ4J0e9qMA/9lX+z
+         QL31ZtVMW166FttvAEd+mVNkny0qio982aP5wbyOymd6OFlaYvyVQV/yuUlmpYSCZc
+         /yzDWBdGlLKeLDyWaC16xErzvrEOr/iAJlJeyDzAFo7PdpQSn3lkXqAvX4eVr2yrCn
+         IAKNrjoXzCgPA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nathan Huckleberry <nhuck@google.com>,
-        Dan Carpenter <error27@gmail.com>, llvm@lists.linux.dev,
-        Nathan Chancellor <nathan@kernel.org>,
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, ndesaulniers@google.com,
-        leon@kernel.org, mkl@pengutronix.de, khalasa@piap.pl,
-        wsa+renesas@sang-engineering.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 16/29] net: korina: Fix return type of korina_send_packet
-Date:   Sun,  9 Oct 2022 18:22:51 -0400
-Message-Id: <20221009222304.1218873-16-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, vinicius.gomes@intel.com,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 17/29] net/sched: taprio: taprio_dump and taprio_change are protected by rtnl_mutex
+Date:   Sun,  9 Oct 2022 18:22:52 -0400
+Message-Id: <20221009222304.1218873-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009222304.1218873-1-sashal@kernel.org>
 References: <20221009222304.1218873-1-sashal@kernel.org>
@@ -60,45 +58,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nathan Huckleberry <nhuck@google.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 106c67ce46f3c82dd276e983668a91d6ed631173 ]
+[ Upstream commit 18cdd2f0998a4967b1fff4c43ed9aef049e42c39 ]
 
-The ndo_start_xmit field in net_device_ops is expected to be of type
-netdev_tx_t (*ndo_start_xmit)(struct sk_buff *skb, struct net_device *dev).
+Since the writer-side lock is taken here, we do not need to open an RCU
+read-side critical section, instead we can use rtnl_dereference() to
+tell lockdep we are serialized with concurrent writes.
 
-The mismatched return type breaks forward edge kCFI since the underlying
-function definition does not match the function hook definition.
-
-The return type of korina_send_packet should be changed from int to
-netdev_tx_t.
-
-Reported-by: Dan Carpenter <error27@gmail.com>
-Link: https://github.com/ClangBuiltLinux/linux/issues/1703
-Cc: llvm@lists.linux.dev
-Signed-off-by: Nathan Huckleberry <nhuck@google.com>
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-Link: https://lore.kernel.org/r/20220912214344.928925-1-nhuck@google.com
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/korina.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/sched/sch_taprio.c | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/korina.c b/drivers/net/ethernet/korina.c
-index 9f804e2aba35..d1bd56f6eecb 100644
---- a/drivers/net/ethernet/korina.c
-+++ b/drivers/net/ethernet/korina.c
-@@ -196,7 +196,8 @@ static void korina_chain_rx(struct korina_private *lp,
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 506ebae1f72c..98d160fc74b9 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -1481,10 +1481,8 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 	}
+ 	INIT_LIST_HEAD(&new_admin->entries);
+ 
+-	rcu_read_lock();
+-	oper = rcu_dereference(q->oper_sched);
+-	admin = rcu_dereference(q->admin_sched);
+-	rcu_read_unlock();
++	oper = rtnl_dereference(q->oper_sched);
++	admin = rtnl_dereference(q->admin_sched);
+ 
+ 	/* no changes - no new mqprio settings */
+ 	if (!taprio_mqprio_cmp(dev, mqprio))
+@@ -1843,9 +1841,8 @@ static int taprio_dump(struct Qdisc *sch, struct sk_buff *skb)
+ 	struct nlattr *nest, *sched_nest;
+ 	unsigned int i;
+ 
+-	rcu_read_lock();
+-	oper = rcu_dereference(q->oper_sched);
+-	admin = rcu_dereference(q->admin_sched);
++	oper = rtnl_dereference(q->oper_sched);
++	admin = rtnl_dereference(q->admin_sched);
+ 
+ 	opt.num_tc = netdev_get_num_tc(dev);
+ 	memcpy(opt.prio_tc_map, dev->prio_tc_map, sizeof(opt.prio_tc_map));
+@@ -1889,8 +1886,6 @@ static int taprio_dump(struct Qdisc *sch, struct sk_buff *skb)
+ 	nla_nest_end(skb, sched_nest);
+ 
+ done:
+-	rcu_read_unlock();
+-
+ 	return nla_nest_end(skb, nest);
+ 
+ admin_error:
+@@ -1900,7 +1895,6 @@ static int taprio_dump(struct Qdisc *sch, struct sk_buff *skb)
+ 	nla_nest_cancel(skb, nest);
+ 
+ start_error:
+-	rcu_read_unlock();
+ 	return -ENOSPC;
  }
  
- /* transmit packet */
--static int korina_send_packet(struct sk_buff *skb, struct net_device *dev)
-+static netdev_tx_t korina_send_packet(struct sk_buff *skb,
-+				      struct net_device *dev)
- {
- 	struct korina_private *lp = netdev_priv(dev);
- 	unsigned long flags;
 -- 
 2.35.1
 
