@@ -2,47 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37D545F9097
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:26:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73F205F91BE
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:40:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231709AbiJIW0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:26:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60856 "EHLO
+        id S233142AbiJIWkg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:40:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230427AbiJIWX6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:23:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECC403C17B;
-        Sun,  9 Oct 2022 15:18:10 -0700 (PDT)
+        with ESMTP id S233430AbiJIWkI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:40:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98FBE41536;
+        Sun,  9 Oct 2022 15:21:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 92C7860C93;
-        Sun,  9 Oct 2022 22:10:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C8C9C43144;
-        Sun,  9 Oct 2022 22:10:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB4DFB80DD6;
+        Sun,  9 Oct 2022 22:11:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5177BC433C1;
+        Sun,  9 Oct 2022 22:11:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665353457;
-        bh=KwB7yzHmIKvJrXcnQgncUVi1felkVMXMpemxmBu6DsM=;
+        s=k20201202; t=1665353467;
+        bh=Ltf1k6nZbq/4KQz6xsOUMvd7H8pKv9s2/hbk21ToTPs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LN+1ko22YeZPuIlas9ImfZ51r594qOsAkxhzWwj/7iTLA82Cm2b41hE1+jxiNDxRw
-         w9F8FDcg1zw8exFv3ACNHdvkq0DHVmAqUQ34GPTtk6d7N8f81W83PxpY88YOOboOUE
-         nRzaRhmX68gtUdkNBVr5RminLAha1dCYOKX2w90TMinFFiDdi+8aGR/RZBxEzCOgDA
-         JuzdZ0UHOU2cY7YAmEoiqa3ZqevP1SlYOT23PgcqYYvNUwZjO6ISPRB/JD+Td82YoI
-         zVMccD178ZmRfbRgMl9i4W2n563f6F8HB7I5RBn7dn7Hg9U8JsFJvQYRNVSEdK+i52
-         +oAHERmNDuuFw==
+        b=mFGwaHuiCdUPufA3+pk12DdJJdaFnnMX2FMzvPLv9D+OZbj7Gj9/PgF8XGvcTKsCQ
+         sEG3j6JYWYn8IIZDsW1vbqxjRHG0a5TuL/u5z+BWBE7Kf3mBpJk4vucfpKaI+iDRpU
+         ayK6uZRIhmbIrJZN07UEcGw5ZpoMgVBfU8qR2yWISYX8rlOOAfzx5EX+CxiEM/s4Cm
+         wrTZYyCkSVn21/1UuejTYmZ4bQSo6O/jpAHZU7fK63y288tXcRFmNXVRwzrEglg/KF
+         EPmzpuUVw+k0ZUZppq6GAfE/jkuqWJKCFB8dYhWhdY2FgDdcmYjccQyxRpEWlPyhzY
+         2yyoRU7nniGkQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jianglei Nie <niejianglei2021@163.com>,
-        Jeff Johnson <quic_jjohnson@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+Cc:     Sean Wang <sean.wang@mediatek.com>, YN Chen <YN.Chen@mediatek.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
+        lorenzo@kernel.org, ryder.lee@mediatek.com, kvalo@kernel.org,
         davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.0 40/77] wifi: ath11k: mhi: fix potential memory leak in ath11k_mhi_register()
-Date:   Sun,  9 Oct 2022 18:07:17 -0400
-Message-Id: <20221009220754.1214186-40-sashal@kernel.org>
+        pabeni@redhat.com, matthias.bgg@gmail.com, deren.wu@mediatek.com,
+        johannes.berg@intel.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 6.0 41/77] wifi: mt76: mt7921: reset msta->airtime_ac while clearing up hw value
+Date:   Sun,  9 Oct 2022 18:07:18 -0400
+Message-Id: <20221009220754.1214186-41-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009220754.1214186-1-sashal@kernel.org>
 References: <20221009220754.1214186-1-sashal@kernel.org>
@@ -59,77 +60,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jianglei Nie <niejianglei2021@163.com>
+From: Sean Wang <sean.wang@mediatek.com>
 
-[ Upstream commit 43e7c3505ec70db3d3c6458824d5fa40f62e3e7b ]
+[ Upstream commit 1bf66dc31032ff5292f4d5b76436653f269fcfbd ]
 
-mhi_alloc_controller() allocates a memory space for mhi_ctrl. When gets
-some error, mhi_ctrl should be freed with mhi_free_controller(). But
-when ath11k_mhi_read_addr_from_dt() fails, the function returns without
-calling mhi_free_controller(), which will lead to a memory leak.
+We should reset mstat->airtime_ac along with clear up the entries in the
+hardware WLAN table for the Rx and Rx accumulative airtime. Otherwsie, the
+value msta->airtime_ac - [tx, rx]_last may be a negative and that is not
+the actual airtime the device took in the last run.
 
-We can fix it by calling mhi_free_controller() when
-ath11k_mhi_read_addr_from_dt() fails.
-
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-Reviewed-by: Jeff Johnson <quic_jjohnson@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220907073704.58806-1-niejianglei2021@163.com
+Reported-by: YN Chen <YN.Chen@mediatek.com>
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/mhi.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7921/main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
-index c44df17719f6..86995e8dc913 100644
---- a/drivers/net/wireless/ath/ath11k/mhi.c
-+++ b/drivers/net/wireless/ath/ath11k/mhi.c
-@@ -402,8 +402,7 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
- 	ret = ath11k_mhi_get_msi(ab_pci);
- 	if (ret) {
- 		ath11k_err(ab, "failed to get msi for mhi\n");
--		mhi_free_controller(mhi_ctrl);
--		return ret;
-+		goto free_controller;
- 	}
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/main.c b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
+index 1438a9f8d1fd..33bd64fe5c74 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/main.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
+@@ -752,6 +752,7 @@ void mt7921_mac_sta_assoc(struct mt76_dev *mdev, struct ieee80211_vif *vif,
  
- 	if (!test_bit(ATH11K_FLAG_MULTI_MSI_VECTORS, &ab->dev_flags))
-@@ -412,7 +411,7 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
- 	if (test_bit(ATH11K_FLAG_FIXED_MEM_RGN, &ab->dev_flags)) {
- 		ret = ath11k_mhi_read_addr_from_dt(mhi_ctrl);
- 		if (ret < 0)
--			return ret;
-+			goto free_controller;
- 	} else {
- 		mhi_ctrl->iova_start = 0;
- 		mhi_ctrl->iova_stop = 0xFFFFFFFF;
-@@ -440,18 +439,22 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
- 	default:
- 		ath11k_err(ab, "failed assign mhi_config for unknown hw rev %d\n",
- 			   ab->hw_rev);
--		mhi_free_controller(mhi_ctrl);
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto free_controller;
- 	}
+ 	mt7921_mac_wtbl_update(dev, msta->wcid.idx,
+ 			       MT_WTBL_UPDATE_ADM_COUNT_CLEAR);
++	memset(msta->airtime_ac, 0, sizeof(msta->airtime_ac));
  
- 	ret = mhi_register_controller(mhi_ctrl, ath11k_mhi_config);
- 	if (ret) {
- 		ath11k_err(ab, "failed to register to mhi bus, err = %d\n", ret);
--		mhi_free_controller(mhi_ctrl);
--		return ret;
-+		goto free_controller;
- 	}
+ 	mt7921_mcu_sta_update(dev, sta, vif, true, MT76_STA_INFO_STATE_ASSOC);
  
- 	return 0;
-+
-+free_controller:
-+	mhi_free_controller(mhi_ctrl);
-+	ab_pci->mhi_ctrl = NULL;
-+	return ret;
- }
- 
- void ath11k_mhi_unregister(struct ath11k_pci *ab_pci)
 -- 
 2.35.1
 
