@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D5ED5F8F7E
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:09:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 465375F8F82
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:09:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230490AbiJIWJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:09:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41254 "EHLO
+        id S230515AbiJIWJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:09:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230384AbiJIWIz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:08:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5B6C2980F;
-        Sun,  9 Oct 2022 15:08:35 -0700 (PDT)
+        with ESMTP id S230513AbiJIWI5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:08:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DE102C643;
+        Sun,  9 Oct 2022 15:08:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7780B80D14;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 75053B80DD0;
+        Sun,  9 Oct 2022 22:08:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 258C4C43145;
         Sun,  9 Oct 2022 22:08:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C5B0C433C1;
-        Sun,  9 Oct 2022 22:08:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665353308;
-        bh=kFRr5HqiT6Cige+MyRzD2LCaijey+NqW3ZYlTW9aevs=;
+        s=k20201202; t=1665353310;
+        bh=xMxSlghfk4u+HEWCqT2HDtLZahf6WcYBU4+V5Q9BAuA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FB0ZDw5pA/5WokJPKry/lkmifzJTSjfsT2EB53kn8uZKytn9R+h10npOvU5zd6q/M
-         sgJDJIL4vaQlfNYvfrNd0Iv1pFwdJjZBajDD56rurj+mQslYo1w3QoFWX+syI3qnE6
-         S58mjiulcAjm1YE1H3zPlGOpvAB5E44Et0YyEdkGNvi9nSKt9BUJmKtuDyKlucQrk2
-         Ht4wpqeANrDud070F1Hrvl0o371TVMEdIqfWcWtM6lQuzBEUOyNPnKC92ZCaBz3fUT
-         nd88WKRY2Dblj34YsFP735h7UEfo6wpNsFp09VSI/N8at7j68pB9zIDaemMgnf/3bK
-         GmUJcEVVPxj+Q==
+        b=mK+pcnmWFJMi2EvAmVtXQTrqbKmuYz1YrrxnnmiTtBcqBJLM5cX4hBIruahdy7xG2
+         5uVXdo7y8FVHN0ju52/TlFJNFGCSw41+ynzhBIZugWOPdN0sMFxqLNAs+G6GBmefsB
+         ZW4sCtuJt4JEMnMAgiS0VWSmnC5eIR2eJqstscxP0iNhnKbSBMdS+kj9xVIR2w7kVq
+         mKtUK3nuQRnxPcxruFJr0zbl9k9maMVXray+sa8gT8AWKm7M9WXi5douhNbIUWp5go
+         N0BJKJnTHrDLHxhRdah6ott5sxPpHlx52mPbsIhTgqDkkuuWn/DNdtNvygkcTdhRsO
+         MJtIXPm/Ufeyg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Abhishek Shah <abhishek.shah@columbia.edu>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.0 12/77] net: mscc: ocelot: adjust forwarding domain for CPU ports in a LAG
-Date:   Sun,  9 Oct 2022 18:06:49 -0400
-Message-Id: <20221009220754.1214186-12-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.0 13/77] tcp: annotate data-race around tcp_md5sig_pool_populated
+Date:   Sun,  9 Oct 2022 18:06:50 -0400
+Message-Id: <20221009220754.1214186-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009220754.1214186-1-sashal@kernel.org>
 References: <20221009220754.1214186-1-sashal@kernel.org>
@@ -58,114 +58,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 291ac1517af58670740528466ccebe3caefb9093 ]
+[ Upstream commit aacd467c0a576e5e44d2de4205855dc0fe43f6fb ]
 
-Currently when we have 2 CPU ports configured for DSA tag_8021q mode and
-we put them in a LAG, a PGID dump looks like this:
+tcp_md5sig_pool_populated can be read while another thread
+changes its value.
 
-PGID_SRC[0] = ports 4,
-PGID_SRC[1] = ports 4,
-PGID_SRC[2] = ports 4,
-PGID_SRC[3] = ports 4,
-PGID_SRC[4] = ports 0, 1, 2, 3, 4, 5,
-PGID_SRC[5] = no ports
+The race has no consequence because allocations
+are protected with tcp_md5sig_mutex.
 
-(ports 0-3 are user ports, ports 4 and 5 are CPU ports)
+This patch adds READ_ONCE() and WRITE_ONCE() to document
+the race and silence KCSAN.
 
-There are 2 problems with the configuration above:
-
-- user ports should enable forwarding towards both CPU ports, not just 4,
-  and the aggregation PGIDs should prune one CPU port or the other from
-  the destination port mask, based on a hash computed from packet headers.
-
-- CPU ports should not be allowed to forward towards themselves and also
-  not towards other ports in the same LAG as themselves
-
-The first problem requires fixing up the PGID_SRC of user ports, when
-ocelot_port_assigned_dsa_8021q_cpu_mask() is called. We need to say that
-when a user port is assigned to a tag_8021q CPU port and that port is in
-a LAG, it should forward towards all ports in that LAG.
-
-The second problem requires fixing up the PGID_SRC of port 4, to remove
-ports 4 and 5 (in a LAG) from the allowed destinations.
-
-After this change, the PGID source masks look as follows:
-
-PGID_SRC[0] = ports 4, 5,
-PGID_SRC[1] = ports 4, 5,
-PGID_SRC[2] = ports 4, 5,
-PGID_SRC[3] = ports 4, 5,
-PGID_SRC[4] = ports 0, 1, 2, 3,
-PGID_SRC[5] = no ports
-
-Note that PGID_SRC[5] still looks weird (it should say "0, 1, 2, 3" just
-like PGID_SRC[4] does), but I've tested forwarding through this CPU port
-and it doesn't seem like anything is affected (it appears that PGID_SRC[4]
-is being looked up on forwarding from the CPU, since both ports 4 and 5
-have logical port ID 4). The reason why it looks weird is because
-we've never called ocelot_port_assign_dsa_8021q_cpu() for any user port
-towards port 5 (all user ports are assigned to port 4 which is in a LAG
-with 5).
-
-Since things aren't broken, I'm willing to leave it like that for now
-and just document the oddity.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Reported-by: Abhishek Shah <abhishek.shah@columbia.edu>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mscc/ocelot.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ net/ipv4/tcp.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 8f8005bc6eea..708a9aab8c76 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -2071,6 +2071,16 @@ static int ocelot_bond_get_id(struct ocelot *ocelot, struct net_device *bond)
- 	return __ffs(bond_mask);
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index e373dde1f46f..3733742cebf8 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -4442,12 +4442,16 @@ static void __tcp_alloc_md5sig_pool(void)
+ 	 * to memory. See smp_rmb() in tcp_get_md5sig_pool()
+ 	 */
+ 	smp_wmb();
+-	tcp_md5sig_pool_populated = true;
++	/* Paired with READ_ONCE() from tcp_alloc_md5sig_pool()
++	 * and tcp_get_md5sig_pool().
++	*/
++	WRITE_ONCE(tcp_md5sig_pool_populated, true);
  }
  
-+/* Returns the mask of user ports assigned to this DSA tag_8021q CPU port.
-+ * Note that when CPU ports are in a LAG, the user ports are assigned to the
-+ * 'primary' CPU port, the one whose physical port number gives the logical
-+ * port number of the LAG.
-+ *
-+ * We leave PGID_SRC poorly configured for the 'secondary' CPU port in the LAG
-+ * (to which no user port is assigned), but it appears that forwarding from
-+ * this secondary CPU port looks at the PGID_SRC associated with the logical
-+ * port ID that it's assigned to, which *is* configured properly.
-+ */
- static u32 ocelot_dsa_8021q_cpu_assigned_ports(struct ocelot *ocelot,
- 					       struct ocelot_port *cpu)
+ bool tcp_alloc_md5sig_pool(void)
  {
-@@ -2087,9 +2097,15 @@ static u32 ocelot_dsa_8021q_cpu_assigned_ports(struct ocelot *ocelot,
- 			mask |= BIT(port);
+-	if (unlikely(!tcp_md5sig_pool_populated)) {
++	/* Paired with WRITE_ONCE() from __tcp_alloc_md5sig_pool() */
++	if (unlikely(!READ_ONCE(tcp_md5sig_pool_populated))) {
+ 		mutex_lock(&tcp_md5sig_mutex);
+ 
+ 		if (!tcp_md5sig_pool_populated) {
+@@ -4458,7 +4462,8 @@ bool tcp_alloc_md5sig_pool(void)
+ 
+ 		mutex_unlock(&tcp_md5sig_mutex);
  	}
- 
-+	if (cpu->bond)
-+		mask &= ~ocelot_get_bond_mask(ocelot, cpu->bond);
-+
- 	return mask;
+-	return tcp_md5sig_pool_populated;
++	/* Paired with WRITE_ONCE() from __tcp_alloc_md5sig_pool() */
++	return READ_ONCE(tcp_md5sig_pool_populated);
  }
+ EXPORT_SYMBOL(tcp_alloc_md5sig_pool);
  
-+/* Returns the DSA tag_8021q CPU port that the given port is assigned to,
-+ * or the bit mask of CPU ports if said CPU port is in a LAG.
-+ */
- u32 ocelot_port_assigned_dsa_8021q_cpu_mask(struct ocelot *ocelot, int port)
+@@ -4474,7 +4479,8 @@ struct tcp_md5sig_pool *tcp_get_md5sig_pool(void)
  {
- 	struct ocelot_port *ocelot_port = ocelot->ports[port];
-@@ -2098,6 +2114,9 @@ u32 ocelot_port_assigned_dsa_8021q_cpu_mask(struct ocelot *ocelot, int port)
- 	if (!cpu_port)
- 		return 0;
+ 	local_bh_disable();
  
-+	if (cpu_port->bond)
-+		return ocelot_get_bond_mask(ocelot, cpu_port->bond);
-+
- 	return BIT(cpu_port->index);
- }
- EXPORT_SYMBOL_GPL(ocelot_port_assigned_dsa_8021q_cpu_mask);
+-	if (tcp_md5sig_pool_populated) {
++	/* Paired with WRITE_ONCE() from __tcp_alloc_md5sig_pool() */
++	if (READ_ONCE(tcp_md5sig_pool_populated)) {
+ 		/* coupled with smp_wmb() in __tcp_alloc_md5sig_pool() */
+ 		smp_rmb();
+ 		return this_cpu_ptr(&tcp_md5sig_pool);
 -- 
 2.35.1
 
