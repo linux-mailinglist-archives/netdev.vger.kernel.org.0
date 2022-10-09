@@ -2,104 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97B0A5F89BA
-	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 08:44:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CAD55F89F8
+	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 09:17:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229825AbiJIGnw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 02:43:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56966 "EHLO
+        id S229711AbiJIHR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 03:17:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbiJIGnv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 02:43:51 -0400
-X-Greylist: delayed 345 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 08 Oct 2022 23:43:49 PDT
-Received: from azure-sdnproxy.icoremail.net (azure-sdnproxy.icoremail.net [20.232.28.96])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 555B73206C
-        for <netdev@vger.kernel.org>; Sat,  8 Oct 2022 23:43:49 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [211.90.237.214])
-        by mail-app2 (Coremail) with SMTP id by_KCgBXCWosbEJjh9O9Bg--.26141S2;
-        Sun, 09 Oct 2022 14:37:41 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-kernel@vger.kernel.org
-Cc:     isdn@linux-pingi.de, kuba@kernel.org, andrii@kernel.org,
-        gregkh@linuxfoundation.org, axboe@kernel.dk, davem@davemloft.net,
-        netdev@vger.kernel.org, zou_wei@huawei.com,
-        Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH] mISDN: hfcpci: Fix use-after-free bug in hfcpci_softirq
-Date:   Sun,  9 Oct 2022 14:37:31 +0800
-Message-Id: <20221009063731.22733-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: by_KCgBXCWosbEJjh9O9Bg--.26141S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7WF1UWr43Xr4xurWUWw4Durg_yoW8XFy8pa
-        y5GFyIyr4rZa10kr48X3WDZF95Za1kArW0kF1kGw13Z3Z8XFy5tr1UtryvvFW5GrZ0gF9F
-        yF48XFWfGFs8AFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvl14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4U
-        JVW0owA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
-        n2kIc2xKxwCY02Avz4vE14v_GF1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr
-        0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY
-        17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcV
-        C0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY
-        6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvj
-        DU0xZFpf9x0JU-J5rUUUUU=
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgYSAVZdtb0jdQAGsE
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        with ESMTP id S229689AbiJIHR1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 03:17:27 -0400
+Received: from smtpbguseast1.qq.com (smtpbguseast1.qq.com [54.204.34.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10F552DAB4
+        for <netdev@vger.kernel.org>; Sun,  9 Oct 2022 00:17:23 -0700 (PDT)
+X-QQ-mid: bizesmtp82t1665299374t4yss6jy
+Received: from localhost.localdomain ( [183.129.236.74])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Sun, 09 Oct 2022 15:09:18 +0800 (CST)
+X-QQ-SSF: 01400000000000M0M000000A0000000
+X-QQ-FEAT: znfcQSa1hKZmOr4I++H8gUPXGIbcrFc7pqENhWtBqgByBmmkia5k5YD2wYL61
+        MuiYODINy8Pk5EytFtEO3ghw7m//IsyoPQYCixhAZ7mPCcGkHA1xdeTR8oEKoe0G+2SMNvM
+        uxI5g3nqHAK0HSxl81NblNZmHUEgFF8H9P3RkFe7CE72YSDHapYUuvcgjseUXGwS7Oz6jE3
+        dAlrhYnNy41MZiQBu4R/aM9pFCRtnyZXnluG90HO85luS1nbtPYf0YKALnGhpg2rMemrvNU
+        BTqw9Ak4blomAFPdOzia6hzbYN1T91OYqUeq5bhLEIPpVSjenCMgFpPz1SicS1Ykamh171s
+        00wM7L8w4mR6/z/tRQ/5iRkmn/5HIV3rOKvi9uIT1hW0EZPjLMfefjUMLlQLV9PQcryCZ8G
+        YZTZ8DiWHDE=
+X-QQ-GoodBg: 2
+From:   Mengyuan Lou <mengyuanlou@net-swift.com>
+To:     netdev@vger.kernel.org
+Cc:     jiawenwu@trustnetic.com, Mengyuan Lou <mengyuanlou@net-swift.com>
+Subject: [PATCH net-next] net: ngbe: Variables need to be initialized
+Date:   Sun,  9 Oct 2022 15:09:12 +0800
+Message-Id: <20221009070912.55353-1-mengyuanlou@net-swift.com>
+X-Mailer: git-send-email 2.37.3
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:net-swift.com:qybglogicsvr:qybglogicsvr1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The function hfcpci_softirq() is a timer handler. If it
-is running, the timer_pending() will return 0 and the
-del_timer_sync() in HFC_cleanup() will not be executed.
-As a result, the use-after-free bug will happen. The
-process is shown below:
+Variables need to be initialized in ngbe_shutdown()
+Fix: commit <e79e40c83b9f> ("net: ngbe: Add build support for ngbe")
 
-    (cleanup routine)          |        (timer handler)
-HFC_cleanup()                  | hfcpci_softirq()
- if (timer_pending(&hfc_tl))   |
-   del_timer_sync()            |
- ...                           | ...
- pci_unregister_driver(hc)     |
-  driver_unregister            |  driver_for_each_device
-   bus_remove_driver           |   _hfcpci_softirq
-    driver_detach              |   ...
-     put_device(dev) //[1]FREE |
-                               |    dev_get_drvdata(dev) //[2]USE
-
-The device is deallocated is position [1] and used in
-position [2].
-
-Fix by removing the "timer_pending" check in HFC_cleanup(),
-which makes sure that the hfcpci_softirq() have finished
-before the resource is deallocated.
-
-Fixes: 009fc857c5f6 ("mISDN: fix possible use-after-free in HFC_cleanup()")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Signed-off-by: Mengyuan Lou <mengyuanlou@net-swift.com>
 ---
- drivers/isdn/hardware/mISDN/hfcpci.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/wangxun/ngbe/ngbe_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/isdn/hardware/mISDN/hfcpci.c b/drivers/isdn/hardware/mISDN/hfcpci.c
-index af17459c1a5..e964a8dd851 100644
---- a/drivers/isdn/hardware/mISDN/hfcpci.c
-+++ b/drivers/isdn/hardware/mISDN/hfcpci.c
-@@ -2345,8 +2345,7 @@ HFC_init(void)
- static void __exit
- HFC_cleanup(void)
- {
--	if (timer_pending(&hfc_tl))
--		del_timer_sync(&hfc_tl);
-+	del_timer_sync(&hfc_tl);
+diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
+index 7674cb6e5700..f754e53eb852 100644
+--- a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
++++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
+@@ -46,7 +46,7 @@ static void ngbe_dev_shutdown(struct pci_dev *pdev, bool *enable_wake)
  
- 	pci_unregister_driver(&hfc_driver);
- }
+ static void ngbe_shutdown(struct pci_dev *pdev)
+ {
+-	bool wake;
++	bool wake = false;
+ 
+ 	ngbe_dev_shutdown(pdev, &wake);
+ 
 -- 
-2.17.1
+2.37.3
 
