@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 73F595F9028
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:21:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C7925F9065
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:24:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231255AbiJIWVp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:21:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44550 "EHLO
+        id S230331AbiJIWYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:24:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231909AbiJIWTn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:19:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D711A3BF;
-        Sun,  9 Oct 2022 15:16:53 -0700 (PDT)
+        with ESMTP id S231564AbiJIWXc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:23:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BDDE3DBC5;
+        Sun,  9 Oct 2022 15:17:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA23260CEE;
-        Sun,  9 Oct 2022 22:12:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E17EFC433C1;
-        Sun,  9 Oct 2022 22:12:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E2F73B80DDE;
+        Sun,  9 Oct 2022 22:12:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BE59C433D7;
+        Sun,  9 Oct 2022 22:12:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665353542;
-        bh=2S3ECd09/UKaqYMGqX00MlN5mRFwbCKTt0QD76JLyVQ=;
+        s=k20201202; t=1665353544;
+        bh=66D2o55xS9JFwuQ8s9rxk5SH4uR49bT6xf7rZNewlQg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ln7JSo5Rm5HTaQIampmEiDWWsXxuNqScrd4CGUmRQ8xMaMt2J5Qvtp3YW1kVyzQTk
-         AYnL/Kn3zOXx8/d4jWEV5qHi/6S5ErFcQMlZMxs149LDcPl36KCOC4nV0H99lK48rz
-         Ekw6HFPqHHVxI62rS41Fh9f2A3dN1L7Wz2uzg9isKnICL4RunPefDYp4W+HLMQlv+P
-         ZRqlWhi09jVU4ASzwDL+diOtFb0sW9NlgHfwQVnGYGXRy3pZB8rj12BsKPpj/iBhLD
-         9IPRsBNL6NQEKKFHNt8AykYsYS5Z4eDpE78giZ7spFpX0AySI7WZnS7jXaCkHhkdlQ
-         1vKqrQAvHdXSA==
+        b=OqySeQ1S0lNSWdNLVR8sbW+TPDdTJiK23ebmqne3kGWlzTrIIlm/04T6NTHBjGB3M
+         QqLICgdYAGO78NkRmsZLy6hzEe/B9eQgdphMv/CaagWs2nxDVSW+Eb7dcbAwAMy4vd
+         06GuMqtWk4utV//BIPviAAPlegAyYtR0hIfIvWrVFsFdgRAAcuAhYhBw1Tt8GzQG9u
+         WSG0RxjKgD6YuVVMxHJF94jgq+abaekTxWD8rrgdc4LeYholWZrrT0NUGswWGrJPr4
+         6BLKVl7sMiwXV/Az5W94mIMFlhtPqnG5M533XCLjTLd5C2o+utsCxvAUwQfxtZQ+l9
+         k6J/UfccCew9A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Sasha Levin <sashal@kernel.org>, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.0 57/77] Bluetooth: hci_event: Make sure ISO events don't affect non-ISO connections
-Date:   Sun,  9 Oct 2022 18:07:34 -0400
-Message-Id: <20221009220754.1214186-57-sashal@kernel.org>
+Cc:     Wen Gong <quic_wgong@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.0 58/77] wifi: ath10k: reset pointer after memory free to avoid potential use-after-free
+Date:   Sun,  9 Oct 2022 18:07:35 -0400
+Message-Id: <20221009220754.1214186-58-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009220754.1214186-1-sashal@kernel.org>
 References: <20221009220754.1214186-1-sashal@kernel.org>
@@ -57,52 +58,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Wen Gong <quic_wgong@quicinc.com>
 
-[ Upstream commit ed680f925aea76ac666f34d9923cb40558f4e97b ]
+[ Upstream commit 1e1cb8e0b73e6f39a9d4a7a15d940b1265387eb5 ]
 
-ISO events (CIS/BIS) shall only be relevant for connection with link
-type of ISO_LINK, otherwise the controller is probably buggy or it is
-the result of fuzzer tools such as syzkaller.
+When running suspend test, kernel crash happened in ath10k, and it is
+fixed by commit b72a4aff947b ("ath10k: skip ath10k_halt during suspend
+for driver state RESTARTING").
 
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Currently the crash is fixed, but as a common code style, it is better
+to set the pointer to NULL after memory is free.
+
+This is to address the code style and it will avoid potential bug of
+use-after-free.
+
+Tested-on: QCA6174 hw3.2 PCI WLAN.RM.4.4.1-00110-QCARMSWP-1
+Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220505092248.787-1-quic_wgong@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_event.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/net/wireless/ath/ath10k/htt_rx.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 6643c9c20fa4..28456d3265be 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -6776,6 +6776,13 @@ static void hci_le_cis_estabilished_evt(struct hci_dev *hdev, void *data,
- 		goto unlock;
- 	}
+diff --git a/drivers/net/wireless/ath/ath10k/htt_rx.c b/drivers/net/wireless/ath/ath10k/htt_rx.c
+index 8a075a711b71..f84f6c4c2a7a 100644
+--- a/drivers/net/wireless/ath/ath10k/htt_rx.c
++++ b/drivers/net/wireless/ath/ath10k/htt_rx.c
+@@ -301,12 +301,16 @@ void ath10k_htt_rx_free(struct ath10k_htt *htt)
+ 			  ath10k_htt_get_vaddr_ring(htt),
+ 			  htt->rx_ring.base_paddr);
  
-+	if (conn->type != ISO_LINK) {
-+		bt_dev_err(hdev,
-+			   "Invalid connection link type handle 0x%4.4x",
-+			   handle);
-+		goto unlock;
-+	}
++	ath10k_htt_config_paddrs_ring(htt, NULL);
 +
- 	if (conn->role == HCI_ROLE_SLAVE) {
- 		__le32 interval;
+ 	dma_free_coherent(htt->ar->dev,
+ 			  sizeof(*htt->rx_ring.alloc_idx.vaddr),
+ 			  htt->rx_ring.alloc_idx.vaddr,
+ 			  htt->rx_ring.alloc_idx.paddr);
++	htt->rx_ring.alloc_idx.vaddr = NULL;
  
-@@ -6896,6 +6903,13 @@ static void hci_le_create_big_complete_evt(struct hci_dev *hdev, void *data,
- 	if (!conn)
- 		goto unlock;
+ 	kfree(htt->rx_ring.netbufs_ring);
++	htt->rx_ring.netbufs_ring = NULL;
+ }
  
-+	if (conn->type != ISO_LINK) {
-+		bt_dev_err(hdev,
-+			   "Invalid connection link type handle 0x%2.2x",
-+			   ev->handle);
-+		goto unlock;
-+	}
-+
- 	if (ev->num_bis)
- 		conn->handle = __le16_to_cpu(ev->bis_handle[0]);
- 
+ static inline struct sk_buff *ath10k_htt_rx_netbuf_pop(struct ath10k_htt *htt)
+@@ -846,8 +850,10 @@ int ath10k_htt_rx_alloc(struct ath10k_htt *htt)
+ 			  ath10k_htt_get_rx_ring_size(htt),
+ 			  vaddr_ring,
+ 			  htt->rx_ring.base_paddr);
++	ath10k_htt_config_paddrs_ring(htt, NULL);
+ err_dma_ring:
+ 	kfree(htt->rx_ring.netbufs_ring);
++	htt->rx_ring.netbufs_ring = NULL;
+ err_netbuf:
+ 	return -ENOMEM;
+ }
 -- 
 2.35.1
 
