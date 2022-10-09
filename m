@@ -2,80 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B857F5F8DA5
-	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 21:10:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 221CF5F8DA7
+	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 21:13:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230287AbiJITKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 15:10:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52810 "EHLO
+        id S230175AbiJITNO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 15:13:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230151AbiJITKT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 15:10:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C24CB13F59
-        for <netdev@vger.kernel.org>; Sun,  9 Oct 2022 12:10:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1081D60C71
-        for <netdev@vger.kernel.org>; Sun,  9 Oct 2022 19:10:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 61619C433D7;
-        Sun,  9 Oct 2022 19:10:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665342615;
-        bh=m2W0oIvqYUrhvMLiOttW3xzh2yP5cc6sLLAm+NitzfU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ptY60xawPKkqnO4IfMMWT+uHDQM/zW+fujGTh8fT4qd79WD8qKhQcQP0Z6r3jXqWj
-         Srw2/meuHNHkxOjUiAlMVHYLr3IpwIcqPxKoH6y7lVJsNodgh48/xn/1ClOjcGEc38
-         O2hGLcRZyYr9U2fyN5nbv8kTtrWANqAsSIXL1A4AMxIMQcH8h+xkt2Jd4LG7QfSWjK
-         l+IahCbG1IdZl+AajF6YhA0+jGOQRcQXC+37X9sZPaQgMuDn6uWhv/YAZuh8SuRIFg
-         jrgNDw6L7zp92zdRQ078WHJsbwoVKqELCvJMUpbWxFjQUqyspx78KfdfYNFlpqSOqS
-         FJ0zjBsGNeiKQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3FE34E2A05F;
-        Sun,  9 Oct 2022 19:10:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230206AbiJITNM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 15:13:12 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA351CFF8
+        for <netdev@vger.kernel.org>; Sun,  9 Oct 2022 12:13:11 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id o20-20020a05600c4fd400b003b4a516c479so5288740wmq.1
+        for <netdev@vger.kernel.org>; Sun, 09 Oct 2022 12:13:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=fN3XoJB9/R6f3Ds4hy7r+Nf0Nve4TLYxsq9pKAg+BLI=;
+        b=T15jCd3mLgyW4sgEKDRGj1V3b2jPxS00CgJhu5JL7YOrQPP+64VAyWPnST7DWrgKjy
+         3xY7NwAFrRAMjchX+LXqeYECF6EaOzgcfOhNudUII5wmGhqjQKKWlrvf493IJ4bn2GuK
+         m9yJBupqfRiqfIvxVXAfDd3lleVd1u1bRB9igDm0WHwCOM5gk48s09iuQsAIRy2m6hag
+         0WiPol1EbQxQZuJPDof7gDxG8xXITAflygf+0xAzb3OYr4lf11rK28qZSgJg96tVvROR
+         v+3qp4xwGwcfmsZbVZEA/jU/TK8ZcDWjc/s4/ELtCh01lYZngGIutFehEes+pcIedn/0
+         uN0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=fN3XoJB9/R6f3Ds4hy7r+Nf0Nve4TLYxsq9pKAg+BLI=;
+        b=pC5mHM3qsai7LOuh84G0ByGWPkIIgqqDGWa5c2MALzFeQZjfnIJsm4g0Y7qfw2auur
+         FEykcJiWKuak2A92UwCu6TQCiPW/k3UJb2ByKdDRt2yjcQTa263JAWZ2agYCLtvjKCCr
+         6+0A4GtIP/RHU41GAEhzf/VhiB2rHeQLRrRlNfXLlbOpNaMgKdMa4kzTYEFzFdNd6ouz
+         oQmYOJHGoPLq86wTjkZbzV1wlqqtlQgjDPzUQ3dLCHJ7NaInZrE3n0uzd8x6EmFi0qqR
+         bAwPd9wstmufKLX6nbRytTMpYME3da8rKEbn7IOokOa5KGL2kPqXGxK1WeEiLKU/1rbJ
+         bkSQ==
+X-Gm-Message-State: ACrzQf2doY5opUesc+zU9cUGY3WoryDQbn8UdA6b18HOx6IwkZA9eZIY
+        mqWFft2hqCtR5GNoouVHTUE=
+X-Google-Smtp-Source: AMsMyM4YjqTPh3qv9AlBEqkMkhffgGLtKHHDNOnFWi6m9/oN0doQ+t4/MBC1AebSWaXSBG027e0X9g==
+X-Received: by 2002:a05:600c:2754:b0:3c6:aba7:5c93 with SMTP id 20-20020a05600c275400b003c6aba75c93mr1222567wmw.177.1665342789950;
+        Sun, 09 Oct 2022 12:13:09 -0700 (PDT)
+Received: from jimi.localdomain ([213.57.189.88])
+        by smtp.gmail.com with ESMTPSA id bh11-20020a05600c3d0b00b003b49ab8ff53sm8574150wmb.8.2022.10.09.12.13.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 09 Oct 2022 12:13:09 -0700 (PDT)
+From:   Eyal Birger <eyal.birger@gmail.com>
+To:     steffen.klassert@secunet.com
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, monil191989@gmail.com,
+        nicolas.dichtel@6wind.com, stephen@networkplumber.org,
+        Eyal Birger <eyal.birger@gmail.com>
+Subject: [PATCH ipsec] xfrm: fix "disable_policy" on ipv4 early demux
+Date:   Sun,  9 Oct 2022 22:12:53 +0300
+Message-Id: <20221009191253.292197-1-eyal.birger@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] octeontx2-pf: mcs: fix missing unlock in some error paths
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166534261525.10565.8365371181009883666.git-patchwork-notify@kernel.org>
-Date:   Sun, 09 Oct 2022 19:10:15 +0000
-References: <20221008082650.3074606-1-yangyingliang@huawei.com>
-In-Reply-To: <20221008082650.3074606-1-yangyingliang@huawei.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     netdev@vger.kernel.org, sbhatta@marvell.com, sgoutham@marvell.com,
-        davem@davemloft.net
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+The commit in the "Fixes" tag tried to avoid a case where policy check
+is ignored due to dst caching in next hops.
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+However, when the traffic is locally consumed, the dst may be cached
+in a local TCP or UDP socket as part of early demux. In this case the
+"disable_policy" flag is not checked as ip_route_input_noref() was only
+called before caching, and thus, packets after the initial packet in a
+flow will be dropped if not matching policies.
 
-On Sat, 8 Oct 2022 16:26:50 +0800 you wrote:
-> Add the missing unlock in some error paths.
-> 
-> Fixes: c54ffc73601c ("octeontx2-pf: mcs: Introduce MACSEC hardware offloading")
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
->  drivers/net/ethernet/marvell/octeontx2/nic/cn10k_macsec.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
+Fix by checking the "disable_policy" flag also when a valid dst is
+already available.
 
-Here is the summary with links:
-  - [net] octeontx2-pf: mcs: fix missing unlock in some error paths
-    https://git.kernel.org/netdev/net/c/897fab7a726a
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216557
+Reported-by: Monil Patel <monil191989@gmail.com>
+Fixes: e6175a2ed1f1 ("xfrm: fix "disable_policy" flag use when arriving from different devices")
+Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
+---
+ net/ipv4/ip_input.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-You are awesome, thank you!
+diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
+index 1b512390b3cf..6d033eeb3d9c 100644
+--- a/net/ipv4/ip_input.c
++++ b/net/ipv4/ip_input.c
+@@ -366,6 +366,11 @@ static int ip_rcv_finish_core(struct net *net, struct sock *sk,
+ 					   iph->tos, dev);
+ 		if (unlikely(err))
+ 			goto drop_error;
++	} else {
++		struct in_device *in_dev = __in_dev_get_rcu(skb->dev);
++
++		if (in_dev && IN_DEV_ORCONF(in_dev, NOPOLICY))
++			IPCB(skb)->flags |= IPSKB_NOPOLICY;
+ 	}
+ 
+ #ifdef CONFIG_IP_ROUTE_CLASSID
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.34.1
 
