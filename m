@@ -2,45 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1B865F9037
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:22:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D65285F90BC
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:27:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231489AbiJIWWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:22:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45486 "EHLO
+        id S232056AbiJIW06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:26:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231279AbiJIWVR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:21:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C98E43AE4E;
-        Sun,  9 Oct 2022 15:17:13 -0700 (PDT)
+        with ESMTP id S231828AbiJIWZ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:25:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C747A3DF2C;
+        Sun,  9 Oct 2022 15:18:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CD1A160CA0;
-        Sun,  9 Oct 2022 22:16:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F128C433D6;
-        Sun,  9 Oct 2022 22:16:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 105ACB80E03;
+        Sun,  9 Oct 2022 22:16:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F36EC43142;
+        Sun,  9 Oct 2022 22:16:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665353798;
-        bh=KiZDrteb0ZE7UEogtdroAkU8Iyt31mvEvH6D7iXd7j4=;
+        s=k20201202; t=1665353809;
+        bh=f2w/2K2Wr7zpiCFVTdrTiVCurVGndA9EOEHywhstOgA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z45KYWJ8x8iYzrPuAnvEDqyuM4ODIWCCDn5HcqXjVFtz+RD5gpBYV4orn7fxk2UTH
-         H3A37nWQcXEkCGbRGsA03Sh/Jpilsn+/qUadIVo/9B37PYFuZxcIqg34rPG5ug1p9q
-         FfEyUNtqVKRoxfh/7d3PmkdVrW+2ZUvYJMZ+/hzSlEEM6fKl9G8O4piMlQ8+4sgi0c
-         LMiAGgD8Mr4LliwZ2fVN+2dFf55++rEcKpp0Pgghq5UJDT/2VszCaC98BaMNsvyD3e
-         OlrvXXpaxPDGDn+UQboH1KWXQfxLeV0u7/JIMtsZjJ6JAjx015bTmPQhi6T/FscF7u
-         aZHPobGk0pfKA==
+        b=f20Q0bDuKr6MfYaFJ47TtetKT6dJc7bsaCtmPnnomC2MbD9SDcaMh6IE6PW2qd0Ri
+         Y8CvN2xdac2Wwq54hWMYIEF9msNgbDM6GT1P6PfyunzH/4+RJFxqJXfmiNJRmFtLSp
+         zfWvk1e5fUeGRSOZ5MiI+ASLPhLQNSrKkJ/IjSuLIeoMO/JtHVnQgiv2egUpoB10Zs
+         ZBUpFyxOONhP74AmgswZ2bgsmxJkKjnstjPXZLJCxT5gr4dY4oCM2UUpLLe0f6/VGS
+         Xxg1UaDlAZtuCi5K/4CjyB6pPvSgylS1mE359rGaZpI/4CL6N1arKOKM4rIS1t/wnz
+         0NavHxfDhGl3g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     GUO Zihua <guozihua@huawei.com>, Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, olek2@wp.pl,
-        yangyingliang@huawei.com, rdunlap@infradead.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 28/73] net: lantiq_etop: Fix return type for implementation of ndo_start_xmit
-Date:   Sun,  9 Oct 2022 18:14:06 -0400
-Message-Id: <20221009221453.1216158-28-sashal@kernel.org>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
+        wsa+renesas@sang-engineering.com, horms@verge.net.au,
+        johannes@sipsolutions.net, socketcan@hartkopp.net,
+        petrm@nvidia.com, harshit.m.mogalapalli@oracle.com
+Subject: [PATCH AUTOSEL 5.19 29/73] netlink: Bounds-check struct nlmsgerr creation
+Date:   Sun,  9 Oct 2022 18:14:07 -0400
+Message-Id: <20221009221453.1216158-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009221453.1216158-1-sashal@kernel.org>
 References: <20221009221453.1216158-1-sashal@kernel.org>
@@ -57,38 +66,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: GUO Zihua <guozihua@huawei.com>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit c8ef3c94bda0e21123202d057d4a299698fa0ed9 ]
+[ Upstream commit 710d21fdff9a98d621cd4e64167f3ef8af4e2fd1 ]
 
-Since Linux now supports CFI, it will be a good idea to fix mismatched
-return type for implementation of hooks. Otherwise this might get
-cought out by CFI and cause a panic.
+In preparation for FORTIFY_SOURCE doing bounds-check on memcpy(),
+switch from __nlmsg_put to nlmsg_put(), and explain the bounds check
+for dealing with the memcpy() across a composite flexible array struct.
+Avoids this future run-time warning:
 
-ltq_etop_tx() would return either NETDEV_TX_BUSY or NETDEV_TX_OK, so
-change the return type to netdev_tx_t directly.
+  memcpy: detected field-spanning write (size 32) of single field "&errmsg->msg" at net/netlink/af_netlink.c:2447 (size 16)
 
-Signed-off-by: GUO Zihua <guozihua@huawei.com>
-Link: https://lore.kernel.org/r/20220902081521.59867-1-guozihua@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
+Cc: Florian Westphal <fw@strlen.de>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: syzbot <syzkaller@googlegroups.com>
+Cc: netfilter-devel@vger.kernel.org
+Cc: coreteam@netfilter.org
+Cc: netdev@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220901071336.1418572-1-keescook@chromium.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/lantiq_etop.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/netfilter/ipset/ip_set_core.c | 8 +++++---
+ net/netlink/af_netlink.c          | 8 +++++---
+ 2 files changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/lantiq_etop.c b/drivers/net/ethernet/lantiq_etop.c
-index 7cedbe1fdfd7..59aab4086dcc 100644
---- a/drivers/net/ethernet/lantiq_etop.c
-+++ b/drivers/net/ethernet/lantiq_etop.c
-@@ -470,7 +470,7 @@ ltq_etop_stop(struct net_device *dev)
- 	return 0;
- }
+diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
+index 16ae92054baa..6b31746f9be3 100644
+--- a/net/netfilter/ipset/ip_set_core.c
++++ b/net/netfilter/ipset/ip_set_core.c
+@@ -1719,11 +1719,13 @@ call_ad(struct net *net, struct sock *ctnl, struct sk_buff *skb,
+ 		skb2 = nlmsg_new(payload, GFP_KERNEL);
+ 		if (!skb2)
+ 			return -ENOMEM;
+-		rep = __nlmsg_put(skb2, NETLINK_CB(skb).portid,
+-				  nlh->nlmsg_seq, NLMSG_ERROR, payload, 0);
++		rep = nlmsg_put(skb2, NETLINK_CB(skb).portid,
++				nlh->nlmsg_seq, NLMSG_ERROR, payload, 0);
+ 		errmsg = nlmsg_data(rep);
+ 		errmsg->error = ret;
+-		memcpy(&errmsg->msg, nlh, nlh->nlmsg_len);
++		unsafe_memcpy(&errmsg->msg, nlh, nlh->nlmsg_len,
++			      /* Bounds checked by the skb layer. */);
++
+ 		cmdattr = (void *)&errmsg->msg + min_len;
  
--static int
-+static netdev_tx_t
- ltq_etop_tx(struct sk_buff *skb, struct net_device *dev)
- {
- 	int queue = skb_get_queue_mapping(skb);
+ 		ret = nla_parse(cda, IPSET_ATTR_CMD_MAX, cmdattr,
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index 0cd91f813a3b..d8d3ed2096a3 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -2440,11 +2440,13 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
+ 		return;
+ 	}
+ 
+-	rep = __nlmsg_put(skb, NETLINK_CB(in_skb).portid, nlh->nlmsg_seq,
+-			  NLMSG_ERROR, payload, flags);
++	rep = nlmsg_put(skb, NETLINK_CB(in_skb).portid, nlh->nlmsg_seq,
++			NLMSG_ERROR, payload, flags);
+ 	errmsg = nlmsg_data(rep);
+ 	errmsg->error = err;
+-	memcpy(&errmsg->msg, nlh, payload > sizeof(*errmsg) ? nlh->nlmsg_len : sizeof(*nlh));
++	unsafe_memcpy(&errmsg->msg, nlh, payload > sizeof(*errmsg)
++					 ? nlh->nlmsg_len : sizeof(*nlh),
++		      /* Bounds checked by the skb layer. */);
+ 
+ 	if (nlk_has_extack && extack) {
+ 		if (extack->_msg) {
 -- 
 2.35.1
 
