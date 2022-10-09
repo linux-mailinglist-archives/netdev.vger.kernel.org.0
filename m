@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 601455F92A7
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:50:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B87835F92A2
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:50:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233508AbiJIWuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57198 "EHLO
+        id S233526AbiJIWuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:50:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233442AbiJIWtH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:49:07 -0400
+        with ESMTP id S233369AbiJIWs4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:48:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 942671E73C;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF3BC1F9E0;
         Sun,  9 Oct 2022 15:25:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D3ADD60C99;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 66DCF60AF2;
+        Sun,  9 Oct 2022 22:23:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF8ECC433C1;
         Sun,  9 Oct 2022 22:23:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40C58C43143;
-        Sun,  9 Oct 2022 22:23:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354196;
-        bh=9XVHi6LjLIEvFxinmzDv+KRBll8JSc+JVj9D8ceuSkI=;
+        s=k20201202; t=1665354197;
+        bh=eB2krCByIRXlVoeM9tlYM3tU18tSgoudcwjHSWX9pPg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZUD4VkGkdvrBbqdyzK1KEpCqdl87Sa4Ypz1UCOXDP7Z/thGNGZxYRkn+LoNOpQ27D
-         nnEKbLJ5gYDmX3gD4VmeVrpS4a2Px8UV0gMZTJfjlR1R+5DFWnzF9MuJI7EkVjCAKm
-         6tRrFGH0BJTgditk4Ppbbwn3cOXrx9mvmbj1SeRoRs/Sq73oCDJ+EpJIqJHnNwOTIS
-         LK5Z3peSwyHxHbp1iwB3AW4YBUZXREtiITuaJEsY0za37p88thaGm6HGzFuIFICVFI
-         5mGVV3r2+p71CBovKNd5yJkM/6ueBLKE9A1lPLufyULWQj3Sk1CneicBFY+C2l3xGZ
-         1mmet1A1XuObQ==
+        b=u/tHZF1YRvCl+z+DdN4p7sUBIYqnSNJZhjn1nrDk0QP7yx2TG/EsrAfhbtZCs1HZc
+         BnGhkONcx0df44q4T2KGIUgw01lQvJjUJHhtv+eVv1y1HsxHVAUSw3yutQ1YzwRUoG
+         XQ1BmnT+EW59RfPALrEjcXehNRhR8fHsuMC0ScRW4xserSYmCCUGsaMiKX6T3pGqaw
+         D67XdvH9MRPW38G59sx83tt6vCLZ5QWsr7qdv9ic6raJby/zuQQkXWv9W7Fe206n5x
+         QFPFJXtJnWiw29mxLj60IHukF6aKnXI+twfWUDkhylgaC3L4zYR4RZIePQ3PIIhmal
+         F/MiosPx0bdOQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mike Pattrick <mkp@redhat.com>,
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Abhishek Shah <abhishek.shah@columbia.edu>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, pshelar@ovn.org,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, dev@openvswitch.org
-Subject: [PATCH AUTOSEL 5.4 05/29] openvswitch: Fix overreporting of drops in dropwatch
-Date:   Sun,  9 Oct 2022 18:22:40 -0400
-Message-Id: <20221009222304.1218873-5-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 06/29] tcp: annotate data-race around tcp_md5sig_pool_populated
+Date:   Sun,  9 Oct 2022 18:22:41 -0400
+Message-Id: <20221009222304.1218873-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009222304.1218873-1-sashal@kernel.org>
 References: <20221009222304.1218873-1-sashal@kernel.org>
@@ -57,40 +58,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mike Pattrick <mkp@redhat.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit c21ab2afa2c64896a7f0e3cbc6845ec63dcfad2e ]
+[ Upstream commit aacd467c0a576e5e44d2de4205855dc0fe43f6fb ]
 
-Currently queue_userspace_packet will call kfree_skb for all frames,
-whether or not an error occurred. This can result in a single dropped
-frame being reported as multiple drops in dropwatch. This functions
-caller may also call kfree_skb in case of an error. This patch will
-consume the skbs instead and allow caller's to use kfree_skb.
+tcp_md5sig_pool_populated can be read while another thread
+changes its value.
 
-Signed-off-by: Mike Pattrick <mkp@redhat.com>
-Link: https://bugzilla.redhat.com/show_bug.cgi?id=2109957
+The race has no consequence because allocations
+are protected with tcp_md5sig_mutex.
+
+This patch adds READ_ONCE() and WRITE_ONCE() to document
+the race and silence KCSAN.
+
+Reported-by: Abhishek Shah <abhishek.shah@columbia.edu>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/openvswitch/datapath.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/ipv4/tcp.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-index 63f36d6cd3f6..41035ce0d23c 100644
---- a/net/openvswitch/datapath.c
-+++ b/net/openvswitch/datapath.c
-@@ -532,8 +532,9 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
- out:
- 	if (err)
- 		skb_tx_error(skb);
--	kfree_skb(user_skb);
--	kfree_skb(nskb);
-+	consume_skb(user_skb);
-+	consume_skb(nskb);
-+
- 	return err;
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 0a570d5d0b38..601bf5ee59bc 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -3768,12 +3768,16 @@ static void __tcp_alloc_md5sig_pool(void)
+ 	 * to memory. See smp_rmb() in tcp_get_md5sig_pool()
+ 	 */
+ 	smp_wmb();
+-	tcp_md5sig_pool_populated = true;
++	/* Paired with READ_ONCE() from tcp_alloc_md5sig_pool()
++	 * and tcp_get_md5sig_pool().
++	*/
++	WRITE_ONCE(tcp_md5sig_pool_populated, true);
  }
  
+ bool tcp_alloc_md5sig_pool(void)
+ {
+-	if (unlikely(!tcp_md5sig_pool_populated)) {
++	/* Paired with WRITE_ONCE() from __tcp_alloc_md5sig_pool() */
++	if (unlikely(!READ_ONCE(tcp_md5sig_pool_populated))) {
+ 		mutex_lock(&tcp_md5sig_mutex);
+ 
+ 		if (!tcp_md5sig_pool_populated) {
+@@ -3784,7 +3788,8 @@ bool tcp_alloc_md5sig_pool(void)
+ 
+ 		mutex_unlock(&tcp_md5sig_mutex);
+ 	}
+-	return tcp_md5sig_pool_populated;
++	/* Paired with WRITE_ONCE() from __tcp_alloc_md5sig_pool() */
++	return READ_ONCE(tcp_md5sig_pool_populated);
+ }
+ EXPORT_SYMBOL(tcp_alloc_md5sig_pool);
+ 
+@@ -3800,7 +3805,8 @@ struct tcp_md5sig_pool *tcp_get_md5sig_pool(void)
+ {
+ 	local_bh_disable();
+ 
+-	if (tcp_md5sig_pool_populated) {
++	/* Paired with WRITE_ONCE() from __tcp_alloc_md5sig_pool() */
++	if (READ_ONCE(tcp_md5sig_pool_populated)) {
+ 		/* coupled with smp_wmb() in __tcp_alloc_md5sig_pool() */
+ 		smp_rmb();
+ 		return this_cpu_ptr(&tcp_md5sig_pool);
 -- 
 2.35.1
 
