@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C8425F940B
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 01:52:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 539205F9312
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:56:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230404AbiJIXw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 19:52:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40630 "EHLO
+        id S233887AbiJIW4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:56:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231479AbiJIXvx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 19:51:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC2361B0A;
-        Sun,  9 Oct 2022 16:23:22 -0700 (PDT)
+        with ESMTP id S233846AbiJIWx6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:53:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E55F4AD43;
+        Sun,  9 Oct 2022 15:29:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 051BC60DD8;
-        Sun,  9 Oct 2022 22:26:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A674C433D7;
-        Sun,  9 Oct 2022 22:26:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CFFA060DD9;
+        Sun,  9 Oct 2022 22:27:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE898C433B5;
+        Sun,  9 Oct 2022 22:26:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354418;
-        bh=NJCqAoZMT1hBBgidJI6oolu+SE17C6YShP1K46PYaBc=;
+        s=k20201202; t=1665354420;
+        bh=+3IhUpAN6u1ITIK/zEVNFbHGupufpTdT9BiBQYhxLqQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j5Y7iMyoFZMBBEl05QSGm9v856y6Tcph/yVpOVM9Sqs9o5jnmAMHAf9dUE8aFTI4i
-         isCdlWmMaz168chVQ7anIn5RUdS7WIia6HVeugjrkUMcHwiRHsJNjg62XjeUD/b2uY
-         wKMCFXkA2P36Jr5WO4SU465Ly0haMkXFkHjPpXJi6NpHZWtIh3OHcANkPvaWjQyTQe
-         IOKZHS0739g/HdI+I8xeWMskE3k/f0r0zFsSbHctP35OpEThT6Ff9E3+Y0H8gW7/t2
-         vuvplVd1l+c29qHOMcQTToXgS3m6m6gEa9E0UEA3nJ5F67FszRk+JOY5eH0edkvl1O
-         AKMb0+VMj2uFw==
+        b=BVifz5JCxk+wj/yTp+iqpuDJtTIpfTBWzIbBwCbjjzKabj8CPpaK1T1N3gszYDAC9
+         1LJZ5GegVyvy0iOpKguxihPUvJStVuquQ5n30w/59DGdIGYq68awowz424/0LYCFAh
+         51MSSOioq4WJLhMMLW4eRs9onhYFh++NvgyUQbcwKoF8n73VFlZcaSmRDWbpHjxbB8
+         SB+rpvmVJCixU5vbtn0OHKVWwtI3gHDGSHNTdTENf5x+k21hVnAhlKIMlGVUKkYw63
+         AlvxoPGWgbFgY5eBZf851KtELwt9iHiaY6evGWH5MvktGb262BaSavAXND1uK+dGMK
+         PlfE7FyqUL+dQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Daniel Golle <daniel@makrotopia.org>,
@@ -40,9 +40,9 @@ Cc:     Daniel Golle <daniel@makrotopia.org>,
         helmut.schaa@googlemail.com, davem@davemloft.net,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 19/23] wifi: rt2x00: set SoC wmac clock register
-Date:   Sun,  9 Oct 2022 18:25:49 -0400
-Message-Id: <20221009222557.1219968-19-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 20/23] wifi: rt2x00: correctly set BBP register 86 for MT7620
+Date:   Sun,  9 Oct 2022 18:25:50 -0400
+Message-Id: <20221009222557.1219968-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009222557.1219968-1-sashal@kernel.org>
 References: <20221009222557.1219968-1-sashal@kernel.org>
@@ -61,54 +61,36 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Daniel Golle <daniel@makrotopia.org>
 
-[ Upstream commit cbde6ed406a51092d9e8a2df058f5f8490f27443 ]
+[ Upstream commit c9aada64fe6493461127f1522d7e2f01792d2424 ]
 
-Instead of using the default value 33 (pci), set US_CYC_CNT init based
-on Programming guide:
-If available, set chipset bus clock with fallback to cpu clock/3.
+Instead of 0 set the correct value for BBP register 86 for MT7620.
 
 Reported-by: Serge Vasilugin <vasilugin@yandex.ru>
 Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 Acked-by: Stanislaw Gruszka <stf_xl@wp.pl>
 Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/3e275d259f476f597dab91a9c395015ef3fe3284.1663445157.git.daniel@makrotopia.org
+Link: https://lore.kernel.org/r/257267247ee4fa7ebc6a5d0c4948b3f8119c0d77.1663445157.git.daniel@makrotopia.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/ralink/rt2x00/rt2800lib.c    | 21 +++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ drivers/net/wireless/ralink/rt2x00/rt2800lib.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/wireless/ralink/rt2x00/rt2800lib.c b/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
-index 0c90bf0540b9..57fa472b5c4e 100644
+index 57fa472b5c4e..155c08dc2e0e 100644
 --- a/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
 +++ b/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
-@@ -5567,6 +5567,27 @@ static int rt2800_init_registers(struct rt2x00_dev *rt2x00dev)
- 		reg = rt2800_register_read(rt2x00dev, US_CYC_CNT);
- 		rt2x00_set_field32(&reg, US_CYC_CNT_CLOCK_CYCLE, 125);
- 		rt2800_register_write(rt2x00dev, US_CYC_CNT, reg);
-+	} else if (rt2x00_is_soc(rt2x00dev)) {
-+		struct clk *clk = clk_get_sys("bus", NULL);
-+		int rate;
-+
-+		if (IS_ERR(clk)) {
-+			clk = clk_get_sys("cpu", NULL);
-+
-+			if (IS_ERR(clk)) {
-+				rate = 125;
-+			} else {
-+				rate = clk_get_rate(clk) / 3000000;
-+				clk_put(clk);
-+			}
-+		} else {
-+			rate = clk_get_rate(clk) / 1000000;
-+			clk_put(clk);
-+		}
-+
-+		reg = rt2800_register_read(rt2x00dev, US_CYC_CNT);
-+		rt2x00_set_field32(&reg, US_CYC_CNT_CLOCK_CYCLE, rate);
-+		rt2800_register_write(rt2x00dev, US_CYC_CNT, reg);
+@@ -3655,7 +3655,10 @@ static void rt2800_config_channel(struct rt2x00_dev *rt2x00dev,
+ 		rt2800_bbp_write(rt2x00dev, 62, 0x37 - rt2x00dev->lna_gain);
+ 		rt2800_bbp_write(rt2x00dev, 63, 0x37 - rt2x00dev->lna_gain);
+ 		rt2800_bbp_write(rt2x00dev, 64, 0x37 - rt2x00dev->lna_gain);
+-		rt2800_bbp_write(rt2x00dev, 86, 0);
++		if (rt2x00_rt(rt2x00dev, RT6352))
++			rt2800_bbp_write(rt2x00dev, 86, 0x38);
++		else
++			rt2800_bbp_write(rt2x00dev, 86, 0);
  	}
  
- 	reg = rt2800_register_read(rt2x00dev, HT_FBK_CFG0);
+ 	if (rf->channel <= 14) {
 -- 
 2.35.1
 
