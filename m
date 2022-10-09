@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C62215F92B5
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:50:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBAB85F9317
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:56:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233454AbiJIWu3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:50:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52270 "EHLO
+        id S233916AbiJIW4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:56:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233494AbiJIWtO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:49:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B10A413D3D;
-        Sun,  9 Oct 2022 15:25:30 -0700 (PDT)
+        with ESMTP id S233904AbiJIWyQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:54:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F5183A142;
+        Sun,  9 Oct 2022 15:29:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6932760C32;
+        by ams.source.kernel.org (Postfix) with ESMTPS id CCEB3B80DE4;
+        Sun,  9 Oct 2022 22:25:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BDF9C433B5;
         Sun,  9 Oct 2022 22:25:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84B8DC4347C;
-        Sun,  9 Oct 2022 22:25:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354329;
-        bh=Z88gscPgKN76zJ93T2DPK3bjOaxFlCelhKvCEzfYnJU=;
+        s=k20201202; t=1665354331;
+        bh=Kzis1vLhezwehNxVB+MAMkeHuzcWMxACM/LeTgmHF4I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AB5bPMorY5Bkg+dfOZi/q5qkU0lhBEZEbAb64JK0R5fcMNy5q0LJ/J1Q32u25fSyF
-         herpFWANCArn92ChaEll8uaT4eccxEX7CEmElZZVycXLfxd+q6K2NPxJYHZOWm/7Ub
-         ABOzvk4nv7xDgoRJqtz4BSgKAQkP1jOphLW41AsycI/1yiE0IHE09yR/Tb4qzmZzul
-         o2v5cPfFlJXOO7Qe+UlbJzBGPoVcRRhtbaug3xiC6eM/H08t+SFIoeag9YelMJXeMc
-         6u8KgyTjs7yjd2WONwuD2JECgHDWA9Nfmfdv7Ru/i8hEllcL3Ui6uEpEtoDgokRkcL
-         oXsm8C39vmFxg==
+        b=Ko5vkSK+EwoljOPwOFLOuB8Kak7l/bkHSpVshsKrYHVa/OPr+/r0Kce/xctsRo2e5
+         HbJ4qK1h9ENhAkZCZerLieAzDeg4jXnOE8e50Dkp6003ipSbROApGpm6K6GqecvHLa
+         Y3bNcGUn2aGZwgTIkR7JAIAhkUW+ZaFENYSDUgSTWk5c9spMBm52cswUFH4ukH3HfR
+         qIE7BSgO590xadjjcei/poMnDpZB2h6uCIiSUNjiZcfrxm1ABF2GHmttWTkUAoEOSo
+         h2GzdhSIoxxYM9Xx4OaEclhTEV5VS6IhbC125mvbKJh4eZhEFWZ9O8gfGowYlUZG15
+         Xa0l5skfIW7GQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wen Gong <quic_wgong@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 16/25] wifi: ath10k: reset pointer after memory free to avoid potential use-after-free
-Date:   Sun,  9 Oct 2022 18:24:21 -0400
-Message-Id: <20221009222436.1219411-16-sashal@kernel.org>
+Cc:     Ziyang Xuan <william.xuanziyang@huawei.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 17/25] can: bcm: check the result of can_send() in bcm_can_tx()
+Date:   Sun,  9 Oct 2022 18:24:22 -0400
+Message-Id: <20221009222436.1219411-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009222436.1219411-1-sashal@kernel.org>
 References: <20221009222436.1219411-1-sashal@kernel.org>
@@ -58,61 +58,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wen Gong <quic_wgong@quicinc.com>
+From: Ziyang Xuan <william.xuanziyang@huawei.com>
 
-[ Upstream commit 1e1cb8e0b73e6f39a9d4a7a15d940b1265387eb5 ]
+[ Upstream commit 3fd7bfd28cfd68ae80a2fe92ea1615722cc2ee6e ]
 
-When running suspend test, kernel crash happened in ath10k, and it is
-fixed by commit b72a4aff947b ("ath10k: skip ath10k_halt during suspend
-for driver state RESTARTING").
+If can_send() fail, it should not update frames_abs counter
+in bcm_can_tx(). Add the result check for can_send() in bcm_can_tx().
 
-Currently the crash is fixed, but as a common code style, it is better
-to set the pointer to NULL after memory is free.
-
-This is to address the code style and it will avoid potential bug of
-use-after-free.
-
-Tested-on: QCA6174 hw3.2 PCI WLAN.RM.4.4.1-00110-QCARMSWP-1
-Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220505092248.787-1-quic_wgong@quicinc.com
+Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Suggested-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+Link: https://lore.kernel.org/all/9851878e74d6d37aee2f1ee76d68361a46f89458.1663206163.git.william.xuanziyang@huawei.com
+Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/htt_rx.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ net/can/bcm.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/htt_rx.c b/drivers/net/wireless/ath/ath10k/htt_rx.c
-index 0a7551dc0f94..68728cba6df3 100644
---- a/drivers/net/wireless/ath/ath10k/htt_rx.c
-+++ b/drivers/net/wireless/ath/ath10k/htt_rx.c
-@@ -302,12 +302,16 @@ void ath10k_htt_rx_free(struct ath10k_htt *htt)
- 			  ath10k_htt_get_vaddr_ring(htt),
- 			  htt->rx_ring.base_paddr);
+diff --git a/net/can/bcm.c b/net/can/bcm.c
+index 3c825b158fb5..74e555a22de7 100644
+--- a/net/can/bcm.c
++++ b/net/can/bcm.c
+@@ -273,6 +273,7 @@ static void bcm_can_tx(struct bcm_op *op)
+ 	struct sk_buff *skb;
+ 	struct net_device *dev;
+ 	struct canfd_frame *cf = op->frames + op->cfsiz * op->currframe;
++	int err;
  
-+	ath10k_htt_config_paddrs_ring(htt, NULL);
-+
- 	dma_free_coherent(htt->ar->dev,
- 			  sizeof(*htt->rx_ring.alloc_idx.vaddr),
- 			  htt->rx_ring.alloc_idx.vaddr,
- 			  htt->rx_ring.alloc_idx.paddr);
-+	htt->rx_ring.alloc_idx.vaddr = NULL;
+ 	/* no target device? => exit */
+ 	if (!op->ifindex)
+@@ -297,11 +298,11 @@ static void bcm_can_tx(struct bcm_op *op)
+ 	/* send with loopback */
+ 	skb->dev = dev;
+ 	can_skb_set_owner(skb, op->sk);
+-	can_send(skb, 1);
++	err = can_send(skb, 1);
++	if (!err)
++		op->frames_abs++;
  
- 	kfree(htt->rx_ring.netbufs_ring);
-+	htt->rx_ring.netbufs_ring = NULL;
- }
+-	/* update statistics */
+ 	op->currframe++;
+-	op->frames_abs++;
  
- static inline struct sk_buff *ath10k_htt_rx_netbuf_pop(struct ath10k_htt *htt)
-@@ -641,8 +645,10 @@ int ath10k_htt_rx_alloc(struct ath10k_htt *htt)
- 			  ath10k_htt_get_rx_ring_size(htt),
- 			  vaddr_ring,
- 			  htt->rx_ring.base_paddr);
-+	ath10k_htt_config_paddrs_ring(htt, NULL);
- err_dma_ring:
- 	kfree(htt->rx_ring.netbufs_ring);
-+	htt->rx_ring.netbufs_ring = NULL;
- err_netbuf:
- 	return -ENOMEM;
- }
+ 	/* reached last frame? */
+ 	if (op->currframe >= op->nframes)
 -- 
 2.35.1
 
