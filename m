@@ -2,51 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF31E5F916E
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:32:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B59205F9171
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:32:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232736AbiJIWcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:32:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53424 "EHLO
+        id S232749AbiJIWcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:32:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232042AbiJIWaT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:30:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6F56FD0B;
-        Sun,  9 Oct 2022 15:19:45 -0700 (PDT)
+        with ESMTP id S232118AbiJIWaW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:30:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3E1140D5;
+        Sun,  9 Oct 2022 15:19:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60832B80D33;
-        Sun,  9 Oct 2022 22:19:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF387C433C1;
-        Sun,  9 Oct 2022 22:19:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0A902B80DCE;
+        Sun,  9 Oct 2022 22:19:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5164DC43142;
+        Sun,  9 Oct 2022 22:19:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665353984;
-        bh=KAnZS9WcwRk8bgKwx6yLV74+eQUR9dCSvwpUrV+4pIQ=;
+        s=k20201202; t=1665353987;
+        bh=uFZzpqGeI0F+s1iei+vQqMl4q+FdPp2Sji8X1gj9HgQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cGNrEkilKJAykfYGO1eDrgJ0MCNqCFMpQWyMGMFwoMRM2jUxwpRVGwbBY8OCPE3l1
-         0ekGokuolmf1tFoYhF6FHeOdB6QQuLBw1EmMhXM9iMLd4IQWA1exc0GMuIgDlC4v33
-         swu0lgmdoA7cZdoM+jbV1W4lLfBb2oiHWq2/Rm5yd1/A7HXjsj6Uqvsmpd2DMTVoMf
-         UmOLSQpBeG7bxqx+PiyA2/ppO2D08HE+hNE8LuU2T1Mnn6T/DRDQkN33PNrgW3X5w4
-         EDy1eblzkGaS3i1GRiVso/JYBuJjR1mqOmrktKZlRfVxwgniepTBg1wpAG/OlCscAa
-         PUvdUYJM3uP2A==
+        b=SN5m213DLRJHBuIvDxS3FxgmD12/1af3/fxu/pssI+IRt/ACwbX0syzQjHPjJZtfe
+         7zdTlpjJGHlN3y2fTBKAFkcjiiiCn1F+Giw9TGOFvqMLtDABLwZuPjcClnecU3G3mW
+         4CAfVpAchQot7IKmhpvpGUxg1Zl1eFmV44pYgbBgv5y7DhrN4QHRMz3aKmzcmS/v5q
+         HqPItgDIXJQ9YkEQjuuSt+BKgNeT79/HhKSKsM2ZMZF/tMnk03xNrmfnfXfqx/G3+Q
+         aOS4R0r6E/8LnWTIQJm2pFbyEgy6m60RKH+GqLIq1kyVmSyoijGZNyKx53NLzIz+7Z
+         i3E4w4u7YSsew==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiri Pirko <jiri@nvidia.com>,
-        Vikas Gupta <vikas.gupta@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, jacob.e.keller@intel.com,
-        johannes@sipsolutions.net, nicolas.dichtel@6wind.com,
+Cc:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        syzbot <syzbot+2ca247c2d60c7023de7f@syzkaller.appspotmail.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 10/46] genetlink: hold read cb_lock during iteration of genl_fam_idr in genl_bind()
-Date:   Sun,  9 Oct 2022 18:18:35 -0400
-Message-Id: <20221009221912.1217372-10-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 12/46] wifi: ath9k: avoid uninit memory read in ath9k_htc_rx_msg()
+Date:   Sun,  9 Oct 2022 18:18:37 -0400
+Message-Id: <20221009221912.1217372-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009221912.1217372-1-sashal@kernel.org>
 References: <20221009221912.1217372-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -59,50 +61,147 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@nvidia.com>
+From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 
-[ Upstream commit 8f1948bdcf2fb50e9092c0950c3c9ac591382101 ]
+[ Upstream commit b383e8abed41cc6ff1a3b34de75df9397fa4878c ]
 
-In genl_bind(), currently genl_lock and write cb_lock are taken
-for iteration of genl_fam_idr and processing of static values
-stored in struct genl_family. Take just read cb_lock for this task
-as it is sufficient to guard the idr and the struct against
-concurrent genl_register/unregister_family() calls.
+syzbot is reporting uninit value at ath9k_htc_rx_msg() [1], for
+ioctl(USB_RAW_IOCTL_EP_WRITE) can call ath9k_hif_usb_rx_stream() with
+pkt_len = 0 but ath9k_hif_usb_rx_stream() uses
+__dev_alloc_skb(pkt_len + 32, GFP_ATOMIC) based on an assumption that
+pkt_len is valid. As a result, ath9k_hif_usb_rx_stream() allocates skb
+with uninitialized memory and ath9k_htc_rx_msg() is reading from
+uninitialized memory.
 
-This will allow to run genl command processing in genl_rcv() and
-mnl_socket_setsockopt(.., NETLINK_ADD_MEMBERSHIP, ..) in parallel.
+Since bytes accessed by ath9k_htc_rx_msg() is not known until
+ath9k_htc_rx_msg() is called, it would be difficult to check minimal valid
+pkt_len at "if (pkt_len > 2 * MAX_RX_BUF_SIZE) {" line in
+ath9k_hif_usb_rx_stream().
 
-Reported-by: Vikas Gupta <vikas.gupta@broadcom.com>
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
-Link: https://lore.kernel.org/r/20220825081940.1283335-1-jiri@resnulli.us
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+We have two choices. One is to workaround by adding __GFP_ZERO so that
+ath9k_htc_rx_msg() sees 0 if pkt_len is invalid. The other is to let
+ath9k_htc_rx_msg() validate pkt_len before accessing. This patch chose
+the latter.
+
+Note that I'm not sure threshold condition is correct, for I can't find
+details on possible packet length used by this protocol.
+
+Link: https://syzkaller.appspot.com/bug?extid=2ca247c2d60c7023de7f [1]
+Reported-by: syzbot <syzbot+2ca247c2d60c7023de7f@syzkaller.appspotmail.com>
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/7acfa1be-4b5c-b2ce-de43-95b0593fb3e5@I-love.SAKURA.ne.jp
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netlink/genetlink.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/ath/ath9k/htc_hst.c | 43 +++++++++++++++---------
+ 1 file changed, 28 insertions(+), 15 deletions(-)
 
-diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
-index 57010927e20a..76aed0571e3a 100644
---- a/net/netlink/genetlink.c
-+++ b/net/netlink/genetlink.c
-@@ -1362,7 +1362,7 @@ static int genl_bind(struct net *net, int group)
- 	unsigned int id;
- 	int ret = 0;
- 
--	genl_lock_all();
-+	down_read(&cb_lock);
- 
- 	idr_for_each_entry(&genl_fam_idr, family, id) {
- 		const struct genl_multicast_group *grp;
-@@ -1383,7 +1383,7 @@ static int genl_bind(struct net *net, int group)
- 		break;
- 	}
- 
--	genl_unlock_all();
-+	up_read(&cb_lock);
- 	return ret;
+diff --git a/drivers/net/wireless/ath/ath9k/htc_hst.c b/drivers/net/wireless/ath/ath9k/htc_hst.c
+index 994ec48b2f66..ca05b07a45e6 100644
+--- a/drivers/net/wireless/ath/ath9k/htc_hst.c
++++ b/drivers/net/wireless/ath/ath9k/htc_hst.c
+@@ -364,33 +364,27 @@ void ath9k_htc_txcompletion_cb(struct htc_target *htc_handle,
  }
  
+ static void ath9k_htc_fw_panic_report(struct htc_target *htc_handle,
+-				      struct sk_buff *skb)
++				      struct sk_buff *skb, u32 len)
+ {
+ 	uint32_t *pattern = (uint32_t *)skb->data;
+ 
+-	switch (*pattern) {
+-	case 0x33221199:
+-		{
++	if (*pattern == 0x33221199 && len >= sizeof(struct htc_panic_bad_vaddr)) {
+ 		struct htc_panic_bad_vaddr *htc_panic;
+ 		htc_panic = (struct htc_panic_bad_vaddr *) skb->data;
+ 		dev_err(htc_handle->dev, "ath: firmware panic! "
+ 			"exccause: 0x%08x; pc: 0x%08x; badvaddr: 0x%08x.\n",
+ 			htc_panic->exccause, htc_panic->pc,
+ 			htc_panic->badvaddr);
+-		break;
+-		}
+-	case 0x33221299:
+-		{
++		return;
++	}
++	if (*pattern == 0x33221299) {
+ 		struct htc_panic_bad_epid *htc_panic;
+ 		htc_panic = (struct htc_panic_bad_epid *) skb->data;
+ 		dev_err(htc_handle->dev, "ath: firmware panic! "
+ 			"bad epid: 0x%08x\n", htc_panic->epid);
+-		break;
+-		}
+-	default:
+-		dev_err(htc_handle->dev, "ath: unknown panic pattern!\n");
+-		break;
++		return;
+ 	}
++	dev_err(htc_handle->dev, "ath: unknown panic pattern!\n");
+ }
+ 
+ /*
+@@ -411,16 +405,26 @@ void ath9k_htc_rx_msg(struct htc_target *htc_handle,
+ 	if (!htc_handle || !skb)
+ 		return;
+ 
++	/* A valid message requires len >= 8.
++	 *
++	 *   sizeof(struct htc_frame_hdr) == 8
++	 *   sizeof(struct htc_ready_msg) == 8
++	 *   sizeof(struct htc_panic_bad_vaddr) == 16
++	 *   sizeof(struct htc_panic_bad_epid) == 8
++	 */
++	if (unlikely(len < sizeof(struct htc_frame_hdr)))
++		goto invalid;
+ 	htc_hdr = (struct htc_frame_hdr *) skb->data;
+ 	epid = htc_hdr->endpoint_id;
+ 
+ 	if (epid == 0x99) {
+-		ath9k_htc_fw_panic_report(htc_handle, skb);
++		ath9k_htc_fw_panic_report(htc_handle, skb, len);
+ 		kfree_skb(skb);
+ 		return;
+ 	}
+ 
+ 	if (epid < 0 || epid >= ENDPOINT_MAX) {
++invalid:
+ 		if (pipe_id != USB_REG_IN_PIPE)
+ 			dev_kfree_skb_any(skb);
+ 		else
+@@ -432,21 +436,30 @@ void ath9k_htc_rx_msg(struct htc_target *htc_handle,
+ 
+ 		/* Handle trailer */
+ 		if (htc_hdr->flags & HTC_FLAGS_RECV_TRAILER) {
+-			if (be32_to_cpu(*(__be32 *) skb->data) == 0x00C60000)
++			if (be32_to_cpu(*(__be32 *) skb->data) == 0x00C60000) {
+ 				/* Move past the Watchdog pattern */
+ 				htc_hdr = (struct htc_frame_hdr *)(skb->data + 4);
++				len -= 4;
++			}
+ 		}
+ 
+ 		/* Get the message ID */
++		if (unlikely(len < sizeof(struct htc_frame_hdr) + sizeof(__be16)))
++			goto invalid;
+ 		msg_id = (__be16 *) ((void *) htc_hdr +
+ 				     sizeof(struct htc_frame_hdr));
+ 
+ 		/* Now process HTC messages */
+ 		switch (be16_to_cpu(*msg_id)) {
+ 		case HTC_MSG_READY_ID:
++			if (unlikely(len < sizeof(struct htc_ready_msg)))
++				goto invalid;
+ 			htc_process_target_rdy(htc_handle, htc_hdr);
+ 			break;
+ 		case HTC_MSG_CONNECT_SERVICE_RESPONSE_ID:
++			if (unlikely(len < sizeof(struct htc_frame_hdr) +
++				     sizeof(struct htc_conn_svc_rspmsg)))
++				goto invalid;
+ 			htc_process_conn_rsp(htc_handle, htc_hdr);
+ 			break;
+ 		default:
 -- 
 2.35.1
 
