@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F08C5F90BF
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:27:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05B305F9130
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:30:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232069AbiJIW1E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:27:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42056 "EHLO
+        id S232421AbiJIWaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:30:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231901AbiJIWZx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:25:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A7A3DBD8;
-        Sun,  9 Oct 2022 15:18:18 -0700 (PDT)
+        with ESMTP id S232282AbiJIW2s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:28:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 768FD3C8F6;
+        Sun,  9 Oct 2022 15:19:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 404B7B80DEE;
-        Sun,  9 Oct 2022 22:15:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB656C433D6;
-        Sun,  9 Oct 2022 22:15:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4ED7B80DF9;
+        Sun,  9 Oct 2022 22:15:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBFE7C433D6;
+        Sun,  9 Oct 2022 22:15:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665353746;
-        bh=sbE5YGdrypbIwwpqsXVVFkuKfbOiCASFIUzuzOIw/5k=;
+        s=k20201202; t=1665353752;
+        bh=Kh8Sla+Un1KkjfHIh8LWbAk/NpfHmZyyc25lnnifXUI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SjG+uAbbz1ajcfSfA0G85mACDNyQww2gfnbNLVhJnrxIK4kH+SfPo+ki3UO6zYWjz
-         wZxZPReJmhNn6QOdJ+9L4td0bL8eQyml8A0yvME8bBE7UiYjpZKSJnclBrvbLzHX7m
-         Y0Bn9hYBNlMKR22DiUKZW5bgWLeiX63GJ0Yb0cXOvHgw7J/1JHMwqFo62rIsKt+Tm9
-         UD2rCPuBeeL+K1etLOqfaoihfN/hQkw6hybkvZb4jZVQo5D1s1fiXGXSNQnvMFxI9y
-         bty5piGy9XgP3kBuYgCYEuSUAIBQxWIky6MTwnz+HSVaphWV0yqFhppeX+jV0Jv1JT
-         dt+/0j3SSuZ8A==
+        b=WUcRAcWR2CeggCjUxjgdpWhPg9VyAZRCpVJtEiL0LhVepy68NgMRq5Ha2lbxlxLu6
+         khYcWx5yNXpHs0C78ltotAkMGZ/JY956UTnIlvxJYR2Bu9H2hdBbSBcoBfMw9pPtXT
+         tfzn0S3wQV1y4oOQgrjOd5b9B6gHX00qsukDrZdm91KWPLouAhj6uxiCQAxCkgtijI
+         SYMXPRbqmoa6AZw6x10f64NqhJ7+vIZsC6TwBYIkMZkHJo5ucLchWpTW3TjgiQ2jG5
+         xFxgkwYIIjSzS2AK5IbQxox8+TweUmWbd+wpTU6wsKTnROgDo/j0IhUDlaglc9ZaVF
+         w7M4pDRW97vpw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Abhishek Shah <abhishek.shah@columbia.edu>,
+Cc:     Jerry Ray <jerry.ray@microchip.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, u.kleine-koenig@pengutronix.de,
+        marcus.folkesson@gmail.com, lee.jones@linaro.org,
+        stefan@datenfreihafen.org, bigeasy@linutronix.de,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 12/73] tcp: annotate data-race around tcp_md5sig_pool_populated
-Date:   Sun,  9 Oct 2022 18:13:50 -0400
-Message-Id: <20221009221453.1216158-12-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.19 13/73] micrel: ksz8851: fixes struct pointer issue
+Date:   Sun,  9 Oct 2022 18:13:51 -0400
+Message-Id: <20221009221453.1216158-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009221453.1216158-1-sashal@kernel.org>
 References: <20221009221453.1216158-1-sashal@kernel.org>
@@ -58,70 +59,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Jerry Ray <jerry.ray@microchip.com>
 
-[ Upstream commit aacd467c0a576e5e44d2de4205855dc0fe43f6fb ]
+[ Upstream commit fef5de753ff01887cfa50990532c3890fccb9338 ]
 
-tcp_md5sig_pool_populated can be read while another thread
-changes its value.
+Issue found during code review. This bug has no impact as long as the
+ks8851_net structure is the first element of the ks8851_net_spi structure.
+As long as the offset to the ks8851_net struct is zero, the container_of()
+macro is subtracting 0 and therefore no damage done. But if the
+ks8851_net_spi struct is ever modified such that the ks8851_net struct
+within it is no longer the first element of the struct, then the bug would
+manifest itself and cause problems.
 
-The race has no consequence because allocations
-are protected with tcp_md5sig_mutex.
+struct ks8851_net is contained within ks8851_net_spi.
+ks is contained within kss.
+kss is the priv_data of the netdev structure.
 
-This patch adds READ_ONCE() and WRITE_ONCE() to document
-the race and silence KCSAN.
-
-Reported-by: Abhishek Shah <abhishek.shah@columbia.edu>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Jerry Ray <jerry.ray@microchip.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/micrel/ks8851_spi.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index ab03977b6578..6426d5e01cb6 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -4347,12 +4347,16 @@ static void __tcp_alloc_md5sig_pool(void)
- 	 * to memory. See smp_rmb() in tcp_get_md5sig_pool()
- 	 */
- 	smp_wmb();
--	tcp_md5sig_pool_populated = true;
-+	/* Paired with READ_ONCE() from tcp_alloc_md5sig_pool()
-+	 * and tcp_get_md5sig_pool().
-+	*/
-+	WRITE_ONCE(tcp_md5sig_pool_populated, true);
- }
+diff --git a/drivers/net/ethernet/micrel/ks8851_spi.c b/drivers/net/ethernet/micrel/ks8851_spi.c
+index 82d55fc27edc..70bc7253454f 100644
+--- a/drivers/net/ethernet/micrel/ks8851_spi.c
++++ b/drivers/net/ethernet/micrel/ks8851_spi.c
+@@ -413,7 +413,8 @@ static int ks8851_probe_spi(struct spi_device *spi)
  
- bool tcp_alloc_md5sig_pool(void)
- {
--	if (unlikely(!tcp_md5sig_pool_populated)) {
-+	/* Paired with WRITE_ONCE() from __tcp_alloc_md5sig_pool() */
-+	if (unlikely(!READ_ONCE(tcp_md5sig_pool_populated))) {
- 		mutex_lock(&tcp_md5sig_mutex);
+ 	spi->bits_per_word = 8;
  
- 		if (!tcp_md5sig_pool_populated) {
-@@ -4363,7 +4367,8 @@ bool tcp_alloc_md5sig_pool(void)
+-	ks = netdev_priv(netdev);
++	kss = netdev_priv(netdev);
++	ks = &kss->ks8851;
  
- 		mutex_unlock(&tcp_md5sig_mutex);
- 	}
--	return tcp_md5sig_pool_populated;
-+	/* Paired with WRITE_ONCE() from __tcp_alloc_md5sig_pool() */
-+	return READ_ONCE(tcp_md5sig_pool_populated);
- }
- EXPORT_SYMBOL(tcp_alloc_md5sig_pool);
+ 	ks->lock = ks8851_lock_spi;
+ 	ks->unlock = ks8851_unlock_spi;
+@@ -433,8 +434,6 @@ static int ks8851_probe_spi(struct spi_device *spi)
+ 		 IRQ_RXPSI)	/* RX process stop */
+ 	ks->rc_ier = STD_IRQ;
  
-@@ -4379,7 +4384,8 @@ struct tcp_md5sig_pool *tcp_get_md5sig_pool(void)
- {
- 	local_bh_disable();
- 
--	if (tcp_md5sig_pool_populated) {
-+	/* Paired with WRITE_ONCE() from __tcp_alloc_md5sig_pool() */
-+	if (READ_ONCE(tcp_md5sig_pool_populated)) {
- 		/* coupled with smp_wmb() in __tcp_alloc_md5sig_pool() */
- 		smp_rmb();
- 		return this_cpu_ptr(&tcp_md5sig_pool);
+-	kss = to_ks8851_spi(ks);
+-
+ 	kss->spidev = spi;
+ 	mutex_init(&kss->lock);
+ 	INIT_WORK(&kss->tx_work, ks8851_tx_work);
 -- 
 2.35.1
 
