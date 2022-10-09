@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 221CF5F8DA7
-	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 21:13:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A717F5F8DAD
+	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 21:17:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230175AbiJITNO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 15:13:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53896 "EHLO
+        id S230136AbiJITRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 15:17:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230206AbiJITNM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 15:13:12 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA351CFF8
-        for <netdev@vger.kernel.org>; Sun,  9 Oct 2022 12:13:11 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id o20-20020a05600c4fd400b003b4a516c479so5288740wmq.1
-        for <netdev@vger.kernel.org>; Sun, 09 Oct 2022 12:13:11 -0700 (PDT)
+        with ESMTP id S229979AbiJITRF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 15:17:05 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11BB823179
+        for <netdev@vger.kernel.org>; Sun,  9 Oct 2022 12:17:04 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id e10-20020a05600c4e4a00b003b4eff4ab2cso7369057wmq.4
+        for <netdev@vger.kernel.org>; Sun, 09 Oct 2022 12:17:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=fN3XoJB9/R6f3Ds4hy7r+Nf0Nve4TLYxsq9pKAg+BLI=;
-        b=T15jCd3mLgyW4sgEKDRGj1V3b2jPxS00CgJhu5JL7YOrQPP+64VAyWPnST7DWrgKjy
-         3xY7NwAFrRAMjchX+LXqeYECF6EaOzgcfOhNudUII5wmGhqjQKKWlrvf493IJ4bn2GuK
-         m9yJBupqfRiqfIvxVXAfDd3lleVd1u1bRB9igDm0WHwCOM5gk48s09iuQsAIRy2m6hag
-         0WiPol1EbQxQZuJPDof7gDxG8xXITAflygf+0xAzb3OYr4lf11rK28qZSgJg96tVvROR
-         v+3qp4xwGwcfmsZbVZEA/jU/TK8ZcDWjc/s4/ELtCh01lYZngGIutFehEes+pcIedn/0
-         uN0A==
+        bh=Yzai4QVJ3GUgs63J6wE715M728/JeqEdzrClPYvk1wg=;
+        b=WwUxkjpC1C0b02dQiNJW85YAp9e1Gi7t3oy9Pcl5aYRlZ/DuWQenZN/p+ZuXab/zW+
+         xPf2vW4E3kbtG3S+FVvgDeoZzI0bk8/Bfubpf5JpvSPxD6D+zLIkeuJHNeq11t4B/jIv
+         KzF7RK1hsWtzD24Ya2Xi88OtaXW4pbpFJStlKzGcp675IhhMtHkT33Ae+aSNw3XPaPsZ
+         Ll2V5Zztop9lE3Q6JabD8wBfR+vzvYGJNgd1i7V8UgykUraCo7NDg2MOz+il6kuHI0Lw
+         ByZhWGPuRAHSowA7KG6wPgchxticPlqKcbZoePP1WGVME2mjGC6H5eE+19wCGI2EiEZd
+         kSpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=fN3XoJB9/R6f3Ds4hy7r+Nf0Nve4TLYxsq9pKAg+BLI=;
-        b=pC5mHM3qsai7LOuh84G0ByGWPkIIgqqDGWa5c2MALzFeQZjfnIJsm4g0Y7qfw2auur
-         FEykcJiWKuak2A92UwCu6TQCiPW/k3UJb2ByKdDRt2yjcQTa263JAWZ2agYCLtvjKCCr
-         6+0A4GtIP/RHU41GAEhzf/VhiB2rHeQLRrRlNfXLlbOpNaMgKdMa4kzTYEFzFdNd6ouz
-         oQmYOJHGoPLq86wTjkZbzV1wlqqtlQgjDPzUQ3dLCHJ7NaInZrE3n0uzd8x6EmFi0qqR
-         bAwPd9wstmufKLX6nbRytTMpYME3da8rKEbn7IOokOa5KGL2kPqXGxK1WeEiLKU/1rbJ
-         bkSQ==
-X-Gm-Message-State: ACrzQf2doY5opUesc+zU9cUGY3WoryDQbn8UdA6b18HOx6IwkZA9eZIY
-        mqWFft2hqCtR5GNoouVHTUE=
-X-Google-Smtp-Source: AMsMyM4YjqTPh3qv9AlBEqkMkhffgGLtKHHDNOnFWi6m9/oN0doQ+t4/MBC1AebSWaXSBG027e0X9g==
-X-Received: by 2002:a05:600c:2754:b0:3c6:aba7:5c93 with SMTP id 20-20020a05600c275400b003c6aba75c93mr1222567wmw.177.1665342789950;
-        Sun, 09 Oct 2022 12:13:09 -0700 (PDT)
+        bh=Yzai4QVJ3GUgs63J6wE715M728/JeqEdzrClPYvk1wg=;
+        b=025Iy+NgxsjO2/6ewQIhoMKcxMcvSfFKiF0Til2SuMBaYs3PluZRk2cy0cECaw6ORv
+         t3AdwGzwK0UVtqzhJ8LdJRHdfAmn8YN6IunnWOZcuaH5Wf+/FoIU5/4StjdN21KneOGZ
+         aHT3QPRKuyXxcCEX+I7B1l5kfMTqxndcVTqusK6kO855ktTBBwOY8c6AUauLft5qFBiF
+         +GsJcK46SVSQGHIGfNrB0yWLt912iGDNt+/AbNxiCPmZPEbdRV0rJHalGO5TT+QJaibC
+         MoAP1yUTh+fQlDdai54IdN6RFMxJzxrqA7rufOpyqOJlhNR9vmSuIyE6h7nwlCzmu+zE
+         fEEg==
+X-Gm-Message-State: ACrzQf1AKZcUxAk976YyA8nGpO5TPVJIHK0AMf9AdC7mZ3VQ3SE3Me9F
+        lJEF0HVqo+3yfp8xuaCZB1Hc09vRjmUfPQ==
+X-Google-Smtp-Source: AMsMyM6/fNIAUzXQY+0u9tf9I92UfWAmwM7jvwYYpKbmJ2zOK9yrc9529X5UgAdQxStZbMPvctAl6w==
+X-Received: by 2002:a1c:6a08:0:b0:3c4:a83b:bc4 with SMTP id f8-20020a1c6a08000000b003c4a83b0bc4mr5458659wmc.115.1665343022363;
+        Sun, 09 Oct 2022 12:17:02 -0700 (PDT)
 Received: from jimi.localdomain ([213.57.189.88])
-        by smtp.gmail.com with ESMTPSA id bh11-20020a05600c3d0b00b003b49ab8ff53sm8574150wmb.8.2022.10.09.12.13.08
+        by smtp.gmail.com with ESMTPSA id c13-20020a5d4f0d000000b0022cd96b3ba6sm8852620wru.90.2022.10.09.12.17.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 09 Oct 2022 12:13:09 -0700 (PDT)
+        Sun, 09 Oct 2022 12:17:02 -0700 (PDT)
 From:   Eyal Birger <eyal.birger@gmail.com>
 To:     steffen.klassert@secunet.com
 Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
@@ -55,9 +55,9 @@ Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
         netdev@vger.kernel.org, monil191989@gmail.com,
         nicolas.dichtel@6wind.com, stephen@networkplumber.org,
         Eyal Birger <eyal.birger@gmail.com>
-Subject: [PATCH ipsec] xfrm: fix "disable_policy" on ipv4 early demux
-Date:   Sun,  9 Oct 2022 22:12:53 +0300
-Message-Id: <20221009191253.292197-1-eyal.birger@gmail.com>
+Subject: [PATCH ipsec,v2] xfrm: fix "disable_policy" on ipv4 early demux
+Date:   Sun,  9 Oct 2022 22:16:43 +0300
+Message-Id: <20221009191643.297623-1-eyal.birger@gmail.com>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -87,12 +87,16 @@ Link: https://bugzilla.kernel.org/show_bug.cgi?id=216557
 Reported-by: Monil Patel <monil191989@gmail.com>
 Fixes: e6175a2ed1f1 ("xfrm: fix "disable_policy" flag use when arriving from different devices")
 Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
+
+----
+
+v2: use dev instead of skb->dev
 ---
  net/ipv4/ip_input.c | 5 +++++
  1 file changed, 5 insertions(+)
 
 diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
-index 1b512390b3cf..6d033eeb3d9c 100644
+index 1b512390b3cf..e880ce77322a 100644
 --- a/net/ipv4/ip_input.c
 +++ b/net/ipv4/ip_input.c
 @@ -366,6 +366,11 @@ static int ip_rcv_finish_core(struct net *net, struct sock *sk,
@@ -100,7 +104,7 @@ index 1b512390b3cf..6d033eeb3d9c 100644
  		if (unlikely(err))
  			goto drop_error;
 +	} else {
-+		struct in_device *in_dev = __in_dev_get_rcu(skb->dev);
++		struct in_device *in_dev = __in_dev_get_rcu(dev);
 +
 +		if (in_dev && IN_DEV_ORCONF(in_dev, NOPOLICY))
 +			IPCB(skb)->flags |= IPSKB_NOPOLICY;
