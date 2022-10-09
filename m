@@ -2,47 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E1665F8F92
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:10:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E7D65F8F8B
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:10:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230324AbiJIWKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:10:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41206 "EHLO
+        id S231216AbiJIWKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:10:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230318AbiJIWJI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:09:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B53A5286FB;
-        Sun,  9 Oct 2022 15:08:45 -0700 (PDT)
+        with ESMTP id S230254AbiJIWJH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:09:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDA1B286DE;
+        Sun,  9 Oct 2022 15:08:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3568160B85;
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1536B80DD2;
+        Sun,  9 Oct 2022 22:08:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F761C43143;
         Sun,  9 Oct 2022 22:08:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 540C4C433D6;
-        Sun,  9 Oct 2022 22:08:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665353323;
-        bh=KAnZS9WcwRk8bgKwx6yLV74+eQUR9dCSvwpUrV+4pIQ=;
+        s=k20201202; t=1665353325;
+        bh=QRlhcj5BMHJzNR3pQ4+/M72AS4Peto5sSQnQiwknc4c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pMtbbXxsxmuwhWhDajVpx+Yq2czOcRxU7HPDRBHYKPLN/EJZl51zPgRmRxGUIiGAU
-         0bb+f8VGRMF+L37rgtZewEF9cQ4vl7UlQGV9VW65qxxBxDHpY9XYnBBE3/Ws9CMqVy
-         IYmeuOuRm9LBRC/+oK4IxZAbiYoEnE/7em9U6dfRT2HgufBz6ZwDfEAlNH2ZKKsl2k
-         /O0Abs3JpDk0hZCdTV4ANMgXdNS4Ku27GWg9lx+M53V7oAdKrzoRbLEMPrM/7WuQ1A
-         Z9AEjku1eAFfBdZTl3wZZs5jdTKROQ6wUkl4klxT6IDKzX5l9B/jZbhkmrBQBBmxbe
-         697v7ci6Hho5w==
+        b=grIlAGL948xJQrVbsGm7G8eHP4iQOH19ZVB3//2GhzSmvlQU4CPFDOuEO4Bgrg9qI
+         g9KK9x8TQozzyzQzjDzMTMBzEmvKNaowHZzw074pBsi0mWLrIFDP7rUrHYfnED3Zb1
+         BG2+uIavtlg+TEph2BwzsZjZU1tPHosAXiuIzUFs1iH/jKRT/zNYQPxUmQ26ufvt0I
+         KkgAV0RUb+8+sQ5qw3rNCi/YHAdW3FVhth7unKa004kgkXWLLjjLeVs3tDjajPvYSA
+         Mxdd50URFoEsF5M9Bh1YrlVcBkr4cEA01PTLfoNxWT00Uw8UgeoX0k4VPTgX69V51p
+         7ZA8F79PtWULA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiri Pirko <jiri@nvidia.com>,
-        Vikas Gupta <vikas.gupta@broadcom.com>,
+Cc:     Marcus Carlberg <marcus.carlberg@axis.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, nicolas.dichtel@6wind.com,
-        gnault@redhat.com, johannes@sipsolutions.net,
+        Sasha Levin <sashal@kernel.org>, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.0 17/77] genetlink: hold read cb_lock during iteration of genl_fam_idr in genl_bind()
-Date:   Sun,  9 Oct 2022 18:06:54 -0400
-Message-Id: <20221009220754.1214186-17-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.0 18/77] net: dsa: mv88e6xxx: Allow external SMI if serial
+Date:   Sun,  9 Oct 2022 18:06:55 -0400
+Message-Id: <20221009220754.1214186-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009220754.1214186-1-sashal@kernel.org>
 References: <20221009220754.1214186-1-sashal@kernel.org>
@@ -59,49 +58,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@nvidia.com>
+From: Marcus Carlberg <marcus.carlberg@axis.com>
 
-[ Upstream commit 8f1948bdcf2fb50e9092c0950c3c9ac591382101 ]
+[ Upstream commit 8532c60efcc5b7b382006129b77aee2c19c43f15 ]
 
-In genl_bind(), currently genl_lock and write cb_lock are taken
-for iteration of genl_fam_idr and processing of static values
-stored in struct genl_family. Take just read cb_lock for this task
-as it is sufficient to guard the idr and the struct against
-concurrent genl_register/unregister_family() calls.
+p0_mode set to one of the supported serial mode should not prevent
+configuring the external SMI interface in
+mv88e6xxx_g2_scratch_gpio_set_smi. The current masking of the p0_mode
+only checks the first 2 bits. This results in switches supporting
+serial mode cannot setup external SMI on certain serial modes
+(Ex: 1000BASE-X and SGMII).
 
-This will allow to run genl command processing in genl_rcv() and
-mnl_socket_setsockopt(.., NETLINK_ADD_MEMBERSHIP, ..) in parallel.
+Extend the mask of the p0_mode to include the reduced modes and
+serial modes as allowed modes for the external SMI interface.
 
-Reported-by: Vikas Gupta <vikas.gupta@broadcom.com>
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
-Link: https://lore.kernel.org/r/20220825081940.1283335-1-jiri@resnulli.us
+Signed-off-by: Marcus Carlberg <marcus.carlberg@axis.com>
+Link: https://lore.kernel.org/r/20220824093706.19049-1-marcus.carlberg@axis.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netlink/genetlink.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/dsa/mv88e6xxx/global2.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
-index 57010927e20a..76aed0571e3a 100644
---- a/net/netlink/genetlink.c
-+++ b/net/netlink/genetlink.c
-@@ -1362,7 +1362,7 @@ static int genl_bind(struct net *net, int group)
- 	unsigned int id;
- 	int ret = 0;
- 
--	genl_lock_all();
-+	down_read(&cb_lock);
- 
- 	idr_for_each_entry(&genl_fam_idr, family, id) {
- 		const struct genl_multicast_group *grp;
-@@ -1383,7 +1383,7 @@ static int genl_bind(struct net *net, int group)
- 		break;
- 	}
- 
--	genl_unlock_all();
-+	up_read(&cb_lock);
- 	return ret;
- }
+diff --git a/drivers/net/dsa/mv88e6xxx/global2.h b/drivers/net/dsa/mv88e6xxx/global2.h
+index 807aeaad9830..7536b8b0ad01 100644
+--- a/drivers/net/dsa/mv88e6xxx/global2.h
++++ b/drivers/net/dsa/mv88e6xxx/global2.h
+@@ -298,7 +298,7 @@
+ #define MV88E6352_G2_SCRATCH_CONFIG_DATA1	0x71
+ #define MV88E6352_G2_SCRATCH_CONFIG_DATA1_NO_CPU	BIT(2)
+ #define MV88E6352_G2_SCRATCH_CONFIG_DATA2	0x72
+-#define MV88E6352_G2_SCRATCH_CONFIG_DATA2_P0_MODE_MASK	0x3
++#define MV88E6352_G2_SCRATCH_CONFIG_DATA2_P0_MODE_MASK	0xf
+ #define MV88E6352_G2_SCRATCH_CONFIG_DATA3	0x73
+ #define MV88E6352_G2_SCRATCH_CONFIG_DATA3_S_SEL		BIT(1)
  
 -- 
 2.35.1
