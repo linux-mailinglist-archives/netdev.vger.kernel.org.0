@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76A425F921C
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:45:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75A385F91D6
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:42:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232739AbiJIWpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:45:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40656 "EHLO
+        id S232291AbiJIWmH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:42:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233263AbiJIWoE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:44:04 -0400
+        with ESMTP id S233521AbiJIWkW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:40:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA991F62D;
-        Sun,  9 Oct 2022 15:22:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB7340E22;
+        Sun,  9 Oct 2022 15:21:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0A129B80DD1;
-        Sun,  9 Oct 2022 22:21:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBA8EC43470;
-        Sun,  9 Oct 2022 22:21:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD8E9B80DD6;
+        Sun,  9 Oct 2022 22:21:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F17C4C433D7;
+        Sun,  9 Oct 2022 22:21:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354102;
-        bh=+/eBksvJ6ANRQNCMZf75gc4o8p99cJ/gFuvAAZ+Tmzg=;
+        s=k20201202; t=1665354109;
+        bh=DhWEa/UcfKTiGy4hMqg9NeiuFR50QRcBQOiIZP+6Pjk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cw2z08alK8lu0Gx2O+U+ZboLWlXgqeHmKSduB/IE20lsSx9bCdsRxK1XtBIfGc74d
-         GvxmMqpfY014rOnZRAFv3R9YwSX3G1ToylmBxSitMQXmg56ajR2XrlKvshdDmtZa1I
-         Gxdz0JAxwPpRS1vC8CJAXFyGBWdUfSJcioUKuzNdecV5qbCbXz+zmEtJPyKcLZnSCb
-         PAhzsXXSGaFQ+aw8Dnikc6X8O6XfwU6ZGxN85EPXxTahdkjJygy/S7iu32sbwCaJ5D
-         c7p5eoCva+l/pZB9t8Udf9xbC5LtO8I6Zh2xsqNtjZmSzVzUqHhVucWpjXh1EXQkWk
-         Qo0Q27DZI7tKQ==
+        b=fhZilrjYxSU43YN/yprRehm2rRxwZcnZJvsIK08jFfhjA3Mg74jxYQsIL0a6v5aNa
+         /aKbAebwUGFhMn7lkKeUcfLaCQvAWDOluVf/+iEUmtz8Ex303mJ7bJ8a9UcF3GKZRO
+         Tc/4lIJROG21a66UB/5F4HouzIoXBIoAjomfXvk4N5qQ7q5jXNh4mc1ZT5ADIhbad9
+         q74/3qsvk/wYJMez1Ii/+I1nMoBD6uBkTyWWOq7aDUwDzCc5DSMa+9noJWrZPOmn2B
+         rtsqqVcOIKPrXPWWhf7422YtNDoe+6MFb6k0qDiAQ6H3HaJlnUvRYWQKWurw1H8gdf
+         BLmoovqpGxqVA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mike Pattrick <mkp@redhat.com>,
+Cc:     Jerry Ray <jerry.ray@microchip.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, pshelar@ovn.org,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, dev@openvswitch.org
-Subject: [PATCH AUTOSEL 5.10 05/34] openvswitch: Fix overreporting of drops in dropwatch
-Date:   Sun,  9 Oct 2022 18:20:59 -0400
-Message-Id: <20221009222129.1218277-5-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, u.kleine-koenig@pengutronix.de,
+        mkl@pengutronix.de, miquel.raynal@bootlin.com, broonie@kernel.org,
+        bigeasy@linutronix.de, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 07/34] micrel: ksz8851: fixes struct pointer issue
+Date:   Sun,  9 Oct 2022 18:21:01 -0400
+Message-Id: <20221009222129.1218277-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009222129.1218277-1-sashal@kernel.org>
 References: <20221009222129.1218277-1-sashal@kernel.org>
@@ -57,40 +58,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mike Pattrick <mkp@redhat.com>
+From: Jerry Ray <jerry.ray@microchip.com>
 
-[ Upstream commit c21ab2afa2c64896a7f0e3cbc6845ec63dcfad2e ]
+[ Upstream commit fef5de753ff01887cfa50990532c3890fccb9338 ]
 
-Currently queue_userspace_packet will call kfree_skb for all frames,
-whether or not an error occurred. This can result in a single dropped
-frame being reported as multiple drops in dropwatch. This functions
-caller may also call kfree_skb in case of an error. This patch will
-consume the skbs instead and allow caller's to use kfree_skb.
+Issue found during code review. This bug has no impact as long as the
+ks8851_net structure is the first element of the ks8851_net_spi structure.
+As long as the offset to the ks8851_net struct is zero, the container_of()
+macro is subtracting 0 and therefore no damage done. But if the
+ks8851_net_spi struct is ever modified such that the ks8851_net struct
+within it is no longer the first element of the struct, then the bug would
+manifest itself and cause problems.
 
-Signed-off-by: Mike Pattrick <mkp@redhat.com>
-Link: https://bugzilla.redhat.com/show_bug.cgi?id=2109957
+struct ks8851_net is contained within ks8851_net_spi.
+ks is contained within kss.
+kss is the priv_data of the netdev structure.
+
+Signed-off-by: Jerry Ray <jerry.ray@microchip.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/openvswitch/datapath.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/micrel/ks8851_spi.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-index 4d2d91d6f990..6b5c0abf7f1b 100644
---- a/net/openvswitch/datapath.c
-+++ b/net/openvswitch/datapath.c
-@@ -544,8 +544,9 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
- out:
- 	if (err)
- 		skb_tx_error(skb);
--	kfree_skb(user_skb);
--	kfree_skb(nskb);
-+	consume_skb(user_skb);
-+	consume_skb(nskb);
-+
- 	return err;
- }
+diff --git a/drivers/net/ethernet/micrel/ks8851_spi.c b/drivers/net/ethernet/micrel/ks8851_spi.c
+index 4ec7f1615977..8327e7f30476 100644
+--- a/drivers/net/ethernet/micrel/ks8851_spi.c
++++ b/drivers/net/ethernet/micrel/ks8851_spi.c
+@@ -415,7 +415,8 @@ static int ks8851_probe_spi(struct spi_device *spi)
  
+ 	spi->bits_per_word = 8;
+ 
+-	ks = netdev_priv(netdev);
++	kss = netdev_priv(netdev);
++	ks = &kss->ks8851;
+ 
+ 	ks->lock = ks8851_lock_spi;
+ 	ks->unlock = ks8851_unlock_spi;
+@@ -435,8 +436,6 @@ static int ks8851_probe_spi(struct spi_device *spi)
+ 		 IRQ_RXPSI)	/* RX process stop */
+ 	ks->rc_ier = STD_IRQ;
+ 
+-	kss = to_ks8851_spi(ks);
+-
+ 	kss->spidev = spi;
+ 	mutex_init(&kss->lock);
+ 	INIT_WORK(&kss->tx_work, ks8851_tx_work);
 -- 
 2.35.1
 
