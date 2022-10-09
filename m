@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F31F35F9347
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:59:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 299BB5F92E4
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:53:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233822AbiJIW7u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:59:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49290 "EHLO
+        id S233791AbiJIWxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:53:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234200AbiJIW5i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:57:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A8F64BA49;
-        Sun,  9 Oct 2022 15:30:39 -0700 (PDT)
+        with ESMTP id S233721AbiJIWv5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:51:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F09848CB0;
+        Sun,  9 Oct 2022 15:27:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BFF0960DDC;
-        Sun,  9 Oct 2022 22:27:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C33F5C433D7;
-        Sun,  9 Oct 2022 22:27:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 99D12B80DC9;
+        Sun,  9 Oct 2022 22:27:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC1A9C433C1;
+        Sun,  9 Oct 2022 22:27:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354427;
-        bh=0vXha/ZnD8UqFgF3bT4H9GPLaJFT/OwUwdOCaflmLtc=;
+        s=k20201202; t=1665354432;
+        bh=zsc+NPBNRssYvuCi2pIfNAVP01gepb+7Au+cEg+X6mA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C20oyuE5UH4OxbSkRMJyNmw4rPU+xeZ9L+hXpgxpp5R5xiXBdrrZwXXFQsSwzrtTM
-         EcHD0SJloX0i+95Midy8bCJWDtmTK5S+Us+YLYVUDJJEXOBSUJQctlam6i6x6bBDx6
-         jCQWNN4qE3QZgUWPCdCABfUSsah6noA0NyPEg4IE5jY9xYIZdnH/7RQn6QxzG72Y/i
-         Qj+VeH1Fwf6ZCd3I/AoBtaD8CrrmUSbW9M4130Zh7bOHzB4G2nEti/EULakL/CITXN
-         vo0KlHRTQmKjL9roeBHUbna86uPU8WhjGahe5FiYvxU4SHitL6PgRzvgdQAiw7hL09
-         5cpaHKSPEOVMg==
+        b=HrnFuICPXPb8psXsrJNuwkNiB318z8yx6WhE+frwFQOQU3pp2VJWVUZj5Qe7yxRTJ
+         WwyT82oZZ4aB1M02VA8pdcT94NeTzMaNtPkGDWgUj6W1FZThJp0UC67y/3N+AwASVb
+         WITjY3XwA4/N2cwJCR7xVhpjbvpkXUjyXKQNJGuMNPDjJlC3UlWO/ZIvOQWHfvByRx
+         JGyozdHgkl64Rsumti/z4zW+W9NOAskkbDr0f8fKROGuI6MWm9KW+/CA3/K32gCpAM
+         pVXg18m5suLuP4xj1LcjPCL98DG6eF/eaV60LCqBYMJgWg8pLN0LBH/JGKRf9kajwq
+         PqOSZBW3+gNdw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Sungwoo Kim <iam@sung-woo.kim>,
-        Sasha Levin <sashal@kernel.org>, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 22/23] Bluetooth: L2CAP: Fix user-after-free
-Date:   Sun,  9 Oct 2022 18:25:52 -0400
-Message-Id: <20221009222557.1219968-22-sashal@kernel.org>
+Cc:     Andrew Gaul <gaul@gaul.org>, Andrew Gaul <gaul@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, hayeswang@realtek.com,
+        jflf_kernel@gmx.com, aaron.ma@canonical.com,
+        chenhao288@hisilicon.com, dober6023@gmail.com, svenva@chromium.org,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 23/23] r8152: Rate limit overflow messages
+Date:   Sun,  9 Oct 2022 18:25:53 -0400
+Message-Id: <20221009222557.1219968-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009222557.1219968-1-sashal@kernel.org>
 References: <20221009222557.1219968-1-sashal@kernel.org>
@@ -58,59 +59,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Andrew Gaul <gaul@gaul.org>
 
-[ Upstream commit 35fcbc4243aad7e7d020b7c1dfb14bb888b20a4f ]
+[ Upstream commit 93e2be344a7db169b7119de21ac1bf253b8c6907 ]
 
-This uses l2cap_chan_hold_unless_zero() after calling
-__l2cap_get_chan_blah() to prevent the following trace:
+My system shows almost 10 million of these messages over a 24-hour
+period which pollutes my logs.
 
-Bluetooth: l2cap_core.c:static void l2cap_chan_destroy(struct kref
-*kref)
-Bluetooth: chan 0000000023c4974d
-Bluetooth: parent 00000000ae861c08
-==================================================================
-BUG: KASAN: use-after-free in __mutex_waiter_is_first
-kernel/locking/mutex.c:191 [inline]
-BUG: KASAN: use-after-free in __mutex_lock_common
-kernel/locking/mutex.c:671 [inline]
-BUG: KASAN: use-after-free in __mutex_lock+0x278/0x400
-kernel/locking/mutex.c:729
-Read of size 8 at addr ffff888006a49b08 by task kworker/u3:2/389
-
-Link: https://lore.kernel.org/lkml/20220622082716.478486-1-lee.jones@linaro.org
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Sungwoo Kim <iam@sung-woo.kim>
+Signed-off-by: Andrew Gaul <gaul@google.com>
+Link: https://lore.kernel.org/r/20221002034128.2026653-1-gaul@google.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/l2cap_core.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/usb/r8152.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index 75a76353525c..652c0723051b 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -4049,6 +4049,12 @@ static int l2cap_connect_create_rsp(struct l2cap_conn *conn,
- 		}
- 	}
- 
-+	chan = l2cap_chan_hold_unless_zero(chan);
-+	if (!chan) {
-+		err = -EBADSLT;
-+		goto unlock;
-+	}
-+
- 	err = 0;
- 
- 	l2cap_chan_lock(chan);
-@@ -4078,6 +4084,7 @@ static int l2cap_connect_create_rsp(struct l2cap_conn *conn,
- 	}
- 
- 	l2cap_chan_unlock(chan);
-+	l2cap_chan_put(chan);
- 
- unlock:
- 	mutex_unlock(&conn->chan_lock);
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index a5a4fef09b93..1ed358d0da84 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -1382,7 +1382,9 @@ static void intr_callback(struct urb *urb)
+ 			   "Stop submitting intr, status %d\n", status);
+ 		return;
+ 	case -EOVERFLOW:
+-		netif_info(tp, intr, tp->netdev, "intr status -EOVERFLOW\n");
++		if (net_ratelimit())
++			netif_info(tp, intr, tp->netdev,
++				   "intr status -EOVERFLOW\n");
+ 		goto resubmit;
+ 	/* -EPIPE:  should clear the halt */
+ 	default:
 -- 
 2.35.1
 
