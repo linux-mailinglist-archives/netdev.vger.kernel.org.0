@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B4835F8B7D
-	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 15:01:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 157765F8B7B
+	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 15:01:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230156AbiJINBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 09:01:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60176 "EHLO
+        id S230201AbiJINBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 09:01:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230164AbiJINA6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 09:00:58 -0400
-Received: from dggsgout12.his.huawei.com (unknown [45.249.212.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BF882A95E;
-        Sun,  9 Oct 2022 06:00:56 -0700 (PDT)
+        with ESMTP id S230181AbiJINBA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 09:01:00 -0400
+Received: from dggsgout11.his.huawei.com (unknown [45.249.212.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E26A29812;
+        Sun,  9 Oct 2022 06:00:58 -0700 (PDT)
 Received: from mail02.huawei.com (unknown [172.30.67.143])
-        by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4Mlhtn1Ytyz6PmS3;
+        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4Mlhtn4HtWzKFTc;
         Sun,  9 Oct 2022 20:58:41 +0800 (CST)
 Received: from k01.huawei.com (unknown [10.67.174.197])
-        by APP2 (Coremail) with SMTP id Syh0CgDHX9T6xUJjwRQEAA--.16593S6;
-        Sun, 09 Oct 2022 21:00:54 +0800 (CST)
+        by APP2 (Coremail) with SMTP id Syh0CgDHX9T6xUJjwRQEAA--.16593S7;
+        Sun, 09 Oct 2022 21:00:55 +0800 (CST)
 From:   Xu Kuohai <xukuohai@huaweicloud.com>
 To:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-kselftest@vger.kernel.org, netdev@vger.kernel.org
@@ -41,18 +41,18 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Alan Maguire <alan.maguire@oracle.com>,
         Kui-Feng Lee <kuifeng@fb.com>,
         Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Subject: [PATCH bpf-next 4/5] selftest/bpf: Fix memory leak in kprobe_multi_test
-Date:   Sun,  9 Oct 2022 09:18:29 -0400
-Message-Id: <20221009131830.395569-5-xukuohai@huaweicloud.com>
+Subject: [PATCH bpf-next 5/5] selftest/bpf: Fix error usage of ASSERT_OK in xdp_adjust_tail.c
+Date:   Sun,  9 Oct 2022 09:18:30 -0400
+Message-Id: <20221009131830.395569-6-xukuohai@huaweicloud.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221009131830.395569-1-xukuohai@huaweicloud.com>
 References: <20221009131830.395569-1-xukuohai@huaweicloud.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: Syh0CgDHX9T6xUJjwRQEAA--.16593S6
-X-Coremail-Antispam: 1UD129KBjvJXoW7uFyfZw1xZw17Aw4kXw18Krg_yoW8WF43pF
-        W0yw4Yka4xAr13X3W3GF48WFyrursrZ34UurWYvw15Cwn8Xw18GF4xKFW3KF95GrZ5Zw43
-        u3W5tr95Ga1UXFJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+X-CM-TRANSID: Syh0CgDHX9T6xUJjwRQEAA--.16593S7
+X-Coremail-Antispam: 1UD129KBjvJXoW7uFyfur4UArW5ZFWDCFy8Xwb_yoW8WF43pa
+        4UJw1qya4Fvr1UXF1UJFy29ry8K3WxWw1fCa9F9r45Ar47XF97JF1xKayaq3ZYgFWrXw1r
+        Z345Krn5Zw45J3JanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
         9KBjDU0xBIdaVrnRJUUUBSb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
         6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUAV
         Cq3wA2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0
@@ -63,7 +63,7 @@ X-Coremail-Antispam: 1UD129KBjvJXoW7uFyfZw1xZw17Aw4kXw18Krg_yoW8WF43pF
         z7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l42xK82IYc2
         Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s02
         6x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a6rW5MIIYrxkI7VAKI48JMIIF0x
-        vE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1lIxAI
+        vE2Ix0cI8IcVAFwI0_JFI_Gr1lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1lIxAI
         cVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF0xvEx4A2js
         IEc7CjxVAFwI0_Gr1j6F4UJbIYCTnIWIevJa73UjIFyTuYvjxUFgAwUUUUU
 X-CM-SenderInfo: 50xn30hkdlqx5xdzvxpfor3voofrz/
@@ -79,50 +79,45 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Xu Kuohai <xukuohai@huawei.com>
 
-The get_syms() function in kprobe_multi_test.c does not free the string
-memory allocated by sscanf correctly. Fix it.
+xdp_adjust_tail.c calls ASSERT_OK() to check the return value of
+bpf_prog_test_load(), but the condition is not correct. Fix it.
 
 Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
 ---
- .../bpf/prog_tests/kprobe_multi_test.c          | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-index d457a55ff408..07dd2c5b7f98 100644
---- a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-+++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-@@ -360,15 +360,14 @@ static int get_syms(char ***symsp, size_t *cntp)
- 		 * to them. Filter out the current culprits - arch_cpu_idle
- 		 * and rcu_* functions.
- 		 */
--		if (!strcmp(name, "arch_cpu_idle"))
--			continue;
--		if (!strncmp(name, "rcu_", 4))
--			continue;
--		if (!strcmp(name, "bpf_dispatcher_xdp_func"))
--			continue;
--		if (!strncmp(name, "__ftrace_invalid_address__",
--			     sizeof("__ftrace_invalid_address__") - 1))
-+		if (!strcmp(name, "arch_cpu_idle") ||
-+			!strncmp(name, "rcu_", 4) ||
-+			!strcmp(name, "bpf_dispatcher_xdp_func") ||
-+			!strncmp(name, "__ftrace_invalid_address__",
-+				 sizeof("__ftrace_invalid_address__") - 1)) {
-+			free(name);
- 			continue;
-+		}
- 		err = hashmap__add(map, name, NULL);
- 		if (err) {
- 			free(name);
-@@ -394,7 +393,7 @@ static int get_syms(char ***symsp, size_t *cntp)
- 	hashmap__free(map);
- 	if (err) {
- 		for (i = 0; i < cnt; i++)
--			free(syms[cnt]);
-+			free(syms[i]);
- 		free(syms);
- 	}
- 	return err;
+diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
+index 9b9cf8458adf..29f0194e6170 100644
+--- a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
++++ b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
+@@ -18,7 +18,7 @@ static void test_xdp_adjust_tail_shrink(void)
+ 	);
+ 
+ 	err = bpf_prog_test_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);
+-	if (ASSERT_OK(err, "test_xdp_adjust_tail_shrink"))
++	if (!ASSERT_OK(err, "test_xdp_adjust_tail_shrink"))
+ 		return;
+ 
+ 	err = bpf_prog_test_run_opts(prog_fd, &topts);
+@@ -53,7 +53,7 @@ static void test_xdp_adjust_tail_grow(void)
+ 	);
+ 
+ 	err = bpf_prog_test_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);
+-	if (ASSERT_OK(err, "test_xdp_adjust_tail_grow"))
++	if (!ASSERT_OK(err, "test_xdp_adjust_tail_grow"))
+ 		return;
+ 
+ 	err = bpf_prog_test_run_opts(prog_fd, &topts);
+@@ -89,7 +89,7 @@ static void test_xdp_adjust_tail_grow2(void)
+ 	);
+ 
+ 	err = bpf_prog_test_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);
+-	if (ASSERT_OK(err, "test_xdp_adjust_tail_grow"))
++	if (!ASSERT_OK(err, "test_xdp_adjust_tail_grow"))
+ 		return;
+ 
+ 	/* Test case-64 */
 -- 
 2.25.1
 
