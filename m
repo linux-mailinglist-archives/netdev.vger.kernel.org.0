@@ -2,103 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D9F915F8A08
-	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 09:49:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC5E95F8B6B
+	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 15:00:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229916AbiJIHqI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 03:46:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34714 "EHLO
+        id S230147AbiJINAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 09:00:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbiJIHqH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 03:46:07 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4804C9FDA
-        for <netdev@vger.kernel.org>; Sun,  9 Oct 2022 00:46:02 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id a13so12187708edj.0
-        for <netdev@vger.kernel.org>; Sun, 09 Oct 2022 00:46:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=QEIF/D8MGN1Grd5pufvetE+4rHYJOEsIRZPIWJ9t55E=;
-        b=mTXUTmCxtEmhmoex9KJV9nB/M76FNtV0PSkYeE9bIQVO5C5U3vETqbcfigGSb4zHgW
-         b57tTJZ0xPxLc99NFy2CKKxUYZhJukoh13srwBq4rJGAiNYoiThX+SrjzUPfR8QAT2IB
-         KoFyYC71XgQ1uXmF42N9VH25vmTDRWIZlDVOsp7iHFumA0gIozHY0kiQrSGqFlhvmwtv
-         Yh8xS/dh8mNRSYRZSILDSaWqYuXrqQN46USD1bzszTaTypOG0yAX+qd2CsAsDE61I72m
-         ygnIRPWLHFPGTxo/URC/mUEZzld7hOlW9Nu5xF5U/QoEDbkVNscSvwgwS9oE+wOEgrdU
-         na6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=QEIF/D8MGN1Grd5pufvetE+4rHYJOEsIRZPIWJ9t55E=;
-        b=NlmvCswoZN4YPi8dsFrwLgQuLoFthc1gSrWCoxtggDbHEB5actPNa6uy2PevyvhYBJ
-         FQ1AiVo22Mrs8xbMbV0KgiUY3moHR4PFbJ2A/wfSbTC2tUjIdXMIPk1opE/7/zeHdA1o
-         A5g067E77V2MbR8LYD71Ztsq4a9JG2XygHNgCqSquOIFlWi8MfYujqItLKxIiBrwP5vN
-         7NsgOKbhasidht/4P4PqLPZmjp2lGvmWDm+VDArDq/fBJ1DqUG8X+d6mrzR/bPeCg7wh
-         54SeqVl3SyyEII+/KqgmIl45C98b6S3v4hyyj9GJjR7mB3woiVPAoZKuGua362F2pg8W
-         oYIg==
-X-Gm-Message-State: ACrzQf0oWffyl/Ixgk2h4PQ8OiMVA+5RldTp86ZiLMlWddO3uZl6Sghe
-        Vx8k0N91eBb/oTUnkNCjpXs=
-X-Google-Smtp-Source: AMsMyM7QKKuILy/emu5UixMAQAHCVWeAmEhFPYdPKj7W0n5IUnYqsz0ppf05T7PCo898HNlsYFKmYQ==
-X-Received: by 2002:aa7:d651:0:b0:459:d1c:394e with SMTP id v17-20020aa7d651000000b004590d1c394emr12318710edr.10.1665301560406;
-        Sun, 09 Oct 2022 00:46:00 -0700 (PDT)
-Received: from ?IPV6:2a01:c22:7b77:2a00:a91b:cd60:e8c2:700e? (dynamic-2a01-0c22-7b77-2a00-a91b-cd60-e8c2-700e.c22.pool.telefonica.de. [2a01:c22:7b77:2a00:a91b:cd60:e8c2:700e])
-        by smtp.googlemail.com with ESMTPSA id g14-20020a170906538e00b0073bdf71995dsm3652647ejo.139.2022.10.09.00.45.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 09 Oct 2022 00:45:59 -0700 (PDT)
-Message-ID: <6d607965-53ab-37c7-3920-ae2ad4be09e5@gmail.com>
-Date:   Sun, 9 Oct 2022 09:45:47 +0200
+        with ESMTP id S229663AbiJINAs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 09:00:48 -0400
+Received: from dggsgout12.his.huawei.com (unknown [45.249.212.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9155224BFF;
+        Sun,  9 Oct 2022 06:00:45 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.143])
+        by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4MlhtZ2ZDLz6Pm4S;
+        Sun,  9 Oct 2022 20:58:30 +0800 (CST)
+Received: from k01.huawei.com (unknown [10.67.174.197])
+        by APP2 (Coremail) with SMTP id Syh0CgDHX9T6xUJjwRQEAA--.16593S2;
+        Sun, 09 Oct 2022 21:00:43 +0800 (CST)
+From:   Xu Kuohai <xukuohai@huaweicloud.com>
+To:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Hou Tao <houtao1@huawei.com>,
+        Dmitrii Dolgov <9erthalion6@gmail.com>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        Kui-Feng Lee <kuifeng@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Subject: [PATCH bpf-next 0/5] Fix bugs found by ASAN when running selftests
+Date:   Sun,  9 Oct 2022 09:18:25 -0400
+Message-Id: <20221009131830.395569-1-xukuohai@huaweicloud.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net] r8169: fix rtl8125b dmar pte write access not set
- error
-Content-Language: en-US
-To:     Chunhao Lin <hau@realtek.com>
-Cc:     netdev@vger.kernel.org, nic_swsd@realtek.com, kuba@kernel.org,
-        grundler@chromium.org
-References: <20221004081037.34064-1-hau@realtek.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-In-Reply-To: <20221004081037.34064-1-hau@realtek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: Syh0CgDHX9T6xUJjwRQEAA--.16593S2
+X-Coremail-Antispam: 1UD129KBjvdXoWruFyftFWDArW7AF4rZr47Jwb_yoW3ArXEyF
+        4IqrykZFZrCa9IyFW5C3Z3WrWxC3yYqryIvFsrtr97J34j9r1UAF4kKFWSy3y8W3y3Jrya
+        vFykX3y09r1aqjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb2xYFVCjjxCrM7AC8VAFwI0_Xr0_Wr1l1xkIjI8I6I8E6xAIw20E
+        Y4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwV
+        A0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x02
+        67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I
+        0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40E
+        x7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x
+        0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l42xK82IY
+        c2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s
+        026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a6rW5MIIYrxkI7VAKI48JMIIF
+        0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0x
+        vE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E
+        87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxUFDGOUUUUU
+X-CM-SenderInfo: 50xn30hkdlqx5xdzvxpfor3voofrz/
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-0.5 required=5.0 tests=BAYES_00,KHOP_HELO_FCRDNS,
+        MAY_BE_FORGED,SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04.10.2022 10:10, Chunhao Lin wrote:
-> When close device, rx will be enabled if wol is enabeld. When open device
-> it will cause rx to dma to wrong address after pci_set_master().
-> 
-> In this patch, driver will disable tx/rx when close device. If wol is
-> eanbled only enable rx filter and disable rxdv_gate to let hardware
-> can receive packet to fifo but not to dma it.
-> 
-> Fixes: 120068481405 ("r8169: fix failing WoL")
-> Signed-off-by: Chunhao Lin <hau@realtek.com>
-> ---
->  drivers/net/ethernet/realtek/r8169_main.c | 14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> index 1b7fdb4f056b..c09cfbe1d3f0 100644
-> --- a/drivers/net/ethernet/realtek/r8169_main.c
-> +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -2239,6 +2239,9 @@ static void rtl_wol_enable_rx(struct rtl8169_private *tp)
->  	if (tp->mac_version >= RTL_GIGA_MAC_VER_25)
->  		RTL_W32(tp, RxConfig, RTL_R32(tp, RxConfig) |
->  			AcceptBroadcast | AcceptMulticast | AcceptMyPhys);
-> +
-> +	if (tp->mac_version >= RTL_GIGA_MAC_VER_40)
-> +		RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
+From: Xu Kuohai <xukuohai@huawei.com>
 
-Is this correct anyway? Supposedly you want to set this bit to disable DMA.
+Xu Kuohai (5):
+  libbpf: Fix use-after-free in btf_dump_name_dups
+  libbpf: Fix memory leak in parse_usdt_arg()
+  selftests/bpf: Fix memory leak caused by not destroying skeleton
+  selftest/bpf: Fix memory leak in kprobe_multi_test
+  selftest/bpf: Fix error usage of ASSERT_OK in xdp_adjust_tail.c
+
+ tools/lib/bpf/btf_dump.c                      | 47 +++++++++++----
+ tools/lib/bpf/usdt.c                          | 59 +++++++++++--------
+ .../selftests/bpf/prog_tests/bpf_iter.c       |  4 +-
+ .../bpf/prog_tests/kprobe_multi_test.c        | 17 +++---
+ .../selftests/bpf/prog_tests/map_kptr.c       |  3 +-
+ .../selftests/bpf/prog_tests/tracing_struct.c |  3 +-
+ .../bpf/prog_tests/xdp_adjust_tail.c          |  6 +-
+ 7 files changed, 88 insertions(+), 51 deletions(-)
+
+-- 
+2.25.1
+
