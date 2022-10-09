@@ -2,48 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA5E85F9386
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 01:23:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B60B5F92EE
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:55:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231274AbiJIXXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 19:23:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57384 "EHLO
+        id S233585AbiJIWzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:55:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233299AbiJIXWs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 19:22:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C21711475;
-        Sun,  9 Oct 2022 15:49:54 -0700 (PDT)
+        with ESMTP id S233627AbiJIWwf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:52:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D70C548EBE;
+        Sun,  9 Oct 2022 15:28:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C50DC60C27;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A268260DBB;
+        Sun,  9 Oct 2022 22:24:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5B64C433B5;
         Sun,  9 Oct 2022 22:24:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA18CC433C1;
-        Sun,  9 Oct 2022 22:24:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354258;
-        bh=9F/WwTjHJoxdBWqRa6iOQ5UCJYl2sd5H82WhROoztuA=;
+        s=k20201202; t=1665354260;
+        bh=maJ8fNNyCcC99rqyWAvsYKYOT4uvsH7Am3h5FOC+4NU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ipw5pjN4ZMGojwFzS0GL1JrTYekoUttlPS7AW3TowuZv5fGAWlDsm1bHptsjWfW6K
-         W6/TUZ+k3TnGrJdJc75aguOUqhPq9du1XVYserKsKw3X+TZg4awEXhZxlYWObcin7c
-         Vkw3OB5B7U7YEsw596AvCltNAX13V4HaS0fjlrR94NRfvGviAQig3h4P/GE2t04308
-         20NsKuPKySFXMX0aU9iIgvnv5z0ZqVsNRmwa74p6ccHNogHVDDpr9ctcczxU6cLjgI
-         mgNdY28PLUaIJjVZh9pYKrj2DMQMgzToyJCE9fkrmo+lRVuO7zt3I6RjoV2LKIjEbe
-         iJH/t41ij3RVw==
+        b=pAQ4YlrKyVpRsvzhre8HvpITg1PKAknMnVuTle+0Abu0NA5s0CLAFzzbRHi/2/2Zm
+         iWvSNeB8+3HODu66g12+x/jk7iTDUWgRzmDM1C3ANwPdeMwOJkn50UieYzWo9rnXzN
+         FHHogZrqIfsZU5XQ0UmK+1HCT8BXLZ8Uu8eezTNm4tb3Nt0UcQmLTCs+zD5wOhQENt
+         +DIdU506dWMwY+skKxIkURWiZVcAGKZRfzvhdjbXcJRTBH4B4Ovm3BBqeLF2QyfGCO
+         9YW/RHfyeaa6L2Uffrb2ZiFVVpI1ObCqWD7GTeyyLBrIkrBnYAZwD8j5c5r3gxUNlt
+         2c3KmNfihwKlg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liu Jian <liujian56@huawei.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 26/29] net: If sock is dead don't access sock's sk_wq in sk_stream_wait_memory
-Date:   Sun,  9 Oct 2022 18:23:01 -0400
-Message-Id: <20221009222304.1218873-26-sashal@kernel.org>
+Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Sungwoo Kim <iam@sung-woo.kim>,
+        Sasha Levin <sashal@kernel.org>, marcel@holtmann.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 27/29] Bluetooth: L2CAP: Fix user-after-free
+Date:   Sun,  9 Oct 2022 18:23:02 -0400
+Message-Id: <20221009222304.1218873-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009222304.1218873-1-sashal@kernel.org>
 References: <20221009222304.1218873-1-sashal@kernel.org>
@@ -60,104 +58,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Liu Jian <liujian56@huawei.com>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[ Upstream commit 3f8ef65af927db247418d4e1db49164d7a158fc5 ]
+[ Upstream commit 35fcbc4243aad7e7d020b7c1dfb14bb888b20a4f ]
 
-Fixes the below NULL pointer dereference:
+This uses l2cap_chan_hold_unless_zero() after calling
+__l2cap_get_chan_blah() to prevent the following trace:
 
-  [...]
-  [   14.471200] Call Trace:
-  [   14.471562]  <TASK>
-  [   14.471882]  lock_acquire+0x245/0x2e0
-  [   14.472416]  ? remove_wait_queue+0x12/0x50
-  [   14.473014]  ? _raw_spin_lock_irqsave+0x17/0x50
-  [   14.473681]  _raw_spin_lock_irqsave+0x3d/0x50
-  [   14.474318]  ? remove_wait_queue+0x12/0x50
-  [   14.474907]  remove_wait_queue+0x12/0x50
-  [   14.475480]  sk_stream_wait_memory+0x20d/0x340
-  [   14.476127]  ? do_wait_intr_irq+0x80/0x80
-  [   14.476704]  do_tcp_sendpages+0x287/0x600
-  [   14.477283]  tcp_bpf_push+0xab/0x260
-  [   14.477817]  tcp_bpf_sendmsg_redir+0x297/0x500
-  [   14.478461]  ? __local_bh_enable_ip+0x77/0xe0
-  [   14.479096]  tcp_bpf_send_verdict+0x105/0x470
-  [   14.479729]  tcp_bpf_sendmsg+0x318/0x4f0
-  [   14.480311]  sock_sendmsg+0x2d/0x40
-  [   14.480822]  ____sys_sendmsg+0x1b4/0x1c0
-  [   14.481390]  ? copy_msghdr_from_user+0x62/0x80
-  [   14.482048]  ___sys_sendmsg+0x78/0xb0
-  [   14.482580]  ? vmf_insert_pfn_prot+0x91/0x150
-  [   14.483215]  ? __do_fault+0x2a/0x1a0
-  [   14.483738]  ? do_fault+0x15e/0x5d0
-  [   14.484246]  ? __handle_mm_fault+0x56b/0x1040
-  [   14.484874]  ? lock_is_held_type+0xdf/0x130
-  [   14.485474]  ? find_held_lock+0x2d/0x90
-  [   14.486046]  ? __sys_sendmsg+0x41/0x70
-  [   14.486587]  __sys_sendmsg+0x41/0x70
-  [   14.487105]  ? intel_pmu_drain_pebs_core+0x350/0x350
-  [   14.487822]  do_syscall_64+0x34/0x80
-  [   14.488345]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-  [...]
+Bluetooth: l2cap_core.c:static void l2cap_chan_destroy(struct kref
+*kref)
+Bluetooth: chan 0000000023c4974d
+Bluetooth: parent 00000000ae861c08
+==================================================================
+BUG: KASAN: use-after-free in __mutex_waiter_is_first
+kernel/locking/mutex.c:191 [inline]
+BUG: KASAN: use-after-free in __mutex_lock_common
+kernel/locking/mutex.c:671 [inline]
+BUG: KASAN: use-after-free in __mutex_lock+0x278/0x400
+kernel/locking/mutex.c:729
+Read of size 8 at addr ffff888006a49b08 by task kworker/u3:2/389
 
-The test scenario has the following flow:
-
-thread1                               thread2
------------                           ---------------
- tcp_bpf_sendmsg
-  tcp_bpf_send_verdict
-   tcp_bpf_sendmsg_redir              sock_close
-    tcp_bpf_push_locked                 __sock_release
-     tcp_bpf_push                         //inet_release
-      do_tcp_sendpages                    sock->ops->release
-       sk_stream_wait_memory          	   // tcp_close
-          sk_wait_event                      sk->sk_prot->close
-           release_sock(__sk);
-            ***
-                                                lock_sock(sk);
-                                                  __tcp_close
-                                                    sock_orphan(sk)
-                                                      sk->sk_wq  = NULL
-                                                release_sock
-            ****
-           lock_sock(__sk);
-          remove_wait_queue(sk_sleep(sk), &wait);
-             sk_sleep(sk)
-             //NULL pointer dereference
-             &rcu_dereference_raw(sk->sk_wq)->wait
-
-While waiting for memory in thread1, the socket is released with its wait
-queue because thread2 has closed it. This caused by tcp_bpf_send_verdict
-didn't increase the f_count of psock->sk_redir->sk_socket->file in thread1.
-
-We should check if SOCK_DEAD flag is set on wakeup in sk_stream_wait_memory
-before accessing the wait queue.
-
-Suggested-by: Jakub Sitnicki <jakub@cloudflare.com>
-Signed-off-by: Liu Jian <liujian56@huawei.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Cc: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/bpf/20220823133755.314697-2-liujian56@huawei.com
+Link: https://lore.kernel.org/lkml/20220622082716.478486-1-lee.jones@linaro.org
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Sungwoo Kim <iam@sung-woo.kim>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/stream.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/bluetooth/l2cap_core.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/net/core/stream.c b/net/core/stream.c
-index a166a32b411f..a61130504827 100644
---- a/net/core/stream.c
-+++ b/net/core/stream.c
-@@ -159,7 +159,8 @@ int sk_stream_wait_memory(struct sock *sk, long *timeo_p)
- 		*timeo_p = current_timeo;
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index 442432f89be1..2d28b4e49b7a 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -4066,6 +4066,12 @@ static int l2cap_connect_create_rsp(struct l2cap_conn *conn,
+ 		}
  	}
- out:
--	remove_wait_queue(sk_sleep(sk), &wait);
-+	if (!sock_flag(sk, SOCK_DEAD))
-+		remove_wait_queue(sk_sleep(sk), &wait);
- 	return err;
  
- do_error:
++	chan = l2cap_chan_hold_unless_zero(chan);
++	if (!chan) {
++		err = -EBADSLT;
++		goto unlock;
++	}
++
+ 	err = 0;
+ 
+ 	l2cap_chan_lock(chan);
+@@ -4095,6 +4101,7 @@ static int l2cap_connect_create_rsp(struct l2cap_conn *conn,
+ 	}
+ 
+ 	l2cap_chan_unlock(chan);
++	l2cap_chan_put(chan);
+ 
+ unlock:
+ 	mutex_unlock(&conn->chan_lock);
 -- 
 2.35.1
 
