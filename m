@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 505C75F8FDA
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:16:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 224A35F91FE
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:44:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231503AbiJIWQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:16:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56554 "EHLO
+        id S232306AbiJIWoZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:44:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231492AbiJIWQU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:16:20 -0400
+        with ESMTP id S232341AbiJIWnP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:43:15 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76F1B6278;
-        Sun,  9 Oct 2022 15:14:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E365343143;
+        Sun,  9 Oct 2022 15:22:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF3BCB80DCE;
+        by ams.source.kernel.org (Postfix) with ESMTPS id BFBADB80DD4;
+        Sun,  9 Oct 2022 22:11:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4979BC433B5;
         Sun,  9 Oct 2022 22:11:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CC3EC433D6;
-        Sun,  9 Oct 2022 22:11:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665353469;
-        bh=qgniTSF+OJAJ5oQQqmSqvcCBvyeFINIUvqYDGmh5u6Y=;
+        s=k20201202; t=1665353471;
+        bh=44uRYNzLL2dyaeADFwbtAehncvGKf6ItaLtVtAl1DKk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hf023Bi/MhNYrPGWqUfBwqDskjI7fkkT0n2B/44RTNgoJgsyOwJyowIKFSkmWLzVF
-         7DdPcAVvOEaTFTYM6v5e6Xf58VLz1wtZNLUB+QdMJqs6GO8zZ4c8ZN1AjYB5UX2M/3
-         9K6QY4hhW/AphSIB8YPYHq2Vj4JTVaAq6SXQ2HF2+HW6q4YUtw876n4BkUVReavPOV
-         V32nGufGmtL3bRQgFhpEGgWW0fNiAFDspgpv7MwI3cuaIilama+AmLP8YYZuRxyIFH
-         DRSNltJVk4p7NT8FRPV8on562kByGIkhz4/GfAeE7nB8p97Ha58ZhkMqYpHOLozPEB
-         fV0JgwXvjTFww==
+        b=AyELzpOYBPiIyLeb619upJv3DhurZik9Ax/gMc7/PClxIu1tUCnazqw9ZGbGwzUHn
+         4C3XJpfuBmuEmm7KSZ8evVCKPmbY+ofVRTDKMJI+UjGg68oN1wmr262I4OIZ4bTnbz
+         0qF/9dhWoHU3ez54dQAodLMsbS7fpxvjjmj47FePYgK+HnBA7+BwBqv2LObKKpKjqJ
+         33fccSE8GoZlaZz0B2kd+OUc1Iw4Acp8O/f4QKF8z9mlNbe24U8g7geT0SVsWNNr9R
+         IWY8Wpvex6/Io/ZMYguyGguOJpsK6wPJIFBUtucFptkXATgF9hbmQzfaOHkkCJM6TG
+         wkq+gakWrnjzA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Po-Hao Huang <phhuang@realtek.com>,
@@ -39,9 +39,9 @@ Cc:     Po-Hao Huang <phhuang@realtek.com>,
         davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.0 42/77] wifi: rtw89: free unused skb to prevent memory leak
-Date:   Sun,  9 Oct 2022 18:07:19 -0400
-Message-Id: <20221009220754.1214186-42-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.0 43/77] wifi: rtw89: fix rx filter after scan
+Date:   Sun,  9 Oct 2022 18:07:20 -0400
+Message-Id: <20221009220754.1214186-43-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009220754.1214186-1-sashal@kernel.org>
 References: <20221009220754.1214186-1-sashal@kernel.org>
@@ -60,31 +60,61 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Po-Hao Huang <phhuang@realtek.com>
 
-[ Upstream commit eae672f386049146058b9e5d3d33e9e4af9dca1d ]
+[ Upstream commit 812825c2b204c491f1a5586c602e4ac75060493a ]
 
-This avoid potential memory leak under power saving mode.
+In monitor mode we should be able to received all packets even if it's not
+destined to us. But after scan, the configuration was wrongly set, so we
+fix it.
 
 Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
 Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
 Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220916033811.13862-6-pkshih@realtek.com
+Link: https://lore.kernel.org/r/20220916033811.13862-7-pkshih@realtek.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtw89/core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/realtek/rtw89/fw.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw89/core.c b/drivers/net/wireless/realtek/rtw89/core.c
-index a5880a54812e..8b338e5ce364 100644
---- a/drivers/net/wireless/realtek/rtw89/core.c
-+++ b/drivers/net/wireless/realtek/rtw89/core.c
-@@ -872,6 +872,7 @@ int rtw89_h2c_tx(struct rtw89_dev *rtwdev,
- 		rtw89_debug(rtwdev, RTW89_DBG_FW,
- 			    "ignore h2c due to power is off with firmware state=%d\n",
- 			    test_bit(RTW89_FLAG_FW_RDY, rtwdev->flags));
-+		dev_kfree_skb(skb);
- 		return 0;
- 	}
+diff --git a/drivers/net/wireless/realtek/rtw89/fw.c b/drivers/net/wireless/realtek/rtw89/fw.c
+index 6473015a6b2a..c993fe9cf6b4 100644
+--- a/drivers/net/wireless/realtek/rtw89/fw.c
++++ b/drivers/net/wireless/realtek/rtw89/fw.c
+@@ -2289,6 +2289,7 @@ void rtw89_hw_scan_start(struct rtw89_dev *rtwdev, struct ieee80211_vif *vif,
+ {
+ 	struct rtw89_vif *rtwvif = (struct rtw89_vif *)vif->drv_priv;
+ 	struct cfg80211_scan_request *req = &scan_req->req;
++	u32 rx_fltr = rtwdev->hal.rx_fltr;
+ 	u8 mac_addr[ETH_ALEN];
  
+ 	rtwdev->scan_info.scanning_vif = vif;
+@@ -2303,13 +2304,13 @@ void rtw89_hw_scan_start(struct rtw89_dev *rtwdev, struct ieee80211_vif *vif,
+ 		ether_addr_copy(mac_addr, vif->addr);
+ 	rtw89_core_scan_start(rtwdev, rtwvif, mac_addr, true);
+ 
+-	rtwdev->hal.rx_fltr &= ~B_AX_A_BCN_CHK_EN;
+-	rtwdev->hal.rx_fltr &= ~B_AX_A_BC;
+-	rtwdev->hal.rx_fltr &= ~B_AX_A_A1_MATCH;
++	rx_fltr &= ~B_AX_A_BCN_CHK_EN;
++	rx_fltr &= ~B_AX_A_BC;
++	rx_fltr &= ~B_AX_A_A1_MATCH;
+ 	rtw89_write32_mask(rtwdev,
+ 			   rtw89_mac_reg_by_idx(R_AX_RX_FLTR_OPT, RTW89_MAC_0),
+ 			   B_AX_RX_FLTR_CFG_MASK,
+-			   rtwdev->hal.rx_fltr);
++			   rx_fltr);
+ }
+ 
+ void rtw89_hw_scan_complete(struct rtw89_dev *rtwdev, struct ieee80211_vif *vif,
+@@ -2323,9 +2324,6 @@ void rtw89_hw_scan_complete(struct rtw89_dev *rtwdev, struct ieee80211_vif *vif,
+ 	if (!vif)
+ 		return;
+ 
+-	rtwdev->hal.rx_fltr |= B_AX_A_BCN_CHK_EN;
+-	rtwdev->hal.rx_fltr |= B_AX_A_BC;
+-	rtwdev->hal.rx_fltr |= B_AX_A_A1_MATCH;
+ 	rtw89_write32_mask(rtwdev,
+ 			   rtw89_mac_reg_by_idx(R_AX_RX_FLTR_OPT, RTW89_MAC_0),
+ 			   B_AX_RX_FLTR_CFG_MASK,
 -- 
 2.35.1
 
