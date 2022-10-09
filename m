@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC2245F9369
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 01:13:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1344A5F931F
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:56:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233451AbiJIXNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 19:13:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59666 "EHLO
+        id S233769AbiJIW4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:56:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233459AbiJIXMq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 19:12:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B03656B9D;
-        Sun,  9 Oct 2022 15:38:43 -0700 (PDT)
+        with ESMTP id S233895AbiJIWyO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:54:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C541B4A128;
+        Sun,  9 Oct 2022 15:29:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 987A460DC6;
-        Sun,  9 Oct 2022 22:27:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 796CCC433C1;
-        Sun,  9 Oct 2022 22:27:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D81460DD5;
+        Sun,  9 Oct 2022 22:27:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 209A7C433C1;
+        Sun,  9 Oct 2022 22:27:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354459;
-        bh=Lq9ysN62kmmqREsBCAGoWQION8SZVICjoEzd7syGdKM=;
+        s=k20201202; t=1665354463;
+        bh=ghDC2JzNsdRhtz2HD3XyUozmlKJwAlnnnYqKEva3Eh4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MSYlWfOQaQEgVf0mK+ZlntV77YFWnWrSpOjtp0Mgc4RehKfkMVFp4Tj8boFh3DZj2
-         cyUP4a/KZQFcz529fBHCH8Cbvhis5DGNGoNK0xh/L2pMvweE63WPjWV+SXC/RQF4SB
-         YpsIFtuefAmuqKHCk6q5HWU9RA/d4X+2D0rXtkedDfMpjoyp9iHogkmHnlYK2qv7iq
-         8JJJtwAAZ0bKOKGbLboM8YTu2dIIxRAuX1zLdpUmL1/xGLMROx+1hmE1OXOTLRNE4g
-         P/Q4c1q2vdBIFjkcTFVCRA2yvo/hEa2Po0sPYF6/uc2sszrpCw2GhsGsWPlYck9sh/
-         WIuN4ftDXYj4Q==
+        b=e/BBmtqt1rZNRT+oWMXfnIGnT9atnckCMeIm3jsg5/wt6Uyd3rbM7kL/NLoo34b3M
+         WYvPaxt8WZ1q6KDXjiN1HHkWq0l9gVadOOCcfxNhwJFDirMHqsqOFXvPvfYJ9/bMeP
+         ApHBmdE6adWSjJ9LqQjyyQp9sn3ObK4/qObhGaMa/o1dV8j9Nmy+F+jjQ2BMbpBxJt
+         HEez8qgZZ82MmPsgTP0oZS7z6jCtohhj9MksZPBOv2r0f7T7tQX2KbmCZqHION59/R
+         wMZ2mhZ6UKvwTLhbef37xUoxiuslhLV9Yf9T1KJSm5Vq/LG0gkI5SvQATH+yvllB7B
+         023DFVgObLhxg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Nathan Huckleberry <nhuck@google.com>,
@@ -39,12 +39,12 @@ Cc:     Nathan Huckleberry <nhuck@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
         edumazet@google.com, pabeni@redhat.com, ndesaulniers@google.com,
-        petrm@nvidia.com, thomas.lendacky@amd.com,
-        wsa+renesas@sang-engineering.com, dmitry.torokhov@gmail.com,
+        prabhakar.mahadev-lad.rj@bp.renesas.com, chi.minghao@zte.com.cn,
+        leon@kernel.org, bigunclemax@gmail.com, linux-omap@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 09/16] net: davicom: Fix return type of dm9000_start_xmit
-Date:   Sun,  9 Oct 2022 18:27:05 -0400
-Message-Id: <20221009222713.1220394-9-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 10/16] net: ethernet: ti: davinci_emac: Fix return type of emac_dev_xmit
+Date:   Sun,  9 Oct 2022 18:27:06 -0400
+Message-Id: <20221009222713.1220394-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009222713.1220394-1-sashal@kernel.org>
 References: <20221009222713.1220394-1-sashal@kernel.org>
@@ -63,7 +63,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nathan Huckleberry <nhuck@google.com>
 
-[ Upstream commit 0191580b000d50089a0b351f7cdbec4866e3d0d2 ]
+[ Upstream commit 5972ca946098487c5155fe13654743f9010f5ed5 ]
 
 The ndo_start_xmit field in net_device_ops is expected to be of type
 netdev_tx_t (*ndo_start_xmit)(struct sk_buff *skb, struct net_device *dev).
@@ -71,7 +71,7 @@ netdev_tx_t (*ndo_start_xmit)(struct sk_buff *skb, struct net_device *dev).
 The mismatched return type breaks forward edge kCFI since the underlying
 function definition does not match the function hook definition.
 
-The return type of dm9000_start_xmit should be changed from int to
+The return type of emac_dev_xmit should be changed from int to
 netdev_tx_t.
 
 Reported-by: Dan Carpenter <error27@gmail.com>
@@ -79,26 +79,26 @@ Link: https://github.com/ClangBuiltLinux/linux/issues/1703
 Cc: llvm@lists.linux.dev
 Signed-off-by: Nathan Huckleberry <nhuck@google.com>
 Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-Link: https://lore.kernel.org/r/20220912194722.809525-1-nhuck@google.com
+Link: https://lore.kernel.org/r/20220912195023.810319-1-nhuck@google.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/davicom/dm9000.c | 2 +-
+ drivers/net/ethernet/ti/davinci_emac.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/davicom/dm9000.c b/drivers/net/ethernet/davicom/dm9000.c
-index 0fe4d8999823..59e09f7174c1 100644
---- a/drivers/net/ethernet/davicom/dm9000.c
-+++ b/drivers/net/ethernet/davicom/dm9000.c
-@@ -1023,7 +1023,7 @@ static void dm9000_send_packet(struct net_device *dev,
-  *  Hardware start transmission.
-  *  Send a packet to media from the upper layer.
+diff --git a/drivers/net/ethernet/ti/davinci_emac.c b/drivers/net/ethernet/ti/davinci_emac.c
+index 37162492e263..ebf22429c349 100644
+--- a/drivers/net/ethernet/ti/davinci_emac.c
++++ b/drivers/net/ethernet/ti/davinci_emac.c
+@@ -955,7 +955,7 @@ static void emac_tx_handler(void *token, int len, int status)
+  *
+  * Returns success(NETDEV_TX_OK) or error code (typically out of desc's)
   */
--static int
-+static netdev_tx_t
- dm9000_start_xmit(struct sk_buff *skb, struct net_device *dev)
+-static int emac_dev_xmit(struct sk_buff *skb, struct net_device *ndev)
++static netdev_tx_t emac_dev_xmit(struct sk_buff *skb, struct net_device *ndev)
  {
- 	unsigned long flags;
+ 	struct device *emac_dev = &ndev->dev;
+ 	int ret_code;
 -- 
 2.35.1
 
