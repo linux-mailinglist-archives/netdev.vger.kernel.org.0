@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E3455F952D
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 02:16:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2422A5F964F
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 02:32:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232050AbiJJAQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 20:16:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42400 "EHLO
+        id S233150AbiJJAct (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 20:32:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232048AbiJJAQD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 20:16:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20831A1AE;
-        Sun,  9 Oct 2022 16:52:20 -0700 (PDT)
+        with ESMTP id S231680AbiJJAc0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 20:32:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC9712FFEC;
+        Sun,  9 Oct 2022 17:05:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8961060DC7;
-        Sun,  9 Oct 2022 22:24:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D37D4C4314C;
-        Sun,  9 Oct 2022 22:24:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 37E2DB80DD6;
+        Sun,  9 Oct 2022 22:25:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AB0AC43470;
+        Sun,  9 Oct 2022 22:25:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354285;
-        bh=+pZ2BQgE4cajppLO56oT5anENuedhpOpwPn6ToGpfCc=;
+        s=k20201202; t=1665354345;
+        bh=QqpHLqiHJ8pQMZ2r9rm0Nz/ebpA/pgrtpSt7B2/lRsc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V007bbVyvtOvXmL0tD5iq2WQ1F/ti6lZLML3DizZIrJqh3y5vzzhPMLvUsM2dXmbW
-         wivOMKv5WV6XuPm/v3QTieuQAHRfLKOz2S9stVs8R0AXuGcLlZzxwvCCjTNq8ol+t7
-         qhKN6XwBEZhiR1ha2GgEDDvcKvWyWRstq/DrAvwdu4VfW5PrvqmzFnGmBpG5H+508Q
-         ztv49DeHsdUXC0pOHWyKEmYLz0eQ75hzSKffVCUF+2Tk6YDXFUHculSsSasHiOuAGM
-         ByajJZ7QWvhxXJQqfFDL5EJvETsu3MSW6Ogp8r9K9M7yL2U0XXMtBLxQ/LMU9eXhhc
-         UzakcxICZ9mLA==
+        b=qhugReT1yBMbiCanwlxxrLW0betL6ajvlufxdNCY49i30kqB74st5CHf8aXooV82J
+         fG6yw2UqxcKpxz6QePCgy0E48HB5Ry2hkWdK8X3dsMIiyuW22eMUrkKD4WyMUhCm6m
+         Kot6YlI0Z+3TqY0Q0hfLsaa7t0X19RJpgRW48T559S21F4EOqPrzeAQmEZHH2RZPe8
+         jRwM261jkBJ397/HSrZ2tqOd1CQda2pa0f1L9xOIHDDdGwnJuzgSaLmxBrshIROrOo
+         ZEsPt/UYj4eCujcCRh4OwYNVIcJ5pzQZxaxAzN6WQGnvy8yX1xLYveXVB+SC6LeW/f
+         NGC77QTixg5iw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Abhishek Shah <abhishek.shah@columbia.edu>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 04/25] tcp: annotate data-race around tcp_md5sig_pool_populated
-Date:   Sun,  9 Oct 2022 18:24:09 -0400
-Message-Id: <20221009222436.1219411-4-sashal@kernel.org>
+Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Sungwoo Kim <iam@sung-woo.kim>,
+        Sasha Levin <sashal@kernel.org>, marcel@holtmann.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 23/25] Bluetooth: L2CAP: Fix user-after-free
+Date:   Sun,  9 Oct 2022 18:24:28 -0400
+Message-Id: <20221009222436.1219411-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009222436.1219411-1-sashal@kernel.org>
 References: <20221009222436.1219411-1-sashal@kernel.org>
@@ -58,70 +58,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[ Upstream commit aacd467c0a576e5e44d2de4205855dc0fe43f6fb ]
+[ Upstream commit 35fcbc4243aad7e7d020b7c1dfb14bb888b20a4f ]
 
-tcp_md5sig_pool_populated can be read while another thread
-changes its value.
+This uses l2cap_chan_hold_unless_zero() after calling
+__l2cap_get_chan_blah() to prevent the following trace:
 
-The race has no consequence because allocations
-are protected with tcp_md5sig_mutex.
+Bluetooth: l2cap_core.c:static void l2cap_chan_destroy(struct kref
+*kref)
+Bluetooth: chan 0000000023c4974d
+Bluetooth: parent 00000000ae861c08
+==================================================================
+BUG: KASAN: use-after-free in __mutex_waiter_is_first
+kernel/locking/mutex.c:191 [inline]
+BUG: KASAN: use-after-free in __mutex_lock_common
+kernel/locking/mutex.c:671 [inline]
+BUG: KASAN: use-after-free in __mutex_lock+0x278/0x400
+kernel/locking/mutex.c:729
+Read of size 8 at addr ffff888006a49b08 by task kworker/u3:2/389
 
-This patch adds READ_ONCE() and WRITE_ONCE() to document
-the race and silence KCSAN.
-
-Reported-by: Abhishek Shah <abhishek.shah@columbia.edu>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/lkml/20220622082716.478486-1-lee.jones@linaro.org
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Sungwoo Kim <iam@sung-woo.kim>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ net/bluetooth/l2cap_core.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 768a7daab559..73745d9e6dda 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -3690,12 +3690,16 @@ static void __tcp_alloc_md5sig_pool(void)
- 	 * to memory. See smp_rmb() in tcp_get_md5sig_pool()
- 	 */
- 	smp_wmb();
--	tcp_md5sig_pool_populated = true;
-+	/* Paired with READ_ONCE() from tcp_alloc_md5sig_pool()
-+	 * and tcp_get_md5sig_pool().
-+	*/
-+	WRITE_ONCE(tcp_md5sig_pool_populated, true);
- }
- 
- bool tcp_alloc_md5sig_pool(void)
- {
--	if (unlikely(!tcp_md5sig_pool_populated)) {
-+	/* Paired with WRITE_ONCE() from __tcp_alloc_md5sig_pool() */
-+	if (unlikely(!READ_ONCE(tcp_md5sig_pool_populated))) {
- 		mutex_lock(&tcp_md5sig_mutex);
- 
- 		if (!tcp_md5sig_pool_populated)
-@@ -3703,7 +3707,8 @@ bool tcp_alloc_md5sig_pool(void)
- 
- 		mutex_unlock(&tcp_md5sig_mutex);
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index 7c280fcdcaa0..5c965f7b1709 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -4049,6 +4049,12 @@ static int l2cap_connect_create_rsp(struct l2cap_conn *conn,
+ 		}
  	}
--	return tcp_md5sig_pool_populated;
-+	/* Paired with WRITE_ONCE() from __tcp_alloc_md5sig_pool() */
-+	return READ_ONCE(tcp_md5sig_pool_populated);
- }
- EXPORT_SYMBOL(tcp_alloc_md5sig_pool);
  
-@@ -3719,7 +3724,8 @@ struct tcp_md5sig_pool *tcp_get_md5sig_pool(void)
- {
- 	local_bh_disable();
++	chan = l2cap_chan_hold_unless_zero(chan);
++	if (!chan) {
++		err = -EBADSLT;
++		goto unlock;
++	}
++
+ 	err = 0;
  
--	if (tcp_md5sig_pool_populated) {
-+	/* Paired with WRITE_ONCE() from __tcp_alloc_md5sig_pool() */
-+	if (READ_ONCE(tcp_md5sig_pool_populated)) {
- 		/* coupled with smp_wmb() in __tcp_alloc_md5sig_pool() */
- 		smp_rmb();
- 		return this_cpu_ptr(&tcp_md5sig_pool);
+ 	l2cap_chan_lock(chan);
+@@ -4078,6 +4084,7 @@ static int l2cap_connect_create_rsp(struct l2cap_conn *conn,
+ 	}
+ 
+ 	l2cap_chan_unlock(chan);
++	l2cap_chan_put(chan);
+ 
+ unlock:
+ 	mutex_unlock(&conn->chan_lock);
 -- 
 2.35.1
 
