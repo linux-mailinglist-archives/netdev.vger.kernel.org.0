@@ -2,53 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 040B25F8F9D
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:10:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1047B5F8FA8
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:11:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230375AbiJIWKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:10:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42092 "EHLO
+        id S230115AbiJIWLm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:11:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230483AbiJIWJ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:09:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB5228732;
-        Sun,  9 Oct 2022 15:08:56 -0700 (PDT)
+        with ESMTP id S230457AbiJIWLO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:11:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D6CE27FD7;
+        Sun,  9 Oct 2022 15:09:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8404CB80DD8;
-        Sun,  9 Oct 2022 22:08:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE41FC4347C;
-        Sun,  9 Oct 2022 22:08:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1E370B80D9A;
+        Sun,  9 Oct 2022 22:09:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 717FCC433C1;
+        Sun,  9 Oct 2022 22:09:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665353329;
-        bh=uFZzpqGeI0F+s1iei+vQqMl4q+FdPp2Sji8X1gj9HgQ=;
+        s=k20201202; t=1665353354;
+        bh=R9mXsIyShsVWJOH9MSgqLniCVDqACxw0AMWjzPQJhRE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IItcKXBvThrqEvex+TKmSNPHr/y08vOckhqLhLtQVePAwJTjNEEuuKuUIKXec7hZ0
-         YAyVL+RWjtzOnzrZX3ouYyUyAHA13c/m1z0fruoQ0G0cvrgY1qBok7Amt02ZoJ17VT
-         Zkl7p+H2iow5Qr4wc0RH5nSNTpy3VfuZsI78pc7Q/P99YV552nopS/Rz9S4JQyBXTz
-         mwWDqVbDiwcY1DiujVVmYLo4e256iuxtz9d4a7GMMJBNJiFkaKzAs56kM3+Avzhv6q
-         r+w5hRg34J5ze9guqVgG8NorH8f27k88botWUTF20N9islLzbkFMiqWNJkjdn/sodJ
-         TjY8KzymOOdZg==
+        b=mYQ4D93Q6surmHfriW0qNuFosg5Iys1pOtw7ZNJMUvlIo5Oyih+kwY/CggXhao588
+         x6UybxQzWj/EAVzqvnOL/9kTa21wiJ1BznL327Wv+G6HKoRui729W4L2wysa+nLAOL
+         zAlff5D1cd/OW1GAXEf4+VtpDSINS8MH7UXn/8Ackp2GkXu29PJZ7fHZnhmfW8Je0u
+         wb1N6YlJ4ICzoR9h8A8jIr/YK5gquCJpPbhpZc6KXr7YNuMqtlI+GNBUut1vQinFTb
+         YhGOqSHfUNh7C+q/tXTg/MQ2vsd38zRUUiHZXfg+6yBNf60D6vrnUv7UBugCYW7UdL
+         q4sc7VeLlU1tw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        syzbot <syzbot+2ca247c2d60c7023de7f@syzkaller.appspotmail.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.0 20/77] wifi: ath9k: avoid uninit memory read in ath9k_htc_rx_msg()
-Date:   Sun,  9 Oct 2022 18:06:57 -0400
-Message-Id: <20221009220754.1214186-20-sashal@kernel.org>
+Cc:     Robert Hancock <robert.hancock@calian.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        radhey.shyam.pandey@xilinx.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, michal.simek@xilinx.com,
+        linux@armlinux.org.uk, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 6.0 23/77] net: axienet: Switch to 64-bit RX/TX statistics
+Date:   Sun,  9 Oct 2022 18:07:00 -0400
+Message-Id: <20221009220754.1214186-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009220754.1214186-1-sashal@kernel.org>
 References: <20221009220754.1214186-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -61,147 +59,140 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+From: Robert Hancock <robert.hancock@calian.com>
 
-[ Upstream commit b383e8abed41cc6ff1a3b34de75df9397fa4878c ]
+[ Upstream commit cb45a8bf4693965e89d115cd2c510f12bc127c37 ]
 
-syzbot is reporting uninit value at ath9k_htc_rx_msg() [1], for
-ioctl(USB_RAW_IOCTL_EP_WRITE) can call ath9k_hif_usb_rx_stream() with
-pkt_len = 0 but ath9k_hif_usb_rx_stream() uses
-__dev_alloc_skb(pkt_len + 32, GFP_ATOMIC) based on an assumption that
-pkt_len is valid. As a result, ath9k_hif_usb_rx_stream() allocates skb
-with uninitialized memory and ath9k_htc_rx_msg() is reading from
-uninitialized memory.
+The RX and TX byte/packet statistics in this driver could be overflowed
+relatively quickly on a 32-bit platform. Switch these stats to use the
+u64_stats infrastructure to avoid this.
 
-Since bytes accessed by ath9k_htc_rx_msg() is not known until
-ath9k_htc_rx_msg() is called, it would be difficult to check minimal valid
-pkt_len at "if (pkt_len > 2 * MAX_RX_BUF_SIZE) {" line in
-ath9k_hif_usb_rx_stream().
-
-We have two choices. One is to workaround by adding __GFP_ZERO so that
-ath9k_htc_rx_msg() sees 0 if pkt_len is invalid. The other is to let
-ath9k_htc_rx_msg() validate pkt_len before accessing. This patch chose
-the latter.
-
-Note that I'm not sure threshold condition is correct, for I can't find
-details on possible packet length used by this protocol.
-
-Link: https://syzkaller.appspot.com/bug?extid=2ca247c2d60c7023de7f [1]
-Reported-by: syzbot <syzbot+2ca247c2d60c7023de7f@syzkaller.appspotmail.com>
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/7acfa1be-4b5c-b2ce-de43-95b0593fb3e5@I-love.SAKURA.ne.jp
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Link: https://lore.kernel.org/r/20220829233901.3429419-1-robert.hancock@calian.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/htc_hst.c | 43 +++++++++++++++---------
- 1 file changed, 28 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/xilinx/xilinx_axienet.h  | 12 ++++++
+ .../net/ethernet/xilinx/xilinx_axienet_main.c | 37 +++++++++++++++++--
+ 2 files changed, 45 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath9k/htc_hst.c b/drivers/net/wireless/ath/ath9k/htc_hst.c
-index 994ec48b2f66..ca05b07a45e6 100644
---- a/drivers/net/wireless/ath/ath9k/htc_hst.c
-+++ b/drivers/net/wireless/ath/ath9k/htc_hst.c
-@@ -364,33 +364,27 @@ void ath9k_htc_txcompletion_cb(struct htc_target *htc_handle,
- }
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet.h b/drivers/net/ethernet/xilinx/xilinx_axienet.h
+index f2e2261b4b7d..8ff4333de2ad 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet.h
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet.h
+@@ -402,6 +402,9 @@ struct axidma_bd {
+  * @rx_bd_num:	Size of RX buffer descriptor ring
+  * @rx_bd_ci:	Stores the index of the Rx buffer descriptor in the ring being
+  *		accessed currently.
++ * @rx_packets: RX packet count for statistics
++ * @rx_bytes:	RX byte count for statistics
++ * @rx_stat_sync: Synchronization object for RX stats
+  * @napi_tx:	NAPI TX control structure
+  * @tx_dma_cr:  Nominal content of TX DMA control register
+  * @tx_bd_v:	Virtual address of the TX buffer descriptor ring
+@@ -411,6 +414,9 @@ struct axidma_bd {
+  *		complete. Only updated at runtime by TX NAPI poll.
+  * @tx_bd_tail:	Stores the index of the next Tx buffer descriptor in the ring
+  *              to be populated.
++ * @tx_packets: TX packet count for statistics
++ * @tx_bytes:	TX byte count for statistics
++ * @tx_stat_sync: Synchronization object for TX stats
+  * @dma_err_task: Work structure to process Axi DMA errors
+  * @tx_irq:	Axidma TX IRQ number
+  * @rx_irq:	Axidma RX IRQ number
+@@ -458,6 +464,9 @@ struct axienet_local {
+ 	dma_addr_t rx_bd_p;
+ 	u32 rx_bd_num;
+ 	u32 rx_bd_ci;
++	u64_stats_t rx_packets;
++	u64_stats_t rx_bytes;
++	struct u64_stats_sync rx_stat_sync;
  
- static void ath9k_htc_fw_panic_report(struct htc_target *htc_handle,
--				      struct sk_buff *skb)
-+				      struct sk_buff *skb, u32 len)
- {
- 	uint32_t *pattern = (uint32_t *)skb->data;
+ 	struct napi_struct napi_tx;
+ 	u32 tx_dma_cr;
+@@ -466,6 +475,9 @@ struct axienet_local {
+ 	u32 tx_bd_num;
+ 	u32 tx_bd_ci;
+ 	u32 tx_bd_tail;
++	u64_stats_t tx_packets;
++	u64_stats_t tx_bytes;
++	struct u64_stats_sync tx_stat_sync;
  
--	switch (*pattern) {
--	case 0x33221199:
--		{
-+	if (*pattern == 0x33221199 && len >= sizeof(struct htc_panic_bad_vaddr)) {
- 		struct htc_panic_bad_vaddr *htc_panic;
- 		htc_panic = (struct htc_panic_bad_vaddr *) skb->data;
- 		dev_err(htc_handle->dev, "ath: firmware panic! "
- 			"exccause: 0x%08x; pc: 0x%08x; badvaddr: 0x%08x.\n",
- 			htc_panic->exccause, htc_panic->pc,
- 			htc_panic->badvaddr);
--		break;
--		}
--	case 0x33221299:
--		{
-+		return;
-+	}
-+	if (*pattern == 0x33221299) {
- 		struct htc_panic_bad_epid *htc_panic;
- 		htc_panic = (struct htc_panic_bad_epid *) skb->data;
- 		dev_err(htc_handle->dev, "ath: firmware panic! "
- 			"bad epid: 0x%08x\n", htc_panic->epid);
--		break;
--		}
--	default:
--		dev_err(htc_handle->dev, "ath: unknown panic pattern!\n");
--		break;
-+		return;
- 	}
-+	dev_err(htc_handle->dev, "ath: unknown panic pattern!\n");
- }
+ 	struct work_struct dma_err_task;
  
- /*
-@@ -411,16 +405,26 @@ void ath9k_htc_rx_msg(struct htc_target *htc_handle,
- 	if (!htc_handle || !skb)
- 		return;
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+index 1760930ec0c4..9262988d26a3 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -752,8 +752,10 @@ static int axienet_tx_poll(struct napi_struct *napi, int budget)
+ 		if (lp->tx_bd_ci >= lp->tx_bd_num)
+ 			lp->tx_bd_ci %= lp->tx_bd_num;
  
-+	/* A valid message requires len >= 8.
-+	 *
-+	 *   sizeof(struct htc_frame_hdr) == 8
-+	 *   sizeof(struct htc_ready_msg) == 8
-+	 *   sizeof(struct htc_panic_bad_vaddr) == 16
-+	 *   sizeof(struct htc_panic_bad_epid) == 8
-+	 */
-+	if (unlikely(len < sizeof(struct htc_frame_hdr)))
-+		goto invalid;
- 	htc_hdr = (struct htc_frame_hdr *) skb->data;
- 	epid = htc_hdr->endpoint_id;
+-		ndev->stats.tx_packets += packets;
+-		ndev->stats.tx_bytes += size;
++		u64_stats_update_begin(&lp->tx_stat_sync);
++		u64_stats_add(&lp->tx_packets, packets);
++		u64_stats_add(&lp->tx_bytes, size);
++		u64_stats_update_end(&lp->tx_stat_sync);
  
- 	if (epid == 0x99) {
--		ath9k_htc_fw_panic_report(htc_handle, skb);
-+		ath9k_htc_fw_panic_report(htc_handle, skb, len);
- 		kfree_skb(skb);
- 		return;
+ 		/* Matches barrier in axienet_start_xmit */
+ 		smp_mb();
+@@ -984,8 +986,10 @@ static int axienet_rx_poll(struct napi_struct *napi, int budget)
+ 		cur_p = &lp->rx_bd_v[lp->rx_bd_ci];
  	}
  
- 	if (epid < 0 || epid >= ENDPOINT_MAX) {
-+invalid:
- 		if (pipe_id != USB_REG_IN_PIPE)
- 			dev_kfree_skb_any(skb);
- 		else
-@@ -432,21 +436,30 @@ void ath9k_htc_rx_msg(struct htc_target *htc_handle,
+-	lp->ndev->stats.rx_packets += packets;
+-	lp->ndev->stats.rx_bytes += size;
++	u64_stats_update_begin(&lp->rx_stat_sync);
++	u64_stats_add(&lp->rx_packets, packets);
++	u64_stats_add(&lp->rx_bytes, size);
++	u64_stats_update_end(&lp->rx_stat_sync);
  
- 		/* Handle trailer */
- 		if (htc_hdr->flags & HTC_FLAGS_RECV_TRAILER) {
--			if (be32_to_cpu(*(__be32 *) skb->data) == 0x00C60000)
-+			if (be32_to_cpu(*(__be32 *) skb->data) == 0x00C60000) {
- 				/* Move past the Watchdog pattern */
- 				htc_hdr = (struct htc_frame_hdr *)(skb->data + 4);
-+				len -= 4;
-+			}
- 		}
+ 	if (tail_p)
+ 		axienet_dma_out_addr(lp, XAXIDMA_RX_TDESC_OFFSET, tail_p);
+@@ -1292,10 +1296,32 @@ static int axienet_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+ 	return phylink_mii_ioctl(lp->phylink, rq, cmd);
+ }
  
- 		/* Get the message ID */
-+		if (unlikely(len < sizeof(struct htc_frame_hdr) + sizeof(__be16)))
-+			goto invalid;
- 		msg_id = (__be16 *) ((void *) htc_hdr +
- 				     sizeof(struct htc_frame_hdr));
++static void
++axienet_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
++{
++	struct axienet_local *lp = netdev_priv(dev);
++	unsigned int start;
++
++	netdev_stats_to_stats64(stats, &dev->stats);
++
++	do {
++		start = u64_stats_fetch_begin_irq(&lp->rx_stat_sync);
++		stats->rx_packets = u64_stats_read(&lp->rx_packets);
++		stats->rx_bytes = u64_stats_read(&lp->rx_bytes);
++	} while (u64_stats_fetch_retry_irq(&lp->rx_stat_sync, start));
++
++	do {
++		start = u64_stats_fetch_begin_irq(&lp->tx_stat_sync);
++		stats->tx_packets = u64_stats_read(&lp->tx_packets);
++		stats->tx_bytes = u64_stats_read(&lp->tx_bytes);
++	} while (u64_stats_fetch_retry_irq(&lp->tx_stat_sync, start));
++}
++
+ static const struct net_device_ops axienet_netdev_ops = {
+ 	.ndo_open = axienet_open,
+ 	.ndo_stop = axienet_stop,
+ 	.ndo_start_xmit = axienet_start_xmit,
++	.ndo_get_stats64 = axienet_get_stats64,
+ 	.ndo_change_mtu	= axienet_change_mtu,
+ 	.ndo_set_mac_address = netdev_set_mac_address,
+ 	.ndo_validate_addr = eth_validate_addr,
+@@ -1850,6 +1876,9 @@ static int axienet_probe(struct platform_device *pdev)
+ 	lp->rx_bd_num = RX_BD_NUM_DEFAULT;
+ 	lp->tx_bd_num = TX_BD_NUM_DEFAULT;
  
- 		/* Now process HTC messages */
- 		switch (be16_to_cpu(*msg_id)) {
- 		case HTC_MSG_READY_ID:
-+			if (unlikely(len < sizeof(struct htc_ready_msg)))
-+				goto invalid;
- 			htc_process_target_rdy(htc_handle, htc_hdr);
- 			break;
- 		case HTC_MSG_CONNECT_SERVICE_RESPONSE_ID:
-+			if (unlikely(len < sizeof(struct htc_frame_hdr) +
-+				     sizeof(struct htc_conn_svc_rspmsg)))
-+				goto invalid;
- 			htc_process_conn_rsp(htc_handle, htc_hdr);
- 			break;
- 		default:
++	u64_stats_init(&lp->rx_stat_sync);
++	u64_stats_init(&lp->tx_stat_sync);
++
+ 	netif_napi_add(ndev, &lp->napi_rx, axienet_rx_poll, NAPI_POLL_WEIGHT);
+ 	netif_napi_add(ndev, &lp->napi_tx, axienet_tx_poll, NAPI_POLL_WEIGHT);
+ 
 -- 
 2.35.1
 
