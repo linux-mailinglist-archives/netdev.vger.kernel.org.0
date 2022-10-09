@@ -2,47 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC7675F9302
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:56:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95C795F92F9
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:55:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233768AbiJIWz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:55:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46734 "EHLO
+        id S230201AbiJIWzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:55:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233719AbiJIWxQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:53:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BAEF4A815;
-        Sun,  9 Oct 2022 15:28:54 -0700 (PDT)
+        with ESMTP id S233769AbiJIWwp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:52:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F3C73DBF6;
+        Sun,  9 Oct 2022 15:28:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E18560CF1;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4EDA0B80DE3;
+        Sun,  9 Oct 2022 22:24:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AAA8C433C1;
         Sun,  9 Oct 2022 22:24:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A7C8C43143;
-        Sun,  9 Oct 2022 22:24:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354288;
-        bh=/XB4y2LpgVtKSLfj2FRGEXMsobFlbWAbbPzG5tqVxqA=;
+        s=k20201202; t=1665354290;
+        bh=g6/KZy9uk/Ec/hbzy4oDMSyyUoEcT0ETTf4Do5iL7K4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iXR4hbwzwttpNjqtkUXN64Lff3fPbksWbKdgvskwcoSjBo7r+wAoJENDbB6Dw0NbE
-         DH+iWUTpqQbFhy2SmK37YrNaqGy8OJHqAFiqc1Qf4TcCXGgXwgIAt+AIPF+Eb7B7hM
-         pCL1O+gLtzH6YAHV0z9lZz2luz+Rcb95nqMoOfE/lEHVo/S+nGZazk7JG1B61/nwDz
-         rGX6G+501KTEGRO+/jymv5tMX6WW/07+2hreKb0S9Bp03kUmovvEXspfONRmStN6Sh
-         mjgQ6faas7Gc+4y4nJbT5oySL0D06n5sGHDP86cS5z6ZuvbUBUpkzHlU1hrGZj5pkF
-         rdRE5Xwipz6oQ==
+        b=hfwGtaunqKPK7b2jopN9QYxj3eq5Y+vuL9ye2RGKNiRsSW51QLoIkrZwBRo2N+ord
+         FBm94ZbVIBwmKRBYgu09xlVN5XmlDcsU2ZuDhAbm2c0i/C7USSHaQNUrWQJouuCWYs
+         ooATLp8ON72UJ7VY92op3Va9V3gZowX8fP5ilm1LwsOxL23I1iFSWX1rfKNpXs2o1P
+         epx+AZ17IAldjJ50qFixBGRjXP+fmGlN58lwrUAfKygpiQnhZgBQ5Y3smHJENPSKvM
+         9UGjPQX92XAFZ74nkC5FvylR/AgvZhqM5Eogq68umqL8QoPrKQujFY3zoepr60r3Dm
+         fxZk0MprADM1g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Khalid Masum <khalid.masum.92@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        syzbot+5ec9bb042ddfe9644773@syzkaller.appspotmail.com,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+Cc:     GUO Zihua <guozihua@huawei.com>, Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, khalasa@piap.pl,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 06/25] xfrm: Update ipcomp_scratches with NULL when freed
-Date:   Sun,  9 Oct 2022 18:24:11 -0400
-Message-Id: <20221009222436.1219411-6-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 07/25] net: xscale: Fix return type for implementation of ndo_start_xmit
+Date:   Sun,  9 Oct 2022 18:24:12 -0400
+Message-Id: <20221009222436.1219411-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009222436.1219411-1-sashal@kernel.org>
 References: <20221009222436.1219411-1-sashal@kernel.org>
@@ -59,70 +56,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Khalid Masum <khalid.masum.92@gmail.com>
+From: GUO Zihua <guozihua@huawei.com>
 
-[ Upstream commit 8a04d2fc700f717104bfb95b0f6694e448a4537f ]
+[ Upstream commit 0dbaf0fa62329d9fe452d9041a707a33f6274f1f ]
 
-Currently if ipcomp_alloc_scratches() fails to allocate memory
-ipcomp_scratches holds obsolete address. So when we try to free the
-percpu scratches using ipcomp_free_scratches() it tries to vfree non
-existent vm area. Described below:
+Since Linux now supports CFI, it will be a good idea to fix mismatched
+return type for implementation of hooks. Otherwise this might get
+cought out by CFI and cause a panic.
 
-static void * __percpu *ipcomp_alloc_scratches(void)
-{
-        ...
-        scratches = alloc_percpu(void *);
-        if (!scratches)
-                return NULL;
-ipcomp_scratches does not know about this allocation failure.
-Therefore holding the old obsolete address.
-        ...
-}
+eth_xmit() would return either NETDEV_TX_BUSY or NETDEV_TX_OK, so
+change the return type to netdev_tx_t directly.
 
-So when we free,
-
-static void ipcomp_free_scratches(void)
-{
-        ...
-        scratches = ipcomp_scratches;
-Assigning obsolete address from ipcomp_scratches
-
-        if (!scratches)
-                return;
-
-        for_each_possible_cpu(i)
-               vfree(*per_cpu_ptr(scratches, i));
-Trying to free non existent page, causing warning: trying to vfree
-existent vm area.
-        ...
-}
-
-Fix this breakage by updating ipcomp_scrtches with NULL when scratches
-is freed
-
-Suggested-by: Herbert Xu <herbert@gondor.apana.org.au>
-Reported-by: syzbot+5ec9bb042ddfe9644773@syzkaller.appspotmail.com
-Tested-by: syzbot+5ec9bb042ddfe9644773@syzkaller.appspotmail.com
-Signed-off-by: Khalid Masum <khalid.masum.92@gmail.com>
-Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: GUO Zihua <guozihua@huawei.com>
+Link: https://lore.kernel.org/r/20220902081612.60405-1-guozihua@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_ipcomp.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/xscale/ixp4xx_eth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/xfrm/xfrm_ipcomp.c b/net/xfrm/xfrm_ipcomp.c
-index a00ec715aa46..32aed1d0f6ee 100644
---- a/net/xfrm/xfrm_ipcomp.c
-+++ b/net/xfrm/xfrm_ipcomp.c
-@@ -216,6 +216,7 @@ static void ipcomp_free_scratches(void)
- 		vfree(*per_cpu_ptr(scratches, i));
- 
- 	free_percpu(scratches);
-+	ipcomp_scratches = NULL;
+diff --git a/drivers/net/ethernet/xscale/ixp4xx_eth.c b/drivers/net/ethernet/xscale/ixp4xx_eth.c
+index aee55c03def0..d2aed667c0da 100644
+--- a/drivers/net/ethernet/xscale/ixp4xx_eth.c
++++ b/drivers/net/ethernet/xscale/ixp4xx_eth.c
+@@ -835,7 +835,7 @@ static void eth_txdone_irq(void *unused)
+ 	}
  }
  
- static void * __percpu *ipcomp_alloc_scratches(void)
+-static int eth_xmit(struct sk_buff *skb, struct net_device *dev)
++static netdev_tx_t eth_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	struct port *port = netdev_priv(dev);
+ 	unsigned int txreadyq = port->plat->txreadyq;
 -- 
 2.35.1
 
