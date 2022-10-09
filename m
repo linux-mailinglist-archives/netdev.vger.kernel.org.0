@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC4065F91DE
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:42:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0BA45F91BC
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:40:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232856AbiJIWmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:42:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58806 "EHLO
+        id S233114AbiJIWkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:40:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233040AbiJIWk1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:40:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73AB041D07;
-        Sun,  9 Oct 2022 15:21:58 -0700 (PDT)
+        with ESMTP id S233243AbiJIWiz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:38:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E915141522;
+        Sun,  9 Oct 2022 15:21:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 311B360C2A;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 130BA60AF8;
+        Sun,  9 Oct 2022 22:20:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F93BC43143;
         Sun,  9 Oct 2022 22:20:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55398C43470;
-        Sun,  9 Oct 2022 22:20:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354051;
-        bh=Svku7iPweTfGQwgBqouCE3/CF9p7StAi3Qh/c7ijZ5Y=;
+        s=k20201202; t=1665354053;
+        bh=Qq/nS/EG95y0I/Z0ahk81L6aZDYvt5NYsst/VyPOYko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RX3GFz7VjxvoYlPzfrPCbuEgBSB04iqtnGevpEkbES4JJbxfW8r2aH34aQ13kg1Ly
-         vc3EpzuN4PWSYJQFWf6AbKMy576TnQE5pOmJyB9N8kjOpvdpyBsWrtoB0rA8KKze5c
-         CRqv5q7ZnuPq9k86jWfOsiLxkUXD2pIeAevtloZaLEJwV82jJk/4BlTRqj43j9mz3K
-         Wruramz9gS1ccyyDdWk0nBhzhPaRYb7tXImYHNBW9jo/wv3Q/nztLK1jJml1itU5HL
-         N1gYBVQCV8KEEVAp1y0eG/Z96a8eyy4R6iChVbXPuX/EGjUvpVqW2Nc4DSP7Pb1BzF
-         p/lirsSamnMyQ==
+        b=olA+b3l1w+FM/iR7NeOV19lfx5JjQ9TQjCsnh2YgRo/4XDQJ2DQsN9olih+PH3A3G
+         b/GJrQPgTRZBDGT11GEqYyPjcHnHzEKFw3RA9UX3+MzhiOhEYkAU11bt/1LkP/jGp8
+         r2G5woiTfN//cll5q56KEztojb35ac4R0nI5mpmS07+07nZUVIvNjOmFRsTHE46+M7
+         lmkZl66Ir1UOxmCcUQMVPXAIJjc8j5UL5x3I27FkGETRqe8ToGxFP00Ems+TiDoYVf
+         iCcdQvupJAMXJYVRTtWbDE/cRW+sc03GAN9YV943a6kzmoVrvbfnVBwaIRBG/aZ6WG
+         ItX3np6P0f/xg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, vinicius.gomes@intel.com,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 33/46] net/sched: taprio: taprio_dump and taprio_change are protected by rtnl_mutex
-Date:   Sun,  9 Oct 2022 18:18:58 -0400
-Message-Id: <20221009221912.1217372-33-sashal@kernel.org>
+Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Hawkins Jiawei <yin31149@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, marcel@holtmann.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 34/46] Bluetooth: hci_sysfs: Fix attempting to call device_add multiple times
+Date:   Sun,  9 Oct 2022 18:18:59 -0400
+Message-Id: <20221009221912.1217372-34-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009221912.1217372-1-sashal@kernel.org>
 References: <20221009221912.1217372-1-sashal@kernel.org>
@@ -58,67 +58,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[ Upstream commit 18cdd2f0998a4967b1fff4c43ed9aef049e42c39 ]
+[ Upstream commit 448a496f760664d3e2e79466aa1787e6abc922b5 ]
 
-Since the writer-side lock is taken here, we do not need to open an RCU
-read-side critical section, instead we can use rtnl_dereference() to
-tell lockdep we are serialized with concurrent writes.
+device_add shall not be called multiple times as stated in its
+documentation:
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+ 'Do not call this routine or device_register() more than once for
+ any device structure'
+
+Syzkaller reports a bug as follows [1]:
+------------[ cut here ]------------
+kernel BUG at lib/list_debug.c:33!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+[...]
+Call Trace:
+ <TASK>
+ __list_add include/linux/list.h:69 [inline]
+ list_add_tail include/linux/list.h:102 [inline]
+ kobj_kset_join lib/kobject.c:164 [inline]
+ kobject_add_internal+0x18f/0x8f0 lib/kobject.c:214
+ kobject_add_varg lib/kobject.c:358 [inline]
+ kobject_add+0x150/0x1c0 lib/kobject.c:410
+ device_add+0x368/0x1e90 drivers/base/core.c:3452
+ hci_conn_add_sysfs+0x9b/0x1b0 net/bluetooth/hci_sysfs.c:53
+ hci_le_cis_estabilished_evt+0x57c/0xae0 net/bluetooth/hci_event.c:6799
+ hci_le_meta_evt+0x2b8/0x510 net/bluetooth/hci_event.c:7110
+ hci_event_func net/bluetooth/hci_event.c:7440 [inline]
+ hci_event_packet+0x63d/0xfd0 net/bluetooth/hci_event.c:7495
+ hci_rx_work+0xae7/0x1230 net/bluetooth/hci_core.c:4007
+ process_one_work+0x991/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e4/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
+
+Link: https://syzkaller.appspot.com/bug?id=da3246e2d33afdb92d66bc166a0934c5b146404a
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Tested-by: Hawkins Jiawei <yin31149@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/sch_taprio.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+ net/bluetooth/hci_sysfs.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index ae7ca68f2cf9..0ac3fbc13b7e 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -1491,10 +1491,8 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
- 	}
- 	INIT_LIST_HEAD(&new_admin->entries);
+diff --git a/net/bluetooth/hci_sysfs.c b/net/bluetooth/hci_sysfs.c
+index 4e3e0451b08c..08542dfc2dc5 100644
+--- a/net/bluetooth/hci_sysfs.c
++++ b/net/bluetooth/hci_sysfs.c
+@@ -48,6 +48,9 @@ void hci_conn_add_sysfs(struct hci_conn *conn)
  
--	rcu_read_lock();
--	oper = rcu_dereference(q->oper_sched);
--	admin = rcu_dereference(q->admin_sched);
--	rcu_read_unlock();
-+	oper = rtnl_dereference(q->oper_sched);
-+	admin = rtnl_dereference(q->admin_sched);
+ 	BT_DBG("conn %p", conn);
  
- 	/* no changes - no new mqprio settings */
- 	if (!taprio_mqprio_cmp(dev, mqprio))
-@@ -1887,9 +1885,8 @@ static int taprio_dump(struct Qdisc *sch, struct sk_buff *skb)
- 	struct nlattr *nest, *sched_nest;
- 	unsigned int i;
++	if (device_is_registered(&conn->dev))
++		return;
++
+ 	dev_set_name(&conn->dev, "%s:%d", hdev->name, conn->handle);
  
--	rcu_read_lock();
--	oper = rcu_dereference(q->oper_sched);
--	admin = rcu_dereference(q->admin_sched);
-+	oper = rtnl_dereference(q->oper_sched);
-+	admin = rtnl_dereference(q->admin_sched);
- 
- 	opt.num_tc = netdev_get_num_tc(dev);
- 	memcpy(opt.prio_tc_map, dev->prio_tc_map, sizeof(opt.prio_tc_map));
-@@ -1933,8 +1930,6 @@ static int taprio_dump(struct Qdisc *sch, struct sk_buff *skb)
- 	nla_nest_end(skb, sched_nest);
- 
- done:
--	rcu_read_unlock();
--
- 	return nla_nest_end(skb, nest);
- 
- admin_error:
-@@ -1944,7 +1939,6 @@ static int taprio_dump(struct Qdisc *sch, struct sk_buff *skb)
- 	nla_nest_cancel(skb, nest);
- 
- start_error:
--	rcu_read_unlock();
- 	return -ENOSPC;
- }
- 
+ 	if (device_add(&conn->dev) < 0) {
 -- 
 2.35.1
 
