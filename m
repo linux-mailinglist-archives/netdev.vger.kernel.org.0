@@ -2,51 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B3225F91A5
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:36:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97FE75F91B3
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:40:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232972AbiJIWgc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:36:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59472 "EHLO
+        id S233048AbiJIWkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:40:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233040AbiJIWeo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:34:44 -0400
+        with ESMTP id S233289AbiJIWjN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:39:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D2CF038;
-        Sun,  9 Oct 2022 15:20:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C32E340E21;
+        Sun,  9 Oct 2022 15:21:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A900E60C19;
-        Sun,  9 Oct 2022 22:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1268C433D6;
-        Sun,  9 Oct 2022 22:20:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AB3360C2B;
+        Sun,  9 Oct 2022 22:20:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C74C4C433C1;
+        Sun,  9 Oct 2022 22:20:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354012;
-        bh=IA9uB1MYFY5GqHlUtk36u1GHPIMq0KeQgQZQTfmtR3I=;
+        s=k20201202; t=1665354020;
+        bh=5wnxw6C7mEaBmctzT+ji9b0d4mmzMnevfMMXcjoG3Xg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jg2kgGSije6QtqQ5tTqybiYQDvPR+c0ehQi414At4TYz66/aF/oMA9DrgurPbCVws
-         WrMRu5GjqZgChfqDnxF+ZWKgtqelfCjBq1RpDnPgIPZd1QBaihe+yUVJNQmXIX3Bj2
-         S2lHXRpcHsTmhaULIF0iQ97q0eLF9hGAXKAw6Jyb/AdRYv2qrx+3qfo5jPCcDz0B8v
-         ZcXogzNZEPGmSWyp3HCGuIHQXZ3DvKBdagzlmMrXpZm46ebdASuYKMLexdIdv+yDww
-         qqESj9+IC80zUx8GNe93KvByZs06JgTzmLBdx81bYenc0OkKRpskbY0f1hz7qG02Pv
-         cUATvXvOZSPJg==
+        b=Bmmg8Pa08vDOskyMYO+KQDnzqVb6fqcYzsF8TB9TIS0i5IRoZMhCj8+lRnholcWro
+         ppmNF3y4uRAAeYesgNkg7L9jMnLQdnuEMHd2p2Co+ahKdHrlh115+fH6xxB6wNkSGv
+         CwzWESI4HJ/0NL9JpZJO0rQ9fylfgHCR6J9wQf/2QN4bqmU0XXy403Wrqmmptdvuwr
+         eWmxGF3z3NfJksqSIbImjW2PwqVpKsVreomeBK+JP31Wzn+LjQjYF7oeaoNhHzaJuo
+         f7DaxqXrOK+o4Vkl3jQFDvFYTJRGlCFf2gd4nj9q1R46wHhXzs/5ZucPJAFI5V30VY
+         9KDPe1n/+WJwQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexander Coffin <alex.coffin@matician.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        aspriel@gmail.com, franky.lin@broadcom.com,
-        hante.meuleman@broadcom.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        chi-hsien.lin@cypress.com, a.fatoum@pengutronix.de,
-        hdegoede@redhat.com, pavel@loebl.cz, bigeasy@linutronix.de,
-        wsa+renesas@sang-engineering.com, wright.feng@cypress.com,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 20/46] wifi: brcmfmac: fix use-after-free bug in brcmf_netdev_start_xmit()
-Date:   Sun,  9 Oct 2022 18:18:45 -0400
-Message-Id: <20221009221912.1217372-20-sashal@kernel.org>
+Cc:     Sean Wang <sean.wang@mediatek.com>, YN Chen <YN.Chen@mediatek.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
+        lorenzo@kernel.org, ryder.lee@mediatek.com, kvalo@kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com, johannes.berg@intel.com,
+        deren.wu@mediatek.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 23/46] wifi: mt76: mt7921: reset msta->airtime_ac while clearing up hw value
+Date:   Sun,  9 Oct 2022 18:18:48 -0400
+Message-Id: <20221009221912.1217372-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009221912.1217372-1-sashal@kernel.org>
 References: <20221009221912.1217372-1-sashal@kernel.org>
@@ -63,138 +60,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Coffin <alex.coffin@matician.com>
+From: Sean Wang <sean.wang@mediatek.com>
 
-[ Upstream commit 3f42faf6db431e04bf942d2ebe3ae88975723478 ]
+[ Upstream commit 1bf66dc31032ff5292f4d5b76436653f269fcfbd ]
 
-> ret = brcmf_proto_tx_queue_data(drvr, ifp->ifidx, skb);
+We should reset mstat->airtime_ac along with clear up the entries in the
+hardware WLAN table for the Rx and Rx accumulative airtime. Otherwsie, the
+value msta->airtime_ac - [tx, rx]_last may be a negative and that is not
+the actual airtime the device took in the last run.
 
-may be schedule, and then complete before the line
-
-> ndev->stats.tx_bytes += skb->len;
-
-[   46.912801] ==================================================================
-[   46.920552] BUG: KASAN: use-after-free in brcmf_netdev_start_xmit+0x718/0x8c8 [brcmfmac]
-[   46.928673] Read of size 4 at addr ffffff803f5882e8 by task systemd-resolve/328
-[   46.935991]
-[   46.937514] CPU: 1 PID: 328 Comm: systemd-resolve Tainted: G           O      5.4.199-[REDACTED] #1
-[   46.947255] Hardware name: [REDACTED]
-[   46.954568] Call trace:
-[   46.957037]  dump_backtrace+0x0/0x2b8
-[   46.960719]  show_stack+0x24/0x30
-[   46.964052]  dump_stack+0x128/0x194
-[   46.967557]  print_address_description.isra.0+0x64/0x380
-[   46.972877]  __kasan_report+0x1d4/0x240
-[   46.976723]  kasan_report+0xc/0x18
-[   46.980138]  __asan_report_load4_noabort+0x18/0x20
-[   46.985027]  brcmf_netdev_start_xmit+0x718/0x8c8 [brcmfmac]
-[   46.990613]  dev_hard_start_xmit+0x1bc/0xda0
-[   46.994894]  sch_direct_xmit+0x198/0xd08
-[   46.998827]  __qdisc_run+0x37c/0x1dc0
-[   47.002500]  __dev_queue_xmit+0x1528/0x21f8
-[   47.006692]  dev_queue_xmit+0x24/0x30
-[   47.010366]  neigh_resolve_output+0x37c/0x678
-[   47.014734]  ip_finish_output2+0x598/0x2458
-[   47.018927]  __ip_finish_output+0x300/0x730
-[   47.023118]  ip_output+0x2e0/0x430
-[   47.026530]  ip_local_out+0x90/0x140
-[   47.030117]  igmpv3_sendpack+0x14c/0x228
-[   47.034049]  igmpv3_send_cr+0x384/0x6b8
-[   47.037895]  igmp_ifc_timer_expire+0x4c/0x118
-[   47.042262]  call_timer_fn+0x1cc/0xbe8
-[   47.046021]  __run_timers+0x4d8/0xb28
-[   47.049693]  run_timer_softirq+0x24/0x40
-[   47.053626]  __do_softirq+0x2c0/0x117c
-[   47.057387]  irq_exit+0x2dc/0x388
-[   47.060715]  __handle_domain_irq+0xb4/0x158
-[   47.064908]  gic_handle_irq+0x58/0xb0
-[   47.068581]  el0_irq_naked+0x50/0x5c
-[   47.072162]
-[   47.073665] Allocated by task 328:
-[   47.077083]  save_stack+0x24/0xb0
-[   47.080410]  __kasan_kmalloc.isra.0+0xc0/0xe0
-[   47.084776]  kasan_slab_alloc+0x14/0x20
-[   47.088622]  kmem_cache_alloc+0x15c/0x468
-[   47.092643]  __alloc_skb+0xa4/0x498
-[   47.096142]  igmpv3_newpack+0x158/0xd78
-[   47.099987]  add_grhead+0x210/0x288
-[   47.103485]  add_grec+0x6b0/0xb70
-[   47.106811]  igmpv3_send_cr+0x2e0/0x6b8
-[   47.110657]  igmp_ifc_timer_expire+0x4c/0x118
-[   47.115027]  call_timer_fn+0x1cc/0xbe8
-[   47.118785]  __run_timers+0x4d8/0xb28
-[   47.122457]  run_timer_softirq+0x24/0x40
-[   47.126389]  __do_softirq+0x2c0/0x117c
-[   47.130142]
-[   47.131643] Freed by task 180:
-[   47.134712]  save_stack+0x24/0xb0
-[   47.138041]  __kasan_slab_free+0x108/0x180
-[   47.142146]  kasan_slab_free+0x10/0x18
-[   47.145904]  slab_free_freelist_hook+0xa4/0x1b0
-[   47.150444]  kmem_cache_free+0x8c/0x528
-[   47.154292]  kfree_skbmem+0x94/0x108
-[   47.157880]  consume_skb+0x10c/0x5a8
-[   47.161466]  __dev_kfree_skb_any+0x88/0xa0
-[   47.165598]  brcmu_pkt_buf_free_skb+0x44/0x68 [brcmutil]
-[   47.171023]  brcmf_txfinalize+0xec/0x190 [brcmfmac]
-[   47.176016]  brcmf_proto_bcdc_txcomplete+0x1c0/0x210 [brcmfmac]
-[   47.182056]  brcmf_sdio_sendfromq+0x8dc/0x1e80 [brcmfmac]
-[   47.187568]  brcmf_sdio_dpc+0xb48/0x2108 [brcmfmac]
-[   47.192529]  brcmf_sdio_dataworker+0xc8/0x238 [brcmfmac]
-[   47.197859]  process_one_work+0x7fc/0x1a80
-[   47.201965]  worker_thread+0x31c/0xc40
-[   47.205726]  kthread+0x2d8/0x370
-[   47.208967]  ret_from_fork+0x10/0x18
-[   47.212546]
-[   47.214051] The buggy address belongs to the object at ffffff803f588280
-[   47.214051]  which belongs to the cache skbuff_head_cache of size 208
-[   47.227086] The buggy address is located 104 bytes inside of
-[   47.227086]  208-byte region [ffffff803f588280, ffffff803f588350)
-[   47.238814] The buggy address belongs to the page:
-[   47.243618] page:ffffffff00dd6200 refcount:1 mapcount:0 mapping:ffffff804b6bf800 index:0xffffff803f589900 compound_mapcount: 0
-[   47.255007] flags: 0x10200(slab|head)
-[   47.258689] raw: 0000000000010200 ffffffff00dfa980 0000000200000002 ffffff804b6bf800
-[   47.266439] raw: ffffff803f589900 0000000080190018 00000001ffffffff 0000000000000000
-[   47.274180] page dumped because: kasan: bad access detected
-[   47.279752]
-[   47.281251] Memory state around the buggy address:
-[   47.286051]  ffffff803f588180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[   47.293277]  ffffff803f588200: fb fb fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[   47.300502] >ffffff803f588280: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[   47.307723]                                                           ^
-[   47.314343]  ffffff803f588300: fb fb fb fb fb fb fb fb fb fb fc fc fc fc fc fc
-[   47.321569]  ffffff803f588380: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
-[   47.328789] ==================================================================
-
-Signed-off-by: Alexander Coffin <alex.coffin@matician.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220808174925.3922558-1-alex.coffin@matician.com
+Reported-by: YN Chen <YN.Chen@mediatek.com>
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/wireless/mediatek/mt76/mt7921/main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
-index db5f8535fdb5..e5bae6224521 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
-@@ -295,6 +295,7 @@ static netdev_tx_t brcmf_netdev_start_xmit(struct sk_buff *skb,
- 	struct brcmf_pub *drvr = ifp->drvr;
- 	struct ethhdr *eh;
- 	int head_delta;
-+	unsigned int tx_bytes = skb->len;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/main.c b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
+index 6cb65391427f..7b48df301079 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/main.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
+@@ -627,6 +627,7 @@ void mt7921_mac_sta_assoc(struct mt76_dev *mdev, struct ieee80211_vif *vif,
  
- 	brcmf_dbg(DATA, "Enter, bsscfgidx=%d\n", ifp->bsscfgidx);
+ 	mt7921_mac_wtbl_update(dev, msta->wcid.idx,
+ 			       MT_WTBL_UPDATE_ADM_COUNT_CLEAR);
++	memset(msta->airtime_ac, 0, sizeof(msta->airtime_ac));
  
-@@ -369,7 +370,7 @@ static netdev_tx_t brcmf_netdev_start_xmit(struct sk_buff *skb,
- 		ndev->stats.tx_dropped++;
- 	} else {
- 		ndev->stats.tx_packets++;
--		ndev->stats.tx_bytes += skb->len;
-+		ndev->stats.tx_bytes += tx_bytes;
- 	}
+ 	mt7921_mcu_sta_update(dev, sta, vif, true, MT76_STA_INFO_STATE_ASSOC);
  
- 	/* Return ok: we always eat the packet */
 -- 
 2.35.1
 
