@@ -2,45 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B16B5F9237
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:47:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E1BA5F92BA
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:50:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232638AbiJIWrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:47:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40656 "EHLO
+        id S233448AbiJIWuf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:50:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232643AbiJIWpQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:45:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3AD55F95;
-        Sun,  9 Oct 2022 15:23:28 -0700 (PDT)
+        with ESMTP id S233560AbiJIWta (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:49:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D91F13E09;
+        Sun,  9 Oct 2022 15:25:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 416E6B80DD0;
-        Sun,  9 Oct 2022 22:23:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1A0EC433D6;
-        Sun,  9 Oct 2022 22:23:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C328E60C2C;
+        Sun,  9 Oct 2022 22:23:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EE23C433C1;
+        Sun,  9 Oct 2022 22:23:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354207;
-        bh=mD+OmwO366IiyeVy3KhqUk71aV/ndDdkQcdKKSej6yM=;
+        s=k20201202; t=1665354211;
+        bh=5JkOB+HsRfMjF6JdEuT30fBWd/b3+QMJryRmJUvtxG8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Nmu6X3RMXlkrbIUjxSOmiJuDiC1xVSndpArf6yoSiet+6+Q8hBrqU+0MVEa7twDjM
-         6P1Js2Zj08QwWdmlYt13vEvvChe+j7UTEwovh12CGeUsyqIk5wludLDpHkCtmg1jlh
-         HR3PFKNYK/PscaKew0Fp3exI3u1SZ8gVgKJf+CLbsfxPFO8IWhq6i86wUqSYmCMEnK
-         b0h5/hmkROKyrrf7sEIOFPb5oWrVWIhGfIO9mNp5oJq86jaY4taQemmVDKXNiY6FbT
-         nTFONwAx5XNQkOTUaYDnPg6HS1ksDqEr1Nn9G2KCnrTPC/qAD0h0ImyDq0wZMptKuE
-         WH3FSURno84qQ==
+        b=awOJq9vpNGX94CnG8qd5gRyAlLSbSfeE5T61MY7sE2ZKzMQF9LDYT3YiEjwZot+Wd
+         GpJo8flZinpOGgUEqYklRdpgfwhwSLQ70e9wbY69WqnlCDPUk6qp5gR88IAY00wx15
+         b+hDehQeigsqeNUuwJR0vy9QZP3H7GwVr3WcvSsGdbcPPUdR1jxOl4ZNAxgmjeEw+T
+         F10vaFJAR/HfU6RHA/fyy2mZ1vAbGqZawPxUP36EMZqa6SE3Z1A4ECLOLW8/GYUBIw
+         +ORQx5YbNaXcDLCxtdiLtlV57xk5in47sd01x0T9MOoWEcP4zihN8faRt7j1c5S4Cn
+         kdFkty6Tg308g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     GUO Zihua <guozihua@huawei.com>, Jakub Kicinski <kuba@kernel.org>,
+Cc:     Sergei Antonov <saproj@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, olek2@wp.pl,
-        rdunlap@infradead.org, yangyingliang@huawei.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 10/29] net: lantiq_etop: Fix return type for implementation of ndo_start_xmit
-Date:   Sun,  9 Oct 2022 18:22:45 -0400
-Message-Id: <20221009222304.1218873-10-sashal@kernel.org>
+        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 11/29] net: ftmac100: fix endianness-related issues from 'sparse'
+Date:   Sun,  9 Oct 2022 18:22:46 -0400
+Message-Id: <20221009222304.1218873-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009222304.1218873-1-sashal@kernel.org>
 References: <20221009222304.1218873-1-sashal@kernel.org>
@@ -57,38 +56,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: GUO Zihua <guozihua@huawei.com>
+From: Sergei Antonov <saproj@gmail.com>
 
-[ Upstream commit c8ef3c94bda0e21123202d057d4a299698fa0ed9 ]
+[ Upstream commit 9df696b3b3a4c96c3219eb87c7bf03fb50e490b8 ]
 
-Since Linux now supports CFI, it will be a good idea to fix mismatched
-return type for implementation of hooks. Otherwise this might get
-cought out by CFI and cause a panic.
+Sparse found a number of endianness-related issues of these kinds:
 
-ltq_etop_tx() would return either NETDEV_TX_BUSY or NETDEV_TX_OK, so
-change the return type to netdev_tx_t directly.
+.../ftmac100.c:192:32: warning: restricted __le32 degrades to integer
 
-Signed-off-by: GUO Zihua <guozihua@huawei.com>
-Link: https://lore.kernel.org/r/20220902081521.59867-1-guozihua@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+.../ftmac100.c:208:23: warning: incorrect type in assignment (different base types)
+.../ftmac100.c:208:23:    expected unsigned int rxdes0
+.../ftmac100.c:208:23:    got restricted __le32 [usertype]
+
+.../ftmac100.c:249:23: warning: invalid assignment: &=
+.../ftmac100.c:249:23:    left side has type unsigned int
+.../ftmac100.c:249:23:    right side has type restricted __le32
+
+.../ftmac100.c:527:16: warning: cast to restricted __le32
+
+Change type of some fields from 'unsigned int' to '__le32' to fix it.
+
+Signed-off-by: Sergei Antonov <saproj@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220902113749.1408562-1-saproj@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/lantiq_etop.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/faraday/ftmac100.h | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/lantiq_etop.c b/drivers/net/ethernet/lantiq_etop.c
-index 6e73ffe6f928..46fd128a16a1 100644
---- a/drivers/net/ethernet/lantiq_etop.c
-+++ b/drivers/net/ethernet/lantiq_etop.c
-@@ -451,7 +451,7 @@ ltq_etop_stop(struct net_device *dev)
- 	return 0;
- }
+diff --git a/drivers/net/ethernet/faraday/ftmac100.h b/drivers/net/ethernet/faraday/ftmac100.h
+index fe986f1673fc..8af32f9070f4 100644
+--- a/drivers/net/ethernet/faraday/ftmac100.h
++++ b/drivers/net/ethernet/faraday/ftmac100.h
+@@ -122,9 +122,9 @@
+  * Transmit descriptor, aligned to 16 bytes
+  */
+ struct ftmac100_txdes {
+-	unsigned int	txdes0;
+-	unsigned int	txdes1;
+-	unsigned int	txdes2;	/* TXBUF_BADR */
++	__le32		txdes0;
++	__le32		txdes1;
++	__le32		txdes2;	/* TXBUF_BADR */
+ 	unsigned int	txdes3;	/* not used by HW */
+ } __attribute__ ((aligned(16)));
  
--static int
-+static netdev_tx_t
- ltq_etop_tx(struct sk_buff *skb, struct net_device *dev)
- {
- 	int queue = skb_get_queue_mapping(skb);
+@@ -143,9 +143,9 @@ struct ftmac100_txdes {
+  * Receive descriptor, aligned to 16 bytes
+  */
+ struct ftmac100_rxdes {
+-	unsigned int	rxdes0;
+-	unsigned int	rxdes1;
+-	unsigned int	rxdes2;	/* RXBUF_BADR */
++	__le32		rxdes0;
++	__le32		rxdes1;
++	__le32		rxdes2;	/* RXBUF_BADR */
+ 	unsigned int	rxdes3;	/* not used by HW */
+ } __attribute__ ((aligned(16)));
+ 
 -- 
 2.35.1
 
