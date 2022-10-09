@@ -2,48 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF7425F9046
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:23:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A9975F90DB
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:28:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231674AbiJIWXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:23:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44848 "EHLO
+        id S232147AbiJIW14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:27:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231308AbiJIWWO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:22:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B8501838F;
-        Sun,  9 Oct 2022 15:17:26 -0700 (PDT)
+        with ESMTP id S230456AbiJIW0E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:26:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F8DD32A84;
+        Sun,  9 Oct 2022 15:18:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DA02860CEC;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 309E2B80E0B;
+        Sun,  9 Oct 2022 22:17:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD79BC43142;
         Sun,  9 Oct 2022 22:17:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71F08C433C1;
-        Sun,  9 Oct 2022 22:17:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665353845;
-        bh=K7t5p5OeCI3fv+lAN/nupgl7vlsdFfIYzFCzulu1peI=;
+        s=k20201202; t=1665353846;
+        bh=lhTMxcnaPY9F61jECeQTcv9FNk/rwyy5W+n0biYYB0E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OogdH78sPZllc8BQAuTr2aXcwjFZCYFC0Atg9VciEEu5m6DhfqR9sB3aGSup61jBN
-         yLZ2mhjzlsk+zpaeusDl+oPPC9fnpMgMje1YBsKwoKV4mhoQkCliguPdg9w/BY52pz
-         7G4s94p78bae6kzP5oHS5RWgOa7J/VKgbO1Z4P+3qSX8vSko2aYmvsH/+McICLHjsQ
-         SSp46gsNpYfcw9txPFqYX3XCDbqKppMCT0nZJIvrZjdZgge0OyACXM3slry8GiQz+f
-         106qrbiqvCgX4KU4iwFYBxTbgoz3LHoZDOVFMXl5Hanw75DMRxY+cJRNtjh3ZgILBb
-         dzjHzCmaz/amA==
+        b=Y/OpTyAhZd8IgTyDSCYE1pF05hkhGwSXURYoDLMDK3oSVKlhpA3oqZ1GEUsVPoal9
+         Wq6jtt+QwN5fpaMXS0dAJM9pB0ToIQ11c9ctOezRrgJh27f3X/1Q96kqHqmbEsozYz
+         kjBy94IBsB7GNvsJP939j6xRUslresUo61xTfzVMDtgqIqYzyDJ3XfQUNXqn+56Dne
+         qbF7YlliUUyN3JI+iL4cmACKhz2q3YP3qUjGY2iNJNvp02xU0K9vMh89aqQ8Pm+IFe
+         59k2+VJSnKmvCFGx0es4eY/Y03RMMhMotCcqlil85SCFU9og8+5y1Q+t/vxWnTAWfG
+         CsyGMsjmJY3fw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sean Wang <sean.wang@mediatek.com>, YN Chen <YN.Chen@mediatek.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
-        lorenzo@kernel.org, ryder.lee@mediatek.com, kvalo@kernel.org,
+Cc:     Po-Hao Huang <phhuang@realtek.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
         davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, matthias.bgg@gmail.com, johannes.berg@intel.com,
-        deren.wu@mediatek.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.19 38/73] wifi: mt76: mt7921: reset msta->airtime_ac while clearing up hw value
-Date:   Sun,  9 Oct 2022 18:14:16 -0400
-Message-Id: <20221009221453.1216158-38-sashal@kernel.org>
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 39/73] wifi: rtw89: free unused skb to prevent memory leak
+Date:   Sun,  9 Oct 2022 18:14:17 -0400
+Message-Id: <20221009221453.1216158-39-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009221453.1216158-1-sashal@kernel.org>
 References: <20221009221453.1216158-1-sashal@kernel.org>
@@ -60,34 +58,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+From: Po-Hao Huang <phhuang@realtek.com>
 
-[ Upstream commit 1bf66dc31032ff5292f4d5b76436653f269fcfbd ]
+[ Upstream commit eae672f386049146058b9e5d3d33e9e4af9dca1d ]
 
-We should reset mstat->airtime_ac along with clear up the entries in the
-hardware WLAN table for the Rx and Rx accumulative airtime. Otherwsie, the
-value msta->airtime_ac - [tx, rx]_last may be a negative and that is not
-the actual airtime the device took in the last run.
+This avoid potential memory leak under power saving mode.
 
-Reported-by: YN Chen <YN.Chen@mediatek.com>
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220916033811.13862-6-pkshih@realtek.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7921/main.c | 1 +
+ drivers/net/wireless/realtek/rtw89/core.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/main.c b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
-index d3f310877248..05c654c50d57 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/main.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
-@@ -738,6 +738,7 @@ void mt7921_mac_sta_assoc(struct mt76_dev *mdev, struct ieee80211_vif *vif,
- 
- 	mt7921_mac_wtbl_update(dev, msta->wcid.idx,
- 			       MT_WTBL_UPDATE_ADM_COUNT_CLEAR);
-+	memset(msta->airtime_ac, 0, sizeof(msta->airtime_ac));
- 
- 	mt7921_mcu_sta_update(dev, sta, vif, true, MT76_STA_INFO_STATE_ASSOC);
+diff --git a/drivers/net/wireless/realtek/rtw89/core.c b/drivers/net/wireless/realtek/rtw89/core.c
+index a6a90572e74b..7313eb80fb1e 100644
+--- a/drivers/net/wireless/realtek/rtw89/core.c
++++ b/drivers/net/wireless/realtek/rtw89/core.c
+@@ -860,6 +860,7 @@ int rtw89_h2c_tx(struct rtw89_dev *rtwdev,
+ 		rtw89_debug(rtwdev, RTW89_DBG_FW,
+ 			    "ignore h2c due to power is off with firmware state=%d\n",
+ 			    test_bit(RTW89_FLAG_FW_RDY, rtwdev->flags));
++		dev_kfree_skb(skb);
+ 		return 0;
+ 	}
  
 -- 
 2.35.1
