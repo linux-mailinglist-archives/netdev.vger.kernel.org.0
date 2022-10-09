@@ -2,206 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BE995F8978
-	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 07:43:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BEAF5F898F
+	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 07:59:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229790AbiJIFnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 01:43:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59862 "EHLO
+        id S229868AbiJIF7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 01:59:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229722AbiJIFni (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 01:43:38 -0400
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAFA82B187
-        for <netdev@vger.kernel.org>; Sat,  8 Oct 2022 22:43:35 -0700 (PDT)
-Received: by mail-il1-f198.google.com with SMTP id i21-20020a056e021d1500b002f9e4f8eab7so6566042ila.7
-        for <netdev@vger.kernel.org>; Sat, 08 Oct 2022 22:43:35 -0700 (PDT)
+        with ESMTP id S229776AbiJIF7H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 01:59:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FE652F643
+        for <netdev@vger.kernel.org>; Sat,  8 Oct 2022 22:59:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1665295145;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XyL4XgZY3fE78rf1t1J98tuq3HEa3BcmqHdSW/YDE7Y=;
+        b=ZtFMWHBWnqNjqog3k0z9BaBsNKKC3WYYHQb1YiMSR0xyKpre1F8JIUNjAhx9/UiTSlbthU
+        jC73DhZBJuXwTMYX9pOkiCH9HvUiUXd4nyk7H4cpT+G5stYUsnndFP5hbxnnJoYIFjC4C8
+        hIShn3T2qLGnQtequZyR5FpzSSIORqE=
+Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com
+ [209.85.215.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-454-A_hAOrw3NYOzsyj1K8_lVw-1; Sun, 09 Oct 2022 01:59:03 -0400
+X-MC-Unique: A_hAOrw3NYOzsyj1K8_lVw-1
+Received: by mail-pg1-f199.google.com with SMTP id 126-20020a630284000000b0043942ef3ac7so4917409pgc.11
+        for <netdev@vger.kernel.org>; Sat, 08 Oct 2022 22:59:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=OkiLQRhmSLtuh1o8dvwMX2015uWLVIf0Afm2i0Kxr0I=;
-        b=zzGzDYGmJ7xbcpfXWxKpYl4H3NLjlTsLWtYTxvfj9GtnQ4KlmKH6Tscanq5CTv9ZFo
-         ci1vCbbFBkj5klBAEwjhR8O+weC/wyPvxUVCjr7Z3L3OL+Q3exkGxvoqAjngOvAt3dNg
-         hASgtiSCA1p4n4FCtn6IcVJegYtq+C9MZtq8XPi7HFirh4DB+5TGPIe4T70xMNvDdpS2
-         auPfCTIb7MxkQGW9xOEx9Umk1+yhLiVmXIA6r2Po8WAcSStLNn8BE6W5tz9X7r6B+vwD
-         MEHXgk4SY1yxgaHX21FQPUM7wtN2agaKMuYlqqaun1Q6hA7SMDajxQ07yKgSlUH/lwwx
-         KJcw==
-X-Gm-Message-State: ACrzQf3ax1DUxONGotgQb8BhgBfTBmo6u/SSnrM5P0aRd1sMg1j3AL9P
-        B0WLACGK48eEjcDM+KJ3t3M4+tV1vhdORUJhBhRkzShMbuVn
-X-Google-Smtp-Source: AMsMyM7v1OPqx2GCvMc8TRZL35mPVQq/caKFC0BTkKYxkTlB2UZh8Cek4g7jA9i2vaVx0q1yeMd370FUGo+twQVQ8XHbLgSbGclH
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=XyL4XgZY3fE78rf1t1J98tuq3HEa3BcmqHdSW/YDE7Y=;
+        b=poJMBigYhQf6pJNL2bgZFTnjfP7kyuv00bRua5Mce/ZBAI7krOVzRL5YJ7YK/ZjoSe
+         j2yESYZbpbX5PuAS5JhzQJa9x82CaYfJGT3y8lMhxVW8VJlhxykJ4UYju2dQptY6Yy8B
+         gqR3Hti+wivmXiOyjTJ3wnnYcwpmwY45U22Fe2q8zU2ACfG4E4Xj7XwpdWDDLSJ5nbs+
+         huDs13jI5tfEcufCfWfvwAl7yE/3nwN2FkpEeF1WWufyb0GUO8kfoIy0X6JSP/X4z3Bp
+         iwxexIJnJT2oB3idn6LvKn5NjYRyke7ghifaZEWVaQDsc+4czQYtZ5e9zY/7PJaYvEru
+         BhLQ==
+X-Gm-Message-State: ACrzQf1YCRamNNuIIyaQInbUN2OHFniYt76TXFFBhxzazlUYCMSiuO4Y
+        d1cbpgd9lafyBo8hwuSTlfwqtegu9sU83MGIfFdDVTSkqztFfjOWpp5IPaExAPZBFmrvakEGfNC
+        R+cht4G2YMC4oFFIN
+X-Received: by 2002:a17:90a:1347:b0:20b:ffd:66b9 with SMTP id y7-20020a17090a134700b0020b0ffd66b9mr16351254pjf.15.1665295142929;
+        Sat, 08 Oct 2022 22:59:02 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM57/2XHWbN7XzWOLjsjlVXU3IBSBWoYzNW9XJfotIZtsRHFNdZuR0KhTY81FYcV9G64goQDVg==
+X-Received: by 2002:a17:90a:1347:b0:20b:ffd:66b9 with SMTP id y7-20020a17090a134700b0020b0ffd66b9mr16351239pjf.15.1665295142628;
+        Sat, 08 Oct 2022 22:59:02 -0700 (PDT)
+Received: from [10.72.12.61] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id 67-20020a620446000000b0054ee4b632dasm4350688pfe.169.2022.10.08.22.58.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 08 Oct 2022 22:59:02 -0700 (PDT)
+Message-ID: <c8cd9a2e-3480-6ca5-96fa-4b5bd2c1174a@redhat.com>
+Date:   Sun, 9 Oct 2022 13:58:53 +0800
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:98:b0:6a2:1723:bee1 with SMTP id
- h24-20020a056602009800b006a21723bee1mr5442197iob.58.1665294215268; Sat, 08
- Oct 2022 22:43:35 -0700 (PDT)
-Date:   Sat, 08 Oct 2022 22:43:35 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000025d09b05ea9386ab@google.com>
-Subject: [syzbot] general protection fault in rose_send_frame (2)
-From:   syzbot <syzbot+b25099bc0c49d0c2962e@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        linux-hams@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, ralf@linux-mips.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.1
+Subject: Re: [PATCH net] virtio-net: add cond_resched() to the command waiting
+ loop
+Content-Language: en-US
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Paolo Abeni <pabeni@redhat.com>, netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Gautam Dawar <gautam.dawar@xilinx.com>,
+        davem <davem@davemloft.net>
+References: <20220905045341.66191-1-jasowang@redhat.com>
+ <20220905031405-mutt-send-email-mst@kernel.org>
+ <CACGkMEtjQ0Jfok-gcRW+kuinsua2X0TscyTNfBJoXHny0Yob+g@mail.gmail.com>
+ <056ba905a2579903a372258383afdf6579767ad0.camel@redhat.com>
+ <CACGkMEuiDqqOEKUWRN9LvQKv8Jz4mi3aSZMwbhUsJkZp=C-0RQ@mail.gmail.com>
+ <c9180ac41b00543e3531a343afae8f5bdca64d8d.camel@redhat.com>
+ <20220907034407-mutt-send-email-mst@kernel.org>
+ <d32101bb-783f-dbd1-545a-be291c27cb63@redhat.com>
+ <20220908011858-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20220908011858-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-syzbot found the following issue on:
-
-HEAD commit:    0326074ff465 Merge tag 'net-next-6.1' of git://git.kernel...
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1686bcdc880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=796b7c2847a6866a
-dashboard link: https://syzkaller.appspot.com/bug?extid=b25099bc0c49d0c2962e
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/b58a97ee1509/disk-0326074f.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/ba3e08c86725/vmlinux-0326074f.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+b25099bc0c49d0c2962e@syzkaller.appspotmail.com
-
-general protection fault, probably for non-canonical address 0xdffffc0000000070: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000380-0x0000000000000387]
-CPU: 0 PID: 18027 Comm: syz-executor.2 Not tainted 6.0.0-syzkaller-02734-g0326074ff465 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/22/2022
-RIP: 0010:rose_send_frame+0x1dd/0x2f0 net/rose/rose_link.c:101
-Code: 48 c1 ea 03 80 3c 02 00 0f 85 06 01 00 00 48 b8 00 00 00 00 00 fc ff df 48 8b 6b 20 48 8d bd 80 03 00 00 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 ea 00 00 00 4c 8b bd 80 03 00 00 e9 77 fe ff ff
-RSP: 0018:ffffc90000007b00 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: ffff88802690b800 RCX: 0000000000000100
-RDX: 0000000000000070 RSI: ffffffff88514482 RDI: 0000000000000380
-RBP: 0000000000000000 R08: 0000000000000005 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: ffff88802690b800
-R13: 0000000000000078 R14: ffff88802f169640 R15: 0000000000000010
-FS:  00007f83f2834700(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ff318aaf940 CR3: 0000000063a3f000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <IRQ>
- rose_transmit_clear_request+0x1d5/0x290 net/rose/rose_link.c:255
- rose_rx_call_request+0x4c0/0x1bc0 net/rose/af_rose.c:1009
- rose_loopback_timer+0x19e/0x590 net/rose/rose_loopback.c:111
- call_timer_fn+0x1a0/0x6b0 kernel/time/timer.c:1474
- expire_timers kernel/time/timer.c:1519 [inline]
- __run_timers.part.0+0x674/0xa80 kernel/time/timer.c:1790
- __run_timers kernel/time/timer.c:1768 [inline]
- run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1803
- __do_softirq+0x1d0/0x9c8 kernel/softirq.c:571
- invoke_softirq kernel/softirq.c:445 [inline]
- __irq_exit_rcu+0x123/0x180 kernel/softirq.c:650
- irq_exit_rcu+0x5/0x20 kernel/softirq.c:662
- sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1107
- </IRQ>
- <TASK>
- asm_sysvec_apic_timer_interrupt+0x16/0x20 arch/x86/include/asm/idtentry.h:649
-RIP: 0010:stackdepot_memcmp lib/stackdepot.c:279 [inline]
-RIP: 0010:find_stack lib/stackdepot.c:295 [inline]
-RIP: 0010:__stack_depot_save+0x145/0x500 lib/stackdepot.c:435
-Code: 29 48 85 ed 75 12 e9 92 00 00 00 48 8b 6d 00 48 85 ed 0f 84 85 00 00 00 39 5d 08 75 ee 44 3b 7d 0c 75 e8 31 c0 48 8b 74 c5 18 <49> 39 34 c6 75 db 48 83 c0 01 48 39 c2 75 ec 48 8b 7c 24 28 48 85
-RSP: 0018:ffffc9001499eb88 EFLAGS: 00000216
-RAX: 000000000000000d RBX: 0000000021011daf RCX: ffff88823b48ed78
-RDX: 0000000000000016 RSI: ffffffff879583d3 RDI: 000000005430cc72
-RBP: ffff8880784e7240 R08: 00000000498c1a10 R09: 0000000000000000
-R10: 0000000000000001 R11: 000000000008c07c R12: 0000000000000001
-R13: 0000000000008dc0 R14: ffffc9001499ebf8 R15: 0000000000000016
- kasan_save_stack+0x2e/0x40 mm/kasan/common.c:39
- kasan_set_track mm/kasan/common.c:45 [inline]
- set_alloc_info mm/kasan/common.c:437 [inline]
- ____kasan_kmalloc mm/kasan/common.c:516 [inline]
- ____kasan_kmalloc mm/kasan/common.c:475 [inline]
- __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:525
- kmalloc include/linux/slab.h:600 [inline]
- kzalloc include/linux/slab.h:733 [inline]
- ref_tracker_alloc+0x14c/0x550 lib/ref_tracker.c:85
- __netdev_tracker_alloc include/linux/netdevice.h:3995 [inline]
- netdev_hold include/linux/netdevice.h:4024 [inline]
- netdev_hold include/linux/netdevice.h:4019 [inline]
- neigh_parms_alloc+0x255/0x5f0 net/core/neighbour.c:1707
- inetdev_init+0x133/0x580 net/ipv4/devinet.c:269
- inetdev_event+0xa85/0x1610 net/ipv4/devinet.c:1534
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:87
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1945
- call_netdevice_notifiers_extack net/core/dev.c:1983 [inline]
- call_netdevice_notifiers net/core/dev.c:1997 [inline]
- register_netdevice+0x10bb/0x1670 net/core/dev.c:10086
- veth_newlink+0x338/0x990 drivers/net/veth.c:1764
- rtnl_newlink_create net/core/rtnetlink.c:3364 [inline]
- __rtnl_newlink+0x1087/0x17e0 net/core/rtnetlink.c:3581
- rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3594
- rtnetlink_rcv_msg+0x43a/0xca0 net/core/rtnetlink.c:6091
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2540
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0x917/0xe10 net/netlink/af_netlink.c:1921
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:734
- ____sys_sendmsg+0x712/0x8c0 net/socket.c:2482
- ___sys_sendmsg+0x110/0x1b0 net/socket.c:2536
- __sys_sendmsg+0xf3/0x1c0 net/socket.c:2565
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f83f168a5a9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f83f2834168 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f83f17abf80 RCX: 00007f83f168a5a9
-RDX: 0000000000000000 RSI: 0000000020000040 RDI: 0000000000000007
-RBP: 00007f83f16e5580 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007ffcf014405f R14: 00007f83f2834300 R15: 0000000000022000
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:rose_send_frame+0x1dd/0x2f0 net/rose/rose_link.c:101
-Code: 48 c1 ea 03 80 3c 02 00 0f 85 06 01 00 00 48 b8 00 00 00 00 00 fc ff df 48 8b 6b 20 48 8d bd 80 03 00 00 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 ea 00 00 00 4c 8b bd 80 03 00 00 e9 77 fe ff ff
-RSP: 0018:ffffc90000007b00 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: ffff88802690b800 RCX: 0000000000000100
-RDX: 0000000000000070 RSI: ffffffff88514482 RDI: 0000000000000380
-RBP: 0000000000000000 R08: 0000000000000005 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: ffff88802690b800
-R13: 0000000000000078 R14: ffff88802f169640 R15: 0000000000000010
-FS:  00007f83f2834700(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ff318aaf940 CR3: 0000000063a3f000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess):
-   0:	48 c1 ea 03          	shr    $0x3,%rdx
-   4:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1)
-   8:	0f 85 06 01 00 00    	jne    0x114
-   e:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  15:	fc ff df
-  18:	48 8b 6b 20          	mov    0x20(%rbx),%rbp
-  1c:	48 8d bd 80 03 00 00 	lea    0x380(%rbp),%rdi
-  23:	48 89 fa             	mov    %rdi,%rdx
-  26:	48 c1 ea 03          	shr    $0x3,%rdx
-* 2a:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
-  2e:	0f 85 ea 00 00 00    	jne    0x11e
-  34:	4c 8b bd 80 03 00 00 	mov    0x380(%rbp),%r15
-  3b:	e9 77 fe ff ff       	jmpq   0xfffffeb7
+在 2022/9/8 13:19, Michael S. Tsirkin 写道:
+> On Thu, Sep 08, 2022 at 10:21:45AM +0800, Jason Wang wrote:
+>> 在 2022/9/7 15:46, Michael S. Tsirkin 写道:
+>>> On Wed, Sep 07, 2022 at 09:07:20AM +0200, Paolo Abeni wrote:
+>>>> On Wed, 2022-09-07 at 10:09 +0800, Jason Wang wrote:
+>>>>> On Tue, Sep 6, 2022 at 6:56 PM Paolo Abeni <pabeni@redhat.com> wrote:
+>>>>>> On Mon, 2022-09-05 at 15:49 +0800, Jason Wang wrote:
+>>>>>>> On Mon, Sep 5, 2022 at 3:15 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+>>>>>>>> On Mon, Sep 05, 2022 at 12:53:41PM +0800, Jason Wang wrote:
+>>>>>>>>> Adding cond_resched() to the command waiting loop for a better
+>>>>>>>>> co-operation with the scheduler. This allows to give CPU a breath to
+>>>>>>>>> run other task(workqueue) instead of busy looping when preemption is
+>>>>>>>>> not allowed.
+>>>>>>>>>
+>>>>>>>>> What's more important. This is a must for some vDPA parent to work
+>>>>>>>>> since control virtqueue is emulated via a workqueue for those parents.
+>>>>>>>>>
+>>>>>>>>> Fixes: bda324fd037a ("vdpasim: control virtqueue support")
+>>>>>>>> That's a weird commit to fix. so it fixes the simulator?
+>>>>>>> Yes, since the simulator is using a workqueue to handle control virtueue.
+>>>>>> Uhmm... touching a driver for a simulator's sake looks a little weird.
+>>>>> Simulator is not the only one that is using a workqueue (but should be
+>>>>> the first).
+>>>>>
+>>>>> I can see  that the mlx5 vDPA driver is using a workqueue as well (see
+>>>>> mlx5_vdpa_kick_vq()).
+>>>>>
+>>>>> And in the case of VDUSE, it needs to wait for the response from the
+>>>>> userspace, this means cond_resched() is probably a must for the case
+>>>>> like UP.
+>>>>>
+>>>>>> Additionally, if the bug is vdpasim, I think it's better to try to
+>>>>>> solve it there, if possible.
+>>>>>>
+>>>>>> Looking at vdpasim_net_work() and vdpasim_blk_work() it looks like
+>>>>>> neither needs a process context, so perhaps you could rework it to run
+>>>>>> the work_fn() directly from vdpasim_kick_vq(), at least for the control
+>>>>>> virtqueue?
+>>>>> It's possible (but require some rework on the simulator core). But
+>>>>> considering we have other similar use cases, it looks better to solve
+>>>>> it in the virtio-net driver.
+>>>> I see.
+>>>>
+>>>>> Additionally, this may have better behaviour when using for the buggy
+>>>>> hardware (e.g the control virtqueue takes too long to respond). We may
+>>>>> consider switching to use interrupt/sleep in the future (but not
+>>>>> suitable for -net).
+>>>> Agreed. Possibly a timeout could be useful, too.
+>>>>
+>>>> Cheers,
+>>>>
+>>>> Paolo
+>>> Hmm timeouts are kind of arbitrary.
+>>> regular drivers basically derive them from hardware
+>>> behaviour but with a generic driver like virtio it's harder.
+>>> I guess we could add timeout as a config field, have
+>>> device make a promise to the driver.
+>>>
+>>> Making the wait interruptible seems more reasonable.
+>>
+>> Yes, but I think we still need this patch for -net and -stable.
+>>
+>> Thanks
+> I was referring to Paolo's idea of having a timeout.
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Ok, I think we're fine with this patch. Any chance to merge this or do I 
+need to resend?
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Thanks
+
+
+>
+
