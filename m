@@ -2,51 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA5B65F91EE
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:43:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0819C5F922D
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:46:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232883AbiJIWnV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:43:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36810 "EHLO
+        id S233055AbiJIWqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:46:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232297AbiJIWmE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:42:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B3642AC8;
-        Sun,  9 Oct 2022 15:22:12 -0700 (PDT)
+        with ESMTP id S232305AbiJIWoj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:44:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5F1E43E41;
+        Sun,  9 Oct 2022 15:23:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 92077B80DD2;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BB1060C2C;
+        Sun,  9 Oct 2022 22:22:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16081C433D7;
         Sun,  9 Oct 2022 22:22:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 361BAC433C1;
-        Sun,  9 Oct 2022 22:22:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354130;
-        bh=wDzhue31XLNHt55NrDeEwqRpEBMxu6FjW/bq0+Z9MQs=;
+        s=k20201202; t=1665354133;
+        bh=EdcwY0D8B7I0Mwb7B6eSp2g/eQ+WY0LiEEa3Q5KACew=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kr7zN4Gmh1zO2mRlBe1OkStbYoihClyBWaC3hP/1CLrRHx1YJpggY5OGlQMCmoXxD
-         an4QX/9LUZR/6AoNr+Rv755KhcmyuoZQSP60vNxO5ihYjrqzb2spIeuwCoUavfyf64
-         gAAN7Tnj7LTmLuyuq9cb+vB7x13A9Z1ZHhe3TYN0Q+68wAzX4bZFtbB6+902JY9YE3
-         UyeOeTbzatC39LSqPlsejuG7Fe3ss/Oj+W7BzSod0HbVfQoQTRD0uuMsvmTkW7CGZm
-         eu4wZTQeS6FrNWu5GdxWYkp3Q/VqG1pqmoO27JK+cV6dGNHzwz7204domFzISiDUn6
-         zs6cSWOSnvb3Q==
+        b=TxfSoNFsUBcmrQr8Vgw4gGgZPnt2NV6d3I4igvOIr9aqVtoeEbxyZTZt3mmVvF5Gk
+         dFCljd2O9LoNZ/BBUXGXRunWUCm1jd/2AwM71SFvmujih8axFouQwLneA0eteXNmfe
+         prZC2DJIXj7l9iGfsUVEP7klgGWEpiWZ2RkUEmqMcgLXViB6iy7fMsog27ywfYt/+C
+         JZXHFr4n9/MGHaCHp4ftP3Mx2TWYn+0jHHvimxS/RE1K3UCBViYLKtDqYIUyvzVqpW
+         YPvrty2eNK1SoiIKO9y3KJWwXj2au0mNFFd15FTHkfp/pnV9kW3mfgDBXGmOI+jdKP
+         wcZm5IjIU8a6w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexander Coffin <alex.coffin@matician.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        aspriel@gmail.com, franky.lin@broadcom.com,
-        hante.meuleman@broadcom.com, davem@davemloft.net,
+Cc:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        syzbot <syzbot+83672956c7aa6af698b3@syzkaller.appspotmail.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Sasha Levin <sashal@kernel.org>, marcel@holtmann.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        alsi@bang-olufsen.dk, chi-hsien.lin@cypress.com,
-        wsa+renesas@sang-engineering.com, bigeasy@linutronix.de,
-        wright.feng@cypress.com, pavel@loebl.cz, hdegoede@redhat.com,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 13/34] wifi: brcmfmac: fix use-after-free bug in brcmf_netdev_start_xmit()
-Date:   Sun,  9 Oct 2022 18:21:07 -0400
-Message-Id: <20221009222129.1218277-13-sashal@kernel.org>
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 15/34] Bluetooth: L2CAP: initialize delayed works at l2cap_chan_create()
+Date:   Sun,  9 Oct 2022 18:21:09 -0400
+Message-Id: <20221009222129.1218277-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009222129.1218277-1-sashal@kernel.org>
 References: <20221009222129.1218277-1-sashal@kernel.org>
@@ -63,138 +59,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Coffin <alex.coffin@matician.com>
+From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 
-[ Upstream commit 3f42faf6db431e04bf942d2ebe3ae88975723478 ]
+[ Upstream commit 2d2cb3066f2c90cd8ca540b36ba7a55e7f2406e0 ]
 
-> ret = brcmf_proto_tx_queue_data(drvr, ifp->ifidx, skb);
+syzbot is reporting cancel_delayed_work() without INIT_DELAYED_WORK() at
+l2cap_chan_del() [1], for CONF_NOT_COMPLETE flag (which meant to prevent
+l2cap_chan_del() from calling cancel_delayed_work()) is cleared by timer
+which fires before l2cap_chan_del() is called by closing file descriptor
+created by socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_L2CAP).
 
-may be schedule, and then complete before the line
+l2cap_bredr_sig_cmd(L2CAP_CONF_REQ) and l2cap_bredr_sig_cmd(L2CAP_CONF_RSP)
+are calling l2cap_ertm_init(chan), and they call l2cap_chan_ready() (which
+clears CONF_NOT_COMPLETE flag) only when l2cap_ertm_init(chan) succeeded.
 
-> ndev->stats.tx_bytes += skb->len;
+l2cap_sock_init() does not call l2cap_ertm_init(chan), and it instead sets
+CONF_NOT_COMPLETE flag by calling l2cap_chan_set_defaults(). However, when
+connect() is requested, "command 0x0409 tx timeout" happens after 2 seconds
+ from connect() request, and CONF_NOT_COMPLETE flag is cleared after 4
+seconds from connect() request, for l2cap_conn_start() from
+l2cap_info_timeout() callback scheduled by
 
-[   46.912801] ==================================================================
-[   46.920552] BUG: KASAN: use-after-free in brcmf_netdev_start_xmit+0x718/0x8c8 [brcmfmac]
-[   46.928673] Read of size 4 at addr ffffff803f5882e8 by task systemd-resolve/328
-[   46.935991]
-[   46.937514] CPU: 1 PID: 328 Comm: systemd-resolve Tainted: G           O      5.4.199-[REDACTED] #1
-[   46.947255] Hardware name: [REDACTED]
-[   46.954568] Call trace:
-[   46.957037]  dump_backtrace+0x0/0x2b8
-[   46.960719]  show_stack+0x24/0x30
-[   46.964052]  dump_stack+0x128/0x194
-[   46.967557]  print_address_description.isra.0+0x64/0x380
-[   46.972877]  __kasan_report+0x1d4/0x240
-[   46.976723]  kasan_report+0xc/0x18
-[   46.980138]  __asan_report_load4_noabort+0x18/0x20
-[   46.985027]  brcmf_netdev_start_xmit+0x718/0x8c8 [brcmfmac]
-[   46.990613]  dev_hard_start_xmit+0x1bc/0xda0
-[   46.994894]  sch_direct_xmit+0x198/0xd08
-[   46.998827]  __qdisc_run+0x37c/0x1dc0
-[   47.002500]  __dev_queue_xmit+0x1528/0x21f8
-[   47.006692]  dev_queue_xmit+0x24/0x30
-[   47.010366]  neigh_resolve_output+0x37c/0x678
-[   47.014734]  ip_finish_output2+0x598/0x2458
-[   47.018927]  __ip_finish_output+0x300/0x730
-[   47.023118]  ip_output+0x2e0/0x430
-[   47.026530]  ip_local_out+0x90/0x140
-[   47.030117]  igmpv3_sendpack+0x14c/0x228
-[   47.034049]  igmpv3_send_cr+0x384/0x6b8
-[   47.037895]  igmp_ifc_timer_expire+0x4c/0x118
-[   47.042262]  call_timer_fn+0x1cc/0xbe8
-[   47.046021]  __run_timers+0x4d8/0xb28
-[   47.049693]  run_timer_softirq+0x24/0x40
-[   47.053626]  __do_softirq+0x2c0/0x117c
-[   47.057387]  irq_exit+0x2dc/0x388
-[   47.060715]  __handle_domain_irq+0xb4/0x158
-[   47.064908]  gic_handle_irq+0x58/0xb0
-[   47.068581]  el0_irq_naked+0x50/0x5c
-[   47.072162]
-[   47.073665] Allocated by task 328:
-[   47.077083]  save_stack+0x24/0xb0
-[   47.080410]  __kasan_kmalloc.isra.0+0xc0/0xe0
-[   47.084776]  kasan_slab_alloc+0x14/0x20
-[   47.088622]  kmem_cache_alloc+0x15c/0x468
-[   47.092643]  __alloc_skb+0xa4/0x498
-[   47.096142]  igmpv3_newpack+0x158/0xd78
-[   47.099987]  add_grhead+0x210/0x288
-[   47.103485]  add_grec+0x6b0/0xb70
-[   47.106811]  igmpv3_send_cr+0x2e0/0x6b8
-[   47.110657]  igmp_ifc_timer_expire+0x4c/0x118
-[   47.115027]  call_timer_fn+0x1cc/0xbe8
-[   47.118785]  __run_timers+0x4d8/0xb28
-[   47.122457]  run_timer_softirq+0x24/0x40
-[   47.126389]  __do_softirq+0x2c0/0x117c
-[   47.130142]
-[   47.131643] Freed by task 180:
-[   47.134712]  save_stack+0x24/0xb0
-[   47.138041]  __kasan_slab_free+0x108/0x180
-[   47.142146]  kasan_slab_free+0x10/0x18
-[   47.145904]  slab_free_freelist_hook+0xa4/0x1b0
-[   47.150444]  kmem_cache_free+0x8c/0x528
-[   47.154292]  kfree_skbmem+0x94/0x108
-[   47.157880]  consume_skb+0x10c/0x5a8
-[   47.161466]  __dev_kfree_skb_any+0x88/0xa0
-[   47.165598]  brcmu_pkt_buf_free_skb+0x44/0x68 [brcmutil]
-[   47.171023]  brcmf_txfinalize+0xec/0x190 [brcmfmac]
-[   47.176016]  brcmf_proto_bcdc_txcomplete+0x1c0/0x210 [brcmfmac]
-[   47.182056]  brcmf_sdio_sendfromq+0x8dc/0x1e80 [brcmfmac]
-[   47.187568]  brcmf_sdio_dpc+0xb48/0x2108 [brcmfmac]
-[   47.192529]  brcmf_sdio_dataworker+0xc8/0x238 [brcmfmac]
-[   47.197859]  process_one_work+0x7fc/0x1a80
-[   47.201965]  worker_thread+0x31c/0xc40
-[   47.205726]  kthread+0x2d8/0x370
-[   47.208967]  ret_from_fork+0x10/0x18
-[   47.212546]
-[   47.214051] The buggy address belongs to the object at ffffff803f588280
-[   47.214051]  which belongs to the cache skbuff_head_cache of size 208
-[   47.227086] The buggy address is located 104 bytes inside of
-[   47.227086]  208-byte region [ffffff803f588280, ffffff803f588350)
-[   47.238814] The buggy address belongs to the page:
-[   47.243618] page:ffffffff00dd6200 refcount:1 mapcount:0 mapping:ffffff804b6bf800 index:0xffffff803f589900 compound_mapcount: 0
-[   47.255007] flags: 0x10200(slab|head)
-[   47.258689] raw: 0000000000010200 ffffffff00dfa980 0000000200000002 ffffff804b6bf800
-[   47.266439] raw: ffffff803f589900 0000000080190018 00000001ffffffff 0000000000000000
-[   47.274180] page dumped because: kasan: bad access detected
-[   47.279752]
-[   47.281251] Memory state around the buggy address:
-[   47.286051]  ffffff803f588180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[   47.293277]  ffffff803f588200: fb fb fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[   47.300502] >ffffff803f588280: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[   47.307723]                                                           ^
-[   47.314343]  ffffff803f588300: fb fb fb fb fb fb fb fb fb fb fc fc fc fc fc fc
-[   47.321569]  ffffff803f588380: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
-[   47.328789] ==================================================================
+  schedule_delayed_work(&conn->info_timer, L2CAP_INFO_TIMEOUT);
 
-Signed-off-by: Alexander Coffin <alex.coffin@matician.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220808174925.3922558-1-alex.coffin@matician.com
+in l2cap_connect() is calling l2cap_chan_ready().
+
+Fix this problem by initializing delayed works used by L2CAP_MODE_ERTM
+mode as soon as l2cap_chan_create() allocates a channel, like I did in
+commit be8597239379f0f5 ("Bluetooth: initialize skb_queue_head at
+l2cap_chan_create()").
+
+Link: https://syzkaller.appspot.com/bug?extid=83672956c7aa6af698b3 [1]
+Reported-by: syzbot <syzbot+83672956c7aa6af698b3@syzkaller.appspotmail.com>
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/bluetooth/l2cap_core.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
-index 61039538a15b..c8e1d505f7b5 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
-@@ -290,6 +290,7 @@ static netdev_tx_t brcmf_netdev_start_xmit(struct sk_buff *skb,
- 	struct brcmf_pub *drvr = ifp->drvr;
- 	struct ethhdr *eh;
- 	int head_delta;
-+	unsigned int tx_bytes = skb->len;
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index 0c38af2ff209..8d5029c81ee7 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -61,6 +61,9 @@ static void l2cap_send_disconn_req(struct l2cap_chan *chan, int err);
  
- 	brcmf_dbg(DATA, "Enter, bsscfgidx=%d\n", ifp->bsscfgidx);
+ static void l2cap_tx(struct l2cap_chan *chan, struct l2cap_ctrl *control,
+ 		     struct sk_buff_head *skbs, u8 event);
++static void l2cap_retrans_timeout(struct work_struct *work);
++static void l2cap_monitor_timeout(struct work_struct *work);
++static void l2cap_ack_timeout(struct work_struct *work);
  
-@@ -364,7 +365,7 @@ static netdev_tx_t brcmf_netdev_start_xmit(struct sk_buff *skb,
- 		ndev->stats.tx_dropped++;
- 	} else {
- 		ndev->stats.tx_packets++;
--		ndev->stats.tx_bytes += skb->len;
-+		ndev->stats.tx_bytes += tx_bytes;
- 	}
+ static inline u8 bdaddr_type(u8 link_type, u8 bdaddr_type)
+ {
+@@ -476,6 +479,9 @@ struct l2cap_chan *l2cap_chan_create(void)
+ 	write_unlock(&chan_list_lock);
  
- 	/* Return ok: we always eat the packet */
+ 	INIT_DELAYED_WORK(&chan->chan_timer, l2cap_chan_timeout);
++	INIT_DELAYED_WORK(&chan->retrans_timer, l2cap_retrans_timeout);
++	INIT_DELAYED_WORK(&chan->monitor_timer, l2cap_monitor_timeout);
++	INIT_DELAYED_WORK(&chan->ack_timer, l2cap_ack_timeout);
+ 
+ 	chan->state = BT_OPEN;
+ 
+@@ -3316,10 +3322,6 @@ int l2cap_ertm_init(struct l2cap_chan *chan)
+ 	chan->rx_state = L2CAP_RX_STATE_RECV;
+ 	chan->tx_state = L2CAP_TX_STATE_XMIT;
+ 
+-	INIT_DELAYED_WORK(&chan->retrans_timer, l2cap_retrans_timeout);
+-	INIT_DELAYED_WORK(&chan->monitor_timer, l2cap_monitor_timeout);
+-	INIT_DELAYED_WORK(&chan->ack_timer, l2cap_ack_timeout);
+-
+ 	skb_queue_head_init(&chan->srej_q);
+ 
+ 	err = l2cap_seq_list_init(&chan->srej_list, chan->tx_win);
 -- 
 2.35.1
 
