@@ -2,48 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46C1B5F9328
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:56:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1F895F93AC
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 01:42:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233970AbiJIW4Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:56:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45718 "EHLO
+        id S232227AbiJIXmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 19:42:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234041AbiJIWyn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:54:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E70A19C;
-        Sun,  9 Oct 2022 15:29:43 -0700 (PDT)
+        with ESMTP id S230381AbiJIXld (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 19:41:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A8F57BFA;
+        Sun,  9 Oct 2022 16:13:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C0F6760C19;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5476EB80DF1;
+        Sun,  9 Oct 2022 22:25:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95668C433D7;
         Sun,  9 Oct 2022 22:25:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9569DC433B5;
-        Sun,  9 Oct 2022 22:25:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354326;
-        bh=0G7pgzAbm2+9YR5/tmvia7bob4tC2qyNvnsTbTuBWPA=;
+        s=k20201202; t=1665354328;
+        bh=/BleCwNH4q+MxKT7DR0P99zio7f8ZwEn9aOrqdQJuJE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rRJonGmhKPqEkaqY0Wp7/tWrv2di2s7eIl6r4SiqCc6aF/N6WFak9Z3IuL8jRxhsT
-         uur2PC8OrQ6nPJyB3Yq5ASn+LcePE1KIk/ZxkcwutprrHN8wiQbw6pzYbam1MA1236
-         OE8sN4mdT0cObv6MNVFk8NXxtpQ49JN3wg0MhnNwxZT5hgqdoIsXI1/0XVnFSQMyQP
-         RO8Z+WuXqNmVcG1FK2KGES5ml+99jbk3GU978XPt+X14p9Rhb4ymgYV+5U6zxpxGOT
-         /AlBXVkCHBhO2tkWItCLFplKNxqrSqh/JjwKt+6ppQzQxdONUdceShPiHJBA5o7i8b
-         XHcnyWcwUyugw==
+        b=sn0idvksEfh52fJ6cewDV9UlIooQyfTWyR4xjJGYkdN41qZuNCXh3H6gX49forGt8
+         uuiblFHUdBNDvUvbJJNsp0iymyQIJcSp6iGlwnnsrIHBSklPFU9k/tyxaHXPo1VAtS
+         7E1mU2DFGgu9c6apo0Ltw0OHFS6SM4L6OqWLrgiKvebtN6SZgfeAOelYpdPgSXOGQG
+         XpVw2rB5sihp+tN6hHfTZFLCqYH1HdwOhtVZa3wAHX+p1vGxVe1tV916wVfF0fNfmH
+         ppi3NX5HFtoLo50wxc1029/8l+pxfvhXf71cITR3QLVgvrkvvjLEMWDdZaXeF8reNE
+         AQ6V/TbzNONQg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nathan Huckleberry <nhuck@google.com>,
-        Dan Carpenter <error27@gmail.com>, llvm@lists.linux.dev,
-        Nathan Chancellor <nathan@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, ndesaulniers@google.com,
-        mw@semihalf.com, khalasa@piap.pl, wsa+renesas@sang-engineering.com,
-        shayagr@amazon.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 14/25] net: korina: Fix return type of korina_send_packet
-Date:   Sun,  9 Oct 2022 18:24:19 -0400
-Message-Id: <20221009222436.1219411-14-sashal@kernel.org>
+Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Hawkins Jiawei <yin31149@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, marcel@holtmann.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 15/25] Bluetooth: hci_sysfs: Fix attempting to call device_add multiple times
+Date:   Sun,  9 Oct 2022 18:24:20 -0400
+Message-Id: <20221009222436.1219411-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009222436.1219411-1-sashal@kernel.org>
 References: <20221009222436.1219411-1-sashal@kernel.org>
@@ -60,45 +58,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nathan Huckleberry <nhuck@google.com>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[ Upstream commit 106c67ce46f3c82dd276e983668a91d6ed631173 ]
+[ Upstream commit 448a496f760664d3e2e79466aa1787e6abc922b5 ]
 
-The ndo_start_xmit field in net_device_ops is expected to be of type
-netdev_tx_t (*ndo_start_xmit)(struct sk_buff *skb, struct net_device *dev).
+device_add shall not be called multiple times as stated in its
+documentation:
 
-The mismatched return type breaks forward edge kCFI since the underlying
-function definition does not match the function hook definition.
+ 'Do not call this routine or device_register() more than once for
+ any device structure'
 
-The return type of korina_send_packet should be changed from int to
-netdev_tx_t.
+Syzkaller reports a bug as follows [1]:
+------------[ cut here ]------------
+kernel BUG at lib/list_debug.c:33!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+[...]
+Call Trace:
+ <TASK>
+ __list_add include/linux/list.h:69 [inline]
+ list_add_tail include/linux/list.h:102 [inline]
+ kobj_kset_join lib/kobject.c:164 [inline]
+ kobject_add_internal+0x18f/0x8f0 lib/kobject.c:214
+ kobject_add_varg lib/kobject.c:358 [inline]
+ kobject_add+0x150/0x1c0 lib/kobject.c:410
+ device_add+0x368/0x1e90 drivers/base/core.c:3452
+ hci_conn_add_sysfs+0x9b/0x1b0 net/bluetooth/hci_sysfs.c:53
+ hci_le_cis_estabilished_evt+0x57c/0xae0 net/bluetooth/hci_event.c:6799
+ hci_le_meta_evt+0x2b8/0x510 net/bluetooth/hci_event.c:7110
+ hci_event_func net/bluetooth/hci_event.c:7440 [inline]
+ hci_event_packet+0x63d/0xfd0 net/bluetooth/hci_event.c:7495
+ hci_rx_work+0xae7/0x1230 net/bluetooth/hci_core.c:4007
+ process_one_work+0x991/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e4/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
 
-Reported-by: Dan Carpenter <error27@gmail.com>
-Link: https://github.com/ClangBuiltLinux/linux/issues/1703
-Cc: llvm@lists.linux.dev
-Signed-off-by: Nathan Huckleberry <nhuck@google.com>
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-Link: https://lore.kernel.org/r/20220912214344.928925-1-nhuck@google.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Link: https://syzkaller.appspot.com/bug?id=da3246e2d33afdb92d66bc166a0934c5b146404a
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Tested-by: Hawkins Jiawei <yin31149@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/korina.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/bluetooth/hci_sysfs.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/korina.c b/drivers/net/ethernet/korina.c
-index 9f804e2aba35..d1bd56f6eecb 100644
---- a/drivers/net/ethernet/korina.c
-+++ b/drivers/net/ethernet/korina.c
-@@ -196,7 +196,8 @@ static void korina_chain_rx(struct korina_private *lp,
- }
+diff --git a/net/bluetooth/hci_sysfs.c b/net/bluetooth/hci_sysfs.c
+index b69d88b88d2e..ccd2c377bf83 100644
+--- a/net/bluetooth/hci_sysfs.c
++++ b/net/bluetooth/hci_sysfs.c
+@@ -48,6 +48,9 @@ void hci_conn_add_sysfs(struct hci_conn *conn)
  
- /* transmit packet */
--static int korina_send_packet(struct sk_buff *skb, struct net_device *dev)
-+static netdev_tx_t korina_send_packet(struct sk_buff *skb,
-+				      struct net_device *dev)
- {
- 	struct korina_private *lp = netdev_priv(dev);
- 	unsigned long flags;
+ 	BT_DBG("conn %p", conn);
+ 
++	if (device_is_registered(&conn->dev))
++		return;
++
+ 	dev_set_name(&conn->dev, "%s:%d", hdev->name, conn->handle);
+ 
+ 	if (device_add(&conn->dev) < 0) {
 -- 
 2.35.1
 
