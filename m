@@ -2,48 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA79B5F9135
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:30:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60C725F9152
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:31:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232445AbiJIWaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:30:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42054 "EHLO
+        id S232529AbiJIWbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:31:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232286AbiJIW2t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:28:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF2562D1C4;
-        Sun,  9 Oct 2022 15:19:05 -0700 (PDT)
+        with ESMTP id S232578AbiJIW3y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:29:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F2D3ECDB;
+        Sun,  9 Oct 2022 15:19:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7209860C2B;
-        Sun,  9 Oct 2022 22:19:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F446C4347C;
-        Sun,  9 Oct 2022 22:19:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C9A0B80D33;
+        Sun,  9 Oct 2022 22:19:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6CB3C433C1;
+        Sun,  9 Oct 2022 22:19:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665353944;
-        bh=79sX76vh9ai+k4JQ7VU0DTX+Fu1WGVzAUgZNp9U+T/0=;
+        s=k20201202; t=1665353950;
+        bh=Q7nL0WEUtaTUZsGTu8PhNbsvfvjXK7qqWWgILZtc6rQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q8jnz9g+8PUagMokGYRz7I+VvkHL6ZupWAqAOLUkm/INP6H0CUVXqikvcXSvifSPX
-         U50GZ0cizGoJ7OE3cOyqKgY9PfjK35cpgBbJG8ZlhmD7dp4h7L2RgEgUDd1Ix9yAgy
-         FMsx1WyS08HMSaT+Se04zUaZULHCMlQhWF6Axm5TVhJCCPpt9RKaUdANUXB4lE9GUo
-         tkOhCZ7sUxRcfgo4o6Vb6AyqczCe3WBJVtrT3gliq9FifCFXiIfcihDPxHFX/jNpJq
-         N/463UfKWI7OCdjCDGCWRvwm+AISF4Eh8cWcuEeFT8QQcxwhBuqcxdx2L2cdqfSKPp
-         ejFGSiHuvmjDg==
+        b=RwfAWhGJuYwu+3BKOvINLc3hcYX2DPycT6eq3QhxOdC/rXj7dhzSEbr5CP8+fht6v
+         Ykb1u3qV2+nCruVjehhoxwwowBtrmWrJoEGLlYt7E4g6AbDwE/YLKpaYwc4pdCjXq7
+         +HHYX70tpV+VJFDLI1qEdppkg9lyZLS1bDc87S9u0H3f2iE2XRNl1/jaFvZsndPyjh
+         xfIqsiwxpqeZKovy/caIYoKhgC/mgjbwUNd2pu8EouYi+QYuuwWoTkbIVGVDjrSY3b
+         ySEs5uLutD7m+5BaxYmRSEm7cGp46CHnkAADyUlnx9xSdDvLfexCttVIRDfWaxRYMy
+         I7w5RVGUomgyw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nathan Huckleberry <nhuck@google.com>,
-        Dan Carpenter <error27@gmail.com>, llvm@lists.linux.dev,
-        Nathan Chancellor <nathan@kernel.org>,
+Cc:     Andrew Gaul <gaul@gaul.org>, Andrew Gaul <gaul@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, horatiu.vultur@microchip.com,
-        UNGLinuxDriver@microchip.com, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, ndesaulniers@google.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 72/73] net: lan966x: Fix return type of lan966x_port_xmit
-Date:   Sun,  9 Oct 2022 18:14:50 -0400
-Message-Id: <20221009221453.1216158-72-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, hayeswang@realtek.com,
+        aaron.ma@canonical.com, jflf_kernel@gmx.com, git@apitzsch.eu,
+        dober6023@gmail.com, svenva@chromium.org,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 73/73] r8152: Rate limit overflow messages
+Date:   Sun,  9 Oct 2022 18:14:51 -0400
+Message-Id: <20221009221453.1216158-73-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009221453.1216158-1-sashal@kernel.org>
 References: <20221009221453.1216158-1-sashal@kernel.org>
@@ -60,45 +59,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nathan Huckleberry <nhuck@google.com>
+From: Andrew Gaul <gaul@gaul.org>
 
-[ Upstream commit 450a580fc4b5e7f7fb8d9b1a0208bf0d1efc53a8 ]
+[ Upstream commit 93e2be344a7db169b7119de21ac1bf253b8c6907 ]
 
-The ndo_start_xmit field in net_device_ops is expected to be of type
-netdev_tx_t (*ndo_start_xmit)(struct sk_buff *skb, struct net_device *dev).
+My system shows almost 10 million of these messages over a 24-hour
+period which pollutes my logs.
 
-The mismatched return type breaks forward edge kCFI since the underlying
-function definition does not match the function hook definition.
-
-The return type of lan966x_port_xmit should be changed from int to
-netdev_tx_t.
-
-Reported-by: Dan Carpenter <error27@gmail.com>
-Link: https://github.com/ClangBuiltLinux/linux/issues/1703
-Cc: llvm@lists.linux.dev
-Signed-off-by: Nathan Huckleberry <nhuck@google.com>
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-Link: https://lore.kernel.org/r/20220929182704.64438-1-nhuck@google.com
+Signed-off-by: Andrew Gaul <gaul@google.com>
+Link: https://lore.kernel.org/r/20221002034128.2026653-1-gaul@google.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/usb/r8152.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index d928b75f3780..be40c6d3ec68 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -344,7 +344,8 @@ static void lan966x_ifh_set_timestamp(void *ifh, u64 timestamp)
- 		IFH_POS_TIMESTAMP, IFH_LEN * 4, PACK, 0);
- }
- 
--static int lan966x_port_xmit(struct sk_buff *skb, struct net_device *dev)
-+static netdev_tx_t lan966x_port_xmit(struct sk_buff *skb,
-+				     struct net_device *dev)
- {
- 	struct lan966x_port *port = netdev_priv(dev);
- 	struct lan966x *lan966x = port->lan966x;
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index 688905ea0a6d..e7b0b59e2bc8 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -1874,7 +1874,9 @@ static void intr_callback(struct urb *urb)
+ 			   "Stop submitting intr, status %d\n", status);
+ 		return;
+ 	case -EOVERFLOW:
+-		netif_info(tp, intr, tp->netdev, "intr status -EOVERFLOW\n");
++		if (net_ratelimit())
++			netif_info(tp, intr, tp->netdev,
++				   "intr status -EOVERFLOW\n");
+ 		goto resubmit;
+ 	/* -EPIPE:  should clear the halt */
+ 	default:
 -- 
 2.35.1
 
