@@ -2,49 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 481FE5F93A4
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 01:41:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1B155F927C
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:49:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232141AbiJIXlu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 19:41:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42856 "EHLO
+        id S233348AbiJIWtt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:49:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231882AbiJIXlV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 19:41:21 -0400
+        with ESMTP id S233360AbiJIWsx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:48:53 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C364D9AFE3;
-        Sun,  9 Oct 2022 16:13:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25AA7D132;
+        Sun,  9 Oct 2022 15:24:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A3B9EB80DCD;
-        Sun,  9 Oct 2022 22:24:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65FD7C433D6;
-        Sun,  9 Oct 2022 22:24:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40E8FB80DE1;
+        Sun,  9 Oct 2022 22:24:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80F4CC433C1;
+        Sun,  9 Oct 2022 22:24:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354283;
-        bh=qauSKgpxQD3mSoJYIZLLYiRX2nOUMjRG4equd7WLjdc=;
+        s=k20201202; t=1665354287;
+        bh=m/QdiEsyaqsXyeYZVuoxXTWReCx/204ZsauJ1OlEs0U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GaBMQzxJ2uA0N88/lbxoc2RvDJMUegqXjU/810J9qe/lBJVAbewb/OFQ3zXiZaGEb
-         B/oC7JUqzP4xOYBN/RuPyxKJyfTeUElRlnHVjGS9k3r21ZQvZo6Oq6NFh9zmPPGfiA
-         /NCrbjplfx8QFhltkrThUQx+R3EwD8KBFhC55yWyAiIcbWJF0iQd70StOLHuO6USWU
-         rtQOdGLPlOin9yEUKqCd0NpFqVFML+Y3HFK/i1ALdbv/twOL4/+D5aCw7n6BPyqSVw
-         MU7R0SgR32y3JjVJmrPz9QsebbcmE11suQfLPEdN5v1UWwkVGTGFMhmk46wjfkmxTl
-         +dBdTvxtEJbAg==
+        b=mhaSsTMS0kvd3+JgIJeRYrMKLDel5wp7+jzvHTpuOwYfN4TM0R8spRjSWi6qHmKit
+         Pnl+RlGANt1Pt0YGUoCKcxsfklu8WTA/7NeVZRz4DtAfgrtaXi+mwPEzndx4sXhPSQ
+         vXZOHWHHmKWmLdkeHro2M6bipEWtDntXFWB3BwpED72nwjkB6q8+vovzd+g9hki+AZ
+         Dop3rln3Z7k4QlQzIcQ1ADCw+ONzF7xzZiEb0RoJWQLkp0rnaR9gbZ1f1t/KHvA9w+
+         ocsw3Q7W6rI8UIs++Zjl95RgX/5v+7Rm+MrOAXgJE9zBEg4wO2ds5BHTaeLV8cpOiO
+         4fyux9nt3FnOA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mike Pattrick <mkp@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, pshelar@ovn.org,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, dev@openvswitch.org
-Subject: [PATCH AUTOSEL 4.19 03/25] openvswitch: Fix overreporting of drops in dropwatch
-Date:   Sun,  9 Oct 2022 18:24:08 -0400
-Message-Id: <20221009222436.1219411-3-sashal@kernel.org>
+Cc:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        syzbot <syzbot+2ca247c2d60c7023de7f@syzkaller.appspotmail.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 05/25] wifi: ath9k: avoid uninit memory read in ath9k_htc_rx_msg()
+Date:   Sun,  9 Oct 2022 18:24:10 -0400
+Message-Id: <20221009222436.1219411-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009222436.1219411-1-sashal@kernel.org>
 References: <20221009222436.1219411-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -57,40 +61,147 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mike Pattrick <mkp@redhat.com>
+From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 
-[ Upstream commit c21ab2afa2c64896a7f0e3cbc6845ec63dcfad2e ]
+[ Upstream commit b383e8abed41cc6ff1a3b34de75df9397fa4878c ]
 
-Currently queue_userspace_packet will call kfree_skb for all frames,
-whether or not an error occurred. This can result in a single dropped
-frame being reported as multiple drops in dropwatch. This functions
-caller may also call kfree_skb in case of an error. This patch will
-consume the skbs instead and allow caller's to use kfree_skb.
+syzbot is reporting uninit value at ath9k_htc_rx_msg() [1], for
+ioctl(USB_RAW_IOCTL_EP_WRITE) can call ath9k_hif_usb_rx_stream() with
+pkt_len = 0 but ath9k_hif_usb_rx_stream() uses
+__dev_alloc_skb(pkt_len + 32, GFP_ATOMIC) based on an assumption that
+pkt_len is valid. As a result, ath9k_hif_usb_rx_stream() allocates skb
+with uninitialized memory and ath9k_htc_rx_msg() is reading from
+uninitialized memory.
 
-Signed-off-by: Mike Pattrick <mkp@redhat.com>
-Link: https://bugzilla.redhat.com/show_bug.cgi?id=2109957
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Since bytes accessed by ath9k_htc_rx_msg() is not known until
+ath9k_htc_rx_msg() is called, it would be difficult to check minimal valid
+pkt_len at "if (pkt_len > 2 * MAX_RX_BUF_SIZE) {" line in
+ath9k_hif_usb_rx_stream().
+
+We have two choices. One is to workaround by adding __GFP_ZERO so that
+ath9k_htc_rx_msg() sees 0 if pkt_len is invalid. The other is to let
+ath9k_htc_rx_msg() validate pkt_len before accessing. This patch chose
+the latter.
+
+Note that I'm not sure threshold condition is correct, for I can't find
+details on possible packet length used by this protocol.
+
+Link: https://syzkaller.appspot.com/bug?extid=2ca247c2d60c7023de7f [1]
+Reported-by: syzbot <syzbot+2ca247c2d60c7023de7f@syzkaller.appspotmail.com>
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/7acfa1be-4b5c-b2ce-de43-95b0593fb3e5@I-love.SAKURA.ne.jp
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/openvswitch/datapath.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/wireless/ath/ath9k/htc_hst.c | 43 +++++++++++++++---------
+ 1 file changed, 28 insertions(+), 15 deletions(-)
 
-diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-index a9868e97db45..b4e3db194140 100644
---- a/net/openvswitch/datapath.c
-+++ b/net/openvswitch/datapath.c
-@@ -526,8 +526,9 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
- out:
- 	if (err)
- 		skb_tx_error(skb);
--	kfree_skb(user_skb);
--	kfree_skb(nskb);
-+	consume_skb(user_skb);
-+	consume_skb(nskb);
-+
- 	return err;
+diff --git a/drivers/net/wireless/ath/ath9k/htc_hst.c b/drivers/net/wireless/ath/ath9k/htc_hst.c
+index e37de14bc502..6d69cf69fd86 100644
+--- a/drivers/net/wireless/ath/ath9k/htc_hst.c
++++ b/drivers/net/wireless/ath/ath9k/htc_hst.c
+@@ -367,33 +367,27 @@ void ath9k_htc_txcompletion_cb(struct htc_target *htc_handle,
  }
  
+ static void ath9k_htc_fw_panic_report(struct htc_target *htc_handle,
+-				      struct sk_buff *skb)
++				      struct sk_buff *skb, u32 len)
+ {
+ 	uint32_t *pattern = (uint32_t *)skb->data;
+ 
+-	switch (*pattern) {
+-	case 0x33221199:
+-		{
++	if (*pattern == 0x33221199 && len >= sizeof(struct htc_panic_bad_vaddr)) {
+ 		struct htc_panic_bad_vaddr *htc_panic;
+ 		htc_panic = (struct htc_panic_bad_vaddr *) skb->data;
+ 		dev_err(htc_handle->dev, "ath: firmware panic! "
+ 			"exccause: 0x%08x; pc: 0x%08x; badvaddr: 0x%08x.\n",
+ 			htc_panic->exccause, htc_panic->pc,
+ 			htc_panic->badvaddr);
+-		break;
+-		}
+-	case 0x33221299:
+-		{
++		return;
++	}
++	if (*pattern == 0x33221299) {
+ 		struct htc_panic_bad_epid *htc_panic;
+ 		htc_panic = (struct htc_panic_bad_epid *) skb->data;
+ 		dev_err(htc_handle->dev, "ath: firmware panic! "
+ 			"bad epid: 0x%08x\n", htc_panic->epid);
+-		break;
+-		}
+-	default:
+-		dev_err(htc_handle->dev, "ath: unknown panic pattern!\n");
+-		break;
++		return;
+ 	}
++	dev_err(htc_handle->dev, "ath: unknown panic pattern!\n");
+ }
+ 
+ /*
+@@ -414,16 +408,26 @@ void ath9k_htc_rx_msg(struct htc_target *htc_handle,
+ 	if (!htc_handle || !skb)
+ 		return;
+ 
++	/* A valid message requires len >= 8.
++	 *
++	 *   sizeof(struct htc_frame_hdr) == 8
++	 *   sizeof(struct htc_ready_msg) == 8
++	 *   sizeof(struct htc_panic_bad_vaddr) == 16
++	 *   sizeof(struct htc_panic_bad_epid) == 8
++	 */
++	if (unlikely(len < sizeof(struct htc_frame_hdr)))
++		goto invalid;
+ 	htc_hdr = (struct htc_frame_hdr *) skb->data;
+ 	epid = htc_hdr->endpoint_id;
+ 
+ 	if (epid == 0x99) {
+-		ath9k_htc_fw_panic_report(htc_handle, skb);
++		ath9k_htc_fw_panic_report(htc_handle, skb, len);
+ 		kfree_skb(skb);
+ 		return;
+ 	}
+ 
+ 	if (epid < 0 || epid >= ENDPOINT_MAX) {
++invalid:
+ 		if (pipe_id != USB_REG_IN_PIPE)
+ 			dev_kfree_skb_any(skb);
+ 		else
+@@ -435,21 +439,30 @@ void ath9k_htc_rx_msg(struct htc_target *htc_handle,
+ 
+ 		/* Handle trailer */
+ 		if (htc_hdr->flags & HTC_FLAGS_RECV_TRAILER) {
+-			if (be32_to_cpu(*(__be32 *) skb->data) == 0x00C60000)
++			if (be32_to_cpu(*(__be32 *) skb->data) == 0x00C60000) {
+ 				/* Move past the Watchdog pattern */
+ 				htc_hdr = (struct htc_frame_hdr *)(skb->data + 4);
++				len -= 4;
++			}
+ 		}
+ 
+ 		/* Get the message ID */
++		if (unlikely(len < sizeof(struct htc_frame_hdr) + sizeof(__be16)))
++			goto invalid;
+ 		msg_id = (__be16 *) ((void *) htc_hdr +
+ 				     sizeof(struct htc_frame_hdr));
+ 
+ 		/* Now process HTC messages */
+ 		switch (be16_to_cpu(*msg_id)) {
+ 		case HTC_MSG_READY_ID:
++			if (unlikely(len < sizeof(struct htc_ready_msg)))
++				goto invalid;
+ 			htc_process_target_rdy(htc_handle, htc_hdr);
+ 			break;
+ 		case HTC_MSG_CONNECT_SERVICE_RESPONSE_ID:
++			if (unlikely(len < sizeof(struct htc_frame_hdr) +
++				     sizeof(struct htc_conn_svc_rspmsg)))
++				goto invalid;
+ 			htc_process_conn_rsp(htc_handle, htc_hdr);
+ 			break;
+ 		default:
 -- 
 2.35.1
 
