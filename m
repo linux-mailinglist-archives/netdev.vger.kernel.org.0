@@ -2,170 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BEAF5F898F
-	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 07:59:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA2B85F8994
+	for <lists+netdev@lfdr.de>; Sun,  9 Oct 2022 08:03:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229868AbiJIF7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 01:59:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50484 "EHLO
+        id S229886AbiJIGDM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 02:03:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229776AbiJIF7H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 01:59:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FE652F643
-        for <netdev@vger.kernel.org>; Sat,  8 Oct 2022 22:59:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1665295145;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XyL4XgZY3fE78rf1t1J98tuq3HEa3BcmqHdSW/YDE7Y=;
-        b=ZtFMWHBWnqNjqog3k0z9BaBsNKKC3WYYHQb1YiMSR0xyKpre1F8JIUNjAhx9/UiTSlbthU
-        jC73DhZBJuXwTMYX9pOkiCH9HvUiUXd4nyk7H4cpT+G5stYUsnndFP5hbxnnJoYIFjC4C8
-        hIShn3T2qLGnQtequZyR5FpzSSIORqE=
-Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com
- [209.85.215.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-454-A_hAOrw3NYOzsyj1K8_lVw-1; Sun, 09 Oct 2022 01:59:03 -0400
-X-MC-Unique: A_hAOrw3NYOzsyj1K8_lVw-1
-Received: by mail-pg1-f199.google.com with SMTP id 126-20020a630284000000b0043942ef3ac7so4917409pgc.11
-        for <netdev@vger.kernel.org>; Sat, 08 Oct 2022 22:59:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=XyL4XgZY3fE78rf1t1J98tuq3HEa3BcmqHdSW/YDE7Y=;
-        b=poJMBigYhQf6pJNL2bgZFTnjfP7kyuv00bRua5Mce/ZBAI7krOVzRL5YJ7YK/ZjoSe
-         j2yESYZbpbX5PuAS5JhzQJa9x82CaYfJGT3y8lMhxVW8VJlhxykJ4UYju2dQptY6Yy8B
-         gqR3Hti+wivmXiOyjTJ3wnnYcwpmwY45U22Fe2q8zU2ACfG4E4Xj7XwpdWDDLSJ5nbs+
-         huDs13jI5tfEcufCfWfvwAl7yE/3nwN2FkpEeF1WWufyb0GUO8kfoIy0X6JSP/X4z3Bp
-         iwxexIJnJT2oB3idn6LvKn5NjYRyke7ghifaZEWVaQDsc+4czQYtZ5e9zY/7PJaYvEru
-         BhLQ==
-X-Gm-Message-State: ACrzQf1YCRamNNuIIyaQInbUN2OHFniYt76TXFFBhxzazlUYCMSiuO4Y
-        d1cbpgd9lafyBo8hwuSTlfwqtegu9sU83MGIfFdDVTSkqztFfjOWpp5IPaExAPZBFmrvakEGfNC
-        R+cht4G2YMC4oFFIN
-X-Received: by 2002:a17:90a:1347:b0:20b:ffd:66b9 with SMTP id y7-20020a17090a134700b0020b0ffd66b9mr16351254pjf.15.1665295142929;
-        Sat, 08 Oct 2022 22:59:02 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM57/2XHWbN7XzWOLjsjlVXU3IBSBWoYzNW9XJfotIZtsRHFNdZuR0KhTY81FYcV9G64goQDVg==
-X-Received: by 2002:a17:90a:1347:b0:20b:ffd:66b9 with SMTP id y7-20020a17090a134700b0020b0ffd66b9mr16351239pjf.15.1665295142628;
-        Sat, 08 Oct 2022 22:59:02 -0700 (PDT)
-Received: from [10.72.12.61] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id 67-20020a620446000000b0054ee4b632dasm4350688pfe.169.2022.10.08.22.58.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 08 Oct 2022 22:59:02 -0700 (PDT)
-Message-ID: <c8cd9a2e-3480-6ca5-96fa-4b5bd2c1174a@redhat.com>
-Date:   Sun, 9 Oct 2022 13:58:53 +0800
+        with ESMTP id S229776AbiJIGDK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 02:03:10 -0400
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEC412DA93;
+        Sat,  8 Oct 2022 23:03:07 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VRh-kKX_1665295373;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VRh-kKX_1665295373)
+          by smtp.aliyun-inc.com;
+          Sun, 09 Oct 2022 14:03:04 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     skashyap@marvell.com
+Cc:     jhasan@marvell.com, GR-QLogic-Storage-Upstream@marvell.com,
+        jejb@linux.ibm.com, martin.petersen@oracle.com,
+        linux@armlinux.org.uk, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH] scsi: qedf: Remove set but unused variable 'page'
+Date:   Sun,  9 Oct 2022 14:02:49 +0800
+Message-Id: <20221009060249.40178-1-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.13.1
-Subject: Re: [PATCH net] virtio-net: add cond_resched() to the command waiting
- loop
-Content-Language: en-US
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Paolo Abeni <pabeni@redhat.com>, netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Gautam Dawar <gautam.dawar@xilinx.com>,
-        davem <davem@davemloft.net>
-References: <20220905045341.66191-1-jasowang@redhat.com>
- <20220905031405-mutt-send-email-mst@kernel.org>
- <CACGkMEtjQ0Jfok-gcRW+kuinsua2X0TscyTNfBJoXHny0Yob+g@mail.gmail.com>
- <056ba905a2579903a372258383afdf6579767ad0.camel@redhat.com>
- <CACGkMEuiDqqOEKUWRN9LvQKv8Jz4mi3aSZMwbhUsJkZp=C-0RQ@mail.gmail.com>
- <c9180ac41b00543e3531a343afae8f5bdca64d8d.camel@redhat.com>
- <20220907034407-mutt-send-email-mst@kernel.org>
- <d32101bb-783f-dbd1-545a-be291c27cb63@redhat.com>
- <20220908011858-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20220908011858-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The variable page is not effectively used in the function, so delete
+it.
 
-在 2022/9/8 13:19, Michael S. Tsirkin 写道:
-> On Thu, Sep 08, 2022 at 10:21:45AM +0800, Jason Wang wrote:
->> 在 2022/9/7 15:46, Michael S. Tsirkin 写道:
->>> On Wed, Sep 07, 2022 at 09:07:20AM +0200, Paolo Abeni wrote:
->>>> On Wed, 2022-09-07 at 10:09 +0800, Jason Wang wrote:
->>>>> On Tue, Sep 6, 2022 at 6:56 PM Paolo Abeni <pabeni@redhat.com> wrote:
->>>>>> On Mon, 2022-09-05 at 15:49 +0800, Jason Wang wrote:
->>>>>>> On Mon, Sep 5, 2022 at 3:15 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->>>>>>>> On Mon, Sep 05, 2022 at 12:53:41PM +0800, Jason Wang wrote:
->>>>>>>>> Adding cond_resched() to the command waiting loop for a better
->>>>>>>>> co-operation with the scheduler. This allows to give CPU a breath to
->>>>>>>>> run other task(workqueue) instead of busy looping when preemption is
->>>>>>>>> not allowed.
->>>>>>>>>
->>>>>>>>> What's more important. This is a must for some vDPA parent to work
->>>>>>>>> since control virtqueue is emulated via a workqueue for those parents.
->>>>>>>>>
->>>>>>>>> Fixes: bda324fd037a ("vdpasim: control virtqueue support")
->>>>>>>> That's a weird commit to fix. so it fixes the simulator?
->>>>>>> Yes, since the simulator is using a workqueue to handle control virtueue.
->>>>>> Uhmm... touching a driver for a simulator's sake looks a little weird.
->>>>> Simulator is not the only one that is using a workqueue (but should be
->>>>> the first).
->>>>>
->>>>> I can see  that the mlx5 vDPA driver is using a workqueue as well (see
->>>>> mlx5_vdpa_kick_vq()).
->>>>>
->>>>> And in the case of VDUSE, it needs to wait for the response from the
->>>>> userspace, this means cond_resched() is probably a must for the case
->>>>> like UP.
->>>>>
->>>>>> Additionally, if the bug is vdpasim, I think it's better to try to
->>>>>> solve it there, if possible.
->>>>>>
->>>>>> Looking at vdpasim_net_work() and vdpasim_blk_work() it looks like
->>>>>> neither needs a process context, so perhaps you could rework it to run
->>>>>> the work_fn() directly from vdpasim_kick_vq(), at least for the control
->>>>>> virtqueue?
->>>>> It's possible (but require some rework on the simulator core). But
->>>>> considering we have other similar use cases, it looks better to solve
->>>>> it in the virtio-net driver.
->>>> I see.
->>>>
->>>>> Additionally, this may have better behaviour when using for the buggy
->>>>> hardware (e.g the control virtqueue takes too long to respond). We may
->>>>> consider switching to use interrupt/sleep in the future (but not
->>>>> suitable for -net).
->>>> Agreed. Possibly a timeout could be useful, too.
->>>>
->>>> Cheers,
->>>>
->>>> Paolo
->>> Hmm timeouts are kind of arbitrary.
->>> regular drivers basically derive them from hardware
->>> behaviour but with a generic driver like virtio it's harder.
->>> I guess we could add timeout as a config field, have
->>> device make a promise to the driver.
->>>
->>> Making the wait interruptible seems more reasonable.
->>
->> Yes, but I think we still need this patch for -net and -stable.
->>
->> Thanks
-> I was referring to Paolo's idea of having a timeout.
+Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=2348
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+---
+ drivers/scsi/qedf/qedf_main.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-
-Ok, I think we're fine with this patch. Any chance to merge this or do I 
-need to resend?
-
-Thanks
-
-
->
+diff --git a/drivers/scsi/qedf/qedf_main.c b/drivers/scsi/qedf/qedf_main.c
+index e045c6e25090..35e16600fc63 100644
+--- a/drivers/scsi/qedf/qedf_main.c
++++ b/drivers/scsi/qedf/qedf_main.c
+@@ -2951,7 +2951,6 @@ static int qedf_alloc_bdq(struct qedf_ctx *qedf)
+ 	int i;
+ 	struct scsi_bd *pbl;
+ 	u64 *list;
+-	dma_addr_t page;
+ 
+ 	/* Alloc dma memory for BDQ buffers */
+ 	for (i = 0; i < QEDF_BDQ_SIZE; i++) {
+@@ -3012,11 +3011,9 @@ static int qedf_alloc_bdq(struct qedf_ctx *qedf)
+ 	qedf->bdq_pbl_list_num_entries = qedf->bdq_pbl_mem_size /
+ 	    QEDF_PAGE_SIZE;
+ 	list = (u64 *)qedf->bdq_pbl_list;
+-	page = qedf->bdq_pbl_list_dma;
+ 	for (i = 0; i < qedf->bdq_pbl_list_num_entries; i++) {
+ 		*list = qedf->bdq_pbl_dma;
+ 		list++;
+-		page += QEDF_PAGE_SIZE;
+ 	}
+ 
+ 	return 0;
+-- 
+2.20.1.7.g153144c
 
