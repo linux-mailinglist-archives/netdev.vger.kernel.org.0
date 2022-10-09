@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 277F75F9004
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:20:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C4D65F90C4
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:27:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231355AbiJIWT7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:19:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56364 "EHLO
+        id S232079AbiJIW1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231519AbiJIWST (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:18:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2E527FD8;
-        Sun,  9 Oct 2022 15:16:06 -0700 (PDT)
+        with ESMTP id S231909AbiJIWZ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:25:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F178222AA;
+        Sun,  9 Oct 2022 15:18:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F83B60DC4;
-        Sun,  9 Oct 2022 22:15:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F22B0C433D6;
-        Sun,  9 Oct 2022 22:15:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3694B80DF3;
+        Sun,  9 Oct 2022 22:15:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36105C433D7;
+        Sun,  9 Oct 2022 22:15:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665353741;
-        bh=F91BAdOXkp+xhwYRMD0QHptsZMxc0ARjOGzeltr8YbA=;
+        s=k20201202; t=1665353743;
+        bh=4I++Kn9fSoZUHIYC6BYNYv/X7IAgLUe/WFzrPJLmnbY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KLKT9LJYVcqDRUAkECaZqpbCTsEYbCITNL11U7mcx+ZS+UR4VrakQE/uMJPQLlBm+
-         k94nBOadCntBBFDvpQn0d6MQ6Rr+oRwizVIgyDe9fkLr7GzoU7DQZFfE7GkD9ohYy2
-         BDMi3eouXgb3sM7E6CaIwMX76yP6mRtL1MKWljZQKrhrdF2b6fDGTMCZQJd/nAXxip
-         6ccjpUA4Mof0iXH5ZLfM5P09VoDwmuRHS1Y60FAI0oV8O1dEFFfyPyLIkZoerbS3pq
-         645R76LPVWlMHvOwIUSXUkqwiMv45hg5Q7CIRG/DLm5a7xGp5PiNiPZxRJYzOyDnvX
-         JhlR3iIiH8YLw==
+        b=qpRIrCNQIp15xrprso+D6NeTNGZIDsVyzC9Lqd7irAHDh/qS699wAet03KMwk4HJV
+         eBwErSp5zYpnFlLlhyLO8bWSqBmCs8PNXKYfZJACDz9k4YSkwLMGpBdQUWKZddTZPH
+         Nn3XOvPqUuC69IaGM8wIpeLDasbh21BMdRh3ZBImoypXIBrOQXlFN078P+dkMxfZcj
+         rK8DPkFLxNC6HKlibEJ1NKEcbMJG7FE6Q0ALgoEc+n7iCtca8as8HuhsHuxJmnBGUv
+         TSwSKTeBvPTKHsCn0ntxMJwzyp+ySjocJS846P2iDpVK/CQlqWgTaWXZctzJKWwLhE
+         DTYq9oy3ZdCeg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mike Pattrick <mkp@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, pshelar@ovn.org,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, dev@openvswitch.org
-Subject: [PATCH AUTOSEL 5.19 09/73] openvswitch: Fix overreporting of drops in dropwatch
-Date:   Sun,  9 Oct 2022 18:13:47 -0400
-Message-Id: <20221009221453.1216158-9-sashal@kernel.org>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, andrew@lunn.ch,
+        vivien.didelot@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 10/73] net: dsa: all DSA masters must be down when changing the tagging protocol
+Date:   Sun,  9 Oct 2022 18:13:48 -0400
+Message-Id: <20221009221453.1216158-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009221453.1216158-1-sashal@kernel.org>
 References: <20221009221453.1216158-1-sashal@kernel.org>
@@ -57,40 +58,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mike Pattrick <mkp@redhat.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit c21ab2afa2c64896a7f0e3cbc6845ec63dcfad2e ]
+[ Upstream commit f41ec1fd1c20e2a4e60a4ab8490b3e63423c0a8a ]
 
-Currently queue_userspace_packet will call kfree_skb for all frames,
-whether or not an error occurred. This can result in a single dropped
-frame being reported as multiple drops in dropwatch. This functions
-caller may also call kfree_skb in case of an error. This patch will
-consume the skbs instead and allow caller's to use kfree_skb.
+The fact that the tagging protocol is set and queried from the
+/sys/class/net/<dsa-master>/dsa/tagging file is a bit of a quirk from
+the single CPU port days which isn't aging very well now that DSA can
+have more than a single CPU port. This is because the tagging protocol
+is a switch property, yet in the presence of multiple CPU ports it can
+be queried and set from multiple sysfs files, all of which are handled
+by the same implementation.
 
-Signed-off-by: Mike Pattrick <mkp@redhat.com>
-Link: https://bugzilla.redhat.com/show_bug.cgi?id=2109957
-Signed-off-by: David S. Miller <davem@davemloft.net>
+The current logic ensures that the net device whose sysfs file we're
+changing the tagging protocol through must be down. That net device is
+the DSA master, and this is fine for single DSA master / CPU port setups.
+
+But exactly because the tagging protocol is per switch [ tree, in fact ]
+and not per DSA master, this isn't fine any longer with multiple CPU
+ports, and we must iterate through the tree and find all DSA masters,
+and make sure that all of them are down.
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/openvswitch/datapath.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/dsa/dsa2.c     | 10 +++-------
+ net/dsa/dsa_priv.h |  1 -
+ net/dsa/master.c   |  2 +-
+ 3 files changed, 4 insertions(+), 9 deletions(-)
 
-diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-index b68ba3c72519..93c596e3b22b 100644
---- a/net/openvswitch/datapath.c
-+++ b/net/openvswitch/datapath.c
-@@ -558,8 +558,9 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
- out:
- 	if (err)
- 		skb_tx_error(skb);
--	kfree_skb(user_skb);
--	kfree_skb(nskb);
-+	consume_skb(user_skb);
-+	consume_skb(nskb);
-+
- 	return err;
- }
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index cac48a741f27..b2fe62bfe8dd 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -1238,7 +1238,6 @@ static int dsa_tree_bind_tag_proto(struct dsa_switch_tree *dst,
+  * they would have formed disjoint trees (different "dsa,member" values).
+  */
+ int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
+-			      struct net_device *master,
+ 			      const struct dsa_device_ops *tag_ops,
+ 			      const struct dsa_device_ops *old_tag_ops)
+ {
+@@ -1254,14 +1253,11 @@ int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
+ 	 * attempts to change the tagging protocol. If we ever lift the IFF_UP
+ 	 * restriction, there needs to be another mutex which serializes this.
+ 	 */
+-	if (master->flags & IFF_UP)
+-		goto out_unlock;
+-
+ 	list_for_each_entry(dp, &dst->ports, list) {
+-		if (!dsa_port_is_user(dp))
+-			continue;
++		if (dsa_port_is_cpu(dp) && (dp->master->flags & IFF_UP))
++			goto out_unlock;
  
+-		if (dp->slave->flags & IFF_UP)
++		if (dsa_port_is_user(dp) && (dp->slave->flags & IFF_UP))
+ 			goto out_unlock;
+ 	}
+ 
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index d9722e49864b..cc1cc866dc42 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -545,7 +545,6 @@ struct dsa_lag *dsa_tree_lag_find(struct dsa_switch_tree *dst,
+ int dsa_tree_notify(struct dsa_switch_tree *dst, unsigned long e, void *v);
+ int dsa_broadcast(unsigned long e, void *v);
+ int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
+-			      struct net_device *master,
+ 			      const struct dsa_device_ops *tag_ops,
+ 			      const struct dsa_device_ops *old_tag_ops);
+ void dsa_tree_master_admin_state_change(struct dsa_switch_tree *dst,
+diff --git a/net/dsa/master.c b/net/dsa/master.c
+index 2851e44c4cf0..32c0a00a8b92 100644
+--- a/net/dsa/master.c
++++ b/net/dsa/master.c
+@@ -307,7 +307,7 @@ static ssize_t tagging_store(struct device *d, struct device_attribute *attr,
+ 		 */
+ 		goto out;
+ 
+-	err = dsa_tree_change_tag_proto(cpu_dp->ds->dst, dev, new_tag_ops,
++	err = dsa_tree_change_tag_proto(cpu_dp->ds->dst, new_tag_ops,
+ 					old_tag_ops);
+ 	if (err) {
+ 		/* On failure the old tagger is restored, so we don't need the
 -- 
 2.35.1
 
