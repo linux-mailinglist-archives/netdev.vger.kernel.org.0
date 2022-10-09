@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C34375F902C
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:21:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E05B5F9032
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:22:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231760AbiJIWVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:21:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45788 "EHLO
+        id S231655AbiJIWW2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:22:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231258AbiJIWTw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:19:52 -0400
+        with ESMTP id S230226AbiJIWU7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:20:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA00731EC4;
-        Sun,  9 Oct 2022 15:17:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FDBD357EB;
+        Sun,  9 Oct 2022 15:17:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1301060CF5;
-        Sun,  9 Oct 2022 22:16:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5254FC433B5;
-        Sun,  9 Oct 2022 22:16:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 903A260C9B;
+        Sun,  9 Oct 2022 22:16:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB654C4347C;
+        Sun,  9 Oct 2022 22:16:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665353788;
-        bh=ihi/X+jRwStHBrEQc38wWsGR2lD4+0D/n45zAeO5vlU=;
+        s=k20201202; t=1665353790;
+        bh=+AJPGenBgFAiiPW7WrHtLVmHu2KcQ0VzgQggN5EiGNo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DCASfawybmc53IrzPLWmkFe35lOG+92QUFIhPOAgw/11x0bu3NcktyJ6SL1q9/iXg
-         uGJwUtI4qdzBjyJoKAjJicOa6lqYoQnB+BH3kbcSerPqM5MaSPdqYbvqsWCiOdAO03
-         qj/VZZfyhu7Yevq1IBLWP5ru1OHGMrRIMBb5N7Q7Q80YM1chjuC2NM0p4LM1JeCyKF
-         fkGEHc+/qdu0JqctzZASSpdi1atPOcIie512rrleGobxuQT324uX+Gh+y/nkn8bZmM
-         JnJa/BCw/fM1CEfOhjbx8mbk1244PGVJHZ9B2CjotENpryPxnnRXFVweBrF3kxnqql
-         iJhB9Crx598+g==
+        b=Ur9v0mt8WrmNRuONsn+uW8Kw2FD0lswud3igfh1rskSJ8sCN2tNv2PNhB7tu5znrg
+         JLDSg7v5+GvuhQgqcsSCEIzXdcVQiudWwuGcrTSA7HwJG/Y7epkadTVOGEKv8fOE7T
+         k+w9Ho+HQyUVDohNk2fUSBHytS4UoyCccHpG7zBX8rOYeDyrQM35F/19MbHrRaV3TB
+         UsmrTZMQ9Xrq7FWCcQWwxwkAq61Qh9HgCUrdmyaam3AN5jWhV9PfLNh4F6cYMDX1eS
+         P2CBudptrQPCE2FC3813NquOf0ofBfiDUEgwSqHi4gyqFX/2JP6Gj4fnWbqeEMQL5Z
+         PfPh5tBjGfREg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zong-Zhe Yang <kevin_yang@realtek.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+Cc:     GUO Zihua <guozihua@huawei.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, rafal@milecki.pl,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 24/73] rtw89: ser: leave lps with mutex
-Date:   Sun,  9 Oct 2022 18:14:02 -0400
-Message-Id: <20221009221453.1216158-24-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.19 25/73] net: broadcom: Fix return type for implementation of
+Date:   Sun,  9 Oct 2022 18:14:03 -0400
+Message-Id: <20221009221453.1216158-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009221453.1216158-1-sashal@kernel.org>
 References: <20221009221453.1216158-1-sashal@kernel.org>
@@ -58,37 +58,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zong-Zhe Yang <kevin_yang@realtek.com>
+From: GUO Zihua <guozihua@huawei.com>
 
-[ Upstream commit 8676031bae1c91037d06341214f4150b33707c68 ]
+[ Upstream commit 12f7bd252221d4f9e000e20530e50129241e3a67 ]
 
-Calling rtw89_leave_lps() should hold rtwdev::mutex.
-So, fix it.
+Since Linux now supports CFI, it will be a good idea to fix mismatched
+return type for implementation of hooks. Otherwise this might get
+cought out by CFI and cause a panic.
 
-Signed-off-by: Zong-Zhe Yang <kevin_yang@realtek.com>
-Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220704023453.19935-5-pkshih@realtek.com
+bcm4908_enet_start_xmit() would return either NETDEV_TX_BUSY or
+NETDEV_TX_OK, so change the return type to netdev_tx_t directly.
+
+Signed-off-by: GUO Zihua <guozihua@huawei.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220902075407.52358-1-guozihua@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtw89/ser.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/broadcom/bcm4908_enet.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw89/ser.c b/drivers/net/wireless/realtek/rtw89/ser.c
-index 9e95ed972710..5d88200cbd3e 100644
---- a/drivers/net/wireless/realtek/rtw89/ser.c
-+++ b/drivers/net/wireless/realtek/rtw89/ser.c
-@@ -152,7 +152,10 @@ static void ser_state_run(struct rtw89_ser *ser, u8 evt)
- 	rtw89_debug(rtwdev, RTW89_DBG_SER, "ser: %s receive %s\n",
- 		    ser_st_name(ser), ser_ev_name(ser, evt));
- 
-+	mutex_lock(&rtwdev->mutex);
- 	rtw89_leave_lps(rtwdev);
-+	mutex_unlock(&rtwdev->mutex);
-+
- 	ser->st_tbl[ser->state].st_func(ser, evt);
+diff --git a/drivers/net/ethernet/broadcom/bcm4908_enet.c b/drivers/net/ethernet/broadcom/bcm4908_enet.c
+index c131d8118489..e5e17a182f9d 100644
+--- a/drivers/net/ethernet/broadcom/bcm4908_enet.c
++++ b/drivers/net/ethernet/broadcom/bcm4908_enet.c
+@@ -507,7 +507,7 @@ static int bcm4908_enet_stop(struct net_device *netdev)
+ 	return 0;
  }
  
+-static int bcm4908_enet_start_xmit(struct sk_buff *skb, struct net_device *netdev)
++static netdev_tx_t bcm4908_enet_start_xmit(struct sk_buff *skb, struct net_device *netdev)
+ {
+ 	struct bcm4908_enet *enet = netdev_priv(netdev);
+ 	struct bcm4908_enet_dma_ring *ring = &enet->tx_ring;
 -- 
 2.35.1
 
