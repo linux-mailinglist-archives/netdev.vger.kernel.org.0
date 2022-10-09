@@ -2,48 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6993C5F91AB
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:40:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B3225F91A5
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:36:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232730AbiJIWk2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:40:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33090 "EHLO
+        id S232972AbiJIWgc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:36:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233071AbiJIWgj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:36:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B71A3FEFE;
-        Sun,  9 Oct 2022 15:20:59 -0700 (PDT)
+        with ESMTP id S233040AbiJIWeo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:34:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D2CF038;
+        Sun,  9 Oct 2022 15:20:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 37384B80DDB;
-        Sun,  9 Oct 2022 22:20:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99C28C43470;
-        Sun,  9 Oct 2022 22:20:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A900E60C19;
+        Sun,  9 Oct 2022 22:20:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1268C433D6;
+        Sun,  9 Oct 2022 22:20:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665354006;
-        bh=dJH2252v8C1VcHtokL3JAqci3ZfsZKJ6QQcpbTTfJaU=;
+        s=k20201202; t=1665354012;
+        bh=IA9uB1MYFY5GqHlUtk36u1GHPIMq0KeQgQZQTfmtR3I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gMZmpMiYjnAB6ljfSkRhBoUXxyB9A7MENo5YtlX2qzxy0LhCtDLZZwie9A0jW+WMT
-         +OCILqfJBJIFz4zqwl4I4qsTnQQy5VR8si/Xxx9+kMjDJHYRAswltBC0/qbDPv9bw+
-         gv4ED7Crw7aHhp8hMngE4QjQk/QO2gaWi5aJe1eZGZDPfFLP/YPtIwm/5TaFgBWZkk
-         UhTKY06eRRN0ZrycUFg0jqWjRD3JGl39oG0GUbXsxkQBj7pzqyVvZNR1Nwm4uCVc+3
-         2c8Vqexs4cJDtHoZKbh0Z+yvVUKsM7a/Hr5Ilwb7BbsctlTgmrSWl4lfbkUY+L1wXf
-         1QqL4bt9odfHw==
+        b=Jg2kgGSije6QtqQ5tTqybiYQDvPR+c0ehQi414At4TYz66/aF/oMA9DrgurPbCVws
+         WrMRu5GjqZgChfqDnxF+ZWKgtqelfCjBq1RpDnPgIPZd1QBaihe+yUVJNQmXIX3Bj2
+         S2lHXRpcHsTmhaULIF0iQ97q0eLF9hGAXKAw6Jyb/AdRYv2qrx+3qfo5jPCcDz0B8v
+         ZcXogzNZEPGmSWyp3HCGuIHQXZ3DvKBdagzlmMrXpZm46ebdASuYKMLexdIdv+yDww
+         qqESj9+IC80zUx8GNe93KvByZs06JgTzmLBdx81bYenc0OkKRpskbY0f1hz7qG02Pv
+         cUATvXvOZSPJg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michal Jaron <michalx.jaron@intel.com>,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>, jesse.brandeburg@intel.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 19/46] iavf: Fix race between iavf_close and iavf_reset_task
-Date:   Sun,  9 Oct 2022 18:18:44 -0400
-Message-Id: <20221009221912.1217372-19-sashal@kernel.org>
+Cc:     Alexander Coffin <alex.coffin@matician.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        aspriel@gmail.com, franky.lin@broadcom.com,
+        hante.meuleman@broadcom.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        chi-hsien.lin@cypress.com, a.fatoum@pengutronix.de,
+        hdegoede@redhat.com, pavel@loebl.cz, bigeasy@linutronix.de,
+        wsa+renesas@sang-engineering.com, wright.feng@cypress.com,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 20/46] wifi: brcmfmac: fix use-after-free bug in brcmf_netdev_start_xmit()
+Date:   Sun,  9 Oct 2022 18:18:45 -0400
+Message-Id: <20221009221912.1217372-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009221912.1217372-1-sashal@kernel.org>
 References: <20221009221912.1217372-1-sashal@kernel.org>
@@ -60,292 +63,138 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Jaron <michalx.jaron@intel.com>
+From: Alexander Coffin <alex.coffin@matician.com>
 
-[ Upstream commit 11c12adcbc1598d91e73ab6ddfa41d25a01478ed ]
+[ Upstream commit 3f42faf6db431e04bf942d2ebe3ae88975723478 ]
 
-During stress tests with adding VF to namespace and changing vf's
-trust there was a race between iavf_reset_task and iavf_close.
-Sometimes when IAVF_FLAG_AQ_DISABLE_QUEUES from iavf_close was sent
-to PF after reset and before IAVF_AQ_GET_CONFIG was sent then PF
-returns error IAVF_NOT_SUPPORTED to disable queues request and
-following requests. There is need to get_config before other
-aq_required will be send but iavf_close clears all flags, if
-get_config was not sent before iavf_close, then it will not be send
-at all.
+> ret = brcmf_proto_tx_queue_data(drvr, ifp->ifidx, skb);
 
-In case when IAVF_FLAG_AQ_GET_OFFLOAD_VLAN_V2_CAPS was sent before
-IAVF_FLAG_AQ_DISABLE_QUEUES then there was rtnl_lock deadlock
-between iavf_close and iavf_adminq_task until iavf_close timeouts
-and disable queues was sent after iavf_close ends.
+may be schedule, and then complete before the line
 
-There was also a problem with sending delete/add filters.
-Sometimes when filters was not yet added to PF and in
-iavf_close all filters was set to remove there might be a try
-to remove nonexistent filters on PF.
+> ndev->stats.tx_bytes += skb->len;
 
-Add aq_required_tmp to save aq_required flags and send them after
-disable_queues will be handled. Clear flags given to iavf_down
-different than IAVF_FLAG_AQ_GET_CONFIG as this flag is necessary
-to sent other aq_required. Remove some flags that we don't
-want to send as we are in iavf_close and we want to disable
-interface. Remove filters which was not yet sent and send del
-filters flags only when there are filters to remove.
+[   46.912801] ==================================================================
+[   46.920552] BUG: KASAN: use-after-free in brcmf_netdev_start_xmit+0x718/0x8c8 [brcmfmac]
+[   46.928673] Read of size 4 at addr ffffff803f5882e8 by task systemd-resolve/328
+[   46.935991]
+[   46.937514] CPU: 1 PID: 328 Comm: systemd-resolve Tainted: G           O      5.4.199-[REDACTED] #1
+[   46.947255] Hardware name: [REDACTED]
+[   46.954568] Call trace:
+[   46.957037]  dump_backtrace+0x0/0x2b8
+[   46.960719]  show_stack+0x24/0x30
+[   46.964052]  dump_stack+0x128/0x194
+[   46.967557]  print_address_description.isra.0+0x64/0x380
+[   46.972877]  __kasan_report+0x1d4/0x240
+[   46.976723]  kasan_report+0xc/0x18
+[   46.980138]  __asan_report_load4_noabort+0x18/0x20
+[   46.985027]  brcmf_netdev_start_xmit+0x718/0x8c8 [brcmfmac]
+[   46.990613]  dev_hard_start_xmit+0x1bc/0xda0
+[   46.994894]  sch_direct_xmit+0x198/0xd08
+[   46.998827]  __qdisc_run+0x37c/0x1dc0
+[   47.002500]  __dev_queue_xmit+0x1528/0x21f8
+[   47.006692]  dev_queue_xmit+0x24/0x30
+[   47.010366]  neigh_resolve_output+0x37c/0x678
+[   47.014734]  ip_finish_output2+0x598/0x2458
+[   47.018927]  __ip_finish_output+0x300/0x730
+[   47.023118]  ip_output+0x2e0/0x430
+[   47.026530]  ip_local_out+0x90/0x140
+[   47.030117]  igmpv3_sendpack+0x14c/0x228
+[   47.034049]  igmpv3_send_cr+0x384/0x6b8
+[   47.037895]  igmp_ifc_timer_expire+0x4c/0x118
+[   47.042262]  call_timer_fn+0x1cc/0xbe8
+[   47.046021]  __run_timers+0x4d8/0xb28
+[   47.049693]  run_timer_softirq+0x24/0x40
+[   47.053626]  __do_softirq+0x2c0/0x117c
+[   47.057387]  irq_exit+0x2dc/0x388
+[   47.060715]  __handle_domain_irq+0xb4/0x158
+[   47.064908]  gic_handle_irq+0x58/0xb0
+[   47.068581]  el0_irq_naked+0x50/0x5c
+[   47.072162]
+[   47.073665] Allocated by task 328:
+[   47.077083]  save_stack+0x24/0xb0
+[   47.080410]  __kasan_kmalloc.isra.0+0xc0/0xe0
+[   47.084776]  kasan_slab_alloc+0x14/0x20
+[   47.088622]  kmem_cache_alloc+0x15c/0x468
+[   47.092643]  __alloc_skb+0xa4/0x498
+[   47.096142]  igmpv3_newpack+0x158/0xd78
+[   47.099987]  add_grhead+0x210/0x288
+[   47.103485]  add_grec+0x6b0/0xb70
+[   47.106811]  igmpv3_send_cr+0x2e0/0x6b8
+[   47.110657]  igmp_ifc_timer_expire+0x4c/0x118
+[   47.115027]  call_timer_fn+0x1cc/0xbe8
+[   47.118785]  __run_timers+0x4d8/0xb28
+[   47.122457]  run_timer_softirq+0x24/0x40
+[   47.126389]  __do_softirq+0x2c0/0x117c
+[   47.130142]
+[   47.131643] Freed by task 180:
+[   47.134712]  save_stack+0x24/0xb0
+[   47.138041]  __kasan_slab_free+0x108/0x180
+[   47.142146]  kasan_slab_free+0x10/0x18
+[   47.145904]  slab_free_freelist_hook+0xa4/0x1b0
+[   47.150444]  kmem_cache_free+0x8c/0x528
+[   47.154292]  kfree_skbmem+0x94/0x108
+[   47.157880]  consume_skb+0x10c/0x5a8
+[   47.161466]  __dev_kfree_skb_any+0x88/0xa0
+[   47.165598]  brcmu_pkt_buf_free_skb+0x44/0x68 [brcmutil]
+[   47.171023]  brcmf_txfinalize+0xec/0x190 [brcmfmac]
+[   47.176016]  brcmf_proto_bcdc_txcomplete+0x1c0/0x210 [brcmfmac]
+[   47.182056]  brcmf_sdio_sendfromq+0x8dc/0x1e80 [brcmfmac]
+[   47.187568]  brcmf_sdio_dpc+0xb48/0x2108 [brcmfmac]
+[   47.192529]  brcmf_sdio_dataworker+0xc8/0x238 [brcmfmac]
+[   47.197859]  process_one_work+0x7fc/0x1a80
+[   47.201965]  worker_thread+0x31c/0xc40
+[   47.205726]  kthread+0x2d8/0x370
+[   47.208967]  ret_from_fork+0x10/0x18
+[   47.212546]
+[   47.214051] The buggy address belongs to the object at ffffff803f588280
+[   47.214051]  which belongs to the cache skbuff_head_cache of size 208
+[   47.227086] The buggy address is located 104 bytes inside of
+[   47.227086]  208-byte region [ffffff803f588280, ffffff803f588350)
+[   47.238814] The buggy address belongs to the page:
+[   47.243618] page:ffffffff00dd6200 refcount:1 mapcount:0 mapping:ffffff804b6bf800 index:0xffffff803f589900 compound_mapcount: 0
+[   47.255007] flags: 0x10200(slab|head)
+[   47.258689] raw: 0000000000010200 ffffffff00dfa980 0000000200000002 ffffff804b6bf800
+[   47.266439] raw: ffffff803f589900 0000000080190018 00000001ffffffff 0000000000000000
+[   47.274180] page dumped because: kasan: bad access detected
+[   47.279752]
+[   47.281251] Memory state around the buggy address:
+[   47.286051]  ffffff803f588180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[   47.293277]  ffffff803f588200: fb fb fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[   47.300502] >ffffff803f588280: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[   47.307723]                                                           ^
+[   47.314343]  ffffff803f588300: fb fb fb fb fb fb fb fb fb fb fc fc fc fc fc fc
+[   47.321569]  ffffff803f588380: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
+[   47.328789] ==================================================================
 
-Signed-off-by: Michal Jaron <michalx.jaron@intel.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Alexander Coffin <alex.coffin@matician.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220808174925.3922558-1-alex.coffin@matician.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c | 177 ++++++++++++++++----
- 1 file changed, 141 insertions(+), 36 deletions(-)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 00b2ef01f4ea..629ebdfa48b8 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -1012,66 +1012,138 @@ static void iavf_up_complete(struct iavf_adapter *adapter)
- }
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
+index db5f8535fdb5..e5bae6224521 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
+@@ -295,6 +295,7 @@ static netdev_tx_t brcmf_netdev_start_xmit(struct sk_buff *skb,
+ 	struct brcmf_pub *drvr = ifp->drvr;
+ 	struct ethhdr *eh;
+ 	int head_delta;
++	unsigned int tx_bytes = skb->len;
  
- /**
-- * iavf_down - Shutdown the connection processing
-+ * iavf_clear_mac_vlan_filters - Remove mac and vlan filters not sent to PF
-+ * yet and mark other to be removed.
-  * @adapter: board private structure
-- *
-- * Expects to be called while holding the __IAVF_IN_CRITICAL_TASK bit lock.
-  **/
--void iavf_down(struct iavf_adapter *adapter)
-+static void iavf_clear_mac_vlan_filters(struct iavf_adapter *adapter)
- {
--	struct net_device *netdev = adapter->netdev;
--	struct iavf_vlan_filter *vlf;
--	struct iavf_cloud_filter *cf;
--	struct iavf_fdir_fltr *fdir;
--	struct iavf_mac_filter *f;
--	struct iavf_adv_rss *rss;
--
--	if (adapter->state <= __IAVF_DOWN_PENDING)
--		return;
--
--	netif_carrier_off(netdev);
--	netif_tx_disable(netdev);
--	adapter->link_up = false;
--	iavf_napi_disable_all(adapter);
--	iavf_irq_disable(adapter);
-+	struct iavf_vlan_filter *vlf, *vlftmp;
-+	struct iavf_mac_filter *f, *ftmp;
+ 	brcmf_dbg(DATA, "Enter, bsscfgidx=%d\n", ifp->bsscfgidx);
  
- 	spin_lock_bh(&adapter->mac_vlan_list_lock);
--
- 	/* clear the sync flag on all filters */
- 	__dev_uc_unsync(adapter->netdev, NULL);
- 	__dev_mc_unsync(adapter->netdev, NULL);
- 
- 	/* remove all MAC filters */
--	list_for_each_entry(f, &adapter->mac_filter_list, list) {
--		f->remove = true;
-+	list_for_each_entry_safe(f, ftmp, &adapter->mac_filter_list,
-+				 list) {
-+		if (f->add) {
-+			list_del(&f->list);
-+			kfree(f);
-+		} else {
-+			f->remove = true;
-+		}
+@@ -369,7 +370,7 @@ static netdev_tx_t brcmf_netdev_start_xmit(struct sk_buff *skb,
+ 		ndev->stats.tx_dropped++;
+ 	} else {
+ 		ndev->stats.tx_packets++;
+-		ndev->stats.tx_bytes += skb->len;
++		ndev->stats.tx_bytes += tx_bytes;
  	}
  
- 	/* remove all VLAN filters */
--	list_for_each_entry(vlf, &adapter->vlan_filter_list, list) {
--		vlf->remove = true;
-+	list_for_each_entry_safe(vlf, vlftmp, &adapter->vlan_filter_list,
-+				 list) {
-+		if (vlf->add) {
-+			list_del(&vlf->list);
-+			kfree(vlf);
-+		} else {
-+			vlf->remove = true;
-+		}
- 	}
--
- 	spin_unlock_bh(&adapter->mac_vlan_list_lock);
-+}
-+
-+/**
-+ * iavf_clear_cloud_filters - Remove cloud filters not sent to PF yet and
-+ * mark other to be removed.
-+ * @adapter: board private structure
-+ **/
-+static void iavf_clear_cloud_filters(struct iavf_adapter *adapter)
-+{
-+	struct iavf_cloud_filter *cf, *cftmp;
- 
- 	/* remove all cloud filters */
- 	spin_lock_bh(&adapter->cloud_filter_list_lock);
--	list_for_each_entry(cf, &adapter->cloud_filter_list, list) {
--		cf->del = true;
-+	list_for_each_entry_safe(cf, cftmp, &adapter->cloud_filter_list,
-+				 list) {
-+		if (cf->add) {
-+			list_del(&cf->list);
-+			kfree(cf);
-+			adapter->num_cloud_filters--;
-+		} else {
-+			cf->del = true;
-+		}
- 	}
- 	spin_unlock_bh(&adapter->cloud_filter_list_lock);
-+}
-+
-+/**
-+ * iavf_clear_fdir_filters - Remove fdir filters not sent to PF yet and mark
-+ * other to be removed.
-+ * @adapter: board private structure
-+ **/
-+static void iavf_clear_fdir_filters(struct iavf_adapter *adapter)
-+{
-+	struct iavf_fdir_fltr *fdir, *fdirtmp;
- 
- 	/* remove all Flow Director filters */
- 	spin_lock_bh(&adapter->fdir_fltr_lock);
--	list_for_each_entry(fdir, &adapter->fdir_list_head, list) {
--		fdir->state = IAVF_FDIR_FLTR_DEL_REQUEST;
-+	list_for_each_entry_safe(fdir, fdirtmp, &adapter->fdir_list_head,
-+				 list) {
-+		if (fdir->state == IAVF_FDIR_FLTR_ADD_REQUEST) {
-+			list_del(&fdir->list);
-+			kfree(fdir);
-+			adapter->fdir_active_fltr--;
-+		} else {
-+			fdir->state = IAVF_FDIR_FLTR_DEL_REQUEST;
-+		}
- 	}
- 	spin_unlock_bh(&adapter->fdir_fltr_lock);
-+}
-+
-+/**
-+ * iavf_clear_adv_rss_conf - Remove adv rss conf not sent to PF yet and mark
-+ * other to be removed.
-+ * @adapter: board private structure
-+ **/
-+static void iavf_clear_adv_rss_conf(struct iavf_adapter *adapter)
-+{
-+	struct iavf_adv_rss *rss, *rsstmp;
- 
- 	/* remove all advance RSS configuration */
- 	spin_lock_bh(&adapter->adv_rss_lock);
--	list_for_each_entry(rss, &adapter->adv_rss_list_head, list)
--		rss->state = IAVF_ADV_RSS_DEL_REQUEST;
-+	list_for_each_entry_safe(rss, rsstmp, &adapter->adv_rss_list_head,
-+				 list) {
-+		if (rss->state == IAVF_ADV_RSS_ADD_REQUEST) {
-+			list_del(&rss->list);
-+			kfree(rss);
-+		} else {
-+			rss->state = IAVF_ADV_RSS_DEL_REQUEST;
-+		}
-+	}
- 	spin_unlock_bh(&adapter->adv_rss_lock);
-+}
-+
-+/**
-+ * iavf_down - Shutdown the connection processing
-+ * @adapter: board private structure
-+ *
-+ * Expects to be called while holding the __IAVF_IN_CRITICAL_TASK bit lock.
-+ **/
-+void iavf_down(struct iavf_adapter *adapter)
-+{
-+	struct net_device *netdev = adapter->netdev;
-+
-+	if (adapter->state <= __IAVF_DOWN_PENDING)
-+		return;
-+
-+	netif_carrier_off(netdev);
-+	netif_tx_disable(netdev);
-+	adapter->link_up = false;
-+	iavf_napi_disable_all(adapter);
-+	iavf_irq_disable(adapter);
-+
-+	iavf_clear_mac_vlan_filters(adapter);
-+	iavf_clear_cloud_filters(adapter);
-+	iavf_clear_fdir_filters(adapter);
-+	iavf_clear_adv_rss_conf(adapter);
- 
- 	if (!(adapter->flags & IAVF_FLAG_PF_COMMS_FAILED)) {
- 		/* cancel any current operation */
-@@ -1080,11 +1152,16 @@ void iavf_down(struct iavf_adapter *adapter)
- 		 * here for this to complete. The watchdog is still running
- 		 * and it will take care of this.
- 		 */
--		adapter->aq_required = IAVF_FLAG_AQ_DEL_MAC_FILTER;
--		adapter->aq_required |= IAVF_FLAG_AQ_DEL_VLAN_FILTER;
--		adapter->aq_required |= IAVF_FLAG_AQ_DEL_CLOUD_FILTER;
--		adapter->aq_required |= IAVF_FLAG_AQ_DEL_FDIR_FILTER;
--		adapter->aq_required |= IAVF_FLAG_AQ_DEL_ADV_RSS_CFG;
-+		if (!list_empty(&adapter->mac_filter_list))
-+			adapter->aq_required |= IAVF_FLAG_AQ_DEL_MAC_FILTER;
-+		if (!list_empty(&adapter->vlan_filter_list))
-+			adapter->aq_required |= IAVF_FLAG_AQ_DEL_VLAN_FILTER;
-+		if (!list_empty(&adapter->cloud_filter_list))
-+			adapter->aq_required |= IAVF_FLAG_AQ_DEL_CLOUD_FILTER;
-+		if (!list_empty(&adapter->fdir_list_head))
-+			adapter->aq_required |= IAVF_FLAG_AQ_DEL_FDIR_FILTER;
-+		if (!list_empty(&adapter->adv_rss_list_head))
-+			adapter->aq_required |= IAVF_FLAG_AQ_DEL_ADV_RSS_CFG;
- 		adapter->aq_required |= IAVF_FLAG_AQ_DISABLE_QUEUES;
- 	}
- 
-@@ -3483,6 +3560,7 @@ static int iavf_open(struct net_device *netdev)
- static int iavf_close(struct net_device *netdev)
- {
- 	struct iavf_adapter *adapter = netdev_priv(netdev);
-+	u64 aq_to_restore;
- 	int status;
- 
- 	mutex_lock(&adapter->crit_lock);
-@@ -3495,6 +3573,29 @@ static int iavf_close(struct net_device *netdev)
- 	set_bit(__IAVF_VSI_DOWN, adapter->vsi.state);
- 	if (CLIENT_ENABLED(adapter))
- 		adapter->flags |= IAVF_FLAG_CLIENT_NEEDS_CLOSE;
-+	/* We cannot send IAVF_FLAG_AQ_GET_OFFLOAD_VLAN_V2_CAPS before
-+	 * IAVF_FLAG_AQ_DISABLE_QUEUES because in such case there is rtnl
-+	 * deadlock with adminq_task() until iavf_close timeouts. We must send
-+	 * IAVF_FLAG_AQ_GET_CONFIG before IAVF_FLAG_AQ_DISABLE_QUEUES to make
-+	 * disable queues possible for vf. Give only necessary flags to
-+	 * iavf_down and save other to set them right before iavf_close()
-+	 * returns, when IAVF_FLAG_AQ_DISABLE_QUEUES will be already sent and
-+	 * iavf will be in DOWN state.
-+	 */
-+	aq_to_restore = adapter->aq_required;
-+	adapter->aq_required &= IAVF_FLAG_AQ_GET_CONFIG;
-+
-+	/* Remove flags which we do not want to send after close or we want to
-+	 * send before disable queues.
-+	 */
-+	aq_to_restore &= ~(IAVF_FLAG_AQ_GET_CONFIG		|
-+			   IAVF_FLAG_AQ_ENABLE_QUEUES		|
-+			   IAVF_FLAG_AQ_CONFIGURE_QUEUES	|
-+			   IAVF_FLAG_AQ_ADD_VLAN_FILTER		|
-+			   IAVF_FLAG_AQ_ADD_MAC_FILTER		|
-+			   IAVF_FLAG_AQ_ADD_CLOUD_FILTER	|
-+			   IAVF_FLAG_AQ_ADD_FDIR_FILTER		|
-+			   IAVF_FLAG_AQ_ADD_ADV_RSS_CFG);
- 
- 	iavf_down(adapter);
- 	iavf_change_state(adapter, __IAVF_DOWN_PENDING);
-@@ -3518,6 +3619,10 @@ static int iavf_close(struct net_device *netdev)
- 				    msecs_to_jiffies(500));
- 	if (!status)
- 		netdev_warn(netdev, "Device resources not yet released\n");
-+
-+	mutex_lock(&adapter->crit_lock);
-+	adapter->aq_required |= aq_to_restore;
-+	mutex_unlock(&adapter->crit_lock);
- 	return 0;
- }
- 
+ 	/* Return ok: we always eat the packet */
 -- 
 2.35.1
 
