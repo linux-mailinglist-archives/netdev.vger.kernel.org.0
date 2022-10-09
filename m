@@ -2,46 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 641525F909F
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:26:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AC815F90BA
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 00:26:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231978AbiJIW02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 18:26:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35578 "EHLO
+        id S231786AbiJIW04 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 18:26:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231758AbiJIWYt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:24:49 -0400
+        with ESMTP id S231841AbiJIWZv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 18:25:51 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 471303BC6E;
-        Sun,  9 Oct 2022 15:18:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 882041F60B;
+        Sun,  9 Oct 2022 15:18:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D0F45B80DF0;
-        Sun,  9 Oct 2022 22:15:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3878AC433C1;
-        Sun,  9 Oct 2022 22:15:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE9F7B80DF1;
+        Sun,  9 Oct 2022 22:15:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6019C433D6;
+        Sun,  9 Oct 2022 22:15:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665353705;
-        bh=t4QUz7k5ixCbtG/WyjayRMs4byyTtxxTPJyT7nb1rRM=;
+        s=k20201202; t=1665353724;
+        bh=bPQpXuTiwSD2XHaeEE3f7S0MAGju3li9gNzgfMUaygQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b8nxLwVum8v0IlZfGDR5SlZEoFSrki9th+GNZFxeDHxB481iwLiof2PKDvzMuUau0
-         qmgnmV99jLWmFTOP2PVSbD1rtGh3apWmlQtcD/XSXWsD565Xkq/veuisRBeYyt6H7K
-         x2UxiwqdVUccusYoFWTGak6w4jXorJIuPxWoaRHpbj1BiujRdInMFZr28ARzZ67i+C
-         usA1qXn3XgAKl4BProR+nxO35FGNFFYfpemQviLF1VdFA9M6XPb76OKrimm3AyOZ76
-         UjoeucaDK4DQjqB34wyzxQc9J9JQm1baBKpx7fg+RVx/yz9e+zfvS3mWe2FNy9bK2W
-         I/w/F1EhWpSkQ==
+        b=JBX1+cyJJJAELBl9R+u/rinJOQ01OQKadbO4vY960u/N836eI55bPn5fmSEcNUXNF
+         kgy7FngVeJTdBazoJcywnGOANGTQbCg6pmqs6v9HCF658ojELIP66CQ9VfRD7Sw7xE
+         s1P0n7nUZC2+XWuZdJ8a55ji9orrhwn5OFEW8dVbAy+dwOzFmiklG0Az6McoRHQUU+
+         NZjKIcKoEYG1WiwjBURukW9se7SpwurTTDE9AEvL0zcZAq2EGPRDPUndBxLVwXMC/4
+         p0fFn+qj+u97tTJY0thVcpi8mCfI5kamMS3Fu+eXoWdb4VBleTfT4gAQrFpZkpPnhJ
+         qbxwQAVsIzwJg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Youghandhar Chintala <quic_youghand@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 03/73] wifi: ath10k: Set tx credit to one for WCN3990 snoc based devices
-Date:   Sun,  9 Oct 2022 18:13:41 -0400
-Message-Id: <20221009221453.1216158-3-sashal@kernel.org>
+Cc:     Wright Feng <wright.feng@cypress.com>,
+        Chi-hsien Lin <chi-hsien.lin@cypress.com>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        aspriel@gmail.com, franky.lin@broadcom.com,
+        hante.meuleman@broadcom.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 04/73] wifi: brcmfmac: fix invalid address access when enabling SCAN log level
+Date:   Sun,  9 Oct 2022 18:13:42 -0400
+Message-Id: <20221009221453.1216158-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221009221453.1216158-1-sashal@kernel.org>
 References: <20221009221453.1216158-1-sashal@kernel.org>
@@ -59,205 +64,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Youghandhar Chintala <quic_youghand@quicinc.com>
+From: Wright Feng <wright.feng@cypress.com>
 
-[ Upstream commit d81bbb684c250a637186d9286d75b1cb04d2986c ]
+[ Upstream commit aa666b68e73fc06d83c070d96180b9010cf5a960 ]
 
-Currently host can send two WMI commands at once. There is possibility to
-cause SMMU issues or corruption, if host wants to initiate 2 DMA
-transfers, it is possible when copy complete interrupt for first DMA
-reaches host, CE has already updated SRRI (Source ring read index) for
-both DMA transfers and is in the middle of 2nd DMA. Host uses SRRI
-(Source ring read index) to interpret how many DMA’s have been completed
-and tries to unmap/free both the DMA entries. Hence now it is limiting to
-one.Because CE is  still in the middle of 2nd DMA which can cause these
-issues when handling two DMA transfers.
+The variable i is changed when setting random MAC address and causes
+invalid address access when printing the value of pi->reqs[i]->reqid.
 
-This change will not impact other targets, as it is only for WCN3990.
+We replace reqs index with ri to fix the issue.
 
-Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.2.0-01387-QCAHLSWMTPLZ-1
+[  136.726473] Unable to handle kernel access to user memory outside uaccess routines at virtual address 0000000000000000
+[  136.737365] Mem abort info:
+[  136.740172]   ESR = 0x96000004
+[  136.743359]   Exception class = DABT (current EL), IL = 32 bits
+[  136.749294]   SET = 0, FnV = 0
+[  136.752481]   EA = 0, S1PTW = 0
+[  136.755635] Data abort info:
+[  136.758514]   ISV = 0, ISS = 0x00000004
+[  136.762487]   CM = 0, WnR = 0
+[  136.765522] user pgtable: 4k pages, 48-bit VAs, pgdp = 000000005c4e2577
+[  136.772265] [0000000000000000] pgd=0000000000000000
+[  136.777160] Internal error: Oops: 96000004 [#1] PREEMPT SMP
+[  136.782732] Modules linked in: brcmfmac(O) brcmutil(O) cfg80211(O) compat(O)
+[  136.789788] Process wificond (pid: 3175, stack limit = 0x00000000053048fb)
+[  136.796664] CPU: 3 PID: 3175 Comm: wificond Tainted: G           O      4.19.42-00001-g531a5f5 #1
+[  136.805532] Hardware name: Freescale i.MX8MQ EVK (DT)
+[  136.810584] pstate: 60400005 (nZCv daif +PAN -UAO)
+[  136.815429] pc : brcmf_pno_config_sched_scans+0x6cc/0xa80 [brcmfmac]
+[  136.821811] lr : brcmf_pno_config_sched_scans+0x67c/0xa80 [brcmfmac]
+[  136.828162] sp : ffff00000e9a3880
+[  136.831475] x29: ffff00000e9a3890 x28: ffff800020543400
+[  136.836786] x27: ffff8000b1008880 x26: ffff0000012bf6a0
+[  136.842098] x25: ffff80002054345c x24: ffff800088d22400
+[  136.847409] x23: ffff0000012bf638 x22: ffff0000012bf6d8
+[  136.852721] x21: ffff8000aced8fc0 x20: ffff8000ac164400
+[  136.858032] x19: ffff00000e9a3946 x18: 0000000000000000
+[  136.863343] x17: 0000000000000000 x16: 0000000000000000
+[  136.868655] x15: ffff0000093f3b37 x14: 0000000000000050
+[  136.873966] x13: 0000000000003135 x12: 0000000000000000
+[  136.879277] x11: 0000000000000000 x10: ffff000009a61888
+[  136.884589] x9 : 000000000000000f x8 : 0000000000000008
+[  136.889900] x7 : 303a32303d726464 x6 : ffff00000a1f957d
+[  136.895211] x5 : 0000000000000000 x4 : ffff00000e9a3942
+[  136.900523] x3 : 0000000000000000 x2 : ffff0000012cead8
+[  136.905834] x1 : ffff0000012bf6d8 x0 : 0000000000000000
+[  136.911146] Call trace:
+[  136.913623]  brcmf_pno_config_sched_scans+0x6cc/0xa80 [brcmfmac]
+[  136.919658]  brcmf_pno_start_sched_scan+0xa4/0x118 [brcmfmac]
+[  136.925430]  brcmf_cfg80211_sched_scan_start+0x80/0xe0 [brcmfmac]
+[  136.931636]  nl80211_start_sched_scan+0x140/0x308 [cfg80211]
+[  136.937298]  genl_rcv_msg+0x358/0x3f4
+[  136.940960]  netlink_rcv_skb+0xb4/0x118
+[  136.944795]  genl_rcv+0x34/0x48
+[  136.947935]  netlink_unicast+0x264/0x300
+[  136.951856]  netlink_sendmsg+0x2e4/0x33c
+[  136.955781]  __sys_sendto+0x120/0x19c
 
-Signed-off-by: Youghandhar Chintala <quic_youghand@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220801134941.15216-1-quic_youghand@quicinc.com
+Signed-off-by: Wright Feng <wright.feng@cypress.com>
+Signed-off-by: Chi-hsien Lin <chi-hsien.lin@cypress.com>
+Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220722115632.620681-4-alvin@pqrs.dk
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/core.c | 16 ++++++++++++++++
- drivers/net/wireless/ath/ath10k/htc.c  | 11 ++++++++---
- drivers/net/wireless/ath/ath10k/hw.h   |  2 ++
- 3 files changed, 26 insertions(+), 3 deletions(-)
+ .../net/wireless/broadcom/brcm80211/brcmfmac/pno.c   | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
-index 688177453b07..07c4a4f0ed33 100644
---- a/drivers/net/wireless/ath/ath10k/core.c
-+++ b/drivers/net/wireless/ath/ath10k/core.c
-@@ -95,6 +95,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.tx_stats_over_pktlog = true,
- 		.dynamic_sar_support = false,
- 		.hw_restart_disconnect = false,
-+		.use_fw_tx_credits = true,
- 	},
- 	{
- 		.id = QCA988X_HW_2_0_VERSION,
-@@ -133,6 +134,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.tx_stats_over_pktlog = true,
- 		.dynamic_sar_support = false,
- 		.hw_restart_disconnect = false,
-+		.use_fw_tx_credits = true,
- 	},
- 	{
- 		.id = QCA9887_HW_1_0_VERSION,
-@@ -172,6 +174,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.tx_stats_over_pktlog = false,
- 		.dynamic_sar_support = false,
- 		.hw_restart_disconnect = false,
-+		.use_fw_tx_credits = true,
- 	},
- 	{
- 		.id = QCA6174_HW_3_2_VERSION,
-@@ -206,6 +209,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.supports_peer_stats_info = true,
- 		.dynamic_sar_support = true,
- 		.hw_restart_disconnect = false,
-+		.use_fw_tx_credits = true,
- 	},
- 	{
- 		.id = QCA6174_HW_2_1_VERSION,
-@@ -244,6 +248,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.tx_stats_over_pktlog = false,
- 		.dynamic_sar_support = false,
- 		.hw_restart_disconnect = false,
-+		.use_fw_tx_credits = true,
- 	},
- 	{
- 		.id = QCA6174_HW_2_1_VERSION,
-@@ -282,6 +287,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.tx_stats_over_pktlog = false,
- 		.dynamic_sar_support = false,
- 		.hw_restart_disconnect = false,
-+		.use_fw_tx_credits = true,
- 	},
- 	{
- 		.id = QCA6174_HW_3_0_VERSION,
-@@ -320,6 +326,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.tx_stats_over_pktlog = false,
- 		.dynamic_sar_support = false,
- 		.hw_restart_disconnect = false,
-+		.use_fw_tx_credits = true,
- 	},
- 	{
- 		.id = QCA6174_HW_3_2_VERSION,
-@@ -362,6 +369,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.supports_peer_stats_info = true,
- 		.dynamic_sar_support = true,
- 		.hw_restart_disconnect = false,
-+		.use_fw_tx_credits = true,
- 	},
- 	{
- 		.id = QCA99X0_HW_2_0_DEV_VERSION,
-@@ -406,6 +414,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.tx_stats_over_pktlog = false,
- 		.dynamic_sar_support = false,
- 		.hw_restart_disconnect = false,
-+		.use_fw_tx_credits = true,
- 	},
- 	{
- 		.id = QCA9984_HW_1_0_DEV_VERSION,
-@@ -457,6 +466,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.tx_stats_over_pktlog = false,
- 		.dynamic_sar_support = false,
- 		.hw_restart_disconnect = false,
-+		.use_fw_tx_credits = true,
- 	},
- 	{
- 		.id = QCA9888_HW_2_0_DEV_VERSION,
-@@ -505,6 +515,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.tx_stats_over_pktlog = false,
- 		.dynamic_sar_support = false,
- 		.hw_restart_disconnect = false,
-+		.use_fw_tx_credits = true,
- 	},
- 	{
- 		.id = QCA9377_HW_1_0_DEV_VERSION,
-@@ -543,6 +554,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.tx_stats_over_pktlog = false,
- 		.dynamic_sar_support = false,
- 		.hw_restart_disconnect = false,
-+		.use_fw_tx_credits = true,
- 	},
- 	{
- 		.id = QCA9377_HW_1_1_DEV_VERSION,
-@@ -583,6 +595,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.tx_stats_over_pktlog = false,
- 		.dynamic_sar_support = false,
- 		.hw_restart_disconnect = false,
-+		.use_fw_tx_credits = true,
- 	},
- 	{
- 		.id = QCA9377_HW_1_1_DEV_VERSION,
-@@ -614,6 +627,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.credit_size_workaround = true,
- 		.dynamic_sar_support = false,
- 		.hw_restart_disconnect = false,
-+		.use_fw_tx_credits = true,
- 	},
- 	{
- 		.id = QCA4019_HW_1_0_DEV_VERSION,
-@@ -659,6 +673,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.tx_stats_over_pktlog = false,
- 		.dynamic_sar_support = false,
- 		.hw_restart_disconnect = false,
-+		.use_fw_tx_credits = true,
- 	},
- 	{
- 		.id = WCN3990_HW_1_0_DEV_VERSION,
-@@ -690,6 +705,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.tx_stats_over_pktlog = false,
- 		.dynamic_sar_support = true,
- 		.hw_restart_disconnect = true,
-+		.use_fw_tx_credits = false,
- 	},
- };
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pno.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pno.c
+index fabfbb0b40b0..d0a7465be586 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pno.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pno.c
+@@ -158,12 +158,12 @@ static int brcmf_pno_set_random(struct brcmf_if *ifp, struct brcmf_pno_info *pi)
+ 	struct brcmf_pno_macaddr_le pfn_mac;
+ 	u8 *mac_addr = NULL;
+ 	u8 *mac_mask = NULL;
+-	int err, i;
++	int err, i, ri;
  
-diff --git a/drivers/net/wireless/ath/ath10k/htc.c b/drivers/net/wireless/ath/ath10k/htc.c
-index fab398046a3f..6d1784f74bea 100644
---- a/drivers/net/wireless/ath/ath10k/htc.c
-+++ b/drivers/net/wireless/ath/ath10k/htc.c
-@@ -947,13 +947,18 @@ int ath10k_htc_wait_target(struct ath10k_htc *htc)
- 		return -ECOMM;
- 	}
+-	for (i = 0; i < pi->n_reqs; i++)
+-		if (pi->reqs[i]->flags & NL80211_SCAN_FLAG_RANDOM_ADDR) {
+-			mac_addr = pi->reqs[i]->mac_addr;
+-			mac_mask = pi->reqs[i]->mac_addr_mask;
++	for (ri = 0; ri < pi->n_reqs; ri++)
++		if (pi->reqs[ri]->flags & NL80211_SCAN_FLAG_RANDOM_ADDR) {
++			mac_addr = pi->reqs[ri]->mac_addr;
++			mac_mask = pi->reqs[ri]->mac_addr_mask;
+ 			break;
+ 		}
  
--	htc->total_transmit_credits = __le16_to_cpu(msg->ready.credit_count);
-+	if (ar->hw_params.use_fw_tx_credits)
-+		htc->total_transmit_credits = __le16_to_cpu(msg->ready.credit_count);
-+	else
-+		htc->total_transmit_credits = 1;
-+
- 	htc->target_credit_size = __le16_to_cpu(msg->ready.credit_size);
+@@ -185,7 +185,7 @@ static int brcmf_pno_set_random(struct brcmf_if *ifp, struct brcmf_pno_info *pi)
+ 	pfn_mac.mac[0] |= 0x02;
  
- 	ath10k_dbg(ar, ATH10K_DBG_HTC,
--		   "Target ready! transmit resources: %d size:%d\n",
-+		   "Target ready! transmit resources: %d size:%d actual credits:%d\n",
- 		   htc->total_transmit_credits,
--		   htc->target_credit_size);
-+		   htc->target_credit_size,
-+		   msg->ready.credit_count);
- 
- 	if ((htc->total_transmit_credits == 0) ||
- 	    (htc->target_credit_size == 0)) {
-diff --git a/drivers/net/wireless/ath/ath10k/hw.h b/drivers/net/wireless/ath/ath10k/hw.h
-index 93acf0dd580a..1b99f3a39a11 100644
---- a/drivers/net/wireless/ath/ath10k/hw.h
-+++ b/drivers/net/wireless/ath/ath10k/hw.h
-@@ -635,6 +635,8 @@ struct ath10k_hw_params {
- 	bool dynamic_sar_support;
- 
- 	bool hw_restart_disconnect;
-+
-+	bool use_fw_tx_credits;
- };
- 
- struct htt_resp;
+ 	brcmf_dbg(SCAN, "enabling random mac: reqid=%llu mac=%pM\n",
+-		  pi->reqs[i]->reqid, pfn_mac.mac);
++		  pi->reqs[ri]->reqid, pfn_mac.mac);
+ 	err = brcmf_fil_iovar_data_set(ifp, "pfn_macaddr", &pfn_mac,
+ 				       sizeof(pfn_mac));
+ 	if (err)
 -- 
 2.35.1
 
