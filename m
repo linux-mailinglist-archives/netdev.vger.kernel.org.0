@@ -2,65 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A1A145FA13A
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 17:38:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B71A45FA152
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 17:42:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229732AbiJJPii (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Oct 2022 11:38:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54854 "EHLO
+        id S229913AbiJJPmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Oct 2022 11:42:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbiJJPii (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 11:38:38 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E40471BF9;
-        Mon, 10 Oct 2022 08:38:33 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id k2so25726179ejr.2;
-        Mon, 10 Oct 2022 08:38:33 -0700 (PDT)
+        with ESMTP id S229691AbiJJPm2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 11:42:28 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C007391F
+        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 08:42:25 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id a26so25714206ejc.4
+        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 08:42:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=JsuMjhs+MgihkzMBVcqrltQP1hvZ675h8QTvnBZuxEE=;
-        b=kDMwTT+Rj5hxx1lZbEUEtlfS6ukzhNrwf6nUd79f4T9FSu5l6X0LjA2fZWQFUQrAY+
-         2qH3H+ZJatgwWwrRorX/xqPy8ygn07Z1B7tNbCopToadNG5fRbtLtLVvh7QT5D1zuYOA
-         QNVuovmubRzuQh65LU2im/RzMjVvXCKHO7d/nTSiIx+KrxFnvQTXAlGgOrlm/fyfMFVp
-         YmcEJPON90u2GYj4spnikpRyd6DXEwP4wres4UjZ+ksKl22yoHsqBYoV6U1qOZSTsQ2x
-         Hzkhn0wOKU7XXMXwj5vBYXAaZMhcKJPvR8E2hpXBkHltOH1Oec12QSjaNTD33rTnf/CO
-         /gYA==
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=6T8+TX6dH3FqwhcUPfmDglNGXY/ot7mxOmhe7HFs93I=;
+        b=MpkK/SIEbqn9woWC1JWIMPi3bxxBYWTAGKfV+fk35G5GwklWCQ2NJNpwf148DPpztl
+         2d1BkdQ1d1BFREbieaMMIuVKnAqrehn7q8wN7BoHGk1PhKXihGFj4yZHT2JdBdgMNybn
+         uRwmcTeH9ybx/CtM2z1VmjPih3Zqj/H33Mt6Iyi+u6r01rA+aWq52euH0bYj3pebJIt+
+         QxyAM0vcKC3KeZfo1nb+zGqiHxB7OHnrmYp+8Q4oUztKEl4RkmW1zh7smvUKxCy1+Wnj
+         nHflFOvaGdohitKSVFyY7Qnz0CHIdRN15i+0/oh5CVGKVPKmeVOIgvZfmK1Hrx+x9qtN
+         W3XQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=JsuMjhs+MgihkzMBVcqrltQP1hvZ675h8QTvnBZuxEE=;
-        b=bKD1nE/tVK8kHX/gon3TETLglPuiOGDuVNzw1wrPr/1wngnwTN4gkWbORfislTae9t
-         S+9luU/kybimLT/c2U6Uzr57e1GA0QUfg7AitcNOwHO5nvZlG2M7qsVMfLda+TOh8/lz
-         HoptaxVh16JgbXQBqATkhVpXHJDZEW2JxYJK/OONduIWv1SYDAUf8CFt+BLds2kTSxHv
-         CFXoZcwKsE4fzm6nfl1U5122qz3bzclGWMyFKBXDwrU/f88GgjfvIjGBKsnhHYDPGqGR
-         b8Fv+RIOrP8Dprwp5NfvzM4G1XtxNDp588knBQnrN0M/J/zW7RjCkZ8AQlM8crOLIqpr
-         w8Jw==
-X-Gm-Message-State: ACrzQf3kZLusftlaDuvirQaPQLnxtSAPuyqeMQUKG3K35Q6D3elgoSPF
-        MpE6llM21Jbdeh22fG/7tme3v68v76d1hObEdTzmBkvR2w+ShA==
-X-Google-Smtp-Source: AMsMyM58pkBmUY7F4411V5D2meYesnsY6fT61KQY/XKUqSt592qflVaY7wNVxFaW+w33GGuxsbZRoefkpdOKPHXxvwo=
-X-Received: by 2002:a17:907:2c75:b0:78d:c201:e9aa with SMTP id
- ib21-20020a1709072c7500b0078dc201e9aamr2789950ejc.235.1665416311890; Mon, 10
- Oct 2022 08:38:31 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6T8+TX6dH3FqwhcUPfmDglNGXY/ot7mxOmhe7HFs93I=;
+        b=z1nRHOsCJx8FyPjM6M+vDyeY4PfwyBqmGLQwxgNgiDO/5ambgMAXCtco0higvbR2W9
+         VzAWzggOg/Wncdr3jxXFEHkOvZv9FF7UVkuiUyFrAg7ZhNxFOAiq5yb6qDg+pb7jpwM9
+         TW+02S16/89yoxBa4u/2zEpbUCfV/2AKjpS3WVg+oyo0GrLU7BptNRn2/RpQKzsvy+YQ
+         66T57GsN869vCpz03W8OEDiSyxeIFzOfsdqVExXgacy4EyfSrT6iGyWataVFyG92JVY2
+         hI2wb1EdzxLN+0IQO3r1PXieiIGg8pYuu6WHQD8Kszwb+JAuW1qqJGaAKhVYN+U3aOQ/
+         qXqw==
+X-Gm-Message-State: ACrzQf0GKDxSsH0O33CK27IY5X7sKvwkAM2HmtWhAMwpdENVemU9la7o
+        AJU9o9M7hqDEhc29elJiymivcA==
+X-Google-Smtp-Source: AMsMyM6EcSXRD865FC/pLDHPZrrRQAGzpjMdg3/49GX35YMub17HX7Dxrr2cWknFikQDX8FDTCW1DQ==
+X-Received: by 2002:a17:907:1c23:b0:78d:2a74:e2f8 with SMTP id nc35-20020a1709071c2300b0078d2a74e2f8mr15746044ejc.621.1665416543567;
+        Mon, 10 Oct 2022 08:42:23 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id u12-20020a056402064c00b004588ef795easm7387235edx.34.2022.10.10.08.42.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Oct 2022 08:42:22 -0700 (PDT)
+Date:   Mon, 10 Oct 2022 17:42:21 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Vadim Fedorenko <vfedorenko@novek.ru>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-clk@vger.kernel.org, Vadim Fedorenko <vadfed@fb.com>
+Subject: Re: [RFC PATCH v3 6/6] ptp_ocp: implement DPLL ops
+Message-ID: <Y0Q9Xcf92OpWPJGW@nanopsycho>
+References: <20221010011804.23716-1-vfedorenko@novek.ru>
+ <20221010011804.23716-7-vfedorenko@novek.ru>
 MIME-Version: 1.0
-From:   Wei Chen <harperchen1110@gmail.com>
-Date:   Mon, 10 Oct 2022 23:37:55 +0800
-Message-ID: <CAO4mrfctv+6_iBjhALswxUTpbFGzj+NGnVnj-5ezwnPRHYCWFA@mail.gmail.com>
-Subject: INFO: rcu detected stall in net_rx_action
-To:     davem@davemloft.net, Eric Dumazet <edumazet@google.com>,
-        kuba@kernel.org, pabeni@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, bigeasy@linutronix.de, imagedong@tencent.com,
-        petrm@nvidia.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221010011804.23716-7-vfedorenko@novek.ru>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,129 +72,304 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Linux Developer,
+Mon, Oct 10, 2022 at 03:18:04AM CEST, vfedorenko@novek.ru wrote:
+>From: Vadim Fedorenko <vadfed@fb.com>
+>
+>Implement DPLL operations in ptp_ocp driver.
+>
+>Signed-off-by: Vadim Fedorenko <vadfed@fb.com>
+>---
+> drivers/ptp/Kconfig       |   1 +
+> drivers/ptp/ptp_ocp.c     | 170 ++++++++++++++++++++++++++++++--------
+> include/uapi/linux/dpll.h |   2 +
+> 3 files changed, 137 insertions(+), 36 deletions(-)
+>
+>diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
+>index fe4971b65c64..8c4cfabc1bfa 100644
+>--- a/drivers/ptp/Kconfig
+>+++ b/drivers/ptp/Kconfig
+>@@ -177,6 +177,7 @@ config PTP_1588_CLOCK_OCP
+> 	depends on COMMON_CLK
+> 	select NET_DEVLINK
+> 	select CRC16
+>+	select DPLL
+> 	help
+> 	  This driver adds support for an OpenCompute time card.
+> 
+>diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
+>index d36c3f597f77..a01c0c721802 100644
+>--- a/drivers/ptp/ptp_ocp.c
+>+++ b/drivers/ptp/ptp_ocp.c
+>@@ -21,6 +21,8 @@
+> #include <linux/mtd/mtd.h>
+> #include <linux/nvmem-consumer.h>
+> #include <linux/crc16.h>
+>+#include <linux/dpll.h>
+>+#include <uapi/linux/dpll.h>
 
-Recently when using our tool to fuzz kernel, the following crash was triggered:
+This should not be needed to include directly. linux/dpll.h should
+include uapi/linux/dpll.h
 
-HEAD commit: 64570fbc14f8 Linux 5.15-rc5
-git tree: upstream
-compiler: clang 12.0.0
-console output:
-https://drive.google.com/file/d/1BOhVEmi3RPIxx-F0LMLsgflaj0r0MyKv/view?usp=sharing
-kernel config: https://drive.google.com/file/d/1lNwvovjLNrcuyFGrg05IoSmgO5jaKBBJ/view?usp=sharing
 
-Unfortunately, I don't have any reproducer for this crash yet.
+> 
+> #define PCI_VENDOR_ID_FACEBOOK			0x1d9b
+> #define PCI_DEVICE_ID_FACEBOOK_TIMECARD		0x0400
+>@@ -336,6 +338,7 @@ struct ptp_ocp {
+> 	struct ptp_ocp_signal	signal[4];
+> 	struct ptp_ocp_sma_connector sma[4];
+> 	const struct ocp_sma_op *sma_op;
+>+	struct dpll_device *dpll;
+> };
+> 
+> #define OCP_REQ_TIMESTAMP	BIT(0)
+>@@ -660,18 +663,19 @@ static DEFINE_IDR(ptp_ocp_idr);
+> struct ocp_selector {
+> 	const char *name;
+> 	int value;
+>+	int dpll_type;
 
-rcu: INFO: rcu_preempt self-detected stall on CPU
-rcu: 0-...!: (88 ticks this GP) idle=4c5/1/0x4000000000000000
-softirq=42739/42739 fqs=1
-(t=15633 jiffies g=62957 q=125)
-rcu: rcu_preempt kthread starved for 15193 jiffies! g62957 f0x0
-RCU_GP_WAIT_FQS(5) ->state=0x0 ->cpu=0
-rcu: Unless rcu_preempt kthread gets sufficient CPU time, OOM is now
-expected behavior.
-rcu: RCU grace-period kthread stack dump:
-task:rcu_preempt     state:R  running task     stack:27696 pid:   14
-ppid:     2 flags:0x00004000
-Call Trace:
- __schedule+0xc1a/0x11e0
- schedule+0x14b/0x210
- schedule_timeout+0x1b4/0x310
- rcu_gp_fqs_loop+0x1fd/0x770
- rcu_gp_kthread+0xa5/0x340
- kthread+0x419/0x510
- ret_from_fork+0x1f/0x30
-rcu: Stack dump where RCU GP kthread last ran:
-NMI backtrace for cpu 0
-CPU: 0 PID: 13 Comm: ksoftirqd/0 Not tainted 5.15.0-rc5+ #14
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-1.13.0-1ubuntu1.1 04/01/2014
-Call Trace:
- <IRQ>
- dump_stack_lvl+0x1d8/0x2c4
- nmi_cpu_backtrace+0x452/0x480
- nmi_trigger_cpumask_backtrace+0x1a3/0x330
- rcu_check_gp_kthread_starvation+0x1f9/0x270
- rcu_sched_clock_irq+0x1de4/0x2bc0
- update_process_times+0x1ab/0x220
- tick_sched_timer+0x2a0/0x440
- __hrtimer_run_queues+0x51a/0xae0
- hrtimer_interrupt+0x3c9/0x1130
- __sysvec_apic_timer_interrupt+0xf9/0x280
- sysvec_apic_timer_interrupt+0x8c/0xb0
- </IRQ>
- asm_sysvec_apic_timer_interrupt+0x12/0x20
-RIP: 0010:e1000_clean+0x15ad/0x40b0
-Code: c5 c8 04 00 00 4c 89 eb 48 c1 eb 03 42 80 3c 23 00 74 08 4c 89
-ef e8 a2 2c 65 fc 49 8b 45 00 b9 9d 00 00 00 89 88 d0 00 00 00 <42> 80
-3c 23 00 74 08 4c 89 ef e8 84 2c 65 fc 49 8b 45 00 8b 40 08
-RSP: 0018:ffffc90000707840 EFLAGS: 00000246
-RAX: ffffc900065c0000 RBX: 1ffff1100371f229 RCX: 000000000000009d
-RDX: 0000000000000100 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: ffffc90000707ac8 R08: ffffffff856f35c6 R09: ffffed100371f2a7
-R10: ffffed100371f2a7 R11: 0000000000000000 R12: dffffc0000000000
-R13: ffff88801b8f9148 R14: 0000000000004e20 R15: 1ffff920000e0f2c
- __napi_poll+0xbd/0x550
- net_rx_action+0x67b/0xfc0
- __do_softirq+0x372/0x783
- run_ksoftirqd+0xa2/0x100
- smpboot_thread_fn+0x570/0xa20
- kthread+0x419/0x510
- ret_from_fork+0x1f/0x30
-NMI backtrace for cpu 0
-CPU: 0 PID: 13 Comm: ksoftirqd/0 Not tainted 5.15.0-rc5+ #14
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-1.13.0-1ubuntu1.1 04/01/2014
-Call Trace:
- <IRQ>
- dump_stack_lvl+0x1d8/0x2c4
- nmi_cpu_backtrace+0x452/0x480
- nmi_trigger_cpumask_backtrace+0x1a3/0x330
- rcu_dump_cpu_stacks+0x22d/0x390
- rcu_sched_clock_irq+0x1de9/0x2bc0
- update_process_times+0x1ab/0x220
- tick_sched_timer+0x2a0/0x440
- __hrtimer_run_queues+0x51a/0xae0
- hrtimer_interrupt+0x3c9/0x1130
- __sysvec_apic_timer_interrupt+0xf9/0x280
- sysvec_apic_timer_interrupt+0x8c/0xb0
- </IRQ>
- asm_sysvec_apic_timer_interrupt+0x12/0x20
-RIP: 0010:e1000_clean+0x15ad/0x40b0
-Code: c5 c8 04 00 00 4c 89 eb 48 c1 eb 03 42 80 3c 23 00 74 08 4c 89
-ef e8 a2 2c 65 fc 49 8b 45 00 b9 9d 00 00 00 89 88 d0 00 00 00 <42> 80
-3c 23 00 74 08 4c 89 ef e8 84 2c 65 fc 49 8b 45 00 8b 40 08
-RSP: 0018:ffffc90000707840 EFLAGS: 00000246
-RAX: ffffc900065c0000 RBX: 1ffff1100371f229 RCX: 000000000000009d
-RDX: 0000000000000100 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: ffffc90000707ac8 R08: ffffffff856f35c6 R09: ffffed100371f2a7
-R10: ffffed100371f2a7 R11: 0000000000000000 R12: dffffc0000000000
-R13: ffff88801b8f9148 R14: 0000000000004e20 R15: 1ffff920000e0f2c
- __napi_poll+0xbd/0x550
- net_rx_action+0x67b/0xfc0
- __do_softirq+0x372/0x783
- run_ksoftirqd+0xa2/0x100
- smpboot_thread_fn+0x570/0xa20
- kthread+0x419/0x510
- ret_from_fork+0x1f/0x30
-----------------
-Code disassembly (best guess), 1 bytes skipped:
-   0: c8 04 00 00          enterq $0x4,$0x0
-   4: 4c 89 eb              mov    %r13,%rbx
-   7: 48 c1 eb 03          shr    $0x3,%rbx
-   b: 42 80 3c 23 00        cmpb   $0x0,(%rbx,%r12,1)
-  10: 74 08                je     0x1a
-  12: 4c 89 ef              mov    %r13,%rdi
-  15: e8 a2 2c 65 fc        callq  0xfc652cbc
-  1a: 49 8b 45 00          mov    0x0(%r13),%rax
-  1e: b9 9d 00 00 00        mov    $0x9d,%ecx
-  23: 89 88 d0 00 00 00    mov    %ecx,0xd0(%rax)
-* 29: 42 80 3c 23 00        cmpb   $0x0,(%rbx,%r12,1) <-- trapping instruction
-  2e: 74 08                je     0x38
-  30: 4c 89 ef              mov    %r13,%rdi
-  33: e8 84 2c 65 fc        callq  0xfc652cbc
-  38: 49 8b 45 00          mov    0x0(%r13),%rax
-  3c: 8b 40 08              mov    0x8(%rax),%eax
+Enum?
 
-Best,
-Wei
+
+> };
+> 
+> static const struct ocp_selector ptp_ocp_clock[] = {
+>-	{ .name = "NONE",	.value = 0 },
+>-	{ .name = "TOD",	.value = 1 },
+>-	{ .name = "IRIG",	.value = 2 },
+>-	{ .name = "PPS",	.value = 3 },
+>-	{ .name = "PTP",	.value = 4 },
+>-	{ .name = "RTC",	.value = 5 },
+>-	{ .name = "DCF",	.value = 6 },
+>-	{ .name = "REGS",	.value = 0xfe },
+>-	{ .name = "EXT",	.value = 0xff },
+>+	{ .name = "NONE",	.value = 0,		.dpll_type = 0 },
+>+	{ .name = "TOD",	.value = 1,		.dpll_type = 0 },
+>+	{ .name = "IRIG",	.value = 2,		.dpll_type = 0 },
+>+	{ .name = "PPS",	.value = 3,		.dpll_type = 0 },
+>+	{ .name = "PTP",	.value = 4,		.dpll_type = 0 },
+>+	{ .name = "RTC",	.value = 5,		.dpll_type = 0 },
+>+	{ .name = "DCF",	.value = 6,		.dpll_type = 0 },
+>+	{ .name = "REGS",	.value = 0xfe,		.dpll_type = 0 },
+>+	{ .name = "EXT",	.value = 0xff,		.dpll_type = 0 },
+> 	{ }
+> };
+> 
+>@@ -680,37 +684,37 @@ static const struct ocp_selector ptp_ocp_clock[] = {
+> #define SMA_SELECT_MASK		GENMASK(14, 0)
+> 
+> static const struct ocp_selector ptp_ocp_sma_in[] = {
+>-	{ .name = "10Mhz",	.value = 0x0000 },
+>-	{ .name = "PPS1",	.value = 0x0001 },
+>-	{ .name = "PPS2",	.value = 0x0002 },
+>-	{ .name = "TS1",	.value = 0x0004 },
+>-	{ .name = "TS2",	.value = 0x0008 },
+>-	{ .name = "IRIG",	.value = 0x0010 },
+>-	{ .name = "DCF",	.value = 0x0020 },
+>-	{ .name = "TS3",	.value = 0x0040 },
+>-	{ .name = "TS4",	.value = 0x0080 },
+>-	{ .name = "FREQ1",	.value = 0x0100 },
+>-	{ .name = "FREQ2",	.value = 0x0200 },
+>-	{ .name = "FREQ3",	.value = 0x0400 },
+>-	{ .name = "FREQ4",	.value = 0x0800 },
+>-	{ .name = "None",	.value = SMA_DISABLE },
+>+	{ .name = "10Mhz",	.value = 0x0000,	.dpll_type = DPLL_TYPE_EXT_10MHZ },
+>+	{ .name = "PPS1",	.value = 0x0001,	.dpll_type = DPLL_TYPE_EXT_1PPS },
+>+	{ .name = "PPS2",	.value = 0x0002,	.dpll_type = DPLL_TYPE_EXT_1PPS },
+>+	{ .name = "TS1",	.value = 0x0004,	.dpll_type = DPLL_TYPE_CUSTOM },
+>+	{ .name = "TS2",	.value = 0x0008,	.dpll_type = DPLL_TYPE_CUSTOM },
+>+	{ .name = "IRIG",	.value = 0x0010,	.dpll_type = DPLL_TYPE_CUSTOM },
+>+	{ .name = "DCF",	.value = 0x0020,	.dpll_type = DPLL_TYPE_CUSTOM },
+>+	{ .name = "TS3",	.value = 0x0040,	.dpll_type = DPLL_TYPE_CUSTOM },
+>+	{ .name = "TS4",	.value = 0x0080,	.dpll_type = DPLL_TYPE_CUSTOM },
+>+	{ .name = "FREQ1",	.value = 0x0100,	.dpll_type = DPLL_TYPE_CUSTOM },
+>+	{ .name = "FREQ2",	.value = 0x0200,	.dpll_type = DPLL_TYPE_CUSTOM },
+>+	{ .name = "FREQ3",	.value = 0x0400,	.dpll_type = DPLL_TYPE_CUSTOM },
+>+	{ .name = "FREQ4",	.value = 0x0800,	.dpll_type = DPLL_TYPE_CUSTOM },
+>+	{ .name = "None",	.value = SMA_DISABLE,	.dpll_type = DPLL_TYPE_NONE },
+> 	{ }
+> };
+> 
+> static const struct ocp_selector ptp_ocp_sma_out[] = {
+>-	{ .name = "10Mhz",	.value = 0x0000 },
+>-	{ .name = "PHC",	.value = 0x0001 },
+>-	{ .name = "MAC",	.value = 0x0002 },
+>-	{ .name = "GNSS1",	.value = 0x0004 },
+>-	{ .name = "GNSS2",	.value = 0x0008 },
+>-	{ .name = "IRIG",	.value = 0x0010 },
+>-	{ .name = "DCF",	.value = 0x0020 },
+>-	{ .name = "GEN1",	.value = 0x0040 },
+>-	{ .name = "GEN2",	.value = 0x0080 },
+>-	{ .name = "GEN3",	.value = 0x0100 },
+>-	{ .name = "GEN4",	.value = 0x0200 },
+>-	{ .name = "GND",	.value = 0x2000 },
+>-	{ .name = "VCC",	.value = 0x4000 },
+>+	{ .name = "10Mhz",	.value = 0x0000,	.dpll_type = DPLL_TYPE_EXT_10MHZ },
+>+	{ .name = "PHC",	.value = 0x0001,	.dpll_type = DPLL_TYPE_INT_OSCILLATOR },
+>+	{ .name = "MAC",	.value = 0x0002,	.dpll_type = DPLL_TYPE_INT_OSCILLATOR },
+>+	{ .name = "GNSS1",	.value = 0x0004,	.dpll_type = DPLL_TYPE_GNSS },
+>+	{ .name = "GNSS2",	.value = 0x0008,	.dpll_type = DPLL_TYPE_GNSS },
+>+	{ .name = "IRIG",	.value = 0x0010,	.dpll_type = DPLL_TYPE_CUSTOM },
+>+	{ .name = "DCF",	.value = 0x0020,	.dpll_type = DPLL_TYPE_CUSTOM },
+>+	{ .name = "GEN1",	.value = 0x0040,	.dpll_type = DPLL_TYPE_CUSTOM },
+>+	{ .name = "GEN2",	.value = 0x0080,	.dpll_type = DPLL_TYPE_CUSTOM },
+>+	{ .name = "GEN3",	.value = 0x0100,	.dpll_type = DPLL_TYPE_CUSTOM },
+>+	{ .name = "GEN4",	.value = 0x0200,	.dpll_type = DPLL_TYPE_CUSTOM },
+>+	{ .name = "GND",	.value = 0x2000,	.dpll_type = DPLL_TYPE_CUSTOM },
+>+	{ .name = "VCC",	.value = 0x4000,	.dpll_type = DPLL_TYPE_CUSTOM },
+> 	{ }
+> };
+> 
+>@@ -3707,6 +3711,90 @@ ptp_ocp_detach(struct ptp_ocp *bp)
+> 	device_unregister(&bp->dev);
+> }
+> 
+>+static int ptp_ocp_dpll_get_status(struct dpll_device *dpll)
+>+{
+>+	struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
+>+	int sync;
+>+
+>+	sync = ioread32(&bp->reg->status) & OCP_STATUS_IN_SYNC;
+>+	return sync;
+>+}
+>+
+>+static int ptp_ocp_dpll_get_lock_status(struct dpll_device *dpll)
+>+{
+>+	struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
+>+	int sync;
+>+
+>+	sync = ioread32(&bp->reg->status) & OCP_STATUS_IN_SYNC;
+>+	return sync;
+>+}
+>+
+>+static int ptp_ocp_sma_get_dpll_type(struct ptp_ocp *bp, int sma_nr)
+>+{
+>+	const struct ocp_selector *tbl;
+>+	u32 val;
+>+
+>+	if (bp->sma[sma_nr].mode == SMA_MODE_IN)
+>+		tbl = bp->sma_op->tbl[0];
+>+	else
+>+		tbl = bp->sma_op->tbl[1];
+>+
+>+	val = ptp_ocp_sma_get(bp, sma_nr);
+>+	return tbl[val].dpll_type;
+>+}
+>+
+>+static int ptp_ocp_dpll_type_supported(struct dpll_device *dpll, int sma, int type, int dir)
+>+{
+>+	struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
+>+	const struct ocp_selector *tbl = bp->sma_op->tbl[dir];
+>+	int i;
+>+
+>+	for (i = 0; i < sizeof(*tbl); i++) {
+>+		if (tbl[i].dpll_type == type)
+>+			return 1;
+>+	}
+>+	return 0;
+>+}
+>+
+>+static int ptp_ocp_dpll_get_source_type(struct dpll_device *dpll, int sma)
+>+{
+>+	struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
+>+
+>+	if (bp->sma[sma].mode != SMA_MODE_IN)
+>+		return -1;
+>+
+>+	return ptp_ocp_sma_get_dpll_type(bp, sma);
+>+}
+>+
+>+static int ptp_ocp_dpll_get_source_supported(struct dpll_device *dpll, int sma, int type)
+>+{
+>+	return ptp_ocp_dpll_type_supported(dpll, sma, type, 0);
+>+}
+>+
+>+static int ptp_ocp_dpll_get_output_type(struct dpll_device *dpll, int sma)
+>+{
+>+	struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
+>+
+>+	if (bp->sma[sma].mode != SMA_MODE_OUT)
+>+		return -1;
+>+
+>+	return ptp_ocp_sma_get_dpll_type(bp, sma);
+>+}
+>+
+>+static int ptp_ocp_dpll_get_output_supported(struct dpll_device *dpll, int sma, int type)
+>+{
+>+	return ptp_ocp_dpll_type_supported(dpll, sma, type, 1);
+>+}
+>+
+>+static struct dpll_device_ops dpll_ops = {
+
+Namespace prefix?
+
+
+>+	.get_status		= ptp_ocp_dpll_get_status,
+>+	.get_lock_status	= ptp_ocp_dpll_get_lock_status,
+>+	.get_source_type	= ptp_ocp_dpll_get_source_type,
+>+	.get_source_supported	= ptp_ocp_dpll_get_source_supported,
+>+	.get_output_type	= ptp_ocp_dpll_get_output_type,
+>+	.get_output_supported	= ptp_ocp_dpll_get_output_supported,
+>+};
+>+
+> static int
+> ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+> {
+>@@ -3762,6 +3850,14 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+> 
+> 	ptp_ocp_info(bp);
+> 	devlink_register(devlink);
+>+
+>+	bp->dpll = dpll_device_alloc(&dpll_ops, "ocp", ARRAY_SIZE(bp->sma), ARRAY_SIZE(bp->sma), bp);
+>+	if (!bp->dpll) {
+
+You have to use IS_ERR() macro here.
+
+
+>+		dev_err(&pdev->dev, "dpll_device_alloc failed\n");
+>+		return 0;
+>+	}
+>+	dpll_device_register(bp->dpll);
+>+
+> 	return 0;
+> 
+> out:
+>@@ -3779,6 +3875,8 @@ ptp_ocp_remove(struct pci_dev *pdev)
+> 	struct ptp_ocp *bp = pci_get_drvdata(pdev);
+> 	struct devlink *devlink = priv_to_devlink(bp);
+> 
+>+	dpll_device_unregister(bp->dpll);
+>+	dpll_device_free(bp->dpll);
+> 	devlink_unregister(devlink);
+> 	ptp_ocp_detach(bp);
+> 	pci_disable_device(pdev);
+>diff --git a/include/uapi/linux/dpll.h b/include/uapi/linux/dpll.h
+>index 8782d3425aae..59fc6ef81b40 100644
+>--- a/include/uapi/linux/dpll.h
+>+++ b/include/uapi/linux/dpll.h
+>@@ -55,11 +55,13 @@ enum dpll_genl_status {
+> 
+> /* DPLL signal types used as source or as output */
+> enum dpll_genl_signal_type {
+>+	DPLL_TYPE_NONE,
+> 	DPLL_TYPE_EXT_1PPS,
+> 	DPLL_TYPE_EXT_10MHZ,
+> 	DPLL_TYPE_SYNCE_ETH_PORT,
+> 	DPLL_TYPE_INT_OSCILLATOR,
+> 	DPLL_TYPE_GNSS,
+>+	DPLL_TYPE_CUSTOM,
+
+This hunk should not be here.
+I commented this on the previous version. Btw, this is not the only
+thing that I previously commented and you ignored. It is annoying to be
+honest. Could you please include the requested changes in next patchset
+version or comment why you are not do including them. Ignoring is never
+good :/
+
+
+> 
+> 	__DPLL_TYPE_MAX,
+> };
+>-- 
+>2.27.0
+>
