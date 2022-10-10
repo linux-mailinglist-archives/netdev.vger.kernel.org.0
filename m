@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFFB35F9FDB
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 16:08:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0151A5F9FDE
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 16:08:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229863AbiJJOIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Oct 2022 10:08:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59486 "EHLO
+        id S229871AbiJJOIX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Oct 2022 10:08:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229822AbiJJOIN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 10:08:13 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 344586FA22;
-        Mon, 10 Oct 2022 07:08:10 -0700 (PDT)
+        with ESMTP id S229831AbiJJOIO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 10:08:14 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 685DD6EF0C;
+        Mon, 10 Oct 2022 07:08:12 -0700 (PDT)
 Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MmLHC4LvGz1M7t4;
-        Mon, 10 Oct 2022 22:03:35 +0800 (CST)
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MmLGl366vz9t5X;
+        Mon, 10 Oct 2022 22:03:11 +0800 (CST)
 Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
  (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Mon, 10 Oct
- 2022 22:08:06 +0800
+ 2022 22:08:08 +0800
 From:   Xu Kuohai <xukuohai@huawei.com>
 To:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>
@@ -41,9 +41,9 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         Alan Maguire <alan.maguire@oracle.com>,
         Delyan Kratunov <delyank@fb.com>,
         Lorenzo Bianconi <lorenzo@kernel.org>
-Subject: [PATCH bpf v3 4/6] selftest/bpf: Fix memory leak in kprobe_multi_test
-Date:   Mon, 10 Oct 2022 10:25:51 -0400
-Message-ID: <20221010142553.776550-5-xukuohai@huawei.com>
+Subject: [PATCH bpf v3 5/6] selftests/bpf: Fix error failure of case test_xdp_adjust_tail_grow
+Date:   Mon, 10 Oct 2022 10:25:52 -0400
+Message-ID: <20221010142553.776550-6-xukuohai@huawei.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221010142553.776550-1-xukuohai@huawei.com>
 References: <20221010142553.776550-1-xukuohai@huawei.com>
@@ -62,52 +62,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The get_syms() function in kprobe_multi_test.c does not free the string
-memory allocated by sscanf correctly. Fix it.
+test_xdp_adjust_tail_grow failed with ipv6:
+  test_xdp_adjust_tail_grow:FAIL:ipv6 unexpected error: -28 (errno 28)
 
-Fixes: 5b6c7e5c4434 ("selftests/bpf: Add attach bench test")
+The reason is that this test case tests ipv4 before ipv6, and when ipv4
+test finished, topts.data_size_out was set to 54, which is smaller than the
+ipv6 output data size 114, so ipv6 test fails with NOSPC error.
+
+Fix it by reset topts.data_size_out to sizeof(buf) before testing ipv6.
+
+Fixes: 04fcb5f9a104 ("selftests/bpf: Migrate from bpf_prog_test_run")
 Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
-Acked-by: Jiri Olsa <jolsa@kernel.org>
 ---
- .../bpf/prog_tests/kprobe_multi_test.c          | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-index d457a55ff408..07dd2c5b7f98 100644
---- a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-+++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-@@ -360,15 +360,14 @@ static int get_syms(char ***symsp, size_t *cntp)
- 		 * to them. Filter out the current culprits - arch_cpu_idle
- 		 * and rcu_* functions.
- 		 */
--		if (!strcmp(name, "arch_cpu_idle"))
--			continue;
--		if (!strncmp(name, "rcu_", 4))
--			continue;
--		if (!strcmp(name, "bpf_dispatcher_xdp_func"))
--			continue;
--		if (!strncmp(name, "__ftrace_invalid_address__",
--			     sizeof("__ftrace_invalid_address__") - 1))
-+		if (!strcmp(name, "arch_cpu_idle") ||
-+			!strncmp(name, "rcu_", 4) ||
-+			!strcmp(name, "bpf_dispatcher_xdp_func") ||
-+			!strncmp(name, "__ftrace_invalid_address__",
-+				 sizeof("__ftrace_invalid_address__") - 1)) {
-+			free(name);
- 			continue;
-+		}
- 		err = hashmap__add(map, name, NULL);
- 		if (err) {
- 			free(name);
-@@ -394,7 +393,7 @@ static int get_syms(char ***symsp, size_t *cntp)
- 	hashmap__free(map);
- 	if (err) {
- 		for (i = 0; i < cnt; i++)
--			free(syms[cnt]);
-+			free(syms[i]);
- 		free(syms);
- 	}
- 	return err;
+diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
+index 9b9cf8458adf..009ee37607df 100644
+--- a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
++++ b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
+@@ -63,6 +63,7 @@ static void test_xdp_adjust_tail_grow(void)
+ 	expect_sz = sizeof(pkt_v6) + 40; /* Test grow with 40 bytes */
+ 	topts.data_in = &pkt_v6;
+ 	topts.data_size_in = sizeof(pkt_v6);
++	topts.data_size_out = sizeof(buf);
+ 	err = bpf_prog_test_run_opts(prog_fd, &topts);
+ 	ASSERT_OK(err, "ipv6");
+ 	ASSERT_EQ(topts.retval, XDP_TX, "ipv6 retval");
 -- 
 2.30.2
 
