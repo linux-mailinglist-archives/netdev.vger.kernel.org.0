@@ -2,119 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D7975FA2F4
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 19:52:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B64C5FA3F4
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 21:08:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229847AbiJJRwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Oct 2022 13:52:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40142 "EHLO
+        id S229910AbiJJTIf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Oct 2022 15:08:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229768AbiJJRwf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 13:52:35 -0400
-Received: from wnew4-smtp.messagingengine.com (wnew4-smtp.messagingengine.com [64.147.123.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 339CE13E14;
-        Mon, 10 Oct 2022 10:52:34 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.west.internal (Postfix) with ESMTP id 85BC52B06F1B;
-        Mon, 10 Oct 2022 13:52:31 -0400 (EDT)
-Received: from imap51 ([10.202.2.101])
-  by compute3.internal (MEProxy); Mon, 10 Oct 2022 13:52:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1665424351; x=1665427951; bh=eIM+MeuDgl
-        5z58nSOwcRux9xgNdpNXrzM2SeDZwQsd8=; b=oYZS5cu/Rsvl0KB8JTLsGB3saF
-        kHTxa5Fkfk+2YZuUmW9S023XW9o0XZ0SDkanDwFAcRrfnfQSmXsoo5P3Ges1zjBL
-        xfvxLGE/PIRL1hIfssvk3zHIJO5gYIpw1Hq6FsGy6STG1EjMUm9xPrf7SoN0TbcM
-        lW+Pmrs07xyj6QAHa9a4A47TC+EdrpYC4ECJp1POmEvis5e7t0l4oRjLdzWpE/+5
-        huVbsRcM8F2DYQ/eWtpk1cO+0hEV+8sBDdZnEPKEY+8mR+FQsBIlQLr7ia0I79Yd
-        dx5VnCYxMOOy7K6aAa4zQAHfR+qG4OTopY2xqj0nZ6JexpQYsNFTfI+kIXDw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1665424351; x=1665427951; bh=eIM+MeuDgl5z58nSOwcRux9xgNdp
-        NXrzM2SeDZwQsd8=; b=U9A8Pr/nhJN0fRLBk0x5nsQOv7x3e+NiaeXMGoKz2X8C
-        yQizTYenqakkepNspG883KFpigUTTBod0GP0z/+BJxxLiGU15sBrf4DmuFOrB5pk
-        tZxoT7wGtBG/fZ0YVC+OysEa7hll+3SyB+TxTPCvtAPrpskNkj5QTzlCSC3k9q6A
-        ZoUONN2LuxiqmrA/hwV/Rn094kcd8rKbbbdNRghnqU3fEEXT86vBPrqf2i0KTOcC
-        zKbvN05lgLt0E8O6aiqU1FAunw7EKsjNbMzAxpi9HwBXV6KwODbKyvwEjeub96px
-        qKdbKSnAzV+joiEs4L4uLyufFYzCkEvf55D0zq+FcQ==
-X-ME-Sender: <xms:3ltEY_8b39mNjScYLdR4EksI10Dmr9dCKLpvYm0EqLHlUzUwYrVQEg>
-    <xme:3ltEY7shMHCvjx9dhS_CDkTBNypGWkHRDgUEBy8O590its7J_gEj6K6S0giUkpAxZ
-    wSvMi7sMKZIRecmb4Y>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfeejgedgudduvdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdet
-    rhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrg
-    htthgvrhhnpeelhfejffehveevjeduffegieffhfeihfekteetffdujedufeeghfekuedt
-    heetgeenucffohhmrghinhepthhugigsuhhilhgurdgtohhmpdhkvghrnhgvlhdrohhrgh
-    enucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrhhn
-    ugesrghrnhgusgdruggv
-X-ME-Proxy: <xmx:3ltEY9C2kDz3h37uVXomDacWmOvYYCjaELqRJgTzUtWZvHe_jBpX7Q>
-    <xmx:3ltEY7cigPoef-_K5NZhRVno0hk_IX7XGhKORG3mGpkbz6fDrvav1Q>
-    <xmx:3ltEY0P2trZKuLHGNKQ8enQ6dPvU7dVmK_jFfzTAbeHtGlKUXyeoqQ>
-    <xmx:3ltEYzpfzxKrcwSazZHRW6cp90WKwAXb278VbPYcPIlYN2rn4Q9OjnNW0SA>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 933A0B60086; Mon, 10 Oct 2022 13:52:30 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-1015-gaf7d526680-fm-20220929.001-gaf7d5266
-Mime-Version: 1.0
-Message-Id: <158e9f4f-9929-4244-b040-78f2e54bc028@app.fastmail.com>
-In-Reply-To: <87ilkrpqka.fsf@kernel.org>
-References: <CA+G9fYsZ_qypa=jHY_dJ=tqX4515+qrV9n2SWXVDHve826nF7Q@mail.gmail.com>
- <87ilkrpqka.fsf@kernel.org>
-Date:   Mon, 10 Oct 2022 19:52:09 +0200
-From:   "Arnd Bergmann" <arnd@arndb.de>
-To:     "Kalle Valo" <kvalo@kernel.org>,
-        "Naresh Kamboju" <naresh.kamboju@linaro.org>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        "open list" <linux-kernel@vger.kernel.org>,
-        linux-wireless@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>, ath11k@lists.infradead.org,
-        regressions@lists.linux.dev, lkft-triage@lists.linaro.org
-Subject: Re: drivers/net/wireless/ath/ath11k/mac.c:2238:29: warning:
- 'ath11k_peer_assoc_h_he_limit' reading 16 bytes from a region of size 0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229832AbiJJTIZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 15:08:25 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EC005AC74;
+        Mon, 10 Oct 2022 12:08:24 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id u21so17146419edi.9;
+        Mon, 10 Oct 2022 12:08:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=8ZWQI6EaAdyld4xWyI/4YqlkKhYX2A2+TTbGbUbetgY=;
+        b=bs8dQiS0WqpLHv+OnV7+mwwcm+a+DGPPnskG8ISDlRKzqXg/gzx9ebBk0KHNJTaRv0
+         FNxyMmejLeZ4/iEZoAqA59guqJi5322dn2J+yVtu2dVfwPjtZ45TuUKGLjAmKpue5gru
+         xPjQUNlYwc9k7Hk6t5JSMbHZQFLdnwhSDDMvSfkISmtuo6N763tELMzhXAQhraSllQfR
+         lzD/K6VYszSF83BWLvaxNt06NSKoFgftAca39Zs+qv50ud25Q1vY/g03nD1BxgftW9EC
+         vjSSMn3YJa8qL7N9ZN3urhtzekDIhLp2i+jSGkdwQE0TtYrkHCjKtXoCcfwFA+UkixRn
+         j7CA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8ZWQI6EaAdyld4xWyI/4YqlkKhYX2A2+TTbGbUbetgY=;
+        b=AW6XLSWvRuO0jMCJKGlV0ofBAccngPNdo8bKota6MHlCxP7IzlBOOu+YCjGN9LnHQY
+         KrJ2praCuw1kyEevCup+tO+lEqLWSU7FUOLagPddYlSSYNQJbW+NTMVEffNIhxqe7PFd
+         Nkqv0OiCUgHobmUIDF/68Ml5dAaBNUY+/kS+Trb/zBF479j9mkMggEzOqAO+0tmla2j0
+         Pm4vowAce6W0X7dixb+RCG9gAY+K1Os+ZdBvry5Pnirz6wa8EvihqtiGNJqgvNFy7+a2
+         TerqTo2dzga/Tuj6jBb5ayMDgH+3CMzM82/9gLQdaQE8cCrrolPZ0hxdi28nCs5Ec9yM
+         4n5g==
+X-Gm-Message-State: ACrzQf3UNHZp5SWTuQgQt9YSHaaygopOxbPPpdfS7k988mp53jtzjAUc
+        x5a8LreO/jU6ffWiFlHyQlY=
+X-Google-Smtp-Source: AMsMyM7QTV2piy1lJlSMEFJV3mTssB40YHw8zbM4UKY9gTn2KK8AiewB9/TEvg4rxyiC7XD+0tMUpg==
+X-Received: by 2002:a05:6402:520d:b0:45a:31cb:f5bd with SMTP id s13-20020a056402520d00b0045a31cbf5bdmr16366411edd.119.1665428902229;
+        Mon, 10 Oct 2022 12:08:22 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-134.ip85.fastwebnet.it. [93.42.70.134])
+        by smtp.gmail.com with ESMTPSA id p9-20020a05640243c900b004573052bf5esm7580959edc.49.2022.10.10.12.08.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Oct 2022 12:08:21 -0700 (PDT)
+Message-ID: <63446da5.050a0220.92e81.d3fb@mx.google.com>
+X-Google-Original-Message-ID: <Y0QTvo45WKoO5KKE@Ansuel-xps.>
+Date:   Mon, 10 Oct 2022 14:44:46 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pawel Dembicki <paweldembicki@gmail.com>,
+        Lech Perczak <lech.perczak@gmail.com>
+Subject: Re: [net PATCH 1/2] net: dsa: qca8k: fix inband mgmt for big-endian
+ systems
+References: <20221010111459.18958-1-ansuelsmth@gmail.com>
+ <Y0RqDd/P3XkrSzc3@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y0RqDd/P3XkrSzc3@lunn.ch>
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DATE_IN_PAST_06_12,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 10, 2022, at 6:54 PM, Kalle Valo wrote:
-> Naresh Kamboju <naresh.kamboju@linaro.org> writes:
+On Mon, Oct 10, 2022 at 08:53:01PM +0200, Andrew Lunn wrote:
+> >  /* Special struct emulating a Ethernet header */
+> >  struct qca_mgmt_ethhdr {
+> > -	u32 command;		/* command bit 31:0 */
+> > -	u32 seq;		/* seq 63:32 */
+> > -	u32 mdio_data;		/* first 4byte mdio */
+> > +	__le32 command;		/* command bit 31:0 */
+> > +	__le32 seq;		/* seq 63:32 */
+> > +	__le32 mdio_data;		/* first 4byte mdio */
+> >  	__be16 hdr;		/* qca hdr */
+> >  } __packed;
+> 
+> It looks odd that hdr is BE while the rest are LE. Did you check this?
+> 
+>    Andrew
 
->>
->> Build log: https://builds.tuxbuild.com/2F4W7nZHNx3T88RB0gaCZ9hBX6c/
->
-> Thanks, I was able to reproduce it now and submitted a patch:
->
-> https://patchwork.kernel.org/project/linux-wireless/patch/20221010160638.20152-1-kvalo@kernel.org/
->
-> But it's strange that nobody else (myself included) didn't see this
-> earlier. Nor later for that matter, this is the only report I got about
-> this. Arnd, any ideas what could cause this only to happen on GCC 11?
->
-> -- 
-> https://patchwork.kernel.org/project/linux-wireless/list/
->
-> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Yes we did many test to analyze this and I just checked with some
+tcpdump that the hdr is BE everytime. If you want I can provide you some
+tcpdump from 2 different systems.
 
-No idea here, though I have not tried to reproduce it. This looks
-like a false positive to me, which might be the result of some
-missed optimization in the compiler when building with certain
-options. I see in the .config that KASAN is enabled, and this sometimes
-causes odd behavior like this. If it does not happen without KASAN,
-maybe report it as a bug against the compiler.
+Anyway it looks like this family switch treats the hdr in a standard way
+with the network byte order and for anything else stick to LE.
 
-     Arnd
+Also as a side note the tagger worked correctly before the mgmt feature
+on BE systems and also works correctly now... just any command is slow
+as the mgmt system has to timeout and fallback to legacy mdio.
+
+-- 
+	Ansuel
