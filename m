@@ -2,112 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B64C5FA3F4
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 21:08:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B09A5FA350
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 20:22:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229910AbiJJTIf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Oct 2022 15:08:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42856 "EHLO
+        id S229794AbiJJSWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Oct 2022 14:22:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229832AbiJJTIZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 15:08:25 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EC005AC74;
-        Mon, 10 Oct 2022 12:08:24 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id u21so17146419edi.9;
-        Mon, 10 Oct 2022 12:08:24 -0700 (PDT)
+        with ESMTP id S229607AbiJJSWX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 14:22:23 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 258151DA63
+        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 11:22:23 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id b5so10898575pgb.6
+        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 11:22:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=8ZWQI6EaAdyld4xWyI/4YqlkKhYX2A2+TTbGbUbetgY=;
-        b=bs8dQiS0WqpLHv+OnV7+mwwcm+a+DGPPnskG8ISDlRKzqXg/gzx9ebBk0KHNJTaRv0
-         FNxyMmejLeZ4/iEZoAqA59guqJi5322dn2J+yVtu2dVfwPjtZ45TuUKGLjAmKpue5gru
-         xPjQUNlYwc9k7Hk6t5JSMbHZQFLdnwhSDDMvSfkISmtuo6N763tELMzhXAQhraSllQfR
-         lzD/K6VYszSF83BWLvaxNt06NSKoFgftAca39Zs+qv50ud25Q1vY/g03nD1BxgftW9EC
-         vjSSMn3YJa8qL7N9ZN3urhtzekDIhLp2i+jSGkdwQE0TtYrkHCjKtXoCcfwFA+UkixRn
-         j7CA==
+        d=fastly.com; s=google;
+        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+bSxSJqNb+sqoNTXSt8Ye05VUAgMzhi/zgUSPCGgMEc=;
+        b=n/8VHYiA7PJrbHwJIQGtT8aJdABS3/DM5tlhlN+UkXerEmjBV7g962mdOrOsnsFT0Z
+         oKIpOF3iS/VaLfq79VOaHWcjnEGmtPNYaUtINafZ8N+Asxq+MC3qgBTt2Sh6iTREKXQQ
+         0N5G//kY1te3/PKLi1pL5hwN5Ju4eFQlJ88RA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8ZWQI6EaAdyld4xWyI/4YqlkKhYX2A2+TTbGbUbetgY=;
-        b=AW6XLSWvRuO0jMCJKGlV0ofBAccngPNdo8bKota6MHlCxP7IzlBOOu+YCjGN9LnHQY
-         KrJ2praCuw1kyEevCup+tO+lEqLWSU7FUOLagPddYlSSYNQJbW+NTMVEffNIhxqe7PFd
-         Nkqv0OiCUgHobmUIDF/68Ml5dAaBNUY+/kS+Trb/zBF479j9mkMggEzOqAO+0tmla2j0
-         Pm4vowAce6W0X7dixb+RCG9gAY+K1Os+ZdBvry5Pnirz6wa8EvihqtiGNJqgvNFy7+a2
-         TerqTo2dzga/Tuj6jBb5ayMDgH+3CMzM82/9gLQdaQE8cCrrolPZ0hxdi28nCs5Ec9yM
-         4n5g==
-X-Gm-Message-State: ACrzQf3UNHZp5SWTuQgQt9YSHaaygopOxbPPpdfS7k988mp53jtzjAUc
-        x5a8LreO/jU6ffWiFlHyQlY=
-X-Google-Smtp-Source: AMsMyM7QTV2piy1lJlSMEFJV3mTssB40YHw8zbM4UKY9gTn2KK8AiewB9/TEvg4rxyiC7XD+0tMUpg==
-X-Received: by 2002:a05:6402:520d:b0:45a:31cb:f5bd with SMTP id s13-20020a056402520d00b0045a31cbf5bdmr16366411edd.119.1665428902229;
-        Mon, 10 Oct 2022 12:08:22 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-134.ip85.fastwebnet.it. [93.42.70.134])
-        by smtp.gmail.com with ESMTPSA id p9-20020a05640243c900b004573052bf5esm7580959edc.49.2022.10.10.12.08.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Oct 2022 12:08:21 -0700 (PDT)
-Message-ID: <63446da5.050a0220.92e81.d3fb@mx.google.com>
-X-Google-Original-Message-ID: <Y0QTvo45WKoO5KKE@Ansuel-xps.>
-Date:   Mon, 10 Oct 2022 14:44:46 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pawel Dembicki <paweldembicki@gmail.com>,
-        Lech Perczak <lech.perczak@gmail.com>
-Subject: Re: [net PATCH 1/2] net: dsa: qca8k: fix inband mgmt for big-endian
- systems
-References: <20221010111459.18958-1-ansuelsmth@gmail.com>
- <Y0RqDd/P3XkrSzc3@lunn.ch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y0RqDd/P3XkrSzc3@lunn.ch>
-X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DATE_IN_PAST_06_12,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=+bSxSJqNb+sqoNTXSt8Ye05VUAgMzhi/zgUSPCGgMEc=;
+        b=wjKYbTVyVFtvdlw1Nu8duTinyxuyNT9nTnMRhy56BjBVaEmAAVuYAfnbd8T/vcMSEF
+         wQ1OHcinKVSXn7Mwnk66z42CalOlvMyRUCEO+tpQYv8sQPQh7oOi9JfLdZccHXJKpHg1
+         9Ms+hdnqr6rqVRtbWyuzdvS0k8w6I1bHiloO0PIfiUF61mR8cuIy+v0OoFfYPySB28dm
+         2VN772WHtEscZd3/Kp9vwxvWcx2odEnESKJzhP2BbiMXn7wrxH1nqmUn6EGuUYaakRFM
+         eDvcl3dukJXXPYj26dT5kuwOqXvTD229xlbKHMoshvHQz2Kyd3NnK2Sk5hk27YlmRWsU
+         L27Q==
+X-Gm-Message-State: ACrzQf272Y+VlI5RV7NN78a1H0Hmuh9a8JfzJTS0DKaJbw5yZW+eQxnf
+        IZ+mXfdkKV6gYkxrUPBuFhOAxiQY5uSbyXCct/r4+BF20PyEtundM8uzcTRxvPZAJp64fUZM5Wj
+        iPrU5TLS7YrUpNOZ/MATL+VhyZ773+u2//IWOSrlwtJhdiLbgW42NtSo/7W0QE365x9Dx
+X-Google-Smtp-Source: AMsMyM4mprkW/0gEZ0uddLZDAnuC3PC2QmjdN6vWo+03MtObwNsStMpdQpOumTxOgNHkjhMX5aI4Mw==
+X-Received: by 2002:a63:186:0:b0:442:ee11:48a5 with SMTP id 128-20020a630186000000b00442ee1148a5mr17565584pgb.284.1665426142330;
+        Mon, 10 Oct 2022 11:22:22 -0700 (PDT)
+Received: from localhost.localdomain (c-24-6-151-244.hsd1.ca.comcast.net. [24.6.151.244])
+        by smtp.gmail.com with ESMTPSA id z18-20020aa79e52000000b005632d3b5c9csm3460195pfq.211.2022.10.10.11.22.21
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 10 Oct 2022 11:22:22 -0700 (PDT)
+From:   Joe Damato <jdamato@fastly.com>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net, edumazet@google.com,
+        linux-kernel@vger.kernel.org, Joe Damato <jdamato@fastly.com>
+Subject: [net-next PATCH] net: core: Add napi_complete_done tracepoint
+Date:   Mon, 10 Oct 2022 11:21:34 -0700
+Message-Id: <1665426094-88160-1-git-send-email-jdamato@fastly.com>
+X-Mailer: git-send-email 2.7.4
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 10, 2022 at 08:53:01PM +0200, Andrew Lunn wrote:
-> >  /* Special struct emulating a Ethernet header */
-> >  struct qca_mgmt_ethhdr {
-> > -	u32 command;		/* command bit 31:0 */
-> > -	u32 seq;		/* seq 63:32 */
-> > -	u32 mdio_data;		/* first 4byte mdio */
-> > +	__le32 command;		/* command bit 31:0 */
-> > +	__le32 seq;		/* seq 63:32 */
-> > +	__le32 mdio_data;		/* first 4byte mdio */
-> >  	__be16 hdr;		/* qca hdr */
-> >  } __packed;
-> 
-> It looks odd that hdr is BE while the rest are LE. Did you check this?
-> 
->    Andrew
+Add a tracepoint to help debug napi_complete_done. Users who set
+defer_hard_irqs and the GRO timer can use this tracepoint to better
+understand what impact these options have when their NIC driver calls
+napi_complete_done.
 
-Yes we did many test to analyze this and I just checked with some
-tcpdump that the hdr is BE everytime. If you want I can provide you some
-tcpdump from 2 different systems.
+perf trace can be used to enable the tracepoint and the output can be
+examined to determine which settings should be adjusted.
 
-Anyway it looks like this family switch treats the hdr in a standard way
-with the network byte order and for anything else stick to LE.
+$ sudo perf trace -e napi:napi_complete_done -a --call-graph=fp --libtraceevent_print
 
-Also as a side note the tagger worked correctly before the mgmt feature
-on BE systems and also works correctly now... just any command is slow
-as the mgmt system has to timeout and fallback to legacy mdio.
+356.774 :0/0 napi:napi_complete_done(napi_complete_done on napi struct 0xffff88e052f02010 dev vlan100 irq_defers_remaining 2 timeout 20000 work_done 0 ret 0)
+	napi_complete_done ([kernel.kallsyms])
+	napi_complete_done ([kernel.kallsyms])
+	i40e_napi_poll ([i40e])
+	__napi_poll ([kernel.kallsyms])
+	net_rx_action ([kernel.kallsyms])
+	__do_softirq ([kernel.kallsyms])
+	sysvec_apic_timer_interrupt ([kernel.kallsyms])
+	asm_sysvec_apic_timer_interrupt ([kernel.kallsyms])
+	intel_idle_irq ([kernel.kallsyms])
+	cpuidle_enter_state ([kernel.kallsyms])
+	cpuidle_enter ([kernel.kallsyms])
+	do_idle ([kernel.kallsyms])
+	cpu_startup_entry ([kernel.kallsyms])
+	[0x243d98] ([kernel.kallsyms])
+	secondary_startup_64_no_verify ([kernel.kallsyms])
 
+Signed-off-by: Joe Damato <jdamato@fastly.com>
+---
+ include/trace/events/napi.h | 29 +++++++++++++++++++++++++++++
+ net/core/dev.c              |  2 ++
+ 2 files changed, 31 insertions(+)
+
+diff --git a/include/trace/events/napi.h b/include/trace/events/napi.h
+index 6678cf8..e8473d3 100644
+--- a/include/trace/events/napi.h
++++ b/include/trace/events/napi.h
+@@ -11,6 +11,35 @@
+ 
+ #define NO_DEV "(no_device)"
+ 
++TRACE_EVENT(napi_complete_done,
++	TP_PROTO(struct napi_struct *napi, int hard_irq_defer, unsigned long timeout,
++		int work_done, bool ret),
++
++	TP_ARGS(napi, hard_irq_defer, timeout, work_done, ret),
++
++	TP_STRUCT__entry(
++		__field(	struct napi_struct *,	napi)
++		__string(	dev_name,  napi->dev ? napi->dev->name : NO_DEV)
++		__field(	int,			hard_irq_defer)
++		__field(	unsigned long,		timeout)
++		__field(	int,			work_done)
++		__field(	int,			ret)
++	),
++
++	TP_fast_assign(
++		__entry->napi = napi;
++		__assign_str(dev_name, napi->dev ? napi->dev->name : NO_DEV);
++		__entry->hard_irq_defer = hard_irq_defer;
++		__entry->timeout = timeout;
++		__entry->work_done = work_done;
++		__entry->ret = ret;
++	),
++
++	TP_printk("napi_complete_done on napi struct %p dev %s irq_defers_remaining %d timeout %lu work_done %d ret %d",
++		__entry->napi, __get_str(dev_name), __entry->hard_irq_defer,
++		__entry->timeout, __entry->work_done, __entry->ret)
++);
++
+ TRACE_EVENT(napi_poll,
+ 
+ 	TP_PROTO(struct napi_struct *napi, int work, int budget),
+diff --git a/net/core/dev.c b/net/core/dev.c
+index fa53830..e601f97 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -6091,6 +6091,8 @@ bool napi_complete_done(struct napi_struct *n, int work_done)
+ 	if (timeout)
+ 		hrtimer_start(&n->timer, ns_to_ktime(timeout),
+ 			      HRTIMER_MODE_REL_PINNED);
++
++	trace_napi_complete_done(n, n->defer_hard_irqs_count, timeout, work_done, ret);
+ 	return ret;
+ }
+ EXPORT_SYMBOL(napi_complete_done);
 -- 
-	Ansuel
+2.7.4
+
