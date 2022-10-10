@@ -2,118 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2966B5F9EA0
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 14:19:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3623C5F9EE1
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 14:53:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232430AbiJJMT5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Oct 2022 08:19:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33612 "EHLO
+        id S230332AbiJJMxN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Oct 2022 08:53:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232319AbiJJMTs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 08:19:48 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D42272E
-        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 05:19:39 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id a10so16718957wrm.12
-        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 05:19:39 -0700 (PDT)
+        with ESMTP id S229978AbiJJMxM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 08:53:12 -0400
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7701052DF6
+        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 05:53:11 -0700 (PDT)
+Received: by mail-qv1-xf34.google.com with SMTP id f14so7056078qvo.3
+        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 05:53:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:reply-to:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=g/ZHjNHsGoaehn5niIwN9gyFHAZsxlv7mG7cEwEx2B0=;
-        b=WMf+npDtzFcGMB3EuCNLTRlDEapRE5ulr+KRjG5zeMaPJPWfrgXL6wepvhrvtima4z
-         k7y/ISn6MvXvSaLh0QQS6P9U9a8hE/8bU48B9dYOEdBhoScggW7QgoG9qmgoOX/FXdJQ
-         g1zxEqhW6kEMUhvoICyUPQrXTekWXIFCZUerZuj4fC1fBcUcjaXrNMNGp5lRlTdh2VU0
-         f8nlIiaf0pI8mYyppqqs9zZb9+m/1ReN4UPWNiw3AkU0tXDW9fRyN2mgvTIHnvg+MQGy
-         WJ4CN/9a3smkc0NGmyfJZIdaDttKUXRwE65iVGx3yZOFXdk7Z+hpKsUhTD48PmWWJmAJ
-         5bRQ==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=TBAjW9r0Yqm9+8GYyvBiVexVdo43xQyNfiIdTzUgdZg=;
+        b=PHNzImnR8QrGbjMwL1s0fRzN5o31WAGmg5gkJxBJVjt3ggEPiAqApR8zasReQ+SZu5
+         022Fg+x9IqWZGzjdD+M+T/AptxNVORADONjxP/LPgZS5/hKylOKkNGvVrg1ZkI1EVfEP
+         Mrq1Ahnz9grUqujlaelrmxiRjwzQDJaEkRcNDn1TIIC7TMXLe+ux5YoiRilACNY6yuQi
+         UxqfyMMf/K/DsDIwjUqv+8IeSEjZiBcCq1W8ZBrZpZWrkMlfLma5fLJfen281rznX+pR
+         xdOQMrRE6QyxExTzas40lCnH4gTZ8Z8ywhCdx/q+/PSSmcMnSxassNJyKUqnDO+Z/WH/
+         WgIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:reply-to:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=g/ZHjNHsGoaehn5niIwN9gyFHAZsxlv7mG7cEwEx2B0=;
-        b=bIYNZgPr0USEUaLAufKKtPKgo03K8g0T5VkkIcKcLzeeN892WwEiRG8On8WBFtFrre
-         GGMm6YZPF1clmhpnMoTACXVxHoQgzblUcITM2La/jOaGsOgZRiy35hL0cCae1F3ez+PH
-         RU7DQtxLJivx5dhYCF6cdOwd2gSJph/N69iB1drc+SKonvYHqZmctx12jr1rQZ/kcY+z
-         gUJAfjTBRdqlrClU3J8P7cCqvl0PXiEfXN88/nSisTbVK6lA08weez2Xj9GUtJAR4Uc4
-         L/XXPp2hwKSd9auSlmaJTEpWHWXGzt7G2ESIbvJxNKXXKf3LRvz6ZzfADW+/JtTDQXMo
-         6VMA==
-X-Gm-Message-State: ACrzQf0IP2YkQZekh5H2laVmx2IuAKG7OnEqZ1oYtaPT317XRDFh0g7P
-        YBlfUJGIQ/cbKM7kDP5xHsepjw==
-X-Google-Smtp-Source: AMsMyM45C3sTvGf+a5kDI2DEPyDsv84fUVWidHMSBZrFsbmV23zHGTCP4R+JaNCMrFC17WpE8JwOrw==
-X-Received: by 2002:a5d:6d8a:0:b0:22f:1ade:de87 with SMTP id l10-20020a5d6d8a000000b0022f1adede87mr8233476wrs.3.1665404378259;
-        Mon, 10 Oct 2022 05:19:38 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:b41:c160:5d4:a7f7:8743:2a68? ([2a01:e0a:b41:c160:5d4:a7f7:8743:2a68])
-        by smtp.gmail.com with ESMTPSA id b21-20020a05600c151500b003c6b9749505sm1785766wmg.30.2022.10.10.05.19.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 Oct 2022 05:19:37 -0700 (PDT)
-Message-ID: <0e3f881d-b469-566f-7cdf-317fb88c305a@6wind.com>
-Date:   Mon, 10 Oct 2022 14:19:36 +0200
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=TBAjW9r0Yqm9+8GYyvBiVexVdo43xQyNfiIdTzUgdZg=;
+        b=WdnQnCZB6Zt4WnLHVA7TzSTOXbuc+nqxrbHtsN6s6LudDKsqZucIgHcXTgPDRZ0/tN
+         p17cpB494mHsFQoKQ+O9Uaa2vMyH8oOAU/Z+4EzJnk/PZgaZiR9InQ1+kMB08wT2Ji6H
+         BSdZkWiT9yfQuKRVvPDyJmzLwmp05cvwzd0k/s8auEaxApDGG+sPInwUJbqa4MgHoja0
+         9Evtzu5PwBgw/4kmZWeMLM8oV075XBE6R+XxMPffzLQrb6rlsCHe6C9Apzjyazjnv+1d
+         LS9Gkemdw3Q1UecgRSYPBWkVaTtxpPCbfsKCfoKmjDQptg6FsClSyLewqSwQ+jtXMMth
+         R2Dw==
+X-Gm-Message-State: ACrzQf3r/62RUf5JMLvrQuBmZta5oqMUvsgiJLhHd+WgLfHHvyWmcEd3
+        WGkx1m9SH4kM5wubmaGo9PTY2iKii9XjZK6hYmelNx955UFIvw==
+X-Google-Smtp-Source: AMsMyM7qGq3zSv5/KhkPd2D4R4e0iJ2D0KOntDQ7ogZdtlNg5HpIwC6gCYOq/7YVkH2Eb0TSBs2Cf9QJ7UUrdzDErwc=
+X-Received: by 2002:a0c:cb8d:0:b0:4b1:7a87:8ad5 with SMTP id
+ p13-20020a0ccb8d000000b004b17a878ad5mr14405550qvk.35.1665406390511; Mon, 10
+ Oct 2022 05:53:10 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Reply-To: nicolas.dichtel@6wind.com
+References: <20221009191643.297623-1-eyal.birger@gmail.com>
+ <1fc3c7b2-027b-374d-b77a-e5a01b70e73a@6wind.com> <CAHsH6GthqV7nUmeujhX_=3425HTsV0sc6O7YxWg22qbwbP=KJg@mail.gmail.com>
+ <0e3f881d-b469-566f-7cdf-317fb88c305a@6wind.com>
+In-Reply-To: <0e3f881d-b469-566f-7cdf-317fb88c305a@6wind.com>
+From:   Eyal Birger <eyal.birger@gmail.com>
+Date:   Mon, 10 Oct 2022 15:52:59 +0300
+Message-ID: <CAHsH6GsBo59jm+fYLmPwf3FDa8+8Dc29BV1huj20YgjRdLeevQ@mail.gmail.com>
 Subject: Re: [PATCH ipsec,v2] xfrm: fix "disable_policy" on ipv4 early demux
-Content-Language: en-US
-To:     Eyal Birger <eyal.birger@gmail.com>
+To:     nicolas.dichtel@6wind.com
 Cc:     steffen.klassert@secunet.com, davem@davemloft.net,
         yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
         kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
         monil191989@gmail.com, stephen@networkplumber.org
-References: <20221009191643.297623-1-eyal.birger@gmail.com>
- <1fc3c7b2-027b-374d-b77a-e5a01b70e73a@6wind.com>
- <CAHsH6GthqV7nUmeujhX_=3425HTsV0sc6O7YxWg22qbwbP=KJg@mail.gmail.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-In-Reply-To: <CAHsH6GthqV7nUmeujhX_=3425HTsV0sc6O7YxWg22qbwbP=KJg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 10/10/2022 à 12:29, Eyal Birger a écrit :
-> Hi Nicolas,
-> 
-> On Mon, Oct 10, 2022 at 11:28 AM Nicolas Dichtel
-> <nicolas.dichtel@6wind.com> wrote:
->>
->> Le 09/10/2022 à 21:16, Eyal Birger a écrit :
->>> The commit in the "Fixes" tag tried to avoid a case where policy check
->>> is ignored due to dst caching in next hops.
->>>
->>> However, when the traffic is locally consumed, the dst may be cached
->>> in a local TCP or UDP socket as part of early demux. In this case the
->>> "disable_policy" flag is not checked as ip_route_input_noref() was only
->>> called before caching, and thus, packets after the initial packet in a
->>> flow will be dropped if not matching policies.
->>>
->>> Fix by checking the "disable_policy" flag also when a valid dst is
->>> already available.
->>>
->>> Link: https://bugzilla.kernel.org/show_bug.cgi?id=216557
->>> Reported-by: Monil Patel <monil191989@gmail.com>
->>> Fixes: e6175a2ed1f1 ("xfrm: fix "disable_policy" flag use when arriving from different devices")
->>> Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
->>>
->>
->> Is there the same problem with ipv6?
-> 
-> The issue is specific to IPv4 as the original fix was only relevant
-> to IPv4.
-> 
-> I also tested a similar scenario using IPv6 addresses and did not see
-> a problem.
-Thanks. Is it possible to write a selftest with this scenario?
+On Mon, Oct 10, 2022 at 3:19 PM Nicolas Dichtel
+<nicolas.dichtel@6wind.com> wrote:
+>
+> Le 10/10/2022 =C3=A0 12:29, Eyal Birger a =C3=A9crit :
+> > Hi Nicolas,
+> >
+> > On Mon, Oct 10, 2022 at 11:28 AM Nicolas Dichtel
+> > <nicolas.dichtel@6wind.com> wrote:
+> >>
+> >> Le 09/10/2022 =C3=A0 21:16, Eyal Birger a =C3=A9crit :
+> >>> The commit in the "Fixes" tag tried to avoid a case where policy chec=
+k
+> >>> is ignored due to dst caching in next hops.
+> >>>
+> >>> However, when the traffic is locally consumed, the dst may be cached
+> >>> in a local TCP or UDP socket as part of early demux. In this case the
+> >>> "disable_policy" flag is not checked as ip_route_input_noref() was on=
+ly
+> >>> called before caching, and thus, packets after the initial packet in =
+a
+> >>> flow will be dropped if not matching policies.
+> >>>
+> >>> Fix by checking the "disable_policy" flag also when a valid dst is
+> >>> already available.
+> >>>
+> >>> Link: https://bugzilla.kernel.org/show_bug.cgi?id=3D216557
+> >>> Reported-by: Monil Patel <monil191989@gmail.com>
+> >>> Fixes: e6175a2ed1f1 ("xfrm: fix "disable_policy" flag use when arrivi=
+ng from different devices")
+> >>> Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
+> >>>
+> >>
+> >> Is there the same problem with ipv6?
+> >
+> > The issue is specific to IPv4 as the original fix was only relevant
+> > to IPv4.
+> >
+> > I also tested a similar scenario using IPv6 addresses and did not see
+> > a problem.
+> Thanks. Is it possible to write a selftest with this scenario?
 
+I can add one targeting ipsec-next.
 
-Regards,
-Nicolas
+Do you perhaps know which is the current preferred flavor for such selftest=
+s
+for ipsec - C or bash?
+
+Eyal.
