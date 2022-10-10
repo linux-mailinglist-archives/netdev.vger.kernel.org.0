@@ -2,78 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EFF25F9C2F
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 11:46:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6150C5F9C4E
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 11:57:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231430AbiJJJq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Oct 2022 05:46:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39240 "EHLO
+        id S231244AbiJJJ5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Oct 2022 05:57:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230253AbiJJJq0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 05:46:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D63F6566D;
-        Mon, 10 Oct 2022 02:46:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E92BB60EC8;
-        Mon, 10 Oct 2022 09:46:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BE61C433D6;
-        Mon, 10 Oct 2022 09:46:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665395184;
-        bh=FJra+6/H/yK2ECcF/qdxyMMLN4AXw9SpU4CxqP12U5E=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=qKhwdOoVUbj4pLXHeBI+Kx1++W9/CgQvXOaNoGJuWvXWWPphzZJY6HyOFZhecJzi9
-         Bcs2xOsCZ5umBruPH1eTQT0eoaYWk1ouxTwCjer019qkpwizSslqzAMEFTErkfxgBi
-         fQQyRIjlSyQbBAZ0hsbv3aq7/dQZeK8Ip1rU+Ib+7yK6bygQ0CejbizaHzEz9a/JOf
-         D2X6jMuMFNj3nTPu3LRcOhUnzmTZA2l5Eh1mo7VzH4h+wbOq3wk6fVcE1se0thyAvY
-         U+qZa6EvRAgcjnVUTPhRa4+LngSdg+NivoMTa+4kE48KP6VyVlae2FRGGEIlpPiGPy
-         rPqRtOJMqvkXg==
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231162AbiJJJ5D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 05:57:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C10FC5F21F
+        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 02:56:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1665395817;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qEUa83HipRTO4aAhoNtLoSIs7ceIGkhT1Fj1jwGOpHk=;
+        b=UL8XqNh1zLpKA5KjQGwhxYjETKxqBrfuDgGd1CnYUOTcDLh/zyttaNYwYQSgpxkp3vc1i6
+        iucgJuhl+xCc5GLd+7PRWDTNiE8eWv+TM/3CYzzt/YovwYcVIBElk54aYltFDjic7XHeoK
+        xDHZcgpIvEpycw2XHmG1mMyccT+imLM=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-28-bO03Dd4TOwytMeXGM44bTg-1; Mon, 10 Oct 2022 05:56:51 -0400
+X-MC-Unique: bO03Dd4TOwytMeXGM44bTg-1
+Received: by mail-wm1-f72.google.com with SMTP id c3-20020a7bc843000000b003b486fc6a40so2953631wml.7
+        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 02:56:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=qEUa83HipRTO4aAhoNtLoSIs7ceIGkhT1Fj1jwGOpHk=;
+        b=pIvChxjWo4MQGQg2ugb9ebWUfgMuCa4vXy7nP6zOQ3YTISPA8U5g9BOhbUKDdhNvu/
+         N2Fu81WkGpV0lrPvUCAWyMYNdzPmCnds6EFNoJAi05+W4qs+XECpmjZoNIwAAPa5PRuP
+         ZKl8v39JAakGklNFQLPgCbQ85RE7UnXrYYelc+2HcTNUkYh5xv2YnbDZNG2j0n/gt9HW
+         nfyzBtqQ8/XQhpibrtXHIciOhq+pvzmBuwcsg7mlgc1mTgd3ci3NlL469DaWFNM0MO0r
+         E8KTUsJZ7JrISvWyNybPWVsZhoST3bxCQRpAZSUAWNElLgyUusYNQ10D0nqmjwcQkzIi
+         YzwQ==
+X-Gm-Message-State: ACrzQf3cNcM2olLOhka/qs+INdnx2lHQPlafJatgqVEgUZauF+TambKK
+        aqYLP1YTwn2iaFHqeG0rDbl5h0EwMVv8JXM4VZLtPqNyM+sbB9jVkLJ5OhxQ9ucUjYyt3RNl8j8
+        zg4Hy5IMR3siK7Y/K
+X-Received: by 2002:a5d:5a18:0:b0:22f:4f72:213a with SMTP id bq24-20020a5d5a18000000b0022f4f72213amr6878632wrb.57.1665395809994;
+        Mon, 10 Oct 2022 02:56:49 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM433FYGI8FP7Isu9a7tQilMCo+PxGRCkwbjKG09o/JkR0yJ5o40ZY2V9beVG4PmGMfS4c1STg==
+X-Received: by 2002:a5d:5a18:0:b0:22f:4f72:213a with SMTP id bq24-20020a5d5a18000000b0022f4f72213amr6878611wrb.57.1665395809729;
+        Mon, 10 Oct 2022 02:56:49 -0700 (PDT)
+Received: from localhost.localdomain ([92.62.32.42])
+        by smtp.gmail.com with ESMTPSA id r1-20020a05600c35c100b003a84375d0d1sm15561178wmq.44.2022.10.10.02.56.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Oct 2022 02:56:49 -0700 (PDT)
+Date:   Mon, 10 Oct 2022 11:56:45 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, robh@kernel.org, johannes@sipsolutions.net,
+        ecree.xilinx@gmail.com, stephen@networkplumber.org, sdf@google.com,
+        f.fainelli@gmail.com, fw@strlen.de, linux-doc@vger.kernel.org,
+        razor@blackwall.org, nicolas.dichtel@6wind.com,
+        Bagas Sanjaya <bagasdotme@gmail.com>
+Subject: Re: [PATCH net-next v2 1/7] docs: add more netlink docs (incl. spec
+ docs)
+Message-ID: <20221010095645.GA3551@localhost.localdomain>
+References: <20220930023418.1346263-1-kuba@kernel.org>
+ <20220930023418.1346263-2-kuba@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] ath9k: Make arrays prof_prio and channelmap static const
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20221005155558.320556-1-colin.i.king@gmail.com>
-References: <20221005155558.320556-1-colin.i.king@gmail.com>
-To:     Colin Ian King <colin.i.king@gmail.com>
-Cc:     =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <166539518023.12656.10839315414003633288.kvalo@kernel.org>
-Date:   Mon, 10 Oct 2022 09:46:21 +0000 (UTC)
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220930023418.1346263-2-kuba@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Colin Ian King <colin.i.king@gmail.com> wrote:
+On Thu, Sep 29, 2022 at 07:34:12PM -0700, Jakub Kicinski wrote:
+> +==============================
+> +Netlink spec C code generation
+> +==============================
+> +
+> +This document describes how Netlink specifications are used to render
+> +C code (uAPI, policies etc.). It also defines the additional properties
+> +allowed in older families by the ``genetlink-c`` protocol level,
+> +to control the naming.
+> +
+> +For brevity this document refers to ``name`` properties of various
+> +objects by the object type. For example ``$attr`` is the value
+> +of ``name`` in an attribute, and ``$family`` is the name of the
+> +family (the global ``name`` property).
+> +
+> +The upper case is used to denote literal values, e.g. ``$family-CMD``
+> +means the concatenation of ``$family``, a dash character, and the literal
+> +``CMD``.
+> +
+> +The names of ``#defines`` and enum values are always converted to upper case,
+> +and with dashes (``-``) replaced by underscores (``_``).
+> +
+> +If the constructured name is a C keyword, an extra underscore is
 
-> Don't populate the read-only arrays prof_prio and channelmap
-> on the stack but instead make them static const. Also makes the
-> object code a little smaller.
-> 
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-> Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
-> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+s/constructured/constructed/
 
-Patch applied to ath-next branch of ath.git, thanks.
+[...]
 
-e161d4b60ae3 wifi: ath9k: Make arrays prof_prio and channelmap static const
+> +header
+> +~~~~~~
+> +
+> +For C-compatible languages, header which already defines this value.
+> +In case the definition is shared by multiple families (e.g. ``IFNAMSIZ``)
+> +code generators for C-compabile languages may prefer to add an appropriate
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20221005155558.320556-1-colin.i.king@gmail.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+s/C-compabile/C-compatible/
 
