@@ -2,125 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 109625F9D38
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 13:01:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89B605F9D45
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 13:04:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231218AbiJJLBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Oct 2022 07:01:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39724 "EHLO
+        id S231720AbiJJLEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Oct 2022 07:04:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231223AbiJJLBf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 07:01:35 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 299622C6;
-        Mon, 10 Oct 2022 04:01:33 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id 78so9973442pgb.13;
-        Mon, 10 Oct 2022 04:01:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:sender:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hkoWneOY7U3jvpgDYhqtOSOufEj1ZI44Rj90YLp9Meg=;
-        b=G5DYGTYTP5HYtu+ZDcpaVP97CugNyoU/vH1l0S56RClmBtcGO2nN2oSAylhpzhY/Nb
-         KcJsniVd3fcQVulNWjA63h/T0fcPv7W+Kxpl+ObZx0SIBWAfmoNLSmoJOP6a3DL28KcP
-         oXdV/e04popGykVrsIz3QSC/0tnG6PlIL3NJ2m3vlu6mcAs6am3yB9Aeq/13ZoGY+uF/
-         xOH6GJkATP48Tp8HiPcJu/e+ChBwOBZRj989+B6heifVy/exiHg8zrBJSrGhl7hqjzUt
-         nENF3Tcn6zhcA70wpITjamZavDDTXkRGzkkDeNp7WmA/rd2HchNDIgJ5LE75OAxSnfVD
-         LCIw==
+        with ESMTP id S231218AbiJJLEY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 07:04:24 -0400
+Received: from mail-il1-f173.google.com (mail-il1-f173.google.com [209.85.166.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC92EDFAC;
+        Mon, 10 Oct 2022 04:04:23 -0700 (PDT)
+Received: by mail-il1-f173.google.com with SMTP id a2so5458627iln.13;
+        Mon, 10 Oct 2022 04:04:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=hkoWneOY7U3jvpgDYhqtOSOufEj1ZI44Rj90YLp9Meg=;
-        b=BnIlsZLybqvq1kvNf0L4C94JRQnKcdjQkCJnDdBKIg9XOfxs/NN/ONShhCm9/RL/OT
-         czqOZvDwaU3gRHETjMR62rryjKqedSLLiirt+nbDgC9tjxPY1XFg9vqdkpKfgEs3aA0d
-         yNu6YYi+7+jk1/D8m1kHrtmlVuSW/H7GEtuLYVIvZjxa22pNd7ZOPabhDHa+5bfdclcS
-         qy5q8czDSd5iJ27f0PoNPS5P/WxJwyqLUCCLaLaA+Vsvh+ettPmD6Dxnv9OvT6nsUHYR
-         TOmgZ43IopFCXkbqokO+QYztf5nnuHqYWiegLdTUkJWjj5GKxTH1rZnxzeqcSnd/pptT
-         A+LA==
-X-Gm-Message-State: ACrzQf0gucdVFDvypFufTM2UzvmZYHov6YgR0gHBSJLhA2hqBClgrshF
-        yCMsvuOzFZp/bkH8uWgx33WNwfZCUUc=
-X-Google-Smtp-Source: AMsMyM7vhboKCvSndwJCMoHPW/feORhz5j1KGkBMRDSGZIPpdA7pxA3XsR9DndVJSk/3vH8JftvGvA==
-X-Received: by 2002:a05:6a00:22cf:b0:563:744a:8951 with SMTP id f15-20020a056a0022cf00b00563744a8951mr2862840pfj.3.1665399692453;
-        Mon, 10 Oct 2022 04:01:32 -0700 (PDT)
-Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
-        by smtp.gmail.com with ESMTPSA id z18-20020a170903019200b00176c6738d13sm2778905plg.169.2022.10.10.04.01.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Oct 2022 04:01:31 -0700 (PDT)
-Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     linux-can@vger.kernel.org, David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v2] iplink_can: add missing `]' of the bitrate, dbitrate and termination arrays
-Date:   Mon, 10 Oct 2022 20:01:18 +0900
-Message-Id: <20221010110118.66116-1-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221010105041.65736-1-mailhol.vincent@wanadoo.fr>
-References: <20221010105041.65736-1-mailhol.vincent@wanadoo.fr>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=jTf+OgVEekYOCCjz9fIdROEP9i0Kj5DJI/WN/pZXFWI=;
+        b=xl7ob7p5QUqrTsR9iZgnp7cwBfQ1Kh5lUKTM54d9lByeHUv4ApK8muUz0GauJa3CUb
+         2KiqKVDPpCTW0dS5ImeMNFxZ6v2xnjqHJWgcvWT/NK1vjb4rZnICIU5JE1dlACzQhDEZ
+         8Ot3cIMM8wZ+B1ruilgzuscpjwbyWmthWHRwQ9Prd2HL1iRV5mgivjiq/TeOKzGL6iSG
+         jI2FVp1qquwy2rogTCuF+ys6VFRQ12Kt7QSBD5C02exVfAuAOKevRgiHg3EksBXw1DZN
+         RzHGZqIfr5axdbJ6t9fh+CaUy6ahlOb12WdFWSToa7p/h/rcecSzW53ZmFjyyx017pQ8
+         NOeQ==
+X-Gm-Message-State: ACrzQf2RkQTC95VO3IeQiaJgEvEGYf91uZKGY8SREqLuaMW9b7h+E/9b
+        JlBIV7BbBSqfpZW2HLg0e9jqXq/Ca8MscjT79UMMfOtDeq4=
+X-Google-Smtp-Source: AMsMyM7hT0YDR/uglyCdWH6aETH2/GuH+utE6/mMV8y+p4EyTtqvfUbny4QcJnz96xW9a4BYt0mUhyZ30ms5hSVjY3I=
+X-Received: by 2002:a05:6e02:1d03:b0:2f9:d1e5:fe16 with SMTP id
+ i3-20020a056e021d0300b002f9d1e5fe16mr8776433ila.60.1665399863021; Mon, 10 Oct
+ 2022 04:04:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+References: <20211103164428.692722-1-mailhol.vincent@wanadoo.fr>
+ <20211103164428.692722-4-mailhol.vincent@wanadoo.fr> <20221007074456.l2sh3s2siuv2a74m@pengutronix.de>
+In-Reply-To: <20221007074456.l2sh3s2siuv2a74m@pengutronix.de>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Mon, 10 Oct 2022 20:04:12 +0900
+Message-ID: <CAMZ6Rq+qD=bi8MKXvjJuH1Bs=nnuyrG1F1ZGm_0U+A_GQDhDSw@mail.gmail.com>
+Subject: Re: [PATCH iproute2-next 5.16 v6 3/5] iplink_can: use PRINT_ANY to
+ factorize code and fix signedness
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, linux-can@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The command "ip --details link show canX" misses the closing bracket
-`]' of the bitrate, the dbitrate and the termination arrays. The --json
-output is not impacted.
+On Fri. 7 Oct. 2022 at 16:56, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> On 04.11.2021 01:44:26, Vincent Mailhol wrote:
+> > Current implementation heavily relies on some "if (is_json_context())"
+> > switches to decide the context and then does some print_*(PRINT_JSON,
+> > ...) when in json context and some fprintf(...) else.
+> >
+> > Furthermore, current implementation uses either print_int() or the
+> > conversion specifier %d to print unsigned integers.
+> >
+> > This patch factorizes each pairs of print_*(PRINT_JSON, ...) and
+> > fprintf() into a single print_*(PRINT_ANY, ...) call. While doing this
+> > replacement, it uses proper unsigned function print_uint() as well as
+> > the conversion specifier %u when the parameter is an unsigned integer.
+> >
+> > Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+>
+> [...]
+>
+> >       if (tb[IFLA_CAN_TERMINATION_CONST] && tb[IFLA_CAN_TERMINATION]) {
+> > @@ -538,29 +483,21 @@ static void can_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+> >                       sizeof(*trm_const);
+> >               int i;
+> >
+> > -             if (is_json_context()) {
+> > -                     print_hu(PRINT_JSON, "termination", NULL, *trm);
+> > -                     open_json_array(PRINT_JSON, "termination_const");
+> > -                     for (i = 0; i < trm_cnt; ++i)
+> > -                             print_hu(PRINT_JSON, NULL, NULL, trm_const[i]);
+> > -                     close_json_array(PRINT_JSON, NULL);
+> > -             } else {
+> > -                     fprintf(f, "\n    termination %hu [ ", *trm);
+> > -
+> > -                     for (i = 0; i < trm_cnt - 1; ++i)
+> > -                             fprintf(f, "%hu, ", trm_const[i]);
+> > -
+> > -                     fprintf(f, "%hu ]", trm_const[i]);
+>                                         ^
+> > -             }
+> > +             can_print_nl_indent();
+> > +             print_hu(PRINT_ANY, "termination", " termination %hu [ ", *trm);
+>
+> Always '['
+>
+> > +             open_json_array(PRINT_JSON, "termination_const");
+> > +             for (i = 0; i < trm_cnt; ++i)
+> > +                     print_hu(PRINT_ANY, NULL,
+> > +                              i < trm_cnt - 1 ? "%hu, " : "%hu",
+> > +                              trm_const[i]);
+> > +             close_json_array(PRINT_JSON, " ]");
+>
+> ']' only for JSON.
 
-Change the first argument of close_json_array() from PRINT_JSON to
-PRINT_ANY to fix the problem. The second argument is already set
-correctly.
+Thanks for the report
 
-Fixes: 67f3c7a5cc0d ("iplink_can: use PRINT_ANY to factorize code and fix signedness")
-Reported-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
----
- ip/iplink_can.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Actually, the second argument of close_json_array() is what should be
+printed for the normal (non-json) output. Here it is correctly set to
+" ]". *However*, this parameter gets ignored because the first
+argument is PRINT_JSON instead of PRINT_ANY.
 
-diff --git a/ip/iplink_can.c b/ip/iplink_can.c
-index 0e670a6c..9bbe3d95 100644
---- a/ip/iplink_can.c
-+++ b/ip/iplink_can.c
-@@ -519,7 +519,7 @@ static void can_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
- 				   i < bitrate_cnt - 1 ? "%8u, " : "%8u",
- 				   bitrate_const[i]);
- 		}
--		close_json_array(PRINT_JSON, " ]");
-+		close_json_array(PRINT_ANY, " ]");
- 	}
- 
- 	/* data bittiming is irrelevant if fixed bitrate is defined */
-@@ -606,7 +606,7 @@ static void can_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
- 				   i < dbitrate_cnt - 1 ? "%8u, " : "%8u",
- 				   dbitrate_const[i]);
- 		}
--		close_json_array(PRINT_JSON, " ]");
-+		close_json_array(PRINT_ANY, " ]");
- 	}
- 
- 	if (tb[IFLA_CAN_TERMINATION_CONST] && tb[IFLA_CAN_TERMINATION]) {
-@@ -623,7 +623,7 @@ static void can_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
- 			print_hu(PRINT_ANY, NULL,
- 				 i < trm_cnt - 1 ? "%hu, " : "%hu",
- 				 trm_const[i]);
--		close_json_array(PRINT_JSON, " ]");
-+		close_json_array(PRINT_ANY, " ]");
- 	}
- 
- 	if (tb[IFLA_CAN_CLOCK]) {
--- 
-2.35.1
+This is a lack of testing on my side (I do not have hardware which
+supports the switchable termination resistors). After investigation,
+the bitrate and dbitrate also have the same issue.
 
+This is fixed in
+https://lore.kernel.org/linux-can/20221010110118.66116-1-mailhol.vincent@wanadoo.fr/
+
+> >       }
+>
+> I just noticed that the non JSON output for termination is missing the
+> closing ']'. See the output in the documentation update by Daniel:
+>
+> | https://lore.kernel.org/all/4514353.LvFx2qVVIh@daniel6430
+
+Yours sincerely,
+Vincent Mailhol
