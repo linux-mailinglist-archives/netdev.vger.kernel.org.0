@@ -2,180 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DAE3D5FA3F2
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 21:08:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 351A85FA401
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 21:11:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229847AbiJJTIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Oct 2022 15:08:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42724 "EHLO
+        id S229930AbiJJTL2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Oct 2022 15:11:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229832AbiJJTIT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 15:08:19 -0400
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2D7711C05;
-        Mon, 10 Oct 2022 12:08:18 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:73:8b7:7001:c8aa:b65f])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 14158299;
-        Mon, 10 Oct 2022 19:08:18 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 14158299
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1665428898; bh=++eWub7rW10WIqlEbZ8W9lP8C39R5e1NP5uJK+tq2GQ=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=P5i0OSEOcKPkAly4+dMv/zlZ5epmkYQw6CK0SReMnbfBX9G7yGTZlx1lT97HgyWia
-         ZSUjLFjT4Qwuue41a2TNSKdfqIZh9wnO5duVwHWGRtsE9HG7/PQZMru8SczZw7tzUG
-         3KuL3oiDqCYv3QYtyGSoWBIzZe/Z03wmo039DpZ5jUmrG5AUYjJ6cZyeu2o1eMrvfm
-         LINA58z1XQv8R0Um5OjEu3im2BKV0L5/VTkhNEjE80MK0pTbRESwWSKPzDHRQAHDY6
-         qXhT77O8C9uI65h1IM8bG/f3764Gzjlt2t125Bc3PPY2jyAVGEzXX6oATz37s5IrLQ
-         JP5akMpS8Aorg==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Jouke Witteveen <j.witteveen@gmail.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Jouke Witteveen <j.witteveen@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH] Documentation: update urls to Linux Foundation wiki
-In-Reply-To: <20221001112058.22387-1-j.witteveen@gmail.com>
-References: <20221001112058.22387-1-j.witteveen@gmail.com>
-Date:   Mon, 10 Oct 2022 13:08:17 -0600
-Message-ID: <87v8orpkda.fsf@meer.lwn.net>
+        with ESMTP id S229462AbiJJTL0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 15:11:26 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B349B635C;
+        Mon, 10 Oct 2022 12:11:25 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id w10so17207110edd.4;
+        Mon, 10 Oct 2022 12:11:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=+RG/4rWr2Io1JrEQJ5IlfsShd0SpiopfiVrMk4/IvCI=;
+        b=o/DfF+VXOR0Vp8DHbq9AcPEp2oyQfep+GnvqBOJ2gDZNGHelivd1jnC/VcrU0QwhbL
+         7YSjFMszOq2qs1gCtoHuCAz1CljJeRo0tXmIEKswERKiksnK7QQK0zR21K4+WqXXyBLU
+         X2M4k35AKTC1Y/z2JcDNR8isGAOQBASFIvPRw2u3Y+fvID84mSpeKOkNFyz9G2WSWvmw
+         Hl6tNgV1ZJTkOnRv4ugHr64mFZkTQUsdvG0RlObrgOflJFr2N1Alx2TqBgvEiq9C+lHs
+         twNPS0jv6cfjP/nFabbjKPE9FBUkz5sFpwEAGySaBxKySYgqR1R8eXtZZNoRMhVUHKhn
+         YsKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+RG/4rWr2Io1JrEQJ5IlfsShd0SpiopfiVrMk4/IvCI=;
+        b=A6regy9herW/gkL0X/gGXMA0i8ZUNOOzAs36yiU8i/lQ47xSOUmgUFST8FaGd1+VlP
+         UM9I+ReKsiNpBvXRNn5NO9XteQzdbc7oOWamaGk9tUC0sffvGEbwJpUAaWx7D+qnCoMc
+         Fuvj0oOihQGpoAC/FuCpd6dprzRAn2dF8s/pEkIHAzUFAOrE9aLX6Z7WXVy4z/Do5NAx
+         wI/MXLHotaYLdB7FEFWEJOQsQGbH73sd7ih6mW7QS2dOLt13Q1y243TSEfcdhdVR0p6k
+         nXQYPE/uQlFmm8+xqfjVTW3x7xPjqk85GDoGk2aNSxVOZfqvXzx5KEmc0f12sMk0NY9m
+         9ZZw==
+X-Gm-Message-State: ACrzQf2NrkFnIJ1aafJFypXl91tcWmFUF6XIqWzL+O/OgqQNMIcjDuwE
+        O1bLktk1lA5lJIRv744u1zmo03z81HnFyA==
+X-Google-Smtp-Source: AMsMyM7Y3ezQhXU9KxyPvca7iwwZzD9jVEwDXSWlTLEM+ZC3VTxHewwZ0V3AhLRezWAc63++ABviTw==
+X-Received: by 2002:a05:6402:1587:b0:458:fbea:436c with SMTP id c7-20020a056402158700b00458fbea436cmr19208258edv.407.1665429084057;
+        Mon, 10 Oct 2022 12:11:24 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id b1-20020a1709063ca100b007305d408b3dsm5727243ejh.78.2022.10.10.12.11.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Oct 2022 12:11:23 -0700 (PDT)
+Date:   Mon, 10 Oct 2022 22:11:20 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Lee Jones <lee@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH v3 net-next 12/14] dt-bindings: net: dsa: ocelot: add
+ ocelot-ext documentation
+Message-ID: <20221010191120.cqbxkn6x25vjfwoy@skbuf>
+References: <YzzLCYHmTcrHbZcH@colin-ia-desktop>
+ <455e31be-dc87-39b3-c7fe-22384959c556@linaro.org>
+ <Yz2mSOXf68S16Xg/@colin-ia-desktop>
+ <28b4d9f9-f41a-deca-aa61-26fb65dcc873@linaro.org>
+ <20221008000014.vs2m3vei5la2r2nd@skbuf>
+ <c9ce1d83-d1ca-4640-bba2-724e18e6e56b@linaro.org>
+ <20221010130707.6z63hsl43ipd5run@skbuf>
+ <d27d7740-bf35-b8d4-d68c-bb133513fa19@linaro.org>
+ <20221010174856.nd3n4soxk7zbmcm7@skbuf>
+ <Y0RoraHpuPbN5O4C@COLIN-DESKTOP1.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y0RoraHpuPbN5O4C@COLIN-DESKTOP1.localdomain>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jouke Witteveen <j.witteveen@gmail.com> writes:
+On Mon, Oct 10, 2022 at 11:47:09AM -0700, Colin Foster wrote:
+> Thank you for laying this path out for me. Hopefully when I go
+> heads-down to implement this there won't be any gotchas. It seems pretty
+> straightforward.
+> 
+> Maybe my only question would be where to send these patches. If these
+> can all go through net-next it seems like there'd be no issue when step
+> 8 (add 7512 documentation) comes along with this current patch set.
+> 
+> Otherwise this sounds good. I'll switch to getting a patch set of steps
+> 1-7 as you suggest.
 
-> The redirects from the old urls stopped working recently.
->
-> Signed-off-by: Jouke Witteveen <j.witteveen@gmail.com>
-
-I see the LF has done its annual web-site replacement; I have no idea
-why they are so enamored with breaking URLs...
-
-Anyway, This is networking documentation, so it should go to the folks
-at netdev [CC'd] rather than me.
-
->  Documentation/networking/bridge.rst                           | 2 +-
->  Documentation/networking/dccp.rst                             | 4 ++--
->  .../networking/device_drivers/ethernet/intel/ice.rst          | 2 +-
->  Documentation/networking/generic_netlink.rst                  | 2 +-
->  MAINTAINERS                                                   | 2 +-
->  net/ipv4/Kconfig                                              | 2 +-
->  net/sched/Kconfig                                             | 2 +-
->  7 files changed, 8 insertions(+), 8 deletions(-)
->
-> diff --git a/Documentation/networking/bridge.rst b/Documentation/networking/bridge.rst
-> index 4aef9cddde2f..c859f3c1636e 100644
-> --- a/Documentation/networking/bridge.rst
-> +++ b/Documentation/networking/bridge.rst
-> @@ -8,7 +8,7 @@ In order to use the Ethernet bridging functionality, you'll need the
->  userspace tools.
->  
->  Documentation for Linux bridging is on:
-> -   http://www.linuxfoundation.org/collaborate/workgroups/networking/bridge
-> +   https://wiki.linuxfoundation.org/networking/bridge
-
-So this page is full of encouraging stuff like:
-
-> The code is updated as part of the 2.4 and 2.6 kernels available at
-> kernel.org.
-
-...and tells us about an encouraging prototype implementation in 2.6.18.
-I'd apply the patch because working URLs are better than broken ones,
-but I also question the value of this material at all in 2022... there
-should be better documents to link to at this point?
-
-Thanks,
-
-jon
-
->  The bridge-utilities are maintained at:
->     git://git.kernel.org/pub/scm/linux/kernel/git/shemminger/bridge-utils.git
-> diff --git a/Documentation/networking/dccp.rst b/Documentation/networking/dccp.rst
-> index 91e5c33ba3ff..cd661509d35d 100644
-> --- a/Documentation/networking/dccp.rst
-> +++ b/Documentation/networking/dccp.rst
-> @@ -41,11 +41,11 @@ specified in RFCs 4340...42.
->  
->  The known bugs are at:
->  
-> -	http://www.linuxfoundation.org/collaborate/workgroups/networking/todo#DCCP
-> +	https://wiki.linuxfoundation.org/networking/todo#dccp
->  
->  For more up-to-date versions of the DCCP implementation, please consider using
->  the experimental DCCP test tree; instructions for checking this out are on:
-> -http://www.linuxfoundation.org/collaborate/workgroups/networking/dccp_testing#Experimental_DCCP_source_tree
-> +https://wiki.linuxfoundation.org/networking/dccp_testing#experimental_dccp_source_tree
->  
->  
->  Socket options
-> diff --git a/Documentation/networking/device_drivers/ethernet/intel/ice.rst b/Documentation/networking/device_drivers/ethernet/intel/ice.rst
-> index dc2e60ced927..b481b81f3be5 100644
-> --- a/Documentation/networking/device_drivers/ethernet/intel/ice.rst
-> +++ b/Documentation/networking/device_drivers/ethernet/intel/ice.rst
-> @@ -819,7 +819,7 @@ NAPI
->  ----
->  This driver supports NAPI (Rx polling mode).
->  For more information on NAPI, see
-> -https://www.linuxfoundation.org/collaborate/workgroups/networking/napi
-> +https://wiki.linuxfoundation.org/networking/napi
->  
->  
->  MACVLAN
-> diff --git a/Documentation/networking/generic_netlink.rst b/Documentation/networking/generic_netlink.rst
-> index 59e04ccf80c1..d960dbd7e80e 100644
-> --- a/Documentation/networking/generic_netlink.rst
-> +++ b/Documentation/networking/generic_netlink.rst
-> @@ -6,4 +6,4 @@ Generic Netlink
->  
->  A wiki document on how to use Generic Netlink can be found here:
->  
-> - * http://www.linuxfoundation.org/collaborate/workgroups/networking/generic_netlink_howto
-> + * https://wiki.linuxfoundation.org/networking/generic_netlink_howto
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 17abc6483100..f9eecb2b6a84 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -5717,7 +5717,7 @@ F:	drivers/scsi/dc395x.*
->  DCCP PROTOCOL
->  L:	dccp@vger.kernel.org
->  S:	Orphan
-> -W:	http://www.linuxfoundation.org/collaborate/workgroups/networking/dccp
-> +W:	https://wiki.linuxfoundation.org/networking/dccp
->  F:	include/linux/dccp.h
->  F:	include/linux/tfrc.h
->  F:	include/uapi/linux/dccp.h
-> diff --git a/net/ipv4/Kconfig b/net/ipv4/Kconfig
-> index e983bb0c5012..ce458aba140a 100644
-> --- a/net/ipv4/Kconfig
-> +++ b/net/ipv4/Kconfig
-> @@ -419,7 +419,7 @@ config INET_DIAG
->  	  native Linux tools such as ss. ss is included in iproute2, currently
->  	  downloadable at:
->  
-> -	    http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2
-> +	    https://wiki.linuxfoundation.org/networking/iproute2
->  
->  	  If unsure, say Y.
->  
-> diff --git a/net/sched/Kconfig b/net/sched/Kconfig
-> index 1e8ab4749c6c..4b63d3fff3ae 100644
-> --- a/net/sched/Kconfig
-> +++ b/net/sched/Kconfig
-> @@ -26,7 +26,7 @@ menuconfig NET_SCHED
->  	  from the package iproute2+tc at
->  	  <https://www.kernel.org/pub/linux/utils/net/iproute2/>.  That package
->  	  also contains some documentation; for more, check out
-> -	  <http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2>.
-> +	  <https://wiki.linuxfoundation.org/networking/iproute2>.
->  
->  	  This Quality of Service (QoS) support will enable you to use
->  	  Differentiated Services (diffserv) and Resource Reservation Protocol
-> -- 
-> 2.37.3
+Generally patches on dt-bindings go through the subsystem to which they
+belong, for example net-next etc. I don't think there are other dependencies?
