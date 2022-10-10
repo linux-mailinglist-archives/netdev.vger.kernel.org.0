@@ -2,330 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E34DA5FA779
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 00:01:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8C115FA7BA
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 00:39:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229560AbiJJWBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Oct 2022 18:01:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45756 "EHLO
+        id S229783AbiJJWj0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Oct 2022 18:39:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229577AbiJJWBn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 18:01:43 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7BC5E57B
-        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 15:01:39 -0700 (PDT)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29ALuAjZ025551;
-        Mon, 10 Oct 2022 22:01:31 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : from : to : cc : references : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=pLCok4+49JDNk+ijpkIRbw7GGhoLcD6tmcs1oNpl2gk=;
- b=pSCebQrnZ2czMcSRsCoiUbU9eG/OWPIAIEMFstjmDBIXfUVlKwrGsWDx5xrcDdj79kz3
- ZXMXo4yHXguXvwlH7EJszc4YTGdH0VnL/9FD5ClSpIS7tYfntbWrBDGAm6zLFTQ9KgHP
- HagZYjY0JYJ7jqrtIXd5IStwer0tyG5BwlyVq2uDli69Uz5EJpTO0pcFPTE7S7R1DzdW
- eYTaiQGfClSN6rYc+w3gzpzsgaBhu7g5O+/dsci96ojn9mjMo6iIs9WF21jqe1UUrvTI
- Jg0ChZUlPJC3H5UL6iMuEbmlQjJX5KGPnYWCrDUoLVkZ1YRA9y6Mh/kUBgREfYehVEeP 8Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3k3k7vv2u1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 10 Oct 2022 22:01:31 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 29ALToD2021778;
-        Mon, 10 Oct 2022 22:01:30 GMT
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3k3k7vv2tp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 10 Oct 2022 22:01:30 +0000
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29ALoodH012216;
-        Mon, 10 Oct 2022 22:01:30 GMT
-Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
-        by ppma01wdc.us.ibm.com with ESMTP id 3k30u9ew0p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 10 Oct 2022 22:01:30 +0000
-Received: from smtpav05.wdc07v.mail.ibm.com ([9.208.128.117])
-        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29AM1SVm8978978
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 10 Oct 2022 22:01:29 GMT
-Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B384958059;
-        Mon, 10 Oct 2022 22:01:28 +0000 (GMT)
-Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3153658053;
-        Mon, 10 Oct 2022 22:01:28 +0000 (GMT)
-Received: from [9.41.99.180] (unknown [9.41.99.180])
-        by smtpav05.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-        Mon, 10 Oct 2022 22:01:28 +0000 (GMT)
-Message-ID: <b06c65b4-dda5-2a07-6f46-56c8355418b2@linux.vnet.ibm.com>
-Date:   Mon, 10 Oct 2022 17:01:27 -0500
+        with ESMTP id S229471AbiJJWjY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 18:39:24 -0400
+Received: from sonic304-55.consmr.mail.ne1.yahoo.com (sonic304-55.consmr.mail.ne1.yahoo.com [66.163.191.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E1BC3343B
+        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 15:39:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1665441563; bh=8mH4ph8zjNJh6d0t/NnJyVfxwE1EmbajgkJns1m6MhQ=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=a5HMG+HGYxEs3adu9idk84kgBnAFEt9lGaS7b1REfVJ+HR3ZZZyOJLcOl3nKerkbfBSaHytmUvQ1hUV77Uqlrku085n5oKSRymYxwLPBNErhclqCsGZpLCmXxuCh0710boITWH3BLl+Oxz2u8dh0gjS/dLGyZBADG/BOZ8OJYclMdBgzCsb7pOT+sJnF7ZwosrA1QCPJ2TabNNEWaL91pLp6kE42iaSzS1Qdm1xouAdRzTPVYMVN7NMBaGV5SAnsmpkaTUNIa5FujBqZu3wT4TEPmpQ+XOOKIjp3gWdV1NgyGB2vr0SB7DT23UTU/y3ySrCfehHBThhsnCoZ6Z9MLg==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1665441563; bh=9/TYbeyAYuHHUplEGbNqNxnS1EQZKx1ekTU4yaNx89d=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=uFRU4poTge4ejtmiPzRcBNTDJS9S3bYxPLKe8AcG8724Zv236Akf2wA4ZDDQz/b2bRj9sa/2amap+3A+iM0+7OjBJFpDAiFOpOQhInOSFxaYTyiEHWc+eU8sScZxmYaSnFywCxBFmiDbbhYz5Is/yjZKWTjfpOIePzUj8UCkWbLACRQ6GXqMlkbxTmtLfiNxtq0/G8foq6SLgr8Sd/3w01zs3z0aJSJ+PPbk/hvT+4uCMYujj+fP3OkoDjIXmTJyT1oTh5cWqRQ4AkQb272ukrFeEPkQFHEnR8QONxyc91u8S1SdNCdQF06tZ9eEYUq2qyyvc78rPpMSbkg1E3MDJg==
+X-YMail-OSG: 4U3MEyEVM1lKW1PW4AYV.IXcc2gfSAR4V5Zk8_LLbPBYUsgThtIQlj1m0J46a5G
+ Yh.Hb1aEA0Pb8eweNjD0io_T.MbtYckvmRH9igkRDY1WFjTFGaaeGVLdTfqo0YDZs2k3.ZBOaJmV
+ ySpDBROEnmrJJ28wxDzo6QDrlo7Fja3jRFfq24SD0iWgh0TQSyGTiftaP9rQU1HqXc0DxKhuYJxc
+ iu1ZB1ospcBKQw_ycE8V5DCIsit1kD3zNzdHCggsOqi_FK23YYRKZXRtKAg8PMeKSHtRyH2nZQr.
+ k9ocbFs_JWCAC6VAiGoYlLGHztJyv_UkJfgolIE0xEy.hFANtqCSzwx_QaIr8oFRWeBhtouRxpOJ
+ GHlHWzbCTpco7qr5jkq8TtFN0KCxgh9pOPD4HKwObiR.1LQYxEXcSbqv9b94.juWWJh9gzwVd0by
+ KRfLpzVp8SVE63GA05CVcT7pn1vKK_hl3QsC_P_a0WIKaqpzqDUzB6d8az_ax7_lCkH.Ir4d4qLf
+ HG0ElHDG_tiTGYwti00kroY.uESoucOfIyhi9RVYqbq_DDhqy3brmf742SkC30z8JR70_6Q6ym2K
+ 5uenyAzg8xoyRlBAPAy7aUTsUWNmjxEbMYMJLIlmU0uCrb8o70Rlx_G8JF6slSdm66qvklbM.Viu
+ QjOnarnG5GIoYzMFS4Z8fmc4JD_4Baq6dotw5YJoWIpK65eyTnWDuBpP_ba3hZk6m_pKsKh73jO7
+ xUlhnXxJKEvmlR3VhWHHOq.C.wwqLVeXdQ2SUOho3qHyU4qoDjcz9nVidlFAzuZI4lZznPMk8zyS
+ J0X0.a0gzGdGIkx1VejU7B58V4NzUdf2UFg5km30yhR5OSkbf9YbQmmjKu1a7QEZN3fKxtMLQi3U
+ O2w_IYKYFM01vQ9cSrbzMAmF._iRrrFpiXzZf5TxSTu_8D11roSUvDUqLNbs0W0dLpwCCCKsv1qd
+ fYowmeNvE04IV8INOBVW.u3DOvAg4qQAOGtdzELuBN47dEx1SNv9xm79WcznAiheiP9LLidHYnEl
+ F6DK47BrfR5_WIRNBqlpIwr3uaEodzEwo.psCrJsLHmebtxRl0dYsqV2S2I3yYguIiwS9LGJaPT0
+ b3337DkWVDeRrcWWYFjYd3uytXmb8FleFErcQ4UZx9cc0w1OevUtVQNmZcTA4Tf.94bEZpwLfJhV
+ eoEMSt2eWb5MWM0EzO.hvHoa04XXgr_UCZNQvWblc5Ff3ucdc66Txf4mpkrBFsaOE_U5FhiTGz8S
+ vI4.nR71v7gV3IpiuNWpVZBXxByS7z.rXRufeghp_qEGQJo7FsY_Kgu8w2Lssg0MIQyk5Vq.uHIK
+ _qQBwJy_ySDzUDjN1WGmdEsTAbmrfM.RtHq5VcsJKr8ZwJjOodbkt1C7PY2vuAdnFsFKjfLYcFCe
+ w5S54wh2PtChFxXuaF2v3eDTVTKYEJeE.nLhfoVd8LkgdZOokn8hNsh9NC124quEPW.DhgTTFBCa
+ QVzMefse.OHsr3jH4gNfjpGaij1n1ieukkAt6P6FUv7URSuY83T8Oajd7FCY7nQdkd6z1lPqEXyF
+ 9CXiMvBBfzzaG8UrIXfOFu.7DFQG0IiTqeFtPVnGB7_rn5DEgzJCrEuLSQEe.Udk6pUbSeDGU042
+ fiUyO8NT8CPJ1lQfOrIZ3G.pIgU6tmaXDBMhHqc1RJ2BlAdaO4cdwHzNhwBWLhNPmotZLAl7v2GW
+ SqrBOGVczfHoTvAwDXva0IgsnCmMil6AuPA7fYsCrl0Jjk2RzbeKsu_Ny6XtGGh50KrQWJHEF64C
+ uAKdJ9kT9so_j1z8Y5a3TCLQlHp.D.L_oCSEwSPvDDeAZQprbwRHQqFrwBZN7V6pXxbU_qRkIfRK
+ 39I7CXhkBp8OhzOP0C2HfmlzVQll.p2D0Mr_e_x0ytbg5ZohKbhL1qCkXNnCTlflIxIfVw2A6aoQ
+ zR2ItxCqvBCTpT8b36TTPgX0QOAH0c.WYAlmoqsuzsBO50MmV9_eAWNcUtgpiyj632shtxjSObEg
+ QBpy7KfHZj5EiQaDKOhVU3sBErhR5Qo6UkU5e.c7pd0e0jzvwO4XB3NiZl_Ok5cs_lPhSlbwDNpi
+ lZeRICAvRyb.KTXFlstw9SJ31RJOOZjfYkAf4IC6jc2zZB5HsfvTMNy03QkvPAVu9xVgDyKiqk9_
+ dnttFb7qjImAHfslmu6T0VfbvVaZkGZDcAhzXK2ogdELbkbXF6AojDQqPZRMrIbLVW_gPuNvke0q
+ j4HVNohzfVhtwpj2QCSNU3L9kMo2qChlnEQAUceWx.f3DpimCUAjDryoInIXmVLFvzNEkTzyXQv1
+ tgec2P5QfPxPI
+X-Sonic-MF: <casey@schaufler-ca.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic304.consmr.mail.ne1.yahoo.com with HTTP; Mon, 10 Oct 2022 22:39:23 +0000
+Received: by hermes--production-bf1-585bd66ffc-lv69x (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 6d7d3319e586f185fdd2f3c7fcc09e93;
+          Mon, 10 Oct 2022 22:37:22 +0000 (UTC)
+Message-ID: <4d29068f-2e42-5c3b-9b74-85dda8b50f6b@schaufler-ca.com>
+Date:   Mon, 10 Oct 2022 15:37:22 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.3.2
-Subject: Re: [EXT] [PATCH v2] bnx2x: Fix error recovering in switch
- configuration
-From:   Thinh Tran <thinhtr@linux.vnet.ibm.com>
-To:     Manish Chopra <manishc@marvell.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Ariel Elior <aelior@marvell.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Sudarsana Reddy Kalluru <skalluru@marvell.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Alok Prasad <palok@marvell.com>,
-        "kuba@kernel.org" <kuba@kernel.org>
-References: <20220826184440.37e7cb85@kernel.org>
- <20220916195114.2474829-1-thinhtr@linux.vnet.ibm.com>
- <BY3PR18MB461200F00B27327499F9FEC8AB4D9@BY3PR18MB4612.namprd18.prod.outlook.com>
- <b9a87990-ae04-6cd2-7160-d9966770fc85@linux.vnet.ibm.com>
- <d2a9711b-21b1-6b0c-ae29-7cb6ee33da6c@linux.vnet.ibm.com>
+Subject: Re: [PATCH] lsm: make security_socket_getpeersec_stream() sockptr_t
+ safe
 Content-Language: en-US
-In-Reply-To: <d2a9711b-21b1-6b0c-ae29-7cb6ee33da6c@linux.vnet.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: DwbNn5XHkiAd5_fURvTsKuLCcvlPl8y3
-X-Proofpoint-GUID: RHOz_HLVEIFK-RJnud7IRY7fAnCYAYwI
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
- definitions=2022-10-10_12,2022-10-10_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
- lowpriorityscore=0 phishscore=0 adultscore=0 bulkscore=0 mlxlogscore=999
- mlxscore=0 priorityscore=1501 suspectscore=0 impostorscore=0 clxscore=1015
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2210100128
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+To:     Paul Moore <paul@paul-moore.com>,
+        John Johansen <john.johansen@canonical.com>
+Cc:     netdev@vger.kernel.org,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        casey@schaufler-ca.com
+References: <166543910984.474337.2779830480340611497.stgit@olly>
+ <CAHC9VhRfEiJunPo7bVzmPPg8UHDoFc0wvOhBaFrsLjfeDCg50g@mail.gmail.com>
+From:   Casey Schaufler <casey@schaufler-ca.com>
+In-Reply-To: <CAHC9VhRfEiJunPo7bVzmPPg8UHDoFc0wvOhBaFrsLjfeDCg50g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Mailer: WebService/1.1.20740 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
+X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Manish,
-Do you have any other suggestion or using the extra variable, 
-nic_stopped, in v2 patch is efficient enough to fix the issue?
 
-Thanks,
-Thinh Tran
+On 10/10/2022 3:00 PM, Paul Moore wrote:
+> On Mon, Oct 10, 2022 at 5:58 PM Paul Moore <paul@paul-moore.com> wrote:
+>> Commit 4ff09db1b79b ("bpf: net: Change sk_getsockopt() to take the
+>> sockptr_t argument") made it possible to call sk_getsockopt()
+>> with both user and kernel address space buffers through the use of
+>> the sockptr_t type.  Unfortunately at the time of conversion the
+>> security_socket_getpeersec_stream() LSM hook was written to only
+>> accept userspace buffers, and in a desire to avoid having to change
+>> the LSM hook the commit author simply passed the sockptr_t's
+>> userspace buffer pointer.  Since the only sk_getsockopt() callers
+>> at the time of conversion which used kernel sockptr_t buffers did
+>> not allow SO_PEERSEC, and hence the
+>> security_socket_getpeersec_stream() hook, this was acceptable but
+>> also very fragile as future changes presented the possibility of
+>> silently passing kernel space pointers to the LSM hook.
+>>
+>> There are several ways to protect against this, including careful
+>> code review of future commits, but since relying on code review to
+>> catch bugs is a recipe for disaster and the upstream eBPF maintainer
+>> is "strongly against defensive programming", this patch updates the
+>> LSM hook, and all of the implementations to support sockptr_t and
+>> safely handle both user and kernel space buffers.
+>>
+>> Signed-off-by: Paul Moore <paul@paul-moore.com>
+>> ---
+>>  include/linux/lsm_hook_defs.h |    2 +-
+>>  include/linux/lsm_hooks.h     |    4 ++--
+>>  include/linux/security.h      |   11 +++++++----
+>>  net/core/sock.c               |    3 ++-
+>>  security/apparmor/lsm.c       |   29 +++++++++++++----------------
+>>  security/security.c           |    6 +++---
+>>  security/selinux/hooks.c      |   13 ++++++-------
+>>  security/smack/smack_lsm.c    |   19 ++++++++++---------
+>>  8 files changed, 44 insertions(+), 43 deletions(-)
+> Casey and John, could you please look over the Smack and AppArmor bits
+> of this patch when you get a chance?  I did my best on the conversion,
+> but I would appreciate a review by the experts :)
 
-On 9/28/2022 4:33 PM, Thinh Tran wrote:
-> Hi Manish,
-> 
-> I think we need the extra variable, nic_stopped, or perhaps defining a 
-> different state to determine the disablement of NAPI and freed IRQs.
-> Since device gets the error, the NIC state is set to 
-> BNX2X_STATE_CLOSING_WAIT4_HALT (0x4000)
-> 
-> 14132 static int bnx2x_eeh_nic_unload(struct bnx2x *bp)
-> 14133 {
-> 14134         bp->state = BNX2X_STATE_CLOSING_WAIT4_HALT;
-> 14135
-> 
-> and stays in this state in EEH handler and driver reset code paths, when 
-> both trying to disabling the NAPI.
-> 
-> On 9/21/2022 3:11 PM, Thinh Tran wrote:
->> Hi Manish,
->> Thanks for reviewing the patch.
->>
->>
->> On 9/19/2022 8:53 AM, Manish Chopra wrote:
->>> Hello Thinh,
->>>
->>>> -----Original Message-----
->>>> From: Thinh Tran <thinhtr@linux.vnet.ibm.com>
->>>> Sent: Saturday, September 17, 2022 1:21 AM
->>>> To: kuba@kernel.org
->>>> Cc: netdev@vger.kernel.org; Ariel Elior <aelior@marvell.com>;
->>>> davem@davemloft.net; Manish Chopra <manishc@marvell.com>; Sudarsana
->>>> Reddy Kalluru <skalluru@marvell.com>; pabeni@redhat.com;
->>>> edumazet@google.com; Thinh Tran <thinhtr@linux.vnet.ibm.com>
->>>> Subject: [EXT] [PATCH v2] bnx2x: Fix error recovering in switch 
->>>> configuration
->>>>
->>>> External Email
->>>>
->>>> ----------------------------------------------------------------------
->>>> As the BCM57810 and other I/O adapters are connected through a PCIe
->>>> switch, the bnx2x driver causes unexpected system hang/crash while 
->>>> handling
->>>> PCIe switch errors, if its error handler is called after other 
->>>> drivers' handlers.
->>>>
->>>> In this case, after numbers of bnx2x_tx_timout(), the
->>>> bnx2x_nic_unload() is  called, frees up resources and calls
->>>> bnx2x_napi_disable(). Then when EEH calls its error handler, the
->>>> bnx2x_io_error_detected() and
->>>> bnx2x_io_slot_reset() also calling bnx2x_napi_disable() and freeing the
->>>> resources.
->>>>
->>>> Signed-off-by: Thinh Tran <thinhtr@linux.vnet.ibm.com>
->>>>
->>>>   v2:
->>>>     - Check the state of the NIC before calling disable nappi
->>>>       and freeing the IRQ
->>>>     - Prevent recurrence of TX timeout by turning off the carrier,
->>>>       calling netif_carrier_off() in bnx2x_tx_timeout()
->>>>     - Check and bail out early if fp->page_pool already freed
->>>> ---
->>>>   drivers/net/ethernet/broadcom/bnx2x/bnx2x.h   |  2 +
->>>>   .../net/ethernet/broadcom/bnx2x/bnx2x_cmn.c   | 27 +++++++++----
->>>>   .../net/ethernet/broadcom/bnx2x/bnx2x_cmn.h   |  3 ++
->>>>   .../net/ethernet/broadcom/bnx2x/bnx2x_main.c  | 38 
->>>> +++++++++----------
->>>> .../net/ethernet/broadcom/bnx2x/bnx2x_vfpf.c  | 17 +++++----
->>>>   5 files changed, 53 insertions(+), 34 deletions(-)
->>>>
->>>> diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
->>>> b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
->>>> index dd5945c4bfec..11280f0eb75b 100644
->>>> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
->>>> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
->>>> @@ -1509,6 +1509,8 @@ struct bnx2x {
->>>>       bool            cnic_loaded;
->>>>       struct cnic_eth_dev    *(*cnic_probe)(struct net_device *);
->>>>
->>>> +    bool            nic_stopped;
->>>> +
->>>
->>> There is an already 'state' variable which holds the NIC state 
->>> whether it was opened or closed. > Perhaps we could use that easily 
->>> in bnx2x_io_slot_reset() to prevent 
->> multiple NAPI disablement
->>> instead of adding a newer one. Please see below for ex -
->>>
->> In my early debug, I did checked for bp->state variable but I was 
->> unsure what the NIC state was safe to disable the NAPI.
->> Thanks for the hint.
->>
->>> diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c 
->>> b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
->>> index 962253db25b8..c8e9b47208ed 100644
->>> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
->>> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
->>> @@ -14256,13 +14256,16 @@ static pci_ers_result_t 
->>> bnx2x_io_slot_reset(struct pci_dev *pdev)
->>>                  }
->>>                  bnx2x_drain_tx_queues(bp);
->>>                  bnx2x_send_unload_req(bp, UNLOAD_RECOVERY);
->>> -               bnx2x_netif_stop(bp, 1);
->>> -               bnx2x_del_all_napi(bp);
->>>
->>> -               if (CNIC_LOADED(bp))
->>> -                       bnx2x_del_all_napi_cnic(bp);
->>> +               if (bp->state == BNX2X_STATE_OPEN) {
->>> +                       bnx2x_netif_stop(bp, 1);
->>> +                       bnx2x_del_all_napi(bp);
->>>
->>> -               bnx2x_free_irq(bp);
->>> +                       if (CNIC_LOADED(bp))
->>> +                               bnx2x_del_all_napi_cnic(bp);
->>> +
->>> +                       bnx2x_free_irq(bp);
->>> +               }
->>>
->>>                  /* Report UNLOAD_DONE to MCP */
->>>                  bnx2x_send_unload_done(bp, true);
->>>
-> Using the v2 patch, I checked the NIC state at places before and after 
-> disabling the NAPI,
->          BNX2X_ERR("before state flag = 0x%x \n", bp->state);
->          if (!bp->nic_stopped) {
->                  BNX2X_ERR("after state flag = 0x%x \n", bp->state);
->          bnx2x_netif_stop(bp, 1);
->          bnx2x_del_all_napi(bp);
->                  ....
-> 
-> the NIC state is always BNX2X_STATE_CLOSING_WAIT4_HALT (0x4000) when 
-> device get error injection.
-> 
-> 1- When EEH handler code path was called first, the 
-> bnx2x_io_slot_reset() does disablement the NAPI and done.
->     [28197.100795] bnx2x: [bnx2x_io_slot_reset:14212(eth3)]IO slot reset 
-> initializing...
->     [28197.100959] bnx2x 0201:50:00.0: enabling device (0140 -> 0142)
->     [28197.107249] bnx2x: [bnx2x_io_slot_reset:14228(eth3)]IO slot reset 
-> --> driver unload
->     [28199.106281] bnx2x: [bnx2x_clean_tx_queue:1205(eth3)]timeout 
-> waiting for queue[1]: txdata->tx_pkt_prod(7270) != 
-> txdata->tx_pkt_cons(7269)
->     [28201.106281] bnx2x: [bnx2x_clean_tx_queue:1205(eth3)]timeout 
-> waiting for queue[3]: txdata->tx_pkt_prod(10977) != 
-> txdata->tx_pkt_cons(10969)
->     [28203.106280] bnx2x: [bnx2x_clean_tx_queue:1205(eth3)]timeout 
-> waiting for queue[4]: txdata->tx_pkt_prod(9532) != 
-> txdata->tx_pkt_cons(9514)
->     [28205.106284] bnx2x: [bnx2x_clean_tx_queue:1205(eth3)]timeout 
-> waiting for queue[6]: txdata->tx_pkt_prod(2359) != 
-> txdata->tx_pkt_cons(2331)
->     [28205.314280] bnx2x: [bnx2x_io_slot_reset:14246(eth3)]before -- 
-> state flag = 0x4000   <---- check NIC state
->     [28205.314282] bnx2x: [bnx2x_io_slot_reset:14248(eth3)]after -- 
-> state flag = 0x4000         <---- check NIC state and disable the NAPI
->     [28205.405009] PCI 0201:50:00.0#500000: EEH: bnx2x driver reports: 
-> 'recovered'
-> ........ snip ......
->     [28213.525014] EEH: Finished:'slot_reset' with aggregate recovery 
-> state:'recovered'
->     [28213.525016] EEH: Notify device driver to resume
->     [28213.525017] EEH: Beginning: 'resume'
->     [28213.525018] PCI 0201:50:00.0#500000: EEH: Invoking bnx2x->resume()
->     [28225.115287] bnx2x 0201:50:00.0 eth3: using MSI-X  IRQs: sp 101 
-> fp[0] 103 ... fp[7] 110
->     [28225.696425] PCI 0201:50:00.0#500000: EEH: bnx2x driver reports: 
-> 'none'
-> 
-> 
-> 2- When the driver reset code path was called first, the 
-> bnx2x_chip_cleanup() does the disablement the NAPI, but NIC is resumed 
-> after the EEH handler code path was called.
->     [13376.774278] bnx2x: [bnx2x_state_wait:312(eth3)]timeout waiting 
-> for state 2
->      [13376.774280] bnx2x: [bnx2x_func_stop:9118(eth3)]FUNC_STOP ramrod 
-> failed. Running a dry transaction
->     [13376.774339] bnx2x: [bnx2x_chip_cleanup:9467(eth3)]before state 
-> flag = 0x4000
->     [13376.774341] bnx2x: [bnx2x_chip_cleanup:9469(eth3)]after state 
-> flag = 0x4000
->     [13376.774344] bnx2x: [bnx2x_igu_int_disable:891(eth3)]BUG! Proper 
-> val not read from IGU!
->     [13391.774280] bnx2x: [bnx2x_fw_command:3044(eth3)]FW failed to 
-> respond!
->     ........ snip .....
->     [13442.118385] PCI 0201:50:00.0#500000: EEH: Invoking 
-> bnx2x->slot_reset()
->     [13442.118388] bnx2x: [bnx2x_io_slot_reset:14212(eth3)]IO slot reset 
-> initializing...
->     [13442.118509] bnx2x 0201:50:00.0: enabling device (0140 -> 0142)
->     [13442.124825] bnx2x: [bnx2x_io_slot_reset:14228(eth3)]IO slot reset 
-> --> driver unload
->     [13442.154290] bnx2x: [bnx2x_io_slot_reset:14246(eth3)]before -- 
-> state flag = 0x4000    <--- check NIC state
->     [13442.274291] PCI 0201:50:00.0#500000: EEH: bnx2x driver reports: 
-> 'recovered'
->     ....... snip .........
->     [13442.424290] EEH: Finished:'slot_reset' with aggregate recovery 
-> state:'recovered'
->     [13442.424291] EEH: Notify device driver to resume
->     [13442.424292] EEH: Beginning: 'resume'
->     [13442.424293] PCI 0201:50:00.0#500000: EEH: Invoking bnx2x->resume()
->     [13443.015280] bnx2x 0201:50:00.0 eth3: using MSI-X  IRQs: sp 61 
-> fp[0] 63 ... fp[7] 75
->     [13443.616423] PCI 0201:50:00.0#500000: EEH: bnx2x driver reports: 
-> 'none'
-> 
-> 
->>> Thanks,
->>> Manish
->>
->> It requires a specific system setup, I will test with v3 patch when 
->> the system is available.
->>
->> Thanks,
->> Thinh Tran
-> 
-> Any suggestions?
-> Thanks,
-> Thinh Tran
+I'm off the grid until 10/20, but will add this to my do-asap stack.
+
