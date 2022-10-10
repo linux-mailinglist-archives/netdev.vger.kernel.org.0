@@ -2,303 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 331605F0CD0
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 15:55:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35BA35F0B48
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 14:06:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231601AbiI3Nz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 09:55:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53648 "EHLO
+        id S230517AbiI3MGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 08:06:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231129AbiI3Nz0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 09:55:26 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C9E372EC6
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 06:55:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1664546124; x=1696082124;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Ee7VFQ1tKWBAv2oWYWTPDFj0q6UdnjcMz9k9Ce684HM=;
-  b=fwHZywig2nUmNa+s4caEV0letSaN5yXZTdmkmYEcc14PyuBh8HrOqaow
-   0DvPGvC8Ib/lut4squW548loTCBt/tnJuSOnxdvMfMJzyv6J8EiTTFqs/
-   OesfivBsnRulDgk3PBYMPxTKQgT/3O89ntLIGd3aHlB8PVflke/+APRb1
-   5xSqS4Nqmgs8wxZg9GZyLPracL5aUOxcciLde7gmbhSUYL/dIUYQAiEDH
-   exnTzya/mZEC+AdZ9ltK6ZbzjCQJZOpTlZQkWXxiiexsjzcb7WkFMz6DP
-   NibfZOUsM60zw1bzDTAAj8k45TynmErpf2bMGMjNFncHuatPgWjV/xSqW
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10486"; a="289354930"
-X-IronPort-AV: E=Sophos;i="5.93,358,1654585200"; 
-   d="scan'208";a="289354930"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2022 06:55:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10486"; a="797971963"
-X-IronPort-AV: E=Sophos;i="5.93,358,1654585200"; 
-   d="scan'208";a="797971963"
-Received: from bswcg005.iind.intel.com ([10.224.174.25])
-  by orsmga005.jf.intel.com with ESMTP; 30 Sep 2022 06:55:20 -0700
-From:   m.chetan.kumar@linux.intel.com
-To:     netdev@vger.kernel.org
-Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        krishna.c.sudi@intel.com, m.chetan.kumar@linux.intel.com,
-        linuxwwan@intel.com, Moises Veleta <moises.veleta@linux.intel.com>,
-        Devegowda Chandrashekar <chandrashekar.devegowda@intel.com>,
-        Ricardo Martinez <ricardo.martinez@linux.intel.com>
-Subject: [PATCH V2 net-next] net: wwan: t7xx: Add port for modem logging
-Date:   Sat,  1 Oct 2022 00:52:54 +0530
-Message-Id: <20220930192254.971947-1-m.chetan.kumar@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S230236AbiI3MGb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 08:06:31 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF8CF157FFB;
+        Fri, 30 Sep 2022 05:06:28 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Mf85D5J1yzpTJK;
+        Fri, 30 Sep 2022 20:03:28 +0800 (CST)
+Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 30 Sep 2022 20:06:27 +0800
+Received: from huawei.com (10.67.174.245) by dggpemm500013.china.huawei.com
+ (7.185.36.172) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Fri, 30 Sep
+ 2022 20:06:26 +0800
+From:   Chen Zhongjin <chenzhongjin@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <shayagr@amazon.com>, <akiyano@amazon.com>, <darinzon@amazon.com>,
+        <ndagan@amazon.com>, <saeedb@amazon.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <nkoler@amazon.com>, <42.hyeyoo@gmail.com>,
+        <chenzhongjin@huawei.com>
+Subject: [PATCH -next] net: ena: Remove unused variable 'tx_bytes'
+Date:   Mon, 10 Oct 2022 11:19:36 +0800
+Message-ID: <20221010031936.2885327-1-chenzhongjin@huawei.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DATE_IN_FUTURE_03_06,
-        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.245]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500013.china.huawei.com (7.185.36.172)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_DATE_IN_FUTURE_96_Q autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Moises Veleta <moises.veleta@linux.intel.com>
+Reported by Clang [-Wunused-but-set-variable]
 
-The Modem Logging (MDL) port provides an interface to collect modem
-logs for debugging purposes. MDL is supported by the relay interface,
-and the mtk_t7xx port infrastructure. MDL allows user-space apps to
-control logging via mbim command and to collect logs via the relay
-interface, while port infrastructure facilitates communication between
-the driver and the modem.
+'commit 548c4940b9f1 ("net: ena: Implement XDP_TX action")'
+This commit introduced the variable 'tx_bytes'. However this variable
+is never used by other code except iterates itself, so remove it.
 
-Signed-off-by: Moises Veleta <moises.veleta@linux.intel.com>
-Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-Signed-off-by: Devegowda Chandrashekar <chandrashekar.devegowda@intel.com>
-Acked-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
---
-v2
- * Removed debugfs control port.
- * Initialize in Notify function upon handshake completion.
- * Remove trace write function, MBIM will send commands.
+Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
 ---
- drivers/net/wwan/Kconfig                |   1 +
- drivers/net/wwan/t7xx/Makefile          |   3 +
- drivers/net/wwan/t7xx/t7xx_hif_cldma.c  |   2 +
- drivers/net/wwan/t7xx/t7xx_port.h       |   5 ++
- drivers/net/wwan/t7xx/t7xx_port_proxy.c |  12 +++
- drivers/net/wwan/t7xx/t7xx_port_proxy.h |   4 +
- drivers/net/wwan/t7xx/t7xx_port_trace.c | 112 ++++++++++++++++++++++++
- 7 files changed, 139 insertions(+)
- create mode 100644 drivers/net/wwan/t7xx/t7xx_port_trace.c
+ drivers/net/ethernet/amazon/ena/ena_netdev.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/wwan/Kconfig b/drivers/net/wwan/Kconfig
-index 3486ffe94ac4..32149029c891 100644
---- a/drivers/net/wwan/Kconfig
-+++ b/drivers/net/wwan/Kconfig
-@@ -108,6 +108,7 @@ config IOSM
- config MTK_T7XX
- 	tristate "MediaTek PCIe 5G WWAN modem T7xx device"
- 	depends on PCI
-+	select RELAY if WWAN_DEBUGFS
- 	help
- 	  Enables MediaTek PCIe based 5G WWAN modem (T7xx series) device.
- 	  Adapts WWAN framework and provides network interface like wwan0
-diff --git a/drivers/net/wwan/t7xx/Makefile b/drivers/net/wwan/t7xx/Makefile
-index dc6a7d682c15..268ff9e87e5b 100644
---- a/drivers/net/wwan/t7xx/Makefile
-+++ b/drivers/net/wwan/t7xx/Makefile
-@@ -18,3 +18,6 @@ mtk_t7xx-y:=	t7xx_pci.o \
- 		t7xx_hif_dpmaif_rx.o  \
- 		t7xx_dpmaif.o \
- 		t7xx_netdev.o
-+
-+mtk_t7xx-$(CONFIG_WWAN_DEBUGFS) += \
-+		t7xx_port_trace.o \
-diff --git a/drivers/net/wwan/t7xx/t7xx_hif_cldma.c b/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
-index 6ff30cb8eb16..aec3a18d44bd 100644
---- a/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
-+++ b/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
-@@ -1018,6 +1018,8 @@ static int t7xx_cldma_late_init(struct cldma_ctrl *md_ctrl)
- 			dev_err(md_ctrl->dev, "control TX ring init fail\n");
- 			goto err_free_tx_ring;
- 		}
-+
-+		md_ctrl->tx_ring[i].pkt_size = CLDMA_MTU;
- 	}
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index 6a356a6cee15..c8dfb9287856 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -1876,7 +1876,6 @@ static int ena_clean_xdp_irq(struct ena_ring *xdp_ring, u32 budget)
+ {
+ 	u32 total_done = 0;
+ 	u16 next_to_clean;
+-	u32 tx_bytes = 0;
+ 	int tx_pkts = 0;
+ 	u16 req_id;
+ 	int rc;
+@@ -1914,7 +1913,6 @@ static int ena_clean_xdp_irq(struct ena_ring *xdp_ring, u32 budget)
+ 			  "tx_poll: q %d skb %p completed\n", xdp_ring->qid,
+ 			  xdpf);
  
- 	for (j = 0; j < CLDMA_RXQ_NUM; j++) {
-diff --git a/drivers/net/wwan/t7xx/t7xx_port.h b/drivers/net/wwan/t7xx/t7xx_port.h
-index dc4133eb433a..702e7aa2ef31 100644
---- a/drivers/net/wwan/t7xx/t7xx_port.h
-+++ b/drivers/net/wwan/t7xx/t7xx_port.h
-@@ -122,6 +122,11 @@ struct t7xx_port {
- 	int				rx_length_th;
- 	bool				chan_enable;
- 	struct task_struct		*thread;
-+#ifdef CONFIG_WWAN_DEBUGFS
-+	void				*relaych;
-+	struct dentry			*debugfs_dir;
-+	struct dentry			*debugfs_wwan_dir;
-+#endif
- };
+-		tx_bytes += xdpf->len;
+ 		tx_pkts++;
+ 		total_done += tx_info->tx_descs;
  
- struct sk_buff *t7xx_port_alloc_skb(int payload);
-diff --git a/drivers/net/wwan/t7xx/t7xx_port_proxy.c b/drivers/net/wwan/t7xx/t7xx_port_proxy.c
-index d4de047ff0d4..894b1d11b2c9 100644
---- a/drivers/net/wwan/t7xx/t7xx_port_proxy.c
-+++ b/drivers/net/wwan/t7xx/t7xx_port_proxy.c
-@@ -70,6 +70,18 @@ static const struct t7xx_port_conf t7xx_md_port_conf[] = {
- 		.name = "MBIM",
- 		.port_type = WWAN_PORT_MBIM,
- 	}, {
-+#ifdef CONFIG_WWAN_DEBUGFS
-+		.tx_ch = PORT_CH_MD_LOG_TX,
-+		.rx_ch = PORT_CH_MD_LOG_RX,
-+		.txq_index = 7,
-+		.rxq_index = 7,
-+		.txq_exp_index = 7,
-+		.rxq_exp_index = 7,
-+		.path_id = CLDMA_ID_MD,
-+		.ops = &t7xx_trace_port_ops,
-+		.name = "mdlog",
-+	}, {
-+#endif
- 		.tx_ch = PORT_CH_CONTROL_TX,
- 		.rx_ch = PORT_CH_CONTROL_RX,
- 		.txq_index = Q_IDX_CTRL,
-diff --git a/drivers/net/wwan/t7xx/t7xx_port_proxy.h b/drivers/net/wwan/t7xx/t7xx_port_proxy.h
-index bc1ff5c6c700..81d059fbc0fb 100644
---- a/drivers/net/wwan/t7xx/t7xx_port_proxy.h
-+++ b/drivers/net/wwan/t7xx/t7xx_port_proxy.h
-@@ -87,6 +87,10 @@ struct ctrl_msg_header {
- extern struct port_ops wwan_sub_port_ops;
- extern struct port_ops ctl_port_ops;
- 
-+#ifdef CONFIG_WWAN_DEBUGFS
-+extern struct port_ops t7xx_trace_port_ops;
-+#endif
-+
- void t7xx_port_proxy_reset(struct port_proxy *port_prox);
- void t7xx_port_proxy_uninit(struct port_proxy *port_prox);
- int t7xx_port_proxy_init(struct t7xx_modem *md);
-diff --git a/drivers/net/wwan/t7xx/t7xx_port_trace.c b/drivers/net/wwan/t7xx/t7xx_port_trace.c
-new file mode 100644
-index 000000000000..b02cd547d8ea
---- /dev/null
-+++ b/drivers/net/wwan/t7xx/t7xx_port_trace.c
-@@ -0,0 +1,112 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (C) 2022 Intel Corporation.
-+ */
-+
-+#include <linux/debugfs.h>
-+#include <linux/relay.h>
-+#include <linux/skbuff.h>
-+#include <linux/wwan.h>
-+
-+#include "t7xx_port.h"
-+#include "t7xx_port_proxy.h"
-+#include "t7xx_state_monitor.h"
-+
-+#define T7XX_TRC_SUB_BUFF_SIZE		131072
-+#define T7XX_TRC_N_SUB_BUFF		32
-+
-+static struct dentry *t7xx_trace_create_buf_file_handler(const char *filename,
-+							 struct dentry *parent,
-+							 umode_t mode,
-+							 struct rchan_buf *buf,
-+							 int *is_global)
-+{
-+	*is_global = 1;
-+	return debugfs_create_file(filename, mode, parent, buf,
-+				   &relay_file_operations);
-+}
-+
-+static int t7xx_trace_remove_buf_file_handler(struct dentry *dentry)
-+{
-+	debugfs_remove(dentry);
-+	return 0;
-+}
-+
-+static int t7xx_trace_subbuf_start_handler(struct rchan_buf *buf, void *subbuf,
-+					   void *prev_subbuf, size_t prev_padding)
-+{
-+	if (relay_buf_full(buf)) {
-+		pr_err_ratelimited("Relay_buf full dropping traces");
-+		return 0;
-+	}
-+
-+	return 1;
-+}
-+
-+static struct rchan_callbacks relay_callbacks = {
-+	.subbuf_start = t7xx_trace_subbuf_start_handler,
-+	.create_buf_file = t7xx_trace_create_buf_file_handler,
-+	.remove_buf_file = t7xx_trace_remove_buf_file_handler,
-+};
-+
-+static void t7xx_trace_port_uninit(struct t7xx_port *port)
-+{
-+	struct rchan *relaych = port->relaych;
-+
-+	if (!relaych)
-+		return;
-+
-+	relay_close(relaych);
-+	debugfs_remove_recursive(port->debugfs_dir);
-+	wwan_put_debugfs_dir(port->debugfs_wwan_dir);
-+}
-+
-+static int t7xx_trace_port_recv_skb(struct t7xx_port *port, struct sk_buff *skb)
-+{
-+	struct rchan *relaych = port->relaych;
-+
-+	if (!relaych)
-+		return -EINVAL;
-+
-+	relay_write(relaych, skb->data, skb->len);
-+	dev_kfree_skb(skb);
-+	return 0;
-+}
-+
-+static void t7xx_port_trace_md_state_notify(struct t7xx_port *port, unsigned int state)
-+{
-+	struct rchan *relaych;
-+
-+	if (state != MD_STATE_READY || port->relaych)
-+		return;
-+
-+	port->debugfs_wwan_dir = wwan_get_debugfs_dir(port->dev);
-+	if (IS_ERR(port->debugfs_wwan_dir))
-+		port->debugfs_wwan_dir = NULL;
-+
-+	port->debugfs_dir = debugfs_create_dir(KBUILD_MODNAME, port->debugfs_wwan_dir);
-+	if (IS_ERR_OR_NULL(port->debugfs_dir)) {
-+		wwan_put_debugfs_dir(port->debugfs_wwan_dir);
-+		dev_err(port->dev, "Unable to create debugfs for trace");
-+		return;
-+	}
-+
-+	relaych = relay_open("relay_ch", port->debugfs_dir, T7XX_TRC_SUB_BUFF_SIZE,
-+			     T7XX_TRC_N_SUB_BUFF, &relay_callbacks, NULL);
-+	if (!relaych)
-+		goto err_rm_debugfs_dir;
-+
-+	port->relaych = relaych;
-+	return;
-+
-+err_rm_debugfs_dir:
-+	debugfs_remove_recursive(port->debugfs_dir);
-+	wwan_put_debugfs_dir(port->debugfs_wwan_dir);
-+	dev_err(port->dev, "Unable to create trace port %s", port->port_conf->name);
-+}
-+
-+struct port_ops t7xx_trace_port_ops = {
-+	.recv_skb = t7xx_trace_port_recv_skb,
-+	.uninit = t7xx_trace_port_uninit,
-+	.md_state_notify = t7xx_port_trace_md_state_notify,
-+};
 -- 
-2.34.1
+2.33.0
 
