@@ -2,120 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 712545FA42E
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 21:29:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 002E95FA43E
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 21:36:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229495AbiJJT3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Oct 2022 15:29:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51560 "EHLO
+        id S229653AbiJJTft (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Oct 2022 15:35:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiJJT3T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 15:29:19 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEC244F68B
-        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 12:29:15 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id c24so11248879plo.3
-        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 12:29:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1rYd5wKmTtTEZzMnTT5DcQpclFJ5bKOFkPhGQYkmSBw=;
-        b=RqTAm/DuxqwDzCmHthDOl9UX9v3KDK9uWW3dB7gJ26kgzCp6X0VUMtZERm5waSuAJp
-         WRwYeIUdSWz+yOsPSDH6pMUkKbBp5ltb6DE46I20hh7n5sfZcr+/UWI/e6JIo+kQ7pAn
-         XmqH/cj8c75Mn9wCipbjMGSHNGvGjHkcJp9XYSiUnt9nvkyBi9hXjxq6aV1bSDVNDMlY
-         3IDCmibgKH3c062sEM4Lw1b/enoGGXVrOYjCOEhSRZKFkfN0FJYor5O5Dbn3dNriRI8V
-         qsTahCejPuFksgdzmV+iCfhVJXFhiqetk/cvxFiNOTSSKl2vnSWYxB0NWJVPOrJszZov
-         ePDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=1rYd5wKmTtTEZzMnTT5DcQpclFJ5bKOFkPhGQYkmSBw=;
-        b=245GUWk6Ez+IWUZmd17ev2DnwrYRdSQp8R1CaRx/3tTEJas0+5i5h+/28anKfdn8aM
-         LKMS9Fqp67AwwMa4O3TKZGt1k+YkL1TNca0ZFZEl+8UCGnzEUQZagUjuO6vvwRLbSIjK
-         9z3LV1cyvL5nf4d72ab23UIbEnYeKFIH6reasYBE1cGsYh1GdfBqyr9XtUU7He1PJQ1c
-         NC14q5mwr8veFaMdY6icK/Ly2PRVYgn3zvHEwe4YfEfvnq7jJZp+/cWnbMbaeOJHm+eO
-         YksV3moFznihnkzJRXVmoh2x0MsB4SikW+3aJAV2KZtBYOGSU5TI7mnIeXYVCTDbu0vt
-         HlvA==
-X-Gm-Message-State: ACrzQf0wiBBkmlSNcG3Y4P4dhis0tGonYS4K+kDFId2O9PjPY+nzbqhz
-        2pKoKNyscR/6HLvuF0+6wIbBVg==
-X-Google-Smtp-Source: AMsMyM7TXibQhFguBkFno2yp6rWxynGT/DZUk5/HtH4gACpcfFw+oDohMV2x5Th9cvxfTdfMTVSHjg==
-X-Received: by 2002:a17:90b:1a8b:b0:20d:4c24:af5 with SMTP id ng11-20020a17090b1a8b00b0020d4c240af5mr5660039pjb.213.1665430155292;
-        Mon, 10 Oct 2022 12:29:15 -0700 (PDT)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id q4-20020a170902dac400b001728ac8af94sm7018956plx.248.2022.10.10.12.29.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Oct 2022 12:29:15 -0700 (PDT)
-Date:   Mon, 10 Oct 2022 12:29:13 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     Jouke Witteveen <j.witteveen@gmail.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] Documentation: update urls to Linux Foundation wiki
-Message-ID: <20221010122913.6a91b117@hermes.local>
-In-Reply-To: <87v8orpkda.fsf@meer.lwn.net>
-References: <20221001112058.22387-1-j.witteveen@gmail.com>
-        <87v8orpkda.fsf@meer.lwn.net>
+        with ESMTP id S229486AbiJJTfq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 15:35:46 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AE5974B89;
+        Mon, 10 Oct 2022 12:35:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=bQBNkKvViR1DqMAB7e/n5mW7JBZLqIweo5nh9dpW24o=; b=UtwroqWkI3CCaRCCtqKUuIf2jd
+        4Iq1VH2cffWzbOiCNH2YKJFC7RNrfeT+qET96YufGuV4MJShQxpBDyD+/bA37FebtwTOT4MXtghUr
+        TGNKe7faXU/qIMOQVx/WiIpWRC5vjbBoReF6RJ09jXIPYnxRjY/tIQDuWVjryOWqisfQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ohyYp-001eJE-6j; Mon, 10 Oct 2022 21:35:35 +0200
+Date:   Mon, 10 Oct 2022 21:35:35 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, bryan.whitehead@microchip.com,
+        edumazet@google.com, pabeni@redhat.com,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next V3] net: lan743x: Add support to SGMII register
+ dump for PCI11010/PCI11414 chips
+Message-ID: <Y0R0B0sOzjOTIM66@lunn.ch>
+References: <20221003103821.4356-1-Raju.Lakkaraju@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221003103821.4356-1-Raju.Lakkaraju@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 10 Oct 2022 13:08:17 -0600
-Jonathan Corbet <corbet@lwn.net> wrote:
+>  static int lan743x_get_regs_len(struct net_device *dev)
+>  {
+> -	return MAX_LAN743X_ETH_REGS * sizeof(u32);
+> +	struct lan743x_adapter *adapter = netdev_priv(dev);
+> +	u32 num_regs = MAX_LAN743X_ETH_COMMON_REGS;
+> +
+> +	if (adapter->is_sgmii_en)
+> +		num_regs += MAX_LAN743X_ETH_SGMII_REGS;
+> +
+> +	return num_regs * sizeof(u32);
+>  }
+>  
+>  static void lan743x_get_regs(struct net_device *dev,
+>  			     struct ethtool_regs *regs, void *p)
+>  {
+> +	struct lan743x_adapter *adapter = netdev_priv(dev);
+> +	int regs_len;
+> +
+> +	regs_len = lan743x_get_regs_len(dev);
+> +	memset(p, 0, regs_len);
+> +
+>  	regs->version = LAN743X_ETH_REG_VERSION;
+> +	regs->len = regs_len;
+> +
+> +	lan743x_common_regs(dev, p);
+> +	p = (u32 *)p + MAX_LAN743X_ETH_COMMON_REGS;
+>  
+> -	lan743x_common_regs(dev, regs, p);
+> +	if (adapter->is_sgmii_en) {
+> +		lan743x_sgmii_regs(dev, p);
+> +		p = (u32 *)p + MAX_LAN743X_ETH_SGMII_REGS;
+> +	}
 
-> Jouke Witteveen <j.witteveen@gmail.com> writes:
-> 
-> > The redirects from the old urls stopped working recently.
-> >
-> > Signed-off-by: Jouke Witteveen <j.witteveen@gmail.com>  
-> 
-> I see the LF has done its annual web-site replacement; I have no idea
-> why they are so enamored with breaking URLs...
-> 
-> Anyway, This is networking documentation, so it should go to the folks
-> at netdev [CC'd] rather than me.
-> 
-> >  Documentation/networking/bridge.rst                           | 2 +-
-> >  Documentation/networking/dccp.rst                             | 4 ++--
-> >  .../networking/device_drivers/ethernet/intel/ice.rst          | 2 +-
-> >  Documentation/networking/generic_netlink.rst                  | 2 +-
-> >  MAINTAINERS                                                   | 2 +-
-> >  net/ipv4/Kconfig                                              | 2 +-
-> >  net/sched/Kconfig                                             | 2 +-
-> >  7 files changed, 8 insertions(+), 8 deletions(-)
-> >
-> > diff --git a/Documentation/networking/bridge.rst b/Documentation/networking/bridge.rst
-> > index 4aef9cddde2f..c859f3c1636e 100644
-> > --- a/Documentation/networking/bridge.rst
-> > +++ b/Documentation/networking/bridge.rst
-> > @@ -8,7 +8,7 @@ In order to use the Ethernet bridging functionality, you'll need the
-> >  userspace tools.
-> >  
-> >  Documentation for Linux bridging is on:
-> > -   http://www.linuxfoundation.org/collaborate/workgroups/networking/bridge
-> > +   https://wiki.linuxfoundation.org/networking/bridge  
-> 
-> So this page is full of encouraging stuff like:
-> 
-> > The code is updated as part of the 2.4 and 2.6 kernels available at
-> > kernel.org.  
-> 
-> ...and tells us about an encouraging prototype implementation in 2.6.18.
-> I'd apply the patch because working URLs are better than broken ones,
-> but I also question the value of this material at all in 2022... there
-> should be better documents to link to at this point?
+This seems O.K. for the moment, but how does it work when you add the
+next set of optional registers? Say you want to add the PTP registers?
 
-This is ancient networking wiki.
-I took old stuff put it on wiki back when I was working at LF
-but never updated since then.
+One idea might be to use the LAN743X_ETH_REG_VERSION as a
+bitfield. Bit 0 indicates the common registers are present. Bit 1
+indicates the SGMII registers are present. Bit 2 is for whatever next
+set of optional registers you add, say PTP.
+
+    Andrew
