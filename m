@@ -2,211 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26CFF5FA87D
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 01:11:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 477725FA96C
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 02:41:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230293AbiJJXLn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Oct 2022 19:11:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52458 "EHLO
+        id S229657AbiJKAlH convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 10 Oct 2022 20:41:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229893AbiJJXLU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 19:11:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DE447E31E;
-        Mon, 10 Oct 2022 16:09:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B92A2B80E34;
-        Mon, 10 Oct 2022 23:08:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 787B9C433D6;
-        Mon, 10 Oct 2022 23:08:43 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="PWVmhODf"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1665443322;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vIB8SkXJdq9zBFlYiq2VoiImKhyYI+n+MyCUYR8RA5M=;
-        b=PWVmhODfxoLxmouLU9BSaRJUfU4D79e45lFdXqjJnTNnxqek6eXBe8jM+5cDLv2SWieydz
-        eLZJ9/jyNqzGAPwZdOWv8VQPqwtzRTPS7Nn5+B7VgwranRRklK+6G2i0AgCO3+sEt9njmP
-        YT5CZQFlI3Eo/Vff5VU/Sy3I4Wnve7U=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 4caf0efb (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Mon, 10 Oct 2022 23:08:41 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, patches@lists.linux.dev
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>, Christoph Hellwig <hch@lst.de>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dave Airlie <airlied@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Westphal <fw@strlen.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Helge Deller <deller@gmx.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Hugh Dickins <hughd@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "James E . J . Bottomley" <jejb@linux.ibm.com>,
-        Jan Kara <jack@suse.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Jens Axboe <axboe@kernel.dk>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        KP Singh <kpsingh@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Russell King <linux@armlinux.org.uk>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Thomas Graf <tgraf@suug.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        WANG Xuerui <kernel@xen0n.name>, Will Deacon <will@kernel.org>,
-        Yury Norov <yury.norov@gmail.com>,
-        dri-devel@lists.freedesktop.org, kasan-dev@googlegroups.com,
-        kernel-janitors@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-block@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-mm@kvack.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-nvme@lists.infradead.org, linux-parisc@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-usb@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        loongarch@lists.linux.dev, netdev@vger.kernel.org,
-        sparclinux@vger.kernel.org, x86@kernel.org
-Subject: [PATCH v6 7/7] prandom: remove unused functions
-Date:   Mon, 10 Oct 2022 17:06:13 -0600
-Message-Id: <20221010230613.1076905-8-Jason@zx2c4.com>
-In-Reply-To: <20221010230613.1076905-1-Jason@zx2c4.com>
-References: <20221010230613.1076905-1-Jason@zx2c4.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        with ESMTP id S229454AbiJKAlG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 20:41:06 -0400
+X-Greylist: delayed 4838 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 10 Oct 2022 17:41:05 PDT
+Received: from correo4.agesic.gub.uy (correo4.agesic.gub.uy [179.27.170.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC8245A88B
+        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 17:41:05 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by correo4.agesic.gub.uy (Postfix) with ESMTP id 9FD612FB48E2;
+        Mon, 10 Oct 2022 19:41:59 -0300 (-03)
+X-Amavis-Modified: Mail body modified (using disclaimer) -
+        zimbramta01.agesic.gub.uy
+X-Spam-Score: 4.041
+X-Spam-Level: ******
+X-Spam-Status: Yes, score=6.7 required=5.0 tests=ADVANCE_FEE_3_NEW,BAYES_80,
+        FREEMAIL_FORGED_REPLYTO,RCVD_IN_DNSWL_MED,RCVD_IN_SBL,
+        RCVD_IN_VALIDITY_RPBL,SPF_HELO_NONE,SPF_PASS autolearn=no
         autolearn_force=no version=3.4.6
+Received: from correo4.agesic.gub.uy ([127.0.0.1])
+        by localhost (zimbramta01.agesic.gub.uy [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id aVNc95v0og2K; Mon, 10 Oct 2022 19:41:59 -0300 (-03)
+Received: from localhost (localhost [127.0.0.1])
+        by correo4.agesic.gub.uy (Postfix) with ESMTP id C0EF32FB48E0;
+        Mon, 10 Oct 2022 19:41:58 -0300 (-03)
+X-Virus-Scanned: amavisd-new at zimbramta01.agesic.gub.uy
+Received: from correo4.agesic.gub.uy ([127.0.0.1])
+        by localhost (zimbramta01.agesic.gub.uy [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id aL25TRjPdrYi; Mon, 10 Oct 2022 19:41:58 -0300 (-03)
+Received: from [103.156.93.66] (unknown [103.156.93.66])
+        by correo4.agesic.gub.uy (Postfix) with ESMTPSA id DA0E12FB48C7;
+        Mon, 10 Oct 2022 19:41:44 -0300 (-03)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8BIT
+Content-Description: Mail message body
+Subject: my subject
+To:     Recipients <aberrutti@inau.gub.uy>
+From:   aberrutti@inau.gub.uy
+Date:   Mon, 10 Oct 2022 15:41:30 -0700
+Reply-To: theschaefflerfound@outlook.com
+Message-Id: <20221010224144.DA0E12FB48C7@correo4.agesic.gub.uy>
+X-Spam-Report: * -2.3 RCVD_IN_DNSWL_MED RBL: Sender listed at https://www.dnswl.org/,
+        *       medium trust
+        *      [179.27.170.181 listed in list.dnswl.org]
+        *  2.0 BAYES_80 BODY: Bayes spam probability is 80 to 95%
+        *      [score: 0.8940]
+        *  0.1 RCVD_IN_SBL RBL: Received via a relay in Spamhaus SBL
+        *      [103.156.93.66 listed in zen.spamhaus.org]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  1.3 RCVD_IN_VALIDITY_RPBL RBL: Relay in Validity RPBL,
+        *      https://senderscore.org/blocklistlookup/
+        *      [179.27.170.181 listed in bl.score.senderscore.com]
+        *  2.1 FREEMAIL_FORGED_REPLYTO Freemail in Reply-To, but not From
+        *  3.5 ADVANCE_FEE_3_NEW Appears to be advance fee fraud (Nigerian
+        *      419)
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With no callers left of prandom_u32() and prandom_bytes(), as well as
-get_random_int(), remove these deprecated wrappers, in favor of
-get_random_u32() and get_random_bytes().
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Yury Norov <yury.norov@gmail.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- drivers/char/random.c   | 11 +++++------
- include/linux/prandom.h | 12 ------------
- include/linux/random.h  |  5 -----
- 3 files changed, 5 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 01acf235f263..2fe28eeb2f38 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -97,7 +97,7 @@ MODULE_PARM_DESC(ratelimit_disable, "Disable random ratelimit suppression");
-  * Returns whether or not the input pool has been seeded and thus guaranteed
-  * to supply cryptographically secure random numbers. This applies to: the
-  * /dev/urandom device, the get_random_bytes function, and the get_random_{u8,
-- * u16,u32,u64,int,long} family of functions.
-+ * u16,u32,u64,long} family of functions.
-  *
-  * Returns: true if the input pool has been seeded.
-  *          false if the input pool has not been seeded.
-@@ -161,15 +161,14 @@ EXPORT_SYMBOL(wait_for_random_bytes);
-  *	u16 get_random_u16()
-  *	u32 get_random_u32()
-  *	u64 get_random_u64()
-- *	unsigned int get_random_int()
-  *	unsigned long get_random_long()
-  *
-  * These interfaces will return the requested number of random bytes
-  * into the given buffer or as a return value. This is equivalent to
-- * a read from /dev/urandom. The u8, u16, u32, u64, int, and long
-- * family of functions may be higher performance for one-off random
-- * integers, because they do a bit of buffering and do not invoke
-- * reseeding until the buffer is emptied.
-+ * a read from /dev/urandom. The u8, u16, u32, u64, long family of
-+ * functions may be higher performance for one-off random integers,
-+ * because they do a bit of buffering and do not invoke reseeding
-+ * until the buffer is emptied.
-  *
-  *********************************************************************/
- 
-diff --git a/include/linux/prandom.h b/include/linux/prandom.h
-index 78db003bc290..e0a0759dd09c 100644
---- a/include/linux/prandom.h
-+++ b/include/linux/prandom.h
-@@ -12,18 +12,6 @@
- #include <linux/percpu.h>
- #include <linux/random.h>
- 
--/* Deprecated: use get_random_u32 instead. */
--static inline u32 prandom_u32(void)
--{
--	return get_random_u32();
--}
--
--/* Deprecated: use get_random_bytes instead. */
--static inline void prandom_bytes(void *buf, size_t nbytes)
--{
--	return get_random_bytes(buf, nbytes);
--}
--
- struct rnd_state {
- 	__u32 s1, s2, s3, s4;
- };
-diff --git a/include/linux/random.h b/include/linux/random.h
-index 08322f700cdc..147a5e0d0b8e 100644
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -42,10 +42,6 @@ u8 get_random_u8(void);
- u16 get_random_u16(void);
- u32 get_random_u32(void);
- u64 get_random_u64(void);
--static inline unsigned int get_random_int(void)
--{
--	return get_random_u32();
--}
- static inline unsigned long get_random_long(void)
- {
- #if BITS_PER_LONG == 64
-@@ -100,7 +96,6 @@ declare_get_random_var_wait(u8, u8)
- declare_get_random_var_wait(u16, u16)
- declare_get_random_var_wait(u32, u32)
- declare_get_random_var_wait(u64, u32)
--declare_get_random_var_wait(int, unsigned int)
- declare_get_random_var_wait(long, unsigned long)
- #undef declare_get_random_var
- 
--- 
-2.37.3
+Congratulations!
 
+      Dear email user, your email address was randomly selected by the Topaz Ballot system to win the 2022 email lottery draw program of GEORG SCHAEFFLER FOUNDATION, and the amount of €2,000,000.00 has been awarded to you.
+
+kindly contact us immediately on how to claim your funds.
+
+Thank you,
+GEORG SCHAEFFLER FOUNDATION
+E-mail: support@theschaefflerfoundation.com
