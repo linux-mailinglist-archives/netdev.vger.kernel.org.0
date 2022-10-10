@@ -2,310 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 808E85FA2D9
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 19:45:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B233C5FA2E7
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 19:49:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229893AbiJJRpL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Oct 2022 13:45:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51532 "EHLO
+        id S229794AbiJJRtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Oct 2022 13:49:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229821AbiJJRpH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 13:45:07 -0400
-Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 344ED303C4;
-        Mon, 10 Oct 2022 10:45:00 -0700 (PDT)
+        with ESMTP id S229452AbiJJRtC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 13:49:02 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4670419A1;
+        Mon, 10 Oct 2022 10:49:01 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id a67so7577255edf.12;
+        Mon, 10 Oct 2022 10:49:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1665423900; x=1696959900;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=yrpzirdanUNo3Rmou8WpWaygcBk7dngXfmcIA6gRLIw=;
-  b=tJwBb3B5Dw+gO2oraGcqVxn4oJcJKT8H2GZiZ72ljo2aPY0NS2+sJLGc
-   H7922ESmKkVqPJgNHUfBH/uKMnBluNrzlPbDTBApl9+C4d7FeOlLW4IjP
-   uOAo95IufKfDrroG9s8rOT4CWRlpjiYmbbPPNO3j3pZjAMFN4PuvyQv0N
-   Y=;
-X-IronPort-AV: E=Sophos;i="5.95,173,1661817600"; 
-   d="scan'208";a="253833959"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-b48bc93b.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Oct 2022 17:44:59 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1d-b48bc93b.us-east-1.amazon.com (Postfix) with ESMTPS id 1C4C6C08B5;
-        Mon, 10 Oct 2022 17:44:56 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Mon, 10 Oct 2022 17:44:55 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.124) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Mon, 10 Oct 2022 17:44:49 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=O4+QADBZkaIFq0lDPLVSz22x8suuy3sLKpvJ7JaHySc=;
+        b=pjMaRbWTwZl/70leVH3XXmTHWUuSbFxXeW38k4ih91f/ezwk9ilGJFVj6tergDok4V
+         51UGhRGl//6gnu3QIplid3c5kTw2xW8rA0eIoiiWpBXFM5nwc9qppPdsF+CXMlzy7fRL
+         4fOT5JAgscRPKFPOAFmw0i9DtcxTaQbCpToXOe7FyTgZzUidDNqaak36wxRUstetbM8i
+         CK5t7H1QmjbBrUIpEQfxxhXaneIt89zNme8I0X9ktXqw13slhJQB0K/oPzTti8E3kpFZ
+         XDzG2kg2xr5w9TAInWQOLFFgxdzzU4ZyX+71ZnMacHVk7HPkUHAxl6lW2lvTTbtvUhJj
+         rR5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=O4+QADBZkaIFq0lDPLVSz22x8suuy3sLKpvJ7JaHySc=;
+        b=goPc1Pfal7CgrnrYDxtl/UjTzYhKO2NBjYjsSgTM8TppXkJPS9O/KtKOu62yAeNpO5
+         5JFWcJphl/irgA4M1nd1He9Juv3+GG0ZdQenA3hGfFF4opyhDcPCpLI7Q3fZ2/0L0k9j
+         +haj3cQ9PJo91CYWqYLaqMVitUy45u/mGVNJdGfMj9oWkq6AKoYDwTSOFEUjNSoCGJkD
+         yBFO2VK0GpwEpqs6yGhmqdpfc+hjhSAcCegb2AOKHJVYHUoNJBGvrR+5F28WZntFrh8w
+         2ocrEAmcRYal71tjigiuB5J/qEryFN2N2Ze7FA0xC8rPJe8s7VFcZ559pIULuvaq/wzH
+         4Trw==
+X-Gm-Message-State: ACrzQf2QJzb9/PGWjQlbHqGk1p5/rl9fiqsxIuEFoezRc2co77KJR5Yd
+        A0lvIg1EZRAVqL7r2ZF2yDs=
+X-Google-Smtp-Source: AMsMyM6CvzWcVTe2IsqK1Cvc3K+ivclMAcjjzwmwfiXT4yy25gTT+lMTgnkuFFhWvXm1Uc2XlbjJzw==
+X-Received: by 2002:a05:6402:14c9:b0:459:1a5b:6c47 with SMTP id f9-20020a05640214c900b004591a5b6c47mr19336861edx.426.1665424139953;
+        Mon, 10 Oct 2022 10:48:59 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id la14-20020a170907780e00b0078d4962a46bsm5620821ejc.190.2022.10.10.10.48.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Oct 2022 10:48:59 -0700 (PDT)
+Date:   Mon, 10 Oct 2022 20:48:56 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Colin Foster <colin.foster@in-advantage.com>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Lee Jones <lee@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Martin KaFai Lau <martin.lau@kernel.org>
-CC:     Craig Gallek <kraig@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v1 net 3/3] selftest: Add test for SO_INCOMING_CPU.
-Date:   Mon, 10 Oct 2022 10:43:51 -0700
-Message-ID: <20221010174351.11024-4-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221010174351.11024-1-kuniyu@amazon.com>
-References: <20221010174351.11024-1-kuniyu@amazon.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH v3 net-next 12/14] dt-bindings: net: dsa: ocelot: add
+ ocelot-ext documentation
+Message-ID: <20221010174856.nd3n4soxk7zbmcm7@skbuf>
+References: <20220926002928.2744638-13-colin.foster@in-advantage.com>
+ <ec63b5aa-3dec-3c27-e987-25e36b1632ba@linaro.org>
+ <YzzLCYHmTcrHbZcH@colin-ia-desktop>
+ <455e31be-dc87-39b3-c7fe-22384959c556@linaro.org>
+ <Yz2mSOXf68S16Xg/@colin-ia-desktop>
+ <28b4d9f9-f41a-deca-aa61-26fb65dcc873@linaro.org>
+ <20221008000014.vs2m3vei5la2r2nd@skbuf>
+ <c9ce1d83-d1ca-4640-bba2-724e18e6e56b@linaro.org>
+ <20221010130707.6z63hsl43ipd5run@skbuf>
+ <d27d7740-bf35-b8d4-d68c-bb133513fa19@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.124]
-X-ClientProxiedBy: EX13D22UWC002.ant.amazon.com (10.43.162.29) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d27d7740-bf35-b8d4-d68c-bb133513fa19@linaro.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some highly optimised applications use SO_INCOMING_CPU to make them
-efficient, but they didn't test if it's working correctly by getsockopt()
-to avoid slowing down.  As a result, no one noticed it had been broken
-for years, so it's a good time to add a test to catch future regression.
+On Mon, Oct 10, 2022 at 09:37:23AM -0400, Krzysztof Kozlowski wrote:
+> What stops you from doing that? What do you need from me?
 
-The test does
+To end the discussion on a constructive note, I think if I were Colin,
+I would do the following, in the following order, according to what was
+expressed as a constraint:
 
-  1) Create $(nproc) TCP listeners associated with each CPU.
+1. Reword the "driver" word out of mscc,vsc7514-switch.yaml and express
+   the description in terms of what the switch can do, not what the
+   driver can do.
 
-  2) Create 32 child sockets for each listener by calling
-     sched_setaffinity() for each CPU.
+2. Make qca8k.yaml have "$ref: dsa.yaml#". Remove "$ref: dsa-port.yaml#"
+   from the same schema.
 
-  3) Check if accept()ed sockets' sk_incoming_cpu matches
-     listener's one.
+3. Remove "- $ref: dsa-port.yaml#" from mediatek,mt7530.yaml. It doesn't
+   seem to be needed, since dsa.yaml also has this. We need this because
+   we want to make sure no one except dsa.yaml references dsa-port.yaml.
 
-If we see -EAGAIN, SO_INCOMING_CPU is broken.  However, we might not see
-any error even if broken; the kernel could miraculously distribute all SYN
-to correct listeners.  Not to let that happen, we must increase the number
-of clients and CPUs to some extent, so the test requires $(nproc) >= 2 and
-creates 64 sockets at least.
+4. Move the DSA-unspecific portion from dsa.yaml into a new
+   ethernet-switch.yaml. What remains in dsa.yaml is "dsa,member".
+   The dsa.yaml schema will have "$ref: ethernet-switch.yaml#" for the
+   "(ethernet-)switch" node, plus its custom additions.
 
-Test:
-  $ nproc
-  96
-  $ ./so_incoming_cpu
+5. Move the DSA-unspecific portion from dsa-port.yaml into a new
+   ethernet-switch-port.yaml. What remains in dsa-port.yaml is:
+   * ethernet phandle
+   * link phandle
+   * label property
+   * dsa-tag-protocol property
+   * the constraint that CPU and DSA ports must have phylink bindings
 
-Before the previous patch:
+6. The ethernet-switch.yaml will have "$ref: ethernet-switch-port.yaml#"
+   and "$ref: dsa-port.yaml". The dsa-port.yaml schema will *not* have
+   "$ref: ethernet-switch-port.yaml#", just its custom additions.
+   I'm not 100% on this, but I think there will be a problem if:
+   - dsa.yaml references ethernet-switch.yaml
+     - ethernet-switch.yaml references ethernet-switch-port.yaml
+   - dsa.yaml also references dsa-port.yaml
+     - dsa-port.yaml references ethernet-switch-port.yaml
+   because ethernet-switch-port.yaml will be referenced twice. Again,
+   not sure if this is a problem. If it isn't, things can be simpler,
+   just make dsa-port.yaml reference ethernet-switch-port.yaml, and skip
+   steps 2 and 3 since dsa-port.yaml containing just the DSA specifics
+   is no longer problematic.
 
-  # Starting 1 tests from 2 test cases.
-  #  RUN           so_incoming_cpu.test1 ...
-  # so_incoming_cpu.c:129:test1:Expected cpu (82) == i (0)
-  # test1: Test terminated by assertion
-  #          FAIL  so_incoming_cpu.test1
-  not ok 1 so_incoming_cpu.test1
-  # FAILED: 0 / 1 tests passed.
-  # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
+7. Make mscc,vsc7514-switch.yaml have "$ref: ethernet-switch.yaml#" for
+   the "mscc,vsc7514-switch.yaml" compatible string. This will eliminate
+   its own definitions for the generic properties: $nodename and
+   ethernet-ports (~45 lines of code if I'm not mistaken).
 
-After:
+8. Introduce the "mscc,vsc7512-switch" compatible string as part of
+   mscc,vsc7514-switch.yaml, but this will have "$ref: dsa.yaml#" (this
+   will have to be referenced by full path because they are in different
+   folders) instead of "ethernet-switch.yaml". Doing this will include
+   the common bindings for a switch, plus the DSA specifics.
 
-  # Starting 1 tests from 2 test cases.
-  #  RUN           so_incoming_cpu.test1 ...
-  # so_incoming_cpu.c:137:test1:SO_INCOMING_CPU is very likely to be working correctly with 3072 sockets.
-  #            OK  so_incoming_cpu.test1
-  ok 1 so_incoming_cpu.test1
-  # PASSED: 1 / 1 tests passed.
-  # Totals: pass:1 fail:0 xfail:0 xpass:0 skip:0 error:0
+9. Optional: rework ti,cpsw-switch.yaml, microchip,lan966x-switch.yaml,
+   microchip,sparx5-switch.yaml to have "$ref: ethernet-switch.yaml#"
+   which should reduce some duplication in existing schemas.
 
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
----
- tools/testing/selftests/net/.gitignore        |   1 +
- tools/testing/selftests/net/Makefile          |   1 +
- tools/testing/selftests/net/so_incoming_cpu.c | 148 ++++++++++++++++++
- 3 files changed, 150 insertions(+)
- create mode 100644 tools/testing/selftests/net/so_incoming_cpu.c
+10. Question for future support of VSC7514 in DSA mode: how do we decide
+    whether to $ref: ethernet-switch.yaml or dsa.yaml? If the parent MFD
+    node has a compatible string similar to "mscc,vsc7512", then use DSA,
+    otherwise use generic ethernet-switch?
 
-diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selftests/net/.gitignore
-index 3d7adee7a3e6..ff8807cc9c2e 100644
---- a/tools/testing/selftests/net/.gitignore
-+++ b/tools/testing/selftests/net/.gitignore
-@@ -25,6 +25,7 @@ rxtimestamp
- sk_bind_sendto_listen
- sk_connect_zero_addr
- socket
-+so_incoming_cpu
- so_netns_cookie
- so_txtime
- stress_reuseport_listen
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 2a6b0bc648c4..ba57e7e7dc86 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -70,6 +70,7 @@ TEST_PROGS += io_uring_zerocopy_tx.sh
- TEST_GEN_FILES += bind_bhash
- TEST_GEN_PROGS += sk_bind_sendto_listen
- TEST_GEN_PROGS += sk_connect_zero_addr
-+TEST_GEN_PROGS += so_incoming_cpu
- 
- TEST_FILES := settings
- 
-diff --git a/tools/testing/selftests/net/so_incoming_cpu.c b/tools/testing/selftests/net/so_incoming_cpu.c
-new file mode 100644
-index 000000000000..0ee0f2e393eb
---- /dev/null
-+++ b/tools/testing/selftests/net/so_incoming_cpu.c
-@@ -0,0 +1,148 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright Amazon.com Inc. or its affiliates. */
-+#define _GNU_SOURCE
-+#include <sched.h>
-+
-+#include <netinet/in.h>
-+#include <sys/socket.h>
-+#include <sys/sysinfo.h>
-+
-+#include "../kselftest_harness.h"
-+
-+#define CLIENT_PER_SERVER	32 /* More sockets, more reliable */
-+#define NR_SERVER		self->nproc
-+#define NR_CLIENT		(CLIENT_PER_SERVER * NR_SERVER)
-+
-+FIXTURE(so_incoming_cpu)
-+{
-+	int nproc;
-+	int *servers;
-+	union {
-+		struct sockaddr addr;
-+		struct sockaddr_in in_addr;
-+	};
-+	socklen_t addrlen;
-+};
-+
-+FIXTURE_SETUP(so_incoming_cpu)
-+{
-+	self->nproc = get_nprocs();
-+	ASSERT_LE(2, self->nproc);
-+
-+	self->servers = malloc(sizeof(int) * NR_SERVER);
-+	ASSERT_NE(self->servers, NULL);
-+
-+	self->in_addr.sin_family = AF_INET;
-+	self->in_addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-+	self->in_addr.sin_port = htons(0);
-+	self->addrlen = sizeof(struct sockaddr_in);
-+}
-+
-+FIXTURE_TEARDOWN(so_incoming_cpu)
-+{
-+	int i;
-+
-+	for (i = 0; i < NR_SERVER; i++)
-+		close(self->servers[i]);
-+
-+	free(self->servers);
-+}
-+
-+void create_servers(struct __test_metadata *_metadata,
-+		    FIXTURE_DATA(so_incoming_cpu) *self)
-+{
-+	int i, fd, ret;
-+
-+	for (i = 0; i < NR_SERVER; i++) {
-+		fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
-+		ASSERT_NE(fd, -1);
-+
-+		ret = setsockopt(fd, SOL_SOCKET, SO_INCOMING_CPU, &i, sizeof(int));
-+		ASSERT_EQ(ret, 0);
-+
-+		ret = setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &(int){1}, sizeof(int));
-+		ASSERT_EQ(ret, 0);
-+
-+		ret = bind(fd, &self->addr, self->addrlen);
-+		ASSERT_EQ(ret, 0);
-+
-+		if (i == 0) {
-+			ret = getsockname(fd, &self->addr, &self->addrlen);
-+			ASSERT_EQ(ret, 0);
-+		}
-+
-+		/* We don't use CLIENT_PER_SERVER here not to block
-+		 * this test at connect() if SO_INCOMING_CPU is broken.
-+		 */
-+		ret = listen(fd, NR_CLIENT);
-+		ASSERT_EQ(ret, 0);
-+
-+		self->servers[i] = fd;
-+	}
-+}
-+
-+void create_clients(struct __test_metadata *_metadata,
-+		    FIXTURE_DATA(so_incoming_cpu) *self)
-+{
-+	cpu_set_t cpu_set;
-+	int i, j, fd, ret;
-+
-+	for (i = 0; i < NR_SERVER; i++) {
-+		CPU_ZERO(&cpu_set);
-+
-+		CPU_SET(i, &cpu_set);
-+		ASSERT_EQ(CPU_COUNT(&cpu_set), 1);
-+		ASSERT_NE(CPU_ISSET(i, &cpu_set), 0);
-+
-+		/* Make sure SYN will be processed on the i-th CPU
-+		 * and finally distributed to the i-th listener.
-+		 */
-+		sched_setaffinity(0, sizeof(cpu_set), &cpu_set);
-+		ASSERT_EQ(ret, 0);
-+
-+		for (j = 0; j < CLIENT_PER_SERVER; j++) {
-+			fd  = socket(AF_INET, SOCK_STREAM, 0);
-+			ASSERT_NE(fd, -1);
-+
-+			ret = connect(fd, &self->addr, self->addrlen);
-+			ASSERT_EQ(ret, 0);
-+
-+			close(fd);
-+		}
-+	}
-+}
-+
-+void verify_incoming_cpu(struct __test_metadata *_metadata,
-+			 FIXTURE_DATA(so_incoming_cpu) *self)
-+{
-+	int i, j, fd, cpu, ret, total = 0;
-+	socklen_t len = sizeof(int);
-+
-+	for (i = 0; i < NR_SERVER; i++) {
-+		for (j = 0; j < CLIENT_PER_SERVER; j++) {
-+			/* If we see -EAGAIN here, SO_INCOMING_CPU is broken */
-+			fd = accept(self->servers[i], &self->addr, &self->addrlen);
-+			ASSERT_NE(fd, -1);
-+
-+			ret = getsockopt(fd, SOL_SOCKET, SO_INCOMING_CPU, &cpu, &len);
-+			ASSERT_EQ(ret, 0);
-+			ASSERT_EQ(cpu, i);
-+
-+			close(fd);
-+			total++;
-+		}
-+	}
-+
-+	ASSERT_EQ(total, NR_CLIENT);
-+	TH_LOG("SO_INCOMING_CPU is very likely to be "
-+	       "working correctly with %d sockets.", total);
-+}
-+
-+TEST_F(so_incoming_cpu, test1)
-+{
-+	create_servers(_metadata, self);
-+	create_clients(_metadata, self);
-+	verify_incoming_cpu(_metadata, self);
-+}
-+
-+TEST_HARNESS_MAIN
--- 
-2.30.2
-
+Colin, how does this sound?
