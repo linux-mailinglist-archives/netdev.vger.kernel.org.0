@@ -2,83 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A9225F9732
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 05:41:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E79E5F9739
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 05:45:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230252AbiJJDkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 23:40:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51334 "EHLO
+        id S230092AbiJJDpr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 23:45:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229607AbiJJDkM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 23:40:12 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0AF01208A
-        for <netdev@vger.kernel.org>; Sun,  9 Oct 2022 20:40:08 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Mm4Nx33w4zrSL2;
-        Mon, 10 Oct 2022 11:37:37 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 10 Oct 2022 11:40:06 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Mon, 10 Oct
- 2022 11:40:06 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     <sbhatta@marvell.com>, <sgoutham@marvell.com>,
-        <davem@davemloft.net>
-Subject: [PATCH net] octeontx2-pf: mcs: fix possible memory leak in otx2_probe()
-Date:   Mon, 10 Oct 2022 11:39:45 +0800
-Message-ID: <20221010033945.2067861-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S230246AbiJJDpp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 23:45:45 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 518003A49E
+        for <netdev@vger.kernel.org>; Sun,  9 Oct 2022 20:45:44 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id r18so9281627pgr.12
+        for <netdev@vger.kernel.org>; Sun, 09 Oct 2022 20:45:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=gPbK7t2wYBd6+4gCzos9wZj6XiiOFZnoiVmrg6V+/4Y=;
+        b=ZDUglpzj2A00wAAmTAe2YfVdA+Yh32ACD64pJ8gdoLpoNEnu5Nhn6Fp2F1QJEb4Sa1
+         u0n5HeaHXVarTBMLEoTTsVEtuctoNpd/LRbBirgqWt0y6zUts+y5ivF5ipqAxFNcXLOQ
+         TVsGgliYfPvvKiO9VNVjPKCjRPLvBYDA0f+mcFcmTNY03tOa6W2zcN6VAPynEcasNqu0
+         VRAkLDdtypaxTbNvHgcKRQGLi6ZBQeUMDEKWtaTv8SoGdRYTDvgrwHgg+xhbuzF6tI0h
+         +/AolTYyDTHFmr9CnMHKGCamr9WJVIXUfxVJhYyV9cxf5THbyZaZJlk/Msa86RHAe2cK
+         hemA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=gPbK7t2wYBd6+4gCzos9wZj6XiiOFZnoiVmrg6V+/4Y=;
+        b=2kfeof7qQVt6+lLwJomPtyQz8ILFDZza+5vB73FBaVXJPF26FisrpM6jvfu3AlFLil
+         elno7+nJNV6sbIxMtcx0iD4JnrzM5/UTUmaChFJkjg1H260DlB1K7w4j6h4vbX8dNVW1
+         kkgApWENJAxRCCDZjguPsYuT4/Q/AE4p8f3JvVWDUrKkInjNcTSzvh/u39VA6LPaNK5I
+         BzwegigUeqXxQ8tpyJ5kMLeEbL4/16t5R8ygHptIgVtW6ZARIylJSKGkMcARy0kiCSVz
+         inJSWTjmeYL5ckomf9IFe/rRZezHQwzVpPRUSBXoKCuW/GbR7Orj6RQvrQko85q9bPwS
+         t5SA==
+X-Gm-Message-State: ACrzQf0KZJKWgEtR8DnRMZQUqmTHiQ/sVy2hjCXVYKCA6kA/2I7tO78s
+        lQwQenspy1Nk4JJnrWWAwU0=
+X-Google-Smtp-Source: AMsMyM4j/kOkWmAh5vKtOtpqXl2pI58L08qZer8yI7mgoD0UHCI8tw2zMbcK0yiH1MmfdozxhGfo7A==
+X-Received: by 2002:a63:1d1:0:b0:43a:348b:63fd with SMTP id 200-20020a6301d1000000b0043a348b63fdmr15572392pgb.52.1665373543745;
+        Sun, 09 Oct 2022 20:45:43 -0700 (PDT)
+Received: from ?IPV6:2620:10d:c085:2103:475:ef07:bb37:8b7b? ([2620:10d:c090:400::5:641])
+        by smtp.gmail.com with ESMTPSA id x66-20020a623145000000b005360da6b26bsm5661040pfx.159.2022.10.09.20.45.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 09 Oct 2022 20:45:43 -0700 (PDT)
+Message-ID: <5da0d110-73f2-3210-dc0c-ee024267c4ad@gmail.com>
+Date:   Sun, 9 Oct 2022 20:45:41 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.3.2
+Subject: Re: [[PATCH net]] ptp: ocp: remove symlink for second GNSS
+To:     Vadim Fedorenko <vfedorenko@novek.ru>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     netdev@vger.kernel.org, Vadim Fedorenko <vadfed@fb.com>
+References: <20221010012934.25639-1-vfedorenko@novek.ru>
+Content-Language: en-US
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+In-Reply-To: <20221010012934.25639-1-vfedorenko@novek.ru>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In error path after calling cn10k_mcs_init(), cn10k_mcs_free() need
-be called to avoid memory leak.
+On 10/9/22 6:29 PM, Vadim Fedorenko wrote:
+> Destroy code doesn't remove symlink for ttyGNSS2 device introduced
+> earlier. Add cleanup code.
+> 
+> Fixes: 71d7e0850476 ("ptp: ocp: Add second GNSS device")
+> Signed-off-by: Vadim Fedorenko <vadfed@fb.com>
 
-Fixes: c54ffc73601c ("octeontx2-pf: mcs: Introduce MACSEC hardware offloading")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Thanks, Vadim!
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 5803d7f9137c..892ca88e0cf4 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -2810,7 +2810,7 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	err = register_netdev(netdev);
- 	if (err) {
- 		dev_err(dev, "Failed to register netdevice\n");
--		goto err_del_mcam_entries;
-+		goto err_mcs_free;
- 	}
- 
- 	err = otx2_wq_init(pf);
-@@ -2849,6 +2849,8 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	otx2_mcam_flow_del(pf);
- err_unreg_netdev:
- 	unregister_netdev(netdev);
-+err_mcs_free:
-+	cn10k_mcs_free(pf);
- err_del_mcam_entries:
- 	otx2_mcam_flow_del(pf);
- err_ptp_destroy:
--- 
-2.25.1
+Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+
+> ---
+>   drivers/ptp/ptp_ocp.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
+> index d36c3f597f77..a48d9b7d2921 100644
+> --- a/drivers/ptp/ptp_ocp.c
+> +++ b/drivers/ptp/ptp_ocp.c
+> @@ -3657,6 +3657,7 @@ ptp_ocp_detach_sysfs(struct ptp_ocp *bp)
+>   	struct device *dev = &bp->dev;
+>   
+>   	sysfs_remove_link(&dev->kobj, "ttyGNSS");
+> +	sysfs_remove_link(&dev->kobj, "ttyGNSS2");
+>   	sysfs_remove_link(&dev->kobj, "ttyMAC");
+>   	sysfs_remove_link(&dev->kobj, "ptp");
+>   	sysfs_remove_link(&dev->kobj, "pps");
 
