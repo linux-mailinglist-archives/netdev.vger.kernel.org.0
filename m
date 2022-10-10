@@ -2,73 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E95F5FA22C
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 18:52:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A8F05FA238
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 18:54:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229682AbiJJQwU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Oct 2022 12:52:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60622 "EHLO
+        id S229841AbiJJQyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Oct 2022 12:54:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229644AbiJJQwS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 12:52:18 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 420E04B49F;
-        Mon, 10 Oct 2022 09:52:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=1QxMbzayslkAE1FFMCUkmewOyzbrMACaLMR3Ux2vqSU=; b=MUwKN4rNxmFOwMVQ2P0LdFmQh0
-        CdCPVdGAJpee59Ei8wFHGD6UBuWKFMiZ2VrJnBPeURURDuPJVcobicUIztKWitAUJrmnzm+tIm9BS
-        NZzLWpO1Enqpdk7IDVTjZtB1Dx+pmXKYV5t1u08CMZTKrBGAyh5E6QJ4cF3GGLh08UfY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ohw0X-001dZw-IC; Mon, 10 Oct 2022 18:52:01 +0200
-Date:   Mon, 10 Oct 2022 18:52:01 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Soha Jin <soha@lohu.info>, Heiner Kallweit <hkallweit1@gmail.com>,
+        with ESMTP id S229731AbiJJQyk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 12:54:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 635012AE4;
+        Mon, 10 Oct 2022 09:54:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF72660EF2;
+        Mon, 10 Oct 2022 16:54:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A1FEC433D6;
+        Mon, 10 Oct 2022 16:54:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1665420875;
+        bh=qPWTNZGEFYJEvDdkwFCY39pduTasoX2MPE4faZjFyb4=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=t5l+1qwolo90SbopV9MI+P+M+f7fq6BmW4pX1FJAWtWDWbvPCt430v6pyP3RHQ/Wt
+         WXhBOzZPLGHezZoSxWW4wCcuOMQBy/ShYXEQgQTtDl623KuQO+vtAURfkwzqUtpiK9
+         bJ6f/pKi8qgT3k4u5nfQHdOy6I3521qnJ7S1owY3e3ahcYzRVCEtlpfAN/sAN3Gr4B
+         RK07rqwIMD3qkovObsKN2CVTLqEsNB1seI3uCb5Vx0EyRHmFYOhb9YU01UTSyHS8uL
+         c6yWO8xfCroHNMUKiyn8aM5LpNkk/T4m1iJnGISl1nzNP1cfBm+adbZgIieTkgtDiu
+         mQBMoOT4prXLQ==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-wireless@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: mdiobus: add fwnode_phy_is_fixed_link()
-Message-ID: <Y0RNsZUnV0GJqIlO@lunn.ch>
-References: <20221009162006.1289-1-soha@lohu.info>
- <Y0Q0P4MlTXmzkJSG@lunn.ch>
- <Y0RLm0qU8MwGt40d@shell.armlinux.org.uk>
+        Paolo Abeni <pabeni@redhat.com>, ath11k@lists.infradead.org,
+        regressions@lists.linux.dev, lkft-triage@lists.linaro.org
+Subject: Re: drivers/net/wireless/ath/ath11k/mac.c:2238:29: warning: 'ath11k_peer_assoc_h_he_limit' reading 16 bytes from a region of size 0
+References: <CA+G9fYsZ_qypa=jHY_dJ=tqX4515+qrV9n2SWXVDHve826nF7Q@mail.gmail.com>
+Date:   Mon, 10 Oct 2022 19:54:29 +0300
+In-Reply-To: <CA+G9fYsZ_qypa=jHY_dJ=tqX4515+qrV9n2SWXVDHve826nF7Q@mail.gmail.com>
+        (Naresh Kamboju's message of "Wed, 21 Sep 2022 16:05:39 +0530")
+Message-ID: <87ilkrpqka.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y0RLm0qU8MwGt40d@shell.armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 10, 2022 at 05:43:07PM +0100, Russell King (Oracle) wrote:
-> On Mon, Oct 10, 2022 at 05:03:27PM +0200, Andrew Lunn wrote:
-> > On Mon, Oct 10, 2022 at 12:20:06AM +0800, Soha Jin wrote:
-> > > A helper function to check if PHY is fixed link with fwnode properties.
-> > > This is similar to of_phy_is_fixed_link.
-> > 
-> > You need to include a user of this new function.
-> > 
-> > Also, not that ACPI only defines the 'new binding' for fixed-link.  If
-> > this is being called on a device which is ACPI underneath, it should
-> > only return true for the 'new binding', not the old binding.
-> 
-> Do we want to support the "managed" property in the fwnode variant,
-> or persuade people to switch to phylink if they want that?
++ arnd
 
-managed has been documented in
-Documentation/firmware-guide/acpi/dsd/phy.rst so i think we need to
-support it.
+Naresh Kamboju <naresh.kamboju@linaro.org> writes:
 
-	Andrew
+> Following build warnings noticed while building arm64 on Linux next-20220921
+>
+> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+>
+> In function 'ath11k_peer_assoc_h_he',
+>     inlined from 'ath11k_peer_assoc_prepare' at
+> drivers/net/wireless/ath/ath11k/mac.c:2662:2:
+> drivers/net/wireless/ath/ath11k/mac.c:2238:29: warning:
+> 'ath11k_peer_assoc_h_he_limit' reading 16 bytes from a region of size
+> 0 [-Wstringop-overread]
+>  2238 |                         v = ath11k_peer_assoc_h_he_limit(v,
+> he_mcs_mask);
+>       |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/wireless/ath/ath11k/mac.c: In function 'ath11k_peer_assoc_prepare':
+> drivers/net/wireless/ath/ath11k/mac.c:2238:29: note: referencing
+> argument 2 of type 'const u16 *' {aka 'const short unsigned int *'}
+> drivers/net/wireless/ath/ath11k/mac.c:2019:12: note: in a call to
+> function 'ath11k_peer_assoc_h_he_limit'
+>  2019 | static u16 ath11k_peer_assoc_h_he_limit(u16 tx_mcs_set,
+>       |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> In function 'ath11k_peer_assoc_h_he',
+>     inlined from 'ath11k_peer_assoc_prepare' at
+> drivers/net/wireless/ath/ath11k/mac.c:2662:2:
+> drivers/net/wireless/ath/ath11k/mac.c:2251:21: warning:
+> 'ath11k_peer_assoc_h_he_limit' reading 16 bytes from a region of size
+> 0 [-Wstringop-overread]
+>  2251 |                 v = ath11k_peer_assoc_h_he_limit(v, he_mcs_mask);
+>       |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/wireless/ath/ath11k/mac.c: In function 'ath11k_peer_assoc_prepare':
+> drivers/net/wireless/ath/ath11k/mac.c:2251:21: note: referencing
+> argument 2 of type 'const u16 *' {aka 'const short unsigned int *'}
+> drivers/net/wireless/ath/ath11k/mac.c:2019:12: note: in a call to
+> function 'ath11k_peer_assoc_h_he_limit'
+>  2019 | static u16 ath11k_peer_assoc_h_he_limit(u16 tx_mcs_set,
+>       |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> In function 'ath11k_peer_assoc_h_he',
+>     inlined from 'ath11k_peer_assoc_prepare' at
+> drivers/net/wireless/ath/ath11k/mac.c:2662:2:
+> drivers/net/wireless/ath/ath11k/mac.c:2264:21: warning:
+> 'ath11k_peer_assoc_h_he_limit' reading 16 bytes from a region of size
+> 0 [-Wstringop-overread]
+>  2264 |                 v = ath11k_peer_assoc_h_he_limit(v, he_mcs_mask);
+>       |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/wireless/ath/ath11k/mac.c: In function 'ath11k_peer_assoc_prepare':
+> drivers/net/wireless/ath/ath11k/mac.c:2264:21: note: referencing
+> argument 2 of type 'const u16 *' {aka 'const short unsigned int *'}
+> drivers/net/wireless/ath/ath11k/mac.c:2019:12: note: in a call to
+> function 'ath11k_peer_assoc_h_he_limit'
+>  2019 | static u16 ath11k_peer_assoc_h_he_limit(u16 tx_mcs_set,
+>       |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> In function 'ath11k_peer_assoc_h_he',
+>     inlined from 'ath11k_peer_assoc_prepare' at
+> drivers/net/wireless/ath/ath11k/mac.c:2662:2:
+> drivers/net/wireless/ath/ath11k/mac.c:2264:21: warning:
+> 'ath11k_peer_assoc_h_he_limit' reading 16 bytes from a region of size
+> 0 [-Wstringop-overread]
+>  2264 |                 v = ath11k_peer_assoc_h_he_limit(v, he_mcs_mask);
+>       |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/wireless/ath/ath11k/mac.c: In function 'ath11k_peer_assoc_prepare':
+> drivers/net/wireless/ath/ath11k/mac.c:2264:21: note: referencing
+> argument 2 of type 'const u16 *' {aka 'const short unsigned int *'}
+> drivers/net/wireless/ath/ath11k/mac.c:2019:12: note: in a call to
+> function 'ath11k_peer_assoc_h_he_limit'
+>  2019 | static u16 ath11k_peer_assoc_h_he_limit(u16 tx_mcs_set,
+>       |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> In function 'ath11k_peer_assoc_h_he',
+>     inlined from 'ath11k_peer_assoc_prepare' at
+> drivers/net/wireless/ath/ath11k/mac.c:2662:2:
+> drivers/net/wireless/ath/ath11k/mac.c:2264:21: warning:
+> 'ath11k_peer_assoc_h_he_limit' reading 16 bytes from a region of size
+> 0 [-Wstringop-overread]
+>  2264 |                 v = ath11k_peer_assoc_h_he_limit(v, he_mcs_mask);
+>       |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/wireless/ath/ath11k/mac.c: In function 'ath11k_peer_assoc_prepare':
+> drivers/net/wireless/ath/ath11k/mac.c:2264:21: note: referencing
+> argument 2 of type 'const u16 *' {aka 'const short unsigned int *'}
+> drivers/net/wireless/ath/ath11k/mac.c:2019:12: note: in a call to
+> function 'ath11k_peer_assoc_h_he_limit'
+>  2019 | static u16 ath11k_peer_assoc_h_he_limit(u16 tx_mcs_set,
+>       |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> In function 'ath11k_peer_assoc_h_he',
+>     inlined from 'ath11k_peer_assoc_prepare' at
+> drivers/net/wireless/ath/ath11k/mac.c:2662:2:
+> drivers/net/wireless/ath/ath11k/mac.c:2251:21: warning:
+> 'ath11k_peer_assoc_h_he_limit' reading 16 bytes from a region of size
+> 0 [-Wstringop-overread]
+>  2251 |                 v = ath11k_peer_assoc_h_he_limit(v, he_mcs_mask);
+>       |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/wireless/ath/ath11k/mac.c: In function 'ath11k_peer_assoc_prepare':
+> drivers/net/wireless/ath/ath11k/mac.c:2251:21: note: referencing
+> argument 2 of type 'const u16 *' {aka 'const short unsigned int *'}
+> drivers/net/wireless/ath/ath11k/mac.c:2019:12: note: in a call to
+> function 'ath11k_peer_assoc_h_he_limit'
+>  2019 | static u16 ath11k_peer_assoc_h_he_limit(u16 tx_mcs_set,
+>       |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>
+> Build log: https://builds.tuxbuild.com/2F4W7nZHNx3T88RB0gaCZ9hBX6c/
+
+Thanks, I was able to reproduce it now and submitted a patch:
+
+https://patchwork.kernel.org/project/linux-wireless/patch/20221010160638.20152-1-kvalo@kernel.org/
+
+But it's strange that nobody else (myself included) didn't see this
+earlier. Nor later for that matter, this is the only report I got about
+this. Arnd, any ideas what could cause this only to happen on GCC 11?
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
