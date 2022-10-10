@@ -2,132 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89B605F9D45
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 13:04:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AF0C5F9E01
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 13:53:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231720AbiJJLEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Oct 2022 07:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42300 "EHLO
+        id S231641AbiJJLxn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Oct 2022 07:53:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231218AbiJJLEY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 07:04:24 -0400
-Received: from mail-il1-f173.google.com (mail-il1-f173.google.com [209.85.166.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC92EDFAC;
-        Mon, 10 Oct 2022 04:04:23 -0700 (PDT)
-Received: by mail-il1-f173.google.com with SMTP id a2so5458627iln.13;
-        Mon, 10 Oct 2022 04:04:23 -0700 (PDT)
+        with ESMTP id S231559AbiJJLxl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 07:53:41 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BC8E696CE;
+        Mon, 10 Oct 2022 04:53:40 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id o21so24271706ejm.11;
+        Mon, 10 Oct 2022 04:53:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=+kWrxkps9B1r/XcbDCedzmZ8kw3EWdGClT/ETHdPLsc=;
+        b=CDQmS9pao6pGb3OiG/CbbyjZsDu9VQepW4QO/tfUO6hLIHc7mF5+OW7ZbADA2ckjRB
+         16jhuL8K9PEc65ADOOv/D+FdzZ/QcbS+PXFKAdek+J1aQh04P9PubVJyySamrOd4v6ql
+         cekl/zL/vdFDegcqMRAyp24WzSUd6ozcHuJLGDXoHVH+ClmkIRZRpuYPwy+cKuBDSoTc
+         GivWfDLW6aZzwy1JKWi1hOgm1woPf/FLwwrvhlNnZSaoaevMZXEVX/Ta49Tjtz448Zwc
+         Jw2PpXqgbd8WDrS7UoynOyqFWr9wpozW9cEW8Y8t7zErbSZat2TmRfirE917WN91qwke
+         0haA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=jTf+OgVEekYOCCjz9fIdROEP9i0Kj5DJI/WN/pZXFWI=;
-        b=xl7ob7p5QUqrTsR9iZgnp7cwBfQ1Kh5lUKTM54d9lByeHUv4ApK8muUz0GauJa3CUb
-         2KiqKVDPpCTW0dS5ImeMNFxZ6v2xnjqHJWgcvWT/NK1vjb4rZnICIU5JE1dlACzQhDEZ
-         8Ot3cIMM8wZ+B1ruilgzuscpjwbyWmthWHRwQ9Prd2HL1iRV5mgivjiq/TeOKzGL6iSG
-         jI2FVp1qquwy2rogTCuF+ys6VFRQ12Kt7QSBD5C02exVfAuAOKevRgiHg3EksBXw1DZN
-         RzHGZqIfr5axdbJ6t9fh+CaUy6ahlOb12WdFWSToa7p/h/rcecSzW53ZmFjyyx017pQ8
-         NOeQ==
-X-Gm-Message-State: ACrzQf2RkQTC95VO3IeQiaJgEvEGYf91uZKGY8SREqLuaMW9b7h+E/9b
-        JlBIV7BbBSqfpZW2HLg0e9jqXq/Ca8MscjT79UMMfOtDeq4=
-X-Google-Smtp-Source: AMsMyM7hT0YDR/uglyCdWH6aETH2/GuH+utE6/mMV8y+p4EyTtqvfUbny4QcJnz96xW9a4BYt0mUhyZ30ms5hSVjY3I=
-X-Received: by 2002:a05:6e02:1d03:b0:2f9:d1e5:fe16 with SMTP id
- i3-20020a056e021d0300b002f9d1e5fe16mr8776433ila.60.1665399863021; Mon, 10 Oct
- 2022 04:04:23 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+kWrxkps9B1r/XcbDCedzmZ8kw3EWdGClT/ETHdPLsc=;
+        b=V5rdcbB2ub+Cqkvf3h6CM3H7eiV//RBQQ4OuefjDV5IyMlrojBQMrK7nTL5Obudlub
+         K8ZMvuORiXRQnIqtxUVBWYbFvlcej7EXbeZZUWuodbqbRof1Bm5RduKOms29Dat0ddfu
+         muLxcsNIGGbMbWS0btSwc+EXowTmV6yG5taaztfBev13eZOcEypsvCV25nF5fqXW9IXG
+         c9JfOcc10psEFvN1RVys86KZqFff9B7ZJwaEMBAZXFGzBdujGMi+Lzd03QXF6cGw8Mo0
+         OPygW6mB1BUJm74Z7Dr6Ju0Q2mYX0HjD2CFYANPLEu3oyeDnqZI7EroTwSNflHphtnas
+         BCgg==
+X-Gm-Message-State: ACrzQf0n6I8ZKCAd7Laph7RHVvAW2H1GW4DlhsFmCRdbCIn6Lf96eD4U
+        krPCsXFpTAGIKH62ey5LWD0=
+X-Google-Smtp-Source: AMsMyM46ZJx7yl8ObIeDqSqu6ChdWomxR5YvfNZvborP4VE3vnEiLspCZs0MO3uXLT7Fw6LEEFUO7A==
+X-Received: by 2002:a17:907:6d8c:b0:78d:b65a:ab12 with SMTP id sb12-20020a1709076d8c00b0078db65aab12mr4022713ejc.573.1665402818752;
+        Mon, 10 Oct 2022 04:53:38 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id k8-20020a17090632c800b007030c97ae62sm5238097ejk.191.2022.10.10.04.53.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Oct 2022 04:53:37 -0700 (PDT)
+Date:   Mon, 10 Oct 2022 14:53:35 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Marcus Carlberg <marcus.carlberg@axis.com>,
+        Jakub Kicinski <kuba@kernel.org>, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.19 15/73] net: dsa: mv88e6xxx: Allow external
+ SMI if serial
+Message-ID: <20221010115335.wt2dpm4dnrxn25ln@skbuf>
+References: <20221009221453.1216158-1-sashal@kernel.org>
+ <20221009221453.1216158-15-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20211103164428.692722-1-mailhol.vincent@wanadoo.fr>
- <20211103164428.692722-4-mailhol.vincent@wanadoo.fr> <20221007074456.l2sh3s2siuv2a74m@pengutronix.de>
-In-Reply-To: <20221007074456.l2sh3s2siuv2a74m@pengutronix.de>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Mon, 10 Oct 2022 20:04:12 +0900
-Message-ID: <CAMZ6Rq+qD=bi8MKXvjJuH1Bs=nnuyrG1F1ZGm_0U+A_GQDhDSw@mail.gmail.com>
-Subject: Re: [PATCH iproute2-next 5.16 v6 3/5] iplink_can: use PRINT_ANY to
- factorize code and fix signedness
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, linux-can@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221009221453.1216158-15-sashal@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri. 7 Oct. 2022 at 16:56, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> On 04.11.2021 01:44:26, Vincent Mailhol wrote:
-> > Current implementation heavily relies on some "if (is_json_context())"
-> > switches to decide the context and then does some print_*(PRINT_JSON,
-> > ...) when in json context and some fprintf(...) else.
-> >
-> > Furthermore, current implementation uses either print_int() or the
-> > conversion specifier %d to print unsigned integers.
-> >
-> > This patch factorizes each pairs of print_*(PRINT_JSON, ...) and
-> > fprintf() into a single print_*(PRINT_ANY, ...) call. While doing this
-> > replacement, it uses proper unsigned function print_uint() as well as
-> > the conversion specifier %u when the parameter is an unsigned integer.
-> >
-> > Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
->
-> [...]
->
-> >       if (tb[IFLA_CAN_TERMINATION_CONST] && tb[IFLA_CAN_TERMINATION]) {
-> > @@ -538,29 +483,21 @@ static void can_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
-> >                       sizeof(*trm_const);
-> >               int i;
-> >
-> > -             if (is_json_context()) {
-> > -                     print_hu(PRINT_JSON, "termination", NULL, *trm);
-> > -                     open_json_array(PRINT_JSON, "termination_const");
-> > -                     for (i = 0; i < trm_cnt; ++i)
-> > -                             print_hu(PRINT_JSON, NULL, NULL, trm_const[i]);
-> > -                     close_json_array(PRINT_JSON, NULL);
-> > -             } else {
-> > -                     fprintf(f, "\n    termination %hu [ ", *trm);
-> > -
-> > -                     for (i = 0; i < trm_cnt - 1; ++i)
-> > -                             fprintf(f, "%hu, ", trm_const[i]);
-> > -
-> > -                     fprintf(f, "%hu ]", trm_const[i]);
->                                         ^
-> > -             }
-> > +             can_print_nl_indent();
-> > +             print_hu(PRINT_ANY, "termination", " termination %hu [ ", *trm);
->
-> Always '['
->
-> > +             open_json_array(PRINT_JSON, "termination_const");
-> > +             for (i = 0; i < trm_cnt; ++i)
-> > +                     print_hu(PRINT_ANY, NULL,
-> > +                              i < trm_cnt - 1 ? "%hu, " : "%hu",
-> > +                              trm_const[i]);
-> > +             close_json_array(PRINT_JSON, " ]");
->
-> ']' only for JSON.
+On Sun, Oct 09, 2022 at 06:13:53PM -0400, Sasha Levin wrote:
+> From: Marcus Carlberg <marcus.carlberg@axis.com>
+> 
+> [ Upstream commit 8532c60efcc5b7b382006129b77aee2c19c43f15 ]
+> 
+> p0_mode set to one of the supported serial mode should not prevent
+> configuring the external SMI interface in
+> mv88e6xxx_g2_scratch_gpio_set_smi. The current masking of the p0_mode
+> only checks the first 2 bits. This results in switches supporting
+> serial mode cannot setup external SMI on certain serial modes
+> (Ex: 1000BASE-X and SGMII).
+> 
+> Extend the mask of the p0_mode to include the reduced modes and
+> serial modes as allowed modes for the external SMI interface.
+> 
+> Signed-off-by: Marcus Carlberg <marcus.carlberg@axis.com>
+> Link: https://lore.kernel.org/r/20220824093706.19049-1-marcus.carlberg@axis.com
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
 
-Thanks for the report
-
-Actually, the second argument of close_json_array() is what should be
-printed for the normal (non-json) output. Here it is correctly set to
-" ]". *However*, this parameter gets ignored because the first
-argument is PRINT_JSON instead of PRINT_ANY.
-
-This is a lack of testing on my side (I do not have hardware which
-supports the switchable termination resistors). After investigation,
-the bitrate and dbitrate also have the same issue.
-
-This is fixed in
-https://lore.kernel.org/linux-can/20221010110118.66116-1-mailhol.vincent@wanadoo.fr/
-
-> >       }
->
-> I just noticed that the non JSON output for termination is missing the
-> closing ']'. See the output in the documentation update by Daniel:
->
-> | https://lore.kernel.org/all/4514353.LvFx2qVVIh@daniel6430
-
-Yours sincerely,
-Vincent Mailhol
+Not needed for stable kernels, please drop, thanks.
