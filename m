@@ -2,92 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A9D65FA6F8
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 23:27:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E21365FA704
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 23:34:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229494AbiJJV1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Oct 2022 17:27:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48168 "EHLO
+        id S229506AbiJJVeH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Oct 2022 17:34:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiJJV1p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 17:27:45 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E493D79EF6
-        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 14:27:43 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 9958422DDE
-        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 21:27:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1665437262; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
-         mime-version:mime-version:content-type:content-type;
-        bh=2w0zntAfFVfZ5RYUF200Jo5dgm4NoiVUgM6/4ozEB20=;
-        b=GhusWm7EN1Q+wpXxZ36A5M1mLsEilbRNPR0WEk9eiuwlORedFy7gexbSZvyaDhGhCKD7GW
-        5FYWHZ7wiFKM8MtwmSY1NRTsbIqYshNnz5jI6gB2dXk4JDkDDVgg2kz31UDqpFdxkfiFp1
-        hIJk9jzD0bFawDFdtX96Gd24ptc/tq0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1665437262;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
-         mime-version:mime-version:content-type:content-type;
-        bh=2w0zntAfFVfZ5RYUF200Jo5dgm4NoiVUgM6/4ozEB20=;
-        b=dcLle/u8RJ/YhZyvuWgNK9CDARwSkDjVpJ2z8BBGsv1gx+bl50JwxH26eovlMpc6eihVCu
-        xJV1ka9/Sl5zwUBg==
-Received: from lion.mk-sys.cz (unknown [10.100.200.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 8EF0C2C141
-        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 21:27:42 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id EA30060927; Mon, 10 Oct 2022 23:27:39 +0200 (CEST)
-Date:   Mon, 10 Oct 2022 23:27:39 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Subject: ethtool 6.0 released
-Message-ID: <20221010212739.ev7w4rqwppfcvo5u@lion.mk-sys.cz>
+        with ESMTP id S229505AbiJJVeG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 17:34:06 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C56097CB64
+        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 14:34:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=mwO0bJmAaQk/DANgr9A8j0/ID1fHfW9f4WP9nuQZ9jY=; b=LesC8pHXVZMWlapjacuh5TAmXr
+        jXlujNyTEbtosJfO/rkUwNRjRfEAhoSXGsGGWuKE+FbQ9DwNb59U93Oeo69hPQL9xhEfNuqKF7eSc
+        pSZ7abH5vw+4u/4KeWvyDKVjXmbQHIvcZKEerrgXPIXXgLDLDMMMiKkACRLbO+PFkC6aLE442yrCl
+        LllwE9xetwgob8VsuNt1IsgOyB9c5ComCdFKh5ymnxF3IBh+MBqHgguPXTzpa/fM4Y5jgm7ybn6G+
+        2ktdZFES/iXYvS+JsBEqZmhXF95UHcrlcpq5oavjUosBmWy3z/1RsBXKVSYrrXm7MBVYcA0YrhjC3
+        2SYi0Pzg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34678)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oi0PI-0005ED-6F; Mon, 10 Oct 2022 22:33:52 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oi0PC-0002BR-Rk; Mon, 10 Oct 2022 22:33:46 +0100
+Date:   Mon, 10 Oct 2022 22:33:46 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Shenwei Wang <shenwei.wang@nxp.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev
+Subject: Re: [PATCH 1/2] net: phylink: add mac_managed_pm in phylink_config
+ structure
+Message-ID: <Y0SPupsMC3roy4J6@shell.armlinux.org.uk>
+References: <20221010203301.132622-1-shenwei.wang@nxp.com>
+ <20221010203301.132622-2-shenwei.wang@nxp.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="zuwk36bgwbm2ho2u"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20221010203301.132622-2-shenwei.wang@nxp.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Oct 10, 2022 at 03:33:00PM -0500, Shenwei Wang wrote:
+> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+> index e9d62f9598f9..6d64d4b6d606 100644
+> --- a/drivers/net/phy/phylink.c
+> +++ b/drivers/net/phy/phylink.c
+> @@ -74,6 +74,7 @@ struct phylink {
+>  
+>  	bool mac_link_dropped;
+>  	bool using_mac_select_pcs;
+> +	bool mac_managed_pm;
 
---zuwk36bgwbm2ho2u
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+I don't think you need this?
 
-Hello,
-
-ethtool 6.0 has been released. There is only one non-cosmetic change but
-skipping 6.0 release felt wrong.
-
-Home page: https://www.kernel.org/pub/software/network/ethtool/
-Download link:
-https://www.kernel.org/pub/software/network/ethtool/ethtool-6.0.tar.xz
-
-Release notes:
-	* Fix: advertisement modes autoselection by lanes (-s)
-
-Michal
-
---zuwk36bgwbm2ho2u
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmNEjkYACgkQ538sG/LR
-dpWJgwf/U8Gk0MA6Tz3GnNVMy/Y5xjI97b61RcfO5B5oTc4zYTK0xKAcdaYJc3n+
-zOJEs//Xo/V8ePlY6sqHjRVuGK8p+5ynA2H4jDwLHwOflPt/D2ANWZ+I1Bc+sGP3
-Kby61pOH4BcLWucR5SDOpYVmhfbnhdZ4wSNBBUTF44Cxzgbpc2CwmnM6wIkViDrk
-WtCKb0kLp1AXE4B1SzrnjvrHGk59GgrRx0bvR9EYhC3TcIg013hlvOjuDEoj1r3g
-6u3sZp/79NHNttIpRA13NLd+3hKX1nEh+NLtONPwlOle+Y5gP3F1rJxl2zVwBUyS
-ZPGIPHQDKIVdpuG2yDKZrEY1kSoCAQ==
-=9M2R
------END PGP SIGNATURE-----
-
---zuwk36bgwbm2ho2u--
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
