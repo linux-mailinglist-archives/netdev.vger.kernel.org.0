@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D11A5F9685
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 03:18:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C59C5F968D
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 03:19:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230499AbiJJBSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Oct 2022 21:18:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35944 "EHLO
+        id S230327AbiJJBTP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Oct 2022 21:19:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230357AbiJJBSk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 21:18:40 -0400
+        with ESMTP id S230319AbiJJBTJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Oct 2022 21:19:09 -0400
 Received: from novek.ru (unknown [213.148.174.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98D392E9D8;
-        Sun,  9 Oct 2022 18:18:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE46231DD3;
+        Sun,  9 Oct 2022 18:19:04 -0700 (PDT)
 Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id E495B504E55;
-        Mon, 10 Oct 2022 04:14:56 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru E495B504E55
+        by novek.ru (Postfix) with ESMTPSA id B3C1F504E56;
+        Mon, 10 Oct 2022 04:14:58 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru B3C1F504E56
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1665364498; bh=XLHIvhz9omIEbrPi1AG5YDmm+bbkVnYbVuLRgaKLvoE=;
+        t=1665364500; bh=1gkc8mZdjRaJkgi2fCTpH3SfdmFXxYsZvsHDJD5oReI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sE9K+oJV6ORuVdu3MsM15fleM8DZrdYjLf15jUo22ykf3XGVemNTIhK6pZ3sWDeNR
-         DM+dnAuR8AmsFgQKTMm5gnAncLOd0KrHt2U6yc7aO9iqYMQjQGXldz606wgCuecJoB
-         WFDyzIsm+hbhA6tib3QiCE2/NWSAp9Bm2qk+faT8=
+        b=vS5C/b61z6zt/Oe0MktMuCpJI3AbBQKiKnaKTfsfFE2UlghQkNs5WrPKW6srSatZk
+         PJUx4qdjxm/Hd3FYd0mOSyA/T10WabYBWPJhRiDCA7A2uT1lw5z7bPXcFLZq7q/2Mn
+         lMakwBM9pahlCsh/7zLqedZDTdIwmVZOJWU6Rkyg=
 From:   Vadim Fedorenko <vfedorenko@novek.ru>
 To:     Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@resnulli.us>,
         Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
 Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-clk@vger.kernel.org, Vadim Fedorenko <vadfed@fb.com>
-Subject: [RFC PATCH v3 5/6] dpll: documentation on DPLL subsystem interface
-Date:   Mon, 10 Oct 2022 04:18:03 +0300
-Message-Id: <20221010011804.23716-6-vfedorenko@novek.ru>
+Subject: [RFC PATCH v3 6/6] ptp_ocp: implement DPLL ops
+Date:   Mon, 10 Oct 2022 04:18:04 +0300
+Message-Id: <20221010011804.23716-7-vfedorenko@novek.ru>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20221010011804.23716-1-vfedorenko@novek.ru>
 References: <20221010011804.23716-1-vfedorenko@novek.ru>
@@ -50,192 +50,275 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vadim Fedorenko <vadfed@fb.com>
 
-Add documentation explaining common netlink interface to configure DPLL
-devices and monitoring events. Common way to implement DPLL device in
-a driver is also covered.
+Implement DPLL operations in ptp_ocp driver.
 
 Signed-off-by: Vadim Fedorenko <vadfed@fb.com>
 ---
- Documentation/networking/dpll.rst  | 157 +++++++++++++++++++++++++++++
- Documentation/networking/index.rst |   1 +
- 2 files changed, 158 insertions(+)
- create mode 100644 Documentation/networking/dpll.rst
+ drivers/ptp/Kconfig       |   1 +
+ drivers/ptp/ptp_ocp.c     | 170 ++++++++++++++++++++++++++++++--------
+ include/uapi/linux/dpll.h |   2 +
+ 3 files changed, 137 insertions(+), 36 deletions(-)
 
-diff --git a/Documentation/networking/dpll.rst b/Documentation/networking/dpll.rst
-new file mode 100644
-index 000000000000..00c15b19aefb
---- /dev/null
-+++ b/Documentation/networking/dpll.rst
-@@ -0,0 +1,157 @@
-+.. SPDX-License-Identifier: GPL-2.0
+diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
+index fe4971b65c64..8c4cfabc1bfa 100644
+--- a/drivers/ptp/Kconfig
++++ b/drivers/ptp/Kconfig
+@@ -177,6 +177,7 @@ config PTP_1588_CLOCK_OCP
+ 	depends on COMMON_CLK
+ 	select NET_DEVLINK
+ 	select CRC16
++	select DPLL
+ 	help
+ 	  This driver adds support for an OpenCompute time card.
+ 
+diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
+index d36c3f597f77..a01c0c721802 100644
+--- a/drivers/ptp/ptp_ocp.c
++++ b/drivers/ptp/ptp_ocp.c
+@@ -21,6 +21,8 @@
+ #include <linux/mtd/mtd.h>
+ #include <linux/nvmem-consumer.h>
+ #include <linux/crc16.h>
++#include <linux/dpll.h>
++#include <uapi/linux/dpll.h>
+ 
+ #define PCI_VENDOR_ID_FACEBOOK			0x1d9b
+ #define PCI_DEVICE_ID_FACEBOOK_TIMECARD		0x0400
+@@ -336,6 +338,7 @@ struct ptp_ocp {
+ 	struct ptp_ocp_signal	signal[4];
+ 	struct ptp_ocp_sma_connector sma[4];
+ 	const struct ocp_sma_op *sma_op;
++	struct dpll_device *dpll;
+ };
+ 
+ #define OCP_REQ_TIMESTAMP	BIT(0)
+@@ -660,18 +663,19 @@ static DEFINE_IDR(ptp_ocp_idr);
+ struct ocp_selector {
+ 	const char *name;
+ 	int value;
++	int dpll_type;
+ };
+ 
+ static const struct ocp_selector ptp_ocp_clock[] = {
+-	{ .name = "NONE",	.value = 0 },
+-	{ .name = "TOD",	.value = 1 },
+-	{ .name = "IRIG",	.value = 2 },
+-	{ .name = "PPS",	.value = 3 },
+-	{ .name = "PTP",	.value = 4 },
+-	{ .name = "RTC",	.value = 5 },
+-	{ .name = "DCF",	.value = 6 },
+-	{ .name = "REGS",	.value = 0xfe },
+-	{ .name = "EXT",	.value = 0xff },
++	{ .name = "NONE",	.value = 0,		.dpll_type = 0 },
++	{ .name = "TOD",	.value = 1,		.dpll_type = 0 },
++	{ .name = "IRIG",	.value = 2,		.dpll_type = 0 },
++	{ .name = "PPS",	.value = 3,		.dpll_type = 0 },
++	{ .name = "PTP",	.value = 4,		.dpll_type = 0 },
++	{ .name = "RTC",	.value = 5,		.dpll_type = 0 },
++	{ .name = "DCF",	.value = 6,		.dpll_type = 0 },
++	{ .name = "REGS",	.value = 0xfe,		.dpll_type = 0 },
++	{ .name = "EXT",	.value = 0xff,		.dpll_type = 0 },
+ 	{ }
+ };
+ 
+@@ -680,37 +684,37 @@ static const struct ocp_selector ptp_ocp_clock[] = {
+ #define SMA_SELECT_MASK		GENMASK(14, 0)
+ 
+ static const struct ocp_selector ptp_ocp_sma_in[] = {
+-	{ .name = "10Mhz",	.value = 0x0000 },
+-	{ .name = "PPS1",	.value = 0x0001 },
+-	{ .name = "PPS2",	.value = 0x0002 },
+-	{ .name = "TS1",	.value = 0x0004 },
+-	{ .name = "TS2",	.value = 0x0008 },
+-	{ .name = "IRIG",	.value = 0x0010 },
+-	{ .name = "DCF",	.value = 0x0020 },
+-	{ .name = "TS3",	.value = 0x0040 },
+-	{ .name = "TS4",	.value = 0x0080 },
+-	{ .name = "FREQ1",	.value = 0x0100 },
+-	{ .name = "FREQ2",	.value = 0x0200 },
+-	{ .name = "FREQ3",	.value = 0x0400 },
+-	{ .name = "FREQ4",	.value = 0x0800 },
+-	{ .name = "None",	.value = SMA_DISABLE },
++	{ .name = "10Mhz",	.value = 0x0000,	.dpll_type = DPLL_TYPE_EXT_10MHZ },
++	{ .name = "PPS1",	.value = 0x0001,	.dpll_type = DPLL_TYPE_EXT_1PPS },
++	{ .name = "PPS2",	.value = 0x0002,	.dpll_type = DPLL_TYPE_EXT_1PPS },
++	{ .name = "TS1",	.value = 0x0004,	.dpll_type = DPLL_TYPE_CUSTOM },
++	{ .name = "TS2",	.value = 0x0008,	.dpll_type = DPLL_TYPE_CUSTOM },
++	{ .name = "IRIG",	.value = 0x0010,	.dpll_type = DPLL_TYPE_CUSTOM },
++	{ .name = "DCF",	.value = 0x0020,	.dpll_type = DPLL_TYPE_CUSTOM },
++	{ .name = "TS3",	.value = 0x0040,	.dpll_type = DPLL_TYPE_CUSTOM },
++	{ .name = "TS4",	.value = 0x0080,	.dpll_type = DPLL_TYPE_CUSTOM },
++	{ .name = "FREQ1",	.value = 0x0100,	.dpll_type = DPLL_TYPE_CUSTOM },
++	{ .name = "FREQ2",	.value = 0x0200,	.dpll_type = DPLL_TYPE_CUSTOM },
++	{ .name = "FREQ3",	.value = 0x0400,	.dpll_type = DPLL_TYPE_CUSTOM },
++	{ .name = "FREQ4",	.value = 0x0800,	.dpll_type = DPLL_TYPE_CUSTOM },
++	{ .name = "None",	.value = SMA_DISABLE,	.dpll_type = DPLL_TYPE_NONE },
+ 	{ }
+ };
+ 
+ static const struct ocp_selector ptp_ocp_sma_out[] = {
+-	{ .name = "10Mhz",	.value = 0x0000 },
+-	{ .name = "PHC",	.value = 0x0001 },
+-	{ .name = "MAC",	.value = 0x0002 },
+-	{ .name = "GNSS1",	.value = 0x0004 },
+-	{ .name = "GNSS2",	.value = 0x0008 },
+-	{ .name = "IRIG",	.value = 0x0010 },
+-	{ .name = "DCF",	.value = 0x0020 },
+-	{ .name = "GEN1",	.value = 0x0040 },
+-	{ .name = "GEN2",	.value = 0x0080 },
+-	{ .name = "GEN3",	.value = 0x0100 },
+-	{ .name = "GEN4",	.value = 0x0200 },
+-	{ .name = "GND",	.value = 0x2000 },
+-	{ .name = "VCC",	.value = 0x4000 },
++	{ .name = "10Mhz",	.value = 0x0000,	.dpll_type = DPLL_TYPE_EXT_10MHZ },
++	{ .name = "PHC",	.value = 0x0001,	.dpll_type = DPLL_TYPE_INT_OSCILLATOR },
++	{ .name = "MAC",	.value = 0x0002,	.dpll_type = DPLL_TYPE_INT_OSCILLATOR },
++	{ .name = "GNSS1",	.value = 0x0004,	.dpll_type = DPLL_TYPE_GNSS },
++	{ .name = "GNSS2",	.value = 0x0008,	.dpll_type = DPLL_TYPE_GNSS },
++	{ .name = "IRIG",	.value = 0x0010,	.dpll_type = DPLL_TYPE_CUSTOM },
++	{ .name = "DCF",	.value = 0x0020,	.dpll_type = DPLL_TYPE_CUSTOM },
++	{ .name = "GEN1",	.value = 0x0040,	.dpll_type = DPLL_TYPE_CUSTOM },
++	{ .name = "GEN2",	.value = 0x0080,	.dpll_type = DPLL_TYPE_CUSTOM },
++	{ .name = "GEN3",	.value = 0x0100,	.dpll_type = DPLL_TYPE_CUSTOM },
++	{ .name = "GEN4",	.value = 0x0200,	.dpll_type = DPLL_TYPE_CUSTOM },
++	{ .name = "GND",	.value = 0x2000,	.dpll_type = DPLL_TYPE_CUSTOM },
++	{ .name = "VCC",	.value = 0x4000,	.dpll_type = DPLL_TYPE_CUSTOM },
+ 	{ }
+ };
+ 
+@@ -3707,6 +3711,90 @@ ptp_ocp_detach(struct ptp_ocp *bp)
+ 	device_unregister(&bp->dev);
+ }
+ 
++static int ptp_ocp_dpll_get_status(struct dpll_device *dpll)
++{
++	struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
++	int sync;
 +
-+===============================
-+The Linux kernel DPLL subsystem
-+===============================
++	sync = ioread32(&bp->reg->status) & OCP_STATUS_IN_SYNC;
++	return sync;
++}
 +
++static int ptp_ocp_dpll_get_lock_status(struct dpll_device *dpll)
++{
++	struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
++	int sync;
 +
-+The main purpose of DPLL subsystem is to provide general interface
-+to configure devices that use any kind of Digital PLL and could use
-+different sources of signal to synchronize to as well as different
-+types of outputs. The inputs and outputs could be internal components
-+of the device as well as external connections. The main interface is
-+NETLINK_GENERIC based protocol with config and monitoring groups of
-+commands defined.
++	sync = ioread32(&bp->reg->status) & OCP_STATUS_IN_SYNC;
++	return sync;
++}
 +
-+Configuration commands group
-+============================
++static int ptp_ocp_sma_get_dpll_type(struct ptp_ocp *bp, int sma_nr)
++{
++	const struct ocp_selector *tbl;
++	u32 val;
 +
-+Configuration commands are used to get information about registered
-+DPLL devices as well as get or set configuration of each used input
-+or output. As DPLL device could not be abstract and reflects real
-+hardware, there is no way to add new DPLL device via netlink from
-+user space and each device should be registered by it's driver.
++	if (bp->sma[sma_nr].mode == SMA_MODE_IN)
++		tbl = bp->sma_op->tbl[0];
++	else
++		tbl = bp->sma_op->tbl[1];
 +
-+List of command with possible attributes
-+========================================
++	val = ptp_ocp_sma_get(bp, sma_nr);
++	return tbl[val].dpll_type;
++}
 +
-+All constants identifying command types use ``DPLL_CMD_`` prefix and
-+suffix according to command purpose. All attributes use ``DPLLA_``
-+prefix and suffix according to attribute purpose:
++static int ptp_ocp_dpll_type_supported(struct dpll_device *dpll, int sma, int type, int dir)
++{
++	struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
++	const struct ocp_selector *tbl = bp->sma_op->tbl[dir];
++	int i;
 +
-+  =====================================  =============================
-+  ``DEVICE_GET``                         userspace to get device info
-+    ``DEVICE_ID``                        attr internal device index
-+    ``DEVICE_NAME``                      attr DPLL device name
-+    ``STATUS``                           attr DPLL device status info
-+    ``DEVICE_SRC_SELECT_MODE``           attr DPLL source selection
-+                                         mode
-+    ``DEVICE_SRC_SELECT_MODE_SUPPORTED`` attr supported source
-+                                         selection modes
-+    ``LOCK_STATUS``                      attr internal frequency-lock
-+                                         status
-+    ``TEMP``                             attr device temperature
-+                                         information
-+  ``SET_SOURCE``                         userspace to set
-+                                         sources/inputs configuration
-+    ``DEVICE_ID``                        attr internal device index
-+                                         to configure source pin
-+    ``SOURCE_ID``                        attr index of source pin to
-+                                         configure
-+    ``SOURCE_NAME``                      attr name of source pin to
-+                                         configure
-+    ``SOURCE_TYPE``                      attr configuration value for
-+                                         selected source pin
-+  ``SET_OUTPUT``                         userspace to set outputs
-+                                         configuration
-+    ``DEVICE_ID``                        attr internal device index to
-+                                         configure output pin
-+    ``OUTPUT_ID``                        attr index of output pin to
-+                                         configure
-+    ``OUTPUT_NAME``                      attr name of output pin to
-+                                         configure
-+    ``OUTPUT_TYPE``                      attr configuration value for
-+                                         selected output pin
-+  ``SET_SRC_SELECT_MODE``                userspace to set source pin
-+                                         selection mode
-+    ``DEVICE_ID``                        attr internal device index
-+    ``DEVICE_SRC_SELECT_MODE``           attr source selection mode
-+  ``SET_SOURCE_PRIO``                    userspace to set priority of
-+                                         a source pin for automatic
-+                                         source selection mode
-+    ``DEVICE_ID``                        attr internal device index
-+                                         for source pin
-+    ``SOURCE_ID``                        attr index of source pin to
-+                                         configure
-+    ``SOURCE_PRIO``                      attr priority of a source pin
++	for (i = 0; i < sizeof(*tbl); i++) {
++		if (tbl[i].dpll_type == type)
++			return 1;
++	}
++	return 0;
++}
 +
++static int ptp_ocp_dpll_get_source_type(struct dpll_device *dpll, int sma)
++{
++	struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
 +
-+The pre-defined enums
-+=====================
++	if (bp->sma[sma].mode != SMA_MODE_IN)
++		return -1;
 +
-+These enums are used to select type values for source/input and
-+output pins:
++	return ptp_ocp_sma_get_dpll_type(bp, sma);
++}
 +
-+  ============================= ======================================
-+  ``DPLL_TYPE_EXT_1PPS``        External 1PPS source
-+  ``DPLL_TYPE_EXT_10MHZ``       External 10MHz source
-+  ``DPLL_TYPE_SYNCE_ETH_PORT``  SyncE on Ethernet port
-+  ``DPLL_TYPE_INT_OSCILLATOR``  Internal Oscillator (i.e. Holdover
-+                                with Atomic Clock as a Source)
-+  ``DPLL_TYPE_GNSS``            GNSS 1PPS source
-+  ``DPLL_TYPE_CUSTOM``          Custom frequency
++static int ptp_ocp_dpll_get_source_supported(struct dpll_device *dpll, int sma, int type)
++{
++	return ptp_ocp_dpll_type_supported(dpll, sma, type, 0);
++}
 +
-+Values for monitoring attributes STATUS:
++static int ptp_ocp_dpll_get_output_type(struct dpll_device *dpll, int sma)
++{
++	struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
 +
-+  ============================= ======================================
-+  ``DPLL_STATUS_NONE``          No information provided
-+  ``DPLL_STATUS_CALIBRATING``   DPLL device is not locked to the
-+                                source frequency
-+  ``DPLL_STATUS_LOCKED``        DPLL device is locked to the source
-+                                frequency
++	if (bp->sma[sma].mode != SMA_MODE_OUT)
++		return -1;
 +
++	return ptp_ocp_sma_get_dpll_type(bp, sma);
++}
 +
-+Possible DPLL source selection mode values:
++static int ptp_ocp_dpll_get_output_supported(struct dpll_device *dpll, int sma, int type)
++{
++	return ptp_ocp_dpll_type_supported(dpll, sma, type, 1);
++}
 +
-+  ============================= ======================================
-+  ``DPLL_SRC_SELECT_FORCED``    source pin is force-selected by
-+                                DPLL_CMD_SET_SOURCE_TYPE
-+  ``DPLL_SRC_SELECT_AUTOMATIC`` source pin ise auto selected according
-+                                to configured priorities and source
-+                                signal validity
-+  ``DPLL_SRC_SELECT_HOLDOVER``  force holdover mode of DPLL
-+  ``DPLL_SRC_SELECT_FREERUN``   DPLL is driven by supplied system
-+                                clock without holdover capabilities
-+  ``DPLL_SRC_SELECT_NCO``       similar to FREERUN, with possibility
-+                                to numerically control frequency offset
++static struct dpll_device_ops dpll_ops = {
++	.get_status		= ptp_ocp_dpll_get_status,
++	.get_lock_status	= ptp_ocp_dpll_get_lock_status,
++	.get_source_type	= ptp_ocp_dpll_get_source_type,
++	.get_source_supported	= ptp_ocp_dpll_get_source_supported,
++	.get_output_type	= ptp_ocp_dpll_get_output_type,
++	.get_output_supported	= ptp_ocp_dpll_get_output_supported,
++};
 +
-+Notifications
-+================
+ static int
+ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ {
+@@ -3762,6 +3850,14 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	ptp_ocp_info(bp);
+ 	devlink_register(devlink);
 +
-+DPLL device can provide notifications regarding status changes of the
-+device, i.e. lock status changes, source/output type changes or alarms.
-+This is the multicast group that is used to notify user-space apps via
-+netlink socket:
++	bp->dpll = dpll_device_alloc(&dpll_ops, "ocp", ARRAY_SIZE(bp->sma), ARRAY_SIZE(bp->sma), bp);
++	if (!bp->dpll) {
++		dev_err(&pdev->dev, "dpll_device_alloc failed\n");
++		return 0;
++	}
++	dpll_device_register(bp->dpll);
 +
-+  ============================== ====================================
-+  ``DPLL_EVENT_DEVICE_CREATE``   New DPLL device was created
-+  ``DPLL_EVENT_DEVICE_DELETE``   DPLL device was deleted
-+  ``DPLL_EVENT_STATUS_LOCKED``   DPLL device has locked to source
-+  ``DPLL_EVENT_STATUS_UNLOCKED`` DPLL device is in freerun or
-+                                 in calibration mode
-+  ``DPLL_EVENT_SOURCE_CHANGE``   DPLL device source changed
-+  ``DPLL_EVENT_OUTPUT_CHANGE``   DPLL device output changed
-+  ``DPLL_EVENT_SOURCE_PRIO``     DPLL device source priority changed
-+  ``DPLL_EVENT_SELECT_MODE``     DPLL device source selection mode
-+                                 changed
-+
-+Device driver implementation
-+============================
-+
-+For device to operate as DPLL subsystem device, it should implement
-+set of operations and register device via ``dpll_device_alloc`` and
-+``dpll_device_register`` providing desired device name and set of
-+supported operations as well as the amount of sources/input pins and
-+output pins. If there is no specific name supplied, dpll subsystem
-+will use ``dpll%d`` template to create device name. Notifications of
-+adding or removing DPLL devices are created within subsystem itself,
-+but notifications about configurations changes or alarms should be
-+implemented within driver as different ways of confirmation could be
-+used. All the interfaces for notification messages could be found in
-+``<dpll.h>``, constats and enums are placed in ``<uapi/linux/dpll.h>``
-+to be consistent with user-space.
-+
-+There is no strict requeriment to implement all the operations for
-+each device, every operation handler is checked for existence and
-+ENOTSUPP is returned in case of absence of specific handler.
-+
-diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
-index 16a153bcc5fe..612d322a3380 100644
---- a/Documentation/networking/index.rst
-+++ b/Documentation/networking/index.rst
-@@ -16,6 +16,7 @@ Contents:
-    device_drivers/index
-    dsa/index
-    devlink/index
-+   dpll
-    caif/index
-    ethtool-netlink
-    ieee802154
+ 	return 0;
+ 
+ out:
+@@ -3779,6 +3875,8 @@ ptp_ocp_remove(struct pci_dev *pdev)
+ 	struct ptp_ocp *bp = pci_get_drvdata(pdev);
+ 	struct devlink *devlink = priv_to_devlink(bp);
+ 
++	dpll_device_unregister(bp->dpll);
++	dpll_device_free(bp->dpll);
+ 	devlink_unregister(devlink);
+ 	ptp_ocp_detach(bp);
+ 	pci_disable_device(pdev);
+diff --git a/include/uapi/linux/dpll.h b/include/uapi/linux/dpll.h
+index 8782d3425aae..59fc6ef81b40 100644
+--- a/include/uapi/linux/dpll.h
++++ b/include/uapi/linux/dpll.h
+@@ -55,11 +55,13 @@ enum dpll_genl_status {
+ 
+ /* DPLL signal types used as source or as output */
+ enum dpll_genl_signal_type {
++	DPLL_TYPE_NONE,
+ 	DPLL_TYPE_EXT_1PPS,
+ 	DPLL_TYPE_EXT_10MHZ,
+ 	DPLL_TYPE_SYNCE_ETH_PORT,
+ 	DPLL_TYPE_INT_OSCILLATOR,
+ 	DPLL_TYPE_GNSS,
++	DPLL_TYPE_CUSTOM,
+ 
+ 	__DPLL_TYPE_MAX,
+ };
 -- 
 2.27.0
 
