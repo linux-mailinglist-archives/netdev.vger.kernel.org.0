@@ -2,209 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 72CA15F9DFE
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 13:53:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A0845F9E08
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 13:54:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231588AbiJJLxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Oct 2022 07:53:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60788 "EHLO
+        id S231801AbiJJLy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Oct 2022 07:54:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230367AbiJJLxk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 07:53:40 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59A626AE90
-        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 04:53:38 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id d6-20020a056e02214600b002fa23a188ebso8468858ilv.6
-        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 04:53:38 -0700 (PDT)
+        with ESMTP id S232165AbiJJLyM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 07:54:12 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C6BD71BCB;
+        Mon, 10 Oct 2022 04:53:58 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id ot12so24387844ejb.1;
+        Mon, 10 Oct 2022 04:53:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=r8MQPm1VfyR8WR3YDKpuy0rJ4sH/UdP+G9t2xvIlExE=;
+        b=B8XNUCS398qRKnyuP7lY3magbVPGqQS07zishCxCW532zytekRB9zlpJXOIpsGcb7q
+         +Yp1VrQwFI+QvAAqm1rNsFbqZyFCyw4e4GVLXRTz2aNUkIqyU3+5JY4YvntdWU8dsbfh
+         JII4Ombw0QwY6pMTk/cZ8E6VjCo4I4MowHD7YXa1LGFvcomxNE9/iUa1IN+PWquV2FHh
+         xvb0Ks8UMqE+jiJN30viSGg4kjMpTSu40Moa/E+Py0OJcHQwXYb9bdXmRUebtVsASFN1
+         SojX53ZPznZeD0GAVPP52CjfLouowHucLnB8pLc7nU66Avy/CScftEI5EmEtPsHgkF0F
+         jpwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=XyjpbSAV9zKFghDaVuv2lfxXp4N8SwMG2j7ltj68tRw=;
-        b=QTYeYRNa2vHIshkeGk83b+rA1LV9n95Lti8BkCPTzRr1y/iOa13t2dZJ7H1p31oPcf
-         A4chqnb+mWeXirASmomLW3Czl2UAjJnGTQ8OwnH2g2aqN5iaCEVLPMqOa364s0ZXjAok
-         E7OVPdNMspTYPAM+pFhJRvir/qkyn3ZDwXFv/OV6QaFCicwkfoQAQNWAcwNMzy2sMGws
-         8W9FOp8sm/x663uYZwtJjeuOI8te0mU5UryccUtMyh/aM7t+rd4iSMEaveq2YNQ8YZ96
-         aw51n6BLz1rKxsU9eKYlKZTy56E5bNHnKNq0rRIEwz3hhgM6SvlIA9Y/eb2HMHYAa8xe
-         1Tqw==
-X-Gm-Message-State: ACrzQf0p3myaOY+nr8xzu+B6xhTZhJUjwmcAUHrD3LNvwfKPKcanZieJ
-        j0v6HUQo6Q8ggL2vUytosLyxBLe662MiCsFHc35nxW/iuuPH
-X-Google-Smtp-Source: AMsMyM7YC7B4VX7kiFXdOMB7a29pZkwCkVNt5qw1UaWzqk9goLssAvIK1o6tAUVhb0bl2dRgcmGacK8A2UQC9IvsPMT2re3V7X3L
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=r8MQPm1VfyR8WR3YDKpuy0rJ4sH/UdP+G9t2xvIlExE=;
+        b=6upctFKbC2aX3UfspGDYYEyzx7d6/pcFRr1DmOKeAGUjjt3uH5XK5humfZCYueuc1U
+         lOOMHXZHaIecMRV30XTcsJlG2tce/ZciGlx5/I00IZ9a4wOApWXbrq8ibDoVJ5K4nxfS
+         O6/ZQBudqXPDlqR9HrFvnmxZCvU0Ngtv3r5RHLJm2Mkv9C5oJ/FP+JI2kZ+P9jNWda/T
+         t5in+6JkN1cd/s/8M7LSmXeH/0J3Mcl9vyHwXzhCvvdMZYGUOIA1koziO6JXQs+KeZEu
+         yd3SUGLs99zYdaGF10HZFL1+ycX3n7Kvx73DD19K5oWiV2iB4WnmH7W5rNLOGiSoe3Ha
+         1jPg==
+X-Gm-Message-State: ACrzQf33uHnF+7Ndxm2N1Qhb0q76A1EknER1fpA/BvM8ZjBytmOvsv5f
+        qaIqhz5bSb6ddQjhIERGRTC2u1LA4H0=
+X-Google-Smtp-Source: AMsMyM6xZGhjDBIsN0LBBIGEUQQGakL3/52H0DngiOquCY+AmQ7Ti629+a32bOQa4gp3GdB7nkbXhg==
+X-Received: by 2002:a17:907:2cf1:b0:78d:cafc:caba with SMTP id hz17-20020a1709072cf100b0078dcafccabamr1455430ejc.154.1665402835990;
+        Mon, 10 Oct 2022 04:53:55 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id ti5-20020a170907c20500b0073d9630cbafsm5223140ejc.126.2022.10.10.04.53.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Oct 2022 04:53:54 -0700 (PDT)
+Date:   Mon, 10 Oct 2022 14:53:52 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>, andrew@lunn.ch,
+        vivien.didelot@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.19 10/73] net: dsa: all DSA masters must be
+ down when changing the tagging protocol
+Message-ID: <20221010115352.dhei6vmdtlhod2bh@skbuf>
+References: <20221009221453.1216158-1-sashal@kernel.org>
+ <20221009221453.1216158-10-sashal@kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:419f:b0:35a:286e:6bdb with SMTP id
- az31-20020a056638419f00b0035a286e6bdbmr9105823jab.295.1665402817676; Mon, 10
- Oct 2022 04:53:37 -0700 (PDT)
-Date:   Mon, 10 Oct 2022 04:53:37 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000005b100405eaaccf89@google.com>
-Subject: [syzbot] possible deadlock in sco_sock_timeout
-From:   syzbot <syzbot+10c46e34f156f51a28ad@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, johan.hedberg@gmail.com,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
-        marcel@holtmann.org, netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221009221453.1216158-10-sashal@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sun, Oct 09, 2022 at 06:13:48PM -0400, Sasha Levin wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> [ Upstream commit f41ec1fd1c20e2a4e60a4ab8490b3e63423c0a8a ]
+> 
+> The fact that the tagging protocol is set and queried from the
+> /sys/class/net/<dsa-master>/dsa/tagging file is a bit of a quirk from
+> the single CPU port days which isn't aging very well now that DSA can
+> have more than a single CPU port. This is because the tagging protocol
+> is a switch property, yet in the presence of multiple CPU ports it can
+> be queried and set from multiple sysfs files, all of which are handled
+> by the same implementation.
+> 
+> The current logic ensures that the net device whose sysfs file we're
+> changing the tagging protocol through must be down. That net device is
+> the DSA master, and this is fine for single DSA master / CPU port setups.
+> 
+> But exactly because the tagging protocol is per switch [ tree, in fact ]
+> and not per DSA master, this isn't fine any longer with multiple CPU
+> ports, and we must iterate through the tree and find all DSA masters,
+> and make sure that all of them are down.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
 
-syzbot found the following issue on:
-
-HEAD commit:    bbed346d5a96 Merge branch 'for-next/core' into for-kernelci
-git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-kernelci
-console output: https://syzkaller.appspot.com/x/log.txt?x=1188403a880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3a4a45d2d827c1e
-dashboard link: https://syzkaller.appspot.com/bug?extid=10c46e34f156f51a28ad
-compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
-userspace arch: arm64
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/e8e91bc79312/disk-bbed346d.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/c1cb3fb3b77e/vmlinux-bbed346d.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+10c46e34f156f51a28ad@syzkaller.appspotmail.com
-
-======================================================
-WARNING: possible circular locking dependency detected
-6.0.0-rc7-syzkaller-18095-gbbed346d5a96 #0 Not tainted
-------------------------------------------------------
-kworker/1:2/31873 is trying to acquire lock:
-ffff000115941130 (sk_lock-AF_BLUETOOTH-BTPROTO_SCO){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1712 [inline]
-ffff000115941130 (sk_lock-AF_BLUETOOTH-BTPROTO_SCO){+.+.}-{0:0}, at: sco_sock_timeout+0x88/0x1b8 net/bluetooth/sco.c:97
-
-but task is already holding lock:
-ffff8000149abd80 ((work_completion)(&(&conn->timeout_work)->work)){+.+.}-{0:0}, at: process_one_work+0x29c/0x504 kernel/workqueue.c:2264
-
-which lock already depends on the new lock.
-
-
-the existing dependency chain (in reverse order) is:
-
--> #3 ((work_completion)(&(&conn->timeout_work)->work)){+.+.}-{0:0}:
-       __flush_work+0x9c/0x144 kernel/workqueue.c:3069
-       __cancel_work_timer+0x1c4/0x2ac kernel/workqueue.c:3160
-       cancel_delayed_work_sync+0x24/0x38 kernel/workqueue.c:3301
-       sco_conn_del+0x140/0x234 net/bluetooth/sco.c:205
-       sco_disconn_cfm+0x64/0xa8 net/bluetooth/sco.c:1379
-       hci_disconn_cfm include/net/bluetooth/hci_core.h:1779 [inline]
-       hci_conn_hash_flush+0x88/0x148 net/bluetooth/hci_conn.c:2366
-       hci_dev_close_sync+0x48c/0x9e0 net/bluetooth/hci_sync.c:4476
-       hci_dev_do_close net/bluetooth/hci_core.c:554 [inline]
-       hci_error_reset+0xac/0x154 net/bluetooth/hci_core.c:1050
-       process_one_work+0x2d8/0x504 kernel/workqueue.c:2289
-       worker_thread+0x340/0x610 kernel/workqueue.c:2436
-       kthread+0x12c/0x158 kernel/kthread.c:376
-       ret_from_fork+0x10/0x20 arch/arm64/kernel/entry.S:860
-
--> #2 (hci_cb_list_lock){+.+.}-{3:3}:
-       __mutex_lock_common+0xd4/0xca8 kernel/locking/mutex.c:603
-       __mutex_lock kernel/locking/mutex.c:747 [inline]
-       mutex_lock_nested+0x38/0x44 kernel/locking/mutex.c:799
-       hci_connect_cfm include/net/bluetooth/hci_core.h:1761 [inline]
-       hci_remote_features_evt+0x274/0x50c net/bluetooth/hci_event.c:3757
-       hci_event_func net/bluetooth/hci_event.c:7443 [inline]
-       hci_event_packet+0x5c4/0x60c net/bluetooth/hci_event.c:7495
-       hci_rx_work+0x1a4/0x2f4 net/bluetooth/hci_core.c:4007
-       process_one_work+0x2d8/0x504 kernel/workqueue.c:2289
-       worker_thread+0x340/0x610 kernel/workqueue.c:2436
-       kthread+0x12c/0x158 kernel/kthread.c:376
-       ret_from_fork+0x10/0x20 arch/arm64/kernel/entry.S:860
-
--> #1 (&hdev->lock){+.+.}-{3:3}:
-       __mutex_lock_common+0xd4/0xca8 kernel/locking/mutex.c:603
-       __mutex_lock kernel/locking/mutex.c:747 [inline]
-       mutex_lock_nested+0x38/0x44 kernel/locking/mutex.c:799
-       sco_sock_connect+0x104/0x220 net/bluetooth/sco.c:593
-       __sys_connect_file net/socket.c:1976 [inline]
-       __sys_connect+0x184/0x190 net/socket.c:1993
-       __do_sys_connect net/socket.c:2003 [inline]
-       __se_sys_connect net/socket.c:2000 [inline]
-       __arm64_sys_connect+0x28/0x3c net/socket.c:2000
-       __invoke_syscall arch/arm64/kernel/syscall.c:38 [inline]
-       invoke_syscall arch/arm64/kernel/syscall.c:52 [inline]
-       el0_svc_common+0x138/0x220 arch/arm64/kernel/syscall.c:142
-       do_el0_svc+0x48/0x164 arch/arm64/kernel/syscall.c:206
-       el0_svc+0x58/0x150 arch/arm64/kernel/entry-common.c:636
-       el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:654
-       el0t_64_sync+0x18c/0x190 arch/arm64/kernel/entry.S:581
-
--> #0 (sk_lock-AF_BLUETOOTH-BTPROTO_SCO){+.+.}-{0:0}:
-       check_prev_add kernel/locking/lockdep.c:3095 [inline]
-       check_prevs_add kernel/locking/lockdep.c:3214 [inline]
-       validate_chain kernel/locking/lockdep.c:3829 [inline]
-       __lock_acquire+0x1530/0x30a4 kernel/locking/lockdep.c:5053
-       lock_acquire+0x100/0x1f8 kernel/locking/lockdep.c:5666
-       lock_sock_nested+0x70/0xd8 net/core/sock.c:3393
-       lock_sock include/net/sock.h:1712 [inline]
-       sco_sock_timeout+0x88/0x1b8 net/bluetooth/sco.c:97
-       process_one_work+0x2d8/0x504 kernel/workqueue.c:2289
-       worker_thread+0x340/0x610 kernel/workqueue.c:2436
-       kthread+0x12c/0x158 kernel/kthread.c:376
-       ret_from_fork+0x10/0x20 arch/arm64/kernel/entry.S:860
-
-other info that might help us debug this:
-
-Chain exists of:
-  sk_lock-AF_BLUETOOTH-BTPROTO_SCO --> hci_cb_list_lock --> (work_completion)(&(&conn->timeout_work)->work)
-
- Possible unsafe locking scenario:
-
-       CPU0                    CPU1
-       ----                    ----
-  lock((work_completion)(&(&conn->timeout_work)->work));
-                               lock(hci_cb_list_lock);
-                               lock((work_completion)(&(&conn->timeout_work)->work));
-  lock(sk_lock-AF_BLUETOOTH-BTPROTO_SCO);
-
- *** DEADLOCK ***
-
-2 locks held by kworker/1:2/31873:
- #0: ffff0000c0010738 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x270/0x504 kernel/workqueue.c:2262
- #1: ffff8000149abd80 ((work_completion)(&(&conn->timeout_work)->work)){+.+.}-{0:0}, at: process_one_work+0x29c/0x504 kernel/workqueue.c:2264
-
-stack backtrace:
-CPU: 1 PID: 31873 Comm: kworker/1:2 Not tainted 6.0.0-rc7-syzkaller-18095-gbbed346d5a96 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/30/2022
-Workqueue: events sco_sock_timeout
-Call trace:
- dump_backtrace+0x1c4/0x1f0 arch/arm64/kernel/stacktrace.c:156
- show_stack+0x2c/0x54 arch/arm64/kernel/stacktrace.c:163
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0x104/0x16c lib/dump_stack.c:106
- dump_stack+0x1c/0x58 lib/dump_stack.c:113
- print_circular_bug+0x2c4/0x2c8 kernel/locking/lockdep.c:2053
- check_noncircular+0x14c/0x154 kernel/locking/lockdep.c:2175
- check_prev_add kernel/locking/lockdep.c:3095 [inline]
- check_prevs_add kernel/locking/lockdep.c:3214 [inline]
- validate_chain kernel/locking/lockdep.c:3829 [inline]
- __lock_acquire+0x1530/0x30a4 kernel/locking/lockdep.c:5053
- lock_acquire+0x100/0x1f8 kernel/locking/lockdep.c:5666
- lock_sock_nested+0x70/0xd8 net/core/sock.c:3393
- lock_sock include/net/sock.h:1712 [inline]
- sco_sock_timeout+0x88/0x1b8 net/bluetooth/sco.c:97
- process_one_work+0x2d8/0x504 kernel/workqueue.c:2289
- worker_thread+0x340/0x610 kernel/workqueue.c:2436
- kthread+0x12c/0x158 kernel/kthread.c:376
- ret_from_fork+0x10/0x20 arch/arm64/kernel/entry.S:860
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Not needed for stable kernels, please drop, thanks.
