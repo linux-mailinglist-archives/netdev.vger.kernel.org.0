@@ -2,152 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A25A5F9F55
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 15:24:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDD345F9F60
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 15:29:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229548AbiJJNYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Oct 2022 09:24:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39056 "EHLO
+        id S229508AbiJJN3J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Oct 2022 09:29:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiJJNYW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 09:24:22 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB23261D89;
-        Mon, 10 Oct 2022 06:24:20 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id nb11so24894959ejc.5;
-        Mon, 10 Oct 2022 06:24:20 -0700 (PDT)
+        with ESMTP id S229490AbiJJN3H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 09:29:07 -0400
+Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AD955F10E
+        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 06:29:06 -0700 (PDT)
+Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-134072c15c1so9227646fac.2
+        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 06:29:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=S4TuO/R3PUr2Z3As+PBmnhfUrFKXN0bX/gKStbzoYWY=;
-        b=lEqkby1o2P9oiUTHmDuhjFJ6WX4EvOcDTsRrkhNm9cfmmNx7LU7OTxjbhCshQd4C8V
-         JWiaxVIQaER2wIOSmq1yo/hxidyY2sp0kk7UOD8iI16ynloBS/qa0eJxpJh7naspnBmF
-         Eomb6M7bQHkWiLqwIeyExy4duhlHArJUy3ExyanWt/X5NNVXt9wl2o6quVRll7D6zJwa
-         rTSDmp3dMrkqk22HVDsEOUC0kAdacsQlvYzqCgDCJTuU86Ceg4IMY5FMmxmWVtDPaScK
-         jUpqS3al4/H7VCuFfDUZMQ1BBpGVmly4z+rGVoFTDt0J0qmQvsVjQBR/zgr61PjzpDO2
-         k8uA==
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=mzvA3GuKrTPaufJ9RRmdBpe4ogpV/znai6MlSebDlfc=;
+        b=2rSwVF2fnNKaIhwmcrNwKvHhgHXExgI9TO9R3Z4jdCBHE8mj+T9kGzcUR2bx+w/kbL
+         dICO1X6vryavxpN2dq0ltjuh8AaN13eKOTxUdqGKvK2RYsNc0JweJX8IRU4Gfl1anROR
+         OCxp1Z4QPahG2IrU79NdTWo6bJ3ipR/mSwF9+nMU4To1mB6Tdcmpz1po/NujmuYRxDy1
+         aQbhCOM+87M/NGDljymx5Zyw4wYxBuM3e8SOPxa1f0d+nLJYOvMNhJtTY5nGi7KBx3aJ
+         vmC7XnbbYPiyRDVthUkLHAb9njXRn9Z0FkD5H7LjPPc5RM4xRBLSZmiBOJg8Oa3dT3NQ
+         YSzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=S4TuO/R3PUr2Z3As+PBmnhfUrFKXN0bX/gKStbzoYWY=;
-        b=v+eUlSBBlHV4LTTybsZA4osfnq2gAF4/BV4YRHbPT2nNcOtBNKJOytH71mwlGRo7wK
-         Z42tdNElvoxLzkSkS7kYppZJ8za6gaCVQ3obDSwWf5I/2g6yVTvIwvhA+zWkPFBA89Or
-         nzgVm91ozq1skgp3SVP1DWWE7GvARsjmtQJhhtyYdP4cz7RJy6z5N3dwhA4C2LoO67TQ
-         irjbXNvwzpqtG6DQmPFlZNh6yTQFDZELEYIPZ++kBMjlrXU+Zial3L6VNpUSLyZtMJ9G
-         H+3lsFjbh3q+50GACe2ycqYYx3gpMvJCkH91IGfgxiBGC4VyQDtYZ/TITaCh9yMR1BrD
-         Dvkg==
-X-Gm-Message-State: ACrzQf2w7nHiEPw4R5Jy5BePoQiDyMUYesSqZFmL1FllxpKQv2kqzYZf
-        AO/Ox36D7OtRY9/IF4Zn5tAzNnm7RMQAzbJ3vko=
-X-Google-Smtp-Source: AMsMyM7nNJ9G292inQymfGArq4O2cI71AqV4IIm31Y9VqNdyXyEO2cc8vT1w7LdYU88WIdncAAYGZTlouIQ8eFLSmZE=
-X-Received: by 2002:a17:907:2d06:b0:78d:50db:130e with SMTP id
- gs6-20020a1709072d0600b0078d50db130emr13651649ejc.371.1665408259027; Mon, 10
- Oct 2022 06:24:19 -0700 (PDT)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=mzvA3GuKrTPaufJ9RRmdBpe4ogpV/znai6MlSebDlfc=;
+        b=ouwouOHCCm+gU581FXhNwt3Se1/k2JMsrMkFutSs0FlzgPHk+e7MQQjehLKMhzdXZz
+         Gook9AX4CfXFpEifrp1H5UoqXN1WVlHXRge0BfPzVKVi3I6wBUa5IMNRcQ3iLLZi/RHP
+         ZoLqRmSxs7VcftUSakVurKbNzDPeWWXZE4LSd7UiK0gr6EeEGwHI/mGbn00aiCo3c7rH
+         liKehQVc1BprcULgxgjWWcXrQsylakkp1INTNHPap97etW9F0sC0H+ZJpwv8AskAz9c7
+         qvLd9B3IY+yu4jiGSVRpc+FSvuRE9ykofnfAhoElhI+TMoPuWkYQG2WROQQoXQrkj0HJ
+         r79w==
+X-Gm-Message-State: ACrzQf2KYyKvC/fBfbY/71jdSYwJSpXt6dffdPP6BMllwTvuRfFDYkJw
+        HklJNO4bgYsQ41J1WLoAFZvIKxhUZPsjVRMht0H1
+X-Google-Smtp-Source: AMsMyM5Uj2vSeOJ4FKvCx0L0Q+XdpaMXk0fUzplu3qADACsyQC5MB4xeOiuaCjzVawvgv0y1GzPPlpcgogXdC4CRjMI=
+X-Received: by 2002:a05:6870:9612:b0:136:66cc:6d5a with SMTP id
+ d18-20020a056870961200b0013666cc6d5amr4986184oaq.172.1665408545775; Mon, 10
+ Oct 2022 06:29:05 -0700 (PDT)
 MIME-Version: 1.0
-From:   Wei Chen <harperchen1110@gmail.com>
-Date:   Mon, 10 Oct 2022 21:23:44 +0800
-Message-ID: <CAO4mrff8gu5pe5A-Tm7mDrduHz4yNHRyWh5B5S2=2qe3ejfgUg@mail.gmail.com>
-Subject: kernel BUG in ip6gre_header
-To:     davem@davemloft.net, Eric Dumazet <edumazet@google.com>,
-        kuba@kernel.org, pabeni@redhat.com, willemb@google.com,
-        kafai@fb.com, imagedong@tencent.com, talalahmad@google.com,
-        luiz.von.dentz@intel.com, vasily.averin@linux.dev,
-        jk@codeconstruct.com.au
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <CAHC9VhTGE1cf_WtDn4aDUY=E-m--4iZXWiNTwPZrP9AVoq17cw@mail.gmail.com>
+ <CAHC9VhT2LK_P+_LuBYDEHnkNkAX6fhNArN_N5bF1qwGed+Kyww@mail.gmail.com>
+ <CAADnVQ+kRCfKn6MCvfYGhpHF0fUWBU-qJqvM=1YPfj02jM9zKw@mail.gmail.com>
+ <CAHC9VhRcr03ZCURFi=EJyPvB3sgi44_aC5ixazC43Zs2bNJiDw@mail.gmail.com>
+ <CAADnVQJ5VgTNiEhEhOtESRrK0q3-pUSbZfAWL=tXv-s2GXqq8Q@mail.gmail.com>
+ <CAHC9VhRmghJcZeUM6NS6J24tBOBxrZckwc2DqbqqqYif8hzopA@mail.gmail.com> <CAADnVQKe+wivnEMF99P27s9rCaOcFQcHFS5Ys+fAcF=mZS_eww@mail.gmail.com>
+In-Reply-To: <CAADnVQKe+wivnEMF99P27s9rCaOcFQcHFS5Ys+fAcF=mZS_eww@mail.gmail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Mon, 10 Oct 2022 09:28:54 -0400
+Message-ID: <CAHC9VhQCU4wHCEF1MXm1dN_e4vqpK_Mny5Wnp8UHfaFU6rn4UA@mail.gmail.com>
+Subject: Re: SO_PEERSEC protections in sk_getsockopt()?
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Martin KaFai Lau <martin.lau@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        selinux@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Linux Developer,
+On Mon, Oct 10, 2022 at 2:19 AM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+> On Sun, Oct 9, 2022 at 3:01 PM Paul Moore <paul@paul-moore.com> wrote:
+> > On Fri, Oct 7, 2022 at 5:55 PM Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> > > On Fri, Oct 7, 2022 at 1:06 PM Paul Moore <paul@paul-moore.com> wrote:
+> > > > On Fri, Oct 7, 2022 at 3:13 PM Alexei Starovoitov
+> > > > <alexei.starovoitov@gmail.com> wrote:
+> > > > > On Fri, Oct 7, 2022 at 10:43 AM Paul Moore <paul@paul-moore.com> wrote:
+> > > > > > On Wed, Oct 5, 2022 at 4:44 PM Paul Moore <paul@paul-moore.com> wrote:
+> > > > > > >
+> > > > > > > Hi Martin,
+> > > > > > >
+> > > > > > > In commit 4ff09db1b79b ("bpf: net: Change sk_getsockopt() to take the
+> > > > > > > sockptr_t argument") I see you wrapped the getsockopt value/len
+> > > > > > > pointers with sockptr_t and in the SO_PEERSEC case you pass the
+> > > > > > > sockptr_t:user field to avoid having to update the LSM hook and
+> > > > > > > implementations.  I think that's fine, especially as you note that
+> > > > > > > eBPF does not support fetching the SO_PEERSEC information, but I think
+> > > > > > > it would be good to harden this case to prevent someone from calling
+> > > > > > > sk_getsockopt(SO_PEERSEC) with kernel pointers.  What do you think of
+> > > > > > > something like this?
+> > > > > > >
+> > > > > > >   static int sk_getsockopt(...)
+> > > > > > >   {
+> > > > > > >     /* ... */
+> > > > > > >     case SO_PEERSEC:
+> > > > > > >       if (optval.is_kernel || optlen.is_kernel)
+> > > > > > >         return -EINVAL;
+> > > > > > >       return security_socket_getpeersec_stream(...);
+> > > > > > >     /* ... */
+> > > > > > >   }
+> > > > > >
+> > > > > > Any thoughts on this Martin, Alexei?  It would be nice to see this
+> > > > > > fixed soon ...
+> > > > >
+> > > > > 'fixed' ?
+> > > > > I don't see any bug.
+> > > > > Maybe WARN_ON_ONCE can be added as a precaution, but also dubious value.
+> > > >
+> > > > Prior to the change it was impossible to call
+> > > > sock_getsockopt(SO_PEERSEC) with a kernel address space pointer, now
+> > > > with 4ff09db1b79b is it possible to call sk_getsockopt(SO_PEERSEC)
+> > > > with a kernel address space pointer and cause problems.
+> > >
+> > > No. It's not possible. There is no path in the kernel that
+> > > can do that.
+> >
+> > If we look at the very next sentence in my last reply you see that I
+> > acknowledge that there may be no callers that currently do that, but
+> > it seems like an easy mistake for someone to make.  I've seen kernel
+> > coding errors similar to this in the past, it seems like a reasonable
+> > thing to protect against, especially considering it is well outside of
+> > any performance critical path.
+> >
+> > > > Perhaps there
+> > > > are no callers in the kernel that do such a thing at the moment, but
+> > > > it seems like an easy mistake for someone to make, and the code to
+> > > > catch it is both trivial and out of any critical path.
+> > >
+> > > Not easy at all.
+> > > There is only way place in the whole kernel that does:
+> > >                 return sk_getsockopt(sk, SOL_SOCKET, optname,
+> > >                                      KERNEL_SOCKPTR(optval),
+> > >                                      KERNEL_SOCKPTR(optlen));
+> > >
+> > > and there is an allowlist of optname-s right in front of it.
+> > > SO_PEERSEC is not there.
+> > > For security_socket_getpeersec_stream to be called with kernel
+> > > address the developer would need to add SO_PEERSEC to that allowlist.
+> > > Which will be trivially caught during the code review.
+> >
+> > A couple of things come to mind ... First, the concern isn't the
+> > existing caller(s), as mentioned above, but future callers.  Second,
+> > while the kernel code review process is good, the number of serious
+> > kernel bugs that have passed uncaught through the code review process
+> > is staggering.
+> >
+> > > > This is one of those cases where preventing a future problem is easy,
+> > > > I think it would be foolish of us to ignore it.
+> > >
+> > > Disagree. It's just a typical example of defensive programming
+> > > which I'm strongly against.
+> >
+> > That's a pretty bold statement, good luck with that.
+> >
+> > > By that argument we should be checking all pointers for NULL
+> > > "because it's easy to do".
+> >
+> > That's not the argument being made here, but based on your previous
+> > statements of trusting code review to catch bugs and your opposition
+> > to defensive programming it seems pretty unlikely we're going to find
+> > common ground.
+> >
+> > I'll take care of this in the LSM tree.
+>
+> Are you saying you'll add a patch to sk_getsockopt
+> in net/core/sock.c without going through net or bpf trees?
+> Paul, you're crossing the line.
 
-Recently when using our tool to fuzz kernel, the following crash was triggered:
+I believe my exact comment was "I'll take care of this in the LSM
+tree."  I haven't thought tpo hard about the details yet, but thinking
+quickly I can imagine several different approaches with varying levels
+of change required in sk_getsockopt(); it would be premature to
+comment much beyond that.  It also looks like David Laight has similar
+concerns, so it's possible he might work on resolving this too,
+discussions are (obviously) ongoing.
 
-HEAD commit: fc74e0a40e4f Linux 5.16-rc7
-git tree: upstream
-compiler: clang 12.0.0
-console output:
-https://drive.google.com/file/d/1w1j1H1ptN2F4RTwi06iAgwXM6cscQHg7/view?usp=sharing
-kernel config: https://drive.google.com/file/d/1L16y3aFu5mPQbKNsc7eQc6RH55YRd1zd/view?usp=sharing
+As far as crossing a line is concerned, I suggest you first look in
+the mirror with respect to changes in the security/ subdir that did
+not go through one of the LSM trees.  There are quite a few patches
+from netdev/bpf that have touched security/ without going through a
+LSM tree or getting a Reviewed-by/Acked-by/etc. from a LSM developer.
+In fact I don't even have to go back a year and I see at least one
+patch that touches code under security/ that was committed by you
+without any LSM developer reviews/acks/etc.
 
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: Wei Chen <harperchen1110@gmail.com>
-
-kernel BUG at net/core/skbuff.c:113!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 3152 Comm: syz-executor Not tainted 5.16.0-rc7 #4
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-1.13.0-1ubuntu1.1 04/01/2014
-RIP: 0010:skb_panic+0x14a/0x150
-Code: ca 99 8b 48 8b 74 24 08 48 8b 54 24 10 8b 0c 24 44 8b 44 24 04
-49 89 e9 31 c0 53 41 55 41 54 41 57 e8 71 e3 f0 01 48 83 c4 20 <0f> 0b
-0f 1f 40 00 55 41 57 41 56 41 55 41 54 53 48 83 ec 70 4c 89
-RSP: 0018:ffffc90009d9f820 EFLAGS: 00010282
-RAX: 000000000000008a RBX: ffff88803e85a000 RCX: 114ab6c57586dc00
-RDX: ffffc90002144000 RSI: 0000000000002f87 RDI: 0000000000002f88
-RBP: ffff88801cb30c00 R08: ffffffff8167a5e2 R09: ffffed100c7867b1
-R10: ffffed100c7867b1 R11: 0000000000000000 R12: 000000000000003c
-R13: 00000000000000c0 R14: dffffc0000000000 R15: ffff88801cb30bd8
-FS:  00007f8d37e40700(0000) GS:ffff888063c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000000 CR3: 00000000131c1000 CR4: 0000000000752ef0
-DR0: 0000000020000100 DR1: 0000000020000100 DR2: c62d86afc1fea99c
-DR3: 0000000000000d27 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-PKRU: 55555554
-Call Trace:
- <TASK>
- skb_under_panic+0x25/0x30
- skb_push+0xb2/0xd0
- ip6gre_header+0xcb/0x7b0
- vlan_dev_hard_header+0x35b/0x480
- llc_mac_hdr_init+0x116/0x190
- llc_sap_action_send_test_c+0x188/0x310
- llc_sap_state_process+0x247/0x840
- llc_ui_sendmsg+0x7da/0x1420
- __sys_sendto+0x43d/0x5a0
- __x64_sys_sendto+0xda/0xf0
- do_syscall_64+0x3d/0xb0
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f8d3a8d7c4d
-Code: 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48
-89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d
-01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f8d37e3fc58 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-RAX: ffffffffffffffda RBX: 00007f8d3a9fe0a0 RCX: 00007f8d3a8d7c4d
-RDX: 0000000000000035 RSI: 0000000020000040 RDI: 0000000000000004
-RBP: 00007f8d3a950d80 R08: 0000000020000080 R09: 0000000000000010
-R10: 0000000004000000 R11: 0000000000000246 R12: 00007f8d3a9fe0a0
-R13: 00007ffc1bf6b7bf R14: 00007ffc1bf6b960 R15: 00007f8d37e3fdc0
- </TASK>
-Modules linked in:
-Dumping ftrace buffer:
-   (ftrace buffer empty)
----[ end trace a43bcba70fed35f6 ]---
-RIP: 0010:skb_panic+0x14a/0x150
-Code: ca 99 8b 48 8b 74 24 08 48 8b 54 24 10 8b 0c 24 44 8b 44 24 04
-49 89 e9 31 c0 53 41 55 41 54 41 57 e8 71 e3 f0 01 48 83 c4 20 <0f> 0b
-0f 1f 40 00 55 41 57 41 56 41 55 41 54 53 48 83 ec 70 4c 89
-RSP: 0018:ffffc90009d9f820 EFLAGS: 00010282
-RAX: 000000000000008a RBX: ffff88803e85a000 RCX: 114ab6c57586dc00
-RDX: ffffc90002144000 RSI: 0000000000002f87 RDI: 0000000000002f88
-RBP: ffff88801cb30c00 R08: ffffffff8167a5e2 R09: ffffed100c7867b1
-R10: ffffed100c7867b1 R11: 0000000000000000 R12: 000000000000003c
-R13: 00000000000000c0 R14: dffffc0000000000 R15: ffff88801cb30bd8
-FS:  00007f8d37e40700(0000) GS:ffff888063c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f300ed27000 CR3: 00000000131c1000 CR4: 0000000000752ef0
-DR0: 0000000020000100 DR1: 0000000020000100 DR2: c62d86afc1fea99c
-DR3: 0000000000000d27 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-PKRU: 55555554
-
-Best,
-Wei
+-- 
+paul-moore.com
