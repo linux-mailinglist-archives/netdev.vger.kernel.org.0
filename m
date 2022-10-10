@@ -2,76 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C5535FA6EB
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 23:23:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A9D65FA6F8
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 23:27:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229861AbiJJVXw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Oct 2022 17:23:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38146 "EHLO
+        id S229494AbiJJV1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Oct 2022 17:27:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229849AbiJJVXu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 17:23:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CFF36C107;
-        Mon, 10 Oct 2022 14:23:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        with ESMTP id S229456AbiJJV1p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 17:27:45 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E493D79EF6
+        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 14:27:43 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 9958422DDE
+        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 21:27:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1665437262; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=2w0zntAfFVfZ5RYUF200Jo5dgm4NoiVUgM6/4ozEB20=;
+        b=GhusWm7EN1Q+wpXxZ36A5M1mLsEilbRNPR0WEk9eiuwlORedFy7gexbSZvyaDhGhCKD7GW
+        5FYWHZ7wiFKM8MtwmSY1NRTsbIqYshNnz5jI6gB2dXk4JDkDDVgg2kz31UDqpFdxkfiFp1
+        hIJk9jzD0bFawDFdtX96Gd24ptc/tq0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1665437262;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=2w0zntAfFVfZ5RYUF200Jo5dgm4NoiVUgM6/4ozEB20=;
+        b=dcLle/u8RJ/YhZyvuWgNK9CDARwSkDjVpJ2z8BBGsv1gx+bl50JwxH26eovlMpc6eihVCu
+        xJV1ka9/Sl5zwUBg==
+Received: from lion.mk-sys.cz (unknown [10.100.200.14])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 82D9261033;
-        Mon, 10 Oct 2022 21:23:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E47ADC433D7;
-        Mon, 10 Oct 2022 21:23:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665437026;
-        bh=LW6qbMwcNGlPWguPr3/tioF4lSPOeC7TNnM9SOAJNC8=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=j5OHXjHstpAmokFGUNn/YWj1urnovTw1Poen8SZNuKNfbzPjWUNba/atuBvFAmCR+
-         LLQGEsvzkDgX/9UGYhGOqCCFlwwMlARKMxFsnBeCzLH6igWRHz6PuUrP/SgzVprE/F
-         J7oDAVdu8d7KUgeJAEOl0uNHolOZTcdKTBBlR/msJ37+eqfw/6bsbTm6o45rLno62I
-         JZi7QNkjIdukUrd3hLcRUT3QqMdsq1bpurWlyBi93TcECQd8YYSOAFfwdMVcqhDHOD
-         amXCndh9xl2LzVWe4guhjjkaLRzC9mQv6mxUVt/2aFGjmgcIpHV6tIEpVYRtMrWt8i
-         l4X4Zvazet1zg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D2C29E2A05F;
-        Mon, 10 Oct 2022 21:23:46 +0000 (UTC)
-Subject: Re: [GIT PULL] virtio: fixes, features
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20221010132030-mutt-send-email-mst@kernel.org>
-References: <20221010132030-mutt-send-email-mst@kernel.org>
-X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20221010132030-mutt-send-email-mst@kernel.org>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-X-PR-Tracked-Commit-Id: 71491c54eafa318fdd24a1f26a1c82b28e1ac21d
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 8aeab132e05fefc3a1a5277878629586bd7a3547
-Message-Id: <166543702685.28157.12851164302122498438.pr-tracker-bot@kernel.org>
-Date:   Mon, 10 Oct 2022 21:23:46 +0000
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        alvaro.karsz@solid-run.com, angus.chen@jaguarmicro.com,
-        gavinl@nvidia.com, jasowang@redhat.com, lingshan.zhu@intel.com,
-        mst@redhat.com, wangdeming@inspur.com, xiujianfeng@huawei.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        by relay2.suse.de (Postfix) with ESMTPS id 8EF0C2C141
+        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 21:27:42 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id EA30060927; Mon, 10 Oct 2022 23:27:39 +0200 (CEST)
+Date:   Mon, 10 Oct 2022 23:27:39 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Subject: ethtool 6.0 released
+Message-ID: <20221010212739.ev7w4rqwppfcvo5u@lion.mk-sys.cz>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="zuwk36bgwbm2ho2u"
+Content-Disposition: inline
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Mon, 10 Oct 2022 13:20:30 -0400:
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+--zuwk36bgwbm2ho2u
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/8aeab132e05fefc3a1a5277878629586bd7a3547
+Hello,
 
-Thank you!
+ethtool 6.0 has been released. There is only one non-cosmetic change but
+skipping 6.0 release felt wrong.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Home page: https://www.kernel.org/pub/software/network/ethtool/
+Download link:
+https://www.kernel.org/pub/software/network/ethtool/ethtool-6.0.tar.xz
+
+Release notes:
+	* Fix: advertisement modes autoselection by lanes (-s)
+
+Michal
+
+--zuwk36bgwbm2ho2u
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmNEjkYACgkQ538sG/LR
+dpWJgwf/U8Gk0MA6Tz3GnNVMy/Y5xjI97b61RcfO5B5oTc4zYTK0xKAcdaYJc3n+
+zOJEs//Xo/V8ePlY6sqHjRVuGK8p+5ynA2H4jDwLHwOflPt/D2ANWZ+I1Bc+sGP3
+Kby61pOH4BcLWucR5SDOpYVmhfbnhdZ4wSNBBUTF44Cxzgbpc2CwmnM6wIkViDrk
+WtCKb0kLp1AXE4B1SzrnjvrHGk59GgrRx0bvR9EYhC3TcIg013hlvOjuDEoj1r3g
+6u3sZp/79NHNttIpRA13NLd+3hKX1nEh+NLtONPwlOle+Y5gP3F1rJxl2zVwBUyS
+ZPGIPHQDKIVdpuG2yDKZrEY1kSoCAQ==
+=9M2R
+-----END PGP SIGNATURE-----
+
+--zuwk36bgwbm2ho2u--
