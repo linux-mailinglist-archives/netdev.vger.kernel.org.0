@@ -2,147 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB0FB5F9CE7
-	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 12:37:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC15F5F9D11
+	for <lists+netdev@lfdr.de>; Mon, 10 Oct 2022 12:51:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231811AbiJJKhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Oct 2022 06:37:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49302 "EHLO
+        id S231770AbiJJKvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Oct 2022 06:51:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231316AbiJJKha (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 06:37:30 -0400
-Received: from smtp-bc0e.mail.infomaniak.ch (smtp-bc0e.mail.infomaniak.ch [IPv6:2001:1600:4:17::bc0e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB6C5AC6A
-        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 03:37:28 -0700 (PDT)
-Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4MmFjK1zGZzMq29V;
-        Mon, 10 Oct 2022 12:37:25 +0200 (CEST)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4MmFjJ4zSDzMpnPn;
-        Mon, 10 Oct 2022 12:37:24 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1665398245;
-        bh=uGtmlFV1t4O58D6gKx+CfFlrT1XKHkbzaBaS6lk+eOo=;
-        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
-        b=JZyVWnBQa3YRVMLm0JN5xY7zbXvoSDmYbV/Gm2YJUkhWwqf3h42gyjKLGRJW2KmuF
-         85ro87abYaa17CbPg8FpF0fJR+HpxH3101+c0aVZKcCyGPnePhywQWZ/HVJMx7crjY
-         k+OnasS0DjnZ9PgsSR4tPsC5mXCqyGVvx1Z6pK1Q=
-Message-ID: <b4b49d93-72a1-b7b4-68e4-2bd03034ee77@digikod.net>
-Date:   Mon, 10 Oct 2022 12:37:24 +0200
+        with ESMTP id S230514AbiJJKvO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 06:51:14 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7F9C286CE;
+        Mon, 10 Oct 2022 03:51:12 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id p3-20020a17090a284300b0020a85fa3ffcso12753168pjf.2;
+        Mon, 10 Oct 2022 03:51:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:sender:from:to:cc:subject:date:message-id:reply-to;
+        bh=xDAJhO6nMeWEoNHiOlooadZpm12/jqYN+cZC7C+A+cU=;
+        b=X8rxYGns2BxQ0rORK5lw0t1/xZ5f20NItWAJX7RAfaCTGH2bhAA7wfzlafa7RYJnUk
+         r7EHv4NtDfS8+0M/09O0RoJokEHP4madb4Pxh3O7z6Am0Sap2FFnPFgVCwFLw8hUt9l2
+         CA3vL2ENcH8hIqcKS8I1NCdxoenWiIrTAxFWp6W5S0qf2XZiKmVEYL7rCpuCsHOcjTYj
+         lV6HMidga2tytXs5nZ2xVrgnROZV/m8TYX5Azit45G0tCoeQglfGY5oSghLWgMf3JRW7
+         Z6W4s5pGIbBaXlr1RILrFwstir8tXPQhaWfqBIU/Lw4GOxZmhC3m4YM290NvR9kD1KaI
+         TMbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:sender:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xDAJhO6nMeWEoNHiOlooadZpm12/jqYN+cZC7C+A+cU=;
+        b=aNlyXfLg87s3DWkz+TmZGvZW84eRzZFdqDGf5HVylnyqqG0aERZCW/4a8EoGR0Tff0
+         njO4Alxg2Dvd5dTPuWIUdATDEacSWEKlXKuo9NozTlkaNBFj200WqJfRz6faZsmv7xbl
+         W0Wde6jomIPQbjQG3GrVTK7ufsnJUeoTRwVqcnsKg04G6NYBZGWtN9vG1IvqrF/XpX0J
+         KbGkYFOvB2iSpFCAhB7/8Ssykb9YjEITTLK7RkNXzZ6ooJmLxQG/XG4xRdiNXpDvN55U
+         uHQkxfGPYjTVV9OE3gfXnUh1CerUh/r1MH/CpvLfT3edv7gKf358i113cHN9RYwQq31B
+         0HXw==
+X-Gm-Message-State: ACrzQf1uNke5rv+VBESDz+9xcHtF+p/XldAJbGpyXPc2ZHbEqqoVnPJv
+        9RMd6X2MVyHgoHNrC7/VdOcWSyy0sDU=
+X-Google-Smtp-Source: AMsMyM4DTqQ8cOATpFoLxmw11Pf0bdewgdfPXjp2BItmroHRq4xdb0vNhpMNph+Qs8AP0Vt7UtLV5Q==
+X-Received: by 2002:a17:902:d54d:b0:180:202c:ad78 with SMTP id z13-20020a170902d54d00b00180202cad78mr16025103plf.84.1665399072017;
+        Mon, 10 Oct 2022 03:51:12 -0700 (PDT)
+Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
+        by smtp.gmail.com with ESMTPSA id a1-20020a170902710100b00178af82a000sm6279134pll.122.2022.10.10.03.51.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Oct 2022 03:51:11 -0700 (PDT)
+Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     linux-can@vger.kernel.org, David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH] iplink_can: add missing `]' of the bitrate, dbitrate and termination arrays
+Date:   Mon, 10 Oct 2022 19:50:41 +0900
+Message-Id: <20221010105041.65736-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: 
-Subject: Re: [PATCH v7 16/18] seltests/landlock: add invalid input data test
-Content-Language: en-US
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-Cc:     willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, anton.sirazetdinov@huawei.com
-References: <20220829170401.834298-1-konstantin.meskhidze@huawei.com>
- <20220829170401.834298-17-konstantin.meskhidze@huawei.com>
- <d91e3fcc-2320-e98c-7d54-458b749c87a8@digikod.net>
- <47ddb2ea-3bc7-533a-9b0d-2b2d3950644c@huawei.com>
- <36de86ad-460c-81d0-b5bd-4d54bd05d201@digikod.net>
-In-Reply-To: <36de86ad-460c-81d0-b5bd-4d54bd05d201@digikod.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The command "ip --details link show canX" misses the closing bracket
+`]' of the bitrate, the dbitrate and the termination arrays. The JSON
+output is not impacted.
 
-On 12/09/2022 19:22, Mickaël Salaün wrote:
-> 
-> On 10/09/2022 22:51, Konstantin Meskhidze (A) wrote:
->>
->>
->> 9/6/2022 11:09 AM, Mickaël Salaün пишет:
->>>
->>> On 29/08/2022 19:03, Konstantin Meskhidze wrote:
->>>> This patch adds rules with invalid user space supplied data:
->>>>        - out of range ruleset attribute;
->>>>        - unhandled allowed access;
->>>>        - zero port value;
->>>>        - zero access value;
->>>>
->>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
->>>> ---
->>>>
->>>> Changes since v6:
->>>> * Adds invalid ruleset attribute test.
->>>>
->>>> Changes since v5:
->>>> * Formats code with clang-format-14.
->>>>
->>>> Changes since v4:
->>>> * Refactors code with self->port variable.
->>>>
->>>> Changes since v3:
->>>> * Adds inval test.
->>>>
->>>> ---
->>>>     tools/testing/selftests/landlock/net_test.c | 66 ++++++++++++++++++++-
->>>>     1 file changed, 65 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/tools/testing/selftests/landlock/net_test.c b/tools/testing/selftests/landlock/net_test.c
->>>> index a93224d1521b..067ba45f58a5 100644
->>>> --- a/tools/testing/selftests/landlock/net_test.c
->>>> +++ b/tools/testing/selftests/landlock/net_test.c
->>>> @@ -26,9 +26,12 @@
->>>>
->>>>     #define IP_ADDRESS "127.0.0.1"
->>>>
->>>> -/* Number pending connections queue to be hold */
->>>> +/* Number pending connections queue to be hold. */
->>>
->>> Patch of a previous patch?
->>>
->>>
->>>>     #define BACKLOG 10
->>>>
->>>> +/* Invalid attribute, out of landlock network access range. */
->>>> +#define LANDLOCK_INVAL_ATTR 7
->>>> +
->>>>     FIXTURE(socket)
->>>>     {
->>>>     	uint port[MAX_SOCKET_NUM];
->>>> @@ -719,4 +722,65 @@ TEST_F(socket, ruleset_expanding)
->>>>     	/* Closes socket 1. */
->>>>     	ASSERT_EQ(0, close(sockfd_1));
->>>>     }
->>>> +
->>>> +TEST_F(socket, inval)
->>>> +{
->>>> +	struct landlock_ruleset_attr ruleset_attr = {
->>>> +		.handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP
->>>> +	};
->>>> +	struct landlock_ruleset_attr ruleset_attr_inval = {
->>>> +		.handled_access_net = LANDLOCK_INVAL_ATTR
->>>
->>> Please add a test similar to TEST_F_FORK(layout1,
->>> file_and_dir_access_rights) instead of explicitly defining and only
->>> testing LANDLOCK_INVAL_ATTR.
->>>
->>      Do you want fs test to be in this commit or maybe its better to add
->> it into "[PATCH v7 01/18] landlock: rename access mask" one.
+Change the first argument of close_json_array() from PRINT_JSON to
+PRINT_ANY to fix the problem. The second argument is already set
+correctly.
 
-Just to make it clear, I didn't suggested an FS test, but a new network 
-test similar to layout1.file_and_dir_access_rights but only related to 
-the network. It should replace/extend the content of this patch (16/18).
+Fixes: 67f3c7a5cc0d ("iplink_can: use PRINT_ANY to factorize code and fix signedness")
+Reported-by: Marc Kleine-Budde <mkl@pengutronix.de> via vger.kernel.org>
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+---
+ ip/iplink_can.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
+diff --git a/ip/iplink_can.c b/ip/iplink_can.c
+index 0e670a6c..9bbe3d95 100644
+--- a/ip/iplink_can.c
++++ b/ip/iplink_can.c
+@@ -519,7 +519,7 @@ static void can_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+ 				   i < bitrate_cnt - 1 ? "%8u, " : "%8u",
+ 				   bitrate_const[i]);
+ 		}
+-		close_json_array(PRINT_JSON, " ]");
++		close_json_array(PRINT_ANY, " ]");
+ 	}
+ 
+ 	/* data bittiming is irrelevant if fixed bitrate is defined */
+@@ -606,7 +606,7 @@ static void can_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+ 				   i < dbitrate_cnt - 1 ? "%8u, " : "%8u",
+ 				   dbitrate_const[i]);
+ 		}
+-		close_json_array(PRINT_JSON, " ]");
++		close_json_array(PRINT_ANY, " ]");
+ 	}
+ 
+ 	if (tb[IFLA_CAN_TERMINATION_CONST] && tb[IFLA_CAN_TERMINATION]) {
+@@ -623,7 +623,7 @@ static void can_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+ 			print_hu(PRINT_ANY, NULL,
+ 				 i < trm_cnt - 1 ? "%hu, " : "%hu",
+ 				 trm_const[i]);
+-		close_json_array(PRINT_JSON, " ]");
++		close_json_array(PRINT_ANY, " ]");
+ 	}
+ 
+ 	if (tb[IFLA_CAN_CLOCK]) {
+-- 
+2.35.1
 
-> 
-> You can squash all the new tests patches (except the "move helper
-> function").
-You should move most of your patch descriptions in a comment above the 
-related tests. The commit message should list all the new tests and 
-quickly explain which part of the kernel is covered (i.e. mostly the TCP 
-part of Landlock). You can get some inspiration from 
-https://git.kernel.org/mic/c/f4056b9266b571c63f30cda70c2d89f7b7e8bb7b
-
-You need to rebase on top of my next branch (from today).
