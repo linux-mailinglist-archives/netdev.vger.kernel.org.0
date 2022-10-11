@@ -2,121 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C3A25FB1C2
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 13:44:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 524FA5FB294
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 14:42:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229923AbiJKLnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Oct 2022 07:43:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60988 "EHLO
+        id S229749AbiJKMmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Oct 2022 08:42:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229978AbiJKLnh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 07:43:37 -0400
-Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6BB38A7F2;
-        Tue, 11 Oct 2022 04:43:35 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.30.67.143])
-        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4Mmv4y3LFMzl64T;
-        Tue, 11 Oct 2022 19:41:38 +0800 (CST)
-Received: from k01.huawei.com (unknown [10.67.174.197])
-        by APP2 (Coremail) with SMTP id Syh0CgBX8NTXVkVj5HNpAA--.32480S8;
-        Tue, 11 Oct 2022 19:43:34 +0800 (CST)
-From:   Xu Kuohai <xukuohai@huaweicloud.com>
-To:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Alan Maguire <alan.maguire@oracle.com>,
-        Delyan Kratunov <delyank@fb.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-Subject: [PATCH bpf-next v4 6/6] selftest/bpf: Fix error usage of ASSERT_OK in xdp_adjust_tail.c
-Date:   Tue, 11 Oct 2022 08:01:08 -0400
-Message-Id: <20221011120108.782373-7-xukuohai@huaweicloud.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221011120108.782373-1-xukuohai@huaweicloud.com>
-References: <20221011120108.782373-1-xukuohai@huaweicloud.com>
+        with ESMTP id S229548AbiJKMmX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 08:42:23 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5457B80EB5;
+        Tue, 11 Oct 2022 05:42:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=KY83JvYoAV0pgz0kphFBxmsHspJ7rho//mBc72ItZhQ=; b=XVEEKAgezBOmP2SSc/BgX+GBjC
+        IpZAfSTDQZOUzL9WlKfOlZSGDzfE4oI2KfySNqY+IXafimfiHInNXkoVd8U+xjbnrh3wOE8+7PBq4
+        Nuh2QXEnvFtLgOSZ0PfDcuz/vI7vGYrNbcqioZUV+tWmBXH67fTUBKTky2xFSzPRrxzM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oiEZd-001iED-79; Tue, 11 Oct 2022 14:41:29 +0200
+Date:   Tue, 11 Oct 2022 14:41:29 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Soha Jin <soha@lohu.info>
+Cc:     'Giuseppe Cavallaro' <peppe.cavallaro@st.com>,
+        'Alexandre Torgue' <alexandre.torgue@foss.st.com>,
+        'Jose Abreu' <joabreu@synopsys.com>,
+        "'David S. Miller'" <davem@davemloft.net>,
+        'Eric Dumazet' <edumazet@google.com>,
+        'Jakub Kicinski' <kuba@kernel.org>,
+        'Paolo Abeni' <pabeni@redhat.com>,
+        'Yangyu Chen' <cyy@cyyself.name>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] net: stmmac: use fwnode instead of of to configure
+ driver
+Message-ID: <Y0VkeSxv9IkJPHJj@lunn.ch>
+References: <20221009162247.1336-1-soha@lohu.info>
+ <20221009162247.1336-2-soha@lohu.info>
+ <Y0SCuaVpAnbpMk72@lunn.ch>
+ <9A100E763AFC9404+3a9901d8dd1f$56f01950$04d04bf0$@lohu.info>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: Syh0CgBX8NTXVkVj5HNpAA--.32480S8
-X-Coremail-Antispam: 1UD129KBjvJXoW7uFyfur4UArW5ZFWDKw43Awb_yoW8Arykpa
-        48Gw1qyasYqr1UXF1UJFy29ry8K3WxWw1fCa9F9r4fAr47JF97JF1xKayaq3ZagFWrXw1r
-        Z34UKrn5Zw45J3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUBSb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
-        6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUAV
-        Cq3wA2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0
-        rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0cI8IcVCY1x0267
-        AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E
-        14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7
-        xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Y
-        z7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l42xK82IYc2
-        Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s02
-        6x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a6rW5MIIYrxkI7VAKI48JMIIF0x
-        vE2Ix0cI8IcVAFwI0_JFI_Gr1lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1lIxAI
-        cVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF0xvEx4A2js
-        IEc7CjxVAFwI0_Gr1j6F4UJbIYCTnIWIevJa73UjIFyTuYvjxUFgAwUUUUU
-X-CM-SenderInfo: 50xn30hkdlqx5xdzvxpfor3voofrz/
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9A100E763AFC9404+3a9901d8dd1f$56f01950$04d04bf0$@lohu.info>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xu Kuohai <xukuohai@huawei.com>
+On Tue, Oct 11, 2022 at 11:12:45AM +0800, Soha Jin wrote:
+> Hi Andrew,
+> 
+> > From: Andrew Lunn <andrew@lunn.ch>
+> > Sent: Tuesday, October 11, 2022 4:38 AM
+> > 
+> > None of these are documented as being valid in ACPI. Do you need to ensure
+> > they only come from DT, or you document them for ACPI, and get the ACPI
+> > maintainers to ACK that they are O.K.
+> 
+> There is _DSD object in ACPI which is used to define Device Specific Data,
+> and provide additional properties and information to the driver. With
+> specific UUID listed in _DSD, a package can be used like Device Tree (a
+> string key associated with a value), and this is also the object
+> fwnode_property_* will parse with.
+> 
+> I have tested some of properties with a device describing stmmac device in
+> ACPI, and it works. These properties should be the configuration to the
+> driver, and is not related to the way configuring it. Moreover, these are
+> described in _DSD and not a part of ACPI standard, there seems no need to
+> ask ACPI maintainers.
+> 
+> Also, as described in Documentation/firmware-guide/acpi/enumeration.rst,
+> there is a Device Tree Namespace Link HID (PRP0001) in kernel. PRP0001 can
+> be used to describe a Device Tree in ACPI's _DSD object, and it just put DT
+> properties in a _DSD package with the specific UUID I said above. But to
+> utilize this feature, the driver seems need to use fwnode APIs.
 
-xdp_adjust_tail.c calls ASSERT_OK() to check the return value of
-bpf_prog_test_load(), but the condition is not correct. Fix it.
+The problem i see with ACPI is that everybody does it differently.
+Each driver defines its own set of properties, which are different to
+every other driver. You end up with snowflakes, each driver is unique,
+making it harder to understand, you cannot transfer knowledge from one
+driver to another. This is fine in the closed sources world of binary
+blob drivers, you don't get to see other drivers that much. But for
+Linux, everything is open, and we want you to look at other drivers,
+copy the good ideas from other driver, make drivers look similar, so
+they are easy to maintain. So ACPI snowflakes are bad.
 
-Fixes: 791cad025051 ("bpf: selftests: Get rid of CHECK macro in xdp_adjust_tail.c")
-Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
----
- tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+DT on the other hand, through DT maintainers and general good
+practices, splits its properties into driver unique and generic
+properties. If there is a generic property for what you want to
+express, you us it. Otherwise, you define a vendor property. If you
+see the same vendor property a few times, you add a generic property,
+since it is a concept which is shared by a number of drivers.  DT
+documents all its properties.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
-index 009ee37607df..39973ea1ce43 100644
---- a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
-@@ -18,7 +18,7 @@ static void test_xdp_adjust_tail_shrink(void)
- 	);
- 
- 	err = bpf_prog_test_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);
--	if (ASSERT_OK(err, "test_xdp_adjust_tail_shrink"))
-+	if (!ASSERT_OK(err, "test_xdp_adjust_tail_shrink"))
- 		return;
- 
- 	err = bpf_prog_test_run_opts(prog_fd, &topts);
-@@ -53,7 +53,7 @@ static void test_xdp_adjust_tail_grow(void)
- 	);
- 
- 	err = bpf_prog_test_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);
--	if (ASSERT_OK(err, "test_xdp_adjust_tail_grow"))
-+	if (!ASSERT_OK(err, "test_xdp_adjust_tail_grow"))
- 		return;
- 
- 	err = bpf_prog_test_run_opts(prog_fd, &topts);
-@@ -90,7 +90,7 @@ static void test_xdp_adjust_tail_grow2(void)
- 	);
- 
- 	err = bpf_prog_test_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);
--	if (ASSERT_OK(err, "test_xdp_adjust_tail_grow"))
-+	if (!ASSERT_OK(err, "test_xdp_adjust_tail_grow"))
- 		return;
- 
- 	/* Test case-64 */
--- 
-2.30.2
+The other problem is that people just seem to think they can stuff DT
+properties into ACPI and call it done. But ACPI is not DT. DT has a
+lot of history, things done wrong initially, and then corrected. We
+don't want to just copy this history into ACPI. We want a clean
+design, throwing away the history of things done wrongly. So i don't
+expect ACPI to have any backwards compatibility hacks.
 
+As you say, the ACPI standard says nothing about networking, or MDIO
+busses, or PHYs. Which means we the Linux community can defines how
+ACPI is used within networking, and we can say snowflakes are not
+wanted. We can follow the good practices of DT, and document
+everything.
+
+So, please read
+Documentation/firmware-guide/acpi/dsd/phy.rst. Anything generic to do
+with PHYs, MDIO, etc should be documented in there. And your driver
+should not handle any generic properties which are not listed in
+there. Note that document says nothing about backwards compatibility.
+
+Please add an
+Documentation/firmware-guide/acpi/dsd/ethernet-controller.rst for all
+the generic properties to do with the MAC driver, similar to the DT
+document ethernet-controller.rst.
+
+I would also suggest you add a document specific to this MAC driver,
+documenting properties specific to it. Any DT properties which are
+listed as deprecated, i don't expect to be seen implemented in ACPI.
+The reset GPIO is a good example of this. Look at its horrible
+history, how it is totally messed up in DT. Don't copy that mess into
+ACPI.
+
+> 
+> > Backward compatibility only applies to DT. Anybody using ACPI should not
+> > expect any backwards compatibility, they should be documented mandatory
+> > properties right from the beginning.
+> 
+> Just do not want to mix the use of OF and fwnode APIs, I simply changed all
+> OF property APIs with fwnode APIs. If you really think the backward
+> compatibility should not exist in ACPI, I will change these compatible
+> codes back to OF APIs.
+
+Because ACPI is not DT, sometimes you do need to handle them
+differently. If you have the exact same property in DT and ACPI, you
+are just stuffing DT into ACPI, yes, you can use the fwnode APIs. But
+when ACPI and DT differ, you need to use the lower level APIs to deal
+with these differences.
+
+     Andrew
