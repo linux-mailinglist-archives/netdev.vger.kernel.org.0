@@ -2,177 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 966545FBA00
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 19:57:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1E4E5FBA21
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 20:08:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229805AbiJKR50 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Oct 2022 13:57:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38460 "EHLO
+        id S230021AbiJKSIK convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 11 Oct 2022 14:08:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229819AbiJKR5O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 13:57:14 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0CC065670;
-        Tue, 11 Oct 2022 10:57:08 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id u71so5918650pgd.2;
-        Tue, 11 Oct 2022 10:57:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=p6PKMYxEfdI0WszhrvbWttbUROryrC523EXSl7tLlr0=;
-        b=M7qiOfgJANA6y0/YEBPbE+3kYW1VHMv7aZfg1lwRWmCxgsXpLhCiQfuBoc1CxflZlr
-         aOCf+dUw8vgLy7g0s1HDnIk80SZ92TT59Y78yIpdXb/dAJQwGjy9aFDFrbz11P5sQ2cp
-         Y63Mmt0b6Z4zP0ZrsNG7B2WOH31JBIAIuqR47FELaNT46BN84ggFXuOWhVFskRBctFyA
-         fKZecnKuug0Wdb6Yt4vBC4O38YSCkViJ2Gjiz+XmVqvh5EXfRpK02RY5A0l1+aC24Smc
-         bBXstKA9qpDiuKeaJTcmo0P4/c/NYwTEgdVY0/solFCjl0hYoGQ/3pKqUSPtie/v402e
-         iTOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=p6PKMYxEfdI0WszhrvbWttbUROryrC523EXSl7tLlr0=;
-        b=xdbIRBi1wbh727vyzFtrhmdh4ieW72cNDD5TUHDHU16cti2fWbe/pD/S6wH3hH45fu
-         DgnECTdoUfTWvMLAn2dbzCjXJdp4S1BGAgdBZKN/uBN3wDEs2R7Umfdm38X3UV6kxWUW
-         ob7WfCqZvQLPnN+YRY/cAKhLY7KWfySfSXYaySG1g0Ji8z2rwSFJN2yARzP7E3/rUZ/U
-         E848CsPy3tWbgTeS5aFBwgPvaDBe6pelTt2uDS7xzbbzhtFAQx/kxpKNS9FG3hnEXAu0
-         GLwf7kUtLMoTd/vithbpMM2TYTowSDtYq8w2SP4L2I4RVbZrzvV83dPQZ2pykXie3Y85
-         rt3w==
-X-Gm-Message-State: ACrzQf2ZN3F2lHAPF3BsxgEB7U/BXsyJnjxSLkm4AeXVsFICO1TnwdQr
-        454rpFDFIygMluZbd3C9JSh18dK/bH8=
-X-Google-Smtp-Source: AMsMyM5X7YErkY8WTx/jNo5musiR0Q9uSWbRw4p4Nuu9tRJrkpljevBa+BCAn3cKHdrtYgs9uCjtnA==
-X-Received: by 2002:a63:814a:0:b0:460:9253:bf8e with SMTP id t71-20020a63814a000000b004609253bf8emr14441269pgd.469.1665511028092;
-        Tue, 11 Oct 2022 10:57:08 -0700 (PDT)
-Received: from ?IPV6:2620:15c:2c1:200:fe1e:608c:a454:dd95? ([2620:15c:2c1:200:fe1e:608c:a454:dd95])
-        by smtp.gmail.com with ESMTPSA id x2-20020a170902ea8200b0016d5b7fb02esm8926811plb.60.2022.10.11.10.57.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Oct 2022 10:57:07 -0700 (PDT)
-Message-ID: <194f6b02-8ee7-b5d7-58f3-6a83b5ff275d@gmail.com>
-Date:   Tue, 11 Oct 2022 10:57:05 -0700
+        with ESMTP id S229698AbiJKSIJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 14:08:09 -0400
+Received: from mail.lixid.net (lixid.tarent.de [193.107.123.118])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD61330561
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 11:08:07 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.lixid.net (MTA) with ESMTP id 3151214112E;
+        Tue, 11 Oct 2022 20:08:05 +0200 (CEST)
+Received: from mail.lixid.net ([127.0.0.1])
+        by localhost (mail.lixid.net [127.0.0.1]) (MFA, port 10024) with LMTP
+        id tBkVkymJXjA2; Tue, 11 Oct 2022 20:08:05 +0200 (CEST)
+Received: from tglase.lan.tarent.de (tglase.lan.tarent.de [172.26.3.108])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.lixid.net (MTA) with ESMTPS id 17504140694;
+        Tue, 11 Oct 2022 20:08:05 +0200 (CEST)
+Received: by tglase.lan.tarent.de (Postfix, from userid 2339)
+        id D2C2B221395; Tue, 11 Oct 2022 20:08:04 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by tglase.lan.tarent.de (Postfix) with ESMTP id B231A220BDD;
+        Tue, 11 Oct 2022 20:08:04 +0200 (CEST)
+Date:   Tue, 11 Oct 2022 20:08:04 +0200 (CEST)
+From:   Thorsten Glaser <t.glaser@tarent.de>
+To:     Haye.Haehne@telekom.de
+cc:     netdev@vger.kernel.org
+Subject: Re: RFH, where did I go wrong?
+In-Reply-To: <daddd9a0-eb6c-6b93-8831-ddc45685234f@tarent.de>
+Message-ID: <380a7ee-ef4b-8afc-edc0-809b955499c7@tarent.de>
+References: <FR2P281MB2959684780DC911876D2465590419@FR2P281MB2959.DEUP281.PROD.OUTLOOK.COM> <FR2P281MB2959EBC7E6CE9A1A8D01A01F90419@FR2P281MB2959.DEUP281.PROD.OUTLOOK.COM> <42776059-242c-cf49-c3ed-31e311b91f1c@tarent.de> <CAHNKnsQGwV9Z9dSrKusLV7qE+Xw_4eqEDtHKTVJxuuy6H+pWRA@mail.gmail.com>
+ <cd3867e0-b645-c6cd-3464-29ffb142de5e@tarent.de> <FR2P281MB29597303CA232BBEF6E328DF90479@FR2P281MB2959.DEUP281.PROD.OUTLOOK.COM> <d0755144-c038-8332-1084-b62cc9c6499@tarent.de> <FR2P281MB2959289F36EFC955105DD1DF90469@FR2P281MB2959.DEUP281.PROD.OUTLOOK.COM>
+ <bd8c8a7f-8a8e-3992-d631-d2f74d38483@tarent.de> <FR2P281MB2959185CA486AB5A5868C4D490529@FR2P281MB2959.DEUP281.PROD.OUTLOOK.COM> <1b62f51-a017-e21-31f3-2ccd72b6c8ad@tarent.de> <FR2P281MB29596B8EA9AC8940C5A95B7690559@FR2P281MB2959.DEUP281.PROD.OUTLOOK.COM>
+ <daddd9a0-eb6c-6b93-8831-ddc45685234f@tarent.de>
+Content-Language: de-DE-1901
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: kernel BUG at net/core/skbuff.c:4219
-Content-Language: en-US
-To:     Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     seh@panix.com, Herbert Xu <herbert@gondor.apana.org.au>,
-        Eric Dumazet <edumazet@google.com>
-References: <20221011165611.GA8735@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-In-Reply-To: <20221011165611.GA8735@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 5 Oct 2022, Thorsten Glaser wrote:
 
-On 10/11/22 09:56, Jeremi Piotrowski wrote:
-> Hi,
->
-> One of our Flatcar users has been hitting the kernel BUG in the subject line
-> for the past year (https://github.com/flatcar/Flatcar/issues/378). This was
-> first reported when on 5.10.25, but has been happening across kernel updates,
-> most recently with 5.15.63. The nodes where this happens are AWS EC2 instances,
-> using ENA and calico networking in eBPF mode with VXLAN encapsulation. When
-> GRO/GSO is enabled, the host hits this bug and prints the following stacktrace:
+> I finally managed to reproduce it, and this is the full trace, from virsh console
+> output from an emulated serial console. (Took multiple test runs of 10 minutes
+> each to crash it still…)
 
+I reduced the queue size and it crashed faster and interestingly enough
+with a slightly different message, involving a nōn-canonical address, if
+that helps in figuring out the case…
 
-I suspect eBPF code lowers gso_size ?
+[515605.047121] general protection fault, probably for non-canonical address 0x1e8aad2910e48f51: 0000 [#1] SMP PTI
+[515605.052590] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G           OE     5.10.0-18-amd64 #1 Debian 5.10.140-1
+[515605.057952] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
+[515605.062691] RIP: 0010:kmem_cache_alloc_node+0xa4/0x220
+[515605.065694] Code: 00 48 85 c9 0f 84 63 01 00 00 83 fd ff 74 0f 48 8b 09 48 c1 e9 36 39 cd 0f 85 4f 01 00 00 41 8b 4c 24 28 49 8b 3c 24 48 01 c1 <48> 8b 19 48 89 ce 49 33 9c 24 b8 00 00 00 48 8d 4a 01 48 0f ce 48
+[515605.075754] RSP: 0018:ffffab8f40003c88 EFLAGS: 00010202
+[515605.078817] RAX: 1e8aad2910e48ee1 RBX: 00000000ffffffff RCX: 1e8aad2910e48f51
+[515605.082977] RDX: 0000000000300995 RSI: 0000000000000a20 RDI: 0000000000035af0
+[515605.087135] RBP: 00000000ffffffff R08: ffff901e3ac35af0 R09: 0000000000000600
+[515605.091288] R10: 0000000000001800 R11: 0000000000000600 R12: ffff901e3ac43900
+[515605.095423] R13: ffffffffa2cea3b6 R14: 0000000000000a20 R15: ffff901e3ac43900
+[515605.099588] FS:  0000000000000000(0000) GS:ffff901e3ac00000(0000) knlGS:0000000000000000
+[515605.104247] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[515605.107527] CR2: 00007fbae55d0030 CR3: 00000001039fe000 CR4: 0000000000000ef0
+[515605.111697] Call Trace:
+[515605.113383]  <IRQ>
+[515605.114836]  __alloc_skb+0x46/0x200
+[515605.117058]  __napi_alloc_skb+0x3f/0xf0
+[515605.119439]  page_to_skb+0x61/0x370 [virtio_net]
+[515605.122216]  receive_buf+0xdfe/0x1a20 [virtio_net]
+[515605.125057]  ? inet_gro_receive+0x23a/0x300
+[515605.127603]  ? gro_normal_one+0x31/0xa0
+[515605.129980]  virtnet_poll+0x14e/0x45a [virtio_net]
+[515605.132819]  net_rx_action+0x145/0x3e0
+[515605.135076]  __do_softirq+0xc5/0x279
+[515605.137342]  asm_call_irq_on_stack+0x12/0x20
+[515605.139925]  </IRQ>
+[515605.141423]  do_softirq_own_stack+0x37/0x50
+[515605.143983]  irq_exit_rcu+0x92/0xc0
+[515605.146190]  common_interrupt+0x74/0x130
+[515605.148609]  asm_common_interrupt+0x1e/0x40
+[515605.151137] RIP: 0010:native_safe_halt+0xe/0x20
+[515605.153863] Code: 00 f0 80 48 02 20 48 8b 00 a8 08 75 c0 e9 77 ff ff ff cc cc cc cc cc cc cc cc cc cc e9 07 00 00 00 0f 00 2d a6 39 51 00 fb f4 <c3> cc cc cc cc 66 66 2e 0f 1f 84 00 00 00 00 00 66 90 e9 07 00 00
+[515605.164167] RSP: 0018:ffffffffa3c03eb8 EFLAGS: 00000202
+[515605.167227] RAX: ffffffffa2ef6390 RBX: 0000000000000000 RCX: ffff901e3ac30a40
+[515605.171395] RDX: 0000000007a1f1c6 RSI: ffffffffa3c03e50 RDI: 0001d4f111e9f981
+[515605.175562] RBP: ffffffffa3c13940 R08: 0000000000000001 R09: 0000000000002000
+[515605.179763] R10: 0000000000002000 R11: 0000000000000000 R12: 0000000000000000
+[515605.183929] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+[515605.188125]  ? __sched_text_end+0x6/0x6
+[515605.190498]  default_idle+0xa/0x20
+[515605.192665]  default_idle_call+0x3c/0xd0
+[515605.195103]  do_idle+0x20c/0x2b0
+[515605.197165]  cpu_startup_entry+0x19/0x20
+[515605.199609]  start_kernel+0x574/0x599
+[515605.201920]  secondary_startup_64_no_verify+0xb0/0xbb
+[515605.204910] Modules linked in: sch_janz(OE) xt_conntrack nft_chain_nat xt_MASQUERADE nf_nat nf_conntrack_netlink nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 xfrm_user xfrm_algo nft_counter xt_addrtype nft_compat x_tables nf_tables libcrc32c br_netfilter bridge stp llc nfnetlink overlay nfsd auth_rpcgss nfs_acl nfs lockd grace nfs_ssc fscache sunrpc loop kvm_intel kvm drm_kms_helper irqbypass cec drm virtio_balloon joydev virtio_rng rng_core evdev serio_raw pcspkr qemu_fw_cfg button ext4 crc16 mbcache jbd2 crc32c_generic hid_generic usbhid hid virtio_net net_failover virtio_blk failover uhci_hcd ehci_hcd ata_generic usbcore ata_piix libata psmouse crc32c_intel scsi_mod virtio_pci virtio_ring virtio floppy i2c_piix4 usb_common
+[515605.239110] ---[ end trace 2913cde92d19dc0b ]---
+[515605.241867] RIP: 0010:kmem_cache_alloc_node+0xa4/0x220
+[515605.243441] BUG: Bad page state in process tc  pfn:147d98
+[515605.244897] Code: 00 48 85 c9 0f 84 63 01 00 00 83 fd ff 74 0f 48 8b 09 48 c1 e9 36 39 cd 0f 85 4f 01 00 00 41 8b 4c 24 28 49 8b 3c 24 48 01 c1 <48> 8b 19 48 89 ce 49 33 9c 24 b8 00 00 00 48 8d 4a 01 48 0f ce 48
+[515605.244898] RSP: 0018:ffffab8f40003c88 EFLAGS: 00010202
+[515605.244901] RAX: 1e8aad2910e48ee1 RBX: 00000000ffffffff RCX: 1e8aad2910e48f51
+[515605.244902] RDX: 0000000000300995 RSI: 0000000000000a20 RDI: 0000000000035af0
+[515605.244911] RBP: 00000000ffffffff R08: ffff901e3ac35af0 R09: 0000000000000600
+[515605.244913] R10: 0000000000001800 R11: 0000000000000600 R12: ffff901e3ac43900
+[515605.244914] R13: ffffffffa2cea3b6 R14: 0000000000000a20 R15: ffff901e3ac43900
+[515605.244916] FS:  0000000000000000(0000) GS:ffff901e3ac00000(0000) knlGS:0000000000000000
+[515605.244918] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[515605.244919] CR2: 00007fbae55d0030 CR3: 00000001039fe000 CR4: 0000000000000ef0
+[515605.244925] Kernel panic - not syncing: Fatal exception in interrupt
+[515605.343549] page:00000000a7ad6eb8 refcount:-7 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x147d98
+[515605.353713] flags: 0x17ffffc0000000()
+[515605.356764] raw: 0017ffffc0000000 dead000000000100 dead000000000122 0000000000000000
+[515605.361568] raw: 0000000000000000 0000000000000000 fffffff9ffffffff 0000000000000000
+[515605.366046] page dumped because: nonzero _refcount
+[515605.368910] Modules linked in: sch_janz(OE) xt_conntrack nft_chain_nat xt_MASQUERADE nf_nat nf_conntrack_netlink nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 xfrm_user xfrm_algo nft_counter xt_addrtype nft_compat x_tables nf_tables libcrc32c br_netfilter bridge stp llc nfnetlink overlay nfsd auth_rpcgss nfs_acl nfs lockd grace nfs_ssc fscache sunrpc loop kvm_intel kvm drm_kms_helper irqbypass cec drm virtio_balloon joydev virtio_rng rng_core evdev serio_raw pcspkr qemu_fw_cfg button ext4 crc16 mbcache jbd2 crc32c_generic hid_generic usbhid hid virtio_net net_failover virtio_blk failover uhci_hcd ehci_hcd ata_generic usbcore ata_piix libata psmouse crc32c_intel scsi_mod virtio_pci virtio_ring virtio floppy i2c_piix4 usb_common
+[515605.402912] CPU: 2 PID: 6951 Comm: tc Tainted: G      D    OE     5.10.0-18-amd64 #1 Debian 5.10.140-1
+[515605.408258] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
+[515605.413046] Call Trace:
+[515605.414753]  dump_stack+0x6b/0x83
+[515605.416879]  bad_page.cold+0x63/0x94
+[515605.419142]  get_page_from_freelist+0xc0b/0x1330
+[515605.421924]  __alloc_pages_nodemask+0x161/0x310
+[515605.424638]  kmalloc_large_node+0x3d/0x110
+[515605.427157]  __kmalloc_node_track_caller+0x235/0x2a0
+[515605.430130]  ? netlink_dump+0x9c/0x350
+[515605.432503]  __alloc_skb+0x79/0x200
+[515605.434686]  netlink_dump+0x9c/0x350
+[515605.436948]  netlink_recvmsg+0x246/0x420
+[515605.439424]  ____sys_recvmsg+0x87/0x180
+[515605.441844]  ? flush_tlb_func_common.constprop.0+0x10f/0x1e0
+[515605.445141]  ? __check_object_size+0x4a/0x160
+[515605.447786]  ? _copy_from_user+0x28/0x60
+[515605.450219]  ? iovec_from_user+0x5b/0x180
+[515605.452693]  ___sys_recvmsg+0x82/0x110
+[515605.455017]  ? handle_mm_fault+0x1143/0x1c10
+[515605.457608]  __sys_recvmsg+0x56/0xa0
+[515605.459853]  do_syscall_64+0x33/0x80
+[515605.462087]  entry_SYSCALL_64_after_hwframe+0x61/0xc6
+[515605.465079] RIP: 0033:0x7f24c51b6e63
+[515605.467301] Code: 8b 15 31 10 0d 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b5 0f 1f 00 64 8b 04 25 18 00 00 00 85 c0 75 14 b8 2f 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 55 c3 0f 1f 40 00 48 83 ec 28 89 54 24 1c 48
+[515605.477470] RSP: 002b:00007ffd49f7c7f8 EFLAGS: 00000246 ORIG_RAX: 000000000000002f
+[515605.481870] RAX: ffffffffffffffda RBX: 0000000000000001 RCX: 00007f24c51b6e63
+[515605.486040] RDX: 0000000000000022 RSI: 00007ffd49f7c8e0 RDI: 0000000000000003
+[515605.490174] RBP: 0000000000000022 R08: 000000007c9654be R09: 00007f24c5288be0
+[515605.494362] R10: 0000000000000076 R11: 0000000000000246 R12: 00007ffd49f7c8e0
+[515605.498537] R13: 0000000000000003 R14: 00007ffd49f7c8d0 R15: 0000000000000000
+[515605.502778] Kernel Offset: 0x21600000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+[515605.508847] ---[ end Kernel panic - not syncing: Fatal exception in interrupt ]---
 
-gso stack is not able to arbitrarily segment a GRO packet after gso_size 
-being changed.
+TIA,
+//mirabilos
+-- 
+Infrastrukturexperte • tarent solutions GmbH
+Am Dickobskreuz 10, D-53121 Bonn • http://www.tarent.de/
+Telephon +49 228 54881-393 • Fax: +49 228 54881-235
+HRB AG Bonn 5168 • USt-ID (VAT): DE122264941
+Geschäftsführer: Dr. Stefan Barth, Kai Ebenrett, Boris Esser, Alexander Steeg
 
-
->
-> [Mon Oct 10 18:22:24 2022] ------------[ cut here ]------------
-> [Mon Oct 10 18:22:24 2022] kernel BUG at net/core/skbuff.c:4219!
-> [Mon Oct 10 18:22:24 2022] invalid opcode: 0000 [#1] SMP PTI
-> [Mon Oct 10 18:22:24 2022] CPU: 6 PID: 0 Comm: swapper/6 Not tainted 5.15.63-flatcar #1
-> [Mon Oct 10 18:22:24 2022] Hardware name: Amazon EC2 z1d.12xlarge/, BIOS 1.0 10/16/2017
-> [Mon Oct 10 18:22:24 2022] RIP: 0010:skb_segment+0xc70/0xe80
-> [Mon Oct 10 18:22:24 2022] Code: 44 24 50 48 89 44 24 30 48 8b 44 24 10 48 89 44 24 50 e9 16 f7 ff ff 0f 0b 89 44 24 2c c7 44 24 4c 00 00 00 00 e9 44 fe ff ff <0f> 0b 0f 0b 0f 0b 41 8b 7d 74 85 ff 0f 85 91 01 00 00 49 8b 95 c0
-> [Mon Oct 10 18:22:24 2022] RSP: 0018:ffffa2d38c780838 EFLAGS: 00010246
-> [Mon Oct 10 18:22:24 2022] RAX: ffff8954dd8312c0 RBX: ffff89293fbde300 RCX: ffff8957bd3d2fa0
-> [Mon Oct 10 18:22:24 2022] RDX: 0000000000000000 RSI: ffff89293fbde2c0 RDI: ffffffffffffffff
-> [Mon Oct 10 18:22:24 2022] RBP: ffffa2d38c780908 R08: 0000000000009db6 R09: 0000000000000000
-> [Mon Oct 10 18:22:24 2022] R10: 000000000000a356 R11: 000000000000a31a R12: 000000000000000b
-> [Mon Oct 10 18:22:24 2022] R13: ffff892940566100 R14: 000000000000a31a R15: ffff891ad0e5c600
-> [Mon Oct 10 18:22:24 2022] FS:  0000000000000000(0000) GS:ffff8948b9b80000(0000) knlGS:0000000000000000
-> [Mon Oct 10 18:22:24 2022] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [Mon Oct 10 18:22:24 2022] CR2: 000000c011faf000 CR3: 0000000d66a0a001 CR4: 00000000007706e0
-> [Mon Oct 10 18:22:24 2022] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [Mon Oct 10 18:22:24 2022] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> [Mon Oct 10 18:22:24 2022] PKRU: 55555554
-> [Mon Oct 10 18:22:24 2022] Call Trace:
-> [Mon Oct 10 18:22:24 2022]  <IRQ>
-> [Mon Oct 10 18:22:24 2022] ? csum_block_add_ext (include/net/checksum.h:117)
-> [Mon Oct 10 18:22:24 2022] ? reqsk_fastopen_remove (include/linux/bitops.h:119 include/net/checksum.h:87 include/net/checksum.h:94 include/net/checksum.h:100)
-> [Mon Oct 10 18:22:24 2022] tcp_gso_segment (net/ipv4/tcp_offload.c:99)
-> [Mon Oct 10 18:22:24 2022] inet_gso_segment (net/ipv4/af_inet.c:1385)
-> [Mon Oct 10 18:22:24 2022] skb_mac_gso_segment (net/core/dev.c:3339)
-> [Mon Oct 10 18:22:24 2022] __skb_gso_segment (net/core/dev.c:3414 (discriminator 3))
-> [Mon Oct 10 18:22:24 2022] ? netif_skb_features (include/net/mpls.h:21 net/core/dev.c:3463 net/core/dev.c:3483 net/core/dev.c:3574)
-> [Mon Oct 10 18:22:24 2022] validate_xmit_skb.constprop.0 (net/core/dev.c:3672)
-> [Mon Oct 10 18:22:24 2022] validate_xmit_skb_list (net/core/dev.c:3722)
-> [Mon Oct 10 18:22:24 2022] sch_direct_xmit (net/sched/sch_generic.c:327)
-> [Mon Oct 10 18:22:24 2022] __dev_queue_xmit (net/core/dev.c:3858 net/core/dev.c:4185)
-> [Mon Oct 10 18:22:24 2022] ip_finish_output2 (include/net/neighbour.h:500 include/net/neighbour.h:514 net/ipv4/ip_output.c:228)
-> [Mon Oct 10 18:22:24 2022] ? ip_route_input_rcu (net/ipv4/route.c:1745 net/ipv4/route.c:2499 net/ipv4/route.c:2458)
-> [Mon Oct 10 18:22:24 2022] ? skb_gso_validate_network_len (net/core/skbuff.c:5561 net/core/skbuff.c:5636)
-> [Mon Oct 10 18:22:24 2022] ? __ip_finish_output (net/ipv4/ip_output.c:249 net/ipv4/ip_output.c:301 net/ipv4/ip_output.c:288)
-> [Mon Oct 10 18:22:24 2022] ip_sublist_rcv_finish (include/net/dst.h:460 net/ipv4/ip_input.c:565)
-> [Mon Oct 10 18:22:24 2022] ip_sublist_rcv (net/ipv4/ip_input.c:624)
-> [Mon Oct 10 18:22:24 2022] ? ip_sublist_rcv (net/ipv4/ip_input.c:422)
-> [Mon Oct 10 18:22:24 2022] ip_list_rcv (net/ipv4/ip_input.c:659)
-> [Mon Oct 10 18:22:24 2022] __netif_receive_skb_list_core (net/core/dev.c:5498 net/core/dev.c:5546)
-> [Mon Oct 10 18:22:24 2022] netif_receive_skb_list_internal (net/core/dev.c:5600 net/core/dev.c:5689)
-> [Mon Oct 10 18:22:24 2022] ? inet_gro_complete (net/ipv4/af_inet.c:1645)
-> [Mon Oct 10 18:22:24 2022] napi_gro_complete.constprop.0.isra.0 (include/linux/list.h:35 net/core/dev.c:5844 net/core/dev.c:5839 net/core/dev.c:5856 net/core/dev.c:5892)
-> [Mon Oct 10 18:22:24 2022] dev_gro_receive (net/core/dev.c:6119)
-> [Mon Oct 10 18:22:24 2022] napi_gro_receive (net/core/dev.c:6223)
-> [Mon Oct 10 18:22:24 2022]  0xffffffffc069d699
-> [Mon Oct 10 18:22:24 2022] ? scheduler_tick (kernel/sched/core.c:7053 kernel/sched/core.c:5278)
-> [Mon Oct 10 18:22:24 2022] __napi_poll (net/core/dev.c:7005)
-> [Mon Oct 10 18:22:24 2022] net_rx_action (net/core/dev.c:7074 net/core/dev.c:7159)
-> [Mon Oct 10 18:22:24 2022] __do_softirq (arch/x86/include/asm/jump_label.h:27 include/linux/jump_label.h:212 include/trace/events/irq.h:142 kernel/softirq.c:559)
-> [Mon Oct 10 18:22:24 2022] irq_exit_rcu (kernel/softirq.c:432 kernel/softirq.c:636 kernel/softirq.c:648)
-> [Mon Oct 10 18:22:24 2022] common_interrupt (arch/x86/kernel/irq.c:240 (discriminator 14))
-> [Mon Oct 10 18:22:24 2022]  </IRQ>
-> [Mon Oct 10 18:22:24 2022]  <TASK>
-> [Mon Oct 10 18:22:24 2022]  asm_common_interrupt+0x21/0x40
-> [Mon Oct 10 18:22:24 2022] RIP: 0010:cpuidle_enter_state+0xc7/0x350
-> [Mon Oct 10 18:22:24 2022] Code: 8b 3d f5 e1 9b 4d e8 08 bb a7 ff 49 89 c5 0f 1f 44 00 00 31 ff e8 09 c9 a7 ff 45 84 ff 0f 85 fe 00 00 00 fb 66 0f 1f 44 00 00 <45> 85 f6 0f 88 0a 01 00 00 49 63 c6 4c 2b 2c 24 48 8d 14 40 48 8d
-> [Mon Oct 10 18:22:24 2022] RSP: 0018:ffffa2d38c527ea8 EFLAGS: 00000246
-> [Mon Oct 10 18:22:24 2022] RAX: ffff8948b9bac100 RBX: 0000000000000003 RCX: 00000000ffffffff
-> [Mon Oct 10 18:22:24 2022] RDX: 0000000000000006 RSI: 0000000000000006 RDI: 0000000000000000
-> [Mon Oct 10 18:22:24 2022] RBP: ffff8948b9bb6000 R08: 0000043f38b90644 R09: 0000043f6c0b1df3
-> [Mon Oct 10 18:22:24 2022] R10: 0000000000000014 R11: 0000000000000008 R12: ffffffffb3bbd7e0
-> [Mon Oct 10 18:22:24 2022] R13: 0000043f38b90644 R14: 0000000000000003 R15: 0000000000000000
-> [Mon Oct 10 18:22:24 2022]  ? cpuidle_enter_state+0xb7/0x350
-> [Mon Oct 10 18:22:24 2022]  cpuidle_enter+0x29/0x40
-> [Mon Oct 10 18:22:24 2022]  do_idle+0x1e9/0x280
-> [Mon Oct 10 18:22:24 2022]  cpu_startup_entry+0x19/0x20
-> [Mon Oct 10 18:22:24 2022]  secondary_startup_64_no_verify+0xc2/0xcb
-> [Mon Oct 10 18:22:24 2022]  </TASK>
-> [Mon Oct 10 18:22:24 2022] Modules linked in: xt_CT ip_set_hash_net ip_set vxlan cls_bpf sch_ingress veth xt_comment xt_mark xt_conntrack nft_chain_nat xt_MASQUERADE nf_nat nf_conntrack_netlink nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 xfrm_user xfrm_algo nft_counter xt_addrtype nft_compat nf_tables nfnetlink nls_ascii nls_cp437 vfat fat mousedev intel_rapl_msr intel_rapl_common psmouse evdev i2c_piix4 i2c_core button sch_fq_codel fuse configfs ext4 crc16 mbcache jbd2 dm_verity dm_bufio aesni_intel nvme nvme_core libaes crypto_simd ena cryptd t10_pi crc_t10dif crct10dif_generic crct10dif_common btrfs blake2b_generic zstd_compress lzo_compress raid6_pq libcrc32c crc32c_generic crc32c_intel dm_mirror dm_region_hash dm_log dm_mod qla4xxx iscsi_boot_sysfs iscsi_tcp libiscsi_tcp libiscsi br_netfilter bridge scsi_transport_iscsi stp llc overlay scsi_mod scsi_common
-> [Mon Oct 10 18:22:24 2022] ---[ end trace 86a2732b8f4d0b13 ]---
->
-> Disabling GSO/GRO *seems* to prevent the BUG_ON() from getting hit but is too
-> costly in terms of performance. There are also suggestions that this happens
-> more often under heavy network load, and has also been observed when running on
-> Vmware.
->
-> If anyone has any suggestions or needs more information to come up with a
-> theory, we'd love to get to the bottom of this.
->
-> Jeremi
+                        ****************************************************
+/⁀\ The UTF-8 Ribbon
+╲ ╱ Campaign against      Mit dem tarent-Newsletter nichts mehr verpassen:
+ ╳  HTML eMail! Also,     https://www.tarent.de/newsletter
+╱ ╲ header encryption!
+                        ****************************************************
