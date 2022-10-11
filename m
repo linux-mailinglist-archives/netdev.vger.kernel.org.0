@@ -2,96 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 631135FAD7C
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 09:30:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47CD95FADB3
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 09:48:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229975AbiJKHaH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Oct 2022 03:30:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36558 "EHLO
+        id S229771AbiJKHsY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Oct 2022 03:48:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229976AbiJKHaF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 03:30:05 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4146817AB3
-        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 00:30:04 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id j16so20190047wrh.5
-        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 00:30:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=65DZPGeOMiG51jD3mC3VwJN9blhX58ex8VFolpch4hE=;
-        b=eJznDTW89xs0tH9NNiWgz4BRsc58OVzipL7hFrU2DWFuSi4xUmlEIubFxEkAnb6fpA
-         9HnTByyhgdw5KAkZDkxRQmL0EFB9mlzNR29wsekOYm3Jb5fahYBMqaRD3aafym63fnlg
-         hDKqmyBMaLvlr10OJR+8Z6N9SEaowHUcW2UDFsPT0LqNnqY7HzO0pUclyY83YeezW7df
-         99fpdOqvLp3+yCsZ0y6sTut7k/OzZrYtnvX7ZTSLpB0Z7z0P8GcRDQrQXuJGETOSr3ih
-         pVfBqNJ112LKYpGPoOeFyUQksOnlONlT1kJ9Ymrj2olY1mVHca9VDa848izmOZRDp5Ks
-         dk8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=65DZPGeOMiG51jD3mC3VwJN9blhX58ex8VFolpch4hE=;
-        b=fn1fVgtAyf5Iu1Bt6anPmtlUP8iYpQZQ7SVPRo+WePoZy/PG/4ml1Cu5KNAjNbWbMv
-         xWj7tOfptUpPCDNxSXToGguwTyQ7R9oJoFEBk8zTeO7erZmnCjeUtW+kklPI/OjHe0yN
-         z5D0fXVx2Tot2ZyWsqUtVyzhF2I1RXIjfT3hS7i2CubJKhs6l3GGvosCviuy9uJyBJq8
-         1Q7HH5QKjydGxRNskxjuNYL7OZtZ+ycTCtjTlPh7Ka1a4qRV7PEhNKlL6MB7p2RnW4rX
-         bGieWwRMCL7n1CnL1yQ/AsfPVruFSp39IH7phRfumy9bGdg4lq1gMnNjyJD20+kPp90y
-         vV/A==
-X-Gm-Message-State: ACrzQf2Sw5Kdg3zJ+CDEgt5azQStcWfgU28KR5+j4MHPC84mWKBsdTk2
-        6HAX0rzkp2iwTSbNQ7X5bdA+T3QeaIxhAySl
-X-Google-Smtp-Source: AMsMyM5bYwuhdM8NeI853wEqPN4PbunSgXieDpWhbciwvzZgeMyrXn6mpiGDzciyWyQsNzyubdhvXw==
-X-Received: by 2002:a5d:6da2:0:b0:22e:4244:953a with SMTP id u2-20020a5d6da2000000b0022e4244953amr13449578wrs.225.1665473402497;
-        Tue, 11 Oct 2022 00:30:02 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id l10-20020adfe9ca000000b002286670bafasm10535297wrn.48.2022.10.11.00.30.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Oct 2022 00:30:01 -0700 (PDT)
-Date:   Tue, 11 Oct 2022 09:30:00 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vadim Fedorenko <vfedorenko@novek.ru>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-clk@vger.kernel.org, Vadim Fedorenko <vadfed@fb.com>
-Subject: Re: [RFC PATCH v3 6/6] ptp_ocp: implement DPLL ops
-Message-ID: <Y0UbeHfxJvBUc2N/@nanopsycho>
-References: <20221010011804.23716-1-vfedorenko@novek.ru>
- <20221010011804.23716-7-vfedorenko@novek.ru>
- <Y0Q9Xcf92OpWPJGW@nanopsycho>
- <a8631728-a76a-41b3-0f88-413c3d7a1b2e@novek.ru>
+        with ESMTP id S229573AbiJKHsX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 03:48:23 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16DA1876A3
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 00:48:22 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1oi9zw-0007d3-JS
+        for netdev@vger.kernel.org; Tue, 11 Oct 2022 09:48:20 +0200
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id 01F69F9C95
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 07:48:19 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 9DB50F9C8C;
+        Tue, 11 Oct 2022 07:48:18 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 69173efa;
+        Tue, 11 Oct 2022 07:48:17 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: [PATCH net 0/4] pull-request: can 2022-10-11
+Date:   Tue, 11 Oct 2022 09:48:11 +0200
+Message-Id: <20221011074815.397301-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a8631728-a76a-41b3-0f88-413c3d7a1b2e@novek.ru>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Oct 10, 2022 at 10:14:20PM CEST, vfedorenko@novek.ru wrote:
->On 10.10.2022 16:42, Jiri Pirko wrote:
->> Mon, Oct 10, 2022 at 03:18:04AM CEST, vfedorenko@novek.ru wrote:
->> > From: Vadim Fedorenko <vadfed@fb.com>
+Hello Jakub, hello David,
 
-[..]
+this is a pull request of 4 patches for net/main.
+
+Anssi Hannula and Jimmy Assarsson contribute 4 patches for the
+kvaser_usb driver. A check for actual received length of USB transfers
+is added, the use of an uninitialized completion is fixed, the TX
+queue is re-synced after restart, and the CAN state is fixed after
+restart.
+
+regards,
+Marc
+
+---
+
+The following changes since commit b15e2e49bfc4965d86b9bc4a8426d53ec90a7192:
+
+  nfp: flower: fix incorrect struct type in GRE key_size (2022-10-10 18:00:43 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-6.1-20221011
+
+for you to fetch changes up to 8183602b8cbc4d865068c6c5705228760d30b003:
+
+  Merge patch series "can: kvaser_usb: Various fixes" (2022-10-11 08:51:22 +0200)
+
+----------------------------------------------------------------
+linux-can-fixes-for-6.1-20221011
+
+----------------------------------------------------------------
+Anssi Hannula (4):
+      can: kvaser_usb_leaf: Fix overread with an invalid command
+      can: kvaser_usb: Fix use of uninitialized completion
+      can: kvaser_usb_leaf: Fix TX queue out of sync after restart
+      can: kvaser_usb_leaf: Fix CAN state after restart
+
+Marc Kleine-Budde (1):
+      Merge patch series "can: kvaser_usb: Various fixes"
+
+ drivers/net/can/usb/kvaser_usb/kvaser_usb.h       |  2 +
+ drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c  |  3 +-
+ drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c |  2 +-
+ drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c  | 79 +++++++++++++++++++++++
+ 4 files changed, 84 insertions(+), 2 deletions(-)
 
 
->> 
->> This hunk should not be here.
->> I commented this on the previous version. Btw, this is not the only
->> thing that I previously commented and you ignored. It is annoying to be
->> honest. Could you please include the requested changes in next patchset
->> version or comment why you are not do including them. Ignoring is never
->> good :/
->> 
->Sorry for that. This version of patchset was issued to add visibility to the
->work done by Arkadiusz and to provide documentation (or at least part of it).
->I will definitely address the comments in the next spin.
-
-NP, thanks!
