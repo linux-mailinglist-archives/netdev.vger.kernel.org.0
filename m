@@ -2,163 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C45F5FADDC
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 09:55:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBBCE5FADF0
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 10:02:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229537AbiJKHzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Oct 2022 03:55:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36236 "EHLO
+        id S229714AbiJKIB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Oct 2022 04:01:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230015AbiJKHzk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 03:55:40 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9319B40E2A;
-        Tue, 11 Oct 2022 00:55:38 -0700 (PDT)
-Received: from fraeml741-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Mmp3L6z7Sz67mY4;
-        Tue, 11 Oct 2022 15:54:54 +0800 (CST)
-Received: from lhrpeml500004.china.huawei.com (7.191.163.9) by
- fraeml741-chm.china.huawei.com (10.206.15.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 11 Oct 2022 09:55:36 +0200
-Received: from [10.122.132.241] (10.122.132.241) by
- lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 11 Oct 2022 08:55:35 +0100
-Message-ID: <4d97342e-0961-e691-40af-c007d02ea43c@huawei.com>
-Date:   Tue, 11 Oct 2022 10:55:34 +0300
+        with ESMTP id S229651AbiJKIB5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 04:01:57 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 674D821819
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 01:01:55 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id v130-20020a1cac88000000b003bcde03bd44so9839693wme.5
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 01:01:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=4V+gpBjk94nGcRqMEPz2aU1JA9Iq7cbFYTB+B934+8c=;
+        b=a4jhloACkZPXLfEWf67R3+ImWh8DFdyIg3I6936z39W7qnFacIqFEXpXujGaJVYGs8
+         mNUawZj/y4jHQkL1Z09cgxlbxXRcgj8VBHtuLNP//EQ+dGKGrK0ApiMvuS4cShoMhsHL
+         WPEjPBUYgxzwiLtnjLRMWQAa3lXNHyoDX+Zcal2Bhs9lrNx4wlv02WE1+P2SUyEydQSV
+         USJY6eSaZxCdpVxwKVLmmrXgxC7CHvKSvu+Wb39ydtIH5pPJxvNjXwYrKhsrOiiqBdWn
+         8vA2zWQzzGd5sTUKL5t3s5egbU51XKSyINm1/wjsM8oWbniF/Yq7gtPFaitM0yjxxsm/
+         4jmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=4V+gpBjk94nGcRqMEPz2aU1JA9Iq7cbFYTB+B934+8c=;
+        b=vpNafppNR5JPZTHFvrVq3fqkLArI60zIr1zTGaapOBNc3k7g6E+ZD+PSVh8BGiWOOM
+         RGSpKb2jR8dgUz0WxwjkmxHZ5qk9YBDsA2AxztmpBveMa5Gei65a3jNzy5Ry87rMmF1Z
+         Q0OA+787J4his0os3b5QtDZMQfIIJxqXPTRWUThNku9ITZ7ytgz9BWjbHrI5inkvYHC6
+         ohEBUyZeGDPfUY8EgufVoUc5pSLFCt8umVjYYOVnO3uGr9P89YIxjilNVM7DFrRyMkoX
+         hlJQL4wFMfwSz1jxabwcL+8gkE72pk8UDKK9Zf6KKJoIT34vzLIZrDZXJTOBl176i2es
+         fknA==
+X-Gm-Message-State: ACrzQf3tHcDfis8P8x42qSie9n5WgDbTtfYNtIK1jC1wlxPuSLWWR0sY
+        zU0jFSsgNYdZqvsEOkEUIzs=
+X-Google-Smtp-Source: AMsMyM7NYU3PnHc/5xtY6N9i3JBDnf9Pu4rz9Zs3AgWgFIw93u9L0jFdJULl8jhhotlZ7RRUx2ILBg==
+X-Received: by 2002:a05:600c:4789:b0:3c4:dbb7:ab0c with SMTP id k9-20020a05600c478900b003c4dbb7ab0cmr10466356wmo.164.1665475313601;
+        Tue, 11 Oct 2022 01:01:53 -0700 (PDT)
+Received: from localhost.localdomain ([213.57.189.88])
+        by smtp.gmail.com with ESMTPSA id d5-20020a05600c34c500b003c409244bb0sm10284200wmq.6.2022.10.11.01.01.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Oct 2022 01:01:53 -0700 (PDT)
+From:   Eyal Birger <eyal.birger@gmail.com>
+To:     idosch@idosch.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, steffen.klassert@secunet.com,
+        herbert@gondor.apana.org.au, dsahern@kernel.org,
+        contact@proelbtn.com, pablo@netfilter.org,
+        nicolas.dichtel@6wind.com, razor@blackwall.org,
+        daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, Eyal Birger <eyal.birger@gmail.com>
+Subject: [PATCH ipsec] xfrm: lwtunnel: squelch kernel warning in case XFRM encap type is not available
+Date:   Tue, 11 Oct 2022 11:01:37 +0300
+Message-Id: <20221011080137.440419-1-eyal.birger@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v7 16/18] seltests/landlock: add invalid input data test
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <anton.sirazetdinov@huawei.com>
-References: <20220829170401.834298-1-konstantin.meskhidze@huawei.com>
- <20220829170401.834298-17-konstantin.meskhidze@huawei.com>
- <d91e3fcc-2320-e98c-7d54-458b749c87a8@digikod.net>
- <47ddb2ea-3bc7-533a-9b0d-2b2d3950644c@huawei.com>
- <36de86ad-460c-81d0-b5bd-4d54bd05d201@digikod.net>
- <b4b49d93-72a1-b7b4-68e4-2bd03034ee77@digikod.net>
-From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-In-Reply-To: <b4b49d93-72a1-b7b4-68e4-2bd03034ee77@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.122.132.241]
-X-ClientProxiedBy: lhrpeml100003.china.huawei.com (7.191.160.210) To
- lhrpeml500004.china.huawei.com (7.191.163.9)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-6.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Ido reported that a kernel warning [1] can be triggered from
+user space when the kernel is compiled with CONFIG_MODULES=y and
+CONFIG_XFRM=n when adding an xfrm encap type route, e.g:
 
+$ ip route add 198.51.100.0/24 dev dummy1 encap xfrm if_id 1
+Error: lwt encapsulation type not supported.
 
-10/10/2022 1:37 PM, Mickaël Salaün пишет:
-> 
-> On 12/09/2022 19:22, Mickaël Salaün wrote:
->> 
->> On 10/09/2022 22:51, Konstantin Meskhidze (A) wrote:
->>>
->>>
->>> 9/6/2022 11:09 AM, Mickaël Salaün пишет:
->>>>
->>>> On 29/08/2022 19:03, Konstantin Meskhidze wrote:
->>>>> This patch adds rules with invalid user space supplied data:
->>>>>        - out of range ruleset attribute;
->>>>>        - unhandled allowed access;
->>>>>        - zero port value;
->>>>>        - zero access value;
->>>>>
->>>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
->>>>> ---
->>>>>
->>>>> Changes since v6:
->>>>> * Adds invalid ruleset attribute test.
->>>>>
->>>>> Changes since v5:
->>>>> * Formats code with clang-format-14.
->>>>>
->>>>> Changes since v4:
->>>>> * Refactors code with self->port variable.
->>>>>
->>>>> Changes since v3:
->>>>> * Adds inval test.
->>>>>
->>>>> ---
->>>>>     tools/testing/selftests/landlock/net_test.c | 66 ++++++++++++++++++++-
->>>>>     1 file changed, 65 insertions(+), 1 deletion(-)
->>>>>
->>>>> diff --git a/tools/testing/selftests/landlock/net_test.c b/tools/testing/selftests/landlock/net_test.c
->>>>> index a93224d1521b..067ba45f58a5 100644
->>>>> --- a/tools/testing/selftests/landlock/net_test.c
->>>>> +++ b/tools/testing/selftests/landlock/net_test.c
->>>>> @@ -26,9 +26,12 @@
->>>>>
->>>>>     #define IP_ADDRESS "127.0.0.1"
->>>>>
->>>>> -/* Number pending connections queue to be hold */
->>>>> +/* Number pending connections queue to be hold. */
->>>>
->>>> Patch of a previous patch?
->>>>
->>>>
->>>>>     #define BACKLOG 10
->>>>>
->>>>> +/* Invalid attribute, out of landlock network access range. */
->>>>> +#define LANDLOCK_INVAL_ATTR 7
->>>>> +
->>>>>     FIXTURE(socket)
->>>>>     {
->>>>>     	uint port[MAX_SOCKET_NUM];
->>>>> @@ -719,4 +722,65 @@ TEST_F(socket, ruleset_expanding)
->>>>>     	/* Closes socket 1. */
->>>>>     	ASSERT_EQ(0, close(sockfd_1));
->>>>>     }
->>>>> +
->>>>> +TEST_F(socket, inval)
->>>>> +{
->>>>> +	struct landlock_ruleset_attr ruleset_attr = {
->>>>> +		.handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP
->>>>> +	};
->>>>> +	struct landlock_ruleset_attr ruleset_attr_inval = {
->>>>> +		.handled_access_net = LANDLOCK_INVAL_ATTR
->>>>
->>>> Please add a test similar to TEST_F_FORK(layout1,
->>>> file_and_dir_access_rights) instead of explicitly defining and only
->>>> testing LANDLOCK_INVAL_ATTR.
->>>>
->>>      Do you want fs test to be in this commit or maybe its better to add
->>> it into "[PATCH v7 01/18] landlock: rename access mask" one.
-> 
-> Just to make it clear, I didn't suggested an FS test, but a new network
-> test similar to layout1.file_and_dir_access_rights but only related to
-> the network. It should replace/extend the content of this patch (16/18).
-> 
-  Ok. I will check out out "layout1.file_and_dir_access_rights" one.
-But anyway we need some test like TEST_F_FORK(layout1, with_net) and
-TEST_F_FORK(socket, with_fs) with mixed attributes as you suggested.
+The reason for the warning is that the LWT infrastructure has an
+autoloading feature which is meant only for encap types that don't
+use a net device,  which is not the case in xfrm encap.
 
-> 
->> 
->> You can squash all the new tests patches (except the "move helper
->> function").
-> You should move most of your patch descriptions in a comment above the
-> related tests. The commit message should list all the new tests and
-> quickly explain which part of the kernel is covered (i.e. mostly the TCP
-> part of Landlock). You can get some inspiration from
-> https://git.kernel.org/mic/c/f4056b9266b571c63f30cda70c2d89f7b7e8bb7b
-> 
-> You need to rebase on top of my next branch (from today).
+Mute this warning for xfrm encap as there's no encap module to autoload
+in this case.
 
-  Ok. Thank you. Sorry for the delay - I was under the snow with 
-Business Trip to China preparings. So I've got out of 10 days quarantine 
-now and continued working.
-> .
+[1]
+ WARNING: CPU: 3 PID: 2746262 at net/core/lwtunnel.c:57 lwtunnel_valid_encap_type+0x4f/0x120
+[...]
+ Call Trace:
+  <TASK>
+  rtm_to_fib_config+0x211/0x350
+  inet_rtm_newroute+0x3a/0xa0
+  rtnetlink_rcv_msg+0x154/0x3c0
+  netlink_rcv_skb+0x49/0xf0
+  netlink_unicast+0x22f/0x350
+  netlink_sendmsg+0x208/0x440
+  ____sys_sendmsg+0x21f/0x250
+  ___sys_sendmsg+0x83/0xd0
+  __sys_sendmsg+0x54/0xa0
+  do_syscall_64+0x35/0x80
+  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+Reported-by: Ido Schimmel <idosch@idosch.org>
+Fixes: 2c2493b9da91 ("xfrm: lwtunnel: add lwtunnel support for xfrm interfaces in collect_md mode")
+Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
+---
+ net/core/lwtunnel.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/net/core/lwtunnel.c b/net/core/lwtunnel.c
+index 6fac2f0ef074..711cd3b4347a 100644
+--- a/net/core/lwtunnel.c
++++ b/net/core/lwtunnel.c
+@@ -48,9 +48,11 @@ static const char *lwtunnel_encap_str(enum lwtunnel_encap_types encap_type)
+ 		return "RPL";
+ 	case LWTUNNEL_ENCAP_IOAM6:
+ 		return "IOAM6";
++	case LWTUNNEL_ENCAP_XFRM:
++		/* module autoload not supported for encap type */
++		return NULL;
+ 	case LWTUNNEL_ENCAP_IP6:
+ 	case LWTUNNEL_ENCAP_IP:
+-	case LWTUNNEL_ENCAP_XFRM:
+ 	case LWTUNNEL_ENCAP_NONE:
+ 	case __LWTUNNEL_ENCAP_MAX:
+ 		/* should not have got here */
+-- 
+2.34.1
+
