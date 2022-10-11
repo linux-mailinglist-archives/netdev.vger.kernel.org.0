@@ -2,102 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA5495FAECD
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 11:00:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D342D5FAECE
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 11:01:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229541AbiJKJAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Oct 2022 05:00:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46222 "EHLO
+        id S229589AbiJKJBu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Oct 2022 05:01:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbiJKJAg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 05:00:36 -0400
-Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58F4852452
-        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 02:00:35 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 4B2BD3200918;
-        Tue, 11 Oct 2022 05:00:31 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Tue, 11 Oct 2022 05:00:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1665478830; x=1665565230; bh=0IvO0UcJSJiexYy2qNtH+WkfUbkn
-        7xXLWJ78GlWZfs4=; b=LcDSz+9KASF5ii4s1LO2Db3xeGeJdcpOoV32MkmD0kH7
-        zN3BCD7JqQoG2SyQoLfPZCIkHAiN8ozi1/fFS2S6ozKk4NVs4pdWCWwr1GDT+/sk
-        UjZuusu2LJvcjo5un/KCUtIFoiu+0IwKsL7wx1MEABf33IC3bs+o7a6s6xrJAh3m
-        LKhzl9S4Ju5F45CJx2h+Tj8II8i+V0QQHYb+qJ5FsjI0/w/bSodB3GHwQIVbzU+A
-        brOhrOHgXuXzm+PAEB61fB8uINfcSG0asB9KN2/RbfI5joSY2cklnR8LwE9Yl9Jj
-        3AgVcVQKD5HBlDYKUmtXnZb7PEThpTzR0nK+D+vi5A==
-X-ME-Sender: <xms:rDBFYyjk_44L-SbFrnMyHSD5ZuLIIviGNHySbTsto1JhRvBJCta5kA>
-    <xme:rDBFYzAxxhabH7r6FzG-AUX863RVnkSktBui8rNryp2vTm20JyWISLvc5zUTysubt
-    wwM7aJOv8jHFVc>
-X-ME-Received: <xmr:rDBFY6FpNLK-eHR_a49pR-Ue9DF2EGjmgZw5pG3z04IdknQGMasNSbx3ZDigjA42Bhbe_cydy29bkONxFswhJVCi8CY>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfeejiedgtdekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnhepvddufeevkeehueegfedtvdevfefgudeifeduieefgfelkeehgeelgeejjeeg
-    gefhnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:rDBFY7QLhzryoRdvi64GJNbll9QDMlMCVjb3UaRQlWcQOaTbmLYtbQ>
-    <xmx:rDBFY_x3N17oIOVp9RPHAVaWiCXUBYQi8nTxFiQA23ZbHhCXl1byzA>
-    <xmx:rDBFY54aoZh-80Z_Iw89Y0e19Z6kwaeMHsxC-Irz0mor5a-A2_bxrg>
-    <xmx:rjBFY94QS5H6uQ4pihNaeiEYN1g0VQZ6brGCQhHMAUrGT9aYSzYAAw>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 11 Oct 2022 05:00:28 -0400 (EDT)
-Date:   Tue, 11 Oct 2022 12:00:24 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Eyal Birger <eyal.birger@gmail.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, steffen.klassert@secunet.com,
-        herbert@gondor.apana.org.au, dsahern@kernel.org,
-        contact@proelbtn.com, pablo@netfilter.org,
-        nicolas.dichtel@6wind.com, razor@blackwall.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org
-Subject: Re: [PATCH ipsec] xfrm: lwtunnel: squelch kernel warning in case
- XFRM encap type is not available
-Message-ID: <Y0UwqMZQ6n+G//aD@shredder>
-References: <20221011080137.440419-1-eyal.birger@gmail.com>
+        with ESMTP id S229477AbiJKJBs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 05:01:48 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9859318382
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 02:01:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1665478907; x=1697014907;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=PPip1fRrVqpE6dcu9HOmQb2Ey5vE/1UuSIl2D8gIJbo=;
+  b=kkaJRasKCNQbaA2VHa14Nm8Mud9xsUUdlPKmEllVYfZGH67IcZiWghM1
+   FKALu5UZjyO0JxRegYzecMBxF+PUcA37Ko6pbkP65SttZRJmoshttAJ1c
+   P/LU/hqsmkxSg1vdInUpJOZshic/WgMoRTjLt2Z+CiO0jP+f9erbw301h
+   r9BmGEgPxdty3jn/tDQBwbZIOkLsB4Fz/pklACudm3OuSNddtp0pEGxI+
+   LnAuAvhqpKUGhjpa6c8HUYS1XKBjXhoITsR9pODmquZMabKsIKVHuTy86
+   UsrbVkOfWQsJN7llTmWfo616mO6zXmgiZxtgMc4s+g4g93iOYTql8UeGx
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10496"; a="284180709"
+X-IronPort-AV: E=Sophos;i="5.95,176,1661842800"; 
+   d="scan'208";a="284180709"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Oct 2022 02:01:47 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10496"; a="659465771"
+X-IronPort-AV: E=Sophos;i="5.95,176,1661842800"; 
+   d="scan'208";a="659465771"
+Received: from unknown (HELO fedora.igk.intel.com) ([10.123.220.6])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Oct 2022 02:01:44 -0700
+From:   Michal Wilczynski <michal.wilczynski@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     alexandr.lobakin@intel.com, jacob.e.keller@intel.com,
+        jesse.brandeburg@intel.com, przemyslaw.kitszel@intel.com,
+        anthony.l.nguyen@intel.com, kuba@kernel.org,
+        ecree.xilinx@gmail.com, jiri@resnulli.us,
+        Michal Wilczynski <michal.wilczynski@intel.com>
+Subject: [PATCH net-next v5 0/4] Implement devlink-rate API and extend it
+Date:   Tue, 11 Oct 2022 11:01:09 +0200
+Message-Id: <20221011090113.445485-1-michal.wilczynski@intel.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221011080137.440419-1-eyal.birger@gmail.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 11, 2022 at 11:01:37AM +0300, Eyal Birger wrote:
-> Ido reported that a kernel warning [1] can be triggered from
-> user space when the kernel is compiled with CONFIG_MODULES=y and
-> CONFIG_XFRM=n when adding an xfrm encap type route, e.g:
-> 
-> $ ip route add 198.51.100.0/24 dev dummy1 encap xfrm if_id 1
-> Error: lwt encapsulation type not supported.
-> 
-> The reason for the warning is that the LWT infrastructure has an
-> autoloading feature which is meant only for encap types that don't
-> use a net device,  which is not the case in xfrm encap.
-> 
-> Mute this warning for xfrm encap as there's no encap module to autoload
-> in this case.
+This is a follow up on:
+https://lore.kernel.org/netdev/20220915134239.1935604-1-michal.wilczynski@intel.com/
 
-[...]
+This patch series implements devlink-rate for ice driver. Unfortunately
+current API isn't flexible enough for our use case, so there is a need to
+extend it.  Some functions have been introduced to enable the driver to
+export current Tx scheduling configuration.
 
-> 
-> Reported-by: Ido Schimmel <idosch@idosch.org>
-> Fixes: 2c2493b9da91 ("xfrm: lwtunnel: add lwtunnel support for xfrm interfaces in collect_md mode")
-> Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
+In the previous submission I've made a mistake and didn't remove
+internal review comments. To avoid confusion I don't go backwards
+in my versioning and submit it as a v5.
 
-Tested-by: Ido Schimmel <idosch@nvidia.com>
+V5:
+- removed queue support per community request
+- fix division of 64bit variable with 32bit divisor by using div_u64()
+- remove RDMA, ADQ exlusion as it's not necessary anymore
+- changed how driver exports configuration, as queues are not supported
+  anymore
+- changed IDA to Xarray for unique node identification
 
-Thanks
+
+V4:
+- changed static variable counter to per port IDA to
+  uniquely identify nodes
+
+V3:
+- removed shift macros, since FIELD_PREP is used
+- added static_assert for struct
+- removed unnecessary functions
+- used tab instead of space in define
+
+V2:
+- fixed Alexandr comments
+- refactored code to fix checkpatch issues
+- added mutual exclusion for RDMA, DCB
+
+
+
+Michal Wilczynski (4):
+  devlink: Extend devlink-rate api with export functions and new params
+  ice: Introduce new parameters in ice_sched_node
+  ice: Implement devlink-rate API
+  ice: Prevent DCB coexistence with Custom Tx scheduler
+
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   4 +-
+ drivers/net/ethernet/intel/ice/ice_common.c   |   3 +
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |   4 +
+ drivers/net/ethernet/intel/ice/ice_devlink.c  | 467 ++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_devlink.h  |   2 +
+ drivers/net/ethernet/intel/ice/ice_idc.c      |   5 +
+ drivers/net/ethernet/intel/ice/ice_repr.c     |  13 +
+ drivers/net/ethernet/intel/ice/ice_sched.c    |  79 ++-
+ drivers/net/ethernet/intel/ice/ice_sched.h    |  25 +
+ drivers/net/ethernet/intel/ice/ice_type.h     |   8 +
+ .../mellanox/mlx5/core/esw/devlink_port.c     |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/esw/qos.c |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/esw/qos.h |   2 +-
+ drivers/net/netdevsim/dev.c                   |  10 +-
+ include/net/devlink.h                         |  21 +-
+ include/uapi/linux/devlink.h                  |   3 +
+ net/core/devlink.c                            | 145 +++++-
+ 17 files changed, 767 insertions(+), 32 deletions(-)
+
+-- 
+2.37.2
+
