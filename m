@@ -2,64 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB2DF5FB7A3
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 17:46:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 224FA5FB829
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 18:17:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230102AbiJKPqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Oct 2022 11:46:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41894 "EHLO
+        id S230056AbiJKQRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Oct 2022 12:17:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229915AbiJKPqd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 11:46:33 -0400
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B4A64F19A;
-        Tue, 11 Oct 2022 08:37:06 -0700 (PDT)
+        with ESMTP id S229844AbiJKQRt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 12:17:49 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82D927C75D
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 09:17:47 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id j16so22396489wrh.5
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 09:17:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1665502628; x=1697038628;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=wkAoM2wYpiQ2JTIInD4+UYAkgTXVdTACo/bxysxP4Aw=;
-  b=chDSVPmgFLqhVQAcKfL5tXYM60Q2MG1x10qfc1Jspzq7+KBvoXzrNUIH
-   Mx1soApFJAs/6Bc8V26NaFDuZY2GABncjafwk0X6ey6QPWtq5P3H6haPK
-   7jQwvr/Q2rmTuzgcC+3L831tfyu8Vq2y+53AoF5soNr23E2kRiXPbqpfC
-   w=;
-X-IronPort-AV: E=Sophos;i="5.95,176,1661817600"; 
-   d="scan'208";a="139076135"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1d-9a235a16.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Oct 2022 15:21:43 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1d-9a235a16.us-east-1.amazon.com (Postfix) with ESMTPS id E742A80380;
-        Tue, 11 Oct 2022 15:21:38 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Tue, 11 Oct 2022 15:21:36 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.214) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Tue, 11 Oct 2022 15:21:29 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <pabeni@redhat.com>
-CC:     <davem@davemloft.net>, <dsahern@kernel.org>, <edumazet@google.com>,
-        <kraig@google.com>, <kuba@kernel.org>, <kuni1840@gmail.com>,
-        <kuniyu@amazon.com>, <linux-kernel@vger.kernel.org>,
-        <martin.lau@kernel.org>, <netdev@vger.kernel.org>,
-        <willemb@google.com>, <yoshfuji@linux-ipv6.org>
-Subject: Re: [PATCH v1 net 3/3] selftest: Add test for SO_INCOMING_CPU.
-Date:   Tue, 11 Oct 2022 08:21:19 -0700
-Message-ID: <20221011152119.89895-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <dea1abff6baabfb8a5abc7cf4eb355eb36b0ef8c.camel@redhat.com>
-References: <dea1abff6baabfb8a5abc7cf4eb355eb36b0ef8c.camel@redhat.com>
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=8p+Ph8umyk1fiV8rOh8aDOZpPjjfRG0WHPagf8EYGjI=;
+        b=LD0gGXDMEqnlsIxmg0Bf/DhQPtX3hLNQyJtg7EC16SmGNowy/93F7CLepmdLP417rL
+         4tREBjrSdHGSA/WBUkWANyn51X4CKiDUtc/bBqmqW1l9dCcVktSKDhziGWMFDFx2FfEk
+         00aCa49AU1QzBU61GiEqOzXUUjkp7P1Cw0I5ifW503DsoATwzYap0kC3aaXDs58plncF
+         UGvfQ/aMdB8N7MHHd5tNx0SFUcRTECD7AZjCJ0xX30IRmb/rbEXX+AbmrfvyqT0E6ypG
+         k5+z8/p86SDwGtxQgD+Pg1K9AYiBcKhpcFooG1QfKfHRv4LBWVHU/Hs7IRmLGRIuZgKr
+         oJ3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=8p+Ph8umyk1fiV8rOh8aDOZpPjjfRG0WHPagf8EYGjI=;
+        b=WW1x1oL6LyX0238YVeCchz/fOZt0kWa+PIMUj1LUp1val+lX2ZxYBTdkjIyxpiyb6J
+         lWJCqDBnAvRHU0Kx10lJ+Yi2snXT+3emnMRQzh2SmbAd4pWTWawyEP65NxxLGB2O/zyu
+         bbofCWqm0w+TW02ibXuqstCWb3HEu9urHmURuloWPdt8u8u/kIPS9CE0vJz9Eg76k53A
+         0BNfsKTUGc3vFUQ+TH2jIxa14qD7DUH/YLB3sQPxcp6CtVHCuNTMX1z2e1WgAgf9j3ok
+         H0nJcHyz9Tdj6x4tK6VNMBH5Ap7lEB4MVNTh8KYK1uWOm08KOfy5JzlqhzS0hRVic9j8
+         aPCQ==
+X-Gm-Message-State: ACrzQf08U1KaVBKHCCFkODG/cnsNfExES7CXG6KS+OUe32KfDTW42pCh
+        0wXiGbPDoJTFFdzNs9RGou4ojw==
+X-Google-Smtp-Source: AMsMyM7gpUdapuVTKHfKEDpK7jYbQ5SOEi2bep8snUSDGTh015napIGgYLeHXayu6RLOZacsubuMVw==
+X-Received: by 2002:a5d:64cd:0:b0:22e:4af7:8182 with SMTP id f13-20020a5d64cd000000b0022e4af78182mr16328525wri.453.1665505065986;
+        Tue, 11 Oct 2022 09:17:45 -0700 (PDT)
+Received: from [192.168.178.32] ([51.155.200.13])
+        by smtp.gmail.com with ESMTPSA id t128-20020a1c4686000000b003b4a699ce8esm11025005wma.6.2022.10.11.09.17.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Oct 2022 09:17:45 -0700 (PDT)
+Message-ID: <9ea9fc0c-41e7-d7cc-7822-dcfab9398d7d@isovalent.com>
+Date:   Tue, 11 Oct 2022 17:17:44 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.214]
-X-ClientProxiedBy: EX13D30UWC002.ant.amazon.com (10.43.162.235) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.2
+Subject: Re: [bpf-next v8 0/3] bpftool: Add autoattach for bpf prog
+ load|loadall
+Content-Language: en-GB
+To:     Wang Yufen <wangyufen@huawei.com>, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
+        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
+        jolsa@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        hawk@kernel.org, nathan@kernel.org, ndesaulniers@google.com,
+        trix@redhat.com
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, llvm@lists.linux.dev
+References: <1665399601-29668-1-git-send-email-wangyufen@huawei.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+In-Reply-To: <1665399601-29668-1-git-send-email-wangyufen@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,248 +79,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Paolo Abeni <pabeni@redhat.com>
-Date:   Tue, 11 Oct 2022 13:34:58 +0200
-> On Mon, 2022-10-10 at 10:43 -0700, Kuniyuki Iwashima wrote:
-> > Some highly optimised applications use SO_INCOMING_CPU to make them
-> > efficient, but they didn't test if it's working correctly by getsockopt()
-> > to avoid slowing down.  As a result, no one noticed it had been broken
-> > for years, so it's a good time to add a test to catch future regression.
-> > 
-> > The test does
-> > 
-> >   1) Create $(nproc) TCP listeners associated with each CPU.
-> > 
-> >   2) Create 32 child sockets for each listener by calling
-> >      sched_setaffinity() for each CPU.
-> > 
-> >   3) Check if accept()ed sockets' sk_incoming_cpu matches
-> >      listener's one.
-> > 
-> > If we see -EAGAIN, SO_INCOMING_CPU is broken.  However, we might not see
-> > any error even if broken; the kernel could miraculously distribute all SYN
-> > to correct listeners.  Not to let that happen, we must increase the number
-> > of clients and CPUs to some extent, so the test requires $(nproc) >= 2 and
-> > creates 64 sockets at least.
-> > 
-> > Test:
-> >   $ nproc
-> >   96
-> >   $ ./so_incoming_cpu
-> > 
-> > Before the previous patch:
-> > 
-> >   # Starting 1 tests from 2 test cases.
-> >   #  RUN           so_incoming_cpu.test1 ...
-> >   # so_incoming_cpu.c:129:test1:Expected cpu (82) == i (0)
-> >   # test1: Test terminated by assertion
-> >   #          FAIL  so_incoming_cpu.test1
-> >   not ok 1 so_incoming_cpu.test1
-> >   # FAILED: 0 / 1 tests passed.
-> >   # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
-> > 
-> > After:
-> > 
-> >   # Starting 1 tests from 2 test cases.
-> >   #  RUN           so_incoming_cpu.test1 ...
-> >   # so_incoming_cpu.c:137:test1:SO_INCOMING_CPU is very likely to be working correctly with 3072 sockets.
-> >   #            OK  so_incoming_cpu.test1
-> >   ok 1 so_incoming_cpu.test1
-> >   # PASSED: 1 / 1 tests passed.
-> >   # Totals: pass:1 fail:0 xfail:0 xpass:0 skip:0 error:0
-> > 
-> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> > ---
-> >  tools/testing/selftests/net/.gitignore        |   1 +
-> >  tools/testing/selftests/net/Makefile          |   1 +
-> >  tools/testing/selftests/net/so_incoming_cpu.c | 148 ++++++++++++++++++
-> >  3 files changed, 150 insertions(+)
-> >  create mode 100644 tools/testing/selftests/net/so_incoming_cpu.c
-> > 
-> > diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selftests/net/.gitignore
-> > index 3d7adee7a3e6..ff8807cc9c2e 100644
-> > --- a/tools/testing/selftests/net/.gitignore
-> > +++ b/tools/testing/selftests/net/.gitignore
-> > @@ -25,6 +25,7 @@ rxtimestamp
-> >  sk_bind_sendto_listen
-> >  sk_connect_zero_addr
-> >  socket
-> > +so_incoming_cpu
-> >  so_netns_cookie
-> >  so_txtime
-> >  stress_reuseport_listen
-> > diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-> > index 2a6b0bc648c4..ba57e7e7dc86 100644
-> > --- a/tools/testing/selftests/net/Makefile
-> > +++ b/tools/testing/selftests/net/Makefile
-> > @@ -70,6 +70,7 @@ TEST_PROGS += io_uring_zerocopy_tx.sh
-> >  TEST_GEN_FILES += bind_bhash
-> >  TEST_GEN_PROGS += sk_bind_sendto_listen
-> >  TEST_GEN_PROGS += sk_connect_zero_addr
-> > +TEST_GEN_PROGS += so_incoming_cpu
-> >  
-> >  TEST_FILES := settings
-> >  
-> > diff --git a/tools/testing/selftests/net/so_incoming_cpu.c b/tools/testing/selftests/net/so_incoming_cpu.c
-> > new file mode 100644
-> > index 000000000000..0ee0f2e393eb
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/net/so_incoming_cpu.c
-> > @@ -0,0 +1,148 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/* Copyright Amazon.com Inc. or its affiliates. */
-> > +#define _GNU_SOURCE
-> > +#include <sched.h>
-> > +
-> > +#include <netinet/in.h>
-> > +#include <sys/socket.h>
-> > +#include <sys/sysinfo.h>
-> > +
-> > +#include "../kselftest_harness.h"
-> > +
-> > +#define CLIENT_PER_SERVER	32 /* More sockets, more reliable */
-> > +#define NR_SERVER		self->nproc
-> > +#define NR_CLIENT		(CLIENT_PER_SERVER * NR_SERVER)
-> > +
-> > +FIXTURE(so_incoming_cpu)
-> > +{
-> > +	int nproc;
-> > +	int *servers;
-> > +	union {
-> > +		struct sockaddr addr;
-> > +		struct sockaddr_in in_addr;
-> > +	};
-> > +	socklen_t addrlen;
-> > +};
-> > +
-> > +FIXTURE_SETUP(so_incoming_cpu)
-> > +{
-> > +	self->nproc = get_nprocs();
-> > +	ASSERT_LE(2, self->nproc);
-> > +
-> > +	self->servers = malloc(sizeof(int) * NR_SERVER);
-> > +	ASSERT_NE(self->servers, NULL);
-> > +
-> > +	self->in_addr.sin_family = AF_INET;
-> > +	self->in_addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-> > +	self->in_addr.sin_port = htons(0);
-> > +	self->addrlen = sizeof(struct sockaddr_in);
-> > +}
-> > +
-> > +FIXTURE_TEARDOWN(so_incoming_cpu)
-> > +{
-> > +	int i;
-> > +
-> > +	for (i = 0; i < NR_SERVER; i++)
-> > +		close(self->servers[i]);
-> > +
-> > +	free(self->servers);
-> > +}
-> > +
-> > +void create_servers(struct __test_metadata *_metadata,
-> > +		    FIXTURE_DATA(so_incoming_cpu) *self)
-> > +{
-> > +	int i, fd, ret;
-> > +
-> > +	for (i = 0; i < NR_SERVER; i++) {
-> > +		fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
-> > +		ASSERT_NE(fd, -1);
-> > +
-> > +		ret = setsockopt(fd, SOL_SOCKET, SO_INCOMING_CPU, &i, sizeof(int));
-> > +		ASSERT_EQ(ret, 0);
-> > +
-> > +		ret = setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &(int){1}, sizeof(int));
-> > +		ASSERT_EQ(ret, 0);
-> > +
-> > +		ret = bind(fd, &self->addr, self->addrlen);
-> > +		ASSERT_EQ(ret, 0);
-> > +
-> > +		if (i == 0) {
-> > +			ret = getsockname(fd, &self->addr, &self->addrlen);
-> > +			ASSERT_EQ(ret, 0);
-> > +		}
-> > +
-> > +		/* We don't use CLIENT_PER_SERVER here not to block
-> > +		 * this test at connect() if SO_INCOMING_CPU is broken.
-> > +		 */
-> > +		ret = listen(fd, NR_CLIENT);
-> > +		ASSERT_EQ(ret, 0);
-> > +
-> > +		self->servers[i] = fd;
-> > +	}
-> > +}
-> > +
-> > +void create_clients(struct __test_metadata *_metadata,
-> > +		    FIXTURE_DATA(so_incoming_cpu) *self)
-> > +{
-> > +	cpu_set_t cpu_set;
-> > +	int i, j, fd, ret;
-> > +
-> > +	for (i = 0; i < NR_SERVER; i++) {
-> > +		CPU_ZERO(&cpu_set);
-> > +
-> > +		CPU_SET(i, &cpu_set);
-> > +		ASSERT_EQ(CPU_COUNT(&cpu_set), 1);
-> > +		ASSERT_NE(CPU_ISSET(i, &cpu_set), 0);
-> > +
-> > +		/* Make sure SYN will be processed on the i-th CPU
-> > +		 * and finally distributed to the i-th listener.
-> > +		 */
-> > +		sched_setaffinity(0, sizeof(cpu_set), &cpu_set);
-> > +		ASSERT_EQ(ret, 0);
-> > +
-> > +		for (j = 0; j < CLIENT_PER_SERVER; j++) {
-> > +			fd  = socket(AF_INET, SOCK_STREAM, 0);
-> > +			ASSERT_NE(fd, -1);
-> > +
-> > +			ret = connect(fd, &self->addr, self->addrlen);
-> > +			ASSERT_EQ(ret, 0);
-> > +
-> > +			close(fd);
-> > +		}
-> > +	}
-> > +}
-> > +
-> > +void verify_incoming_cpu(struct __test_metadata *_metadata,
-> > +			 FIXTURE_DATA(so_incoming_cpu) *self)
-> > +{
-> > +	int i, j, fd, cpu, ret, total = 0;
-> > +	socklen_t len = sizeof(int);
-> > +
-> > +	for (i = 0; i < NR_SERVER; i++) {
-> > +		for (j = 0; j < CLIENT_PER_SERVER; j++) {
-> > +			/* If we see -EAGAIN here, SO_INCOMING_CPU is broken */
-> > +			fd = accept(self->servers[i], &self->addr, &self->addrlen);
-> > +			ASSERT_NE(fd, -1);
-> > +
-> > +			ret = getsockopt(fd, SOL_SOCKET, SO_INCOMING_CPU, &cpu, &len);
-> > +			ASSERT_EQ(ret, 0);
-> > +			ASSERT_EQ(cpu, i);
-> > +
-> > +			close(fd);
-> > +			total++;
-> > +		}
-> > +	}
-> > +
-> > +	ASSERT_EQ(total, NR_CLIENT);
-> > +	TH_LOG("SO_INCOMING_CPU is very likely to be "
-> > +	       "working correctly with %d sockets.", total);
-> > +}
-> > +
-> > +TEST_F(so_incoming_cpu, test1)
-> > +{
-> > +	create_servers(_metadata, self);
-> > +	create_clients(_metadata, self);
-> > +	verify_incoming_cpu(_metadata, self);
-> > +}
+2022-10-10 18:59 UTC+0800 ~ Wang Yufen <wangyufen@huawei.com>
+> This patchset add "autoattach" optional for "bpftool prog load(_all)" to support
+> one-step load-attach-pin_link.
 > 
-> I think it would be nicer if you could add more test-cases, covering
-> e.g.:
-> - set SO_INCOMING_CPU after SO_REUSE_PORT, 
-> - initially including a socket without SO_INCOMING_CPU and the removing
-> it from the soreuseport set
+> v7 -> v8: for the programs not supporting autoattach, fall back to reguler pinning
+> 	  instead of skipping
+> v6 -> v7: add info msg print and update doc for the skip program
+> v5 -> v6: skip the programs not supporting auto-attach,
+> 	  and change optional name from "auto_attach" to "autoattach"
+> v4 -> v5: some formatting nits of doc
+> v3 -> v4: rename functions, update doc, bash and do_help()
+> v2 -> v3: switch to extend prog load command instead of extend perf
+> v2: https://patchwork.kernel.org/project/netdevbpf/patch/20220824033837.458197-1-weiyongjun1@huawei.com/
+> v1: https://patchwork.kernel.org/project/netdevbpf/patch/20220816151725.153343-1-weiyongjun1@huawei.com/
+> 
+> Wang Yufen (3):
+>   bpftool: Add autoattach for bpf prog load|loadall
+>   bpftool: Update doc (add autoattach to prog load)
+>   bpftool: Update the bash completion(add autoattach to prog load)
+> 
+>  tools/bpf/bpftool/Documentation/bpftool-prog.rst | 15 ++++-
+>  tools/bpf/bpftool/bash-completion/bpftool        |  1 +
+>  tools/bpf/bpftool/prog.c                         | 78 +++++++++++++++++++++++-
+>  3 files changed, 90 insertions(+), 4 deletions(-)
+> 
 
-I agree that, actually I did the tests with python :)
-I'll add the cases in the next spin.
+The series looks good to me, thank you!
 
-Thank you.
+Reviewed-by: Quentin Monnet <quentin@isovalent.com>
