@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB4575FB1AE
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 13:43:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C3A25FB1C2
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 13:44:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229600AbiJKLnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Oct 2022 07:43:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60978 "EHLO
+        id S229923AbiJKLnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Oct 2022 07:43:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229974AbiJKLnh (ORCPT
+        with ESMTP id S229978AbiJKLnh (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 07:43:37 -0400
-Received: from dggsgout12.his.huawei.com (unknown [45.249.212.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECE2F8F25D;
-        Tue, 11 Oct 2022 04:43:34 -0700 (PDT)
+Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6BB38A7F2;
+        Tue, 11 Oct 2022 04:43:35 -0700 (PDT)
 Received: from mail02.huawei.com (unknown [172.30.67.143])
-        by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4Mmv4Z3YR4z6R4ld;
-        Tue, 11 Oct 2022 19:41:18 +0800 (CST)
+        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4Mmv4y3LFMzl64T;
+        Tue, 11 Oct 2022 19:41:38 +0800 (CST)
 Received: from k01.huawei.com (unknown [10.67.174.197])
-        by APP2 (Coremail) with SMTP id Syh0CgBX8NTXVkVj5HNpAA--.32480S7;
-        Tue, 11 Oct 2022 19:43:33 +0800 (CST)
+        by APP2 (Coremail) with SMTP id Syh0CgBX8NTXVkVj5HNpAA--.32480S8;
+        Tue, 11 Oct 2022 19:43:34 +0800 (CST)
 From:   Xu Kuohai <xukuohai@huaweicloud.com>
 To:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-kselftest@vger.kernel.org, netdev@vger.kernel.org
@@ -40,18 +40,18 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Alan Maguire <alan.maguire@oracle.com>,
         Delyan Kratunov <delyank@fb.com>,
         Lorenzo Bianconi <lorenzo@kernel.org>
-Subject: [PATCH bpf-next v4 5/6] selftests/bpf: Fix error failure of case test_xdp_adjust_tail_grow
-Date:   Tue, 11 Oct 2022 08:01:07 -0400
-Message-Id: <20221011120108.782373-6-xukuohai@huaweicloud.com>
+Subject: [PATCH bpf-next v4 6/6] selftest/bpf: Fix error usage of ASSERT_OK in xdp_adjust_tail.c
+Date:   Tue, 11 Oct 2022 08:01:08 -0400
+Message-Id: <20221011120108.782373-7-xukuohai@huaweicloud.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221011120108.782373-1-xukuohai@huaweicloud.com>
 References: <20221011120108.782373-1-xukuohai@huaweicloud.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: Syh0CgBX8NTXVkVj5HNpAA--.32480S7
-X-Coremail-Antispam: 1UD129KBjvJXoW7uFy3ZFW5JFWkWr1fWr1fCrg_yoW8GFy7pa
-        4xJ3W7tFySqF12qF1DWFW29FW8Ga1kuF13Ca92qrW3Ar43JFn7tF4xKay5Was3KFWfXw1r
-        Z34rKrn5Cws5JwUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+X-CM-TRANSID: Syh0CgBX8NTXVkVj5HNpAA--.32480S8
+X-Coremail-Antispam: 1UD129KBjvJXoW7uFyfur4UArW5ZFWDKw43Awb_yoW8Arykpa
+        48Gw1qyasYqr1UXF1UJFy29ry8K3WxWw1fCa9F9r4fAr47JF97JF1xKayaq3ZagFWrXw1r
+        Z34UKrn5Zw45J3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
         9KBjDU0xBIdaVrnRJUUUBSb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
         6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUAV
         Cq3wA2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0
@@ -67,8 +67,8 @@ X-Coremail-Antispam: 1UD129KBjvJXoW7uFy3ZFW5JFWkWr1fWr1fCrg_yoW8GFy7pa
         IEc7CjxVAFwI0_Gr1j6F4UJbIYCTnIWIevJa73UjIFyTuYvjxUFgAwUUUUU
 X-CM-SenderInfo: 50xn30hkdlqx5xdzvxpfor3voofrz/
 X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,KHOP_HELO_FCRDNS,
-        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -77,33 +77,46 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Xu Kuohai <xukuohai@huawei.com>
 
-test_xdp_adjust_tail_grow failed with ipv6:
-  test_xdp_adjust_tail_grow:FAIL:ipv6 unexpected error: -28 (errno 28)
+xdp_adjust_tail.c calls ASSERT_OK() to check the return value of
+bpf_prog_test_load(), but the condition is not correct. Fix it.
 
-The reason is that this test case tests ipv4 before ipv6, and when ipv4
-test finished, topts.data_size_out was set to 54, which is smaller than the
-ipv6 output data size 114, so ipv6 test fails with NOSPC error.
-
-Fix it by reset topts.data_size_out to sizeof(buf) before testing ipv6.
-
-Fixes: 04fcb5f9a104 ("selftests/bpf: Migrate from bpf_prog_test_run")
+Fixes: 791cad025051 ("bpf: selftests: Get rid of CHECK macro in xdp_adjust_tail.c")
 Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
 ---
- tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c | 1 +
- 1 file changed, 1 insertion(+)
+ tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
-index 9b9cf8458adf..009ee37607df 100644
+index 009ee37607df..39973ea1ce43 100644
 --- a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
 +++ b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
-@@ -63,6 +63,7 @@ static void test_xdp_adjust_tail_grow(void)
- 	expect_sz = sizeof(pkt_v6) + 40; /* Test grow with 40 bytes */
- 	topts.data_in = &pkt_v6;
- 	topts.data_size_in = sizeof(pkt_v6);
-+	topts.data_size_out = sizeof(buf);
+@@ -18,7 +18,7 @@ static void test_xdp_adjust_tail_shrink(void)
+ 	);
+ 
+ 	err = bpf_prog_test_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);
+-	if (ASSERT_OK(err, "test_xdp_adjust_tail_shrink"))
++	if (!ASSERT_OK(err, "test_xdp_adjust_tail_shrink"))
+ 		return;
+ 
  	err = bpf_prog_test_run_opts(prog_fd, &topts);
- 	ASSERT_OK(err, "ipv6");
- 	ASSERT_EQ(topts.retval, XDP_TX, "ipv6 retval");
+@@ -53,7 +53,7 @@ static void test_xdp_adjust_tail_grow(void)
+ 	);
+ 
+ 	err = bpf_prog_test_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);
+-	if (ASSERT_OK(err, "test_xdp_adjust_tail_grow"))
++	if (!ASSERT_OK(err, "test_xdp_adjust_tail_grow"))
+ 		return;
+ 
+ 	err = bpf_prog_test_run_opts(prog_fd, &topts);
+@@ -90,7 +90,7 @@ static void test_xdp_adjust_tail_grow2(void)
+ 	);
+ 
+ 	err = bpf_prog_test_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);
+-	if (ASSERT_OK(err, "test_xdp_adjust_tail_grow"))
++	if (!ASSERT_OK(err, "test_xdp_adjust_tail_grow"))
+ 		return;
+ 
+ 	/* Test case-64 */
 -- 
 2.30.2
 
