@@ -2,162 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 555405FAEDF
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 11:03:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AD845FAF14
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 11:08:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229761AbiJKJDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Oct 2022 05:03:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48416 "EHLO
+        id S229929AbiJKJIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Oct 2022 05:08:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229932AbiJKJDi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 05:03:38 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 865DB78BF9
-        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 02:03:29 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1oiBAb-0003LK-Jg; Tue, 11 Oct 2022 11:03:25 +0200
-Message-ID: <acc587a0-2c42-b039-fe2a-48f75e7ed462@leemhuis.info>
-Date:   Tue, 11 Oct 2022 11:03:25 +0200
+        with ESMTP id S229854AbiJKJH6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 05:07:58 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E15A56FA3F
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 02:07:52 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id a67so9834526edf.12
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 02:07:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=b/ZgLQmwlLpR7BP/HZx0/elrquvDc9b0uAx+8zCGxg8=;
+        b=YULsQdqKRwxDtfbd+UwayqrR6/D5/QJXMMM+TzRdt6JV1sI8vZ2W8lImEuBaCVYxsL
+         3A1PjGQF63PiSRnGt+vi3t5U7hx1q+WSx4CZWZR7uBp9POm1qCB3LwcFYD2bWA6Y8y71
+         l6dUVa+WsQpvURk3afJ8MLWxfkhV5ZsU0Yy7zJIDUWT0oxEJW/WUpjGMirO18quV+fmN
+         eDCZ6q5ZZhPR8mvJBWim8ahs4Kzmz4XnVXBtJZgjVzPfSCEeQWyO9jkPyMT2WAOdgoAl
+         wZJyDL/f2JCthJK/BfB509XerxhTpYObL+CyXmZYC0pNpB5u9WKMV0yu0GZ4CyS0ZHBN
+         5opA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=b/ZgLQmwlLpR7BP/HZx0/elrquvDc9b0uAx+8zCGxg8=;
+        b=twyAHYKdFadVyb1vdF/kHKImuvnx8NpQ3RWnB4WqrR8yzfiRTteHD1Ox9O30IFSdsH
+         VnsuMidMQ9+FZb7E/PGaz9/G8wmIkcq6f2KrdcNTc8wAA/1aNgWZhEGb1GhaNxwIp1LG
+         CdY1t+AAT/hxwTd4WPWcKyZu4Qhn8Jbw+uno2J1+kJg/Wh/XIQPG9KhRwt8y3oEnVkJt
+         WsIhqa7PNVV+/odL/tgHjtXaGYV1JD4eTpe+RT0+5IEhvDkU4y5V/Olh1lyQMFzpYQpD
+         +1bBQZSSDOYPVPug1GHyo03mvO4NVt+7UTfv5tIG2lal6NYlv3dABBjr/PM1GG1Efpzf
+         pnRQ==
+X-Gm-Message-State: ACrzQf3CJACwM8nB7fznn4RSzBCXfjL6lfukQ3yDGRXPL821jNQKzH6g
+        htp0LVqniNirmdARvCl8Uf07UA==
+X-Google-Smtp-Source: AMsMyM7MG0fWzRVIv4pvKfKvWW83ZWU2A/ckdbwacSE3yaGM9sapVpPmeg83bdb0GGlIjHNw3u1LKw==
+X-Received: by 2002:a05:6402:50d1:b0:45a:fc:86f4 with SMTP id h17-20020a05640250d100b0045a00fc86f4mr22345173edb.344.1665479270986;
+        Tue, 11 Oct 2022 02:07:50 -0700 (PDT)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id v8-20020aa7d9c8000000b00458478a4295sm8713180eds.9.2022.10.11.02.07.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Oct 2022 02:07:50 -0700 (PDT)
+Message-ID: <6b7dda54-bf07-4784-d675-2db26eec3ddf@blackwall.org>
+Date:   Tue, 11 Oct 2022 12:07:48 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.1
-Subject: Re: Fw: [Bug 216557] New: tcp connection not working over ip_vti
- interface #forregzbot
-Content-Language: en-US, de-DE
-To:     netdev@vger.kernel.org,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-References: <20221007141751.1336e50b@hermes.local>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <20221007141751.1336e50b@hermes.local>
+ Thunderbird/102.2.1
+Subject: Re: [PATCH ipsec] xfrm: lwtunnel: squelch kernel warning in case XFRM
+ encap type is not available
+Content-Language: en-US
+To:     Eyal Birger <eyal.birger@gmail.com>, idosch@idosch.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, steffen.klassert@secunet.com,
+        herbert@gondor.apana.org.au, dsahern@kernel.org,
+        contact@proelbtn.com, pablo@netfilter.org,
+        nicolas.dichtel@6wind.com, daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org
+References: <20221011080137.440419-1-eyal.birger@gmail.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20221011080137.440419-1-eyal.birger@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1665479010;069b218f;
-X-HE-SMSGID: 1oiBAb-0003LK-Jg
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[Note: this mail is primarily send for documentation purposes and/or for
-regzbot, my Linux kernel regression tracking bot. That's why I removed
-most or all folks from the list of recipients, but left any that looked
-like a mailing lists. These mails usually contain '#forregzbot' in the
-subject, to make them easy to spot and filter out.]
+On 11/10/2022 11:01, Eyal Birger wrote:
+> Ido reported that a kernel warning [1] can be triggered from
+> user space when the kernel is compiled with CONFIG_MODULES=y and
+> CONFIG_XFRM=n when adding an xfrm encap type route, e.g:
+> 
+> $ ip route add 198.51.100.0/24 dev dummy1 encap xfrm if_id 1
+> Error: lwt encapsulation type not supported.
+> 
+> The reason for the warning is that the LWT infrastructure has an
+> autoloading feature which is meant only for encap types that don't
+> use a net device,  which is not the case in xfrm encap.
+> 
+> Mute this warning for xfrm encap as there's no encap module to autoload
+> in this case.
+> 
+> [1]
+>  WARNING: CPU: 3 PID: 2746262 at net/core/lwtunnel.c:57 lwtunnel_valid_encap_type+0x4f/0x120
+> [...]
+>  Call Trace:
+>   <TASK>
+>   rtm_to_fib_config+0x211/0x350
+>   inet_rtm_newroute+0x3a/0xa0
+>   rtnetlink_rcv_msg+0x154/0x3c0
+>   netlink_rcv_skb+0x49/0xf0
+>   netlink_unicast+0x22f/0x350
+>   netlink_sendmsg+0x208/0x440
+>   ____sys_sendmsg+0x21f/0x250
+>   ___sys_sendmsg+0x83/0xd0
+>   __sys_sendmsg+0x54/0xa0
+>   do_syscall_64+0x35/0x80
+>   entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> 
+> Reported-by: Ido Schimmel <idosch@idosch.org>
+> Fixes: 2c2493b9da91 ("xfrm: lwtunnel: add lwtunnel support for xfrm interfaces in collect_md mode")
+> Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
+> ---
+>  net/core/lwtunnel.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/core/lwtunnel.c b/net/core/lwtunnel.c
+> index 6fac2f0ef074..711cd3b4347a 100644
+> --- a/net/core/lwtunnel.c
+> +++ b/net/core/lwtunnel.c
+> @@ -48,9 +48,11 @@ static const char *lwtunnel_encap_str(enum lwtunnel_encap_types encap_type)
+>  		return "RPL";
+>  	case LWTUNNEL_ENCAP_IOAM6:
+>  		return "IOAM6";
+> +	case LWTUNNEL_ENCAP_XFRM:
+> +		/* module autoload not supported for encap type */
+> +		return NULL;
+>  	case LWTUNNEL_ENCAP_IP6:
+>  	case LWTUNNEL_ENCAP_IP:
+> -	case LWTUNNEL_ENCAP_XFRM:
+>  	case LWTUNNEL_ENCAP_NONE:
+>  	case __LWTUNNEL_ENCAP_MAX:
+>  		/* should not have got here */
 
-[TLDR: I'm adding this regression report to the list of tracked
-regressions; all text from me you find below is based on a few templates
-paragraphs you might have encountered already already in similar form.]
+Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
 
-Hi, this is your Linux kernel regression tracker.
-
-On 07.10.22 23:17, Stephen Hemminger wrote:
-
-> Begin forwarded message:
-> 
-> Date: Fri, 07 Oct 2022 20:51:12 +0000
-> From: bugzilla-daemon@kernel.org
-> To: stephen@networkplumber.org
-> Subject: [Bug 216557] New: tcp connection not working over ip_vti interface
-> 
-> 
-> https://bugzilla.kernel.org/show_bug.cgi?id=216557
-> 
->             Bug ID: 216557
->            Summary: tcp connection not working over ip_vti interface
->            Product: Networking
->            Version: 2.5
->     Kernel Version: 5.15.53
->           Hardware: All
->                 OS: Linux
->               Tree: Mainline
->             Status: NEW
->           Severity: high
->           Priority: P1
->          Component: IPV4
->           Assignee: stephen@networkplumber.org
->           Reporter: monil191989@gmail.com
->         Regression: No
-> 
-> TCP protocol is not working, when ipsec tunnel has been setup and ip_vti tunnel
-> is used for route based ipsec.
-> 
-> After the below changes merged with latest kernel. xfrm4_policy_check in
-> tcp_v4_rcv drops all packets except first syn packet under XfrmInTmplMismatch
-> when local destined packets are received over ip_vti tunnel.
-> 
-> author  Eyal Birger <eyal.birger@gmail.com>     2022-05-13 23:34:02 +0300
-> committer       Greg Kroah-Hartman <gregkh@linuxfoundation.org> 2022-05-25
-> 09:57:30 +0200
-> commit  952c2464963895271c31698970e7ec1ad6f0fe45 (patch)
-> tree    9e8300c45a0eb5a9555eae017f8ae561f3e8bc51 /include/net/xfrm.h
-> parent  36d8cca5b46fe41b59f8011553495ede3b693703 (diff)
-> download        linux-952c2464963895271c31698970e7ec1ad6f0fe45.tar.gz
-> xfrm: fix "disable_policy" flag use when arriving from different devices
-> 
-> 
-> setup:
-> 1) create road warrior ipsec tunnel with local ip x.x.x.x remote ip y.y.y.y.
-> 2) create vti interface using ip tunnel add vti_test local x.x.x.x remote
-> y.y.y.y mode vti 
-> 3) echo 1 > /proc/sys/net/ipv4/conf/vti_test/disable_policy
-> 4) Add default route over vti_test.
-> 5) ping remote ip, ping works.
-> 6) ssh remote ip, ssh dont work. check tcp connection not working.
-> 
-> Root cause:
-> -> with above mentioned commit, now xfrm4_policy_check depends on skb's  
-> IPSKB_NOPOLICY flag which need to be set per skb and it only gets set in
-> ip_route_input_noref .
-> 
-> -> before above change, xfrm4_policy_check was using DST_NOPOLICY which was  
-> checked against dst set in skb.
-> 
-> -> ip_rcv_finish_core calls ip_route_input_noref only if dst is not valid in  
-> skb.
-> 
-> -> By default in kernel sysctl_ip_early_demux = 1, which means when skb with  
-> syn is received, tcp stack will set DST from skb to sk and in subsequent
-> packets it will copy dst from sk to skb and skip calling ip_route_input_nore
-> inside ip_rcv_finish_core.
-> 
-> -> so for all the subsequent  received packets, IPSKB_NOPOLICY will not get set  
-> and they will get drop.
-> 
-> workaround:
-> only work-aroud is to disable early tcp demux.
-> echo 0 > /proc/sys/net/ipv4/ip_early_demux
-
-Thanks for the report. To be sure below issue doesn't fall through the
-cracks unnoticed, I'm adding it to regzbot, my Linux kernel regression
-tracking bot:
-
-#regzbot introduced e6175a2ed1f1 ^
-https://bugzilla.kernel.org/show_bug.cgi?id=216557
-#regzbot title [Bug 216557] New: tcp connection not working over ip_vti
-interface
-#regzbot monitor:
-https://lore.kernel.org/all/20221009191643.297623-1-eyal.birger@gmail.com/
-#regzbot ignore-activity
-
-This isn't a regression? This issue or a fix for it are already
-discussed somewhere else? It was fixed already? You want to clarify when
-the regression started to happen? Or point out I got the title or
-something else totally wrong? Then just reply -- ideally with also
-telling regzbot about it, as explained here:
-https://linux-regtracking.leemhuis.info/tracked-regression/
-
-Reminder for developers: When fixing the issue, add 'Link:' tags
-pointing to the report (the mail this one replies to), as explained for
-in the Linux kernel's documentation; above webpage explains why this is
-important for tracked regressions.
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-
-P.S.: As the Linux kernel's regression tracker I deal with a lot of
-reports and sometimes miss something important when writing mails like
-this. If that's the case here, don't hesitate to tell me in a public
-reply, it's in everyone's interest to set the public record straight.
