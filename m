@@ -2,131 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 11C335FB42B
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 16:06:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03A615FB469
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 16:18:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229999AbiJKOGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Oct 2022 10:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33032 "EHLO
+        id S229699AbiJKOSE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Oct 2022 10:18:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229965AbiJKOGR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 10:06:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 747FA95AC2
-        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 07:06:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1665497169;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=cH1ww0H+AelzkocMwAGHmagPzaIZq85kVhL0hJPUMXQ=;
-        b=W1APLRGXyubwy/JSGC8iTTxxFohoXbTp8nXNF9kfB6uRyr16lVAcw/BbfrlO2bd1iI0WEo
-        Ug0irVjKdjm7qOzMUGYkU64gOOEz/9GW2eUk2tJz+q7u55CNJX28ztCtia3QCDof9PzjKg
-        C1K9Lc31fzMn5UzhURPugiL+U48dhmA=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-443-AgI6P3GnOuqTwE-86-PEyQ-1; Tue, 11 Oct 2022 10:06:05 -0400
-X-MC-Unique: AgI6P3GnOuqTwE-86-PEyQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6529E3C02B78;
-        Tue, 11 Oct 2022 14:06:04 +0000 (UTC)
-Received: from RHTPC1VM0NT (unknown [10.22.32.200])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 10A60112D412;
-        Tue, 11 Oct 2022 14:06:04 +0000 (UTC)
-From:   Aaron Conole <aconole@redhat.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, dev@openvswitch.org,
-        Florian Westphal <fw@strlen.de>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Eric Dumazet <edumazet@google.com>, kuba@kernel.org,
-        Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: Re: [ovs-dev] [PATCH net] openvswitch: add nf_ct_is_confirmed check
- before assigning the helper
-References: <c5c9092a22a2194650222bffaf786902613deb16.1665085502.git.lucien.xin@gmail.com>
-        <f7tczayh47y.fsf@redhat.com>
-Date:   Tue, 11 Oct 2022 10:06:03 -0400
-In-Reply-To: <f7tczayh47y.fsf@redhat.com> (Aaron Conole's message of "Tue, 11
-        Oct 2022 09:36:33 -0400")
-Message-ID: <f7t8rlmh2us.fsf@redhat.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+        with ESMTP id S229501AbiJKOSC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 10:18:02 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59DB994108
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 07:18:00 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id q9so27183570ejd.0
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 07:18:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=9pYd0ajdV4UoEYzGRm2RyhM3NangO07YKa8YosWFJxc=;
+        b=qOO14G1jWialOMk3rAO6mJnx71Xgh55AevrMUfCho/rBhgGB7hbLZZ53IyK+vfj/yu
+         YPYuplsjDRobcHe7hzn6HB7lXAAJ7iBsbqZYtONCKkSJdOTtIS1s+C8IJSohGi/oXH2M
+         NlDKuoEuQ8DekcTe0X3qQT6qYN8R5d2VIp8MLL2J2h4ChhanyzSj0yKSIlNM0nhvLRcG
+         6WN6kPbSMHI59jYXmlK8Ioo5fdAlVgsRYC4a++2epAN9M7zJ+F+x9B1U6S3c5ipT2vZD
+         6n1462VEgvUjwGvi9fMPk8KPnfBSbVA2TRg+ph/TLAZofn+Dl+HpGheycMFPlQOx3c+5
+         Kyiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=9pYd0ajdV4UoEYzGRm2RyhM3NangO07YKa8YosWFJxc=;
+        b=NJ/5kOR2p1OnmU9a8KLLDsAJJkjO2hjjPCbEsye58FB1ywbt3HhD2xL086GV55cZz5
+         wJserQ/lSsCkOMNM7rBY2TcDVYXTnJC4I0anh9hPlJt2m1c9cWOVjDroNkHPZtHWqK7q
+         pYwCrkmKYID6hCu1Vx5qZqX1nfwEdovzGxI0VId7glUOVD7WLb+ecsGTCledJsKHpmxQ
+         EWXRm02D/RQKuS6k1bd8YI4ZwfYmvMelsnM9DGkoTA9JzfA0KKYvi5TAbr67ETu1rbkv
+         pkARnwdoOssmMmSob0stR+Ovr3eOHtKsZJJXeLrO6aoFWjuXK/3OxsAtp0/omPCTztNE
+         0H7A==
+X-Gm-Message-State: ACrzQf2KdXSB4rDlsNBZcCLkMb3WrPmk0KhPE0iZ36p+V138UUpJ+XpC
+        EdSD7aA8qjVVf2bsucOw9opBdA==
+X-Google-Smtp-Source: AMsMyM6WcBbE8YSQzTdFGQDgrcq/ZHwj6fwENxr8/ar7aKWcAfyyVr8WuJrymOhF0pue1JFuFn2bgA==
+X-Received: by 2002:a17:906:1350:b0:77f:76a7:a0f with SMTP id x16-20020a170906135000b0077f76a70a0fmr18740289ejb.503.1665497878769;
+        Tue, 11 Oct 2022 07:17:58 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id b18-20020a17090636d200b007417041fb2bsm6979662ejc.116.2022.10.11.07.17.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Oct 2022 07:17:57 -0700 (PDT)
+Date:   Tue, 11 Oct 2022 16:17:55 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     "Wilczynski, Michal" <michal.wilczynski@intel.com>
+Cc:     Edward Cree <ecree.xilinx@gmail.com>, netdev@vger.kernel.org,
+        alexandr.lobakin@intel.com, dchumak@nvidia.com, maximmi@nvidia.com,
+        simon.horman@corigine.com, jacob.e.keller@intel.com,
+        jesse.brandeburg@intel.com, przemyslaw.kitszel@intel.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [RFC PATCH net-next v4 2/6] devlink: Extend devlink-rate api
+ with queues and new parameters
+Message-ID: <Y0V7E4UVPTH5tMSz@nanopsycho>
+References: <20220915134239.1935604-1-michal.wilczynski@intel.com>
+ <20220915134239.1935604-3-michal.wilczynski@intel.com>
+ <f17166c7-312d-ac13-989e-b064cddcb49e@gmail.com>
+ <401d70a9-5f6d-ed46-117b-de0b82a5f52c@intel.com>
+ <YzGSPMx2yZT/W6Gw@nanopsycho>
+ <0a201dd1-55bb-925f-ee95-75bb9451bb8c@intel.com>
+ <YzVFez0OXL98hyBt@nanopsycho>
+ <3ff10647-f766-5164-a815-82010c738e12@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <3ff10647-f766-5164-a815-82010c738e12@intel.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Aaron Conole <aconole@redhat.com> writes:
-
-> Xin Long <lucien.xin@gmail.com> writes:
+Tue, Oct 11, 2022 at 03:28:38PM CEST, michal.wilczynski@intel.com wrote:
 >
->> A WARN_ON call trace would be triggered when 'ct(commit, alg=helper)'
->> applies on a confirmed connection:
->>
->>   WARNING: CPU: 0 PID: 1251 at net/netfilter/nf_conntrack_extend.c:98
->>   RIP: 0010:nf_ct_ext_add+0x12d/0x150 [nf_conntrack]
->>   Call Trace:
->>    <TASK>
->>    nf_ct_helper_ext_add+0x12/0x60 [nf_conntrack]
->>    __nf_ct_try_assign_helper+0xc4/0x160 [nf_conntrack]
->>    __ovs_ct_lookup+0x72e/0x780 [openvswitch]
->>    ovs_ct_execute+0x1d8/0x920 [openvswitch]
->>    do_execute_actions+0x4e6/0xb60 [openvswitch]
->>    ovs_execute_actions+0x60/0x140 [openvswitch]
->>    ovs_packet_cmd_execute+0x2ad/0x310 [openvswitch]
->>    genl_family_rcv_msg_doit.isra.15+0x113/0x150
->>    genl_rcv_msg+0xef/0x1f0
->>
->> which can be reproduced with these OVS flows:
->>
->>   table=0, in_port=veth1,tcp,tcp_dst=2121,ct_state=-trk
->>   actions=ct(commit, table=1)
->>   table=1, in_port=veth1,tcp,tcp_dst=2121,ct_state=+trk+new
->>   actions=ct(commit, alg=ftp),normal
->>
->> The issue was introduced by commit 248d45f1e193 ("openvswitch: Allow
->> attaching helper in later commit") where it somehow removed the check
->> of nf_ct_is_confirmed before asigning the helper. This patch is to fix
->> it by bringing it back.
->>
->> Fixes: 248d45f1e193 ("openvswitch: Allow attaching helper in later commit")
->> Reported-by: Pablo Neira Ayuso <pablo@netfilter.org>
->> Signed-off-by: Xin Long <lucien.xin@gmail.com>
->> ---
 >
-> Hi Xin,
+>On 9/29/2022 9:12 AM, Jiri Pirko wrote:
+>> Wed, Sep 28, 2022 at 01:47:03PM CEST, michal.wilczynski@intel.com wrote:
+>> > 
+>> > On 9/26/2022 1:51 PM, Jiri Pirko wrote:
+>> > > Thu, Sep 15, 2022 at 08:41:52PM CEST, michal.wilczynski@intel.com wrote:
+>> > > > On 9/15/2022 5:31 PM, Edward Cree wrote:
+>> > > > > On 15/09/2022 14:42, Michal Wilczynski wrote:
+>> > > > > > Currently devlink-rate only have two types of objects: nodes and leafs.
+>> > > > > > There is a need to extend this interface to account for a third type of
+>> > > > > > scheduling elements - queues. In our use case customer is sending
+>> > > > > > different types of traffic on each queue, which requires an ability to
+>> > > > > > assign rate parameters to individual queues.
+>> > > > > Is there a use-case for this queue scheduling in the absence of a netdevice?
+>> > > > > If not, then I don't see how this belongs in devlink; the configuration
+>> > > > >     should instead be done in two parts: devlink-rate to schedule between
+>> > > > >     different netdevices (e.g. VFs) and tc qdiscs (or some other netdev-level
+>> > > > >     API) to schedule different queues within each single netdevice.
+>> > > > > Please explain why this existing separation does not support your use-case.
+>> > > > > 
+>> > > > > Also I would like to see some documentation as part of this patch.  It looks
+>> > > > >     like there's no kernel document for devlink-rate unlike most other devlink
+>> > > > >     objects; perhaps you could add one?
+>> > > > > 
+>> > > > > -ed
+>> > > > Hi,
+>> > > > Previously we discussed adding queues to devlink-rate in this thread:
+>> > > > https://lore.kernel.org/netdev/20220704114513.2958937-1-michal.wilczynski@intel.com/T/#u
+>> > > > In our use case we are trying to find a way to expose hardware Tx scheduler
+>> > > > tree that is defined
+>> > > > per port to user. Obviously if the tree is defined per physical port, all the
+>> > > > scheduling nodes will reside
+>> > > > on the same tree.
+>> > > > 
+>> > > > Our customer is trying to send different types of traffic that require
+>> > > > different QoS levels on the same
+>> > > Do I understand that correctly, that you are assigning traffic to queues
+>> > > in VM, and you rate the queues on hypervisor? Is that the goal?
+>> > Yes.
+>> Why do you have this mismatch? If forces the hypervisor and VM admin to
+>> somehow sync upon the configuration. That does not sound correct to me.
 >
-> Looking at the original commit, I think this will read like a revert.  I
-> am doing some testing now, but I think we need input from Yi-Hung to
-> find out what the use case is that the original fixed.
+>Thanks for a feedback, this is going to be changed
+>
+>> 
+>> 
+>> > > 
+>> > > > VM, but on a different queues. This requires completely different rate setups
+>> > > > for that queue - in the
+>> > > > implementation that you're mentioning we wouldn't be able to arbitrarily
+>> > > > reassign the queue to any node.
+>> > > > Those queues would still need to share a single parent - their netdev. This
+>> > > So that replies to Edward's note about having the queues maintained
+>> > > within the single netdev/vport, correct?
+>> >   Correct ;)
+>> Okay. So you don't really need any kind of sharing devlink might be able
+>> to provide.
+>> 
+>>  From what you say and how I see this, it's clear. You should handle the
+>> per-queue shaping on the VM, on netdevice level, most probably by
+>> offloading some of the TC qdisc.
+>
+>I talked with architect, and this is how the solution will end up looking
+>like,
+>I'm not sure however whether creating a hardware-only qdisc is allowed ?
 
-I'm also not able to reproduce the WARN_ON.  My env:
+Nope.
 
-kernel: 4c86114194e6 ("Merge tag 'iomap-6.1-merge-1' of git://git.kernel.org/pub/scm/fs/xfs/xfs-linux")
 
-Using current upstream OVS
-I used your flows (adjusting the port names):
-
- cookie=0x0, duration=246.240s, table=0, n_packets=17, n_bytes=1130, ct_state=-trk,tcp,in_port=v0,tp_dst=2121 actions=ct(commit,table=1)
- cookie=0x0, duration=246.240s, table=1, n_packets=1, n_bytes=74, ct_state=+new+trk,tcp,in_port=v0,tp_dst=2121 actions=ct(commit,alg=ftp),NORMAL
-
-and ran:
-
-$ ip netns exec server python3 -m pyftpdlib -i 172.31.110.20 &
-$ ip netns exec client curl ftp://172.31.110.20:2121
-
-but no WARN_ON message got triggered.  Are there additional flows you
-used that I am missing, or perhaps this should be on a different kernel
-commit?
-
-> -Aaron
-
+>
+>
+>
+>Btw, thanks everyone for valuable feedback, I've resend the patch
+>without the queue support,
+>https://lore.kernel.org/netdev/20221011090113.445485-1-michal.wilczynski@intel.com/
+>
+>
+>BR,
+>Michał
+>> 
+>> > > 
+>> > > > wouldn't allow us to fully take
+>> > > > advantage of the HQoS and would introduce arbitrary limitations.
+>> > > > 
+>> > > > Also I would think that since there is only one vendor implementing this
+>> > > > particular devlink-rate API, there is
+>> > > > some room for flexibility.
+>> > > > 
+>> > > > Regarding the documentation,  sure. I just wanted to get all the feedback
+>> > > >from the mailing list and arrive at the final
+>> > > > solution before writing the docs.
+>> > > > 
+>> > > > BTW, I'm going to be out of office tomorrow, so will respond in this thread
+>> > > > on Monday.
+>> > > > BR,
+>> > > > Michał
+>> > > > 
+>> > > > 
+>
