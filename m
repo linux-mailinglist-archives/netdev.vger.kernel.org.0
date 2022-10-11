@@ -2,47 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D208C5FB851
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 18:31:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94C455FB8AE
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 18:56:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229757AbiJKQb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Oct 2022 12:31:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56724 "EHLO
+        id S229831AbiJKQ4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Oct 2022 12:56:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229779AbiJKQb0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 12:31:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88DA41402B;
-        Tue, 11 Oct 2022 09:31:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE59B61215;
-        Tue, 11 Oct 2022 16:31:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A093CC433D6;
-        Tue, 11 Oct 2022 16:31:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665505884;
-        bh=WtjFG99GlAzYUAymxozvg4UBgubwOQ6jODebQwJ6gUo=;
-        h=From:Subject:To:Cc:Date:From;
-        b=MU6Dtk/d1resCxS9YXKlNE7XoliqOSAwT58c2VRyq41al5PsFRJitmm5Bn/7ny4cw
-         C45KvRBhPfGNyWqSQoKQfG4wxsT/AAOdcZsMYmh6TXLqDbNGNcIxX1CK86DPcK5/Pl
-         UQvuHiJO6a2Z9FOhzhbkwLlvwhx0m5mgEtfQyvEzD6Hg8lat0vIdizJt01setIKsco
-         EsZEVGZY0YlTUKBP6wPQTHpUgKrZXyafu9ziSJe85An4zYM17fmeopcr8bzsiU8HbI
-         HjUJtkdJGP6voZrcv1/qg+DlOxI2LfqPYsiU786oiMR2n82moA+13zNNzh8iE2hHFD
-         jzIlBTzAwLJgw==
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229885AbiJKQ4N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 12:56:13 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E62B2A4B93;
+        Tue, 11 Oct 2022 09:56:11 -0700 (PDT)
+Received: by linux.microsoft.com (Postfix, from userid 1112)
+        id B4B7E20EC332; Tue, 11 Oct 2022 09:56:11 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com B4B7E20EC332
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1665507371;
+        bh=oA6Cyk055mFQo6DgJ18D3XBOGVfdOg6mfEbcaZCFXzc=;
+        h=Date:From:To:Cc:Subject:From;
+        b=axgBLjzyI8Ms6DdzFjNhV+1m2CjSSVmXM8cCuVr/XweLArBrtsHT47sEbulGrjfCR
+         HZpmbIo3wK7PcuCF+YTM0FCKlfqlARh10ZpDsTZQgBCMMqBGHlp9GsDlBHjBOAK7li
+         n97GA/j1OzM3Eaij27QRzd4TJsQHvJnSLWegwPUw=
+Date:   Tue, 11 Oct 2022 09:56:11 -0700
+From:   Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     seh@panix.com
+Subject: kernel BUG at net/core/skbuff.c:4219
+Message-ID: <20221011165611.GA8735@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-From:   Kalle Valo <kvalo@kernel.org>
-Subject: pull-request: wireless-2022-10-11
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Message-Id: <20221011163123.A093CC433D6@smtp.kernel.org>
-Date:   Tue, 11 Oct 2022 16:31:23 +0000 (UTC)
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -51,102 +46,92 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
 
-here's a pull request to net tree, more info below. Please let me know if there
-are any problems.
+One of our Flatcar users has been hitting the kernel BUG in the subject line
+for the past year (https://github.com/flatcar/Flatcar/issues/378). This was
+first reported when on 5.10.25, but has been happening across kernel updates,
+most recently with 5.15.63. The nodes where this happens are AWS EC2 instances,
+using ENA and calico networking in eBPF mode with VXLAN encapsulation. When
+GRO/GSO is enabled, the host hits this bug and prints the following stacktrace:
 
-Kalle
+[Mon Oct 10 18:22:24 2022] ------------[ cut here ]------------
+[Mon Oct 10 18:22:24 2022] kernel BUG at net/core/skbuff.c:4219!
+[Mon Oct 10 18:22:24 2022] invalid opcode: 0000 [#1] SMP PTI
+[Mon Oct 10 18:22:24 2022] CPU: 6 PID: 0 Comm: swapper/6 Not tainted 5.15.63-flatcar #1
+[Mon Oct 10 18:22:24 2022] Hardware name: Amazon EC2 z1d.12xlarge/, BIOS 1.0 10/16/2017
+[Mon Oct 10 18:22:24 2022] RIP: 0010:skb_segment+0xc70/0xe80
+[Mon Oct 10 18:22:24 2022] Code: 44 24 50 48 89 44 24 30 48 8b 44 24 10 48 89 44 24 50 e9 16 f7 ff ff 0f 0b 89 44 24 2c c7 44 24 4c 00 00 00 00 e9 44 fe ff ff <0f> 0b 0f 0b 0f 0b 41 8b 7d 74 85 ff 0f 85 91 01 00 00 49 8b 95 c0
+[Mon Oct 10 18:22:24 2022] RSP: 0018:ffffa2d38c780838 EFLAGS: 00010246
+[Mon Oct 10 18:22:24 2022] RAX: ffff8954dd8312c0 RBX: ffff89293fbde300 RCX: ffff8957bd3d2fa0
+[Mon Oct 10 18:22:24 2022] RDX: 0000000000000000 RSI: ffff89293fbde2c0 RDI: ffffffffffffffff
+[Mon Oct 10 18:22:24 2022] RBP: ffffa2d38c780908 R08: 0000000000009db6 R09: 0000000000000000
+[Mon Oct 10 18:22:24 2022] R10: 000000000000a356 R11: 000000000000a31a R12: 000000000000000b
+[Mon Oct 10 18:22:24 2022] R13: ffff892940566100 R14: 000000000000a31a R15: ffff891ad0e5c600
+[Mon Oct 10 18:22:24 2022] FS:  0000000000000000(0000) GS:ffff8948b9b80000(0000) knlGS:0000000000000000
+[Mon Oct 10 18:22:24 2022] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[Mon Oct 10 18:22:24 2022] CR2: 000000c011faf000 CR3: 0000000d66a0a001 CR4: 00000000007706e0
+[Mon Oct 10 18:22:24 2022] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[Mon Oct 10 18:22:24 2022] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[Mon Oct 10 18:22:24 2022] PKRU: 55555554
+[Mon Oct 10 18:22:24 2022] Call Trace:
+[Mon Oct 10 18:22:24 2022]  <IRQ>
+[Mon Oct 10 18:22:24 2022] ? csum_block_add_ext (include/net/checksum.h:117)
+[Mon Oct 10 18:22:24 2022] ? reqsk_fastopen_remove (include/linux/bitops.h:119 include/net/checksum.h:87 include/net/checksum.h:94 include/net/checksum.h:100)
+[Mon Oct 10 18:22:24 2022] tcp_gso_segment (net/ipv4/tcp_offload.c:99)
+[Mon Oct 10 18:22:24 2022] inet_gso_segment (net/ipv4/af_inet.c:1385)
+[Mon Oct 10 18:22:24 2022] skb_mac_gso_segment (net/core/dev.c:3339)
+[Mon Oct 10 18:22:24 2022] __skb_gso_segment (net/core/dev.c:3414 (discriminator 3))
+[Mon Oct 10 18:22:24 2022] ? netif_skb_features (include/net/mpls.h:21 net/core/dev.c:3463 net/core/dev.c:3483 net/core/dev.c:3574)
+[Mon Oct 10 18:22:24 2022] validate_xmit_skb.constprop.0 (net/core/dev.c:3672)
+[Mon Oct 10 18:22:24 2022] validate_xmit_skb_list (net/core/dev.c:3722)
+[Mon Oct 10 18:22:24 2022] sch_direct_xmit (net/sched/sch_generic.c:327)
+[Mon Oct 10 18:22:24 2022] __dev_queue_xmit (net/core/dev.c:3858 net/core/dev.c:4185)
+[Mon Oct 10 18:22:24 2022] ip_finish_output2 (include/net/neighbour.h:500 include/net/neighbour.h:514 net/ipv4/ip_output.c:228)
+[Mon Oct 10 18:22:24 2022] ? ip_route_input_rcu (net/ipv4/route.c:1745 net/ipv4/route.c:2499 net/ipv4/route.c:2458)
+[Mon Oct 10 18:22:24 2022] ? skb_gso_validate_network_len (net/core/skbuff.c:5561 net/core/skbuff.c:5636)
+[Mon Oct 10 18:22:24 2022] ? __ip_finish_output (net/ipv4/ip_output.c:249 net/ipv4/ip_output.c:301 net/ipv4/ip_output.c:288)
+[Mon Oct 10 18:22:24 2022] ip_sublist_rcv_finish (include/net/dst.h:460 net/ipv4/ip_input.c:565)
+[Mon Oct 10 18:22:24 2022] ip_sublist_rcv (net/ipv4/ip_input.c:624)
+[Mon Oct 10 18:22:24 2022] ? ip_sublist_rcv (net/ipv4/ip_input.c:422)
+[Mon Oct 10 18:22:24 2022] ip_list_rcv (net/ipv4/ip_input.c:659)
+[Mon Oct 10 18:22:24 2022] __netif_receive_skb_list_core (net/core/dev.c:5498 net/core/dev.c:5546)
+[Mon Oct 10 18:22:24 2022] netif_receive_skb_list_internal (net/core/dev.c:5600 net/core/dev.c:5689)
+[Mon Oct 10 18:22:24 2022] ? inet_gro_complete (net/ipv4/af_inet.c:1645)
+[Mon Oct 10 18:22:24 2022] napi_gro_complete.constprop.0.isra.0 (include/linux/list.h:35 net/core/dev.c:5844 net/core/dev.c:5839 net/core/dev.c:5856 net/core/dev.c:5892)
+[Mon Oct 10 18:22:24 2022] dev_gro_receive (net/core/dev.c:6119)
+[Mon Oct 10 18:22:24 2022] napi_gro_receive (net/core/dev.c:6223)
+[Mon Oct 10 18:22:24 2022]  0xffffffffc069d699
+[Mon Oct 10 18:22:24 2022] ? scheduler_tick (kernel/sched/core.c:7053 kernel/sched/core.c:5278)
+[Mon Oct 10 18:22:24 2022] __napi_poll (net/core/dev.c:7005)
+[Mon Oct 10 18:22:24 2022] net_rx_action (net/core/dev.c:7074 net/core/dev.c:7159)
+[Mon Oct 10 18:22:24 2022] __do_softirq (arch/x86/include/asm/jump_label.h:27 include/linux/jump_label.h:212 include/trace/events/irq.h:142 kernel/softirq.c:559)
+[Mon Oct 10 18:22:24 2022] irq_exit_rcu (kernel/softirq.c:432 kernel/softirq.c:636 kernel/softirq.c:648)
+[Mon Oct 10 18:22:24 2022] common_interrupt (arch/x86/kernel/irq.c:240 (discriminator 14))
+[Mon Oct 10 18:22:24 2022]  </IRQ>
+[Mon Oct 10 18:22:24 2022]  <TASK>
+[Mon Oct 10 18:22:24 2022]  asm_common_interrupt+0x21/0x40
+[Mon Oct 10 18:22:24 2022] RIP: 0010:cpuidle_enter_state+0xc7/0x350
+[Mon Oct 10 18:22:24 2022] Code: 8b 3d f5 e1 9b 4d e8 08 bb a7 ff 49 89 c5 0f 1f 44 00 00 31 ff e8 09 c9 a7 ff 45 84 ff 0f 85 fe 00 00 00 fb 66 0f 1f 44 00 00 <45> 85 f6 0f 88 0a 01 00 00 49 63 c6 4c 2b 2c 24 48 8d 14 40 48 8d
+[Mon Oct 10 18:22:24 2022] RSP: 0018:ffffa2d38c527ea8 EFLAGS: 00000246
+[Mon Oct 10 18:22:24 2022] RAX: ffff8948b9bac100 RBX: 0000000000000003 RCX: 00000000ffffffff
+[Mon Oct 10 18:22:24 2022] RDX: 0000000000000006 RSI: 0000000000000006 RDI: 0000000000000000
+[Mon Oct 10 18:22:24 2022] RBP: ffff8948b9bb6000 R08: 0000043f38b90644 R09: 0000043f6c0b1df3
+[Mon Oct 10 18:22:24 2022] R10: 0000000000000014 R11: 0000000000000008 R12: ffffffffb3bbd7e0
+[Mon Oct 10 18:22:24 2022] R13: 0000043f38b90644 R14: 0000000000000003 R15: 0000000000000000
+[Mon Oct 10 18:22:24 2022]  ? cpuidle_enter_state+0xb7/0x350
+[Mon Oct 10 18:22:24 2022]  cpuidle_enter+0x29/0x40
+[Mon Oct 10 18:22:24 2022]  do_idle+0x1e9/0x280
+[Mon Oct 10 18:22:24 2022]  cpu_startup_entry+0x19/0x20
+[Mon Oct 10 18:22:24 2022]  secondary_startup_64_no_verify+0xc2/0xcb
+[Mon Oct 10 18:22:24 2022]  </TASK>
+[Mon Oct 10 18:22:24 2022] Modules linked in: xt_CT ip_set_hash_net ip_set vxlan cls_bpf sch_ingress veth xt_comment xt_mark xt_conntrack nft_chain_nat xt_MASQUERADE nf_nat nf_conntrack_netlink nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 xfrm_user xfrm_algo nft_counter xt_addrtype nft_compat nf_tables nfnetlink nls_ascii nls_cp437 vfat fat mousedev intel_rapl_msr intel_rapl_common psmouse evdev i2c_piix4 i2c_core button sch_fq_codel fuse configfs ext4 crc16 mbcache jbd2 dm_verity dm_bufio aesni_intel nvme nvme_core libaes crypto_simd ena cryptd t10_pi crc_t10dif crct10dif_generic crct10dif_common btrfs blake2b_generic zstd_compress lzo_compress raid6_pq libcrc32c crc32c_generic crc32c_intel dm_mirror dm_region_hash dm_log dm_mod qla4xxx iscsi_boot_sysfs iscsi_tcp libiscsi_tcp libiscsi br_netfilter bridge scsi_transport_iscsi stp llc overlay scsi_mod scsi_common
+[Mon Oct 10 18:22:24 2022] ---[ end trace 86a2732b8f4d0b13 ]---
 
-The following changes since commit 0326074ff4652329f2a1a9c8685104576bd8d131:
+Disabling GSO/GRO *seems* to prevent the BUG_ON() from getting hit but is too
+costly in terms of performance. There are also suggestions that this happens
+more often under heavy network load, and has also been observed when running on
+Vmware.
 
-  Merge tag 'net-next-6.1' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next (2022-10-04 13:38:03 -0700)
+If anyone has any suggestions or needs more information to come up with a
+theory, we'd love to get to the bottom of this.
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless.git tags/wireless-2022-10-11
-
-for you to fetch changes up to abf93f369419249ca482a8911039fe1c75a94227:
-
-  wifi: ath11k: mac: fix reading 16 bytes from a region of size 0 warning (2022-10-11 11:46:31 +0300)
-
-----------------------------------------------------------------
-wireless fixes for v6.1
-
-First set of fixes for v6.1. Quite a lot of fixes in stack but also
-for mt76.
-
-cfg80211/mac80211
-
-* fix locking error in mac80211's hw addr change
-
-* fix TX queue stop for internal TXQs
-
-* handling of very small (e.g. STP TCN) packets
-
-* two memcpy() hardening fixes
-
-* fix probe request 6 GHz capability warning
-
-* fix various connection prints
-
-* fix decapsulation offload for AP VLAN
-
-mt76
-
-* fix rate reporting, LLC packets and receive checksum offload on specific chipsets
-
-iwlwifi
-
-* fix crash due to list corruption
-
-ath11k
-
-* fix a compiler warning with GCC 11 and KASAN
-
-----------------------------------------------------------------
-Alexander Wetzel (1):
-      wifi: mac80211: netdev compatible TX stop for iTXQ drivers
-
-Dan Carpenter (1):
-      wifi: mac80211: unlock on error in ieee80211_can_powered_addr_change()
-
-Felix Fietkau (6):
-      wifi: mt76: fix rate reporting / throughput regression on mt7915 and newer
-      wifi: mac80211: do not drop packets smaller than the LLC-SNAP header on fast-rx
-      wifi: mac80211: fix decap offload for stations on AP_VLAN interfaces
-      wifi: cfg80211: fix ieee80211_data_to_8023_exthdr handling of small packets
-      wifi: mt76: fix receiving LLC packets on mt7615/mt7915
-      wifi: mt76: fix rx checksum offload on mt7615/mt7915/mt7921
-
-Hawkins Jiawei (1):
-      wifi: wext: use flex array destination for memcpy()
-
-James Prestwood (2):
-      wifi: mac80211: fix probe req HE capabilities access
-      wifi: mac80211: remove/avoid misleading prints
-
-Jose Ignacio Tornos Martinez (1):
-      wifi: iwlwifi: mvm: fix double list_add at iwl_mvm_mac_wake_tx_queue (other cases)
-
-Kalle Valo (1):
-      wifi: ath11k: mac: fix reading 16 bytes from a region of size 0 warning
-
-Kees Cook (1):
-      wifi: nl80211: Split memcpy() of struct nl80211_wowlan_tcp_data_token flexible array
-
- drivers/net/wireless/ath/ath11k/mac.c           |  5 ++--
- drivers/net/wireless/intel/iwlwifi/mvm/sta.c    |  2 ++
- drivers/net/wireless/mediatek/mt76/dma.c        |  5 +---
- drivers/net/wireless/mediatek/mt76/mt7615/mac.c | 12 ++++----
- drivers/net/wireless/mediatek/mt76/mt7915/mac.c | 12 ++++----
- drivers/net/wireless/mediatek/mt76/mt7921/mac.c |  4 ++-
- drivers/net/wireless/mediatek/mt76/tx.c         | 10 +++++--
- include/linux/wireless.h                        | 10 ++++++-
- net/mac80211/iface.c                            |  8 ++---
- net/mac80211/mlme.c                             |  7 +++--
- net/mac80211/rx.c                               |  9 +++---
- net/mac80211/tx.c                               | 10 ++++---
- net/mac80211/util.c                             |  2 +-
- net/wireless/nl80211.c                          |  4 ++-
- net/wireless/util.c                             | 40 +++++++++++++------------
- net/wireless/wext-core.c                        | 17 ++++++-----
- 16 files changed, 94 insertions(+), 63 deletions(-)
+Jeremi
