@@ -2,278 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E90505FAED2
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 11:02:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 555405FAEDF
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 11:03:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229798AbiJKJCM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Oct 2022 05:02:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47170 "EHLO
+        id S229761AbiJKJDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Oct 2022 05:03:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229778AbiJKJCG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 05:02:06 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA7AD7C333
-        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 02:02:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1665478923; x=1697014923;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=FgYZ0l4P1XisJ6hI5uWmPrhh6KlJ/UmTGEMeHv+iS+w=;
-  b=LZU2MtF9fqZalrKwiOxIjyyboe/O66NyyOwpQRDv1dkjkpbGNat8mlMH
-   a2jpUitHOz4BhnY0lMqHdcLKNGEw/SgHTLKSvQPVKgew7++f9H4Rm3B5I
-   iokCxsgG0up3T5UXJhSIDuhzhKn57LUEIlRWvJJLs9vgQkbxDb88bLF04
-   jkDRMJgocvnm70kp/N1066GHdjhrzJfiL4jCYl9TQwuawlvCJUi0bgFj+
-   bdMuhHq8ZMl+lPsMJ31GM4ofR7MvBn0j7H1duXU5WV4+uHhsa/vQHIX8e
-   ZJO1oew7/E+TV81T9S3t/KQxZnAKhHoMsA8t/YXsQcIeIpcXCHP1Lo0il
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10496"; a="284180793"
-X-IronPort-AV: E=Sophos;i="5.95,176,1661842800"; 
-   d="scan'208";a="284180793"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Oct 2022 02:02:02 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10496"; a="659465886"
-X-IronPort-AV: E=Sophos;i="5.95,176,1661842800"; 
-   d="scan'208";a="659465886"
-Received: from unknown (HELO fedora.igk.intel.com) ([10.123.220.6])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Oct 2022 02:02:00 -0700
-From:   Michal Wilczynski <michal.wilczynski@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     alexandr.lobakin@intel.com, jacob.e.keller@intel.com,
-        jesse.brandeburg@intel.com, przemyslaw.kitszel@intel.com,
-        anthony.l.nguyen@intel.com, kuba@kernel.org,
-        ecree.xilinx@gmail.com, jiri@resnulli.us,
-        Michal Wilczynski <michal.wilczynski@intel.com>
-Subject: [PATCH net-next v5 4/4] ice: Prevent DCB coexistence with Custom Tx scheduler
-Date:   Tue, 11 Oct 2022 11:01:13 +0200
-Message-Id: <20221011090113.445485-5-michal.wilczynski@intel.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20221011090113.445485-1-michal.wilczynski@intel.com>
-References: <20221011090113.445485-1-michal.wilczynski@intel.com>
+        with ESMTP id S229932AbiJKJDi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 05:03:38 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 865DB78BF9
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 02:03:29 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1oiBAb-0003LK-Jg; Tue, 11 Oct 2022 11:03:25 +0200
+Message-ID: <acc587a0-2c42-b039-fe2a-48f75e7ed462@leemhuis.info>
+Date:   Tue, 11 Oct 2022 11:03:25 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.1
+Subject: Re: Fw: [Bug 216557] New: tcp connection not working over ip_vti
+ interface #forregzbot
+Content-Language: en-US, de-DE
+To:     netdev@vger.kernel.org,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+References: <20221007141751.1336e50b@hermes.local>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <20221007141751.1336e50b@hermes.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1665479010;069b218f;
+X-HE-SMSGID: 1oiBAb-0003LK-Jg
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DCB might interfere with Custom Tx Scheduler changes that user might
-introduce using devlink-rate API.
+[Note: this mail is primarily send for documentation purposes and/or for
+regzbot, my Linux kernel regression tracking bot. That's why I removed
+most or all folks from the list of recipients, but left any that looked
+like a mailing lists. These mails usually contain '#forregzbot' in the
+subject, to make them easy to spot and filter out.]
 
-Check if DCB is active, when user tries to change any setting in exported
-Tx scheduler tree.
+[TLDR: I'm adding this regression report to the list of tracked
+regressions; all text from me you find below is based on a few templates
+paragraphs you might have encountered already already in similar form.]
 
-Signed-off-by: Michal Wilczynski <michal.wilczynski@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_dcb_lib.c |  4 ++
- drivers/net/ethernet/intel/ice/ice_devlink.c | 61 ++++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_idc.c     |  5 ++
- drivers/net/ethernet/intel/ice/ice_type.h    |  1 +
- 4 files changed, 71 insertions(+)
+Hi, this is your Linux kernel regression tracker.
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-index add90e75f05c..8d7fc76f49af 100644
---- a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-@@ -364,6 +364,10 @@ int ice_pf_dcb_cfg(struct ice_pf *pf, struct ice_dcbx_cfg *new_cfg, bool locked)
- 	/* Enable DCB tagging only when more than one TC */
- 	if (ice_dcb_get_num_tc(new_cfg) > 1) {
- 		dev_dbg(dev, "DCB tagging enabled (num TC > 1)\n");
-+		if (pf->hw.port_info->is_custom_tx_enabled) {
-+			dev_err(dev, "Custom Tx scheduler feature enabled, can't configure DCB\n");
-+			return -EBUSY;
-+		}
- 		set_bit(ICE_FLAG_DCB_ENA, pf->flags);
- 	} else {
- 		dev_dbg(dev, "DCB tagging disabled (num TC = 1)\n");
-diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
-index ea3701822942..e29089b5df29 100644
---- a/drivers/net/ethernet/intel/ice/ice_devlink.c
-+++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-@@ -8,6 +8,7 @@
- #include "ice_devlink.h"
- #include "ice_eswitch.h"
- #include "ice_fw_update.h"
-+#include "ice_dcb_lib.h"
- 
- static int ice_active_port_option = -1;
- 
-@@ -713,6 +714,33 @@ ice_devlink_port_unsplit(struct devlink *devlink, struct devlink_port *port,
- 	return ice_devlink_port_split(devlink, port, 1, extack);
- }
- 
-+/**
-+ * ice_enable_custom_tx - try to enable custom Tx feature
-+ * @pf: devlink struct
-+ * @extack: extended netdev ack structure
-+ *
-+ * This function tries to enabled custom Tx feature,
-+ * it's not possible to enable it, if DCB is active.
-+ */
-+static bool ice_enable_custom_tx(struct ice_pf *pf, struct netlink_ext_ack *extack)
-+{
-+	struct ice_port_info *pi = ice_get_main_vsi(pf)->port_info;
-+	struct device *dev = ice_pf_to_dev(pf);
-+
-+	if (pi->is_custom_tx_enabled)
-+		/* already enabled, return true */
-+		return true;
-+
-+	if (ice_is_dcb_active(pf)) {
-+		dev_err(dev, "DCB active, can't modify Tx scheduler tree\n");
-+		return false;
-+	}
-+
-+	pi->is_custom_tx_enabled = true;
-+
-+	return true;
-+}
-+
- /**
-  * ice_traverse_tx_tree - traverse Tx scheduler tree
-  * @devlink: devlink struct
-@@ -892,6 +920,9 @@ static struct ice_port_info *ice_get_pi_from_dev_rate(struct devlink_rate *rate_
- static int ice_devlink_rate_node_new(struct devlink_rate *rate_node, void **priv,
- 				     struct netlink_ext_ack *extack)
- {
-+	if (!ice_enable_custom_tx(devlink_priv(rate_node->devlink), extack))
-+		return -EBUSY;
-+
- 	return 0;
- }
- 
-@@ -905,6 +936,9 @@ static int ice_devlink_rate_node_del(struct devlink_rate *rate_node, void *priv,
- 	tc_node = pi->root->children[0];
- 	node = priv;
- 
-+	if (!ice_enable_custom_tx(devlink_priv(rate_node->devlink), extack))
-+		return -EBUSY;
-+
- 	if (!rate_node->parent || !node || tc_node == node || !extack)
- 		return 0;
- 
-@@ -924,6 +958,9 @@ static int ice_devlink_rate_leaf_tx_max_set(struct devlink_rate *rate_vport, voi
- {
- 	struct ice_sched_node *node = priv;
- 
-+	if (!ice_enable_custom_tx(devlink_priv(rate_vport->devlink), extack))
-+		return -EBUSY;
-+
- 	if (!node)
- 		return 0;
- 
-@@ -937,6 +974,9 @@ static int ice_devlink_rate_leaf_tx_share_set(struct devlink_rate *rate_vport, v
- {
- 	struct ice_sched_node *node = priv;
- 
-+	if (!ice_enable_custom_tx(devlink_priv(rate_vport->devlink), extack))
-+		return -EBUSY;
-+
- 	if (!node)
- 		return 0;
- 
-@@ -950,6 +990,9 @@ static int ice_devlink_rate_leaf_tx_priority_set(struct devlink_rate *rate_vport
- {
- 	struct ice_sched_node *node = priv;
- 
-+	if (!ice_enable_custom_tx(devlink_priv(rate_vport->devlink), extack))
-+		return -EBUSY;
-+
- 	if (!node)
- 		return 0;
- 
-@@ -963,6 +1006,9 @@ static int ice_devlink_rate_leaf_tx_weight_set(struct devlink_rate *rate_vport,
- {
- 	struct ice_sched_node *node = priv;
- 
-+	if (!ice_enable_custom_tx(devlink_priv(rate_vport->devlink), extack))
-+		return -EBUSY;
-+
- 	if (!node)
- 		return 0;
- 
-@@ -976,6 +1022,9 @@ static int ice_devlink_rate_node_tx_max_set(struct devlink_rate *rate_node, void
- {
- 	struct ice_sched_node *node = priv;
- 
-+	if (!ice_enable_custom_tx(devlink_priv(rate_node->devlink), extack))
-+		return -EBUSY;
-+
- 	if (!node)
- 		return 0;
- 
-@@ -989,6 +1038,9 @@ static int ice_devlink_rate_node_tx_share_set(struct devlink_rate *rate_node, vo
- {
- 	struct ice_sched_node *node = priv;
- 
-+	if (!ice_enable_custom_tx(devlink_priv(rate_node->devlink), extack))
-+		return -EBUSY;
-+
- 	if (!node)
- 		return 0;
- 
-@@ -1002,6 +1054,9 @@ static int ice_devlink_rate_node_tx_priority_set(struct devlink_rate *rate_node,
- {
- 	struct ice_sched_node *node = priv;
- 
-+	if (!ice_enable_custom_tx(devlink_priv(rate_node->devlink), extack))
-+		return -EBUSY;
-+
- 	if (!node)
- 		return 0;
- 
-@@ -1015,6 +1070,9 @@ static int ice_devlink_rate_node_tx_weight_set(struct devlink_rate *rate_node, v
- {
- 	struct ice_sched_node *node = priv;
- 
-+	if (!ice_enable_custom_tx(devlink_priv(rate_node->devlink), extack))
-+		return -EBUSY;
-+
- 	if (!node)
- 		return 0;
- 
-@@ -1041,6 +1099,9 @@ static int ice_devlink_set_parent(struct devlink_rate *devlink_rate,
- 	if (!extack)
- 		return 0;
- 
-+	if (!ice_enable_custom_tx(devlink_priv(devlink_rate->devlink), extack))
-+		return -EBUSY;
-+
- 	if (!parent) {
- 		if (!node || tc_node == node || node->num_children)
- 			return -EINVAL;
-diff --git a/drivers/net/ethernet/intel/ice/ice_idc.c b/drivers/net/ethernet/intel/ice/ice_idc.c
-index 895c32bcc8b5..f702bd5272f2 100644
---- a/drivers/net/ethernet/intel/ice/ice_idc.c
-+++ b/drivers/net/ethernet/intel/ice/ice_idc.c
-@@ -273,6 +273,11 @@ int ice_plug_aux_dev(struct ice_pf *pf)
- 	if (!ice_is_rdma_ena(pf))
- 		return 0;
- 
-+	if (pf->hw.port_info->is_custom_tx_enabled) {
-+		dev_err(ice_pf_to_dev(pf), "Custom Tx scheduler enabled, it's mutually exclusive with RDMA\n");
-+		return -EBUSY;
-+	}
-+
- 	iadev = kzalloc(sizeof(*iadev), GFP_KERNEL);
- 	if (!iadev)
- 		return -ENOMEM;
-diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
-index 3b6d317371cd..05eb30f34871 100644
---- a/drivers/net/ethernet/intel/ice/ice_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_type.h
-@@ -714,6 +714,7 @@ struct ice_port_info {
- 	struct ice_qos_cfg qos_cfg;
- 	struct xarray sched_node_ids;
- 	u8 is_vf:1;
-+	u8 is_custom_tx_enabled:1;
- };
- 
- struct ice_switch_info {
--- 
-2.37.2
+On 07.10.22 23:17, Stephen Hemminger wrote:
 
+> Begin forwarded message:
+> 
+> Date: Fri, 07 Oct 2022 20:51:12 +0000
+> From: bugzilla-daemon@kernel.org
+> To: stephen@networkplumber.org
+> Subject: [Bug 216557] New: tcp connection not working over ip_vti interface
+> 
+> 
+> https://bugzilla.kernel.org/show_bug.cgi?id=216557
+> 
+>             Bug ID: 216557
+>            Summary: tcp connection not working over ip_vti interface
+>            Product: Networking
+>            Version: 2.5
+>     Kernel Version: 5.15.53
+>           Hardware: All
+>                 OS: Linux
+>               Tree: Mainline
+>             Status: NEW
+>           Severity: high
+>           Priority: P1
+>          Component: IPV4
+>           Assignee: stephen@networkplumber.org
+>           Reporter: monil191989@gmail.com
+>         Regression: No
+> 
+> TCP protocol is not working, when ipsec tunnel has been setup and ip_vti tunnel
+> is used for route based ipsec.
+> 
+> After the below changes merged with latest kernel. xfrm4_policy_check in
+> tcp_v4_rcv drops all packets except first syn packet under XfrmInTmplMismatch
+> when local destined packets are received over ip_vti tunnel.
+> 
+> author  Eyal Birger <eyal.birger@gmail.com>     2022-05-13 23:34:02 +0300
+> committer       Greg Kroah-Hartman <gregkh@linuxfoundation.org> 2022-05-25
+> 09:57:30 +0200
+> commit  952c2464963895271c31698970e7ec1ad6f0fe45 (patch)
+> tree    9e8300c45a0eb5a9555eae017f8ae561f3e8bc51 /include/net/xfrm.h
+> parent  36d8cca5b46fe41b59f8011553495ede3b693703 (diff)
+> download        linux-952c2464963895271c31698970e7ec1ad6f0fe45.tar.gz
+> xfrm: fix "disable_policy" flag use when arriving from different devices
+> 
+> 
+> setup:
+> 1) create road warrior ipsec tunnel with local ip x.x.x.x remote ip y.y.y.y.
+> 2) create vti interface using ip tunnel add vti_test local x.x.x.x remote
+> y.y.y.y mode vti 
+> 3) echo 1 > /proc/sys/net/ipv4/conf/vti_test/disable_policy
+> 4) Add default route over vti_test.
+> 5) ping remote ip, ping works.
+> 6) ssh remote ip, ssh dont work. check tcp connection not working.
+> 
+> Root cause:
+> -> with above mentioned commit, now xfrm4_policy_check depends on skb's  
+> IPSKB_NOPOLICY flag which need to be set per skb and it only gets set in
+> ip_route_input_noref .
+> 
+> -> before above change, xfrm4_policy_check was using DST_NOPOLICY which was  
+> checked against dst set in skb.
+> 
+> -> ip_rcv_finish_core calls ip_route_input_noref only if dst is not valid in  
+> skb.
+> 
+> -> By default in kernel sysctl_ip_early_demux = 1, which means when skb with  
+> syn is received, tcp stack will set DST from skb to sk and in subsequent
+> packets it will copy dst from sk to skb and skip calling ip_route_input_nore
+> inside ip_rcv_finish_core.
+> 
+> -> so for all the subsequent  received packets, IPSKB_NOPOLICY will not get set  
+> and they will get drop.
+> 
+> workaround:
+> only work-aroud is to disable early tcp demux.
+> echo 0 > /proc/sys/net/ipv4/ip_early_demux
+
+Thanks for the report. To be sure below issue doesn't fall through the
+cracks unnoticed, I'm adding it to regzbot, my Linux kernel regression
+tracking bot:
+
+#regzbot introduced e6175a2ed1f1 ^
+https://bugzilla.kernel.org/show_bug.cgi?id=216557
+#regzbot title [Bug 216557] New: tcp connection not working over ip_vti
+interface
+#regzbot monitor:
+https://lore.kernel.org/all/20221009191643.297623-1-eyal.birger@gmail.com/
+#regzbot ignore-activity
+
+This isn't a regression? This issue or a fix for it are already
+discussed somewhere else? It was fixed already? You want to clarify when
+the regression started to happen? Or point out I got the title or
+something else totally wrong? Then just reply -- ideally with also
+telling regzbot about it, as explained here:
+https://linux-regtracking.leemhuis.info/tracked-regression/
+
+Reminder for developers: When fixing the issue, add 'Link:' tags
+pointing to the report (the mail this one replies to), as explained for
+in the Linux kernel's documentation; above webpage explains why this is
+important for tracked regressions.
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+
+P.S.: As the Linux kernel's regression tracker I deal with a lot of
+reports and sometimes miss something important when writing mails like
+this. If that's the case here, don't hesitate to tell me in a public
+reply, it's in everyone's interest to set the public record straight.
