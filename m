@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36B3E5FB1C1
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 13:44:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB4575FB1AE
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 13:43:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229475AbiJKLnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Oct 2022 07:43:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60972 "EHLO
+        id S229600AbiJKLnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Oct 2022 07:43:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229971AbiJKLnh (ORCPT
+        with ESMTP id S229974AbiJKLnh (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 07:43:37 -0400
 Received: from dggsgout12.his.huawei.com (unknown [45.249.212.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1377CB6B;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECE2F8F25D;
         Tue, 11 Oct 2022 04:43:34 -0700 (PDT)
 Received: from mail02.huawei.com (unknown [172.30.67.143])
-        by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4Mmv4Y2vPbz6Pmfc;
-        Tue, 11 Oct 2022 19:41:17 +0800 (CST)
+        by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4Mmv4Z3YR4z6R4ld;
+        Tue, 11 Oct 2022 19:41:18 +0800 (CST)
 Received: from k01.huawei.com (unknown [10.67.174.197])
-        by APP2 (Coremail) with SMTP id Syh0CgBX8NTXVkVj5HNpAA--.32480S6;
-        Tue, 11 Oct 2022 19:43:32 +0800 (CST)
+        by APP2 (Coremail) with SMTP id Syh0CgBX8NTXVkVj5HNpAA--.32480S7;
+        Tue, 11 Oct 2022 19:43:33 +0800 (CST)
 From:   Xu Kuohai <xukuohai@huaweicloud.com>
 To:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-kselftest@vger.kernel.org, netdev@vger.kernel.org
@@ -40,18 +40,18 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Alan Maguire <alan.maguire@oracle.com>,
         Delyan Kratunov <delyank@fb.com>,
         Lorenzo Bianconi <lorenzo@kernel.org>
-Subject: [PATCH bpf-next v4 4/6] selftest/bpf: Fix memory leak in kprobe_multi_test
-Date:   Tue, 11 Oct 2022 08:01:06 -0400
-Message-Id: <20221011120108.782373-5-xukuohai@huaweicloud.com>
+Subject: [PATCH bpf-next v4 5/6] selftests/bpf: Fix error failure of case test_xdp_adjust_tail_grow
+Date:   Tue, 11 Oct 2022 08:01:07 -0400
+Message-Id: <20221011120108.782373-6-xukuohai@huaweicloud.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221011120108.782373-1-xukuohai@huaweicloud.com>
 References: <20221011120108.782373-1-xukuohai@huaweicloud.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: Syh0CgBX8NTXVkVj5HNpAA--.32480S6
-X-Coremail-Antispam: 1UD129KBjvJXoW7uFyfZw18AF1fXw43Cr13twb_yoW8ZFyDpa
-        4xCw4YkF1xAF1rWFn7Ga1kXry5ur4kZry8Cry5tw13uw1kAwn5JF4IkayfKas3GrWkX3Wr
-        C3Z7Gr9rK3yDX3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+X-CM-TRANSID: Syh0CgBX8NTXVkVj5HNpAA--.32480S7
+X-Coremail-Antispam: 1UD129KBjvJXoW7uFy3ZFW5JFWkWr1fWr1fCrg_yoW8GFy7pa
+        4xJ3W7tFySqF12qF1DWFW29FW8Ga1kuF13Ca92qrW3Ar43JFn7tF4xKay5Was3KFWfXw1r
+        Z34rKrn5Cws5JwUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
         9KBjDU0xBIdaVrnRJUUUBSb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
         6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUAV
         Cq3wA2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0
@@ -62,7 +62,7 @@ X-Coremail-Antispam: 1UD129KBjvJXoW7uFyfZw18AF1fXw43Cr13twb_yoW8ZFyDpa
         z7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l42xK82IYc2
         Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s02
         6x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a6rW5MIIYrxkI7VAKI48JMIIF0x
-        vE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1lIxAI
+        vE2Ix0cI8IcVAFwI0_JFI_Gr1lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1lIxAI
         cVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF0xvEx4A2js
         IEc7CjxVAFwI0_Gr1j6F4UJbIYCTnIWIevJa73UjIFyTuYvjxUFgAwUUUUU
 X-CM-SenderInfo: 50xn30hkdlqx5xdzvxpfor3voofrz/
@@ -77,82 +77,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Xu Kuohai <xukuohai@huawei.com>
 
-The get_syms() function in kprobe_multi_test.c does not free the string
-memory allocated by sscanf correctly. Fix it.
+test_xdp_adjust_tail_grow failed with ipv6:
+  test_xdp_adjust_tail_grow:FAIL:ipv6 unexpected error: -28 (errno 28)
 
-Fixes: 5b6c7e5c4434 ("selftests/bpf: Add attach bench test")
+The reason is that this test case tests ipv4 before ipv6, and when ipv4
+test finished, topts.data_size_out was set to 54, which is smaller than the
+ipv6 output data size 114, so ipv6 test fails with NOSPC error.
+
+Fix it by reset topts.data_size_out to sizeof(buf) before testing ipv6.
+
+Fixes: 04fcb5f9a104 ("selftests/bpf: Migrate from bpf_prog_test_run")
 Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
-Acked-by: Jiri Olsa <jolsa@kernel.org>
 ---
- .../bpf/prog_tests/kprobe_multi_test.c        | 26 ++++++++++---------
- 1 file changed, 14 insertions(+), 12 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-index d457a55ff408..287b3ac40227 100644
---- a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-+++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-@@ -325,7 +325,7 @@ static bool symbol_equal(const void *key1, const void *key2, void *ctx __maybe_u
- static int get_syms(char ***symsp, size_t *cntp)
- {
- 	size_t cap = 0, cnt = 0, i;
--	char *name, **syms = NULL;
-+	char *name = NULL, **syms = NULL;
- 	struct hashmap *map;
- 	char buf[256];
- 	FILE *f;
-@@ -352,6 +352,8 @@ static int get_syms(char ***symsp, size_t *cntp)
- 		/* skip modules */
- 		if (strchr(buf, '['))
- 			continue;
-+
-+		free(name);
- 		if (sscanf(buf, "%ms$*[^\n]\n", &name) != 1)
- 			continue;
- 		/*
-@@ -369,32 +371,32 @@ static int get_syms(char ***symsp, size_t *cntp)
- 		if (!strncmp(name, "__ftrace_invalid_address__",
- 			     sizeof("__ftrace_invalid_address__") - 1))
- 			continue;
-+
- 		err = hashmap__add(map, name, NULL);
--		if (err) {
--			free(name);
--			if (err == -EEXIST)
--				continue;
-+		if (err == -EEXIST)
-+			continue;
-+		if (err)
- 			goto error;
--		}
-+
- 		err = libbpf_ensure_mem((void **) &syms, &cap,
- 					sizeof(*syms), cnt + 1);
--		if (err) {
--			free(name);
-+		if (err)
- 			goto error;
--		}
--		syms[cnt] = name;
--		cnt++;
-+
-+		syms[cnt++] = name;
-+		name = NULL;
- 	}
- 
- 	*symsp = syms;
- 	*cntp = cnt;
- 
- error:
-+	free(name);
- 	fclose(f);
- 	hashmap__free(map);
- 	if (err) {
- 		for (i = 0; i < cnt; i++)
--			free(syms[cnt]);
-+			free(syms[i]);
- 		free(syms);
- 	}
- 	return err;
+diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
+index 9b9cf8458adf..009ee37607df 100644
+--- a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
++++ b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
+@@ -63,6 +63,7 @@ static void test_xdp_adjust_tail_grow(void)
+ 	expect_sz = sizeof(pkt_v6) + 40; /* Test grow with 40 bytes */
+ 	topts.data_in = &pkt_v6;
+ 	topts.data_size_in = sizeof(pkt_v6);
++	topts.data_size_out = sizeof(buf);
+ 	err = bpf_prog_test_run_opts(prog_fd, &topts);
+ 	ASSERT_OK(err, "ipv6");
+ 	ASSERT_EQ(topts.retval, XDP_TX, "ipv6 retval");
 -- 
 2.30.2
 
