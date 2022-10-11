@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DAD6A5FA9E4
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 03:20:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EF675FA9E8
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 03:20:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229628AbiJKBU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Oct 2022 21:20:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43862 "EHLO
+        id S229531AbiJKBU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Oct 2022 21:20:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbiJKBUT (ORCPT
+        with ESMTP id S229526AbiJKBUT (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 21:20:19 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD8B40E0E;
-        Mon, 10 Oct 2022 18:20:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BD4982605
+        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 18:20:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DEF80B81100;
-        Tue, 11 Oct 2022 01:20:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9389DC433D6;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1D49AB811C0
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 01:20:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A2808C433B5;
         Tue, 11 Oct 2022 01:20:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1665451215;
-        bh=cfVQzOtvpVQuPs2yzafVx/Gecgi+P/DxQOOasuViRsM=;
+        bh=gUOuj6nJd1mhc56D90B9Z/JvUt0dcCljSJz5HLapaLg=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=VW/uqde0YQhYWYdWewUO1sywYeq57fQHuQTi+r6uDGmBEHxJu274ZVSgDBdklX53A
-         F4V6Eioq/ZwOdwssRU5nzgvHcoW4tWPHMRSj2qLB6vRUS0ikwTPma7NtnslOT72YjZ
-         QJ/cv43Gcz/IbtOSyJqMGIKqbm3QEuKNQj+sfp3pghCazCow8vY846r9pjN8SlXM7S
-         1Yw5gbKT5OnXhPxkJ3qnnNFVdaQZQ3ojUClXACiQPYdoEhWgWOzGr+EY+g5Tmr7Phw
-         jB8DrqmAUsyaKWRnX7CXJDNgAaWMeU6cXMBr+orJR8HHKd+MeH17+CQg0W36PR9zKv
-         VQ6pYVPJgn//A==
+        b=g37UHJrGz+WfTr2nleoXtJfC7lLd7R++X6IMiEK9lS4whBscJcOYbeGCGVp1XTr+L
+         QJQaGwlKYRCqICSlrscKW3dF1PKXCWX8vJb+8N+0LHc9MxMxg+uX1n1DlZWjHP70Fg
+         SxWE2TY+jmQMU357yJDaIlxGt8GzeYxTjNO+1ClncU3CU5pAhc5ISAyTtL2cHGsIqw
+         8VMtIWgkDclk0ysBZY/VLU/w8Spvoj2NO0/kWFEuBIindUk9v1wFxP79kALrqWzKUn
+         FN+WNyKvk8MD8xnAk3NKBIYY9vb1HWrlYgzKR05qD6/I14/zpGXa1AwupSDpeLmzOH
+         LpPHYJr9sW4wg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 70832E4D00E;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 85499E4D024;
         Tue, 11 Oct 2022 01:20:15 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: systemport: Enable all RX descriptors for SYSTEMPORT
- Lite
+Subject: Re: [PATCH net-next] net: sfp: fill also 5gbase-r and 25gbase-r modes in
+ sfp_parse_support()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166545121545.22576.6517732665062130017.git-patchwork-notify@kernel.org>
+Message-Id: <166545121554.22576.12304234241074213225.git-patchwork-notify@kernel.org>
 Date:   Tue, 11 Oct 2022 01:20:15 +0000
-References: <20221007034201.4126054-1-f.fainelli@gmail.com>
-In-Reply-To: <20221007034201.4126054-1-f.fainelli@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-kernel@vger.kernel.org
+References: <20221007084844.20352-1-kabel@kernel.org>
+In-Reply-To: <20221007084844.20352-1-kabel@kernel.org>
+To:     =?utf-8?q?Marek_Beh=C3=BAn_=3Ckabel=40kernel=2Eorg=3E?=@ci.codeaurora.org
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        rmk+kernel@armlinux.org.uk, andrew@lunn.ch
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -62,20 +61,19 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu,  6 Oct 2022 20:42:01 -0700 you wrote:
-> The original commit that added support for the SYSTEMPORT Lite variant
-> halved the number of RX descriptors due to a confusion between the
-> number of descriptors and the number of descriptor words. There are 512
-> descriptor *words* which means 256 descriptors total.
+On Fri,  7 Oct 2022 10:48:44 +0200 you wrote:
+> Fill in also 5gbase-r and 25gbase-r PHY interface modes into the
+> phy_interface_t bitmap in sfp_parse_support().
 > 
-> Fixes: 44a4524c54af ("net: systemport: Add support for SYSTEMPORT Lite")
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> 
-> [...]
+> Fixes: fd580c983031 ("net: sfp: augment SFP parsing with phy_interface_t bitmap")
+> Signed-off-by: Marek Behún <kabel@kernel.org>
+> ---
+>  drivers/net/phy/sfp-bus.c | 3 +++
+>  1 file changed, 3 insertions(+)
 
 Here is the summary with links:
-  - [net] net: systemport: Enable all RX descriptors for SYSTEMPORT Lite
-    https://git.kernel.org/netdev/net/c/a390e03401e9
+  - [net-next] net: sfp: fill also 5gbase-r and 25gbase-r modes in sfp_parse_support()
+    https://git.kernel.org/netdev/net/c/5b4c189d660a
 
 You are awesome, thank you!
 -- 
