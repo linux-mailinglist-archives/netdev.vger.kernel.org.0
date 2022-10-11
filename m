@@ -2,222 +2,346 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BF845FBCCB
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 23:24:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D183F5FBCEB
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 23:27:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229619AbiJKVYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Oct 2022 17:24:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39420 "EHLO
+        id S229777AbiJKV12 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 11 Oct 2022 17:27:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229605AbiJKVYr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 17:24:47 -0400
-Received: from na01-obe.outbound.protection.outlook.com (mail-centralusazon11023025.outbound.protection.outlook.com [52.101.64.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ABA518B27;
-        Tue, 11 Oct 2022 14:24:43 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dZv47yvl5mO5qziMspSkQeUkrlWPQQmey8xZms+0o2IGQWkKWVzVgTlTkBaEGhnZN5pUwU/VIinP8xC6LUR8GBQ0pdFb894iXKEzOiKQYmLrCbhQOx7F2sX5ZDP8FN/Vwk+TLlKaWjFDWl0x9HdQjxHSaU2DyswBW/yJLfzr/tcTt7uKUyHun8tPSO04v1mQ+F0HuQgZlXzYThXU01Oa7SEgXMUgGZsY9UvG8WKCSOaeRNiQTpoyiJpDRlRmTmY3CTgQ/KCSd5k9AVmKxunPUliZr9YR8WgAuO8/zFFGf96lW9PK8JbESjd8xnAEkv5WeRUYL8pvLkCfNj+KFzYFDQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Xm3gX3ElFq18Iy7lhuroxlf4dEEqSwkF3FL2PYwJ0mo=;
- b=SjWvbidxHy+X6z0uc8wX2mD6vv36p0Jxef1EcK8ksZsSF6jn5pvt4fiFZOsP5LCXlihxYXVj9f95TNBZN6wA+b8HMVGC8vqH+TRFwvBXQ19EnyQBom5rC72B0S7u7ufQ10FNUBd7bqUYQNtNWnrteM0Zp8yfT+ekIy++EqKv6PPnx07ArsdtpeZf664Gl55JyTR6TZ4CsA8edXILk7HAFXlLG4mHNMBPlaTSBLV3FdlE1CcQCiHcwSh/rNPtOchvOma6xgNzLlYq6dM1hYck4lkOqmFUlnaFMl0eNO8zwvk8ucU8Kh7TvJ5ZxeQAVY9QtweDq5+On9F/hePijbNQMA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Xm3gX3ElFq18Iy7lhuroxlf4dEEqSwkF3FL2PYwJ0mo=;
- b=Jqog41OO/OzQN3uhaN34AFl+1Q/oG5rw1djRLWaxcyaHOIaLonl/pvp02FOaH9hI6nAqams94x7eLRf8bCXH6yKrjkMnwWJrG1C8Wfrx77zKTF5TiQirxt/tsEcXnuQf0HJmiu/Ke7HsQ8wYnhbmalOtHkP23+9orH9NS9aUYpk=
-Received: from BYAPR21MB1688.namprd21.prod.outlook.com (2603:10b6:a02:bf::26)
- by SJ1PR21MB3552.namprd21.prod.outlook.com (2603:10b6:a03:454::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.6; Tue, 11 Oct
- 2022 21:24:39 +0000
-Received: from BYAPR21MB1688.namprd21.prod.outlook.com
- ([fe80::676b:75a4:14cd:6163]) by BYAPR21MB1688.namprd21.prod.outlook.com
- ([fe80::676b:75a4:14cd:6163%7]) with mapi id 15.20.5746.006; Tue, 11 Oct 2022
- 21:24:39 +0000
-From:   "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-To:     Cezar Bulinaru <cbulinaru@gmail.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH] net: hyperv: bugcheck trigered by memcpy in rndis_filter
-Thread-Topic: [PATCH] net: hyperv: bugcheck trigered by memcpy in rndis_filter
-Thread-Index: AQHY3adSmTsfvXYduEmDZiuuCp1NGK4JrpJQ
-Date:   Tue, 11 Oct 2022 21:24:38 +0000
-Message-ID: <BYAPR21MB16884DCA8A74DB851930AD71D7239@BYAPR21MB1688.namprd21.prod.outlook.com>
-References: <20221011192545.11236-1-cbulinaru@gmail.com>
-In-Reply-To: <20221011192545.11236-1-cbulinaru@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=bbdad44f-af73-4465-a43c-de71adcc96a3;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-10-11T21:03:40Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BYAPR21MB1688:EE_|SJ1PR21MB3552:EE_
-x-ms-office365-filtering-correlation-id: 01f0125d-2af4-4062-828f-08daabcf00ff
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: YgJiFBoPuSiwitZfNBTWrlceXBIr8bmId0/PvR5wbDjrTSBWsPwplzTSL555v1RlZyu+OJjgCc8L+f/gBLrKbQ4nCPvLoHQAb6UQx/RKM4/kknixDStf4etC0aYZjONweOa4+iXWgDzBqBeNtxRRNKU7MixQugBvYaIw4aGnU0a0LuDlDJ8PYlg+s+uCb/CTmTAR0uJWLL1/ONxHoh/xLq8eRemHQNee+tH8tbX19J3IV8Ow4fHVGDKgHNwrbARGXay/ogS5xG+tUR/hZYk9P1xjKDb7O5TAIKMXKHjzaC3SqvKWNyLuOyUILL+ULcE8s6EcgFoEEENmadK4cJFkUGBX2PNDXKMBehKrs6NEzjuKdCrzufxS11MVZXppMPGV6ljXHFExBDvlBpSjB5lNLzhPbAz9wZE9d/K78o4iLdTK/W1Vdh43Pzu4KBBury/t+WTjqug/46Ct8TrY3qbEA9gCJaPk1RZvByIsrtq8XJwpS3NDALLkARgSqWFkd0DHOaJO8bifHAkyOWugAkR3rkLV+pTtLCY8FB2LNO5qjpGWX3hQ8ehkNmocl8SsYCzUMi4NCeHDXuvuNhiT+1Kue7O+0+Zsgvd7KJsGpYlxEf8zgROJZ/F0G+oVKTxzovPYBdCZl5XxCeVsXzGtV8VDLaNhBtKY7tMvaNt93VnlLG6asjeIrek5lTsxoFYriK2p40UfDyoqEdI8o5R5qZjxxpzdIMdhv0RToxVwqZw4D5PqXwwHuLJJjIFw5HbT2XXcV9qQdyQ33v7C/ztPZR0ceNfmFAxLKlgQK+x1A+c7y+gVCqaFogcf1UpXnk/W4QPt4a+7EcLKGWj4HgFPsHZx/Q==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1688.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(346002)(376002)(136003)(39860400002)(366004)(451199015)(82960400001)(83380400001)(55016003)(186003)(82950400001)(38100700002)(38070700005)(921005)(5660300002)(122000001)(8936002)(76116006)(8990500004)(52536014)(8676002)(64756008)(66446008)(2906002)(41300700001)(66556008)(66476007)(316002)(10290500003)(26005)(9686003)(478600001)(86362001)(7696005)(6506007)(66946007)(110136005)(71200400001)(33656002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?rpNqIlU337G4mQlikeWrdVUu50vGRGKtoolGSQl5AqjHIeW+3RXr3jYSlULu?=
- =?us-ascii?Q?wLeUKEYk5RkQ3nZsku+04/s4Y8dL35faulwKwAzaVK2J4QJqj6kwuOf8IpVI?=
- =?us-ascii?Q?Rqbb3ZNz3Qux6G06TY9wYvHaZ4v7Yy7i1ASTgTdh/UYUNIPDi2yTP7tYpXM0?=
- =?us-ascii?Q?blVsekK3yy6MYHzlBxVSmC3E0o+UtZlN05lfT6wfucAG2rBxQtZm1qYhF9ST?=
- =?us-ascii?Q?J5FL34rH2IVlcRVrwp5Sx3YMkg7oMIdpdv93YTQT3xHX7Iabd3Ks124jDbvy?=
- =?us-ascii?Q?MVvnKW7hJTyCXBEFxhour87ddx9ljY2rSB5VpGiAzBSeLzMOhB/XhzxWkEwj?=
- =?us-ascii?Q?PRGXnZ0xvyhvCVAxnfBbbdw8jPovhZBhx2BZ0v1JOfzTRZdEyQnQJdoVDK0n?=
- =?us-ascii?Q?anmqCBt2uizGdHZUu8uqRy/R/kqF2vFVrT6XBw4cf986xDVlYSJvtRPC/xd4?=
- =?us-ascii?Q?fTgH0mHQHFoEf5UQEDetberbjnt/HUs921I6Iv8Clp7Aecb/BzrWMdYMGVU7?=
- =?us-ascii?Q?kP/beBaANAD5g3T8HIod42sDaNgPEzPnBaB8UNGyfR0M0Iemx10igjA2blyJ?=
- =?us-ascii?Q?3AGCulAsGoATY93YUQe8tOdJMhGe1Wyfym/lqe7Vcji2IMy8yueeUti6jaQA?=
- =?us-ascii?Q?ALtWXzLzrsNmvO+ZreMIyleCC3RVKHuIcDDx+uJeSOzwqfv29QXbASz5cD8E?=
- =?us-ascii?Q?iFoTJBi4r3dNms9C4y6FnZD6TpKaM5nMfzzSuUdxFeYor3yvv4KkNWDPByzU?=
- =?us-ascii?Q?RqYVGHhV3SjaMs+NrImtWUdFQt3/dyg0HHJrjhQ6fAw6dOQvu+mj9DUKq+Tb?=
- =?us-ascii?Q?NoDUEDOsZrNXW/2i2h8p/UG6ts7StzfyogKKSdhH5oteiY6O8ct7POrEtyVs?=
- =?us-ascii?Q?pOb6x/GVzvmFstfm9ne+FuxudOxaHni42byKZVtOq+H+TUvzVJ71a3d5OMv/?=
- =?us-ascii?Q?aFI60GwYrL+Gx2GrWAVjjk2WVJ7i4ModwGBt3uVgkTrSZYUbCApQyvtIXA33?=
- =?us-ascii?Q?wgJD1Gs6BF+qr9SvWWdxPEiDz2C/XGXC4NNJhBRkqntP83IW7vPvbZu2MtRG?=
- =?us-ascii?Q?rAz3Cf+0ZYfISxAYSvbFcpEK6SiPVjWgI0xQROsxDR4/QztEnO0nX9A0g/h0?=
- =?us-ascii?Q?NA6+JWJlIbuRv659Bi6PInK4II56vOuOTfvukqyt0GrL1/DoH/D+r9HHhyY1?=
- =?us-ascii?Q?nhVXmN32VCv4jpTsFixus6HvEV6C7ZeIUFx1jbb2Xj3gPxbThxs9FlubUNlp?=
- =?us-ascii?Q?eWqYQ6uFiWi7Bfj6cFWt4GQiZYyL3MlFEmyB47eSifLhxXXj26yC4IUIxodE?=
- =?us-ascii?Q?CnuhqRxGoszTjNrAYomIBjb1zcb1kSkSyHzKt4ce4x2NR+GlfOjwl+msqyIJ?=
- =?us-ascii?Q?lpqpEPwFmsTJUlJHlXpYr2uqU5cr23BtWYo/fjlmBiWYALyEZz5O14c3KpNT?=
- =?us-ascii?Q?02u99g9htZoiBGey0JvHfBf3AqRZOJc8Oe6fZ4Z4irPtkdqnHvzlpXQ2hyNy?=
- =?us-ascii?Q?f73Usgo5DU2Mb3Gm75R12ASUf1w6AS/U346ujyUL4VE2H/PqQ6Uuh8uVCTNn?=
- =?us-ascii?Q?oQRL2Zc4oGyOCuS5DM7nMYKYQMjMqUIGXFDBK2cJ8gfFxoH/ychSnRApqwER?=
- =?us-ascii?Q?3g=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S229741AbiJKV1Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 17:27:24 -0400
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC38BFD10
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 14:27:21 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id x6-20020a056e021bc600b002fc96f780e7so1654815ilv.10
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 14:27:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:to:from:subject:message-id:in-reply-to
+         :date:mime-version:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=/oo4r2AbtWeVS75Zv0ff0EvstUdUTXfoQtBAE25lHxY=;
+        b=pRsrKQ3EvL3ZR6NVd/zY4ApXIB3HQ5NnVMyRlMYIMT9n+YjnzLaV9hnlyur/aL81tO
+         Et4OnVyutPrIf7OZ3nNwRVlZlJFovnzpz5pakKThjfidH5HdNUHgO8tsI2nmOpSv4zF3
+         lRD/V/10RjmQadHciTKs8wXfbDQeABq8kmT14oX4u9dJwQoeluscU0Xlkqgy8xEzmljH
+         3FClkuHVFlQpFzltzqLJxg7WrAWTWt5vWmW2DBgC39G1KnjSWrmjjIrlMoe0k518N5EZ
+         ZXVjZRJpAiatzHLgizDzqjwIfUzLVwKC6SKBWYPHvebi8bveez71Dq0uEB3Hl3ok0pJs
+         SQNw==
+X-Gm-Message-State: ACrzQf1o/9/VBBBoeRPDlEJqhYflHiIzEAO3OBMQ5Q3IbvQJTRJI79Vi
+        ilCWbwjMBxHsKEobomtc/MdfVrtCoXEJf0HYIQ4i/Y5xDE4b
+X-Google-Smtp-Source: AMsMyM6bvB1GXpiVtuSe0CrGU7tic/p8jWS8UbpyiBYzCZssERgW70JuP4vCyKTb6d3bm7ELMeJiP5IOPW92MVSCqCnkGya2JZnU
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1688.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 01f0125d-2af4-4062-828f-08daabcf00ff
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Oct 2022 21:24:38.9046
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: haXycGbZ2XgVeb/HLO5uFmteSgI7d1XkHug+rrcEccMSkkuMNR5MWNx01QGYCQ5IG8tcQFFt3TapBa4HW07d3ylp0WMNCfQ6g+05OLXRO3E=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR21MB3552
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6e02:156a:b0:2fc:4266:f56 with SMTP id
+ k10-20020a056e02156a00b002fc42660f56mr6329135ilu.140.1665523641047; Tue, 11
+ Oct 2022 14:27:21 -0700 (PDT)
+Date:   Tue, 11 Oct 2022 14:27:21 -0700
+In-Reply-To: <20221011170435-mutt-send-email-mst@kernel.org>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000fd62ef05eac8f004@google.com>
+Subject: Re: [syzbot] upstream boot error: WARNING in cpumask_next_wrap
+From:   syzbot <syzbot+51a652e2d24d53e75734@syzkaller.appspotmail.com>
+To:     ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
+        davem@davemloft.net, edumazet@google.com, hawk@kernel.org,
+        jasowang@redhat.com, john.fastabend@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, mst@redhat.com,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com,
+        virtualization@lists.linux-foundation.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cezar Bulinaru <cbulinaru@gmail.com> Sent: Tuesday, October 11, 2022 =
-12:26 PM
->=20
-> A bugcheck is trigered when the response message len exceeds
-> the size of rndis_message. Inside the rndis_request structure
-> these fields are however followed by a RNDIS_EXT_LEN padding
-> so it is safe to use unsafe_memcpy.
->=20
-> memcpy: detected field-spanning write (size 168) of single field "(void *=
-)&request-
-> >response_msg + (sizeof(struct rndis_message) - sizeof(union
-> rndis_message_container)) + sizeof(*req_id)" at drivers/net/hyperv/rndis_=
-filter.c:338
-> (size 40)
-> RSP: 0018:ffffc90000144de0 EFLAGS: 00010282
-> RAX: 0000000000000000 RBX: ffff8881766b4000 RCX: 0000000000000000
-> RDX: 0000000000000102 RSI: 0000000000009ffb RDI: 00000000ffffffff
-> RBP: ffffc90000144e38 R08: 0000000000000000 R09: 00000000ffffdfff
-> R10: ffffc90000144c48 R11: ffffffff82f56ac8 R12: ffff8881766b403c
-> R13: 00000000000000a8 R14: ffff888100b75000 R15: ffff888179301d00
-> FS:  0000000000000000(0000) GS:ffff8884d6280000(0000) knlGS:0000000000000=
-000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 000055f8b024c418 CR3: 0000000176548001 CR4: 00000000003706e0
-> Call Trace:
->  <IRQ>
->  ? _raw_spin_unlock_irqrestore+0x27/0x50
->  netvsc_poll+0x556/0x940 [hv_netvsc]
->  __napi_poll+0x2e/0x170
->  net_rx_action+0x299/0x2f0
->  __do_softirq+0xed/0x2ef
->  __irq_exit_rcu+0x9f/0x110
->  irq_exit_rcu+0xe/0x20
->  sysvec_hyperv_callback+0xb0/0xd0
->  </IRQ>
->  <TASK>
->  asm_sysvec_hyperv_callback+0x1b/0x20
-> RIP: 0010:native_safe_halt+0xb/0x10
->=20
-> Signed-off-by: Cezar Bulinaru <cbulinaru@gmail.com>
-> ---
->  drivers/net/hyperv/rndis_filter.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis=
-_filter.c
-> index 11f767a20444..eea777ec2541 100644
-> --- a/drivers/net/hyperv/rndis_filter.c
-> +++ b/drivers/net/hyperv/rndis_filter.c
-> @@ -20,6 +20,7 @@
->  #include <linux/vmalloc.h>
->  #include <linux/rtnetlink.h>
->  #include <linux/ucs2_string.h>
-> +#include <linux/string.h>
->=20
->  #include "hyperv_net.h"
->  #include "netvsc_trace.h"
-> @@ -335,9 +336,10 @@ static void rndis_filter_receive_response(struct net=
-_device
-> *ndev,
->                 if (resp->msg_len <=3D
->                     sizeof(struct rndis_message) + RNDIS_EXT_LEN) {
->                         memcpy(&request->response_msg, resp, RNDIS_HEADER=
-_SIZE + sizeof(*req_id));
-> -                       memcpy((void *)&request->response_msg + RNDIS_HEA=
-DER_SIZE + sizeof(*req_id),
-> +                       unsafe_memcpy((void *)&request->response_msg + RN=
-DIS_HEADER_SIZE + sizeof(*req_id),
->                                data + RNDIS_HEADER_SIZE + sizeof(*req_id)=
-,
-> -                              resp->msg_len - RNDIS_HEADER_SIZE - sizeof=
-(*req_id));
-> +                              resp->msg_len - RNDIS_HEADER_SIZE - sizeof=
-(*req_id),
-> +                              "request->response_msg is followed by a pa=
-dding of RNDIS_EXT_LEN inside rndis_request");
->                         if (request->request_msg.ndis_msg_type =3D=3D
->                             RNDIS_MSG_QUERY && request->request_msg.msg.
->                             query_req.oid =3D=3D RNDIS_OID_GEN_MEDIA_CONN=
-ECT_STATUS)
-> --
-> 2.37.1
+Hello,
 
-Thanks for fixing this.  I had it on my list of things to look at this week=
-, but
-I probably would have beat my head against the wall trying to get memcpy()
-to work without generating the warning.  I can see now that the way the
-RNDIS_EXT_LEN padding is set up, using the unsafe version is the only choic=
-e.
-Maybe there's a better way to embed the struct rndis_message and padding
-inside the struct rndis_request, but that better way isn't obvious.  Any ch=
-ange
-would have ripple effects through code that is carefully crafted to reject
-malformed and potentially malicious messages, so it's best to leave it as i=
-s.
+syzbot tried to test the proposed patch but the build/boot failed:
 
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+resolver registered
+[    5.556576][    T1] Key type id_legacy registered
+[    5.557522][    T1] nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+[    5.558640][    T1] nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+[    5.567089][    T1] Key type cifs.spnego registered
+[    5.567892][    T1] Key type cifs.idmap registered
+[    5.569053][    T1] ntfs: driver 2.1.32 [Flags: R/W].
+[    5.570912][    T1] ntfs3: Max link count 4000
+[    5.571535][    T1] ntfs3: Enabled Linux POSIX ACLs support
+[    5.572513][    T1] ntfs3: Read-only LZX/Xpress compression included
+[    5.574261][    T1] efs: 1.0a - http://aeschi.ch.eu.org/efs/
+[    5.575274][    T1] jffs2: version 2.2. (NAND) (SUMMARY)  © 2001-2006 Red Hat, Inc.
+[    5.579930][    T1] romfs: ROMFS MTD (C) 2007 Red Hat, Inc.
+[    5.581216][    T1] QNX4 filesystem 0.2.3 registered.
+[    5.582195][    T1] qnx6: QNX6 filesystem 1.0.0 registered.
+[    5.583827][    T1] fuse: init (API version 7.37)
+[    5.588259][    T1] orangefs_debugfs_init: called with debug mask: :none: :0:
+[    5.589705][    T1] orangefs_init: module version upstream loaded
+[    5.591366][    T1] JFS: nTxBlock = 8192, nTxLock = 65536
+[    5.604957][    T1] SGI XFS with ACLs, security attributes, realtime, quota, fatal assert, debug enabled
+[    5.617336][    T1] 9p: Installing v9fs 9p2000 file system support
+[    5.619447][    T1] NILFS version 2 loaded
+[    5.620043][    T1] befs: version: 0.9.3
+[    5.621928][    T1] ocfs2: Registered cluster interface o2cb
+[    5.623133][    T1] ocfs2: Registered cluster interface user
+[    5.624559][    T1] OCFS2 User DLM kernel interface loaded
+[    5.635096][    T1] gfs2: GFS2 installed
+[    5.645789][    T1] ceph: loaded (mds proto 32)
+[    5.657347][    T1] NET: Registered PF_ALG protocol family
+[    5.658194][    T1] xor: automatically using best checksumming function   avx       
+[    5.659255][    T1] async_tx: api initialized (async)
+[    5.660129][    T1] Key type asymmetric registered
+[    5.660836][    T1] Asymmetric key parser 'x509' registered
+[    5.661639][    T1] Asymmetric key parser 'pkcs8' registered
+[    5.662447][    T1] Key type pkcs7_test registered
+[    5.665996][    T1] alg: self-tests for CTR-KDF (hmac(sha256)) passed
+[    5.667302][    T1] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 240)
+[    5.668986][    T1] io scheduler mq-deadline registered
+[    5.669749][    T1] io scheduler kyber registered
+[    5.671033][    T1] io scheduler bfq registered
+[    5.677855][    T1] input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input0
+[    5.682131][    T1] ACPI: button: Power Button [PWRF]
+[    5.684301][    T1] input: Sleep Button as /devices/LNXSYSTM:00/LNXSLPBN:00/input/input1
+[    5.685918][  T160] kworker/u4:1 (160) used greatest stack depth: 26672 bytes left
+[    5.687126][    T1] ACPI: button: Sleep Button [SLPF]
+[    5.710387][    T1] ACPI: \_SB_.LNKC: Enabled at IRQ 11
+[    5.711260][    T1] virtio-pci 0000:00:03.0: virtio_pci: leaving for legacy driver
+[    5.725631][    T1] ACPI: \_SB_.LNKD: Enabled at IRQ 10
+[    5.726543][    T1] virtio-pci 0000:00:04.0: virtio_pci: leaving for legacy driver
+[    5.740211][    T1] ACPI: \_SB_.LNKB: Enabled at IRQ 10
+[    5.741109][    T1] virtio-pci 0000:00:06.0: virtio_pci: leaving for legacy driver
+[    5.751058][  T194] kworker/u4:1 (194) used greatest stack depth: 26624 bytes left
+[    6.053979][    T1] N_HDLC line discipline registered with maxframe=4096
+[    6.055096][    T1] Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+[    6.058386][    T1] 00:03: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+[    6.063373][    T1] 00:04: ttyS1 at I/O 0x2f8 (irq = 3, base_baud = 115200) is a 16550A
+[    6.068699][    T1] 00:05: ttyS2 at I/O 0x3e8 (irq = 6, base_baud = 115200) is a 16550A
+[    6.073444][    T1] 00:06: ttyS3 at I/O 0x2e8 (irq = 7, base_baud = 115200) is a 16550A
+[    6.081659][    T1] Non-volatile memory driver v1.3
+[    6.098395][    T1] Linux agpgart interface v0.103
+[    6.100599][    T1] ACPI: bus type drm_connector registered
+[    6.104060][    T1] [drm] Initialized vgem 1.0.0 20120112 for vgem on minor 0
+[    6.109975][    T1] [drm] Initialized vkms 1.0.0 20180514 for vkms on minor 1
+[    6.166404][    T1] Console: switching to colour frame buffer device 128x48
+[    6.184282][    T1] platform vkms: [drm] fb0: vkmsdrmfb frame buffer device
+[    6.185456][    T1] usbcore: registered new interface driver udl
+[    6.234876][    T1] brd: module loaded
+[    6.287542][    T1] loop: module loaded
+[    6.360301][    T1] zram: Added device: zram0
+[    6.366643][    T1] null_blk: disk nullb0 created
+[    6.367407][    T1] null_blk: module loaded
+[    6.368437][    T1] Guest personality initialized and is inactive
+[    6.370337][    T1] VMCI host device registered (name=vmci, major=10, minor=119)
+[    6.371699][    T1] Initialized host personality
+[    6.372849][    T1] usbcore: registered new interface driver rtsx_usb
+[    6.374672][    T1] usbcore: registered new interface driver viperboard
+[    6.376021][    T1] usbcore: registered new interface driver dln2
+[    6.378029][    T1] usbcore: registered new interface driver pn533_usb
+[    6.382237][    T1] nfcsim 0.2 initialized
+[    6.383289][    T1] usbcore: registered new interface driver port100
+[    6.384344][    T1] usbcore: registered new interface driver nfcmrvl
+[    6.388305][    T1] Loading iSCSI transport class v2.0-870.
+[    6.413355][    T1] scsi host0: Virtio SCSI HBA
+[    6.449912][    T1] st: Version 20160209, fixed bufsize 32768, s/g segs 256
+[    6.452351][    T9] scsi 0:0:1:0: Direct-Access     Google   PersistentDisk   1    PQ: 0 ANSI: 6
+[    6.476962][    T1] Rounding down aligned max_sectors from 4294967295 to 4294967288
+[    6.479627][    T1] db_root: cannot open: /etc/target
+[    6.481551][    T1] slram: not enough parameters.
+[    6.488103][    T1] ftl_cs: FTL header not found.
+[    6.534919][    T1] wireguard: WireGuard 1.0.0 loaded. See www.wireguard.com for information.
+[    6.539139][    T1] wireguard: Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+[    6.540930][    T1] eql: Equalizer2002: Simon Janes (simon@ncm.com) and David S. Miller (davem@redhat.com)
+[    6.550498][    T1] MACsec IEEE 802.1AE
+[    6.572661][    T1] tun: Universal TUN/TAP device driver, 1.6
+[    6.609300][    T1] ------------[ cut here ]------------
+[    6.610845][    T1] WARNING: CPU: 0 PID: 1 at include/linux/cpumask.h:110 __netif_set_xps_queue+0x88e/0x1f30
+[    6.612642][    T1] Modules linked in:
+[    6.613259][    T1] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 6.0.0-syzkaller-11153-gd5c59b2d8ff4 #0
+[    6.614532][    T1] Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/22/2022
+[    6.615891][    T1] RIP: 0010:__netif_set_xps_queue+0x88e/0x1f30
+[    6.616957][    T1] Code: fa 48 c7 c2 e0 98 f4 8a be 2e 0a 00 00 48 c7 c7 80 97 f4 8a c6 05 ae d1 74 06 01 e8 f5 d9 f1 01 e9 ef fd ff ff e8 22 32 25 fa <0f> 0b e9 8e fa ff ff 8b 6c 24 38 e8 12 32 25 fa 49 8d 7c 24 04 48
+[    6.619667][    T1] RSP: 0018:ffffc900000678a0 EFLAGS: 00010293
+[    6.620512][    T1] RAX: 0000000000000000 RBX: 0000000000000002 RCX: 0000000000000000
+[    6.621622][    T1] RDX: ffff888140170000 RSI: ffffffff875733be RDI: 0000000000000004
+[    6.622718][    T1] RBP: 0000000000000002 R08: 0000000000000004 R09: 0000000000000002
+[    6.623845][    T1] R10: 0000000000000002 R11: 000000000008c07e R12: ffff88801c770100
+[    6.624960][    T1] R13: 0000000000000003 R14: ffff88801c770118 R15: 0000000000000002
+[    6.626041][    T1] FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+[    6.630570][    T1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    6.631671][    T1] CR2: ffff88823ffff000 CR3: 000000000bc8e000 CR4: 0000000000350ef0
+[    6.632794][    T1] Call Trace:
+[    6.633365][    T1]  <TASK>
+[    6.633824][    T1]  ? vp_bus_name+0xc0/0xc0
+[    6.634553][    T1]  virtnet_set_affinity+0x5c2/0x840
+[    6.635296][    T1]  ? trace_xdp_exception+0x320/0x320
+[    6.636102][    T1]  virtnet_probe+0x12ae/0x31e0
+[    6.636943][    T1]  ? virtnet_find_vqs+0xc30/0xc30
+[    6.637869][    T1]  virtio_dev_probe+0x577/0x870
+[    6.638646][    T1]  ? virtio_features_ok+0x1e0/0x1e0
+[    6.639418][    T1]  really_probe+0x249/0xb90
+[    6.640084][    T1]  __driver_probe_device+0x1df/0x4d0
+[    6.640946][    T1]  driver_probe_device+0x4c/0x1a0
+[    6.641736][    T1]  __driver_attach+0x1d0/0x550
+[    6.642452][    T1]  ? __device_attach_driver+0x2e0/0x2e0
+[    6.643232][    T1]  bus_for_each_dev+0x147/0x1d0
+[    6.643950][    T1]  ? subsys_dev_iter_exit+0x20/0x20
+[    6.644738][    T1]  bus_add_driver+0x4c9/0x640
+[    6.645463][    T1]  driver_register+0x220/0x3a0
+[    6.646280][    T1]  ? veth_init+0x11/0x11
+[    6.646945][    T1]  virtio_net_driver_init+0x93/0xd2
+[    6.647717][    T1]  do_one_initcall+0x13d/0x780
+[    6.648438][    T1]  ? trace_event_raw_event_initcall_level+0x1f0/0x1f0
+[    6.649399][    T1]  ? parameq+0x100/0x170
+[    6.650056][    T1]  kernel_init_freeable+0x6ff/0x788
+[    6.650837][    T1]  ? rest_init+0x270/0x270
+[    6.651501][    T1]  kernel_init+0x1a/0x1d0
+[    6.652116][    T1]  ? rest_init+0x270/0x270
+[    6.652801][    T1]  ret_from_fork+0x1f/0x30
+[    6.653527][    T1]  </TASK>
+[    6.654267][    T1] Kernel panic - not syncing: panic_on_warn set ...
+[    6.655330][    T1] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 6.0.0-syzkaller-11153-gd5c59b2d8ff4 #0
+[    6.656008][    T9] scsi 0:0:1:0: Attached scsi generic sg0 type 0
+[    6.657424][    T1] Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/22/2022
+[    6.657424][    T1] Call Trace:
+[    6.659366][    T9] sd 0:0:1:0: [sda] 4194304 512-byte logical blocks: (2.15 GB/2.00 GiB)
+[    6.659401][    T9] sd 0:0:1:0: [sda] 4096-byte physical blocks
+[    6.659557][    T9] sd 0:0:1:0: [sda] Write Protect is off
+[    6.659582][    T9] sd 0:0:1:0: [sda] Mode Sense: 1f 00 00 08
+[    6.659777][    T9] sd 0:0:1:0: [sda] Write cache: enabled, read cache: enabled, doesn't support DPO or FUA
+[    6.657424][    T1]  <TASK>
+[    6.657424][    T1]  dump_stack_lvl+0xcd/0x134
+[    6.657424][    T1]  panic+0x2c8/0x622
+[    6.657424][    T1]  ? panic_print_sys_info.part.0+0x110/0x110
+[    6.657424][    T1]  ? __warn.cold+0x24b/0x350
+[    6.657424][    T1]  ? __netif_set_xps_queue+0x88e/0x1f30
+[    6.657424][    T1]  __warn.cold+0x25c/0x350
+[    6.657424][    T1]  ? __netif_set_xps_queue+0x88e/0x1f30
+[    6.670084][    T9]  sda: sda1
+[    6.671363][    T9] sd 0:0:1:0: [sda] Attached SCSI disk
+[    6.672268][    T1]  report_bug+0x1bc/0x210
+[    6.672621][    T1]  handle_bug+0x3c/0x70
+[    6.672621][    T1]  exc_invalid_op+0x14/0x40
+[    6.672621][    T1]  asm_exc_invalid_op+0x16/0x20
+[    6.672621][    T1] RIP: 0010:__netif_set_xps_queue+0x88e/0x1f30
+[    6.672621][    T1] Code: fa 48 c7 c2 e0 98 f4 8a be 2e 0a 00 00 48 c7 c7 80 97 f4 8a c6 05 ae d1 74 06 01 e8 f5 d9 f1 01 e9 ef fd ff ff e8 22 32 25 fa <0f> 0b e9 8e fa ff ff 8b 6c 24 38 e8 12 32 25 fa 49 8d 7c 24 04 48
+[    6.672621][    T1] RSP: 0018:ffffc900000678a0 EFLAGS: 00010293
+[    6.672621][    T1] RAX: 0000000000000000 RBX: 0000000000000002 RCX: 0000000000000000
+[    6.672621][    T1] RDX: ffff888140170000 RSI: ffffffff875733be RDI: 0000000000000004
+[    6.672621][    T1] RBP: 0000000000000002 R08: 0000000000000004 R09: 0000000000000002
+[    6.672621][    T1] R10: 0000000000000002 R11: 000000000008c07e R12: ffff88801c770100
+[    6.672621][    T1] R13: 0000000000000003 R14: ffff88801c770118 R15: 0000000000000002
+[    6.672621][    T1]  ? __netif_set_xps_queue+0x88e/0x1f30
+[    6.672621][    T1]  ? vp_bus_name+0xc0/0xc0
+[    6.672621][    T1]  virtnet_set_affinity+0x5c2/0x840
+[    6.672621][    T1]  ? trace_xdp_exception+0x320/0x320
+[    6.672621][    T1]  virtnet_probe+0x12ae/0x31e0
+[    6.672621][    T1]  ? virtnet_find_vqs+0xc30/0xc30
+[    6.672621][    T1]  virtio_dev_probe+0x577/0x870
+[    6.672621][    T1]  ? virtio_features_ok+0x1e0/0x1e0
+[    6.672621][    T1]  really_probe+0x249/0xb90
+[    6.672621][    T1]  __driver_probe_device+0x1df/0x4d0
+[    6.672621][    T1]  driver_probe_device+0x4c/0x1a0
+[    6.672621][    T1]  __driver_attach+0x1d0/0x550
+[    6.672621][    T1]  ? __device_attach_driver+0x2e0/0x2e0
+[    6.672621][    T1]  bus_for_each_dev+0x147/0x1d0
+[    6.672621][    T1]  ? subsys_dev_iter_exit+0x20/0x20
+[    6.672621][    T1]  bus_add_driver+0x4c9/0x640
+[    6.696608][    T1]  driver_register+0x220/0x3a0
+[    6.698110][    T1]  ? veth_init+0x11/0x11
+[    6.698520][    T1]  virtio_net_driver_init+0x93/0xd2
+[    6.698520][    T1]  do_one_initcall+0x13d/0x780
+[    6.698520][    T1]  ? trace_event_raw_event_initcall_level+0x1f0/0x1f0
+[    6.698520][    T1]  ? parameq+0x100/0x170
+[    6.698520][    T1]  kernel_init_freeable+0x6ff/0x788
+[    6.698520][    T1]  ? rest_init+0x270/0x270
+[    6.698520][    T1]  kernel_init+0x1a/0x1d0
+[    6.698520][    T1]  ? rest_init+0x270/0x270
+[    6.698520][    T1]  ret_from_fork+0x1f/0x30
+[    6.698520][    T1]  </TASK>
+[    6.698520][    T1] Kernel Offset: disabled
+[    6.698520][    T1] Rebooting in 86400 seconds..
+
+
+syzkaller build log:
+go env (err=<nil>)
+GO111MODULE="auto"
+GOARCH="amd64"
+GOBIN=""
+GOCACHE="/syzkaller/.cache/go-build"
+GOENV="/syzkaller/.config/go/env"
+GOEXE=""
+GOEXPERIMENT=""
+GOFLAGS=""
+GOHOSTARCH="amd64"
+GOHOSTOS="linux"
+GOINSECURE=""
+GOMODCACHE="/syzkaller/jobs/linux/gopath/pkg/mod"
+GONOPROXY=""
+GONOSUMDB=""
+GOOS="linux"
+GOPATH="/syzkaller/jobs/linux/gopath"
+GOPRIVATE=""
+GOPROXY="https://proxy.golang.org,direct"
+GOROOT="/usr/local/go"
+GOSUMDB="sum.golang.org"
+GOTMPDIR=""
+GOTOOLDIR="/usr/local/go/pkg/tool/linux_amd64"
+GOVCS=""
+GOVERSION="go1.17"
+GCCGO="gccgo"
+AR="ar"
+CC="gcc"
+CXX="g++"
+CGO_ENABLED="1"
+GOMOD="/syzkaller/jobs/linux/gopath/src/github.com/google/syzkaller/go.mod"
+CGO_CFLAGS="-g -O2"
+CGO_CPPFLAGS=""
+CGO_CXXFLAGS="-g -O2"
+CGO_FFLAGS="-g -O2"
+CGO_LDFLAGS="-g -O2"
+PKG_CONFIG="pkg-config"
+GOGCCFLAGS="-fPIC -m64 -pthread -fmessage-length=0 -fdebug-prefix-map=/tmp/go-build1794615944=/tmp/go-build -gno-record-gcc-switches"
+
+git status (err=<nil>)
+HEAD detached at 1353c374a
+nothing to commit, working tree clean
+
+
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+Makefile:32: run command via tools/syz-env for best compatibility, see:
+Makefile:33: https://github.com/google/syzkaller/blob/master/docs/contributing.md#using-syz-env
+go list -f '{{.Stale}}' ./sys/syz-sysgen | grep -q false || go install ./sys/syz-sysgen
+make .descriptions
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+bin/syz-sysgen
+touch .descriptions
+GOOS=linux GOARCH=amd64 go build "-ldflags=-s -w -X github.com/google/syzkaller/prog.GitRevision=1353c374a28b0c3b20e5acf59753aceb934c7fd0 -X 'github.com/google/syzkaller/prog.gitRevisionDate=20221011-154314'" "-tags=syz_target syz_os_linux syz_arch_amd64 " -o ./bin/linux_amd64/syz-fuzzer github.com/google/syzkaller/syz-fuzzer
+GOOS=linux GOARCH=amd64 go build "-ldflags=-s -w -X github.com/google/syzkaller/prog.GitRevision=1353c374a28b0c3b20e5acf59753aceb934c7fd0 -X 'github.com/google/syzkaller/prog.gitRevisionDate=20221011-154314'" "-tags=syz_target syz_os_linux syz_arch_amd64 " -o ./bin/linux_amd64/syz-execprog github.com/google/syzkaller/tools/syz-execprog
+GOOS=linux GOARCH=amd64 go build "-ldflags=-s -w -X github.com/google/syzkaller/prog.GitRevision=1353c374a28b0c3b20e5acf59753aceb934c7fd0 -X 'github.com/google/syzkaller/prog.gitRevisionDate=20221011-154314'" "-tags=syz_target syz_os_linux syz_arch_amd64 " -o ./bin/linux_amd64/syz-stress github.com/google/syzkaller/tools/syz-stress
+mkdir -p ./bin/linux_amd64
+gcc -o ./bin/linux_amd64/syz-executor executor/executor.cc \
+	-m64 -O2 -pthread -Wall -Werror -Wparentheses -Wunused-const-variable -Wframe-larger-than=16384 -Wno-stringop-overflow -Wno-array-bounds -Wno-format-overflow -static-pie -fpermissive -w -DGOOS_linux=1 -DGOARCH_amd64=1 \
+	-DHOSTGOOS_linux=1 -DGIT_REVISION=\"1353c374a28b0c3b20e5acf59753aceb934c7fd0\"
+
+
+Error text is too large and was truncated, full error text is at:
+https://syzkaller.appspot.com/x/error.txt?x=10140a3a880000
+
+
+Tested on:
+
+commit:         d5c59b2d lib/cpumask: drop 'new' suffix for cpumask_ne..
+git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f17bafa7c5d14ecb
+dashboard link: https://syzkaller.appspot.com/bug?extid=51a652e2d24d53e75734
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+
+Note: no patches were applied.
