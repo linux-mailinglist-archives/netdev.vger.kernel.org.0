@@ -2,152 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62AA55FBF2E
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 04:29:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 592B75FBF8C
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 05:46:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229566AbiJLC3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Oct 2022 22:29:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45590 "EHLO
+        id S229495AbiJLDqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Oct 2022 23:46:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229511AbiJLC3L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 22:29:11 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E436A59AE;
-        Tue, 11 Oct 2022 19:29:10 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id w2so15280097pfb.0;
-        Tue, 11 Oct 2022 19:29:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=DS+7UWTAKwi61a1gwOFyUAnc5rAX6eUV+RzoBUx0RU4=;
-        b=kHHuKV38G60HU68ehpMQSGszVXMAawsfgDkJ4F/ZVSvNixw8yyBeVuGtoC7/smUMaV
-         owrtPW8VIUxtwaiQsO34uyqIEPBxuNaxLNUC8h4ssWEkisPioLIgnmYFmahai3ROdkF5
-         XGqoS6YeKyp0XTSSpFetcY4y8JJ/bS0N97K0u6Amnp3+tz6bv6QE4/38DntMxBO/LCpx
-         rERYPTDgGEYZUhnfKwrTdnz41fMxdiGdFwWm5kFClijHTYB13wQpGPaw/0Rm4/iSaM9K
-         BWMHCe6xs/JEimtYesa4Ih9cJCbj2+kWexoubxRJEEqMLE4U4b0md4lf0MGbBecZjZu5
-         oTzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=DS+7UWTAKwi61a1gwOFyUAnc5rAX6eUV+RzoBUx0RU4=;
-        b=ruKJ9QXFKK3aIZXqbQQvCKQb4kK7AWaVoloaDmcH8h5ilvn5xxT9Bz3dLJw27f5WKl
-         cFRzVK9EZw7Ba8R84KsZANjlDEfCZz45r33SZlEYJ1o9E1Z28eAyYr3CDM/DF7QEzYBc
-         lU7D45M6qL0jE9Ubu8SkqB9rocSF1l5m5c3wzDVMpfVbLx7rtFoVdeb8s7Pk6eW33kaJ
-         PdjYt8ci/ohx/uwU/bZsUhirOAyC6PMAKm6a05C3oonIrr13UQ3MKlaz8VqZVTL0tW2h
-         u+8xyhG8XD+24I//7c05mCLnOSGcbjKHcxdgR2doR/0yQwzv+eXddLQKz4VOVmGao+cT
-         3CZg==
-X-Gm-Message-State: ACrzQf3/AkPPgufDm+tXYOILV7vV7oNpPf0TudjMUzpneoWlyVzXkLjd
-        MPlMZ4neJcz/9OZyM5eNNCLAqQ/bvQUQBKTXhDc=
-X-Google-Smtp-Source: AMsMyM7O/jfdqt4uTelbLRdHE64LQlNSBPTGDzRJqGbsbhOEHhqVa2CsmK0SSK6HctVqN6QuRNpvmw==
-X-Received: by 2002:a63:f358:0:b0:43c:5e1:985 with SMTP id t24-20020a63f358000000b0043c05e10985mr23859199pgj.5.1665541749923;
-        Tue, 11 Oct 2022 19:29:09 -0700 (PDT)
-Received: from localhost (ec2-13-57-97-131.us-west-1.compute.amazonaws.com. [13.57.97.131])
-        by smtp.gmail.com with ESMTPSA id b5-20020a170902650500b001752216ca51sm9261734plk.39.2022.10.11.19.29.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Oct 2022 19:29:09 -0700 (PDT)
-Date:   Mon, 3 Oct 2022 00:11:39 +0000
-From:   Bobby Eshleman <bobbyeshleman@gmail.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@gmail.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] vsock: replace virtio_vsock_pkt with sk_buff
-Message-ID: <Yzoou4UwOv5lh0hE@bullseye>
-References: <20221006011946.85130-1-bobby.eshleman@bytedance.com>
- <20221006025956-mutt-send-email-mst@kernel.org>
- <20221006073410.ahhqhlhah4lo47o7@sgarzare-redhat>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221006073410.ahhqhlhah4lo47o7@sgarzare-redhat>
-X-Spam-Status: No, score=1.3 required=5.0 tests=BAYES_00,DATE_IN_PAST_96_XX,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Level: *
+        with ESMTP id S229452AbiJLDq0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 23:46:26 -0400
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA278796A9
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 20:46:23 -0700 (PDT)
+Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20221012034619epoutp01dec1db117c0f9b169a696e4f8fc34922~dNZuEPxnV1986219862epoutp01b
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 03:46:19 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20221012034619epoutp01dec1db117c0f9b169a696e4f8fc34922~dNZuEPxnV1986219862epoutp01b
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1665546379;
+        bh=9Z/+w+F454z0H7x0XmWxlYencJ1CYBTi6E82IACKXlc=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=mD7LdkPo8qKXm5P7YzrOSpYY0xHfZejYeUoKbv1z7Fn/FNMTgyDqew83J/KzOakWO
+         OxYMO2YbQtAX0BBecfrTjB06San1xxpN8pPHOjX0nt8CvbBJfiYE/P9J/fal2xKoHR
+         MjJtn6zzoEvdpUKau+2hHymgFM0RBtIa2r+/Jsxs=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
+        20221012034618epcas5p1a27ca887871381c60ecbad50866ea445~dNZtZCbiH0912109121epcas5p1Z;
+        Wed, 12 Oct 2022 03:46:18 +0000 (GMT)
+Received: from epsmges5p2new.samsung.com (unknown [182.195.38.182]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4MnJTz0sMpz4x9Q1; Wed, 12 Oct
+        2022 03:46:15 +0000 (GMT)
+Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
+        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        50.8B.39477.68836436; Wed, 12 Oct 2022 12:46:15 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas5p4.samsung.com (KnoxPortal) with ESMTPA id
+        20221011120147epcas5p45049f7c0428a799c005b6ab77b428128~dAhCDyTuS1761517615epcas5p4P;
+        Tue, 11 Oct 2022 12:01:47 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20221011120147epsmtrp222a75feb8614315677f467942b54324c~dAhCC9G1R2226422264epsmtrp2c;
+        Tue, 11 Oct 2022 12:01:47 +0000 (GMT)
+X-AuditID: b6c32a4a-259fb70000019a35-4d-634638862f05
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        56.32.18644.A2B55436; Tue, 11 Oct 2022 21:01:47 +0900 (KST)
+Received: from cheetah.sa.corp.samsungelectronics.net (unknown
+        [107.109.115.53]) by epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20221011120144epsmtip2ff82626fc431fb636abb0859cf6df5f6~dAg-kpFeb1451514515epsmtip2X;
+        Tue, 11 Oct 2022 12:01:44 +0000 (GMT)
+From:   Vivek Yadav <vivek.2311@samsung.com>
+To:     rcsekar@samsung.com, wg@grandegger.com, mkl@pengutronix.de,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, pankaj.dubey@samsung.com
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Vivek Yadav <vivek.2311@samsung.com>
+Subject: [PATCH] can: mcan: Add support for handling dlec error on CAN FD
+ format frame
+Date:   Tue, 11 Oct 2022 17:05:12 +0530
+Message-Id: <20221011113512.13756-1-vivek.2311@samsung.com>
+X-Mailer: git-send-email 2.17.1
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrGKsWRmVeSWpSXmKPExsWy7bCmum67hVuyQXMXs8Wc8y0sFk+PPWK3
+        uLCtj9Vi1fepzBaXd81hs1i/aAqLxbEFYhbfTr9htFi09Qu7xawLO1gtfi08zGKx9N5OVgce
+        jy0rbzJ5LNhU6vHx0m1Gj02rOtk8+v8aeLzfd5XNo2/LKkaPz5vkAjiism0yUhNTUosUUvOS
+        81My89JtlbyD453jTc0MDHUNLS3MlRTyEnNTbZVcfAJ03TJzgG5VUihLzCkFCgUkFhcr6dvZ
+        FOWXlqQqZOQXl9gqpRak5BSYFOgVJ+YWl+al6+WlllgZGhgYmQIVJmRn3HikXHCBt+LZrJes
+        DYwTuLsYOTkkBEwkZryczNzFyMUhJLCbUeLD3efsEM4nRolDkzdBOZ8ZJd78fcUG07Lh0g6o
+        ll2MEkc7lkM5rUwSC5tmsoJUsQloSTzuXMACkhARWMUocWn1LaB2Dg5mgWqJA0f4QGqEBSIk
+        1h4+yAISZhFQldjzKwEkzCtgLbFw0jFWiGXyEqs3HACbLyHwkl3i1/YVTBAJF4kd6y5DFQlL
+        vDq+hR3ClpL4/G4v1KXJEjv+dULVZEgsmLiHEcK2lzhwZQ4LxDmaEut36UOEZSWmnloHNp5Z
+        gE+i9/cTqFW8EjvmwdgqEi8+T2AFaQVZ1XtOGCLsIXFs1SlmEFtIIFaiq2sH4wRG2VkICxYw
+        Mq5ilEwtKM5NTy02LTDKSy2HR1Nyfu4mRnAC1PLawfjwwQe9Q4xMHIyHGCU4mJVEeBnnOyUL
+        8aYkVlalFuXHF5XmpBYfYjQFhthEZinR5HxgCs4riTc0sTQwMTMzM7E0NjNUEuddPEMrWUgg
+        PbEkNTs1tSC1CKaPiYNTqoFpS8fSmdJOzC9vTz10f85OL41NDelvPC/aXv9gWBXW5jj95+Tt
+        Qb+Osk+f186/687W4xc3cZ9leSSQsOAZw9WtMf/TorcXb+xMbeSQd2t9ybPUNu7Srk0H2nTP
+        hC+qTLFoi934sPy30dY3az+83Zukw7ZovZTb9wtOjTvul91mdXxiyLn4yMpDWTvOJjabph2R
+        fuR/LXpb1FLOQ6oX/Hy4vDc9s0id3DDlTsSfZTXHJpfmGXMtY6/bXPt/3coTIh0C/+0Mf1h+
+        +nXrT+/Z1eInnq9kS1vxZ5rRkQyDcof5/y+fmd//puCI8XX53R+C3GavC7FnKn3+RNj4q8fK
+        6R2FiXLz8p9xO8tLJh/OnainuUaJpTgj0VCLuag4EQAeAIvPCQQAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrMLMWRmVeSWpSXmKPExsWy7bCSvK52tGuywesXTBZzzrewWDw99ojd
+        4sK2PlaLVd+nMltc3jWHzWL9oiksFscWiFl8O/2G0WLR1i/sFrMu7GC1+LXwMIvF0ns7WR14
+        PLasvMnksWBTqcfHS7cZPTat6mTz6P9r4PF+31U2j74tqxg9Pm+SC+CI4rJJSc3JLEst0rdL
+        4Mq48Ui54AJvxbNZL1kbGCdwdzFyckgImEhsuLSDuYuRi0NIYAejxOIZO1khElISU868ZIGw
+        hSVW/nvODlHUzCTRefAAWIJNQEvicecCFpCEiMAWRomDixYzgiSYBeol3p25yQ5iCwuESUxd
+        3A+0goODRUBVYs+vBJAwr4C1xMJJx6CWyUus3nCAeQIjzwJGhlWMkqkFxbnpucWGBUZ5qeV6
+        xYm5xaV56XrJ+bmbGMHhqKW1g3HPqg96hxiZOBgPMUpwMCuJ8DLOd0oW4k1JrKxKLcqPLyrN
+        SS0+xCjNwaIkznuh62S8kEB6YklqdmpqQWoRTJaJg1Oqganw7EOTU+XJ12+ovezy4VvUzs5s
+        c2Eb14makl0cKc+fKB36zTu3PPL2579x09d8Fz4xq9Rin8955Y25+bUXyi/aT02afbNMtHrP
+        Vu+3MnUxGTq23+4u9bNrezvP8NSr+xaxtRu0rvIGMjy6V1t8/OW+gq6jbVbZzxbMXzJP8rrJ
+        woVdjWVm+Rd/X3ueoPVdblrtjpLs9eL51j0zxJc0X/3JV2UneEkmXMDx/7kLElfae87G97of
+        W+18x3bGMq+SG5VvpY/+2L6z9epEI0aezEeXXROPe3lEb3a7Uj7X7fS9dPYFV1w1BIIPTtjL
+        Z6N5I3pOUvPupz65QstkZx9Y+uC7yeaH6me2XJQ8lNb5yCtFiaU4I9FQi7moOBEAmP1kRrYC
+        AAA=
+X-CMS-MailID: 20221011120147epcas5p45049f7c0428a799c005b6ab77b428128
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: REQ_APPROVE
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20221011120147epcas5p45049f7c0428a799c005b6ab77b428128
+References: <CGME20221011120147epcas5p45049f7c0428a799c005b6ab77b428128@epcas5p4.samsung.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 06, 2022 at 09:34:10AM +0200, Stefano Garzarella wrote:
-> On Thu, Oct 06, 2022 at 03:08:12AM -0400, Michael S. Tsirkin wrote:
-> > On Wed, Oct 05, 2022 at 06:19:44PM -0700, Bobby Eshleman wrote:
-> > > This patch replaces the struct virtio_vsock_pkt with struct sk_buff.
-> > > 
-> > > Using sk_buff in vsock benefits it by a) allowing vsock to be extended
-> > > for socket-related features like sockmap, b) vsock may in the future
-> > > use other sk_buff-dependent kernel capabilities, and c) vsock shares
-> > > commonality with other socket types.
-> > > 
-> > > This patch is taken from the original series found here:
-> > > https://lore.kernel.org/all/cover.1660362668.git.bobby.eshleman@bytedance.com/
-> > > 
-> > > Small-sized packet throughput improved by ~5% (from 18.53 Mb/s to 19.51
-> > > Mb/s). Tested using uperf, 16B payloads, 64 threads, 100s, averaged from
-> > > 10 test runs (n=10). This improvement is likely due to packet merging.
-> > > 
-> > > Large-sized packet throughput decreases ~9% (from 27.25 Gb/s to 25.04
-> > > Gb/s). Tested using uperf, 64KB payloads, 64 threads, 100s, averaged
-> > > from 10 test runs (n=10).
-> > > 
-> > > Medium-sized packet throughput decreases ~5% (from 4.0 Gb/s to 3.81
-> > > Gb/s). Tested using uperf, 4k to 8k payload sizes picked randomly
-> > > according to normal distribution, 64 threads, 100s, averaged from 10
-> > > test runs (n=10).
-> > 
-> > It is surprizing to me that the original vsock code managed to outperform
-> > the new one, given that to my knowledge we did not focus on optimizing it.
-> 
-> Yeah mee to.
-> 
+When a frame in CAN FD format has reached the data phase, the next
+CAN event (error or valid frame) will be shown in DLEC.
 
-Indeed.
+Utilizes the dedicated flag (Data Phase Last Error Code: DLEC flag) to
+determine the type of last error that occurred in the data phase
+of a CAN FD frame and handle the bus errors.
 
-> From this numbers maybe the allocation cost has been reduced as it performs
-> better with small packets. But with medium to large packets we perform
-> worse, perhaps because previously we were allocating a contiguous buffer up
-> to 64k?
-> Instead alloc_skb() could allocate non-contiguous pages ? (which would solve
-> the problems we saw a few days ago)
-> 
+Signed-off-by: Vivek Yadav <vivek.2311@samsung.com>
+---
+ drivers/net/can/m_can/m_can.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-I think this would be the case with alloc_skb_with_frags(), but
-internally alloc_skb() uses kmalloc() for the payload and sk_buff_head
-slab allocations for the sk_buff itself (all the more confusing to me,
-as the prior allocator also uses two separate allocations per packet).
+diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+index 4709c012b1dc..c070580d35fb 100644
+--- a/drivers/net/can/m_can/m_can.c
++++ b/drivers/net/can/m_can/m_can.c
+@@ -156,6 +156,7 @@ enum m_can_reg {
+ #define PSR_EW		BIT(6)
+ #define PSR_EP		BIT(5)
+ #define PSR_LEC_MASK	GENMASK(2, 0)
++#define PSR_DLEC_SHIFT  8
+ 
+ /* Interrupt Register (IR) */
+ #define IR_ALL_INT	0xffffffff
+@@ -870,6 +871,7 @@ static int m_can_handle_bus_errors(struct net_device *dev, u32 irqstatus,
+ {
+ 	struct m_can_classdev *cdev = netdev_priv(dev);
+ 	int work_done = 0;
++	int dpsr = 0;
+ 
+ 	if (irqstatus & IR_RF0L)
+ 		work_done += m_can_handle_lost_msg(dev);
+@@ -884,6 +886,15 @@ static int m_can_handle_bus_errors(struct net_device *dev, u32 irqstatus,
+ 	    m_can_is_protocol_err(irqstatus))
+ 		work_done += m_can_handle_protocol_error(dev, irqstatus);
+ 
++	if (cdev->can.ctrlmode & CAN_CTRLMODE_FD) {
++		dpsr  = psr >> PSR_DLEC_SHIFT;
++		if ((cdev->can.ctrlmode & CAN_CTRLMODE_BERR_REPORTING) &&
++		    is_lec_err(dpsr)) {
++			netdev_dbg(dev, "Data phase error detected\n");
++			work_done += m_can_handle_lec_err(dev, dpsr & LEC_UNUSED);
++		}
++	}
++
+ 	/* other unproccessed error interrupts */
+ 	m_can_handle_other_err(dev, irqstatus);
+ 
+-- 
+2.17.1
 
-> @Bobby Are these numbers for guest -> host communication? Can we try the
-> reverse path as well?
-> 
-
-Yep, these are guest -> host. Unfortunately, the numbers are worse for
-host to guest. Running the same tests, except for 100+ times instead of
-just 10, for h2g sockets:
-
-16B payload throughput decreases ~8%.
-4K-8KB payload throughput decreases ~15%.
-64KB payload throughput decreases ~8%.
-
-I'm currently working on tracking down the root cause and seeing if
-there is some way around the performance hit.
-
-Sorry for the delayed response, it took a good minute to collect
-enough data to feel confident I wasn't just seeing noise.
-
-Best,
-Bobby
