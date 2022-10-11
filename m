@@ -2,224 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 243315FBDA6
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 00:08:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 591A35FBDBB
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 00:17:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229446AbiJKWH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Oct 2022 18:07:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35810 "EHLO
+        id S229477AbiJKWRJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Oct 2022 18:17:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbiJKWH4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 18:07:56 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDFC663FE9
-        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 15:07:54 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id p14so10440050pfq.5
-        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 15:07:54 -0700 (PDT)
+        with ESMTP id S229446AbiJKWRH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 18:17:07 -0400
+Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1CB07FE67
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 15:17:06 -0700 (PDT)
+Received: by mail-vs1-xe41.google.com with SMTP id 63so15789989vse.2
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 15:17:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=wqkavWsBbbwbdJv3B8FxGansYQYFdOP0Uithsdevni4=;
-        b=UV0qy+4ngeIsDw86C1kEY/IqDgYAvrw3QUsOqFb6FL+J0Nl7JNj7+vjBwpxFFnSsot
-         HjFR3Q9UqQY3y7/giGno99eX7VZm52S+ndSltv2NEYNBkFR3npSXG9VTnIxMjLm2ZiPY
-         iAQisSo8yKJnzGd9mG8Q52hJHQbx83HHQTOvw+LVhlX2L9n+8fipHul5GgorseCzo8C+
-         q2EFI4dZEJTFx51TEw2SO5Fa9YxPPac0ETVwhBK8M32hOWHlCyucqsE1PEeyulnmWq77
-         qZmUkDHFu4IoELnqDeb9sQHwhlDdrZTT5EFtCp57neBIRBDGFnGUpt6O6Vlbu8DTb5qg
-         MSdA==
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=j6c6RloR1f1meVJL/BrGR4Y0ez6uzlYlKHhaiRNYhs0=;
+        b=Ljs6P4FzxcfHRQ4s15ppaRH1xzkCJVy/UHv/rPuM39e2Pgi5fWFD/Et/bvpGO4lyGP
+         74Wp2Rf4O8LStzUuUxxe6FWyC1s4eL4fPiZJo306EJtASAoCab1fzL6b7NH7nz4fhRQT
+         pjWTPIa/E7WowLPtYie91O1fo/eHbZZg3R8PWNdSQg+j/Yw7dGw+njr/yXzWE4PhngPW
+         y4D4Fi5r/vRNdg6mA9JQQoO6uB4n2MxwUbd9DqJK9z50WMcFNOKSwU12bv5j1JusCbZb
+         IQLOWhZnEMCBMg+t/mw3FnpSDwqQmJWXcyEBLfmSJpzDrfcbHPzYRdlLrp3SASNCjaVr
+         OCsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=wqkavWsBbbwbdJv3B8FxGansYQYFdOP0Uithsdevni4=;
-        b=drJJcw0fW8uZtqtj0r/l9zVMirUoWiDr270tNvdEKD9yIRCQAeY9lvtkxqlPy2k+zK
-         P6SNkMDCw5EkihWCZsk+wTMWcGakGTAaP7O7WCmOGsBhFZOBYqJY5wZf1FUA+jaL4COO
-         rJxvhKI2WBUoiukVKHYTZRb/nOq4WkOBD4S9TqSqQAnZsT7WXtdSTAca3XHNvDMUmrKK
-         zmKAgmJqzfMC2Gj+MTwDs3KNmUtqbAnwNGP+vAPVOpA4aYzVeWPgW55S+B71ji6/mIR7
-         NqBKZ+KiRMNNdVIlQfTAMf3WgYv0iWoyjDh90hKXN4h/3zrWcqKw80sL9zmtyysHiMo2
-         8dQw==
-X-Gm-Message-State: ACrzQf0eOxET6w5VEJJkMan370YGbQqp4kQ14ckMwHC9j0U/h24MxX1K
-        C+zfXBYDvmJJtE0My63ejsM=
-X-Google-Smtp-Source: AMsMyM5nvR+42KtAbpOGlphUg3AlDiici6BqrI7+lDea6vkX7UzQnVwss+Mw7c+TwQzLqHEgGqDJuw==
-X-Received: by 2002:a63:d551:0:b0:452:87e0:73d5 with SMTP id v17-20020a63d551000000b0045287e073d5mr22127392pgi.488.1665526074472;
-        Tue, 11 Oct 2022 15:07:54 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:245b:b683:5ec3:7a71])
-        by smtp.gmail.com with ESMTPSA id z8-20020a1709027e8800b0017834a6966csm9100501pla.176.2022.10.11.15.07.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Oct 2022 15:07:53 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net] tcp: cdg: allow tcp_cdg_release() to be called multiple times
-Date:   Tue, 11 Oct 2022 15:07:48 -0700
-Message-Id: <20221011220748.3801134-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.38.0.rc1.362.ged0d419d3c-goog
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=j6c6RloR1f1meVJL/BrGR4Y0ez6uzlYlKHhaiRNYhs0=;
+        b=5mBqVs3xuOGPBxGXJfXybjnIPwrgAT+M7XTI4GWZhGQAlgNCdlFO9QyIgiq+nEeCFL
+         zw1Du8mYO8zl1PfkSiqJUM6Ugw0jhFqbYOzsbiy4QPxQRNg74248ihAEchfQmS5iZKS0
+         BtMvgAmpjx2+1Sj4xUKI+ATzVzmpWWlZKURHGxufPBAPF2EEkRa17Gu6VKV5vcpsOJJg
+         g35Y5DZ+3T7Rzp73kD1XXqBTBid+7AnwNTGEbKmlBMwcbo7ffbxpVRRSY71KBNv0a/Vi
+         uoFRrZOSRkDl7lLT6EACAyUbFVkg2izjhjmO7mxKBeniMZYBjHy2UdFWL/KtTY+cHq0U
+         8ryQ==
+X-Gm-Message-State: ACrzQf2djlc6ikjHLYHPc3p156B2UtGd5RUysqYjRxkFLnEqr1ctOqSw
+        kuJ9AvVVrk8ByUcnEcUHNufKSYNdH7+7IAOuxNA=
+X-Google-Smtp-Source: AMsMyM5GjsZwK686nhoE9wq0JWDdvVKPQb75ghtqbWuPUNTL5jSknj4bqt1FBZN5UVATapqHPZX1a6MAehdnL7rgJkU=
+X-Received: by 2002:a05:6102:50ab:b0:3a7:2240:2b52 with SMTP id
+ bl43-20020a05610250ab00b003a722402b52mr11665138vsb.3.1665526625813; Tue, 11
+ Oct 2022 15:17:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Received: by 2002:ab0:7385:0:0:0:0:0 with HTTP; Tue, 11 Oct 2022 15:17:05
+ -0700 (PDT)
+Reply-To: mmrstephen16@gmail.com
+From:   "Mr. Stephen Melvin" <xuhgcmm@gmail.com>
+Date:   Tue, 11 Oct 2022 15:17:05 -0700
+Message-ID: <CA+J6LLT0AQ_a3rKNd_8uFyaq7Kev+iD_FxstA912p=3DYCGs2A@mail.gmail.com>
+Subject: Reply and let me know if you received this email.!!!
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=4.9 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
+        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_HK_NAME_FM_MR_MRS,UNDISC_FREEM autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Hello Dear, How are you today and your family? Want to believe you are
+all doing great.
 
-Apparently, mptcp is able to call tcp_disconnect() on an already
-disconnected flow. This is generally fine, unless current congestion
-control is CDG, because it might trigger a double-free [1]
+Please reply to me as fast as possible. I have important information for you.
 
-Instead of fixing MPTCP, and future bugs, we can make tcp_disconnect()
-more resilient.
-
-[1]
-BUG: KASAN: double-free in slab_free mm/slub.c:3539 [inline]
-BUG: KASAN: double-free in kfree+0xe2/0x580 mm/slub.c:4567
-
-CPU: 0 PID: 3645 Comm: kworker/0:7 Not tainted 6.0.0-syzkaller-02734-g0326074ff465 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/22/2022
-Workqueue: events mptcp_worker
-Call Trace:
-<TASK>
-__dump_stack lib/dump_stack.c:88 [inline]
-dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
-print_address_description mm/kasan/report.c:317 [inline]
-print_report.cold+0x2ba/0x719 mm/kasan/report.c:433
-kasan_report_invalid_free+0x81/0x190 mm/kasan/report.c:462
-____kasan_slab_free+0x18b/0x1c0 mm/kasan/common.c:356
-kasan_slab_free include/linux/kasan.h:200 [inline]
-slab_free_hook mm/slub.c:1759 [inline]
-slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1785
-slab_free mm/slub.c:3539 [inline]
-kfree+0xe2/0x580 mm/slub.c:4567
-tcp_disconnect+0x980/0x1e20 net/ipv4/tcp.c:3145
-__mptcp_close_ssk+0x5ca/0x7e0 net/mptcp/protocol.c:2327
-mptcp_do_fastclose net/mptcp/protocol.c:2592 [inline]
-mptcp_worker+0x78c/0xff0 net/mptcp/protocol.c:2627
-process_one_work+0x991/0x1610 kernel/workqueue.c:2289
-worker_thread+0x665/0x1080 kernel/workqueue.c:2436
-kthread+0x2e4/0x3a0 kernel/kthread.c:376
-ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
-</TASK>
-
-Allocated by task 3671:
-kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
-kasan_set_track mm/kasan/common.c:45 [inline]
-set_alloc_info mm/kasan/common.c:437 [inline]
-____kasan_kmalloc mm/kasan/common.c:516 [inline]
-____kasan_kmalloc mm/kasan/common.c:475 [inline]
-__kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:525
-kmalloc_array include/linux/slab.h:640 [inline]
-kcalloc include/linux/slab.h:671 [inline]
-tcp_cdg_init+0x10d/0x170 net/ipv4/tcp_cdg.c:380
-tcp_init_congestion_control+0xab/0x550 net/ipv4/tcp_cong.c:193
-tcp_reinit_congestion_control net/ipv4/tcp_cong.c:217 [inline]
-tcp_set_congestion_control+0x96c/0xaa0 net/ipv4/tcp_cong.c:391
-do_tcp_setsockopt+0x505/0x2320 net/ipv4/tcp.c:3513
-tcp_setsockopt+0xd4/0x100 net/ipv4/tcp.c:3801
-mptcp_setsockopt+0x35f/0x2570 net/mptcp/sockopt.c:844
-__sys_setsockopt+0x2d6/0x690 net/socket.c:2252
-__do_sys_setsockopt net/socket.c:2263 [inline]
-__se_sys_setsockopt net/socket.c:2260 [inline]
-__x64_sys_setsockopt+0xba/0x150 net/socket.c:2260
-do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-Freed by task 16:
-kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
-kasan_set_track+0x21/0x30 mm/kasan/common.c:45
-kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
-____kasan_slab_free mm/kasan/common.c:367 [inline]
-____kasan_slab_free+0x166/0x1c0 mm/kasan/common.c:329
-kasan_slab_free include/linux/kasan.h:200 [inline]
-slab_free_hook mm/slub.c:1759 [inline]
-slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1785
-slab_free mm/slub.c:3539 [inline]
-kfree+0xe2/0x580 mm/slub.c:4567
-tcp_cleanup_congestion_control+0x70/0x120 net/ipv4/tcp_cong.c:226
-tcp_v4_destroy_sock+0xdd/0x750 net/ipv4/tcp_ipv4.c:2254
-tcp_v6_destroy_sock+0x11/0x20 net/ipv6/tcp_ipv6.c:1969
-inet_csk_destroy_sock+0x196/0x440 net/ipv4/inet_connection_sock.c:1157
-tcp_done+0x23b/0x340 net/ipv4/tcp.c:4649
-tcp_rcv_state_process+0x40e7/0x4990 net/ipv4/tcp_input.c:6624
-tcp_v6_do_rcv+0x3fc/0x13c0 net/ipv6/tcp_ipv6.c:1525
-tcp_v6_rcv+0x2e8e/0x3830 net/ipv6/tcp_ipv6.c:1759
-ip6_protocol_deliver_rcu+0x2db/0x1950 net/ipv6/ip6_input.c:439
-ip6_input_finish+0x14c/0x2c0 net/ipv6/ip6_input.c:484
-NF_HOOK include/linux/netfilter.h:302 [inline]
-NF_HOOK include/linux/netfilter.h:296 [inline]
-ip6_input+0x9c/0xd0 net/ipv6/ip6_input.c:493
-dst_input include/net/dst.h:455 [inline]
-ip6_rcv_finish+0x193/0x2c0 net/ipv6/ip6_input.c:79
-ip_sabotage_in net/bridge/br_netfilter_hooks.c:874 [inline]
-ip_sabotage_in+0x1fa/0x260 net/bridge/br_netfilter_hooks.c:865
-nf_hook_entry_hookfn include/linux/netfilter.h:142 [inline]
-nf_hook_slow+0xc5/0x1f0 net/netfilter/core.c:614
-nf_hook.constprop.0+0x3ac/0x650 include/linux/netfilter.h:257
-NF_HOOK include/linux/netfilter.h:300 [inline]
-ipv6_rcv+0x9e/0x380 net/ipv6/ip6_input.c:309
-__netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5485
-__netif_receive_skb+0x1f/0x1c0 net/core/dev.c:5599
-netif_receive_skb_internal net/core/dev.c:5685 [inline]
-netif_receive_skb+0x12f/0x8d0 net/core/dev.c:5744
-NF_HOOK include/linux/netfilter.h:302 [inline]
-NF_HOOK include/linux/netfilter.h:296 [inline]
-br_pass_frame_up+0x303/0x410 net/bridge/br_input.c:68
-br_handle_frame_finish+0x909/0x1aa0 net/bridge/br_input.c:199
-br_nf_hook_thresh+0x2f8/0x3d0 net/bridge/br_netfilter_hooks.c:1041
-br_nf_pre_routing_finish_ipv6+0x695/0xef0 net/bridge/br_netfilter_ipv6.c:207
-NF_HOOK include/linux/netfilter.h:302 [inline]
-br_nf_pre_routing_ipv6+0x417/0x7c0 net/bridge/br_netfilter_ipv6.c:237
-br_nf_pre_routing+0x1496/0x1fe0 net/bridge/br_netfilter_hooks.c:507
-nf_hook_entry_hookfn include/linux/netfilter.h:142 [inline]
-nf_hook_bridge_pre net/bridge/br_input.c:255 [inline]
-br_handle_frame+0x9c9/0x12d0 net/bridge/br_input.c:399
-__netif_receive_skb_core+0x9fe/0x38f0 net/core/dev.c:5379
-__netif_receive_skb_one_core+0xae/0x180 net/core/dev.c:5483
-__netif_receive_skb+0x1f/0x1c0 net/core/dev.c:5599
-process_backlog+0x3a0/0x7c0 net/core/dev.c:5927
-__napi_poll+0xb3/0x6d0 net/core/dev.c:6494
-napi_poll net/core/dev.c:6561 [inline]
-net_rx_action+0x9c1/0xd90 net/core/dev.c:6672
-__do_softirq+0x1d0/0x9c8 kernel/softirq.c:571
-
-Fixes: 2b0a8c9eee81 ("tcp: add CDG congestion control")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/ipv4/tcp_cdg.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/ipv4/tcp_cdg.c b/net/ipv4/tcp_cdg.c
-index ddc7ba0554bddaa5df2fffdb61faba1f3cfbde5c..112f28f9369349a54ac719af3de353577a830cf1 100644
---- a/net/ipv4/tcp_cdg.c
-+++ b/net/ipv4/tcp_cdg.c
-@@ -375,6 +375,7 @@ static void tcp_cdg_init(struct sock *sk)
- 	struct cdg *ca = inet_csk_ca(sk);
- 	struct tcp_sock *tp = tcp_sk(sk);
- 
-+	ca->gradients = NULL;
- 	/* We silently fall back to window = 1 if allocation fails. */
- 	if (window > 1)
- 		ca->gradients = kcalloc(window, sizeof(ca->gradients[0]),
-@@ -388,6 +389,7 @@ static void tcp_cdg_release(struct sock *sk)
- 	struct cdg *ca = inet_csk_ca(sk);
- 
- 	kfree(ca->gradients);
-+	ca->gradients = NULL;
- }
- 
- static struct tcp_congestion_ops tcp_cdg __read_mostly = {
--- 
-2.38.0.rc1.362.ged0d419d3c-goog
-
+Kind Regards,
+Mr. Stephen Melvin.
