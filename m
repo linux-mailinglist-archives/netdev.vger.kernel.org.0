@@ -2,98 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 121205FAE21
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 10:13:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF4C75FAE7D
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 10:32:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229875AbiJKINI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Oct 2022 04:13:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37532 "EHLO
+        id S230054AbiJKIch (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Oct 2022 04:32:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbiJKINH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 04:13:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89D4A3EA49;
-        Tue, 11 Oct 2022 01:13:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2BD73B80AAE;
-        Tue, 11 Oct 2022 08:13:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46790C433C1;
-        Tue, 11 Oct 2022 08:13:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665475982;
-        bh=hdV/HagkJ26SOAJFvJzmaF51kGu9RxKTWkSj9OFXJ9o=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=BipUaM7W4M0iTTaKjf/MvpWknYY7hihA0mTYx0uxRN29Mp/M0UejN70x+4LkrhLXJ
-         WQUxO/lGsuQo/76gHn00sLWGFuLu/rtVqVdR/7q0w2YaxYfswVpqDcGaDn35fapdCc
-         qI821XfCJXBwFnBC/ITOR9oWR6J3enqSOEZ4Oh+M2SdRxte0MXHeQXXyH89XVXnb5J
-         WQtykTZ9/dMOg/MQNmq/wefEGYBki3JTAorcRujJGa5p+FBO8oVSFUO2aPidwQ0cr1
-         HLz53LFGilK3SEzRKmNIeSP0mFQvy+BqPSaimShSBPYpL2PPOQMUjKR40F3dX+4VoO
-         7sQdaiWbLjD3A==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     "Arnd Bergmann" <arnd@arndb.de>
-Cc:     "Naresh Kamboju" <naresh.kamboju@linaro.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "open list" <linux-kernel@vger.kernel.org>,
-        linux-wireless@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>, ath11k@lists.infradead.org,
-        regressions@lists.linux.dev, lkft-triage@lists.linaro.org
-Subject: Re: drivers/net/wireless/ath/ath11k/mac.c:2238:29: warning: 'ath11k_peer_assoc_h_he_limit' reading 16 bytes from a region of size 0
-References: <CA+G9fYsZ_qypa=jHY_dJ=tqX4515+qrV9n2SWXVDHve826nF7Q@mail.gmail.com>
-        <87ilkrpqka.fsf@kernel.org>
-        <158e9f4f-9929-4244-b040-78f2e54bc028@app.fastmail.com>
-Date:   Tue, 11 Oct 2022 11:12:56 +0300
-In-Reply-To: <158e9f4f-9929-4244-b040-78f2e54bc028@app.fastmail.com> (Arnd
-        Bergmann's message of "Mon, 10 Oct 2022 19:52:09 +0200")
-Message-ID: <87tu4aok1j.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S230015AbiJKIcU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 04:32:20 -0400
+Received: from smtp-190a.mail.infomaniak.ch (smtp-190a.mail.infomaniak.ch [185.125.25.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B416385598
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 01:32:18 -0700 (PDT)
+Received: from smtp-2-0001.mail.infomaniak.ch (unknown [10.5.36.108])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4MmptS4VwBzMqBCR;
+        Tue, 11 Oct 2022 10:32:16 +0200 (CEST)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4MmptS0XKTzMpprH;
+        Tue, 11 Oct 2022 10:32:15 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1665477136;
+        bh=i1QozCdbLF8mC5Ti7x3s/K4yPoiXCCNs7CBbe0ukwKU=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=QgvNf4loK/J/M2hyRKHQOAJ4eZQvS2WProNRB8HTAxxoSu3JgVw2mjpWHXPztiOBP
+         wiIsTfr1asYnA5WRZv41wxvwo93GrIzM8dJZzScdwOPsjL9V4/j1BSaBaXgq7QoeIH
+         3vmX/o4OBe38G4u/LP+mLEXKPxE+TOC3ZA8Uj94U=
+Message-ID: <1caf1972-4983-45ad-6050-47c44e1f41fb@digikod.net>
+Date:   Tue, 11 Oct 2022 10:32:15 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: 
+Subject: Re: [PATCH v7 16/18] seltests/landlock: add invalid input data test
+Content-Language: en-US
+To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, anton.sirazetdinov@huawei.com
+References: <20220829170401.834298-1-konstantin.meskhidze@huawei.com>
+ <20220829170401.834298-17-konstantin.meskhidze@huawei.com>
+ <d91e3fcc-2320-e98c-7d54-458b749c87a8@digikod.net>
+ <47ddb2ea-3bc7-533a-9b0d-2b2d3950644c@huawei.com>
+ <36de86ad-460c-81d0-b5bd-4d54bd05d201@digikod.net>
+ <b4b49d93-72a1-b7b4-68e4-2bd03034ee77@digikod.net>
+ <4d97342e-0961-e691-40af-c007d02ea43c@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+In-Reply-To: <4d97342e-0961-e691-40af-c007d02ea43c@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Arnd Bergmann" <arnd@arndb.de> writes:
 
-> On Mon, Oct 10, 2022, at 6:54 PM, Kalle Valo wrote:
->> Naresh Kamboju <naresh.kamboju@linaro.org> writes:
->
+On 11/10/2022 09:55, Konstantin Meskhidze (A) wrote:
+> 
+> 
+> 10/10/2022 1:37 PM, Mickaël Salaün пишет:
+>>
+>> On 12/09/2022 19:22, Mickaël Salaün wrote:
 >>>
->>> Build log: https://builds.tuxbuild.com/2F4W7nZHNx3T88RB0gaCZ9hBX6c/
+>>> On 10/09/2022 22:51, Konstantin Meskhidze (A) wrote:
+>>>>
+>>>>
+>>>> 9/6/2022 11:09 AM, Mickaël Salaün пишет:
+>>>>>
+>>>>> On 29/08/2022 19:03, Konstantin Meskhidze wrote:
+>>>>>> This patch adds rules with invalid user space supplied data:
+>>>>>>         - out of range ruleset attribute;
+>>>>>>         - unhandled allowed access;
+>>>>>>         - zero port value;
+>>>>>>         - zero access value;
+>>>>>>
+>>>>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>>>>>> ---
+>>>>>>
+>>>>>> Changes since v6:
+>>>>>> * Adds invalid ruleset attribute test.
+>>>>>>
+>>>>>> Changes since v5:
+>>>>>> * Formats code with clang-format-14.
+>>>>>>
+>>>>>> Changes since v4:
+>>>>>> * Refactors code with self->port variable.
+>>>>>>
+>>>>>> Changes since v3:
+>>>>>> * Adds inval test.
+>>>>>>
+>>>>>> ---
+>>>>>>      tools/testing/selftests/landlock/net_test.c | 66 ++++++++++++++++++++-
+>>>>>>      1 file changed, 65 insertions(+), 1 deletion(-)
+>>>>>>
+>>>>>> diff --git a/tools/testing/selftests/landlock/net_test.c b/tools/testing/selftests/landlock/net_test.c
+>>>>>> index a93224d1521b..067ba45f58a5 100644
+>>>>>> --- a/tools/testing/selftests/landlock/net_test.c
+>>>>>> +++ b/tools/testing/selftests/landlock/net_test.c
+>>>>>> @@ -26,9 +26,12 @@
+>>>>>>
+>>>>>>      #define IP_ADDRESS "127.0.0.1"
+>>>>>>
+>>>>>> -/* Number pending connections queue to be hold */
+>>>>>> +/* Number pending connections queue to be hold. */
+>>>>>
+>>>>> Patch of a previous patch?
+>>>>>
+>>>>>
+>>>>>>      #define BACKLOG 10
+>>>>>>
+>>>>>> +/* Invalid attribute, out of landlock network access range. */
+>>>>>> +#define LANDLOCK_INVAL_ATTR 7
+>>>>>> +
+>>>>>>      FIXTURE(socket)
+>>>>>>      {
+>>>>>>      	uint port[MAX_SOCKET_NUM];
+>>>>>> @@ -719,4 +722,65 @@ TEST_F(socket, ruleset_expanding)
+>>>>>>      	/* Closes socket 1. */
+>>>>>>      	ASSERT_EQ(0, close(sockfd_1));
+>>>>>>      }
+>>>>>> +
+>>>>>> +TEST_F(socket, inval)
+>>>>>> +{
+>>>>>> +	struct landlock_ruleset_attr ruleset_attr = {
+>>>>>> +		.handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP
+>>>>>> +	};
+>>>>>> +	struct landlock_ruleset_attr ruleset_attr_inval = {
+>>>>>> +		.handled_access_net = LANDLOCK_INVAL_ATTR
+>>>>>
+>>>>> Please add a test similar to TEST_F_FORK(layout1,
+>>>>> file_and_dir_access_rights) instead of explicitly defining and only
+>>>>> testing LANDLOCK_INVAL_ATTR.
+>>>>>
+>>>>       Do you want fs test to be in this commit or maybe its better to add
+>>>> it into "[PATCH v7 01/18] landlock: rename access mask" one.
 >>
->> Thanks, I was able to reproduce it now and submitted a patch:
+>> Just to make it clear, I didn't suggested an FS test, but a new network
+>> test similar to layout1.file_and_dir_access_rights but only related to
+>> the network. It should replace/extend the content of this patch (16/18).
 >>
->> https://patchwork.kernel.org/project/linux-wireless/patch/20221010160638.20152-1-kvalo@kernel.org/
->>
->> But it's strange that nobody else (myself included) didn't see this
->> earlier. Nor later for that matter, this is the only report I got about
->> this. Arnd, any ideas what could cause this only to happen on GCC 11?
->>
->> -- 
->> https://patchwork.kernel.org/project/linux-wireless/list/
->>
->> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
->
-> No idea here, though I have not tried to reproduce it. This looks
-> like a false positive to me, which might be the result of some
-> missed optimization in the compiler when building with certain
-> options. I see in the .config that KASAN is enabled, and this sometimes
-> causes odd behavior like this. If it does not happen without KASAN,
-> maybe report it as a bug against the compiler.
+>    Ok. I will check out out "layout1.file_and_dir_access_rights" one.
+> But anyway we need some test like TEST_F_FORK(layout1, with_net) and
+> TEST_F_FORK(socket, with_fs) with mixed attributes as you suggested.
 
-You guessed correctly, disabling KASAN makes the warning go away. So no
-point of reporting this to GCC, thanks for the help!
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Right, you can add that to the main test patch.
