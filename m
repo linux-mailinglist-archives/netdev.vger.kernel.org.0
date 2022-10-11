@@ -2,106 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D9BE45FB0CD
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 12:53:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 316DD5FB14D
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 13:17:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229863AbiJKKxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Oct 2022 06:53:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57670 "EHLO
+        id S229577AbiJKLQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Oct 2022 07:16:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229600AbiJKKx3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 06:53:29 -0400
-Received: from wnew3-smtp.messagingengine.com (wnew3-smtp.messagingengine.com [64.147.123.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5751E37184;
-        Tue, 11 Oct 2022 03:53:27 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.west.internal (Postfix) with ESMTP id B498C2B066B9;
-        Tue, 11 Oct 2022 06:53:25 -0400 (EDT)
-Received: from imap51 ([10.202.2.101])
-  by compute3.internal (MEProxy); Tue, 11 Oct 2022 06:53:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1665485605; x=1665489205; bh=5bI3YI3TxD
-        wB3OBrM9zXo72ykVPw/KrTh1LKAdTEzQI=; b=wvKNwKMxqrtAUNztuQlpfH9rp1
-        brYdNWsHKjW5fJGmq9KxBMWNgghy92WBf4MC7Df/2iyjxjmhvBS9lfU/852FLQBp
-        cwYxE7DKRf1odZT1cYvYmIOjaFXYHx1v9iQfOZ1r45PpQULyQ73bENRT2VQaF14n
-        YlSUTQWrnjdvMW5/vOFs1RpnahKqADuw8MKEfsOS7DOCiPl8jJUcMj54k+6YL/cP
-        Tldi28IarLCcK31EyloZYKNFdkDjGMo5sgbySgmeTpy7U14eqb6cErLRRWgnPBRL
-        5JF2BDvJFdUGJNEaZehLDR7ifkamlAlDo52ovoiZk8a6s4AnrGC4lGLa7D/Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1665485605; x=1665489205; bh=5bI3YI3TxDwB3OBrM9zXo72ykVPw
-        /KrTh1LKAdTEzQI=; b=QiyfXg4wplRnzHFR+cKAh/LuF+QhtxgGfaKaoB9f8dyO
-        41zuh4OCh3LAMg4AEswO0xUhCGhmzHV8pNpkmkRBcuTeFDIeiBfw464gNOdcqn4I
-        fFFPIYbZCGph4Y1DbFmnVdv7soycxHa2mLCXm1LiV2NLX5Ofs0QiFuHBNtEOyXcM
-        uSFkq7zJo2eoNmSWveue5aUznNqZ04sn7yu2lATDofJ0jSGdfILE6BQEBY2e32qg
-        H0XRSS/QYLFzQYuA4wig9W2u4LP2bAW4VtELDlZbNut75XPUyRQ5DeCUiiHM2elL
-        vp6jgsEcas+IeiCGy2bMpewivf1Zqz3ZMcf30umdXg==
-X-ME-Sender: <xms:JEtFY32lcooBYztdni67Wwmf0LubIg_dQcMQkf3jQrxQ-oDXKtPCUw>
-    <xme:JEtFY2HgsDD9Sbsgfw-Jy2gu8rI3E0Sl9eGDOrmslweQR1ZqSxMeUEs_-Yh-k0Swd
-    mPXzYddL1kPBGVBsoI>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfeejiedgvdelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
-    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
-    htvghrnhepffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdek
-    teffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
-    hrnhgusegrrhhnuggsrdguvg
-X-ME-Proxy: <xmx:JEtFY34Hs5N1C3qu7St5NaZMRwdLH8GqRYGVSNCkcjMa44U90zOy6Q>
-    <xmx:JEtFY83QAC37vCJ0ovUwIfvJSa_Vo9YEENl-M-JBNfvib88fBVKhGQ>
-    <xmx:JEtFY6HZMGQ9A2HNXL7dS-yvA5FZgAEJlvb5J-il0U7Y-PCW9C3p5A>
-    <xmx:JUtFY9C-zwgQtavNsqAMd3xx1ciDw6jSZur_Rm2SJnHJdxi7sCsWrmxdE6s>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id B75D1B60086; Tue, 11 Oct 2022 06:53:24 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-1015-gaf7d526680-fm-20220929.001-gaf7d5266
-Mime-Version: 1.0
-Message-Id: <e21a4eab-fe4f-4028-a22e-d60a6feb4dac@app.fastmail.com>
-In-Reply-To: <87tu4aok1j.fsf@kernel.org>
-References: <CA+G9fYsZ_qypa=jHY_dJ=tqX4515+qrV9n2SWXVDHve826nF7Q@mail.gmail.com>
- <87ilkrpqka.fsf@kernel.org>
- <158e9f4f-9929-4244-b040-78f2e54bc028@app.fastmail.com>
- <87tu4aok1j.fsf@kernel.org>
-Date:   Tue, 11 Oct 2022 12:53:04 +0200
-From:   "Arnd Bergmann" <arnd@arndb.de>
-To:     "Kalle Valo" <kvalo@kernel.org>
-Cc:     "Naresh Kamboju" <naresh.kamboju@linaro.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "open list" <linux-kernel@vger.kernel.org>,
-        linux-wireless@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>, ath11k@lists.infradead.org,
-        regressions@lists.linux.dev, lkft-triage@lists.linaro.org
-Subject: Re: drivers/net/wireless/ath/ath11k/mac.c:2238:29: warning:
- 'ath11k_peer_assoc_h_he_limit' reading 16 bytes from a region of size 0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229526AbiJKLQz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 07:16:55 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88257167DF;
+        Tue, 11 Oct 2022 04:16:51 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id l4so12891944plb.8;
+        Tue, 11 Oct 2022 04:16:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=i4WAsnhbo3mj6+qRptDWdWyrS7sjNQ20usVEoY9BN20=;
+        b=IK0W1JCopDHO3FpVF9n+RPJadViBF+kTshKxvh136W2VuPTpjvlRMiUxKRsrOixqxa
+         5T99NE4XznLUWsd9jV3vCmm1sfSt2hxRtYDLvNbwPFguMyWCsZ9VX2Tk2VjxS2BoBwDv
+         LT8VNvWwoD786nbCibPy6Mnho3OWhscs+sO8ngbCFHKWxGWvkfO7KiNfRQ6A59uEdtr+
+         QIwegXEPplXIT0Y+7oPME5PGfySTofgnyC3JiRKE65e1b5gGm1tdheBppmQOmsrA4RWW
+         nKh/rY9uKHZgBlyb1ghXiVzRjBD4ZWfiCQOko/XgvaihXPv0nFBauQcfogOMQNGfcpog
+         bPhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=i4WAsnhbo3mj6+qRptDWdWyrS7sjNQ20usVEoY9BN20=;
+        b=uVJdQcBxU9TOnJyBXkhUp3xAiQl4VI8d9bTXTHPzAhlk9cFWS8fQUVfGNKej310uJL
+         Jw7yUkceK2zuSN4Dy/eR2a2FQVD1F38MDOAxEp5+ODjmz1XtDtPTjGdkcciW+pEPjVDG
+         +g9ijskTowKz3QIzdD90am7SNpJBaxpnCDF4KWm5IGP1Z68hvA2Z/KGv2wgcgzOFBxlc
+         7TbojweYcWtzjiuPIC+GYwux9LyaRwmfbkLheefcX57H5pF5ZcnKHK0lp12GwWPl3YtV
+         brasNMgJz2m3KkHXiVBOCDHspAbR2b1jH+MX39eEmb4GqTTXuxg7Azaw4fuXDqot7rEx
+         Rlkw==
+X-Gm-Message-State: ACrzQf3qNfXeqb21hEbJYzOS7UKE930kbp9UHNCpBAhBTQnXci3xwNVh
+        /gzmUAfHn2hxtj/un1dWk4o=
+X-Google-Smtp-Source: AMsMyM57ZWctsmlsdd6OOXLvsYniC7b+6zsqhFJ/dmNGqaEKN05YOuL3+RvxwzXFfbiONbkGUWd7GQ==
+X-Received: by 2002:a17:90b:3805:b0:20d:4e77:371f with SMTP id mq5-20020a17090b380500b0020d4e77371fmr9137587pjb.170.1665487010884;
+        Tue, 11 Oct 2022 04:16:50 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id s4-20020a170902ea0400b0017300ec80b0sm4510907plg.308.2022.10.11.04.16.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Oct 2022 04:16:49 -0700 (PDT)
+From:   yexingchen116@gmail.com
+X-Google-Original-From: ye.xingchen@zte.com.cn
+To:     anthony.l.nguyen@intel.com
+Cc:     jesse.brandeburg@intel.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ye xingchen <ye.xingchen@zte.com.cn>
+Subject: [PATCH linux-next] iavf: Replace __FUNCTION__ with __func__
+Date:   Tue, 11 Oct 2022 11:16:38 +0000
+Message-Id: <20221011111638.324346-1-ye.xingchen@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 11, 2022, at 10:12 AM, Kalle Valo wrote:
-> "Arnd Bergmann" <arnd@arndb.de> writes:
+From: ye xingchen <ye.xingchen@zte.com.cn>
 
->
-> You guessed correctly, disabling KASAN makes the warning go away. So no
-> point of reporting this to GCC, thanks for the help!
+__FUNCTION__ exists only for backwards compatibility reasons with old
+gcc versions. Replace it with __func__.
 
-What I meant was that if the problem is specific to KASAN, it might
-be nice to report it in the gcc bug tracker with the KASAN component,
-ideally with some kind of minimized test case or at least preprocessed
-source.
+Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
+---
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-   Arnd
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index 3fc572341781..98ab11972f5c 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -4820,7 +4820,7 @@ static void iavf_shutdown(struct pci_dev *pdev)
+ 		iavf_close(netdev);
+ 
+ 	if (iavf_lock_timeout(&adapter->crit_lock, 5000))
+-		dev_warn(&adapter->pdev->dev, "failed to acquire crit_lock in %s\n", __FUNCTION__);
++		dev_warn(&adapter->pdev->dev, "failed to acquire crit_lock in %s\n", __func__);
+ 	/* Prevent the watchdog from running. */
+ 	iavf_change_state(adapter, __IAVF_REMOVE);
+ 	adapter->aq_required = 0;
+-- 
+2.25.1
+
