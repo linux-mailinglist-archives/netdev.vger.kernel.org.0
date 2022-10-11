@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FF775FB1BB
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 13:43:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29CA75FB1B2
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 13:43:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229926AbiJKLnd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Oct 2022 07:43:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60792 "EHLO
+        id S229778AbiJKLno (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Oct 2022 07:43:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229908AbiJKLna (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 07:43:30 -0400
+        with ESMTP id S229935AbiJKLne (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 07:43:34 -0400
 Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AABF7C748;
-        Tue, 11 Oct 2022 04:43:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8482895C1;
+        Tue, 11 Oct 2022 04:43:32 -0700 (PDT)
 Received: from mail02.huawei.com (unknown [172.30.67.143])
-        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4Mmv4S0YPtzKG3R;
-        Tue, 11 Oct 2022 19:41:12 +0800 (CST)
+        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4Mmv4W0nM8zKG9D;
+        Tue, 11 Oct 2022 19:41:15 +0800 (CST)
 Received: from k01.huawei.com (unknown [10.67.174.197])
-        by APP2 (Coremail) with SMTP id Syh0CgBX8NTXVkVj5HNpAA--.32480S4;
-        Tue, 11 Oct 2022 19:43:28 +0800 (CST)
+        by APP2 (Coremail) with SMTP id Syh0CgBX8NTXVkVj5HNpAA--.32480S5;
+        Tue, 11 Oct 2022 19:43:31 +0800 (CST)
 From:   Xu Kuohai <xukuohai@huaweicloud.com>
 To:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-kselftest@vger.kernel.org, netdev@vger.kernel.org
@@ -40,20 +40,20 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Alan Maguire <alan.maguire@oracle.com>,
         Delyan Kratunov <delyank@fb.com>,
         Lorenzo Bianconi <lorenzo@kernel.org>
-Subject: [PATCH bpf-next v4 2/6] libbpf: Fix memory leak in parse_usdt_arg()
-Date:   Tue, 11 Oct 2022 08:01:04 -0400
-Message-Id: <20221011120108.782373-3-xukuohai@huaweicloud.com>
+Subject: [PATCH bpf-next v4 3/6] selftests/bpf: Fix memory leak caused by not destroying skeleton
+Date:   Tue, 11 Oct 2022 08:01:05 -0400
+Message-Id: <20221011120108.782373-4-xukuohai@huaweicloud.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221011120108.782373-1-xukuohai@huaweicloud.com>
 References: <20221011120108.782373-1-xukuohai@huaweicloud.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: Syh0CgBX8NTXVkVj5HNpAA--.32480S4
-X-Coremail-Antispam: 1UD129KBjvJXoW7uFyxtrW8ury5KFW3WFW8Xrb_yoW8tr1rpr
-        WS9w1qvrn7J3yfGFyDXanYq343CrsrJr9Yyr1Fya45ZF4fWrW8J3s3Kr4fKwn8JFW7AFWa
-        9F4rKrWfGFy5XF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUBYb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
-        6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUXw
+X-CM-TRANSID: Syh0CgBX8NTXVkVj5HNpAA--.32480S5
+X-Coremail-Antispam: 1UD129KBjvJXoW7uFy3Cr4xWF4UAFWDJFy5Jwb_yoW8uw4fpa
+        48u34akF1SyF1jqFy8Ca17uFWrKFs7Zr1Ykr48tw1Fvrn8XFyxXF1xKay5J3Z3GrZ5Zw13
+        Aa4ftrs5CayUJFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUBFb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
+        6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUWw
         A2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxS
         w2x7M28EF7xvwVC0I7IYx2IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxV
         W8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v2
@@ -63,8 +63,8 @@ X-Coremail-Antispam: 1UD129KBjvJXoW7uFyxtrW8ury5KFW3WFW8Xrb_yoW8tr1rpr
         vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8G
         jcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a6rW5MIIYrxkI7VAKI48JMIIF0xvE2I
         x0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26F4j6r4UJwCI42IY6xAI
-        w20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x
-        0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7IU1sa9DUUUUU==
+        w20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Gr0_Cr1lIxAIcVC2z280aVCY1x
+        0267AKxVW8Jr0_Cr1UYxBIdaVFxhVjvjDU0xZFpf9x07UAkuxUUUUU=
 X-CM-SenderInfo: 50xn30hkdlqx5xdzvxpfor3voofrz/
 X-CFilter-Loop: Reflected
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
@@ -77,62 +77,59 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Xu Kuohai <xukuohai@huawei.com>
 
-In the arm64 version of parse_usdt_arg(), when sscanf returns 2, reg_name
-is allocated but not freed. Fix it.
+Some test cases does not destroy skeleton object correctly, causing ASAN
+to report memory leak warning. Fix it.
 
-Fixes: 0f8619929c57 ("libbpf: Usdt aarch64 arg parsing support")
+Fixes: 0ef6740e9777 ("selftests/bpf: Add tests for kptr_ref refcounting")
+Fixes: 1642a3945e22 ("selftests/bpf: Add struct argument tests with fentry/fexit programs.")
 Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
 ---
- tools/lib/bpf/usdt.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/map_kptr.c       | 3 ++-
+ tools/testing/selftests/bpf/prog_tests/tracing_struct.c | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/tools/lib/bpf/usdt.c b/tools/lib/bpf/usdt.c
-index e83b497c2245..49f3c3b7f609 100644
---- a/tools/lib/bpf/usdt.c
-+++ b/tools/lib/bpf/usdt.c
-@@ -1348,25 +1348,23 @@ static int calc_pt_regs_off(const char *reg_name)
+diff --git a/tools/testing/selftests/bpf/prog_tests/map_kptr.c b/tools/testing/selftests/bpf/prog_tests/map_kptr.c
+index fdcea7a61491..0d66b1524208 100644
+--- a/tools/testing/selftests/bpf/prog_tests/map_kptr.c
++++ b/tools/testing/selftests/bpf/prog_tests/map_kptr.c
+@@ -105,7 +105,7 @@ static void test_map_kptr_success(bool test_run)
+ 	ASSERT_OK(opts.retval, "test_map_kptr_ref2 retval");
  
- static int parse_usdt_arg(const char *arg_str, int arg_num, struct usdt_arg_spec *arg)
- {
--	char *reg_name = NULL;
-+	char reg_name[16];
- 	int arg_sz, len, reg_off;
- 	long off;
+ 	if (test_run)
+-		return;
++		goto exit;
  
--	if (sscanf(arg_str, " %d @ \[ %m[a-z0-9], %ld ] %n", &arg_sz, &reg_name, &off, &len) == 3) {
-+	if (sscanf(arg_str, " %d @ \[ %15[a-z0-9], %ld ] %n", &arg_sz, reg_name, &off, &len) == 3) {
- 		/* Memory dereference case, e.g., -4@[sp, 96] */
- 		arg->arg_type = USDT_ARG_REG_DEREF;
- 		arg->val_off = off;
- 		reg_off = calc_pt_regs_off(reg_name);
--		free(reg_name);
- 		if (reg_off < 0)
- 			return reg_off;
- 		arg->reg_off = reg_off;
--	} else if (sscanf(arg_str, " %d @ \[ %m[a-z0-9] ] %n", &arg_sz, &reg_name, &len) == 2) {
-+	} else if (sscanf(arg_str, " %d @ \[ %15[a-z0-9] ] %n", &arg_sz, reg_name, &len) == 2) {
- 		/* Memory dereference case, e.g., -4@[sp] */
- 		arg->arg_type = USDT_ARG_REG_DEREF;
- 		arg->val_off = 0;
- 		reg_off = calc_pt_regs_off(reg_name);
--		free(reg_name);
- 		if (reg_off < 0)
- 			return reg_off;
- 		arg->reg_off = reg_off;
-@@ -1375,12 +1373,11 @@ static int parse_usdt_arg(const char *arg_str, int arg_num, struct usdt_arg_spec
- 		arg->arg_type = USDT_ARG_CONST;
- 		arg->val_off = off;
- 		arg->reg_off = 0;
--	} else if (sscanf(arg_str, " %d @ %m[a-z0-9] %n", &arg_sz, &reg_name, &len) == 2) {
-+	} else if (sscanf(arg_str, " %d @ %15[a-z0-9] %n", &arg_sz, reg_name, &len) == 2) {
- 		/* Register read case, e.g., -8@x4 */
- 		arg->arg_type = USDT_ARG_REG;
- 		arg->val_off = 0;
- 		reg_off = calc_pt_regs_off(reg_name);
--		free(reg_name);
- 		if (reg_off < 0)
- 			return reg_off;
- 		arg->reg_off = reg_off;
+ 	ret = bpf_map__update_elem(skel->maps.array_map,
+ 				   &key, sizeof(key), buf, sizeof(buf), 0);
+@@ -132,6 +132,7 @@ static void test_map_kptr_success(bool test_run)
+ 	ret = bpf_map__delete_elem(skel->maps.lru_hash_map, &key, sizeof(key), 0);
+ 	ASSERT_OK(ret, "lru_hash_map delete");
+ 
++exit:
+ 	map_kptr__destroy(skel);
+ }
+ 
+diff --git a/tools/testing/selftests/bpf/prog_tests/tracing_struct.c b/tools/testing/selftests/bpf/prog_tests/tracing_struct.c
+index d5022b91d1e4..48dc9472e160 100644
+--- a/tools/testing/selftests/bpf/prog_tests/tracing_struct.c
++++ b/tools/testing/selftests/bpf/prog_tests/tracing_struct.c
+@@ -15,7 +15,7 @@ static void test_fentry(void)
+ 
+ 	err = tracing_struct__attach(skel);
+ 	if (!ASSERT_OK(err, "tracing_struct__attach"))
+-		return;
++		goto destroy_skel;
+ 
+ 	ASSERT_OK(trigger_module_test_read(256), "trigger_read");
+ 
+@@ -54,6 +54,7 @@ static void test_fentry(void)
+ 	ASSERT_EQ(skel->bss->t5_ret, 1, "t5 ret");
+ 
+ 	tracing_struct__detach(skel);
++destroy_skel:
+ 	tracing_struct__destroy(skel);
+ }
+ 
 -- 
 2.30.2
 
