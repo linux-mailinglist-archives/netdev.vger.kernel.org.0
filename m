@@ -2,213 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D51E05FB303
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 15:15:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BB8A5FB33B
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 15:20:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230008AbiJKNPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Oct 2022 09:15:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37168 "EHLO
+        id S230118AbiJKNUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Oct 2022 09:20:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230012AbiJKNPG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 09:15:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CAD818347
-        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 06:15:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 885A36118D
-        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 13:15:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D571C433D6;
-        Tue, 11 Oct 2022 13:15:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665494101;
-        bh=S5A4dfZnVIjo0oxWQe1cmukiiRy8u/Y38dM3eb7FvCA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=aOi5E6lPKBRkp+AHZ/ufZNju9SoNxMpFJbkD7pmjqp5VDpR23alA9UqgpaELZQmDM
-         vw37sKSTj/1B9CVOaqwYY/yoli+4XrGfh2YvjTQMv0dT/PyRSdaMnwjBJeJjQQoqAP
-         AhOVAzbnusxbIimYG02/xWQOCssJx+8obm/39O3z/vARaJtUnq/8a3tkMaABN/WLG3
-         G7mwn7mq4kJ+TTaxrse3YApoLffBv80sNMrNGZMc43oZjjnoQUwuakGJ33pz8tHjJ8
-         jjxhr8t60Zf/4VpDIe9BtljxwuEVzR4lHWTfrgs55cmTSE88eRXagC3rVyLL4zIXpE
-         ATMSSzR1w/s8w==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leonro@nvidia.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH net v1] net/mlx5: Make ASO poll CQ usable in atomic context
-Date:   Tue, 11 Oct 2022 16:14:55 +0300
-Message-Id: <ddf073ea964de8fd8984961ffe3dcb78559b08ac.1665493459.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.37.3
+        with ESMTP id S230074AbiJKNUT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 09:20:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A7E97D65
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 06:19:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1665494340;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TDCMSGvi/kRX/Ot4OPzT6z0p0kG2Pn06Pcb3KApka90=;
+        b=eGM/hE11Hcrz0SkbfhF9VgZVGmlmUL+EigWSCtybuJe4GtNg0Vq/BGRRuU5ce9raHG7AAq
+        RXXMflHd+IOIw6Ceqb5iMsEmjUOieaQ0EjZr+NkNYcF8YrrL+jvM/X8KNUZkty+uaZu+kg
+        PVpJEFIp/8oyoWbZCoLT5fy29ufNuEw=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-115-Gin4huCPOJe5YyKpk8MkcQ-1; Tue, 11 Oct 2022 09:18:59 -0400
+X-MC-Unique: Gin4huCPOJe5YyKpk8MkcQ-1
+Received: by mail-qv1-f71.google.com with SMTP id q20-20020ad44354000000b004afb5a0d33cso7889500qvs.12
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 06:18:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=TDCMSGvi/kRX/Ot4OPzT6z0p0kG2Pn06Pcb3KApka90=;
+        b=0uEWa0KaJ3BowLoIWAmR3I8fpHBu9RAdidxGYBF3xKKtC7EwCrEhI6DFKA+vUM0moq
+         tYpTfEW42MZQ2YeykCFtVpA895HPa9pRVy54lpbyRX1HRzofY4KSBD90AgCIyM9T5zfQ
+         ZekB1izBV39Xjdyx+0iuVIaMoBo1rzgB+juSEzpFCQTGw57zHgA62Dc6TPMjYRQqcqkl
+         vMcLlW4HEqJ5LPnUB0K/VURbpfHkmZr9hNdu3oilnsWoHCWRht4jcECDDAzC3+g52sT5
+         k8nzVp3JJxrlvneWbklytZs3JhMVHpykah5Il+Oi9FYoQb3+BCyXO7jW7c6jADe2mjrr
+         W2Jw==
+X-Gm-Message-State: ACrzQf2lJBUZ0BvrjWM7e0UKWpEHicBYmZVko1O89WViIggtIbinE0Sh
+        bCPpwSzlYcYIhCNv1oPXCg5wN26jdg+lr3ZyikdIrpretAmHnpulld9eHd0cGixJ3TWAV1ychTq
+        KKnpo6rwzQQboSYJN
+X-Received: by 2002:a37:b041:0:b0:6eb:cc8c:e9a9 with SMTP id z62-20020a37b041000000b006ebcc8ce9a9mr10117336qke.573.1665494338813;
+        Tue, 11 Oct 2022 06:18:58 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM7dIYhwlas6OZtmsmZiLfYVI7d5Nj1cy6lD86qqfVYrx394tNkaNREnLpBJxr4GzDttBy7txg==
+X-Received: by 2002:a37:b041:0:b0:6eb:cc8c:e9a9 with SMTP id z62-20020a37b041000000b006ebcc8ce9a9mr10117317qke.573.1665494338566;
+        Tue, 11 Oct 2022 06:18:58 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-103-235.dyn.eolo.it. [146.241.103.235])
+        by smtp.gmail.com with ESMTPSA id q4-20020a05620a2a4400b006ee74cc976esm3069348qkp.70.2022.10.11.06.18.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Oct 2022 06:18:58 -0700 (PDT)
+Message-ID: <126bda05a809cb53090675725a6c5ad51d439918.camel@redhat.com>
+Subject: Re: [PATCH net-next v5 0/4] Implement devlink-rate API and extend it
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Michal Wilczynski <michal.wilczynski@intel.com>,
+        netdev@vger.kernel.org
+Cc:     alexandr.lobakin@intel.com, jacob.e.keller@intel.com,
+        jesse.brandeburg@intel.com, przemyslaw.kitszel@intel.com,
+        anthony.l.nguyen@intel.com, kuba@kernel.org,
+        ecree.xilinx@gmail.com, jiri@resnulli.us
+Date:   Tue, 11 Oct 2022 15:18:54 +0200
+In-Reply-To: <20221011090113.445485-1-michal.wilczynski@intel.com>
+References: <20221011090113.445485-1-michal.wilczynski@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+Hello,
 
-Poll CQ functions shouldn't sleep as they are called in atomic context.
-The following splat appears once the mlx5_aso_poll_cq() is used in such
-flow.
+On Tue, 2022-10-11 at 11:01 +0200, Michal Wilczynski wrote:
+> This is a follow up on:
+> https://lore.kernel.org/netdev/20220915134239.1935604-1-michal.wilczynski@intel.com/
+> 
+> This patch series implements devlink-rate for ice driver. Unfortunately
+> current API isn't flexible enough for our use case, so there is a need to
+> extend it.  Some functions have been introduced to enable the driver to
+> export current Tx scheduling configuration.
+> 
+> In the previous submission I've made a mistake and didn't remove
+> internal review comments. To avoid confusion I don't go backwards
+> in my versioning and submit it as a v5.
+> 
+> V5:
+> - removed queue support per community request
+> - fix division of 64bit variable with 32bit divisor by using div_u64()
+> - remove RDMA, ADQ exlusion as it's not necessary anymore
+> - changed how driver exports configuration, as queues are not supported
+>   anymore
+> - changed IDA to Xarray for unique node identification
+> 
+> 
+> V4:
+> - changed static variable counter to per port IDA to
+>   uniquely identify nodes
+> 
+> V3:
+> - removed shift macros, since FIELD_PREP is used
+> - added static_assert for struct
+> - removed unnecessary functions
+> - used tab instead of space in define
+> 
+> V2:
+> - fixed Alexandr comments
+> - refactored code to fix checkpatch issues
+> - added mutual exclusion for RDMA, DCB
+> 
+> 
+> 
+> Michal Wilczynski (4):
+>   devlink: Extend devlink-rate api with export functions and new params
+>   ice: Introduce new parameters in ice_sched_node
+>   ice: Implement devlink-rate API
+>   ice: Prevent DCB coexistence with Custom Tx scheduler
+> 
+>  .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   4 +-
+>  drivers/net/ethernet/intel/ice/ice_common.c   |   3 +
+>  drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |   4 +
+>  drivers/net/ethernet/intel/ice/ice_devlink.c  | 467 ++++++++++++++++++
+>  drivers/net/ethernet/intel/ice/ice_devlink.h  |   2 +
+>  drivers/net/ethernet/intel/ice/ice_idc.c      |   5 +
+>  drivers/net/ethernet/intel/ice/ice_repr.c     |  13 +
+>  drivers/net/ethernet/intel/ice/ice_sched.c    |  79 ++-
+>  drivers/net/ethernet/intel/ice/ice_sched.h    |  25 +
+>  drivers/net/ethernet/intel/ice/ice_type.h     |   8 +
+>  .../mellanox/mlx5/core/esw/devlink_port.c     |   4 +-
+>  .../net/ethernet/mellanox/mlx5/core/esw/qos.c |   4 +-
+>  .../net/ethernet/mellanox/mlx5/core/esw/qos.h |   2 +-
+>  drivers/net/netdevsim/dev.c                   |  10 +-
+>  include/net/devlink.h                         |  21 +-
+>  include/uapi/linux/devlink.h                  |   3 +
+>  net/core/devlink.c                            | 145 +++++-
+>  17 files changed, 767 insertions(+), 32 deletions(-)
+> 
+net-next is currently CLOSED,
 
- BUG: scheduling while atomic: swapper/17/0/0x00000100
- Modules linked in: sch_ingress openvswitch nsh mlx5_vdpa vringh vhost_iotlb vdpa mlx5_ib mlx5_core xt_conntrack xt_MASQUERADE nf_conntrack_netlink nfnetlink xt_addrtype iptable_nat nf_nat br_netfilter overlay rpcrdma rdma_ucm ib_iser libiscsi scsi_transport_iscsi ib_umad rdma_cm ib_ipoib iw_cm ib_cm ib_uverbs ib_core fuse [last unloaded: mlx5_core]
- CPU: 17 PID: 0 Comm: swapper/17 Tainted: G        W          6.0.0-rc2+ #13
- Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
- Call Trace:
-  <IRQ>
-  dump_stack_lvl+0x34/0x44
-  __schedule_bug.cold+0x47/0x53
-  __schedule+0x4b6/0x670
-  ? hrtimer_start_range_ns+0x28d/0x360
-  schedule+0x50/0x90
-  schedule_hrtimeout_range_clock+0x98/0x120
-  ? __hrtimer_init+0xb0/0xb0
-  usleep_range_state+0x60/0x90
-  mlx5_aso_poll_cq+0xad/0x190 [mlx5_core]
-  mlx5e_ipsec_aso_update_curlft+0x81/0xb0 [mlx5_core]
-  xfrm_timer_handler+0x6b/0x360
-  ? xfrm_find_acq_byseq+0x50/0x50
-  __hrtimer_run_queues+0x139/0x290
-  hrtimer_run_softirq+0x7d/0xe0
-  __do_softirq+0xc7/0x272
-  irq_exit_rcu+0x87/0xb0
-  sysvec_apic_timer_interrupt+0x72/0x90
-  </IRQ>
-  <TASK>
-  asm_sysvec_apic_timer_interrupt+0x16/0x20
- RIP: 0010:default_idle+0x18/0x20
- Code: ae 7d ff ff cc cc cc cc cc cc cc cc cc cc cc cc cc cc 0f 1f 44 00 00 8b 05 b5 30 0d 01 85 c0 7e 07 0f 00 2d 0a e3 53 00 fb f4 <c3> 0f 1f 80 00 00 00 00 0f 1f 44 00 00 65 48 8b 04 25 80 ad 01 00
- RSP: 0018:ffff888100883ee0 EFLAGS: 00000242
- RAX: 0000000000000001 RBX: ffff888100849580 RCX: 4000000000000000
- RDX: 0000000000000001 RSI: 0000000000000083 RDI: 000000000008863c
- RBP: 0000000000000011 R08: 00000064e6977fa9 R09: 0000000000000001
- R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
- R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-  default_idle_call+0x37/0xb0
-  do_idle+0x1cd/0x1e0
-  cpu_startup_entry+0x19/0x20
-  start_secondary+0xfe/0x120
-  secondary_startup_64_no_verify+0xcd/0xdb
-  </TASK>
- softirq: huh, entered softirq 8 HRTIMER 00000000a97c08cb with preempt_count 00000100, exited with 00000000?
+Please repost when net-next reopens after 6.1-rc1 is cut.
 
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
-Hi,
+Thanks,
 
-I had an internal discussion with Saeed and we decided that this patch
-is good enough to be merged as it will allow ASO usage in mlx5 IPsec code.
-
-In long run, we are going to change ASO to use NAPI polling mode in similar
-way as it is already done for TLS. 
-
-Changelog
-v1:
- * Added usleep in TC code.
-v0: https://lore.kernel.org/all/d941bb44798b938705ca6944d8ee02c97af7ddd5.1664017836.git.leonro@nvidia.com
----
- drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c  |  8 +++++++-
- .../net/ethernet/mellanox/mlx5/core/en_accel/macsec.c  |  4 ++--
- drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c      | 10 +---------
- drivers/net/ethernet/mellanox/mlx5/core/lib/aso.h      |  2 +-
- 4 files changed, 11 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
-index a53e205f4a89..be74e1403328 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
-@@ -115,6 +115,7 @@ mlx5e_tc_meter_modify(struct mlx5_core_dev *mdev,
- 	struct mlx5e_flow_meters *flow_meters;
- 	u8 cir_man, cir_exp, cbs_man, cbs_exp;
- 	struct mlx5_aso_wqe *aso_wqe;
-+	unsigned long expires;
- 	struct mlx5_aso *aso;
- 	u64 rate, burst;
- 	u8 ds_cnt;
-@@ -187,7 +188,12 @@ mlx5e_tc_meter_modify(struct mlx5_core_dev *mdev,
- 	mlx5_aso_post_wqe(aso, true, &aso_wqe->ctrl);
- 
- 	/* With newer FW, the wait for the first ASO WQE is more than 2us, put the wait 10ms. */
--	err = mlx5_aso_poll_cq(aso, true, 10);
-+	expires = jiffies + msecs_to_jiffies(10);
-+	do {
-+		err = mlx5_aso_poll_cq(aso, true);
-+		if (err)
-+			usleep_range(2, 10);
-+	} while (err && time_is_after_jiffies(expires));
- 	mutex_unlock(&flow_meters->aso_lock);
- 
- 	return err;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-index 5da746da898d..41970067917b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-@@ -1405,7 +1405,7 @@ static int macsec_aso_set_arm_event(struct mlx5_core_dev *mdev, struct mlx5e_mac
- 			   MLX5_ACCESS_ASO_OPC_MOD_MACSEC);
- 	macsec_aso_build_ctrl(aso, &aso_wqe->aso_ctrl, in);
- 	mlx5_aso_post_wqe(maso, false, &aso_wqe->ctrl);
--	err = mlx5_aso_poll_cq(maso, false, 10);
-+	err = mlx5_aso_poll_cq(maso, false);
- 	mutex_unlock(&aso->aso_lock);
- 
- 	return err;
-@@ -1430,7 +1430,7 @@ static int macsec_aso_query(struct mlx5_core_dev *mdev, struct mlx5e_macsec *mac
- 	macsec_aso_build_wqe_ctrl_seg(aso, &aso_wqe->aso_ctrl, NULL);
- 
- 	mlx5_aso_post_wqe(maso, false, &aso_wqe->ctrl);
--	err = mlx5_aso_poll_cq(maso, false, 10);
-+	err = mlx5_aso_poll_cq(maso, false);
- 	if (err)
- 		goto err_out;
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c
-index 21e14507ff5c..baa8092f335e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c
-@@ -381,20 +381,12 @@ void mlx5_aso_post_wqe(struct mlx5_aso *aso, bool with_data,
- 	WRITE_ONCE(doorbell_cseg, NULL);
- }
- 
--int mlx5_aso_poll_cq(struct mlx5_aso *aso, bool with_data, u32 interval_ms)
-+int mlx5_aso_poll_cq(struct mlx5_aso *aso, bool with_data)
- {
- 	struct mlx5_aso_cq *cq = &aso->cq;
- 	struct mlx5_cqe64 *cqe;
--	unsigned long expires;
- 
- 	cqe = mlx5_cqwq_get_cqe(&cq->wq);
--
--	expires = jiffies + msecs_to_jiffies(interval_ms);
--	while (!cqe && time_is_after_jiffies(expires)) {
--		usleep_range(2, 10);
--		cqe = mlx5_cqwq_get_cqe(&cq->wq);
--	}
--
- 	if (!cqe)
- 		return -ETIMEDOUT;
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.h
-index d854e01d7fc5..2d40dcf9d42e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.h
-@@ -83,7 +83,7 @@ void mlx5_aso_build_wqe(struct mlx5_aso *aso, u8 ds_cnt,
- 			u32 obj_id, u32 opc_mode);
- void mlx5_aso_post_wqe(struct mlx5_aso *aso, bool with_data,
- 		       struct mlx5_wqe_ctrl_seg *doorbell_cseg);
--int mlx5_aso_poll_cq(struct mlx5_aso *aso, bool with_data, u32 interval_ms);
-+int mlx5_aso_poll_cq(struct mlx5_aso *aso, bool with_data);
- 
- struct mlx5_aso *mlx5_aso_create(struct mlx5_core_dev *mdev, u32 pdn);
- void mlx5_aso_destroy(struct mlx5_aso *aso);
--- 
-2.37.3
+Paolo
 
