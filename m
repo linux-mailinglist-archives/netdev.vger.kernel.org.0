@@ -2,79 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03A615FB469
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 16:18:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B432E5FB478
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 16:23:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229699AbiJKOSE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Oct 2022 10:18:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58892 "EHLO
+        id S229689AbiJKOXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Oct 2022 10:23:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiJKOSC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 10:18:02 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59DB994108
-        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 07:18:00 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id q9so27183570ejd.0
-        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 07:18:00 -0700 (PDT)
+        with ESMTP id S229619AbiJKOXW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 10:23:22 -0400
+Received: from mail-oo1-xc2e.google.com (mail-oo1-xc2e.google.com [IPv6:2607:f8b0:4864:20::c2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8952C925B4
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 07:23:21 -0700 (PDT)
+Received: by mail-oo1-xc2e.google.com with SMTP id r15-20020a4abf0f000000b004761c7e6be1so10125026oop.9
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 07:23:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=9pYd0ajdV4UoEYzGRm2RyhM3NangO07YKa8YosWFJxc=;
-        b=qOO14G1jWialOMk3rAO6mJnx71Xgh55AevrMUfCho/rBhgGB7hbLZZ53IyK+vfj/yu
-         YPYuplsjDRobcHe7hzn6HB7lXAAJ7iBsbqZYtONCKkSJdOTtIS1s+C8IJSohGi/oXH2M
-         NlDKuoEuQ8DekcTe0X3qQT6qYN8R5d2VIp8MLL2J2h4ChhanyzSj0yKSIlNM0nhvLRcG
-         6WN6kPbSMHI59jYXmlK8Ioo5fdAlVgsRYC4a++2epAN9M7zJ+F+x9B1U6S3c5ipT2vZD
-         6n1462VEgvUjwGvi9fMPk8KPnfBSbVA2TRg+ph/TLAZofn+Dl+HpGheycMFPlQOx3c+5
-         Kyiw==
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=tg0K9Lcf+BZPICr6ex5nQidf8aghcnapzzOiBAeExJg=;
+        b=nln+qXLGxR3lmnbN2Bmne1jXzwr6q1J1MD/Xy+D3rOj4y+L5g9CGxDMDDfDG4QGkmu
+         a6MZLfANf/LglLlylpBTv17zfPvogxOfPNmnvi9lxUnFVCxbZLhw9wOcbhtQlAGfMBzL
+         QS6D1XEmp/td3+OyGDhQ81MXfYsfS83CovPA+QNBgM1Pcv6h7QpQM6SAwD2j4uYfQHms
+         H1+sJuFeNQ2/KAvliAMEkNg8ARPBr41u4AL1C/laGGkg53/NRfK8hJfCCiT/Wm7IE8aO
+         FYJV3OLW2LJuKBCC47Iw3pTzmH1u/AU6TdLiC0iBIvcidNND8djCsnDGV6stOwxcpCio
+         LCwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=9pYd0ajdV4UoEYzGRm2RyhM3NangO07YKa8YosWFJxc=;
-        b=NJ/5kOR2p1OnmU9a8KLLDsAJJkjO2hjjPCbEsye58FB1ywbt3HhD2xL086GV55cZz5
-         wJserQ/lSsCkOMNM7rBY2TcDVYXTnJC4I0anh9hPlJt2m1c9cWOVjDroNkHPZtHWqK7q
-         pYwCrkmKYID6hCu1Vx5qZqX1nfwEdovzGxI0VId7glUOVD7WLb+ecsGTCledJsKHpmxQ
-         EWXRm02D/RQKuS6k1bd8YI4ZwfYmvMelsnM9DGkoTA9JzfA0KKYvi5TAbr67ETu1rbkv
-         pkARnwdoOssmMmSob0stR+Ovr3eOHtKsZJJXeLrO6aoFWjuXK/3OxsAtp0/omPCTztNE
-         0H7A==
-X-Gm-Message-State: ACrzQf2KdXSB4rDlsNBZcCLkMb3WrPmk0KhPE0iZ36p+V138UUpJ+XpC
-        EdSD7aA8qjVVf2bsucOw9opBdA==
-X-Google-Smtp-Source: AMsMyM6WcBbE8YSQzTdFGQDgrcq/ZHwj6fwENxr8/ar7aKWcAfyyVr8WuJrymOhF0pue1JFuFn2bgA==
-X-Received: by 2002:a17:906:1350:b0:77f:76a7:a0f with SMTP id x16-20020a170906135000b0077f76a70a0fmr18740289ejb.503.1665497878769;
-        Tue, 11 Oct 2022 07:17:58 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id b18-20020a17090636d200b007417041fb2bsm6979662ejc.116.2022.10.11.07.17.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Oct 2022 07:17:57 -0700 (PDT)
-Date:   Tue, 11 Oct 2022 16:17:55 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     "Wilczynski, Michal" <michal.wilczynski@intel.com>
-Cc:     Edward Cree <ecree.xilinx@gmail.com>, netdev@vger.kernel.org,
-        alexandr.lobakin@intel.com, dchumak@nvidia.com, maximmi@nvidia.com,
-        simon.horman@corigine.com, jacob.e.keller@intel.com,
-        jesse.brandeburg@intel.com, przemyslaw.kitszel@intel.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [RFC PATCH net-next v4 2/6] devlink: Extend devlink-rate api
- with queues and new parameters
-Message-ID: <Y0V7E4UVPTH5tMSz@nanopsycho>
-References: <20220915134239.1935604-1-michal.wilczynski@intel.com>
- <20220915134239.1935604-3-michal.wilczynski@intel.com>
- <f17166c7-312d-ac13-989e-b064cddcb49e@gmail.com>
- <401d70a9-5f6d-ed46-117b-de0b82a5f52c@intel.com>
- <YzGSPMx2yZT/W6Gw@nanopsycho>
- <0a201dd1-55bb-925f-ee95-75bb9451bb8c@intel.com>
- <YzVFez0OXL98hyBt@nanopsycho>
- <3ff10647-f766-5164-a815-82010c738e12@intel.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=tg0K9Lcf+BZPICr6ex5nQidf8aghcnapzzOiBAeExJg=;
+        b=iNDSogiXUXIkrsGFI5OuYE2DUL8oUJGNyfz4CgaQ58jbUhgH+NdLDTxcFfME5GxPm+
+         m7wArvCdRJ/J7eLSP7k4JvMk416MtfRs3UbATY6J36JzCR9hTLrxVKoIOcs2bAAZk3BG
+         0UfXBqvaQP5KQScD1Zcb5WMDy0ym7OEIUv5bC1kBMMP3sef2IY/y5WfMsdx04/OMNQgs
+         rZBIZAXZFuEHXaxoCv7R5Ibyy+PiFLoha1bUyvWZTIcpDoe2YyKI5GEk2v22QD6Xf55w
+         3T0rr3T/Poa7HmuAEnGR+iepsj3dJvfymxWFbIniOe5glmwtFwDu/ZIEnF52/u+1S8KN
+         6/ZA==
+X-Gm-Message-State: ACrzQf2MZCZ38zjKaD6Nctf/rrVCPe8OwmXCuPq6oFbj6awa++qrPyYB
+        zL9zhArqkg5HdY8kCxFXDzT+q6uVbyVoKPcZ30Y=
+X-Google-Smtp-Source: AMsMyM7T8HoexPYdRZHg8NTWp6tm678tYJ86lZ2zhcDDJ+2VJN6p5ATY9zJ7nHg2tTObTH3DGzcii4TJ3sf+iLk6K/E=
+X-Received: by 2002:a05:6830:4101:b0:659:d456:71f9 with SMTP id
+ w1-20020a056830410100b00659d45671f9mr10263652ott.295.1665498200807; Tue, 11
+ Oct 2022 07:23:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <3ff10647-f766-5164-a815-82010c738e12@intel.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+References: <c5c9092a22a2194650222bffaf786902613deb16.1665085502.git.lucien.xin@gmail.com>
+ <f7tczayh47y.fsf@redhat.com> <f7t8rlmh2us.fsf@redhat.com>
+In-Reply-To: <f7t8rlmh2us.fsf@redhat.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Tue, 11 Oct 2022 10:22:30 -0400
+Message-ID: <CADvbK_eDC8KGVZwQPGtEyWovBAqoMEHR15DCiGzL-u5ivigPMw@mail.gmail.com>
+Subject: Re: [ovs-dev] [PATCH net] openvswitch: add nf_ct_is_confirmed check
+ before assigning the helper
+To:     Aaron Conole <aconole@redhat.com>
+Cc:     network dev <netdev@vger.kernel.org>, dev@openvswitch.org,
+        Florian Westphal <fw@strlen.de>,
+        Ilya Maximets <i.maximets@ovn.org>,
+        Eric Dumazet <edumazet@google.com>, kuba@kernel.org,
+        Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,104 +72,143 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Oct 11, 2022 at 03:28:38PM CEST, michal.wilczynski@intel.com wrote:
+On Tue, Oct 11, 2022 at 10:06 AM Aaron Conole <aconole@redhat.com> wrote:
 >
+> Aaron Conole <aconole@redhat.com> writes:
 >
->On 9/29/2022 9:12 AM, Jiri Pirko wrote:
->> Wed, Sep 28, 2022 at 01:47:03PM CEST, michal.wilczynski@intel.com wrote:
->> > 
->> > On 9/26/2022 1:51 PM, Jiri Pirko wrote:
->> > > Thu, Sep 15, 2022 at 08:41:52PM CEST, michal.wilczynski@intel.com wrote:
->> > > > On 9/15/2022 5:31 PM, Edward Cree wrote:
->> > > > > On 15/09/2022 14:42, Michal Wilczynski wrote:
->> > > > > > Currently devlink-rate only have two types of objects: nodes and leafs.
->> > > > > > There is a need to extend this interface to account for a third type of
->> > > > > > scheduling elements - queues. In our use case customer is sending
->> > > > > > different types of traffic on each queue, which requires an ability to
->> > > > > > assign rate parameters to individual queues.
->> > > > > Is there a use-case for this queue scheduling in the absence of a netdevice?
->> > > > > If not, then I don't see how this belongs in devlink; the configuration
->> > > > >     should instead be done in two parts: devlink-rate to schedule between
->> > > > >     different netdevices (e.g. VFs) and tc qdiscs (or some other netdev-level
->> > > > >     API) to schedule different queues within each single netdevice.
->> > > > > Please explain why this existing separation does not support your use-case.
->> > > > > 
->> > > > > Also I would like to see some documentation as part of this patch.  It looks
->> > > > >     like there's no kernel document for devlink-rate unlike most other devlink
->> > > > >     objects; perhaps you could add one?
->> > > > > 
->> > > > > -ed
->> > > > Hi,
->> > > > Previously we discussed adding queues to devlink-rate in this thread:
->> > > > https://lore.kernel.org/netdev/20220704114513.2958937-1-michal.wilczynski@intel.com/T/#u
->> > > > In our use case we are trying to find a way to expose hardware Tx scheduler
->> > > > tree that is defined
->> > > > per port to user. Obviously if the tree is defined per physical port, all the
->> > > > scheduling nodes will reside
->> > > > on the same tree.
->> > > > 
->> > > > Our customer is trying to send different types of traffic that require
->> > > > different QoS levels on the same
->> > > Do I understand that correctly, that you are assigning traffic to queues
->> > > in VM, and you rate the queues on hypervisor? Is that the goal?
->> > Yes.
->> Why do you have this mismatch? If forces the hypervisor and VM admin to
->> somehow sync upon the configuration. That does not sound correct to me.
+> > Xin Long <lucien.xin@gmail.com> writes:
+> >
+> >> A WARN_ON call trace would be triggered when 'ct(commit, alg=helper)'
+> >> applies on a confirmed connection:
+> >>
+> >>   WARNING: CPU: 0 PID: 1251 at net/netfilter/nf_conntrack_extend.c:98
+> >>   RIP: 0010:nf_ct_ext_add+0x12d/0x150 [nf_conntrack]
+> >>   Call Trace:
+> >>    <TASK>
+> >>    nf_ct_helper_ext_add+0x12/0x60 [nf_conntrack]
+> >>    __nf_ct_try_assign_helper+0xc4/0x160 [nf_conntrack]
+> >>    __ovs_ct_lookup+0x72e/0x780 [openvswitch]
+> >>    ovs_ct_execute+0x1d8/0x920 [openvswitch]
+> >>    do_execute_actions+0x4e6/0xb60 [openvswitch]
+> >>    ovs_execute_actions+0x60/0x140 [openvswitch]
+> >>    ovs_packet_cmd_execute+0x2ad/0x310 [openvswitch]
+> >>    genl_family_rcv_msg_doit.isra.15+0x113/0x150
+> >>    genl_rcv_msg+0xef/0x1f0
+> >>
+> >> which can be reproduced with these OVS flows:
+> >>
+> >>   table=0, in_port=veth1,tcp,tcp_dst=2121,ct_state=-trk
+> >>   actions=ct(commit, table=1)
+> >>   table=1, in_port=veth1,tcp,tcp_dst=2121,ct_state=+trk+new
+> >>   actions=ct(commit, alg=ftp),normal
+> >>
+> >> The issue was introduced by commit 248d45f1e193 ("openvswitch: Allow
+> >> attaching helper in later commit") where it somehow removed the check
+> >> of nf_ct_is_confirmed before asigning the helper. This patch is to fix
+> >> it by bringing it back.
+> >>
+> >> Fixes: 248d45f1e193 ("openvswitch: Allow attaching helper in later commit")
+> >> Reported-by: Pablo Neira Ayuso <pablo@netfilter.org>
+> >> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> >> ---
+> >
+> > Hi Xin,
+> >
+> > Looking at the original commit, I think this will read like a revert.  I
+> > am doing some testing now, but I think we need input from Yi-Hung to
+> > find out what the use case is that the original fixed.
 >
->Thanks for a feedback, this is going to be changed
+> I'm also not able to reproduce the WARN_ON.  My env:
 >
->> 
->> 
->> > > 
->> > > > VM, but on a different queues. This requires completely different rate setups
->> > > > for that queue - in the
->> > > > implementation that you're mentioning we wouldn't be able to arbitrarily
->> > > > reassign the queue to any node.
->> > > > Those queues would still need to share a single parent - their netdev. This
->> > > So that replies to Edward's note about having the queues maintained
->> > > within the single netdev/vport, correct?
->> >   Correct ;)
->> Okay. So you don't really need any kind of sharing devlink might be able
->> to provide.
->> 
->>  From what you say and how I see this, it's clear. You should handle the
->> per-queue shaping on the VM, on netdevice level, most probably by
->> offloading some of the TC qdisc.
+> kernel: 4c86114194e6 ("Merge tag 'iomap-6.1-merge-1' of git://git.kernel.org/pub/scm/fs/xfs/xfs-linux")
 >
->I talked with architect, and this is how the solution will end up looking
->like,
->I'm not sure however whether creating a hardware-only qdisc is allowed ?
+> Using current upstream OVS
+> I used your flows (adjusting the port names):
+>
+>  cookie=0x0, duration=246.240s, table=0, n_packets=17, n_bytes=1130, ct_state=-trk,tcp,in_port=v0,tp_dst=2121 actions=ct(commit,table=1)
+>  cookie=0x0, duration=246.240s, table=1, n_packets=1, n_bytes=74, ct_state=+new+trk,tcp,in_port=v0,tp_dst=2121 actions=ct(commit,alg=ftp),NORMAL
+>
+> and ran:
+>
+> $ ip netns exec server python3 -m pyftpdlib -i 172.31.110.20 &
+> $ ip netns exec client curl ftp://172.31.110.20:2121
+>
+> but no WARN_ON message got triggered.  Are there additional flows you
+> used that I am missing, or perhaps this should be on a different kernel
+> commit?
+>
+> > -Aaron
+>
+Hi, Aaron, thanks for looking at this.
 
-Nope.
+Here is a script to reproduce it, you can try, and let me know if it's
+still not reproduced
+(it's also upstream ovs, for the first 2 lines, you may adjust on your env.)
 
+export PATH=$PATH:/usr/local/share/openvswitch/scripts
+ovs-ctl restart #systemctl restart openvswitch
 
->
->
->
->Btw, thanks everyone for valuable feedback, I've resend the patch
->without the queue support,
->https://lore.kernel.org/netdev/20221011090113.445485-1-michal.wilczynski@intel.com/
->
->
->BR,
->Michał
->> 
->> > > 
->> > > > wouldn't allow us to fully take
->> > > > advantage of the HQoS and would introduce arbitrary limitations.
->> > > > 
->> > > > Also I would think that since there is only one vendor implementing this
->> > > > particular devlink-rate API, there is
->> > > > some room for flexibility.
->> > > > 
->> > > > Regarding the documentation,  sure. I just wanted to get all the feedback
->> > > >from the mailing list and arrive at the final
->> > > > solution before writing the docs.
->> > > > 
->> > > > BTW, I'm going to be out of office tomorrow, so will respond in this thread
->> > > > on Monday.
->> > > > BR,
->> > > > Michał
->> > > > 
->> > > > 
->
+ip net add ns0
+ip net add ns1
+ip link add veth0 type veth peer name veth1
+ip link add veth3 type veth peer name veth2
+ip link set veth0 netns ns0
+ip link set veth3 netns ns1
+ip net exec ns0 ip addr add  7.7.7.1/24 dev veth0
+mac1=`ip net exec ns1 cat /sys/class/net/veth3/address`
+mac2=`ip net exec ns0 cat /sys/class/net/veth0/address`
+ip net exec ns0 ip neigh add 7.7.16.2 dev veth0 lladdr $mac1
+ip net exec ns1 ip addr add  7.7.16.2/24 dev veth3
+ip net exec ns1 ip neigh add 7.7.16.1 dev veth3 lladdr $mac2
+ip net exec ns0 ip link set veth0 up
+ip net exec ns1 ip link set veth3 up
+ip net exec ns0 ip route add  7.7.16.2 dev veth0
+
+sleep 0.5
+ovs-vsctl set Open_vSwitch . other_config:hw-offload=false
+ovs-vsctl set Open_vSwitch . other_config:tc-policy=skip_hw
+ovs-vsctl add-br br-ovs
+ovs-vsctl add-port br-ovs veth1
+ovs-vsctl add-port br-ovs veth2
+ip link set br-ovs up
+ip link set veth1 up
+ip link set veth2 up
+
+ovs-ofctl del-flows br-ovs
+ovs-ofctl add-flow br-ovs arp,actions=normal
+ovs-ofctl add-flow br-ovs icmp,actions=normal
+ovs-ofctl add-flow br-ovs "table=0,
+in_port=veth1,tcp,tcp_dst=2121,ct_state=-trk actions=ct(commit,
+table=1)"
+#ovs-ofctl add-flow br-ovs "table=0,
+in_port=veth1,tcp,tcp_dst=2121,ct_state=-trk actions=ct(table=1, nat)"
+ovs-ofctl add-flow br-ovs "table=0, in_port=veth2,tcp,ct_state=-trk
+actions=ct(table=1, nat)"
+ovs-ofctl add-flow br-ovs "table=0, in_port=veth1,tcp,ct_state=-trk
+actions=ct(table=0, nat)"
+
+ovs-ofctl add-flow br-ovs "table=0,
+in_port=veth1,tcp,ct_state=+trk+rel actions=ct(commit, nat),normal"
+ovs-ofctl add-flow br-ovs "table=0,
+in_port=veth1,tcp,ct_state=+trk+est actions=veth2"
+
+ovs-ofctl add-flow br-ovs "table=1,
+in_port=veth1,tcp,tcp_dst=2121,ct_state=+trk+new actions=ct(commit)"
+ovs-ofctl add-flow br-ovs "table=1,
+in_port=veth1,tcp,tcp_dst=2121,ct_state=+trk+new actions=ct(commit,
+alg=ftp),normal"
+
+ovs-ofctl add-flow br-ovs "table=1,
+in_port=veth1,tcp,tcp_dst=2121,ct_state=+trk+new actions=ct(commit,
+nat(src=7.7.16.1), alg=ftp),normal"
+ovs-ofctl add-flow br-ovs "table=1,
+in_port=veth1,tcp,tcp_dst=2121,ct_state=+trk+est actions=veth2"
+ovs-ofctl add-flow br-ovs "table=1,
+in_port=veth2,tcp,ct_state=+trk+est actions=veth1"
+ovs-ofctl dump-flows br-ovs --color
+conntrack -F
+
+ip netns exec ns1 echo "test" > a
+ip netns exec ns1 python3 -m pyftpdlib -p 2121 -D &
+sleep 2
+ip netns exec ns0 wget ftp://anonymous@7.7.16.2:2121/a
