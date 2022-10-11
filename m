@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 53BF25FA977
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 02:46:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40A215FA986
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 02:58:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229514AbiJKAqx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Oct 2022 20:46:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45368 "EHLO
+        id S229504AbiJKA63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Oct 2022 20:58:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbiJKAqw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 20:46:52 -0400
+        with ESMTP id S229453AbiJKA62 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Oct 2022 20:58:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0AD613D39;
-        Mon, 10 Oct 2022 17:46:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2ACF1D329
+        for <netdev@vger.kernel.org>; Mon, 10 Oct 2022 17:58:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6680661040;
-        Tue, 11 Oct 2022 00:46:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88088C433C1;
-        Tue, 11 Oct 2022 00:46:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E53E61062
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 00:58:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0E4DC433C1;
+        Tue, 11 Oct 2022 00:58:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665449210;
-        bh=qzAnevukwzgKzM8k4PiH/jy6hHD8tIFfQp/2qb7dFXA=;
+        s=k20201202; t=1665449905;
+        bh=0/Xhb0BibbjrP/I1dHYYBg5//ly+Ab+Xj+pwk20cg0s=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=b2lizhc7ZNQAgG7oubhnjh/7sFuuU+ymNbjzQ63fHki3ZcrdWVyTD9GKqgVZY7fQi
-         7t3Nu+nvz2pueQhmI8ot3kOabCASQ2M7uz6BfcNQRHMqT3kw0Lhfj5mB/SOWFhjMiN
-         sZ11vpAl2JngHC039fkRqocsVw2UBngcRn2Z54DG5OzZLZ805bxbaJwFozSzKKodKO
-         pWqWNGx+nW5Zel1f+IruM7V1z2Eh/PPh8CV9kg3Wf/KoRub5GlIuRdgtWWV3YmI7li
-         qyG2HhtmYXAFSggeUeOOvEMjFCrJztpROXb6R58k5JYOTzPFg0P+TSRj4PfP5rn5Sk
-         9blAa5bsKvkkA==
-Date:   Mon, 10 Oct 2022 17:46:49 -0700
+        b=Q3awKTSzgRywETFvgRUcuM5Hsjx+ITuqwO7c+PksfpMBdlZqG6YgftQKXY2opbCl2
+         mcGF4S3a77Vjif/ym8uj96iJDR9kS2VWhpd/ZTNLml3w+BAhKv5eMkgD/wyaxyH22A
+         qAOfFsu5Zf1QwxawaywV0mKKt+qQaO6+nZpxd4xqfXJOKdtZHjZ34PWrYRm6nCqjdE
+         WgUBdMzkha3CfqfGagUKgX9lBKxX6hmHdi76NCLxen7vKpHInW2ZNh7HoOCr7WFW7Z
+         EyU+MP/AzEYV2zRpjK1Lzj7d8Z1owJ3yZ4LZAzoRS9DTL3QXe33hnjd5rMYlR+3/ra
+         SXioyNlOOaFdw==
+Date:   Mon, 10 Oct 2022 17:58:24 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Furkan Kardame <f.kardame@manjaro.org>
-Cc:     pgwipeout@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: phy: add support for Motorcomm yt8531C phy
-Message-ID: <20221010174649.57b49c0d@kernel.org>
-In-Reply-To: <20221009192405.97118-1-f.kardame@manjaro.org>
-References: <20221009192405.97118-1-f.kardame@manjaro.org>
+To:     Joe Damato <jdamato@fastly.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com
+Subject: Re: [net-next PATCH] net: core: Add napi_complete_done tracepoint
+Message-ID: <20221010175824.28c61c50@kernel.org>
+In-Reply-To: <1665426094-88160-1-git-send-email-jdamato@fastly.com>
+References: <1665426094-88160-1-git-send-email-jdamato@fastly.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -52,20 +51,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun,  9 Oct 2022 22:24:05 +0300 Furkan Kardame wrote:
-> From: Peter Geis <pgwipeout@gmail.com>
+On Mon, 10 Oct 2022 11:21:34 -0700 Joe Damato wrote:
+> Add a tracepoint to help debug napi_complete_done. Users who set
+> defer_hard_irqs and the GRO timer can use this tracepoint to better
+> understand what impact these options have when their NIC driver calls
+> napi_complete_done.
 > 
-> This patch adds support for Motorcomm YT8531C which is
-> used in OrangePi 3 LTS, OrangePi 4 LTS and OrangePi 800
-> Currently being used by Manjaro Arm kernel
+> perf trace can be used to enable the tracepoint and the output can be
+> examined to determine which settings should be adjusted.
 
-# Form letter - net-next is closed
-
-We have already sent the networking pull request for 6.1
-and therefore net-next is closed for new drivers, features,
-code refactoring and optimizations. We are currently accepting
-bug fixes only.
-
-Please repost when net-next reopens after 6.1-rc1 is cut.
-
-RFC patches sent for review only are obviously welcome at any time.
+Are you familiar with bpftrace, and it's ability to attach to kfunc 
+and kretfunc? We mostly add tracepoints to static functions which get
+inlined these days.
