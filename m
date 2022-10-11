@@ -2,221 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 006C05FBCF6
-	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 23:31:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26C455FBD29
+	for <lists+netdev@lfdr.de>; Tue, 11 Oct 2022 23:46:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229639AbiJKVbc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Oct 2022 17:31:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58116 "EHLO
+        id S229540AbiJKVqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Oct 2022 17:46:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbiJKVbb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 17:31:31 -0400
-Received: from novek.ru (unknown [213.148.174.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A752192594;
-        Tue, 11 Oct 2022 14:31:29 -0700 (PDT)
-Received: from [192.168.0.18] (unknown [37.228.234.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id 99A78504E80;
-        Wed, 12 Oct 2022 00:27:58 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 99A78504E80
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1665523680; bh=Snqz/eTDzxw25Q39oAWKZOmTxeAOD5iOEPrqAgO67Eg=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=IZqHkfh3Ozakx9ncf5mATON2e5fdD0U8UUpLxUMUCl3Yne5hdbT6IZObiWAqXpzu7
-         Hhk8x2vhJ7h1v6dXhzZ69+Jc+R9MSH8GRw+Ph7VW53tu6volQsi0PU5rayuCZdRyvI
-         xmHw0yWtEkmnBB+b3Pu+0F3IjNduzuulKUFdLpnM=
-Message-ID: <ecf59dda-2d6a-2c56-668b-5377ae107439@novek.ru>
-Date:   Tue, 11 Oct 2022 22:31:25 +0100
+        with ESMTP id S229480AbiJKVqT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Oct 2022 17:46:19 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9221C83078
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 14:46:16 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-3321c2a8d4cso139891887b3.5
+        for <netdev@vger.kernel.org>; Tue, 11 Oct 2022 14:46:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=GEulKj1nvbXZ7IVsn+EVhi4AIwqT69+jjpsn03kd5IY=;
+        b=r/akqXUHOBpJVDopdfgX0yH8mUPO8OxzRVF+sjnkC2yri/Bk1mzjoXy9AjwBkvecJ/
+         5Pt75yW4vzCj9lMG+cU8frap/YNl0+wwr56qzb0Bf5X5rVD+Kh67GvfgNlcqUTbSvU2H
+         YUs10+BVyb+CSost7spt0d5uM5si1+2SZhaM08F0iY8Rg52/QJy0KKebL94bxnsHqFiR
+         VPhxoF7WzWVBWAdJYWJJ88PDMTqGvP/3FpoflxDoWkI9lVfSiqZ+YuleISPXiB7croTP
+         OAfuywoO/SvF3CZBesbOg8f3GQYmlkvt4gzhGPqcOlMR9XWnHBx+ujq6gihKHuhqBFfl
+         K8Ig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=GEulKj1nvbXZ7IVsn+EVhi4AIwqT69+jjpsn03kd5IY=;
+        b=1+KnOD7/0g/qQ8+MhDxiCB7Hug1pyPPBLYz+VYHwkio/Obqdf7PZJX/AifclFcIm7N
+         e1Hc4bqK8bp2ThoLSAh3S5q+j2wa+KLxpC0YSqrhhinYFP/CKnJG1Vwy1FgBPKjSL6fL
+         xQs9RmY7Hct2N9cwC4f6HkpjLi5cfpYAWEWOgRo10fFOpCdC0DZ7r1MBHwi6DfXEvhXh
+         Hd1dXUg0WN3S4HaUFV67v+FZz10RbM4w3jHeLhG/+y4OV6ULC5rMWO2bakOL0WwjzE0L
+         ffXaMsp3XOnTjVEs1EPEumq5OucIkSSN/ZTMl7nl7De1QurIK25xOnVwcOtXB8NWGwV6
+         yq1w==
+X-Gm-Message-State: ACrzQf0wJyAYuGjqysRWrCdIyfXYh9QxlF7tShRL2xOxYkICGKNTg7xQ
+        KjAD9WzsBbZkyWTewrpO4+ZtMUMf/FC4IlaMAF2l2Q==
+X-Google-Smtp-Source: AMsMyM7G/c+mnlbxsc/J6zdbP58DXiKakRAksS2NWRu5HbdIQr/J+gDs9p0cN8yWY810Sj8qmp8r+qjLLIlfysyZ5y8=
+X-Received: by 2002:a81:9202:0:b0:35e:face:a087 with SMTP id
+ j2-20020a819202000000b0035efacea087mr24119129ywg.55.1665524775333; Tue, 11
+ Oct 2022 14:46:15 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [RFC PATCH v3 1/6] dpll: Add DPLL framework base functions
-Content-Language: en-US
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-clk@vger.kernel.org, Vadim Fedorenko <vadfed@fb.com>
-References: <20221010011804.23716-1-vfedorenko@novek.ru>
- <20221010011804.23716-2-vfedorenko@novek.ru> <Y0PjULbYQf1WbI9w@nanopsycho>
- <24d1d750-7fd0-44e2-318c-62f6a4a23ea5@novek.ru> <Y0UqFml6tEdFt0rj@nanopsycho>
- <Y0UtiBRcc8aBS4tD@nanopsycho>
-From:   Vadim Fedorenko <vfedorenko@novek.ru>
-In-Reply-To: <Y0UtiBRcc8aBS4tD@nanopsycho>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20220908011022.45342-1-kuniyu@amazon.com> <166370042183.20640.3960141192085780845.git-patchwork-notify@kernel.org>
+In-Reply-To: <166370042183.20640.3960141192085780845.git-patchwork-notify@kernel.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 11 Oct 2022 14:46:03 -0700
+Message-ID: <CANn89iLXMup0dRD_Ov79Xt8N9FM0XdhCHEN05sf3eLwxKweM6w@mail.gmail.com>
+Subject: Re: [PATCH v6 net-next 0/6] tcp: Introduce optional per-netns ehash.
+To:     patchwork-bot+netdevbpf@kernel.org
+Cc:     Kuniyuki Iwashima <kuniyu@amazon.com>, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, kuni1840@gmail.com,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11.10.2022 09:47, Jiri Pirko wrote:
-> Tue, Oct 11, 2022 at 10:32:22AM CEST, jiri@resnulli.us wrote:
->> Mon, Oct 10, 2022 at 09:54:26PM CEST, vfedorenko@novek.ru wrote:
->>> On 10.10.2022 10:18, Jiri Pirko wrote:
->>>> Mon, Oct 10, 2022 at 03:17:59AM CEST, vfedorenko@novek.ru wrote:
->>>>> From: Vadim Fedorenko <vadfed@fb.com>
-> 
-> [...]
-> 
-> 
->>> I see your point. We do have hardware which allows changing type of SMA
->>> connector, and even the direction, each SMA could be used as input/source or
->>> output of different signals. But there are limitation, like not all SMAs can
->>> produce IRIG-B signal or only some of them can be used to get GNSS 1PPS. The
->>
->> Okay, so that is not the *type* of source, but rather attribute of it.
->> Example:
->>
->> $ dpll X show
->> index 0
->>   type EXT
->>   signal 1PPS
->>   supported_signals
->>      1PPS 10MHz
->>
->> $ dpll X set source index 1 signal_type 10MHz
->> $ dpll X show
->> index 0
->>   type EXT
->>   signal 10MHz
->>   supported_signals
->>      1PPS 10MHz
->>
->> So one source with index 0 of type "EXT" (could be "SMA", does not
->> matter) supports 1 signal types.
->>
->>
->> Thinking about this more and to cover the case when one SMA could be
->> potencially used for input and output. It already occured to me that
->> source/output are quite similar, have similar/same attributes. What if
->> they are merged together to say a "pin" object only with extra
->> PERSONALITY attribute?
->>
->> Example:
->>
->> -> DPLL_CMD_PIN_GET - dump
->>       ATTR_DEVICE_ID X
->>
->> <- DPLL_CMD_PIN_GET
->>
->>        ATTR_DEVICE_ID X
->>        ATTR_PIN_INDEX 0
->>        ATTR_PIN_TYPE EXT
->>        ATTR_PIN_SIGNAL 1PPS   (selected signal)
->>        ATTR_PIN_SUPPORTED_SIGNALS (nest)
->>          ATTR_PIN_SIGNAL 1PPS
->>          ATTR_PIN_SIGNAL 10MHZ
->>        ATTR_PIN_PERSONALITY OUTPUT   (selected personality)
->>        ATTR_PIN_SUPPORTED_PERSONALITIES (nest)
->>          ATTR_PIN_PERSONALITY DISCONNECTED
->>          ATTR_PIN_PERSONALITY INPUT
->>          ATTR_PIN_PERSONALITY OUTPUT     (note this supports both input and
->> 					  output)
->>
->>        ATTR_DEVICE_ID X
->>        ATTR_PIN_INDEX 1
->>        ATTR_PIN_TYPE EXT
->>        ATTR_PIN_SIGNAL 10MHz   (selected signal)
->>        ATTR_PIN_SUPPORTED_SIGNALS (nest)
->>          ATTR_PIN_SIGNAL 1PPS
->>          ATTR_PIN_SIGNAL 10MHZ
->>        ATTR_PIN_PERSONALITY DISCONNECTED   (selected personality - not
->> 					    connected currently)
->>        ATTR_PIN_SUPPORTED_PERSONALITIES (nest)
->>          ATTR_PIN_PERSONALITY DISCONNECTED
->>          ATTR_PIN_PERSONALITY INPUT      (note this supports only input)
->>
->>        ATTR_DEVICE_ID X
->>        ATTR_PIN_INDEX 2
->>        ATTR_PIN_TYPE GNSS
->>        ATTR_PIN_SIGNAL 1PPS   (selected signal)
->>        ATTR_PIN_SUPPORTED_SIGNALS (nest)
->>          ATTR_PIN_SIGNAL 1PPS
->>        ATTR_PIN_PERSONALITY INPUT   (selected personality - note this is
->> 				     now he selected source, being only
->> 				     pin with INPUT personality)
->>        ATTR_PIN_SUPPORTED_PERSONALITIES (nest)
->>          ATTR_PIN_PERSONALITY DISCONNECTED
->>          ATTR_PIN_PERSONALITY INPUT      (note this supports only input)
->>
->>        ATTR_DEVICE_ID X
->>        ATTR_PIN_INDEX 3
->>        ATTR_PIN_TYPE SYNCE_ETH_PORT
->>        ATTR_PIN_NETDEV_IFINDEX 20
->>        ATTR_PIN_PERSONALITY OUTPUT   (selected personality)
->>        ATTR_PIN_SUPPORTED_PERSONALITIES (nest)
->>          ATTR_PIN_PERSONALITY DISCONNECTED
->>          ATTR_PIN_PERSONALITY INPUT
->>          ATTR_PIN_PERSONALITY OUTPUT     (note this supports both input and
->> 					  output)
->>
->>        ATTR_DEVICE_ID X
->>        ATTR_PIN_INDEX 4
->>        ATTR_PIN_TYPE SYNCE_ETH_PORT
->>        ATTR_PIN_NETDEV_IFINDEX 30
->>        ATTR_PIN_PERSONALITY OUTPUT   (selected personality)
->>        ATTR_PIN_SUPPORTED_PERSONALITIES (nest)
->>          ATTR_PIN_PERSONALITY DISCONNECTED
->>          ATTR_PIN_PERSONALITY INPUT
->>          ATTR_PIN_PERSONALITY OUTPUT     (note this supports both input and
->> 					  output)
->>
->>
->> This allows the user to actually see the full picture:
->> 1) all input/output pins in a single list, no duplicates
->> 2) each pin if of certain type (ATTR_PIN_TYPE) EXT/GNSS/SYNCE_ETH_PORT
->> 3) the pins that can change signal type contain the selected and list of
->>    supported signal types (ATTR_PIN_SIGNAL, ATTR_PIN_SUPPORTED_SIGNALS)
->> 4) direction/connection of the pin to the DPLL is exposed over
->>    ATTR_PIN_PERSONALITY. For each pin, the driver would expose it can
->>    act as INPUT/OUTPUT and even more, it can indicate the pin can
->>    disconnect from DPLL entirely (if possible).
->> 5) user can select the source by setting ATTR_PIN_PERSONALITY of certain
->>    pin to INPUT. Only one pin could be set to INPUT and that is the
->>    souce of DPLL.
->>    In case no pin have personality set to INPUT, the DPLL is
->>    free-running.
-> 
-> Okay, thinking about it some more, I would leave the source select
-> indepentent from the ATTR_PIN_PERSONALITY and selectable using device
-> set cmd and separate attribute. It works better even more when consider
-> autoselect mode.
-> 
-> Well of course only pins with ATTR_PIN_PERSONALITY INPUT could be
-> selected as source.
-> 
+On Tue, Sep 20, 2022 at 12:00 PM <patchwork-bot+netdevbpf@kernel.org> wrote:
+>
+> Hello:
+>
+> This series was applied to netdev/net-next.git (master)
+> by Jakub Kicinski <kuba@kernel.org>:
+>
+> On Wed, 7 Sep 2022 18:10:16 -0700 you wrote:
+> > The more sockets we have in the hash table, the longer we spend looking
+> > up the socket.  While running a number of small workloads on the same
+> > host, they penalise each other and cause performance degradation.
+> >
+> > The root cause might be a single workload that consumes much more
+> > resources than the others.  It often happens on a cloud service where
+> > different workloads share the same computing resource.
+> >
+> > [...]
+>
+> Here is the summary with links:
+>   - [v6,net-next,1/6] tcp: Clean up some functions.
+>     https://git.kernel.org/netdev/net-next/c/08eaef904031
+>   - [v6,net-next,2/6] tcp: Don't allocate tcp_death_row outside of struct netns_ipv4.
+>     https://git.kernel.org/netdev/net-next/c/e9bd0cca09d1
+>   - [v6,net-next,3/6] tcp: Set NULL to sk->sk_prot->h.hashinfo.
+>     https://git.kernel.org/netdev/net-next/c/429e42c1c54e
+>   - [v6,net-next,4/6] tcp: Access &tcp_hashinfo via net.
+>     https://git.kernel.org/netdev/net-next/c/4461568aa4e5
+>   - [v6,net-next,5/6] tcp: Save unnecessary inet_twsk_purge() calls.
+>     https://git.kernel.org/netdev/net-next/c/edc12f032a5a
+>   - [v6,net-next,6/6] tcp: Introduce optional per-netns ehash.
+>     https://git.kernel.org/netdev/net-next/c/d1e5e6408b30
+>
+> You are awesome, thank you!
+> --
+> Deet-doot-dot, I am a bot.
+> https://korg.docs.kernel.org/patchwork/pwbot.html
+>
+>
 
-Overall, I agree with this proposal, and as I've already said, the work is going 
-exactly the same way - to introduce pin object with separate set of attributes.
-I don't really like 'PERSONALITY' naming, I think we have to find a better name. 
-It looks like DIRECTION is slightly better. And the CONNECTED/DISCONNECTED 
-should be different attribute. And we also need attribute PRIORITY to be able to 
-configure (or hint) auto-select mode. There are also special objects called 
-muxes, which consist of several inputs and one output, but they cannot 
-synthonise signal, only pass one of the inputs to output. We are still in kind 
-of discussion whether to have them as separate objects, or extend the amount of 
-pins of DPLL device in this case. The problem again in the auto-select mode and 
-priorities. It would be great to hear your thoughts about such objects.
+Note that this series is causing issues.
 
->>
->> This would introduce quite nice flexibility, exposes source/output
->> capabilities and provides good visilibity of current configuration.
->>
->>
->>> interface was created to cover such case. I believe we have to improve it to
->>> cover SyncE configuration better, but I personally don't have SyncE hardware
->>> ready to test and that's why I have to rely on suggestions from yours or
->>> Arkadiusz's experience. From what I can see now there is need for special
->>> attribute to link source to net device, and I'm happy to add it. In case of
->>> fixed configuration of sources, the device should provide only one type as
->>> supported and that's it.
->>>
-> 
-> [...]
+BUG: KASAN: use-after-free in tcp_or_dccp_get_hashinfo
+include/net/inet_hashtables.h:181 [inline]
+BUG: KASAN: use-after-free in reqsk_queue_unlink+0x320/0x350
+net/ipv4/inet_connection_sock.c:913
+Read of size 8 at addr ffff88807545bd80 by task syz-executor.2/8301
 
+CPU: 1 PID: 8301 Comm: syz-executor.2 Not tainted
+6.0.0-syzkaller-02757-gaf7d23f9d96a #0
+Hardware name: Google Google Compute Engine/Google Compute Engine,
+BIOS Google 09/22/2022
+Call Trace:
+<IRQ>
+__dump_stack lib/dump_stack.c:88 [inline]
+dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+print_address_description mm/kasan/report.c:317 [inline]
+print_report.cold+0x2ba/0x719 mm/kasan/report.c:433
+kasan_report+0xb1/0x1e0 mm/kasan/report.c:495
+tcp_or_dccp_get_hashinfo include/net/inet_hashtables.h:181 [inline]
+reqsk_queue_unlink+0x320/0x350 net/ipv4/inet_connection_sock.c:913
+inet_csk_reqsk_queue_drop net/ipv4/inet_connection_sock.c:927 [inline]
+inet_csk_reqsk_queue_drop_and_put net/ipv4/inet_connection_sock.c:939 [inline]
+reqsk_timer_handler+0x724/0x1160 net/ipv4/inet_connection_sock.c:1053
+call_timer_fn+0x1a0/0x6b0 kernel/time/timer.c:1474
+expire_timers kernel/time/timer.c:1519 [inline]
+__run_timers.part.0+0x674/0xa80 kernel/time/timer.c:1790
+__run_timers kernel/time/timer.c:1768 [inline]
+run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1803
+__do_softirq+0x1d0/0x9c8 kernel/softirq.c:571
+invoke_softirq kernel/softirq.c:445 [inline]
+__irq_exit_rcu+0x123/0x180 kernel/softirq.c:650
+irq_exit_rcu+0x5/0x20 kernel/softirq.c:662
+sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1107
+</IRQ>
+
+We forgot to make sure there were no TCP_NEW_SYN_RECV sockets in the
+hash tables before deleting the hash tables.
+
+Probably inet_twsk_purge() (when called when
+et->ipv4.tcp_death_row.hashinfo->pernet is true)
+also needs to remove all TCP_NEW_SYN_RECV request sockets.
