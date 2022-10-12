@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 137545FCBD7
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 22:12:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B30BB5FCBE6
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 22:16:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229586AbiJLUMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 16:12:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35384 "EHLO
+        id S229587AbiJLUQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 16:16:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiJLUMx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 16:12:53 -0400
+        with ESMTP id S229480AbiJLUP7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 16:15:59 -0400
 Received: from novek.ru (unknown [213.148.174.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 569A689CC0;
-        Wed, 12 Oct 2022 13:12:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17F7738472;
+        Wed, 12 Oct 2022 13:15:57 -0700 (PDT)
 Received: from [192.168.0.18] (unknown [37.228.234.7])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id 1057F504E89;
-        Wed, 12 Oct 2022 23:09:16 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 1057F504E89
+        by novek.ru (Postfix) with ESMTPSA id 4DFAD504E89;
+        Wed, 12 Oct 2022 23:11:56 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 4DFAD504E89
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1665605360; bh=HJ+8iOQStAGjWXjANLde/CWpSgBqP7tjx783RIERUxc=;
+        t=1665605517; bh=Q8XExt+JG4DuTaK4NlsBXX2YXbzBn/XJwDdhp/0zNoI=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Ei4CEcPaNG/bfHpFhhJWbuJAj6Lt15YpnG7UZf+80SQXMmyxFV1ISOtgej3AwtZyY
-         KgVORHuYI1YcpC1M9FBUXQ0UoUkaKE7h4MJB27bZk/rpkgMrnxHOUU5thj7wDGS4Qj
-         A3iAJTEb80YIksmiuoWF7l4LphfB+YV4zZs1rzkM=
-Message-ID: <9a3608cf-21bb-18b1-796a-7325a613b641@novek.ru>
-Date:   Wed, 12 Oct 2022 21:12:43 +0100
+        b=bqcUCbVokfcn7DNO8Fo7UQvZe7wYKQIejR1VBwOkqWpybp5HRO4zYE0V7qecxNPz9
+         OGEyi42+UAWjrXEbUbbcE4XV20sYS7O2NBNp9S8eeUkJjTrkuFaCRYyEnEC+vEdjli
+         lo1UqdYgqROqSOdJO/Ja2XQjsvAB3KsNZLjhjxsE=
+Message-ID: <e076fa5c-93ec-9bdb-f490-46503d96a10f@novek.ru>
+Date:   Wed, 12 Oct 2022 21:15:23 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
@@ -39,12 +39,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-clk@vger.kernel.org, Vadim Fedorenko <vadfed@fb.com>
 References: <20221010011804.23716-1-vfedorenko@novek.ru>
- <20221010011804.23716-2-vfedorenko@novek.ru> <Y0PjULbYQf1WbI9w@nanopsycho>
- <24d1d750-7fd0-44e2-318c-62f6a4a23ea5@novek.ru> <Y0UqFml6tEdFt0rj@nanopsycho>
- <Y0UtiBRcc8aBS4tD@nanopsycho> <ecf59dda-2d6a-2c56-668b-5377ae107439@novek.ru>
- <Y0ZiQbqQ+DsHinOf@nanopsycho>
+ <20221010011804.23716-2-vfedorenko@novek.ru> <Y0abOsYjGapUTJHv@nanopsycho>
 From:   Vadim Fedorenko <vfedorenko@novek.ru>
-In-Reply-To: <Y0ZiQbqQ+DsHinOf@nanopsycho>
+In-Reply-To: <Y0abOsYjGapUTJHv@nanopsycho>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -56,209 +53,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12.10.2022 07:44, Jiri Pirko wrote:
-> Tue, Oct 11, 2022 at 11:31:25PM CEST, vfedorenko@novek.ru wrote:
->> On 11.10.2022 09:47, Jiri Pirko wrote:
->>> Tue, Oct 11, 2022 at 10:32:22AM CEST, jiri@resnulli.us wrote:
->>>> Mon, Oct 10, 2022 at 09:54:26PM CEST, vfedorenko@novek.ru wrote:
->>>>> On 10.10.2022 10:18, Jiri Pirko wrote:
->>>>>> Mon, Oct 10, 2022 at 03:17:59AM CEST, vfedorenko@novek.ru wrote:
->>>>>>> From: Vadim Fedorenko <vadfed@fb.com>
->>>
->>> [...]
->>>
->>>
->>>>> I see your point. We do have hardware which allows changing type of SMA
->>>>> connector, and even the direction, each SMA could be used as input/source or
->>>>> output of different signals. But there are limitation, like not all SMAs can
->>>>> produce IRIG-B signal or only some of them can be used to get GNSS 1PPS. The
->>>>
->>>> Okay, so that is not the *type* of source, but rather attribute of it.
->>>> Example:
->>>>
->>>> $ dpll X show
->>>> index 0
->>>>    type EXT
->>>>    signal 1PPS
->>>>    supported_signals
->>>>       1PPS 10MHz
->>>>
->>>> $ dpll X set source index 1 signal_type 10MHz
->>>> $ dpll X show
->>>> index 0
->>>>    type EXT
->>>>    signal 10MHz
->>>>    supported_signals
->>>>       1PPS 10MHz
->>>>
->>>> So one source with index 0 of type "EXT" (could be "SMA", does not
->>>> matter) supports 1 signal types.
->>>>
->>>>
->>>> Thinking about this more and to cover the case when one SMA could be
->>>> potencially used for input and output. It already occured to me that
->>>> source/output are quite similar, have similar/same attributes. What if
->>>> they are merged together to say a "pin" object only with extra
->>>> PERSONALITY attribute?
->>>>
->>>> Example:
->>>>
->>>> -> DPLL_CMD_PIN_GET - dump
->>>>        ATTR_DEVICE_ID X
->>>>
->>>> <- DPLL_CMD_PIN_GET
->>>>
->>>>         ATTR_DEVICE_ID X
->>>>         ATTR_PIN_INDEX 0
->>>>         ATTR_PIN_TYPE EXT
->>>>         ATTR_PIN_SIGNAL 1PPS   (selected signal)
->>>>         ATTR_PIN_SUPPORTED_SIGNALS (nest)
->>>>           ATTR_PIN_SIGNAL 1PPS
->>>>           ATTR_PIN_SIGNAL 10MHZ
->>>>         ATTR_PIN_PERSONALITY OUTPUT   (selected personality)
->>>>         ATTR_PIN_SUPPORTED_PERSONALITIES (nest)
->>>>           ATTR_PIN_PERSONALITY DISCONNECTED
->>>>           ATTR_PIN_PERSONALITY INPUT
->>>>           ATTR_PIN_PERSONALITY OUTPUT     (note this supports both input and
->>>> 					  output)
->>>>
->>>>         ATTR_DEVICE_ID X
->>>>         ATTR_PIN_INDEX 1
->>>>         ATTR_PIN_TYPE EXT
->>>>         ATTR_PIN_SIGNAL 10MHz   (selected signal)
->>>>         ATTR_PIN_SUPPORTED_SIGNALS (nest)
->>>>           ATTR_PIN_SIGNAL 1PPS
->>>>           ATTR_PIN_SIGNAL 10MHZ
->>>>         ATTR_PIN_PERSONALITY DISCONNECTED   (selected personality - not
->>>> 					    connected currently)
->>>>         ATTR_PIN_SUPPORTED_PERSONALITIES (nest)
->>>>           ATTR_PIN_PERSONALITY DISCONNECTED
->>>>           ATTR_PIN_PERSONALITY INPUT      (note this supports only input)
->>>>
->>>>         ATTR_DEVICE_ID X
->>>>         ATTR_PIN_INDEX 2
->>>>         ATTR_PIN_TYPE GNSS
->>>>         ATTR_PIN_SIGNAL 1PPS   (selected signal)
->>>>         ATTR_PIN_SUPPORTED_SIGNALS (nest)
->>>>           ATTR_PIN_SIGNAL 1PPS
->>>>         ATTR_PIN_PERSONALITY INPUT   (selected personality - note this is
->>>> 				     now he selected source, being only
->>>> 				     pin with INPUT personality)
->>>>         ATTR_PIN_SUPPORTED_PERSONALITIES (nest)
->>>>           ATTR_PIN_PERSONALITY DISCONNECTED
->>>>           ATTR_PIN_PERSONALITY INPUT      (note this supports only input)
->>>>
->>>>         ATTR_DEVICE_ID X
->>>>         ATTR_PIN_INDEX 3
->>>>         ATTR_PIN_TYPE SYNCE_ETH_PORT
->>>>         ATTR_PIN_NETDEV_IFINDEX 20
->>>>         ATTR_PIN_PERSONALITY OUTPUT   (selected personality)
->>>>         ATTR_PIN_SUPPORTED_PERSONALITIES (nest)
->>>>           ATTR_PIN_PERSONALITY DISCONNECTED
->>>>           ATTR_PIN_PERSONALITY INPUT
->>>>           ATTR_PIN_PERSONALITY OUTPUT     (note this supports both input and
->>>> 					  output)
->>>>
->>>>         ATTR_DEVICE_ID X
->>>>         ATTR_PIN_INDEX 4
->>>>         ATTR_PIN_TYPE SYNCE_ETH_PORT
->>>>         ATTR_PIN_NETDEV_IFINDEX 30
->>>>         ATTR_PIN_PERSONALITY OUTPUT   (selected personality)
->>>>         ATTR_PIN_SUPPORTED_PERSONALITIES (nest)
->>>>           ATTR_PIN_PERSONALITY DISCONNECTED
->>>>           ATTR_PIN_PERSONALITY INPUT
->>>>           ATTR_PIN_PERSONALITY OUTPUT     (note this supports both input and
->>>> 					  output)
->>>>
->>>>
->>>> This allows the user to actually see the full picture:
->>>> 1) all input/output pins in a single list, no duplicates
->>>> 2) each pin if of certain type (ATTR_PIN_TYPE) EXT/GNSS/SYNCE_ETH_PORT
->>>> 3) the pins that can change signal type contain the selected and list of
->>>>     supported signal types (ATTR_PIN_SIGNAL, ATTR_PIN_SUPPORTED_SIGNALS)
->>>> 4) direction/connection of the pin to the DPLL is exposed over
->>>>     ATTR_PIN_PERSONALITY. For each pin, the driver would expose it can
->>>>     act as INPUT/OUTPUT and even more, it can indicate the pin can
->>>>     disconnect from DPLL entirely (if possible).
->>>> 5) user can select the source by setting ATTR_PIN_PERSONALITY of certain
->>>>     pin to INPUT. Only one pin could be set to INPUT and that is the
->>>>     souce of DPLL.
->>>>     In case no pin have personality set to INPUT, the DPLL is
->>>>     free-running.
->>>
->>> Okay, thinking about it some more, I would leave the source select
->>> indepentent from the ATTR_PIN_PERSONALITY and selectable using device
->>> set cmd and separate attribute. It works better even more when consider
->>> autoselect mode.
->>>
->>> Well of course only pins with ATTR_PIN_PERSONALITY INPUT could be
->>> selected as source.
->>>
+On 12.10.2022 11:47, Jiri Pirko wrote:
+> Mon, Oct 10, 2022 at 03:17:59AM CEST, vfedorenko@novek.ru wrote:
+>> From: Vadim Fedorenko <vadfed@fb.com>
 >>
->> Overall, I agree with this proposal, and as I've already said, the work is
->> going exactly the same way - to introduce pin object with separate set of
->> attributes.
->> I don't really like 'PERSONALITY' naming, I think we have to find a better
->> name. It looks like DIRECTION is slightly better. And the
->> CONNECTED/DISCONNECTED should be different attribute. And we also need
-> 
-> Yeah, it is a matter of implementation. I just thought that this is
-> possible to be done in a single attribute, because when the pin is
-> disconnected, the direction has no meaning.
-> 
-> 
->> attribute PRIORITY to be able to configure (or hint) auto-select mode. There
-> 
-> Sure, I didn't put the PRIORITY attribute to the example, but I believe
-> it is very straightforward extension to add it.
-> 
-> 
->> are also special objects called muxes, which consist of several inputs and
->> one output, but they cannot synthonise signal, only pass one of the inputs to
->> output. We are still in kind of discussion whether to have them as separate
->> objects, or extend the amount of pins of DPLL device in this case. The
->> problem again in the auto-select mode and priorities. It would be great to
->> hear your thoughts about such objects.
-> 
-> Does the mux have any attribute/configuration valuable for the user.
-> If yes, it might make sense to have it as a separate object. Then we
-> can have it as a tree of object of type MUX with leaves of PIN.
-
-Yes, that was the first thought, but implementation details are not great for now.
-
-> The question really is, if the user needs to know about muxes and work
-> with them, or they can be abstracted out by the driver.
-
-Both ways will work I believe. It's more like our will to give users full 
-picture or hide it somehow with the implementation.
-> 
-> Could you elaborate a bit more why auto-select mode and priorities are
-> problematic with muxes in picture?
-
-AFAIU, some mux devices are not smart enough to make a decision suitable for 
-autoselect for the pins they have. In this case the autoselect process is done 
-in the DPLL device, which selects mux and not the pin directly. At the same time 
-there could be muxes that are smart enough to make a decision, and it will be 
-autoselect on top of autoselect (and several more layers) and it doesn't sound 
-great to me. I believe Arkadiusz will explain the mux a bit better.
-
-> 
-> 
+>> DPLL framework is used to represent and configure DPLL devices
+>> in systems. Each device that has DPLL and can configure sources
+>> and outputs can use this framework.
 >>
->>>>
->>>> This would introduce quite nice flexibility, exposes source/output
->>>> capabilities and provides good visilibity of current configuration.
->>>>
->>>>
->>>>> interface was created to cover such case. I believe we have to improve it to
->>>>> cover SyncE configuration better, but I personally don't have SyncE hardware
->>>>> ready to test and that's why I have to rely on suggestions from yours or
->>>>> Arkadiusz's experience. From what I can see now there is need for special
->>>>> attribute to link source to net device, and I'm happy to add it. In case of
->>>>> fixed configuration of sources, the device should provide only one type as
->>>>> supported and that's it.
->>>>>
->>>
->>> [...]
->>
-
+>> Signed-off-by: Vadim Fedorenko <vadfed@fb.com>
+>> Co-developed-by: Jakub Kicinski <kuba@kernel.org>
+>> Co-developed-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+> 
+> 
+> [...]
+> 
+> 
+>> +struct dpll_device *dpll_device_alloc(struct dpll_device_ops *ops, const char *name,
+>> +				      int sources_count, int outputs_count, void *priv)
+> 
+> Having constant array of "pins" would not work for SyncE. For example in
+> mlxsw driver, netdevs can appear and disappear within the device
+> lifetime (for example port splits, linecard provision). We need to
+> register/unregister pins dynamically.
+> 
+Yes, I agree, and we are working to implement pin object with dynamic 
+attach/detach or reg/unreg functions.
