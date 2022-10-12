@@ -2,69 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90DFF5FC957
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 18:32:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5019F5FC964
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 18:42:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229908AbiJLQcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 12:32:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50754 "EHLO
+        id S229734AbiJLQmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 12:42:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229930AbiJLQb6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 12:31:58 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FF651B9D8
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 09:31:57 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id 126so20625368ybw.3
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 09:31:57 -0700 (PDT)
+        with ESMTP id S230052AbiJLQmq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 12:42:46 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA63CBB055
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 09:42:44 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id k2so39245429ejr.2
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 09:42:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=+BbB7PM9hnNtO80/Dn2EefYTDUKTIFo/3oAljBeXmEc=;
-        b=HcgV90oPy72IClq9m/mdhIC2EgYa23647/vXiDgyB9SLusaacBrii1cg2Sdzs+EFCu
-         VDl8OkBnvu3SwiWWjyu/hBH1fwYG3Dv82zYp2dsnPxjBPJuv8Hfe6BwQG4GFNeydJdGl
-         NnLV6VLJR9baUkArru1n8hauwMheZkHRlTfeMH5RkmRUj5GtUzE+FrBjCXbzsWCAIzQP
-         wCmVxTN3Cnw/AKn01YBP3M5qyL46WhlUr9CW+rbOx7US3F33ENF9abSt5DJraAMGULsV
-         Y9UBklyKEqRx69OUC5LLYx6ul/MuUfxJaOV3rSpE6feVcFNRp/M9ElXOq4OFocJ+h9ce
-         68pw==
+        bh=fi+05BteQs1tUO7T9SXE9tvOcc1NZmf2rVbl3jcKt2o=;
+        b=h1RLdkT8H3kgPZoVrxw0aSAVCeVxAivRTaPgJ+omZ1Y5Jym4UXoM2cEXD5OihdOmyK
+         zo/ljvCn9Hn4NMT8i8dXH8mldly821hkJ+8jcYIu96tw77RcfXs0HcrPvrVXkWqjzbRU
+         lYrJk9odsxAvuWJEvbMnCXJ48pJ2z4oMes+sYoEQilCjnc6FsoZEB5YNvRpo65axo5Ie
+         NQBboIE/eMoNprybNlBmGRBzHSfvg2ttwvz3VPsu64nMzGiWVPzA0XN5KVSWNPBjAihK
+         c7aj3vZOju35tijCejXNri6hEUX0Wiwp+NBkDWAsuXg5rECMrSzy629G/8iPVmzwaPoj
+         enUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=+BbB7PM9hnNtO80/Dn2EefYTDUKTIFo/3oAljBeXmEc=;
-        b=xH4uYO1/dLzQX36xxPu9klRu4PJ7gwzOH67FJBslWhK0praUwUVygwbocPzyvW3eE4
-         gO3wk6gk3wexiW/HGd6IxURYHF60Q3Mb0ddo6AGoYNg7g131bcwKWkhDq9Pv/M5/osK2
-         LcoaRTiwSWGRttPPaGesf4pW5lb4nzGsjhxQ4HceMKIUjYLj1YbL/FuOSIyn2O9zUKok
-         DJFDeA5Ng/3IZ+d7IoLhJGBaMaY+r2tnzzszyl56KNCk17AZ9nRPL88rb3f9ZTuIcaFS
-         6y3LogJxzNxxXAvkbAlO8YEOZwNKSD9tKzh7RaiJ6ESxrZu9D36A+Cqr7D3RQ7dXpmE3
-         DpMg==
-X-Gm-Message-State: ACrzQf0nqb7lakTeps0yCEXD/dp5GOvlX6biXIP0JryoU+ALxTHYybc1
-        gxhhNS+gOYbzT437D69vnFiW4udlpS57HLOW1nAGLw==
-X-Google-Smtp-Source: AMsMyM6dkiTI5DF73nJuGUGAe1xwxuaSeDSNi9zhtvpiEf91hd96wtZi7i05dayhTg8uDVPu1tjTlRyeKiLN95k5PQo=
-X-Received: by 2002:a25:328c:0:b0:6be:2d4a:e77 with SMTP id
- y134-20020a25328c000000b006be2d4a0e77mr27903592yby.407.1665592316408; Wed, 12
- Oct 2022 09:31:56 -0700 (PDT)
+        bh=fi+05BteQs1tUO7T9SXE9tvOcc1NZmf2rVbl3jcKt2o=;
+        b=PdnE+qZwHBTs6+QFE4O98Q+uCI0MyJUqdZeuoihmotEKgEcC9Lq4hvbtItgdWwKa6O
+         duwZp11rTHRdjZBEDqpa+54giO+Th0hDQMSzZ+b+XU7ckwdX3G/usczfPD2n0loQraLr
+         2pGDFnbFgE2suT3aXjQsKZVG/+bDp0n1Ai13WSfZ2Kt8Ah3Ywo/ztef1n9Fd26urVH5F
+         ZyV4mXxgemXlD9YGGxx6FZkJ++YguzU24ZmWd/LMjQn8mmjHq1PokA+1OxNqX/cCZZF6
+         axqXW+oimdsyaaDE1s8NUHtDmeo6UV51tEhZzOki+y3dggU39P4ATEbGRPROSu3YRlj2
+         hzfA==
+X-Gm-Message-State: ACrzQf03/lZf70RbIKKmri3KVixkD8kVzcd8m9Onzd3vnWXP8NlV7OU1
+        dkG4oUu0WhujO6sOxpqiMFn8/IZY/p+dH/89JFI=
+X-Google-Smtp-Source: AMsMyM6mp9JRxxGNdUEEmzA7DThTJyeg2hEIfyjPOhrZBLhJVyA1V3tEmeIzAGSLhjvhvRTTfS46Pc+ybWMDyTJG98A=
+X-Received: by 2002:a17:907:8688:b0:782:6637:e8dc with SMTP id
+ qa8-20020a170907868800b007826637e8dcmr24231345ejc.174.1665592963206; Wed, 12
+ Oct 2022 09:42:43 -0700 (PDT)
 MIME-Version: 1.0
-References: <20221012145036.74960-1-kuniyu@amazon.com>
-In-Reply-To: <20221012145036.74960-1-kuniyu@amazon.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 12 Oct 2022 09:31:44 -0700
-Message-ID: <CANn89iJYF6S3XcfnxNcsPMjhFXz1naokJ+tLM1jSjjR6uco9bw@mail.gmail.com>
-Subject: Re: [PATCH v1 net] tcp: Clean up kernel listener's reqsk in inet_twsk_purge()
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org,
-        syzbot <syzkaller@googlegroups.com>
+References: <20221012153737.128424-1-saproj@gmail.com> <1b919195757c49769bde19c59a846789@AcuMS.aculab.com>
+In-Reply-To: <1b919195757c49769bde19c59a846789@AcuMS.aculab.com>
+From:   Sergei Antonov <saproj@gmail.com>
+Date:   Wed, 12 Oct 2022 19:42:31 +0300
+Message-ID: <CABikg9zdg-WW+C-46Cy=gcgsd8ZEborOJkXOPUfxy9TmNEz_wg@mail.gmail.com>
+Subject: Re: [PATCH v2 net] net: ftmac100: do not reject packets bigger than 1514
+To:     David Laight <David.Laight@aculab.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_SBL_A autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,140 +69,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 12, 2022 at 7:51 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+On Wed, 12 Oct 2022 at 19:13, David Laight <David.Laight@aculab.com> wrote:
 >
-> Eric Dumazet reported a use-after-free related to the per-netns ehash
-> series. [0]
+> From: Sergei Antonov
+> > Sent: 12 October 2022 16:38
+> >
+> > Despite the datasheet [1] saying the controller should allow incoming
+> > packets of length >=1518, it only allows packets of length <=1514.
 >
-> When we create a TCP socket from userspace, the socket always holds a
-> refcnt of the netns.  This guarantees that a reqsk timer is always fired
-> before netns dismantle.  Each reqsk has a refcnt of its listener, so the
-> listener is not freed before the reqsk, and the net is not freed before
-> the listener as well.
->
-> OTOH, when in-kernel users create a TCP socket, it might not hold a refcnt
-> of its netns.  Thus, a reqsk timer can be fired after the netns dismantle
-> and access freed per-netns ehash.
+> Shouldn't that be <=1518 and <1518 ??
 
-Patch seems good, but changelog is incorrect.
+Oh, thanks for noticing. But still it should be slightly different:
+<= 1518 and <=1514
+Here is my test results of different packet sizes:
+packets of 1518 / 1517 / 1516 / 1515 bytes did not come to the driver
+(before my patch)
+packets of 1514 and less bytes did come
 
-1) we have a TCP listener (or more) on a netns
-2) We receive SYN packets, creating SYN_RECV request sockets, added in
-ehash table.
-3) job is killed, TCP listener closed.
-4) When a TCP listener is closed, we do not purge all SYN_RECV
-requests sockets, because we rely
-   on normal per-request timer firing, then finding the listener is no
-longer in LISTEN state -> drop the request socket.
-   (We do not maintain a per-listener list of request sockets, and
-going through ehash would be quite expensive on busy servers)
-5) netns is deleted (and optional TCP ehashinfo freed)
-6) request socket timer fire, and wecrash while trying to unlink the
-request socket from the freed ehash table.
+> Although traditionally it was 1514+crc.
+> An extra 4 byte header is now allowed.
+> There is also the usefulness of supporting full length frames
+> with a PPPoE header.
+>
+> Whether it actually makes sense to round up the receive buffer
+> size and associated max frame length to 1536 (cache line aligned)
+> is another matter (probably 1534 for 4n+2 alignment).
+>
+> > Since 1518 is a standard Ethernet maximum frame size, and it can
+> > easily be encountered (in SSH for example), fix this behavior:
+> >
+> > * Set FTMAC100_MACCR_RX_FTL in the MAC Control Register.
+>
+> What does that do?
 
-In short, I think the case could happen with normal TCP sockets,
-allocated from user space.
+If FTMAC100_MACCR_RX_FTL is not set:
+  the driver does not receive the "long" packet at all. Looks like the
+controller discards the packet without bothering the driver.
+If FTMAC100_MACCR_RX_FTL is set:
+  the driver receives the "long" packet marked by the
+FTMAC100_RXDES0_FTL flag. And these packets were discarded by the
+driver (before my patch).
 
+> Looks like it might cause 'Frame Too Long' packets be returned.
+> In which case should the code just have ignored it since
+> longer frames would be discarded completely??
+
+Is there such a thing as a response packet which is sent in return to
+FTL packet? Did not know that. My testcases were SSH and SCP programs
+on Ubuntu 22 and they simply hang trying to connect to the ftmac100
+device - no retransmissions or retries with smaller frames happened.
+
+> > * Check for packet size > 1518 in ftmac100_rx_packet_error().
+> >
+> > [1]
+> > https://bitbucket.org/Kasreyn/mkrom-uc7112lx/src/master/documents/FIC8120_DS_v1.2.pdf
+> >
+> > Fixes: 8d77c036b57c ("net: add Faraday FTMAC100 10/100 Ethernet driver")
+> > Signed-off-by: Sergei Antonov <saproj@gmail.com>
+> > ---
+> >
+> > v1 -> v2:
+> > * Typos in description fixed.
+> >
+> >  drivers/net/ethernet/faraday/ftmac100.c | 13 +++++++++++--
+> >  1 file changed, 11 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/faraday/ftmac100.c b/drivers/net/ethernet/faraday/ftmac100.c
+> > index d95d78230828..34d0284079ff 100644
+> > --- a/drivers/net/ethernet/faraday/ftmac100.c
+> > +++ b/drivers/net/ethernet/faraday/ftmac100.c
+> > @@ -154,6 +154,7 @@ static void ftmac100_set_mac(struct ftmac100 *priv, const unsigned char *mac)
+> >                                FTMAC100_MACCR_CRC_APD | \
+> >                                FTMAC100_MACCR_FULLDUP | \
+> >                                FTMAC100_MACCR_RX_RUNT | \
+> > +                              FTMAC100_MACCR_RX_FTL  | \
+> >                                FTMAC100_MACCR_RX_BROADPKT)
+> >
+> >  static int ftmac100_start_hw(struct ftmac100 *priv)
+> > @@ -320,6 +321,7 @@ static bool ftmac100_rx_packet_error(struct ftmac100 *priv,
+> >  {
+> >       struct net_device *netdev = priv->netdev;
+> >       bool error = false;
+> > +     const unsigned int length = ftmac100_rxdes_frame_length(rxdes);
 >
-> To avoid the use-after-free, we need to clean up TCP_NEW_SYN_RECV sockets
-> in inet_twsk_purge() if the netns uses a per-netns ehash.
->
-> [0]: https://lore.kernel.org/netdev/CANn89iLXMup0dRD_Ov79Xt8N9FM0XdhCHEN05sf3eLwxKweM6w@mail.gmail.com/
->
-> BUG: KASAN: use-after-free in tcp_or_dccp_get_hashinfo
-> include/net/inet_hashtables.h:181 [inline]
-> BUG: KASAN: use-after-free in reqsk_queue_unlink+0x320/0x350
-> net/ipv4/inet_connection_sock.c:913
-> Read of size 8 at addr ffff88807545bd80 by task syz-executor.2/8301
->
-> CPU: 1 PID: 8301 Comm: syz-executor.2 Not tainted
-> 6.0.0-syzkaller-02757-gaf7d23f9d96a #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine,
-> BIOS Google 09/22/2022
-> Call Trace:
-> <IRQ>
-> __dump_stack lib/dump_stack.c:88 [inline]
-> dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
-> print_address_description mm/kasan/report.c:317 [inline]
-> print_report.cold+0x2ba/0x719 mm/kasan/report.c:433
-> kasan_report+0xb1/0x1e0 mm/kasan/report.c:495
-> tcp_or_dccp_get_hashinfo include/net/inet_hashtables.h:181 [inline]
-> reqsk_queue_unlink+0x320/0x350 net/ipv4/inet_connection_sock.c:913
-> inet_csk_reqsk_queue_drop net/ipv4/inet_connection_sock.c:927 [inline]
-> inet_csk_reqsk_queue_drop_and_put net/ipv4/inet_connection_sock.c:939 [inline]
-> reqsk_timer_handler+0x724/0x1160 net/ipv4/inet_connection_sock.c:1053
-> call_timer_fn+0x1a0/0x6b0 kernel/time/timer.c:1474
-> expire_timers kernel/time/timer.c:1519 [inline]
-> __run_timers.part.0+0x674/0xa80 kernel/time/timer.c:1790
-> __run_timers kernel/time/timer.c:1768 [inline]
-> run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1803
-> __do_softirq+0x1d0/0x9c8 kernel/softirq.c:571
-> invoke_softirq kernel/softirq.c:445 [inline]
-> __irq_exit_rcu+0x123/0x180 kernel/softirq.c:650
-> irq_exit_rcu+0x5/0x20 kernel/softirq.c:662
-> sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1107
-> </IRQ>
->
-> Fixes: d1e5e6408b30 ("tcp: Introduce optional per-netns ehash.")
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> Reported-by: Eric Dumazet <edumazet@google.com>
-> Suggested-by: Eric Dumazet <edumazet@google.com>
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> ---
->  net/ipv4/inet_timewait_sock.c | 15 ++++++++++++++-
->  net/ipv4/tcp_minisocks.c      |  9 +++++----
->  2 files changed, 19 insertions(+), 5 deletions(-)
->
-> diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_sock.c
-> index 71d3bb0abf6c..66fc940f9521 100644
-> --- a/net/ipv4/inet_timewait_sock.c
-> +++ b/net/ipv4/inet_timewait_sock.c
-> @@ -268,8 +268,21 @@ void inet_twsk_purge(struct inet_hashinfo *hashinfo, int family)
->                 rcu_read_lock();
->  restart:
->                 sk_nulls_for_each_rcu(sk, node, &head->chain) {
-> -                       if (sk->sk_state != TCP_TIME_WAIT)
-> +                       if (sk->sk_state != TCP_TIME_WAIT) {
-> +                               /* A kernel listener socket might not hold refcnt for net,
-> +                                * so reqsk_timer_handler() could be fired after net is
-> +                                * freed.  Userspace listener and reqsk never exist here.
-> +                                */
-> +                               if (unlikely(sk->sk_state == TCP_NEW_SYN_RECV &&
-> +                                            hashinfo->pernet)) {
-> +                                       struct request_sock *req = inet_reqsk(sk);
-> +
-> +                                       inet_csk_reqsk_queue_drop_and_put(req->rsk_listener, req);
-> +                               }
-> +
->                                 continue;
-> +                       }
-> +
->                         tw = inet_twsk(sk);
->                         if ((tw->tw_family != family) ||
->                                 refcount_read(&twsk_net(tw)->ns.count))
-> diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-> index 79f30f026d89..c375f603a16c 100644
-> --- a/net/ipv4/tcp_minisocks.c
-> +++ b/net/ipv4/tcp_minisocks.c
-> @@ -353,13 +353,14 @@ void tcp_twsk_purge(struct list_head *net_exit_list, int family)
->         struct net *net;
->
->         list_for_each_entry(net, net_exit_list, exit_list) {
-> -               /* The last refcount is decremented in tcp_sk_exit_batch() */
-> -               if (refcount_read(&net->ipv4.tcp_death_row.tw_refcount) == 1)
-> -                       continue;
-> -
->                 if (net->ipv4.tcp_death_row.hashinfo->pernet) {
-> +                       /* Even if tw_refcount == 1, we must clean up kernel reqsk */
->                         inet_twsk_purge(net->ipv4.tcp_death_row.hashinfo, family);
->                 } else if (!purged_once) {
-> +                       /* The last refcount is decremented in tcp_sk_exit_batch() */
-> +                       if (refcount_read(&net->ipv4.tcp_death_row.tw_refcount) == 1)
-> +                               continue;
-> +
->                         inet_twsk_purge(&tcp_hashinfo, family);
->                         purged_once = true;
->                 }
-> --
-> 2.30.2
->
+> Do you need to read this value this early in the function?
+> Looks like it is only used when overlong packets are reported.
+
+I decided to make a variable in order to use it twice:
+in the condition: "length > 1518"
+in logging: "netdev_info(netdev, "rx frame too long (%u)\n", length);"
+You are right saying it is not needed in most cases. Can we hope for
+the optimizer to postpone the initialization of 'length' till it is
+accessed?
