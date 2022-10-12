@@ -2,88 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B2795FC57E
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 14:40:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8F825FC587
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 14:42:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229831AbiJLMkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 08:40:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42590 "EHLO
+        id S229929AbiJLMmc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 08:42:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229867AbiJLMkT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 08:40:19 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B56D77B2AA;
-        Wed, 12 Oct 2022 05:40:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 16BBECE1B2D;
-        Wed, 12 Oct 2022 12:40:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3A028C433D7;
-        Wed, 12 Oct 2022 12:40:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665578415;
-        bh=xjMgXIvqMwoitiYdM8Fd/wo6GXLsZu3oIGa2mxFKVdc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=UeSFF4TXZ4U1/LZR3QcjxuULfGHhLIiBQ9dF0O5b6OAOGzwV6D0b/Ccv91sQLlbex
-         DrdEMIc5bzvo0tXz+oniOPGTKfW554ffB4nX+B0VxcT7c8UxaG7NQ1KWJD+lEwIRt9
-         wxhsINqZfp5bdnCQDOgVlQ0Z5EWghTt8/3ZaNxWHLbzNI1YZZss084cwB8CwVG7pZy
-         EjoEqee2ko24QJcEQFu8Emm9NEi/4aD31nCzISju7VUpcuztgwOn54YXySFPDrUMAd
-         j1fvYvIaHnYRdkD6GRwAnhjLuhj7QEjQ3WWxosXxQHY4P8Sco3iTviCHAPIh4PnQwQ
-         fVL9yM51VOm7g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 19D5FE21EC5;
-        Wed, 12 Oct 2022 12:40:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229895AbiJLMmZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 08:42:25 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB66FC894F;
+        Wed, 12 Oct 2022 05:42:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=ZDOHsKJ2O6yHB6mK3GypL2lDL6oF4YLtssKIorMpkUY=; b=tAqLQQXtGcqUKQQMcUwu8J+DSU
+        B93WVo9Tk9gbUZ6kMdj96CQpCUS1Ch0PBf39+r8kZLeBETTJmgN3hiz1qswvSttsk1PYk3wlMnyJt
+        +0uA5s6JUmiBDfgGJhZNmho2YqSK3DM1jZsj6dgjO2fgwfKgLzO80503Eq07DYTm/AOM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oib3w-001nlI-Co; Wed, 12 Oct 2022 14:42:16 +0200
+Date:   Wed, 12 Oct 2022 14:42:16 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pawel Dembicki <paweldembicki@gmail.com>,
+        Lech Perczak <lech.perczak@gmail.com>
+Subject: Re: [net PATCH 1/2] net: dsa: qca8k: fix inband mgmt for big-endian
+ systems
+Message-ID: <Y0a2KD9pVeoYkHkK@lunn.ch>
+References: <20221010111459.18958-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 1/3] selftests: netfilter: Test reverse path filtering
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166557841510.32004.6740633560901619092.git-patchwork-notify@kernel.org>
-Date:   Wed, 12 Oct 2022 12:40:15 +0000
-References: <20221012121902.27738-2-fw@strlen.de>
-In-Reply-To: <20221012121902.27738-2-fw@strlen.de>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     netdev@vger.kernel.org, pabeni@redhat.com, edumazet@google.com,
-        davem@davemloft.net, kuba@kernel.org,
-        netfilter-devel@vger.kernel.org, phil@nwl.cc, gnault@redhat.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221010111459.18958-1-ansuelsmth@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (master)
-by Florian Westphal <fw@strlen.de>:
-
-On Wed, 12 Oct 2022 14:19:00 +0200 you wrote:
-> From: Phil Sutter <phil@nwl.cc>
+On Mon, Oct 10, 2022 at 01:14:58PM +0200, Christian Marangi wrote:
+> The header and the data of the skb for the inband mgmt requires
+> to be in little-endian. This is problematic for big-endian system
+> as the mgmt header is written in the cpu byte order.
 > 
-> Test reverse path (filter) matches in iptables, ip6tables and nftables.
-> Both with a regular interface and a VRF.
+> Fix this by converting each value for the mgmt header and data to
+> little-endian, and convert to cpu byte order the mgmt header and
+> data sent by the switch.
 > 
-> Signed-off-by: Phil Sutter <phil@nwl.cc>
-> Reviewed-by: Guillaume Nault <gnault@redhat.com>
-> Signed-off-by: Florian Westphal <fw@strlen.de>
+> Fixes: 5950c7c0a68c ("net: dsa: qca8k: add support for mgmt read/write in Ethernet packet")
+> Tested-by: Pawel Dembicki <paweldembicki@gmail.com>
+> Tested-by: Lech Perczak <lech.perczak@gmail.com>
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> Reviewed-by: Lech Perczak <lech.perczak@gmail.com>
+> ---
+>  drivers/net/dsa/qca/qca8k-8xxx.c | 63 ++++++++++++++++++++++++--------
+>  include/linux/dsa/tag_qca.h      |  6 +--
+>  2 files changed, 50 insertions(+), 19 deletions(-)
 > 
-> [...]
+> diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
+> index 5669c92c93f7..4bb9b7eac68b 100644
+> --- a/drivers/net/dsa/qca/qca8k-8xxx.c
+> +++ b/drivers/net/dsa/qca/qca8k-8xxx.c
+> @@ -137,27 +137,42 @@ static void qca8k_rw_reg_ack_handler(struct dsa_switch *ds, struct sk_buff *skb)
+>  	struct qca8k_mgmt_eth_data *mgmt_eth_data;
+>  	struct qca8k_priv *priv = ds->priv;
+>  	struct qca_mgmt_ethhdr *mgmt_ethhdr;
+> +	u32 command;
+>  	u8 len, cmd;
+> +	int i;
+>  
+>  	mgmt_ethhdr = (struct qca_mgmt_ethhdr *)skb_mac_header(skb);
+>  	mgmt_eth_data = &priv->mgmt_eth_data;
+>  
+> -	cmd = FIELD_GET(QCA_HDR_MGMT_CMD, mgmt_ethhdr->command);
+> -	len = FIELD_GET(QCA_HDR_MGMT_LENGTH, mgmt_ethhdr->command);
+> +	command = le32_to_cpu(mgmt_ethhdr->command);
+> +	cmd = FIELD_GET(QCA_HDR_MGMT_CMD, command);
+> +	len = FIELD_GET(QCA_HDR_MGMT_LENGTH, command);
 
-Here is the summary with links:
-  - [net,1/3] selftests: netfilter: Test reverse path filtering
-    https://git.kernel.org/netdev/net/c/6e31ce831c63
-  - [net,2/3] netfilter: rpfilter/fib: Populate flowic_l3mdev field
-    https://git.kernel.org/netdev/net/c/acc641ab95b6
-  - [net,3/3] selftests: netfilter: Fix nft_fib.sh for all.rp_filter=1
-    https://git.kernel.org/netdev/net/c/6a91e7270936
+Humm...
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+This might have the same alignment issue as the second patch. In fact,
+because the Ethernet header is 14 bytes in size, it is often
+deliberately out of alignment by 2 bytes, so that the IP header is
+aligned. You should probably be using get_unaligned_le32() when
+accessing members of mgmt_ethhdr.
 
-
+	  Andrew
