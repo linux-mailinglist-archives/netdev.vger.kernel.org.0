@@ -2,149 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F81B5FCA03
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 19:43:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C9B25FCA12
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 19:50:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229709AbiJLRny (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 13:43:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36956 "EHLO
+        id S229621AbiJLRuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 13:50:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229534AbiJLRnx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 13:43:53 -0400
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1ED9FBCE5
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 10:43:52 -0700 (PDT)
-Received: by mail-il1-f200.google.com with SMTP id h10-20020a056e021d8a00b002f99580de6cso13798752ila.5
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 10:43:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Y3t3T5A0CNZfHnuiirguZVaaAi/cfmdOzs9XC2Yc3ro=;
-        b=CqDoAmvX+eQYfuofC05fTt0G1Tlcjdhmlcmg4nurZsIbbzBMS/TC6KDUFJVOr++8Rz
-         ApeI96ghBmapEDXe0r9Yq6AyBEITJ2KEXP+iSe7mTPhn8VqPWjM7CDfORoHqEApcaO9n
-         fRlRxUsQ26xl4jkH8TFas+mfnCJNvN7ymlnehyEdh5lB74nuuvuMNRBOUO3Liz2vnPyl
-         uN4QXbBgAgoj8tYaCGnrs/k6gzrvoKaIV8qEuXPJGR9FScmCTPL/FeR+q8qWeotgvHjZ
-         iDuGmFJYADhf+Uq9ql8n/vwn4ioVx4n/JBdZYnqYP5c8CkiZJeXH+jdbljdquc5hXg1n
-         LsKQ==
-X-Gm-Message-State: ACrzQf1RhwgR+t5cZGi+aY7cuGtNpjIJ03YTdY5lt+eMC5ch1VFGgEbv
-        FiJLMWKF4OzKOoSEIEHOmYcv98biHysrfjnt2ygfD8xhGSpL
-X-Google-Smtp-Source: AMsMyM42dMQOvWy91GEOPI1bnLiv5In7DR/xVs1GynbAy2Ai0ChovX2pHuLl6cHz/s/kmW85hU6mIifP+bAdkMCL5r1J/W2I+CwR
+        with ESMTP id S229507AbiJLRuj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 13:50:39 -0400
+Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22BAC9413E;
+        Wed, 12 Oct 2022 10:50:38 -0700 (PDT)
+Received: from [IPV6:2003:e9:d728:5820:2c00:8a27:9bcf:7d44] (p200300e9d72858202c008a279bcf7d44.dip0.t-ipconnect.de [IPv6:2003:e9:d728:5820:2c00:8a27:9bcf:7d44])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 3AF8EC01B4;
+        Wed, 12 Oct 2022 19:50:35 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1665597035;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TPTAaOTk3ES86EKQXvoNx3hKyjt1D+wTsi+ko99dRMw=;
+        b=FlIMGK5n0k63xfrXhXtOan1IQiLbUZM5qHrY9C5hU41nitM9Nf8AnWWTT+xYPi1Tz5jqZo
+        iUFPSNLcDlfZtKPtb4MHSMomWCOoSEZQDoYoKHL2EnYf9mO/16SvKt+wEGCOo0tWdIqZd2
+        IMR/ExjQaE9FTp8qrStYw+H3CxQ3DDE3TkXIxH1OGFmfn05t4g1pyHr7BG91xZ6/kKlzJ7
+        iwFcKqheOU8mrrR/a2SpDU9lHNd6zuC1FfMJ/+NrXRHlxWxRr3/Oq9rBBEr+7zzqAglnSZ
+        jWyU4aE59CgEQ66DmW6aGtyGmANhO1wrvEqT4ekj1KpwKyE62BgovVRiwsenVg==
+Message-ID: <addba337-b3a5-5e1f-9524-e9f3b2ebfb80@datenfreihafen.org>
+Date:   Wed, 12 Oct 2022 19:50:34 +0200
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:2c8e:b0:6a3:886a:30fb with SMTP id
- i14-20020a0566022c8e00b006a3886a30fbmr14692434iow.75.1665596632018; Wed, 12
- Oct 2022 10:43:52 -0700 (PDT)
-Date:   Wed, 12 Oct 2022 10:43:52 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000097399505ead9ef34@google.com>
-Subject: [syzbot] WARNING in ovs_dp_reset_user_features
-From:   syzbot <syzbot+31cde0bef4bbf8ba2d86@syzkaller.appspotmail.com>
-To:     aahringo@redhat.com, ccaulfie@redhat.com, cluster-devel@redhat.com,
-        davem@davemloft.net, dev@openvswitch.org, edumazet@google.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, pshelar@ovn.org,
-        syzkaller-bugs@googlegroups.com, teigland@redhat.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Subject: Re: [PATCH wpan/next v3 9/9] ieee802154: atusb: add support for trac
+ feature
+Content-Language: en-US
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alexander Aring <alex.aring@gmail.com>,
+        linux-wpan@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexander Aring <aahringo@redhat.com>
+References: <20220905203412.1322947-1-miquel.raynal@bootlin.com>
+ <20220905203412.1322947-10-miquel.raynal@bootlin.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+In-Reply-To: <20220905203412.1322947-10-miquel.raynal@bootlin.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hello Miquel, Alexander.
 
-syzbot found the following issue on:
+On 05.09.22 22:34, Miquel Raynal wrote:
+> From: Alexander Aring <aahringo@redhat.com>
+> 
+> This patch adds support for reading the trac register if atusb firmware
+> reports tx done. There is currently a feature to compare a sequence
+> number, if the payload is 1 it tells the driver only the sequence number
+> is available if it's two there is additional the trac status register as
+> payload.
+> 
+> Currently the atusb_in_good() function determines if it's a tx done or
+> rx done if according the payload length. This patch is doing the same
+> and assumes this behaviour.
+> 
+> Signed-off-by: Alexander Aring <aahringo@redhat.com>
+> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> ---
+>   drivers/net/ieee802154/atusb.c | 33 ++++++++++++++++++++++++++++-----
+>   1 file changed, 28 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/ieee802154/atusb.c b/drivers/net/ieee802154/atusb.c
+> index 2c338783893d..95a4a3cdc8a4 100644
+> --- a/drivers/net/ieee802154/atusb.c
+> +++ b/drivers/net/ieee802154/atusb.c
+> @@ -191,7 +191,7 @@ static void atusb_work_urbs(struct work_struct *work)
+>   
+>   /* ----- Asynchronous USB -------------------------------------------------- */
+>   
+> -static void atusb_tx_done(struct atusb *atusb, u8 seq)
+> +static void atusb_tx_done(struct atusb *atusb, u8 seq, int reason)
+>   {
+>   	struct usb_device *usb_dev = atusb->usb_dev;
+>   	u8 expect = atusb->tx_ack_seq;
+> @@ -199,7 +199,10 @@ static void atusb_tx_done(struct atusb *atusb, u8 seq)
+>   	dev_dbg(&usb_dev->dev, "%s (0x%02x/0x%02x)\n", __func__, seq, expect);
+>   	if (seq == expect) {
+>   		/* TODO check for ifs handling in firmware */
+> -		ieee802154_xmit_complete(atusb->hw, atusb->tx_skb, false);
+> +		if (reason == IEEE802154_SUCCESS)
+> +			ieee802154_xmit_complete(atusb->hw, atusb->tx_skb, false);
+> +		else
+> +			ieee802154_xmit_error(atusb->hw, atusb->tx_skb, reason);
+>   	} else {
+>   		/* TODO I experience this case when atusb has a tx complete
+>   		 * irq before probing, we should fix the firmware it's an
+> @@ -215,7 +218,8 @@ static void atusb_in_good(struct urb *urb)
+>   	struct usb_device *usb_dev = urb->dev;
+>   	struct sk_buff *skb = urb->context;
+>   	struct atusb *atusb = SKB_ATUSB(skb);
+> -	u8 len, lqi;
+> +	int result = IEEE802154_SUCCESS;
+> +	u8 len, lqi, trac;
+>   
+>   	if (!urb->actual_length) {
+>   		dev_dbg(&usb_dev->dev, "atusb_in: zero-sized URB ?\n");
+> @@ -224,8 +228,27 @@ static void atusb_in_good(struct urb *urb)
+>   
+>   	len = *skb->data;
+>   
+> -	if (urb->actual_length == 1) {
+> -		atusb_tx_done(atusb, len);
+> +	switch (urb->actual_length) {
+> +	case 2:
+> +		trac = TRAC_MASK(*(skb->data + 1));
+> +		switch (trac) {
+> +		case TRAC_SUCCESS:
+> +		case TRAC_SUCCESS_DATA_PENDING:
+> +			/* already IEEE802154_SUCCESS */
+> +			break;
+> +		case TRAC_CHANNEL_ACCESS_FAILURE:
+> +			result = IEEE802154_CHANNEL_ACCESS_FAILURE;
+> +			break;
+> +		case TRAC_NO_ACK:
+> +			result = IEEE802154_NO_ACK;
+> +			break;
+> +		default:
+> +			result = IEEE802154_SYSTEM_ERROR;
+> +		}
+> +
+> +		fallthrough;
+> +	case 1:
+> +		atusb_tx_done(atusb, len, result);
+>   		return;
+>   	}
+>   
 
-HEAD commit:    e8bc52cb8df8 Merge tag 'driver-core-6.1-rc1' of git://git...
-git tree:       upstream
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=134de042880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7579993da6496f03
-dashboard link: https://syzkaller.appspot.com/bug?extid=31cde0bef4bbf8ba2d86
-compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12173a34880000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1792461a880000
+There have been various RFC patches from either of you two on this. From 
+what I can see this is the last one.
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/4dc25a89bfbd/disk-e8bc52cb.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/16c9ca5fd754/vmlinux-e8bc52cb.xz
+I am glad that this is done in a backwards compatible way, so it can 
+keep working with the older v.03 firmware. See my comments on the 
+firmware part of this in the other thread.
 
-The issue was bisected to:
+This patch has been applied to the wpan-next tree and will be
+part of the next pull request to net-next. Thanks!
 
-commit 6b0afc0cc3e9a9a91f5a76d0965d449781441e18
-Author: Alexander Aring <aahringo@redhat.com>
-Date:   Wed Jun 22 18:45:23 2022 +0000
-
-    fs: dlm: don't use deprecated timeout features by default
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10d5787c880000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=12d5787c880000
-console output: https://syzkaller.appspot.com/x/log.txt?x=14d5787c880000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+31cde0bef4bbf8ba2d86@syzkaller.appspotmail.com
-Fixes: 6b0afc0cc3e9 ("fs: dlm: don't use deprecated timeout features by default")
-
-------------[ cut here ]------------
-Dropping previously announced user features
-WARNING: CPU: 1 PID: 3608 at net/openvswitch/datapath.c:1619 ovs_dp_reset_user_features+0x1bc/0x240 net/openvswitch/datapath.c:1619
-Modules linked in:
-CPU: 1 PID: 3608 Comm: syz-executor162 Not tainted 6.0.0-syzkaller-07994-ge8bc52cb8df8 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/22/2022
-RIP: 0010:ovs_dp_reset_user_features+0x1bc/0x240 net/openvswitch/datapath.c:1619
-Code: 00 c7 03 00 00 00 00 eb 05 e8 d0 be 67 f7 5b 41 5c 41 5e 41 5f 5d c3 e8 c2 be 67 f7 48 c7 c7 00 92 e3 8b 31 c0 e8 74 7a 2f f7 <0f> 0b eb c7 44 89 f1 80 e1 07 fe c1 38 c1 0f 8c f1 fe ff ff 4c 89
-RSP: 0018:ffffc90003b8f370 EFLAGS: 00010246
-RAX: e794c0e413340e00 RBX: ffff8880175cae68 RCX: ffff88801c069d80
-RDX: 0000000000000000 RSI: 0000000080000000 RDI: 0000000000000000
-RBP: 0000000000000008 R08: ffffffff816c58ad R09: ffffed1017364f13
-R10: ffffed1017364f13 R11: 1ffff11017364f12 R12: dffffc0000000000
-R13: ffff8880175ca450 R14: 1ffff11002eb95cd R15: ffffc90003b8f6b0
-FS:  0000555557276300(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000916 CR3: 000000001ed81000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- ovs_dp_cmd_new+0x8f6/0xc80 net/openvswitch/datapath.c:1822
- genl_family_rcv_msg_doit net/netlink/genetlink.c:731 [inline]
- genl_family_rcv_msg net/netlink/genetlink.c:808 [inline]
- genl_rcv_msg+0x11ca/0x1670 net/netlink/genetlink.c:825
- netlink_rcv_skb+0x1f0/0x460 net/netlink/af_netlink.c:2540
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:836
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x7e7/0x9c0 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0x9b3/0xcd0 net/netlink/af_netlink.c:1921
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg net/socket.c:734 [inline]
- ____sys_sendmsg+0x597/0x8e0 net/socket.c:2482
- ___sys_sendmsg net/socket.c:2536 [inline]
- __sys_sendmsg+0x28e/0x390 net/socket.c:2565
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7fc51f29de89
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffd99ec6ed8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 000000000000a2c4 RCX: 00007fc51f29de89
-RDX: 0000000000000000 RSI: 0000000020000100 RDI: 0000000000000003
-RBP: 0000000000000000 R08: 00007ffd99ec7078 R09: 00007ffd99ec7078
-R10: 00007ffd99ec6950 R11: 0000000000000246 R12: 00007ffd99ec6eec
-R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+regards
+Stefan Schmidt
