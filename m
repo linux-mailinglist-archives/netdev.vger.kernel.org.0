@@ -2,267 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A9C95FC9E1
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 19:28:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E2225FC9F3
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 19:33:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229715AbiJLR2k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 13:28:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39186 "EHLO
+        id S229639AbiJLRdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 13:33:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229651AbiJLR2g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 13:28:36 -0400
-Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25FE48E0E1
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 10:28:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1665595715; x=1697131715;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=MtflLHwyzkDFJ2AvH3uSMxyMy4azMZU/MGR9m62/RF8=;
-  b=rOamMwKb+E4CLn6nsIuAHMJLZUN+yYdOa9dyk/d82iawmo4bVY2eLVX9
-   fPZvFplEkoAVQ5qn5H7xzl+WWmygGoATsd1X5xNpCqz+XBfwrlNjV/B6v
-   biUQ7eYFJMkLUja+uRVzaTCjO4D96VGoZuIcMFw2YzlYyUXvo366afo1V
-   8=;
-X-IronPort-AV: E=Sophos;i="5.95,179,1661817600"; 
-   d="scan'208";a="1063412402"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-718d0906.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2022 17:28:19 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2b-718d0906.us-west-2.amazon.com (Postfix) with ESMTPS id 435A63E002D;
-        Wed, 12 Oct 2022 17:28:19 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Wed, 12 Oct 2022 17:28:16 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.161.77) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.15;
- Wed, 12 Oct 2022 17:28:11 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <edumazet@google.com>
-CC:     <davem@davemloft.net>, <dsahern@kernel.org>, <kuba@kernel.org>,
-        <kuni1840@gmail.com>, <kuniyu@amazon.com>,
-        <netdev@vger.kernel.org>, <pabeni@redhat.com>,
-        <syzkaller@googlegroups.com>, <yoshfuji@linux-ipv6.org>
-Subject: Re: [PATCH v1 net] tcp: Clean up kernel listener's reqsk in inet_twsk_purge()
-Date:   Wed, 12 Oct 2022 10:28:01 -0700
-Message-ID: <20221012172801.83774-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <CANn89iJYF6S3XcfnxNcsPMjhFXz1naokJ+tLM1jSjjR6uco9bw@mail.gmail.com>
-References: <CANn89iJYF6S3XcfnxNcsPMjhFXz1naokJ+tLM1jSjjR6uco9bw@mail.gmail.com>
+        with ESMTP id S229469AbiJLRds (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 13:33:48 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E03387E038
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 10:33:47 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id j8-20020a056e02154800b002fc89e9ebeeso4052612ilu.16
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 10:33:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=BdkoRVMJ90T5a3AiDSQOPz1ky7p4FPo1aE/Z/gAXzJ0=;
+        b=xLXmlQ1K6kPrFwy8Wi+XHzHba7QVePyQ3ItprHj5mLw/UXpdW2Uyc0Ev2co0OUHElp
+         C4KS07XniF7VLJiaiTKA+E19hYFKrgbzSVg4SNnNXmi7OttAzmD9mbRXc/0brV/GvesN
+         1mYgo4KVPkdZxTD7iTyFJz1xUpqkYpRyFVR6Bj8fXDFsoxZMF60AwDrWShLkttBI38Ah
+         YEnjCPwdJMVWC3OBC7H2aq0JVPiMJ2eHux5IK0Y2dSwxkYIRc8aVLZfjtgeQkBUnVPwC
+         RmARtujY+Yo1bdBQme03xnG4n5x4AM8v3fMXwYKTK1Ila/nYKPpqQBeDjgYSu6H3NBbP
+         3onA==
+X-Gm-Message-State: ACrzQf2GQ15r1UWwWQE80Z64PAM23sVoCu9HQxkP2HfABU2HuGRlCPuJ
+        JrXPi7eDMIpvlQVCkHjFL+3UkTqziBL5IGN/oFvuZiFlalq0
+X-Google-Smtp-Source: AMsMyM4CBX20T3busmTdRVBZIjm7yhmOvTYcL9K9AfLSEd9Jp5AolsfDqKOpnvL8gDxxV2iPSI9EAjfVtC7iQlOflZLTuBUsJwo4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.161.77]
-X-ClientProxiedBy: EX13d09UWA001.ant.amazon.com (10.43.160.247) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a6b:c411:0:b0:6bc:1382:37d5 with SMTP id
+ y17-20020a6bc411000000b006bc138237d5mr9195202ioa.133.1665596027294; Wed, 12
+ Oct 2022 10:33:47 -0700 (PDT)
+Date:   Wed, 12 Oct 2022 10:33:47 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000008bdd0305ead9cb9f@google.com>
+Subject: [syzbot] WARNING in ovs_dp_cmd_new (2)
+From:   syzbot <syzbot+6c1a3b18294de0f138d8@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dev@openvswitch.org, edumazet@google.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, pshelar@ovn.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 12 Oct 2022 09:31:44 -0700
-> On Wed, Oct 12, 2022 at 7:51 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> >
-> > Eric Dumazet reported a use-after-free related to the per-netns ehash
-> > series. [0]
-> >
-> > When we create a TCP socket from userspace, the socket always holds a
-> > refcnt of the netns.  This guarantees that a reqsk timer is always fired
-> > before netns dismantle.  Each reqsk has a refcnt of its listener, so the
-> > listener is not freed before the reqsk, and the net is not freed before
-> > the listener as well.
-> >
-> > OTOH, when in-kernel users create a TCP socket, it might not hold a refcnt
-> > of its netns.  Thus, a reqsk timer can be fired after the netns dismantle
-> > and access freed per-netns ehash.
-> 
-> Patch seems good, but changelog is incorrect.
-> 
-> 1) we have a TCP listener (or more) on a netns
-> 2) We receive SYN packets, creating SYN_RECV request sockets, added in
-> ehash table.
-> 3) job is killed, TCP listener closed.
-> 4) When a TCP listener is closed, we do not purge all SYN_RECV
-> requests sockets, because we rely
->    on normal per-request timer firing, then finding the listener is no
-> longer in LISTEN state -> drop the request socket.
->    (We do not maintain a per-listener list of request sockets, and
-> going through ehash would be quite expensive on busy servers)
-> 5) netns is deleted (and optional TCP ehashinfo freed)
-> 6) request socket timer fire, and wecrash while trying to unlink the
-> request socket from the freed ehash table.
-> 
-> In short, I think the case could happen with normal TCP sockets,
-> allocated from user space.
+Hello,
 
-Hmm.. I think 5) always happens after reqsk_timer for TCP socket
-allocated from user space because reqsk has a refcnt for its netns
-indirectly via the listener.
+syzbot found the following issue on:
 
-reqsk has its listener's sk_refcnt, so when reqsk timer is fired
-the last reqsk_put() in inet_csk_reqsk_queue_drop_and_put() calls
-sock_put() for the listener, and then listener release the last
-refcnt for the net, and finally net is queued up to the free-list.
+HEAD commit:    e8bc52cb8df8 Merge tag 'driver-core-6.1-rc1' of git://git...
+git tree:       upstream
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=1112f08a880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=1b85abe77fd80fd6
+dashboard link: https://syzkaller.appspot.com/bug?extid=6c1a3b18294de0f138d8
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1112607c880000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=144b0ca4880000
 
----8<---
-static void __sk_destruct(struct rcu_head *head)
-{
-...
-	if (likely(sk->sk_net_refcnt))
-		put_net(sock_net(sk));
-	sk_prot_free(sk->sk_prot_creator, sk);
-}
----8<---
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/40287b1866de/disk-e8bc52cb.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/1ef7d0e94dfc/vmlinux-e8bc52cb.xz
 
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+6c1a3b18294de0f138d8@syzkaller.appspotmail.com
 
-I did some tests with this script, but KASAN did not detect UAF
-and I checked the timer is always executed before netns dismantle
-for userspace listener.
-
----8<---
-set -e
-
-sysctl -w net.ipv4.tcp_child_ehash_entries=128
-sysctl -w net.ipv4.tcp_max_orphans=0
-
-cat <<EOF>test.py
-from socket import *
-from subprocess import run
-
-s = socket()
-s.bind(('localhost', 80))
-s.listen()
-
-c = socket()
-c.connect(('localhost', 80))
-run('netstat -tan'.split())
-EOF
-
-cat <<EOF>test_net.sh
-set -e
-
-sysctl net.ipv4.tcp_child_ehash_entries
-
-ip link set lo up
-
-iptables -A OUTPUT -o lo -p tcp --dport 80 --tcp-flags ACK ACK -j DROP
-
-python3 test.py
-
-netstat -tan
-
-EOF
-
-unshare -n bash test_net.sh
----8<---
+------------[ cut here ]------------
+Dropping previously announced user features
+WARNING: CPU: 1 PID: 3616 at net/openvswitch/datapath.c:1619 ovs_dp_reset_user_features net/openvswitch/datapath.c:1619 [inline]
+WARNING: CPU: 1 PID: 3616 at net/openvswitch/datapath.c:1619 ovs_dp_cmd_new+0xdf5/0x1300 net/openvswitch/datapath.c:1822
+Modules linked in:
+CPU: 1 PID: 3616 Comm: syz-executor259 Not tainted 6.0.0-syzkaller-07994-ge8bc52cb8df8 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/22/2022
+RIP: 0010:ovs_dp_reset_user_features net/openvswitch/datapath.c:1619 [inline]
+RIP: 0010:ovs_dp_cmd_new+0xdf5/0x1300 net/openvswitch/datapath.c:1822
+Code: 2a 0f b6 04 02 84 c0 74 04 3c 03 7e 21 c7 43 68 00 00 00 00 e9 30 fe ff ff e8 b7 fe 53 f8 48 c7 c7 00 13 21 8b e8 c7 a5 16 00 <0f> 0b eb be 4c 89 e7 e8 9f 14 a1 f8 eb d5 e8 38 14 a1 f8 e9 3f ff
+RSP: 0018:ffffc90003f0f4e8 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: ffff8880126fa000 RCX: 0000000000000000
+RDX: ffff88801e751d80 RSI: ffffffff8160f738 RDI: fffff520007e1e8f
+RBP: ffff888016a0ae00 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000080000000 R11: 676e6970706f7244 R12: ffff8880126fa068
+R13: 0000000000000008 R14: ffff888016a0ae58 R15: ffff8880266cd880
+FS:  000055555626b300(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020000916 CR3: 00000000265ee000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:731
+ genl_family_rcv_msg net/netlink/genetlink.c:808 [inline]
+ genl_rcv_msg+0x441/0x780 net/netlink/genetlink.c:825
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2540
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:836
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x917/0xe10 net/netlink/af_netlink.c:1921
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:734
+ ____sys_sendmsg+0x712/0x8c0 net/socket.c:2482
+ ___sys_sendmsg+0x110/0x1b0 net/socket.c:2536
+ __sys_sendmsg+0xf3/0x1c0 net/socket.c:2565
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f9aa25fce89
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fff35f65558 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000000095e8 RCX: 00007f9aa25fce89
+RDX: 0000000000000000 RSI: 0000000020000100 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 00007fff35f656f8 R09: 00007fff35f656f8
+R10: 00007fff35f64fd0 R11: 0000000000000246 R12: 00007fff35f6556c
+R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
 
 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-> > To avoid the use-after-free, we need to clean up TCP_NEW_SYN_RECV sockets
-> > in inet_twsk_purge() if the netns uses a per-netns ehash.
-> >
-> > [0]: https://lore.kernel.org/netdev/CANn89iLXMup0dRD_Ov79Xt8N9FM0XdhCHEN05sf3eLwxKweM6w@mail.gmail.com/
-> >
-> > BUG: KASAN: use-after-free in tcp_or_dccp_get_hashinfo
-> > include/net/inet_hashtables.h:181 [inline]
-> > BUG: KASAN: use-after-free in reqsk_queue_unlink+0x320/0x350
-> > net/ipv4/inet_connection_sock.c:913
-> > Read of size 8 at addr ffff88807545bd80 by task syz-executor.2/8301
-> >
-> > CPU: 1 PID: 8301 Comm: syz-executor.2 Not tainted
-> > 6.0.0-syzkaller-02757-gaf7d23f9d96a #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine,
-> > BIOS Google 09/22/2022
-> > Call Trace:
-> > <IRQ>
-> > __dump_stack lib/dump_stack.c:88 [inline]
-> > dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
-> > print_address_description mm/kasan/report.c:317 [inline]
-> > print_report.cold+0x2ba/0x719 mm/kasan/report.c:433
-> > kasan_report+0xb1/0x1e0 mm/kasan/report.c:495
-> > tcp_or_dccp_get_hashinfo include/net/inet_hashtables.h:181 [inline]
-> > reqsk_queue_unlink+0x320/0x350 net/ipv4/inet_connection_sock.c:913
-> > inet_csk_reqsk_queue_drop net/ipv4/inet_connection_sock.c:927 [inline]
-> > inet_csk_reqsk_queue_drop_and_put net/ipv4/inet_connection_sock.c:939 [inline]
-> > reqsk_timer_handler+0x724/0x1160 net/ipv4/inet_connection_sock.c:1053
-> > call_timer_fn+0x1a0/0x6b0 kernel/time/timer.c:1474
-> > expire_timers kernel/time/timer.c:1519 [inline]
-> > __run_timers.part.0+0x674/0xa80 kernel/time/timer.c:1790
-> > __run_timers kernel/time/timer.c:1768 [inline]
-> > run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1803
-> > __do_softirq+0x1d0/0x9c8 kernel/softirq.c:571
-> > invoke_softirq kernel/softirq.c:445 [inline]
-> > __irq_exit_rcu+0x123/0x180 kernel/softirq.c:650
-> > irq_exit_rcu+0x5/0x20 kernel/softirq.c:662
-> > sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1107
-> > </IRQ>
-> >
-> > Fixes: d1e5e6408b30 ("tcp: Introduce optional per-netns ehash.")
-> > Reported-by: syzbot <syzkaller@googlegroups.com>
-> > Reported-by: Eric Dumazet <edumazet@google.com>
-> > Suggested-by: Eric Dumazet <edumazet@google.com>
-> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> > ---
-> >  net/ipv4/inet_timewait_sock.c | 15 ++++++++++++++-
-> >  net/ipv4/tcp_minisocks.c      |  9 +++++----
-> >  2 files changed, 19 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_sock.c
-> > index 71d3bb0abf6c..66fc940f9521 100644
-> > --- a/net/ipv4/inet_timewait_sock.c
-> > +++ b/net/ipv4/inet_timewait_sock.c
-> > @@ -268,8 +268,21 @@ void inet_twsk_purge(struct inet_hashinfo *hashinfo, int family)
-> >                 rcu_read_lock();
-> >  restart:
-> >                 sk_nulls_for_each_rcu(sk, node, &head->chain) {
-> > -                       if (sk->sk_state != TCP_TIME_WAIT)
-> > +                       if (sk->sk_state != TCP_TIME_WAIT) {
-> > +                               /* A kernel listener socket might not hold refcnt for net,
-> > +                                * so reqsk_timer_handler() could be fired after net is
-> > +                                * freed.  Userspace listener and reqsk never exist here.
-> > +                                */
-> > +                               if (unlikely(sk->sk_state == TCP_NEW_SYN_RECV &&
-> > +                                            hashinfo->pernet)) {
-> > +                                       struct request_sock *req = inet_reqsk(sk);
-> > +
-> > +                                       inet_csk_reqsk_queue_drop_and_put(req->rsk_listener, req);
-> > +                               }
-> > +
-> >                                 continue;
-> > +                       }
-> > +
-> >                         tw = inet_twsk(sk);
-> >                         if ((tw->tw_family != family) ||
-> >                                 refcount_read(&twsk_net(tw)->ns.count))
-> > diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-> > index 79f30f026d89..c375f603a16c 100644
-> > --- a/net/ipv4/tcp_minisocks.c
-> > +++ b/net/ipv4/tcp_minisocks.c
-> > @@ -353,13 +353,14 @@ void tcp_twsk_purge(struct list_head *net_exit_list, int family)
-> >         struct net *net;
-> >
-> >         list_for_each_entry(net, net_exit_list, exit_list) {
-> > -               /* The last refcount is decremented in tcp_sk_exit_batch() */
-> > -               if (refcount_read(&net->ipv4.tcp_death_row.tw_refcount) == 1)
-> > -                       continue;
-> > -
-> >                 if (net->ipv4.tcp_death_row.hashinfo->pernet) {
-> > +                       /* Even if tw_refcount == 1, we must clean up kernel reqsk */
-> >                         inet_twsk_purge(net->ipv4.tcp_death_row.hashinfo, family);
-> >                 } else if (!purged_once) {
-> > +                       /* The last refcount is decremented in tcp_sk_exit_batch() */
-> > +                       if (refcount_read(&net->ipv4.tcp_death_row.tw_refcount) == 1)
-> > +                               continue;
-> > +
-> >                         inet_twsk_purge(&tcp_hashinfo, family);
-> >                         purged_once = true;
-> >                 }
-> > --
-> > 2.30.2
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
