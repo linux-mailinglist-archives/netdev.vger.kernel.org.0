@@ -2,101 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E3625FC71C
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 16:17:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1B835FC766
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 16:32:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229769AbiJLORn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 10:17:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42238 "EHLO
+        id S229505AbiJLOce (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 10:32:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229577AbiJLORl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 10:17:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F54E4F665
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 07:17:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1665584259;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=PqNcyRrP+8DZEGChD9ht0LMFr5rp4+16v3Kx7IRTLeU=;
-        b=KTwpm90HBMTVVpdgmrx+obfr+NtqLm9lgi+GsumtzE7p65S3EAVc2UW8bqOCDWy4d9646c
-        AfvXbO5wYmd8yBmzbatVvc7CDrKrpDFDymPiFeo6lQwkMdpzR/MMMI8swKUPBHWXaAue/U
-        Cbw2sza7Jr5WGnVXc1pSGpfHXy3s650=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-28-cPF_2_qXNjeDaRkUwoSO3w-1; Wed, 12 Oct 2022 10:17:38 -0400
-X-MC-Unique: cPF_2_qXNjeDaRkUwoSO3w-1
-Received: by mail-qk1-f200.google.com with SMTP id w13-20020a05620a424d00b006e833c4fb0dso11895520qko.2
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 07:17:38 -0700 (PDT)
+        with ESMTP id S229459AbiJLOcd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 10:32:33 -0400
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B7AECA8A9
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 07:32:31 -0700 (PDT)
+Received: by mail-qk1-x72e.google.com with SMTP id x13so8004374qkg.11
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 07:32:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=SH4UGOuYFZRjMjpUe6JiCqBFCXy39ifK+ZqrTxN5hbc=;
+        b=h2tWoloLCif8btRNVAv/Kb99Ys0nSBWAsdEQBv245LFnhCgk3+HaPx5b6/4u30qaqc
+         3oAtZ6i0r8pAwA6mGhMULAttwwqiEz6jBQtizIuuziZjGvoZS4RdauEHZqmqBizGuvPB
+         FI+hp1RU8rPQRamMz24NeXBCIGqonYlFLzaYaRuYQGv7CDp5clNblWwTN5wg1mGX2CeC
+         /FfFsnjm0Vh4kcQWjmEH5rwe6YfmYUkmjq0hB08kmbs0WuGjLZPm45nKNLd4leXDbYt4
+         W4wL0UBPGSP7zC03yOpTfEGgEAHsPCesRgSH44F3E5SZxiorLTkr9vqu9mHiZRZPzWeC
+         1Bzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:from:content-language
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=PqNcyRrP+8DZEGChD9ht0LMFr5rp4+16v3Kx7IRTLeU=;
-        b=BmB/DpmzD3QvX++DgfCOXu2yI+rBDTR+XknTqMGjIrSxBANtMU9SS+AOfwok1JoxiI
-         UxBB6fuMvRIEbqkY8P1x2J2rgpBpAt2rWWeiElYgcWwjIc6Qik5zsV81QTGsX7f85od8
-         DkiIvGcq/7qT10ghKd5K7dSZHqMsyiGdFna+lDRNl0vjU2L9a1PBCfZNUPv3Q3qeOHWk
-         iAmVjszwy9q1fd9iVw4gddriTsTccvi2zM9iHRoWoVjxR506JNjcePIAZZsbr9t+ca6T
-         8DOFR96Xp/Vb2l/r7kkEX4rDyri5kZ8S20xhaqaMjaZnqKXg+zIZCUMYJz3bI6UxlZMr
-         RaUg==
-X-Gm-Message-State: ACrzQf28Mr9GHrVazpWJ0H6ItOK6ZPRQA+KD1eVTjN2L3drZHPRMqf6p
-        f3v9O8yxyYJfr1TPwYtulb4K6sZuj3GQAisTlxJVqd1Kg66mAPj/wHiICEXkuQUMpZvZQmzFPEB
-        klOU39kWnkwJUgPjJ
-X-Received: by 2002:a05:620a:4389:b0:6df:835f:98d1 with SMTP id a9-20020a05620a438900b006df835f98d1mr20056741qkp.169.1665584258029;
-        Wed, 12 Oct 2022 07:17:38 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM5FxTwZZi39mwa8PKie9WngIRS/F/Oe7XY167zbsWAmD5qRGj1LNwyKjGPVfYRIbfgKqM+izA==
-X-Received: by 2002:a05:620a:4389:b0:6df:835f:98d1 with SMTP id a9-20020a05620a438900b006df835f98d1mr20056727qkp.169.1665584257817;
-        Wed, 12 Oct 2022 07:17:37 -0700 (PDT)
-Received: from [192.168.98.18] ([107.12.98.143])
-        by smtp.gmail.com with ESMTPSA id de14-20020a05620a370e00b006e07228ed53sm12251619qkb.18.2022.10.12.07.17.37
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=SH4UGOuYFZRjMjpUe6JiCqBFCXy39ifK+ZqrTxN5hbc=;
+        b=MoWilNay4hf8FtHhgmQMgJGM+KLcUv/oQNqx8qaQCWkq96FRD+n3xuTd7GyWW9V1AH
+         oT+Db6dgqqrCxgLb8eHGW8MhZ7aIXFTN6mYxOPyUWAxafimKPf1EXuCnzwujxkDzwob9
+         jP146L8RBumVmgY1YMTyiu5D3Gul8gYgCOp4ixh9Gu0yT+zBQwLv+hpFTUeYYKDYaOwn
+         IHgWVglBuaeGdaXEuergxYauHTWVKhWNHYTyFbuP1WzwfU3Z9Cn7GKG5RJTOg7yV/7Xc
+         +FOWCEf0I+yvEbYE6rGrX+NMrufSKyCzlI7wQz38TZbrCeJY161iSuNkja0fz5JCwQSK
+         xlMA==
+X-Gm-Message-State: ACrzQf3wmZ3mIUIH6enHkNBs+ExIcdV4idRX8Ydn5vRScfeaJfF0/Anv
+        2dgMr8LI5gCEfpQXea1H0MnOZQ==
+X-Google-Smtp-Source: AMsMyM561J8FH7HsWgP5RLTfNoeEdidaF/qKXJ1zmPKh6eF/XRTzCY/HasSxm6mPyaBCFY1GpNGHKQ==
+X-Received: by 2002:a37:ad12:0:b0:6ee:8313:6199 with SMTP id f18-20020a37ad12000000b006ee83136199mr5398271qkm.570.1665585150355;
+        Wed, 12 Oct 2022 07:32:30 -0700 (PDT)
+Received: from [192.168.1.57] (cpe-72-225-192-120.nyc.res.rr.com. [72.225.192.120])
+        by smtp.gmail.com with ESMTPSA id bq15-20020a05622a1c0f00b0039cb9b6c390sm2395117qtb.79.2022.10.12.07.32.28
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Oct 2022 07:17:37 -0700 (PDT)
-Message-ID: <40f04ded-0c86-8669-24b1-9a313ca21076@redhat.com>
-Date:   Wed, 12 Oct 2022 10:17:36 -0400
+        Wed, 12 Oct 2022 07:32:29 -0700 (PDT)
+Message-ID: <6f3088a8-284d-d71f-68d1-01a5412bfff2@linaro.org>
+Date:   Wed, 12 Oct 2022 10:32:07 -0400
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.2
+Subject: Re: [PATCH v3 1/3] dt-bindings: net: marvell,pp2: convert to
+ json-schema
 Content-Language: en-US
-From:   Jonathan Toppins <jtoppins@redhat.com>
-Subject: kselftest: bonding: dev_addr_lists.sh doesn't run due to lack of
- dependencies
-To:     Benjamin Poirier <bpoirier@nvidia.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     =?UTF-8?Q?Micha=c5=82_Grzelak?= <mig@semihalf.com>,
+        devicetree@vger.kernel.org, linux@armlinux.org.uk,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, upstream@semihalf.com
+References: <20221011190613.13008-1-mig@semihalf.com>
+ <20221011190613.13008-2-mig@semihalf.com>
+ <ad015bc9-a6d2-491d-463a-42a6a0afbf75@linaro.org>
+ <CAPv3WKcY=erFTBDLP1AhQa0+CP6C8KJinmKFEkR2xh4mHHv_aQ@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAPv3WKcY=erFTBDLP1AhQa0+CP6C8KJinmKFEkR2xh4mHHv_aQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When kselftest for bonding is built like:
-$ make TARGETS="drivers/net/bonding" -j8 -C tools/testing/selftests gen_tar
+On 11/10/2022 16:34, Marcin Wojtas wrote:
+>>
+>> Keep the same order of items here as in list of properties
+>>
+>>> +
+>>> +required:
+>>> +  - compatible
+>>> +  - reg
+>>> +  - clocks
+>>> +  - clock-names
+>>> +
+>>> +allOf:
+>>> +  - $ref: ethernet-controller.yaml#
+>>
+>> Hmm, are you sure this applies to top-level properties, not to
+>> ethernet-port subnodes? Your ports have phy-mode and phy - just like
+>> ethernet-controller. If I understand correctly, your Armada Ethernet
+>> Controller actually consists of multiple ethernet controllers?
+>>
+> 
+> PP2 is a single controller with common HW blocks, such as queue/buffer
+> management, parser/classifier, register space, and more. It controls
+> up to 3 MAC's (ports) that can be connected to phys, sfp cages, etc.
+> The latter cannot exist on their own and IMO the current hierarchy -
+> the main controller with subnodes (ports) properly reflects the
+> hardware.
+> 
+> Anyway, the ethernet-controller.yaml properties fit to the subnodes.
+> Apart from the name. The below is IMO a good description:.
 
-and then run on the target:
-$ ./run_kselftest.sh
-[...]
-# selftests: drivers/net/bonding: dev_addr_lists.sh
-# ./dev_addr_lists.sh: line 17: ./../../../net/forwarding/lib.sh: No 
-such file or directory
-# ./dev_addr_lists.sh: line 107: tests_run: command not found
-# ./dev_addr_lists.sh: line 109: exit: : numeric argument required
-# ./dev_addr_lists.sh: line 34: pre_cleanup: command not found
-not ok 4 selftests: drivers/net/bonding: dev_addr_lists.sh # exit=2
-[...]
+It also starts to look a bit like a switch (see bindings/net/dsa).
 
-I am still new to kselftests is this expected or is there some way in 
-the make machinery to force packaging of net as well?
+> 
+>> If so, this should be moved to proper place inside patternProperties.
+>> Maybe the subnodes should also be renamed from ports to just "ethernet"
+>> (as ethernet-controller.yaml expects), but other schemas do not follow
+>> this convention,
+> 
+> ethernet@
+> {
+>     ethernet-port@0
+>     {
+>      }
+>      ethernet-port@1
+>      {
+>      }
+> }
+> 
+> What do you recommend?
 
-Thanks,
--Jon
+Yes, keep it like this and reference the ethernet-controller.yaml in
+each port.
+
+Best regards,
+Krzysztof
 
