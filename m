@@ -2,308 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 301BD5FCAB6
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 20:36:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D8535FCA9B
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 20:26:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229651AbiJLSf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 14:35:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58200 "EHLO
+        id S229793AbiJLS0n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 14:26:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229712AbiJLSf4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 14:35:56 -0400
-X-Greylist: delayed 2315 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 12 Oct 2022 11:35:54 PDT
-Received: from 1.mo550.mail-out.ovh.net (1.mo550.mail-out.ovh.net [178.32.127.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73FCA5D0E7
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 11:35:53 -0700 (PDT)
-Received: from player728.ha.ovh.net (unknown [10.111.172.229])
-        by mo550.mail-out.ovh.net (Postfix) with ESMTP id BB6E322404
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 17:57:17 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player728.ha.ovh.net (Postfix) with ESMTPSA id B9C432F8FE5EC;
-        Wed, 12 Oct 2022 17:57:12 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-100R003037fe447-62ac-4074-adae-940157cc4a84,
-                    75377E6B882747309559AE06BD3DFEEF97A89409) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Krzysztof Opasiak <k.opasiak@samsung.com>
-Cc:     Stephen Kitt <steve@sk2.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] drivers/nfc: use simple i2c probe
-Date:   Wed, 12 Oct 2022 19:56:59 +0200
-Message-Id: <20221012175700.3940062-1-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S229573AbiJLS0m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 14:26:42 -0400
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A9076C967
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 11:26:41 -0700 (PDT)
+Received: by mail-io1-f72.google.com with SMTP id 75-20020a6b144e000000b006bbed69b669so7444036iou.21
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 11:26:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=w9E4FGrgNA2t7iVK5WJAXLQ73iKqHUC0p6WTicNH5HI=;
+        b=VYOQIuYKAghZHwtDjKARPx7nL1HWFFFcpXoTVP+icJsRQ+3n1kez9ig4i+TZSAnHgy
+         4onY8AUPAWL9JJO4VsfCmn2arkT7gnXfRef9LUy9u5P0867XWinA2XT2e1W7QnA2UurC
+         MzAnhZ3kRROkbQAyUi93drSmNcCxO/t6sI3u4QqTUWgyK7Of+31LBvQortKTbZf5h8fy
+         Bk5npbOhs8zyab5KlT35LSkdP1YSYyccGQUl8E+cNo6NflutrUm+NN+kW3dnXfhUqzcF
+         3MpXzweBoqn/LLc84JtgtWLt4AdezWvKDqq1XJvC+EzGWuft30IwzG7nD1k4wTU5RG4x
+         fCMQ==
+X-Gm-Message-State: ACrzQf2bzYI7BXswXq5X3nrfn+87+QXeG0XDkEZ6ivvcw1+yQbYA1uF2
+        HvNpF258B9NhXMTJm6myc995XhbQ147yx0ioBL8pAXy/WCS0
+X-Google-Smtp-Source: AMsMyM6JLuT2RuIdhxwPKrhuwo+D+YFm7PP82rP0WGBtsSpEWXCji7rBUrIPlPcKpyRlWQfDPBv1NJAxIcs1TPQg1TaczmiEcAxX
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 18445899650934343387
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrfeejkedguddvtdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeelgeetueejffejfeejvefhtddufeejgfetleegtddukeelieelvddvteduveejtdenucfkphepuddvjedrtddrtddruddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepuddvjedrtddrtddruddpmhgrihhlfhhrohhmpeeoshhtvghvvgesshhkvddrohhrgheqpdhnsggprhgtphhtthhopedupdhrtghpthhtohepnhgvthguvghvsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdfovfetjfhoshhtpehmohehhedtpdhmohguvgepshhmthhpohhuth
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6638:d94:b0:35a:6828:6804 with SMTP id
+ l20-20020a0566380d9400b0035a68286804mr16609925jaj.149.1665599200624; Wed, 12
+ Oct 2022 11:26:40 -0700 (PDT)
+Date:   Wed, 12 Oct 2022 11:26:40 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b1060905eada8881@google.com>
+Subject: [syzbot] WARNING in ip_rt_bug (2)
+From:   syzbot <syzbot+e738404dcd14b620923c@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All these drivers have an i2c probe function which doesn't use the
-"struct i2c_device_id *id" parameter, so they can trivially be
-converted to the "probe_new" style of probe with a single argument.
+Hello,
 
-This is part of an ongoing transition to single-argument i2c probe
-functions. Old-style probe functions involve a call to i2c_match_id:
-in drivers/i2c/i2c-core-base.c,
+syzbot found the following issue on:
 
-         /*
-          * When there are no more users of probe(),
-          * rename probe_new to probe.
-          */
-         if (driver->probe_new)
-                 status = driver->probe_new(client);
-         else if (driver->probe)
-                 status = driver->probe(client,
-                                        i2c_match_id(driver->id_table, client));
-         else
-                 status = -EINVAL;
+HEAD commit:    a0ba26f37ea0 Merge git://git.kernel.org/pub/scm/linux/kern..
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=1594a825e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=27392dd2975fd692
+dashboard link: https://syzkaller.appspot.com/bug?extid=e738404dcd14b620923c
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16851c6de00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11f5d605e00000
 
-Drivers which don't need the second parameter can be declared using
-probe_new instead, avoiding the call to i2c_match_id. Drivers which do
-can still be converted to probe_new-style, calling i2c_match_id
-themselves (as is done currently for of_match_id).
+Bisection is inconclusive: the issue happens on the oldest tested release.
 
-This change was done using the following Coccinelle script, and fixed
-up for whitespace changes:
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1422a825e00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=1622a825e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1222a825e00000
 
-@ rule1 @
-identifier fn;
-identifier client, id;
-@@
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+e738404dcd14b620923c@syzkaller.appspotmail.com
 
-- static int fn(struct i2c_client *client, const struct i2c_device_id *id)
-+ static int fn(struct i2c_client *client)
-{
-...when != id
-}
+syz-executor857 uses obsolete (PF_INET,SOCK_PACKET)
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 7033 at net/ipv4/route.c:1243 ip_rt_bug+0x11/0x20 net/ipv4/route.c:1242
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 1 PID: 7033 Comm: syz-executor857 Not tainted 5.6.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x188/0x20d lib/dump_stack.c:118
+ panic+0x2e3/0x75c kernel/panic.c:221
+ __warn.cold+0x2f/0x35 kernel/panic.c:582
+ report_bug+0x27b/0x2f0 lib/bug.c:195
+ fixup_bug arch/x86/kernel/traps.c:174 [inline]
+ fixup_bug arch/x86/kernel/traps.c:169 [inline]
+ do_error_trap+0x12b/0x220 arch/x86/kernel/traps.c:267
+ do_invalid_op+0x32/0x40 arch/x86/kernel/traps.c:286
+ invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
+RIP: 0010:ip_rt_bug+0x11/0x20 net/ipv4/route.c:1243
+Code: ff ff e8 c2 d7 33 fb e9 eb fe ff ff e8 b8 d7 33 fb e9 59 ff ff ff 0f 1f 00 55 48 89 d5 e8 17 0e f7 fa 48 89 ef e8 6f 0c 8f ff <0f> 0b 31 c0 5d c3 66 0f 1f 84 00 00 00 00 00 41 54 49 89 fc e8 f6
+RSP: 0018:ffffc90001937300 EFLAGS: 00010293
+RAX: ffff8880a2bc2540 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff867b1711 RDI: 0000000000000286
+RBP: ffff8880a31fb940 R08: 0000000000000000 R09: ffffed1015ce7074
+R10: ffffed1015ce7073 R11: ffff8880ae73839b R12: ffff8880970b0e00
+R13: ffff8880a31fb940 R14: ffff8880a4a71240 R15: ffff8880a31fb998
+ dst_output include/net/dst.h:436 [inline]
+ ip_local_out+0xaf/0x1a0 net/ipv4/ip_output.c:125
+ ip_send_skb+0x3e/0xe0 net/ipv4/ip_output.c:1560
+ ip_push_pending_frames+0x5f/0x80 net/ipv4/ip_output.c:1580
+ icmp_push_reply+0x33f/0x490 net/ipv4/icmp.c:390
+ __icmp_send+0xc44/0x14a0 net/ipv4/icmp.c:740
+ icmp_send include/net/icmp.h:43 [inline]
+ ip_options_compile+0xad/0xf0 net/ipv4/ip_options.c:486
+ ip_rcv_options net/ipv4/ip_input.c:278 [inline]
+ ip_rcv_finish_core.isra.0+0x4aa/0x1ec0 net/ipv4/ip_input.c:370
+ ip_rcv_finish+0x144/0x2f0 net/ipv4/ip_input.c:426
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ NF_HOOK include/linux/netfilter.h:301 [inline]
+ ip_rcv+0xd0/0x3c0 net/ipv4/ip_input.c:538
+ __netif_receive_skb_one_core+0xf5/0x160 net/core/dev.c:5187
+ __netif_receive_skb+0x27/0x1c0 net/core/dev.c:5301
+ netif_receive_skb_internal net/core/dev.c:5391 [inline]
+ netif_receive_skb+0x16e/0x960 net/core/dev.c:5450
+ tun_rx_batched.isra.0+0x47b/0x7d0 drivers/net/tun.c:1553
+ tun_get_user+0x134a/0x3be0 drivers/net/tun.c:1997
+ tun_chr_write_iter+0xb0/0x147 drivers/net/tun.c:2026
+ call_write_iter include/linux/fs.h:1902 [inline]
+ new_sync_write+0x49c/0x700 fs/read_write.c:483
+ __vfs_write+0xc9/0x100 fs/read_write.c:496
+ vfs_write+0x262/0x5c0 fs/read_write.c:558
+ ksys_write+0x127/0x250 fs/read_write.c:611
+ do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:294
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x440699
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fffce0515b8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000440699
+RDX: 000000000000100c RSI: 0000000020000240 RDI: 0000000000000005
+RBP: 0000000000000000 R08: 0000000000002c00 R09: 00007fff0000000d
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401f20
+R13: 0000000000401fb0 R14: 0000000000000000 R15: 0000000000000000
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
 
-@ rule2 depends on rule1 @
-identifier rule1.fn;
-identifier driver;
-@@
 
-struct i2c_driver driver = {
--       .probe
-+       .probe_new
-                =
-(
-                   fn
-|
--                  &fn
-+                  fn
-)
-                ,
-};
-
-Signed-off-by: Stephen Kitt <steve@sk2.org>
 ---
- drivers/nfc/microread/i2c.c | 5 ++---
- drivers/nfc/nfcmrvl/i2c.c   | 5 ++---
- drivers/nfc/nxp-nci/i2c.c   | 5 ++---
- drivers/nfc/pn533/i2c.c     | 5 ++---
- drivers/nfc/pn544/i2c.c     | 5 ++---
- drivers/nfc/s3fwrn5/i2c.c   | 5 ++---
- drivers/nfc/st-nci/i2c.c    | 5 ++---
- drivers/nfc/st21nfca/i2c.c  | 5 ++---
- 8 files changed, 16 insertions(+), 24 deletions(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/nfc/microread/i2c.c b/drivers/nfc/microread/i2c.c
-index 5eaa18f81355..e72b358a2a12 100644
---- a/drivers/nfc/microread/i2c.c
-+++ b/drivers/nfc/microread/i2c.c
-@@ -231,8 +231,7 @@ static const struct nfc_phy_ops i2c_phy_ops = {
- 	.disable = microread_i2c_disable,
- };
- 
--static int microread_i2c_probe(struct i2c_client *client,
--			       const struct i2c_device_id *id)
-+static int microread_i2c_probe(struct i2c_client *client)
- {
- 	struct microread_i2c_phy *phy;
- 	int r;
-@@ -287,7 +286,7 @@ static struct i2c_driver microread_i2c_driver = {
- 	.driver = {
- 		.name = MICROREAD_I2C_DRIVER_NAME,
- 	},
--	.probe		= microread_i2c_probe,
-+	.probe_new	= microread_i2c_probe,
- 	.remove		= microread_i2c_remove,
- 	.id_table	= microread_i2c_id,
- };
-diff --git a/drivers/nfc/nfcmrvl/i2c.c b/drivers/nfc/nfcmrvl/i2c.c
-index acef0cfd76af..424b49a71930 100644
---- a/drivers/nfc/nfcmrvl/i2c.c
-+++ b/drivers/nfc/nfcmrvl/i2c.c
-@@ -176,8 +176,7 @@ static int nfcmrvl_i2c_parse_dt(struct device_node *node,
- 	return 0;
- }
- 
--static int nfcmrvl_i2c_probe(struct i2c_client *client,
--			     const struct i2c_device_id *id)
-+static int nfcmrvl_i2c_probe(struct i2c_client *client)
- {
- 	const struct nfcmrvl_platform_data *pdata;
- 	struct nfcmrvl_i2c_drv_data *drv_data;
-@@ -252,7 +251,7 @@ static const struct i2c_device_id nfcmrvl_i2c_id_table[] = {
- MODULE_DEVICE_TABLE(i2c, nfcmrvl_i2c_id_table);
- 
- static struct i2c_driver nfcmrvl_i2c_driver = {
--	.probe = nfcmrvl_i2c_probe,
-+	.probe_new = nfcmrvl_i2c_probe,
- 	.id_table = nfcmrvl_i2c_id_table,
- 	.remove = nfcmrvl_i2c_remove,
- 	.driver = {
-diff --git a/drivers/nfc/nxp-nci/i2c.c b/drivers/nfc/nxp-nci/i2c.c
-index ec6446511984..d4c299be7949 100644
---- a/drivers/nfc/nxp-nci/i2c.c
-+++ b/drivers/nfc/nxp-nci/i2c.c
-@@ -263,8 +263,7 @@ static const struct acpi_gpio_mapping acpi_nxp_nci_gpios[] = {
- 	{ }
- };
- 
--static int nxp_nci_i2c_probe(struct i2c_client *client,
--			    const struct i2c_device_id *id)
-+static int nxp_nci_i2c_probe(struct i2c_client *client)
- {
- 	struct device *dev = &client->dev;
- 	struct nxp_nci_i2c_phy *phy;
-@@ -349,7 +348,7 @@ static struct i2c_driver nxp_nci_i2c_driver = {
- 		   .acpi_match_table = ACPI_PTR(acpi_id),
- 		   .of_match_table = of_nxp_nci_i2c_match,
- 		  },
--	.probe = nxp_nci_i2c_probe,
-+	.probe_new = nxp_nci_i2c_probe,
- 	.id_table = nxp_nci_i2c_id_table,
- 	.remove = nxp_nci_i2c_remove,
- };
-diff --git a/drivers/nfc/pn533/i2c.c b/drivers/nfc/pn533/i2c.c
-index ddf3db286bad..1503a98f0405 100644
---- a/drivers/nfc/pn533/i2c.c
-+++ b/drivers/nfc/pn533/i2c.c
-@@ -163,8 +163,7 @@ static const struct pn533_phy_ops i2c_phy_ops = {
- };
- 
- 
--static int pn533_i2c_probe(struct i2c_client *client,
--			       const struct i2c_device_id *id)
-+static int pn533_i2c_probe(struct i2c_client *client)
- {
- 	struct pn533_i2c_phy *phy;
- 	struct pn533 *priv;
-@@ -260,7 +259,7 @@ static struct i2c_driver pn533_i2c_driver = {
- 		   .name = PN533_I2C_DRIVER_NAME,
- 		   .of_match_table = of_match_ptr(of_pn533_i2c_match),
- 		  },
--	.probe = pn533_i2c_probe,
-+	.probe_new = pn533_i2c_probe,
- 	.id_table = pn533_i2c_id_table,
- 	.remove = pn533_i2c_remove,
- };
-diff --git a/drivers/nfc/pn544/i2c.c b/drivers/nfc/pn544/i2c.c
-index 9e754abcfa2a..8b0d910bee06 100644
---- a/drivers/nfc/pn544/i2c.c
-+++ b/drivers/nfc/pn544/i2c.c
-@@ -866,8 +866,7 @@ static const struct acpi_gpio_mapping acpi_pn544_gpios[] = {
- 	{ },
- };
- 
--static int pn544_hci_i2c_probe(struct i2c_client *client,
--			       const struct i2c_device_id *id)
-+static int pn544_hci_i2c_probe(struct i2c_client *client)
- {
- 	struct device *dev = &client->dev;
- 	struct pn544_i2c_phy *phy;
-@@ -954,7 +953,7 @@ static struct i2c_driver pn544_hci_i2c_driver = {
- 		   .of_match_table = of_match_ptr(of_pn544_i2c_match),
- 		   .acpi_match_table = ACPI_PTR(pn544_hci_i2c_acpi_match),
- 		  },
--	.probe = pn544_hci_i2c_probe,
-+	.probe_new = pn544_hci_i2c_probe,
- 	.id_table = pn544_hci_i2c_id_table,
- 	.remove = pn544_hci_i2c_remove,
- };
-diff --git a/drivers/nfc/s3fwrn5/i2c.c b/drivers/nfc/s3fwrn5/i2c.c
-index f824dc7099ce..33f8b8ce9132 100644
---- a/drivers/nfc/s3fwrn5/i2c.c
-+++ b/drivers/nfc/s3fwrn5/i2c.c
-@@ -177,8 +177,7 @@ static int s3fwrn5_i2c_parse_dt(struct i2c_client *client)
- 	return 0;
- }
- 
--static int s3fwrn5_i2c_probe(struct i2c_client *client,
--				  const struct i2c_device_id *id)
-+static int s3fwrn5_i2c_probe(struct i2c_client *client)
- {
- 	struct s3fwrn5_i2c_phy *phy;
- 	int ret;
-@@ -271,7 +270,7 @@ static struct i2c_driver s3fwrn5_i2c_driver = {
- 		.name = S3FWRN5_I2C_DRIVER_NAME,
- 		.of_match_table = of_match_ptr(of_s3fwrn5_i2c_match),
- 	},
--	.probe = s3fwrn5_i2c_probe,
-+	.probe_new = s3fwrn5_i2c_probe,
- 	.remove = s3fwrn5_i2c_remove,
- 	.id_table = s3fwrn5_i2c_id_table,
- };
-diff --git a/drivers/nfc/st-nci/i2c.c b/drivers/nfc/st-nci/i2c.c
-index 89fa24d71bef..6b5eed8a1fbe 100644
---- a/drivers/nfc/st-nci/i2c.c
-+++ b/drivers/nfc/st-nci/i2c.c
-@@ -195,8 +195,7 @@ static const struct acpi_gpio_mapping acpi_st_nci_gpios[] = {
- 	{},
- };
- 
--static int st_nci_i2c_probe(struct i2c_client *client,
--				  const struct i2c_device_id *id)
-+static int st_nci_i2c_probe(struct i2c_client *client)
- {
- 	struct device *dev = &client->dev;
- 	struct st_nci_i2c_phy *phy;
-@@ -284,7 +283,7 @@ static struct i2c_driver st_nci_i2c_driver = {
- 		.of_match_table = of_match_ptr(of_st_nci_i2c_match),
- 		.acpi_match_table = ACPI_PTR(st_nci_i2c_acpi_match),
- 	},
--	.probe = st_nci_i2c_probe,
-+	.probe_new = st_nci_i2c_probe,
- 	.id_table = st_nci_i2c_id_table,
- 	.remove = st_nci_i2c_remove,
- };
-diff --git a/drivers/nfc/st21nfca/i2c.c b/drivers/nfc/st21nfca/i2c.c
-index 76b55986bcf8..55f7a2391bb1 100644
---- a/drivers/nfc/st21nfca/i2c.c
-+++ b/drivers/nfc/st21nfca/i2c.c
-@@ -487,8 +487,7 @@ static const struct acpi_gpio_mapping acpi_st21nfca_gpios[] = {
- 	{},
- };
- 
--static int st21nfca_hci_i2c_probe(struct i2c_client *client,
--				  const struct i2c_device_id *id)
-+static int st21nfca_hci_i2c_probe(struct i2c_client *client)
- {
- 	struct device *dev = &client->dev;
- 	struct st21nfca_i2c_phy *phy;
-@@ -598,7 +597,7 @@ static struct i2c_driver st21nfca_hci_i2c_driver = {
- 		.of_match_table = of_match_ptr(of_st21nfca_i2c_match),
- 		.acpi_match_table = ACPI_PTR(st21nfca_hci_i2c_acpi_match),
- 	},
--	.probe = st21nfca_hci_i2c_probe,
-+	.probe_new = st21nfca_hci_i2c_probe,
- 	.id_table = st21nfca_hci_i2c_id_table,
- 	.remove = st21nfca_hci_i2c_remove,
- };
-
-base-commit: 833477fce7a14d43ae4c07f8ddc32fa5119471a2
--- 
-2.30.2
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
