@@ -2,106 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A36A15FC8B8
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 17:52:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C90A5FC8F8
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 18:13:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229966AbiJLPwL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 11:52:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53916 "EHLO
+        id S229604AbiJLQNr convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 12 Oct 2022 12:13:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbiJLPwJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 11:52:09 -0400
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62144F2520;
-        Wed, 12 Oct 2022 08:52:03 -0700 (PDT)
-Received: by mail-qk1-x729.google.com with SMTP id a5so5680490qkl.6;
-        Wed, 12 Oct 2022 08:52:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=cCvqeLf3ZV6pySPAQmlmFI1gb6Z0Oqu0IwzbIvFJXOs=;
-        b=Wi94i1FaQ6yT28Hz9NIlUS2Qy2Hv4lUdEiAmQghGtGHfgTtkIufcBnzCRl5P7GPmlW
-         aREjMHguEleNyrJiix3w25TmU5AQv1180Hb96Q5gVa5WglhXnw7ydmrVlV01axywwHRq
-         OUSCi30aq3eJTDjRa8lkEune/QZxTawqJiOsRN0XS+tFJK6QZhZD5uLPMfgbVW40PvuQ
-         H05ohIofLFYqjaox0xiWXOp4OGN63OwaP6ZtDmPLAFVftYGiKGEo2bnhXjLMjPDOswdc
-         BD+YpLByDiH3+WEpROZPZsYGjpvt1l/lTZJVSmuw9gHQHBbdTOUjwnerbgW6hS2Nh6IQ
-         c09g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=cCvqeLf3ZV6pySPAQmlmFI1gb6Z0Oqu0IwzbIvFJXOs=;
-        b=3uPf5sVATgG0TL6JQa6pwycUotswtEod2XgreslSDvp3S3OBbGnJaJj2PPkfqeXpq/
-         LazeWxqoVDH9NojM/nvDkqyTeYShEubGX7lylbtlIP/f/3GPDVtw7bmO1nhzv2T2xlq/
-         50Xc7VqPJh07PZYH3GDMXHxQJjzs+be2tjt+J3IHH8jbDX52cBzdoUa5Gp6UoDYCKDh+
-         Q1jL814poTEx6kApmKFCARnpC5ihdvnvj5VwVapFK6oTv341Px7mpP3VSNA3K/2KCgBP
-         aObONtmFLT/xndFJhX6FM6fBer2E7t13SEu9TsqHIWJ9Wk3GglLKDWyMdwje3xxUMEuk
-         u2eg==
-X-Gm-Message-State: ACrzQf33pW/Bb91NuIZ9jP9GqXiC6c6xugSMA0b2HElEPjoZXw30KeE/
-        /RJr6gIgsvRogzJdFn4YI+0=
-X-Google-Smtp-Source: AMsMyM7LtO48HZ5f2sR1NieF9+RmAyNc0iOtdYp1GqKzYWVUCGe/jb51+hIXoo3OsLPuNINYTUOI5A==
-X-Received: by 2002:a05:620a:2218:b0:6ee:1e01:b189 with SMTP id m24-20020a05620a221800b006ee1e01b189mr8908158qkh.478.1665589922344;
-        Wed, 12 Oct 2022 08:52:02 -0700 (PDT)
-Received: from [192.168.1.201] (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
-        by smtp.gmail.com with ESMTPSA id h15-20020a05620a400f00b006a6ebde4799sm16543987qko.90.2022.10.12.08.52.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Oct 2022 08:52:01 -0700 (PDT)
-Message-ID: <b4a07016-081b-13b0-2cc4-546f419ad59b@gmail.com>
-Date:   Wed, 12 Oct 2022 11:52:00 -0400
+        with ESMTP id S229605AbiJLQNq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 12:13:46 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58FB4E070A
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 09:13:45 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-268-WeWgrHtwPRGrwdN7bTB1vA-1; Wed, 12 Oct 2022 17:13:42 +0100
+X-MC-Unique: WeWgrHtwPRGrwdN7bTB1vA-1
+Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
+ (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Wed, 12 Oct
+ 2022 17:13:40 +0100
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.040; Wed, 12 Oct 2022 17:13:40 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Sergei Antonov' <saproj@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>
+Subject: RE: [PATCH v2 net] net: ftmac100: do not reject packets bigger than
+ 1514
+Thread-Topic: [PATCH v2 net] net: ftmac100: do not reject packets bigger than
+ 1514
+Thread-Index: AQHY3lCWEiTFPZdxBkKncwnj941AIq4K6mqQ
+Date:   Wed, 12 Oct 2022 16:13:40 +0000
+Message-ID: <1b919195757c49769bde19c59a846789@AcuMS.aculab.com>
+References: <20221012153737.128424-1-saproj@gmail.com>
+In-Reply-To: <20221012153737.128424-1-saproj@gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net] sunhme: fix an IS_ERR() vs NULL check in probe
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
 Content-Language: en-US
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rolf Eike Beer <eike-kernel@sf-tec.de>,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-References: <Y0bWzJL8JknX8MUf@kili>
-From:   Sean Anderson <seanga2@gmail.com>
-In-Reply-To: <Y0bWzJL8JknX8MUf@kili>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_SBL_A autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/12/22 11:01, Dan Carpenter wrote:
-> The devm_request_region() function does not return error pointers, it
-> returns NULL on error.
+From: Sergei Antonov
+> Sent: 12 October 2022 16:38
 > 
-> Fixes: 914d9b2711dd ("sunhme: switch to devres")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> ---
->   drivers/net/ethernet/sun/sunhme.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
-> index 62deed210a95..91f10f746dff 100644
-> --- a/drivers/net/ethernet/sun/sunhme.c
-> +++ b/drivers/net/ethernet/sun/sunhme.c
-> @@ -2896,8 +2896,8 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
->   
->   	hpreg_res = devm_request_region(&pdev->dev, pci_resource_start(pdev, 0),
->   					pci_resource_len(pdev, 0), DRV_NAME);
-> -	if (IS_ERR(hpreg_res)) {
-> -		err = PTR_ERR(hpreg_res);
-> +	if (!hpreg_res) {
-> +		err = -EBUSY;
->   		dev_err(&pdev->dev, "Cannot obtain PCI resources, aborting.\n");
->   		goto err_out_clear_quattro;
->   	}
+> Despite the datasheet [1] saying the controller should allow incoming
+> packets of length >=1518, it only allows packets of length <=1514.
 
-Reviewed-by: Sean Anderson <seanga2@gmail.com>
+Shouldn't that be <=1518 and <1518 ??
+
+Although traditionally it was 1514+crc.
+An extra 4 byte header is now allowed.
+There is also the usefulness of supporting full length frames
+with a PPPoE header.
+
+Whether it actually makes sense to round up the receive buffer
+size and associated max frame length to 1536 (cache line aligned)
+is another matter (probably 1534 for 4n+2 alignment).
+
+> Since 1518 is a standard Ethernet maximum frame size, and it can
+> easily be encountered (in SSH for example), fix this behavior:
+> 
+> * Set FTMAC100_MACCR_RX_FTL in the MAC Control Register.
+
+What does that do?
+Looks like it might cause 'Frame Too Long' packets be returned.
+In which case should the code just have ignored it since
+longer frames would be discarded completely??
+
+> * Check for packet size > 1518 in ftmac100_rx_packet_error().
+> 
+> [1]
+> https://bitbucket.org/Kasreyn/mkrom-uc7112lx/src/master/documents/FIC8120_DS_v1.2.pdf
+> 
+> Fixes: 8d77c036b57c ("net: add Faraday FTMAC100 10/100 Ethernet driver")
+> Signed-off-by: Sergei Antonov <saproj@gmail.com>
+> ---
+> 
+> v1 -> v2:
+> * Typos in description fixed.
+> 
+>  drivers/net/ethernet/faraday/ftmac100.c | 13 +++++++++++--
+>  1 file changed, 11 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/faraday/ftmac100.c b/drivers/net/ethernet/faraday/ftmac100.c
+> index d95d78230828..34d0284079ff 100644
+> --- a/drivers/net/ethernet/faraday/ftmac100.c
+> +++ b/drivers/net/ethernet/faraday/ftmac100.c
+> @@ -154,6 +154,7 @@ static void ftmac100_set_mac(struct ftmac100 *priv, const unsigned char *mac)
+>  				 FTMAC100_MACCR_CRC_APD	| \
+>  				 FTMAC100_MACCR_FULLDUP	| \
+>  				 FTMAC100_MACCR_RX_RUNT	| \
+> +				 FTMAC100_MACCR_RX_FTL	| \
+>  				 FTMAC100_MACCR_RX_BROADPKT)
+> 
+>  static int ftmac100_start_hw(struct ftmac100 *priv)
+> @@ -320,6 +321,7 @@ static bool ftmac100_rx_packet_error(struct ftmac100 *priv,
+>  {
+>  	struct net_device *netdev = priv->netdev;
+>  	bool error = false;
+> +	const unsigned int length = ftmac100_rxdes_frame_length(rxdes);
+
+Do you need to read this value this early in the function?
+Looks like it is only used when overlong packets are reported.
+
+	David
+
+> 
+>  	if (unlikely(ftmac100_rxdes_rx_error(rxdes))) {
+>  		if (net_ratelimit())
+> @@ -337,9 +339,16 @@ static bool ftmac100_rx_packet_error(struct ftmac100 *priv,
+>  		error = true;
+>  	}
+> 
+> -	if (unlikely(ftmac100_rxdes_frame_too_long(rxdes))) {
+> +	/* The frame-too-long flag 'FTMAC100_RXDES0_FTL' is described in the
+> +	 * datasheet as: "When set, it indicates that the received packet
+> +	 * length exceeds 1518 bytes." But testing shows that it is also set
+> +	 * when packet length is equal to 1518.
+> +	 * Since 1518 is a standard Ethernet maximum frame size, let it pass
+> +	 * and only trigger an error when packet length really exceeds it.
+> +	 */
+> +	if (unlikely(ftmac100_rxdes_frame_too_long(rxdes) && length > 1518)) {
+>  		if (net_ratelimit())
+> -			netdev_info(netdev, "rx frame too long\n");
+> +			netdev_info(netdev, "rx frame too long (%u)\n", length);
+> 
+>  		netdev->stats.rx_length_errors++;
+>  		error = true;
+> --
+> 2.34.1
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
