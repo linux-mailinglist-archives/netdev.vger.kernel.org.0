@@ -2,80 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 742215FC687
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 15:31:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBDE05FC68C
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 15:34:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229793AbiJLNb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 09:31:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38576 "EHLO
+        id S229734AbiJLNef (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 09:34:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229627AbiJLNby (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 09:31:54 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAD58C1D80;
-        Wed, 12 Oct 2022 06:31:53 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id w18so11563876ejq.11;
-        Wed, 12 Oct 2022 06:31:53 -0700 (PDT)
+        with ESMTP id S229793AbiJLNe3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 09:34:29 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B78A7CF87B
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 06:34:27 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id o4-20020a258d84000000b006bcfc1aafbdso16065890ybl.14
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 06:34:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=440OAvPp6jpvC+cHwk3GXF5FrYW0sETANLJf2TwXc6M=;
-        b=SYJ3XYD0kST/ooAbwEU/DkumUXHC7/OTxKNj7X2LS+UK9QkVWLqCxeBYYk+tDTHfMY
-         /WXn3mzroSuuxQaqeW/4bvyRL+J2+GHeYiuaKfknTFBhYq4+rH/jZ/KXV3/F7QGQA+Kb
-         thMjyTUWkzCJDQ2/Z31rXugKrQ+gHEZSHDNfsxjiJRf9ILUGT6NRDdIqxenL02rcY8rx
-         mCSShNedpHSJsIPKfj9HTAdCdSoAutb2vdZpUORQMf9duwMMI5fmFEd48hz4d4BB00cy
-         n0qE6YGHXChhLQiNfmY897HUY6manN8dPeoJHSsy5CfQ3WKlm+N2hG7xkyPmXbZiB1Ky
-         llnw==
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=wT5hQfznKkVoD+X5pY+mA2o+4Og1/F5b18WV/Hx5kXY=;
+        b=O8o0NXlZQ/wzPxTUyeTNCKurtj2d18KtZeNGjFu4M4XIk4xSUG9C8OquSCusduFgmy
+         oddFoqcpsD/qxwq7O+HW+NvXAuym7zKbHFxjg9+kVoKinfSqUNh8v2LcTYU6U8haWB9F
+         2J1Wytj6DGDPdqHynDwesp41Mz1OLToD8yTMfNFHuQyxUviOIItl98e6jCwY38P86hhP
+         QXMMQJjb1kdFGvhVucquMuOjNYHAZaelF4crVVCm9EFVfpwn0UWu/q6o/6BpjieSe3Cu
+         cmqmNW5Y7xeXHONAdBdhGV2N75qSIQngr6myGs/vsrJ2ujbw21wcrcWU/Xy7x8+vdU+l
+         823Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=440OAvPp6jpvC+cHwk3GXF5FrYW0sETANLJf2TwXc6M=;
-        b=o+aad9LQZc97z3g5qKIqFRdnTMm6P3JweTpmjXS+MQqtTYHa+xJ5bE2d9r2QnjCChX
-         KvJlD0SPaff9nLOEF4XD9jHTgYGSw1UF0WZi1hsXKcBW95A2KdwDRnyoZasuuLoeMpX0
-         pThVCFyqvYL35uSREt9YcVCftSF54u3yp+hHpmUSVPxrAO/qa3cgwnA3lE61LQL9NIAb
-         6OzZuPC322pmwyohHYWIj86ksGjDWTpMP3GwYLGRMwVuj7hctbzW0mGQhkgCuFgXDqRM
-         Jg4zr5gDvbc7Jn4YuyacDedj8ullZjfvCas3YRIOkltc54sWWxpV7KSN5/sBSCBMdzc6
-         yNhQ==
-X-Gm-Message-State: ACrzQf0MFPf4PI/l4w21d1r/ws+67Qwj/QpBij7PGcEPusRYXKTOXPn3
-        xhjtnKjvRkONfyZ9A2tnHgo=
-X-Google-Smtp-Source: AMsMyM4Z0q203MhmgEfKASMNY7Hp0BMajrk+VkG58OIljwpKDlMxVkfRJai/GkupltHMMFHnPBo1tw==
-X-Received: by 2002:a17:907:948e:b0:783:91cf:c35a with SMTP id dm14-20020a170907948e00b0078391cfc35amr22604972ejc.366.1665581512285;
-        Wed, 12 Oct 2022 06:31:52 -0700 (PDT)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id l18-20020a1709063d3200b0071cef6c53aesm1325154ejf.0.2022.10.12.06.31.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Oct 2022 06:31:51 -0700 (PDT)
-Date:   Wed, 12 Oct 2022 16:31:48 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=wT5hQfznKkVoD+X5pY+mA2o+4Og1/F5b18WV/Hx5kXY=;
+        b=GiOcFZPwG6FdT5lrOaVW+tCdkkJX8tWLiwMJU4mhnrynRVLWCAfZ+iIbGw4ACY4u9u
+         3ZMbBFqJBBH/bauh7dnyRyDIHEnteWKn3/BKlKAsWPl+GegbxQGmOiCF7+lJY6lXw4/w
+         9FSWsHVsnOzJc+GaY3roU+kQlLiCYG71svUsGMTAPEAN3GtEy9zgwTBeL/fVKvE2nCPp
+         6F56exWhe0l187NI5uUBu4uUemtQVit6iXNhdF/Dy2mP7qtqK4SEE0379lmXa2rFfaia
+         F1/WbuYQPdYnapoRfIRyRC0fQDzOjfxonktXnkDH5/7huHkr++TB8VvDSOLex1IaRVTL
+         16ZA==
+X-Gm-Message-State: ACrzQf02wl6fOB1w6xI71xaFGsBuHMZ4UeEQTcknW8BBvhHhjKMsOQyg
+        JuMO8GkUpZjhAKAfaHIAqU12GuS3xLdqhw==
+X-Google-Smtp-Source: AMsMyM5PnL+1hM31Wxqrt8Pm0LHltkF7V/nxdZ+wRRN0oWA/3/e+RFqF9DSOFhbcMo8y6ZwmPSYfCxSYNZQ7Vg==
+X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
+ (user=edumazet job=sendgmr) by 2002:a25:d0c3:0:b0:6be:1ae5:5996 with SMTP id
+ h186-20020a25d0c3000000b006be1ae55996mr26833626ybg.580.1665581666756; Wed, 12
+ Oct 2022 06:34:26 -0700 (PDT)
+Date:   Wed, 12 Oct 2022 13:34:12 +0000
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.38.0.rc1.362.ged0d419d3c-goog
+Message-ID: <20221012133412.519394-1-edumazet@google.com>
+Subject: [PATCH net] kcm: avoid potential race in kcm_tx_work
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pawel Dembicki <paweldembicki@gmail.com>,
-        Lech Perczak <lech.perczak@gmail.com>
-Subject: Re: [net PATCH 1/2] net: dsa: qca8k: fix inband mgmt for big-endian
- systems
-Message-ID: <20221012133148.6apqbip3kvnjuafu@skbuf>
-References: <20221010111459.18958-1-ansuelsmth@gmail.com>
- <Y0a2KD9pVeoYkHkK@lunn.ch>
- <6346b921.a70a0220.64f4e.a0bc@mx.google.com>
- <6346ba28.050a0220.f0e18.949b@mx.google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6346ba28.050a0220.f0e18.949b@mx.google.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Tom Herbert <tom@herbertland.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,40 +69,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 12, 2022 at 02:59:17PM +0200, Christian Marangi wrote:
-> > > Humm...
-> > > 
-> > > This might have the same alignment issue as the second patch. In fact,
-> > > because the Ethernet header is 14 bytes in size, it is often
-> > > deliberately out of alignment by 2 bytes, so that the IP header is
-> > > aligned. You should probably be using get_unaligned_le32() when
-> > > accessing members of mgmt_ethhdr.
-> > > 
-> > > 	  Andrew
-> > 
-> > Should I replace everything to get_unaligned_le32? Or this is only
-> > needed for the mgmt_ethhdr as it's 12 bytes?
-> > 
-> > The skb data is all 32 bit contiguous stuff so it should be safe? Or
-> > should we treat that also as unalligned just to make sure?
-> > 
-> > Same question for patch 2. the rest of the mib in skb data are all 32 or
-> > 64 values contiguous so wonder if we just take extra care of the
-> > mgmt_ethhdr. 
-> > 
-> 
-> Also also... Should I use put_unalligned to fill the mgmt_ethhdr?
+syzbot found that kcm_tx_work() could crash [1] in:
 
-Documentation/core-api/unaligned-memory-access.rst section "Alignment vs. Networking"
-says that the IP header is aligned to a 4 byte boundary.
+	/* Primarily for SOCK_SEQPACKET sockets */
+	if (likely(sk->sk_socket) &&
+	    test_bit(SOCK_NOSPACE, &sk->sk_socket->flags)) {
+<<*>>	clear_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
+		sk->sk_write_space(sk);
+	}
 
-Relative to the IP header, skb_mac_header(skb) is a pointer that's 14
-bytes behind, right?
+I think the reason is that another thread might concurrently
+run in kcm_release() and call sock_orphan(sk) while sk is not
+locked. kcm_tx_work() find sk->sk_socket being NULL.
 
-14 bytes behind something aligned to a 4 byte boundary is something
-that's not aligned to a 4 byte boundary. That's why Andrew is suggesting
-to use the unaligned helper for accesses (both put and get).
+[1]
+BUG: KASAN: null-ptr-deref in instrument_atomic_write include/linux/instrumented.h:86 [inline]
+BUG: KASAN: null-ptr-deref in clear_bit include/asm-generic/bitops/instrumented-atomic.h:41 [inline]
+BUG: KASAN: null-ptr-deref in kcm_tx_work+0xff/0x160 net/kcm/kcmsock.c:742
+Write of size 8 at addr 0000000000000008 by task kworker/u4:3/53
 
-On-stack data structures don't need this, the compiler should take care
-of aligning them and their fields appropriately. The trouble is with
-pointers generated using manual arithmetics.
+CPU: 0 PID: 53 Comm: kworker/u4:3 Not tainted 5.19.0-rc3-next-20220621-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: kkcmd kcm_tx_work
+Call Trace:
+<TASK>
+__dump_stack lib/dump_stack.c:88 [inline]
+dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+kasan_report+0xbe/0x1f0 mm/kasan/report.c:495
+check_region_inline mm/kasan/generic.c:183 [inline]
+kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
+instrument_atomic_write include/linux/instrumented.h:86 [inline]
+clear_bit include/asm-generic/bitops/instrumented-atomic.h:41 [inline]
+kcm_tx_work+0xff/0x160 net/kcm/kcmsock.c:742
+process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
+</TASK>
+
+Fixes: ab7ac4eb9832 ("kcm: Kernel Connection Multiplexor module")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Tom Herbert <tom@herbertland.com>
+---
+ net/kcm/kcmsock.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/kcm/kcmsock.c b/net/kcm/kcmsock.c
+index 1215c863e1c410fa9ba5b9c3706152decfb3ebac..27725464ec08fe2b5f2e86202636cbc895568098 100644
+--- a/net/kcm/kcmsock.c
++++ b/net/kcm/kcmsock.c
+@@ -1838,10 +1838,10 @@ static int kcm_release(struct socket *sock)
+ 	kcm = kcm_sk(sk);
+ 	mux = kcm->mux;
+ 
++	lock_sock(sk);
+ 	sock_orphan(sk);
+ 	kfree_skb(kcm->seq_skb);
+ 
+-	lock_sock(sk);
+ 	/* Purge queue under lock to avoid race condition with tx_work trying
+ 	 * to act when queue is nonempty. If tx_work runs after this point
+ 	 * it will just return.
+-- 
+2.38.0.rc1.362.ged0d419d3c-goog
+
