@@ -2,132 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A1B25FC02D
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 07:49:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A99F5FC05C
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 07:59:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229635AbiJLFtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 01:49:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52686 "EHLO
+        id S229698AbiJLF7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 01:59:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbiJLFtl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 01:49:41 -0400
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7205EF47;
-        Tue, 11 Oct 2022 22:49:37 -0700 (PDT)
-Message-ID: <43bf4a5f-dac9-4fe9-1eba-9ab9beb650aa@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1665553775;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=40pZpkslxkeKFTGJuJ6oWOyvEYbIxCXMcmV6B+QVCKE=;
-        b=FPHUHxXPavilQJi/8GZV/2hlYEaBDl6tPElHTjQ7fQtQb8R43hdTwRPYoNrrr3wNB2ys+w
-        hwkxfTzI0qsGl2WNKzsbQMBhIrWF3fAfxQZbhUo1jk6z+ySK3eSa7kM4/VJPygXZIBsFAg
-        3eya216VizU5VPDOjGXNmmk04iyHxeQ=
-Date:   Tue, 11 Oct 2022 22:49:32 -0700
+        with ESMTP id S229780AbiJLF6z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 01:58:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 252CB9D509;
+        Tue, 11 Oct 2022 22:58:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9C21B80F9B;
+        Wed, 12 Oct 2022 05:58:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5DACC433D6;
+        Wed, 12 Oct 2022 05:58:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1665554317;
+        bh=qTRsNoqEYVKC6cGjuvIxq3oeVauZtuaLJan/sZXNsGw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Itw4Yk+Vuu7vfp4Aurd3lIFwGC2kyc6CFtxEaG4xiri7Jf/T8gMpNfF9hsRnmWlU5
+         ZSnJkm9y/cOo69t55ZLBUoosu/ZKs3lRbNTqH1p3PKviPPhqzjHutIK/4Qqlcw5UYG
+         5yD1hs70ELKPCndmUmIAnnwKnUSzXHqLTbt0mLzrzsYaZHcw5yOOEeGLBFlGw5WNsG
+         GbnAHjBGNCWBPX8axSbPnvEv4zFjjOPfIftqFqA217XmIlEB9NkEkWUWCKD/FtKqpT
+         vbwiGDzA0z/a3R+sd6Em8TaGqyRmMSFmChmjGgmfvgi/ZtVWR4ZlAjwOxwXn3bJAQg
+         pQ4yzmGxSCOOA==
+Date:   Wed, 12 Oct 2022 08:58:32 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Peilin Ye <yepeilin.cs@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3] net/sock: Introduce trace_sk_data_ready()
+Message-ID: <Y0ZXiDiqxYb7yYmS@unreal>
+References: <20221007221038.2345-1-yepeilin.cs@gmail.com>
+ <20221011195856.13691-1-yepeilin.cs@gmail.com>
 MIME-Version: 1.0
-Subject: Re: [PATCH bpf-next v4 2/3] selftests/bpf: Add connmark read test
-Content-Language: en-US
-To:     Daniel Xu <dxu@dxuuu.xyz>
-Cc:     pablo@netfilter.org, fw@strlen.de, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        andrii@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        bpf@vger.kernel.org, memxor@gmail.com
-References: <cover.1660254747.git.dxu@dxuuu.xyz>
- <d3bc620a491e4c626c20d80631063922cbe13e2b.1660254747.git.dxu@dxuuu.xyz>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-In-Reply-To: <d3bc620a491e4c626c20d80631063922cbe13e2b.1660254747.git.dxu@dxuuu.xyz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221011195856.13691-1-yepeilin.cs@gmail.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/11/22 2:55 PM, Daniel Xu wrote:
-> Test that the prog can read from the connection mark. This test is nice
-> because it ensures progs can interact with netfilter subsystem
-> correctly.
+On Tue, Oct 11, 2022 at 12:58:56PM -0700, Peilin Ye wrote:
+> From: Peilin Ye <peilin.ye@bytedance.com>
 > 
-> Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
-> Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> As suggested by Cong, introduce a tracepoint for all ->sk_data_ready()
+> callback implementations.  For example:
+> 
+> <...>
+>   dpkg-deb-7752    [000] .....   145.660735: sk_data_ready: family=16 protocol=16 func=sock_def_readable
+>   dpkg-deb-7757    [000] .....   145.759168: sk_data_ready: family=16 protocol=16 func=sock_def_readable
+>   dpkg-deb-7758    [000] .....   145.763956: sk_data_ready: family=16 protocol=16 func=sock_def_readable
+> <...>
+> 
+> Suggested-by: Cong Wang <cong.wang@bytedance.com>
+> Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
 > ---
->   tools/testing/selftests/bpf/prog_tests/bpf_nf.c | 3 ++-
->   tools/testing/selftests/bpf/progs/test_bpf_nf.c | 3 +++
->   2 files changed, 5 insertions(+), 1 deletion(-)
+> change since v2:
+>   - Fix modpost error for modules (kernel test robot)
 > 
-> diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
-> index 88a2c0bdefec..544bf90ac2a7 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
-> @@ -44,7 +44,7 @@ static int connect_to_server(int srv_fd)
->   
->   static void test_bpf_nf_ct(int mode)
->   {
-> -	const char *iptables = "iptables -t raw %s PREROUTING -j CT";
-> +	const char *iptables = "iptables -t raw %s PREROUTING -j CONNMARK --set-mark 42/0";
-Hi Daniel Xu, this test starts failing recently in CI [0]:
+> changes since v1:
+>   - Move tracepoint into ->sk_data_ready() callback implementations
+>     (Eric Dumazet)
+>   - Fix W=1 warning (Jakub Kicinski)
+> 
+>  drivers/infiniband/hw/erdma/erdma_cm.c   |  3 +++
+>  drivers/infiniband/sw/siw/siw_cm.c       |  5 +++++
+>  drivers/infiniband/sw/siw/siw_qp.c       |  3 +++
+>  drivers/nvme/host/tcp.c                  |  3 +++
+>  drivers/nvme/target/tcp.c                |  5 +++++
+>  drivers/scsi/iscsi_tcp.c                 |  3 +++
+>  drivers/soc/qcom/qmi_interface.c         |  3 +++
+>  drivers/target/iscsi/iscsi_target_nego.c |  2 ++
+>  drivers/xen/pvcalls-back.c               |  5 +++++
+>  fs/dlm/lowcomms.c                        |  5 +++++
+>  fs/ocfs2/cluster/tcp.c                   |  5 +++++
+>  include/trace/events/sock.h              | 24 ++++++++++++++++++++++++
+>  net/ceph/messenger.c                     |  4 ++++
+>  net/core/net-traces.c                    |  2 ++
+>  net/core/skmsg.c                         |  3 +++
+>  net/core/sock.c                          |  2 ++
+>  net/kcm/kcmsock.c                        |  3 +++
+>  net/mptcp/subflow.c                      |  3 +++
+>  net/qrtr/ns.c                            |  3 +++
+>  net/rds/tcp_listen.c                     |  2 ++
+>  net/rds/tcp_recv.c                       |  2 ++
+>  net/sctp/socket.c                        |  3 +++
+>  net/smc/smc_rx.c                         |  3 +++
+>  net/sunrpc/svcsock.c                     |  5 +++++
+>  net/sunrpc/xprtsock.c                    |  3 +++
+>  net/tipc/socket.c                        |  3 +++
+>  net/tipc/topsrv.c                        |  5 +++++
+>  net/tls/tls_sw.c                         |  3 +++
+>  net/xfrm/espintcp.c                      |  3 +++
+>  29 files changed, 118 insertions(+)
+> 
+> diff --git a/drivers/infiniband/hw/erdma/erdma_cm.c b/drivers/infiniband/hw/erdma/erdma_cm.c
+> index f13f16479eca..63f314222813 100644
+> --- a/drivers/infiniband/hw/erdma/erdma_cm.c
+> +++ b/drivers/infiniband/hw/erdma/erdma_cm.c
 
-Warning: Extension CONNMARK revision 0 not supported, missing kernel module?
-   iptables v1.8.8 (nf_tables): Could not fetch rule set generation id: Invalid 
-argument
+<...>
 
-   Warning: Extension CONNMARK revision 0 not supported, missing kernel module?
-   iptables v1.8.8 (nf_tables): Could not fetch rule set generation id: Invalid 
-argument
+> +	trace_sk_data_ready(sk, __func__);
 
-   Warning: Extension CONNMARK revision 0 not supported, missing kernel module?
-   iptables v1.8.8 (nf_tables): Could not fetch rule set generation id: Invalid 
-argument
+<...>
 
-   Warning: Extension CONNMARK revision 0 not supported, missing kernel module?
-   iptables v1.8.8 (nf_tables): Could not fetch rule set generation id: Invalid 
-argument
+> +	trace_sk_data_ready(sk, __func__);
 
-   test_bpf_nf_ct:PASS:test_bpf_nf__open_and_load 0 nsec
-   test_bpf_nf_ct:FAIL:iptables unexpected error: 1024 (errno 0)
+<...>
 
-Could you help to take a look? Thanks.
+> +	trace_sk_data_ready(sk, __func__);
 
-[0]: https://github.com/kernel-patches/bpf/actions/runs/3231598391/jobs/5291529292
+<...>
 
->   	int srv_fd = -1, client_fd = -1, srv_client_fd = -1;
->   	struct sockaddr_in peer_addr = {};
->   	struct test_bpf_nf *skel;
-> @@ -114,6 +114,7 @@ static void test_bpf_nf_ct(int mode)
->   	/* expected status is IPS_SEEN_REPLY */
->   	ASSERT_EQ(skel->bss->test_status, 2, "Test for ct status update ");
->   	ASSERT_EQ(skel->data->test_exist_lookup, 0, "Test existing connection lookup");
-> +	ASSERT_EQ(skel->bss->test_exist_lookup_mark, 43, "Test existing connection lookup ctmark");
->   end:
->   	if (srv_client_fd != -1)
->   		close(srv_client_fd);
-> diff --git a/tools/testing/selftests/bpf/progs/test_bpf_nf.c b/tools/testing/selftests/bpf/progs/test_bpf_nf.c
-> index 84e0fd479794..2722441850cc 100644
-> --- a/tools/testing/selftests/bpf/progs/test_bpf_nf.c
-> +++ b/tools/testing/selftests/bpf/progs/test_bpf_nf.c
-> @@ -28,6 +28,7 @@ __be16 sport = 0;
->   __be32 daddr = 0;
->   __be16 dport = 0;
->   int test_exist_lookup = -ENOENT;
-> +u32 test_exist_lookup_mark = 0;
->   
->   struct nf_conn;
->   
-> @@ -174,6 +175,8 @@ nf_ct_test(struct nf_conn *(*lookup_fn)(void *, struct bpf_sock_tuple *, u32,
->   		       sizeof(opts_def));
->   	if (ct) {
->   		test_exist_lookup = 0;
-> +		if (ct->mark == 42)
-> +			test_exist_lookup_mark = 43;
->   		bpf_ct_release(ct);
->   	} else {
->   		test_exist_lookup = opts_def.error;
+> +	trace_sk_data_ready(sk, __func__);
 
+<...>
+
+> +	trace_sk_data_ready(sk, __func__);
+
+<...>
+
+> +	trace_sk_data_ready(sk, __func__);
+
+<...>
+
+> +	trace_sk_data_ready(sk, __func__);
+
+<...>
+
+> +	trace_sk_data_ready(sk, __func__);
+
+<...>
+
+> +	trace_sk_data_ready(sk, __func__);
+
+<...>
+
+> +	trace_sk_data_ready(sk, __func__);
+>  	pr_debug("Entering iscsi_target_sk_data_ready: conn: %p\n", conn);
+
+This can go.
+
+<...>
+
+> +	trace_sk_data_ready(sock, __func__);
+
+<...>
+
+> +	trace_sk_data_ready(sock, __func__);
+
+<...>
+
+> +	trace_sk_data_ready(sk, __func__);
+
+<...>
+
+> +	trace_sk_data_ready(sk, __func__);
+
+<...>
+
+> +	trace_sk_data_ready(sk, __func__);
+
+<...>
+
+> +	trace_sk_data_ready(sk, __func__);
+
+<...>
+
+__func__ repetitive pattern hints that it is not best API interface.
+
+
+> +TRACE_EVENT(sk_data_ready,
+> +
+> +	TP_PROTO(const struct sock *sk, const char *func),
+> +
+> +	TP_ARGS(sk, func),
+> +
+> +	TP_STRUCT__entry(
+> +		__field(const void *, skaddr)
+> +		__field(__u16, family)
+> +		__field(__u16, protocol)
+> +		__string(func, func)
+
+TRACE_EVENT() is macro defined in .h file, you can safely put __func__
+instead.
+
+> +	),
+> +
+> +	TP_fast_assign(
+> +		__entry->skaddr = sk;
+> +		__entry->family = sk->sk_family;
+> +		__entry->protocol = sk->sk_protocol;
+> +		__assign_str(func, func)
+> +	),
+> +
+> +	TP_printk("family=%u protocol=%u func=%s",
+> +		  __entry->family, __entry->protocol, __get_str(func))
+> +);
+> +
+>  #endif /* _TRACE_SOCK_H */
