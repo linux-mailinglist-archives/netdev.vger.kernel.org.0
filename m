@@ -2,164 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F6A35FC774
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 16:34:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4C035FC793
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 16:39:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229650AbiJLOes (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 10:34:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46238 "EHLO
+        id S229711AbiJLOjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 10:39:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229746AbiJLOeq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 10:34:46 -0400
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71FD0FADE
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 07:34:43 -0700 (PDT)
-Received: by mail-qk1-x729.google.com with SMTP id d13so4214641qko.5
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 07:34:43 -0700 (PDT)
+        with ESMTP id S229807AbiJLOjL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 10:39:11 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CAE061DA1
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 07:39:09 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id 81so20243223ybf.7
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 07:39:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=OMsZ+7M+Sgc7E+9hQ4WNx9YG06bm1iwnnpkAazR85FQ=;
-        b=v+NlSdt1xz25Z4nh5paIkrUedP3AyaVTV5F6ByBfEKCbp5uDnrvLuQZTADrqMTFH+K
-         ouXHzKcWPMhLSawAypW1+Si9D2IHWmm79RcK7w+e2WCcvYrmY2Wank2V9xT5QwYLNuCi
-         UJrq5X2oq1EwOmFPEFOQgQpuNvhENP8V7laGYPp26huydnOjvTg1QGKo57j4dzfkZUq7
-         5hdsfIUDrPJuzIGg+TwXGqJ76kCLaG0t8tKmt0rlMxoLzOpCorV3GzAnYzlloBHKR5bi
-         /anuljnptXX786g8htuf7LyNLu3PnQO92CVhapnNS6rguqUFk5tcihj0Cu7/HwYGvZ52
-         cDAg==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Iwty6IO2YhJUWtTmIIC3w1X+zwPEtrCB5GqbjID7kbs=;
+        b=AyYQdaIpG99rx17v8MMe1/XgQ5Oi5n6hF0MbmcrL+bu3ifAw1kPCeas0u4EaTseVpd
+         YxCuLKyySoK8U8uU+IPSxnzEQP4fonSCIkFPBQHgakm/iaOolC1Py6RSgWt3go2Ap4fN
+         NYIPNycBmcz8VRKye8EQHtb7NWVaEWuc/qH23bFMSt5K/2dxGoHFmOHj84rf+64DJSa+
+         SZOlu5SwSJyXmV6ReXo+LPxsZENawfEipURjUUBTVkQU2I/qvwdRX4gU+DMcx0Aot+Ws
+         tAEWrYUw5o9cmNA7DUU1g2gbUsY6Upjru9ifyuU+ONZmzSJqD/9o6j4KgigwEMDeMrGG
+         adbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=OMsZ+7M+Sgc7E+9hQ4WNx9YG06bm1iwnnpkAazR85FQ=;
-        b=WgXjmb/aAxiYIPFp05gS0EdPUYoUPKFGfBMCDNrehZbIoIgO1p9ZoEk+G3GykeAwSx
-         LNRvR+OVXaeQy6E5tEm5SREKeGSdYOXQGpJQHyBUWQmQcF6Nbem8DhLJysBktm6Jbtfy
-         h4WjbBbd2A6Ky8ze1H/8Tw/1fYAjpE9BUNZ46CjAhRWLptU8mkMXrhisTPqZj19QkWSE
-         xjhRLMvy75bKiWau3qx8YozBY25L34eVhyc9SfNvs5p80uru8D8tcXeUkN6sKT0R3krw
-         Ig3sAhBflJxRDSjfg42m16QRFMF1K9OH2a2CesgTJijFgyRYkuoX2p6lDV7otX1JJPZu
-         NTnw==
-X-Gm-Message-State: ACrzQf0Af1yK+/woN9SYRudSlritTaXU8tDyjPjeJwca9kB3NG/QTrwW
-        5BPqD5XTDO4iZBFnrcuEgAg/Vw==
-X-Google-Smtp-Source: AMsMyM4qzU6utKFRylYq2Fgww+YpmjOTOpohktT/qqMwnS8qvd0pIyK0JpDzT1OKiy9dH2IYptnjgw==
-X-Received: by 2002:a37:5a04:0:b0:6e0:a338:5f12 with SMTP id o4-20020a375a04000000b006e0a3385f12mr20382231qkb.420.1665585282401;
-        Wed, 12 Oct 2022 07:34:42 -0700 (PDT)
-Received: from [192.168.1.57] (cpe-72-225-192-120.nyc.res.rr.com. [72.225.192.120])
-        by smtp.gmail.com with ESMTPSA id e124-20020a37b582000000b006ceb933a9fesm15796606qkf.81.2022.10.12.07.34.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Oct 2022 07:34:41 -0700 (PDT)
-Message-ID: <881e19a9-2e16-7661-0efd-cae7ef1067e7@linaro.org>
-Date:   Wed, 12 Oct 2022 10:34:40 -0400
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Iwty6IO2YhJUWtTmIIC3w1X+zwPEtrCB5GqbjID7kbs=;
+        b=X1jIWMVwA8E81yQiUihf+MPEWZUaK3fIF+LzeFvh3d/P99Ts1ecJ3dHPm9pIENtQhK
+         SkcEudjPTJCPGgNXq2JxneY2wKcw4kHesUPXn4/tKoOosK7sgXF5VW++lnasBeSpmbAt
+         Ej9Nmi/vy6w/16Ody48geSuYuZPumE1uWUrdQFl0XMY1OK+d/ybt35BdvYj0TGBnwMlj
+         GGQptrZTPmTIm+AElU6MVSecql0pthEjpU+xfhV8wQkG3+R99s23Scec6t1kyzdMmtue
+         vzG3hgRSj80mVIRJRxdI0TowQlOA7S7AodswJ8T6et0UPIjcJFEyRSTPy8dyj62wEztZ
+         cIyw==
+X-Gm-Message-State: ACrzQf0CAaO8+XXdm+zT1ohSXrTzV/dcwfN05uST8ONyX7X1lK+b7NK2
+        zR3Zj0DJyZxVNVfVBYHe0OvgzZJDxVQHLVq6DRC3RA==
+X-Google-Smtp-Source: AMsMyM4u5IATBvJBSVGl7BsAZuT/y6oB0gu+hsUV2HsJFUR9Ex7QjOgaFDdfRS4tKUHKkvrZmt9R4glMSI2lgjfQ7Qk=
+X-Received: by 2002:a25:328c:0:b0:6be:2d4a:e77 with SMTP id
+ y134-20020a25328c000000b006be2d4a0e77mr27453078yby.407.1665585548486; Wed, 12
+ Oct 2022 07:39:08 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.2
-Subject: Re: [PATCH v3 1/3] dt-bindings: net: marvell,pp2: convert to
- json-schema
-Content-Language: en-US
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     =?UTF-8?Q?Micha=c5=82_Grzelak?= <mig@semihalf.com>,
-        devicetree@vger.kernel.org, linux@armlinux.org.uk,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, upstream@semihalf.com
-References: <20221011190613.13008-1-mig@semihalf.com>
- <20221011190613.13008-2-mig@semihalf.com>
- <ad015bc9-a6d2-491d-463a-42a6a0afbf75@linaro.org>
- <CAPv3WKcY=erFTBDLP1AhQa0+CP6C8KJinmKFEkR2xh4mHHv_aQ@mail.gmail.com>
- <CAPv3WKdon28ntGQ=xbmL+CEFQ7=xzOQOcV9qN_8MOt-uiLHoXg@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAPv3WKdon28ntGQ=xbmL+CEFQ7=xzOQOcV9qN_8MOt-uiLHoXg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <20221012133412.519394-1-edumazet@google.com> <CACT4Y+YQ39dVh0tbmjzqoNEnS76ucbVYiNrfwjiby-8z6E7UDQ@mail.gmail.com>
+In-Reply-To: <CACT4Y+YQ39dVh0tbmjzqoNEnS76ucbVYiNrfwjiby-8z6E7UDQ@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 12 Oct 2022 07:38:57 -0700
+Message-ID: <CANn89iJUHnzPa1EBD=eTK7J0R3XqHW=kqXcaCF0MbEzsBO+SEA@mail.gmail.com>
+Subject: Re: [PATCH net] kcm: avoid potential race in kcm_tx_work
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        eric.dumazet@gmail.com, syzbot <syzkaller@googlegroups.com>,
+        Tom Herbert <tom@herbertland.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/10/2022 19:01, Marcin Wojtas wrote:
-,
->>
->> ethernet@
->> {
->>     ethernet-port@0
->>     {
->>      }
->>      ethernet-port@1
->>      {
->>      }
->> }
->>
->> What do you recommend?
->>
-> 
-> I moved the ethernet-controller.yaml reference to under the subnode
-> (this allowed me to remove phy and phy-mode description)) and it
-> doesn't complain about the node naming. Please let me know if below
-> would be acceptable.
-> 
-> --- a/Documentation/devicetree/bindings/net/marvell,pp2.yaml
-> +++ b/Documentation/devicetree/bindings/net/marvell,pp2.yaml
-> @@ -61,7 +61,11 @@ patternProperties:
->      type: object
->      description: subnode for each ethernet port.
-> 
-> +    allOf:
+On Wed, Oct 12, 2022 at 7:00 AM Dmitry Vyukov <dvyukov@google.com> wrote:
+>
+> On Wed, 12 Oct 2022 at 15:34, 'Eric Dumazet' via syzkaller
+> <syzkaller@googlegroups.com> wrote:
+> >
+> > syzbot found that kcm_tx_work() could crash [1] in:
+> >
+> >         /* Primarily for SOCK_SEQPACKET sockets */
+> >         if (likely(sk->sk_socket) &&
+> >             test_bit(SOCK_NOSPACE, &sk->sk_socket->flags)) {
+> > <<*>>   clear_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
+> >                 sk->sk_write_space(sk);
+> >         }
+> >
+> > I think the reason is that another thread might concurrently
+> > run in kcm_release() and call sock_orphan(sk) while sk is not
+> > locked. kcm_tx_work() find sk->sk_socket being NULL.
+>
+> Does it make sense to add some lockdep annotations to sock_orphan()
+> and maybe some other similar functions to catch such cases earlier?
 
-Skip the allOf, just $ref is enough.
+I thought about that, but this seems net-next material.
 
-> +      - $ref: ethernet-controller.yaml#
-> +
->      properties:
->        interrupts:
->          minItems: 1
->          maxItems: 10
-> @@ -95,19 +99,11 @@ patternProperties:
-> 
->        port-id:
->          $ref: /schemas/types.yaml#/definitions/uint32
-> +        deprecated: true
->          description: >
->            ID of the port from the MAC point of view.
->            Legacy binding for backward compatibility.
-> 
-> -      phy:
-> -        $ref: /schemas/types.yaml#/definitions/phandle
-> -        description: >
-> -          a phandle to a phy node defining the PHY address
-> -          (as the reg property, a single integer).
-> -
-> -      phy-mode:
-> -        $ref: ethernet-controller.yaml#/properties/phy-mode
-> -
->        marvell,loopback:
->          $ref: /schemas/types.yaml#/definitions/flag
->          description: port is loopback mode.
-> @@ -132,7 +128,6 @@ required:
->    - clock-names
-> 
->  allOf:
-> -  - $ref: ethernet-controller.yaml#
->    - if:
-> 
-
-Yes, except:
-
-1. top-level (so with no indentation) unevaluatedProperties: false
-should be now additionalProperties: false.
-2. You need unevaluatedProperties here:
-
-+    type: object
-+    description: subnode for each ethernet port.
-+    $ref: ethernet-controller.yaml#
-+    unevaluatedProperties: false
-
-Best regards,
-Krzysztof
-
+>
+>
+> > [1]
+> > BUG: KASAN: null-ptr-deref in instrument_atomic_write include/linux/instrumented.h:86 [inline]
+> > BUG: KASAN: null-ptr-deref in clear_bit include/asm-generic/bitops/instrumented-atomic.h:41 [inline]
+> > BUG: KASAN: null-ptr-deref in kcm_tx_work+0xff/0x160 net/kcm/kcmsock.c:742
+> > Write of size 8 at addr 0000000000000008 by task kworker/u4:3/53
+> >
+> > CPU: 0 PID: 53 Comm: kworker/u4:3 Not tainted 5.19.0-rc3-next-20220621-syzkaller #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > Workqueue: kkcmd kcm_tx_work
+> > Call Trace:
+> > <TASK>
+> > __dump_stack lib/dump_stack.c:88 [inline]
+> > dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+> > kasan_report+0xbe/0x1f0 mm/kasan/report.c:495
+> > check_region_inline mm/kasan/generic.c:183 [inline]
+> > kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
+> > instrument_atomic_write include/linux/instrumented.h:86 [inline]
+> > clear_bit include/asm-generic/bitops/instrumented-atomic.h:41 [inline]
+> > kcm_tx_work+0xff/0x160 net/kcm/kcmsock.c:742
+> > process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+> > worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+> > kthread+0x2e9/0x3a0 kernel/kthread.c:376
+> > ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
+> > </TASK>
+> >
+> > Fixes: ab7ac4eb9832 ("kcm: Kernel Connection Multiplexor module")
+> > Reported-by: syzbot <syzkaller@googlegroups.com>
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > Cc: Tom Herbert <tom@herbertland.com>
+> > ---
+> >  net/kcm/kcmsock.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/net/kcm/kcmsock.c b/net/kcm/kcmsock.c
+> > index 1215c863e1c410fa9ba5b9c3706152decfb3ebac..27725464ec08fe2b5f2e86202636cbc895568098 100644
+> > --- a/net/kcm/kcmsock.c
+> > +++ b/net/kcm/kcmsock.c
+> > @@ -1838,10 +1838,10 @@ static int kcm_release(struct socket *sock)
+> >         kcm = kcm_sk(sk);
+> >         mux = kcm->mux;
+> >
+> > +       lock_sock(sk);
+> >         sock_orphan(sk);
+> >         kfree_skb(kcm->seq_skb);
+> >
+> > -       lock_sock(sk);
+> >         /* Purge queue under lock to avoid race condition with tx_work trying
+> >          * to act when queue is nonempty. If tx_work runs after this point
+> >          * it will just return.
+> > --
+> > 2.38.0.rc1.362.ged0d419d3c-goog
+> >
+> > --
+> > You received this message because you are subscribed to the Google Groups "syzkaller" group.
+> > To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller+unsubscribe@googlegroups.com.
+> > To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller/20221012133412.519394-1-edumazet%40google.com.
