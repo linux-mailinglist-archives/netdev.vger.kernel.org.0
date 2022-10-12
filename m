@@ -2,101 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43AEF5FCCCA
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 23:08:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30FD05FCD1C
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 23:26:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229771AbiJLVIj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 17:08:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42186 "EHLO
+        id S229722AbiJLV0k convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 12 Oct 2022 17:26:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229641AbiJLVIi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 17:08:38 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3826FFF235
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 14:08:37 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id 3so150768pfw.4
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 14:08:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ElcaSENspuIb37PaJ/21GDQ25/AhVWBhVbKNRiODFrQ=;
-        b=WEgYRK/z3m7R1JqytKy9BGr9thItSeAJ7zTILkmSgySy0YQrWkbb4ns03wZAfUmdmn
-         SqLvPyYakO/OFHMbJnkHAvUue+weI0KY/XztgdU304e/EZ44QVacHz+xOYCKWrUSkCcg
-         VaHgZ3PvNEuP2B1QWGno9sFAVYmgSyZxv1WP5fOvr1t9xpP0vvmkYs6ZKx0b3vEraVQl
-         clwTA6t+VRZlIj85P10AGd+Q4AZK0UEiws/vT+Gzi8srEUIqgoVKw6JkL7BWMjXcUsRR
-         mEiFR5ckwTxaR14O3iC8TLtvxlPtxoDxk0pPyAl9qL6y2s8Pb561wyxzEp4GTb5qT/rW
-         kNCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ElcaSENspuIb37PaJ/21GDQ25/AhVWBhVbKNRiODFrQ=;
-        b=loDbgnJUalP7pp48uW+LCU1eo2pIJtQnEwgM08VEzw0rTHQ1x0TciOuVQMJvV2PdTd
-         SXY5BVU6HXjeJ+ai2IuLnPPgB8u+whTER7NG6yY/6BmONrW0hXqlAHvHDOIKrva/29es
-         9Ke7Nq5MFljMMq320R7MCzleDlIZUVjWyWDo23GKoZSDC84b2bNgrvog42Xjw6eeDC+V
-         aXDGFbiVsvaJ226JxNbhOpm+Wax1bkUl41/ousXbO+9FB5nMURZFmKweH7QNDTbTS3T+
-         Y4auS8pBWxgC4iEWM/YwzChTT3CM3awAgzQTXfIfhjcjVZDuvGwomSO5uWfGaTbQwUa3
-         q76Q==
-X-Gm-Message-State: ACrzQf0YGI1G2b47Hxm3p7OvnSLQVoVdG/Wfh2Ktj+Nqc2ZM3A2nJFsa
-        u+BdA12HqT+UkLoQI32Nd6c=
-X-Google-Smtp-Source: AMsMyM5cQG2y8Ida/4bsFC13D1pF2+tWEhB0UvvkzhevwP5cdJM3ymLzcZ/u6xuuUr359vbQS7RZcg==
-X-Received: by 2002:a65:6753:0:b0:438:e83a:bebc with SMTP id c19-20020a656753000000b00438e83abebcmr26959563pgu.602.1665608916736;
-        Wed, 12 Oct 2022 14:08:36 -0700 (PDT)
-Received: from ?IPV6:2620:15c:2c1:200:9517:7fc4:6b3f:85b4? ([2620:15c:2c1:200:9517:7fc4:6b3f:85b4])
-        by smtp.gmail.com with ESMTPSA id g2-20020aa79f02000000b0053ae018a91esm298969pfr.173.2022.10.12.14.08.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Oct 2022 14:08:36 -0700 (PDT)
-Message-ID: <ee967071-abbe-c0e3-db96-6963d1b886b2@gmail.com>
-Date:   Wed, 12 Oct 2022 14:08:34 -0700
+        with ESMTP id S229621AbiJLV0j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 17:26:39 -0400
+Received: from mail.lixid.net (lixid.tarent.de [193.107.123.118])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB200C3540
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 14:26:37 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.lixid.net (MTA) with ESMTP id 63D4B14111F
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 23:26:36 +0200 (CEST)
+Received: from mail.lixid.net ([127.0.0.1])
+        by localhost (mail.lixid.net [127.0.0.1]) (MFA, port 10024) with LMTP
+        id NF29S5IWq9DW for <netdev@vger.kernel.org>;
+        Wed, 12 Oct 2022 23:26:31 +0200 (CEST)
+Received: from x61w.mirbsd.org (vpn-172-34-0-14.dynamic.tarent.de [172.34.0.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.lixid.net (MTA) with ESMTPS id 1E55A141056
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 23:26:31 +0200 (CEST)
+Received: by x61w.mirbsd.org (Postfix, from userid 1000)
+        id ACD7B61494; Wed, 12 Oct 2022 23:26:24 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by x61w.mirbsd.org (Postfix) with ESMTP id A74A96138A
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 23:26:24 +0200 (CEST)
+Date:   Wed, 12 Oct 2022 23:26:24 +0200 (CEST)
+From:   Thorsten Glaser <t.glaser@tarent.de>
+To:     netdev@vger.kernel.org
+Subject: qdisc_watchdog_schedule_range_ns granularity
+Message-ID: <c4a1d4ff-82eb-82c9-619e-37c18b41a017@tarent.de>
+Content-Language: de-DE-1901
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: RFH, where did I go wrong?
-Content-Language: en-US
-To:     Thorsten Glaser <t.glaser@tarent.de>
-Cc:     Dave Taht <dave.taht@gmail.com>, netdev@vger.kernel.org
-References: <42776059-242c-cf49-c3ed-31e311b91f1c@tarent.de>
- <CAA93jw5J5XzhKb_L0C5uw1e3yz_4ithUnWO6nAmeeAEn7jyYiQ@mail.gmail.com>
- <1a1214b6-fc29-1e11-ec21-682684188513@tarent.de>
- <CAA93jw6ReJPD=5oQ8mvcDCMNV8px8pB4UBjq=PDJvfE=kwxCRg@mail.gmail.com>
- <d4103bc1-d0bb-5c66-10f5-2dae2cdb653d@tarent.de>
- <8051fcd-4b5-7b32-887e-7df7a779be1b@tarent.de>
- <3660fc5b-5cb3-61ee-a10c-0f541282eba4@gmail.com>
- <d6645cac-3dd3-432-3ae1-178347761b6e@tarent.de>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-In-Reply-To: <d6645cac-3dd3-432-3ae1-178347761b6e@tarent.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi again,
 
-On 10/12/22 14:05, Thorsten Glaser wrote:
-> On Wed, 12 Oct 2022, Eric Dumazet wrote:
->
->> I guess RTNL is not held at this point.
-> OIC, so it’s held for .init and .reset but not the other methods.
-> I wish this were documented…
+next thing ☺
 
+For my “faked extra latency” I sometimes need to reschedule to
+future, when all queued-up packets have receive timestamps in
+the future. For this, I have been using:
 
-RTNL being a mutex it only can be acquired in process context.
+	qdisc_watchdog_schedule_range_ns(&q->watchdog, rs, 0);
 
-qdisc fast path (queue/dequeue) can be called from (soft)irq context, so 
-RTNL is out of reach.
+Where rs is the smallest in-the-future enqueue timestamp.
 
+However it was observed that this can add quite a lot more extra
+delay than planned, I saw single-digit millisecond figures, which
+IMHO is already a lot, but a coworker saw around 17 ms, which is
+definitely too much.
 
->
-> Looking good so far. Thank you very much!
->
-> bye,
-> //mirabilos
+What is the granularity of qdisc watchdogs, and how can I aim at
+being called again for dequeueing in more precise fashion? I would
+prefer to being called within 1 ms, 2 if it must absolutely be, of
+the timestamp passed.
+
+Thanks in advance,
+//mirabilos
+-- 
+Infrastrukturexperte • tarent solutions GmbH
+Am Dickobskreuz 10, D-53121 Bonn • http://www.tarent.de/
+Telephon +49 228 54881-393 • Fax: +49 228 54881-235
+HRB AG Bonn 5168 • USt-ID (VAT): DE122264941
+Geschäftsführer: Dr. Stefan Barth, Kai Ebenrett, Boris Esser, Alexander Steeg
+
+                        ****************************************************
+/⁀\ The UTF-8 Ribbon
+╲ ╱ Campaign against      Mit dem tarent-Newsletter nichts mehr verpassen:
+ ╳  HTML eMail! Also,     https://www.tarent.de/newsletter
+╱ ╲ header encryption!
+                        ****************************************************
