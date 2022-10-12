@@ -2,110 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E914B5FC518
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 14:15:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D86FB5FC52A
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 14:19:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229757AbiJLMPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 08:15:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53296 "EHLO
+        id S229813AbiJLMTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 08:19:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229741AbiJLMPu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 08:15:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45842B40CC
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 05:15:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1665576948;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HWppM9e4/cjX3NwOAsXMCO6iSIiQ/EeeKOofhtTvcjI=;
-        b=VnYhqaOxwZQH7ugyJuU+LudNUjhlY457bOHq7HKGDbtkZDMyWHbsGKXPz21x2Ws4IRwNv5
-        mv0sf62kcdllhYg7l+7dhkuGtpF1Q0mrnGXoSz7QXq7bXTqLQthUq5k6CWZRCln2e8LtgK
-        wXMsd56rIp7f456UsLUDbgmqTjvK9x0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-164-J2YdFhuJM1KrTg9zS1vCWw-1; Wed, 12 Oct 2022 08:15:44 -0400
-X-MC-Unique: J2YdFhuJM1KrTg9zS1vCWw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BE3C1185A7A3;
-        Wed, 12 Oct 2022 12:15:43 +0000 (UTC)
-Received: from RHTPC1VM0NT (unknown [10.22.32.220])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 185DF111DCE0;
-        Wed, 12 Oct 2022 12:15:42 +0000 (UTC)
-From:   Aaron Conole <aconole@redhat.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, dev@openvswitch.org,
-        Florian Westphal <fw@strlen.de>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Eric Dumazet <edumazet@google.com>, kuba@kernel.org,
-        Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: Re: [ovs-dev] [PATCH net] openvswitch: add nf_ct_is_confirmed check
- before assigning the helper
-References: <c5c9092a22a2194650222bffaf786902613deb16.1665085502.git.lucien.xin@gmail.com>
-Date:   Wed, 12 Oct 2022 08:15:42 -0400
-In-Reply-To: <c5c9092a22a2194650222bffaf786902613deb16.1665085502.git.lucien.xin@gmail.com>
-        (Xin Long's message of "Thu, 6 Oct 2022 15:45:02 -0400")
-Message-ID: <f7t5ygpdyq9.fsf@redhat.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+        with ESMTP id S229711AbiJLMTb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 08:19:31 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DB0BBEFA0;
+        Wed, 12 Oct 2022 05:19:27 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1oiahi-0002eU-DS; Wed, 12 Oct 2022 14:19:18 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     <netdev@vger.kernel.org>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        <netfilter-devel@vger.kernel.org>, Florian Westphal <fw@strlen.de>
+Subject: [PATCH net 0/3] netfilter fixes for net
+Date:   Wed, 12 Oct 2022 14:18:59 +0200
+Message-Id: <20221012121902.27738-1-fw@strlen.de>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Xin Long <lucien.xin@gmail.com> writes:
+Hello,
 
-> A WARN_ON call trace would be triggered when 'ct(commit, alg=helper)'
-> applies on a confirmed connection:
->
->   WARNING: CPU: 0 PID: 1251 at net/netfilter/nf_conntrack_extend.c:98
->   RIP: 0010:nf_ct_ext_add+0x12d/0x150 [nf_conntrack]
->   Call Trace:
->    <TASK>
->    nf_ct_helper_ext_add+0x12/0x60 [nf_conntrack]
->    __nf_ct_try_assign_helper+0xc4/0x160 [nf_conntrack]
->    __ovs_ct_lookup+0x72e/0x780 [openvswitch]
->    ovs_ct_execute+0x1d8/0x920 [openvswitch]
->    do_execute_actions+0x4e6/0xb60 [openvswitch]
->    ovs_execute_actions+0x60/0x140 [openvswitch]
->    ovs_packet_cmd_execute+0x2ad/0x310 [openvswitch]
->    genl_family_rcv_msg_doit.isra.15+0x113/0x150
->    genl_rcv_msg+0xef/0x1f0
->
-> which can be reproduced with these OVS flows:
->
->   table=0, in_port=veth1,tcp,tcp_dst=2121,ct_state=-trk
->   actions=ct(commit, table=1)
->   table=1, in_port=veth1,tcp,tcp_dst=2121,ct_state=+trk+new
->   actions=ct(commit, alg=ftp),normal
->
-> The issue was introduced by commit 248d45f1e193 ("openvswitch: Allow
-> attaching helper in later commit") where it somehow removed the check
-> of nf_ct_is_confirmed before asigning the helper. This patch is to fix
-> it by bringing it back.
->
-> Fixes: 248d45f1e193 ("openvswitch: Allow attaching helper in later commit")
-> Reported-by: Pablo Neira Ayuso <pablo@netfilter.org>
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> ---
+This series from Phil Sutter for the *net* tree fixes a problem with a change
+from the 6.1 development phase: the change to nft_fib should have used
+the more recent flowic_l3mdev field.  Pointed out by Guillaume Nault.
+This also makes the older iptables module follow the same pattern.
 
-Thanks for all the help, I was able to reproduce the warning.  Looking
-at it, I'm not sure why the check for confirmed was removed.
+Also add selftest case and avoid test failure in nft_fib.sh when the
+host environment has set rp_filter=1.
 
-I did some additional testing with common scenarios, some testing with
-bare DP flows, and I think it is good to apply.
+Please consider pulling this from
 
-Acked-by: Aaron Conole <aconole@redhat.com>
-Tested-by: Aaron Conole <aconole@redhat.com>
+  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git master
 
+----------------------------------------------------------------
+The following changes since commit 739cfa34518ef3a6789f5f77239073972a387359:
+
+  net/mlx5: Make ASO poll CQ usable in atomic context (2022-10-12 09:16:05 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git master
+
+for you to fetch changes up to 6a91e7270936c5a504af7e0a197d7021e169d281:
+
+  selftests: netfilter: Fix nft_fib.sh for all.rp_filter=1 (2022-10-12 14:08:15 +0200)
+
+----------------------------------------------------------------
+Phil Sutter (3):
+      selftests: netfilter: Test reverse path filtering
+      netfilter: rpfilter/fib: Populate flowic_l3mdev field
+      selftests: netfilter: Fix nft_fib.sh for all.rp_filter=1
+
+ net/ipv4/netfilter/ipt_rpfilter.c            |   2 +-
+ net/ipv4/netfilter/nft_fib_ipv4.c            |   2 +-
+ net/ipv6/netfilter/ip6t_rpfilter.c           |   9 +-
+ net/ipv6/netfilter/nft_fib_ipv6.c            |   5 +-
+ tools/testing/selftests/netfilter/Makefile   |   2 +-
+ tools/testing/selftests/netfilter/nft_fib.sh |   1 +
+ tools/testing/selftests/netfilter/rpath.sh   | 147 +++++++++++++++++++++++++++
+ 7 files changed, 156 insertions(+), 12 deletions(-)
+ create mode 100755 tools/testing/selftests/netfilter/rpath.sh
