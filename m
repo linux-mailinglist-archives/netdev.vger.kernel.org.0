@@ -2,61 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A7A95FCB23
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 20:55:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 837385FCB37
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 21:00:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230026AbiJLSza (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 14:55:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60220 "EHLO
+        id S229545AbiJLTAA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 15:00:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230043AbiJLSzB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 14:55:01 -0400
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 920721D66B
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 11:54:55 -0700 (PDT)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-35711e5a5ceso163604507b3.13
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 11:54:55 -0700 (PDT)
+        with ESMTP id S229591AbiJLS75 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 14:59:57 -0400
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D928C6440
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 11:59:55 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-360871745b0so103964987b3.3
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 11:59:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=0us5JaOJDUgvNU1TRg6RgeYT4cwR/x4TlTNpaGHirjU=;
-        b=NgXE+FzJuVZD6oT99Uh+GWL4SwNOcW26vfdts36LYdaCDaYIlpafYH45hrXGPT7+jO
-         0QhRLvGwTyB0Yj06uYD7X+girQDE8fmPW3UwbFl3DwXn6NTY7axlEEmAa5uZYO6zYbxd
-         L9h8JqzvNmFnyFQjJ/PBil/Zgz+0tabheHgpa/oAqjBNLM98uCoNDwERWNuYKhRzXHTQ
-         h6+PyT9l6dB3AfqSI9SIR9LWAVHi0fpCyeKTNzghb0Nl5xkzYSxmyvc84YiZXfE3814T
-         Mcbcvhfh17jjkClgBxwTZdDGfTlvHGBYykzWQ9lD6NJzCskgKnz3o6uZdHjQAhojistk
-         kfOA==
+        bh=CITEcy3H9RvWfgD6/tq34bn3UFkan53XGYeqNtVspRw=;
+        b=P/Ng3C3+UN5W5glGaP6oXhfEttj7Fw1Jklmfv+mc+MwuDhGra2RqWeKkX0so0zMuEI
+         biiCxYgVe3munH+k2ynaBQ7KgfkzB4ghjFvN9/Q/1w5+o6DgFk82jNTsqrGnfGFVaf09
+         sRMJCweaIecezbOAxTJnAFudJvKsUjWiy3uAwUHz95mXgXF05XQZeC9YbJGVl4/34vw/
+         iQDs7sv14DLUE9HcrH87SosU9wbPw/MWakipAHCJ4kdYQflNtfaVe9l5MlKiZSk1Myzg
+         iOkyvZYZa8uOfDwmhMCqZf/n7tOiQDgQ4p6B634ZZL9AGeDk+i+Zy+tiqooIvD1N5DqB
+         5z/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=0us5JaOJDUgvNU1TRg6RgeYT4cwR/x4TlTNpaGHirjU=;
-        b=WSIXP8M0fD+HDY3uoO5DBb+3enuYZXFj45q/NB8fztBOfB1Nu7dW91DEYarCAEhCls
-         npAWgFkcqlMKlDFRUR3OwyxocFrwWF+lkVzZXhzqG7atuHgn9Nz+QwCsy5vK+M/szUre
-         DXFQQqeI6MDpZEB5F42/MgqGd+zfypsltPfi7vVxYpmTziwQysZB33eLK6p5FEvQeGe7
-         /lf9h8ak8wRNWdzZyUlOmDaid8w+hVAz/PA+s9MEOs2U14HbkUG1dL8EElDt5LJYR4HP
-         aFsv1xnzfmYpSX/oZ4drSc7WaYRrpRWyr4Ls5zW0YG55g9uuFANvXVKA/XMvHrhevLbo
-         qSdQ==
-X-Gm-Message-State: ACrzQf2PFzrnKMhIwnsVK4zQ6YUC3Dv3qweGyIVPBjpkeks77VzhbRuA
-        mYbVVHYMjqexWH9pCrb+/DB061pDFyNRgGY8fUJ1NA==
-X-Google-Smtp-Source: AMsMyM7Fgb/AD6k0K1EaSUj1N1iD7vgHN7afuYOamWTPOpPCKAIyds+AGO0ukyyt9Sd/8HhNiHIFkV8uG5SnDG4wm9M=
-X-Received: by 2002:a81:1b09:0:b0:35d:cf91:aadc with SMTP id
- b9-20020a811b09000000b0035dcf91aadcmr27606845ywb.47.1665600894276; Wed, 12
- Oct 2022 11:54:54 -0700 (PDT)
+        bh=CITEcy3H9RvWfgD6/tq34bn3UFkan53XGYeqNtVspRw=;
+        b=1/4vbdKNlxtoNY8KBRm2rAljaLV3wrC9cBqJMYC0PXo/IPrnKkTVop9icP0azo4cuw
+         zNIqvu08AMJPOCJOH4KRqFAvaElrBrJJetYtOnbhtFDGRgl877O5pq4iTzPQJ92t+62D
+         1Y3HHn9B8J8QsCuJAbwC6oxectjREeTCJCygZ16hbWp9iSu21OstI4Kfh2mUTTKeUyMP
+         5GT7G9F3qnGtnCzso+7NM/YiYUtCBL2HJpQIg1EscYln5Mz4mJ4Mi+NgO9eKATlBCge5
+         xuTgF5LopCAGHdhMNz/L/yKQZcUWnWRpnH9pvV5jLyE8FhB3O00wvNjxGe7tisJIS59V
+         c82Q==
+X-Gm-Message-State: ACrzQf0Iqxn20c1dr65OWSP5gkU3z+K/iQIctupu68Kbb/CSAqP7XNKx
+        EIREDg0lyccnFbkvvjT5gl/8nZrxnAxSzjUDQXYFiA==
+X-Google-Smtp-Source: AMsMyM65MA/tfAyuQ+LxJ6Kh1NrTyfl/ofknbUTC7dcAJw/QwuyrQf5rTrvWs9UtqjTFPaQc2gDKrvgXpPZWFWWdzHk=
+X-Received: by 2002:a81:48d6:0:b0:355:8d0a:d8a1 with SMTP id
+ v205-20020a8148d6000000b003558d0ad8a1mr27180226ywa.467.1665601194844; Wed, 12
+ Oct 2022 11:59:54 -0700 (PDT)
 MIME-Version: 1.0
-References: <CANn89iJYF6S3XcfnxNcsPMjhFXz1naokJ+tLM1jSjjR6uco9bw@mail.gmail.com>
- <20221012172801.83774-1-kuniyu@amazon.com>
-In-Reply-To: <20221012172801.83774-1-kuniyu@amazon.com>
+References: <20221012185243.88948-1-kuniyu@amazon.com>
+In-Reply-To: <20221012185243.88948-1-kuniyu@amazon.com>
 From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 12 Oct 2022 11:54:42 -0700
-Message-ID: <CANn89iJ=G5N+bp2HE+W5nvMsXFF0gO3-7Aui_3p2ufAwkY2=5g@mail.gmail.com>
-Subject: Re: [PATCH v1 net] tcp: Clean up kernel listener's reqsk in inet_twsk_purge()
+Date:   Wed, 12 Oct 2022 11:59:43 -0700
+Message-ID: <CANn89iJn-T_rKg67h6deW0Oyh=X4kWXVBrtvUJU+VpDTfpde0w@mail.gmail.com>
+Subject: Re: [PATCH v2 net] udp: Update reuse->has_conns under reuseport_lock.
 To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org,
-        kuni1840@gmail.com, netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller@googlegroups.com, yoshfuji@linux-ipv6.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Martin KaFai Lau <martin.lau@kernel.org>,
+        Craig Gallek <kraig@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
@@ -69,243 +74,175 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 12, 2022 at 10:28 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+On Wed, Oct 12, 2022 at 11:53 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
 >
-> From:   Eric Dumazet <edumazet@google.com>
-> Date:   Wed, 12 Oct 2022 09:31:44 -0700
-> > On Wed, Oct 12, 2022 at 7:51 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> > >
-> > > Eric Dumazet reported a use-after-free related to the per-netns ehash
-> > > series. [0]
-> > >
-> > > When we create a TCP socket from userspace, the socket always holds a
-> > > refcnt of the netns.  This guarantees that a reqsk timer is always fired
-> > > before netns dismantle.  Each reqsk has a refcnt of its listener, so the
-> > > listener is not freed before the reqsk, and the net is not freed before
-> > > the listener as well.
-> > >
-> > > OTOH, when in-kernel users create a TCP socket, it might not hold a refcnt
-> > > of its netns.  Thus, a reqsk timer can be fired after the netns dismantle
-> > > and access freed per-netns ehash.
-> >
-> > Patch seems good, but changelog is incorrect.
-> >
-> > 1) we have a TCP listener (or more) on a netns
-> > 2) We receive SYN packets, creating SYN_RECV request sockets, added in
-> > ehash table.
-> > 3) job is killed, TCP listener closed.
-> > 4) When a TCP listener is closed, we do not purge all SYN_RECV
-> > requests sockets, because we rely
-> >    on normal per-request timer firing, then finding the listener is no
-> > longer in LISTEN state -> drop the request socket.
-> >    (We do not maintain a per-listener list of request sockets, and
-> > going through ehash would be quite expensive on busy servers)
-> > 5) netns is deleted (and optional TCP ehashinfo freed)
-> > 6) request socket timer fire, and wecrash while trying to unlink the
-> > request socket from the freed ehash table.
-> >
-> > In short, I think the case could happen with normal TCP sockets,
-> > allocated from user space.
+> When we call connect() for a UDP socket in a reuseport group, we have
+> to update sk->sk_reuseport_cb->has_conns to 1.  Otherwise, the kernel
+> could select a unconnected socket wrongly for packets sent to the
+> connected socket.
 >
-> Hmm.. I think 5) always happens after reqsk_timer for TCP socket
-> allocated from user space because reqsk has a refcnt for its netns
-> indirectly via the listener.
+> However, the current way to set has_conns is illegal and possible to
+> trigger that problem.  reuseport_has_conns() changes has_conns under
+> rcu_read_lock(), which upgrades the RCU reader to the updater.  Then,
+> it must do the update under the updater's lock, reuseport_lock, but
+> it doesn't for now.
 >
-> reqsk has its listener's sk_refcnt, so when reqsk timer is fired
-> the last reqsk_put() in inet_csk_reqsk_queue_drop_and_put() calls
-> sock_put() for the listener, and then listener release the last
-> refcnt for the net, and finally net is queued up to the free-list.
+> For this reason, there is a race below where we fail to set has_conns
+> resulting in the wrong socket selection.  To avoid the race, let's split
+> the reader and updater with proper locking.
 >
-> ---8<---
-> static void __sk_destruct(struct rcu_head *head)
-> {
-> ...
->         if (likely(sk->sk_net_refcnt))
->                 put_net(sock_net(sk));
->         sk_prot_free(sk->sk_prot_creator, sk);
-> }
-> ---8<---
+>  cpu1                               cpu2
+> +----+                             +----+
 >
+> __ip[46]_datagram_connect()        reuseport_grow()
+> .                                  .
+> |- reuseport_has_conns(sk, true)   |- more_reuse = __reuseport_alloc(more_socks_size)
+> |  .                               |
+> |  |- rcu_read_lock()
+> |  |- reuse = rcu_dereference(sk->sk_reuseport_cb)
+> |  |
+> |  |                               |  /* reuse->has_conns == 0 here */
+> |  |                               |- more_reuse->has_conns = reuse->has_conns
+> |  |- reuse->has_conns = 1         |  /* more_reuse->has_conns SHOULD BE 1 HERE */
+> |  |                               |
+> |  |                               |- rcu_assign_pointer(reuse->socks[i]->sk_reuseport_cb,
+> |  |                               |                     more_reuse)
+> |  `- rcu_read_unlock()            `- kfree_rcu(reuse, rcu)
+> |
+> |- sk->sk_state = TCP_ESTABLISHED
 >
-> I did some tests with this script, but KASAN did not detect UAF
-> and I checked the timer is always executed before netns dismantle
-> for userspace listener.
+> Fixes: acdcecc61285 ("udp: correct reuseport selection with connected sockets")
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> ---
+> v2:
+>   * Fix build failure for CONFIG_IPV6=m
+>   * Drop SO_INCOMING_CPU fix, which will be sent for net-next
+>     after the v6.1 merge window
 >
-> ---8<---
-> set -e
+> v1: https://lore.kernel.org/netdev/20221010174351.11024-1-kuniyu@amazon.com/
+> ---
+>  include/net/sock_reuseport.h | 11 +++++------
+>  net/core/sock_reuseport.c    | 15 +++++++++++++++
+>  net/ipv4/datagram.c          |  2 +-
+>  net/ipv4/udp.c               |  2 +-
+>  net/ipv6/datagram.c          |  2 +-
+>  net/ipv6/udp.c               |  2 +-
+>  6 files changed, 24 insertions(+), 10 deletions(-)
 >
-> sysctl -w net.ipv4.tcp_child_ehash_entries=128
-> sysctl -w net.ipv4.tcp_max_orphans=0
+> diff --git a/include/net/sock_reuseport.h b/include/net/sock_reuseport.h
+> index 473b0b0fa4ab..efc9085c6892 100644
+> --- a/include/net/sock_reuseport.h
+> +++ b/include/net/sock_reuseport.h
+> @@ -43,21 +43,20 @@ struct sock *reuseport_migrate_sock(struct sock *sk,
+>  extern int reuseport_attach_prog(struct sock *sk, struct bpf_prog *prog);
+>  extern int reuseport_detach_prog(struct sock *sk);
 >
-> cat <<EOF>test.py
-> from socket import *
-> from subprocess import run
+> -static inline bool reuseport_has_conns(struct sock *sk, bool set)
+> +static inline bool reuseport_has_conns(struct sock *sk)
+>  {
+>         struct sock_reuseport *reuse;
+>         bool ret = false;
 >
-> s = socket()
-> s.bind(('localhost', 80))
-> s.listen()
+>         rcu_read_lock();
+>         reuse = rcu_dereference(sk->sk_reuseport_cb);
+> -       if (reuse) {
+> -               if (set)
+> -                       reuse->has_conns = 1;
+> -               ret = reuse->has_conns;
+> -       }
+> +       if (reuse && reuse->has_conns)
+> +               ret = true;
+>         rcu_read_unlock();
 >
-> c = socket()
-> c.connect(('localhost', 80))
-> run('netstat -tan'.split())
-> EOF
+>         return ret;
+>  }
 >
-> cat <<EOF>test_net.sh
-> set -e
+> +void reuseport_has_conns_set(struct sock *sk);
+> +
+>  #endif  /* _SOCK_REUSEPORT_H */
+> diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
+> index 5daa1fa54249..abb414ed4aa7 100644
+> --- a/net/core/sock_reuseport.c
+> +++ b/net/core/sock_reuseport.c
+> @@ -21,6 +21,21 @@ static DEFINE_IDA(reuseport_ida);
+>  static int reuseport_resurrect(struct sock *sk, struct sock_reuseport *old_reuse,
+>                                struct sock_reuseport *reuse, bool bind_inany);
 >
-> sysctl net.ipv4.tcp_child_ehash_entries
->
-> ip link set lo up
->
-> iptables -A OUTPUT -o lo -p tcp --dport 80 --tcp-flags ACK ACK -j DROP
->
-> python3 test.py
->
-> netstat -tan
->
-> EOF
->
-> unshare -n bash test_net.sh
-> ---8<---
->
+> +void reuseport_has_conns_set(struct sock *sk)
+> +{
+> +       struct sock_reuseport *reuse;
+> +
+> +       if (!rcu_access_pointer(sk->sk_reuseport_cb))
+> +               return;
+> +
+> +       spin_lock(&reuseport_lock);
+> +       reuse = rcu_dereference_protected(sk->sk_reuseport_cb,
+> +                                         lockdep_is_held(&reuseport_lock));
 
-Hmm... maybe , but I have other syzbot reports that suggest the netns
-refcounting is wrong...
+Could @reuse be NULL at this point ?
 
-Maybe this is time I add a ref tracker dir for 'kernel sockets',
-making sure this tracker is empty right before netns is destroyed.
+Previous  test was performed without reuseport_lock being held.
 
-BUG: KASAN: use-after-free in tcp_probe_timer net/ipv4/tcp_timer.c:378 [inline]
-BUG: KASAN: use-after-free in tcp_write_timer_handler+0x7e2/0x920
-net/ipv4/tcp_timer.c:624
-Read of size 1 at addr ffff88807d6ba385 by task syz-executor.2/3638
-
-CPU: 0 PID: 3638 Comm: syz-executor.2 Not tainted
-6.0.0-syzkaller-09589-g55be6084c8e0 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine,
-BIOS Google 09/22/2022
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0x1e3/0x2cb lib/dump_stack.c:106
- print_address_description+0x65/0x4b0 mm/kasan/report.c:317
- print_report+0x108/0x220 mm/kasan/report.c:433
- kasan_report+0xfb/0x130 mm/kasan/report.c:495
- tcp_probe_timer net/ipv4/tcp_timer.c:378 [inline]
- tcp_write_timer_handler+0x7e2/0x920 net/ipv4/tcp_timer.c:624
- tcp_write_timer+0x176/0x280 net/ipv4/tcp_timer.c:637
- call_timer_fn+0xf5/0x210 kernel/time/timer.c:1474
- expire_timers kernel/time/timer.c:1519 [inline]
- __run_timers+0x76a/0x980 kernel/time/timer.c:1790
- run_timer_softirq+0x63/0xf0 kernel/time/timer.c:1803
- __do_softirq+0x277/0x75b kernel/softirq.c:571
- __irq_exit_rcu+0xec/0x170 kernel/softirq.c:650
- irq_exit_rcu+0x5/0x20 kernel/softirq.c:662
- sysvec_apic_timer_interrupt+0x91/0xb0 arch/x86/kernel/apic/apic.c:1107
-
-
-
-
+> +       reuse->has_conns = 1;
+> +       spin_unlock(&reuseport_lock);
+> +}
+> +EXPORT_SYMBOL(reuseport_has_conns_set);
+> +
+>  static int reuseport_sock_index(struct sock *sk,
+>                                 const struct sock_reuseport *reuse,
+>                                 bool closed)
+> diff --git a/net/ipv4/datagram.c b/net/ipv4/datagram.c
+> index 405a8c2aea64..5e66add7befa 100644
+> --- a/net/ipv4/datagram.c
+> +++ b/net/ipv4/datagram.c
+> @@ -70,7 +70,7 @@ int __ip4_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len
+>         }
+>         inet->inet_daddr = fl4->daddr;
+>         inet->inet_dport = usin->sin_port;
+> -       reuseport_has_conns(sk, true);
+> +       reuseport_has_conns_set(sk);
+>         sk->sk_state = TCP_ESTABLISHED;
+>         sk_set_txhash(sk);
+>         inet->inet_id = prandom_u32();
+> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> index d63118ce5900..29228231b058 100644
+> --- a/net/ipv4/udp.c
+> +++ b/net/ipv4/udp.c
+> @@ -448,7 +448,7 @@ static struct sock *udp4_lib_lookup2(struct net *net,
+>                         result = lookup_reuseport(net, sk, skb,
+>                                                   saddr, sport, daddr, hnum);
+>                         /* Fall back to scoring if group has connections */
+> -                       if (result && !reuseport_has_conns(sk, false))
+> +                       if (result && !reuseport_has_conns(sk))
+>                                 return result;
 >
+>                         result = result ? : sk;
+> diff --git a/net/ipv6/datagram.c b/net/ipv6/datagram.c
+> index df665d4e8f0f..5ecb56522f9d 100644
+> --- a/net/ipv6/datagram.c
+> +++ b/net/ipv6/datagram.c
+> @@ -256,7 +256,7 @@ int __ip6_datagram_connect(struct sock *sk, struct sockaddr *uaddr,
+>                 goto out;
+>         }
 >
-> > > To avoid the use-after-free, we need to clean up TCP_NEW_SYN_RECV sockets
-> > > in inet_twsk_purge() if the netns uses a per-netns ehash.
-> > >
-> > > [0]: https://lore.kernel.org/netdev/CANn89iLXMup0dRD_Ov79Xt8N9FM0XdhCHEN05sf3eLwxKweM6w@mail.gmail.com/
-> > >
-> > > BUG: KASAN: use-after-free in tcp_or_dccp_get_hashinfo
-> > > include/net/inet_hashtables.h:181 [inline]
-> > > BUG: KASAN: use-after-free in reqsk_queue_unlink+0x320/0x350
-> > > net/ipv4/inet_connection_sock.c:913
-> > > Read of size 8 at addr ffff88807545bd80 by task syz-executor.2/8301
-> > >
-> > > CPU: 1 PID: 8301 Comm: syz-executor.2 Not tainted
-> > > 6.0.0-syzkaller-02757-gaf7d23f9d96a #0
-> > > Hardware name: Google Google Compute Engine/Google Compute Engine,
-> > > BIOS Google 09/22/2022
-> > > Call Trace:
-> > > <IRQ>
-> > > __dump_stack lib/dump_stack.c:88 [inline]
-> > > dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
-> > > print_address_description mm/kasan/report.c:317 [inline]
-> > > print_report.cold+0x2ba/0x719 mm/kasan/report.c:433
-> > > kasan_report+0xb1/0x1e0 mm/kasan/report.c:495
-> > > tcp_or_dccp_get_hashinfo include/net/inet_hashtables.h:181 [inline]
-> > > reqsk_queue_unlink+0x320/0x350 net/ipv4/inet_connection_sock.c:913
-> > > inet_csk_reqsk_queue_drop net/ipv4/inet_connection_sock.c:927 [inline]
-> > > inet_csk_reqsk_queue_drop_and_put net/ipv4/inet_connection_sock.c:939 [inline]
-> > > reqsk_timer_handler+0x724/0x1160 net/ipv4/inet_connection_sock.c:1053
-> > > call_timer_fn+0x1a0/0x6b0 kernel/time/timer.c:1474
-> > > expire_timers kernel/time/timer.c:1519 [inline]
-> > > __run_timers.part.0+0x674/0xa80 kernel/time/timer.c:1790
-> > > __run_timers kernel/time/timer.c:1768 [inline]
-> > > run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1803
-> > > __do_softirq+0x1d0/0x9c8 kernel/softirq.c:571
-> > > invoke_softirq kernel/softirq.c:445 [inline]
-> > > __irq_exit_rcu+0x123/0x180 kernel/softirq.c:650
-> > > irq_exit_rcu+0x5/0x20 kernel/softirq.c:662
-> > > sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1107
-> > > </IRQ>
-> > >
-> > > Fixes: d1e5e6408b30 ("tcp: Introduce optional per-netns ehash.")
-> > > Reported-by: syzbot <syzkaller@googlegroups.com>
-> > > Reported-by: Eric Dumazet <edumazet@google.com>
-> > > Suggested-by: Eric Dumazet <edumazet@google.com>
-> > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> > > ---
-> > >  net/ipv4/inet_timewait_sock.c | 15 ++++++++++++++-
-> > >  net/ipv4/tcp_minisocks.c      |  9 +++++----
-> > >  2 files changed, 19 insertions(+), 5 deletions(-)
-> > >
-> > > diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_sock.c
-> > > index 71d3bb0abf6c..66fc940f9521 100644
-> > > --- a/net/ipv4/inet_timewait_sock.c
-> > > +++ b/net/ipv4/inet_timewait_sock.c
-> > > @@ -268,8 +268,21 @@ void inet_twsk_purge(struct inet_hashinfo *hashinfo, int family)
-> > >                 rcu_read_lock();
-> > >  restart:
-> > >                 sk_nulls_for_each_rcu(sk, node, &head->chain) {
-> > > -                       if (sk->sk_state != TCP_TIME_WAIT)
-> > > +                       if (sk->sk_state != TCP_TIME_WAIT) {
-> > > +                               /* A kernel listener socket might not hold refcnt for net,
-> > > +                                * so reqsk_timer_handler() could be fired after net is
-> > > +                                * freed.  Userspace listener and reqsk never exist here.
-> > > +                                */
-> > > +                               if (unlikely(sk->sk_state == TCP_NEW_SYN_RECV &&
-> > > +                                            hashinfo->pernet)) {
-> > > +                                       struct request_sock *req = inet_reqsk(sk);
-> > > +
-> > > +                                       inet_csk_reqsk_queue_drop_and_put(req->rsk_listener, req);
-> > > +                               }
-> > > +
-> > >                                 continue;
-> > > +                       }
-> > > +
-> > >                         tw = inet_twsk(sk);
-> > >                         if ((tw->tw_family != family) ||
-> > >                                 refcount_read(&twsk_net(tw)->ns.count))
-> > > diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-> > > index 79f30f026d89..c375f603a16c 100644
-> > > --- a/net/ipv4/tcp_minisocks.c
-> > > +++ b/net/ipv4/tcp_minisocks.c
-> > > @@ -353,13 +353,14 @@ void tcp_twsk_purge(struct list_head *net_exit_list, int family)
-> > >         struct net *net;
-> > >
-> > >         list_for_each_entry(net, net_exit_list, exit_list) {
-> > > -               /* The last refcount is decremented in tcp_sk_exit_batch() */
-> > > -               if (refcount_read(&net->ipv4.tcp_death_row.tw_refcount) == 1)
-> > > -                       continue;
-> > > -
-> > >                 if (net->ipv4.tcp_death_row.hashinfo->pernet) {
-> > > +                       /* Even if tw_refcount == 1, we must clean up kernel reqsk */
-> > >                         inet_twsk_purge(net->ipv4.tcp_death_row.hashinfo, family);
-> > >                 } else if (!purged_once) {
-> > > +                       /* The last refcount is decremented in tcp_sk_exit_batch() */
-> > > +                       if (refcount_read(&net->ipv4.tcp_death_row.tw_refcount) == 1)
-> > > +                               continue;
-> > > +
-> > >                         inet_twsk_purge(&tcp_hashinfo, family);
-> > >                         purged_once = true;
-> > >                 }
-> > > --
-> > > 2.30.2
+> -       reuseport_has_conns(sk, true);
+> +       reuseport_has_conns_set(sk);
+>         sk->sk_state = TCP_ESTABLISHED;
+>         sk_set_txhash(sk);
+>  out:
+> diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+> index 91e795bb9ade..56e4523a3004 100644
+> --- a/net/ipv6/udp.c
+> +++ b/net/ipv6/udp.c
+> @@ -182,7 +182,7 @@ static struct sock *udp6_lib_lookup2(struct net *net,
+>                         result = lookup_reuseport(net, sk, skb,
+>                                                   saddr, sport, daddr, hnum);
+>                         /* Fall back to scoring if group has connections */
+> -                       if (result && !reuseport_has_conns(sk, false))
+> +                       if (result && !reuseport_has_conns(sk))
+>                                 return result;
+>
+>                         result = result ? : sk;
+> --
+> 2.30.2
+>
