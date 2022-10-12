@@ -2,57 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7910D5FC561
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 14:34:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AE015FC575
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 14:37:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229734AbiJLMea (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 08:34:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54334 "EHLO
+        id S229885AbiJLMhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 08:37:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229676AbiJLMe2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 08:34:28 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC8D9C6960;
-        Wed, 12 Oct 2022 05:34:27 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id a26so37673012ejc.4;
-        Wed, 12 Oct 2022 05:34:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=9/RIE4UtfSnbb24YnWB8sjXppAAKMhorvgvYfIUj5k4=;
-        b=dBQz1uVSih9iBYNDG+HvDmLo2oLgdqcmQEq1z+bpjGgeQM2VbL6mvbFTVD8bQrRg8w
-         SiDoQTUOn4BCEALVWnpIxLPD4/QogY2rqMaNw+ZseI4XTqvSDEdmj+EdlTzAVPxvuUFX
-         SLg9sUHpH27bwUUp4wZDxlh9Hobs39km8D0RBUghVFePZh1v8bx356ApfBUGtBJrpllt
-         83ZikNmUH+iCo0LL3ZKoaDisVK5douU410IW0J0xSK20RxgIkQR/XiSY09xxp/aUBjBh
-         Mo71R3FtgBUjzsmevzYgpWXa6eCJ3btCkjFTjPYzdbj7WBTT+RpU+62Wo5mSbcuee5/H
-         yPZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9/RIE4UtfSnbb24YnWB8sjXppAAKMhorvgvYfIUj5k4=;
-        b=FJfzh6R60MOgI5P7ca2o4P1a4KBrT+WHXxuLMzn22fTW/3v1mia4LSsa0t4bN9vmaF
-         50VEum1vKkDCjVYFF9OGo+y381Mm663KnF+JgYJ7yKSqDxkb31hsNoegAHa82Yy9d/sG
-         EGbzCvOVj3u19kUW0rDTtdluwTgW877P01rc8z9+eqr5tl+PMcQNCK/iN4UfNwyhfV5w
-         Y8jwETlRVrHKphWSJ46m/UFidI1PTl1DT9OnKx1GpidrjYEwD/Ea01q+re2vhpx5uumX
-         f+hC4BdhdMQ6xPgWdBFk92z9XMgI90uDGrNqnJcuR9W/jdM5OuhJIrbxGgidNBhDOZMR
-         ihhA==
-X-Gm-Message-State: ACrzQf3Pta+WuQkz07EfwwqykaTtn/Xnsd++KwOelPPy8WV2o4+pwLyl
-        uBLycl4IsZD9GLj5P1kPvRk=
-X-Google-Smtp-Source: AMsMyM6iiVUpEIeWX1XO2f5hwEdoAqSvNflAm9iN3wbYxrZVZpcjBbuOvdp6juwchz1X6lRVeYFhVQ==
-X-Received: by 2002:a17:907:8a15:b0:782:e6da:f13d with SMTP id sc21-20020a1709078a1500b00782e6daf13dmr22750273ejc.152.1665578066004;
-        Wed, 12 Oct 2022 05:34:26 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-134.ip85.fastwebnet.it. [93.42.70.134])
-        by smtp.gmail.com with ESMTPSA id r10-20020a17090609ca00b00780636a85fasm1133082eje.221.2022.10.12.05.34.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Oct 2022 05:34:25 -0700 (PDT)
-Message-ID: <6346b451.170a0220.2c49b.3ebc@mx.google.com>
-X-Google-Original-Message-ID: <Y0a0Tkbsg40yFOq5@Ansuel-xps.>
-Date:   Wed, 12 Oct 2022 14:34:22 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
+        with ESMTP id S229884AbiJLMht (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 08:37:49 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C66C2C707B;
+        Wed, 12 Oct 2022 05:37:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=JWy5RQWI5KogxEJb2DRzy4LpyNy0j033+Jo3GVosbOA=; b=Fv134si1BGJlyz8/5vUhVpOeHt
+        JGZxF13SrLBknVXU4cPUZV8ynsEWqL0qnDm3KAgqOfYTJck4Mmq3Pdm/+nPsH2q23JRtCZoMm4411
+        5LHiCQDf5PZOY7IMqEk2DFRRtuhwHkLp+yTeixw+IYp0HEl3omiw2fOMHHGSCtxQhSr4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oiazO-001njB-Aj; Wed, 12 Oct 2022 14:37:34 +0200
+Date:   Wed, 12 Oct 2022 14:37:34 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Christian Marangi <ansuelsmth@gmail.com>
 Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
@@ -64,62 +39,67 @@ Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Pawel Dembicki <paweldembicki@gmail.com>,
         Lech Perczak <lech.perczak@gmail.com>
-Subject: Re: [net PATCH 1/2] net: dsa: qca8k: fix inband mgmt for big-endian
- systems
+Subject: Re: [net PATCH 2/2] net: dsa: qca8k: fix ethtool autocast mib for
+ big-endian systems
+Message-ID: <Y0a1Ditnr/ekKR39@lunn.ch>
 References: <20221010111459.18958-1-ansuelsmth@gmail.com>
- <Y0RqDd/P3XkrSzc3@lunn.ch>
- <63446da5.050a0220.92e81.d3fb@mx.google.com>
- <Y0azJlxthYXr7gMX@lunn.ch>
+ <20221010111459.18958-2-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y0azJlxthYXr7gMX@lunn.ch>
+In-Reply-To: <20221010111459.18958-2-ansuelsmth@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 12, 2022 at 02:29:26PM +0200, Andrew Lunn wrote:
-> On Mon, Oct 10, 2022 at 02:44:46PM +0200, Christian Marangi wrote:
-> > On Mon, Oct 10, 2022 at 08:53:01PM +0200, Andrew Lunn wrote:
-> > > >  /* Special struct emulating a Ethernet header */
-> > > >  struct qca_mgmt_ethhdr {
-> > > > -	u32 command;		/* command bit 31:0 */
-> > > > -	u32 seq;		/* seq 63:32 */
-> > > > -	u32 mdio_data;		/* first 4byte mdio */
-> > > > +	__le32 command;		/* command bit 31:0 */
-> > > > +	__le32 seq;		/* seq 63:32 */
-> > > > +	__le32 mdio_data;		/* first 4byte mdio */
-> > > >  	__be16 hdr;		/* qca hdr */
-> > > >  } __packed;
-> > > 
-> > > It looks odd that hdr is BE while the rest are LE. Did you check this?
-> > > 
-> > >    Andrew
-> > 
-> > Yes we did many test to analyze this and I just checked with some
-> > tcpdump that the hdr is BE everytime.
-> 
-> That might actual make sense. The comment says:
-> 
-> > > >  /* Special struct emulating a Ethernet header */
-> 
-> And hdr is where the Ether type would be, which is network endian,
-> i.e. big endian.
-> 
->      Andrew
+>  	struct qca8k_priv *priv = ds->priv;
+>  	const struct qca8k_mib_desc *mib;
+>  	struct mib_ethhdr *mib_ethhdr;
+> -	int i, mib_len, offset = 0;
+> -	u64 *data;
+> +	__le32 *data2;
+>  	u8 port;
+> +	int i;
+>  
+>  	mib_ethhdr = (struct mib_ethhdr *)skb_mac_header(skb);
+>  	mib_eth_data = &priv->mib_eth_data;
+> @@ -1532,28 +1532,24 @@ static void qca8k_mib_autocast_handler(struct dsa_switch *ds, struct sk_buff *sk
+>  	if (port != mib_eth_data->req_port)
+>  		goto exit;
+>  
+> -	data = mib_eth_data->data;
+> +	data2 = (__le32 *)skb->data;
+>  
+>  	for (i = 0; i < priv->info->mib_count; i++) {
+>  		mib = &ar8327_mib[i];
+>  
+>  		/* First 3 mib are present in the skb head */
+>  		if (i < 3) {
+> -			data[i] = mib_ethhdr->data[i];
+> +			mib_eth_data->data[i] = le32_to_cpu(mib_ethhdr->data[i]);
+>  			continue;
+>  		}
+>  
+> -		mib_len = sizeof(uint32_t);
+> -
+>  		/* Some mib are 64 bit wide */
+>  		if (mib->size == 2)
+> -			mib_len = sizeof(uint64_t);
+> -
+> -		/* Copy the mib value from packet to the */
+> -		memcpy(data + i, skb->data + offset, mib_len);
+> +			mib_eth_data->data[i] = le64_to_cpu(*(__le64 *)data2);
+> +		else
+> +			mib_eth_data->data[i] = le32_to_cpu(*data2);
 
-Yes that is my theory... hdr is in the ether type position so it's the
-only part that the switch treat in a standard way as it has to be like
-that or a dev creating a tagger driver would have no way to understand
-if the packet is autocast, in band ack or a simple packet so who created
-the fw for the switch had this concern in mind and stick to keeping at
-least the hdr in a standard way.
+Are there any alignment guarantees? The old memcpy did not care if the
+source has oddly alignment. But when you start dereferencing a pointed,
+you need to be sure those pointers are aligned. You might want to use
+get_unaligned_le32 and get_unaligned_le64.
 
--- 
-	Ansuel
+	   Andrew
