@@ -2,261 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3E035FCB96
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 21:28:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60AD15FCB9F
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 21:33:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229691AbiJLT2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 15:28:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41480 "EHLO
+        id S229511AbiJLTdc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 15:33:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229698AbiJLT2Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 15:28:16 -0400
-Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 887DB104534
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 12:28:13 -0700 (PDT)
+        with ESMTP id S229459AbiJLTda (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 15:33:30 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCBD5FFFA1
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 12:33:27 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id c3-20020a1c3503000000b003bd21e3dd7aso1793315wma.1
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 12:33:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1665602894; x=1697138894;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=NpSyPZBcBaJ1F0ggid8hGBkS78S0Sg9Sm1fgdaogCgk=;
-  b=kXDpGRRlxnqaKst2XWIzhVP4tjPpyrNLuIt3zE1xoxXMKGlZxmBkRASp
-   9CxEnnTSzcSy9j3QbzdD9NKhRU6Kt0RtCZhq2FJhtYXYMXySHdack+OpP
-   /BsmyWWz34zy2wsKQCyk1nkVtNGkBenNOA9gAmJmnqJ7Q8hypr0u8881P
-   c=;
-X-IronPort-AV: E=Sophos;i="5.95,180,1661817600"; 
-   d="scan'208";a="251322235"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-5c4a15b1.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2022 19:28:00 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2c-5c4a15b1.us-west-2.amazon.com (Postfix) with ESMTPS id 947EA45B1F;
-        Wed, 12 Oct 2022 19:27:56 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Wed, 12 Oct 2022 19:27:55 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.230) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.15;
- Wed, 12 Oct 2022 19:27:49 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <edumazet@google.com>
-CC:     <davem@davemloft.net>, <dsahern@kernel.org>, <kraig@google.com>,
-        <kuba@kernel.org>, <kuni1840@gmail.com>, <kuniyu@amazon.com>,
-        <martin.lau@kernel.org>, <netdev@vger.kernel.org>,
-        <pabeni@redhat.com>, <willemb@google.com>,
-        <yoshfuji@linux-ipv6.org>
-Subject: Re: [PATCH v2 net] udp: Update reuse->has_conns under reuseport_lock.
-Date:   Wed, 12 Oct 2022 12:27:39 -0700
-Message-ID: <20221012192739.91505-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <CANn89iJn-T_rKg67h6deW0Oyh=X4kWXVBrtvUJU+VpDTfpde0w@mail.gmail.com>
-References: <CANn89iJn-T_rKg67h6deW0Oyh=X4kWXVBrtvUJU+VpDTfpde0w@mail.gmail.com>
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=rb3P+SSN1sXyqJ2czRmiuQmEZ6Yw67MQkLT5mp7Ld9E=;
+        b=n7WsXrv60EsxQXCp2IbIUt6y01Ya3R3O3+37j5cvFwQOSW1q1A6W5CeTahQfxDQU+N
+         yJgSKowR1R2Aa16hctpL0weH9tXz1f0PqLz7pi4mnL9YDQjYrdIJ01fvCuTVfnzAUSDr
+         9ZeZQT/t8k/RpiSZWVAEWbRWXbKrvKYCzeQuuRzWGmpvDumuHcFbhQXPDZq64ryM8TOk
+         O8NKS4cuMvDvHnKqVq1XpaUvIMnaOUx5n5BN/d+KDxqOT1hd+An+v9duFKJOdgUnFz+Q
+         zWCHvZ6vm/030JYg8h2AJGvXWamtJSvsk5n7B7kTDCsD8u99r0rsdJPs3PqM2OqoC7oy
+         Cu2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=rb3P+SSN1sXyqJ2czRmiuQmEZ6Yw67MQkLT5mp7Ld9E=;
+        b=Z6udZPc0MIcGifqLvP7iN20o0vjfAZBufSJbjprcahC3QLC7hK8I83r9GG628dqPOa
+         xPLieDmXNlQ7diJoV3fGb5i3HT3UhFrCC1VnItYZNReVxuQEDzDXPgVap0FDvmroQnRE
+         06/PA8FVWZF1bqgKvW5BZLm6JcxgVviwhDoKCxknG3OX4xAKMFX45BcMbhC35Tr0up7S
+         dhJecMXI0HbJLxhshNPvNEleb+1gph/lBccles5qjcfoChUpz7eSHJhTaacIcjNIgZDv
+         XUcZjYjvi35ymLIgEjqaMnBcochZjPDdKsbdSD/C2TiMrAZ9k3FnQUc6OkSM8jzzNncU
+         W68g==
+X-Gm-Message-State: ACrzQf3RM6gb0JmfV9YrAzDbc2oaFDWfXp8hw+xS75hZwyBEchRxHU2T
+        /uXGrTH7tpALtqunNVqExv0=
+X-Google-Smtp-Source: AMsMyM69mEeJgiX89w5iD5lVUzxcawoyo/UxSJzlT1ITMbsUzI+CFNLvlVi22ZBcok/RRQobyuRdMg==
+X-Received: by 2002:a05:600c:490f:b0:3c6:2c21:97f6 with SMTP id f15-20020a05600c490f00b003c62c2197f6mr3790706wmp.177.1665603206101;
+        Wed, 12 Oct 2022 12:33:26 -0700 (PDT)
+Received: from ?IPV6:2a01:c22:6f0c:8900:9422:b6d3:cb18:f1c6? (dynamic-2a01-0c22-6f0c-8900-9422-b6d3-cb18-f1c6.c22.pool.telefonica.de. [2a01:c22:6f0c:8900:9422:b6d3:cb18:f1c6])
+        by smtp.googlemail.com with ESMTPSA id g6-20020a05600c4ec600b003b477532e66sm8087747wmq.2.2022.10.12.12.33.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Oct 2022 12:33:25 -0700 (PDT)
+Message-ID: <3ffdaa0d-4a3d-dd2c-506c-d10b5297f430@gmail.com>
+Date:   Wed, 12 Oct 2022 21:33:18 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.230]
-X-ClientProxiedBy: EX13D01UWB003.ant.amazon.com (10.43.161.94) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net] r8169: fix rtl8125b dmar pte write access not set
+ error
+Content-Language: en-US
+To:     Hau <hau@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "grundler@chromium.org" <grundler@chromium.org>
+References: <20221004081037.34064-1-hau@realtek.com>
+ <6d607965-53ab-37c7-3920-ae2ad4be09e5@gmail.com>
+ <6781f98dd232471791be8b0168f0153a@realtek.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+In-Reply-To: <6781f98dd232471791be8b0168f0153a@realtek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 12 Oct 2022 11:59:43 -0700
-> On Wed, Oct 12, 2022 at 11:53 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> >
-> > When we call connect() for a UDP socket in a reuseport group, we have
-> > to update sk->sk_reuseport_cb->has_conns to 1.  Otherwise, the kernel
-> > could select a unconnected socket wrongly for packets sent to the
-> > connected socket.
-> >
-> > However, the current way to set has_conns is illegal and possible to
-> > trigger that problem.  reuseport_has_conns() changes has_conns under
-> > rcu_read_lock(), which upgrades the RCU reader to the updater.  Then,
-> > it must do the update under the updater's lock, reuseport_lock, but
-> > it doesn't for now.
-> >
-> > For this reason, there is a race below where we fail to set has_conns
-> > resulting in the wrong socket selection.  To avoid the race, let's split
-> > the reader and updater with proper locking.
-> >
-> >  cpu1                               cpu2
-> > +----+                             +----+
-> >
-> > __ip[46]_datagram_connect()        reuseport_grow()
-> > .                                  .
-> > |- reuseport_has_conns(sk, true)   |- more_reuse = __reuseport_alloc(more_socks_size)
-> > |  .                               |
-> > |  |- rcu_read_lock()
-> > |  |- reuse = rcu_dereference(sk->sk_reuseport_cb)
-> > |  |
-> > |  |                               |  /* reuse->has_conns == 0 here */
-> > |  |                               |- more_reuse->has_conns = reuse->has_conns
-> > |  |- reuse->has_conns = 1         |  /* more_reuse->has_conns SHOULD BE 1 HERE */
-> > |  |                               |
-> > |  |                               |- rcu_assign_pointer(reuse->socks[i]->sk_reuseport_cb,
-> > |  |                               |                     more_reuse)
-> > |  `- rcu_read_unlock()            `- kfree_rcu(reuse, rcu)
-> > |
-> > |- sk->sk_state = TCP_ESTABLISHED
-> >
-> > Fixes: acdcecc61285 ("udp: correct reuseport selection with connected sockets")
-> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> > ---
-> > v2:
-> >   * Fix build failure for CONFIG_IPV6=m
-> >   * Drop SO_INCOMING_CPU fix, which will be sent for net-next
-> >     after the v6.1 merge window
-> >
-> > v1: https://lore.kernel.org/netdev/20221010174351.11024-1-kuniyu@amazon.com/
-> > ---
-> >  include/net/sock_reuseport.h | 11 +++++------
-> >  net/core/sock_reuseport.c    | 15 +++++++++++++++
-> >  net/ipv4/datagram.c          |  2 +-
-> >  net/ipv4/udp.c               |  2 +-
-> >  net/ipv6/datagram.c          |  2 +-
-> >  net/ipv6/udp.c               |  2 +-
-> >  6 files changed, 24 insertions(+), 10 deletions(-)
-> >
-> > diff --git a/include/net/sock_reuseport.h b/include/net/sock_reuseport.h
-> > index 473b0b0fa4ab..efc9085c6892 100644
-> > --- a/include/net/sock_reuseport.h
-> > +++ b/include/net/sock_reuseport.h
-> > @@ -43,21 +43,20 @@ struct sock *reuseport_migrate_sock(struct sock *sk,
-> >  extern int reuseport_attach_prog(struct sock *sk, struct bpf_prog *prog);
-> >  extern int reuseport_detach_prog(struct sock *sk);
-> >
-> > -static inline bool reuseport_has_conns(struct sock *sk, bool set)
-> > +static inline bool reuseport_has_conns(struct sock *sk)
-> >  {
-> >         struct sock_reuseport *reuse;
-> >         bool ret = false;
-> >
-> >         rcu_read_lock();
-> >         reuse = rcu_dereference(sk->sk_reuseport_cb);
-> > -       if (reuse) {
-> > -               if (set)
-> > -                       reuse->has_conns = 1;
-> > -               ret = reuse->has_conns;
-> > -       }
-> > +       if (reuse && reuse->has_conns)
-> > +               ret = true;
-> >         rcu_read_unlock();
-> >
-> >         return ret;
-> >  }
-> >
-> > +void reuseport_has_conns_set(struct sock *sk);
-> > +
-> >  #endif  /* _SOCK_REUSEPORT_H */
-> > diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
-> > index 5daa1fa54249..abb414ed4aa7 100644
-> > --- a/net/core/sock_reuseport.c
-> > +++ b/net/core/sock_reuseport.c
-> > @@ -21,6 +21,21 @@ static DEFINE_IDA(reuseport_ida);
-> >  static int reuseport_resurrect(struct sock *sk, struct sock_reuseport *old_reuse,
-> >                                struct sock_reuseport *reuse, bool bind_inany);
-> >
-> > +void reuseport_has_conns_set(struct sock *sk)
-> > +{
-> > +       struct sock_reuseport *reuse;
-> > +
-> > +       if (!rcu_access_pointer(sk->sk_reuseport_cb))
-> > +               return;
-> > +
-> > +       spin_lock(&reuseport_lock);
-> > +       reuse = rcu_dereference_protected(sk->sk_reuseport_cb,
-> > +                                         lockdep_is_held(&reuseport_lock));
+On 12.10.2022 09:59, Hau wrote:
+>>
+>> On 04.10.2022 10:10, Chunhao Lin wrote:
+>>> When close device, rx will be enabled if wol is enabeld. When open
+>>> device it will cause rx to dma to wrong address after pci_set_master().
+>>>
+>>> In this patch, driver will disable tx/rx when close device. If wol is
+>>> eanbled only enable rx filter and disable rxdv_gate to let hardware
+>>> can receive packet to fifo but not to dma it.
+>>>
+>>> Fixes: 120068481405 ("r8169: fix failing WoL")
+>>> Signed-off-by: Chunhao Lin <hau@realtek.com>
+>>> ---
+>>>  drivers/net/ethernet/realtek/r8169_main.c | 14 +++++++-------
+>>>  1 file changed, 7 insertions(+), 7 deletions(-)
+>>>
+>>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c
+>>> b/drivers/net/ethernet/realtek/r8169_main.c
+>>> index 1b7fdb4f056b..c09cfbe1d3f0 100644
+>>> --- a/drivers/net/ethernet/realtek/r8169_main.c
+>>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+>>> @@ -2239,6 +2239,9 @@ static void rtl_wol_enable_rx(struct
+>> rtl8169_private *tp)
+>>>  	if (tp->mac_version >= RTL_GIGA_MAC_VER_25)
+>>>  		RTL_W32(tp, RxConfig, RTL_R32(tp, RxConfig) |
+>>>  			AcceptBroadcast | AcceptMulticast | AcceptMyPhys);
+>>> +
+>>> +	if (tp->mac_version >= RTL_GIGA_MAC_VER_40)
+>>> +		RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
+>>
+>> Is this correct anyway? Supposedly you want to set this bit to disable DMA.
+>>
+> If wol is enabled, driver need to disable hardware rxdv_gate for receiving packets.
 > 
-> Could @reuse be NULL at this point ?
-> 
-> Previous  test was performed without reuseport_lock being held.
-
-Usually, sk_reuseport_cb is changed under lock_sock().
-
-The only exception is reuseport_grow() & TCP reqsk migration case.
-
-1) shutdown() TCP listener, which is moved into the latter part of
-   reuse->socks[] to migrate reqsk.
-
-2) New listen() overflows reuse->socks[] and call reuseport_grow().
-
-3) reuse->max_socks overflows u16 with the new listener.
-
-4) reuseport_grow() pops the old shutdown()ed listener from the array
-   and update its sk->sk_reuseport_cb as NULL without lock_sock().
-
-shutdown()ed sk->sk_reuseport_cb can be changed without lock_sock().
-
-But, reuseport_has_conns_set() is called only for UDP and under
-lock_sock(), so @reuse never be NULL in this case.
-
-
-> > +       reuse->has_conns = 1;
-> > +       spin_unlock(&reuseport_lock);
-> > +}
-> > +EXPORT_SYMBOL(reuseport_has_conns_set);
-> > +
-> >  static int reuseport_sock_index(struct sock *sk,
-> >                                 const struct sock_reuseport *reuse,
-> >                                 bool closed)
-> > diff --git a/net/ipv4/datagram.c b/net/ipv4/datagram.c
-> > index 405a8c2aea64..5e66add7befa 100644
-> > --- a/net/ipv4/datagram.c
-> > +++ b/net/ipv4/datagram.c
-> > @@ -70,7 +70,7 @@ int __ip4_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len
-> >         }
-> >         inet->inet_daddr = fl4->daddr;
-> >         inet->inet_dport = usin->sin_port;
-> > -       reuseport_has_conns(sk, true);
-> > +       reuseport_has_conns_set(sk);
-> >         sk->sk_state = TCP_ESTABLISHED;
-> >         sk_set_txhash(sk);
-> >         inet->inet_id = prandom_u32();
-> > diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-> > index d63118ce5900..29228231b058 100644
-> > --- a/net/ipv4/udp.c
-> > +++ b/net/ipv4/udp.c
-> > @@ -448,7 +448,7 @@ static struct sock *udp4_lib_lookup2(struct net *net,
-> >                         result = lookup_reuseport(net, sk, skb,
-> >                                                   saddr, sport, daddr, hnum);
-> >                         /* Fall back to scoring if group has connections */
-> > -                       if (result && !reuseport_has_conns(sk, false))
-> > +                       if (result && !reuseport_has_conns(sk))
-> >                                 return result;
-> >
-> >                         result = result ? : sk;
-> > diff --git a/net/ipv6/datagram.c b/net/ipv6/datagram.c
-> > index df665d4e8f0f..5ecb56522f9d 100644
-> > --- a/net/ipv6/datagram.c
-> > +++ b/net/ipv6/datagram.c
-> > @@ -256,7 +256,7 @@ int __ip6_datagram_connect(struct sock *sk, struct sockaddr *uaddr,
-> >                 goto out;
-> >         }
-> >
-> > -       reuseport_has_conns(sk, true);
-> > +       reuseport_has_conns_set(sk);
-> >         sk->sk_state = TCP_ESTABLISHED;
-> >         sk_set_txhash(sk);
-> >  out:
-> > diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-> > index 91e795bb9ade..56e4523a3004 100644
-> > --- a/net/ipv6/udp.c
-> > +++ b/net/ipv6/udp.c
-> > @@ -182,7 +182,7 @@ static struct sock *udp6_lib_lookup2(struct net *net,
-> >                         result = lookup_reuseport(net, sk, skb,
-> >                                                   saddr, sport, daddr, hnum);
-> >                         /* Fall back to scoring if group has connections */
-> > -                       if (result && !reuseport_has_conns(sk, false))
-> > +                       if (result && !reuseport_has_conns(sk))
-> >                                 return result;
-> >
-> >                         result = result ? : sk;
-> > --
-> > 2.30.2
+OK, I see. But why disable it here? I see no scenario where rxdv_gate would be enabled
+when we get here.
