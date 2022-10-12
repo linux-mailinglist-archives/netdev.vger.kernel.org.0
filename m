@@ -2,50 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EDBD05FCBE9
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 22:17:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 106CA5FCBEA
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 22:18:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229504AbiJLURd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 16:17:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43972 "EHLO
+        id S229627AbiJLUSH convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 12 Oct 2022 16:18:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiJLURc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 16:17:32 -0400
-Received: from novek.ru (unknown [213.148.174.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5846E38472;
-        Wed, 12 Oct 2022 13:17:31 -0700 (PDT)
-Received: from [192.168.0.18] (unknown [37.228.234.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        with ESMTP id S229547AbiJLUSG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 16:18:06 -0400
+Received: from mail.lixid.net (lixid.tarent.de [193.107.123.118])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACB02C4C39
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 13:18:04 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.lixid.net (MTA) with ESMTP id 53149141165;
+        Wed, 12 Oct 2022 22:18:03 +0200 (CEST)
+Received: from mail.lixid.net ([127.0.0.1])
+        by localhost (mail.lixid.net [127.0.0.1]) (MFA, port 10024) with LMTP
+        id 8MTBr_XlpVDQ; Wed, 12 Oct 2022 22:17:56 +0200 (CEST)
+Received: from x61w.mirbsd.org (vpn-172-34-0-14.dynamic.tarent.de [172.34.0.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id CF9F9504E89;
-        Wed, 12 Oct 2022 23:13:59 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru CF9F9504E89
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1665605641; bh=nwzq51eDgmJENhKn30MWEpwK+URO+XaouJTOroLnKpo=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=aEOcl8NzA8myWw1KGoWK7TEcIVPw/I1U70di2u4itsIu5EWBo5Jcz7AMPCdZD7xLr
-         btbWz7r1hI7sSrcjALGAZkh3jRCG+44CIhK7y0qbGnACWAyne+VBHed0URgYq4lbKl
-         5SupY1+1h+VJbExRdEukhICiOPggYzsnfqUc3EJs=
-Message-ID: <ad45a05b-be0d-6d9d-c1a9-4af0c956b88c@novek.ru>
-Date:   Wed, 12 Oct 2022 21:17:26 +0100
+        by mail.lixid.net (MTA) with ESMTPS id D79C81410A9;
+        Wed, 12 Oct 2022 22:17:56 +0200 (CEST)
+Received: by x61w.mirbsd.org (Postfix, from userid 1000)
+        id 827426228E; Wed, 12 Oct 2022 22:17:56 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by x61w.mirbsd.org (Postfix) with ESMTP id 7CD1F6228D;
+        Wed, 12 Oct 2022 22:17:56 +0200 (CEST)
+Date:   Wed, 12 Oct 2022 22:17:56 +0200 (CEST)
+From:   Thorsten Glaser <t.glaser@tarent.de>
+To:     Dave Taht <dave.taht@gmail.com>
+cc:     netdev@vger.kernel.org
+Subject: Re: RFH, where did I go wrong?
+In-Reply-To: <d4103bc1-d0bb-5c66-10f5-2dae2cdb653d@tarent.de>
+Message-ID: <8051fcd-4b5-7b32-887e-7df7a779be1b@tarent.de>
+References: <42776059-242c-cf49-c3ed-31e311b91f1c@tarent.de> <CAA93jw5J5XzhKb_L0C5uw1e3yz_4ithUnWO6nAmeeAEn7jyYiQ@mail.gmail.com> <1a1214b6-fc29-1e11-ec21-682684188513@tarent.de> <CAA93jw6ReJPD=5oQ8mvcDCMNV8px8pB4UBjq=PDJvfE=kwxCRg@mail.gmail.com>
+ <d4103bc1-d0bb-5c66-10f5-2dae2cdb653d@tarent.de>
+Content-Language: de-DE-1901
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [RFC PATCH v3 1/6] dpll: Add DPLL framework base functions
-Content-Language: en-US
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-clk@vger.kernel.org, Vadim Fedorenko <vadfed@fb.com>
-References: <20221010011804.23716-1-vfedorenko@novek.ru>
- <20221010011804.23716-2-vfedorenko@novek.ru> <Y0bwq4YyeWsODPjv@nanopsycho>
-From:   Vadim Fedorenko <vfedorenko@novek.ru>
-In-Reply-To: <Y0bwq4YyeWsODPjv@nanopsycho>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_PASS,
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,51 +51,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12.10.2022 17:51, Jiri Pirko wrote:
-> Mon, Oct 10, 2022 at 03:17:59AM CEST, vfedorenko@novek.ru wrote:
->> From: Vadim Fedorenko <vadfed@fb.com>
->>
->> DPLL framework is used to represent and configure DPLL devices
->> in systems. Each device that has DPLL and can configure sources
->> and outputs can use this framework.
->>
->> Signed-off-by: Vadim Fedorenko <vadfed@fb.com>
->> Co-developed-by: Jakub Kicinski <kuba@kernel.org>
->> Co-developed-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
->> ---
-> 
-> [..]
-> 
->> +enum dpll_genl_status {
->> +	DPLL_STATUS_NONE,
->> +	DPLL_STATUS_CALIBRATING,
->> +	DPLL_STATUS_LOCKED,
->> +
->> +	__DPLL_STATUS_MAX,
->> +};
->> +#define DPLL_STATUS_MAX (__DPLL_STATUS_MAX - 1)
->> +
-> 
-> [..]
-> 
->> +
->> +/* DPLL lock status provides information of source used to lock the device */
->> +enum dpll_genl_lock_status {
->> +	DPLL_LOCK_STATUS_UNLOCKED,
->> +	DPLL_LOCK_STATUS_EXT_1PPS,
->> +	DPLL_LOCK_STATUS_EXT_10MHZ,
->> +	DPLL_LOCK_STATUS_SYNCE,
->> +	DPLL_LOCK_STATUS_INT_OSCILLATOR,
->> +	DPLL_LOCK_STATUS_GNSS,
->> +
->> +	__DPLL_LOCK_STATUS_MAX,
->> +};
->> +#define DPLL_LOCK_STATUS_MAX (__DPLL_LOCK_STATUS_MAX - 1)
-> 
-> In addition to what I wrote in the previous reply where I suggested to
-> have lock status independent on type or source, I think we should merge
-> "status" and "lock status" to one attr/enum. Or any reason to have these
-> separate?
-> 
-Yep, agree. No reason to have it separate anymore.
+Dixi quod…
 
+> > I'll take a harder look, but does it crash if you rip out debugfs?
+[…]
+> And yes, it (commit dbb99579808dcf106264f28f3c8cf5ef2f2c05bf) still
+> crashes even if this time I get yet another message… all of those I
+
+I may have found the case by reducing further. Disabling the periodic
+dropping of too-old packets wasn’t it, but apparently, the code now
+guarded by JANZ_HEADDROP is it. Replacing it (dropping the oldest
+packet returning NET_XMIT_CN) with trivial code that rejects the new
+packet-to-be-enqueued with qdisc_drop() instead… seems to not crash.
+
+So, the code in question that seems to introduce the crash is:
+
+
+u32 prev_backlog = sch->qstats.backlog;
+//… normal code to add the passed skb (timestamp, etc.)
+// q->memusage += cb->truesz;
+if (unlikely(overlimit = (++sch->q.qlen > sch->limit))) {
+	struct sk_buff *skbtodrop;
+	/* skbtodrop = head of FIFO and remove it from the FIFO */
+	skbtodrop = q->q[1].first;
+	if (!(q->q[1].first = skbtodrop->next))
+		q->q[1].last = NULL;
+	--sch->q.qlen;
+	/* accounting */
+	q->memusage -= get_janz_skb(skbtodrop)->truesz;
+	qdisc_qstats_backlog_dec(sch, skbtodrop);
+	/* free the skb */
+	rtnl_kfree_skbs(skbtodrop, skbtodrop)
+}
+//… normal code to add:
+// line 879-885 enqueue into the FIFO
+// qdisc_qstats_backlog_inc(sch, skb);
+//… now code protected by the flag again:
+if (unlikely(overlimit)) {
+	qdisc_qstats_overlimit(sch);
+	qdisc_tree_reduce_backlog(sch, 0,
+	    prev_backlog - sch->qstats.backlog);
+	return (NET_XMIT_CN);
+}
+// normal code remaining: return (NET_XMIT_SUCCESS);
+
+
+This *seems* pretty straightforward to me, given similar code
+in other qdiscs, and what I could learn from their header and
+implementation.
+
+TIA,
+//mirabilos
+-- 
+Infrastrukturexperte • tarent solutions GmbH
+Am Dickobskreuz 10, D-53121 Bonn • http://www.tarent.de/
+Telephon +49 228 54881-393 • Fax: +49 228 54881-235
+HRB AG Bonn 5168 • USt-ID (VAT): DE122264941
+Geschäftsführer: Dr. Stefan Barth, Kai Ebenrett, Boris Esser, Alexander Steeg
+
+                        ****************************************************
+/⁀\ The UTF-8 Ribbon
+╲ ╱ Campaign against      Mit dem tarent-Newsletter nichts mehr verpassen:
+ ╳  HTML eMail! Also,     https://www.tarent.de/newsletter
+╱ ╲ header encryption!
+                        ****************************************************
