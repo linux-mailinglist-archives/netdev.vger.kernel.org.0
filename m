@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BAF75FC528
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 14:19:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B4075FC52C
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 14:19:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229797AbiJLMTb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 08:19:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55820 "EHLO
+        id S229626AbiJLMTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 08:19:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229803AbiJLMTa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 08:19:30 -0400
+        with ESMTP id S229812AbiJLMTc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 08:19:32 -0400
 Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 186C9C4D87;
-        Wed, 12 Oct 2022 05:19:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BED2C4D8E;
+        Wed, 12 Oct 2022 05:19:29 -0700 (PDT)
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
         (envelope-from <fw@breakpoint.cc>)
-        id 1oiahm-0002ej-S5; Wed, 12 Oct 2022 14:19:22 +0200
+        id 1oiahr-0002f2-0y; Wed, 12 Oct 2022 14:19:27 +0200
 From:   Florian Westphal <fw@strlen.de>
 To:     <netdev@vger.kernel.org>
 Cc:     Paolo Abeni <pabeni@redhat.com>,
@@ -24,11 +24,12 @@ Cc:     Paolo Abeni <pabeni@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         <netfilter-devel@vger.kernel.org>, Phil Sutter <phil@nwl.cc>,
+        David Ahern <dsahern@kernel.org>,
         Guillaume Nault <gnault@redhat.com>,
         Florian Westphal <fw@strlen.de>
-Subject: [PATCH net 1/3] selftests: netfilter: Test reverse path filtering
-Date:   Wed, 12 Oct 2022 14:19:00 +0200
-Message-Id: <20221012121902.27738-2-fw@strlen.de>
+Subject: [PATCH net 2/3] netfilter: rpfilter/fib: Populate flowic_l3mdev field
+Date:   Wed, 12 Oct 2022 14:19:01 +0200
+Message-Id: <20221012121902.27738-3-fw@strlen.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221012121902.27738-1-fw@strlen.de>
 References: <20221012121902.27738-1-fw@strlen.de>
@@ -45,184 +46,98 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Phil Sutter <phil@nwl.cc>
 
-Test reverse path (filter) matches in iptables, ip6tables and nftables.
-Both with a regular interface and a VRF.
+Use the introduced field for correct operation with VRF devices instead
+of conditionally overwriting flowic_oif. This is a partial revert of
+commit b575b24b8eee3 ("netfilter: Fix rpfilter dropping vrf packets by
+mistake"), implementing a simpler solution.
 
 Signed-off-by: Phil Sutter <phil@nwl.cc>
+Reviewed-by: David Ahern <dsahern@kernel.org>
 Reviewed-by: Guillaume Nault <gnault@redhat.com>
 Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- tools/testing/selftests/netfilter/Makefile |   2 +-
- tools/testing/selftests/netfilter/rpath.sh | 147 +++++++++++++++++++++
- 2 files changed, 148 insertions(+), 1 deletion(-)
- create mode 100755 tools/testing/selftests/netfilter/rpath.sh
+ net/ipv4/netfilter/ipt_rpfilter.c  | 2 +-
+ net/ipv4/netfilter/nft_fib_ipv4.c  | 2 +-
+ net/ipv6/netfilter/ip6t_rpfilter.c | 9 +++------
+ net/ipv6/netfilter/nft_fib_ipv6.c  | 5 ++---
+ 4 files changed, 7 insertions(+), 11 deletions(-)
 
-diff --git a/tools/testing/selftests/netfilter/Makefile b/tools/testing/selftests/netfilter/Makefile
-index 600e3a19d5e2..4504ee07be08 100644
---- a/tools/testing/selftests/netfilter/Makefile
-+++ b/tools/testing/selftests/netfilter/Makefile
-@@ -6,7 +6,7 @@ TEST_PROGS := nft_trans_stress.sh nft_fib.sh nft_nat.sh bridge_brouter.sh \
- 	nft_concat_range.sh nft_conntrack_helper.sh \
- 	nft_queue.sh nft_meta.sh nf_nat_edemux.sh \
- 	ipip-conntrack-mtu.sh conntrack_tcp_unreplied.sh \
--	conntrack_vrf.sh nft_synproxy.sh
-+	conntrack_vrf.sh nft_synproxy.sh rpath.sh
+diff --git a/net/ipv4/netfilter/ipt_rpfilter.c b/net/ipv4/netfilter/ipt_rpfilter.c
+index 8183bbcabb4a..ff85db52b2e5 100644
+--- a/net/ipv4/netfilter/ipt_rpfilter.c
++++ b/net/ipv4/netfilter/ipt_rpfilter.c
+@@ -77,7 +77,7 @@ static bool rpfilter_mt(const struct sk_buff *skb, struct xt_action_param *par)
+ 	flow.flowi4_mark = info->flags & XT_RPFILTER_VALID_MARK ? skb->mark : 0;
+ 	flow.flowi4_tos = iph->tos & IPTOS_RT_MASK;
+ 	flow.flowi4_scope = RT_SCOPE_UNIVERSE;
+-	flow.flowi4_oif = l3mdev_master_ifindex_rcu(xt_in(par));
++	flow.flowi4_l3mdev = l3mdev_master_ifindex_rcu(xt_in(par));
  
- CFLAGS += $(shell pkg-config --cflags libmnl 2>/dev/null || echo "-I/usr/include/libmnl")
- LDLIBS = -lmnl
-diff --git a/tools/testing/selftests/netfilter/rpath.sh b/tools/testing/selftests/netfilter/rpath.sh
-new file mode 100755
-index 000000000000..2d8da7bd8ab7
---- /dev/null
-+++ b/tools/testing/selftests/netfilter/rpath.sh
-@@ -0,0 +1,147 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+# return code to signal skipped test
-+ksft_skip=4
-+
-+# search for legacy iptables (it uses the xtables extensions
-+if iptables-legacy --version >/dev/null 2>&1; then
-+	iptables='iptables-legacy'
-+elif iptables --version >/dev/null 2>&1; then
-+	iptables='iptables'
-+else
-+	iptables=''
-+fi
-+
-+if ip6tables-legacy --version >/dev/null 2>&1; then
-+	ip6tables='ip6tables-legacy'
-+elif ! ip6tables --version >/dev/null 2>&1; then
-+	ip6tables='ip6tables'
-+else
-+	ip6tables=''
-+fi
-+
-+if nft --version >/dev/null 2>&1; then
-+	nft='nft'
-+else
-+	nft=''
-+fi
-+
-+if [ -z "$iptables$ip6tables$nft" ]; then
-+	echo "SKIP: Test needs iptables, ip6tables or nft"
-+	exit $ksft_skip
-+fi
-+
-+sfx=$(mktemp -u "XXXXXXXX")
-+ns1="ns1-$sfx"
-+ns2="ns2-$sfx"
-+trap "ip netns del $ns1; ip netns del $ns2" EXIT
-+
-+# create two netns, disable rp_filter in ns2 and
-+# keep IPv6 address when moving into VRF
-+ip netns add "$ns1"
-+ip netns add "$ns2"
-+ip netns exec "$ns2" sysctl -q net.ipv4.conf.all.rp_filter=0
-+ip netns exec "$ns2" sysctl -q net.ipv4.conf.default.rp_filter=0
-+ip netns exec "$ns2" sysctl -q net.ipv6.conf.all.keep_addr_on_down=1
-+
-+# a standard connection between the netns, should not trigger rp filter
-+ip -net "$ns1" link add v0 type veth peer name v0 netns "$ns2"
-+ip -net "$ns1" link set v0 up; ip -net "$ns2" link set v0 up
-+ip -net "$ns1" a a 192.168.23.2/24 dev v0
-+ip -net "$ns2" a a 192.168.23.1/24 dev v0
-+ip -net "$ns1" a a fec0:23::2/64 dev v0 nodad
-+ip -net "$ns2" a a fec0:23::1/64 dev v0 nodad
-+
-+# rp filter testing: ns1 sends packets via v0 which ns2 would route back via d0
-+ip -net "$ns2" link add d0 type dummy
-+ip -net "$ns2" link set d0 up
-+ip -net "$ns1" a a 192.168.42.2/24 dev v0
-+ip -net "$ns2" a a 192.168.42.1/24 dev d0
-+ip -net "$ns1" a a fec0:42::2/64 dev v0 nodad
-+ip -net "$ns2" a a fec0:42::1/64 dev d0 nodad
-+
-+# firewall matches to test
-+ip netns exec "$ns2" "$iptables" -t raw -A PREROUTING -s 192.168.0.0/16 -m rpfilter
-+ip netns exec "$ns2" "$ip6tables" -t raw -A PREROUTING -s fec0::/16 -m rpfilter
-+ip netns exec "$ns2" nft -f - <<EOF
-+table inet t {
-+	chain c {
-+		type filter hook prerouting priority raw;
-+		ip saddr 192.168.0.0/16 fib saddr . iif oif exists counter
-+		ip6 saddr fec0::/16 fib saddr . iif oif exists counter
-+	}
-+}
-+EOF
-+
-+die() {
-+	echo "FAIL: $*"
-+	#ip netns exec "$ns2" "$iptables" -t raw -vS
-+	#ip netns exec "$ns2" "$ip6tables" -t raw -vS
-+	#ip netns exec "$ns2" nft list ruleset
-+	exit 1
-+}
-+
-+# check rule counters, return true if rule did not match
-+ipt_zero_rule() { # (command)
-+	[ -n "$1" ] || return 0
-+	ip netns exec "$ns2" "$1" -t raw -vS | grep -q -- "-m rpfilter -c 0 0"
-+}
-+nft_zero_rule() { # (family)
-+	[ -n "$nft" ] || return 0
-+	ip netns exec "$ns2" "$nft" list chain inet t c | \
-+		grep -q "$1 saddr .* counter packets 0 bytes 0"
-+}
-+
-+netns_ping() { # (netns, args...)
-+	local netns="$1"
-+	shift
-+	ip netns exec "$netns" ping -q -c 1 -W 1 "$@" >/dev/null
-+}
-+
-+testrun() {
-+	# clear counters first
-+	[ -n "$iptables" ] && ip netns exec "$ns2" "$iptables" -t raw -Z
-+	[ -n "$ip6tables" ] && ip netns exec "$ns2" "$ip6tables" -t raw -Z
-+	if [ -n "$nft" ]; then
-+		(
-+			echo "delete table inet t";
-+			ip netns exec "$ns2" nft -s list table inet t;
-+		) | ip netns exec "$ns2" nft -f -
-+	fi
-+
-+	# test 1: martian traffic should fail rpfilter matches
-+	netns_ping "$ns1" -I v0 192.168.42.1 && \
-+		die "martian ping 192.168.42.1 succeeded"
-+	netns_ping "$ns1" -I v0 fec0:42::1 && \
-+		die "martian ping fec0:42::1 succeeded"
-+
-+	ipt_zero_rule "$iptables" || die "iptables matched martian"
-+	ipt_zero_rule "$ip6tables" || die "ip6tables matched martian"
-+	nft_zero_rule ip || die "nft IPv4 matched martian"
-+	nft_zero_rule ip6 || die "nft IPv6 matched martian"
-+
-+	# test 2: rpfilter match should pass for regular traffic
-+	netns_ping "$ns1" 192.168.23.1 || \
-+		die "regular ping 192.168.23.1 failed"
-+	netns_ping "$ns1" fec0:23::1 || \
-+		die "regular ping fec0:23::1 failed"
-+
-+	ipt_zero_rule "$iptables" && die "iptables match not effective"
-+	ipt_zero_rule "$ip6tables" && die "ip6tables match not effective"
-+	nft_zero_rule ip && die "nft IPv4 match not effective"
-+	nft_zero_rule ip6 && die "nft IPv6 match not effective"
-+
-+}
-+
-+testrun
-+
-+# repeat test with vrf device in $ns2
-+ip -net "$ns2" link add vrf0 type vrf table 10
-+ip -net "$ns2" link set vrf0 up
-+ip -net "$ns2" link set v0 master vrf0
-+
-+testrun
-+
-+echo "PASS: netfilter reverse path match works as intended"
-+exit 0
+ 	return rpfilter_lookup_reverse(xt_net(par), &flow, xt_in(par), info->flags) ^ invert;
+ }
+diff --git a/net/ipv4/netfilter/nft_fib_ipv4.c b/net/ipv4/netfilter/nft_fib_ipv4.c
+index 7ade04ff972d..e886147eed11 100644
+--- a/net/ipv4/netfilter/nft_fib_ipv4.c
++++ b/net/ipv4/netfilter/nft_fib_ipv4.c
+@@ -84,7 +84,7 @@ void nft_fib4_eval(const struct nft_expr *expr, struct nft_regs *regs,
+ 		oif = NULL;
+ 
+ 	if (priv->flags & NFTA_FIB_F_IIF)
+-		fl4.flowi4_oif = l3mdev_master_ifindex_rcu(oif);
++		fl4.flowi4_l3mdev = l3mdev_master_ifindex_rcu(oif);
+ 
+ 	if (nft_hook(pkt) == NF_INET_PRE_ROUTING &&
+ 	    nft_fib_is_loopback(pkt->skb, nft_in(pkt))) {
+diff --git a/net/ipv6/netfilter/ip6t_rpfilter.c b/net/ipv6/netfilter/ip6t_rpfilter.c
+index d800801a5dd2..69d86b040a6a 100644
+--- a/net/ipv6/netfilter/ip6t_rpfilter.c
++++ b/net/ipv6/netfilter/ip6t_rpfilter.c
+@@ -37,6 +37,7 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
+ 	bool ret = false;
+ 	struct flowi6 fl6 = {
+ 		.flowi6_iif = LOOPBACK_IFINDEX,
++		.flowi6_l3mdev = l3mdev_master_ifindex_rcu(dev),
+ 		.flowlabel = (* (__be32 *) iph) & IPV6_FLOWINFO_MASK,
+ 		.flowi6_proto = iph->nexthdr,
+ 		.daddr = iph->saddr,
+@@ -55,9 +56,7 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
+ 	if (rpfilter_addr_linklocal(&iph->saddr)) {
+ 		lookup_flags |= RT6_LOOKUP_F_IFACE;
+ 		fl6.flowi6_oif = dev->ifindex;
+-	/* Set flowi6_oif for vrf devices to lookup route in l3mdev domain. */
+-	} else if (netif_is_l3_master(dev) || netif_is_l3_slave(dev) ||
+-		  (flags & XT_RPFILTER_LOOSE) == 0)
++	} else if ((flags & XT_RPFILTER_LOOSE) == 0)
+ 		fl6.flowi6_oif = dev->ifindex;
+ 
+ 	rt = (void *)ip6_route_lookup(net, &fl6, skb, lookup_flags);
+@@ -72,9 +71,7 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
+ 		goto out;
+ 	}
+ 
+-	if (rt->rt6i_idev->dev == dev ||
+-	    l3mdev_master_ifindex_rcu(rt->rt6i_idev->dev) == dev->ifindex ||
+-	    (flags & XT_RPFILTER_LOOSE))
++	if (rt->rt6i_idev->dev == dev || (flags & XT_RPFILTER_LOOSE))
+ 		ret = true;
+  out:
+ 	ip6_rt_put(rt);
+diff --git a/net/ipv6/netfilter/nft_fib_ipv6.c b/net/ipv6/netfilter/nft_fib_ipv6.c
+index 1d7e520d9966..91faac610e03 100644
+--- a/net/ipv6/netfilter/nft_fib_ipv6.c
++++ b/net/ipv6/netfilter/nft_fib_ipv6.c
+@@ -41,9 +41,8 @@ static int nft_fib6_flowi_init(struct flowi6 *fl6, const struct nft_fib *priv,
+ 	if (ipv6_addr_type(&fl6->daddr) & IPV6_ADDR_LINKLOCAL) {
+ 		lookup_flags |= RT6_LOOKUP_F_IFACE;
+ 		fl6->flowi6_oif = get_ifindex(dev ? dev : pkt->skb->dev);
+-	} else if ((priv->flags & NFTA_FIB_F_IIF) &&
+-		   (netif_is_l3_master(dev) || netif_is_l3_slave(dev))) {
+-		fl6->flowi6_oif = dev->ifindex;
++	} else if (priv->flags & NFTA_FIB_F_IIF) {
++		fl6->flowi6_l3mdev = l3mdev_master_ifindex_rcu(dev);
+ 	}
+ 
+ 	if (ipv6_addr_type(&fl6->saddr) & IPV6_ADDR_UNICAST)
 -- 
 2.35.1
 
