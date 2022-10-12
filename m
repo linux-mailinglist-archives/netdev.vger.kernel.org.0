@@ -2,131 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 414275FCE4E
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 00:20:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2C635FCE85
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 00:35:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229783AbiJLWUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 18:20:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60516 "EHLO
+        id S230045AbiJLWfn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 18:35:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229514AbiJLWUJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 18:20:09 -0400
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 757395B041;
-        Wed, 12 Oct 2022 15:20:07 -0700 (PDT)
-Message-ID: <16bcda3b-989e-eadf-b6c3-803470b0afd6@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1665613205;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XPnFWAerAeXy7NqqbkBgHG7dHkoWQXwMsB4p5t6ekQw=;
-        b=oZ3pOq5xCw/PRsR1W+ITyjKzMuegcr37NX/899mYpwjVeZkZBE23mDs3AYoGpt7egnvRw/
-        Jm7GRr3URKKvoL6oDmbS1aiq2gzLqqlBtBfnvhTCEDsCKgRj9tQW9SyS7Cn+BHPhZqE2/g
-        QF65ECQ+qgrEYR5xm1M7n7cdCAWj/CU=
-Date:   Wed, 12 Oct 2022 15:20:01 -0700
+        with ESMTP id S230021AbiJLWfg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 18:35:36 -0400
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 974C4D57E5
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 15:35:35 -0700 (PDT)
+Received: by mail-lf1-x142.google.com with SMTP id y5so27843454lfl.4
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 15:35:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3doPDrK1i3CCYnmJWT1RJhZMSz9LGtLv1iv8irfeFNo=;
+        b=f+swGSWK4BVipfbzH+PQ0qd5calf5UR7cwskex1Qv9BM+ltgMXXQIMRlD6OYgvoo+7
+         /1KCEGUA15LE7UWMS1CGYqinxVr9VGWLV1RpymSvCGGx38XhdpWCz1FeoCHHzveTGJGp
+         3x2W77YEbOLuSqTkSZ5uVk/4CmEyoJQcfd3cxjHK6oXWx2DUR/qUaS2kIAtbzV+ajNF0
+         X9eiemVib0FlgF2lZaI5pX9MMAslOZEOmtaxJ0VNy9okG+sSrr4H7tp4t4LeRB1o+WWT
+         5XZCj4blyaTbKkuuqOwT4guUz4qovo0+FtqtqunbgNhVDfJbvKh+wSb3GZegVW/NhlHR
+         SRpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=3doPDrK1i3CCYnmJWT1RJhZMSz9LGtLv1iv8irfeFNo=;
+        b=u/xRDeIIwaVNICWJSUB/MEJkoK1CZzAenL6GYPrNv+lkCZJJRc1W45E5F3S2+yBR0x
+         XPA2XoI4ZsYuL3w2Mq56D8OKPgTT3s9s679K5PNMvySETaDITAm7mFl1BvmKbbj7oAuw
+         dUcKoenv6E1b1UoswoEbZWTy46+/HCCMYt4+Pr5LYlgTgvcyhyONyWqP4+NIvgKWbyha
+         ZM5a88dMfzuH1I+JZffjbvtoIbSliNQHv2W4mZa5m45TFDMC2G8M2AvgrIBkWtDzhgxs
+         GkQPSVoeYppYUvwHsp4+WGqqkec8E53vjmQU9f9xmRhCLBNJS77CvbZePctpeElp34w9
+         2c5Q==
+X-Gm-Message-State: ACrzQf3aDNx9AgJ8gS8FXdSNMVZ0+14+KFD7MrUX8NLnTr35Wm93TRH6
+        abxxavdNCQqSfS442mx+gJDs8ZNpG/7nCDiniHs=
+X-Google-Smtp-Source: AMsMyM7EZGxS4wgDeKjwLPQ4WkrxSnyZrYxC+q//z6mQYxGUEEYnpehqINOlpbHC+f4WQaMaU7hXtMt1mwhiB0IlLfs=
+X-Received: by 2002:ac2:4842:0:b0:4a0:53a0:51c with SMTP id
+ 2-20020ac24842000000b004a053a0051cmr10490885lfy.202.1665614133748; Wed, 12
+ Oct 2022 15:35:33 -0700 (PDT)
 MIME-Version: 1.0
-Subject: Re: [PATCH bpf-next v4 2/3] selftests/bpf: Add connmark read test
-Content-Language: en-US
-To:     Daniel Xu <dxu@dxuuu.xyz>
-Cc:     pablo@netfilter.org, fw@strlen.de, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        andrii@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        bpf@vger.kernel.org, memxor@gmail.com
-References: <cover.1660254747.git.dxu@dxuuu.xyz>
- <d3bc620a491e4c626c20d80631063922cbe13e2b.1660254747.git.dxu@dxuuu.xyz>
- <43bf4a5f-dac9-4fe9-1eba-9ab9beb650aa@linux.dev>
- <20221012220953.i2xevhu36kxyxscl@k2>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-In-Reply-To: <20221012220953.i2xevhu36kxyxscl@k2>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:ab3:61d1:0:b0:1e7:9b6f:7c5 with HTTP; Wed, 12 Oct 2022
+ 15:35:33 -0700 (PDT)
+Reply-To: illuminatiinitiationcenter110@gmail.com
+From:   Garry Lee <basaijapeter727@gmail.com>
+Date:   Thu, 13 Oct 2022 01:35:33 +0300
+Message-ID: <CACXn0DNtUZZckFHjwE5+bJDjyj-W4EQ+xhbJkEbusF9_8RDHHQ@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=5.2 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_FILL_THIS_FORM_SHORT,
+        UNDISC_FREEM,UPPERCASE_75_100 autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:142 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5000]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [basaijapeter727[at]gmail.com]
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [illuminatiinitiationcenter110[at]gmail.com]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [basaijapeter727[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        *  0.0 UPPERCASE_75_100 message body is 75-100% uppercase
+        *  3.1 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+        *  0.0 T_FILL_THIS_FORM_SHORT Fill in a short form with personal
+        *      information
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/12/22 3:09 PM, Daniel Xu wrote:
-> Hi Martin,
-> 
-> On Tue, Oct 11, 2022 at 10:49:32PM -0700, Martin KaFai Lau wrote:
->> On 8/11/22 2:55 PM, Daniel Xu wrote:
->>> Test that the prog can read from the connection mark. This test is nice
->>> because it ensures progs can interact with netfilter subsystem
->>> correctly.
->>>
->>> Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
->>> Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
->>> ---
->>>    tools/testing/selftests/bpf/prog_tests/bpf_nf.c | 3 ++-
->>>    tools/testing/selftests/bpf/progs/test_bpf_nf.c | 3 +++
->>>    2 files changed, 5 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
->>> index 88a2c0bdefec..544bf90ac2a7 100644
->>> --- a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
->>> +++ b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
->>> @@ -44,7 +44,7 @@ static int connect_to_server(int srv_fd)
->>>    static void test_bpf_nf_ct(int mode)
->>>    {
->>> -	const char *iptables = "iptables -t raw %s PREROUTING -j CT";
->>> +	const char *iptables = "iptables -t raw %s PREROUTING -j CONNMARK --set-mark 42/0";
->> Hi Daniel Xu, this test starts failing recently in CI [0]:
->>
->> Warning: Extension CONNMARK revision 0 not supported, missing kernel module?
->>    iptables v1.8.8 (nf_tables): Could not fetch rule set generation id:
->> Invalid argument
->>
->>    Warning: Extension CONNMARK revision 0 not supported, missing kernel module?
->>    iptables v1.8.8 (nf_tables): Could not fetch rule set generation id:
->> Invalid argument
->>
->>    Warning: Extension CONNMARK revision 0 not supported, missing kernel module?
->>    iptables v1.8.8 (nf_tables): Could not fetch rule set generation id:
->> Invalid argument
->>
->>    Warning: Extension CONNMARK revision 0 not supported, missing kernel module?
->>    iptables v1.8.8 (nf_tables): Could not fetch rule set generation id:
->> Invalid argument
->>
->>    test_bpf_nf_ct:PASS:test_bpf_nf__open_and_load 0 nsec
->>    test_bpf_nf_ct:FAIL:iptables unexpected error: 1024 (errno 0)
->>
->> Could you help to take a look? Thanks.
->>
->> [0]: https://github.com/kernel-patches/bpf/actions/runs/3231598391/jobs/5291529292
-> 
-> [...]
-> 
-> Thanks for letting me know. I took a quick look and it seems that
-> synproxy selftest is also failing:
-> 
->      2022-10-12T03:14:20.2007627Z test_synproxy:FAIL:iptables -t raw -I PREROUTING      -i tmp1 -p tcp -m tcp --syn --dport 8080 -j CT --notrack unexpected error: 1024 (errno 2)
-> 
-> Googling the "Could not fetch rule set generation id" yields a lot of
-> hits. Most of the links are from downstream projects recommending user
-> downgrade iptables (nftables) to iptables-legacy.
-
-Thanks for looking into it!  We have been debugging a bit today also.  I also 
-think iptables-legacy is the one to use.  I posted a patch [0].  Let see how the 
-CI goes.
-
-The rules that the selftest used is not a lot.  I wonder what it takes to remove 
-the iptables command usage from the selftest?
-
-[0]: https://lore.kernel.org/bpf/20221012221235.3529719-1-martin.lau@linux.dev/
-
-> 
-> So perhaps iptables/nftables suffered a regression somewhere. I'll take
-> a closer look tonight / tomorrow morning.
-> 
-> Thanks,
-> Daniel
-
+-- 
+DO YOU WANT TO BE RICH AND FAMOUS? JOIN THE GREAT ILLUMINATI ORDER OF
+RICHES, POWER/FAME  NOW AND ACHIEVE ALL YOUR DREAMS? IF YES EMAIL US :
+MAIL: illuminatiinitiationcenter110@gmail.com
+YOUR FULL NAME:
+PHONE NUMBER :
+COUNTRY :
+GENDER:
