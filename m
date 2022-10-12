@@ -2,66 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBDE05FC68C
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 15:34:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 218635FC6B2
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 15:46:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229734AbiJLNef (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 09:34:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40830 "EHLO
+        id S229560AbiJLNqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 09:46:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229793AbiJLNe3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 09:34:29 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B78A7CF87B
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 06:34:27 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id o4-20020a258d84000000b006bcfc1aafbdso16065890ybl.14
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 06:34:27 -0700 (PDT)
+        with ESMTP id S229783AbiJLNqE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 09:46:04 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33793B03E8
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 06:46:03 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id bu25so25853161lfb.3
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 06:46:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=wT5hQfznKkVoD+X5pY+mA2o+4Og1/F5b18WV/Hx5kXY=;
-        b=O8o0NXlZQ/wzPxTUyeTNCKurtj2d18KtZeNGjFu4M4XIk4xSUG9C8OquSCusduFgmy
-         oddFoqcpsD/qxwq7O+HW+NvXAuym7zKbHFxjg9+kVoKinfSqUNh8v2LcTYU6U8haWB9F
-         2J1Wytj6DGDPdqHynDwesp41Mz1OLToD8yTMfNFHuQyxUviOIItl98e6jCwY38P86hhP
-         QXMMQJjb1kdFGvhVucquMuOjNYHAZaelF4crVVCm9EFVfpwn0UWu/q6o/6BpjieSe3Cu
-         cmqmNW5Y7xeXHONAdBdhGV2N75qSIQngr6myGs/vsrJ2ujbw21wcrcWU/Xy7x8+vdU+l
-         823Q==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=KB5pGAjU8oYBFG25BFLphQ6ae7VNq2jH5jjjGZx/bvQ=;
+        b=WC7geWwZupuwlE2BKDqTFVFvhbkccGiWfhtg/wJBZunHkLtaviGaThIexqAjqyTOo2
+         bMnoultbNT8Ql1x5B0VQF5bOQGUPMhhwQYBcABVg8K68497L4bUpukAEJxrapP0ekxFr
+         b7YHpooI8b1ozfphKewCF63uVuXnfABOLCAEl62eIppejC0fQJ8RHRoN9md+VI1KYZPT
+         vvCkKvj4llP8oTUdi6AvOrYeSR9IIRo69E78j+Ezugx1ZXO8tOQhxBQTRlVWF0T0ySr9
+         LUM6E50HOk4eB25cWlWUGslzk7rs8MJHOo5RHN1WTpiOj1zKX9bWd42kmw9pwLjdcr5S
+         4L8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=wT5hQfznKkVoD+X5pY+mA2o+4Og1/F5b18WV/Hx5kXY=;
-        b=GiOcFZPwG6FdT5lrOaVW+tCdkkJX8tWLiwMJU4mhnrynRVLWCAfZ+iIbGw4ACY4u9u
-         3ZMbBFqJBBH/bauh7dnyRyDIHEnteWKn3/BKlKAsWPl+GegbxQGmOiCF7+lJY6lXw4/w
-         9FSWsHVsnOzJc+GaY3roU+kQlLiCYG71svUsGMTAPEAN3GtEy9zgwTBeL/fVKvE2nCPp
-         6F56exWhe0l187NI5uUBu4uUemtQVit6iXNhdF/Dy2mP7qtqK4SEE0379lmXa2rFfaia
-         F1/WbuYQPdYnapoRfIRyRC0fQDzOjfxonktXnkDH5/7huHkr++TB8VvDSOLex1IaRVTL
-         16ZA==
-X-Gm-Message-State: ACrzQf02wl6fOB1w6xI71xaFGsBuHMZ4UeEQTcknW8BBvhHhjKMsOQyg
-        JuMO8GkUpZjhAKAfaHIAqU12GuS3xLdqhw==
-X-Google-Smtp-Source: AMsMyM5PnL+1hM31Wxqrt8Pm0LHltkF7V/nxdZ+wRRN0oWA/3/e+RFqF9DSOFhbcMo8y6ZwmPSYfCxSYNZQ7Vg==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a25:d0c3:0:b0:6be:1ae5:5996 with SMTP id
- h186-20020a25d0c3000000b006be1ae55996mr26833626ybg.580.1665581666756; Wed, 12
- Oct 2022 06:34:26 -0700 (PDT)
-Date:   Wed, 12 Oct 2022 13:34:12 +0000
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.38.0.rc1.362.ged0d419d3c-goog
-Message-ID: <20221012133412.519394-1-edumazet@google.com>
-Subject: [PATCH net] kcm: avoid potential race in kcm_tx_work
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Tom Herbert <tom@herbertland.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=KB5pGAjU8oYBFG25BFLphQ6ae7VNq2jH5jjjGZx/bvQ=;
+        b=1Th3fuYymD8wukdAqvsT0uHvDk0Srz4MibYKypxJ6QRToW+3iumqPp6Kn8TbZtX5l3
+         F9uN+KDQwgQBjk97cL2UtRLbQZOozEJgaZu+jijj+Y8e9YG5Ryj+lcHEzKJMJx/FERDt
+         8mnt/2RiJ4CqatVpKNpt8vZoJT8tkCd7b111BN9tir1P9lZy3SEVybFoBZmzpkx1ZIPH
+         adq4AgAkRk6XTGFECYteCSmD/bPHRCVsjxjkWB085a5NJPWyvqCSwAkkiD3xBgqmTq2E
+         p12/3GUCg4kCMcdLxO86srOFpYJdT5gNGRKmM47/q03DuTbi8lpLy8CDTifAVd6Nl3x/
+         Nhmw==
+X-Gm-Message-State: ACrzQf2sPHfGW8RxFnqyl0L5HDUUfppIF3RPfMcACxUupHPyz6UkHOeC
+        E2PvF4hAcisqyZ3gEVjwBqgOWKjp9/U=
+X-Google-Smtp-Source: AMsMyM44GQDc/Sx6h6nlBemLkWmA/g3M0uMYsMPZjFmb+0Wxsw67nMP/ROIgv2Dz3asvKTwVM3z0jg==
+X-Received: by 2002:a05:6512:208a:b0:4a2:6cc7:cee5 with SMTP id t10-20020a056512208a00b004a26cc7cee5mr10706887lfr.153.1665582361359;
+        Wed, 12 Oct 2022 06:46:01 -0700 (PDT)
+Received: from saproj-Latitude-5501.yandex.net ([2a02:6b8:0:40c:8077:5514:991f:3a57])
+        by smtp.gmail.com with ESMTPSA id f7-20020a056512360700b004996fbfd75esm2310791lfs.71.2022.10.12.06.46.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Oct 2022 06:46:01 -0700 (PDT)
+From:   Sergei Antonov <saproj@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, Sergei Antonov <saproj@gmail.com>
+Subject: [PATCH net] net: ftmac100: do not reject packets bigger than 1514
+Date:   Wed, 12 Oct 2022 16:45:58 +0300
+Message-Id: <20221012134558.79737-1-saproj@gmail.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_SBL_A autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,68 +68,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot found that kcm_tx_work() could crash [1] in:
+Dispite datasheet [1] saying the controller should allow incoming
+packets of length >=1518, it only allows packets of length <=1514.
 
-	/* Primarily for SOCK_SEQPACKET sockets */
-	if (likely(sk->sk_socket) &&
-	    test_bit(SOCK_NOSPACE, &sk->sk_socket->flags)) {
-<<*>>	clear_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
-		sk->sk_write_space(sk);
-	}
+Since 1518 is a standard Ethernet maximum frame size, and it can
+easily be encountered (in SSH for example), fix this behaviour:
 
-I think the reason is that another thread might concurrently
-run in kcm_release() and call sock_orphan(sk) while sk is not
-locked. kcm_tx_work() find sk->sk_socket being NULL.
+* Set FTMAC100_MACCR_RX_FTL in the MAC Control Register.
+* Check for packet size > 1518 in ftmac100_rx_packet_error().
 
 [1]
-BUG: KASAN: null-ptr-deref in instrument_atomic_write include/linux/instrumented.h:86 [inline]
-BUG: KASAN: null-ptr-deref in clear_bit include/asm-generic/bitops/instrumented-atomic.h:41 [inline]
-BUG: KASAN: null-ptr-deref in kcm_tx_work+0xff/0x160 net/kcm/kcmsock.c:742
-Write of size 8 at addr 0000000000000008 by task kworker/u4:3/53
+https://bitbucket.org/Kasreyn/mkrom-uc7112lx/src/master/documents/FIC8120_DS_v1.2.pdf
 
-CPU: 0 PID: 53 Comm: kworker/u4:3 Not tainted 5.19.0-rc3-next-20220621-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: kkcmd kcm_tx_work
-Call Trace:
-<TASK>
-__dump_stack lib/dump_stack.c:88 [inline]
-dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
-kasan_report+0xbe/0x1f0 mm/kasan/report.c:495
-check_region_inline mm/kasan/generic.c:183 [inline]
-kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
-instrument_atomic_write include/linux/instrumented.h:86 [inline]
-clear_bit include/asm-generic/bitops/instrumented-atomic.h:41 [inline]
-kcm_tx_work+0xff/0x160 net/kcm/kcmsock.c:742
-process_one_work+0x996/0x1610 kernel/workqueue.c:2289
-worker_thread+0x665/0x1080 kernel/workqueue.c:2436
-kthread+0x2e9/0x3a0 kernel/kthread.c:376
-ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
-</TASK>
-
-Fixes: ab7ac4eb9832 ("kcm: Kernel Connection Multiplexor module")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Tom Herbert <tom@herbertland.com>
+Fixes: 8d77c036b57c ("net: add Faraday FTMAC100 10/100 Ethernet driver")
+Signed-off-by: Sergei Antonov <saproj@gmail.com>
 ---
- net/kcm/kcmsock.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/faraday/ftmac100.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/net/kcm/kcmsock.c b/net/kcm/kcmsock.c
-index 1215c863e1c410fa9ba5b9c3706152decfb3ebac..27725464ec08fe2b5f2e86202636cbc895568098 100644
---- a/net/kcm/kcmsock.c
-+++ b/net/kcm/kcmsock.c
-@@ -1838,10 +1838,10 @@ static int kcm_release(struct socket *sock)
- 	kcm = kcm_sk(sk);
- 	mux = kcm->mux;
+diff --git a/drivers/net/ethernet/faraday/ftmac100.c b/drivers/net/ethernet/faraday/ftmac100.c
+index d95d78230828..34d0284079ff 100644
+--- a/drivers/net/ethernet/faraday/ftmac100.c
++++ b/drivers/net/ethernet/faraday/ftmac100.c
+@@ -154,6 +154,7 @@ static void ftmac100_set_mac(struct ftmac100 *priv, const unsigned char *mac)
+ 				 FTMAC100_MACCR_CRC_APD	| \
+ 				 FTMAC100_MACCR_FULLDUP	| \
+ 				 FTMAC100_MACCR_RX_RUNT	| \
++				 FTMAC100_MACCR_RX_FTL	| \
+ 				 FTMAC100_MACCR_RX_BROADPKT)
  
-+	lock_sock(sk);
- 	sock_orphan(sk);
- 	kfree_skb(kcm->seq_skb);
+ static int ftmac100_start_hw(struct ftmac100 *priv)
+@@ -320,6 +321,7 @@ static bool ftmac100_rx_packet_error(struct ftmac100 *priv,
+ {
+ 	struct net_device *netdev = priv->netdev;
+ 	bool error = false;
++	const unsigned int length = ftmac100_rxdes_frame_length(rxdes);
  
--	lock_sock(sk);
- 	/* Purge queue under lock to avoid race condition with tx_work trying
- 	 * to act when queue is nonempty. If tx_work runs after this point
- 	 * it will just return.
+ 	if (unlikely(ftmac100_rxdes_rx_error(rxdes))) {
+ 		if (net_ratelimit())
+@@ -337,9 +339,16 @@ static bool ftmac100_rx_packet_error(struct ftmac100 *priv,
+ 		error = true;
+ 	}
+ 
+-	if (unlikely(ftmac100_rxdes_frame_too_long(rxdes))) {
++	/* The frame-too-long flag 'FTMAC100_RXDES0_FTL' is described in the
++	 * datasheet as: "When set, it indicates that the received packet
++	 * length exceeds 1518 bytes." But testing shows that it is also set
++	 * when packet length is equal to 1518.
++	 * Since 1518 is a standard Ethernet maximum frame size, let it pass
++	 * and only trigger an error when packet length really exceeds it.
++	 */
++	if (unlikely(ftmac100_rxdes_frame_too_long(rxdes) && length > 1518)) {
+ 		if (net_ratelimit())
+-			netdev_info(netdev, "rx frame too long\n");
++			netdev_info(netdev, "rx frame too long (%u)\n", length);
+ 
+ 		netdev->stats.rx_length_errors++;
+ 		error = true;
 -- 
-2.38.0.rc1.362.ged0d419d3c-goog
+2.34.1
 
