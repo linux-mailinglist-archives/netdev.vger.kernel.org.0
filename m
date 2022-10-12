@@ -2,106 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D2C635FCE85
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 00:35:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53F4A5FCE86
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 00:36:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230045AbiJLWfn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 18:35:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35852 "EHLO
+        id S229980AbiJLWg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 18:36:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230021AbiJLWfg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 18:35:36 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 974C4D57E5
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 15:35:35 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id y5so27843454lfl.4
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 15:35:35 -0700 (PDT)
+        with ESMTP id S229648AbiJLWg1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 18:36:27 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E94F6D57EC
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 15:36:24 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id h12so374024pjk.0
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 15:36:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=3doPDrK1i3CCYnmJWT1RJhZMSz9LGtLv1iv8irfeFNo=;
-        b=f+swGSWK4BVipfbzH+PQ0qd5calf5UR7cwskex1Qv9BM+ltgMXXQIMRlD6OYgvoo+7
-         /1KCEGUA15LE7UWMS1CGYqinxVr9VGWLV1RpymSvCGGx38XhdpWCz1FeoCHHzveTGJGp
-         3x2W77YEbOLuSqTkSZ5uVk/4CmEyoJQcfd3cxjHK6oXWx2DUR/qUaS2kIAtbzV+ajNF0
-         X9eiemVib0FlgF2lZaI5pX9MMAslOZEOmtaxJ0VNy9okG+sSrr4H7tp4t4LeRB1o+WWT
-         5XZCj4blyaTbKkuuqOwT4guUz4qovo0+FtqtqunbgNhVDfJbvKh+wSb3GZegVW/NhlHR
-         SRpg==
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=mJuspXcv7ruXPp6rcpUd7oAP5CVcNrA65qXmxw9FXU8=;
+        b=J14RGaMfL7oAgxaTXkAwbO29Nh4J9K7FoEmebZMSwevTgDfEwEww19UCzlGaz4UjPp
+         JMh7XSqTsJVvifPxuhh4FegZgqcxaWuZ3/1S0sndyQJY7qNh8Fq/JjCj3hG78lgIXnyb
+         NylxstvrtC7m5KGddEyfJ8dhS0j0apC4edGCwHCosyyH5dDMtnWcOHovzsD6E8/cnHjw
+         vdZhpgUDaXX+95k9w4wjFxhKRBLH5joR7hNlwIuXXl6h/6pmBZ/eccXHYPaBLoA+jRxj
+         prWp/lzhrohfQPWxT6fDqF/Fa+cka546BoRcKWu6IHnBLw7ag9Defjie+h0pC5bKFMRo
+         Z0Dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=3doPDrK1i3CCYnmJWT1RJhZMSz9LGtLv1iv8irfeFNo=;
-        b=u/xRDeIIwaVNICWJSUB/MEJkoK1CZzAenL6GYPrNv+lkCZJJRc1W45E5F3S2+yBR0x
-         XPA2XoI4ZsYuL3w2Mq56D8OKPgTT3s9s679K5PNMvySETaDITAm7mFl1BvmKbbj7oAuw
-         dUcKoenv6E1b1UoswoEbZWTy46+/HCCMYt4+Pr5LYlgTgvcyhyONyWqP4+NIvgKWbyha
-         ZM5a88dMfzuH1I+JZffjbvtoIbSliNQHv2W4mZa5m45TFDMC2G8M2AvgrIBkWtDzhgxs
-         GkQPSVoeYppYUvwHsp4+WGqqkec8E53vjmQU9f9xmRhCLBNJS77CvbZePctpeElp34w9
-         2c5Q==
-X-Gm-Message-State: ACrzQf3aDNx9AgJ8gS8FXdSNMVZ0+14+KFD7MrUX8NLnTr35Wm93TRH6
-        abxxavdNCQqSfS442mx+gJDs8ZNpG/7nCDiniHs=
-X-Google-Smtp-Source: AMsMyM7EZGxS4wgDeKjwLPQ4WkrxSnyZrYxC+q//z6mQYxGUEEYnpehqINOlpbHC+f4WQaMaU7hXtMt1mwhiB0IlLfs=
-X-Received: by 2002:ac2:4842:0:b0:4a0:53a0:51c with SMTP id
- 2-20020ac24842000000b004a053a0051cmr10490885lfy.202.1665614133748; Wed, 12
- Oct 2022 15:35:33 -0700 (PDT)
+        bh=mJuspXcv7ruXPp6rcpUd7oAP5CVcNrA65qXmxw9FXU8=;
+        b=FZp6Ka/cr7pX2n43xECPzkNFpjlf76r74no8NZsyMUc9S/F3tfHqxGmnahqxGint49
+         778CFqn+AMbEzlXcWa8KtfzNmBMuKrnwYB6eht5guq67Djrv+AlQO+a6J7dGQ8rCmMi2
+         a2ru1psY1oO8bAty2GUWGfANuOsvLfsB8miS7ObfEnGQ6CyDqAw3MWM06PrBIangtHnp
+         yjliy8MphD70PwIgTEGbIMlx6u1myAWgHP6zoFWKzFpgqdX+0EDvEyl3eaaf7u/76CDf
+         ClHSVtWur9gRHv5cDtaYh0IKsYm7r9QL76Y0p3UmmlQrD2SxAS9df8FynoM2jOuts+Ct
+         eZFg==
+X-Gm-Message-State: ACrzQf3HNUlt1noCj2shGYuPjWGCDHca9GRmvqgsEXKmKyKGX6IB35NH
+        2PFJpClyYGMb3nwQCNg9GB8=
+X-Google-Smtp-Source: AMsMyM6E2WRDheYapuoWF6z10g9Cl1brOzvNB7h7Tds+jo9MPSa8g3nWo9cR9fXLLvsDr19qYEaRRA==
+X-Received: by 2002:a17:902:8a88:b0:17f:8642:7c9a with SMTP id p8-20020a1709028a8800b0017f86427c9amr32052276plo.13.1665614184001;
+        Wed, 12 Oct 2022 15:36:24 -0700 (PDT)
+Received: from ?IPV6:2620:15c:2c1:200:9517:7fc4:6b3f:85b4? ([2620:15c:2c1:200:9517:7fc4:6b3f:85b4])
+        by smtp.gmail.com with ESMTPSA id l76-20020a633e4f000000b00460a5c6304dsm7521273pga.67.2022.10.12.15.36.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Oct 2022 15:36:23 -0700 (PDT)
+Message-ID: <44a7e82b-0fe9-d6ba-ee12-02dfa4980966@gmail.com>
+Date:   Wed, 12 Oct 2022 15:36:21 -0700
 MIME-Version: 1.0
-Received: by 2002:ab3:61d1:0:b0:1e7:9b6f:7c5 with HTTP; Wed, 12 Oct 2022
- 15:35:33 -0700 (PDT)
-Reply-To: illuminatiinitiationcenter110@gmail.com
-From:   Garry Lee <basaijapeter727@gmail.com>
-Date:   Thu, 13 Oct 2022 01:35:33 +0300
-Message-ID: <CACXn0DNtUZZckFHjwE5+bJDjyj-W4EQ+xhbJkEbusF9_8RDHHQ@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.2 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_FILL_THIS_FORM_SHORT,
-        UNDISC_FREEM,UPPERCASE_75_100 autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:142 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [basaijapeter727[at]gmail.com]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [illuminatiinitiationcenter110[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [basaijapeter727[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.0 UPPERCASE_75_100 message body is 75-100% uppercase
-        *  3.1 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-        *  0.0 T_FILL_THIS_FORM_SHORT Fill in a short form with personal
-        *      information
-X-Spam-Level: *****
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: qdisc_watchdog_schedule_range_ns granularity
+Content-Language: en-US
+To:     Thorsten Glaser <t.glaser@tarent.de>, netdev@vger.kernel.org
+References: <c4a1d4ff-82eb-82c9-619e-37c18b41a017@tarent.de>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+In-Reply-To: <c4a1d4ff-82eb-82c9-619e-37c18b41a017@tarent.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-DO YOU WANT TO BE RICH AND FAMOUS? JOIN THE GREAT ILLUMINATI ORDER OF
-RICHES, POWER/FAME  NOW AND ACHIEVE ALL YOUR DREAMS? IF YES EMAIL US :
-MAIL: illuminatiinitiationcenter110@gmail.com
-YOUR FULL NAME:
-PHONE NUMBER :
-COUNTRY :
-GENDER:
+
+On 10/12/22 14:26, Thorsten Glaser wrote:
+> Hi again,
+>
+> next thing ☺
+>
+> For my “faked extra latency” I sometimes need to reschedule to
+> future, when all queued-up packets have receive timestamps in
+> the future. For this, I have been using:
+>
+> 	qdisc_watchdog_schedule_range_ns(&q->watchdog, rs, 0);
+>
+> Where rs is the smallest in-the-future enqueue timestamp.
+>
+> However it was observed that this can add quite a lot more extra
+> delay than planned, I saw single-digit millisecond figures, which
+> IMHO is already a lot, but a coworker saw around 17 ms, which is
+> definitely too much.
+
+Make sure your .config has
+
+CONFIG_HIGH_RES_TIMERS=y
+
+I don't know how you measure this latency, but net/sched/sch_fq.c has 
+instrumentation,
+
+and following command on a random host in my lab shows an average (EWMA) 
+latency
+
+smaller than 29 usec, (32 TX queues on the NIC)
+
+tc -s -d qd sh dev eth1 | grep latency
+   gc 194315 highprio 0 throttled 902 latency 10.7us
+   gc 196277 highprio 0 throttled 156 latency 11.8us
+   gc 84107 highprio 0 throttled 286 latency 13.7us
+   gc 19408 highprio 0 throttled 324 latency 10.9us
+   gc 309405 highprio 0 throttled 370 latency 11.1us
+   gc 147821 highprio 0 throttled 154 latency 12.2us
+   gc 84768 highprio 0 throttled 2859 latency 10.7us
+   gc 181833 highprio 0 throttled 4311 latency 12.9us
+   gc 117038 highprio 0 throttled 1127 latency 11.1us
+   gc 168430 highprio 0 throttled 1784 latency 22.1us
+   gc 71086 highprio 0 throttled 2339 latency 14.3us
+   gc 127584 highprio 0 throttled 1396 latency 11.5us
+   gc 96239 highprio 0 throttled 297 latency 16.9us
+   gc 96490 highprio 0 throttled 6374 latency 11.3us
+   gc 117284 highprio 0 throttled 2011 latency 11.5us
+   gc 122355 highprio 0 throttled 303 latency 12.8us
+   gc 221196 highprio 0 throttled 330 latency 11.3us
+   gc 204193 highprio 0 throttled 121 latency 12us
+   gc 177423 highprio 0 throttled 1012 latency 11.9us
+   gc 70236 highprio 0 throttled 1015 latency 15us
+   gc 166721 highprio 0 throttled 488 latency 11.9us
+   gc 92794 highprio 0 throttled 963 latency 17.1us
+   gc 229031 highprio 0 throttled 274 latency 12.2us
+   gc 109511 highprio 0 throttled 234 latency 10.5us
+   gc 89160 highprio 0 throttled 729 latency 10.7us
+   gc 182940 highprio 0 throttled 234 latency 11.7us
+   gc 172111 highprio 0 throttled 2439 latency 11.4us
+   gc 101261 highprio 0 throttled 2614 latency 11.6us
+   gc 95759 highprio 0 throttled 336 latency 11.3us
+   gc 103392 highprio 0 throttled 2990 latency 11.2us
+   gc 173068 highprio 0 throttled 955 latency 16.5us
+   gc 97893 highprio 0 throttled 748 latency 11.7us
+
+Note that after the timer fires, a TX softirq is scheduled (to send more 
+packets from qdisc -> NIC)
+
+Under high cpu pressure, it is possible the softirq is delayed,
+
+because ksoftirqd might compete with user threads.
+
+
+>
+> What is the granularity of qdisc watchdogs, and how can I aim at
+> being called again for dequeueing in more precise fashion? I would
+> prefer to being called within 1 ms, 2 if it must absolutely be, of
+> the timestamp passed.
+>
+> Thanks in advance,
+> //mirabilos
