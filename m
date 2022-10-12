@@ -2,154 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 53F4A5FCE86
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 00:36:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43A935FCEA3
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 00:55:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229980AbiJLWg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 18:36:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37916 "EHLO
+        id S229489AbiJLWz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 18:55:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229648AbiJLWg1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 18:36:27 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E94F6D57EC
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 15:36:24 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id h12so374024pjk.0
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 15:36:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=mJuspXcv7ruXPp6rcpUd7oAP5CVcNrA65qXmxw9FXU8=;
-        b=J14RGaMfL7oAgxaTXkAwbO29Nh4J9K7FoEmebZMSwevTgDfEwEww19UCzlGaz4UjPp
-         JMh7XSqTsJVvifPxuhh4FegZgqcxaWuZ3/1S0sndyQJY7qNh8Fq/JjCj3hG78lgIXnyb
-         NylxstvrtC7m5KGddEyfJ8dhS0j0apC4edGCwHCosyyH5dDMtnWcOHovzsD6E8/cnHjw
-         vdZhpgUDaXX+95k9w4wjFxhKRBLH5joR7hNlwIuXXl6h/6pmBZ/eccXHYPaBLoA+jRxj
-         prWp/lzhrohfQPWxT6fDqF/Fa+cka546BoRcKWu6IHnBLw7ag9Defjie+h0pC5bKFMRo
-         Z0Dg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mJuspXcv7ruXPp6rcpUd7oAP5CVcNrA65qXmxw9FXU8=;
-        b=FZp6Ka/cr7pX2n43xECPzkNFpjlf76r74no8NZsyMUc9S/F3tfHqxGmnahqxGint49
-         778CFqn+AMbEzlXcWa8KtfzNmBMuKrnwYB6eht5guq67Djrv+AlQO+a6J7dGQ8rCmMi2
-         a2ru1psY1oO8bAty2GUWGfANuOsvLfsB8miS7ObfEnGQ6CyDqAw3MWM06PrBIangtHnp
-         yjliy8MphD70PwIgTEGbIMlx6u1myAWgHP6zoFWKzFpgqdX+0EDvEyl3eaaf7u/76CDf
-         ClHSVtWur9gRHv5cDtaYh0IKsYm7r9QL76Y0p3UmmlQrD2SxAS9df8FynoM2jOuts+Ct
-         eZFg==
-X-Gm-Message-State: ACrzQf3HNUlt1noCj2shGYuPjWGCDHca9GRmvqgsEXKmKyKGX6IB35NH
-        2PFJpClyYGMb3nwQCNg9GB8=
-X-Google-Smtp-Source: AMsMyM6E2WRDheYapuoWF6z10g9Cl1brOzvNB7h7Tds+jo9MPSa8g3nWo9cR9fXLLvsDr19qYEaRRA==
-X-Received: by 2002:a17:902:8a88:b0:17f:8642:7c9a with SMTP id p8-20020a1709028a8800b0017f86427c9amr32052276plo.13.1665614184001;
-        Wed, 12 Oct 2022 15:36:24 -0700 (PDT)
-Received: from ?IPV6:2620:15c:2c1:200:9517:7fc4:6b3f:85b4? ([2620:15c:2c1:200:9517:7fc4:6b3f:85b4])
-        by smtp.gmail.com with ESMTPSA id l76-20020a633e4f000000b00460a5c6304dsm7521273pga.67.2022.10.12.15.36.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Oct 2022 15:36:23 -0700 (PDT)
-Message-ID: <44a7e82b-0fe9-d6ba-ee12-02dfa4980966@gmail.com>
-Date:   Wed, 12 Oct 2022 15:36:21 -0700
+        with ESMTP id S229454AbiJLWz0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 18:55:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10028D73FF
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 15:55:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A029A6164F
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 22:55:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1C5AC433D6;
+        Wed, 12 Oct 2022 22:55:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1665615324;
+        bh=69/PQh+cOvSS0EdQoi88q8EUmcsDFfVRBHMBeGbH2M8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=n9LtF6JxaN7cAb8ffHQE88on36PKXrNnPYDyUijLKwgiXT/JolUezRC7fg/ebaTan
+         NKllHICWapOV45V52B02/Jb5apENv7SkOhi/3bva2IXXeCAftefQJZwFe2CWx0+5XM
+         ZMld4k6EyRrVMhcOfTr4D8zGDHnyuD0+fko5RqaN1399eM5PfD/UKcAq2QFPIwJiHJ
+         q2wR9kmaICtzg5bHjf5qBz+AUI2yvhqOYBpu0673glmn7HhykvuJSKl7+dSE9MBaQ3
+         jj1MfpE4lXtwV5ygsinTU619cebqDRAZpcvNye4kjrA5QRTW0LY4P+3ut0rm2JyLCW
+         sEjFOErcWGQrA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        borisp@nvidia.com, john.fastabend@gmail.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net] tls: strp: make sure the TCP skbs do not have overlapping data
+Date:   Wed, 12 Oct 2022 15:55:20 -0700
+Message-Id: <20221012225520.303928-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: qdisc_watchdog_schedule_range_ns granularity
-Content-Language: en-US
-To:     Thorsten Glaser <t.glaser@tarent.de>, netdev@vger.kernel.org
-References: <c4a1d4ff-82eb-82c9-619e-37c18b41a017@tarent.de>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-In-Reply-To: <c4a1d4ff-82eb-82c9-619e-37c18b41a017@tarent.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+TLS tries to get away with using the TCP input queue directly.
+This does not work if there is duplicated data (multiple skbs
+holding bytes for the same seq number range due to retransmits).
+Check for this condition and fall back to copy mode, it should
+be rare.
 
-On 10/12/22 14:26, Thorsten Glaser wrote:
-> Hi again,
->
-> next thing ☺
->
-> For my “faked extra latency” I sometimes need to reschedule to
-> future, when all queued-up packets have receive timestamps in
-> the future. For this, I have been using:
->
-> 	qdisc_watchdog_schedule_range_ns(&q->watchdog, rs, 0);
->
-> Where rs is the smallest in-the-future enqueue timestamp.
->
-> However it was observed that this can add quite a lot more extra
-> delay than planned, I saw single-digit millisecond figures, which
-> IMHO is already a lot, but a coworker saw around 17 ms, which is
-> definitely too much.
+Fixes: 84c61fe1a75b ("tls: rx: do not use the standard strparser")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ net/tls/tls_strp.c | 32 ++++++++++++++++++++++++++++----
+ 1 file changed, 28 insertions(+), 4 deletions(-)
 
-Make sure your .config has
+diff --git a/net/tls/tls_strp.c b/net/tls/tls_strp.c
+index 9b79e334dbd9..955ac3e0bf4d 100644
+--- a/net/tls/tls_strp.c
++++ b/net/tls/tls_strp.c
+@@ -273,7 +273,7 @@ static int tls_strp_read_copyin(struct tls_strparser *strp)
+ 	return desc.error;
+ }
+ 
+-static int tls_strp_read_short(struct tls_strparser *strp)
++static int tls_strp_read_copy(struct tls_strparser *strp, bool qshort)
+ {
+ 	struct skb_shared_info *shinfo;
+ 	struct page *page;
+@@ -283,7 +283,7 @@ static int tls_strp_read_short(struct tls_strparser *strp)
+ 	 * to read the data out. Otherwise the connection will stall.
+ 	 * Without pressure threshold of INT_MAX will never be ready.
+ 	 */
+-	if (likely(!tcp_epollin_ready(strp->sk, INT_MAX)))
++	if (likely(qshort && !tcp_epollin_ready(strp->sk, INT_MAX)))
+ 		return 0;
+ 
+ 	shinfo = skb_shinfo(strp->anchor);
+@@ -315,6 +315,27 @@ static int tls_strp_read_short(struct tls_strparser *strp)
+ 	return 0;
+ }
+ 
++static bool tls_strp_check_no_dup(struct tls_strparser *strp)
++{
++	unsigned int len = strp->stm.offset + strp->stm.full_len;
++	struct sk_buff *skb;
++	u32 seq;
++
++	skb = skb_shinfo(strp->anchor)->frag_list;
++	seq = TCP_SKB_CB(skb)->seq;
++
++	while (skb->len < len) {
++		seq += skb->len;
++		len -= skb->len;
++		skb = skb->next;
++
++		if (TCP_SKB_CB(skb)->seq != seq)
++			return false;
++	}
++
++	return true;
++}
++
+ static void tls_strp_load_anchor_with_queue(struct tls_strparser *strp, int len)
+ {
+ 	struct tcp_sock *tp = tcp_sk(strp->sk);
+@@ -373,7 +394,7 @@ static int tls_strp_read_sock(struct tls_strparser *strp)
+ 		return tls_strp_read_copyin(strp);
+ 
+ 	if (inq < strp->stm.full_len)
+-		return tls_strp_read_short(strp);
++		return tls_strp_read_copy(strp, true);
+ 
+ 	if (!strp->stm.full_len) {
+ 		tls_strp_load_anchor_with_queue(strp, inq);
+@@ -387,9 +408,12 @@ static int tls_strp_read_sock(struct tls_strparser *strp)
+ 		strp->stm.full_len = sz;
+ 
+ 		if (!strp->stm.full_len || inq < strp->stm.full_len)
+-			return tls_strp_read_short(strp);
++			return tls_strp_read_copy(strp, true);
+ 	}
+ 
++	if (!tls_strp_check_no_dup(strp))
++		return tls_strp_read_copy(strp, false);
++
+ 	strp->msg_ready = 1;
+ 	tls_rx_msg_ready(strp);
+ 
+-- 
+2.37.3
 
-CONFIG_HIGH_RES_TIMERS=y
-
-I don't know how you measure this latency, but net/sched/sch_fq.c has 
-instrumentation,
-
-and following command on a random host in my lab shows an average (EWMA) 
-latency
-
-smaller than 29 usec, (32 TX queues on the NIC)
-
-tc -s -d qd sh dev eth1 | grep latency
-   gc 194315 highprio 0 throttled 902 latency 10.7us
-   gc 196277 highprio 0 throttled 156 latency 11.8us
-   gc 84107 highprio 0 throttled 286 latency 13.7us
-   gc 19408 highprio 0 throttled 324 latency 10.9us
-   gc 309405 highprio 0 throttled 370 latency 11.1us
-   gc 147821 highprio 0 throttled 154 latency 12.2us
-   gc 84768 highprio 0 throttled 2859 latency 10.7us
-   gc 181833 highprio 0 throttled 4311 latency 12.9us
-   gc 117038 highprio 0 throttled 1127 latency 11.1us
-   gc 168430 highprio 0 throttled 1784 latency 22.1us
-   gc 71086 highprio 0 throttled 2339 latency 14.3us
-   gc 127584 highprio 0 throttled 1396 latency 11.5us
-   gc 96239 highprio 0 throttled 297 latency 16.9us
-   gc 96490 highprio 0 throttled 6374 latency 11.3us
-   gc 117284 highprio 0 throttled 2011 latency 11.5us
-   gc 122355 highprio 0 throttled 303 latency 12.8us
-   gc 221196 highprio 0 throttled 330 latency 11.3us
-   gc 204193 highprio 0 throttled 121 latency 12us
-   gc 177423 highprio 0 throttled 1012 latency 11.9us
-   gc 70236 highprio 0 throttled 1015 latency 15us
-   gc 166721 highprio 0 throttled 488 latency 11.9us
-   gc 92794 highprio 0 throttled 963 latency 17.1us
-   gc 229031 highprio 0 throttled 274 latency 12.2us
-   gc 109511 highprio 0 throttled 234 latency 10.5us
-   gc 89160 highprio 0 throttled 729 latency 10.7us
-   gc 182940 highprio 0 throttled 234 latency 11.7us
-   gc 172111 highprio 0 throttled 2439 latency 11.4us
-   gc 101261 highprio 0 throttled 2614 latency 11.6us
-   gc 95759 highprio 0 throttled 336 latency 11.3us
-   gc 103392 highprio 0 throttled 2990 latency 11.2us
-   gc 173068 highprio 0 throttled 955 latency 16.5us
-   gc 97893 highprio 0 throttled 748 latency 11.7us
-
-Note that after the timer fires, a TX softirq is scheduled (to send more 
-packets from qdisc -> NIC)
-
-Under high cpu pressure, it is possible the softirq is delayed,
-
-because ksoftirqd might compete with user threads.
-
-
->
-> What is the granularity of qdisc watchdogs, and how can I aim at
-> being called again for dequeueing in more precise fashion? I would
-> prefer to being called within 1 ms, 2 if it must absolutely be, of
-> the timestamp passed.
->
-> Thanks in advance,
-> //mirabilos
