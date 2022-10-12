@@ -2,222 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC7B95FC1EF
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 10:24:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B5EB5FC1FE
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 10:30:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229621AbiJLIYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 04:24:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40410 "EHLO
+        id S229665AbiJLI36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 04:29:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229695AbiJLIYk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 04:24:40 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2073.outbound.protection.outlook.com [40.107.92.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1BE31008
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 01:24:38 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cOd3BfFBg7S+s5tALYys6z8zAyPNRErrCE+8Xxm5vlXax2z9kZpTKK4/fFCCscgJTwKOvJp/rUR1ScM9BdjTz5JEY8hbVCDgR3/AXMu5ZERMNBFkbuZbbTNm24WZfXrQDA3102HPHKKhyBX6d6I2+au3gCRoQiSoXO4DPFJf98fhH/nmjVKVUrqmJmp0eRrEPnuOzJUUshhjwQIME7EdITZFbUK4GI8m77IVj5KQYt+a6VQa9i/1JnjKoTVDGYFBl7jyZ2fL1PBYxkmPrPkduzNFlOWWyf659pNf6zqtJ413r0iYItEl8jPTJ2wjxdQEiVd+w8XvLkFXUA46HZpVxg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XSuDvGbKwxdNQgNhsJ7mG3W+Ij1DzTLf/zWAtuT5k+0=;
- b=mUQ29VyPS5y77Ya4cbH03gOepnhb/hLhYbNQHI+SzuxoWtF2ZSDs+hgy5BwjQhkCjoqWNgwhcKgBdJsfy956vx8RA9Ad10MauWQv99VWY+b7eqPgqTYgJRGh0WOLQePJ2fKl3aHFoCL2TDj4C/42BLW707dacZsTKrCoxXOG4r4eWK+H3rIeZSeIYQ9hF8B9asKcE87U3h3/a3BjAsSxFM+eSMD4LaD1fyNCfA2zROUea6MNnsQ8N6ovofnP8YOluc0YeIDt0sCHFqZpR2oG3j7NwjUqTmgQYnk39WKX361nwnyBikaTJSsARrzgHAzfGGvYSaIyTN8YeGc0sl40dw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=iogearbox.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XSuDvGbKwxdNQgNhsJ7mG3W+Ij1DzTLf/zWAtuT5k+0=;
- b=tikUZiCencVEud1dMY1fkuxivx2f2mP7NSiJo4SxvLeH9WaOau7d3EDMR+YSGOcjULN9DZUcYvDVxvvKYNxsEb2DPAtfV882lB+YQs9X5DVwfOp00ghyYHnC9kfunPMESaCeyYPDXLTYNiIysRYTseP1C2xZAYpYZ/y+aZK5X3fSzttqPqRgBfmLmV9a61XOcE55l6t4rBkuVKLcxhCRm9OD+1Z2k1oJe0JU8SFBZUag4yGKJJ6omVgj6SHVGKrZPA7IBgHdBL7gxAqWNLx26XbqI2RCUpCjLM6v1sE+CGTz3iMw9LyJMML0xAfg9X4IOIH23FJY06okkqkakPbSmw==
-Received: from MW4PR03CA0012.namprd03.prod.outlook.com (2603:10b6:303:8f::17)
- by BL1PR12MB5377.namprd12.prod.outlook.com (2603:10b6:208:31f::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5709.21; Wed, 12 Oct
- 2022 08:24:37 +0000
-Received: from CO1NAM11FT100.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8f:cafe::82) by MW4PR03CA0012.outlook.office365.com
- (2603:10b6:303:8f::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5709.22 via Frontend
- Transport; Wed, 12 Oct 2022 08:24:36 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- CO1NAM11FT100.mail.protection.outlook.com (10.13.175.133) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5723.20 via Frontend Transport; Wed, 12 Oct 2022 08:24:36 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Wed, 12 Oct
- 2022 01:24:27 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Wed, 12 Oct
- 2022 01:24:26 -0700
-Received: from reg-r-vrt-019-180.mtr.labs.mlnx (10.127.8.11) by
- mail.nvidia.com (10.129.68.8) with Microsoft SMTP Server id 15.2.986.29 via
- Frontend Transport; Wed, 12 Oct 2022 01:24:24 -0700
-From:   Paul Blakey <paulb@nvidia.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Paul Blakey <paulb@nvidia.com>,
-        Vlad Buslov <vladbu@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>
-CC:     Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229650AbiJLI34 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 04:29:56 -0400
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D8301EC60;
+        Wed, 12 Oct 2022 01:29:55 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1665563393;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=OVdrn/Jn8bciC/DXtG15W5lQxTAJiYriHkBH3410Vo8=;
+        b=PXhUb1I+hoet4Cvu28QFTnN8Hek3irQwmyqbG1kGTwdr2SN7PkjyXCzEik5AZhmUNrC9ub
+        AGQLGtnK28U4JRfzd1MDMlDhaq7Cj7TglabCGF2G502nlUV4jNnHAgAL4V0laKUtd7RJVD
+        l9229ZZaIwm/CmONouNLvzWDlHlMj/A=
+From:   Cai Huoqing <cai.huoqing@linux.dev>
+To:     leonro@nvidia.com
+Cc:     caihuoqing <caihuoqing@baidu.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH net v4 2/2] selftests: add selftest for chaining of tc ingress handling to egress
-Date:   Wed, 12 Oct 2022 11:24:13 +0300
-Message-ID: <1665563053-29263-3-git-send-email-paulb@nvidia.com>
-X-Mailer: git-send-email 1.8.4.3
-In-Reply-To: <1665563053-29263-1-git-send-email-paulb@nvidia.com>
-References: <1665563053-29263-1-git-send-email-paulb@nvidia.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Qiao Ma <mqaio@linux.alibaba.com>,
+        Zhengchao Shao <shaozhengchao@huawei.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: hinic: Update the range of MTU from 256 to 9600
+Date:   Wed, 12 Oct 2022 16:29:40 +0800
+Message-Id: <20221012082945.10353-1-cai.huoqing@linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT100:EE_|BL1PR12MB5377:EE_
-X-MS-Office365-Filtering-Correlation-Id: 565a3bb9-f2c6-4ff2-1bcd-08daac2b32d2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: of811gsZOaGlWoSHp0r9gRvor5/mtA7YoxIXTKis6qK6LNha2V18JtPwdfaUbYNkxaoVlW8duD/fZOG2jtPqUrROBPvOs76N1dHyYnib2QFI20IRwUlEk8Gw1u+Ub9fz60J5p0y+hmBiHVQNa5C53ilHIDOcQDN81CN93DDmpKB2K6rC/KVyoSyTjVT0gqsj9+SQUz2fYVvh8nPKKIkSk3rutnm2u9ZyvtjffU7PYe/NAi3ySzkZovftCI1+crtV5TTkpsXO5n+xJTShjO7aYfJgZ0/DiqqqAmMTzABXSbnRlsBlSZCjq9o35PJuZ972lT0PaZ83Jbk9GGrcmnuj7f4/WrK4shGtZNZA+MRPswEcE0RZl1AuW7mYXnVq5tBOlGFMVZ2aZ/1vSuvvz2+CV5UvdNZ3x3T+XiUIf1DmHGGbIpuq6sxXzySbQAtVuXG9KTM1GIcA53P7axkURiEufJW9RFmyRUiKEjIuD5Pf04uhQxIZTmd4cCUHcpRxVkVqQaUO1otvfG8rrO9TO9iIDNtTP4ebLsZ3+8SrEMVDCg5/2hi6FDniautz/E3hAIYvActOl2yjK07lwpbyCE1B4zpcSNveVMeCkchOvLrUaP6Udx13xilRIDFVtenpr83dEeK1mrg6X+vcBuZl4cMyxVkaJT37EXQqija1tBFyej5EUVTd0BeJiHbPsqBEDsoBF1J0NXZ8BZ14wQ0oAGpZOqIExnlk/0erOTrLsYJSnZHJOKqRRi2DLHim/gUx2q+5Ohr1GI+rfK+EEonma49I/A==
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(136003)(376002)(346002)(396003)(451199015)(40470700004)(46966006)(36840700001)(426003)(47076005)(2906002)(2616005)(40460700003)(36756003)(86362001)(40480700001)(8676002)(4326008)(6666004)(41300700001)(7636003)(82740400003)(356005)(82310400005)(36860700001)(336012)(186003)(5660300002)(110136005)(54906003)(478600001)(6636002)(8936002)(26005)(70586007)(70206006)(316002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Oct 2022 08:24:36.1454
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 565a3bb9-f2c6-4ff2-1bcd-08daac2b32d2
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT100.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5377
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This test runs a simple ingress tc setup between two veth pairs,
-then adds a egress->ingress rule to test the chaining of tc ingress
-pipeline to tc egress piepline.
+From: caihuoqing <caihuoqing@baidu.com>
 
-Signed-off-by: Paul Blakey <paulb@nvidia.com>
+Hinic hardware only support MTU from 256 to 9600, so set
+the max_mtu and min_mtu.
+
+And not need to add the validity judgment when set mtu,
+because the judgment is made in net/core: dev_validate_mtu
+
+Signed-off-by: caihuoqing <caihuoqing@baidu.com>
 ---
- tools/testing/selftests/net/Makefile          |  1 +
- .../net/test_ingress_egress_chaining.sh       | 81 +++++++++++++++++++
- 2 files changed, 82 insertions(+)
- create mode 100644 tools/testing/selftests/net/test_ingress_egress_chaining.sh
+ drivers/net/ethernet/huawei/hinic/hinic_dev.h  |  3 +++
+ drivers/net/ethernet/huawei/hinic/hinic_main.c |  3 ++-
+ drivers/net/ethernet/huawei/hinic/hinic_port.c | 17 +----------------
+ 3 files changed, 6 insertions(+), 17 deletions(-)
 
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index c0ee2955fe54..f4774717c5b6 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -63,6 +63,7 @@ TEST_GEN_FILES += cmsg_sender
- TEST_GEN_FILES += stress_reuseport_listen
- TEST_PROGS += test_vxlan_vnifiltering.sh
- TEST_GEN_FILES += io_uring_zerocopy_tx
-+TEST_PROGS += test_ingress_egress_chaining.sh
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_dev.h b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
+index a4fbf44f944c..2bbc94c0a9c1 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_dev.h
++++ b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
+@@ -22,6 +22,9 @@
  
- TEST_FILES := settings
+ #define LP_PKT_CNT		64
  
-diff --git a/tools/testing/selftests/net/test_ingress_egress_chaining.sh b/tools/testing/selftests/net/test_ingress_egress_chaining.sh
-new file mode 100644
-index 000000000000..193d92078ae0
---- /dev/null
-+++ b/tools/testing/selftests/net/test_ingress_egress_chaining.sh
-@@ -0,0 +1,81 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
++#define HINIC_MAX_MTU_SIZE		9600
++#define HINIC_MIN_MTU_SIZE		256
 +
-+# This test runs a simple ingress tc setup between two veth pairs,
-+# and chains a single egress rule to test ingress chaining to egress.
-+#
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
-+if [ "$(id -u)" -ne 0 ];then
-+	echo "SKIP: Need root privileges"
-+	exit $ksft_skip
-+fi
-+
-+needed_mods="act_mirred cls_flower sch_ingress"
-+for mod in $needed_mods; do
-+	modinfo $mod &>/dev/null || { echo "SKIP: Need act_mirred module"; exit $ksft_skip; }
-+done
-+
-+ns="ns$((RANDOM%899+100))"
-+veth1="veth1$((RANDOM%899+100))"
-+veth2="veth2$((RANDOM%899+100))"
-+peer1="peer1$((RANDOM%899+100))"
-+peer2="peer2$((RANDOM%899+100))"
-+ip_peer1=198.51.100.5
-+ip_peer2=198.51.100.6
-+
-+function fail() {
-+	echo "FAIL: $@" >> /dev/stderr
-+	exit 1
-+}
-+
-+function cleanup() {
-+	killall -q -9 udpgso_bench_rx
-+	ip link del $veth1 &> /dev/null
-+	ip link del $veth2 &> /dev/null
-+	ip netns del $ns &> /dev/null
-+}
-+trap cleanup EXIT
-+
-+function config() {
-+	echo "Setup veth pairs [$veth1, $peer1], and veth pair [$veth2, $peer2]"
-+	ip link add $veth1 type veth peer name $peer1
-+	ip link add $veth2 type veth peer name $peer2
-+	ip addr add $ip_peer1/24 dev $peer1
-+	ip link set $peer1 up
-+	ip netns add $ns
-+	ip link set dev $peer2 netns $ns
-+	ip netns exec $ns ip addr add $ip_peer2/24 dev $peer2
-+	ip netns exec $ns ip link set $peer2 up
-+	ip link set $veth1 up
-+	ip link set $veth2 up
-+
-+	echo "Add tc filter ingress->egress forwarding $veth1 <-> $veth2"
-+	tc qdisc add dev $veth2 ingress
-+	tc qdisc add dev $veth1 ingress
-+	tc filter add dev $veth2 ingress prio 1 proto all flower \
-+		action mirred egress redirect dev $veth1
-+	tc filter add dev $veth1 ingress prio 1 proto all flower \
-+		action mirred egress redirect dev $veth2
-+
-+	echo "Add tc filter egress->ingress forwarding $peer1 -> $veth1, bypassing the veth pipe"
-+	tc qdisc add dev $peer1 clsact
-+	tc filter add dev $peer1 egress prio 20 proto ip flower \
-+		action mirred ingress redirect dev $veth1
-+}
-+
-+function test_run() {
-+	echo "Run tcp traffic"
-+	./udpgso_bench_rx -t &
-+	sleep 1
-+	ip netns exec $ns timeout -k 2 10 ./udpgso_bench_tx -t -l 2 -4 -D $ip_peer1 || fail "traffic failed"
-+	echo "Test passed"
-+}
-+
-+config
-+test_run
-+trap - EXIT
-+cleanup
-+
-+
+ enum hinic_flags {
+ 	HINIC_LINK_UP = BIT(0),
+ 	HINIC_INTF_UP = BIT(1),
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+index c23ee2ddbce3..41e52f775aae 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+@@ -1189,7 +1189,8 @@ static int nic_dev_init(struct pci_dev *pdev)
+ 	else
+ 		netdev->netdev_ops = &hinicvf_netdev_ops;
+ 
+-	netdev->max_mtu = ETH_MAX_MTU;
++	netdev->max_mtu = HINIC_MAX_MTU_SIZE;
++	netdev->min_mtu = HINIC_MIN_MTU_SIZE;
+ 
+ 	nic_dev = netdev_priv(netdev);
+ 	nic_dev->netdev = netdev;
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.c b/drivers/net/ethernet/huawei/hinic/hinic_port.c
+index 28ae6f1201a8..0a39c3dffa9a 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_port.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_port.c
+@@ -17,9 +17,6 @@
+ #include "hinic_port.h"
+ #include "hinic_dev.h"
+ 
+-#define HINIC_MIN_MTU_SIZE              256
+-#define HINIC_MAX_JUMBO_FRAME_SIZE      15872
+-
+ enum mac_op {
+ 	MAC_DEL,
+ 	MAC_SET,
+@@ -147,24 +144,12 @@ int hinic_port_get_mac(struct hinic_dev *nic_dev, u8 *addr)
+  **/
+ int hinic_port_set_mtu(struct hinic_dev *nic_dev, int new_mtu)
+ {
+-	struct net_device *netdev = nic_dev->netdev;
+ 	struct hinic_hwdev *hwdev = nic_dev->hwdev;
+ 	struct hinic_port_mtu_cmd port_mtu_cmd;
+ 	struct hinic_hwif *hwif = hwdev->hwif;
+ 	u16 out_size = sizeof(port_mtu_cmd);
+ 	struct pci_dev *pdev = hwif->pdev;
+-	int err, max_frame;
+-
+-	if (new_mtu < HINIC_MIN_MTU_SIZE) {
+-		netif_err(nic_dev, drv, netdev, "mtu < MIN MTU size");
+-		return -EINVAL;
+-	}
+-
+-	max_frame = new_mtu + ETH_HLEN + ETH_FCS_LEN;
+-	if (max_frame > HINIC_MAX_JUMBO_FRAME_SIZE) {
+-		netif_err(nic_dev, drv, netdev, "mtu > MAX MTU size");
+-		return -EINVAL;
+-	}
++	int err;
+ 
+ 	port_mtu_cmd.func_idx = HINIC_HWIF_FUNC_IDX(hwif);
+ 	port_mtu_cmd.mtu = new_mtu;
 -- 
-2.30.1
+2.25.1
 
