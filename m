@@ -2,58 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C03265FC560
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 14:34:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A2995FC541
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 14:24:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229600AbiJLMeN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 08:34:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53886 "EHLO
+        id S229585AbiJLMY5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 08:24:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229626AbiJLMeM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 08:34:12 -0400
-X-Greylist: delayed 583 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 12 Oct 2022 05:34:09 PDT
-Received: from pm.theglu.org (pm.theglu.org [5.39.81.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8464DC58A1;
-        Wed, 12 Oct 2022 05:34:09 -0700 (PDT)
-Received: from pm.theglu.org (localhost [127.0.0.1])
-        by pm.theglu.org (Postfix) with ESMTP id C020440334;
-        Wed, 12 Oct 2022 12:24:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=simple; d=theglu.org; h=message-id
-        :date:mime-version:subject:to:cc:references:from:in-reply-to
-        :content-type:content-transfer-encoding; s=postier; bh=WmbqpEAaQ
-        V3hejfjmDbHh1em7d4=; b=UkfZ5qboZWOpX2D/NXHQd60M3Xdm4v41twJ8RmdRH
-        NFBFDvPOSEoJ8Q1UM6eo+AmJq4bkLl2KnSYRvNpXBx4ldVF2Hi6pflK5MnTzTJ8T
-        CNZ+BKtSgoFLxKY0EJT+oqiAQrhhs5Z2l030sW0VgixhuqgNk3QdhVsYGQerR56S
-        Ng=
-Received: from [10.0.17.2] (people.swisscom.puidoux-infra.ch [146.4.119.107])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by pm.theglu.org (Postfix) with ESMTPSA id E19B440124;
-        Wed, 12 Oct 2022 12:24:12 +0000 (UTC)
-Message-ID: <d6c3cd78-741c-d528-129a-cf7ed7ef236d@arcanite.ch>
-Date:   Wed, 12 Oct 2022 14:24:11 +0200
+        with ESMTP id S229563AbiJLMYz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 08:24:55 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8249327CF0;
+        Wed, 12 Oct 2022 05:24:53 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id bj12so37538250ejb.13;
+        Wed, 12 Oct 2022 05:24:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=ytqQ1cDOxBZFD/vHgDeWMTdy0Xdb3L8hzizbhg/VDps=;
+        b=DB8JwO9WuD4xmUBa2BA5PkVz1BGxJIDwCTpjS6YNA3ak1yzMMBnXHNVkBl3/RufvDc
+         5bvvewC3ejedP/EtUThNQYMCrX5uqHz5kX8xNmDGIdpLQ/FvADFSJ7FxIW6OJadhNW1U
+         hbUTTutdMdcdnv16/ftoZHPgCsiDNg823PH8FuskwTKfGq7ueBILCxed9suTDDOz/39/
+         4MPehqB5og4cjH3npyDdESiDS0iWUch0eLBFhJWGOb/MBGDG9gpxqcmUMxnP5bzBou4T
+         QuSin7IoqDg5z+eZ4qdCCUeH8ETlHAU4dv0zuXgPfqN7gItnJ5vrfK+u8LfNYnNfMQzh
+         JHMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ytqQ1cDOxBZFD/vHgDeWMTdy0Xdb3L8hzizbhg/VDps=;
+        b=phS3zVIyd2qA3PlJb5AoUltmuo+Sc2t8p2ri3Nff1n3YjAw6VeIguy7rRxplQkt/qU
+         z+LNoRqP+ztBrYkLHKn1pE1rY/zt/ogRwg3QmuuEdBI6TZ8/kDlFIHSDPXuZNuD9hzb6
+         +2hxahWW214qZ8zdrNPF+lAe0hnAf8/6FzLsMzCUMaSjrxB/+R6Cs0rWDvG+9uSgFNt3
+         bZT43M4sq/L+ACg1nijQHl2vt8YuoB0sa//VF5sMMe/Bt9ZlFY7JvAtsr6oJkiXTEh11
+         vzD8UCEglLv5oHLFqwGHDZH8p6DKUUPohjdZmRW81b691w1/0wjJ1d33hoSvLzzYMRaD
+         v9Tg==
+X-Gm-Message-State: ACrzQf05bv+MQj7KP4JHCGMzYoNC+0O4Wesl4Plz5wTS4+hY3nOEKvmt
+        2faFApP98r8ULqrFD7CKUEx3O/NwHIA=
+X-Google-Smtp-Source: AMsMyM454eJcJsbNPHab14fThr6MoHVYZ4t2YqL/WB3VoPJ18yNTVs+XL3WBqOl5VWGUqvDmq4zVOA==
+X-Received: by 2002:a17:907:97c6:b0:783:dcad:3454 with SMTP id js6-20020a17090797c600b00783dcad3454mr23008541ejc.271.1665577491827;
+        Wed, 12 Oct 2022 05:24:51 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-134.ip85.fastwebnet.it. [93.42.70.134])
+        by smtp.gmail.com with ESMTPSA id 9-20020a170906210900b0078d21574986sm1139245ejt.203.2022.10.12.05.24.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Oct 2022 05:24:51 -0700 (PDT)
+Message-ID: <6346b213.170a0220.a9c38.3d7b@mx.google.com>
+X-Google-Original-Message-ID: <Y0ayD81h0iqXLohZ@Ansuel-xps.>
+Date:   Wed, 12 Oct 2022 14:24:47 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pawel Dembicki <paweldembicki@gmail.com>,
+        Lech Perczak <lech.perczak@gmail.com>
+Subject: Re: [net PATCH 1/2] net: dsa: qca8k: fix inband mgmt for big-endian
+ systems
+References: <20221010111459.18958-1-ansuelsmth@gmail.com>
+ <Y0RqDd/P3XkrSzc3@lunn.ch>
+ <63446da5.050a0220.92e81.d3fb@mx.google.com>
+ <20221012072411.dk7dynbttnaozyrl@skbuf>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: [REGRESSION] Unable to NAT own TCP packets from another VRF with
- tcp_l3mdev_accept = 1
-Content-Language: en-US-large
-To:     Mike Manning <mvrmanning@gmail.com>
-Cc:     netdev@vger.kernel.org, Phil Sutter <phil@nwl.cc>,
-        Florian Westphal <fw@strlen.de>,
-        David Ahern <dsahern@kernel.org>,
-        netfilter-devel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-References: <98348818-28c5-4cb2-556b-5061f77e112c@arcanite.ch>
- <20220930174237.2e89c9e1@kernel.org>
- <1eca7cd0-ad6e-014f-d4e2-490b307ab61d@gmail.com>
-From:   Maximilien Cuony <maximilien.cuony@arcanite.ch>
-Organization: Arcanite Solutions SARL
-In-Reply-To: <1eca7cd0-ad6e-014f-d4e2-490b307ab61d@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,SPF_HELO_PASS,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221012072411.dk7dynbttnaozyrl@skbuf>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,43 +84,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/7/22 18:47, Mike Manning wrote:
-> Hi Maximilien,
->
-> Apologies that you have now hit this issue. Further to David's reply
-> with the link for the rationale behind the change, the bisected commit
-> you found restores backwards compatibility with the 4.19 kernel to allow
-> a match on an unbound socket when in a VRF if tcp_l3mdev_accept=1, the
-> absence of this causing issues for others. Isolation between default and
-> other VRFs as introduced by the team I worked for back in 2018 and
-> introduced in 5.x kernels remains guaranteed if tcp_l3mdev_accept=0.
->
-> There is no appetite so far to introduce yet another kernel parameter to
-> control this specific behavior, see e.g.
-> https://lore.kernel.org/netdev/f174108c-67c5-3bb6-d558-7e02de701ee2@gmail.com/
-Ok, I do understand it's tricky to satisfy both side and adding a 
-parameter for each cases is probably not sustainable ^^'
-> Is there any possibility that you could use tcp_l3mdev_accept=0 by
-> running any services needed in the VRF with 'ip vrf exec <vrf> <cmd>'?
-Yes, we will try to do that, there was some complication but it's 
-probably easier and better for the future.
-> Is the problem specific to using NAT for eth2 in the VRF, i.e. have you
-> tried on another interface in that VRF, or on eth2 without NAT config?
-If we try to NAT on another interface in the VRF it doesn't work. 
-Without NAT it does work.
-> No doubt you are doing this, but can I also check that your VRF config
-> is correct according to
-> https://www.kernel.org/doc/Documentation/networking/vrf.txt , so
-> reducing the local lookup preference, etc., e.g.
+On Wed, Oct 12, 2022 at 10:24:11AM +0300, Vladimir Oltean wrote:
+> On Mon, Oct 10, 2022 at 02:44:46PM +0200, Christian Marangi wrote:
+> > On Mon, Oct 10, 2022 at 08:53:01PM +0200, Andrew Lunn wrote:
+> > > >  /* Special struct emulating a Ethernet header */
+> > > >  struct qca_mgmt_ethhdr {
+> > > > -	u32 command;		/* command bit 31:0 */
+> > > > -	u32 seq;		/* seq 63:32 */
+> > > > -	u32 mdio_data;		/* first 4byte mdio */
+> > > > +	__le32 command;		/* command bit 31:0 */
+> > > > +	__le32 seq;		/* seq 63:32 */
+> > > > +	__le32 mdio_data;		/* first 4byte mdio */
+> > > >  	__be16 hdr;		/* qca hdr */
+> > > >  } __packed;
+> > > 
+> > > It looks odd that hdr is BE while the rest are LE. Did you check this?
+> > > 
+> > >    Andrew
+> > 
+> > Yes we did many test to analyze this and I just checked with some
+> > tcpdump that the hdr is BE everytime. If you want I can provide you some
+> > tcpdump from 2 different systems.
+> > 
+> > Anyway it looks like this family switch treats the hdr in a standard way
+> > with the network byte order and for anything else stick to LE.
+> > 
+> > Also as a side note the tagger worked correctly before the mgmt feature
+> > on BE systems and also works correctly now... just any command is slow
+> > as the mgmt system has to timeout and fallback to legacy mdio.
+> 
+> Could you provide a tcpdump?
 
-Yes, rules/preferences are correct - I think by ifupdown2 during 
-interface activation.
+Hi, this [0] is the zip with all the tcpdump.
+The main packet to check are the one that are 60 in lenght and > 170 in
+length for the autocast mib. I added both LE and BE and for BE I added
+the broken and the correct one.
 
-So we will try to not to have to use tcp_l3mdev_accept=1 to make it 
-working as expected.
+As you notice without following this endianess madness, the switch
+doesn't answer to any request.
 
-Thanks for you help and have a nice day :)
+Hope the dump are not too bloated to understand this problem.
+
+[0] https://we.tl/t-ZpXVObTIh0
 
 -- 
-Maximilien Cuony
-
+	Ansuel
