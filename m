@@ -2,155 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C90A5FC8F8
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 18:13:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CB825FC91B
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 18:22:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229604AbiJLQNr convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 12 Oct 2022 12:13:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34956 "EHLO
+        id S229867AbiJLQWS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 12:22:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229605AbiJLQNq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 12:13:46 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58FB4E070A
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 09:13:45 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-268-WeWgrHtwPRGrwdN7bTB1vA-1; Wed, 12 Oct 2022 17:13:42 +0100
-X-MC-Unique: WeWgrHtwPRGrwdN7bTB1vA-1
-Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
- (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Wed, 12 Oct
- 2022 17:13:40 +0100
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.040; Wed, 12 Oct 2022 17:13:40 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Sergei Antonov' <saproj@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>
-Subject: RE: [PATCH v2 net] net: ftmac100: do not reject packets bigger than
- 1514
-Thread-Topic: [PATCH v2 net] net: ftmac100: do not reject packets bigger than
- 1514
-Thread-Index: AQHY3lCWEiTFPZdxBkKncwnj941AIq4K6mqQ
-Date:   Wed, 12 Oct 2022 16:13:40 +0000
-Message-ID: <1b919195757c49769bde19c59a846789@AcuMS.aculab.com>
-References: <20221012153737.128424-1-saproj@gmail.com>
-In-Reply-To: <20221012153737.128424-1-saproj@gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S229552AbiJLQWP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 12:22:15 -0400
+Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 441F7F253F;
+        Wed, 12 Oct 2022 09:22:03 -0700 (PDT)
+Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-1324e7a1284so20011468fac.10;
+        Wed, 12 Oct 2022 09:22:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=w9ooysRCPWwfkOQsofxa8c0vAZXT4BQ/v/BacIsjsJw=;
+        b=ZoN2S3I8tMdJi5TGESstwejE8OxWDtshhO482ynUMnoYJNfyohQ6Plc/dx58Cd0BS7
+         8hBWIVgdzlk6cPQ5u5ueok0fD2/ayXrNmD7xWHxxndoce89SpP+/+n51MaTLWl0RqtCr
+         eSN36jOFJQ55K6M2GBb4UfS8z1F8eELU9Ay38Rp7dEDNgHZjTNthNNaPmoPppJ/otF+i
+         MVjLOyDmsj9+HJY8X8H7cAU2opXFGUQsifZRtMERgRR6Kv/gb+hV7Wq4OEJv67neaJl2
+         4GWJkq1RBN3lckPNPykCVLzeRo5pdzBmtKMU6ZvIuyk4Icr/UmvO0Ybwj9sJXmzi20O8
+         Jfnw==
+X-Gm-Message-State: ACrzQf1YMZniz0o6m+HE6hYXOI+bYmNjfW6r3KeHZmMfWUx6dOyGctqW
+        /C8f+HjiJuDG/RpYtPBOdw==
+X-Google-Smtp-Source: AMsMyM7ax+7oJeMRo/K68gvl3SyHLdXhw2E4wnkt/VLvxvFuCGm6zdglL8IJeCxdEDXSHOc0BNd6UQ==
+X-Received: by 2002:a05:6870:88a9:b0:133:605:bb1d with SMTP id m41-20020a05687088a900b001330605bb1dmr2849384oam.220.1665591719121;
+        Wed, 12 Oct 2022 09:21:59 -0700 (PDT)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id r26-20020a4ae51a000000b00425806a20f5sm1139604oot.3.2022.10.12.09.21.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Oct 2022 09:21:58 -0700 (PDT)
+Received: (nullmailer pid 2282719 invoked by uid 1000);
+        Wed, 12 Oct 2022 16:21:59 -0000
+Date:   Wed, 12 Oct 2022 11:21:59 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Matej Vasilevski <matej.vasilevski@seznam.cz>
+Cc:     Ondrej Ille <ondrej.ille@gmail.com>, linux-can@vger.kernel.org,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>, devicetree@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Pavel Pisa <pisa@cmp.felk.cvut.cz>,
+        Eric Dumazet <edumazet@google.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH v5 1/4] dt-bindings: can: ctucanfd: add another clock for
+ HW timestamping
+Message-ID: <166559171895.2282669.6983651717616748049.robh@kernel.org>
+References: <20221012062558.732930-1-matej.vasilevski@seznam.cz>
+ <20221012062558.732930-2-matej.vasilevski@seznam.cz>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_SBL_A autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221012062558.732930-2-matej.vasilevski@seznam.cz>
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sergei Antonov
-> Sent: 12 October 2022 16:38
+On Wed, 12 Oct 2022 08:25:55 +0200, Matej Vasilevski wrote:
+> Add second clock phandle to specify the timestamping clock.
 > 
-> Despite the datasheet [1] saying the controller should allow incoming
-> packets of length >=1518, it only allows packets of length <=1514.
-
-Shouldn't that be <=1518 and <1518 ??
-
-Although traditionally it was 1514+crc.
-An extra 4 byte header is now allowed.
-There is also the usefulness of supporting full length frames
-with a PPPoE header.
-
-Whether it actually makes sense to round up the receive buffer
-size and associated max frame length to 1536 (cache line aligned)
-is another matter (probably 1534 for 4n+2 alignment).
-
-> Since 1518 is a standard Ethernet maximum frame size, and it can
-> easily be encountered (in SSH for example), fix this behavior:
-> 
-> * Set FTMAC100_MACCR_RX_FTL in the MAC Control Register.
-
-What does that do?
-Looks like it might cause 'Frame Too Long' packets be returned.
-In which case should the code just have ignored it since
-longer frames would be discarded completely??
-
-> * Check for packet size > 1518 in ftmac100_rx_packet_error().
-> 
-> [1]
-> https://bitbucket.org/Kasreyn/mkrom-uc7112lx/src/master/documents/FIC8120_DS_v1.2.pdf
-> 
-> Fixes: 8d77c036b57c ("net: add Faraday FTMAC100 10/100 Ethernet driver")
-> Signed-off-by: Sergei Antonov <saproj@gmail.com>
+> Signed-off-by: Matej Vasilevski <matej.vasilevski@seznam.cz>
 > ---
+>  .../bindings/net/can/ctu,ctucanfd.yaml        | 19 +++++++++++++++----
+>  1 file changed, 15 insertions(+), 4 deletions(-)
 > 
-> v1 -> v2:
-> * Typos in description fixed.
-> 
->  drivers/net/ethernet/faraday/ftmac100.c | 13 +++++++++++--
->  1 file changed, 11 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/faraday/ftmac100.c b/drivers/net/ethernet/faraday/ftmac100.c
-> index d95d78230828..34d0284079ff 100644
-> --- a/drivers/net/ethernet/faraday/ftmac100.c
-> +++ b/drivers/net/ethernet/faraday/ftmac100.c
-> @@ -154,6 +154,7 @@ static void ftmac100_set_mac(struct ftmac100 *priv, const unsigned char *mac)
->  				 FTMAC100_MACCR_CRC_APD	| \
->  				 FTMAC100_MACCR_FULLDUP	| \
->  				 FTMAC100_MACCR_RX_RUNT	| \
-> +				 FTMAC100_MACCR_RX_FTL	| \
->  				 FTMAC100_MACCR_RX_BROADPKT)
-> 
->  static int ftmac100_start_hw(struct ftmac100 *priv)
-> @@ -320,6 +321,7 @@ static bool ftmac100_rx_packet_error(struct ftmac100 *priv,
->  {
->  	struct net_device *netdev = priv->netdev;
->  	bool error = false;
-> +	const unsigned int length = ftmac100_rxdes_frame_length(rxdes);
 
-Do you need to read this value this early in the function?
-Looks like it is only used when overlong packets are reported.
-
-	David
-
-> 
->  	if (unlikely(ftmac100_rxdes_rx_error(rxdes))) {
->  		if (net_ratelimit())
-> @@ -337,9 +339,16 @@ static bool ftmac100_rx_packet_error(struct ftmac100 *priv,
->  		error = true;
->  	}
-> 
-> -	if (unlikely(ftmac100_rxdes_frame_too_long(rxdes))) {
-> +	/* The frame-too-long flag 'FTMAC100_RXDES0_FTL' is described in the
-> +	 * datasheet as: "When set, it indicates that the received packet
-> +	 * length exceeds 1518 bytes." But testing shows that it is also set
-> +	 * when packet length is equal to 1518.
-> +	 * Since 1518 is a standard Ethernet maximum frame size, let it pass
-> +	 * and only trigger an error when packet length really exceeds it.
-> +	 */
-> +	if (unlikely(ftmac100_rxdes_frame_too_long(rxdes) && length > 1518)) {
->  		if (net_ratelimit())
-> -			netdev_info(netdev, "rx frame too long\n");
-> +			netdev_info(netdev, "rx frame too long (%u)\n", length);
-> 
->  		netdev->stats.rx_length_errors++;
->  		error = true;
-> --
-> 2.34.1
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+Reviewed-by: Rob Herring <robh@kernel.org>
