@@ -2,62 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AEF55FC85C
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 17:25:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F32335FC880
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 17:37:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229882AbiJLPZ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 11:25:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60714 "EHLO
+        id S229914AbiJLPhq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 11:37:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229879AbiJLPZX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 11:25:23 -0400
-Received: from mail-ej1-x64a.google.com (mail-ej1-x64a.google.com [IPv6:2a00:1450:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4D2550F9A
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 08:25:20 -0700 (PDT)
-Received: by mail-ej1-x64a.google.com with SMTP id sd5-20020a1709076e0500b0078de7be1ee3so2277367ejc.23
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 08:25:20 -0700 (PDT)
+        with ESMTP id S229595AbiJLPho (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 11:37:44 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F038DB769
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 08:37:42 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id s20so26303902lfi.11
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 08:37:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=Yu3GPHeMlULojI1/JTHmBLmYCXwxkibU0UYNSNib01c=;
-        b=inBQ2+46OdZGEZP0EIgEMcLDhwizvr4YHaViVBNtyru9zGHKlVe/+cv6nNMrIIQMEJ
-         G8SBsNVB5KVekNAAkoVnGh8uWqXP+C5qInIzagUUH8IJEb0Y0+thwCWwOCFxe31p5MFk
-         VKO0vYPlrFI4qBJ6J7QiQl0Z7ve8sFFGMMbIIrASHKvmwM13K/hn/GM7zipYvCb8AZcM
-         g1WJoA3/B8s4cIwV1ptkxEDlDX8uNZ+5IL/jMjhWPbjhMtNrHoodNRdxmfq/+YngOxAM
-         gGYsiOUVilQPBB5jmQgDKlYzuRjvWWX1VIEf5k+wxlmMo4VE9+DW5/XomOJP/LuCGOuj
-         R/hg==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=tk1G2RwNRdqz+wGlY+ULMADXguU2rnNvX/4SHP4ZobI=;
+        b=gCLPlmA/xQyifU9SScPakk2CDvMJRWLIGdxWcoVEA7tOtElkbkogoOJjhzsgNvmH9a
+         lWEAizvMRrYGP+VaVn2+BWOrTVG4OP7lMsw0JZ+awEhYLP8kxWIAfT2WqEqyYVQ15jFd
+         vcPqTh6QwrZIDgzArYGj/rzk8nBmikyd/Os8KZBykPWEYZyT6eQSZy6FPG/0uwXE6uJ7
+         lneHo7CDvyY1+FxGgLquzJjXAJOi68AtqcAqC3YJqrJDYrichJTqvplX224uoAHgPjqY
+         yHcrGlDQj4X2X4mE+vY6Mfzzu2j+WYvBGK82U8mYo4rFfbSYwCJFLdMNIyWlVS7Drcqy
+         6M9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Yu3GPHeMlULojI1/JTHmBLmYCXwxkibU0UYNSNib01c=;
-        b=cjbUL5VLNGiG95N6s4fpJE8KwS7+j6rGHvWL+IRXm8b/cefhBt2+4wJm55z/hDuHjj
-         JW89RdopZIzSzEAl3OON0URb3jMgBes4Gd5EyuLmHldF168msP6RvAIJn5ZpCY0gXRBo
-         8UTDOI/Q0+kk3o6b3tWppvaf+vIVY5oUa6JP1wvv4XQUSJ+MasIuO83Fah9KQ2680p8O
-         a7aDjHYgjb+JeQc3kdsqs5EWNDvnsoKuHND+A4xSKVbm2kqMNasPw95bEMoK9SwX8uDr
-         IErkpYa+UYrWHhHvUm/AfcytU2AUx9nY6ETWIGIEvEFSDAh1qaHwcCWZP0s2U2Au7ltW
-         Wt7Q==
-X-Gm-Message-State: ACrzQf0zQv2i2XtWp9Jl1Ufzq82Jydh+9HZ/FC8gIonIS0ChM+AOkALV
-        gBL0VFawLOk6IozHBVPvCwvUYK47eWA=
-X-Google-Smtp-Source: AMsMyM4gX8K2jJoiz4dWY4552ehVtk3lBTyvItbXkXJvUlI1B3yrv+e6K6QubS86fCNeG7TL5oxMW1D43UE=
-X-Received: from glider.muc.corp.google.com ([2a00:79e0:9c:201:2b49:534b:bcb4:a3ee])
- (user=glider job=sendgmr) by 2002:a17:906:794b:b0:787:a9ee:3bf0 with SMTP id
- l11-20020a170906794b00b00787a9ee3bf0mr22636550ejo.354.1665588319189; Wed, 12
- Oct 2022 08:25:19 -0700 (PDT)
-Date:   Wed, 12 Oct 2022 17:25:14 +0200
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.38.0.rc1.362.ged0d419d3c-goog
-Message-ID: <20221012152514.2060384-1-glider@google.com>
-Subject: [PATCH] tipc: fix an information leak in tipc_topsrv_kern_subscr
-From:   Alexander Potapenko <glider@google.com>
-To:     glider@google.com
-Cc:     jmaloy@redhat.com, ying.xue@windriver.com, netdev@vger.kernel.org,
-        davem@davemloft.net, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=tk1G2RwNRdqz+wGlY+ULMADXguU2rnNvX/4SHP4ZobI=;
+        b=ekTJoQFrNs/04YYno+agc/Ows1SOoDv3XeL9HXQ9Z1dedwotR7WNMQOzAalK75g4nC
+         KGhZGFqvvkjVk5tOXr4V2qRx/xRBC9viUdn9TvHFck2UbJsnEayP5GOTQAG3ihx8P0Iv
+         WXVADc0vay5RCfDVzr7LJ44nCvVenMCAIlsdeaIijf5kVXVUGkI0gpApUKKBTVEC/L4A
+         UQ46TKhJdkX6fzbyUufqxVvzLnyweh+IS2eX8cWCQ9MzwqkOcR2m2Ik5hdNm0mxCXeah
+         vFk9thmcXPYQUyI/8s4oBwLQ2jllwAroXMo1WdohK6Nys8YvWtr/eRmUUtoxwOeg0OHz
+         SL5A==
+X-Gm-Message-State: ACrzQf0W+OMFXbg3ZEmjE/lj2HUMgDdilQsvnG2mzypkt2HQHIcCBYyu
+        0CTu+Ae55y7bL0KODFnv98SXBgTxdAU=
+X-Google-Smtp-Source: AMsMyM5AIZEhnAgmiFu16IbnL+1G6zb+9NEhQNntrF0ttWzlX9NvLf37rEotKPSyhU4x9b/wn4NWXw==
+X-Received: by 2002:a05:6512:13a4:b0:477:a28a:2280 with SMTP id p36-20020a05651213a400b00477a28a2280mr9989116lfa.689.1665589061099;
+        Wed, 12 Oct 2022 08:37:41 -0700 (PDT)
+Received: from saproj-Latitude-5501.yandex.net ([2a02:6b8:0:40c:8077:5514:991f:3a57])
+        by smtp.gmail.com with ESMTPSA id e26-20020a2e985a000000b0026c4e922fb2sm6949ljj.48.2022.10.12.08.37.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Oct 2022 08:37:40 -0700 (PDT)
+From:   Sergei Antonov <saproj@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, Sergei Antonov <saproj@gmail.com>
+Subject: [PATCH v2 net] net: ftmac100: do not reject packets bigger than 1514
+Date:   Wed, 12 Oct 2022 18:37:37 +0300
+Message-Id: <20221012153737.128424-1-saproj@gmail.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_SBL_A autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,79 +68,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use a 8-byte write to initialize sub.usr_handle in
-tipc_topsrv_kern_subscr(), otherwise four bytes remain uninitialized
-when issuing setsockopt(..., SOL_TIPC, ...).
-This resulted in an infoleak reported by KMSAN when the packet was
-received:
+Despite the datasheet [1] saying the controller should allow incoming
+packets of length >=1518, it only allows packets of length <=1514.
 
-  =====================================================
-  BUG: KMSAN: kernel-infoleak in copyout+0xbc/0x100 lib/iov_iter.c:169
-   instrument_copy_to_user ./include/linux/instrumented.h:121
-   copyout+0xbc/0x100 lib/iov_iter.c:169
-   _copy_to_iter+0x5c0/0x20a0 lib/iov_iter.c:527
-   copy_to_iter ./include/linux/uio.h:176
-   simple_copy_to_iter+0x64/0xa0 net/core/datagram.c:513
-   __skb_datagram_iter+0x123/0xdc0 net/core/datagram.c:419
-   skb_copy_datagram_iter+0x58/0x200 net/core/datagram.c:527
-   skb_copy_datagram_msg ./include/linux/skbuff.h:3903
-   packet_recvmsg+0x521/0x1e70 net/packet/af_packet.c:3469
-   ____sys_recvmsg+0x2c4/0x810 net/socket.c:?
-   ___sys_recvmsg+0x217/0x840 net/socket.c:2743
-   __sys_recvmsg net/socket.c:2773
-   __do_sys_recvmsg net/socket.c:2783
-   __se_sys_recvmsg net/socket.c:2780
-   __x64_sys_recvmsg+0x364/0x540 net/socket.c:2780
-   do_syscall_x64 arch/x86/entry/common.c:50
-   do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
-   entry_SYSCALL_64_after_hwframe+0x63/0xcd arch/x86/entry/entry_64.S:120
+Since 1518 is a standard Ethernet maximum frame size, and it can
+easily be encountered (in SSH for example), fix this behavior:
 
-  ...
+* Set FTMAC100_MACCR_RX_FTL in the MAC Control Register.
+* Check for packet size > 1518 in ftmac100_rx_packet_error().
 
-  Uninit was stored to memory at:
-   tipc_sub_subscribe+0x42d/0xb50 net/tipc/subscr.c:156
-   tipc_conn_rcv_sub+0x246/0x620 net/tipc/topsrv.c:375
-   tipc_topsrv_kern_subscr+0x2e8/0x400 net/tipc/topsrv.c:579
-   tipc_group_create+0x4e7/0x7d0 net/tipc/group.c:190
-   tipc_sk_join+0x2a8/0x770 net/tipc/socket.c:3084
-   tipc_setsockopt+0xae5/0xe40 net/tipc/socket.c:3201
-   __sys_setsockopt+0x87f/0xdc0 net/socket.c:2252
-   __do_sys_setsockopt net/socket.c:2263
-   __se_sys_setsockopt net/socket.c:2260
-   __x64_sys_setsockopt+0xe0/0x160 net/socket.c:2260
-   do_syscall_x64 arch/x86/entry/common.c:50
-   do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
-   entry_SYSCALL_64_after_hwframe+0x63/0xcd arch/x86/entry/entry_64.S:120
+[1]
+https://bitbucket.org/Kasreyn/mkrom-uc7112lx/src/master/documents/FIC8120_DS_v1.2.pdf
 
-  Local variable sub created at:
-   tipc_topsrv_kern_subscr+0x57/0x400 net/tipc/topsrv.c:562
-   tipc_group_create+0x4e7/0x7d0 net/tipc/group.c:190
-
-  Bytes 84-87 of 88 are uninitialized
-  Memory access of size 88 starts at ffff88801ed57cd0
-  Data copied to user address 0000000020000400
-  ...
-  =====================================================
-
-Signed-off-by: Alexander Potapenko <glider@google.com>
-Fixes: 026321c6d056a5 ("tipc: rename tipc_server to tipc_topsrv")
+Fixes: 8d77c036b57c ("net: add Faraday FTMAC100 10/100 Ethernet driver")
+Signed-off-by: Sergei Antonov <saproj@gmail.com>
 ---
- net/tipc/topsrv.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/tipc/topsrv.c b/net/tipc/topsrv.c
-index 5522865deae95..14fd05fd6107d 100644
---- a/net/tipc/topsrv.c
-+++ b/net/tipc/topsrv.c
-@@ -568,7 +568,7 @@ bool tipc_topsrv_kern_subscr(struct net *net, u32 port, u32 type, u32 lower,
- 	sub.seq.upper = upper;
- 	sub.timeout = TIPC_WAIT_FOREVER;
- 	sub.filter = filter;
--	*(u32 *)&sub.usr_handle = port;
-+	*(u64 *)&sub.usr_handle = (u64)port;
+v1 -> v2:
+* Typos in description fixed.
+
+ drivers/net/ethernet/faraday/ftmac100.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/faraday/ftmac100.c b/drivers/net/ethernet/faraday/ftmac100.c
+index d95d78230828..34d0284079ff 100644
+--- a/drivers/net/ethernet/faraday/ftmac100.c
++++ b/drivers/net/ethernet/faraday/ftmac100.c
+@@ -154,6 +154,7 @@ static void ftmac100_set_mac(struct ftmac100 *priv, const unsigned char *mac)
+ 				 FTMAC100_MACCR_CRC_APD	| \
+ 				 FTMAC100_MACCR_FULLDUP	| \
+ 				 FTMAC100_MACCR_RX_RUNT	| \
++				 FTMAC100_MACCR_RX_FTL	| \
+ 				 FTMAC100_MACCR_RX_BROADPKT)
  
- 	con = tipc_conn_alloc(tipc_topsrv(net));
- 	if (IS_ERR(con))
+ static int ftmac100_start_hw(struct ftmac100 *priv)
+@@ -320,6 +321,7 @@ static bool ftmac100_rx_packet_error(struct ftmac100 *priv,
+ {
+ 	struct net_device *netdev = priv->netdev;
+ 	bool error = false;
++	const unsigned int length = ftmac100_rxdes_frame_length(rxdes);
+ 
+ 	if (unlikely(ftmac100_rxdes_rx_error(rxdes))) {
+ 		if (net_ratelimit())
+@@ -337,9 +339,16 @@ static bool ftmac100_rx_packet_error(struct ftmac100 *priv,
+ 		error = true;
+ 	}
+ 
+-	if (unlikely(ftmac100_rxdes_frame_too_long(rxdes))) {
++	/* The frame-too-long flag 'FTMAC100_RXDES0_FTL' is described in the
++	 * datasheet as: "When set, it indicates that the received packet
++	 * length exceeds 1518 bytes." But testing shows that it is also set
++	 * when packet length is equal to 1518.
++	 * Since 1518 is a standard Ethernet maximum frame size, let it pass
++	 * and only trigger an error when packet length really exceeds it.
++	 */
++	if (unlikely(ftmac100_rxdes_frame_too_long(rxdes) && length > 1518)) {
+ 		if (net_ratelimit())
+-			netdev_info(netdev, "rx frame too long\n");
++			netdev_info(netdev, "rx frame too long (%u)\n", length);
+ 
+ 		netdev->stats.rx_length_errors++;
+ 		error = true;
 -- 
-2.38.0.rc1.362.ged0d419d3c-goog
+2.34.1
 
