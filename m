@@ -2,48 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B5EB5FC1FE
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 10:30:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2712B5FC218
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 10:37:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229665AbiJLI36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 04:29:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51470 "EHLO
+        id S229607AbiJLIhp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 04:37:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbiJLI34 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 04:29:56 -0400
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D8301EC60;
-        Wed, 12 Oct 2022 01:29:55 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1665563393;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=OVdrn/Jn8bciC/DXtG15W5lQxTAJiYriHkBH3410Vo8=;
-        b=PXhUb1I+hoet4Cvu28QFTnN8Hek3irQwmyqbG1kGTwdr2SN7PkjyXCzEik5AZhmUNrC9ub
-        AGQLGtnK28U4JRfzd1MDMlDhaq7Cj7TglabCGF2G502nlUV4jNnHAgAL4V0laKUtd7RJVD
-        l9229ZZaIwm/CmONouNLvzWDlHlMj/A=
-From:   Cai Huoqing <cai.huoqing@linux.dev>
-To:     leonro@nvidia.com
-Cc:     caihuoqing <caihuoqing@baidu.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Qiao Ma <mqaio@linux.alibaba.com>,
-        Zhengchao Shao <shaozhengchao@huawei.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: hinic: Update the range of MTU from 256 to 9600
-Date:   Wed, 12 Oct 2022 16:29:40 +0800
-Message-Id: <20221012082945.10353-1-cai.huoqing@linux.dev>
+        with ESMTP id S229484AbiJLIhn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 04:37:43 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF0F286D1;
+        Wed, 12 Oct 2022 01:37:42 -0700 (PDT)
+Received: from fraeml736-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MnQwP6Xl0z6H74T;
+        Wed, 12 Oct 2022 16:36:05 +0800 (CST)
+Received: from lhrpeml500004.china.huawei.com (7.191.163.9) by
+ fraeml736-chm.china.huawei.com (10.206.15.217) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 12 Oct 2022 10:37:39 +0200
+Received: from [10.122.132.241] (10.122.132.241) by
+ lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 12 Oct 2022 09:37:38 +0100
+Message-ID: <1ba8c972-1b81-dd85-c24b-83525511083e@huawei.com>
+Date:   Wed, 12 Oct 2022 11:37:38 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v7 02/18] landlock: refactor
+ landlock_find_rule/insert_rule
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <hukeping@huawei.com>, <anton.sirazetdinov@huawei.com>
+References: <20220829170401.834298-1-konstantin.meskhidze@huawei.com>
+ <20220829170401.834298-3-konstantin.meskhidze@huawei.com>
+ <431e5311-7072-3a20-af75-d81907b22d61@digikod.net>
+From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+In-Reply-To: <431e5311-7072-3a20-af75-d81907b22d61@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+X-Originating-IP: [10.122.132.241]
+X-ClientProxiedBy: lhrpeml100005.china.huawei.com (7.191.160.25) To
+ lhrpeml500004.china.huawei.com (7.191.163.9)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -51,89 +58,123 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: caihuoqing <caihuoqing@baidu.com>
 
-Hinic hardware only support MTU from 256 to 9600, so set
-the max_mtu and min_mtu.
 
-And not need to add the validity judgment when set mtu,
-because the judgment is made in net/core: dev_validate_mtu
+9/6/2022 11:07 AM, Mickaël Salaün пишет:
+> Good to see such clean commit!
+> 
+> On 29/08/2022 19:03, Konstantin Meskhidze wrote:
+>> Adds a new landlock_key union and landlock_id structure to support
+>> a socket port rule type. Refactors landlock_insert_rule() and
+>> landlock_find_rule() to support coming network modifications.
+> 
+>> This patch also adds is_object_pointer() and get_root() helpers.
+> 
+> Please explain a bit what these helpers do.
+> 
+> 
+>> Now adding or searching a rule in a ruleset depends on a landlock id
+>> argument provided in refactored functions mentioned above.
+> 
+> More explanation:
+> A struct landlock_id identifies a unique entry in a ruleset: either a
+> kernel object (e.g inode) or a typed data (e.g. TCP port). There is one
+> red-black tree per key type.
+> 
+>> 
+>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+> 
+> Because most changes come from
+> https://git.kernel.org/mic/c/8f4104b3dc59e7f110c9b83cdf034d010a2d006f
+> and
+> https://git.kernel.org/mic/c/7d6cf40a6f81adf607ad3cc17aaa11e256beeea4
+> you can append
+> Co-developed-by: Mickaël Salaün <mic@digikod.net>
 
-Signed-off-by: caihuoqing <caihuoqing@baidu.com>
----
- drivers/net/ethernet/huawei/hinic/hinic_dev.h  |  3 +++
- drivers/net/ethernet/huawei/hinic/hinic_main.c |  3 ++-
- drivers/net/ethernet/huawei/hinic/hinic_port.c | 17 +----------------
- 3 files changed, 6 insertions(+), 17 deletions(-)
+   Do I need to add Co-developed-by: Mickaël Salaün <mic@digikod.net>
+   and Signed-off-by: Mickaël Salaün <mic@digikod.net> or just
+   Co-developed-by: Mickaël Salaün <mic@digikod.net> ????
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_dev.h b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
-index a4fbf44f944c..2bbc94c0a9c1 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_dev.h
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
-@@ -22,6 +22,9 @@
- 
- #define LP_PKT_CNT		64
- 
-+#define HINIC_MAX_MTU_SIZE		9600
-+#define HINIC_MIN_MTU_SIZE		256
-+
- enum hinic_flags {
- 	HINIC_LINK_UP = BIT(0),
- 	HINIC_INTF_UP = BIT(1),
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-index c23ee2ddbce3..41e52f775aae 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-@@ -1189,7 +1189,8 @@ static int nic_dev_init(struct pci_dev *pdev)
- 	else
- 		netdev->netdev_ops = &hinicvf_netdev_ops;
- 
--	netdev->max_mtu = ETH_MAX_MTU;
-+	netdev->max_mtu = HINIC_MAX_MTU_SIZE;
-+	netdev->min_mtu = HINIC_MIN_MTU_SIZE;
- 
- 	nic_dev = netdev_priv(netdev);
- 	nic_dev->netdev = netdev;
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.c b/drivers/net/ethernet/huawei/hinic/hinic_port.c
-index 28ae6f1201a8..0a39c3dffa9a 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_port.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_port.c
-@@ -17,9 +17,6 @@
- #include "hinic_port.h"
- #include "hinic_dev.h"
- 
--#define HINIC_MIN_MTU_SIZE              256
--#define HINIC_MAX_JUMBO_FRAME_SIZE      15872
--
- enum mac_op {
- 	MAC_DEL,
- 	MAC_SET,
-@@ -147,24 +144,12 @@ int hinic_port_get_mac(struct hinic_dev *nic_dev, u8 *addr)
-  **/
- int hinic_port_set_mtu(struct hinic_dev *nic_dev, int new_mtu)
- {
--	struct net_device *netdev = nic_dev->netdev;
- 	struct hinic_hwdev *hwdev = nic_dev->hwdev;
- 	struct hinic_port_mtu_cmd port_mtu_cmd;
- 	struct hinic_hwif *hwif = hwdev->hwif;
- 	u16 out_size = sizeof(port_mtu_cmd);
- 	struct pci_dev *pdev = hwif->pdev;
--	int err, max_frame;
--
--	if (new_mtu < HINIC_MIN_MTU_SIZE) {
--		netif_err(nic_dev, drv, netdev, "mtu < MIN MTU size");
--		return -EINVAL;
--	}
--
--	max_frame = new_mtu + ETH_HLEN + ETH_FCS_LEN;
--	if (max_frame > HINIC_MAX_JUMBO_FRAME_SIZE) {
--		netif_err(nic_dev, drv, netdev, "mtu > MAX MTU size");
--		return -EINVAL;
--	}
-+	int err;
- 
- 	port_mtu_cmd.func_idx = HINIC_HWIF_FUNC_IDX(hwif);
- 	port_mtu_cmd.mtu = new_mtu;
--- 
-2.25.1
+   Cause Submiting patches article says:
+   https://www.kernel.org/doc/html/latest/process/submitting-patches.html
 
+   "...Since Co-developed-by: denotes authorship, every Co-developed-by: 
+must be immediately followed by a Signed-off-by: of the associated 
+co-author...."
+
+   Is this correct signing for this patch:
+
+   Co-developed-by: Mickaël Salaün <mic@digikod.net>
+   Signed-off-by: Mickaël Salaün <mic@digikod.net>
+   Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+> 
+>> ---
+>> 
+>> Changes since v6:
+>> * Adds union landlock_key, enum landlock_key_type, and struct
+>>    landlock_id.
+>> * Refactors ruleset functions and improves switch/cases: create_rule(),
+>>    insert_rule(), get_root(), is_object_pointer(), free_rule(),
+>>    landlock_find_rule().
+>> * Refactors landlock_append_fs_rule() functions to support new
+>>    landlock_id type.
+>> 
+>> Changes since v5:
+>> * Formats code with clang-format-14.
+>> 
+>> Changes since v4:
+>> * Refactors insert_rule() and create_rule() functions by deleting
+>> rule_type from their arguments list, it helps to reduce useless code.
+>> 
+>> Changes since v3:
+>> * Splits commit.
+>> * Refactors landlock_insert_rule and landlock_find_rule functions.
+>> * Rename new_ruleset->root_inode.
+>> 
+>> ---
+>>   security/landlock/fs.c      |  21 ++++--
+>>   security/landlock/ruleset.c | 146 +++++++++++++++++++++++++-----------
+>>   security/landlock/ruleset.h |  51 ++++++++++---
+>>   3 files changed, 156 insertions(+), 62 deletions(-)
+> 
+> [...]
+> 
+>> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
+>> index 647d44284080..bb1408cc8dd2 100644
+>> --- a/security/landlock/ruleset.h
+>> +++ b/security/landlock/ruleset.h
+>> @@ -49,6 +49,33 @@ struct landlock_layer {
+>>   	access_mask_t access;
+>>   };
+>> 
+>> +/**
+>> + * union landlock_key - Key of a ruleset's red-black tree
+>> + */
+>> +union landlock_key {
+>> +	struct landlock_object *object;
+>> +	uintptr_t data;
+>> +};
+>> +
+>> +/**
+>> + * enum landlock_key_type - Type of &union landlock_key
+>> + */
+>> +enum landlock_key_type {
+>> +	/**
+>> +	 * @LANDLOCK_KEY_INODE: Type of &landlock_ruleset.root_inode's node
+>> +	 * keys.
+>> +	 */
+>> +	LANDLOCK_KEY_INODE = 1,
+>> +};
+>> +
+>> +/**
+>> + * struct landlock_id - Unique rule identifier for a ruleset
+>> + */
+>> +struct landlock_id {
+>> +	union landlock_key key;
+>> +	const enum landlock_key_type type;
+>> +};
+> 
+> You can add these new types to Documentation/security/landlock.rst (with
+> this commit). You need to complete all the new field descriptions though
+> (otherwise you'll get Sphinx warnings): object, data, key, type.
+> .
