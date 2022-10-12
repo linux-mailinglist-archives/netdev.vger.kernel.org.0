@@ -2,116 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DF105FC2F2
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 11:19:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF92C5FC2F6
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 11:20:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229948AbiJLJTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 05:19:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41456 "EHLO
+        id S229798AbiJLJUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 05:20:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230001AbiJLJT0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 05:19:26 -0400
-X-Greylist: delayed 437 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 12 Oct 2022 02:19:20 PDT
-Received: from proxima.lasnet.de (proxima.lasnet.de [78.47.171.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED70BD070;
-        Wed, 12 Oct 2022 02:19:19 -0700 (PDT)
-Received: from [IPV6:2003:e9:d70e:f1c1:fef2:18a8:26e3:47fd] (p200300e9d70ef1c1fef218a826e347fd.dip0.t-ipconnect.de [IPv6:2003:e9:d70e:f1c1:fef2:18a8:26e3:47fd])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 60649C00BF;
-        Wed, 12 Oct 2022 11:11:58 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1665565919;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eZtg5Y3YtjLfjZ4AiTBdcZo4Fd7NX7MVDXLwGnUiQ7Q=;
-        b=R3ttwxL9bRyb4vppo/ti1r3DgUf0lKIstR2BJ2kgWJyC2GrRAKK0BjfVkPOrl7ZbDkjJZb
-        hq9g2ubZUQnl+YMJDiSbmzM3zfTnxVdFLRHWi5gWrf1+EvRG9Ymck5ESr2BIZMx+qvkfOI
-        UQgPt1HWgve8lKY/3h6RAbAosTWDXdgAFFPry1XeytBpzs/efXMsngqQBwvQDtqLZ1IKK/
-        i3Ksf/9wVMCl1f0ayQYHe1QHu0FsTwBHUUkMsdmozinVjrZDRitLRMlfjhapzXkME9zIi+
-        meOc22QFEkVXPpXVwy45wgreNXJ85NIx+gnqQrVC/EA3a/BxKaXh/faBZ0QB5A==
-Message-ID: <20f6407e-aecc-cd84-f57c-8f4f477630ab@datenfreihafen.org>
-Date:   Wed, 12 Oct 2022 11:11:58 +0200
+        with ESMTP id S229950AbiJLJTx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 05:19:53 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89339FAD4;
+        Wed, 12 Oct 2022 02:19:52 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id g27so23614157edf.11;
+        Wed, 12 Oct 2022 02:19:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=pNSFAr2MGivBSLtf3MfcdCBQLmBdDr3TEf3ZiaGN4R8=;
+        b=FDD9yc6U8Q8r+i6GYJu0VNwuSvFNAx40cBnTrpkBokdJzW31FSIB9lA0QnpQAgLOjo
+         PKVXCCexLKAo8i2FAfU9IsiFRsUQxOMdOtHZbW5L9MpfpwfTFGjiZaF4jF0zZQbUTARs
+         zel/hmruMzT9kykHnTY2ItDib7T07yeZzsZvJZ/Is3J8jI044GBbLKdVxxGfm88IDsUk
+         33YTKntHYXEf7t2y8uP5s8RBD7gCeQ8CpPg3EcbTYu/QJconcAE8+QvBqOITjb4TqEjx
+         Ju86wNLPdYTqHaRGmFq7r6YbIt01PxHEEiwve2KLNzv0TjsnV/WdZX7H4vna6WgOkYKl
+         91Og==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pNSFAr2MGivBSLtf3MfcdCBQLmBdDr3TEf3ZiaGN4R8=;
+        b=Y5krs3gH4LstW35fFmtep+krlziDGaRKGYnnqCVNfC+2uio9hAjwiSd8BK8MAluNV9
+         DbqRtUP8z4qm9b/eCfsprJtVJAp0Y1ZMFKMAnrpDywh08xKwXZ+7TJBsdFiE873TTJJV
+         DrTjQ9HVSZ2xieo7eKzcNwmeThoGhSjvJrBjyo7AG8ZeAEN9nytPrd3Ua+VkvKiCq/Ef
+         ja5jhecoQV4ea/LEmNh7+nfbt6MrX0ymQV4YmDMrDJjEn+U1W9jOR2OlPchZWQ8fQAIM
+         F9CdGA4LmCy33c6br3zqOsFkiDUZymvFFTCbymcQChFSmOXSkaFWMoESj/1jsLrdpeCP
+         6UEQ==
+X-Gm-Message-State: ACrzQf3wINowk3MOWA24uTQNM4qeK5BdehR3kZ5KRuNdHr3IM19i0Fs0
+        eagIUWm+T8BFIF+YARqaBbd0/AN6fQ7QIw==
+X-Google-Smtp-Source: AMsMyM6bJSXO/d+EGXaKgWOUcUspbuz5Nz7fsjKtFF77ct5LATs5R5VsXUE1F00KHnOEfyVmIsI6Mw==
+X-Received: by 2002:a05:6402:1909:b0:459:d0b8:1606 with SMTP id e9-20020a056402190900b00459d0b81606mr26027648edz.313.1665566390977;
+        Wed, 12 Oct 2022 02:19:50 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id d41-20020a056402402900b0045bef7cf489sm7093029eda.89.2022.10.12.02.19.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Oct 2022 02:19:50 -0700 (PDT)
+Date:   Wed, 12 Oct 2022 12:19:47 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, Lee Jones <lee@kernel.org>
+Subject: Re: [RFC v4 net-next 03/17] net: mscc: ocelot: expose stats layout
+ definition to be used by other drivers
+Message-ID: <20221012091947.tdiglhtzy5cvfmpe@skbuf>
+References: <20221008185152.2411007-1-colin.foster@in-advantage.com>
+ <20221008185152.2411007-4-colin.foster@in-advantage.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH linux-next] ieee802154: cc2520: remove the unneeded result
- variable
-Content-Language: en-US
-To:     cgel.zte@gmail.com, varkabhadram@gmail.com
-Cc:     alex.aring@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xu Panda <xu.panda@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
-References: <20220912072041.16873-1-xu.panda@zte.com.cn>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <20220912072041.16873-1-xu.panda@zte.com.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221008185152.2411007-4-colin.foster@in-advantage.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
-
-On 12.09.22 09:20, cgel.zte@gmail.com wrote:
-> From: Xu Panda <xu.panda@zte.com.cn>
+On Sat, Oct 08, 2022 at 11:51:38AM -0700, Colin Foster wrote:
+> The ocelot_stats_layout array is common between several different chips,
+> some of which can only be controlled externally. Export this structure so
+> it doesn't have to be duplicated in these other drivers.
 > 
-> Return the value cc2520_write_register() directly instead of storing it in
-> another redundant variable.
+> Rename the structure as well, to follow the conventions of other shared
+> resources.
 > 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Xu Panda <xu.panda@zte.com.cn>
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
 > ---
->   drivers/net/ieee802154/cc2520.c | 7 ++-----
->   1 file changed, 2 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/net/ieee802154/cc2520.c b/drivers/net/ieee802154/cc2520.c
-> index c69b87d3837d..abe331c795df 100644
-> --- a/drivers/net/ieee802154/cc2520.c
-> +++ b/drivers/net/ieee802154/cc2520.c
-> @@ -632,7 +632,6 @@ static int
->   cc2520_set_channel(struct ieee802154_hw *hw, u8 page, u8 channel)
->   {
->          struct cc2520_private *priv = hw->priv;
-> -       int ret;
-> 
->          dev_dbg(&priv->spi->dev, "trying to set channel\n");
-> 
-> @@ -640,10 +639,8 @@ cc2520_set_channel(struct ieee802154_hw *hw, u8 page, u8 channel)
->          WARN_ON(channel < CC2520_MINCHANNEL);
->          WARN_ON(channel > CC2520_MAXCHANNEL);
-> 
-> -       ret = cc2520_write_register(priv, CC2520_FREQCTRL,
-> -                                   11 + 5 * (channel - 11));
-> -
-> -       return ret;
-> +       return cc2520_write_register(priv, CC2520_FREQCTRL,
-> +                                    11 + 5 * (channel - 11));
->   }
-> 
->   static int
 
-The patch itself looks good, but it does not apply here:
+I see that ocelot->stats_layout has become a redundant indirection.
+It no longer contains anything hardware-specific. The register offsets
+are now part of the switch-specific sys_regmap.
 
-[stefan@localhost wpan-next]$ git am -s 
-linux-next-ieee802154-cc2520-remove-the-unneeded-result-variable.patch
-Applying: ieee802154: cc2520: remove the unneeded result variable
-error: patch failed: drivers/net/ieee802154/cc2520.c:632
-error: drivers/net/ieee802154/cc2520.c: patch does not apply
-Patch failed at 0001 ieee802154: cc2520: remove the unneeded result variable
-
-Against which tree did you make this patch? Could you please rebase 
-against latest net-next or wpan-next?
-
-regards
-Stefan Schmidt
+Could you please refactor the code to use a single static const struct
+ocelot_stats_layout in ocelot_stats.c, and remove felix->info->stats_layout
+and ocelot->stats_layout?
