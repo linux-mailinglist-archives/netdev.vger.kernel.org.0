@@ -2,247 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 837385FCB37
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 21:00:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E69355FCB51
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 21:11:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229545AbiJLTAA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 15:00:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48792 "EHLO
+        id S229777AbiJLTK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 15:10:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229591AbiJLS75 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 14:59:57 -0400
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D928C6440
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 11:59:55 -0700 (PDT)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-360871745b0so103964987b3.3
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 11:59:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=CITEcy3H9RvWfgD6/tq34bn3UFkan53XGYeqNtVspRw=;
-        b=P/Ng3C3+UN5W5glGaP6oXhfEttj7Fw1Jklmfv+mc+MwuDhGra2RqWeKkX0so0zMuEI
-         biiCxYgVe3munH+k2ynaBQ7KgfkzB4ghjFvN9/Q/1w5+o6DgFk82jNTsqrGnfGFVaf09
-         sRMJCweaIecezbOAxTJnAFudJvKsUjWiy3uAwUHz95mXgXF05XQZeC9YbJGVl4/34vw/
-         iQDs7sv14DLUE9HcrH87SosU9wbPw/MWakipAHCJ4kdYQflNtfaVe9l5MlKiZSk1Myzg
-         iOkyvZYZa8uOfDwmhMCqZf/n7tOiQDgQ4p6B634ZZL9AGeDk+i+Zy+tiqooIvD1N5DqB
-         5z/A==
+        with ESMTP id S229502AbiJLTK4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 15:10:56 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3A06CD5EE
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 12:10:54 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id i4-20020a056e02152400b002fa876e95b3so14028687ilu.17
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 12:10:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=CITEcy3H9RvWfgD6/tq34bn3UFkan53XGYeqNtVspRw=;
-        b=1/4vbdKNlxtoNY8KBRm2rAljaLV3wrC9cBqJMYC0PXo/IPrnKkTVop9icP0azo4cuw
-         zNIqvu08AMJPOCJOH4KRqFAvaElrBrJJetYtOnbhtFDGRgl877O5pq4iTzPQJ92t+62D
-         1Y3HHn9B8J8QsCuJAbwC6oxectjREeTCJCygZ16hbWp9iSu21OstI4Kfh2mUTTKeUyMP
-         5GT7G9F3qnGtnCzso+7NM/YiYUtCBL2HJpQIg1EscYln5Mz4mJ4Mi+NgO9eKATlBCge5
-         xuTgF5LopCAGHdhMNz/L/yKQZcUWnWRpnH9pvV5jLyE8FhB3O00wvNjxGe7tisJIS59V
-         c82Q==
-X-Gm-Message-State: ACrzQf0Iqxn20c1dr65OWSP5gkU3z+K/iQIctupu68Kbb/CSAqP7XNKx
-        EIREDg0lyccnFbkvvjT5gl/8nZrxnAxSzjUDQXYFiA==
-X-Google-Smtp-Source: AMsMyM65MA/tfAyuQ+LxJ6Kh1NrTyfl/ofknbUTC7dcAJw/QwuyrQf5rTrvWs9UtqjTFPaQc2gDKrvgXpPZWFWWdzHk=
-X-Received: by 2002:a81:48d6:0:b0:355:8d0a:d8a1 with SMTP id
- v205-20020a8148d6000000b003558d0ad8a1mr27180226ywa.467.1665601194844; Wed, 12
- Oct 2022 11:59:54 -0700 (PDT)
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=t8nF4IQtb58XajClhN/mJflKMS7BVWwTL21p2c0pUdE=;
+        b=vSZoNhmgT5E3vgYzyEs4fiDnVdNDRkz9V0bn0Dv6uGAEVEj0SxB/gC+01AsqT5BsnY
+         DFXn1GKVA+zrW4wq7mb4/LxqapBZsowostY03RFKD+6v97OzV7PaHmvZazsFhZijCk86
+         eC1OKQ+AMMbKpJ19rQevMI/RbNrcCntAordEs4j/DkVs6tZnpiQN7B5wGiivD94CYu/M
+         QzB9vsunOGalqnGQxRNz4rlRtVnE57uew7dAuNtpCMGV9uMYofY9FzhF5XmxUrx3y61E
+         fCO8VC4buQo/GKtAzVogVpLC8R65G0rdJ2DGszz802OL4vOpYMTxLJd0XJ7womfPGXYt
+         071g==
+X-Gm-Message-State: ACrzQf2MHbYsS7aqMBsZlGKe3g5W9dGZ1RLgVDRblFjO0hPC9WhVVyFM
+        uRzRbThndHFFnKoHxj6rVEapV8eYfT2BB5LWaDS+Q7qXX4vf
+X-Google-Smtp-Source: AMsMyM769wpn0lgVxSpHUE8r7EbiB7B0ALKp6b6ZDTt0s75rSoUraJvBc3vF/4gqzjhy6gQZ1/K6MtPnwGw9ZMbA1m6J1v6HB9rN
 MIME-Version: 1.0
-References: <20221012185243.88948-1-kuniyu@amazon.com>
-In-Reply-To: <20221012185243.88948-1-kuniyu@amazon.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 12 Oct 2022 11:59:43 -0700
-Message-ID: <CANn89iJn-T_rKg67h6deW0Oyh=X4kWXVBrtvUJU+VpDTfpde0w@mail.gmail.com>
-Subject: Re: [PATCH v2 net] udp: Update reuse->has_conns under reuseport_lock.
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Martin KaFai Lau <martin.lau@kernel.org>,
-        Craig Gallek <kraig@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org
+X-Received: by 2002:a05:6638:2589:b0:363:bc7a:19eb with SMTP id
+ s9-20020a056638258900b00363bc7a19ebmr8309629jat.80.1665601853939; Wed, 12 Oct
+ 2022 12:10:53 -0700 (PDT)
+Date:   Wed, 12 Oct 2022 12:10:53 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d7639205eadb267a@google.com>
+Subject: [syzbot] KMSAN: uninit-value in hsr_fill_frame_info (2)
+From:   syzbot <syzbot+b11c500e990cac6ba129@syzkaller.appspotmail.com>
+To:     claudiajkang@gmail.com, davem@davemloft.net,
+        ennoerlangen@gmail.com, george.mccollister@gmail.com,
+        glider@google.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 12, 2022 at 11:53 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
->
-> When we call connect() for a UDP socket in a reuseport group, we have
-> to update sk->sk_reuseport_cb->has_conns to 1.  Otherwise, the kernel
-> could select a unconnected socket wrongly for packets sent to the
-> connected socket.
->
-> However, the current way to set has_conns is illegal and possible to
-> trigger that problem.  reuseport_has_conns() changes has_conns under
-> rcu_read_lock(), which upgrades the RCU reader to the updater.  Then,
-> it must do the update under the updater's lock, reuseport_lock, but
-> it doesn't for now.
->
-> For this reason, there is a race below where we fail to set has_conns
-> resulting in the wrong socket selection.  To avoid the race, let's split
-> the reader and updater with proper locking.
->
->  cpu1                               cpu2
-> +----+                             +----+
->
-> __ip[46]_datagram_connect()        reuseport_grow()
-> .                                  .
-> |- reuseport_has_conns(sk, true)   |- more_reuse = __reuseport_alloc(more_socks_size)
-> |  .                               |
-> |  |- rcu_read_lock()
-> |  |- reuse = rcu_dereference(sk->sk_reuseport_cb)
-> |  |
-> |  |                               |  /* reuse->has_conns == 0 here */
-> |  |                               |- more_reuse->has_conns = reuse->has_conns
-> |  |- reuse->has_conns = 1         |  /* more_reuse->has_conns SHOULD BE 1 HERE */
-> |  |                               |
-> |  |                               |- rcu_assign_pointer(reuse->socks[i]->sk_reuseport_cb,
-> |  |                               |                     more_reuse)
-> |  `- rcu_read_unlock()            `- kfree_rcu(reuse, rcu)
-> |
-> |- sk->sk_state = TCP_ESTABLISHED
->
-> Fixes: acdcecc61285 ("udp: correct reuseport selection with connected sockets")
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> ---
-> v2:
->   * Fix build failure for CONFIG_IPV6=m
->   * Drop SO_INCOMING_CPU fix, which will be sent for net-next
->     after the v6.1 merge window
->
-> v1: https://lore.kernel.org/netdev/20221010174351.11024-1-kuniyu@amazon.com/
-> ---
->  include/net/sock_reuseport.h | 11 +++++------
->  net/core/sock_reuseport.c    | 15 +++++++++++++++
->  net/ipv4/datagram.c          |  2 +-
->  net/ipv4/udp.c               |  2 +-
->  net/ipv6/datagram.c          |  2 +-
->  net/ipv6/udp.c               |  2 +-
->  6 files changed, 24 insertions(+), 10 deletions(-)
->
-> diff --git a/include/net/sock_reuseport.h b/include/net/sock_reuseport.h
-> index 473b0b0fa4ab..efc9085c6892 100644
-> --- a/include/net/sock_reuseport.h
-> +++ b/include/net/sock_reuseport.h
-> @@ -43,21 +43,20 @@ struct sock *reuseport_migrate_sock(struct sock *sk,
->  extern int reuseport_attach_prog(struct sock *sk, struct bpf_prog *prog);
->  extern int reuseport_detach_prog(struct sock *sk);
->
-> -static inline bool reuseport_has_conns(struct sock *sk, bool set)
-> +static inline bool reuseport_has_conns(struct sock *sk)
->  {
->         struct sock_reuseport *reuse;
->         bool ret = false;
->
->         rcu_read_lock();
->         reuse = rcu_dereference(sk->sk_reuseport_cb);
-> -       if (reuse) {
-> -               if (set)
-> -                       reuse->has_conns = 1;
-> -               ret = reuse->has_conns;
-> -       }
-> +       if (reuse && reuse->has_conns)
-> +               ret = true;
->         rcu_read_unlock();
->
->         return ret;
->  }
->
-> +void reuseport_has_conns_set(struct sock *sk);
-> +
->  #endif  /* _SOCK_REUSEPORT_H */
-> diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
-> index 5daa1fa54249..abb414ed4aa7 100644
-> --- a/net/core/sock_reuseport.c
-> +++ b/net/core/sock_reuseport.c
-> @@ -21,6 +21,21 @@ static DEFINE_IDA(reuseport_ida);
->  static int reuseport_resurrect(struct sock *sk, struct sock_reuseport *old_reuse,
->                                struct sock_reuseport *reuse, bool bind_inany);
->
-> +void reuseport_has_conns_set(struct sock *sk)
-> +{
-> +       struct sock_reuseport *reuse;
-> +
-> +       if (!rcu_access_pointer(sk->sk_reuseport_cb))
-> +               return;
-> +
-> +       spin_lock(&reuseport_lock);
-> +       reuse = rcu_dereference_protected(sk->sk_reuseport_cb,
-> +                                         lockdep_is_held(&reuseport_lock));
+Hello,
 
-Could @reuse be NULL at this point ?
+syzbot found the following issue on:
 
-Previous  test was performed without reuseport_lock being held.
+HEAD commit:    d6e2c8c7eb40 x86: kmsan: enable KMSAN builds for x86
+git tree:       https://github.com/google/kmsan.git master
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=143fe3c6f00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=65d9eb7bfd2865c9
+dashboard link: https://syzkaller.appspot.com/bug?extid=b11c500e990cac6ba129
+compiler:       clang version 14.0.0 (/usr/local/google/src/llvm-git-monorepo 2b554920f11c8b763cd9ed9003f4e19b919b8e1f), GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1257629ef00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17959c21f00000
 
-> +       reuse->has_conns = 1;
-> +       spin_unlock(&reuseport_lock);
-> +}
-> +EXPORT_SYMBOL(reuseport_has_conns_set);
-> +
->  static int reuseport_sock_index(struct sock *sk,
->                                 const struct sock_reuseport *reuse,
->                                 bool closed)
-> diff --git a/net/ipv4/datagram.c b/net/ipv4/datagram.c
-> index 405a8c2aea64..5e66add7befa 100644
-> --- a/net/ipv4/datagram.c
-> +++ b/net/ipv4/datagram.c
-> @@ -70,7 +70,7 @@ int __ip4_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len
->         }
->         inet->inet_daddr = fl4->daddr;
->         inet->inet_dport = usin->sin_port;
-> -       reuseport_has_conns(sk, true);
-> +       reuseport_has_conns_set(sk);
->         sk->sk_state = TCP_ESTABLISHED;
->         sk_set_txhash(sk);
->         inet->inet_id = prandom_u32();
-> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-> index d63118ce5900..29228231b058 100644
-> --- a/net/ipv4/udp.c
-> +++ b/net/ipv4/udp.c
-> @@ -448,7 +448,7 @@ static struct sock *udp4_lib_lookup2(struct net *net,
->                         result = lookup_reuseport(net, sk, skb,
->                                                   saddr, sport, daddr, hnum);
->                         /* Fall back to scoring if group has connections */
-> -                       if (result && !reuseport_has_conns(sk, false))
-> +                       if (result && !reuseport_has_conns(sk))
->                                 return result;
->
->                         result = result ? : sk;
-> diff --git a/net/ipv6/datagram.c b/net/ipv6/datagram.c
-> index df665d4e8f0f..5ecb56522f9d 100644
-> --- a/net/ipv6/datagram.c
-> +++ b/net/ipv6/datagram.c
-> @@ -256,7 +256,7 @@ int __ip6_datagram_connect(struct sock *sk, struct sockaddr *uaddr,
->                 goto out;
->         }
->
-> -       reuseport_has_conns(sk, true);
-> +       reuseport_has_conns_set(sk);
->         sk->sk_state = TCP_ESTABLISHED;
->         sk_set_txhash(sk);
->  out:
-> diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-> index 91e795bb9ade..56e4523a3004 100644
-> --- a/net/ipv6/udp.c
-> +++ b/net/ipv6/udp.c
-> @@ -182,7 +182,7 @@ static struct sock *udp6_lib_lookup2(struct net *net,
->                         result = lookup_reuseport(net, sk, skb,
->                                                   saddr, sport, daddr, hnum);
->                         /* Fall back to scoring if group has connections */
-> -                       if (result && !reuseport_has_conns(sk, false))
-> +                       if (result && !reuseport_has_conns(sk))
->                                 return result;
->
->                         result = result ? : sk;
-> --
-> 2.30.2
->
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+b11c500e990cac6ba129@syzkaller.appspotmail.com
+
+hsr0: VLAN not yet supported
+=====================================================
+BUG: KMSAN: uninit-value in hsr_fill_frame_info+0x495/0x770 net/hsr/hsr_forward.c:526
+ hsr_fill_frame_info+0x495/0x770 net/hsr/hsr_forward.c:526
+ fill_frame_info net/hsr/hsr_forward.c:605 [inline]
+ hsr_forward_skb+0x7c4/0x3630 net/hsr/hsr_forward.c:619
+ hsr_dev_xmit+0x23a/0x530 net/hsr/hsr_device.c:222
+ __netdev_start_xmit include/linux/netdevice.h:4778 [inline]
+ netdev_start_xmit include/linux/netdevice.h:4792 [inline]
+ xmit_one+0x2f4/0x840 net/core/dev.c:3532
+ dev_hard_start_xmit+0x186/0x440 net/core/dev.c:3548
+ __dev_queue_xmit+0x22ee/0x3500 net/core/dev.c:4176
+ dev_queue_xmit+0x4b/0x60 net/core/dev.c:4209
+ packet_snd net/packet/af_packet.c:3063 [inline]
+ packet_sendmsg+0x6671/0x7d60 net/packet/af_packet.c:3094
+ sock_sendmsg_nosec net/socket.c:705 [inline]
+ sock_sendmsg net/socket.c:725 [inline]
+ __sys_sendto+0x9ef/0xc70 net/socket.c:2040
+ __do_sys_sendto net/socket.c:2052 [inline]
+ __se_sys_sendto net/socket.c:2048 [inline]
+ __x64_sys_sendto+0x19c/0x210 net/socket.c:2048
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x51/0xa0 arch/x86/entry/common.c:81
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Uninit was created at:
+ slab_post_alloc_hook mm/slab.h:754 [inline]
+ slab_alloc_node mm/slub.c:3231 [inline]
+ __kmalloc_node_track_caller+0xde3/0x14f0 mm/slub.c:4962
+ kmalloc_reserve net/core/skbuff.c:354 [inline]
+ __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
+ alloc_skb include/linux/skbuff.h:1300 [inline]
+ alloc_skb_with_frags+0x1df/0xd60 net/core/skbuff.c:5995
+ sock_alloc_send_pskb+0xdf4/0xfc0 net/core/sock.c:2600
+ packet_alloc_skb net/packet/af_packet.c:2911 [inline]
+ packet_snd net/packet/af_packet.c:3006 [inline]
+ packet_sendmsg+0x506f/0x7d60 net/packet/af_packet.c:3094
+ sock_sendmsg_nosec net/socket.c:705 [inline]
+ sock_sendmsg net/socket.c:725 [inline]
+ __sys_sendto+0x9ef/0xc70 net/socket.c:2040
+ __do_sys_sendto net/socket.c:2052 [inline]
+ __se_sys_sendto net/socket.c:2048 [inline]
+ __x64_sys_sendto+0x19c/0x210 net/socket.c:2048
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x51/0xa0 arch/x86/entry/common.c:81
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+CPU: 1 PID: 3506 Comm: syz-executor134 Not tainted 5.18.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+=====================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
