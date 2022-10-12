@@ -2,152 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A1025FC3C7
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 12:32:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF08D5FC3D2
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 12:36:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229614AbiJLKcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 06:32:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38370 "EHLO
+        id S229689AbiJLKgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 06:36:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229567AbiJLKcV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 06:32:21 -0400
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57D941004B;
-        Wed, 12 Oct 2022 03:32:20 -0700 (PDT)
-Date:   Wed, 12 Oct 2022 18:32:10 +0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1665570738;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MQ9rZIoWXU894RalXxEe5qRg+Q/4BMs+ckCLyACwqOc=;
-        b=HhLjQvNj0O28zE8xYD2rlR8EMG26cveb3UZCdyMn2TUuJojfWGYnfO806MEf+FjRjUglys
-        WeN/vhNZ0kWD/NVrrU0UXnr964IBJb/PrNKY66NzhiNwLsTOZ6Vx7Jkzo9cmGMt8xbihJm
-        74CTovCE836uptkvtyihc3PpQAN7Ox4=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Cai Huoqing <cai.huoqing@linux.dev>
-To:     shaozhengchao <shaozhengchao@huawei.com>
-Cc:     leonro@nvidia.com, caihuoqing <caihuoqing@baidu.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Qiao Ma <mqaio@linux.alibaba.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: hinic: Update the range of MTU from 256 to 9600
-Message-ID: <20221012103210.GA3055@chq-T47>
-References: <20221012082945.10353-1-cai.huoqing@linux.dev>
- <15f63fd8-0f0e-26bc-c74e-fc7666c6ff88@huawei.com>
+        with ESMTP id S229436AbiJLKf7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 06:35:59 -0400
+Received: from smtpbgjp3.qq.com (smtpbgjp3.qq.com [54.92.39.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB2153D0C
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 03:35:57 -0700 (PDT)
+X-QQ-mid: bizesmtp64t1665570953tmkeypje
+Received: from wxdbg.localdomain.com ( [183.129.236.74])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 12 Oct 2022 18:35:43 +0800 (CST)
+X-QQ-SSF: 01400000000000H0U000B00A0000000
+X-QQ-FEAT: PS/N6jJLnDZDVMly9xJaXrKEKSPe/gA0lgpJ2s3tO+j3KLzJMBv2Hms36SaxQ
+        /qVLPkl4nsCt7BdRh3NnuT36mTk7MMaeMd2ydKjJDl0X2TZEbJsUtpRgMYXA0YX4MUrDmYN
+        gGPu9HU5Y0PXScYCjFOB8i6h0/myEHOuuuZTh5oPu3KvLAw6mE8HUAWtcQcuWsK3VqNT8tp
+        zwaXjCuuAMp7xahVcCoKmAWW4gmKvTAhLQpLPOmpPyDdaidA4/bd3g4+RizRERn9Cd7XZ5F
+        JqJECLe5PoRVd8gdCy8N1skIZlsgNjob8KdFE2mNpaoz+stES45CRlPi1QM+Q4Yqn3RRnOv
+        ILizFNJIezZnuRjJTIcfTkSmee4fMJkKZRyjUGT16l5YLtUQXR4jtMtfY/sog==
+X-QQ-GoodBg: 2
+From:   Jiawen Wu <jiawenwu@trustnetic.com>
+To:     netdev@vger.kernel.org
+Cc:     mengyuanlou@net-swift.com, Jiawen Wu <jiawenwu@trustnetic.com>
+Subject: [PATCH net-next v4 0/3] net: WangXun txgbe ethernet driver
+Date:   Wed, 12 Oct 2022 18:35:30 +0800
+Message-Id: <20221012103533.738954-1-jiawenwu@trustnetic.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <15f63fd8-0f0e-26bc-c74e-fc7666c6ff88@huawei.com>
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:trustnetic.com:qybglogicsvr:qybglogicsvr5
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12 10月 22 17:25:21, shaozhengchao wrote:
-> 
-> 
-> On 2022/10/12 16:29, Cai Huoqing wrote:
-> > From: caihuoqing <caihuoqing@baidu.com>
-> > 
-> > Hinic hardware only support MTU from 256 to 9600, so set
-> > the max_mtu and min_mtu.
-> > 
-> > And not need to add the validity judgment when set mtu,
-> > because the judgment is made in net/core: dev_validate_mtu
-> > 
-> > Signed-off-by: caihuoqing <caihuoqing@baidu.com>
-> > ---
-> >   drivers/net/ethernet/huawei/hinic/hinic_dev.h  |  3 +++
-> >   drivers/net/ethernet/huawei/hinic/hinic_main.c |  3 ++-
-> >   drivers/net/ethernet/huawei/hinic/hinic_port.c | 17 +----------------
-> >   3 files changed, 6 insertions(+), 17 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/huawei/hinic/hinic_dev.h b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
-> > index a4fbf44f944c..2bbc94c0a9c1 100644
-> > --- a/drivers/net/ethernet/huawei/hinic/hinic_dev.h
-> > +++ b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
-> > @@ -22,6 +22,9 @@
-> >   #define LP_PKT_CNT		64
-> > +#define HINIC_MAX_MTU_SIZE		9600
-Hi Shao, thanks for your reply.
+This patch series adds support for WangXun 10 gigabit NIC, to initialize
+hardware, set mac address, and register netdev.
 
-I will change it in patch v2, like
-"#define HINIC_MAX_MTU_SIZE (HINIC_MAX_JUMBO_FRAME_SIZE - ETH_HLEN - ETH_FCS_LEN)"
-to compatible the old firmware (maybe some old cards).
-> > +#define HINIC_MIN_MTU_SIZE		256
-> > +
-> >   enum hinic_flags {
-> >   	HINIC_LINK_UP = BIT(0),
-> >   	HINIC_INTF_UP = BIT(1),
-> > diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-> > index c23ee2ddbce3..41e52f775aae 100644
-> > --- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
-> > +++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-> > @@ -1189,7 +1189,8 @@ static int nic_dev_init(struct pci_dev *pdev)
-> >   	else
-> >   		netdev->netdev_ops = &hinicvf_netdev_ops;
-> > -	netdev->max_mtu = ETH_MAX_MTU;
-> > +	netdev->max_mtu = HINIC_MAX_MTU_SIZE;
-> > +	netdev->min_mtu = HINIC_MIN_MTU_SIZE;
-> >   	nic_dev = netdev_priv(netdev);
-> >   	nic_dev->netdev = netdev;
-> > diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.c b/drivers/net/ethernet/huawei/hinic/hinic_port.c
-> > index 28ae6f1201a8..0a39c3dffa9a 100644
-> > --- a/drivers/net/ethernet/huawei/hinic/hinic_port.c
-> > +++ b/drivers/net/ethernet/huawei/hinic/hinic_port.c
-> > @@ -17,9 +17,6 @@
-> >   #include "hinic_port.h"
-> >   #include "hinic_dev.h"
-> > -#define HINIC_MIN_MTU_SIZE              256
-> > -#define HINIC_MAX_JUMBO_FRAME_SIZE      15872
-> > -
-> >   enum mac_op {
-> >   	MAC_DEL,
-> >   	MAC_SET,
-> > @@ -147,24 +144,12 @@ int hinic_port_get_mac(struct hinic_dev *nic_dev, u8 *addr)
-> >    **/
-> >   int hinic_port_set_mtu(struct hinic_dev *nic_dev, int new_mtu)
-> >   {
-> > -	struct net_device *netdev = nic_dev->netdev;
-> >   	struct hinic_hwdev *hwdev = nic_dev->hwdev;
-> >   	struct hinic_port_mtu_cmd port_mtu_cmd;
-> >   	struct hinic_hwif *hwif = hwdev->hwif;
-> >   	u16 out_size = sizeof(port_mtu_cmd);
-> >   	struct pci_dev *pdev = hwif->pdev;
-> > -	int err, max_frame;
-> > -
-> > -	if (new_mtu < HINIC_MIN_MTU_SIZE) {
-> > -		netif_err(nic_dev, drv, netdev, "mtu < MIN MTU size");
-> > -		return -EINVAL;
-> > -	}
-> > -
-> > -	max_frame = new_mtu + ETH_HLEN + ETH_FCS_LEN;
-> > -	if (max_frame > HINIC_MAX_JUMBO_FRAME_SIZE) {
-> > -		netif_err(nic_dev, drv, netdev, "mtu > MAX MTU size");
-> > -		return -EINVAL;
-> > -	}
-> > +	int err;
-> >   	port_mtu_cmd.func_idx = HINIC_HWIF_FUNC_IDX(hwif);
-> >   	port_mtu_cmd.mtu = new_mtu;
-> 
-> Hi Cai:
-> 	You cannot change the maximum supported jumbo frame size.
-> Because as far as I know, this is not compatible with the older
-> firmware version. If you change the maximum MTU, the maximum length
-> of packets received by the port will be affected with older fw. So
-> donot change it.
-> 
-> Zhengchao Shao
+Change log:
+v4: address comments:
+    Andrew Lunn: https://lore.kernel.org/all/YzXROBtztWopeeaA@lunn.ch/
+v3: address comments:
+    Andrew Lunn: remove hw function ops, reorder functions, use BIT(n)
+                 for register bit offset, move the same code of txgbe
+                 and ngbe to libwx
+v2: address comments:
+    Andrew Lunn: https://lore.kernel.org/netdev/YvRhld5rD%2FxgITEg@lunn.ch/
+
+Jiawen Wu (3):
+  net: txgbe: Store PCI info
+  net: txgbe: Reset hardware
+  net: txgbe: Set MAC address and register netdev
+
+ drivers/net/ethernet/wangxun/Kconfig          |   6 +
+ drivers/net/ethernet/wangxun/Makefile         |   1 +
+ drivers/net/ethernet/wangxun/libwx/Makefile   |   7 +
+ drivers/net/ethernet/wangxun/libwx/wx_hw.c    | 475 ++++++++++++++++++
+ drivers/net/ethernet/wangxun/libwx/wx_hw.h    |  18 +
+ drivers/net/ethernet/wangxun/libwx/wx_type.h  | 239 +++++++++
+ drivers/net/ethernet/wangxun/txgbe/Makefile   |   3 +-
+ drivers/net/ethernet/wangxun/txgbe/txgbe.h    |  22 +-
+ drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c |  99 ++++
+ drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h |   9 +
+ .../net/ethernet/wangxun/txgbe/txgbe_main.c   | 382 +++++++++++++-
+ .../net/ethernet/wangxun/txgbe/txgbe_type.h   |  33 +-
+ 12 files changed, 1275 insertions(+), 19 deletions(-)
+ create mode 100644 drivers/net/ethernet/wangxun/libwx/Makefile
+ create mode 100644 drivers/net/ethernet/wangxun/libwx/wx_hw.c
+ create mode 100644 drivers/net/ethernet/wangxun/libwx/wx_hw.h
+ create mode 100644 drivers/net/ethernet/wangxun/libwx/wx_type.h
+ create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c
+ create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h
+
+-- 
+2.27.0
+
