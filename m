@@ -2,179 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2712B5FC218
-	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 10:37:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 338E45FC233
+	for <lists+netdev@lfdr.de>; Wed, 12 Oct 2022 10:45:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229607AbiJLIhp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 04:37:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38106 "EHLO
+        id S229766AbiJLIpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 04:45:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbiJLIhn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 04:37:43 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF0F286D1;
-        Wed, 12 Oct 2022 01:37:42 -0700 (PDT)
-Received: from fraeml736-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MnQwP6Xl0z6H74T;
-        Wed, 12 Oct 2022 16:36:05 +0800 (CST)
-Received: from lhrpeml500004.china.huawei.com (7.191.163.9) by
- fraeml736-chm.china.huawei.com (10.206.15.217) with Microsoft SMTP Server
+        with ESMTP id S229658AbiJLIpL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 04:45:11 -0400
+Received: from a.mx.secunet.com (unknown [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98F981D655;
+        Wed, 12 Oct 2022 01:44:48 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 7C35E206D8;
+        Wed, 12 Oct 2022 10:44:32 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 6GQRK5oqxZKv; Wed, 12 Oct 2022 10:44:32 +0200 (CEST)
+Received: from mailout2.secunet.com (unknown [62.96.220.49])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 0D21E206D2;
+        Wed, 12 Oct 2022 10:44:32 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout2.secunet.com (Postfix) with ESMTP id F2CFA80004A;
+        Wed, 12 Oct 2022 10:44:16 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 12 Oct 2022 10:37:39 +0200
-Received: from [10.122.132.241] (10.122.132.241) by
- lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 12 Oct 2022 09:37:38 +0100
-Message-ID: <1ba8c972-1b81-dd85-c24b-83525511083e@huawei.com>
-Date:   Wed, 12 Oct 2022 11:37:38 +0300
+ 15.1.2375.31; Wed, 12 Oct 2022 10:44:16 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 12 Oct
+ 2022 10:44:16 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id F1BD431825C1; Wed, 12 Oct 2022 10:44:15 +0200 (CEST)
+Date:   Wed, 12 Oct 2022 10:44:15 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Christian Langrock <christian.langrock@secunet.com>
+CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH ipsec v6] xfrm: replay: Fix ESN wrap around for GSO
+Message-ID: <20221012084415.GQ2950045@gauss3.secunet.de>
+References: <6810817b-e6b7-feac-64f8-c83c517ae9a5@secunet.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v7 02/18] landlock: refactor
- landlock_find_rule/insert_rule
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
-        <hukeping@huawei.com>, <anton.sirazetdinov@huawei.com>
-References: <20220829170401.834298-1-konstantin.meskhidze@huawei.com>
- <20220829170401.834298-3-konstantin.meskhidze@huawei.com>
- <431e5311-7072-3a20-af75-d81907b22d61@digikod.net>
-From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-In-Reply-To: <431e5311-7072-3a20-af75-d81907b22d61@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.122.132.241]
-X-ClientProxiedBy: lhrpeml100005.china.huawei.com (7.191.160.25) To
- lhrpeml500004.china.huawei.com (7.191.163.9)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <6810817b-e6b7-feac-64f8-c83c517ae9a5@secunet.com>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,RDNS_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Oct 07, 2022 at 04:50:15PM +0200, Christian Langrock wrote:
+> When using GSO it can happen that the wrong seq_hi is used for the last
+> packets before the wrap around. This can lead to double usage of a
+> sequence number. To avoid this, we should serialize this last GSO
+> packet.
+> 
+> Fixes: d7dbefc45cf5 ("xfrm: Add xfrm_replay_overflow functions for offloading")
+> Co-developed-by: Steffen Klassert <steffen.klassert@secunet.com>
+> Signed-off-by: Christian Langrock <christian.langrock@secunet.com>
+> ---
+> Changes in v6:
+>  - move overflow check to offloading path to avoid locking issues
+> 
+> Changes in v5:
+>  - Fix build
+> 
+> Changes in v4:
+>  - move changelog within comment
+>  - add reviewer
+> 
+> Changes in v3:
+> - fix build
+> - remove wrapper function
+> 
+> Changes in v2:
+> - switch to bool as return value
+> - remove switch case in wrapper function
+> ---
+>  net/ipv4/esp4_offload.c |  3 +++
+>  net/ipv6/esp6_offload.c |  3 +++
+>  net/xfrm/xfrm_device.c  | 15 ++++++++++++++-
+>  net/xfrm/xfrm_replay.c  |  2 +-
+>  4 files changed, 21 insertions(+), 2 deletions(-)
 
-
-9/6/2022 11:07 AM, Mickaël Salaün пишет:
-> Good to see such clean commit!
-> 
-> On 29/08/2022 19:03, Konstantin Meskhidze wrote:
->> Adds a new landlock_key union and landlock_id structure to support
->> a socket port rule type. Refactors landlock_insert_rule() and
->> landlock_find_rule() to support coming network modifications.
-> 
->> This patch also adds is_object_pointer() and get_root() helpers.
-> 
-> Please explain a bit what these helpers do.
-> 
-> 
->> Now adding or searching a rule in a ruleset depends on a landlock id
->> argument provided in refactored functions mentioned above.
-> 
-> More explanation:
-> A struct landlock_id identifies a unique entry in a ruleset: either a
-> kernel object (e.g inode) or a typed data (e.g. TCP port). There is one
-> red-black tree per key type.
-> 
->> 
->> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-> 
-> Because most changes come from
-> https://git.kernel.org/mic/c/8f4104b3dc59e7f110c9b83cdf034d010a2d006f
-> and
-> https://git.kernel.org/mic/c/7d6cf40a6f81adf607ad3cc17aaa11e256beeea4
-> you can append
-> Co-developed-by: Mickaël Salaün <mic@digikod.net>
-
-   Do I need to add Co-developed-by: Mickaël Salaün <mic@digikod.net>
-   and Signed-off-by: Mickaël Salaün <mic@digikod.net> or just
-   Co-developed-by: Mickaël Salaün <mic@digikod.net> ????
-
-   Cause Submiting patches article says:
-   https://www.kernel.org/doc/html/latest/process/submitting-patches.html
-
-   "...Since Co-developed-by: denotes authorship, every Co-developed-by: 
-must be immediately followed by a Signed-off-by: of the associated 
-co-author...."
-
-   Is this correct signing for this patch:
-
-   Co-developed-by: Mickaël Salaün <mic@digikod.net>
-   Signed-off-by: Mickaël Salaün <mic@digikod.net>
-   Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-> 
->> ---
->> 
->> Changes since v6:
->> * Adds union landlock_key, enum landlock_key_type, and struct
->>    landlock_id.
->> * Refactors ruleset functions and improves switch/cases: create_rule(),
->>    insert_rule(), get_root(), is_object_pointer(), free_rule(),
->>    landlock_find_rule().
->> * Refactors landlock_append_fs_rule() functions to support new
->>    landlock_id type.
->> 
->> Changes since v5:
->> * Formats code with clang-format-14.
->> 
->> Changes since v4:
->> * Refactors insert_rule() and create_rule() functions by deleting
->> rule_type from their arguments list, it helps to reduce useless code.
->> 
->> Changes since v3:
->> * Splits commit.
->> * Refactors landlock_insert_rule and landlock_find_rule functions.
->> * Rename new_ruleset->root_inode.
->> 
->> ---
->>   security/landlock/fs.c      |  21 ++++--
->>   security/landlock/ruleset.c | 146 +++++++++++++++++++++++++-----------
->>   security/landlock/ruleset.h |  51 ++++++++++---
->>   3 files changed, 156 insertions(+), 62 deletions(-)
-> 
-> [...]
-> 
->> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
->> index 647d44284080..bb1408cc8dd2 100644
->> --- a/security/landlock/ruleset.h
->> +++ b/security/landlock/ruleset.h
->> @@ -49,6 +49,33 @@ struct landlock_layer {
->>   	access_mask_t access;
->>   };
->> 
->> +/**
->> + * union landlock_key - Key of a ruleset's red-black tree
->> + */
->> +union landlock_key {
->> +	struct landlock_object *object;
->> +	uintptr_t data;
->> +};
->> +
->> +/**
->> + * enum landlock_key_type - Type of &union landlock_key
->> + */
->> +enum landlock_key_type {
->> +	/**
->> +	 * @LANDLOCK_KEY_INODE: Type of &landlock_ruleset.root_inode's node
->> +	 * keys.
->> +	 */
->> +	LANDLOCK_KEY_INODE = 1,
->> +};
->> +
->> +/**
->> + * struct landlock_id - Unique rule identifier for a ruleset
->> + */
->> +struct landlock_id {
->> +	union landlock_key key;
->> +	const enum landlock_key_type type;
->> +};
-> 
-> You can add these new types to Documentation/security/landlock.rst (with
-> this commit). You need to complete all the new field descriptions though
-> (otherwise you'll get Sphinx warnings): object, data, key, type.
-> .
+Your patch does not apply to the ipsec tree. Looks
+like it is malformed by your mailer.
