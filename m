@@ -2,123 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1716D5FD795
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 12:05:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 739095FD7A0
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 12:10:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229663AbiJMKFb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 06:05:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46338 "EHLO
+        id S229537AbiJMKKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 06:10:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229534AbiJMKFa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 06:05:30 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA28B40EA;
-        Thu, 13 Oct 2022 03:05:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Content-Type:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-To:Resent-Cc:
-        Resent-Message-ID:In-Reply-To:References;
-        bh=MIv4m4vQ4qvNV4Hb3bgm4q2zBlksVMHOhzFO9UdQ9rs=; t=1665655529; x=1666865129; 
-        b=Blf1jDnD5T1ApDR6KT5Ke4X3wQ0RGyXTMlCxM/bblXMFYc/soTyx885ypsH8ppk7/VlxkR7FNnY
-        UmAgaR6cDm1Irq5W5N90Cu0zM8FPqNCjGA69m9EoBT6W/UZbGmo1arYywLDmFS9M5BVNeBOam7qdZ
-        n/TvDmQXSs/R9E6W5JLeXGS/sfPY/u+SeXeXOU6iRxUWBtIL7uL2oHqoPU9BZ14I7Olis5Nz4kuF0
-        llAY8WbTMirDekTQGicynvqtObcCgQ8uwQkdzlK/9sjLJhqvBNMrZJgkxCjG7Guv0Nh+u3+g48Cg2
-        ziba9wl69oclZmUD+9YVT1LaVRu4uCmfBGlA==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.96)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1oiv5i-005e80-1q;
-        Thu, 13 Oct 2022 12:05:26 +0200
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Subject: pull-request: wireless-2022-10-13
-Date:   Thu, 13 Oct 2022 12:04:51 +0200
-Message-Id: <20221013100522.46346-1-johannes@sipsolutions.net>
-X-Mailer: git-send-email 2.37.3
+        with ESMTP id S229682AbiJMKKD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 06:10:03 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D09161C90D
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 03:09:59 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id iv17so853891wmb.4
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 03:09:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=fikJBuc2dKoI5QSH8/aZZj0ff+S7GAGXWa4PY32D5co=;
+        b=XeJ7aF8OamDr/+deXK7b7T0q6Wob/Dxwz4PKdqyoq3z/GXE4Uwkl7FPE5xXPU4zYz5
+         L9cj/6Yl9pXJoCB7N9Aa85guKhve1R8lHSClh8bJW3444tl0VjgWlGPco2flgib0eP5J
+         NxNCr4xdIV0lb/SIi5KaxqzbNwHzkiT09ngVkQxTBEbwAxddFC7VU0+PftupcoQoPHtn
+         3qTGv3gh6QiUSz5OLZ0BJbLBzPcqJh9KSmtM26T12LIT52BBf8xwEtpdIW2agc87/OWS
+         P7K3iN+UFbl27pOe0ebnThjBnibOdOCdnEVIm1vBXpBXA8PaZMK8cCc3pDzzNvZ40AXX
+         88vw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=fikJBuc2dKoI5QSH8/aZZj0ff+S7GAGXWa4PY32D5co=;
+        b=L0yv+XSDAXVMCwp9pi00bwPqF9YNR6uP2/PYkfrlfcd7W0WmvDKj5p1NTt6FxQYYfL
+         CgrmHrnRi7Vcc2QwLGjGI0zMNK/DOUsmEDX+OkKR2aBHv1PwmWJuE6qa7VoTFNymHq8D
+         4T0UMGQKP4k50zqK8na01Zyz9elwoRlsJptKHSdLJW17HqTbx+JRPdLUadNIunuT8Eo3
+         ZAmNE0XNQkzERVlpyCvzACVdI062uZ90vJsijzJouky7GsBQQPPIBt2oR+aH76OlaWPx
+         mAqB3BDCOlLCcnMIlkR6A1ftNnTzWoFymPukAJB4gkl51KQJmjaeVkUam9XEYAl6jbYr
+         or0g==
+X-Gm-Message-State: ACrzQf1LpttnBbnsQFfO1TqM06ffL/FvFwQX+FQxdQNWKlZAXYDuNuON
+        8vPxXXl74vmLebHre51f5cg=
+X-Google-Smtp-Source: AMsMyM7sd2WU98Dst9i0tIr1av0LA4AxKlhz9vCk+T/IGdM5hBtX7wjAjmev2dbHFid1DZFUd21C7w==
+X-Received: by 2002:a05:600c:6885:b0:3c4:de24:638 with SMTP id fn5-20020a05600c688500b003c4de240638mr5860118wmb.183.1665655797879;
+        Thu, 13 Oct 2022 03:09:57 -0700 (PDT)
+Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
+        by smtp.gmail.com with ESMTPSA id z6-20020adfdf86000000b00230c9d427f9sm1689831wrl.53.2022.10.13.03.09.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 13 Oct 2022 03:09:57 -0700 (PDT)
+Subject: Re: [PATCH net] sfc: Change VF mac via PF as first preference if
+ available.
+To:     Jonathan Cooper <jonathan.s.cooper@amd.com>,
+        netdev@vger.kernel.org, linux-net-drivers@amd.com
+Cc:     Martin Habets <habetsm.xilinx@gmail.com>,
+        =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20221013095553.52957-1-jonathan.s.cooper@amd.com>
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Message-ID: <5631204c-546f-c45d-9e6f-330c3cddf275@gmail.com>
+Date:   Thu, 13 Oct 2022 11:09:56 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <20221013095553.52957-1-jonathan.s.cooper@amd.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 13/10/2022 10:55, Jonathan Cooper wrote:
+> Changing a VF's mac address through the VF (rather than via the PF)
+> fails with EPERM because the latter part of efx_ef10_set_mac_address
+> attempts to change the vport mac address list as the VF.
+> Even with this fixed it still fails with EBUSY because the vadaptor
+> is still assigned on the VF - the vadaptor reassignment must be within
+> a section where the VF has torn down its state.
+> 
+> A major reason this has broken is because we have two functions that
+> ostensibly do the same thing - have a PF and VF cooperate to change a
+> VF mac address. Rather than do this, if we are changing the mac of a VF
+> that has a link to the PF in the same VM then simply call
+> sriov_set_vf_mac instead, which is a proven working function that does
+> that.
+> 
+> If there is no PF available, or that fails non-fatally, then attempt to
+> change the VF's mac address as we would a PF, without updating the PF's
+> data.
+> 
+> Test case:
+> Create a VF:
+>   echo 1 > /sys/class/net/<if>/device/sriov_numvfs
+> Set the mac address of the VF directly:
+>   ip link set <vf> addr 00:11:22:33:44:55
+> Set the MAC address of the VF via the PF:
+>   ip link set <pf> vf 0 mac 00:11:22:33:44:66
+> Without this patch the last command will fail with ENOENT.
+> 
+> Signed-off-by: Jonathan Cooper <jonathan.s.cooper@amd.com>
+> Reported-by: Íñigo Huguet <ihuguet@redhat.com>
+> Fixes: 910c8789a777 ("set the MAC address using MC_CMD_VADAPTOR_SET_MAC")
 
-So as discussed previously, here are the fixes for the
-scan parsing issues. I had to create a merge commit to
-keep the stable commit IDs that we'd already used for
-communication.
-
-Please pull and let me know if there's any problem.
-
-Thanks,
-johannes
-
-
-
-The following changes since commit abf93f369419249ca482a8911039fe1c75a94227:
-
-  wifi: ath11k: mac: fix reading 16 bytes from a region of size 0 warning (2022-10-11 11:46:31 +0300)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless.git tags/wireless-2022-10-13
-
-for you to fetch changes up to e7ad651c31c5e1289323e6c680be6e582a593b26:
-
-  Merge branch 'cve-fixes-2022-10-13' (2022-10-13 11:59:56 +0200)
-
-----------------------------------------------------------------
-More wireless fixes for 6.1
-
-This has only the fixes for the scan parsing issues.
-
-----------------------------------------------------------------
-Johannes Berg (10):
-      wifi: cfg80211: fix u8 overflow in cfg80211_update_notlisted_nontrans()
-      wifi: cfg80211/mac80211: reject bad MBSSID elements
-      wifi: mac80211: fix MBSSID parsing use-after-free
-      wifi: cfg80211: ensure length byte is present before access
-      wifi: cfg80211: fix BSS refcounting bugs
-      wifi: cfg80211: avoid nontransmitted BSS list corruption
-      wifi: mac80211_hwsim: avoid mac80211 warning on bad rate
-      wifi: mac80211: fix crash in beacon protection for P2P-device
-      wifi: cfg80211: update hidden BSSes to avoid WARN_ON
-      Merge branch 'cve-fixes-2022-10-13'
-
- Documentation/networking/phy.rst                   |  2 +-
- MAINTAINERS                                        |  1 +
- drivers/isdn/hardware/mISDN/hfcpci.c               |  3 +-
- drivers/net/ethernet/adi/adin1110.c                | 13 ++--
- drivers/net/ethernet/broadcom/Makefile             |  5 --
- drivers/net/ethernet/freescale/enetc/enetc_qos.c   |  1 -
- drivers/net/ethernet/marvell/octeontx2/af/mcs.c    |  4 +-
- .../ethernet/marvell/octeontx2/nic/cn10k_macsec.c  |  7 +-
- .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |  4 +-
- .../ethernet/marvell/prestera/prestera_matchall.c  |  2 +
- drivers/net/ethernet/mediatek/Makefile             |  5 --
- drivers/net/hyperv/hyperv_net.h                    |  3 +-
- drivers/net/hyperv/netvsc.c                        |  4 ++
- drivers/net/hyperv/netvsc_drv.c                    | 19 ++++++
- drivers/net/macvlan.c                              |  2 +-
- drivers/net/pse-pd/Kconfig                         |  1 +
- drivers/net/wireless/mac80211_hwsim.c              |  2 +
- drivers/ptp/ptp_ocp.c                              |  1 +
- include/net/ieee802154_netdev.h                    | 12 +++-
- net/dsa/port.c                                     |  2 +-
- net/ieee802154/socket.c                            |  7 +-
- net/ipv4/fib_semantics.c                           |  8 +--
- net/mac80211/ieee80211_i.h                         |  8 +++
- net/mac80211/rx.c                                  | 12 ++--
- net/mac80211/util.c                                | 30 +++++----
- net/sched/sch_taprio.c                             |  8 +--
- net/wireless/scan.c                                | 77 ++++++++++++++--------
- tools/testing/selftests/net/fib_nexthops.sh        |  5 ++
- 28 files changed, 160 insertions(+), 88 deletions(-)
-
+Acked-by: Edward Cree <ecree.xilinx@gmail.com>
