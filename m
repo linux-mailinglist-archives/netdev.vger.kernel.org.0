@@ -2,86 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCA7D5FDD19
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 17:23:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EBFD5FDCF6
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 17:19:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229847AbiJMPXw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 11:23:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33040 "EHLO
+        id S229665AbiJMPTS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 11:19:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230019AbiJMPXj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 11:23:39 -0400
-X-Greylist: delayed 294 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 13 Oct 2022 08:23:22 PDT
-Received: from violet.fr.zoreil.com (violet.fr.zoreil.com [IPv6:2001:4b98:dc0:41:216:3eff:fe56:8398])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54C5163374
-        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 08:23:21 -0700 (PDT)
-Received: from violet.fr.zoreil.com ([127.0.0.1])
-        by violet.fr.zoreil.com (8.17.1/8.17.1) with ESMTP id 29DFIEM44167620;
-        Thu, 13 Oct 2022 17:18:14 +0200
-DKIM-Filter: OpenDKIM Filter v2.11.0 violet.fr.zoreil.com 29DFIEM44167620
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fr.zoreil.com;
-        s=v20220413; t=1665674294;
-        bh=QQKO2Gt95d0S/UD87ZROBlqSFHYhACkqDca6PMq68og=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nGPOnL391tusZVM8FyvGI6BoeE9YL8AgrwzoTpZbHd2YZhkoPTHQRMaWZ254Kskin
-         YxJbgmFslsmcOjXzsIWcWoOuNaWisSKxRMH+hRO5GVHK+nYqBAaLkFvsW5F8Tyoc6W
-         GUy4qbNuZSvTMTtm8EwuWPcMO+ZvsoMRzkbfF8j0=
-Received: (from romieu@localhost)
-        by violet.fr.zoreil.com (8.17.1/8.17.1/Submit) id 29DFIDuG4167619;
-        Thu, 13 Oct 2022 17:18:13 +0200
-Date:   Thu, 13 Oct 2022 17:18:13 +0200
-From:   Francois Romieu <romieu@fr.zoreil.com>
-To:     Christian =?utf-8?Q?P=C3=B6ssinger?= <christian@poessinger.com>
-Cc:     netdev@vger.kernel.org,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: Re: iproute2/tc invalid JSON in 6.0.0 for flowid
-Message-ID: <Y0gsNeByeUnTF3AT@electric-eye.fr.zoreil.com>
-References: <f4806731521546b0bb7011b8c570b52b@poessinger.com>
+        with ESMTP id S229436AbiJMPTR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 11:19:17 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E13B8E09B2;
+        Thu, 13 Oct 2022 08:19:16 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id b5so1822550pgb.6;
+        Thu, 13 Oct 2022 08:19:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=3muxJhNWv1hg7XONepRN26NwBDFTg3vZFivnKP3G+hw=;
+        b=F8jmyvQukbGYiASMQsZRXYBAgV0Gnw2M5nkuujeTetPf3rsaauv9xqFMQYUT5FQ9Ud
+         Kzm0YATZRoKU5vKU9gHFXBPOg/rD6S1vhqv6hIGfuZ5kcBrh5w6IZ1bhSSzfKiOObQNs
+         UMP6K5+2vUvly2DoPvsBAZPTKeTBWcakE49W3hgUx0wDOWxMeujG93vUGfR/2vPwxihL
+         glDzsN22bDxXHParQbQfmUPIxzQ9MwKrKB2doeaqcqTfN1AHs0Ug/bw/R+8scqA8scOF
+         OPyhkNNPjjHd0G2cEEHkktgDhX8FLhEX05vFqHnfXkoPY5X7RhhgLUPRx+nOr1bA73L7
+         naew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=3muxJhNWv1hg7XONepRN26NwBDFTg3vZFivnKP3G+hw=;
+        b=owAIRCTwM6A/D/NIdjOS7XreUu6WAg/mKstc/IVC7VTfG9nCbvsDog6IKYRbdZrEpp
+         SabhYpETPM/GQLuCjcA693pH43KpnZ43w333ZU6zHwn+lgpYJQ2HLNRHPpsBJsBjdE/P
+         D9hx2A6teVfQShYSyrnLa6HRMk/7HBXCBnnPa5OXX48PEoGfkd+0pPIq2U3aCOtqVjiU
+         ykY6+3L06vZo6jlDKZprari0/YD5YmWMj3PsPEkb86I+6atqHdeHxv/RUfv9G3O84/pC
+         M4YkqpNkC8hoi4qnWMiB2+uYAen/Uu2ftN1F0brLehcY2RGwOVVIyFfKy3d2R93PdPgK
+         zaNw==
+X-Gm-Message-State: ACrzQf3AQUrw9XP4OxlkAup5XVOF1VopfjkkjWaPcO55ftmphEB6soFG
+        7FLpHkBdyspC20PVjHUfLFg=
+X-Google-Smtp-Source: AMsMyM7KzUH6zyRCq0rjPfxSwxmRq5ml7euKx/4M8cKfmc6iy6SK4ugTZjvTtd+gJ7hAo2SCwSXXFQ==
+X-Received: by 2002:a65:5688:0:b0:3c2:1015:988e with SMTP id v8-20020a655688000000b003c21015988emr349335pgs.280.1665674356367;
+        Thu, 13 Oct 2022 08:19:16 -0700 (PDT)
+Received: from localhost.localdomain (67.230.176.239.16clouds.com. [67.230.176.239])
+        by smtp.gmail.com with ESMTPSA id j63-20020a625542000000b00562e9f636e0sm2260596pfb.10.2022.10.13.08.19.14
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 13 Oct 2022 08:19:15 -0700 (PDT)
+From:   Xiaobo Liu <cppcoffee@gmail.com>
+To:     davem@davemloft.net
+Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiaobo Liu <cppcoffee@gmail.com>
+Subject: [PATCH] net/atm: fix proc_mpc_write 1 byte less calculated
+Date:   Thu, 13 Oct 2022 23:19:01 +0800
+Message-Id: <20221013151901.29368-1-cppcoffee@gmail.com>
+X-Mailer: git-send-email 2.21.0 (Apple Git-122.2)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <f4806731521546b0bb7011b8c570b52b@poessinger.com>
-X-Organisation: Land of Sunshine Inc.
-X-Spam-Status: No, score=1.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_SBL_CSS,SPF_HELO_PASS,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christian Pössinger <christian@poessinger.com> :
-[...]
-> If you can point me to the location which could be responsible for this issue, I am happy to submit a fix to the net tree.
+Then the input contains '\0' or '\n', proc_mpc_write has read them,
+so the return value needs +1.
 
-If the completely untested patch below does not work, you may also
-dig the bits in include/json_print.h and lib/json_print.c 
+Signed-off-by: Xiaobo Liu <cppcoffee@gmail.com>
+---
+ net/atm/mpoa_proc.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-(Ccing Stephen as the unidentified "both" in README.devel)
-
-diff --git a/tc/f_u32.c b/tc/f_u32.c
-index d787eb91..70098bcd 100644
---- a/tc/f_u32.c
-+++ b/tc/f_u32.c
-@@ -1275,11 +1275,11 @@ static int u32_print_opt(struct filter_util *qu, FILE *f, struct rtattr *opt,
- 		fprintf(stderr, "divisor and hash missing ");
- 	}
- 	if (tb[TCA_U32_CLASSID]) {
-+		char *fmt = !sel || !(sel->flags & TC_U32_TERMINAL) ? "*flowid %s" : "flowid %s";
- 		SPRINT_BUF(b1);
--		fprintf(f, "%sflowid %s ",
--			!sel || !(sel->flags & TC_U32_TERMINAL) ? "*" : "",
--			sprint_tc_classid(rta_getattr_u32(tb[TCA_U32_CLASSID]),
--					  b1));
+diff --git a/net/atm/mpoa_proc.c b/net/atm/mpoa_proc.c
+index 829db9eba..444ceda60 100755
+--- a/net/atm/mpoa_proc.c
++++ b/net/atm/mpoa_proc.c
+@@ -224,8 +224,11 @@ static ssize_t proc_mpc_write(struct file *file, const char __user *buff,
+ 			free_page((unsigned long)page);
+ 			return -EFAULT;
+ 		}
+-		if (*p == '\0' || *p == '\n')
 +
-+		print_string(PRINT_ANY, "flowid", fmt,
-+			    sprint_tc_classid(rta_getattr_u32(tb[TCA_U32_CLASSID]), b1));
- 	} else if (sel && sel->flags & TC_U32_TERMINAL) {
- 		print_string(PRINT_FP, NULL, "terminal flowid ", NULL);
++		if (*p == '\0' || *p == '\n') {
++			len += 1
+ 			break;
++		}
  	}
-
+ 
+ 	*p = '\0';
 -- 
-Ueimor
+2.21.0 (Apple Git-122.2)
+
