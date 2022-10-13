@@ -2,43 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FC0F5FDD3D
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 17:33:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A9305FDD42
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 17:36:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229544AbiJMPdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 11:33:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57148 "EHLO
+        id S229649AbiJMPgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 11:36:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229502AbiJMPdG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 11:33:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7335289CED;
-        Thu, 13 Oct 2022 08:32:58 -0700 (PDT)
+        with ESMTP id S229607AbiJMPgB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 11:36:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B41BC472;
+        Thu, 13 Oct 2022 08:36:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1B070B81E4F;
-        Thu, 13 Oct 2022 15:32:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A98BBC433C1;
-        Thu, 13 Oct 2022 15:32:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 704036185F;
+        Thu, 13 Oct 2022 15:36:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5675FC433C1;
+        Thu, 13 Oct 2022 15:35:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665675175;
-        bh=N9dtBbeid/AQkUHbcP83wLXIrRijx2HgAI5RS58u7Cc=;
+        s=k20201202; t=1665675359;
+        bh=b7rN1J1tkmNTBaVm+VFtuhtzYVEUyyLIPomIdeoSKwM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SYtt1KflZxR9wMpCim04SVkSYQdU0WbQGen1/vsts/jOhflWO4cD4XlDPoLWt+d5k
-         C9Ms6/bGMWjRa6eB7faz3vyV4lABgRepl9hKcJ2NHUXG9zMfreoP0dgpCbvSPUN8gg
-         drJgBqf9VDZfRQwl12rUbnLE7ZSZwiVYv9JN8UZHcy3zM3k6U7Bs5TgWIElXdm2PXk
-         nleg4EG1IOV+QAHl24XKrFF4bYWPfW8VVKMfBzTrnuo1oJbcGLLPR7DLniHN00ivqh
-         qQ9dtpb49rtx92k8nI8Po9frN+zErp69dB6IFg++BQ94JMwzTrXJ2LEuprgbKjqKDt
-         Adwx/+2vlYIdg==
-Date:   Thu, 13 Oct 2022 08:32:54 -0700
+        b=burXVONUjzxwp1H+KuY3jpHCs6y2HJCo+fsLhdUylaeNgjeNTGUFEcyqM7WBvJzPC
+         0uPe5bTJcnsPp2e1s3tuiFC/Oh5iyzGYOyH8G+81Zn9FQJgTHWyRYQey9QycbojslT
+         gw9v7CjZX78YG7HA4APOvnDQAGQUCHHdRWBh+M6pmvjugHNGah9DY0Ubd6tgaoRHGS
+         5ISbuZUAg+Z8GcEU86FbYBPZ1zmmJ47EGUGJBlTeB8n/uj4u0z+JLTaZVf6+zuIAvK
+         f89nW0OSK3SNMjPjiRV1MWuDuf8V+C1/9YTTKEAd5/hgV1ftkOyOBP45a60ytMlzZZ
+         glIpft+lgs9Pg==
+Date:   Thu, 13 Oct 2022 08:35:58 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-Subject: Re: pull-request: wireless-2022-10-13
-Message-ID: <20221013083254.5d302a5e@kernel.org>
-In-Reply-To: <20221013100522.46346-1-johannes@sipsolutions.net>
-References: <20221013100522.46346-1-johannes@sipsolutions.net>
+To:     Cai Huoqing <cai.huoqing@linux.dev>
+Cc:     shaozhengchao@huawei.com, caihuoqing <caihuoqing@baidu.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Qiao Ma <mqaio@linux.alibaba.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: hinic: Set max_mtu/min_mtu directly to simplify
+ the code.
+Message-ID: <20221013083558.110621be@kernel.org>
+In-Reply-To: <20221013060723.7306-1-cai.huoqing@linux.dev>
+References: <20221013060723.7306-1-cai.huoqing@linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -51,11 +59,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 13 Oct 2022 12:04:51 +0200 Johannes Berg wrote:
-> Please pull and let me know if there's any problem.
+On Thu, 13 Oct 2022 14:07:08 +0800 Cai Huoqing wrote:
+> From: caihuoqing <caihuoqing@baidu.com>
+> 
+> Set max_mtu/min_mtu directly to avoid making the validity judgment
+> when set mtu, because the judgment is made in net/core: dev_validate_mtu,
+> so to simplify the code.
+> 
+> Signed-off-by: caihuoqing <caihuoqing@baidu.com>
 
-Since you asked if there are any problems... :)
+Alright, if it's just a cleanup then you'll need to wait a few days
+(-rc1 will be this Sunday):
 
-net/wireless/scan.c:1677:61: warning: incorrect type in argument 2 (different address spaces)
-net/wireless/scan.c:1677:61:    expected struct cfg80211_bss_ies const *new_ies
-net/wireless/scan.c:1677:61:    got struct cfg80211_bss_ies const [noderef] __rcu *beacon_ies
+# Form letter - net-next is closed
+
+We have already sent the networking pull request for 6.1
+and therefore net-next is closed for new drivers, features,
+code refactoring and optimizations. We are currently accepting
+bug fixes only.
+
+Please repost when net-next reopens after 6.1-rc1 is cut.
+
+RFC patches sent for review only are obviously welcome at any time.
