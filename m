@@ -2,66 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF55A5FD25C
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 03:13:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D23BA5FD2AA
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 03:37:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229988AbiJMBNR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 21:13:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36346 "EHLO
+        id S229843AbiJMBg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 21:36:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230207AbiJMBMo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 21:12:44 -0400
-Received: from mail-qv1-xf4a.google.com (mail-qv1-xf4a.google.com [IPv6:2607:f8b0:4864:20::f4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C143859269
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 18:11:54 -0700 (PDT)
-Received: by mail-qv1-xf4a.google.com with SMTP id mz8-20020a0562142d0800b004b18a95b180so372941qvb.8
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 18:11:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=2tlT0sKryIjjlYcEvRxXBonCj9sjgTZRO4xGVKaegZc=;
-        b=aCC+5QU5Q6ql86BpxO4LEXx32nPTesKN2ifqvcP4ePLuU4LSDEC9aC5PcOyvEq0Tio
-         lT95CTcSyY026VFVEPc6wa5F7zF2cYv2M5AG9//2M0Jv5R1mSTFLzZd3QK5pWtPWjvTQ
-         7QdVXzB93hHMtr7jFlS7ez4Ze2Me5JUuBRa69ctkMF1i478rc2j4UC7ms1mvWEBNs3pT
-         PgKUPt8lLz2rUP4Zf688haPjC7tU0IPluU6wxir/wOA2bL6EJo0hXIA49VJMvK3Q5WiC
-         DkXwUroV44w0bjwTtglFGghxbDo7MVzZouxftAmhHGb/0j79QDmmff0E+hnfPrMPoZ40
-         UAFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=2tlT0sKryIjjlYcEvRxXBonCj9sjgTZRO4xGVKaegZc=;
-        b=RiHjnZssuB/m9zCCcA3J3KaofVi6S0iPlwpMmAZRfjcDy4tX8AZbyX+heNkwFaQL3G
-         a+kKmGFEmy0GKEJfLKsgJamXmlk7UvkwdL0Oksm8BiIGcQtn9KCyQyuY62dVykVbPwfT
-         /opDD5zdpi+u1b1LoIMl2RpW8Xi3SRZTZnaFZwN3bTggbSpGF82P2XPWfIznWZR3thvN
-         Tgaj3uIFz8JorrIKo4PggNICxg0s1pm4y3FAHyX0nmrEr+vJAlABEOWvMWkz8VFQE1jA
-         1cRecw+MnElG8r+Kr7ZKYo0gwX04iX68CRdowzj2Lddh91iiBm7oHA+petmi3MiYAQ5f
-         eKgQ==
-X-Gm-Message-State: ACrzQf2gr94F4klPaGFlxOe4O9obYIqWFcdP3CQ3SX/n+9Yz2gKEHpkM
-        KhZ9AvcbpJVt0z3QtGb16mSN0oOgfA+/Qg==
-X-Google-Smtp-Source: AMsMyM5X/Dl+9DA/7md7Osvy7DxGRQ4FWuzTQwkehXz6q6IsmTu6BxBQHm1VBP9Dh364YU9mjaQoHnsoVaMkVA==
-X-Received: from shakeelb.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:262e])
- (user=shakeelb job=sendgmr) by 2002:a17:903:11c4:b0:178:634b:1485 with SMTP
- id q4-20020a17090311c400b00178634b1485mr31147763plh.142.1665622475078; Wed,
- 12 Oct 2022 17:54:35 -0700 (PDT)
-Date:   Thu, 13 Oct 2022 00:54:31 +0000
-In-Reply-To: <20221012173825.45d6fbf2@kernel.org>
-Mime-Version: 1.0
-References: <20210817194003.2102381-1-weiwan@google.com> <20221012163300.795e7b86@kernel.org>
- <CALvZod5pKzcxWsLnjUwE9fUb=1S9MDLOHF950miF8x8CWtK5Bw@mail.gmail.com> <20221012173825.45d6fbf2@kernel.org>
-Message-ID: <20221013005431.wzjurocrdoozykl7@google.com>
-Subject: Re: [PATCH net-next] net-memcg: pass in gfp_t mask to mem_cgroup_charge_skmem()
-From:   Shakeel Butt <shakeelb@google.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Wei Wang <weiwan@google.com>, Eric Dumazet <edumazet@google.com>,
-        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        cgroups@vger.kernel.org, linux-mm@kvack.org,
-        Roman Gushchin <roman.gushchin@linux.dev>
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
+        with ESMTP id S229646AbiJMBg5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 21:36:57 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 728741285C6;
+        Wed, 12 Oct 2022 18:36:56 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MnsSy47YjzlVlT;
+        Thu, 13 Oct 2022 09:32:18 +0800 (CST)
+Received: from [10.67.111.192] (10.67.111.192) by
+ kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 13 Oct 2022 09:36:53 +0800
+Message-ID: <cda0bc3d-9587-6b5e-e676-4e3bd11e95da@huawei.com>
+Date:   Thu, 13 Oct 2022 09:36:52 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH bpf-next v4 6/6] selftest/bpf: Fix error usage of
+ ASSERT_OK in xdp_adjust_tail.c
+Content-Language: en-US
+To:     Martin KaFai Lau <martin.lau@linux.dev>,
+        Xu Kuohai <xukuohai@huaweicloud.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        Delyan Kratunov <delyank@fb.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+References: <20221011120108.782373-1-xukuohai@huaweicloud.com>
+ <20221011120108.782373-7-xukuohai@huaweicloud.com>
+ <33d17f23-03cb-9bff-2e50-06ab0f597640@linux.dev>
+From:   Xu Kuohai <xukuohai@huawei.com>
+In-Reply-To: <33d17f23-03cb-9bff-2e50-06ab0f597640@linux.dev>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.111.192]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemi500013.china.huawei.com (7.221.188.120)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,66 +69,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 12, 2022 at 05:38:25PM -0700, Jakub Kicinski wrote:
-> On Wed, 12 Oct 2022 17:17:38 -0700 Shakeel Butt wrote:
-> > Did the revert of this patch fix the issue you are seeing? The reason
-> > I am asking is because this patch should not change the behavior.
-> > Actually someone else reported the similar issue for UDP RX at [1] and
-> > they tested the revert as well. The revert did not fix the issue for
-> > them.
-> > 
-> > Wei has a better explanation at [2] why this patch is not the cause
-> > for these issues.
+On 10/13/2022 7:26 AM, Martin KaFai Lau wrote:
+> On 10/11/22 5:01 AM, Xu Kuohai wrote:
+>> From: Xu Kuohai <xukuohai@huawei.com>
+>>
+>> xdp_adjust_tail.c calls ASSERT_OK() to check the return value of
+>> bpf_prog_test_load(), but the condition is not correct. Fix it.
+>>
+>> Fixes: 791cad025051 ("bpf: selftests: Get rid of CHECK macro in xdp_adjust_tail.c")
+>> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
+>> ---
+>>   tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c | 6 +++---
+>>   1 file changed, 3 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
+>> index 009ee37607df..39973ea1ce43 100644
+>> --- a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
+>> +++ b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
+>> @@ -18,7 +18,7 @@ static void test_xdp_adjust_tail_shrink(void)
+>>       );
+>>       err = bpf_prog_test_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);
+>> -    if (ASSERT_OK(err, "test_xdp_adjust_tail_shrink"))
+>> +    if (!ASSERT_OK(err, "test_xdp_adjust_tail_shrink"))
+>>           return;
+>>       err = bpf_prog_test_run_opts(prog_fd, &topts);
+>> @@ -53,7 +53,7 @@ static void test_xdp_adjust_tail_grow(void)
+>>       );
+>>       err = bpf_prog_test_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);
+>> -    if (ASSERT_OK(err, "test_xdp_adjust_tail_grow"))
+>> +    if (!ASSERT_OK(err, "test_xdp_adjust_tail_grow"))
 > 
-> We're talking TCP here, to be clear. I haven't tested a revert, yet (not
-> that easy to test with a real workload) but I'm relatively confident the
-> change did introduce an "unforced" call, specifically this bit:
-> 
-> @@ -2728,10 +2728,12 @@ int __sk_mem_raise_allocated(struct sock *sk, int size, int amt, int kind)
->  {
->  	struct proto *prot = sk->sk_prot;
->  	long allocated = sk_memory_allocated_add(sk, amt);
-> +	bool memcg_charge = mem_cgroup_sockets_enabled && sk->sk_memcg;
->  	bool charged = true;
->  
-> -	if (mem_cgroup_sockets_enabled && sk->sk_memcg &&
-> -	    !(charged = mem_cgroup_charge_skmem(sk->sk_memcg, amt)))
-> +	if (memcg_charge &&
-> +	    !(charged = mem_cgroup_charge_skmem(sk->sk_memcg, amt,
-> +						gfp_memcg_charge())))
-> 
-> where gfp_memcg_charge() is GFP_NOWAIT in softirq.
-> 
-> The above gets called from (inverted stack):
->  tcp_data_queue()
->  tcp_try_rmem_schedule(sk, skb, skb->truesize)
->  tcp_try_rmem_schedule()
->  sk_rmem_schedule()
->  __sk_mem_schedule()
->  __sk_mem_raise_allocated()
-> 
-> Is my confidence unjustified? :)
+> Ouch... ic.  It is why this test has been passing.
 > 
 
-Let me add Wei's explanation inline which is protocol independent:
+Well, it's because the value of err is zero, so ASSERT_OK passed.
 
-	__sk_mem_raise_allocated() BEFORE the above patch is:
-	- mem_cgroup_charge_skmem() gets called:
-	    - try_charge() with GFP_NOWAIT gets called and  failed
-	    - try_charge() with __GFP_NOFAIL
-	    - return false
-	- goto suppress_allocation:
-	    - mem_cgroup_uncharge_skmem() gets called
-	- return 0 (which means failure)
+> 
+>>           return;
+>>       err = bpf_prog_test_run_opts(prog_fd, &topts);
+>> @@ -90,7 +90,7 @@ static void test_xdp_adjust_tail_grow2(void)
+>>       );
+>>       err = bpf_prog_test_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);
+>> -    if (ASSERT_OK(err, "test_xdp_adjust_tail_grow"))
+>> +    if (!ASSERT_OK(err, "test_xdp_adjust_tail_grow"))
+>>           return;
+>>       /* Test case-64 */
+> 
+> .
 
-	AFTER the above patch, what happens in __sk_mem_raise_allocated() is:
-	- mem_cgroup_charge_skmem() gets called:
-	    - try_charge() with GFP_NOWAIT gets called and failed
-	    - return false
-	- goto suppress_allocation:
-	    - We no longer calls mem_cgroup_uncharge_skmem()
-	- return 0
-
-So, before the patch, the memcg code may force charges but it will
-return false and make the networking code to uncharge memcg for
-SK_MEM_RECV.
