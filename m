@@ -2,85 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C71995FDC3E
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 16:17:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F63C5FDC4D
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 16:20:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230183AbiJMORZ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Oct 2022 10:17:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41812 "EHLO
+        id S229794AbiJMOU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 10:20:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230134AbiJMORU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 10:17:20 -0400
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 013DEDFB4B
-        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 07:17:17 -0700 (PDT)
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-626-grIOuBmkPDyLGO9MU49A_g-1; Thu, 13 Oct 2022 10:17:13 -0400
-X-MC-Unique: grIOuBmkPDyLGO9MU49A_g-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 130198309DF;
-        Thu, 13 Oct 2022 14:17:13 +0000 (UTC)
-Received: from hog.localdomain (unknown [10.39.192.237])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1411811457CA;
-        Thu, 13 Oct 2022 14:17:06 +0000 (UTC)
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     netdev@vger.kernel.org
-Cc:     Antoine Tenart <atenart@kernel.org>,
-        Sabrina Dubroca <sd@queasysnail.net>
-Subject: [PATCH net 5/5] macsec: clear encryption keys from the stack after setting up offload
-Date:   Thu, 13 Oct 2022 16:15:43 +0200
-Message-Id: <a053cf1fcea946451017d446c3ced3756c47e712.1665416630.git.sd@queasysnail.net>
-In-Reply-To: <cover.1665416630.git.sd@queasysnail.net>
-References: <cover.1665416630.git.sd@queasysnail.net>
+        with ESMTP id S230011AbiJMOU0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 10:20:26 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED686279
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 07:20:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=xPazVOf+JIyGrlgsKcU5eWYA5huFnC8aPrhbNP5ZPv8=; b=y/qixORELxshsq9200zsgcRL3P
+        dAK+YwMOSYDN6a4AGnpelLTMKNRLjxjRxHGW1X2pMkv6ALFK8rFDIpCz7OfDcl5VymvIqwJdYPoBf
+        ieDxtEjgLPKotQNz11+ujVfurDvb6FW2G4ScHJTzkvnCpVq5vHf3hNyjslVfHmiAgqE0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oiz4H-001tU2-Mu; Thu, 13 Oct 2022 16:20:13 +0200
+Date:   Thu, 13 Oct 2022 16:20:13 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Arankal, Nagaraj" <nagaraj.p.arankal@hpe.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: socket leaks observed in Linux kernel's passive close path
+Message-ID: <Y0genWOLGfy2kQ/M@lunn.ch>
+References: <SJ0PR84MB1847204B80E86F8449DE1AAAB2259@SJ0PR84MB1847.NAMPRD84.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252; x-default=true
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <SJ0PR84MB1847204B80E86F8449DE1AAAB2259@SJ0PR84MB1847.NAMPRD84.PROD.OUTLOOK.COM>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-macsec_add_rxsa and macsec_add_txsa copy the key to an on-stack
-offloading context to pass it to the drivers, but leaves it there when
-it's done. Clear it with memzero_explicit as soon as it's not needed
-anymore.
+On Thu, Oct 13, 2022 at 06:47:56AM +0000, Arankal, Nagaraj wrote:
+> Description:
+> We have observed a strange race condition , where sockets are not freed in kernel in the following condition.
+> We have a kernel module , which monitors the TCP connection state changes , as part of the functionality it replaces the default sk_destruct function of all TCP sockets with our module specific routine.  Looks like sk_destruct() is not invoked in following condition and hence the sockets are leaked despite receiving RESET from the remote.
+> 
+> 1.	Establish a TCP connection between Host A and Host B.
+> 2.	Make the client at B to initiate the CLOSE() immediately after 3-way handshake.
+> 3.	Server end sends huge amount of data to client and does close on FD.
+> 4.	FIN from the client is not ACKED, and server is busy sending the data.
+> 5.	RESET is received from the remote client.
+> 6.	Sk_destruct() is not invoked due to non-null sk_refcnt or sk_wmem_alloc count.
+> 
+> Kernel version: Debian Linux 4.19.y(238,247)
 
-Fixes: 3cf3227a21d1 ("net: macsec: hardware offloading infrastructure")
-Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
----
- drivers/net/macsec.c | 2 ++
- 1 file changed, 2 insertions(+)
+Is this reproducible with a modern kernel? v6.0? If this is already
+fixed, we need to identify what change fixed it, and get it back
+ported. If it is broken in v6.0, and net-next, it first needs fixing
+in net-next, and then back porting to the different LTS kernels.
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 0ad6eba0a807..333e47b68e02 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -1839,6 +1839,7 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
- 		       secy->key_len);
- 
- 		err = macsec_offload(ops->mdo_add_rxsa, &ctx);
-+		memzero_explicit(ctx.sa.key, secy->key_len);
- 		if (err)
- 			goto cleanup;
- 	}
-@@ -2082,6 +2083,7 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
- 		       secy->key_len);
- 
- 		err = macsec_offload(ops->mdo_add_txsa, &ctx);
-+		memzero_explicit(ctx.sa.key, secy->key_len);
- 		if (err)
- 			goto cleanup;
- 	}
--- 
-2.38.0
-
+   Andrew
