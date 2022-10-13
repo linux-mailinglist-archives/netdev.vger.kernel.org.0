@@ -2,119 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D2795FDEBE
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 19:14:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10EE35FDEE4
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 19:25:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229659AbiJMROr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 13:14:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49002 "EHLO
+        id S229726AbiJMRZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 13:25:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229705AbiJMROq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 13:14:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97B8A13EAD;
-        Thu, 13 Oct 2022 10:14:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 33D73618C9;
-        Thu, 13 Oct 2022 17:14:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 491F1C433D7;
-        Thu, 13 Oct 2022 17:14:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665681283;
-        bh=pDxmcYjitaHRhnAhlXahfQJzdt1gN1EjmnneIPOHL7Y=;
-        h=From:To:Cc:Subject:Date:From;
-        b=YrAaq/Wowtqb7O5Ox6ZHbYdFMzgxDEvdfQ3A9I6RaMVtRIdkz+MduySRi56ir+yU2
-         g3FjJYq6cQxkRBWEFQLDwGfg/XJ5mKxAEVtPr2rM23b9Jg5Q7PoYvxxSqxOl+WLrjx
-         C84qLg7iV2I8iVFNwRrIfATm9l0Cog5IrIR8e/Z7ED2cGWF8u3j1Xlh3whb3Kkczf3
-         zl8vbW6M/YZPwdr1IKsPBzoVx21LqJSKWl3MA2N69PcK+wLxAVoB9JtZDjnQsqrQ9I
-         TOznswK7IGqhJJqVVndrkId/dTuzfGdooOLmY5tuDVegUrb0jjVtrrAg37gJudXHQt
-         pPWM7ycGnDbSA==
-From:   guoren@kernel.org
-To:     andriy.shevchenko@linux.intel.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux@rasmusvillemoes.dk, yury.norov@gmail.com
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Guo Ren <guoren@linux.alibaba.com>, Guo Ren <guoren@kernel.org>
-Subject: [PATCH] net: Fixup virtnet_set_affinity() cause cpumask warning
-Date:   Thu, 13 Oct 2022 13:14:34 -0400
-Message-Id: <20221013171434.3132854-1-guoren@kernel.org>
-X-Mailer: git-send-email 2.36.1
+        with ESMTP id S229470AbiJMRZE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 13:25:04 -0400
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8A414001F
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 10:25:02 -0700 (PDT)
+Received: by mail-qt1-x82f.google.com with SMTP id s3so1976166qtn.12
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 10:25:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=j1qTz+oYugF8Lf770mKCIrdepvqmBbCEzwy+EaukMrM=;
+        b=RwP93R0i/58OL7LRD+//xbsGSpXEvsNfrhi2GXL/rRnIR0fEBr1hhf0AxtH9ySaIuq
+         fxnBUs5tBFF0nv+sS5fXPWTFdyDQIQyfW3oaIHCHCny57nHo+jkN3VT1oW56ATf0pSAn
+         /cXKnAs4MWRb/mczWEGT2NYOdgosHqzbcK1Ec=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=j1qTz+oYugF8Lf770mKCIrdepvqmBbCEzwy+EaukMrM=;
+        b=Dj4G1jkjE5gIHW6ofxpMck6wOHoda7G9udZ3XyFV8SOfs/+y+9nb9vqBYFaeAQRwZb
+         jp/ISSJmx3jvv8y+aKwjbIOacFWgYhcFBUOnComaCBAe4TwSDSf6pjhJb6iCUztNBd1v
+         e4qJlweTc31lrXbGNqjkmmnlONeDv5OCk6h6y0c1gC1IcbPhzYyB5fjAFgstUe5q0CmR
+         OCxf0YlKbzswChAeQiDKocUmnXsMlFmglDWCf6Y3AoCinaH+AcClq92qJ30Fc2RlGwHk
+         oVi7aFhBwaBt836HPzbtOXV8lds6Nx96lmDZbT3TRdsYNIH17geJWoTMoLK1D4zfB6zZ
+         HZJA==
+X-Gm-Message-State: ACrzQf2nGpA9iD0qd/axIHyLkeN/fSUdsCbrKKi8cFUg1okMLSkLMkie
+        MDzDEguQ/bEaXJQrnCiG/wZZcH1/hCOf7g==
+X-Google-Smtp-Source: AMsMyM6CWgMJj/+lhT5b1BFVEyML97dudpXAfkoP7igROT5dKSFjJPR45KMteiEvkOYE6BpKZN9pgQ==
+X-Received: by 2002:a05:620a:d8c:b0:6a7:91a2:c827 with SMTP id q12-20020a05620a0d8c00b006a791a2c827mr733300qkl.407.1665681901510;
+        Thu, 13 Oct 2022 10:25:01 -0700 (PDT)
+Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com. [209.85.128.180])
+        by smtp.gmail.com with ESMTPSA id o5-20020a05620a228500b006ee94c5bf26sm191011qkh.91.2022.10.13.10.25.01
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 13 Oct 2022 10:25:01 -0700 (PDT)
+Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-3608b5e634aso23912547b3.6
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 10:25:01 -0700 (PDT)
+X-Received: by 2002:a05:6830:4421:b0:661:8fdd:81e9 with SMTP id
+ q33-20020a056830442100b006618fdd81e9mr528782otv.69.1665681558964; Thu, 13 Oct
+ 2022 10:19:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221010132030-mutt-send-email-mst@kernel.org>
+ <87r0zdmujf.fsf@mpe.ellerman.id.au> <20221012070532-mutt-send-email-mst@kernel.org>
+ <87mta1marq.fsf@mpe.ellerman.id.au> <87edvdm7qg.fsf@mpe.ellerman.id.au>
+ <20221012115023-mutt-send-email-mst@kernel.org> <CAHk-=wg2Pkb9kbfbstbB91AJA2SF6cySbsgHG-iQMq56j3VTcA@mail.gmail.com>
+ <38893b2e-c7a1-4ad2-b691-7fbcbbeb310f@app.fastmail.com> <20221012180806-mutt-send-email-mst@kernel.org>
+ <a35fd31b-0658-4ac1-8340-99cdf4c75bb7@app.fastmail.com>
+In-Reply-To: <a35fd31b-0658-4ac1-8340-99cdf4c75bb7@app.fastmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 13 Oct 2022 10:19:02 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whLv3MO0Tvc62zJ+=4yvSfKMK17C0wfpbXBwUJqSjKbYA@mail.gmail.com>
+Message-ID: <CAHk-=whLv3MO0Tvc62zJ+=4yvSfKMK17C0wfpbXBwUJqSjKbYA@mail.gmail.com>
+Subject: Re: [GIT PULL] virtio: fixes, features
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>, xiujianfeng@huawei.com,
+        kvm@vger.kernel.org, alvaro.karsz@solid-run.com,
+        Jason Wang <jasowang@redhat.com>, angus.chen@jaguarmicro.com,
+        wangdeming@inspur.com, linux-kernel@vger.kernel.org,
+        linux-pci@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Netdev <netdev@vger.kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>, lingshan.zhu@intel.com,
+        linuxppc-dev@lists.ozlabs.org, gavinl@nvidia.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+On Wed, Oct 12, 2022 at 11:29 PM Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> On Thu, Oct 13, 2022, at 12:08 AM, Michael S. Tsirkin wrote:
+> >
+> > Do these two boxes even have pci?
+>
+> Footbridge/netwinder has PCI and PC-style ISA on-board devices
+> (floppy, ps2 mouse/keyboard, parport, soundblaster, ...), RiscPC
+> has neither.
 
-Don't pass nr_bits-1 as arg1 for cpumask_next_wrap, which would
-cause warning now.
+It's worth noting that changing a driver that does
 
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 1 at include/linux/cpumask.h:110 cpumask_next_wrap+0x5c/0x80
-Modules linked in:
-CPU: 0 PID: 1 Comm: swapper/0 Not tainted 6.0.0-11659-ge7e38f6cce55-dirty #328
-Hardware name: riscv-virtio,qemu (DT)
-epc : cpumask_next_wrap+0x5c/0x80
- ra : virtnet_set_affinity+0x1ba/0x1fc
-epc : ffffffff808992ca ra : ffffffff805d84ca sp : ff60000002327a50
- gp : ffffffff81602390 tp : ff600000023a0000 t0 : 5f74656e74726976
- t1 : 0000000000000000 t2 : 735f74656e747269 s0 : ff60000002327a90
- s1 : 0000000000000003 a0 : 0000000000000003 a1 : ffffffff816051c0
- a2 : 0000000000000004 a3 : 0000000000000000 a4 : 0000000000000000
- a5 : 0000000000000004 a6 : 0000000000000000 a7 : 0000000000000000
- s2 : 0000000000000000 s3 : ffffffff816051c0 s4 : ffffffff8160224c
- s5 : 0000000000000004 s6 : 0000000000000004 s7 : 0000000000000000
- s8 : 0000000000000003 s9 : ffffffff810aa398 s10: ffffffff80e97d20
- s11: 0000000000000004 t3 : ffffffff819acc97 t4 : ffffffff819acc97
- t5 : ffffffff819acc98 t6 : ff60000002327878
-status: 0000000200000120 badaddr: 0000000000000000 cause: 0000000000000003
-[<ffffffff805d84ca>] virtnet_set_affinity+0x1ba/0x1fc
-[<ffffffff805da7ac>] virtnet_probe+0x832/0xf1e
-[<ffffffff804fe61c>] virtio_dev_probe+0x164/0x2de
-[<ffffffff8054c4c4>] really_probe+0x82/0x224
-[<ffffffff8054c6c0>] __driver_probe_device+0x5a/0xaa
-[<ffffffff8054c73c>] driver_probe_device+0x2c/0xb8
-[<ffffffff8054cd66>] __driver_attach+0x76/0x108
-[<ffffffff8054a482>] bus_for_each_dev+0x52/0x9a
-[<ffffffff8054be8c>] driver_attach+0x1a/0x28
-[<ffffffff8054b996>] bus_add_driver+0x154/0x1c2
-[<ffffffff8054d592>] driver_register+0x52/0x108
-[<ffffffff804fe120>] register_virtio_driver+0x1c/0x2c
-[<ffffffff80a29142>] virtio_net_driver_init+0x7a/0xb0
-[<ffffffff80002854>] do_one_initcall+0x66/0x2e4
-[<ffffffff80a01222>] kernel_init_freeable+0x28a/0x304
-[<ffffffff808cb1be>] kernel_init+0x1e/0x110
-[<ffffffff80003c4e>] ret_from_exception+0x0/0x10
----[ end trace 0000000000000000 ]---
+        if (dev->irq == NO_IRQ)
+                return -ENODEV;
 
-Fixes: 78e5a3399421 ("cpumask: fix checking valid cpu range")
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Signed-off-by: Guo Ren <guoren@kernel.org>
----
- drivers/net/virtio_net.c | 2 ++
- 1 file changed, 2 insertions(+)
+to use
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 7106932c6f88..e4b56523b2b5 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -2300,6 +2300,8 @@ static void virtnet_set_affinity(struct virtnet_info *vi)
- 
- 		for (j = 0; j < group_size; j++) {
- 			cpumask_set_cpu(cpu, mask);
-+			if (cpu == (nr_cpu_ids - 1))
-+				break;
- 			cpu = cpumask_next_wrap(cpu, cpu_online_mask,
- 						nr_cpu_ids, false);
- 		}
--- 
-2.36.1
+        if (!dev->irq)
+                return -ENODEV;
 
+should be pretty much always fine.
+
+Even *if* that driver is then compiled and used on an architecture
+where NO_IRQ is one of the odd values, you end up having only two
+cases
+
+ (a) irq 0 was actually a valid irq after all
+
+ (b) you just get the error later when actually trying to use the odd
+NO_IRQ interrupt with request_irq() and friends
+
+and here (a) basically never happens - certainly not for any PCI setup
+- and (b) is harmless unless the driver was already terminally broken
+anyway.
+
+The one exception for (a) might be some platform irq code. On x86,
+that would be the legacy timer interrupt, of course.
+
+So if some odd platform actually has a "real" interrupt on irq0, that
+platform should either just fix the irq number mapping, or should
+consider that interrupt to be a platform-specific thing and handle it
+very very specially.
+
+On x86, for example, we do
+
+        if (request_irq(0, timer_interrupt, flags, "timer", NULL))
+
+early in boot, and that's basically what then makes sure that no
+driver can get that irq. It's done through the platform "timer_init"
+code at the "late_time_init()" call.
+
+(And that "late_time_init()" - despite the name - isn't very late at
+all. It's just later than the very early timekeeping init - after
+interrupts have been enabled at all.
+
+             Linus
