@@ -2,127 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 026CD5FDE8B
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 18:52:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBE235FDEB8
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 19:13:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229879AbiJMQwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 12:52:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35062 "EHLO
+        id S229572AbiJMRNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 13:13:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229885AbiJMQwf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 12:52:35 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 252B910A7C9
-        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 09:52:32 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id d6so3371883lfs.10
-        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 09:52:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6hw2W+lQ+Hv9z48dDP42SJngsa6TM787Uybb56JTsIU=;
-        b=ghoFwQTxBbVHDWGz3pu/fVVdmZGCPWS90lwX3nEcU8o2Y1zv1+S4YKeTSmNESQTc6v
-         iRO5UImZPCZP7qu1ZfLC/j5rrFtvoEEBjvZgBQVPzI9DvpXQ8FkeuIVOBWkHDpc5fmP3
-         1ATgRGOtOgU4JBqWGKYdqSQcOfHDgp5bnC5faThbh8oATv2pgFgKboonbacHOIbATQJH
-         rH0Es23nJMcEAS+3TJgRAAUeQ8cvn5VePMhUIbrmhr5EpxIprUUWmAY9Dey+gsSVNWvn
-         0E9i+lfXJe5ueJbmHYTiUe/1xqkCkFG1xyudg29Km7t5TTfV8UF0ovgJ8Nc407m2itT1
-         01Gg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=6hw2W+lQ+Hv9z48dDP42SJngsa6TM787Uybb56JTsIU=;
-        b=ERHrZvJAsDd9LoeBzztqSk0dzU+GpoW+ranFHHSuEughP2pw7ICbUAO65qmyxOVs1V
-         VJQA+zS4BmO1by1E5W4tf0oEj2wWG2C4GjAuJPiNxn9JzNItS/+nUXM/xnsi7L6jOm8z
-         qIfMC9JvGEbZYVObGrdTWGOf4rsOLBUbfJumYg5ZjY6vvSTgAKwfEAWKgjzFSGohVCNU
-         ZMGXxTmSGX5QArXc/bzZdEaYI4ghY5IkyfF13z0B9mio55XKHTjBWBUCNDZIv5Mv1MhX
-         HVkexKHshKKmap1CesP2AMpwFhLlgMJlDkyNsCxr4EzjxEvgPVWiawkevvg1Wk1e6Vt5
-         Cqug==
-X-Gm-Message-State: ACrzQf2z7EblAdsItaQJn1LwIhMHzFBIR00GEH9VkJkssaT4JmZpC3gd
-        cUZPJWdgeYBYUfvL7Fwnv8gAjw==
-X-Google-Smtp-Source: AMsMyM4gcJcA8tRARkMMAurN5cSMCEOxM2sdSbaTGrQZ+dBknfKwag6sQfZLDND3tnv8+yEOEtRERQ==
-X-Received: by 2002:a05:6512:33cb:b0:4a4:2bee:5c8b with SMTP id d11-20020a05651233cb00b004a42bee5c8bmr205014lfg.237.1665679950541;
-        Thu, 13 Oct 2022 09:52:30 -0700 (PDT)
-Received: from fedora.. ([78.10.206.53])
-        by smtp.gmail.com with ESMTPSA id k7-20020a2e9207000000b00262fae1ffe6sm540752ljg.110.2022.10.13.09.52.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Oct 2022 09:52:30 -0700 (PDT)
-From:   =?UTF-8?q?Micha=C5=82=20Grzelak?= <mig@semihalf.com>
-To:     devicetree@vger.kernel.org
-Cc:     mw@semihalf.com, linux@armlinux.org.uk, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        upstream@semihalf.com
-Subject: [PATCH v4 3/3] ARM: dts: armada-375: Update network description to match schema
-Date:   Thu, 13 Oct 2022 18:51:34 +0200
-Message-Id: <20221013165134.78234-4-mig@semihalf.com>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20221013165134.78234-1-mig@semihalf.com>
-References: <20221013165134.78234-1-mig@semihalf.com>
+        with ESMTP id S229454AbiJMRNI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 13:13:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBDE3BE53F;
+        Thu, 13 Oct 2022 10:13:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77967B81FCD;
+        Thu, 13 Oct 2022 17:13:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 331EAC43140;
+        Thu, 13 Oct 2022 17:13:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1665681184;
+        bh=qtUj4HOZkI60Q9GjVY9brGrEXkMR3EQ8UgD83vxXH5w=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=A9CJ00bqKbjgthG0ZqvCoar3VNkmpwv4SscAW/S9JY8LUyrqncfulmYD+O7JqR0yg
+         ygCwPVvC79lvUBIawSMZc1WCdzp3AhQzwJZfdhWJJF0+BbvH2GcLtej5603oab4q2a
+         6dmH9Uu36g+Whb4snZL2WE3/r8qzQ53wm3TDdT+2kE0Df/8Tm61YdW7bce6soPq/i7
+         +zXD8e6rxNLZlaqMCuEtuQ7J5aZiJaR+E75W2oolYbxOZMetLINW9riADie0TYOdI1
+         LuhLUBEnl8GdKK+YJ+F7hcxwwumaJAjXvNROqoVwBBSKt6Tj1Tvp0B5B7Vxrnu0bAZ
+         1zf4IDM+BN38Q==
+Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-136b5dd6655so3057645fac.3;
+        Thu, 13 Oct 2022 10:13:04 -0700 (PDT)
+X-Gm-Message-State: ACrzQf39M1CDwGMG6eVWVjB456T0cCkD1qvb2FieR4bDfFVauf8WsGkg
+        Mg6G+GVYcdogt/e/KBSXUu6NLEXeGm6JQ6coPJE=
+X-Google-Smtp-Source: AMsMyM7DQbyVVn9lSwhHQzzI4CguO+SXqSphIbQfVREHxCAuibjZh6Kn8I+5xZ4lObB09Jy9FhCU5LPHq3lbCFDEMkw=
+X-Received: by 2002:a05:6870:4413:b0:136:66cc:6af8 with SMTP id
+ u19-20020a056870441300b0013666cc6af8mr6177186oah.112.1665681183189; Thu, 13
+ Oct 2022 10:13:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <20221013163857.3086718-1-guoren@kernel.org>
+In-Reply-To: <20221013163857.3086718-1-guoren@kernel.org>
+From:   Guo Ren <guoren@kernel.org>
+Date:   Fri, 14 Oct 2022 01:12:51 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTSu_SDGEYZxW7nfY8B=k_hkdxKy2TsK7C5v7cqM7qrKRA@mail.gmail.com>
+Message-ID: <CAJF2gTSu_SDGEYZxW7nfY8B=k_hkdxKy2TsK7C5v7cqM7qrKRA@mail.gmail.com>
+Subject: Re: [PATCH] net: Fixup netif_attrmask_next_and warning
+To:     andriy.shevchenko@linux.intel.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux@rasmusvillemoes.dk, yury.norov@gmail.com
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Guo Ren <guoren@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marcin Wojtas <mw@semihalf.com>
+On Fri, Oct 14, 2022 at 12:39 AM <guoren@kernel.org> wrote:
+>
+> From: Guo Ren <guoren@linux.alibaba.com>
+>
+> Don't pass nr_bits as arg1, cpu_max_bits_warn would cause warning
+> now.
+>
+> ------------[ cut here ]------------
+> WARNING: CPU: 2 PID: 1 at include/linux/cpumask.h:110 __netif_set_xps_queue+0x14e/0x770
+> Modules linked in:
+> CPU: 2 PID: 1 Comm: swapper/0 Not tainted 6.0.0-rc4-00018-g854701ba4c39 #324
+> Hardware name: riscv-virtio,qemu (DT)
+> epc : __netif_set_xps_queue+0x14e/0x770
+>  ra : __netif_set_xps_queue+0x552/0x770
+> epc : ffffffff806fe448 ra : ffffffff806fe84c sp : ff600000023279d0
+>  gp : ffffffff815fff88 tp : ff600000023a0000 t0 : ff6000000308ab40
+>  t1 : 0000000000000003 t2 : 0000000000000000 s0 : ff60000002327a90
+>  s1 : 0000000000000000 a0 : ff6000000308ab00 a1 : ff6000000308ab00
+>  a2 : ff6000000308a8e8 a3 : 0000000000000004 a4 : 0000000000000000
+>  a5 : 0000000000000000 a6 : 0000000000000000 a7 : 0000000000000000
+>  s2 : 0000000000000000 s3 : 0000000000000000 s4 : ff60000002327aa0
+>  s5 : ffffffff816031c8 s6 : 0000000000000000 s7 : 0000000000000001
+>  s8 : 0000000000000000 s9 : 0000000000000004 s10: ff6000000308a8c0
+>  s11: 0000000000000004 t3 : 0000000000000000 t4 : 0000000000000014
+>  t5 : 0000000000000000 t6 : 0000000000000000
+> status: 0000000200000120 badaddr: 0000000000000000 cause: 0000000000000003
+> [<ffffffff805e5824>] virtnet_set_affinity+0x14a/0x1c0
+> [<ffffffff805e7b04>] virtnet_probe+0x7fc/0xee2
+> [<ffffffff8050e120>] virtio_dev_probe+0x164/0x2de
+> [<ffffffff8055b69e>] really_probe+0x82/0x224
+> [<ffffffff8055b89a>] __driver_probe_device+0x5a/0xaa
+> [<ffffffff8055b916>] driver_probe_device+0x2c/0xb8
+> [<ffffffff8055bf34>] __driver_attach+0x76/0x108
+> [<ffffffff805597c0>] bus_for_each_dev+0x4a/0x8e
+> [<ffffffff8055b072>] driver_attach+0x1a/0x28
+> [<ffffffff8055ab8c>] bus_add_driver+0x13c/0x1a6
+> [<ffffffff8055c722>] driver_register+0x4a/0xfc
+> [<ffffffff8050dc34>] register_virtio_driver+0x1c/0x2c
+> [<ffffffff80a2bae4>] virtio_net_driver_init+0x7a/0xb0
+> [<ffffffff80002840>] do_one_initcall+0x66/0x2e4
+> [<ffffffff80a01212>] kernel_init_freeable+0x28a/0x304
+> [<ffffffff808b21e2>] kernel_init+0x1e/0x110
+> [<ffffffff80003c46>] ret_from_exception+0x0/0x10
+> ---[ end trace 0000000000000000 ]---
+>
+> Fixes: 944c417daeb6 ("net: fix cpu_max_bits_warn() usage in netif_attrmask_next{,_and}")
 
-Update the PP2 ethernet ports subnodes' names to match
-schema enforced by the marvell,pp2.yaml contents.
+Sorry, the Fixes commit is 854701ba4c39.
+----
+commit 854701ba4c39afae2362ba19a580c461cb183e4f
+Author: Yury Norov <yury.norov@gmail.com>
+Date:   Mon Sep 19 14:05:54 2022 -0700
 
-Add new required properties ('reg') which contains information
-about the port ID, keeping 'port-id' ones for backward
-compatibility.
+    net: fix cpu_max_bits_warn() usage in netif_attrmask_next{,_and}
 
-Signed-off-by: Marcin Wojtas <mw@semihalf.com>
----
- arch/arm/boot/dts/armada-375.dtsi | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+    The functions require to be passed with a cpu index prior to one that is
+    the first to start search, so the valid input range is [-1, nr_cpu_ids-1).
+    However, the code checks against [-1, nr_cpu_ids).
 
-diff --git a/arch/arm/boot/dts/armada-375.dtsi b/arch/arm/boot/dts/armada-375.dtsi
-index 929deaf312a5..9fbe0cfec48f 100644
---- a/arch/arm/boot/dts/armada-375.dtsi
-+++ b/arch/arm/boot/dts/armada-375.dtsi
-@@ -178,6 +178,8 @@ mdio: mdio@c0054 {
- 
- 			/* Network controller */
- 			ethernet: ethernet@f0000 {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
- 				compatible = "marvell,armada-375-pp2";
- 				reg = <0xf0000 0xa000>, /* Packet Processor regs */
- 				      <0xc0000 0x3060>, /* LMS regs */
-@@ -187,15 +189,17 @@ ethernet: ethernet@f0000 {
- 				clock-names = "pp_clk", "gop_clk";
- 				status = "disabled";
- 
--				eth0: eth0 {
-+				eth0: ethernet-port@0 {
- 					interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>;
--					port-id = <0>;
-+					reg = <0>;
-+					port-id = <0>; /* For backward compatibility. */
- 					status = "disabled";
- 				};
- 
--				eth1: eth1 {
-+				eth1: ethernet-port@1 {
- 					interrupts = <GIC_SPI 41 IRQ_TYPE_LEVEL_HIGH>;
--					port-id = <1>;
-+					reg = <1>;
-+					port-id = <1>; /* For backward compatibility. */
- 					status = "disabled";
- 				};
- 			};
+    Acked-by: Jakub Kicinski <kuba@kernel.org>
+    Signed-off-by: Yury Norov <yury.norov@gmail.com>
+
+
+> Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+> Signed-off-by: Guo Ren <guoren@kernel.org>
+> ---
+>  net/core/dev.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index fa53830d0683..9ec8b10ae329 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -2589,8 +2589,8 @@ int __netif_set_xps_queue(struct net_device *dev, const unsigned long *mask,
+>                 copy = true;
+>
+>         /* allocate memory for queue storage */
+> -       for (j = -1; j = netif_attrmask_next_and(j, online_mask, mask, nr_ids),
+> -            j < nr_ids;) {
+> +       for (j = -1; j < nr_ids;
+> +            j = netif_attrmask_next_and(j, online_mask, mask, nr_ids)) {
+>                 if (!new_dev_maps) {
+>                         new_dev_maps = kzalloc(maps_sz, GFP_KERNEL);
+>                         if (!new_dev_maps) {
+> --
+> 2.36.1
+>
+
+
 -- 
-2.37.3
-
+Best Regards
+ Guo Ren
