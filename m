@@ -2,98 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0CEC5FDD8B
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 17:50:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4939D5FDD93
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 17:53:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229801AbiJMPu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 11:50:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43022 "EHLO
+        id S229587AbiJMPxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 11:53:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbiJMPuZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 11:50:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EB805E304;
-        Thu, 13 Oct 2022 08:50:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5818B81F20;
-        Thu, 13 Oct 2022 15:50:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 66D1BC433D7;
-        Thu, 13 Oct 2022 15:50:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665676217;
-        bh=6Jmi9yxaqUq0TiuKlx6pKicXoRk7Q06JDNLxaUfZ8A0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=H82fgKs74BZSHePBrCvnMYSm0Bh5prZWgg6ed88gOAuomxlkrxveqyA9VFfCJUbyd
-         HT6d55BqleSzMG446hj3FI7OnmjV29mEb0ZNIAvWsWROGf0yHduNLOmkMKZHzwTBBg
-         HD5dexYuEFu33hOvRq3+pCO5Exse0UiyhGJ2DR95V8am2bmXKazcDPdtIQ0hhWlvt2
-         Gwlc54cNJuzeo5Tnp9xTLDIRHnFFtOagH8NsWqA5WWhtQlG6DXxdEMd3nycIne5qgs
-         y9Yisy0Me5XQBkaynP1oNJ2XckxcT/BKxuWD1aHtp9ADacJys8eX6d3yyHcB10RV87
-         zx3dWGZeXyw6g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 42D9BE29F30;
-        Thu, 13 Oct 2022 15:50:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229710AbiJMPxC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 11:53:02 -0400
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CD9A100BD5
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 08:53:01 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-35ad0584879so21450267b3.7
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 08:53:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Rw+y4Zuzzr57wPyEG3SG0/48K4QIwQm9BpzIw2606Kc=;
+        b=IzHj2PC1KPrhv5dnkg9GYf7VFyLh1sJHTVTu8LLX6WaZ28AdpsD34oC07m+P9zTsml
+         EZfWjz3dsKS/R0gOT3BVIfkYdGnUtxLmMvwj/AJp1zJ46aqzrAO+ZnUnAQaX7R7NZfib
+         dCRRBO7w0HdMrcpU6UCESENg/0EQ+yOxjm6Jq1M5oO+oIrawhGEk2rCV4eHpoHUnq/u8
+         hDQfbg/W0C85BsxlWnQ3ayX07jwJzUViOXEazHsaoUpRTCI6FZc/mw/iBDWYN64OUVvs
+         uBP4Mh0moKyur8WyJF3Yy2pl1wZ5Poi6aQjjmFqlkgNWXW3zVHs4Ig2r+HMRvWejbmO8
+         XliQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Rw+y4Zuzzr57wPyEG3SG0/48K4QIwQm9BpzIw2606Kc=;
+        b=sj58oU/tc4zA1FND4Yajci+mO3R3fMR8ceaiGmwPhdbPltn4X3B7/GNlC/QWznI1NZ
+         GVxlWjXGiHL6SKWXf3Jiyd3cHPsFl9rPVK3aViSm3kcm7S/yAR7ODdcbUrqXsEkBkiXt
+         YytTekL6PCfNUy/3g7stoPcQAMH3n5sOkYpjq6RPUbSpHmQtoc+duytqnlKz4O9+d8v+
+         BBc9mGbZX9FoPzRAiP9sLls/2ZDEgGU62pGg0qATSYCLhlTbh2OkJr1emNtwRxXDSBvD
+         XtrY/f2PIdwK49ze7Gm+pdIUtVdLJfnMVxvrx0hOZ/xpfdLiuQXsF4dxBgT8S+0BW88F
+         LJQg==
+X-Gm-Message-State: ACrzQf0NH4CyWeEd47H6CtHP7jpqbDJZr0PQgfrQVPiTx7O/XVd3M6iK
+        QDxphHpC5+Xl4CUls37w5qmve64urFCAgoEkZnJkAQ==
+X-Google-Smtp-Source: AMsMyM71FgxgF8dnn8bnRaHsQrFYK2PENWdqWDYFeoIEDTsJtxObOFw2uCTB71vQ1TahO5uhmOHAFkNBe4hHXcbDJJ4=
+X-Received: by 2002:a81:4e57:0:b0:360:db33:f020 with SMTP id
+ c84-20020a814e57000000b00360db33f020mr589883ywb.93.1665676381082; Thu, 13 Oct
+ 2022 08:53:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next v4 0/6] Fix bugs found by ASAN when running selftests
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166567621726.30586.15920096866905291891.git-patchwork-notify@kernel.org>
-Date:   Thu, 13 Oct 2022 15:50:17 +0000
-References: <20221011120108.782373-1-xukuohai@huaweicloud.com>
-In-Reply-To: <20221011120108.782373-1-xukuohai@huaweicloud.com>
-To:     Xu Kuohai <xukuohai@huaweicloud.com>
-Cc:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, mykolal@fb.com,
-        shuah@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        hawk@kernel.org, memxor@gmail.com, alan.maguire@oracle.com,
-        delyank@fb.com, lorenzo@kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20220609063412.2205738-1-eric.dumazet@gmail.com>
+ <20220609063412.2205738-7-eric.dumazet@gmail.com> <684c6220-9288-3838-a938-0792b57c5968@amd.com>
+ <CANn89iKpaJsqeMDQYySmUr2=n8D+dyXKtK0u7hF_8kW10mMm1A@mail.gmail.com>
+In-Reply-To: <CANn89iKpaJsqeMDQYySmUr2=n8D+dyXKtK0u7hF_8kW10mMm1A@mail.gmail.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Thu, 13 Oct 2022 08:52:49 -0700
+Message-ID: <CALvZod7Bprb_Vt_6OqhtBCpgJc_EykK49emvpnfrpyX0RX5dGg@mail.gmail.com>
+Subject: Re: [PATCH net-next 6/7] net: keep sk->sk_forward_alloc as small as possible
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     K Prateek Nayak <kprateek.nayak@amd.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Gautham Shenoy <gautham.shenoy@amd.com>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Chen Yu <yu.c.chen@intel.com>,
+        Abel Wu <wuyun.abel@bytedance.com>,
+        Yicong Yang <yangyicong@hisilicon.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Thu, Oct 13, 2022 at 7:35 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+[...]
+> The only regression that has been noticed was when memcg was in the picture.
+> Shakeel Butt sent patches to address this specific mm issue.
+> Not sure what happened to the series (
+> https://patchwork.kernel.org/project/linux-mm/list/?series=669584 )
+>
 
-This series was applied to bpf/bpf-next.git (master)
-by Andrii Nakryiko <andrii@kernel.org>:
+That series has been merged into Linus tree for 6.1-rc1.
 
-On Tue, 11 Oct 2022 08:01:02 -0400 you wrote:
-> From: Xu Kuohai <xukuohai@huawei.com>
-> 
-> This series fixes bugs found by ASAN when running bpf selftests on arm64.
-> 
-> v4:
-> - Address Andrii's suggestions
-> 
-> [...]
+Prateek, are you running the benchmarks in memory cgroups? Can you
+also test the latest Linus tree (or 6.1-rc1 when available) and see if
+the regression is still there?
 
-Here is the summary with links:
-  - [bpf-next,v4,1/6] libbpf: Fix use-after-free in btf_dump_name_dups
-    https://git.kernel.org/bpf/bpf-next/c/02c1e5b0bbb8
-  - [bpf-next,v4,2/6] libbpf: Fix memory leak in parse_usdt_arg()
-    https://git.kernel.org/bpf/bpf-next/c/cd168cc6f685
-  - [bpf-next,v4,3/6] selftests/bpf: Fix memory leak caused by not destroying skeleton
-    https://git.kernel.org/bpf/bpf-next/c/fbca16071678
-  - [bpf-next,v4,4/6] selftest/bpf: Fix memory leak in kprobe_multi_test
-    https://git.kernel.org/bpf/bpf-next/c/159c69121102
-  - [bpf-next,v4,5/6] selftests/bpf: Fix error failure of case test_xdp_adjust_tail_grow
-    https://git.kernel.org/bpf/bpf-next/c/496848b47126
-  - [bpf-next,v4,6/6] selftest/bpf: Fix error usage of ASSERT_OK in xdp_adjust_tail.c
-    https://git.kernel.org/bpf/bpf-next/c/cafecc0e3df3
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+thanks,
+Shakeel
