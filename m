@@ -2,110 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A15A5FD2E6
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 03:45:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E154E5FD2FD
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 03:50:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229646AbiJMBpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 21:45:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57348 "EHLO
+        id S229924AbiJMBu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 21:50:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229544AbiJMBpK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 21:45:10 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B02B93F1C6;
-        Wed, 12 Oct 2022 18:45:06 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MnsfP1Wxhz1P79c;
-        Thu, 13 Oct 2022 09:40:29 +0800 (CST)
-Received: from [10.67.111.192] (10.67.111.192) by
- kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 13 Oct 2022 09:45:03 +0800
-Message-ID: <1d7b081c-9ae1-b5bd-e97e-518147e06099@huawei.com>
-Date:   Thu, 13 Oct 2022 09:45:02 +0800
+        with ESMTP id S229876AbiJMBuU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 21:50:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44CB288DEA
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 18:50:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E08ECB81CF0
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 01:50:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 887B7C4347C;
+        Thu, 13 Oct 2022 01:50:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1665625816;
+        bh=hLjnv4mrVLh5HMxyot5Mx3Iq70N97EgA069cYJUiqJ4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Ri9cscau/6UeuFc/hP7PMSALWfotmGZmdugUMjKvVdvW7HRxbP/TDTtFZXvXuF63r
+         y5lwOxVZTo80527I/IRr32W2odq8rT6YNZDKjvCUSH6SNz0yh5B78zSarRwvB/uSXv
+         ckN1go3PKcZTD8EEAn3PPC8JS93lDbOID01jsdqEgZEDkg0cUe5MowMkwyDDk1jBpb
+         nEhkx0nzlmnELNIDcESEC1DHT/w1g9ATSBFwrhzleiThg3zSLIAwddBin9yIA9ZFbO
+         IIXg0ZY1eRegMbH4auIB026GAcDELykO0XUl/eHkKB7nmtSC82cvVu7IqyyOaTtits
+         CsHZcJPCL+XXg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6E8FCE29F35;
+        Thu, 13 Oct 2022 01:50:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH bpf-next v4 5/6] selftests/bpf: Fix error failure of case
- test_xdp_adjust_tail_grow
-Content-Language: en-US
-To:     Martin KaFai Lau <martin.lau@linux.dev>,
-        Xu Kuohai <xukuohai@huaweicloud.com>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Alan Maguire <alan.maguire@oracle.com>,
-        Delyan Kratunov <delyank@fb.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>, <bpf@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-References: <20221011120108.782373-1-xukuohai@huaweicloud.com>
- <20221011120108.782373-6-xukuohai@huaweicloud.com>
- <611e9bed-df6a-0da9-fbf9-4046f4211a7d@linux.dev>
-From:   Xu Kuohai <xukuohai@huawei.com>
-In-Reply-To: <611e9bed-df6a-0da9-fbf9-4046f4211a7d@linux.dev>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.111.192]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net] openvswitch: add nf_ct_is_confirmed check before
+ assigning the helper
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166562581644.26155.16251877521132982468.git-patchwork-notify@kernel.org>
+Date:   Thu, 13 Oct 2022 01:50:16 +0000
+References: <c5c9092a22a2194650222bffaf786902613deb16.1665085502.git.lucien.xin@gmail.com>
+In-Reply-To: <c5c9092a22a2194650222bffaf786902613deb16.1665085502.git.lucien.xin@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     netdev@vger.kernel.org, dev@openvswitch.org, davem@davemloft.net,
+        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
+        pshelar@ovn.org, fw@strlen.de, pablo@netfilter.org,
+        i.maximets@ovn.org, echaudro@redhat.com, yihung.wei@gmail.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/13/2022 7:17 AM, Martin KaFai Lau wrote:
-> On 10/11/22 5:01 AM, Xu Kuohai wrote:
->> From: Xu Kuohai <xukuohai@huawei.com>
->>
->> test_xdp_adjust_tail_grow failed with ipv6:
->>    test_xdp_adjust_tail_grow:FAIL:ipv6 unexpected error: -28 (errno 28)
->>
->> The reason is that this test case tests ipv4 before ipv6, and when ipv4
->> test finished, topts.data_size_out was set to 54, which is smaller than the
->> ipv6 output data size 114, so ipv6 test fails with NOSPC error.
->>
->> Fix it by reset topts.data_size_out to sizeof(buf) before testing ipv6.
->>
->> Fixes: 04fcb5f9a104 ("selftests/bpf: Migrate from bpf_prog_test_run")
->> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
->> ---
->>   tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c | 1 +
->>   1 file changed, 1 insertion(+)
->>
->> diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
->> index 9b9cf8458adf..009ee37607df 100644
->> --- a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
->> +++ b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
->> @@ -63,6 +63,7 @@ static void test_xdp_adjust_tail_grow(void)
->>       expect_sz = sizeof(pkt_v6) + 40; /* Test grow with 40 bytes */
->>       topts.data_in = &pkt_v6;
->>       topts.data_size_in = sizeof(pkt_v6);
->> +    topts.data_size_out = sizeof(buf);
-> 
-> lgtm but how was it working before... weird.
-> 
+Hello:
 
-the test case returns before this line is executed, see patch 6
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
->>       err = bpf_prog_test_run_opts(prog_fd, &topts);
->>       ASSERT_OK(err, "ipv6");
->>       ASSERT_EQ(topts.retval, XDP_TX, "ipv6 retval");
+On Thu,  6 Oct 2022 15:45:02 -0400 you wrote:
+> A WARN_ON call trace would be triggered when 'ct(commit, alg=helper)'
+> applies on a confirmed connection:
 > 
-> .
+>   WARNING: CPU: 0 PID: 1251 at net/netfilter/nf_conntrack_extend.c:98
+>   RIP: 0010:nf_ct_ext_add+0x12d/0x150 [nf_conntrack]
+>   Call Trace:
+>    <TASK>
+>    nf_ct_helper_ext_add+0x12/0x60 [nf_conntrack]
+>    __nf_ct_try_assign_helper+0xc4/0x160 [nf_conntrack]
+>    __ovs_ct_lookup+0x72e/0x780 [openvswitch]
+>    ovs_ct_execute+0x1d8/0x920 [openvswitch]
+>    do_execute_actions+0x4e6/0xb60 [openvswitch]
+>    ovs_execute_actions+0x60/0x140 [openvswitch]
+>    ovs_packet_cmd_execute+0x2ad/0x310 [openvswitch]
+>    genl_family_rcv_msg_doit.isra.15+0x113/0x150
+>    genl_rcv_msg+0xef/0x1f0
+> 
+> [...]
+
+Here is the summary with links:
+  - [net] openvswitch: add nf_ct_is_confirmed check before assigning the helper
+    https://git.kernel.org/netdev/net/c/3c1860543fcc
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
