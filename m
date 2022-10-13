@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 73AAE5FE258
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 21:03:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B82065FE1E3
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 20:46:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229737AbiJMTDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 15:03:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36650 "EHLO
+        id S229976AbiJMSqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 14:46:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229727AbiJMTDM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 15:03:12 -0400
+        with ESMTP id S232261AbiJMSqK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 14:46:10 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99DD5D2F9
-        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 12:03:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD6418B481
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 11:43:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1665687789;
+        s=mimecast20190719; t=1665686476;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=vsO4hYJKt+wtVYN9Zqac/Tunho9CLrg8yUdRp7WUlZA=;
-        b=PQtX24VJk1SbFim7kz+5LDo5XmmdJEexMjfBovyfkanhiJpxkHIxqDxTyb2bSIdZXKBqy+
-        cq9u0dif7PjXvAyiVd36gIIX078Ed27aR+g/jtp+mQVI8UrSlxdU69lC6n8qvX/jucirTF
-        4VycbZe0opJmHFAH8OS/3u9pL9+soko=
-Received: from mail-oa1-f71.google.com (mail-oa1-f71.google.com
- [209.85.160.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=aO9uwyAWNrITIE0HcaM8sZnAKHxlA4eUnkHhusC4UKE=;
+        b=HUAZBmVZdC5JKhxZJiN2OvTGJyteki3L6JkJ0BZ6KKo/i+Jnvp1EApRGP+SMMY4szhMMJb
+        quwQzWDK7nnbLQ1Z+3hHi4F0yApuLJJW59Dd4w23yRwtke4AUYC3K99S5FZsTiY36PZ71r
+        kDYhzkm6lCCiRg6HvYqkZf8QS8KF4+Q=
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com
+ [209.85.167.200]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-530-1HgcjoFAObO85sM6KelM1A-1; Thu, 13 Oct 2022 14:41:09 -0400
-X-MC-Unique: 1HgcjoFAObO85sM6KelM1A-1
-Received: by mail-oa1-f71.google.com with SMTP id 586e51a60fabf-13234741239so1493351fac.7
-        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 11:41:08 -0700 (PDT)
+ us-mta-650-CoruuQkfPY6vU8E4tHf0EQ-1; Thu, 13 Oct 2022 14:41:15 -0400
+X-MC-Unique: CoruuQkfPY6vU8E4tHf0EQ-1
+Received: by mail-oi1-f200.google.com with SMTP id t37-20020a05680815a500b0034fdd9124d9so1086585oiw.3
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 11:41:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=vsO4hYJKt+wtVYN9Zqac/Tunho9CLrg8yUdRp7WUlZA=;
-        b=RV9sLPnQrIpq2X82aUKOkJeL1onMe7+I07KujwpSyR+PdtVkVWqgQQ2KqjvK2Cwve5
-         xpVXf9sD2au8wxSUa+NIklvIakFEmsgOa6u2F4L6LAWLVsSyY3o8w67l5lWyEp8/RH4Z
-         +lJckxbvn8nWfZa/IStrpjnWC9HXI0NtH8Q+QnmcwV3WDz5dFQIb1sJYfwij1pXPnTrX
-         9NQudRETQJLMafaVpcLdCQHt9gQ6GTkyDsouBxjYwIAdAYdCA43bFOpn83CaZNolcgAz
-         sMiRE8YzxESG8I9slbssg+sXOn5sL4eGi/Jxv5qKN9J4uszqtXGXyWT1+BXGqGC9p//K
-         L/uw==
-X-Gm-Message-State: ACrzQf0T+/irHGdLjHPhUR69lunSo480Rp3hEDvJsd9NSFF1KqBDLaOV
-        aGaaDDzKIlFQxv/2OA4fhyW/tEOalCf1SdqzFutn/Hvy6KrmZ+amHqjLBOT3PGDhehEUjgSmDLJ
-        DbpJ0FjtYsevU6nrj
-X-Received: by 2002:a05:6808:10c3:b0:350:e563:7c4a with SMTP id s3-20020a05680810c300b00350e5637c4amr598483ois.182.1665686468368;
-        Thu, 13 Oct 2022 11:41:08 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM7GzHFdCUGCQhqNsosJjZKt8Eeu2wVwQ9Do3KHBGqH13o0NNm/9FKqwNNjhBy1g53fEGrBUSA==
-X-Received: by 2002:a05:6808:10c3:b0:350:e563:7c4a with SMTP id s3-20020a05680810c300b00350e5637c4amr598464ois.182.1665686468134;
-        Thu, 13 Oct 2022 11:41:08 -0700 (PDT)
+        bh=aO9uwyAWNrITIE0HcaM8sZnAKHxlA4eUnkHhusC4UKE=;
+        b=zZ6Nv84mq32lvStv/Uta38hFbgynIXDUWbjSRaJ3tWaPjylI/pg+YfcRAVbOHiEIBU
+         5g+2KHVKijWAU2kR16GtCGww/uMMJaYTbPer/BbCLIwfX3rNMTfoodjwR7mcEnORatA2
+         5q7gif3T42BFniSVRUJc213jyvdxgW/hPEUSF9Mp8p5Yjx2tUx9IxezfJ123imzXI6H2
+         sxsvJz+7/RhcxCsUDYouUxNUblTZGCL5UaQ4bUpFqIelKhBwIh4DToyZlewMo0xumgy9
+         k3keT8bqxU6PZIY2AjrmxOmaXQVWt22YBGiWIeTu2qunXl5EInBrJOlNqGePrkvSNON1
+         I6gw==
+X-Gm-Message-State: ACrzQf0jTgphKWkMxyfEP5CHgwvssICgzreXdNNZMkI4E38iJPzFUw8i
+        u4IIjR2xi1zpBwAo7kPzD2ta53tKtcdC+BvIeAi6mFpyiQoKWBpVk2MOv0ZYDKA+i8/KgCKIBXc
+        UZx7451w1ppMNosMl
+X-Received: by 2002:a05:6870:596:b0:12d:91cd:cf36 with SMTP id m22-20020a056870059600b0012d91cdcf36mr6446062oap.84.1665686474650;
+        Thu, 13 Oct 2022 11:41:14 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM52k3vKtIVGL+BfBIsY/ib9UZWiX3f2GV5v2CeLaUkMNUjAO0cLO7Cc3TLwdOlxaDtAQIvz/Q==
+X-Received: by 2002:a05:6870:596:b0:12d:91cd:cf36 with SMTP id m22-20020a056870059600b0012d91cdcf36mr6446050oap.84.1665686474448;
+        Thu, 13 Oct 2022 11:41:14 -0700 (PDT)
 Received: from localhost.localdomain ([2804:1b3:a801:9473:d360:c737:7c9c:d52b])
-        by smtp.gmail.com with ESMTPSA id v13-20020a05683024ad00b006618ad77a63sm244521ots.74.2022.10.13.11.41.02
+        by smtp.gmail.com with ESMTPSA id v13-20020a05683024ad00b006618ad77a63sm244521ots.74.2022.10.13.11.41.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Oct 2022 11:41:07 -0700 (PDT)
+        Thu, 13 Oct 2022 11:41:14 -0700 (PDT)
 From:   Leonardo Bras <leobras@redhat.com>
 To:     Steffen Klassert <steffen.klassert@secunet.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
@@ -82,9 +82,9 @@ To:     Steffen Klassert <steffen.klassert@secunet.com>,
         Wang Yufen <wangyufen@huawei.com>, mtosatti@redhat.com
 Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-pci@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v2 3/4] sched/isolation: Add HK_TYPE_WQ to isolcpus=domain
-Date:   Thu, 13 Oct 2022 15:40:28 -0300
-Message-Id: <20221013184028.129486-4-leobras@redhat.com>
+Subject: [PATCH v2 4/4] crypto/pcrypt: Do not use isolated CPUs for callback
+Date:   Thu, 13 Oct 2022 15:40:29 -0300
+Message-Id: <20221013184028.129486-5-leobras@redhat.com>
 X-Mailer: git-send-email 2.38.0
 In-Reply-To: <20221013184028.129486-1-leobras@redhat.com>
 References: <20221013184028.129486-1-leobras@redhat.com>
@@ -92,110 +92,59 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Housekeeping code keeps multiple cpumasks in order to keep track of which
-cpus can perform given housekeeping category.
+Currently pcrypt_aead_init_tfm() will pick callback cpus (ctx->cb_cpu)
+from any online cpus. Later padata_reorder() will queue_work_on() the
+chosen cb_cpu.
 
-Every time the HK_TYPE_WQ cpumask is checked before queueing work at a cpu
-WQ it also happens to check for HK_TYPE_DOMAIN. So It can be assumed that
-the Domain isolation also ends up isolating work queues.
+This is undesired if the chosen cb_cpu is listed as isolated (i.e. using
+isolcpus=... or nohz_full=... kernel parameters), since the work queued
+will interfere with the workload on the isolated cpu.
 
-Delegating current HK_TYPE_DOMAIN's work queue isolation to HK_TYPE_WQ
-makes it simpler to check if a cpu can run a task into an work queue, since
-code just need to go through a single HK_TYPE_* cpumask.
-
-Make isolcpus=domain aggregate both HK_TYPE_DOMAIN and HK_TYPE_WQ, and
-remove a lot of cpumask_and calls.
-
-Also, remove a unnecessary '|=' at housekeeping_isolcpus_setup() since we
-are sure that 'flags == 0' here.
+Make sure isolated cpus are not used for pcrypt.
 
 Signed-off-by: Leonardo Bras <leobras@redhat.com>
 ---
- drivers/pci/pci-driver.c | 13 +------------
- kernel/sched/isolation.c |  4 ++--
- kernel/workqueue.c       |  1 -
- net/core/net-sysfs.c     |  1 -
- 4 files changed, 3 insertions(+), 16 deletions(-)
+ crypto/pcrypt.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 107d77f3c8467..550bef2504b8d 100644
---- a/drivers/pci/pci-driver.c
-+++ b/drivers/pci/pci-driver.c
-@@ -371,19 +371,8 @@ static int pci_call_probe(struct pci_driver *drv, struct pci_dev *dev,
- 	    pci_physfn_is_probed(dev)) {
- 		cpu = nr_cpu_ids;
- 	} else {
--		cpumask_var_t wq_domain_mask;
--
--		if (!zalloc_cpumask_var(&wq_domain_mask, GFP_KERNEL)) {
--			error = -ENOMEM;
--			goto out;
--		}
--		cpumask_and(wq_domain_mask,
--			    housekeeping_cpumask(HK_TYPE_WQ),
--			    housekeeping_cpumask(HK_TYPE_DOMAIN));
--
- 		cpu = cpumask_any_and(cpumask_of_node(node),
--				      wq_domain_mask);
--		free_cpumask_var(wq_domain_mask);
-+				      housekeeping_cpumask(HK_TYPE_WQ));
- 	}
+diff --git a/crypto/pcrypt.c b/crypto/pcrypt.c
+index 9d10b846ccf73..0162629a03957 100644
+--- a/crypto/pcrypt.c
++++ b/crypto/pcrypt.c
+@@ -16,6 +16,7 @@
+ #include <linux/kobject.h>
+ #include <linux/cpu.h>
+ #include <crypto/pcrypt.h>
++#include <linux/sched/isolation.h>
  
- 	if (cpu < nr_cpu_ids)
-diff --git a/kernel/sched/isolation.c b/kernel/sched/isolation.c
-index 373d42c707bc5..ced4b78564810 100644
---- a/kernel/sched/isolation.c
-+++ b/kernel/sched/isolation.c
-@@ -204,7 +204,7 @@ static int __init housekeeping_isolcpus_setup(char *str)
+ static struct padata_instance *pencrypt;
+ static struct padata_instance *pdecrypt;
+@@ -175,13 +176,15 @@ static int pcrypt_aead_init_tfm(struct crypto_aead *tfm)
+ 	struct pcrypt_instance_ctx *ictx = aead_instance_ctx(inst);
+ 	struct pcrypt_aead_ctx *ctx = crypto_aead_ctx(tfm);
+ 	struct crypto_aead *cipher;
++	const cpumask_t *hk_wq = housekeeping_cpumask(HK_TYPE_WQ);
  
- 		if (!strncmp(str, "domain,", 7)) {
- 			str += 7;
--			flags |= HK_FLAG_DOMAIN;
-+			flags |= HK_FLAG_DOMAIN | HK_FLAG_WQ;
- 			continue;
- 		}
+ 	cpu_index = (unsigned int)atomic_inc_return(&ictx->tfm_count) %
+-		    cpumask_weight(cpu_online_mask);
++		    cpumask_weight_and(hk_wq, cpu_online_mask);
  
-@@ -234,7 +234,7 @@ static int __init housekeeping_isolcpus_setup(char *str)
+-	ctx->cb_cpu = cpumask_first(cpu_online_mask);
++	ctx->cb_cpu = cpumask_first_and(hk_wq, cpu_online_mask);
+ 	for (cpu = 0; cpu < cpu_index; cpu++)
+-		ctx->cb_cpu = cpumask_next(ctx->cb_cpu, cpu_online_mask);
++		ctx->cb_cpu = cpumask_next_and(ctx->cb_cpu, hk_wq,
++					       cpu_online_mask);
  
- 	/* Default behaviour for isolcpus without flags */
- 	if (!flags)
--		flags |= HK_FLAG_DOMAIN;
-+		flags = HK_FLAG_DOMAIN | HK_FLAG_WQ;
+ 	cipher = crypto_spawn_aead(&ictx->spawn);
  
- 	return housekeeping_setup(str, flags);
- }
-diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-index 7cd5f5e7e0a1b..b557daa571f17 100644
---- a/kernel/workqueue.c
-+++ b/kernel/workqueue.c
-@@ -6004,7 +6004,6 @@ void __init workqueue_init_early(void)
- 
- 	BUG_ON(!alloc_cpumask_var(&wq_unbound_cpumask, GFP_KERNEL));
- 	cpumask_copy(wq_unbound_cpumask, housekeeping_cpumask(HK_TYPE_WQ));
--	cpumask_and(wq_unbound_cpumask, wq_unbound_cpumask, housekeeping_cpumask(HK_TYPE_DOMAIN));
- 
- 	pwq_cache = KMEM_CACHE(pool_workqueue, SLAB_PANIC);
- 
-diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index 8409d41405dfe..7b6fb62a118ab 100644
---- a/net/core/net-sysfs.c
-+++ b/net/core/net-sysfs.c
-@@ -852,7 +852,6 @@ static ssize_t store_rps_map(struct netdev_rx_queue *queue,
- 	}
- 
- 	if (!cpumask_empty(mask)) {
--		cpumask_and(mask, mask, housekeeping_cpumask(HK_TYPE_DOMAIN));
- 		cpumask_and(mask, mask, housekeeping_cpumask(HK_TYPE_WQ));
- 		if (cpumask_empty(mask)) {
- 			free_cpumask_var(mask);
 -- 
 2.38.0
 
