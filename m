@@ -2,60 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 71D175FE208
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 20:51:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C0875FE211
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 20:52:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231329AbiJMSva (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 14:51:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52310 "EHLO
+        id S232231AbiJMSwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 14:52:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231423AbiJMSvE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 14:51:04 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B271547B9F
-        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 11:49:17 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id h15so2308228qtu.2
-        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 11:49:17 -0700 (PDT)
+        with ESMTP id S232199AbiJMSvp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 14:51:45 -0400
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1CBA18347
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 11:49:47 -0700 (PDT)
+Received: by mail-qv1-xf34.google.com with SMTP id i9so1876517qvu.1
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 11:49:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=Hh8VSPpCMU9TIR5sHV9wcae/102Ucbb59hlSDBbz5K0=;
-        b=jTpqb6zkVQ4xqk9gOWmU9z54LGeG7Qjn3ItnfydnvulihLlcuPeSEWmoivT+l9KQ8N
-         KTF9k46oi+jJkFSYtiIrdRWdWwbYc5w5lj9HOI4LKFbB5mL+KTzeOvA5Oj1qsD8GEIv8
-         rqZzSALPiyy7BMHRY5aS5crLMMfcAUaRRtXNJo3CcbybGra1OAZq6vGD9vMsRLvjTHcv
-         6EUVhMDNaXQzNraQa5xJxDWZjtcBxHER7EA9OzQBqK2s43+Lo5dO0cO5h22QLCFJ0dWi
-         5y9AKHe3VsWY1MXbhWpfq8FpZ6/8Lg9Mc1x623wLRAmEa9adgvDvnkxfDwcMBTw7Jsxt
-         Jzpw==
+        bh=SpiOZdhs8DkPfxMIeo17LG9S/lTyDpfq6Tzt1fvQgiE=;
+        b=Ki7BXDIsOAs2d8IRlb3OHYg07FqRdwfGAcX/YuQvENX4X4gLe+PdKqDnvrX8qe1oUL
+         M2xh4acuHPHDAftUjU6YXbqqUUGi7s7vFz1aIkGsSWCaoqMXd8WxV18Pzwbb3ak3pKCW
+         w/U6crLc3UyXQc3IWWWli2a6iPDm5ZcGc264J3g0cerGefkoK2wEvZmxYeFCdYYgns5Q
+         p3xQTp2TlfRcTI4mMmJkiR435K5bie6vIWPpFqO/I7XRcph5Yjr2BLzERptdf6JQHp6l
+         3+kAjzTqYBHdT3krbiK3KPbiBooMCFHi7F84xKhazwf1Gxo/3mR6NxlBXe5TjBc0QJw2
+         OqDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Hh8VSPpCMU9TIR5sHV9wcae/102Ucbb59hlSDBbz5K0=;
-        b=Opp5HH+R0jMgZCpNBn4oL1Nmf1HFHYROv8WagIg+GHQhTtTpR073kJD8SQY7X43aqI
-         zB0d+2aaByvgbaq8VomKF/093vUhHyA//il7KwEwtb3wDl2pP5YPQ1uLuCGZ5r69bUPH
-         /w9Jv8Q9wQtLXRCQOoWMmL7thfvlo5OtvhKMltYG7onFeyfEhIJFCP8hReOMx/WP46MQ
-         zQWktHGpnjvzMcsVxuhGmF8G0j90TCfOqn6FB/FqgLOwJv5tEb+sFrlBqLDO/+kwz7eo
-         RaRXYedBvGjEM8VjHNGfeRmeqxwO5nCqTYCmv+qmSOpC+6+DzFhe9Iy2b4bfUAMHeoHT
-         TsoA==
-X-Gm-Message-State: ACrzQf2/CF1aiDKJphsVXiB1CPmOBsUad4OggNqQ5rMIRtXRA+zu5WIE
-        V6wZlKctv7B9+L9JWTiMSyg=
-X-Google-Smtp-Source: AMsMyM7FqhQ83abcQwq5mIJuWc2u/CV0q4+UWl5+zr+whM9PEeb41Ff7MvU48hn8K17v6H0ubYn0Bg==
-X-Received: by 2002:ac8:4d5b:0:b0:39c:b6d2:b631 with SMTP id x27-20020ac84d5b000000b0039cb6d2b631mr1078235qtv.487.1665686882814;
-        Thu, 13 Oct 2022 11:48:02 -0700 (PDT)
+        bh=SpiOZdhs8DkPfxMIeo17LG9S/lTyDpfq6Tzt1fvQgiE=;
+        b=XPMhZ898TVEaa4+7klDtwb9H5BDmNNNUwI3C9x+S4PCOSNeZwSQnO1aEJHEqIwSmzL
+         h41cczh+NZ4qYO3rK2EOY6QuiAm9YspWsqQK2sDS16sqe2e1DbhCVliBO8Nr8kp1jQVa
+         tc024qhzvb82PGicwLJ467856z4Rs9fPs4eRRZEIDEbmWc8mrEYzE45qW61ClDAn19+E
+         zLdraqCwU93i8ptlRFPKGrMyQcC4XVFDCzHushNakaT4zVEO3ftbPfvTmziBxfWSst3q
+         6vianPYqqLT5qmRPI+hIEJDB9Z75+InfOZELUGm2dKFN9OgjZHLLgd8ailDseqPNVMVj
+         CWEw==
+X-Gm-Message-State: ACrzQf2SNHrJX+xTv4J0ehTYZCEk6LdeuGJ+1KbmzwjgbtulxpIRoCFk
+        04qNk0JQVuTabzIBoQ2rbzQ=
+X-Google-Smtp-Source: AMsMyM5FCRoHrM/azxvKD7WtMMpuO+Jx4fYXgDuPE0V3s7qhBDL2AcmK82A2VStcm2YBSSRyi0T1jQ==
+X-Received: by 2002:a05:6214:518b:b0:4b1:dae2:4537 with SMTP id kl11-20020a056214518b00b004b1dae24537mr1009917qvb.2.1665686939334;
+        Thu, 13 Oct 2022 11:48:59 -0700 (PDT)
 Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id l3-20020ac84583000000b003986fc4d9fdsm497159qtn.49.2022.10.13.11.47.56
+        by smtp.googlemail.com with ESMTPSA id g10-20020ac8070a000000b0039cc47752casm432705qth.77.2022.10.13.11.48.56
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Oct 2022 11:48:02 -0700 (PDT)
-Message-ID: <2c861748-b881-f464-abd1-1a1588e2a330@gmail.com>
-Date:   Thu, 13 Oct 2022 11:47:55 -0700
+        Thu, 13 Oct 2022 11:48:58 -0700 (PDT)
+Message-ID: <aa6b1fcd-b8d8-2df4-b4a8-b77f7a7e5fb2@gmail.com>
+Date:   Thu, 13 Oct 2022 11:48:55 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH v5 1/2] net: phylink: add mac_managed_pm in phylink_config
- structure
+Subject: Re: [PATCH v5 2/2] net: stmmac: Enable mac_managed_pm phylink config
 Content-Language: en-US
 To:     Shenwei Wang <shenwei.wang@nxp.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -70,12 +69,11 @@ Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
         Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
         linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev,
-        Russell King <rmk+kernel@armlinux.org.uk>
+        linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev
 References: <20221013133904.978802-1-shenwei.wang@nxp.com>
- <20221013133904.978802-2-shenwei.wang@nxp.com>
+ <20221013133904.978802-3-shenwei.wang@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20221013133904.978802-2-shenwei.wang@nxp.com>
+In-Reply-To: <20221013133904.978802-3-shenwei.wang@nxp.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -89,31 +87,19 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 10/13/22 06:39, Shenwei Wang wrote:
-> The recent commit
-> 
-> 'commit 47ac7b2f6a1f ("net: phy: Warn about incorrect
-> mdio_bus_phy_resume() state")'
-> 
-> requires the MAC driver explicitly tell the phy driver who is
-> managing the PM, otherwise you will see warning during resume
-> stage.
-> 
-> Add a boolean property in the phylink_config structure so that
-> the MAC driver can use it to tell the PHY driver if it wants to
-> manage the PM.
+> Enable the mac_managed_pm configuration in the phylink_config
+> structure to avoid the kernel warning during system resume.
 > 
 > 'Fixes: 47ac7b2f6a1f ("net: phy: Warn about incorrect
 > mdio_bus_phy_resume() state")'
+> 
+> Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
 
-This is not the way to provide a Fixse tag, it should simply be:
-
-Fixes: 47ac7b2f6a1f ("net: phy: Warn about incorrect 
-mdio_bus_phy_resume() state"
+Same comment as patch #1, the Fixes tag is improperly formatted and does 
+not require the use of ' before and after.
 
 With that fixed:
 
 Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-
-as a courtesy, you could CC the author of the patch you are fixing BTW
 -- 
 Florian
