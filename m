@@ -2,144 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 650C95FD3BF
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 06:18:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A6445FD3C2
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 06:25:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229540AbiJMESl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 00:18:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45224 "EHLO
+        id S229490AbiJMEYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 00:24:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229494AbiJMESh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 00:18:37 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AF61122BC5
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 21:18:35 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id z9-20020a17090a468900b00202fdb32ba1so496514pjf.1
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 21:18:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=zRvbOdnLFkkO1H+l0YKZdetTiBnUb46NxgSTP+dtmWw=;
-        b=UHRwCHPfL9O7ChsvIKIHzncJ2N3Fjdrq0hlgsp1EwwDR2LNEVm5/FrMmvck2ZjQqDc
-         QO7XNuUb3Or1ixE3y5dL1xON/UZnZE+I0yt1y9b7QFGB/Q6kVb9aREbKxAgtbYMlIheL
-         kgEqGxFSMKdRWmm7zjRn6D+Wmlau2q8wiHgY8X0e555V4tJ72xR+jX4AlRGYaJkyU7ke
-         HXibMWsW8IrgyjHqsw+sZr9M9aVnLuSyFalJWPSuS0HSNLOj1NnAcsQayv7AxTPd1rms
-         rmVtNoHsurRukqtMwk2UDi9TkLaL7sbTXklc/w3CDAk+P4aTlw1M9d1g3TEfT0McpP56
-         aagQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=zRvbOdnLFkkO1H+l0YKZdetTiBnUb46NxgSTP+dtmWw=;
-        b=jdR/3wjO4dOZpfv/kohW6s44Z6fqNV9ivabgniXq6BKS6ClxPaSfM6gFDJjBhflwph
-         Q/NTSzVvk0CCK0vrGzGnKjeyF1u7Tx7nuHQpQbq1zL7lrzBedbq0jO6ig3lbtvriVWew
-         3QgKuVO5oMpQznz/IYnWJhAzDe+hLUrJq2PuUZAv2HqeZ7WPGNGrOTOl38NQkTD9Ji8H
-         lOInsB/ay2Lq6ub3g7kYghjMNCwyH94qo4eEEnaP2yDePLAirCVOwV6ju7HkvUleVNTR
-         xKDzeVFQ9AS/8bp0N5/TvcFNWFm56hl+CMn/qZgvHyzXJqgB5/b/FQFEM/CSIuPQDsc7
-         Un2A==
-X-Gm-Message-State: ACrzQf0rjGffoHXQ1u54deSv8/C3f78g1KNTXstphzn6k+dDs8Xv+Seu
-        kF5tFVGUjeCV8AoxqOHPbC+EG1pxpB1xDg==
-X-Google-Smtp-Source: AMsMyM6DXcyFsUJiVLXKV0d1YWYVYDoajBGEzNpfPGTooN0zpPbM5rFjzXpN02Uf/C4PaKrSUw/WwCyfDEGs6Q==
-X-Received: from shakeelb.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:262e])
- (user=shakeelb job=sendgmr) by 2002:a17:902:ecc2:b0:17f:9022:e00b with SMTP
- id a2-20020a170902ecc200b0017f9022e00bmr33674660plh.87.1665634715170; Wed, 12
- Oct 2022 21:18:35 -0700 (PDT)
-Date:   Thu, 13 Oct 2022 04:18:33 +0000
-In-Reply-To: <CAEA6p_BUUzhHVAyaD3semV84M+TeZzmrkyjpwb-gs8e6sQRCWw@mail.gmail.com>
-Mime-Version: 1.0
-References: <20210817194003.2102381-1-weiwan@google.com> <20221012163300.795e7b86@kernel.org>
- <CALvZod5pKzcxWsLnjUwE9fUb=1S9MDLOHF950miF8x8CWtK5Bw@mail.gmail.com>
- <20221012173825.45d6fbf2@kernel.org> <20221013005431.wzjurocrdoozykl7@google.com>
- <20221012184050.5a7f3bde@kernel.org> <20221012201650.3e55331d@kernel.org>
- <CAEA6p_CqqPtnWjr_yYr1oVF3UKe=6RqFLrg1OoANs2eg5_by0A@mail.gmail.com>
- <20221012204941.3223d205@kernel.org> <CAEA6p_BUUzhHVAyaD3semV84M+TeZzmrkyjpwb-gs8e6sQRCWw@mail.gmail.com>
-Message-ID: <20221013041833.rhifxw4gqwk4ofi2@google.com>
-Subject: Re: [PATCH net-next] net-memcg: pass in gfp_t mask to mem_cgroup_charge_skmem()
-From:   Shakeel Butt <shakeelb@google.com>
-To:     Wei Wang <weiwan@google.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>, cgroups@vger.kernel.org,
-        linux-mm@kvack.org, Roman Gushchin <roman.gushchin@linux.dev>
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229485AbiJMEYq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 00:24:46 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2270E113F
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 21:24:42 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-248-51rZ28CCMQGwV54jqoVNCw-1; Thu, 13 Oct 2022 05:24:39 +0100
+X-MC-Unique: 51rZ28CCMQGwV54jqoVNCw-1
+Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
+ (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Thu, 13 Oct
+ 2022 05:24:39 +0100
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.040; Thu, 13 Oct 2022 05:24:39 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Sergei Antonov' <saproj@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>
+Subject: RE: [PATCH v2 net] net: ftmac100: do not reject packets bigger than
+ 1514
+Thread-Topic: [PATCH v2 net] net: ftmac100: do not reject packets bigger than
+ 1514
+Thread-Index: AQHY3lCWEiTFPZdxBkKncwnj941AIq4K6mqQ///7b4CAAMyDUA==
+Date:   Thu, 13 Oct 2022 04:24:39 +0000
+Message-ID: <379c5499d1be4f73a6175385d3345a68@AcuMS.aculab.com>
+References: <20221012153737.128424-1-saproj@gmail.com>
+ <1b919195757c49769bde19c59a846789@AcuMS.aculab.com>
+ <CABikg9zdg-WW+C-46Cy=gcgsd8ZEborOJkXOPUfxy9TmNEz_wg@mail.gmail.com>
+In-Reply-To: <CABikg9zdg-WW+C-46Cy=gcgsd8ZEborOJkXOPUfxy9TmNEz_wg@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 12, 2022 at 09:04:59PM -0700, Wei Wang wrote:
-> On Wed, Oct 12, 2022 at 8:49 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Wed, 12 Oct 2022 20:34:00 -0700 Wei Wang wrote:
-> > > > I pushed this little nugget to one affected machine via KLP:
-> > > >
-> > > > diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-> > > > index 03ffbb255e60..c1ca369a1b77 100644
-> > > > --- a/mm/memcontrol.c
-> > > > +++ b/mm/memcontrol.c
-> > > > @@ -7121,6 +7121,10 @@ bool mem_cgroup_charge_skmem(struct mem_cgroup *memcg, unsigned int nr_pages,
-> > > >                 return true;
-> > > >         }
-> > > >
-> > > > +       if (gfp_mask == GFP_NOWAIT) {
-> > > > +               try_charge(memcg, gfp_mask|__GFP_NOFAIL, nr_pages);
-> > > > +               refill_stock(memcg, nr_pages);
-> > > > +       }
-> > > >         return false;
-> > > >  }
-> > > >
-> > > AFAICT, if you force charge by passing __GFP_NOFAIL to try_charge(),
-> > > you should return true to tell the caller that the nr_pages is
-> > > actually being charged.
-> >
-> > Ack - not sure what the best thing to do is, tho. Always pass NOFAIL
-> > in softirq?
-> >
-> > It's not clear to me yet why doing the charge/uncharge actually helps,
-> > perhaps try_to_free_mem_cgroup_pages() does more when NOFAIL is passed?
-> >
-> I am curious to know as well.
-> 
-> > I'll do more digging tomorrow.
-> >
-> > > Although I am not very sure what refill_stock() does. Does that
-> > > "uncharge" those pages?
-> >
-> > I think so, I copied it from mem_cgroup_uncharge_skmem().
+RnJvbTogU2VyZ2VpIEFudG9ub3YNCj4gU2VudDogMTIgT2N0b2JlciAyMDIyIDE3OjQzDQo+IA0K
+PiBPbiBXZWQsIDEyIE9jdCAyMDIyIGF0IDE5OjEzLCBEYXZpZCBMYWlnaHQgPERhdmlkLkxhaWdo
+dEBhY3VsYWIuY29tPiB3cm90ZToNCj4gPg0KPiA+IEZyb206IFNlcmdlaSBBbnRvbm92DQo+ID4g
+PiBTZW50OiAxMiBPY3RvYmVyIDIwMjIgMTY6MzgNCj4gPiA+DQo+ID4gPiBEZXNwaXRlIHRoZSBk
+YXRhc2hlZXQgWzFdIHNheWluZyB0aGUgY29udHJvbGxlciBzaG91bGQgYWxsb3cgaW5jb21pbmcN
+Cj4gPiA+IHBhY2tldHMgb2YgbGVuZ3RoID49MTUxOCwgaXQgb25seSBhbGxvd3MgcGFja2V0cyBv
+ZiBsZW5ndGggPD0xNTE0Lg0KDQpBY3R1YWxseSBJIGJldCB0aGUgZGF0YXNoZWV0IGlzIGNvcnJl
+Y3QuDQpUaGUgbGVuZ3RoIGNoZWNrIGlzIHByb2JhYmx5IGRvbmUgYmVmb3JlIHRoZSBDUkMgaXMg
+ZGlzY2FyZGVkLg0KDQouLi4NCj4gPiBBbHRob3VnaCB0cmFkaXRpb25hbGx5IGl0IHdhcyAxNTE0
+K2NyYy4NCj4gPiBBbiBleHRyYSA0IGJ5dGUgaGVhZGVyIGlzIG5vdyBhbGxvd2VkLg0KPiA+IFRo
+ZXJlIGlzIGFsc28gdGhlIHVzZWZ1bG5lc3Mgb2Ygc3VwcG9ydGluZyBmdWxsIGxlbmd0aCBmcmFt
+ZXMNCj4gPiB3aXRoIGEgUFBQb0UgaGVhZGVyLg0KPiA+DQo+ID4gV2hldGhlciBpdCBhY3R1YWxs
+eSBtYWtlcyBzZW5zZSB0byByb3VuZCB1cCB0aGUgcmVjZWl2ZSBidWZmZXINCj4gPiBzaXplIGFu
+ZCBhc3NvY2lhdGVkIG1heCBmcmFtZSBsZW5ndGggdG8gMTUzNiAoY2FjaGUgbGluZSBhbGlnbmVk
+KQ0KPiA+IGlzIGFub3RoZXIgbWF0dGVyIChwcm9iYWJseSAxNTM0IGZvciA0bisyIGFsaWdubWVu
+dCkuDQo+ID4NCj4gPiA+IFNpbmNlIDE1MTggaXMgYSBzdGFuZGFyZCBFdGhlcm5ldCBtYXhpbXVt
+IGZyYW1lIHNpemUsIGFuZCBpdCBjYW4NCj4gPiA+IGVhc2lseSBiZSBlbmNvdW50ZXJlZCAoaW4g
+U1NIIGZvciBleGFtcGxlKSwgZml4IHRoaXMgYmVoYXZpb3I6DQo+ID4gPg0KPiA+ID4gKiBTZXQg
+RlRNQUMxMDBfTUFDQ1JfUlhfRlRMIGluIHRoZSBNQUMgQ29udHJvbCBSZWdpc3Rlci4NCj4gPg0K
+PiA+IFdoYXQgZG9lcyB0aGF0IGRvPw0KPiANCj4gSWYgRlRNQUMxMDBfTUFDQ1JfUlhfRlRMIGlz
+IG5vdCBzZXQ6DQo+ICAgdGhlIGRyaXZlciBkb2VzIG5vdCByZWNlaXZlIHRoZSAibG9uZyIgcGFj
+a2V0IGF0IGFsbC4gTG9va3MgbGlrZSB0aGUNCj4gY29udHJvbGxlciBkaXNjYXJkcyB0aGUgcGFj
+a2V0IHdpdGhvdXQgYm90aGVyaW5nIHRoZSBkcml2ZXIuDQo+IElmIEZUTUFDMTAwX01BQ0NSX1JY
+X0ZUTCBpcyBzZXQ6DQo+ICAgdGhlIGRyaXZlciByZWNlaXZlcyB0aGUgImxvbmciIHBhY2tldCBt
+YXJrZWQgYnkgdGhlDQo+IEZUTUFDMTAwX1JYREVTMF9GVEwgZmxhZy4gQW5kIHRoZXNlIHBhY2tl
+dHMgd2VyZSBkaXNjYXJkZWQgYnkgdGhlDQo+IGRyaXZlciAoYmVmb3JlIG15IHBhdGNoKS4NCg0K
+VGhlcmUgYXJlIG90aGVyIHByb2JsZW1zIGhlcmUuDQpXaGVyZSBkb2VzIHRoZSBleHRyYSBkYXRh
+IGFjdHVhbGx5IGdldCB3cml0dGVuIHRvPw0KV2hhdCBoYXBwZW5zIHRvIHZlcnkgbG9uZyBwYWNr
+ZXRzPw0KDQpJJ20gZ3Vlc3NpbmcgdGhlIGhhcmR3YXJlIGhhcyBhIHJlYXNvbmFibGUgaW50ZXJm
+YWNlIHdoZXJlDQp0aGVyZSBpcyBhICdyaW5nJyBvZiByZWNlaXZlIGJ1ZmZlciBkZXNjcmlwdG9y
+cy4NCklmIGEgZnJhbWUgaXMgbG9uZ2VyIHRoYW4gYSBidWZmZXIgdGhlIGhhcmR3YXJlIHdpbGwg
+d3JpdGUNCnRoZSBmcmFtZSB0byBtdWx0aXBsZSBidWZmZXJzLg0KDQpIb3dldmVyIGlmIGVhY2gg
+YnVmZmVyIGlzIGxvbmcgZW5vdWdoIGZvciBhIG5vcm1hbCBmcmFtZQ0KYW5kIHRoZSBoYXJkd2Fy
+ZSBkaXNjYXJkcy90cnVuY2F0ZXMgb3ZlcmxvbmcgZnJhbWVzIHRoZW4NCnRoZSBkcml2ZXIgY2Fu
+IGFzc3VtZSB0aGVyZSBhcmUgbm8gY29udGludWF0aW9ucy4NCihJIHVzZWQgdG8gdXNlIGFuIGFy
+cmF5IG9mIDEyOCBidWZmZXJzIG9mIDUxMiBieXRlcyBhbmQNCmFsd2F5cyBjb3B5IHRoZSByZWNl
+aXZlIGRhdGEgLSBhIHNpbmdsZSB3b3JkIGFsaWduZWQgY29weQ0KdW5sZXNzIGEgbG9uZyBmcmFt
+ZSBjcm9zc2VkIHRoZSByaW5nIGVuZC4pDQoNCkl0IGxvb2tzIGxpa2UgdGhlIEZUTCBiaXQgYWN0
+dWFsbHkgY29udHJvbHMgd2hldGhlcg0Kb3ZlcmxvbmcgZnJhbWVzIGFyZSBkaXNjYXJkZWQgb3Ig
+dHJ1bmNhdGVkLg0KKFRoZXJlIG1heSBiZSBhbm90aGVyIG9wdGlvbiB0byBlaXRoZXIgc2V0IHRo
+ZSBmcmFtZQ0KbGVuZ3RoIG9yIGRpc2FibGUgdGhlIGZlYXR1cmUgY29tcGxldGVseS4pDQoNCk5v
+dyB5b3UgbWlnaHQgZ2V0IGF3YXkgd2l0aCBwYWNrZXRzIHRoYXQgYXJlIG9ubHkgNCBieXRlcw0K
+b3ZlcmxvbmcgKG9uZSBWTEFOIGhlYWRlcikgYmVjYXVzZSB0aGUgaGFyZHdhcmUgYWx3YXlzDQp3
+cml0ZXMgdGhlIGZ1bGwgcmVjZWl2ZWQgQ1JDIGludG8gdGhlIGJ1ZmZlci4NClNvIHdoZW4gaXQg
+ZGlzY2FyZHMgYSAxNTE1LTE1MTggZnJhbWUgdGhlIGV4dHJhIGJ5dGVzDQphcmUgZnJvbSB0aGUg
+ZnJhbWUuDQpJZiB0aGF0IGlzIHRydWUgaXQgZGVzZXJ2ZXMgYSBjb21tZW50Lg0KDQpPVE9IIGlm
+IGl0IGNhcnJpZXMgb24gd3JpdGluZyBpbnRvIHRoZSByeCByaW5nIGJ1ZmZlcg0KdGhlbiBpdCBt
+aWdodCBhbHNvICdvdmVyZmxvdycgaW50byB0aGUgbmV4dCByaW5nIGVudHJ5Lg0KSW5kZWVkIGEg
+bG9uZyBlbm91Z2ggZnJhbWUgd2lsbCBmaWxsIHRoZSBlbnRpcmUgcmluZw0KKHlvdSdsbCBuZWVk
+IGEgYnVnZ3kgZXRoZXJuZXQgaHViL3N3aXRjaCBvZiBhIDEwLzEwME0NCkhEWCBuZXR3b3JrKS4N
+Cg0KWW91IHJlYWxseSBkbyBuZWVkIHRvIGNoZWNrIHdoZXRoZXIgaXQgZGV0ZWN0cyBDUkMgZXJy
+b3JzDQpvbiBvdmVybG9uZyBmcmFtZXMuIElmIGl0IChtb3N0bHkpIHN0b3BzIHByb2Nlc3Npbmcg
+YXQNCjE1MTggYnl0ZXMgKGluYyBjcmMpIHRoZW4gaXQgbWF5IG5vdC4NCkFsc28gaWYgdGhlIGZy
+YW1lIGxlbmd0aCBmaWVsZCBpcyAoc2F5KSAxNiBiaXRzIHRoZW4NCmEgNjRrKyBmcmFtZSB3aWxs
+IHdyYXAgdGhlIGNvdW50ZXIuDQpXaGljaCBtZWFucyB0aGF0IHRoZSBmcmFtZSBsZW5ndGggbWF5
+IGJlIHVucmVsaWFibGUNCmZvciBvdmVybG9uZyBmcmFtZXMuDQooVGhlIGNvdW50IG1pZ2h0IHNh
+dHVyYXRlLikNCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJh
+bWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0
+cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
 
-I think I understand why this issue start happening after this patch.
-The memcg charging happens in batches of 32 (64 nowadays) pages even
-if the charge request is less. The remaining pre-charge is cached in
-the per-cpu cache (or stock).
-
-With (GFP_NOWAIT | __GFP_NOFAIL), you let the memcg go over the limit
-without triggering oom-kill and then refill_stock just put the
-pre-charge in the per-cpu cache. So, the later allocation/charge succeed
-from the per-cpu cache even though memcg is over the limit.
-
-So, with this patch we no longer force charge and then uncharge on
-failure, so the later allocation/charge fail similarly.
-
-Regarding what is the right thing to do, IMHO, is to use GFP_ATOMIC
-instead of GFP_NOWAIT. If you see the following comment in
-try_charge_memcg(), we added this exception particularly for these kind
-of situations.
-
-...
-	/*
-	 * Memcg doesn't have a dedicated reserve for atomic
-	 * allocations. But like the global atomic pool, we need to
-	 * put the burden of reclaim on regular allocation requests
-	 * and let these go through as privileged allocations.
-	 */
-	if (!(gfp_mask & (__GFP_NOFAIL | __GFP_HIGH)))
-		return -ENOMEM;
-...
-
-Shakeel
