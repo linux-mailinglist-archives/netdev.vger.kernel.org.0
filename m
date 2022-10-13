@@ -2,378 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC2CB5FDEFB
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 19:30:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 192DB5FDF13
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 19:34:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229972AbiJMRaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 13:30:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50404 "EHLO
+        id S229715AbiJMRez (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 13:34:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229861AbiJMRaR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 13:30:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9E521BE91;
-        Thu, 13 Oct 2022 10:29:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 90D5B618D7;
-        Thu, 13 Oct 2022 17:29:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB50AC433D6;
-        Thu, 13 Oct 2022 17:29:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665682194;
-        bh=dgamv1WD4e4OHeEfZRuftyyK9wNJhEN0+bFLo24PNgU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=UcwbOpZgLKU18RWWgoKjMgfa2XqVVGvs0TANsy83nLEYMuMcs+dZcW/rTWhEORrmY
-         0EHeachApvo3XhH/r2hHBoitn/MSaOt2wlMIHLahEi8VvjOpDLCHqMOh1AS3reQwfv
-         u/Aq+2YiyiPqcV6Ftp+N8/iunVYIaDPJzsMMWJXmWQunqFCOPV08V8JpQ10iAuJgwc
-         9iffqDJIxgKyvPIwfjMVMkQzgAENkRtiuMVrLo/k+h+TnEksVi0/CrJCFi1s+w1Vue
-         zSF2N3a/Q/WOcxkK3VmwLaAQZ1ppV8UHdsqjzN6DDRlfNv8fmJpsbTx+u8wTF6nFrh
-         HDPYm/dR5VYMA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     torvalds@linux-foundation.org
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, pabeni@redhat.com
-Subject: [PULL] Networking for v6.1-rc1
-Date:   Thu, 13 Oct 2022 10:29:52 -0700
-Message-Id: <20221013172952.338043-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.36.1
+        with ESMTP id S229651AbiJMRex (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 13:34:53 -0400
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 941AC14D3D;
+        Thu, 13 Oct 2022 10:34:49 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id C73EA3200926;
+        Thu, 13 Oct 2022 13:34:47 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Thu, 13 Oct 2022 13:34:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; t=1665682487; x=1665768887; bh=DsLRBe3Kqg
+        11qxqyD8iEafKn/j01pfzBRrrJqScyfLo=; b=f7SZBH7WjhSQGZCuMHebwkT2sd
+        +viFn0CR3SIjXI2JL5ZQkUqV72KbP8lssa0nGl9NnHFp3u8dM930zmbj+k1EKXGT
+        dmyWSUG4ThZuPjlJzsmMhWssQ/vk336zYPL3SGF8Bp7sntMNHw3Ra/VplQWA/ya8
+        OKnug9TsNQ7E2PIb6gsn+kN/4HXcnz4b51MJcU3dkshI5SZPtiJEGDmZZlcVi/t6
+        eAf0w6otCS9bbAl3cs6kSBJqxwMVNMW8utR3tWMkT8cyla2zeMjuYBTHhA9LEvmy
+        lsUzNHN3yTXwi7wocJ7n5OeJgSLf2fkm5/wu49LM3w6BF5QZ49mFbE7EtW/w==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; t=1665682487; x=1665768887; bh=DsLRBe3Kqg11qxqyD8iEafKn/j01
+        pfzBRrrJqScyfLo=; b=L76Ve5FJL9Iz4Zy1s4a7laS8w+dlLAmgusGwE5w5DYvV
+        2XGZQabRX9k2/MsXSvu/J2Jp0UZcTvJcVcD2pFibsv8AfptxG+CzLmYPouydKWtm
+        Sw3rXl/TJAIAnTgEE9Hz7UYJ7MdKnIGC0/sHeWMyu/Ut8L8RPE4TMd91QnIxQn4l
+        cJ6G9095f3wEOWX1U9xYDB+HAOnSmMUCX72fd73OEVbAYXqCDKy51IphGcyvOjpa
+        JqOEdx9+lGEs1RZZHxO8+DlvnHjDLh6b0KXwNh9TT0DaaHvnTn3MQaoFNMtSJswY
+        sPsAUN5uEoEWtsM4hs3TjaXDtiOTwcqIdU6d+AkBFA==
+X-ME-Sender: <xms:NkxIYz1JAXnchSoQ40X737hlRnuXoNfxof9Q4CtPc8BjK0pf1PcEpQ>
+    <xme:NkxIYyEZi1_PbHefB_3ZLGDU7N94iA7oP-3F2ygeHHcnIVL12Qf-i0-DEBbRo6iJK
+    mjvq__qyxPMeAgMwA>
+X-ME-Received: <xmr:NkxIYz6xmWbheEiUBU1cQbfkZD6HSj4KAtfwr5vnikiWEeWBGRoLmN9Nesunp2js4s9fOEMkMyDXjIa5>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfeektddguddujecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enfghrlhcuvffnffculdefhedmnecujfgurhepfffhvfevuffkfhggtggujgesthdtredt
+    tddtvdenucfhrhhomhepffgrnhhivghlucgiuhcuoegugihusegugihuuhhurdighiiiqe
+    enucggtffrrghtthgvrhhnpeffffdvfefhudfhfeejjedvieduiefgvdfghfejkeehueeu
+    hfdvieeftdeugfffhfenucffohhmrghinhepghhithhhuhgsrdgtohhmnecuvehluhhsth
+    gvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepugiguhesugiguhhuuhdr
+    giihii
+X-ME-Proxy: <xmx:NkxIY42XuTKWSZPHKVCQDb6xQaYhp_x6WhDTrjBTHll6i_UoFT-qAw>
+    <xmx:NkxIY2H5bY_aJ91LAFSvfx0au0buKEIf3AXPLGAD312EnB2WbBUZ1g>
+    <xmx:NkxIY5_wMmQnIQh6eLuK0z_ECfmqVZjhi8bgaHlQfRSVdjbs4UhXog>
+    <xmx:N0xIY5C1R_0VE1OGECV3gCtROmkpxajr9K8vkdh2Fn_H255jVCFhSw>
+Feedback-ID: i6a694271:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 13 Oct 2022 13:34:46 -0400 (EDT)
+Date:   Thu, 13 Oct 2022 11:34:48 -0600
+From:   Daniel Xu <dxu@dxuuu.xyz>
+To:     Martin KaFai Lau <martin.lau@linux.dev>
+Cc:     pablo@netfilter.org, fw@strlen.de, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        andrii@kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        bpf@vger.kernel.org, memxor@gmail.com
+Subject: Re: [PATCH bpf-next v4 2/3] selftests/bpf: Add connmark read test
+Message-ID: <20221013173448.aprptjs5qq777342@k2>
+References: <cover.1660254747.git.dxu@dxuuu.xyz>
+ <d3bc620a491e4c626c20d80631063922cbe13e2b.1660254747.git.dxu@dxuuu.xyz>
+ <43bf4a5f-dac9-4fe9-1eba-9ab9beb650aa@linux.dev>
+ <20221012220953.i2xevhu36kxyxscl@k2>
+ <16bcda3b-989e-eadf-b6c3-803470b0afd6@linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <16bcda3b-989e-eadf-b6c3-803470b0afd6@linux.dev>
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FROM_SUSPICIOUS_NTLD,
+        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_PDS_OTHER_BAD_TLD autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Linus!
-
-We don't have a fix for the gcc 8.5 objtool warning, yet, because
-apparently it's very compiler-version specific. I seem to be the only
-one bothered by it so far. So I'll keep poking but if my own setup
-updates to a new compiler I may stop caring as well..
-
-The following changes since commit 0326074ff4652329f2a1a9c8685104576bd8d131:
-
-  Merge tag 'net-next-6.1' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next (2022-10-04 13:38:03 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.1-rc1
-
-for you to fetch changes up to 99df45c9e0a43b1b88dab294265e2be4a040a441:
-
-  sunhme: fix an IS_ERR() vs NULL check in probe (2022-10-13 09:34:09 -0700)
-
-----------------------------------------------------------------
-Including fixes from netfilter, and wifi.
-
-Current release - regressions:
-
- - Revert "net/sched: taprio: make qdisc_leaf() see
-   the per-netdev-queue pfifo child qdiscs", it may cause crashes
-   when the qdisc is reconfigured
-
- - inet: ping: fix splat due to packet allocation refactoring in inet
-
- - tcp: clean up kernel listener's reqsk in inet_twsk_purge(),
-   fix UAF due to races when per-netns hash table is used
-
-Current release - new code bugs:
-
- - eth: adin1110: check in netdev_event that netdev belongs to driver
-
- - fixes for PTR_ERR() vs NULL bugs in driver code, from Dan and co.
-
-Previous releases - regressions:
-
- - ipv4: handle attempt to delete multipath route when fib_info
-   contains an nh reference, avoid oob access
-
- - wifi: fix handful of bugs in the new Multi-BSSID code
-
- - wifi: mt76: fix rate reporting / throughput regression on mt7915
-   and newer, fix checksum offload
-
- - wifi: iwlwifi: mvm: fix double list_add at
-   iwl_mvm_mac_wake_tx_queue (other cases)
-
- - wifi: mac80211: do not drop packets smaller than the LLC-SNAP
-   header on fast-rx
-
-Previous releases - always broken:
-
- - ieee802154: don't warn zero-sized raw_sendmsg()
-
- - ipv6: ping: fix wrong checksum for large frames
-
- - mctp: prevent double key removal and unref
-
- - tcp/udp: fix memory leaks and races around IPV6_ADDRFORM
-
- - hv_netvsc: fix race between VF offering and VF association message
-
-Misc:
-
- - remove -Warray-bounds silencing in the drivers, compilers fixed
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-
-----------------------------------------------------------------
-Alexander Aring (2):
-      Revert "net/ieee802154: reject zero-sized raw_sendmsg()"
-      net: ieee802154: return -EINVAL for unknown addr type
-
-Alexander Wetzel (1):
-      wifi: mac80211: netdev compatible TX stop for iTXQ drivers
-
-Alexandru Tachici (1):
-      net: ethernet: adi: adin1110: Add check in netdev_event
-
-Anssi Hannula (4):
-      can: kvaser_usb_leaf: Fix overread with an invalid command
-      can: kvaser_usb: Fix use of uninitialized completion
-      can: kvaser_usb_leaf: Fix TX queue out of sync after restart
-      can: kvaser_usb_leaf: Fix CAN state after restart
-
-Casper Andersson (1):
-      docs: networking: phy: add missing space
-
-Dan Carpenter (3):
-      wifi: mac80211: unlock on error in ieee80211_can_powered_addr_change()
-      net: marvell: prestera: fix a couple NULL vs IS_ERR() checks
-      sunhme: fix an IS_ERR() vs NULL check in probe
-
-David Ahern (1):
-      ipv4: Handle attempt to delete multipath route when fib_info contains an nh reference
-
-David S. Miller (2):
-      Merge branch 'inet-ping-fixes'
-      Merge branch 'master' of git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf
-
-Divya Koppera (1):
-      net: phy: micrel: Fixes FIELD_GET assertion
-
-Duoming Zhou (1):
-      mISDN: hfcpci: Fix use-after-free bug in hfcpci_softirq
-
-Eric Dumazet (5):
-      macvlan: enforce a consistent minimal mtu
-      ipv6: ping: fix wrong checksum for large frames
-      inet: ping: fix recent breakage
-      tcp: cdg: allow tcp_cdg_release() to be called multiple times
-      kcm: avoid potential race in kcm_tx_work
-
-Felix Fietkau (6):
-      wifi: mt76: fix rate reporting / throughput regression on mt7915 and newer
-      wifi: mac80211: do not drop packets smaller than the LLC-SNAP header on fast-rx
-      wifi: mac80211: fix decap offload for stations on AP_VLAN interfaces
-      wifi: cfg80211: fix ieee80211_data_to_8023_exthdr handling of small packets
-      wifi: mt76: fix receiving LLC packets on mt7615/mt7915
-      wifi: mt76: fix rx checksum offload on mt7615/mt7915/mt7921
-
-Florian Fainelli (1):
-      net: systemport: Enable all RX descriptors for SYSTEMPORT Lite
-
-Gaurav Kohli (1):
-      hv_netvsc: Fix race between VF offering and VF association message from host
-
-Geert Uytterhoeven (1):
-      net: pse-pd: PSE_REGULATOR should depend on REGULATOR
-
-Hawkins Jiawei (1):
-      wifi: wext: use flex array destination for memcpy()
-
-Jakub Kicinski (3):
-      Merge tag 'ieee802154-for-net-2022-10-05' of git://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan
-      Merge tag 'wireless-2022-10-11' of git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless
-      Merge branch 'tcp-udp-fix-memory-leaks-and-data-races-around-ipv6_addrform'
-
-James Prestwood (2):
-      wifi: mac80211: fix probe req HE capabilities access
-      wifi: mac80211: remove/avoid misleading prints
-
-Jeremy Kerr (1):
-      mctp: prevent double key removal and unref
-
-Johannes Berg (10):
-      wifi: cfg80211: fix u8 overflow in cfg80211_update_notlisted_nontrans()
-      wifi: cfg80211/mac80211: reject bad MBSSID elements
-      wifi: mac80211: fix MBSSID parsing use-after-free
-      wifi: cfg80211: ensure length byte is present before access
-      wifi: cfg80211: fix BSS refcounting bugs
-      wifi: cfg80211: avoid nontransmitted BSS list corruption
-      wifi: mac80211_hwsim: avoid mac80211 warning on bad rate
-      wifi: mac80211: fix crash in beacon protection for P2P-device
-      wifi: cfg80211: update hidden BSSes to avoid WARN_ON
-      Merge branch 'cve-fixes-2022-10-13'
-
-Jose Ignacio Tornos Martinez (1):
-      wifi: iwlwifi: mvm: fix double list_add at iwl_mvm_mac_wake_tx_queue (other cases)
-
-Kalle Valo (1):
-      wifi: ath11k: mac: fix reading 16 bytes from a region of size 0 warning
-
-Kees Cook (3):
-      net: ethernet: mediatek: Remove -Warray-bounds exception
-      net: ethernet: bgmac: Remove -Warray-bounds exception
-      wifi: nl80211: Split memcpy() of struct nl80211_wowlan_tcp_data_token flexible array
-
-Kuniyuki Iwashima (6):
-      tcp/udp: Fix memory leak in ipv6_renew_options().
-      udp: Call inet6_destroy_sock() in setsockopt(IPV6_ADDRFORM).
-      tcp/udp: Call inet6_destroy_sock() in IPv6 sk->sk_destruct().
-      ipv6: Fix data races around sk->sk_prot.
-      tcp: Fix data races around icsk->icsk_af_ops.
-      tcp: Clean up kernel listener's reqsk in inet_twsk_purge()
-
-Leon Romanovsky (1):
-      net/mlx5: Make ASO poll CQ usable in atomic context
-
-Louis Peens (1):
-      nfp: flower: fix incorrect struct type in GRE key_size
-
-Maksym Glubokiy (1):
-      net: prestera: span: do not unbind things things that were never bound
-
-Marc Kleine-Budde (1):
-      Merge patch series "can: kvaser_usb: Various fixes"
-
-Marek Behún (1):
-      net: sfp: fill also 5gbase-r and 25gbase-r modes in sfp_parse_support()
-
-Matthias Schiffer (1):
-      net: ethernet: ti: am65-cpsw: set correct devlink flavour for unused ports
-
-Paolo Abeni (2):
-      Merge tag 'linux-can-fixes-for-6.1-20221011' of git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can
-      Merge tag 'wireless-2022-10-13' of git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless
-
-Phil Sutter (3):
-      selftests: netfilter: Test reverse path filtering
-      netfilter: rpfilter/fib: Populate flowic_l3mdev field
-      selftests: netfilter: Fix nft_fib.sh for all.rp_filter=1
-
-Serhiy Boiko (1):
-      prestera: matchall: do not rollback if rule exists
-
-Tetsuo Handa (1):
-      net/ieee802154: don't warn zero-sized raw_sendmsg()
-
-Vadim Fedorenko (1):
-      ] ptp: ocp: remove symlink for second GNSS
-
-Vladimir Oltean (1):
-      Revert "net/sched: taprio: make qdisc_leaf() see the per-netdev-queue pfifo child qdiscs"
-
-Wenjia Zhang (1):
-      MAINTAINERS: add Jan as SMC maintainer
-
-Xin Long (1):
-      openvswitch: add nf_ct_is_confirmed check before assigning the helper
-
-Yang Li (2):
-      octeontx2-pf: mcs: remove unneeded semicolon
-      net: enetc: Remove duplicated include in enetc_qos.c
-
-Yang Yingliang (4):
-      octeontx2-pf: mcs: fix missing unlock in some error paths
-      net: dsa: fix wrong pointer passed to PTR_ERR() in dsa_port_phylink_create()
-      octeontx2-af: cn10k: mcs: Fix error return code in mcs_register_interrupts()
-      octeontx2-pf: mcs: fix possible memory leak in otx2_probe()
-
- Documentation/networking/phy.rst                   |   2 +-
- MAINTAINERS                                        |   1 +
- drivers/isdn/hardware/mISDN/hfcpci.c               |   3 +-
- drivers/net/can/usb/kvaser_usb/kvaser_usb.h        |   2 +
- drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c   |   3 +-
- drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c  |   2 +-
- drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c   |  79 +++++++++++
- drivers/net/ethernet/adi/adin1110.c                |  13 +-
- drivers/net/ethernet/broadcom/Makefile             |   5 -
- drivers/net/ethernet/broadcom/bcmsysport.h         |   2 +-
- drivers/net/ethernet/freescale/enetc/enetc_qos.c   |   1 -
- drivers/net/ethernet/marvell/octeontx2/af/mcs.c    |   4 +-
- .../ethernet/marvell/octeontx2/nic/cn10k_macsec.c  |   7 +-
- .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |   4 +-
- .../ethernet/marvell/prestera/prestera_matchall.c  |   2 +
- .../ethernet/marvell/prestera/prestera_router_hw.c |   6 +-
- .../net/ethernet/marvell/prestera/prestera_span.c  |   5 +-
- drivers/net/ethernet/mediatek/Makefile             |   5 -
- .../net/ethernet/mellanox/mlx5/core/en/tc/meter.c  |   8 +-
- .../ethernet/mellanox/mlx5/core/en_accel/macsec.c  |   4 +-
- drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c  |  10 +-
- drivers/net/ethernet/mellanox/mlx5/core/lib/aso.h  |   2 +-
- .../net/ethernet/netronome/nfp/flower/offload.c    |   4 +-
- drivers/net/ethernet/sun/sunhme.c                  |   4 +-
- drivers/net/ethernet/ti/am65-cpsw-nuss.c           |   5 +-
- drivers/net/hyperv/hyperv_net.h                    |   3 +-
- drivers/net/hyperv/netvsc.c                        |   4 +
- drivers/net/hyperv/netvsc_drv.c                    |  19 +++
- drivers/net/macvlan.c                              |   2 +-
- drivers/net/phy/micrel.c                           |   9 +-
- drivers/net/phy/sfp-bus.c                          |   3 +
- drivers/net/pse-pd/Kconfig                         |   1 +
- drivers/net/wireless/ath/ath11k/mac.c              |   5 +-
- drivers/net/wireless/intel/iwlwifi/mvm/sta.c       |   2 +
- drivers/net/wireless/mac80211_hwsim.c              |   2 +
- drivers/net/wireless/mediatek/mt76/dma.c           |   5 +-
- drivers/net/wireless/mediatek/mt76/mt7615/mac.c    |  12 +-
- drivers/net/wireless/mediatek/mt76/mt7915/mac.c    |  12 +-
- drivers/net/wireless/mediatek/mt76/mt7921/mac.c    |   4 +-
- drivers/net/wireless/mediatek/mt76/tx.c            |  10 +-
- drivers/ptp/ptp_ocp.c                              |   1 +
- include/linux/wireless.h                           |  10 +-
- include/net/ieee802154_netdev.h                    |  12 +-
- include/net/ipv6.h                                 |   2 +
- include/net/udp.h                                  |   2 +-
- include/net/udplite.h                              |   8 --
- net/core/sock.c                                    |   6 +-
- net/dsa/port.c                                     |   2 +-
- net/ieee802154/socket.c                            |   7 +-
- net/ipv4/af_inet.c                                 |  23 +++-
- net/ipv4/fib_semantics.c                           |   8 +-
- net/ipv4/inet_timewait_sock.c                      |  15 ++-
- net/ipv4/netfilter/ipt_rpfilter.c                  |   2 +-
- net/ipv4/netfilter/nft_fib_ipv4.c                  |   2 +-
- net/ipv4/ping.c                                    |  23 +---
- net/ipv4/tcp.c                                     |  10 +-
- net/ipv4/tcp_cdg.c                                 |   2 +
- net/ipv4/tcp_minisocks.c                           |   9 +-
- net/ipv4/udp.c                                     |   9 +-
- net/ipv4/udplite.c                                 |   8 ++
- net/ipv6/af_inet6.c                                |  14 +-
- net/ipv6/ipv6_sockglue.c                           |  34 ++---
- net/ipv6/netfilter/ip6t_rpfilter.c                 |   9 +-
- net/ipv6/netfilter/nft_fib_ipv6.c                  |   5 +-
- net/ipv6/ping.c                                    |   2 +-
- net/ipv6/tcp_ipv6.c                                |   6 +-
- net/ipv6/udp.c                                     |  15 ++-
- net/ipv6/udp_impl.h                                |   1 +
- net/ipv6/udplite.c                                 |   9 +-
- net/kcm/kcmsock.c                                  |   2 +-
- net/mac80211/ieee80211_i.h                         |   8 ++
- net/mac80211/iface.c                               |   8 +-
- net/mac80211/mlme.c                                |   7 +-
- net/mac80211/rx.c                                  |  21 +--
- net/mac80211/tx.c                                  |  10 +-
- net/mac80211/util.c                                |  34 ++---
- net/mctp/af_mctp.c                                 |  23 +++-
- net/mctp/route.c                                   |  10 +-
- net/openvswitch/conntrack.c                        |   3 +-
- net/sched/sch_taprio.c                             |   8 +-
- net/wireless/nl80211.c                             |   4 +-
- net/wireless/scan.c                                |  77 +++++++----
- net/wireless/util.c                                |  40 +++---
- net/wireless/wext-core.c                           |  17 ++-
- tools/testing/selftests/net/fib_nexthops.sh        |   5 +
- tools/testing/selftests/netfilter/Makefile         |   2 +-
- tools/testing/selftests/netfilter/nft_fib.sh       |   1 +
- tools/testing/selftests/netfilter/rpath.sh         | 147 +++++++++++++++++++++
- 88 files changed, 684 insertions(+), 275 deletions(-)
- create mode 100755 tools/testing/selftests/netfilter/rpath.sh
+On Wed, Oct 12, 2022 at 03:20:01PM -0700, Martin KaFai Lau wrote:
+> On 10/12/22 3:09 PM, Daniel Xu wrote:
+> > Hi Martin,
+> > 
+> > On Tue, Oct 11, 2022 at 10:49:32PM -0700, Martin KaFai Lau wrote:
+> > > On 8/11/22 2:55 PM, Daniel Xu wrote:
+> > > > Test that the prog can read from the connection mark. This test is nice
+> > > > because it ensures progs can interact with netfilter subsystem
+> > > > correctly.
+> > > > 
+> > > > Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
+> > > > Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> > > > ---
+> > > >    tools/testing/selftests/bpf/prog_tests/bpf_nf.c | 3 ++-
+> > > >    tools/testing/selftests/bpf/progs/test_bpf_nf.c | 3 +++
+> > > >    2 files changed, 5 insertions(+), 1 deletion(-)
+> > > > 
+> > > > diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
+> > > > index 88a2c0bdefec..544bf90ac2a7 100644
+> > > > --- a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
+> > > > +++ b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
+> > > > @@ -44,7 +44,7 @@ static int connect_to_server(int srv_fd)
+> > > >    static void test_bpf_nf_ct(int mode)
+> > > >    {
+> > > > -	const char *iptables = "iptables -t raw %s PREROUTING -j CT";
+> > > > +	const char *iptables = "iptables -t raw %s PREROUTING -j CONNMARK --set-mark 42/0";
+> > > Hi Daniel Xu, this test starts failing recently in CI [0]:
+> > > 
+> > > Warning: Extension CONNMARK revision 0 not supported, missing kernel module?
+> > >    iptables v1.8.8 (nf_tables): Could not fetch rule set generation id:
+> > > Invalid argument
+> > > 
+> > >    Warning: Extension CONNMARK revision 0 not supported, missing kernel module?
+> > >    iptables v1.8.8 (nf_tables): Could not fetch rule set generation id:
+> > > Invalid argument
+> > > 
+> > >    Warning: Extension CONNMARK revision 0 not supported, missing kernel module?
+> > >    iptables v1.8.8 (nf_tables): Could not fetch rule set generation id:
+> > > Invalid argument
+> > > 
+> > >    Warning: Extension CONNMARK revision 0 not supported, missing kernel module?
+> > >    iptables v1.8.8 (nf_tables): Could not fetch rule set generation id:
+> > > Invalid argument
+> > > 
+> > >    test_bpf_nf_ct:PASS:test_bpf_nf__open_and_load 0 nsec
+> > >    test_bpf_nf_ct:FAIL:iptables unexpected error: 1024 (errno 0)
+> > > 
+> > > Could you help to take a look? Thanks.
+> > > 
+> > > [0]: https://github.com/kernel-patches/bpf/actions/runs/3231598391/jobs/5291529292
+> > 
+> > [...]
+> > 
+> > Thanks for letting me know. I took a quick look and it seems that
+> > synproxy selftest is also failing:
+> > 
+> >      2022-10-12T03:14:20.2007627Z test_synproxy:FAIL:iptables -t raw -I PREROUTING      -i tmp1 -p tcp -m tcp --syn --dport 8080 -j CT --notrack unexpected error: 1024 (errno 2)
+> > 
+> > Googling the "Could not fetch rule set generation id" yields a lot of
+> > hits. Most of the links are from downstream projects recommending user
+> > downgrade iptables (nftables) to iptables-legacy.
+> 
+> Thanks for looking into it!  We have been debugging a bit today also.  I
+> also think iptables-legacy is the one to use.  I posted a patch [0].  Let
+> see how the CI goes.
+> 
+> The rules that the selftest used is not a lot.  I wonder what it takes to
+> remove the iptables command usage from the selftest?
+
+At least the conntrack mark stuff, it would've been easier to write the
+selftests _without_ iptables. But I thought it was both good and
+necessary to test interop between BPF and netfilter. B/c that is
+what the user is doing (at least for me).
+
+However if it's causing maintenance trouble, I'll leave that call to
+you.
+
+Thanks,
+Daniel
