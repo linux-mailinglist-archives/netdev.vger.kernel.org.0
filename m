@@ -2,122 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BAEC65FD404
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 07:01:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 341675FD472
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 08:04:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229550AbiJMFBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 01:01:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36006 "EHLO
+        id S229691AbiJMGEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 02:04:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229511AbiJMFBA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 01:01:00 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B26D210326E
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 22:00:59 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id pq16so961463pjb.2
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 22:00:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=daynix-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=vo2vClF0viTyEV9dF3uXEQmi9DD+bFYaARDbiE673FY=;
-        b=bcFJXUHNzbEqQLUtO/5UnkbVjmKzQ+mDYMt0K89Rc/1Of0EdHQYXnHCqgkNNy81BNE
-         oZIBtnrnC9bZElluyBGBIRbZ2qzyqcR2OBCaHR80lxcIc43dp7ZP/yJGfwymLvJy+055
-         PsY5LMoboAg0kSIcjgPrzZdaTBSv5fTyyQHdns8R4q2gF74J+/jVUNisidxiZtABwJcW
-         A0OUqscxtNJzlSvWhb6YQ4W/aljdSUvafmjZ5vvBFhIcXmA2IsNrDw/W3MeIeufgJ+pc
-         xLq+YSWhCqEoG2BZH1gs5I9DF5kYTGCLmKueUHxDh1X79DeNaf/x7pp2rQsiyhk0iU6P
-         azUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=vo2vClF0viTyEV9dF3uXEQmi9DD+bFYaARDbiE673FY=;
-        b=JqzCYEHq1crrzqjWQkcxcxQly9gB+UpwQLKfByYxzqGdC6JKp0vAcKUPipgExXjaVL
-         dFA7BH/qkTYIQ4+hJXDlOh/3I+j5A4WBZrd0JJwA6xqI9wVX7+eXdbiLm16d6aommWky
-         3NrCKaNCEC+tGUfC1Qlulp6V5oqQpy/BlC5HQ7IZHdLaLUhCay8Btg4mpAvdwxfrFUeE
-         gri8eyeuh7z35TwVEZLkAxx2DQDzqtNQDRTVGVgp1iG7dm5vfw/tizeoG0IvBRzQXfMH
-         h0sDtDcPJ3iheglPntsOQmRZAZIE1pqZtSM3qe3PuK4jhJY9GU91JzbfZ08eh4Pdwuz4
-         JgxA==
-X-Gm-Message-State: ACrzQf2Ef6okd3Bcn4RnD5S28GyqCWLOvotXAS/Y23KL7bkj3R31b99r
-        4+BFzR+L3L+p/3OyRgW6VPtgyQ==
-X-Google-Smtp-Source: AMsMyM7prQsv8d89ELhZC16iF907vgbbEkzq/tHxl8hNDtEPOBmor31gzGC8wSwsOIsGn0Nx+m3iVg==
-X-Received: by 2002:a17:90b:1806:b0:20d:3256:38 with SMTP id lw6-20020a17090b180600b0020d32560038mr8847987pjb.94.1665637259078;
-        Wed, 12 Oct 2022 22:00:59 -0700 (PDT)
-Received: from fedora.flets-east.jp ([2400:4050:c360:8200:8ae8:3c4:c0da:7419])
-        by smtp.gmail.com with ESMTPSA id v22-20020a17090abb9600b0020bfd6586c6sm2278518pjr.7.2022.10.12.22.00.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Oct 2022 22:00:58 -0700 (PDT)
-From:   Akihiko Odaki <akihiko.odaki@daynix.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Yan Vugenfirer <yan@daynix.com>,
-        Yuri Benditovich <yuri.benditovich@daynix.com>,
-        Akihiko Odaki <akihiko.odaki@daynix.com>
-Subject: [PATCH] e1000e: Fix TX dispatch condition
-Date:   Thu, 13 Oct 2022 14:00:44 +0900
-Message-Id: <20221013050044.11862-1-akihiko.odaki@daynix.com>
-X-Mailer: git-send-email 2.37.3
+        with ESMTP id S229546AbiJMGEx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 02:04:53 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5C0A515819
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 23:04:51 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 29D641NO0027095, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 29D641NO0027095
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Thu, 13 Oct 2022 14:04:01 +0800
+Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.32; Thu, 13 Oct 2022 14:04:31 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Thu, 13 Oct 2022 14:04:30 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::402d:f52e:eaf0:28a2]) by
+ RTEXMBS04.realtek.com.tw ([fe80::402d:f52e:eaf0:28a2%5]) with mapi id
+ 15.01.2375.007; Thu, 13 Oct 2022 14:04:30 +0800
+From:   Hau <hau@realtek.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "grundler@chromium.org" <grundler@chromium.org>
+Subject: RE: [PATCH net] r8169: fix rtl8125b dmar pte write access not set error
+Thread-Topic: [PATCH net] r8169: fix rtl8125b dmar pte write access not set
+ error
+Thread-Index: AQHY18jMGMKenjvi2k2tTzR0owCm5K4FMJuAgAU+f1CAAD4tAIABNXCA
+Date:   Thu, 13 Oct 2022 06:04:30 +0000
+Message-ID: <5eda67bb8f16473fb575b6a470d3592c@realtek.com>
+References: <20221004081037.34064-1-hau@realtek.com>
+ <6d607965-53ab-37c7-3920-ae2ad4be09e5@gmail.com>
+ <6781f98dd232471791be8b0168f0153a@realtek.com>
+ <3ffdaa0d-4a3d-dd2c-506c-d10b5297f430@gmail.com>
+In-Reply-To: <3ffdaa0d-4a3d-dd2c-506c-d10b5297f430@gmail.com>
+Accept-Language: zh-TW, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.129]
+x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEwLzEzIOS4iuWNiCAwMjo1MTowMA==?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-KSE-Antivirus-Interceptor-Info: fallback
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-e1000_xmit_frame is expected to stop the queue and dispatch frames to
-hardware if there is not sufficient space for the next frame in the
-buffer, but sometimes it failed to do so because the estimated maxmium
-size of frame was wrong. As the consequence, the later invocation of
-e1000_xmit_frame failed with NETDEV_TX_BUSY, and the frame in the buffer
-remained forever, resulting in a watchdog failure.
-
-This change fixes the estimated size by making it match with the
-condition for NETDEV_TX_BUSY. Apparently, the old estimation failed to
-account for the following lines which determines the space requirement
-for not causing NETDEV_TX_BUSY:
->	/* reserve a descriptor for the offload context */
->	if ((mss) || (skb->ip_summed == CHECKSUM_PARTIAL))
->		count++;
->	count++;
->
->	count += DIV_ROUND_UP(len, adapter->tx_fifo_limit);
-
-This issue was found with http-stress02 test included in Linux Test
-Project 20220930.
-
-Signed-off-by: Akihiko Odaki <akihiko.odaki@daynix.com>
----
- drivers/net/ethernet/intel/e1000e/netdev.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index 321f2a95ae3a..da113f5011e9 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -5936,9 +5936,9 @@ static netdev_tx_t e1000_xmit_frame(struct sk_buff *skb,
- 		e1000_tx_queue(tx_ring, tx_flags, count);
- 		/* Make sure there is space in the ring for the next send. */
- 		e1000_maybe_stop_tx(tx_ring,
--				    (MAX_SKB_FRAGS *
-+				    ((MAX_SKB_FRAGS + 1) *
- 				     DIV_ROUND_UP(PAGE_SIZE,
--						  adapter->tx_fifo_limit) + 2));
-+						  adapter->tx_fifo_limit) + 4));
- 
- 		if (!netdev_xmit_more() ||
- 		    netif_xmit_stopped(netdev_get_tx_queue(netdev, 0))) {
--- 
-2.37.3
-
+PiBPbiAxMi4xMC4yMDIyIDA5OjU5LCBIYXUgd3JvdGU6DQo+ID4+DQo+ID4+IE9uIDA0LjEwLjIw
+MjIgMTA6MTAsIENodW5oYW8gTGluIHdyb3RlOg0KPiA+Pj4gV2hlbiBjbG9zZSBkZXZpY2UsIHJ4
+IHdpbGwgYmUgZW5hYmxlZCBpZiB3b2wgaXMgZW5hYmVsZC4gV2hlbiBvcGVuDQo+ID4+PiBkZXZp
+Y2UgaXQgd2lsbCBjYXVzZSByeCB0byBkbWEgdG8gd3JvbmcgYWRkcmVzcyBhZnRlciBwY2lfc2V0
+X21hc3RlcigpLg0KPiA+Pj4NCj4gPj4+IEluIHRoaXMgcGF0Y2gsIGRyaXZlciB3aWxsIGRpc2Fi
+bGUgdHgvcnggd2hlbiBjbG9zZSBkZXZpY2UuIElmIHdvbA0KPiA+Pj4gaXMgZWFuYmxlZCBvbmx5
+IGVuYWJsZSByeCBmaWx0ZXIgYW5kIGRpc2FibGUgcnhkdl9nYXRlIHRvIGxldA0KPiA+Pj4gaGFy
+ZHdhcmUgY2FuIHJlY2VpdmUgcGFja2V0IHRvIGZpZm8gYnV0IG5vdCB0byBkbWEgaXQuDQo+ID4+
+Pg0KPiA+Pj4gRml4ZXM6IDEyMDA2ODQ4MTQwNSAoInI4MTY5OiBmaXggZmFpbGluZyBXb0wiKQ0K
+PiA+Pj4gU2lnbmVkLW9mZi1ieTogQ2h1bmhhbyBMaW4gPGhhdUByZWFsdGVrLmNvbT4NCj4gPj4+
+IC0tLQ0KPiA+Pj4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L3JlYWx0ZWsvcjgxNjlfbWFpbi5jIHwg
+MTQgKysrKysrKy0tLS0tLS0NCj4gPj4+ICAxIGZpbGUgY2hhbmdlZCwgNyBpbnNlcnRpb25zKCsp
+LCA3IGRlbGV0aW9ucygtKQ0KPiA+Pj4NCj4gPj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9l
+dGhlcm5ldC9yZWFsdGVrL3I4MTY5X21haW4uYw0KPiA+Pj4gYi9kcml2ZXJzL25ldC9ldGhlcm5l
+dC9yZWFsdGVrL3I4MTY5X21haW4uYw0KPiA+Pj4gaW5kZXggMWI3ZmRiNGYwNTZiLi5jMDljZmJl
+MWQzZjAgMTAwNjQ0DQo+ID4+PiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9yZWFsdGVrL3I4
+MTY5X21haW4uYw0KPiA+Pj4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvcmVhbHRlay9yODE2
+OV9tYWluLmMNCj4gPj4+IEBAIC0yMjM5LDYgKzIyMzksOSBAQCBzdGF0aWMgdm9pZCBydGxfd29s
+X2VuYWJsZV9yeChzdHJ1Y3QNCj4gPj4gcnRsODE2OV9wcml2YXRlICp0cCkNCj4gPj4+ICAJaWYg
+KHRwLT5tYWNfdmVyc2lvbiA+PSBSVExfR0lHQV9NQUNfVkVSXzI1KQ0KPiA+Pj4gIAkJUlRMX1cz
+Mih0cCwgUnhDb25maWcsIFJUTF9SMzIodHAsIFJ4Q29uZmlnKSB8DQo+ID4+PiAgCQkJQWNjZXB0
+QnJvYWRjYXN0IHwgQWNjZXB0TXVsdGljYXN0IHwgQWNjZXB0TXlQaHlzKTsNCj4gPj4+ICsNCj4g
+Pj4+ICsJaWYgKHRwLT5tYWNfdmVyc2lvbiA+PSBSVExfR0lHQV9NQUNfVkVSXzQwKQ0KPiA+Pj4g
+KwkJUlRMX1czMih0cCwgTUlTQywgUlRMX1IzMih0cCwgTUlTQykgJiB+UlhEVl9HQVRFRF9FTik7
+DQo+ID4+DQo+ID4+IElzIHRoaXMgY29ycmVjdCBhbnl3YXk/IFN1cHBvc2VkbHkgeW91IHdhbnQg
+dG8gc2V0IHRoaXMgYml0IHRvIGRpc2FibGUgRE1BLg0KPiA+Pg0KPiA+IElmIHdvbCBpcyBlbmFi
+bGVkLCBkcml2ZXIgbmVlZCB0byBkaXNhYmxlIGhhcmR3YXJlIHJ4ZHZfZ2F0ZSBmb3IgcmVjZWl2
+aW5nDQo+IHBhY2tldHMuDQo+ID4NCj4gT0ssIEkgc2VlLiBCdXQgd2h5IGRpc2FibGUgaXQgaGVy
+ZT8gSSBzZWUgbm8gc2NlbmFyaW8gd2hlcmUgcnhkdl9nYXRlIHdvdWxkDQo+IGJlIGVuYWJsZWQg
+d2hlbiB3ZSBnZXQgaGVyZS4NCj4gDQpyeGR2X2dhdGUgd2lsbCBiZSBlbmFibGVkIGluIHJ0bDgx
+NjlfY2xlYW51cCgpLiBXaGVuIHN1c3BlbmQgb3IgY2xvc2UgYW5kIHdvbCBpcyBlbmFibGVkDQpk
+cml2ZXIgd2lsbCBjYWxsIHJ0bDgxNjlfZG93bigpIC0+IHJ0bDgxNjlfY2xlYW51cCgpLT4gcnRs
+X3ByZXBhcmVfcG93ZXJfZG93bigpLT4gcnRsX3dvbF9lbmFibGVfcngoKS4NClNvIGRpc2FibGVk
+IHJ4ZHZfZ2F0ZSBpbiBydGxfd29sX2VuYWJsZV9yeCgpIGZvciByZWNlaXZpbmcgcGFja2V0cy4N
+Cg0KLS0tLS0tUGxlYXNlIGNvbnNpZGVyIHRoZSBlbnZpcm9ubWVudCBiZWZvcmUgcHJpbnRpbmcg
+dGhpcyBlLW1haWwuDQo=
