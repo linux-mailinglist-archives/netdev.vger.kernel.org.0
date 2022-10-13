@@ -2,122 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A6445FD3C2
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 06:25:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 749A05FD3E0
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 06:36:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229490AbiJMEYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 00:24:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53782 "EHLO
+        id S229585AbiJMEgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 00:36:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229485AbiJMEYq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 00:24:46 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2270E113F
-        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 21:24:42 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-248-51rZ28CCMQGwV54jqoVNCw-1; Thu, 13 Oct 2022 05:24:39 +0100
-X-MC-Unique: 51rZ28CCMQGwV54jqoVNCw-1
-Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
- (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Thu, 13 Oct
- 2022 05:24:39 +0100
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.040; Thu, 13 Oct 2022 05:24:39 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Sergei Antonov' <saproj@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>
-Subject: RE: [PATCH v2 net] net: ftmac100: do not reject packets bigger than
- 1514
-Thread-Topic: [PATCH v2 net] net: ftmac100: do not reject packets bigger than
- 1514
-Thread-Index: AQHY3lCWEiTFPZdxBkKncwnj941AIq4K6mqQ///7b4CAAMyDUA==
-Date:   Thu, 13 Oct 2022 04:24:39 +0000
-Message-ID: <379c5499d1be4f73a6175385d3345a68@AcuMS.aculab.com>
-References: <20221012153737.128424-1-saproj@gmail.com>
- <1b919195757c49769bde19c59a846789@AcuMS.aculab.com>
- <CABikg9zdg-WW+C-46Cy=gcgsd8ZEborOJkXOPUfxy9TmNEz_wg@mail.gmail.com>
-In-Reply-To: <CABikg9zdg-WW+C-46Cy=gcgsd8ZEborOJkXOPUfxy9TmNEz_wg@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S229502AbiJMEgt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 00:36:49 -0400
+Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EB3011C27D
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 21:36:47 -0700 (PDT)
+Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-354c7abf786so7798197b3.0
+        for <netdev@vger.kernel.org>; Wed, 12 Oct 2022 21:36:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MYZC/ZZhrwfqeSKJS7iWNQa4xs9BkuJYpmdkhZqDO3E=;
+        b=bD3BNclyP9ltZIweT1HDKFuXx6eb7hOiLH9JVviEPYPhB0sOYPnOgSU66gdF5d75+3
+         TlT4HyKkoVhHJB9h5halO2XpqS8djMcIXY4706siHzr/PLKnv112E/jabXR193uN3VcJ
+         Q4R2PquNN4OCA4stpjgToiAixsItpkw4Wf/g8xxe6JpEyWsj43y9KYMVQ7VVW1MKEkWD
+         MW2SYxDHdUMKQZv2bqCPYKIN999RCky76DYbu1YcIVUDt+yDL3z5STwfNhL9Z+AfZMeT
+         aMVhDpXfyfPVhRgip9XUGbp9hhNLyveS8nWaOZwTZWsFXiNOKv9T/2UxcbCCZzKIE1Mm
+         UQmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=MYZC/ZZhrwfqeSKJS7iWNQa4xs9BkuJYpmdkhZqDO3E=;
+        b=zfUXG8PMkDABkNY2ubutFiHNdcsFFtIxNyknvc4ldxPgBVkSWS2iVGQvGJ05sWNBm1
+         y0kc48TZ2JwMZQpEAATD58PUlEBsQk1BGJpM1vFiNcpx2ugUg4MTVSCuLfhL1DWR52jw
+         3fl/4LhTCVKjscoO4mB7avlwRpCrw336anQm+GONT8yUHdUEyIusOLBCWmLwsa4rfsaG
+         ICIEAyG0VePqI+yB3Uo3gqdAL6xotQ9raRRGcOQBF9XZ5FuFwrhh7qr3jlj+dPfRtDw0
+         /ka7lPnoDikEefc2U9hB5GPvvvmEEFS723fEH7Nps1N6bLu4mDJtwyaxa642GGDD2kgg
+         /ogg==
+X-Gm-Message-State: ACrzQf0tx58Y5Rpqt673Gv3N+Hjn/GNDy8WkOojsHL4zex5F63lG5Mg1
+        r3xhyW1JTy99SNj1XfMmvhxu/fpB0AGUswEdsMujJvqg4ds=
+X-Google-Smtp-Source: AMsMyM4JwARt2gsfW3ADYilWDn1NFUBx3KE68DKqvT23RO3GiX4CqATZEILY6t09XMVmV61nBv6lrhFaSEPDN4pinJk=
+X-Received: by 2002:a81:892:0:b0:355:a4c8:f310 with SMTP id
+ 140-20020a810892000000b00355a4c8f310mr29362922ywi.486.1665635806604; Wed, 12
+ Oct 2022 21:36:46 -0700 (PDT)
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <CANOLnON11vzvVdyJfW+QJ36siWR4-s=HJ2aRKpRy7CP=aRPoSw@mail.gmail.com>
+ <CANOLnOPeOi0gxYwd5+ybdv5w=RZEh5JakJPE9xgrSL1cecZHbw@mail.gmail.com>
+ <Yv0h1PFxmK7rVWpy@cmpxchg.org> <CALvZod5_LVkOkF+gmefnctmx+bRjykSARm2JA9eqKJx85NYBGQ@mail.gmail.com>
+ <CAEA6p_BhAh6f_kAHEoEJ38nunY=c=4WqxhJQUjT+dCSAr_rm8g@mail.gmail.com> <CANOLnONQaHXOp1z1rNum74N2b=Ub7t5NsGHqPdHUQL4+4YYEQg@mail.gmail.com>
+In-Reply-To: <CANOLnONQaHXOp1z1rNum74N2b=Ub7t5NsGHqPdHUQL4+4YYEQg@mail.gmail.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Wed, 12 Oct 2022 21:36:34 -0700
+Message-ID: <CALvZod6VaQXrs1x7ff=RRWWP+CgD0hQkTROfZ9XowQ_Zo3SO3Q@mail.gmail.com>
+Subject: Re: UDP rx packet loss in a cgroup with a memory limit
+To:     =?UTF-8?Q?Gra=C5=BEvydas_Ignotas?= <notasas@gmail.com>
+Cc:     Wei Wang <weiwan@google.com>, Johannes Weiner <hannes@cmpxchg.org>,
+        Eric Dumazet <edumazet@google.com>,
+        netdev <netdev@vger.kernel.org>, Michal Hocko <mhocko@suse.com>,
+        Roman Gushchin <guro@fb.com>, Linux MM <linux-mm@kvack.org>,
+        Cgroups <cgroups@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogU2VyZ2VpIEFudG9ub3YNCj4gU2VudDogMTIgT2N0b2JlciAyMDIyIDE3OjQzDQo+IA0K
-PiBPbiBXZWQsIDEyIE9jdCAyMDIyIGF0IDE5OjEzLCBEYXZpZCBMYWlnaHQgPERhdmlkLkxhaWdo
-dEBhY3VsYWIuY29tPiB3cm90ZToNCj4gPg0KPiA+IEZyb206IFNlcmdlaSBBbnRvbm92DQo+ID4g
-PiBTZW50OiAxMiBPY3RvYmVyIDIwMjIgMTY6MzgNCj4gPiA+DQo+ID4gPiBEZXNwaXRlIHRoZSBk
-YXRhc2hlZXQgWzFdIHNheWluZyB0aGUgY29udHJvbGxlciBzaG91bGQgYWxsb3cgaW5jb21pbmcN
-Cj4gPiA+IHBhY2tldHMgb2YgbGVuZ3RoID49MTUxOCwgaXQgb25seSBhbGxvd3MgcGFja2V0cyBv
-ZiBsZW5ndGggPD0xNTE0Lg0KDQpBY3R1YWxseSBJIGJldCB0aGUgZGF0YXNoZWV0IGlzIGNvcnJl
-Y3QuDQpUaGUgbGVuZ3RoIGNoZWNrIGlzIHByb2JhYmx5IGRvbmUgYmVmb3JlIHRoZSBDUkMgaXMg
-ZGlzY2FyZGVkLg0KDQouLi4NCj4gPiBBbHRob3VnaCB0cmFkaXRpb25hbGx5IGl0IHdhcyAxNTE0
-K2NyYy4NCj4gPiBBbiBleHRyYSA0IGJ5dGUgaGVhZGVyIGlzIG5vdyBhbGxvd2VkLg0KPiA+IFRo
-ZXJlIGlzIGFsc28gdGhlIHVzZWZ1bG5lc3Mgb2Ygc3VwcG9ydGluZyBmdWxsIGxlbmd0aCBmcmFt
-ZXMNCj4gPiB3aXRoIGEgUFBQb0UgaGVhZGVyLg0KPiA+DQo+ID4gV2hldGhlciBpdCBhY3R1YWxs
-eSBtYWtlcyBzZW5zZSB0byByb3VuZCB1cCB0aGUgcmVjZWl2ZSBidWZmZXINCj4gPiBzaXplIGFu
-ZCBhc3NvY2lhdGVkIG1heCBmcmFtZSBsZW5ndGggdG8gMTUzNiAoY2FjaGUgbGluZSBhbGlnbmVk
-KQ0KPiA+IGlzIGFub3RoZXIgbWF0dGVyIChwcm9iYWJseSAxNTM0IGZvciA0bisyIGFsaWdubWVu
-dCkuDQo+ID4NCj4gPiA+IFNpbmNlIDE1MTggaXMgYSBzdGFuZGFyZCBFdGhlcm5ldCBtYXhpbXVt
-IGZyYW1lIHNpemUsIGFuZCBpdCBjYW4NCj4gPiA+IGVhc2lseSBiZSBlbmNvdW50ZXJlZCAoaW4g
-U1NIIGZvciBleGFtcGxlKSwgZml4IHRoaXMgYmVoYXZpb3I6DQo+ID4gPg0KPiA+ID4gKiBTZXQg
-RlRNQUMxMDBfTUFDQ1JfUlhfRlRMIGluIHRoZSBNQUMgQ29udHJvbCBSZWdpc3Rlci4NCj4gPg0K
-PiA+IFdoYXQgZG9lcyB0aGF0IGRvPw0KPiANCj4gSWYgRlRNQUMxMDBfTUFDQ1JfUlhfRlRMIGlz
-IG5vdCBzZXQ6DQo+ICAgdGhlIGRyaXZlciBkb2VzIG5vdCByZWNlaXZlIHRoZSAibG9uZyIgcGFj
-a2V0IGF0IGFsbC4gTG9va3MgbGlrZSB0aGUNCj4gY29udHJvbGxlciBkaXNjYXJkcyB0aGUgcGFj
-a2V0IHdpdGhvdXQgYm90aGVyaW5nIHRoZSBkcml2ZXIuDQo+IElmIEZUTUFDMTAwX01BQ0NSX1JY
-X0ZUTCBpcyBzZXQ6DQo+ICAgdGhlIGRyaXZlciByZWNlaXZlcyB0aGUgImxvbmciIHBhY2tldCBt
-YXJrZWQgYnkgdGhlDQo+IEZUTUFDMTAwX1JYREVTMF9GVEwgZmxhZy4gQW5kIHRoZXNlIHBhY2tl
-dHMgd2VyZSBkaXNjYXJkZWQgYnkgdGhlDQo+IGRyaXZlciAoYmVmb3JlIG15IHBhdGNoKS4NCg0K
-VGhlcmUgYXJlIG90aGVyIHByb2JsZW1zIGhlcmUuDQpXaGVyZSBkb2VzIHRoZSBleHRyYSBkYXRh
-IGFjdHVhbGx5IGdldCB3cml0dGVuIHRvPw0KV2hhdCBoYXBwZW5zIHRvIHZlcnkgbG9uZyBwYWNr
-ZXRzPw0KDQpJJ20gZ3Vlc3NpbmcgdGhlIGhhcmR3YXJlIGhhcyBhIHJlYXNvbmFibGUgaW50ZXJm
-YWNlIHdoZXJlDQp0aGVyZSBpcyBhICdyaW5nJyBvZiByZWNlaXZlIGJ1ZmZlciBkZXNjcmlwdG9y
-cy4NCklmIGEgZnJhbWUgaXMgbG9uZ2VyIHRoYW4gYSBidWZmZXIgdGhlIGhhcmR3YXJlIHdpbGwg
-d3JpdGUNCnRoZSBmcmFtZSB0byBtdWx0aXBsZSBidWZmZXJzLg0KDQpIb3dldmVyIGlmIGVhY2gg
-YnVmZmVyIGlzIGxvbmcgZW5vdWdoIGZvciBhIG5vcm1hbCBmcmFtZQ0KYW5kIHRoZSBoYXJkd2Fy
-ZSBkaXNjYXJkcy90cnVuY2F0ZXMgb3ZlcmxvbmcgZnJhbWVzIHRoZW4NCnRoZSBkcml2ZXIgY2Fu
-IGFzc3VtZSB0aGVyZSBhcmUgbm8gY29udGludWF0aW9ucy4NCihJIHVzZWQgdG8gdXNlIGFuIGFy
-cmF5IG9mIDEyOCBidWZmZXJzIG9mIDUxMiBieXRlcyBhbmQNCmFsd2F5cyBjb3B5IHRoZSByZWNl
-aXZlIGRhdGEgLSBhIHNpbmdsZSB3b3JkIGFsaWduZWQgY29weQ0KdW5sZXNzIGEgbG9uZyBmcmFt
-ZSBjcm9zc2VkIHRoZSByaW5nIGVuZC4pDQoNCkl0IGxvb2tzIGxpa2UgdGhlIEZUTCBiaXQgYWN0
-dWFsbHkgY29udHJvbHMgd2hldGhlcg0Kb3ZlcmxvbmcgZnJhbWVzIGFyZSBkaXNjYXJkZWQgb3Ig
-dHJ1bmNhdGVkLg0KKFRoZXJlIG1heSBiZSBhbm90aGVyIG9wdGlvbiB0byBlaXRoZXIgc2V0IHRo
-ZSBmcmFtZQ0KbGVuZ3RoIG9yIGRpc2FibGUgdGhlIGZlYXR1cmUgY29tcGxldGVseS4pDQoNCk5v
-dyB5b3UgbWlnaHQgZ2V0IGF3YXkgd2l0aCBwYWNrZXRzIHRoYXQgYXJlIG9ubHkgNCBieXRlcw0K
-b3ZlcmxvbmcgKG9uZSBWTEFOIGhlYWRlcikgYmVjYXVzZSB0aGUgaGFyZHdhcmUgYWx3YXlzDQp3
-cml0ZXMgdGhlIGZ1bGwgcmVjZWl2ZWQgQ1JDIGludG8gdGhlIGJ1ZmZlci4NClNvIHdoZW4gaXQg
-ZGlzY2FyZHMgYSAxNTE1LTE1MTggZnJhbWUgdGhlIGV4dHJhIGJ5dGVzDQphcmUgZnJvbSB0aGUg
-ZnJhbWUuDQpJZiB0aGF0IGlzIHRydWUgaXQgZGVzZXJ2ZXMgYSBjb21tZW50Lg0KDQpPVE9IIGlm
-IGl0IGNhcnJpZXMgb24gd3JpdGluZyBpbnRvIHRoZSByeCByaW5nIGJ1ZmZlcg0KdGhlbiBpdCBt
-aWdodCBhbHNvICdvdmVyZmxvdycgaW50byB0aGUgbmV4dCByaW5nIGVudHJ5Lg0KSW5kZWVkIGEg
-bG9uZyBlbm91Z2ggZnJhbWUgd2lsbCBmaWxsIHRoZSBlbnRpcmUgcmluZw0KKHlvdSdsbCBuZWVk
-IGEgYnVnZ3kgZXRoZXJuZXQgaHViL3N3aXRjaCBvZiBhIDEwLzEwME0NCkhEWCBuZXR3b3JrKS4N
-Cg0KWW91IHJlYWxseSBkbyBuZWVkIHRvIGNoZWNrIHdoZXRoZXIgaXQgZGV0ZWN0cyBDUkMgZXJy
-b3JzDQpvbiBvdmVybG9uZyBmcmFtZXMuIElmIGl0IChtb3N0bHkpIHN0b3BzIHByb2Nlc3Npbmcg
-YXQNCjE1MTggYnl0ZXMgKGluYyBjcmMpIHRoZW4gaXQgbWF5IG5vdC4NCkFsc28gaWYgdGhlIGZy
-YW1lIGxlbmd0aCBmaWVsZCBpcyAoc2F5KSAxNiBiaXRzIHRoZW4NCmEgNjRrKyBmcmFtZSB3aWxs
-IHdyYXAgdGhlIGNvdW50ZXIuDQpXaGljaCBtZWFucyB0aGF0IHRoZSBmcmFtZSBsZW5ndGggbWF5
-IGJlIHVucmVsaWFibGUNCmZvciBvdmVybG9uZyBmcmFtZXMuDQooVGhlIGNvdW50IG1pZ2h0IHNh
-dHVyYXRlLikNCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJh
-bWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0
-cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
+On Wed, Aug 17, 2022 at 1:12 PM Gra=C5=BEvydas Ignotas <notasas@gmail.com> =
+wrote:
+>
+> On Wed, Aug 17, 2022 at 9:16 PM Wei Wang <weiwan@google.com> wrote:
+> >
+> > On Wed, Aug 17, 2022 at 10:37 AM Shakeel Butt <shakeelb@google.com> wro=
+te:
+> > >
+> > > + Eric and netdev
+> > >
+> > > On Wed, Aug 17, 2022 at 10:13 AM Johannes Weiner <hannes@cmpxchg.org>=
+ wrote:
+> > > >
+> > > > This is most likely a regression caused by this patch:
+> > > >
+> > > > commit 4b1327be9fe57443295ae86fe0fcf24a18469e9f
+> > > > Author: Wei Wang <weiwan@google.com>
+> > > > Date:   Tue Aug 17 12:40:03 2021 -0700
+> > > >
+> > > >     net-memcg: pass in gfp_t mask to mem_cgroup_charge_skmem()
+> > > >
+> > > >     Add gfp_t mask as an input parameter to mem_cgroup_charge_skmem=
+(),
+> > > >     to give more control to the networking stack and enable it to c=
+hange
+> > > >     memcg charging behavior. In the future, the networking stack ma=
+y decide
+> > > >     to avoid oom-kills when fallbacks are more appropriate.
+> > > >
+> > > >     One behavior change in mem_cgroup_charge_skmem() by this patch =
+is to
+> > > >     avoid force charging by default and let the caller decide when =
+and if
+> > > >     force charging is needed through the presence or absence of
+> > > >     __GFP_NOFAIL.
+> > > >
+> > > >     Signed-off-by: Wei Wang <weiwan@google.com>
+> > > >     Reviewed-by: Shakeel Butt <shakeelb@google.com>
+> > > >     Signed-off-by: David S. Miller <davem@davemloft.net>
+> > > >
+> > > > We never used to fail these allocations. Cgroups don't have a
+> > > > kswapd-style watermark reclaimer, so the network relied on
+> > > > force-charging and leaving reclaim to allocations that can block.
+> > > > Now it seems network packets could just fail indefinitely.
+> > > >
+> > > > The changelog is a bit terse given how drastic the behavior change
+> > > > is. Wei, Shakeel, can you fill in why this was changed? Can we reve=
+rt
+> > > > this for the time being?
+> > >
+> > > Does reverting the patch fix the issue? However I don't think it will=
+.
+> > >
+> > > Please note that we still have the force charging as before this
+> > > patch. Previously when mem_cgroup_charge_skmem() force charges, it
+> > > returns false and __sk_mem_raise_allocated takes suppress_allocation
+> > > code path. Based on some heuristics, it may allow it or it may
+> > > uncharge and return failure.
+> >
+> > The force charging logic in __sk_mem_raise_allocated only gets
+> > considered on tx path for STREAM socket. So it probably does not take
+> > effect on UDP path. And, that logic is NOT being altered in the above
+> > patch.
+> > So specifically for UDP receive path, what happens in
+> > __sk_mem_raise_allocated() BEFORE the above patch is:
+> > - mem_cgroup_charge_skmem() gets called:
+> >     - try_charge() with GFP_NOWAIT gets called and  failed
+> >     - try_charge() with __GFP_NOFAIL
+> >     - return false
+> > - goto suppress_allocation:
+> >     - mem_cgroup_uncharge_skmem() gets called
+> > - return 0 (which means failure)
+> >
+> > AFTER the above patch, what happens in __sk_mem_raise_allocated() is:
+> > - mem_cgroup_charge_skmem() gets called:
+> >     - try_charge() with GFP_NOWAIT gets called and failed
+> >     - return false
+> > - goto suppress_allocation:
+> >     - We no longer calls mem_cgroup_uncharge_skmem()
+> > - return 0
+> >
+> > So I agree with Shakeel, that this change shouldn't alter the behavior
+> > of the above call path in such a situation.
+> > But do let us know if reverting this change has any effect on your test=
+.
+>
+> The problem is still there (the kernel wasn't compiling after revert,
+> had to adjust another seemingly unrelated callsite). It's hard to tell
+> if it's better or worse since it happens so randomly.
+>
 
+Hello everyone, we have a better understanding why the patch pointed
+out by Johannes might have exposed this issue. See
+https://lore.kernel.org/all/20221013041833.rhifxw4gqwk4ofi2@google.com/.
+
+To summarize, the old code was depending on a subtle interaction of
+force-charge and percpu charge caches which this patch removed. The
+fix I am proposing is for the network stack to be explicit of its need
+(i.e. use GFP_ATOMIC) instead of depending on a subtle behavior.
