@@ -2,109 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB6FB5FE5F9
-	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 01:44:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 018DC5FE5F2
+	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 01:44:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229941AbiJMXoq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 19:44:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42882 "EHLO
+        id S229608AbiJMXny (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 19:43:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229940AbiJMXoe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 19:44:34 -0400
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D12CD199888
-        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 16:44:22 -0700 (PDT)
-Received: by mail-qv1-xf2f.google.com with SMTP id df9so2281924qvb.9
-        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 16:44:22 -0700 (PDT)
+        with ESMTP id S229545AbiJMXnw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 19:43:52 -0400
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B59718C420;
+        Thu, 13 Oct 2022 16:43:52 -0700 (PDT)
+Received: by mail-qt1-x831.google.com with SMTP id w3so2749928qtv.9;
+        Thu, 13 Oct 2022 16:43:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=G4y6mG+4mDb5OA/mvjphPM6v31//PNw4p/aCL2x8Kr4=;
-        b=HSPj0ofgWQ7QT+KTnLHM+8NWoBEfCxHC4YKqk6R86pzR7pPikvPG8xHSBss01D2Ejs
-         VfTjnUXbLPAIvYJf+RLG3xzwnMx25G1IdqpzT+LplvdMEnka/WUiH9MOa9WQcq6BhUY2
-         HnIpcsZDYB0gtXPmwYqtzxFsJhQqRJlvjcrxNqNRZ9L4+IsdCYtbp+j+0D6wfo4kazdy
-         B9WCGlrULPlSfkFCLkUqGK7ilxtr4cXx754ATZ7UWKn/2dWEASXg1XWxO9o5YohCLMG2
-         jZxCozdRodlCT+VVaVM5MIcNcZDjr9M2zxtjWEpk9HzsTL7Nj2YBfo8oSaNH3sy8pNeD
-         fF6Q==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=M3AV7ZQbI7aNl/tYezng4lVshBENwgW5MmDC2ALTMOU=;
+        b=Dgwe+FsBX5p02aA/HrYcjA2hSo4aa6LZcE5tZ5X77GSffPHlEzTNHQFZEo2BuX6rVJ
+         wO1wxGkmxEgyA50nCZ9Zhq3JggNVPlqsnkk1jjIZaWeQydKN2jGhlDSxEJ+tFbT80oFc
+         vQAxt59KcqJbqEl3pfNGjWIKjX0ferW7vq/apXCMdZC20zg50mjj8t9IEKN+Vq44sYy7
+         eEzlDUH1qhoQeuOdGWuLkCrhR9qEiO+LPQiN+RFKUXtnP/Ul1Akg+GBz6jl+szPt4Ssf
+         f19isGUAYVfEOFlpRUp39I9k5s8IYvC5O1Xw6CEqcMJMpQ8quM0XFkfzp2Icv37BNI1p
+         RPbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=G4y6mG+4mDb5OA/mvjphPM6v31//PNw4p/aCL2x8Kr4=;
-        b=INFcgB8N1suosUuMCc9klHfSpiJbXA0KcqN2k9Sl1spe1OKLQCIAoOyq2kxX61Pxh5
-         8ek8WQgsZtqTxxWZogFjOmNXJHeYSd6WK1m8FzyEfxHX6Bx9+kq/7aD91aMThsWOOd9C
-         mmwtSWoyKu4UNkus+uN4JI0W5iZsbbSi9pXpiUa/OnAF3CUN4LnQaaMyxDxhOJIflfWU
-         BQgLTgWk+uLlwy6aHlwqIilwVKRlQjoeaSyn9BBZIlPXx6y3rkkemtLHorCJkVIfODtH
-         67MUx4WyjTCQlGOLoBfAwrjk1Op4U3OKRYon1L67toSBMzO4x8k9V55vzbun5mY+wKdb
-         SHXw==
-X-Gm-Message-State: ACrzQf3doAoVnCLp7iXeBIkCh8mSHLBSSewy8EpQzZn09Fn3QcfnPzK6
-        rDWY4gdUD6AZymRWoaSOQmOYwA==
-X-Google-Smtp-Source: AMsMyM4ZbodensA/Nqmrz2W2buL7MGJ5OnmzoL5Xy9Pl6OMGuchRLFFRuIMuxAF8HafgxloTlPRSqg==
-X-Received: by 2002:a0c:b294:0:b0:4b1:a396:d1cc with SMTP id r20-20020a0cb294000000b004b1a396d1ccmr2170493qve.107.1665704654294;
-        Thu, 13 Oct 2022 16:44:14 -0700 (PDT)
-Received: from krzk-bin.home (cpe-72-225-192-120.nyc.res.rr.com. [72.225.192.120])
-        by smtp.gmail.com with ESMTPSA id d19-20020a05620a241300b006bb82221013sm1210073qkn.0.2022.10.13.16.44.13
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=M3AV7ZQbI7aNl/tYezng4lVshBENwgW5MmDC2ALTMOU=;
+        b=sqOQVue5UgV3IKWjrY30kNli4Wz06Joll6hxC2Q2CV30+yGb3y78XLzKBXN33T2Xw6
+         WM9hrc9SXt2TkD4gg+naZbWXiIilxj0DqaiIltWR6RQK5w9aBbSze0xd4uILTt9aATHn
+         mgo70RkY5W1PGlJ7OTu4sBRT+WZ2XqQua4oHqvgA8S2BwU6BGbvOglFsqTmNxWQY8EBC
+         L/L/T3gC+OpD3aviy1M9xMU07wxdErrmGdjMIt2SwwQJUG5dTt4+8g3xyKot3gN0q0LP
+         20qcbVkFoTlFUWrdxkN2msryJRBawkmYajCk5HftuN2tmTV/RE1Z6H5RqwswJJfe7w8s
+         +kxA==
+X-Gm-Message-State: ACrzQf1ljfgOXQECrlew2/d2yU2i9LM33a6LLnaq3WRgNyQlHlXLu0dw
+        blHZq+WamXYUAfFRmfDOV56p3wecqlY=
+X-Google-Smtp-Source: AMsMyM7/dmSKM1pdeovR5OlPEchqOBoiCfJiV3EkIND51Jdfe1F1tWPFbGEUfjcqIDxog08KAts3+Q==
+X-Received: by 2002:ac8:594b:0:b0:35c:d0b7:e2f9 with SMTP id 11-20020ac8594b000000b0035cd0b7e2f9mr2099023qtz.483.1665704630995;
+        Thu, 13 Oct 2022 16:43:50 -0700 (PDT)
+Received: from localhost ([2601:4c1:c100:2270:ec49:7545:4026:a70a])
+        by smtp.gmail.com with ESMTPSA id d3-20020a37c403000000b006bba46e5eeasm841543qki.37.2022.10.13.16.43.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Oct 2022 16:44:13 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        Thu, 13 Oct 2022 16:43:50 -0700 (PDT)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] MAINTAINERS: nfc: s3fwrn5: Drop Krzysztof Opasiak
-Date:   Thu, 13 Oct 2022 19:42:05 -0400
-Message-Id: <20221013234205.132630-1-krzysztof.kozlowski@linaro.org>
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Menglong Dong <imagedong@tencent.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Guo Ren <guoren@linux.alibaba.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>
+Cc:     Yury Norov <yury.norov@gmail.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/4] net: drop netif_attrmask_next*()
+Date:   Thu, 13 Oct 2022 16:43:44 -0700
+Message-Id: <20221013234349.1165689-1-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Emails to Krzysztof Opasiak bounce ("Recipient address rejected: User
-unknown") so drop his email from maintainers of s3fwrn5 NFC bindings and
-driver.
+netif_attrmask_next_and() generates warnings if CONFIG_DEBUG_PER_CPU_MAPS
+is enabled. It is used in a single place. netif_attrmask_next() is not
+used at all. With some rework of __netif_set_xps_queue(), we can drop
+both functions, switch the code to well-tested bitmap API and fix the
+warning.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml | 1 -
- MAINTAINERS                                                    | 1 -
- 2 files changed, 2 deletions(-)
+v1: https://lore.kernel.org/netdev/20221002151702.3932770-1-yury.norov@gmail.com/T/
+v2: Fix missed bitmap initialization in patch #3.
 
-diff --git a/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml b/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
-index 64995cbb0f97..41c9760227cd 100644
---- a/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
-+++ b/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
-@@ -8,7 +8,6 @@ title: Samsung S3FWRN5 NCI NFC Controller
- 
- maintainers:
-   - Krzysztof Kozlowski <krzk@kernel.org>
--  - Krzysztof Opasiak <k.opasiak@samsung.com>
- 
- properties:
-   compatible:
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d0d808564539..e06289b01229 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -18160,7 +18160,6 @@ F:	include/media/drv-intf/s3c_camif.h
- 
- SAMSUNG S3FWRN5 NFC DRIVER
- M:	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
--M:	Krzysztof Opasiak <k.opasiak@samsung.com>
- L:	linux-nfc@lists.01.org (subscribers-only)
- S:	Maintained
- F:	Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+Yury Norov (4):
+  net: move setup code out of mutex in __netif_set_xps_queue()
+  net: merge XPS_CPU_DEV_MAPS_SIZE and XPS_RXQ_DEV_MAPS_SIZE macros
+  net: initialize online_mask unconditionally in __netif_set_xps_queue()
+  net: fix opencoded for_each_and_bit() in __netif_set_xps_queue()
+
+ include/linux/netdevice.h | 53 ++-------------------------------------
+ net/core/dev.c            | 35 ++++++++++++++------------
+ 2 files changed, 21 insertions(+), 67 deletions(-)
+
 -- 
 2.34.1
 
