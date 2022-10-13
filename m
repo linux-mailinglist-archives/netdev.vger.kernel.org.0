@@ -2,103 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 23F215FDCF1
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 17:17:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCA7D5FDD19
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 17:23:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229744AbiJMPRw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 11:17:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48966 "EHLO
+        id S229847AbiJMPXw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 11:23:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbiJMPRu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 11:17:50 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B7F810F8AB;
-        Thu, 13 Oct 2022 08:17:45 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id E44781884C4B;
-        Thu, 13 Oct 2022 15:17:42 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id B029F2500015;
-        Thu, 13 Oct 2022 15:17:42 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 74E139EC000A; Thu, 13 Oct 2022 15:17:42 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S230019AbiJMPXj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 11:23:39 -0400
+X-Greylist: delayed 294 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 13 Oct 2022 08:23:22 PDT
+Received: from violet.fr.zoreil.com (violet.fr.zoreil.com [IPv6:2001:4b98:dc0:41:216:3eff:fe56:8398])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54C5163374
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 08:23:21 -0700 (PDT)
+Received: from violet.fr.zoreil.com ([127.0.0.1])
+        by violet.fr.zoreil.com (8.17.1/8.17.1) with ESMTP id 29DFIEM44167620;
+        Thu, 13 Oct 2022 17:18:14 +0200
+DKIM-Filter: OpenDKIM Filter v2.11.0 violet.fr.zoreil.com 29DFIEM44167620
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fr.zoreil.com;
+        s=v20220413; t=1665674294;
+        bh=QQKO2Gt95d0S/UD87ZROBlqSFHYhACkqDca6PMq68og=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nGPOnL391tusZVM8FyvGI6BoeE9YL8AgrwzoTpZbHd2YZhkoPTHQRMaWZ254Kskin
+         YxJbgmFslsmcOjXzsIWcWoOuNaWisSKxRMH+hRO5GVHK+nYqBAaLkFvsW5F8Tyoc6W
+         GUy4qbNuZSvTMTtm8EwuWPcMO+ZvsoMRzkbfF8j0=
+Received: (from romieu@localhost)
+        by violet.fr.zoreil.com (8.17.1/8.17.1/Submit) id 29DFIDuG4167619;
+        Thu, 13 Oct 2022 17:18:13 +0200
+Date:   Thu, 13 Oct 2022 17:18:13 +0200
+From:   Francois Romieu <romieu@fr.zoreil.com>
+To:     Christian =?utf-8?Q?P=C3=B6ssinger?= <christian@poessinger.com>
+Cc:     netdev@vger.kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: iproute2/tc invalid JSON in 6.0.0 for flowid
+Message-ID: <Y0gsNeByeUnTF3AT@electric-eye.fr.zoreil.com>
+References: <f4806731521546b0bb7011b8c570b52b@poessinger.com>
 MIME-Version: 1.0
-Date:   Thu, 13 Oct 2022 17:17:42 +0200
-From:   netdev@kapio-technology.com
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Hans Schultz <schultz.hans@gmail.com>,
-        Joachim Wiberg <troglobit@gmail.com>,
-        Amit Cohen <amcohen@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v7 net-next 9/9] selftests: forwarding: add test of
- MAC-Auth Bypass to locked port tests
-In-Reply-To: <Y0ggn5SZnw+4SGLC@shredder>
-References: <20221009174052.1927483-1-netdev@kapio-technology.com>
- <20221009174052.1927483-10-netdev@kapio-technology.com>
- <21f799c5a7a79e2e4b111a95fff6fe3d@kapio-technology.com>
- <Y0ggn5SZnw+4SGLC@shredder>
-User-Agent: Gigahost Webmail
-Message-ID: <46112084313969f9a6dfdea9fe52b4b1@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <f4806731521546b0bb7011b8c570b52b@poessinger.com>
+X-Organisation: Land of Sunshine Inc.
+X-Spam-Status: No, score=1.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_SBL_CSS,SPF_HELO_PASS,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-10-13 16:28, Ido Schimmel wrote:
-> On Wed, Oct 12, 2022 at 11:46:55AM +0200, netdev@kapio-technology.com 
-> wrote:
->> Ido, have you had time to look at this patch set, and do I need to 
->> release a
->> v8 to fix those two forgotten statics and maybe also this new 
->> switchcore
->> driver that was not there when I posted this patch set?
-> 
-> I don't know which changes you are referring to, but v8 should
-> incorporate all the changes requested so far. Do not post it as long as
-> net-next is closed (unless marked as RFC):
+Christian Pössinger <christian@poessinger.com> :
+[...]
+> If you can point me to the location which could be responsible for this issue, I am happy to submit a fix to the net tree.
 
-Ohh, I missed declaring two functions as static in chip.c, and 
-unfortunately my compiler did not give me any warnings...
+If the completely untested patch below does not work, you may also
+dig the bits in include/json_print.h and lib/json_print.c 
 
-What is the schedule for net-next to be open (I guess that it is closed 
-as of now)?
+(Ccing Stephen as the unidentified "both" in README.devel)
 
-> 
-> https://www.kernel.org/doc/html/latest/process/maintainer-netdev.html#how-often-do-changes-from-these-trees-make-it-to-the-mainline-linus-tree
+diff --git a/tc/f_u32.c b/tc/f_u32.c
+index d787eb91..70098bcd 100644
+--- a/tc/f_u32.c
++++ b/tc/f_u32.c
+@@ -1275,11 +1275,11 @@ static int u32_print_opt(struct filter_util *qu, FILE *f, struct rtattr *opt,
+ 		fprintf(stderr, "divisor and hash missing ");
+ 	}
+ 	if (tb[TCA_U32_CLASSID]) {
++		char *fmt = !sel || !(sel->flags & TC_U32_TERMINAL) ? "*flowid %s" : "flowid %s";
+ 		SPRINT_BUF(b1);
+-		fprintf(f, "%sflowid %s ",
+-			!sel || !(sel->flags & TC_U32_TERMINAL) ? "*" : "",
+-			sprint_tc_classid(rta_getattr_u32(tb[TCA_U32_CLASSID]),
+-					  b1));
++
++		print_string(PRINT_ANY, "flowid", fmt,
++			    sprint_tc_classid(rta_getattr_u32(tb[TCA_U32_CLASSID]), b1));
+ 	} else if (sel && sel->flags & TC_U32_TERMINAL) {
+ 		print_string(PRINT_FP, NULL, "terminal flowid ", NULL);
+ 	}
+
+-- 
+Ueimor
