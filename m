@@ -2,50 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EBA95FD7E2
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 12:43:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D45205FD7F3
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 12:51:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229540AbiJMKn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 06:43:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54886 "EHLO
+        id S229557AbiJMKvx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 06:51:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbiJMKnZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 06:43:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1767E6F79;
-        Thu, 13 Oct 2022 03:43:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B7B16177B;
-        Thu, 13 Oct 2022 10:43:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45CFDC433C1;
-        Thu, 13 Oct 2022 10:43:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665657803;
-        bh=ossWo8LyH8dkodWmbwnkOkO94f2sDxCTIm28ZOqDeQI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=grmcX7AytvVYg3wfKBL7eAaP/T82Ouemrzj420kJXSovTEAcUM/wFqUllwzoN8fiP
-         u9TCGWP4onBXuojX012A6alLQgw1T7Nms2bbw2Cjek8oXH3FSYT5NTg9Nf+UeJQo1u
-         cY7g8VhRPBGvqO1HNVs0MMaySPgH5qphGWqGdBwoOsn+31sfHIa5KfdMiALbGyqW4C
-         xuI7cYBfNbBX+fGh62c7ZZVUBRtWtjpa1KX5em3WtxcUjK2mkE0p4tOSaYKbyA2lAv
-         YUg2rICJa/wfxz8toU5FyWffJf8nj+q5BugqiXUiQYUWXOTPKy4lABXM/C5OPjDlhN
-         +5+dMZib35+SQ==
-Date:   Thu, 13 Oct 2022 13:43:19 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Aru Kolappan <aru.kolappan@oracle.com>
-Cc:     jgg@ziepe.ca, saeedm@nvidia.com, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        manjunath.b.patil@oracle.com, rama.nichanamatlu@oracle.com
-Subject: Re: [PATCH  1/1] net/mlx5: add dynamic logging for mlx5_dump_err_cqe
-Message-ID: <Y0frx6g/iadBBYgQ@unreal>
-References: <1665618772-11048-1-git-send-email-aru.kolappan@oracle.com>
+        with ESMTP id S229462AbiJMKve (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 06:51:34 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3611FF26C
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 03:51:32 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Mp5t85Kg2zHtmq;
+        Thu, 13 Oct 2022 18:51:28 +0800 (CST)
+Received: from [10.174.178.66] (10.174.178.66) by
+ dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 13 Oct 2022 18:51:30 +0800
+Message-ID: <fef5174d-2109-37e9-8c46-2626b3310c5e@huawei.com>
+Date:   Thu, 13 Oct 2022 18:51:29 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1665618772-11048-1-git-send-email-aru.kolappan@oracle.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.2
+To:     netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>
+CC:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>, <edumazet@google.com>,
+        <sgarzare@redhat.com>, <ast@kernel.org>, <nikolay@nvidia.com>,
+        <mkl@pengutronix.de>, <cong.wang@bytedance.com>
+From:   shaozhengchao <shaozhengchao@huawei.com>
+Subject: net/kcm: syz issue about general protection fault in skb_unlink
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.66]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,48 +47,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 12, 2022 at 04:52:52PM -0700, Aru Kolappan wrote:
-> From: Arumugam Kolappan <aru.kolappan@oracle.com>
-> 
-> Presently, mlx5 driver dumps error CQE by default for few syndromes. Some
-> syndromes are expected due to application behavior[Ex: REMOTE_ACCESS_ERR
-> for revoking rkey before RDMA operation is completed]. There is no option
-> to disable the log if the application decided to do so. This patch
-> converts the log into dynamic print and by default, this debug print is
-> disabled. Users can enable/disable this logging at runtime if needed.
-> 
-> Suggested-by: Manjunath Patil <manjunath.b.patil@oracle.com>
-> Signed-off-by: Arumugam Kolappan <aru.kolappan@oracle.com>
-> ---
->  drivers/infiniband/hw/mlx5/cq.c | 2 +-
->  include/linux/mlx5/cq.h         | 4 ++--
->  2 files changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/infiniband/hw/mlx5/cq.c b/drivers/infiniband/hw/mlx5/cq.c
-> index be189e0..890cdc3 100644
-> --- a/drivers/infiniband/hw/mlx5/cq.c
-> +++ b/drivers/infiniband/hw/mlx5/cq.c
-> @@ -269,7 +269,7 @@ static void handle_responder(struct ib_wc *wc, struct mlx5_cqe64 *cqe,
->  
->  static void dump_cqe(struct mlx5_ib_dev *dev, struct mlx5_err_cqe *cqe)
->  {
-> -	mlx5_ib_warn(dev, "dump error cqe\n");
-> +	mlx5_ib_dbg(dev, "dump error cqe\n");
+I found that the syz issue("general protection fault in skb_unlink")
+still happen in Linux -next branch.
+commit: 082fce125e57cff60687181c97f3a8ee620c38f5
+Link: 
+https://groups.google.com/g/syzkaller-bugs/c/ZfR2B5KaQrA/m/QfnGHCYSBwAJ
+Please ask:
+Is there any problem with this patch? Why is this patch not merged into
+the Linux -next branch or mainline?
 
-This path should be handled in switch<->case of mlx5_handle_error_cqe()
-by skipping dump_cqe for MLX5_CQE_SYNDROME_REMOTE_ACCESS_ERR.
+Thank you.
 
-diff --git a/drivers/infiniband/hw/mlx5/cq.c b/drivers/infiniband/hw/mlx5/cq.c
-index be189e0525de..2d75c3071a1e 100644
---- a/drivers/infiniband/hw/mlx5/cq.c
-+++ b/drivers/infiniband/hw/mlx5/cq.c
-@@ -306,6 +306,7 @@ static void mlx5_handle_error_cqe(struct mlx5_ib_dev *dev,
-                wc->status = IB_WC_REM_INV_REQ_ERR;
-                break;
-        case MLX5_CQE_SYNDROME_REMOTE_ACCESS_ERR:
-+               dump = 0;
-                wc->status = IB_WC_REM_ACCESS_ERR;
-                break;
-        case MLX5_CQE_SYNDROME_REMOTE_OP_ERR:
-
-Thanks
+Zhengchao Shao
