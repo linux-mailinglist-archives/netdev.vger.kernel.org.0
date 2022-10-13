@@ -2,336 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3B455FDADA
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 15:29:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 572785FDAF9
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 15:36:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229928AbiJMN3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 09:29:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33176 "EHLO
+        id S229751AbiJMNgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 09:36:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229794AbiJMN3x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 09:29:53 -0400
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2080.outbound.protection.outlook.com [40.107.96.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45C7F1B7A3;
-        Thu, 13 Oct 2022 06:29:51 -0700 (PDT)
+        with ESMTP id S229650AbiJMNgD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 09:36:03 -0400
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2087.outbound.protection.outlook.com [40.107.100.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AF3DABD78
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 06:35:58 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=N799NCBeHwhuQbxVzzdi+gcCIJX45dLncc1qXrm9RJHAewIIIux74hQt34RJq375rRB2vlGeheKO41hhx0Lz9rptCoHFLlbaJu673p1bUntW2Ei8yOQYdLPzYKLKcUE9AwYK1+9Nq1AYrqqtF5TAqg9nH024/JciKUjCtUuLfF/f73jy2oaRmfsLyZImmVDIKjfOoh20TPCaSMonIy1Q6MHYH3ZBcxTPIsn7Kzk3Ag8+AjKtd0n65EhDr2BSmpCCBhbLVbVz60nUM6kuIP4WYMAFVtZ80oQSKqXGziYjGhKDSRjStr//Dgf+pRA8U1xOFR+KCDC1jRc3TY1uvv3HAg==
+ b=EKlGL6XugiC3mybZogzy41nxKnA7iZIi0JVVABecvogskMUUlbCFdNpSwg4cTLd4Ll0hO0SCCAdg2/0y6bidSTqwAvvy1DP5e4oWX1JMbDERBpfG91/Bba3OCdlhJAg93qLAvn2fG8K40g3lznmkcb7dXD/CtrWx7b60HRStBTE8nR9fJTmRQf69ln2joQTRUBu96NVmrBvDoM1Ysq6SoVstfkKTXka1uh5JdxPToiXtrMHAVhSklAur5qX2a6/aSIr2hNOnPE/AkuVnoBPdXKUMuD3riun4NWbYahcHVoY0f1nGwWwyZK3PVM+lyQFztFF8oUFD3+P7EZKozMP13Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WyjqTXnskcfRWQYYTQfpNjb32qwOoO4IhxQhv3iAAXY=;
- b=fLVI5Qfo06D2vFDUOwt+xA8wjLMGsHRweUMAc7pouf0xt5Qlt4rt53jyg2vzMBWPdRUEno58wI6qmaUbRV+tBzaa1bQ1Qf2VcfRJLeER2CTgddfD86ikTLeWSvCviJEv1DAmZkyO7eSViOjlbyyjGI6r51gj/9SHYbD+hhVJRdq+fvGfMZ7RU4537UvmD/fRHz6+VZ5HAAeLNRE2JHeBU8YqBeNF2ggVFCbGV5CvpgVefDDPUtGa8VRhmrWH5HbueqcG2HBDc4Xj+UckTvtz0YjpZ0NbUC6te37qntBEPYa5FR71Xe/IzIqWHkEdJvNhPYeAs69Geq6GJAP8Mv0pTg==
+ bh=FG5BE8YUX4eEHEsI/rlcZ/Z5F0sf2Jh/2tqc1HvfvYw=;
+ b=OyD9d4F4BoqpOxX0MDnQRmASyCKz9PGAYDn97HzMhJq/X7iS0U3kxOFrk0o532dYIP4EXI79c/KVJShmcxB8WG0KIwi40vMKy9aPqyAboKD4bcg6IXOp52IF/ePXotSkzOfAepteEH/7NeiWOWiANRTy3uO/dONuR+kUUzj/zbEHcxyV/z4BYcopBLcDZSsH7r6I6f9mgLuuDXQPIJb1k5cr721al9ZuDi/kPfDrwRvROBafIi6BApW5l9j/nEBU0JtBwkqxB3vhXkI+XPtDKWJmEMhiCIgepS2zB3HH2kbHTK4SdioaLXpxqwUifrs9Q279GqW6noCgFJ5+upxEqA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WyjqTXnskcfRWQYYTQfpNjb32qwOoO4IhxQhv3iAAXY=;
- b=NnZnyY3BV3Bt8xHNlzTznDHMRib6T6KKvRGyy6Xm5Lp/dujUEvWgT2oJ7FpCcJfhZtP7EKimZ6idHL4tjKFtN9FIQMa4/FanuQk80GWigBlju+r/0K2t/TF3iZReNoBqy/nn06LQJwz41HkaQDuw5Er17LF5XC4liN5S02fNpd4tIQWn7WrYo8HfbGyozKK3waoyzahN3ppifq2Ukr2RpVZq2RL7yelxJI1EJI7xzl9uQco+tU/AFZB4HkmU96+jHuqNPDCuYgxELlQcDoGVWCfHmxvY64bUUAMKuN/AeA23XbRZrwkhJ/4GIoh2JthoSZ8Xtx2KMrrFPuuCnOMMJw==
+ bh=FG5BE8YUX4eEHEsI/rlcZ/Z5F0sf2Jh/2tqc1HvfvYw=;
+ b=R/9YBbvWAxHhIccbO2qLLKvZI6RrBHYY92vJ3vUiMU+FZdeboWoDU2kEz2jT7CUSbMoGPkaQVzmFUeGtM5hMf8aeOazELcSOdB6xXTab9E774fkCk15frG68OuwlP9w7VIjo+6D2A9JYPcso0uOfo/NpaLi/nL+Y8heQpW8wSpA=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by BY5PR12MB4067.namprd12.prod.outlook.com (2603:10b6:a03:212::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.26; Thu, 13 Oct
- 2022 13:29:49 +0000
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::4ff2:d93e:d200:227e]) by CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::4ff2:d93e:d200:227e%6]) with mapi id 15.20.5676.031; Thu, 13 Oct 2022
- 13:29:49 +0000
-Date:   Thu, 13 Oct 2022 16:29:42 +0300
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     "Hans J. Schultz" <netdev@kapio-technology.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Hans Schultz <schultz.hans@gmail.com>,
-        Joachim Wiberg <troglobit@gmail.com>,
-        Amit Cohen <amcohen@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v7 net-next 2/9] net: bridge: add blackhole fdb entry flag
-Message-ID: <Y0gSxhIEQD9BC/SE@shredder>
-References: <20221009174052.1927483-1-netdev@kapio-technology.com>
- <20221009174052.1927483-3-netdev@kapio-technology.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221009174052.1927483-3-netdev@kapio-technology.com>
-X-ClientProxiedBy: VI1PR0102CA0067.eurprd01.prod.exchangelabs.com
- (2603:10a6:803::44) To CY5PR12MB6179.namprd12.prod.outlook.com
- (2603:10b6:930:24::22)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM4PR12MB6207.namprd12.prod.outlook.com (2603:10b6:8:a6::10) by
+ DS0PR12MB7582.namprd12.prod.outlook.com (2603:10b6:8:13c::18) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5709.22; Thu, 13 Oct 2022 13:35:56 +0000
+Received: from DM4PR12MB6207.namprd12.prod.outlook.com
+ ([fe80::ca06:3a33:5bc7:67f8]) by DM4PR12MB6207.namprd12.prod.outlook.com
+ ([fe80::ca06:3a33:5bc7:67f8%5]) with mapi id 15.20.5723.026; Thu, 13 Oct 2022
+ 13:35:56 +0000
+Message-ID: <3977a1f7-eb5c-2d12-fa62-d501c56d3d9b@amd.com>
+Date:   Thu, 13 Oct 2022 14:35:48 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC PATCH net-next 1/3] netlink: add support for formatted
+ extack messages
+Content-Language: en-GB
+To:     Jiri Pirko <jiri@resnulli.us>,
+        Johannes Berg <johannes@sipsolutions.net>
+Cc:     Edward Cree <ecree.xilinx@gmail.com>, netdev@vger.kernel.org,
+        linux-net-drivers@amd.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, habetsm.xilinx@gmail.com,
+        marcelo.leitner@gmail.com
+References: <cover.1665147129.git.ecree.xilinx@gmail.com>
+ <a01a9a1539c22800b2a5827cf234756f13fa6b97.1665147129.git.ecree.xilinx@gmail.com>
+ <34a347be9efca63a76faf6edca6e313b257483b6.camel@sipsolutions.net>
+ <1aafd0ec-5e01-9b01-61a5-48f3945c3969@gmail.com>
+ <ff12253b6855305cc3fa518af30e8ac21019b684.camel@sipsolutions.net>
+ <Y0gLlKo8JGJKA7nf@nanopsycho>
+From:   Edward Cree <ecree@amd.com>
+In-Reply-To: <Y0gLlKo8JGJKA7nf@nanopsycho>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: LO4P123CA0384.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:18f::11) To DM4PR12MB6207.namprd12.prod.outlook.com
+ (2603:10b6:8:a6::10)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|BY5PR12MB4067:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4dc68b83-25a8-4b12-a08f-08daad1f002e
+X-MS-TrafficTypeDiagnostic: DM4PR12MB6207:EE_|DS0PR12MB7582:EE_
+X-MS-Office365-Filtering-Correlation-Id: 970cb142-7065-4d1f-ee18-08daad1fdb2a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8+Mzbi2l9DRA2PK9rpJp4lYg7tOoNNDwwJ/KiOVWa+BUBHQ8Je0DW9JjGnWSf/hGpXW9ubE5p5hQqT1oIp5cSMdCwYqB9AKD9MgExq9JJ+pPR7ExNlixgap6Qn3jw6LNyl8fy/09PXoKWhIg2ECwEobLh6jbVbXzAyB0arsw6EIXOCoOKDOcmPys/G8x/22+QOd5ZfoDT85XGfB4Rz+nctWhdPeH5gT3utBj63CAuFgNf1HEoB0OSQPYhLWdSbfMMH2j1cYxvWsaN6ZOLNgPjyrowuNDnoRDGNkwHc895niaS0XuHWqnmym+lDwi+ZJVQ9cFz/6X0+ng+Q0zgFJ6GJv4Kz5SJdACA1qtSHOL+ZWDkBRPEYQXlUS91hLK1+Xm0UqDibOvJ+MB44UeyP98z4WolzrttQ+Nqp1ftqDru9r9o7IPX5A5SH+mWDOql8I+x/OwQE9XGTktBihRkCcWlew24FA7zwtEhybrbqhMxsiq9o/6ROfmmE+uOa290vHYFtfoQ+cxGy6G/xlTTG52KmPamGjN+etO2vZfEzBLk/0RBFSNZ1OVrJU/Orpafs3vDrk/iAVQ+KTVuzp4p4T9NWh0h7HACkFrymFbAQ5KmGXuGH/uhAocyeiOaFYOMITDF7Te0/ImB00xIwzfadY098jJKlAw/g8GIYpsQZcQTxlKXiQWpPPuzUYwkDtcd7/tFqek4nfh0ztvKJ3F/VL5Vg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(39860400002)(136003)(396003)(376002)(346002)(366004)(451199015)(6916009)(54906003)(316002)(6666004)(4326008)(6486002)(66476007)(66556008)(66946007)(8676002)(66899015)(478600001)(6512007)(9686003)(8936002)(26005)(41300700001)(6506007)(33716001)(186003)(7406005)(7416002)(5660300002)(2906002)(83380400001)(38100700002)(86362001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: UoKNU0FLJCw2ihKqGowpfM9Moy9PP6zM06URTSXLI487F3lO2jskxGb1Tzb7/puDuPgzm9iZWYFIU3nCoZF0moEHJaf3z1/1VWmvVI1fefpt5UL0zouULlTBeVFM4UtIYJ76eQD5Owq4nzRoPTQBt6MOt6Xb2pJAsdHhug+dvxNcaMl/99asvjBsaM5tbZdxFqfe8MvvDvF4rScohQ4me9b2zVdfncwXOgd3BOqZKK4OhcyHGkBoQ8FEKv3CGKNl3N19dXT+iCVA1IPoqUUmkJg43CM9aDedWzDgGsjR/afAFVTeevFChAXcl8KTVPDjWFFY/pTpZmFHeqRBy0FkRhzRb9RLdEWquswXILcc5sO7FAQAli6ldqEJXfxt/FKVIiEJX8TU6PjB1qP3ycpP5WHGX3OYYwyMFHUV9inBIGSLFs41SX1CCD+EZGK1FkK33Y9moNm8r4PHTh2CuVVQDPvdgo8azyDE0ja2RKozkTuv6XOGjexBUQJE2BIFI3lXmEFfnp87Wk+XGfDrjhTJnvr1MXiSXtewbdpOfTycRIFw0lIpWe8zN3HJmrbjHYJcGBBlCPZ+MNFYV/3MiEvbO6fbRr5485OO2/+Ug3siUaKJWGDvx0Z3mlBKUllGaledL10J7vFIVBJ724aTEhk404AN/NiLVJp4W3IMDy1JNekJ1nyiWaz2pKLqudiawoBeMd1cSEI/S1USVHI95V3qU9+i13v1Mp9+z+okIz8F3lQYcE6S93CEG7CnTmvwSzRcTaaOLLaaPMGEaF3vi8XlpPT+bXtCR/6p4a8ZeGeWiVg=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB6207.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(376002)(39860400002)(366004)(346002)(396003)(451199015)(66556008)(4744005)(110136005)(6486002)(478600001)(5660300002)(41300700001)(4326008)(66946007)(8936002)(36756003)(316002)(7416002)(66476007)(8676002)(38100700002)(6512007)(31696002)(6666004)(6506007)(53546011)(26005)(186003)(2616005)(83380400001)(2906002)(31686004)(15650500001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?51uv85Z1yMIuGeDBV1Iy42PL93TfLM+2A0hV187Fk19o/2juQBAKKTILP+Wf?=
- =?us-ascii?Q?UL3N+5/wk13E4808c1CcXOdVgbSFXq5Zn8ntLrqbTSfCpaQwENzZD9Rx2zhS?=
- =?us-ascii?Q?UToNtUZZTL6frqK2yHCDU6KvDBEytVrb4G2Ay6Csc82BC9x2uN+EXISExIlo?=
- =?us-ascii?Q?rm+qTcdgGbsNZHcDHc9Ue9vVayt+kCNl7kHGudP6Ufr0sMseliB+c3E2Bgdu?=
- =?us-ascii?Q?NiNGWIV0E0AwIXnYX3XFxK0s4tc5WtqrWAA7skzjGtPUAjWazYtViBsdONuZ?=
- =?us-ascii?Q?tzixaf290+8rVHeCtjUtRE0KPwwyLIpXLsHT1AEKwGDYVm2yZOW0Z53YMmUC?=
- =?us-ascii?Q?RIgslR01xy0MZIYSsOPtsysPZAwkvIkTJKHNnk4x15nCTXC/+WZl/YDbT8Lx?=
- =?us-ascii?Q?fT3cy8ZeW0/g2MYmcaxck8krEO1zf8Ja+qFNEtbM1NZFIvPsY2V3cV8LF4k8?=
- =?us-ascii?Q?jpwUt4aITiQonN3TL/0qry0OzEaOqWzqQnncNAKvARxIOAVqbLEX/Mb0Gmfk?=
- =?us-ascii?Q?LAQQblYcOJYGQTqyKDcMtDwR9Y/r2GpSYWNdW3Oe8Ru6dhixWFg6fHM/+Myr?=
- =?us-ascii?Q?VGo6iWQdLoBsuJX+pi3iN8qux6oJTT9GEO5TyoFKKzb15B6oHIJdMabfNNS0?=
- =?us-ascii?Q?XMBWMa4nsn4132co1cVmIYj2pCxBKvFRuLCqaPcsgwiSG5E8XWkclje90Icg?=
- =?us-ascii?Q?cI1xdmVbiH41rh5gtjAnjPpKnH2wBtuyYGKAiSkqmXts7vr4hbfkf0MTPaak?=
- =?us-ascii?Q?K0BEA03YJrEBZX2cbUknwIhQg0UP+nnvrHy8nr0/NSCpiBntgPH2Ln23r3u5?=
- =?us-ascii?Q?ImMmg7491Lw2BEn0nLBKzpK9bZyzO/TYUHx/w9aryKSXf5o9pLaV3GEWX06V?=
- =?us-ascii?Q?qEw4eP2zz3IxVFhk1nd0SrT1+cNw/yJ541ALVfPQrASi3QcAkVUmrJrEcqU7?=
- =?us-ascii?Q?t7gTAS0GAzLcoFIGBGMJBLe/rWbS3zxaxK/cPhLz6l4GIp7H4r41M808A4Tm?=
- =?us-ascii?Q?xid9ss5cAeoml9D0JhS00yFZc2UJfuOuVEzaYB8O/jZ7UwOlwD8Ly/Hup+zs?=
- =?us-ascii?Q?3wjJusKk2A96La4jCwIkDt+iBQay7V+PWLcTqtI2o/rOWFyHhVV961YR+a2T?=
- =?us-ascii?Q?GJ4Nt92os5G39RTBcMMGKeqzD/zpWG540YYrPldFubms6wCHTYqMDjQFxwY9?=
- =?us-ascii?Q?pVVv4vdD3JlztajG8w8CNQrqAOFDPXp6q9uXrPxERxMRgN0Lkzm/xaeHwN3l?=
- =?us-ascii?Q?S8EYfXLOzK7gFwTjGFnOMWpKH2R8V+FOH5H2OCwfpT84fFeGlM1MW147T2zL?=
- =?us-ascii?Q?/zioV7gXR8522lKpaZRMz/f5UGutbv9FXJZ6QHm00cJXjfRup/RLlcNun5B6?=
- =?us-ascii?Q?ITJIGopa2yXJy113If0M6J7Lv64GKC/U7BePEE2ZKpZU1hr6m50C/ZDvKjZy?=
- =?us-ascii?Q?cdRRfX8mAnrWGo9EcjnfCqWRU2tFnJB3Y2Ae37c4JJfvruWAaAVIp7ogzJNc?=
- =?us-ascii?Q?NBUPXF5ESMaqKl9t9B1vvn4T9V5nbQMdx6k2bcUGEdeQMzwC4YGAKLoafp51?=
- =?us-ascii?Q?XI6W+m69rlq8mr/g8MYSmFRCL/xvYllq3vOqwD7W?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4dc68b83-25a8-4b12-a08f-08daad1f002e
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?czFKNkRFeURab2JVdGNkVC84VUltZFZLS3lLa05POW1UQS9CVS9VOEViTlR0?=
+ =?utf-8?B?UUV1UkM0L0ZNUnRHcjlyUmhKM3RONFJ5WHZ5MWVTNVFnK05raURlVlVYdEFZ?=
+ =?utf-8?B?TWU3Y2VBc2U1TTcvS25uV2pSR2xYQ0NKaWhkK1lHVFpOL3RjTEhKY0Q0VWxQ?=
+ =?utf-8?B?b24yRUtmRkZpbElTdGt0eWJDS3hhdFZnNUlWSmlHbzMxb09qMHFVa0F6V0l5?=
+ =?utf-8?B?dlpNMm1mZnRmWXI0WlhvY1k3cUV2RER4NVNObzN0Uy8waU4zaXNmeXZrRkRI?=
+ =?utf-8?B?c0ZsVmJ3RHMyZHFYcXRwcWZITVRrb2pZSytYeDZwRS81THRBR3d3dUdGSnh5?=
+ =?utf-8?B?UHNrT3RYU3o2TmVlZFVvNm1LRGdSYmtPRmxodUVxcDMzZ1dsbG1OVGVvclBL?=
+ =?utf-8?B?dW5IZmlPeXkrak9jYWUrZG1ZYnU2Q21zUy9LVHZ1cFZZYTVNTDR5T1Jpd2FT?=
+ =?utf-8?B?UWhpU044ZlRRZ2tuaWZMSzdQN3h3NjlzbWVGYkR1QkZpazlGRlZBVTI5WWt6?=
+ =?utf-8?B?cSsvb2Z4M082YzlmbnpLV3J0NTdabzAxU2cyS08yVEtRc3U3VGxaR2Znb0NK?=
+ =?utf-8?B?ZkRHd2YwTU9EZm1zRXlGNnlrbmhDaU1RdGcxUCtEN1NxZ3prWlpwMnFnWjBt?=
+ =?utf-8?B?RU8xSXc1VEV3Vzh6bVlsR1NqNWpOQTc4b21qeXppSjZOclFYR1dJYWFCejZj?=
+ =?utf-8?B?N2g3TGFuZ2dISHJrcUJnb0xqV3E1My9saVZ2OXNTcStEazk5YmRRYzFJWm83?=
+ =?utf-8?B?bkQ0L0wzcWNjMmhTNFlSM2VGWUIwNUVJeEphMmhKQ1RVMDREYXpHc1V2cUI4?=
+ =?utf-8?B?dGNOM2lvbmFMS21SdlNYWVlNN0FCUXlnT2xXRnhnR3hBSGdmbE5yRFpqWnox?=
+ =?utf-8?B?WlR3Zkk0ZDZpMlhsSms0VVFJblY0OVdiVkp2VEVGczh0UUhSNWdmelhGamNt?=
+ =?utf-8?B?YjBBREVUZDM4YTNmK1F5cFdHRllZRGhXNmNQT0ZNNXVRR21sR1Nobkc2cEw3?=
+ =?utf-8?B?aGZPdTFWcENIRm4wbXB4V0xDOVcvdlh1MWg2bitmbzErdEw5Ui8wN2JLNmdL?=
+ =?utf-8?B?WVdHNHJBd09nNlFXU2tEMXFrK2FNK2dsS2pFYzZZekUrRU9OUWp5ZERQSEhs?=
+ =?utf-8?B?UXJYWklueXhBK1FnMGJHY2VyREpzcnY5U3oySEZ1Z1ZXdE1uQ0ErU2xTWHZ1?=
+ =?utf-8?B?L1U5aFRPL1FPWHNlTllENXpBaW5PUmxWL3hUSnBWZURxcEFoU2tmRER0WXg0?=
+ =?utf-8?B?bnVxbTFHb1dCNGJ1cFRhUEdQMmZnZXNHUzQvN0FSeWRXTGNWMTFqUzF6VnJM?=
+ =?utf-8?B?b1pkL2ZLOUxFY1hIamRrdGl4Q2RQcm9zTlVnaTlXam1WWGxOcGZnRDVWWVJn?=
+ =?utf-8?B?aHFXUGs3SnJ4VjcxTXpHdFdUZmg0ZVRyMXRBYVdJayttVThIMmxXT1JZeVdh?=
+ =?utf-8?B?SFFvN3lQTFhmMjBmWS95K3JsMUlWUnNTNkZ0MFpSQXVHRG5HUlFtMFowWERR?=
+ =?utf-8?B?U3g3dm0xTmtuNHIrdktLZDB4eWp1YkE0aUo5alA1bmpWZkJCQ0RLNFNWMnN4?=
+ =?utf-8?B?ZEU2YmExcFRWN2ZsWTJINlA2bXpxa1Q3Wk9ZakNoVGY0cTdvd2hMT2k5L0l0?=
+ =?utf-8?B?cDR4OGdUb0wwczZ2WGhLaHY0MnFPbEhmVTBFUm0wMjJSdlFRdjVnM01tdXlI?=
+ =?utf-8?B?SEU3dnBKaGFyYldyZVplSk1OcGJCMlplL3hMb3JmV3B0bGJFNi9YMDFiNitO?=
+ =?utf-8?B?eE4xcng1Nm9TYkkvUGREN1NaRFVVbWFOajVONHc3UFNBRTd0MG5XWVU1Q0tT?=
+ =?utf-8?B?ZWJDUlhJU1BRVVUyU2xVUzVQbDVhUlg2UlhhT2tzYm00UzJ3QUVKYnpBb2sx?=
+ =?utf-8?B?N2t2S1hsQkFCRXVxUVgxTGZSdmcySXByeVNMWkI5dmxOOGF2eFBZZHJrNmF6?=
+ =?utf-8?B?WnNwOU5qbllnOWJjbGZGNk5jcGtBVUlVZWlPN0Z3cTdvMjNGdlB3V1d0OHI2?=
+ =?utf-8?B?VStCWjliOXNsakFyakU3U3lYbDdaeVF4Q1gxT1RmaFFMbU5tVk5LcGFvS2M4?=
+ =?utf-8?B?NFMybFpuTDQ5SWdsck5BYkZ5M2ovNlVxWkR6RnBoTW0zRDNIclRnQ1ZoRkMz?=
+ =?utf-8?Q?GlSI=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 970cb142-7065-4d1f-ee18-08daad1fdb2a
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB6207.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Oct 2022 13:29:48.9055
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Oct 2022 13:35:56.1941
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: RG1ZpmowQadeNat383r0kgme34Arb1uad/qSQCB9HaidB0ewYeu6oLjf+TMS3mi8moe6ORXdmZKFHH/42kcNCQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4067
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: iM+UkzBBgX59otMBDYQweD0dSgttFb2Fyy/vFtgNwD9LdK9RTmWkwsQWbUSaKCiX
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7582
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 09, 2022 at 07:40:45PM +0200, Hans J. Schultz wrote:
-> @@ -1018,8 +1020,9 @@ static bool fdb_handle_notify(struct net_bridge_fdb_entry *fdb, u8 notify)
->  /* Update (create or replace) forwarding database entry */
->  static int fdb_add_entry(struct net_bridge *br, struct net_bridge_port *source,
->  			 const u8 *addr, struct ndmsg *ndm, u16 flags, u16 vid,
-> -			 struct nlattr *nfea_tb[])
-> +			 u32 ext_flags, struct nlattr *nfea_tb[])
->  {
-> +	bool blackhole = !!(ext_flags & NTF_EXT_BLACKHOLE);
->  	bool is_sticky = !!(ndm->ndm_flags & NTF_STICKY);
->  	bool refresh = !nfea_tb[NFEA_DONT_REFRESH];
->  	struct net_bridge_fdb_entry *fdb;
-> @@ -1092,6 +1095,14 @@ static int fdb_add_entry(struct net_bridge *br, struct net_bridge_port *source,
->  		modified = true;
->  	}
->  
-> +	if (blackhole != test_bit(BR_FDB_BLACKHOLE, &fdb->flags)) {
-> +		change_bit(BR_FDB_BLACKHOLE, &fdb->flags);
-> +		modified = true;
-> +	}
-> +
-> +	if (blackhole)
-> +		set_bit(BR_FDB_LOCAL, &fdb->flags);
+On 13/10/2022 13:59, Jiri Pirko wrote:
+> I think that the macro caller need to take the buffer size into account
+> passing the formatted msg. So if the generated message would not fit
+> into the buffer, it's a caller bug. WARN_ON() is suitable for such
+> things, as it most probaly will hit the developer testing newly added
+> exack message.
 
-We should instead validate earlier that NTF_EXT_BLACKHOLE is only
-specified with NUD_PERMANENT. See more below.
+I disagree, extack is a best-effort diagnostic channel and it's valid
+ for a caller to rely on e.g. %pI6c to generate messages that *usually*
+ fit but can't be guaranteed to.  And original dev might well not see
+ the WARN_ON() because he's using addresses like fc00::123 in his tests
+ whereas the end user — who maybe has panic_on_warn enabled — has a
+ real-world address that takes 30+ bytes to print.
+Then there's things like %d which can vary in length by a factor of 10.
+I think the net_warn_ratelimited() with the full message, as I've used
+ in v2, is plenty loud enough.
 
-> +
->  	if (test_and_clear_bit(BR_FDB_LOCKED, &fdb->flags))
->  		modified = true;
->  
-> @@ -1113,7 +1124,7 @@ static int fdb_add_entry(struct net_bridge *br, struct net_bridge_port *source,
->  static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
->  			struct net_bridge_port *p, const unsigned char *addr,
->  			u16 nlh_flags, u16 vid, struct nlattr *nfea_tb[],
-> -			struct netlink_ext_ack *extack)
-> +			u32 ext_flags, struct netlink_ext_ack *extack)
->  {
->  	int err = 0;
->  
-> @@ -1138,9 +1149,12 @@ static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
->  			return -EINVAL;
->  		}
->  		err = br_fdb_external_learn_add(br, p, addr, vid, true);
-> +	} else if ((ext_flags & NTF_EXT_BLACKHOLE) && p) {
-> +		NL_SET_ERR_MSG_MOD(extack, "Blackhole FDB entry cannot be applied on a port");
-> +		return -EINVAL;
-
-This is too late. I can do:
-
-# bridge fdb add 00:aa:bb:cc:dd:ee dev dummy1 master extern_learn blackhole
-# bridge fdb get 00:aa:bb:cc:dd:ee br br0 
-00:aa:bb:cc:dd:ee dev dummy1 extern_learn master br0 
-
-Nothing will explode, but it's not ideal either.
-
-Since we force blackhole entries to be permanent they cannot be aged by
-the kernel. I'm not sure what is the use case for user space adding
-externally learned blackhole entries.
-
-How about:
-
-diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-index d6f22e2e018a..9257a46544dd 100644
---- a/net/bridge/br_fdb.c
-+++ b/net/bridge/br_fdb.c
-@@ -1100,9 +1100,6 @@ static int fdb_add_entry(struct net_bridge *br, struct net_bridge_port *source,
- 		modified = true;
- 	}
- 
--	if (blackhole)
--		set_bit(BR_FDB_LOCAL, &fdb->flags);
--
- 	if (test_and_clear_bit(BR_FDB_LOCKED, &fdb->flags))
- 		modified = true;
- 
-@@ -1149,9 +1146,6 @@ static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
- 			return -EINVAL;
- 		}
- 		err = br_fdb_external_learn_add(br, p, addr, vid, false, false, false, true);
--	} else if ((ext_flags & NTF_EXT_BLACKHOLE) && p) {
--		NL_SET_ERR_MSG_MOD(extack, "Blackhole FDB entry cannot be applied on a port");
--		return -EINVAL;
- 	} else {
- 		spin_lock_bh(&br->hash_lock);
- 		err = fdb_add_entry(br, p, addr, ndm, nlh_flags, vid, ext_flags, nfea_tb);
-@@ -1214,6 +1208,21 @@ int br_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
- 		return -EINVAL;
- 	}
- 
-+	if (ext_flags & NTF_EXT_BLACKHOLE) {
-+		if (!(ndm->ndm_state & NUD_PERMANENT)) {
-+			NL_SET_ERR_MSG_MOD(extack, "Blackhole FDB entry must be permanent");
-+			return -EINVAL;
-+		}
-+		if (p) {
-+			NL_SET_ERR_MSG_MOD(extack, "Blackhole FDB entry cannot be applied on a port");
-+			return -EINVAL;
-+		}
-+		if (ndm->ndm_flags & NTF_EXT_LEARNED) {
-+			NL_SET_ERR_MSG_MOD(extack, "Blackhole FDB entry cannot be added as externally learned");
-+			return -EINVAL;
-+		}
-+	}
-+
- 	if (tb[NDA_FDB_EXT_ATTRS]) {
- 		attr = tb[NDA_FDB_EXT_ATTRS];
- 		err = nla_parse_nested(nfea_tb, NFEA_MAX, attr,
-
-With which I get:
-
-# bridge fdb add 00:aa:bb:cc:dd:ee dev dummy1 master extern_learn blackhole
-Error: bridge: Blackhole FDB entry cannot be applied on a port.
-
-# bridge fdb add 00:aa:bb:cc:dd:ee dev br0 self extern_learn blackhole
-Error: bridge: Blackhole FDB entry cannot be added as externally learned.
-
->  	} else {
->  		spin_lock_bh(&br->hash_lock);
-> -		err = fdb_add_entry(br, p, addr, ndm, nlh_flags, vid, nfea_tb);
-> +		err = fdb_add_entry(br, p, addr, ndm, nlh_flags, vid, ext_flags, nfea_tb);
->  		spin_unlock_bh(&br->hash_lock);
->  	}
->  
-> @@ -1219,10 +1233,10 @@ int br_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
->  
->  		/* VID was specified, so use it. */
->  		err = __br_fdb_add(ndm, br, p, addr, nlh_flags, vid, nfea_tb,
-> -				   extack);
-> +				   ext_flags, extack);
->  	} else {
->  		err = __br_fdb_add(ndm, br, p, addr, nlh_flags, 0, nfea_tb,
-> -				   extack);
-> +				   ext_flags, extack);
->  		if (err || !vg || !vg->num_vlans)
->  			goto out;
->  
-> @@ -1234,7 +1248,7 @@ int br_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
->  			if (!br_vlan_should_use(v))
->  				continue;
->  			err = __br_fdb_add(ndm, br, p, addr, nlh_flags, v->vid,
-> -					   nfea_tb, extack);
-> +					   nfea_tb, ext_flags, extack);
->  			if (err)
->  				goto out;
->  		}
-> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-> index 068fced7693c..665d1d6bdc75 100644
-> --- a/net/bridge/br_input.c
-> +++ b/net/bridge/br_input.c
-> @@ -193,8 +193,11 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
->  	if (dst) {
->  		unsigned long now = jiffies;
->  
-> -		if (test_bit(BR_FDB_LOCAL, &dst->flags))
-> +		if (test_bit(BR_FDB_LOCAL, &dst->flags)) {
-> +			if (unlikely(test_bit(BR_FDB_BLACKHOLE, &dst->flags)))
-> +				goto drop;
->  			return br_pass_frame_up(skb);
-> +		}
->  
->  		if (now != dst->used)
->  			dst->used = now;
-> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-> index 4ce8b8e5ae0b..e7a08657c7ed 100644
-> --- a/net/bridge/br_private.h
-> +++ b/net/bridge/br_private.h
-> @@ -253,6 +253,7 @@ enum {
->  	BR_FDB_NOTIFY,
->  	BR_FDB_NOTIFY_INACTIVE,
->  	BR_FDB_LOCKED,
-> +	BR_FDB_BLACKHOLE,
->  };
->  
->  struct net_bridge_fdb_key {
-> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-> index 8008ceb45605..ae641dfea5f2 100644
-> --- a/net/core/rtnetlink.c
-> +++ b/net/core/rtnetlink.c
-> @@ -4054,7 +4054,7 @@ int ndo_dflt_fdb_add(struct ndmsg *ndm,
->  	if (tb[NDA_FLAGS_EXT])
->  		ext_flags = nla_get_u32(tb[NDA_FLAGS_EXT]);
->  
-> -	if (ext_flags & NTF_EXT_LOCKED) {
-> +	if (ext_flags & (NTF_EXT_LOCKED | NTF_EXT_BLACKHOLE)) {
->  		netdev_info(dev, "invalid flags given to default FDB implementation\n");
->  		return err;
->  	}
-> -- 
-> 2.34.1
-> 
+-ed
