@@ -2,106 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AADF5FDC24
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 16:11:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20D215FDC38
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 16:17:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229556AbiJMOLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 10:11:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56180 "EHLO
+        id S229916AbiJMORE convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Oct 2022 10:17:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229660AbiJMOK7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 10:10:59 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B7514BA5D
-        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 07:10:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=aVV6nLMJHEcCeLK3mA1RUrXSvJ/itjth7X+6dDA8w+g=; b=BFQmGo9sCLrnx8cL+6SlURZgnx
-        66tFzclyNQ/mI7x/N6e2OpYzSRa3KWn6IGoTNcxSV8g02JkAEKYqaRx4tOOo8Bkk6wHSZyJY3eSS3
-        kRJk9fLfMgUTZuxP0OM08bQDySTRuP9uRx2cy8bgGdKKX0TQF9KhTflIqaFxZfcrhZDo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oiyvG-001tR6-7C; Thu, 13 Oct 2022 16:10:54 +0200
-Date:   Thu, 13 Oct 2022 16:10:54 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Sergei Antonov <saproj@gmail.com>
-Cc:     David Laight <David.Laight@aculab.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>
-Subject: Re: [PATCH v2 net] net: ftmac100: do not reject packets bigger than
- 1514
-Message-ID: <Y0gcblXFum4GsSve@lunn.ch>
-References: <20221012153737.128424-1-saproj@gmail.com>
- <1b919195757c49769bde19c59a846789@AcuMS.aculab.com>
- <CABikg9zdg-WW+C-46Cy=gcgsd8ZEborOJkXOPUfxy9TmNEz_wg@mail.gmail.com>
- <f05f9dd9b39f42d18df0018c3596d866@AcuMS.aculab.com>
- <CABikg9wnvHCLGXCXc-tpyrMaetHt_DDiYCrprciQ-z+9-7fz+w@mail.gmail.com>
+        with ESMTP id S229736AbiJMORD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 10:17:03 -0400
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [207.211.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C259A437EA
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 07:17:01 -0700 (PDT)
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-575-QUWrHGLGNLKxREPTcphZLQ-1; Thu, 13 Oct 2022 10:16:54 -0400
+X-MC-Unique: QUWrHGLGNLKxREPTcphZLQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BCB4B887404;
+        Thu, 13 Oct 2022 14:16:47 +0000 (UTC)
+Received: from hog.localdomain (unknown [10.39.192.237])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 24360112C074;
+        Thu, 13 Oct 2022 14:16:40 +0000 (UTC)
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     netdev@vger.kernel.org
+Cc:     Antoine Tenart <atenart@kernel.org>,
+        Sabrina Dubroca <sd@queasysnail.net>,
+        Mark Starovoytov <mstarovoitov@marvell.com>,
+        Igor Russkikh <irusskikh@marvell.com>
+Subject: [PATCH net 0/5] macsec: offload-related fixes
+Date:   Thu, 13 Oct 2022 16:15:38 +0200
+Message-Id: <cover.1665416630.git.sd@queasysnail.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CABikg9wnvHCLGXCXc-tpyrMaetHt_DDiYCrprciQ-z+9-7fz+w@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252; x-default=true
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Without an 802.1Q tag (probably a VLAN tag?) the max frame has
-> > 1514 data bytes (inc mac addresses, but excl crc).
-> > Unless you are using VLANs that should be the frame limit.
-> > The IP+TCP is limited to the 1500 byte payload.
-> 
-> Exactly! Incoming packets first go through a switch chip (Marvell
-> 88E6060), so packets should get tagged.
-> 
-> > So if the sender is generating longer packets it is buggy!
-> 
-> Looking into it.
-> 
-> On the sender computer:
-> sudo ifconfig eno1 mtu 1500 up
-> ssh receiver_computer
-> 
-> On the receiver computer:
-> in ftmac100_rx_packet_error() I call
-> ftmac100_rxdes_frame_length(rxdes) and it returns 1518. I suppose, it
-> is 1500 + 18(ethernet overhead) + 4(switch tag) - 4(crc).
-> 
-> Would you like me to dump the entire packet and verify?
+I'm working on a dummy offload for macsec on netdevsim. It just has a
+small SecY and RXSC table so I can trigger failures easily on the
+ndo_* side. It has exposed a couple of issues.
 
-You did not mention DSA before. That is an important fact.
+The first patch will cause some performance degradation, but in the
+current state it's not possible to offload macsec to lower devices
+that also support ipsec offload. I'm working on re-adding those
+feature flags when offload is available, but I haven't fully solved
+that yet. I think it would be safer to do that second part in net-next
+considering how complex feature interactions tend to be.
 
-What should happen is that the DSA framework should take the DSA frame
-header into account. It should be calling into the MAC driver and
-asking it to change its MTU to allow for the additional 4 bytes of the
-switch tag.
+Sabrina Dubroca (5):
+  Revert "net: macsec: report real_dev features when HW offloading is
+    enabled"
+  macsec: delete new rxsc when offload fails
+  macsec: fix secy->n_rx_sc accounting
+  macsec: fix detection of RXSCs when toggling offloading
+  macsec: clear encryption keys from the stack after setting up offload
 
-But there is some history here. For a long time, it was just assumed
-the MAC driver would accept any length of packet, i.e. the MRU,
-Maximum Receive Unit, was big enough for DSA to just work. A Marvell
-switch is normally combined with a Marvell MAC, and this was
-true. This worked for a long time, until it did not work for some
-combination of switch and MAC. It then became necessary to change the
-MTU on the master interface, so it would actually receive the bigger
-frames. But we had the backwards compatibility problem, that some MAC
-drivers which work with DSA because there MRU is sufficient, don't
-support changing the MTU. So we could not make it fatal if the change
-of the MTU failed.
+ drivers/net/macsec.c | 51 ++++++++++++++++----------------------------
+ 1 file changed, 18 insertions(+), 33 deletions(-)
 
-Does this driver support the MTU change op? If not, you should try
-implementing it. If the hardware cannot actually receive longer
-packets, you need to take the opposite approach. You need to make the
-MTU on the slave interfaces smaller, so that packets from the switch
-to the master interface are small enough to be correctly received when
-including the switch header.
+-- 
+2.38.0
 
-	  Andrew
