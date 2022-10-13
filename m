@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C6CD5FD6EF
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 11:23:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A8025FD6F1
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 11:23:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229547AbiJMJXk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 05:23:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37070 "EHLO
+        id S229701AbiJMJXq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 05:23:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229825AbiJMJXb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 05:23:31 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2046.outbound.protection.outlook.com [40.107.223.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BCB6F53FF
-        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 02:23:30 -0700 (PDT)
+        with ESMTP id S229845AbiJMJXc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 05:23:32 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2056.outbound.protection.outlook.com [40.107.243.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B51F53FF
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 02:23:31 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jASnXhLzkcvj5wp8N//0Q+x4jsFfAYHfTNLIZ21kknlKKJBTlc4Gm2TqSy5ze9TothJyAbi+IZQlN4TZ58GnQqFfdtisAFy8NmccEsSJ1ZopQqsg1xXNMEQMBwDzwaFjsXNikYFXTrgG/+qfAWn2AFtzukNr2wsIm/CQIMDjCdFix+wnlcSSdluvjR8hQBJ64BHBsl9BH17cUSSzNw+NuT2ura/iPOl1Ky2BWQvaDwiVIqsobgOeuyed3awK6wmXqARhfnDRtISropc4YF/F9mGW/Jux97oSQLUYWS+P0tuM0yn7RDqYxybojbEVSmb92KyUXQjzvqznzGFkq/loGQ==
+ b=E+7wTalCYRSPFoa7nAhCW2eTW6vFOayR3kZmTBkpDKE+3Wpz3oVoITeNgMv8KsHDwtWtA79n590SsNOsq78HBdTQWHtc1dSoBgNCpPKMBGAkV/4+pWYBJkH1aX6+ybNC6PAmyqICHgbqACdh1KbMOtgynq15wjqn8krDxaxxJZtYxQfsQQySjcLnF/lLyRIzOqicRvx/C9BtqVjOJzYpSp6NkwPqre8IPAC2tLebZymPWPrvlskaq9RhqtXTW3h+bDPu/ir4MXyOeKCQP2h+EGqTITr+UujTCagkJ4Ia8Wq+/Tm2YuWwoP0q2uZaE9VQ9moVn29vH88++G53KMWECg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ypJ2TgwdyeHH2utB1SHNCC3bujjvkgW6aIS3dhf7tqs=;
- b=HF9M7m7GxmVxXp7QCInec4L4/sx9wCsx0ShZcbIIAO4HgRvbeF84SYi5IZqKtN0tlgaVZnptyPGKggwWsqx2+YW/ySlUn/Gsz/C2OiX6vlNNRzk96JQYo/oSKqAvkXc/lo0IwKBddnGoXhi18C+00lF9vb6dIYBdYtP/zLg2wcbo2p7+LSpyyzci9bmHI6x9ea78jeP/9pJsavMdWJRUxIlQCg2CPvYkPdjTWqybY8FdT2JGMRzNTwnNhIdjR2EJSf8KFXrEkn2NEQaJFBaJfHWCoJyuQ5C4ZkLmlqDu0+n3x+vrEgMya3pKW4Md6Jbtjn+/z8/yqe3auAImwcsFYw==
+ bh=IN1+DzckYapOyI+NPaAyLDe9yRI66HV6A853PYDkZU4=;
+ b=OqYMoieY8UzHUv+v3M5F7Sexed9iSr+0c0oYX4HWWShwSzRTDMk8LndzTrotQouvZ5Ym/guW8fVvTpZTS/9+AnfwxJSAtCwuMG2qOc7GdqQSIIuXjpZrycESGx7DfrYGQhuFuTprFWLYbvaRIZu6aXYH66gS+9FfR2hfHdFGsNfnbkjdEL7OUGWP9kXnY2LUXpLNjBWvs+mr+k9ALYJSGk2bBSwwH8n8sHLrG3zXL+gkxdbEpdT5Hxth2TsK5SkdjmFlHka6qoB0vOHiAFBaYK5RtPCf6QHnwCuV/FNgJyydvl+8N0n27M3FiBQJNYsCPavCXi5K+B4RbXKLHVH5Ag==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ypJ2TgwdyeHH2utB1SHNCC3bujjvkgW6aIS3dhf7tqs=;
- b=PUrC0nq3WxRVB8ebBedgjLvo6qswB0zVKquceKD0B2j79yxzO/GAHiOQtEoEpt/SH7p/ztU44Z4DIssfXn4/Go3wESA2ARimslWfS4QUwsq4Dkrvdr+rLgGxYZr890U4VsifbmTRObdfVUWF+hJbRo6a3VKRqlvZm8OZziiwH7Y=
-Received: from DS7PR05CA0076.namprd05.prod.outlook.com (2603:10b6:8:57::13) by
- CH3PR12MB7546.namprd12.prod.outlook.com (2603:10b6:610:149::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5709.21; Thu, 13 Oct
- 2022 09:23:26 +0000
-Received: from DM6NAM11FT035.eop-nam11.prod.protection.outlook.com
- (2603:10b6:8:57:cafe::86) by DS7PR05CA0076.outlook.office365.com
- (2603:10b6:8:57::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.10 via Frontend
- Transport; Thu, 13 Oct 2022 09:23:26 +0000
+ bh=IN1+DzckYapOyI+NPaAyLDe9yRI66HV6A853PYDkZU4=;
+ b=VxQR68n7AvNoOpWo/h+zUtFeWD6KYN/sicPR7jj+e9ImB5ZGgmFdbWWoiObQBL5BhX3RxK2wWNmulIYkPfqspqwo2VWPItIgAPq3n75YNVnj26ylwSuCozgtb9WQCkbJdbKEE1BHxQwv0AcuXtnYh/MT0ac+g0j9qA7wy3/J3es=
+Received: from DM6PR13CA0009.namprd13.prod.outlook.com (2603:10b6:5:bc::22) by
+ PH0PR12MB5452.namprd12.prod.outlook.com (2603:10b6:510:d7::16) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5709.21; Thu, 13 Oct 2022 09:23:29 +0000
+Received: from DM6NAM11FT009.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:bc:cafe::4) by DM6PR13CA0009.outlook.office365.com
+ (2603:10b6:5:bc::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.6 via Frontend
+ Transport; Thu, 13 Oct 2022 09:23:28 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -46,26 +45,30 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
 Received: from SATLEXMB03.amd.com (165.204.84.17) by
- DM6NAM11FT035.mail.protection.outlook.com (10.13.172.100) with Microsoft SMTP
+ DM6NAM11FT009.mail.protection.outlook.com (10.13.173.20) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5723.20 via Frontend Transport; Thu, 13 Oct 2022 09:23:26 +0000
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB03.amd.com
+ 15.20.5723.20 via Frontend Transport; Thu, 13 Oct 2022 09:23:28 +0000
+Received: from SATLEXMB06.amd.com (10.181.40.147) by SATLEXMB03.amd.com
  (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 13 Oct
- 2022 04:23:25 -0500
+ 2022 04:23:28 -0500
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB06.amd.com
+ (10.181.40.147) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 13 Oct
+ 2022 04:23:27 -0500
 Received: from xcbecree41x.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28 via Frontend
- Transport; Thu, 13 Oct 2022 04:23:24 -0500
+ Transport; Thu, 13 Oct 2022 04:23:26 -0500
 From:   <edward.cree@amd.com>
 To:     <netdev@vger.kernel.org>, <linux-net-drivers@amd.com>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
         <edumazet@google.com>, <habetsm.xilinx@gmail.com>,
         <johannes@sipsolutions.net>, <marcelo.leitner@gmail.com>,
         Edward Cree <ecree.xilinx@gmail.com>
-Subject: [RFC PATCH v2 net-next 1/3] netlink: add support for formatted extack messages
-Date:   Thu, 13 Oct 2022 10:23:00 +0100
-Message-ID: <26c2cf2e699de83905e2c21491b71af0e34d00d8.1665567166.git.ecree.xilinx@gmail.com>
+Subject: [RFC PATCH v2 net-next 2/3] sfc: use formatted extacks instead of efx_tc_err()
+Date:   Thu, 13 Oct 2022 10:23:01 +0100
+Message-ID: <05f7c539b45e1a496c8c678e1c4d46d4ee985005.1665567166.git.ecree.xilinx@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <cover.1665567166.git.ecree.xilinx@gmail.com>
 References: <cover.1665567166.git.ecree.xilinx@gmail.com>
@@ -74,23 +77,23 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT035:EE_|CH3PR12MB7546:EE_
-X-MS-Office365-Filtering-Correlation-Id: 773192e4-0ecc-48a7-4403-08daacfc9585
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT009:EE_|PH0PR12MB5452:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4432275d-a0e4-42c6-75d4-08daacfc96ae
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Z70gcjvt64tgxKJpWBYpsCPfu/OXOVPItOfKRgJOZEPXOw1G/Gy88LNub/rDySTfM0AGRWk8hHJOqfafXepZe6/QpT8XkzaAvfy9p6/cgTYZaUGtmZuvxUVoGJdjN6E6eDf03vpVGLIsuv5jmcRf5qW+QgQ7PbU2wVK+aSIxYPfQG3HTIqK2rSL4EKvqwdbqPCurd1FpurvFGzWymJN4xQJ1nk9o0aCCX8cC5Rwwb3gCpqVHNzXVCs9A+JqpwXMoDMUmm/FrtF29JKL1BcflEybciHNoCVhMw0DXVahQWYRBG48KxnrXJuuONyNsvs3rxLdLV8bkSR/uwrbkF4l+BAZcSGMzwxSQVPqZg78ZvfRB5MHtIs+nsnVCtFouv0Yd1eKkcsffofEWTuK7wtG3Zzwt2a/Rij/ODSHozSoKLMIvzFNt5BHsJp8GnwbOWyNPv7zM0W+ZkToedJymQvFAx/cySbVtz1ptOp4K1Rk+/joogqoZtVM06kHnCGcPcjgwQJeNh7uNBczCjhucDH6FfaNesnsZvZgr1lSn1Bosjs9HyEo6MieEErrgZmBfZN0FNHGtFDQafW173+4fwZPn1SmHNAtfMkvmZfDq0RoCPWayzphvwsqIZYaYmhzOKD4mXL7BMweSceTw+Uo5dY/emUKjRzeBou/a6/rkV9UZNT12LfbmbxY6c9q/5Eug9FYVa2wUPHYjynBDY/s8bc58xhi3S0qwJ4Xxec/iYAAjp3YCx+8CYXH6HiG7HQyhH4sbrJgpnBp36szHhhQr9LD8cI61umq1Fe2cP5f9JkJA3lSRhrfFYZdgr6+9uySDb1Ou
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(396003)(346002)(39860400002)(136003)(376002)(451199015)(46966006)(36840700001)(40470700004)(9686003)(356005)(316002)(110136005)(6636002)(54906003)(82740400003)(86362001)(478600001)(55446002)(81166007)(36756003)(36860700001)(26005)(40480700001)(40460700003)(336012)(186003)(6666004)(4326008)(41300700001)(8676002)(5660300002)(15650500001)(8936002)(47076005)(426003)(83380400001)(2906002)(82310400005)(70586007)(2876002)(70206006)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: vAJ+MlNQh2sOnHayZSZwV3Nswx3h3RJZGZ2MvHuAfmEehsGj6e2AOo78MYDgJLiiaui1e+uo7LxJ4ZBVXIVvtNxjjKxZd7eIpJaOUABSkCr/H8NpAfci+L48m6oItmJ+eKaZQFzH++VVDt3/SbMXapD5gy1RTzJbTVgztWckEcKTzHa+URdm2wcftLKJtmBB/t040XJnIEUkWwaDgU3ZW2f6HNMVGx0LbDTOtAerueDcbDVI+tle1W2QzWrj/yuDjIeWPhPVQs/6/GK/ZGl9QB884Zzdu0Zf3KGzQq0E1DbkWyJTmkJqpE/k8fhouajf6zOAGB85OHLQLtd8H7FrwHkVwnpnQ1Mh4tN7IOpmMRPfRxkX4oawQakUNlYJb57WUG6M2QRfcOFZDV/0lgA6sWZlfcqLRpKzmSRGMGiRjkRLjWB2qnGVTRXUQ2/kjnQnUDHbZG9zTDesC15lqgamJSkOUTpvIldlbTKGi42hpMPSiBo0xe7IOdiH7jrzl54QvOabZUdT+JXlgwPIdGu5ubufu1ijxaYt84XOzv+3Ajo9wfTw0LSPTxgtWSZkGIBPDSnuONKNPTRMPW07Yjjn9ZR7Ir3R9tGxWn6fubiCGKr7PjQJk2dDecuOxTRZj67wBiYaPwidKffechBPb0X0Hz8V+Qoxzv4kzxzk5lWp1KGBvd5Wc4cXEz2IHrxkNC6ZixYfQQl6gPm1V1Lyjf13HqspUeBb6jLaulDUD55sCjot55sWJJTghmAKkYRwZZQ9plj6Ngq1CmejR7KIV5QdXt6yEFzfKewCeUBdqNtqtdA=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(136003)(346002)(39860400002)(376002)(396003)(451199015)(40470700004)(36840700001)(46966006)(70206006)(336012)(6636002)(8676002)(54906003)(83380400001)(478600001)(110136005)(426003)(36756003)(82310400005)(316002)(356005)(36860700001)(40480700001)(86362001)(55446002)(2876002)(81166007)(47076005)(82740400003)(5660300002)(2906002)(70586007)(4326008)(41300700001)(40460700003)(9686003)(26005)(8936002)(186003)(6666004)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Oct 2022 09:23:26.5840
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Oct 2022 09:23:28.5317
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 773192e4-0ecc-48a7-4403-08daacfc9585
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4432275d-a0e4-42c6-75d4-08daacfc96ae
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT035.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT009.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB7546
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5452
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
@@ -103,78 +106,212 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Edward Cree <ecree.xilinx@gmail.com>
 
-Include an 80-byte buffer in struct netlink_ext_ack that can be used
- for scnprintf()ed messages.  This does mean that the resulting string
- can't be enumerated, translated etc. in the way NL_SET_ERR_MSG() was
- designed to allow.
+Since we can now get a formatted message back to the user with
+ NL_SET_ERR_MSG_FMT_MOD(), there's no need for our special logging.
 
 Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
 ---
- include/linux/netlink.h | 25 +++++++++++++++++++++++--
- 1 file changed, 23 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/sfc/mae.c |  5 ++--
+ drivers/net/ethernet/sfc/tc.c  | 47 +++++++++++++++-------------------
+ drivers/net/ethernet/sfc/tc.h  | 18 -------------
+ 3 files changed, 23 insertions(+), 47 deletions(-)
 
-diff --git a/include/linux/netlink.h b/include/linux/netlink.h
-index d51e041d2242..4cbe87739c4d 100644
---- a/include/linux/netlink.h
-+++ b/include/linux/netlink.h
-@@ -64,6 +64,7 @@ netlink_kernel_create(struct net *net, int unit, struct netlink_kernel_cfg *cfg)
+diff --git a/drivers/net/ethernet/sfc/mae.c b/drivers/net/ethernet/sfc/mae.c
+index 874c765b2465..6f472ea0638a 100644
+--- a/drivers/net/ethernet/sfc/mae.c
++++ b/drivers/net/ethernet/sfc/mae.c
+@@ -265,9 +265,8 @@ int efx_mae_match_check_caps(struct efx_nic *efx,
+ 	rc = efx_mae_match_check_cap_typ(supported_fields[MAE_FIELD_INGRESS_PORT],
+ 					 ingress_port_mask_type);
+ 	if (rc) {
+-		efx_tc_err(efx, "No support for %s mask in field ingress_port\n",
+-			   mask_type_name(ingress_port_mask_type));
+-		NL_SET_ERR_MSG_MOD(extack, "Unsupported mask type for ingress_port");
++		NL_SET_ERR_MSG_FMT_MOD(extack, "No support for %s mask in field ingress_port",
++				       mask_type_name(ingress_port_mask_type));
+ 		return rc;
+ 	}
+ 	return 0;
+diff --git a/drivers/net/ethernet/sfc/tc.c b/drivers/net/ethernet/sfc/tc.c
+index 3478860d4023..b21a961eabb1 100644
+--- a/drivers/net/ethernet/sfc/tc.c
++++ b/drivers/net/ethernet/sfc/tc.c
+@@ -137,17 +137,16 @@ static int efx_tc_flower_parse_match(struct efx_nic *efx,
+ 		flow_rule_match_control(rule, &fm);
  
- /* this can be increased when necessary - don't expose to userland */
- #define NETLINK_MAX_COOKIE_LEN	20
-+#define NETLINK_MAX_FMTMSG_LEN	80
+ 		if (fm.mask->flags) {
+-			efx_tc_err(efx, "Unsupported match on control.flags %#x\n",
+-				   fm.mask->flags);
+-			NL_SET_ERR_MSG_MOD(extack, "Unsupported match on control.flags");
++			NL_SET_ERR_MSG_FMT_MOD(extack, "Unsupported match on control.flags %#x",
++					       fm.mask->flags);
+ 			return -EOPNOTSUPP;
+ 		}
+ 	}
+ 	if (dissector->used_keys &
+ 	    ~(BIT(FLOW_DISSECTOR_KEY_CONTROL) |
+ 	      BIT(FLOW_DISSECTOR_KEY_BASIC))) {
+-		efx_tc_err(efx, "Unsupported flower keys %#x\n", dissector->used_keys);
+-		NL_SET_ERR_MSG_MOD(extack, "Unsupported flower keys encountered");
++		NL_SET_ERR_MSG_FMT_MOD(extack, "Unsupported flower keys %#x",
++				       dissector->used_keys);
+ 		return -EOPNOTSUPP;
+ 	}
  
- /**
-  * struct netlink_ext_ack - netlink extended ACK report struct
-@@ -75,6 +76,8 @@ netlink_kernel_create(struct net *net, int unit, struct netlink_kernel_cfg *cfg)
-  * @miss_nest: nest missing an attribute (%NULL if missing top level attr)
-  * @cookie: cookie data to return to userspace (for success)
-  * @cookie_len: actual cookie data length
-+ * @_msg_buf: output buffer for formatted message strings - don't access
-+ *	directly, use %NL_SET_ERR_MSG_FMT
-  */
- struct netlink_ext_ack {
- 	const char *_msg;
-@@ -84,13 +87,13 @@ struct netlink_ext_ack {
- 	u16 miss_type;
- 	u8 cookie[NETLINK_MAX_COOKIE_LEN];
- 	u8 cookie_len;
-+	char _msg_buf[NETLINK_MAX_FMTMSG_LEN];
- };
+@@ -156,11 +155,11 @@ static int efx_tc_flower_parse_match(struct efx_nic *efx,
  
- /* Always use this macro, this allows later putting the
-  * message into a separate section or such for things
-  * like translation or listing all possible messages.
-- * Currently string formatting is not supported (due
-- * to the lack of an output buffer.)
-+ * If string formatting is needed use NL_SET_ERR_MSG_FMT.
-  */
- #define NL_SET_ERR_MSG(extack, msg) do {		\
- 	static const char __msg[] = msg;		\
-@@ -102,9 +105,27 @@ struct netlink_ext_ack {
- 		__extack->_msg = __msg;			\
- } while (0)
+ 		flow_rule_match_basic(rule, &fm);
+ 		if (fm.mask->n_proto) {
+-			EFX_TC_ERR_MSG(efx, extack, "Unsupported eth_proto match\n");
++			NL_SET_ERR_MSG_MOD(extack, "Unsupported eth_proto match");
+ 			return -EOPNOTSUPP;
+ 		}
+ 		if (fm.mask->ip_proto) {
+-			EFX_TC_ERR_MSG(efx, extack, "Unsupported ip_proto match\n");
++			NL_SET_ERR_MSG_MOD(extack, "Unsupported ip_proto match");
+ 			return -EOPNOTSUPP;
+ 		}
+ 	}
+@@ -200,13 +199,9 @@ static int efx_tc_flower_replace(struct efx_nic *efx,
  
-+#define NL_SET_ERR_MSG_FMT(extack, fmt, args...) do {			\
-+	struct netlink_ext_ack *__extack = (extack);			\
-+									\
-+	if (!__extack)							\
-+		break;							\
-+	if (snprintf(__extack->_msg_buf, NETLINK_MAX_FMTMSG_LEN,	\
-+		     (fmt), ##args) >= NETLINK_MAX_FMTMSG_LEN)		\
-+		net_warn_ratelimited("truncated extack: " fmt "\n",	\
-+				     ##args);				\
-+									\
-+	do_trace_netlink_extack(__extack->_msg_buf);			\
-+									\
-+	__extack->_msg = __extack->_msg_buf;				\
-+} while (0)
-+
- #define NL_SET_ERR_MSG_MOD(extack, msg)			\
- 	NL_SET_ERR_MSG((extack), KBUILD_MODNAME ": " msg)
+ 	if (efv != from_efv) {
+ 		/* can't happen */
+-		efx_tc_err(efx, "for %s efv is %snull but from_efv is %snull\n",
+-			   netdev_name(net_dev), efv ? "non-" : "",
+-			   from_efv ? "non-" : "");
+-		if (efv)
+-			NL_SET_ERR_MSG_MOD(extack, "vfrep filter has PF net_dev (can't happen)");
+-		else
+-			NL_SET_ERR_MSG_MOD(extack, "PF filter has vfrep net_dev (can't happen)");
++		NL_SET_ERR_MSG_FMT_MOD(extack, "for %s efv is %snull but from_efv is %snull (can't happen)",
++				       netdev_name(net_dev), efv ? "non-" : "",
++				       from_efv ? "non-" : "");
+ 		return -EINVAL;
+ 	}
  
-+#define NL_SET_ERR_MSG_FMT_MOD(extack, fmt, args...)	\
-+	NL_SET_ERR_MSG_FMT((extack), KBUILD_MODNAME ": " fmt, ##args)
-+
- #define NL_SET_BAD_ATTR_POLICY(extack, attr, pol) do {	\
- 	if ((extack)) {					\
- 		(extack)->bad_attr = (attr);		\
+@@ -214,7 +209,7 @@ static int efx_tc_flower_replace(struct efx_nic *efx,
+ 	memset(&match, 0, sizeof(match));
+ 	rc = efx_tc_flower_external_mport(efx, from_efv);
+ 	if (rc < 0) {
+-		EFX_TC_ERR_MSG(efx, extack, "Failed to identify ingress m-port");
++		NL_SET_ERR_MSG_MOD(extack, "Failed to identify ingress m-port");
+ 		return rc;
+ 	}
+ 	match.value.ingress_port = rc;
+@@ -224,7 +219,7 @@ static int efx_tc_flower_replace(struct efx_nic *efx,
+ 		return rc;
+ 
+ 	if (tc->common.chain_index) {
+-		EFX_TC_ERR_MSG(efx, extack, "No support for nonzero chain_index");
++		NL_SET_ERR_MSG_MOD(extack, "No support for nonzero chain_index");
+ 		return -EOPNOTSUPP;
+ 	}
+ 	match.mask.recirc_id = 0xff;
+@@ -261,7 +256,7 @@ static int efx_tc_flower_replace(struct efx_nic *efx,
+ 
+ 		if (!act) {
+ 			/* more actions after a non-pipe action */
+-			EFX_TC_ERR_MSG(efx, extack, "Action follows non-pipe action");
++			NL_SET_ERR_MSG_MOD(extack, "Action follows non-pipe action");
+ 			rc = -EINVAL;
+ 			goto release;
+ 		}
+@@ -270,7 +265,7 @@ static int efx_tc_flower_replace(struct efx_nic *efx,
+ 		case FLOW_ACTION_DROP:
+ 			rc = efx_mae_alloc_action_set(efx, act);
+ 			if (rc) {
+-				EFX_TC_ERR_MSG(efx, extack, "Failed to write action set to hw (drop)");
++				NL_SET_ERR_MSG_MOD(extack, "Failed to write action set to hw (drop)");
+ 				goto release;
+ 			}
+ 			list_add_tail(&act->list, &rule->acts.list);
+@@ -281,20 +276,20 @@ static int efx_tc_flower_replace(struct efx_nic *efx,
+ 			save = *act;
+ 			to_efv = efx_tc_flower_lookup_efv(efx, fa->dev);
+ 			if (IS_ERR(to_efv)) {
+-				EFX_TC_ERR_MSG(efx, extack, "Mirred egress device not on switch");
++				NL_SET_ERR_MSG_MOD(extack, "Mirred egress device not on switch");
+ 				rc = PTR_ERR(to_efv);
+ 				goto release;
+ 			}
+ 			rc = efx_tc_flower_external_mport(efx, to_efv);
+ 			if (rc < 0) {
+-				EFX_TC_ERR_MSG(efx, extack, "Failed to identify egress m-port");
++				NL_SET_ERR_MSG_MOD(extack, "Failed to identify egress m-port");
+ 				goto release;
+ 			}
+ 			act->dest_mport = rc;
+ 			act->deliver = 1;
+ 			rc = efx_mae_alloc_action_set(efx, act);
+ 			if (rc) {
+-				EFX_TC_ERR_MSG(efx, extack, "Failed to write action set to hw (mirred)");
++				NL_SET_ERR_MSG_MOD(extack, "Failed to write action set to hw (mirred)");
+ 				goto release;
+ 			}
+ 			list_add_tail(&act->list, &rule->acts.list);
+@@ -310,9 +305,9 @@ static int efx_tc_flower_replace(struct efx_nic *efx,
+ 			*act = save;
+ 			break;
+ 		default:
+-			efx_tc_err(efx, "Unhandled action %u\n", fa->id);
++			NL_SET_ERR_MSG_FMT_MOD(extack, "Unhandled action %u",
++					       fa->id);
+ 			rc = -EOPNOTSUPP;
+-			NL_SET_ERR_MSG_MOD(extack, "Unsupported action");
+ 			goto release;
+ 		}
+ 	}
+@@ -334,7 +329,7 @@ static int efx_tc_flower_replace(struct efx_nic *efx,
+ 		act->deliver = 1;
+ 		rc = efx_mae_alloc_action_set(efx, act);
+ 		if (rc) {
+-			EFX_TC_ERR_MSG(efx, extack, "Failed to write action set to hw (deliver)");
++			NL_SET_ERR_MSG_MOD(extack, "Failed to write action set to hw (deliver)");
+ 			goto release;
+ 		}
+ 		list_add_tail(&act->list, &rule->acts.list);
+@@ -349,13 +344,13 @@ static int efx_tc_flower_replace(struct efx_nic *efx,
+ 
+ 	rc = efx_mae_alloc_action_set_list(efx, &rule->acts);
+ 	if (rc) {
+-		EFX_TC_ERR_MSG(efx, extack, "Failed to write action set list to hw");
++		NL_SET_ERR_MSG_MOD(extack, "Failed to write action set list to hw");
+ 		goto release;
+ 	}
+ 	rc = efx_mae_insert_rule(efx, &rule->match, EFX_TC_PRIO_TC,
+ 				 rule->acts.fw_id, &rule->fw_id);
+ 	if (rc) {
+-		EFX_TC_ERR_MSG(efx, extack, "Failed to insert rule in hw");
++		NL_SET_ERR_MSG_MOD(extack, "Failed to insert rule in hw");
+ 		goto release_acts;
+ 	}
+ 	return 0;
+diff --git a/drivers/net/ethernet/sfc/tc.h b/drivers/net/ethernet/sfc/tc.h
+index 196fd74ed973..4373c3243e3c 100644
+--- a/drivers/net/ethernet/sfc/tc.h
++++ b/drivers/net/ethernet/sfc/tc.h
+@@ -15,24 +15,6 @@
+ #include <linux/rhashtable.h>
+ #include "net_driver.h"
+ 
+-/* Error reporting: convenience macros.  For indicating why a given filter
+- * insertion is not supported; errors in internal operation or in the
+- * hardware should be netif_err()s instead.
+- */
+-/* Used when error message is constant. */
+-#define EFX_TC_ERR_MSG(efx, extack, message)	do {			\
+-	NL_SET_ERR_MSG_MOD(extack, message);				\
+-	if (efx->log_tc_errs)						\
+-		netif_info(efx, drv, efx->net_dev, "%s\n", message);	\
+-} while (0)
+-/* Used when error message is not constant; caller should also supply a
+- * constant extack message with NL_SET_ERR_MSG_MOD().
+- */
+-#define efx_tc_err(efx, fmt, args...)	do {		\
+-if (efx->log_tc_errs)					\
+-	netif_info(efx, drv, efx->net_dev, fmt, ##args);\
+-} while (0)
+-
+ struct efx_tc_action_set {
+ 	u16 deliver:1;
+ 	u32 dest_mport;
