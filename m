@@ -2,188 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 73CE75FE535
-	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 00:25:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A963D5FE5AF
+	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 00:55:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229491AbiJMWZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 18:25:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34696 "EHLO
+        id S229913AbiJMWzp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 18:55:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229502AbiJMWZQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 18:25:16 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21E9563342;
-        Thu, 13 Oct 2022 15:25:14 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id bj12so6821573ejb.13;
-        Thu, 13 Oct 2022 15:25:14 -0700 (PDT)
+        with ESMTP id S229927AbiJMWzg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 18:55:36 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56A7615200C
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 15:55:28 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id f193so2833788pgc.0
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 15:55:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Y/XbGbIL+iBomfsKlPTzECJpeVlb/uQPqD+FWv+ejzU=;
-        b=AAHk7awD17JroxJjaZ0W0W2+Cz7xco0YWyDJG1lojoglBZ/r5fsjZPZniRgXFHnjZ8
-         F+9005plpZb5D4Q5PvdL3y8J3ITs7F/dz7sVsIa2vMReYqZ0fQkGZyaXHn9Nakz8fvTt
-         5qhCsw4yiWp34l/JKDxE0EFKSRcjt+iWEPd/UgYOAUp672YLN8dJjw2BrITDqoki6trx
-         s7SqTKMRQB9jJN02DRWUiyMWT3mrHpUzVS3mFl+u9IfKYVRN9XL4zE8nVof6ctc5mv9R
-         FKu5xt+sWpXhhLxNxYu2DbVNYDfSbHuYNQeSHSt0kJBi6SegIGms4ZEr/NGBTSgzorFn
-         aF2Q==
+        d=fastly.com; s=google;
+        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=9xzIvBQboVU6QSJeZ36bSnwTh4/Q/wHVlnO0sL376rQ=;
+        b=inUPe8i3pDgU690g6pKYXdJ+J3eqN19cSvhrQnycfJcOebhPFZqZKPj63H3xdJTUJN
+         96WdWngcIk6Hc7/CK1zxnO9TB474LFR3+a2AzswLbIaCMnAZuY6g86oNyqfOtHHr8D1O
+         oqH+bp6096+6QoL2ZudSDzEmng63bV2rz4rW8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Y/XbGbIL+iBomfsKlPTzECJpeVlb/uQPqD+FWv+ejzU=;
-        b=huIHWVBLHrWWAoHQhxp7Qa+Pmhu1Vh5/r3ZQ/iOgPA8eDMXgELIwG1/yXceJpBYSBC
-         hVkxYzjKtzsykbPCUo3QS99ZjvAbR+huczzLF5mdp1D/cVqLIJo7VLJ3tXPsME/TQyje
-         rWR5gJuMKmiDNvf06aYuDCYgT05vQXuNkyRtBrQvM+mpbOaDvAmGamfugLYjYdwgHAvL
-         2ZjnHKn4pM0sD48LVIlY0x8CLAKrKkOLhdRmGnAqF+n0q87+VRz7a/Nwr+tHPdJD3/l3
-         o8eW+/4K5wv3fOaN3lBs36HTO7xjVovSeo9Cmw21IaHakpyLcRicQWmv/K3oiemM3Zx/
-         3PsQ==
-X-Gm-Message-State: ACrzQf3muEsMXp0kw5AkzYOYYkXBSx3xc/ojX4yskNRNnPw4RljXlj+t
-        g0+yyutxdwLWRZ6Dq4bDtdQUv/FTT000HFqpQH4=
-X-Google-Smtp-Source: AMsMyM4KcSjkJ25IAsnbyj71kzWY+VTucjq4ZLk1i3YEwTiEvqLKYqjJ9Q041Q/pqHkoG8fwHxPeDQLv7QgK+7uXJfY=
-X-Received: by 2002:a17:907:2d91:b0:78d:8747:71b4 with SMTP id
- gt17-20020a1709072d9100b0078d874771b4mr1370683ejc.545.1665699912570; Thu, 13
- Oct 2022 15:25:12 -0700 (PDT)
-MIME-Version: 1.0
-References: <20221003190545.6b7c7aba@kernel.org> <20221003214941.6f6ea10d@kernel.org>
- <YzvV0CFSi9KvXVlG@krava> <20221004072522.319cd826@kernel.org>
- <Yz1SSlzZQhVtl1oS@krava> <20221005084442.48cb27f1@kernel.org>
- <20221005091801.38cc8732@kernel.org> <Yz3kHX4hh8soRjGE@krava>
- <20221013080517.621b8d83@kernel.org> <Y0iNVwxTJmrddRuv@krava>
-In-Reply-To: <Y0iNVwxTJmrddRuv@krava>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 13 Oct 2022 15:24:59 -0700
-Message-ID: <CAEf4Bzbow+8-f4rg2LRRRUD+=1wbv1MjpAh-P4=smUPtrzfZ3Q@mail.gmail.com>
-Subject: Re: WARN: multiple IDs found for 'nf_conn': 92168, 117897 - using 92168
-To:     Jiri Olsa <olsajiri@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Martin KaFai Lau <martin.lau@kernel.org>,
-        bpf@vger.kernel.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=9xzIvBQboVU6QSJeZ36bSnwTh4/Q/wHVlnO0sL376rQ=;
+        b=jhXq5TnRS2yjRsKGiP4njaI2KKBqhe6+gIO8iqZnzqGKM8mZfrfpAnlFXuIAFZBEhU
+         nIWeQ4XPEVrTEkXXUsV4oPNYIrKpPV6VeX3nuuvye1rXhj/jGL38qjodqLTXTBOnoqfZ
+         7DgEFUjquRJRvhBEh+GdbfB7DS2UbZWTiEF2SQkmhGcHIZFEZO1eBDC80eyEIif++5iH
+         WT/0LUiGOST7J26sJZvt870aPkXmyvOlnztwTfDwzL7FsTti/vnjS4vsKoQtstRImfCp
+         7P6EET4pelSABqnP8nMuMNz2ybrR4rTaECcO6q1NNeoPqF4+woMS1XDsvMCMjus1lzjl
+         yw7A==
+X-Gm-Message-State: ACrzQf07omdTDOIsCaNtzVVo8LJFWHLrmePL+miR20sbuhgY3OeOt/F+
+        BgzSApU+ILTc1CSrsEbfR5t3EQ==
+X-Google-Smtp-Source: AMsMyM4bWk5UMVBpYhVx7JHLiBqIpyiiByE5lDDHmJvZKOMsjHJWRw5JtFt3bcHjhhlkcmUsC8i6sg==
+X-Received: by 2002:a05:6a00:14c8:b0:564:5e5:8d85 with SMTP id w8-20020a056a0014c800b0056405e58d85mr1998375pfu.36.1665701727798;
+        Thu, 13 Oct 2022 15:55:27 -0700 (PDT)
+Received: from localhost.localdomain (c-24-6-151-244.hsd1.ca.comcast.net. [24.6.151.244])
+        by smtp.gmail.com with ESMTPSA id b14-20020a170902650e00b00174fa8cbf31sm313110plk.303.2022.10.13.15.55.26
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 13 Oct 2022 15:55:27 -0700 (PDT)
+From:   Joe Damato <jdamato@fastly.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        anthony.l.nguyen@intel.com, jesse.brandeburg@intel.com,
+        Joe Damato <jdamato@fastly.com>
+Subject: [net-queue bugfix RFC] i40e: Clear IFF_RXFH_CONFIGURED when RSS is reset
+Date:   Thu, 13 Oct 2022 15:54:31 -0700
+Message-Id: <1665701671-6353-1-git-send-email-jdamato@fastly.com>
+X-Mailer: git-send-email 2.7.4
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 13, 2022 at 3:12 PM Jiri Olsa <olsajiri@gmail.com> wrote:
->
-> On Thu, Oct 13, 2022 at 08:05:17AM -0700, Jakub Kicinski wrote:
-> > On Wed, 5 Oct 2022 22:07:57 +0200 Jiri Olsa wrote:
-> > > > Yeah, it's there on linux-next, too.
-> > > >
-> > > > Let me grab a fresh VM and try there. Maybe it's my system. Somehow.
-> > >
-> > > ok, I will look around what's the way to install that centos 8 thing
-> >
-> > Any luck?
->
-> now BTFIDS warnings..
->
-> I can see following on centos8 with gcc 8.5:
->
->           BTFIDS  vmlinux
->         WARN: multiple IDs found for 'task_struct': 300, 56614 - using 300
->         WARN: multiple IDs found for 'file': 540, 56649 - using 540
->         WARN: multiple IDs found for 'vm_area_struct': 549, 56652 - using 549
->         WARN: multiple IDs found for 'seq_file': 953, 56690 - using 953
->         WARN: multiple IDs found for 'inode': 1132, 56966 - using 1132
->         WARN: multiple IDs found for 'path': 1164, 56995 - using 1164
->         WARN: multiple IDs found for 'task_struct': 300, 61905 - using 300
->         WARN: multiple IDs found for 'file': 540, 61943 - using 540
->         WARN: multiple IDs found for 'vm_area_struct': 549, 61946 - using 549
->         WARN: multiple IDs found for 'inode': 1132, 62029 - using 1132
->         WARN: multiple IDs found for 'path': 1164, 62058 - using 1164
->         WARN: multiple IDs found for 'cgroup': 1190, 62067 - using 1190
->         WARN: multiple IDs found for 'seq_file': 953, 62253 - using 953
->         WARN: multiple IDs found for 'sock': 7960, 62374 - using 7960
->         WARN: multiple IDs found for 'sk_buff': 1876, 62485 - using 1876
->         WARN: multiple IDs found for 'bpf_prog': 6094, 62542 - using 6094
->         WARN: multiple IDs found for 'socket': 7993, 62545 - using 7993
->         WARN: multiple IDs found for 'xdp_buff': 6191, 62836 - using 6191
->         WARN: multiple IDs found for 'sock_common': 8164, 63152 - using 8164
->         WARN: multiple IDs found for 'request_sock': 17296, 63204 - using 17296
->         WARN: multiple IDs found for 'inet_request_sock': 36292, 63222 - using 36292
->         WARN: multiple IDs found for 'inet_sock': 32700, 63225 - using 32700
->         WARN: multiple IDs found for 'inet_connection_sock': 33944, 63240 - using 33944
->         WARN: multiple IDs found for 'tcp_request_sock': 36299, 63260 - using 36299
->         WARN: multiple IDs found for 'tcp_sock': 33969, 63264 - using 33969
->         WARN: multiple IDs found for 'bpf_map': 6623, 63343 - using 6623
->
-> I'll need to check on that..
->
-> and I just actually saw the 'nf_conn' warning on linux-next/master with
-> latest fedora/gcc-12:
->
->           BTF [M] net/netfilter/nf_nat.ko
->         WARN: multiple IDs found for 'nf_conn': 106518, 120156 - using 106518
->         WARN: multiple IDs found for 'nf_conn': 106518, 121853 - using 106518
->         WARN: multiple IDs found for 'nf_conn': 106518, 123126 - using 106518
->         WARN: multiple IDs found for 'nf_conn': 106518, 124537 - using 106518
->         WARN: multiple IDs found for 'nf_conn': 106518, 126442 - using 106518
->         WARN: multiple IDs found for 'nf_conn': 106518, 128256 - using 106518
->           LD [M]  net/netfilter/nf_nat_tftp.ko
->
-> looks like maybe dedup missed this struct for some reason
->
-> nf_conn dump from module:
->
->         [120155] PTR '(anon)' type_id=120156
->         [120156] STRUCT 'nf_conn' size=320 vlen=14
->                 'ct_general' type_id=105882 bits_offset=0
->                 'lock' type_id=180 bits_offset=64
->                 'timeout' type_id=113 bits_offset=640
->                 'zone' type_id=106520 bits_offset=672
->                 'tuplehash' type_id=106533 bits_offset=704
->                 'status' type_id=1 bits_offset=1600
->                 'ct_net' type_id=3215 bits_offset=1664
->                 'nat_bysource' type_id=139 bits_offset=1728
->                 '__nfct_init_offset' type_id=949 bits_offset=1856
->                 'master' type_id=120155 bits_offset=1856
->                 'mark' type_id=106351 bits_offset=1920
->                 'secmark' type_id=106351 bits_offset=1952
->                 'ext' type_id=106536 bits_offset=1984
->                 'proto' type_id=106532 bits_offset=2048
->
-> nf_conn dump from vmlinux:
->
->         [106517] PTR '(anon)' type_id=106518
->         [106518] STRUCT 'nf_conn' size=320 vlen=14
->                 'ct_general' type_id=105882 bits_offset=0
->                 'lock' type_id=180 bits_offset=64
->                 'timeout' type_id=113 bits_offset=640
->                 'zone' type_id=106520 bits_offset=672
->                 'tuplehash' type_id=106533 bits_offset=704
->                 'status' type_id=1 bits_offset=1600
->                 'ct_net' type_id=3215 bits_offset=1664
->                 'nat_bysource' type_id=139 bits_offset=1728
->                 '__nfct_init_offset' type_id=949 bits_offset=1856
->                 'master' type_id=106517 bits_offset=1856
->                 'mark' type_id=106351 bits_offset=1920
->                 'secmark' type_id=106351 bits_offset=1952
->                 'ext' type_id=106536 bits_offset=1984
->                 'proto' type_id=106532 bits_offset=2048
->
-> look identical.. Andrii, any idea?
+Sending this first as an RFC to ensure that this is the correct and desired
+behavior when changing queue counts and flowhashes in i40e.
 
-I'm pretty sure they are not identical. There is somewhere a STRUCT vs
-FWD difference. We had a similar discussion recently with Alan
-Maguire.
+If this is approved, I can send an official "v1".
 
->                 'master' type_id=120155 bits_offset=1856
+Before this change, reconfiguring the queue count using ethtool doesn't
+always work, even for queue counts that were previously accepted because
+the IFF_RXFH_CONFIGURED bit was not cleared when the flow indirection hash
+is cleared by the driver.
 
-vs
+For example:
 
->                 'master' type_id=106517 bits_offset=1856
+$ sudo ethtool -x eth0
+RX flow hash indirection table for eth0 with 34 RX ring(s):
+    0:      0     1     2     3     4     5     6     7
+    8:      8     9    10    11    12    13    14    15
+   16:     16    17    18    19    20    21    22    23
+   24:     24    25    26    27    28    29    30    31
+   32:     32    33     0     1     2     3     4     5
+[...snip...]
 
-we'd need to unwind all these references to find where they start to differ
+As you can see, the flow indirection hash distributes flows to 34 queues.
 
->
-> thanks,
-> jirka
+Increasing the number of queues from 34 to 64 works, and the flow
+indirection hash is reset automatically:
+
+$ sudo ethtool -L eth0 combined 64
+$ sudo ethtool -x eth0
+RX flow hash indirection table for eth0 with 64 RX ring(s):
+    0:      0     1     2     3     4     5     6     7
+    8:      8     9    10    11    12    13    14    15
+   16:     16    17    18    19    20    21    22    23
+   24:     24    25    26    27    28    29    30    31
+   32:     32    33    34    35    36    37    38    39
+   40:     40    41    42    43    44    45    46    47
+   48:     48    49    50    51    52    53    54    55
+   56:     56    57    58    59    60    61    62    63
+
+However, reducing the queue count back to 34 (which previously worked)
+fails:
+
+$ sudo ethtool -L eth0 combined 34
+Cannot set device channel parameters: Invalid argument
+
+This happens because the kernel thinks that the user configured the flow
+hash (since the IFF_RXFH_CONFIGURED bit is not cleared by the driver when
+the driver reset it) and thus returns -EINVAL, presumably to prevent the
+driver from resizing the queues and resetting the user-defined flowhash.
+
+With this patch applied, the queue count can be reduced to fewer queues
+than the flow indirection hash is set to distribute flows to if the flow
+indirection hash was not modified by the user.
+
+For example, with the patch applied:
+
+$ sudo ethtool -L eth0 combined 32
+$ sudo ethtool -x eth0
+RX flow hash indirection table for eth0 with 32 RX ring(s):
+    0:      0     1     2     3     4     5     6     7
+    8:      8     9    10    11    12    13    14    15
+   16:     16    17    18    19    20    21    22    23
+   24:     24    25    26    27    28    29    30    31
+[..snip..]
+
+I can now reduce the queue count to below 32 without error (unlike earlier):
+
+$ sudo ethtool -L eth0 combined 24
+$ sudo ethtool -x eth0
+RX flow hash indirection table for eth0 with 24 RX ring(s):
+    0:      0     1     2     3     4     5     6     7
+    8:      8     9    10    11    12    13    14    15
+   16:     16    17    18    19    20    21    22    23
+
+This works because I was using the default flow hash, so the driver discards
+it and regenerates it.
+
+However, if I manually set the flow hash to some user defined value:
+
+$ sudo ethtool -X eth0 equal 20
+$ sudo ethtool -x eth0
+RX flow hash indirection table for eth0 with 24 RX ring(s):
+    0:      0     1     2     3     4     5     6     7
+    8:      8     9    10    11    12    13    14    15
+   16:     16    17    18    19     0     1     2     3
+[..snip..]
+
+I will now not be able to shrink the queue count again:
+
+$ sudo ethtool -L eth0 combined 16
+Cannot set device channel parameters: Invalid argument
+
+But, I can increase the queue count and the flow hash is preserved:
+
+$ sudo ethtool -L eth0 combined 64
+$ sudo ethtool -x eth0
+RX flow hash indirection table for eth0 with 64 RX ring(s):
+    0:      0     1     2     3     4     5     6     7
+    8:      8     9    10    11    12    13    14    15
+   16:     16    17    18    19     0     1     2     3
+
+Fixes: 28c5869f2bc4 ("i40e: add new fields to store user configuration")
+Signed-off-by: Joe Damato <jdamato@fastly.com>
+---
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index feabd26..0e8dca7 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -11522,6 +11522,8 @@ static void i40e_clear_rss_config_user(struct i40e_vsi *vsi)
+ 
+ 	kfree(vsi->rss_lut_user);
+ 	vsi->rss_lut_user = NULL;
++
++	vsi->netdev->priv_flags &= ~IFF_RXFH_CONFIGURED;
+ }
+ 
+ /**
+-- 
+2.7.4
+
