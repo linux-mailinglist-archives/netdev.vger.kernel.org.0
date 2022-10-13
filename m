@@ -2,94 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC3EF5FD9B1
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 14:57:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D7E75FD9B8
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 14:59:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229726AbiJMM5x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 08:57:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47014 "EHLO
+        id S229591AbiJMM7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 08:59:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229627AbiJMM5w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 08:57:52 -0400
-Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 27E3A139E45;
-        Thu, 13 Oct 2022 05:57:49 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [10.162.98.155])
-        by mail-app3 (Coremail) with SMTP id cC_KCgDXWLU6C0hjcwbVBw--.25275S2;
-        Thu, 13 Oct 2022 20:57:37 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-kernel@vger.kernel.org
-Cc:     netdev@vger.kernel.org, isdn@linux-pingi.de, kuba@kernel.org,
-        gregkh@linuxfoundation.org, andrii@kernel.org, davem@davemloft.net,
-        axboe@kernel.dk, Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH] mISDN: hfcpci: Fix use-after-free bug in hfcpci_Timer
-Date:   Thu, 13 Oct 2022 20:57:29 +0800
-Message-Id: <20221013125729.105652-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgDXWLU6C0hjcwbVBw--.25275S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7CrW8JFW7AF18ur48tF48Crg_yoW8Gw13pF
-        W5WF42yrWqqF1jya1UZan8uF93Aa1vyrWrKFWqk39xZ3Z3XFy5AF1Ut3yv9FWfGr93W39x
-        XF40qw1YkF9rAFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkI1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
-        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
-        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
-        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
-        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v
-        1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
-        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vI
-        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
-        1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvE
-        x4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgECAVZdtb56rwASsH
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229519AbiJMM7I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 08:59:08 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53C90147074
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 05:59:03 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id r17so3710898eja.7
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 05:59:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=PhGQeGIe5xcuqU98Lgp2cyqw/BtN+KEpjBzd6CGb8JM=;
+        b=8GKHKlqe2bGS4hrD63o5pzxnwqVdsNSLzqsVkoVTZw8uPy4lSoMKXgMLTTh9HSME5L
+         wXPv7SueKCIgqTS+gWICu9PniW91Ljd41IvGBZvlQympqipqQcd41hUzrhMMKZNHnRoq
+         xk/m4kXF23ZfrleJ0Z+VE2ic0NBoQ22s+k5l0BZg6yxYVG8HuZwyvLEWz0dKOVr+U8Nf
+         9zBTkIEJHQpR7S9ssDQJM6XkuK8Mzhrp8wozQFpxbe7u7FjM5FGU6WHsapY3efW4zawj
+         /x4ooceLsF9y0ikvbK7r0AuAR1qjjstJE/OIsgucnl4ejUAF2ugEHwbBkCGNcbJ387dv
+         VByg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=PhGQeGIe5xcuqU98Lgp2cyqw/BtN+KEpjBzd6CGb8JM=;
+        b=SArsvy8N6IsFnMPSr7iMc1O58mM+04G++xjCDB/uaRE5C07m9gKotI97/3SpzLI3+h
+         HRo+/K4+/cS+rBA6hWG+r3thEulpWvtd1+czOkYvppp6lYunF3pL8DSqm+ruAd/Otu4R
+         ogXmk7wy2Z5/+Q1wIzYbWTd2ZygKblmpOG2ga+s+nagTBmnzsHAl8BeT3nJmw6VC/72C
+         F1ZHWKcONicuRx5S+qst63mflukYuVyR8wjGZKsr3baF9yK92XQJ35yaUutY+TuKMboo
+         +9/FlMZF7+OVWRlLLJVaOwxH4oMesbnL3NxIlHjpf6HbLNmY7e2aNBgas7Z3gZNOya3v
+         /pvg==
+X-Gm-Message-State: ACrzQf1FXWD3O0BvZFvben3Cd4Ughtp+NC7c/Wjcp3Pdy38QcNg6VSbU
+        L9mPD49lDVq+8jFlT0OSP/0vHw==
+X-Google-Smtp-Source: AMsMyM5Alm/TAor4zQOtqV65HlIE4F0enrByqXkQFk44BT0sB1bWZ8PhoIBj19rtaGYtiMtdBGXNCA==
+X-Received: by 2002:a17:906:dc8f:b0:78d:f675:226 with SMTP id cs15-20020a170906dc8f00b0078df6750226mr5766580ejc.745.1665665941376;
+        Thu, 13 Oct 2022 05:59:01 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id 8-20020a170906328800b00734bfab4d59sm3010017ejw.170.2022.10.13.05.59.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Oct 2022 05:59:00 -0700 (PDT)
+Date:   Thu, 13 Oct 2022 14:59:00 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Edward Cree <ecree.xilinx@gmail.com>, ecree@xilinx.com,
+        netdev@vger.kernel.org, linux-net-drivers@amd.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, habetsm.xilinx@gmail.com,
+        marcelo.leitner@gmail.com
+Subject: Re: [RFC PATCH net-next 1/3] netlink: add support for formatted
+ extack messages
+Message-ID: <Y0gLlKo8JGJKA7nf@nanopsycho>
+References: <cover.1665147129.git.ecree.xilinx@gmail.com>
+ <a01a9a1539c22800b2a5827cf234756f13fa6b97.1665147129.git.ecree.xilinx@gmail.com>
+ <34a347be9efca63a76faf6edca6e313b257483b6.camel@sipsolutions.net>
+ <1aafd0ec-5e01-9b01-61a5-48f3945c3969@gmail.com>
+ <ff12253b6855305cc3fa518af30e8ac21019b684.camel@sipsolutions.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ff12253b6855305cc3fa518af30e8ac21019b684.camel@sipsolutions.net>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the timer handler hfcpci_Timer() is running, the
-del_timer(&hc->hw.timer) in release_io_hfcpci() could
-not stop it. As a result, the use-after-free bug will
-happen. The process is shown below:
+Fri, Oct 07, 2022 at 03:49:42PM CEST, johannes@sipsolutions.net wrote:
+>On Fri, 2022-10-07 at 14:46 +0100, Edward Cree wrote:
+>> On 07/10/2022 14:35, Johannes Berg wrote:
+>> > 
+>> > > +#define NL_SET_ERR_MSG_FMT(extack, fmt, args...) do {		\
+>> > > +	struct netlink_ext_ack *__extack = (extack);		\
+>> > > +								\
+>> > > +	scnprintf(__extack->_msg_buf, NETLINK_MAX_FMTMSG_LEN,	\
+>> > > +		  (fmt), ##args);				\
+>> > 
+>> > Maybe that should print some kind of warning if the string was longer
+>> > than the buffer? OTOH, I guess the user would notice anyway, and until
+>> > you run the code nobody can possibly notice ... too bad then?
+>> > 
+>> > Maybe we could at least _statically_ make sure that the *format* string
+>> > (fmt) is shorter than say 60 chars or something to give some wiggle room
+>> > for the print expansion?
+>> > 
+>> > 	/* allow 20 chars for format expansion */
+>> > 	BUILD_BUG_ON(strlen(fmt) > NETLINK_MAX_FMTMSG_LEN - 20);
+>> > 
+>> > might even work? Just as a sanity check.
+>> 
+>> Hmm, I don't think we want to prohibit the case of (say) a 78-char format
+>>  string with one %d that's always small-valued in practice.
+>> In fact if you have lots of % in the format string the output could be
+>>  significantly *shorter* than fmt.
+>> So while I do like the idea of a sanity check, I don't see how to do it
+>>  without imposing unnecessary limitations.
+>> 
+>
+>Yeah, I agree. We could runtime warn but that's also pretty useless.
 
-    (cleanup routine)          |        (timer handler)
-release_card()                 | hfcpci_Timer()
-  release_io_hfcpci            |
-    del_timer(&hc->hw.timer)   |
-  ...                          |  ...
-  kfree(hc) //[1]FREE          |
-                               |   hc->hw.timer.expires //[2]USE
+I think that the macro caller need to take the buffer size into account
+passing the formatted msg. So if the generated message would not fit
+into the buffer, it's a caller bug. WARN_ON() is suitable for such
+things, as it most probaly will hit the developer testing newly added
+exack message.
 
-The hfc_pci is deallocated in position [1] and used in
-position [2].
 
-Fix by changing del_timer() in release_io_hfcpci() to
-del_timer_sync(), which makes sure the hfcpci_Timer()
-have finished before the hfc_pci is deallocated.
-
-Fixes: 1700fe1a10dc ("Add mISDN HFC PCI driver")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
- drivers/isdn/hardware/mISDN/hfcpci.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/isdn/hardware/mISDN/hfcpci.c b/drivers/isdn/hardware/mISDN/hfcpci.c
-index af17459c1a5..5cf37fe7de2 100644
---- a/drivers/isdn/hardware/mISDN/hfcpci.c
-+++ b/drivers/isdn/hardware/mISDN/hfcpci.c
-@@ -157,7 +157,7 @@ release_io_hfcpci(struct hfc_pci *hc)
- {
- 	/* disable memory mapped ports + busmaster */
- 	pci_write_config_word(hc->pdev, PCI_COMMAND, 0);
--	del_timer(&hc->hw.timer);
-+	del_timer_sync(&hc->hw.timer);
- 	dma_free_coherent(&hc->pdev->dev, 0x8000, hc->hw.fifos,
- 			  hc->hw.dmahandle);
- 	iounmap(hc->hw.pci_io);
--- 
-2.17.1
-
+>
+>I guess we just have to be careful - but I know from experience that
+>won't work ;-)
+>
+>(and some things like %pM or even %p*H can expand a lot anyway)
+>
+>Unless maybe we printed a warning together with the full string, so the
+>user could recover it? WARN_ON() isn't useful though, the string should
+>be enough to understand where it came from.
+>
+>Anyway just thinking out loud :)
+>
+>johannes
