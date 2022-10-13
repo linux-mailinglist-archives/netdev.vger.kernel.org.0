@@ -2,70 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 697095FE5E7
-	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 01:38:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB6FB5FE5F9
+	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 01:44:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229721AbiJMXil (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 19:38:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55804 "EHLO
+        id S229941AbiJMXoq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 19:44:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229655AbiJMXij (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 19:38:39 -0400
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E639B18F247
-        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 16:38:37 -0700 (PDT)
-Received: by mail-qv1-xf36.google.com with SMTP id l19so2290808qvu.4
-        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 16:38:37 -0700 (PDT)
+        with ESMTP id S229940AbiJMXoe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 19:44:34 -0400
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D12CD199888
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 16:44:22 -0700 (PDT)
+Received: by mail-qv1-xf2f.google.com with SMTP id df9so2281924qvb.9
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 16:44:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=C8FfdZqDKu7Ldi8kglzUkI6fWUDELAEdTYLSHbtzm40=;
-        b=cG9L2R/hwNS79DCzMNQKkX5Fmdm6qUucezQg2RbyEF5SLmq7efrZNFNvbDaE6EQizL
-         GcejhopSHQnPif71L0OyzGG98r2wR7aIZmNvwIgyqnmF9nOehMqebn5wFTWo+GGodpLy
-         YzJ4qXE5X8HYFzJ8XICLiNc82gXKTn6aLxkkBGV9cWJAanb0O5fxeM45zbvhPr9YwlKf
-         oR/mcyG15Gf23t5w//hyqbHN/pCUnKNFMDdsNzVM7/rl6iQ28+5mfKK7aXicJ9kiDWz1
-         Xpd30XiIMUFZBmkr5OLt/Rfjcn122VlkjICFUxFCVjMTlbKsKm/USDytqs0MwcjzCKRj
-         Zl8A==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=G4y6mG+4mDb5OA/mvjphPM6v31//PNw4p/aCL2x8Kr4=;
+        b=HSPj0ofgWQ7QT+KTnLHM+8NWoBEfCxHC4YKqk6R86pzR7pPikvPG8xHSBss01D2Ejs
+         VfTjnUXbLPAIvYJf+RLG3xzwnMx25G1IdqpzT+LplvdMEnka/WUiH9MOa9WQcq6BhUY2
+         HnIpcsZDYB0gtXPmwYqtzxFsJhQqRJlvjcrxNqNRZ9L4+IsdCYtbp+j+0D6wfo4kazdy
+         B9WCGlrULPlSfkFCLkUqGK7ilxtr4cXx754ATZ7UWKn/2dWEASXg1XWxO9o5YohCLMG2
+         jZxCozdRodlCT+VVaVM5MIcNcZDjr9M2zxtjWEpk9HzsTL7Nj2YBfo8oSaNH3sy8pNeD
+         fF6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=C8FfdZqDKu7Ldi8kglzUkI6fWUDELAEdTYLSHbtzm40=;
-        b=WnH6p+IfA9CfB/y+P1oTAsbbVYga5M1s4nFFWE9Iix2bOE4ezDrZ9a9bEocK0m6A4H
-         /9NSAW+DPjiOoWvdH2VZ2Kdmc+TJCDrRSogJcFnAqrJgSX3PlXvsD5mgb/8bCuYzf20c
-         pV5YMRyeW7vTLjZ32MFQDxQnl1QyUg9XRgsihu1R2gECd6WWI4d6gxJVePo2wVCsJYQC
-         VRGa9Ul9ZignbPGDq9OKeUrKS8qKYDR7JOu3W4XhWHR8za5oe87sJTfgi7Ag/9YEhEC6
-         +tp9hUZJrqBPrdsjRvMsc3VXgKIB0DYFH5nq179NW9g8rnhc7JMRVOcF4J4IvnAWHx+S
-         LhgQ==
-X-Gm-Message-State: ACrzQf1r16PLNrjSeTuSfGKaM5PFBg+OpUafJ/jgOHsWcj5bzYTSzUVn
-        SxsPXvAJT/b53tek7IVZD4X6atpj4GSFtQ==
-X-Google-Smtp-Source: AMsMyM5PkaWEs6JslcDlmka0L/m9xqY/p4Xt0EubY3SJAbDzUlRaq9Zq08KwdZmnFzERmu2xXd4FVQ==
-X-Received: by 2002:a05:6214:2121:b0:4b3:d854:56a3 with SMTP id r1-20020a056214212100b004b3d85456a3mr1969862qvc.98.1665704317100;
-        Thu, 13 Oct 2022 16:38:37 -0700 (PDT)
-Received: from [192.168.1.57] (cpe-72-225-192-120.nyc.res.rr.com. [72.225.192.120])
-        by smtp.gmail.com with ESMTPSA id k6-20020a378806000000b006ea5a9984d1sm863755qkd.94.2022.10.13.16.38.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Oct 2022 16:38:36 -0700 (PDT)
-Message-ID: <f0df9fa3-d543-b307-1a70-a00024042585@linaro.org>
-Date:   Thu, 13 Oct 2022 19:36:24 -0400
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.2
-Subject: Re: [PATCH] drivers/nfc: use simple i2c probe
-Content-Language: en-US
-To:     Stephen Kitt <steve@sk2.org>,
-        Krzysztof Opasiak <k.opasiak@samsung.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20221012175700.3940062-1-steve@sk2.org>
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=G4y6mG+4mDb5OA/mvjphPM6v31//PNw4p/aCL2x8Kr4=;
+        b=INFcgB8N1suosUuMCc9klHfSpiJbXA0KcqN2k9Sl1spe1OKLQCIAoOyq2kxX61Pxh5
+         8ek8WQgsZtqTxxWZogFjOmNXJHeYSd6WK1m8FzyEfxHX6Bx9+kq/7aD91aMThsWOOd9C
+         mmwtSWoyKu4UNkus+uN4JI0W5iZsbbSi9pXpiUa/OnAF3CUN4LnQaaMyxDxhOJIflfWU
+         BQgLTgWk+uLlwy6aHlwqIilwVKRlQjoeaSyn9BBZIlPXx6y3rkkemtLHorCJkVIfODtH
+         67MUx4WyjTCQlGOLoBfAwrjk1Op4U3OKRYon1L67toSBMzO4x8k9V55vzbun5mY+wKdb
+         SHXw==
+X-Gm-Message-State: ACrzQf3doAoVnCLp7iXeBIkCh8mSHLBSSewy8EpQzZn09Fn3QcfnPzK6
+        rDWY4gdUD6AZymRWoaSOQmOYwA==
+X-Google-Smtp-Source: AMsMyM4ZbodensA/Nqmrz2W2buL7MGJ5OnmzoL5Xy9Pl6OMGuchRLFFRuIMuxAF8HafgxloTlPRSqg==
+X-Received: by 2002:a0c:b294:0:b0:4b1:a396:d1cc with SMTP id r20-20020a0cb294000000b004b1a396d1ccmr2170493qve.107.1665704654294;
+        Thu, 13 Oct 2022 16:44:14 -0700 (PDT)
+Received: from krzk-bin.home (cpe-72-225-192-120.nyc.res.rr.com. [72.225.192.120])
+        by smtp.gmail.com with ESMTPSA id d19-20020a05620a241300b006bb82221013sm1210073qkn.0.2022.10.13.16.44.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Oct 2022 16:44:13 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221012175700.3940062-1-steve@sk2.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] MAINTAINERS: nfc: s3fwrn5: Drop Krzysztof Opasiak
+Date:   Thu, 13 Oct 2022 19:42:05 -0400
+Message-Id: <20221013234205.132630-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -74,19 +71,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/10/2022 13:56, Stephen Kitt wrote:
-> All these drivers have an i2c probe function which doesn't use the
-> "struct i2c_device_id *id" parameter, so they can trivially be
-> converted to the "probe_new" style of probe with a single argument.
-> 
-> This is part of an ongoing transition to single-argument i2c probe
-> functions. Old-style probe functions involve a call to i2c_match_id:
-> in drivers/i2c/i2c-core-base.c,
-> 
+Emails to Krzysztof Opasiak bounce ("Recipient address rejected: User
+unknown") so drop his email from maintainers of s3fwrn5 NFC bindings and
+driver.
 
-Looks ok, but subject needs to follow regular prefix style, so just "nfc:".
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml | 1 -
+ MAINTAINERS                                                    | 1 -
+ 2 files changed, 2 deletions(-)
 
-
-Best regards,
-Krzysztof
+diff --git a/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml b/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+index 64995cbb0f97..41c9760227cd 100644
+--- a/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
++++ b/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+@@ -8,7 +8,6 @@ title: Samsung S3FWRN5 NCI NFC Controller
+ 
+ maintainers:
+   - Krzysztof Kozlowski <krzk@kernel.org>
+-  - Krzysztof Opasiak <k.opasiak@samsung.com>
+ 
+ properties:
+   compatible:
+diff --git a/MAINTAINERS b/MAINTAINERS
+index d0d808564539..e06289b01229 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -18160,7 +18160,6 @@ F:	include/media/drv-intf/s3c_camif.h
+ 
+ SAMSUNG S3FWRN5 NFC DRIVER
+ M:	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+-M:	Krzysztof Opasiak <k.opasiak@samsung.com>
+ L:	linux-nfc@lists.01.org (subscribers-only)
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+-- 
+2.34.1
 
