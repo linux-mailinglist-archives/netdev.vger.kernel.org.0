@@ -2,97 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8ABA5FD6F0
+	by mail.lfdr.de (Postfix) with ESMTP id 8C6CD5FD6EF
 	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 11:23:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229717AbiJMJXn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 05:23:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37060 "EHLO
+        id S229547AbiJMJXk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 05:23:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229800AbiJMJXa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 05:23:30 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2052.outbound.protection.outlook.com [40.107.94.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D33EAFA002
-        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 02:23:28 -0700 (PDT)
+        with ESMTP id S229825AbiJMJXb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 05:23:31 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2046.outbound.protection.outlook.com [40.107.223.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BCB6F53FF
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 02:23:30 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=foDDa3BO8Q2LCiEE7cBBJAxQCgEDHHqAHzS0WkWUopXBPtKOBhoc0usop++pcD+AJ2Y7vFxBIccmI0yjx/Dfw3LXzDs5nfNwQ1WRTkuvLbOF7dWnnjTRYzlON0A2y1dC4VEEfLHVIiDjOcZmj9dXDk72Q6TBCdGTpLrNV4pX6A9d9TjYyZ3pdZCoeylTS29puDmcQDTmuA++ppVafCsqyiO/6+xGu/lFPT71uJ/yxQqI4A+0fUu4CM+ryuh/k78GAdsgzD23RdjkrvmyiB/o3lJhEoMVKtkzbt4r+jjGT2p3fkDG9WDpODzIHbBWqaTHcxAy4ABARQ2zMArOCyWKAA==
+ b=jASnXhLzkcvj5wp8N//0Q+x4jsFfAYHfTNLIZ21kknlKKJBTlc4Gm2TqSy5ze9TothJyAbi+IZQlN4TZ58GnQqFfdtisAFy8NmccEsSJ1ZopQqsg1xXNMEQMBwDzwaFjsXNikYFXTrgG/+qfAWn2AFtzukNr2wsIm/CQIMDjCdFix+wnlcSSdluvjR8hQBJ64BHBsl9BH17cUSSzNw+NuT2ura/iPOl1Ky2BWQvaDwiVIqsobgOeuyed3awK6wmXqARhfnDRtISropc4YF/F9mGW/Jux97oSQLUYWS+P0tuM0yn7RDqYxybojbEVSmb92KyUXQjzvqznzGFkq/loGQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5VtS4U2lJsamU7Z35ZKL9HfQWhKppLQ9EGze7Zp7y6s=;
- b=gTfeEm5cAOgpZQzHLnj1xj5O4qy0GB602tHb6tTMkGl1mnYHyHdjmfxJL9zpV/VXuJK4AGfqFokmN2mFSHIitgFLjBwHU1GW6bRNJEVfz0+Kso2Ne7EeI/3CXJ6QEiDr/eTUQ90oDWbL7WZrOmFaphdctcGstVwFdS44ckNd49V8/zgpiYiZbydFpKv2VEyYufPn1FGD2J16RcKNnhut0m54RYQAAtemmHLOIGjVIAe0/B3QvpRRuY5vLiYPFDN+4vpIsUbA08uVy0aveD7PtO+hqIKIdyvtFoqbVYBhI7Dwo1zunNSMYKpokVutUQhudaD2dn6gDgGlg7JT4jhcBw==
+ bh=ypJ2TgwdyeHH2utB1SHNCC3bujjvkgW6aIS3dhf7tqs=;
+ b=HF9M7m7GxmVxXp7QCInec4L4/sx9wCsx0ShZcbIIAO4HgRvbeF84SYi5IZqKtN0tlgaVZnptyPGKggwWsqx2+YW/ySlUn/Gsz/C2OiX6vlNNRzk96JQYo/oSKqAvkXc/lo0IwKBddnGoXhi18C+00lF9vb6dIYBdYtP/zLg2wcbo2p7+LSpyyzci9bmHI6x9ea78jeP/9pJsavMdWJRUxIlQCg2CPvYkPdjTWqybY8FdT2JGMRzNTwnNhIdjR2EJSf8KFXrEkn2NEQaJFBaJfHWCoJyuQ5C4ZkLmlqDu0+n3x+vrEgMya3pKW4Md6Jbtjn+/z8/yqe3auAImwcsFYw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5VtS4U2lJsamU7Z35ZKL9HfQWhKppLQ9EGze7Zp7y6s=;
- b=nli/NNb9UpLxdkxjQSoBddparcgk2O7qrM8xfrmcRRqna6bf0LYUOlb2LeFN9qxzEHCSy7RUG90pCCNQHX83mUtmVXID8OQWlNRuv0iF/fZmSodx3kBAtZDxUUAaNLt/rNUuFigI7CqTjOB+NkEjwelTzg4xJEuBLz7uIvqxbxk=
-Received: from MW4P220CA0011.NAMP220.PROD.OUTLOOK.COM (2603:10b6:303:115::16)
- by PH7PR12MB7282.namprd12.prod.outlook.com (2603:10b6:510:209::7) with
+ bh=ypJ2TgwdyeHH2utB1SHNCC3bujjvkgW6aIS3dhf7tqs=;
+ b=PUrC0nq3WxRVB8ebBedgjLvo6qswB0zVKquceKD0B2j79yxzO/GAHiOQtEoEpt/SH7p/ztU44Z4DIssfXn4/Go3wESA2ARimslWfS4QUwsq4Dkrvdr+rLgGxYZr890U4VsifbmTRObdfVUWF+hJbRo6a3VKRqlvZm8OZziiwH7Y=
+Received: from DS7PR05CA0076.namprd05.prod.outlook.com (2603:10b6:8:57::13) by
+ CH3PR12MB7546.namprd12.prod.outlook.com (2603:10b6:610:149::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5709.15; Thu, 13 Oct
- 2022 09:23:25 +0000
-Received: from CO1NAM11FT054.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:115:cafe::a9) by MW4P220CA0011.outlook.office365.com
- (2603:10b6:303:115::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.26 via Frontend
- Transport; Thu, 13 Oct 2022 09:23:25 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5709.21; Thu, 13 Oct
+ 2022 09:23:26 +0000
+Received: from DM6NAM11FT035.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:8:57:cafe::86) by DS7PR05CA0076.outlook.office365.com
+ (2603:10b6:8:57::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.10 via Frontend
+ Transport; Thu, 13 Oct 2022 09:23:26 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
 Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT054.mail.protection.outlook.com (10.13.174.70) with Microsoft SMTP
+ client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
+Received: from SATLEXMB03.amd.com (165.204.84.17) by
+ DM6NAM11FT035.mail.protection.outlook.com (10.13.172.100) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5723.20 via Frontend Transport; Thu, 13 Oct 2022 09:23:25 +0000
-Received: from SATLEXMB08.amd.com (10.181.40.132) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ 15.20.5723.20 via Frontend Transport; Thu, 13 Oct 2022 09:23:26 +0000
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 13 Oct
- 2022 04:23:24 -0500
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB08.amd.com
- (10.181.40.132) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 13 Oct
- 2022 02:23:24 -0700
+ 2022 04:23:25 -0500
 Received: from xcbecree41x.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28 via Frontend
- Transport; Thu, 13 Oct 2022 04:23:22 -0500
+ Transport; Thu, 13 Oct 2022 04:23:24 -0500
 From:   <edward.cree@amd.com>
 To:     <netdev@vger.kernel.org>, <linux-net-drivers@amd.com>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
         <edumazet@google.com>, <habetsm.xilinx@gmail.com>,
         <johannes@sipsolutions.net>, <marcelo.leitner@gmail.com>,
         Edward Cree <ecree.xilinx@gmail.com>
-Subject: [RFC PATCH v2 net-next 0/3] netlink: formatted extacks
-Date:   Thu, 13 Oct 2022 10:22:59 +0100
-Message-ID: <cover.1665567166.git.ecree.xilinx@gmail.com>
+Subject: [RFC PATCH v2 net-next 1/3] netlink: add support for formatted extack messages
+Date:   Thu, 13 Oct 2022 10:23:00 +0100
+Message-ID: <26c2cf2e699de83905e2c21491b71af0e34d00d8.1665567166.git.ecree.xilinx@gmail.com>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <cover.1665567166.git.ecree.xilinx@gmail.com>
+References: <cover.1665567166.git.ecree.xilinx@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT054:EE_|PH7PR12MB7282:EE_
-X-MS-Office365-Filtering-Correlation-Id: 44100a70-900f-423d-3a20-08daacfc94d2
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT035:EE_|CH3PR12MB7546:EE_
+X-MS-Office365-Filtering-Correlation-Id: 773192e4-0ecc-48a7-4403-08daacfc9585
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: NpRZHACJxqQiVY5VcQu7IP4fu7LvZaF/0qi0agKeJFA1EUGl3uRBWjHK6UuFU3Ugsns2/oB0NS0SNN7drkvUi0KYT7pzfpas9CQbPuepCxOGT0Of15G6g1c2wmmtioUSvcVw8x8oCEIQA0kweK6zh4yMbqQxNg3hXAER7p7Ii6U7wS1H/uwGvJPMraJUE9WyFxbifxnNR6VJeWqmy3tyWZ18Zpoa2YxuVJvkLZ1VsUKSKHf/gDF1LO9TzikoWx89zDGDxkC8c9vQHB2MctEfinSd0f2ioQbBTskxj4dcO2HndpAac22Hz+CXFhwnS5tYITvKnKtQ9trB33CAWSr9tel9qEEuCD8b2Zh/tDGKMalZAsbPXWFWPNzHybAUWnrNvFNQzdNKJwSg0mPCeWMtnMZhOSJx3zNwJ2Gzhk8Y9KI4psjU8WfvFMVPExKHQaewEnE+a1M6M72PAZa4o/2n+lUmcz9qcTiTsX9lYG+lZvIBsr06bO31uHMqw88ZuyXgYY58hko1f9jN44cOLB+fEVpgNQGf/8WV3M9ttcum60ZBpp9NuphDvSMT44UYil27L0Hx4n23kIQCW4qN74o45Qc4k8wjdd0W79riLl7QbvUbEa3eBh+XOieXd0ubUaB7yAQ50E9MTILPbVparpT0jyZkBjfj+JfFl2gJC+jw/WvxTWCdzRRaF9l5TGxc50ywlbQawP6I501o3WEVGiuM/sGfd30Grgon8wwm2KJSGjjt+8OoPpxqER6E7RXi5FXdgNtg+c4a8rmK3Ek63sZr7/EidSIBNp0bBPYHiHCXWuc=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(396003)(376002)(136003)(346002)(451199015)(46966006)(40470700004)(36840700001)(82740400003)(2876002)(70586007)(186003)(81166007)(9686003)(316002)(6636002)(83380400001)(356005)(2906002)(5660300002)(40480700001)(6666004)(26005)(8936002)(54906003)(40460700003)(36756003)(336012)(4326008)(8676002)(86362001)(426003)(70206006)(55446002)(47076005)(36860700001)(82310400005)(110136005)(41300700001)(478600001)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Z70gcjvt64tgxKJpWBYpsCPfu/OXOVPItOfKRgJOZEPXOw1G/Gy88LNub/rDySTfM0AGRWk8hHJOqfafXepZe6/QpT8XkzaAvfy9p6/cgTYZaUGtmZuvxUVoGJdjN6E6eDf03vpVGLIsuv5jmcRf5qW+QgQ7PbU2wVK+aSIxYPfQG3HTIqK2rSL4EKvqwdbqPCurd1FpurvFGzWymJN4xQJ1nk9o0aCCX8cC5Rwwb3gCpqVHNzXVCs9A+JqpwXMoDMUmm/FrtF29JKL1BcflEybciHNoCVhMw0DXVahQWYRBG48KxnrXJuuONyNsvs3rxLdLV8bkSR/uwrbkF4l+BAZcSGMzwxSQVPqZg78ZvfRB5MHtIs+nsnVCtFouv0Yd1eKkcsffofEWTuK7wtG3Zzwt2a/Rij/ODSHozSoKLMIvzFNt5BHsJp8GnwbOWyNPv7zM0W+ZkToedJymQvFAx/cySbVtz1ptOp4K1Rk+/joogqoZtVM06kHnCGcPcjgwQJeNh7uNBczCjhucDH6FfaNesnsZvZgr1lSn1Bosjs9HyEo6MieEErrgZmBfZN0FNHGtFDQafW173+4fwZPn1SmHNAtfMkvmZfDq0RoCPWayzphvwsqIZYaYmhzOKD4mXL7BMweSceTw+Uo5dY/emUKjRzeBou/a6/rkV9UZNT12LfbmbxY6c9q/5Eug9FYVa2wUPHYjynBDY/s8bc58xhi3S0qwJ4Xxec/iYAAjp3YCx+8CYXH6HiG7HQyhH4sbrJgpnBp36szHhhQr9LD8cI61umq1Fe2cP5f9JkJA3lSRhrfFYZdgr6+9uySDb1Ou
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(396003)(346002)(39860400002)(136003)(376002)(451199015)(46966006)(36840700001)(40470700004)(9686003)(356005)(316002)(110136005)(6636002)(54906003)(82740400003)(86362001)(478600001)(55446002)(81166007)(36756003)(36860700001)(26005)(40480700001)(40460700003)(336012)(186003)(6666004)(4326008)(41300700001)(8676002)(5660300002)(15650500001)(8936002)(47076005)(426003)(83380400001)(2906002)(82310400005)(70586007)(2876002)(70206006)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Oct 2022 09:23:25.3169
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Oct 2022 09:23:26.5840
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 44100a70-900f-423d-3a20-08daacfc94d2
+X-MS-Exchange-CrossTenant-Network-Message-Id: 773192e4-0ecc-48a7-4403-08daacfc9585
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT054.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT035.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7282
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB7546
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
@@ -105,33 +103,78 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Edward Cree <ecree.xilinx@gmail.com>
 
-Currently, netlink extacks can only carry fixed string messages, which
- is limiting when reporting failures in complex systems.  This series
- adds the ability to return printf-formatted messages, and uses it in
- the sfc driver's TC offload code.
-Formatted extack messages are limited in length to a fixed buffer size,
- currently 80 characters.  If the message exceeds this, the full message
- will be logged (ratelimited) to the console and a truncated version
- returned over netlink.
-There is no change to the netlink uAPI; only internal kernel changes
- are needed.
+Include an 80-byte buffer in struct netlink_ext_ack that can be used
+ for scnprintf()ed messages.  This does mean that the resulting string
+ can't be enumerated, translated etc. in the way NL_SET_ERR_MSG() was
+ designed to allow.
 
-Changed in v2:
-* fixed null-checking of extack (with break; as suggested by kuba)
-* added logging of full string on truncation (Johannes)
+Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
+---
+ include/linux/netlink.h | 25 +++++++++++++++++++++++--
+ 1 file changed, 23 insertions(+), 2 deletions(-)
 
-Edward Cree (3):
-  netlink: add support for formatted extack messages
-  sfc: use formatted extacks instead of efx_tc_err()
-  sfc: remove 'log-tc-errors' ethtool private flag
-
- drivers/net/ethernet/sfc/ef100_ethtool.c  |  2 -
- drivers/net/ethernet/sfc/ethtool_common.c | 37 ------------------
- drivers/net/ethernet/sfc/ethtool_common.h |  2 -
- drivers/net/ethernet/sfc/mae.c            |  5 +--
- drivers/net/ethernet/sfc/net_driver.h     |  2 -
- drivers/net/ethernet/sfc/tc.c             | 47 ++++++++++-------------
- drivers/net/ethernet/sfc/tc.h             | 18 ---------
- include/linux/netlink.h                   | 25 +++++++++++-
- 8 files changed, 46 insertions(+), 92 deletions(-)
-
+diff --git a/include/linux/netlink.h b/include/linux/netlink.h
+index d51e041d2242..4cbe87739c4d 100644
+--- a/include/linux/netlink.h
++++ b/include/linux/netlink.h
+@@ -64,6 +64,7 @@ netlink_kernel_create(struct net *net, int unit, struct netlink_kernel_cfg *cfg)
+ 
+ /* this can be increased when necessary - don't expose to userland */
+ #define NETLINK_MAX_COOKIE_LEN	20
++#define NETLINK_MAX_FMTMSG_LEN	80
+ 
+ /**
+  * struct netlink_ext_ack - netlink extended ACK report struct
+@@ -75,6 +76,8 @@ netlink_kernel_create(struct net *net, int unit, struct netlink_kernel_cfg *cfg)
+  * @miss_nest: nest missing an attribute (%NULL if missing top level attr)
+  * @cookie: cookie data to return to userspace (for success)
+  * @cookie_len: actual cookie data length
++ * @_msg_buf: output buffer for formatted message strings - don't access
++ *	directly, use %NL_SET_ERR_MSG_FMT
+  */
+ struct netlink_ext_ack {
+ 	const char *_msg;
+@@ -84,13 +87,13 @@ struct netlink_ext_ack {
+ 	u16 miss_type;
+ 	u8 cookie[NETLINK_MAX_COOKIE_LEN];
+ 	u8 cookie_len;
++	char _msg_buf[NETLINK_MAX_FMTMSG_LEN];
+ };
+ 
+ /* Always use this macro, this allows later putting the
+  * message into a separate section or such for things
+  * like translation or listing all possible messages.
+- * Currently string formatting is not supported (due
+- * to the lack of an output buffer.)
++ * If string formatting is needed use NL_SET_ERR_MSG_FMT.
+  */
+ #define NL_SET_ERR_MSG(extack, msg) do {		\
+ 	static const char __msg[] = msg;		\
+@@ -102,9 +105,27 @@ struct netlink_ext_ack {
+ 		__extack->_msg = __msg;			\
+ } while (0)
+ 
++#define NL_SET_ERR_MSG_FMT(extack, fmt, args...) do {			\
++	struct netlink_ext_ack *__extack = (extack);			\
++									\
++	if (!__extack)							\
++		break;							\
++	if (snprintf(__extack->_msg_buf, NETLINK_MAX_FMTMSG_LEN,	\
++		     (fmt), ##args) >= NETLINK_MAX_FMTMSG_LEN)		\
++		net_warn_ratelimited("truncated extack: " fmt "\n",	\
++				     ##args);				\
++									\
++	do_trace_netlink_extack(__extack->_msg_buf);			\
++									\
++	__extack->_msg = __extack->_msg_buf;				\
++} while (0)
++
+ #define NL_SET_ERR_MSG_MOD(extack, msg)			\
+ 	NL_SET_ERR_MSG((extack), KBUILD_MODNAME ": " msg)
+ 
++#define NL_SET_ERR_MSG_FMT_MOD(extack, fmt, args...)	\
++	NL_SET_ERR_MSG_FMT((extack), KBUILD_MODNAME ": " fmt, ##args)
++
+ #define NL_SET_BAD_ATTR_POLICY(extack, attr, pol) do {	\
+ 	if ((extack)) {					\
+ 		(extack)->bad_attr = (attr);		\
