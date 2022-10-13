@@ -2,109 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6238B5FDF2C
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 19:42:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC0305FE0CE
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 20:15:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229700AbiJMRmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 13:42:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50668 "EHLO
+        id S231417AbiJMSPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 14:15:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbiJMRmI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 13:42:08 -0400
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4EE8E09C4
-        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 10:42:06 -0700 (PDT)
-Message-ID: <c4f74864-0a6a-5075-891c-d20d0dc20f2f@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1665682924;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+PugGeeHuOFAHK4K5Jw6vx1wsrq9Nb6z9GV4h7SiBwA=;
-        b=Uhu1Zf24q1/6Bs7JJE26O/eul6JdWRLakWiqOStk9Pv20iWBVjXddGVFnkArk4V+qzICnP
-        ZhH6cUc2ydFrKR3JGbNCElHZtiIgO1A5Yra2yHh7b2hWfZE3qKcWmzU73mHEBhaYB3gtMi
-        uMa4C5cYEbbuKr+MET65JiWar7pv4Z4=
-Date:   Thu, 13 Oct 2022 10:41:53 -0700
+        with ESMTP id S231659AbiJMSMR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 14:12:17 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8318A4DB0B;
+        Thu, 13 Oct 2022 11:08:54 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id t10-20020a17090a4e4a00b0020af4bcae10so2567929pjl.3;
+        Thu, 13 Oct 2022 11:08:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=eg/F5GQr7kLj5OgnGhnCri7y548zIFtiHsw90JMrvRI=;
+        b=ZaJTZ+0JKI/fN8Q3sS6lyGzFzxvqwq4PFzfu5opiB62O095/RwOk8DhHgnwoEGc/3O
+         Rk2qJZHApobUN5JXSttpCFLuKEKbqPhhxRJye+4dovWI78ssqBnioDUZxjsbDrE+G/Pe
+         +FCjxIhwcJFqByll/Ej4Ol9G9f5jDDw7yBav49sbnauiis5ggDXIvMvsAKupui2nuFtE
+         rVrAdGCRojV6mIPelm4NaC6Tlz8cc6/Z7uCf481MnUBtbDpNraeZcV0CI+lpshamDrI7
+         U9wPcioqm6WtYFQq5YG3jlnnmEhm0X5uZxZ9vvp4yDVPAEckXEBakeJt66IntJmSrR6n
+         +e1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=eg/F5GQr7kLj5OgnGhnCri7y548zIFtiHsw90JMrvRI=;
+        b=rogm6WBHYpiMwTik53dOmcCI5j0DVqb7og+OjkfAojgaj7/CT8CIUQsG7aX2LjCYFZ
+         jbypLDlvQ6p1DSH34DKp5CEo13Hav2+PMvwI/2bftNPGg0unapG8FD4tAWKmJdZTDJGd
+         w+1l1CjWH4KdNTDgm+u6XF7uw89Lsdf9hJKvEWMzfX8KxBHin/VbNPeCmCgx2qaP6y7q
+         aT6BsK+oUxj98K2iXqOsOhhReBUNKjR8HDj9TeGTDs7Qzb8DueR7qW+iRotPe6d7NSRX
+         cdoP08H1ZOUmx/ADyDT5ZzL6DcWF16P5sbkGMLt0zLSFCQeYqqmZkxrJ5Lu9h7Y1ZOcw
+         0U3A==
+X-Gm-Message-State: ACrzQf24qEvF7r0bzwUTRao/2n00oNxGZVQqmyFVK9rwAQ9FaDCR07FJ
+        slU+P01+tzsew6+2Jvj831Wyhdjn83ZKeOOfCtzM1xLF5Uk=
+X-Google-Smtp-Source: AMsMyM4Cws5OIwOAhD6dYa9EMZvHvUDm9AfOUDIbT6tlsR9FMqM+DY3DbGUDx4Z/H42gVTZpClRo75IviWihBbyWbjE=
+X-Received: by 2002:a05:6102:3351:b0:3a7:9d3c:496e with SMTP id
+ j17-20020a056102335100b003a79d3c496emr889921vse.56.1665683851407; Thu, 13 Oct
+ 2022 10:57:31 -0700 (PDT)
 MIME-Version: 1.0
-Subject: Re: [PATCH v2 net] udp: Update reuse->has_conns under reuseport_lock.
-Content-Language: en-US
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     davem@davemloft.net, dsahern@kernel.org,
-        Eric Dumazet <edumazet@google.com>, kraig@google.com,
-        kuba@kernel.org, kuni1840@gmail.com, martin.lau@kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, willemb@google.com,
-        yoshfuji@linux-ipv6.org
-References: <CANn89iJn-T_rKg67h6deW0Oyh=X4kWXVBrtvUJU+VpDTfpde0w@mail.gmail.com>
- <20221012192739.91505-1-kuniyu@amazon.com>
- <CANn89iLja=eQHbsM_Ta2sQF0tOGU8vAGrh_izRuuHjuO1ouUag@mail.gmail.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-In-Reply-To: <CANn89iLja=eQHbsM_Ta2sQF0tOGU8vAGrh_izRuuHjuO1ouUag@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221013163857.3086718-1-guoren@kernel.org> <CAJF2gTSu_SDGEYZxW7nfY8B=k_hkdxKy2TsK7C5v7cqM7qrKRA@mail.gmail.com>
+In-Reply-To: <CAJF2gTSu_SDGEYZxW7nfY8B=k_hkdxKy2TsK7C5v7cqM7qrKRA@mail.gmail.com>
+From:   Yury Norov <yury.norov@gmail.com>
+Date:   Thu, 13 Oct 2022 10:57:20 -0700
+Message-ID: <CAAH8bW8FArQL=cVex=ZFOFhBC-9JvKNtdwCwjVYexe3qWehLKw@mail.gmail.com>
+Subject: Re: [PATCH] net: Fixup netif_attrmask_next_and warning
+To:     Guo Ren <guoren@kernel.org>
+Cc:     andriy.shevchenko@linux.intel.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux@rasmusvillemoes.dk, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/13/22 9:09 AM, Eric Dumazet wrote:
->>>> diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
->>>> index 5daa1fa54249..abb414ed4aa7 100644
->>>> --- a/net/core/sock_reuseport.c
->>>> +++ b/net/core/sock_reuseport.c
->>>> @@ -21,6 +21,21 @@ static DEFINE_IDA(reuseport_ida);
->>>>   static int reuseport_resurrect(struct sock *sk, struct sock_reuseport *old_reuse,
->>>>                                 struct sock_reuseport *reuse, bool bind_inany);
->>>>
->>>> +void reuseport_has_conns_set(struct sock *sk)
->>>> +{
->>>> +       struct sock_reuseport *reuse;
->>>> +
->>>> +       if (!rcu_access_pointer(sk->sk_reuseport_cb))
->>>> +               return;
->>>> +
->>>> +       spin_lock(&reuseport_lock);
+> > Fixes: 944c417daeb6 ("net: fix cpu_max_bits_warn() usage in netif_attrmask_next{,_and}")
+>
+> Sorry, the Fixes commit is 854701ba4c39.
 
-It seems other paths are still using the spin_lock_bh().  It will be useful to 
-have a few words here why _bh() is not needed.
-
->>>> +       reuse = rcu_dereference_protected(sk->sk_reuseport_cb,
->>>> +                                         lockdep_is_held(&reuseport_lock));
->>>
->>> Could @reuse be NULL at this point ?
->>>
->>> Previous  test was performed without reuseport_lock being held.
->>
->> Usually, sk_reuseport_cb is changed under lock_sock().
->>
->> The only exception is reuseport_grow() & TCP reqsk migration case.
->>
->> 1) shutdown() TCP listener, which is moved into the latter part of
->>     reuse->socks[] to migrate reqsk.
->>
->> 2) New listen() overflows reuse->socks[] and call reuseport_grow().
->>
->> 3) reuse->max_socks overflows u16 with the new listener.
->>
->> 4) reuseport_grow() pops the old shutdown()ed listener from the array
->>     and update its sk->sk_reuseport_cb as NULL without lock_sock().
->>
->> shutdown()ed sk->sk_reuseport_cb can be changed without lock_sock().
->>
->> But, reuseport_has_conns_set() is called only for UDP and under
->> lock_sock(), so @reuse never be NULL in this case.
-> 
-> Given the complexity of this code and how much time is needed to
-> review all possibilities, please add an additional
-> 
-> if (reuse)
->     reuse->has_conns = 1;
-
-+1
-
+1. it doesn't fix my commit. There's nothing to fix. It fixes net code.
+2. https://lore.kernel.org/all/YznDSKbiDI99Om23@yury-laptop/t/#mf3a04206802c50ee7f5900e968aa03abdeb49c68
