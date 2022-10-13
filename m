@@ -2,92 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62F615FD7E6
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 12:43:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EBA95FD7E2
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 12:43:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229493AbiJMKnl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 06:43:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55232 "EHLO
+        id S229540AbiJMKn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 06:43:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229526AbiJMKnk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 06:43:40 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D15F53F7
-        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 03:43:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=pjTVS6JgzB6zbGzEkQkKcJrhDL5WkDfSJ6POZrFZYqY=; b=uPZGwmNuGuyLdzIHAd82SN+ocC
-        o4UYoIIKS588es2kSmcF7ck4YzNwcm/fJq3zXWgOOLpmOIgPzkyMmVboMmP7o3bi/IkPrHNhjOIyl
-        t7TWygHwzN66azmOjnFGwwTlYnMb9I0W390SFZcAvx4bs2c3r1OhvvBj306lw4waLJ3fOqiFuPEtv
-        ELlMdEjVGepbbLRVzU8KX8tka7PHX2hlu0mPEh6enjT+i8HIei+zsnIqIJylkCbEaZy4jpGJLuwAF
-        OtYjH3tOrVGtWza26/kjjxKdZnGqYKEUwmyVWXVyoKWagT9yff8aUzxtyZevKXTz+CM4FSzJNmFQo
-        L+wn9hfw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34702)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oivgO-0008F4-GX; Thu, 13 Oct 2022 11:43:20 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oivgI-0004hr-0y; Thu, 13 Oct 2022 11:43:14 +0100
-Date:   Thu, 13 Oct 2022 11:43:13 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Shenwei Wang <shenwei.wang@nxp.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev
-Subject: Re: [PATCH v4 1/2] net: phylink: add mac_managed_pm in
- phylink_config structure
-Message-ID: <Y0frwcu/SxHwatch@shell.armlinux.org.uk>
-References: <20221010204827.153296-1-shenwei.wang@nxp.com>
- <20221010204827.153296-2-shenwei.wang@nxp.com>
+        with ESMTP id S229490AbiJMKnZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 06:43:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1767E6F79;
+        Thu, 13 Oct 2022 03:43:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B7B16177B;
+        Thu, 13 Oct 2022 10:43:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45CFDC433C1;
+        Thu, 13 Oct 2022 10:43:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1665657803;
+        bh=ossWo8LyH8dkodWmbwnkOkO94f2sDxCTIm28ZOqDeQI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=grmcX7AytvVYg3wfKBL7eAaP/T82Ouemrzj420kJXSovTEAcUM/wFqUllwzoN8fiP
+         u9TCGWP4onBXuojX012A6alLQgw1T7Nms2bbw2Cjek8oXH3FSYT5NTg9Nf+UeJQo1u
+         cY7g8VhRPBGvqO1HNVs0MMaySPgH5qphGWqGdBwoOsn+31sfHIa5KfdMiALbGyqW4C
+         xuI7cYBfNbBX+fGh62c7ZZVUBRtWtjpa1KX5em3WtxcUjK2mkE0p4tOSaYKbyA2lAv
+         YUg2rICJa/wfxz8toU5FyWffJf8nj+q5BugqiXUiQYUWXOTPKy4lABXM/C5OPjDlhN
+         +5+dMZib35+SQ==
+Date:   Thu, 13 Oct 2022 13:43:19 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Aru Kolappan <aru.kolappan@oracle.com>
+Cc:     jgg@ziepe.ca, saeedm@nvidia.com, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        manjunath.b.patil@oracle.com, rama.nichanamatlu@oracle.com
+Subject: Re: [PATCH  1/1] net/mlx5: add dynamic logging for mlx5_dump_err_cqe
+Message-ID: <Y0frx6g/iadBBYgQ@unreal>
+References: <1665618772-11048-1-git-send-email-aru.kolappan@oracle.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221010204827.153296-2-shenwei.wang@nxp.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <1665618772-11048-1-git-send-email-aru.kolappan@oracle.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 10, 2022 at 03:48:26PM -0500, Shenwei Wang wrote:
-> The recent commit
+On Wed, Oct 12, 2022 at 04:52:52PM -0700, Aru Kolappan wrote:
+> From: Arumugam Kolappan <aru.kolappan@oracle.com>
 > 
-> 'commit 47ac7b2f6a1f ("net: phy: Warn about incorrect
-> mdio_bus_phy_resume() state")'
+> Presently, mlx5 driver dumps error CQE by default for few syndromes. Some
+> syndromes are expected due to application behavior[Ex: REMOTE_ACCESS_ERR
+> for revoking rkey before RDMA operation is completed]. There is no option
+> to disable the log if the application decided to do so. This patch
+> converts the log into dynamic print and by default, this debug print is
+> disabled. Users can enable/disable this logging at runtime if needed.
 > 
-> requires the MAC driver explicitly tell the phy driver who is
-> managing the PM, otherwise you will see warning during resume
-> stage.
+> Suggested-by: Manjunath Patil <manjunath.b.patil@oracle.com>
+> Signed-off-by: Arumugam Kolappan <aru.kolappan@oracle.com>
+> ---
+>  drivers/infiniband/hw/mlx5/cq.c | 2 +-
+>  include/linux/mlx5/cq.h         | 4 ++--
+>  2 files changed, 3 insertions(+), 3 deletions(-)
 > 
-> Add a boolean property in the phylink_config structure so that
-> the MAC driver can use it to tell the PHY driver if it wants to
-> manage the PM.
-> 
-> Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
+> diff --git a/drivers/infiniband/hw/mlx5/cq.c b/drivers/infiniband/hw/mlx5/cq.c
+> index be189e0..890cdc3 100644
+> --- a/drivers/infiniband/hw/mlx5/cq.c
+> +++ b/drivers/infiniband/hw/mlx5/cq.c
+> @@ -269,7 +269,7 @@ static void handle_responder(struct ib_wc *wc, struct mlx5_cqe64 *cqe,
+>  
+>  static void dump_cqe(struct mlx5_ib_dev *dev, struct mlx5_err_cqe *cqe)
+>  {
+> -	mlx5_ib_warn(dev, "dump error cqe\n");
+> +	mlx5_ib_dbg(dev, "dump error cqe\n");
 
-Perfect, thank you!
+This path should be handled in switch<->case of mlx5_handle_error_cqe()
+by skipping dump_cqe for MLX5_CQE_SYNDROME_REMOTE_ACCESS_ERR.
 
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+diff --git a/drivers/infiniband/hw/mlx5/cq.c b/drivers/infiniband/hw/mlx5/cq.c
+index be189e0525de..2d75c3071a1e 100644
+--- a/drivers/infiniband/hw/mlx5/cq.c
++++ b/drivers/infiniband/hw/mlx5/cq.c
+@@ -306,6 +306,7 @@ static void mlx5_handle_error_cqe(struct mlx5_ib_dev *dev,
+                wc->status = IB_WC_REM_INV_REQ_ERR;
+                break;
+        case MLX5_CQE_SYNDROME_REMOTE_ACCESS_ERR:
++               dump = 0;
+                wc->status = IB_WC_REM_ACCESS_ERR;
+                break;
+        case MLX5_CQE_SYNDROME_REMOTE_OP_ERR:
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Thanks
