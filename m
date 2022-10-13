@@ -2,86 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DEF005FD857
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 13:28:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 054F65FD88E
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 13:41:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229722AbiJML16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 07:27:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33264 "EHLO
+        id S229809AbiJMLlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 07:41:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229723AbiJML14 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 07:27:56 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59A2F7E816
-        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 04:27:54 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Mp6Zr4NFfz1P7Hy;
-        Thu, 13 Oct 2022 19:23:16 +0800 (CST)
-Received: from [10.174.178.66] (10.174.178.66) by
- dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 13 Oct 2022 19:27:52 +0800
-Message-ID: <d5cc5d48-5ab3-3697-fbcd-607eb5855ddc@huawei.com>
-Date:   Thu, 13 Oct 2022 19:27:51 +0800
+        with ESMTP id S229802AbiJMLk5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 07:40:57 -0400
+Received: from mail.sf-mail.de (mail.sf-mail.de [IPv6:2a01:4f8:1c17:6fae:616d:6c69:616d:6c69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00DE6B4887
+        for <netdev@vger.kernel.org>; Thu, 13 Oct 2022 04:40:54 -0700 (PDT)
+Received: (qmail 12515 invoked from network); 13 Oct 2022 11:40:25 -0000
+Received: from p200300cf070ada0076d435fffeb7be92.dip0.t-ipconnect.de ([2003:cf:70a:da00:76d4:35ff:feb7:be92]:49034 HELO eto.sf-tec.de) (auth=eike@sf-mail.de)
+        by mail.sf-mail.de (Qsmtpd 0.38dev) with (TLS_AES_256_GCM_SHA384 encrypted) ESMTPSA
+        for <fw@strlen.de>; Thu, 13 Oct 2022 13:40:25 +0200
+From:   Rolf Eike Beer <eike-kernel@sf-tec.de>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Florian Westphal <fw@strlen.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Thomas Graf <tgraf@suug.ch>, kasan-dev@googlegroups.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        kernel-janitors@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-block@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-mm@kvack.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-nvme@lists.infradead.org, linux-parisc@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-usb@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        loongarch@lists.linux.dev, netdev@vger.kernel.org,
+        sparclinux@vger.kernel.org, x86@kernel.org
+Subject: Re: [PATCH v6 5/7] treewide: use get_random_u32() when possible
+Date:   Thu, 13 Oct 2022 13:40:40 +0200
+Message-ID: <11986571.xaOnivgMc4@eto.sf-tec.de>
+In-Reply-To: <20221013101635.GB11818@breakpoint.cc>
+References: <20221010230613.1076905-1-Jason@zx2c4.com> <3026360.ZldQQBzMgz@eto.sf-tec.de> <20221013101635.GB11818@breakpoint.cc>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: net/kcm: syz issue about general protection fault in skb_unlink
-To:     Paolo Abeni <pabeni@redhat.com>, netdev <netdev@vger.kernel.org>
-CC:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>, <edumazet@google.com>,
-        <sgarzare@redhat.com>, <ast@kernel.org>, <nikolay@nvidia.com>,
-        <mkl@pengutronix.de>, <cong.wang@bytedance.com>
-References: <fef5174d-2109-37e9-8c46-2626b3310c5e@huawei.com>
- <45b601aebda1225b38b62c95b2c12e0fce76ee80.camel@redhat.com>
-From:   shaozhengchao <shaozhengchao@huawei.com>
-In-Reply-To: <45b601aebda1225b38b62c95b2c12e0fce76ee80.camel@redhat.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.66]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="nextPart22512332.f9tG50R4rC"; micalg="pgp-sha1"; protocol="application/pgp-signature"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--nextPart22512332.f9tG50R4rC
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
+From: Rolf Eike Beer <eike-kernel@sf-tec.de>
+To: Florian Westphal <fw@strlen.de>
+Date: Thu, 13 Oct 2022 13:40:40 +0200
+Message-ID: <11986571.xaOnivgMc4@eto.sf-tec.de>
+In-Reply-To: <20221013101635.GB11818@breakpoint.cc>
+MIME-Version: 1.0
+
+Am Donnerstag, 13. Oktober 2022, 12:16:35 CEST schrieb Florian Westphal:
+> Rolf Eike Beer <eike-kernel@sf-tec.de> wrote:
+> > Florian, can you comment and maybe fix it?
+> 
+> Can't comment, do not remember -- this was 5 years ago.
+> 
+> > Or you wanted to move the variable before the loop and keep the random
+> > state between the loops and only reseed when all '1' bits have been
+> > consumed.
+> Probably.  No clue, best to NOT change it to not block Jasons series and
+> then just simplify this and remove all the useless shifts.
+
+Sure. Jason, just in case you are going to do a v7 this could move to u8 then.
+
+--nextPart22512332.f9tG50R4rC
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQSaYVDeqwKa3fTXNeNcpIk+abn8TgUCY0f5OAAKCRBcpIk+abn8
+TncNAKCia3h4AG/9IzqybWbLcwE6uVgTqACfRr3dPUK8JMrKIqGzYOiL96isZhg=
+=zppL
+-----END PGP SIGNATURE-----
+
+--nextPart22512332.f9tG50R4rC--
 
 
-On 2022/10/13 19:13, Paolo Abeni wrote:
-> On Thu, 2022-10-13 at 18:51 +0800, shaozhengchao wrote:
->> I found that the syz issue("general protection fault in skb_unlink")
->> still happen in Linux -next branch.
->> commit: 082fce125e57cff60687181c97f3a8ee620c38f5
->> Link:
->> https://groups.google.com/g/syzkaller-bugs/c/ZfR2B5KaQrA/m/QfnGHCYSBwAJ
->> Please ask:
->> Is there any problem with this patch? Why is this patch not merged into
->> the Linux -next branch or mainline?
-> 
-> I never submitted the patch formally. So much time has passed that I
-> don't recall exactly why. Possibly the patch fell outside my radar
-> after hitting a syzkaller infrastructure issue.
-> 
-> Apart from that, the patch is quite invasinve, especially for a
-> subsystem with no selftest and that I don't know particularly well.
-> 
-> As a possible option I can try to post it for net-next, when it will
-> re-open - assuming there is agreement on that.
-> 
-> Cheers,
-> 
-> Paolo
-> 
-> 
-Hi Paolo:
-	Thank you for your reply. I'd like to see your patch.:)
-If needed, I can provide a reproduction program.
-
-Zhengchao Shao
 
