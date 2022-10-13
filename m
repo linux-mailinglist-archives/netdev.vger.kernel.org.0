@@ -2,73 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B43E75FD2C6
-	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 03:41:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A15A5FD2E6
+	for <lists+netdev@lfdr.de>; Thu, 13 Oct 2022 03:45:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229978AbiJMBlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Oct 2022 21:41:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47958 "EHLO
+        id S229646AbiJMBpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Oct 2022 21:45:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229984AbiJMBk6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 21:40:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B07A3AE77;
-        Wed, 12 Oct 2022 18:40:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B33BB81CCD;
-        Thu, 13 Oct 2022 01:40:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E8E9C433C1;
-        Thu, 13 Oct 2022 01:40:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665625251;
-        bh=3ZCGToPaazLxSo8auNDegz7ZNYJoaGHGQK/xLD/k5Yc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=cAqYNXvo5FQ12eE1mxDNT5gXxmkTLytoDOpPo9g0aqYCJsdWxA/DaZBASaBYKlRnp
-         82Ml9I7x46PwbneRMgA+JDoQlT5D9elUmpV2dHCfvFDfSHZ+W4MNnuORvj3hTL8QnV
-         fx1lYjFEPbYOV1F8An+ZsHF9SLuR+qBZnvdo1B7mepPnKUdx8hsQ96jHn0r2KLbQYF
-         Uy1QgQ3Jbmpib/p0R13uw5SmVGv9/l0PynGEiomvK30DmPCD1YxTHirgDW4VWLS85a
-         GlNqljtHAtSliG/bxK156q5pu/oaSG8itOlMPdyywpGzP6YcSC6jyatydVie+I7js3
-         4gXeBnGxmwRJg==
-Date:   Wed, 12 Oct 2022 18:40:50 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Wei Wang <weiwan@google.com>, Eric Dumazet <edumazet@google.com>,
-        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        cgroups@vger.kernel.org, linux-mm@kvack.org,
-        Roman Gushchin <roman.gushchin@linux.dev>
-Subject: Re: [PATCH net-next] net-memcg: pass in gfp_t mask to
- mem_cgroup_charge_skmem()
-Message-ID: <20221012184050.5a7f3bde@kernel.org>
-In-Reply-To: <20221013005431.wzjurocrdoozykl7@google.com>
-References: <20210817194003.2102381-1-weiwan@google.com>
-        <20221012163300.795e7b86@kernel.org>
-        <CALvZod5pKzcxWsLnjUwE9fUb=1S9MDLOHF950miF8x8CWtK5Bw@mail.gmail.com>
-        <20221012173825.45d6fbf2@kernel.org>
-        <20221013005431.wzjurocrdoozykl7@google.com>
+        with ESMTP id S229544AbiJMBpK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Oct 2022 21:45:10 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B02B93F1C6;
+        Wed, 12 Oct 2022 18:45:06 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MnsfP1Wxhz1P79c;
+        Thu, 13 Oct 2022 09:40:29 +0800 (CST)
+Received: from [10.67.111.192] (10.67.111.192) by
+ kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 13 Oct 2022 09:45:03 +0800
+Message-ID: <1d7b081c-9ae1-b5bd-e97e-518147e06099@huawei.com>
+Date:   Thu, 13 Oct 2022 09:45:02 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH bpf-next v4 5/6] selftests/bpf: Fix error failure of case
+ test_xdp_adjust_tail_grow
+Content-Language: en-US
+To:     Martin KaFai Lau <martin.lau@linux.dev>,
+        Xu Kuohai <xukuohai@huaweicloud.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        Delyan Kratunov <delyank@fb.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+References: <20221011120108.782373-1-xukuohai@huaweicloud.com>
+ <20221011120108.782373-6-xukuohai@huaweicloud.com>
+ <611e9bed-df6a-0da9-fbf9-4046f4211a7d@linux.dev>
+From:   Xu Kuohai <xukuohai@huawei.com>
+In-Reply-To: <611e9bed-df6a-0da9-fbf9-4046f4211a7d@linux.dev>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.111.192]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemi500013.china.huawei.com (7.221.188.120)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 13 Oct 2022 00:54:31 +0000 Shakeel Butt wrote:
-> So, before the patch, the memcg code may force charges but it will
-> return false and make the networking code to uncharge memcg for
-> SK_MEM_RECV.
+On 10/13/2022 7:17 AM, Martin KaFai Lau wrote:
+> On 10/11/22 5:01 AM, Xu Kuohai wrote:
+>> From: Xu Kuohai <xukuohai@huawei.com>
+>>
+>> test_xdp_adjust_tail_grow failed with ipv6:
+>>    test_xdp_adjust_tail_grow:FAIL:ipv6 unexpected error: -28 (errno 28)
+>>
+>> The reason is that this test case tests ipv4 before ipv6, and when ipv4
+>> test finished, topts.data_size_out was set to 54, which is smaller than the
+>> ipv6 output data size 114, so ipv6 test fails with NOSPC error.
+>>
+>> Fix it by reset topts.data_size_out to sizeof(buf) before testing ipv6.
+>>
+>> Fixes: 04fcb5f9a104 ("selftests/bpf: Migrate from bpf_prog_test_run")
+>> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
+>> ---
+>>   tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c | 1 +
+>>   1 file changed, 1 insertion(+)
+>>
+>> diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
+>> index 9b9cf8458adf..009ee37607df 100644
+>> --- a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
+>> +++ b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
+>> @@ -63,6 +63,7 @@ static void test_xdp_adjust_tail_grow(void)
+>>       expect_sz = sizeof(pkt_v6) + 40; /* Test grow with 40 bytes */
+>>       topts.data_in = &pkt_v6;
+>>       topts.data_size_in = sizeof(pkt_v6);
+>> +    topts.data_size_out = sizeof(buf);
+> 
+> lgtm but how was it working before... weird.
+> 
 
-Ah, right, I see it now :(
+the test case returns before this line is executed, see patch 6
 
-I guess I'll have to try to test (some approximation of) a revert 
-after all.
+>>       err = bpf_prog_test_run_opts(prog_fd, &topts);
+>>       ASSERT_OK(err, "ipv6");
+>>       ASSERT_EQ(topts.retval, XDP_TX, "ipv6 retval");
+> 
+> .
 
-Did the fact that we used to force charge not potentially cause
-reclaim, tho?  Letting TCP accept the next packet even if it had
-to drop the current one?
