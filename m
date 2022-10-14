@@ -2,122 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56DAD5FEC0E
-	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 11:50:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F06F5FEC26
+	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 11:52:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229663AbiJNJuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Oct 2022 05:50:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52326 "EHLO
+        id S229907AbiJNJwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Oct 2022 05:52:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229625AbiJNJuO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 05:50:14 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F87A2F651
-        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 02:50:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1665741012; x=1697277012;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=y9y3OjO/luNlBmQ8H9i99QPF0QmPgUDjDbeRaFF1nsE=;
-  b=iFbySXigRn5grXTN/rdevmFZBLixhDynAcrxdsOeSk9Wof7Yit/cMfeU
-   PPMr21KuuNyOHpqEd3YMqYxtpIn6gVKSqbeHvhABvq1dHDFOAwuYqboTr
-   hJbLX4ktFWv3d5VmSVhFRax8LBsSO2aCgqCedVII3sOl47b0inmcv7kAM
-   UjQpthTFVHew/qQ9VxzCupsjo0qidzL+Ox7a6GHHIKTy0yEgYAPl4t7EQ
-   tHhyLNoY1d+Xa3BDPm8cgvt125TU1F0JpU92QLnVE+IMW57GW95C/nawu
-   NRycDtQ9AHrf392vExE/nwrnhxI1NH+bRHC/5k4wgzj2ZQZZ43m8BTbDv
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10499"; a="302952693"
-X-IronPort-AV: E=Sophos;i="5.95,184,1661842800"; 
-   d="scan'208";a="302952693"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2022 02:50:12 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10499"; a="627518953"
-X-IronPort-AV: E=Sophos;i="5.95,184,1661842800"; 
-   d="scan'208";a="627518953"
-Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.73])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2022 02:50:08 -0700
-From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     jasowang@redhat.com, mst@redhat.com, stephen@networkplumber.org,
-        dsahern@kernel.org
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        hang.yuan@intel.com, Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH] iproute2/vdpa: Add support for reading device features
-Date:   Fri, 14 Oct 2022 17:41:52 +0800
-Message-Id: <20221014094152.5570-1-lingshan.zhu@intel.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S229763AbiJNJwa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 05:52:30 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D7B31B76C7
+        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 02:52:24 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id bj12so9272083ejb.13
+        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 02:52:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=299L7Zs/XJUb9u6JhyOpi3WgUrHdMmQAEsWR3uOjIYc=;
+        b=JOTiuopG8km3XtuX5HfQFp6ORVzx7LLvrQ2isr87H2o5ZimMUKe+djV7os1u6GUxAP
+         tSKR4RAfbO9EhFwI3uwa+u18qUlWC9nH2ssNu3hbQLb8mIJOLk3wL7WiyhA8kJSGWEyx
+         hpvtalFBKFgSm6cbXN8Rl9q32sGNmoUv340a1u3xTJ6AqmYOvWFT7Ruacnf3Lr6Fav+0
+         sT2/vAhaRTM1qmqtW6R7GsgGlA8MEIa2exqjVXqfq6uQviD/eXlsqgZ0SrCjNaNuHg7G
+         Kd2hP4B5H6zkXVv2FzsaC7r8W5QRauYiVEtw8yC5jEkN0HogjFHHdsGibILaGmY6UZT6
+         pm1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=299L7Zs/XJUb9u6JhyOpi3WgUrHdMmQAEsWR3uOjIYc=;
+        b=j3pFBILHTArdn+u6FhqbicNcNUjSfrylfTHUSmJBDr4t+ef23ZwS377UWKehZxa7nu
+         pfUTksoyAd5cIdzqdxhdKH/w7P7zeh0mQUXDG+i0wAOwraz4tdsEfCoWlj1h9QvPPSc+
+         QQKNwr1J/iiOZcHG8cTzmNZ+bRW4SGBG2LrauU7g12IREX5kP67qJeFgtmtXo8SkaMQ5
+         xlxDvSfY36i/T41YPktBq8+8Uw2hldH1f95ugj1/530HMjEiacaS+dbn4brBh/3BwGaT
+         0RJjvqrNem0K1xNJXJKKWa27h9BabiuhHzzYq8pe5A2YGtgQUp/sQrbk6htNyOkDRslP
+         fIqg==
+X-Gm-Message-State: ACrzQf1yRsU2Y3N/K0P+oKBcjUO6EDb/xNdMTkQXNWvjI4iREKZ6MLQe
+        T2j6HfXkdSDgcKVjifn0Rr5azQ==
+X-Google-Smtp-Source: AMsMyM6e+X4YGgA/fu0UmpKGVoZyo9IBlfy1KHM0430kLf7hh912Jq/15taqlNOl5o46hecGERfePw==
+X-Received: by 2002:a17:906:4fcd:b0:78d:8059:17c with SMTP id i13-20020a1709064fcd00b0078d8059017cmr3005758ejw.423.1665741142164;
+        Fri, 14 Oct 2022 02:52:22 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id z10-20020a170906714a00b0078b4801c40bsm1208101ejj.216.2022.10.14.02.52.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Oct 2022 02:52:21 -0700 (PDT)
+Date:   Fri, 14 Oct 2022 11:52:20 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Vadim Fedorenko <vfedorenko@novek.ru>,
+        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-clk@vger.kernel.org, Vadim Fedorenko <vadfed@fb.com>
+Subject: Re: [RFC PATCH v3 1/6] dpll: Add DPLL framework base functions
+Message-ID: <Y0kxVJn9EFylJiKK@nanopsycho>
+References: <20221010011804.23716-2-vfedorenko@novek.ru>
+ <Y0PjULbYQf1WbI9w@nanopsycho>
+ <24d1d750-7fd0-44e2-318c-62f6a4a23ea5@novek.ru>
+ <Y0UqFml6tEdFt0rj@nanopsycho>
+ <Y0UtiBRcc8aBS4tD@nanopsycho>
+ <ecf59dda-2d6a-2c56-668b-5377ae107439@novek.ru>
+ <Y0ZiQbqQ+DsHinOf@nanopsycho>
+ <9a3608cf-21bb-18b1-796a-7325a613b641@novek.ru>
+ <Y0e2Zn4pbhPnKGQJ@nanopsycho>
+ <20221013081725.501b0f58@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221013081725.501b0f58@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit implements support for reading vdpa device
-features in iproute2.
+Thu, Oct 13, 2022 at 05:17:25PM CEST, kuba@kernel.org wrote:
+>On Thu, 13 Oct 2022 08:55:34 +0200 Jiri Pirko wrote:
+>>> AFAIU, some mux devices are not smart enough to make a decision suitable for
+>>> autoselect for the pins they have. In this case the autoselect process is
+>>> done in the DPLL device, which selects mux and not the pin directly. At the
+>>> same time there could be muxes that are smart enough to make a decision, and
+>>> it will be autoselect on top of autoselect (and several more layers) and it
+>>> doesn't sound great to me. I believe Arkadiusz will explain the mux a bit
+>>> better.  
+>> 
+>> From what you write in this reply, I have a feeling that these details
+>> are not really interesting for user to see. So I tend to lean forward to
+>> abstract this out and leave the details to HW/FW/driver.
+>
+>Are you saying we don't need to model MUXes?  Topology of the signals
+>imposes restrictions on the supported configuration, it's not something
+>you can "abstract out in the FW".
+>
+>My thinking was we can let the user ignore it and have the core figure
+>out the configuration of the muxes if users asks for a pin behind a mux.
+>But it's better if the mux is visible so that it's clear which signals
+>can't be selected simultaneously. (IIRC Arkadiusz may have even had
+>muxes shared between DPLLs :S)
 
-Example:
-$ vdpa dev config show vdpa0
-vdpa0: mac 00:e8:ca:11:be:05 link up link_announce false max_vq_pairs 4 mtu 1500
-  negotiated_features MRG_RXBUF CTRL_VQ MQ VERSION_1 ACCESS_PLATFORM
-  dev_features MTU MAC MRG_RXBUF CTRL_VQ MQ ANY_LAYOUT VERSION_1 ACCESS_PLATFORM
+Yeah, that sounds fine. My point was, the user does not have to know the
+details and muxes could be abstracted out in kernel and below.
 
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
----
- vdpa/vdpa.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+Not sure why the mux would need to be visible to user. It it needs to,
+sure, lets model it. I have no strong opinion here.
 
-diff --git a/vdpa/vdpa.c b/vdpa/vdpa.c
-index b73e40b4..89844e92 100644
---- a/vdpa/vdpa.c
-+++ b/vdpa/vdpa.c
-@@ -87,6 +87,8 @@ static const enum mnl_attr_data_type vdpa_policy[VDPA_ATTR_MAX + 1] = {
- 	[VDPA_ATTR_DEV_NEGOTIATED_FEATURES] = MNL_TYPE_U64,
- 	[VDPA_ATTR_DEV_MGMTDEV_MAX_VQS] = MNL_TYPE_U32,
- 	[VDPA_ATTR_DEV_SUPPORTED_FEATURES] = MNL_TYPE_U64,
-+	[VDPA_ATTR_DEV_FEATURES] = MNL_TYPE_U64,
-+	[VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES] = MNL_TYPE_U64,
- };
- 
- static int attr_cb(const struct nlattr *attr, void *data)
-@@ -482,7 +484,7 @@ static const char * const *dev_to_feature_str[] = {
- 
- #define NUM_FEATURE_BITS 64
- 
--static void print_features(struct vdpa *vdpa, uint64_t features, bool mgmtdevf,
-+static void print_features(struct vdpa *vdpa, uint64_t features, bool devf,
- 			   uint16_t dev_id)
- {
- 	const char * const *feature_strs = NULL;
-@@ -492,7 +494,7 @@ static void print_features(struct vdpa *vdpa, uint64_t features, bool mgmtdevf,
- 	if (dev_id < ARRAY_SIZE(dev_to_feature_str))
- 		feature_strs = dev_to_feature_str[dev_id];
- 
--	if (mgmtdevf)
-+	if (devf)
- 		pr_out_array_start(vdpa, "dev_features");
- 	else
- 		pr_out_array_start(vdpa, "negotiated_features");
-@@ -771,6 +773,15 @@ static void pr_out_dev_net_config(struct vdpa *vdpa, struct nlattr **tb)
- 		val_u64 = mnl_attr_get_u64(tb[VDPA_ATTR_DEV_NEGOTIATED_FEATURES]);
- 		print_features(vdpa, val_u64, false, dev_id);
- 	}
-+	if (tb[VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES]) {
-+		uint16_t dev_id = 0;
-+
-+		if (tb[VDPA_ATTR_DEV_ID])
-+			dev_id = mnl_attr_get_u32(tb[VDPA_ATTR_DEV_ID]);
-+
-+		val_u64 = mnl_attr_get_u64(tb[VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES]);
-+		print_features(vdpa, val_u64, true, dev_id);
-+	}
- }
- 
- static void pr_out_dev_config(struct vdpa *vdpa, struct nlattr **tb)
--- 
-2.31.1
 
+>
+>Anyway, I may just be confused about the state of the series because
+>most of the points you brought up were already discussed. I guess you
+>were right that off-list reviews are a bad idea :(
+
+Yep :/ Let's please move it here to stop the mess.
