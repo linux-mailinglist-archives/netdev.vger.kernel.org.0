@@ -2,48 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C608F5FEEB9
-	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 15:35:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AB9F5FEEBB
+	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 15:37:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229540AbiJNNfe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Oct 2022 09:35:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40504 "EHLO
+        id S229619AbiJNNg7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Oct 2022 09:36:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229600AbiJNNfd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 09:35:33 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A12914D274
-        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 06:35:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=sklxLmCw6q5TUWkZXhxlV+TewM+gvpE5fEdVDt2mW/8=; b=NG
-        Gxfr/YMagbnrPeqR1W1g1r3qI2gQx11a3fUBOe8wZXWHTPKeFDapLQpwHX2knCxGvNx6EzJL+h4GK
-        bq5FRYHzLOvoV4CqutoX61wPoH5cH5fOP4ytMjnKz3dZSB7mO6wYLC28KQdwM8RqmHaAgwz23thma
-        /MH0ijE6wlyvbH0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ojKqQ-001yQp-Q7; Fri, 14 Oct 2022 15:35:22 +0200
-Date:   Fri, 14 Oct 2022 15:35:22 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>
-Cc:     irusskikh@marvell.com, dbogdanov@marvell.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, Li Liang <liali@redhat.com>
-Subject: Re: [PATCH net] atlantic: fix deadlock at aq_nic_stop
-Message-ID: <Y0llmkQqmWLDLm52@lunn.ch>
-References: <20221014103443.138574-1-ihuguet@redhat.com>
- <Y0lSYQ99lBSqk+eH@lunn.ch>
- <CACT4ouct9H+TQ33S=bykygU_Rpb61LMQDYQ1hjEaM=-LxAw9GQ@mail.gmail.com>
+        with ESMTP id S229554AbiJNNg5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 09:36:57 -0400
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F0C719C22B;
+        Fri, 14 Oct 2022 06:36:56 -0700 (PDT)
+Received: by mail-qk1-x72a.google.com with SMTP id o22so2417378qkl.8;
+        Fri, 14 Oct 2022 06:36:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=HXD89n+g/IHfNLxiFjO0ku2zV39n7Ij4/f7iwolHvDA=;
+        b=XedoNpp0fM2LS9h3qwYg/QbLyZUeKGuriQZkE5AsCgog55mCg5l//DbGx9NU37OLac
+         ojv/VMZw8L9W1rW8Fat8i3oN9VG97bmXN39v5a8EW8QsFMTijuudZvFPfRsBUj5tC6d3
+         2SRMwzUv+ExrORBwrNQbBlcbY9E8ZjllsGlpLdq1QN6djjliWROKTdpMYloqCYAn/twP
+         9J4qfeICQWuNsnq7zNj9fZ8inoQBOIibXUY56OgEN2hH/dfYBc4sLSbMihNjhgOn+5eq
+         mU6um6hYnGV1P5wWTohrqVtPHn7syy5r1mMEjpkGlBXOaFqo560n19d0UDlaxVMMJ3Dv
+         Xk9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=HXD89n+g/IHfNLxiFjO0ku2zV39n7Ij4/f7iwolHvDA=;
+        b=uqoQXsBab7BfLB4SIHqzwSP4gWPDtZp3oaCeotGSWFzzDKbjsCz0NtIMyIO2tSyIu9
+         UqrUf6Mvaz1uOiEi+2YJXoh44vmZRSEiyBpon4ozT87/59Y/ZMXIiUr4M/nB4svClyRj
+         YQScjy7EDYxNvDiG7JacdsWnWVioZtTiFjcwCkJpUTKSmUEVIX1NKIIkm2ffl6Lqn+c6
+         3p4L33P2/EndqYyW2rkAtxyl4WcAozsA8s21JtqU3nhInNOllxzERZNrNIeC3yhr9cE0
+         VhjiKK7wkQ6fnAV5WqPet7ss2+zGoEcVWMxrSHrW79nFxswVtbokngor3BxVP2wrDsqZ
+         Q2Nw==
+X-Gm-Message-State: ACrzQf0dtu4YLloQsa8tdOM+GQSXHtkoA3CyRXG6QEGvQRbtkZGox+36
+        uSt35EmzwsECV3D1ptRcIwgiNEUjaiA=
+X-Google-Smtp-Source: AMsMyM6GNZuQdkoS6Dw52LPxv4g7vcgJQSJQi131zAY5ZiRXq0Daa30zSKKXsvGOcEAZ/GhEPBGz2A==
+X-Received: by 2002:a05:620a:4248:b0:6d2:7f09:50a1 with SMTP id w8-20020a05620a424800b006d27f0950a1mr3692923qko.746.1665754615618;
+        Fri, 14 Oct 2022 06:36:55 -0700 (PDT)
+Received: from [192.168.1.201] (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
+        by smtp.gmail.com with ESMTPSA id l5-20020ac80785000000b003996aa171b9sm1972323qth.97.2022.10.14.06.36.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Oct 2022 06:36:55 -0700 (PDT)
+Message-ID: <69402e24-99a2-9957-693d-645b98f01cda@gmail.com>
+Date:   Fri, 14 Oct 2022 09:36:54 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CACT4ouct9H+TQ33S=bykygU_Rpb61LMQDYQ1hjEaM=-LxAw9GQ@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net] sunhme: Uninitialized variable in happy_meal_init()
+Content-Language: en-US
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+References: <Y0kuLdMUdLCHF+fe@kili>
+From:   Sean Anderson <seanga2@gmail.com>
+In-Reply-To: <Y0kuLdMUdLCHF+fe@kili>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -51,50 +77,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 14, 2022 at 02:43:47PM +0200, Íñigo Huguet wrote:
-> On Fri, Oct 14, 2022 at 2:14 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> >
-> > > Fix trying to acquire rtnl_lock at the beginning of those functions, and
-> > > returning if NIC closing is ongoing. Also do the "linkstate" stuff in a
-> > > workqueue instead than in a threaded irq, where sleeping or waiting a
-> > > mutex for a long time is discouraged.
-> >
-> > What happens when the same interrupt fires again, while the work queue
-> > is still active? The advantage of the threaded interrupt handler is
-> > that the interrupt will be kept disabled, and should not fire again
-> > until the threaded interrupt handler exits.
+On 10/14/22 05:38, Dan Carpenter wrote:
+> The "burst" string is only initialized for CONFIG_SPARC.
 > 
-> Nothing happens, if it's already queued, it won't be queued again, and
-> when it runs it will evaluate the last link state. And in the worst
-> case, it will be enqueued to run again, and if linkstate has changed
-> it will be evaluated again. This will rarely happen and it's harmless.
+> Fixes: 24cddbc3ef11 ("sunhme: Combine continued messages")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> ---
+>   drivers/net/ethernet/sun/sunhme.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Also, I haven't checked it but these lines suggest that the IRQ is
-> auto-disabled in the hw until you enable it again. I didn't rely on
-> this, anyway.
->         self->aq_hw_ops->hw_irq_enable(self->aq_hw,
->                                        BIT(self->aq_nic_cfg.link_irq_vec));
-> 
-> Honestly I was a bit in doubt on doing this, with the threaded irq it
-> would also work. I'd like to hear more opinions about this and I can
-> change it back.
+> diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
+> index 62deed210a95..efaa6a8eadec 100644
+> --- a/drivers/net/ethernet/sun/sunhme.c
+> +++ b/drivers/net/ethernet/sun/sunhme.c
+> @@ -1328,7 +1328,7 @@ static int happy_meal_init(struct happy_meal *hp)
+>   	void __iomem *erxregs      = hp->erxregs;
+>   	void __iomem *bregs        = hp->bigmacregs;
+>   	void __iomem *tregs        = hp->tcvregs;
+> -	const char *bursts;
+> +	const char *bursts = "";
+>   	u32 regtmp, rxcfg;
+>   
+>   	/* If auto-negotiation timer is running, kill it. */
 
-Ethernet PHYs do all there interrupt handling in threaded IRQs. That
-can require a number of MDIO transactions. So we can be talking about
-64 bits at 2.5MHz, so 25uS or more. We have not seen issues with that.
+This should be "64" to match the value used by PCI.
 
-> > If MACSEC is enabled, aq_nic_update_link_status() is called with RTNL
-> > held. If it is not enabled, RTNL is not held. This sort of
-> > inconsistency could lead to further locking bugs, since it is not
-> > obvious. Please try to make this consistent.
-> 
-> This is not new in these patches, that's what was already happening, I
-> just moved it to get the lock a bit earlier. In my opinion, this is as
-> it should be: why acquire a mutex if you don't have anything to
-> protect with it? And it's worse with rtnl_lock which is held by many
-> processes, and can be held for quite long times...
-
-Maybe the lock needs to be moved closer to what actually needs to be
-protect? What is it protecting?
-
-	 Andrew
+--Sean
