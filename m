@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B883C5FE9B9
-	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 09:40:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03B4C5FE9BB
+	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 09:40:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229988AbiJNHkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Oct 2022 03:40:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32904 "EHLO
+        id S229696AbiJNHk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Oct 2022 03:40:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229696AbiJNHkS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 03:40:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD9159269;
-        Fri, 14 Oct 2022 00:40:17 -0700 (PDT)
+        with ESMTP id S229974AbiJNHkW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 03:40:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77A876582F
+        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 00:40:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C99E619D0;
-        Fri, 14 Oct 2022 07:40:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 744A1C433D6;
+        by ams.source.kernel.org (Postfix) with ESMTPS id B8C06B82262
+        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 07:40:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6D5C7C433D7;
         Fri, 14 Oct 2022 07:40:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1665733216;
-        bh=pdspCJQ07e6HI7qw8rXouuJbeG2thtb2TGgHsraA+pI=;
+        bh=nxDumI64fJ94EiV65kRrZaD/4ZT7CPh/00RbS3CPuFY=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=UsfvedrGKi6yYt5aOT8LrX8H6jXgeZekU+bRsjO3gUOmIVTWXcxk4o0YScRunfp7K
-         9qPgnQ9l0MnL92CpJMUUfESC3IkeMavZRCnDCy1zdNIEik978iqEekxtqcbUVUCPnn
-         wCfIE/0GDwuMzuUfyPmzepCoRMtA0rEv1AbAxj/s20V69nI+7VXFSX8dayF82odUIO
-         dwZ2v2bzDYUxFn+h/DG3OpZwEyrjs+ZEzE4U7aXWz9MkZ6Vq5U8a96Yg7+1G0PvEnZ
-         HVu6Zuk1UdKk2bNirhC346eFMt4js5KjpHJtLL5LYuxGVZh4Gx9zWPuBaL77tW01aQ
-         r9jRz/PHKSVoQ==
+        b=CQ6UG0Pt7GxgQ7SliEyMezNDW+kGBfoS5PcUEhdz3/ra7JotYlhKxV/oMv3DjnoGW
+         CcT1WIvIKkmVYndxSOXrn7wcZB0EjKjmy/6+1x2UwyMR5G/HKPuvgHhmAHboI0yVKY
+         IuNhh/fJ964haIqhd+v8l+pHzibai/qa1Z3ADT7rRMn+eD66fdbzZl2OIjAEJ7ISwI
+         jcHUo6habJprdm+rO+ku5CEeqNhVeRTiD2TUn23d2KGM/Li/DR/+himZP2h1Mq15RB
+         yvngCyVHgFt2Q0aPPJ9Z/3RgIzJtMzygqM62RnD9T+OfzQic2Qs8jsGXi5ruYwmmrV
+         aNrZTodEHTiAQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5A1A5E50D94;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4E70AE270EF;
         Fri, 14 Oct 2022 07:40:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] tipc: Fix recognition of trial period
+Subject: Re: [PATCH net] i40e: Fix DMA mappings leak
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166573321636.24049.11691596559527099656.git-patchwork-notify@kernel.org>
+Message-Id: <166573321631.24049.4200074316284119400.git-patchwork-notify@kernel.org>
 Date:   Fri, 14 Oct 2022 07:40:16 +0000
-References: <20221010024613.2951-1-mark.tomlinson@alliedtelesis.co.nz>
-In-Reply-To: <20221010024613.2951-1-mark.tomlinson@alliedtelesis.co.nz>
-To:     Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>
-Cc:     jmaloy@redhat.com, ying.xue@windriver.com, davem@davemloft.net,
-        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org
+References: <20221012205440.3332570-1-jacob.e.keller@intel.com>
+In-Reply-To: <20221012205440.3332570-1-jacob.e.keller@intel.com>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        jan.sokolowski@intel.com, mateusz.palczewski@intel.com,
+        chandanx.rout@intel.com, gurucharanx.g@intel.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -61,20 +61,28 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Mon, 10 Oct 2022 15:46:13 +1300 you wrote:
-> The trial period exists until jiffies is after addr_trial_end. But as
-> jiffies will eventually overflow, just using time_after will eventually
-> give incorrect results. As the node address is set once the trial period
-> ends, this can be used to know that we are not in the trial period.
+On Wed, 12 Oct 2022 13:54:40 -0700 you wrote:
+> From: Jan Sokolowski <jan.sokolowski@intel.com>
 > 
-> Fixes: e415577f57f4 ("tipc: correct discovery message handling during address trial period")
-> Signed-off-by: Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>
+> During reallocation of RX buffers, new DMA mappings are created for
+> those buffers.
+> 
+> steps for reproduction:
+> while :
+> do
+> for ((i=0; i<=8160; i=i+32))
+> do
+> ethtool -G enp130s0f0 rx $i tx $i
+> sleep 0.5
+> ethtool -g enp130s0f0
+> done
+> done
 > 
 > [...]
 
 Here is the summary with links:
-  - tipc: Fix recognition of trial period
-    https://git.kernel.org/netdev/net/c/28be7ca4fcfd
+  - [net] i40e: Fix DMA mappings leak
+    https://git.kernel.org/netdev/net/c/aae425efdfd1
 
 You are awesome, thank you!
 -- 
