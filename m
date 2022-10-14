@@ -2,93 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 808E35FE922
-	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 08:58:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79B765FE940
+	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 09:11:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229911AbiJNG6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Oct 2022 02:58:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52434 "EHLO
+        id S229653AbiJNHLn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Oct 2022 03:11:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229609AbiJNG6d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 02:58:33 -0400
-Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B8AF61BB963;
-        Thu, 13 Oct 2022 23:58:28 -0700 (PDT)
-Received: by ajax-webmail-mail-app3 (Coremail) ; Fri, 14 Oct 2022 14:58:17
- +0800 (GMT+08:00)
-X-Originating-IP: [10.192.136.77]
-Date:   Fri, 14 Oct 2022 14:58:17 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Leon Romanovsky" <leon@kernel.org>
-Cc:     "Greg KH" <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        isdn@linux-pingi.de, kuba@kernel.org, andrii@kernel.org,
-        davem@davemloft.net, axboe@kernel.dk
-Subject: Re: [PATCH] mISDN: hfcpci: Fix use-after-free bug in hfcpci_Timer
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <Y0j8ixwitdWKuUoM@unreal>
-References: <20221013125729.105652-1-duoming@zju.edu.cn>
- <Y0gQhe6EL6nDstlL@kroah.com> <Y0j8ixwitdWKuUoM@unreal>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S229622AbiJNHLl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 03:11:41 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D680915B333
+        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 00:11:40 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1ojEqm-0006Gw-HT; Fri, 14 Oct 2022 09:11:20 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 3D443FDE12;
+        Fri, 14 Oct 2022 07:11:17 +0000 (UTC)
+Date:   Fri, 14 Oct 2022 09:11:14 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Vivek Yadav <vivek.2311@samsung.com>
+Cc:     rcsekar@samsung.com, wg@grandegger.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        pankaj.dubey@samsung.com, ravi.patel@samsung.com,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] can: mcan: Add support for handling DLEC error on CAN
+ FD
+Message-ID: <20221014071114.a6ls5ay56xk4cin3@pengutronix.de>
+References: <CGME20221014053017epcas5p359d337008999640fa140c691f47bc79c@epcas5p3.samsung.com>
+ <20221014050332.45045-1-vivek.2311@samsung.com>
 MIME-Version: 1.0
-Message-ID: <24615c1e.123e96.183d5495a77.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cC_KCgA3jw6JCEljeZ7hBw--.1588W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgQDAVZdtb6wxgAAsy
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="auelfjaotv27cxiq"
+Content-Disposition: inline
+In-Reply-To: <20221014050332.45045-1-vivek.2311@samsung.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sCgpPbiBGcmksIDE0IE9jdCAyMDIyIDA5OjA3OjA3ICswMzAwIExlb24gUm9tYW5vdnNr
-eSB3cm90ZToKCj4gT24gVGh1LCBPY3QgMTMsIDIwMjIgYXQgMDM6MjA6MDVQTSArMDIwMCwgR3Jl
-ZyBLSCB3cm90ZToKPiA+IE9uIFRodSwgT2N0IDEzLCAyMDIyIGF0IDA4OjU3OjI5UE0gKzA4MDAs
-IER1b21pbmcgWmhvdSB3cm90ZToKPiA+ID4gSWYgdGhlIHRpbWVyIGhhbmRsZXIgaGZjcGNpX1Rp
-bWVyKCkgaXMgcnVubmluZywgdGhlCj4gPiA+IGRlbF90aW1lcigmaGMtPmh3LnRpbWVyKSBpbiBy
-ZWxlYXNlX2lvX2hmY3BjaSgpIGNvdWxkCj4gPiA+IG5vdCBzdG9wIGl0LiBBcyBhIHJlc3VsdCwg
-dGhlIHVzZS1hZnRlci1mcmVlIGJ1ZyB3aWxsCj4gPiA+IGhhcHBlbi4gVGhlIHByb2Nlc3MgaXMg
-c2hvd24gYmVsb3c6Cj4gPiA+IAo+ID4gPiAgICAgKGNsZWFudXAgcm91dGluZSkgICAgICAgICAg
-fCAgICAgICAgKHRpbWVyIGhhbmRsZXIpCj4gPiA+IHJlbGVhc2VfY2FyZCgpICAgICAgICAgICAg
-ICAgICB8IGhmY3BjaV9UaW1lcigpCj4gPiA+ICAgcmVsZWFzZV9pb19oZmNwY2kgICAgICAgICAg
-ICB8Cj4gPiA+ICAgICBkZWxfdGltZXIoJmhjLT5ody50aW1lcikgICB8Cj4gPiA+ICAgLi4uICAg
-ICAgICAgICAgICAgICAgICAgICAgICB8ICAuLi4KPiA+ID4gICBrZnJlZShoYykgLy9bMV1GUkVF
-ICAgICAgICAgIHwKPiA+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICBoYy0+
-aHcudGltZXIuZXhwaXJlcyAvL1syXVVTRQo+ID4gPiAKPiA+ID4gVGhlIGhmY19wY2kgaXMgZGVh
-bGxvY2F0ZWQgaW4gcG9zaXRpb24gWzFdIGFuZCB1c2VkIGluCj4gPiA+IHBvc2l0aW9uIFsyXS4K
-PiA+ID4gCj4gPiA+IEZpeCBieSBjaGFuZ2luZyBkZWxfdGltZXIoKSBpbiByZWxlYXNlX2lvX2hm
-Y3BjaSgpIHRvCj4gPiA+IGRlbF90aW1lcl9zeW5jKCksIHdoaWNoIG1ha2VzIHN1cmUgdGhlIGhm
-Y3BjaV9UaW1lcigpCj4gPiA+IGhhdmUgZmluaXNoZWQgYmVmb3JlIHRoZSBoZmNfcGNpIGlzIGRl
-YWxsb2NhdGVkLgo+ID4gPiAKPiA+ID4gRml4ZXM6IDE3MDBmZTFhMTBkYyAoIkFkZCBtSVNETiBI
-RkMgUENJIGRyaXZlciIpCj4gPiA+IFNpZ25lZC1vZmYtYnk6IER1b21pbmcgWmhvdSA8ZHVvbWlu
-Z0B6anUuZWR1LmNuPgo+ID4gPiAtLS0KPiA+ID4gIGRyaXZlcnMvaXNkbi9oYXJkd2FyZS9tSVNE
-Ti9oZmNwY2kuYyB8IDIgKy0KPiA+ID4gIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwg
-MSBkZWxldGlvbigtKQo+ID4gPiAKPiA+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaXNkbi9oYXJk
-d2FyZS9tSVNETi9oZmNwY2kuYyBiL2RyaXZlcnMvaXNkbi9oYXJkd2FyZS9tSVNETi9oZmNwY2ku
-Ywo+ID4gPiBpbmRleCBhZjE3NDU5YzFhNS4uNWNmMzdmZTdkZTIgMTAwNjQ0Cj4gPiA+IC0tLSBh
-L2RyaXZlcnMvaXNkbi9oYXJkd2FyZS9tSVNETi9oZmNwY2kuYwo+ID4gPiArKysgYi9kcml2ZXJz
-L2lzZG4vaGFyZHdhcmUvbUlTRE4vaGZjcGNpLmMKPiA+ID4gQEAgLTE1Nyw3ICsxNTcsNyBAQCBy
-ZWxlYXNlX2lvX2hmY3BjaShzdHJ1Y3QgaGZjX3BjaSAqaGMpCj4gPiA+ICB7Cj4gPiA+ICAJLyog
-ZGlzYWJsZSBtZW1vcnkgbWFwcGVkIHBvcnRzICsgYnVzbWFzdGVyICovCj4gPiA+ICAJcGNpX3dy
-aXRlX2NvbmZpZ193b3JkKGhjLT5wZGV2LCBQQ0lfQ09NTUFORCwgMCk7Cj4gPiA+IC0JZGVsX3Rp
-bWVyKCZoYy0+aHcudGltZXIpOwo+ID4gPiArCWRlbF90aW1lcl9zeW5jKCZoYy0+aHcudGltZXIp
-Owo+ID4gCj4gPiBOaWNlLCBob3cgZGlkIHlvdSB0ZXN0IHRoYXQgdGhpcyB3aWxsIHdvcmsgcHJv
-cGVybHk/ICBEbyB5b3UgaGF2ZSB0aGlzCj4gPiBoYXJkd2FyZSBmb3IgdGVzdGluZz8gIEhvdyB3
-YXMgdGhpcyBpc3N1ZSBmb3VuZCBhbmQgdmVyaWZpZWQgdGhhdCB0aGlzCj4gPiBpcyB0aGUgY29y
-cmVjdCByZXNvbHV0aW9uPwoKSSBhbSB0cnlpbmcgdG8gc2ltdWxhdGUgdGhlIGhhcmR3YXJlIHRv
-IHZlcmlmaWVkIHRoYXQgdGhpcyBpcyB0aGUgY29ycmVjdApyZXNvbHV0aW9uLiBJIHdpbGwgZ2l2
-ZSBmZWVkYmFjayBpbiBhIGZldyB3ZWVrcyBsYXRlci4KCj4gQWNjb3JkaW5nIHRvIGhpcyBwcmV2
-aW91cyByZXNwb25zZSBbMV0sIHRoZSBhbnN3ZXIgd2lsbCBiZSBuby4gSSdtIG5vdAo+IHN1cGVy
-LWV4Y2l0ZWQgdGhhdCB0aGlzIHVubWFpbnRhaW5lZCBhbmQgb2xkIGRyaXZlciBjaG9zZW4gYXMg
-cGxheWdyb3VuZAo+IGZvciBuZXcgdG9vbC4KPiAKPiBbMV0gaHR0cHM6Ly9sb3JlLmtlcm5lbC5v
-cmcvYWxsLzE3YWQ2OTEzLmZmOGUwLjE4Mzg5MzM4NDBkLkNvcmVtYWlsLmR1b21pbmdAemp1LmVk
-dS5jbi8jdAoKQmVzdCByZWdhcmRzLApEdW9taW5nIFpob3U=
+
+--auelfjaotv27cxiq
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On 14.10.2022 10:33:32, Vivek Yadav wrote:
+> When a frame in CAN FD format has reached the data phase, the next
+> CAN event (error or valid frame) will be shown in DLEC.
+>=20
+> Utilizes the dedicated flag (Data Phase Last Error Code: DLEC flag) to
+> determine the type of last error that occurred in the data phase
+> of a CAN FD frame and handle the bus errors.
+>=20
+> Signed-off-by: Vivek Yadav <vivek.2311@samsung.com>
+> ---
+> This patch is dependent on following patch from Marc:
+> [1]: https://lore.kernel.org/all/20221012074205.691384-1-mkl@pengutronix.=
+de/
+>=20
+>  drivers/net/can/m_can/m_can.c | 11 ++++++++++-
+>  1 file changed, 10 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+> index 18a138fdfa66..8cff1f274aab 100644
+> --- a/drivers/net/can/m_can/m_can.c
+> +++ b/drivers/net/can/m_can/m_can.c
+> @@ -156,6 +156,7 @@ enum m_can_reg {
+>  #define PSR_EW		BIT(6)
+>  #define PSR_EP		BIT(5)
+>  #define PSR_LEC_MASK	GENMASK(2, 0)
+> +#define PSR_DLEC_MASK   GENMASK(8, 10)
+> =20
+>  /* Interrupt Register (IR) */
+>  #define IR_ALL_INT	0xffffffff
+> @@ -876,8 +877,16 @@ static int m_can_handle_bus_errors(struct net_device=
+ *dev, u32 irqstatus,
+>  	if (cdev->can.ctrlmode & CAN_CTRLMODE_BERR_REPORTING) {
+>  		u8 lec =3D FIELD_GET(PSR_LEC_MASK, psr);
+> =20
+> -		if (is_lec_err(lec))
+> +		if (is_lec_err(lec)) {
+>  			work_done +=3D m_can_handle_lec_err(dev, lec);
+> +		} else {
+
+In case of high interrupt latency there might be lec and dlec errors
+pending. As this is error handling and not the hot path, please check
+for both, i.e.:
+
+                if (is_lec_err(lec))
+                        work_done +=3D m_can_handle_lec_err(dev, lec);
+
+                if (is_lec_err(dlec))
+                        work_done +=3D m_can_handle_lec_err(dev, dlec);
+
+> +			u8 dlec =3D FIELD_GET(PSR_DLEC_MASK, psr);
+> +
+> +			if (is_lec_err(dlec)) {
+> +				netdev_dbg(dev, "Data phase error detected\n");
+
+If you add a debug, please add one for the Arbitration phase, too.
+
+> +				work_done +=3D m_can_handle_lec_err(dev, dlec);
+> +			}
+> +		}
+>  	}
+> =20
+>  	/* handle protocol errors in arbitration phase */
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--auelfjaotv27cxiq
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmNJC5AACgkQrX5LkNig
+012inQgAqQAHXULDQgDxLcGMMPHf9Vc3xfSIeMCKvDX3RUBDNygZ0JYa3OO0xBBX
+pOmqPmXTJqHCnvzbNIS0D3GqfnITBx2fNfkTT/h4TLYcBCTICtMiKEdG4Kihr1o8
+OkEFSaq43m+0kwDVpRRQFGsRezCphHlSGoAsHrA07udvncLLmWpaktNwB/KXcy1w
+PoltReQJGwDVA5stJh6lpYpX3rSvFg2K6lOYnMuCOEKUYkM+vilenXw2k/PJQ+qh
+EbxayxkqAWJqwNbD48a2aqcsGzl3z5gTf6LnRemJ7FgYk8uN2r9mG+Qa7AKxHIW+
+YeX5J7PmPWPtXN80OOx1nXUUOHd7gA==
+=2FT1
+-----END PGP SIGNATURE-----
+
+--auelfjaotv27cxiq--
