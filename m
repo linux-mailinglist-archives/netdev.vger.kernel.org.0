@@ -2,102 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1627D5FEE48
-	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 15:00:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DDCD5FEE51
+	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 15:02:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229649AbiJNNAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Oct 2022 09:00:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48830 "EHLO
+        id S229819AbiJNNCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Oct 2022 09:02:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbiJNNAw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 09:00:52 -0400
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 538F41974F1
-        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 06:00:49 -0700 (PDT)
-Received: (Authenticated sender: i.maximets@ovn.org)
-        by mail.gandi.net (Postfix) with ESMTPSA id 47E3210000D;
-        Fri, 14 Oct 2022 13:00:33 +0000 (UTC)
-Message-ID: <b9e25530-e618-421c-922e-b9f2380bc19f@ovn.org>
-Date:   Fri, 14 Oct 2022 15:00:32 +0200
+        with ESMTP id S229774AbiJNNCr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 09:02:47 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F611C8835
+        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 06:02:46 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1ojKKX-0001M4-Io; Fri, 14 Oct 2022 15:02:25 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id B2C2DFE29F;
+        Fri, 14 Oct 2022 13:02:22 +0000 (UTC)
+Date:   Fri, 14 Oct 2022 15:02:20 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Vivek Yadav <vivek.2311@samsung.com>
+Cc:     rcsekar@samsung.com, wg@grandegger.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        pankaj.dubey@samsung.com, ravi.patel@samsung.com,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] can: mcan: Add support for handling DLEC error on CAN
+ FD
+Message-ID: <20221014130220.jfdldo644aq5x6ox@pengutronix.de>
+References: <CGME20221014121257epcas5p3805649d1a77149ac4d3dd110fb808633@epcas5p3.samsung.com>
+ <20221014114613.33369-1-vivek.2311@samsung.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.1
-Cc:     i.maximets@ovn.org, Davide Caratti <dcaratti@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Tianyu Yuan <tianyu.yuan@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>, dev@openvswitch.org,
-        oss-drivers <oss-drivers@corigine.com>, netdev@vger.kernel.org,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
-        Vlad Buslov <vladbu@nvidia.com>
-Subject: Re: [ovs-dev] [PATCH] tests: fix reference output for meter offload
- stats
-Content-Language: en-US
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Marcelo Leitner <mleitner@redhat.com>
-References: <eeb0c590-7364-a00e-69fc-2326678d6bdf@ovn.org>
- <PH0PR13MB4793A85169BB60B8609B192194499@PH0PR13MB4793.namprd13.prod.outlook.com>
- <0aac2127-0b14-187e-0adb-7d6b8fe8cfb1@ovn.org>
- <e71b2bf2-cfd5-52f4-5fd4-1c852f2a8c6c@ovn.org>
- <00D45065-3D74-4C4C-8988-BFE0CEB3BE2F@redhat.com>
- <fe0cd650-0d4a-d871-5c0b-b1c831c8d0cc@ovn.org>
- <CALnP8ZYcGvtP_BV=2gy0v3TtSfD=3nO-uzbG8E1UvjoDYD2+7A@mail.gmail.com>
- <CAKa-r6sn1oZNn0vrnrthzq_XsxpdHGWyxw_T9b9ND0=DJk64yQ@mail.gmail.com>
- <CALnP8ZaZ5zGD4sP3=SSvC=RBmVOOcc9MdA=aaYRQctaBOhmHfQ@mail.gmail.com>
- <CAM0EoM=zWBzivTkEG7uBJepZ0=OZmiuqDF3RmgdWA=FgznRF6g@mail.gmail.com>
- <CALnP8ZY2M3+m_qrg4ox5pjGJ__CAMKfshD+=OxTHCWc=EutapQ@mail.gmail.com>
- <CAM0EoM=5wqbsOL-ZPkuhQXTJh3pTGqhdDDXuEqsjxEoAapApdQ@mail.gmail.com>
-From:   Ilya Maximets <i.maximets@ovn.org>
-In-Reply-To: <CAM0EoM=5wqbsOL-ZPkuhQXTJh3pTGqhdDDXuEqsjxEoAapApdQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NEUTRAL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="nsyareichhihttzn"
+Content-Disposition: inline
+In-Reply-To: <20221014114613.33369-1-vivek.2311@samsung.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/8/22 14:32, Jamal Hadi Salim wrote:
-> On Fri, Oct 7, 2022 at 1:37 PM Marcelo Leitner <mleitner@redhat.com> wrote:
->>
->> On Fri, Oct 07, 2022 at 11:59:42AM -0400, Jamal Hadi Salim wrote:
->>> On Fri, Oct 7, 2022 at 11:01 AM Marcelo Leitner <mleitner@redhat.com> wrote:
->>>>
-> 
-> [..]
->>>
->>> It's mostly how people who offload (not sure about OVS) do it;
->>> example some of the switches out there.
->>
->> You mean with OK, DROP, TRAP or GOTO actions, right?
->>
->> Because for PIPE, it has:
->>                 } else if (is_tcf_gact_pipe(act)) {
->>                         NL_SET_ERR_MSG_MOD(extack, "Offload of
->> \"pipe\" action is not supported");
->>                         return -EOPNOTSUPP;
->>
-> 
-> I thought it was pipe but maybe it is OK(in my opinion that is a bad code
-> for just "count"). We have some (at least NIC) hardware folks on the list.
 
-IIRC, 'OK' action will stop the processing for the packet, so it can
-only be used as a last action in the list.  But we need to count packets
-as a very first action in the list.  So, that doesn't help.
+--nsyareichhihttzn
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Note: we could create an alias to PIPE and call it COUNT if it helps.
+On 14.10.2022 17:16:13, Vivek Yadav wrote:
+> When a frame in CAN FD format has reached the data phase, the next
+> CAN event (error or valid frame) will be shown in DLEC.
+>=20
+> Utilizes the dedicated flag (Data Phase Last Error Code: DLEC flag) to
+> determine the type of last error that occurred in the data phase
+> of a CAN FD frame and handle the bus errors.
 
-Will that help with offloading of that action?  Why the PIPE is not
-offloadable in the first place and will COUNT be offloadable?
+Can you please test your code before sending it.
 
-> And yes, in retrospect we should probably have separated out accounting
-> from the actions in tc. It makes a lot of sense in s/w - and would work fine for
-> modern hardware but when you dont have as many counters as actions
-> it's a challenge. Same thing with policers/meters.
-> 
-> cheers,
-> jamal
+| drivers/net/can/m_can/m_can.c: In function =E2=80=98m_can_handle_bus_erro=
+rs=E2=80=99:
+| include/linux/build_bug.h:16:51: error: negative width in bit-field =E2=
+=80=98<anonymous>=E2=80=99
+|    16 | #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e));=
+ })))
+[...]
+| drivers/net/can/m_can/m_can.c:883:17: warning: ISO C90 forbids mixed decl=
+arations and code [-Wdeclaration-after-statement]
+|   883 |                 u8 dlec =3D FIELD_GET(PSR_DLEC_MASK, psr);
+|       |                 ^~
 
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--nsyareichhihttzn
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmNJXdkACgkQrX5LkNig
+010E+ggAr4/hTIGmZRl7ym8KMWr1saLyszKV4xOnKcuQNMW9IR4eDH0jVoLnSIur
+zfkSEEIfjZWMRJhHu4h2iIV6YnkBz0jZa5rMnDG63LSYJOl2UT1yBNzo1MBFjhhs
+JSLdk069k9y1R2oAZ0Madks2vkHN42HHqOXG4/c7aa/vAMK8mHIws4z16nMonF0x
+fsfwzm8QXhKSdzQ3vVJkbupFKoUe7a+FB5dOKlG1oOqTCXY2CEKz553qPP8le8Ql
+w5mFYCOWBhy5ESxuIBFDQA0+MiCmeuFgGNZiULHQAd0dU1ROmBI9VKFTOkNXxeXU
+XHZfHqoLfscfXRyzKOefhrBVb/X5jw==
+=XetC
+-----END PGP SIGNATURE-----
+
+--nsyareichhihttzn--
