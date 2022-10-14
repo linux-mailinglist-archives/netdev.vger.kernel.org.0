@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10DF55FF15C
-	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 17:29:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC0BF5FF15F
+	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 17:29:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230398AbiJNP32 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Oct 2022 11:29:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55098 "EHLO
+        id S230405AbiJNP3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Oct 2022 11:29:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229798AbiJNP3Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 11:29:25 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C97D91D3EB5;
-        Fri, 14 Oct 2022 08:29:22 -0700 (PDT)
+        with ESMTP id S230442AbiJNP3p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 11:29:45 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2043C1D5869;
+        Fri, 14 Oct 2022 08:29:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1665761363; x=1697297363;
+  t=1665761371; x=1697297371;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=GFO5B/TBiuI1kXgFuapjcQD6QaRC4LsZQuzGyAZVNjY=;
-  b=2DICIAOWezNlIZwnCJ84LYDEpY9a/8W/LJjSm3siN7S59N23wDrbGfkg
-   f2knwcOJHPQbGKNwSZFZ0qgC9a0zsa2fkmTfWrkMxl6mziUKFfy5G44li
-   RlnhkfCmQrlCoWGrEtuC4XX0z+J6K5MSqZRksFawvjqPMV0TQa2xiXNpL
-   Z1OnrJngqsIrQo9Y3J9o03Fd+KukGgElyPilc7Pc7fO+dlMVilRQDi4KZ
-   cn1dga+0Y4hUuA2zPC9Cr7CCzQfNdu1CPjeCW1fGUtnb5lyuDjGlLN/Ew
-   JWz0l7Q/b4jn9kZOIlseXwoY1jgQH14cJkws1MFjcwZZwvRc6/4wHeNvj
+  bh=n94UfcLFyhyFfsXtdP6iBggIHqYSJYVNV6N2/pYkpEg=;
+  b=W9RNDZQTNdcHTQMbWxNJpo9A5C6++sR77bmcK/F3rlct7tywgVGsnqwT
+   CJ2h3c19X3zhEPkcPn4AWgK64DtQE9Y7IYZCbSHhnPI1srOs2sWH6nYnm
+   OXytYFyRMhdzrIKklakaxUMf3Tuz5QmPLnnxSIApPaAZ82A3YBczWZHZo
+   vhjr9E75Pn+Bksb22xVcruAF4W+EJt7SUrmMmDRe1eR8aZvnBlUZoDnlX
+   dy3KVZfZ7se2VtK9Q9/r/VwmDzLpcmMF1rOvBnkuU5gJ00Yra3OksGgLB
+   PH8J+wa+EQemQU8i7sgfJXS2qWY3atbHnHbqSoGkK6nSBM5+rYKcuhEcu
    A==;
 X-IronPort-AV: E=Sophos;i="5.95,184,1661842800"; 
-   d="scan'208";a="178786930"
+   d="scan'208";a="195427833"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Oct 2022 08:29:22 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Oct 2022 08:29:29 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 14 Oct 2022 08:29:21 -0700
+ 15.1.2507.12; Fri, 14 Oct 2022 08:29:29 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Fri, 14 Oct 2022 08:29:16 -0700
+ 15.1.2507.12 via Frontend Transport; Fri, 14 Oct 2022 08:29:24 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
@@ -46,9 +46,9 @@ CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
         <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
         <linux@armlinux.org.uk>, <Tristram.Ha@microchip.com>,
         <richardcochran@gmail.com>
-Subject: [RFC Patch net-next 1/6] net: dsa: microchip: adding the posix clock support
-Date:   Fri, 14 Oct 2022 20:58:52 +0530
-Message-ID: <20221014152857.32645-2-arun.ramadoss@microchip.com>
+Subject: [RFC Patch net-next 2/6] net: dsa: microchip: Initial hardware time stamping support
+Date:   Fri, 14 Oct 2022 20:58:53 +0530
+Message-ID: <20221014152857.32645-3-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20221014152857.32645-1-arun.ramadoss@microchip.com>
 References: <20221014152857.32645-1-arun.ramadoss@microchip.com>
@@ -57,542 +57,345 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch implement routines (adjfine, adjtime, gettime and settime)
-for manipulating the chip's PTP clock. It registers the ptp caps
-to posix clock register.
+This patch adds the routine for get_ts_info, hwstamp_get, set. This enables
+the PTP support towards userspace applications such as linuxptp.
+Tx timestamping can be enabled per port and Rx timestamping enabled
+globally.
 
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- drivers/net/dsa/microchip/Kconfig       |  10 +
- drivers/net/dsa/microchip/Makefile      |   1 +
- drivers/net/dsa/microchip/ksz_common.c  |  14 +-
- drivers/net/dsa/microchip/ksz_common.h  |  17 ++
- drivers/net/dsa/microchip/ksz_ptp.c     | 269 ++++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz_ptp.h     |  43 ++++
- drivers/net/dsa/microchip/ksz_ptp_reg.h |  52 +++++
- 7 files changed, 405 insertions(+), 1 deletion(-)
- create mode 100644 drivers/net/dsa/microchip/ksz_ptp.c
- create mode 100644 drivers/net/dsa/microchip/ksz_ptp.h
- create mode 100644 drivers/net/dsa/microchip/ksz_ptp_reg.h
+ drivers/net/dsa/microchip/ksz_common.c |   2 +
+ drivers/net/dsa/microchip/ksz_common.h |   3 +
+ drivers/net/dsa/microchip/ksz_ptp.c    | 111 ++++++++++++++++++++++++-
+ drivers/net/dsa/microchip/ksz_ptp.h    |  14 ++++
+ include/linux/dsa/ksz_common.h         |  23 +++++
+ net/dsa/tag_ksz.c                      |  59 +++++++++++++
+ 6 files changed, 210 insertions(+), 2 deletions(-)
+ create mode 100644 include/linux/dsa/ksz_common.h
 
-diff --git a/drivers/net/dsa/microchip/Kconfig b/drivers/net/dsa/microchip/Kconfig
-index 06b1efdb5e7d..1e9712ff64e2 100644
---- a/drivers/net/dsa/microchip/Kconfig
-+++ b/drivers/net/dsa/microchip/Kconfig
-@@ -21,6 +21,16 @@ config NET_DSA_MICROCHIP_KSZ_SPI
- 	help
- 	  Select to enable support for registering switches configured through SPI.
- 
-+config NET_DSA_MICROCHIP_KSZ_PTP
-+	bool "Support for the PTP clock on the KSZ9563/LAN937x Ethernet Switch"
-+	depends on NET_DSA_MICROCHIP_KSZ_COMMON && PTP_1588_CLOCK
-+	help
-+	  This enables support for timestamping & PTP clock manipulation
-+	  in the KSZ9563/LAN937x Ethernet switch
-+
-+	  Select to enable support for PTP feature for KSZ9563/lan937x series
-+	  of switch.
-+
- config NET_DSA_MICROCHIP_KSZ8863_SMI
- 	tristate "KSZ series SMI connected switch driver"
- 	depends on NET_DSA_MICROCHIP_KSZ_COMMON
-diff --git a/drivers/net/dsa/microchip/Makefile b/drivers/net/dsa/microchip/Makefile
-index 28873559efc2..29d2d00ea27f 100644
---- a/drivers/net/dsa/microchip/Makefile
-+++ b/drivers/net/dsa/microchip/Makefile
-@@ -6,4 +6,5 @@ ksz_switch-objs += ksz8795.o
- ksz_switch-objs += lan937x_main.o
- obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ9477_I2C)	+= ksz9477_i2c.o
- obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ_SPI)		+= ksz_spi.o
-+obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ_PTP)	   	+= ksz_ptp.o
- obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ8863_SMI)	+= ksz8863_smi.o
 diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index d612181b3226..084563e80660 100644
+index 084563e80660..d8ec5b641b89 100644
 --- a/drivers/net/dsa/microchip/ksz_common.c
 +++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -27,6 +27,7 @@
- #include "ksz8.h"
- #include "ksz9477.h"
- #include "lan937x.h"
-+#include "ksz_ptp.h"
- 
- #define MIB_COUNTER_NUM 0x20
- 
-@@ -1990,10 +1991,16 @@ static int ksz_setup(struct dsa_switch *ds)
- 		}
- 	}
- 
-+	ret = ksz_ptp_clock_register(ds);
-+	if (ret) {
-+		dev_err(dev->dev, "Failed to register PTP clock: %d\n", ret);
-+		goto out_pirq;
-+	}
-+
- 	ret = ksz_mdio_register(dev);
- 	if (ret < 0) {
- 		dev_err(dev->dev, "failed to register the mdio");
--		goto out_pirq;
-+		goto out_ptp_clock_unregister;
- 	}
- 
- 	/* start switch */
-@@ -2002,6 +2009,8 @@ static int ksz_setup(struct dsa_switch *ds)
- 
- 	return 0;
- 
-+out_ptp_clock_unregister:
-+	ksz_ptp_clock_unregister(ds);
- out_pirq:
- 	if (dev->irq > 0)
- 		dsa_switch_for_each_user_port(dp, dev->ds)
-@@ -2018,6 +2027,8 @@ static void ksz_teardown(struct dsa_switch *ds)
- 	struct ksz_device *dev = ds->priv;
- 	struct dsa_port *dp;
- 
-+	ksz_ptp_clock_unregister(ds);
-+
- 	if (dev->irq > 0) {
- 		dsa_switch_for_each_user_port(dp, dev->ds)
- 			ksz_irq_free(&dev->ports[dp->index].pirq);
-@@ -2831,6 +2842,7 @@ static const struct dsa_switch_ops ksz_switch_ops = {
- 	.get_pause_stats	= ksz_get_pause_stats,
+@@ -2843,6 +2843,8 @@ static const struct dsa_switch_ops ksz_switch_ops = {
  	.port_change_mtu	= ksz_change_mtu,
  	.port_max_mtu		= ksz_max_mtu,
-+	.get_ts_info            = ksz_get_ts_info,
+ 	.get_ts_info            = ksz_get_ts_info,
++	.port_hwtstamp_get      = ksz_hwtstamp_get,
++	.port_hwtstamp_set      = ksz_hwtstamp_set,
  };
  
  struct ksz_device *ksz_switch_alloc(struct device *base, void *priv)
 diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 9cfa179575ce..f936a4100423 100644
+index f936a4100423..0e5f02d3992e 100644
 --- a/drivers/net/dsa/microchip/ksz_common.h
 +++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -14,6 +14,9 @@
- #include <linux/regmap.h>
- #include <net/dsa.h>
- #include <linux/irq.h>
-+#include <linux/ptp_clock_kernel.h>
-+
-+#include "ksz_ptp.h"
- 
- #define KSZ_MAX_NUM_PORTS 8
- 
-@@ -141,6 +144,7 @@ struct ksz_device {
- 	u16 port_mask;
- 	struct mutex lock_irq;		/* IRQ Access */
- 	struct ksz_irq girq;
-+	struct ksz_ptp_data ptp_data;
+@@ -104,6 +104,9 @@ struct ksz_port {
+ 	struct ksz_device *ksz_dev;
+ 	struct ksz_irq pirq;
+ 	u8 num;
++#if IS_ENABLED(CONFIG_NET_DSA_MICROCHIP_KSZ_PTP)
++	bool hwts_tx_en;
++#endif
  };
  
- /* List of supported models */
-@@ -442,6 +446,19 @@ static inline int ksz_write32(struct ksz_device *dev, u32 reg, u32 value)
- 	return ret;
+ struct ksz_device {
+diff --git a/drivers/net/dsa/microchip/ksz_ptp.c b/drivers/net/dsa/microchip/ksz_ptp.c
+index 0ead0e097ed5..5199840377aa 100644
+--- a/drivers/net/dsa/microchip/ksz_ptp.c
++++ b/drivers/net/dsa/microchip/ksz_ptp.c
+@@ -3,6 +3,7 @@
+  * Copyright (C) 2021-2022 Microchip Technology Inc.
+  */
+ 
++#include <linux/dsa/ksz_common.h>
+ #include <linux/kernel.h>
+ #include <linux/ptp_classify.h>
+ #include <linux/ptp_clock_kernel.h>
+@@ -21,6 +22,17 @@
+ #define KSZ_PTP_INC_NS 40  /* HW clock is incremented every 40 ns (by 40) */
+ #define KSZ_PTP_SUBNS_BITS 32  /* Number of bits in sub-nanoseconds counter */
+ 
++static int ksz_ptp_enable_mode(struct ksz_device *dev, bool enable)
++{
++	u16 data = 0;
++
++	/* Enable PTP mode */
++	if (enable)
++		data = PTP_ENABLE;
++
++	return ksz_rmw16(dev, REG_PTP_MSG_CONF1, PTP_ENABLE, data);
++}
++
+ /* The function is return back the capability of timestamping feature when
+  * requested through ethtool -T <interface> utility
+  */
+@@ -33,15 +45,110 @@ int ksz_get_ts_info(struct dsa_switch *ds, int port, struct ethtool_ts_info *ts)
+ 			      SOF_TIMESTAMPING_RX_HARDWARE |
+ 			      SOF_TIMESTAMPING_RAW_HARDWARE;
+ 
+-	ts->tx_types = (1 << HWTSTAMP_TX_OFF);
++	ts->tx_types = (1 << HWTSTAMP_TX_OFF) | (1 << HWTSTAMP_TX_ON);
+ 
+-	ts->rx_filters = (1 << HWTSTAMP_FILTER_NONE);
++	ts->rx_filters =
++		(1 << HWTSTAMP_FILTER_NONE) | (1 << HWTSTAMP_FILTER_ALL);
+ 
+ 	ts->phc_index = ptp_clock_index(ptp_data->clock);
+ 
+ 	return 0;
  }
  
-+static inline int ksz_rmw16(struct ksz_device *dev, u32 reg, u16 mask,
-+			    u16 value)
++int ksz_hwtstamp_get(struct dsa_switch *ds, int port, struct ifreq *ifr)
 +{
++	struct ksz_tagger_data *tagger_data = ksz_tagger_data(ds);
++	struct ksz_device *dev = ds->priv;
++	struct hwtstamp_config config;
++
++	config.flags = 0;
++
++	if (dev->ports[port].hwts_tx_en)
++		config.tx_type = HWTSTAMP_TX_ON;
++	else
++		config.tx_type = HWTSTAMP_TX_OFF;
++
++	if (tagger_data->hwtstamp_get_state(ds))
++		config.rx_filter = HWTSTAMP_FILTER_ALL;
++	else
++		config.rx_filter = HWTSTAMP_FILTER_NONE;
++
++	return copy_to_user(ifr->ifr_data, &config, sizeof(config)) ?
++		-EFAULT : 0;
++}
++
++static int ksz_set_hwtstamp_config(struct ksz_device *dev, int port,
++				   struct hwtstamp_config *config)
++{
++	struct ksz_tagger_data *tagger_data = ksz_tagger_data(dev->ds);
++	struct ksz_port *prt = &dev->ports[port];
++	bool rx_on;
++
++	/* reserved for future extensions */
++	if (config->flags)
++		return -EINVAL;
++
++	switch (config->tx_type) {
++	case HWTSTAMP_TX_OFF:
++		prt->hwts_tx_en = false;
++		break;
++	case HWTSTAMP_TX_ON:
++		prt->hwts_tx_en = true;
++		break;
++	default:
++		return -ERANGE;
++	}
++
++	switch (config->rx_filter) {
++	case HWTSTAMP_FILTER_NONE:
++		rx_on = false;
++		break;
++	default:
++		rx_on = true;
++		break;
++	}
++
++	if (rx_on != tagger_data->hwtstamp_get_state(dev->ds)) {
++		int ret;
++
++		tagger_data->hwtstamp_set_state(dev->ds, false);
++
++		ret = ksz_ptp_enable_mode(dev, rx_on);
++		if (ret)
++			return ret;
++
++		if (rx_on)
++			tagger_data->hwtstamp_set_state(dev->ds, true);
++	}
++
++	return 0;
++}
++
++int ksz_hwtstamp_set(struct dsa_switch *ds, int port, struct ifreq *ifr)
++{
++	struct ksz_device *dev = ds->priv;
++	struct ksz_ptp_data *ptp_data = &dev->ptp_data;
++	struct hwtstamp_config config;
 +	int ret;
 +
-+	ret = regmap_update_bits(dev->regmap[1], reg, mask, value);
-+	if (ret)
-+		dev_err(dev->dev, "can't rmw 16bit reg: 0x%x %pe\n", reg,
-+			ERR_PTR(ret));
++	mutex_lock(&ptp_data->lock);
 +
++	ret = copy_from_user(&config, ifr->ifr_data, sizeof(config));
++	if (ret)
++		goto error_return;
++
++	ret = ksz_set_hwtstamp_config(dev, port, &config);
++	if (ret)
++		goto error_return;
++
++	/* Save the chosen configuration to be returned later. */
++	ret = copy_to_user(ifr->ifr_data, &config, sizeof(config));
++
++error_return:
++	mutex_unlock(&ptp_data->lock);
 +	return ret;
 +}
 +
- static inline int ksz_write64(struct ksz_device *dev, u32 reg, u64 value)
+ /* These are function related to the ptp clock info */
+ static int _ksz_ptp_gettime(struct ksz_device *dev, struct timespec64 *ts)
  {
- 	u32 val[2];
-diff --git a/drivers/net/dsa/microchip/ksz_ptp.c b/drivers/net/dsa/microchip/ksz_ptp.c
+diff --git a/drivers/net/dsa/microchip/ksz_ptp.h b/drivers/net/dsa/microchip/ksz_ptp.h
+index ac53b0df2733..4c024cc9d935 100644
+--- a/drivers/net/dsa/microchip/ksz_ptp.h
++++ b/drivers/net/dsa/microchip/ksz_ptp.h
+@@ -21,6 +21,8 @@ void ksz_ptp_clock_unregister(struct dsa_switch *ds);
+ 
+ int ksz_get_ts_info(struct dsa_switch *ds, int port,
+ 		    struct ethtool_ts_info *ts);
++int ksz_hwtstamp_get(struct dsa_switch *ds, int port, struct ifreq *ifr);
++int ksz_hwtstamp_set(struct dsa_switch *ds, int port, struct ifreq *ifr);
+ 
+ #else
+ 
+@@ -38,6 +40,18 @@ static inline void ksz_ptp_clock_unregister(struct dsa_switch *ds) { }
+ 
+ #define ksz_get_ts_info NULL
+ 
++static inline int ksz_hwtstamp_get(struct dsa_switch *ds, int port,
++				   struct ifreq *ifr)
++{
++	return -EOPNOTSUPP;
++}
++
++static inline int ksz_hwtstamp_set(struct dsa_switch *ds, int port,
++				   struct ifreq *ifr)
++{
++	return -EOPNOTSUPP;
++}
++
+ #endif	/* End of CONFIG_NET_DSA_MICROCHIOP_KSZ_PTP */
+ 
+ #endif
+diff --git a/include/linux/dsa/ksz_common.h b/include/linux/dsa/ksz_common.h
 new file mode 100644
-index 000000000000..0ead0e097ed5
+index 000000000000..8903bce4753b
 --- /dev/null
-+++ b/drivers/net/dsa/microchip/ksz_ptp.c
-@@ -0,0 +1,269 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Microchip LAN937X PTP Implementation
++++ b/include/linux/dsa/ksz_common.h
+@@ -0,0 +1,23 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Microchip switch tag common header
++ *
 + * Copyright (C) 2021-2022 Microchip Technology Inc.
 + */
 +
-+#include <linux/kernel.h>
-+#include <linux/ptp_classify.h>
-+#include <linux/ptp_clock_kernel.h>
++#ifndef _NET_DSA_KSZ_COMMON_H_
++#define _NET_DSA_KSZ_COMMON_H_
 +
-+#include "ksz_common.h"
-+#include "ksz_ptp.h"
-+#include "ksz_ptp_reg.h"
++#include <net/dsa.h>
 +
-+#define ptp_caps_to_data(d) \
-+		container_of((d), struct ksz_ptp_data, caps)
-+#define ptp_data_to_ksz_dev(d) \
-+		container_of((d), struct ksz_device, ptp_data)
++struct ksz_tagger_data {
++	bool (*hwtstamp_get_state)(struct dsa_switch *ds);
++	void (*hwtstamp_set_state)(struct dsa_switch *ds, bool on);
++};
 +
-+#define MAX_DRIFT_CORR 6250000
-+
-+#define KSZ_PTP_INC_NS 40  /* HW clock is incremented every 40 ns (by 40) */
-+#define KSZ_PTP_SUBNS_BITS 32  /* Number of bits in sub-nanoseconds counter */
-+
-+/* The function is return back the capability of timestamping feature when
-+ * requested through ethtool -T <interface> utility
-+ */
-+int ksz_get_ts_info(struct dsa_switch *ds, int port, struct ethtool_ts_info *ts)
++static inline struct ksz_tagger_data *
++ksz_tagger_data(struct dsa_switch *ds)
 +{
-+	struct ksz_device *dev	= ds->priv;
-+	struct ksz_ptp_data *ptp_data = &dev->ptp_data;
-+
-+	ts->so_timestamping = SOF_TIMESTAMPING_TX_HARDWARE |
-+			      SOF_TIMESTAMPING_RX_HARDWARE |
-+			      SOF_TIMESTAMPING_RAW_HARDWARE;
-+
-+	ts->tx_types = (1 << HWTSTAMP_TX_OFF);
-+
-+	ts->rx_filters = (1 << HWTSTAMP_FILTER_NONE);
-+
-+	ts->phc_index = ptp_clock_index(ptp_data->clock);
-+
-+	return 0;
++	return ds->tagger_data;
 +}
 +
-+/* These are function related to the ptp clock info */
-+static int _ksz_ptp_gettime(struct ksz_device *dev, struct timespec64 *ts)
++#endif /* _NET_DSA_KSZ_COMMON_H_ */
+diff --git a/net/dsa/tag_ksz.c b/net/dsa/tag_ksz.c
+index 38fa19c1e2d5..ca1261b04fe7 100644
+--- a/net/dsa/tag_ksz.c
++++ b/net/dsa/tag_ksz.c
+@@ -4,6 +4,7 @@
+  * Copyright (c) 2017 Microchip Technology
+  */
+ 
++#include <linux/dsa/ksz_common.h>
+ #include <linux/etherdevice.h>
+ #include <linux/list.h>
+ #include <net/dsa.h>
+@@ -13,6 +14,62 @@
+ #define KSZ_EGRESS_TAG_LEN		1
+ #define KSZ_INGRESS_TAG_LEN		1
+ 
++#define KSZ_HWTS_EN  0
++
++struct ksz_tagger_private {
++	struct ksz_tagger_data data; /* Must be first */
++	unsigned long state;
++};
++
++static struct ksz_tagger_private *
++ksz_tagger_private(struct dsa_switch *ds)
 +{
-+	u32 nanoseconds;
-+	u32 seconds;
-+	u8 phase;
-+	int ret;
-+
-+	/* Copy current PTP clock into shadow registers */
-+	ret = ksz_rmw16(dev, REG_PTP_CLK_CTRL, PTP_READ_TIME, PTP_READ_TIME);
-+	if (ret)
-+		return ret;
-+
-+	/* Read from shadow registers */
-+	ret = ksz_read8(dev, REG_PTP_RTC_SUB_NANOSEC__2, &phase);
-+	if (ret)
-+		return ret;
-+
-+	ret = ksz_read32(dev, REG_PTP_RTC_NANOSEC, &nanoseconds);
-+	if (ret)
-+		return ret;
-+
-+	ret = ksz_read32(dev, REG_PTP_RTC_SEC, &seconds);
-+	if (ret)
-+		return ret;
-+
-+	ts->tv_sec = seconds;
-+	ts->tv_nsec = nanoseconds + phase * 8;
-+
-+	return 0;
++	return ds->tagger_data;
 +}
 +
-+static int ksz_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
++static bool ksz_hwtstamp_get_state(struct dsa_switch *ds)
 +{
-+	struct ksz_ptp_data *ptp_data = ptp_caps_to_data(ptp);
-+	struct ksz_device *dev = ptp_data_to_ksz_dev(ptp_data);
-+	int ret;
++	struct ksz_tagger_private *priv = ksz_tagger_private(ds);
 +
-+	mutex_lock(&ptp_data->lock);
-+	ret = _ksz_ptp_gettime(dev, ts);
-+	mutex_unlock(&ptp_data->lock);
-+
-+	return ret;
++	return test_bit(KSZ_HWTS_EN, &priv->state);
 +}
 +
-+static int ksz_ptp_settime(struct ptp_clock_info *ptp,
-+			   const struct timespec64 *ts)
++static void ksz_hwtstamp_set_state(struct dsa_switch *ds, bool on)
 +{
-+	struct ksz_ptp_data *ptp_data = ptp_caps_to_data(ptp);
-+	struct ksz_device *dev = ptp_data_to_ksz_dev(ptp_data);
-+	int ret;
++	struct ksz_tagger_private *priv = ksz_tagger_private(ds);
 +
-+	mutex_lock(&ptp_data->lock);
-+
-+	/* Write to shadow registers */
-+
-+	/* Write 0 to clock phase */
-+	ret = ksz_write16(dev, REG_PTP_RTC_SUB_NANOSEC__2, PTP_RTC_0NS);
-+	if (ret)
-+		goto error_return;
-+
-+	/* nanoseconds */
-+	ret = ksz_write32(dev, REG_PTP_RTC_NANOSEC, ts->tv_nsec);
-+	if (ret)
-+		goto error_return;
-+
-+	/* seconds */
-+	ret = ksz_write32(dev, REG_PTP_RTC_SEC, ts->tv_sec);
-+	if (ret)
-+		goto error_return;
-+
-+	/* Load PTP clock from shadow registers */
-+	ret = ksz_rmw16(dev, REG_PTP_CLK_CTRL, PTP_LOAD_TIME, PTP_LOAD_TIME);
-+
-+error_return:
-+	mutex_unlock(&ptp_data->lock);
-+
-+	return ret;
-+}
-+
-+static int ksz_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
-+{
-+	struct ksz_ptp_data *ptp_data = ptp_caps_to_data(ptp);
-+	struct ksz_device *dev = ptp_data_to_ksz_dev(ptp_data);
-+	int ret;
-+
-+	mutex_lock(&ptp_data->lock);
-+
-+	if (scaled_ppm) {
-+		s64 ppb, adj;
-+		u32 data32;
-+
-+		/* see scaled_ppm_to_ppb() in ptp_clock.c for details */
-+		ppb = 1 + scaled_ppm;
-+		ppb *= 125;
-+		ppb *= KSZ_PTP_INC_NS;
-+		ppb <<= KSZ_PTP_SUBNS_BITS - 13;
-+		adj = div_s64(ppb, NSEC_PER_SEC);
-+
-+		data32 = abs(adj);
-+		data32 &= PTP_SUBNANOSEC_M;
-+		if (adj >= 0)
-+			data32 |= PTP_RATE_DIR;
-+
-+		ret = ksz_write32(dev, REG_PTP_SUBNANOSEC_RATE, data32);
-+		if (ret)
-+			goto error_return;
-+
-+		ret = ksz_rmw16(dev, REG_PTP_CLK_CTRL, PTP_CLK_ADJ_ENABLE,
-+				PTP_CLK_ADJ_ENABLE);
-+		if (ret)
-+			goto error_return;
-+	} else {
-+		ret = ksz_rmw16(dev, REG_PTP_CLK_CTRL, PTP_CLK_ADJ_ENABLE, 0);
-+		if (ret)
-+			goto error_return;
-+	}
-+
-+error_return:
-+	mutex_unlock(&ptp_data->lock);
-+	return ret;
-+}
-+
-+static int ksz_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
-+{
-+	struct ksz_ptp_data *ptp_data = ptp_caps_to_data(ptp);
-+	struct ksz_device *dev = ptp_data_to_ksz_dev(ptp_data);
-+	s32 sec, nsec;
-+	u16 data16;
-+	int ret;
-+
-+	mutex_lock(&ptp_data->lock);
-+
-+	/* do not use ns_to_timespec64(),
-+	 * both sec and nsec are subtracted by hw
-+	 */
-+	sec = div_s64_rem(delta, NSEC_PER_SEC, &nsec);
-+
-+	ret = ksz_write32(dev, REG_PTP_RTC_NANOSEC, abs(nsec));
-+	if (ret)
-+		goto error_return;
-+
-+	ret = ksz_write32(dev, REG_PTP_RTC_SEC, abs(sec));
-+	if (ret)
-+		goto error_return;
-+
-+	ret = ksz_read16(dev, REG_PTP_CLK_CTRL, &data16);
-+	if (ret)
-+		goto error_return;
-+
-+	data16 |= PTP_STEP_ADJ;
-+
-+	/*PTP_STEP_DIR -- 0: subtract, 1: add */
-+	if (delta < 0)
-+		data16 &= ~PTP_STEP_DIR;
++	if (on)
++		set_bit(KSZ_HWTS_EN, &priv->state);
 +	else
-+		data16 |= PTP_STEP_DIR;
-+
-+	ret = ksz_write16(dev, REG_PTP_CLK_CTRL, data16);
-+
-+error_return:
-+	mutex_unlock(&ptp_data->lock);
-+	return ret;
++		clear_bit(KSZ_HWTS_EN, &priv->state);
 +}
 +
-+static int ksz_ptp_start_clock(struct ksz_device *dev)
++static void ksz_disconnect(struct dsa_switch *ds)
 +{
-+	return ksz_rmw16(dev, REG_PTP_CLK_CTRL, PTP_CLK_ENABLE, PTP_CLK_ENABLE);
++	struct ksz_tagger_private *priv = ds->tagger_data;
++
++	kfree(priv);
++	ds->tagger_data = NULL;
 +}
 +
-+static const struct ptp_clock_info ksz_ptp_caps = {
-+	.owner		= THIS_MODULE,
-+	.name		= "Microchip Clock",
-+	.max_adj	= MAX_DRIFT_CORR,
-+	.gettime64	= ksz_ptp_gettime,
-+	.settime64	= ksz_ptp_settime,
-+	.adjfine	= ksz_ptp_adjfine,
-+	.adjtime	= ksz_ptp_adjtime,
-+};
-+
-+int ksz_ptp_clock_register(struct dsa_switch *ds)
++static int ksz_connect(struct dsa_switch *ds)
 +{
-+	struct ksz_device *dev = ds->priv;
-+	struct ksz_ptp_data *ptp_data = &dev->ptp_data;
-+	int ret;
++	struct ksz_tagger_data *tagger_data;
++	struct ksz_tagger_private *priv;
 +
-+	mutex_init(&ptp_data->lock);
++	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
 +
-+	ptp_data->caps = ksz_ptp_caps;
++	/* Export functions for switch driver use */
++	tagger_data = &priv->data;
++	tagger_data->hwtstamp_get_state = ksz_hwtstamp_get_state;
++	tagger_data->hwtstamp_set_state = ksz_hwtstamp_set_state;
++	ds->tagger_data = priv;
 +
-+	/* Start hardware counter */
-+	ret = ksz_ptp_start_clock(dev);
-+	if (ret)
-+		return ret;
-+
-+	/* Register the PTP Clock */
-+	ptp_data->clock = ptp_clock_register(&ptp_data->caps, dev->dev);
-+	if (IS_ERR_OR_NULL(ptp_data->clock))
-+		return PTR_ERR(ptp_data->clock);
-+
-+	ret = ksz_rmw16(dev, REG_PTP_MSG_CONF1, PTP_802_1AS, PTP_802_1AS);
-+	if (ret)
-+		goto error_unregister_clock;
-+
-+	return 0;
-+
-+error_unregister_clock:
-+	ptp_clock_unregister(ptp_data->clock);
-+	return ret;
-+}
-+
-+void ksz_ptp_clock_unregister(struct dsa_switch *ds)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	struct ksz_ptp_data *ptp_data = &dev->ptp_data;
-+
-+	if (IS_ERR_OR_NULL(ptp_data->clock))
-+		return;
-+
-+	ptp_clock_unregister(ptp_data->clock);
-+}
-+
-+MODULE_AUTHOR("Arun Ramadoss <arun.ramadoss@microchip.com>");
-+MODULE_DESCRIPTION("PTP support for KSZ switch");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/net/dsa/microchip/ksz_ptp.h b/drivers/net/dsa/microchip/ksz_ptp.h
-new file mode 100644
-index 000000000000..ac53b0df2733
---- /dev/null
-+++ b/drivers/net/dsa/microchip/ksz_ptp.h
-@@ -0,0 +1,43 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Microchip LAN937X PTP Implementation
-+ * Copyright (C) 2020-2021 Microchip Technology Inc.
-+ */
-+
-+#ifndef _NET_DSA_DRIVERS_KSZ_PTP_H
-+#define _NET_DSA_DRIVERS_KSZ_PTP_H
-+
-+#if IS_ENABLED(CONFIG_NET_DSA_MICROCHIP_KSZ_PTP)
-+
-+struct ksz_ptp_data {
-+	struct ptp_clock_info caps;
-+	struct ptp_clock *clock;
-+	/* Serializes all operations on the PTP hardware clock */
-+	struct mutex lock;
-+};
-+
-+int ksz_ptp_clock_register(struct dsa_switch *ds);
-+
-+void ksz_ptp_clock_unregister(struct dsa_switch *ds);
-+
-+int ksz_get_ts_info(struct dsa_switch *ds, int port,
-+		    struct ethtool_ts_info *ts);
-+
-+#else
-+
-+struct ksz_ptp_data {
-+	/* Serializes all operations on the PTP hardware clock */
-+	struct mutex lock;
-+};
-+
-+static inline int ksz_ptp_clock_register(struct dsa_switch *ds)
-+{
 +	return 0;
 +}
 +
-+static inline void ksz_ptp_clock_unregister(struct dsa_switch *ds) { }
-+
-+#define ksz_get_ts_info NULL
-+
-+#endif	/* End of CONFIG_NET_DSA_MICROCHIOP_KSZ_PTP */
-+
-+#endif
-diff --git a/drivers/net/dsa/microchip/ksz_ptp_reg.h b/drivers/net/dsa/microchip/ksz_ptp_reg.h
-new file mode 100644
-index 000000000000..2bf8395475b9
---- /dev/null
-+++ b/drivers/net/dsa/microchip/ksz_ptp_reg.h
-@@ -0,0 +1,52 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Microchip KSZ PTP register definitions
-+ * Copyright (C) 2019-2021 Microchip Technology Inc.
-+ */
-+
-+/* 5 - PTP Clock */
-+#define REG_PTP_CLK_CTRL		0x0500
-+
-+#define PTP_STEP_ADJ			BIT(6)
-+#define PTP_STEP_DIR			BIT(5)
-+#define PTP_READ_TIME			BIT(4)
-+#define PTP_LOAD_TIME			BIT(3)
-+#define PTP_CLK_ADJ_ENABLE		BIT(2)
-+#define PTP_CLK_ENABLE			BIT(1)
-+#define PTP_CLK_RESET			BIT(0)
-+
-+#define REG_PTP_RTC_SUB_NANOSEC__2	0x0502
-+
-+#define PTP_RTC_SUB_NANOSEC_M		0x0007
-+#define PTP_RTC_0NS			0x00
-+
-+#define REG_PTP_RTC_NANOSEC		0x0504
-+#define REG_PTP_RTC_NANOSEC_H		0x0504
-+#define REG_PTP_RTC_NANOSEC_L		0x0506
-+
-+#define REG_PTP_RTC_SEC			0x0508
-+#define REG_PTP_RTC_SEC_H		0x0508
-+#define REG_PTP_RTC_SEC_L		0x050A
-+
-+#define REG_PTP_SUBNANOSEC_RATE		0x050C
-+#define REG_PTP_SUBNANOSEC_RATE_H	0x050C
-+#define PTP_SUBNANOSEC_M		0x3FFFFFFF
-+
-+#define PTP_RATE_DIR			BIT(31)
-+#define PTP_TMP_RATE_ENABLE		BIT(30)
-+
-+#define REG_PTP_SUBNANOSEC_RATE_L	0x050E
-+
-+#define REG_PTP_RATE_DURATION		0x0510
-+#define REG_PTP_RATE_DURATION_H		0x0510
-+#define REG_PTP_RATE_DURATION_L		0x0512
-+
-+#define REG_PTP_MSG_CONF1		0x0514
-+
-+#define PTP_802_1AS			BIT(7)
-+#define PTP_ENABLE			BIT(6)
-+#define PTP_ETH_ENABLE			BIT(5)
-+#define PTP_IPV4_UDP_ENABLE		BIT(4)
-+#define PTP_IPV6_UDP_ENABLE		BIT(3)
-+#define PTP_TC_P2P			BIT(2)
-+#define PTP_MASTER			BIT(1)
-+#define PTP_1STEP			BIT(0)
+ static struct sk_buff *ksz_common_rcv(struct sk_buff *skb,
+ 				      struct net_device *dev,
+ 				      unsigned int port, unsigned int len)
+@@ -245,6 +302,8 @@ static const struct dsa_device_ops lan937x_netdev_ops = {
+ 	.proto	= DSA_TAG_PROTO_LAN937X,
+ 	.xmit	= lan937x_xmit,
+ 	.rcv	= ksz9477_rcv,
++	.connect = ksz_connect,
++	.disconnect = ksz_disconnect,
+ 	.needed_tailroom = LAN937X_EGRESS_TAG_LEN,
+ };
+ 
 -- 
 2.36.1
 
