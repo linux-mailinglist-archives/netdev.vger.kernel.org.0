@@ -2,94 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F31395FED3B
-	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 13:34:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62D725FED3F
+	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 13:36:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229810AbiJNLec (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Oct 2022 07:34:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43596 "EHLO
+        id S229594AbiJNLgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Oct 2022 07:36:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229594AbiJNLeb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 07:34:31 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413AF1B8670;
-        Fri, 14 Oct 2022 04:34:30 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29EA1m7D016183;
-        Fri, 14 Oct 2022 11:34:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=buSuzlHntogVUPFfK4RjBL+S+bw9W06CKCs0MSyl9P8=;
- b=eV59XwaMjiJu303pF/9lf/QwSCe+EXQIJF3oHtMtLh2nKkiLVrhbidNCVVtLOlcofQzq
- /hQlb21uMdveYxDZC9fpTSTi+HhEOyA9EPnxXWLc68zxAtxgCK9oR+Jh5uPfH82hQvm4
- elXVMJB10sx09WwYw/uBHFgRME4GL53Ct25v6SEVyM2Y4NHsYzzcpD+sF8fcUFqTmp7M
- Lp2jOTLqLBZA61w3tqfQ++BobESBobqF5ToVwMl8iu6/4hBvr76M5jdmT0vrzDKxkQMf
- 17HpP667OWlYH7B8jfH+sGhHV7Nw/tYaVPExtAStgBIYQHFD9PziSTYGajQuATU6SSrD Gg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3k6mvr647f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 14 Oct 2022 11:34:22 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 29EBPgA6010304;
-        Fri, 14 Oct 2022 11:34:22 GMT
-Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3k6mvr646v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 14 Oct 2022 11:34:22 +0000
-Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
-        by ppma05wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29EBJv0M011687;
-        Fri, 14 Oct 2022 11:34:21 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma05wdc.us.ibm.com with ESMTP id 3k30ub5nya-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 14 Oct 2022 11:34:21 +0000
-Received: from smtpav01.dal12v.mail.ibm.com ([9.208.128.133])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29EBYIAF10158618
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 14 Oct 2022 11:34:19 GMT
-Received: from smtpav01.dal12v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E3EF55805D;
-        Fri, 14 Oct 2022 11:34:19 +0000 (GMT)
-Received: from smtpav01.dal12v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 52D9958058;
-        Fri, 14 Oct 2022 11:34:18 +0000 (GMT)
-Received: from [9.211.93.235] (unknown [9.211.93.235])
-        by smtpav01.dal12v.mail.ibm.com (Postfix) with ESMTP;
-        Fri, 14 Oct 2022 11:34:18 +0000 (GMT)
-Message-ID: <28880e7d-c02b-0b34-d1f3-54596ec7f297@linux.ibm.com>
-Date:   Fri, 14 Oct 2022 13:34:17 +0200
+        with ESMTP id S229866AbiJNLg3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 07:36:29 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25C4D1C0705
+        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 04:36:29 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1ojIz3-0008Bs-Ap; Fri, 14 Oct 2022 13:36:09 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 3B87BFE1ED;
+        Fri, 14 Oct 2022 11:36:06 +0000 (UTC)
+Date:   Fri, 14 Oct 2022 13:36:03 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Vivek Yadav <vivek.2311@samsung.com>
+Cc:     rcsekar@samsung.com, wg@grandegger.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        pankaj.dubey@samsung.com, ravi.patel@samsung.com,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] can: mcan: Add support for handling DLEC error on CAN
+ FD
+Message-ID: <20221014113603.hrg3ttsgofgq44ba@pengutronix.de>
+References: <CGME20221014053017epcas5p359d337008999640fa140c691f47bc79c@epcas5p3.samsung.com>
+ <20221014050332.45045-1-vivek.2311@samsung.com>
+ <20221014071114.a6ls5ay56xk4cin3@pengutronix.de>
+ <00db01d8dfbf$5e38fbd0$1aaaf370$@samsung.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.3.2
-Subject: Re: [PATCH net] net/smc: Fix an error code in smc_lgr_create()
-To:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Karsten Graul <kgraul@linux.ibm.com>
-Cc:     Jan Karcher <jaka@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-References: <Y0ktLDGg0CafxS3d@kili>
-From:   Wenjia Zhang <wenjia@linux.ibm.com>
-In-Reply-To: <Y0ktLDGg0CafxS3d@kili>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: Gj7G9BtQaf6evLdoF3VoeaiNKhjeEn_I
-X-Proofpoint-GUID: FT_juMmEEVT1y6dkNnOdPhwOjpctwwxr
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-10-14_06,2022-10-14_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- impostorscore=0 lowpriorityscore=0 adultscore=0 suspectscore=0 spamscore=0
- clxscore=1011 mlxscore=0 priorityscore=1501 mlxlogscore=999 phishscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2210140066
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="mj7nepgaiz77tn2a"
+Content-Disposition: inline
+In-Reply-To: <00db01d8dfbf$5e38fbd0$1aaaf370$@samsung.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -97,31 +60,72 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--mj7nepgaiz77tn2a
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 14.10.22 11:34, Dan Carpenter wrote:
-> If smc_wr_alloc_lgr_mem() fails then return an error code.  Don't return
-> success.
-> 
-> Fixes: 8799e310fb3f ("net/smc: add v2 support to the work request layer")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> ---
->   net/smc/smc_core.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-> index e6ee797640b4..c305d8dd23f8 100644
-> --- a/net/smc/smc_core.c
-> +++ b/net/smc/smc_core.c
-> @@ -896,7 +896,8 @@ static int smc_lgr_create(struct smc_sock *smc, struct smc_init_info *ini)
->   		}
->   		memcpy(lgr->pnet_id, ibdev->pnetid[ibport - 1],
->   		       SMC_MAX_PNETID_LEN);
-> -		if (smc_wr_alloc_lgr_mem(lgr))
-> +		rc = smc_wr_alloc_lgr_mem(lgr);
-> +		if (rc)
->   			goto free_wq;
->   		smc_llc_lgr_init(lgr, smc);
->   
+On 14.10.2022 16:53:19, Vivek Yadav wrote:
+> >=20
+> >                 if (is_lec_err(lec))
+> >                         work_done +=3D m_can_handle_lec_err(dev, lec);
+> >=20
+> >                 if (is_lec_err(dlec))
+> >                         work_done +=3D m_can_handle_lec_err(dev, dlec);
+> >=20
+> > > +			u8 dlec =3D FIELD_GET(PSR_DLEC_MASK, psr);
+> > > +
+> > > +			if (is_lec_err(dlec)) {
+> > > +				netdev_dbg(dev, "Data phase error
+> > detected\n");
+> >=20
+> > If you add a debug, please add one for the Arbitration phase, too.
+>
+> I have added the debug print specially for dlec (data phase). So we
+> can differentiate lec errors (for all type of frames except FD with
+> BRS) and Data phase errors, as we are calling same handler function
+> for both the errors.
+>=20
+> If I understood your comment correctly, you are asking something like bel=
+ow:
+>         /* handle protocol errors in arbitration phase */
+>         if ((cdev->can.ctrlmode & CAN_CTRLMODE_BERR_REPORTING) &&
+> -           m_can_is_protocol_err(irqstatus))
+> +           m_can_is_protocol_err(irqstatus)) {
+> +               netdev_dbg(dev, "Arbitration phase error detected\n");
+>                 work_done +=3D m_can_handle_protocol_error(dev, irqstatus=
+);
+> +       }
+>=20
+> If the above implementation is correct as per your review comment, I
+> think we don't need the above changes because Debug print for
+> arbitration failure are already there in "
+> m_can_handle_protocol_error" function.
 
-Good catch! Thank you for your effort!
-Reviewed-by: Wenjia Zhang <wenjia@linux.ibm.com>
+Ok
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--mj7nepgaiz77tn2a
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmNJSaEACgkQrX5LkNig
+011yxgf/c6acNcBfDRfZ9nhxnau0jXG2K7yOwJb8Hi4SIxPO/63RPFT+lqGvm+Pn
+eA75SQiGy8ojstW3XJyGDTm5hJ0YNHN1jEd00ZlY4LuBwTmoNrsdMigxjbpLOAdp
+orkIkDcbsL6TNx37Ky38actcIhNVJ9MognLme0WG/2Z3AA9iEQHpV1RmBe1a3rxQ
+TDpUo9iK8juT9CtH7A54MPEmeFJnIiHTC4sOBD5fX9e8iaTiqQS73UP8O6R3M8LG
+AHDywbXMHeCVI8M/mPP2iY11q58D2omCh6J7lD0VpiycpWEycGaGp+n52S33FaEX
+BFx4blHBGw7XsfT2KbGaZm52yweSWw==
+=UAXg
+-----END PGP SIGNATURE-----
+
+--mj7nepgaiz77tn2a--
