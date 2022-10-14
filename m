@@ -2,196 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 84E135FF228
-	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 18:20:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 791CC5FF238
+	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 18:25:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229726AbiJNQU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Oct 2022 12:20:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59146 "EHLO
+        id S229688AbiJNQZ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Oct 2022 12:25:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbiJNQUZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 12:20:25 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E496B4A81F
-        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 09:20:18 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id 126so6187609ybw.3
-        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 09:20:18 -0700 (PDT)
+        with ESMTP id S229992AbiJNQZ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 12:25:27 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B1175789C
+        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 09:25:25 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id 63so6204842ybq.4
+        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 09:25:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=uY0IG2r/onj1LsXaA41TR23rc52PyWUrwqi3tyqEPkY=;
-        b=YZBQRYJLpJQSbtbM6pXh9wRl9esR6TWT70JjnO3uSRGQksb7cbLP3bNp3C6vhDWNS0
-         Jq+xUb5p5aU4B48WPqqgjjTz5HsB7SY++fTvIhJz9GOxTryYmK2BaH4hSHGAGmjgscO0
-         aOHqKLQIXUygS5vGlQhmqb+7uPmdsLwD8a7FNuZZ01+tYoOlvkOCcDFC3dPRMi0hIP9X
-         klbzPbRlCxAAbONOuN+J2gYjTcO9QANQyGs4IDia4D5MHUnFpbaiRddmslMdW5rRUztk
-         D3nJ3ZWTmK9xdx6+uCt53zK0dY/OVRtjD+6WczC2rrPc9xYAnv4QqlxJf9GYEqN6JFNP
-         BonA==
+        bh=NcdIdCoD13PsVdF7VemIWCKC21xbZgC+dlVWP2DevsU=;
+        b=0XzxQYtHFbIrXn8AS8vsoqDTkWCOBrHLEQFRujV8atSDmeImDUO47FOUArU55vzqNA
+         moMrG/7iYJbwyioQ7slGp1rAYns2UOfNyN8xtPsP9ZvQkF8+sFK+bH1W2Cnuzy4l6tny
+         n0XJmGsvSBeHB50i30Vo7KKjsyS3ZnsvUqBZQUH5Ta/m5YjDbLiwlJuW37qfRIdd6asi
+         JVBMNr5PUIuRElKOVHzDZb9UPTRMclwFFDpSI1E0th8GiBX9BNpXbbj3r+KE9v3xhG65
+         3Bs5ADQcT2I8MrYHafd6NHU4zxo8MNAjyGNRvzc/Jhsr1yY9J9eThlJ0mg8ypzRFcZ9X
+         HaWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=uY0IG2r/onj1LsXaA41TR23rc52PyWUrwqi3tyqEPkY=;
-        b=RNiTqmZ/nEIyrOVUvAzPL/Dd0kW8x3NBp/CC9FKd2gSyRpKvI65aDeSy3EVv3roJWB
-         iy5oyPu52aoqjYSpu6hmEFPXYVMF+uztqhosGXh6r4LL2R8YMEcxMQiusCnMHSdFlhIQ
-         SGSJ7LeqtjypobBGhVmVDXEsNifrZaocl0IyAt90tg8Fy8UpyI5/W4HlOWaqlvQetAKS
-         kcLPgbInUJSNxr/bxvikez4ofRkb7lpQr2E8iOof/t9LRRQsDWqOwaCqp3qzrwVjJ/3d
-         EkneGOPdlgAwI1yMzxZ2VMSTOfHmMIm/AYaszyIueT3dJjZcyNq3ir+TwxaKWlPrEIe2
-         YQmw==
-X-Gm-Message-State: ACrzQf1h3ocyNWvv1UeBYmiH3q8KEjGoPRjgC8Q2BmSXtT0Y3QjlRaz5
-        qXsb7hkhjyL1EdAYWu6DEqjESSHeEpT0Ddbrj8NX2w==
-X-Google-Smtp-Source: AMsMyM5tSIBZmpnwsUpIM0Ii/QRfqpXzilyZZLcpVPKgs/pRDP/i/3uxQ5KVVmvty7JPqg1mXgkKMDWK8kFQ2x7zaTQ=
-X-Received: by 2002:a25:3187:0:b0:6c1:822b:eab1 with SMTP id
- x129-20020a253187000000b006c1822beab1mr4948047ybx.427.1665764417429; Fri, 14
- Oct 2022 09:20:17 -0700 (PDT)
+        bh=NcdIdCoD13PsVdF7VemIWCKC21xbZgC+dlVWP2DevsU=;
+        b=HXQiPLIpg0xle7rbN5luSZJgFqOTUwgVgK8mTm0HJRgp0ArosyQ+e8p6nnTqgtdCjk
+         zueLfb5PAQonlyEa/+zaqi1/BvUSJ8253zMHd4qDEBjRWPSAf5EihiCkLmMzP3KQnzwU
+         TI9CmPtGg/W+RMACYgHY8lZLZy0SuLkTV0ZkWJWFfz8iBb8SW4aUJIMa5bDmAvvg9hXP
+         IMJcUSNLInnF3j5WUKlRGIWOViyQPBetuxqS3S8kYYex71DUZOn5fy4rayd10UI2+WUk
+         8+zNmEJqk1/TSqUkfNQkYuI+eDaw92Q6h7r3ZieeNsuaXxXv1Bs60ifY0bh4Fw9kqKbz
+         W5kg==
+X-Gm-Message-State: ACrzQf2JFBtQMe913kGiUEVAcb3y+KyPZ/Y4Ws76xlGbzB9H0lrDY6jQ
+        ujlid2Z6iXN03nMlpWYzzbQCE1RbA1G43sOESidr
+X-Google-Smtp-Source: AMsMyM6ady9Wb/I8bWW9rB+anqAQUZjNjnrqoCisyeI5hegnDjV4ximcDWV1xI5TfdzL4x9FJGsT6gLoO0Pu/Uib5Fo=
+X-Received: by 2002:a25:9a88:0:b0:6b9:c29a:2f4b with SMTP id
+ s8-20020a259a88000000b006b9c29a2f4bmr5348869ybo.236.1665764724292; Fri, 14
+ Oct 2022 09:25:24 -0700 (PDT)
 MIME-Version: 1.0
-References: <5099dc39-c6d9-115a-855b-6aa98d17eb4b@collabora.com>
- <8dff3e46-6dac-af6a-1a3b-e6a8b93fdc60@collabora.com> <CANn89iLOdgExV3ydkg0r2iNwavSp5Zu9hskf34TTqmCZQCfUdA@mail.gmail.com>
- <5db967de-ea7e-9f35-cd74-d4cca2fcb9ee@codeweavers.com>
-In-Reply-To: <5db967de-ea7e-9f35-cd74-d4cca2fcb9ee@codeweavers.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 14 Oct 2022 09:20:04 -0700
-Message-ID: <CANn89iJTNUCDLptS_rV4JUDcEH8JNXvOTx4xgzvaDHG6eodtXg@mail.gmail.com>
-Subject: Re: [RFC] EADDRINUSE from bind() on application restart after killing
-To:     Paul Gofman <pgofman@codeweavers.com>
-Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        "open list:NETWORKING [TCP]" <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
+References: <166543910984.474337.2779830480340611497.stgit@olly>
+ <20221013085333.26288e44@kernel.org> <CAHC9VhT5A6M27PO1_NKgqaRJXkTyZv_kjfPF=VNSLZ1nx5GFrA@mail.gmail.com>
+ <CAADnVQ+1RZWuvjCEAro0OW9+1w12U2R6v3+kTR5T7pWvPC7gLg@mail.gmail.com>
+In-Reply-To: <CAADnVQ+1RZWuvjCEAro0OW9+1w12U2R6v3+kTR5T7pWvPC7gLg@mail.gmail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Fri, 14 Oct 2022 12:25:12 -0400
+Message-ID: <CAHC9VhRModyV8B9o7_DqkanWf79GzPGMtirw=xCt2wexp5RJ6w@mail.gmail.com>
+Subject: Re: [PATCH] lsm: make security_socket_getpeersec_stream() sockptr_t safe
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        selinux@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 14, 2022 at 8:52 AM Paul Gofman <pgofman@codeweavers.com> wrote:
->
-> Hello Eric,
->
-> our problem is actually not with the accept socket / port for which
-> those timeouts apply, we don't care for that temporary port number. The
-> problem is that the listen port (to which apps bind explicitly) is also
-> busy until the accept socket waits through all the necessary timeouts
-> and is fully closed. From my reading of TCP specs I don't understand why
-> it should be this way. The TCP hazards stipulating those timeouts seem
-> to apply to accept (connection) socket / port only. Shouldn't listen
-> socket's port (the only one we care about) be available for bind
-> immediately after the app stops listening on it (either due to closing
-> the listen socket or process force kill), or maybe have some other
-> timeouts not related to connected accept socket / port hazards? Or am I
-> missing something why it should be the way it is done now?
->
-
-
-To quote your initial message :
-
-<quote>
-We are able to avoid this error by adding SO_REUSEADDR attribute to the
-socket in a hack. But this hack cannot be added to the application
-process as we don't own it.
-</quote>
-
-Essentially you are complaining of the linux kernel being unable to
-run a buggy application.
-
-We are not going to change the linux kernel because you can not
-fix/recompile an application.
-
-Note that you could use LD_PRELOAD, or maybe eBPF to automatically
-turn SO_REUSEADDR before bind()
-
-
-> Thanks,
->      Paul.
->
->
-> On 9/30/22 10:16, Eric Dumazet wrote:
-> > On Fri, Sep 30, 2022 at 6:24 AM Muhammad Usama Anjum
-> > <usama.anjum@collabora.com> wrote:
-> >> Hi Eric,
-> >>
-> >> RFC 1337 describes the TIME-WAIT Assassination Hazards in TCP. Because
-> >> of this hazard we have 60 seconds timeout in TIME_WAIT state if
-> >> connection isn't closed properly. From RFC 1337:
-> >>> The TIME-WAIT delay allows all old duplicate segments time
-> >> enough to die in the Internet before the connection is reopened.
-> >>
-> >> As on localhost there is virtually no delay. I think the TIME-WAIT delay
-> >> must be zero for localhost connections. I'm no expert here. On localhost
-> >> there is no delay. So why should we wait for 60 seconds to mitigate a
-> >> hazard which isn't there?
-> > Because we do not specialize TCP stack for loopback.
+On Fri, Oct 14, 2022 at 11:51 AM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+> On Thu, Oct 13, 2022 at 8:59 AM Paul Moore <paul@paul-moore.com> wrote:
 > >
-> > It is easy to force delays even for loopback (tc qdisc add dev lo root
-> > netem ...)
+> > On Thu, Oct 13, 2022 at 11:53 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> > > On Mon, 10 Oct 2022 17:58:29 -0400 Paul Moore wrote:
+> > > > Commit 4ff09db1b79b ("bpf: net: Change sk_getsockopt() to take the
+> > > > sockptr_t argument") made it possible to call sk_getsockopt()
+> > > > with both user and kernel address space buffers through the use of
+> > > > the sockptr_t type.  Unfortunately at the time of conversion the
+> > > > security_socket_getpeersec_stream() LSM hook was written to only
+> > > > accept userspace buffers, and in a desire to avoid having to change
+> > > > the LSM hook the commit author simply passed the sockptr_t's
+> > > > userspace buffer pointer.  Since the only sk_getsockopt() callers
+> > > > at the time of conversion which used kernel sockptr_t buffers did
+> > > > not allow SO_PEERSEC, and hence the
+> > > > security_socket_getpeersec_stream() hook, this was acceptable but
+> > > > also very fragile as future changes presented the possibility of
+> > > > silently passing kernel space pointers to the LSM hook.
+> > > >
+> > > > There are several ways to protect against this, including careful
+> > > > code review of future commits, but since relying on code review to
+> > > > catch bugs is a recipe for disaster and the upstream eBPF maintainer
+> > > > is "strongly against defensive programming", this patch updates the
+> > > > LSM hook, and all of the implementations to support sockptr_t and
+> > > > safely handle both user and kernel space buffers.
+> > >
+> > > Code seems sane, FWIW, but the commit message sounds petty,
+> > > which is likely why nobody is willing to ack it.
 > >
-> > You can avoid TCP complexity (cpu costs) over loopback using AF_UNIX instead.
-> >
-> > TIME_WAIT sockets are optional.
-> > If you do not like them, simply set /proc/sys/net/ipv4/tcp_max_tw_buckets to 0 ?
-> >
-> >> Zapping the sockets in TIME_WAIT and FIN_WAIT_2 does removes them. But
-> >> zap is required from privileged (CAP_NET_ADMIN) process. We are having
-> >> hard time finding a privileged process to do this.
-> > Really, we are not going to add kludges in TCP stacks because of this reason.
-> >
-> >> Thanks,
-> >> Usama
-> >>
-> >>
-> >> On 5/24/22 1:18 PM, Muhammad Usama Anjum wrote:
-> >>> Hello,
-> >>>
-> >>> We have a set of processes which talk with each other through a local
-> >>> TCP socket. If the process(es) are killed (through SIGKILL) and
-> >>> restarted at once, the bind() fails with EADDRINUSE error. This error
-> >>> only appears if application is restarted at once without waiting for 60
-> >>> seconds or more. It seems that there is some timeout of 60 seconds for
-> >>> which the previous TCP connection remains alive waiting to get closed
-> >>> completely. In that duration if we try to connect again, we get the error.
-> >>>
-> >>> We are able to avoid this error by adding SO_REUSEADDR attribute to the
-> >>> socket in a hack. But this hack cannot be added to the application
-> >>> process as we don't own it.
-> >>>
-> >>> I've looked at the TCP connection states after killing processes in
-> >>> different ways. The TCP connection ends up in 2 different states with
-> >>> timeouts:
-> >>>
-> >>> (1) Timeout associated with FIN_WAIT_1 state which is set through
-> >>> `tcp_fin_timeout` in procfs (60 seconds by default)
-> >>>
-> >>> (2) Timeout associated with TIME_WAIT state which cannot be changed. It
-> >>> seems like this timeout has come from RFC 1337.
-> >>>
-> >>> The timeout in (1) can be changed. Timeout in (2) cannot be changed. It
-> >>> also doesn't seem feasible to change the timeout of TIME_WAIT state as
-> >>> the RFC mentions several hazards. But we are talking about a local TCP
-> >>> connection where maybe those hazards aren't applicable directly? Is it
-> >>> possible to change timeout for TIME_WAIT state for only local
-> >>> connections without any hazards?
-> >>>
-> >>> We have tested a hack where we replace timeout of TIME_WAIT state from a
-> >>> value in procfs for local connections. This solves our problem and
-> >>> application starts to work without any modifications to it.
-> >>>
-> >>> The question is that what can be the best possible solution here? Any
-> >>> thoughts will be very helpful.
-> >>>
-> >>> Regards,
-> >>>
-> >> --
-> >> Muhammad Usama Anjum
+> > Heh, feel free to look at Alexei's comments to my original email; the
+> > commit description seems spot on to me.
 >
+> Paul,
 >
+> The commit message:
+> "
+> also very fragile as future changes presented the possibility of
+> silently passing kernel space pointers to the LSM hook.
+> "
+> shows that you do not understand how copy_from_user works.
+>
+> Martin's change didn't introduce any fragility.
+> Do you realize that user space can pass any 64-bit value
+> as 'user pointer' via syscall, right?
+> And that value may just as well be a valid kernel address.
+> copy_from_user always had a check to prevent reading kernel
+> memory. It will simply return an error when it sees
+> kernel address.
+>
+> Your patch itself is not wrong per-se, but it's doing
+> not what you think it's doing.
+> Right now the patch is useless, but
+> if switch statement in sol_socket_sockopt() would be relaxed
+> the bpf progs would be able to pass kernel pointers
+> to security_socket_getpeersec which makes little sense at this point.
+> So the code you're adding will be a dead code without a test
+> for the foreseeable future.
+> Because of that I can only add my Nack.
+
+Oh don't worry, I've already registered your NACK because the patch
+has a three line diff in net/core/sock.c and it's going in via the LSM
+tree.  I'll CC you on the pull request and mention your NACK to Linus,
+you can feel free to make whatever argument you believe justifies your
+objection at that point in time.
+
+However, just so I'm clear on your new objection, you are basically
+saying that copy_to_sockptr() shouldn't exist?  If you honestly
+believe that, and you aren't just picking on this patch because of a
+grudge, I would encourage you to submit a patch removing
+copy_to_sockptr() and friends from the kernel and let's see what
+happens; please CC me on the patch(es) as I think the discussion for
+that would be very interesting :)
+
+-- 
+paul-moore.com
