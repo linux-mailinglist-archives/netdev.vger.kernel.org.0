@@ -2,83 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D6E2B5FE9BD
-	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 09:40:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CFBD5FE9C6
+	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 09:44:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230029AbiJNHk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Oct 2022 03:40:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33446 "EHLO
+        id S229617AbiJNHoP convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 14 Oct 2022 03:44:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230007AbiJNHkW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 03:40:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 764CE647C4;
-        Fri, 14 Oct 2022 00:40:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S229485AbiJNHoO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 03:44:14 -0400
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B987B9AFD0
+        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 00:44:12 -0700 (PDT)
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-294-6nszyrnDOUiIdJtwp5vEkw-1; Fri, 14 Oct 2022 03:44:07 -0400
+X-MC-Unique: 6nszyrnDOUiIdJtwp5vEkw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E130CB82261;
-        Fri, 14 Oct 2022 07:40:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8866EC43142;
-        Fri, 14 Oct 2022 07:40:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665733216;
-        bh=E9YS9LuaxDgBFcPWjoiYDHC4CqKREUCdE1gS66oYz0w=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=bog607pAnjNhwSRKDzo/kleN9OYjKVzR/HYkfnjQCl00pAB+gd4Qe3Bfy4YUSIj77
-         PBFIAAjeJkAUrlFfyB3kBgW1syUKnqVGE8C4BW6pXTw0H6xSKfgqVluAzCig0i82RR
-         87Qjd4/vRDIA4ASMi05X5ci284whZjoDoigihPwBQdrVxpuvg5I3Vo0BPwn+WYWpTq
-         sCYLl7J527le1BF+smlDYywV5xKGBtlMaam+KP04WugXjorPX9ibiLx4nhmXXkz3k8
-         4fv61fbEir+eBdz6jI+oPNXxIvCv8ECGgZZzbQrKzFnw7AYoZtW8i+PGngc7krGHQT
-         ExYQpMDdM9BrQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 70480E52525;
-        Fri, 14 Oct 2022 07:40:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 500BD3814942;
+        Fri, 14 Oct 2022 07:44:07 +0000 (UTC)
+Received: from hog (unknown [10.39.192.237])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 82E88208DDBD;
+        Fri, 14 Oct 2022 07:44:06 +0000 (UTC)
+Date:   Fri, 14 Oct 2022 09:43:41 +0200
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     netdev@vger.kernel.org, Antoine Tenart <atenart@kernel.org>
+Subject: Re: [PATCH net 3/5] macsec: fix secy->n_rx_sc accounting
+Message-ID: <Y0kTLaz95PUE4uQz@hog>
+References: <cover.1665416630.git.sd@queasysnail.net>
+ <1879f6c8a7fcb5d7bb58ffb3d9fed26c8d7ec5cb.1665416630.git.sd@queasysnail.net>
+ <Y0j+2J2uBqrhqRtg@unreal>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: macvlan: change schedule system_wq to system_unbound_wq
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166573321645.24049.4297610580110367640.git-patchwork-notify@kernel.org>
-Date:   Fri, 14 Oct 2022 07:40:16 +0000
-References: <1665646872-20954-1-git-send-email-zhangxiangqian@kylinos.cn>
-In-Reply-To: <1665646872-20954-1-git-send-email-zhangxiangqian@kylinos.cn>
-To:     zhangxiangqian <zhangxiangqian@kylinos.cn>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <Y0j+2J2uBqrhqRtg@unreal>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Thu, 13 Oct 2022 15:41:12 +0800 you wrote:
-> For FT2000+/64 devices,
-> when four virtual machines share the same physical network interface,
-> DROP will occur due to the single core CPU performance problem.
+2022-10-14, 09:16:56 +0300, Leon Romanovsky wrote:
+[...]
+> > @@ -1897,15 +1899,16 @@ static int macsec_add_rxsc(struct sk_buff *skb, struct genl_info *info)
+> >  	secy = &macsec_priv(dev)->secy;
+> >  	sci = nla_get_sci(tb_rxsc[MACSEC_RXSC_ATTR_SCI]);
+> >  
+> > -	rx_sc = create_rx_sc(dev, sci);
+> > +
+> > +	if (tb_rxsc[MACSEC_RXSC_ATTR_ACTIVE])
+> > +		active = !!nla_get_u8(tb_rxsc[MACSEC_RXSC_ATTR_ACTIVE]);
 > 
-> ip_check_defrag and macvlan_process_broadcast is on the same CPU.
-> When the MACVLAN PORT increases, the CPU usage reaches more than 90%.
-> bc_queue > bc_queue_len_used (default 1000), causing DROP.
+> You don't need !! to assign to bool variables and can safely omit them.
+
+Yeah, but I'm just moving existing code, see below.
+
+(please trim your replies, nobody wants to scroll through endless
+quoting just to find one comment hiding in the middle)
+
 > 
-> [...]
+> thanks
+> 
+> > +
+> > +	rx_sc = create_rx_sc(dev, sci, active);
+> >  	if (IS_ERR(rx_sc)) {
+> >  		rtnl_unlock();
+> >  		return PTR_ERR(rx_sc);
+> >  	}
+> >  
+> > -	if (tb_rxsc[MACSEC_RXSC_ATTR_ACTIVE])
+> > -		rx_sc->active = !!nla_get_u8(tb_rxsc[MACSEC_RXSC_ATTR_ACTIVE]);
 
-Here is the summary with links:
-  - net: macvlan: change schedule system_wq to system_unbound_wq
-    https://git.kernel.org/netdev/net/c/3d6642eac74d
-
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Sabrina
 
