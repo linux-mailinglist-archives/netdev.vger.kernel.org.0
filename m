@@ -2,104 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AB9F5FEEBB
-	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 15:37:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 825055FEEBD
+	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 15:37:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229619AbiJNNg7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Oct 2022 09:36:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48056 "EHLO
+        id S229615AbiJNNh4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Oct 2022 09:37:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbiJNNg5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 09:36:57 -0400
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F0C719C22B;
-        Fri, 14 Oct 2022 06:36:56 -0700 (PDT)
-Received: by mail-qk1-x72a.google.com with SMTP id o22so2417378qkl.8;
-        Fri, 14 Oct 2022 06:36:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=HXD89n+g/IHfNLxiFjO0ku2zV39n7Ij4/f7iwolHvDA=;
-        b=XedoNpp0fM2LS9h3qwYg/QbLyZUeKGuriQZkE5AsCgog55mCg5l//DbGx9NU37OLac
-         ojv/VMZw8L9W1rW8Fat8i3oN9VG97bmXN39v5a8EW8QsFMTijuudZvFPfRsBUj5tC6d3
-         2SRMwzUv+ExrORBwrNQbBlcbY9E8ZjllsGlpLdq1QN6djjliWROKTdpMYloqCYAn/twP
-         9J4qfeICQWuNsnq7zNj9fZ8inoQBOIibXUY56OgEN2hH/dfYBc4sLSbMihNjhgOn+5eq
-         mU6um6hYnGV1P5wWTohrqVtPHn7syy5r1mMEjpkGlBXOaFqo560n19d0UDlaxVMMJ3Dv
-         Xk9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=HXD89n+g/IHfNLxiFjO0ku2zV39n7Ij4/f7iwolHvDA=;
-        b=uqoQXsBab7BfLB4SIHqzwSP4gWPDtZp3oaCeotGSWFzzDKbjsCz0NtIMyIO2tSyIu9
-         UqrUf6Mvaz1uOiEi+2YJXoh44vmZRSEiyBpon4ozT87/59Y/ZMXIiUr4M/nB4svClyRj
-         YQScjy7EDYxNvDiG7JacdsWnWVioZtTiFjcwCkJpUTKSmUEVIX1NKIIkm2ffl6Lqn+c6
-         3p4L33P2/EndqYyW2rkAtxyl4WcAozsA8s21JtqU3nhInNOllxzERZNrNIeC3yhr9cE0
-         VhjiKK7wkQ6fnAV5WqPet7ss2+zGoEcVWMxrSHrW79nFxswVtbokngor3BxVP2wrDsqZ
-         Q2Nw==
-X-Gm-Message-State: ACrzQf0dtu4YLloQsa8tdOM+GQSXHtkoA3CyRXG6QEGvQRbtkZGox+36
-        uSt35EmzwsECV3D1ptRcIwgiNEUjaiA=
-X-Google-Smtp-Source: AMsMyM6GNZuQdkoS6Dw52LPxv4g7vcgJQSJQi131zAY5ZiRXq0Daa30zSKKXsvGOcEAZ/GhEPBGz2A==
-X-Received: by 2002:a05:620a:4248:b0:6d2:7f09:50a1 with SMTP id w8-20020a05620a424800b006d27f0950a1mr3692923qko.746.1665754615618;
-        Fri, 14 Oct 2022 06:36:55 -0700 (PDT)
-Received: from [192.168.1.201] (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
-        by smtp.gmail.com with ESMTPSA id l5-20020ac80785000000b003996aa171b9sm1972323qth.97.2022.10.14.06.36.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Oct 2022 06:36:55 -0700 (PDT)
-Message-ID: <69402e24-99a2-9957-693d-645b98f01cda@gmail.com>
-Date:   Fri, 14 Oct 2022 09:36:54 -0400
+        with ESMTP id S229537AbiJNNhy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 09:37:54 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 881CF1CEC0F
+        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 06:37:53 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 3CA27204E0;
+        Fri, 14 Oct 2022 15:37:51 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id uoykIjbzfGgn; Fri, 14 Oct 2022 15:37:50 +0200 (CEST)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 7477F20322;
+        Fri, 14 Oct 2022 15:37:50 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout2.secunet.com (Postfix) with ESMTP id 6453980004A;
+        Fri, 14 Oct 2022 15:37:50 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 14 Oct 2022 15:37:50 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Fri, 14 Oct
+ 2022 15:37:50 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id A5FE931809FD; Fri, 14 Oct 2022 15:37:49 +0200 (CEST)
+Date:   Fri, 14 Oct 2022 15:37:49 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Eyal Birger <eyal.birger@gmail.com>
+CC:     <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
+        <dsahern@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        <monil191989@gmail.com>, <nicolas.dichtel@6wind.com>,
+        <stephen@networkplumber.org>
+Subject: Re: [PATCH ipsec,v2] xfrm: fix "disable_policy" on ipv4 early demux
+Message-ID: <20221014133749.GM2602992@gauss3.secunet.de>
+References: <20221009191643.297623-1-eyal.birger@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net] sunhme: Uninitialized variable in happy_meal_init()
-Content-Language: en-US
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-References: <Y0kuLdMUdLCHF+fe@kili>
-From:   Sean Anderson <seanga2@gmail.com>
-In-Reply-To: <Y0kuLdMUdLCHF+fe@kili>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20221009191643.297623-1-eyal.birger@gmail.com>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/14/22 05:38, Dan Carpenter wrote:
-> The "burst" string is only initialized for CONFIG_SPARC.
+On Sun, Oct 09, 2022 at 10:16:43PM +0300, Eyal Birger wrote:
+> The commit in the "Fixes" tag tried to avoid a case where policy check
+> is ignored due to dst caching in next hops.
 > 
-> Fixes: 24cddbc3ef11 ("sunhme: Combine continued messages")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> ---
->   drivers/net/ethernet/sun/sunhme.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> However, when the traffic is locally consumed, the dst may be cached
+> in a local TCP or UDP socket as part of early demux. In this case the
+> "disable_policy" flag is not checked as ip_route_input_noref() was only
+> called before caching, and thus, packets after the initial packet in a
+> flow will be dropped if not matching policies.
 > 
-> diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
-> index 62deed210a95..efaa6a8eadec 100644
-> --- a/drivers/net/ethernet/sun/sunhme.c
-> +++ b/drivers/net/ethernet/sun/sunhme.c
-> @@ -1328,7 +1328,7 @@ static int happy_meal_init(struct happy_meal *hp)
->   	void __iomem *erxregs      = hp->erxregs;
->   	void __iomem *bregs        = hp->bigmacregs;
->   	void __iomem *tregs        = hp->tcvregs;
-> -	const char *bursts;
-> +	const char *bursts = "";
->   	u32 regtmp, rxcfg;
->   
->   	/* If auto-negotiation timer is running, kill it. */
+> Fix by checking the "disable_policy" flag also when a valid dst is
+> already available.
+> 
+> Link: https://bugzilla.kernel.org/show_bug.cgi?id=216557
+> Reported-by: Monil Patel <monil191989@gmail.com>
+> Fixes: e6175a2ed1f1 ("xfrm: fix "disable_policy" flag use when arriving from different devices")
+> Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
 
-This should be "64" to match the value used by PCI.
-
---Sean
+Applied, thanks Eyal!
