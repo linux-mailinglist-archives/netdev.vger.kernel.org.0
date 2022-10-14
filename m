@@ -2,67 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F03475FE6B8
-	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 03:53:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7ED355FE6CC
+	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 04:06:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229705AbiJNBx3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 21:53:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47956 "EHLO
+        id S229742AbiJNCF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 22:05:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229540AbiJNBx2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 21:53:28 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F7F18982A;
-        Thu, 13 Oct 2022 18:53:26 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MpTqt6pYKzDsVV;
-        Fri, 14 Oct 2022 09:50:50 +0800 (CST)
-Received: from [10.67.111.192] (10.67.111.192) by
- kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 14 Oct 2022 09:53:23 +0800
-Message-ID: <86c88c01-22eb-b7f8-9c65-0faf97b4096b@huawei.com>
-Date:   Fri, 14 Oct 2022 09:53:23 +0800
+        with ESMTP id S229744AbiJNCFz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 22:05:55 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E83118C411;
+        Thu, 13 Oct 2022 19:05:52 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id a6-20020a17090abe0600b0020d7c0c6650so6620015pjs.0;
+        Thu, 13 Oct 2022 19:05:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=c8322atv62tEbkL85+mZmId4t2HkHpXWBmOWIZmHHKQ=;
+        b=Cc7JU9HXA+772G/+ua4nvw3QiVXgSueeEMfZ6iovpja8xdMGbEGPbrkZolZ/MRFcPb
+         Aasi8lDuwKwZS41+zerWUkzANCnzobhfGdtaCJO+bdGqCRbpJ9nL5vvUJYgYE3R2vnbg
+         T7R8ZQ/jyQPT04iI9g5SOcIMU9m32RcHEdbNoF/jTyG1zgWPECvox9R8X6K7X/4nxCnA
+         EKOzpZlRoHVJSoiP65R4YYSPfdu8jbjEmgZ4w4s83wCGQNh9ggbNUpKLrxOMESobhOO5
+         XQjK9dkb+kirTXcYL98LWMsodpksl5QiKmB+Mdj6YUv3UJsnS1gBy6PEuYubkacoONI8
+         BoWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=c8322atv62tEbkL85+mZmId4t2HkHpXWBmOWIZmHHKQ=;
+        b=cjMlSjCd8VMhOv3w9B8GjIbDEXDJJUIOCMYQSEO4ExHkbE7H/sveyJpjjD4NDRIW6c
+         sfL2+LYt1fVGkMg4o01flBSsX+8iDyrJyWsE41TSGeYJCti5gO/Vb/LEQrW3w//RbgT1
+         6wxqRv8TDEQk6a9j0CsLEFgHzVw+R1BWOxiFuyCaEJqGekxk1SamDVkP/KiXyu3YSVT/
+         JTBheVcv34GpBNtUifoI0vEP4f0JAalIJZFaUL3wVpI/vxHDHkvEfneZQf/8Zg2uKL4a
+         EC7zK7InsosDVCPIGYNHSe8yV5KQFzsK/HcqJcSOtLRkj1iMQBxKTCelfx1zpeXPkejJ
+         evZA==
+X-Gm-Message-State: ACrzQf17BPOH13pNN8U83qmAG0hshEXNDTmDUNChcrkdkmc4UBVBXuYa
+        t8s31T16pGocSua9kD0zWpM=
+X-Google-Smtp-Source: AMsMyM7khLiq0I1JfGqVKyWARrvSFv8q7D3nfGQyKgCGthaf/7m/mWl11Br422vBZ3oOl8PNJftRTw==
+X-Received: by 2002:a17:902:da91:b0:181:a0e6:5116 with SMTP id j17-20020a170902da9100b00181a0e65116mr2908309plx.57.1665713151092;
+        Thu, 13 Oct 2022 19:05:51 -0700 (PDT)
+Received: from localhost.localdomain ([43.128.11.181])
+        by smtp.gmail.com with ESMTPSA id y24-20020aa79438000000b0056281da3bcbsm368804pfo.149.2022.10.13.19.05.47
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 13 Oct 2022 19:05:50 -0700 (PDT)
+From:   Xiaobo Liu <cppcoffee@gmail.com>
+To:     davem@davemloft.net
+Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiaobo Liu <cppcoffee@gmail.com>
+Subject: [PATCH] net/atm: fix proc_mpc_write incorrect return value
+Date:   Fri, 14 Oct 2022 10:05:40 +0800
+Message-Id: <20221014020540.32114-1-cppcoffee@gmail.com>
+X-Mailer: git-send-email 2.21.0 (Apple Git-122.2)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH bpf-next v4 2/6] libbpf: Fix memory leak in
- parse_usdt_arg()
-Content-Language: en-US
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Xu Kuohai <xukuohai@huaweicloud.com>
-CC:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Alan Maguire <alan.maguire@oracle.com>,
-        Delyan Kratunov <delyank@fb.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-References: <20221011120108.782373-1-xukuohai@huaweicloud.com>
- <20221011120108.782373-3-xukuohai@huaweicloud.com>
- <CAEf4BzZVYO42kDcmNqorLfwJcMcN7fyTLdp2GWbGfV5akP12GQ@mail.gmail.com>
-From:   Xu Kuohai <xukuohai@huawei.com>
-In-Reply-To: <CAEf4BzZVYO42kDcmNqorLfwJcMcN7fyTLdp2GWbGfV5akP12GQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.111.192]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,79 +69,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/13/2022 11:47 PM, Andrii Nakryiko wrote:
-> On Tue, Oct 11, 2022 at 4:43 AM Xu Kuohai <xukuohai@huaweicloud.com> wrote:
->>
->> From: Xu Kuohai <xukuohai@huawei.com>
->>
->> In the arm64 version of parse_usdt_arg(), when sscanf returns 2, reg_name
->> is allocated but not freed. Fix it.
->>
->> Fixes: 0f8619929c57 ("libbpf: Usdt aarch64 arg parsing support")
->> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
->> ---
->>   tools/lib/bpf/usdt.c | 11 ++++-------
->>   1 file changed, 4 insertions(+), 7 deletions(-)
->>
->> diff --git a/tools/lib/bpf/usdt.c b/tools/lib/bpf/usdt.c
->> index e83b497c2245..49f3c3b7f609 100644
->> --- a/tools/lib/bpf/usdt.c
->> +++ b/tools/lib/bpf/usdt.c
->> @@ -1348,25 +1348,23 @@ static int calc_pt_regs_off(const char *reg_name)
->>
->>   static int parse_usdt_arg(const char *arg_str, int arg_num, struct usdt_arg_spec *arg)
->>   {
->> -       char *reg_name = NULL;
->> +       char reg_name[16];
->>          int arg_sz, len, reg_off;
->>          long off;
->>
->> -       if (sscanf(arg_str, " %d @ \[ %m[a-z0-9], %ld ] %n", &arg_sz, &reg_name, &off, &len) == 3) {
->> +       if (sscanf(arg_str, " %d @ \[ %15[a-z0-9], %ld ] %n", &arg_sz, reg_name, &off, &len) == 3) {
-> 
-> It would be nice to do the same change for other architectures where
-> it makes sense and avoid having to deal with unnecessary memory
-> allocations. Please send follow up patches with similar changes for
-> other implementations of parse_usdt_arg. Thanks.
->
+Then the input contains '\0' or '\n', proc_mpc_write has read them,
+so the return value needs +1.
 
-ok, will do
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 
-> 
->>                  /* Memory dereference case, e.g., -4@[sp, 96] */
->>                  arg->arg_type = USDT_ARG_REG_DEREF;
->>                  arg->val_off = off;
->>                  reg_off = calc_pt_regs_off(reg_name);
->> -               free(reg_name);
->>                  if (reg_off < 0)
->>                          return reg_off;
->>                  arg->reg_off = reg_off;
->> -       } else if (sscanf(arg_str, " %d @ \[ %m[a-z0-9] ] %n", &arg_sz, &reg_name, &len) == 2) {
->> +       } else if (sscanf(arg_str, " %d @ \[ %15[a-z0-9] ] %n", &arg_sz, reg_name, &len) == 2) {
->>                  /* Memory dereference case, e.g., -4@[sp] */
->>                  arg->arg_type = USDT_ARG_REG_DEREF;
->>                  arg->val_off = 0;
->>                  reg_off = calc_pt_regs_off(reg_name);
->> -               free(reg_name);
->>                  if (reg_off < 0)
->>                          return reg_off;
->>                  arg->reg_off = reg_off;
->> @@ -1375,12 +1373,11 @@ static int parse_usdt_arg(const char *arg_str, int arg_num, struct usdt_arg_spec
->>                  arg->arg_type = USDT_ARG_CONST;
->>                  arg->val_off = off;
->>                  arg->reg_off = 0;
->> -       } else if (sscanf(arg_str, " %d @ %m[a-z0-9] %n", &arg_sz, &reg_name, &len) == 2) {
->> +       } else if (sscanf(arg_str, " %d @ %15[a-z0-9] %n", &arg_sz, reg_name, &len) == 2) {
->>                  /* Register read case, e.g., -8@x4 */
->>                  arg->arg_type = USDT_ARG_REG;
->>                  arg->val_off = 0;
->>                  reg_off = calc_pt_regs_off(reg_name);
->> -               free(reg_name);
->>                  if (reg_off < 0)
->>                          return reg_off;
->>                  arg->reg_off = reg_off;
->> --
->> 2.30.2
->>
-> .
+Signed-off-by: Xiaobo Liu <cppcoffee@gmail.com>
+---
+ net/atm/mpoa_proc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/atm/mpoa_proc.c b/net/atm/mpoa_proc.c
+index 829db9eba..aaf64b953 100755
+--- a/net/atm/mpoa_proc.c
++++ b/net/atm/mpoa_proc.c
+@@ -219,11 +219,12 @@ static ssize_t proc_mpc_write(struct file *file, const char __user *buff,
+ 	if (!page)
+ 		return -ENOMEM;
+ 
+-	for (p = page, len = 0; len < nbytes; p++, len++) {
++	for (p = page, len = 0; len < nbytes; p++) {
+ 		if (get_user(*p, buff++)) {
+ 			free_page((unsigned long)page);
+ 			return -EFAULT;
+ 		}
++		len += 1;
+ 		if (*p == '\0' || *p == '\n')
+ 			break;
+ 	}
+-- 
+2.21.0 (Apple Git-122.2)
 
