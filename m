@@ -2,109 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C1AA5FF080
-	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 16:41:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04AAF5FF085
+	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 16:45:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230451AbiJNOlF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Oct 2022 10:41:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36220 "EHLO
+        id S229920AbiJNOp1 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 14 Oct 2022 10:45:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230442AbiJNOkv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 10:40:51 -0400
-Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3962213D31
-        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 07:40:43 -0700 (PDT)
-Received: by mail-oi1-x233.google.com with SMTP id l5so5232976oif.7
-        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 07:40:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=HZa46c30unM25MuQTDwPkEaLzFAs0PSz9tbfi7EIH2A=;
-        b=oSnLNh7v61+s6xj2JWX/OD9O7Dy9Lml3+xo4vK4SPGjGhkkMAQQGEpvmsBITFJhjQ0
-         Z0PkONI4QAKZlrWItxLn3fa5kFka6WAbm+W+NPgwhY+o+t9crYuKCxOFaPP1ZfvEmpja
-         MYPyw2YTP9E2KcDzEaRvgPDcNVd8omqdZyE5MDYA9rXiqd5GpbC0E4UqGGvTFGGQYpLk
-         nPd2PDfJUZ73cHEeLYLeqk3LhRjBK/Nwb+BwapXVNDcLSRp27h5DK+4XWR46T5za9tYw
-         0YuA1UGuYoahyekw2P7YByw3TnEKj7XUsui9zrt5h4q/WuJJj/78X6gor2aIDLqnWQwE
-         Zmeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=HZa46c30unM25MuQTDwPkEaLzFAs0PSz9tbfi7EIH2A=;
-        b=UD3GU3iRD6OoyFPE+1vG9CkkjTddat1+44M6j7QKpvLo7n1bgJakyQLep/Bey7h0G5
-         8KIK8htkjqYFO3dQ64B/MdPJ3HFgFKWMV8qVPUTBdQWi48Q/++lv7tl7vgckBN8aID02
-         JQcLzSzHkiBkrwV7IRBk7djjlNchgVyYvVGynTaYJC4eVF60yyJCpP/QdgPfqEwzHod7
-         +BZS7XOZcBIq01KQyA/E7XtW+SbHQOvxaBlZ8i50tReQxXmTXer5BWkULn/Q+/WhxI/W
-         +WHWCYd1+IXFNKCAh+eg7AtpdlNjz95zN1ZAwlSnjd9xb2iAeiTsHdj/DJH6NWpDSv8z
-         s5Lw==
-X-Gm-Message-State: ACrzQf1M1wkAHVz1rsiDkDReB5mMw3vh/qrPN3735ZDd4vfoX8Pb+yEL
-        bSQje0rydmi3El1DEhH09R/ftKKpMtncJc38Ld44Rg==
-X-Google-Smtp-Source: AMsMyM6kFTLmnWh/762itXbxG4DtkC/NpgAqD+hpJWGexkcIDjTVeOsTP0PcelgTNEkd0TEN85r+H/fBQhgh7METxZ8=
-X-Received: by 2002:a05:6808:219a:b0:354:daec:53cb with SMTP id
- be26-20020a056808219a00b00354daec53cbmr2536482oib.2.1665758441818; Fri, 14
- Oct 2022 07:40:41 -0700 (PDT)
+        with ESMTP id S229573AbiJNOpZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 10:45:25 -0400
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82BD73B477
+        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 07:45:23 -0700 (PDT)
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-306-LF5WmHK5N2S2w89TmK54Aw-1; Fri, 14 Oct 2022 10:45:20 -0400
+X-MC-Unique: LF5WmHK5N2S2w89TmK54Aw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0376038012DD;
+        Fri, 14 Oct 2022 14:45:20 +0000 (UTC)
+Received: from hog (unknown [10.39.192.237])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8487A1043DDC;
+        Fri, 14 Oct 2022 14:45:17 +0000 (UTC)
+Date:   Fri, 14 Oct 2022 16:44:52 +0200
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     netdev@vger.kernel.org, Antoine Tenart <atenart@kernel.org>,
+        Mark Starovoytov <mstarovoitov@marvell.com>,
+        Igor Russkikh <irusskikh@marvell.com>
+Subject: Re: [PATCH net 0/5] macsec: offload-related fixes
+Message-ID: <Y0l15J6AVN75k+wO@hog>
+References: <cover.1665416630.git.sd@queasysnail.net>
+ <Y0j+E+n/RggT05km@unreal>
+ <Y0kTMXzY3l4ncegR@hog>
+ <Y0lCHaGTQjsNvzVN@unreal>
 MIME-Version: 1.0
-References: <eeb0c590-7364-a00e-69fc-2326678d6bdf@ovn.org> <PH0PR13MB4793A85169BB60B8609B192194499@PH0PR13MB4793.namprd13.prod.outlook.com>
- <0aac2127-0b14-187e-0adb-7d6b8fe8cfb1@ovn.org> <e71b2bf2-cfd5-52f4-5fd4-1c852f2a8c6c@ovn.org>
- <00D45065-3D74-4C4C-8988-BFE0CEB3BE2F@redhat.com> <fe0cd650-0d4a-d871-5c0b-b1c831c8d0cc@ovn.org>
- <CALnP8ZYcGvtP_BV=2gy0v3TtSfD=3nO-uzbG8E1UvjoDYD2+7A@mail.gmail.com>
- <CAKa-r6sn1oZNn0vrnrthzq_XsxpdHGWyxw_T9b9ND0=DJk64yQ@mail.gmail.com>
- <CALnP8ZaZ5zGD4sP3=SSvC=RBmVOOcc9MdA=aaYRQctaBOhmHfQ@mail.gmail.com>
- <CAM0EoM=zWBzivTkEG7uBJepZ0=OZmiuqDF3RmgdWA=FgznRF6g@mail.gmail.com>
- <CALnP8ZY2M3+m_qrg4ox5pjGJ__CAMKfshD+=OxTHCWc=EutapQ@mail.gmail.com>
- <CAM0EoM=5wqbsOL-ZPkuhQXTJh3pTGqhdDDXuEqsjxEoAapApdQ@mail.gmail.com> <b9e25530-e618-421c-922e-b9f2380bc19f@ovn.org>
-In-Reply-To: <b9e25530-e618-421c-922e-b9f2380bc19f@ovn.org>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Fri, 14 Oct 2022 10:40:30 -0400
-Message-ID: <CAM0EoMkFhGtT5t0103V=h0YVddBrkwiAngP7BZY-vStijUVvtw@mail.gmail.com>
-Subject: Re: [ovs-dev] [PATCH] tests: fix reference output for meter offload stats
-To:     Ilya Maximets <i.maximets@ovn.org>
-Cc:     Marcelo Leitner <mleitner@redhat.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Tianyu Yuan <tianyu.yuan@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>, dev@openvswitch.org,
-        oss-drivers <oss-drivers@corigine.com>, netdev@vger.kernel.org,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
-        Vlad Buslov <vladbu@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <Y0lCHaGTQjsNvzVN@unreal>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 14, 2022 at 9:00 AM Ilya Maximets <i.maximets@ovn.org> wrote:
->
+2022-10-14, 14:03:57 +0300, Leon Romanovsky wrote:
+> On Fri, Oct 14, 2022 at 09:43:45AM +0200, Sabrina Dubroca wrote:
+> > 2022-10-14, 09:13:39 +0300, Leon Romanovsky wrote:
+> > > On Thu, Oct 13, 2022 at 04:15:38PM +0200, Sabrina Dubroca wrote:
+> > > > I'm working on a dummy offload for macsec on netdevsim. It just has a
+> > > > small SecY and RXSC table so I can trigger failures easily on the
+> > > > ndo_* side. It has exposed a couple of issues.
+> > > > 
+> > > > The first patch will cause some performance degradation, but in the
+> > > > current state it's not possible to offload macsec to lower devices
+> > > > that also support ipsec offload. 
+> > > 
+> > > Please don't, IPsec offload is available and undergoing review.
+> > > https://lore.kernel.org/netdev/cover.1662295929.git.leonro@nvidia.com/
+> > > 
+> > > This is whole series (XFRM + driver) for IPsec full offload.
+> > > https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/log/?h=xfrm-next
+> > 
+> > Yes, and that's not upstream yet. 
+> 
+> For this conversation, you can assume what that series is merged.
+> It is not merged due to request to change how we store XFRM policies
+> in XFRM core code.
+> 
+> > That patchset is also doing nothing to address the issue I'm refering
+> > to here, where xfrm_api_check rejects the macsec device because it has
+> > the NETIF_F_HW_ESP flag (passed from the lower device) and no xfrmdev_ops.
+> 
+> Of course, why do you think that IPsec series should address MACsec bugs?
 
-[..]
-> > I thought it was pipe but maybe it is OK(in my opinion that is a bad code
-> > for just "count"). We have some (at least NIC) hardware folks on the list.
->
-> IIRC, 'OK' action will stop the processing for the packet, so it can
-> only be used as a last action in the list.  But we need to count packets
-> as a very first action in the list.  So, that doesn't help.
->
+I don't. That's why I really don't understand how the "full offload"
+series is relevant for this patchset.
 
-That's why i said it is a bad code - but i believe it's what some of
-the hardware
-people are doing. Note: it's only bad if you have more actions after because
-it aborts the processing pipeline.
+-- 
+Sabrina
 
-> > Note: we could create an alias to PIPE and call it COUNT if it helps.
->
-> Will that help with offloading of that action?  Why the PIPE is not
-> offloadable in the first place and will COUNT be offloadable?
-
-Offloadable is just a semantic choice in this case. If someone is
-using OK to count  today - they could should be able to use PIPE
-instead (their driver needs to do some transformation of course).
-
-cheers,
-jamal
