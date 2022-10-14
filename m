@@ -2,555 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AAC15FF23F
-	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 18:27:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B68745FF246
+	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 18:31:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230359AbiJNQ1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Oct 2022 12:27:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47184 "EHLO
+        id S230466AbiJNQbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Oct 2022 12:31:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230021AbiJNQ1j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 12:27:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D80441D1AB3
-        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 09:27:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1665764857;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gWQFQj7gvmQlpOAvJJGpEIR/W6rMI9tCdbEcuViyKiM=;
-        b=QgZQpXlKyRXsL4Wtfr5efNZt9gALRyVOPBl+2bru/9Lx5OKiXHjtKaJ0U5WOVoLRAunMnK
-        ZyGH3tTHKXZtPZRECm2KpqeyWJtMdEtt1ME7mkozIaknrWdyw3wpKg7TvY32Qd+a2QwYGp
-        c1HaEWDpTV3GrifRaPQp008Xp+tNY5s=
-Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com
- [209.85.210.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-630-vcore1GBOCaPcbth7Il3HA-1; Fri, 14 Oct 2022 12:27:35 -0400
-X-MC-Unique: vcore1GBOCaPcbth7Il3HA-1
-Received: by mail-ot1-f72.google.com with SMTP id w4-20020a9d5384000000b00661b6b49c75so1623411otg.11
-        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 09:27:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=gWQFQj7gvmQlpOAvJJGpEIR/W6rMI9tCdbEcuViyKiM=;
-        b=k7aUx5IoywjVUb9bpHny05JPhBUIKr0MYazYJ+seS7JMzzjAHYPEac/joJm8LcGbfr
-         os1avecHKhvV/WybmXOb+BHQ4Fad+Ue3Rsn4c3PLrXJ0u5o2o097/kPl+9uE113fC8gh
-         jbmjd0C6RJD5r1zXtZbtRv8hwThHRromaSSz5loRSTSH7Ak6NIWVPb3e3/0vxqwlmZE1
-         ZCCJ+nTI3+dK57UhmqCPphBjgBmfb/r3qgsfKKVfWAyvu5yqB0JNfQu0uko/pz0z1D7F
-         3VMjeghZdNbQ7QGKZ28Btat+bQeLGhsq5lp7CfD3f/RdetTUlotBjxKvpFzqR4aCRLT6
-         eLIw==
-X-Gm-Message-State: ACrzQf2mHRlEHva1CVwe8/vQlO/Rejzay5WR64QOV7RcTni9CSMSwCS8
-        d83fV2SQV82EaYjql1mdprL/i9BDRnYAzBZOPie1eSMivoH2F1d20NfXsFwI4iOnweSkA7a5UyF
-        a86YGDA5cwyuj7VYR
-X-Received: by 2002:a05:6870:2054:b0:132:d1fb:ddf0 with SMTP id l20-20020a056870205400b00132d1fbddf0mr9025888oad.283.1665764855077;
-        Fri, 14 Oct 2022 09:27:35 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM5rG/MQ7wNzObW4bY3Eu9bywv7qJQUN8nIWFMTkDev7VaPb9LOJXDmUMNlynrjXphiKqEHA5Q==
-X-Received: by 2002:a05:6870:2054:b0:132:d1fb:ddf0 with SMTP id l20-20020a056870205400b00132d1fbddf0mr9025853oad.283.1665764854746;
-        Fri, 14 Oct 2022 09:27:34 -0700 (PDT)
-Received: from ?IPv6:2804:1b3:a801:baa9:f002:974b:318a:f9b? ([2804:1b3:a801:baa9:f002:974b:318a:f9b])
-        by smtp.gmail.com with ESMTPSA id f23-20020a9d7b57000000b00661b5e95173sm1404752oto.35.2022.10.14.09.27.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Oct 2022 09:27:34 -0700 (PDT)
-Message-ID: <7249d33e5b3e7d63b1b2a0df2b43e7a6f2082cf9.camel@redhat.com>
-Subject: Re: [PATCH v2 3/4] sched/isolation: Add HK_TYPE_WQ to
- isolcpus=domain
-From:   Leonardo =?ISO-8859-1?Q?Br=E1s?= <leobras@redhat.com>
-To:     Frederic Weisbecker <frederic@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Tejun Heo <tj@kernel.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Phil Auld <pauld@redhat.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Wang Yufen <wangyufen@huawei.com>, mtosatti@redhat.com,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pci@vger.kernel.org, netdev@vger.kernel.org,
-        fweisbec@gmail.com
-Date:   Fri, 14 Oct 2022 13:27:25 -0300
-In-Reply-To: <20221014132410.GA1108603@lothringen>
-References: <20221013184028.129486-1-leobras@redhat.com>
-         <20221013184028.129486-4-leobras@redhat.com>
-         <Y0kfgypRPdJYrvM3@hirez.programming.kicks-ass.net>
-         <20221014132410.GA1108603@lothringen>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 
+        with ESMTP id S230435AbiJNQbS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 12:31:18 -0400
+Received: from mail.codeweavers.com (mail.codeweavers.com [65.103.31.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE201D2F68;
+        Fri, 14 Oct 2022 09:31:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=codeweavers.com; s=6377696661; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=VSDYHnT32iCl0O9dttAG/XvqaQdcz9am927nG9WKioY=; b=idwzH+L9nJVkg+HSkFdaQq2Yup
+        kFtSIdWj4n1vzFI+EkWoE7GLbdzvhpRXamlqtKzNwktLFkLjBTrsTx8W3Kvj9m9/8WRlrGQKgeRL2
+        Q8iWKgFiJYo+xRoBdhzb7wo0N6MOehhUh9qKAK93q3bm1LI5VM2ktzvKoB+D5enz9X/4=;
+Received: from cw141ip123.vpn.codeweavers.com ([10.69.141.123])
+        by mail.codeweavers.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <pgofman@codeweavers.com>)
+        id 1ojNac-00G8Mx-Om; Fri, 14 Oct 2022 11:31:15 -0500
+Message-ID: <81b0e6c9-6c13-aecd-1e0e-6417eb89285f@codeweavers.com>
+Date:   Fri, 14 Oct 2022 11:31:11 -0500
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.1
+Subject: Re: [RFC] EADDRINUSE from bind() on application restart after killing
+Content-Language: en-GB
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        "open list:NETWORKING [TCP]" <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <5099dc39-c6d9-115a-855b-6aa98d17eb4b@collabora.com>
+ <8dff3e46-6dac-af6a-1a3b-e6a8b93fdc60@collabora.com>
+ <CANn89iLOdgExV3ydkg0r2iNwavSp5Zu9hskf34TTqmCZQCfUdA@mail.gmail.com>
+ <5db967de-ea7e-9f35-cd74-d4cca2fcb9ee@codeweavers.com>
+ <CANn89iJTNUCDLptS_rV4JUDcEH8JNXvOTx4xgzvaDHG6eodtXg@mail.gmail.com>
+From:   Paul Gofman <pgofman@codeweavers.com>
+In-Reply-To: <CANn89iJTNUCDLptS_rV4JUDcEH8JNXvOTx4xgzvaDHG6eodtXg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2022-10-14 at 15:24 +0200, Frederic Weisbecker wrote:
-> On Fri, Oct 14, 2022 at 10:36:19AM +0200, Peter Zijlstra wrote:
-> >=20
-> > + Frederic; who actually does most of this code
-> >=20
-> > On Thu, Oct 13, 2022 at 03:40:28PM -0300, Leonardo Bras wrote:
-> > > Housekeeping code keeps multiple cpumasks in order to keep track of w=
-hich
-> > > cpus can perform given housekeeping category.
-> > >=20
-> > > Every time the HK_TYPE_WQ cpumask is checked before queueing work at =
-a cpu
-> > > WQ it also happens to check for HK_TYPE_DOMAIN. So It can be assumed =
-that
-> > > the Domain isolation also ends up isolating work queues.
-> > >=20
-> > > Delegating current HK_TYPE_DOMAIN's work queue isolation to HK_TYPE_W=
-Q
-> > > makes it simpler to check if a cpu can run a task into an work queue,=
- since
-> > > code just need to go through a single HK_TYPE_* cpumask.
-> > >=20
-> > > Make isolcpus=3Ddomain aggregate both HK_TYPE_DOMAIN and HK_TYPE_WQ, =
-and
-> > > remove a lot of cpumask_and calls.
-> > >=20
-> > > Also, remove a unnecessary '|=3D' at housekeeping_isolcpus_setup() si=
-nce we
-> > > are sure that 'flags =3D=3D 0' here.
-> > >=20
-> > > Signed-off-by: Leonardo Bras <leobras@redhat.com>
-> >=20
-> > I've long maintained that having all these separate masks is daft;
-> > Frederic do we really need that?
->=20
-> Indeed. In my queue for the cpuset interface to nohz_full, I have the fol=
-lowing
-> patch (but note DOMAIN and WQ have to stay seperate flags because workque=
-ue
-> affinity can be modified seperately from isolcpus)
->=20
-> ---
-> From: Frederic Weisbecker <frederic@kernel.org>
-> Date: Tue, 26 Jul 2022 17:03:30 +0200
-> Subject: [PATCH] sched/isolation: Gather nohz_full related isolation feat=
-ures
->  into common flag
->=20
-> Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
-> ---
->  arch/x86/kvm/x86.c              |  2 +-
->  drivers/pci/pci-driver.c        |  2 +-
->  include/linux/sched/isolation.h |  7 +------
->  kernel/cpu.c                    |  4 ++--
->  kernel/kthread.c                |  4 ++--
->  kernel/rcu/tasks.h              |  2 +-
->  kernel/rcu/tree_plugin.h        |  6 +++---
->  kernel/sched/core.c             | 10 +++++-----
->  kernel/sched/fair.c             |  6 +++---
->  kernel/sched/isolation.c        | 25 +++++++------------------
->  kernel/watchdog.c               |  2 +-
->  kernel/workqueue.c              |  2 +-
->  net/core/net-sysfs.c            |  2 +-
->  13 files changed, 29 insertions(+), 45 deletions(-)
->=20
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 1910e1e78b15..d0b73fcf4a1c 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -9009,7 +9009,7 @@ int kvm_arch_init(void *opaque)
->  	}
-> =20
->  	if (pi_inject_timer =3D=3D -1)
-> -		pi_inject_timer =3D housekeeping_enabled(HK_TYPE_TIMER);
-> +		pi_inject_timer =3D housekeeping_enabled(HK_TYPE_NOHZ_FULL);
->  #ifdef CONFIG_X86_64
->  	pvclock_gtod_register_notifier(&pvclock_gtod_notifier);
-> =20
-> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-> index 49238ddd39ee..af3494a39921 100644
-> --- a/drivers/pci/pci-driver.c
-> +++ b/drivers/pci/pci-driver.c
-> @@ -378,7 +378,7 @@ static int pci_call_probe(struct pci_driver *drv, str=
-uct pci_dev *dev,
->  			goto out;
->  		}
->  		cpumask_and(wq_domain_mask,
-> -			    housekeeping_cpumask(HK_TYPE_WQ),
-> +			    housekeeping_cpumask(HK_TYPE_NOHZ_FULL),
->  			    housekeeping_cpumask(HK_TYPE_DOMAIN));
-> =20
->  		cpu =3D cpumask_any_and(cpumask_of_node(node),
-> diff --git a/include/linux/sched/isolation.h b/include/linux/sched/isolat=
-ion.h
-> index 8c15abd67aed..7ca34e04abe7 100644
-> --- a/include/linux/sched/isolation.h
-> +++ b/include/linux/sched/isolation.h
-> @@ -6,15 +6,10 @@
->  #include <linux/tick.h>
-> =20
->  enum hk_type {
-> -	HK_TYPE_TIMER,
-> -	HK_TYPE_RCU,
-> -	HK_TYPE_MISC,
-> +	HK_TYPE_NOHZ_FULL,
->  	HK_TYPE_SCHED,
-> -	HK_TYPE_TICK,
->  	HK_TYPE_DOMAIN,
-> -	HK_TYPE_WQ,
->  	HK_TYPE_MANAGED_IRQ,
-> -	HK_TYPE_KTHREAD,
->  	HK_TYPE_MAX
->  };
-> =20
-> diff --git a/kernel/cpu.c b/kernel/cpu.c
-> index bbad5e375d3b..573f14d75a2e 100644
-> --- a/kernel/cpu.c
-> +++ b/kernel/cpu.c
-> @@ -1500,8 +1500,8 @@ int freeze_secondary_cpus(int primary)
->  	cpu_maps_update_begin();
->  	if (primary =3D=3D -1) {
->  		primary =3D cpumask_first(cpu_online_mask);
-> -		if (!housekeeping_cpu(primary, HK_TYPE_TIMER))
-> -			primary =3D housekeeping_any_cpu(HK_TYPE_TIMER);
-> +		if (!housekeeping_cpu(primary, HK_TYPE_NOHZ_FULL))
-> +			primary =3D housekeeping_any_cpu(HK_TYPE_NOHZ_FULL);
->  	} else {
->  		if (!cpu_online(primary))
->  			primary =3D cpumask_first(cpu_online_mask);
-> diff --git a/kernel/kthread.c b/kernel/kthread.c
-> index 544fd4097406..0719035feba0 100644
-> --- a/kernel/kthread.c
-> +++ b/kernel/kthread.c
-> @@ -355,7 +355,7 @@ static int kthread(void *_create)
->  	 * back to default in case they have been changed.
->  	 */
->  	sched_setscheduler_nocheck(current, SCHED_NORMAL, &param);
-> -	set_cpus_allowed_ptr(current, housekeeping_cpumask(HK_TYPE_KTHREAD));
-> +	set_cpus_allowed_ptr(current, housekeeping_cpumask(HK_TYPE_NOHZ_FULL));
-> =20
->  	/* OK, tell user we're spawned, wait for stop or wakeup */
->  	__set_current_state(TASK_UNINTERRUPTIBLE);
-> @@ -721,7 +721,7 @@ int kthreadd(void *unused)
->  	/* Setup a clean context for our children to inherit. */
->  	set_task_comm(tsk, "kthreadd");
->  	ignore_signals(tsk);
-> -	set_cpus_allowed_ptr(tsk, housekeeping_cpumask(HK_TYPE_KTHREAD));
-> +	set_cpus_allowed_ptr(tsk, housekeeping_cpumask(HK_TYPE_NOHZ_FULL));
->  	set_mems_allowed(node_states[N_MEMORY]);
-> =20
->  	current->flags |=3D PF_NOFREEZE;
-> diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
-> index f5bf6fb430da..b99f79625b26 100644
-> --- a/kernel/rcu/tasks.h
-> +++ b/kernel/rcu/tasks.h
-> @@ -537,7 +537,7 @@ static int __noreturn rcu_tasks_kthread(void *arg)
->  	struct rcu_tasks *rtp =3D arg;
-> =20
->  	/* Run on housekeeping CPUs by default.  Sysadm can move if desired. */
-> -	housekeeping_affine(current, HK_TYPE_RCU);
-> +	housekeeping_affine(current, HK_TYPE_NOHZ_FULL);
->  	WRITE_ONCE(rtp->kthread_ptr, current); // Let GPs start!
-> =20
->  	/*
-> diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
-> index b2219577fbe2..4935b06c3caf 100644
-> --- a/kernel/rcu/tree_plugin.h
-> +++ b/kernel/rcu/tree_plugin.h
-> @@ -1237,9 +1237,9 @@ static void rcu_boost_kthread_setaffinity(struct rc=
-u_node *rnp, int outgoingcpu)
->  		if ((mask & leaf_node_cpu_bit(rnp, cpu)) &&
->  		    cpu !=3D outgoingcpu)
->  			cpumask_set_cpu(cpu, cm);
-> -	cpumask_and(cm, cm, housekeeping_cpumask(HK_TYPE_RCU));
-> +	cpumask_and(cm, cm, housekeeping_cpumask(HK_TYPE_NOHZ_FULL));
->  	if (cpumask_empty(cm))
-> -		cpumask_copy(cm, housekeeping_cpumask(HK_TYPE_RCU));
-> +		cpumask_copy(cm, housekeeping_cpumask(HK_TYPE_NOHZ_FULL));
->  	set_cpus_allowed_ptr(t, cm);
->  	mutex_unlock(&rnp->boost_kthread_mutex);
->  	free_cpumask_var(cm);
-> @@ -1294,5 +1294,5 @@ static void rcu_bind_gp_kthread(void)
->  {
->  	if (!tick_nohz_full_enabled())
->  		return;
-> -	housekeeping_affine(current, HK_TYPE_RCU);
-> +	housekeeping_affine(current, HK_TYPE_NOHZ_FULL);
->  }
-> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-> index f53c0096860b..5ff205f39197 100644
-> --- a/kernel/sched/core.c
-> +++ b/kernel/sched/core.c
-> @@ -1079,13 +1079,13 @@ int get_nohz_timer_target(void)
->  	struct sched_domain *sd;
->  	const struct cpumask *hk_mask;
-> =20
-> -	if (housekeeping_cpu(cpu, HK_TYPE_TIMER)) {
-> +	if (housekeeping_cpu(cpu, HK_TYPE_NOHZ_FULL)) {
->  		if (!idle_cpu(cpu))
->  			return cpu;
->  		default_cpu =3D cpu;
->  	}
-> =20
-> -	hk_mask =3D housekeeping_cpumask(HK_TYPE_TIMER);
-> +	hk_mask =3D housekeeping_cpumask(HK_TYPE_NOHZ_FULL);
-> =20
->  	rcu_read_lock();
->  	for_each_domain(cpu, sd) {
-> @@ -1101,7 +1101,7 @@ int get_nohz_timer_target(void)
->  	}
-> =20
->  	if (default_cpu =3D=3D -1)
-> -		default_cpu =3D housekeeping_any_cpu(HK_TYPE_TIMER);
-> +		default_cpu =3D housekeeping_any_cpu(HK_TYPE_NOHZ_FULL);
->  	cpu =3D default_cpu;
->  unlock:
->  	rcu_read_unlock();
-> @@ -5562,7 +5562,7 @@ static void sched_tick_start(int cpu)
->  	int os;
->  	struct tick_work *twork;
-> =20
-> -	if (housekeeping_cpu(cpu, HK_TYPE_TICK))
-> +	if (housekeeping_cpu(cpu, HK_TYPE_NOHZ_FULL))
->  		return;
-> =20
->  	WARN_ON_ONCE(!tick_work_cpu);
-> @@ -5583,7 +5583,7 @@ static void sched_tick_stop(int cpu)
->  	struct tick_work *twork;
->  	int os;
-> =20
-> -	if (housekeeping_cpu(cpu, HK_TYPE_TICK))
-> +	if (housekeeping_cpu(cpu, HK_TYPE_NOHZ_FULL))
->  		return;
-> =20
->  	WARN_ON_ONCE(!tick_work_cpu);
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index 77b2048a9326..ac3b33e00451 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -10375,7 +10375,7 @@ static inline int on_null_domain(struct rq *rq)
->   * - When one of the busy CPUs notice that there may be an idle rebalanc=
-ing
->   *   needed, they will kick the idle load balancer, which then does idle
->   *   load balancing for all the idle CPUs.
-> - * - HK_TYPE_MISC CPUs are used for this task, because HK_TYPE_SCHED not=
- set
-> + * - HK_TYPE_NOHZ_FULL CPUs are used for this task, because HK_TYPE_SCHE=
-D not set
->   *   anywhere yet.
->   */
-> =20
-> @@ -10384,7 +10384,7 @@ static inline int find_new_ilb(void)
->  	int ilb;
->  	const struct cpumask *hk_mask;
-> =20
-> -	hk_mask =3D housekeeping_cpumask(HK_TYPE_MISC);
-> +	hk_mask =3D housekeeping_cpumask(HK_TYPE_NOHZ_FULL);
-> =20
->  	for_each_cpu_and(ilb, nohz.idle_cpus_mask, hk_mask) {
-> =20
-> @@ -10400,7 +10400,7 @@ static inline int find_new_ilb(void)
-> =20
->  /*
->   * Kick a CPU to do the nohz balancing, if it is time for it. We pick an=
-y
-> - * idle CPU in the HK_TYPE_MISC housekeeping set (if there is one).
-> + * idle CPU in the HK_TYPE_NOHZ_FULL housekeeping set (if there is one).
->   */
->  static void kick_ilb(unsigned int flags)
->  {
-> diff --git a/kernel/sched/isolation.c b/kernel/sched/isolation.c
-> index 4087718ee5b4..443f1ce83e32 100644
-> --- a/kernel/sched/isolation.c
-> +++ b/kernel/sched/isolation.c
-> @@ -4,20 +4,15 @@
->   *  any CPU: unbound workqueues, timers, kthreads and any offloadable wo=
-rk.
->   *
->   * Copyright (C) 2017 Red Hat, Inc., Frederic Weisbecker
-> - * Copyright (C) 2017-2018 SUSE, Frederic Weisbecker
-> + * Copyright (C) 2017-2022 SUSE, Frederic Weisbecker
->   *
->   */
-> =20
->  enum hk_flags {
-> -	HK_FLAG_TIMER		=3D BIT(HK_TYPE_TIMER),
-> -	HK_FLAG_RCU		=3D BIT(HK_TYPE_RCU),
-> -	HK_FLAG_MISC		=3D BIT(HK_TYPE_MISC),
-> +	HK_FLAG_NOHZ_FULL	=3D BIT(HK_TYPE_NOHZ_FULL),
->  	HK_FLAG_SCHED		=3D BIT(HK_TYPE_SCHED),
-> -	HK_FLAG_TICK		=3D BIT(HK_TYPE_TICK),
->  	HK_FLAG_DOMAIN		=3D BIT(HK_TYPE_DOMAIN),
-> -	HK_FLAG_WQ		=3D BIT(HK_TYPE_WQ),
->  	HK_FLAG_MANAGED_IRQ	=3D BIT(HK_TYPE_MANAGED_IRQ),
-> -	HK_FLAG_KTHREAD		=3D BIT(HK_TYPE_KTHREAD),
->  };
-> =20
->  DEFINE_STATIC_KEY_FALSE(housekeeping_overridden);
-> @@ -88,7 +83,7 @@ void __init housekeeping_init(void)
-> =20
->  	static_branch_enable(&housekeeping_overridden);
-> =20
-> -	if (housekeeping.flags & HK_FLAG_TICK)
-> +	if (housekeeping.flags & HK_FLAG_NOHZ_FULL)
->  		sched_tick_offload_init();
-> =20
->  	for_each_set_bit(type, &housekeeping.flags, HK_TYPE_MAX) {
-> @@ -111,7 +106,7 @@ static int __init housekeeping_setup(char *str, unsig=
-ned long flags)
->  	cpumask_var_t non_housekeeping_mask, housekeeping_staging;
->  	int err =3D 0;
-> =20
-> -	if ((flags & HK_FLAG_TICK) && !(housekeeping.flags & HK_FLAG_TICK)) {
-> +	if ((flags & HK_FLAG_NOHZ_FULL) && !(housekeeping.flags & HK_FLAG_NOHZ_=
-FULL)) {
->  		if (!IS_ENABLED(CONFIG_NO_HZ_FULL)) {
->  			pr_warn("Housekeeping: nohz unsupported."
->  				" Build with CONFIG_NO_HZ_FULL\n");
-> @@ -163,7 +158,7 @@ static int __init housekeeping_setup(char *str, unsig=
-ned long flags)
->  			housekeeping_setup_type(type, housekeeping_staging);
->  	}
-> =20
-> -	if ((flags & HK_FLAG_TICK) && !(housekeeping.flags & HK_FLAG_TICK))
-> +	if ((flags & HK_FLAG_NOHZ_FULL) && !(housekeeping.flags & HK_FLAG_NOHZ_=
-FULL))
->  		tick_nohz_full_setup(non_housekeeping_mask);
-> =20
->  	housekeeping.flags |=3D flags;
-> @@ -179,12 +174,7 @@ static int __init housekeeping_setup(char *str, unsi=
-gned long flags)
-> =20
->  static int __init housekeeping_nohz_full_setup(char *str)
->  {
-> -	unsigned long flags;
-> -
-> -	flags =3D HK_FLAG_TICK | HK_FLAG_WQ | HK_FLAG_TIMER | HK_FLAG_RCU |
-> -		HK_FLAG_MISC | HK_FLAG_KTHREAD;
-> -
-> -	return housekeeping_setup(str, flags);
-> +	return housekeeping_setup(str, HK_FLAG_NOHZ_FULL);
->  }
->  __setup("nohz_full=3D", housekeeping_nohz_full_setup);
-> =20
-> @@ -198,8 +188,7 @@ static int __init housekeeping_isolcpus_setup(char *s=
-tr)
->  	while (isalpha(*str)) {
->  		if (!strncmp(str, "nohz,", 5)) {
->  			str +=3D 5;
-> -			flags |=3D HK_FLAG_TICK | HK_FLAG_WQ | HK_FLAG_TIMER |
-> -				HK_FLAG_RCU | HK_FLAG_MISC | HK_FLAG_KTHREAD;
-> +			flags |=3D HK_FLAG_NOHZ_FULL;
->  			continue;
->  		}
-> =20
-> diff --git a/kernel/watchdog.c b/kernel/watchdog.c
-> index 20a7a55e62b6..3e9636f4bac6 100644
-> --- a/kernel/watchdog.c
-> +++ b/kernel/watchdog.c
-> @@ -852,7 +852,7 @@ void __init lockup_detector_init(void)
->  		pr_info("Disabling watchdog on nohz_full cores by default\n");
-> =20
->  	cpumask_copy(&watchdog_cpumask,
-> -		     housekeeping_cpumask(HK_TYPE_TIMER));
-> +		     housekeeping_cpumask(HK_TYPE_NOHZ_FULL));
-> =20
->  	if (!watchdog_nmi_probe())
->  		nmi_watchdog_available =3D true;
-> diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-> index 1ea50f6be843..3eb283d76d81 100644
-> --- a/kernel/workqueue.c
-> +++ b/kernel/workqueue.c
-> @@ -5993,7 +5993,7 @@ void __init workqueue_init_early(void)
->  	BUILD_BUG_ON(__alignof__(struct pool_workqueue) < __alignof__(long long=
-));
-> =20
->  	BUG_ON(!alloc_cpumask_var(&wq_unbound_cpumask, GFP_KERNEL));
-> -	cpumask_copy(wq_unbound_cpumask, housekeeping_cpumask(HK_TYPE_WQ));
-> +	cpumask_copy(wq_unbound_cpumask, housekeeping_cpumask(HK_TYPE_NOHZ_FULL=
-));
->  	cpumask_and(wq_unbound_cpumask, wq_unbound_cpumask, housekeeping_cpumas=
-k(HK_TYPE_DOMAIN));
-> =20
->  	pwq_cache =3D KMEM_CACHE(pool_workqueue, SLAB_PANIC);
-> diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-> index e319e242dddf..6dddf359b754 100644
-> --- a/net/core/net-sysfs.c
-> +++ b/net/core/net-sysfs.c
-> @@ -852,7 +852,7 @@ static ssize_t store_rps_map(struct netdev_rx_queue *=
-queue,
-> =20
->  	if (!cpumask_empty(mask)) {
->  		cpumask_and(mask, mask, housekeeping_cpumask(HK_TYPE_DOMAIN));
-> -		cpumask_and(mask, mask, housekeeping_cpumask(HK_TYPE_WQ));
-> +		cpumask_and(mask, mask, housekeeping_cpumask(HK_TYPE_NOHZ_FULL));
->  		if (cpumask_empty(mask)) {
->  			free_cpumask_var(mask);
->  			return -EINVAL;
+Hello Eric,
 
-Hello Frederic,
+     that message was not mine.
 
-So, IIUC you are removing all flags composing nohz_full=3D parameter in fav=
-or of a
-unified NOHZ_FULL flag.=20
+     Speaking from the Wine side, we cannot workaround that with 
+SO_REUSEADDR. First of all, it is under app control and we can't 
+voluntary tweak app's socket settings. Then, app might be intentionally 
+not using SO_REUSEADDR to prevent port reuse which of course may be 
+harmful (more harmful than failure to restart for another minute). What 
+is broken with the application which doesn't want to use SO_REUSEADDR 
+and wants to disallow port reuse while it binds to it which reuse will 
+surely break it?
 
-I am very new to the code, and I am probably missing the whole picture, but=
- I
-actually think it's a good approach to keep them split for a couple reasons=
-:
-1 - They are easier to understand in code (IMHO):=C2=A0
-"This cpu should not do this, because it's not able to do WQ housekeeping" =
-looks
-better than "because it's not in DOMAIN or NOHZ_FULL housekeeping"
+     But my present question about the listening socket being not 
+reusable while closed due to linked accepeted socket was not related to 
+Wine at all. I am not sure how one can fix that in the application if 
+they don't really want other applications or another copy of the same 
+one to be able to reuse the port they currently bind to? I believe the 
+issue with listen socket been not available happens rather often for 
+native services and they all have to workaround that. While not related 
+here, I also encountered some out-of-tree hacks to tweak the TIME_WAIT 
+timeout to tackle this very problem for some cloud custom kernels.
 
-2 - They are simpler for using:=C2=A0
-Suppose we have this function that should run at a WQ, but we want to keep =
-them
-out of the isolated cpus. If we have the unified flags, we need to combine =
-both
-DOMAIN and NOHZ_FULL bitmasks, and then combine it again with something lik=
-e
-cpu_online_mask. It usually means allocating a new cpumask_t, and also free=
-ing
-it afterwards.
-If we have a single WQ flag, we can avoid the allocation altogether by usin=
-g
-for_each_cpu_and(), making the code much simpler.
+     My question is if the behaviour of blocking listen socket port 
+while the accepted port (which, as I understand, does not have any 
+direct relation to listen port anymore from TCP standpoint) is still in 
+TIME_ or other wait is stipulated by TCP requirements which I am 
+missing? Or, if not, maybe that can be changed?
 
-3 - It makes easier to compose new isolation modes:
-In case the future requires a new isolation mode that also uses the types o=
-f
-isolation we currently have implemented, it would be much easier to just co=
-mpose
-it with the current HK flags, instead of having to go through all usages an=
-d do
-a cpumask_and() there. Also, new isolation modes would make (2) worse.
+Thanks,
+     Paul.
 
-What I am able see as a pro in "unified flag" side, is that getting all the
-multiple flags doing their jobs should be a lot of trouble.=20
 
-While I do understand you are much more experienced than me on that, and th=
-at
-your decision is more likely to be better,=C2=A0I am unable to see the argu=
-ments that
-helped you reach it.=C2=A0
-
-Could you please point them, so I can better understand the decision?
-
-Best regards,
-Leo
+On 10/14/22 11:20, Eric Dumazet wrote:
+> On Fri, Oct 14, 2022 at 8:52 AM Paul Gofman <pgofman@codeweavers.com> wrote:
+>> Hello Eric,
+>>
+>> our problem is actually not with the accept socket / port for which
+>> those timeouts apply, we don't care for that temporary port number. The
+>> problem is that the listen port (to which apps bind explicitly) is also
+>> busy until the accept socket waits through all the necessary timeouts
+>> and is fully closed. From my reading of TCP specs I don't understand why
+>> it should be this way. The TCP hazards stipulating those timeouts seem
+>> to apply to accept (connection) socket / port only. Shouldn't listen
+>> socket's port (the only one we care about) be available for bind
+>> immediately after the app stops listening on it (either due to closing
+>> the listen socket or process force kill), or maybe have some other
+>> timeouts not related to connected accept socket / port hazards? Or am I
+>> missing something why it should be the way it is done now?
+>>
+>
+> To quote your initial message :
+>
+> <quote>
+> We are able to avoid this error by adding SO_REUSEADDR attribute to the
+> socket in a hack. But this hack cannot be added to the application
+> process as we don't own it.
+> </quote>
+>
+> Essentially you are complaining of the linux kernel being unable to
+> run a buggy application.
+>
+> We are not going to change the linux kernel because you can not
+> fix/recompile an application.
+>
+> Note that you could use LD_PRELOAD, or maybe eBPF to automatically
+> turn SO_REUSEADDR before bind()
+>
+>
+>> Thanks,
+>>       Paul.
+>>
+>>
+>> On 9/30/22 10:16, Eric Dumazet wrote:
+>>> On Fri, Sep 30, 2022 at 6:24 AM Muhammad Usama Anjum
+>>> <usama.anjum@collabora.com> wrote:
+>>>> Hi Eric,
+>>>>
+>>>> RFC 1337 describes the TIME-WAIT Assassination Hazards in TCP. Because
+>>>> of this hazard we have 60 seconds timeout in TIME_WAIT state if
+>>>> connection isn't closed properly. From RFC 1337:
+>>>>> The TIME-WAIT delay allows all old duplicate segments time
+>>>> enough to die in the Internet before the connection is reopened.
+>>>>
+>>>> As on localhost there is virtually no delay. I think the TIME-WAIT delay
+>>>> must be zero for localhost connections. I'm no expert here. On localhost
+>>>> there is no delay. So why should we wait for 60 seconds to mitigate a
+>>>> hazard which isn't there?
+>>> Because we do not specialize TCP stack for loopback.
+>>>
+>>> It is easy to force delays even for loopback (tc qdisc add dev lo root
+>>> netem ...)
+>>>
+>>> You can avoid TCP complexity (cpu costs) over loopback using AF_UNIX instead.
+>>>
+>>> TIME_WAIT sockets are optional.
+>>> If you do not like them, simply set /proc/sys/net/ipv4/tcp_max_tw_buckets to 0 ?
+>>>
+>>>> Zapping the sockets in TIME_WAIT and FIN_WAIT_2 does removes them. But
+>>>> zap is required from privileged (CAP_NET_ADMIN) process. We are having
+>>>> hard time finding a privileged process to do this.
+>>> Really, we are not going to add kludges in TCP stacks because of this reason.
+>>>
+>>>> Thanks,
+>>>> Usama
+>>>>
+>>>>
+>>>> On 5/24/22 1:18 PM, Muhammad Usama Anjum wrote:
+>>>>> Hello,
+>>>>>
+>>>>> We have a set of processes which talk with each other through a local
+>>>>> TCP socket. If the process(es) are killed (through SIGKILL) and
+>>>>> restarted at once, the bind() fails with EADDRINUSE error. This error
+>>>>> only appears if application is restarted at once without waiting for 60
+>>>>> seconds or more. It seems that there is some timeout of 60 seconds for
+>>>>> which the previous TCP connection remains alive waiting to get closed
+>>>>> completely. In that duration if we try to connect again, we get the error.
+>>>>>
+>>>>> We are able to avoid this error by adding SO_REUSEADDR attribute to the
+>>>>> socket in a hack. But this hack cannot be added to the application
+>>>>> process as we don't own it.
+>>>>>
+>>>>> I've looked at the TCP connection states after killing processes in
+>>>>> different ways. The TCP connection ends up in 2 different states with
+>>>>> timeouts:
+>>>>>
+>>>>> (1) Timeout associated with FIN_WAIT_1 state which is set through
+>>>>> `tcp_fin_timeout` in procfs (60 seconds by default)
+>>>>>
+>>>>> (2) Timeout associated with TIME_WAIT state which cannot be changed. It
+>>>>> seems like this timeout has come from RFC 1337.
+>>>>>
+>>>>> The timeout in (1) can be changed. Timeout in (2) cannot be changed. It
+>>>>> also doesn't seem feasible to change the timeout of TIME_WAIT state as
+>>>>> the RFC mentions several hazards. But we are talking about a local TCP
+>>>>> connection where maybe those hazards aren't applicable directly? Is it
+>>>>> possible to change timeout for TIME_WAIT state for only local
+>>>>> connections without any hazards?
+>>>>>
+>>>>> We have tested a hack where we replace timeout of TIME_WAIT state from a
+>>>>> value in procfs for local connections. This solves our problem and
+>>>>> application starts to work without any modifications to it.
+>>>>>
+>>>>> The question is that what can be the best possible solution here? Any
+>>>>> thoughts will be very helpful.
+>>>>>
+>>>>> Regards,
+>>>>>
+>>>> --
+>>>> Muhammad Usama Anjum
+>>
 
