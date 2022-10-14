@@ -2,131 +2,268 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 648FE5FEC76
-	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 12:21:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C22CD5FEC9C
+	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 12:35:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229771AbiJNKVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Oct 2022 06:21:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55398 "EHLO
+        id S229542AbiJNKfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Oct 2022 06:35:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229633AbiJNKVP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 06:21:15 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD1EF1B867E
-        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 03:21:13 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id e18so2792803wmq.3
-        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 03:21:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=dDU1EHry5n+XrvnahgNgah2Rjg065mq9PJm7gjM4LqY=;
-        b=weBpi7OT8CMZrlbpSnhba0XK7AN7li0KVaeNIC9WLH5il+FoUOWOHgPjMa3T2BLRFU
-         2JGX09gQtSGRZX5Mi1lO6g5KAuDbwwH1Atfg4qdGPoerf8g2ACU3nnJRIRdfWqY2C2aT
-         mMk08B6uAB4oYiaVBZEf4KgHaZfe+3XwOzVkCIpGq9W+uE2qVmcA6U2xajbUhH4K+z5v
-         FA/qF6pJbowGLw3i3s90YdZHizscizbVuMwnF/pJxMjzygUWSekeWhH8uR5ViLxfcvw6
-         I54tnjAKsZwvUVnfljwK5CoAHvHkZKmI9y1G8BGBxIQU3CnYVSuCBJHJ+R+DSLRaQ2u+
-         nILA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=dDU1EHry5n+XrvnahgNgah2Rjg065mq9PJm7gjM4LqY=;
-        b=HJehWPhkKB1OqpFNEACdRd0YR94H/t63DoVclB5CRL4zs/neEQdTghRE/o2z8Od1cL
-         uXo4JZUbeKCmjtepvdFMZFpmB89p59eyV+yzhX8pMVFHwMCj1wt/BVV68l7Vmxwmb96P
-         4DxfVcJtMB34BgA6FLRO8Wp4VQeGuYaMWeh6O9R113U177vLkWJLUO1FXuYOVdCxyuYk
-         HNW+ilDG9rukLMVGw/pLX2IpZjOx1t8xkkau6yujq8vZPmlF2XZw2iTh/MvCsOjAm6V7
-         Q7J+6OCMypQcDXzNBNR90+JLZ1ZN5G+epkD5PkMvVC9zXLQYtQHvCN9Un6lSaXhIC4DL
-         hkxQ==
-X-Gm-Message-State: ACrzQf3kT9WttiBW1b4oljfOeWIpPnhsFofZID9hCK1f+2aZk9MGzrxf
-        R/fkmXklDwLn5STcNJu+uinqMg==
-X-Google-Smtp-Source: AMsMyM4hwqGQBIpE+BIeCKNhNjdJTVXdfNcXvl3ImrKVug9wu7yYYNOc/LK8urWEJtHZ5ZgSMDmCoA==
-X-Received: by 2002:a1c:f008:0:b0:3b4:fd2e:3ede with SMTP id a8-20020a1cf008000000b003b4fd2e3edemr9737880wmb.133.1665742872213;
-        Fri, 14 Oct 2022 03:21:12 -0700 (PDT)
-Received: from ?IPV6:2a05:6e02:1041:c10:b460:17f0:186d:9d2e? ([2a05:6e02:1041:c10:b460:17f0:186d:9d2e])
-        by smtp.googlemail.com with ESMTPSA id n17-20020a05600c465100b003c65c9a36dfsm1633633wmo.48.2022.10.14.03.21.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Oct 2022 03:21:11 -0700 (PDT)
-Message-ID: <f327dfc4-cd67-930c-a011-8cc2c58d7668@linaro.org>
-Date:   Fri, 14 Oct 2022 12:21:09 +0200
+        with ESMTP id S229513AbiJNKfD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 06:35:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D05CB2AC65
+        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 03:35:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1665743701;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=IGRCqrNr2ZmOSsN+ZXeGJM8vRRz+Pjpq9lX8nmSdxEw=;
+        b=Jn7D/XUxSzXJrV5g+144qgcm7rl5eJW8l/343s33w7zAnAn7cgfH2d6f5b8pz0KbOrQiNF
+        U8mE5mYqBjQokl7mrPUqTtcCPLdTcqtMvma2UYtF59l5RFggssLJnJe92lMBdV+X/t+bO+
+        8SuAmk0CxMhxbhAfcg88nsdmDpVj3ow=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-627-UvAWA_NzOxiPbwVDZ_MGkw-1; Fri, 14 Oct 2022 06:34:53 -0400
+X-MC-Unique: UvAWA_NzOxiPbwVDZ_MGkw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 346A929324A3;
+        Fri, 14 Oct 2022 10:34:53 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.39.192.44])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7858C1121314;
+        Fri, 14 Oct 2022 10:34:51 +0000 (UTC)
+From:   =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+To:     irusskikh@marvell.com, dbogdanov@marvell.com
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
+        Li Liang <liali@redhat.com>
+Subject: [PATCH net] atlantic: fix deadlock at aq_nic_stop
+Date:   Fri, 14 Oct 2022 12:34:43 +0200
+Message-Id: <20221014103443.138574-1-ihuguet@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 1/2] thermal/drivers/iwlwifi: Use generic
- thermal_zone_get_trip() function
-Content-Language: en-US
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     rafael@kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Miri Korenblit <miriam.rachel.korenblit@intel.com>,
-        Nathan Errera <nathan.errera@intel.com>,
-        "open list:INTEL WIRELESS WIFI LINK (iwlwifi)" 
-        <linux-wireless@vger.kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>
-References: <20221014073253.3719911-1-daniel.lezcano@linaro.org>
- <87mt9yn22w.fsf@kernel.org>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <87mt9yn22w.fsf@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/10/2022 12:15, Kalle Valo wrote:
-> Daniel Lezcano <daniel.lezcano@linaro.org> writes:
-> 
->> The thermal framework gives the possibility to register the trip
->> points with the thermal zone. When that is done, no get_trip_* ops are
->> needed and they can be removed.
->>
->> The get_trip_temp, get_trip_hyst and get_trip_type are handled by the
->> get_trip_point().
->>
->> The set_trip_temp() generic function does some checks which are no
->> longer needed in the set_trip_point() ops.
->>
->> Convert ops content logic into generic trip points and register them
->> with the thermal zone.
->>
->> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
->> ---
->>   drivers/net/wireless/intel/iwlwifi/mvm/mvm.h |  2 +-
->>   drivers/net/wireless/intel/iwlwifi/mvm/tt.c  | 71 ++++----------------
->>   2 files changed, 13 insertions(+), 60 deletions(-)
-> 
-> The subject should begin with "wifi: iwlwifi: ".
-> 
-> I don't see patch 2. Via which tree is the plan for this patch?
+NIC is stopped with rtnl_lock held, and during the stop it cancels the
+'service_task' work and free irqs.
 
-patch 2 are similar changes but related to the mellanox driver.
+However, if CONFIG_MACSEC is set, rtnl_lock is acquired both from
+aq_nic_service_task and aq_linkstate_threaded_isr. Then a deadlock
+happens if aq_nic_stop tries to cancel/disable them when they've already
+started their execution.
 
-This is the continuation of the trip point rework:
+As the deadlock is caused by rtnl_lock, it causes many other processes
+to stall, not only atlantic related stuff.
 
-https://lore.kernel.org/netdev/20221003092602.1323944-22-daniel.lezcano@linaro.org/t/
+Fix trying to acquire rtnl_lock at the beginning of those functions, and
+returning if NIC closing is ongoing. Also do the "linkstate" stuff in a
+workqueue instead than in a threaded irq, where sleeping or waiting a
+mutex for a long time is discouraged.
 
-This patch is planned to go through the thermal tree
+The issue appeared repeteadly attaching and deattaching the NIC to a
+bond interface. Doing that after this patch I cannot reproduce the bug.
 
-Sorry I should have mentioned that.
+Fixes: 62c1c2e606f6 ("net: atlantic: MACSec offload skeleton")
+Reported-by: Li Liang <liali@redhat.com>
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ .../ethernet/aquantia/atlantic/aq_macsec.c    |  7 +--
+ .../net/ethernet/aquantia/atlantic/aq_nic.c   | 59 ++++++++++++++++---
+ .../net/ethernet/aquantia/atlantic/aq_nic.h   |  1 +
+ 3 files changed, 55 insertions(+), 12 deletions(-)
 
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c b/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c
+index 3d0e16791e1c..5759eba89db9 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c
+@@ -1458,7 +1458,7 @@ int aq_macsec_enable(struct aq_nic_s *nic)
+ 	if (!nic->macsec_cfg)
+ 		return 0;
+ 
+-	rtnl_lock();
++	ASSERT_RTNL();
+ 
+ 	if (nic->aq_fw_ops->send_macsec_req) {
+ 		struct macsec_cfg_request cfg = { 0 };
+@@ -1507,7 +1507,6 @@ int aq_macsec_enable(struct aq_nic_s *nic)
+ 	ret = aq_apply_macsec_cfg(nic);
+ 
+ unlock:
+-	rtnl_unlock();
+ 	return ret;
+ }
+ 
+@@ -1519,9 +1518,9 @@ void aq_macsec_work(struct aq_nic_s *nic)
+ 	if (!netif_carrier_ok(nic->ndev))
+ 		return;
+ 
+-	rtnl_lock();
++	ASSERT_RTNL();
++
+ 	aq_check_txsa_expiration(nic);
+-	rtnl_unlock();
+ }
+ 
+ int aq_macsec_rx_sa_cnt(struct aq_nic_s *nic)
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+index 06508eebb585..5cb7d165dd21 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+@@ -40,6 +40,8 @@ static unsigned int aq_itr_rx;
+ module_param_named(aq_itr_rx, aq_itr_rx, uint, 0644);
+ MODULE_PARM_DESC(aq_itr_rx, "RX interrupt throttle rate");
+ 
++#define AQ_TASK_RETRY_MS	50
++
+ static void aq_nic_update_ndev_stats(struct aq_nic_s *self);
+ 
+ static void aq_nic_rss_init(struct aq_nic_s *self, unsigned int num_rss_queues)
+@@ -210,19 +212,41 @@ static int aq_nic_update_link_status(struct aq_nic_s *self)
+ 	return 0;
+ }
+ 
+-static irqreturn_t aq_linkstate_threaded_isr(int irq, void *private)
++static irqreturn_t aq_linkstate_isr(int irq, void *private)
+ {
+ 	struct aq_nic_s *self = private;
+ 
+ 	if (!self)
+ 		return IRQ_NONE;
+ 
++	if (!aq_utils_obj_test(&self->flags, AQ_NIC_FLAG_CLOSING))
++		aq_ndev_schedule_work(&self->linkstate_task);
++
++	return IRQ_HANDLED;
++}
++
++static void aq_nic_linkstate_task(struct work_struct *work)
++{
++	struct aq_nic_s *self = container_of(work, struct aq_nic_s,
++					     linkstate_task);
++
++#if IS_ENABLED(CONFIG_MACSEC)
++	/* avoid deadlock at aq_nic_stop -> cancel_work_sync */
++	while (!rtnl_trylock()) {
++		if (aq_utils_obj_test(&self->flags, AQ_NIC_FLAG_CLOSING))
++			return;
++		msleep(AQ_TASK_RETRY_MS);
++	}
++#endif
++
+ 	aq_nic_update_link_status(self);
+ 
++#if IS_ENABLED(CONFIG_MACSEC)
++	rtnl_unlock();
++#endif
++
+ 	self->aq_hw_ops->hw_irq_enable(self->aq_hw,
+ 				       BIT(self->aq_nic_cfg.link_irq_vec));
+-
+-	return IRQ_HANDLED;
+ }
+ 
+ static void aq_nic_service_task(struct work_struct *work)
+@@ -236,12 +260,23 @@ static void aq_nic_service_task(struct work_struct *work)
+ 	if (aq_utils_obj_test(&self->flags, AQ_NIC_FLAGS_IS_NOT_READY))
+ 		return;
+ 
++#if IS_ENABLED(CONFIG_MACSEC)
++	/* avoid deadlock at aq_nic_stop -> cancel_work_sync */
++	while (!rtnl_trylock()) {
++		if (aq_utils_obj_test(&self->flags, AQ_NIC_FLAG_CLOSING))
++			return;
++		msleep(AQ_TASK_RETRY_MS);
++	}
++#endif
++
+ 	err = aq_nic_update_link_status(self);
+ 	if (err)
+ 		return;
+ 
+ #if IS_ENABLED(CONFIG_MACSEC)
+ 	aq_macsec_work(self);
++
++	rtnl_unlock();
+ #endif
+ 
+ 	mutex_lock(&self->fwreq_mutex);
+@@ -505,6 +540,7 @@ int aq_nic_start(struct aq_nic_s *self)
+ 	if (err)
+ 		goto err_exit;
+ 
++	INIT_WORK(&self->linkstate_task, aq_nic_linkstate_task);
+ 	INIT_WORK(&self->service_task, aq_nic_service_task);
+ 
+ 	timer_setup(&self->service_timer, aq_nic_service_timer_cb, 0);
+@@ -531,10 +567,9 @@ int aq_nic_start(struct aq_nic_s *self)
+ 		if (cfg->link_irq_vec) {
+ 			int irqvec = pci_irq_vector(self->pdev,
+ 						    cfg->link_irq_vec);
+-			err = request_threaded_irq(irqvec, NULL,
+-						   aq_linkstate_threaded_isr,
+-						   IRQF_SHARED | IRQF_ONESHOT,
+-						   self->ndev->name, self);
++			err = request_irq(irqvec, aq_linkstate_isr,
++					  IRQF_SHARED | IRQF_ONESHOT,
++					  self->ndev->name, self);
+ 			if (err < 0)
+ 				goto err_exit;
+ 			self->msix_entry_mask |= (1 << cfg->link_irq_vec);
+@@ -1380,11 +1415,15 @@ int aq_nic_set_loopback(struct aq_nic_s *self)
+ int aq_nic_stop(struct aq_nic_s *self)
+ {
+ 	unsigned int i = 0U;
++	int ret;
++
++	aq_utils_obj_set(&self->flags, AQ_NIC_FLAG_CLOSING);
+ 
+ 	netif_tx_disable(self->ndev);
+ 	netif_carrier_off(self->ndev);
+ 
+ 	del_timer_sync(&self->service_timer);
++	cancel_work_sync(&self->linkstate_task);
+ 	cancel_work_sync(&self->service_task);
+ 
+ 	self->aq_hw_ops->hw_irq_disable(self->aq_hw, AQ_CFG_IRQ_MASK);
+@@ -1401,7 +1440,11 @@ int aq_nic_stop(struct aq_nic_s *self)
+ 
+ 	aq_ptp_ring_stop(self);
+ 
+-	return self->aq_hw_ops->hw_stop(self->aq_hw);
++	ret = self->aq_hw_ops->hw_stop(self->aq_hw);
++
++	aq_utils_obj_clear(&self->flags, AQ_NIC_FLAG_CLOSING);
++
++	return ret;
+ }
+ 
+ void aq_nic_set_power(struct aq_nic_s *self)
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h b/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
+index 935ba889bd9a..a114b66990a9 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
+@@ -140,6 +140,7 @@ struct aq_nic_s {
+ 	const struct aq_fw_ops *aq_fw_ops;
+ 	struct aq_nic_cfg_s aq_nic_cfg;
+ 	struct timer_list service_timer;
++	struct work_struct linkstate_task;
+ 	struct work_struct service_task;
+ 	struct timer_list polling_timer;
+ 	struct aq_hw_link_status_s link_status;
 -- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+2.34.1
 
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
