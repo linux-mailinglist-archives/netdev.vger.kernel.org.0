@@ -2,80 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 70E355FE90F
-	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 08:47:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 463C85FE910
+	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 08:48:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229692AbiJNGrp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Oct 2022 02:47:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56542 "EHLO
+        id S229655AbiJNGsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Oct 2022 02:48:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229787AbiJNGrn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 02:47:43 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BD5F18541B;
-        Thu, 13 Oct 2022 23:47:30 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id bp11so6082105wrb.9;
-        Thu, 13 Oct 2022 23:47:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=D/0A5gYLwBnKJwADaWEmj06PgAR3LilrfLx3+JDwOcA=;
-        b=N6M8ET29jTTF4AhO0vXOJgud7zFOSeRPwZakbFhkELPgWXCh7Z5Ju15H1MEuDvtZI2
-         Iw1Owknbw/PBE44wqO14inRJ+KkdvCE2DP4DLb79wVGW81+E0+5CfAbn8dBJLLzuYbLk
-         +kz4ArLnoqFguFdqTBPlU0rkQO+arh+rVRIeH3pccOLAJqsK69/39PgJp2UYbDrr5RFr
-         3eC57HbGuUxZGhEYxg8grwudnTWb3z+sMnqfI9DILtQcheDqrpeNwGBeYdl9EL9wf4Rz
-         anQHLbfec73CAa5v5TpFZAo5uN/RM6MpO/OcRJRpUTyxraLJUAfbNCLxz5XUbRRAcQSW
-         9/Ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=D/0A5gYLwBnKJwADaWEmj06PgAR3LilrfLx3+JDwOcA=;
-        b=dZ/wEz97J9JaXOnDVgv1J9r6PoniegaoQ7syuNBf81/9vc/LO1dyBjq0g0UE2pgkr4
-         XxNjg2UnyzwO41UTNNfRSimNHVv6pNziyLMUKM0M6bs1QQ9YfcRykVf1aN5msRUgAy/j
-         P7PRuddF1bTqfgsNHKmo9J7loeLza5dgLTQSjHAMCRsNdu1mYcNm3CVOCL8prlLQetyf
-         heOAB/P4iL8n5ABP0J7yWonQBpwIfnOF34UhEQssPmMy3rOcsP4jh/6mvx82KYAsEwwm
-         PMF1AFeGTJ9+FpEPD0TYOTndKCHw/IuDa/ihQ9VYajCIDe6yJTt9cvKsCE1W2xyyJSUX
-         JAUA==
-X-Gm-Message-State: ACrzQf00feY3gQmL5s5xWBfTlep7L6U/sV1rJnIJV+L3088+ldqcWTID
-        otF594BZU3hL7/Yi/sGLtC4=
-X-Google-Smtp-Source: AMsMyM4UcwhCu5a6X38VXEc9IpIZvwKfm5OVUxvFgKMHhLXItHx8MYGZM/Q0WvrdgkBMpgUGp7ISjw==
-X-Received: by 2002:a5d:668e:0:b0:22f:d914:80ed with SMTP id l14-20020a5d668e000000b0022fd91480edmr2225655wru.45.1665730048516;
-        Thu, 13 Oct 2022 23:47:28 -0700 (PDT)
-Received: from krava ([193.85.244.190])
-        by smtp.gmail.com with ESMTPSA id j10-20020a05600c190a00b003c6b7f5567csm14324802wmq.0.2022.10.13.23.47.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Oct 2022 23:47:28 -0700 (PDT)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Fri, 14 Oct 2022 08:47:26 +0200
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <olsajiri@gmail.com>, Jakub Kicinski <kuba@kernel.org>,
-        Martin KaFai Lau <martin.lau@kernel.org>,
-        bpf@vger.kernel.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: WARN: multiple IDs found for 'nf_conn': 92168, 117897 - using
- 92168
-Message-ID: <Y0kF/radV0cg4JYk@krava>
-References: <20221003214941.6f6ea10d@kernel.org>
- <YzvV0CFSi9KvXVlG@krava>
- <20221004072522.319cd826@kernel.org>
- <Yz1SSlzZQhVtl1oS@krava>
- <20221005084442.48cb27f1@kernel.org>
- <20221005091801.38cc8732@kernel.org>
- <Yz3kHX4hh8soRjGE@krava>
- <20221013080517.621b8d83@kernel.org>
- <Y0iNVwxTJmrddRuv@krava>
- <CAEf4Bzbow+8-f4rg2LRRRUD+=1wbv1MjpAh-P4=smUPtrzfZ3Q@mail.gmail.com>
+        with ESMTP id S229879AbiJNGsO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 02:48:14 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2077.outbound.protection.outlook.com [40.107.237.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A08AB1B2BBD;
+        Thu, 13 Oct 2022 23:48:09 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MSakksebsBoVlBz6Uvc/8v5pI+DMhDWFfYXWsyQU1OOALB2MVja+n8xajiTNVZzoS0GUuS6vRmNFoxjdsqFIX2ra4fNpkZKMwWbXrlvQJisyB0P/iE2DCO0MLxetJ281SZbp8fJhMmKEEnNHG1v9EJshtHwwAbkIv8IzDTQj3udZ8VGhg0x6WINJznObHX9/TPPUyvm9+ZQ+x9oKmhc7HcK3IYt5v/cZoFc9BP2++iIkptWuxshgaj8FeZQL1GNESglURMumvq3ClxO5hJ52UpOMRBkF23T8IuIRgboiIs2igXqQIQ8tBAmNRjcETYgmY27FavoP3aOLLGVLebrliw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CDmWzcUen+mdB4+xmOQKivrfbK/4IZyLLtzcH5L/Ajs=;
+ b=TBxWrmkdkJRep4YKRGrw0tKEI5euJBWbHCePn8Iy9PMIVSTBjUespQbtoVcVsRjhnRwBIxBTY25yg/6lstOosOT8qZvIRqtuLeExZyG1SRfu8ko1jHaUe1tghe1ewYNctcpZD9cR005uI/q6tidgiuK3oENN8QeztKunJE+bn4hAI6a+22M/BNNMHiztJ9CwbzpyEchbJJuU4UwpWv339t/9Y2YiaHS0yRjKViVUC4OjjQ/BCc6I+qHDfeVumpVxH/UJTSaQdiBvli4MJraC325BNVJGzL1hBX5ZfIyeKPRYhuBhOWnpnJUK+12W821EciIgeXu81bvGiu3hiAogjg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=lunn.ch smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CDmWzcUen+mdB4+xmOQKivrfbK/4IZyLLtzcH5L/Ajs=;
+ b=Bl6DpjHwC46pa700YPSLTI92k4G4/558J/DnX/TSR8q9qFA/kJPxH4xeORhWkc7NGFfTxC+MgmQz36hzO9VA3MTdKfB/2PT/yOztOnECJn+/PvO5nf//oui3aFAide/o2Z7nNYgqJm1lKuWCgAME/PL6Fhw19uUF1qj4xr/p3GQ=
+Received: from DM6PR07CA0130.namprd07.prod.outlook.com (2603:10b6:5:330::22)
+ by SN7PR12MB6912.namprd12.prod.outlook.com (2603:10b6:806:26d::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5709.15; Fri, 14 Oct
+ 2022 06:48:07 +0000
+Received: from DM6NAM11FT060.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:330:cafe::d3) by DM6PR07CA0130.outlook.office365.com
+ (2603:10b6:5:330::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.28 via Frontend
+ Transport; Fri, 14 Oct 2022 06:48:07 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT060.mail.protection.outlook.com (10.13.173.63) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5723.20 via Frontend Transport; Fri, 14 Oct 2022 06:48:05 +0000
+Received: from SATLEXMB05.amd.com (10.181.40.146) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Fri, 14 Oct
+ 2022 01:48:00 -0500
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB05.amd.com
+ (10.181.40.146) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Fri, 14 Oct
+ 2022 01:47:53 -0500
+Received: from xhdharinik40.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
+ Transport; Fri, 14 Oct 2022 01:47:50 -0500
+From:   Harini Katakam <harini.katakam@amd.com>
+To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <harinikatakamlinux@gmail.com>, <michal.simek@amd.com>,
+        <harini.katakam@amd.com>, <radhey.shyam.pandey@amd.com>
+Subject: [PATCH v2] net: phy: dp83867: Extend RX strap quirk for SGMII mode
+Date:   Fri, 14 Oct 2022 12:17:35 +0530
+Message-ID: <20221014064735.18928-1-harini.katakam@amd.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4Bzbow+8-f4rg2LRRRUD+=1wbv1MjpAh-P4=smUPtrzfZ3Q@mail.gmail.com>
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT060:EE_|SN7PR12MB6912:EE_
+X-MS-Office365-Filtering-Correlation-Id: 878fbc3a-fd10-4c39-5682-08daadb00beb
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: yyjLL1uIOl67nawkELuKLsng6iWu7k8fd761z+Vkk930DZ98uHZCrbiKkZInGlvsrgHy+Bi2w3uGGq07ARrjsfv9MheUDOB3cTGMiivi8A7afCdEsVAfjmzp+NxsYiD26ihFhLNLX7rKjsHoTEr9MuyDACauTV+FIbMlDKPVyFzJ3rtuOFR2PPZiNQ3+qJN3JQvLdvQB2EAJdJbMjaHUnRVF5ldiZk/HS5PXOT7Pxd6d5TakcQME/Vy3ZMcDPPCRedeUvWgi46xV+6FIqraeCruNYtwE9OZ3qOZmf8wUUmpwk5YHd3Ux3AREqFkIe0HIBJFWENllqxdT65AuLARBk3/AHoe3Fyd711D7jmlt9Bf+I0FYZNA1Wm4D/MXtCRD2kREXI7ekELhqYTavrKqHzFq9Ccj6H22y3lv06G9wSeY5brAK15k4d58MSeo1GL8eDHzjtphduHHhVz4wfxVYaCdTRqPHwnFRPHW0exrJp1h8+AFbS/ea3Fqz0/4nNNjvvHUSkQS9odUzcrvSsg4niECf/Lo2i49p9+3PMEa8Jy3EHU9ovn+Cu2LV3mOMyfdFiXx9IKYlprhv40Oz3/udgxM+F2SmJdlM2RgsdxClt8HrDvQV5HhioTA08QMCWTQ08NGZW9ioEF5GIvlds9hHu6Nw2iTyV6m81xQDTKjBcS2tss2hjv/q1tmXWbCfLE/7+sIsLvC/XdVIhSS45yTJL3dfHTs0YFlNrqCu8bqEEow7keJrGOoqTC/xcU4Av/CtKguJm2/27EUKsEoxKuTpaa4FeSMARTiDAbvawWrULb4CvFi1FDyiab2yL4S6y2k4
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(136003)(396003)(346002)(39860400002)(376002)(451199015)(36840700001)(40470700004)(46966006)(426003)(8936002)(82740400003)(5660300002)(4326008)(8676002)(6666004)(47076005)(110136005)(40460700003)(54906003)(82310400005)(356005)(81166007)(26005)(478600001)(41300700001)(316002)(70206006)(36860700001)(36756003)(70586007)(86362001)(44832011)(336012)(2906002)(40480700001)(2616005)(7416002)(1076003)(186003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Oct 2022 06:48:05.1543
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 878fbc3a-fd10-4c39-5682-08daadb00beb
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT060.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6912
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,117 +102,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 13, 2022 at 03:24:59PM -0700, Andrii Nakryiko wrote:
-> On Thu, Oct 13, 2022 at 3:12 PM Jiri Olsa <olsajiri@gmail.com> wrote:
-> >
-> > On Thu, Oct 13, 2022 at 08:05:17AM -0700, Jakub Kicinski wrote:
-> > > On Wed, 5 Oct 2022 22:07:57 +0200 Jiri Olsa wrote:
-> > > > > Yeah, it's there on linux-next, too.
-> > > > >
-> > > > > Let me grab a fresh VM and try there. Maybe it's my system. Somehow.
-> > > >
-> > > > ok, I will look around what's the way to install that centos 8 thing
-> > >
-> > > Any luck?
-> >
-> > now BTFIDS warnings..
-> >
-> > I can see following on centos8 with gcc 8.5:
-> >
-> >           BTFIDS  vmlinux
-> >         WARN: multiple IDs found for 'task_struct': 300, 56614 - using 300
-> >         WARN: multiple IDs found for 'file': 540, 56649 - using 540
-> >         WARN: multiple IDs found for 'vm_area_struct': 549, 56652 - using 549
-> >         WARN: multiple IDs found for 'seq_file': 953, 56690 - using 953
-> >         WARN: multiple IDs found for 'inode': 1132, 56966 - using 1132
-> >         WARN: multiple IDs found for 'path': 1164, 56995 - using 1164
-> >         WARN: multiple IDs found for 'task_struct': 300, 61905 - using 300
-> >         WARN: multiple IDs found for 'file': 540, 61943 - using 540
-> >         WARN: multiple IDs found for 'vm_area_struct': 549, 61946 - using 549
-> >         WARN: multiple IDs found for 'inode': 1132, 62029 - using 1132
-> >         WARN: multiple IDs found for 'path': 1164, 62058 - using 1164
-> >         WARN: multiple IDs found for 'cgroup': 1190, 62067 - using 1190
-> >         WARN: multiple IDs found for 'seq_file': 953, 62253 - using 953
-> >         WARN: multiple IDs found for 'sock': 7960, 62374 - using 7960
-> >         WARN: multiple IDs found for 'sk_buff': 1876, 62485 - using 1876
-> >         WARN: multiple IDs found for 'bpf_prog': 6094, 62542 - using 6094
-> >         WARN: multiple IDs found for 'socket': 7993, 62545 - using 7993
-> >         WARN: multiple IDs found for 'xdp_buff': 6191, 62836 - using 6191
-> >         WARN: multiple IDs found for 'sock_common': 8164, 63152 - using 8164
-> >         WARN: multiple IDs found for 'request_sock': 17296, 63204 - using 17296
-> >         WARN: multiple IDs found for 'inet_request_sock': 36292, 63222 - using 36292
-> >         WARN: multiple IDs found for 'inet_sock': 32700, 63225 - using 32700
-> >         WARN: multiple IDs found for 'inet_connection_sock': 33944, 63240 - using 33944
-> >         WARN: multiple IDs found for 'tcp_request_sock': 36299, 63260 - using 36299
-> >         WARN: multiple IDs found for 'tcp_sock': 33969, 63264 - using 33969
-> >         WARN: multiple IDs found for 'bpf_map': 6623, 63343 - using 6623
-> >
-> > I'll need to check on that..
-> >
-> > and I just actually saw the 'nf_conn' warning on linux-next/master with
-> > latest fedora/gcc-12:
-> >
-> >           BTF [M] net/netfilter/nf_nat.ko
-> >         WARN: multiple IDs found for 'nf_conn': 106518, 120156 - using 106518
-> >         WARN: multiple IDs found for 'nf_conn': 106518, 121853 - using 106518
-> >         WARN: multiple IDs found for 'nf_conn': 106518, 123126 - using 106518
-> >         WARN: multiple IDs found for 'nf_conn': 106518, 124537 - using 106518
-> >         WARN: multiple IDs found for 'nf_conn': 106518, 126442 - using 106518
-> >         WARN: multiple IDs found for 'nf_conn': 106518, 128256 - using 106518
-> >           LD [M]  net/netfilter/nf_nat_tftp.ko
-> >
-> > looks like maybe dedup missed this struct for some reason
-> >
-> > nf_conn dump from module:
-> >
-> >         [120155] PTR '(anon)' type_id=120156
-> >         [120156] STRUCT 'nf_conn' size=320 vlen=14
-> >                 'ct_general' type_id=105882 bits_offset=0
-> >                 'lock' type_id=180 bits_offset=64
-> >                 'timeout' type_id=113 bits_offset=640
-> >                 'zone' type_id=106520 bits_offset=672
-> >                 'tuplehash' type_id=106533 bits_offset=704
-> >                 'status' type_id=1 bits_offset=1600
-> >                 'ct_net' type_id=3215 bits_offset=1664
-> >                 'nat_bysource' type_id=139 bits_offset=1728
-> >                 '__nfct_init_offset' type_id=949 bits_offset=1856
-> >                 'master' type_id=120155 bits_offset=1856
-> >                 'mark' type_id=106351 bits_offset=1920
-> >                 'secmark' type_id=106351 bits_offset=1952
-> >                 'ext' type_id=106536 bits_offset=1984
-> >                 'proto' type_id=106532 bits_offset=2048
-> >
-> > nf_conn dump from vmlinux:
-> >
-> >         [106517] PTR '(anon)' type_id=106518
-> >         [106518] STRUCT 'nf_conn' size=320 vlen=14
-> >                 'ct_general' type_id=105882 bits_offset=0
-> >                 'lock' type_id=180 bits_offset=64
-> >                 'timeout' type_id=113 bits_offset=640
-> >                 'zone' type_id=106520 bits_offset=672
-> >                 'tuplehash' type_id=106533 bits_offset=704
-> >                 'status' type_id=1 bits_offset=1600
-> >                 'ct_net' type_id=3215 bits_offset=1664
-> >                 'nat_bysource' type_id=139 bits_offset=1728
-> >                 '__nfct_init_offset' type_id=949 bits_offset=1856
-> >                 'master' type_id=106517 bits_offset=1856
-> >                 'mark' type_id=106351 bits_offset=1920
-> >                 'secmark' type_id=106351 bits_offset=1952
-> >                 'ext' type_id=106536 bits_offset=1984
-> >                 'proto' type_id=106532 bits_offset=2048
-> >
-> > look identical.. Andrii, any idea?
-> 
-> I'm pretty sure they are not identical. There is somewhere a STRUCT vs
-> FWD difference. We had a similar discussion recently with Alan
-> Maguire.
-> 
-> >                 'master' type_id=120155 bits_offset=1856
-> 
-> vs
-> 
-> >                 'master' type_id=106517 bits_offset=1856
+When RX strap in HW is not set to MODE 3 or 4, bit 7 and 8 in CF4
+register should be set. The former is already handled in
+dp83867_config_init; add the latter in SGMII specific initialization.
 
-master is pointer to same 'nf_conn' object, and rest of the ids are same
+Fixes: 2a10154abcb7 ("net: phy: dp83867: Add TI dp83867 phy")
+Signed-off-by: Harini Katakam <harini.katakam@amd.com>
+---
+ drivers/net/phy/dp83867.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-jirka
+diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
+index 6939563d3b7c..417527f8bbf5 100644
+--- a/drivers/net/phy/dp83867.c
++++ b/drivers/net/phy/dp83867.c
+@@ -853,6 +853,14 @@ static int dp83867_config_init(struct phy_device *phydev)
+ 		else
+ 			val &= ~DP83867_SGMII_TYPE;
+ 		phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_SGMIICTL, val);
++
++		/* This is a SW workaround for link instability if RX_CTRL is
++		 * not strapped to mode 3 or 4 in HW. This is required for SGMII
++		 * in addition to clearing bit 7, handled above.
++		 */
++		if (dp83867->rxctrl_strap_quirk)
++			phy_set_bits_mmd(phydev, DP83867_DEVADDR, DP83867_CFG4,
++					 BIT(8));
+ 	}
+ 
+ 	val = phy_read(phydev, DP83867_CFG3);
+-- 
+2.17.1
+
