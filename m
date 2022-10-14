@@ -2,97 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C64705FEC66
-	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 12:15:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47A985FEC70
+	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 12:18:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229693AbiJNKPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Oct 2022 06:15:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39764 "EHLO
+        id S229618AbiJNKSW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Oct 2022 06:18:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229598AbiJNKPb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 06:15:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CED98A99D6;
-        Fri, 14 Oct 2022 03:15:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 606DD61AC4;
-        Fri, 14 Oct 2022 10:15:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E04CC433C1;
-        Fri, 14 Oct 2022 10:15:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665742528;
-        bh=a9urAeM6qo9g4VwJfLS+Bay5Jtu4BOaMES1yiMuCDEE=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=Ou2s55cgzvH/FPQFhGvnaUCmvL9KalwfkzMqcmXvSKCq4jjy0IOO1cokBJAm4IwsY
-         MYaX9uCTlW8hS+TCQeYti1nlLWyoGbmeL+vbKlaoDtrThyi7PJxOOIKRgqAG8awhJe
-         iC6s9xxYV7ElHM0mW+z3RArWM0RAd+deULC1CxAFhQ8CZoLWspDIK68j/D3yNX1Ry/
-         JlPsGy7MyEvkYln0r9Bt1GdFhg31EiAIJXHkVO1aWQTw7uMBSvHF3DsnuUzi1LFin+
-         AJ8uoXOx33JB3Vct5QOjiHRUsPC1Kb0PuhebPoJuB4W2+B2qotzzCdCmMCcKf52qvJ
-         hf039hiEudERA==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     rafael@kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229533AbiJNKSU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 06:18:20 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D752B12FFA8
+        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 03:18:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=2M67E4exov3pIudJ8dLX9p/62WDBS+2cAltVv6T03AA=; b=sfHm+VkQDbGDSCIPpuYyvJu4Op
+        HByYBFDrqYxmiUy0/ltP/mwZ3fBqsuUWp7JPlrmTRBoCgYnK1wQiD+eDogKbjvWQ3kguf0JhNtHWX
+        pOjaspaz6RlSgqzEmyP7gBjF92JKKgCDaaZgfxlJYxvrbVcfEWC9xTdua4i6ay06rx29OkrPaTXqG
+        GEuhXjDZZohqo7F3SOuBbOfqSvxHm4/uYevqnlFP+Pij7rZoWZXGHWrk9PB6P8ZxkCUo60wNfzYDS
+        68cv7b2cqjtta56EjRarN4kcSCuVwdBRWlHnd4ijQkF+Kc/VXG1Sw2cfxGqKkWNevhoXHK/C1Kilv
+        84epCK8w==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34718)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ojHlV-0000hC-CG; Fri, 14 Oct 2022 11:18:06 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ojHlO-0005eU-FA; Fri, 14 Oct 2022 11:17:58 +0100
+Date:   Fri, 14 Oct 2022 11:17:58 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Shenwei Wang <shenwei.wang@nxp.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Miri Korenblit <miriam.rachel.korenblit@intel.com>,
-        Nathan Errera <nathan.errera@intel.com>,
-        linux-wireless@vger.kernel.org (open list:INTEL WIRELESS WIFI LINK
-        (iwlwifi)), netdev@vger.kernel.org (open list:NETWORKING DRIVERS)
-Subject: Re: [PATCH 1/2] thermal/drivers/iwlwifi: Use generic thermal_zone_get_trip() function
-References: <20221014073253.3719911-1-daniel.lezcano@linaro.org>
-Date:   Fri, 14 Oct 2022 13:15:19 +0300
-In-Reply-To: <20221014073253.3719911-1-daniel.lezcano@linaro.org> (Daniel
-        Lezcano's message of "Fri, 14 Oct 2022 09:32:50 +0200")
-Message-ID: <87mt9yn22w.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "imx@lists.linux.dev" <imx@lists.linux.dev>
+Subject: Re: [EXT] Re: [PATCH v5 0/2] net: phylink: add phylink_set_mac_pm()
+ helper
+Message-ID: <Y0k3VqK4oOLOEljJ@shell.armlinux.org.uk>
+References: <20221013133904.978802-1-shenwei.wang@nxp.com>
+ <Y0g3tW26qDDaxYPP@shell.armlinux.org.uk>
+ <PAXPR04MB9185777624723D0FE11C6E4689259@PAXPR04MB9185.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PAXPR04MB9185777624723D0FE11C6E4689259@PAXPR04MB9185.eurprd04.prod.outlook.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel Lezcano <daniel.lezcano@linaro.org> writes:
+On Thu, Oct 13, 2022 at 07:24:02PM +0000, Shenwei Wang wrote:
+> > -----Original Message-----
+> > From: Russell King <linux@armlinux.org.uk>
+> > Sent: Thursday, October 13, 2022 11:07 AM
+> > On Thu, Oct 13, 2022 at 08:39:02AM -0500, Shenwei Wang wrote:
+> > > Per Russell's suggestion, the implementation is changed from the
+> > > helper function to add an extra property in phylink_config structure
+> > > because this change can easily cover SFP usecase too.
+> > 
+> > Which tree are you aiming this for - net-next or net?
+> 
+> The patch can be applied to both trees.  You can select the one which is easy to
+> go ahead.
 
-> The thermal framework gives the possibility to register the trip
-> points with the thermal zone. When that is done, no get_trip_* ops are
-> needed and they can be removed.
->
-> The get_trip_temp, get_trip_hyst and get_trip_type are handled by the
-> get_trip_point().
->
-> The set_trip_temp() generic function does some checks which are no
-> longer needed in the set_trip_point() ops.
->
-> Convert ops content logic into generic trip points and register them
-> with the thermal zone.
->
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-> ---
->  drivers/net/wireless/intel/iwlwifi/mvm/mvm.h |  2 +-
->  drivers/net/wireless/intel/iwlwifi/mvm/tt.c  | 71 ++++----------------
->  2 files changed, 13 insertions(+), 60 deletions(-)
+That may be the case at the moment, because the net-next tree has been
+merged into mainline and the net tree recently updated to mainline, but
+that is not always the case.
 
-The subject should begin with "wifi: iwlwifi: ".
+The purpose of the tag in the subject line is to tell the various
+maintainers on the netdev mailing list what _your_ expectation is for
+the patch and where _you_ intend it to be applied.
 
-I don't see patch 2. Via which tree is the plan for this patch?
-
-Gregory, please review this.
+Thanks.
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
