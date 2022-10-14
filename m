@@ -2,84 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D3B85FE9C7
-	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 09:44:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16C455FEA5E
+	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 10:20:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229485AbiJNHoT convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 14 Oct 2022 03:44:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42132 "EHLO
+        id S229910AbiJNIU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Oct 2022 04:20:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229658AbiJNHoR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 03:44:17 -0400
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [207.211.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EECB98E0FC
-        for <netdev@vger.kernel.org>; Fri, 14 Oct 2022 00:44:15 -0700 (PDT)
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-183-QuuEX9mSOKGvI1-MOBNjKg-1; Fri, 14 Oct 2022 03:44:11 -0400
-X-MC-Unique: QuuEX9mSOKGvI1-MOBNjKg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S230087AbiJNIUW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 04:20:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0896EA0261;
+        Fri, 14 Oct 2022 01:20:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 586A58027EC;
-        Fri, 14 Oct 2022 07:44:11 +0000 (UTC)
-Received: from hog (unknown [10.39.192.237])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id EC9BC1402140;
-        Fri, 14 Oct 2022 07:44:09 +0000 (UTC)
-Date:   Fri, 14 Oct 2022 09:43:45 +0200
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     netdev@vger.kernel.org, Antoine Tenart <atenart@kernel.org>,
-        Mark Starovoytov <mstarovoitov@marvell.com>,
-        Igor Russkikh <irusskikh@marvell.com>
-Subject: Re: [PATCH net 0/5] macsec: offload-related fixes
-Message-ID: <Y0kTMXzY3l4ncegR@hog>
-References: <cover.1665416630.git.sd@queasysnail.net>
- <Y0j+E+n/RggT05km@unreal>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 06F7FB82270;
+        Fri, 14 Oct 2022 08:20:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9553EC433D7;
+        Fri, 14 Oct 2022 08:20:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1665735614;
+        bh=J76X/xI3ZYRL0g1Sf6dnSW0VX7I1/KbcYZPfBHuDpR4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=E0neJOuChOHOotuezF455eXfujedVs53rYTFBaS5UWfHiDDdOQrhWXRXzuNnIJyfv
+         N1ivPbRNzvNviyt7QW3bLuoBtkaOe//Qg+ZiqTMTjnUQizPAbSZjpWqI559OZqrehH
+         zozkIZ/25KlVqNNGNOybLPP7XPxc/VJ6rovTdj/DH5ggk0RYlR8FLorqKWZf7es9pp
+         15N3ZsFKwLdYQl2nwBGpoiUlY5Mox7I5TG0W+NAkwqfvk6aBcCKgfNn+ofFIV97r/C
+         DO9Olp+raYc0Sc0v0FSjA3VGh8GYEE9a1N8m+YNtWCSRaNSLVDACKghHqZDQjZNo4A
+         Vr0/tRVs9ml8Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 78D2AE4D00B;
+        Fri, 14 Oct 2022 08:20:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <Y0j+E+n/RggT05km@unreal>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Type: text/plain; charset=UTF-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] MAINTAINERS: nfc: s3fwrn5: Drop Krzysztof Opasiak
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166573561449.14465.9269645235996945251.git-patchwork-notify@kernel.org>
+Date:   Fri, 14 Oct 2022 08:20:14 +0000
+References: <20221013234205.132630-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221013234205.132630-1-krzysztof.kozlowski@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2022-10-14, 09:13:39 +0300, Leon Romanovsky wrote:
-> On Thu, Oct 13, 2022 at 04:15:38PM +0200, Sabrina Dubroca wrote:
-> > I'm working on a dummy offload for macsec on netdevsim. It just has a
-> > small SecY and RXSC table so I can trigger failures easily on the
-> > ndo_* side. It has exposed a couple of issues.
-> > 
-> > The first patch will cause some performance degradation, but in the
-> > current state it's not possible to offload macsec to lower devices
-> > that also support ipsec offload. 
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Thu, 13 Oct 2022 19:42:05 -0400 you wrote:
+> Emails to Krzysztof Opasiak bounce ("Recipient address rejected: User
+> unknown") so drop his email from maintainers of s3fwrn5 NFC bindings and
+> driver.
 > 
-> Please don't, IPsec offload is available and undergoing review.
-> https://lore.kernel.org/netdev/cover.1662295929.git.leonro@nvidia.com/
-> 
-> This is whole series (XFRM + driver) for IPsec full offload.
-> https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/log/?h=xfrm-next
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml | 1 -
+>  MAINTAINERS                                                    | 1 -
+>  2 files changed, 2 deletions(-)
 
-Yes, and that's not upstream yet. That patchset is also doing nothing
-to address the issue I'm refering to here, where xfrm_api_check
-rejects the macsec device because it has the NETIF_F_HW_ESP flag
-(passed from the lower device) and no xfrmdev_ops.
+Here is the summary with links:
+  - MAINTAINERS: nfc: s3fwrn5: Drop Krzysztof Opasiak
+    https://git.kernel.org/netdev/net/c/0c9341179551
 
-OTOH the mlx5 driver has both macsec and ipsec offload already, so I
-think it should be affected by this exact issue.
-
-There are other feature flags that almost certainly shouldn't be
-copied from the lower device, such as the TLS offload flags.
-
+You are awesome, thank you!
 -- 
-Sabrina
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
