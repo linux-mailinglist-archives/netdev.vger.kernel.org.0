@@ -2,54 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA3EC5FE6F4
-	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 04:24:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B0E65FE71E
+	for <lists+netdev@lfdr.de>; Fri, 14 Oct 2022 04:45:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229742AbiJNCYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Oct 2022 22:24:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39998 "EHLO
+        id S229572AbiJNCpd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Oct 2022 22:45:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229594AbiJNCYu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 22:24:50 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D48391403C;
-        Thu, 13 Oct 2022 19:24:43 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MpVTc38zQz1P7Lf;
-        Fri, 14 Oct 2022 10:20:04 +0800 (CST)
-Received: from [10.174.179.191] (10.174.179.191) by
- canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 14 Oct 2022 10:24:40 +0800
-Message-ID: <fbb13238-d0e2-7b0f-8b7b-e4fb211bcaaf@huawei.com>
-Date:   Fri, 14 Oct 2022 10:24:39 +0800
+        with ESMTP id S229666AbiJNCpc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Oct 2022 22:45:32 -0400
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1B73EA6B2;
+        Thu, 13 Oct 2022 19:45:30 -0700 (PDT)
+Received: by mail-qv1-xf33.google.com with SMTP id i9so2503181qvu.1;
+        Thu, 13 Oct 2022 19:45:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ABXjfWD1HfWlaDYb98DlEmp68ByH83Ag8aVCNesB2RU=;
+        b=fDB3O+A0/U7VFtxQ7fcT9BWnA2CNSNNIQGLTKpJ7/Mvb3vngwyrZA41MP9Mm21YWFN
+         Z/LTpYS3av06ScI+lVdHUDOTJvxVChU4TOj1QcZMBwkXmXPdnZQ/kyzCpWhaF9ktW3pi
+         rAiiXjcwetMoYC07eA3TUHOeZ9q/anhlMSkvd2fXQWQ6ZJmU5Dm+h2A9HNwNAPN0vPs+
+         gANdeQxdQjKbYFoXGuHYik8ZWGPtgLZPWzRcQsuLWvsgMm+4KB6B0oogL/+p60b0ys7R
+         vy1Lppk2dN6dey4pjv5ya/PijKUVM8Kx5rhy5pVCp9l+ypm2SnXJzgcUBqOSb0efGw5D
+         jrbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ABXjfWD1HfWlaDYb98DlEmp68ByH83Ag8aVCNesB2RU=;
+        b=DeyNwGVorxF81gfGU8wEj+BAahgB1L8dR+XuwV41+dVJQeTLaqeeh8wuz+/WE6mO6V
+         kNfXUkN1jXdd/2DfhvFusxkpfMueQEDtfhRzMxDBCLFt1CHDdTBlRGTSj1/PxOD6d5ln
+         1SHvNXdsbAweBG083oOZmnXSURy4EjNoMP3JiZ+Tg/TAyufFNIXGkmHVrVYgc6n7fFoF
+         QhzZkv7TuuSrHwWZfAklzLQgmuROp9NrwQPHNWSEEpkqf7eTwh9YNuQ66Vn1loolhAD9
+         sTAPFNJaNICWpieJmgKIwhC2xCwR9gMF3In6wWXzJTJi5n7Gm47tnV/RK8Y+xk4NpCLo
+         W2oQ==
+X-Gm-Message-State: ACrzQf01DF6OmdLDDN9NMJmY2rEoFjxsGhWxhT5OnbphrvRZVnXqwB9n
+        4jH842YuZ0ibJVZvSg4V/jM=
+X-Google-Smtp-Source: AMsMyM4bPEkCE1NupQQdsfOrgzlVIGzOikSw3o/J9/g7Mpm/vMGUL5r5T1CANbugamSgKvrijncE1w==
+X-Received: by 2002:a05:6214:1c85:b0:4af:9303:6d4b with SMTP id ib5-20020a0562141c8500b004af93036d4bmr2579679qvb.125.1665715529933;
+        Thu, 13 Oct 2022 19:45:29 -0700 (PDT)
+Received: from localhost (cpec09435e3ea83-cmc09435e3ea81.cpe.net.cable.rogers.com. [99.235.148.253])
+        by smtp.gmail.com with UTF8SMTPSA id d9-20020ac85349000000b00343057845f7sm1146178qto.20.2022.10.13.19.45.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 13 Oct 2022 19:45:28 -0700 (PDT)
+From:   Cezar Bulinaru <cbulinaru@gmail.com>
+To:     pabeni@redhat.com, kys@microsoft.com, haiyangz@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, linux-hyperv@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     cbulinaru@gmail.com, Michael Kelley <mikelley@microsoft.com>
+Subject: [PATCH v3] net: hv_netvsc: Fix a warning triggered by memcpy in rndis_filter
+Date:   Thu, 13 Oct 2022 22:45:03 -0400
+Message-Id: <20221014024503.4533-1-cbulinaru@gmail.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [bpf-next v8 1/3] bpftool: Add autoattach for bpf prog
- load|loadall
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     <quentin@isovalent.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <andrii@kernel.org>, <martin.lau@linux.dev>, <song@kernel.org>,
-        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <sdf@google.com>, <haoluo@google.com>, <jolsa@kernel.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <hawk@kernel.org>,
-        <nathan@kernel.org>, <ndesaulniers@google.com>, <trix@redhat.com>,
-        <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <llvm@lists.linux.dev>
-References: <1665399601-29668-1-git-send-email-wangyufen@huawei.com>
- <1665399601-29668-2-git-send-email-wangyufen@huawei.com>
- <CAEf4BzYzUKUg=V6Bir7s1AKuZF-=HFsjuWBTjTqO8fganjWVDg@mail.gmail.com>
-From:   wangyufen <wangyufen@huawei.com>
-In-Reply-To: <CAEf4BzYzUKUg=V6Bir7s1AKuZF-=HFsjuWBTjTqO8fganjWVDg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.191]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,182 +70,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+memcpy: detected field-spanning write (size 168) of single field "(void *)&request->response_msg + (sizeof(struct rndis_message) - sizeof(union rndis_message_container)) + sizeof(*req_id)" at drivers/net/hyperv/rndis_filter.c:338 (size 40)
+RSP: 0018:ffffc90000144de0 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: ffff8881766b4000 RCX: 0000000000000000
+RDX: 0000000000000102 RSI: 0000000000009ffb RDI: 00000000ffffffff
+RBP: ffffc90000144e38 R08: 0000000000000000 R09: 00000000ffffdfff
+R10: ffffc90000144c48 R11: ffffffff82f56ac8 R12: ffff8881766b403c
+R13: 00000000000000a8 R14: ffff888100b75000 R15: ffff888179301d00
+FS:  0000000000000000(0000) GS:ffff8884d6280000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055f8b024c418 CR3: 0000000176548001 CR4: 00000000003706e0
+Call Trace:
+ <IRQ>
+ ? _raw_spin_unlock_irqrestore+0x27/0x50
+ netvsc_poll+0x556/0x940 [hv_netvsc]
+ __napi_poll+0x2e/0x170
+ net_rx_action+0x299/0x2f0
+ __do_softirq+0xed/0x2ef
+ __irq_exit_rcu+0x9f/0x110
+ irq_exit_rcu+0xe/0x20
+ sysvec_hyperv_callback+0xb0/0xd0
+ </IRQ>
+ <TASK>
+ asm_sysvec_hyperv_callback+0x1b/0x20
+RIP: 0010:native_safe_halt+0xb/0x10
 
-在 2022/10/14 3:47, Andrii Nakryiko 写道:
-> On Mon, Oct 10, 2022 at 3:40 AM Wang Yufen <wangyufen@huawei.com> wrote:
->> Add autoattach optional to support one-step load-attach-pin_link.
->>
->> For example,
->>     $ bpftool prog loadall test.o /sys/fs/bpf/test autoattach
->>
->>     $ bpftool link
->>     26: tracing  name test1  tag f0da7d0058c00236  gpl
->>          loaded_at 2022-09-09T21:39:49+0800  uid 0
->>          xlated 88B  jited 55B  memlock 4096B  map_ids 3
->>          btf_id 55
->>     28: kprobe  name test3  tag 002ef1bef0723833  gpl
->>          loaded_at 2022-09-09T21:39:49+0800  uid 0
->>          xlated 88B  jited 56B  memlock 4096B  map_ids 3
->>          btf_id 55
->>     57: tracepoint  name oncpu  tag 7aa55dfbdcb78941  gpl
->>          loaded_at 2022-09-09T21:41:32+0800  uid 0
->>          xlated 456B  jited 265B  memlock 4096B  map_ids 17,13,14,15
->>          btf_id 82
->>
->>     $ bpftool link
->>     1: tracing  prog 26
->>          prog_type tracing  attach_type trace_fentry
->>     3: perf_event  prog 28
->>     10: perf_event  prog 57
->>
->> The autoattach optional can support tracepoints, k(ret)probes,
->> u(ret)probes.
->>
->> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
->> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
->> ---
->>   tools/bpf/bpftool/prog.c | 78 ++++++++++++++++++++++++++++++++++++++++++++++--
->>   1 file changed, 76 insertions(+), 2 deletions(-)
->>
->> diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
->> index c81362a..8f3afce 100644
->> --- a/tools/bpf/bpftool/prog.c
->> +++ b/tools/bpf/bpftool/prog.c
->> @@ -1453,6 +1453,69 @@ static int do_run(int argc, char **argv)
->>          return ret;
->>   }
->>
->> +static int
->> +auto_attach_program(struct bpf_program *prog, const char *path)
->> +{
->> +       struct bpf_link *link;
->> +       int err;
->> +
->> +       link = bpf_program__attach(prog);
->> +       if (!link) {
->> +               p_info("Program %s does not support autoattach, falling back to pinning",
->> +                      bpf_program__name(prog));
->> +               return bpf_obj_pin(bpf_program__fd(prog), path);
->> +       }
->> +       err = bpf_link__pin(link, path);
->> +       if (err) {
->> +               bpf_link__destroy(link);
->> +               return err;
->> +       }
-> leaking link here, destroy it unconditionally. If pinning succeeded,
-> you don't need to hold link's FD open anymore.
+Fixes: A warning triggered when the response message len exceeds
+the size of rndis_message. Inside the rndis_request structure
+these fields are however followed by a RNDIS_EXT_LEN padding
+so it is safe to use unsafe_memcpy.
 
-I got it, will change. Thanks！
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Signed-off-by: Cezar Bulinaru <cbulinaru@gmail.com>
+---
+ drivers/net/hyperv/rndis_filter.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
->
->> +       return 0;
->> +}
->> +
->> +static int pathname_concat(const char *path, const char *name, char *buf)
-> why you didn't do the same as in libbpf? Pass buffer size explicitly
-> instead of assuming PATH_MAX
+diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
+index 11f767a20444..eea777ec2541 100644
+--- a/drivers/net/hyperv/rndis_filter.c
++++ b/drivers/net/hyperv/rndis_filter.c
+@@ -20,6 +20,7 @@
+ #include <linux/vmalloc.h>
+ #include <linux/rtnetlink.h>
+ #include <linux/ucs2_string.h>
++#include <linux/string.h>
+ 
+ #include "hyperv_net.h"
+ #include "netvsc_trace.h"
+@@ -335,9 +336,10 @@ static void rndis_filter_receive_response(struct net_device *ndev,
+ 		if (resp->msg_len <=
+ 		    sizeof(struct rndis_message) + RNDIS_EXT_LEN) {
+ 			memcpy(&request->response_msg, resp, RNDIS_HEADER_SIZE + sizeof(*req_id));
+-			memcpy((void *)&request->response_msg + RNDIS_HEADER_SIZE + sizeof(*req_id),
++			unsafe_memcpy((void *)&request->response_msg + RNDIS_HEADER_SIZE + sizeof(*req_id),
+ 			       data + RNDIS_HEADER_SIZE + sizeof(*req_id),
+-			       resp->msg_len - RNDIS_HEADER_SIZE - sizeof(*req_id));
++			       resp->msg_len - RNDIS_HEADER_SIZE - sizeof(*req_id),
++			       "request->response_msg is followed by a padding of RNDIS_EXT_LEN inside rndis_request");
+ 			if (request->request_msg.ndis_msg_type ==
+ 			    RNDIS_MSG_QUERY && request->request_msg.msg.
+ 			    query_req.oid == RNDIS_OID_GEN_MEDIA_CONNECT_STATUS)
+-- 
+2.37.1
 
-The pathname_concat function is invoked only in one place and is not a
-general function here. So, not modified. Or, can I change the "pathname_concat"
-of libbpf to "LIBBPF_API int libbpf_pathname_concat" and use the
-libbpf_pathname_concat directly?
-
-
->
->> +{
->> +       int len;
->> +
->> +       len = snprintf(buf, PATH_MAX, "%s/%s", path, name);
->> +       if (len < 0)
->> +               return -EINVAL;
->> +       if (len >= PATH_MAX)
->> +               return -ENAMETOOLONG;
->> +
->> +       return 0;
->> +}
->> +
->> +static int
->> +auto_attach_programs(struct bpf_object *obj, const char *path)
->> +{
->> +       struct bpf_program *prog;
->> +       char buf[PATH_MAX];
->> +       int err;
->> +
->> +       bpf_object__for_each_program(prog, obj) {
->> +               err = pathname_concat(path, bpf_program__name(prog), buf);
->> +               if (err)
->> +                       goto err_unpin_programs;
->> +
->> +               err = auto_attach_program(prog, buf);
->> +               if (err)
->> +                       goto err_unpin_programs;
->> +       }
->> +
->> +       return 0;
->> +
->> +err_unpin_programs:
->> +       while ((prog = bpf_object__prev_program(obj, prog))) {
->> +               if (pathname_concat(path, bpf_program__name(prog), buf))
->> +                       continue;
->> +
->> +               bpf_program__unpin(prog, buf);
->> +       }
->> +
->> +       return err;
->> +}
->> +
->>   static int load_with_options(int argc, char **argv, bool first_prog_only)
->>   {
->>          enum bpf_prog_type common_prog_type = BPF_PROG_TYPE_UNSPEC;
->> @@ -1464,6 +1527,7 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
->>          struct bpf_program *prog = NULL, *pos;
->>          unsigned int old_map_fds = 0;
->>          const char *pinmaps = NULL;
->> +       bool auto_attach = false;
->>          struct bpf_object *obj;
->>          struct bpf_map *map;
->>          const char *pinfile;
->> @@ -1583,6 +1647,9 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
->>                                  goto err_free_reuse_maps;
->>
->>                          pinmaps = GET_ARG();
->> +               } else if (is_prefix(*argv, "autoattach")) {
->> +                       auto_attach = true;
->> +                       NEXT_ARG();
->>                  } else {
->>                          p_err("expected no more arguments, 'type', 'map' or 'dev', got: '%s'?",
->>                                *argv);
->> @@ -1692,14 +1759,20 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
->>                          goto err_close_obj;
->>                  }
->>
->> -               err = bpf_obj_pin(bpf_program__fd(prog), pinfile);
->> +               if (auto_attach)
->> +                       err = auto_attach_program(prog, pinfile);
->> +               else
->> +                       err = bpf_obj_pin(bpf_program__fd(prog), pinfile);
->>                  if (err) {
->>                          p_err("failed to pin program %s",
->>                                bpf_program__section_name(prog));
->>                          goto err_close_obj;
->>                  }
->>          } else {
->> -               err = bpf_object__pin_programs(obj, pinfile);
->> +               if (auto_attach)
->> +                       err = auto_attach_programs(obj, pinfile);
->> +               else
->> +                       err = bpf_object__pin_programs(obj, pinfile);
->>                  if (err) {
->>                          p_err("failed to pin all programs");
->>                          goto err_close_obj;
->> @@ -2338,6 +2411,7 @@ static int do_help(int argc, char **argv)
->>                  "                         [type TYPE] [dev NAME] \\\n"
->>                  "                         [map { idx IDX | name NAME } MAP]\\\n"
->>                  "                         [pinmaps MAP_DIR]\n"
->> +               "                         [autoattach]\n"
->>                  "       %1$s %2$s attach PROG ATTACH_TYPE [MAP]\n"
->>                  "       %1$s %2$s detach PROG ATTACH_TYPE [MAP]\n"
->>                  "       %1$s %2$s run PROG \\\n"
->> --
->> 1.8.3.1
->>
