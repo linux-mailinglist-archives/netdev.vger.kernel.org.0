@@ -2,61 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F23B35FF7E5
-	for <lists+netdev@lfdr.de>; Sat, 15 Oct 2022 03:38:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 169D15FF7E9
+	for <lists+netdev@lfdr.de>; Sat, 15 Oct 2022 03:41:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229619AbiJOBil (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Oct 2022 21:38:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50946 "EHLO
+        id S229646AbiJOBl0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Oct 2022 21:41:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229609AbiJOBik (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 21:38:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86C0A895DA;
-        Fri, 14 Oct 2022 18:38:39 -0700 (PDT)
+        with ESMTP id S229602AbiJOBlY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Oct 2022 21:41:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 545A592CDA;
+        Fri, 14 Oct 2022 18:41:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43C87B82486;
-        Sat, 15 Oct 2022 01:38:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEE41C43143;
-        Sat, 15 Oct 2022 01:38:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E622C61CEE;
+        Sat, 15 Oct 2022 01:41:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 538A8C4347C;
+        Sat, 15 Oct 2022 01:41:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665797917;
-        bh=ZjS+xMNSlpvu1zyJXPazkr7R5rfqNNFR9uxlQHaxDsE=;
+        s=k20201202; t=1665798082;
+        bh=wKhQf1jqlDwn101ASuQdn4i1qM4vzK+c1GxsBmywSQE=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=sZJXGp6SrjJIO9l34zTRNWzM4kTD44QTn543wLrAPYqL01z6JXWE1hWUY6q2duH6e
-         aS9b69bxyIrjDzXKV1Jkm7vL7UOGcW7zvspQ0LXz0E5YdTU8dKkbWYriiawbB9uYMS
-         24GoryYcJSo9pfQJVo56E0luIiVyd7v00Z5ph63iDvKopZwypRALTPcCEsIOr/9sOD
-         VF+zGeqkS3wtO+y64krgLfXrJSaI0AH/OALGXN5S3GkcGmh/NLWc90x4afTlX/hIgf
-         +N+X+S0Ee4hUcoXv8sxtbVkoYZLndQP13LhX8N5YhQnwnTqu77/XZv67kal9FOrb4d
-         5agliUqM2N3PA==
-Received: by mail-oi1-f170.google.com with SMTP id g130so6796708oia.13;
-        Fri, 14 Oct 2022 18:38:36 -0700 (PDT)
-X-Gm-Message-State: ACrzQf2Gd6zH1hdDCncMhQCxZZJ27YDZuJ/MN5+/9N4QreZVaoiLCFb2
-        l3Pm7zt6C/K8GfPiLGh91j5spI/DL5JXI5eiN+0=
-X-Google-Smtp-Source: AMsMyM6B/sjQViEnCU0rQQ1CtugSua/MQXf19M8zrTaSx6fTy6/clBFPhm0KZ8eepVAFQut0I40wcPZpDsuV9XPCvL8=
-X-Received: by 2002:a05:6808:10c3:b0:354:db1e:c4a8 with SMTP id
- s3-20020a05680810c300b00354db1ec4a8mr7945001ois.112.1665797916031; Fri, 14
- Oct 2022 18:38:36 -0700 (PDT)
+        b=G7EP7ym7Xq40DSKKFk1FnlCqWb0kWyOonZjQwcrLxsSebr0hWQlSrXTiJIlc4rLiY
+         wtLZQXubG00pUCZxw/3VdZsZF20feD8oOMmcVrgTnfZRY2A1CXb4Kp81Qo533K1xfE
+         ZVWIt/TZU2VivgMENujtqrGWLfngOyA4BBzpRkk5apvtI+9619fDtu/iH+1qWwDVWT
+         FxoIdFOQ4Ugot94sKDQdOToiEBSRWqBXkC1Yr/RVxtre3O3qJ4wNjIBmyU9tIfWqfs
+         eb4AFh7oZdXwpminI3b60Vk3hV+Ez1Tl2w+w30/nCZ5avaQHhBpJ4de2yqfPZapBv2
+         LqYUQMkbtKL3A==
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-132af5e5543so7820511fac.8;
+        Fri, 14 Oct 2022 18:41:22 -0700 (PDT)
+X-Gm-Message-State: ACrzQf39f/0K61B4XZR+eU0LZrfTOKEKVJ0PZg9hVwjLrmnLxPNopFoR
+        qSc2OkJ8eiltTyftFLyar6dYrka+E6RRC4D6cS0=
+X-Google-Smtp-Source: AMsMyM4X/8fOrngND6837Iu7qJtRPT17SJfoi8d7p/Zi7lOb6CQClanTVDO2W4a/68EOGJB1oXZitLhLUCHPN74oDB8=
+X-Received: by 2002:a05:6870:4413:b0:136:66cc:6af8 with SMTP id
+ u19-20020a056870441300b0013666cc6af8mr10179246oah.112.1665798081415; Fri, 14
+ Oct 2022 18:41:21 -0700 (PDT)
 MIME-Version: 1.0
 References: <20221014030459.3272206-1-guoren@kernel.org> <20221014030459.3272206-2-guoren@kernel.org>
- <20221013203544.110a143c@kernel.org> <CAJF2gTQyMHNHLizeU-gvUdA5hRLUWxvHXuVVqSoPg3M_WxPPdw@mail.gmail.com>
- <20221014085219.635d25cd@kernel.org>
-In-Reply-To: <20221014085219.635d25cd@kernel.org>
+ <20221013203544.110a143c@kernel.org> <20221013203911.2705eccc@kernel.org>
+ <Y0jowX4zIZMMVc0H@yury-laptop> <20221014090311.392e0546@kernel.org>
+In-Reply-To: <20221014090311.392e0546@kernel.org>
 From:   Guo Ren <guoren@kernel.org>
-Date:   Sat, 15 Oct 2022 09:38:24 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTQtZOHgN7eJ-nhwF3RMUzJUC=ZjOnRzoR11Fso2b3z3gQ@mail.gmail.com>
-Message-ID: <CAJF2gTQtZOHgN7eJ-nhwF3RMUzJUC=ZjOnRzoR11Fso2b3z3gQ@mail.gmail.com>
+Date:   Sat, 15 Oct 2022 09:41:09 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTSQ++HkY8=vhgN7+sqETjvbxNTuKLb_wLU=U90mUmUHFg@mail.gmail.com>
+Message-ID: <CAJF2gTSQ++HkY8=vhgN7+sqETjvbxNTuKLb_wLU=U90mUmUHFg@mail.gmail.com>
 Subject: Re: [PATCH V2 1/2] net: Fixup netif_attrmask_next_and warning
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     andriy.shevchenko@linux.intel.com, davem@davemloft.net,
+Cc:     Yury Norov <yury.norov@gmail.com>,
+        andriy.shevchenko@linux.intel.com, davem@davemloft.net,
         edumazet@google.com, pabeni@redhat.com, linux@rasmusvillemoes.dk,
-        yury.norov@gmail.com, caraitto@google.com, willemb@google.com,
-        jonolson@google.com, amritha.nambiar@intel.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Guo Ren <guoren@linux.alibaba.com>
+        caraitto@google.com, willemb@google.com, jonolson@google.com,
+        amritha.nambiar@intel.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -66,37 +67,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 14, 2022 at 11:52 PM Jakub Kicinski <kuba@kernel.org> wrote:
+On Sat, Oct 15, 2022 at 12:03 AM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> On Fri, 14 Oct 2022 14:38:56 +0800 Guo Ren wrote:
-> > > This does not look equivalent, have you tested it?
+> On Thu, 13 Oct 2022 21:42:41 -0700 Yury Norov wrote:
+> > > Oh, it was reposted today:
 > > >
-> > > nr_ids is unsigned, doesn't it mean we'll never enter the loop?
+> > > https://lore.kernel.org/all/20221013234349.1165689-2-yury.norov@gmail=
+.com/
+> > >
+> > > But we need a revert of 854701ba4c as well to cover the issue back up
+> > > for 6.1, AFAIU.
 > >
-> > Yes, you are right. Any unsigned int would break the result.
-> > (gdb) p (int)-1 < (int)2
-> > $1 = 1
-> > (gdb) p (int)-1 < (unsigned int)2
-> > $2 = 0
-> > (gdb) p (unsigned int)-1 < (int)2
-> > $4 = 0
-> >
-> > So it should be:
-> >  -     for (j = -1; j = netif_attrmask_next_and(j, online_mask, mask, nr_ids),
-> >  -          j < nr_ids;) {
-> >  +     for (j = -1; j < (int)nr_ids;
-> >  +          j = netif_attrmask_next_and(j, online_mask, mask, nr_ids)) {
-> >
-> > Right? Of cause, nr_ids couldn't be 0xffffffff (-1).
+> > The patch 854701ba4c is technically correct. I fixed most of warnings i=
+n
+> > advance, but nobody can foresee everything, right? I expected some nois=
+e,
+> > and now we have just a few things to fix.
 >
-> No. You can't enter the loop with -1 as the iterator either.
-> Let's move on.
-Oops, how about the below:
-     for (j = netif_attrmask_next_and(-1, online_mask, mask, nr_ids);
-j < (int)nr_ids;
-          j = netif_attrmask_next_and(j, online_mask, mask, nr_ids)) {
+> I got 6 warnings booting my machine after pulling back from Linus
+> (which included your patches in net for the first time).
+> And that's not including the XPS and the virtio warning.
+Oh, that's a wide effect than we thought.
+
+>
+> > This is what for -rc releases exist, didn't they?
+> >
+> > I suggest to keep the patch, because this is the only way to make
+> > cpumask_check()-related issues visible to people. If things will go as
+> > they go now, I expect that -rc3 will be clean from cpumask_check()
+> > warnings.
+>
+> This sounds too close to saying that "it's okay for -rc1 to be broken".
+> Why were your changes not in linux-next for a month before the merge
+> window? :(
+>
+> We will not be merging a refactoring series into net to silence an
+> arguably over-eager warning. We need a minimal fix, Guo Ren's patches
+> seem to miss the mark so I reckon the best use of everyone's time is
+> to just drop the exposing patch and retry in -next =F0=9F=A4=B7
 
 
--- 
+
+--=20
 Best Regards
  Guo Ren
