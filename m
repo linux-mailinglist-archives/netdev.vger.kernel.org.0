@@ -2,51 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B899C5FF99E
-	for <lists+netdev@lfdr.de>; Sat, 15 Oct 2022 12:20:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EB015FF9D6
+	for <lists+netdev@lfdr.de>; Sat, 15 Oct 2022 13:42:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229633AbiJOKUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Oct 2022 06:20:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46708 "EHLO
+        id S229673AbiJOLkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Oct 2022 07:40:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229578AbiJOKUU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Oct 2022 06:20:20 -0400
+        with ESMTP id S229459AbiJOLkR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Oct 2022 07:40:17 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BD262AC4B
-        for <netdev@vger.kernel.org>; Sat, 15 Oct 2022 03:20:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CA8339126
+        for <netdev@vger.kernel.org>; Sat, 15 Oct 2022 04:40:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6687A60C6A
-        for <netdev@vger.kernel.org>; Sat, 15 Oct 2022 10:20:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 38D61C43146;
-        Sat, 15 Oct 2022 10:20:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0409360CEE
+        for <netdev@vger.kernel.org>; Sat, 15 Oct 2022 11:40:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4EEFCC433D6;
+        Sat, 15 Oct 2022 11:40:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665829216;
-        bh=EzrYI8O/qGFauVLutnLTzOBNyAzUSS97K1yfAfkzZOk=;
+        s=k20201202; t=1665834015;
+        bh=HWzOIdm/SXZX57mUR2lF9IlBwqXaNsfG5gQlazsAX14=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=h9aVA6OD8YRqDCHP7nPkiVsdgFmROc78RNP7U5q7rf2OeOWA47GcYdoBNh/DNClDg
-         t2ib83FnCwdTsdkSWNVCxr5nYwjvJQGYUjSSChujhSIhLvrlyC91y9c5O3ZpXZ5rPI
-         bl+ffTpHAK9iappYcQRRzQ2dikPIc67Ks6NiGlDriIbtwyTBzEVhF+3TngPs8q/FYi
-         XvvM0bsPRWDnyGUoii+/W+wF+NmYeA+ts6PKrXDb37vpm+bi+6QnZRCJK36AnNnb3G
-         lLzIeFCaskeRAlZDLfT1zhfp3AK+VAzlIlvBOj8lhOcugKEdcBovte2WAIiMGUeT4y
-         HfLf6rdyC6N0Q==
+        b=kJmyrpxEUYr0l9swkQYcPX1k8aIP0Oky7kUnYWUtwOA38ZYLW447BUrBQm86FAWM9
+         6ukBK60mAOXn7GmiEjfIoWglN71Nr0fqAEvBf5chbUOwiS0E7p2LLqkVwEUlkhyQPZ
+         xjzwmjNGR4cMmPS2VG4ZKWWqArfse6DelXmID8GfSMBW+fzD2XcfsJ/5lb6iNImD+O
+         84Rv9TzjlE1JxF5dK1JfUJ4P5PSDv2Qg1EWjYRiz6uT8GS6KVvYd0U7jfEYOQw+BlQ
+         sncToAKBKSVLvIMCeloNZitRuWx0Bz1N+ChBBzsykZiJdMldG8osYhk+gPA51Y4npa
+         +n3ZyrQnfcSFA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1F56FE52527;
-        Sat, 15 Oct 2022 10:20:16 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 30B4BE4D00C;
+        Sat, 15 Oct 2022 11:40:15 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] Revert "net: fix cpu_max_bits_warn() usage in
- netif_attrmask_next{,_and}"
+Subject: Re: [PATCH NET v6 0/2] net: phylink: add phylink_set_mac_pm() helper
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166582921612.1299.769135677399153914.git-patchwork-notify@kernel.org>
-Date:   Sat, 15 Oct 2022 10:20:16 +0000
-References: <20221014160746.553813-1-kuba@kernel.org>
-In-Reply-To: <20221014160746.553813-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, guoren@kernel.org, yury.norov@gmail.com
+Message-Id: <166583401519.3126.7962999627489450739.git-patchwork-notify@kernel.org>
+Date:   Sat, 15 Oct 2022 11:40:15 +0000
+References: <20221014144729.1159257-1-shenwei.wang@nxp.com>
+In-Reply-To: <20221014144729.1159257-1-shenwei.wang@nxp.com>
+To:     Shenwei Wang <shenwei.wang@nxp.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, mcoquelin.stm32@gmail.com,
+        linux@armlinux.org.uk, andrew@lunn.ch, hkallweit1@gmail.com,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, f.fainelli@gmail.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,23 +62,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This series was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 14 Oct 2022 09:07:46 -0700 you wrote:
-> This reverts commit 854701ba4c39afae2362ba19a580c461cb183e4f.
+On Fri, 14 Oct 2022 09:47:27 -0500 you wrote:
+> Per Russell's suggestion, the implementation is changed from the helper
+> function to add an extra property in phylink_config structure because this
+> change can easily cover SFP usecase too.
 > 
-> We have more violations around, which leads to:
-> 
->   WARNING: CPU: 2 PID: 1 at include/linux/cpumask.h:110 __netif_set_xps_queue+0x14e/0x770
-> 
-> Let's back this out and retry with a larger clean up in -next.
+> Changes in v6:
+>  - update the fix tag hash and format
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] Revert "net: fix cpu_max_bits_warn() usage in netif_attrmask_next{,_and}"
-    https://git.kernel.org/netdev/net/c/fc8695eb11f0
+  - [NET,v6,1/2] net: phylink: add mac_managed_pm in phylink_config structure
+    https://git.kernel.org/netdev/net/c/96de900ae78e
+  - [NET,v6,2/2] net: stmmac: Enable mac_managed_pm phylink config
+    https://git.kernel.org/netdev/net/c/f151c147b3af
 
 You are awesome, thank you!
 -- 
