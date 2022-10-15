@@ -2,67 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 444D35FFBE5
-	for <lists+netdev@lfdr.de>; Sat, 15 Oct 2022 22:27:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CC135FFBEA
+	for <lists+netdev@lfdr.de>; Sat, 15 Oct 2022 22:45:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229720AbiJOU1D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Oct 2022 16:27:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53728 "EHLO
+        id S229737AbiJOUo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Oct 2022 16:44:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbiJOU1B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Oct 2022 16:27:01 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26484476FF
-        for <netdev@vger.kernel.org>; Sat, 15 Oct 2022 13:27:00 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id k3so9247031ybk.9
-        for <netdev@vger.kernel.org>; Sat, 15 Oct 2022 13:27:00 -0700 (PDT)
+        with ESMTP id S229717AbiJOUoz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Oct 2022 16:44:55 -0400
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 947F727CE8;
+        Sat, 15 Oct 2022 13:44:52 -0700 (PDT)
+Received: by mail-qk1-x736.google.com with SMTP id j21so4582046qkk.9;
+        Sat, 15 Oct 2022 13:44:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=mS8XGtqd3i/pk7URDEoiQ34L/lpb4BogfvC0QODXjc4=;
-        b=dwdL4K9pRB9tgFet7f7vkNfdIBpt8C0Lj7H1w9Q6g+d+D9kAO8YuHXByo7dCdPWkj/
-         dWJKhJxi3mYnrcFxahkQTvX/H0r+TSU9o3T4KEtXiKKN4G64iBbWLxwQaQ2QYymqOoTf
-         n9g1m56tAU42EkcyTM/vnC7AWgWiQ3Ce73ewbrVQvhleAS6JgOvbOERa3WQESZ7lxC53
-         4kfqLgLa9RCvw2XaBq6SJj+QAyLBilMVDhz1cUAcDH7HW7Yrwhj/URm15dI0UG17aBtW
-         nRu+OiFlOu1MWc7QTc76Yk63GwD42QQHOX87u5+9/nl8Jfdlvydske96dNSDrpidJV0Y
-         b9xA==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=xh6TSzvbNFywc6iwi85Ia3FIfwAjKhdb6xypb+c6K1g=;
+        b=Tw4XIMbMEJq0QfU1mVohFCuYu7dCJ0q3q8gUGC8wgbmHd9TDMxpCa8QjZBog8S8HYs
+         SXafbyIE3cmw6qu5oku8+Q0COZR+K1RYy5n/jhPfeodWe3UieVvAs7rHzdzKdv1NFrnF
+         VxIzyQdlGhClZqh3yqLm8CTvh4UR3+L0vYVi5pO/9VO8BAClR7VoilCf/5r2jkjU8DE6
+         LW/2TzrNI2DlfRbgWxxL92S/lqCSZhnJcY6Eqjpo5rr47H52VOAXp08jQbaKIrAk6WHN
+         HH0cy3/2z8R4KbQvA4scxmzgIotLyBCpRPbXD33f50zaq0iPM+crroW0NDRijKQXUkAM
+         FpyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=mS8XGtqd3i/pk7URDEoiQ34L/lpb4BogfvC0QODXjc4=;
-        b=WbqxDy0enwt/z3WvvMwLrG21m/t0Y73EOgxmYGBHz3kniII26V/5CM7ErSM4vQ0Srp
-         o5FC08uwR8IYkv1K4JWH9pRHMRO2NFt+GDy4LAi4rZUrbDluSClNjKd77wlk0Ep4dc8G
-         0/riGENetCngmVXP4a7B65vXGob289fw8azjaEg6WTXmbhRIPMjrNG0Q9qHHt8R//Ard
-         1QEa5KI4qdKBlxF6Dbl9SAzQrgC7CgxWtEfpxzgQP+//GGYhBC+Ik6KM/L/FHv/0gJP/
-         hUHVtDqZf8PI3/P83CjKPMH2xSfNULyQqurO6+CqgiSA18gjZgDDt249jBg8/DZEAAwI
-         5i9g==
-X-Gm-Message-State: ACrzQf2W6QWFFoPt8GrI4hcAmb1u6uJoEjlTBZiyFw5VUfY77GCzlF2b
-        fTWjs/0wkqbwzwNJKPoczvv/a4Pcm3bAalhCHWnpW8d4MS4=
-X-Google-Smtp-Source: AMsMyM6TpoCQc+8Yf7RgpQ7w8fNS/RPrKY3wwmxKembXmvCWXgCqdO9SFDcNRLr0kipN0CTA826iCVitjzJsROJnT7U=
-X-Received: by 2002:a25:84c9:0:b0:6bd:5074:bc30 with SMTP id
- x9-20020a2584c9000000b006bd5074bc30mr3377208ybm.55.1665865619165; Sat, 15 Oct
- 2022 13:26:59 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xh6TSzvbNFywc6iwi85Ia3FIfwAjKhdb6xypb+c6K1g=;
+        b=p8bX7GSWqUQLGn5geIJvWnGqofUNmU46Vo6rarcnz3rxzPvTysj4Vu7pFSctB4ktj2
+         smW6WsWvBiZCj1+3QvVMlC06SqGm3QJwuP7Ob7mlp5dQIuyxhzICV2J9snjtuUa39NBJ
+         6JdAH7usQ/Pbg+39cfoAAXBS9WiWWkBHglL+87S3TFjJCegQSAwKT/lH9VqAXd0KW1em
+         3V9jvql1LthHAoxG/nZSksLnt98XJTo+9eus4AvVTIl+RyfCWskDOJdQzZM9XMqOmg2K
+         Hvh6KOS+WIX9hGZHF1x/Ne++blx3BmiTBULgq1B++Em3F+mBDOgPGw/1uyYdcq8BlPqn
+         qdKA==
+X-Gm-Message-State: ACrzQf2VIviQWyaKxf8fmSEKuziVGetYC2ceDj6w0or8PyZunYaMrBqu
+        6RNQQLi1prAZ23wMk6T5EV4=
+X-Google-Smtp-Source: AMsMyM5LV4OMmfMRZm+5KYtXnWDtuXiHxkFXZjBuPwmd2y8+gPU9/ar1dFP180Oe3/D9tUhabgSr5A==
+X-Received: by 2002:ae9:ea03:0:b0:6e0:ca9c:e795 with SMTP id f3-20020ae9ea03000000b006e0ca9ce795mr2881444qkg.168.1665866691570;
+        Sat, 15 Oct 2022 13:44:51 -0700 (PDT)
+Received: from localhost ([2601:4c1:c100:2270:b7d0:ec47:792a:b1d9])
+        by smtp.gmail.com with ESMTPSA id w13-20020a05620a424d00b006ce441816e0sm5694840qko.15.2022.10.15.13.44.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 15 Oct 2022 13:44:51 -0700 (PDT)
+Date:   Sat, 15 Oct 2022 13:44:50 -0700
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        syzbot <syzbot+d0fd2bf0dd6da72496dd@syzkaller.appspotmail.com>,
+        syzkaller-bugs@googlegroups.com,
+        Andrew Jones <ajones@ventanamicro.com>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Menglong Dong <imagedong@tencent.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Guo Ren <guoren@linux.alibaba.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        andriy.shevchenko@linux.intel.com, linux@rasmusvillemoes.dk,
+        yury.norov@gmail.com, caraitto@google.com, willemb@google.com,
+        jonolson@google.com, amritha.nambiar@intel.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [syzbot] WARNING in c_start
+Message-ID: <Y0sbwpRcipI564yp@yury-laptop>
+References: <0000000000007647ec05eb05249c@google.com>
+ <Y0nTd9HSnnt/KDap@zn.tnic>
+ <2eaf1386-8ab0-bd65-acee-e29f1c5a6623@I-love.SAKURA.ne.jp>
+ <Y0qfLyhSoTodAdxu@zn.tnic>
 MIME-Version: 1.0
-References: <CANn89iKJpWK9hWLPhfCYNcVUPucpgTf7s_aYv4uiQ=xocmE5WA@mail.gmail.com>
- <20220928221514.27350-1-yepeilin.cs@gmail.com> <634b1304.c80a0220.cedc6.e007@mx.google.com>
-In-Reply-To: <634b1304.c80a0220.cedc6.e007@mx.google.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Sat, 15 Oct 2022 13:26:48 -0700
-Message-ID: <CANn89iLrKnzYUt-bkXA9pVsviw2+RM3tWO==ZYy-yHR_1Uz+9w@mail.gmail.com>
-Subject: Re: [PATCH net-next] net/sock: Introduce trace_sk_data_ready()
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     cong.wang@bytedance.com, davem@davemloft.net, dsahern@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, peilin.ye@bytedance.com,
-        yepeilin.cs@gmail.com, yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y0qfLyhSoTodAdxu@zn.tnic>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,24 +90,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 15, 2022 at 1:07 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> On Thu, Sep 29, 2022 at 09:19:34AM -0700, Eric Dumazet wrote:
-> > Second patch adding the tracing point once in the helper ?
-> >
-> > Alternatively, why not add the tracepoint directly in the called
-> > functions (we have few of them),
-> > instead of all call points ?
->
-> Why do we want to give implementations of sk_data_ready() freedom
-> to not to call this trace_sk_data_ready()?
->
-> Thanks.
+Add people from other threads discussing this.
 
-I proposed an alternative. Choose one, but not the one you do not like :/
+On Sat, Oct 15, 2022 at 01:53:19PM +0200, Borislav Petkov wrote:
+> On Sat, Oct 15, 2022 at 08:39:19PM +0900, Tetsuo Handa wrote:
+> > That's an invalid command line. The correct syntax is:
+> > 
+> > #syz test: git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> 
+> The fix is not in Linus' tree yet.
+> 
+> > Andrew Jones proposed a fix for x86 and riscv architectures [2]. But
+> > other architectures have the same problem. And fixing all callers will
+> > not be in time for this merge window.
+> 
+> Why won't there be time? That's why the -rcs are for.
+> 
+> Also, that thing fires only when CONFIG_DEBUG_PER_CPU_MAPS is enabled.
+> 
+> So no, we will take Andrew's fixes for all arches in time for 6.1.
 
-The first proposition was to split the patch in a more logical way.
+Summarizing things:
 
-I think we have less sk_data_ready() functions than call sites, so
-code size would be smaller,
-but this is probably something we care about enough.
+1. cpumask_check() was introduced to make sure that the cpu number
+passed into cpumask API belongs to a valid range. But the check is
+broken for a very long time. And because of that there are a lot of
+places where cpumask API is used wrongly.
+
+2. Underlying bitmap functions handle that correctly - when user
+passes out-of-range CPU index, the nr_cpu_ids is returned, and this is
+what expected by client code. So if DEBUG_PER_CPU_MAPS config is off,
+everything is working smoothly.
+
+3. I fixed all warnings that I was aware at the time of submitting the
+patch. 2 follow-up series are on review: "[PATCH v2 0/4] net: drop
+netif_attrmask_next*()" and "[PATCH 0/9] lib/cpumask: simplify
+cpumask_next_wrap()". Also, Andrew Jones, Alexander Gordeev and Guo Ren
+proposed fixes for c_start() in arch code.
+
+4. The code paths mentioned above are all known to me that violate
+cpumask_check() rules. (Did I miss something?)
+
+With all that, I agree with Borislav. Unfortunately, syzcall didn't CC
+me about this problem with c_start(). But I don't like the idea to revert
+cpumask_check() fix. This way we'll never clean that mess. 
+
+If for some reason those warnings are unacceptable for -rcs (and like
+Boris, I don't understand why), than instead of reverting commits, I'd
+suggest moving cpumask sanity check from DEBUG_PER_CPU_MAPS under a new
+config, say CONFIG_CPUMASK_DEBUG, which will be inactive until people will
+fix their code. I can send a patch shortly, if we'll decide going this way.
+
+How people would even realize that they're doing something wrong if
+they will not get warned about it?
+
+Thanks,
+Yury
