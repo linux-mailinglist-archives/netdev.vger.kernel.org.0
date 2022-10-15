@@ -2,136 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 629225FFB48
-	for <lists+netdev@lfdr.de>; Sat, 15 Oct 2022 18:50:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7084F5FFB6C
+	for <lists+netdev@lfdr.de>; Sat, 15 Oct 2022 19:24:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229655AbiJOQuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Oct 2022 12:50:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50562 "EHLO
+        id S229734AbiJORYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Oct 2022 13:24:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229556AbiJOQuV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Oct 2022 12:50:21 -0400
-Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17D5F42D68;
-        Sat, 15 Oct 2022 09:50:20 -0700 (PDT)
-Received: by mail-ot1-x333.google.com with SMTP id v40-20020a056830092800b00661e37421c2so1380588ott.3;
-        Sat, 15 Oct 2022 09:50:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=gaBorpeM8V7m8SAG2YMcD20/4oV3CI8spBrOFUZBCj0=;
-        b=itMm9PtcYGZC/S/zNPXxgkiEUfYzw4v/S7eWRU2eYc/c24FX9lES+jOwcoO/nBfTCS
-         iBJKTB1za6OkIxvLk0uPiiLvVZFrhB+bbsXwzVOxknrjUsYk8CfLnxjI1M0YuGQ+fdLh
-         aJv8tVIvdxFBtjCmohOHpr8pQtKLhefet8sXo9Z6Bli5RvcBLZt+U96pXoxrlE0sogCG
-         lNavBRSRRLTV4xlINdXmyNyiJxm/cbTgdSEQezmVbBIMdaZNRV1T0rZdd+KwLI42vNeE
-         76GH0rNa3p2IIZTBhnKxQeaUyVEWZjmyE0PgEQKOGJsKfNIqY+Sq/9CO3KD3t+O0Me7Q
-         JQTw==
+        with ESMTP id S229670AbiJORYn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Oct 2022 13:24:43 -0400
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87CDE1CB31
+        for <netdev@vger.kernel.org>; Sat, 15 Oct 2022 10:24:39 -0700 (PDT)
+Received: by mail-io1-f72.google.com with SMTP id q12-20020a5d834c000000b006bc2cb1994aso4915133ior.15
+        for <netdev@vger.kernel.org>; Sat, 15 Oct 2022 10:24:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=gaBorpeM8V7m8SAG2YMcD20/4oV3CI8spBrOFUZBCj0=;
-        b=GYtGFXSFKRPAAvbmhrpXkACk6NBdQS7g/sfWUQSaPbItzUkSo447Nm1F1Pxh9IrVht
-         oLAfcIXaVcMk38emKTO2tBTjgXOtj8Zl8fn8k6gD3giykNH6f1Oph4sNKKVhX3wjF+ZC
-         CYsVFE75DVw4JbLJJJuVrCuUZtxKub211H2dO9/Xh4aIBhs262XLIYE74azcWq+h+p/H
-         Sx4Pk6JoX6Boz72OkZOSESrCFCDl9YAZMOSpfv2eMx3z25LLJUDkfROvbyvh69GzjSyU
-         L8JTqGzjziVWo6sYIgViysXr8uLDihIeTRIZC7VgCzqXCgEUgfK425At5vbPpk7Dqh2X
-         ZVbQ==
-X-Gm-Message-State: ACrzQf1H8qgje+StAWqVd6QhCc9YAGJO4q72tyUizajQJTOr4SapQWMQ
-        F1YghK8HbZSijL9geiJaqCY=
-X-Google-Smtp-Source: AMsMyM41gyen8vcEwtex8EZqZBAb3f7m2MEGHd5U94tNVHrAGDZpxAMyO6GQmsId+IaBnxmuHOuz4Q==
-X-Received: by 2002:a9d:d83:0:b0:661:e250:f35f with SMTP id 3-20020a9d0d83000000b00661e250f35fmr1535982ots.102.1665852619400;
-        Sat, 15 Oct 2022 09:50:19 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id k25-20020a056830151900b00661ac94f187sm2716112otp.42.2022.10.15.09.50.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 15 Oct 2022 09:50:18 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Sat, 15 Oct 2022 09:50:17 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     guoren@kernel.org
-Cc:     andriy.shevchenko@linux.intel.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux@rasmusvillemoes.dk, yury.norov@gmail.com,
-        caraitto@google.com, willemb@google.com, jonolson@google.com,
-        amritha.nambiar@intel.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>
-Subject: Re: [PATCH] Revert "cpumask: fix checking valid cpu range"
-Message-ID: <20221015165017.GA1034513@roeck-us.net>
-References: <20221015130548.3634468-1-guoren@kernel.org>
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=FXDSuoFbN7ibdHQJGHhqaFHsM+PEsrRvhPrQr4NT61Q=;
+        b=XtZLYVDqGNjs7oGnS76ArP69KubEtFgF1/4P2+HaYHr+zoAyvB/aEBzZd2LTb/Q0KS
+         kZTosGJIB/rk7Ikx539woh33iJkwdLll4yNNrbvL4scI8ewkQB/9q1fjEZoQ5kYLoej/
+         ox4qc+mWtlzNGa3MUGuz1TID8F8Vcdee6OjX4lY0V4E0NEGIc0EYwPKrKnvyu+uvarhk
+         BTeauomXLHryEa8VLqYaYjb0duGCJNUOSx5q1LjDeb/vkSQoMTsjPVRG4oQ05uxwXeIf
+         onEaMLfck53BixdJq6NhaN1Mobe1O65pQAwxOR2rCaIx6Yw2xTszb4quo8Lo9dv9no4k
+         9MgA==
+X-Gm-Message-State: ACrzQf0K1VTL0yhB/eKn80cnmmRqVHVup3z/Mv6GVDyvxhh3TpZZr8tx
+        E5gj9X2dqIp5wi0Q2277RDqUxspLGuv69EmI+EyE+sII1Qcn
+X-Google-Smtp-Source: AMsMyM7LsjR7kpP4xhca/8DFkSor8LrpGNZj5UjiIW5s6h0+tgtpLA8uyA22mZlK8EKO7jg9DEgb2XIEE8zWDvg9vntFqhtQxRaP
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221015130548.3634468-1-guoren@kernel.org>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6602:1588:b0:6bc:d49a:61cc with SMTP id
+ e8-20020a056602158800b006bcd49a61ccmr1519089iow.154.1665854678860; Sat, 15
+ Oct 2022 10:24:38 -0700 (PDT)
+Date:   Sat, 15 Oct 2022 10:24:38 -0700
+In-Reply-To: <0000000000008caae305ab9a5318@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000618a8205eb160404@google.com>
+Subject: Re: [syzbot] general protection fault in security_inode_getattr
+From:   syzbot <syzbot+f07cc9be8d1d226947ed@syzkaller.appspotmail.com>
+To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, dvyukov@google.com, hdanton@sina.com,
+        jmorris@namei.org, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@chromium.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-unionfs@vger.kernel.org, miklos@szeredi.hu,
+        netdev@vger.kernel.org, omosnace@redhat.com, paul@paul-moore.com,
+        serge@hallyn.com, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, tonymarislogistics@yandex.com,
+        yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 15, 2022 at 09:05:48AM -0400, guoren@kernel.org wrote:
-> From: Guo Ren <guoren@linux.alibaba.com>
-> 
-> This reverts commit 78e5a3399421ad79fc024e6d78e2deb7809d26af.
-> 
-> ------------[ cut here ]------------
-> WARNING: CPU: 3 PID: 1 at include/linux/cpumask.h:110 cpumask_next_wrap+0x5c/0x80
-> 
-> Let's back this out and retry with a larger clean up in -next.
-> 
+syzbot has found a reproducer for the following issue on:
 
-Unfortunately the revert triggers (or exposes ?) another backtrace.
+HEAD commit:    55be6084c8e0 Merge tag 'timers-core-2022-10-05' of git://g..
+git tree:       upstream
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=147637c6880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=df75278aabf0681a
+dashboard link: https://syzkaller.appspot.com/bug?extid=f07cc9be8d1d226947ed
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1585a0c2880000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1480a464880000
 
-WARNING: CPU: 0 PID: 1 at include/linux/cpumask.h:110 __netif_set_xps_queue+0x194/0x976
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/6c791937c012/disk-55be6084.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/cb21a2879b4c/vmlinux-55be6084.xz
+mounted in repro: https://storage.googleapis.com/syzbot-assets/2d56267ed26f/mount_1.gz
+
+The issue was bisected to:
+
+commit 35697c12d7ffd31a56d3c9604066a166b75d0169
+Author: Yonghong Song <yhs@fb.com>
+Date:   Thu Jan 16 17:40:04 2020 +0000
+
+    selftests/bpf: Fix test_progs send_signal flakiness with nmi mode
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13032139900000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=10832139900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=17032139900000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+f07cc9be8d1d226947ed@syzkaller.appspotmail.com
+Fixes: 35697c12d7ff ("selftests/bpf: Fix test_progs send_signal flakiness with nmi mode")
+
+general protection fault, probably for non-canonical address 0xdffffc000000000d: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000068-0x000000000000006f]
+CPU: 0 PID: 3761 Comm: syz-executor352 Not tainted 6.0.0-syzkaller-09589-g55be6084c8e0 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/22/2022
+RIP: 0010:d_backing_inode include/linux/dcache.h:542 [inline]
+RIP: 0010:security_inode_getattr+0x46/0x140 security/security.c:1345
+Code: 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 04 01 00 00 48 b8 00 00 00 00 00 fc ff df 49 8b 5d 08 48 8d 7b 68 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 d7 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 8b
+RSP: 0018:ffffc9000400f578 EFLAGS: 00010212
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 000000000000000d RSI: ffffffff83bd72fe RDI: 0000000000000068
+RBP: ffffc9000400f750 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000000000000 R11: 000000000008c07d R12: ffff8880763dca48
+R13: ffffc9000400f750 R14: 00000000000007ff R15: 0000000000000000
+FS:  00007f246f27e700(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f246f27e718 CR3: 00000000717a9000 CR4: 0000000000350ef0
+Call Trace:
+ <TASK>
+ vfs_getattr+0x22/0x60 fs/stat.c:158
+ ovl_copy_up_one+0x12c/0x2870 fs/overlayfs/copy_up.c:965
+ ovl_copy_up_flags+0x150/0x1d0 fs/overlayfs/copy_up.c:1047
+ ovl_maybe_copy_up+0x140/0x190 fs/overlayfs/copy_up.c:1079
+ ovl_open+0xf1/0x2d0 fs/overlayfs/file.c:152
+ do_dentry_open+0x6cc/0x13f0 fs/open.c:882
+ do_open fs/namei.c:3557 [inline]
+ path_openat+0x1c92/0x28f0 fs/namei.c:3691
+ do_filp_open+0x1b6/0x400 fs/namei.c:3718
+ do_sys_openat2+0x16d/0x4c0 fs/open.c:1310
+ do_sys_open fs/open.c:1326 [inline]
+ __do_sys_open fs/open.c:1334 [inline]
+ __se_sys_open fs/open.c:1330 [inline]
+ __x64_sys_open+0x119/0x1c0 fs/open.c:1330
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f246f2f2b49
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f246f27e2f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000002
+RAX: ffffffffffffffda RBX: 00007f246f3774b0 RCX: 00007f246f2f2b49
+RDX: 0000000000000000 RSI: 0000000000000300 RDI: 0000000020000140
+RBP: 00007f246f3442ac R08: 00007f246f27e700 R09: 0000000000000000
+R10: 00007f246f27e700 R11: 0000000000000246 R12: 0031656c69662f2e
+R13: 79706f636174656d R14: 0079616c7265766f R15: 00007f246f3774b8
+ </TASK>
 Modules linked in:
-CPU: 0 PID: 1 Comm: swapper/0 Not tainted 6.0.0-12199-g277163563de8 #1
-Hardware name: riscv-virtio,qemu (DT)
-epc : __netif_set_xps_queue+0x194/0x976
-ra : __netif_set_xps_queue+0x3b0/0x976
-epc : c089a664 ra : c089a880 sp : c2515c60
-gp : c1d8e760 tp : c2578040 t0 : c364f980
-t1 : 00000000 t2 : 00001fff s0 : c2515cd0
-s1 : c2515ce4 a0 : c364f940 a1 : 00000000
-a2 : c364f940 a3 : 00000000 a4 : c364f950
-a5 : c364f890 a6 : 00000003 a7 : 00000000
-s2 : 00000001 s3 : c1d382c0 s4 : 00000000
-s5 : 00000000 s6 : 00000000 s7 : c364f880
-s8 : 00000000 s9 : 00000001 s10: 00000001
-s11: 00000000 t3 : 00000018 t4 : 7fd38a0e
-t5 : 00000007 t6 : c3639470
-status: 00000120 badaddr: 00000000 cause: 00000003
-[<c074548a>] virtnet_set_affinity+0x13a/0x1a2
-[<c07478de>] virtnet_probe+0x884/0xfdc
-[<c063ce9a>] virtio_dev_probe+0x1d6/0x354
-[<c0683d6e>] really_probe+0x82/0x214
-[<c0683f58>] __driver_probe_device+0x58/0xa2
-[<c0683fd2>] driver_probe_device+0x30/0xaa
-[<c0684596>] __driver_attach+0x56/0x11c
-[<c0681f26>] bus_for_each_dev+0x52/0x90
-[<c06837c0>] driver_attach+0x1a/0x22
-[<c068331a>] bus_add_driver+0x148/0x1b6
-[<c0684d70>] driver_register+0x52/0xea
-[<c063c924>] register_virtio_driver+0x1a/0x28
-[<c0c2428e>] virtio_net_driver_init+0x7a/0xa6
-[<c0002824>] do_one_initcall+0x5e/0x2e2
-[<c0c01130>] kernel_init_freeable+0x298/0x306
-[<c0aa0ac2>] kernel_init+0x1e/0x10e
-[<c0003ad8>] ret_from_exception+0x0/0x10
-irq event stamp: 106012
-hardirqs last  enabled at (106011): [<c0aa9284>] _raw_spin_unlock_irqrestore+0x54/0x62
-hardirqs last disabled at (106012): [<c0007534>] __trace_hardirqs_off+0xc/0x14
-softirqs last  enabled at (105764): [<c0886392>] napi_get_frags_check+0x0/0x50
-softirqs last disabled at (105758): [<c0886392>] napi_get_frags_check+0x0/0x50
+---[ end trace 0000000000000000 ]---
+RIP: 0010:d_backing_inode include/linux/dcache.h:542 [inline]
+RIP: 0010:security_inode_getattr+0x46/0x140 security/security.c:1345
+Code: 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 04 01 00 00 48 b8 00 00 00 00 00 fc ff df 49 8b 5d 08 48 8d 7b 68 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 d7 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 8b
+RSP: 0018:ffffc9000400f578 EFLAGS: 00010212
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 000000000000000d RSI: ffffffff83bd72fe RDI: 0000000000000068
+RBP: ffffc9000400f750 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000000000000 R11: 000000000008c07d R12: ffff8880763dca48
+R13: ffffc9000400f750 R14: 00000000000007ff R15: 0000000000000000
+FS:  00007f246f27e700(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005643c9471000 CR3: 00000000717a9000 CR4: 0000000000350ee0
+----------------
+Code disassembly (best guess):
+   0:	48 89 fa             	mov    %rdi,%rdx
+   3:	48 c1 ea 03          	shr    $0x3,%rdx
+   7:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1)
+   b:	0f 85 04 01 00 00    	jne    0x115
+  11:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+  18:	fc ff df
+  1b:	49 8b 5d 08          	mov    0x8(%r13),%rbx
+  1f:	48 8d 7b 68          	lea    0x68(%rbx),%rdi
+  23:	48 89 fa             	mov    %rdi,%rdx
+  26:	48 c1 ea 03          	shr    $0x3,%rdx
+* 2a:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
+  2e:	0f 85 d7 00 00 00    	jne    0x10b
+  34:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+  3b:	fc ff df
+  3e:	48                   	rex.W
+  3f:	8b                   	.byte 0x8b
 
-This is the result of commit 854701ba4c39 ("net: fix cpu_max_bits_warn()
-usage in netif_attrmask_next{,_and}").
-
-Guenter
