@@ -2,183 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00F725FFCCE
-	for <lists+netdev@lfdr.de>; Sun, 16 Oct 2022 03:00:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C472E5FFCD3
+	for <lists+netdev@lfdr.de>; Sun, 16 Oct 2022 03:12:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229763AbiJPBAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Oct 2022 21:00:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51098 "EHLO
+        id S229765AbiJPBMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Oct 2022 21:12:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229624AbiJPBAM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Oct 2022 21:00:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 938A42C10D
-        for <netdev@vger.kernel.org>; Sat, 15 Oct 2022 18:00:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1665882009;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hYsQV77jSVZ1xo/DJ7SyfJsKSPF5nuGhpJ71epheuCI=;
-        b=bx0VOb3OP6AQkaQ9mGu59n22wbGpKKh5Jom/6o5tDlijSsJ7EKxivC9XcCCMsIpxyKctMT
-        fKDvnJPIAr7bJBzrt8QE18BY0UA4QwKhwYapFa4vrl5jRqaScTfrDMmWCWHys5p/D0wJ/l
-        CzXSFZunI4oPu6drLMkC/Hhf+IOzyvE=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-314-OqrHrCyZN3Wbdx3ymrwZXQ-1; Sat, 15 Oct 2022 21:00:08 -0400
-X-MC-Unique: OqrHrCyZN3Wbdx3ymrwZXQ-1
-Received: by mail-wm1-f72.google.com with SMTP id c3-20020a7bc843000000b003b486fc6a40so3863754wml.7
-        for <netdev@vger.kernel.org>; Sat, 15 Oct 2022 18:00:07 -0700 (PDT)
+        with ESMTP id S229504AbiJPBMd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Oct 2022 21:12:33 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E529BDF5F;
+        Sat, 15 Oct 2022 18:12:30 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id t25so4805167qkm.2;
+        Sat, 15 Oct 2022 18:12:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=M6jFIGhx+nOyZ6rzu58iWqKDcyExepoMoxIJXMpw6gs=;
+        b=ncYIUmGK7C113vowuHgFK5UKcdec2QuRPLEhTS7UszkE8BWy5pQ0NGWuuSdADawR72
+         m62n10HNf9Zv+1WBTch3uDIdQoXfntdAkTmHBvOhy+pb7Aig4Du3YoT7Egl9os4TKf1s
+         4sKUI93kVGDtVEADo+jKvTyfOXBYr2UsaoXOXqzkTunclRbNYmaQDY+ZDHa3Zr1Jw/cw
+         EWdKruSDSOvKKUy3NvKSu3jdAacctB/thouLF4IkfD0pNZ0vecGEa4vYBemHK7+m/cdu
+         ZVtHcubCyH5yvsH43sPS9jTcPtpnL+As9aJH76j827ON6eGSZy4oSqxNgrRaH4klMKs+
+         QN4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=hYsQV77jSVZ1xo/DJ7SyfJsKSPF5nuGhpJ71epheuCI=;
-        b=WUaZ4jFNOY1bDlCU1USMXDO4MFKriCiizXU4nbeA3RXvGfK/g9U/RYfy5rDiIAaDMk
-         BWg+4FwNFji4n30KwgoksmQJZDJxi8T4d0lJO1vLaUuVzndzdFN2OH0RBI3x/aoXiUpp
-         KhBXNfK6TrBJ/n46ITpvNvR0ug2KcrWZ4rFuquaubGwY5dEkKAj0QDxXTyZ/PCaNwv1c
-         58ogX4NpmaniqhL1m26EDO+ZcHYM2l4W2T44XLsFttNjTXkAL2mA+2FMf6MQV0mtEVE5
-         vozfs04HXLb5XnE6keEGzQyrh74BpHQFQNneDTAwuOcBA/ygj6+IrMh1mDJVI7xo1rld
-         bY0g==
-X-Gm-Message-State: ACrzQf1iyNvbHvq5r3hv1pf/xm1lPhoqfx3ieYfm9yfzaj0qrFN9QcQV
-        hyMM/iXt58VuniCMq2ejwyQnebjSr1jMJmztzyBa3NpQ0e91miw+/ASjCsyrRgv1z4jPKc8v968
-        19f+87OLDismATrZjZavmY6aQOJbdP3lB
-X-Received: by 2002:a05:600c:510e:b0:3b4:fed8:e65c with SMTP id o14-20020a05600c510e00b003b4fed8e65cmr2883878wms.93.1665882007018;
-        Sat, 15 Oct 2022 18:00:07 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM66HPDxlXvYzsqrga5jABjfOB5xiJMXx7sbgnn4jYzeoaIdfmXlF6XrUgOtw9Z8Dmo+83EndNOj/1gwm66a0gw=
-X-Received: by 2002:a05:600c:510e:b0:3b4:fed8:e65c with SMTP id
- o14-20020a05600c510e00b003b4fed8e65cmr2883860wms.93.1665882006813; Sat, 15
- Oct 2022 18:00:06 -0700 (PDT)
-MIME-Version: 1.0
-References: <20221007085310.503366-1-miquel.raynal@bootlin.com>
- <20221007085310.503366-6-miquel.raynal@bootlin.com> <CAK-6q+iun+K8F6Mv3=WLL92iZnv-9oSnoRYtY4Zex2DZqS8ABQ@mail.gmail.com>
- <CAK-6q+iKf5bXX+EPBw9utCpAoBVjZ678na0V_n4GUes5O=NLLw@mail.gmail.com>
- <CAK-6q+hO1AFzdH_DRYVM77VJhotsoeiBzqL0o7ND7sPYJhSrbQ@mail.gmail.com> <20221012155828.5a5cade8@xps-13>
-In-Reply-To: <20221012155828.5a5cade8@xps-13>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Sat, 15 Oct 2022 20:59:55 -0400
-Message-ID: <CAK-6q+jAr9qFY6dB6tYuycHyMNX=Ge9k4sJS38O_eRdvgLhnAA@mail.gmail.com>
-Subject: Re: [PATCH wpan/next v4 5/8] ieee802154: hwsim: Implement address filtering
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=M6jFIGhx+nOyZ6rzu58iWqKDcyExepoMoxIJXMpw6gs=;
+        b=a8OUBX98ljmg1X1payWq1Y9VohEy2CIxXrXy4rALj1bUYrosGveAbybVIJaDG231Ze
+         tkqcyCAr1wjQ1qpb43j1vqk2rB+qFkpG7d3/aVl9CSaAPn0+0+iUfPQcKCL1sxuxOY7b
+         DSB3iLf3aY/J5PY0O/+PaNbrOPqHpiAdn3UQvNSjKvxNZFgysgldjQh+U/QX0wWx0DMD
+         LiVuamrJ1u9zEvHA+5XQHN7YAj6JJaNvrZjBNjJDpyCt3gkoaR7IZt1cSLuKSy6VDG64
+         Vo0UeYLgdNy1ZoCKXv5WQcIfnHC3Iwy7tvfMg4/dY9gItl8AG1ef1ed2P7TXvXTlhD3P
+         cJjA==
+X-Gm-Message-State: ACrzQf3/XuNaEWyKRYf8Acc4/ARJF1MwYEGFFNiE2WdSoo+yCkkfktqB
+        oxXaA8GWIUqLsGVHupDFDLE=
+X-Google-Smtp-Source: AMsMyM7/UjqcuM+PFkGWSXN5J8StM+QgIGSheY4X7K1tiWZVy0/GwT9iB933kahz3utjUzVMWNaLRQ==
+X-Received: by 2002:a05:620a:21cf:b0:6ed:82e:8a5b with SMTP id h15-20020a05620a21cf00b006ed082e8a5bmr3515687qka.657.1665882749901;
+        Sat, 15 Oct 2022 18:12:29 -0700 (PDT)
+Received: from localhost ([2601:4c1:c100:2270:b7d0:ec47:792a:b1d9])
+        by smtp.gmail.com with ESMTPSA id r187-20020a37a8c4000000b006d1d8fdea8asm5745301qke.85.2022.10.15.18.12.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 15 Oct 2022 18:12:29 -0700 (PDT)
+Date:   Sat, 15 Oct 2022 18:12:28 -0700
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        syzbot <syzbot+d0fd2bf0dd6da72496dd@syzkaller.appspotmail.com>,
+        syzkaller-bugs@googlegroups.com,
+        Andrew Jones <ajones@ventanamicro.com>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Menglong Dong <imagedong@tencent.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Guo Ren <guoren@linux.alibaba.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        andriy.shevchenko@linux.intel.com, linux@rasmusvillemoes.dk,
+        caraitto@google.com, willemb@google.com, jonolson@google.com,
+        amritha.nambiar@intel.com, linux-kernel@vger.kernel.org
+Subject: Re: [syzbot] WARNING in c_start
+Message-ID: <Y0tafD7qI2x5xzTc@yury-laptop>
+References: <0000000000007647ec05eb05249c@google.com>
+ <Y0nTd9HSnnt/KDap@zn.tnic>
+ <2eaf1386-8ab0-bd65-acee-e29f1c5a6623@I-love.SAKURA.ne.jp>
+ <Y0qfLyhSoTodAdxu@zn.tnic>
+ <Y0sbwpRcipI564yp@yury-laptop>
+ <23488f06-c4b4-8bd8-b0bc-85914ba4d1c6@I-love.SAKURA.ne.jp>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <23488f06-c4b4-8bd8-b0bc-85914ba4d1c6@I-love.SAKURA.ne.jp>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Sun, Oct 16, 2022 at 09:24:57AM +0900, Tetsuo Handa wrote:
+> On 2022/10/16 5:44, Yury Norov wrote:
+> > Add people from other threads discussing this.
+> > 
+> > On Sat, Oct 15, 2022 at 01:53:19PM +0200, Borislav Petkov wrote:
+> >> On Sat, Oct 15, 2022 at 08:39:19PM +0900, Tetsuo Handa wrote:
+> >>> That's an invalid command line. The correct syntax is:
+> >>>
+> >>> #syz test: git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> >>
+> >> The fix is not in Linus' tree yet.
+> >>
+> >>> Andrew Jones proposed a fix for x86 and riscv architectures [2]. But
+> >>> other architectures have the same problem. And fixing all callers will
+> >>> not be in time for this merge window.
+> >>
+> >> Why won't there be time? That's why the -rcs are for.
+> >>
+> >> Also, that thing fires only when CONFIG_DEBUG_PER_CPU_MAPS is enabled.
+> >>
+> >> So no, we will take Andrew's fixes for all arches in time for 6.1.
+> > 
+> > Summarizing things:
+> > 
+> > 1. cpumask_check() was introduced to make sure that the cpu number
+> > passed into cpumask API belongs to a valid range. But the check is
+> > broken for a very long time. And because of that there are a lot of
+> > places where cpumask API is used wrongly.
+> > 
+> > 2. Underlying bitmap functions handle that correctly - when user
+> > passes out-of-range CPU index, the nr_cpu_ids is returned, and this is
+> > what expected by client code. So if DEBUG_PER_CPU_MAPS config is off,
+> > everything is working smoothly.
+> > 
+> > 3. I fixed all warnings that I was aware at the time of submitting the
+> > patch. 2 follow-up series are on review: "[PATCH v2 0/4] net: drop
+> > netif_attrmask_next*()" and "[PATCH 0/9] lib/cpumask: simplify
+> > cpumask_next_wrap()". Also, Andrew Jones, Alexander Gordeev and Guo Ren
+> > proposed fixes for c_start() in arch code.
+> > 
+> > 4. The code paths mentioned above are all known to me that violate
+> > cpumask_check() rules. (Did I miss something?)
+> > 
+> > With all that, I agree with Borislav. Unfortunately, syzcall didn't CC
+> > me about this problem with c_start(). But I don't like the idea to revert
+> > cpumask_check() fix. This way we'll never clean that mess. 
+> > 
+> > If for some reason those warnings are unacceptable for -rcs (and like
+> > Boris, I don't understand why), than instead of reverting commits, I'd
+> > suggest moving cpumask sanity check from DEBUG_PER_CPU_MAPS under a new
+> > config, say CONFIG_CPUMASK_DEBUG, which will be inactive until people will
+> > fix their code. I can send a patch shortly, if we'll decide going this way.
+> > 
+> > How people would even realize that they're doing something wrong if
+> > they will not get warned about it?
+> 
+> I'm asking you not to use BUG_ON()/WARN_ON() etc. which breaks syzkaller.
 
-On Sat, Oct 15, 2022 at 4:59 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
->
-> Hi Alexander,
->
-> aahringo@redhat.com wrote on Mon, 10 Oct 2022 21:21:17 -0400:
->
-> > Hi,
-> >
-> > On Mon, Oct 10, 2022 at 9:13 PM Alexander Aring <aahringo@redhat.com> wrote:
-> > >
-> > > Hi,
-> > >
-> > > On Mon, Oct 10, 2022 at 9:04 PM Alexander Aring <aahringo@redhat.com> wrote:
-> > > >
-> > > > Hi,
-> > > >
-> > > > On Fri, Oct 7, 2022 at 4:53 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> > > > >
-> > > > > We have access to the address filters being theoretically applied, we
-> > > > > also have access to the actual filtering level applied, so let's add a
-> > > > > proper frame validation sequence in hwsim.
-> > > > >
-> > > > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > > > ---
-> > > > >  drivers/net/ieee802154/mac802154_hwsim.c | 111 ++++++++++++++++++++++-
-> > > > >  include/net/ieee802154_netdev.h          |   8 ++
-> > > > >  2 files changed, 117 insertions(+), 2 deletions(-)
-> > > > >
-> > > > > diff --git a/drivers/net/ieee802154/mac802154_hwsim.c b/drivers/net/ieee802154/mac802154_hwsim.c
-> > > > > index 458be66b5195..84ee948f35bc 100644
-> > > > > --- a/drivers/net/ieee802154/mac802154_hwsim.c
-> > > > > +++ b/drivers/net/ieee802154/mac802154_hwsim.c
-> > > > > @@ -18,6 +18,7 @@
-> > > > >  #include <linux/netdevice.h>
-> > > > >  #include <linux/device.h>
-> > > > >  #include <linux/spinlock.h>
-> > > > > +#include <net/ieee802154_netdev.h>
-> > > > >  #include <net/mac802154.h>
-> > > > >  #include <net/cfg802154.h>
-> > > > >  #include <net/genetlink.h>
-> > > > > @@ -139,6 +140,113 @@ static int hwsim_hw_addr_filt(struct ieee802154_hw *hw,
-> > > > >         return 0;
-> > > > >  }
-> > > > >
-> > > > > +static void hwsim_hw_receive(struct ieee802154_hw *hw, struct sk_buff *skb,
-> > > > > +                            u8 lqi)
-> > > > > +{
-> > > > > +       struct ieee802154_hdr hdr;
-> > > > > +       struct hwsim_phy *phy = hw->priv;
-> > > > > +       struct hwsim_pib *pib;
-> > > > > +
-> > > > > +       rcu_read_lock();
-> > > > > +       pib = rcu_dereference(phy->pib);
-> > > > > +
-> > > > > +       if (!pskb_may_pull(skb, 3)) {
-> > > > > +               dev_dbg(hw->parent, "invalid frame\n");
-> > > > > +               goto drop;
-> > > > > +       }
-> > > > > +
-> > > > > +       memcpy(&hdr, skb->data, 3);
-> > > > > +
-> > > > > +       /* Level 4 filtering: Frame fields validity */
-> > > > > +       if (hw->phy->filtering == IEEE802154_FILTERING_4_FRAME_FIELDS) {
-> > >
-> > > I see, there is this big if handling. But it accesses the
-> > > hw->phy->filtering value. It should be part of the hwsim pib setting
-> > > set by the driver callback. It is a question here of mac802154 layer
-> > > setting vs driver layer setting. We should do what the mac802154 tells
-> > > the driver to do, this way we do what the mac802154 layer is set to.
-> > >
-> > > However it's a minor thing and it's okay to do it so...
-> >
-> > * whereas we never let the driver know at any time of what different
-> > filter levels exist _currently_ we have only the promiscuous mode
-> > on/off switch which is do nothing or 4_FRAME_FIELDS.
-> > It will work for now, changing anything in the mac802154 filtering
-> > fields or something will end in probably breakage in this handling. In
-> > my point of view as the current state is it should not do that, as
-> > remember that hwsim will "simulate" hardware it should not be able to
-> > access mac802154 fields (especially when doing receiving of frames) as
-> > other hardware will only set register bits (as hwsim pib values is
-> > there for)...
-> >
-> > Still I think it's fine for now.
->
-> I see your point, indeed I could have added another PIB attribute
-> instead of accessing the PHY state.
->
-> I am fine doing it in a followup patch if this what you prefer. Shall I
-> do it?
+It's not me who added WARN_ON() in the cpumask_check(). You're asking
+a wrong person. 
 
-okay, note that you did it right with the address filter patches by
-copying them from the drivers-ops.
+What for do we have WARN_ON(), if we can't use it?
 
-- Alex
+> Just printing messages (without "BUG:"/"WARNING:" string which also breaks
+> syzkaller) like below diff is sufficient for people to realize that they're
+> doing something wrong.
+> 
+> Again, please do revert "cpumask: fix checking valid cpu range" immediately.
 
+The revert is already in Jakub's batch for -rc2, AFAIK.
+
+Thanks,
+Yury
