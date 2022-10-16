@@ -2,138 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 968DC600264
-	for <lists+netdev@lfdr.de>; Sun, 16 Oct 2022 19:29:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 002B6600278
+	for <lists+netdev@lfdr.de>; Sun, 16 Oct 2022 19:34:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229782AbiJPR3D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Oct 2022 13:29:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38126 "EHLO
+        id S229681AbiJPReb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Oct 2022 13:34:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229726AbiJPR3B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Oct 2022 13:29:01 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E6A92DF
-        for <netdev@vger.kernel.org>; Sun, 16 Oct 2022 10:29:00 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id f22so6548241qto.3
-        for <netdev@vger.kernel.org>; Sun, 16 Oct 2022 10:29:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7p7Rhiz6u+qDWoNX5wKPt5gsaSQ0nnDRRjUPUOoRYns=;
-        b=IP+VO4AJyiRQw19GVdWhGxIbewhAS9zr6PcjJu+xgu6VTfK7J1ryG4sZX2NGspQlSu
-         /RYp9o0i/NcAxBO6N9xyDo7F/tlSSjHYwopXKukSQp8QFGgwQhCLrI5DjLDaK4NUJ1BW
-         t84Wv3Z+OHIKwZPSGFZZI9AhlJQJAWlg1BU3y8JyqFh8o0bjGLxIkxMeXGvpkYeys3l6
-         UpemUffpUjhzQTwzjrtD+dzQbkqbRukKV2awPMPzxi86t7XgQ04EhN7w4LebvMyUvCeG
-         26olgRk6aZI5ygS2Ck9XmnV80A5BClBW90zU+mgeFDDmUEuB1qvydguPJST19ZUAXKUI
-         hrcg==
+        with ESMTP id S230029AbiJPRe0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Oct 2022 13:34:26 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8672513CCC
+        for <netdev@vger.kernel.org>; Sun, 16 Oct 2022 10:34:24 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id 23-20020a5d9c57000000b006bbd963e8adso5671041iof.19
+        for <netdev@vger.kernel.org>; Sun, 16 Oct 2022 10:34:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7p7Rhiz6u+qDWoNX5wKPt5gsaSQ0nnDRRjUPUOoRYns=;
-        b=PFx1dEoVbwXREPImPNBWHAZ9yrNuzK7XW1wYFEXGa/DPlPywTlZQmYtOe727ZFa12X
-         cjpxZHUjpeOKARFwGnjYTVdUFCUSe+ikb1mcDBLHecWzdyvpCRjOZeeEgwe6DoSYX8F4
-         tk0eekbf/aIRifAA3tbUWbACnDdTizoN11RdJ3dxxw4nvzLHC25c6MGQWM6r08ZflxjQ
-         7A+K86frk5kO0NkRycExAaz4HEQ81W1bIDkAPHTFs5e9PtRk4E9CtJxRBbdqi0Y9PVuX
-         wPlwZAaQuGNhD+wjKediioLQWTHBEYPYqTEtw72Trr2fu766WP/S594bSvzp4SSYCArL
-         DQlQ==
-X-Gm-Message-State: ACrzQf2FAVQaQ73KMc3IcU/8MDJqODSXcfi1QmuryVzRrfJyXwn89tns
-        5BoVrFCUcXAcDFWBzG6cuYc=
-X-Google-Smtp-Source: AMsMyM6HDz841MBCfiHyRBVuKWOUaS3VIqyK/ehK+qRtMUe/d75/a5CACmjbDtLPVp0pc/djMdDo8Q==
-X-Received: by 2002:a05:622a:1983:b0:39c:d680:8197 with SMTP id u3-20020a05622a198300b0039cd6808197mr5849397qtc.7.1665941339387;
-        Sun, 16 Oct 2022 10:28:59 -0700 (PDT)
-Received: from localhost ([2600:1700:65a0:ab60:be78:db2a:9fab:4eca])
-        by smtp.gmail.com with ESMTPSA id j22-20020ac84416000000b0039cc64bcb53sm6003368qtn.27.2022.10.16.10.28.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 16 Oct 2022 10:28:58 -0700 (PDT)
-Date:   Sun, 16 Oct 2022 10:28:57 -0700
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        wizhao@redhat.com, netdev@vger.kernel.org, peilin.ye@bytedance.com
-Subject: Re: [PATCH net] net/sched: act_mirred: use the backlog for mirred
- ingress
-Message-ID: <Y0w/WWY60gqrtGLp@pop-os.localdomain>
-References: <33dc43f587ec1388ba456b4915c75f02a8aae226.1663945716.git.dcaratti@redhat.com>
- <YzCZMHYmk53mQ+HK@pop-os.localdomain>
- <YzxwCy7R0MdWZuO4@dcaratti.users.ipa.redhat.com>
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=9HnUcMrpaOy4ZoL5ypHWvjmoyr0LqAIz7W4hYAK2fiI=;
+        b=fA1yI+mYUQ+mOWOuoQtTLrkSz+b8+R5e5o7Nb2KFoW9o10THvZ/hM9FSBR0OszPVwM
+         pE7l+LDCc9qnbvdH5bQ0vE01tJSR5Zf5sNiGYNEjWBFUBYisArX60kIwpurFkeHj2Emw
+         rm0uVUxfZUNW3CrVmN+svumBMtZfNCCambWl6LJSzRT0eVuYDDRHAkpc4uhvV0JTx2iX
+         POXjiVZ8XKuJrSmJthmyhN4IU02hD1ebfvXEVfNkzHY8Tl+/J29UGc5LMuY7kQq16ZOZ
+         2NEEW6lCwiqNn5jNMXRess0xuv6Z2uW0UbxwWjptTIV628yAVoWO7dVIuwfcXVpbe3ns
+         Mv9w==
+X-Gm-Message-State: ACrzQf0xQZ2c3e6/svRGgKOZZ9Zu5LG+s5OQypEHdv0WJKb9GjBlhzur
+        MkEjHQ6KyOtGO6JX07HqQwDseqGHgo37+n4jQAt1s32QTZ3W
+X-Google-Smtp-Source: AMsMyM7qspteAsrK5Mgq3OaCHRR/wYcZjGnfTnfsk7GdfkdP3jG+nm1SS/vzaXgUf0BQGOpO5QgR8XlS8g1zTVGBw7BHfTVjcerF
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YzxwCy7R0MdWZuO4@dcaratti.users.ipa.redhat.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6e02:184c:b0:2fc:4f65:9dee with SMTP id
+ b12-20020a056e02184c00b002fc4f659deemr3194230ilv.154.1665941663602; Sun, 16
+ Oct 2022 10:34:23 -0700 (PDT)
+Date:   Sun, 16 Oct 2022 10:34:23 -0700
+In-Reply-To: <0000000000009d327505b0999237@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000013612005eb2a4525@google.com>
+Subject: Re: [syzbot] INFO: rcu detected stall in batadv_nc_worker (3)
+From:   syzbot <syzbot+69904c3b4a09e8fa2e1b@syzkaller.appspotmail.com>
+To:     a@unstable.cc, alsa-devel@alsa-project.org,
+        b.a.t.m.a.n@lists.open-mesh.org, broonie@kernel.org,
+        davem@davemloft.net, dvyukov@google.com, edumazet@google.com,
+        hdanton@sina.com, jhs@mojatatu.com, jiri@resnulli.us,
+        kuba@kernel.org, lgirdwood@gmail.com, linux-kernel@vger.kernel.org,
+        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
+        pabeni@redhat.com, perex@perex.cz, povik+lin@cutebit.org,
+        steve@sk2.org, sven@narfation.org, sw@simonwunderlich.de,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
+        tiwai@suse.com, tonymarislogistics@yandex.com,
+        xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 04, 2022 at 07:40:27PM +0200, Davide Caratti wrote:
-> hello Cong, thanks for looking at this!
-> 
-> On Sun, Sep 25, 2022 at 11:08:48AM -0700, Cong Wang wrote:
-> > On Fri, Sep 23, 2022 at 05:11:12PM +0200, Davide Caratti wrote:
-> > > William reports kernel soft-lockups on some OVS topologies when TC mirred
-> > > "egress-to-ingress" action is hit by local TCP traffic. Indeed, using the
-> > > mirred action in egress-to-ingress can easily produce a dmesg splat like:
-> > > 
-> > >  ============================================
-> > >  WARNING: possible recursive locking detected
-> 
-> [...]
-> 
-> > >  6.0.0-rc4+ #511 Not tainted
-> > >  --------------------------------------------
-> > >  nc/1037 is trying to acquire lock:
-> > >  ffff950687843cb0 (slock-AF_INET/1){+.-.}-{2:2}, at: tcp_v4_rcv+0x1023/0x1160
-> > > 
-> > >  but task is already holding lock:
-> > >  ffff950687846cb0 (slock-AF_INET/1){+.-.}-{2:2}, at: tcp_v4_rcv+0x1023/0x1160
-> 
-> FTR, this is:
+syzbot has bisected this issue to:
 
-Yeah, Peilin actually looked deeper into this issue. Let's copy him.
+commit f8a4018c826fde6137425bbdbe524d5973feb173
+Author: Mark Brown <broonie@kernel.org>
+Date:   Thu Jun 2 13:53:04 2022 +0000
 
-> 
-> 2091         sk_incoming_cpu_update(sk);
-> 2092
-> 2093         bh_lock_sock_nested(sk); <--- the lock reported in the splat
-> 2094         tcp_segs_in(tcp_sk(sk), skb);
-> 2095         ret = 0;
-> 2096         if (!sock_owned_by_user(sk)) {
-> 
-> > BTW, have you thought about solving the above lockdep warning in TCP
-> > layer?
-> 
-> yes, but that doesn't look like a trivial fix at all - and I doubt it's
-> worth doing it just to make mirred and TCP "friends". Please note:
-> on current kernel this doesn't just result in a lockdep warning: using
-> iperf3 on unpatched kernels it's possible to see a real deadlock, like:
+    ASoC: tas2770: Use modern ASoC DAI format terminology
 
-I'd say your test case is rare, because I don't think it is trivial for
-a TCP socket to send packets to itself.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=164d4978880000
+start commit:   55be6084c8e0 Merge tag 'timers-core-2022-10-05' of git://g..
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=154d4978880000
+console output: https://syzkaller.appspot.com/x/log.txt?x=114d4978880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=df75278aabf0681a
+dashboard link: https://syzkaller.appspot.com/bug?extid=69904c3b4a09e8fa2e1b
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16e2e478880000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=149ca17c880000
 
- 
-> > Which also means we can no longer know the RX path status any more,
-> > right? I mean if we have filters on ingress, we can't know whether they
-> > drop this packet or not, after this patch? To me, this at least breaks
-> > users' expectation.
-> 
-> Fair point! Then maybe we don't need to change the whole TC mirred ingress:
-> since the problem only affects egress to ingress, we can preserve the call
-> to netif_recive_skb() on ingress->ingress, and just use the backlog in the
-> egress->ingress direction _ that has been broken since the very beginning
-> and got similar fixes in the past [1]. Something like:
+Reported-by: syzbot+69904c3b4a09e8fa2e1b@syzkaller.appspotmail.com
+Fixes: f8a4018c826f ("ASoC: tas2770: Use modern ASoC DAI format terminology")
 
-Regarless ingress->ingress or egress->ingress, this patch breaks
-users' expectation. And, actually egress->ingress is more common than
-ingress->ingress, in my experience.
-
-Thanks.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
