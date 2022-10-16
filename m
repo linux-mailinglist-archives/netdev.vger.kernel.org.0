@@ -2,132 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 233CF5FFDAD
-	for <lists+netdev@lfdr.de>; Sun, 16 Oct 2022 08:52:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F35A5FFDFE
+	for <lists+netdev@lfdr.de>; Sun, 16 Oct 2022 09:36:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229761AbiJPGws (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Oct 2022 02:52:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
+        id S229711AbiJPHgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Oct 2022 03:36:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbiJPGwr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Oct 2022 02:52:47 -0400
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DF693D58C
-        for <netdev@vger.kernel.org>; Sat, 15 Oct 2022 23:52:46 -0700 (PDT)
-Received: by mail-io1-f71.google.com with SMTP id d24-20020a05660225d800b006a466ec7746so5277181iop.3
-        for <netdev@vger.kernel.org>; Sat, 15 Oct 2022 23:52:46 -0700 (PDT)
+        with ESMTP id S229648AbiJPHgX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Oct 2022 03:36:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89BE230559
+        for <netdev@vger.kernel.org>; Sun, 16 Oct 2022 00:36:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1665905780;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=mi6paNxUhZc8wCZTNMWuTKiyJWtsArsQ1TaS5bk0tCs=;
+        b=DvNhSHiwPdQJ02utuE/GLS6PQSNF/Rbkf/OT5VfX42CCQWHKWeXZwBfsP/qhzd28S/Wbro
+        2FmHXKjKiHi/LprHtFrp5DhmrXlFkh1uwWycE3YvsRJXik+lMgU14rayBWKMz1KMlmiN2B
+        wNtKvGKcTMxKUdnwyoR8dYQMKYLnnfU=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-122-90Am3WaANJKCtjI6Nuc_sQ-1; Sun, 16 Oct 2022 03:36:19 -0400
+X-MC-Unique: 90Am3WaANJKCtjI6Nuc_sQ-1
+Received: by mail-wm1-f70.google.com with SMTP id h206-20020a1c21d7000000b003c56437e529so5461208wmh.2
+        for <netdev@vger.kernel.org>; Sun, 16 Oct 2022 00:36:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=+T5aOHFBn0evAQz1vErQpfAFJ2574A0vi0Zz9LJdccA=;
-        b=7975tAPWCim4RTuyIEvgWnWW7USMcQqKESVEeDKWAw716mfazRgwGYbwuYi1X/XIg4
-         ksdLf6CRglZ5oI2ahChp68vsFQw6/mTFWFUFE9sUQ3+VdBFRHowPaewY2ux394yoL7rs
-         iMrLg26xMIltyI/xPV3bh+iMtxQRHu3SWYlzWhNFjfsHftPjDNn1O6k0VvxLSZFacTS2
-         nbtXEnspWir0qJEkp0hMUroQAI0AdQM2Fxxuu5I6ZIxXZgl2AhkKKQUcrj9mglK6hRKr
-         SSc9Z0DJWYZrVLO1tBTCNZ1aRjr4jPXEncam6UAZkDkgZPmnWAs5d5Lr8GtKXK76iapS
-         sYuw==
-X-Gm-Message-State: ACrzQf09aIltRff/DnJ36nh0EfbSDyTShIStiT1vJQIvpKxAij50usnY
-        HUgVP+cbgOgt91orXn5LrfJHVMBOqcO4ksT8+qTSuqo19tvV
-X-Google-Smtp-Source: AMsMyM6EUVKT4V8JbfjAjs94yP0uEUQFLuz12gSDUo05L3wQic671XTHtNh/yDdBKmYV/FRN+O2+batHaqElAZpScVs7iI2InzZv
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mi6paNxUhZc8wCZTNMWuTKiyJWtsArsQ1TaS5bk0tCs=;
+        b=r5v8nrK4l+wJOErAaUCXy5D9AA6bruHM+83WdKN8jhSO96DmuoWFQ/slotmtPGUUP5
+         BfwCcVIq7xFFda9jR1mDflGRl1sv5P2f5R3OUdSMHVswqDrg0YMlzHoxFMtjPMajkflK
+         MK7Sc7ePTal6dcg6DHNDQ9kcUwDzMujl74j7IkyTfTABW+WFEBXA/ao2XwXkHC5hH3+E
+         lj4e+o0UvfpSmRvKNUTQnArD/wYXCe2gPSO2GgSIPire5acHkGf2mI4BbFxYCzDkHI32
+         Uf+j3ib/Fgh7ArrdI3Fn5C1lg7/UoNLLtGFwWXMVHBHttRJEoW/JmmYxwAtDlw66N6PI
+         nf+w==
+X-Gm-Message-State: ACrzQf1kt1Igl49p57cvLdp9XMS3CidpW9MXoi2kx74zENwsuHtLv7hK
+        /IB3H/N+zKnov7yUMP1+s1idjFd/+dWYUQ0IbmfmIjTa1nidujG/UXMn6uF5SqqDvqhZ+89e8f6
+        aH7c+63inqXvX6k0w
+X-Received: by 2002:a5d:5612:0:b0:22e:35b7:5654 with SMTP id l18-20020a5d5612000000b0022e35b75654mr3177788wrv.651.1665905777919;
+        Sun, 16 Oct 2022 00:36:17 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM6L2f7JWrMgCNZU5cQ24fKThZRGdI4bnqhsF6oFbB8HEU6GjHxbSLnDTcA1+Mi3n9Rna76SGQ==
+X-Received: by 2002:a5d:5612:0:b0:22e:35b7:5654 with SMTP id l18-20020a5d5612000000b0022e35b75654mr3177764wrv.651.1665905777555;
+        Sun, 16 Oct 2022 00:36:17 -0700 (PDT)
+Received: from redhat.com ([2.54.171.110])
+        by smtp.gmail.com with ESMTPSA id n4-20020adf8b04000000b00231893bfdc7sm6017053wra.2.2022.10.16.00.36.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 16 Oct 2022 00:36:16 -0700 (PDT)
+Date:   Sun, 16 Oct 2022 03:36:12 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     syzbot <syzbot+4d0c5794bff07852726c@syzkaller.appspotmail.com>
+Cc:     ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
+        davem@davemloft.net, edumazet@google.com, hawk@kernel.org,
+        jasowang@redhat.com, john.fastabend@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
+        virtualization@lists.linux-foundation.org
+Subject: Re: [syzbot] net boot error: WARNING in cpumask_next_wrap
+Message-ID: <20221015154817-mutt-send-email-mst@kernel.org>
+References: <000000000000f4b06105eb17a6c8@google.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:341c:b0:6bc:1c3d:836e with SMTP id
- n28-20020a056602341c00b006bc1c3d836emr2163062ioz.24.1665903165488; Sat, 15
- Oct 2022 23:52:45 -0700 (PDT)
-Date:   Sat, 15 Oct 2022 23:52:45 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000068cb2905eb214e9a@google.com>
-Subject: [syzbot] WARNING in btf_type_id_size
-From:   syzbot <syzbot+6280ebbcdba3e0c14fde@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, haoluo@google.com, john.fastabend@gmail.com,
-        jolsa@kernel.org, kpsingh@kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, martin.lau@linux.dev, nathan@kernel.org,
-        ndesaulniers@google.com, netdev@vger.kernel.org, sdf@google.com,
-        song@kernel.org, syzkaller-bugs@googlegroups.com, trix@redhat.com,
-        yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <000000000000f4b06105eb17a6c8@google.com>
+X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SORTED_RECIPS,SPF_HELO_NONE,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sat, Oct 15, 2022 at 12:21:41PM -0700, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    a1b6b102df03 Merge branch 'phylink_set_mac_pm'
+> git tree:       net
+> console output: https://syzkaller.appspot.com/x/log.txt?x=179af0c2880000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=85495c44a2c25446
+> dashboard link: https://syzkaller.appspot.com/bug?extid=4d0c5794bff07852726c
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> 
+> Downloadable assets:
+> disk image: https://storage.googleapis.com/syzbot-assets/d67c9cef7c77/disk-a1b6b102.raw.xz
+> vmlinux: https://storage.googleapis.com/syzbot-assets/708d1f638584/vmlinux-a1b6b102.xz
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+4d0c5794bff07852726c@syzkaller.appspotmail.com
+> 
+> ACPI: button: Sleep Button [SLPF]
+> ACPI: \_SB_.LNKC: Enabled at IRQ 11
+> virtio-pci 0000:00:03.0: virtio_pci: leaving for legacy driver
+> ACPI: \_SB_.LNKD: Enabled at IRQ 10
+> virtio-pci 0000:00:04.0: virtio_pci: leaving for legacy driver
+> ACPI: \_SB_.LNKB: Enabled at IRQ 10
+> virtio-pci 0000:00:06.0: virtio_pci: leaving for legacy driver
+> virtio-pci 0000:00:07.0: virtio_pci: leaving for legacy driver
+> N_HDLC line discipline registered with maxframe=4096
+> Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+> 00:03: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+> 00:04: ttyS1 at I/O 0x2f8 (irq = 3, base_baud = 115200) is a 16550A
+> 00:05: ttyS2 at I/O 0x3e8 (irq = 6, base_baud = 115200) is a 16550A
+> 00:06: ttyS3 at I/O 0x2e8 (irq = 7, base_baud = 115200) is a 16550A
+> Non-volatile memory driver v1.3
+> Linux agpgart interface v0.103
+> ACPI: bus type drm_connector registered
+> [drm] Initialized vgem 1.0.0 20120112 for vgem on minor 0
+> [drm] Initialized vkms 1.0.0 20180514 for vkms on minor 1
+> Console: switching to colour frame buffer device 128x48
+> platform vkms: [drm] fb0: vkmsdrmfb frame buffer device
+> usbcore: registered new interface driver udl
+> brd: module loaded
+> loop: module loaded
+> zram: Added device: zram0
+> null_blk: disk nullb0 created
+> null_blk: module loaded
+> Guest personality initialized and is inactive
+> VMCI host device registered (name=vmci, major=10, minor=119)
+> Initialized host personality
+> usbcore: registered new interface driver rtsx_usb
+> usbcore: registered new interface driver viperboard
+> usbcore: registered new interface driver dln2
+> usbcore: registered new interface driver pn533_usb
+> nfcsim 0.2 initialized
+> usbcore: registered new interface driver port100
+> usbcore: registered new interface driver nfcmrvl
+> Loading iSCSI transport class v2.0-870.
+> scsi host0: Virtio SCSI HBA
+> st: Version 20160209, fixed bufsize 32768, s/g segs 256
+> Rounding down aligned max_sectors from 4294967295 to 4294967288
+> db_root: cannot open: /etc/target
+> slram: not enough parameters.
+> ftl_cs: FTL header not found.
+> wireguard: WireGuard 1.0.0 loaded. See www.wireguard.com for information.
+> wireguard: Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+> eql: Equalizer2002: Simon Janes (simon@ncm.com) and David S. Miller (davem@redhat.com)
+> MACsec IEEE 802.1AE
+> tun: Universal TUN/TAP device driver, 1.6
+> ------------[ cut here ]------------
+> WARNING: CPU: 0 PID: 1 at include/linux/cpumask.h:110 cpu_max_bits_warn include/linux/cpumask.h:110 [inline]
+> WARNING: CPU: 0 PID: 1 at include/linux/cpumask.h:110 cpumask_check include/linux/cpumask.h:117 [inline]
+> WARNING: CPU: 0 PID: 1 at include/linux/cpumask.h:110 cpumask_next include/linux/cpumask.h:178 [inline]
+> WARNING: CPU: 0 PID: 1 at include/linux/cpumask.h:110 cpumask_next_wrap+0x139/0x1d0 lib/cpumask.c:27
+> Modules linked in:
+> CPU: 0 PID: 1 Comm: swapper/0 Not tainted 6.0.0-syzkaller-11847-ga1b6b102df03 #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/22/2022
+> RIP: 0010:cpu_max_bits_warn include/linux/cpumask.h:110 [inline]
+> RIP: 0010:cpumask_check include/linux/cpumask.h:117 [inline]
+> RIP: 0010:cpumask_next include/linux/cpumask.h:178 [inline]
+> RIP: 0010:cpumask_next_wrap+0x139/0x1d0 lib/cpumask.c:27
+> Code: df e8 8b 4a 3d f8 39 eb 77 64 e8 32 4e 3d f8 41 8d 6c 24 01 89 de 89 ef e8 74 4a 3d f8 39 dd 0f 82 54 ff ff ff e8 17 4e 3d f8 <0f> 0b e9 48 ff ff ff e8 0b 4e 3d f8 48 c7 c2 00 02 e2 8d 48 b8 00
+> RSP: 0000:ffffc90000067920 EFLAGS: 00010293
+> RAX: 0000000000000000 RBX: 0000000000000002 RCX: 0000000000000000
+> RDX: ffff88813fe50000 RSI: ffffffff893f1c59 RDI: 0000000000000004
+> RBP: 0000000000000002 R08: 0000000000000004 R09: 0000000000000002
+> R10: 0000000000000002 R11: 0000000000000000 R12: 0000000000000001
+> R13: 0000000000000000 R14: 0000000000000002 R15: ffffffff8de20010
+> FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: ffff88823ffff000 CR3: 000000000bc8e000 CR4: 00000000003506f0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  <TASK>
+>  virtnet_set_affinity+0x35a/0x750 drivers/net/virtio_net.c:2303
+>  init_vqs drivers/net/virtio_net.c:3581 [inline]
+>  init_vqs drivers/net/virtio_net.c:3567 [inline]
+>  virtnet_probe+0x12ae/0x31e0 drivers/net/virtio_net.c:3884
+>  virtio_dev_probe+0x577/0x870 drivers/virtio/virtio.c:305
+>  call_driver_probe drivers/base/dd.c:560 [inline]
+>  really_probe+0x249/0xb90 drivers/base/dd.c:639
+>  __driver_probe_device+0x1df/0x4d0 drivers/base/dd.c:778
+>  driver_probe_device+0x4c/0x1a0 drivers/base/dd.c:808
+>  __driver_attach+0x1d0/0x550 drivers/base/dd.c:1190
+>  bus_for_each_dev+0x147/0x1d0 drivers/base/bus.c:301
+>  bus_add_driver+0x4c9/0x640 drivers/base/bus.c:618
+>  driver_register+0x220/0x3a0 drivers/base/driver.c:246
+>  virtio_net_driver_init+0x93/0xd2 drivers/net/virtio_net.c:4090
+>  do_one_initcall+0x13d/0x780 init/main.c:1303
+>  do_initcall_level init/main.c:1376 [inline]
+>  do_initcalls init/main.c:1392 [inline]
+>  do_basic_setup init/main.c:1411 [inline]
+>  kernel_init_freeable+0x6ff/0x788 init/main.c:1631
+>  kernel_init+0x1a/0x1d0 init/main.c:1519
+>  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+>  </TASK>
 
-syzbot found the following issue on:
 
-HEAD commit:    0326074ff465 Merge tag 'net-next-6.1' of git://git.kernel...
-git tree:       bpf
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=1376ba52880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=796b7c2847a6866a
-dashboard link: https://syzkaller.appspot.com/bug?extid=6280ebbcdba3e0c14fde
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15e182aa880000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1677bfcc880000
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/7cc67ced256d/disk-0326074f.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/86a7be29267c/vmlinux-0326074f.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+6280ebbcdba3e0c14fde@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 3609 at kernel/bpf/btf.c:1946 btf_type_id_size+0x2d5/0x9d0 kernel/bpf/btf.c:1946
-Modules linked in:
-CPU: 0 PID: 3609 Comm: syz-executor361 Not tainted 6.0.0-syzkaller-02734-g0326074ff465 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/22/2022
-RIP: 0010:btf_type_id_size+0x2d5/0x9d0 kernel/bpf/btf.c:1946
-Code: ef e8 7f 8e e4 ff 41 83 ff 0b 77 28 f6 44 24 10 18 75 3f e8 6d 91 e4 ff 44 89 fe bf 0e 00 00 00 e8 20 8e e4 ff e8 5b 91 e4 ff <0f> 0b 45 31 f6 e9 98 02 00 00 41 83 ff 12 74 18 e8 46 91 e4 ff 44
-RSP: 0018:ffffc90003cefb40 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 0000000000000002 RCX: 0000000000000000
-RDX: ffff8880259c0000 RSI: ffffffff81968415 RDI: 0000000000000005
-RBP: ffff88801270ca00 R08: 0000000000000005 R09: 000000000000000e
-R10: 0000000000000011 R11: 0000000000000000 R12: 0000000000000000
-R13: 0000000000000011 R14: ffff888026ee6424 R15: 0000000000000011
-FS:  000055555641b300(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000f2e258 CR3: 000000007110e000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- btf_func_proto_check kernel/bpf/btf.c:4447 [inline]
- btf_check_all_types kernel/bpf/btf.c:4723 [inline]
- btf_parse_type_sec kernel/bpf/btf.c:4752 [inline]
- btf_parse kernel/bpf/btf.c:5026 [inline]
- btf_new_fd+0x1926/0x1e70 kernel/bpf/btf.c:6892
- bpf_btf_load kernel/bpf/syscall.c:4324 [inline]
- __sys_bpf+0xb7d/0x4cf0 kernel/bpf/syscall.c:5010
- __do_sys_bpf kernel/bpf/syscall.c:5069 [inline]
- __se_sys_bpf kernel/bpf/syscall.c:5067 [inline]
- __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:5067
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f0fbae41c69
-Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffc8aeb6228 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f0fbae41c69
-RDX: 0000000000000020 RSI: 0000000020000140 RDI: 0000000000000012
-RBP: 00007f0fbae05e10 R08: 0000000000000000 R09: 0000000000000000
-R10: 00000000ffffffff R11: 0000000000000246 R12: 00007f0fbae05ea0
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
+#syz test: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
 
 
+figure out why is syzbot triggering warnings
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/net/virtio_net.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 7106932c6f88..3c1c16b43bbd 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -2295,13 +2295,20 @@ static void virtnet_set_affinity(struct virtnet_info *vi)
+ 			0;
+ 	cpu = cpumask_first(cpu_online_mask);
+ 
++	printk(KERN_ERR "%s +%d : %s cpu %d num %d stride %d stragglers %d\n",
++	       __FILE__, __LINE__, __func__, cpu, num_cpu, stride, stragglers);
++
+ 	for (i = 0; i < vi->curr_queue_pairs; i++) {
+ 		group_size = stride + (i < stragglers ? 1 : 0);
++		printk(KERN_ERR "%s +%d : %s vq %d group_size %d",
++		       __FILE__, __LINE__, __func__, i, group_size);
+ 
+ 		for (j = 0; j < group_size; j++) {
+ 			cpumask_set_cpu(cpu, mask);
+ 			cpu = cpumask_next_wrap(cpu, cpu_online_mask,
+ 						nr_cpu_ids, false);
++			printk(KERN_ERR "%s +%d : %s groupindex %d cpu %d",
++			       __FILE__, __LINE__, __func__, j, group_size);
+ 		}
+ 		virtqueue_set_affinity(vi->rq[i].vq, mask);
+ 		virtqueue_set_affinity(vi->sq[i].vq, mask);
+-- 
+MST
+
