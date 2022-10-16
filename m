@@ -2,71 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FAD75FFD39
-	for <lists+netdev@lfdr.de>; Sun, 16 Oct 2022 06:11:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 233CF5FFDAD
+	for <lists+netdev@lfdr.de>; Sun, 16 Oct 2022 08:52:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229747AbiJPELl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Oct 2022 00:11:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34534 "EHLO
+        id S229761AbiJPGws (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Oct 2022 02:52:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbiJPELj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Oct 2022 00:11:39 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A5912F64F
-        for <netdev@vger.kernel.org>; Sat, 15 Oct 2022 21:11:38 -0700 (PDT)
-Received: from fsav412.sakura.ne.jp (fsav412.sakura.ne.jp [133.242.250.111])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 29G4AJdC027641;
-        Sun, 16 Oct 2022 13:10:19 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav412.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav412.sakura.ne.jp);
- Sun, 16 Oct 2022 13:10:19 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav412.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 29G4AIH2027636
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Sun, 16 Oct 2022 13:10:18 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <80a12dd3-dae4-ccc7-e277-b2fd2cba78e2@I-love.SAKURA.ne.jp>
-Date:   Sun, 16 Oct 2022 13:10:18 +0900
+        with ESMTP id S229575AbiJPGwr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Oct 2022 02:52:47 -0400
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DF693D58C
+        for <netdev@vger.kernel.org>; Sat, 15 Oct 2022 23:52:46 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id d24-20020a05660225d800b006a466ec7746so5277181iop.3
+        for <netdev@vger.kernel.org>; Sat, 15 Oct 2022 23:52:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+T5aOHFBn0evAQz1vErQpfAFJ2574A0vi0Zz9LJdccA=;
+        b=7975tAPWCim4RTuyIEvgWnWW7USMcQqKESVEeDKWAw716mfazRgwGYbwuYi1X/XIg4
+         ksdLf6CRglZ5oI2ahChp68vsFQw6/mTFWFUFE9sUQ3+VdBFRHowPaewY2ux394yoL7rs
+         iMrLg26xMIltyI/xPV3bh+iMtxQRHu3SWYlzWhNFjfsHftPjDNn1O6k0VvxLSZFacTS2
+         nbtXEnspWir0qJEkp0hMUroQAI0AdQM2Fxxuu5I6ZIxXZgl2AhkKKQUcrj9mglK6hRKr
+         SSc9Z0DJWYZrVLO1tBTCNZ1aRjr4jPXEncam6UAZkDkgZPmnWAs5d5Lr8GtKXK76iapS
+         sYuw==
+X-Gm-Message-State: ACrzQf09aIltRff/DnJ36nh0EfbSDyTShIStiT1vJQIvpKxAij50usnY
+        HUgVP+cbgOgt91orXn5LrfJHVMBOqcO4ksT8+qTSuqo19tvV
+X-Google-Smtp-Source: AMsMyM6EUVKT4V8JbfjAjs94yP0uEUQFLuz12gSDUo05L3wQic671XTHtNh/yDdBKmYV/FRN+O2+batHaqElAZpScVs7iI2InzZv
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.3
-Subject: Re: [syzbot] WARNING in c_start
-Content-Language: en-US
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     Borislav Petkov <bp@alien8.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        syzbot <syzbot+d0fd2bf0dd6da72496dd@syzkaller.appspotmail.com>,
-        syzkaller-bugs@googlegroups.com,
-        Andrew Jones <ajones@ventanamicro.com>, netdev@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Menglong Dong <imagedong@tencent.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Guo Ren <guoren@linux.alibaba.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        andriy.shevchenko@linux.intel.com, linux@rasmusvillemoes.dk,
-        caraitto@google.com, willemb@google.com, jonolson@google.com,
-        amritha.nambiar@intel.com, linux-kernel@vger.kernel.org
-References: <0000000000007647ec05eb05249c@google.com>
- <Y0nTd9HSnnt/KDap@zn.tnic>
- <2eaf1386-8ab0-bd65-acee-e29f1c5a6623@I-love.SAKURA.ne.jp>
- <Y0qfLyhSoTodAdxu@zn.tnic> <Y0sbwpRcipI564yp@yury-laptop>
- <23488f06-c4b4-8bd8-b0bc-85914ba4d1c6@I-love.SAKURA.ne.jp>
- <Y0tafD7qI2x5xzTc@yury-laptop>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <Y0tafD7qI2x5xzTc@yury-laptop>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+X-Received: by 2002:a05:6602:341c:b0:6bc:1c3d:836e with SMTP id
+ n28-20020a056602341c00b006bc1c3d836emr2163062ioz.24.1665903165488; Sat, 15
+ Oct 2022 23:52:45 -0700 (PDT)
+Date:   Sat, 15 Oct 2022 23:52:45 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000068cb2905eb214e9a@google.com>
+Subject: [syzbot] WARNING in btf_type_id_size
+From:   syzbot <syzbot+6280ebbcdba3e0c14fde@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, haoluo@google.com, john.fastabend@gmail.com,
+        jolsa@kernel.org, kpsingh@kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, martin.lau@linux.dev, nathan@kernel.org,
+        ndesaulniers@google.com, netdev@vger.kernel.org, sdf@google.com,
+        song@kernel.org, syzkaller-bugs@googlegroups.com, trix@redhat.com,
+        yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,34 +58,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/10/16 10:12, Yury Norov wrote:
-> On Sun, Oct 16, 2022 at 09:24:57AM +0900, Tetsuo Handa wrote:
->> I'm asking you not to use BUG_ON()/WARN_ON() etc. which breaks syzkaller.
-> 
-> It's not me who added WARN_ON() in the cpumask_check(). You're asking
-> a wrong person. 
+Hello,
 
-Because you broke the kernel testing. It was obvious that passing "cpu + 1"
-instead of "cpu" will trivially hit cpu == nr_cpumask_bits condition.
-If your patch were reviewed and tested, we would not have done this discussion.
+syzbot found the following issue on:
 
-> 
-> What for do we have WARN_ON(), if we can't use it?
+HEAD commit:    0326074ff465 Merge tag 'net-next-6.1' of git://git.kernel...
+git tree:       bpf
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=1376ba52880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=796b7c2847a6866a
+dashboard link: https://syzkaller.appspot.com/bug?extid=6280ebbcdba3e0c14fde
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15e182aa880000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1677bfcc880000
 
-WARN_ON() could be used which should not happen.
-But cpu == nr_cpumask_bits condition shall happen in your patch.
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/7cc67ced256d/disk-0326074f.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/86a7be29267c/vmlinux-0326074f.xz
 
-RCs are not for fixing bugs that causes boot failures. Such bugs
-should have been tested and fixed before patches are sent to linux.git .
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+6280ebbcdba3e0c14fde@syzkaller.appspotmail.com
 
-> 
->> Just printing messages (without "BUG:"/"WARNING:" string which also breaks
->> syzkaller) like below diff is sufficient for people to realize that they're
->> doing something wrong.
->>
->> Again, please do revert "cpumask: fix checking valid cpu range" immediately.
-> 
-> The revert is already in Jakub's batch for -rc2, AFAIK.
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 3609 at kernel/bpf/btf.c:1946 btf_type_id_size+0x2d5/0x9d0 kernel/bpf/btf.c:1946
+Modules linked in:
+CPU: 0 PID: 3609 Comm: syz-executor361 Not tainted 6.0.0-syzkaller-02734-g0326074ff465 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/22/2022
+RIP: 0010:btf_type_id_size+0x2d5/0x9d0 kernel/bpf/btf.c:1946
+Code: ef e8 7f 8e e4 ff 41 83 ff 0b 77 28 f6 44 24 10 18 75 3f e8 6d 91 e4 ff 44 89 fe bf 0e 00 00 00 e8 20 8e e4 ff e8 5b 91 e4 ff <0f> 0b 45 31 f6 e9 98 02 00 00 41 83 ff 12 74 18 e8 46 91 e4 ff 44
+RSP: 0018:ffffc90003cefb40 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 0000000000000002 RCX: 0000000000000000
+RDX: ffff8880259c0000 RSI: ffffffff81968415 RDI: 0000000000000005
+RBP: ffff88801270ca00 R08: 0000000000000005 R09: 000000000000000e
+R10: 0000000000000011 R11: 0000000000000000 R12: 0000000000000000
+R13: 0000000000000011 R14: ffff888026ee6424 R15: 0000000000000011
+FS:  000055555641b300(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000f2e258 CR3: 000000007110e000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ btf_func_proto_check kernel/bpf/btf.c:4447 [inline]
+ btf_check_all_types kernel/bpf/btf.c:4723 [inline]
+ btf_parse_type_sec kernel/bpf/btf.c:4752 [inline]
+ btf_parse kernel/bpf/btf.c:5026 [inline]
+ btf_new_fd+0x1926/0x1e70 kernel/bpf/btf.c:6892
+ bpf_btf_load kernel/bpf/syscall.c:4324 [inline]
+ __sys_bpf+0xb7d/0x4cf0 kernel/bpf/syscall.c:5010
+ __do_sys_bpf kernel/bpf/syscall.c:5069 [inline]
+ __se_sys_bpf kernel/bpf/syscall.c:5067 [inline]
+ __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:5067
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f0fbae41c69
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc8aeb6228 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f0fbae41c69
+RDX: 0000000000000020 RSI: 0000000020000140 RDI: 0000000000000012
+RBP: 00007f0fbae05e10 R08: 0000000000000000 R09: 0000000000000000
+R10: 00000000ffffffff R11: 0000000000000246 R12: 00007f0fbae05ea0
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
 
-OK.
 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
