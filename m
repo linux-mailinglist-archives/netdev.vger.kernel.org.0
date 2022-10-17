@@ -2,256 +2,3243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6194F600F10
-	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 14:20:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C327600F1F
+	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 14:21:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230459AbiJQMTp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 08:19:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38628 "EHLO
+        id S230120AbiJQMU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 08:20:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230453AbiJQMTi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 08:19:38 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2061a.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e88::61a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C49C6286D4;
-        Mon, 17 Oct 2022 05:19:11 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DM4L8f6YS2c2JB7aunKIJX8xgBoVqw+XiuC25N5GeCD2T4Hz3mxh0Rmosaqx69EoAikRqSLSO/x6v7rGMI9VRbIE0JhQCkggtkL3g6xSlqVj5ab2t0FASLkn7O8rvLwI1+wWv0+AZaN7VmlrXyAijZnGq+ApjnYH0or3HYotTY9kLXKI5AIOTLwB2gk78XI6uTXLWN+tlZxumK60zUxR88ILfq7qafXNNO80xfeQ/T5HqpOEghVokIJOW4hAB/9LkqudmVZs2q3ylJ1sQDhm6PQbLcP3jZtKKNCEEkol3sZlOkoP/19vm9p4iuEwfZhx028KUslzU9QHougE+foJZA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bYazlS7D6o3rlLXTfDOpO0nZBDP732XuJopiABuEWl0=;
- b=EeSWLeBgufXBAzduwsm/dNjDt2ATNakWf7YTqPX4L44WBBEWHEhDYbGvitE0zZaeNbzAuiOX1Sqpa+o7FOB6bwoa137bi+lb+raoZb2n1kOgNVVMPcYLXjq5V+u+6oVsMZFn1RdG+cZnQLzWGigNeHj7DTUtDO2MS34y5fehWkcSNxzWXLMuMfBpktivTvOvLFAaXZwSo/tYPPSjgjKS1xPALRY8IWJFcg3XMl0SjRB0l5I8H3/LN+l+vHljRi8cbIRZL5bsBx8RXi8DWOAnK902e7EOeE1CcYOeaodygB+SvJMU8hdkA0C7pI4o04zrJMwQ+ISUoL+WhtcfiSisaw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bYazlS7D6o3rlLXTfDOpO0nZBDP732XuJopiABuEWl0=;
- b=Re7i4D5PpZp0PY7OJFWHNw0JxR4tfcEdDTADefxdxspg74N/tNDrTrOAvXRcRvIPsrO8ABzcUKpE/Q9WRpn2SbMbSdiUKyF1E6jsD8X11KLcjZX30L9C9uWimhfeyFhGzggEMqTfmzOJVEdE+aIyWrAKXSAtHVcHyQXVcj9cOyY=
-Received: from BN9PR03CA0151.namprd03.prod.outlook.com (2603:10b6:408:f4::6)
- by DM4PR12MB5325.namprd12.prod.outlook.com (2603:10b6:5:390::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.32; Mon, 17 Oct
- 2022 12:17:19 +0000
-Received: from BN8NAM11FT111.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:f4:cafe::fb) by BN9PR03CA0151.outlook.office365.com
- (2603:10b6:408:f4::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.30 via Frontend
- Transport; Mon, 17 Oct 2022 12:17:19 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT111.mail.protection.outlook.com (10.13.177.54) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5723.20 via Frontend Transport; Mon, 17 Oct 2022 12:17:19 +0000
-Received: from SATLEXMB08.amd.com (10.181.40.132) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Mon, 17 Oct
- 2022 07:17:18 -0500
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB08.amd.com
- (10.181.40.132) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Mon, 17 Oct
- 2022 05:17:17 -0700
-Received: from xhdlakshmis40.xilinx.com (10.180.168.240) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.31 via Frontend
- Transport; Mon, 17 Oct 2022 07:16:55 -0500
-From:   Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
-To:     <broonie@kernel.org>, <sanju.mehta@amd.com>,
-        <chin-ting_kuo@aspeedtech.com>, <clg@kaod.org>,
-        <kdasu.kdev@gmail.com>, <f.fainelli@gmail.com>,
-        <rjui@broadcom.com>, <sbranden@broadcom.com>,
-        <eajames@linux.ibm.com>, <olteanv@gmail.com>, <han.xu@nxp.com>,
-        <john.garry@huawei.com>, <shawnguo@kernel.org>,
-        <s.hauer@pengutronix.de>, <narmstrong@baylibre.com>,
-        <khilman@baylibre.com>, <matthias.bgg@gmail.com>,
-        <haibo.chen@nxp.com>, <linus.walleij@linaro.org>,
-        <daniel@zonque.org>, <haojian.zhuang@gmail.com>,
-        <robert.jarzmik@free.fr>, <agross@kernel.org>,
-        <bjorn.andersson@linaro.org>, <heiko@sntech.de>,
-        <krzysztof.kozlowski@linaro.org>, <andi@etezian.org>,
-        <mcoquelin.stm32@gmail.com>, <alexandre.torgue@foss.st.com>,
-        <wens@csie.org>, <jernej.skrabec@gmail.com>, <samuel@sholland.org>,
-        <masahisa.kojima@linaro.org>, <jaswinder.singh@linaro.org>,
-        <rostedt@goodmis.org>, <mingo@redhat.com>,
-        <l.stelmach@samsung.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <alex.aring@gmail.com>, <stefan@datenfreihafen.org>,
-        <kvalo@kernel.org>, <miquel.raynal@bootlin.com>, <richard@nod.at>,
-        <vigneshr@ti.com>, <jic23@kernel.org>,
-        <tudor.ambarus@microchip.com>, <pratyush@kernel.org>
-CC:     <git@amd.com>, <linux-spi@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <joel@jms.id.au>,
-        <andrew@aj.id.au>, <radu_nicolae.pirea@upb.ro>,
-        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <claudiu.beznea@microchip.com>,
-        <bcm-kernel-feedback-list@broadcom.com>, <fancer.lancer@gmail.com>,
-        <kernel@pengutronix.de>, <festevam@gmail.com>, <linux-imx@nxp.com>,
-        <jbrunet@baylibre.com>, <martin.blumenstingl@googlemail.com>,
-        <avifishman70@gmail.com>, <tmaimon77@gmail.com>,
-        <tali.perry1@gmail.com>, <venture@google.com>, <yuenn@google.com>,
-        <benjaminfair@google.com>, <yogeshgaur.83@gmail.com>,
-        <konrad.dybcio@somainline.org>, <alim.akhtar@samsung.com>,
-        <ldewangan@nvidia.com>, <thierry.reding@gmail.com>,
-        <jonathanh@nvidia.com>, <michal.simek@amd.com>,
-        <linux-aspeed@lists.ozlabs.org>, <openbmc@lists.ozlabs.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-rpi-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-msm@vger.kernel.org>,
-        <linux-rockchip@lists.infradead.org>,
-        <linux-samsung-soc@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-sunxi@lists.linux.dev>, <linux-tegra@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-wpan@vger.kernel.org>,
-        <libertas-dev@lists.infradead.org>,
-        <linux-wireless@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
-        <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
-        <linux-iio@vger.kernel.org>, <michael@walle.cc>,
-        <akumarma@amd.com>, <amitrkcian2002@gmail.com>,
-        Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
-Subject: [PATCH 10/10] spi: spi-zynqmp-gqspi: Add parallel memories support in GQSPI driver
-Date:   Mon, 17 Oct 2022 17:42:49 +0530
-Message-ID: <20221017121249.19061-11-amit.kumar-mahapatra@amd.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20221017121249.19061-1-amit.kumar-mahapatra@amd.com>
-References: <20221017121249.19061-1-amit.kumar-mahapatra@amd.com>
+        with ESMTP id S229774AbiJQMU4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 08:20:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 436C8D9B;
+        Mon, 17 Oct 2022 05:20:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4FDF1B80F02;
+        Mon, 17 Oct 2022 12:19:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59263C433C1;
+        Mon, 17 Oct 2022 12:19:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666009149;
+        bh=QKQ8L4ue+bO7I/2cJGM7q+jzP6SAWuBM2nRTPhsMzKQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=sVazPPU7t6d/eLtk3LM6lSmd1HGsMb6Y6HLiEq6UA1qG9ZxQVuRiIzFsRMA7zx1rb
+         83V7HQpGttC/9Vtwt/fRyJNZLQh9+pctuquPVaF4T6jiVaiJN6dqXmhZTdfZVPH52i
+         tQUeZfTo2EfV0fCqscY/Z15+wwNzEnuLoZ4h4KW0/jnpo8rio+TMxxhgza3z+Y0XD4
+         ps1qzEv6NJAWMDeX5n+po4UVhgNmOxt5e1xCWyzKXJtvivPXEFuhGlsxKmBGFSgr6M
+         JmdDEWMe5AFrah7hxjWYMmpzeEYtdL3Hqs1aguy0+hHBW6X+NCiTqQEZTCh2qUF2lu
+         nqXZQvwTdIllQ==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     steve.glendinning@shawell.net, Arnd Bergmann <arnd@arndb.de>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH] net: remove smc911x driver
+Date:   Mon, 17 Oct 2022 14:18:26 +0200
+Message-Id: <20221017121900.3520108-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT111:EE_|DM4PR12MB5325:EE_
-X-MS-Office365-Filtering-Correlation-Id: 66b081e1-9fe6-4224-8b75-08dab03989bf
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Ww/K/luUKbn2cK/1rk2xYUfgTKlAX3l67GjcllqynrcZ2ozkdw67tAbNlAe7f7IdWe/p5rT85UHRqBqTgbBEN3R6wJHnmwQQzrSFIyXgb9dtFLwZj6jRI34OcXElrlsMus83KR2Nfaq2fCSnPqpnnHQs8UirhMLEsAYl9NtQBdup2vfHu2QDUi9MuY2QB/f6FGgbfYepRVHVdnINGpAS4y7yn7E6HfXpgh488pAE8BQogJNEtGsmCOlSpqo2b5UErgJj8P2Hf7JbsUpibRGr9FD9PjRaRruQJURqVcM0X5wYu4H7DCFOBsT5ztCVdx22iT0okHN45GjUjgtTUtq6GQaEtQlYoFygVZ3x6PZa8Z/CQmAo2Q52LZTp4OT0ZH7N+ADUAMRuxUtBiuaiulW5P94PhmXwYlI4X3bkWBcmmivFtiHZ267XAd0RSfceOYZYIn07+KYfnqdzyFKSX4rJ5fYJQ4Cx5ouaf36UJUbOWlC7/UB5U/vFiZ3GRFOCI79cfp4+8Ezie/WVfgWlYDghZGRjnGa/ECXfcUx6qOcXtLhV7bFflKhoJeeE5YkIHnFyTwseN4vw4LecFYuS/U18WhWZLWgp28Mw/ADKsTIbMZL9ykuVtDTC7TdLOzPAn46f/9ynAEzyzTQCtQkoRtjLk69be2QQ1FqrhW95JgWlNESeQfKQ7xME84LO/HDzwVmPrf8eYInvRpwrD8u0oR95/lk93p9ou73NUd4y4NG/Tc+m4yn10+9pKQR2mSLqot//gHKxmoT/kG9LX1uN7m9LFCFdgSUkRW2xQkT0dYmui4DBYZ5rYd6pD/oKTgKyN4tDc9wnRYw619mpOfmGQUdh2bjoNok2f1uqCWO1bpp45NduSIi2STKLOC1oUQL2+aWagKcBrtc+pNoVfdlOefiwXQ==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(376002)(136003)(346002)(396003)(451199015)(36840700001)(40470700004)(46966006)(2616005)(26005)(6666004)(36860700001)(83380400001)(478600001)(336012)(186003)(1076003)(47076005)(426003)(7336002)(7366002)(7406005)(7416002)(5660300002)(2906002)(40480700001)(40460700003)(82310400005)(54906003)(110136005)(316002)(41300700001)(8936002)(8676002)(70206006)(4326008)(70586007)(86362001)(36756003)(81166007)(356005)(921005)(82740400003)(41080700001)(36900700001)(2101003)(83996005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Oct 2022 12:17:19.5752
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 66b081e1-9fe6-4224-8b75-08dab03989bf
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT111.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5325
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-During GQSPI driver probe set ctlr->multi-cs-cap for enabling multi CS
-capability of the controller. In parallel mode the controller can either
-split the data between both the flash or can send the same data to both the
-flashes, this is determined by the STRIPE bit. While sending commands to
-the flashes the GQSPI driver send the same command to both the flashes by
-resetting the STRIPE bit, but while writing/reading data to & from the
-flash the GQSPI driver splits the data evenly between both the flashes by
-setting the STRIPE bit.
+From: Arnd Bergmann <arnd@arndb.de>
 
-Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
+This driver was used on Arm and SH machines until 2009, when the
+last platforms moved to the smsc911x driver for the same hardware.
+
+Time to retire this version.
+
+Link: https://lore.kernel.org/netdev/1232010482-3744-1-git-send-email-steve.glendinning@smsc.com/
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/spi/spi-zynqmp-gqspi.c | 39 +++++++++++++++++++++++++++++++++-
- 1 file changed, 38 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/smsc/Kconfig   |   14 -
+ drivers/net/ethernet/smsc/Makefile  |    1 -
+ drivers/net/ethernet/smsc/smc911x.c | 2198 ---------------------------
+ drivers/net/ethernet/smsc/smc911x.h |  901 -----------
+ include/linux/smc911x.h             |   14 -
+ 5 files changed, 3128 deletions(-)
+ delete mode 100644 drivers/net/ethernet/smsc/smc911x.c
+ delete mode 100644 drivers/net/ethernet/smsc/smc911x.h
+ delete mode 100644 include/linux/smc911x.h
 
-diff --git a/drivers/spi/spi-zynqmp-gqspi.c b/drivers/spi/spi-zynqmp-gqspi.c
-index 4759f704bf5c..6574e0a9efa5 100644
---- a/drivers/spi/spi-zynqmp-gqspi.c
-+++ b/drivers/spi/spi-zynqmp-gqspi.c
-@@ -23,6 +23,7 @@
- #include <linux/spinlock.h>
- #include <linux/workqueue.h>
- #include <linux/spi/spi-mem.h>
-+#include <linux/mtd/spi-nor.h>
+diff --git a/drivers/net/ethernet/smsc/Kconfig b/drivers/net/ethernet/smsc/Kconfig
+index 2524c907f386..5f22a8a4d27b 100644
+--- a/drivers/net/ethernet/smsc/Kconfig
++++ b/drivers/net/ethernet/smsc/Kconfig
+@@ -75,20 +75,6 @@ config EPIC100
+ 	  More specific information and updates are available from
+ 	  <http://www.scyld.com/network/epic100.html>.
  
- /* Generic QSPI register offsets */
- #define GQSPI_CONFIG_OFST		0x00000100
-@@ -192,6 +193,7 @@ struct qspi_platform_data {
-  * @op_lock:		Operational lock
-  * @speed_hz:          Current SPI bus clock speed in hz
-  * @has_tapdelay:	Used for tapdelay register available in qspi
-+ * @is_parallel:		Used for multi CS support
-  */
- struct zynqmp_qspi {
- 	struct spi_controller *ctlr;
-@@ -214,8 +216,33 @@ struct zynqmp_qspi {
- 	struct mutex op_lock;
- 	u32 speed_hz;
- 	bool has_tapdelay;
-+	bool is_parallel;
- };
- 
-+/**
-+ * zynqmp_gqspi_update_stripe - For GQSPI controller data stripe capabilities
-+ * @op:	Pointer to mem ops
-+ * Return:      Status of the data stripe
-+ *
-+ * Returns true if data stripe need to be enabled, else returns false
-+ */
-+bool zynqmp_gqspi_update_stripe(const struct spi_mem_op *op)
-+{
-+	if (op->cmd.opcode ==  SPINOR_OP_BE_4K ||
-+	    op->cmd.opcode ==  SPINOR_OP_BE_32K ||
-+	    op->cmd.opcode ==  SPINOR_OP_CHIP_ERASE ||
-+	    op->cmd.opcode ==  SPINOR_OP_SE ||
-+	    op->cmd.opcode ==  SPINOR_OP_BE_32K_4B ||
-+	    op->cmd.opcode ==  SPINOR_OP_SE_4B ||
-+	    op->cmd.opcode == SPINOR_OP_BE_4K_4B ||
-+	    op->cmd.opcode ==  SPINOR_OP_WRSR ||
-+	    op->cmd.opcode ==  SPINOR_OP_BRWR ||
-+	    op->cmd.opcode ==  SPINOR_OP_WRSR2)
-+		return false;
-+
-+	return true;
-+}
-+
- /**
-  * zynqmp_gqspi_read - For GQSPI controller read operation
-  * @xqspi:	Pointer to the zynqmp_qspi structure
-@@ -470,7 +497,14 @@ static void zynqmp_qspi_chipselect(struct spi_device *qspi, bool is_high)
- 
- 	genfifoentry |= GQSPI_GENFIFO_MODE_SPI;
- 
--	if (qspi->cs_index_mask & GQSPI_SELECT_UPPER_CS) {
-+	if ((qspi->cs_index_mask & GQSPI_SELECT_LOWER_CS) &&
-+	    (qspi->cs_index_mask & GQSPI_SELECT_UPPER_CS)) {
-+		zynqmp_gqspi_selectslave(xqspi,
-+					 GQSPI_SELECT_FLASH_CS_BOTH,
-+					 GQSPI_SELECT_FLASH_BUS_BOTH);
-+		if (!xqspi->is_parallel)
-+			xqspi->is_parallel = true;
-+	} else if (qspi->cs_index_mask & GQSPI_SELECT_UPPER_CS) {
- 		zynqmp_gqspi_selectslave(xqspi,
- 					 GQSPI_SELECT_FLASH_CS_UPPER,
- 					 GQSPI_SELECT_FLASH_BUS_LOWER);
-@@ -1139,6 +1173,8 @@ static int zynqmp_qspi_exec_op(struct spi_mem *mem,
- 	}
- 
- 	if (op->data.nbytes) {
-+		if (xqspi->is_parallel && zynqmp_gqspi_update_stripe(op))
-+			genfifoentry |= GQSPI_GENFIFO_STRIPE;
- 		reinit_completion(&xqspi->data_completion);
- 		if (op->data.dir == SPI_MEM_DATA_OUT) {
- 			xqspi->txbuf = (u8 *)op->data.buf.out;
-@@ -1334,6 +1370,7 @@ static int zynqmp_qspi_probe(struct platform_device *pdev)
- 	ctlr->bits_per_word_mask = SPI_BPW_MASK(8);
- 	ctlr->dev.of_node = np;
- 	ctlr->auto_runtime_pm = true;
-+	ctlr->multi_cs_cap = true;
- 
- 	ret = devm_spi_register_controller(&pdev->dev, ctlr);
- 	if (ret) {
+-config SMC911X
+-	tristate "SMSC LAN911[5678] support"
+-	select CRC32
+-	select MII
+-	depends on (ARM || SUPERH || COMPILE_TEST)
+-	help
+-	  This is a driver for SMSC's LAN911x series of Ethernet chipsets
+-	  including the new LAN9115, LAN9116, LAN9117, and LAN9118.
+-	  Say Y here if you want it compiled into the kernel.
+-
+-	  This driver is also available as a module. The module will be
+-	  called smc911x.  If you want to compile it as a module, say M
+-	  here and read <file:Documentation/kbuild/modules.rst>
+-
+ config SMSC911X
+ 	tristate "SMSC LAN911x/LAN921x families embedded ethernet support"
+ 	depends on HAS_IOMEM
+diff --git a/drivers/net/ethernet/smsc/Makefile b/drivers/net/ethernet/smsc/Makefile
+index 4105912b1629..1501fa364c13 100644
+--- a/drivers/net/ethernet/smsc/Makefile
++++ b/drivers/net/ethernet/smsc/Makefile
+@@ -8,5 +8,4 @@ obj-$(CONFIG_SMC91X) += smc91x.o
+ obj-$(CONFIG_PCMCIA_SMC91C92) += smc91c92_cs.o
+ obj-$(CONFIG_EPIC100) += epic100.o
+ obj-$(CONFIG_SMSC9420) += smsc9420.o
+-obj-$(CONFIG_SMC911X) += smc911x.o
+ obj-$(CONFIG_SMSC911X) += smsc911x.o
+diff --git a/drivers/net/ethernet/smsc/smc911x.c b/drivers/net/ethernet/smsc/smc911x.c
+deleted file mode 100644
+index 52ecfb461c41..000000000000
+--- a/drivers/net/ethernet/smsc/smc911x.c
++++ /dev/null
+@@ -1,2198 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-or-later
+-/*
+- * smc911x.c
+- * This is a driver for SMSC's LAN911{5,6,7,8} single-chip Ethernet devices.
+- *
+- * Copyright (C) 2005 Sensoria Corp
+- *	   Derived from the unified SMC91x driver by Nicolas Pitre
+- *	   and the smsc911x.c reference driver by SMSC
+- *
+- * Arguments:
+- *	 watchdog  = TX watchdog timeout
+- *	 tx_fifo_kb = Size of TX FIFO in KB
+- *
+- * History:
+- *	  04/16/05	Dustin McIntire		 Initial version
+- */
+-static const char version[] =
+-	 "smc911x.c: v1.0 04-16-2005 by Dustin McIntire <dustin@sensoria.com>\n";
+-
+-/* Debugging options */
+-#define ENABLE_SMC_DEBUG_RX		0
+-#define ENABLE_SMC_DEBUG_TX		0
+-#define ENABLE_SMC_DEBUG_DMA		0
+-#define ENABLE_SMC_DEBUG_PKTS		0
+-#define ENABLE_SMC_DEBUG_MISC		0
+-#define ENABLE_SMC_DEBUG_FUNC		0
+-
+-#define SMC_DEBUG_RX		((ENABLE_SMC_DEBUG_RX	? 1 : 0) << 0)
+-#define SMC_DEBUG_TX		((ENABLE_SMC_DEBUG_TX	? 1 : 0) << 1)
+-#define SMC_DEBUG_DMA		((ENABLE_SMC_DEBUG_DMA	? 1 : 0) << 2)
+-#define SMC_DEBUG_PKTS		((ENABLE_SMC_DEBUG_PKTS ? 1 : 0) << 3)
+-#define SMC_DEBUG_MISC		((ENABLE_SMC_DEBUG_MISC ? 1 : 0) << 4)
+-#define SMC_DEBUG_FUNC		((ENABLE_SMC_DEBUG_FUNC ? 1 : 0) << 5)
+-
+-#ifndef SMC_DEBUG
+-#define SMC_DEBUG	 ( SMC_DEBUG_RX	  | \
+-			   SMC_DEBUG_TX	  | \
+-			   SMC_DEBUG_DMA  | \
+-			   SMC_DEBUG_PKTS | \
+-			   SMC_DEBUG_MISC | \
+-			   SMC_DEBUG_FUNC   \
+-			 )
+-#endif
+-
+-#include <linux/module.h>
+-#include <linux/kernel.h>
+-#include <linux/sched.h>
+-#include <linux/delay.h>
+-#include <linux/interrupt.h>
+-#include <linux/errno.h>
+-#include <linux/ioport.h>
+-#include <linux/crc32.h>
+-#include <linux/device.h>
+-#include <linux/platform_device.h>
+-#include <linux/spinlock.h>
+-#include <linux/ethtool.h>
+-#include <linux/mii.h>
+-#include <linux/workqueue.h>
+-
+-#include <linux/netdevice.h>
+-#include <linux/etherdevice.h>
+-#include <linux/skbuff.h>
+-
+-#include <linux/dmaengine.h>
+-
+-#include <asm/io.h>
+-
+-#include "smc911x.h"
+-
+-/*
+- * Transmit timeout, default 5 seconds.
+- */
+-static int watchdog = 5000;
+-module_param(watchdog, int, 0400);
+-MODULE_PARM_DESC(watchdog, "transmit timeout in milliseconds");
+-
+-static int tx_fifo_kb=8;
+-module_param(tx_fifo_kb, int, 0400);
+-MODULE_PARM_DESC(tx_fifo_kb,"transmit FIFO size in KB (1<x<15)(default=8)");
+-
+-MODULE_LICENSE("GPL");
+-MODULE_ALIAS("platform:smc911x");
+-
+-/*
+- * The internal workings of the driver.  If you are changing anything
+- * here with the SMC stuff, you should have the datasheet and know
+- * what you are doing.
+- */
+-#define CARDNAME "smc911x"
+-
+-/*
+- * Use power-down feature of the chip
+- */
+-#define POWER_DOWN		 1
+-
+-#if SMC_DEBUG > 0
+-#define DBG(n, dev, args...)			 \
+-	do {					 \
+-		if (SMC_DEBUG & (n))		 \
+-			netdev_dbg(dev, args);	 \
+-	} while (0)
+-
+-#define PRINTK(dev, args...)   netdev_info(dev, args)
+-#else
+-#define DBG(n, dev, args...)			 \
+-	while (0) {				 \
+-		netdev_dbg(dev, args);		 \
+-	}
+-#define PRINTK(dev, args...)   netdev_dbg(dev, args)
+-#endif
+-
+-#if SMC_DEBUG_PKTS > 0
+-static void PRINT_PKT(u_char *buf, int length)
+-{
+-	int i;
+-	int remainder;
+-	int lines;
+-
+-	lines = length / 16;
+-	remainder = length % 16;
+-
+-	for (i = 0; i < lines ; i ++) {
+-		int cur;
+-		printk(KERN_DEBUG);
+-		for (cur = 0; cur < 8; cur++) {
+-			u_char a, b;
+-			a = *buf++;
+-			b = *buf++;
+-			pr_cont("%02x%02x ", a, b);
+-		}
+-		pr_cont("\n");
+-	}
+-	printk(KERN_DEBUG);
+-	for (i = 0; i < remainder/2 ; i++) {
+-		u_char a, b;
+-		a = *buf++;
+-		b = *buf++;
+-		pr_cont("%02x%02x ", a, b);
+-	}
+-	pr_cont("\n");
+-}
+-#else
+-static inline void PRINT_PKT(u_char *buf, int length) { }
+-#endif
+-
+-
+-/* this enables an interrupt in the interrupt mask register */
+-#define SMC_ENABLE_INT(lp, x) do {			\
+-	unsigned int  __mask;				\
+-	__mask = SMC_GET_INT_EN((lp));			\
+-	__mask |= (x);					\
+-	SMC_SET_INT_EN((lp), __mask);			\
+-} while (0)
+-
+-/* this disables an interrupt from the interrupt mask register */
+-#define SMC_DISABLE_INT(lp, x) do {			\
+-	unsigned int  __mask;				\
+-	__mask = SMC_GET_INT_EN((lp));			\
+-	__mask &= ~(x);					\
+-	SMC_SET_INT_EN((lp), __mask);			\
+-} while (0)
+-
+-/*
+- * this does a soft reset on the device
+- */
+-static void smc911x_reset(struct net_device *dev)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	unsigned int reg, timeout=0, resets=1, irq_cfg;
+-	unsigned long flags;
+-
+-	DBG(SMC_DEBUG_FUNC, dev, "--> %s\n", __func__);
+-
+-	/*	 Take out of PM setting first */
+-	if ((SMC_GET_PMT_CTRL(lp) & PMT_CTRL_READY_) == 0) {
+-		/* Write to the bytetest will take out of powerdown */
+-		SMC_SET_BYTE_TEST(lp, 0);
+-		timeout=10;
+-		do {
+-			udelay(10);
+-			reg = SMC_GET_PMT_CTRL(lp) & PMT_CTRL_READY_;
+-		} while (--timeout && !reg);
+-		if (timeout == 0) {
+-			PRINTK(dev, "smc911x_reset timeout waiting for PM restore\n");
+-			return;
+-		}
+-	}
+-
+-	/* Disable all interrupts */
+-	spin_lock_irqsave(&lp->lock, flags);
+-	SMC_SET_INT_EN(lp, 0);
+-	spin_unlock_irqrestore(&lp->lock, flags);
+-
+-	while (resets--) {
+-		SMC_SET_HW_CFG(lp, HW_CFG_SRST_);
+-		timeout=10;
+-		do {
+-			udelay(10);
+-			reg = SMC_GET_HW_CFG(lp);
+-			/* If chip indicates reset timeout then try again */
+-			if (reg & HW_CFG_SRST_TO_) {
+-				PRINTK(dev, "chip reset timeout, retrying...\n");
+-				resets++;
+-				break;
+-			}
+-		} while (--timeout && (reg & HW_CFG_SRST_));
+-	}
+-	if (timeout == 0) {
+-		PRINTK(dev, "smc911x_reset timeout waiting for reset\n");
+-		return;
+-	}
+-
+-	/* make sure EEPROM has finished loading before setting GPIO_CFG */
+-	timeout=1000;
+-	while (--timeout && (SMC_GET_E2P_CMD(lp) & E2P_CMD_EPC_BUSY_))
+-		udelay(10);
+-
+-	if (timeout == 0){
+-		PRINTK(dev, "smc911x_reset timeout waiting for EEPROM busy\n");
+-		return;
+-	}
+-
+-	/* Initialize interrupts */
+-	SMC_SET_INT_EN(lp, 0);
+-	SMC_ACK_INT(lp, -1);
+-
+-	/* Reset the FIFO level and flow control settings */
+-	SMC_SET_HW_CFG(lp, (lp->tx_fifo_kb & 0xF) << 16);
+-//TODO: Figure out what appropriate pause time is
+-	SMC_SET_FLOW(lp, FLOW_FCPT_ | FLOW_FCEN_);
+-	SMC_SET_AFC_CFG(lp, lp->afc_cfg);
+-
+-
+-	/* Set to LED outputs */
+-	SMC_SET_GPIO_CFG(lp, 0x70070000);
+-
+-	/*
+-	 * Deassert IRQ for 1*10us for edge type interrupts
+-	 * and drive IRQ pin push-pull
+-	 */
+-	irq_cfg = (1 << 24) | INT_CFG_IRQ_EN_ | INT_CFG_IRQ_TYPE_;
+-#ifdef SMC_DYNAMIC_BUS_CONFIG
+-	if (lp->cfg.irq_polarity)
+-		irq_cfg |= INT_CFG_IRQ_POL_;
+-#endif
+-	SMC_SET_IRQ_CFG(lp, irq_cfg);
+-
+-	/* clear anything saved */
+-	if (lp->pending_tx_skb != NULL) {
+-		dev_kfree_skb (lp->pending_tx_skb);
+-		lp->pending_tx_skb = NULL;
+-		dev->stats.tx_errors++;
+-		dev->stats.tx_aborted_errors++;
+-	}
+-}
+-
+-/*
+- * Enable Interrupts, Receive, and Transmit
+- */
+-static void smc911x_enable(struct net_device *dev)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	unsigned mask, cfg, cr;
+-	unsigned long flags;
+-
+-	DBG(SMC_DEBUG_FUNC, dev, "--> %s\n", __func__);
+-
+-	spin_lock_irqsave(&lp->lock, flags);
+-
+-	SMC_SET_MAC_ADDR(lp, dev->dev_addr);
+-
+-	/* Enable TX */
+-	cfg = SMC_GET_HW_CFG(lp);
+-	cfg &= HW_CFG_TX_FIF_SZ_ | 0xFFF;
+-	cfg |= HW_CFG_SF_;
+-	SMC_SET_HW_CFG(lp, cfg);
+-	SMC_SET_FIFO_TDA(lp, 0xFF);
+-	/* Update TX stats on every 64 packets received or every 1 sec */
+-	SMC_SET_FIFO_TSL(lp, 64);
+-	SMC_SET_GPT_CFG(lp, GPT_CFG_TIMER_EN_ | 10000);
+-
+-	SMC_GET_MAC_CR(lp, cr);
+-	cr |= MAC_CR_TXEN_ | MAC_CR_HBDIS_;
+-	SMC_SET_MAC_CR(lp, cr);
+-	SMC_SET_TX_CFG(lp, TX_CFG_TX_ON_);
+-
+-	/* Add 2 byte padding to start of packets */
+-	SMC_SET_RX_CFG(lp, (2<<8) & RX_CFG_RXDOFF_);
+-
+-	/* Turn on receiver and enable RX */
+-	if (cr & MAC_CR_RXEN_)
+-		DBG(SMC_DEBUG_RX, dev, "Receiver already enabled\n");
+-
+-	SMC_SET_MAC_CR(lp, cr | MAC_CR_RXEN_);
+-
+-	/* Interrupt on every received packet */
+-	SMC_SET_FIFO_RSA(lp, 0x01);
+-	SMC_SET_FIFO_RSL(lp, 0x00);
+-
+-	/* now, enable interrupts */
+-	mask = INT_EN_TDFA_EN_ | INT_EN_TSFL_EN_ | INT_EN_RSFL_EN_ |
+-		INT_EN_GPT_INT_EN_ | INT_EN_RXDFH_INT_EN_ | INT_EN_RXE_EN_ |
+-		INT_EN_PHY_INT_EN_;
+-	if (IS_REV_A(lp->revision))
+-		mask|=INT_EN_RDFL_EN_;
+-	else {
+-		mask|=INT_EN_RDFO_EN_;
+-	}
+-	SMC_ENABLE_INT(lp, mask);
+-
+-	spin_unlock_irqrestore(&lp->lock, flags);
+-}
+-
+-/*
+- * this puts the device in an inactive state
+- */
+-static void smc911x_shutdown(struct net_device *dev)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	unsigned cr;
+-	unsigned long flags;
+-
+-	DBG(SMC_DEBUG_FUNC, dev, "%s: --> %s\n", CARDNAME, __func__);
+-
+-	/* Disable IRQ's */
+-	SMC_SET_INT_EN(lp, 0);
+-
+-	/* Turn of Rx and TX */
+-	spin_lock_irqsave(&lp->lock, flags);
+-	SMC_GET_MAC_CR(lp, cr);
+-	cr &= ~(MAC_CR_TXEN_ | MAC_CR_RXEN_ | MAC_CR_HBDIS_);
+-	SMC_SET_MAC_CR(lp, cr);
+-	SMC_SET_TX_CFG(lp, TX_CFG_STOP_TX_);
+-	spin_unlock_irqrestore(&lp->lock, flags);
+-}
+-
+-static inline void smc911x_drop_pkt(struct net_device *dev)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	unsigned int fifo_count, timeout, reg;
+-
+-	DBG(SMC_DEBUG_FUNC | SMC_DEBUG_RX, dev, "%s: --> %s\n",
+-	    CARDNAME, __func__);
+-	fifo_count = SMC_GET_RX_FIFO_INF(lp) & 0xFFFF;
+-	if (fifo_count <= 4) {
+-		/* Manually dump the packet data */
+-		while (fifo_count--)
+-			SMC_GET_RX_FIFO(lp);
+-	} else	 {
+-		/* Fast forward through the bad packet */
+-		SMC_SET_RX_DP_CTRL(lp, RX_DP_CTRL_FFWD_BUSY_);
+-		timeout=50;
+-		do {
+-			udelay(10);
+-			reg = SMC_GET_RX_DP_CTRL(lp) & RX_DP_CTRL_FFWD_BUSY_;
+-		} while (--timeout && reg);
+-		if (timeout == 0) {
+-			PRINTK(dev, "timeout waiting for RX fast forward\n");
+-		}
+-	}
+-}
+-
+-/*
+- * This is the procedure to handle the receipt of a packet.
+- * It should be called after checking for packet presence in
+- * the RX status FIFO.	 It must be called with the spin lock
+- * already held.
+- */
+-static inline void	 smc911x_rcv(struct net_device *dev)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	unsigned int pkt_len, status;
+-	struct sk_buff *skb;
+-	unsigned char *data;
+-
+-	DBG(SMC_DEBUG_FUNC | SMC_DEBUG_RX, dev, "--> %s\n",
+-	    __func__);
+-	status = SMC_GET_RX_STS_FIFO(lp);
+-	DBG(SMC_DEBUG_RX, dev, "Rx pkt len %d status 0x%08x\n",
+-	    (status & 0x3fff0000) >> 16, status & 0xc000ffff);
+-	pkt_len = (status & RX_STS_PKT_LEN_) >> 16;
+-	if (status & RX_STS_ES_) {
+-		/* Deal with a bad packet */
+-		dev->stats.rx_errors++;
+-		if (status & RX_STS_CRC_ERR_)
+-			dev->stats.rx_crc_errors++;
+-		else {
+-			if (status & RX_STS_LEN_ERR_)
+-				dev->stats.rx_length_errors++;
+-			if (status & RX_STS_MCAST_)
+-				dev->stats.multicast++;
+-		}
+-		/* Remove the bad packet data from the RX FIFO */
+-		smc911x_drop_pkt(dev);
+-	} else {
+-		/* Receive a valid packet */
+-		/* Alloc a buffer with extra room for DMA alignment */
+-		skb = netdev_alloc_skb(dev, pkt_len+32);
+-		if (unlikely(skb == NULL)) {
+-			PRINTK(dev, "Low memory, rcvd packet dropped.\n");
+-			dev->stats.rx_dropped++;
+-			smc911x_drop_pkt(dev);
+-			return;
+-		}
+-		/* Align IP header to 32 bits
+-		 * Note that the device is configured to add a 2
+-		 * byte padding to the packet start, so we really
+-		 * want to write to the orignal data pointer */
+-		data = skb->data;
+-		skb_reserve(skb, 2);
+-		skb_put(skb,pkt_len-4);
+-#ifdef SMC_USE_DMA
+-		{
+-		unsigned int fifo;
+-		/* Lower the FIFO threshold if possible */
+-		fifo = SMC_GET_FIFO_INT(lp);
+-		if (fifo & 0xFF) fifo--;
+-		DBG(SMC_DEBUG_RX, dev, "Setting RX stat FIFO threshold to %d\n",
+-		    fifo & 0xff);
+-		SMC_SET_FIFO_INT(lp, fifo);
+-		/* Setup RX DMA */
+-		SMC_SET_RX_CFG(lp, RX_CFG_RX_END_ALGN16_ | ((2<<8) & RX_CFG_RXDOFF_));
+-		lp->rxdma_active = 1;
+-		lp->current_rx_skb = skb;
+-		SMC_PULL_DATA(lp, data, (pkt_len+2+15) & ~15);
+-		/* Packet processing deferred to DMA RX interrupt */
+-		}
+-#else
+-		SMC_SET_RX_CFG(lp, RX_CFG_RX_END_ALGN4_ | ((2<<8) & RX_CFG_RXDOFF_));
+-		SMC_PULL_DATA(lp, data, pkt_len+2+3);
+-
+-		DBG(SMC_DEBUG_PKTS, dev, "Received packet\n");
+-		PRINT_PKT(data, min(pkt_len - 4, 64U));
+-		skb->protocol = eth_type_trans(skb, dev);
+-		netif_rx(skb);
+-		dev->stats.rx_packets++;
+-		dev->stats.rx_bytes += pkt_len-4;
+-#endif
+-	}
+-}
+-
+-/*
+- * This is called to actually send a packet to the chip.
+- */
+-static void smc911x_hardware_send_pkt(struct net_device *dev)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	struct sk_buff *skb;
+-	unsigned int cmdA, cmdB, len;
+-	unsigned char *buf;
+-
+-	DBG(SMC_DEBUG_FUNC | SMC_DEBUG_TX, dev, "--> %s\n", __func__);
+-	BUG_ON(lp->pending_tx_skb == NULL);
+-
+-	skb = lp->pending_tx_skb;
+-	lp->pending_tx_skb = NULL;
+-
+-	/* cmdA {25:24] data alignment [20:16] start offset [10:0] buffer length */
+-	/* cmdB {31:16] pkt tag [10:0] length */
+-#ifdef SMC_USE_DMA
+-	/* 16 byte buffer alignment mode */
+-	buf = (char*)((u32)(skb->data) & ~0xF);
+-	len = (skb->len + 0xF + ((u32)skb->data & 0xF)) & ~0xF;
+-	cmdA = (1<<24) | (((u32)skb->data & 0xF)<<16) |
+-			TX_CMD_A_INT_FIRST_SEG_ | TX_CMD_A_INT_LAST_SEG_ |
+-			skb->len;
+-#else
+-	buf = (char *)((uintptr_t)skb->data & ~0x3);
+-	len = (skb->len + 3 + ((uintptr_t)skb->data & 3)) & ~0x3;
+-	cmdA = (((uintptr_t)skb->data & 0x3) << 16) |
+-			TX_CMD_A_INT_FIRST_SEG_ | TX_CMD_A_INT_LAST_SEG_ |
+-			skb->len;
+-#endif
+-	/* tag is packet length so we can use this in stats update later */
+-	cmdB = (skb->len  << 16) | (skb->len & 0x7FF);
+-
+-	DBG(SMC_DEBUG_TX, dev, "TX PKT LENGTH 0x%04x (%d) BUF 0x%p CMDA 0x%08x CMDB 0x%08x\n",
+-	    len, len, buf, cmdA, cmdB);
+-	SMC_SET_TX_FIFO(lp, cmdA);
+-	SMC_SET_TX_FIFO(lp, cmdB);
+-
+-	DBG(SMC_DEBUG_PKTS, dev, "Transmitted packet\n");
+-	PRINT_PKT(buf, min(len, 64U));
+-
+-	/* Send pkt via PIO or DMA */
+-#ifdef SMC_USE_DMA
+-	lp->current_tx_skb = skb;
+-	SMC_PUSH_DATA(lp, buf, len);
+-	/* DMA complete IRQ will free buffer and set jiffies */
+-#else
+-	SMC_PUSH_DATA(lp, buf, len);
+-	netif_trans_update(dev);
+-	dev_kfree_skb_irq(skb);
+-#endif
+-	if (!lp->tx_throttle) {
+-		netif_wake_queue(dev);
+-	}
+-	SMC_ENABLE_INT(lp, INT_EN_TDFA_EN_ | INT_EN_TSFL_EN_);
+-}
+-
+-/*
+- * Since I am not sure if I will have enough room in the chip's ram
+- * to store the packet, I call this routine which either sends it
+- * now, or set the card to generates an interrupt when ready
+- * for the packet.
+- */
+-static netdev_tx_t
+-smc911x_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	unsigned int free;
+-	unsigned long flags;
+-
+-	DBG(SMC_DEBUG_FUNC | SMC_DEBUG_TX, dev, "--> %s\n",
+-	    __func__);
+-
+-	spin_lock_irqsave(&lp->lock, flags);
+-
+-	BUG_ON(lp->pending_tx_skb != NULL);
+-
+-	free = SMC_GET_TX_FIFO_INF(lp) & TX_FIFO_INF_TDFREE_;
+-	DBG(SMC_DEBUG_TX, dev, "TX free space %d\n", free);
+-
+-	/* Turn off the flow when running out of space in FIFO */
+-	if (free <= SMC911X_TX_FIFO_LOW_THRESHOLD) {
+-		DBG(SMC_DEBUG_TX, dev, "Disabling data flow due to low FIFO space (%d)\n",
+-		    free);
+-		/* Reenable when at least 1 packet of size MTU present */
+-		SMC_SET_FIFO_TDA(lp, (SMC911X_TX_FIFO_LOW_THRESHOLD)/64);
+-		lp->tx_throttle = 1;
+-		netif_stop_queue(dev);
+-	}
+-
+-	/* Drop packets when we run out of space in TX FIFO
+-	 * Account for overhead required for:
+-	 *
+-	 *	  Tx command words			 8 bytes
+-	 *	  Start offset				 15 bytes
+-	 *	  End padding				 15 bytes
+-	 */
+-	if (unlikely(free < (skb->len + 8 + 15 + 15))) {
+-		netdev_warn(dev, "No Tx free space %d < %d\n",
+-			    free, skb->len);
+-		lp->pending_tx_skb = NULL;
+-		dev->stats.tx_errors++;
+-		dev->stats.tx_dropped++;
+-		spin_unlock_irqrestore(&lp->lock, flags);
+-		dev_kfree_skb_any(skb);
+-		return NETDEV_TX_OK;
+-	}
+-
+-#ifdef SMC_USE_DMA
+-	{
+-		/* If the DMA is already running then defer this packet Tx until
+-		 * the DMA IRQ starts it
+-		 */
+-		if (lp->txdma_active) {
+-			DBG(SMC_DEBUG_TX | SMC_DEBUG_DMA, dev, "Tx DMA running, deferring packet\n");
+-			lp->pending_tx_skb = skb;
+-			netif_stop_queue(dev);
+-			spin_unlock_irqrestore(&lp->lock, flags);
+-			return NETDEV_TX_OK;
+-		} else {
+-			DBG(SMC_DEBUG_TX | SMC_DEBUG_DMA, dev, "Activating Tx DMA\n");
+-			lp->txdma_active = 1;
+-		}
+-	}
+-#endif
+-	lp->pending_tx_skb = skb;
+-	smc911x_hardware_send_pkt(dev);
+-	spin_unlock_irqrestore(&lp->lock, flags);
+-
+-	return NETDEV_TX_OK;
+-}
+-
+-/*
+- * This handles a TX status interrupt, which is only called when:
+- * - a TX error occurred, or
+- * - TX of a packet completed.
+- */
+-static void smc911x_tx(struct net_device *dev)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	unsigned int tx_status;
+-
+-	DBG(SMC_DEBUG_FUNC | SMC_DEBUG_TX, dev, "--> %s\n",
+-	    __func__);
+-
+-	/* Collect the TX status */
+-	while (((SMC_GET_TX_FIFO_INF(lp) & TX_FIFO_INF_TSUSED_) >> 16) != 0) {
+-		DBG(SMC_DEBUG_TX, dev, "Tx stat FIFO used 0x%04x\n",
+-		    (SMC_GET_TX_FIFO_INF(lp) & TX_FIFO_INF_TSUSED_) >> 16);
+-		tx_status = SMC_GET_TX_STS_FIFO(lp);
+-		dev->stats.tx_packets++;
+-		dev->stats.tx_bytes+=tx_status>>16;
+-		DBG(SMC_DEBUG_TX, dev, "Tx FIFO tag 0x%04x status 0x%04x\n",
+-		    (tx_status & 0xffff0000) >> 16,
+-		    tx_status & 0x0000ffff);
+-		/* count Tx errors, but ignore lost carrier errors when in
+-		 * full-duplex mode */
+-		if ((tx_status & TX_STS_ES_) && !(lp->ctl_rfduplx &&
+-		    !(tx_status & 0x00000306))) {
+-			dev->stats.tx_errors++;
+-		}
+-		if (tx_status & TX_STS_MANY_COLL_) {
+-			dev->stats.collisions+=16;
+-			dev->stats.tx_aborted_errors++;
+-		} else {
+-			dev->stats.collisions+=(tx_status & TX_STS_COLL_CNT_) >> 3;
+-		}
+-		/* carrier error only has meaning for half-duplex communication */
+-		if ((tx_status & (TX_STS_LOC_ | TX_STS_NO_CARR_)) &&
+-		    !lp->ctl_rfduplx) {
+-			dev->stats.tx_carrier_errors++;
+-		}
+-		if (tx_status & TX_STS_LATE_COLL_) {
+-			dev->stats.collisions++;
+-			dev->stats.tx_aborted_errors++;
+-		}
+-	}
+-}
+-
+-
+-/*---PHY CONTROL AND CONFIGURATION-----------------------------------------*/
+-/*
+- * Reads a register from the MII Management serial interface
+- */
+-
+-static int smc911x_phy_read(struct net_device *dev, int phyaddr, int phyreg)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	unsigned int phydata;
+-
+-	SMC_GET_MII(lp, phyreg, phyaddr, phydata);
+-
+-	DBG(SMC_DEBUG_MISC, dev, "%s: phyaddr=0x%x, phyreg=0x%02x, phydata=0x%04x\n",
+-	    __func__, phyaddr, phyreg, phydata);
+-	return phydata;
+-}
+-
+-
+-/*
+- * Writes a register to the MII Management serial interface
+- */
+-static void smc911x_phy_write(struct net_device *dev, int phyaddr, int phyreg,
+-			int phydata)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-
+-	DBG(SMC_DEBUG_MISC, dev, "%s: phyaddr=0x%x, phyreg=0x%x, phydata=0x%x\n",
+-	    __func__, phyaddr, phyreg, phydata);
+-
+-	SMC_SET_MII(lp, phyreg, phyaddr, phydata);
+-}
+-
+-/*
+- * Finds and reports the PHY address (115 and 117 have external
+- * PHY interface 118 has internal only
+- */
+-static void smc911x_phy_detect(struct net_device *dev)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	int phyaddr;
+-	unsigned int cfg, id1, id2;
+-
+-	DBG(SMC_DEBUG_FUNC, dev, "--> %s\n", __func__);
+-
+-	lp->phy_type = 0;
+-
+-	/*
+-	 * Scan all 32 PHY addresses if necessary, starting at
+-	 * PHY#1 to PHY#31, and then PHY#0 last.
+-	 */
+-	switch(lp->version) {
+-		case CHIP_9115:
+-		case CHIP_9117:
+-		case CHIP_9215:
+-		case CHIP_9217:
+-			cfg = SMC_GET_HW_CFG(lp);
+-			if (cfg & HW_CFG_EXT_PHY_DET_) {
+-				cfg &= ~HW_CFG_PHY_CLK_SEL_;
+-				cfg |= HW_CFG_PHY_CLK_SEL_CLK_DIS_;
+-				SMC_SET_HW_CFG(lp, cfg);
+-				udelay(10); /* Wait for clocks to stop */
+-
+-				cfg |= HW_CFG_EXT_PHY_EN_;
+-				SMC_SET_HW_CFG(lp, cfg);
+-				udelay(10); /* Wait for clocks to stop */
+-
+-				cfg &= ~HW_CFG_PHY_CLK_SEL_;
+-				cfg |= HW_CFG_PHY_CLK_SEL_EXT_PHY_;
+-				SMC_SET_HW_CFG(lp, cfg);
+-				udelay(10); /* Wait for clocks to stop */
+-
+-				cfg |= HW_CFG_SMI_SEL_;
+-				SMC_SET_HW_CFG(lp, cfg);
+-
+-				for (phyaddr = 1; phyaddr < 32; ++phyaddr) {
+-
+-					/* Read the PHY identifiers */
+-					SMC_GET_PHY_ID1(lp, phyaddr & 31, id1);
+-					SMC_GET_PHY_ID2(lp, phyaddr & 31, id2);
+-
+-					/* Make sure it is a valid identifier */
+-					if (id1 != 0x0000 && id1 != 0xffff &&
+-					    id1 != 0x8000 && id2 != 0x0000 &&
+-					    id2 != 0xffff && id2 != 0x8000) {
+-						/* Save the PHY's address */
+-						lp->mii.phy_id = phyaddr & 31;
+-						lp->phy_type = id1 << 16 | id2;
+-						break;
+-					}
+-				}
+-				if (phyaddr < 32)
+-					/* Found an external PHY */
+-					break;
+-			}
+-			fallthrough;
+-		default:
+-			/* Internal media only */
+-			SMC_GET_PHY_ID1(lp, 1, id1);
+-			SMC_GET_PHY_ID2(lp, 1, id2);
+-			/* Save the PHY's address */
+-			lp->mii.phy_id = 1;
+-			lp->phy_type = id1 << 16 | id2;
+-	}
+-
+-	DBG(SMC_DEBUG_MISC, dev, "phy_id1=0x%x, phy_id2=0x%x phyaddr=0x%x\n",
+-	    id1, id2, lp->mii.phy_id);
+-}
+-
+-/*
+- * Sets the PHY to a configuration as determined by the user.
+- * Called with spin_lock held.
+- */
+-static int smc911x_phy_fixed(struct net_device *dev)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	int phyaddr = lp->mii.phy_id;
+-	int bmcr;
+-
+-	DBG(SMC_DEBUG_FUNC, dev, "--> %s\n", __func__);
+-
+-	/* Enter Link Disable state */
+-	SMC_GET_PHY_BMCR(lp, phyaddr, bmcr);
+-	bmcr |= BMCR_PDOWN;
+-	SMC_SET_PHY_BMCR(lp, phyaddr, bmcr);
+-
+-	/*
+-	 * Set our fixed capabilities
+-	 * Disable auto-negotiation
+-	 */
+-	bmcr &= ~BMCR_ANENABLE;
+-	if (lp->ctl_rfduplx)
+-		bmcr |= BMCR_FULLDPLX;
+-
+-	if (lp->ctl_rspeed == 100)
+-		bmcr |= BMCR_SPEED100;
+-
+-	/* Write our capabilities to the phy control register */
+-	SMC_SET_PHY_BMCR(lp, phyaddr, bmcr);
+-
+-	/* Re-Configure the Receive/Phy Control register */
+-	bmcr &= ~BMCR_PDOWN;
+-	SMC_SET_PHY_BMCR(lp, phyaddr, bmcr);
+-
+-	return 1;
+-}
+-
+-/**
+- * smc911x_phy_reset - reset the phy
+- * @dev: net device
+- * @phy: phy address
+- *
+- * Issue a software reset for the specified PHY and
+- * wait up to 100ms for the reset to complete.	 We should
+- * not access the PHY for 50ms after issuing the reset.
+- *
+- * The time to wait appears to be dependent on the PHY.
+- *
+- */
+-static int smc911x_phy_reset(struct net_device *dev, int phy)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	int timeout;
+-	unsigned long flags;
+-	unsigned int reg;
+-
+-	DBG(SMC_DEBUG_FUNC, dev, "--> %s()\n", __func__);
+-
+-	spin_lock_irqsave(&lp->lock, flags);
+-	reg = SMC_GET_PMT_CTRL(lp);
+-	reg &= ~0xfffff030;
+-	reg |= PMT_CTRL_PHY_RST_;
+-	SMC_SET_PMT_CTRL(lp, reg);
+-	spin_unlock_irqrestore(&lp->lock, flags);
+-	for (timeout = 2; timeout; timeout--) {
+-		msleep(50);
+-		spin_lock_irqsave(&lp->lock, flags);
+-		reg = SMC_GET_PMT_CTRL(lp);
+-		spin_unlock_irqrestore(&lp->lock, flags);
+-		if (!(reg & PMT_CTRL_PHY_RST_)) {
+-			/* extra delay required because the phy may
+-			 * not be completed with its reset
+-			 * when PHY_BCR_RESET_ is cleared. 256us
+-			 * should suffice, but use 500us to be safe
+-			 */
+-			udelay(500);
+-		break;
+-		}
+-	}
+-
+-	return reg & PMT_CTRL_PHY_RST_;
+-}
+-
+-/**
+- * smc911x_phy_powerdown - powerdown phy
+- * @dev: net device
+- * @phy: phy address
+- *
+- * Power down the specified PHY
+- */
+-static void smc911x_phy_powerdown(struct net_device *dev, int phy)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	unsigned int bmcr;
+-
+-	/* Enter Link Disable state */
+-	SMC_GET_PHY_BMCR(lp, phy, bmcr);
+-	bmcr |= BMCR_PDOWN;
+-	SMC_SET_PHY_BMCR(lp, phy, bmcr);
+-}
+-
+-/**
+- * smc911x_phy_check_media - check the media status and adjust BMCR
+- * @dev: net device
+- * @init: set true for initialisation
+- *
+- * Select duplex mode depending on negotiation state.	This
+- * also updates our carrier state.
+- */
+-static void smc911x_phy_check_media(struct net_device *dev, int init)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	int phyaddr = lp->mii.phy_id;
+-	unsigned int bmcr, cr;
+-
+-	DBG(SMC_DEBUG_FUNC, dev, "--> %s\n", __func__);
+-
+-	if (mii_check_media(&lp->mii, netif_msg_link(lp), init)) {
+-		/* duplex state has changed */
+-		SMC_GET_PHY_BMCR(lp, phyaddr, bmcr);
+-		SMC_GET_MAC_CR(lp, cr);
+-		if (lp->mii.full_duplex) {
+-			DBG(SMC_DEBUG_MISC, dev, "Configuring for full-duplex mode\n");
+-			bmcr |= BMCR_FULLDPLX;
+-			cr |= MAC_CR_RCVOWN_;
+-		} else {
+-			DBG(SMC_DEBUG_MISC, dev, "Configuring for half-duplex mode\n");
+-			bmcr &= ~BMCR_FULLDPLX;
+-			cr &= ~MAC_CR_RCVOWN_;
+-		}
+-		SMC_SET_PHY_BMCR(lp, phyaddr, bmcr);
+-		SMC_SET_MAC_CR(lp, cr);
+-	}
+-}
+-
+-/*
+- * Configures the specified PHY through the MII management interface
+- * using Autonegotiation.
+- * Calls smc911x_phy_fixed() if the user has requested a certain config.
+- * If RPC ANEG bit is set, the media selection is dependent purely on
+- * the selection by the MII (either in the MII BMCR reg or the result
+- * of autonegotiation.)  If the RPC ANEG bit is cleared, the selection
+- * is controlled by the RPC SPEED and RPC DPLX bits.
+- */
+-static void smc911x_phy_configure(struct work_struct *work)
+-{
+-	struct smc911x_local *lp = container_of(work, struct smc911x_local,
+-						phy_configure);
+-	struct net_device *dev = lp->netdev;
+-	int phyaddr = lp->mii.phy_id;
+-	int my_phy_caps; /* My PHY capabilities */
+-	int my_ad_caps; /* My Advertised capabilities */
+-	int status __always_unused;
+-	unsigned long flags;
+-
+-	DBG(SMC_DEBUG_FUNC, dev, "--> %s()\n", __func__);
+-
+-	/*
+-	 * We should not be called if phy_type is zero.
+-	 */
+-	if (lp->phy_type == 0)
+-		return;
+-
+-	if (smc911x_phy_reset(dev, phyaddr)) {
+-		netdev_info(dev, "PHY reset timed out\n");
+-		return;
+-	}
+-	spin_lock_irqsave(&lp->lock, flags);
+-
+-	/*
+-	 * Enable PHY Interrupts (for register 18)
+-	 * Interrupts listed here are enabled
+-	 */
+-	SMC_SET_PHY_INT_MASK(lp, phyaddr, PHY_INT_MASK_ENERGY_ON_ |
+-		 PHY_INT_MASK_ANEG_COMP_ | PHY_INT_MASK_REMOTE_FAULT_ |
+-		 PHY_INT_MASK_LINK_DOWN_);
+-
+-	/* If the user requested no auto neg, then go set his request */
+-	if (lp->mii.force_media) {
+-		smc911x_phy_fixed(dev);
+-		goto smc911x_phy_configure_exit;
+-	}
+-
+-	/* Copy our capabilities from MII_BMSR to MII_ADVERTISE */
+-	SMC_GET_PHY_BMSR(lp, phyaddr, my_phy_caps);
+-	if (!(my_phy_caps & BMSR_ANEGCAPABLE)) {
+-		netdev_info(dev, "Auto negotiation NOT supported\n");
+-		smc911x_phy_fixed(dev);
+-		goto smc911x_phy_configure_exit;
+-	}
+-
+-	/* CSMA capable w/ both pauses */
+-	my_ad_caps = ADVERTISE_CSMA | ADVERTISE_PAUSE_CAP | ADVERTISE_PAUSE_ASYM;
+-
+-	if (my_phy_caps & BMSR_100BASE4)
+-		my_ad_caps |= ADVERTISE_100BASE4;
+-	if (my_phy_caps & BMSR_100FULL)
+-		my_ad_caps |= ADVERTISE_100FULL;
+-	if (my_phy_caps & BMSR_100HALF)
+-		my_ad_caps |= ADVERTISE_100HALF;
+-	if (my_phy_caps & BMSR_10FULL)
+-		my_ad_caps |= ADVERTISE_10FULL;
+-	if (my_phy_caps & BMSR_10HALF)
+-		my_ad_caps |= ADVERTISE_10HALF;
+-
+-	/* Disable capabilities not selected by our user */
+-	if (lp->ctl_rspeed != 100)
+-		my_ad_caps &= ~(ADVERTISE_100BASE4|ADVERTISE_100FULL|ADVERTISE_100HALF);
+-
+-	if (!lp->ctl_rfduplx)
+-		my_ad_caps &= ~(ADVERTISE_100FULL|ADVERTISE_10FULL);
+-
+-	/* Update our Auto-Neg Advertisement Register */
+-	SMC_SET_PHY_MII_ADV(lp, phyaddr, my_ad_caps);
+-	lp->mii.advertising = my_ad_caps;
+-
+-	/*
+-	 * Read the register back.	 Without this, it appears that when
+-	 * auto-negotiation is restarted, sometimes it isn't ready and
+-	 * the link does not come up.
+-	 */
+-	udelay(10);
+-	SMC_GET_PHY_MII_ADV(lp, phyaddr, status);
+-
+-	DBG(SMC_DEBUG_MISC, dev, "phy caps=0x%04x\n", my_phy_caps);
+-	DBG(SMC_DEBUG_MISC, dev, "phy advertised caps=0x%04x\n", my_ad_caps);
+-
+-	/* Restart auto-negotiation process in order to advertise my caps */
+-	SMC_SET_PHY_BMCR(lp, phyaddr, BMCR_ANENABLE | BMCR_ANRESTART);
+-
+-	smc911x_phy_check_media(dev, 1);
+-
+-smc911x_phy_configure_exit:
+-	spin_unlock_irqrestore(&lp->lock, flags);
+-}
+-
+-/*
+- * smc911x_phy_interrupt
+- *
+- * Purpose:  Handle interrupts relating to PHY register 18. This is
+- *	 called from the "hard" interrupt handler under our private spinlock.
+- */
+-static void smc911x_phy_interrupt(struct net_device *dev)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	int phyaddr = lp->mii.phy_id;
+-	int status __always_unused;
+-
+-	DBG(SMC_DEBUG_FUNC, dev, "--> %s\n", __func__);
+-
+-	if (lp->phy_type == 0)
+-		return;
+-
+-	smc911x_phy_check_media(dev, 0);
+-	/* read to clear status bits */
+-	SMC_GET_PHY_INT_SRC(lp, phyaddr,status);
+-	DBG(SMC_DEBUG_MISC, dev, "PHY interrupt status 0x%04x\n",
+-	    status & 0xffff);
+-	DBG(SMC_DEBUG_MISC, dev, "AFC_CFG 0x%08x\n",
+-	    SMC_GET_AFC_CFG(lp));
+-}
+-
+-/*--- END PHY CONTROL AND CONFIGURATION-------------------------------------*/
+-
+-/*
+- * This is the main routine of the driver, to handle the device when
+- * it needs some attention.
+- */
+-static irqreturn_t smc911x_interrupt(int irq, void *dev_id)
+-{
+-	struct net_device *dev = dev_id;
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	unsigned int status, mask, timeout;
+-	unsigned int rx_overrun=0, cr, pkts;
+-	unsigned long flags;
+-
+-	DBG(SMC_DEBUG_FUNC, dev, "--> %s\n", __func__);
+-
+-	spin_lock_irqsave(&lp->lock, flags);
+-
+-	/* Spurious interrupt check */
+-	if ((SMC_GET_IRQ_CFG(lp) & (INT_CFG_IRQ_INT_ | INT_CFG_IRQ_EN_)) !=
+-		(INT_CFG_IRQ_INT_ | INT_CFG_IRQ_EN_)) {
+-		spin_unlock_irqrestore(&lp->lock, flags);
+-		return IRQ_NONE;
+-	}
+-
+-	mask = SMC_GET_INT_EN(lp);
+-	SMC_SET_INT_EN(lp, 0);
+-
+-	/* set a timeout value, so I don't stay here forever */
+-	timeout = 8;
+-
+-
+-	do {
+-		status = SMC_GET_INT(lp);
+-
+-		DBG(SMC_DEBUG_MISC, dev, "INT 0x%08x MASK 0x%08x OUTSIDE MASK 0x%08x\n",
+-		    status, mask, status & ~mask);
+-
+-		status &= mask;
+-		if (!status)
+-			break;
+-
+-		/* Handle SW interrupt condition */
+-		if (status & INT_STS_SW_INT_) {
+-			SMC_ACK_INT(lp, INT_STS_SW_INT_);
+-			mask &= ~INT_EN_SW_INT_EN_;
+-		}
+-		/* Handle various error conditions */
+-		if (status & INT_STS_RXE_) {
+-			SMC_ACK_INT(lp, INT_STS_RXE_);
+-			dev->stats.rx_errors++;
+-		}
+-		if (status & INT_STS_RXDFH_INT_) {
+-			SMC_ACK_INT(lp, INT_STS_RXDFH_INT_);
+-			dev->stats.rx_dropped+=SMC_GET_RX_DROP(lp);
+-		 }
+-		/* Undocumented interrupt-what is the right thing to do here? */
+-		if (status & INT_STS_RXDF_INT_) {
+-			SMC_ACK_INT(lp, INT_STS_RXDF_INT_);
+-		}
+-
+-		/* Rx Data FIFO exceeds set level */
+-		if (status & INT_STS_RDFL_) {
+-			if (IS_REV_A(lp->revision)) {
+-				rx_overrun=1;
+-				SMC_GET_MAC_CR(lp, cr);
+-				cr &= ~MAC_CR_RXEN_;
+-				SMC_SET_MAC_CR(lp, cr);
+-				DBG(SMC_DEBUG_RX, dev, "RX overrun\n");
+-				dev->stats.rx_errors++;
+-				dev->stats.rx_fifo_errors++;
+-			}
+-			SMC_ACK_INT(lp, INT_STS_RDFL_);
+-		}
+-		if (status & INT_STS_RDFO_) {
+-			if (!IS_REV_A(lp->revision)) {
+-				SMC_GET_MAC_CR(lp, cr);
+-				cr &= ~MAC_CR_RXEN_;
+-				SMC_SET_MAC_CR(lp, cr);
+-				rx_overrun=1;
+-				DBG(SMC_DEBUG_RX, dev, "RX overrun\n");
+-				dev->stats.rx_errors++;
+-				dev->stats.rx_fifo_errors++;
+-			}
+-			SMC_ACK_INT(lp, INT_STS_RDFO_);
+-		}
+-		/* Handle receive condition */
+-		if ((status & INT_STS_RSFL_) || rx_overrun) {
+-			unsigned int fifo;
+-			DBG(SMC_DEBUG_RX, dev, "RX irq\n");
+-			fifo = SMC_GET_RX_FIFO_INF(lp);
+-			pkts = (fifo & RX_FIFO_INF_RXSUSED_) >> 16;
+-			DBG(SMC_DEBUG_RX, dev, "Rx FIFO pkts %d, bytes %d\n",
+-			    pkts, fifo & 0xFFFF);
+-			if (pkts != 0) {
+-#ifdef SMC_USE_DMA
+-				unsigned int fifo;
+-				if (lp->rxdma_active){
+-					DBG(SMC_DEBUG_RX | SMC_DEBUG_DMA, dev,
+-					    "RX DMA active\n");
+-					/* The DMA is already running so up the IRQ threshold */
+-					fifo = SMC_GET_FIFO_INT(lp) & ~0xFF;
+-					fifo |= pkts & 0xFF;
+-					DBG(SMC_DEBUG_RX, dev,
+-					    "Setting RX stat FIFO threshold to %d\n",
+-					    fifo & 0xff);
+-					SMC_SET_FIFO_INT(lp, fifo);
+-				} else
+-#endif
+-				smc911x_rcv(dev);
+-			}
+-			SMC_ACK_INT(lp, INT_STS_RSFL_);
+-		}
+-		/* Handle transmit FIFO available */
+-		if (status & INT_STS_TDFA_) {
+-			DBG(SMC_DEBUG_TX, dev, "TX data FIFO space available irq\n");
+-			SMC_SET_FIFO_TDA(lp, 0xFF);
+-			lp->tx_throttle = 0;
+-#ifdef SMC_USE_DMA
+-			if (!lp->txdma_active)
+-#endif
+-				netif_wake_queue(dev);
+-			SMC_ACK_INT(lp, INT_STS_TDFA_);
+-		}
+-		/* Handle transmit done condition */
+-#if 1
+-		if (status & (INT_STS_TSFL_ | INT_STS_GPT_INT_)) {
+-			DBG(SMC_DEBUG_TX | SMC_DEBUG_MISC, dev,
+-			    "Tx stat FIFO limit (%d) /GPT irq\n",
+-			    (SMC_GET_FIFO_INT(lp) & 0x00ff0000) >> 16);
+-			smc911x_tx(dev);
+-			SMC_SET_GPT_CFG(lp, GPT_CFG_TIMER_EN_ | 10000);
+-			SMC_ACK_INT(lp, INT_STS_TSFL_);
+-			SMC_ACK_INT(lp, INT_STS_TSFL_ | INT_STS_GPT_INT_);
+-		}
+-#else
+-		if (status & INT_STS_TSFL_) {
+-			DBG(SMC_DEBUG_TX, dev, "TX status FIFO limit (%d) irq\n", ?);
+-			smc911x_tx(dev);
+-			SMC_ACK_INT(lp, INT_STS_TSFL_);
+-		}
+-
+-		if (status & INT_STS_GPT_INT_) {
+-			DBG(SMC_DEBUG_RX, dev, "IRQ_CFG 0x%08x FIFO_INT 0x%08x RX_CFG 0x%08x\n",
+-			    SMC_GET_IRQ_CFG(lp),
+-			    SMC_GET_FIFO_INT(lp),
+-			    SMC_GET_RX_CFG(lp));
+-			DBG(SMC_DEBUG_RX, dev, "Rx Stat FIFO Used 0x%02x Data FIFO Used 0x%04x Stat FIFO 0x%08x\n",
+-			    (SMC_GET_RX_FIFO_INF(lp) & 0x00ff0000) >> 16,
+-			    SMC_GET_RX_FIFO_INF(lp) & 0xffff,
+-			    SMC_GET_RX_STS_FIFO_PEEK(lp));
+-			SMC_SET_GPT_CFG(lp, GPT_CFG_TIMER_EN_ | 10000);
+-			SMC_ACK_INT(lp, INT_STS_GPT_INT_);
+-		}
+-#endif
+-
+-		/* Handle PHY interrupt condition */
+-		if (status & INT_STS_PHY_INT_) {
+-			DBG(SMC_DEBUG_MISC, dev, "PHY irq\n");
+-			smc911x_phy_interrupt(dev);
+-			SMC_ACK_INT(lp, INT_STS_PHY_INT_);
+-		}
+-	} while (--timeout);
+-
+-	/* restore mask state */
+-	SMC_SET_INT_EN(lp, mask);
+-
+-	DBG(SMC_DEBUG_MISC, dev, "Interrupt done (%d loops)\n",
+-	    8-timeout);
+-
+-	spin_unlock_irqrestore(&lp->lock, flags);
+-
+-	return IRQ_HANDLED;
+-}
+-
+-#ifdef SMC_USE_DMA
+-static void
+-smc911x_tx_dma_irq(void *data)
+-{
+-	struct smc911x_local *lp = data;
+-	struct net_device *dev = lp->netdev;
+-	struct sk_buff *skb = lp->current_tx_skb;
+-	unsigned long flags;
+-
+-	DBG(SMC_DEBUG_FUNC, dev, "--> %s\n", __func__);
+-
+-	DBG(SMC_DEBUG_TX | SMC_DEBUG_DMA, dev, "TX DMA irq handler\n");
+-	BUG_ON(skb == NULL);
+-	dma_unmap_single(lp->dev, tx_dmabuf, tx_dmalen, DMA_TO_DEVICE);
+-	netif_trans_update(dev);
+-	dev_kfree_skb_irq(skb);
+-	lp->current_tx_skb = NULL;
+-	if (lp->pending_tx_skb != NULL)
+-		smc911x_hardware_send_pkt(dev);
+-	else {
+-		DBG(SMC_DEBUG_TX | SMC_DEBUG_DMA, dev,
+-		    "No pending Tx packets. DMA disabled\n");
+-		spin_lock_irqsave(&lp->lock, flags);
+-		lp->txdma_active = 0;
+-		if (!lp->tx_throttle) {
+-			netif_wake_queue(dev);
+-		}
+-		spin_unlock_irqrestore(&lp->lock, flags);
+-	}
+-
+-	DBG(SMC_DEBUG_TX | SMC_DEBUG_DMA, dev,
+-	    "TX DMA irq completed\n");
+-}
+-static void
+-smc911x_rx_dma_irq(void *data)
+-{
+-	struct smc911x_local *lp = data;
+-	struct net_device *dev = lp->netdev;
+-	struct sk_buff *skb = lp->current_rx_skb;
+-	unsigned long flags;
+-	unsigned int pkts;
+-
+-	DBG(SMC_DEBUG_FUNC, dev, "--> %s\n", __func__);
+-	DBG(SMC_DEBUG_RX | SMC_DEBUG_DMA, dev, "RX DMA irq handler\n");
+-	dma_unmap_single(lp->dev, rx_dmabuf, rx_dmalen, DMA_FROM_DEVICE);
+-	BUG_ON(skb == NULL);
+-	lp->current_rx_skb = NULL;
+-	PRINT_PKT(skb->data, skb->len);
+-	skb->protocol = eth_type_trans(skb, dev);
+-	dev->stats.rx_packets++;
+-	dev->stats.rx_bytes += skb->len;
+-	netif_rx(skb);
+-
+-	spin_lock_irqsave(&lp->lock, flags);
+-	pkts = (SMC_GET_RX_FIFO_INF(lp) & RX_FIFO_INF_RXSUSED_) >> 16;
+-	if (pkts != 0) {
+-		smc911x_rcv(dev);
+-	}else {
+-		lp->rxdma_active = 0;
+-	}
+-	spin_unlock_irqrestore(&lp->lock, flags);
+-	DBG(SMC_DEBUG_RX | SMC_DEBUG_DMA, dev,
+-	    "RX DMA irq completed. DMA RX FIFO PKTS %d\n",
+-	    pkts);
+-}
+-#endif	 /* SMC_USE_DMA */
+-
+-#ifdef CONFIG_NET_POLL_CONTROLLER
+-/*
+- * Polling receive - used by netconsole and other diagnostic tools
+- * to allow network i/o with interrupts disabled.
+- */
+-static void smc911x_poll_controller(struct net_device *dev)
+-{
+-	disable_irq(dev->irq);
+-	smc911x_interrupt(dev->irq, dev);
+-	enable_irq(dev->irq);
+-}
+-#endif
+-
+-/* Our watchdog timed out. Called by the networking layer */
+-static void smc911x_timeout(struct net_device *dev, unsigned int txqueue)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	int status, mask;
+-	unsigned long flags;
+-
+-	DBG(SMC_DEBUG_FUNC, dev, "--> %s\n", __func__);
+-
+-	spin_lock_irqsave(&lp->lock, flags);
+-	status = SMC_GET_INT(lp);
+-	mask = SMC_GET_INT_EN(lp);
+-	spin_unlock_irqrestore(&lp->lock, flags);
+-	DBG(SMC_DEBUG_MISC, dev, "INT 0x%02x MASK 0x%02x\n",
+-	    status, mask);
+-
+-	/* Dump the current TX FIFO contents and restart */
+-	mask = SMC_GET_TX_CFG(lp);
+-	SMC_SET_TX_CFG(lp, mask | TX_CFG_TXS_DUMP_ | TX_CFG_TXD_DUMP_);
+-	/*
+-	 * Reconfiguring the PHY doesn't seem like a bad idea here, but
+-	 * smc911x_phy_configure() calls msleep() which calls schedule_timeout()
+-	 * which calls schedule().	 Hence we use a work queue.
+-	 */
+-	if (lp->phy_type != 0)
+-		schedule_work(&lp->phy_configure);
+-
+-	/* We can accept TX packets again */
+-	netif_trans_update(dev); /* prevent tx timeout */
+-	netif_wake_queue(dev);
+-}
+-
+-/*
+- * This routine will, depending on the values passed to it,
+- * either make it accept multicast packets, go into
+- * promiscuous mode (for TCPDUMP and cousins) or accept
+- * a select set of multicast packets
+- */
+-static void smc911x_set_multicast_list(struct net_device *dev)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	unsigned int multicast_table[2];
+-	unsigned int mcr, update_multicast = 0;
+-	unsigned long flags;
+-
+-	DBG(SMC_DEBUG_FUNC, dev, "--> %s\n", __func__);
+-
+-	spin_lock_irqsave(&lp->lock, flags);
+-	SMC_GET_MAC_CR(lp, mcr);
+-	spin_unlock_irqrestore(&lp->lock, flags);
+-
+-	if (dev->flags & IFF_PROMISC) {
+-
+-		DBG(SMC_DEBUG_MISC, dev, "RCR_PRMS\n");
+-		mcr |= MAC_CR_PRMS_;
+-	}
+-	/*
+-	 * Here, I am setting this to accept all multicast packets.
+-	 * I don't need to zero the multicast table, because the flag is
+-	 * checked before the table is
+-	 */
+-	else if (dev->flags & IFF_ALLMULTI || netdev_mc_count(dev) > 16) {
+-		DBG(SMC_DEBUG_MISC, dev, "RCR_ALMUL\n");
+-		mcr |= MAC_CR_MCPAS_;
+-	}
+-
+-	/*
+-	 * This sets the internal hardware table to filter out unwanted
+-	 * multicast packets before they take up memory.
+-	 *
+-	 * The SMC chip uses a hash table where the high 6 bits of the CRC of
+-	 * address are the offset into the table.	If that bit is 1, then the
+-	 * multicast packet is accepted.  Otherwise, it's dropped silently.
+-	 *
+-	 * To use the 6 bits as an offset into the table, the high 1 bit is
+-	 * the number of the 32 bit register, while the low 5 bits are the bit
+-	 * within that register.
+-	 */
+-	else if (!netdev_mc_empty(dev)) {
+-		struct netdev_hw_addr *ha;
+-
+-		/* Set the Hash perfec mode */
+-		mcr |= MAC_CR_HPFILT_;
+-
+-		/* start with a table of all zeros: reject all */
+-		memset(multicast_table, 0, sizeof(multicast_table));
+-
+-		netdev_for_each_mc_addr(ha, dev) {
+-			u32 position;
+-
+-			/* upper 6 bits are used as hash index */
+-			position = ether_crc(ETH_ALEN, ha->addr)>>26;
+-
+-			multicast_table[position>>5] |= 1 << (position&0x1f);
+-		}
+-
+-		/* be sure I get rid of flags I might have set */
+-		mcr &= ~(MAC_CR_PRMS_ | MAC_CR_MCPAS_);
+-
+-		/* now, the table can be loaded into the chipset */
+-		update_multicast = 1;
+-	} else	 {
+-		DBG(SMC_DEBUG_MISC, dev, "~(MAC_CR_PRMS_|MAC_CR_MCPAS_)\n");
+-		mcr &= ~(MAC_CR_PRMS_ | MAC_CR_MCPAS_);
+-
+-		/*
+-		 * since I'm disabling all multicast entirely, I need to
+-		 * clear the multicast list
+-		 */
+-		memset(multicast_table, 0, sizeof(multicast_table));
+-		update_multicast = 1;
+-	}
+-
+-	spin_lock_irqsave(&lp->lock, flags);
+-	SMC_SET_MAC_CR(lp, mcr);
+-	if (update_multicast) {
+-		DBG(SMC_DEBUG_MISC, dev,
+-		    "update mcast hash table 0x%08x 0x%08x\n",
+-		    multicast_table[0], multicast_table[1]);
+-		SMC_SET_HASHL(lp, multicast_table[0]);
+-		SMC_SET_HASHH(lp, multicast_table[1]);
+-	}
+-	spin_unlock_irqrestore(&lp->lock, flags);
+-}
+-
+-
+-/*
+- * Open and Initialize the board
+- *
+- * Set up everything, reset the card, etc..
+- */
+-static int
+-smc911x_open(struct net_device *dev)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-
+-	DBG(SMC_DEBUG_FUNC, dev, "--> %s\n", __func__);
+-
+-	/* reset the hardware */
+-	smc911x_reset(dev);
+-
+-	/* Configure the PHY, initialize the link state */
+-	smc911x_phy_configure(&lp->phy_configure);
+-
+-	/* Turn on Tx + Rx */
+-	smc911x_enable(dev);
+-
+-	netif_start_queue(dev);
+-
+-	return 0;
+-}
+-
+-/*
+- * smc911x_close
+- *
+- * this makes the board clean up everything that it can
+- * and not talk to the outside world.	 Caused by
+- * an 'ifconfig ethX down'
+- */
+-static int smc911x_close(struct net_device *dev)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-
+-	DBG(SMC_DEBUG_FUNC, dev, "--> %s\n", __func__);
+-
+-	netif_stop_queue(dev);
+-	netif_carrier_off(dev);
+-
+-	/* clear everything */
+-	smc911x_shutdown(dev);
+-
+-	if (lp->phy_type != 0) {
+-		/* We need to ensure that no calls to
+-		 * smc911x_phy_configure are pending.
+-		 */
+-		cancel_work_sync(&lp->phy_configure);
+-		smc911x_phy_powerdown(dev, lp->mii.phy_id);
+-	}
+-
+-	if (lp->pending_tx_skb) {
+-		dev_kfree_skb(lp->pending_tx_skb);
+-		lp->pending_tx_skb = NULL;
+-	}
+-
+-	return 0;
+-}
+-
+-/*
+- * Ethtool support
+- */
+-static int
+-smc911x_ethtool_get_link_ksettings(struct net_device *dev,
+-				   struct ethtool_link_ksettings *cmd)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	int status;
+-	unsigned long flags;
+-	u32 supported;
+-
+-	DBG(SMC_DEBUG_FUNC, dev, "--> %s\n", __func__);
+-
+-	if (lp->phy_type != 0) {
+-		spin_lock_irqsave(&lp->lock, flags);
+-		mii_ethtool_get_link_ksettings(&lp->mii, cmd);
+-		spin_unlock_irqrestore(&lp->lock, flags);
+-	} else {
+-		supported = SUPPORTED_10baseT_Half |
+-				SUPPORTED_10baseT_Full |
+-				SUPPORTED_TP | SUPPORTED_AUI;
+-
+-		if (lp->ctl_rspeed == 10)
+-			cmd->base.speed = SPEED_10;
+-		else if (lp->ctl_rspeed == 100)
+-			cmd->base.speed = SPEED_100;
+-
+-		cmd->base.autoneg = AUTONEG_DISABLE;
+-		cmd->base.port = 0;
+-		SMC_GET_PHY_SPECIAL(lp, lp->mii.phy_id, status);
+-		cmd->base.duplex =
+-			(status & (PHY_SPECIAL_SPD_10FULL_ | PHY_SPECIAL_SPD_100FULL_)) ?
+-				DUPLEX_FULL : DUPLEX_HALF;
+-
+-		ethtool_convert_legacy_u32_to_link_mode(
+-			cmd->link_modes.supported, supported);
+-
+-	}
+-
+-	return 0;
+-}
+-
+-static int
+-smc911x_ethtool_set_link_ksettings(struct net_device *dev,
+-				   const struct ethtool_link_ksettings *cmd)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	int ret;
+-	unsigned long flags;
+-
+-	if (lp->phy_type != 0) {
+-		spin_lock_irqsave(&lp->lock, flags);
+-		ret = mii_ethtool_set_link_ksettings(&lp->mii, cmd);
+-		spin_unlock_irqrestore(&lp->lock, flags);
+-	} else {
+-		if (cmd->base.autoneg != AUTONEG_DISABLE ||
+-		    cmd->base.speed != SPEED_10 ||
+-		    (cmd->base.duplex != DUPLEX_HALF &&
+-		     cmd->base.duplex != DUPLEX_FULL) ||
+-		    (cmd->base.port != PORT_TP &&
+-		     cmd->base.port != PORT_AUI))
+-			return -EINVAL;
+-
+-		lp->ctl_rfduplx = cmd->base.duplex == DUPLEX_FULL;
+-
+-		ret = 0;
+-	}
+-
+-	return ret;
+-}
+-
+-static void
+-smc911x_ethtool_getdrvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
+-{
+-	strscpy(info->driver, CARDNAME, sizeof(info->driver));
+-	strscpy(info->version, version, sizeof(info->version));
+-	strscpy(info->bus_info, dev_name(dev->dev.parent),
+-		sizeof(info->bus_info));
+-}
+-
+-static int smc911x_ethtool_nwayreset(struct net_device *dev)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	int ret = -EINVAL;
+-	unsigned long flags;
+-
+-	if (lp->phy_type != 0) {
+-		spin_lock_irqsave(&lp->lock, flags);
+-		ret = mii_nway_restart(&lp->mii);
+-		spin_unlock_irqrestore(&lp->lock, flags);
+-	}
+-
+-	return ret;
+-}
+-
+-static u32 smc911x_ethtool_getmsglevel(struct net_device *dev)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	return lp->msg_enable;
+-}
+-
+-static void smc911x_ethtool_setmsglevel(struct net_device *dev, u32 level)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	lp->msg_enable = level;
+-}
+-
+-static int smc911x_ethtool_getregslen(struct net_device *dev)
+-{
+-	/* System regs + MAC regs + PHY regs */
+-	return (((E2P_CMD - ID_REV)/4 + 1) +
+-			(WUCSR - MAC_CR)+1 + 32) * sizeof(u32);
+-}
+-
+-static void smc911x_ethtool_getregs(struct net_device *dev,
+-				    struct ethtool_regs *regs, void *buf)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	unsigned long flags;
+-	u32 reg,i,j=0;
+-	u32 *data = (u32*)buf;
+-
+-	regs->version = lp->version;
+-	for(i=ID_REV;i<=E2P_CMD;i+=4) {
+-		data[j++] = SMC_inl(lp, i);
+-	}
+-	for(i=MAC_CR;i<=WUCSR;i++) {
+-		spin_lock_irqsave(&lp->lock, flags);
+-		SMC_GET_MAC_CSR(lp, i, reg);
+-		spin_unlock_irqrestore(&lp->lock, flags);
+-		data[j++] = reg;
+-	}
+-	for(i=0;i<=31;i++) {
+-		spin_lock_irqsave(&lp->lock, flags);
+-		SMC_GET_MII(lp, i, lp->mii.phy_id, reg);
+-		spin_unlock_irqrestore(&lp->lock, flags);
+-		data[j++] = reg & 0xFFFF;
+-	}
+-}
+-
+-static int smc911x_ethtool_wait_eeprom_ready(struct net_device *dev)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	unsigned int timeout;
+-	int e2p_cmd;
+-
+-	e2p_cmd = SMC_GET_E2P_CMD(lp);
+-	for(timeout=10;(e2p_cmd & E2P_CMD_EPC_BUSY_) && timeout; timeout--) {
+-		if (e2p_cmd & E2P_CMD_EPC_TIMEOUT_) {
+-			PRINTK(dev, "%s timeout waiting for EEPROM to respond\n",
+-			       __func__);
+-			return -EFAULT;
+-		}
+-		mdelay(1);
+-		e2p_cmd = SMC_GET_E2P_CMD(lp);
+-	}
+-	if (timeout == 0) {
+-		PRINTK(dev, "%s timeout waiting for EEPROM CMD not busy\n",
+-		       __func__);
+-		return -ETIMEDOUT;
+-	}
+-	return 0;
+-}
+-
+-static inline int smc911x_ethtool_write_eeprom_cmd(struct net_device *dev,
+-						   int cmd, int addr)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	int ret;
+-
+-	if ((ret = smc911x_ethtool_wait_eeprom_ready(dev))!=0)
+-		return ret;
+-	SMC_SET_E2P_CMD(lp, E2P_CMD_EPC_BUSY_ |
+-		((cmd) & (0x7<<28)) |
+-		((addr) & 0xFF));
+-	return 0;
+-}
+-
+-static inline int smc911x_ethtool_read_eeprom_byte(struct net_device *dev,
+-						   u8 *data)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	int ret;
+-
+-	if ((ret = smc911x_ethtool_wait_eeprom_ready(dev))!=0)
+-		return ret;
+-	*data = SMC_GET_E2P_DATA(lp);
+-	return 0;
+-}
+-
+-static inline int smc911x_ethtool_write_eeprom_byte(struct net_device *dev,
+-						    u8 data)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	int ret;
+-
+-	if ((ret = smc911x_ethtool_wait_eeprom_ready(dev))!=0)
+-		return ret;
+-	SMC_SET_E2P_DATA(lp, data);
+-	return 0;
+-}
+-
+-static int smc911x_ethtool_geteeprom(struct net_device *dev,
+-				     struct ethtool_eeprom *eeprom, u8 *data)
+-{
+-	u8 eebuf[SMC911X_EEPROM_LEN];
+-	int i, ret;
+-
+-	for(i=0;i<SMC911X_EEPROM_LEN;i++) {
+-		if ((ret=smc911x_ethtool_write_eeprom_cmd(dev, E2P_CMD_EPC_CMD_READ_, i ))!=0)
+-			return ret;
+-		if ((ret=smc911x_ethtool_read_eeprom_byte(dev, &eebuf[i]))!=0)
+-			return ret;
+-	}
+-	memcpy(data, eebuf+eeprom->offset, eeprom->len);
+-	return 0;
+-}
+-
+-static int smc911x_ethtool_seteeprom(struct net_device *dev,
+-				     struct ethtool_eeprom *eeprom, u8 *data)
+-{
+-	int i, ret;
+-
+-	/* Enable erase */
+-	if ((ret=smc911x_ethtool_write_eeprom_cmd(dev, E2P_CMD_EPC_CMD_EWEN_, 0 ))!=0)
+-		return ret;
+-	for(i=eeprom->offset;i<(eeprom->offset+eeprom->len);i++) {
+-		/* erase byte */
+-		if ((ret=smc911x_ethtool_write_eeprom_cmd(dev, E2P_CMD_EPC_CMD_ERASE_, i ))!=0)
+-			return ret;
+-		/* write byte */
+-		if ((ret=smc911x_ethtool_write_eeprom_byte(dev, *data))!=0)
+-			return ret;
+-		if ((ret=smc911x_ethtool_write_eeprom_cmd(dev, E2P_CMD_EPC_CMD_WRITE_, i ))!=0)
+-			return ret;
+-	}
+-	return 0;
+-}
+-
+-static int smc911x_ethtool_geteeprom_len(struct net_device *dev)
+-{
+-	 return SMC911X_EEPROM_LEN;
+-}
+-
+-static const struct ethtool_ops smc911x_ethtool_ops = {
+-	.get_drvinfo	 = smc911x_ethtool_getdrvinfo,
+-	.get_msglevel	 = smc911x_ethtool_getmsglevel,
+-	.set_msglevel	 = smc911x_ethtool_setmsglevel,
+-	.nway_reset = smc911x_ethtool_nwayreset,
+-	.get_link	 = ethtool_op_get_link,
+-	.get_regs_len	 = smc911x_ethtool_getregslen,
+-	.get_regs	 = smc911x_ethtool_getregs,
+-	.get_eeprom_len = smc911x_ethtool_geteeprom_len,
+-	.get_eeprom = smc911x_ethtool_geteeprom,
+-	.set_eeprom = smc911x_ethtool_seteeprom,
+-	.get_link_ksettings	 = smc911x_ethtool_get_link_ksettings,
+-	.set_link_ksettings	 = smc911x_ethtool_set_link_ksettings,
+-};
+-
+-/*
+- * smc911x_findirq
+- *
+- * This routine has a simple purpose -- make the SMC chip generate an
+- * interrupt, so an auto-detect routine can detect it, and find the IRQ,
+- */
+-static int smc911x_findirq(struct net_device *dev)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	int timeout = 20;
+-	unsigned long cookie;
+-
+-	DBG(SMC_DEBUG_FUNC, dev, "--> %s\n", __func__);
+-
+-	cookie = probe_irq_on();
+-
+-	/*
+-	 * Force a SW interrupt
+-	 */
+-
+-	SMC_SET_INT_EN(lp, INT_EN_SW_INT_EN_);
+-
+-	/*
+-	 * Wait until positive that the interrupt has been generated
+-	 */
+-	do {
+-		int int_status;
+-		udelay(10);
+-		int_status = SMC_GET_INT_EN(lp);
+-		if (int_status & INT_EN_SW_INT_EN_)
+-			 break;		/* got the interrupt */
+-	} while (--timeout);
+-
+-	/*
+-	 * there is really nothing that I can do here if timeout fails,
+-	 * as autoirq_report will return a 0 anyway, which is what I
+-	 * want in this case.	 Plus, the clean up is needed in both
+-	 * cases.
+-	 */
+-
+-	/* and disable all interrupts again */
+-	SMC_SET_INT_EN(lp, 0);
+-
+-	/* and return what I found */
+-	return probe_irq_off(cookie);
+-}
+-
+-static const struct net_device_ops smc911x_netdev_ops = {
+-	.ndo_open		= smc911x_open,
+-	.ndo_stop		= smc911x_close,
+-	.ndo_start_xmit		= smc911x_hard_start_xmit,
+-	.ndo_tx_timeout		= smc911x_timeout,
+-	.ndo_set_rx_mode	= smc911x_set_multicast_list,
+-	.ndo_validate_addr	= eth_validate_addr,
+-	.ndo_set_mac_address	= eth_mac_addr,
+-#ifdef CONFIG_NET_POLL_CONTROLLER
+-	.ndo_poll_controller	= smc911x_poll_controller,
+-#endif
+-};
+-
+-/*
+- * Function: smc911x_probe(unsigned long ioaddr)
+- *
+- * Purpose:
+- *	 Tests to see if a given ioaddr points to an SMC911x chip.
+- *	 Returns a 0 on success
+- *
+- * Algorithm:
+- *	 (1) see if the endian word is OK
+- *	 (1) see if I recognize the chip ID in the appropriate register
+- *
+- * Here I do typical initialization tasks.
+- *
+- * o  Initialize the structure if needed
+- * o  print out my vanity message if not done so already
+- * o  print out what type of hardware is detected
+- * o  print out the ethernet address
+- * o  find the IRQ
+- * o  set up my private data
+- * o  configure the dev structure with my subroutines
+- * o  actually GRAB the irq.
+- * o  GRAB the region
+- */
+-static int smc911x_probe(struct net_device *dev)
+-{
+-	struct smc911x_local *lp = netdev_priv(dev);
+-	int i, retval;
+-	unsigned int val, chip_id, revision;
+-	const char *version_string;
+-	unsigned long irq_flags;
+-#ifdef SMC_USE_DMA
+-	struct dma_slave_config	config;
+-	dma_cap_mask_t mask;
+-#endif
+-	u8 addr[ETH_ALEN];
+-
+-	DBG(SMC_DEBUG_FUNC, dev, "--> %s\n", __func__);
+-
+-	/* First, see if the endian word is recognized */
+-	val = SMC_GET_BYTE_TEST(lp);
+-	DBG(SMC_DEBUG_MISC, dev, "%s: endian probe returned 0x%04x\n",
+-	    CARDNAME, val);
+-	if (val != 0x87654321) {
+-		netdev_err(dev, "Invalid chip endian 0x%08x\n", val);
+-		retval = -ENODEV;
+-		goto err_out;
+-	}
+-
+-	/*
+-	 * check if the revision register is something that I
+-	 * recognize.	These might need to be added to later,
+-	 * as future revisions could be added.
+-	 */
+-	chip_id = SMC_GET_PN(lp);
+-	DBG(SMC_DEBUG_MISC, dev, "%s: id probe returned 0x%04x\n",
+-	    CARDNAME, chip_id);
+-	for(i=0;chip_ids[i].id != 0; i++) {
+-		if (chip_ids[i].id == chip_id) break;
+-	}
+-	if (!chip_ids[i].id) {
+-		netdev_err(dev, "Unknown chip ID %04x\n", chip_id);
+-		retval = -ENODEV;
+-		goto err_out;
+-	}
+-	version_string = chip_ids[i].name;
+-
+-	revision = SMC_GET_REV(lp);
+-	DBG(SMC_DEBUG_MISC, dev, "%s: revision = 0x%04x\n", CARDNAME, revision);
+-
+-	/* At this point I'll assume that the chip is an SMC911x. */
+-	DBG(SMC_DEBUG_MISC, dev, "%s: Found a %s\n",
+-	    CARDNAME, chip_ids[i].name);
+-
+-	/* Validate the TX FIFO size requested */
+-	if ((tx_fifo_kb < 2) || (tx_fifo_kb > 14)) {
+-		netdev_err(dev, "Invalid TX FIFO size requested %d\n",
+-			   tx_fifo_kb);
+-		retval = -EINVAL;
+-		goto err_out;
+-	}
+-
+-	/* fill in some of the fields */
+-	lp->version = chip_ids[i].id;
+-	lp->revision = revision;
+-	lp->tx_fifo_kb = tx_fifo_kb;
+-	/* Reverse calculate the RX FIFO size from the TX */
+-	lp->tx_fifo_size=(lp->tx_fifo_kb<<10) - 512;
+-	lp->rx_fifo_size= ((0x4000 - 512 - lp->tx_fifo_size) / 16) * 15;
+-
+-	/* Set the automatic flow control values */
+-	switch(lp->tx_fifo_kb) {
+-		/*
+-		 *	 AFC_HI is about ((Rx Data Fifo Size)*2/3)/64
+-		 *	 AFC_LO is AFC_HI/2
+-		 *	 BACK_DUR is about 5uS*(AFC_LO) rounded down
+-		 */
+-		case 2:/* 13440 Rx Data Fifo Size */
+-			lp->afc_cfg=0x008C46AF;break;
+-		case 3:/* 12480 Rx Data Fifo Size */
+-			lp->afc_cfg=0x0082419F;break;
+-		case 4:/* 11520 Rx Data Fifo Size */
+-			lp->afc_cfg=0x00783C9F;break;
+-		case 5:/* 10560 Rx Data Fifo Size */
+-			lp->afc_cfg=0x006E374F;break;
+-		case 6:/* 9600 Rx Data Fifo Size */
+-			lp->afc_cfg=0x0064328F;break;
+-		case 7:/* 8640 Rx Data Fifo Size */
+-			lp->afc_cfg=0x005A2D7F;break;
+-		case 8:/* 7680 Rx Data Fifo Size */
+-			lp->afc_cfg=0x0050287F;break;
+-		case 9:/* 6720 Rx Data Fifo Size */
+-			lp->afc_cfg=0x0046236F;break;
+-		case 10:/* 5760 Rx Data Fifo Size */
+-			lp->afc_cfg=0x003C1E6F;break;
+-		case 11:/* 4800 Rx Data Fifo Size */
+-			lp->afc_cfg=0x0032195F;break;
+-		/*
+-		 *	 AFC_HI is ~1520 bytes less than RX Data Fifo Size
+-		 *	 AFC_LO is AFC_HI/2
+-		 *	 BACK_DUR is about 5uS*(AFC_LO) rounded down
+-		 */
+-		case 12:/* 3840 Rx Data Fifo Size */
+-			lp->afc_cfg=0x0024124F;break;
+-		case 13:/* 2880 Rx Data Fifo Size */
+-			lp->afc_cfg=0x0015073F;break;
+-		case 14:/* 1920 Rx Data Fifo Size */
+-			lp->afc_cfg=0x0006032F;break;
+-		 default:
+-			 PRINTK(dev, "ERROR -- no AFC_CFG setting found");
+-			 break;
+-	}
+-
+-	DBG(SMC_DEBUG_MISC | SMC_DEBUG_TX | SMC_DEBUG_RX, dev,
+-	    "%s: tx_fifo %d rx_fifo %d afc_cfg 0x%08x\n", CARDNAME,
+-	    lp->tx_fifo_size, lp->rx_fifo_size, lp->afc_cfg);
+-
+-	spin_lock_init(&lp->lock);
+-
+-	/* Get the MAC address */
+-	SMC_GET_MAC_ADDR(lp, addr);
+-	eth_hw_addr_set(dev, addr);
+-
+-	/* now, reset the chip, and put it into a known state */
+-	smc911x_reset(dev);
+-
+-	/*
+-	 * If dev->irq is 0, then the device has to be banged on to see
+-	 * what the IRQ is.
+-	 *
+-	 * Specifying an IRQ is done with the assumption that the user knows
+-	 * what (s)he is doing.  No checking is done!!!!
+-	 */
+-	if (dev->irq < 1) {
+-		int trials;
+-
+-		trials = 3;
+-		while (trials--) {
+-			dev->irq = smc911x_findirq(dev);
+-			if (dev->irq)
+-				break;
+-			/* kick the card and try again */
+-			smc911x_reset(dev);
+-		}
+-	}
+-	if (dev->irq == 0) {
+-		netdev_warn(dev, "Couldn't autodetect your IRQ. Use irq=xx.\n");
+-		retval = -ENODEV;
+-		goto err_out;
+-	}
+-	dev->irq = irq_canonicalize(dev->irq);
+-
+-	dev->netdev_ops = &smc911x_netdev_ops;
+-	dev->watchdog_timeo = msecs_to_jiffies(watchdog);
+-	dev->ethtool_ops = &smc911x_ethtool_ops;
+-
+-	INIT_WORK(&lp->phy_configure, smc911x_phy_configure);
+-	lp->mii.phy_id_mask = 0x1f;
+-	lp->mii.reg_num_mask = 0x1f;
+-	lp->mii.force_media = 0;
+-	lp->mii.full_duplex = 0;
+-	lp->mii.dev = dev;
+-	lp->mii.mdio_read = smc911x_phy_read;
+-	lp->mii.mdio_write = smc911x_phy_write;
+-
+-	/*
+-	 * Locate the phy, if any.
+-	 */
+-	smc911x_phy_detect(dev);
+-
+-	/* Set default parameters */
+-	lp->msg_enable = NETIF_MSG_LINK;
+-	lp->ctl_rfduplx = 1;
+-	lp->ctl_rspeed = 100;
+-
+-#ifdef SMC_DYNAMIC_BUS_CONFIG
+-	irq_flags = lp->cfg.irq_flags;
+-#else
+-	irq_flags = IRQF_SHARED | SMC_IRQ_SENSE;
+-#endif
+-
+-	/* Grab the IRQ */
+-	retval = request_irq(dev->irq, smc911x_interrupt,
+-			     irq_flags, dev->name, dev);
+-	if (retval)
+-		goto err_out;
+-
+-#ifdef SMC_USE_DMA
+-
+-	dma_cap_zero(mask);
+-	dma_cap_set(DMA_SLAVE, mask);
+-	lp->rxdma = dma_request_channel(mask, NULL, NULL);
+-	lp->txdma = dma_request_channel(mask, NULL, NULL);
+-	lp->rxdma_active = 0;
+-	lp->txdma_active = 0;
+-
+-	memset(&config, 0, sizeof(config));
+-	config.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+-	config.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+-	config.src_addr = lp->physaddr + RX_DATA_FIFO;
+-	config.dst_addr = lp->physaddr + TX_DATA_FIFO;
+-	config.src_maxburst = 32;
+-	config.dst_maxburst = 32;
+-	retval = dmaengine_slave_config(lp->rxdma, &config);
+-	if (retval) {
+-		dev_err(lp->dev, "dma rx channel configuration failed: %d\n",
+-			retval);
+-		goto err_out;
+-	}
+-	retval = dmaengine_slave_config(lp->txdma, &config);
+-	if (retval) {
+-		dev_err(lp->dev, "dma tx channel configuration failed: %d\n",
+-			retval);
+-		goto err_out;
+-	}
+-#endif
+-
+-	retval = register_netdev(dev);
+-	if (retval == 0) {
+-		/* now, print out the card info, in a short format.. */
+-		netdev_info(dev, "%s (rev %d) at %#lx IRQ %d",
+-			    version_string, lp->revision,
+-			    dev->base_addr, dev->irq);
+-
+-#ifdef SMC_USE_DMA
+-		if (lp->rxdma)
+-			pr_cont(" RXDMA %p", lp->rxdma);
+-
+-		if (lp->txdma)
+-			pr_cont(" TXDMA %p", lp->txdma);
+-#endif
+-		pr_cont("\n");
+-		if (!is_valid_ether_addr(dev->dev_addr)) {
+-			netdev_warn(dev, "Invalid ethernet MAC address. Please set using ifconfig\n");
+-		} else {
+-			/* Print the Ethernet address */
+-			netdev_info(dev, "Ethernet addr: %pM\n",
+-				    dev->dev_addr);
+-		}
+-
+-		if (lp->phy_type == 0) {
+-			PRINTK(dev, "No PHY found\n");
+-		} else if ((lp->phy_type & ~0xff) == LAN911X_INTERNAL_PHY_ID) {
+-			PRINTK(dev, "LAN911x Internal PHY\n");
+-		} else {
+-			PRINTK(dev, "External PHY 0x%08x\n", lp->phy_type);
+-		}
+-	}
+-
+-err_out:
+-#ifdef SMC_USE_DMA
+-	if (retval) {
+-		if (lp->rxdma)
+-			dma_release_channel(lp->rxdma);
+-		if (lp->txdma)
+-			dma_release_channel(lp->txdma);
+-	}
+-#endif
+-	return retval;
+-}
+-
+-/*
+- * smc911x_drv_probe(void)
+- *
+- *	  Output:
+- *	 0 --> there is a device
+- *	 anything else, error
+- */
+-static int smc911x_drv_probe(struct platform_device *pdev)
+-{
+-	struct net_device *ndev;
+-	struct resource *res;
+-	struct smc911x_local *lp;
+-	void __iomem *addr;
+-	int ret;
+-
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (!res) {
+-		ret = -ENODEV;
+-		goto out;
+-	}
+-
+-	/*
+-	 * Request the regions.
+-	 */
+-	if (!request_mem_region(res->start, SMC911X_IO_EXTENT, CARDNAME)) {
+-		 ret = -EBUSY;
+-		 goto out;
+-	}
+-
+-	ndev = alloc_etherdev(sizeof(struct smc911x_local));
+-	if (!ndev) {
+-		ret = -ENOMEM;
+-		goto release_1;
+-	}
+-	SET_NETDEV_DEV(ndev, &pdev->dev);
+-
+-	ndev->dma = (unsigned char)-1;
+-	ndev->irq = platform_get_irq(pdev, 0);
+-	if (ndev->irq < 0) {
+-		ret = ndev->irq;
+-		goto release_both;
+-	}
+-
+-	lp = netdev_priv(ndev);
+-	lp->netdev = ndev;
+-#ifdef SMC_DYNAMIC_BUS_CONFIG
+-	{
+-		struct smc911x_platdata *pd = dev_get_platdata(&pdev->dev);
+-		if (!pd) {
+-			ret = -EINVAL;
+-			goto release_both;
+-		}
+-		memcpy(&lp->cfg, pd, sizeof(lp->cfg));
+-	}
+-#endif
+-
+-	addr = ioremap(res->start, SMC911X_IO_EXTENT);
+-	if (!addr) {
+-		ret = -ENOMEM;
+-		goto release_both;
+-	}
+-
+-	platform_set_drvdata(pdev, ndev);
+-	lp->base = addr;
+-	ndev->base_addr = res->start;
+-	ret = smc911x_probe(ndev);
+-	if (ret != 0) {
+-		iounmap(addr);
+-release_both:
+-		free_netdev(ndev);
+-release_1:
+-		release_mem_region(res->start, SMC911X_IO_EXTENT);
+-out:
+-		pr_info("%s: not found (%d).\n", CARDNAME, ret);
+-	}
+-#ifdef SMC_USE_DMA
+-	else {
+-		lp->physaddr = res->start;
+-		lp->dev = &pdev->dev;
+-	}
+-#endif
+-
+-	return ret;
+-}
+-
+-static int smc911x_drv_remove(struct platform_device *pdev)
+-{
+-	struct net_device *ndev = platform_get_drvdata(pdev);
+-	struct smc911x_local *lp = netdev_priv(ndev);
+-	struct resource *res;
+-
+-	DBG(SMC_DEBUG_FUNC, ndev, "--> %s\n", __func__);
+-
+-	unregister_netdev(ndev);
+-
+-	free_irq(ndev->irq, ndev);
+-
+-#ifdef SMC_USE_DMA
+-	{
+-		if (lp->rxdma)
+-			dma_release_channel(lp->rxdma);
+-		if (lp->txdma)
+-			dma_release_channel(lp->txdma);
+-	}
+-#endif
+-	iounmap(lp->base);
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	release_mem_region(res->start, SMC911X_IO_EXTENT);
+-
+-	free_netdev(ndev);
+-	return 0;
+-}
+-
+-static int smc911x_drv_suspend(struct platform_device *dev, pm_message_t state)
+-{
+-	struct net_device *ndev = platform_get_drvdata(dev);
+-	struct smc911x_local *lp = netdev_priv(ndev);
+-
+-	DBG(SMC_DEBUG_FUNC, ndev, "--> %s\n", __func__);
+-	if (ndev) {
+-		if (netif_running(ndev)) {
+-			netif_device_detach(ndev);
+-			smc911x_shutdown(ndev);
+-#if POWER_DOWN
+-			/* Set D2 - Energy detect only setting */
+-			SMC_SET_PMT_CTRL(lp, 2<<12);
+-#endif
+-		}
+-	}
+-	return 0;
+-}
+-
+-static int smc911x_drv_resume(struct platform_device *dev)
+-{
+-	struct net_device *ndev = platform_get_drvdata(dev);
+-
+-	DBG(SMC_DEBUG_FUNC, ndev, "--> %s\n", __func__);
+-	if (ndev) {
+-		struct smc911x_local *lp = netdev_priv(ndev);
+-
+-		if (netif_running(ndev)) {
+-			smc911x_reset(ndev);
+-			if (lp->phy_type != 0)
+-				smc911x_phy_configure(&lp->phy_configure);
+-			smc911x_enable(ndev);
+-			netif_device_attach(ndev);
+-		}
+-	}
+-	return 0;
+-}
+-
+-static struct platform_driver smc911x_driver = {
+-	.probe		 = smc911x_drv_probe,
+-	.remove	 = smc911x_drv_remove,
+-	.suspend	 = smc911x_drv_suspend,
+-	.resume	 = smc911x_drv_resume,
+-	.driver	 = {
+-		.name	 = CARDNAME,
+-	},
+-};
+-
+-module_platform_driver(smc911x_driver);
+diff --git a/drivers/net/ethernet/smsc/smc911x.h b/drivers/net/ethernet/smsc/smc911x.h
+deleted file mode 100644
+index d4edcc0da87c..000000000000
+--- a/drivers/net/ethernet/smsc/smc911x.h
++++ /dev/null
+@@ -1,901 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-or-later */
+-/*------------------------------------------------------------------------
+- . smc911x.h - macros for SMSC's LAN911{5,6,7,8} single-chip Ethernet device.
+- .
+- . Copyright (C) 2005 Sensoria Corp.
+- . Derived from the unified SMC91x driver by Nicolas Pitre
+- .
+- .
+- . Information contained in this file was obtained from the LAN9118
+- . manual from SMC.  To get a copy, if you really want one, you can find
+- . information under www.smsc.com.
+- .
+- . Authors
+- .	 Dustin McIntire		 <dustin@sensoria.com>
+- .
+- ---------------------------------------------------------------------------*/
+-#ifndef _SMC911X_H_
+-#define _SMC911X_H_
+-
+-#include <linux/smc911x.h>
+-/*
+- * Use the DMA feature on PXA chips
+- */
+-#ifdef CONFIG_ARCH_PXA
+-  #define SMC_USE_PXA_DMA	1
+-  #define SMC_USE_16BIT		0
+-  #define SMC_USE_32BIT		1
+-  #define SMC_IRQ_SENSE		IRQF_TRIGGER_FALLING
+-#elif defined(CONFIG_SH_MAGIC_PANEL_R2)
+-  #define SMC_USE_16BIT		0
+-  #define SMC_USE_32BIT		1
+-  #define SMC_IRQ_SENSE		IRQF_TRIGGER_LOW
+-#elif defined(CONFIG_ARCH_OMAP3)
+-  #define SMC_USE_16BIT		0
+-  #define SMC_USE_32BIT		1
+-  #define SMC_IRQ_SENSE		IRQF_TRIGGER_LOW
+-  #define SMC_MEM_RESERVED	1
+-#elif defined(CONFIG_ARCH_OMAP2)
+-  #define SMC_USE_16BIT		0
+-  #define SMC_USE_32BIT		1
+-  #define SMC_IRQ_SENSE		IRQF_TRIGGER_LOW
+-  #define SMC_MEM_RESERVED	1
+-#else
+-/*
+- * Default configuration
+- */
+-
+-#define SMC_DYNAMIC_BUS_CONFIG
+-#endif
+-
+-#ifdef SMC_USE_PXA_DMA
+-#define SMC_USE_DMA
+-#endif
+-
+-/* store this information for the driver.. */
+-struct smc911x_local {
+-	/*
+-	 * If I have to wait until the DMA is finished and ready to reload a
+-	 * packet, I will store the skbuff here. Then, the DMA will send it
+-	 * out and free it.
+-	 */
+-	struct sk_buff *pending_tx_skb;
+-
+-	/* version/revision of the SMC911x chip */
+-	u16 version;
+-	u16 revision;
+-
+-	/* FIFO sizes */
+-	int tx_fifo_kb;
+-	int tx_fifo_size;
+-	int rx_fifo_size;
+-	int afc_cfg;
+-
+-	/* Contains the current active receive/phy mode */
+-	int ctl_rfduplx;
+-	int ctl_rspeed;
+-
+-	u32 msg_enable;
+-	u32 phy_type;
+-	struct mii_if_info mii;
+-
+-	/* work queue */
+-	struct work_struct phy_configure;
+-
+-	int tx_throttle;
+-	spinlock_t lock;
+-
+-	struct net_device *netdev;
+-
+-#ifdef SMC_USE_DMA
+-	/* DMA needs the physical address of the chip */
+-	u_long physaddr;
+-	struct dma_chan *rxdma;
+-	struct dma_chan *txdma;
+-	int rxdma_active;
+-	int txdma_active;
+-	struct sk_buff *current_rx_skb;
+-	struct sk_buff *current_tx_skb;
+-	struct device *dev;
+-#endif
+-	void __iomem *base;
+-#ifdef SMC_DYNAMIC_BUS_CONFIG
+-	struct smc911x_platdata cfg;
+-#endif
+-};
+-
+-/*
+- * Define the bus width specific IO macros
+- */
+-
+-#ifdef SMC_DYNAMIC_BUS_CONFIG
+-static inline unsigned int SMC_inl(struct smc911x_local *lp, int reg)
+-{
+-	void __iomem *ioaddr = lp->base + reg;
+-
+-	if (lp->cfg.flags & SMC911X_USE_32BIT)
+-		return readl(ioaddr);
+-
+-	if (lp->cfg.flags & SMC911X_USE_16BIT)
+-		return readw(ioaddr) | (readw(ioaddr + 2) << 16);
+-
+-	BUG();
+-}
+-
+-static inline void SMC_outl(unsigned int value, struct smc911x_local *lp,
+-			    int reg)
+-{
+-	void __iomem *ioaddr = lp->base + reg;
+-
+-	if (lp->cfg.flags & SMC911X_USE_32BIT) {
+-		writel(value, ioaddr);
+-		return;
+-	}
+-
+-	if (lp->cfg.flags & SMC911X_USE_16BIT) {
+-		writew(value & 0xffff, ioaddr);
+-		writew(value >> 16, ioaddr + 2);
+-		return;
+-	}
+-
+-	BUG();
+-}
+-
+-static inline void SMC_insl(struct smc911x_local *lp, int reg,
+-			      void *addr, unsigned int count)
+-{
+-	void __iomem *ioaddr = lp->base + reg;
+-
+-	if (lp->cfg.flags & SMC911X_USE_32BIT) {
+-		ioread32_rep(ioaddr, addr, count);
+-		return;
+-	}
+-
+-	if (lp->cfg.flags & SMC911X_USE_16BIT) {
+-		ioread16_rep(ioaddr, addr, count * 2);
+-		return;
+-	}
+-
+-	BUG();
+-}
+-
+-static inline void SMC_outsl(struct smc911x_local *lp, int reg,
+-			     void *addr, unsigned int count)
+-{
+-	void __iomem *ioaddr = lp->base + reg;
+-
+-	if (lp->cfg.flags & SMC911X_USE_32BIT) {
+-		iowrite32_rep(ioaddr, addr, count);
+-		return;
+-	}
+-
+-	if (lp->cfg.flags & SMC911X_USE_16BIT) {
+-		iowrite16_rep(ioaddr, addr, count * 2);
+-		return;
+-	}
+-
+-	BUG();
+-}
+-#else
+-#if	SMC_USE_16BIT
+-#define SMC_inl(lp, r)		 ((readw((lp)->base + (r)) & 0xFFFF) + (readw((lp)->base + (r) + 2) << 16))
+-#define SMC_outl(v, lp, r) 			 \
+-	do{					 \
+-		 writew(v & 0xFFFF, (lp)->base + (r));	 \
+-		 writew(v >> 16, (lp)->base + (r) + 2); \
+-	 } while (0)
+-#define SMC_insl(lp, r, p, l)	 ioread16_rep((short*)((lp)->base + (r)), p, l*2)
+-#define SMC_outsl(lp, r, p, l)	 iowrite16_rep((short*)((lp)->base + (r)), p, l*2)
+-
+-#elif	SMC_USE_32BIT
+-#define SMC_inl(lp, r)		 readl((lp)->base + (r))
+-#define SMC_outl(v, lp, r)	 writel(v, (lp)->base + (r))
+-#define SMC_insl(lp, r, p, l)	 ioread32_rep((int*)((lp)->base + (r)), p, l)
+-#define SMC_outsl(lp, r, p, l)	 iowrite32_rep((int*)((lp)->base + (r)), p, l)
+-
+-#endif /* SMC_USE_16BIT */
+-#endif /* SMC_DYNAMIC_BUS_CONFIG */
+-
+-
+-#ifdef SMC_USE_PXA_DMA
+-
+-/*
+- * Use a DMA for RX and TX packets.
+- */
+-#include <linux/dma-mapping.h>
+-
+-static dma_addr_t rx_dmabuf, tx_dmabuf;
+-static int rx_dmalen, tx_dmalen;
+-static void smc911x_rx_dma_irq(void *data);
+-static void smc911x_tx_dma_irq(void *data);
+-
+-#ifdef SMC_insl
+-#undef SMC_insl
+-#define SMC_insl(lp, r, p, l) \
+-	smc_pxa_dma_insl(lp, lp->physaddr, r, lp->rxdma, p, l)
+-
+-static inline void
+-smc_pxa_dma_insl(struct smc911x_local *lp, u_long physaddr,
+-		int reg, struct dma_chan *dma, u_char *buf, int len)
+-{
+-	struct dma_async_tx_descriptor *tx;
+-
+-	/* 64 bit alignment is required for memory to memory DMA */
+-	if ((long)buf & 4) {
+-		*((u32 *)buf) = SMC_inl(lp, reg);
+-		buf += 4;
+-		len--;
+-	}
+-
+-	len *= 4;
+-	rx_dmabuf = dma_map_single(lp->dev, buf, len, DMA_FROM_DEVICE);
+-	rx_dmalen = len;
+-	tx = dmaengine_prep_slave_single(dma, rx_dmabuf, rx_dmalen,
+-					 DMA_DEV_TO_MEM, 0);
+-	if (tx) {
+-		tx->callback = smc911x_rx_dma_irq;
+-		tx->callback_param = lp;
+-		dmaengine_submit(tx);
+-		dma_async_issue_pending(dma);
+-	}
+-}
+-#endif
+-
+-#ifdef SMC_outsl
+-#undef SMC_outsl
+-#define SMC_outsl(lp, r, p, l) \
+-	 smc_pxa_dma_outsl(lp, lp->physaddr, r, lp->txdma, p, l)
+-
+-static inline void
+-smc_pxa_dma_outsl(struct smc911x_local *lp, u_long physaddr,
+-		int reg, struct dma_chan *dma, u_char *buf, int len)
+-{
+-	struct dma_async_tx_descriptor *tx;
+-
+-	/* 64 bit alignment is required for memory to memory DMA */
+-	if ((long)buf & 4) {
+-		SMC_outl(*((u32 *)buf), lp, reg);
+-		buf += 4;
+-		len--;
+-	}
+-
+-	len *= 4;
+-	tx_dmabuf = dma_map_single(lp->dev, buf, len, DMA_TO_DEVICE);
+-	tx_dmalen = len;
+-	tx = dmaengine_prep_slave_single(dma, tx_dmabuf, tx_dmalen,
+-					 DMA_DEV_TO_MEM, 0);
+-	if (tx) {
+-		tx->callback = smc911x_tx_dma_irq;
+-		tx->callback_param = lp;
+-		dmaengine_submit(tx);
+-		dma_async_issue_pending(dma);
+-	}
+-}
+-#endif
+-#endif	 /* SMC_USE_PXA_DMA */
+-
+-
+-/* Chip Parameters and Register Definitions */
+-
+-#define SMC911X_TX_FIFO_LOW_THRESHOLD	(1536*2)
+-
+-#define SMC911X_IO_EXTENT	 0x100
+-
+-#define SMC911X_EEPROM_LEN	 7
+-
+-/* Below are the register offsets and bit definitions
+- * of the Lan911x memory space
+- */
+-#define RX_DATA_FIFO		 (0x00)
+-
+-#define TX_DATA_FIFO		 (0x20)
+-#define	TX_CMD_A_INT_ON_COMP_		(0x80000000)
+-#define	TX_CMD_A_INT_BUF_END_ALGN_	(0x03000000)
+-#define	TX_CMD_A_INT_4_BYTE_ALGN_	(0x00000000)
+-#define	TX_CMD_A_INT_16_BYTE_ALGN_	(0x01000000)
+-#define	TX_CMD_A_INT_32_BYTE_ALGN_	(0x02000000)
+-#define	TX_CMD_A_INT_DATA_OFFSET_	(0x001F0000)
+-#define	TX_CMD_A_INT_FIRST_SEG_		(0x00002000)
+-#define	TX_CMD_A_INT_LAST_SEG_		(0x00001000)
+-#define	TX_CMD_A_BUF_SIZE_		(0x000007FF)
+-#define	TX_CMD_B_PKT_TAG_		(0xFFFF0000)
+-#define	TX_CMD_B_ADD_CRC_DISABLE_	(0x00002000)
+-#define	TX_CMD_B_DISABLE_PADDING_	(0x00001000)
+-#define	TX_CMD_B_PKT_BYTE_LENGTH_	(0x000007FF)
+-
+-#define RX_STATUS_FIFO		(0x40)
+-#define	RX_STS_PKT_LEN_			(0x3FFF0000)
+-#define	RX_STS_ES_			(0x00008000)
+-#define	RX_STS_BCST_			(0x00002000)
+-#define	RX_STS_LEN_ERR_			(0x00001000)
+-#define	RX_STS_RUNT_ERR_		(0x00000800)
+-#define	RX_STS_MCAST_			(0x00000400)
+-#define	RX_STS_TOO_LONG_		(0x00000080)
+-#define	RX_STS_COLL_			(0x00000040)
+-#define	RX_STS_ETH_TYPE_		(0x00000020)
+-#define	RX_STS_WDOG_TMT_		(0x00000010)
+-#define	RX_STS_MII_ERR_			(0x00000008)
+-#define	RX_STS_DRIBBLING_		(0x00000004)
+-#define	RX_STS_CRC_ERR_			(0x00000002)
+-#define RX_STATUS_FIFO_PEEK 	(0x44)
+-#define TX_STATUS_FIFO		(0x48)
+-#define	TX_STS_TAG_			(0xFFFF0000)
+-#define	TX_STS_ES_			(0x00008000)
+-#define	TX_STS_LOC_			(0x00000800)
+-#define	TX_STS_NO_CARR_			(0x00000400)
+-#define	TX_STS_LATE_COLL_		(0x00000200)
+-#define	TX_STS_MANY_COLL_		(0x00000100)
+-#define	TX_STS_COLL_CNT_		(0x00000078)
+-#define	TX_STS_MANY_DEFER_		(0x00000004)
+-#define	TX_STS_UNDERRUN_		(0x00000002)
+-#define	TX_STS_DEFERRED_		(0x00000001)
+-#define TX_STATUS_FIFO_PEEK	(0x4C)
+-#define ID_REV			(0x50)
+-#define	ID_REV_CHIP_ID_			(0xFFFF0000)  /* RO */
+-#define	ID_REV_REV_ID_			(0x0000FFFF)  /* RO */
+-
+-#define INT_CFG			(0x54)
+-#define	INT_CFG_INT_DEAS_		(0xFF000000)  /* R/W */
+-#define	INT_CFG_INT_DEAS_CLR_		(0x00004000)
+-#define	INT_CFG_INT_DEAS_STS_		(0x00002000)
+-#define	INT_CFG_IRQ_INT_		(0x00001000)  /* RO */
+-#define	INT_CFG_IRQ_EN_			(0x00000100)  /* R/W */
+-#define	INT_CFG_IRQ_POL_		(0x00000010)  /* R/W Not Affected by SW Reset */
+-#define	INT_CFG_IRQ_TYPE_		(0x00000001)  /* R/W Not Affected by SW Reset */
+-
+-#define INT_STS			(0x58)
+-#define	INT_STS_SW_INT_			(0x80000000)  /* R/WC */
+-#define	INT_STS_TXSTOP_INT_		(0x02000000)  /* R/WC */
+-#define	INT_STS_RXSTOP_INT_		(0x01000000)  /* R/WC */
+-#define	INT_STS_RXDFH_INT_		(0x00800000)  /* R/WC */
+-#define	INT_STS_RXDF_INT_		(0x00400000)  /* R/WC */
+-#define	INT_STS_TX_IOC_			(0x00200000)  /* R/WC */
+-#define	INT_STS_RXD_INT_		(0x00100000)  /* R/WC */
+-#define	INT_STS_GPT_INT_		(0x00080000)  /* R/WC */
+-#define	INT_STS_PHY_INT_		(0x00040000)  /* RO */
+-#define	INT_STS_PME_INT_		(0x00020000)  /* R/WC */
+-#define	INT_STS_TXSO_			(0x00010000)  /* R/WC */
+-#define	INT_STS_RWT_			(0x00008000)  /* R/WC */
+-#define	INT_STS_RXE_			(0x00004000)  /* R/WC */
+-#define	INT_STS_TXE_			(0x00002000)  /* R/WC */
+-//#define	INT_STS_ERX_		(0x00001000)  /* R/WC */
+-#define	INT_STS_TDFU_			(0x00000800)  /* R/WC */
+-#define	INT_STS_TDFO_			(0x00000400)  /* R/WC */
+-#define	INT_STS_TDFA_			(0x00000200)  /* R/WC */
+-#define	INT_STS_TSFF_			(0x00000100)  /* R/WC */
+-#define	INT_STS_TSFL_			(0x00000080)  /* R/WC */
+-//#define	INT_STS_RXDF_		(0x00000040)  /* R/WC */
+-#define	INT_STS_RDFO_			(0x00000040)  /* R/WC */
+-#define	INT_STS_RDFL_			(0x00000020)  /* R/WC */
+-#define	INT_STS_RSFF_			(0x00000010)  /* R/WC */
+-#define	INT_STS_RSFL_			(0x00000008)  /* R/WC */
+-#define	INT_STS_GPIO2_INT_		(0x00000004)  /* R/WC */
+-#define	INT_STS_GPIO1_INT_		(0x00000002)  /* R/WC */
+-#define	INT_STS_GPIO0_INT_		(0x00000001)  /* R/WC */
+-
+-#define INT_EN			(0x5C)
+-#define	INT_EN_SW_INT_EN_		(0x80000000)  /* R/W */
+-#define	INT_EN_TXSTOP_INT_EN_		(0x02000000)  /* R/W */
+-#define	INT_EN_RXSTOP_INT_EN_		(0x01000000)  /* R/W */
+-#define	INT_EN_RXDFH_INT_EN_		(0x00800000)  /* R/W */
+-//#define	INT_EN_RXDF_INT_EN_		(0x00400000)  /* R/W */
+-#define	INT_EN_TIOC_INT_EN_		(0x00200000)  /* R/W */
+-#define	INT_EN_RXD_INT_EN_		(0x00100000)  /* R/W */
+-#define	INT_EN_GPT_INT_EN_		(0x00080000)  /* R/W */
+-#define	INT_EN_PHY_INT_EN_		(0x00040000)  /* R/W */
+-#define	INT_EN_PME_INT_EN_		(0x00020000)  /* R/W */
+-#define	INT_EN_TXSO_EN_			(0x00010000)  /* R/W */
+-#define	INT_EN_RWT_EN_			(0x00008000)  /* R/W */
+-#define	INT_EN_RXE_EN_			(0x00004000)  /* R/W */
+-#define	INT_EN_TXE_EN_			(0x00002000)  /* R/W */
+-//#define	INT_EN_ERX_EN_			(0x00001000)  /* R/W */
+-#define	INT_EN_TDFU_EN_			(0x00000800)  /* R/W */
+-#define	INT_EN_TDFO_EN_			(0x00000400)  /* R/W */
+-#define	INT_EN_TDFA_EN_			(0x00000200)  /* R/W */
+-#define	INT_EN_TSFF_EN_			(0x00000100)  /* R/W */
+-#define	INT_EN_TSFL_EN_			(0x00000080)  /* R/W */
+-//#define	INT_EN_RXDF_EN_			(0x00000040)  /* R/W */
+-#define	INT_EN_RDFO_EN_			(0x00000040)  /* R/W */
+-#define	INT_EN_RDFL_EN_			(0x00000020)  /* R/W */
+-#define	INT_EN_RSFF_EN_			(0x00000010)  /* R/W */
+-#define	INT_EN_RSFL_EN_			(0x00000008)  /* R/W */
+-#define	INT_EN_GPIO2_INT_		(0x00000004)  /* R/W */
+-#define	INT_EN_GPIO1_INT_		(0x00000002)  /* R/W */
+-#define	INT_EN_GPIO0_INT_		(0x00000001)  /* R/W */
+-
+-#define BYTE_TEST		(0x64)
+-#define FIFO_INT		(0x68)
+-#define	FIFO_INT_TX_AVAIL_LEVEL_	(0xFF000000)  /* R/W */
+-#define	FIFO_INT_TX_STS_LEVEL_		(0x00FF0000)  /* R/W */
+-#define	FIFO_INT_RX_AVAIL_LEVEL_	(0x0000FF00)  /* R/W */
+-#define	FIFO_INT_RX_STS_LEVEL_		(0x000000FF)  /* R/W */
+-
+-#define RX_CFG			(0x6C)
+-#define	RX_CFG_RX_END_ALGN_		(0xC0000000)  /* R/W */
+-#define		RX_CFG_RX_END_ALGN4_		(0x00000000)  /* R/W */
+-#define		RX_CFG_RX_END_ALGN16_		(0x40000000)  /* R/W */
+-#define		RX_CFG_RX_END_ALGN32_		(0x80000000)  /* R/W */
+-#define	RX_CFG_RX_DMA_CNT_		(0x0FFF0000)  /* R/W */
+-#define	RX_CFG_RX_DUMP_			(0x00008000)  /* R/W */
+-#define	RX_CFG_RXDOFF_			(0x00001F00)  /* R/W */
+-//#define	RX_CFG_RXBAD_			(0x00000001)  /* R/W */
+-
+-#define TX_CFG			(0x70)
+-//#define	TX_CFG_TX_DMA_LVL_		(0xE0000000)	 /* R/W */
+-//#define	TX_CFG_TX_DMA_CNT_		(0x0FFF0000)	 /* R/W Self Clearing */
+-#define	TX_CFG_TXS_DUMP_		(0x00008000)  /* Self Clearing */
+-#define	TX_CFG_TXD_DUMP_		(0x00004000)  /* Self Clearing */
+-#define	TX_CFG_TXSAO_			(0x00000004)  /* R/W */
+-#define	TX_CFG_TX_ON_			(0x00000002)  /* R/W */
+-#define	TX_CFG_STOP_TX_			(0x00000001)  /* Self Clearing */
+-
+-#define HW_CFG			(0x74)
+-#define	HW_CFG_TTM_			(0x00200000)  /* R/W */
+-#define	HW_CFG_SF_			(0x00100000)  /* R/W */
+-#define	HW_CFG_TX_FIF_SZ_		(0x000F0000)  /* R/W */
+-#define	HW_CFG_TR_			(0x00003000)  /* R/W */
+-#define	HW_CFG_PHY_CLK_SEL_		(0x00000060)  /* R/W */
+-#define		 HW_CFG_PHY_CLK_SEL_INT_PHY_ 	(0x00000000) /* R/W */
+-#define		 HW_CFG_PHY_CLK_SEL_EXT_PHY_ 	(0x00000020) /* R/W */
+-#define		 HW_CFG_PHY_CLK_SEL_CLK_DIS_ 	(0x00000040) /* R/W */
+-#define	HW_CFG_SMI_SEL_			(0x00000010)  /* R/W */
+-#define	HW_CFG_EXT_PHY_DET_		(0x00000008)  /* RO */
+-#define	HW_CFG_EXT_PHY_EN_		(0x00000004)  /* R/W */
+-#define	HW_CFG_32_16_BIT_MODE_		(0x00000004)  /* RO */
+-#define	HW_CFG_SRST_TO_			(0x00000002)  /* RO */
+-#define	HW_CFG_SRST_			(0x00000001)  /* Self Clearing */
+-
+-#define RX_DP_CTRL		(0x78)
+-#define	RX_DP_CTRL_RX_FFWD_		(0x80000000)  /* R/W */
+-#define	RX_DP_CTRL_FFWD_BUSY_		(0x80000000)  /* RO */
+-
+-#define RX_FIFO_INF		(0x7C)
+-#define	 RX_FIFO_INF_RXSUSED_		(0x00FF0000)  /* RO */
+-#define	 RX_FIFO_INF_RXDUSED_		(0x0000FFFF)  /* RO */
+-
+-#define TX_FIFO_INF		(0x80)
+-#define	TX_FIFO_INF_TSUSED_		(0x00FF0000)  /* RO */
+-#define	TX_FIFO_INF_TDFREE_		(0x0000FFFF)  /* RO */
+-
+-#define PMT_CTRL		(0x84)
+-#define	PMT_CTRL_PM_MODE_		(0x00003000)  /* Self Clearing */
+-#define	PMT_CTRL_PHY_RST_		(0x00000400)  /* Self Clearing */
+-#define	PMT_CTRL_WOL_EN_		(0x00000200)  /* R/W */
+-#define	PMT_CTRL_ED_EN_			(0x00000100)  /* R/W */
+-#define	PMT_CTRL_PME_TYPE_		(0x00000040)  /* R/W Not Affected by SW Reset */
+-#define	PMT_CTRL_WUPS_			(0x00000030)  /* R/WC */
+-#define		PMT_CTRL_WUPS_NOWAKE_		(0x00000000)  /* R/WC */
+-#define		PMT_CTRL_WUPS_ED_		(0x00000010)  /* R/WC */
+-#define		PMT_CTRL_WUPS_WOL_		(0x00000020)  /* R/WC */
+-#define		PMT_CTRL_WUPS_MULTI_		(0x00000030)  /* R/WC */
+-#define	PMT_CTRL_PME_IND_		(0x00000008)  /* R/W */
+-#define	PMT_CTRL_PME_POL_		(0x00000004)  /* R/W */
+-#define	PMT_CTRL_PME_EN_		(0x00000002)  /* R/W Not Affected by SW Reset */
+-#define	PMT_CTRL_READY_			(0x00000001)  /* RO */
+-
+-#define GPIO_CFG		(0x88)
+-#define	GPIO_CFG_LED3_EN_		(0x40000000)  /* R/W */
+-#define	GPIO_CFG_LED2_EN_		(0x20000000)  /* R/W */
+-#define	GPIO_CFG_LED1_EN_		(0x10000000)  /* R/W */
+-#define	GPIO_CFG_GPIO2_INT_POL_		(0x04000000)  /* R/W */
+-#define	GPIO_CFG_GPIO1_INT_POL_		(0x02000000)  /* R/W */
+-#define	GPIO_CFG_GPIO0_INT_POL_		(0x01000000)  /* R/W */
+-#define	GPIO_CFG_EEPR_EN_		(0x00700000)  /* R/W */
+-#define	GPIO_CFG_GPIOBUF2_		(0x00040000)  /* R/W */
+-#define	GPIO_CFG_GPIOBUF1_		(0x00020000)  /* R/W */
+-#define	GPIO_CFG_GPIOBUF0_		(0x00010000)  /* R/W */
+-#define	GPIO_CFG_GPIODIR2_		(0x00000400)  /* R/W */
+-#define	GPIO_CFG_GPIODIR1_		(0x00000200)  /* R/W */
+-#define	GPIO_CFG_GPIODIR0_		(0x00000100)  /* R/W */
+-#define	GPIO_CFG_GPIOD4_		(0x00000010)  /* R/W */
+-#define	GPIO_CFG_GPIOD3_		(0x00000008)  /* R/W */
+-#define	GPIO_CFG_GPIOD2_		(0x00000004)  /* R/W */
+-#define	GPIO_CFG_GPIOD1_		(0x00000002)  /* R/W */
+-#define	GPIO_CFG_GPIOD0_		(0x00000001)  /* R/W */
+-
+-#define GPT_CFG			(0x8C)
+-#define	GPT_CFG_TIMER_EN_		(0x20000000)  /* R/W */
+-#define	GPT_CFG_GPT_LOAD_		(0x0000FFFF)  /* R/W */
+-
+-#define GPT_CNT			(0x90)
+-#define	GPT_CNT_GPT_CNT_		(0x0000FFFF)  /* RO */
+-
+-#define ENDIAN			(0x98)
+-#define FREE_RUN		(0x9C)
+-#define RX_DROP			(0xA0)
+-#define MAC_CSR_CMD		(0xA4)
+-#define	 MAC_CSR_CMD_CSR_BUSY_		(0x80000000)  /* Self Clearing */
+-#define	 MAC_CSR_CMD_R_NOT_W_		(0x40000000)  /* R/W */
+-#define	 MAC_CSR_CMD_CSR_ADDR_		(0x000000FF)  /* R/W */
+-
+-#define MAC_CSR_DATA		(0xA8)
+-#define AFC_CFG			(0xAC)
+-#define		AFC_CFG_AFC_HI_			(0x00FF0000)  /* R/W */
+-#define		AFC_CFG_AFC_LO_			(0x0000FF00)  /* R/W */
+-#define		AFC_CFG_BACK_DUR_		(0x000000F0)  /* R/W */
+-#define		AFC_CFG_FCMULT_			(0x00000008)  /* R/W */
+-#define		AFC_CFG_FCBRD_			(0x00000004)  /* R/W */
+-#define		AFC_CFG_FCADD_			(0x00000002)  /* R/W */
+-#define		AFC_CFG_FCANY_			(0x00000001)  /* R/W */
+-
+-#define E2P_CMD			(0xB0)
+-#define	E2P_CMD_EPC_BUSY_		(0x80000000)  /* Self Clearing */
+-#define	E2P_CMD_EPC_CMD_			(0x70000000)  /* R/W */
+-#define		E2P_CMD_EPC_CMD_READ_		(0x00000000)  /* R/W */
+-#define		E2P_CMD_EPC_CMD_EWDS_		(0x10000000)  /* R/W */
+-#define		E2P_CMD_EPC_CMD_EWEN_		(0x20000000)  /* R/W */
+-#define		E2P_CMD_EPC_CMD_WRITE_		(0x30000000)  /* R/W */
+-#define		E2P_CMD_EPC_CMD_WRAL_		(0x40000000)  /* R/W */
+-#define		E2P_CMD_EPC_CMD_ERASE_		(0x50000000)  /* R/W */
+-#define		E2P_CMD_EPC_CMD_ERAL_		(0x60000000)  /* R/W */
+-#define		E2P_CMD_EPC_CMD_RELOAD_		(0x70000000)  /* R/W */
+-#define	E2P_CMD_EPC_TIMEOUT_		(0x00000200)  /* RO */
+-#define	E2P_CMD_MAC_ADDR_LOADED_	(0x00000100)  /* RO */
+-#define	E2P_CMD_EPC_ADDR_		(0x000000FF)  /* R/W */
+-
+-#define E2P_DATA		(0xB4)
+-#define	E2P_DATA_EEPROM_DATA_		(0x000000FF)  /* R/W */
+-/* end of LAN register offsets and bit definitions */
+-
+-/*
+- ****************************************************************************
+- ****************************************************************************
+- * MAC Control and Status Register (Indirect Address)
+- * Offset (through the MAC_CSR CMD and DATA port)
+- ****************************************************************************
+- ****************************************************************************
+- *
+- */
+-#define MAC_CR			(0x01)  /* R/W */
+-
+-/* MAC_CR - MAC Control Register */
+-#define MAC_CR_RXALL_			(0x80000000)
+-// TODO: delete this bit? It is not described in the data sheet.
+-#define MAC_CR_HBDIS_			(0x10000000)
+-#define MAC_CR_RCVOWN_			(0x00800000)
+-#define MAC_CR_LOOPBK_			(0x00200000)
+-#define MAC_CR_FDPX_			(0x00100000)
+-#define MAC_CR_MCPAS_			(0x00080000)
+-#define MAC_CR_PRMS_			(0x00040000)
+-#define MAC_CR_INVFILT_			(0x00020000)
+-#define MAC_CR_PASSBAD_			(0x00010000)
+-#define MAC_CR_HFILT_			(0x00008000)
+-#define MAC_CR_HPFILT_			(0x00002000)
+-#define MAC_CR_LCOLL_			(0x00001000)
+-#define MAC_CR_BCAST_			(0x00000800)
+-#define MAC_CR_DISRTY_			(0x00000400)
+-#define MAC_CR_PADSTR_			(0x00000100)
+-#define MAC_CR_BOLMT_MASK_		(0x000000C0)
+-#define MAC_CR_DFCHK_			(0x00000020)
+-#define MAC_CR_TXEN_			(0x00000008)
+-#define MAC_CR_RXEN_			(0x00000004)
+-
+-#define ADDRH			(0x02)	  /* R/W mask 0x0000FFFFUL */
+-#define ADDRL			(0x03)	  /* R/W mask 0xFFFFFFFFUL */
+-#define HASHH			(0x04)	  /* R/W */
+-#define HASHL			(0x05)	  /* R/W */
+-
+-#define MII_ACC			(0x06)	  /* R/W */
+-#define MII_ACC_PHY_ADDR_		(0x0000F800)
+-#define MII_ACC_MIIRINDA_		(0x000007C0)
+-#define MII_ACC_MII_WRITE_		(0x00000002)
+-#define MII_ACC_MII_BUSY_		(0x00000001)
+-
+-#define MII_DATA		(0x07)	  /* R/W mask 0x0000FFFFUL */
+-
+-#define FLOW			(0x08)	  /* R/W */
+-#define FLOW_FCPT_			(0xFFFF0000)
+-#define FLOW_FCPASS_			(0x00000004)
+-#define FLOW_FCEN_			(0x00000002)
+-#define FLOW_FCBSY_			(0x00000001)
+-
+-#define VLAN1			(0x09)	  /* R/W mask 0x0000FFFFUL */
+-#define VLAN1_VTI1_			(0x0000ffff)
+-
+-#define VLAN2			(0x0A)	  /* R/W mask 0x0000FFFFUL */
+-#define VLAN2_VTI2_			(0x0000ffff)
+-
+-#define WUFF			(0x0B)	  /* WO */
+-
+-#define WUCSR			(0x0C)	  /* R/W */
+-#define WUCSR_GUE_			(0x00000200)
+-#define WUCSR_WUFR_			(0x00000040)
+-#define WUCSR_MPR_			(0x00000020)
+-#define WUCSR_WAKE_EN_			(0x00000004)
+-#define WUCSR_MPEN_			(0x00000002)
+-
+-/*
+- ****************************************************************************
+- * Chip Specific MII Defines
+- ****************************************************************************
+- *
+- * Phy register offsets and bit definitions
+- *
+- */
+-
+-#define PHY_MODE_CTRL_STS	((u32)17)	/* Mode Control/Status Register */
+-//#define MODE_CTRL_STS_FASTRIP_	  ((u16)0x4000)
+-#define MODE_CTRL_STS_EDPWRDOWN_	 ((u16)0x2000)
+-//#define MODE_CTRL_STS_LOWSQEN_	   ((u16)0x0800)
+-//#define MODE_CTRL_STS_MDPREBP_	   ((u16)0x0400)
+-//#define MODE_CTRL_STS_FARLOOPBACK_  ((u16)0x0200)
+-//#define MODE_CTRL_STS_FASTEST_	   ((u16)0x0100)
+-//#define MODE_CTRL_STS_REFCLKEN_	   ((u16)0x0010)
+-//#define MODE_CTRL_STS_PHYADBP_	   ((u16)0x0008)
+-//#define MODE_CTRL_STS_FORCE_G_LINK_ ((u16)0x0004)
+-#define MODE_CTRL_STS_ENERGYON_	 	((u16)0x0002)
+-
+-#define PHY_INT_SRC			((u32)29)
+-#define PHY_INT_SRC_ENERGY_ON_			((u16)0x0080)
+-#define PHY_INT_SRC_ANEG_COMP_			((u16)0x0040)
+-#define PHY_INT_SRC_REMOTE_FAULT_		((u16)0x0020)
+-#define PHY_INT_SRC_LINK_DOWN_			((u16)0x0010)
+-#define PHY_INT_SRC_ANEG_LP_ACK_		((u16)0x0008)
+-#define PHY_INT_SRC_PAR_DET_FAULT_		((u16)0x0004)
+-#define PHY_INT_SRC_ANEG_PGRX_			((u16)0x0002)
+-
+-#define PHY_INT_MASK			((u32)30)
+-#define PHY_INT_MASK_ENERGY_ON_			((u16)0x0080)
+-#define PHY_INT_MASK_ANEG_COMP_			((u16)0x0040)
+-#define PHY_INT_MASK_REMOTE_FAULT_		((u16)0x0020)
+-#define PHY_INT_MASK_LINK_DOWN_			((u16)0x0010)
+-#define PHY_INT_MASK_ANEG_LP_ACK_		((u16)0x0008)
+-#define PHY_INT_MASK_PAR_DET_FAULT_		((u16)0x0004)
+-#define PHY_INT_MASK_ANEG_PGRX_			((u16)0x0002)
+-
+-#define PHY_SPECIAL			((u32)31)
+-#define PHY_SPECIAL_ANEG_DONE_			((u16)0x1000)
+-#define PHY_SPECIAL_RES_			((u16)0x0040)
+-#define PHY_SPECIAL_RES_MASK_			((u16)0x0FE1)
+-#define PHY_SPECIAL_SPD_			((u16)0x001C)
+-#define PHY_SPECIAL_SPD_10HALF_			((u16)0x0004)
+-#define PHY_SPECIAL_SPD_10FULL_			((u16)0x0014)
+-#define PHY_SPECIAL_SPD_100HALF_		((u16)0x0008)
+-#define PHY_SPECIAL_SPD_100FULL_		((u16)0x0018)
+-
+-#define LAN911X_INTERNAL_PHY_ID		(0x0007C000)
+-
+-/* Chip ID values */
+-#define CHIP_9115	0x0115
+-#define CHIP_9116	0x0116
+-#define CHIP_9117	0x0117
+-#define CHIP_9118	0x0118
+-#define CHIP_9211	0x9211
+-#define CHIP_9215	0x115A
+-#define CHIP_9217	0x117A
+-#define CHIP_9218	0x118A
+-
+-struct chip_id {
+-	u16 id;
+-	char *name;
+-};
+-
+-static const struct chip_id chip_ids[] =  {
+-	{ CHIP_9115, "LAN9115" },
+-	{ CHIP_9116, "LAN9116" },
+-	{ CHIP_9117, "LAN9117" },
+-	{ CHIP_9118, "LAN9118" },
+-	{ CHIP_9211, "LAN9211" },
+-	{ CHIP_9215, "LAN9215" },
+-	{ CHIP_9217, "LAN9217" },
+-	{ CHIP_9218, "LAN9218" },
+-	{ 0, NULL },
+-};
+-
+-#define IS_REV_A(x)	((x & 0xFFFF)==0)
+-
+-/*
+- * Macros to abstract register access according to the data bus
+- * capabilities.  Please use those and not the in/out primitives.
+- */
+-/* FIFO read/write macros */
+-#define SMC_PUSH_DATA(lp, p, l)	SMC_outsl( lp, TX_DATA_FIFO, p, (l) >> 2 )
+-#define SMC_PULL_DATA(lp, p, l)	SMC_insl ( lp, RX_DATA_FIFO, p, (l) >> 2 )
+-#define SMC_SET_TX_FIFO(lp, x) 	SMC_outl( x, lp, TX_DATA_FIFO )
+-#define SMC_GET_RX_FIFO(lp)	SMC_inl( lp, RX_DATA_FIFO )
+-
+-
+-/* I/O mapped register read/write macros */
+-#define SMC_GET_TX_STS_FIFO(lp)		SMC_inl( lp, TX_STATUS_FIFO )
+-#define SMC_GET_RX_STS_FIFO(lp)		SMC_inl( lp, RX_STATUS_FIFO )
+-#define SMC_GET_RX_STS_FIFO_PEEK(lp)	SMC_inl( lp, RX_STATUS_FIFO_PEEK )
+-#define SMC_GET_PN(lp)			(SMC_inl( lp, ID_REV ) >> 16)
+-#define SMC_GET_REV(lp)			(SMC_inl( lp, ID_REV ) & 0xFFFF)
+-#define SMC_GET_IRQ_CFG(lp)		SMC_inl( lp, INT_CFG )
+-#define SMC_SET_IRQ_CFG(lp, x)		SMC_outl( x, lp, INT_CFG )
+-#define SMC_GET_INT(lp)			SMC_inl( lp, INT_STS )
+-#define SMC_ACK_INT(lp, x)			SMC_outl( x, lp, INT_STS )
+-#define SMC_GET_INT_EN(lp)		SMC_inl( lp, INT_EN )
+-#define SMC_SET_INT_EN(lp, x)		SMC_outl( x, lp, INT_EN )
+-#define SMC_GET_BYTE_TEST(lp)		SMC_inl( lp, BYTE_TEST )
+-#define SMC_SET_BYTE_TEST(lp, x)		SMC_outl( x, lp, BYTE_TEST )
+-#define SMC_GET_FIFO_INT(lp)		SMC_inl( lp, FIFO_INT )
+-#define SMC_SET_FIFO_INT(lp, x)		SMC_outl( x, lp, FIFO_INT )
+-#define SMC_SET_FIFO_TDA(lp, x)					\
+-	do {							\
+-		unsigned long __flags;				\
+-		int __mask;					\
+-		local_irq_save(__flags);			\
+-		__mask = SMC_GET_FIFO_INT((lp)) & ~(0xFF<<24);	\
+-		SMC_SET_FIFO_INT( (lp), __mask | (x)<<24 );	\
+-		local_irq_restore(__flags);			\
+-	} while (0)
+-#define SMC_SET_FIFO_TSL(lp, x)					\
+-	do {							\
+-		unsigned long __flags;				\
+-		int __mask;					\
+-		local_irq_save(__flags);			\
+-		__mask = SMC_GET_FIFO_INT((lp)) & ~(0xFF<<16);	\
+-		SMC_SET_FIFO_INT( (lp), __mask | (((x) & 0xFF)<<16));	\
+-		local_irq_restore(__flags);			\
+-	} while (0)
+-#define SMC_SET_FIFO_RSA(lp, x)					\
+-	do {							\
+-		unsigned long __flags;				\
+-		int __mask;					\
+-		local_irq_save(__flags);			\
+-		__mask = SMC_GET_FIFO_INT((lp)) & ~(0xFF<<8);	\
+-		SMC_SET_FIFO_INT( (lp), __mask | (((x) & 0xFF)<<8));	\
+-		local_irq_restore(__flags);			\
+-	} while (0)
+-#define SMC_SET_FIFO_RSL(lp, x)					\
+-	do {							\
+-		unsigned long __flags;				\
+-		int __mask;					\
+-		local_irq_save(__flags);			\
+-		__mask = SMC_GET_FIFO_INT((lp)) & ~0xFF;	\
+-		SMC_SET_FIFO_INT( (lp),__mask | ((x) & 0xFF));	\
+-		local_irq_restore(__flags);			\
+-	} while (0)
+-#define SMC_GET_RX_CFG(lp)		SMC_inl( lp, RX_CFG )
+-#define SMC_SET_RX_CFG(lp, x)		SMC_outl( x, lp, RX_CFG )
+-#define SMC_GET_TX_CFG(lp)		SMC_inl( lp, TX_CFG )
+-#define SMC_SET_TX_CFG(lp, x)		SMC_outl( x, lp, TX_CFG )
+-#define SMC_GET_HW_CFG(lp)		SMC_inl( lp, HW_CFG )
+-#define SMC_SET_HW_CFG(lp, x)		SMC_outl( x, lp, HW_CFG )
+-#define SMC_GET_RX_DP_CTRL(lp)		SMC_inl( lp, RX_DP_CTRL )
+-#define SMC_SET_RX_DP_CTRL(lp, x)		SMC_outl( x, lp, RX_DP_CTRL )
+-#define SMC_GET_PMT_CTRL(lp)		SMC_inl( lp, PMT_CTRL )
+-#define SMC_SET_PMT_CTRL(lp, x)		SMC_outl( x, lp, PMT_CTRL )
+-#define SMC_GET_GPIO_CFG(lp)		SMC_inl( lp, GPIO_CFG )
+-#define SMC_SET_GPIO_CFG(lp, x)		SMC_outl( x, lp, GPIO_CFG )
+-#define SMC_GET_RX_FIFO_INF(lp)		SMC_inl( lp, RX_FIFO_INF )
+-#define SMC_SET_RX_FIFO_INF(lp, x)		SMC_outl( x, lp, RX_FIFO_INF )
+-#define SMC_GET_TX_FIFO_INF(lp)		SMC_inl( lp, TX_FIFO_INF )
+-#define SMC_SET_TX_FIFO_INF(lp, x)		SMC_outl( x, lp, TX_FIFO_INF )
+-#define SMC_GET_GPT_CFG(lp)		SMC_inl( lp, GPT_CFG )
+-#define SMC_SET_GPT_CFG(lp, x)		SMC_outl( x, lp, GPT_CFG )
+-#define SMC_GET_RX_DROP(lp)		SMC_inl( lp, RX_DROP )
+-#define SMC_SET_RX_DROP(lp, x)		SMC_outl( x, lp, RX_DROP )
+-#define SMC_GET_MAC_CMD(lp)		SMC_inl( lp, MAC_CSR_CMD )
+-#define SMC_SET_MAC_CMD(lp, x)		SMC_outl( x, lp, MAC_CSR_CMD )
+-#define SMC_GET_MAC_DATA(lp)		SMC_inl( lp, MAC_CSR_DATA )
+-#define SMC_SET_MAC_DATA(lp, x)		SMC_outl( x, lp, MAC_CSR_DATA )
+-#define SMC_GET_AFC_CFG(lp)		SMC_inl( lp, AFC_CFG )
+-#define SMC_SET_AFC_CFG(lp, x)		SMC_outl( x, lp, AFC_CFG )
+-#define SMC_GET_E2P_CMD(lp)		SMC_inl( lp, E2P_CMD )
+-#define SMC_SET_E2P_CMD(lp, x)		SMC_outl( x, lp, E2P_CMD )
+-#define SMC_GET_E2P_DATA(lp)		SMC_inl( lp, E2P_DATA )
+-#define SMC_SET_E2P_DATA(lp, x)		SMC_outl( x, lp, E2P_DATA )
+-
+-/* MAC register read/write macros */
+-#define SMC_GET_MAC_CSR(lp,a,v)						\
+-	do {								\
+-		while (SMC_GET_MAC_CMD((lp)) & MAC_CSR_CMD_CSR_BUSY_);	\
+-		SMC_SET_MAC_CMD((lp),MAC_CSR_CMD_CSR_BUSY_ |		\
+-			MAC_CSR_CMD_R_NOT_W_ | (a) );			\
+-		while (SMC_GET_MAC_CMD((lp)) & MAC_CSR_CMD_CSR_BUSY_);	\
+-		v = SMC_GET_MAC_DATA((lp));			       	\
+-	} while (0)
+-#define SMC_SET_MAC_CSR(lp,a,v)						\
+-	do {								\
+-		while (SMC_GET_MAC_CMD((lp)) & MAC_CSR_CMD_CSR_BUSY_);	\
+-		SMC_SET_MAC_DATA((lp), v);				\
+-		SMC_SET_MAC_CMD((lp), MAC_CSR_CMD_CSR_BUSY_ | (a) );	\
+-		while (SMC_GET_MAC_CMD((lp)) & MAC_CSR_CMD_CSR_BUSY_);	\
+-	} while (0)
+-#define SMC_GET_MAC_CR(lp, x)	SMC_GET_MAC_CSR( (lp), MAC_CR, x )
+-#define SMC_SET_MAC_CR(lp, x)	SMC_SET_MAC_CSR( (lp), MAC_CR, x )
+-#define SMC_GET_ADDRH(lp, x)	SMC_GET_MAC_CSR( (lp), ADDRH, x )
+-#define SMC_SET_ADDRH(lp, x)	SMC_SET_MAC_CSR( (lp), ADDRH, x )
+-#define SMC_GET_ADDRL(lp, x)	SMC_GET_MAC_CSR( (lp), ADDRL, x )
+-#define SMC_SET_ADDRL(lp, x)	SMC_SET_MAC_CSR( (lp), ADDRL, x )
+-#define SMC_GET_HASHH(lp, x)	SMC_GET_MAC_CSR( (lp), HASHH, x )
+-#define SMC_SET_HASHH(lp, x)	SMC_SET_MAC_CSR( (lp), HASHH, x )
+-#define SMC_GET_HASHL(lp, x)	SMC_GET_MAC_CSR( (lp), HASHL, x )
+-#define SMC_SET_HASHL(lp, x)	SMC_SET_MAC_CSR( (lp), HASHL, x )
+-#define SMC_GET_MII_ACC(lp, x)	SMC_GET_MAC_CSR( (lp), MII_ACC, x )
+-#define SMC_SET_MII_ACC(lp, x)	SMC_SET_MAC_CSR( (lp), MII_ACC, x )
+-#define SMC_GET_MII_DATA(lp, x)	SMC_GET_MAC_CSR( (lp), MII_DATA, x )
+-#define SMC_SET_MII_DATA(lp, x)	SMC_SET_MAC_CSR( (lp), MII_DATA, x )
+-#define SMC_GET_FLOW(lp, x)		SMC_GET_MAC_CSR( (lp), FLOW, x )
+-#define SMC_SET_FLOW(lp, x)		SMC_SET_MAC_CSR( (lp), FLOW, x )
+-#define SMC_GET_VLAN1(lp, x)	SMC_GET_MAC_CSR( (lp), VLAN1, x )
+-#define SMC_SET_VLAN1(lp, x)	SMC_SET_MAC_CSR( (lp), VLAN1, x )
+-#define SMC_GET_VLAN2(lp, x)	SMC_GET_MAC_CSR( (lp), VLAN2, x )
+-#define SMC_SET_VLAN2(lp, x)	SMC_SET_MAC_CSR( (lp), VLAN2, x )
+-#define SMC_SET_WUFF(lp, x)		SMC_SET_MAC_CSR( (lp), WUFF, x )
+-#define SMC_GET_WUCSR(lp, x)	SMC_GET_MAC_CSR( (lp), WUCSR, x )
+-#define SMC_SET_WUCSR(lp, x)	SMC_SET_MAC_CSR( (lp), WUCSR, x )
+-
+-/* PHY register read/write macros */
+-#define SMC_GET_MII(lp,a,phy,v)					\
+-	do {							\
+-		u32 __v;					\
+-		do {						\
+-			SMC_GET_MII_ACC((lp), __v);			\
+-		} while ( __v & MII_ACC_MII_BUSY_ );		\
+-		SMC_SET_MII_ACC( (lp), ((phy)<<11) | ((a)<<6) |	\
+-			MII_ACC_MII_BUSY_);			\
+-		do {						\
+-			SMC_GET_MII_ACC( (lp), __v);			\
+-		} while ( __v & MII_ACC_MII_BUSY_ );		\
+-		SMC_GET_MII_DATA((lp), v);				\
+-	} while (0)
+-#define SMC_SET_MII(lp,a,phy,v)					\
+-	do {							\
+-		u32 __v;					\
+-		do {						\
+-			SMC_GET_MII_ACC((lp), __v);			\
+-		} while ( __v & MII_ACC_MII_BUSY_ );		\
+-		SMC_SET_MII_DATA((lp), v);				\
+-		SMC_SET_MII_ACC( (lp), ((phy)<<11) | ((a)<<6) |	\
+-			MII_ACC_MII_BUSY_	 |		\
+-			MII_ACC_MII_WRITE_  );			\
+-		do {						\
+-			SMC_GET_MII_ACC((lp), __v);			\
+-		} while ( __v & MII_ACC_MII_BUSY_ );		\
+-	} while (0)
+-#define SMC_GET_PHY_BMCR(lp,phy,x)		SMC_GET_MII( (lp), MII_BMCR, phy, x )
+-#define SMC_SET_PHY_BMCR(lp,phy,x)		SMC_SET_MII( (lp), MII_BMCR, phy, x )
+-#define SMC_GET_PHY_BMSR(lp,phy,x)		SMC_GET_MII( (lp), MII_BMSR, phy, x )
+-#define SMC_GET_PHY_ID1(lp,phy,x)		SMC_GET_MII( (lp), MII_PHYSID1, phy, x )
+-#define SMC_GET_PHY_ID2(lp,phy,x)		SMC_GET_MII( (lp), MII_PHYSID2, phy, x )
+-#define SMC_GET_PHY_MII_ADV(lp,phy,x)	SMC_GET_MII( (lp), MII_ADVERTISE, phy, x )
+-#define SMC_SET_PHY_MII_ADV(lp,phy,x)	SMC_SET_MII( (lp), MII_ADVERTISE, phy, x )
+-#define SMC_GET_PHY_MII_LPA(lp,phy,x)	SMC_GET_MII( (lp), MII_LPA, phy, x )
+-#define SMC_SET_PHY_MII_LPA(lp,phy,x)	SMC_SET_MII( (lp), MII_LPA, phy, x )
+-#define SMC_GET_PHY_CTRL_STS(lp,phy,x)	SMC_GET_MII( (lp), PHY_MODE_CTRL_STS, phy, x )
+-#define SMC_SET_PHY_CTRL_STS(lp,phy,x)	SMC_SET_MII( (lp), PHY_MODE_CTRL_STS, phy, x )
+-#define SMC_GET_PHY_INT_SRC(lp,phy,x)	SMC_GET_MII( (lp), PHY_INT_SRC, phy, x )
+-#define SMC_SET_PHY_INT_SRC(lp,phy,x)	SMC_SET_MII( (lp), PHY_INT_SRC, phy, x )
+-#define SMC_GET_PHY_INT_MASK(lp,phy,x)	SMC_GET_MII( (lp), PHY_INT_MASK, phy, x )
+-#define SMC_SET_PHY_INT_MASK(lp,phy,x)	SMC_SET_MII( (lp), PHY_INT_MASK, phy, x )
+-#define SMC_GET_PHY_SPECIAL(lp,phy,x)	SMC_GET_MII( (lp), PHY_SPECIAL, phy, x )
+-
+-
+-
+-/* Misc read/write macros */
+-
+-#ifndef SMC_GET_MAC_ADDR
+-#define SMC_GET_MAC_ADDR(lp, addr)				\
+-	do {							\
+-		unsigned int __v;				\
+-								\
+-		SMC_GET_MAC_CSR((lp), ADDRL, __v);			\
+-		addr[0] = __v; addr[1] = __v >> 8;		\
+-		addr[2] = __v >> 16; addr[3] = __v >> 24;	\
+-		SMC_GET_MAC_CSR((lp), ADDRH, __v);			\
+-		addr[4] = __v; addr[5] = __v >> 8;		\
+-	} while (0)
+-#endif
+-
+-#define SMC_SET_MAC_ADDR(lp, addr)				\
+-	do {							\
+-		 SMC_SET_MAC_CSR((lp), ADDRL,				\
+-				 addr[0] |			\
+-				(addr[1] << 8) |		\
+-				(addr[2] << 16) |		\
+-				(addr[3] << 24));		\
+-		 SMC_SET_MAC_CSR((lp), ADDRH, addr[4]|(addr[5] << 8));\
+-	} while (0)
+-
+-
+-#define SMC_WRITE_EEPROM_CMD(lp, cmd, addr)				\
+-	do {								\
+-		while (SMC_GET_E2P_CMD((lp)) & MAC_CSR_CMD_CSR_BUSY_);	\
+-		SMC_SET_MAC_CMD((lp), MAC_CSR_CMD_R_NOT_W_ | a );		\
+-		while (SMC_GET_MAC_CMD((lp)) & MAC_CSR_CMD_CSR_BUSY_);	\
+-	} while (0)
+-
+-#endif	 /* _SMC911X_H_ */
+diff --git a/include/linux/smc911x.h b/include/linux/smc911x.h
+deleted file mode 100644
+index 8cace8189e74..000000000000
+--- a/include/linux/smc911x.h
++++ /dev/null
+@@ -1,14 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef __SMC911X_H__
+-#define __SMC911X_H__
+-
+-#define SMC911X_USE_16BIT (1 << 0)
+-#define SMC911X_USE_32BIT (1 << 1)
+-
+-struct smc911x_platdata {
+-	unsigned long flags;
+-	unsigned long irq_flags; /* IRQF_... */
+-	int irq_polarity;
+-};
+-
+-#endif /* __SMC911X_H__ */
 -- 
-2.17.1
+2.29.2
 
