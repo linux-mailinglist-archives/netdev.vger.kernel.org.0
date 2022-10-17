@@ -2,68 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46CD76004E5
-	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 03:43:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 398A6600514
+	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 04:01:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230012AbiJQBnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Oct 2022 21:43:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54502 "EHLO
+        id S230098AbiJQCBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Oct 2022 22:01:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229911AbiJQBn3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Oct 2022 21:43:29 -0400
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1C553FEC1
-        for <netdev@vger.kernel.org>; Sun, 16 Oct 2022 18:43:28 -0700 (PDT)
-Received: by mail-qk1-x72f.google.com with SMTP id t25so5858564qkm.2
-        for <netdev@vger.kernel.org>; Sun, 16 Oct 2022 18:43:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=wZR5j8tL/5oU/xGVpP8FKeFl23lIlEh4OAjfmdl9LmQ=;
-        b=LCUUaZ+rEAdcyFmlRoH+DxiQj5GHWId2iCVo4YYvyt4lXpr3RedFsnphbEt8DZ+OrT
-         HOPNyAnWP0ApPHlBwptTgFQEEJC152s8SSXhwDt3FV9PmOfHjRi/4rs7/j+JKYzPFual
-         gbumcAgKZy0anzkJRwdKDlhrIwpJ9rmnLOrnI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wZR5j8tL/5oU/xGVpP8FKeFl23lIlEh4OAjfmdl9LmQ=;
-        b=tYyErxWNYUE0SdAlyTjSyQPtJDTMk1NaYB+nShCPayySTpBLBZgVvY78ntgUqQAXLn
-         un9UnDlVzaAAO6JsG/9y3biXlQ/RnSaWAWiafsNG7Gldl8RB2o8HjnlfZUJ4zKo/FdHP
-         5F2ZU8NqoiFFTHDyYlKhmMhcZHEW4K6Ri1VIL6OFUUS33BrqYw0tMKonh9EmucKehMJp
-         LusBAqEKVj2Qg6pV/UEWdN2PlyfNX0pavTRqxtWl23ZCdybZ09Z8iaEe6dDGh+/YGOGf
-         detDCtYQGTfUg62QF+1TrYOmWFxmAkx6ruNAVQr+6ypJXrPBvLk9S0eKIJMOGqDxhyMa
-         vOxg==
-X-Gm-Message-State: ACrzQf0v/DS9vwFeah2Ke7pxvt1tqUTsZWFYTjW62fyQFDrlS9/sFat5
-        mvYoZ7k0Ivv01xdrhFEOz8a+mg==
-X-Google-Smtp-Source: AMsMyM4LwJEcNq8FTwK0gfWL1pcdbZc5TXJPV/mHmtv0+HSrux3tZm5YRItfp03F5sE1zgu7hEZU7Q==
-X-Received: by 2002:a37:f50b:0:b0:6cb:be4d:6ce8 with SMTP id l11-20020a37f50b000000b006cbbe4d6ce8mr6139565qkk.135.1665971008085;
-        Sun, 16 Oct 2022 18:43:28 -0700 (PDT)
-Received: from C02YVCJELVCG ([136.56.55.162])
-        by smtp.gmail.com with ESMTPSA id n1-20020a05620a294100b006e8f8ca8287sm8311244qkp.120.2022.10.16.18.43.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 16 Oct 2022 18:43:27 -0700 (PDT)
-From:   Andy Gospodarek <andrew.gospodarek@broadcom.com>
-X-Google-Original-From: Andy Gospodarek <gospo@broadcom.com>
-Date:   Sun, 16 Oct 2022 21:43:18 -0400
-To:     Gerhard Engleder <gerhard@engleder-embedded.com>
-Cc:     andrew.gospodarek@broadcom.com, ast@kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, kuba@kernel.org,
-        hawk@kernel.org, john.fastabend@gmail.com, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] samples/bpf: Fix MAC address swapping in
- xdp2_kern
-Message-ID: <Y0yzNh9Kih1Z9KsK@C02YVCJELVCG>
-References: <20221015213050.65222-1-gerhard@engleder-embedded.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221015213050.65222-1-gerhard@engleder-embedded.com>
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        with ESMTP id S230179AbiJQCBC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Oct 2022 22:01:02 -0400
+Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E9A14456A;
+        Sun, 16 Oct 2022 19:00:50 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R931e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0VSG7X5M_1665972035;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VSG7X5M_1665972035)
+          by smtp.aliyun-inc.com;
+          Mon, 17 Oct 2022 10:00:37 +0800
+Message-ID: <1665971921.4555926-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH V2 2/2] net: Fixup virtnet_set_affinity() cause cpumask warning
+Date:   Mon, 17 Oct 2022 09:58:41 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     guoren@kernel.org
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Guo Ren <guoren@linux.alibaba.com>,
+        Guo Ren <guoren@kernel.org>, andriy.shevchenko@linux.intel.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux@rasmusvillemoes.dk, yury.norov@gmail.com,
+        caraitto@google.com, willemb@google.com, jonolson@google.com,
+        amritha.nambiar@intel.com
+References: <20221014030459.3272206-1-guoren@kernel.org>
+ <20221014030459.3272206-3-guoren@kernel.org>
+In-Reply-To: <20221014030459.3272206-3-guoren@kernel.org>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,43 +43,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 15, 2022 at 11:30:50PM +0200, Gerhard Engleder wrote:
-> xdp2_kern rewrites and forwards packets out on the same interface.
-> Forwarding still works but rewrite got broken when xdp multibuffer
-> support has been added.
-> 
-> With xdp multibuffer a local copy of the packet has been introduced. The
-> MAC address is now swapped in the local copy, but the local copy in not
-> written back.
-> 
-> Fix MAC address swapping be adding write back of modified packet.
-> 
-
-Nice catch!  Thanks for posting this.
-
-> Fixes: 772251742262 ("samples/bpf: fixup some tools to be able to support xdp multibuffer")
-> Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
-Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
-
+On Thu, 13 Oct 2022 23:04:59 -0400, guoren@kernel.org wrote:
+> From: Guo Ren <guoren@linux.alibaba.com>
+>
+> Don't pass nr_bits-1 as arg1 for cpumask_next_wrap, which would
+> cause warning now 78e5a3399421 ("cpumask: fix checking valid
+> cpu range").
+>
+> ------------[ cut here ]------------
+> WARNING: CPU: 0 PID: 1 at include/linux/cpumask.h:110 cpumask_next_wrap+0x5c/0x80
+> Modules linked in:
+> CPU: 0 PID: 1 Comm: swapper/0 Not tainted 6.0.0-11659-ge7e38f6cce55-dirty #328
+> Hardware name: riscv-virtio,qemu (DT)
+> epc : cpumask_next_wrap+0x5c/0x80
+>  ra : virtnet_set_affinity+0x1ba/0x1fc
+> epc : ffffffff808992ca ra : ffffffff805d84ca sp : ff60000002327a50
+>  gp : ffffffff81602390 tp : ff600000023a0000 t0 : 5f74656e74726976
+>  t1 : 0000000000000000 t2 : 735f74656e747269 s0 : ff60000002327a90
+>  s1 : 0000000000000003 a0 : 0000000000000003 a1 : ffffffff816051c0
+>  a2 : 0000000000000004 a3 : 0000000000000000 a4 : 0000000000000000
+>  a5 : 0000000000000004 a6 : 0000000000000000 a7 : 0000000000000000
+>  s2 : 0000000000000000 s3 : ffffffff816051c0 s4 : ffffffff8160224c
+>  s5 : 0000000000000004 s6 : 0000000000000004 s7 : 0000000000000000
+>  s8 : 0000000000000003 s9 : ffffffff810aa398 s10: ffffffff80e97d20
+>  s11: 0000000000000004 t3 : ffffffff819acc97 t4 : ffffffff819acc97
+>  t5 : ffffffff819acc98 t6 : ff60000002327878
+> status: 0000000200000120 badaddr: 0000000000000000 cause: 0000000000000003
+> [<ffffffff805d84ca>] virtnet_set_affinity+0x1ba/0x1fc
+> [<ffffffff805da7ac>] virtnet_probe+0x832/0xf1e
+> [<ffffffff804fe61c>] virtio_dev_probe+0x164/0x2de
+> [<ffffffff8054c4c4>] really_probe+0x82/0x224
+> [<ffffffff8054c6c0>] __driver_probe_device+0x5a/0xaa
+> [<ffffffff8054c73c>] driver_probe_device+0x2c/0xb8
+> [<ffffffff8054cd66>] __driver_attach+0x76/0x108
+> [<ffffffff8054a482>] bus_for_each_dev+0x52/0x9a
+> [<ffffffff8054be8c>] driver_attach+0x1a/0x28
+> [<ffffffff8054b996>] bus_add_driver+0x154/0x1c2
+> [<ffffffff8054d592>] driver_register+0x52/0x108
+> [<ffffffff804fe120>] register_virtio_driver+0x1c/0x2c
+> [<ffffffff80a29142>] virtio_net_driver_init+0x7a/0xb0
+> [<ffffffff80002854>] do_one_initcall+0x66/0x2e4
+> [<ffffffff80a01222>] kernel_init_freeable+0x28a/0x304
+> [<ffffffff808cb1be>] kernel_init+0x1e/0x110
+> [<ffffffff80003c4e>] ret_from_exception+0x0/0x10
+> ---[ end trace 0000000000000000 ]---
+>
+> Fixes: 2ca653d607ce ("virtio_net: Stripe queue affinities across cores.")
+> Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+> Signed-off-by: Guo Ren <guoren@kernel.org>
 > ---
->  samples/bpf/xdp2_kern.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/samples/bpf/xdp2_kern.c b/samples/bpf/xdp2_kern.c
-> index 3332ba6bb95f..67804ecf7ce3 100644
-> --- a/samples/bpf/xdp2_kern.c
-> +++ b/samples/bpf/xdp2_kern.c
-> @@ -112,6 +112,10 @@ int xdp_prog1(struct xdp_md *ctx)
->  
->  	if (ipproto == IPPROTO_UDP) {
->  		swap_src_dst_mac(data);
-> +
-> +		if (bpf_xdp_store_bytes(ctx, 0, pkt, sizeof(pkt)))
-> +			return rc;
-> +
->  		rc = XDP_TX;
->  	}
->  
-> -- 
-> 2.30.2
-> 
+>  drivers/net/virtio_net.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 7106932c6f88..e4b56523b2b5 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -2300,6 +2300,8 @@ static void virtnet_set_affinity(struct virtnet_info *vi)
+>
+>  		for (j = 0; j < group_size; j++) {
+>  			cpumask_set_cpu(cpu, mask);
+> +			if (cpu == (nr_cpu_ids - 1))
+> +				break;
+
+The problem seems to be a problem with cpumask_next_wrap(), I'm not particularly
+sure.
+
+But I think there is something wrong with your modification, which will cause
+subsequent queues to be bound to (nr_cpu_ids - 1).
+
+Thanks.
+
+
+>  			cpu = cpumask_next_wrap(cpu, cpu_online_mask,
+>  						nr_cpu_ids, false);
+>  		}
+> --
+> 2.36.1
+>
