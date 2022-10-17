@@ -2,88 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE393600E88
-	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 14:04:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B963600E98
+	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 14:11:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229910AbiJQMEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 08:04:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60998 "EHLO
+        id S230089AbiJQMLw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 08:11:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229896AbiJQMEk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 08:04:40 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D11120AC
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 05:04:38 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id a10so18062273wrm.12
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 05:04:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Y9ipY9Q6QdQ9gwRaiKZpShKe6etYw3VCYFiimXfGTcQ=;
-        b=ec/yWMs6hgqrMbFqM0JvobqoO4qPpelM+AvtINVevY0+1y/JJIJgtoMR4Jr9RHN5hO
-         HP+LDtyIOAmM3KPJEFutKGW8v7KNPcTucwUC6iX6TaoZvDizzCnuQOQrHW1iS6mtcXPq
-         3fehdpiFKQG+4yVHjkbJb1+f191HofHyOhpLchFApzC7xYjSNWvJByQpqZZlhZNmMKvR
-         ZEp71YhF4BLSRo4HdiW/KPVK1BP2xoweRstna/ML+D0JMnd0SocOUvZvP38nQbQRyzDI
-         Vhpu2lJ+FfApQ3AsB2vBnndmoYcJp7Zfz//PmR/vqIWUje0k291ND3ak35xGICS6qpDC
-         b3uA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Y9ipY9Q6QdQ9gwRaiKZpShKe6etYw3VCYFiimXfGTcQ=;
-        b=3k8OSUQnCiE887tLMlVrth3XYUv7LV9alMkaD3pitPUG3G+GMihx95CrWfrH0Abx8r
-         ZnCPNoPNHd94b6X6zudFlxct+Gph+TS5sPFEQtykPgVCv8dG+eabSOZQ3B7Oaj6vw2Sc
-         8xLN6tE4nHQQR470Pc3AySMFJy108fCA4xnLBsu6trhP+fPDH31ON32aNLbvaIXT9xna
-         QgBQMt0lhNbMn/HsWPT/C7gnDVore7sc0lteHPlIVaZiIE2UK11uTzBUeHZ4uyM6rgXM
-         p2vV3gv5dhdHJfP8shPwGt7D1LZYVb5fmfaku1gSAt/K4UlVLoHd+aWni48uPHJXWYYz
-         gzEA==
-X-Gm-Message-State: ACrzQf0nP2934legLabJvhUvhwAvJCWA7/s12D0PcpE1iakmGGlm4Pql
-        nt7gY1a6hwW57u7eSLg5KDQ=
-X-Google-Smtp-Source: AMsMyM5+cDeFsdmfqymXtJUn3tLigi3ZMh8LQi0eJpu7HN9f869obts5H6hye9zCQY+uihKsi3rZ8A==
-X-Received: by 2002:adf:c582:0:b0:22b:3c72:6b81 with SMTP id m2-20020adfc582000000b0022b3c726b81mr5992028wrg.320.1666008277001;
-        Mon, 17 Oct 2022 05:04:37 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
-        by smtp.gmail.com with ESMTPSA id g6-20020a05600c4ec600b003b477532e66sm27635743wmq.2.2022.10.17.05.04.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Oct 2022 05:04:36 -0700 (PDT)
-Subject: Re: [RFC PATCH v2 net-next 1/3] netlink: add support for formatted
- extack messages
-To:     Jakub Kicinski <kuba@kernel.org>, edward.cree@amd.com
-Cc:     netdev@vger.kernel.org, linux-net-drivers@amd.com,
-        davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
-        habetsm.xilinx@gmail.com, johannes@sipsolutions.net,
-        marcelo.leitner@gmail.com
-References: <cover.1665567166.git.ecree.xilinx@gmail.com>
- <26c2cf2e699de83905e2c21491b71af0e34d00d8.1665567166.git.ecree.xilinx@gmail.com>
- <20221013082913.0719721e@kernel.org>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <ac4c37d1-e33b-2cd8-707a-9f6abd382df3@gmail.com>
-Date:   Mon, 17 Oct 2022 13:04:35 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        with ESMTP id S230105AbiJQMLu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 08:11:50 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5B8A5D0CA
+        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 05:11:47 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1okOxt-00034B-Ey; Mon, 17 Oct 2022 14:11:29 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id B0CB0100A4C;
+        Mon, 17 Oct 2022 12:11:26 +0000 (UTC)
+Date:   Mon, 17 Oct 2022 14:11:22 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>
+Cc:     Matej Vasilevski <matej.vasilevski@seznam.cz>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v5 2/4] can: ctucanfd: add HW timestamps to RX and error
+ CAN frames
+Message-ID: <20221017121122.kt6adqz4dtqc2sy5@pengutronix.de>
+References: <20221012062558.732930-1-matej.vasilevski@seznam.cz>
+ <20221012062558.732930-3-matej.vasilevski@seznam.cz>
+ <202210162354.48915.pisa@cmp.felk.cvut.cz>
 MIME-Version: 1.0
-In-Reply-To: <20221013082913.0719721e@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="rvnrtrzjwhjvuun7"
+Content-Disposition: inline
+In-Reply-To: <202210162354.48915.pisa@cmp.felk.cvut.cz>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13/10/2022 16:29, Jakub Kicinski wrote:
->    (I think splicing the "trunced extack:" with fmt will result
->     in the format string getting stored in .ro twice?)
 
-Yes, it will.  I guess we could splice "%s" with fmt in _both_
- calls (snprintf and net_warn_ratelimited), pass "" to one and
- "truncated extack: " to the other.  Then there's only a single
- string to put in .ro.  Is that worth the complication?
+--rvnrtrzjwhjvuun7
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On 16.10.2022 23:54:48, Pavel Pisa wrote:
+[...]
+> I hope/expect that it is not problem to call clk_prepare_enable twice
+> on same reference when the clocks are the same. As I read the code the
+> state is counted. If it is a problem then some if has to be put there
+> when the core and timestamp clock are the same.
+
+The clock prepare and enable are counting. If you call then twice, you
+have to call disable and unprepare twice, too, to shut it down. This is
+widely used in the kernel, e.g. if the same clock is passed to several
+IP cores.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--rvnrtrzjwhjvuun7
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmNNRmcACgkQrX5LkNig
+013jTQf+O3lLkZSM4YhGiVas49XH0Hf3wyVccsA5bdMIO4RQMnWPnxWbY/wIzY1o
+POdo3ycEo6hQCYZ1XMpNznzmnBaD17yXiLJHzWVrx16ZSAWfQOblluOgHujs3vkg
+jnqPRD74I1F5LlqOI0RRWtX1jlGZkO9Bd0cyyYgwtSoNFWXp6I+xIxrclgArda24
+HPWR2VSeqmiQAna8r9rdslI8j/HD6llI4Rspq8I3PpSL2ipyvtN9v2FbSfhLPOer
+Kr0Pc7/LITS95Klj/cpCFLJDLX/F4o0MdamQar5kh92vDSx15Sc2gUxBD9jqgpyc
+SPVzpWjMEbIaPv7++vzBN8Z/px/Yjg==
+=GIBY
+-----END PGP SIGNATURE-----
+
+--rvnrtrzjwhjvuun7--
