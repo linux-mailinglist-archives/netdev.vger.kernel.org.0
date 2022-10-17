@@ -2,39 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 147FA601BE6
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 00:00:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 294E3601BE9
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 00:00:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229968AbiJQWAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 18:00:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48162 "EHLO
+        id S230102AbiJQWAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 18:00:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229943AbiJQWAK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 18:00:10 -0400
+        with ESMTP id S230136AbiJQWAp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 18:00:45 -0400
 Received: from novek.ru (unknown [213.148.174.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57AB168CCB
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 15:00:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 376FF7697E
+        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 15:00:40 -0700 (PDT)
 Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id 3519B504ECB;
-        Tue, 18 Oct 2022 00:56:31 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 3519B504ECB
+        by novek.ru (Postfix) with ESMTPSA id 94706504ECC;
+        Tue, 18 Oct 2022 00:56:32 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 94706504ECC
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1666043792; bh=RFgVKglkJ3XHLWDLpmDNMQaeuLIZkmTAYhxQbgpJ6pw=;
+        t=1666043793; bh=YJfnpm9QMEktbfNCEhntfvETmmCOFNPX1RGTPwd4ORE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T4x20FUcYU4pJsoyGiiavUY4bYOtDw+mAmr87NHB+qEaeVp4YqHO25EuAY/T9HYd7
-         rxp406QhuLXUgFtK876gcK703M/a4aOb2LhCsH1C/DqotQrEMDtHP1EeEQ3XIIOetD
-         TEyOmk8rsoGdP95a66b4JaL8T/gw47vWBpLXtWu4=
+        b=XkD0PMb03crvTxj0rCXxlDzBHCRsnhoD9w2qdZqdMluwrEl7fuUCy39Z/Kk0+f6k7
+         9KvQLS40ygVLidQq87Ly5uwJToCx2+h4y5ab+KiQzijab5I5b1E2uSHfQ4WUlvV46j
+         H3GWzW8I8SJWJkYqaAbUFUULC1fGbW0dQJERcwfo=
 From:   Vadim Fedorenko <vfedorenko@novek.ru>
 To:     Richard Cochran <richardcochran@gmail.com>,
         Jonathan Lemon <jonathan.lemon@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Vadim Fedorenko <vadfed@fb.com>,
-        Charles Parent <charles.parent@orolia2s.com>
-Subject: [PATCH net-next 4/5] ptp: ocp: expose config and temperature for ART card
-Date:   Tue, 18 Oct 2022 00:59:46 +0300
-Message-Id: <20221017215947.7438-5-vfedorenko@novek.ru>
+Cc:     netdev@vger.kernel.org, Vadim Fedorenko <vadfed@fb.com>
+Subject: [PATCH net-next 5/5] ptp: ocp: remove flash image header check fallback
+Date:   Tue, 18 Oct 2022 00:59:47 +0300
+Message-Id: <20221017215947.7438-6-vfedorenko@novek.ru>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20221017215947.7438-1-vfedorenko@novek.ru>
 References: <20221017215947.7438-1-vfedorenko@novek.ru>
@@ -51,190 +50,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vadim Fedorenko <vadfed@fb.com>
 
-Orolia card has disciplining configuration and temperature table
-stored in EEPROM. This patch exposes them as binary attributes to
-have read and write access.
+Previously there was a fallback mode to flash firmware image without
+proper header. But now we have different supported vendors and flashing
+wrong image could destroy the hardware. Remove fallback mode and force
+header check. Both vendors have published firmware images with headers.
 
-Co-developed-by: Charles Parent <charles.parent@orolia2s.com>
 Signed-off-by: Vadim Fedorenko <vadfed@fb.com>
 ---
- drivers/ptp/ptp_ocp.c | 137 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 137 insertions(+)
+ drivers/ptp/ptp_ocp.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index d8a723e9e21c..82d17b90fe16 100644
+index 82d17b90fe16..3788daf1e541 100644
 --- a/drivers/ptp/ptp_ocp.c
 +++ b/drivers/ptp/ptp_ocp.c
-@@ -696,6 +696,9 @@ static struct ocp_resource ocp_fb_resource[] = {
- 	{ }
- };
+@@ -1536,11 +1536,9 @@ ptp_ocp_devlink_fw_image(struct devlink *devlink, const struct firmware *fw,
+ 	hdr = (const struct ptp_ocp_firmware_header *)fw->data;
+ 	if (memcmp(hdr->magic, OCP_FIRMWARE_MAGIC_HEADER, 4)) {
+ 		devlink_flash_update_status_notify(devlink,
+-			"No firmware header found, flashing raw image",
++			"No firmware header found, cancel firmware upgrade",
+ 			NULL, 0, 0);
+-		offset = 0;
+-		length = fw->size;
+-		goto out;
++		return -EINVAL;
+ 	}
  
-+#define OCP_ART_CONFIG_SIZE		144
-+#define OCP_ART_TEMP_TABLE_SIZE		368
-+
- struct ocp_art_gpio_reg {
- 	struct {
- 		u32	gpio;
-@@ -3340,6 +3343,131 @@ DEVICE_FREQ_GROUP(freq2, 1);
- DEVICE_FREQ_GROUP(freq3, 2);
- DEVICE_FREQ_GROUP(freq4, 3);
- 
-+static ssize_t
-+disciplining_config_read(struct file *filp, struct kobject *kobj,
-+	    struct bin_attribute *bin_attr, char *buf,
-+	    loff_t off, size_t count)
-+{
-+	struct ptp_ocp *bp = dev_get_drvdata(kobj_to_dev(kobj));
-+	size_t size = OCP_ART_CONFIG_SIZE;
-+	struct nvmem_device *nvmem;
-+	ssize_t err;
-+
-+	nvmem = ptp_ocp_nvmem_device_get(bp, NULL);
-+	if (IS_ERR(nvmem))
-+		return PTR_ERR(nvmem);
-+
-+	if (off > size) {
-+		err = 0;
-+		goto out;
-+	}
-+
-+	if (off + count > size)
-+		count = size - off;
-+
-+	// the configuration is in the very beginning of the EEPROM
-+	err = nvmem_device_read(nvmem, off, count, buf);
-+	if (err != count) {
-+		err = -EFAULT;
-+		goto out;
-+	}
-+
-+out:
-+	ptp_ocp_nvmem_device_put(&nvmem);
-+
-+	return err;
-+}
-+
-+static ssize_t
-+disciplining_config_write(struct file *filp, struct kobject *kobj,
-+	     struct bin_attribute *bin_attr, char *buf,
-+	     loff_t off, size_t count)
-+{
-+	struct ptp_ocp *bp = dev_get_drvdata(kobj_to_dev(kobj));
-+	struct nvmem_device *nvmem;
-+	ssize_t err;
-+
-+	/* Allow write of the whole area only */
-+	if (off || count != OCP_ART_CONFIG_SIZE)
-+		return -EFAULT;
-+
-+	nvmem = ptp_ocp_nvmem_device_get(bp, NULL);
-+	if (IS_ERR(nvmem))
-+		return PTR_ERR(nvmem);
-+
-+
-+	err = nvmem_device_write(nvmem, 0x00, count, buf);
-+	if (err != count)
-+		err = -EFAULT;
-+
-+	ptp_ocp_nvmem_device_put(&nvmem);
-+
-+	return err;
-+}
-+static BIN_ATTR_RW(disciplining_config, OCP_ART_CONFIG_SIZE);
-+
-+static ssize_t
-+temperature_table_read(struct file *filp, struct kobject *kobj,
-+	    struct bin_attribute *bin_attr, char *buf,
-+	    loff_t off, size_t count)
-+{
-+	struct ptp_ocp *bp = dev_get_drvdata(kobj_to_dev(kobj));
-+	size_t size = OCP_ART_TEMP_TABLE_SIZE;
-+	struct nvmem_device *nvmem;
-+	ssize_t err;
-+
-+	nvmem = ptp_ocp_nvmem_device_get(bp, NULL);
-+	if (IS_ERR(nvmem))
-+		return PTR_ERR(nvmem);
-+
-+	if (off > size) {
-+		err = 0;
-+		goto out;
-+	}
-+
-+	if (off + count > size)
-+		count = size - off;
-+
-+	// the configuration is in the very beginning of the EEPROM
-+	err = nvmem_device_read(nvmem, 0x90 + off, count, buf);
-+	if (err != count) {
-+		err = -EFAULT;
-+		goto out;
-+	}
-+
-+out:
-+	ptp_ocp_nvmem_device_put(&nvmem);
-+
-+	return err;
-+}
-+
-+static ssize_t
-+temperature_table_write(struct file *filp, struct kobject *kobj,
-+			struct bin_attribute *bin_attr, char *buf,
-+			loff_t off, size_t count)
-+{
-+	struct ptp_ocp *bp = dev_get_drvdata(kobj_to_dev(kobj));
-+	struct nvmem_device *nvmem;
-+	ssize_t err;
-+
-+	/* Allow write of the whole area only */
-+	if (off || count != OCP_ART_TEMP_TABLE_SIZE)
-+		return -EFAULT;
-+
-+	nvmem = ptp_ocp_nvmem_device_get(bp, NULL);
-+	if (IS_ERR(nvmem))
-+		return PTR_ERR(nvmem);
-+
-+	err = nvmem_device_write(nvmem, 0x90, count, buf);
-+	if (err != count)
-+		err = -EFAULT;
-+
-+	ptp_ocp_nvmem_device_put(&nvmem);
-+
-+	return err;
-+}
-+static BIN_ATTR_RW(temperature_table, OCP_ART_TEMP_TABLE_SIZE);
-+
- static struct attribute *fb_timecard_attrs[] = {
- 	&dev_attr_serialnum.attr,
- 	&dev_attr_gnss_sync.attr,
-@@ -3359,9 +3487,11 @@ static struct attribute *fb_timecard_attrs[] = {
- 	&dev_attr_tod_correction.attr,
- 	NULL,
- };
-+
- static const struct attribute_group fb_timecard_group = {
- 	.attrs = fb_timecard_attrs,
- };
-+
- static const struct ocp_attr_group fb_timecard_groups[] = {
- 	{ .cap = OCP_CAP_BASIC,	    .group = &fb_timecard_group },
- 	{ .cap = OCP_CAP_SIGNAL,    .group = &fb_timecard_signal0_group },
-@@ -3390,8 +3520,15 @@ static struct attribute *art_timecard_attrs[] = {
- 	NULL,
- };
- 
-+static struct bin_attribute *bin_art_timecard_attrs[] = {
-+	&bin_attr_disciplining_config,
-+	&bin_attr_temperature_table,
-+	NULL,
-+};
-+
- static const struct attribute_group art_timecard_group = {
- 	.attrs = art_timecard_attrs,
-+	.bin_attrs = bin_art_timecard_attrs,
- };
- 
- static const struct ocp_attr_group art_timecard_groups[] = {
+ 	if (be16_to_cpu(hdr->pci_vendor_id) != bp->pdev->vendor ||
 -- 
 2.27.0
 
