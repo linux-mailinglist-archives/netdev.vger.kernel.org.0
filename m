@@ -2,212 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D1D160077B
-	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 09:15:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3003600784
+	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 09:18:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230073AbiJQHPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 03:15:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33132 "EHLO
+        id S229845AbiJQHS0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 03:18:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230047AbiJQHPa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 03:15:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A76101F0
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 00:15:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1665990926;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iPJ0zMzH+/+WqE+Q9hXMqr+6tdiNkx5DCmG8+/nVPjA=;
-        b=PpVQNCUfenkyJKX1EWLMzbY7PmoCvMPw8b4dKomzk430mHmsNFcMGC9u+X3MQRqMjUiMr+
-        6Wd0yjMDZHqmkx0749w9xEDHg8SAd3XZFMYjx4HFQmh28KG2cAdhr1uF5kdcxYmGfc2sZW
-        t/6VpNX+oh0d2Kv/x+ZgdvrjatEuaDE=
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
- [209.85.167.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-198-pQg9HDYLP0GwKYZo9vKTOA-1; Mon, 17 Oct 2022 03:15:25 -0400
-X-MC-Unique: pQg9HDYLP0GwKYZo9vKTOA-1
-Received: by mail-oi1-f199.google.com with SMTP id bm8-20020a0568081a8800b003544ba66e7bso3644745oib.18
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 00:15:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=iPJ0zMzH+/+WqE+Q9hXMqr+6tdiNkx5DCmG8+/nVPjA=;
-        b=0Tsvt6SzCU8v002BCMVo5B6fsjIH1pJ+dQSBUsly2V65ULExtS6CPdmbOVdIE/4w2P
-         25BXB/k5OYAZv9NRL4kwEGDXYkVwWTUETlVCHQM8nFTNKkPqIar+4bz30CJpg6CQdfcn
-         cGK/yD+FSRodJvqnVM+eM24vITY+vk73wQCrXaFdUyprI24Un0nzymQvj6Y1RFJGtrzh
-         0TZk6nuyRMPYaFW0QfHqqh5eH3TR+LzkVodKbnGRDdhEwOsLvE6GIl0wWcrH752INA+X
-         XJedENq0tv4Mv8lDnFUOTibt4HDTlNOrOCs/2dLeGOM1YououONAbSQWIQ9BVwCi/htP
-         zNGg==
-X-Gm-Message-State: ACrzQf3mZMGlgSQG5Qqm5XoAjK8MBbtGPvELS9tHHDE8cXEfjYv3u0q0
-        VKi1b8ab5jo5OxDcHyxehDCt0vu3yQA1owdAicqNYtj+l6JLCjnqNjErgHH7LfRLHfVZCe5IoxC
-        osqjdZjoinFMF9jpqWzJdFGg2dYK6LEUY
-X-Received: by 2002:a9d:7dcf:0:b0:661:dc25:ba0 with SMTP id k15-20020a9d7dcf000000b00661dc250ba0mr4363908otn.201.1665990924506;
-        Mon, 17 Oct 2022 00:15:24 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM6PRVlb4SMRZS+7oWQMjNwL9+//CGJE+DrIL1IAik9PhPKTnJpbrhNsRHBWEsjTXVM1VPXKWZW9Hq3yWLjAgaI=
-X-Received: by 2002:a9d:7dcf:0:b0:661:dc25:ba0 with SMTP id
- k15-20020a9d7dcf000000b00661dc250ba0mr4363898otn.201.1665990924270; Mon, 17
- Oct 2022 00:15:24 -0700 (PDT)
+        with ESMTP id S230040AbiJQHSZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 03:18:25 -0400
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3C35808B;
+        Mon, 17 Oct 2022 00:18:22 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R861e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VSJPAsn_1665991068;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VSJPAsn_1665991068)
+          by smtp.aliyun-inc.com;
+          Mon, 17 Oct 2022 15:18:20 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     stas.yakovlev@gmail.com
+Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH] wireless: ipw2200: Remove the unused function ipw_alive()
+Date:   Mon, 17 Oct 2022 15:17:46 +0800
+Message-Id: <20221017071746.118685-1-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-References: <20220905045341.66191-1-jasowang@redhat.com> <20220905031405-mutt-send-email-mst@kernel.org>
- <CACGkMEtjQ0Jfok-gcRW+kuinsua2X0TscyTNfBJoXHny0Yob+g@mail.gmail.com>
- <056ba905a2579903a372258383afdf6579767ad0.camel@redhat.com>
- <CACGkMEuiDqqOEKUWRN9LvQKv8Jz4mi3aSZMwbhUsJkZp=C-0RQ@mail.gmail.com>
- <c9180ac41b00543e3531a343afae8f5bdca64d8d.camel@redhat.com>
- <20220907034407-mutt-send-email-mst@kernel.org> <d32101bb-783f-dbd1-545a-be291c27cb63@redhat.com>
- <20220908011858-mutt-send-email-mst@kernel.org> <c8cd9a2e-3480-6ca5-96fa-4b5bd2c1174a@redhat.com>
- <20221009160520-mutt-send-email-mst@kernel.org> <CACGkMEscu+mUBff1JUW4QxkyV33MwRP7VPSZ2-OXp5=pJaHC6Q@mail.gmail.com>
-In-Reply-To: <CACGkMEscu+mUBff1JUW4QxkyV33MwRP7VPSZ2-OXp5=pJaHC6Q@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Mon, 17 Oct 2022 15:15:12 +0800
-Message-ID: <CACGkMEurGrbj6E5xzLN_uAe9bhFaYtrUu-4fqNP=aumiQi9bzQ@mail.gmail.com>
-Subject: Re: [PATCH net] virtio-net: add cond_resched() to the command waiting loop
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Gautam Dawar <gautam.dawar@xilinx.com>,
-        davem <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 12, 2022 at 11:19 AM Jason Wang <jasowang@redhat.com> wrote:
->
-> On Tue, Oct 11, 2022 at 1:11 AM Michael S. Tsirkin <mst@redhat.com> wrote=
-:
-> >
-> > On Sun, Oct 09, 2022 at 01:58:53PM +0800, Jason Wang wrote:
-> > >
-> > > =E5=9C=A8 2022/9/8 13:19, Michael S. Tsirkin =E5=86=99=E9=81=93:
-> > > > On Thu, Sep 08, 2022 at 10:21:45AM +0800, Jason Wang wrote:
-> > > > > =E5=9C=A8 2022/9/7 15:46, Michael S. Tsirkin =E5=86=99=E9=81=93:
-> > > > > > On Wed, Sep 07, 2022 at 09:07:20AM +0200, Paolo Abeni wrote:
-> > > > > > > On Wed, 2022-09-07 at 10:09 +0800, Jason Wang wrote:
-> > > > > > > > On Tue, Sep 6, 2022 at 6:56 PM Paolo Abeni <pabeni@redhat.c=
-om> wrote:
-> > > > > > > > > On Mon, 2022-09-05 at 15:49 +0800, Jason Wang wrote:
-> > > > > > > > > > On Mon, Sep 5, 2022 at 3:15 PM Michael S. Tsirkin <mst@=
-redhat.com> wrote:
-> > > > > > > > > > > On Mon, Sep 05, 2022 at 12:53:41PM +0800, Jason Wang =
-wrote:
-> > > > > > > > > > > > Adding cond_resched() to the command waiting loop f=
-or a better
-> > > > > > > > > > > > co-operation with the scheduler. This allows to giv=
-e CPU a breath to
-> > > > > > > > > > > > run other task(workqueue) instead of busy looping w=
-hen preemption is
-> > > > > > > > > > > > not allowed.
-> > > > > > > > > > > >
-> > > > > > > > > > > > What's more important. This is a must for some vDPA=
- parent to work
-> > > > > > > > > > > > since control virtqueue is emulated via a workqueue=
- for those parents.
-> > > > > > > > > > > >
-> > > > > > > > > > > > Fixes: bda324fd037a ("vdpasim: control virtqueue su=
-pport")
-> > > > > > > > > > > That's a weird commit to fix. so it fixes the simulat=
-or?
-> > > > > > > > > > Yes, since the simulator is using a workqueue to handle=
- control virtueue.
-> > > > > > > > > Uhmm... touching a driver for a simulator's sake looks a =
-little weird.
-> > > > > > > > Simulator is not the only one that is using a workqueue (bu=
-t should be
-> > > > > > > > the first).
-> > > > > > > >
-> > > > > > > > I can see  that the mlx5 vDPA driver is using a workqueue a=
-s well (see
-> > > > > > > > mlx5_vdpa_kick_vq()).
-> > > > > > > >
-> > > > > > > > And in the case of VDUSE, it needs to wait for the response=
- from the
-> > > > > > > > userspace, this means cond_resched() is probably a must for=
- the case
-> > > > > > > > like UP.
-> > > > > > > >
-> > > > > > > > > Additionally, if the bug is vdpasim, I think it's better =
-to try to
-> > > > > > > > > solve it there, if possible.
-> > > > > > > > >
-> > > > > > > > > Looking at vdpasim_net_work() and vdpasim_blk_work() it l=
-ooks like
-> > > > > > > > > neither needs a process context, so perhaps you could rew=
-ork it to run
-> > > > > > > > > the work_fn() directly from vdpasim_kick_vq(), at least f=
-or the control
-> > > > > > > > > virtqueue?
-> > > > > > > > It's possible (but require some rework on the simulator cor=
-e). But
-> > > > > > > > considering we have other similar use cases, it looks bette=
-r to solve
-> > > > > > > > it in the virtio-net driver.
-> > > > > > > I see.
-> > > > > > >
-> > > > > > > > Additionally, this may have better behaviour when using for=
- the buggy
-> > > > > > > > hardware (e.g the control virtqueue takes too long to respo=
-nd). We may
-> > > > > > > > consider switching to use interrupt/sleep in the future (bu=
-t not
-> > > > > > > > suitable for -net).
-> > > > > > > Agreed. Possibly a timeout could be useful, too.
-> > > > > > >
-> > > > > > > Cheers,
-> > > > > > >
-> > > > > > > Paolo
-> > > > > > Hmm timeouts are kind of arbitrary.
-> > > > > > regular drivers basically derive them from hardware
-> > > > > > behaviour but with a generic driver like virtio it's harder.
-> > > > > > I guess we could add timeout as a config field, have
-> > > > > > device make a promise to the driver.
-> > > > > >
-> > > > > > Making the wait interruptible seems more reasonable.
-> > > > >
-> > > > > Yes, but I think we still need this patch for -net and -stable.
-> > > > >
-> > > > > Thanks
-> > > > I was referring to Paolo's idea of having a timeout.
-> > >
-> > >
-> > > Ok, I think we're fine with this patch. Any chance to merge this or d=
-o I
-> > > need to resend?
-> > >
-> > > Thanks
-> >
-> > Last question: do we want cpu_relax here now? Or is cond_resched
-> > sufficient?
->
-> (Have answered in another thread)
->
-> I think we need cpu_relax() since there could be no high priority task
-> in the current cpu so we still need to relax.
->
-> Thanks
+The function ipw_alive() is defined in the ipw2200.c file, but not called
+elsewhere, so delete this unused function.
 
-Michael, does this answer make sense? If yes, would you like to ack the pat=
-ch?
+drivers/net/wireless/intel/ipw2x00/ipw2200.c:3007:19: warning: unused function 'ipw_alive'.
 
-Thanks
+Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=2410
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+---
+ drivers/net/wireless/intel/ipw2x00/ipw2200.c | 14 --------------
+ 1 file changed, 14 deletions(-)
 
->
-> >
-> > >
-> > > >
-> >
+diff --git a/drivers/net/wireless/intel/ipw2x00/ipw2200.c b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
+index 5b483de18c81..79d5c09757d4 100644
+--- a/drivers/net/wireless/intel/ipw2x00/ipw2200.c
++++ b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
+@@ -2995,20 +2995,6 @@ static void ipw_remove_current_network(struct ipw_priv *priv)
+ 	spin_unlock_irqrestore(&priv->ieee->lock, flags);
+ }
+ 
+-/*
+- * Check that card is still alive.
+- * Reads debug register from domain0.
+- * If card is present, pre-defined value should
+- * be found there.
+- *
+- * @param priv
+- * @return 1 if card is present, 0 otherwise
+- */
+-static inline int ipw_alive(struct ipw_priv *priv)
+-{
+-	return ipw_read32(priv, 0x90) == 0xd55555d5;
+-}
+-
+ /* timeout in msec, attempted in 10-msec quanta */
+ static int ipw_poll_bit(struct ipw_priv *priv, u32 addr, u32 mask,
+ 			       int timeout)
+-- 
+2.20.1.7.g153144c
 
