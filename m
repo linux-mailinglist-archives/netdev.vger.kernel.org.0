@@ -2,131 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B77F5600676
-	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 07:55:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD4BA6006C4
+	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 08:35:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229959AbiJQFzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 01:55:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34380 "EHLO
+        id S229732AbiJQGf2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 02:35:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229975AbiJQFzC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 01:55:02 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF472CDEF
-        for <netdev@vger.kernel.org>; Sun, 16 Oct 2022 22:54:59 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id m23so12691182lji.2
-        for <netdev@vger.kernel.org>; Sun, 16 Oct 2022 22:54:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ionos.com; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=62S+L9lvQ6yKl9SFK5Ea6OjGhcrckPawD24jzjiDOjs=;
-        b=OwZbd1yKCFh9k8IYIsapUj3IinbahiX9SIQYMhZYY8VwAlZQ6XTtka33WwTZOeAAOb
-         UDswZXgISy65AzHw+WuwVW7/SQyVl+iVC5bfFD+vraf+gkpnRmo64XOdyeETunRU+R7/
-         TJpyXy4VfvZAMm/tRiXFwRXdj4SfzYpY/YIw/srsDlmblULd+j9o7s8sY3/j6l2/u3nq
-         aSHhfXqZ1eXcl4PRNRsqxvBcZBdi6j6mZs9sCfLR9llXt/HyHadvs83JLiyZSEI/0h3+
-         XY/sBbX8Ayb5/hOzADY+cQik1ChbjLgA+zFV6FL8wOIgH0dc3IIRxS52hzmeRKCkyarK
-         D78w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=62S+L9lvQ6yKl9SFK5Ea6OjGhcrckPawD24jzjiDOjs=;
-        b=euZU40ND8OXzObuVZaZukzgdHc9RbptTypgP69DBkTtv7fkHCvAcW8jEO2YRforuhZ
-         xOC1J9dRsB+SL9zRx1pV2lflhRXls6T4HL3YgwppzZfbzFHZvW+9h7zpeRO0XBUEVOEy
-         4qun5fGblCmzQrS4YTUSNfuO3SA1uL6qPu3THtQ+M2uo5sv77reDEcw1rZBGkYusYolj
-         kUc5W9bSS97GAUySca/BO6CoE0MHRWDxKCfqwoDQkHF6+gyrCAgx+yuTL/BWhMEyUutw
-         bQvVI0+O8QqNK/1ZGFiCX7cIQpwBaaP5jA11tBB8DSdSUyagDAnUfBxpj6Ds1OOJAhsj
-         YP+Q==
-X-Gm-Message-State: ACrzQf2qt8mFgf6vQjvCgscVSvrnHw06+Umchb4DQq/R2VgRiWH9JtxW
-        qRq0Lbmo5A1jLiYPpG48SfBzxPcAUrn2i35K9KlaXg==
-X-Google-Smtp-Source: AMsMyM7HpLYx29Z7vacvnTaKV70hInyG36tLoG44GGNdnQ4/Yz8uOVgot2S8hCombJq50nEJWXSwDM6dgR4pU+f1dzo=
-X-Received: by 2002:a2e:844e:0:b0:26b:f5ee:b2bb with SMTP id
- u14-20020a2e844e000000b0026bf5eeb2bbmr3554425ljh.403.1665986097966; Sun, 16
- Oct 2022 22:54:57 -0700 (PDT)
+        with ESMTP id S229949AbiJQGf0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 02:35:26 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFC6E3499B;
+        Sun, 16 Oct 2022 23:35:24 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id BC62020527;
+        Mon, 17 Oct 2022 08:35:22 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id eoMKP7F9VnJk; Mon, 17 Oct 2022 08:35:22 +0200 (CEST)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 2727520096;
+        Mon, 17 Oct 2022 08:35:22 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout1.secunet.com (Postfix) with ESMTP id 1749980004A;
+        Mon, 17 Oct 2022 08:35:22 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 17 Oct 2022 08:35:21 +0200
+Received: from christian-dev1.secunet.de (172.18.157.49) by
+ mbx-essen-01.secunet.de (10.53.40.197) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 17 Oct 2022 08:35:15 +0200
+From:   Christian Langrock <christian.langrock@secunet.com>
+To:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "open list:NETWORKING [IPSEC]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+CC:     Christian Langrock <christian.langrock@secunet.com>
+Subject: [PATCH ipsec v7] xfrm: replay: Fix ESN wrap around for GSO
+Date:   Mon, 17 Oct 2022 08:34:47 +0200
+Message-ID: <20221017063447.1816366-1-christian.langrock@secunet.com>
+X-Mailer: git-send-email 2.37.1.223.g6a475b71f8
 MIME-Version: 1.0
-References: <CAMGffEmiu2BPx6=KW+7_+pzD-=hb8sX9r5cJ1_NovmrWG9xFuA@mail.gmail.com>
- <Y0fJ6P943FuVZ3k1@unreal> <CAMGffEmFCgKv-6XNXjAKzr5g6TtT_=wj6H62AdGCUXx4hruxBQ@mail.gmail.com>
- <Y0foGrlwnYX8lJX2@unreal>
-In-Reply-To: <Y0foGrlwnYX8lJX2@unreal>
-From:   Jinpu Wang <jinpu.wang@ionos.com>
-Date:   Mon, 17 Oct 2022 07:54:46 +0200
-Message-ID: <CAMGffEnWmVb_qZFq6_rhZGH5q1Wq=n5ciJmp6uxxE6JLctywng@mail.gmail.com>
-Subject: Re: [BUG] mlx5_core general protection fault in mlx5_cmd_comp_handler
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Moshe Shemesh <moshe@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>, Shay Drory <shayd@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 13, 2022 at 12:27 PM Leon Romanovsky <leon@kernel.org> wrote:
->
-> On Thu, Oct 13, 2022 at 10:32:55AM +0200, Jinpu Wang wrote:
-> > On Thu, Oct 13, 2022 at 10:18 AM Leon Romanovsky <leon@kernel.org> wrote:
-> > >
-> > > On Wed, Oct 12, 2022 at 01:55:55PM +0200, Jinpu Wang wrote:
-> > > > Hi Leon, hi Saeed,
-> > > >
-> > > > We have seen crashes during server shutdown on both kernel 5.10 and
-> > > > kernel 5.15 with GPF in mlx5 mlx5_cmd_comp_handler function.
-> > > >
-> > > > All of the crashes point to
-> > > >
-> > > > 1606                         memcpy(ent->out->first.data,
-> > > > ent->lay->out, sizeof(ent->lay->out));
-> > > >
-> > > > I guess, it's kind of use after free for ent buffer. I tried to reprod
-> > > > by repeatedly reboot the testing servers, but no success  so far.
-> > >
-> > > My guess is that command interface is not flushed, but Moshe and me
-> > > didn't see how it can happen.
-> > >
-> > >   1206         INIT_DELAYED_WORK(&ent->cb_timeout_work, cb_timeout_handler);
-> > >   1207         INIT_WORK(&ent->work, cmd_work_handler);
-> > >   1208         if (page_queue) {
-> > >   1209                 cmd_work_handler(&ent->work);
-> > >   1210         } else if (!queue_work(cmd->wq, &ent->work)) {
-> > >                           ^^^^^^^ this is what is causing to the splat
-> > >   1211                 mlx5_core_warn(dev, "failed to queue work\n");
-> > >   1212                 err = -EALREADY;
-> > >   1213                 goto out_free;
-> > >   1214         }
-> > >
-> > > <...>
-> > > >
-> > > > Is this problem known, maybe already fixed?
-> > >
-> > > I don't see any missing Fixes that exist in 6.0 and don't exist in 5.5.32.
->
-> Sorry it is 5.15.32
->
-> > > Is it possible to reproduce this on latest upstream code?
-> > I haven't been able to reproduce it, as mentioned above, I tried to
-> > reproduce by simply reboot in loop, no luck yet.
-> > do you have suggestions to speedup the reproduction?
->
-> Maybe try to shutdown during filling command interface.
-> I think that any query command will do the trick.
-Just an update.
-I tried to run "saquery" in a loop in one session and do "modproble -r
-mlx5_ib && modprobe mlx5_ib" in loop in another session during last
-days , but still no luck. --c
->
-> > Once I can reproduce, I can also try with kernel 6.0.
->
-> It will be great.
->
-> Thanks
-Thanks!
+When using GSO it can happen that the wrong seq_hi is used for the last
+packets before the wrap around. This can lead to double usage of a
+sequence number. To avoid this, we should serialize this last GSO
+packet.
+
+Fixes: d7dbefc45cf5 ("xfrm: Add xfrm_replay_overflow functions for offloading")
+Co-developed-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Christian Langrock <christian.langrock@secunet.com>
+---
+Changes in v7:
+ - Fix malformed mail
+
+Changes in v6:
+ - move overflow check to offloading path to avoid locking issues
+
+Changes in v5:
+ - Fix build
+
+Changes in v4:
+ - move changelog within comment
+ - add reviewer
+
+Changes in v3:
+- fix build
+- remove wrapper function
+
+Changes in v2:
+- switch to bool as return value
+- remove switch case in wrapper function
+---
+ net/ipv4/esp4_offload.c |  3 +++
+ net/ipv6/esp6_offload.c |  3 +++
+ net/xfrm/xfrm_device.c  | 15 ++++++++++++++-
+ net/xfrm/xfrm_replay.c  |  2 +-
+ 4 files changed, 21 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/esp4_offload.c b/net/ipv4/esp4_offload.c
+index 170152772d33..3969fa805679 100644
+--- a/net/ipv4/esp4_offload.c
++++ b/net/ipv4/esp4_offload.c
+@@ -314,6 +314,9 @@ static int esp_xmit(struct xfrm_state *x, struct sk_buff *skb,  netdev_features_
+ 			xo->seq.low += skb_shinfo(skb)->gso_segs;
+ 	}
+ 
++	if (xo->seq.low < seq)
++		xo->seq.hi++;
++
+ 	esp.seqno = cpu_to_be64(seq + ((u64)xo->seq.hi << 32));
+ 
+ 	ip_hdr(skb)->tot_len = htons(skb->len);
+diff --git a/net/ipv6/esp6_offload.c b/net/ipv6/esp6_offload.c
+index 79d43548279c..242f4295940e 100644
+--- a/net/ipv6/esp6_offload.c
++++ b/net/ipv6/esp6_offload.c
+@@ -346,6 +346,9 @@ static int esp6_xmit(struct xfrm_state *x, struct sk_buff *skb,  netdev_features
+ 			xo->seq.low += skb_shinfo(skb)->gso_segs;
+ 	}
+ 
++	if (xo->seq.low < seq)
++		xo->seq.hi++;
++
+ 	esp.seqno = cpu_to_be64(xo->seq.low + ((u64)xo->seq.hi << 32));
+ 
+ 	len = skb->len - sizeof(struct ipv6hdr);
+diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
+index 5f5aafd418af..21269e8f2db4 100644
+--- a/net/xfrm/xfrm_device.c
++++ b/net/xfrm/xfrm_device.c
+@@ -97,6 +97,18 @@ static void xfrm_outer_mode_prep(struct xfrm_state *x, struct sk_buff *skb)
+ 	}
+ }
+ 
++static inline bool xmit_xfrm_check_overflow(struct sk_buff *skb)
++{
++	struct xfrm_offload *xo = xfrm_offload(skb);
++	__u32 seq = xo->seq.low;
++
++	seq += skb_shinfo(skb)->gso_segs;
++	if (unlikely(seq < xo->seq.low))
++		return true;
++
++	return false;
++}
++
+ struct sk_buff *validate_xmit_xfrm(struct sk_buff *skb, netdev_features_t features, bool *again)
+ {
+ 	int err;
+@@ -134,7 +146,8 @@ struct sk_buff *validate_xmit_xfrm(struct sk_buff *skb, netdev_features_t featur
+ 		return skb;
+ 	}
+ 
+-	if (skb_is_gso(skb) && unlikely(x->xso.dev != dev)) {
++	if (skb_is_gso(skb) && (unlikely(x->xso.dev != dev) ||
++				unlikely(xmit_xfrm_check_overflow(skb)))) {
+ 		struct sk_buff *segs;
+ 
+ 		/* Packet got rerouted, fixup features and segment it. */
+diff --git a/net/xfrm/xfrm_replay.c b/net/xfrm/xfrm_replay.c
+index 9f4d42eb090f..ce56d659c55a 100644
+--- a/net/xfrm/xfrm_replay.c
++++ b/net/xfrm/xfrm_replay.c
+@@ -714,7 +714,7 @@ static int xfrm_replay_overflow_offload_esn(struct xfrm_state *x, struct sk_buff
+ 			oseq += skb_shinfo(skb)->gso_segs;
+ 		}
+ 
+-		if (unlikely(oseq < replay_esn->oseq)) {
++		if (unlikely(xo->seq.low < replay_esn->oseq)) {
+ 			XFRM_SKB_CB(skb)->seq.output.hi = ++oseq_hi;
+ 			xo->seq.hi = oseq_hi;
+ 			replay_esn->oseq_hi = oseq_hi;
+-- 
+2.37.1.223.g6a475b71f8
+
