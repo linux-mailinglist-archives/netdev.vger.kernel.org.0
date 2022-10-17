@@ -2,204 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B87E601AFF
-	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 23:08:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28CD7601B3D
+	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 23:26:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229935AbiJQVIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 17:08:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44010 "EHLO
+        id S230122AbiJQV0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 17:26:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230248AbiJQVIN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 17:08:13 -0400
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EADBB78BE5
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 14:08:08 -0700 (PDT)
-Received: by mail-pf1-x449.google.com with SMTP id j20-20020a056a00235400b00565af23c8c2so6633966pfj.7
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 14:08:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=46MPYDcSyFVz6GkTBNDhV/x3uqfsygrrwPwLQqkUp+w=;
-        b=jzPeBXpOTdnBBqSUUx+JsE7CbYRwJhXYYE8ercipoXpii37ZMHhrX9uxh1TCt/bhpA
-         p4diyFb1+ilOBUx9wd3BL4ND5dvCsY3p3L/+MOoQDUZl4cn9EEB0pICqDW/GlAZICXDE
-         c9hP+YebzW3cfrn2Df91htYo6q4dFJ4EBdqTThpL6BQexammj8BVByu2iNL4gVrwc3dO
-         fljjEGCbLk6Nq6Nh89klNTskGCrgbtmBWexrUdnnhoXxsjLzUvFJOCPa5IvxXqW3vK1O
-         j5z9RhpxbFCgR9ho4MsVfOOaFeFBDafphClmUJsPjRlYXPQ0Zx2LCHqF/AANW1mGHmeq
-         /Kdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=46MPYDcSyFVz6GkTBNDhV/x3uqfsygrrwPwLQqkUp+w=;
-        b=7H5C/O6Ci145MkrTO1TmdkKWl5t+xh+VkET0cJfsKLXnkk6OIBjf0+87pOxxDivUUP
-         K3FBXb8aJNjdPeMvUqae5qYbO5MbEZaXymkDIb30LOvm1oB/9jSimp3vCDLfO7j8cc7p
-         UvXjYRwwLUrCw3R2l2LqOIz4xwBakMix5KojvrTq2t3sCYDCnUnuenVsofn0cVr4wzHR
-         vVg1/iPpot+R3VvZ7TlPl8kl2L6D3EeTAiv1gXMgdBnZ+GhggIvP+peSyxrwzFNMqzO0
-         +St1qsMGiujeeP2NbR5Hj4TL1V1ymamj0YEG7j9JBbZJ8nO64iBmLdSr95NuzzCDycEV
-         Lvcw==
-X-Gm-Message-State: ACrzQf0vU/Wg0RCPBV0Hg1931muI0fbmEOvuAfEIpCB4PNg/0EcbVEx5
-        rCRxj4f8r/KClMLfEXebf83Bo+c=
-X-Google-Smtp-Source: AMsMyM4GSctGNx25wodoPDTxUtrfbkCUz9AV+iG7gC3eeINwAKdiuqLk7vzVQYNhat4w8MEasWHzz5M=
-X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a17:90b:2741:b0:20a:ebc3:6513 with SMTP id
- qi1-20020a17090b274100b0020aebc36513mr16120594pjb.29.1666040887804; Mon, 17
- Oct 2022 14:08:07 -0700 (PDT)
-Date:   Mon, 17 Oct 2022 14:08:06 -0700
-In-Reply-To: <20221017121344.1258c0f1@kernel.org>
-Mime-Version: 1.0
-References: <0000000000004438f605ead95255@google.com> <20221017121344.1258c0f1@kernel.org>
-Message-ID: <Y03ENjT5V5ac6VVn@google.com>
-Subject: Re: [syzbot] KMSAN: uninit-value in erspan_build_header
-From:   sdf@google.com
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     syzbot <syzbot+d551178aab6a783dc249@syzkaller.appspotmail.com>,
-        davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
-        glider@google.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org,
-        bpf@vger.kernel.org, yuehaibing@huawei.com,
-        Lorenz Bauer <oss@lmb.io>
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229572AbiJQV0q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 17:26:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCC8F7C1E7;
+        Mon, 17 Oct 2022 14:26:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7E18CB819D8;
+        Mon, 17 Oct 2022 21:26:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61995C433D7;
+        Mon, 17 Oct 2022 21:26:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666042003;
+        bh=Jb3a7mjcOgsOP9FRukKfzN3dSsgM4aL7stno/Lo2Njs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=e26ODJq01mHKxOQ6HxTBDvfLXVQMqyJC70gRGpNM7iLE5ojG7pVpElEyF04MJPNIE
+         5a6BaCp5dpvgg2gBX3+uv5z3CYLqHDTN2iCJF3YEFO1phghtUDk9KEdBsjmWGdNJch
+         ZgoOP9h4+3Ls/+GBTeFjrETiUOmKsBU9RqvSBObY2CldWZwLLtek91DFNci7ACJViP
+         gtOr/+5lF6akaOf4hQ0sBzZf5BNgYH5TqmZpVm+I+BSlJ/2b7qnO+TqO+WMLuPy3n4
+         pyywYbB1HWoh4ciILp5uvkeqw7pbeUWpqYmwhjrfqKdF1EU2M/VpeAI4pExaz2yotn
+         gt+6bZlWgp5cA==
+Date:   Mon, 17 Oct 2022 14:26:41 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Yury Norov <yury.norov@gmail.com>,
+        Borislav Petkov <bp@alien8.de>,
+        syzbot <syzbot+d0fd2bf0dd6da72496dd@syzkaller.appspotmail.com>,
+        syzkaller-bugs@googlegroups.com,
+        Andrew Jones <ajones@ventanamicro.com>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Menglong Dong <imagedong@tencent.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Guo Ren <guoren@linux.alibaba.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        andriy.shevchenko@linux.intel.com, linux@rasmusvillemoes.dk,
+        caraitto@google.com, willemb@google.com, jonolson@google.com,
+        amritha.nambiar@intel.com, linux-kernel@vger.kernel.org
+Subject: Re: [syzbot] WARNING in c_start
+Message-ID: <20221017142641.26fc370c@kernel.org>
+In-Reply-To: <50e2ecf5-4b83-3ba1-70a2-796d988d4c0b@I-love.SAKURA.ne.jp>
+References: <0000000000007647ec05eb05249c@google.com>
+        <Y0nTd9HSnnt/KDap@zn.tnic>
+        <2eaf1386-8ab0-bd65-acee-e29f1c5a6623@I-love.SAKURA.ne.jp>
+        <Y0qfLyhSoTodAdxu@zn.tnic>
+        <Y0sbwpRcipI564yp@yury-laptop>
+        <23488f06-c4b4-8bd8-b0bc-85914ba4d1c6@I-love.SAKURA.ne.jp>
+        <Y0tafD7qI2x5xzTc@yury-laptop>
+        <CAHk-=wihz-GXx66MmEyaADgS1fQE_LDcB9wrHAmkvXkd8nx9tA@mail.gmail.com>
+        <50e2ecf5-4b83-3ba1-70a2-796d988d4c0b@I-love.SAKURA.ne.jp>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/17, Jakub Kicinski wrote:
-> CC: bpf, looks like we have a packet with uninitialized payload
-> generated by BPF_PROG_TEST_RUN?
+On Mon, 17 Oct 2022 11:54:01 +0900 Tetsuo Handa wrote:
+> On 2022/10/17 2:52, Linus Torvalds wrote:
+> > Anyway, since rc1 is fairly imminent, I will just revert it for now -
+> > I don't want to have a pending revert wait until -rc2.  
+> 
+> Thank you, Linus.
+> 
+> Yury or Jakub, please send a revert request on commit 854701ba4c39 ("net: fix cpu_max_bits_warn()
+> usage in netif_attrmask_next{,_and}"), for https://syzkaller.appspot.com/bug?extid=9abe5ecc348676215427
+> says that boot is still failing.
 
-Sounds similar to [0] and [1].
-
-0:  
-https://lore.kernel.org/bpf/ce5d58a3-32ed-fa81-d490-ce854cfca927@huawei.com/T/#t
-1:  
-https://lore.kernel.org/bpf/CAKH8qBugSdWHP7mtNxrnLLR+56u_0OCx3xQOkJSV-+RUvDAeNg@mail.gmail.com/T/#t
-
-> On Wed, 12 Oct 2022 09:59:52 -0700 syzbot wrote:
-> > Hello,
-> >
-> > syzbot found the following issue on:
-> >
-> > HEAD commit:    968c2729e576 x86: kmsan: fix comment in kmsan_shadow.c
-> > git tree:       https://github.com/google/kmsan.git master
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=100cd00c880000
-> > kernel config:   
-> https://syzkaller.appspot.com/x/.config?x=131312b26465c190
-> > dashboard link:  
-> https://syzkaller.appspot.com/bug?extid=d551178aab6a783dc249
-> > compiler:       clang version 15.0.0  
-> (https://github.com/llvm/llvm-project.git  
-> 610139d2d9ce6746b3c617fb3e2f7886272d26ff), GNU ld (GNU Binutils for  
-> Debian) 2.35.2
-> > userspace arch: i386
-> >
-> > Unfortunately, I don't have any reproducer for this issue yet.
-> >
-> > Downloadable assets:
-> > disk image:  
-> https://storage.googleapis.com/syzbot-assets/c78ce21b953f/disk-968c2729.raw.xz
-> > vmlinux:  
-> https://storage.googleapis.com/syzbot-assets/22868d826804/vmlinux-968c2729.xz
-> >
-> > IMPORTANT: if you fix the issue, please add the following tag to the  
-> commit:
-> > Reported-by: syzbot+d551178aab6a783dc249@syzkaller.appspotmail.com
-> >
-> > =====================================================
-> > BUG: KMSAN: uninit-value in erspan_build_header+0x16d/0x330  
-> include/net/erspan.h:197
-> >  erspan_build_header+0x16d/0x330 include/net/erspan.h:197
-> >  erspan_xmit+0x11a2/0x1f00 net/ipv4/ip_gre.c:701
-> >  __netdev_start_xmit include/linux/netdevice.h:4819 [inline]
-> >  netdev_start_xmit include/linux/netdevice.h:4833 [inline]
-> >  xmit_one+0x14e/0x5f0 net/core/dev.c:3590
-> >  dev_hard_start_xmit+0xe5/0x370 net/core/dev.c:3606
-> >  sch_direct_xmit+0x3f1/0xdb0 net/sched/sch_generic.c:342
-> >  __dev_xmit_skb+0xc22/0x1a30 net/core/dev.c:3817
-> >  __dev_queue_xmit+0x12cb/0x31f0 net/core/dev.c:4222
-> >  dev_queue_xmit include/linux/netdevice.h:3008 [inline]
-> >  __bpf_tx_skb net/core/filter.c:2115 [inline]
-> >  __bpf_redirect_common net/core/filter.c:2154 [inline]
-> >  __bpf_redirect+0x1293/0x13b0 net/core/filter.c:2161
-> >  ____bpf_clone_redirect net/core/filter.c:2430 [inline]
-> >  bpf_clone_redirect+0x324/0x470 net/core/filter.c:2402
-> >  ___bpf_prog_run+0x7ed/0xaee0 kernel/bpf/core.c:1813
-> >  __bpf_prog_run512+0xc2/0x110 kernel/bpf/core.c:2038
-> >  bpf_dispatcher_nop_func include/linux/bpf.h:903 [inline]
-> >  __bpf_prog_run include/linux/filter.h:594 [inline]
-> >  bpf_prog_run include/linux/filter.h:601 [inline]
-> >  bpf_test_run+0x592/0xd20 net/bpf/test_run.c:402
-> >  bpf_prog_test_run_skb+0x1625/0x20b0 net/bpf/test_run.c:1141
-> >  bpf_prog_test_run+0x6a0/0x730 kernel/bpf/syscall.c:3620
-> >  __sys_bpf+0x88d/0xe70 kernel/bpf/syscall.c:4971
-> >  __do_sys_bpf kernel/bpf/syscall.c:5057 [inline]
-> >  __se_sys_bpf kernel/bpf/syscall.c:5055 [inline]
-> >  __ia32_sys_bpf+0x9c/0xe0 kernel/bpf/syscall.c:5055
-> >  do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
-> >  __do_fast_syscall_32+0xa2/0x100 arch/x86/entry/common.c:178
-> >  do_fast_syscall_32+0x33/0x70 arch/x86/entry/common.c:203
-> >  do_SYSENTER_32+0x1b/0x20 arch/x86/entry/common.c:246
-> >  entry_SYSENTER_compat_after_hwframe+0x70/0x82
-> >
-> > Uninit was created at:
-> >  slab_post_alloc_hook mm/slab.h:732 [inline]
-> >  slab_alloc_node mm/slub.c:3258 [inline]
-> >  __kmalloc_node_track_caller+0x814/0x1250 mm/slub.c:4970
-> >  kmalloc_reserve net/core/skbuff.c:362 [inline]
-> >  pskb_expand_head+0x24a/0x1a80 net/core/skbuff.c:1729
-> >  __skb_cow include/linux/skbuff.h:3529 [inline]
-> >  skb_cow_head include/linux/skbuff.h:3563 [inline]
-> >  erspan_xmit+0xad2/0x1f00 net/ipv4/ip_gre.c:688
-> >  __netdev_start_xmit include/linux/netdevice.h:4819 [inline]
-> >  netdev_start_xmit include/linux/netdevice.h:4833 [inline]
-> >  xmit_one+0x14e/0x5f0 net/core/dev.c:3590
-> >  dev_hard_start_xmit+0xe5/0x370 net/core/dev.c:3606
-> >  sch_direct_xmit+0x3f1/0xdb0 net/sched/sch_generic.c:342
-> >  __dev_xmit_skb+0xc22/0x1a30 net/core/dev.c:3817
-> >  __dev_queue_xmit+0x12cb/0x31f0 net/core/dev.c:4222
-> >  dev_queue_xmit include/linux/netdevice.h:3008 [inline]
-> >  __bpf_tx_skb net/core/filter.c:2115 [inline]
-> >  __bpf_redirect_common net/core/filter.c:2154 [inline]
-> >  __bpf_redirect+0x1293/0x13b0 net/core/filter.c:2161
-> >  ____bpf_clone_redirect net/core/filter.c:2430 [inline]
-> >  bpf_clone_redirect+0x324/0x470 net/core/filter.c:2402
-> >  ___bpf_prog_run+0x7ed/0xaee0 kernel/bpf/core.c:1813
-> >  __bpf_prog_run512+0xc2/0x110 kernel/bpf/core.c:2038
-> >  bpf_dispatcher_nop_func include/linux/bpf.h:903 [inline]
-> >  __bpf_prog_run include/linux/filter.h:594 [inline]
-> >  bpf_prog_run include/linux/filter.h:601 [inline]
-> >  bpf_test_run+0x592/0xd20 net/bpf/test_run.c:402
-> >  bpf_prog_test_run_skb+0x1625/0x20b0 net/bpf/test_run.c:1141
-> >  bpf_prog_test_run+0x6a0/0x730 kernel/bpf/syscall.c:3620
-> >  __sys_bpf+0x88d/0xe70 kernel/bpf/syscall.c:4971
-> >  __do_sys_bpf kernel/bpf/syscall.c:5057 [inline]
-> >  __se_sys_bpf kernel/bpf/syscall.c:5055 [inline]
-> >  __ia32_sys_bpf+0x9c/0xe0 kernel/bpf/syscall.c:5055
-> >  do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
-> >  __do_fast_syscall_32+0xa2/0x100 arch/x86/entry/common.c:178
-> >  do_fast_syscall_32+0x33/0x70 arch/x86/entry/common.c:203
-> >  do_SYSENTER_32+0x1b/0x20 arch/x86/entry/common.c:246
-> >  entry_SYSENTER_compat_after_hwframe+0x70/0x82
-> >
-> > CPU: 0 PID: 12499 Comm: syz-executor.1 Not tainted  
-> 6.0.0-rc5-syzkaller-48543-g968c2729e576 #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-> Google 09/22/2022
-> > =====================================================
-> >
-> >
-> > ---
-> > This report is generated by a bot. It may contain errors.
-> > See https://goo.gl/tpsmEJ for more information about syzbot.
-> > syzbot engineers can be reached at syzkaller@googlegroups.com.
-> >
-> > syzbot will keep track of this issue. See:
-> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-
+Yup, we got that revert queued up. LMK if it's a show stopper 
+otherwise it'll get to Linus on Thu.
