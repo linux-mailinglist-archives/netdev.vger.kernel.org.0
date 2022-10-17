@@ -2,83 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 09453601736
-	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 21:19:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3F2560174D
+	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 21:21:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229778AbiJQTTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 15:19:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46734 "EHLO
+        id S230520AbiJQTVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 15:21:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230299AbiJQTTc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 15:19:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E210E6172;
-        Mon, 17 Oct 2022 12:19:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 66F0161202;
-        Mon, 17 Oct 2022 19:19:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D9B9C433C1;
-        Mon, 17 Oct 2022 19:19:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666034369;
-        bh=Qr818kc1xI8X7W0RLObQ/uwj/M89QgsXdWjiM4pDHzQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RYSrfixV7H4m8Bq9qKrOvE5+I10CcI1GmMEGUCZP3wdLcmijp9XkwxL+5DnslgW5x
-         Rp/uJCAiFqp/f5aVODOXEu9RXvXk8wl5jQMBroBXMxmIPW/DXSfywCX24g1mgOWuG9
-         s94/yqeqz6oItVb3SqdztNfTbGXJrRn/nqXrJ45z9tnGhIaDaHWK/xNJTg3D1UDEIa
-         JY03M2nxymtIhdbs1j1rwFxJtRMkGqn3proUNXjBI2raT89OVINb70LG2+7bjixnzV
-         /K+g4gv1TpGb7tpP1wWa9F11cu5leYpW5VNJTcEy15ua7MrtTp6oCaWSaZ02NS/5xL
-         ZJRsJqhWgWerQ==
-Date:   Mon, 17 Oct 2022 12:19:28 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jerry.Ray@microchip.com
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        krzysztof.kozlowski@linaro.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next][PATCH v4] dt-bindings: dsa: Add lan9303 yaml
-Message-ID: <20221017121928.36b582c3@kernel.org>
-In-Reply-To: <20221017191311.mxkjfz75pgzbcwcz@skbuf>
-References: <20221003164624.4823-1-jerry.ray@microchip.com>
-        <20221003164624.4823-1-jerry.ray@microchip.com>
-        <20221008225628.pslsnwilrpvg3xdf@skbuf>
-        <e49eb069-c66b-532c-0e8e-43575304187b@linaro.org>
-        <20221009222257.f3fcl7mw3hdtp4p2@skbuf>
-        <551ca020-d4bb-94bf-7091-755506d76f58@linaro.org>
-        <20221010102914.ut364d57sjhnb3lj@skbuf>
-        <MWHPR11MB16938D7BA12C1632FF675C0AEF299@MWHPR11MB1693.namprd11.prod.outlook.com>
-        <20221017191311.mxkjfz75pgzbcwcz@skbuf>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S230483AbiJQTUz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 15:20:55 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C84D776761;
+        Mon, 17 Oct 2022 12:20:50 -0700 (PDT)
+Received: by linux.microsoft.com (Postfix, from userid 1004)
+        id 01FDF20FD46C; Mon, 17 Oct 2022 12:20:50 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 01FDF20FD46C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxonhyperv.com;
+        s=default; t=1666034450;
+        bh=Ymtr4NC/p7G4dhVJgRsevX0//AmTAesmxqym7mMRINc=;
+        h=From:To:Cc:Subject:Date:Reply-To:From;
+        b=YM9k3tRLH3o9BkFvjxj3acNu4CeIw52pySCgGiniACHSo2rT0o161Y9hTWh9qSmz6
+         DRs+j+fJL2guzvTI9Iq1bjl1GW3jXE2EVBDlv1rFNeWvfqprDCkE028Pc2tewJmkWT
+         nyXJerL/0dE05IgxyASAF/1s+XH4lWbrN0zVrVWc=
+From:   longli@linuxonhyperv.com
+To:     "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>, edumazet@google.com,
+        shiraz.saleem@intel.com, Ajay Sharma <sharmaajay@microsoft.com>
+Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        Long Li <longli@microsoft.com>
+Subject: [Patch v7 00/12] Introduce Microsoft Azure Network Adapter (MANA) RDMA driver
+Date:   Mon, 17 Oct 2022 12:20:29 -0700
+Message-Id: <1666034441-15424-1-git-send-email-longli@linuxonhyperv.com>
+X-Mailer: git-send-email 1.8.3.1
+Reply-To: longli@microsoft.com
+X-Spam-Status: No, score=-11.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 17 Oct 2022 22:13:11 +0300 Vladimir Oltean wrote:
-> The portion I highlighted of the change you're making includes your name
-> into the output of $(./scripts/get_maintainer.pl drivers/net/dsa/lan9303-core.c).
-> In other words, you're voluntarily subscribing to the responsibility of
-> being a maintainer for the driver, getting emails from other developers,
-> reviewing patches. Furthermore, you also maintain the code in the stable
-> trees, hence your name also gets propagated there so people who use
-> those kernels can report problems to you.
-> 
-> The MAINTAINERS entry for lan9303 needs to go to the "net" tree, from
-> where it can be backported. This covers the driver + schema files as
-> they currently are. The change of the .txt to the .yaml schema then
-> comes on top of that (and on "net-next").
+From: Long Li <longli@microsoft.com>
 
-And FWIW net gets merged into net-next every Thu so (compared to how
-long this patch had been in review) it won't be a large delay to wait
-for the MAINTAINERS patch to propagate.
+This patchset implements a RDMA driver for Microsoft Azure Network
+Adapter (MANA). In MANA, the RDMA device is modeled as an auxiliary device
+to the Ethernet device.
+
+The first 11 patches modify the MANA Ethernet driver to support RDMA driver.
+The last patch implementes the RDMA driver.
+
+The user-mode of the driver is being reviewed at:
+https://github.com/linux-rdma/rdma-core/pull/1177
+
+Ajay Sharma (3):
+  net: mana: Set the DMA device max segment size
+  net: mana: Define and process GDMA response code
+    GDMA_STATUS_MORE_ENTRIES
+  net: mana: Define data structures for protection domain and memory
+    registration
+
+Long Li (9):
+  net: mana: Add support for auxiliary device
+  net: mana: Record the physical address for doorbell page region
+  net: mana: Handle vport sharing between devices
+  net: mana: Export Work Queue functions for use by RDMA driver
+  net: mana: Record port number in netdev
+  net: mana: Move header files to a common location
+  net: mana: Define max values for SGL entries
+  net: mana: Define data structures for allocating doorbell page from
+    GDMA
+  RDMA/mana_ib: Add a driver for Microsoft Azure Network Adapter
+
+ MAINTAINERS                                   |  10 +
+ drivers/infiniband/Kconfig                    |   1 +
+ drivers/infiniband/hw/Makefile                |   1 +
+ drivers/infiniband/hw/mana/Kconfig            |  10 +
+ drivers/infiniband/hw/mana/Makefile           |   4 +
+ drivers/infiniband/hw/mana/cq.c               |  79 +++
+ drivers/infiniband/hw/mana/device.c           | 117 ++++
+ drivers/infiniband/hw/mana/main.c             | 508 ++++++++++++++++++
+ drivers/infiniband/hw/mana/mana_ib.h          | 156 ++++++
+ drivers/infiniband/hw/mana/mr.c               | 200 +++++++
+ drivers/infiniband/hw/mana/qp.c               | 505 +++++++++++++++++
+ drivers/infiniband/hw/mana/wq.c               | 115 ++++
+ drivers/net/ethernet/microsoft/Kconfig        |   1 +
+ .../net/ethernet/microsoft/mana/gdma_main.c   |  40 +-
+ .../net/ethernet/microsoft/mana/hw_channel.c  |   6 +-
+ .../net/ethernet/microsoft/mana/mana_bpf.c    |   2 +-
+ drivers/net/ethernet/microsoft/mana/mana_en.c | 175 +++++-
+ .../ethernet/microsoft/mana/mana_ethtool.c    |   2 +-
+ .../net/ethernet/microsoft/mana/shm_channel.c |   2 +-
+ .../microsoft => include/net}/mana/gdma.h     | 158 +++++-
+ .../net}/mana/hw_channel.h                    |   0
+ .../microsoft => include/net}/mana/mana.h     |  23 +-
+ include/net/mana/mana_auxiliary.h             |  10 +
+ .../net}/mana/shm_channel.h                   |   0
+ include/uapi/rdma/ib_user_ioctl_verbs.h       |   1 +
+ include/uapi/rdma/mana-abi.h                  |  66 +++
+ 26 files changed, 2147 insertions(+), 45 deletions(-)
+ create mode 100644 drivers/infiniband/hw/mana/Kconfig
+ create mode 100644 drivers/infiniband/hw/mana/Makefile
+ create mode 100644 drivers/infiniband/hw/mana/cq.c
+ create mode 100644 drivers/infiniband/hw/mana/device.c
+ create mode 100644 drivers/infiniband/hw/mana/main.c
+ create mode 100644 drivers/infiniband/hw/mana/mana_ib.h
+ create mode 100644 drivers/infiniband/hw/mana/mr.c
+ create mode 100644 drivers/infiniband/hw/mana/qp.c
+ create mode 100644 drivers/infiniband/hw/mana/wq.c
+ rename {drivers/net/ethernet/microsoft => include/net}/mana/gdma.h (80%)
+ rename {drivers/net/ethernet/microsoft => include/net}/mana/hw_channel.h (100%)
+ rename {drivers/net/ethernet/microsoft => include/net}/mana/mana.h (95%)
+ create mode 100644 include/net/mana/mana_auxiliary.h
+ rename {drivers/net/ethernet/microsoft => include/net}/mana/shm_channel.h (100%)
+ create mode 100644 include/uapi/rdma/mana-abi.h
+
+-- 
+2.17.1
+
