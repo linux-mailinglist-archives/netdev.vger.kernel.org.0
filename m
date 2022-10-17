@@ -2,80 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 073066015CA
-	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 19:54:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF5EE6015E5
+	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 20:03:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230212AbiJQRyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 13:54:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47346 "EHLO
+        id S230473AbiJQSDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 14:03:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230022AbiJQRyJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 13:54:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2A51F601
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 10:54:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1666029245;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vW045TRZg0HI3CVbl/qDr7ObashbGzCDeLwDHPt2cRk=;
-        b=RDe+jnXrFO3GCZoRaXv8xa/p2egY//C9eGz895B5iFtgAwllsQYmU5nliRWWb0HZBSdzcX
-        i0cT3ro818o+44hJrXLTieNg0sEC5nYVfC+V1v10v7tRBDqICYG6vcscZzi1XG57tNTwWH
-        OIyBIOi1Tky/YHCqsb48dY7aWsY+VYg=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-605-bQD8r1VjOrGGOEbakH6FxA-1; Mon, 17 Oct 2022 13:54:04 -0400
-X-MC-Unique: bQD8r1VjOrGGOEbakH6FxA-1
-Received: by mail-qt1-f200.google.com with SMTP id e24-20020ac84918000000b0039878b3c676so8901669qtq.6
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 10:54:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vW045TRZg0HI3CVbl/qDr7ObashbGzCDeLwDHPt2cRk=;
-        b=Qwb7Mox0RqsCh7HsN2LnLDsxxOEQ2HPhvYVKH/ezanxZSlNC2ILefhsuF/lsPlYrb/
-         98hdOsei/bFmZ6Bk446Kmeg5PXJSXYKq6TqTIxuT0zNrhmGLFEC6tkwWNVefMNsaHa5o
-         66UHRJkLbyqti2iPj59SJqjxtQkfgHQiOb/qqkOvr7Xr1mmpuD1KbatZPnsrdvysOjS7
-         WAyQefpHFZegcvQCnZ3lG/AuqzSavbfqQAqozqDZKFVpKu5tJaQzddZ8W1i18SuIDClR
-         eLAc/WHiHbSXkMW2VAUwkTy1bRhiSt8184euySJfQogapDW+pniSPxUJPQXBDydveiF0
-         tCyw==
-X-Gm-Message-State: ACrzQf2dwoer0YWK9PuQnkuoBg+KVHrAWjWwyMUqflQAXGRK9G8tHzEe
-        jmLMkGZxATpQvHYJAqDlp9nvskudoLNXPxwlfC7Ll4fr7YskKKzR3gkMbzZiYe9d2TIkP2zcmVa
-        j8C9BBdWIdNhUShYo
-X-Received: by 2002:a05:620a:2618:b0:6ea:908:120e with SMTP id z24-20020a05620a261800b006ea0908120emr8354728qko.645.1666029243934;
-        Mon, 17 Oct 2022 10:54:03 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM5MnZRI/+y7OnMntAppb+WoMmHAqSPseNR2wkk3kcHFTfjDcUN7CIaRXFJasqXSEgtakgiexA==
-X-Received: by 2002:a05:620a:2618:b0:6ea:908:120e with SMTP id z24-20020a05620a261800b006ea0908120emr8354717qko.645.1666029243706;
-        Mon, 17 Oct 2022 10:54:03 -0700 (PDT)
-Received: from [192.168.98.18] ([107.12.98.143])
-        by smtp.gmail.com with ESMTPSA id x7-20020ac87ec7000000b0038d9555b580sm276689qtj.44.2022.10.17.10.54.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Oct 2022 10:54:01 -0700 (PDT)
-Message-ID: <ad1c232c-e209-162d-1fa6-65702b5af121@redhat.com>
-Date:   Mon, 17 Oct 2022 13:53:55 -0400
+        with ESMTP id S230126AbiJQSDh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 14:03:37 -0400
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825A863FFB;
+        Mon, 17 Oct 2022 11:03:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=FU3Btm3EGBwXY4LS7OhQ2d8cTy/b/4HQKovRbcKBjos=; b=YSx/KHgYLgMvLP92fQqt+LbqTm
+        oqJ27ciBM3x8dNSImEPv5MwHeucHHzZZe7/+jmm0N1XwRvo1WGd7UadkAKUl2GHLHWACgps45uxkB
+        NcOse+D8Zoz0Fuz+EfvKX+cno4JILAqGZ62QebfEkIyf+O5spjYCCaYGX9aqCd1p/znDN2Blfd1Tv
+        SoRK94PsA31EzF6d9pWdnkePt8rAXi7OQVF6uEBNlD4OBdVdknSqHOosA/R1jD/LcRcBIIKtkPGc8
+        0mOstPbsyC1TNSEtWqyrsHVa4lZP1GZbop3aBW0o6o4cZpOpQnurDKjgDM5NZXSv6U937D6GC8L8O
+        7nal5D+PuliyNChsjus11wi+Yh/EZxqDHaZD3JDQXBNC9UL/Bc/lTPUsWyEePPg5Qvw+WZRVHy9Nb
+        z2VHF+nib+ZYXZWujt4jjDReaPrrC3TF0LyzoumgcZbx0eTzqEBtW0pNzWiZHJ8Z6/6cQQz2iAyMt
+        W1DczxcPrWz3HvPRGmdVHTu8CAGW5+GA1hXQ/MPtNebBXjMtMv76t2S9oXwShlb4bUci313YjKafz
+        e/YrkqHNXaxXSRjnnJKVEBElnIY88BXfLuP03KZIdlQHrmmNZoUUXyazvJbMw1nHU4SEbXvvn1awb
+        62as9NgYYlckuc68u4ruBqlGIua/uN9yjO3Ywj17I=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Nikolay Kichukov <nikolay@oldum.net>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Greg Kurz <groug@kaod.org>,
+        Stefano Stabellini <stefano.stabellini@xilinx.com>
+Subject: Re: [PATCH v6 11/11] net/9p: allocate appropriate reduced message buffers
+Date:   Mon, 17 Oct 2022 20:03:28 +0200
+Message-ID: <4858768.YlS1rbApJJ@silver>
+In-Reply-To: <Y02Kz2xuntFrKXhV@nvidia.com>
+References: <cover.1657920926.git.linux_oss@crudebyte.com>
+ <3f51590535dc96ed0a165b8218c57639cfa5c36c.1657920926.git.linux_oss@crudebyte.com>
+ <Y02Kz2xuntFrKXhV@nvidia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: kselftest: bonding: dev_addr_lists.sh doesn't run due to lack of
- dependencies
-Content-Language: en-US
-To:     Benjamin Poirier <bpoirier@nvidia.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
-References: <40f04ded-0c86-8669-24b1-9a313ca21076@redhat.com>
- <Y0dejgSk60iZaJ/4@d3>
-From:   Jonathan Toppins <jtoppins@redhat.com>
-In-Reply-To: <Y0dejgSk60iZaJ/4@d3>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,102 +58,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/12/22 20:40, Benjamin Poirier wrote:
-> On 2022-10-12 10:17 -0400, Jonathan Toppins wrote:
->> When kselftest for bonding is built like:
->> $ make TARGETS="drivers/net/bonding" -j8 -C tools/testing/selftests gen_tar
->>
->> and then run on the target:
->> $ ./run_kselftest.sh
->> [...]
->> # selftests: drivers/net/bonding: dev_addr_lists.sh
->> # ./dev_addr_lists.sh: line 17: ./../../../net/forwarding/lib.sh: No such
->> file or directory
->> # ./dev_addr_lists.sh: line 107: tests_run: command not found
->> # ./dev_addr_lists.sh: line 109: exit: : numeric argument required
->> # ./dev_addr_lists.sh: line 34: pre_cleanup: command not found
->> not ok 4 selftests: drivers/net/bonding: dev_addr_lists.sh # exit=2
->> [...]
->>
->> I am still new to kselftests is this expected or is there some way in the
->> make machinery to force packaging of net as well?
->>
+On Monday, October 17, 2022 7:03:11 PM CEST Jason Gunthorpe wrote:
+> On Fri, Jul 15, 2022 at 11:33:56PM +0200, Christian Schoenebeck wrote:
+> > So far 'msize' was simply used for all 9p message types, which is far
+> > too much and slowed down performance tremendously with large values
+> > for user configurable 'msize' option.
+> > 
+> > Let's stop this waste by using the new p9_msg_buf_size() function for
+> > allocating more appropriate, smaller buffers according to what is
+> > actually sent over the wire.
+> > 
+> > Only exception: RDMA transport is currently excluded from this message
+> > size optimization - for its response buffers that is - as RDMA transport
+> > would not cope with it, due to its response buffers being pulled from a
+> > shared pool. [1]
+> > 
+> > Link: https://lore.kernel.org/all/Ys3jjg52EIyITPua@codewreck.org/ [1]
+> > Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
+> > ---
+> > 
+> >  net/9p/client.c | 42 +++++++++++++++++++++++++++++++++++-------
+> >  1 file changed, 35 insertions(+), 7 deletions(-)
 > 
-> Arg, I didn't know that you could export just a part of the selftest
-> tree. Thanks for the report.
+> It took me a while to sort out, but for any others - this patch is
+> incompatible with qemu 5.0. It starts working again after this qemu
+> patch:
 > 
-> I'm traveling for a few days. I'll look into how to fix the inclusion
-> problem when I get back on October 19th.
+> commit cf45183b718f02b1369e18c795dc51bc1821245d
+> Author: Stefano Stabellini <stefano.stabellini@xilinx.com>
+> Date:   Thu May 21 12:26:25 2020 -0700
 > 
-> In the meantime, if you just want to run the bonding tests you can do:
+>     Revert "9p: init_in_iov_from_pdu can truncate the size"
 > 
-> (in tree)
-> make -C tools/testing/selftests run_tests TARGETS="drivers/net/bonding"
+>     This reverts commit 16724a173049ac29c7b5ade741da93a0f46edff7.
+>     It causes https://bugs.launchpad.net/bugs/1877688.
 > 
-> or
+>     Signed-off-by: Stefano Stabellini <stefano.stabellini@xilinx.com>
+>     Reviewed-by: Christian Schoenebeck <qemu_oss@crudebyte.com>
+>     Message-Id: <20200521192627.15259-1-sstabellini@kernel.org>
+>     Signed-off-by: Greg Kurz <groug@kaod.org>
 > 
-> (exported)
-> make -C tools/testing/selftests gen_tar
-> [... extract archive ...]
-> ./run_kselftest.sh -c drivers/net/bonding
+> It causes something like this:
 > 
-> 
-> It seems like a plausible fix might be to use symlinks, what do you
-> think?
+> # modprobe ib_cm
+> qemu-system-x86_64: VirtFS reply type 117 needs 17 bytes, buffer has 17,
+> less than minimum
 
-This looks good to me. I might rename `lib.sh` to `net_lib.sh` but that 
-is just a nit.
+9p server in QEMU 5.0 was broken by mentioned, reverted QEMU patch, and it was 
+already fixed in stable release 5.0.1.
 
--Jon
+It is not that recent kernel patch is breaking behaviour, but it triggers that 
+(short-lived) QEMU bug more reliably, as 9p client is now using smaller 
+messages more often. But even without this kernel patch, you would still get a 
+QEMU hang with short I/O. So it is not a good idea to continue using that 
+particular, old QEMU version, please update at least to QEMU 5.0.1.
 
-> 
-> diff --git a/tools/testing/selftests/drivers/net/bonding/Makefile b/tools/testing/selftests/drivers/net/bonding/Makefile
-> index e9dab5f9d773..7c50bfc24d32 100644
-> --- a/tools/testing/selftests/drivers/net/bonding/Makefile
-> +++ b/tools/testing/selftests/drivers/net/bonding/Makefile
-> @@ -7,6 +7,8 @@ TEST_PROGS := \
->   	bond-lladdr-target.sh \
->   	dev_addr_lists.sh
->   
-> -TEST_FILES := lag_lib.sh
-> +TEST_FILES := \
-> +	lag_lib.sh \
-> +	lib.sh
->   
->   include ../../../lib.mk
-> diff --git a/tools/testing/selftests/drivers/net/bonding/dev_addr_lists.sh b/tools/testing/selftests/drivers/net/bonding/dev_addr_lists.sh
-> index e6fa24eded5b..7b79f090ddaa 100755
-> --- a/tools/testing/selftests/drivers/net/bonding/dev_addr_lists.sh
-> +++ b/tools/testing/selftests/drivers/net/bonding/dev_addr_lists.sh
-> @@ -14,7 +14,7 @@ ALL_TESTS="
->   REQUIRE_MZ=no
->   NUM_NETIFS=0
->   lib_dir=$(dirname "$0")
-> -source "$lib_dir"/../../../net/forwarding/lib.sh
-> +source "$lib_dir"/lib.sh
->   
->   source "$lib_dir"/lag_lib.sh
->   
-> diff --git a/tools/testing/selftests/drivers/net/bonding/lib.sh b/tools/testing/selftests/drivers/net/bonding/lib.sh
-> new file mode 120000
-> index 000000000000..39c96828c5ef
-> --- /dev/null
-> +++ b/tools/testing/selftests/drivers/net/bonding/lib.sh
-> @@ -0,0 +1 @@
-> +../../../net/forwarding/lib.sh
-> \ No newline at end of file
-> diff --git a/tools/testing/selftests/lib.mk b/tools/testing/selftests/lib.mk
-> index 9d4cb94cf437..6203d3993554 100644
-> --- a/tools/testing/selftests/lib.mk
-> +++ b/tools/testing/selftests/lib.mk
-> @@ -84,7 +84,7 @@ endif
->   
->   define INSTALL_SINGLE_RULE
->   	$(if $(INSTALL_LIST),@mkdir -p $(INSTALL_PATH))
-> -	$(if $(INSTALL_LIST),rsync -a $(INSTALL_LIST) $(INSTALL_PATH)/)
-> +	$(if $(INSTALL_LIST),rsync -aL $(INSTALL_LIST) $(INSTALL_PATH)/)
->   endef
->   
->   define INSTALL_RULE
-> 
+Best regards,
+Christian Schoenebeck
+
 
