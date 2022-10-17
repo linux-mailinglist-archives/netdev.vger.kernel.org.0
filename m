@@ -2,72 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1E436013E0
-	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 18:50:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B89F601421
+	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 18:59:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229732AbiJQQuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 12:50:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34172 "EHLO
+        id S229978AbiJQQ7f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 12:59:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229622AbiJQQuP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 12:50:15 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81DF9DEC2;
-        Mon, 17 Oct 2022 09:50:14 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id z97so16915725ede.8;
-        Mon, 17 Oct 2022 09:50:14 -0700 (PDT)
+        with ESMTP id S229972AbiJQQ7d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 12:59:33 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D4A5B7FE
+        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 09:59:31 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-355ae0f4d3dso115418557b3.14
+        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 09:59:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ljMwFMsGhYFrteQhcvxg+9WwuCbKPdET/QlVHZX87ww=;
-        b=SNCaIFZ6ZHk4eyfJ58C9q8dTHW9V/zQxcHJ5LbBDejwuh7vQPQuIQuHPof/8fQE0Sn
-         F/dtmr/W0fcFN13pkFtfRSBnci1hEAgtd8B/RljU15/6eFy6rWl4Tm+hzl3Qb/TgJG/b
-         /dMio2b84AzPohxjlE1ItyRION1zEW+tY2oQl5xCGVoiaytWSqrunofOpizMJUebDLJL
-         ilyxhAUYQYDw2Qfofx9o7HULMbNxbl7QG+5Ydjl3rhWXqfKdPWGdqabXKWC98WtgQsVD
-         WcYrCrYqh6GAMegYz+S9MmktknGo3Wk0f8e709LRR+oO66ulxAN7QbdM6MM+d2orjbSO
-         rXaA==
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=4QxOkCt8UevmI0RXOll26ojyMZpWAwRNJgGHeYRjXi8=;
+        b=EpFOy6FzaXx/0+8yMdWXzldiWnbMmnpN03Xo+lcd/s1oJ1R9vnvQxOOWIM9ZSs052b
+         ny9Ugy7xMUvWEqWTJfFzMIEUW/A4+p6rJwfiiNw0braoiGFAHKQUCVELiax7X0DjqkXR
+         xAvKmB5vUn/8B0fERxQAm0n2HTFx1aTF07ZEp0SRCZ0e0QIgsZJ0cRLZ8oA8cgPEGAqi
+         W2hPAy+YBs6ZEEC3M04/vV3uDua3NBAiLoT4vF15932nCdhmpILZQlOBIu3jvQL8p+aK
+         +huZQlv+AYf28HnMpca4iOrL2zfHw/Ol/dm0BRD8fB7WEndBMbV+5U5+rmJXqHiSW7fd
+         hrLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ljMwFMsGhYFrteQhcvxg+9WwuCbKPdET/QlVHZX87ww=;
-        b=MC9kbpsmiKiYjPwInR61u6RhN+R/zf+jQNxiA+H1/5gg7BtrTWVvfW1S9vnL44SdDM
-         a//jkWLBlEBcnonLJE+RH2wTd22w3C1y8vBVxC1BJWEpc5N06iVjY/3U29CBaBoZW0Sq
-         ECzFa4T0Qk0ORbJ6ob4xLZPonhluSbT6/ml/3aN8CXXxfKpPiTYKcsJA3dNfwNXBOGek
-         4X+B/ZBit4AvVJNhfDmI6evupBVNUL6AXdh0gtpIJrcfzoqDjewL4Xliy6j1IObefV4s
-         ePz595io6MUkwqGyxKoHBkHaLR9DTX4Edf8v/wZM2aqF1WcFOAzy/1Q0BX/eO2/TM2jP
-         9jlw==
-X-Gm-Message-State: ACrzQf2XJWARJNG23R4KlpO9QARx1n8warpKQfHXL9AMh8pM2peSH2wf
-        j7jX1QuTIWC1uBOfiCzwaYM=
-X-Google-Smtp-Source: AMsMyM7AQaEkuzGxOIvBD33JhgNoRm39M/cgF0yfC5eCV+qG8bnLKdSbc1ds0Dv1TrD7wCfh3uLv7Q==
-X-Received: by 2002:a05:6402:34cb:b0:45d:197e:718c with SMTP id w11-20020a05640234cb00b0045d197e718cmr11151839edc.365.1666025413105;
-        Mon, 17 Oct 2022 09:50:13 -0700 (PDT)
-Received: from [192.168.8.100] (94.196.234.149.threembb.co.uk. [94.196.234.149])
-        by smtp.gmail.com with ESMTPSA id l10-20020a1709060cca00b0078d21574986sm6387039ejh.203.2022.10.17.09.50.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Oct 2022 09:50:12 -0700 (PDT)
-Message-ID: <6f0a9137-2d2b-7294-f59f-0fcf9cdfc72d@gmail.com>
-Date:   Mon, 17 Oct 2022 17:46:57 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.1
-Subject: Re: IORING_CQE_F_COPIED
-To:     Stefan Metzmacher <metze@samba.org>,
-        io-uring <io-uring@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
-        Dylan Yudaken <dylany@fb.com>
-References: <4385ba84-55dd-6b08-0ca7-6b4a43f9d9a2@samba.org>
-Content-Language: en-US
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <4385ba84-55dd-6b08-0ca7-6b4a43f9d9a2@samba.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=4QxOkCt8UevmI0RXOll26ojyMZpWAwRNJgGHeYRjXi8=;
+        b=l8oBKVohSuA38M7RUH1qCF6VIXQJks2YqSYiY2n723zViR15arA+whEzfid1jNK+lH
+         K+qg150uLg3eUt8gJKA9LbmHuuB2lpKyFm/bHTAqIjvn1ah+qnXfMFE0RxvBG5nU9EgS
+         54fmVH4zDs0ZsWsLYQQ0M2KkEmUPlWyQyks8W/qIXTV5v7+LVM1AlcufP+3sxg2wOg/u
+         b4NkaflxY6oXlCnuLBNJ9zfmQmmi9t4wR8y0ZPwRQX17fYzBcGWzr/Eo3nXIUvXhq8if
+         Uksmu256ETsT9t9FRiCtBXUAULa7yZ27qICETACraPMPUe+yl544OXEIzaB11OStP9T2
+         YnoQ==
+X-Gm-Message-State: ACrzQf2JIpBnSrG6OX/EZs/NlMUaSUXuL1Vw7pBP0AmSD4T/0hxWquXY
+        pZLhbbhf/crmxIHPyjitqUUB2lXZibNdcA==
+X-Google-Smtp-Source: AMsMyM7cP1zUenCttMWecOVYMcddpGSKDOdRf2vrQWE8i7hAnDwfyCUEsjpNZwVZ7dPEEYyV9KLwjdAff5Qx5w==
+X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
+ (user=edumazet job=sendgmr) by 2002:a81:be02:0:b0:355:c386:5ff1 with SMTP id
+ i2-20020a81be02000000b00355c3865ff1mr9661832ywn.285.1666025970772; Mon, 17
+ Oct 2022 09:59:30 -0700 (PDT)
+Date:   Mon, 17 Oct 2022 16:59:28 +0000
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.38.0.413.g74048e4d9e-goog
+Message-ID: <20221017165928.2150130-1-edumazet@google.com>
+Subject: [PATCH net] net: hsr: avoid possible NULL deref in skb_clone()
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Andreas Oetken <ennoerlangen@gmail.com>,
+        Juhee Kang <claudiajkang@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,24 +71,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey Stefan,
+syzbot got a crash [1] in skb_clone(), caused by a bug
+in hsr_get_untagged_frame().
 
-On 10/14/22 12:06, Stefan Metzmacher wrote:
-> Hi Pavel,
-> 
-> In the tests I made I used this version of IORING_CQE_F_COPIED:
-> https://git.samba.org/?p=metze/linux/wip.git;a=commitdiff;h=645d3b584c417a247d92d71baa6266a5f3d0d17d
-> (also inlined at the end)
-> 
-> Would that something we want for 6.1? (Should I post that with a useful commit message, after doing some more tests)
+When/if create_stripped_skb_hsr() returns NULL, we must
+not attempt to call skb_clone().
 
-I was thinking, can it be delivered separately but not in the same cqe?
-The intention is to keep it off the IO path. For example, it can emit a
-zc status CQE or maybe keep a "zc failed" counter inside the ring. Other
-options? And we can add a separate callback for that, will make a couple
-of things better.
+While we are at it, replace a WARN_ONCE() by netdev_warn_once().
 
-What do you think? Especially from the userspace usability perspective.
+[1]
+general protection fault, probably for non-canonical address 0xdffffc000000000f: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000078-0x000000000000007f]
+CPU: 1 PID: 754 Comm: syz-executor.0 Not tainted 6.0.0-syzkaller-02734-g0326074ff465 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/22/2022
+RIP: 0010:skb_clone+0x108/0x3c0 net/core/skbuff.c:1641
+Code: 93 02 00 00 49 83 7c 24 28 00 0f 85 e9 00 00 00 e8 5d 4a 29 fa 4c 8d 75 7e 48 b8 00 00 00 00 00 fc ff df 4c 89 f2 48 c1 ea 03 <0f> b6 04 02 4c 89 f2 83 e2 07 38 d0 7f 08 84 c0 0f 85 9e 01 00 00
+RSP: 0018:ffffc90003ccf4e0 EFLAGS: 00010207
 
+RAX: dffffc0000000000 RBX: ffffc90003ccf5f8 RCX: ffffc9000c24b000
+RDX: 000000000000000f RSI: ffffffff8751cb13 RDI: 0000000000000000
+RBP: 0000000000000000 R08: 00000000000000f0 R09: 0000000000000140
+R10: fffffbfff181d972 R11: 0000000000000000 R12: ffff888161fc3640
+R13: 0000000000000a20 R14: 000000000000007e R15: ffffffff8dc5f620
+FS: 00007feb621e4700(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007feb621e3ff8 CR3: 00000001643a9000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+<TASK>
+hsr_get_untagged_frame+0x4e/0x610 net/hsr/hsr_forward.c:164
+hsr_forward_do net/hsr/hsr_forward.c:461 [inline]
+hsr_forward_skb+0xcca/0x1d50 net/hsr/hsr_forward.c:623
+hsr_handle_frame+0x588/0x7c0 net/hsr/hsr_slave.c:69
+__netif_receive_skb_core+0x9fe/0x38f0 net/core/dev.c:5379
+__netif_receive_skb_one_core+0xae/0x180 net/core/dev.c:5483
+__netif_receive_skb+0x1f/0x1c0 net/core/dev.c:5599
+netif_receive_skb_internal net/core/dev.c:5685 [inline]
+netif_receive_skb+0x12f/0x8d0 net/core/dev.c:5744
+tun_rx_batched+0x4ab/0x7a0 drivers/net/tun.c:1544
+tun_get_user+0x2686/0x3a00 drivers/net/tun.c:1995
+tun_chr_write_iter+0xdb/0x200 drivers/net/tun.c:2025
+call_write_iter include/linux/fs.h:2187 [inline]
+new_sync_write fs/read_write.c:491 [inline]
+vfs_write+0x9e9/0xdd0 fs/read_write.c:584
+ksys_write+0x127/0x250 fs/read_write.c:637
+do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+Fixes: f266a683a480 ("net/hsr: Better frame dispatch")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ net/hsr/hsr_forward.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
+index 5bf357734b113085a3602aa53bd753d7c8140c0d..a50429a62f7442e99e6c101f9caf33df16c69faf 100644
+--- a/net/hsr/hsr_forward.c
++++ b/net/hsr/hsr_forward.c
+@@ -150,15 +150,15 @@ struct sk_buff *hsr_get_untagged_frame(struct hsr_frame_info *frame,
+ 				       struct hsr_port *port)
+ {
+ 	if (!frame->skb_std) {
+-		if (frame->skb_hsr) {
++		if (frame->skb_hsr)
+ 			frame->skb_std =
+ 				create_stripped_skb_hsr(frame->skb_hsr, frame);
+-		} else {
+-			/* Unexpected */
+-			WARN_ONCE(1, "%s:%d: Unexpected frame received (port_src %s)\n",
+-				  __FILE__, __LINE__, port->dev->name);
++		else
++			netdev_warn_once(port->dev,
++					 "Unexpected frame received in hsr_get_untagged_frame()\n");
++
++		if (!frame->skb_std)
+ 			return NULL;
+-		}
+ 	}
+ 
+ 	return skb_clone(frame->skb_std, GFP_ATOMIC);
 -- 
-Pavel Begunkov
+2.38.0.413.g74048e4d9e-goog
+
