@@ -2,65 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6732460163C
-	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 20:27:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B860601649
+	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 20:30:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230376AbiJQS04 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 14:26:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35454 "EHLO
+        id S230316AbiJQSaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 14:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230304AbiJQS0y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 14:26:54 -0400
-Received: from mail-oo1-f50.google.com (mail-oo1-f50.google.com [209.85.161.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6BD474CE6;
-        Mon, 17 Oct 2022 11:26:53 -0700 (PDT)
-Received: by mail-oo1-f50.google.com with SMTP id g15-20020a4a894f000000b0047f8e899623so2755953ooi.5;
-        Mon, 17 Oct 2022 11:26:53 -0700 (PDT)
+        with ESMTP id S229898AbiJQSaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 14:30:21 -0400
+Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 966321401E
+        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 11:30:16 -0700 (PDT)
+Received: by mail-vs1-xe2c.google.com with SMTP id 3so12385102vsh.5
+        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 11:30:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=DXU81cQcPsCJLCV+A2vr1+j7uPP+PNe41H9VCxRnhMQ=;
+        b=cx2LxuZ48C+MUnXJPZyd4WuzGanbZCWLlqZEcit5FftjC6xno++aG8MH9PDvAsUUSZ
+         rmLFTWxZ7FHQZZZy70/qWTZ46+bNpX3NyFKCeD9lIx4/kPNEO2qTrd77sJIoaJ8dkYDI
+         o7IYMoNmlgES8l3e7IkYdanLaYMPBOr9Tw76x0NeZopzOsPfdP/KtRMrs0u8ZI0zl/iv
+         jeRSLOvCCCMyWP6SsQP9z/A54CtQgSLFAY8b+7wcGNFqOIH3q3wdbiCKtXvCbIwq11zO
+         Wjz+h0o4ay1fMleegtoBUxCyyULgYzByPQJRX/BcNAKj8dryCo/V0Ut21HjJYfU2Tdma
+         rlmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=14x/M1tKZwx1cpScI/Zn9umGF7nknJ0iPBkHXl0p60w=;
-        b=7wpMGAuxXsPn25YuNGrtZ3sAIgRIs+/YMxs4yEM4jxwxANNFxPtv2oezL2EABBiqbp
-         7Eg3qS4W/M+Oflco5puM2LewRCuo1eW/h7MNSWFbrOzO5IsROFw1d5+SIM27H7ilkAv1
-         fUIZY/rHN6kI/g1NXyH9KN5wsgeMI9vpy8V8evlkhfQ7+9umgz37IAb9LEOff3R10o6b
-         2R3WC1wtcKH7VCHFoTSTZHm7nLjdm9NMsKrFazjM5Vt/QwLLV3/WhzCwp/0J3tKnjoxH
-         FkKqE3UUR5NAWeD1PQq6gVBkO3KG+DkgYpDqxAUp6ROYKFBO/SNMLfuSuqiodr6kqoT4
-         4VcQ==
-X-Gm-Message-State: ACrzQf3IcXZ9Y+c5ezB/S6rI5hSlaGVUw4eF00P6EEDey7QHp+NGeC5Q
-        yqa8RC07zW4TKgVCFvcwIyu1n1btOA==
-X-Google-Smtp-Source: AMsMyM4CG65ULQoMsmj7Stme8+7rka/kGz7dJ4wC47I7Ms/prM1SAEmqglGIHsHsjKKzmkj+TXJmxA==
-X-Received: by 2002:a4a:d31a:0:b0:47e:70a5:7eed with SMTP id g26-20020a4ad31a000000b0047e70a57eedmr4773127oos.16.1666031212900;
-        Mon, 17 Oct 2022 11:26:52 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id i34-20020a056870892200b0013320d9d9casm5148668oao.44.2022.10.17.11.26.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Oct 2022 11:26:52 -0700 (PDT)
-Received: (nullmailer pid 2246065 invoked by uid 1000);
-        Mon, 17 Oct 2022 18:26:53 -0000
-Date:   Mon, 17 Oct 2022 13:26:53 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     =?utf-8?Q?Micha=C5=82?= Grzelak <mig@semihalf.com>
-Cc:     robh+dt@kernel.org, edumazet@google.com, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, upstream@semihalf.com,
-        devicetree@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        mw@semihalf.com, kuba@kernel.org
-Subject: Re: [PATCH v5 1/3] dt-bindings: net: marvell,pp2: convert to
- json-schema
-Message-ID: <166603121217.2246011.825778809609571162.robh@kernel.org>
-References: <20221014213254.30950-1-mig@semihalf.com>
- <20221014213254.30950-2-mig@semihalf.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=DXU81cQcPsCJLCV+A2vr1+j7uPP+PNe41H9VCxRnhMQ=;
+        b=Bvki4wvishQAu/67zFHd+N3LmY33tu/kHmOHSQOWLKKRZbdy+Aoqfnr//ua522We8l
+         GSYtLgCPETK2MWwbBkxyhzNLHA3QptjKLgwrH4iWl1D9nOXxPHibjoTHyOdfiErtAzf4
+         EkkLJ4lX8UbeuOCcoVnx7rJE1tqwosDurYWXY6+rs6CvdpHJbBtuZnh1DtngkbbWENi3
+         /5aGoLN9axhAE8agwdJGFl+gUxIp7AU9JEzEzOwbNObJIwfXUNijw16cR9gGKaJbnI+Y
+         C0NtqhcwNAhUf3jiciYkaUEBJbooAHAWDenOzfWn8ds9YTD+3kc5Fru2bVQDA9roxxlM
+         NFVQ==
+X-Gm-Message-State: ACrzQf2bPuTqUywXpOJNtsKMZYJx8dZpwlBCHfHPqP4zH3qczqn7oIjo
+        ZA9T83u9sV/Xjgb6APXiRb1/RAJD4IaBBpwiuAUCxQ==
+X-Google-Smtp-Source: AMsMyM4p9p0QSnPBV1gkTca9Wg26fAHTdzB5s48QOa9jPxquDOSsim86CoYwsXoOqK1CJmm9ZL0dMMJMQDF8TfvR9Vo=
+X-Received: by 2002:a67:e8d0:0:b0:3a9:765b:38fe with SMTP id
+ y16-20020a67e8d0000000b003a9765b38femr124089vsn.51.1666031415362; Mon, 17 Oct
+ 2022 11:30:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20221014213254.30950-2-mig@semihalf.com>
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
+References: <00000000000068cb2905eb214e9a@google.com> <CAKH8qBu+oT+BF6sA4PKxfUsj43O5BNSLzrdhirWOLJ0O8KbA3w@mail.gmail.com>
+ <CANp29Y5ZsUQ64iizRVQiuunGceH_gGTQbLrKRDZWYuSHRdazLQ@mail.gmail.com> <Y02UV5XnsWo+Zd7q@google.com>
+In-Reply-To: <Y02UV5XnsWo+Zd7q@google.com>
+From:   Aleksandr Nogikh <nogikh@google.com>
+Date:   Mon, 17 Oct 2022 11:30:04 -0700
+Message-ID: <CANp29Y4x8fGchAsEaZyb4U_Doi-VBuoNkP+Pq90Eorzj7fotdg@mail.gmail.com>
+Subject: Re: [syzbot] WARNING in btf_type_id_size
+To:     sdf@google.com
+Cc:     syzbot <syzbot+6280ebbcdba3e0c14fde@syzkaller.appspotmail.com>,
+        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, haoluo@google.com, john.fastabend@gmail.com,
+        jolsa@kernel.org, kpsingh@kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, martin.lau@linux.dev, nathan@kernel.org,
+        ndesaulniers@google.com, netdev@vger.kernel.org, song@kernel.org,
+        syzkaller-bugs@googlegroups.com, trix@redhat.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,23 +73,127 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 14 Oct 2022 23:32:52 +0200, Michał Grzelak wrote:
-> Convert the marvell,pp2 bindings from text to proper schema.
-> 
-> Move 'marvell,system-controller' and 'dma-coherent' properties from
-> port up to the controller node, to match what is actually done in DT.
-> 
-> Rename all subnodes to match "^(ethernet-)?port@[0-2]$" and deprecate
-> port-id in favour of 'reg'.
-> 
-> Signed-off-by: Michał Grzelak <mig@semihalf.com>
-> ---
->  .../devicetree/bindings/net/marvell,pp2.yaml  | 305 ++++++++++++++++++
->  .../devicetree/bindings/net/marvell-pp2.txt   | 141 --------
->  MAINTAINERS                                   |   2 +-
->  3 files changed, 306 insertions(+), 142 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/net/marvell,pp2.yaml
->  delete mode 100644 Documentation/devicetree/bindings/net/marvell-pp2.txt
-> 
+On Mon, Oct 17, 2022 at 10:43 AM <sdf@google.com> wrote:
+>
+> On 10/17, Aleksandr Nogikh wrote:
+> > Let's tell the bot about the fix
+>
+> > #syz fix: bpf: prevent decl_tag from being referenced in func_proto
+>
+> Thx! Wasn't sure syzkaller would accept that until the fix is actually
+> pulled in.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+No, that's not strictly necessary :) syzbot accepts fix commit titles
+at any moment and then just waits until the commit reaches all
+branches it fuzzes.
+
+>
+> > On Mon, Oct 17, 2022 at 9:16 AM 'Stanislav Fomichev' via
+> > syzkaller-bugs <syzkaller-bugs@googlegroups.com> wrote:
+> > >
+> > > On Sat, Oct 15, 2022 at 11:52 PM syzbot
+> > > <syzbot+6280ebbcdba3e0c14fde@syzkaller.appspotmail.com> wrote:
+> > > >
+> > > > Hello,
+> > > >
+> > > > syzbot found the following issue on:
+> > > >
+> > > > HEAD commit:    0326074ff465 Merge tag 'net-next-6.1' of
+> > git://git.kernel...
+> > > > git tree:       bpf
+> > > > console+strace:
+> > https://syzkaller.appspot.com/x/log.txt?x=1376ba52880000
+> > > > kernel config:
+> > https://syzkaller.appspot.com/x/.config?x=796b7c2847a6866a
+> > > > dashboard link:
+> > https://syzkaller.appspot.com/bug?extid=6280ebbcdba3e0c14fde
+> > > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU
+> > Binutils for Debian) 2.35.2
+> > > > syz repro:
+> > https://syzkaller.appspot.com/x/repro.syz?x=15e182aa880000
+> > > > C reproducer:
+> > https://syzkaller.appspot.com/x/repro.c?x=1677bfcc880000
+> > > >
+> > > > Downloadable assets:
+> > > > disk image:
+> > https://storage.googleapis.com/syzbot-assets/7cc67ced256d/disk-0326074f.raw.xz
+> > > > vmlinux:
+> > https://storage.googleapis.com/syzbot-assets/86a7be29267c/vmlinux-0326074f.xz
+> > > >
+> > > > IMPORTANT: if you fix the issue, please add the following tag to the
+> > commit:
+> > > > Reported-by: syzbot+6280ebbcdba3e0c14fde@syzkaller.appspotmail.com
+> > > >
+> > > > ------------[ cut here ]------------
+> > > > WARNING: CPU: 0 PID: 3609 at kernel/bpf/btf.c:1946
+> > btf_type_id_size+0x2d5/0x9d0 kernel/bpf/btf.c:1946
+> > > > Modules linked in:
+> > > > CPU: 0 PID: 3609 Comm: syz-executor361 Not tainted
+> > 6.0.0-syzkaller-02734-g0326074ff465 #0
+> > > > Hardware name: Google Google Compute Engine/Google Compute Engine,
+> > BIOS Google 09/22/2022
+> > > > RIP: 0010:btf_type_id_size+0x2d5/0x9d0 kernel/bpf/btf.c:1946
+> > > > Code: ef e8 7f 8e e4 ff 41 83 ff 0b 77 28 f6 44 24 10 18 75 3f e8 6d
+> > 91 e4 ff 44 89 fe bf 0e 00 00 00 e8 20 8e e4 ff e8 5b 91 e4 ff <0f> 0b 45
+> > 31 f6 e9 98 02 00 00 41 83 ff 12 74 18 e8 46 91 e4 ff 44
+> > > > RSP: 0018:ffffc90003cefb40 EFLAGS: 00010293
+> > > > RAX: 0000000000000000 RBX: 0000000000000002 RCX: 0000000000000000
+> > > > RDX: ffff8880259c0000 RSI: ffffffff81968415 RDI: 0000000000000005
+> > > > RBP: ffff88801270ca00 R08: 0000000000000005 R09: 000000000000000e
+> > > > R10: 0000000000000011 R11: 0000000000000000 R12: 0000000000000000
+> > > > R13: 0000000000000011 R14: ffff888026ee6424 R15: 0000000000000011
+> > > > FS:  000055555641b300(0000) GS:ffff8880b9a00000(0000)
+> > knlGS:0000000000000000
+> > > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > > CR2: 0000000000f2e258 CR3: 000000007110e000 CR4: 00000000003506f0
+> > > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > > > Call Trace:
+> > > >  <TASK>
+> > > >  btf_func_proto_check kernel/bpf/btf.c:4447 [inline]
+> > > >  btf_check_all_types kernel/bpf/btf.c:4723 [inline]
+> > > >  btf_parse_type_sec kernel/bpf/btf.c:4752 [inline]
+> > > >  btf_parse kernel/bpf/btf.c:5026 [inline]
+> > > >  btf_new_fd+0x1926/0x1e70 kernel/bpf/btf.c:6892
+> > > >  bpf_btf_load kernel/bpf/syscall.c:4324 [inline]
+> > > >  __sys_bpf+0xb7d/0x4cf0 kernel/bpf/syscall.c:5010
+> > > >  __do_sys_bpf kernel/bpf/syscall.c:5069 [inline]
+> > > >  __se_sys_bpf kernel/bpf/syscall.c:5067 [inline]
+> > > >  __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:5067
+> > > >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> > > >  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+> > > >  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> > > > RIP: 0033:0x7f0fbae41c69
+> > > > Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48
+> > 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01
+> > f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+> > > > RSP: 002b:00007ffc8aeb6228 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+> > > > RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f0fbae41c69
+> > > > RDX: 0000000000000020 RSI: 0000000020000140 RDI: 0000000000000012
+> > > > RBP: 00007f0fbae05e10 R08: 0000000000000000 R09: 0000000000000000
+> > > > R10: 00000000ffffffff R11: 0000000000000246 R12: 00007f0fbae05ea0
+> > > > R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+> > > >  </TASK>
+> > >
+> > > Will be addressed by
+> > >
+> > https://lore.kernel.org/bpf/d1379e3f-a64d-8c27-9b77-f6de085ce498@meta.com/T/#u
+> > >
+> > >
+> > > > ---
+> > > > This report is generated by a bot. It may contain errors.
+> > > > See https://goo.gl/tpsmEJ for more information about syzbot.
+> > > > syzbot engineers can be reached at syzkaller@googlegroups.com.
+> > > >
+> > > > syzbot will keep track of this issue. See:
+> > > > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> > > > syzbot can test patches for this issue, for details see:
+> > > > https://goo.gl/tpsmEJ#testing-patches
+> > >
+> > > --
+> > > You received this message because you are subscribed to the Google
+> > Groups "syzkaller-bugs" group.
+> > > To unsubscribe from this group and stop receiving emails from it, send
+> > an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+> > > To view this discussion on the web visit
+> > https://groups.google.com/d/msgid/syzkaller-bugs/CAKH8qBu%2BoT%2BBF6sA4PKxfUsj43O5BNSLzrdhirWOLJ0O8KbA3w%40mail.gmail.com.
