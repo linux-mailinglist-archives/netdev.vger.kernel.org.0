@@ -2,69 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F2CE601473
-	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 19:14:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09FF960147A
+	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 19:15:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229923AbiJQROU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 13:14:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54002 "EHLO
+        id S229955AbiJQRPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 13:15:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229683AbiJQROT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 13:14:19 -0400
-Received: from mail-ua1-x936.google.com (mail-ua1-x936.google.com [IPv6:2607:f8b0:4864:20::936])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B57826FA39
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 10:14:17 -0700 (PDT)
-Received: by mail-ua1-x936.google.com with SMTP id d3so4600785uav.7
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 10:14:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=CxWqumSKR3BuOjp+QhgYFQBAXUoNfkUfOpUq1HWbl1w=;
-        b=NRaKixeeXt339sxitZM7mXtcrOmvTuuZbF/O4pmY9sNzz8QzJqt3I/HP28ok/o6bKF
-         QS1ILGFmsPUL0yTzgbV+OaJrZNdINmskRdWBi09zrfXtg4222W2GIk28TCOmwVYZcgp7
-         /P66vUDajserDVUntWJE5goYXl+m8caF8TlBVS8+qcMp6fJY9+jsit/orphHHjWPdnYK
-         TORcADOobZV6uxiIjneRHf4jSrU11fQzUoss4PmgOpdXxtLodCDJqMoFog9yR2qTjbma
-         B+4rYy8utZjL5PqU4M5csXLWeSQGPa0h9Fz+PKBsQ41Cv8jZn0ManS0KCPFGekkVbeHN
-         beUA==
+        with ESMTP id S229948AbiJQRPk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 13:15:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BCED58514
+        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 10:15:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1666026937;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uTPjQ+L7t3QDYthVXhRZFlmlQ11pyMSRL3Ye16AEvZQ=;
+        b=fUAWtHoTNdjJko5zSMzfrhcqL93eS7dW8hrO7JpJTuIHrpN4eQhSO1MIj0GCyk3D6vPS82
+        UtJQf9a92YxZ49dqJKAyxMZPGeTezz31KghG7wyO0OizD4Uoe0L3hkpWhlOf1KaaD4m/ux
+        C1aZ4WOajbWgrplDX4te/F7l9OlYNLk=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-456-q7tf6ofYM16Ih9HBieMHtQ-1; Mon, 17 Oct 2022 13:15:36 -0400
+X-MC-Unique: q7tf6ofYM16Ih9HBieMHtQ-1
+Received: by mail-qv1-f70.google.com with SMTP id v3-20020a0cf903000000b004b4619bb7e3so7249597qvn.22
+        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 10:15:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=CxWqumSKR3BuOjp+QhgYFQBAXUoNfkUfOpUq1HWbl1w=;
-        b=3tNCSZMKEiQ8nTCUCYsN+FDtA5uOKbgx/RIwjhZzHp/c/JlRNthF1IBFKC3fx1MrUO
-         qmtkc1hbe8UPHiT9niZkp/2oOalTB9YMDsS3MjqFYsRYntRpklHFF5ganrxf5oVW6HV8
-         +DYOBzeOAeGELqAOx84XXqp2aQGIneySSSS+f/0RrJO9Hr6lsQu+gHK+ZYtTlNZanNEU
-         E8f7gbhllVkgtn6sYOzfNcq651H9lll8wogddnYy4gIgxuG+dbU5S8iCs1U5pExxe1dq
-         N+jNr/VVI/r6XMXLIDQqea0OjksXIVxtbcK4C8TWcrzbvXBzSyDRBlyb0AUM/0lXLZU+
-         sb8g==
-X-Gm-Message-State: ACrzQf1JZj544+5WrPqzD3rvCuGBqwXThB9B5jqm1UYigk2azit2yzM1
-        bwC4dQ0x4GQE0ilVdwdF2HImcjvb0RB99Vutdt6euA==
-X-Google-Smtp-Source: AMsMyM4PgTCeLg8g3Eesqdsslve+dLMxFt87fZ3c3+2JP97PZO1tnMEsdM+iPBdJDBSl9z3FqXUVfkrc47q5R7G4t2M=
-X-Received: by 2002:ab0:70c6:0:b0:39e:ed14:806b with SMTP id
- r6-20020ab070c6000000b0039eed14806bmr5184637ual.82.1666026856800; Mon, 17 Oct
- 2022 10:14:16 -0700 (PDT)
-MIME-Version: 1.0
-References: <00000000000068cb2905eb214e9a@google.com> <CAKH8qBu+oT+BF6sA4PKxfUsj43O5BNSLzrdhirWOLJ0O8KbA3w@mail.gmail.com>
-In-Reply-To: <CAKH8qBu+oT+BF6sA4PKxfUsj43O5BNSLzrdhirWOLJ0O8KbA3w@mail.gmail.com>
-From:   Aleksandr Nogikh <nogikh@google.com>
-Date:   Mon, 17 Oct 2022 10:14:05 -0700
-Message-ID: <CANp29Y5ZsUQ64iizRVQiuunGceH_gGTQbLrKRDZWYuSHRdazLQ@mail.gmail.com>
-Subject: Re: [syzbot] WARNING in btf_type_id_size
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     syzbot <syzbot+6280ebbcdba3e0c14fde@syzkaller.appspotmail.com>,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, haoluo@google.com, john.fastabend@gmail.com,
-        jolsa@kernel.org, kpsingh@kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, martin.lau@linux.dev, nathan@kernel.org,
-        ndesaulniers@google.com, netdev@vger.kernel.org, song@kernel.org,
-        syzkaller-bugs@googlegroups.com, trix@redhat.com, yhs@fb.com
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=uTPjQ+L7t3QDYthVXhRZFlmlQ11pyMSRL3Ye16AEvZQ=;
+        b=rccZqgzcaVIvdV2aEu4ZBZGTaO5DdVEJ0kCcpPRVJruXuYi9Xvk44nj02fGr9a2eIG
+         +0lhlHwQcIhciuTYHL9Yj4os+tU58JBSThFLgQPPaUulsF74ptI1pb9A+LXWvinSAZSb
+         3Bqf4x0YZDO/ZX4yhjoo8htA4sfH4a43X+9AaJj6aX6fCcY3w2AjwZRxtNCuBXFAcQvi
+         GP1uNlUW3YPjzYN5+x5N91ifQBcxJ5wPztYCkbvxX4l8j2r2Hy8Hxv/BNS5FXbdOmf42
+         pKKcTCfMfONMFcurmOMucP8dS9ie9Ssn5qJ2pZTuqlz+BtmsgQe4k/tfZRJzv2x15riM
+         5Ntw==
+X-Gm-Message-State: ACrzQf0ECZw48aRwHJLwFoWFyo9O9B1xk/wf9u61ScUp0EAcVhg4MOla
+        mxvfTQJ5LoK/vBJwM1t1WlzBIk9VOfBFM6RDZ5/wWm86hIJIw1QqO6ck8ApbTJ6UzDFApjjJu3p
+        oEAzkTw3FH609NwF2
+X-Received: by 2002:a05:620a:2718:b0:6ed:4883:141c with SMTP id b24-20020a05620a271800b006ed4883141cmr8300051qkp.496.1666026936206;
+        Mon, 17 Oct 2022 10:15:36 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM6D09Mm++vFlZfF5Hm+uhiVzI68519YqC9p3nDghGKWNRnT+NNCqHFuLAoJ4bG857jmUtCm+Q==
+X-Received: by 2002:a05:620a:2718:b0:6ed:4883:141c with SMTP id b24-20020a05620a271800b006ed4883141cmr8300024qkp.496.1666026935856;
+        Mon, 17 Oct 2022 10:15:35 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-103-235.dyn.eolo.it. [146.241.103.235])
+        by smtp.gmail.com with ESMTPSA id g8-20020ac87f48000000b0035cf31005e2sm203532qtk.73.2022.10.17.10.15.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Oct 2022 10:15:35 -0700 (PDT)
+Message-ID: <f31aa394b15fe2449f9fc2552e43767f5cbfe211.camel@redhat.com>
+Subject: Re: [ovs-dev] [syzbot] WARNING in ovs_dp_reset_user_features
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Aaron Conole <aconole@redhat.com>
+Cc:     syzbot <syzbot+31cde0bef4bbf8ba2d86@syzkaller.appspotmail.com>,
+        aahringo@redhat.com, ccaulfie@redhat.com, cluster-devel@redhat.com,
+        davem@davemloft.net, dev@openvswitch.org, edumazet@google.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pshelar@ovn.org,
+        syzkaller-bugs@googlegroups.com, teigland@redhat.com
+Date:   Mon, 17 Oct 2022 19:15:31 +0200
+In-Reply-To: <f7th702d1jm.fsf@redhat.com>
+References: <00000000000097399505ead9ef34@google.com>
+         <c7dd8b101d78c27e1f21ab15f98627e5a5fd919e.camel@redhat.com>
+         <f7th702d1jm.fsf@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,94 +84,127 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Let's tell the bot about the fix
+On Mon, 2022-10-17 at 09:26 -0400, Aaron Conole wrote:
+> Paolo Abeni <pabeni@redhat.com> writes:
+> > On Wed, 2022-10-12 at 10:43 -0700, syzbot wrote:
+> > > Hello,
+> > > 
+> > > syzbot found the following issue on:
+> > > 
+> > > HEAD commit:    e8bc52cb8df8 Merge tag 'driver-core-6.1-rc1' of git://git...
+> > > git tree:       upstream
+> > > console+strace: https://syzkaller.appspot.com/x/log.txt?x=134de042880000
+> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=7579993da6496f03
+> > > dashboard link: https://syzkaller.appspot.com/bug?extid=31cde0bef4bbf8ba2d86
+> > > compiler: Debian clang version
+> > > 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU
+> > > ld (GNU Binutils for Debian) 2.35.2
+> > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12173a34880000
+> > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1792461a880000
+> > > 
+> > > Downloadable assets:
+> > > disk image: https://storage.googleapis.com/syzbot-assets/4dc25a89bfbd/disk-e8bc52cb.raw.xz
+> > > vmlinux: https://storage.googleapis.com/syzbot-assets/16c9ca5fd754/vmlinux-e8bc52cb.xz
+> > > 
+> > > The issue was bisected to:
+> > > 
+> > > commit 6b0afc0cc3e9a9a91f5a76d0965d449781441e18
+> > > Author: Alexander Aring <aahringo@redhat.com>
+> > > Date:   Wed Jun 22 18:45:23 2022 +0000
+> > > 
+> > >     fs: dlm: don't use deprecated timeout features by default
+> > 
+> > This commit is not really relevant for the issue, but it makes the
+> > reproducer fail, since it changes the genl_family registration order
+> > and the repro hard-codes the ovs genl family id.
+> 
+> I have an easy reproducer at:
+> 
+> http://git.bytheb.org/cgit/kselftest.git/commit/?id=97800e452e2cea1fafb45058120128e902d8970e
+> 
+> (PS: I do plan to do some cleanup and then post this kselftest stuff)
+> 
+> > > 
+> > > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10d5787c880000
+> > > final oops:     https://syzkaller.appspot.com/x/report.txt?x=12d5787c880000
+> > > console output: https://syzkaller.appspot.com/x/log.txt?x=14d5787c880000
+> > > 
+> > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > > Reported-by: syzbot+31cde0bef4bbf8ba2d86@syzkaller.appspotmail.com
+> > > Fixes: 6b0afc0cc3e9 ("fs: dlm: don't use deprecated timeout features by default")
+> > > 
+> > > ------------[ cut here ]------------
+> > > Dropping previously announced user features
+> > > WARNING: CPU: 1 PID: 3608 at net/openvswitch/datapath.c:1619
+> > > ovs_dp_reset_user_features+0x1bc/0x240
+> > > net/openvswitch/datapath.c:1619
+> > > Modules linked in:
+> > > CPU: 1 PID: 3608 Comm: syz-executor162 Not tainted 6.0.0-syzkaller-07994-ge8bc52cb8df8 #0
+> > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/22/2022
+> > > RIP: 0010:ovs_dp_reset_user_features+0x1bc/0x240 net/openvswitch/datapath.c:1619
+> > > Code: 00 c7 03 00 00 00 00 eb 05 e8 d0 be 67 f7 5b 41 5c 41 5e 41 5f
+> > > 5d c3 e8 c2 be 67 f7 48 c7 c7 00 92 e3 8b 31 c0 e8 74 7a 2f f7 <0f>
+> > > 0b eb c7 44 89 f1 80 e1 07 fe c1 38 c1 0f 8c f1 fe ff ff 4c 89
+> > > RSP: 0018:ffffc90003b8f370 EFLAGS: 00010246
+> > > RAX: e794c0e413340e00 RBX: ffff8880175cae68 RCX: ffff88801c069d80
+> > > RDX: 0000000000000000 RSI: 0000000080000000 RDI: 0000000000000000
+> > > RBP: 0000000000000008 R08: ffffffff816c58ad R09: ffffed1017364f13
+> > > R10: ffffed1017364f13 R11: 1ffff11017364f12 R12: dffffc0000000000
+> > > R13: ffff8880175ca450 R14: 1ffff11002eb95cd R15: ffffc90003b8f6b0
+> > > FS:  0000555557276300(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > CR2: 0000000020000916 CR3: 000000001ed81000 CR4: 00000000003506e0
+> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > > Call Trace:
+> > >  <TASK>
+> > >  ovs_dp_cmd_new+0x8f6/0xc80 net/openvswitch/datapath.c:1822
+> > >  genl_family_rcv_msg_doit net/netlink/genetlink.c:731 [inline]
+> > >  genl_family_rcv_msg net/netlink/genetlink.c:808 [inline]
+> > >  genl_rcv_msg+0x11ca/0x1670 net/netlink/genetlink.c:825
+> > >  netlink_rcv_skb+0x1f0/0x460 net/netlink/af_netlink.c:2540
+> > >  genl_rcv+0x24/0x40 net/netlink/genetlink.c:836
+> > >  netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+> > >  netlink_unicast+0x7e7/0x9c0 net/netlink/af_netlink.c:1345
+> > >  netlink_sendmsg+0x9b3/0xcd0 net/netlink/af_netlink.c:1921
+> > >  sock_sendmsg_nosec net/socket.c:714 [inline]
+> > >  sock_sendmsg net/socket.c:734 [inline]
+> > >  ____sys_sendmsg+0x597/0x8e0 net/socket.c:2482
+> > >  ___sys_sendmsg net/socket.c:2536 [inline]
+> > >  __sys_sendmsg+0x28e/0x390 net/socket.c:2565
+> > >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> > >  do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
+> > >  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> > > RIP: 0033:0x7fc51f29de89
+> > > Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48
+> > > 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48>
+> > > 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+> > > RSP: 002b:00007ffd99ec6ed8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> > > RAX: ffffffffffffffda RBX: 000000000000a2c4 RCX: 00007fc51f29de89
+> > > RDX: 0000000000000000 RSI: 0000000020000100 RDI: 0000000000000003
+> > > RBP: 0000000000000000 R08: 00007ffd99ec7078 R09: 00007ffd99ec7078
+> > > R10: 00007ffd99ec6950 R11: 0000000000000246 R12: 00007ffd99ec6eec
+> > > R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
+> > >  </TASK>
+> > > 
+> > In this specific case it looks like the warning is caused by the fact
+> > that ovs allows an 'outdated' datapath to set user_features (version is
+> > not checked in ovs_dp_change()) but later complains if the same user-
+> > space touch again the same datapath (version check in
+> > ovs_dp_reset_user_features())
+> 
+> Maybe this should be changed from WARN() to printk(KERN_NOTICE, ..) or
+> something similar?  
 
-#syz fix: bpf: prevent decl_tag from being referenced in func_proto
+nowaday it's pr_notice() ;), but even pr_warn() could fit (it will not
+trigger a calltrace splat). I think such kind of change it's the right
+thing to do.
 
-On Mon, Oct 17, 2022 at 9:16 AM 'Stanislav Fomichev' via
-syzkaller-bugs <syzkaller-bugs@googlegroups.com> wrote:
->
-> On Sat, Oct 15, 2022 at 11:52 PM syzbot
-> <syzbot+6280ebbcdba3e0c14fde@syzkaller.appspotmail.com> wrote:
-> >
-> > Hello,
-> >
-> > syzbot found the following issue on:
-> >
-> > HEAD commit:    0326074ff465 Merge tag 'net-next-6.1' of git://git.kernel...
-> > git tree:       bpf
-> > console+strace: https://syzkaller.appspot.com/x/log.txt?x=1376ba52880000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=796b7c2847a6866a
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=6280ebbcdba3e0c14fde
-> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15e182aa880000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1677bfcc880000
-> >
-> > Downloadable assets:
-> > disk image: https://storage.googleapis.com/syzbot-assets/7cc67ced256d/disk-0326074f.raw.xz
-> > vmlinux: https://storage.googleapis.com/syzbot-assets/86a7be29267c/vmlinux-0326074f.xz
-> >
-> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > Reported-by: syzbot+6280ebbcdba3e0c14fde@syzkaller.appspotmail.com
-> >
-> > ------------[ cut here ]------------
-> > WARNING: CPU: 0 PID: 3609 at kernel/bpf/btf.c:1946 btf_type_id_size+0x2d5/0x9d0 kernel/bpf/btf.c:1946
-> > Modules linked in:
-> > CPU: 0 PID: 3609 Comm: syz-executor361 Not tainted 6.0.0-syzkaller-02734-g0326074ff465 #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/22/2022
-> > RIP: 0010:btf_type_id_size+0x2d5/0x9d0 kernel/bpf/btf.c:1946
-> > Code: ef e8 7f 8e e4 ff 41 83 ff 0b 77 28 f6 44 24 10 18 75 3f e8 6d 91 e4 ff 44 89 fe bf 0e 00 00 00 e8 20 8e e4 ff e8 5b 91 e4 ff <0f> 0b 45 31 f6 e9 98 02 00 00 41 83 ff 12 74 18 e8 46 91 e4 ff 44
-> > RSP: 0018:ffffc90003cefb40 EFLAGS: 00010293
-> > RAX: 0000000000000000 RBX: 0000000000000002 RCX: 0000000000000000
-> > RDX: ffff8880259c0000 RSI: ffffffff81968415 RDI: 0000000000000005
-> > RBP: ffff88801270ca00 R08: 0000000000000005 R09: 000000000000000e
-> > R10: 0000000000000011 R11: 0000000000000000 R12: 0000000000000000
-> > R13: 0000000000000011 R14: ffff888026ee6424 R15: 0000000000000011
-> > FS:  000055555641b300(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > CR2: 0000000000f2e258 CR3: 000000007110e000 CR4: 00000000003506f0
-> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > Call Trace:
-> >  <TASK>
-> >  btf_func_proto_check kernel/bpf/btf.c:4447 [inline]
-> >  btf_check_all_types kernel/bpf/btf.c:4723 [inline]
-> >  btf_parse_type_sec kernel/bpf/btf.c:4752 [inline]
-> >  btf_parse kernel/bpf/btf.c:5026 [inline]
-> >  btf_new_fd+0x1926/0x1e70 kernel/bpf/btf.c:6892
-> >  bpf_btf_load kernel/bpf/syscall.c:4324 [inline]
-> >  __sys_bpf+0xb7d/0x4cf0 kernel/bpf/syscall.c:5010
-> >  __do_sys_bpf kernel/bpf/syscall.c:5069 [inline]
-> >  __se_sys_bpf kernel/bpf/syscall.c:5067 [inline]
-> >  __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:5067
-> >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> >  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-> >  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> > RIP: 0033:0x7f0fbae41c69
-> > Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-> > RSP: 002b:00007ffc8aeb6228 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-> > RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f0fbae41c69
-> > RDX: 0000000000000020 RSI: 0000000020000140 RDI: 0000000000000012
-> > RBP: 00007f0fbae05e10 R08: 0000000000000000 R09: 0000000000000000
-> > R10: 00000000ffffffff R11: 0000000000000246 R12: 00007f0fbae05ea0
-> > R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-> >  </TASK>
->
-> Will be addressed by
-> https://lore.kernel.org/bpf/d1379e3f-a64d-8c27-9b77-f6de085ce498@meta.com/T/#u
->
->
-> > ---
-> > This report is generated by a bot. It may contain errors.
-> > See https://goo.gl/tpsmEJ for more information about syzbot.
-> > syzbot engineers can be reached at syzkaller@googlegroups.com.
-> >
-> > syzbot will keep track of this issue. See:
-> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> > syzbot can test patches for this issue, for details see:
-> > https://goo.gl/tpsmEJ#testing-patches
->
-> --
-> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/CAKH8qBu%2BoT%2BBF6sA4PKxfUsj43O5BNSLzrdhirWOLJ0O8KbA3w%40mail.gmail.com.
+Adding constraints on user_features change is not going to fly, as
+syzkaller could e.g. change the esposed version across different
+netlink ops.
+
+Cheers,
+
+Paolo
+
