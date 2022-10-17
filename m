@@ -2,60 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA16D601436
-	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 19:03:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BCAE601438
+	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 19:04:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230048AbiJQRDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 13:03:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56862 "EHLO
+        id S230063AbiJQRDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 13:03:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230110AbiJQRDn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 13:03:43 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D0EF70E54
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 10:03:39 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id a10so19364370wrm.12
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 10:03:39 -0700 (PDT)
+        with ESMTP id S230041AbiJQRDo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 13:03:44 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E43A6FA2B
+        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 10:03:41 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id a10so19364474wrm.12
+        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 10:03:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=tessares.net; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=wWx9ZLl6eMErHwIX6BhdtNdjpwYlqyXoA4EnFmsxy6M=;
-        b=VyqSkBotHNpPmoDqByv1qhVthhMYb134HXuGZPtLZCB9MCGVEUyq3QcFeSBxkCE+7n
-         ENn5Un2n8XMKQsKdfLCXaaxVqQCYvfSxeRhArHQ24ZD6OoVBoVvTVGH9cNuZ12mHDgYh
-         R7A7vje5hiw8wIG8yy5fZ/lN/bJwJTF1CT6XGv/wSEjTrzGGyEeucOhx5EJrAPRE9Jlm
-         qwOQSUn8ooFCqSZXabXnYrstHlSoCdJ4+GkcLKrqtU4fK8xD+z+nKsnZS3lmL3UbWlWN
-         3FcxKVJFrt/+HQsc4gOLin4RHu02ohJCGIw0VlV1wmu9P3hUVm0/MFCuMHjdp0kNfcZh
-         rJtA==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=FfTCoR58idMg6WfKIzHQnE7Yg8ftI8rKIp7yG+lylFA=;
+        b=QOAVf3HnzRDJZ5WcNKWFshzk1PdHzaqJyaLOWD4DRIo4pFE7sj1Fix2xyDxAopb1bh
+         iTeKm6bFojgib2tI8ckv15E063Iu3yEuwkHQDy2MlibPZTjBDBfdO2KEUyGRECya1Y+l
+         ZlpRvZDoDTou6x4kqxigIT3GW2700oAXIIJw853DRD+4GVIp9O82jJTpaMqnEnniHCx+
+         h8NdckPMWchneTa/gDahzqW5R2wAoZGBqE7MxlWF2mDfk/q9FSZg0oYKA2baEpAd5Z7c
+         KncoJpLpl5cDqHYOmeQxA8TXKyL4XDAZgKB3cawy0vFeNcdksmC7P63QPq1IQpoy3K71
+         k2wQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=wWx9ZLl6eMErHwIX6BhdtNdjpwYlqyXoA4EnFmsxy6M=;
-        b=O8lQz9WcRvhng354Z7esITRgDGoyUJqdruC36vD8MYefxvFIq6wvXedCaE7TNWbG1d
-         xdCT0fkFT3qP4+r6sK/JZUxLt+83zIs3aUzAccEqXiOB1v2T1mcMD6NHK9pxytt1/5DE
-         SmHaLeCQ2QLWHUnRDds8HEaznsNttZIHUOGGHl97VjYH8Ou9O98+NkFzRkrQgR5pUH+L
-         vhjBQS+zcD6QbPnvZrFJbQhANCVqijAGySFGAxGO82C0/wixtBi32fiwIL26SjPVt1Cz
-         3NgJfxrM+LnzmR01yZfA3ZhpuZFDOoSpCn8775Fv8ZLUCH8SWy9SxGojJKAFCpY0n20Z
-         aZnw==
-X-Gm-Message-State: ACrzQf0degGDVVvf2cu6buyBymCgONvL6cMUMv15g+GMfvMSzniETXi4
-        +QfqCTzS/kV+NWiPBAgcgGcpAw==
-X-Google-Smtp-Source: AMsMyM6thaAcRTDPpbUy8TQ/o9h8YfwT48gHJHEar+t/1uFkHjjlVPc7/5wS7DKLCIZNF0eFWxhmPg==
-X-Received: by 2002:a5d:5a9a:0:b0:232:c7fb:3063 with SMTP id bp26-20020a5d5a9a000000b00232c7fb3063mr7289441wrb.50.1666026217813;
-        Mon, 17 Oct 2022 10:03:37 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=FfTCoR58idMg6WfKIzHQnE7Yg8ftI8rKIp7yG+lylFA=;
+        b=M/OyG5imbSQit6A/AZWM+JcVVwqxur3lvMTgTXsimjYb5XbrKBvU7y6ddUcoTlY/3t
+         SQKlA+fi4naM8SGEg2Lu44DpdKmpOVucgqzUJq3SqCz5tHID/vqW2SgfVUfq8kI9TNzc
+         UWkOGzev739yvaU1lgnwhLo5c4ecQvWkaLuS/aBIy1VN0FeeYvY9au9xZ0KSv3lkYZ6X
+         rtbAAzAbisMpwNR4XCCqPpCBlnRuELHUCTnr2EYtEaUn1dP5iGycaOmxl1z9KMxgFlQU
+         joMc8TiBPlslHfi83O3fxUu5wWP6qT9ANVekLQILGKuOex0QWhybutMKl46MH6aVX4BS
+         zX7A==
+X-Gm-Message-State: ACrzQf3y7qYa1ug3y09zawxkj0jeTioiWh74nZa3tXc43qJ4VNWxchsP
+        SexbO6ocz1btmsDQ54mY0g9w3A==
+X-Google-Smtp-Source: AMsMyM7eAVFS47f4lwYbIcRY/fcxie+kMlY4llt3ZmEhSf6Cij4YkU0OPffxDrpBiSPQ7EGrUYisjQ==
+X-Received: by 2002:a5d:6e82:0:b0:22f:a27c:c964 with SMTP id k2-20020a5d6e82000000b0022fa27cc964mr6902053wrz.699.1666026219274;
+        Mon, 17 Oct 2022 10:03:39 -0700 (PDT)
 Received: from vdi08.nix.tessares.net (static.219.156.76.144.clients.your-server.de. [144.76.156.219])
-        by smtp.gmail.com with ESMTPSA id w16-20020adf8bd0000000b0022f40a2d06esm9079196wra.35.2022.10.17.10.03.36
+        by smtp.gmail.com with ESMTPSA id w16-20020adf8bd0000000b0022f40a2d06esm9079196wra.35.2022.10.17.10.03.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Oct 2022 10:03:37 -0700 (PDT)
+        Mon, 17 Oct 2022 10:03:38 -0700 (PDT)
 From:   Matthieu Baerts <matthieu.baerts@tessares.net>
 To:     Stephen Hemminger <stephen@networkplumber.org>
 Cc:     netdev@vger.kernel.org,
         Matthieu Baerts <matthieu.baerts@tessares.net>
-Subject: [PATCH iproute2 0/4] ss: add missing entries in man-pages and 'ss -h'
-Date:   Mon, 17 Oct 2022 19:03:04 +0200
-Message-Id: <20221017170308.1280537-1-matthieu.baerts@tessares.net>
+Subject: [PATCH iproute2 1/4] ss: man: add missing entries for MPTCP
+Date:   Mon, 17 Oct 2022 19:03:05 +0200
+Message-Id: <20221017170308.1280537-2-matthieu.baerts@tessares.net>
 X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20221017170308.1280537-1-matthieu.baerts@tessares.net>
+References: <20221017170308.1280537-1-matthieu.baerts@tessares.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -67,24 +70,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When checking something else, I noticed the '-M' / '--mptcp' parameter for ss
-was missing in the man page.
+'ss -h' was mentioning MPTCP but not the man page.
 
-While at it, I also checked which other ones were missing and I even found TIPC
-query support has been accidentally dropped during a previous merge.
+While at it, also add the missing '.' at the end of the list, before the
+new sentence.
 
-Matthieu Baerts (4):
-  ss: man: add missing entries for MPTCP
-  ss: man: add missing entries for TIPC
-  ss: usage: add missing parameters
-  ss: re-add TIPC query support
+Fixes: 9c3be2c0 ("ss: mptcp: add msk diag interface support")
+Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+---
+ man/man8/ss.8 | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
- man/man8/ss.8 | 18 +++++++++++++++---
- misc/ss.c     |  4 +++-
- 2 files changed, 18 insertions(+), 4 deletions(-)
-
-
-base-commit: cb2c7ff0075901c54627a310f7c27d664ac289cc
+diff --git a/man/man8/ss.8 b/man/man8/ss.8
+index 12cb91b9..6489aa79 100644
+--- a/man/man8/ss.8
++++ b/man/man8/ss.8
+@@ -385,6 +385,9 @@ Display vsock sockets (alias for -f vsock).
+ .B \-\-xdp
+ Display XDP sockets (alias for -f xdp).
+ .TP
++.B \-M, \-\-mptcp
++Display MPTCP sockets.
++.TP
+ .B \-\-inet-sockopt
+ Display inet socket options.
+ .TP
+@@ -396,7 +399,7 @@ supported: unix, inet, inet6, link, netlink, vsock, xdp.
+ List of socket tables to dump, separated by commas. The following identifiers
+ are understood: all, inet, tcp, udp, raw, unix, packet, netlink, unix_dgram,
+ unix_stream, unix_seqpacket, packet_raw, packet_dgram, dccp, sctp,
+-vsock_stream, vsock_dgram, xdp Any item in the list may optionally be
++vsock_stream, vsock_dgram, xdp, mptcp. Any item in the list may optionally be
+ prefixed by an exclamation mark
+ .RB ( ! )
+ to exclude that socket table from being dumped.
 -- 
 2.37.2
 
