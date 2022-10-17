@@ -2,152 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4409F6012F2
-	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 17:49:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CBD460130D
+	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 17:55:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230200AbiJQPtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 11:49:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33884 "EHLO
+        id S230126AbiJQPzn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 11:55:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230134AbiJQPtQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 11:49:16 -0400
-Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B765F659CF;
-        Mon, 17 Oct 2022 08:49:15 -0700 (PDT)
-Received: by mail-qk1-f176.google.com with SMTP id o22so6866306qkl.8;
-        Mon, 17 Oct 2022 08:49:15 -0700 (PDT)
+        with ESMTP id S229452AbiJQPzl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 11:55:41 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB95227FD2
+        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 08:55:40 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id bj12so25876295ejb.13
+        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 08:55:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=3BHceDag9Md4/a5AqUKH6++D1DzVF43eei0OiRnI+yI=;
+        b=I1qwSyou8GB/VV8v+uoEDcHl9csn1qo7LgNYVX2TWu4A0OaMPY6b/Gtlb+1Sfhum/m
+         EPC9NblW6sUrOUgt/TUClXXaOwD3fjS95AK2X9eukfA3w9p8ZMaEqbynCqnIICY85NNd
+         MMYzgRJWKdrBJ+Vth0YIxTMTK1G78c0Hux7sEIu49FYwP2GVFwXScbadLqxNn/C3Rx9e
+         2ayFGDRDTYPx63saNggUejyzxnm7GcJ91TH30TsNRUNAJbf7m8q5TKPWC9vvpxhnzkrs
+         s6XF4lFi6QBDhIDuvDcR2sB3Bm26Zz+Su3c5mFrmVlkEtupGNolJmnpSP2ehY+fKeanT
+         RSWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=c1hr660YTne5HWG47TPibAhxpQ0b+WJkg6fuMvgqI+4=;
-        b=zdUsJqHJJcoFQvqffAq4sBuoSw/VJr03atjS33OHW2fSPB0F/iyZtm7RtxJA8SKPMX
-         tgIHX5miRYKzYFOJ+LsXsTMZKZlGmv50mMAiPwQvdhm5G29NRijTrTeM5E4moBZKT0D5
-         dH8f08NTQs6r9UM7v0k2S2yjxL6a+U1nQIT64jhLggvvVdoBZptY3pU2kuOWi1W2WxFS
-         Fe7TuB5AeQYF31w8KTKRGKLenS9MwAFeD3jXoOMpJg+tRkUyiHfVwLFnQJAyTmeGDbhM
-         FmsYko8AS+mCsjYQcsaI0RJLTi8Jx+7Bfd2ahSAnrPFwgm0ceBEtaWdwEic9V7+0uxq2
-         UiXQ==
-X-Gm-Message-State: ACrzQf0/C3QibntNtSr1fagqmhnh/vxD7c+rAyDEMt+gqssbNpFaQ99l
-        kAmuWPSsOqeUcky5GholY3Y4nqKkyQqtAQ==
-X-Google-Smtp-Source: AMsMyM44AuelNG1tg1KdSqSnF9F28nFZzaRzuNfze+Yx35BH5JoziwtFgDEXSzF5W+CCKSAG/yOqMg==
-X-Received: by 2002:a05:620a:b05:b0:6ee:cb0e:3c94 with SMTP id t5-20020a05620a0b0500b006eecb0e3c94mr8002708qkg.379.1666021754734;
-        Mon, 17 Oct 2022 08:49:14 -0700 (PDT)
-Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
-        by smtp.gmail.com with ESMTPSA id m21-20020a05620a24d500b006bb82221013sm149076qkn.0.2022.10.17.08.49.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Oct 2022 08:49:13 -0700 (PDT)
-Received: by mail-yb1-f174.google.com with SMTP id 81so13762198ybf.7;
-        Mon, 17 Oct 2022 08:49:13 -0700 (PDT)
-X-Received: by 2002:a25:687:0:b0:6c2:2b0c:26e with SMTP id 129-20020a250687000000b006c22b0c026emr9748099ybg.202.1666021753122;
- Mon, 17 Oct 2022 08:49:13 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3BHceDag9Md4/a5AqUKH6++D1DzVF43eei0OiRnI+yI=;
+        b=OLDm24tO4s+hnTGFQBgKSDA4oHrpmRzu0U1Qg7yNk8aejwDwth/w4qbUjWAKH0cUWo
+         ooHkeOlhVKtQAYBPRxnI+FtgMoDd/ddLPLCXjeExM/eCmBpLMlv2xQtaNtPUE5cU/+gP
+         Q2ZWxavk/6zxoNMtTJk4tUqUpK3XecvkT4jZwTy2i430WF/5eactInSzwBKawzdH0JHQ
+         /OAJLin4rtTtCSOJXykRjzqENcZIKw+jKpOBmji2xrtomRDmWrbDnpz3eynAncCnQg37
+         9UbL4xQwZN6GPyKysZg65keueW62w0m5U0GPMVpQ0xUogWK8Q12SIhqzsRUhvwALeBIv
+         WP/w==
+X-Gm-Message-State: ACrzQf0mWBEOkiZW8Qnn4V9jwMC+e7J0lZE/L0CrSqnj69KVa0hojJ5C
+        2uS6BgjJIglr7u25kvSJVMFayzKmGv0=
+X-Google-Smtp-Source: AMsMyM4PpI5qdDWISK+s6Qwsss+BYOJr8hx9PCownWwgSXe4nQnjWo8FDjEhx461F2PnuSVXANz39g==
+X-Received: by 2002:a17:907:2c44:b0:78d:4e67:ca5d with SMTP id hf4-20020a1709072c4400b0078d4e67ca5dmr9237699ejc.397.1666022138969;
+        Mon, 17 Oct 2022 08:55:38 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id r2-20020a1709061ba200b0078d76ee7543sm6196493ejg.222.2022.10.17.08.55.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Oct 2022 08:55:38 -0700 (PDT)
+Date:   Mon, 17 Oct 2022 18:55:36 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Sergei Antonov <saproj@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH v3 net] net: ftmac100: support frames with DSA tag
+Message-ID: <20221017155536.hfetulaedgmvjoc5@skbuf>
+References: <20221013155724.2911050-1-saproj@gmail.com>
 MIME-Version: 1.0
-References: <20220902215737.981341-1-sean.anderson@seco.com>
- <20220902215737.981341-6-sean.anderson@seco.com> <CAMuHMdWqTtjuOvDo9qxgDVpm+RBGm7BEgpdqVRH1n_dLGoYLTA@mail.gmail.com>
- <086a6f02-4495-510e-9fc5-64f95e7d55f6@seco.com>
-In-Reply-To: <086a6f02-4495-510e-9fc5-64f95e7d55f6@seco.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 17 Oct 2022 17:49:01 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdW-E4ykVdCugCyJt7_uKZZHyc=jStiL7DOiq2RZr6GTvQ@mail.gmail.com>
-Message-ID: <CAMuHMdW-E4ykVdCugCyJt7_uKZZHyc=jStiL7DOiq2RZr6GTvQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v5 05/14] net: fman: Map the base address once
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Camelia Groza <camelia.groza@nxp.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221013155724.2911050-1-saproj@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sean,
+On Thu, Oct 13, 2022 at 06:57:24PM +0300, Sergei Antonov wrote:
+> Fixes the problem when frames coming from DSA were discarded.
+> DSA tag might make frame size >1518. Such frames are discarded
+> by the controller when FTMAC100_MACCR_RX_FTL is not set in the
+> MAC Control Register, see datasheet [1].
+> 
+> Set FTMAC100_MACCR_RX_FTL in the MAC Control Register.
+> For received packets marked with FTMAC100_RXDES0_FTL check if packet
+> length (with FCS excluded) is within expected limits, that is not
+> greater than netdev->mtu + 14 (Ethernet headers). Otherwise trigger
+> an error. In the presence of DSA netdev->mtu is 1504 to accommodate
+> for VLAN tag.
 
-On Mon, Oct 17, 2022 at 5:34 PM Sean Anderson <sean.anderson@seco.com> wrote:
-> On 10/17/22 11:15 AM, Geert Uytterhoeven wrote:
-> > On Sat, Sep 3, 2022 at 12:00 AM Sean Anderson <sean.anderson@seco.com> wrote:
-> >> We don't need to remap the base address from the resource twice (once in
-> >> mac_probe() and again in set_fman_mac_params()). We still need the
-> >> resource to get the end address, but we can use a single function call
-> >> to get both at once.
-> >>
-> >> While we're at it, use platform_get_mem_or_io and devm_request_resource
-> >> to map the resource. I think this is the more "correct" way to do things
-> >> here, since we use the pdev resource, instead of creating a new one.
-> >> It's still a bit tricky, since we need to ensure that the resource is a
-> >> child of the fman region when it gets requested.
-> >>
-> >> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> >> Acked-by: Camelia Groza <camelia.groza@nxp.com>
-> >
-> > Thanks for your patch, which is now commit 262f2b782e255b79
-> > ("net: fman: Map the base address once") in v6.1-rc1.
-> >
-> >> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth_sysfs.c
-> >> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth_sysfs.c
-> >> @@ -18,7 +18,7 @@ static ssize_t dpaa_eth_show_addr(struct device *dev,
-> >>
-> >>         if (mac_dev)
-> >>                 return sprintf(buf, "%llx",
-> >> -                               (unsigned long long)mac_dev->res->start);
-> >> +                               (unsigned long long)mac_dev->vaddr);
-> >
-> > On 32-bit:
-> >
-> >     warning: cast from pointer to integer of different size
-> > [-Wpointer-to-int-cast]
-> >
-> > Obviously you should cast to "uintptr_t" or "unsigned long" instead,
-> > and change the "%llx" to "%p" or "%lx"...
->
-> Isn't there a %px for this purpose?
+Which VLAN tag do you mean? Earlier you mentioned a tail tag as can be
+seen and parsed by net/dsa/tag_trailer.c. Don't conflate the two, one
+has nothing to do with the other.
 
-Yes there is.  But if it makes sense to use that depends on the
-still to be answered questions at the bottom...
+I think this patch is at the limit of what can reasonably be considered a
+bug fix, especially since inefficient use of resources does not constitute
+a bug in itself. And the justification provided in the commit message
+certainly does not help its cause.
 
-> > However, taking a closer look:
-> >   1. The old code exposed a physical address to user space, the new
-> >      code exposes the mapped virtual address.
-> >      Is that change intentional?
->
-> No, this is not intentional. So to make this backwards-compatible, I
-> suppose I need a virt_to_phys?
+DSA generally works on the assumption that netdev drivers need no change
+to operate as DSA masters. However, in this particular case, it has
+historically operated using the "wishful thinking" assumption that
+dev_set_mtu(master, 1504) will always be enough to work, even if this
+call fails (hence the reason for making its failure non-fatal).
 
-I think virt_to_phys() will work only on real memory, not on MMIO,
-so you may need to reintroduce the resource again.
+More context (to supplement Andrew's message from Message-ID Y0gcblXFum4GsSve@lunn.ch:
+https://patchwork.ozlabs.org/project/netdev/patch/20200421123110.13733-2-olteanv@gmail.com/
 
-> >   2. Virtual addresses are useless in user space.
-> >      Moreover, addresses printed by "%p" are obfuscated, as this is
-> >      considered a security issue. Likewise for working around this by
-> >      casting to an integer.
->
-> Yes, you're right that this probably shouldn't be exposed to userspace.
->
-> > What's the real purpose of dpaa_eth_show_addr()?
->
-> I have no idea. This is a question for Madalin.
->
-> > Perhaps it should be removed?
->
-> That would be reasonable IMO.
+My humble opinion is that "reasonable and noninvasive changes"
+for drivers to work as DSA masters is a more desirable goal, and hence,
+not every master <-> switch pair that doesn't work out of the box should
+be considered a bug.
 
-Gr{oetje,eeting}s,
+Here's how I would approach your particular issue:
 
-                        Geert
+1. retarget from "net" to "net-next"
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2. observe the ftmac100 code. The RX_BUF_SIZE macro is set to 2044, with a
+   comment that it must be smaller than 0x7ff.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+3. compare with the datasheet. There it can be seen that RXBUF_SIZE is
+   an 11-bit field, confirming that packets larger than 2048 bytes must
+   be processed as scatter/gather (multiple BDs).
+
+4. back to the code, the driver does not support scatter gather processing,
+   but it does not push the MTU limit as far as single-buffer RX can go, either.
+   It puts it to a quite random 1518, inconsistent in itself to the FTL
+   field which drops frames with MTU larger than 1500 (so dev->mtu values between
+   1500 and 1518 are incorrectly handled).
+   It could go as far as 2047 - VLAN_ETH_HLEN, and the Frame Too Long
+   bit should be unset to allow this.
+
+5. the code currently relies on the FTL field to not trigger the BUG_ON()
+   right below, if scatter/gather frames are received. But the FTL bit
+   needs to go. I would completely remove the ftmac100_rxdes_frame_too_long()
+   check from the fast path, instead of your approach to just make it
+   more complicated. If you simply call ftmac100_rx_drop_packet() instead
+   of BUG_ON() when receiving a BD which is non-final, you get a simpler
+   way of protecting against multi-buffer frames, while not having to
+   rely on the comparison between frame length and netdev->mtu at all.
+   (side note: it isn't a problem if you receive larger frames than the
+   MTU, as long as you receive the frames <= than the MTU).
+
+6. Actually implement the ndo_change_mtu() for this driver, and even though you
+   don't make any hardware change based on the precise value, you could do one
+   important thing. Depending on whether the dev->mtu is <= 1500 or not, you could
+   set or unset the FTL bit, and this could allow for less CPU cycles spent
+   dropping S/G frames when the MTU of the interface is standard 1500.
+
+With these changes, you would leave the ftmac100 driver in a more civilized
+state, you wouldn't need to implement S/G RX unless you wanted to, and
+as a side effect, it would also operate well as a DSA master.
