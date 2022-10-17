@@ -2,67 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CBD460130D
-	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 17:55:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90FA3601317
+	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 17:58:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230126AbiJQPzn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 11:55:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55090 "EHLO
+        id S229564AbiJQP6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 11:58:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbiJQPzl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 11:55:41 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB95227FD2
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 08:55:40 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id bj12so25876295ejb.13
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 08:55:40 -0700 (PDT)
+        with ESMTP id S231140AbiJQP6c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 11:58:32 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31BF16DAD0
+        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 08:58:32 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id k3so13768204ybk.9
+        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 08:58:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=3BHceDag9Md4/a5AqUKH6++D1DzVF43eei0OiRnI+yI=;
-        b=I1qwSyou8GB/VV8v+uoEDcHl9csn1qo7LgNYVX2TWu4A0OaMPY6b/Gtlb+1Sfhum/m
-         EPC9NblW6sUrOUgt/TUClXXaOwD3fjS95AK2X9eukfA3w9p8ZMaEqbynCqnIICY85NNd
-         MMYzgRJWKdrBJ+Vth0YIxTMTK1G78c0Hux7sEIu49FYwP2GVFwXScbadLqxNn/C3Rx9e
-         2ayFGDRDTYPx63saNggUejyzxnm7GcJ91TH30TsNRUNAJbf7m8q5TKPWC9vvpxhnzkrs
-         s6XF4lFi6QBDhIDuvDcR2sB3Bm26Zz+Su3c5mFrmVlkEtupGNolJmnpSP2ehY+fKeanT
-         RSWA==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=NzD+Tg7PE9+gjhi7CR1d4v32mJlUuw67dSVHgFthTqY=;
+        b=qUB9wf7YDVgTTusDwfF1LSudBlZMqkClxa5Wwb5/dWL+Vm+sMBsPncactMM4cedf2g
+         y6DgHinJP47w4XzUzyGOizbkwoLAzddoYbu2KmwNTIDnif07+ptb0dW4gJM5sxxif9Bv
+         JjiqLpRQJKHt4l7V3XwNhpdMtz4bUclQ+YeLol2r1OtYoRmg+sLQxSibAcboXMABsbKq
+         fM6+LGGNWoCR6CsIuCDNnxp78PvS+Sv5/VBALmIpV9jLGV9dFLgw3d6J8M40lgFMqZbJ
+         DFkUQ9qaSecfvlqtjCLwQyGpPH9jlEEYBz2K1066waFoqly5/m8V1VfybBOFXyDoaDyF
+         EdWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3BHceDag9Md4/a5AqUKH6++D1DzVF43eei0OiRnI+yI=;
-        b=OLDm24tO4s+hnTGFQBgKSDA4oHrpmRzu0U1Qg7yNk8aejwDwth/w4qbUjWAKH0cUWo
-         ooHkeOlhVKtQAYBPRxnI+FtgMoDd/ddLPLCXjeExM/eCmBpLMlv2xQtaNtPUE5cU/+gP
-         Q2ZWxavk/6zxoNMtTJk4tUqUpK3XecvkT4jZwTy2i430WF/5eactInSzwBKawzdH0JHQ
-         /OAJLin4rtTtCSOJXykRjzqENcZIKw+jKpOBmji2xrtomRDmWrbDnpz3eynAncCnQg37
-         9UbL4xQwZN6GPyKysZg65keueW62w0m5U0GPMVpQ0xUogWK8Q12SIhqzsRUhvwALeBIv
-         WP/w==
-X-Gm-Message-State: ACrzQf0mWBEOkiZW8Qnn4V9jwMC+e7J0lZE/L0CrSqnj69KVa0hojJ5C
-        2uS6BgjJIglr7u25kvSJVMFayzKmGv0=
-X-Google-Smtp-Source: AMsMyM4PpI5qdDWISK+s6Qwsss+BYOJr8hx9PCownWwgSXe4nQnjWo8FDjEhx461F2PnuSVXANz39g==
-X-Received: by 2002:a17:907:2c44:b0:78d:4e67:ca5d with SMTP id hf4-20020a1709072c4400b0078d4e67ca5dmr9237699ejc.397.1666022138969;
-        Mon, 17 Oct 2022 08:55:38 -0700 (PDT)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id r2-20020a1709061ba200b0078d76ee7543sm6196493ejg.222.2022.10.17.08.55.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Oct 2022 08:55:38 -0700 (PDT)
-Date:   Mon, 17 Oct 2022 18:55:36 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Sergei Antonov <saproj@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH v3 net] net: ftmac100: support frames with DSA tag
-Message-ID: <20221017155536.hfetulaedgmvjoc5@skbuf>
-References: <20221013155724.2911050-1-saproj@gmail.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=NzD+Tg7PE9+gjhi7CR1d4v32mJlUuw67dSVHgFthTqY=;
+        b=lahSE59wVtYBYwhIkW+nrBVvmnk0MjyzQMBdl2dnIlss4MPiqYmTWfxPrmHV2SprJ7
+         KAyge+UViixv0sp1Fq0xhSeoITu6wlKh8hlP/wNb+C3KP/XvaJ4SxRhW7HC+nq32dRDh
+         42TU+nq8Fcw3nOWM5PAYZ4afLMwfmHhCrJcfoKRH4s8ZXw131woL4uHxIjngeeB0ftLn
+         ExY9xvX7qNXjVkwIhY0/I1VhkdFhPvdCfHKqbYhIUi5WTzg+0/ADELa433vCazH6IsDV
+         4TzWVA9LfkAG87bjJKqFmMqSreZRvrWLPt4ADlZC1RHiE5Feal3FbHHbdTTWEhTpj7Vd
+         2fjg==
+X-Gm-Message-State: ACrzQf0rmcAF1ijTU2PZ1DoFsg9DvyRJ3yLgjArXLlcFvenapgA0iRiX
+        Q7puxaqvkyHBqEALB76HNBYW0qOzgOI2QvaaUiP6xw==
+X-Google-Smtp-Source: AMsMyM6Z9lsceeZJBtuJwGGuoDTbw9ZtMEo1D0AMTAWODwOc2QM6SomqLR3wA33MSS6d1henIDl81k9QfQT4VG1zbcc=
+X-Received: by 2002:a25:3187:0:b0:6c1:822b:eab1 with SMTP id
+ x129-20020a253187000000b006c1822beab1mr9350186ybx.427.1666022311003; Mon, 17
+ Oct 2022 08:58:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221013155724.2911050-1-saproj@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20221017080331.16878-1-shaozhengchao@huawei.com>
+In-Reply-To: <20221017080331.16878-1-shaozhengchao@huawei.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 17 Oct 2022 08:58:17 -0700
+Message-ID: <CANn89iJdZx=e2QN_AXPiZQDh4u4EY5dOrzgdsqgWTCpvLhJVcQ@mail.gmail.com>
+Subject: Re: [PATCH net] ip6mr: fix UAF issue in ip6mr_sk_done() when
+ addrconf_init_net() failed
+To:     Zhengchao Shao <shaozhengchao@huawei.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        pabeni@redhat.com, weiyongjun1@huawei.com, yuehaibing@huawei.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,78 +69,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 13, 2022 at 06:57:24PM +0300, Sergei Antonov wrote:
-> Fixes the problem when frames coming from DSA were discarded.
-> DSA tag might make frame size >1518. Such frames are discarded
-> by the controller when FTMAC100_MACCR_RX_FTL is not set in the
-> MAC Control Register, see datasheet [1].
-> 
-> Set FTMAC100_MACCR_RX_FTL in the MAC Control Register.
-> For received packets marked with FTMAC100_RXDES0_FTL check if packet
-> length (with FCS excluded) is within expected limits, that is not
-> greater than netdev->mtu + 14 (Ethernet headers). Otherwise trigger
-> an error. In the presence of DSA netdev->mtu is 1504 to accommodate
-> for VLAN tag.
+On Mon, Oct 17, 2022 at 12:55 AM Zhengchao Shao
+<shaozhengchao@huawei.com> wrote:
+>
+> If the initialization fails in calling addrconf_init_net(), devconf_all is
+> the pointer that has been released. Then ip6mr_sk_done() is called to
+> release the net, accessing devconf->mc_forwarding directly causes invalid
+> pointer access.
+>
+> The process is as follows:
+> setup_net()
+>         ops_init()
+>                 addrconf_init_net()
+>                 all = kmemdup(...)           ---> alloc "all"
+>                 ...
+>                 net->ipv6.devconf_all = all;
+>                 __addrconf_sysctl_register() ---> failed
+>                 ...
+>                 kfree(all);                  ---> ipv6.devconf_all invalid
+>                 ...
+>         ops_exit_list()
+>                 ...
+>                 ip6mr_sk_done()
+>                         devconf = net->ipv6.devconf_all;
+>                         //devconf is invalid pointer
+>                         if (!devconf || !atomic_read(&devconf->mc_forwarding))
+>
+>
+> Fixes: 7d9b1b578d67 ("ip6mr: fix use-after-free in ip6mr_sk_done()")
 
-Which VLAN tag do you mean? Earlier you mentioned a tail tag as can be
-seen and parsed by net/dsa/tag_trailer.c. Don't conflate the two, one
-has nothing to do with the other.
+Hmmm. I wonder if you are not masking a more serious bug.
 
-I think this patch is at the limit of what can reasonably be considered a
-bug fix, especially since inefficient use of resources does not constitute
-a bug in itself. And the justification provided in the commit message
-certainly does not help its cause.
+When I wrote this patch ( 7d9b1b578d67) I was following the standard
+rule of ops->exit() being called
+only if the corresponding ops->init() function had not failed.
 
-DSA generally works on the assumption that netdev drivers need no change
-to operate as DSA masters. However, in this particular case, it has
-historically operated using the "wishful thinking" assumption that
-dev_set_mtu(master, 1504) will always be enough to work, even if this
-call fails (hence the reason for making its failure non-fatal).
+net/core/net_namespace.c:setup_net() even has some comments about this rule:
 
-More context (to supplement Andrew's message from Message-ID Y0gcblXFum4GsSve@lunn.ch:
-https://patchwork.ozlabs.org/project/netdev/patch/20200421123110.13733-2-olteanv@gmail.com/
+out_undo:
+        /* Walk through the list backwards calling the exit functions
+         * for the pernet modules whose init functions did not fail.
+         */
+        list_add(&net->exit_list, &net_exit_list);
+        saved_ops = ops;
+        list_for_each_entry_continue_reverse(ops, &pernet_list, list)
+                ops_pre_exit_list(ops, &net_exit_list);
 
-My humble opinion is that "reasonable and noninvasive changes"
-for drivers to work as DSA masters is a more desirable goal, and hence,
-not every master <-> switch pair that doesn't work out of the box should
-be considered a bug.
+        synchronize_rcu();
 
-Here's how I would approach your particular issue:
+        ops = saved_ops;
+        list_for_each_entry_continue_reverse(ops, &pernet_list, list)
+                ops_exit_list(ops, &net_exit_list);
 
-1. retarget from "net" to "net-next"
+        ops = saved_ops;
+        list_for_each_entry_continue_reverse(ops, &pernet_list, list)
+                ops_free_list(ops, &net_exit_list);
 
-2. observe the ftmac100 code. The RX_BUF_SIZE macro is set to 2044, with a
-   comment that it must be smaller than 0x7ff.
+        rcu_barrier();
+        goto out;
 
-3. compare with the datasheet. There it can be seen that RXBUF_SIZE is
-   an 11-bit field, confirming that packets larger than 2048 bytes must
-   be processed as scatter/gather (multiple BDs).
 
-4. back to the code, the driver does not support scatter gather processing,
-   but it does not push the MTU limit as far as single-buffer RX can go, either.
-   It puts it to a quite random 1518, inconsistent in itself to the FTL
-   field which drops frames with MTU larger than 1500 (so dev->mtu values between
-   1500 and 1518 are incorrectly handled).
-   It could go as far as 2047 - VLAN_ETH_HLEN, and the Frame Too Long
-   bit should be unset to allow this.
 
-5. the code currently relies on the FTL field to not trigger the BUG_ON()
-   right below, if scatter/gather frames are received. But the FTL bit
-   needs to go. I would completely remove the ftmac100_rxdes_frame_too_long()
-   check from the fast path, instead of your approach to just make it
-   more complicated. If you simply call ftmac100_rx_drop_packet() instead
-   of BUG_ON() when receiving a BD which is non-final, you get a simpler
-   way of protecting against multi-buffer frames, while not having to
-   rely on the comparison between frame length and netdev->mtu at all.
-   (side note: it isn't a problem if you receive larger frames than the
-   MTU, as long as you receive the frames <= than the MTU).
-
-6. Actually implement the ndo_change_mtu() for this driver, and even though you
-   don't make any hardware change based on the precise value, you could do one
-   important thing. Depending on whether the dev->mtu is <= 1500 or not, you could
-   set or unset the FTL bit, and this could allow for less CPU cycles spent
-   dropping S/G frames when the MTU of the interface is standard 1500.
-
-With these changes, you would leave the ftmac100 driver in a more civilized
-state, you wouldn't need to implement S/G RX unless you wanted to, and
-as a side effect, it would also operate well as a DSA master.
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> ---
+>  net/ipv6/addrconf.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+> index 417834b7169d..9c3f5202a97b 100644
+> --- a/net/ipv6/addrconf.c
+> +++ b/net/ipv6/addrconf.c
+> @@ -7214,9 +7214,11 @@ static int __net_init addrconf_init_net(struct net *net)
+>         __addrconf_sysctl_unregister(net, all, NETCONFA_IFINDEX_ALL);
+>  err_reg_all:
+>         kfree(dflt);
+> +       net->ipv6.devconf_dflt = NULL;
+>  #endif
+>  err_alloc_dflt:
+>         kfree(all);
+> +       net->ipv6.devconf_all = NULL;
+>  err_alloc_all:
+>         kfree(net->ipv6.inet6_addr_lst);
+>  err_alloc_addr:
+> --
+> 2.17.1
+>
