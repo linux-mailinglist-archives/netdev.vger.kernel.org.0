@@ -2,122 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4798960040A
-	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 00:58:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46CD76004E5
+	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 03:43:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229759AbiJPW6Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Oct 2022 18:58:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39508 "EHLO
+        id S230012AbiJQBnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Oct 2022 21:43:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229786AbiJPW6X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Oct 2022 18:58:23 -0400
-Received: from mail-ot1-f47.google.com (mail-ot1-f47.google.com [209.85.210.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E619732BA8;
-        Sun, 16 Oct 2022 15:58:21 -0700 (PDT)
-Received: by mail-ot1-f47.google.com with SMTP id cb2-20020a056830618200b00661b6e5dcd8so4888208otb.8;
-        Sun, 16 Oct 2022 15:58:21 -0700 (PDT)
+        with ESMTP id S229911AbiJQBn3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Oct 2022 21:43:29 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1C553FEC1
+        for <netdev@vger.kernel.org>; Sun, 16 Oct 2022 18:43:28 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id t25so5858564qkm.2
+        for <netdev@vger.kernel.org>; Sun, 16 Oct 2022 18:43:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=wZR5j8tL/5oU/xGVpP8FKeFl23lIlEh4OAjfmdl9LmQ=;
+        b=LCUUaZ+rEAdcyFmlRoH+DxiQj5GHWId2iCVo4YYvyt4lXpr3RedFsnphbEt8DZ+OrT
+         HOPNyAnWP0ApPHlBwptTgFQEEJC152s8SSXhwDt3FV9PmOfHjRi/4rs7/j+JKYzPFual
+         gbumcAgKZy0anzkJRwdKDlhrIwpJ9rmnLOrnI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=date:subject:message-id:references:in-reply-to:cc:to:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0FGJBQWXx5CpWaQi3nYfZu/z/0GkvFFnodWEgQwT7VU=;
-        b=SH9Jur0xCrMAFWQ46mdPAXevodYLQv2pCTsMNyQ32G/cFMmgGxBdW7a17XFGDhdVQz
-         PbpLxW83qK42ivtTPR6OfUaw/KegEj0F3FZrv7s3XHMM4Y6IaQOLQe8lcQW2OEhSLFq3
-         IxoLuGjlJuf76jGjZoqnGUlo1YIElS0yfWR+CMj00lB8WotyfiTNLIPVMZw0Fxj/Cazq
-         DO9P6QMc+pCa2S7kiZkWLq8Hd88GmmoNB0hYT+rcCWR7koOdjv5JXF+e+ph8TeOjjQkY
-         RwrhV9Ucb1f4hLsFK4//aANXJZTk/BSLSjG41Tj2Ej7a1vhxRVi/ExYQNWl6uM+Ws+M8
-         fxjQ==
-X-Gm-Message-State: ACrzQf2nFwT9eiIncwrrkusD4zI6vOk02nklnGA67mAwAjuGS+XlIeNK
-        vNrTf2Xnj9QvWau2UcZSAg==
-X-Google-Smtp-Source: AMsMyM4LLY5uBLl0jyQjiLuAfmIxU2jlW1svNyO4p/uoDTSaYOLamHpc4SKVCxcOVtlx52/RTMJ6mA==
-X-Received: by 2002:a9d:f43:0:b0:638:c3c4:73ee with SMTP id 61-20020a9d0f43000000b00638c3c473eemr3601886ott.186.1665961101090;
-        Sun, 16 Oct 2022 15:58:21 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id y3-20020a056870418300b0011f400edb17sm4281809oac.4.2022.10.16.15.58.20
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=wZR5j8tL/5oU/xGVpP8FKeFl23lIlEh4OAjfmdl9LmQ=;
+        b=tYyErxWNYUE0SdAlyTjSyQPtJDTMk1NaYB+nShCPayySTpBLBZgVvY78ntgUqQAXLn
+         un9UnDlVzaAAO6JsG/9y3biXlQ/RnSaWAWiafsNG7Gldl8RB2o8HjnlfZUJ4zKo/FdHP
+         5F2ZU8NqoiFFTHDyYlKhmMhcZHEW4K6Ri1VIL6OFUUS33BrqYw0tMKonh9EmucKehMJp
+         LusBAqEKVj2Qg6pV/UEWdN2PlyfNX0pavTRqxtWl23ZCdybZ09Z8iaEe6dDGh+/YGOGf
+         detDCtYQGTfUg62QF+1TrYOmWFxmAkx6ruNAVQr+6ypJXrPBvLk9S0eKIJMOGqDxhyMa
+         vOxg==
+X-Gm-Message-State: ACrzQf0v/DS9vwFeah2Ke7pxvt1tqUTsZWFYTjW62fyQFDrlS9/sFat5
+        mvYoZ7k0Ivv01xdrhFEOz8a+mg==
+X-Google-Smtp-Source: AMsMyM4LwJEcNq8FTwK0gfWL1pcdbZc5TXJPV/mHmtv0+HSrux3tZm5YRItfp03F5sE1zgu7hEZU7Q==
+X-Received: by 2002:a37:f50b:0:b0:6cb:be4d:6ce8 with SMTP id l11-20020a37f50b000000b006cbbe4d6ce8mr6139565qkk.135.1665971008085;
+        Sun, 16 Oct 2022 18:43:28 -0700 (PDT)
+Received: from C02YVCJELVCG ([136.56.55.162])
+        by smtp.gmail.com with ESMTPSA id n1-20020a05620a294100b006e8f8ca8287sm8311244qkp.120.2022.10.16.18.43.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 16 Oct 2022 15:58:20 -0700 (PDT)
-Received: (nullmailer pid 3904632 invoked by uid 1000);
-        Sun, 16 Oct 2022 22:58:18 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     =?utf-8?q?Micha=C5=82_Grzelak?= <mig@semihalf.com>
-Cc:     davem@davemloft.net, krzysztof.kozlowski+dt@linaro.org,
-        upstream@semihalf.com, kuba@kernel.org, edumazet@google.com,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, mw@semihalf.com, linux@armlinux.org.uk
-In-Reply-To: <20221014213254.30950-2-mig@semihalf.com>
-References: <20221014213254.30950-1-mig@semihalf.com> <20221014213254.30950-2-mig@semihalf.com>
-Message-Id: <166596083428.3897181.16535515589194840767.robh@kernel.org>
-Subject: Re: [PATCH v5 1/3] dt-bindings: net: marvell,pp2: convert to json-schema
-Date:   Sun, 16 Oct 2022 17:58:18 -0500
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,PP_MIME_FAKE_ASCII_TEXT,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+        Sun, 16 Oct 2022 18:43:27 -0700 (PDT)
+From:   Andy Gospodarek <andrew.gospodarek@broadcom.com>
+X-Google-Original-From: Andy Gospodarek <gospo@broadcom.com>
+Date:   Sun, 16 Oct 2022 21:43:18 -0400
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>
+Cc:     andrew.gospodarek@broadcom.com, ast@kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, kuba@kernel.org,
+        hawk@kernel.org, john.fastabend@gmail.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] samples/bpf: Fix MAC address swapping in
+ xdp2_kern
+Message-ID: <Y0yzNh9Kih1Z9KsK@C02YVCJELVCG>
+References: <20221015213050.65222-1-gerhard@engleder-embedded.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221015213050.65222-1-gerhard@engleder-embedded.com>
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 14 Oct 2022 23:32:52 +0200, Michał Grzelak wrote:
-> Convert the marvell,pp2 bindings from text to proper schema.
+On Sat, Oct 15, 2022 at 11:30:50PM +0200, Gerhard Engleder wrote:
+> xdp2_kern rewrites and forwards packets out on the same interface.
+> Forwarding still works but rewrite got broken when xdp multibuffer
+> support has been added.
 > 
-> Move 'marvell,system-controller' and 'dma-coherent' properties from
-> port up to the controller node, to match what is actually done in DT.
+> With xdp multibuffer a local copy of the packet has been introduced. The
+> MAC address is now swapped in the local copy, but the local copy in not
+> written back.
 > 
-> Rename all subnodes to match "^(ethernet-)?port@[0-2]$" and deprecate
-> port-id in favour of 'reg'.
+> Fix MAC address swapping be adding write back of modified packet.
 > 
-> Signed-off-by: Michał Grzelak <mig@semihalf.com>
+
+Nice catch!  Thanks for posting this.
+
+> Fixes: 772251742262 ("samples/bpf: fixup some tools to be able to support xdp multibuffer")
+> Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
+
 > ---
->  .../devicetree/bindings/net/marvell,pp2.yaml  | 305 ++++++++++++++++++
->  .../devicetree/bindings/net/marvell-pp2.txt   | 141 --------
->  MAINTAINERS                                   |   2 +-
->  3 files changed, 306 insertions(+), 142 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/net/marvell,pp2.yaml
->  delete mode 100644 Documentation/devicetree/bindings/net/marvell-pp2.txt
+>  samples/bpf/xdp2_kern.c | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
-
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
-
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
-
-Full log is available here: https://patchwork.ozlabs.org/patch/
-
-
-ethernet@0: 'eth0', 'eth1', 'eth2' do not match any of the regexes: '^(ethernet-)?port@[0-2]$', 'pinctrl-[0-9]+'
-	arch/arm64/boot/dts/marvell/armada-7040-db.dtb
-	arch/arm64/boot/dts/marvell/armada-7040-mochabin.dtb
-	arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dtb
-	arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dtb
-	arch/arm64/boot/dts/marvell/armada-8040-db.dtb
-	arch/arm64/boot/dts/marvell/armada-8040-db.dtb
-	arch/arm64/boot/dts/marvell/armada-8040-mcbin.dtb
-	arch/arm64/boot/dts/marvell/armada-8040-mcbin.dtb
-	arch/arm64/boot/dts/marvell/armada-8040-mcbin-singleshot.dtb
-	arch/arm64/boot/dts/marvell/armada-8040-mcbin-singleshot.dtb
-	arch/arm64/boot/dts/marvell/armada-8040-puzzle-m801.dtb
-	arch/arm64/boot/dts/marvell/armada-8040-puzzle-m801.dtb
-	arch/arm64/boot/dts/marvell/cn9130-crb-A.dtb
-	arch/arm64/boot/dts/marvell/cn9130-crb-B.dtb
-	arch/arm64/boot/dts/marvell/cn9130-db-B.dtb
-	arch/arm64/boot/dts/marvell/cn9130-db.dtb
-	arch/arm64/boot/dts/marvell/cn9131-db-B.dtb
-	arch/arm64/boot/dts/marvell/cn9131-db-B.dtb
-	arch/arm64/boot/dts/marvell/cn9131-db.dtb
-	arch/arm64/boot/dts/marvell/cn9131-db.dtb
-	arch/arm64/boot/dts/marvell/cn9132-db-B.dtb
-	arch/arm64/boot/dts/marvell/cn9132-db-B.dtb
-	arch/arm64/boot/dts/marvell/cn9132-db-B.dtb
-	arch/arm64/boot/dts/marvell/cn9132-db.dtb
-	arch/arm64/boot/dts/marvell/cn9132-db.dtb
-	arch/arm64/boot/dts/marvell/cn9132-db.dtb
-
-ethernet@f0000: 'eth0', 'eth1' do not match any of the regexes: '^(ethernet-)?port@[0-2]$', 'pinctrl-[0-9]+'
-	arch/arm/boot/dts/armada-375-db.dtb
-
+> diff --git a/samples/bpf/xdp2_kern.c b/samples/bpf/xdp2_kern.c
+> index 3332ba6bb95f..67804ecf7ce3 100644
+> --- a/samples/bpf/xdp2_kern.c
+> +++ b/samples/bpf/xdp2_kern.c
+> @@ -112,6 +112,10 @@ int xdp_prog1(struct xdp_md *ctx)
+>  
+>  	if (ipproto == IPPROTO_UDP) {
+>  		swap_src_dst_mac(data);
+> +
+> +		if (bpf_xdp_store_bytes(ctx, 0, pkt, sizeof(pkt)))
+> +			return rc;
+> +
+>  		rc = XDP_TX;
+>  	}
+>  
+> -- 
+> 2.30.2
+> 
