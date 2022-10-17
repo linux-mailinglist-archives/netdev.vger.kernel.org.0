@@ -2,82 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3003600784
-	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 09:18:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4437960078E
+	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 09:19:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229845AbiJQHS0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 03:18:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36408 "EHLO
+        id S230145AbiJQHTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 03:19:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230040AbiJQHSZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 03:18:25 -0400
-Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3C35808B;
-        Mon, 17 Oct 2022 00:18:22 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R861e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VSJPAsn_1665991068;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VSJPAsn_1665991068)
-          by smtp.aliyun-inc.com;
-          Mon, 17 Oct 2022 15:18:20 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     stas.yakovlev@gmail.com
-Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH] wireless: ipw2200: Remove the unused function ipw_alive()
-Date:   Mon, 17 Oct 2022 15:17:46 +0800
-Message-Id: <20221017071746.118685-1-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        with ESMTP id S229919AbiJQHTk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 03:19:40 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D1565D0;
+        Mon, 17 Oct 2022 00:19:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1665991176; x=1697527176;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=UBuvRDypJT++mgXI7DOwGnJFcpVZ/gzflYCezJdbRdo=;
+  b=uym6OB4c1Sk5NO5RwIY51XSS9/CIJ07C5BmaM8Q+VVZUb0IaslrOWhtJ
+   cLoVAuTxp4wl68MPEvd6+pzimQfZvo+YQKjjIts2iPvim2WR8xfCfxJtw
+   P7cMhS2ZgaIXOEoGbAwSQFw6GXzLahEKXrBcLTOIe7fhOONftq3lWsxlS
+   TOoZt35q2tWqT6DHlSVSvGFAoHMNSd5XUn25isoC6DzXNIvdCjtAo60Yq
+   bYxQyfh0e2Z27T2rcfHtYtND17wdKz1Dqc+ksbE4osXF0CBvUvMEXRy9j
+   CV8n82ELrr3QcfXf9mngBFnuaLnaL9/bURic9BB1JWuPWBKvjuvxvyQWM
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.95,190,1661842800"; 
+   d="scan'208";a="182465180"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Oct 2022 00:19:33 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Mon, 17 Oct 2022 00:19:33 -0700
+Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
+ Transport; Mon, 17 Oct 2022 00:19:26 -0700
+Message-ID: <91250148-67b9-d514-6af0-bfcd719fde53@microchip.com>
+Date:   Mon, 17 Oct 2022 09:19:22 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] dt-bindings: Remove "status" from schema examples, again
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        "David Airlie" <airlied@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        "Lars-Peter Clausen" <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Nandhini Srikandan <nandhini.srikandan@intel.com>,
+        Rashmi A <rashmi.a@intel.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>, Sumit Gupta <sumitg@nvidia.com>,
+        Mikko Perttunen <mperttunen@nvidia.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+CC:     <devicetree@vger.kernel.org>, <linux-tegra@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <linux-iio@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-phy@lists.infradead.org>
+References: <20221014205104.2822159-1-robh@kernel.org>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+In-Reply-To: <20221014205104.2822159-1-robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The function ipw_alive() is defined in the ipw2200.c file, but not called
-elsewhere, so delete this unused function.
+On 14/10/2022 at 22:51, Rob Herring wrote:
+> There's no reason to have "status" properties in examples. "okay" is the
+> default, and "disabled" turns off some schema checks ('required'
+> specifically).
+> 
+> A meta-schema check for this is pending, so hopefully the last time to
+> fix these.
+> 
+> Fix the indentation in intel,phy-thunderbay-emmc while we're here.
+> 
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>   .../arm/tegra/nvidia,tegra-ccplex-cluster.yaml    |  1 -
+>   .../display/tegra/nvidia,tegra124-dpaux.yaml      |  1 -
+>   .../display/tegra/nvidia,tegra186-display.yaml    |  2 --
+>   .../bindings/iio/addac/adi,ad74413r.yaml          |  1 -
+>   .../devicetree/bindings/net/cdns,macb.yaml        |  1 -
+>   .../devicetree/bindings/net/nxp,dwmac-imx.yaml    |  1 -
+>   .../bindings/phy/intel,phy-thunderbay-emmc.yaml   | 15 +++++++--------
+>   7 files changed, 7 insertions(+), 15 deletions(-)
 
-drivers/net/wireless/intel/ipw2x00/ipw2200.c:3007:19: warning: unused function 'ipw_alive'.
+[..]
 
-Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=2410
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
----
- drivers/net/wireless/intel/ipw2x00/ipw2200.c | 14 --------------
- 1 file changed, 14 deletions(-)
+> diff --git a/Documentation/devicetree/bindings/net/cdns,macb.yaml b/Documentation/devicetree/bindings/net/cdns,macb.yaml
+> index 318f4efe7f6f..bef5e0f895be 100644
+> --- a/Documentation/devicetree/bindings/net/cdns,macb.yaml
+> +++ b/Documentation/devicetree/bindings/net/cdns,macb.yaml
+> @@ -203,7 +203,6 @@ examples:
+>                       power-domains = <&zynqmp_firmware PD_ETH_1>;
+>                       resets = <&zynqmp_reset ZYNQMP_RESET_GEM1>;
+>                       reset-names = "gem1_rst";
+> -                    status = "okay";
+>                       phy-mode = "sgmii";
+>                       phys = <&psgtr 1 PHY_TYPE_SGMII 1 1>;
+>                       fixed-link {
 
-diff --git a/drivers/net/wireless/intel/ipw2x00/ipw2200.c b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
-index 5b483de18c81..79d5c09757d4 100644
---- a/drivers/net/wireless/intel/ipw2x00/ipw2200.c
-+++ b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
-@@ -2995,20 +2995,6 @@ static void ipw_remove_current_network(struct ipw_priv *priv)
- 	spin_unlock_irqrestore(&priv->ieee->lock, flags);
- }
- 
--/*
-- * Check that card is still alive.
-- * Reads debug register from domain0.
-- * If card is present, pre-defined value should
-- * be found there.
-- *
-- * @param priv
-- * @return 1 if card is present, 0 otherwise
-- */
--static inline int ipw_alive(struct ipw_priv *priv)
--{
--	return ipw_read32(priv, 0x90) == 0xd55555d5;
--}
--
- /* timeout in msec, attempted in 10-msec quanta */
- static int ipw_poll_bit(struct ipw_priv *priv, u32 addr, u32 mask,
- 			       int timeout)
+
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Thanks Rob. Best regards,
+   Nicolas
+
 -- 
-2.20.1.7.g153144c
-
+Nicolas Ferre
