@@ -2,71 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34070601C0E
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 00:08:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02740601C16
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 00:11:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229963AbiJQWIO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 18:08:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33652 "EHLO
+        id S229984AbiJQWLp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 18:11:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229770AbiJQWIN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 18:08:13 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 320657696A;
-        Mon, 17 Oct 2022 15:08:12 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id bv10so20654177wrb.4;
-        Mon, 17 Oct 2022 15:08:12 -0700 (PDT)
+        with ESMTP id S229963AbiJQWLo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 18:11:44 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DBF46C96A
+        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 15:11:43 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id x1-20020a17090ab00100b001fda21bbc90so15545497pjq.3
+        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 15:11:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=93riG9uu1J1WTisFoALpPiFgWUkyaVzYtCZ43mZ5yrg=;
-        b=W1Ju2EFTJ2FGU2nPR7Z1V+8TcZq1Ap4M3E0lHq6CeBWtHnpy9A1bb9Vvb3dwfdM+Zs
-         3AQcMDIvxGr0lAcpBxmAPpewJYFWAn9wV2kUJaTY81ySCT6jFrZql6F1ErIq7VDx2/pS
-         Bdnc2PYpk+CoZTaOEeOdYY2k+LUh5WqME+9K9BQ42JnuJVedtLB+4J8engvQudegm0Oa
-         LbB21AaF2p0dmAm3LM4hwnApeW47fsibZVmOzuKJA03BJp8ZpanpcOazZFYVkt2oaXm5
-         doLPsmqdlDqow28TweCY9IkLeDht1lLsmp2K4lHqtigAPZAPzIizT4l3aYiwNyXKJM8K
-         ab3Q==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=yKXEn3BHCUa8FLEFKfOVUMorMrQv6lBr8VXQMwu2VLw=;
+        b=J3mvcXVenYARhzDd5dr39z47OLSGLkwIyDPaAzy50rCEs3s+dRZd7+u831UtcJt5cL
+         Ca0FlQo/UVTpNAnVOCDwlzPyAbuG2KGx8w/Eq3l4LNZX8kdxWY+ralRvS7NU49dblxY/
+         jeJmrQ3YRS8n7sWN0N73ilt8NvLmvQxRdoSVav2NK54auafIGL/+Aaezwj1pz/ObowAl
+         EXGKQ3+RXXjpJH2LUw7bUuN4fzGGYD/Pg+v/fiM5KErgeSgXMsg4+uuU394EOHXhsUTW
+         KiSUP6cavK21wuOoE5jb0nxZ1EbdQwjs45wKkDU8/uXLWBjjEfPFvOSmgrVdbbzrSTQr
+         shZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=93riG9uu1J1WTisFoALpPiFgWUkyaVzYtCZ43mZ5yrg=;
-        b=OE0Kpn56EMZY6sPyqRIE/tG8OniWkpMn+wfbs16aVk1fg29hlTtlAqzUadm9uPEpbz
-         nGl3nfZC2C7HH9nqcJYkF7dckCUSr291qIIUsUFELe9av9Oq8s3Ppji28Q+kBzGlS3uP
-         CDQiZwsjjBYmDyh9RLWlu64v8r1YVXUsO62wRw4GJz6oDNGW/G79SqpE4B8lreuGpTw2
-         Ud5HB0ZYHFuy7Pqz25yBVM1JagrH+jtPuNIYfWKH7/LQeGtCvUZ4s5F9GQwEhShlsNhR
-         sohjcG+Vs/nI1A5HAGWgOq3/72ABsJCOJOOrvr9HB0NaJV6UcR+Wp1FBaNiAQ5D8W24C
-         55rg==
-X-Gm-Message-State: ACrzQf16gDs01XHujdVal/ozeeJsUtw6x0WOYtNnH8C2vAYlNEGLNu+P
-        DhhYW9giADdCcABswSbRXwA=
-X-Google-Smtp-Source: AMsMyM76liUy6+AG1ZVa7Bt9T4aylrBn/uEOHcjsY92xLWmGtL+0dn9b630t2UvUF6obEzAXi9OkUw==
-X-Received: by 2002:a05:6000:168f:b0:22e:4c3:de09 with SMTP id y15-20020a056000168f00b0022e04c3de09mr7259250wrd.40.1666044490528;
-        Mon, 17 Oct 2022 15:08:10 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id bd21-20020a05600c1f1500b003b95ed78275sm11754504wmb.20.2022.10.17.15.08.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Oct 2022 15:08:10 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] esp6: remove redundant variable err
-Date:   Mon, 17 Oct 2022 23:08:09 +0100
-Message-Id: <20221017220809.864495-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.37.3
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=yKXEn3BHCUa8FLEFKfOVUMorMrQv6lBr8VXQMwu2VLw=;
+        b=Jk35bRHv6ro3fSSuQmZHT7jKN9PmANPBTMVfXw921NMhNxgdN85cKtZ6D+hD2aWUvB
+         dRgYJXoYiobkOfudThvjxo0akT4STOyHePsGck04Ybbb7ArO6M+8wTbtrSDqeu3lRKs+
+         KEdB35wQ0r3vHWtjPIVpQkFmp7n68mqGP+12+zZZKc+okkgbFX/EOsksWcJgvIFOxpeB
+         QNglEnD5iSZc7KSCsYufF5prSZJmfwZ32IdkPf6wlkCrbiq9vVLw1jCkqLJJs1s18vcx
+         nhGT7Bovh9S1AAGi58JJDiSVfktjRnjPczpSMGwlS4LK9S7bg8jX3qmkhMljEPcigaCC
+         yD4g==
+X-Gm-Message-State: ACrzQf1A5kL/RB0f9vHSNjQq+hE4ESqbmq9eXO4yOWJE5yIWozOyIeNT
+        yZZnBKn7IyeYNWOEWQ0rIcg=
+X-Google-Smtp-Source: AMsMyM7EyeWtx9JOCApzWLptHKxXNWhfA+pzxpOcTLmTlnZhapjh4xcJpe4x4OFpw0QWyeirRL2cPw==
+X-Received: by 2002:a17:90b:1e04:b0:20d:90b3:45e5 with SMTP id pg4-20020a17090b1e0400b0020d90b345e5mr33487730pjb.113.1666044702754;
+        Mon, 17 Oct 2022 15:11:42 -0700 (PDT)
+Received: from ?IPV6:2620:10d:c085:2103:475:ef07:bb37:8b7b? ([2620:10d:c090:400::5:6fcd])
+        by smtp.gmail.com with ESMTPSA id w14-20020a170902a70e00b0017c7376ac9csm7087093plq.206.2022.10.17.15.11.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Oct 2022 15:11:41 -0700 (PDT)
+Message-ID: <cd67d53e-bf1b-ae33-108d-975391feb5c3@gmail.com>
+Date:   Mon, 17 Oct 2022 15:11:39 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.3.3
+Subject: Re: [PATCH net-next 2/5] ptp: ocp: add Orolia timecard support
+Content-Language: en-US
+To:     Vadim Fedorenko <vfedorenko@novek.ru>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Vadim Fedorenko <vadfed@fb.com>,
+        Charles Parent <charles.parent@orolia2s.com>
+References: <20221017215947.7438-1-vfedorenko@novek.ru>
+ <20221017215947.7438-3-vfedorenko@novek.ru>
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+In-Reply-To: <20221017215947.7438-3-vfedorenko@novek.ru>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -75,37 +78,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Variable err is being assigned a value that is not read, the assignment
-is redundant and so is the variable. Remove it.
+On 10/17/22 2:59 PM, Vadim Fedorenko wrote:
+> From: Vadim Fedorenko <vadfed@fb.com>
+> 
+> This brings in the Orolia timecard support from the GitHub repository.
+> The card uses different drivers to provide access to i2c EEPROM and
+> firmware SPI flash. And it also has a bit different EEPROM map, but
+> other parts of the code are the same and could be reused.
+> 
+> Co-developed-by: Charles Parent <charles.parent@orolia2s.com>
+> Signed-off-by: Vadim Fedorenko <vadfed@fb.com>
+> ---
+>   drivers/ptp/ptp_ocp.c | 296 ++++++++++++++++++++++++++++++++++++++++++
+>   1 file changed, 296 insertions(+)
+> 
+> diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
+> index e5b28f89c8dd..cd4f3860d72a 100644
+> --- a/drivers/ptp/ptp_ocp.c
+> +++ b/drivers/ptp/ptp_ocp.c
+> @@ -13,9 +13,11 @@
+>   #include <linux/clk-provider.h>
+>   #include <linux/platform_device.h>
+>   #include <linux/platform_data/i2c-xiic.h>
+> +#include <linux/platform_data/i2c-ocores.h>
+>   #include <linux/ptp_clock_kernel.h>
+>   #include <linux/spi/spi.h>
+>   #include <linux/spi/xilinx_spi.h>
+> +#include <linux/spi/altera.h>
+>   #include <net/devlink.h>
+>   #include <linux/i2c.h>
+>   #include <linux/mtd/mtd.h>
+> @@ -28,6 +30,14 @@
+>   #define PCI_VENDOR_ID_CELESTICA			0x18d4
+>   #define PCI_DEVICE_ID_CELESTICA_TIMECARD	0x1008
+>   
+> +#ifndef PCI_VENDOR_ID_OROLIA
+> +#define PCI_VENDOR_ID_OROLIA 0x1ad7
+> +#endif
+> +
+> +#ifndef PCI_DEVICE_ID_OROLIA_ARTCARD
+> +#define PCI_DEVICE_ID_OROLIA_ARTCARD 0xa000
+> +#endif
+Remove the #ifndef #endif pairs here.
 
-Cleans up clang scan warning:
-net/ipv6/esp6_offload.c:64:7: warning: Although the value stored to 'err'
-is used in the enclosing expression, the value is never actually read
-from 'err' [deadcode.DeadStores]
-
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- net/ipv6/esp6_offload.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/net/ipv6/esp6_offload.c b/net/ipv6/esp6_offload.c
-index 79d43548279c..97edf461bc72 100644
---- a/net/ipv6/esp6_offload.c
-+++ b/net/ipv6/esp6_offload.c
-@@ -56,12 +56,11 @@ static struct sk_buff *esp6_gro_receive(struct list_head *head,
- 	__be32 seq;
- 	__be32 spi;
- 	int nhoff;
--	int err;
- 
- 	if (!pskb_pull(skb, offset))
- 		return NULL;
- 
--	if ((err = xfrm_parse_spi(skb, IPPROTO_ESP, &spi, &seq)) != 0)
-+	if (xfrm_parse_spi(skb, IPPROTO_ESP, &spi, &seq) != 0)
- 		goto out;
- 
- 	xo = xfrm_offload(skb);
--- 
-2.37.3
+Also, you're missing my SOB on these patches.
+--
+Jonathan
 
