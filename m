@@ -2,122 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 877D66014A3
-	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 19:19:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B1B56014B3
+	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 19:23:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230200AbiJQRT2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 13:19:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38558 "EHLO
+        id S230033AbiJQRXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 13:23:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230190AbiJQRT0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 13:19:26 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDF9AC4A;
-        Mon, 17 Oct 2022 10:19:21 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id z97so17028545ede.8;
-        Mon, 17 Oct 2022 10:19:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=rMglibETToQb8dPBGbxr6FHH36nbwiMc9pZGdb7n6oM=;
-        b=oveX0QP/1N8fJTSTxdiHHnuTEpvHY3UoN5/Ttgaqtdr3V1PKGHIJ1p7mzauGSspEX5
-         U3MZwy2+ysRYw3K/b7UI3LJTG3uPNJ6EbrYkts/lmuU+DhcC6Sfx2u2kzdw74mj8a/ms
-         NCsDdLSxxR2CstXwWD+rq1uHqfdCufrm99Pg1owPBIANoOdiI63bgxmKmwEB4/uLPuoU
-         BLIdGM5QhWH0JlQmJLtKKOcWchP7n8fJBmItH+ijHhl6hDwuY2wG2kIcFdxXmHllda+c
-         AWsXB18A2C2i6kGBB4F78Cxf0oF07+++WAQzLbGPV8poYaKDun2+DIQaGYhx5claJrpY
-         Rc8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rMglibETToQb8dPBGbxr6FHH36nbwiMc9pZGdb7n6oM=;
-        b=KBbtuHo/bGSLF8+cn+kPXRF+A9t0Dg3AN9otGdsuUZrb5iAAxLiM+qLmAdQBPcIP10
-         n0bcfg5Nl/ZNqxK9nxFzT3hIYqY4UffROy5aLClwG19MUKSMqx4PQEy2XYJasiY+PXO/
-         80jro/zhZ/JZu13dirIiyrCqxkoKIozl5lelHXTAHqqWTrVwjZ55Gco/WhiEz8EqdShh
-         YsaZeqyqIvFuIKZ0Im9esS98SUaJ+KDrEGsZvCVf6BJD4bGAvUizVR5J4JH7c0GWISlI
-         DffB/1FyOxtSRnEzjGJ0ojZvjqvhkA6v4yQxWkC8wgTi9Dj9329gEsv9Em2Ln+j3pWTI
-         6LFA==
-X-Gm-Message-State: ACrzQf30Ha1/i0Jo0l0zZUyBtB/nYeJqIR3/ezwp6YuKyHts6fseWGKB
-        yPeyyoz/UwfZ17ftcdmxYYuP1UjQTOc=
-X-Google-Smtp-Source: AMsMyM7q5L8G70qX89ejUU9HnhYARrJxMRcNM7opEgbDiC+f1m6kauangYtrOL6XhA6NklFlg2uzgg==
-X-Received: by 2002:a05:6402:320e:b0:45c:ae50:dbca with SMTP id g14-20020a056402320e00b0045cae50dbcamr11321231eda.104.1666027160328;
-        Mon, 17 Oct 2022 10:19:20 -0700 (PDT)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id q7-20020a170906540700b0078d9cd0d2d6sm6564554ejo.11.2022.10.17.10.19.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Oct 2022 10:19:19 -0700 (PDT)
-Date:   Mon, 17 Oct 2022 20:19:16 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux@armlinux.org.uk,
-        Tristram.Ha@microchip.com, richardcochran@gmail.com,
-        ceggers@arri.de, b.hutchman@gmail.com
-Subject: Re: [RFC Patch net-next 0/6] net: dsa: microchip: add gPTP support
- for LAN937x switch
-Message-ID: <20221017171916.oszpyxfnblezee6u@skbuf>
-References: <20221014152857.32645-1-arun.ramadoss@microchip.com>
+        with ESMTP id S230234AbiJQRXf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 13:23:35 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A2A66726AB
+        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 10:23:30 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 29HHMfbG6005826, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 29HHMfbG6005826
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Tue, 18 Oct 2022 01:22:41 +0800
+Received: from RTEXDAG01.realtek.com.tw (172.21.6.100) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Tue, 18 Oct 2022 01:23:12 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXDAG01.realtek.com.tw (172.21.6.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Tue, 18 Oct 2022 01:23:12 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::add3:284:fd3d:8adb]) by
+ RTEXMBS04.realtek.com.tw ([fe80::add3:284:fd3d:8adb%5]) with mapi id
+ 15.01.2375.007; Tue, 18 Oct 2022 01:23:12 +0800
+From:   Hau <hau@realtek.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "grundler@chromium.org" <grundler@chromium.org>
+Subject: RE: [PATCH net] r8169: fix rtl8125b dmar pte write access not set error
+Thread-Topic: [PATCH net] r8169: fix rtl8125b dmar pte write access not set
+ error
+Thread-Index: AQHY18jMGMKenjvi2k2tTzR0owCm5K4FMJuAgAU+f1CAAD4tAIABNXCAgALE74CABEBDgA==
+Date:   Mon, 17 Oct 2022 17:23:11 +0000
+Message-ID: <c214fed3af19464c823a5294f531eaea@realtek.com>
+References: <20221004081037.34064-1-hau@realtek.com>
+ <6d607965-53ab-37c7-3920-ae2ad4be09e5@gmail.com>
+ <6781f98dd232471791be8b0168f0153a@realtek.com>
+ <3ffdaa0d-4a3d-dd2c-506c-d10b5297f430@gmail.com>
+ <5eda67bb8f16473fb575b6a470d3592c@realtek.com>
+ <48ff36cd-370b-f067-b643-a3d59df036dd@gmail.com>
+In-Reply-To: <48ff36cd-370b-f067-b643-a3d59df036dd@gmail.com>
+Accept-Language: zh-TW, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.129]
+x-kse-serverinfo: RTEXDAG01.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEwLzE3IOS4i+WNiCAwNDoxMjowMA==?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221014152857.32645-1-arun.ramadoss@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arun,
-
-On Fri, Oct 14, 2022 at 08:58:51PM +0530, Arun Ramadoss wrote:
-> The LAN937x switch has capable for supporting IEEE 1588 PTP protocol. This
-> patch series add gPTP profile support and tested using the ptp4l application.
-> LAN937x has the same PTP register set similar to KSZ9563, hence the
-> implementation has been made common for the ksz switches. But the testing is
-> done only for lan937x switch.
-
-Would it be possible to actually test these patches on KSZ9563?
-
-Christian Eggers tried to add PTP support for this switch a while ago,
-and he claims that two-step TX timestamping was de-featured for KSZ95xx
-due to hardware errata.
-https://patchwork.ozlabs.org/project/netdev/patch/20201019172435.4416-8-ceggers@arri.de/
-
-> 
-> Arun Ramadoss (6):
->   net: dsa: microchip: adding the posix clock support
->   net: dsa: microchip: Initial hardware time stamping support
->   net: dsa: microchip: Manipulating absolute time using ptp hw clock
->   net: dsa: microchip: enable the ptp interrupt for timestamping
->   net: dsa: microchip: Adding the ptp packet reception logic
->   net: dsa: microchip: add the transmission tstamp logic
-> 
->  drivers/net/dsa/microchip/Kconfig       |  10 +
->  drivers/net/dsa/microchip/Makefile      |   1 +
->  drivers/net/dsa/microchip/ksz_common.c  |  43 +-
->  drivers/net/dsa/microchip/ksz_common.h  |  31 +
->  drivers/net/dsa/microchip/ksz_ptp.c     | 755 ++++++++++++++++++++++++
->  drivers/net/dsa/microchip/ksz_ptp.h     |  84 +++
->  drivers/net/dsa/microchip/ksz_ptp_reg.h |  68 +++
->  include/linux/dsa/ksz_common.h          |  53 ++
->  net/dsa/tag_ksz.c                       | 156 ++++-
->  9 files changed, 1192 insertions(+), 9 deletions(-)
->  create mode 100644 drivers/net/dsa/microchip/ksz_ptp.c
->  create mode 100644 drivers/net/dsa/microchip/ksz_ptp.h
->  create mode 100644 drivers/net/dsa/microchip/ksz_ptp_reg.h
->  create mode 100644 include/linux/dsa/ksz_common.h
-> 
-> 
-> base-commit: 66ae04368efbe20eb8951c9a76158f99ce672f25
-> -- 
-> 2.36.1
-> 
+PiBPbiAxMy4xMC4yMDIyIDA4OjA0LCBIYXUgd3JvdGU6DQo+ID4+IE9uIDEyLjEwLjIwMjIgMDk6
+NTksIEhhdSB3cm90ZToNCj4gPj4+Pg0KPiA+Pj4+IE9uIDA0LjEwLjIwMjIgMTA6MTAsIENodW5o
+YW8gTGluIHdyb3RlOg0KPiA+Pj4+PiBXaGVuIGNsb3NlIGRldmljZSwgcnggd2lsbCBiZSBlbmFi
+bGVkIGlmIHdvbCBpcyBlbmFiZWxkLiBXaGVuIG9wZW4NCj4gPj4+Pj4gZGV2aWNlIGl0IHdpbGwg
+Y2F1c2UgcnggdG8gZG1hIHRvIHdyb25nIGFkZHJlc3MgYWZ0ZXIgcGNpX3NldF9tYXN0ZXIoKS4N
+Cj4gPj4+Pj4NCj4gPj4+Pj4gSW4gdGhpcyBwYXRjaCwgZHJpdmVyIHdpbGwgZGlzYWJsZSB0eC9y
+eCB3aGVuIGNsb3NlIGRldmljZS4gSWYgd29sDQo+ID4+Pj4+IGlzIGVhbmJsZWQgb25seSBlbmFi
+bGUgcnggZmlsdGVyIGFuZCBkaXNhYmxlIHJ4ZHZfZ2F0ZSB0byBsZXQNCj4gPj4+Pj4gaGFyZHdh
+cmUgY2FuIHJlY2VpdmUgcGFja2V0IHRvIGZpZm8gYnV0IG5vdCB0byBkbWEgaXQuDQo+ID4+Pj4+
+DQo+ID4+Pj4+IEZpeGVzOiAxMjAwNjg0ODE0MDUgKCJyODE2OTogZml4IGZhaWxpbmcgV29MIikN
+Cj4gPj4+Pj4gU2lnbmVkLW9mZi1ieTogQ2h1bmhhbyBMaW4gPGhhdUByZWFsdGVrLmNvbT4NCj4g
+Pj4+Pj4gLS0tDQo+ID4+Pj4+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9yZWFsdGVrL3I4MTY5X21h
+aW4uYyB8IDE0ICsrKysrKystLS0tLS0tDQo+ID4+Pj4+ICAxIGZpbGUgY2hhbmdlZCwgNyBpbnNl
+cnRpb25zKCspLCA3IGRlbGV0aW9ucygtKQ0KPiA+Pj4+Pg0KPiA+Pj4+PiBkaWZmIC0tZ2l0IGEv
+ZHJpdmVycy9uZXQvZXRoZXJuZXQvcmVhbHRlay9yODE2OV9tYWluLmMNCj4gPj4+Pj4gYi9kcml2
+ZXJzL25ldC9ldGhlcm5ldC9yZWFsdGVrL3I4MTY5X21haW4uYw0KPiA+Pj4+PiBpbmRleCAxYjdm
+ZGI0ZjA1NmIuLmMwOWNmYmUxZDNmMCAxMDA2NDQNCj4gPj4+Pj4gLS0tIGEvZHJpdmVycy9uZXQv
+ZXRoZXJuZXQvcmVhbHRlay9yODE2OV9tYWluLmMNCj4gPj4+Pj4gKysrIGIvZHJpdmVycy9uZXQv
+ZXRoZXJuZXQvcmVhbHRlay9yODE2OV9tYWluLmMNCj4gPj4+Pj4gQEAgLTIyMzksNiArMjIzOSw5
+IEBAIHN0YXRpYyB2b2lkIHJ0bF93b2xfZW5hYmxlX3J4KHN0cnVjdA0KPiA+Pj4+IHJ0bDgxNjlf
+cHJpdmF0ZSAqdHApDQo+ID4+Pj4+ICAJaWYgKHRwLT5tYWNfdmVyc2lvbiA+PSBSVExfR0lHQV9N
+QUNfVkVSXzI1KQ0KPiA+Pj4+PiAgCQlSVExfVzMyKHRwLCBSeENvbmZpZywgUlRMX1IzMih0cCwg
+UnhDb25maWcpIHwNCj4gPj4+Pj4gIAkJCUFjY2VwdEJyb2FkY2FzdCB8IEFjY2VwdE11bHRpY2Fz
+dCB8IEFjY2VwdE15UGh5cyk7DQo+ID4+Pj4+ICsNCj4gPj4+Pj4gKwlpZiAodHAtPm1hY192ZXJz
+aW9uID49IFJUTF9HSUdBX01BQ19WRVJfNDApDQo+ID4+Pj4+ICsJCVJUTF9XMzIodHAsIE1JU0Ms
+IFJUTF9SMzIodHAsIE1JU0MpICYNCj4gflJYRFZfR0FURURfRU4pOw0KPiA+Pj4+DQo+ID4+Pj4g
+SXMgdGhpcyBjb3JyZWN0IGFueXdheT8gU3VwcG9zZWRseSB5b3Ugd2FudCB0byBzZXQgdGhpcyBi
+aXQgdG8gZGlzYWJsZQ0KPiBETUEuDQo+ID4+Pj4NCj4gPj4+IElmIHdvbCBpcyBlbmFibGVkLCBk
+cml2ZXIgbmVlZCB0byBkaXNhYmxlIGhhcmR3YXJlIHJ4ZHZfZ2F0ZSBmb3INCj4gPj4+IHJlY2Vp
+dmluZw0KPiA+PiBwYWNrZXRzLg0KPiA+Pj4NCj4gPj4gT0ssIEkgc2VlLiBCdXQgd2h5IGRpc2Fi
+bGUgaXQgaGVyZT8gSSBzZWUgbm8gc2NlbmFyaW8gd2hlcmUgcnhkdl9nYXRlDQo+ID4+IHdvdWxk
+IGJlIGVuYWJsZWQgd2hlbiB3ZSBnZXQgaGVyZS4NCj4gPj4NCj4gPiByeGR2X2dhdGUgd2lsbCBi
+ZSBlbmFibGVkIGluIHJ0bDgxNjlfY2xlYW51cCgpLiBXaGVuIHN1c3BlbmQgb3IgY2xvc2UNCj4g
+PiBhbmQgd29sIGlzIGVuYWJsZWQgZHJpdmVyIHdpbGwgY2FsbCBydGw4MTY5X2Rvd24oKSAtPiBy
+dGw4MTY5X2NsZWFudXAoKS0+DQo+IHJ0bF9wcmVwYXJlX3Bvd2VyX2Rvd24oKS0+IHJ0bF93b2xf
+ZW5hYmxlX3J4KCkuDQo+ID4gU28gZGlzYWJsZWQgcnhkdl9nYXRlIGluIHJ0bF93b2xfZW5hYmxl
+X3J4KCkgZm9yIHJlY2VpdmluZyBwYWNrZXRzLg0KPiA+DQo+IHJ0bDgxNjlfY2xlYW51cCgpIHNr
+aXBzIHRoZSBjYWxsIHRvIHJ0bF9lbmFibGVfcnhkdmdhdGUoKSB3aGVuIGJlaW5nIGNhbGxlZA0K
+PiBmcm9tDQo+IHJ0bDgxNjlfZG93bigpIGFuZCB3b2wgaXMgZW5hYmxlZC4gVGhpcyBtZWFucyBy
+eGR2IGdhdGUgaXMgc3RpbGwgZGlzYWJsZWQuDQo+IA0KWWVzLCBpdCB3aWxsIGtlZXAgcnhkdl9n
+YXRlIGRpc2FibGUuIEJ1dCBpdCB3aWxsIGFsc28ga2VlcCB0eC9yeCBvbi4gIElmIE9TIGhhdmUg
+YW4gIHVuZXhwZWN0ZWQNCnJlYm9vdCBoYXJkd2FyZSAgbWF5IGRtYSB0byBpbnZhbGlkIG1lbW9y
+eSBhZGRyZXNzLiBJZiBwb3NzaWJsZSBJIHByZWZlciB0byBrZWVwDQp0eC9yeCBvZmYgd2hlbiBl
+eGl0IGRyaXZlciBjb250cm9sLiAgDQoNCi0tLS0tLVBsZWFzZSBjb25zaWRlciB0aGUgZW52aXJv
+bm1lbnQgYmVmb3JlIHByaW50aW5nIHRoaXMgZS1tYWlsLg0K
