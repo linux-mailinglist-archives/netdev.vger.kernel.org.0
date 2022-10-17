@@ -2,150 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F580600800
-	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 09:47:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A45FC600812
+	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 09:50:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230141AbiJQHrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 03:47:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47360 "EHLO
+        id S230041AbiJQHuh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 03:50:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229770AbiJQHrG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 03:47:06 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D9D4193ED;
-        Mon, 17 Oct 2022 00:47:05 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id b2so10042477plc.7;
-        Mon, 17 Oct 2022 00:47:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=trKg4e+84RTL7802i/2COWxZYFL5an0MughGIKzB3gg=;
-        b=Is2mRJ7WSElkiPaw7WGMnu+OPee+ZjTYdAH4JarFZZh1AxUymwfPScZLlDfCz5dGuy
-         26qCclC9g8JIZm/9bx09Qpi+2oc+RbGD6VMaw6L929D21P3l8NHSNAfTk5iyU9YjiVyg
-         9I4QgP0ovmueLtZ16Zdc2R5qMxewrGwAss1j4d3LN6vq+x4l8paLAFvE5xrf69kriikl
-         ThodotI7uheTcjnF4p+QwkKeduT47F6OI9JI3+jg4IrQH9x3RSOCB//O5MTQHLzM21Ta
-         ZRq6/Vh3aNXb5/wkotpwkO4xPDuTrCxDrbLwFcIG8yucLOifuDv/XAAvtgU/FYFGVvoH
-         xLRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=trKg4e+84RTL7802i/2COWxZYFL5an0MughGIKzB3gg=;
-        b=ooMCf+70Nac0QIsSaOZP5AuAkPCTEKW5zg6yh6NzpGqR8Qn+bnBOgUaqpipW5JWN1S
-         r0Nlm7z4d45p/ofyBkDxzUN9iOlqB9/tVqNlsWFDh5BC+e/cVHCxAFyAe3aMWM26mDB4
-         5jKJQgJu53QgRqihgOqnxTb9ep00JG0dfmdWvaDbc77Mnn0KxTreOXe7ekLTES7el9U8
-         WX8ed8KSCG3+CqfDX4Ysh5ejmQMRw3ZtiYB+jp3nxBJBp6MJUWc0ju+fiLU5JMsvieov
-         UNS6UyaxpUX+QFjDdlyZ9NTEzaycPHchvOtcwtxXz287hCkFyh69s1yyyoivKoH/bFfj
-         PXyg==
-X-Gm-Message-State: ACrzQf0CqQ5B7XhnAXSFPdcNaHvLD7mxyDCeWvEMLrkQdKppBOJrUUA8
-        3ct3UQnPXOSbDZv1NeQGxw0=
-X-Google-Smtp-Source: AMsMyM6FsMPVoOIGj/GIWy3kAd5GCtJpbj51sd6eQQHcKxTz9sAYFb6w7o8+2MgwT3QJ7GDaMYOgHA==
-X-Received: by 2002:a17:90b:1b51:b0:20d:8594:bd5f with SMTP id nv17-20020a17090b1b5100b0020d8594bd5fmr31118093pjb.125.1665992824904;
-        Mon, 17 Oct 2022 00:47:04 -0700 (PDT)
-Received: from localhost ([159.226.94.113])
-        by smtp.gmail.com with ESMTPSA id i6-20020a17090332c600b001806f4fbf25sm5945229plr.182.2022.10.17.00.47.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Oct 2022 00:47:04 -0700 (PDT)
-From:   Hawkins Jiawei <yin31149@gmail.com>
-To:     syzbot+8f819e36e01022991cfa@syzkaller.appspotmail.com,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, 18801353760@163.com,
-        yin31149@gmail.com,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        netdev@vger.kernel.org
-Subject: [PATCH] Bluetooth: L2CAP: Fix memory leak in vhci_write
-Date:   Mon, 17 Oct 2022 15:44:32 +0800
-Message-Id: <20221017074432.12177-1-yin31149@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229663AbiJQHug (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 03:50:36 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C1423EA3;
+        Mon, 17 Oct 2022 00:50:32 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MrTgP2N7MzHvnQ;
+        Mon, 17 Oct 2022 15:50:25 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Mon, 17 Oct
+ 2022 15:50:13 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <linux-bluetooth@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+CC:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
+        <luiz.dentz@gmail.com>, <weiyongjun1@huawei.com>,
+        <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
+Subject: [PATCH] Bluetooth: L2CAP: fix use-after-free in l2cap_conn_del()
+Date:   Mon, 17 Oct 2022 15:58:13 +0800
+Message-ID: <20221017075813.6071-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzkaller reports a memory leak as follows:
-====================================
-BUG: memory leak
-unreferenced object 0xffff88810d81ac00 (size 240):
-  [...]
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffff838733d9>] __alloc_skb+0x1f9/0x270 net/core/skbuff.c:418
-    [<ffffffff833f742f>] alloc_skb include/linux/skbuff.h:1257 [inline]
-    [<ffffffff833f742f>] bt_skb_alloc include/net/bluetooth/bluetooth.h:469 [inline]
-    [<ffffffff833f742f>] vhci_get_user drivers/bluetooth/hci_vhci.c:391 [inline]
-    [<ffffffff833f742f>] vhci_write+0x5f/0x230 drivers/bluetooth/hci_vhci.c:511
-    [<ffffffff815e398d>] call_write_iter include/linux/fs.h:2192 [inline]
-    [<ffffffff815e398d>] new_sync_write fs/read_write.c:491 [inline]
-    [<ffffffff815e398d>] vfs_write+0x42d/0x540 fs/read_write.c:578
-    [<ffffffff815e3cdd>] ksys_write+0x9d/0x160 fs/read_write.c:631
-    [<ffffffff845e0645>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-    [<ffffffff845e0645>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-    [<ffffffff84600087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-====================================
+When l2cap_recv_frame() is invoked to receive data, and the cid is
+L2CAP_CID_A2MP, if the channel does not exist, it will create a channel.
+However, after a channel is created, the hold operation of the channel
+is not performed. In this case, the value of channel reference counting
+is 1. As a result, after hci_error_reset() is triggered, l2cap_conn_del()
+invokes the close hook function of A2MP to release the channel. Then
+ l2cap_chan_unlock(chan) will trigger UAF issue.
 
-HCI core will uses hci_rx_work() to process frame, which is queued to
-the hdev->rx_q tail in hci_recv_frame() by HCI driver.
+The process is as follows:
+Receive data:
+l2cap_data_channel()
+    a2mp_channel_create()  --->channel ref is 2
+    l2cap_chan_put()       --->channel ref is 1
 
-Yet the problem is that, HCI core does not free the skb after handling
-ACL data packets. To be more specific, when start fragment does not
-contain the L2CAP length, HCI core just reads possible bytes and
-finishes frame process in l2cap_recv_acldata(), without freeing the skb,
-which triggers the above memory leak.
+Triger event:
+    hci_error_reset()
+        hci_dev_do_close()
+        ...
+        l2cap_disconn_cfm()
+            l2cap_conn_del()
+                l2cap_chan_hold()    --->channel ref is 2
+                l2cap_chan_del()     --->channel ref is 1
+                a2mp_chan_close_cb() --->channel ref is 0, release channel
+                l2cap_chan_unlock()  --->UAF of channel
 
-This patch solves it by releasing the relative skb, after processing the
-above case in l2cap_recv_acldata()
+The detailed Call Trace is as follows:
+BUG: KASAN: use-after-free in __mutex_unlock_slowpath+0xa6/0x5e0
+Read of size 8 at addr ffff8880160664b8 by task kworker/u11:1/7593
+Workqueue: hci0 hci_error_reset
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xcd/0x134
+ print_report.cold+0x2ba/0x719
+ kasan_report+0xb1/0x1e0
+ kasan_check_range+0x140/0x190
+ __mutex_unlock_slowpath+0xa6/0x5e0
+ l2cap_conn_del+0x404/0x7b0
+ l2cap_disconn_cfm+0x8c/0xc0
+ hci_conn_hash_flush+0x11f/0x260
+ hci_dev_close_sync+0x5f5/0x11f0
+ hci_dev_do_close+0x2d/0x70
+ hci_error_reset+0x9e/0x140
+ process_one_work+0x98a/0x1620
+ worker_thread+0x665/0x1080
+ kthread+0x2e4/0x3a0
+ ret_from_fork+0x1f/0x30
+ </TASK>
 
-Fixes: 4d7ea8ee90e4 ("Bluetooth: L2CAP: Fix handling fragmented length")
-Link: https://lore.kernel.org/all/0000000000000d0b1905e6aaef64@google.com/
-Reported-and-tested-by: syzbot+8f819e36e01022991cfa@syzkaller.appspotmail.com
-Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
+Allocated by task 7593:
+ kasan_save_stack+0x1e/0x40
+ __kasan_kmalloc+0xa9/0xd0
+ l2cap_chan_create+0x40/0x930
+ amp_mgr_create+0x96/0x990
+ a2mp_channel_create+0x7d/0x150
+ l2cap_recv_frame+0x51b8/0x9a70
+ l2cap_recv_acldata+0xaa3/0xc00
+ hci_rx_work+0x702/0x1220
+ process_one_work+0x98a/0x1620
+ worker_thread+0x665/0x1080
+ kthread+0x2e4/0x3a0
+ ret_from_fork+0x1f/0x30
+
+Freed by task 7593:
+ kasan_save_stack+0x1e/0x40
+ kasan_set_track+0x21/0x30
+ kasan_set_free_info+0x20/0x30
+ ____kasan_slab_free+0x167/0x1c0
+ slab_free_freelist_hook+0x89/0x1c0
+ kfree+0xe2/0x580
+ l2cap_chan_put+0x22a/0x2d0
+ l2cap_conn_del+0x3fc/0x7b0
+ l2cap_disconn_cfm+0x8c/0xc0
+ hci_conn_hash_flush+0x11f/0x260
+ hci_dev_close_sync+0x5f5/0x11f0
+ hci_dev_do_close+0x2d/0x70
+ hci_error_reset+0x9e/0x140
+ process_one_work+0x98a/0x1620
+ worker_thread+0x665/0x1080
+ kthread+0x2e4/0x3a0
+ ret_from_fork+0x1f/0x30
+
+Last potentially related work creation:
+ kasan_save_stack+0x1e/0x40
+ __kasan_record_aux_stack+0xbe/0xd0
+ call_rcu+0x99/0x740
+ netlink_release+0xe6a/0x1cf0
+ __sock_release+0xcd/0x280
+ sock_close+0x18/0x20
+ __fput+0x27c/0xa90
+ task_work_run+0xdd/0x1a0
+ exit_to_user_mode_prepare+0x23c/0x250
+ syscall_exit_to_user_mode+0x19/0x50
+ do_syscall_64+0x42/0x80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+Second to last potentially related work creation:
+ kasan_save_stack+0x1e/0x40
+ __kasan_record_aux_stack+0xbe/0xd0
+ call_rcu+0x99/0x740
+ netlink_release+0xe6a/0x1cf0
+ __sock_release+0xcd/0x280
+ sock_close+0x18/0x20
+ __fput+0x27c/0xa90
+ task_work_run+0xdd/0x1a0
+ exit_to_user_mode_prepare+0x23c/0x250
+ syscall_exit_to_user_mode+0x19/0x50
+ do_syscall_64+0x42/0x80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+Fixes: d0be8347c623 ("Bluetooth: L2CAP: Fix use-after-free caused by l2cap_chan_put")
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- net/bluetooth/l2cap_core.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ net/bluetooth/l2cap_core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index 1f34b82ca0ec..e0a00854c02e 100644
+index 2283871d3f01..9a32ce634919 100644
 --- a/net/bluetooth/l2cap_core.c
 +++ b/net/bluetooth/l2cap_core.c
-@@ -8426,9 +8426,8 @@ void l2cap_recv_acldata(struct hci_conn *hcon, struct sk_buff *skb, u16 flags)
- 		 * expected length.
- 		 */
- 		if (skb->len < L2CAP_LEN_SIZE) {
--			if (l2cap_recv_frag(conn, skb, conn->mtu) < 0)
--				goto drop;
--			return;
-+			l2cap_recv_frag(conn, skb, conn->mtu);
-+			goto drop;
- 		}
+@@ -7615,6 +7615,7 @@ static void l2cap_data_channel(struct l2cap_conn *conn, u16 cid,
+ 				return;
+ 			}
  
- 		len = get_unaligned_le16(skb->data) + L2CAP_HDR_SIZE;
-@@ -8472,7 +8471,7 @@ void l2cap_recv_acldata(struct hci_conn *hcon, struct sk_buff *skb, u16 flags)
- 
- 			/* Header still could not be read just continue */
- 			if (conn->rx_skb->len < L2CAP_LEN_SIZE)
--				return;
-+				goto drop;
- 		}
- 
- 		if (skb->len > conn->rx_len) {
++			l2cap_chan_hold(chan);
+ 			l2cap_chan_lock(chan);
+ 		} else {
+ 			BT_DBG("unknown cid 0x%4.4x", cid);
 -- 
-2.25.1
+2.17.1
 
