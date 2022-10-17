@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E190160175D
-	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 21:21:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80F4F601771
+	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 21:22:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231189AbiJQTVL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 15:21:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55702 "EHLO
+        id S230339AbiJQTVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 15:21:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230507AbiJQTU7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 15:20:59 -0400
+        with ESMTP id S230518AbiJQTVA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 15:21:00 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3B3F932BAC;
-        Mon, 17 Oct 2022 12:20:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 134FE12084;
+        Mon, 17 Oct 2022 12:20:55 -0700 (PDT)
 Received: by linux.microsoft.com (Postfix, from userid 1004)
-        id F188420FDA81; Mon, 17 Oct 2022 12:20:52 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com F188420FDA81
+        id 7961920FDA82; Mon, 17 Oct 2022 12:20:53 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7961920FDA82
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxonhyperv.com;
-        s=default; t=1666034452;
-        bh=xJ3JkF6Vcd6GI3PssrAc3ksaEXDp0/3rJi7rJ5ZNs8A=;
+        s=default; t=1666034453;
+        bh=VZLU6TkFNRW5iAmkrZyBMdtSidOZ/oflWZp0XwAvTYk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:Reply-To:From;
-        b=dgkb5TSKZSQBCQO6oVAN+Nd/V+VUPKDFgmUjbGbyqp1iopCvAiHi9V3Mtt2iUGd/n
-         5diZh2lQtI9Y/XSqUtSqD027LwxN8IKntp7ug3EkkFzuuuAOsiZ7MaOh/iuOOOYyrJ
-         LaUupCeTEymnfCGYV613kSPkIAnmUJQZCQ6g+CbY=
+        b=dqEngWQHk3K2tRF5V4hErqK7yuDvYK6SPoh2gGLk+h3FqGae2Y14E8OdzJnCc4ppW
+         /7oIifBx6XZQa56wNq35kVA0Gja8006/o4EefRHCFINSPIBIQ/u2ybobVbBDhTcBCA
+         3IMOF7UVub9dRIMJFsFNNAWks7HEe2oNuHskH0q4=
 From:   longli@linuxonhyperv.com
 To:     "K. Y. Srinivasan" <kys@microsoft.com>,
         Haiyang Zhang <haiyangz@microsoft.com>,
@@ -38,9 +38,9 @@ To:     "K. Y. Srinivasan" <kys@microsoft.com>,
 Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
         Long Li <longli@microsoft.com>
-Subject: [Patch v7 04/12] net: mana: Set the DMA device max segment size
-Date:   Mon, 17 Oct 2022 12:20:33 -0700
-Message-Id: <1666034441-15424-5-git-send-email-longli@linuxonhyperv.com>
+Subject: [Patch v7 05/12] net: mana: Export Work Queue functions for use by RDMA driver
+Date:   Mon, 17 Oct 2022 12:20:34 -0700
+Message-Id: <1666034441-15424-6-git-send-email-longli@linuxonhyperv.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1666034441-15424-1-git-send-email-longli@linuxonhyperv.com>
 References: <1666034441-15424-1-git-send-email-longli@linuxonhyperv.com>
@@ -55,39 +55,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ajay Sharma <sharmaajay@microsoft.com>
+From: Long Li <longli@microsoft.com>
 
-MANA hardware doesn't have any restrictions on the DMA segment size, set it
-to the max allowed value.
+RDMA device may need to create Ethernet device queues for use by Queue
+Pair type RAW. This allows a user-mode context accesses Ethernet hardware
+queues. Export the supporting functions for use by the RDMA driver.
 
-Signed-off-by: Ajay Sharma <sharmaajay@microsoft.com>
 Reviewed-by: Dexuan Cui <decui@microsoft.com>
 Signed-off-by: Long Li <longli@microsoft.com>
 Acked-by: Haiyang Zhang <haiyangz@microsoft.com>
 ---
 Change log:
-v2: Use the max allowed value as the hardware doesn't have any limit
+v3: format/coding style changes
+v5: remove unused defintions, use EXPORT_SYMBOL_NS, rearrange some defintions to a later patch in the series
 
- drivers/net/ethernet/microsoft/mana/gdma_main.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/ethernet/microsoft/mana/gdma_main.c |  1 +
+ drivers/net/ethernet/microsoft/mana/mana.h      |  9 +++++++++
+ drivers/net/ethernet/microsoft/mana/mana_en.c   | 16 +++++++++-------
+ 3 files changed, 19 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/ethernet/microsoft/mana/gdma_main.c b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-index 0cfe5f15458e..4f041b27c07d 100644
+index 4f041b27c07d..aab22911f20d 100644
 --- a/drivers/net/ethernet/microsoft/mana/gdma_main.c
 +++ b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-@@ -1363,6 +1363,12 @@ static int mana_gd_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	if (err)
- 		goto release_region;
+@@ -152,6 +152,7 @@ int mana_gd_send_request(struct gdma_context *gc, u32 req_len, const void *req,
  
-+	err = dma_set_max_seg_size(&pdev->dev, UINT_MAX);
-+	if (err) {
-+		dev_err(&pdev->dev, "Failed to set dma device segment size\n");
-+		goto release_region;
-+	}
+ 	return mana_hwc_send_request(hwc, req_len, req, resp_len, resp);
+ }
++EXPORT_SYMBOL_NS(mana_gd_send_request, NET_MANA);
+ 
+ int mana_gd_alloc_memory(struct gdma_context *gc, unsigned int length,
+ 			 struct gdma_mem_info *gmi)
+diff --git a/drivers/net/ethernet/microsoft/mana/mana.h b/drivers/net/ethernet/microsoft/mana/mana.h
+index 2883a08dbfb5..6e9e86fb4c02 100644
+--- a/drivers/net/ethernet/microsoft/mana/mana.h
++++ b/drivers/net/ethernet/microsoft/mana/mana.h
+@@ -635,6 +635,15 @@ struct mana_tx_package {
+ 	struct gdma_posted_wqe_info wqe_info;
+ };
+ 
++int mana_create_wq_obj(struct mana_port_context *apc,
++		       mana_handle_t vport,
++		       u32 wq_type, struct mana_obj_spec *wq_spec,
++		       struct mana_obj_spec *cq_spec,
++		       mana_handle_t *wq_obj);
 +
- 	err = -ENOMEM;
- 	gc = vzalloc(sizeof(*gc));
- 	if (!gc)
++void mana_destroy_wq_obj(struct mana_port_context *apc, u32 wq_type,
++			 mana_handle_t wq_obj);
++
+ int mana_cfg_vport(struct mana_port_context *apc, u32 protection_dom_id,
+ 		   u32 doorbell_pg_id);
+ void mana_uncfg_vport(struct mana_port_context *apc);
+diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
+index efe14a343fd1..6ad4bc8cbc99 100644
+--- a/drivers/net/ethernet/microsoft/mana/mana_en.c
++++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
+@@ -792,11 +792,11 @@ static int mana_cfg_vport_steering(struct mana_port_context *apc,
+ 	return err;
+ }
+ 
+-static int mana_create_wq_obj(struct mana_port_context *apc,
+-			      mana_handle_t vport,
+-			      u32 wq_type, struct mana_obj_spec *wq_spec,
+-			      struct mana_obj_spec *cq_spec,
+-			      mana_handle_t *wq_obj)
++int mana_create_wq_obj(struct mana_port_context *apc,
++		       mana_handle_t vport,
++		       u32 wq_type, struct mana_obj_spec *wq_spec,
++		       struct mana_obj_spec *cq_spec,
++		       mana_handle_t *wq_obj)
+ {
+ 	struct mana_create_wqobj_resp resp = {};
+ 	struct mana_create_wqobj_req req = {};
+@@ -845,9 +845,10 @@ static int mana_create_wq_obj(struct mana_port_context *apc,
+ out:
+ 	return err;
+ }
++EXPORT_SYMBOL_NS(mana_create_wq_obj, NET_MANA);
+ 
+-static void mana_destroy_wq_obj(struct mana_port_context *apc, u32 wq_type,
+-				mana_handle_t wq_obj)
++void mana_destroy_wq_obj(struct mana_port_context *apc, u32 wq_type,
++			 mana_handle_t wq_obj)
+ {
+ 	struct mana_destroy_wqobj_resp resp = {};
+ 	struct mana_destroy_wqobj_req req = {};
+@@ -872,6 +873,7 @@ static void mana_destroy_wq_obj(struct mana_port_context *apc, u32 wq_type,
+ 		netdev_err(ndev, "Failed to destroy WQ object: %d, 0x%x\n", err,
+ 			   resp.hdr.status);
+ }
++EXPORT_SYMBOL_NS(mana_destroy_wq_obj, NET_MANA);
+ 
+ static void mana_destroy_eq(struct mana_context *ac)
+ {
 -- 
 2.17.1
 
