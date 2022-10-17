@@ -2,202 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32EC66012C9
-	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 17:32:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FF3F6012CD
+	for <lists+netdev@lfdr.de>; Mon, 17 Oct 2022 17:35:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230228AbiJQPch (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 11:32:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33760 "EHLO
+        id S229817AbiJQPfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 11:35:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229799AbiJQPcg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 11:32:36 -0400
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C3F12753
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 08:32:34 -0700 (PDT)
-Received: by mail-qv1-xf32.google.com with SMTP id o67so7596600qvo.13
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 08:32:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=DlhvucNsh6lQT97rBrPoKSr6IXxVRQV41qr8MDssIYE=;
-        b=EDom+IoiFDuJbrTIuwrT+vuKLbE7XaHjABuPUcfwKE6RW86oI8UyKYP2vdgjS3YvYU
-         fiSl22UKVMTbJiHFKGeW/yxojAXiBAPSeb1xAw/WbLZxy1aYEloRv//uWs76IQ/I5Xlt
-         LAP9gBO+0JpqIyOXe1dDneDmx1FbTRaB2G+YQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=DlhvucNsh6lQT97rBrPoKSr6IXxVRQV41qr8MDssIYE=;
-        b=MbQ14kv2JTkuQf7+PlgIkSZlOkaCvt5DpAJnAgbAU3SmLoSTgOOdTZBPPnqe9qhrz5
-         Xf4lKa3qf8eA4YRstpGDy/0cV66dDa249QrzllcB7sOnR64GsW6yaB74yIKg3PMZVXzH
-         w5wnPgzwpvUgzFcZnPLvQWwUFBhYE011L5l+VW9lxtRYjkwooShZz4qcKaG5W+GvRlWM
-         5LoJITKig01h+JfTpvp6seABk27ZukiqsbxEGkeNGV0qhX+GeEvi3RCW3YwByyyGPLBd
-         7T9Pfab7E9QMKJyQsPD99DTsCjUEiwNz/VxgMsUAaUw865u23uhWqcW8dxryQ2ObTJUa
-         CbtQ==
-X-Gm-Message-State: ACrzQf327DuaTlWLPHKJszlsVhaJXkOHTMRoTRywmX71gPwBcQs0UWyR
-        ZnKUr3hcgbXBkT1WBwhwO3bmPaFe7N6cHCOI
-X-Google-Smtp-Source: AMsMyM7BtuZDHRWLZJ21rHzzkku4D7OVQqV7OfZhuEXtl9JDOCB3I+yB2KflX6bQs+YS3xjetVYnVw==
-X-Received: by 2002:a05:6214:2306:b0:473:f77a:85a7 with SMTP id gc6-20020a056214230600b00473f77a85a7mr8711588qvb.106.1666020753313;
-        Mon, 17 Oct 2022 08:32:33 -0700 (PDT)
-Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id m10-20020ac8444a000000b0039b03ac2f72sm42321qtn.46.2022.10.17.08.32.29
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 17 Oct 2022 08:32:30 -0700 (PDT)
-From:   Michael Chan <michael.chan@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, gospo@broadcom.com, vikas.gupta@broadcom.com
-Subject: [PATCH net] bnxt_en: fix memory leak in bnxt_nvm_test()
-Date:   Mon, 17 Oct 2022 11:32:22 -0400
-Message-Id: <1666020742-25834-1-git-send-email-michael.chan@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000038b3a505eb3caff1"
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        MIME_HEADER_CTYPE_ONLY,MIME_NO_TEXT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_NONE,T_TVD_MIME_NO_HEADERS autolearn=no autolearn_force=no
-        version=3.4.6
+        with ESMTP id S229725AbiJQPfB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 11:35:01 -0400
+Received: from EUR02-VE1-obe.outbound.protection.outlook.com (mail-eopbgr20089.outbound.protection.outlook.com [40.107.2.89])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018D9186E6;
+        Mon, 17 Oct 2022 08:34:59 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JEkwd2MtIBl5rCbDYslmhyWX0+8qbYyBKcfNqC1fVxrAdHDoqk+7x65IUOSAjfzl6TOoNHa8PAaEttRG5+h4c57vmxING4r3N2BHWdX55/LYAe0vA1T49h7/ShipEPrabhg7/9nmONKLtbbslPE1rjJEbZUkIA+mkxxLGTesAoHtgcbgiwn53OyZbeA2GvzmPu9UH1LNABJTRy76lbAwiBpuEJKPLxzktUmlLvV1+miaUNsyuOssTMHT5rvS8igM7wJRvAFr15lmtNJuQK8e3x4QGh8EEzdUYaYGiEo2+KallKyg0YDf4zMk3I3hQnFKmebVsbQfIQKhYvUl6Rg+6g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=oB+kx1OPzZxKIQwwkg6hIkYyhMPiN1IpgiZB16yNWbo=;
+ b=C9oaNaXiKpHKHPRej13PEmc13KIMfDKY91pQvnbD9kIhg/wTHh4GEZOlxjJqyoI0dvBTI61m8xUN+CLXDLZbq9J/ZmvzGqZvddAUn76XtzXMFHvTnsabpGM5m/BA185ztvWRsXS4d+nCMxRGyLk6Rk138Tuv7xzbt1BR5AbWIXv+r44r18OlsGsOSh2KfEVqNZGEj4l8UCpYoIDEacm69qZM48gVGWLnfjxlsBfPDcgEssnwe/NRoQeY9Hbd/hFdwOIYRqzvb2LNStyU34vYcmPlxeMnqdK1qJLnHqYFj7ldAUGYxZU0DNtGoJ4HhdA8rFyEFFX3AG7IlKLe/5Ck/w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oB+kx1OPzZxKIQwwkg6hIkYyhMPiN1IpgiZB16yNWbo=;
+ b=AZltl162BmBJAgqkkw8HdsTqDnwBjvQpEa6dSPWCecFqRK2QALpQxXMjLX71rhtW9UOGpuSRrOKU6aBhDCT3s9s4/UPlkJag/Bz48+XdXZKTx84FaUysJ1hG6kzteS5mpGJgBYs2Uox53BPL2NvVp1NBHjiTtymSGJeWD5rV3bi/RVCzZp/87XtnTbdXxkHUO+aQ0UGen/owKz/NgJYQPu+BP0uMR/tfw1O9zDvMk7u16Di5b/tgJq1iimloRbZWC/fm0DrNTS7xtPt+ooMBHu65udGbqa0jDc+EkfQaCn7TxyIBw+PvLryryAjBYlNKQqJvHBBgM1hRlH6h1+BiKw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
+ by PAXPR03MB7999.eurprd03.prod.outlook.com (2603:10a6:102:21e::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.28; Mon, 17 Oct
+ 2022 15:34:56 +0000
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::204a:de22:b651:f86d]) by DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::204a:de22:b651:f86d%6]) with mapi id 15.20.5723.033; Mon, 17 Oct 2022
+ 15:34:55 +0000
+Subject: Re: [PATCH net-next v5 05/14] net: fman: Map the base address once
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Camelia Groza <camelia.groza@nxp.com>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org
+References: <20220902215737.981341-1-sean.anderson@seco.com>
+ <20220902215737.981341-6-sean.anderson@seco.com>
+ <CAMuHMdWqTtjuOvDo9qxgDVpm+RBGm7BEgpdqVRH1n_dLGoYLTA@mail.gmail.com>
+From:   Sean Anderson <sean.anderson@seco.com>
+Message-ID: <086a6f02-4495-510e-9fc5-64f95e7d55f6@seco.com>
+Date:   Mon, 17 Oct 2022 11:34:47 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <CAMuHMdWqTtjuOvDo9qxgDVpm+RBGm7BEgpdqVRH1n_dLGoYLTA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BL0PR02CA0076.namprd02.prod.outlook.com
+ (2603:10b6:208:51::17) To DB7PR03MB4972.eurprd03.prod.outlook.com
+ (2603:10a6:10:7d::22)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DB7PR03MB4972:EE_|PAXPR03MB7999:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1cfb7a7a-d584-4d51-3eaa-08dab0552457
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: urh6ONtA/A8UeFSCZ02DNrzPC8GN3lvHwfLPvgoup9JQ3/ID0Plhpd++JCwIgyEfnjIzk4X+v5GUN4wd/4d0bEVV12UwBVnP3KAcMqe213d/g1TtrJLjXDA6nim5FiR1ehGV03UIRVq+fF/jbufXFDpZwsmUhNGwzQ6IwCQywVn+rNyF41Ba7HYxB2gWuRkPOerT8IqnF3EWgSqEeEoo9bN6qMlNwrv7FNNwb7oleCibE9sBO+gmZ3anzokHAb/uZqbmNzkCDUnZsbSPsYcClcv9WaRgZZW8GRxCUR5vvjRfd0yFZFIM9Mu1w95uqzofvziTBZCrULmsLrZyKr9gHrirSkNXFAJfZM6ijZ2Dfi8bKgIyfAjp8swtFtdsOsOkV3HSXm4FbBwML5Nj+FK42sRatNxDNRyOnYnkdkoAEhRVRXSUA9WJuMI24TUWSTreMxmr4Bh2wXaQv2O80kA8QzD0Ui0aiZmzZjf2Lgv9ZhCjXCj/1uKN8JW4i0JXNpOhtbqY56xjIQnmoW7FCyGKMGl4pg1C3nUVGLpslFbYUCNrBTqVpaVpmy9M/WVJI8ur7Z/PR0xaFGfC2HsXYSY2pwvh9KgierEi0rs9eq5jgNHzW4AplWbUxlovHiczfCrPEf4WW6JQAn4a+0BjiBTG8sl2ActwayTHaZo7bu2QOlt/ana/WYkm9Y/qtS3UiYXnmVCU3yfCpwqpehezyNOlIKexSEYQ8Zjh+m4pyJXRb7A0VM0lQPozHIZQ5P/tDTJ3jfgFVcY+2Bdo7BzZZ4ZpVkYwB+lGUu8K6KeuFOeejYE0JB72OUX13OuKkawCw13rHpVMRJO37k1xR7dqieEivQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(376002)(39850400004)(346002)(136003)(366004)(451199015)(36756003)(31686004)(53546011)(86362001)(31696002)(7416002)(38100700002)(5660300002)(44832011)(2906002)(38350700002)(2616005)(186003)(83380400001)(52116002)(6506007)(316002)(478600001)(26005)(6512007)(6486002)(54906003)(6916009)(66946007)(66476007)(66556008)(41300700001)(4326008)(8936002)(6666004)(8676002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UlRhUnY1MDlPSkpyTUlEaW1mTjM5ZWkxMm9JTzhqTGJVNllPVFdRZGVKVTh1?=
+ =?utf-8?B?b0h1Tk1Vd29lVVRQRWozeHpPYlJBYW5KWkxPREJrUURjc0FDdDNWZXBlaU1R?=
+ =?utf-8?B?UTlpQ2hETmlpcFNodDNncjM0Wm5mTEd5Z0VOZnh5SWxDQ2RXeW9IUnJzREZ5?=
+ =?utf-8?B?cEhXbEJNTTgrTnFEbE15YWl5RzNkMnh5NVA1OFVMUkVkYXlwN0MyZjZRVTZM?=
+ =?utf-8?B?RDRUNldiMmhENWx0Zkl2dHVpTVM4N01VWXFIMmlZMFVnRStmU0FmekdmTVcz?=
+ =?utf-8?B?RGxhMDZXZDNGQzNaTEE3b0NOWWh3K1FidUpHRVBUMTRXN1VUcjZpL2FFaUZj?=
+ =?utf-8?B?MHBtQzhBVkRRZ09DdUdpMFpQSVhHMFlkRUJIbkNyM0ZtTG9zOHJsWW84TE03?=
+ =?utf-8?B?UEtLbXgxWVFnOThtb25sVUFiMWdSYzgrVCtVVEwyNXNLai93TnQ4TzAraFVh?=
+ =?utf-8?B?a005cHlKUjZNWDg1ekY0ZGhSZFV6NnM2TTVaVks0cnVBby81c3hBTGdDZVIr?=
+ =?utf-8?B?NEMxZXpYYTI3Q1diWFIzNjNVM2cvaXhyNVJCanI4YXowM0hLT0J4RTlYa0o0?=
+ =?utf-8?B?MkZmL005bTVMcnhIUlJMTHFMM0JUVm5DRHV1Szc1eVE5K1pkdTRidHp4TWxu?=
+ =?utf-8?B?eXlMQmxVaTBzN2Q4RDlqdzhsYnpxaHIxalBLdnZjUnB2V0FzTXFCeTBlV3Bm?=
+ =?utf-8?B?YVFhV3FHbVNIUmZYZkoxbzUxN0VEbHVGRWNXa1RiR1BtdWVTV1JmbzBNT0pS?=
+ =?utf-8?B?VW50TldiMURNU0haTHN6ODJzRGV3T3pmdFJYeXpHeDU5aUJmeEE0QytwamVL?=
+ =?utf-8?B?N3E1NWQ0MXVDNTByTmNQeCthUC9QMnhTeGl0S1RGN296czFjVE02R0t4TXBP?=
+ =?utf-8?B?VTNWKzZHa05Hd3MrN1dkZkd1a0dRTzVJYUpYRWpjaGJFeXB3WnFPaW13dHBu?=
+ =?utf-8?B?WGh4QkJRYkl6YTFwOGN0K0JrOWFiMEs0dWVacDJoaG5nUVoxOWkxOWc3MzIw?=
+ =?utf-8?B?bGpNL0RhNXM2dmVWYnJBMHRUNHBGTFg4emJzSWp2YTFOZHBBRTBKYldnTjdx?=
+ =?utf-8?B?OFY2SHM2YzgxR29LaXdVbTR6UEdhOVcreUhybkV0VWgwalU1Sm1yVklvVVVs?=
+ =?utf-8?B?MVlPNFV0RXl5b2JjcWprVisxYkVRRTl6cDRkckFJdjl2LzhBN0dZOVJMWkVk?=
+ =?utf-8?B?cWRDOXY2dmZCS09aUWZEQ0lITVJlOE91a2xKOGsrZnZIUThxeG9VbWd6MHFy?=
+ =?utf-8?B?VmRnaXJDRHRZTFVPOTIwRlRUREI3ZitxaitUb0xYR0t0NDliK0hCYW16YnND?=
+ =?utf-8?B?enFRT0lTY2JGbDJkTEdJc2RsUE9xTEIrbS9uVjB2N3k5Q2VEL0E5N2VFNjdI?=
+ =?utf-8?B?R0o3OFJ6K2F2TmVueFgwK2Ryd2FocTdYWXhhL2k0YnVsNjZiUDF1d3o1KzNx?=
+ =?utf-8?B?dHV0MlB5WXJrYU1CbW9IOXBRVCtJMU9rdWVubFBXMDRsRkgwbk9OeHdTdkk3?=
+ =?utf-8?B?RVVMSTFwTHFFOGh0dGNIa2ordWgvMmgwUDlESnNCOFdHTHgvT083NVZnZ3g3?=
+ =?utf-8?B?VTJndmhyNmUrZ2pUb1JXclJjbnJmNndOcTJuMUw1a0RwcUFObmdBRFNHQTlh?=
+ =?utf-8?B?clBKUTd0ZXNGWUZIRzkyZE5vQmY4MVpoWXBJbDlYTmJyakdIUjZpbWxub3k3?=
+ =?utf-8?B?dXhkN2s0MlFYbFVFbTdUU21aL29uSVoydVpIVXVua0FOamlNNXJLaVBORzh2?=
+ =?utf-8?B?Um43NXhIbTllOEpxV2FZMmI4bWl2V2VDbThFaFlGRGlYZVdyNjBTYnNEcHZB?=
+ =?utf-8?B?VTk4ZkxKRE4yY0ZHQ2FiNlZVUDU4WW5SWTZWd0ZGYXNzZm1NdUJtYzE2c3dJ?=
+ =?utf-8?B?VUdiM2pLUDdLemJTWTErMnJWWlBmK01vdUU0bDlBbEhkdldPYzlFOW5NN0do?=
+ =?utf-8?B?SVhBVkt5ZnZEVFpnckFScHRxZ3FPck9nc2hoT3JFemw5cysrQU1SeUdNcGV4?=
+ =?utf-8?B?akVqRmQ2bk1KRk0zTi9xL0xGc0dIZkVPOGdDL1FkNlRGcHFWNjJKeVVOSG9h?=
+ =?utf-8?B?OUJnbGhwQUFnQ21yRE80TVE0Rkg5eG14QXRNK2tpVi9QZDJRSUJOK1ZpbndO?=
+ =?utf-8?B?OU12aFVCa2lsZjdXZ0xiNlFrR09PbDBOMkJid2JEWEpnT2hxVnJkNjZ3UXVt?=
+ =?utf-8?B?dFE9PQ==?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1cfb7a7a-d584-4d51-3eaa-08dab0552457
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Oct 2022 15:34:55.8033
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: YuAarAyGJBiA/jVd9UarW9m6/GMrAV6/GMVotVQaF7xBwYUFkqpRsXMpvDz6lWthc5H3rZ9aPvFTdf9KPRdxPg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR03MB7999
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000038b3a505eb3caff1
-
-From: Vikas Gupta <vikas.gupta@broadcom.com>
-
-Free the kzalloc'ed buffer before returning in the success path.
-
-Fixes: 5b6ff128fdf6 ("bnxt_en: implement callbacks for devlink selftests")
-Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index a36803e79e92..8a6f788f6294 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -613,6 +613,7 @@ static int bnxt_dl_reload_up(struct devlink *dl, enum devlink_reload_action acti
- 
- static bool bnxt_nvm_test(struct bnxt *bp, struct netlink_ext_ack *extack)
- {
-+	bool rc = false;
- 	u32 datalen;
- 	u16 index;
- 	u8 *buf;
-@@ -632,20 +633,20 @@ static bool bnxt_nvm_test(struct bnxt *bp, struct netlink_ext_ack *extack)
- 
- 	if (bnxt_get_nvram_item(bp->dev, index, 0, datalen, buf)) {
- 		NL_SET_ERR_MSG_MOD(extack, "nvm test vpd read error");
--		goto err;
-+		goto done;
- 	}
- 
- 	if (bnxt_flash_nvram(bp->dev, BNX_DIR_TYPE_VPD, BNX_DIR_ORDINAL_FIRST,
- 			     BNX_DIR_EXT_NONE, 0, 0, buf, datalen)) {
- 		NL_SET_ERR_MSG_MOD(extack, "nvm test vpd write error");
--		goto err;
-+		goto done;
- 	}
- 
--	return true;
-+	rc = true;
- 
--err:
-+done:
- 	kfree(buf);
--	return false;
-+	return rc;
- }
- 
- static bool bnxt_dl_selftest_check(struct devlink *dl, unsigned int id,
--- 
-2.18.1
 
 
---00000000000038b3a505eb3caff1
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+On 10/17/22 11:15 AM, Geert Uytterhoeven wrote:
+> Hi Sean,
+> 
+> On Sat, Sep 3, 2022 at 12:00 AM Sean Anderson <sean.anderson@seco.com> wrote:
+>> We don't need to remap the base address from the resource twice (once in
+>> mac_probe() and again in set_fman_mac_params()). We still need the
+>> resource to get the end address, but we can use a single function call
+>> to get both at once.
+>>
+>> While we're at it, use platform_get_mem_or_io and devm_request_resource
+>> to map the resource. I think this is the more "correct" way to do things
+>> here, since we use the pdev resource, instead of creating a new one.
+>> It's still a bit tricky, since we need to ensure that the resource is a
+>> child of the fman region when it gets requested.
+>>
+>> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+>> Acked-by: Camelia Groza <camelia.groza@nxp.com>
+> 
+> Thanks for your patch, which is now commit 262f2b782e255b79
+> ("net: fman: Map the base address once") in v6.1-rc1.
+> 
+>> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth_sysfs.c
+>> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth_sysfs.c
+>> @@ -18,7 +18,7 @@ static ssize_t dpaa_eth_show_addr(struct device *dev,
+>>
+>>         if (mac_dev)
+>>                 return sprintf(buf, "%llx",
+>> -                               (unsigned long long)mac_dev->res->start);
+>> +                               (unsigned long long)mac_dev->vaddr);
+> 
+> On 32-bit:
+> 
+>     warning: cast from pointer to integer of different size
+> [-Wpointer-to-int-cast]
+> 
+> Obviously you should cast to "uintptr_t" or "unsigned long" instead,
+> and change the "%llx" to "%p" or "%lx"...
 
-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
-OnaLEot1MoQO7BIe5S9H4AcCEXXcrJJiAtMCl47ARpyHmvQFQFFTrHgUYEd9V+9bOzY7MBIGSV1N
-/JfsT1sZw6HT0lJkSQefhPGpBniAob62DJP3qr11tu8CAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
-BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
-HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQU31rAyTdZweIF0tJTFYwfOv2w
-L4QwDQYJKoZIhvcNAQELBQADggEBACcuyaGmk0NSZ7Kio7O7WSZ0j0f9xXcBnLbJvQXFYM7JI5uS
-kw5ozATEN5gfmNIe0AHzqwoYjAf3x8Dv2w7HgyrxWdpjTKQFv5jojxa3A5LVuM8mhPGZfR/L5jSk
-5xc3llsKqrWI4ov4JyW79p0E99gfPA6Waixoavxvv1CZBQ4Stu7N660kTu9sJrACf20E+hdKLoiU
-hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
-E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
-aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
-EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIB3KaZ0dZQw7MilCkW4b9vFDbhrhycxD
-nZ13d4MZv5/kMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTAx
-NzE1MzIzM1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBZBNx4U3bubqnSBtwsmvhfG5G1dXrn+tH1oHQscLwv9Pteu/1f
-wb4Cz2uvixyHnw7zh9GTO98z3PXJQ+AFeqHV0WZHqPAFXCzkcBmD9zXFPiDMe2Cctt4YeHetOiH6
-O8JgFmykmkEucNN9oWSy6hBwQ2w0daWQ5V7zKvJSYYVfZBWGmw0qjvcYEQpx+l9mhd1LDaPzTxsC
-QslZAaCTBD6NDqQO5nR9dGti6JXNpuN7AsEWvhC5m2Nu30Aw9k1js4mHYuwEUBRDtFBp751HRPaj
-HeT26xBLHbmYhrya20bbZzCx3Z7RqqJEhVGuaclMRa0qk0NaJS0/EdvLIScS4zgg
---00000000000038b3a505eb3caff1--
+Isn't there a %px for this purpose?
+
+> However, taking a closer look:
+>   1. The old code exposed a physical address to user space, the new
+>      code exposes the mapped virtual address.
+>      Is that change intentional?
+
+No, this is not intentional. So to make this backwards-compatible, I
+suppose I need a virt_to_phys?
+
+>   2. Virtual addresses are useless in user space.
+>      Moreover, addresses printed by "%p" are obfuscated, as this is
+>      considered a security issue. Likewise for working around this by
+>      casting to an integer.
+
+Yes, you're right that this probably shouldn't be exposed to userspace.
+
+> What's the real purpose of dpaa_eth_show_addr()?
+
+I have no idea. This is a question for Madalin.
+
+> Perhaps it should be removed?
+
+That would be reasonable IMO.
+
+--Sean
+
+>>         else
+>>                 return sprintf(buf, "none");
+>>  }
+> 
+> Gr{oetje,eeting}s,
+> 
+>                         Geert
+> 
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
+> 
