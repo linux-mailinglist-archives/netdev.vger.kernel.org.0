@@ -2,70 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE69C6029FB
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 13:14:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CF90602A30
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 13:32:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230099AbiJRLOL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 07:14:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33636 "EHLO
+        id S229605AbiJRLcQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 07:32:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230153AbiJRLN4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 07:13:56 -0400
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 710CFB7F44
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 04:13:43 -0700 (PDT)
-Received: by mail-io1-xd30.google.com with SMTP id h203so11423160iof.1
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 04:13:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=1sNQaxslGRn7j8mwW/A3EBiiklgGPtuls0wdm4aJVrA=;
-        b=W+6yt1fFaD3+1XA3/UuZ+PfzTKo94QiOuA8zOOD1qlPjpmYVOizwm4vd9q96lKI7LQ
-         N7MSAQCF1Zn/zzfxc6JXDlk8e4sfb5Y0r1N0SzofyYxkaWmk9TgKhZmuVLwZ0M9EE159
-         zOFIuZe2ipIazEUgushgwZHlEIg44snt7EaYLuxc5WPDt2wf7QLTLkxks+eS1pNYrlYL
-         saC2+HySOIiYT7w8F52XECfCsPPr/O+1zXpu7cbCjMinku1MKysOI1OlNobh0Hx5TjQm
-         6BUrZEPqK5MhzoSj1xAAhpOBlXtZRl9oGUekv+7nNBMnnXxFMUQTfh8nTC0gVLtJWA8Q
-         c0Zw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=1sNQaxslGRn7j8mwW/A3EBiiklgGPtuls0wdm4aJVrA=;
-        b=OM1ull0/wsoLDkUahKANCptN1tAhyZ4wwLg8QiZVOFiU/qfWYM3iLvQUlm8VXVw0Ux
-         4A7dibAtaM6cHCb+ubaRLgZDI/JJSvSiWul4p/s3ShpMmE20cRmcDdeJTPtEuRnvp/dm
-         tcY3tRYTzKO6hEGbgLth1sibrZhbrroTq0f6bl856u12Zy201PPEmUV9jSJ/oQAHQ9Vb
-         dYBrZJyFii1Qj9Z5JshEdAul1riLqdLE1zXINav7bruhAJ7au9Fmf1552CKtmuIaTlnw
-         AC4ggPnhOpLLjpPWCXofujopfGPQJHPoWWfI0jKFvBZ7vy9E6uyqEhFOx+ujwf9E2hK7
-         Xd2A==
-X-Gm-Message-State: ACrzQf1piJZ8pzBrkU7Z5irf4LX616OP9JgVou6q6BT857/PwTY6A1hk
-        4pjiTMwOH+2/2hF7emd67vv1wXReDiM90ze2f8bwUqxWsYfFyl2Qf1w=
-X-Google-Smtp-Source: AMsMyM6HBcMbxCd0s0Pzi4EuMCpCgjyFMVqNDam0O70s55m06g0m3O3S8PUMudLUiYuyOf8sTVe+mYgQpWjSq7qBfDc=
-X-Received: by 2002:a05:6638:4987:b0:363:c403:28ff with SMTP id
- cv7-20020a056638498700b00363c40328ffmr1419784jab.235.1666091622005; Tue, 18
- Oct 2022 04:13:42 -0700 (PDT)
+        with ESMTP id S229456AbiJRLcP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 07:32:15 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0FCA8CF4;
+        Tue, 18 Oct 2022 04:32:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1666092733; x=1697628733;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=IMnUlVlnLDpwEnQaBZc/eyje1E5fqjhxZrMDamIwqX4=;
+  b=1FWh7JszI7I2XKxHBDRlp9X2+oG4f/jut2jf/TgaXm4Kmcu+M4nXXCma
+   5NX5BEqKb3WKgF2p8DjonBvwm+8DBqIA39o+XatH6BLdEJn1rN56oqR7w
+   NONGSXZQVTwZqUsD4ZuhDtr7W7nPFfmDVHfn6w7uL7jtstFroelyw+z/X
+   /IMJ+r/7fju10O1FRvb9RhwTdfjXOrXNzS5jrHVAI/nG+okF7Br8gqwpj
+   xjLk4CW2F8WGffADaWPWFA56QSh5t1TGdrdTlRGqaZaWzQp8wnujJj52L
+   3UAIiKERoEkbguMv2PIfI5nvi9vY1cEJPhp1gx4oblC20H3OUe1xx158G
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.95,193,1661842800"; 
+   d="scan'208";a="185316420"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Oct 2022 04:32:12 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Tue, 18 Oct 2022 04:32:12 -0700
+Received: from den-dk-m31857.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Tue, 18 Oct 2022 04:32:10 -0700
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Steen Hegelund <steen.hegelund@microchip.com>,
+        <UNGLinuxDriver@microchip.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "Casper Andersson" <casper.casan@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        "Nathan Huckleberry" <nhuck@google.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [PATCH net-next 0/9] Add support for Sparx5 IS2 VCAP
+Date:   Tue, 18 Oct 2022 13:31:47 +0200
+Message-ID: <20221018113156.2364533-1-steen.hegelund@microchip.com>
+X-Mailer: git-send-email 2.38.0
 MIME-Version: 1.0
-References: <20221003095725.978129-1-m.chetan.kumar@linux.intel.com>
- <CAHNKnsT9EpOCd2Rj=5dQO5a2JrsHuyZQUG9apbrxHTehe37yug@mail.gmail.com>
- <192037d6-3b4d-d059-283b-3fa5094d5465@linux.intel.com> <CAHNKnsSvQNwjttQQPjKJ5aEtm6rfddrjKjd1TafcoyH1L51m-w@mail.gmail.com>
- <eb68e77a-518e-3b3d-4c63-2a06390cce43@linux.intel.com>
-In-Reply-To: <eb68e77a-518e-3b3d-4c63-2a06390cce43@linux.intel.com>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Tue, 18 Oct 2022 15:13:40 +0400
-Message-ID: <CAHNKnsSkXJZMqA2sw5wu3Z7H659ue0qFfS90kbBA-Nra2NLcBA@mail.gmail.com>
-Subject: Re: [PATCH V3 net-next] net: wwan: t7xx: Add port for modem logging
-To:     "Kumar, M Chetan" <m.chetan.kumar@linux.intel.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        johannes@sipsolutions.net, loic.poulain@linaro.org,
-        krishna.c.sudi@intel.com, linuxwwan@intel.com,
-        Moises Veleta <moises.veleta@linux.intel.com>,
-        Devegowda Chandrashekar <chandrashekar.devegowda@intel.com>,
-        Ricardo Martinez <ricardo.martinez@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,145 +69,209 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 18, 2022 at 8:29 AM Kumar, M Chetan
-<m.chetan.kumar@linux.intel.com> wrote:
-> On 10/18/2022 5:29 AM, Sergey Ryazanov wrote:
->> On Mon, Oct 17, 2022 at 1:16 PM Kumar, M Chetan wrote:
->>> On 10/16/2022 9:35 PM, Sergey Ryazanov wrote:
->>>>>> On Mon, Oct 3, 2022 at 8:29 AM <m.chetan.kumar@linux.intel.com> wrote:
->>>>>>> The Modem Logging (MDL) port provides an interface to collect modem
->>>>>>> logs for debugging purposes. MDL is supported by the relay interface,
->>>>>>> and the mtk_t7xx port infrastructure. MDL allows user-space apps to
->>>>>>> control logging via mbim command and to collect logs via the relay
->>>>>>> interface, while port infrastructure facilitates communication between
->>>>>>> the driver and the modem.
->>>>>>
->>>>>> [skip]
->>>>>>
->>>>>>> diff --git a/drivers/net/wwan/t7xx/t7xx_port.h b/drivers/net/wwan/t7xx/t7xx_port.h
->>>>>>> index dc4133eb433a..702e7aa2ef31 100644
->>>>>>> --- a/drivers/net/wwan/t7xx/t7xx_port.h
->>>>>>> +++ b/drivers/net/wwan/t7xx/t7xx_port.h
->>>>>>> @@ -122,6 +122,11 @@ struct t7xx_port {
->>>>>>>           int                             rx_length_th;
->>>>>>>           bool                            chan_enable;
->>>>>>>           struct task_struct              *thread;
->>>>>>> +#ifdef CONFIG_WWAN_DEBUGFS
->>>>>>> +         void                            *relaych;
->>>>>>> +         struct dentry                   *debugfs_dir;
->>>>>>> +         struct dentry                   *debugfs_wwan_dir;
->>>>>>
->>>>>> Both of these debugfs directories are device-wide, why did you place
->>>>>> these pointers in the item port context?
->>>
->>> I guess it was kept inside port so that it could be accessed directly
->>> from port context.
->>>
->>> Thanks for pointing it out. I think we should move out the complete
->>> #ifdef CONFIG_WWAN_DEBUGFS block of port container.
->>
->> Moving out debugfs directory pointers sounds like a good idea.
->> Introduction of any new debugfs knob will be a much easier if these
->> pointers are available in some device-wide state container. But the
->> relaych pointer looks like a logging port specific element. Why should
->> it be moved out?
->
-> t7xx_port is a common port container. keeping relaych pointer inside
-> port container is like having relaych pointer for all port instance
-> (AT/MBIM) though it is not required for others. So planning to move out.
->
-> You suggest to keep it or move out ?
+This provides initial support for the Sparx5 VCAP functionality via the 'tc'
+traffic control userspace tool and its flower filter.
 
-The t7xx_port structure already has a WWAN port specific field - wwan_port.
+Overview:
+=========
 
-We can group such specific and otherwise useless fields into a union. Like this:
+The supported flower filter keys and actions are:
 
---- a/drivers/net/wwan/t7xx/t7xx_port.h
-+++ b/drivers/net/wwan/t7xx/t7xx_port.h
-@@ -99,7 +99,6 @@ struct t7xx_port_conf {
- struct t7xx_port {
-        /* Members not initialized in definition */
-        const struct t7xx_port_conf     *port_conf;
--       struct wwan_port                *wwan_port;
-        struct t7xx_pci_dev             *t7xx_dev;
-        struct device                   *dev;
-        u16                             seq_nums[2];    /* TX/RX
-sequence numbers */
-@@ -122,6 +121,10 @@ struct t7xx_port {
-        int                             rx_length_th;
-        bool                            chan_enable;
-        struct task_struct              *thread;
-+       union { /* Port type specific data */
-+               struct wwan_port        *wwan_port;
-+               struct rchan            *relaych;
-+       };
- };
+- source and destination MAC address keys
+- trap action
+- pass action
 
-Or even like this:
+The supported Sparx5 VCAPs are: IS2 (see below for more info)
 
---- a/drivers/net/wwan/t7xx/t7xx_port.h
-+++ b/drivers/net/wwan/t7xx/t7xx_port.h
-@@ -99,7 +99,6 @@ struct t7xx_port_conf {
- struct t7xx_port {
-        /* Members not initialized in definition */
-        const struct t7xx_port_conf     *port_conf;
--       struct wwan_port                *wwan_port;
-        struct t7xx_pci_dev             *t7xx_dev;
-        struct device                   *dev;
-        u16                             seq_nums[2];    /* TX/RX
-sequence numbers */
-@@ -122,6 +121,14 @@ struct t7xx_port {
-        int                             rx_length_th;
-        bool                            chan_enable;
-        struct task_struct              *thread;
-+       union { /* Port type specific data */
-+               struct {
-+                       struct wwan_port        *wwan_port;
-+               } wwan;
-+               struct {
-+                       struct rchan            *relaych;
-+               } log;
-+       };
- };
+The VCAP (Versatile Content-Aware Processor) feature is essentially a TCAM with
+rules consisting of:
 
-Or, if we want more isolation, we can define per port type structures
-and make the field in t7xx_port opaque:
+- Programmable key fields
+- Programmable action fields
+- A counter (which may be only one bit wide)
 
-@@ -99,7 +99,6 @@ struct t7xx_port_conf {
- struct t7xx_port {
-        /* Members not initialized in definition */
-        const struct t7xx_port_conf     *port_conf;
--       struct wwan_port                *wwan_port;
-        struct t7xx_pci_dev             *t7xx_dev;
-        struct device                   *dev;
-        u16                             seq_nums[2];    /* TX/RX
-sequence numbers */
-@@ -122,8 +121,23 @@ struct t7xx_port {
-        int                             rx_length_th;
-        bool                            chan_enable;
-        struct task_struct              *thread;
-+       char                            priv[0x10];     /* Port type
-private data */
- };
+Besides this each VCAP has:
 
-+#define t7xx_port_priv(__p)    ((void *)&((__p)->priv))
-+
-+struct t7xx_port_wwan {
-+       struct wwan_port                *wwan_port;
-+};
-+
-+BUILD_BUG_ON(sizeof(struct t7xx_port_wwan) > sizeof(port->priv));
-+
-+struct t7xx_port_log {
-+       struct rchan                    *relaych;
-+};
-+
-+BUILD_BUG_ON(sizeof(struct t7xx_port_log) > sizeof(port->priv));
+- A number of independent lookups
+- A keyset configuration typically per port per lookup
 
-I do not want to suggest any specific solution, it is always up to you
-how to develop your code. I just wanted to point out the unexpected
-pointers location and the possible difficulty of accessing the debugfs
-directory pointer in the future.
+VCAPs are used in many of the TSN features such as PSFP, PTP, FRER as well as
+the general shaping, policing and access control, so it is an important building
+block for these advanced features.
+
+Functionality:
+==============
+
+When a frame is passed to a VCAP the VCAP will generate a set of keys (keyset)
+based on the traffic type.  If there is a rule created with this keyset in the
+VCAP and the values of the keys matches the values in the keyset of the frame,
+the rule is said to match and the actions in the rule will be executed and the
+rule counter will be incremented.  No more rules will be examined in this VCAP
+lookup.
+
+If there is no match in the current lookup the frame will be matched against the
+next lookup (some VCAPs do the processing of the lookups in parallel).
+
+The Sparx5 SoC has 6 different VCAP types:
+
+- IS0: Ingress Stage 0 (AKA CLM) mostly handles classification
+- IS2: Ingress Stage 2 mostly handles access control
+- IP6PFX: IPv6 prefix: Provides tables for IPV6 address management
+- LPM: Longest Path Match for IP guarding and routing
+- ES0: Egress Stage 0 is mostly used for CPU copying and multicast handling
+- ES2: Egress Stage 2 is known as the rewriter and mostly updates tags
+
+
+Design:
+=======
+
+The VCAP implementation provides switchcore independent handling of rules
+and supports:
+
+- Creating and deleting rules
+- Updating and getting rules
+
+The platform specific API implementation as well as the platform specific model
+of the VCAP instances are attached to the VCAP API and a client can then
+access rules via the API in a platform independent way, with the
+limitations that each VCAP has in terms of is supported keys and actions.
+
+The VCAP model is generated from information delivered by the designers if the
+VCAP hardware.
+
+Here is an illustration of this:
+
+  +------------------+     +------------------+
+  | TC flower filter |     | PTP client       |
+  | for Sparx5       |     | for Sparx5       |
+  +-------------\----+     +---------/--------+
+                 \                  /
+                  \                /
+                   \              /
+                    \            /
+                     \          /
+                 +----v--------v----+
+                 |     VCAP API     |
+                 +---------|--------+
+                           |
+                           |
+                           |
+                           |
+                 +---------v--------+
+                 |   VCAP control   |
+                 |   instance       |
+                 +----/--------|----+
+                     /         |
+                    /          |
+                   /           |
+                  /            |
+  +--------------v---+    +----v-------------+
+  |   Sparx5 VCAP    |    | Sparx5 VCAP API  |
+  |   model          |    | Implementation   |
+  +------------------+    +---------|--------+
+                                    |
+                                    |
+                                    |
+                                    |
+                          +---------v--------+
+                          | Sparx5 VCAP HW   |
+                          +------------------+
+
+Delivery:
+=========
+
+For now only the IS2 is supported but later the IS0, ES0 and ES2 will be added.
+There are currently no plans to support the IP6PFX and the LPM VCAPs.
+
+The IS2 VCAP has 4 lookups and they are accessible with a TC chain id:
+
+- chain 8000000: IS2 Lookup 0
+- chain 8100000: IS2 Lookup 1
+- chain 8200000: IS2 Lookup 2
+- chain 8300000: IS2 Lookup 3
+
+These lookups are executed in parallel by the IS2 VCAP but the actions are
+executed in series (the datasheet explains what happens if actions overlap).
+
+The functionality of TC flower as well as TC matchall filters will be expanded
+in later submissions as well as the number of VCAPs supported.
+
+This is current plan:
+
+- add support for more TC flower filter keys and extend the Sparx5 port keyset
+  configuration
+- support for TC protocol all
+- debugfs support for inspecting rules
+- TC flower filter statistics
+- Sparx5 IS0 VCAP support and more TC keys and actions to support this
+- add TC policer and drop action support (depends on the Sparx5 QoS support
+  upstreamed separately)
+- Sparx5 ES0 VCAP support and more TC actions to support this
+- TC flower template support
+- TC matchall filter support for mirroring and policing ports
+- TC flower filter mirror action support
+- Sparx5 ES2 VCAP support
+
+
+The LAN966x switchcore will also be updated to use the VCAP API as well as
+future Microchip switches.
+The LAN966x has 3 VCAPS (IS1, IS2 and ES0) and a slightly different keyset and
+actionset portfolio than Sparx5.
+
+Steen Hegelund (9):
+  net: microchip: sparx5: Adding initial VCAP API support
+  net: microchip: sparx5: Adding IS2 VCAP model to VCAP API
+  net: microchip: sparx5: Adding IS2 VCAP register interface
+  net: microchip: sparx5: Adding initial tc flower support for VCAP API
+  net: microchip: sparx5: Adding port keyset config and callback
+    interface
+  net: microchip: sparx5: Adding basic rule management in VCAP API
+  net: microchip: sparx5: Writing rules to the IS2 VCAP
+  net: microchip: sparx5: Adding KUNIT test VCAP model
+  net: microchip: sparx5: Adding KUNIT test for the VCAP API
+
+ MAINTAINERS                                   |    1 +
+ drivers/net/ethernet/microchip/Kconfig        |    1 +
+ drivers/net/ethernet/microchip/Makefile       |    1 +
+ drivers/net/ethernet/microchip/sparx5/Kconfig |    1 +
+ .../net/ethernet/microchip/sparx5/Makefile    |    8 +-
+ .../ethernet/microchip/sparx5/sparx5_main.c   |    9 +
+ .../ethernet/microchip/sparx5/sparx5_main.h   |    6 +
+ .../microchip/sparx5/sparx5_main_regs.h       |  460 +-
+ .../net/ethernet/microchip/sparx5/sparx5_tc.c |   46 +
+ .../net/ethernet/microchip/sparx5/sparx5_tc.h |   14 +
+ .../microchip/sparx5/sparx5_tc_flower.c       |  256 +
+ .../microchip/sparx5/sparx5_vcap_ag_api.c     | 1351 ++++
+ .../microchip/sparx5/sparx5_vcap_ag_api.h     |   18 +
+ .../microchip/sparx5/sparx5_vcap_impl.c       |  527 ++
+ .../microchip/sparx5/sparx5_vcap_impl.h       |   20 +
+ drivers/net/ethernet/microchip/vcap/Kconfig   |   52 +
+ drivers/net/ethernet/microchip/vcap/Makefile  |    9 +
+ .../net/ethernet/microchip/vcap/vcap_ag_api.h |  326 +
+ .../microchip/vcap/vcap_ag_api_kunit.h        |  642 ++
+ .../net/ethernet/microchip/vcap/vcap_api.c    | 1142 ++++
+ .../net/ethernet/microchip/vcap/vcap_api.h    |  272 +
+ .../ethernet/microchip/vcap/vcap_api_client.h |  195 +
+ .../ethernet/microchip/vcap/vcap_api_kunit.c  |  933 +++
+ .../microchip/vcap/vcap_model_kunit.c         | 5509 +++++++++++++++++
+ .../microchip/vcap/vcap_model_kunit.h         |   10 +
+ 25 files changed, 11805 insertions(+), 4 deletions(-)
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.c
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.h
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.h
+ create mode 100644 drivers/net/ethernet/microchip/vcap/Kconfig
+ create mode 100644 drivers/net/ethernet/microchip/vcap/Makefile
+ create mode 100644 drivers/net/ethernet/microchip/vcap/vcap_ag_api.h
+ create mode 100644 drivers/net/ethernet/microchip/vcap/vcap_ag_api_kunit.h
+ create mode 100644 drivers/net/ethernet/microchip/vcap/vcap_api.c
+ create mode 100644 drivers/net/ethernet/microchip/vcap/vcap_api.h
+ create mode 100644 drivers/net/ethernet/microchip/vcap/vcap_api_client.h
+ create mode 100644 drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
+ create mode 100644 drivers/net/ethernet/microchip/vcap/vcap_model_kunit.c
+ create mode 100644 drivers/net/ethernet/microchip/vcap/vcap_model_kunit.h
 
 -- 
-Sergey
+2.38.0
+
