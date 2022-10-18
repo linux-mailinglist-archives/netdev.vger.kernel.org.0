@@ -2,147 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 419F1602E0D
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 16:13:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 421F8602E20
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 16:17:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229926AbiJRONl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 10:13:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33458 "EHLO
+        id S230258AbiJROQ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 10:16:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229660AbiJRONj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 10:13:39 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAD781E708;
-        Tue, 18 Oct 2022 07:13:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666102417; x=1697638417;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=94bOPuLfvb++UsTwZ2og0iogtTMZkU8RTP6q7KeUdqA=;
-  b=ZHeMV3GbYxmapXRl3k0sOtgmMzN54mG2I9b9Ta2QJIbu/LjAolKysjrz
-   KcBkOZo7fI4Df0qVfYB/DV8RfCQx1fllVadYMzU4Lstx40G0EB0jj0bg/
-   Vo0doYHxK76utw0HxaCAsIpYTI6UnulGJtXIVfhBxG55TT+7BisHbhRMh
-   Y+LfYgAx29Vy7QQ5MQJZu9U+F3CRFVZcuABgaSB334yGxR4t48CwitPHg
-   PwhPNsG0OF83L0URH/4A8i7tB7VJgwz52lLYB1SwOfm0zSFaZqm2O659m
-   BbK+V0nrmROf7X0LuMfwgoXvs1HK4RgShowAyOlgY1VHNE3dsMKuwSuCw
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="306097558"
-X-IronPort-AV: E=Sophos;i="5.95,193,1661842800"; 
-   d="scan'208";a="306097558"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Oct 2022 07:13:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="754061907"
-X-IronPort-AV: E=Sophos;i="5.95,193,1661842800"; 
-   d="scan'208";a="754061907"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga004.jf.intel.com with ESMTP; 18 Oct 2022 07:13:32 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oknLW-009PYY-1H;
-        Tue, 18 Oct 2022 17:13:30 +0300
-Date:   Tue, 18 Oct 2022 17:13:30 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Yury Norov <yury.norov@gmail.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 6/6] netlink: add universal 'bigint'
- attribute type
-Message-ID: <Y060io/942BpWpQw@smile.fi.intel.com>
-References: <20221018140027.48086-1-alexandr.lobakin@intel.com>
- <20221018140027.48086-7-alexandr.lobakin@intel.com>
+        with ESMTP id S229660AbiJROQ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 10:16:58 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1093DBCB81
+        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 07:16:58 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id v11so788848wmd.1
+        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 07:16:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=khumNE/9NHSamDPPsziQSRB7o6Qre+1OtoK84grTRmE=;
+        b=73hNzB3lqfl/PtpFdd8GCqYvz2JmbpfbKjHQLvcHBSUa/YX7yAbVz2nt7ky4MCL0b+
+         dLTIgsA4buyrbhdzMKs6Xgc/SuwlgNq0bmHTmHWyLxPFxSamUZnUAOn+woyg7uArTggu
+         5sBe9Aw0hMYhTKBzuu0PzQQ3O2vJpC4PkovUTIeOQe50ReyTkLbj17oMMeki+9IUkwvt
+         IOXSTlfMAYrS4jYoUACjOCGc1lV/byLsNb+Ctv4M7JVAARJHWwExtJxXld68DWX53HPh
+         mbZs6QFvtgdKk37oEwDiJz4ZAEkPnTWkVo6PgIeuGY2uJsWF+LAhpHWizxAP/C8+F1gW
+         f6Gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=khumNE/9NHSamDPPsziQSRB7o6Qre+1OtoK84grTRmE=;
+        b=gemyfES48Ux5CUYqBtZ53mjpihuyN84GRhaaOGSPqIUbtEfZdsGouoOOH1ImQDG4Se
+         PeBX3SeCLswK8FTlg9p7PwcKd75crcth7xh2gAny4045ZYI/h43JabgBJbaNglepKwvr
+         Xvws0PYYsk2m6lhDxKUN2yM3ZQjgtelpjY7vCHNRsrjTQ3HrPVnmVyfik1xbe0GXakSi
+         ay9PzUZxUXjOv/anZFYM/92JUmdEkoMO67Ia0akQHUpD7xgGrPHfLaoGxb31GuxgP2e6
+         eTEhq18Z0VRFJmSl5uLK2oMnz3fS8FADjGsqD1fSb4W/EAKNd+z+5L/SI1RxKQmXbYBj
+         Ps/w==
+X-Gm-Message-State: ACrzQf35q+ZsaKS0vFjkhclurkysyhrk285Hj/ejuLojVPfLjEsAj1sc
+        7t9MSt82haAspHGL55BqEijGsQ==
+X-Google-Smtp-Source: AMsMyM77HUta1fdRT0VWzllxASbS0ekqc/OWeMk2eB2qG/+QsSBKlZv6aRn41kGumxLErObC/zEFYg==
+X-Received: by 2002:a05:600c:4f90:b0:3c6:c7dd:ce40 with SMTP id n16-20020a05600c4f9000b003c6c7ddce40mr20076485wmq.114.1666102616476;
+        Tue, 18 Oct 2022 07:16:56 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id t9-20020a05600c198900b003b4fe03c881sm19676590wmq.48.2022.10.18.07.16.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Oct 2022 07:16:55 -0700 (PDT)
+Date:   Tue, 18 Oct 2022 16:16:54 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Michal Wilczynski <michal.wilczynski@intel.com>
+Cc:     netdev@vger.kernel.org, alexandr.lobakin@intel.com,
+        jacob.e.keller@intel.com, jesse.brandeburg@intel.com,
+        przemyslaw.kitszel@intel.com, anthony.l.nguyen@intel.com,
+        kuba@kernel.org, ecree.xilinx@gmail.com
+Subject: Re: [PATCH net-next v6 0/4] Implement devlink-rate API and extend it
+Message-ID: <Y061VtBGHOaDK3y5@nanopsycho>
+References: <20221018123543.1210217-1-michal.wilczynski@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221018140027.48086-7-alexandr.lobakin@intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20221018123543.1210217-1-michal.wilczynski@intel.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 18, 2022 at 04:00:27PM +0200, Alexander Lobakin wrote:
-> Add a new type of Netlink attribute -- big integer.
-> 
-> Basically bigints are just arrays of u32s, but can carry anything,
-> with 1 bit precision. Using variable-length arrays of a fixed type
-> gives the following:
-> 
-> * versatility: one type can carry scalars from u8 to u64, bitmaps,
->   binary data etc.;
-> * scalability: the same Netlink attribute can be changed to a wider
->   (or shorter) data type with no compatibility issues, same for
->   growing bitmaps;
-> * optimization: 4-byte units don't require wasting slots for empty
->   padding attributes (they always have natural alignment in Netlink
->   messages).
-> 
-> The only downside is that get/put functions sometimes are not just
-> direct assignment inlines due to the internal representation using
-> bitmaps (longs) and the bitmap API.
-> 
-> Basic consumer functions/macros are:
-> * nla_put_bigint() and nla_get_bigint() -- to easily put a bigint to
->   an skb or get it from a received message (only pointer to an
->   unsigned long array and the number of bits in it are needed);
-> * nla_put_bigint_{u,be,le,net}{8,16,32,64}() -- alternatives to the
->   already existing family to send/receive scalars using the new type
->   (instead of distinct attr types);
-> * nla_total_size_bigint*() -- to provide estimate size in bytes to
->   Netlink needed to store a bigint/type;
-> * NLA_POLICY_BIGINT*() -- to declare a Netlink policy for a bigint
->   attribute.
-> 
-> There are also *_bitmap() aliases for the *_bigint() helpers which
-> have no differences and designed to distinguish bigints from bitmaps
-> in the call sites (for readability).
-> 
-> Netlink policy for a bigint can have an optional bitmap mask of bits
-> supported by the code -- for example, to filter out obsolete bits
-> removed some time ago or limit value to n bits (e.g. 53 instead of
-> 64). Without it, Netlink will just make sure no bits past the passed
-> number are set. Both variants can be requested from the userspace
-> and the kernel will put a mask into a new policy attribute
-> (%NL_POLICY_TYPE_ATTR_BIGINT_MASK).
-> 
-> Note on including <linux/bitmap.h> into <net/netlink.h>: seems to
-> introduce no visible compilation time regressions, make includecheck
-> doesn't see anything illegit as well. Hiding everything inside
-> lib/nlattr.c would require making a couple dozens optimizable
-> inlines external, doesn't sound optimal.
+Tue, Oct 18, 2022 at 02:35:38PM CEST, michal.wilczynski@intel.com wrote:
+>This is a follow up on:
+>https://lore.kernel.org/netdev/20220915134239.1935604-1-michal.wilczynski@intel.com/
+>
+>This patch series implements devlink-rate for ice driver. Unfortunately
+>current API isn't flexible enough for our use case, so there is a need to
+>extend it. Some functions have been introduced to enable the driver to
+>export current Tx scheduling configuration.
 
-...
-
->  #ifndef __NET_NETLINK_H
->  #define __NET_NETLINK_H
->  
-> -#include <linux/types.h>
-> +#include <linux/bitmap.h>
-
-types.h is not guaranteed to be included by bitmap.h. So, if you want to
-clean up the headers in this header, do it in a separate change.
-
-Also I would suggest to check what Ingo did in his 2000+ patch series
-to see if there is anything interesting towards this header.
-
->  #include <linux/netlink.h>
->  #include <linux/jiffies.h>
->  #include <linux/in6.h>
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+This is not enough to be said in the cover letter. You need to clearly
+explain the motivation, what is the problem you are trying to solve and
+describe the solution. Also, provide example commands and outputs here.
 
