@@ -2,177 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E40836027B0
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 10:58:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A42336027BB
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 11:00:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231153AbiJRI6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 04:58:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47520 "EHLO
+        id S231205AbiJRJAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 05:00:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230239AbiJRI6n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 04:58:43 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D230553A7D;
-        Tue, 18 Oct 2022 01:58:41 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 29I8wTXO042014;
-        Tue, 18 Oct 2022 03:58:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1666083509;
-        bh=YkULLNGYTCiKKV3uTi6aQb+TYdDAV94MFgivkAOeMeU=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=M/k2ew09yjWhkh2bjwGbP16KWzPey6WbuksRdUqnWjIzpyfyMU7++7AcB6bGo8/9e
-         Jl5zc7JOmlc8kJefWYTRLiIYldaOoVYu+I8nr+f1+oSu7nucd3UvqhqKQDn08k26Cj
-         rMkxPLfdqeapLRLrkavCAsoo0/AWF06o2XFT++6E=
-Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 29I8wTaI030340
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 18 Oct 2022 03:58:29 -0500
-Received: from DLEE115.ent.ti.com (157.170.170.26) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Tue, 18
- Oct 2022 03:58:28 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
- Frontend Transport; Tue, 18 Oct 2022 03:58:29 -0500
-Received: from uda0492258.dhcp.ti.com (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 29I8wAcR010100;
-        Tue, 18 Oct 2022 03:58:24 -0500
-From:   Siddharth Vadapalli <s-vadapalli@ti.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski@linaro.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <linux@armlinux.org.uk>,
-        <vladimir.oltean@nxp.com>, <vigneshr@ti.com>, <nsekhar@ti.com>
-CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <s-vadapalli@ti.com>
-Subject: [PATCH v2 3/3] net: ethernet: ti: am65-cpsw: Add support for SERDES configuration
-Date:   Tue, 18 Oct 2022 14:28:10 +0530
-Message-ID: <20221018085810.151327-4-s-vadapalli@ti.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20221018085810.151327-1-s-vadapalli@ti.com>
-References: <20221018085810.151327-1-s-vadapalli@ti.com>
+        with ESMTP id S231272AbiJRI7w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 04:59:52 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B82BF1C104
+        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 01:59:32 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id c24so13197965pls.9
+        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 01:59:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=SyYgnWapL79xSGbWpqYMsssi6Z5UWEMZCCJiBQWYB4E=;
+        b=HESG1GP8bzrjSt/N/3biOxlPGGIiOnjZz7pL+YQNIzKoN6I+tjDC2Pp/uhHC2z4Vs5
+         aGzRvgHCUubVN8NGAjkTNHZ87zzBdFYkpHDd3e4o8LjWLUqMjpqz3WlVjyqFQs2gPvwO
+         j+TfsLtFgE7q5r2dDeTn1JsFxJEDhZiBVK/VY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=SyYgnWapL79xSGbWpqYMsssi6Z5UWEMZCCJiBQWYB4E=;
+        b=HMamNUsmcTlhw000i9HW8Cyx4B1yEShbh/IIgEtNM1ddRJIRgi69L3svaL2w/MPfBh
+         s207t7kOSjBO74KjggmQRtQqS1Qv1DynF5Q41huZeFTp2B8pn4mjZN+JT2fGaPaGa5KG
+         SXQOucxnyibHF2mVdgzW+D6Uk3pAuaIyHJOya3ye+HNqTkAudrsaeVuZPPGHGzzbnIqf
+         DWMYrJXFmHupVs9flSaFlB5Yht6RjIj+FKhcYWLERvQ1qdG4QPOnvL6Vwmu7WlRJve4C
+         GFDLtrPNS2o2HmQgTtUPla/IOQJWjTYr5kyDV1K1jCW0/iDES0fWC1QPyaWkcRozJgUv
+         6FJw==
+X-Gm-Message-State: ACrzQf2oz9fUhcgF6FscaL+eTHG8QZTA0dWSy1RTLErDEzShb9pvqxN7
+        mAnhYJsAq3v7mnX+DqTsqmp9RA==
+X-Google-Smtp-Source: AMsMyM4nSRh7exYZnqzoianMYgY8zRtCYF+gY02raaBn1ZvuKqIPaVLoRweAhr1hoJ0whFsFPiYQPA==
+X-Received: by 2002:a17:903:2410:b0:17a:b32:dbec with SMTP id e16-20020a170903241000b0017a0b32dbecmr1919815plo.163.1666083571999;
+        Tue, 18 Oct 2022 01:59:31 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id d25-20020aa797b9000000b00561f8fdba8esm8997458pfq.12.2022.10.18.01.59.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Oct 2022 01:59:31 -0700 (PDT)
+From:   Kees Cook <keescook@chromium.org>
+To:     Rasesh Mody <rmody@marvell.com>
+Cc:     Kees Cook <keescook@chromium.org>, GR-Linux-NIC-Dev@marvell.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: [PATCH] bnx2: Pass allocation size to build_skb()
+Date:   Tue, 18 Oct 2022 01:59:29 -0700
+Message-Id: <20221018085911.never.761-kees@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1102; h=from:subject:message-id; bh=0iHouSVWi0PwtUaYPQkq5H19VoFAe1X0ZNyWzn5SCiM=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBjTmrxhlbZceUvuakDoLe7hd916D4/myuLK08nIiua YaUGddiJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCY05q8QAKCRCJcvTf3G3AJpR4EA CSTtT9LieM6D3o4tx5ZJ7a+zK3I/9WqHD2KIdka3We7XaR1IpSrnbypJUI70xheIXyARK5Zn80tsLE k7/i2X/PNQNJv9jzpb026t0x2BXhHogl/tlXrP4PrLQlYvBAL7XEn23/bri3WzBRbhgSsoPkeNfhlQ QKGVsgMLCItyteG6u/d5pTfNIh98Tm1hf9jG/GL6WAe/7+D8BF8BZGBwAOjiOv3Q8GbrSEHX0U/6pH /hg88vrHL6GJT8mTrn9dc6pgNB3fsn5fhIYs4/MLZ1Ahq2x81aqlRYfa5EaeSkAUEt9OQpm8TmjWQ2 nXpSqNi259io2cnMCSNpiSYSTPQ5ZhMQdDJnuwo4XCFN34OCPo3OZZu3Oyc3ZwTwmZmjrqElELGdY4 SfwSJAr3fuDULYYC3lL12WtPpGPRvJDVaODhLTcD7GLTOPDSCQx+twqsxNCH95pVm8YlHIpQ0yTSbZ bvjv9wViG6B0yqtZE+W1buh4DWWGIDVAJN1U0jCul+euwN0z8+hhYTtUDmDucD8JJyY2VEAQsqFdlZ D1xiDdO0FrU6GNtxtlAA85AfBfkUJlSKZSTDQjldvi8L//k34b7eK6Mok96/EqRa2qGd0TYnFnd1P+ ShmDVyS57kEFJJnIC/Y6S0Hp0E+cSRlSXShV8nJUBGoJsvYcz0yiQ1KeHnPA==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use PHY framework APIs to initialize the SERDES PHY connected to CPSW MAC.
+In preparation for requiring that build_skb() have a non-zero size
+argument, pass the actual data allocation size explicitly into
+build_skb().
 
-Define the functions am65_cpsw_disable_phy(), am65_cpsw_enable_phy(),
-am65_cpsw_disable_serdes_phy() and am65_cpsw_init_serdes_phy().
-
-Power on and initialize the SerDes PHY in am65_cpsw_nuss_init_slave_ports()
-by invoking am65_cpsw_init_serdes_phy().
-
-Power off the SerDes PHY in am65_cpsw_nuss_remove() by invoking
-am65_cpsw_disable_serdes_phy().
-
-Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
+Cc: Rasesh Mody <rmody@marvell.com>
+Cc: GR-Linux-NIC-Dev@marvell.com
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- drivers/net/ethernet/ti/am65-cpsw-nuss.c | 65 ++++++++++++++++++++++++
- 1 file changed, 65 insertions(+)
+ drivers/net/ethernet/broadcom/bnx2.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-index 91e294afc3ad..519ebd371dd8 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-+++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-@@ -1403,6 +1403,65 @@ static const struct net_device_ops am65_cpsw_nuss_netdev_ops = {
- 	.ndo_get_devlink_port   = am65_cpsw_ndo_get_devlink_port,
- };
+diff --git a/drivers/net/ethernet/broadcom/bnx2.c b/drivers/net/ethernet/broadcom/bnx2.c
+index fec57f1982c8..0b2d4972343a 100644
+--- a/drivers/net/ethernet/broadcom/bnx2.c
++++ b/drivers/net/ethernet/broadcom/bnx2.c
+@@ -3045,7 +3045,8 @@ bnx2_rx_skb(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr, u8 *data,
  
-+static void am65_cpsw_disable_phy(struct phy *phy)
-+{
-+	phy_power_off(phy);
-+	phy_exit(phy);
-+}
+ 	dma_unmap_single(&bp->pdev->dev, dma_addr, bp->rx_buf_use_size,
+ 			 DMA_FROM_DEVICE);
+-	skb = build_skb(data, 0);
 +
-+static int am65_cpsw_enable_phy(struct phy *phy)
-+{
-+	int ret;
-+
-+	ret = phy_init(phy);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = phy_power_on(phy);
-+	if (ret < 0) {
-+		phy_exit(phy);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static void am65_cpsw_disable_serdes_phy(struct am65_cpsw_common *common)
-+{
-+	struct device_node *node, *port_np;
-+	struct device *dev = common->dev;
-+	const char *name = "serdes-phy";
-+	struct phy *phy;
-+
-+	node = of_get_child_by_name(dev->of_node, "ethernet-ports");
-+
-+	for_each_child_of_node(node, port_np) {
-+		phy = devm_of_phy_get(dev, port_np, name);
-+		am65_cpsw_disable_phy(phy);
-+	}
-+}
-+
-+static int am65_cpsw_init_serdes_phy(struct device *dev, struct device_node *port_np)
-+{
-+	const char *name = "serdes-phy";
-+	struct phy *phy;
-+	int ret;
-+
-+	phy = devm_of_phy_get(dev, port_np, name);
-+	if (PTR_ERR(phy) == -ENODEV)
-+		return 0;
-+
-+	ret =  am65_cpsw_enable_phy(phy);
-+	if (ret < 0)
-+		goto err_phy;
-+
-+	return 0;
-+
-+err_phy:
-+	devm_phy_put(dev, phy);
-+	return ret;
-+}
-+
- static void am65_cpsw_nuss_mac_config(struct phylink_config *config, unsigned int mode,
- 				      const struct phylink_link_state *state)
- {
-@@ -1880,6 +1939,11 @@ static int am65_cpsw_nuss_init_slave_ports(struct am65_cpsw_common *common)
- 			goto of_node_put;
- 		}
- 
-+		/* Initialize the phy for the port */
-+		ret = am65_cpsw_init_serdes_phy(dev, port_np);
-+		if (ret)
-+			return ret;
-+
- 		port->slave.mac_only =
- 				of_property_read_bool(port_np, "ti,mac-only");
- 
-@@ -2833,6 +2897,7 @@ static int am65_cpsw_nuss_remove(struct platform_device *pdev)
- 
- 	am65_cpsw_nuss_phylink_cleanup(common);
- 	am65_cpsw_unregister_devlink(common);
-+	am65_cpsw_disable_serdes_phy(common);
- 	am65_cpsw_unregister_notifiers(common);
- 
- 	/* must unregister ndevs here because DD release_driver routine calls
++	skb = build_skb(data, bp->rx_buf_size);
+ 	if (!skb) {
+ 		kfree(data);
+ 		goto error;
 -- 
-2.25.1
+2.34.1
 
