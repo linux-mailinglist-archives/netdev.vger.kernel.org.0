@@ -2,91 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8898660271E
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 10:37:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DEF0602751
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 10:43:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230097AbiJRIhu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 04:37:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53440 "EHLO
+        id S230254AbiJRInZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 04:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229949AbiJRIhr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 04:37:47 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D189F745
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 01:37:45 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id a13so19460580edj.0
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 01:37:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=WaPR/tmqWGcHhxRlM7SpojtLJcPC5mdHh5MXF3Ewvbk=;
-        b=8OGa01prAdF0y4D0Uz44tSzzEmmgbLu8CCpNNBZ6LdpI+YoIkpNtWrWYfRKDEh8KCB
-         bk5oGQ0yMsZ4GjqybOadty3vUndpWRk4khXdCoW85w3dsFUkL4SsZYCIGkIWqqChHoAF
-         gcxmXW7THu8+MfWd3fM/GJZM1cm6coTRJ2cquKCiGo+Iv4Sex9ILtXRqWEcRKBFxePCT
-         IPslvfR70QjRWwRZE7Q5E780gFbWIOXJ53O2q4IYJao76liUR26wlylXfFepiM6Fu8LG
-         H9xa7DGpnweWEnBPTmk545PZgJdzWtP8PwuL8u2juBJnE4bfPAuJ6xtUbA17/0L6VnbX
-         ijGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WaPR/tmqWGcHhxRlM7SpojtLJcPC5mdHh5MXF3Ewvbk=;
-        b=pVf9WBApgoxG2BHW8qS1NITL6BLxE3k4YqiqYcncq4NZ0ByEI+ghMuyoys6q5/H7gT
-         FPIy5/xhT1fej2io/hXZD7WnvIMhyPGxzyF+nZ9hSl8RGTJebe4NAEX578wPJSX/dU/d
-         5STRRWj1zMJ1YDRmyD91/eYZbr7WkPtshBio/+eXQ8Ro25S2m87sAYcdQ+4AS5cWYX9D
-         G5mRcoLz2PPqB+YJwv4S19Myi/ExUVOmmhKy1xY3IpKA2QylbAQGPy8EMqCudCZjKSUj
-         bfQPJqAvNlC2ddxf/eIuv9RjDW4TMUNC9OLV2uf1ucgbg/0F3GGYXR5dxHvgskB4iqV1
-         HYLQ==
-X-Gm-Message-State: ACrzQf1Wub0U9k59zsZllobNh3KlUdNoFPCyLer06oEcPBpQURQSltMP
-        pvyK+b98dXzQE+MRKtr47Ms9YA==
-X-Google-Smtp-Source: AMsMyM6SIOcTZVNe2fyjyFBy5PanORL8OYZZduX5sfYJhmsNLOC24nC0Hqo2CvWxsX5es34+8YuPHw==
-X-Received: by 2002:a05:6402:1d53:b0:45e:ec87:686e with SMTP id dz19-20020a0564021d5300b0045eec87686emr150040edb.380.1666082264334;
-        Tue, 18 Oct 2022 01:37:44 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id g2-20020a1709064e4200b0077016f4c6d4sm7238813ejw.55.2022.10.18.01.37.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Oct 2022 01:37:44 -0700 (PDT)
-Message-ID: <8d1c7a93-6189-dd93-f4ee-bb76282bd2c0@blackwall.org>
-Date:   Tue, 18 Oct 2022 11:37:42 +0300
+        with ESMTP id S229768AbiJRInY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 04:43:24 -0400
+Received: from hr2.samba.org (hr2.samba.org [IPv6:2a01:4f8:192:486::2:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 313292ED41;
+        Tue, 18 Oct 2022 01:43:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=samba.org;
+        s=42; h=From:Cc:To:Date:Message-ID;
+        bh=heQizsKM6wB6x3ZGPufNdBjDOwODRsRwqhUa5JzMemg=; b=S9rrTtrXoodMq+Q+eCaNsBov4E
+        G6LxRUEnQnbtglJ/rDSNlZWSAnt8U0C1caQcmwXCEG7D8HeGaQ4Pjs1YIl48OEwnblqG1PnxJw44x
+        5/qFcbXtiVEfiAtvAx7D4SksBOLBHmByGWAhvFMvHbz9MNxdrNf80KyXdaAPrgSIPqlaA/OvE5deD
+        PAu7ecVLtUM2/OP40s6n22qQe+qldweUGAd2skokQYNveNY2vg4i/WE614lNxSupe+76FAlWViypk
+        NAILK9lut/NXW2Z4hcLZfGFb7Mir1FqDiGGZXFCuJDMOYo3zbR6rmy0u0U35IMX+xQKUarVqHiPMk
+        00+JNeMbZ/lP+4baNPcR8y6sY2uGFtOAXgYmjEQBG57fyok//8IuXFTvz5U5sSFXkDy+3gY1Uw/Ml
+        z3IpdpWnw7rqabiTp3m7apXzfZPv+1M9MGzinKQy9YgN/tGmFDollaaJa3UjbZs+MmC4rtk0Pk/Fw
+        TgLqPcuTWMojgUKGuMiFNbaG;
+Received: from [127.0.0.2] (localhost [127.0.0.1])
+        by hr2.samba.org with esmtpsa (TLS1.3:ECDHE_SECP256R1__ECDSA_SECP256R1_SHA256__CHACHA20_POLY1305:256)
+        (Exim)
+        id 1okiBz-004iMG-M5; Tue, 18 Oct 2022 08:43:19 +0000
+Message-ID: <4bbf6bc1-ee4b-8758-7860-a06f57f35d14@samba.org>
+Date:   Tue, 18 Oct 2022 10:43:17 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH net-next 4/4] bridge: mcast: Simplify MDB entry creation
+ Thunderbird/102.2.2
+To:     Pavel Begunkov <asml.silence@gmail.com>,
+        io-uring <io-uring@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
+        Dylan Yudaken <dylany@fb.com>
+References: <4385ba84-55dd-6b08-0ca7-6b4a43f9d9a2@samba.org>
+ <6f0a9137-2d2b-7294-f59f-0fcf9cdfc72d@gmail.com>
 Content-Language: en-US
-To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, roopa@nvidia.com, mlxsw@nvidia.com
-References: <20221018064001.518841-1-idosch@nvidia.com>
- <20221018064001.518841-5-idosch@nvidia.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20221018064001.518841-5-idosch@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
+From:   Stefan Metzmacher <metze@samba.org>
+Subject: Re: IORING_CQE_F_COPIED
+In-Reply-To: <6f0a9137-2d2b-7294-f59f-0fcf9cdfc72d@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/10/2022 09:40, Ido Schimmel wrote:
-> Before creating a new MDB entry, br_multicast_new_group() will call
-> br_mdb_ip_get() to see if one exists and return it if so.
-> 
-> Therefore, simply call br_multicast_new_group() and omit the call to
-> br_mdb_ip_get().
-> 
-> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-> ---
->  net/bridge/br_mdb.c | 11 +++--------
->  1 file changed, 3 insertions(+), 8 deletions(-)
-> 
+Hi Pavel,
 
-Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
+> On 10/14/22 12:06, Stefan Metzmacher wrote:
+>> Hi Pavel,
+>>
+>> In the tests I made I used this version of IORING_CQE_F_COPIED:
+>> https://git.samba.org/?p=metze/linux/wip.git;a=commitdiff;h=645d3b584c417a247d92d71baa6266a5f3d0d17d
+>> (also inlined at the end)
+>>
+>> Would that something we want for 6.1? (Should I post that with a useful commit message, after doing some more tests)
+> 
+> I was thinking, can it be delivered separately but not in the same cqe?
+> The intention is to keep it off the IO path. For example, it can emit a
+> zc status CQE or maybe keep a "zc failed" counter inside the ring. Other
+> options? And we can add a separate callback for that, will make a couple
+> of things better.
+> 
+> What do you think? Especially from the userspace usability perspective.
 
+So far I can't think of any other way that would be useful yet,
+but that doesn't mean something else might exist...
+
+IORING_CQE_F_COPIED is available per request and makes it possible
+to judge why the related SENDMSG_ZC was fast or not.
+It's also available in trace-cmd report.
+
+Everything else would likely re-introduce similar complexity like we
+had with the notif slots.
+
+Instead of a new IORING_CQE_F_COPIED flag we could also set
+cqe.res = SO_EE_CODE_ZEROCOPY_COPIED, but that isn't really different.
+
+As I basically use the same logic that's used to generate SO_EE_CODE_ZEROCOPY_COPIED
+for the native MSG_ZEROCOPY, I don't see the problem with IORING_CQE_F_COPIED.
+Can you be more verbose why you're thinking about something different?
+
+metze
