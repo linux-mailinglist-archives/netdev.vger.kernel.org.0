@@ -2,107 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7248060217B
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 04:54:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF004602182
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 04:57:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230159AbiJRCx7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 22:53:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60512 "EHLO
+        id S229959AbiJRC5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 22:57:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230141AbiJRCx5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 22:53:57 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC3F584E7B
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 19:53:55 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id f23so12554130plr.6
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 19:53:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZQY3W7hRKh2A3mmRwaSR5zMANSUXerkDNjuNxhhUVMQ=;
-        b=T4EstTAc8ZqL0hkcgqQE1JkVr/qcAw+Ir6jEvpi4OV2kvFODb5E7k4DmdGHwn/Fp1s
-         azy0qiMEBS+g/92IdHzbDBBLUhPA6mrjfJtSaKq5JwE4igc6yOsJN3cpLxKmu4r5d36/
-         0KlP4W6yEo1uhW846C/VuwvP62WJfHaq4Ojqg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZQY3W7hRKh2A3mmRwaSR5zMANSUXerkDNjuNxhhUVMQ=;
-        b=wYVvnCWwPqEpYdsOdiQQLRravL2b8L4mdszPslGZ0KSk7a9fs76MZByhgzrQqPzAMo
-         LvW1R5+a7k92o+yRNBT0NfljHMUdUpH1A4RrTr2WMOKiBALEwmPXtgphYAPI5o9DT4Zp
-         L9JZmLv9gsBQYrn1OY/WMOtgnerpJaRk1XaOPi2Goej45ru5hauIvwhKMqCmfV/jPcv6
-         FHTzkb/xESCI+ZOTeJlkC1nm94+l46JFB2JHZy/P7GQEMKp8p8rt4ss0FP3eulZcTVpm
-         lc2rgMp7ScVpW8jg/xImcmzaB+mwKpHX9GPN186qWp2PbMJRXoX1BEqQF+VgnXCBDHRe
-         8O7g==
-X-Gm-Message-State: ACrzQf0PMQdA4zmCS79GaBVGtj74Zb/AMLdMESB2ZegxzV1S/LHSXBwG
-        7W3IfNR4hd8L8oYqueRe9SwOUQ==
-X-Google-Smtp-Source: AMsMyM4VySz82tfsQkg7rqBGDxZ2dolN0viseOzqMsyFFd9ok/rnzj8rF4XLPfUEnvJ8tOkZCB4PuA==
-X-Received: by 2002:a17:90b:1644:b0:20b:1cb4:2c9a with SMTP id il4-20020a17090b164400b0020b1cb42c9amr38015024pjb.193.1666061635017;
-        Mon, 17 Oct 2022 19:53:55 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id l3-20020a654c43000000b0046ae818b626sm7034638pgr.30.2022.10.17.19.53.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Oct 2022 19:53:54 -0700 (PDT)
-Date:   Mon, 17 Oct 2022 19:53:53 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH 6/6][next] airo: Avoid clashing function prototypes
-Message-ID: <202210171950.B5F2676D7F@keescook>
-References: <cover.1666038048.git.gustavoars@kernel.org>
- <ab0047382e6fd20c694e4ca14de8ca2c2a0e19d0.1666038048.git.gustavoars@kernel.org>
+        with ESMTP id S229613AbiJRC5E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 22:57:04 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58C3E97D72;
+        Mon, 17 Oct 2022 19:57:03 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Mrz0z0wRXz1P7Cv;
+        Tue, 18 Oct 2022 10:52:19 +0800 (CST)
+Received: from [10.174.179.191] (10.174.179.191) by
+ canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 18 Oct 2022 10:57:00 +0800
+Message-ID: <b38c7c5e-bd88-0257-42f4-773d8791330a@huawei.com>
+Date:   Tue, 18 Oct 2022 10:57:00 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ab0047382e6fd20c694e4ca14de8ca2c2a0e19d0.1666038048.git.gustavoars@kernel.org>
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [net 1/2] selftests/net: fix opening object file failed
+To:     Martin KaFai Lau <martin.lau@linux.dev>,
+        Lina Wang <lina.wang@mediatek.com>
+CC:     <bpf@vger.kernel.org>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <deso@posteo.net>, <netdev@vger.kernel.org>
+References: <1665482267-30706-1-git-send-email-wangyufen@huawei.com>
+ <1665482267-30706-2-git-send-email-wangyufen@huawei.com>
+ <469d28c0-8156-37ad-d0d9-c11608ca7e07@linux.dev>
+From:   wangyufen <wangyufen@huawei.com>
+In-Reply-To: <469d28c0-8156-37ad-d0d9-c11608ca7e07@linux.dev>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.191]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 17, 2022 at 03:36:20PM -0500, Gustavo A. R. Silva wrote:
-> [...]
-> @@ -6312,16 +6326,16 @@ static int airo_get_mode(struct net_device *dev,
->  	/* If not managed, assume it's ad-hoc */
->  	switch (local->config.opmode & MODE_CFG_MASK) {
->  		case MODE_STA_ESS:
-> -			*uwrq = IW_MODE_INFRA;
-> +			uwrq->mode = IW_MODE_INFRA;
->  			break;
->  		case MODE_AP:
-> -			*uwrq = IW_MODE_MASTER;
-> +			uwrq->mode = IW_MODE_MASTER;
->  			break;
->  		case MODE_AP_RPTR:
-> -			*uwrq = IW_MODE_REPEAT;
-> +			uwrq->mode = IW_MODE_REPEAT;
->  			break;
->  		default:
-> -			*uwrq = IW_MODE_ADHOC;
-> +			uwrq->mode = IW_MODE_ADHOC;
->  	}
->  
->  	return 0;
 
-Sometimes you use the union directly, sometimes not. What was your
-heuristic for that?
+在 2022/10/13 9:51, Martin KaFai Lau 写道:
+> On 10/11/22 2:57 AM, Wang Yufen wrote:
+>> The program file used in the udpgro_frglist testcase is 
+>> "../bpf/nat6to4.o",
+>> but the actual nat6to4.o file is in "bpf/" not "../bpf".
+>> The following error occurs:
+>>    Error opening object ../bpf/nat6to4.o: No such file or directory
+>
+> hmm... so it sounds like the test never works...
+>
+> The test seems like mostly exercising the tc-bpf?  It makes sense to 
+> move it to the selftests/bpf. or staying in net is also fine for now 
+> and only need to fix up the path here.
+>
+> However, if moving to selftests/bpf, I don't think it is a good idea 
+> to only move the bpf prog but not moving the actual test program (the 
+> script here) such that the bpf CI can continuously testing it.  
+> Otherwise, it will just drift and rot slowly like patch 2.
+>
+> Also, if you prefer to move it to selftests/bpf, the bpf prog cannot 
+> be moved in the current form.  eg. There is some convention on the SEC 
+> name in the selftests/bpf/progs.  Also, the testing script needs to be 
+> adapted to the selftests/bpf/test_progs infra.
 
-Regardless, looks good!
+hmm... if moving to selftests/bpf, the actual test programs also needs 
+to move to selftests/bpf, e.g. udpgso_bench_*, in_netns.sh, udpgso*.sh, 
+which may not be a good idea.
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+So, only fix up the path here.
 
--- 
-Kees Cook
+Also fix up the bpf/nat6to4.o compile error as following:
+
+     make -C tools/testing/selftests/net got the following err:
+     bpf/nat6to4.c:43:10: fatal error: 'bpf/bpf_helpers.h' file not found
+              ^~~~~~~~~~~~~~~~~~~
+
