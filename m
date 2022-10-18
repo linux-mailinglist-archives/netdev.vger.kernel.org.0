@@ -2,96 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 394D4603461
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 22:54:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A6F560346B
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 22:57:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229890AbiJRUyb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 16:54:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54624 "EHLO
+        id S230041AbiJRU5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 16:57:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229746AbiJRUya (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 16:54:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 392AD62F4
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 13:54:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1666126468;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hO1LFELXQEUpYNdXEw0Kt4gZtU698gtGrVoO0zJ7b2o=;
-        b=fOjq6pAPc5M2mut1doNaAqbEClvS85ocZXYvrv1s0nP9OtAIwPqJX4gp2EEYYo4kPxm8kc
-        XOKpGUoBSqUC8kNoRjzdszqh44rb8IPkqWRJSjAlZip+PV5AHIGU6IPGVbalKHxsIdU+8X
-        dZ1uvoDwm+Wk5z8QtqJ4Hrmcgz0MJYE=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-381-TDgX9Or4OaWKfxSOxC59Bw-1; Tue, 18 Oct 2022 16:54:26 -0400
-X-MC-Unique: TDgX9Or4OaWKfxSOxC59Bw-1
-Received: by mail-wm1-f70.google.com with SMTP id 133-20020a1c028b000000b003c5e6b44ebaso11800771wmc.9
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 13:54:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=hO1LFELXQEUpYNdXEw0Kt4gZtU698gtGrVoO0zJ7b2o=;
-        b=gdhYlwRaK4e+zaPJc/rGmKiBPLGVC9N1WVd2tSsdErRC55j2ANP6fxfZJaODW5J5N/
-         yGHCSE83PyHDZvsyJjk3Kjg/jVoG0BycTlnx92uw0Rs+uksvvjTqHsKfCjjT1Yf3n1Lp
-         JfG2z5MYE6MCe1hizUBbLNdOQeazi8lhUhXFXZslCV+tNGW0EIoOOp1uo5l0zU7SdfmJ
-         JqMvM/b3RDxkHrX8KxCj8gE5yqMjhz8+Bcs1i0qAy9dTc/31lTrYIjCkBfDtco5sba4L
-         Qj2HRu6XHyQMZtglwgqonhkK10T2KFp/64ZjZJ7ckGIbAEhAebmkqhknKmJls5Y2kHFy
-         6Mjg==
-X-Gm-Message-State: ACrzQf07HMSy6+4bKezy5jbupHr6adRt9Xd2Nnr7oplyM+wRPU4oDTLL
-        GvLEa5/UxVgnwGG7Yp4cCo+zYB1QZpMAqLAcp6u1QSagLJlZ0ImaqL8tROu6nx6+YWoQHEwhJk8
-        t1ZwefJ55Xc+wuP4TWzEURJ5WUppidbiw
-X-Received: by 2002:adf:fad0:0:b0:22e:4998:fd5d with SMTP id a16-20020adffad0000000b0022e4998fd5dmr2986815wrs.267.1666126464683;
-        Tue, 18 Oct 2022 13:54:24 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM56AO+wk6RlK4KVfT9P3LmtwBvOvRZ6AIQAfU74yH274huUcfE7m3JRGMgA/Z6UR6c4Q7uE8soGGYtHsMbqYuw=
-X-Received: by 2002:adf:fad0:0:b0:22e:4998:fd5d with SMTP id
- a16-20020adffad0000000b0022e4998fd5dmr2986803wrs.267.1666126464448; Tue, 18
- Oct 2022 13:54:24 -0700 (PDT)
+        with ESMTP id S229861AbiJRU5o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 16:57:44 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1845653A54;
+        Tue, 18 Oct 2022 13:57:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1666126664; x=1697662664;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Iw7ifpwqC5dIzOmjFQLDFvPXcRHwlPq0OQd/Sm9QAtA=;
+  b=NQ4EQ9z2BxtfVz9nxbG04h38WFmQLNE3XmBGXW3yvSqwfDxm1bM9qq8e
+   GISOio/mOU1b1xAslEGQjyx85NbXPU+DaUwT4p3q3pq+hX1DwAgpZ/Q7h
+   h5CifCbwYiBD4H3V+KjPePyTvPuy3yvOAcNQCwzotU5r/qjfMhNSV/vnY
+   58mI9GCbdmPN3krqUBMzcyus5xYywovZZW50mPtD9zHcBgHH5QMOpaHoF
+   AR5+Fys26yZujCi/bR1+dvEhpYWYtZ0dUXM7jkHK37R8flSbRb2wxT9rU
+   69hux/erEHRxUdHymsSoHYmz3nTCwyE/msR9P5TCSxvj9HXgs7BVSadfh
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="289553784"
+X-IronPort-AV: E=Sophos;i="5.95,194,1661842800"; 
+   d="scan'208";a="289553784"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Oct 2022 13:57:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="803946119"
+X-IronPort-AV: E=Sophos;i="5.95,194,1661842800"; 
+   d="scan'208";a="803946119"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga005.jf.intel.com with ESMTP; 18 Oct 2022 13:57:41 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1okted-009YNz-1S;
+        Tue, 18 Oct 2022 23:57:39 +0300
+Date:   Tue, 18 Oct 2022 23:57:39 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Stanislaw Gruszka <stf_xl@wp.pl>,
+        Helmut Schaa <helmut.schaa@googlemail.com>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: Re: [PATCH] wifi: rt2x00: use explicitly signed type for clamping
+Message-ID: <Y08TQwcY3zL3kGHR@smile.fi.intel.com>
+References: <202210190108.ESC3pc3D-lkp@intel.com>
+ <20221018202734.140489-1-Jason@zx2c4.com>
+ <Y08PVnsTw75sHfbg@smile.fi.intel.com>
+ <Y08SGz/xGSN87ynk@zx2c4.com>
 MIME-Version: 1.0
-References: <20221018183540.806471-1-miquel.raynal@bootlin.com>
-In-Reply-To: <20221018183540.806471-1-miquel.raynal@bootlin.com>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Tue, 18 Oct 2022 16:54:13 -0400
-Message-ID: <CAK-6q+gRMG64Ra9ghAUVHXkJoGB1b5Kd6rLTiUK+UArbYhP+BA@mail.gmail.com>
-Subject: Re: [PATCH wpan-next v5] mac802154: Ensure proper scan-level filtering
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Guilhem Imberton <guilhem.imberton@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y08SGz/xGSN87ynk@zx2c4.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, Oct 18, 2022 at 02:52:43PM -0600, Jason A. Donenfeld wrote:
+> On Tue, Oct 18, 2022 at 11:40:54PM +0300, Andy Shevchenko wrote:
+> > On Tue, Oct 18, 2022 at 02:27:34PM -0600, Jason A. Donenfeld wrote:
+> > > On some platforms, `char` is unsigned, which makes casting -7 to char
+> > > overflow, which in turn makes the clamping operation bogus. Instead,
+> > > deal with an explicit `s8` type, so that the comparison is always
+> > > signed, and return an s8 result from the function as well. Note that
+> > > this function's result is assigned to a `short`, which is always signed.
+> > 
+> > Why not to use short? See my patch I just sent.
+> 
+> Trying to have the most minimal change here that doesn't rock the boat.
+> I'm not out to rewrite the driver. I don't know the original author's
+> rationales. This patch here is correct and will generate the same code
+> as before on architectures where it wasn't broken.
+> 
+> However, if you want your "change the codegen" patch to be taken
+> seriously, you should probably send it to the wireless maintainers like
+> this one, and they can decide. Personally, I don't really care either
+> way.
 
-On Tue, Oct 18, 2022 at 2:35 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
->
-> We now have a fine grained filtering information so let's ensure proper
-> filtering in scan mode, which means that only beacons are processed.
->
+I have checked the code paths there and I found no evidence that short can't be
+used. That's why my patch.
 
-Is this a fixup? Can you resend the whole series please?
+Okay, I will formally send it to the corresponding maintainers.
 
-- Alex
+But if they want, they can always download this thread using `b4` tool and at
+least comment on it.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
