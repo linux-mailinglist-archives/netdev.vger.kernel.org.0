@@ -2,108 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 801F9603298
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 20:34:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C54360329B
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 20:35:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230189AbiJRSe3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 14:34:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40962 "EHLO
+        id S230121AbiJRSft (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 14:35:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230180AbiJRSe2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 14:34:28 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B1C63B9;
-        Tue, 18 Oct 2022 11:34:23 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 29IIXu8C060046;
-        Tue, 18 Oct 2022 13:33:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1666118036;
-        bh=fMb1VL9YtHPCpt27Fqs9iLpWccGutRkx4U5ZfaG+UgE=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=NsH8pjMS1DC7+oCBrtvz6ztBaGVEAm7jlqgIu/d2ACIR0tgZr8qtHTVUfZwR4bZlh
-         Ppb1IJCFILS/Hc+VZrHP1nQjX6WZTyyprds1Tn07F2dID8sh1nfVpWQtAMF4WTCf/D
-         qwjKvljceqfbjMoit790BjX6LkQxHWFay9GutUN4=
-Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 29IIXuIi052387
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 18 Oct 2022 13:33:56 -0500
-Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Tue, 18
- Oct 2022 13:33:56 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
- Frontend Transport; Tue, 18 Oct 2022 13:33:56 -0500
-Received: from [10.250.33.68] (ileaxei01-snat.itg.ti.com [10.180.69.5])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 29IIXtQE118408;
-        Tue, 18 Oct 2022 13:33:56 -0500
-Message-ID: <97aae18e-a96c-a81b-74b7-03e32131a58f@ti.com>
-Date:   Tue, 18 Oct 2022 13:33:55 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH net] net: fman: Use physical address for userspace
- interfaces
-To:     Sean Anderson <sean.anderson@seco.com>,
-        Andrew Lunn <andrew@lunn.ch>
-CC:     "David S . Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
+        with ESMTP id S229885AbiJRSfs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 14:35:48 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CD8987FA5;
+        Tue, 18 Oct 2022 11:35:45 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id D9097240005;
+        Tue, 18 Oct 2022 18:35:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1666118144;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=f9v9AXm9wprdn9biVpha9awd8UfQaoNNNblXXhJgyzg=;
+        b=FpbJ49GtvG4kRgpgFPSmJl1njhPmfEKcI38s+PzspaltBoxwtU+13bJHuM5mUneGqO/+1Y
+        F8bz5hkWxooJYkgn8NCgoOoIj4bBFxHSeBlWnMxtsvSxlGk4N4aTgk9qwx0c2Md2CBWLiK
+        5QnbF7wCgzoJcUzmYHDEGSdg4s5Baa4dj5J/Lk0cAXGjWTTH+sYYxTlVBbcVvIhN+iTW8x
+        WPex0/rq9Ug3je9gzUMujPckuYWIO9ca+FopPMs0dWvQnCIVEGAeWIwM5mz7/KFgtKUgOl
+        LUV4IvMvlj4jrNl3btgabd1OhAr/sa3PNUNwwRn2znPSjaHOM9j1dco9qSoOqA==
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Camelia Groza <camelia.groza@nxp.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-References: <20221017162807.1692691-1-sean.anderson@seco.com>
- <Y07guYuGySM6F/us@lunn.ch> <c409789a-68cb-7aba-af31-31488b16f918@seco.com>
-Content-Language: en-US
-From:   Andrew Davis <afd@ti.com>
-In-Reply-To: <c409789a-68cb-7aba-af31-31488b16f918@seco.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next v5] mac802154: Ensure proper scan-level filtering
+Date:   Tue, 18 Oct 2022 20:35:40 +0200
+Message-Id: <20221018183540.806471-1-miquel.raynal@bootlin.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/18/22 12:37 PM, Sean Anderson wrote:
-> Hi Andrew,
-> 
-> On 10/18/22 1:22 PM, Andrew Lunn wrote:
->> On Mon, Oct 17, 2022 at 12:28:06PM -0400, Sean Anderson wrote:
->>> For whatever reason, the address of the MAC is exposed to userspace in
->>> several places. We need to use the physical address for this purpose to
->>> avoid leaking information about the kernel's memory layout, and to keep
->>> backwards compatibility.
->>
->> How does this keep backwards compatibility? Whatever is in user space
->> using this virtual address expects a virtual address. If it now gets a
->> physical address it will probably do the wrong thing. Unless there is
->> a one to one mapping, and you are exposing virtual addresses anyway.
->>
->> If you are going to break backwards compatibility Maybe it would be
->> better to return 0xdeadbeef? Or 0?
->>
->>         Andrew
->>
-> 
-> The fixed commit was added in v6.1-rc1 and switched from physical to
-> virtual. So this is effectively a partial revert to the previous
-> behavior (but keeping the other changes). See [1] for discussion.
-> 
-> --Sean
-> 
-> [1] https://lore.kernel.org/netdev/20220902215737.981341-1-sean.anderson@seco.com/T/#md5c6b66bc229c09062d205352a7d127c02b8d262
+We now have a fine grained filtering information so let's ensure proper
+filtering in scan mode, which means that only beacons are processed.
 
-I see it asked in that thread, but not answered. Why are you exposing
-"physical" addresses to userspace? There should be no reason for that.
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+---
 
-Andrew
+Changes in v4:
+* dev_dbg call with: s/!beacon/non-beacon/.
+* Rebased on top of wpan-next but there is still a commit that has not
+  been merged (went through a fixes PR), but is already in Linus' tree
+  and was present in my branch when I generated this patch.
+
+ net/mac802154/rx.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
+
+diff --git a/net/mac802154/rx.c b/net/mac802154/rx.c
+index 14bc646b9ab7..2ae23a2f4a09 100644
+--- a/net/mac802154/rx.c
++++ b/net/mac802154/rx.c
+@@ -34,6 +34,7 @@ ieee802154_subif_frame(struct ieee802154_sub_if_data *sdata,
+ 		       struct sk_buff *skb, const struct ieee802154_hdr *hdr)
+ {
+ 	struct wpan_dev *wpan_dev = &sdata->wpan_dev;
++	struct wpan_phy *wpan_phy = sdata->local->hw.phy;
+ 	__le16 span, sshort;
+ 	int rc;
+ 
+@@ -42,6 +43,17 @@ ieee802154_subif_frame(struct ieee802154_sub_if_data *sdata,
+ 	span = wpan_dev->pan_id;
+ 	sshort = wpan_dev->short_addr;
+ 
++	/* Level 3 filtering: Only beacons are accepted during scans */
++	if (sdata->required_filtering == IEEE802154_FILTERING_3_SCAN &&
++	    sdata->required_filtering > wpan_phy->filtering) {
++		if (mac_cb(skb)->type != IEEE802154_FC_TYPE_BEACON) {
++			dev_dbg(&sdata->dev->dev,
++				"drop non-beacon frame (0x%x) during scan\n",
++				mac_cb(skb)->type);
++			goto fail;
++		}
++	}
++
+ 	switch (mac_cb(skb)->dest.mode) {
+ 	case IEEE802154_ADDR_NONE:
+ 		if (hdr->source.mode != IEEE802154_ADDR_NONE)
+@@ -277,10 +289,6 @@ void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb)
+ 
+ 	ieee802154_monitors_rx(local, skb);
+ 
+-	/* TODO: Handle upcomming receive path where the PHY is at the
+-	 * IEEE802154_FILTERING_NONE level during a scan.
+-	 */
+-
+ 	/* Level 1 filtering: Check the FCS by software when relevant */
+ 	if (local->hw.phy->filtering == IEEE802154_FILTERING_NONE) {
+ 		crc = crc_ccitt(0, skb->data, skb->len);
+-- 
+2.34.1
+
