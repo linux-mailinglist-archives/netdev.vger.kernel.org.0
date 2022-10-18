@@ -2,49 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 96202602094
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 03:48:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE6F660209C
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 03:52:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230179AbiJRBsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 21:48:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37148 "EHLO
+        id S230272AbiJRBwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 21:52:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230158AbiJRBsV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 21:48:21 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0E95754BD
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 18:48:18 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MrxTg2G7Lz1P7F4;
-        Tue, 18 Oct 2022 09:43:35 +0800 (CST)
-Received: from [10.174.178.66] (10.174.178.66) by
- dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 18 Oct 2022 09:48:16 +0800
-Message-ID: <c482c66b-a455-ff6e-7a6a-a8c5d717c457@huawei.com>
-Date:   Tue, 18 Oct 2022 09:48:15 +0800
+        with ESMTP id S230108AbiJRBwL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 21:52:11 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E30726A5;
+        Mon, 17 Oct 2022 18:52:11 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id t12-20020a17090a3b4c00b0020b04251529so12604660pjf.5;
+        Mon, 17 Oct 2022 18:52:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=F3wlL/ajAUZuSQuLqok2LEp7cE4Q1lhw7nG0x3vWvLo=;
+        b=P1SVxKZ2xqPlH9qEWdAyz53sslUpBq9ek4rcAhQBWVpGP9XZXylE7eS1/AUJKnWxnP
+         P53s/RSQUeZ2CxZU2gBFXZHCg3/NagaMhm9bVmEt1UnpNZsi195LL8jEJFL6fcpJe03m
+         WEKuazMMwZtcLk6UgL7jvusDptk0HGr5MxnJ+9K/NNsccecxQB3DpwrfZ30oYJsDwmUg
+         zlD6L3ahG9V2wcClpSxnHOBzYnRyW8CW8YSVgq8uPZX7TO89VBjyqZYp4j0Z19k04K4v
+         vPHb6Z0hSY0HfLqLPtWdtmhmIZ4w+7CbDaLDDDzsbQc72xNJZUiLCJmvRcfoaAZZF7oP
+         YISw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=F3wlL/ajAUZuSQuLqok2LEp7cE4Q1lhw7nG0x3vWvLo=;
+        b=79PyCT4S2xJsAbxTxRAhH+JpSbMACzKe9InT7uBed4JFtnMSs1uuUiZkiI9dxKx8Ay
+         LIozZSTCuBLHcmK+MAKVrbHOl03hqAjCGdSWVsp1jBEcPgdxqEcQNgUA+i7vEqvnG0Jf
+         F4U7e2xS7onZ4N46Dh5tShGG/lcnNpcW5xptpQ/aYww7tM9dwrS0UEqQUex3npibOkCJ
+         jJpj4eUNeUsU8WoHnzDsb6hjur+MLFM7lcLggYdTEIuVYihJGkLmXLbkpAgv/eCYcrKR
+         G76ECZ9XxurBKNkkp6JhkKup49z0Fh1ZEm8/NaEJyqbE6m1vfjn2JBxZU/vzZpHYzueW
+         xQ7A==
+X-Gm-Message-State: ACrzQf0IvT7nadzkRayfyMk8QHzm6U5gsrhlxKIh2mDOeo/TaIVTuu0K
+        Z9OZ0rWT9dHR8cL6QIkS8tk1ViXMgeKvmw==
+X-Google-Smtp-Source: AMsMyM74RdouSv91fKy3+4W3vZG8c+FzbiKPyhvlH32MBNCQ2sa8lLEHykHSkg1RXwSPvg6JGldPHA==
+X-Received: by 2002:a17:90b:2651:b0:20a:daaf:75f0 with SMTP id pa17-20020a17090b265100b0020adaaf75f0mr800721pjb.142.1666057930614;
+        Mon, 17 Oct 2022 18:52:10 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id z22-20020a62d116000000b0055f209690c0sm7771997pfg.50.2022.10.17.18.52.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Oct 2022 18:52:10 -0700 (PDT)
+From:   yexingchen116@gmail.com
+X-Google-Original-From: ye.xingchen@zte.com.cn
+To:     jesse.brandeburg@intel.com
+Cc:     anthony.l.nguyen@intel.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        jacob.e.keller@intel.com, joe@perches.com,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ye xingchen <ye.xingchen@zte.com.cn>
+Subject: [PATCH linux-next v2] iavf: Replace __FUNCTION__ with __func__
+Date:   Tue, 18 Oct 2022 01:52:04 +0000
+Message-Id: <20221018015204.371685-1-ye.xingchen@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [PATCH net] ip6mr: fix UAF issue in ip6mr_sk_done() when
- addrconf_init_net() failed
-To:     Eric Dumazet <edumazet@google.com>
-CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <weiyongjun1@huawei.com>,
-        <yuehaibing@huawei.com>
-References: <20221017080331.16878-1-shaozhengchao@huawei.com>
- <CANn89iJdZx=e2QN_AXPiZQDh4u4EY5dOrzgdsqgWTCpvLhJVcQ@mail.gmail.com>
-From:   shaozhengchao <shaozhengchao@huawei.com>
-In-Reply-To: <CANn89iJdZx=e2QN_AXPiZQDh4u4EY5dOrzgdsqgWTCpvLhJVcQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.66]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,98 +72,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: ye xingchen <ye.xingchen@zte.com.cn>
 
+__FUNCTION__ exists only for backwards compatibility reasons with old
+gcc versions. Replace it with __func__.
 
-On 2022/10/17 23:58, Eric Dumazet wrote:
-> On Mon, Oct 17, 2022 at 12:55 AM Zhengchao Shao
-> <shaozhengchao@huawei.com> wrote:
->>
->> If the initialization fails in calling addrconf_init_net(), devconf_all is
->> the pointer that has been released. Then ip6mr_sk_done() is called to
->> release the net, accessing devconf->mc_forwarding directly causes invalid
->> pointer access.
->>
->> The process is as follows:
->> setup_net()
->>          ops_init()
->>                  addrconf_init_net()
->>                  all = kmemdup(...)           ---> alloc "all"
->>                  ...
->>                  net->ipv6.devconf_all = all;
->>                  __addrconf_sysctl_register() ---> failed
->>                  ...
->>                  kfree(all);                  ---> ipv6.devconf_all invalid
->>                  ...
->>          ops_exit_list()
->>                  ...
->>                  ip6mr_sk_done()
->>                          devconf = net->ipv6.devconf_all;
->>                          //devconf is invalid pointer
->>                          if (!devconf || !atomic_read(&devconf->mc_forwarding))
->>
->>
->> Fixes: 7d9b1b578d67 ("ip6mr: fix use-after-free in ip6mr_sk_done()")
-> 
-> Hmmm. I wonder if you are not masking a more serious bug.
-> 
-> When I wrote this patch ( 7d9b1b578d67) I was following the standard
-> rule of ops->exit() being called
-> only if the corresponding ops->init() function had not failed.
-> 
-> net/core/net_namespace.c:setup_net() even has some comments about this rule:
-> 
-> out_undo:
->          /* Walk through the list backwards calling the exit functions
->           * for the pernet modules whose init functions did not fail.
->           */
->          list_add(&net->exit_list, &net_exit_list);
->          saved_ops = ops;
->          list_for_each_entry_continue_reverse(ops, &pernet_list, list)
->                  ops_pre_exit_list(ops, &net_exit_list);
-> 
->          synchronize_rcu();
-> 
->          ops = saved_ops;
->          list_for_each_entry_continue_reverse(ops, &pernet_list, list)
->                  ops_exit_list(ops, &net_exit_list);
-> 
->          ops = saved_ops;
->          list_for_each_entry_continue_reverse(ops, &pernet_list, list)
->                  ops_free_list(ops, &net_exit_list);
-> 
->          rcu_barrier();
->          goto out;
-> 
-> 
-Hi Eric:
-	Thank you for your reply. I wonder if fixing commit
-e0da5a480caf ("[NETNS]: Create ipv6 devconf-s for namespaces")
-would be more appropriate?
+Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+---
+v1 -> v2
+Fix the message up to use ("message in %s\n", __func__)
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Zhengchao Shao
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c
+b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index 3fc572341781..efa2692af577 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -4820,7 +4820,7 @@ static void iavf_shutdown(struct pci_dev *pdev)
+ 		iavf_close(netdev);
+ 
+ 	if (iavf_lock_timeout(&adapter->crit_lock, 5000))
+-		dev_warn(&adapter->pdev->dev, "failed to acquire crit_lock in %s\n", __FUNCTION__);
++		dev_warn(&adapter->pdev->dev, "%s: failed to acquire crit_lock\n", __func__);
+ 	/* Prevent the watchdog from running. */
+ 	iavf_change_state(adapter, __IAVF_REMOVE);
+ 	adapter->aq_required = 0;
+-- 
+2.25.1
 
-> 
->> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
->> ---
->>   net/ipv6/addrconf.c | 2 ++
->>   1 file changed, 2 insertions(+)
->>
->> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
->> index 417834b7169d..9c3f5202a97b 100644
->> --- a/net/ipv6/addrconf.c
->> +++ b/net/ipv6/addrconf.c
->> @@ -7214,9 +7214,11 @@ static int __net_init addrconf_init_net(struct net *net)
->>          __addrconf_sysctl_unregister(net, all, NETCONFA_IFINDEX_ALL);
->>   err_reg_all:
->>          kfree(dflt);
->> +       net->ipv6.devconf_dflt = NULL;
->>   #endif
->>   err_alloc_dflt:
->>          kfree(all);
->> +       net->ipv6.devconf_all = NULL;
->>   err_alloc_all:
->>          kfree(net->ipv6.inet6_addr_lst);
->>   err_alloc_addr:
->> --
->> 2.17.1
->>
