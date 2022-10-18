@@ -2,125 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 640AD602857
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 11:28:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8330660285B
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 11:29:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229526AbiJRJ2e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 05:28:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40820 "EHLO
+        id S229758AbiJRJ3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 05:29:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229621AbiJRJ2d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 05:28:33 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3D58ACF51
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 02:28:31 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id y1so13553946pfr.3
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 02:28:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=HvSGhjmv3Eg4xrw6LqhEGBu9ndJxCrKraxxLsJWVAoE=;
-        b=bx+MrBZcXWuQSfltk8RKBAexQtpB8Tyf7VvtqIqC2b/7/LkQLWlqsCvU3yW3kKJRwM
-         pXyP+KD3JxMWzfjbVWQiIoVreEuOLJgGpCkJD7sESuh0XNBCDCmlL/W7LpKrKk5eD78B
-         nvLLE0yOLbMIHNoOLIy/KV3Isa/ItZF0qAnOg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=HvSGhjmv3Eg4xrw6LqhEGBu9ndJxCrKraxxLsJWVAoE=;
-        b=MKYCU0v0Y2E3OWepS1PbAp6D3Ktzw+VyphGnybD5bqTImU15W/8FzfHdARFtUfcjNc
-         hP8qBk+vjnXjF0/mzy2o/EQ2VILJVgLY4zdnfdbDJ2JXeCPGcdlWleEH98x6vPSYLPwG
-         ijvgkff+hNAyzrTG4vOHWy8wekIUn/jjvPz3Y2UYe/poR0il/B+LKmVe7KhPfHbJh79v
-         qBXmW1FhVLDTbqRPaqPgiRm+7U7uCqnwgfqeAsOGNh959U5dU/l4irLo3BuqWqObDXYs
-         jQcQvXCSplEZn/ME5WfR8dfZAQZDJ6sAsel3p2P47K83eMS6BDgyZrdVaTsaCNPJoYHR
-         ZiFw==
-X-Gm-Message-State: ACrzQf1de6VlvNR5oIUL6OreyVnodNPL/HVGWwHY/oBhj56Ecjiw7jO1
-        G+rfZgwhleJtct7nyFGcfYLUyQ==
-X-Google-Smtp-Source: AMsMyM7e9RNdettxW6HbtJS8S9dUMjgLEAyQagvghkBEvWpQO3sjx3yczL5I5LXCdLx9Nt9MQOBQWw==
-X-Received: by 2002:a05:6a00:1410:b0:528:5a5a:d846 with SMTP id l16-20020a056a00141000b005285a5ad846mr2299256pfu.9.1666085310915;
-        Tue, 18 Oct 2022 02:28:30 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id b7-20020a170903228700b0017a0668befasm8284269plh.124.2022.10.18.02.28.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Oct 2022 02:28:30 -0700 (PDT)
-From:   Kees Cook <keescook@chromium.org>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Alex Elder <elder@linaro.org>, Alex Elder <elder@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: [PATCH v3] net: ipa: Proactively round up to kmalloc bucket size
-Date:   Tue, 18 Oct 2022 02:28:27 -0700
-Message-Id: <20221018092724.give.735-kees@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229525AbiJRJ3S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 05:29:18 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2075.outbound.protection.outlook.com [40.107.223.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4940FACA0E
+        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 02:29:17 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CrZi9ef6JWaAQSrFPAE9F8a2y7wJctXLZAWul3vFK59wmV3iQPQNj7B8OOJg1hmLhseJVH3KX19+LyAnM1f+QwScbMZgdo8OKN+qtgOjD3PnK+t7zyi1AAHhRXcoRL7RlXZBMi3NVuZ1TPDUlnTDbwUt4kbr90lZuKB7irV7lqCsfE2RIoRt7HWylw4/IClhuKjGTx4S9+EYLW4FTffwNmUcGMSRiHdnyVbIcRLQB8o9E3KIdW9QS22FqVf5NPhHlTsK5fxYCLLpn9hOC+upGiUIoSqI+aFGQIko79H0CrDMICNuOC8+VXkLoUXgUYUHdybTH4vGnmOREJHoKnUvFw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kREAOCkXOuP+JfIsuZmaTZLZcsUTUI5rANRuoSoOpN0=;
+ b=ffkLKNNrih81wunoFrSM3wJXi2LRfLpmAspkyPQZqKv4sX4ACWaNCvh6m7s7RqJaml8hZoZ0jRLM1SR+ujFRcdEmI7oVJmzBGbKVL4GYAbBKsohCGbwgTzc1XFxIL1uocECeCAy0U12HilbdHdy4dQYBehHutqZ//tr9ml1ea+CoSliSM/VMfADs/aWVc/OxNl8gM6XVDjapI1OzhKhLN0lEZG/erGuH+aF1xqCyPDsvAMlzV2VhCuMZiZyx9AG6OmWhx/JhvhmJc0/dNMFIagfSkqK/3EEMkAecWualLG9Z2DI2lv80MonPge1u3mYjW6CQZWI0KbqOVLRG+7XfoQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kREAOCkXOuP+JfIsuZmaTZLZcsUTUI5rANRuoSoOpN0=;
+ b=bGRoesE78h5yxK/TsoS9EsCifUoXjD8o2jei9wqvYdL0vXbpBHxAO56PHzhWGhb3U+aM/RyyyExsb9lssGftu1fQxmjIggxMS8CX/4fq+HIE4teGNZvY2EBr1038mHiuMapUynLLjIvltT0ARxwr/Trf8U85AKJYpaFmcMBNpZc=
+Received: from BN9PR03CA0754.namprd03.prod.outlook.com (2603:10b6:408:13a::9)
+ by DM6PR12MB5021.namprd12.prod.outlook.com (2603:10b6:5:208::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.33; Tue, 18 Oct
+ 2022 09:29:15 +0000
+Received: from BN8NAM11FT064.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:13a:cafe::ae) by BN9PR03CA0754.outlook.office365.com
+ (2603:10b6:408:13a::9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.31 via Frontend
+ Transport; Tue, 18 Oct 2022 09:29:15 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT064.mail.protection.outlook.com (10.13.176.160) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5723.20 via Frontend Transport; Tue, 18 Oct 2022 09:29:15 +0000
+Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Tue, 18 Oct
+ 2022 04:29:14 -0500
+Received: from xcbpieterj41x.xilinx.com (10.180.168.240) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31 via Frontend
+ Transport; Tue, 18 Oct 2022 04:29:13 -0500
+From:   <pieter.jansen-van-vuuren@amd.com>
+To:     <netdev@vger.kernel.org>, <linux-net-drivers@amd.com>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <edumazet@google.com>, <ecree.xilinx@gmail.com>,
+        <habetsm.xilinx@gmail.com>,
+        Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>
+Subject: [PATCH net] sfc: include vport_id in filter spec hash and equal()
+Date:   Tue, 18 Oct 2022 10:28:41 +0100
+Message-ID: <20221018092841.32206-1-pieter.jansen-van-vuuren@amd.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1954; h=from:subject:message-id; bh=+PFTQF0MwAeLZJKYp39gKTCjOYyXLwCQDxSN2i+QLBQ=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBjTnG7iUSkulGBQKsUdfAePGssNbp/SzVd3mEKAham YRzoo4uJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCY05xuwAKCRCJcvTf3G3AJgiiD/ 9GGepRQLjCCYJq0dU+ybeCdbS6MIRSjJK1nogXUkKYi5bAL/0lG/t4GkBz/pQ2U3WdrHeYKD25DWX7 8xHDT4LatQwuuNWi0zCfVsqOLtk5b24dAHQZn48f3ZErVVvHK8mMHBDAmBsml/f3JuUZFULGy//2Kj E3GTUgFfjY9N8/kWv8/2VOpg4RciexEJAqJrML1i1njeGMpGy7mCYeYR/KUPcM5o3IAstVjwnXG4ux EO4S31jwl+eIAUKyQBp/lJoV2B8kkcKaAruieA4BwU+TfpRRLEnJj2/vmHthDitPmow7Bg08GPXtbM foXZ5uxBG3mnzqaWZ370LTC8s/DFAmC7cXl7xOupH9ctmEr0pt9wOiyDzTT5iw25ZVNxd9ypilsdQ6 R9xsOtQ6uSPzB4OB/SflODFQ5Se8LTEAPL/Y6wKu2Scr+32tG4kWlnqQ119YKWfhcqdci+hDLGR2HX aLKgWl9C6vxxBlxbNS+r7q6OHpg+M1cDh4ReetpMZdfR4dXrqbyVNVp5JyT4xuknaRMNx2pzkQbOtY 4FNNRAw4WRktl3YLEG9rW5tWwSUsLpOSkUuV/0dcsR6b9w40Xz5Ei/Rao7pWAsUOacDk5tsWPfCrjP kpUFpgReic9UoVSVTjTUASJEh79q8ghXK6ccwPme+D3L6djE7QQ+m+U5Vkbg==
-X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT064:EE_|DM6PR12MB5021:EE_
+X-MS-Office365-Filtering-Correlation-Id: fe2d36c6-6c9d-42b5-f796-08dab0eb396d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: dmrxzmam372pFm0QeizPM+hiRzyGYI0UucFHGH4Z8WfhG+uHmqMReiYG5MGmXJqi2rk+HYJrxINRVCiD/VuFHQcUDvjpm0u/IPo1seqelXceAOadog9+XIW0McEW2X79e/5lKNtGEGWj03VfDVKoGTf4dzh+wY04JAJYm+NgzaeBSPLvSLr0hACmLCHxV9gvZFpR8s7L8J5sFBFrOD86A68JfzRR/O29SrTBXiClLs7OOYKQnM8VgYFEbqReM/Fa4KNVZcwJnZkmhqxiAYmABorxnvYXUXJkUz/kzWaUJeu15jV1lxtPo3AxEGYE2tqqSveV6O/0+7uVQy7DhZOtHn/vQbPeR1yIX6uBRlX/YhoIrntK2c3R3Dd+Bj8LvTe6mFvgb5iEpdowHA68e8kvQ1hCBD+iMGjXZ1xHMnni5SdHujfvynyOEkff/8hrXINJt/frRJjM17NhOv3Jl03QEPLoEUw9wOTbD+cI/cRzOsz+4WZGXKAoL2l0x86lUjg6O4EUszfR+0yBb32RAbeFXXVNrqvlkfFcvI0rDmMcs5x8BWBujUvwSCJGumj15EPOSXug6FvHJ9+Ua225tW2yDpoidxHIjCgBl9dNRGkKSDyDBXSlUW/a36IyifnIu1S1cwiFUC2gAnffJ7fFvGlqefgkQBGzxobmfBJeSNpJ40L3lV6MvYJ3nbfL/Mmi4FKzd+LI0EhfaeM/3Mytr8jzvwmcLtDFU210YQsiun6TJbNfmXsz37oi5GGB1Wbm53gycAZ3kRwdutYUBGJFUrc0CqdoCJv42W01VoUWfNsL4og=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(136003)(39860400002)(376002)(346002)(396003)(451199015)(36840700001)(40470700004)(46966006)(5660300002)(8936002)(2906002)(8676002)(4326008)(41300700001)(2876002)(40460700003)(36756003)(356005)(81166007)(86362001)(82740400003)(26005)(110136005)(6636002)(336012)(2616005)(1076003)(186003)(54906003)(82310400005)(6666004)(478600001)(36860700001)(70586007)(70206006)(40480700001)(426003)(316002)(47076005)(83380400001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Oct 2022 09:29:15.3032
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: fe2d36c6-6c9d-42b5-f796-08dab0eb396d
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT064.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB5021
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of discovering the kmalloc bucket size _after_ allocation, round
-up proactively so the allocation is explicitly made for the full size,
-allowing the compiler to correctly reason about the resulting size of
-the buffer through the existing __alloc_size() hint.
+From: Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>
 
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org
-Reviewed-by: Alex Elder <elder@linaro.org>
-Link: https://lore.kernel.org/lkml/4d75a9fd-1b94-7208-9de8-5a0102223e68@ieee.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
----
-v3: rebase to v6.1-rc1
-v2: https://lore.kernel.org/lkml/20220923202822.2667581-6-keescook@chromium.org/
----
- drivers/net/ipa/gsi_trans.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+Filters on different vports are qualified by different implicit MACs and/or
+VLANs, so shouldn't be considered equal even if their other match fields
+are identical.
 
-diff --git a/drivers/net/ipa/gsi_trans.c b/drivers/net/ipa/gsi_trans.c
-index 26b7f683a3e1..0f52c068c46d 100644
---- a/drivers/net/ipa/gsi_trans.c
-+++ b/drivers/net/ipa/gsi_trans.c
-@@ -87,6 +87,7 @@ struct gsi_tre {
- int gsi_trans_pool_init(struct gsi_trans_pool *pool, size_t size, u32 count,
- 			u32 max_alloc)
+Fixes: 7c460d9be610 ("sfc: Extend and abstract efx_filter_spec to cover Huntington/EF10")
+Co-developed-by: Edward Cree <ecree.xilinx@gmail.com>
+Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
+Signed-off-by: Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>
+Reviewed-by: Martin Habets <habetsm.xilinx@gmail.com>
+---
+ drivers/net/ethernet/sfc/filter.h    |  4 ++--
+ drivers/net/ethernet/sfc/rx_common.c | 10 +++++-----
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/ethernet/sfc/filter.h b/drivers/net/ethernet/sfc/filter.h
+index be72e71da027..5f201a547e5b 100644
+--- a/drivers/net/ethernet/sfc/filter.h
++++ b/drivers/net/ethernet/sfc/filter.h
+@@ -162,9 +162,9 @@ struct efx_filter_spec {
+ 	u32	priority:2;
+ 	u32	flags:6;
+ 	u32	dmaq_id:12;
+-	u32	vport_id;
+ 	u32	rss_context;
+-	__be16	outer_vid __aligned(4); /* allow jhash2() of match values */
++	u32	vport_id;
++	__be16	outer_vid;
+ 	__be16	inner_vid;
+ 	u8	loc_mac[ETH_ALEN];
+ 	u8	rem_mac[ETH_ALEN];
+diff --git a/drivers/net/ethernet/sfc/rx_common.c b/drivers/net/ethernet/sfc/rx_common.c
+index 4826e6a7e4ce..9220afeddee8 100644
+--- a/drivers/net/ethernet/sfc/rx_common.c
++++ b/drivers/net/ethernet/sfc/rx_common.c
+@@ -660,17 +660,17 @@ bool efx_filter_spec_equal(const struct efx_filter_spec *left,
+ 	     (EFX_FILTER_FLAG_RX | EFX_FILTER_FLAG_TX)))
+ 		return false;
+ 
+-	return memcmp(&left->outer_vid, &right->outer_vid,
++	return memcmp(&left->vport_id, &right->vport_id,
+ 		      sizeof(struct efx_filter_spec) -
+-		      offsetof(struct efx_filter_spec, outer_vid)) == 0;
++		      offsetof(struct efx_filter_spec, vport_id)) == 0;
+ }
+ 
+ u32 efx_filter_spec_hash(const struct efx_filter_spec *spec)
  {
-+	size_t alloc_size;
- 	void *virt;
+-	BUILD_BUG_ON(offsetof(struct efx_filter_spec, outer_vid) & 3);
+-	return jhash2((const u32 *)&spec->outer_vid,
++	BUILD_BUG_ON(offsetof(struct efx_filter_spec, vport_id) & 3);
++	return jhash2((const u32 *)&spec->vport_id,
+ 		      (sizeof(struct efx_filter_spec) -
+-		       offsetof(struct efx_filter_spec, outer_vid)) / 4,
++		       offsetof(struct efx_filter_spec, vport_id)) / 4,
+ 		      0);
+ }
  
- 	if (!size)
-@@ -103,13 +104,15 @@ int gsi_trans_pool_init(struct gsi_trans_pool *pool, size_t size, u32 count,
- 	 * If there aren't enough entries starting at the free index,
- 	 * we just allocate free entries from the beginning of the pool.
- 	 */
--	virt = kcalloc(count + max_alloc - 1, size, GFP_KERNEL);
-+	alloc_size = size_mul(count + max_alloc - 1, size);
-+	alloc_size = kmalloc_size_roundup(alloc_size);
-+	virt = kzalloc(alloc_size, GFP_KERNEL);
- 	if (!virt)
- 		return -ENOMEM;
- 
- 	pool->base = virt;
- 	/* If the allocator gave us any extra memory, use it */
--	pool->count = ksize(pool->base) / size;
-+	pool->count = alloc_size / size;
- 	pool->free = 0;
- 	pool->max_alloc = max_alloc;
- 	pool->size = size;
 -- 
-2.34.1
+2.25.1
 
