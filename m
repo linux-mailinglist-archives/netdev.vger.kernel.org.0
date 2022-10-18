@@ -2,97 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 963DA602BAA
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 14:25:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FB82602BD9
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 14:36:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229934AbiJRMZh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 08:25:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49100 "EHLO
+        id S229753AbiJRMf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 08:35:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229886AbiJRMZg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 08:25:36 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 516FEB7EE1
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 05:25:34 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MsCfZ56XqzpVY7;
-        Tue, 18 Oct 2022 20:22:14 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 18 Oct 2022 20:25:32 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Tue, 18 Oct
- 2022 20:25:31 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
-        <davem@davemloft.net>
-Subject: [PATCH net] net: hns: fix possible memory leak in hnae_ae_register()
-Date:   Tue, 18 Oct 2022 20:24:51 +0800
-Message-ID: <20221018122451.1749171-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229682AbiJRMf5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 08:35:57 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A36EA76455
+        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 05:35:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1666096556; x=1697632556;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=y59pKnKQCE2ZRwII+nA+NrHLxh8VxLzHHLq+ks61PAc=;
+  b=ZBgL46BVWQS9lJd1Zs8LI0uCozvQJSiO5hcYKBaVrQVFcdOm9YO5pHNn
+   7AeKc2FyKattr1a4ISsISP3NMFhv2SWFXyvWvKpYS7Ngcr6aP4MJCdgZN
+   en5p/YJmfSZxeEpyBVaPl6bPnoQQz0wRR8QBvnbR0nmriMvEBJ+VDTAk/
+   lzHAkKKixmbeC42VVPLQeC9WIIBSFDrg0ruMnLKhuKkowsV2tgK+vP6E2
+   mqzPizUpo84zYW8KLrdICReoGfmvzQgLyOgf0WwzFv+xT18fBrACO67Qw
+   SZEDVrV2un3dBGZa+6aSImgIw/tsGGmKuHp478LHBmawJLW5y1lV7uBzF
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10503"; a="293458208"
+X-IronPort-AV: E=Sophos;i="5.95,193,1661842800"; 
+   d="scan'208";a="293458208"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Oct 2022 05:35:56 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10503"; a="771181196"
+X-IronPort-AV: E=Sophos;i="5.95,193,1661842800"; 
+   d="scan'208";a="771181196"
+Received: from unknown (HELO fedora.igk.intel.com) ([10.123.220.6])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Oct 2022 05:35:53 -0700
+From:   Michal Wilczynski <michal.wilczynski@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     alexandr.lobakin@intel.com, jacob.e.keller@intel.com,
+        jesse.brandeburg@intel.com, przemyslaw.kitszel@intel.com,
+        anthony.l.nguyen@intel.com, kuba@kernel.org,
+        ecree.xilinx@gmail.com, jiri@resnulli.us,
+        Michal Wilczynski <michal.wilczynski@intel.com>
+Subject: [PATCH net-next v6 0/4] Implement devlink-rate API and extend it
+Date:   Tue, 18 Oct 2022 14:35:38 +0200
+Message-Id: <20221018123543.1210217-1-michal.wilczynski@intel.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Inject fault while probing module, if device_register() fails,
-but the refcount of kobject is not decreased to 0, the name
-allocated in dev_set_name() is leaked. Fix this by calling
-put_device(), so that name can be freed in callback function
-kobject_cleanup().
+This is a follow up on:
+https://lore.kernel.org/netdev/20220915134239.1935604-1-michal.wilczynski@intel.com/
 
-unreferenced object 0xffff00c01aba2100 (size 128):
-  comm "systemd-udevd", pid 1259, jiffies 4294903284 (age 294.152s)
-  hex dump (first 32 bytes):
-    68 6e 61 65 30 00 00 00 18 21 ba 1a c0 00 ff ff  hnae0....!......
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<0000000034783f26>] slab_post_alloc_hook+0xa0/0x3e0
-    [<00000000748188f2>] __kmem_cache_alloc_node+0x164/0x2b0
-    [<00000000ab0743e8>] __kmalloc_node_track_caller+0x6c/0x390
-    [<000000006c0ffb13>] kvasprintf+0x8c/0x118
-    [<00000000fa27bfe1>] kvasprintf_const+0x60/0xc8
-    [<0000000083e10ed7>] kobject_set_name_vargs+0x3c/0xc0
-    [<000000000b87affc>] dev_set_name+0x7c/0xa0
-    [<000000003fd8fe26>] hnae_ae_register+0xcc/0x190 [hnae]
-    [<00000000fe97edc9>] hns_dsaf_ae_init+0x9c/0x108 [hns_dsaf]
-    [<00000000c36ff1eb>] hns_dsaf_probe+0x548/0x748 [hns_dsaf]
+This patch series implements devlink-rate for ice driver. Unfortunately
+current API isn't flexible enough for our use case, so there is a need to
+extend it. Some functions have been introduced to enable the driver to
+export current Tx scheduling configuration.
 
-Fixes: 6fe6611ff275 ("net: add Hisilicon Network Subsystem hnae framework support")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns/hnae.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+In the previous submission I've made a mistake and didn't remove
+internal review comments. To avoid confusion I don't go backwards
+in my versioning and submit it as v6.
 
-diff --git a/drivers/net/ethernet/hisilicon/hns/hnae.c b/drivers/net/ethernet/hisilicon/hns/hnae.c
-index 00fafc0f8512..430eccea8e5e 100644
---- a/drivers/net/ethernet/hisilicon/hns/hnae.c
-+++ b/drivers/net/ethernet/hisilicon/hns/hnae.c
-@@ -419,8 +419,10 @@ int hnae_ae_register(struct hnae_ae_dev *hdev, struct module *owner)
- 	hdev->cls_dev.release = hnae_release;
- 	(void)dev_set_name(&hdev->cls_dev, "hnae%d", hdev->id);
- 	ret = device_register(&hdev->cls_dev);
--	if (ret)
-+	if (ret) {
-+		put_device(&hdev->cls_dev);
- 		return ret;
-+	}
- 
- 	__module_get(THIS_MODULE);
- 
+This is a re-send, because I've send the previous patch during the time
+that net-next was closed.
+https://lore.kernel.org/netdev/20221011090113.445485-1-michal.wilczynski@intel.com/
+
+
+V6:
+- replaced strncpy with strscpy
+- renamed rate_vport -> rate_leaf
+
+V5:
+- removed queue support per community request
+- fix division of 64bit variable with 32bit divisor by using div_u64()
+- remove RDMA, ADQ exlusion as it's not necessary anymore
+- changed how driver exports configuration, as queues are not supported
+  anymore
+- changed IDA to Xarray for unique node identification
+
+
+V4:
+- changed static variable counter to per port IDA to
+  uniquely identify nodes
+
+V3:
+- removed shift macros, since FIELD_PREP is used
+- added static_assert for struct
+- removed unnecessary functions
+- used tab instead of space in define
+
+V2:
+- fixed Alexandr comments
+- refactored code to fix checkpatch issues
+- added mutual exclusion for RDMA, DCB
+
+
+Michal Wilczynski (4):
+  devlink: Extend devlink-rate api with export functions and new params
+  ice: Introduce new parameters in ice_sched_node
+  ice: Implement devlink-rate API
+  ice: Prevent DCB coexistence with Custom Tx scheduler
+
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   4 +-
+ drivers/net/ethernet/intel/ice/ice_common.c   |   3 +
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |   4 +
+ drivers/net/ethernet/intel/ice/ice_devlink.c  | 467 ++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_devlink.h  |   2 +
+ drivers/net/ethernet/intel/ice/ice_idc.c      |   5 +
+ drivers/net/ethernet/intel/ice/ice_repr.c     |  13 +
+ drivers/net/ethernet/intel/ice/ice_sched.c    |  79 ++-
+ drivers/net/ethernet/intel/ice/ice_sched.h    |  25 +
+ drivers/net/ethernet/intel/ice/ice_type.h     |   8 +
+ .../mellanox/mlx5/core/esw/devlink_port.c     |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/esw/qos.c |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/esw/qos.h |   2 +-
+ drivers/net/netdevsim/dev.c                   |  10 +-
+ include/net/devlink.h                         |  21 +-
+ include/uapi/linux/devlink.h                  |   3 +
+ net/core/devlink.c                            | 145 +++++-
+ 17 files changed, 767 insertions(+), 32 deletions(-)
+
 -- 
-2.25.1
+2.37.2
 
