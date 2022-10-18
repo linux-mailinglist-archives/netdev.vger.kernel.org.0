@@ -2,51 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 569C36028B9
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 11:50:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDDFF6028CC
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 11:54:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229623AbiJRJuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 05:50:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46184 "EHLO
+        id S229722AbiJRJyH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 05:54:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbiJRJuX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 05:50:23 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DCC3175BA;
-        Tue, 18 Oct 2022 02:50:22 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Ms8DG1bpJzJn2f;
-        Tue, 18 Oct 2022 17:47:42 +0800 (CST)
-Received: from [10.174.179.191] (10.174.179.191) by
- canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 18 Oct 2022 17:50:19 +0800
-Message-ID: <793d2d69-cf52-defc-6964-8b7c95bb45c4@huawei.com>
-Date:   Tue, 18 Oct 2022 17:50:19 +0800
+        with ESMTP id S230216AbiJRJx7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 05:53:59 -0400
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A56836BCD;
+        Tue, 18 Oct 2022 02:53:58 -0700 (PDT)
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 5C8491C09D8; Tue, 18 Oct 2022 11:53:57 +0200 (CEST)
+Date:   Tue, 18 Oct 2022 11:53:56 +0200
+From:   Pavel Machek <pavel@denx.de>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Wen Gong <quic_wgong@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>, kvalo@kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 4.19 16/25] wifi: ath10k: reset pointer after
+ memory free to avoid potential use-after-free
+Message-ID: <20221018095356.GH1264@duo.ucw.cz>
+References: <20221009222436.1219411-1-sashal@kernel.org>
+ <20221009222436.1219411-16-sashal@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [net 1/2] selftests/net: fix opening object file failed
-From:   wangyufen <wangyufen@huawei.com>
-To:     Martin KaFai Lau <martin.lau@linux.dev>,
-        Lina Wang <lina.wang@mediatek.com>
-CC:     <bpf@vger.kernel.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <deso@posteo.net>, <netdev@vger.kernel.org>
-References: <1665482267-30706-1-git-send-email-wangyufen@huawei.com>
- <1665482267-30706-2-git-send-email-wangyufen@huawei.com>
- <469d28c0-8156-37ad-d0d9-c11608ca7e07@linux.dev>
- <b38c7c5e-bd88-0257-42f4-773d8791330a@huawei.com>
-In-Reply-To: <b38c7c5e-bd88-0257-42f4-773d8791330a@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.191]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="y0Ed1hDcWxc3B7cn"
+Content-Disposition: inline
+In-Reply-To: <20221009222436.1219411-16-sashal@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NEUTRAL autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -54,65 +45,83 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-在 2022/10/18 10:57, wangyufen 写道:
->
-> 在 2022/10/13 9:51, Martin KaFai Lau 写道:
->> On 10/11/22 2:57 AM, Wang Yufen wrote:
->>> The program file used in the udpgro_frglist testcase is 
->>> "../bpf/nat6to4.o",
->>> but the actual nat6to4.o file is in "bpf/" not "../bpf".
->>> The following error occurs:
->>>    Error opening object ../bpf/nat6to4.o: No such file or directory
->>
->> hmm... so it sounds like the test never works...
->>
->> The test seems like mostly exercising the tc-bpf?  It makes sense to 
->> move it to the selftests/bpf. or staying in net is also fine for now 
->> and only need to fix up the path here.
->>
->> However, if moving to selftests/bpf, I don't think it is a good idea 
->> to only move the bpf prog but not moving the actual test program (the 
->> script here) such that the bpf CI can continuously testing it.  
->> Otherwise, it will just drift and rot slowly like patch 2.
->>
->> Also, if you prefer to move it to selftests/bpf, the bpf prog cannot 
->> be moved in the current form.  eg. There is some convention on the 
->> SEC name in the selftests/bpf/progs.  Also, the testing script needs 
->> to be adapted to the selftests/bpf/test_progs infra.
->
-> hmm... if moving to selftests/bpf, the actual test programs also needs 
-> to move to selftests/bpf, e.g. udpgso_bench_*, in_netns.sh, 
-> udpgso*.sh, which may not be a good idea.
->
-> So, only fix up the path here.
->
-> Also fix up the bpf/nat6to4.o compile error as following:
->
->     make -C tools/testing/selftests/net got the following err:
->     bpf/nat6to4.c:43:10: fatal error: 'bpf/bpf_helpers.h' file not found
->              ^~~~~~~~~~~~~~~~~~~
->
->
-After revert commit 7b92aa9e61350("selftests net: fix kselftest net 
-fatal error"),
+--y0Ed1hDcWxc3B7cn
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-make -C tools/testing/selftests got the following err:
+Hi!
 
-In file included from bpf/nat6to4.c:43:
-../../../lib/bpf/bpf_helpers.h:11:10: fatal error: 'bpf_helper_defs.h' 
-file not found
-#include "bpf_helper_defs.h"
-          ^~~~~~~~~~~~~~~~~~~
+> From: Wen Gong <quic_wgong@quicinc.com>
+>=20
+> [ Upstream commit 1e1cb8e0b73e6f39a9d4a7a15d940b1265387eb5 ]
+>=20
+> When running suspend test, kernel crash happened in ath10k, and it is
+> fixed by commit b72a4aff947b ("ath10k: skip ath10k_halt during suspend
+> for driver state RESTARTING").
+>=20
+> Currently the crash is fixed, but as a common code style, it is better
+> to set the pointer to NULL after memory is free.
+>=20
+> This is to address the code style and it will avoid potential bug of
+> use-after-free.
 
-"bpf_helper_defs.h"  is generated by libbpf；
+We don't have this patch in 4.19:
 
+b72a4aff947b ("ath10k: skip ath10k_halt during suspend for driver state RES=
+TARTING").
 
-So, there are two possible approaches:  the first moving nat6to4.c and 
-the actual test programs to selftests/bpf;
+We probably should take that one, as this may depend on it. On the
+other hand, we don't need this one as it is just a cleanup...
 
-second add make dependency on libbpf for the nat6to4.c.
+Best regards,
+								Pavel
+							=09
+> +++ b/drivers/net/wireless/ath/ath10k/htt_rx.c
+> @@ -302,12 +302,16 @@ void ath10k_htt_rx_free(struct ath10k_htt *htt)
+>  			  ath10k_htt_get_vaddr_ring(htt),
+>  			  htt->rx_ring.base_paddr);
+> =20
+> +	ath10k_htt_config_paddrs_ring(htt, NULL);
+> +
+>  	dma_free_coherent(htt->ar->dev,
+>  			  sizeof(*htt->rx_ring.alloc_idx.vaddr),
+>  			  htt->rx_ring.alloc_idx.vaddr,
+>  			  htt->rx_ring.alloc_idx.paddr);
+> +	htt->rx_ring.alloc_idx.vaddr =3D NULL;
+> =20
+>  	kfree(htt->rx_ring.netbufs_ring);
+> +	htt->rx_ring.netbufs_ring =3D NULL;
+>  }
+> =20
+>  static inline struct sk_buff *ath10k_htt_rx_netbuf_pop(struct ath10k_htt=
+ *htt)
+> @@ -641,8 +645,10 @@ int ath10k_htt_rx_alloc(struct ath10k_htt *htt)
+>  			  ath10k_htt_get_rx_ring_size(htt),
+>  			  vaddr_ring,
+>  			  htt->rx_ring.base_paddr);
+> +	ath10k_htt_config_paddrs_ring(htt, NULL);
+>  err_dma_ring:
+>  	kfree(htt->rx_ring.netbufs_ring);
+> +	htt->rx_ring.netbufs_ring =3D NULL;
+>  err_netbuf:
+>  	return -ENOMEM;
+>  }
+> --=20
+> 2.35.1
 
-Which one is better?
+--=20
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
 
+--y0Ed1hDcWxc3B7cn
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCY053tAAKCRAw5/Bqldv6
+8n84AJ45/QgkGMpSg/yVjmSGm2uAOTr89QCeLihL/LnMqBq5hHDBcCEB+8hBSt0=
+=6ejv
+-----END PGP SIGNATURE-----
+
+--y0Ed1hDcWxc3B7cn--
