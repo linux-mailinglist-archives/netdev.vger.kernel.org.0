@@ -2,95 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 23DE2603360
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 21:33:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97BA160336C
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 21:43:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229535AbiJRTc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 15:32:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50676 "EHLO
+        id S229736AbiJRTns (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 15:43:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbiJRTc6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 15:32:58 -0400
-X-Greylist: delayed 90 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 18 Oct 2022 12:32:55 PDT
-Received: from omta037.useast.a.cloudfilter.net (omta037.useast.a.cloudfilter.net [44.202.169.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F04F96CD0D
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 12:32:55 -0700 (PDT)
-Received: from eig-obgw-6013a.ext.cloudfilter.net ([10.0.30.177])
-        by cmsmtp with ESMTP
-        id kmI3oF54e7krOksJ9ouWaE; Tue, 18 Oct 2022 19:31:23 +0000
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with ESMTP
-        id ksJ5oo4k3s4voksJ6o8o6o; Tue, 18 Oct 2022 19:31:20 +0000
-X-Authority-Analysis: v=2.4 cv=Cf4bWZnl c=1 sm=1 tr=0 ts=634eff08
- a=1YbLdUo/zbTtOZ3uB5T3HA==:117 a=VLn1U4HDsV/kFU42pi1uTw==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10 a=Qawa6l4ZSaYA:10
- a=wYkD_t78qR0A:10 a=cak1eodxRRWiubympP0A:9 a=QEXdDO2ut3YA:10
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=B8sItrIzPT1FhGdQ0ENveK914e997Na/QHZvsstLhtM=; b=EtFXKgE3/C7QhFoXgAIqcn+mHq
-        n0jpJ1yc89SZFk3QRIYWQbQFlkZdKqHQVNmC25NtWS58DqjR9hP8X7VDgpmbZ5z9sPBo78pcP7MAk
-        lTqwTU8S2sLegbh6wRASDikI9wq5d5HT/2cXKFlzchDXxggEfq6ayJ5Ilamr1vBho8EU0ef/ogJKM
-        YBMxKWwKUop1rMOwjLtEFiD+UVGKYS2AwP+8ex28C0DBva22ITFJsYwS3LH59OxtuaMrUIgVfpCrx
-        iWHsqSFZKD3WenFiqyFkTrKo3lMyMEXfdNeKKlDBWZrd9FWi4zDzBNtc+T6o3Kz1deV1SN+Xh7ImB
-        mfQVRQ2Q==;
-Received: from [187.184.159.238] (port=8860 helo=[192.168.0.24])
-        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.95)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1oksJ4-0006S8-1O;
-        Tue, 18 Oct 2022 14:31:18 -0500
-Message-ID: <71935a08-e9d3-5f9e-5b9a-7847bd38b756@embeddedor.com>
-Date:   Tue, 18 Oct 2022 14:31:12 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH 2/6][next] cfg80211: Avoid clashing function prototypes
+        with ESMTP id S229592AbiJRTnp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 15:43:45 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530A37A524;
+        Tue, 18 Oct 2022 12:43:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1666122224; x=1697658224;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=xCESRguzM/KCVjM1UZvMWYEuUGm/wf29Za14UfRh7kQ=;
+  b=SCxT//iD7fcrF4AJzA7miSg86HEJFjrv9ZXZrixMYVy1saO9Bz3/O3TY
+   Du0SbOy9wqTDEFoemetdm700KbpwjeBRAiDeZ9YtwqA7QetvsDYW1OtQC
+   x4ls4qJP5DDdSlz1HuyZblrI609L2FIcw5VhBCKBK1KB/ZcVD1tMoTxi+
+   rUsmK5Y3CBNfuqBYChoMbgQqcZs/cFGNHQAzKEakibuwoWF8bVOlHABhe
+   KjT1GnoD+NrrRDEc/MqvBSOFXLnKjleUQqaiy0NH0mbD0ze+WO3MD8OTz
+   Di6cxJVFe5MWjRkU/7r0pZjdz3JjeclWz+CEPU9cVl+EQCl/Rm7QHyxnW
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="293612145"
+X-IronPort-AV: E=Sophos;i="5.95,194,1661842800"; 
+   d="scan'208";a="293612145"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Oct 2022 12:43:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="691987323"
+X-IronPort-AV: E=Sophos;i="5.95,194,1661842800"; 
+   d="scan'208";a="691987323"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by fmsmga008.fm.intel.com with ESMTP; 18 Oct 2022 12:43:43 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 18 Oct 2022 12:43:43 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 18 Oct 2022 12:43:42 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Tue, 18 Oct 2022 12:43:42 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.108)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Tue, 18 Oct 2022 12:43:40 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZZCbCtKM+O3WVBOgSiU38N3q2IeCIJyye27uHza/szZFaojdQbSrHiE1y/8QptLt8TgtbCPZhovxDhQomfjM/006ZT5GEvcyzR0/y0LOXxdCm7oIXCAcva//Nge2tIWhgt3Q2g+OMkiF9+kv9DgWi09UEcM16JLjRCIjAOyInSA4y6RmiUNWTJxzee+oWLUjGvTUqyqzwMsAveyeZV8AKNpWh3lUa55AIQ+PCbzzER1FeiE1f0i4M4LwztPKyHw+gi+fZc1u3a0dXmd9ZcG6MGon6qaEmgYF/pv2v1b0ay9PalIiQkfieJYVYWX1OaBLro6BwnG+RiQw/MgDwQv9kQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=v8v709TrImX/Akdemy9ue1W+xbyR8hEEHR8VHMb5GvM=;
+ b=BZjwbb9jo1YfEuWuDJ1E8zg4bEZEJpu3XsUwug8tyIX6FjKT+avsNalH32WN9XkAmA6c0bpYs+T4ETkffDuRQCjB0qfvbMaBBsmEuTRfiJj65nPHPW934NiBaB3p4T5rXyB6saE4K9M2sUPylqjkl0u7B7qM2pravdZU1O/+1Oou4moS4WBJKZGWYQpQFn0JGmCYaD9Sys4dxlo+i1uWLdP5cBOqYDo7VKyneER+NXgTXE0yMpdZq3w+H2YF3TSQuZeVsgvTvBPBv50+39YMoWz9HJqrf6vTdFD5c0kmiaVIeTpk3n8hdK9AkKamaGrlxZ+iyfMjLXAxsynl13byBg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
+ by SA2PR11MB5162.namprd11.prod.outlook.com (2603:10b6:806:114::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.29; Tue, 18 Oct
+ 2022 19:43:39 +0000
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::e314:2938:1e97:8cbf]) by CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::e314:2938:1e97:8cbf%7]) with mapi id 15.20.5723.033; Tue, 18 Oct 2022
+ 19:43:39 +0000
+From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
+To:     "yexingchen116@gmail.com" <yexingchen116@gmail.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>
+CC:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "joe@perches.com" <joe@perches.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        ye xingchen <ye.xingchen@zte.com.cn>
+Subject: RE: [PATCH linux-next v2] iavf: Replace __FUNCTION__ with __func__
+Thread-Topic: [PATCH linux-next v2] iavf: Replace __FUNCTION__ with __func__
+Thread-Index: AQHY4pRmP/aRRZzjzkSYKlQ3Cy9uc64UjpSg
+Date:   Tue, 18 Oct 2022 19:43:39 +0000
+Message-ID: <CO1PR11MB5089B2FA5C1CB0E2064E4E34D6289@CO1PR11MB5089.namprd11.prod.outlook.com>
+References: <20221018015204.371685-1-ye.xingchen@zte.com.cn>
+In-Reply-To: <20221018015204.371685-1-ye.xingchen@zte.com.cn>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Kees Cook <keescook@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-References: <cover.1666038048.git.gustavoars@kernel.org>
- <291de76bc7cd5c21dc2f2471382ab0caaf625b22.1666038048.git.gustavoars@kernel.org>
- <202210171939.61FFBE79A7@keescook>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-In-Reply-To: <202210171939.61FFBE79A7@keescook>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.184.159.238
-X-Source-L: No
-X-Exim-ID: 1oksJ4-0006S8-1O
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: ([192.168.0.24]) [187.184.159.238]:8860
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 5
-X-Org:  HG=hgshared;ORG=hostgator;
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
-X-CMAE-Envelope: MS4xfCRWv1AtnVa/+i8w3/8VKIOt4CyST3vA3uwYkV0ljA/IVRoG5A1mSN2ZV4xGlgYam1AWag9Po4qfx7tBJWJD1oM7I0yJSylE/kl6EzVc/s72ed+wD3rO
- 25bvcAZ8qP2zx4+UYAaGNhvJtNUSWww5A+J33Sc747+1J+OBspxXM12XWLdRxsODvjUMR8M3HgAD6jwlUUPmz5EYdFbGAg6FcEY=
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: CO1PR11MB5089:EE_|SA2PR11MB5162:EE_
+x-ms-office365-filtering-correlation-id: 0bdb8398-ac66-4041-a1fe-08dab1410dec
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: YFt+ftpAfZifB/jHaCrNyVf6uW5w+pYSvY6r726yK6/A318kHxjEykTcQx7b3BQOKRqxhwWgAbbC/4qqXbTRoeI31DH/sr1BOZ7NFxYDgIWgKTSzIhVebOsGx3NiZQdU7Wc+lA4BWIVlRRTKNq1m10ixG33s9ZC0oGUq0Hmje26WYre1avt3OmfQw2v1rKHCinDPJF0CRHmW8CyEelCvFLlhDmSWyFGYzHL/8ELslpfix+Hs4WXidKVl8l0F78PTL+2SkxtBMGgooE5uhlygIzZWceiRauP+QR0o0uWxFLSaSVCDyIoEnrrVnVUufP2FL/68mDzCIgLNwafRy1RSEsrhvZ/K67sTWJhlCC0bzNUp3AAUNEO3Y7KnWVv/EPI+IHRm60qtcVmCc15fTmPPlf4Df/i524X/T+/fc7TIqVAco5rj8RbcBuf0bYh4An+245vDtPo6jq2DiBcraNl7i62YAicfLNNL2VA1IQPCMtfkuXEVENK0JpESavtpJpZxKPIItjmDidQCAo290nNpK9ZeQZEvWIR3rPsRP3s2w0d67qJuflvdvED6bUVgHZr3PtcVKggXJXuWjFS9GcAx538zBcfJrlOEgpPJW0fIJdcwHHfyjUCCSqbSfZJ2tZvY3uRU2R0mi1Zbhr4fb9fQ8eyyeIcnyJZIw0YCMzU5qVdy4BFOFN0lOBj0Nigdof/7hbhlci2FPqZqc8TzPcdsbBhwUk2+prB3K5mK8UZZfYm9rmya2WK2iD+Ap2h9qWgKCG4+DQIYxQTsufv4Lf9aUA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(346002)(396003)(39860400002)(376002)(366004)(136003)(451199015)(6506007)(2906002)(8936002)(5660300002)(52536014)(53546011)(86362001)(33656002)(7416002)(4326008)(41300700001)(26005)(9686003)(38070700005)(186003)(478600001)(66946007)(66446008)(64756008)(8676002)(71200400001)(55016003)(76116006)(83380400001)(66476007)(66556008)(82960400001)(7696005)(38100700002)(6636002)(54906003)(122000001)(316002)(110136005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?94GCX8IxW97hobJ0woEtZDv+k+oQD7ClNf7egPr3BbTJ/UhyWP5AIUlkrbKa?=
+ =?us-ascii?Q?l1uniLNNXDbkasgqqWQ8Uvn9R6hEHBu32aHrX+gNDptm03W93XxLGVKN29Uo?=
+ =?us-ascii?Q?DvZT7lyDcHVSV487x+nojjTN1038yhBo61wXwFOqB11Mfe93054P4f6xOgjn?=
+ =?us-ascii?Q?mFzMyDDMfFqqMxC41k4jTQw3KBELCqO/ns+fgA2sY2UNbO37+Idl+rPKIZSO?=
+ =?us-ascii?Q?k0kJUvqDh5i4su/qFsG2Ibz8LfpX2pZ0nT4yKIPCjQ7oCVstB0zMJI95roOY?=
+ =?us-ascii?Q?Lc5oleCBibKcfyy3NwmKV0HWAB98R+HVyajM44HVlfsnMJ08hWpnP8zZudsX?=
+ =?us-ascii?Q?kbNK3liZhwhZ0lPzxwigjFN7EBDDKa4F6yapf2iyK4t9qK0dVWe81FDsQdGz?=
+ =?us-ascii?Q?8+xRFC4ncbhm1fmmA8ZIgdPn961Z8FgbPVJHDzckpc9boHkOjzOIQ2x4jcBG?=
+ =?us-ascii?Q?PsiXWk1abj39fBDccQvm4yxc+wMe+rIbQ+jeixxD8yCWUBLp2+sjoTf6ByIh?=
+ =?us-ascii?Q?8tV+VabitUig0dVW+yhYPQyFHcs3Gz/bvucSb92iQIhnioGosLvWxiQlqz+m?=
+ =?us-ascii?Q?KslbBeprmQ6Dhg2hy1Nz/lzOjIDbRpVnO+HtwVnaSSZj6TzK1N6Ky4X5lvlV?=
+ =?us-ascii?Q?Xtcl5Lj2rhjzN33d/EpOdmrAHAvjsK6NqdghMIpPcSIFss+mJMjFwVOkXTab?=
+ =?us-ascii?Q?RL5YYBgnwfsZpvQdNQzhp8ab4BbfNd3KT7SNQrSghLWwsOK2Eqy5E79drXUx?=
+ =?us-ascii?Q?PC3OSP7/sbcvobYYmUqLdxd/qbcJx2hPW8QRlDLZPti/rJ6oL6u5XxbIzvO1?=
+ =?us-ascii?Q?nvrs33aiOjZub8rb4wGOiiz5pmFsCUgLb572egHEAN4fjsBEtDN/5aiCzk/G?=
+ =?us-ascii?Q?J1IAHMZ0Q3YAfRp+9tLhbbdyTp+B06bfhrnZ5DusXO88fTllJg0v/GC9nmme?=
+ =?us-ascii?Q?nIGLW9jkLltrfBzoniWyQQbgXyliYZo02UgAp5UoImY65MiGCbbFIDF1XHo0?=
+ =?us-ascii?Q?E3lN3q2T3dYHeANpUDbe9HL7HZyNCd7rpDxVBdFJvA7r7+2j9S972KbyKe/e?=
+ =?us-ascii?Q?2waW4za8pdkDKCuWlnFNhLdxSYT4KA4KWUcZIE6CDb0SWrt7iAj/WlVObmad?=
+ =?us-ascii?Q?HbLevFfc0ECuV9EjXGw+KGyr0DQMATr2OpmshDzora5YKy796GUF4uMjfm68?=
+ =?us-ascii?Q?+rISMtNprmmXIKvdudy+8xImciEFr+uaVl0baIpahc+AsT8dOVT+oTXUoRNe?=
+ =?us-ascii?Q?c/V1xkwSvtRzFnEyLF0BXzxPu6WZaSIK615RJn3ClcWytgcm5PM7n/vLVS+3?=
+ =?us-ascii?Q?aRJODNhpUFq1qebkC3RuL/LlysufmTm/sVvpZAyYyoCuMkj5DXQSUpta1W34?=
+ =?us-ascii?Q?9eXIfANLvuGs4LLfUoNtn4yhVjOHyhmPT4lkSAIEtwWMQBKWWI3V1aRGMQtP?=
+ =?us-ascii?Q?w3XZ9hZ+J1v/EpP+wtovrq67VwDjhDrH4C8EjkQRp7BAlBmPpu0GH+ngMc/i?=
+ =?us-ascii?Q?hxiwgE1KIe5/eFER9s2hbXVo+h+6mTNu1FuBzbenxNQtpgzSsVH5GX0zFuqZ?=
+ =?us-ascii?Q?J64pwUuo3I3CxfoYhuLRovV4dgQdhg58b0TM7XpC?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0bdb8398-ac66-4041-a1fe-08dab1410dec
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Oct 2022 19:43:39.0792
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: VC6nQ9V09CTHksJ25cgXYDJo0yZM0I3jpOPGxDE8uwsWngMPcrnk0eKRz3Fee+7rpjm3nvxws5q5EuqSMHCizWltLCiZF28S1MCIinDpQ8M=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB5162
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -99,39 +161,52 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 10/17/22 21:41, Kees Cook wrote:
+> -----Original Message-----
+> From: yexingchen116@gmail.com <yexingchen116@gmail.com>
+> Sent: Monday, October 17, 2022 6:52 PM
+> To: Brandeburg, Jesse <jesse.brandeburg@intel.com>
+> Cc: Nguyen, Anthony L <anthony.l.nguyen@intel.com>; davem@davemloft.net;
+> edumazet@google.com; kuba@kernel.org; pabeni@redhat.com; Keller, Jacob E
+> <jacob.e.keller@intel.com>; joe@perches.com; intel-wired-lan@lists.osuosl=
+.org;
+> netdev@vger.kernel.org; linux-kernel@vger.kernel.org; ye xingchen
+> <ye.xingchen@zte.com.cn>
+> Subject: [PATCH linux-next v2] iavf: Replace __FUNCTION__ with __func__
+>=20
+> From: ye xingchen <ye.xingchen@zte.com.cn>
+>=20
+> __FUNCTION__ exists only for backwards compatibility reasons with old
+> gcc versions. Replace it with __func__.
+>=20
+> Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
+> Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 
->>   
->>   static const iw_handler	orinoco_handler[] = {
->>   	IW_HANDLER(SIOCSIWCOMMIT,	orinoco_ioctl_commit),
->> -	IW_HANDLER(SIOCGIWNAME,		(iw_handler)cfg80211_wext_giwname),
->> +	IW_HANDLER(SIOCGIWNAME,		cfg80211_wext_giwname),
-> 
-> This hunk should be in the orinoco patch, I think?
+Thanks for cleaning this up!
 
-I just didn't want to have this huge patch touching multiple
-different files. That's why I decided to split it up into three
-separate patches.
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
 
-But yeah; now it seems like a good idea to merge patches 1 to 3
-into just a single patch.
+> ---
+> v1 -> v2
+> Fix the message up to use ("message in %s\n", __func__)
+>  drivers/net/ethernet/intel/iavf/iavf_main.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c
+> b/drivers/net/ethernet/intel/iavf/iavf_main.c
+> index 3fc572341781..efa2692af577 100644
+> --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
+> +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+> @@ -4820,7 +4820,7 @@ static void iavf_shutdown(struct pci_dev *pdev)
+>  		iavf_close(netdev);
+>=20
+>  	if (iavf_lock_timeout(&adapter->crit_lock, 5000))
+> -		dev_warn(&adapter->pdev->dev, "failed to acquire crit_lock in
+> %s\n", __FUNCTION__);
+> +		dev_warn(&adapter->pdev->dev, "%s: failed to acquire
+> crit_lock\n", __func__);
+>  	/* Prevent the watchdog from running. */
+>  	iavf_change_state(adapter, __IAVF_REMOVE);
+>  	adapter->aq_required =3D 0;
+> --
+> 2.25.1
 
-> 
-> 
->> [...]
->> +	[IW_IOCTL_IDX(SIOCGIWRETRY)]    = cfg80211_wext_giwretry,
-> 
-> The common practice seems to be to use IW_HANDLER instead of open-coding
-> it like this.
-> 
-> 	IW_HANDLER(SIOCGIWRETRY,	cfg80211_wext_giwretry),
-
-Yeah; I forget this after reverting Sami's changes:
-
-32fc4a9ad56f ("cfg80211: fix callback type mismatches in wext-compat")
-
-I'll fix it up. :)
-
-Thanks for the feedback!
---
-Gustavo
