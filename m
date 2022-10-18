@@ -2,107 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 937A260213F
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 04:38:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C80FA602149
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 04:41:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230212AbiJRCiH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 22:38:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49996 "EHLO
+        id S229454AbiJRCly (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 22:41:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229727AbiJRCiF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 22:38:05 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14AAD92CDB
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 19:38:04 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id p3-20020a17090a284300b0020a85fa3ffcso16027796pjf.2
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 19:38:04 -0700 (PDT)
+        with ESMTP id S229687AbiJRClx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 22:41:53 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D69798BB9C
+        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 19:41:50 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id g28so12810172pfk.8
+        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 19:41:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Z/sbw9esP61gV6/BLjaGWBnk+miYGbzeL/QwROnEOEk=;
-        b=H2b63KJVBO2GdMY0nV/dRf6TlFnJ9QK+L5IU7T5QQXV42NprTy4I0+Hy0Pf735/iXm
-         3lx/MrbJ0PvxxE1zwSSXG6I4SG/bhHsWeltVfRw3pEPGkm6o5LHtvIygegVL/ABhfNkG
-         VFoyQeZYn8eVRg5UyTUrqWgY/up6MImhm2A28=
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Zg4TUcI05oybhWwKK7WfEpddIyR7SKg7hJD3GVQqv+4=;
+        b=fI5BizILWdXp7nlbeCT1NMtSOeJfetKwhyk2vhTnmJhdNuxvwZ5/KZIBnmOAIuPYkU
+         muvJcgK82bGjwibdRIEOBeqr3ohEjKkk5fLI2Vrw6Jc+xDffe85lRmSCk5MjDvyMp11r
+         MbNIzGS1Rp+hjZZEu6J5filgRNOEkTQ6jeXMM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Z/sbw9esP61gV6/BLjaGWBnk+miYGbzeL/QwROnEOEk=;
-        b=Hl2tuPGEbifUDMDtbeC5uVZJzDKHlkyXpoT/vRgdjqKn6znwhSR5u6YONfYdB83yqR
-         Jf93Q1aDa0IRY3GNxHCakI+jbdvvVnvpSC59oQngUAt34F/YelQv/t7IYNFVkCYxA8a/
-         JsrK4D3anssXGx/L9IzV1JuUci9RmSBwolAK9Plh4sPRu0+vU9LxBB5OmY02L7c6umXz
-         vJjwr1tseZuowOpkNOgzrW8Az9M6cG6qSvAgl7/vt5svvTYHLlSsk4D94jjudWRDMIdG
-         ObCCcURwadpR4VL28CI+mecIzhmg8uwSSKN8fK+c5oJVVUPuSeiau3u0sVpZ76dRIh0c
-         t/mw==
-X-Gm-Message-State: ACrzQf2mJoNINcXUvLhHOVZQfNx0hRxV/95sIv0ccEvhrmpQjXWkqqlt
-        kHLzXv3SUjcfPgyRS68fc/p1/g==
-X-Google-Smtp-Source: AMsMyM6s2Ekj+FmLeqNvK1NM2HJla6ZcerERHHYbU3/pACFrqZ+Ucd9P8aD3+AQE3rjZ6laoBn05Dg==
-X-Received: by 2002:a17:903:11c4:b0:178:634b:1485 with SMTP id q4-20020a17090311c400b00178634b1485mr715059plh.142.1666060683550;
-        Mon, 17 Oct 2022 19:38:03 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Zg4TUcI05oybhWwKK7WfEpddIyR7SKg7hJD3GVQqv+4=;
+        b=UwWzsZ5eZ1daQc1eFnAyOv++yLTchHEPVBe4M4SlvZDEFur0qK5JUh4MZYTath3YCb
+         m+U6Q93KHXdbTXe+0M3749qtXNrU3GQYC9dbW5uberuLGAbdGYBFXD3ZOgoyAkj3d8Xe
+         W5hogIAjZUA3+wrb504MVpDXM9G4T3wSZVAHV6gv6gkxrUVq5kPI/lzi9ECm4rPuDWCL
+         3AlTEJ3ybGKazbiGh1QhOpGNZHICm23eq42XDbPk8a6UxrcYhgcBYWV7GOY6a8ksMXP5
+         Mg126S+MQ0RZPm2X6coDgr2TC836KghSGgIP+jcEL7EuYqcQ7tENUEUmnYcq5b4IqOk8
+         nHEg==
+X-Gm-Message-State: ACrzQf1gzrqe/osl8yAvJXbdQ/ibODspKKOfgxY9ifVVQA9YwEJ4+otm
+        NCSuZOhRlYqXuCQhiXEDmULV4g==
+X-Google-Smtp-Source: AMsMyM4m5Ra8jwDfvqCT8zik/EZVj46VRT7zLYklwFkogFGxGKXj6Ms7IkYQpPnVqgz2TkZVySegMQ==
+X-Received: by 2002:a63:e113:0:b0:439:e032:c879 with SMTP id z19-20020a63e113000000b00439e032c879mr745675pgh.287.1666060910313;
+        Mon, 17 Oct 2022 19:41:50 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id p24-20020a170902a41800b00172b87d97cbsm7315559plq.67.2022.10.17.19.38.02
+        by smtp.gmail.com with ESMTPSA id i6-20020a17090332c600b001806f4fbf25sm7361585plr.182.2022.10.17.19.41.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Oct 2022 19:38:02 -0700 (PDT)
+        Mon, 17 Oct 2022 19:41:49 -0700 (PDT)
+Date:   Mon, 17 Oct 2022 19:41:48 -0700
 From:   Kees Cook <keescook@chromium.org>
-To:     Simon Kelley <simon@thekelleys.org.uk>
-Cc:     Kees Cook <keescook@chromium.org>, Kalle Valo <kvalo@kernel.org>,
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: [PATCH][next] atmel: Fix atmel_private_handler array size
-Date:   Mon, 17 Oct 2022 19:37:59 -0700
-Message-Id: <20221018023732.never.700-kees@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH 2/6][next] cfg80211: Avoid clashing function prototypes
+Message-ID: <202210171939.61FFBE79A7@keescook>
+References: <cover.1666038048.git.gustavoars@kernel.org>
+ <291de76bc7cd5c21dc2f2471382ab0caaf625b22.1666038048.git.gustavoars@kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1211; h=from:subject:message-id; bh=Dxza05rOmp3v/aLKDNxxdoNSiFdbo0KfFIwpTTS9BCk=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBjThGHNro1AgkFkolg4wYwZle8Iky3GKlCqcc25/rt uZHSEsmJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCY04RhwAKCRCJcvTf3G3AJpZLEA CFUjDExOqbpd2QqGOnokVzYUb9oUUeGMozp2aB0M0LWltq2+sESFlbav9rDITqdSV4an+tRFToGfmL 11+p3ENB1hcZVYN7beLUiiMjBEmU+wQa0/aO8XWS6PDLV+HX1YZaqLCKjE8B0SWD3EGvHXGNWQgBVQ 6j9QtQfWuVq8hE9fsN+lxUshnVUhTJruaV71sPXTyS4uMKeH8FJpb5CiuIDSVSGyu7opBEJRK0AQZk LRjG0PbadvFMM8q+V04WGy9sqIhs13rAOeBFREysnBG3n/tmHhJ9/C9X4BHRH+zVKfDy4xgvCedl57 2VXVizkyBXsbRPBhVO4qWSyyefCIBPVKzTKXVTX5qYQM3r7lzg/zcA3frKW/sUDdZKpHPgdVpzproJ FZS3QRO/zyXQck8HFyi+OWYDOhE/Xl710sh1yRnYMItWOQYMprMaUZyHsRYAG5w8l3IJvrQ+6daOes UqjLO+Ak74KEgnc2e3ZCXgEBlgIROxyk0pqtxd2zjwUDd4mjp+jl3Nh8iqnTK53z/MA8kPPCj7fXQN wQ6YVZkXlO++4qetIMNVa0yHu0IFJf1Qpg7oi6jMixyGhyChjQRGsCC+e6hOsnbzmnzMyyE7693fPI f2RZJoA7CFsMmZl2uRS3NHVSyM/sv1v3hZyNb6/9cCEUPtNgzcy9B4olDoRg==
-X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <291de76bc7cd5c21dc2f2471382ab0caaf625b22.1666038048.git.gustavoars@kernel.org>
 X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the atmel_private_handler to correctly sized (1 element) again. (I
-should have checked the data segment for differences.) This had no
-behavioral impact (no private callbacks), but it made a very large
-zero-filled array.
+On Mon, Oct 17, 2022 at 03:34:22PM -0500, Gustavo A. R. Silva wrote:
+> When built with Control Flow Integrity, function prototypes between
+> caller and function declaration must match. These mismatches are visible
+> at compile time with the new -Wcast-function-type-strict in Clang[1].
+> 
+> Fix a total of 10 warnings like these:
+> 
+> ../drivers/net/wireless/intersil/orinoco/wext.c:1390:27: error: incompatible function pointer types initializing 'const iw_handler' (aka 'int (*const)(struct net_device *, struct iw_request_info *, union iwreq_data *, char *)') with an expression of type 'int (struct net_device *, struct iw_request_info *, struct iw_param *, char *)' [-Wincompatible-function-pointer-types]
+>         IW_HANDLER(SIOCGIWRETRY,        cfg80211_wext_giwretry),
+>                                         ^~~~~~~~~~~~~~~~~~~~~~
+> ../include/uapi/linux/wireless.h:357:23: note: expanded from macro 'IW_HANDLER'
+>         [IW_IOCTL_IDX(id)] = func
+> 
+> The cfg80211 Wireless Extension handler callbacks (iw_handler) use a
+> union for the data argument. Actually use the union and perform explicit
+> member selection in the function body instead of having a function
+> prototype mismatch. No significant binary differences were seen
+> before/after changes.
+> 
+> Link: https://github.com/KSPP/linux/issues/234
+> Link: https://reviews.llvm.org/D134831 [1]
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> ---
+>  drivers/net/wireless/intersil/orinoco/wext.c |  22 +--
+>  include/net/cfg80211-wext.h                  |  20 +--
+>  net/wireless/scan.c                          |   3 +-
+>  net/wireless/wext-compat.c                   | 180 +++++++++----------
+>  net/wireless/wext-compat.h                   |   8 +-
+>  net/wireless/wext-sme.c                      |   5 +-
+>  6 files changed, 112 insertions(+), 126 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/intersil/orinoco/wext.c b/drivers/net/wireless/intersil/orinoco/wext.c
+> index b8eb5d60192f..dea1ff044342 100644
+> --- a/drivers/net/wireless/intersil/orinoco/wext.c
+> +++ b/drivers/net/wireless/intersil/orinoco/wext.c
+> @@ -1363,31 +1363,31 @@ static const struct iw_priv_args orinoco_privtab[] = {
+>  
+>  static const iw_handler	orinoco_handler[] = {
+>  	IW_HANDLER(SIOCSIWCOMMIT,	orinoco_ioctl_commit),
+> -	IW_HANDLER(SIOCGIWNAME,		(iw_handler)cfg80211_wext_giwname),
+> +	IW_HANDLER(SIOCGIWNAME,		cfg80211_wext_giwname),
 
-Cc: Simon Kelley <simon@thekelleys.org.uk>
-Cc: Kalle Valo <kvalo@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: linux-wireless@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Fixes: 8af9d4068e86 ("wifi: atmel: Avoid clashing function prototypes")
-Signed-off-by: Kees Cook <keescook@chromium.org>
----
- drivers/net/wireless/atmel/atmel.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This hunk should be in the orinoco patch, I think?
 
-diff --git a/drivers/net/wireless/atmel/atmel.c b/drivers/net/wireless/atmel/atmel.c
-index ed430b91e2aa..7c2d1c588156 100644
---- a/drivers/net/wireless/atmel/atmel.c
-+++ b/drivers/net/wireless/atmel/atmel.c
-@@ -2570,7 +2570,7 @@ static const iw_handler atmel_handler[] =
- 
- static const iw_handler atmel_private_handler[] =
- {
--	IW_HANDLER(SIOCIWFIRSTPRIV,	NULL),
-+	NULL,				/* SIOCIWFIRSTPRIV */
- };
- 
- struct atmel_priv_ioctl {
+
+> [...]
+> +	[IW_IOCTL_IDX(SIOCGIWRETRY)]    = cfg80211_wext_giwretry,
+
+The common practice seems to be to use IW_HANDLER instead of open-coding
+it like this.
+
+	IW_HANDLER(SIOCGIWRETRY,	cfg80211_wext_giwretry),
+
 -- 
-2.34.1
-
+Kees Cook
