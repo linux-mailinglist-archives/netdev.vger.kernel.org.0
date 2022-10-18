@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8095060244C
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 08:24:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFB4060244D
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 08:24:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229896AbiJRGYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 02:24:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39302 "EHLO
+        id S230071AbiJRGYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 02:24:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229525AbiJRGYJ (ORCPT
+        with ESMTP id S229554AbiJRGYJ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 02:24:09 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B681E8C01D
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB06C8E7BA
         for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 23:24:08 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Ms3bw3mnkz1P73N;
-        Tue, 18 Oct 2022 14:19:24 +0800 (CST)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Ms3dZ0m2MzpVg0;
+        Tue, 18 Oct 2022 14:20:50 +0800 (CST)
 Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
  (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Tue, 18 Oct
@@ -28,9 +28,9 @@ To:     <cake@lists.bufferbloat.net>, <netdev@vger.kernel.org>,
         <kuba@kernel.org>, <pabeni@redhat.com>
 CC:     <dave.taht@gmail.com>, <weiyongjun1@huawei.com>,
         <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH net,v2 1/3] net: sched: cake: fix null pointer access issue when cake_init() fails
-Date:   Tue, 18 Oct 2022 14:31:59 +0800
-Message-ID: <20221018063201.306474-2-shaozhengchao@huawei.com>
+Subject: [PATCH net,v2 2/3] Revert "net: sched: fq_codel: remove redundant resource cleanup in fq_codel_init()"
+Date:   Tue, 18 Oct 2022 14:32:00 +0800
+Message-ID: <20221018063201.306474-3-shaozhengchao@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20221018063201.306474-1-shaozhengchao@huawei.com>
 References: <20221018063201.306474-1-shaozhengchao@huawei.com>
@@ -48,30 +48,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the default qdisc is cake, if the qdisc of dev_queue fails to be
-inited during mqprio_init(), cake_reset() is invoked to clear
-resources. In this case, the tins is NULL, and it will cause gpf issue.
+This reverts commit 494f5063b86cd6e972cb41a27e083c9a3664319d.
+
+When the default qdisc is fq_codel, if the qdisc of dev_queue fails to be
+inited during mqprio_init(), fq_codel_reset() is invoked to clear
+resources. In this case, the flow is NULL, and it will cause gpf issue.
 
 The process is as follows:
 qdisc_create_dflt()
-	cake_init()
-		q->tins = kvcalloc(...)        --->failed, q->tins is NULL
+	fq_codel_init()
+		...
+		q->flows_cnt = 1024;
+		...
+		q->flows = kvcalloc(...)      --->failed, q->flows is NULL
 	...
 	qdisc_put()
 		...
-		cake_reset()
+		fq_codel_reset()
 			...
-			cake_dequeue_one()
-				b = &q->tins[...]   --->q->tins is NULL
+			flow = q->flows + i   --->q->flows is NULL
 
 The following is the Call Trace information:
 general protection fault, probably for non-canonical address
-0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-RIP: 0010:cake_dequeue_one+0xc9/0x3c0
+0xdffffc0000000001: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
+RIP: 0010:fq_codel_reset+0x14d/0x350
 Call Trace:
 <TASK>
-cake_reset+0xb1/0x140
 qdisc_reset+0xed/0x6f0
 qdisc_destroy+0x82/0x4c0
 qdisc_put+0x9e/0xb0
@@ -89,32 +92,67 @@ ___sys_sendmsg+0xe8/0x160
 __sys_sendmsg+0xbf/0x160
 do_syscall_64+0x35/0x80
 entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7f89e5122d04
+RIP: 0033:0x7fd272b22d04
 </TASK>
 
-Fixes: 046f6fd5daef ("sched: Add Common Applications Kept Enhanced (cake) qdisc")
 Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- net/sched/sch_cake.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ net/sched/sch_fq_codel.c | 25 +++++++++++++++++--------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
 
-diff --git a/net/sched/sch_cake.c b/net/sched/sch_cake.c
-index 55c6879d2c7e..87f8ce2c65ee 100644
---- a/net/sched/sch_cake.c
-+++ b/net/sched/sch_cake.c
-@@ -2224,8 +2224,12 @@ static struct sk_buff *cake_dequeue(struct Qdisc *sch)
+diff --git a/net/sched/sch_fq_codel.c b/net/sched/sch_fq_codel.c
+index 99d318b60568..8c4fee063436 100644
+--- a/net/sched/sch_fq_codel.c
++++ b/net/sched/sch_fq_codel.c
+@@ -478,24 +478,26 @@ static int fq_codel_init(struct Qdisc *sch, struct nlattr *opt,
+ 	if (opt) {
+ 		err = fq_codel_change(sch, opt, extack);
+ 		if (err)
+-			return err;
++			goto init_failure;
+ 	}
  
- static void cake_reset(struct Qdisc *sch)
- {
-+	struct cake_sched_data *q = qdisc_priv(sch);
- 	u32 c;
+ 	err = tcf_block_get(&q->block, &q->filter_list, sch, extack);
+ 	if (err)
+-		return err;
++		goto init_failure;
  
-+	if (!q->tins)
-+		return;
+ 	if (!q->flows) {
+ 		q->flows = kvcalloc(q->flows_cnt,
+ 				    sizeof(struct fq_codel_flow),
+ 				    GFP_KERNEL);
+-		if (!q->flows)
+-			return -ENOMEM;
+-
++		if (!q->flows) {
++			err = -ENOMEM;
++			goto init_failure;
++		}
+ 		q->backlogs = kvcalloc(q->flows_cnt, sizeof(u32), GFP_KERNEL);
+-		if (!q->backlogs)
+-			return -ENOMEM;
+-
++		if (!q->backlogs) {
++			err = -ENOMEM;
++			goto alloc_failure;
++		}
+ 		for (i = 0; i < q->flows_cnt; i++) {
+ 			struct fq_codel_flow *flow = q->flows + i;
+ 
+@@ -508,6 +510,13 @@ static int fq_codel_init(struct Qdisc *sch, struct nlattr *opt,
+ 	else
+ 		sch->flags &= ~TCQ_F_CAN_BYPASS;
+ 	return 0;
 +
- 	for (c = 0; c < CAKE_MAX_TINS; c++)
- 		cake_clear_tin(sch, c);
++alloc_failure:
++	kvfree(q->flows);
++	q->flows = NULL;
++init_failure:
++	q->flows_cnt = 0;
++	return err;
  }
+ 
+ static int fq_codel_dump(struct Qdisc *sch, struct sk_buff *skb)
 -- 
 2.17.1
 
