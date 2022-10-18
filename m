@@ -2,96 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 39FD7602948
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 12:24:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C2D360294C
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 12:26:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229844AbiJRKYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 06:24:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39930 "EHLO
+        id S229865AbiJRK0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 06:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229752AbiJRKYu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 06:24:50 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7C7427B3A;
-        Tue, 18 Oct 2022 03:24:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=DshSkJs6j1g2qNN0Ljt9foy0RHxNcTT/yoMkXBCk6VM=; b=XRyCev8owxNX2OahbBXwNPlH8j
-        NTyzHcr0KM7WW1Qx+xtiP8mtX7FGY+inXq9DzlwdvZOVq13q9ZJIZIXJ8NQJXAkybHYU1wZ8pKn9/
-        CIE7PPNfKz6p4DopKPIGBWeJ5Yoa2Bast+3G8rsUsEGnrZ76MIcscw/xv4AhW1YnLBnM7PG4h4O0+
-        q7bZcmbdm85v/UucEiVbUQO+G0H/89NCDXKTXLUS1rEdHRs6lUUeL1Ygl5ZIRENPrwROiLW6huFWw
-        RxrJ//6Y+6p2KMT0/d9rZ9Funjiq7TJKY4UdpprjwmdJWJoj+D6xbXpu+p/uRWjJnymr8dua16fOT
-        IPZaqhiA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34770)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1okjm5-0004KA-In; Tue, 18 Oct 2022 11:24:41 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1okjm3-00010w-Dk; Tue, 18 Oct 2022 11:24:39 +0100
-Date:   Tue, 18 Oct 2022 11:24:39 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Pavel Machek <pavel@denx.de>
-Cc:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.10 21/34] net: sfp: move Alcatel Lucent
- 3FE46541AA fixup
-Message-ID: <Y05+51lztI5yi/A6@shell.armlinux.org.uk>
-References: <20221009222129.1218277-1-sashal@kernel.org>
- <20221009222129.1218277-21-sashal@kernel.org>
- <20221018094332.GE1264@duo.ucw.cz>
+        with ESMTP id S229752AbiJRK0R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 06:26:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC8C5895D5;
+        Tue, 18 Oct 2022 03:26:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C73C61517;
+        Tue, 18 Oct 2022 10:26:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29E45C433C1;
+        Tue, 18 Oct 2022 10:26:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666088774;
+        bh=O+F9PZUtZ1aoM1l0AUhHXjYWG/zaP+5OTgFirZPQLkU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oT4axrZfBywUV8Z0rA5hBF4fjTRgDxQIZgp11Dq1HZhotk/ZglH7tjqXCr1Y3EnIS
+         Lx9B0xYNMyUn4sl2lqomEGhbHO/IHqrHC6pAncfMVjinxW+jAfaNYGjAKrm+Ug5T1F
+         kXKvKVobP4NQXtW0nxlHR9Hs/3Dj4hR00HWoGTqWOJTtQ2dUiV0wLLY9P/90rN2QqR
+         JbgdSF1QQjfRlh7235JxvOcOHTBdeNYXs2RY94P7vLfULKSChHWhEiiMwoLTlzeJdZ
+         zOqjOSA5T7EixCTuxAz+nGutMNkBoUwyr1lrzCSFN8dXy0BY5cNox8KQHbmBIz6fb+
+         vS1ieLyjLS7rg==
+Date:   Tue, 18 Oct 2022 13:26:09 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Emeel Hakim <ehakim@nvidia.com>, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, Raed Salem <raeds@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: Re: [PATCH net] net/mlx5e: Cleanup MACsec uninitialization routine
+Message-ID: <Y05/QTz6qEoUINTw@unreal>
+References: <b43b1c5aadd5cfdcd2e385ce32693220331700ba.1665645548.git.leonro@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221018094332.GE1264@duo.ucw.cz>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <b43b1c5aadd5cfdcd2e385ce32693220331700ba.1665645548.git.leonro@nvidia.com>
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 18, 2022 at 11:43:32AM +0200, Pavel Machek wrote:
-> Hi!
+On Thu, Oct 13, 2022 at 10:21:00AM +0300, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
 > 
-> > Add a new fixup mechanism to the SFP quirks, and use it for this
-> > module.
+> The mlx5e_macsec_cleanup() routine has pointer dereferencing if mlx5 device
+> doesn't support MACsec (priv->macsec will be NULL) together with useless
+> comment line, assignment and extra blank lines.
 > 
-> There are two preparation patches for this, but this does not fix
-> anything -- it just reimplement quirk in a different way.
+> Fix everything in one patch.
 > 
-> We should not have patches 19-21 in stable.
+> Fixes: 1f53da676439 ("net/mlx5e: Create advanced steering operation (ASO) object for MACsec")
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  .../net/ethernet/mellanox/mlx5/core/en_accel/macsec.c | 11 +----------
+>  1 file changed, 1 insertion(+), 10 deletions(-)
 
-They should be being dropped as, as a result of this ongoing madness,
-I've requested stable to no longer consider *any* of my patches for
-AUTOSEL treatment.
+Gentle ping.
 
-I'm afraid that the stable kernel is loosing its purpose, and is
-becoming just another development tree as long as this autosel
-process exists that picks up what are development patches - coupled
-with the "if you don't respond we're adding it to stable anyway"
-approach means that it's a hell of a lot of work for maintainers to
-be watching what stable is doing 24 hours a day 365 days a year with
-_no_ possibility of having a break from that.
-
-As I understand it, the autosel stuff is using an AI to work out
-whether the patch is suitable or not, and no one bothers to look at
-the quality of its selection - that task is loaded on to each
-maintainer and requires said maintainer to never take any time off
-from that task.
-
-It's madness.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Thanks
