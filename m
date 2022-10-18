@@ -2,92 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DEF0602751
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 10:43:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2D2860279C
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 10:55:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230254AbiJRInZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 04:43:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40332 "EHLO
+        id S230136AbiJRIzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 04:55:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229768AbiJRInY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 04:43:24 -0400
-Received: from hr2.samba.org (hr2.samba.org [IPv6:2a01:4f8:192:486::2:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 313292ED41;
-        Tue, 18 Oct 2022 01:43:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=samba.org;
-        s=42; h=From:Cc:To:Date:Message-ID;
-        bh=heQizsKM6wB6x3ZGPufNdBjDOwODRsRwqhUa5JzMemg=; b=S9rrTtrXoodMq+Q+eCaNsBov4E
-        G6LxRUEnQnbtglJ/rDSNlZWSAnt8U0C1caQcmwXCEG7D8HeGaQ4Pjs1YIl48OEwnblqG1PnxJw44x
-        5/qFcbXtiVEfiAtvAx7D4SksBOLBHmByGWAhvFMvHbz9MNxdrNf80KyXdaAPrgSIPqlaA/OvE5deD
-        PAu7ecVLtUM2/OP40s6n22qQe+qldweUGAd2skokQYNveNY2vg4i/WE614lNxSupe+76FAlWViypk
-        NAILK9lut/NXW2Z4hcLZfGFb7Mir1FqDiGGZXFCuJDMOYo3zbR6rmy0u0U35IMX+xQKUarVqHiPMk
-        00+JNeMbZ/lP+4baNPcR8y6sY2uGFtOAXgYmjEQBG57fyok//8IuXFTvz5U5sSFXkDy+3gY1Uw/Ml
-        z3IpdpWnw7rqabiTp3m7apXzfZPv+1M9MGzinKQy9YgN/tGmFDollaaJa3UjbZs+MmC4rtk0Pk/Fw
-        TgLqPcuTWMojgUKGuMiFNbaG;
-Received: from [127.0.0.2] (localhost [127.0.0.1])
-        by hr2.samba.org with esmtpsa (TLS1.3:ECDHE_SECP256R1__ECDSA_SECP256R1_SHA256__CHACHA20_POLY1305:256)
-        (Exim)
-        id 1okiBz-004iMG-M5; Tue, 18 Oct 2022 08:43:19 +0000
-Message-ID: <4bbf6bc1-ee4b-8758-7860-a06f57f35d14@samba.org>
-Date:   Tue, 18 Oct 2022 10:43:17 +0200
+        with ESMTP id S229871AbiJRIzD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 04:55:03 -0400
+Received: from novek.ru (unknown [213.148.174.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B971D0D9
+        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 01:54:57 -0700 (PDT)
+Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id 08939504ECC;
+        Tue, 18 Oct 2022 11:50:49 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 08939504ECC
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1666083050; bh=uk+AlDLxRDjQMHXSzG+kHc/EqLvBdYXkyVQ+GV/rHq0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Xi3oIEFtVUS6qX4ZIp0VSDnCWmGoiUtpCTupSuG1mnROcsMgP6wtBqLhORLSv394f
+         rkwb+nXbuEOpUngdBTGfXtGzO9xd/5eUyMjhoM1xErCt7YACxFNs/H7aB/TDTY+xEp
+         joiDCGi/yz3puVHITGAYdaHRstSQMTh00mSFZcI4=
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+To:     Richard Cochran <richardcochran@gmail.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Vadim Fedorenko <vfedorenko@novek.ru>
+Subject: [PATCH net-next v2 0/5] ptp: ocp: add support for Orolia ART-CARD
+Date:   Tue, 18 Oct 2022 11:54:13 +0300
+Message-Id: <20221018085418.2163-1-vfedorenko@novek.ru>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-To:     Pavel Begunkov <asml.silence@gmail.com>,
-        io-uring <io-uring@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
-        Dylan Yudaken <dylany@fb.com>
-References: <4385ba84-55dd-6b08-0ca7-6b4a43f9d9a2@samba.org>
- <6f0a9137-2d2b-7294-f59f-0fcf9cdfc72d@gmail.com>
-Content-Language: en-US
-From:   Stefan Metzmacher <metze@samba.org>
-Subject: Re: IORING_CQE_F_COPIED
-In-Reply-To: <6f0a9137-2d2b-7294-f59f-0fcf9cdfc72d@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Pavel,
+Orolia company created alternative open source TimeCard. The hardware of
+the card provides similar to OCP's card functions, that's why the support
+is added to current driver.
 
-> On 10/14/22 12:06, Stefan Metzmacher wrote:
->> Hi Pavel,
->>
->> In the tests I made I used this version of IORING_CQE_F_COPIED:
->> https://git.samba.org/?p=metze/linux/wip.git;a=commitdiff;h=645d3b584c417a247d92d71baa6266a5f3d0d17d
->> (also inlined at the end)
->>
->> Would that something we want for 6.1? (Should I post that with a useful commit message, after doing some more tests)
-> 
-> I was thinking, can it be delivered separately but not in the same cqe?
-> The intention is to keep it off the IO path. For example, it can emit a
-> zc status CQE or maybe keep a "zc failed" counter inside the ring. Other
-> options? And we can add a separate callback for that, will make a couple
-> of things better.
-> 
-> What do you think? Especially from the userspace usability perspective.
+The first patch in the series changes the way to store information about
+serial ports and is more like preparation.
 
-So far I can't think of any other way that would be useful yet,
-but that doesn't mean something else might exist...
+The patches 2 to 4 introduces actual hardware support.
 
-IORING_CQE_F_COPIED is available per request and makes it possible
-to judge why the related SENDMSG_ZC was fast or not.
-It's also available in trace-cmd report.
+The last patch removes fallback from devlink flashing interface to protect
+against flashing wrong image. This became actual now as we have 2 different
+boards supported and wrong image can ruin hardware easily.
 
-Everything else would likely re-introduce similar complexity like we
-had with the notif slots.
+v2:
+  Address comments from Jonathan Lemon
 
-Instead of a new IORING_CQE_F_COPIED flag we could also set
-cqe.res = SO_EE_CODE_ZEROCOPY_COPIED, but that isn't really different.
+Vadim Fedorenko (5):
+  ptp: ocp: upgrade serial line information
+  ptp: ocp: add Orolia timecard support
+  ptp: ocp: add serial port of mRO50 MAC on ART card
+  ptp: ocp: expose config and temperature for ART card
+  ptp: ocp: remove flash image header check fallback
 
-As I basically use the same logic that's used to generate SO_EE_CODE_ZEROCOPY_COPIED
-for the native MSG_ZEROCOPY, I don't see the problem with IORING_CQE_F_COPIED.
-Can you be more verbose why you're thinking about something different?
+ drivers/ptp/ptp_ocp.c | 566 ++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 519 insertions(+), 47 deletions(-)
 
-metze
+-- 
+2.27.0
+
