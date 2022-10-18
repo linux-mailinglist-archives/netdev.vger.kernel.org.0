@@ -2,120 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B5F06035F8
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 00:35:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ACE3603629
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 00:44:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229610AbiJRWfI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 18:35:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34616 "EHLO
+        id S230050AbiJRWoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 18:44:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230023AbiJRWe5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 18:34:57 -0400
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD48ADF0D
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 15:34:39 -0700 (PDT)
-Received: by mail-qk1-x730.google.com with SMTP id x13so9639430qkg.11
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 15:34:39 -0700 (PDT)
+        with ESMTP id S230080AbiJRWoA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 18:44:00 -0400
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D13E8A7E8;
+        Tue, 18 Oct 2022 15:43:59 -0700 (PDT)
+Received: by mail-oi1-x236.google.com with SMTP id o64so17255950oib.12;
+        Tue, 18 Oct 2022 15:43:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=d8l26VqjYWMF70YANmL81xtMBvMhRbV8z9l+EzsfRds=;
-        b=YQU3BqgIHmAt0qLxWsgB/A/68Rg1+5YSjPjDYmW4ZrL3BcBgrBwppHonhNCu251mQ3
-         efCkml5cPx8PmPF0jeawXTMouir0+ENDrVxBMuzqw5um/jvUpSBgufubtRGRIApUbeao
-         rTvKRvpy84yhLlu0FNeOkuSNWFO2sS7cLR+GcWGE26fijILt/TDJWlkNxGcRREGinTsH
-         o9N6jhZu4nfgWI0XidVVGyWNwvLWZOPb+sWGAppNExQaBX3OhaOrqPS1HVbp1VVi/Wrg
-         qGuQdG2iT8S+jivnBEQJx+sA2JrJpxoTbew7QRxyh2whO2vhCd12sQgBhMLSVMgAyBEA
-         au1Q==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=bKOW1QdWpDeYUyEm9qOMdRQfQU4SuEssfuGJ8DkV72Q=;
+        b=mGz6EJf+N70NcuyS56qAbClsakah+wEUUowM6J+x5Lb8OKglZOTpkfcV8614Rlufy+
+         bnaqbnroYJzpnjfhNTiRaDm46rtqCv6vUxIEgou3GM1Hk6N3T7avmWCP8exkmTtyhNzG
+         C/6ND0GneTqlU4r+oGen8BRGd5UIu6XS1JHP8pSjIqaM0dR99NerHlHfaWYO8bthXCwr
+         ZMc5LqQf2aq/QrMKyERF86nPD3BC+Fy1fhG8cNsHqc1CMVj2EQHDBwQihFPqHe5+6cIf
+         f6UURjFLwtEWucrn9z55SLgUWQezItcPIm/6WHWFRIvLcpfMwwbg2QNvFgoqz+97SuQM
+         md3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=d8l26VqjYWMF70YANmL81xtMBvMhRbV8z9l+EzsfRds=;
-        b=7DqfcaXGqbfXwGeK3ZBDgJAv3WN9+2Vm1DH2acISABd8KOs54FQ38oAU5CdtU6UIQH
-         lLX69CTsrOOxdVhSR8QoGpFy+76yqAp7UmdpG2IDl7n7ToGCXRPYV6N6zEBb15/pL768
-         DQNJDrGrv4NrmXLtqv6CB2Ti6SXQHdr3VOFvFzLs7YvO/uaz9CwreCe76xzMwRG2ZOGq
-         pfYyGtEBM1yqRRLkGGNpe9jGiJPRnjIf7Re+NxdAmTMPZLUIFsckX3+xTJlrzdtPkjRE
-         saHwxOZBWIcGocJg9elA/ufeuuR1ne+bMSanzAMhbZ6cyJblKclNAr1K/MtWEgF/FpPk
-         i7Dw==
-X-Gm-Message-State: ACrzQf1aXjiWpryQkOhzZB3Sc6eoOODt4AAQUY7vEr+zBvcvkyGn4OMO
-        XpHIc7iWj0N8KCK2LOl54630sQ==
-X-Google-Smtp-Source: AMsMyM6gR/rEAC/F7rWYiVhzX0uXvT39XzWAY16QONciExLnxAPhkuGkhDZgxZo29aVddigxcRgU/Q==
-X-Received: by 2002:a05:620a:8010:b0:6ee:cf03:38a6 with SMTP id ee16-20020a05620a801000b006eecf0338a6mr3568874qkb.264.1666132476151;
-        Tue, 18 Oct 2022 15:34:36 -0700 (PDT)
-Received: from [192.168.10.124] (pool-72-83-177-149.washdc.east.verizon.net. [72.83.177.149])
-        by smtp.gmail.com with ESMTPSA id n14-20020ac85a0e000000b0039ad65104fasm2987271qta.12.2022.10.18.15.34.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Oct 2022 15:34:35 -0700 (PDT)
-Message-ID: <3b446b01-cf9c-a185-bbad-a77b7d73c5d2@linaro.org>
-Date:   Tue, 18 Oct 2022 18:34:34 -0400
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=bKOW1QdWpDeYUyEm9qOMdRQfQU4SuEssfuGJ8DkV72Q=;
+        b=yJYvb3/0FY7gP/jpfoLBSN0M/IbsSmYkZb9Q/Z14aLAPWp7odeqk106G3IJf/0iYRZ
+         nTo9Vttc+gN+zdXeBYFpk6v4vgjXy/nHAj4ITF6wcM7qj3eip7TN3jLlvSeZh8/00IY8
+         XtcSIEOHQ4UxLJx9HXBBEsEdwjXc8xxV5AWGbtWImjgReXQLEp6AwhWwcsy5ttGEEyMp
+         jd+nxXuSPBR0TNI3kmKuHGE/ZmyrLyNc5qJmHctgEZXnf58cIoltTNxLr4rPmE7VLsqW
+         xoiFiDQEjYxlddHARHypOv6mF8HMNVkOQOR66oLtrvfb+t4cROHKNEdcetsgGwM/4LyM
+         D5PQ==
+X-Gm-Message-State: ACrzQf3Pt6+xKBtukzchhvno21/Ik2hTqNMYXYbPoWdl8wjAK8Px8c6R
+        HiQL+p3j6ze6hWjzW9wrLi4=
+X-Google-Smtp-Source: AMsMyM5ZR/g6sZnfn2VHCfz27SdOCJChEAW0ySisXoy7K4E0uCegu9fScJTQhQqCuP6n1TUXu7U/wg==
+X-Received: by 2002:a05:6808:1b22:b0:355:2980:2ac8 with SMTP id bx34-20020a0568081b2200b0035529802ac8mr2533494oib.1.1666133038596;
+        Tue, 18 Oct 2022 15:43:58 -0700 (PDT)
+Received: from localhost ([12.97.180.36])
+        by smtp.gmail.com with ESMTPSA id v6-20020a9d69c6000000b006618586b850sm6586758oto.46.2022.10.18.15.43.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Oct 2022 15:43:57 -0700 (PDT)
+Date:   Tue, 18 Oct 2022 15:41:46 -0700
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 net-next 1/6] bitmap: try to optimize arr32 <-> bitmap
+ on 64-bit LEs
+Message-ID: <Y08rqtdiTDbIm0EJ@yury-laptop>
+References: <20221018140027.48086-1-alexandr.lobakin@intel.com>
+ <20221018140027.48086-2-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [net-next][PATCH v4] dt-bindings: dsa: Add lan9303 yaml
-Content-Language: en-US
-To:     Jerry.Ray@microchip.com, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20221003164624.4823-1-jerry.ray@microchip.com>
- <c1b64758-219b-9251-cea8-d5301f01ee7f@linaro.org>
- <MWHPR11MB1693223A91222AEAAA3FC69FEF299@MWHPR11MB1693.namprd11.prod.outlook.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <MWHPR11MB1693223A91222AEAAA3FC69FEF299@MWHPR11MB1693.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221018140027.48086-2-alexandr.lobakin@intel.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17/10/2022 14:33, Jerry.Ray@microchip.com wrote:
->>> +
->>> +  reg:
->>> +    maxItems: 1
->>> +
->>> +  reset-gpios:
->>> +    description: Optional reset line
->>> +    maxItems: 1
->>> +
->>> +  reset-duration:
->>> +    description: Reset duration in milliseconds
->>> +    default: 200
->>
->> This is a friendly reminder during the review process.
->>
->> It seems my previous comments were not fully addressed. Maybe my
->> feedback got lost between the quotes, maybe you just forgot to apply it.
->> Please go back to the previous discussion and either implement all
->> requested changes or keep discussing them.
->>
->> Thank you.
->>
+On Tue, Oct 18, 2022 at 04:00:22PM +0200, Alexander Lobakin wrote:
+> Unlike bitmap_{from,to}_arr64(), when there can be no out-of-bounds
+> accesses (due to u64 always being no shorter than unsigned long),
+> it can't be guaranteed with arr32s due to that on 64-bit platforms:
 > 
-> I am documenting "what is" rather than what I think it should be. I
-> would prefer there be a "-ms" suffix on the name, but that was not
-> what was in the pre-existing code.
+> bits     BITS_TO_U32 * sizeof(u32)    BITS_TO_LONGS * sizeof(long)
+> 1-32     4                            8
+> 33-64    8                            8
+> 95-96    12                           16
+> 97-128   16                           16
 > 
-> I added the "default: 200" line and can add a "maxItems: 1", but begin
-> getting errors when I attempt to further define this field as a
-> uint32 type or anything like that.
-
-There are no errors after adding proper type. However I cannot help you
-for some unspecified code with unspecified warnings.
-
+> and so on.
+> That is why bitmap_{from,to}_arr32() are always defined there as
+> externs. But quite often @nbits is a compile-time constant, which
+> means we could suggest whether it can be inlined or not at
+> compile-time basing on the number of bits (above).
 > 
-> And no, I'm not getting any warnings or errors from the dt_bindings_check.
+> So, try to determine that at compile time and, in case of both
+> containers having the same size in bytes, resolve it to
+> bitmap_copy_clear_tail() on Little Endian. No changes here for
+> Big Endian or when the number of bits *really* is variable.
 
-Best regards,
-Krzysztof
+You're saying 'try to optimize', but don't show any numbers. What's
+the target for your optimization? Can you demonstrate how it performs
+in test or in real work?
+ 
+> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> ---
+>  include/linux/bitmap.h | 51 ++++++++++++++++++++++++++++++------------
+>  lib/bitmap.c           | 12 +++++-----
+>  2 files changed, 43 insertions(+), 20 deletions(-)
+> 
+> diff --git a/include/linux/bitmap.h b/include/linux/bitmap.h
+> index 7d6d73b78147..79d12e0f748b 100644
+> --- a/include/linux/bitmap.h
+> +++ b/include/linux/bitmap.h
+> @@ -283,24 +283,47 @@ static inline void bitmap_copy_clear_tail(unsigned long *dst,
+>   * On 32-bit systems bitmaps are represented as u32 arrays internally. On LE64
+>   * machines the order of hi and lo parts of numbers match the bitmap structure.
+>   * In both cases conversion is not needed when copying data from/to arrays of
+> - * u32. But in LE64 case, typecast in bitmap_copy_clear_tail() may lead
+> - * to out-of-bound access. To avoid that, both LE and BE variants of 64-bit
+> - * architectures are not using bitmap_copy_clear_tail().
+> + * u32. But in LE64 case, typecast in bitmap_copy_clear_tail() may lead to
+> + * out-of-bound access. To avoid that, LE variant of 64-bit architectures uses
+> + * bitmap_copy_clear_tail() only when @bitmap and @buf containers have the same
+> + * size in memory (known at compile time), and 64-bit BEs never use it.
+>   */
+> -#if BITS_PER_LONG == 64
+> -void bitmap_from_arr32(unsigned long *bitmap, const u32 *buf,
+> -							unsigned int nbits);
+> -void bitmap_to_arr32(u32 *buf, const unsigned long *bitmap,
+> -							unsigned int nbits);
+> +#if BITS_PER_LONG == 32
+> +#define bitmap_arr32_compat(nbits)		true
+> +#elif defined(__LITTLE_ENDIAN)
+> +#define bitmap_arr32_compat(nbits)		\
 
+'Compat' is reserved for a compatibility layer between kernel and
+user spaces running different ABIs. Can you pick some other word?
+
+> +	(__builtin_constant_p(nbits) &&		\
+> +	 BITS_TO_U32(nbits) * sizeof(u32) ==	\
+> +	 BITS_TO_LONGS(nbits) * sizeof(long))
+
+I think it should be:
+        round_up(nbits, 32) == round_up(nbits, 64)
+
+>  #else
+> -#define bitmap_from_arr32(bitmap, buf, nbits)			\
+> -	bitmap_copy_clear_tail((unsigned long *) (bitmap),	\
+> -			(const unsigned long *) (buf), (nbits))
+> -#define bitmap_to_arr32(buf, bitmap, nbits)			\
+> -	bitmap_copy_clear_tail((unsigned long *) (buf),		\
+> -			(const unsigned long *) (bitmap), (nbits))
+
+Can you keep this part untouched? I'd like to have a clear meaning -
+on 32-bit arch, bitmap_to_arr32 is a simple copy.
+
+> +#define bitmap_arr32_compat(nbits)		false
+>  #endif
+>  
+> +void __bitmap_from_arr32(unsigned long *bitmap, const u32 *buf, unsigned int nbits);
+> +void __bitmap_to_arr32(u32 *buf, const unsigned long *bitmap, unsigned int nbits);
+> +
+> +static inline void bitmap_from_arr32(unsigned long *bitmap, const u32 *buf,
+> +				     unsigned int nbits)
+> +{
+> +	const unsigned long *src = (const unsigned long *)buf;
+> +
+> +	if (bitmap_arr32_compat(nbits))
+> +		bitmap_copy_clear_tail(bitmap, src, nbits);
+> +	else
+> +		__bitmap_from_arr32(bitmap, buf, nbits);
+
+If you would really want to optimize it, I'd suggest something like
+this:
+    #ifdef __LITTLE_ENDIAN
+        /*copy as many full 64-bit words as we can */
+        bitmap_copy(bitmap, src, round_down(nbits, BITS_PER_LONG)); 
+
+        /* now copy part of last word per-byte */
+        ...
+    #else
+	__bitmap_from_arr32(bitmap, buf, nbits);
+    #endif
+
+This should be better because it uses fast bitmap_copy() regardless
+the number of bits. Assuming bitmap_copy() is significantly faster
+than bitmap_from_arr(), people will be surprised by the difference of
+speed of copying, say, 2048 and 2049-bit bitmaps. Right?
+
+But unless we'll see real numbers, it's questionable to me if that's
+worth the effort.
+
+Thanks,
+Yury
