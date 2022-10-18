@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E6EE60366E
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 01:07:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02E9760366F
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 01:08:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229939AbiJRXHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 19:07:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35694 "EHLO
+        id S229886AbiJRXH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 19:07:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229836AbiJRXHr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 19:07:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F88EBD056
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 16:07:41 -0700 (PDT)
+        with ESMTP id S229827AbiJRXHp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 19:07:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB19DBE2F2
+        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 16:07:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 83608B8207D
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 928B361723
         for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 23:07:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C20CEC43141;
-        Tue, 18 Oct 2022 23:07:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76F54C433D7;
+        Tue, 18 Oct 2022 23:07:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666134460;
-        bh=rVsZCfKTzriIPgjvgfJ9dblAuHU9IQCmyXb/aa0JXJg=;
+        s=k20201202; t=1666134461;
+        bh=RtKta0cJkreQ92ktt5mTi/lO5SCoKozzwF0MjboUrCE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EQGl8UNryBMdGmowqOnjsZmxrq2Qv4+gNvhlSxtO3rRtfgDugXG0MZe+7MLyNqwDc
-         13m6UuV8oquwitkLzeShMEAJCMwhvFw+QayT2CRgtIZ7V65fOuReIHdAwu7XJywDlS
-         34r3rWeo07KJfas0oxkFE9Mjuk4zITik0uJ18xbHk5l1d9Yk6sbozvHuh8tbfZgext
-         GLMmn/EdyESpHaMe9+oyAkv5haVgzGo7qdoU7HREAseYGvPwCXPYm4ngkuFWbL9C2D
-         pc1gM+VPPml9Kr4NYI6KyCmRL65RW+ky257jPXRLIq9szoa/awY1KDg/CITrYFqdxJ
-         SLqmd8kTkc94Q==
+        b=gjqdhakZBCknyAi03u7iOSNaztv82UTtiTtCPJC8aDm1vV00/NQitBRTxmx8YGeRi
+         gxhMc/8qKAyt5xUrxzaZ1P66IV3zUi85fHsLFvo8j62ZDFfQty/rbx6KD5d99T8Qbr
+         wFQ/e+MyiFdy6YRjTbJdupTT+bf0x23I8/TFa2sr/LTJ4WHOYUaiikYSYCH6Jn93Tj
+         NrUnO9xioSm8ur/w0vc1YvvDHQT4IfoCGV5uLwODHxDWmlVEvNdDzBicdqJi0Uy6aU
+         nBaFc0/XAcCaw/0qgPFJ1HtXLhETGbexUYXx1n6Sl/YMP0XRHuIJCYLLL5/TvYGwnj
+         MD2fdM8wF0uTA==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net, johannes@sipsolutions.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         jiri@resnulli.us, razor@blackwall.org, nicolas.dichtel@6wind.com,
         gnault@redhat.com, jacob.e.keller@intel.com, fw@strlen.de,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 10/13] genetlink: use iterator in the op to policy map dumping
-Date:   Tue, 18 Oct 2022 16:07:25 -0700
-Message-Id: <20221018230728.1039524-11-kuba@kernel.org>
+Subject: [PATCH net-next 11/13] genetlink: inline old iteration helpers
+Date:   Tue, 18 Oct 2022 16:07:26 -0700
+Message-Id: <20221018230728.1039524-12-kuba@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221018230728.1039524-1-kuba@kernel.org>
 References: <20221018230728.1039524-1-kuba@kernel.org>
@@ -54,126 +54,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We can't put the full iterator in the struct ctrl_dump_policy_ctx
-because dump context is statically sized by netlink core.
-Allocate it dynamically.
-
-Rename policy to dump_map to make the logic a little easier to follow.
+All dumpers use the iterators now, inline the cmd by index
+stuff into iterator code.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- net/netlink/genetlink.c | 48 ++++++++++++++++++++++-------------------
- 1 file changed, 26 insertions(+), 22 deletions(-)
+ net/netlink/genetlink.c | 32 +++++++++-----------------------
+ 1 file changed, 9 insertions(+), 23 deletions(-)
 
 diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
-index c5fcb7b9c383..63807204805a 100644
+index 63807204805a..301981bae83d 100644
 --- a/net/netlink/genetlink.c
 +++ b/net/netlink/genetlink.c
-@@ -1225,10 +1225,10 @@ static int genl_ctrl_event(int event, const struct genl_family *family,
- struct ctrl_dump_policy_ctx {
- 	struct netlink_policy_dump_state *state;
- 	const struct genl_family *rt;
--	unsigned int opidx;
-+	struct genl_op_iter *op_iter;
- 	u32 op;
- 	u16 fam_id;
--	u8 policies:1,
-+	u8 dump_map:1,
- 	   single_op:1;
- };
- 
-@@ -1298,9 +1298,16 @@ static int ctrl_dumppolicy_start(struct netlink_callback *cb)
- 
- 		if (!ctx->state)
- 			return -ENODATA;
-+
-+		ctx->dump_map = 1;
- 		return 0;
- 	}
- 
-+	ctx->op_iter = kmalloc(sizeof(*ctx->op_iter), GFP_KERNEL);
-+	if (!ctx->op_iter)
-+		return -ENOMEM;
-+	ctx->dump_map = genl_op_iter_init(rt, ctx->op_iter);
-+
- 	for (genl_op_iter_init(rt, &i); genl_op_iter_next(&i); ) {
- 		if (i.doit.policy) {
- 			err = netlink_policy_dump_add_policy(&ctx->state,
-@@ -1318,12 +1325,16 @@ static int ctrl_dumppolicy_start(struct netlink_callback *cb)
- 		}
- 	}
- 
--	if (!ctx->state)
--		return -ENODATA;
-+	if (!ctx->state) {
-+		err = -ENODATA;
-+		goto err_free_op_iter;
-+	}
- 	return 0;
- 
- err_free_state:
- 	netlink_policy_dump_free(ctx->state);
-+err_free_op_iter:
-+	kfree(ctx->op_iter);
- 	return err;
+@@ -99,11 +99,6 @@ static const struct genl_family *genl_family_find_byname(char *name)
+ 	return NULL;
  }
  
-@@ -1403,11 +1414,10 @@ static int ctrl_dumppolicy(struct sk_buff *skb, struct netlink_callback *cb)
- 	struct ctrl_dump_policy_ctx *ctx = (void *)cb->ctx;
- 	void *hdr;
- 
--	if (!ctx->policies) {
--		struct genl_split_ops doit, dumpit;
--		struct genl_ops op;
+-static int genl_get_cmd_cnt(const struct genl_family *family)
+-{
+-	return family->n_ops + family->n_small_ops;
+-}
 -
-+	if (ctx->dump_map) {
- 		if (ctx->single_op) {
-+			struct genl_split_ops doit, dumpit;
-+
- 			if (genl_get_cmd(ctx->op, GENL_CMD_CAP_DO,
- 					 ctx->rt, &doit) &&
- 			    genl_get_cmd(ctx->op, GENL_CMD_CAP_DUMP,
-@@ -1419,25 +1429,18 @@ static int ctrl_dumppolicy(struct sk_buff *skb, struct netlink_callback *cb)
- 			if (ctrl_dumppolicy_put_op(skb, cb, &doit, &dumpit))
- 				return skb->len;
- 
--			ctx->opidx = genl_get_cmd_cnt(ctx->rt);
-+			/* done with the per-op policy index list */
-+			ctx->dump_map = 0;
- 		}
- 
--		while (ctx->opidx < genl_get_cmd_cnt(ctx->rt)) {
--			genl_get_cmd_by_index(ctx->opidx, ctx->rt, &op);
--
--			genl_cmd_full_to_split(&doit, ctx->rt,
--					       &op, GENL_CMD_CAP_DO);
--			genl_cmd_full_to_split(&dumpit, ctx->rt,
--					       &op, GENL_CMD_CAP_DUMP);
--
--			if (ctrl_dumppolicy_put_op(skb, cb, &doit, &dumpit))
-+		while (ctx->dump_map) {
-+			if (ctrl_dumppolicy_put_op(skb, cb,
-+						   &ctx->op_iter->doit,
-+						   &ctx->op_iter->dumpit))
- 				return skb->len;
- 
--			ctx->opidx++;
-+			ctx->dump_map = genl_op_iter_next(ctx->op_iter);
- 		}
--
--		/* completed with the per-op policy index list */
--		ctx->policies = true;
- 	}
- 
- 	while (netlink_policy_dump_loop(ctx->state)) {
-@@ -1470,6 +1473,7 @@ static int ctrl_dumppolicy_done(struct netlink_callback *cb)
+ static void genl_op_from_full(const struct genl_family *family,
+ 			      unsigned int i, struct genl_ops *op)
  {
- 	struct ctrl_dump_policy_ctx *ctx = (void *)cb->ctx;
- 
-+	kfree(ctx->op_iter);
- 	netlink_policy_dump_free(ctx->state);
- 	return 0;
+@@ -217,18 +212,6 @@ genl_get_cmd(u32 cmd, u8 flags, const struct genl_family *family,
+ 	return genl_cmd_full_to_split(op, family, &full, flags);
  }
+ 
+-static void genl_get_cmd_by_index(unsigned int i,
+-				  const struct genl_family *family,
+-				  struct genl_ops *op)
+-{
+-	if (i < family->n_ops)
+-		genl_op_from_full(family, i, op);
+-	else if (i < family->n_ops + family->n_small_ops)
+-		genl_op_from_small(family, i - family->n_ops, op);
+-	else
+-		WARN_ON_ONCE(1);
+-}
+-
+ struct genl_op_iter {
+ 	const struct genl_family *family;
+ 	struct genl_split_ops doit;
+@@ -246,22 +229,25 @@ genl_op_iter_init(const struct genl_family *family, struct genl_op_iter *iter)
+ 
+ 	iter->flags = 0;
+ 
+-	return genl_get_cmd_cnt(iter->family);
++	return iter->family->n_ops + iter->family->n_small_ops;
+ }
+ 
+ static bool genl_op_iter_next(struct genl_op_iter *iter)
+ {
++	const struct genl_family *family = iter->family;
+ 	struct genl_ops op;
+ 
+-	if (iter->i >= genl_get_cmd_cnt(iter->family))
++	if (iter->i < family->n_ops)
++		genl_op_from_full(family, iter->i, &op);
++	else if (iter->i < family->n_ops + family->n_small_ops)
++		genl_op_from_small(family, iter->i - family->n_ops, &op);
++	else
+ 		return false;
+ 
+-	genl_get_cmd_by_index(iter->i, iter->family, &op);
+ 	iter->i++;
+ 
+-	genl_cmd_full_to_split(&iter->doit, iter->family, &op, GENL_CMD_CAP_DO);
+-	genl_cmd_full_to_split(&iter->dumpit, iter->family,
+-			       &op, GENL_CMD_CAP_DUMP);
++	genl_cmd_full_to_split(&iter->doit, family, &op, GENL_CMD_CAP_DO);
++	genl_cmd_full_to_split(&iter->dumpit, family, &op, GENL_CMD_CAP_DUMP);
+ 
+ 	iter->cmd = iter->doit.cmd | iter->dumpit.cmd;
+ 	iter->flags = iter->doit.flags | iter->dumpit.flags;
 -- 
 2.37.3
 
