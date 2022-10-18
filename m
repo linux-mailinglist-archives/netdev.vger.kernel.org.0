@@ -2,98 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CDA6602155
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 04:44:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF7EA60215A
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 04:44:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229923AbiJRCoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Oct 2022 22:44:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34464 "EHLO
+        id S231208AbiJRCoP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Oct 2022 22:44:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231253AbiJRCnz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 22:43:55 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 493A997D5F
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 19:43:52 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id i6so12504071pli.12
-        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 19:43:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=M9bVbKjcMFy6WPGWlEhUD2iI062qF6nYT+c2WdgY1Q8=;
-        b=gWp2faJnrCBXaa/EzcdaiT2psb/PKcsg9+6LtqyyYDhruCaHVeQ7fUSv4MDU7UZlmZ
-         c2YFULQTK+7bF1Z6M4M7iVyKxo/AQs0mJp2x4jSD2wADIhZyAfCmCLAfyTpAXNo5Am1Y
-         n9AWDMbyh9I0/jm5RxLt8JfNAgM6LjGg0lqN8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=M9bVbKjcMFy6WPGWlEhUD2iI062qF6nYT+c2WdgY1Q8=;
-        b=IjoqDCPuVnhTW3HkllsOwzxFy5gd2QIgf8LaVES87ChI+LBzICBUF623IcBnRO2/hj
-         mmfZVmk4oxffEB3bXoeua/U/01+hjxBo+VDR7NAHVzPu+281d5W5OfXf46utydzKjWHi
-         oh34spV+nFGdmuyzfSmy2JojdEAhsB2i8vdiGIIXtYkYOqmmUl+BX3ga8XdBk3W9RVzi
-         TK8junb0wJPLfBbJDCVu21cmd4rW1Ht+wy3fDY9HtD5kxzhCJRXn5eH0DHD6oTJeeX3Y
-         vFZkMTw3Mkw47ZWnEarhDmu7jqe7AbG6Twb9Yq7xZjp1A9YsiCjekNcQ4UD2xiUhV4g1
-         +MCw==
-X-Gm-Message-State: ACrzQf21TxwvVdNr8NGJt9pW89nkbt5dhOJVFUnTZl5Qiv3DA429VA+C
-        K+LzgdN+QA3k/bon8IrY8IJlbQ==
-X-Google-Smtp-Source: AMsMyM47Y1NyZHdqz1//0n1330NKrwJOAGp7q/D/pp97k2bhIugRMB78h4i6pLlpQLE0EUIevEe13w==
-X-Received: by 2002:a17:902:d717:b0:17f:6155:e578 with SMTP id w23-20020a170902d71700b0017f6155e578mr717658ply.31.1666061031803;
-        Mon, 17 Oct 2022 19:43:51 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id p3-20020a170902780300b001811a197797sm7274765pll.194.2022.10.17.19.43.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Oct 2022 19:43:51 -0700 (PDT)
-Date:   Mon, 17 Oct 2022 19:43:50 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Stanislav Yakovlev <stas.yakovlev@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH 3/6][next] ipw2x00: Remove unnecessary cast to iw_handler
- in ipw_wx_handlers
-Message-ID: <202210171943.1B5E6B85@keescook>
-References: <cover.1666038048.git.gustavoars@kernel.org>
- <421a4b4673da8fb610850f674d0994ad46bc1ed6.1666038048.git.gustavoars@kernel.org>
+        with ESMTP id S231192AbiJRCoK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Oct 2022 22:44:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D2139623E
+        for <netdev@vger.kernel.org>; Mon, 17 Oct 2022 19:44:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EFB161363
+        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 02:44:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90EF7C433C1;
+        Tue, 18 Oct 2022 02:44:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666061046;
+        bh=PGvJK2Uq9YbNqzDPQnZHMe7Mi6c/mB4wy/TwI/BGjlk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Ebu/2TZLVLsKksNV8jadm/7nk1+CitaxblKaWBqlNEZBTjuJVmEmoq88am8Mm4TyT
+         236rHlV1qpYDFv5nuRD0dkZpDBQqaOZLo5YtFGFKfIuPAe6kXwhrhYFdUEv7/YnYj0
+         HKnXNLUtdefKuy4C/6NjyZGQ+osTupER9HO1dMbtspAfPV8nkFWtDox1h9YEYKQZBL
+         r7UbQjmbUaXusCYUwKWVmuKMu82HLY2iUdvarOSAhr9JT/rlEysPhzVvZ5afnlkT+J
+         Le4AsLy6Zvr2LBq1fWx7tYEgec8W8HAGiakCIrOmahKVoJHhpQ1A8x5OFZ6v5L28FK
+         iffJBhBll28ZA==
+Date:   Mon, 17 Oct 2022 19:44:04 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        =?UTF-8?B?w43DsWlnbw==?= Huguet <ihuguet@redhat.com>
+Cc:     irusskikh@marvell.com, dbogdanov@marvell.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
+        Li Liang <liali@redhat.com>
+Subject: Re: [PATCH net] atlantic: fix deadlock at aq_nic_stop
+Message-ID: <20221017194404.0f841a52@kernel.org>
+In-Reply-To: <Y03y/D8WszbjmSwZ@lunn.ch>
+References: <20221014103443.138574-1-ihuguet@redhat.com>
+        <Y0lSYQ99lBSqk+eH@lunn.ch>
+        <CACT4ouct9H+TQ33S=bykygU_Rpb61LMQDYQ1hjEaM=-LxAw9GQ@mail.gmail.com>
+        <Y0llmkQqmWLDLm52@lunn.ch>
+        <CACT4oudn-sS16O7_+eihVYUqSTqgshbbqMFRBhgxkgytphsN-Q@mail.gmail.com>
+        <Y0rNLpmCjHVoO+D1@lunn.ch>
+        <CACT4oucrz5gDazdAF3BpEJX8XTRestZjiLAOxSHGAxSqf_o+LQ@mail.gmail.com>
+        <Y03y/D8WszbjmSwZ@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <421a4b4673da8fb610850f674d0994ad46bc1ed6.1666038048.git.gustavoars@kernel.org>
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 17, 2022 at 03:34:48PM -0500, Gustavo A. R. Silva wrote:
-> Previous patches have removed the rest of the casts to iw_handler in
-> ipw_wx_handlers array definition, and with that multiple
-> -Wcast-function-type-strict warnings have been fixed.
+On Tue, 18 Oct 2022 02:27:40 +0200 Andrew Lunn wrote:
+> > > Please try to identify what is being protected. If it is driver
+> > > internal state, could it be replaced with a driver mutex, rather than
+> > > RTNL? Or is it network stack as a whole state, which really does
+> > > require RTNL? If so, how do other drivers deal with this problem? Is
+> > > it specific to MACSEC? Does MACSEC have a design problem?  
+> > 
+> > I already considered this possibility but discarded it because, as I
+> > say above, everything else is already legitimately protected by
+> > rtnl_lock.  
 > 
-> Remove the one cast to iw_handler remaining, which was not removed in
-> previous patches because there was no -Wcast-function-type-strict warning
-> associated with it.
-> 
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
->  /* Rebase the WE IOCTLs to zero for the handler array */
->  static iw_handler ipw_wx_handlers[] = {
-> -	IW_HANDLER(SIOCGIWNAME, (iw_handler)cfg80211_wext_giwname),
-> +	IW_HANDLER(SIOCGIWNAME, cfg80211_wext_giwname),
->  	IW_HANDLER(SIOCSIWFREQ, ipw_wx_set_freq),
->  	IW_HANDLER(SIOCGIWFREQ, ipw_wx_get_freq),
->  	IW_HANDLER(SIOCSIWMODE, ipw_wx_set_mode),
+> Did you look at other drivers using MACSEC offload? Is this driver
+> unique in having stuff run in a work queue which you need to cancel?
+> In fact, it is not limited to MACSEC, it could be any work queue which
+> holds RTNL and needs to be cancelled.
 
-I'd just collapse this into the previous cfg80211_wext patch...
+FWIW the work APIs return a boolean to tell you if the work was
+actually scheduled / canceled, and you can pair that with a reference
+count of the netdev to avoid the typical _sync issues.
 
--- 
-Kees Cook
+trigger()
+	ASSERT_RTNL();
+	if (schedule_work(netdev_priv->bla))
+		netdev_hold();
+
+work()
+	rtnl_lock();
+	if (netif_running())
+		do_ya_thing();
+	netdev_put();
+	rtnl_unlock();
+
+stop()
+	ASSERT_RTNL();
+	if (cancel_work(bla))
+		netdev_put();
+
+I think.
