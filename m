@@ -2,326 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CE5D602B4C
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 14:09:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ABB4602B9F
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 14:21:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229835AbiJRMJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 08:09:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57812 "EHLO
+        id S229958AbiJRMVR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 08:21:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230282AbiJRMIu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 08:08:50 -0400
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2049.outbound.protection.outlook.com [40.107.95.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5161BBEAFB
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 05:08:29 -0700 (PDT)
+        with ESMTP id S230241AbiJRMVC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 08:21:02 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B76BA26114;
+        Tue, 18 Oct 2022 05:20:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1666095651; x=1697631651;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=sZfILRZC386zAULMZyOlWqDLr33z/6h5x5KoFmJSrl0=;
+  b=i0hEwQUbDoQaq2VWcM4uMcYOEqnzTc8SxxTFbrbSq92LNvA8wp8Rn8/j
+   C9uyMWU7FQwx01NECoJWGIrZ15GsbT13UVibAgL2IU8Qxq4fyNRpUlhaX
+   3+tnQCbr70c6XQDWEunAJuQFEhkIeYxN9L6GODSSd2jeJNxmghQkKLXeG
+   RnLKKyRJAlC9TRS/xKJK/o8XV1hM4ccIVcQ4Xu/XBV10IIGQlmMLOZpve
+   3J9jLFhGo2K4LS6znJAD5qhhrPEcEHwHenBxk+/Hialn0rtQvUHSCigfU
+   aAiN88sKyGbL90pPXpYa8/WkSC8mzuXtikM3tTDQ0U6cZ5twWvvP9qLwi
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10503"; a="307172030"
+X-IronPort-AV: E=Sophos;i="5.95,193,1661842800"; 
+   d="scan'208";a="307172030"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Oct 2022 05:20:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10503"; a="754020413"
+X-IronPort-AV: E=Sophos;i="5.95,193,1661842800"; 
+   d="scan'208";a="754020413"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga004.jf.intel.com with ESMTP; 18 Oct 2022 05:20:47 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 18 Oct 2022 05:20:46 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 18 Oct 2022 05:20:46 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Tue, 18 Oct 2022 05:20:46 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.172)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Tue, 18 Oct 2022 05:20:45 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=c8ig9+dIpjTolMjBEmVZmHhPRDqdv9H8/Yhh6ES5QlIdRS/QNUISmJCpgJpmgKuJzzbTRkb2NwHYloJs93HTfdn4fcCrBDqTN/MwhmNR6mpN6L2sxOiHmAPzRV8sLE92h4wqa0QUfBIHiq2nbV63inzjqCv0K0WCCW890HLT18sDv3AeOGvko3lEXmhBc37HdS7yKmnjJPdb609JMAx7GMQzMuVf06v/AM3i1ROOdTOpZg1Ab4xvsS7o3n17d0tTy1WNdNY92/xuBerbj0did5L04UDEjqCywcZUKgekc0n05NzhZt8Ief6VfqfgtbHgJPH8gCmUHvFq4ndzF7mipA==
+ b=QhO/1+IiLoHb9EWA05x67kQc9wrNscNGXsIjIK/UxoHcYq1mR4ekeD7v6+N3VgT+NsgSgzmY9MQePuEPiXqmOlOvaPMFxUx0vvFIjBUUOS50O65K9qs40xsgkJ8/fZMzbP6KDB1F32/61Xt2DuvLw2ctP7hRoSYCxhEcbuGoPXXyQqEdYISnc5rLIQ9MqmSzfGkVNwjw7qVi2H8uePAKyTEuBCS+Dr7qkrN8+sdzjJzmAY24x5fb9CIstHLBDsQRiSzP2UiHHjQB/2ENMnQaZpItmyQhRYLhXAIVzmF2TaX6V0UmknsM9Ys7ipdJkam8LZYe5M4qfXSEA2i8UxctdQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/fkwh202eXgpsxIjCf8XrnU2/86UOeQGTa0oGgKb+tI=;
- b=QXqyglBU5BFbXiaNkB5289YCpWEqwq8EpfOuHqEauvgnE93E0xUCEzm6XqT3ZbCoFlbz5LMNp6rmF2kSxNqgtdFlXqTDelWRkZa1ysyhaxdtZZiOe9t8pHxv4loKgBma3p0U4aaqZs+PGBh9kqrhhxS8zXkb2Ig6GKe4sCx//bsQRZzycI6GO+D66OGDv7TgwkJUTbKap/Zgk1PIyP6hc3I7hqtdhRZ/JchHpaE0wf0L/HEilxyTQ89H1iPG8p339VOTYsZX4guNX0kUUxiaeDG3l5ZdIRjwpQ4Gi9F+OzkC2mGnIhPtDftdkHB7TPo7qytUQhRldt7D0VWh54KFUQ==
+ bh=4r9nEOjuz7GDjSwzd2qFlVqSkeMtaPADnIeQDgftQBg=;
+ b=DG9eDlMHccarJLB1/Wa3OaOg+WT+WPK+tkDHHnoMX4/fUe1wdYT8XBAV0e3jcpspKqmTA9lzjasLqc+iiVoB9hGGmkv1ETF9au2JeLHy0N4WMz93+N/K3q9w3jGkFntF2tYhpOlSkQVDntUtV2qoVrjxPy2qOFP5uwFxA/9/+K9++bXOkfZu57iCPSQrpn3MA2JofJdB3x2AaGc9fxA8jb4MDNdKiLPhSeFrRG0+AIzuMwn1sKZDYDuSy/jqenfK8UNi20CPKj0aTl4v9HXT5Ag5Pzw5zjNu+kwKWKaLLkcUzGwvNPHLse6TCB0qOc62F+Su+1tUR6vxIFZyd1SpLg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/fkwh202eXgpsxIjCf8XrnU2/86UOeQGTa0oGgKb+tI=;
- b=RzbD2gerKyYtKxnxypBPO3N5iTkk4gU+1wXSo/4iB9Z/CwFgm2Vytn4zK8S6it8qJjJQHfOtzdAAzSYGSjXY3jXQwZ8HeLQWdO9lqfeJOiZGd36uLTeRMWuqa6chp/i3jPbI6aEgo321qDgttUdgb1TwRIhzrOxnJtCsqEmRFXAg20UVSGo1TuQRo3lNs0OYgRHSmH2/WZn+rIdUj3JQdg0pPA04XfaGhkaqQ+/iXliubSdDabQiYgulxHZyVMrid5pC4vTIVen8uGcRK6LWALD83f2PWBtGrzvMbDWG4HObFl2RiiwnFPQ46ZSTP9tSXzs8DzghzrX3l7zrkp9pPg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by PH7PR12MB6696.namprd12.prod.outlook.com (2603:10b6:510:1b3::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.26; Tue, 18 Oct
- 2022 12:07:27 +0000
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::4ff2:d93e:d200:227e]) by CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::4ff2:d93e:d200:227e%7]) with mapi id 15.20.5723.033; Tue, 18 Oct 2022
- 12:07:26 +0000
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, roopa@nvidia.com, razor@blackwall.org,
-        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [RFC PATCH net-next 19/19] bridge: mcast: Support replacement of MDB port group entries
-Date:   Tue, 18 Oct 2022 15:04:20 +0300
-Message-Id: <20221018120420.561846-20-idosch@nvidia.com>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20221018120420.561846-1-idosch@nvidia.com>
-References: <20221018120420.561846-1-idosch@nvidia.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: VI1PR07CA0219.eurprd07.prod.outlook.com
- (2603:10a6:802:58::22) To CY5PR12MB6179.namprd12.prod.outlook.com
- (2603:10b6:930:24::22)
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from DM5PR11MB1324.namprd11.prod.outlook.com (2603:10b6:3:15::14) by
+ DM4PR11MB7181.namprd11.prod.outlook.com (2603:10b6:8:113::13) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5709.21; Tue, 18 Oct 2022 12:20:43 +0000
+Received: from DM5PR11MB1324.namprd11.prod.outlook.com
+ ([fe80::793f:3870:4550:8aee]) by DM5PR11MB1324.namprd11.prod.outlook.com
+ ([fe80::793f:3870:4550:8aee%7]) with mapi id 15.20.5723.033; Tue, 18 Oct 2022
+ 12:20:43 +0000
+From:   "Ruhl, Michael J" <michael.j.ruhl@intel.com>
+To:     Kees Cook <keescook@chromium.org>,
+        "Ruhl@www.outflux.net" <Ruhl@www.outflux.net>
+CC:     "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>
+Subject: RE: [PATCH v3 1/2] igb: Do not free q_vector unless new one was
+ allocated
+Thread-Topic: [PATCH v3 1/2] igb: Do not free q_vector unless new one was
+ allocated
+Thread-Index: AQHY4tOhXsEwHafDKkupYOAMeXei0K4UEdiQ
+Date:   Tue, 18 Oct 2022 12:20:43 +0000
+Message-ID: <DM5PR11MB13247434B4473C63898A35A7C1289@DM5PR11MB1324.namprd11.prod.outlook.com>
+References: <20221018092340.never.556-kees@kernel.org>
+ <20221018092526.4035344-1-keescook@chromium.org>
+In-Reply-To: <20221018092526.4035344-1-keescook@chromium.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.6.500.17
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM5PR11MB1324:EE_|DM4PR11MB7181:EE_
+x-ms-office365-filtering-correlation-id: 5a3ce4e5-8933-4009-abc7-08dab1032d91
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 5Vj+e5H7KH72uER5pPH3Dt9yvUz8VDXyCXHk5NtpfZT9g3WnF6SwtSSf9AQzJpciqBqpYKP0g5NCM7/She1HkQZvCjVVxMT8o1jcmveQxyDOni69fxBAE3RkoEh1yO/xTFSOdnazwE2Osf9uTBTMdwLyBdVYOUhygsfj9eDsiwPHV/oZBCPuc7MVdfYMA8Wgh6RrG/nRe+8bG7RZ4m3ldfZXnpKdslcktVKcWeAvgtr5rKkLB8oy3h5oSCR4kkXb79qXZ5OEvrVWfy96tsPltnZYV/8FZXX93agBO2D1hO+6wqB54oZinA9z0r+OFQ9R6Ym+VwdAjifPH9+AYKuF0pgYczF1+43B14WftDQAwZK8pJ0nJioDyo3s6207mokpm3p27hX7wXpWfnW0Tydcp+TyZatEYhJysibGqy8ZMEGS1dMA6g8MPJFs6iuYz5Z4sT6uNUYf5qoHaITr183CqduP7krptlBy0TDgamFuiphjpQx4E0ScbKfpUpugL699G0/DNdHIQMgxGKD3tLnMnqVJ6YXIE4jlcm7vGahtKLq/WtBoImTMBNlEmNF28NQMfog5aaYf4otMy1OWotPdgp23XesvA6ZZSwXhGKt3p71pJ0v1UeyoZVP77RVnrCGeAVo34eqVAmD5jLro+3rxxA3oPyFZG+BSVUEJ14ULdpxgEZt9A8ltiLh4T2f3LzPZAd/sMG2C9Z+Ere21EqsT1pPOcwWU8qz1jx6CAnNW6LtYNqXLOMDwHt9S9/L/cdjSBUw6eCylF79q4jUD0xckxDMfmw2HEwbt2WxdASerl8sc49IFwSJUH4ZdOGDChDv69d4QA4W+etjHiy9vFSO9G05XhegoA4G27Tf0CzUF4SU=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR11MB1324.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(366004)(39860400002)(346002)(396003)(136003)(451199015)(110136005)(6506007)(9686003)(26005)(186003)(52536014)(82960400001)(2906002)(478600001)(66946007)(76116006)(86362001)(66476007)(66556008)(38100700002)(83380400001)(7696005)(4326008)(41300700001)(33656002)(55016003)(5660300002)(122000001)(66446008)(8936002)(7416002)(71200400001)(64756008)(316002)(38070700005)(8676002)(54906003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?tsescKqBU+bngQry9lmDVrkjXq9eCFadvWoVo3K29+tt6bZFDnT33UzLlhqt?=
+ =?us-ascii?Q?TqidxAkzighLn6tWMZfP1TEpzFc/vltVjUS8NisLNc06GQNebKwURyWoAKXJ?=
+ =?us-ascii?Q?sqVtVREPMQS6Rb6G/ATJdXhtix/NHO+eje4MsscebUJW0/tkc05rYTbCy0u/?=
+ =?us-ascii?Q?NS3WveSabcuOJq00j/4Xv5MdPfotdWKWFLM61RbY7bh9SP3A6kWFNjmBrQIw?=
+ =?us-ascii?Q?g7SJVOwYK9Xkvg0hoqlSyrxM/ipORjdq5HTVyJNYFJkZqs3gTf6D0uDatK0J?=
+ =?us-ascii?Q?EoQozcqjxYR05cBN5SbxCcm38A3ImTAYVuR5GdEbM0cZpfrVaRNCUPF9ARQV?=
+ =?us-ascii?Q?Pc1H8i7CfKEoqLJeRvIRLAMG/6yAa4+5NKzi1wf/vwscUOHU0uBb6GJFoexj?=
+ =?us-ascii?Q?+I2SmbMPk8YCAtVysRUlUN+wD5U+XPo6r8D52iy6WFbLOVl25X+aN9ULLs4I?=
+ =?us-ascii?Q?Syn0cqKEAN4gNcwZKEBm65WOFSuoGmJdItiF9YXph/zL3H5Orj/9+LuLIT4R?=
+ =?us-ascii?Q?GpPx0Pd2eoB8P9OgmuMN0x0fJICeLPH3XTBnFWXMUkEqwkFYOR76NxNidfQh?=
+ =?us-ascii?Q?+nUUMe8KW3MWSez/DRcbQ2oY0KNul1yViCHQn/UMj63HnLHYt6Vuik/Yd/lZ?=
+ =?us-ascii?Q?3ecuLv23WDpBJMQHlDlj+x7qQfxLjmUC41fJnUqE/M5Lgl+2kYud8dc6p7Z8?=
+ =?us-ascii?Q?Ys0tkQIVGZkKwoPyNEaduRzoTES2yOa9mGkafa7CwrC4+3Bg5ulRYajNdBFb?=
+ =?us-ascii?Q?oPZwgOzKS8dqq8zddhYOfFRRSVRoGPFjKPzpT3X7id8/fJF534OElGPR7zEy?=
+ =?us-ascii?Q?G9mN/NkFub1d9ZPAkI/C3ZzePd3zF+oEz/jSnrMLgNK/YCeCA/509++NduMR?=
+ =?us-ascii?Q?zAdmSM7GvhLAVxPjkf5dM+WBcMGWgspyJ7kuEdJojlDOK8XTUWnlBtqvs/6Z?=
+ =?us-ascii?Q?YFRjrZYoQ/w4BBvhBMrLbsGYC02De0H93pnvku40z2+J4/zG6fqoz3BdDDTM?=
+ =?us-ascii?Q?RLDrUwe7ZC14ZcbLEailjw9cJFNUCK6BjVqikGYCth0/0Bnq52L3XBXrFr9k?=
+ =?us-ascii?Q?l0/8v30bl9auYc49vQj/4Pivb7QUUGN2JJnbadAOfL5WckqUjmNcCQT0AJp8?=
+ =?us-ascii?Q?NhRbzMTO4VnDX3QHRRPW6nrs9fSgm9YfIre1e1kdB/LjewTEN7QNN5uPxBvW?=
+ =?us-ascii?Q?yC+E6kjSBYRfaCuv13M//nJ+u4ssCDybsi6StL48Y0c3EWfdoM72+/KeWVFu?=
+ =?us-ascii?Q?pJ+TzUJQd5td0WpV2a5cyxtHPVPViFYkuvKfly97ArJmUOgrKNYUywSKFx3B?=
+ =?us-ascii?Q?kxcDBa/awMKfziqKWQ+20c7lAEydNEvVsTCjYTNkp2CDmJgO5k1sRoXnO4MY?=
+ =?us-ascii?Q?g0ucl8hOKH2iALka/p0fG9XqDWC0SzmlvqdkGYKTTxI6GPRoZIcWqUW0rPvK?=
+ =?us-ascii?Q?uvk9pJQYIfGxOJCCe+4qlGENmu3LGHa3/3nSbfRJ+TvfDaQV0BgdVtXsBDuX?=
+ =?us-ascii?Q?BpMBd82A0vYGbeR2/VhI9MN85ZWqS3R3lvYJxzACw14v4l1k7q+SZZT6R4l3?=
+ =?us-ascii?Q?nduRh+p0k5Ub4K5/DSkNRGFVJD6zhJmImW+pg3GR?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|PH7PR12MB6696:EE_
-X-MS-Office365-Filtering-Correlation-Id: c31e96ff-1221-44e6-e0c6-08dab10152b5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fTdRU5Ss9QlYDtijjUo/3wPQonBtdwKZ8auJtZbl6TofrWqFTMlAlCMbC23OK487Vj56KwIspyfLwffnMYsYleLRftu5ZwPzgGNc0Aud+x851i+vh1chEB0OulMp3Dopu0vxpnYOjhL9k3kdo1Knt39GOmy/7sApZict183EMVB003WdLV6KLAa2RTVU/QqsLWvxPechuY2Ht/LyqMTV5xAGh7vHLZBQOOH+kAB/ls8HKh/ryPWaiHaEnubi/AffV9FD9v7HAcNJeQyzNMSzkU61P7uPhZ+XphO+9mDUaP9K2ZHdp/yxWP3VlY9nQE5kiNyl5GRbnwJIXOLs7a6ScHOYXvJ7vrQqrttUFwxcxUTidzNwatlR//mAyQ9AX9/YvkpHFZidT8BIjKMw57RpPw8UmORlJ2fCrDxVOAMDHx+7XPQuvQJm2aywZ5mMAoUg0G74Y4AeuKJHLSIT3Ki98mBIqB1XR+9imr7Pw7Y4DitBPkVqcB7burT/L1jY7A/8k5y04XadQUbaJ9pVNXf64t1COm3c4/2crRiNv7V9UVfManqqTiQ9AhGQagjaYKq0+Kh8yleCYF6QZgsxzvqZfFOPQlG/5QtAomOB3e1g4iB/HAEAdhhix2AJoETHSG4Nf9FEAbXJUWhw+tqp2hUcWF0LTxPmx5ZqLxP+Hq9bbsigM38aVX1OVApVBzyI9mStU7E0xPvABm0TRM8fIrjkAA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(39860400002)(396003)(136003)(366004)(376002)(451199015)(6506007)(36756003)(2906002)(8936002)(86362001)(4326008)(5660300002)(107886003)(6512007)(6666004)(26005)(41300700001)(186003)(2616005)(1076003)(478600001)(8676002)(6486002)(66946007)(83380400001)(66476007)(66556008)(38100700002)(316002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?CLcfj/iGQ92g4+BtSbYXj4qgXj7nifjZuBmLjGfMUAsiiOVxfYtYm/T2D+Pp?=
- =?us-ascii?Q?TBgYfv6T81wqfg6iV0xyEVsjQx7t2j0mqFE70uo48zQniEO+oo4kZm6FcdkD?=
- =?us-ascii?Q?bKISyjm3PRGH89QQQhOXSZHEd7yQYwuQtcu84hwHdUHHyfCdIFzAaDf3t5Ut?=
- =?us-ascii?Q?w7Z/64WPtlnJ/Jw4iPRplIHfvqi27fyNtuxqILVXRy93m6WnpqdOMcVCmXjX?=
- =?us-ascii?Q?KqoLvxAwxngKqrCiNFXYeHQEBQoD5uhnV2xCt1iAzd2bLApjHGLvBCFyDrFO?=
- =?us-ascii?Q?6rKe9v0QKQLMAv0CQL05rmbV0QokHPCD02mM4ODx/LiDcPjMLPgRq71DCst9?=
- =?us-ascii?Q?PQBrW1b0+p6UvyqH68BOMWRdS8yBpVkZuqp6C6r48dYINUpSu5axCBamtR2L?=
- =?us-ascii?Q?z7lfDn5Dj8vnpCi7xg5ssKO4IXk2CU1f3Q+o3pnfZCSqIysitc+NZQjL/r8V?=
- =?us-ascii?Q?tBDMGnHU0FNkRzWC7jES1+IDCA9yqK1fO6gslhyxH8zDl3IkcOOYF1wQknMG?=
- =?us-ascii?Q?aTXTQRjexyGMEJyAAMCAZwgsrt4uBO3gKFAPhG3H+GEgMG4RFdOpeEQRAbl9?=
- =?us-ascii?Q?i3eUD1xBbjlu7D++Fk+y6jKVtEclqmPQ6zzIpuRAPUJAxRQ7Mx5EBWl/1wFu?=
- =?us-ascii?Q?A4QdCpziSQOcRlWzVx2yCNVawPsrFUSySMSOJlzXmXvLxiHqNbHMRrdAM+wl?=
- =?us-ascii?Q?JgrwkRN/4L8ygDmaSQWfHpDVo4Op9dOEu1sijGmUnv2LE9zHZgbK/L6Z8/YW?=
- =?us-ascii?Q?VyGjvSGMC37ufAbsCRyZRfEMTZDKqkmHf681OQ79sy58MP0C/6eFIobeW2Dg?=
- =?us-ascii?Q?uI7XhiZxPBcTxYWJIavjH7CuHXs0EXHj/FRpG1uDLKx4LxaRkQjX67GEZyFd?=
- =?us-ascii?Q?poFVvtNCzEv3Gj9xlQM2EYuMvFjhXo/uKKlOTz5aG7BHzZ1ZCqUz3VM9/VG6?=
- =?us-ascii?Q?+pCd/3hcYg2JV76EW5dMVaJwJR64J3wdMgLgI+JbV5zWCVznaj+M4YL+bRzS?=
- =?us-ascii?Q?govyF+m8v0VKZ/zSfFwdQcFATj6pp2HgG3QRD8YruIv+xWbkv7pcFy5gAtry?=
- =?us-ascii?Q?7zZkfm0FUGiKtZGNs0GWn/c7qMWSVeDzF4rjC53uB5ZKIPwTDCBNveRtpnIm?=
- =?us-ascii?Q?lZE6vrifznHdO/dTBbXkUpvoGsi74Hr1sQ5K1dR3cKhb1+M8yQGWfJ30+yYk?=
- =?us-ascii?Q?qR1V2rc+2BkYPysTdgGprwvCsOMMC6xmmUWa6+VDJgTAuNKspKMhbomZMWc9?=
- =?us-ascii?Q?kFNVGepAh7pyEn2uFMAE+Jh/l/m+crwz85z1uA2F5WXtl+A0z6UijW5BfqLt?=
- =?us-ascii?Q?M7dN7mJcBhHIvuYjlb/eolWM5E8wh1uch9hn1h3Msg0nf/JN5akehq+wJzbz?=
- =?us-ascii?Q?VhjEJsJ4z9fxrIRWVvwP06RfXxjcXGhAHlXhYzbozJCCWlfvScXgkyQtDhje?=
- =?us-ascii?Q?atSd8/NRJ6kHXA/do8AKlNMrcRofZxNC+M4cUzWarPzXxguqSIHlNWQnFYQC?=
- =?us-ascii?Q?9+flYQPO7gQamP869eJOTdV2DFf9Fo3UGKCbBOAvbpxg95MTW+c4mtxEx8NO?=
- =?us-ascii?Q?vWl08m4kPb/VHDWExUKeZEfVzLIcTL4oHo1AgtUI?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c31e96ff-1221-44e6-e0c6-08dab10152b5
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Oct 2022 12:07:26.8958
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB1324.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5a3ce4e5-8933-4009-abc7-08dab1032d91
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Oct 2022 12:20:43.3729
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: a8IH8qFv3xkLvJ1lWHwcn0EkkW5rdIUxMt0ePiRV7AfK6QY3ozXBfHeOy+7481v+xyMRYmVv0Z0seeoxJxF/jQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6696
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: rf6sRZxBY4dwng8txisCZGHbqueKr/eDdXgLQxoG2mQTSN0qQ+NG/B3lGHzvIKVEitEFq204oSHDFEwpkUMdlx7cG93sSyXpyd5ghiEPbao=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB7181
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that user space can specify additional attributes of port group
-entries such as filter mode and source list, it makes sense to allow
-user space to atomically modify these attributes by replacing entries
-instead of forcing user space to delete the entries and add them back.
+>-----Original Message-----
+>From: Kees Cook <keescook@chromium.org>
+>Sent: Tuesday, October 18, 2022 5:25 AM
+>To: Ruhl@www.outflux.net; Ruhl, Michael J <michael.j.ruhl@intel.com>
+>Cc: Kees Cook <keescook@chromium.org>; Brandeburg, Jesse
+><jesse.brandeburg@intel.com>; Nguyen, Anthony L
+><anthony.l.nguyen@intel.com>; David S. Miller <davem@davemloft.net>;
+>Eric Dumazet <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>;
+>Paolo Abeni <pabeni@redhat.com>; intel-wired-lan@lists.osuosl.org;
+>netdev@vger.kernel.org; linux-kernel@vger.kernel.org; linux-
+>hardening@vger.kernel.org
+>Subject: [PATCH v3 1/2] igb: Do not free q_vector unless new one was
+>allocated
+>
+>Avoid potential use-after-free condition under memory pressure. If the
+>kzalloc() fails, q_vector will be freed but left in the original
+>adapter->q_vector[v_idx] array position.
+>
+>Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>
+>Cc: Tony Nguyen <anthony.l.nguyen@intel.com>
+>Cc: "David S. Miller" <davem@davemloft.net>
+>Cc: Eric Dumazet <edumazet@google.com>
+>Cc: Jakub Kicinski <kuba@kernel.org>
+>Cc: Paolo Abeni <pabeni@redhat.com>
+>Cc: intel-wired-lan@lists.osuosl.org
+>Cc: netdev@vger.kernel.org
+>Signed-off-by: Kees Cook <keescook@chromium.org>
+>---
+> drivers/net/ethernet/intel/igb/igb_main.c | 8 ++++++--
+> 1 file changed, 6 insertions(+), 2 deletions(-)
+>
+>diff --git a/drivers/net/ethernet/intel/igb/igb_main.c
+>b/drivers/net/ethernet/intel/igb/igb_main.c
+>index f8e32833226c..6256855d0f62 100644
+>--- a/drivers/net/ethernet/intel/igb/igb_main.c
+>+++ b/drivers/net/ethernet/intel/igb/igb_main.c
+>@@ -1202,8 +1202,12 @@ static int igb_alloc_q_vector(struct igb_adapter
+>*adapter,
+> 	if (!q_vector) {
+> 		q_vector =3D kzalloc(size, GFP_KERNEL);
+> 	} else if (size > ksize(q_vector)) {
+>-		kfree_rcu(q_vector, rcu);
+>-		q_vector =3D kzalloc(size, GFP_KERNEL);
+>+		struct igb_q_vector *new_q_vector;
+>+
+>+		new_q_vector =3D kzalloc(size, GFP_KERNEL);
+>+		if (new_q_vector)
+>+			kfree_rcu(q_vector, rcu);
+>+		q_vector =3D new_q_vector;
 
-Replace MDB port group entries when the 'NLM_F_REPLACE' flag is
-specified in the netlink message header.
+Ok, that makes more sense to me.
 
-When a (*, G) entry is replaced, update the following attributes: Source
-list, state, filter mode, protocol and flags. If the entry is temporary
-and in EXCLUDE mode, reset the group timer to the group membership
-interval. If the entry is temporary and in INCLUDE mode, reset the
-source timers of associated sources to the group membership interval.
+Reviewed-by: Michael J. Ruhl <michael.j.ruhl@intel.com>
 
-Examples:
+Mike
 
- # bridge mdb replace dev br0 port dummy10 grp 239.1.1.1 permanent source_list 192.0.2.1,192.0.2.2 filter_mode include
- # bridge -d -s mdb show
- dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.2 permanent filter_mode include proto static     0.00
- dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.1 permanent filter_mode include proto static     0.00
- dev br0 port dummy10 grp 239.1.1.1 permanent filter_mode include source_list 192.0.2.2/0.00,192.0.2.1/0.00 proto static     0.00
 
- # bridge mdb replace dev br0 port dummy10 grp 239.1.1.1 permanent source_list 192.0.2.1,192.0.2.3 filter_mode exclude proto zebra
- # bridge -d -s mdb show
- dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.3 permanent filter_mode include proto zebra  blocked    0.00
- dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.1 permanent filter_mode include proto zebra  blocked    0.00
- dev br0 port dummy10 grp 239.1.1.1 permanent filter_mode exclude source_list 192.0.2.3/0.00,192.0.2.1/0.00 proto zebra     0.00
-
- # bridge mdb replace dev br0 port dummy10 grp 239.1.1.1 temp source_list 192.0.2.4,192.0.2.3 filter_mode include proto bgp
- # bridge -d -s mdb show
- dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.4 temp filter_mode include proto bgp     0.00
- dev br0 port dummy10 grp 239.1.1.1 src 192.0.2.3 temp filter_mode include proto bgp     0.00
- dev br0 port dummy10 grp 239.1.1.1 temp filter_mode include source_list 192.0.2.4/259.44,192.0.2.3/259.44 proto bgp     0.00
-
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- net/bridge/br_mdb.c     | 103 ++++++++++++++++++++++++++++++++++++++--
- net/bridge/br_private.h |   1 +
- 2 files changed, 99 insertions(+), 5 deletions(-)
-
-diff --git a/net/bridge/br_mdb.c b/net/bridge/br_mdb.c
-index 7ee6d383ad07..b0c506a3e09e 100644
---- a/net/bridge/br_mdb.c
-+++ b/net/bridge/br_mdb.c
-@@ -802,6 +802,28 @@ __br_mdb_choose_context(struct net_bridge *br,
- 	return brmctx;
- }
- 
-+static int br_mdb_replace_group_sg(struct br_mdb_config *cfg,
-+				   struct net_bridge_mdb_entry *mp,
-+				   struct net_bridge_port_group *pg,
-+				   struct net_bridge_mcast *brmctx,
-+				   unsigned char flags,
-+				   struct netlink_ext_ack *extack)
-+{
-+	unsigned long now = jiffies;
-+
-+	pg->flags = flags;
-+	pg->rt_protocol = cfg->rt_protocol;
-+	if (!(flags & MDB_PG_FLAGS_PERMANENT) && !cfg->src_entry)
-+		mod_timer(&pg->timer,
-+			  now + brmctx->multicast_membership_interval);
-+	else
-+		del_timer(&pg->timer);
-+
-+	br_mdb_notify(cfg->br->dev, mp, pg, RTM_NEWMDB);
-+
-+	return 0;
-+}
-+
- static int br_mdb_add_group_sg(struct br_mdb_config *cfg,
- 			       struct net_bridge_mdb_entry *mp,
- 			       struct net_bridge_mcast *brmctx,
-@@ -816,8 +838,12 @@ static int br_mdb_add_group_sg(struct br_mdb_config *cfg,
- 	     (p = mlock_dereference(*pp, cfg->br)) != NULL;
- 	     pp = &p->next) {
- 		if (p->key.port == cfg->p) {
--			NL_SET_ERR_MSG_MOD(extack, "(S, G) group is already joined by port");
--			return -EEXIST;
-+			if (!(cfg->nlflags & NLM_F_REPLACE)) {
-+				NL_SET_ERR_MSG_MOD(extack, "(S, G) group is already joined by port");
-+				return -EEXIST;
-+			}
-+			return br_mdb_replace_group_sg(cfg, mp, p, brmctx,
-+						       flags, extack);
- 		}
- 		if ((unsigned long)p->key.port < (unsigned long)cfg->p)
- 			break;
-@@ -884,6 +910,7 @@ static int br_mdb_add_group_src_fwd(struct br_mdb_config *cfg,
- 	sg_cfg.src_entry = true;
- 	sg_cfg.filter_mode = MCAST_INCLUDE;
- 	sg_cfg.rt_protocol = cfg->rt_protocol;
-+	sg_cfg.nlflags = cfg->nlflags;
- 	return br_mdb_add_group_sg(&sg_cfg, sgmp, brmctx, flags, extack);
- }
- 
-@@ -904,7 +931,7 @@ static int br_mdb_add_group_src(struct br_mdb_config *cfg,
- 			NL_SET_ERR_MSG_MOD(extack, "Failed to add new source entry");
- 			return -ENOSPC;
- 		}
--	} else {
-+	} else if (!(cfg->nlflags & NLM_F_REPLACE)) {
- 		NL_SET_ERR_MSG_MOD(extack, "Source entry already exists");
- 		return -EEXIST;
- 	}
-@@ -962,6 +989,67 @@ static int br_mdb_add_group_srcs(struct br_mdb_config *cfg,
- 	return err;
- }
- 
-+static int br_mdb_replace_group_srcs(struct br_mdb_config *cfg,
-+				     struct net_bridge_port_group *pg,
-+				     struct net_bridge_mcast *brmctx,
-+				     struct netlink_ext_ack *extack)
-+{
-+	struct net_bridge_group_src *ent;
-+	struct hlist_node *tmp;
-+	int err;
-+
-+	hlist_for_each_entry(ent, &pg->src_list, node)
-+		ent->flags |= BR_SGRP_F_DELETE;
-+
-+	err = br_mdb_add_group_srcs(cfg, pg, brmctx, extack);
-+	if (err)
-+		goto err_clear_delete;
-+
-+	hlist_for_each_entry_safe(ent, tmp, &pg->src_list, node) {
-+		if (ent->flags & BR_SGRP_F_DELETE)
-+			br_multicast_del_group_src(ent, false);
-+	}
-+
-+	return 0;
-+
-+err_clear_delete:
-+	hlist_for_each_entry(ent, &pg->src_list, node)
-+		ent->flags &= ~BR_SGRP_F_DELETE;
-+	return err;
-+}
-+
-+static int br_mdb_replace_group_star_g(struct br_mdb_config *cfg,
-+				       struct net_bridge_mdb_entry *mp,
-+				       struct net_bridge_port_group *pg,
-+				       struct net_bridge_mcast *brmctx,
-+				       unsigned char flags,
-+				       struct netlink_ext_ack *extack)
-+{
-+	unsigned long now = jiffies;
-+	int err;
-+
-+	err = br_mdb_replace_group_srcs(cfg, pg, brmctx, extack);
-+	if (err)
-+		return err;
-+
-+	pg->flags = flags;
-+	pg->filter_mode = cfg->filter_mode;
-+	pg->rt_protocol = cfg->rt_protocol;
-+	if (!(flags & MDB_PG_FLAGS_PERMANENT) &&
-+	    cfg->filter_mode == MCAST_EXCLUDE)
-+		mod_timer(&pg->timer,
-+			  now + brmctx->multicast_membership_interval);
-+	else
-+		del_timer(&pg->timer);
-+
-+	br_mdb_notify(cfg->br->dev, mp, pg, RTM_NEWMDB);
-+
-+	if (br_multicast_should_handle_mode(brmctx, cfg->group.proto))
-+		br_multicast_star_g_handle_mode(pg, cfg->filter_mode);
-+
-+	return 0;
-+}
-+
- static int br_mdb_add_group_star_g(struct br_mdb_config *cfg,
- 				   struct net_bridge_mdb_entry *mp,
- 				   struct net_bridge_mcast *brmctx,
-@@ -977,8 +1065,12 @@ static int br_mdb_add_group_star_g(struct br_mdb_config *cfg,
- 	     (p = mlock_dereference(*pp, cfg->br)) != NULL;
- 	     pp = &p->next) {
- 		if (p->key.port == cfg->p) {
--			NL_SET_ERR_MSG_MOD(extack, "(*, G) group is already joined by port");
--			return -EEXIST;
-+			if (!(cfg->nlflags & NLM_F_REPLACE)) {
-+				NL_SET_ERR_MSG_MOD(extack, "(*, G) group is already joined by port");
-+				return -EEXIST;
-+			}
-+			return br_mdb_replace_group_star_g(cfg, mp, p, brmctx,
-+							   flags, extack);
- 		}
- 		if ((unsigned long)p->key.port < (unsigned long)cfg->p)
- 			break;
-@@ -1222,6 +1314,7 @@ static int br_mdb_config_init(struct net *net, struct sk_buff *skb,
- 	cfg->filter_mode = MCAST_EXCLUDE;
- 	INIT_LIST_HEAD(&cfg->src_list);
- 	cfg->rt_protocol = RTPROT_STATIC;
-+	cfg->nlflags = nlh->nlmsg_flags;
- 
- 	bpm = nlmsg_data(nlh);
- 	if (!bpm->ifindex) {
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 73f0e98de33b..7831f01fa018 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -107,6 +107,7 @@ struct br_mdb_config {
- 	u8				filter_mode;
- 	u8				rt_protocol;
- 	struct list_head		src_list;
-+	u32				nlflags;
- };
- #endif
- 
--- 
-2.37.3
+> 	} else {
+> 		memset(q_vector, 0, size);
+> 	}
+>--
+>2.34.1
 
