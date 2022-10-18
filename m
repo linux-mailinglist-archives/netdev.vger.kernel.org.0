@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3066603667
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 01:07:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45F2C60366A
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 01:07:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229729AbiJRXHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 19:07:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35478 "EHLO
+        id S229853AbiJRXHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 19:07:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229605AbiJRXHl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 19:07:41 -0400
+        with ESMTP id S229767AbiJRXHm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 19:07:42 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92899387
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 16:07:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6356E733DF
+        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 16:07:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E036CB8218E
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 23:07:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 154DBC43143;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8FC21B8218A
+        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 23:07:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC8BCC433C1;
         Tue, 18 Oct 2022 23:07:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666134457;
-        bh=1H/5oZ+1fAeAQEFKn4UYw0mW0eY2Rtz7yI+nwtKb0G8=;
+        s=k20201202; t=1666134458;
+        bh=FoR/o6mvrW9NkbxKfjC37D9DKoklhyL2lHPWIyH9slk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XJkOr+3zSDeujuRsKv34aVHld4Gg+oJ0S6Hu/J4MDTY2nnQM4bvrzpKFc8oRxlNrK
-         +OMfaIJDSLDQcYLSDLJRJoeSj0li2ktf+rR4sZ5HyrD+EQU6TsCS3tzdHeVgJTNWUO
-         mQ1rH4p6mcHtCEkXhrNJ/ARFNPutuOn7fWTHfRks7gH0pbsaq2iu7Ui2QersqfXzm3
-         uip1ABI8M96RXo1pw8qrSNbIcQqSYhHraGnDpXnyM435BsPGVftKuZ4L/ZboqE/W2V
-         mXgGCl0rkLWnsP7BmwNkCZooJiy+DrkCp1G0ZZSuz20Wrqa5nZn5mG3fiFmUIXE5N0
-         /PrZBNPkKrtzw==
+        b=HHkNArovfnIur4GpQc6uUcRWDBQgIRxR+NIGlfNH/SRoPjBRwFAsNuaer/eMAaxyx
+         fU09IFW5cq1utoEI0V1OsZGH4IA/aEL0Lhfi2dIYo5ka0zRYjzzXKocrLewqe4LJqM
+         8HQ+HKKYwNNwsQFKxqmJ3KizOXIJHlxqCA5BpQVi9ZKIWsSCGYisEEbVjIXjx1m/Lj
+         3eEP8dnlLV214XnUH7yeKfbJaYE8kaH/8iBp5UQrCtu43AeGSMBj2u4Q8LTXxE7hEb
+         VTKNesaKrg4NR3jpObvUbhtZZ7EGXEvhDdiBMH1fix39OYDRO7ILKEn5kDxf0xikQL
+         NYu944mSu6oDg==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net, johannes@sipsolutions.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         jiri@resnulli.us, razor@blackwall.org, nicolas.dichtel@6wind.com,
         gnault@redhat.com, jacob.e.keller@intel.com, fw@strlen.de,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 06/13] genetlink: add policies for both doit and dumpit in ctrl_dumppolicy_start()
-Date:   Tue, 18 Oct 2022 16:07:21 -0700
-Message-Id: <20221018230728.1039524-7-kuba@kernel.org>
+Subject: [PATCH net-next 07/13] genetlink: support split policies in ctrl_dumppolicy_put_op()
+Date:   Tue, 18 Oct 2022 16:07:22 -0700
+Message-Id: <20221018230728.1039524-8-kuba@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221018230728.1039524-1-kuba@kernel.org>
 References: <20221018230728.1039524-1-kuba@kernel.org>
@@ -54,88 +54,117 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Separate adding doit and dumpit policies for CTRL_CMD_GETPOLICY.
-This has no effect until we actually allow do and dump to come
-from different sources as netlink_policy_dump_add_policy()
-does deduplication.
+Pass do and dump versions of the op to ctrl_dumppolicy_put_op()
+so that it can provide a different policy index for the two.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- net/netlink/genetlink.c | 48 ++++++++++++++++++++++++++++++++---------
- 1 file changed, 38 insertions(+), 10 deletions(-)
+ net/netlink/genetlink.c | 55 ++++++++++++++++++++++++-----------------
+ 1 file changed, 33 insertions(+), 22 deletions(-)
 
 diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
-index 9dfb3cf89b97..234b27977013 100644
+index 234b27977013..3e821c346577 100644
 --- a/net/netlink/genetlink.c
 +++ b/net/netlink/genetlink.c
-@@ -1234,29 +1234,57 @@ static int ctrl_dumppolicy_start(struct netlink_callback *cb)
- 	ctx->rt = rt;
+@@ -1319,7 +1319,8 @@ static void *ctrl_dumppolicy_prep(struct sk_buff *skb,
  
- 	if (tb[CTRL_ATTR_OP]) {
-+		struct genl_split_ops doit, dump;
-+
- 		ctx->single_op = true;
- 		ctx->op = nla_get_u32(tb[CTRL_ATTR_OP]);
+ static int ctrl_dumppolicy_put_op(struct sk_buff *skb,
+ 				  struct netlink_callback *cb,
+-			          struct genl_ops *op)
++			          struct genl_split_ops *doit,
++				  struct genl_split_ops *dumpit)
+ {
+ 	struct ctrl_dump_policy_ctx *ctx = (void *)cb->ctx;
+ 	struct nlattr *nest_pol, *nest_op;
+@@ -1327,10 +1328,7 @@ static int ctrl_dumppolicy_put_op(struct sk_buff *skb,
+ 	int idx;
  
--		err = genl_get_cmd(ctx->op, rt, &op);
--		if (err) {
-+		if (genl_get_cmd_split(ctx->op, GENL_CMD_CAP_DO, rt, &doit) &&
-+		    genl_get_cmd_split(ctx->op, GENL_CMD_CAP_DUMP, rt, &dump)) {
- 			NL_SET_BAD_ATTR(cb->extack, tb[CTRL_ATTR_OP]);
--			return err;
-+			return -ENOENT;
- 		}
+ 	/* skip if we have nothing to show */
+-	if (!op->policy)
+-		return 0;
+-	if (!op->doit &&
+-	    (!op->dumpit || op->validate & GENL_DONT_VALIDATE_DUMP))
++	if (!doit->policy && !dumpit->policy)
+ 		return 0;
  
--		if (!op.policy)
--			return -ENODATA;
-+		if (doit.policy) {
-+			err = netlink_policy_dump_add_policy(&ctx->state,
-+							     doit.policy,
-+							     doit.maxattr);
-+			if (err)
-+				goto err_free_state;
-+		}
-+		if (dump.policy) {
-+			err = netlink_policy_dump_add_policy(&ctx->state,
-+							     dump.policy,
-+							     dump.maxattr);
-+			if (err)
-+				goto err_free_state;
-+		}
+ 	hdr = ctrl_dumppolicy_prep(skb, cb);
+@@ -1341,21 +1339,26 @@ static int ctrl_dumppolicy_put_op(struct sk_buff *skb,
+ 	if (!nest_pol)
+ 		goto err;
  
--		return netlink_policy_dump_add_policy(&ctx->state, op.policy,
--						      op.maxattr);
-+		if (!ctx->state)
-+			return -ENODATA;
-+		return 0;
- 	}
+-	nest_op = nla_nest_start(skb, op->cmd);
++	nest_op = nla_nest_start(skb, doit->cmd);
+ 	if (!nest_op)
+ 		goto err;
  
- 	for (i = 0; i < genl_get_cmd_cnt(rt); i++) {
+-	/* for now both do/dump are always the same */
+-	idx = netlink_policy_dump_get_policy_idx(ctx->state,
+-						 op->policy,
+-						 op->maxattr);
++	if (doit->policy) {
++		idx = netlink_policy_dump_get_policy_idx(ctx->state,
++							 doit->policy,
++							 doit->maxattr);
+ 
+-	if (op->doit && nla_put_u32(skb, CTRL_ATTR_POLICY_DO, idx))
+-		goto err;
++		if (nla_put_u32(skb, CTRL_ATTR_POLICY_DO, idx))
++			goto err;
++	}
++	if (dumpit->policy) {
++		idx = netlink_policy_dump_get_policy_idx(ctx->state,
++							 dumpit->policy,
++							 dumpit->maxattr);
+ 
+-	if (op->dumpit && !(op->validate & GENL_DONT_VALIDATE_DUMP) &&
+-	    nla_put_u32(skb, CTRL_ATTR_POLICY_DUMP, idx))
+-		goto err;
++		if (nla_put_u32(skb, CTRL_ATTR_POLICY_DUMP, idx))
++			goto err;
++	}
+ 
+ 	nla_nest_end(skb, nest_op);
+ 	nla_nest_end(skb, nest_pol);
+@@ -1373,16 +1376,19 @@ static int ctrl_dumppolicy(struct sk_buff *skb, struct netlink_callback *cb)
+ 	void *hdr;
+ 
+ 	if (!ctx->policies) {
 +		struct genl_split_ops doit, dumpit;
-+
- 		genl_get_cmd_by_index(i, rt, &op);
+ 		struct genl_ops op;
  
--		if (op.policy) {
-+		genl_cmd_full_to_split(&doit, ctx->rt, &op, GENL_CMD_CAP_DO);
-+		genl_cmd_full_to_split(&dumpit, ctx->rt,
-+				       &op, GENL_CMD_CAP_DUMP);
+ 		if (ctx->single_op) {
+-			int err;
+-
+-			err = genl_get_cmd(ctx->op, ctx->rt, &op);
+-			if (WARN_ON(err))
+-				return err;
++			if (genl_get_cmd_split(ctx->op, GENL_CMD_CAP_DO,
++					       ctx->rt, &doit) &&
++			    genl_get_cmd_split(ctx->op, GENL_CMD_CAP_DUMP,
++					       ctx->rt, &dumpit)) {
++				WARN_ON(1);
++				return -ENOENT;
++			}
+ 
+-			if (ctrl_dumppolicy_put_op(skb, cb, &op))
++			if (ctrl_dumppolicy_put_op(skb, cb, &doit, &dumpit))
+ 				return skb->len;
+ 
+ 			ctx->opidx = genl_get_cmd_cnt(ctx->rt);
+@@ -1391,7 +1397,12 @@ static int ctrl_dumppolicy(struct sk_buff *skb, struct netlink_callback *cb)
+ 		while (ctx->opidx < genl_get_cmd_cnt(ctx->rt)) {
+ 			genl_get_cmd_by_index(ctx->opidx, ctx->rt, &op);
+ 
+-			if (ctrl_dumppolicy_put_op(skb, cb, &op))
++			genl_cmd_full_to_split(&doit, ctx->rt,
++					       &op, GENL_CMD_CAP_DO);
++			genl_cmd_full_to_split(&dumpit, ctx->rt,
++					       &op, GENL_CMD_CAP_DUMP);
 +
-+		if (doit.policy) {
-+			err = netlink_policy_dump_add_policy(&ctx->state,
-+							     doit.policy,
-+							     doit.maxattr);
-+			if (err)
-+				goto err_free_state;
-+		}
-+		if (dumpit.policy) {
- 			err = netlink_policy_dump_add_policy(&ctx->state,
--							     op.policy,
--							     op.maxattr);
-+							     dumpit.policy,
-+							     dumpit.maxattr);
- 			if (err)
- 				goto err_free_state;
- 		}
++			if (ctrl_dumppolicy_put_op(skb, cb, &doit, &dumpit))
+ 				return skb->len;
+ 
+ 			ctx->opidx++;
 -- 
 2.37.3
 
