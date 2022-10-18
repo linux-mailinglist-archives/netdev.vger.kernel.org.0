@@ -2,100 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BDF0660346E
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 22:58:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1C0E603484
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 23:01:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230071AbiJRU6v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 16:58:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33414 "EHLO
+        id S230000AbiJRVBl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 17:01:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229861AbiJRU6u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 16:58:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671F980F6B;
-        Tue, 18 Oct 2022 13:58:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1BC51B82113;
-        Tue, 18 Oct 2022 20:58:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84E47C433B5;
-        Tue, 18 Oct 2022 20:58:46 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="F7gObyUL"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1666126723;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=gbNrqkAmkdQNh54QMfahwNrlzGhnLQkj38mepOX8CvM=;
-        b=F7gObyULOPiE7SisivTExQqZhqmi06KhNSWt1DQY0nast1V8Ad0YQd9iIMN0u59zghcZXa
-        01I8l8sjW/LOPcjFgzyrK6G5KH4Bdu92IU5g38zXeZVMjHIlV+lwTpIExqbQnmNRX2pCax
-        YrpCwWvxFd9uyQePGEXBZKyv2bzWUUU=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id c99e1dea (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Tue, 18 Oct 2022 20:58:42 +0000 (UTC)
-Received: by mail-vs1-f51.google.com with SMTP id 3so15988493vsh.5;
-        Tue, 18 Oct 2022 13:58:42 -0700 (PDT)
-X-Gm-Message-State: ACrzQf0Nrb0g7NqPhUHKY1FddiSuvvWyMXQN8Pi2oAxWz2YMj3RNssqf
-        Mw3cLEZMk07OtxeGyWWyeHHLGSqcE+rMVTlzVvY=
-X-Google-Smtp-Source: AMsMyM6bJ2VUjcb+te44+zGsDdQz0Fw+mBwnfeKnpOcuY+kiRk3c1H3JbyjXEFVtqLfZG3vGUSpq2CDwB0/Ne1pKMlo=
-X-Received: by 2002:a67:ed9a:0:b0:3a7:718a:7321 with SMTP id
- d26-20020a67ed9a000000b003a7718a7321mr2099048vsp.55.1666126721398; Tue, 18
- Oct 2022 13:58:41 -0700 (PDT)
+        with ESMTP id S229756AbiJRVBj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 17:01:39 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 102647333D
+        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 14:01:25 -0700 (PDT)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29IKg5GG022393;
+        Tue, 18 Oct 2022 21:00:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=2L1KuEpM2clY5yrNUxF0t8gHaGAfMogZpGNaqOkm4zI=;
+ b=NCqA73I0AMG9IAE1wAFtJRdZCUvYAm7Z7w3TcbvxIe/KxcBdlZXM3KdYMLz98/+iQCoz
+ vROwu+6zfWklwAvWXJYZ0v130n7EKPml63vFde9VjO8VjH8bXX5kJtf7HYaAgU3McvVH
+ 0Rrw0qpFgckhhxx1TqEYx4h978HR7yLiiNFBLWjoq1rOanddsVpyjynHOO+Vyvp817e2
+ jlzVKRoad5KbdYXH6sthV1w6eUQ4sRA/8/dOGJcR4MYFsdyzGhtkIo95nxm/aymgtGCo
+ WVWHJyIro6hklh3EOrdOcsintZb5GVL9nythuMPmm6cZvMLf4861/nO7TgRtOY6tAJcM xw== 
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ka3dkgf1w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 18 Oct 2022 21:00:18 +0000
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29IKoNiN009336;
+        Tue, 18 Oct 2022 21:00:17 GMT
+Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
+        by ppma03dal.us.ibm.com with ESMTP id 3k7mg9v8p9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 18 Oct 2022 21:00:17 +0000
+Received: from smtpav01.dal12v.mail.ibm.com ([9.208.128.133])
+        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29IL0Iw34850334
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 18 Oct 2022 21:00:18 GMT
+Received: from smtpav01.dal12v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1A3C25806B;
+        Tue, 18 Oct 2022 21:00:15 +0000 (GMT)
+Received: from smtpav01.dal12v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B204B58066;
+        Tue, 18 Oct 2022 21:00:14 +0000 (GMT)
+Received: from [9.160.6.192] (unknown [9.160.6.192])
+        by smtpav01.dal12v.mail.ibm.com (Postfix) with ESMTP;
+        Tue, 18 Oct 2022 21:00:14 +0000 (GMT)
+Message-ID: <94c6ed71-286b-0fd8-5128-9fe9b7ebcd0f@linux.ibm.com>
+Date:   Tue, 18 Oct 2022 16:00:14 -0500
 MIME-Version: 1.0
-References: <202210190108.ESC3pc3D-lkp@intel.com> <20221018202734.140489-1-Jason@zx2c4.com>
- <Y08PVnsTw75sHfbg@smile.fi.intel.com> <Y08SGz/xGSN87ynk@zx2c4.com> <Y08TQwcY3zL3kGHR@smile.fi.intel.com>
-In-Reply-To: <Y08TQwcY3zL3kGHR@smile.fi.intel.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Tue, 18 Oct 2022 14:58:30 -0600
-X-Gmail-Original-Message-ID: <CAHmME9qQAqXYR0+K=32otECgrni51Z0c38iO3h1VRM4Xf3o2=Q@mail.gmail.com>
-Message-ID: <CAHmME9qQAqXYR0+K=32otECgrni51Z0c38iO3h1VRM4Xf3o2=Q@mail.gmail.com>
-Subject: Re: [PATCH] wifi: rt2x00: use explicitly signed type for clamping
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Stanislaw Gruszka <stf_xl@wp.pl>,
-        Helmut Schaa <helmut.schaa@googlemail.com>,
-        Kalle Valo <kvalo@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.2
+Subject: Re: [PATCH net-next] ibmveth: Always stop tx queues during close
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, nick.child@ibm.com
+References: <20221017151743.45704-1-nnac123@linux.ibm.com>
+ <20221018114729.79dbfbe2@kernel.org>
+From:   Nick Child <nnac123@linux.ibm.com>
+In-Reply-To: <20221018114729.79dbfbe2@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 6UVpLKVxb45Jg0t2optFgSeyFr8-6Y_y
+X-Proofpoint-ORIG-GUID: 6UVpLKVxb45Jg0t2optFgSeyFr8-6Y_y
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-10-18_07,2022-10-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
+ priorityscore=1501 adultscore=0 malwarescore=0 impostorscore=0
+ mlxlogscore=976 lowpriorityscore=0 mlxscore=0 bulkscore=0 suspectscore=0
+ clxscore=1015 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2210180115
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 18, 2022 at 2:57 PM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
->
-> On Tue, Oct 18, 2022 at 02:52:43PM -0600, Jason A. Donenfeld wrote:
-> > On Tue, Oct 18, 2022 at 11:40:54PM +0300, Andy Shevchenko wrote:
-> > > On Tue, Oct 18, 2022 at 02:27:34PM -0600, Jason A. Donenfeld wrote:
-> > > > On some platforms, `char` is unsigned, which makes casting -7 to char
-> > > > overflow, which in turn makes the clamping operation bogus. Instead,
-> > > > deal with an explicit `s8` type, so that the comparison is always
-> > > > signed, and return an s8 result from the function as well. Note that
-> > > > this function's result is assigned to a `short`, which is always signed.
-> > >
-> > > Why not to use short? See my patch I just sent.
-> >
-> > Trying to have the most minimal change here that doesn't rock the boat.
-> > I'm not out to rewrite the driver. I don't know the original author's
-> > rationales. This patch here is correct and will generate the same code
-> > as before on architectures where it wasn't broken.
-> >
-> > However, if you want your "change the codegen" patch to be taken
-> > seriously, you should probably send it to the wireless maintainers like
-> > this one, and they can decide. Personally, I don't really care either
-> > way.
->
-> I have checked the code paths there and I found no evidence that short can't be
-> used. That's why my patch.
 
-Do you have a rationale why you want to change codegen?
+Hello Jakub,
 
-Jason
+Thanks for the review,
+
+On 10/18/22 13:47, Jakub Kicinski wrote:
+> On Mon, 17 Oct 2022 10:17:43 -0500 Nick Child wrote:
+>> The issue with this approach was that the hypervisor freed all of
+>> the devices control structures after the hcall H_FREE_LOGICAL_LAN
+>> was performed but the transmit queues were never stopped. So the higher
+>> layers in the network stack would continue transmission but any
+>> H_SEND_LOGICAL_LAN hcall would fail with H_PARAMETER until the
+>> hypervisor's structures for the device were allocated with the
+>> H_REGISTER_LOGICAL_LAN hcall in ibmveth_open.
+> 
+> Sounds like we should treat this one as a fix as well?
+
+Agreed. I will resend with `net` tag.
+
+
+> How far back is it safe to backport?
+The issue is introduced in commit 860f242eb534 ("[PATCH] ibmveth change 
+buffer pools dynamically") which first appears in v3.19.
+Please let me know if I should resend with "Fixes:".
+
+Since the aforementioned commit, multiple other patches have mimicked 
+the behavior. Because the same bad logic is used in multiple places, 
+their will be multiple merge conflicts depending on the LTS branch. From
+what I can tell the patch will differ between the one posted here 
+(v6.1), LTS v4.14-5.15, and LTS v4.9.
+
+Since the issue only results in annoying "failed to send" driver 
+messages and is under no pressure to get backported from end users, we 
+are okay if it does not get backported. That being said, if you would 
+like to see it backported, I can send you the patches that would apply
+cleanly to v4.9 and v4.14-v5.15.
+
+If there is anything else I can do please let me know.
+
+Thanks again,
+Nick Child
