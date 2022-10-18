@@ -2,145 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A89C602A7F
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 13:45:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF22C602A8C
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 13:50:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230089AbiJRLp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 07:45:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35250 "EHLO
+        id S229907AbiJRLup (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 07:50:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229962AbiJRLp4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 07:45:56 -0400
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7CC3B40E2
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 04:45:54 -0700 (PDT)
-Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 21B2F60008;
-        Tue, 18 Oct 2022 11:45:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1666093553;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=foqT3NAnuG1A67EIZZREcFShvqHNGhgtMHvlC41QDNQ=;
-        b=jE87XLA/2qSt48gbFPp4XbsbR24R1mdE943v/8/bHn6VGBZcA6BiXclBs6rg9YEZkuCvxo
-        3Au1A7xZS46mxMGoD6SzXp7Du50O6gGGwqRwv5ig0b3+QhSZmR5wfMl9BW0aHbuXzSZ2ff
-        hcxDz6rb1HrRfso6BQHmrf2Ur1wqbKL7s00BwKn7s1RgID2ZXdGgHGjo15AVb71p13jQt6
-        VOnP1oXo/G9aSKG13ogKSoI+A5FeSiR0DWYHL1C6VAgOHj8gT6bZrM4Qc8kkHi+IA7mClr
-        p34V0FvtlXWrrK5ODytYe+F7+2T9v0T0V4v/hw6C96A13gH5uLswAwpcSB4AGg==
-Date:   Tue, 18 Oct 2022 13:45:47 +0200
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: Multi-PHYs and multiple-ports bonding support
-Message-ID: <20221018134547.18a7e36e@pc-8.home>
-In-Reply-To: <Y01Sv63B5ijqD48a@lunn.ch>
-References: <20221017105100.0cb33490@pc-8.home>
-        <Y00fYeZEcG/E3FPV@shell.armlinux.org.uk>
-        <Y01Sv63B5ijqD48a@lunn.ch>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
+        with ESMTP id S229687AbiJRLuo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 07:50:44 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3273EB4894
+        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 04:50:41 -0700 (PDT)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MsBrh3J0lzmVC1;
+        Tue, 18 Oct 2022 19:45:56 +0800 (CST)
+Received: from kwepemm600008.china.huawei.com (7.193.23.88) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 18 Oct 2022 19:50:18 +0800
+Received: from huawei.com (10.175.100.227) by kwepemm600008.china.huawei.com
+ (7.193.23.88) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Tue, 18 Oct
+ 2022 19:50:17 +0800
+From:   Shang XiaoJing <shangxiaojing@huawei.com>
+To:     <bongsu.jeon@samsung.com>, <krzysztof.kozlowski@linaro.org>,
+        <kuba@kernel.org>, <pabeni@redhat.com>, <netdev@vger.kernel.org>
+CC:     <shangxiaojing@huawei.com>
+Subject: [PATCH v2] nfc: virtual_ncidev: Fix memory leak in virtual_nci_send()
+Date:   Tue, 18 Oct 2022 19:49:35 +0800
+Message-ID: <20221018114935.8871-1-shangxiaojing@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.175.100.227]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600008.china.huawei.com (7.193.23.88)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Andrew,
+skb should be free in virtual_nci_send(), otherwise kmemleak will report
+memleak.
 
-On Mon, 17 Oct 2022 15:03:59 +0200
-Andrew Lunn <andrew@lunn.ch> wrote:
+Steps for reproduction (simulated in qemu):
+	cd tools/testing/selftests/nci
+	make
+	./nci_dev
 
-> On Mon, Oct 17, 2022 at 10:24:49AM +0100, Russell King (Oracle) wrote:
-> > On Mon, Oct 17, 2022 at 10:51:00AM +0200, Maxime Chevallier wrote: =20
-> > > 2) Changes in Phylink
-> > >=20
-> > > This might be the tricky part, as we need to track several ports,
-> > > possibly connected to different PHYs, to get their state. For
-> > > now, I haven't prototyped any of this yet. =20
-> >=20
-> > The problem is _way_ larger than phylink. It's a fundamental
-> > throughout the net layer that there is one-PHY to one-MAC
-> > relationship. Phylink just adopts this because it is the
-> > established norm, and trying to fix it is rather rediculous without
-> > a use case.
-> >=20
-> > See code such as the ethtool code, where the MAC and associated
-> > layers are# entirely bypassed with all the PHY-accessing ethtool
-> > commands and the commands are passed directly to phylib for the PHY
-> > registered against the netdev. =20
->=20
-> We probably need to model the MII MUX. We can then have netdev->phydev
-> and netdev->sfp_bus point to the MUX, which then defers to the
-> currently active PHY/SFP for backwards compatibility. Additionally,
-> for netlink ethtool, we can add a new property which allows a specific
-> PHY/SFP hanging off the MUX to be addressed.
+BUG: memory leak
+unreferenced object 0xffff888107588000 (size 208):
+  comm "nci_dev", pid 206, jiffies 4294945376 (age 368.248s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<000000008d94c8fd>] __alloc_skb+0x1da/0x290
+    [<00000000278bc7f8>] nci_send_cmd+0xa3/0x350
+    [<0000000081256a22>] nci_reset_req+0x6b/0xa0
+    [<000000009e721112>] __nci_request+0x90/0x250
+    [<000000005d556e59>] nci_dev_up+0x217/0x5b0
+    [<00000000e618ce62>] nfc_dev_up+0x114/0x220
+    [<00000000981e226b>] nfc_genl_dev_up+0x94/0xe0
+    [<000000009bb03517>] genl_family_rcv_msg_doit.isra.14+0x228/0x2d0
+    [<00000000b7f8c101>] genl_rcv_msg+0x35c/0x640
+    [<00000000c94075ff>] netlink_rcv_skb+0x11e/0x350
+    [<00000000440cfb1e>] genl_rcv+0x24/0x40
+    [<0000000062593b40>] netlink_unicast+0x43f/0x640
+    [<000000001d0b13cc>] netlink_sendmsg+0x73a/0xbf0
+    [<000000003272487f>] __sys_sendto+0x324/0x370
+    [<00000000ef9f1747>] __x64_sys_sendto+0xdd/0x1b0
+    [<000000001e437841>] do_syscall_64+0x3f/0x90
 
-That's a good idea ! I find it pretty elegant indeed, and would be the
-right place to implement the switching logic too.
+Fixes: e624e6c3e777 ("nfc: Add a virtual nci device driver")
+Signed-off-by: Shang XiaoJing <shangxiaojing@huawei.com>
+---
+changes in v2:
+- free skb in error paths too.
+---
+ drivers/nfc/virtual_ncidev.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-> Modeling the MUX probably helps us with the overall architecture.  As
-> Maxime described, there are at least two different architectures: the
-> MUX is between the MAC and the PHYs, and the MUX is inside the PHY
-> between the host interface and the line interfaces. There are at least
-> 4 PHYs like this.
->=20
-> We also have Russells problem of two PHYs on one path. It would be
-> nice to solve that at the same time, which the additional identifier
-> attribute should help solve.
->=20
-> I would probably start this work from the uAPI. How does the uAPI
-> work?
-
-=46rom the doc of struct ethtool_link_setting, there seems to be an
-attempt to support that already :
-
-"* Some hardware interfaces may have multiple PHYs and/or physical
- * connectors fitted or do not allow the driver to detect which are
- * fitted.  For these interfaces @port and/or @phy_address may be
- * writable, possibly dependent on @autoneg being %AUTONEG_DISABLE.
- * Otherwise, attempts to write different values may be ignored or
- * rejected.
-"
-
-https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/ethtool.h=
-#L2047
-
-However, this doesn't allow to enumerate clearly the interfaces
-available, and it relies on the mdio address + port. This doesn't
-address the chained PHYs as we don't have a clear view of the topology
-(but do we need to ?)
-
-I like very much the concept of having a way to address the interfaces
-or the parts of the link chain.
-
-Could we introduce a new ethtool cmd, allowing to enumerate the
-ports and discover the topology, and another one to get an equivalent
-of the ethtool_link_settings for each block in the chain ?
-
-I'll try to prototype a few things to get a clearer picture...
-
-Thanks a lot for your input,
-
-Maxime
-
-> 	Andrew
+diff --git a/drivers/nfc/virtual_ncidev.c b/drivers/nfc/virtual_ncidev.c
+index f577449e4935..3a4ad95b40a7 100644
+--- a/drivers/nfc/virtual_ncidev.c
++++ b/drivers/nfc/virtual_ncidev.c
+@@ -54,16 +54,19 @@ static int virtual_nci_send(struct nci_dev *ndev, struct sk_buff *skb)
+ 	mutex_lock(&nci_mutex);
+ 	if (state != virtual_ncidev_enabled) {
+ 		mutex_unlock(&nci_mutex);
++		consume_skb(skb);
+ 		return 0;
+ 	}
+ 
+ 	if (send_buff) {
+ 		mutex_unlock(&nci_mutex);
++		consume_skb(skb);
+ 		return -1;
+ 	}
+ 	send_buff = skb_copy(skb, GFP_KERNEL);
+ 	mutex_unlock(&nci_mutex);
+ 	wake_up_interruptible(&wq);
++	consume_skb(skb);
+ 
+ 	return 0;
+ }
+-- 
+2.17.1
 
