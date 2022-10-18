@@ -2,311 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B691660312E
-	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 18:57:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27254603118
+	for <lists+netdev@lfdr.de>; Tue, 18 Oct 2022 18:56:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230056AbiJRQ5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 12:57:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47692 "EHLO
+        id S229965AbiJRQ4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 12:56:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230002AbiJRQ5C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 12:57:02 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D5EBC821A;
-        Tue, 18 Oct 2022 09:57:00 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 0F6B81884965;
-        Tue, 18 Oct 2022 16:56:58 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id EBBFB25001FA;
-        Tue, 18 Oct 2022 16:56:57 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id E04E89EC0007; Tue, 18 Oct 2022 16:56:57 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
-Received: from fujitsu.vestervang (2-104-116-184-cable.dk.customer.tdc.net [2.104.116.184])
-        by smtp.gigahost.dk (Postfix) with ESMTPSA id 12B1D9EC000A;
-        Tue, 18 Oct 2022 16:56:57 +0000 (UTC)
-From:   "Hans J. Schultz" <netdev@kapio-technology.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org,
-        "Hans J. Schultz" <netdev@kapio-technology.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Christian Marangi <ansuelsmth@gmail.com>,
+        with ESMTP id S229648AbiJRQ4g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 12:56:36 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B45E4D277
+        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 09:56:35 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id t10-20020a17090a4e4a00b0020af4bcae10so14539404pjl.3
+        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 09:56:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=aX+f1aKTWuCaRtpe8oYSPCaFSr1D16+zAAHvgYMM3Zo=;
+        b=R6Gv+3IG1iLaOlVgLEbN8WjYPxZerEqODSTfzQyFFbWHEdFWJFjm8eUEgFnxiI4U0E
+         p9HnxoiRwzbxGiNmlrZbpkmfHnTR3W2ShE4fQ7ddsGomhyxGT3zcNzhjsHGa+FkVEsbI
+         B5VojHp0lIqcyWsOjBOCy1RWTAA+nyNXqcrmo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=aX+f1aKTWuCaRtpe8oYSPCaFSr1D16+zAAHvgYMM3Zo=;
+        b=mB12uX99bN8ghGS4DWEh4+BBTXMkvt+gfrIAHiW3JIWIdwX12HA5/ddmvlL0x2ZVdQ
+         S+vfIvk3e+hqEy0m6Ex5sXYDekRAWsn2WKpSzkKC4NYVpxDtf2ahy3t/X7+4IQlrw0C+
+         A3I2d1HzPRs7oo5KrZSpJ5nNtHBRXG7CjlO0q9K+2GwagRRw607qrD7B0RwXGK/4Y6ps
+         shjC9aQlz0YuyDxyAYx6lsEogI+WjlCvJBCKZSsS4Os+sOB1IzdEH4TCtM06rIA5Q0V2
+         oJA+bEtucLgIrd0dwBQvFAYAU9CROhRNp1Kkj6uRlKxYfIYqPrSGt7WG9vMLQTIVXFSX
+         6L6A==
+X-Gm-Message-State: ACrzQf2HjeZj2TrsgBsp9x1QFJcT0i5Wz8E4o7M7WPQdHBt6NQgyzku7
+        Fd71SEO3YFEQ49h1bLj0kWVCHQ==
+X-Google-Smtp-Source: AMsMyM7EiDhq7ZjZ2Gd1Bxbo03ECXLOB8ZkjJ+Y7TCVR1Yhm0ucGTwlAWAUsfIX6Zkb1a/L9MHkXPA==
+X-Received: by 2002:a17:903:246:b0:179:96b5:1ad2 with SMTP id j6-20020a170903024600b0017996b51ad2mr3949944plh.37.1666112194673;
+        Tue, 18 Oct 2022 09:56:34 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id f23-20020a63f757000000b00460c67afbd5sm8327716pgk.7.2022.10.18.09.56.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Oct 2022 09:56:33 -0700 (PDT)
+Date:   Tue, 18 Oct 2022 09:56:32 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Hans Schultz <schultz.hans@gmail.com>,
-        Joachim Wiberg <troglobit@gmail.com>,
-        Amit Cohen <amcohen@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH v8 net-next 05/12] net: dsa: propagate the locked flag down through the DSA layer
-Date:   Tue, 18 Oct 2022 18:56:12 +0200
-Message-Id: <20221018165619.134535-6-netdev@kapio-technology.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221018165619.134535-1-netdev@kapio-technology.com>
-References: <20221018165619.134535-1-netdev@kapio-technology.com>
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] bpf, test_run: Track allocation size of data
+Message-ID: <202210180948.0A0D16844D@keescook>
+References: <20221018090205.never.090-kees@kernel.org>
+ <CAADnVQKBfPeDqHE8U6f79XKqrQsLWysRQMweBhwBd-qRP0FDpw@mail.gmail.com>
 MIME-Version: 1.0
-Organization: Westermo Network Technologies AB
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAADnVQKBfPeDqHE8U6f79XKqrQsLWysRQMweBhwBd-qRP0FDpw@mail.gmail.com>
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new u16 for fdb flags to propagate through the DSA layer towards the
-fdb add and del functions of the drivers.
+On Tue, Oct 18, 2022 at 09:29:07AM -0700, Alexei Starovoitov wrote:
+> On Tue, Oct 18, 2022 at 2:02 AM Kees Cook <keescook@chromium.org> wrote:
+> > +       alloc->len = kmalloc_size_roundup(size + headroom + tailroom);
+> > +       alloc->data = kzalloc(alloc->len, GFP_USER);
+> 
+> Don't you need to do this generalically in many places in the kernel?
 
-Signed-off-by: Hans J. Schultz <netdev@kapio-technology.com>
----
- include/net/dsa.h  |  2 ++
- net/dsa/dsa_priv.h |  6 ++++--
- net/dsa/port.c     | 10 ++++++----
- net/dsa/slave.c    | 10 ++++++++--
- net/dsa/switch.c   | 16 ++++++++--------
- 5 files changed, 28 insertions(+), 16 deletions(-)
+The size tracking or the rounding up?
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index ee369670e20e..e4b641b20713 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -821,6 +821,8 @@ static inline bool dsa_port_tree_same(const struct dsa_port *a,
- 	return a->ds->dst == b->ds->dst;
- }
- 
-+#define DSA_FDB_FLAG_LOCKED		(1 << 0)
-+
- typedef int dsa_fdb_dump_cb_t(const unsigned char *addr, u16 vid,
- 			      bool is_static, void *data);
- struct dsa_switch_ops {
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 6e65c7ffd6f3..c943e8934063 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -65,6 +65,7 @@ struct dsa_notifier_fdb_info {
- 	const struct dsa_port *dp;
- 	const unsigned char *addr;
- 	u16 vid;
-+	u16 fdb_flags;
- 	struct dsa_db db;
- };
- 
-@@ -131,6 +132,7 @@ struct dsa_switchdev_event_work {
- 	 */
- 	unsigned char addr[ETH_ALEN];
- 	u16 vid;
-+	u16 fdb_flags;
- 	bool host_addr;
- };
- 
-@@ -241,9 +243,9 @@ int dsa_port_vlan_msti(struct dsa_port *dp,
- 		       const struct switchdev_vlan_msti *msti);
- int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu);
- int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
--		     u16 vid);
-+		     u16 vid, u16 fdb_flags);
- int dsa_port_fdb_del(struct dsa_port *dp, const unsigned char *addr,
--		     u16 vid);
-+		     u16 vid, u16 fdb_flags);
- int dsa_port_standalone_host_fdb_add(struct dsa_port *dp,
- 				     const unsigned char *addr, u16 vid);
- int dsa_port_standalone_host_fdb_del(struct dsa_port *dp,
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 208168276995..ff4f66f14d39 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -304,7 +304,7 @@ static int dsa_port_inherit_brport_flags(struct dsa_port *dp,
- 					 struct netlink_ext_ack *extack)
- {
- 	const unsigned long mask = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
--				   BR_BCAST_FLOOD | BR_PORT_LOCKED;
-+				   BR_BCAST_FLOOD;
- 	struct net_device *brport_dev = dsa_port_to_bridge_port(dp);
- 	int flag, err;
- 
-@@ -328,7 +328,7 @@ static void dsa_port_clear_brport_flags(struct dsa_port *dp)
- {
- 	const unsigned long val = BR_FLOOD | BR_MCAST_FLOOD | BR_BCAST_FLOOD;
- 	const unsigned long mask = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
--				   BR_BCAST_FLOOD | BR_PORT_LOCKED;
-+				   BR_BCAST_FLOOD | BR_PORT_LOCKED | BR_PORT_MAB;
- 	int flag, err;
- 
- 	for_each_set_bit(flag, &mask, 32) {
-@@ -956,12 +956,13 @@ int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu)
- }
- 
- int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
--		     u16 vid)
-+		     u16 vid, u16 fdb_flags)
- {
- 	struct dsa_notifier_fdb_info info = {
- 		.dp = dp,
- 		.addr = addr,
- 		.vid = vid,
-+		.fdb_flags = fdb_flags,
- 		.db = {
- 			.type = DSA_DB_BRIDGE,
- 			.bridge = *dp->bridge,
-@@ -979,12 +980,13 @@ int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
- }
- 
- int dsa_port_fdb_del(struct dsa_port *dp, const unsigned char *addr,
--		     u16 vid)
-+		     u16 vid, u16 fdb_flags)
- {
- 	struct dsa_notifier_fdb_info info = {
- 		.dp = dp,
- 		.addr = addr,
- 		.vid = vid,
-+		.fdb_flags = fdb_flags,
- 		.db = {
- 			.type = DSA_DB_BRIDGE,
- 			.bridge = *dp->bridge,
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 1a59918d3b30..65f0c578ef44 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -3246,6 +3246,7 @@ static void dsa_slave_switchdev_event_work(struct work_struct *work)
- 		container_of(work, struct dsa_switchdev_event_work, work);
- 	const unsigned char *addr = switchdev_work->addr;
- 	struct net_device *dev = switchdev_work->dev;
-+	u16 fdb_flags = switchdev_work->fdb_flags;
- 	u16 vid = switchdev_work->vid;
- 	struct dsa_switch *ds;
- 	struct dsa_port *dp;
-@@ -3261,7 +3262,7 @@ static void dsa_slave_switchdev_event_work(struct work_struct *work)
- 		else if (dp->lag)
- 			err = dsa_port_lag_fdb_add(dp, addr, vid);
- 		else
--			err = dsa_port_fdb_add(dp, addr, vid);
-+			err = dsa_port_fdb_add(dp, addr, vid, fdb_flags);
- 		if (err) {
- 			dev_err(ds->dev,
- 				"port %d failed to add %pM vid %d to fdb: %d\n",
-@@ -3277,7 +3278,7 @@ static void dsa_slave_switchdev_event_work(struct work_struct *work)
- 		else if (dp->lag)
- 			err = dsa_port_lag_fdb_del(dp, addr, vid);
- 		else
--			err = dsa_port_fdb_del(dp, addr, vid);
-+			err = dsa_port_fdb_del(dp, addr, vid, fdb_flags);
- 		if (err) {
- 			dev_err(ds->dev,
- 				"port %d failed to delete %pM vid %d from fdb: %d\n",
-@@ -3315,6 +3316,7 @@ static int dsa_slave_fdb_event(struct net_device *dev,
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
- 	bool host_addr = fdb_info->is_local;
- 	struct dsa_switch *ds = dp->ds;
-+	u16 fdb_flags = 0;
- 
- 	if (ctx && ctx != dp)
- 		return 0;
-@@ -3361,6 +3363,9 @@ static int dsa_slave_fdb_event(struct net_device *dev,
- 		   orig_dev->name, fdb_info->addr, fdb_info->vid,
- 		   host_addr ? " as host address" : "");
- 
-+	if (fdb_info->locked)
-+		fdb_flags |= DSA_FDB_FLAG_LOCKED;
-+
- 	INIT_WORK(&switchdev_work->work, dsa_slave_switchdev_event_work);
- 	switchdev_work->event = event;
- 	switchdev_work->dev = dev;
-@@ -3369,6 +3374,7 @@ static int dsa_slave_fdb_event(struct net_device *dev,
- 	ether_addr_copy(switchdev_work->addr, fdb_info->addr);
- 	switchdev_work->vid = fdb_info->vid;
- 	switchdev_work->host_addr = host_addr;
-+	switchdev_work->fdb_flags = fdb_flags;
- 
- 	dsa_schedule_work(&switchdev_work->work);
- 
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index ce56acdba203..dd355556892e 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -234,7 +234,7 @@ static int dsa_port_do_mdb_del(struct dsa_port *dp,
- }
- 
- static int dsa_port_do_fdb_add(struct dsa_port *dp, const unsigned char *addr,
--			       u16 vid, struct dsa_db db)
-+			       u16 vid, u16 fdb_flags, struct dsa_db db)
- {
- 	struct dsa_switch *ds = dp->ds;
- 	struct dsa_mac_addr *a;
-@@ -278,7 +278,7 @@ static int dsa_port_do_fdb_add(struct dsa_port *dp, const unsigned char *addr,
- }
- 
- static int dsa_port_do_fdb_del(struct dsa_port *dp, const unsigned char *addr,
--			       u16 vid, struct dsa_db db)
-+			       u16 vid, u16 fdb_flags, struct dsa_db db)
- {
- 	struct dsa_switch *ds = dp->ds;
- 	struct dsa_mac_addr *a;
-@@ -404,8 +404,8 @@ static int dsa_switch_host_fdb_add(struct dsa_switch *ds,
- 								info->vid,
- 								info->db);
- 			} else {
--				err = dsa_port_do_fdb_add(dp, info->addr,
--							  info->vid, info->db);
-+				err = dsa_port_do_fdb_add(dp, info->addr, info->vid,
-+							  info->fdb_flags, info->db);
- 			}
- 			if (err)
- 				break;
-@@ -432,8 +432,8 @@ static int dsa_switch_host_fdb_del(struct dsa_switch *ds,
- 								info->vid,
- 								info->db);
- 			} else {
--				err = dsa_port_do_fdb_del(dp, info->addr,
--							  info->vid, info->db);
-+				err = dsa_port_do_fdb_del(dp, info->addr, info->vid,
-+							  info->fdb_flags, info->db);
- 			}
- 			if (err)
- 				break;
-@@ -452,7 +452,7 @@ static int dsa_switch_fdb_add(struct dsa_switch *ds,
- 	if (!ds->ops->port_fdb_add)
- 		return -EOPNOTSUPP;
- 
--	return dsa_port_do_fdb_add(dp, info->addr, info->vid, info->db);
-+	return dsa_port_do_fdb_add(dp, info->addr, info->vid, info->fdb_flags, info->db);
- }
- 
- static int dsa_switch_fdb_del(struct dsa_switch *ds,
-@@ -464,7 +464,7 @@ static int dsa_switch_fdb_del(struct dsa_switch *ds,
- 	if (!ds->ops->port_fdb_del)
- 		return -EOPNOTSUPP;
- 
--	return dsa_port_do_fdb_del(dp, info->addr, info->vid, info->db);
-+	return dsa_port_do_fdb_del(dp, info->addr, info->vid, info->fdb_flags, info->db);
- }
- 
- static int dsa_switch_lag_fdb_add(struct dsa_switch *ds,
+The need for rounding up is surprisingly rare[1] -- very few things actually
+used ksize(), and almost all of them are due to following some variation
+of a realloc idiom. I've sent patches for all of them now, so that should
+be a short road to solving the problems ksize() created.
+
+The need for missed size tracking is also pretty uncommon (most
+dynamically sized things already track their size in some form
+or another). Finding a truly generalizable solution is an ongoing
+experiment[2].
+
+-Kees
+
+[1] https://lore.kernel.org/lkml/20220923202822.2667581-1-keescook@chromium.org/
+[2] https://lore.kernel.org/llvm/20220504014440.3697851-1-keescook@chromium.org/
+
 -- 
-2.34.1
-
+Kees Cook
