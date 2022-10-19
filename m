@@ -2,72 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4265D603B15
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 10:02:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F025603B20
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 10:06:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230087AbiJSICV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 04:02:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47828 "EHLO
+        id S229648AbiJSIGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 04:06:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230137AbiJSICQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 04:02:16 -0400
-X-Greylist: delayed 336 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 19 Oct 2022 01:02:13 PDT
-Received: from mail.peston.pl (mail.peston.pl [5.196.8.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 117E27AC0C
-        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 01:02:12 -0700 (PDT)
-Received: by mail.peston.pl (Postfix, from userid 1002)
-        id 2D40DA230C; Wed, 19 Oct 2022 07:56:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=peston.pl; s=mail;
-        t=1666166194; bh=Cc29BCeGAXKamRAYF1RC3YwJiZOOIdJ1fkzOKoOmzTc=;
-        h=Date:From:To:Subject:From;
-        b=ZJlGBUtPKIqKKbx8oNJR0AeUjv9GG6Sy1+GS2m/Eyjmpq3Vzq8MoqgHYFPmsUhEbP
-         cpSL8WpapF2F1/VQpZH9jCqbvryXiWVT+fFgcm0RKeCIogVJSkpcuABOmyXb6Kzckf
-         SJplcoQwz+QNggPU2fnTZB1DdXRJP/+Lq1lxDn6G6XHRtoqvxx1/KXZqJmOO7yc9yj
-         OldjN7sXvcmhtp26kvlMKuCM/O+6wdZ4gCxeG7uZbi+5FGqwnU4JQSrf0zZxih16Y/
-         RLipTTIcImyR5fnTYkvp8V7+nACWyvEWcx0/N568vQUxzRjk1Q65bLvuQCBh1HDW5l
-         zJPkhcJhELMNQ==
-Received: by mail.peston.pl for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 07:56:21 GMT
-Message-ID: <20221019064500-0.1.57.dviv.0.a8g6x6cq3i@peston.pl>
-Date:   Wed, 19 Oct 2022 07:56:21 GMT
-From:   "Igor Ferenz" <igor.ferenz@peston.pl>
-To:     <netdev@vger.kernel.org>
-Subject: Biznesowy angielski
-X-Mailer: mail.peston.pl
+        with ESMTP id S229484AbiJSIGN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 04:06:13 -0400
+Received: from proxima.lasnet.de (proxima.lasnet.de [78.47.171.185])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17C6674CEE;
+        Wed, 19 Oct 2022 01:06:12 -0700 (PDT)
+Received: from [IPV6:2003:e9:d737:8af6:4fc:668d:6ab2:2a74] (p200300e9d7378af604fc668d6ab22a74.dip0.t-ipconnect.de [IPv6:2003:e9:d737:8af6:4fc:668d:6ab2:2a74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id A6E2CC0183;
+        Wed, 19 Oct 2022 10:06:09 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1666166770;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Wle3jPpmkZ9Q6kR0RR4IH1KKfOOsPa+u9//L4s5BVCk=;
+        b=Yyi4l3mIwXmIGnp9OVvISygFVMhT9KAoKXL9rlxjH5vlnaTEJHr0S2r0yY9Qfaok4FpF6w
+        CaQNvm3IDgWkfnx3Uwx4T0Be9njcb6Ysidd7ANbuc7OO7bxaivfBcInlW6UaB6gFBpTi15
+        U2sYOAO3NU3MJDB9hnrUfsxwO3aGADMuNvhp3dRcj2A1vj7uzdc/CukdlFeA/Rz8w59cPD
+        iMGK3SefQu9v4HrHwuj/ZfZGwPMUjTP9F5vqlY6LgIfkyCQA7/ksQqgOeeLs6oShDRbBZA
+        UetGeIMBBKhuZiq6mp9vs949NaiEDQQvf63z2hgN3/NWtfd9r2cSA+XenaAScQ==
+Message-ID: <154ea7ad-333e-cecd-517b-0a9cf9d1b390@datenfreihafen.org>
+Date:   Wed, 19 Oct 2022 10:06:05 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_VALIDITY_RPBL,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Subject: Re: [PATCH wpan-next v5] mac802154: Ensure proper scan-level
+ filtering
+Content-Language: en-US
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alexander Aring <aahringo@redhat.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>, linux-wpan@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+References: <20221018183540.806471-1-miquel.raynal@bootlin.com>
+ <CAK-6q+gRMG64Ra9ghAUVHXkJoGB1b5Kd6rLTiUK+UArbYhP+BA@mail.gmail.com>
+ <20221019000329.2eacd502@xps-13>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+In-Reply-To: <20221019000329.2eacd502@xps-13>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dzie=C5=84 dobry,=20
+Hello.
 
-czy rozwa=C5=BCali Pa=C5=84stwo rozw=C3=B3j kwalifikacji j=C4=99zykowych =
-swoich pracownik=C3=B3w?
+On 19.10.22 00:03, Miquel Raynal wrote:
+> Hi Alexander,
+> 
+> aahringo@redhat.com wrote on Tue, 18 Oct 2022 16:54:13 -0400:
+> 
+>> Hi,
+>>
+>> On Tue, Oct 18, 2022 at 2:35 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>>>
+>>> We now have a fine grained filtering information so let's ensure proper
+>>> filtering in scan mode, which means that only beacons are processed.
+>>>   
+>>
+>> Is this a fixup? Can you resend the whole series please?
+> 
+> Hmm no? Unless I understood things the wrong way, Stefan applied
+> patches 1 to 7 of my v4, and asked me to make a change on the 8th
+> patch.
+> 
+> This is v5 just for patch 8/8 of the previous series, I just changed
+> a debug string actually...
+> 
+> There was a conflict when he applied it but I believe this is because
+> wpan-next did not contain one of the fixes which made it to Linus' tree
+> a month ago. So in my branch I still have this fix prior to this patch,
+> because otherwise there will be a conflict when merging v6.1-rc1 (which
+> I believe was not done yet).
 
-Opracowali=C5=9Bmy kursy j=C4=99zykowe dla r=C3=B3=C5=BCnych bran=C5=BC, =
-w kt=C3=B3rych koncentrujemy si=C4=99 na podniesieniu poziomu s=C5=82owni=
-ctwa i jako=C5=9Bci komunikacji wykorzystuj=C4=85c autorsk=C4=85 metod=C4=
-=99, stworzon=C4=85 specjalnie dla wymagaj=C4=85cego biznesu.=20
+You believe correctly. :-) In my workflow I normally do not merge in 
+changes from net-next until after my latest pull-request was pulled in. 
+I do this to avoid extra merge commits.
 
-Niestandardowy kurs on-line, dopasowany do profilu firmy i obszar=C3=B3w =
-=C5=9Bwiadczonych us=C5=82ug, w szybkim czasie przyniesie efekty, kt=C3=B3=
-re zwi=C4=99ksz=C4=85 komfort i jako=C5=9B=C4=87 pracy, rozwijaj=C4=85c m=
-o=C5=BCliwo=C5=9Bci biznesowe.=20
+In case I see a merge conflict in my testing before sending the pull 
+request I add merge guidance to the pull. Which is my plan this time 
+around as well.
 
-Zdalne szkolenie j=C4=99zykowe to m.in. zaj=C4=99cia z native speakerami,=
- kt=C3=B3re w szybkim czasie naucz=C4=85 pracownik=C3=B3w rozmawia=C4=87 =
-za pomoc=C4=85 jasnego i zwi=C4=99z=C5=82ego j=C4=99zyka Business English=
-=2E
-
-Czy m=C3=B3g=C5=82bym przedstawi=C4=87 wi=C4=99cej szczeg=C3=B3=C5=82=C3=B3=
-w i opowiedzie=C4=87 jak dzia=C5=82amy?=20
+regards
+Stefan Schmidt
 
 
-Pozdrawiam
-Igor Ferenz
