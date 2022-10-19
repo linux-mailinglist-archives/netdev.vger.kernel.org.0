@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51DA560530B
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 00:24:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2D17605310
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 00:24:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229729AbiJSWYe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 18:24:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34580 "EHLO
+        id S231260AbiJSWYg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 18:24:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230510AbiJSWY1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 18:24:27 -0400
+        with ESMTP id S230506AbiJSWY3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 18:24:29 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C463762D4;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C472C633C;
         Wed, 19 Oct 2022 15:24:25 -0700 (PDT)
 Received: by linux.microsoft.com (Postfix, from userid 1004)
-        id B4E8020FE9DF; Wed, 19 Oct 2022 15:24:24 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com B4E8020FE9DF
+        id 2B92F20FEA28; Wed, 19 Oct 2022 15:24:25 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 2B92F20FEA28
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxonhyperv.com;
-        s=default; t=1666218264;
-        bh=rxJ1l3XZAaUy7L0ulivQTclU3lx9TfDBngKUNfhY9VY=;
+        s=default; t=1666218265;
+        bh=9o96KL9v/M+VdBJEWVgSsnv2eumQWNZL84myNK5sMHE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:Reply-To:From;
-        b=jYFnSlBMhbpay/sQeCvPbsJBqGPInkKnYaQVr1O5zAliw9S5i3Qj3n+9s5GhAaEuC
-         X99xmGe9rnjfe2PCc+NZlpZQPpb0jZYuJoAM+wK69kQHw+mT8CLJtrhBTluCMBPAQW
-         3INXdwE0vNt8oR3hBuoO9R8NW5SF0sr3c0XOLxsU=
+        b=kD7DFchqAI7nQVQkDMuY5ZG/xWSnFqvwh0oTZhOnI3CiUQXVKNmuvaQdm6SNn8l+u
+         b18aFF9gpKTC0l56pR6TUdRKwv5UXy5f1MRgX8OQOdy9AjOgIKVNTURDH2ZROtCSim
+         M/AUc/hihZaz3yqgvHleyAY8BpLwUDqiEdJMOO4o=
 From:   longli@linuxonhyperv.com
 To:     "K. Y. Srinivasan" <kys@microsoft.com>,
         Haiyang Zhang <haiyangz@microsoft.com>,
@@ -38,9 +38,9 @@ To:     "K. Y. Srinivasan" <kys@microsoft.com>,
 Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
         Long Li <longli@microsoft.com>
-Subject: [Patch v8 06/12] net: mana: Record port number in netdev
-Date:   Wed, 19 Oct 2022 15:24:06 -0700
-Message-Id: <1666218252-32191-7-git-send-email-longli@linuxonhyperv.com>
+Subject: [Patch v8 07/12] net: mana: Move header files to a common location
+Date:   Wed, 19 Oct 2022 15:24:07 -0700
+Message-Id: <1666218252-32191-8-git-send-email-longli@linuxonhyperv.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1666218252-32191-1-git-send-email-longli@linuxonhyperv.com>
 References: <1666218252-32191-1-git-send-email-longli@linuxonhyperv.com>
@@ -57,28 +57,149 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Long Li <longli@microsoft.com>
 
-The port number is useful for user-mode application to identify this
-net device based on port index. Set to the correct value in ndev.
+In preparation to add MANA RDMA driver, move all the required header files
+to a common location for use by both Ethernet and RDMA drivers.
 
 Reviewed-by: Dexuan Cui <decui@microsoft.com>
 Signed-off-by: Long Li <longli@microsoft.com>
 Acked-by: Haiyang Zhang <haiyangz@microsoft.com>
 ---
- drivers/net/ethernet/microsoft/mana/mana_en.c | 1 +
- 1 file changed, 1 insertion(+)
+Change log:
+v2: Move headers to include/net/mana, instead of include/linux/mana
 
+ MAINTAINERS                                                   | 1 +
+ drivers/net/ethernet/microsoft/mana/gdma_main.c               | 2 +-
+ drivers/net/ethernet/microsoft/mana/hw_channel.c              | 4 ++--
+ drivers/net/ethernet/microsoft/mana/mana_bpf.c                | 2 +-
+ drivers/net/ethernet/microsoft/mana/mana_en.c                 | 4 ++--
+ drivers/net/ethernet/microsoft/mana/mana_ethtool.c            | 2 +-
+ drivers/net/ethernet/microsoft/mana/shm_channel.c             | 2 +-
+ {drivers/net/ethernet/microsoft => include/net}/mana/gdma.h   | 0
+ .../net/ethernet/microsoft => include/net}/mana/hw_channel.h  | 0
+ {drivers/net/ethernet/microsoft => include/net}/mana/mana.h   | 0
+ .../ethernet/microsoft => include/net}/mana/mana_auxiliary.h  | 0
+ .../net/ethernet/microsoft => include/net}/mana/shm_channel.h | 0
+ 12 files changed, 9 insertions(+), 8 deletions(-)
+ rename {drivers/net/ethernet/microsoft => include/net}/mana/gdma.h (100%)
+ rename {drivers/net/ethernet/microsoft => include/net}/mana/hw_channel.h (100%)
+ rename {drivers/net/ethernet/microsoft => include/net}/mana/mana.h (100%)
+ rename {drivers/net/ethernet/microsoft => include/net}/mana/mana_auxiliary.h (100%)
+ rename {drivers/net/ethernet/microsoft => include/net}/mana/shm_channel.h (100%)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 8a5012ba6ff9..8b9a50756c7e 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9457,6 +9457,7 @@ F:	include/asm-generic/hyperv-tlfs.h
+ F:	include/asm-generic/mshyperv.h
+ F:	include/clocksource/hyperv_timer.h
+ F:	include/linux/hyperv.h
++F:	include/net/mana
+ F:	include/uapi/linux/hyperv.h
+ F:	net/vmw_vsock/hyperv_transport.c
+ F:	tools/hv/
+diff --git a/drivers/net/ethernet/microsoft/mana/gdma_main.c b/drivers/net/ethernet/microsoft/mana/gdma_main.c
+index aab22911f20d..93847ed0e4b3 100644
+--- a/drivers/net/ethernet/microsoft/mana/gdma_main.c
++++ b/drivers/net/ethernet/microsoft/mana/gdma_main.c
+@@ -6,7 +6,7 @@
+ #include <linux/utsname.h>
+ #include <linux/version.h>
+ 
+-#include "mana.h"
++#include <net/mana/mana.h>
+ 
+ static u32 mana_gd_r32(struct gdma_context *g, u64 offset)
+ {
+diff --git a/drivers/net/ethernet/microsoft/mana/hw_channel.c b/drivers/net/ethernet/microsoft/mana/hw_channel.c
+index 543a5d5c304f..76829ab43d40 100644
+--- a/drivers/net/ethernet/microsoft/mana/hw_channel.c
++++ b/drivers/net/ethernet/microsoft/mana/hw_channel.c
+@@ -1,8 +1,8 @@
+ // SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
+ /* Copyright (c) 2021, Microsoft Corporation. */
+ 
+-#include "gdma.h"
+-#include "hw_channel.h"
++#include <net/mana/gdma.h>
++#include <net/mana/hw_channel.h>
+ 
+ static int mana_hwc_get_msg_index(struct hw_channel_context *hwc, u16 *msg_id)
+ {
+diff --git a/drivers/net/ethernet/microsoft/mana/mana_bpf.c b/drivers/net/ethernet/microsoft/mana/mana_bpf.c
+index 421fd39ff3a8..3caea631229c 100644
+--- a/drivers/net/ethernet/microsoft/mana/mana_bpf.c
++++ b/drivers/net/ethernet/microsoft/mana/mana_bpf.c
+@@ -8,7 +8,7 @@
+ #include <linux/bpf_trace.h>
+ #include <net/xdp.h>
+ 
+-#include "mana.h"
++#include <net/mana/mana.h>
+ 
+ void mana_xdp_tx(struct sk_buff *skb, struct net_device *ndev)
+ {
 diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
-index 6ad4bc8cbc99..b6303a43fa7c 100644
+index b6303a43fa7c..ffa2a0e2c213 100644
 --- a/drivers/net/ethernet/microsoft/mana/mana_en.c
 +++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
-@@ -2133,6 +2133,7 @@ static int mana_probe_port(struct mana_context *ac, int port_idx,
- 	ndev->max_mtu = ndev->mtu;
- 	ndev->min_mtu = ndev->mtu;
- 	ndev->needed_headroom = MANA_HEADROOM;
-+	ndev->dev_port = port_idx;
- 	SET_NETDEV_DEV(ndev, gc->dev);
+@@ -12,8 +12,8 @@
+ #include <net/checksum.h>
+ #include <net/ip6_checksum.h>
  
- 	netif_carrier_off(ndev);
+-#include "mana.h"
+-#include "mana_auxiliary.h"
++#include <net/mana/mana.h>
++#include <net/mana/mana_auxiliary.h>
+ 
+ static DEFINE_IDA(mana_adev_ida);
+ 
+diff --git a/drivers/net/ethernet/microsoft/mana/mana_ethtool.c b/drivers/net/ethernet/microsoft/mana/mana_ethtool.c
+index c530db76880f..6f98de6d7440 100644
+--- a/drivers/net/ethernet/microsoft/mana/mana_ethtool.c
++++ b/drivers/net/ethernet/microsoft/mana/mana_ethtool.c
+@@ -5,7 +5,7 @@
+ #include <linux/etherdevice.h>
+ #include <linux/ethtool.h>
+ 
+-#include "mana.h"
++#include <net/mana/mana.h>
+ 
+ static const struct {
+ 	char name[ETH_GSTRING_LEN];
+diff --git a/drivers/net/ethernet/microsoft/mana/shm_channel.c b/drivers/net/ethernet/microsoft/mana/shm_channel.c
+index da255da62176..5553af9c8085 100644
+--- a/drivers/net/ethernet/microsoft/mana/shm_channel.c
++++ b/drivers/net/ethernet/microsoft/mana/shm_channel.c
+@@ -6,7 +6,7 @@
+ #include <linux/io.h>
+ #include <linux/mm.h>
+ 
+-#include "shm_channel.h"
++#include <net/mana/shm_channel.h>
+ 
+ #define PAGE_FRAME_L48_WIDTH_BYTES 6
+ #define PAGE_FRAME_L48_WIDTH_BITS (PAGE_FRAME_L48_WIDTH_BYTES * 8)
+diff --git a/drivers/net/ethernet/microsoft/mana/gdma.h b/include/net/mana/gdma.h
+similarity index 100%
+rename from drivers/net/ethernet/microsoft/mana/gdma.h
+rename to include/net/mana/gdma.h
+diff --git a/drivers/net/ethernet/microsoft/mana/hw_channel.h b/include/net/mana/hw_channel.h
+similarity index 100%
+rename from drivers/net/ethernet/microsoft/mana/hw_channel.h
+rename to include/net/mana/hw_channel.h
+diff --git a/drivers/net/ethernet/microsoft/mana/mana.h b/include/net/mana/mana.h
+similarity index 100%
+rename from drivers/net/ethernet/microsoft/mana/mana.h
+rename to include/net/mana/mana.h
+diff --git a/drivers/net/ethernet/microsoft/mana/mana_auxiliary.h b/include/net/mana/mana_auxiliary.h
+similarity index 100%
+rename from drivers/net/ethernet/microsoft/mana/mana_auxiliary.h
+rename to include/net/mana/mana_auxiliary.h
+diff --git a/drivers/net/ethernet/microsoft/mana/shm_channel.h b/include/net/mana/shm_channel.h
+similarity index 100%
+rename from drivers/net/ethernet/microsoft/mana/shm_channel.h
+rename to include/net/mana/shm_channel.h
 -- 
 2.17.1
 
