@@ -2,53 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B9A2604985
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 16:42:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD0A46048E2
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 16:13:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231145AbiJSOm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 10:42:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51958 "EHLO
+        id S230265AbiJSONu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 10:13:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231229AbiJSOmK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 10:42:10 -0400
-X-Greylist: delayed 445 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 19 Oct 2022 07:27:36 PDT
-Received: from mx3.wp.pl (mx3.wp.pl [212.77.101.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1311717A01D
-        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 07:27:36 -0700 (PDT)
-Received: (wp-smtpd smtp.wp.pl 11740 invoked from network); 19 Oct 2022 11:00:53 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
-          t=1666170053; bh=3iSyL7Yr0KXhutVzhxVQQmQBj+WqFimMQl9DBDJpgOM=;
-          h=From:To:Cc:Subject;
-          b=htd/dTu9w9KQgwvCLEwNwa5TxHkcmBOR/AchgyTvSPzOO91bYFNuolLihjMgvUCga
-           QhkQSx6OIaV7RtcUiDwOT4/PXQkieeEvo9M2i6E+j8fG8sgZ4clEv5JA+ld0UrsiJJ
-           oiXsHc4S5f1DR8SQvJyp6cSEzJO6jR4r4aHLdAeo=
-Received: from 89-64-7-202.dynamic.chello.pl (HELO localhost) (stf_xl@wp.pl@[89.64.7.202])
-          (envelope-sender <stf_xl@wp.pl>)
-          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
-          for <Jason@zx2c4.com>; 19 Oct 2022 11:00:53 +0200
-Date:   Wed, 19 Oct 2022 11:00:52 +0200
-From:   Stanislaw Gruszka <stf_xl@wp.pl>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Helmut Schaa <helmut.schaa@googlemail.com>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: Re: [PATCH v2] wifi: rt2x00: use explicitly signed or unsigned types
-Message-ID: <20221019090052.GB81503@wp.pl>
-References: <20221018202734.140489-1-Jason@zx2c4.com>
- <20221019081417.3402284-1-Jason@zx2c4.com>
+        with ESMTP id S232094AbiJSONa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 10:13:30 -0400
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [IPv6:2001:4b98:dc4:8::240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C7C9543C3;
+        Wed, 19 Oct 2022 06:56:00 -0700 (PDT)
+Received: from relay10.mail.gandi.net (unknown [217.70.178.230])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id 8F089CEECA;
+        Wed, 19 Oct 2022 13:46:29 +0000 (UTC)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id AC4B6240004;
+        Wed, 19 Oct 2022 13:44:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1666187066;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=KiudPeN4ih8vxup9qMF9Xj0kZ8/yn8+dYzubgOF3bR4=;
+        b=cvnKPKrDXr6S01qkutJhoc+rrLIw14BBLMHnTI/RHH4AdV1FheTF6g4QfA94NO111aZFUW
+        Vfg9Y7fAAEJSuA7OzhhxPaonsQGiHNTQqaLeF1tuWG5hXaDixCHr++ZgKXHULPa096l5zE
+        YYjrZkiUmERWQq7AgGaH29dHcdBC6pKWRfum7dsDo9LHB6E0Ch2Eg6ZTcDfUyE9R8KC5VB
+        imA03L7Fhmj5ilwAmCowbR4WZgB+O32zksyF4QgUJAGRiMJOAmOO3CRbUwRAyywOJwyvbh
+        UEo+3VgYJ9iHeoR2E4fjpbsGRYVpa1QfXh3wW9BriTEveqJign39EsmTenW9Tg==
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next v6 0/3] IEEE 802.15.4 filtering series followup
+Date:   Wed, 19 Oct 2022 15:44:20 +0200
+Message-Id: <20221019134423.877169-1-miquel.raynal@bootlin.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221019081417.3402284-1-Jason@zx2c4.com>
-X-WP-MailID: ea5fd171d046a1a6ccd8e0dd348d5991
-X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
-X-WP-SPAM: NO 0000000 [4dNk]                               
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,39 +62,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 19, 2022 at 02:14:17AM -0600, Jason A. Donenfeld wrote:
-> On some platforms, `char` is unsigned, but this driver, for the most
-> part, assumed it was signed. In other places, it uses `char` to mean an
-> unsigned number, but only in cases when the values are small. And in
-> still other places, `char` is used as a boolean. Put an end to this
-> confusion by declaring explicit types, depending on the context.
-> 
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Cc: Stanislaw Gruszka <stf_xl@wp.pl>
-> Cc: Helmut Schaa <helmut.schaa@googlemail.com>
-> Cc: Kalle Valo <kvalo@kernel.org>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-<snip>
+Hello,
 
-> @@ -3406,14 +3406,14 @@ static void rt2800_config_channel_rf53xx(struct rt2x00_dev *rt2x00dev,
->  		} else if (rt2x00_rt(rt2x00dev, RT5390) ||
->  			   rt2x00_rt(rt2x00dev, RT5392) ||
->  			   rt2x00_rt(rt2x00dev, RT6352)) {
-> -			static const char r59_non_bt[] = {0x8f, 0x8f,
-> +			static const s8 r59_non_bt[] = {0x8f, 0x8f,
->  				0x8f, 0x8f, 0x8f, 0x8f, 0x8f, 0x8d,
->  				0x8a, 0x88, 0x88, 0x87, 0x87, 0x86};
->  
->  			rt2800_rfcsr_write(rt2x00dev, 59,
->  					   r59_non_bt[idx]);
->  		} else if (rt2x00_rt(rt2x00dev, RT5350)) {
-> -			static const char r59_non_bt[] = {0x0b, 0x0b,
-> +			static const s8 r59_non_bt[] = {0x0b, 0x0b,
->  				0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0a,
->  				0x0a, 0x09, 0x08, 0x07, 0x07, 0x06};
+The filtering series v4 [1] lead to a discussion about the use of a PIB
+attribute to save the required PHY filtering level instead of accessing
+the MAC internals, which is bein addressed in patch 1/3 and 2/3. The
+last patch has been sent alone as a v5 because of a debug message
+needing rewording. Actually Stefan wanted me to rebase on top of
+wpan-next without keeping a patch sent as a fix which conflicts with it,
+so here it is.
 
-Please make those two tables u8 as well.
+Once these three patches will be merged (I don't expect much discussions
+on it to be honest?) I will send the next small series bringing support
+for COORD interfaces.
 
-Regards
-Stanislaw
+Cheers, Miquèl
+
+Miquel Raynal (3):
+  ieee802154: hwsim: Introduce a helper to update all the PIB attributes
+  ieee802154: hwsim: Save the current filtering level and use it
+  mac802154: Ensure proper scan-level filtering
+
+ drivers/net/ieee802154/mac802154_hwsim.c | 88 +++++++++++++++---------
+ net/mac802154/rx.c                       | 16 +++--
+ 2 files changed, 67 insertions(+), 37 deletions(-)
+
+-- 
+2.34.1
+
