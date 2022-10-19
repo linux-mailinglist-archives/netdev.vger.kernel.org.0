@@ -2,82 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4888603AD6
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 09:41:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88C64603AF0
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 09:50:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229961AbiJSHli (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 03:41:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60156 "EHLO
+        id S230104AbiJSHu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 03:50:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229756AbiJSHlh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 03:41:37 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42D9261118
-        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 00:41:36 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MsjN75078zHv4q;
-        Wed, 19 Oct 2022 15:41:27 +0800 (CST)
-Received: from [10.174.178.66] (10.174.178.66) by
- dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 19 Oct 2022 15:41:07 +0800
-Message-ID: <8d79818c-21a3-9a78-7b80-15f5c60875a4@huawei.com>
-Date:   Wed, 19 Oct 2022 15:41:06 +0800
+        with ESMTP id S229525AbiJSHu1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 03:50:27 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1765E5FF54
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 00:50:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=F305I/bNYEbc33wVsrAaRYeF9Dt6ZHLxN9cuBqvxAKg=;
+        t=1666165826; x=1667375426; b=J3yRn7gun6b25szKWnhRhEC3l5qUpG2IA9ZO49CsbzPpYDb
+        qMBUjgvo7OFxOfay2cfKnoLR+AnSidV+QNoB/qlkBqtkplTzyKAq4yBhPPohsGASx/laydhAeUt8K
+        OBWgOfU/c5WK3+268ODoEnnDNdrUCLAWwkIhRaZpMZDjgrE++DQEdDAu0CQtH4Jt09dgy4gKoK9mA
+        NBFacizXPMPpaGF8cTB7MxZYrtUABeAvLEQBp8IYvkuhivK4T2WxLNUZY3uZ7RqTc15ygWHtQsGfX
+        gExqPUx1t8GHQHbhEdWfvmInFEE/0BTVS4SuesSB2Qy+HdzzvvFffB6YaSS3aF6A==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1ol3qD-00B14Y-2t;
+        Wed, 19 Oct 2022 09:50:18 +0200
+Message-ID: <68eaa8749d8ad971b34cce82f4306e77ccccbf3a.camel@sipsolutions.net>
+Subject: Re: [PATCH net-next 01/13] genetlink: refactor the cmd <> policy
+ mapping dump
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        jiri@resnulli.us, razor@blackwall.org, nicolas.dichtel@6wind.com,
+        gnault@redhat.com, jacob.e.keller@intel.com, fw@strlen.de
+Date:   Wed, 19 Oct 2022 09:50:16 +0200
+In-Reply-To: <20221018230728.1039524-2-kuba@kernel.org>
+References: <20221018230728.1039524-1-kuba@kernel.org>
+         <20221018230728.1039524-2-kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [PATCH net 3/4] net: hinic: fix the issue of CMDQ memory leaks
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <keescook@chromium.org>, <gustavoars@kernel.org>,
-        <gregkh@linuxfoundation.org>, <ast@kernel.org>,
-        <peter.chen@kernel.org>, <bin.chen@corigine.com>,
-        <luobin9@huawei.com>, <weiyongjun1@huawei.com>,
-        <yuehaibing@huawei.com>
-References: <20221019024220.376178-1-shaozhengchao@huawei.com>
- <20221019024220.376178-4-shaozhengchao@huawei.com> <Y0+lRITJ1kPNCY0c@unreal>
-From:   shaozhengchao <shaozhengchao@huawei.com>
-In-Reply-To: <Y0+lRITJ1kPNCY0c@unreal>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.66]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-malware-bazaar: not-scanned
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 2022-10-18 at 16:07 -0700, Jakub Kicinski wrote:
+> The code at the top of ctrl_dumppolicy() dumps mappings between
+> ops and policies. It supports dumping both the entire family and
+> single op if dump is filtered. But both of those cases are handled
+> inside a loop, which makes the logic harder to follow and change.
+> Refactor to split the two cases more clearly.
+
+Hmm. Yeah, fair, it's nicer now :)
+
+However,
+
+>  	if (!ctx->policies) {
+> -		while (ctx->opidx < genl_get_cmd_cnt(ctx->rt)) {
+> -			struct genl_ops op;
+> +		struct genl_ops op;
+> =20
+> -			if (ctx->single_op) {
+> -				int err;
+> +		if (ctx->single_op) {
+> +			int err;
+> =20
+> -				err =3D genl_get_cmd(ctx->op, ctx->rt, &op);
+> -				if (WARN_ON(err))
+> -					return skb->len;
+> +			err =3D genl_get_cmd(ctx->op, ctx->rt, &op);
+> +			if (WARN_ON(err))
+> +				return err;
+> =20
+> -				/* break out of the loop after this one */
+> -				ctx->opidx =3D genl_get_cmd_cnt(ctx->rt);
+> -			} else {
+> -				genl_get_cmd_by_index(ctx->opidx, ctx->rt, &op);
+> -			}
+> +			if (ctrl_dumppolicy_put_op(skb, cb, &op))
+> +				return skb->len;
+> +
+> +			ctx->opidx =3D genl_get_cmd_cnt(ctx->rt);
+
+This (now without a comment that you removed rather than changed), still
+strikes me as odd.
+
+I guess if we add a comment /* don't enter the loop below */ that'd be
+nicer, but I feel maybe putting the loop into the else instead would be
+nicer?
 
 
-On 2022/10/19 15:20, Leon Romanovsky wrote:
-> On Wed, Oct 19, 2022 at 10:42:19AM +0800, Zhengchao Shao wrote:
->> When hinic_set_cmdq_depth() fails in hinic_init_cmdqs(), the cmdq memory is
->> not released correctly. Fix it.
->>
->> Fixes: 72ef908bb3ff ("hinic: add three net_device_ops of vf")
->> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
->> ---
->>   drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c | 5 +++++
->>   1 file changed, 5 insertions(+)
-> 
-> <...>
-> 
->> +	cmdq_type = HINIC_CMDQ_SYNC;
->> +	for (; cmdq_type < HINIC_MAX_CMDQ_TYPES; cmdq_type++)
-> 
-> Why do you have this "for loops" in all places? There is only one cmdq_type.
-> 
-> Thanks
-Hi Leon:
-	Thank you for your review. Now, only the synchronous CMDQ is
-enabled for the current CMDQs. New type of CMDQ could be added later.
-So looping style is maintained on both the allocation and release paths.
-
-Zhengchao Shao
+johannes
