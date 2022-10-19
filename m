@@ -2,127 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2677C6039F8
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 08:41:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1D796039FF
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 08:46:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229717AbiJSGl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 02:41:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59160 "EHLO
+        id S229776AbiJSGq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 02:46:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229605AbiJSGl1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 02:41:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F053B6D87F
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 23:41:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EE2961771
-        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 06:41:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE311C433D6;
-        Wed, 19 Oct 2022 06:41:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666161671;
-        bh=vc0TJrRmtoaMmoAz6AgTGAh0v075fwFWKs0OJwMgpkc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=N672zkIvW0rWlHmMy6ZJrHZ38Zu4S5ls3k0g6BeOt551prn1JtfFIOhwjxgajgJhL
-         hcaZnkF67pqMsqlfb28U29SnYrff+tZH5duaEqn0huh+47sJlQFlbkftMXwFu7Mrdo
-         Qni/u7hat5cNMq/UwXTfdw/xi7uiqNwqJF9qeLLiot8fe8StrGCBW//VJPuWSL+e0U
-         WWf2LUvWVQ+rkYSqB/vUdnGamnjxqEfVvUkcv2emo2yGBEG7J69GRpy1iHbETDFl0e
-         wAwd4t1MwQpYVkNMYO7Wlese6feWmxZx8zT+vVIOMnMRa3+b6lJXokYM9hnfDVgZZG
-         g0r+1HFsXPlYw==
-Date:   Wed, 19 Oct 2022 09:41:06 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Saeed Mahameed <saeedm@nvidia.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Emeel Hakim <ehakim@nvidia.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: [PATCH RESEND net] net/mlx5e: Cleanup MACsec uninitialization
- routine
-Message-ID: <Y0+cAuKjyH3p6yos@unreal>
-References: <4bd5c6655c5970ac30adb254a1f09f4f5e992158.1666159448.git.leonro@nvidia.com>
- <20221019062710.drfqigxhmh3uzxl7@sfedora>
+        with ESMTP id S229926AbiJSGq0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 02:46:26 -0400
+Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 748A06E8BE;
+        Tue, 18 Oct 2022 23:46:25 -0700 (PDT)
+Received: by mail-qt1-f180.google.com with SMTP id g11so11136345qts.1;
+        Tue, 18 Oct 2022 23:46:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=4Yc/gLv7VbOxzOOe3FhYvFca+lsfjiloEeWONHysiSM=;
+        b=sW1rdrLXpKq4ktS6lQm7jowd8sbv0jZd6wtOWCpVw1DcB54soZDxzkQJ52SURhoTtQ
+         MdJAEgnPjaOMYlQUlBSpyXFZVAxpTb5ePzVIhSxJsCEgNnql1VLb99BfuFktLU+NgUdt
+         0XVnZBlIf4MjMXt2dspJLAZAMSeKhssgTUPLP0HbG1mQTqkCpsqvoVDwVKrydIFITDEr
+         WW2z+4f1HzatMavR4xdl/Osa54yp5oeUhb6ikRlgv3RVxCB5TVo5s6sRErQyTGrW2Kke
+         Le7e6UqqGD40wJVImdifWES8FkMRMXdg5SGPuw4DlMi/IcXTGis82TjePDmqdWT9M3Yh
+         axuQ==
+X-Gm-Message-State: ACrzQf1v0KAIXbRncpuZD38Q9m7MkaVE/7o0tYUM6wxhJG3fXmeL9hbl
+        oPhQKkBU0hP4XLlVfOQ9qBMinegTFObFRS+d
+X-Google-Smtp-Source: AMsMyM4sFN/c5xk4crwFE7dx9WRdHD125FRExDC/A3KDWxCf6nPfD3xldHVtajNK6X/33GpJrRSeHQ==
+X-Received: by 2002:ac8:5850:0:b0:39a:8ebf:5474 with SMTP id h16-20020ac85850000000b0039a8ebf5474mr5268626qth.466.1666161984386;
+        Tue, 18 Oct 2022 23:46:24 -0700 (PDT)
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com. [209.85.219.182])
+        by smtp.gmail.com with ESMTPSA id q28-20020a05620a2a5c00b006eed14045f4sm4535987qkp.48.2022.10.18.23.46.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 18 Oct 2022 23:46:24 -0700 (PDT)
+Received: by mail-yb1-f182.google.com with SMTP id 63so19693882ybq.4;
+        Tue, 18 Oct 2022 23:46:23 -0700 (PDT)
+X-Received: by 2002:a25:cd01:0:b0:6c2:6f0d:f4ce with SMTP id
+ d1-20020a25cd01000000b006c26f0df4cemr5188600ybf.365.1666161983732; Tue, 18
+ Oct 2022 23:46:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221019062710.drfqigxhmh3uzxl7@sfedora>
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221017162807.1692691-1-sean.anderson@seco.com>
+ <Y07guYuGySM6F/us@lunn.ch> <c409789a-68cb-7aba-af31-31488b16f918@seco.com>
+ <97aae18e-a96c-a81b-74b7-03e32131a58f@ti.com> <Y08dECNbfMc3VUcG@lunn.ch>
+ <595b7903-610f-b76a-5230-f2d8ad5400b4@seco.com> <AM0PR04MB39729CFDBB20C133C269275AEC2B9@AM0PR04MB3972.eurprd04.prod.outlook.com>
+In-Reply-To: <AM0PR04MB39729CFDBB20C133C269275AEC2B9@AM0PR04MB3972.eurprd04.prod.outlook.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 19 Oct 2022 08:46:11 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUZKQFWV8QAKmwxuhWz0ZbFmcsUuf4OUzS_C31maP5+Yg@mail.gmail.com>
+Message-ID: <CAMuHMdUZKQFWV8QAKmwxuhWz0ZbFmcsUuf4OUzS_C31maP5+Yg@mail.gmail.com>
+Subject: Re: [PATCH net] net: fman: Use physical address for userspace interfaces
+To:     Madalin Bucur <madalin.bucur@nxp.com>
+Cc:     Sean Anderson <sean.anderson@seco.com>,
+        Andrew Lunn <andrew@lunn.ch>, Andrew Davis <afd@ti.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Camelia Alexandra Groza <camelia.groza@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 18, 2022 at 11:27:10PM -0700, Saeed Mahameed wrote:
-> On 19 Oct 09:06, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> > 
-> > The mlx5e_macsec_cleanup() routine has pointer dereferencing if mlx5 device
-> > doesn't support MACsec (priv->macsec will be NULL) together with useless
-> > comment line, assignment and extra blank lines.
-> > 
-> > Fix everything in one patch.
-> > 
-> > Fixes: 1f53da676439 ("net/mlx5e: Create advanced steering operation (ASO) object for MACsec")
-> > Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > ---
-> > Resend: https://lore.kernel.org/all/b43b1c5aadd5cfdcd2e385ce32693220331700ba.1665645548.git.leonro@nvidia.com
-> > ---
-> > .../net/ethernet/mellanox/mlx5/core/en_accel/macsec.c | 11 +----------
-> > 1 file changed, 1 insertion(+), 10 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-> > index 41970067917b..4331235b21ee 100644
-> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-> > @@ -1846,25 +1846,16 @@ int mlx5e_macsec_init(struct mlx5e_priv *priv)
-> > void mlx5e_macsec_cleanup(struct mlx5e_priv *priv)
-> > {
-> > 	struct mlx5e_macsec *macsec = priv->macsec;
-> > -	struct mlx5_core_dev *mdev = macsec->mdev;
-> > +	struct mlx5_core_dev *mdev = priv->mdev;
-> > 
-> > 	if (!macsec)
-> > 		return;
-> > 
-> > 	mlx5_notifier_unregister(mdev, &macsec->nb);
-> > -
-> > 	mlx5e_macsec_fs_cleanup(macsec->macsec_fs);
-> > -
-> > -	/* Cleanup workqueue */
-> > 	destroy_workqueue(macsec->wq);
-> > -
-> > 	mlx5e_macsec_aso_cleanup(&macsec->aso, mdev);
-> > -
-> > -	priv->macsec = NULL;
-> > -
-> 
-> Tariq was right, we need this check, the same priv can be resurrected
-> after cleanup to be used in switchdev representor profile, where
-> capabilities are not guaranteed to be the same as NIC netdev, so you will
-> end up using a garbage macsec.
+Hi Madalin,
 
-Not really, we are checking that device supports MACsec with
-mlx5e_is_macsec_device() in every entry call where is a chance do
-not have priv->macsec. If device doesn't support, the relevant ops
-won't be installed (mlx5e_macsec_build_netdev) and nothing will call
-uninitialized MACsec.
+On Wed, Oct 19, 2022 at 7:20 AM Madalin Bucur <madalin.bucur@nxp.com> wrote:
+> > -----Original Message-----
+> > From: Sean Anderson <sean.anderson@seco.com>
+> > Sent: 19 October 2022 00:47
+> > To: Andrew Lunn <andrew@lunn.ch>; Andrew Davis <afd@ti.com>
+> > Cc: David S . Miller <davem@davemloft.net>; netdev@vger.kernel.org;
+> > linux-kernel@vger.kernel.org; Madalin Bucur <madalin.bucur@nxp.com>;
+> > Jakub Kicinski <kuba@kernel.org>; Eric Dumazet <edumazet@google.com>;
+> > Paolo Abeni <pabeni@redhat.com>; Camelia Alexandra Groza
+> > <camelia.groza@nxp.com>; Geert Uytterhoeven <geert@linux-m68k.org>
+> > Subject: Re: [PATCH net] net: fman: Use physical address for userspace
+> > interfaces
+> >
+> >
+> >
+> > On 10/18/22 5:39 PM, Andrew Lunn wrote:
+> > > On Tue, Oct 18, 2022 at 01:33:55PM -0500, Andrew Davis wrote:
+> > >> On 10/18/22 12:37 PM, Sean Anderson wrote:
+> > >> > Hi Andrew,
+> > >> >
+> > >> > On 10/18/22 1:22 PM, Andrew Lunn wrote:
+> > >> > > On Mon, Oct 17, 2022 at 12:28:06PM -0400, Sean Anderson wrote:
+> > >> > > > For whatever reason, the address of the MAC is exposed to
+> > userspace in
+> > >> > > > several places. We need to use the physical address for this
+> > purpose to
+> > >> > > > avoid leaking information about the kernel's memory layout, and
+> > to keep
+> > >> > > > backwards compatibility.
+> > >> > >
+> > >> > > How does this keep backwards compatibility? Whatever is in user
+> > space
+> > >> > > using this virtual address expects a virtual address. If it now
+> > gets a
+> > >> > > physical address it will probably do the wrong thing. Unless there
+> > is
+> > >> > > a one to one mapping, and you are exposing virtual addresses
+> > anyway.
+> > >> > >
+> > >> > > If you are going to break backwards compatibility Maybe it would
+> > be
+> > >> > > better to return 0xdeadbeef? Or 0?
+> > >> > >
+> > >> > >         Andrew
+> > >> > >
+> > >> >
+> > >> > The fixed commit was added in v6.1-rc1 and switched from physical to
+> > >> > virtual. So this is effectively a partial revert to the previous
+> > >> > behavior (but keeping the other changes). See [1] for discussion.
+> > >
+> > > Please don't assume a reviewer has seen the previous
+> > > discussion. Include the background in the commit message to help such
+> > > reviewers.
 
-The NULL assignment is purely anti-pattern where you hide use-after-free
-access.
+> > >> I see it asked in that thread, but not answered. Why are you exposing
+> > >> "physical" addresses to userspace? There should be no reason for that.
+> > >
+> > > I don't see anything about needing physical or virtual address in the
+> > > discussion, or i've missed it.
+> >
+> > Well, Madalin originally added this, so perhaps she has some insight.
+> >
+> > I have no idea why we set the IFMAP stuff, since that seems like it's for
+> > PCMCIA. Not sure about sysfs either.
+> >
+> > > If nobody knows why it is needed, either use an obfusticated value, or
+> > > remove it all together. If somebody/something does need it, they will
+> > > report the regression.
+> >
+> > I'd rather apply this (or v2 of this) and then remove the "feature" in
+> > follow-up.
+> >
+> > --Sean
+>
+>
+> root@localhost:~# grep 1ae /etc/udev/rules.d/72-fsl-dpaa-persistent-networking.rules
+> SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1ae0000", NAME="fm1-mac1"
+> SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1ae2000", NAME="fm1-mac2"
+> SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1ae4000", NAME="fm1-mac3"
+> SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1ae6000", NAME="fm1-mac4"
+> SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1ae8000", NAME="fm1-mac5"
+> SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1aea000", NAME="fm1-mac6"
 
-> 
-> Also we don't submit cleanups to net to avoid porting unnecessary changes
-> and new bugs to -rc.
+So you rely on the physical address.
+It's a pity this uses a custom sysfs file.
+Can't you obtain this information some other way?
+Anyway, as this is in use, it became part of the ABI.
 
-It is something that was added in previous cycle. There is no
-backporting yet.
+> root@localhost:~# grep 1ae  /sys/devices/platform/soc/soc:fsl,dpaa/soc:fsl,dpaa:ethernet@*/net/fm1-mac*/device_addr
+> /sys/devices/platform/soc/soc:fsl,dpaa/soc:fsl,dpaa:ethernet@2/net/fm1-mac3/device_addr:1ae4000
+> /sys/devices/platform/soc/soc:fsl,dpaa/soc:fsl,dpaa:ethernet@3/net/fm1-mac4/device_addr:1ae6000
+> /sys/devices/platform/soc/soc:fsl,dpaa/soc:fsl,dpaa:ethernet@4/net/fm1-mac5/device_addr:1ae8000
+> /sys/devices/platform/soc/soc:fsl,dpaa/soc:fsl,dpaa:ethernet@5/net/fm1-mac6/device_addr:1aea000
 
-Thanks
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
