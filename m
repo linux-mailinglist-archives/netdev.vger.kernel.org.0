@@ -2,140 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 548EC60460F
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 14:56:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF50D604652
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 15:06:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbiJSM4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 08:56:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40346 "EHLO
+        id S229826AbiJSNGh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 09:06:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233399AbiJSM4F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 08:56:05 -0400
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 685F11CEC00
-        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 05:38:55 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id z30so10532774qkz.13
-        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 05:38:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=yztcDb/9Hhh5Rkv5M5nLE2clBrl/RANSXIwbIVDKzcg=;
-        b=c6TUtOPHf/1jy2RkaZ9KZYqSJRHzD/kcZx5TA9S1o397Mrus0CeSD0Emoa46RX+OXV
-         ioJWsrANMi4wmLC6peKtC788oaEqgtld0Y+FYh31c0WO/Xs+8HPJ0CG4svmVo3cQWVvZ
-         +32DT1yuGfoLdmVqOca7sl4J3clcFxk2hQlRA0/yV4YlwGHaX3ZHJub0Fa1npAj65XgL
-         L0TMPgHvaH0WwEDlhKFwJWyJJS1r6Dz+FibEGoGey2sOnImhL0tipecHyIXjYvHvaUG0
-         riDEl7SRMowNXhYbNshwUtoPzIraCVlcwcb4WcklAhR5vSrtu96Y87JzzOrc7l/AhhTg
-         gYFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=yztcDb/9Hhh5Rkv5M5nLE2clBrl/RANSXIwbIVDKzcg=;
-        b=wBuOKWNI2UJIHZQ/M2GIvJngzSHqx0j0aypFf8dChzPt7mHLp4t7MeiNpWeIc3l4vC
-         hpx3DhIrqU2dXM5dne3K2LuloneZO2F9posFhvF8pUjlLzFO2DUsHDI7TpLqzVqtZCSG
-         YNBREtODGjouiTE49JrbUfd7ybX8I2P8NVnpJmcH2sTzx1fYtbwJlfpFpGJMYvSew+TO
-         B8hI+uJ+mIuKCiO9CJeeFbs22KURj9IJyGBYRXlBf40e1V952LPGG/3X4CfZaDi50W52
-         9XfFl4uup0XLeraknX1lkpVaaVaV//wR8wLtJROnWN330InZH8FlXEy8bxe3HEktNgCh
-         zViw==
-X-Gm-Message-State: ACrzQf0RNQhEWwULDxEb1ityb/UWhD1akfzQR6Yv9VFs5B+v2gjU/LkS
-        pjhhck4YBl3oSQr/0V0BJxV0PltZdtD4VA==
-X-Google-Smtp-Source: AMsMyM6SC40e+0JgwyPmZJo+chi9ytQvP9whxlTv+lJaJhecWJIKYPMqoLkW/vEBTOm+/nphGOcI5A==
-X-Received: by 2002:a05:620a:28ce:b0:6cf:933c:40d3 with SMTP id l14-20020a05620a28ce00b006cf933c40d3mr5104264qkp.258.1666183076537;
-        Wed, 19 Oct 2022 05:37:56 -0700 (PDT)
-Received: from [192.168.10.124] (pool-72-83-177-149.washdc.east.verizon.net. [72.83.177.149])
-        by smtp.gmail.com with ESMTPSA id bp17-20020a05620a459100b006ce3f1af120sm4916845qkb.44.2022.10.19.05.37.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Oct 2022 05:37:56 -0700 (PDT)
-Message-ID: <11d6f585-bd9f-246f-29e0-719f0551e6c9@linaro.org>
-Date:   Wed, 19 Oct 2022 08:37:53 -0400
+        with ESMTP id S232094AbiJSNGQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 09:06:16 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A83D1DB263;
+        Wed, 19 Oct 2022 05:50:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=LvgRD4iN2m8G6ZpNS+5FlDAbPJRUbn+oLpBhRnPeWvY=; b=duZrPGPMQ809pOr+sYnrVIU7D7
+        4Q7+nJJyxlO0d3zDQIBMXBFwC6V4p/UyXv+9X5DrmuexhHhGW+vhmVj3nkGAyrc1FpPs2R+/gRKOH
+        t3z+KLmr3IZyATGwJU4xB0l7Xu3vSz4JIIWL8RXo1vPoj7Rjc/xGd7edZeXZ03svN7Pk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ol8VO-002Rsz-BE; Wed, 19 Oct 2022 14:49:06 +0200
+Date:   Wed, 19 Oct 2022 14:49:06 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Madalin Bucur <madalin.bucur@nxp.com>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Andrew Davis <afd@ti.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Camelia Alexandra Groza <camelia.groza@nxp.com>
+Subject: Re: [PATCH net] net: fman: Use physical address for userspace
+ interfaces
+Message-ID: <Y0/yQhRtH2iWfozx@lunn.ch>
+References: <20221017162807.1692691-1-sean.anderson@seco.com>
+ <Y07guYuGySM6F/us@lunn.ch>
+ <c409789a-68cb-7aba-af31-31488b16f918@seco.com>
+ <97aae18e-a96c-a81b-74b7-03e32131a58f@ti.com>
+ <Y08dECNbfMc3VUcG@lunn.ch>
+ <595b7903-610f-b76a-5230-f2d8ad5400b4@seco.com>
+ <AM0PR04MB39729CFDBB20C133C269275AEC2B9@AM0PR04MB3972.eurprd04.prod.outlook.com>
+ <CAMuHMdUZKQFWV8QAKmwxuhWz0ZbFmcsUuf4OUzS_C31maP5+Yg@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [PATCH v4 1/3] dt-bindings: net: renesas: Document Renesas
- Ethernet Switch
-Content-Language: en-US
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-References: <20221019083518.933070-1-yoshihiro.shimoda.uh@renesas.com>
- <20221019083518.933070-2-yoshihiro.shimoda.uh@renesas.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221019083518.933070-2-yoshihiro.shimoda.uh@renesas.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdUZKQFWV8QAKmwxuhWz0ZbFmcsUuf4OUzS_C31maP5+Yg@mail.gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/10/2022 04:35, Yoshihiro Shimoda wrote:
-> Document Renesas Etherent Switch for R-Car S4-8 (r8a779f0).
+> > root@localhost:~# grep 1ae /etc/udev/rules.d/72-fsl-dpaa-persistent-networking.rules
+> > SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1ae0000", NAME="fm1-mac1"
+> > SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1ae2000", NAME="fm1-mac2"
+> > SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1ae4000", NAME="fm1-mac3"
+> > SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1ae6000", NAME="fm1-mac4"
+> > SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1ae8000", NAME="fm1-mac5"
+> > SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1aea000", NAME="fm1-mac6"
 > 
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> So you rely on the physical address.
+> It's a pity this uses a custom sysfs file.
+> Can't you obtain this information some other way?
+> Anyway, as this is in use, it became part of the ABI.
 
-Thank you for your patch. There is something to discuss/improve.
+I agree about the ABI thing. Please add this to the commit messages as
+a justification.
 
-> +  ethernet-ports:
-> +    type: object
-> +    additionalProperties: false
-> +
-> +    properties:
-> +      '#address-cells':
-> +        description: Port number of ETHA (TSNA).
-> +        const: 1
-> +
-> +      '#size-cells':
-> +        const: 0
-> +
-> +    patternProperties:
-> +      "^port@[0-9a-f]+$":
-> +        type: object
-> +        $ref: /schemas/net/ethernet-controller.yaml#
-> +        unevaluatedProperties: false
-> +
-> +        properties:
-> +          reg:
-> +            description:
-> +              Port number of ETHA (TSNA).
-> +
-> +          phy-handle: true
-> +
-> +          phy-mode: true
+It would also be good to move user space away from this. You should be
+able to use the port id in the place of the physical address. That is
+what is used by Ethernet switches etc, in the udev rules for giving
+switch ports names.
 
-Why do you need these two properties here? They are provided by
-ethernet-controller, so I suggest to drop them.
-
-I already commented about it in v3.
-
-> +
-> +          phys:
-> +            maxItems: 1
-> +            description:
-> +              Phandle of an Ethernet SERDES.
-> +
-> +          mdio:
-> +            $ref: /schemas/net/mdio.yaml#
-> +            unevaluatedProperties: false
-> +
-> +        required:
-> +          - reg
-> +          - phy-handle
-> +          - phy-mode
-> +          - phys
-> +          - mdio
-
-
-Best regards,
-Krzysztof
-
+       Andrew
