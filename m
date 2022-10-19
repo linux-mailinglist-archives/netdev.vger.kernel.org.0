@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A20E160524A
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 23:54:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6A9B60525F
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 23:56:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230195AbiJSVyV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 17:54:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48020 "EHLO
+        id S231544AbiJSV4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 17:56:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230098AbiJSVyT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 17:54:19 -0400
-Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E4C6193EDA;
-        Wed, 19 Oct 2022 14:54:18 -0700 (PDT)
-Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-1364357a691so22338000fac.7;
-        Wed, 19 Oct 2022 14:54:18 -0700 (PDT)
+        with ESMTP id S231572AbiJSVzs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 17:55:48 -0400
+Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1D6C18499D;
+        Wed, 19 Oct 2022 14:55:33 -0700 (PDT)
+Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-1322fa1cf6fso22341857fac.6;
+        Wed, 19 Oct 2022 14:55:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=YJ+gcKy3+ICExSUxeGNVeYxwKRMLEpodZAR4x+ytUmQ=;
-        b=dDJ0JQ93bZPq2dQ6HHs4BM3P7y7x3ex4Udx/f3oV107fIAGRqCqiUAK4T6/mclRUTL
-         k6VXDsJCo+3VOLCazldKjjHM+lJ8QOakQMzFCtwXIigRqYJpthjSWHrUjldK/XyX2l/l
-         iKOv53hDmtNPRgk4yKn68UV8V+zEdg05C0xPy9JrWNc2IUpCk3ldysiIHF2222Zrz4cS
-         LK6W0jibjbXYKBBw5Q1xhDVsALV0y/74K62EaojRNgGc4MO64kHLT6PSIH7xOjVPiab9
-         gfOe9o2Am9w2RJuip/fqKfHsokGMnFI4g5rBGqa+6SEQ0g8xiGnd7jFNXe8RRo8UaCED
-         3oVw==
+        bh=AdGMjnq7E++U/DphCr9ATKf5sHD8nmk5LlQJFPFavwY=;
+        b=p+Yjqi45aiig6SqDsJNA7Lg2TwLPJzIeRScNb5/yHmuAquxLwviiXdxZVRTU0yuXxV
+         QfWFpT7GjyotHvNaLQml1HmB4a+l9aK9mbRi9o8Y7SnKgNO7avG4bWkp86wetJHdL8CG
+         fWsff+UFO1t7ODNFg2vwl8sfXkcyFBGq8nyN8iALmKG4BdeMjaG3AvtTM+DlPdcexrsb
+         i7hLf7bZBfCfePjpLMEua4aIUbgGDELnhd3oUdnueV5P/5f8nVqBdduLXs0a+Q328IcD
+         NXPqI+zVmDrSv8Y4lYHrRAcCG2sYl977QknoqeizpGyxXqmEK7SPCKE6oEeYo3qnpo0I
+         GcJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=YJ+gcKy3+ICExSUxeGNVeYxwKRMLEpodZAR4x+ytUmQ=;
-        b=t8MYsd9bKlXGZ1qcaUanYvjenaWaE0tEG1+HRBHk2XUmCKfWDdU4m4FPZ1p8AEQKBc
-         lxuL3Z4gGAeVRysVdkAcRTw/APDtjHHOfhmgHBlM9Tz0Y2F/r5O9/dynp9fuNPsAmxqz
-         BoRieBjWaqqjzE5cWLvVB+pLnccizBd+Spj6cMjcWc0S0ydNl9YU1l95Sd56/lJRiclf
-         mFMVZl/8tcsmu3Qn6pHvEvPjeoOJdQTgj7fqFA/AdmBH8kZCG5olDlU4jDt+mjjf9kjc
-         aQoziRHL7xastWW7A0DdX+IZPnh+BuOY27GxBO7NC60pYcN5kytAfeAEQsDrNlWh/o/7
-         KzcA==
-X-Gm-Message-State: ACrzQf2tZt4Hp0RBXl50/PJwuOtrCQxM4GMGIG00RJ+4K7Rl/0qiSo0u
-        qmJT5CkmqRlH+aewE9q8TIthAUvItXozS7Uw5oSLv5gI66Y=
-X-Google-Smtp-Source: AMsMyM6xVu23n1WzC5jBi8l3VQrxg/vVtSsZD3E9sLqVSYnql7UC+za1j/nF8djhGSf29UDOy4693nVx540OzUxovGg=
+        bh=AdGMjnq7E++U/DphCr9ATKf5sHD8nmk5LlQJFPFavwY=;
+        b=4qfHokFnjOdJirDmwRKf681QiVZgk2cSBUQ7ZfRO8Usjk1OQYiaJCwVh+NUm/3/rJ6
+         SbqWTnFw/Q6fmtiMLt3IVgFSS2Hr/YFmuYa1xEnMqgi23bB+lzr+aYnEcl+dl6oDfVSM
+         GOBqFvOw68GxFoAhuxBqRRYBB5zAg8dP0XBCXAFc7NXtfY0FUyMmlr9hZPQsHf6sUJ+K
+         RYIkiYy36cEtuxA8dfypNkBxRlAr5xPwOswoiuNLxAAwaFQBdzyGQC9vp1Pf4IPdNHh0
+         MXfOI+M+6zQjaya5VxKHVHpFSRG0VSnYUVbc4KmhtXiDyOw6IXLCVGODlth+VRYMV3+z
+         ip4A==
+X-Gm-Message-State: ACrzQf0S2jPMGYtKBFHa4Apqg2BpKlm5p8GyjSBbtrmShKwSkf1xjRHT
+        7xZHSW+rgeVTFwiCL2tVte9h67la4ziF2DH21l+2lZOVgEQ=
+X-Google-Smtp-Source: AMsMyM7+Bkbr7wPYYyUnmLO5awDZ7A9AfENpLlYLCNs6UIGi+2WzT2MQwhPWVDixRSnOFvyryeY4AHnL4lJaKjF8hqI=
 X-Received: by 2002:a05:6870:9614:b0:11d:3906:18fc with SMTP id
- d20-20020a056870961400b0011d390618fcmr23560049oaq.190.1666216457895; Wed, 19
- Oct 2022 14:54:17 -0700 (PDT)
+ d20-20020a056870961400b0011d390618fcmr23562948oaq.190.1666216532311; Wed, 19
+ Oct 2022 14:55:32 -0700 (PDT)
 MIME-Version: 1.0
-References: <20221019180735.161388-1-aleksei.kodanev@bell-sw.com> <20221019180735.161388-2-aleksei.kodanev@bell-sw.com>
-In-Reply-To: <20221019180735.161388-2-aleksei.kodanev@bell-sw.com>
+References: <20221019180735.161388-1-aleksei.kodanev@bell-sw.com> <20221019180735.161388-3-aleksei.kodanev@bell-sw.com>
+In-Reply-To: <20221019180735.161388-3-aleksei.kodanev@bell-sw.com>
 From:   Xin Long <lucien.xin@gmail.com>
-Date:   Wed, 19 Oct 2022 17:26:48 -0400
-Message-ID: <CADvbK_edAKXgrQUgcPMxkVFADOnPuyU3+Dzumi_3MubYoHvvRg@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/3] sctp: remove unnecessary NULL check in sctp_ulpq_tail_event()
+Date:   Wed, 19 Oct 2022 17:28:02 -0400
+Message-ID: <CADvbK_dDWTuKUa9HWZbSm4XSONLpezfOasJVkaAcv5z4T8Orgg@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/3] sctp: remove unnecessary NULL checks in sctp_enqueue_event()
 To:     Alexey Kodanev <aleksei.kodanev@bell-sw.com>
 Cc:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
@@ -65,24 +65,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 19, 2022 at 2:33 PM Alexey Kodanev
+On Wed, Oct 19, 2022 at 2:36 PM Alexey Kodanev
 <aleksei.kodanev@bell-sw.com> wrote:
 >
-> After commit 013b96ec6461 ("sctp: Pass sk_buff_head explicitly to
-> sctp_ulpq_tail_event().") there is one more unneeded check of
-> skb_list for NULL.
+> After commit 178ca044aa60 ("sctp: Make sctp_enqueue_event tak an
+> skb list."), skb_list cannot be NULL.
 >
 > Detected using the static analysis tool - Svace.
 > Signed-off-by: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
 > ---
->  net/sctp/ulpqueue.c | 5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
+>  net/sctp/stream_interleave.c | 12 +++---------
+>  1 file changed, 3 insertions(+), 9 deletions(-)
 >
-> diff --git a/net/sctp/ulpqueue.c b/net/sctp/ulpqueue.c
-> index 24960dcb6a21..b05daafd369a 100644
-> --- a/net/sctp/ulpqueue.c
-> +++ b/net/sctp/ulpqueue.c
-> @@ -256,10 +256,7 @@ int sctp_ulpq_tail_event(struct sctp_ulpq *ulpq, struct sk_buff_head *skb_list)
+> diff --git a/net/sctp/stream_interleave.c b/net/sctp/stream_interleave.c
+> index bb22b71df7a3..94727feb07b3 100644
+> --- a/net/sctp/stream_interleave.c
+> +++ b/net/sctp/stream_interleave.c
+> @@ -490,11 +490,8 @@ static int sctp_enqueue_event(struct sctp_ulpq *ulpq,
+>         if (!sctp_ulpevent_is_enabled(event, ulpq->asoc->subscribe))
+>                 goto out_free;
+>
+> -       if (skb_list)
+> -               skb_queue_splice_tail_init(skb_list,
+> -                                          &sk->sk_receive_queue);
+> -       else
+> -               __skb_queue_tail(&sk->sk_receive_queue, skb);
+> +       skb_queue_splice_tail_init(skb_list,
+> +                                  &sk->sk_receive_queue);
+>
+>         if (!sp->data_ready_signalled) {
+>                 sp->data_ready_signalled = 1;
+> @@ -504,10 +501,7 @@ static int sctp_enqueue_event(struct sctp_ulpq *ulpq,
 >         return 1;
 >
 >  out_free:
