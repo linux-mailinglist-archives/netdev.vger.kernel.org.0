@@ -2,98 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C0512605404
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 01:37:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07103605429
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 01:43:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231777AbiJSXhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 19:37:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34604 "EHLO
+        id S230081AbiJSXn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 19:43:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231226AbiJSXhO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 19:37:14 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF9781CF56D;
-        Wed, 19 Oct 2022 16:37:06 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id 78so17645796pgb.13;
-        Wed, 19 Oct 2022 16:37:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=gxwOkr2sbt9Ku+GvYa22/rMbCgAwd24FdOiu35P0uoQ=;
-        b=UChISMd5pGB+Lk2wNEmXVXniV1uLC7k9QCxzp0KUZvDW1L9LoGRcN3C2mMO6eDpDyd
-         V3TdshPC8loYHwC6xjqPXb0EfaLCRg9zOESW5GW993HLlblfgUbSdMUUBMDFhJEyUm02
-         NdKz/Kbt7BBzFiKsgv8WntzkwqXw0DnwF0LQSJlSv6v8j8KEQksaq5sVOL9vFxeW53Iq
-         ftCZ5wjG7GUXkZeqlXly6YfA8nwYqJdUDMjzcQ858IUpBbgNQd5o8R8CNRcxYVXMwYOu
-         25cxRtfF/uTOy5RhBPpzyjHkGu3jziSYUJGiZQObkIzbknueOtH9gTyVmHT9Txelsn5S
-         Ce0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=gxwOkr2sbt9Ku+GvYa22/rMbCgAwd24FdOiu35P0uoQ=;
-        b=MADaUitMiZbqkGTKXbRRAcohQM1v8PbZO7LzbXfh2UjkIZd+Rd6SmL8HvCdgzB0xKF
-         1uP2DoUFo5k8Ye9a3fs/koLa1EWSoDWwYCJO7ADvru0oHwx7DMRGVmfCs8SmBOV4C7zd
-         8+3cj4hpX/Y8Iy69/sdhwTZ6Qh60frPPoaDvfINEd8SJyp51rJ8ZUxxjQXIz3woe8ePd
-         qZOomJFaefZUVJ9Ea0A+08FC48vSfG2AIqz16GaPeLh44C6Au+V8lZxKaKcNYdj3U2xZ
-         PRZlRdx/s8K1y8pdI5VCFmwJnKrWuzT9pnkRAONviSUEekg5Scb0IO10sXAGtWlTrKCr
-         C71w==
-X-Gm-Message-State: ACrzQf1hKewFm0Fgcq2UMZf7ZDggmG7vydnmljqBiC9jHzZTTV1LZOd0
-        4+r+A4tBCr9SEcccqzbiZx8=
-X-Google-Smtp-Source: AMsMyM6IU1c1qFj+JI+Nm1xFEY3GU6JEIXtMZwAwJW2xtOzKCj8Ctdr+CWOGP2AOMcfWmW1radJQ6A==
-X-Received: by 2002:a63:6986:0:b0:43c:8417:8dac with SMTP id e128-20020a636986000000b0043c84178dacmr9252828pgc.286.1666222625634;
-        Wed, 19 Oct 2022 16:37:05 -0700 (PDT)
-Received: from ?IPV6:2600:8802:b00:4a48:8d6a:5f0b:fdeb:b03? ([2600:8802:b00:4a48:8d6a:5f0b:fdeb:b03])
-        by smtp.gmail.com with ESMTPSA id l8-20020a170903120800b0016c09a0ef87sm11500031plh.255.2022.10.19.16.37.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Oct 2022 16:37:04 -0700 (PDT)
-Message-ID: <527fe1c9-fcaf-af0f-1b5b-aee46afe56f9@gmail.com>
-Date:   Wed, 19 Oct 2022 16:37:03 -0700
+        with ESMTP id S229630AbiJSXnv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 19:43:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 245D3157F59;
+        Wed, 19 Oct 2022 16:43:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 19346B82639;
+        Wed, 19 Oct 2022 23:43:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60BFEC433C1;
+        Wed, 19 Oct 2022 23:43:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666223025;
+        bh=SkLLkcU5TOFI2QjJPz7/UivzW23oiY6PsaSXHNNVu3M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=InHDNrPnMkFob4mpq5C6539OmORNNVC7wBXoXxKdnXLwi1LR4tzNBQEu4c8Z+EQ62
+         o8Du9O3vRs8qfvKQ47F2/TSXqCNCGyjPA+ACsBiPgrS5ojxiya3HjvAUds3wkyAtnR
+         1Lp30P3VN8keUlmBEL4+0yXwTUraS41QD6KC8tY7mL/xtjtLVziNk2x2AWSiKyd2dL
+         G2UQSqb5owTumHZXrl3p0iJbbbkmJFCb1iyVeTETN5Z8d7O7/q8RtIpfs8RNSSoHov
+         5ozpr0eF6vBJbxeJUqFi3j9hU5D8oHhdO7wt3U435w4mxJ2Zh66d2BlOpGayaRawJG
+         JzRvSN0xpnKYA==
+Date:   Wed, 19 Oct 2022 16:43:44 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
+        <linux-kernel@vger.kernel.org>, <Bryan.Whitehead@microchip.com>,
+        <edumazet@google.com>, <pabeni@redhat.com>,
+        <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH net-next V4] net: lan743x: Add support to SGMII register
+ dump for PCI11010/PCI11414 chips
+Message-ID: <20221019164344.52cf16dd@kernel.org>
+In-Reply-To: <20221018061425.3400-1-Raju.Lakkaraju@microchip.com>
+References: <20221018061425.3400-1-Raju.Lakkaraju@microchip.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.3
-Subject: Re: [PATCH v2] net: macb: Specify PHY PM management done by MAC
-Content-Language: en-US
-To:     Sergiu Moga <sergiu.moga@microchip.com>,
-        nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux@armlinux.org.uk,
-        tudor.ambarus@microchip.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20221019120929.63098-1-sergiu.moga@microchip.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20221019120929.63098-1-sergiu.moga@microchip.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 18 Oct 2022 11:44:25 +0530 Raju Lakkaraju wrote:
+> Add support to SGMII register dump
 
+> +++ b/drivers/net/ethernet/microchip/lan743x_ethtool.c
+> @@ -24,6 +24,9 @@
+>  #define LOCK_TIMEOUT_MAX_CNT		    (100) // 1 sec (10 msce * 100)
+>  
+>  #define LAN743X_CSR_READ_OP(offset)	     lan743x_csr_read(adapter, offset)
+> +#define VSPEC1			MDIO_MMD_VEND1
+> +#define VSPEC2			MDIO_MMD_VEND2
+> +#define SGMII_RD(adp, dev, adr) lan743x_sgmii_dump_read(adp, dev, adr)
 
-On 10/19/2022 5:09 AM, Sergiu Moga wrote:
-> The `macb_resume`/`macb_suspend` methods already call the
-> `phylink_start`/`phylink_stop` methods during their execution so
-> explicitly say that the PM of the PHY is done by MAC by using the
-> `mac_managed_pm` flag of the `struct phylink_config`.
-> 
-> This also fixes the warning message issued during resume:
-> WARNING: CPU: 0 PID: 237 at drivers/net/phy/phy_device.c:323 mdio_bus_phy_resume+0x144/0x148
-> 
-> Depends-on: 96de900ae78e ("net: phylink: add mac_managed_pm in phylink_config structure")
-> Fixes: 744d23c71af3 ("net: phy: Warn about incorrect mdio_bus_phy_resume() state")
-> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
+These defines help limit the line length?
+Please don't obfuscate code like that, see below.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> +static void lan743x_sgmii_regs(struct net_device *dev, void *p)
+> +{
+> +	struct lan743x_adapter *adp = netdev_priv(dev);
+> +	u32 *rb = p;
+> +
+> +	rb[ETH_SR_VSMMD_DEV_ID1]                = SGMII_RD(adp, VSPEC1, 0x0002);
+> +	rb[ETH_SR_VSMMD_DEV_ID2]                = SGMII_RD(adp, VSPEC1, 0x0003);
+> +	rb[ETH_SR_VSMMD_PCS_ID1]                = SGMII_RD(adp, VSPEC1, 0x0004);
+> +	rb[ETH_SR_VSMMD_PCS_ID2]                = SGMII_RD(adp, VSPEC1, 0x0005);
+> +	rb[ETH_SR_VSMMD_STS]                    = SGMII_RD(adp, VSPEC1, 0x0008);
+> +	rb[ETH_SR_VSMMD_CTRL]                   = SGMII_RD(adp, VSPEC1, 0x0009);
+> +	rb[ETH_SR_MII_CTRL]                     = SGMII_RD(adp, VSPEC2, 0x0000);
+> +	rb[ETH_SR_MII_STS]                      = SGMII_RD(adp, VSPEC2, 0x0001);
+> +	rb[ETH_SR_MII_DEV_ID1]                  = SGMII_RD(adp, VSPEC2, 0x0002);
+> +	rb[ETH_SR_MII_DEV_ID2]                  = SGMII_RD(adp, VSPEC2, 0x0003);
+> +	rb[ETH_SR_MII_AN_ADV]                   = SGMII_RD(adp, VSPEC2, 0x0004);
+> +	rb[ETH_SR_MII_LP_BABL]                  = SGMII_RD(adp, VSPEC2, 0x0005);
+> +	rb[ETH_SR_MII_EXPN]                     = SGMII_RD(adp, VSPEC2, 0x0006);
+> +	rb[ETH_SR_MII_EXT_STS]                  = SGMII_RD(adp, VSPEC2, 0x000F);
+> +	rb[ETH_SR_MII_TIME_SYNC_ABL]            = SGMII_RD(adp, VSPEC2, 0x0708);
+> +	rb[ETH_SR_MII_TIME_SYNC_TX_MAX_DLY_LWR] = SGMII_RD(adp, VSPEC2, 0x0709);
 
-Makes me realize we need to do the same in DSA, I will cook a patch soon.
--- 
-Florian
+You can declare a structure holding the params and save the info there:
+
+	struct {
+		u8 id;
+		u8 dev;
+		u16 addr;
+	} regs[] = {
+		{ ETH_SR_MII_TIME_SYNC_TX_MAX_DLY_LWR,	MDIO_MMD_VEND2,	0x0709 },
+	};
+
+that should fit on the line.
+
+You can then read the values in a loop. And inside that loop you can
+handle errors (perhaps avoiding the need for lan743x_sgmii_dump_read()
+which seems rather unnecessary as lan743x_sgmii_read() already prints 
+errors).
+
+FWIW I like Andrew's suggestion from v3 to use version as a bitfield, too.
