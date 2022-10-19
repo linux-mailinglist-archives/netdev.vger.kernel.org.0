@@ -2,112 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 686FE604380
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 13:41:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A76676043CE
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 13:49:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230376AbiJSLko (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 07:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34252 "EHLO
+        id S230397AbiJSLtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 07:49:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231474AbiJSLj6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 07:39:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0923518DAA6;
-        Wed, 19 Oct 2022 04:18:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C97E6176B;
-        Wed, 19 Oct 2022 10:41:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14972C433D6;
-        Wed, 19 Oct 2022 10:41:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666176065;
-        bh=B6/i+zuHr8M8YUCl5dAojeyEr1/k0AiM1p2uxl25xx4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tEDEaoFbXcvOR15+0B3Ox/PnYnpuM8GvrZl68oUKFqopE+DMQNg+Z/JlwyA5sAyTv
-         71XLaUr2NDVAJDAUz1nJC8ZKHnMsE8O3hPU3gw+sGPFiKCs/i/B+qQIU+B6LZ8mgkt
-         in8tn3dT7bWQ8+QPyDSvxqLhy1RCNLbEXNn9lFkCeJ9oY1DEPW0N1lFEOlkQ1fioCu
-         ZR2D78gHSzME9geOD7LtTiIGhfHGTeoNql4MJfwKQ844WX2hQjL2gxFelQh0tf5Hp1
-         08phjIkMSYBvUoJQ3Rh447M/5mNyn5lPpp8OUAeJZOTPV7DONfBOCLiBdqW6LoXYBl
-         l5T+0+b7d1QIg==
-Date:   Wed, 19 Oct 2022 12:41:00 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     linux@armlinux.org.uk, andrew@lunn.ch, hkallweit1@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH RFC 3/3] net: renesas: rswitch: Pass host parameters to
- phydev
-Message-ID: <20221019124100.41c9bbaf@dellmb>
-In-Reply-To: <20221019085052.933385-4-yoshihiro.shimoda.uh@renesas.com>
-References: <20221019085052.933385-1-yoshihiro.shimoda.uh@renesas.com>
-        <20221019085052.933385-4-yoshihiro.shimoda.uh@renesas.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        with ESMTP id S231952AbiJSLs5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 07:48:57 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 627CC169128;
+        Wed, 19 Oct 2022 04:27:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1666178873; x=1697714873;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Gq6k+2v0sgUYQcVJmhpXsMbxRry1yR7Pv/R1hXeZor8=;
+  b=I+mhUoiIMYuVRx4JNxu2Qa6Y8W+rLA9k8JiI3FI6+5Lbj42CLFzYkqXE
+   GkEhe5L6dE9rHGA23P/19VwSojheUfO0HJQFew/HuERc2pYFftJv3xK1Y
+   bMjVb5ojQz//ppzwdPe4+p15SQHAfMZW0cn0UebTV82GnSI0BKsRC2LMx
+   VYoFeo0+Viy5oWB/58e0ybcLO0AoENBRAMHFvSzZ8aNhc6dwugQw6DEyL
+   jiohEeP8KyewS6+1SlXdJJS6WuON5slNMS1fIxnespt2wz+dsz7YKOfIx
+   KuaKok5QQm8emuZU2r2AmbmhYDQq6sSUAKI3ikUZOM5dduTWYiWC3CryL
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="392679241"
+X-IronPort-AV: E=Sophos;i="5.95,196,1661842800"; 
+   d="scan'208";a="392679241"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 04:05:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="629204413"
+X-IronPort-AV: E=Sophos;i="5.95,196,1661842800"; 
+   d="scan'208";a="629204413"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga002.jf.intel.com with ESMTP; 19 Oct 2022 04:04:59 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1ol6sb-009p1H-1r;
+        Wed, 19 Oct 2022 14:04:57 +0300
+Date:   Wed, 19 Oct 2022 14:04:57 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Stanislaw Gruszka <stf_xl@wp.pl>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Helmut Schaa <helmut.schaa@googlemail.com>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: Re: [PATCH] wifi: rt2x00: use explicitly signed type for clamping
+Message-ID: <Y0/Z2aHKYVPsiWa5@smile.fi.intel.com>
+References: <202210190108.ESC3pc3D-lkp@intel.com>
+ <20221018202734.140489-1-Jason@zx2c4.com>
+ <20221019085219.GA81503@wp.pl>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221019085219.GA81503@wp.pl>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 19 Oct 2022 17:50:52 +0900
-Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com> wrote:
-
-> Use of_phy_connect_with_host_params() to pass host parameters to
-> phydev. Otherwise, connected PHY cannot work correctly.
+On Wed, Oct 19, 2022 at 10:52:19AM +0200, Stanislaw Gruszka wrote:
+> On Tue, Oct 18, 2022 at 02:27:34PM -0600, Jason A. Donenfeld wrote:
+> > On some platforms, `char` is unsigned, which makes casting -7 to char
+> > overflow, which in turn makes the clamping operation bogus. Instead,
+> > deal with an explicit `s8` type, so that the comparison is always
+> > signed, and return an s8 result from the function as well. Note that
+> > this function's result is assigned to a `short`, which is always signed.
+> > 
+> > Cc: Andrew Morton <akpm@linux-foundation.org>
+> > Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > Cc: Stanislaw Gruszka <stf_xl@wp.pl>
+> > Cc: Helmut Schaa <helmut.schaa@googlemail.com>
+> > Cc: Kalle Valo <kvalo@kernel.org>
+> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 > 
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> ---
->  drivers/net/ethernet/renesas/rswitch.c | 13 +++++++++++--
->  1 file changed, 11 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/renesas/rswitch.c b/drivers/net/ethernet/renesas/rswitch.c
-> index c604331bfd88..bb2f1e667210 100644
-> --- a/drivers/net/ethernet/renesas/rswitch.c
-> +++ b/drivers/net/ethernet/renesas/rswitch.c
-> @@ -16,6 +16,7 @@
->  #include <linux/of_irq.h>
->  #include <linux/of_mdio.h>
->  #include <linux/of_net.h>
-> +#include <linux/phy.h>
->  #include <linux/phy/phy.h>
->  #include <linux/pm_runtime.h>
->  #include <linux/slab.h>
-> @@ -1234,11 +1235,19 @@ static void rswitch_phy_remove_link_mode(struct rswitch_device *rdev,
->  
->  static int rswitch_phy_init(struct rswitch_device *rdev, struct device_node *phy)
->  {
-> +	DECLARE_PHY_INTERFACE_MASK(host_interfaces);
->  	struct phy_device *phydev;
->  	int err = 0;
->  
-> -	phydev = of_phy_connect(rdev->ndev, phy, rswitch_adjust_link, 0,
-> -				rdev->etha->phy_interface);
-> +	phy_interface_zero(host_interfaces);
-> +	if (rdev->etha->phy_interface == PHY_INTERFACE_MODE_SGMII)
-> +		__set_bit(PHY_INTERFACE_MODE_SGMII, host_interfaces);
-> +
-> +	phydev = of_phy_connect_with_host_params(rdev->ndev, phy,
-> +						 rswitch_adjust_link, 0,
-> +						 rdev->etha->phy_interface,
-> +						 host_interfaces,
-> +						 rdev->etha->speed);
->  	if (!phydev) {
->  		err = -ENOENT;
->  		goto out;
+> I prefer s8 just because is shorter name than short :-)
 
-NAK. There already is API for doing this: phylink. Adding new, and so
-much specific function for this is a waste. Just convert the rswitch
-driver to phylink.
+Shouldn't the corresponding data structure type be fixed accordingly?
 
-Please look at the documentation at
-  Documentation/networking/sfp-phylink.rst
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Marek
+
