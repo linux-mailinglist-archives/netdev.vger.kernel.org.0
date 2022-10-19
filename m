@@ -2,67 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 160DA604DE1
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 18:55:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DF77604DFC
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 18:59:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230232AbiJSQz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 12:55:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59922 "EHLO
+        id S231455AbiJSQ7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 12:59:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230243AbiJSQzW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 12:55:22 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E3B16E290
-        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 09:55:20 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id k2so41448173ejr.2
-        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 09:55:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Z0nbxATf0Pslupnp9w8B/MC+W/4txjYvCbMfD5jVOLs=;
-        b=T17THd1SYZZpofG5f3BofsBxODH0gSs5VHdNDAXujrt0ZNYKKtFc+VyNKoBE8GGYRU
-         /afV0HXDNkAuhJqzWvMtbY3VVMS4wEKCQmH0Hu58YNhPJURfe4OiTvPCepteyFpIgRnY
-         ImPh2HKiuqlzh4EApTXrsihcXCK2wwz3/rEFCPxtfhMMc22GJziZ6wmQ2DlpnjfkpSxD
-         OVNUTc0QDKxO3elGdjrmQ9WCYq958o8J8TEfcPI+1MJU05lrDmg4WYqaG1ItjU5h2yxC
-         mp8lcfNUn9BSWuTRlctkczv1xjW6c4ZnrDEq6e7YFx8Ls5VUkMeII5wB3QgDE/1Uxcsa
-         fIeA==
+        with ESMTP id S231659AbiJSQ66 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 12:58:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C070107CFB
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 09:58:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1666198719;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kMbRR8N3NBN7JRc14l4V9PVHBT8vqQAtLm8Prh9zzPA=;
+        b=Fe3Wu8YBjjrjrvMCQeOecgQlqDCNpSh9NyCQGWBBm6xAjgJHRfe3Enca0jrSoldlIrOfgV
+        1ssF3W2K/GYMM2gH2nQWwV6o8lUA4BVebfeIEAf21LL347ZPIjEDonUOHo4/zRP7Pgg1Kf
+        N88kMG9zXifsWqoQ01tso0Tbl6Qx3/A=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-601-GuleNNhTObCMWjjAHwPc2Q-1; Wed, 19 Oct 2022 12:58:38 -0400
+X-MC-Unique: GuleNNhTObCMWjjAHwPc2Q-1
+Received: by mail-qv1-f69.google.com with SMTP id kr13-20020a0562142b8d00b004b1d5953a2cso10981590qvb.3
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 09:58:38 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Z0nbxATf0Pslupnp9w8B/MC+W/4txjYvCbMfD5jVOLs=;
-        b=EFVoLj+GSe1IEbHqr4EbWhbl7Px9YfOJGIo9q5UYwqp5gJTZjDkPD6bnS/8wjd5AHb
-         79PqkG2K1Wz+kA1hFnAzIvA4/9yV4x1hGnsoO4y/mvJlmuyECgAXPl41dhx8rvDWa5nI
-         5mIUoBPmuseIWu9WLTE7ZYm32JBvmfXayiDzrhpjhrl8QSp12GRni+2o63KB12LhCbg2
-         CbRHJqXFU75GR5rjM+htOZGLFZnhn44ckwVdBSuEPFaXnhFJrdF21ABcirBxe5CyZR8K
-         pvbuOL+2Gy9yueptOdwRcc9oK97jwrbDQVwDUA2YW6iLHISNJuH0CAZbPWIBPu626DA9
-         gUNQ==
-X-Gm-Message-State: ACrzQf1aZKmFRwti34/+PHceiIogHTa52h4zOuXXC5WCGj4xtw+MRniV
-        rkw2VITiLHQgGhxzzzWlFTg=
-X-Google-Smtp-Source: AMsMyM57jcz71EwLaAHK7FmMdcCmZIx18b4qg2r3hxDhtjwupJzfYrgx5k01/qyy7WGxZMOmTLhQfg==
-X-Received: by 2002:a17:906:7193:b0:78d:b87e:6aa5 with SMTP id h19-20020a170906719300b0078db87e6aa5mr7607763ejk.580.1666198519008;
-        Wed, 19 Oct 2022 09:55:19 -0700 (PDT)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id gw22-20020a170906f15600b0073d7ab84375sm9301547ejb.92.2022.10.19.09.55.17
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=kMbRR8N3NBN7JRc14l4V9PVHBT8vqQAtLm8Prh9zzPA=;
+        b=fw3osqfFGQSiLG3eG04MDnQj46oD/1bs185pZe/Bk33LTNO0kvYyZQXy6gTCc9oNma
+         80/mbKlSIJx83v/yHTR+k9qFCcVGeWjkzBuOaYgcHyxkQvfjM28U4unCOLQ+zcj9Qtk4
+         N9FTdcnIiyq7wY9gGAkOnvGWO07NT1wn5sNsjkDVnAs8ViPquBRu/vknFpXQlpysj6Gs
+         bK/nGI6sC7OVHn/7IvlZnWic50/Jd1eSzOmI2icdAOJNhVZTJnQ7dWN1SlS56RGUT0bg
+         i8iYhvom4PU2SEsqlDHKbxzf8N23/m4ylcrArjrysBWClfgC8SIGYxokEodZQ/4p/U0Y
+         0x9w==
+X-Gm-Message-State: ACrzQf0MZvzIioDgLMFf48L/oHNIVFWqpqYd/vgWGuF4hi+FXhJ9JLKc
+        pjHnVMVW+NEJqb0TlFVBTofdrpTqVBHOesHDxhrdzB7rtMu2dIpO2rG3DpxNT7XVe8PGxUwutYF
+        fjnqJ9+aW6VpgtMz/
+X-Received: by 2002:a05:622a:1110:b0:39c:d568:8b26 with SMTP id e16-20020a05622a111000b0039cd5688b26mr7152674qty.280.1666198717820;
+        Wed, 19 Oct 2022 09:58:37 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM7R4XPY2GyUXWh4pLiDdzoE84zGdhYpvBc1m/P9tyQ811yZd60DHb1QxzQ3yJTPDUQSfnUTgA==
+X-Received: by 2002:a05:622a:1110:b0:39c:d568:8b26 with SMTP id e16-20020a05622a111000b0039cd5688b26mr7152620qty.280.1666198716740;
+        Wed, 19 Oct 2022 09:58:36 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-103-235.dyn.eolo.it. [146.241.103.235])
+        by smtp.gmail.com with ESMTPSA id l12-20020a37f90c000000b006cbc6e1478csm5248009qkj.57.2022.10.19.09.58.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Oct 2022 09:55:18 -0700 (PDT)
-Date:   Wed, 19 Oct 2022 19:55:16 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Sergei Antonov <saproj@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, andrew@lunn.ch
-Subject: Re: [PATCH v4 net-next] net: ftmac100: support mtu > 1500
-Message-ID: <20221019165516.sgoddwmdx6srmh5e@skbuf>
-References: <20221019162058.289712-1-saproj@gmail.com>
+        Wed, 19 Oct 2022 09:58:36 -0700 (PDT)
+Message-ID: <48dc93489465e75a0f37c4b02f4711598cb1ed4d.camel@redhat.com>
+Subject: Re: [PATCH net-next 2/2] udp: track the forward memory release
+ threshold in an hot cacheline
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
+        kuba@kernel.org, mathew.j.martineau@linux.intel.com,
+        matthieu.baerts@tessares.net, mptcp@lists.linux.dev,
+        netdev@vger.kernel.org
+Date:   Wed, 19 Oct 2022 18:58:33 +0200
+In-Reply-To: <20221019163306.70984-1-kuniyu@amazon.com>
+References: <dafe09ca2e14c4ab45f3d9db56b768e06750e382.1666173045.git.pabeni@redhat.com>
+         <20221019163306.70984-1-kuniyu@amazon.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221019162058.289712-1-saproj@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,127 +82,130 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 19, 2022 at 07:20:58PM +0300, Sergei Antonov wrote:
-> The ftmac100 controller considers some packets FTL (frame
-> too long) and drops them. An example of a dropped packet:
-> 6 bytes - dst MAC
-> 6 bytes - src MAC
-> 2 bytes - EtherType IPv4 (0800)
-> 1504 bytes - IPv4 packet
-
-Why do you insist writing these confusing messages?
-
-It's pretty straightforward. If the FTMAC100 is used as a DSA master,
-then it is expected that frames which are MTU sized on the wire facing
-the external switch port (1500 octets in L2 payload, plus L2 header)
-also get a DSA tag when seen by the host port.
-
-This extra tag increases the length of the packet as the host port sees
-it, and the FTMAC100 is not prepared to handle frames whose length
-exceeds 1518 octets (including FCS) at all.
-
-Only a minimal rework is needed to support this configuration. Since
-MTU-sized DSA-tagged frames still fit within a single buffer (RX_BUF_SIZE),
-we just need to optimize the resource management rather than implement
-multi buffer RX.
-
-In ndo_mtu_change, we toggle the FTMAC100_MACCR_RX_FTL bit to tell the
-hardware to drop (or not) frames with an L2 payload length larger than
-1500. And since setting this bit, and accepting frames with the FTL bit
-in the BD status, exposes us to the danger of receiving multi-buffer
-frames (which we still do not support), we need to replace the BUG_ON()
-with a proper call to ftmac100_rx_drop_packet(). We need to replicate
-the MACCR configuration in ftmac100_start_hw() as well, since there is a
-hardware reset there which clears previous settings.
-
-The advantage of dynamically changing FTMAC100_MACCR_RX_FTL is that when
-dev->mtu is at the default value of 1500, large frames are automatically
-dropped in hardware and we do not spend CPU cycles dropping them.
-
-> Do the following to let the driver receive these packets.
-> Set FTMAC100_MACCR_RX_FTL when mtu>1500 in the MAC Control Register.
-> For received packets marked with FTMAC100_RXDES0_FTL check if packet
-> length (with FCS excluded) is within expected limits, that is not
-> greater than netdev->mtu + 14 (Ethernet headers). Otherwise trigger
-> an error.
+On Wed, 2022-10-19 at 09:33 -0700, Kuniyuki Iwashima wrote:
+> From:   Paolo Abeni <pabeni@redhat.com>
+> Date:   Wed, 19 Oct 2022 12:02:01 +0200
+> > When the receiver process and the BH runs on different cores,
+> > udp_rmem_release() experience a cache miss while accessing sk_rcvbuf,
+> > as the latter shares the same cacheline with sk_forward_alloc, written
+> > by the BH.
+> > 
+> > With this patch, UDP tracks the rcvbuf value and its update via custom
+> > SOL_SOCKET socket options, and copies the forward memory threshold value
+> > used by udp_rmem_release() in a different cacheline, already accessed by
+> > the above function and uncontended.
+> > 
+> > Overall the above give a 10% peek throughput increase under UDP flood.
+> > 
+> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> > ---
+> >  include/linux/udp.h |  3 +++
+> >  net/ipv4/udp.c      | 22 +++++++++++++++++++---
+> >  net/ipv6/udp.c      |  8 ++++++--
+> >  3 files changed, 28 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/include/linux/udp.h b/include/linux/udp.h
+> > index e96da4157d04..5cdba00a904a 100644
+> > --- a/include/linux/udp.h
+> > +++ b/include/linux/udp.h
+> > @@ -87,6 +87,9 @@ struct udp_sock {
+> >  
+> >  	/* This field is dirtied by udp_recvmsg() */
+> >  	int		forward_deficit;
+> > +
+> > +	/* This fields follows rcvbuf value, and is touched by udp_recvmsg */
+> > +	int		forward_threshold;
+> >  };
+> >  
+> >  #define UDP_MAX_SEGMENTS	(1 << 6UL)
+> > diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> > index 8126f67d18b3..915f573587fa 100644
+> > --- a/net/ipv4/udp.c
+> > +++ b/net/ipv4/udp.c
+> > @@ -1448,7 +1448,7 @@ static void udp_rmem_release(struct sock *sk, int size, int partial,
+> >  	if (likely(partial)) {
+> >  		up->forward_deficit += size;
+> >  		size = up->forward_deficit;
+> > -		if (size < (sk->sk_rcvbuf >> 2) &&
+> > +		if (size < READ_ONCE(up->forward_threshold) &&
+> >  		    !skb_queue_empty(&up->reader_queue))
+> >  			return;
+> >  	} else {
+> > @@ -1622,8 +1622,12 @@ static void udp_destruct_sock(struct sock *sk)
+> >  
+> >  int udp_init_sock(struct sock *sk)
+> >  {
+> > -	skb_queue_head_init(&udp_sk(sk)->reader_queue);
+> > +	struct udp_sock *up = udp_sk(sk);
+> > +
+> > +	skb_queue_head_init(&up->reader_queue);
+> > +	up->forward_threshold = sk->sk_rcvbuf >> 2;
+> >  	sk->sk_destruct = udp_destruct_sock;
+> > +	set_bit(SOCK_CUSTOM_SOCKOPT, &sk->sk_socket->flags);
+> >  	return 0;
+> >  }
+> >  
+> > @@ -2671,6 +2675,18 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
+> >  	int err = 0;
+> >  	int is_udplite = IS_UDPLITE(sk);
+> >  
+> > +	if (level == SOL_SOCKET) {
+> > +		err = sk_setsockopt(sk, level, optname, optval, optlen);
+> > +
+> > +		if (optname == SO_RCVBUF || optname == SO_RCVBUFFORCE) {
+> > +			sockopt_lock_sock(sk);
 > 
-> Fixes: 8d77c036b57c ("net: add Faraday FTMAC100 10/100 Ethernet driver")
+> Can we drop this lock by adding READ_ONCE() to sk->sk_rcvbuf below ?
 
-Please drop the Fixes: tag, I thought we agreed this patch wouldn't get
-backported, since it does not fix any bug in this driver.
+I think we can't. If there are racing thread updating rcvbuf, we could
+end-up with mismatching value in forward_threshold. Not a likely
+scenario, but still... This is control path, acquiring the lock once
+more should not be a problem.
 
-> Signed-off-by: Sergei Antonov <saproj@gmail.com>
-> Suggested-by: Vladimir Oltean <olteanv@gmail.com>
-
-You essentially did nothing from what I suggested. Please remove this
-tag, it is misleading.
-
-> ---
->  drivers/net/ethernet/faraday/ftmac100.c | 29 ++++++++++++++++++++++---
->  1 file changed, 26 insertions(+), 3 deletions(-)
+> > +			/* paired with READ_ONCE in udp_rmem_release() */
+> > +			WRITE_ONCE(up->forward_threshold, sk->sk_rcvbuf >> 2);
+> > +			sockopt_release_sock(sk);
+> > +		}
+> > +		return err;
+> > +	}
+> > +
+> >  	if (optlen < sizeof(int))
+> >  		return -EINVAL;
+> >  
+> > @@ -2784,7 +2800,7 @@ EXPORT_SYMBOL(udp_lib_setsockopt);
+> >  int udp_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,
+> >  		   unsigned int optlen)
+> >  {
+> > -	if (level == SOL_UDP  ||  level == SOL_UDPLITE)
+> > +	if (level == SOL_UDP  ||  level == SOL_UDPLITE || level == SOL_SOCKET)
+> >  		return udp_lib_setsockopt(sk, level, optname,
+> >  					  optval, optlen,
+> >  					  udp_push_pending_frames);
+> > diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+> > index 8d09f0ea5b8c..1ed20bcfd7a0 100644
+> > --- a/net/ipv6/udp.c
+> > +++ b/net/ipv6/udp.c
+> > @@ -64,8 +64,12 @@ static void udpv6_destruct_sock(struct sock *sk)
+> >  
+> >  int udpv6_init_sock(struct sock *sk)
+> >  {
+> > -	skb_queue_head_init(&udp_sk(sk)->reader_queue);
+> > +	struct udp_sock *up = udp_sk(sk);
+> > +
+> > +	skb_queue_head_init(&up->reader_queue);
+> > +	up->forward_threshold = sk->sk_rcvbuf >> 2;
+> >  	sk->sk_destruct = udpv6_destruct_sock;
+> > +	set_bit(SOCK_CUSTOM_SOCKOPT, &sk->sk_socket->flags);
+> >  	return 0;
+> >  }
 > 
-> diff --git a/drivers/net/ethernet/faraday/ftmac100.c b/drivers/net/ethernet/faraday/ftmac100.c
-> index d95d78230828..f89b53845f21 100644
-> --- a/drivers/net/ethernet/faraday/ftmac100.c
-> +++ b/drivers/net/ethernet/faraday/ftmac100.c
-> @@ -159,6 +159,7 @@ static void ftmac100_set_mac(struct ftmac100 *priv, const unsigned char *mac)
->  static int ftmac100_start_hw(struct ftmac100 *priv)
->  {
->  	struct net_device *netdev = priv->netdev;
-> +	unsigned int maccr;
->  
->  	if (ftmac100_reset(priv))
->  		return -EIO;
-> @@ -175,7 +176,20 @@ static int ftmac100_start_hw(struct ftmac100 *priv)
->  
->  	ftmac100_set_mac(priv, netdev->dev_addr);
->  
-> -	iowrite32(MACCR_ENABLE_ALL, priv->base + FTMAC100_OFFSET_MACCR);
-> +	maccr = MACCR_ENABLE_ALL;
-> +
-> +	/* We have to set FTMAC100_MACCR_RX_FTL in case MTU > 1500
-> +	 * and do extra length check in ftmac100_rx_packet_error().
-> +	 * Otherwise the controller silently drops these packets.
-> +	 *
-> +	 * When the MTU of the interface is standard 1500, rely on
-> +	 * the controller's functionality to drop too long packets
-> +	 * and save some CPU time.
-> +	 */
-> +	if (netdev->mtu > 1500)
-> +		maccr |= FTMAC100_MACCR_RX_FTL;
+> It's time to factorise this part like udp_destruct_common() ?
 
-It is expected that ndo_change_mtu() handles this as well, so that the
-MTU change takes effect right away even if the device is open.
+I guess it makes sense. Possibly 'udp_lib_destruct()' just to follow
+others helper style?
 
-> +
-> +	iowrite32(maccr, priv->base + FTMAC100_OFFSET_MACCR);
->  	return 0;
->  }
->  
-> @@ -337,9 +351,18 @@ static bool ftmac100_rx_packet_error(struct ftmac100 *priv,
->  		error = true;
->  	}
->  
-> -	if (unlikely(ftmac100_rxdes_frame_too_long(rxdes))) {
-> +	/* If the frame-too-long flag FTMAC100_RXDES0_FTL is set, check
-> +	 * if ftmac100_rxdes_frame_length(rxdes) exceeds the currently
-> +	 * set MTU plus ETH_HLEN.
-> +	 * The controller would set FTMAC100_RXDES0_FTL for all incoming
-> +	 * frames longer than 1518 (includeing FCS) in the presense of
-> +	 * FTMAC100_MACCR_RX_FTL in the MAC Control Register.
-> +	 */
-> +	if (unlikely(ftmac100_rxdes_frame_too_long(rxdes) &&
-> +		     ftmac100_rxdes_frame_length(rxdes) > netdev->mtu + ETH_HLEN)) {
-
-You didn't explain why you can't drop this altogether?
-
->  		if (net_ratelimit())
-> -			netdev_info(netdev, "rx frame too long\n");
-> +			netdev_info(netdev, "rx frame too long (%u)\n",
-> +				    ftmac100_rxdes_frame_length(rxdes));
->  
->  		netdev->stats.rx_length_errors++;
->  		error = true;
-> -- 
-> 2.34.1
 > 
+Thanks,
+
+Paolo
+
