@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C69F0604FEF
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 20:52:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB813604FEB
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 20:51:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229906AbiJSSwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 14:52:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34452 "EHLO
+        id S229879AbiJSSvy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 14:51:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230159AbiJSSwV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 14:52:21 -0400
+        with ESMTP id S229597AbiJSSvv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 14:51:51 -0400
 Received: from novek.ru (unknown [213.148.174.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E37A1A0FB1
-        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 11:52:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20B451958F1
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 11:51:51 -0700 (PDT)
 Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id 2BA08504EC9;
-        Wed, 19 Oct 2022 21:48:10 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 2BA08504EC9
+        by novek.ru (Postfix) with ESMTPSA id 7E057504ECB;
+        Wed, 19 Oct 2022 21:48:12 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 7E057504ECB
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1666205292; bh=fB8HTiN+eJf18SaWx80NWgQn+RUpgFarPy6mTojSnZg=;
+        t=1666205293; bh=DW5nFYcgvXTUFIE6sFmtf5r1sh/I2/XwxCLTjGpmS0o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aehz4db9JSWAY07ORYgkzH4V1wXayiNGeG3BYl4HRP5vNvWmi20fYUfyUrL01ppN2
-         14ptrQgQbpKiI1VX8XtlNHKbJnPa05q/8ElsVa8wXqnn6bBQjaj07WNazCCgxSqZAf
-         f3wYP3KEnIMp6XiiiH5J5XZQWbsKb2g2VPnq/JyI=
+        b=JkAlz5SAmXiz+U+QiXzEWONLEODMOCnlmr5pkyS6MvN8bu1+dNz1n2m95GsySvsnI
+         1yCsE/lvzH/M9wrl//KDPWAmG47mEjkP+0UHE92rSD28TFy4i7YDC+FS5CDutixbyS
+         cigWe3XSIkNmYj2OFiIh8V6if/6l7PUSMnl6MbMk=
 From:   Vadim Fedorenko <vfedorenko@novek.ru>
 To:     Richard Cochran <richardcochran@gmail.com>,
         Jonathan Lemon <jonathan.lemon@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Vadim Fedorenko <vadfed@fb.com>,
         Charles Parent <charles.parent@orolia2s.com>
-Subject: [PATCH net-next v4 2/5] ptp: ocp: add Orolia timecard support
-Date:   Wed, 19 Oct 2022 21:51:09 +0300
-Message-Id: <20221019185112.28294-3-vfedorenko@novek.ru>
+Subject: [PATCH net-next v4 3/5] ptp: ocp: add serial port of mRO50 MAC on ART card
+Date:   Wed, 19 Oct 2022 21:51:10 +0300
+Message-Id: <20221019185112.28294-4-vfedorenko@novek.ru>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20221019185112.28294-1-vfedorenko@novek.ru>
 References: <20221019185112.28294-1-vfedorenko@novek.ru>
@@ -51,393 +51,59 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vadim Fedorenko <vadfed@fb.com>
 
-This brings in the Orolia timecard support from the GitHub repository.
-The card uses different drivers to provide access to i2c EEPROM and
-firmware SPI flash. And it also has a bit different EEPROM map, but
-other parts of the code are the same and could be reused.
+ART card provides interface to access to serial port of miniature atomic
+clock found on the card. Add support for this device and configure it
+during init phase.
 
 Co-developed-by: Charles Parent <charles.parent@orolia2s.com>
 Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 Signed-off-by: Vadim Fedorenko <vadfed@fb.com>
 ---
- drivers/ptp/ptp_ocp.c | 293 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 293 insertions(+)
+ drivers/ptp/ptp_ocp.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
 diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index e5b28f89c8dd..59b226518ee4 100644
+index 59b226518ee4..9bdfb82d5402 100644
 --- a/drivers/ptp/ptp_ocp.c
 +++ b/drivers/ptp/ptp_ocp.c
-@@ -13,9 +13,11 @@
- #include <linux/clk-provider.h>
- #include <linux/platform_device.h>
- #include <linux/platform_data/i2c-xiic.h>
-+#include <linux/platform_data/i2c-ocores.h>
- #include <linux/ptp_clock_kernel.h>
- #include <linux/spi/spi.h>
- #include <linux/spi/xilinx_spi.h>
-+#include <linux/spi/altera.h>
- #include <net/devlink.h>
- #include <linux/i2c.h>
- #include <linux/mtd/mtd.h>
-@@ -28,6 +30,9 @@
- #define PCI_VENDOR_ID_CELESTICA			0x18d4
- #define PCI_DEVICE_ID_CELESTICA_TIMECARD	0x1008
- 
-+#define PCI_VENDOR_ID_OROLIA 			0x1ad7
-+#define PCI_DEVICE_ID_OROLIA_ARTCARD 		0xa000
-+
- static struct class timecard_class = {
- 	.owner		= THIS_MODULE,
- 	.name		= "timecard",
-@@ -310,6 +315,7 @@ struct ptp_ocp {
- 	struct ptp_ocp_ext_src	*ts2;
- 	struct ptp_ocp_ext_src	*ts3;
- 	struct ptp_ocp_ext_src	*ts4;
-+	struct ocp_art_gpio_reg __iomem *art_sma;
- 	struct img_reg __iomem	*image;
- 	struct ptp_clock	*ptp;
- 	struct ptp_clock_info	ptp_info;
-@@ -370,8 +376,12 @@ static int ptp_ocp_signal_from_perout(struct ptp_ocp *bp, int gen,
- static int ptp_ocp_signal_enable(void *priv, u32 req, bool enable);
- static int ptp_ocp_sma_store(struct ptp_ocp *bp, const char *buf, int sma_nr);
- 
-+static int ptp_ocp_art_board_init(struct ptp_ocp *bp, struct ocp_resource *r);
-+
- static const struct ocp_attr_group fb_timecard_groups[];
- 
-+static const struct ocp_attr_group art_timecard_groups[];
-+
- struct ptp_ocp_eeprom_map {
- 	u16	off;
- 	u16	len;
-@@ -394,6 +404,12 @@ static struct ptp_ocp_eeprom_map fb_eeprom_map[] = {
- 	{ }
+@@ -208,6 +208,11 @@ struct frequency_reg {
+ 	u32	ctrl;
+ 	u32	status;
  };
- 
-+static struct ptp_ocp_eeprom_map art_eeprom_map[] = {
-+	{ EEPROM_ENTRY(0x200 + 0x43, board_id) },
-+	{ EEPROM_ENTRY(0x200 + 0x63, serial) },
-+	{ }
++
++struct board_config_reg {
++	u32 mro50_serial_activate;
 +};
 +
- #define bp_assign_entry(bp, res, val) ({				\
- 	uintptr_t addr = (uintptr_t)(bp) + (res)->bp_offset;		\
- 	*(typeof(val) *)addr = val;					\
-@@ -435,6 +451,13 @@ static struct ptp_ocp_eeprom_map fb_eeprom_map[] = {
-  * 14: Signal Generator 4
-  * 15: TS3
-  * 16: TS4
-+ --
-+ * 8: Orolia TS1
-+ * 10: Orolia TS2
-+ * 11: Orolia TS0 (GNSS)
-+ * 12: Orolia PPS
-+ * 14: Orolia TS3
-+ * 15: Orolia TS4
-  */
- 
- static struct ocp_resource ocp_fb_resource[] = {
-@@ -661,9 +684,127 @@ static struct ocp_resource ocp_fb_resource[] = {
- 	{ }
- };
- 
-+struct ocp_art_gpio_reg {
-+	struct {
-+		u32	gpio;
-+		u32	__pad[3];
-+	} map[4];
-+};
-+
-+static struct ocp_resource ocp_art_resource[] = {
+ #define FREQ_STATUS_VALID	BIT(31)
+ #define FREQ_STATUS_ERROR	BIT(30)
+ #define FREQ_STATUS_OVERRUN	BIT(29)
+@@ -299,6 +304,7 @@ struct ptp_ocp {
+ 	struct tod_reg __iomem	*tod;
+ 	struct pps_reg __iomem	*pps_to_ext;
+ 	struct pps_reg __iomem	*pps_to_clk;
++	struct board_config_reg __iomem	*board_config;
+ 	struct gpio_reg __iomem	*pps_select;
+ 	struct gpio_reg __iomem	*sma_map1;
+ 	struct gpio_reg __iomem	*sma_map2;
+@@ -795,6 +801,17 @@ static struct ocp_resource ocp_art_resource[] = {
+ 			},
+ 		},
+ 	},
 +	{
-+		OCP_MEM_RESOURCE(reg),
-+		.offset = 0x01000000, .size = 0x10000,
-+	},
-+	{
-+		OCP_SERIAL_RESOURCE(gnss_port),
-+		.offset = 0x00160000 + 0x1000, .irq_vec = 3,
++		OCP_SERIAL_RESOURCE(mac_port),
++		.offset = 0x00190000, .irq_vec = 7,
 +		.extra = &(struct ptp_ocp_serial_port) {
-+			.baud = 115200,
++			.baud = 9600,
 +		},
 +	},
 +	{
-+		OCP_MEM_RESOURCE(art_sma),
-+		.offset = 0x003C0000, .size = 0x1000,
++		OCP_MEM_RESOURCE(board_config),
++		.offset = 0x210000, .size = 0x1000,
 +	},
-+	/* Timestamp associated with GNSS1 receiver PPS */
-+	{
-+		OCP_EXT_RESOURCE(ts0),
-+		.offset = 0x360000, .size = 0x20, .irq_vec = 12,
-+		.extra = &(struct ptp_ocp_ext_info) {
-+			.index = 0,
-+			.irq_fcn = ptp_ocp_ts_irq,
-+			.enable = ptp_ocp_ts_enable,
-+		},
-+	},
-+	{
-+		OCP_EXT_RESOURCE(ts1),
-+		.offset = 0x380000, .size = 0x20, .irq_vec = 8,
-+		.extra = &(struct ptp_ocp_ext_info) {
-+			.index = 1,
-+			.irq_fcn = ptp_ocp_ts_irq,
-+			.enable = ptp_ocp_ts_enable,
-+		},
-+	},
-+	{
-+		OCP_EXT_RESOURCE(ts2),
-+		.offset = 0x390000, .size = 0x20, .irq_vec = 10,
-+		.extra = &(struct ptp_ocp_ext_info) {
-+			.index = 2,
-+			.irq_fcn = ptp_ocp_ts_irq,
-+			.enable = ptp_ocp_ts_enable,
-+		},
-+	},
-+	{
-+		OCP_EXT_RESOURCE(ts3),
-+		.offset = 0x3A0000, .size = 0x20, .irq_vec = 14,
-+		.extra = &(struct ptp_ocp_ext_info) {
-+			.index = 3,
-+			.irq_fcn = ptp_ocp_ts_irq,
-+			.enable = ptp_ocp_ts_enable,
-+		},
-+	},
-+	{
-+		OCP_EXT_RESOURCE(ts4),
-+		.offset = 0x3B0000, .size = 0x20, .irq_vec = 15,
-+		.extra = &(struct ptp_ocp_ext_info) {
-+			.index = 4,
-+			.irq_fcn = ptp_ocp_ts_irq,
-+			.enable = ptp_ocp_ts_enable,
-+		},
-+	},
-+	/* Timestamp associated with Internal PPS of the card */
-+	{
-+		OCP_EXT_RESOURCE(pps),
-+		.offset = 0x00330000, .size = 0x20, .irq_vec = 11,
-+		.extra = &(struct ptp_ocp_ext_info) {
-+			.index = 5,
-+			.irq_fcn = ptp_ocp_ts_irq,
-+			.enable = ptp_ocp_ts_enable,
-+		},
-+	},
-+	{
-+		OCP_SPI_RESOURCE(spi_flash),
-+		.offset = 0x00310000, .size = 0x10000, .irq_vec = 9,
-+		.extra = &(struct ptp_ocp_flash_info) {
-+			.name = "spi_altera", .pci_offset = 0,
-+			.data_size = sizeof(struct altera_spi_platform_data),
-+			.data = &(struct altera_spi_platform_data) {
-+				.num_chipselect = 1,
-+				.num_devices = 1,
-+				.devices = &(struct spi_board_info) {
-+					.modalias = "spi-nor",
-+				},
-+			},
-+		},
-+	},
-+	{
-+		OCP_I2C_RESOURCE(i2c_ctrl),
-+		.offset = 0x350000, .size = 0x100, .irq_vec = 4,
-+		.extra = &(struct ptp_ocp_i2c_info) {
-+			.name = "ocores-i2c",
-+			.fixed_rate = 400000,
-+			.data_size = sizeof(struct ocores_i2c_platform_data),
-+			.data = &(struct ocores_i2c_platform_data) {
-+				.clock_khz = 125000,
-+				.bus_khz = 400,
-+				.num_devices = 1,
-+				.devices = &(struct i2c_board_info) {
-+					I2C_BOARD_INFO("24c08", 0x50),
-+				},
-+			},
-+		},
-+	},
-+	{
-+		.setup = ptp_ocp_art_board_init,
-+	},
-+	{ }
-+};
-+
- static const struct pci_device_id ptp_ocp_pcidev_id[] = {
- 	{ PCI_DEVICE_DATA(FACEBOOK, TIMECARD, &ocp_fb_resource) },
- 	{ PCI_DEVICE_DATA(CELESTICA, TIMECARD, &ocp_fb_resource) },
-+	{ PCI_DEVICE_DATA(OROLIA, ARTCARD, &ocp_art_resource) },
- 	{ }
- };
- MODULE_DEVICE_TABLE(pci, ptp_ocp_pcidev_id);
-@@ -728,6 +869,19 @@ static const struct ocp_selector ptp_ocp_sma_out[] = {
- 	{ }
- };
- 
-+static const struct ocp_selector ptp_ocp_art_sma_in[] = {
-+	{ .name = "PPS1",	.value = 0x0001 },
-+	{ .name = "10Mhz",	.value = 0x0008 },
-+	{ }
-+};
-+
-+static const struct ocp_selector ptp_ocp_art_sma_out[] = {
-+	{ .name = "PHC",	.value = 0x0002 },
-+	{ .name = "GNSS",	.value = 0x0004 },
-+	{ .name = "10Mhz",	.value = 0x0010 },
-+	{ }
-+};
-+
- struct ocp_sma_op {
- 	const struct ocp_selector *tbl[2];
- 	void (*init)(struct ptp_ocp *bp);
-@@ -2275,6 +2429,121 @@ ptp_ocp_register_resources(struct ptp_ocp *bp, kernel_ulong_t driver_data)
- 	return err;
- }
- 
-+static void
-+ptp_ocp_art_sma_init(struct ptp_ocp *bp)
-+{
-+	u32 reg;
-+	int i;
-+
-+	/* defaults */
-+	bp->sma[0].mode = SMA_MODE_IN;
-+	bp->sma[1].mode = SMA_MODE_IN;
-+	bp->sma[2].mode = SMA_MODE_OUT;
-+	bp->sma[3].mode = SMA_MODE_OUT;
-+
-+	bp->sma[0].default_fcn = 0x08;	/* IN: 10Mhz */
-+	bp->sma[1].default_fcn = 0x01;	/* IN: PPS1 */
-+	bp->sma[2].default_fcn = 0x10;	/* OUT: 10Mhz */
-+	bp->sma[3].default_fcn = 0x02;	/* OUT: PHC */
-+
-+	/* If no SMA map, the pin functions and directions are fixed. */
-+	if (!bp->art_sma) {
-+		for (i = 0; i < 4; i++) {
-+			bp->sma[i].fixed_fcn = true;
-+			bp->sma[i].fixed_dir = true;
-+		}
-+		return;
-+	}
-+
-+	for (i = 0; i < 4; i++) {
-+		reg = ioread32(&bp->art_sma->map[i].gpio);
-+
-+		switch (reg & 0xff) {
-+		case 0:
-+			bp->sma[i].fixed_fcn = true;
-+			bp->sma[i].fixed_dir = true;
-+			break;
-+		case 1:
-+		case 8:
-+			bp->sma[i].mode = SMA_MODE_IN;
-+			break;
-+		default:
-+			bp->sma[i].mode = SMA_MODE_OUT;
-+			break;
-+		}
-+	}
-+}
-+
-+static u32
-+ptp_ocp_art_sma_get(struct ptp_ocp *bp, int sma_nr)
-+{
-+	if (bp->sma[sma_nr - 1].fixed_fcn)
-+		return bp->sma[sma_nr - 1].default_fcn;
-+
-+	return ioread32(&bp->art_sma->map[sma_nr - 1].gpio) & 0xff;
-+}
-+
-+/* note: store 0 is considered invalid. */
-+static int
-+ptp_ocp_art_sma_set(struct ptp_ocp *bp, int sma_nr, u32 val)
-+{
-+	unsigned long flags;
-+	u32 __iomem *gpio;
-+	int err = 0;
-+	u32 reg;
-+
-+	val &= SMA_SELECT_MASK;
-+	if (hweight32(val) > 1)
-+		return -EINVAL;
-+
-+	gpio = &bp->art_sma->map[sma_nr - 1].gpio;
-+
-+	spin_lock_irqsave(&bp->lock, flags);
-+	reg = ioread32(gpio);
-+	if (((reg >> 16) & val) == 0) {
-+		err = -EOPNOTSUPP;
-+	} else {
-+		reg = (reg & 0xff00) | (val & 0xff);
-+		iowrite32(reg, gpio);
-+	}
-+	spin_unlock_irqrestore(&bp->lock, flags);
-+
-+	return err;
-+}
-+
-+static const struct ocp_sma_op ocp_art_sma_op = {
-+	.tbl		= { ptp_ocp_art_sma_in, ptp_ocp_art_sma_out },
-+	.init		= ptp_ocp_art_sma_init,
-+	.get		= ptp_ocp_art_sma_get,
-+	.set_inputs	= ptp_ocp_art_sma_set,
-+	.set_output	= ptp_ocp_art_sma_set,
-+};
-+
-+/* ART specific board initializers; last "resource" registered. */
-+static int
-+ptp_ocp_art_board_init(struct ptp_ocp *bp, struct ocp_resource *r)
-+{
-+	int err;
-+
-+	bp->flash_start = 0x1000000;
-+	bp->eeprom_map = art_eeprom_map;
-+	bp->fw_cap = OCP_CAP_BASIC;
-+	bp->fw_version = ioread32(&bp->reg->version);
-+	bp->fw_tag = 2;
-+	bp->sma_op = &ocp_art_sma_op;
-+
-+	/* Enable MAC serial port during initialisation */
-+	iowrite32(1, &bp->board_config->mro50_serial_activate);
-+
-+	ptp_ocp_sma_init(bp);
-+
-+	err = ptp_ocp_attr_group_add(bp, art_timecard_groups);
-+	if (err)
-+		return err;
-+
-+	return ptp_ocp_init_clock(bp);
-+}
-+
- static ssize_t
- ptp_ocp_show_output(const struct ocp_selector *tbl, u32 val, char *buf,
- 		    int def_val)
-@@ -3083,6 +3352,30 @@ static const struct ocp_attr_group fb_timecard_groups[] = {
- 	{ },
- };
- 
-+static struct attribute *art_timecard_attrs[] = {
-+	&dev_attr_serialnum.attr,
-+	&dev_attr_clock_source.attr,
-+	&dev_attr_available_clock_sources.attr,
-+	&dev_attr_utc_tai_offset.attr,
-+	&dev_attr_ts_window_adjust.attr,
-+	&dev_attr_sma1.attr,
-+	&dev_attr_sma2.attr,
-+	&dev_attr_sma3.attr,
-+	&dev_attr_sma4.attr,
-+	&dev_attr_available_sma_inputs.attr,
-+	&dev_attr_available_sma_outputs.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group art_timecard_group = {
-+	.attrs = art_timecard_attrs,
-+};
-+
-+static const struct ocp_attr_group art_timecard_groups[] = {
-+	{ .cap = OCP_CAP_BASIC,	    .group = &art_timecard_group },
-+	{ },
-+};
-+
- static void
- gpio_input_map(char *buf, struct ptp_ocp *bp, u16 map[][2], u16 bit,
- 	       const char *def)
+ 	{
+ 		.setup = ptp_ocp_art_board_init,
+ 	},
 -- 
 2.27.0
 
