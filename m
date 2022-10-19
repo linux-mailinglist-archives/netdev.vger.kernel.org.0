@@ -2,75 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 946A5604697
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 15:15:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8144660476B
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 15:38:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231396AbiJSNPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 09:15:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37340 "EHLO
+        id S232537AbiJSNis (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 09:38:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231358AbiJSNPR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 09:15:17 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E0E12A8B
-        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 06:01:09 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MsmDP5YDQzHv5m;
-        Wed, 19 Oct 2022 17:49:57 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 19 Oct
- 2022 17:50:04 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC:     <keescook@chromium.org>, <gustavoars@kernel.org>,
-        <gregkh@linuxfoundation.org>, <ast@kernel.org>,
-        <peter.chen@kernel.org>, <bin.chen@corigine.com>,
-        <luobin9@huawei.com>, <weiyongjun1@huawei.com>,
-        <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH net,v2 4/4] net: hinic: fix the issue of double release MBOX callback of VF
-Date:   Wed, 19 Oct 2022 17:57:54 +0800
-Message-ID: <20221019095754.189119-5-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20221019095754.189119-1-shaozhengchao@huawei.com>
-References: <20221019095754.189119-1-shaozhengchao@huawei.com>
+        with ESMTP id S232533AbiJSNi0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 09:38:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5535FF88ED
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 06:26:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1666185901;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xODfCnegHAcY9oJAuVS/RwknTQC22dpmxvZ72mfflMc=;
+        b=jVhig997ar2ldaVna5XA9sVP7CJCpZqoP7TkVw6ecAlCVLdYFGwQ4BybUV/tAAlPOIZr2C
+        RAWROdUXrpnUt7kEVX/isp+0clY/WVEggShJrLp74k/F8whfktRH5KvpAbJKDW+baI9B0M
+        aNdli0zsmPVoJnwDWNBys4dbRJfbfYg=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-28-nyfhg_36NkqpmdwZJ86PmQ-1; Wed, 19 Oct 2022 06:02:34 -0400
+X-MC-Unique: nyfhg_36NkqpmdwZJ86PmQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A34B21C0A58F;
+        Wed, 19 Oct 2022 10:02:33 +0000 (UTC)
+Received: from gerbillo.redhat.com (unknown [10.39.194.193])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1B0712028DC1;
+        Wed, 19 Oct 2022 10:02:31 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, mptcp@lists.linux.dev,
+        David Ahern <dsahern@kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>
+Subject: [PATCH net-next 2/2] udp: track the forward memory release threshold in an hot cacheline
+Date:   Wed, 19 Oct 2022 12:02:01 +0200
+Message-Id: <dafe09ca2e14c4ab45f3d9db56b768e06750e382.1666173045.git.pabeni@redhat.com>
+In-Reply-To: <cover.1666173045.git.pabeni@redhat.com>
+References: <cover.1666173045.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In hinic_vf_func_init(), if VF fails to register information with PF
-through the MBOX, the MBOX callback function of VF is released once. But
-it is released again in hinic_init_hwdev(). Remove one.
+When the receiver process and the BH runs on different cores,
+udp_rmem_release() experience a cache miss while accessing sk_rcvbuf,
+as the latter shares the same cacheline with sk_forward_alloc, written
+by the BH.
 
-Fixes: 7dd29ee12865 ("hinic: add sriov feature support")
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+With this patch, UDP tracks the rcvbuf value and its update via custom
+SOL_SOCKET socket options, and copies the forward memory threshold value
+used by udp_rmem_release() in a different cacheline, already accessed by
+the above function and uncontended.
+
+Overall the above give a 10% peek throughput increase under UDP flood.
+
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- drivers/net/ethernet/huawei/hinic/hinic_sriov.c | 1 -
- 1 file changed, 1 deletion(-)
+ include/linux/udp.h |  3 +++
+ net/ipv4/udp.c      | 22 +++++++++++++++++++---
+ net/ipv6/udp.c      |  8 ++++++--
+ 3 files changed, 28 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
-index a5f08b969e3f..f7e05b41385b 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
-@@ -1174,7 +1174,6 @@ int hinic_vf_func_init(struct hinic_hwdev *hwdev)
- 			dev_err(&hwdev->hwif->pdev->dev,
- 				"Failed to register VF, err: %d, status: 0x%x, out size: 0x%x\n",
- 				err, register_info.status, out_size);
--			hinic_unregister_vf_mbox_cb(hwdev, HINIC_MOD_L2NIC);
- 			return -EIO;
- 		}
+diff --git a/include/linux/udp.h b/include/linux/udp.h
+index e96da4157d04..5cdba00a904a 100644
+--- a/include/linux/udp.h
++++ b/include/linux/udp.h
+@@ -87,6 +87,9 @@ struct udp_sock {
+ 
+ 	/* This field is dirtied by udp_recvmsg() */
+ 	int		forward_deficit;
++
++	/* This fields follows rcvbuf value, and is touched by udp_recvmsg */
++	int		forward_threshold;
+ };
+ 
+ #define UDP_MAX_SEGMENTS	(1 << 6UL)
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 8126f67d18b3..915f573587fa 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -1448,7 +1448,7 @@ static void udp_rmem_release(struct sock *sk, int size, int partial,
+ 	if (likely(partial)) {
+ 		up->forward_deficit += size;
+ 		size = up->forward_deficit;
+-		if (size < (sk->sk_rcvbuf >> 2) &&
++		if (size < READ_ONCE(up->forward_threshold) &&
+ 		    !skb_queue_empty(&up->reader_queue))
+ 			return;
  	} else {
+@@ -1622,8 +1622,12 @@ static void udp_destruct_sock(struct sock *sk)
+ 
+ int udp_init_sock(struct sock *sk)
+ {
+-	skb_queue_head_init(&udp_sk(sk)->reader_queue);
++	struct udp_sock *up = udp_sk(sk);
++
++	skb_queue_head_init(&up->reader_queue);
++	up->forward_threshold = sk->sk_rcvbuf >> 2;
+ 	sk->sk_destruct = udp_destruct_sock;
++	set_bit(SOCK_CUSTOM_SOCKOPT, &sk->sk_socket->flags);
+ 	return 0;
+ }
+ 
+@@ -2671,6 +2675,18 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
+ 	int err = 0;
+ 	int is_udplite = IS_UDPLITE(sk);
+ 
++	if (level == SOL_SOCKET) {
++		err = sk_setsockopt(sk, level, optname, optval, optlen);
++
++		if (optname == SO_RCVBUF || optname == SO_RCVBUFFORCE) {
++			sockopt_lock_sock(sk);
++			/* paired with READ_ONCE in udp_rmem_release() */
++			WRITE_ONCE(up->forward_threshold, sk->sk_rcvbuf >> 2);
++			sockopt_release_sock(sk);
++		}
++		return err;
++	}
++
+ 	if (optlen < sizeof(int))
+ 		return -EINVAL;
+ 
+@@ -2784,7 +2800,7 @@ EXPORT_SYMBOL(udp_lib_setsockopt);
+ int udp_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,
+ 		   unsigned int optlen)
+ {
+-	if (level == SOL_UDP  ||  level == SOL_UDPLITE)
++	if (level == SOL_UDP  ||  level == SOL_UDPLITE || level == SOL_SOCKET)
+ 		return udp_lib_setsockopt(sk, level, optname,
+ 					  optval, optlen,
+ 					  udp_push_pending_frames);
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 8d09f0ea5b8c..1ed20bcfd7a0 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -64,8 +64,12 @@ static void udpv6_destruct_sock(struct sock *sk)
+ 
+ int udpv6_init_sock(struct sock *sk)
+ {
+-	skb_queue_head_init(&udp_sk(sk)->reader_queue);
++	struct udp_sock *up = udp_sk(sk);
++
++	skb_queue_head_init(&up->reader_queue);
++	up->forward_threshold = sk->sk_rcvbuf >> 2;
+ 	sk->sk_destruct = udpv6_destruct_sock;
++	set_bit(SOCK_CUSTOM_SOCKOPT, &sk->sk_socket->flags);
+ 	return 0;
+ }
+ 
+@@ -1671,7 +1675,7 @@ void udpv6_destroy_sock(struct sock *sk)
+ int udpv6_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,
+ 		     unsigned int optlen)
+ {
+-	if (level == SOL_UDP  ||  level == SOL_UDPLITE)
++	if (level == SOL_UDP  ||  level == SOL_UDPLITE || level == SOL_SOCKET)
+ 		return udp_lib_setsockopt(sk, level, optname,
+ 					  optval, optlen,
+ 					  udp_v6_push_pending_frames);
 -- 
-2.17.1
+2.37.3
 
