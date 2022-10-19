@@ -2,45 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 040906039F9
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 08:42:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2677C6039F8
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 08:41:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229635AbiJSGmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 02:42:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33574 "EHLO
+        id S229717AbiJSGl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 02:41:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229605AbiJSGmC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 02:42:02 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A630F73936
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 23:42:01 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Msh3N2xvWzHv3T;
-        Wed, 19 Oct 2022 14:41:52 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 19 Oct 2022 14:41:59 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 19 Oct
- 2022 14:41:58 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     <ard.biesheuvel@linaro.org>, <jaswinder.singh@linaro.org>,
-        <davem@davemloft.net>
-Subject: [PATCH net] net: netsec: fix error handling in netsec_register_mdio()
-Date:   Wed, 19 Oct 2022 14:41:04 +0800
-Message-ID: <20221019064104.3228892-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229605AbiJSGl1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 02:41:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F053B6D87F
+        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 23:41:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EE2961771
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 06:41:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE311C433D6;
+        Wed, 19 Oct 2022 06:41:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666161671;
+        bh=vc0TJrRmtoaMmoAz6AgTGAh0v075fwFWKs0OJwMgpkc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=N672zkIvW0rWlHmMy6ZJrHZ38Zu4S5ls3k0g6BeOt551prn1JtfFIOhwjxgajgJhL
+         hcaZnkF67pqMsqlfb28U29SnYrff+tZH5duaEqn0huh+47sJlQFlbkftMXwFu7Mrdo
+         Qni/u7hat5cNMq/UwXTfdw/xi7uiqNwqJF9qeLLiot8fe8StrGCBW//VJPuWSL+e0U
+         WWf2LUvWVQ+rkYSqB/vUdnGamnjxqEfVvUkcv2emo2yGBEG7J69GRpy1iHbETDFl0e
+         wAwd4t1MwQpYVkNMYO7Wlese6feWmxZx8zT+vVIOMnMRa3+b6lJXokYM9hnfDVgZZG
+         g0r+1HFsXPlYw==
+Date:   Wed, 19 Oct 2022 09:41:06 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Saeed Mahameed <saeedm@nvidia.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Emeel Hakim <ehakim@nvidia.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: Re: [PATCH RESEND net] net/mlx5e: Cleanup MACsec uninitialization
+ routine
+Message-ID: <Y0+cAuKjyH3p6yos@unreal>
+References: <4bd5c6655c5970ac30adb254a1f09f4f5e992158.1666159448.git.leonro@nvidia.com>
+ <20221019062710.drfqigxhmh3uzxl7@sfedora>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221019062710.drfqigxhmh3uzxl7@sfedora>
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -48,37 +59,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If phy_device_register() fails, phy_device_free() need be called to
-put refcount, so memory of phy device and device name can be freed
-in callback function.
+On Tue, Oct 18, 2022 at 11:27:10PM -0700, Saeed Mahameed wrote:
+> On 19 Oct 09:06, Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > The mlx5e_macsec_cleanup() routine has pointer dereferencing if mlx5 device
+> > doesn't support MACsec (priv->macsec will be NULL) together with useless
+> > comment line, assignment and extra blank lines.
+> > 
+> > Fix everything in one patch.
+> > 
+> > Fixes: 1f53da676439 ("net/mlx5e: Create advanced steering operation (ASO) object for MACsec")
+> > Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > ---
+> > Resend: https://lore.kernel.org/all/b43b1c5aadd5cfdcd2e385ce32693220331700ba.1665645548.git.leonro@nvidia.com
+> > ---
+> > .../net/ethernet/mellanox/mlx5/core/en_accel/macsec.c | 11 +----------
+> > 1 file changed, 1 insertion(+), 10 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
+> > index 41970067917b..4331235b21ee 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
+> > @@ -1846,25 +1846,16 @@ int mlx5e_macsec_init(struct mlx5e_priv *priv)
+> > void mlx5e_macsec_cleanup(struct mlx5e_priv *priv)
+> > {
+> > 	struct mlx5e_macsec *macsec = priv->macsec;
+> > -	struct mlx5_core_dev *mdev = macsec->mdev;
+> > +	struct mlx5_core_dev *mdev = priv->mdev;
+> > 
+> > 	if (!macsec)
+> > 		return;
+> > 
+> > 	mlx5_notifier_unregister(mdev, &macsec->nb);
+> > -
+> > 	mlx5e_macsec_fs_cleanup(macsec->macsec_fs);
+> > -
+> > -	/* Cleanup workqueue */
+> > 	destroy_workqueue(macsec->wq);
+> > -
+> > 	mlx5e_macsec_aso_cleanup(&macsec->aso, mdev);
+> > -
+> > -	priv->macsec = NULL;
+> > -
+> 
+> Tariq was right, we need this check, the same priv can be resurrected
+> after cleanup to be used in switchdev representor profile, where
+> capabilities are not guaranteed to be the same as NIC netdev, so you will
+> end up using a garbage macsec.
 
-If get_phy_device() fails, mdiobus_unregister() need be called,
-or it will cause warning in mdiobus_free() and kobject is leaked.
+Not really, we are checking that device supports MACsec with
+mlx5e_is_macsec_device() in every entry call where is a chance do
+not have priv->macsec. If device doesn't support, the relevant ops
+won't be installed (mlx5e_macsec_build_netdev) and nothing will call
+uninitialized MACsec.
 
-Fixes: 533dd11a12f6 ("net: socionext: Add Synquacer NetSec driver")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/net/ethernet/socionext/netsec.c | 2 ++
- 1 file changed, 2 insertions(+)
+The NULL assignment is purely anti-pattern where you hide use-after-free
+access.
 
-diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
-index 2240f6d0b89b..9b46579b5a10 100644
---- a/drivers/net/ethernet/socionext/netsec.c
-+++ b/drivers/net/ethernet/socionext/netsec.c
-@@ -1961,11 +1961,13 @@ static int netsec_register_mdio(struct netsec_priv *priv, u32 phy_addr)
- 			ret = PTR_ERR(priv->phydev);
- 			dev_err(priv->dev, "get_phy_device err(%d)\n", ret);
- 			priv->phydev = NULL;
-+			mdiobus_unregister(bus);
- 			return -ENODEV;
- 		}
- 
- 		ret = phy_device_register(priv->phydev);
- 		if (ret) {
-+			phy_device_free(priv->phydev);
- 			mdiobus_unregister(bus);
- 			dev_err(priv->dev,
- 				"phy_device_register err(%d)\n", ret);
--- 
-2.25.1
+> 
+> Also we don't submit cleanups to net to avoid porting unnecessary changes
+> and new bugs to -rc.
 
+It is something that was added in previous cycle. There is no
+backporting yet.
+
+Thanks
