@@ -2,46 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C626D6039D7
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 08:38:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59F406039D9
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 08:38:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230023AbiJSGij (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 02:38:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46506 "EHLO
+        id S230008AbiJSGil (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 02:38:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229954AbiJSGif (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 02:38:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE9FC6D55F
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 23:38:34 -0700 (PDT)
+        with ESMTP id S229958AbiJSGij (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 02:38:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78EC26D85F
+        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 23:38:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 68C886177E
-        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 06:38:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B376DC433C1;
-        Wed, 19 Oct 2022 06:38:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3953EB82239
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 06:38:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4276C433C1;
+        Wed, 19 Oct 2022 06:38:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666161513;
-        bh=2WHJVlD8YQF1FlOYxDJnqihgCopbQqXoegSiJTzGzVE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=eOdObgcba2iDSXmYixshZW1dwdcBVJXrfdA/u1X8EthPTwYU8AaY30qTHHCDHPzBm
-         kl/YMyniba4j1t/h8rKOP8jC6voK+HrqfjJdulkFEawoZc4uuFOStbaNpaf8Z3HqWV
-         5ONGTBkuu8o0EZTnoySWc2nlUN2+rK6SL4Q+tHRuQUdEXvNdLhVo2v7V5JM0N3ZKog
-         jY53LgrM2RzohsNQ1Xa6Gku+vTX+eXzUTY1rtpYXedh8/7IOLKmU3BFRsrAhj/vvAE
-         bWKuqbCUl6a9TVEVdbaikdMKmuDu2uX0qWqxmPFlOuHsQIOTGDz7/r+I5joaSghmQz
-         cTgyq6OidNqOg==
+        s=k20201202; t=1666161514;
+        bh=7HQ1deySWXZEEYDhV7KbOqdQs9aT16o8QBa/BV1ulZM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DE/cxo9n3JETIHhz8RuKJpn0srxJWx0KzUsbh3udLNAe+waGN96XeOyy/AQxpedk8
+         zrfDWER7Vlb8FR0hPAg7pTcjFw1B1EuIc58D+HSWBOHDAl4IVQuMlTBf7cqFJZ3/8e
+         2hTzBWlyKwsXBS4WsmI9WM2yhdvU0+b92458e+13NtlwWxsOUZB1oUjsodRZvoh32O
+         TeNbBqrwau2Qo6T5ZUN0J8Di5TJzowgypTCXUqphLDWpcOcWOdBd16oseTqdSAW9jl
+         scq2DxK5h344CapYbmw/WHuiWcfaMYTep2s2ahlIsZ1R4Y4q/jQK8NZTJH40biPk/a
+         aT5SWANQtg+Ig==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: [pull request][RESEND net 00/16] mlx5 fixes 2022-10-14
-Date:   Tue, 18 Oct 2022 23:37:57 -0700
-Message-Id: <20221019063813.802772-1-saeed@kernel.org>
+        Tariq Toukan <tariqt@nvidia.com>,
+        Hyong Youb Kim <hyonkim@cisco.com>,
+        Leon Romanovsky <leonro@nvidia.com>
+Subject: [net 01/16] net/mlx5e: Do not increment ESN when updating IPsec ESN state
+Date:   Tue, 18 Oct 2022 23:37:58 -0700
+Message-Id: <20221019063813.802772-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20221019063813.802772-1-saeed@kernel.org>
+References: <20221019063813.802772-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -53,90 +57,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Hyong Youb Kim <hyonkim@cisco.com>
 
-This series provides bug fixes to mlx5 driver.
-Please pull and let me know if there is any problem.
-Sorry for the resend, apparently the patches themselves never made it in
-the 1st posting.
+An offloaded SA stops receiving after about 2^32 + replay_window
+packets. For example, when SA reaches <seq-hi 0x1, seq 0x2c>, all
+subsequent packets get dropped with SA-icv-failure (integrity_failed).
 
-Thanks,
-Saeed.
+To reproduce the bug:
+- ConnectX-6 Dx with crypto enabled (FW 22.30.1004)
+- ipsec.conf:
+  nic-offload = yes
+  replay-window = 32
+  esn = yes
+  salifetime=24h
+- Run netperf for a long time to send more than 2^32 packets
+  netperf -H <device-under-test> -t TCP_STREAM -l 20000
 
+When 2^32 + replay_window packets are received, the replay window
+moves from the 2nd half of subspace (overlap=1) to the 1st half
+(overlap=0). The driver then updates the 'esn' value in NIC
+(i.e. seq_hi) as follows.
 
-The following changes since commit 0c93411795513a0e8dfcb5bcc7bab756b98bfc73:
+ seq_hi = xfrm_replay_seqhi(seq_bottom)
+ new esn in NIC = seq_hi + 1
 
-  MAINTAINERS: nfc: s3fwrn5: Drop Krzysztof Opasiak (2022-10-14 09:14:49 +0100)
+The +1 increment is wrong, as seq_hi already contains the correct
+seq_hi. For example, when seq_hi=1, the driver actually tells NIC to
+use seq_hi=2 (esn). This incorrect esn value causes all subsequent
+packets to fail integrity checks (SA-icv-failure). So, do not
+increment.
 
-are available in the Git repository at:
+Fixes: cb01008390bb ("net/mlx5: IPSec, Add support for ESN")
+Signed-off-by: Hyong Youb Kim <hyonkim@cisco.com>
+Acked-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2022-10-14
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+index 2a8fd7020622..a715601865d3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+@@ -101,7 +101,6 @@ static bool mlx5e_ipsec_update_esn_state(struct mlx5e_ipsec_sa_entry *sa_entry)
+ 	struct xfrm_replay_state_esn *replay_esn;
+ 	u32 seq_bottom = 0;
+ 	u8 overlap;
+-	u32 *esn;
+ 
+ 	if (!(sa_entry->x->props.flags & XFRM_STATE_ESN)) {
+ 		sa_entry->esn_state.trigger = 0;
+@@ -116,11 +115,9 @@ static bool mlx5e_ipsec_update_esn_state(struct mlx5e_ipsec_sa_entry *sa_entry)
+ 
+ 	sa_entry->esn_state.esn = xfrm_replay_seqhi(sa_entry->x,
+ 						    htonl(seq_bottom));
+-	esn = &sa_entry->esn_state.esn;
+ 
+ 	sa_entry->esn_state.trigger = 1;
+ 	if (unlikely(overlap && seq_bottom < MLX5E_IPSEC_ESN_SCOPE_MID)) {
+-		++(*esn);
+ 		sa_entry->esn_state.overlap = 0;
+ 		return true;
+ 	} else if (unlikely(!overlap &&
+-- 
+2.37.3
 
-for you to fetch changes up to 66c76edd8eae26bcf8cd376866c401cefaa1889b:
-
-  net/mlx5e: Fix macsec sci endianness at rx sa update (2022-10-14 16:09:35 -0700)
-
-----------------------------------------------------------------
-mlx5-fixes-2022-10-14
-
-----------------------------------------------------------------
-Ariel Levkovich (1):
-      net/mlx5e: TC, Reject forwarding from internal port to internal port
-
-Aya Levin (1):
-      net/mlx5e: Extend SKB room check to include PTP-SQ
-
-Hyong Youb Kim (1):
-      net/mlx5e: Do not increment ESN when updating IPsec ESN state
-
-Moshe Shemesh (1):
-      net/mlx5: Wait for firmware to enable CRS before pci_restore_state
-
-Paul Blakey (1):
-      net/mlx5e: Update restore chain id for slow path packets
-
-Raed Salem (4):
-      net/mlx5e: Fix macsec coverity issue at rx sa update
-      net/mlx5e: Fix macsec rx security association (SA) update/delete
-      net/mlx5e: Fix wrong bitwise comparison usage in macsec_fs_rx_add_rule function
-      net/mlx5e: Fix macsec sci endianness at rx sa update
-
-Roi Dayan (1):
-      net/mlx5e: TC, Fix cloned flow attr instance dests are not zeroed
-
-Rongwei Liu (1):
-      net/mlx5: DR, Fix matcher disconnect error flow
-
-Roy Novich (1):
-      net/mlx5: Update fw fatal reporter state on PCI handlers successful recover
-
-Saeed Mahameed (1):
-      net/mlx5: ASO, Create the ASO SQ with the correct timestamp format
-
-Shay Drory (1):
-      net/mlx5: SF: Fix probing active SFs during driver probe phase
-
-Suresh Devarakonda (1):
-      net/mlx5: Fix crash during sync firmware reset
-
-Tariq Toukan (1):
-      net/mlx5: Fix possible use-after-free in async command interface
-
- drivers/net/ethernet/mellanox/mlx5/core/cmd.c      | 10 +--
- drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h   |  9 +++
- .../net/ethernet/mellanox/mlx5/core/en/tc_priv.h   |  2 +
- drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h  |  6 ++
- .../ethernet/mellanox/mlx5/core/en_accel/ipsec.c   |  3 -
- .../ethernet/mellanox/mlx5/core/en_accel/macsec.c  | 16 ++--
- .../mellanox/mlx5/core/en_accel/macsec_fs.c        |  2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 78 +++++++++++++++++++-
- drivers/net/ethernet/mellanox/mlx5/core/en_tx.c    |  6 ++
- drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c | 17 +++++
- drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c  |  7 ++
- drivers/net/ethernet/mellanox/mlx5/core/lib/mpfs.c |  6 +-
- drivers/net/ethernet/mellanox/mlx5/core/main.c     |  4 +
- .../net/ethernet/mellanox/mlx5/core/sf/dev/dev.c   | 86 ++++++++++++++++++++++
- drivers/net/ethernet/mellanox/mlx5/core/sf/sf.h    | 10 +++
- .../ethernet/mellanox/mlx5/core/steering/dr_rule.c |  3 +-
- include/linux/mlx5/driver.h                        |  2 +-
- 17 files changed, 242 insertions(+), 25 deletions(-)
