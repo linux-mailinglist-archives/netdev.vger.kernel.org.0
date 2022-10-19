@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C67F604489
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 14:07:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC28360448D
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 14:08:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232658AbiJSMHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 08:07:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58166 "EHLO
+        id S232078AbiJSMH0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 08:07:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232153AbiJSMHI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 08:07:08 -0400
+        with ESMTP id S232593AbiJSMHG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 08:07:06 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ECFC5071E;
-        Wed, 19 Oct 2022 04:44:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E25FC4C626;
+        Wed, 19 Oct 2022 04:44:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1666179842; x=1697715842;
+  t=1666179846; x=1697715846;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=ZYVJSZg23O9xPWkXhFps5NRNrCF8doHHdLhdjU/6sPk=;
-  b=p73AmBg/GvteM0nntlhKD2skerkqiyXWRtu7bqvDXiOaurIC2gKO7NJc
-   DD1dkJCXX1++8utYP6k5nyzYOGWWQYDEB+cDtHHNRVYtAuntHii7PyL5o
-   34pfmQyOYEn6MetQcJBURkYFpzh8nEcPbxf5eUaBsc+NNQKgWOrwINtJL
-   P23ISYCdvePBSuq/lR/cWkCO5waTUHXm/YnMwhNFk9nZJYGnhoO/taSUD
-   DwVWkY0DToEYMTzKXsTeRXzwKU3nQDSdnpgn8Xpz3li6WZsE2pYD529cT
-   Q3z6XZBvygyv8+hVGHBHLFYd+cbO1pxeHM0etEXRSvpho8EjXt5fXV4wQ
-   g==;
+  bh=1AdBsauOX0wezZ8Vq1Q3UxrgAgdPNvRPWRQ2GtMGkUU=;
+  b=PqwXt4O+QZ9dAlTLwmJtmcqCYmypA4akk1KV9G6r/3VYwdJYkd4mxpN4
+   sfRUVEM7qM5fVdy11KVeRl4y3LymhOMcU5bB9/HY4KQUAyAbQEvmWVCy9
+   Hg/QiYz0Ca+WuRbEP1QyUgYo6+xpB/gyj8TPI0X5/SZezxVGyH1qx9i4o
+   zLS0/8pYKAB0Yjf5QV1o60EDxkPuVNS24dsDR9SXoKaEi00jjABRE++2T
+   RMsD2GSgINZk2LPHWqiUXNtq/xmrJmgmWw7O22mxNrVyzKq8Tmz9CxFGf
+   7Vk8pcfV/th7Or7lDAfeBKtrdLkV5HXgZjXUKtw3ytzV7lomFlCt7fbM4
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.95,196,1661842800"; 
-   d="scan'208";a="182926225"
+   d="scan'208";a="179533657"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Oct 2022 04:42:31 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Oct 2022 04:42:38 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 19 Oct 2022 04:42:28 -0700
+ 15.1.2507.12; Wed, 19 Oct 2022 04:42:32 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Wed, 19 Oct 2022 04:42:26 -0700
+ 15.1.2507.12 via Frontend Transport; Wed, 19 Oct 2022 04:42:29 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -52,9 +52,9 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         "Nathan Huckleberry" <nhuck@google.com>,
         <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH net-next v2 2/9] net: microchip: sparx5: Adding IS2 VCAP model to VCAP API
-Date:   Wed, 19 Oct 2022 13:42:08 +0200
-Message-ID: <20221019114215.620969-3-steen.hegelund@microchip.com>
+Subject: [PATCH net-next v2 3/9] net: microchip: sparx5: Adding IS2 VCAP register interface
+Date:   Wed, 19 Oct 2022 13:42:09 +0200
+Message-ID: <20221019114215.620969-4-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20221019114215.620969-1-steen.hegelund@microchip.com>
 References: <20221019114215.620969-1-steen.hegelund@microchip.com>
@@ -63,1444 +63,517 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_PASS,SPF_PASS,UPPERCASE_75_100 autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This provides the Sparx5 Ingress Stage 2 (IS2) model and adds it to the
-VCAP control instance that will be provided to the VCAP API.
+This adds the register interface needed to access the Sparx5 Ingress Stage
+2 VCAP (IS2).
 
-The Sparx5 IS2 C code model is generated from the Sparx5 RTL design model.
+The Sparx5 Chip Register Model can be browsed at this location:
+https://github.com/microchip-ung/sparx-5_reginfo
 
 Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
 ---
- .../net/ethernet/microchip/sparx5/Makefile    |    2 +-
- .../microchip/sparx5/sparx5_vcap_ag_api.c     | 1351 +++++++++++++++++
- .../microchip/sparx5/sparx5_vcap_ag_api.h     |   18 +
- .../microchip/sparx5/sparx5_vcap_impl.c       |    4 +
- 4 files changed, 1374 insertions(+), 1 deletion(-)
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.c
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.h
+ .../microchip/sparx5/sparx5_main_regs.h       | 460 +++++++++++++++++-
+ 1 file changed, 458 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/Makefile b/drivers/net/ethernet/microchip/sparx5/Makefile
-index aa4dadb8a25d..b9c6831c2d92 100644
---- a/drivers/net/ethernet/microchip/sparx5/Makefile
-+++ b/drivers/net/ethernet/microchip/sparx5/Makefile
-@@ -9,7 +9,7 @@ sparx5-switch-y  := sparx5_main.o sparx5_packet.o \
-  sparx5_netdev.o sparx5_phylink.o sparx5_port.o sparx5_mactable.o sparx5_vlan.o \
-  sparx5_switchdev.o sparx5_calendar.o sparx5_ethtool.o sparx5_fdma.o \
-  sparx5_ptp.o sparx5_pgid.o sparx5_tc.o sparx5_qos.o \
-- sparx5_vcap_impl.o
-+ sparx5_vcap_impl.o sparx5_vcap_ag_api.o
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h b/drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h
+index fa2eb70f487a..c42195f4ec4d 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h
+@@ -4,8 +4,8 @@
+  * Copyright (c) 2021 Microchip Technology Inc.
+  */
  
- # Provide include files
- ccflags-y += -I$(srctree)/drivers/net/ethernet/microchip/vcap
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.c b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.c
-new file mode 100644
-index 000000000000..1bd987c664e8
---- /dev/null
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.c
-@@ -0,0 +1,1351 @@
-+// SPDX-License-Identifier: BSD-3-Clause
-+/* Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries.
-+ * Microchip VCAP API
-+ */
-+
-+/* This file is autogenerated by cml-utils 2022-10-13 10:04:41 +0200.
-+ * Commit ID: fd7cafd175899f0672c73afb3a30fc872500ae86
-+ */
-+
-+#include <linux/types.h>
-+#include <linux/kernel.h>
-+
-+#include "vcap_api.h"
-+#include "sparx5_vcap_ag_api.h"
-+
-+/* keyfields */
-+static const struct vcap_field is2_mac_etype_keyfield[] = {
-+	[VCAP_KF_TYPE] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 0,
-+		.width = 4,
-+	},
-+	[VCAP_KF_LOOKUP_FIRST_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 4,
-+		.width = 1,
-+	},
-+	[VCAP_KF_LOOKUP_PAG] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 5,
-+		.width = 8,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK_L3] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 13,
-+		.width = 1,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK_RNG] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 14,
-+		.width = 4,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK_SEL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 18,
-+		.width = 2,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 20,
-+		.width = 32,
-+	},
-+	[VCAP_KF_L2_MC_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 52,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L2_BC_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 53,
-+		.width = 1,
-+	},
-+	[VCAP_KF_8021Q_VLAN_TAGGED_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 54,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ISDX_GT0_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 55,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ISDX_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 56,
-+		.width = 12,
-+	},
-+	[VCAP_KF_8021Q_VID_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 68,
-+		.width = 13,
-+	},
-+	[VCAP_KF_8021Q_DEI_CLS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 81,
-+		.width = 1,
-+	},
-+	[VCAP_KF_8021Q_PCP_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 82,
-+		.width = 3,
-+	},
-+	[VCAP_KF_L2_FWD_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 85,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_RT_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 88,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_DST_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 89,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L2_DMAC] = {
-+		.type = VCAP_FIELD_U48,
-+		.offset = 90,
-+		.width = 48,
-+	},
-+	[VCAP_KF_L2_SMAC] = {
-+		.type = VCAP_FIELD_U48,
-+		.offset = 138,
-+		.width = 48,
-+	},
-+	[VCAP_KF_ETYPE_LEN_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 186,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ETYPE] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 187,
-+		.width = 16,
-+	},
-+	[VCAP_KF_L2_PAYLOAD_ETYPE] = {
-+		.type = VCAP_FIELD_U64,
-+		.offset = 203,
-+		.width = 64,
-+	},
-+	[VCAP_KF_L4_RNG] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 267,
-+		.width = 16,
-+	},
-+	[VCAP_KF_OAM_CCM_CNTS_EQ0] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 283,
-+		.width = 1,
-+	},
-+	[VCAP_KF_OAM_Y1731_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 284,
-+		.width = 1,
-+	},
-+};
-+
-+static const struct vcap_field is2_arp_keyfield[] = {
-+	[VCAP_KF_TYPE] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 0,
-+		.width = 4,
-+	},
-+	[VCAP_KF_LOOKUP_FIRST_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 4,
-+		.width = 1,
-+	},
-+	[VCAP_KF_LOOKUP_PAG] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 5,
-+		.width = 8,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK_L3] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 13,
-+		.width = 1,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK_RNG] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 14,
-+		.width = 4,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK_SEL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 18,
-+		.width = 2,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 20,
-+		.width = 32,
-+	},
-+	[VCAP_KF_L2_MC_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 52,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L2_BC_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 53,
-+		.width = 1,
-+	},
-+	[VCAP_KF_8021Q_VLAN_TAGGED_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 54,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ISDX_GT0_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 55,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ISDX_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 56,
-+		.width = 12,
-+	},
-+	[VCAP_KF_8021Q_VID_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 68,
-+		.width = 13,
-+	},
-+	[VCAP_KF_8021Q_DEI_CLS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 81,
-+		.width = 1,
-+	},
-+	[VCAP_KF_8021Q_PCP_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 82,
-+		.width = 3,
-+	},
-+	[VCAP_KF_L2_FWD_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 85,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L2_SMAC] = {
-+		.type = VCAP_FIELD_U48,
-+		.offset = 86,
-+		.width = 48,
-+	},
-+	[VCAP_KF_ARP_ADDR_SPACE_OK_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 134,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ARP_PROTO_SPACE_OK_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 135,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ARP_LEN_OK_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 136,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ARP_TGT_MATCH_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 137,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ARP_SENDER_MATCH_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 138,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ARP_OPCODE_UNKNOWN_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 139,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ARP_OPCODE] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 140,
-+		.width = 2,
-+	},
-+	[VCAP_KF_L3_IP4_DIP] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 142,
-+		.width = 32,
-+	},
-+	[VCAP_KF_L3_IP4_SIP] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 174,
-+		.width = 32,
-+	},
-+	[VCAP_KF_L3_DIP_EQ_SIP_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 206,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L4_RNG] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 207,
-+		.width = 16,
-+	},
-+};
-+
-+static const struct vcap_field is2_ip4_tcp_udp_keyfield[] = {
-+	[VCAP_KF_TYPE] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 0,
-+		.width = 4,
-+	},
-+	[VCAP_KF_LOOKUP_FIRST_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 4,
-+		.width = 1,
-+	},
-+	[VCAP_KF_LOOKUP_PAG] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 5,
-+		.width = 8,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK_L3] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 13,
-+		.width = 1,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK_RNG] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 14,
-+		.width = 4,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK_SEL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 18,
-+		.width = 2,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 20,
-+		.width = 32,
-+	},
-+	[VCAP_KF_L2_MC_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 52,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L2_BC_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 53,
-+		.width = 1,
-+	},
-+	[VCAP_KF_8021Q_VLAN_TAGGED_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 54,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ISDX_GT0_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 55,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ISDX_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 56,
-+		.width = 12,
-+	},
-+	[VCAP_KF_8021Q_VID_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 68,
-+		.width = 13,
-+	},
-+	[VCAP_KF_8021Q_DEI_CLS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 81,
-+		.width = 1,
-+	},
-+	[VCAP_KF_8021Q_PCP_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 82,
-+		.width = 3,
-+	},
-+	[VCAP_KF_L2_FWD_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 85,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_RT_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 88,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_DST_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 89,
-+		.width = 1,
-+	},
-+	[VCAP_KF_IP4_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 90,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_FRAGMENT_TYPE] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 91,
-+		.width = 2,
-+	},
-+	[VCAP_KF_L3_FRAG_INVLD_L4_LEN] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 93,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_OPTIONS_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 94,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_TTL_GT0] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 95,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_TOS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 96,
-+		.width = 8,
-+	},
-+	[VCAP_KF_L3_IP4_DIP] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 104,
-+		.width = 32,
-+	},
-+	[VCAP_KF_L3_IP4_SIP] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 136,
-+		.width = 32,
-+	},
-+	[VCAP_KF_L3_DIP_EQ_SIP_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 168,
-+		.width = 1,
-+	},
-+	[VCAP_KF_TCP_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 169,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L4_DPORT] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 170,
-+		.width = 16,
-+	},
-+	[VCAP_KF_L4_SPORT] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 186,
-+		.width = 16,
-+	},
-+	[VCAP_KF_L4_RNG] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 202,
-+		.width = 16,
-+	},
-+	[VCAP_KF_L4_SPORT_EQ_DPORT_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 218,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L4_SEQUENCE_EQ0_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 219,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L4_FIN] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 220,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L4_SYN] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 221,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L4_RST] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 222,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L4_PSH] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 223,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L4_ACK] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 224,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L4_URG] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 225,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L4_PAYLOAD] = {
-+		.type = VCAP_FIELD_U64,
-+		.offset = 226,
-+		.width = 64,
-+	},
-+};
-+
-+static const struct vcap_field is2_ip4_other_keyfield[] = {
-+	[VCAP_KF_TYPE] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 0,
-+		.width = 4,
-+	},
-+	[VCAP_KF_LOOKUP_FIRST_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 4,
-+		.width = 1,
-+	},
-+	[VCAP_KF_LOOKUP_PAG] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 5,
-+		.width = 8,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK_L3] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 13,
-+		.width = 1,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK_RNG] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 14,
-+		.width = 4,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK_SEL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 18,
-+		.width = 2,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 20,
-+		.width = 32,
-+	},
-+	[VCAP_KF_L2_MC_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 52,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L2_BC_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 53,
-+		.width = 1,
-+	},
-+	[VCAP_KF_8021Q_VLAN_TAGGED_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 54,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ISDX_GT0_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 55,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ISDX_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 56,
-+		.width = 12,
-+	},
-+	[VCAP_KF_8021Q_VID_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 68,
-+		.width = 13,
-+	},
-+	[VCAP_KF_8021Q_DEI_CLS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 81,
-+		.width = 1,
-+	},
-+	[VCAP_KF_8021Q_PCP_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 82,
-+		.width = 3,
-+	},
-+	[VCAP_KF_L2_FWD_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 85,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_RT_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 88,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_DST_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 89,
-+		.width = 1,
-+	},
-+	[VCAP_KF_IP4_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 90,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_FRAGMENT_TYPE] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 91,
-+		.width = 2,
-+	},
-+	[VCAP_KF_L3_FRAG_INVLD_L4_LEN] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 93,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_OPTIONS_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 94,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_TTL_GT0] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 95,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_TOS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 96,
-+		.width = 8,
-+	},
-+	[VCAP_KF_L3_IP4_DIP] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 104,
-+		.width = 32,
-+	},
-+	[VCAP_KF_L3_IP4_SIP] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 136,
-+		.width = 32,
-+	},
-+	[VCAP_KF_L3_DIP_EQ_SIP_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 168,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_IP_PROTO] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 169,
-+		.width = 8,
-+	},
-+	[VCAP_KF_L4_RNG] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 177,
-+		.width = 16,
-+	},
-+	[VCAP_KF_L3_PAYLOAD] = {
-+		.type = VCAP_FIELD_U112,
-+		.offset = 193,
-+		.width = 96,
-+	},
-+};
-+
-+static const struct vcap_field is2_ip6_std_keyfield[] = {
-+	[VCAP_KF_TYPE] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 0,
-+		.width = 4,
-+	},
-+	[VCAP_KF_LOOKUP_FIRST_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 4,
-+		.width = 1,
-+	},
-+	[VCAP_KF_LOOKUP_PAG] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 5,
-+		.width = 8,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK_L3] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 13,
-+		.width = 1,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK_RNG] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 14,
-+		.width = 4,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK_SEL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 18,
-+		.width = 2,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 20,
-+		.width = 32,
-+	},
-+	[VCAP_KF_L2_MC_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 52,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L2_BC_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 53,
-+		.width = 1,
-+	},
-+	[VCAP_KF_8021Q_VLAN_TAGGED_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 54,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ISDX_GT0_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 55,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ISDX_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 56,
-+		.width = 12,
-+	},
-+	[VCAP_KF_8021Q_VID_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 68,
-+		.width = 13,
-+	},
-+	[VCAP_KF_8021Q_DEI_CLS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 81,
-+		.width = 1,
-+	},
-+	[VCAP_KF_8021Q_PCP_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 82,
-+		.width = 3,
-+	},
-+	[VCAP_KF_L2_FWD_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 85,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_RT_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 88,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_TTL_GT0] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 90,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_IP6_SIP] = {
-+		.type = VCAP_FIELD_U128,
-+		.offset = 91,
-+		.width = 128,
-+	},
-+	[VCAP_KF_L3_DIP_EQ_SIP_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 219,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_IP_PROTO] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 220,
-+		.width = 8,
-+	},
-+	[VCAP_KF_L4_RNG] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 228,
-+		.width = 16,
-+	},
-+	[VCAP_KF_L3_PAYLOAD] = {
-+		.type = VCAP_FIELD_U48,
-+		.offset = 244,
-+		.width = 40,
-+	},
-+};
-+
-+static const struct vcap_field is2_ip_7tuple_keyfield[] = {
-+	[VCAP_KF_TYPE] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 0,
-+		.width = 2,
-+	},
-+	[VCAP_KF_LOOKUP_FIRST_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 2,
-+		.width = 1,
-+	},
-+	[VCAP_KF_LOOKUP_PAG] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 3,
-+		.width = 8,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK_L3] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 11,
-+		.width = 1,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK_RNG] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 12,
-+		.width = 4,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK_SEL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 16,
-+		.width = 2,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_MASK] = {
-+		.type = VCAP_FIELD_U72,
-+		.offset = 18,
-+		.width = 65,
-+	},
-+	[VCAP_KF_L2_MC_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 83,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L2_BC_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 84,
-+		.width = 1,
-+	},
-+	[VCAP_KF_8021Q_VLAN_TAGGED_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 85,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ISDX_GT0_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 86,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ISDX_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 87,
-+		.width = 12,
-+	},
-+	[VCAP_KF_8021Q_VID_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 99,
-+		.width = 13,
-+	},
-+	[VCAP_KF_8021Q_DEI_CLS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 112,
-+		.width = 1,
-+	},
-+	[VCAP_KF_8021Q_PCP_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 113,
-+		.width = 3,
-+	},
-+	[VCAP_KF_L2_FWD_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 116,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_RT_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 119,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_DST_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 120,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L2_DMAC] = {
-+		.type = VCAP_FIELD_U48,
-+		.offset = 121,
-+		.width = 48,
-+	},
-+	[VCAP_KF_L2_SMAC] = {
-+		.type = VCAP_FIELD_U48,
-+		.offset = 169,
-+		.width = 48,
-+	},
-+	[VCAP_KF_IP4_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 217,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_TTL_GT0] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 218,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_TOS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 219,
-+		.width = 8,
-+	},
-+	[VCAP_KF_L3_IP6_DIP] = {
-+		.type = VCAP_FIELD_U128,
-+		.offset = 227,
-+		.width = 128,
-+	},
-+	[VCAP_KF_L3_IP6_SIP] = {
-+		.type = VCAP_FIELD_U128,
-+		.offset = 355,
-+		.width = 128,
-+	},
-+	[VCAP_KF_L3_DIP_EQ_SIP_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 483,
-+		.width = 1,
-+	},
-+	[VCAP_KF_TCP_UDP_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 484,
-+		.width = 1,
-+	},
-+	[VCAP_KF_TCP_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 485,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L4_DPORT] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 486,
-+		.width = 16,
-+	},
-+	[VCAP_KF_L4_SPORT] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 502,
-+		.width = 16,
-+	},
-+	[VCAP_KF_L4_RNG] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 518,
-+		.width = 16,
-+	},
-+	[VCAP_KF_L4_SPORT_EQ_DPORT_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 534,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L4_SEQUENCE_EQ0_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 535,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L4_FIN] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 536,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L4_SYN] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 537,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L4_RST] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 538,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L4_PSH] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 539,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L4_ACK] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 540,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L4_URG] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 541,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L4_PAYLOAD] = {
-+		.type = VCAP_FIELD_U64,
-+		.offset = 542,
-+		.width = 64,
-+	},
-+};
-+
-+/* keyfield_set */
-+static const struct vcap_set is2_keyfield_set[] = {
-+	[VCAP_KFS_MAC_ETYPE] = {
-+		.type_id = 0,
-+		.sw_per_item = 6,
-+		.sw_cnt = 2,
-+	},
-+	[VCAP_KFS_ARP] = {
-+		.type_id = 3,
-+		.sw_per_item = 6,
-+		.sw_cnt = 2,
-+	},
-+	[VCAP_KFS_IP4_TCP_UDP] = {
-+		.type_id = 4,
-+		.sw_per_item = 6,
-+		.sw_cnt = 2,
-+	},
-+	[VCAP_KFS_IP4_OTHER] = {
-+		.type_id = 5,
-+		.sw_per_item = 6,
-+		.sw_cnt = 2,
-+	},
-+	[VCAP_KFS_IP6_STD] = {
-+		.type_id = 6,
-+		.sw_per_item = 6,
-+		.sw_cnt = 2,
-+	},
-+	[VCAP_KFS_IP_7TUPLE] = {
-+		.type_id = 1,
-+		.sw_per_item = 12,
-+		.sw_cnt = 1,
-+	},
-+};
-+
-+/* keyfield_set map */
-+static const struct vcap_field *is2_keyfield_set_map[] = {
-+	[VCAP_KFS_MAC_ETYPE] = is2_mac_etype_keyfield,
-+	[VCAP_KFS_ARP] = is2_arp_keyfield,
-+	[VCAP_KFS_IP4_TCP_UDP] = is2_ip4_tcp_udp_keyfield,
-+	[VCAP_KFS_IP4_OTHER] = is2_ip4_other_keyfield,
-+	[VCAP_KFS_IP6_STD] = is2_ip6_std_keyfield,
-+	[VCAP_KFS_IP_7TUPLE] = is2_ip_7tuple_keyfield,
-+};
-+
-+/* keyfield_set map sizes */
-+static int is2_keyfield_set_map_size[] = {
-+	[VCAP_KFS_MAC_ETYPE] = ARRAY_SIZE(is2_mac_etype_keyfield),
-+	[VCAP_KFS_ARP] = ARRAY_SIZE(is2_arp_keyfield),
-+	[VCAP_KFS_IP4_TCP_UDP] = ARRAY_SIZE(is2_ip4_tcp_udp_keyfield),
-+	[VCAP_KFS_IP4_OTHER] = ARRAY_SIZE(is2_ip4_other_keyfield),
-+	[VCAP_KFS_IP6_STD] = ARRAY_SIZE(is2_ip6_std_keyfield),
-+	[VCAP_KFS_IP_7TUPLE] = ARRAY_SIZE(is2_ip_7tuple_keyfield),
-+};
-+
-+/* actionfields */
-+static const struct vcap_field is2_base_type_actionfield[] = {
-+	[VCAP_AF_PIPELINE_FORCE_ENA] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 1,
-+		.width = 1,
-+	},
-+	[VCAP_AF_PIPELINE_PT] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 2,
-+		.width = 5,
-+	},
-+	[VCAP_AF_HIT_ME_ONCE] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 7,
-+		.width = 1,
-+	},
-+	[VCAP_AF_INTR_ENA] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 8,
-+		.width = 1,
-+	},
-+	[VCAP_AF_CPU_COPY_ENA] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 9,
-+		.width = 1,
-+	},
-+	[VCAP_AF_CPU_QUEUE_NUM] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 10,
-+		.width = 3,
-+	},
-+	[VCAP_AF_LRN_DIS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 14,
-+		.width = 1,
-+	},
-+	[VCAP_AF_RT_DIS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 15,
-+		.width = 1,
-+	},
-+	[VCAP_AF_POLICE_ENA] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 16,
-+		.width = 1,
-+	},
-+	[VCAP_AF_POLICE_IDX] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 17,
-+		.width = 6,
-+	},
-+	[VCAP_AF_IGNORE_PIPELINE_CTRL] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 23,
-+		.width = 1,
-+	},
-+	[VCAP_AF_MASK_MODE] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 27,
-+		.width = 3,
-+	},
-+	[VCAP_AF_PORT_MASK] = {
-+		.type = VCAP_FIELD_U72,
-+		.offset = 30,
-+		.width = 68,
-+	},
-+	[VCAP_AF_MIRROR_PROBE] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 111,
-+		.width = 2,
-+	},
-+	[VCAP_AF_MATCH_ID] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 159,
-+		.width = 16,
-+	},
-+	[VCAP_AF_MATCH_ID_MASK] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 175,
-+		.width = 16,
-+	},
-+	[VCAP_AF_CNT_ID] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 191,
-+		.width = 12,
-+	},
-+};
-+
-+/* actionfield_set */
-+static const struct vcap_set is2_actionfield_set[] = {
-+	[VCAP_AFS_BASE_TYPE] = {
-+		.type_id = -1,
-+		.sw_per_item = 3,
-+		.sw_cnt = 4,
-+	},
-+};
-+
-+/* actionfield_set map */
-+static const struct vcap_field *is2_actionfield_set_map[] = {
-+	[VCAP_AFS_BASE_TYPE] = is2_base_type_actionfield,
-+};
-+
-+/* actionfield_set map size */
-+static int is2_actionfield_set_map_size[] = {
-+	[VCAP_AFS_BASE_TYPE] = ARRAY_SIZE(is2_base_type_actionfield),
-+};
-+
-+/* Type Groups */
-+static const struct vcap_typegroup is2_x12_keyfield_set_typegroups[] = {
-+	{
-+		.offset = 0,
-+		.width = 3,
-+		.value = 4,
-+	},
-+	{
-+		.offset = 156,
-+		.width = 1,
-+		.value = 0,
-+	},
-+	{
-+		.offset = 312,
-+		.width = 2,
-+		.value = 0,
-+	},
-+	{
-+		.offset = 468,
-+		.width = 1,
-+		.value = 0,
-+	},
-+	{}
-+};
-+
-+static const struct vcap_typegroup is2_x6_keyfield_set_typegroups[] = {
-+	{
-+		.offset = 0,
-+		.width = 2,
-+		.value = 2,
-+	},
-+	{
-+		.offset = 156,
-+		.width = 1,
-+		.value = 0,
-+	},
-+	{}
-+};
-+
-+static const struct vcap_typegroup is2_x3_keyfield_set_typegroups[] = {
-+	{}
-+};
-+
-+static const struct vcap_typegroup is2_x1_keyfield_set_typegroups[] = {
-+	{}
-+};
-+
-+static const struct vcap_typegroup *is2_keyfield_set_typegroups[] = {
-+	[12] = is2_x12_keyfield_set_typegroups,
-+	[6] = is2_x6_keyfield_set_typegroups,
-+	[3] = is2_x3_keyfield_set_typegroups,
-+	[1] = is2_x1_keyfield_set_typegroups,
-+	[13] = NULL,
-+};
-+
-+static const struct vcap_typegroup is2_x3_actionfield_set_typegroups[] = {
-+	{
-+		.offset = 0,
-+		.width = 2,
-+		.value = 2,
-+	},
-+	{
-+		.offset = 110,
-+		.width = 1,
-+		.value = 0,
-+	},
-+	{
-+		.offset = 220,
-+		.width = 1,
-+		.value = 0,
-+	},
-+	{}
-+};
-+
-+static const struct vcap_typegroup is2_x1_actionfield_set_typegroups[] = {
-+	{}
-+};
-+
-+static const struct vcap_typegroup *is2_actionfield_set_typegroups[] = {
-+	[3] = is2_x3_actionfield_set_typegroups,
-+	[1] = is2_x1_actionfield_set_typegroups,
-+	[13] = NULL,
-+};
-+
-+/* Keyfieldset names */
-+static const char * const vcap_keyfield_set_names[] = {
-+	[VCAP_KFS_NO_VALUE]                      =  "(None)",
-+	[VCAP_KFS_ARP]                           =  "VCAP_KFS_ARP",
-+	[VCAP_KFS_IP4_OTHER]                     =  "VCAP_KFS_IP4_OTHER",
-+	[VCAP_KFS_IP4_TCP_UDP]                   =  "VCAP_KFS_IP4_TCP_UDP",
-+	[VCAP_KFS_IP6_STD]                       =  "VCAP_KFS_IP6_STD",
-+	[VCAP_KFS_IP_7TUPLE]                     =  "VCAP_KFS_IP_7TUPLE",
-+	[VCAP_KFS_MAC_ETYPE]                     =  "VCAP_KFS_MAC_ETYPE",
-+};
-+
-+/* Actionfieldset names */
-+static const char * const vcap_actionfield_set_names[] = {
-+	[VCAP_AFS_NO_VALUE]                      =  "(None)",
-+	[VCAP_AFS_BASE_TYPE]                     =  "VCAP_AFS_BASE_TYPE",
-+};
-+
-+/* Keyfield names */
-+static const char * const vcap_keyfield_names[] = {
-+	[VCAP_KF_NO_VALUE]                       =  "(None)",
-+	[VCAP_KF_8021Q_DEI_CLS]                  =  "8021Q_DEI_CLS",
-+	[VCAP_KF_8021Q_PCP_CLS]                  =  "8021Q_PCP_CLS",
-+	[VCAP_KF_8021Q_VID_CLS]                  =  "8021Q_VID_CLS",
-+	[VCAP_KF_8021Q_VLAN_TAGGED_IS]           =  "8021Q_VLAN_TAGGED_IS",
-+	[VCAP_KF_ARP_ADDR_SPACE_OK_IS]           =  "ARP_ADDR_SPACE_OK_IS",
-+	[VCAP_KF_ARP_LEN_OK_IS]                  =  "ARP_LEN_OK_IS",
-+	[VCAP_KF_ARP_OPCODE]                     =  "ARP_OPCODE",
-+	[VCAP_KF_ARP_OPCODE_UNKNOWN_IS]          =  "ARP_OPCODE_UNKNOWN_IS",
-+	[VCAP_KF_ARP_PROTO_SPACE_OK_IS]          =  "ARP_PROTO_SPACE_OK_IS",
-+	[VCAP_KF_ARP_SENDER_MATCH_IS]            =  "ARP_SENDER_MATCH_IS",
-+	[VCAP_KF_ARP_TGT_MATCH_IS]               =  "ARP_TGT_MATCH_IS",
-+	[VCAP_KF_ETYPE]                          =  "ETYPE",
-+	[VCAP_KF_ETYPE_LEN_IS]                   =  "ETYPE_LEN_IS",
-+	[VCAP_KF_IF_IGR_PORT_MASK]               =  "IF_IGR_PORT_MASK",
-+	[VCAP_KF_IF_IGR_PORT_MASK_L3]            =  "IF_IGR_PORT_MASK_L3",
-+	[VCAP_KF_IF_IGR_PORT_MASK_RNG]           =  "IF_IGR_PORT_MASK_RNG",
-+	[VCAP_KF_IF_IGR_PORT_MASK_SEL]           =  "IF_IGR_PORT_MASK_SEL",
-+	[VCAP_KF_IP4_IS]                         =  "IP4_IS",
-+	[VCAP_KF_ISDX_CLS]                       =  "ISDX_CLS",
-+	[VCAP_KF_ISDX_GT0_IS]                    =  "ISDX_GT0_IS",
-+	[VCAP_KF_L2_BC_IS]                       =  "L2_BC_IS",
-+	[VCAP_KF_L2_DMAC]                        =  "L2_DMAC",
-+	[VCAP_KF_L2_FWD_IS]                      =  "L2_FWD_IS",
-+	[VCAP_KF_L2_MC_IS]                       =  "L2_MC_IS",
-+	[VCAP_KF_L2_PAYLOAD_ETYPE]               =  "L2_PAYLOAD_ETYPE",
-+	[VCAP_KF_L2_SMAC]                        =  "L2_SMAC",
-+	[VCAP_KF_L3_DIP_EQ_SIP_IS]               =  "L3_DIP_EQ_SIP_IS",
-+	[VCAP_KF_L3_DST_IS]                      =  "L3_DST_IS",
-+	[VCAP_KF_L3_FRAGMENT_TYPE]               =  "L3_FRAGMENT_TYPE",
-+	[VCAP_KF_L3_FRAG_INVLD_L4_LEN]           =  "L3_FRAG_INVLD_L4_LEN",
-+	[VCAP_KF_L3_IP4_DIP]                     =  "L3_IP4_DIP",
-+	[VCAP_KF_L3_IP4_SIP]                     =  "L3_IP4_SIP",
-+	[VCAP_KF_L3_IP6_DIP]                     =  "L3_IP6_DIP",
-+	[VCAP_KF_L3_IP6_SIP]                     =  "L3_IP6_SIP",
-+	[VCAP_KF_L3_IP_PROTO]                    =  "L3_IP_PROTO",
-+	[VCAP_KF_L3_OPTIONS_IS]                  =  "L3_OPTIONS_IS",
-+	[VCAP_KF_L3_PAYLOAD]                     =  "L3_PAYLOAD",
-+	[VCAP_KF_L3_RT_IS]                       =  "L3_RT_IS",
-+	[VCAP_KF_L3_TOS]                         =  "L3_TOS",
-+	[VCAP_KF_L3_TTL_GT0]                     =  "L3_TTL_GT0",
-+	[VCAP_KF_L4_ACK]                         =  "L4_ACK",
-+	[VCAP_KF_L4_DPORT]                       =  "L4_DPORT",
-+	[VCAP_KF_L4_FIN]                         =  "L4_FIN",
-+	[VCAP_KF_L4_PAYLOAD]                     =  "L4_PAYLOAD",
-+	[VCAP_KF_L4_PSH]                         =  "L4_PSH",
-+	[VCAP_KF_L4_RNG]                         =  "L4_RNG",
-+	[VCAP_KF_L4_RST]                         =  "L4_RST",
-+	[VCAP_KF_L4_SEQUENCE_EQ0_IS]             =  "L4_SEQUENCE_EQ0_IS",
-+	[VCAP_KF_L4_SPORT]                       =  "L4_SPORT",
-+	[VCAP_KF_L4_SPORT_EQ_DPORT_IS]           =  "L4_SPORT_EQ_DPORT_IS",
-+	[VCAP_KF_L4_SYN]                         =  "L4_SYN",
-+	[VCAP_KF_L4_URG]                         =  "L4_URG",
-+	[VCAP_KF_LOOKUP_FIRST_IS]                =  "LOOKUP_FIRST_IS",
-+	[VCAP_KF_LOOKUP_PAG]                     =  "LOOKUP_PAG",
-+	[VCAP_KF_OAM_CCM_CNTS_EQ0]               =  "OAM_CCM_CNTS_EQ0",
-+	[VCAP_KF_OAM_Y1731_IS]                   =  "OAM_Y1731_IS",
-+	[VCAP_KF_TCP_IS]                         =  "TCP_IS",
-+	[VCAP_KF_TCP_UDP_IS]                     =  "TCP_UDP_IS",
-+	[VCAP_KF_TYPE]                           =  "TYPE",
-+};
-+
-+/* Actionfield names */
-+static const char * const vcap_actionfield_names[] = {
-+	[VCAP_AF_NO_VALUE]                       =  "(None)",
-+	[VCAP_AF_CNT_ID]                         =  "CNT_ID",
-+	[VCAP_AF_CPU_COPY_ENA]                   =  "CPU_COPY_ENA",
-+	[VCAP_AF_CPU_QUEUE_NUM]                  =  "CPU_QUEUE_NUM",
-+	[VCAP_AF_HIT_ME_ONCE]                    =  "HIT_ME_ONCE",
-+	[VCAP_AF_IGNORE_PIPELINE_CTRL]           =  "IGNORE_PIPELINE_CTRL",
-+	[VCAP_AF_INTR_ENA]                       =  "INTR_ENA",
-+	[VCAP_AF_LRN_DIS]                        =  "LRN_DIS",
-+	[VCAP_AF_MASK_MODE]                      =  "MASK_MODE",
-+	[VCAP_AF_MATCH_ID]                       =  "MATCH_ID",
-+	[VCAP_AF_MATCH_ID_MASK]                  =  "MATCH_ID_MASK",
-+	[VCAP_AF_MIRROR_PROBE]                   =  "MIRROR_PROBE",
-+	[VCAP_AF_PIPELINE_FORCE_ENA]             =  "PIPELINE_FORCE_ENA",
-+	[VCAP_AF_PIPELINE_PT]                    =  "PIPELINE_PT",
-+	[VCAP_AF_POLICE_ENA]                     =  "POLICE_ENA",
-+	[VCAP_AF_POLICE_IDX]                     =  "POLICE_IDX",
-+	[VCAP_AF_PORT_MASK]                      =  "PORT_MASK",
-+	[VCAP_AF_RT_DIS]                         =  "RT_DIS",
-+};
-+
-+/* VCAPs */
-+const struct vcap_info sparx5_vcaps[] = {
-+	[VCAP_TYPE_IS2] = {
-+		.name = "is2",
-+		.rows = 256,
-+		.sw_count = 12,
-+		.sw_width = 52,
-+		.sticky_width = 1,
-+		.act_width = 110,
-+		.default_cnt = 73,
-+		.require_cnt_dis = 0,
-+		.version = 1,
-+		.keyfield_set = is2_keyfield_set,
-+		.keyfield_set_size = ARRAY_SIZE(is2_keyfield_set),
-+		.actionfield_set = is2_actionfield_set,
-+		.actionfield_set_size = ARRAY_SIZE(is2_actionfield_set),
-+		.keyfield_set_map = is2_keyfield_set_map,
-+		.keyfield_set_map_size = is2_keyfield_set_map_size,
-+		.actionfield_set_map = is2_actionfield_set_map,
-+		.actionfield_set_map_size = is2_actionfield_set_map_size,
-+		.keyfield_set_typegroups = is2_keyfield_set_typegroups,
-+		.actionfield_set_typegroups = is2_actionfield_set_typegroups,
-+	},
-+};
-+
-+const struct vcap_statistics sparx5_vcap_stats = {
-+	.name = "sparx5",
-+	.count = 1,
-+	.keyfield_set_names = vcap_keyfield_set_names,
-+	.actionfield_set_names = vcap_actionfield_set_names,
-+	.keyfield_names = vcap_keyfield_names,
-+	.actionfield_names = vcap_actionfield_names,
-+};
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.h b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.h
-new file mode 100644
-index 000000000000..7d106f1276fe
---- /dev/null
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.h
-@@ -0,0 +1,18 @@
-+/* SPDX-License-Identifier: BSD-3-Clause */
-+/* Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries.
-+ * Microchip VCAP API
-+ */
-+
-+/* This file is autogenerated by cml-utils 2022-10-13 10:04:41 +0200.
-+ * Commit ID: fd7cafd175899f0672c73afb3a30fc872500ae86
-+ */
-+
-+#ifndef __SPARX5_VCAP_AG_API_H__
-+#define __SPARX5_VCAP_AG_API_H__
-+
-+/* VCAPs */
-+extern const struct vcap_info sparx5_vcaps[];
-+extern const struct vcap_statistics sparx5_vcap_stats;
-+
-+#endif /* __SPARX5_VCAP_AG_API_H__ */
-+
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
-index 8df7cba77a28..68f6fed80556 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
-@@ -13,6 +13,7 @@
- #include "vcap_api.h"
- #include "sparx5_main_regs.h"
- #include "sparx5_main.h"
-+#include "sparx5_vcap_ag_api.h"
+-/* This file is autogenerated by cml-utils 2022-02-26 14:15:01 +0100.
+- * Commit ID: 98bdd3d171cc2a1afd30d241d41a4281d471a48c (dirty)
++/* This file is autogenerated by cml-utils 2022-09-12 14:22:42 +0200.
++ * Commit ID: 06aecbca4eab6e85d87f665fe6b6348c48146245
+  */
  
- /* Allocate a vcap control and vcap instances and configure the system */
- int sparx5_vcap_init(struct sparx5 *sparx5)
-@@ -28,6 +29,9 @@ int sparx5_vcap_init(struct sparx5 *sparx5)
- 		return -ENOMEM;
+ #ifndef _SPARX5_MAIN_REGS_H_
+@@ -171,6 +171,162 @@ enum sparx5_target {
+ /*      ANA_AC:STAT_CNT_CFG_PORT:STAT_LSB_CNT */
+ #define ANA_AC_PORT_STAT_LSB_CNT(g, r) __REG(TARGET_ANA_AC, 0, 1, 843776, g, 70, 64, 20, r, 4, 4)
  
- 	sparx5->vcap_ctrl = ctrl;
-+	/* select the sparx5 VCAP model */
-+	ctrl->vcaps = sparx5_vcaps;
-+	ctrl->stats = &sparx5_vcap_stats;
++/*      ANA_ACL:COMMON:VCAP_S2_CFG */
++#define ANA_ACL_VCAP_S2_CFG(r)    __REG(TARGET_ANA_ACL, 0, 1, 32768, 0, 1, 592, 0, r, 70, 4)
++
++#define ANA_ACL_VCAP_S2_CFG_SEC_ROUTE_HANDLING_ENA BIT(28)
++#define ANA_ACL_VCAP_S2_CFG_SEC_ROUTE_HANDLING_ENA_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_CFG_SEC_ROUTE_HANDLING_ENA, x)
++#define ANA_ACL_VCAP_S2_CFG_SEC_ROUTE_HANDLING_ENA_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_CFG_SEC_ROUTE_HANDLING_ENA, x)
++
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_OAM_ENA     GENMASK(27, 26)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_OAM_ENA_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_OAM_ENA, x)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_OAM_ENA_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_OAM_ENA, x)
++
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP6_TCPUDP_OTHER_ENA GENMASK(25, 24)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP6_TCPUDP_OTHER_ENA_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP6_TCPUDP_OTHER_ENA, x)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP6_TCPUDP_OTHER_ENA_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP6_TCPUDP_OTHER_ENA, x)
++
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP6_VID_ENA GENMASK(23, 22)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP6_VID_ENA_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP6_VID_ENA, x)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP6_VID_ENA_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP6_VID_ENA, x)
++
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP6_STD_ENA GENMASK(21, 20)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP6_STD_ENA_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP6_STD_ENA, x)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP6_STD_ENA_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP6_STD_ENA, x)
++
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP6_TCPUDP_ENA GENMASK(19, 18)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP6_TCPUDP_ENA_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP6_TCPUDP_ENA, x)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP6_TCPUDP_ENA_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP6_TCPUDP_ENA, x)
++
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP_7TUPLE_ENA GENMASK(17, 16)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP_7TUPLE_ENA_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP_7TUPLE_ENA, x)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP_7TUPLE_ENA_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP_7TUPLE_ENA, x)
++
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP4_VID_ENA GENMASK(15, 14)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP4_VID_ENA_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP4_VID_ENA, x)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP4_VID_ENA_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP4_VID_ENA, x)
++
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP4_TCPUDP_ENA GENMASK(13, 12)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP4_TCPUDP_ENA_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP4_TCPUDP_ENA, x)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP4_TCPUDP_ENA_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP4_TCPUDP_ENA, x)
++
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP4_OTHER_ENA GENMASK(11, 10)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP4_OTHER_ENA_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP4_OTHER_ENA, x)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP4_OTHER_ENA_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_IP4_OTHER_ENA, x)
++
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_ARP_ENA     GENMASK(9, 8)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_ARP_ENA_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_ARP_ENA, x)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_ARP_ENA_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_ARP_ENA, x)
++
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_MAC_SNAP_ENA GENMASK(7, 6)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_MAC_SNAP_ENA_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_MAC_SNAP_ENA, x)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_MAC_SNAP_ENA_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_MAC_SNAP_ENA, x)
++
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_MAC_LLC_ENA GENMASK(5, 4)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_MAC_LLC_ENA_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_MAC_LLC_ENA, x)
++#define ANA_ACL_VCAP_S2_CFG_SEC_TYPE_MAC_LLC_ENA_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_CFG_SEC_TYPE_MAC_LLC_ENA, x)
++
++#define ANA_ACL_VCAP_S2_CFG_SEC_ENA              GENMASK(3, 0)
++#define ANA_ACL_VCAP_S2_CFG_SEC_ENA_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_CFG_SEC_ENA, x)
++#define ANA_ACL_VCAP_S2_CFG_SEC_ENA_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_CFG_SEC_ENA, x)
++
++/*      ANA_ACL:COMMON:SWAP_IP_CTRL */
++#define ANA_ACL_SWAP_IP_CTRL      __REG(TARGET_ANA_ACL, 0, 1, 32768, 0, 1, 592, 412, 0, 1, 4)
++
++#define ANA_ACL_SWAP_IP_CTRL_DMAC_REPL_OFFSET_VAL GENMASK(23, 18)
++#define ANA_ACL_SWAP_IP_CTRL_DMAC_REPL_OFFSET_VAL_SET(x)\
++	FIELD_PREP(ANA_ACL_SWAP_IP_CTRL_DMAC_REPL_OFFSET_VAL, x)
++#define ANA_ACL_SWAP_IP_CTRL_DMAC_REPL_OFFSET_VAL_GET(x)\
++	FIELD_GET(ANA_ACL_SWAP_IP_CTRL_DMAC_REPL_OFFSET_VAL, x)
++
++#define ANA_ACL_SWAP_IP_CTRL_IP_SWAP_IP6_HOPC_VAL GENMASK(17, 10)
++#define ANA_ACL_SWAP_IP_CTRL_IP_SWAP_IP6_HOPC_VAL_SET(x)\
++	FIELD_PREP(ANA_ACL_SWAP_IP_CTRL_IP_SWAP_IP6_HOPC_VAL, x)
++#define ANA_ACL_SWAP_IP_CTRL_IP_SWAP_IP6_HOPC_VAL_GET(x)\
++	FIELD_GET(ANA_ACL_SWAP_IP_CTRL_IP_SWAP_IP6_HOPC_VAL, x)
++
++#define ANA_ACL_SWAP_IP_CTRL_IP_SWAP_IP4_TTL_VAL GENMASK(9, 2)
++#define ANA_ACL_SWAP_IP_CTRL_IP_SWAP_IP4_TTL_VAL_SET(x)\
++	FIELD_PREP(ANA_ACL_SWAP_IP_CTRL_IP_SWAP_IP4_TTL_VAL, x)
++#define ANA_ACL_SWAP_IP_CTRL_IP_SWAP_IP4_TTL_VAL_GET(x)\
++	FIELD_GET(ANA_ACL_SWAP_IP_CTRL_IP_SWAP_IP4_TTL_VAL, x)
++
++#define ANA_ACL_SWAP_IP_CTRL_IP_SWAP_IP6_HOPC_ENA BIT(1)
++#define ANA_ACL_SWAP_IP_CTRL_IP_SWAP_IP6_HOPC_ENA_SET(x)\
++	FIELD_PREP(ANA_ACL_SWAP_IP_CTRL_IP_SWAP_IP6_HOPC_ENA, x)
++#define ANA_ACL_SWAP_IP_CTRL_IP_SWAP_IP6_HOPC_ENA_GET(x)\
++	FIELD_GET(ANA_ACL_SWAP_IP_CTRL_IP_SWAP_IP6_HOPC_ENA, x)
++
++#define ANA_ACL_SWAP_IP_CTRL_IP_SWAP_IP4_TTL_ENA BIT(0)
++#define ANA_ACL_SWAP_IP_CTRL_IP_SWAP_IP4_TTL_ENA_SET(x)\
++	FIELD_PREP(ANA_ACL_SWAP_IP_CTRL_IP_SWAP_IP4_TTL_ENA, x)
++#define ANA_ACL_SWAP_IP_CTRL_IP_SWAP_IP4_TTL_ENA_GET(x)\
++	FIELD_GET(ANA_ACL_SWAP_IP_CTRL_IP_SWAP_IP4_TTL_ENA, x)
++
++/*      ANA_ACL:COMMON:VCAP_S2_RLEG_STAT */
++#define ANA_ACL_VCAP_S2_RLEG_STAT(r) __REG(TARGET_ANA_ACL, 0, 1, 32768, 0, 1, 592, 424, r, 4, 4)
++
++#define ANA_ACL_VCAP_S2_RLEG_STAT_IRLEG_STAT_MASK GENMASK(12, 6)
++#define ANA_ACL_VCAP_S2_RLEG_STAT_IRLEG_STAT_MASK_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_RLEG_STAT_IRLEG_STAT_MASK, x)
++#define ANA_ACL_VCAP_S2_RLEG_STAT_IRLEG_STAT_MASK_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_RLEG_STAT_IRLEG_STAT_MASK, x)
++
++#define ANA_ACL_VCAP_S2_RLEG_STAT_ERLEG_STAT_MASK GENMASK(5, 0)
++#define ANA_ACL_VCAP_S2_RLEG_STAT_ERLEG_STAT_MASK_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_RLEG_STAT_ERLEG_STAT_MASK, x)
++#define ANA_ACL_VCAP_S2_RLEG_STAT_ERLEG_STAT_MASK_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_RLEG_STAT_ERLEG_STAT_MASK, x)
++
++/*      ANA_ACL:COMMON:VCAP_S2_FRAGMENT_CFG */
++#define ANA_ACL_VCAP_S2_FRAGMENT_CFG __REG(TARGET_ANA_ACL, 0, 1, 32768, 0, 1, 592, 440, 0, 1, 4)
++
++#define ANA_ACL_VCAP_S2_FRAGMENT_CFG_L4_MIN_LEN  GENMASK(9, 5)
++#define ANA_ACL_VCAP_S2_FRAGMENT_CFG_L4_MIN_LEN_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_FRAGMENT_CFG_L4_MIN_LEN, x)
++#define ANA_ACL_VCAP_S2_FRAGMENT_CFG_L4_MIN_LEN_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_FRAGMENT_CFG_L4_MIN_LEN, x)
++
++#define ANA_ACL_VCAP_S2_FRAGMENT_CFG_FRAGMENT_OFFSET_THRES_DIS BIT(4)
++#define ANA_ACL_VCAP_S2_FRAGMENT_CFG_FRAGMENT_OFFSET_THRES_DIS_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_FRAGMENT_CFG_FRAGMENT_OFFSET_THRES_DIS, x)
++#define ANA_ACL_VCAP_S2_FRAGMENT_CFG_FRAGMENT_OFFSET_THRES_DIS_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_FRAGMENT_CFG_FRAGMENT_OFFSET_THRES_DIS, x)
++
++#define ANA_ACL_VCAP_S2_FRAGMENT_CFG_FRAGMENT_OFFSET_THRES GENMASK(3, 0)
++#define ANA_ACL_VCAP_S2_FRAGMENT_CFG_FRAGMENT_OFFSET_THRES_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_FRAGMENT_CFG_FRAGMENT_OFFSET_THRES, x)
++#define ANA_ACL_VCAP_S2_FRAGMENT_CFG_FRAGMENT_OFFSET_THRES_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_FRAGMENT_CFG_FRAGMENT_OFFSET_THRES, x)
++
+ /*      ANA_ACL:COMMON:OWN_UPSID */
+ #define ANA_ACL_OWN_UPSID(r)      __REG(TARGET_ANA_ACL, 0, 1, 32768, 0, 1, 592, 580, r, 3, 4)
  
- 	return 0;
- }
+@@ -180,6 +336,174 @@ enum sparx5_target {
+ #define ANA_ACL_OWN_UPSID_OWN_UPSID_GET(x)\
+ 	FIELD_GET(ANA_ACL_OWN_UPSID_OWN_UPSID, x)
+ 
++/*      ANA_ACL:KEY_SEL:VCAP_S2_KEY_SEL */
++#define ANA_ACL_VCAP_S2_KEY_SEL(g, r) __REG(TARGET_ANA_ACL, 0, 1, 34200, g, 134, 16, 0, r, 4, 4)
++
++#define ANA_ACL_VCAP_S2_KEY_SEL_KEY_SEL_ENA      BIT(13)
++#define ANA_ACL_VCAP_S2_KEY_SEL_KEY_SEL_ENA_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_KEY_SEL_KEY_SEL_ENA, x)
++#define ANA_ACL_VCAP_S2_KEY_SEL_KEY_SEL_ENA_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_KEY_SEL_KEY_SEL_ENA, x)
++
++#define ANA_ACL_VCAP_S2_KEY_SEL_IGR_PORT_MASK_SEL BIT(12)
++#define ANA_ACL_VCAP_S2_KEY_SEL_IGR_PORT_MASK_SEL_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_KEY_SEL_IGR_PORT_MASK_SEL, x)
++#define ANA_ACL_VCAP_S2_KEY_SEL_IGR_PORT_MASK_SEL_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_KEY_SEL_IGR_PORT_MASK_SEL, x)
++
++#define ANA_ACL_VCAP_S2_KEY_SEL_NON_ETH_KEY_SEL  GENMASK(11, 10)
++#define ANA_ACL_VCAP_S2_KEY_SEL_NON_ETH_KEY_SEL_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_KEY_SEL_NON_ETH_KEY_SEL, x)
++#define ANA_ACL_VCAP_S2_KEY_SEL_NON_ETH_KEY_SEL_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_KEY_SEL_NON_ETH_KEY_SEL, x)
++
++#define ANA_ACL_VCAP_S2_KEY_SEL_IP4_MC_KEY_SEL   GENMASK(9, 8)
++#define ANA_ACL_VCAP_S2_KEY_SEL_IP4_MC_KEY_SEL_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_KEY_SEL_IP4_MC_KEY_SEL, x)
++#define ANA_ACL_VCAP_S2_KEY_SEL_IP4_MC_KEY_SEL_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_KEY_SEL_IP4_MC_KEY_SEL, x)
++
++#define ANA_ACL_VCAP_S2_KEY_SEL_IP4_UC_KEY_SEL   GENMASK(7, 6)
++#define ANA_ACL_VCAP_S2_KEY_SEL_IP4_UC_KEY_SEL_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_KEY_SEL_IP4_UC_KEY_SEL, x)
++#define ANA_ACL_VCAP_S2_KEY_SEL_IP4_UC_KEY_SEL_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_KEY_SEL_IP4_UC_KEY_SEL, x)
++
++#define ANA_ACL_VCAP_S2_KEY_SEL_IP6_MC_KEY_SEL   GENMASK(5, 3)
++#define ANA_ACL_VCAP_S2_KEY_SEL_IP6_MC_KEY_SEL_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_KEY_SEL_IP6_MC_KEY_SEL, x)
++#define ANA_ACL_VCAP_S2_KEY_SEL_IP6_MC_KEY_SEL_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_KEY_SEL_IP6_MC_KEY_SEL, x)
++
++#define ANA_ACL_VCAP_S2_KEY_SEL_IP6_UC_KEY_SEL   GENMASK(2, 1)
++#define ANA_ACL_VCAP_S2_KEY_SEL_IP6_UC_KEY_SEL_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_KEY_SEL_IP6_UC_KEY_SEL, x)
++#define ANA_ACL_VCAP_S2_KEY_SEL_IP6_UC_KEY_SEL_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_KEY_SEL_IP6_UC_KEY_SEL, x)
++
++#define ANA_ACL_VCAP_S2_KEY_SEL_ARP_KEY_SEL      BIT(0)
++#define ANA_ACL_VCAP_S2_KEY_SEL_ARP_KEY_SEL_SET(x)\
++	FIELD_PREP(ANA_ACL_VCAP_S2_KEY_SEL_ARP_KEY_SEL, x)
++#define ANA_ACL_VCAP_S2_KEY_SEL_ARP_KEY_SEL_GET(x)\
++	FIELD_GET(ANA_ACL_VCAP_S2_KEY_SEL_ARP_KEY_SEL, x)
++
++/*      ANA_ACL:CNT_A:CNT_A */
++#define ANA_ACL_CNT_A(g)          __REG(TARGET_ANA_ACL, 0, 1, 0, g, 4096, 4, 0, 0, 1, 4)
++
++/*      ANA_ACL:CNT_B:CNT_B */
++#define ANA_ACL_CNT_B(g)          __REG(TARGET_ANA_ACL, 0, 1, 16384, g, 4096, 4, 0, 0, 1, 4)
++
++/*      ANA_ACL:STICKY:SEC_LOOKUP_STICKY */
++#define ANA_ACL_SEC_LOOKUP_STICKY(r) __REG(TARGET_ANA_ACL, 0, 1, 36408, 0, 1, 16, 0, r, 4, 4)
++
++#define ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_CLM_STICKY BIT(17)
++#define ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_CLM_STICKY_SET(x)\
++	FIELD_PREP(ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_CLM_STICKY, x)
++#define ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_CLM_STICKY_GET(x)\
++	FIELD_GET(ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_CLM_STICKY, x)
++
++#define ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_IRLEG_STICKY BIT(16)
++#define ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_IRLEG_STICKY_SET(x)\
++	FIELD_PREP(ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_IRLEG_STICKY, x)
++#define ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_IRLEG_STICKY_GET(x)\
++	FIELD_GET(ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_IRLEG_STICKY, x)
++
++#define ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_ERLEG_STICKY BIT(15)
++#define ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_ERLEG_STICKY_SET(x)\
++	FIELD_PREP(ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_ERLEG_STICKY, x)
++#define ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_ERLEG_STICKY_GET(x)\
++	FIELD_GET(ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_ERLEG_STICKY, x)
++
++#define ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_PORT_STICKY BIT(14)
++#define ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_PORT_STICKY_SET(x)\
++	FIELD_PREP(ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_PORT_STICKY, x)
++#define ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_PORT_STICKY_GET(x)\
++	FIELD_GET(ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_PORT_STICKY, x)
++
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_CUSTOM2_STICKY BIT(13)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_CUSTOM2_STICKY_SET(x)\
++	FIELD_PREP(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_CUSTOM2_STICKY, x)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_CUSTOM2_STICKY_GET(x)\
++	FIELD_GET(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_CUSTOM2_STICKY, x)
++
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_CUSTOM1_STICKY BIT(12)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_CUSTOM1_STICKY_SET(x)\
++	FIELD_PREP(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_CUSTOM1_STICKY, x)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_CUSTOM1_STICKY_GET(x)\
++	FIELD_GET(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_CUSTOM1_STICKY, x)
++
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_OAM_STICKY BIT(11)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_OAM_STICKY_SET(x)\
++	FIELD_PREP(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_OAM_STICKY, x)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_OAM_STICKY_GET(x)\
++	FIELD_GET(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_OAM_STICKY, x)
++
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP6_VID_STICKY BIT(10)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP6_VID_STICKY_SET(x)\
++	FIELD_PREP(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP6_VID_STICKY, x)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP6_VID_STICKY_GET(x)\
++	FIELD_GET(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP6_VID_STICKY, x)
++
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP6_STD_STICKY BIT(9)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP6_STD_STICKY_SET(x)\
++	FIELD_PREP(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP6_STD_STICKY, x)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP6_STD_STICKY_GET(x)\
++	FIELD_GET(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP6_STD_STICKY, x)
++
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP6_TCPUDP_STICKY BIT(8)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP6_TCPUDP_STICKY_SET(x)\
++	FIELD_PREP(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP6_TCPUDP_STICKY, x)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP6_TCPUDP_STICKY_GET(x)\
++	FIELD_GET(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP6_TCPUDP_STICKY, x)
++
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP_7TUPLE_STICKY BIT(7)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP_7TUPLE_STICKY_SET(x)\
++	FIELD_PREP(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP_7TUPLE_STICKY, x)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP_7TUPLE_STICKY_GET(x)\
++	FIELD_GET(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP_7TUPLE_STICKY, x)
++
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP4_VID_STICKY BIT(6)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP4_VID_STICKY_SET(x)\
++	FIELD_PREP(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP4_VID_STICKY, x)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP4_VID_STICKY_GET(x)\
++	FIELD_GET(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP4_VID_STICKY, x)
++
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP4_TCPUDP_STICKY BIT(5)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP4_TCPUDP_STICKY_SET(x)\
++	FIELD_PREP(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP4_TCPUDP_STICKY, x)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP4_TCPUDP_STICKY_GET(x)\
++	FIELD_GET(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP4_TCPUDP_STICKY, x)
++
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP4_OTHER_STICKY BIT(4)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP4_OTHER_STICKY_SET(x)\
++	FIELD_PREP(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP4_OTHER_STICKY, x)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP4_OTHER_STICKY_GET(x)\
++	FIELD_GET(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP4_OTHER_STICKY, x)
++
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_ARP_STICKY BIT(3)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_ARP_STICKY_SET(x)\
++	FIELD_PREP(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_ARP_STICKY, x)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_ARP_STICKY_GET(x)\
++	FIELD_GET(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_ARP_STICKY, x)
++
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_MAC_SNAP_STICKY BIT(2)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_MAC_SNAP_STICKY_SET(x)\
++	FIELD_PREP(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_MAC_SNAP_STICKY, x)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_MAC_SNAP_STICKY_GET(x)\
++	FIELD_GET(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_MAC_SNAP_STICKY, x)
++
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_MAC_LLC_STICKY BIT(1)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_MAC_LLC_STICKY_SET(x)\
++	FIELD_PREP(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_MAC_LLC_STICKY, x)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_MAC_LLC_STICKY_GET(x)\
++	FIELD_GET(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_MAC_LLC_STICKY, x)
++
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_MAC_ETYPE_STICKY BIT(0)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_MAC_ETYPE_STICKY_SET(x)\
++	FIELD_PREP(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_MAC_ETYPE_STICKY, x)
++#define ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_MAC_ETYPE_STICKY_GET(x)\
++	FIELD_GET(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_MAC_ETYPE_STICKY, x)
++
+ /*      ANA_AC_POL:POL_ALL_CFG:POL_UPD_INT_CFG */
+ #define ANA_AC_POL_POL_UPD_INT_CFG __REG(TARGET_ANA_AC_POL, 0, 1, 75968, 0, 1, 1160, 1148, 0, 1, 4)
+ 
+@@ -5039,6 +5363,138 @@ enum sparx5_target {
+ #define REW_RAM_INIT_RAM_CFG_HOOK_GET(x)\
+ 	FIELD_GET(REW_RAM_INIT_RAM_CFG_HOOK, x)
+ 
++/*      VCAP_SUPER:VCAP_CORE_CFG:VCAP_UPDATE_CTRL */
++#define VCAP_SUPER_CTRL           __REG(TARGET_VCAP_SUPER, 0, 1, 0, 0, 1, 8, 0, 0, 1, 4)
++
++#define VCAP_SUPER_CTRL_UPDATE_CMD               GENMASK(24, 22)
++#define VCAP_SUPER_CTRL_UPDATE_CMD_SET(x)\
++	FIELD_PREP(VCAP_SUPER_CTRL_UPDATE_CMD, x)
++#define VCAP_SUPER_CTRL_UPDATE_CMD_GET(x)\
++	FIELD_GET(VCAP_SUPER_CTRL_UPDATE_CMD, x)
++
++#define VCAP_SUPER_CTRL_UPDATE_ENTRY_DIS         BIT(21)
++#define VCAP_SUPER_CTRL_UPDATE_ENTRY_DIS_SET(x)\
++	FIELD_PREP(VCAP_SUPER_CTRL_UPDATE_ENTRY_DIS, x)
++#define VCAP_SUPER_CTRL_UPDATE_ENTRY_DIS_GET(x)\
++	FIELD_GET(VCAP_SUPER_CTRL_UPDATE_ENTRY_DIS, x)
++
++#define VCAP_SUPER_CTRL_UPDATE_ACTION_DIS        BIT(20)
++#define VCAP_SUPER_CTRL_UPDATE_ACTION_DIS_SET(x)\
++	FIELD_PREP(VCAP_SUPER_CTRL_UPDATE_ACTION_DIS, x)
++#define VCAP_SUPER_CTRL_UPDATE_ACTION_DIS_GET(x)\
++	FIELD_GET(VCAP_SUPER_CTRL_UPDATE_ACTION_DIS, x)
++
++#define VCAP_SUPER_CTRL_UPDATE_CNT_DIS           BIT(19)
++#define VCAP_SUPER_CTRL_UPDATE_CNT_DIS_SET(x)\
++	FIELD_PREP(VCAP_SUPER_CTRL_UPDATE_CNT_DIS, x)
++#define VCAP_SUPER_CTRL_UPDATE_CNT_DIS_GET(x)\
++	FIELD_GET(VCAP_SUPER_CTRL_UPDATE_CNT_DIS, x)
++
++#define VCAP_SUPER_CTRL_UPDATE_ADDR              GENMASK(18, 3)
++#define VCAP_SUPER_CTRL_UPDATE_ADDR_SET(x)\
++	FIELD_PREP(VCAP_SUPER_CTRL_UPDATE_ADDR, x)
++#define VCAP_SUPER_CTRL_UPDATE_ADDR_GET(x)\
++	FIELD_GET(VCAP_SUPER_CTRL_UPDATE_ADDR, x)
++
++#define VCAP_SUPER_CTRL_UPDATE_SHOT              BIT(2)
++#define VCAP_SUPER_CTRL_UPDATE_SHOT_SET(x)\
++	FIELD_PREP(VCAP_SUPER_CTRL_UPDATE_SHOT, x)
++#define VCAP_SUPER_CTRL_UPDATE_SHOT_GET(x)\
++	FIELD_GET(VCAP_SUPER_CTRL_UPDATE_SHOT, x)
++
++#define VCAP_SUPER_CTRL_CLEAR_CACHE              BIT(1)
++#define VCAP_SUPER_CTRL_CLEAR_CACHE_SET(x)\
++	FIELD_PREP(VCAP_SUPER_CTRL_CLEAR_CACHE, x)
++#define VCAP_SUPER_CTRL_CLEAR_CACHE_GET(x)\
++	FIELD_GET(VCAP_SUPER_CTRL_CLEAR_CACHE, x)
++
++#define VCAP_SUPER_CTRL_MV_TRAFFIC_IGN           BIT(0)
++#define VCAP_SUPER_CTRL_MV_TRAFFIC_IGN_SET(x)\
++	FIELD_PREP(VCAP_SUPER_CTRL_MV_TRAFFIC_IGN, x)
++#define VCAP_SUPER_CTRL_MV_TRAFFIC_IGN_GET(x)\
++	FIELD_GET(VCAP_SUPER_CTRL_MV_TRAFFIC_IGN, x)
++
++/*      VCAP_SUPER:VCAP_CORE_CFG:VCAP_MV_CFG */
++#define VCAP_SUPER_CFG            __REG(TARGET_VCAP_SUPER, 0, 1, 0, 0, 1, 8, 4, 0, 1, 4)
++
++#define VCAP_SUPER_CFG_MV_NUM_POS                GENMASK(31, 16)
++#define VCAP_SUPER_CFG_MV_NUM_POS_SET(x)\
++	FIELD_PREP(VCAP_SUPER_CFG_MV_NUM_POS, x)
++#define VCAP_SUPER_CFG_MV_NUM_POS_GET(x)\
++	FIELD_GET(VCAP_SUPER_CFG_MV_NUM_POS, x)
++
++#define VCAP_SUPER_CFG_MV_SIZE                   GENMASK(15, 0)
++#define VCAP_SUPER_CFG_MV_SIZE_SET(x)\
++	FIELD_PREP(VCAP_SUPER_CFG_MV_SIZE, x)
++#define VCAP_SUPER_CFG_MV_SIZE_GET(x)\
++	FIELD_GET(VCAP_SUPER_CFG_MV_SIZE, x)
++
++/*      VCAP_SUPER:VCAP_CORE_CACHE:VCAP_ENTRY_DAT */
++#define VCAP_SUPER_VCAP_ENTRY_DAT(r) __REG(TARGET_VCAP_SUPER, 0, 1, 8, 0, 1, 904, 0, r, 64, 4)
++
++/*      VCAP_SUPER:VCAP_CORE_CACHE:VCAP_MASK_DAT */
++#define VCAP_SUPER_VCAP_MASK_DAT(r) __REG(TARGET_VCAP_SUPER, 0, 1, 8, 0, 1, 904, 256, r, 64, 4)
++
++/*      VCAP_SUPER:VCAP_CORE_CACHE:VCAP_ACTION_DAT */
++#define VCAP_SUPER_VCAP_ACTION_DAT(r) __REG(TARGET_VCAP_SUPER, 0, 1, 8, 0, 1, 904, 512, r, 64, 4)
++
++/*      VCAP_SUPER:VCAP_CORE_CACHE:VCAP_CNT_DAT */
++#define VCAP_SUPER_VCAP_CNT_DAT(r) __REG(TARGET_VCAP_SUPER, 0, 1, 8, 0, 1, 904, 768, r, 32, 4)
++
++/*      VCAP_SUPER:VCAP_CORE_CACHE:VCAP_CNT_FW_DAT */
++#define VCAP_SUPER_VCAP_CNT_FW_DAT __REG(TARGET_VCAP_SUPER, 0, 1, 8, 0, 1, 904, 896, 0, 1, 4)
++
++/*      VCAP_SUPER:VCAP_CORE_CACHE:VCAP_TG_DAT */
++#define VCAP_SUPER_VCAP_TG_DAT    __REG(TARGET_VCAP_SUPER, 0, 1, 8, 0, 1, 904, 900, 0, 1, 4)
++
++/*      VCAP_SUPER:VCAP_CORE_MAP:VCAP_CORE_IDX */
++#define VCAP_SUPER_IDX            __REG(TARGET_VCAP_SUPER, 0, 1, 912, 0, 1, 8, 0, 0, 1, 4)
++
++#define VCAP_SUPER_IDX_CORE_IDX                  GENMASK(3, 0)
++#define VCAP_SUPER_IDX_CORE_IDX_SET(x)\
++	FIELD_PREP(VCAP_SUPER_IDX_CORE_IDX, x)
++#define VCAP_SUPER_IDX_CORE_IDX_GET(x)\
++	FIELD_GET(VCAP_SUPER_IDX_CORE_IDX, x)
++
++/*      VCAP_SUPER:VCAP_CORE_MAP:VCAP_CORE_MAP */
++#define VCAP_SUPER_MAP            __REG(TARGET_VCAP_SUPER, 0, 1, 912, 0, 1, 8, 4, 0, 1, 4)
++
++#define VCAP_SUPER_MAP_CORE_MAP                  GENMASK(2, 0)
++#define VCAP_SUPER_MAP_CORE_MAP_SET(x)\
++	FIELD_PREP(VCAP_SUPER_MAP_CORE_MAP, x)
++#define VCAP_SUPER_MAP_CORE_MAP_GET(x)\
++	FIELD_GET(VCAP_SUPER_MAP_CORE_MAP, x)
++
++/*      VCAP_SUPER:VCAP_CONST:VCAP_VER */
++#define VCAP_SUPER_VCAP_VER       __REG(TARGET_VCAP_SUPER, 0, 1, 924, 0, 1, 40, 0, 0, 1, 4)
++
++/*      VCAP_SUPER:VCAP_CONST:ENTRY_WIDTH */
++#define VCAP_SUPER_ENTRY_WIDTH    __REG(TARGET_VCAP_SUPER, 0, 1, 924, 0, 1, 40, 4, 0, 1, 4)
++
++/*      VCAP_SUPER:VCAP_CONST:ENTRY_CNT */
++#define VCAP_SUPER_ENTRY_CNT      __REG(TARGET_VCAP_SUPER, 0, 1, 924, 0, 1, 40, 8, 0, 1, 4)
++
++/*      VCAP_SUPER:VCAP_CONST:ENTRY_SWCNT */
++#define VCAP_SUPER_ENTRY_SWCNT    __REG(TARGET_VCAP_SUPER, 0, 1, 924, 0, 1, 40, 12, 0, 1, 4)
++
++/*      VCAP_SUPER:VCAP_CONST:ENTRY_TG_WIDTH */
++#define VCAP_SUPER_ENTRY_TG_WIDTH __REG(TARGET_VCAP_SUPER, 0, 1, 924, 0, 1, 40, 16, 0, 1, 4)
++
++/*      VCAP_SUPER:VCAP_CONST:ACTION_DEF_CNT */
++#define VCAP_SUPER_ACTION_DEF_CNT __REG(TARGET_VCAP_SUPER, 0, 1, 924, 0, 1, 40, 20, 0, 1, 4)
++
++/*      VCAP_SUPER:VCAP_CONST:ACTION_WIDTH */
++#define VCAP_SUPER_ACTION_WIDTH   __REG(TARGET_VCAP_SUPER, 0, 1, 924, 0, 1, 40, 24, 0, 1, 4)
++
++/*      VCAP_SUPER:VCAP_CONST:CNT_WIDTH */
++#define VCAP_SUPER_CNT_WIDTH      __REG(TARGET_VCAP_SUPER, 0, 1, 924, 0, 1, 40, 28, 0, 1, 4)
++
++/*      VCAP_SUPER:VCAP_CONST:CORE_CNT */
++#define VCAP_SUPER_CORE_CNT       __REG(TARGET_VCAP_SUPER, 0, 1, 924, 0, 1, 40, 32, 0, 1, 4)
++
++/*      VCAP_SUPER:VCAP_CONST:IF_CNT */
++#define VCAP_SUPER_IF_CNT         __REG(TARGET_VCAP_SUPER, 0, 1, 924, 0, 1, 40, 36, 0, 1, 4)
++
+ /*      VCAP_SUPER:RAM_CTRL:RAM_INIT */
+ #define VCAP_SUPER_RAM_INIT       __REG(TARGET_VCAP_SUPER, 0, 1, 1120, 0, 1, 4, 0, 0, 1, 4)
+ 
 -- 
 2.38.1
 
