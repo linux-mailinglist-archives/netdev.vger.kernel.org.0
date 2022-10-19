@@ -2,64 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 844B76046B6
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 15:18:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A920604598
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 14:42:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230306AbiJSNSo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 09:18:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59584 "EHLO
+        id S233283AbiJSMmV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 08:42:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231488AbiJSNSX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 09:18:23 -0400
-X-Greylist: delayed 450 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 19 Oct 2022 06:03:56 PDT
-Received: from ggeceazg.iranichat.com (ggeceazg.iranichat.com [92.52.217.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62FC01D4DEC
-        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 06:03:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; s=dkim; d=iranichat.com;
- h=Content-Type:MIME-Version:Content-Transfer-Encoding:Content-Description:Subject:To:From:Date:Message-ID; i=fin.bee@iranichat.com;
- bh=SnzvvH6uGl2MiFnmR3uhYIQGwXE=;
- b=KroAPO9vaQOaxfVEAk/svrLJADZOwGVMab1z31p1Q9dXs0grzdoMQT7sZHVLbnItS4SKZhyzVUZt
-   6lG376/kFrlUiIZW/N+SMAJdtHU65AbijVLWssezEqEl+MvRIWYDgSxYuNZPTYdbBu+iuHa9Bhxl
-   XHKrnXzEpnfKgjWiHl1vHPKoXLTyO7bpErvxtDvoUz9yF2wMFi5E8MTGMKe2XbIPdh1iiRLOSnOi
-   oEWA4gsbm8RPP331hcYMwudD34H2STvJunSzEYwd9R/Ex+3ghO6DNqxsNpa0npS6gmdLi4uLj0mW
-   VwjwPCVYWlSrRvqgj+tkQPGeeuBYfyHWet8pAA==
-DomainKey-Signature: a=rsa-sha1; c=nofws; q=dns; s=dkim; d=iranichat.com;
- b=eLeuJYvOhAkBD/A4B01xiIL2Jl82B8JF/Ob3QlzFEKu0rdCtNYoEU6VLpqrTntH0rTexBD1bziMC
-   F137aa1ubZJBV/meFupbkFQ7RHTMpZhwb6YT+Kv/IqumeqDa4FKHbglVwxvJHbZiqLuy6RunYDaP
-   idN+/iMB45zmR6hptpQDIdoY+ry/HfmbcRy3PMfjofX1FQQ0sV/9QGvXh0wZRZ2JyirmKOopCEp6
-   c6mNW8RrwlSJq52mnppChufl91PyeD01wqZmeYHqQwF0kllz6rGfSH8SGOJSlZA278iIGmtEvKTU
-   sBns7d2QS4+w7GoY1cvEbc1qDF4P611FkMT8Aw==;
-Content-Type: text/plain; charset="iso-8859-1"
+        with ESMTP id S233284AbiJSMmF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 08:42:05 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46703317E9;
+        Wed, 19 Oct 2022 05:24:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=JhqoTv6oI6VeCIoZx6BVwVchA34wqcZ6eZRE7mXJULQ=; b=Jppr6nR3t5UgH30loqLy82PiMR
+        fZ5pGuOVZuY/mmhBVAT8Zt78bQqGEDbRixgB7dzHgMCZsLXv0jS/kPZUZTVoF4fM6bdzmhogKMn/r
+        pFwk+dEDM1taRD5sqsH7sjzmkLkT03N8LfcaMFxXW9GdCgwelb1CXR18Ld+gZi0pmpSmS2tYMqLLa
+        E8USl5tGbxKvHnbDNcRWuqGMv76GgjU3o4txg4Y6lqUpml+s9r+baCF1oxDI2I0HZ0/pk26pfpZKt
+        5jDwILtn6Cs8y2mNU/mNT1q8bEIXUYWtpgKMu6EwTwgJ13n2/eZoUEtlfpSPJz7BboHQNaqFo/Pzr
+        w0myR9wA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34796)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ol7ib-0005cB-2W; Wed, 19 Oct 2022 12:58:41 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ol7iZ-00027y-J3; Wed, 19 Oct 2022 12:58:39 +0100
+Date:   Wed, 19 Oct 2022 12:58:39 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>, andrew@lunn.ch,
+        hkallweit1@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH RFC 2/3] net: phy: marvell10g: Add host interface speed
+ configuration
+Message-ID: <Y0/mbzaUItB1BOzg@shell.armlinux.org.uk>
+References: <20221019085052.933385-1-yoshihiro.shimoda.uh@renesas.com>
+ <20221019085052.933385-3-yoshihiro.shimoda.uh@renesas.com>
+ <20221019124839.33ad3458@dellmb>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Description: Mail message body
-Subject: New order
-To:     Recipients <fin.bee@iranichat.com>
-From:   "fin.bee@iranichat.com" <fin.bee@iranichat.com>
-Date:   Wed, 19 Oct 2022 13:56:22 +0200
-Message-ID: <0.0.1.873.1D8E3B1D27684E0.0@ggeceazg.iranichat.com>
-X-Spam-Status: No, score=4.5 required=5.0 tests=BAYES_80,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        TO_EQ_FM_DIRECT_MX,URIBL_BLACK autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Level: ****
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20221019124839.33ad3458@dellmb>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Good day,
-Please I will like to request a quote from your company.
+On Wed, Oct 19, 2022 at 12:48:39PM +0200, Marek Behún wrote:
+> On Wed, 19 Oct 2022 17:50:51 +0900
+> Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com> wrote:
+> 
+> > Add support for selecting host speed mode. For now, only support
+> > 1000M bps.
+> > 
+> > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> > ---
+> >  drivers/net/phy/marvell10g.c | 23 +++++++++++++++++++++++
+> >  1 file changed, 23 insertions(+)
+> > 
+> > diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
+> > index 383a9c9f36e5..daf3242c6078 100644
+> > --- a/drivers/net/phy/marvell10g.c
+> > +++ b/drivers/net/phy/marvell10g.c
+> > @@ -101,6 +101,10 @@ enum {
+> >  	MV_AN_21X0_SERDES_CTRL2_AUTO_INIT_DIS	= BIT(13),
+> >  	MV_AN_21X0_SERDES_CTRL2_RUN_INIT	= BIT(15),
+> >  
+> > +	MV_MOD_CONF		= 0xf000,
+> > +	MV_MOD_CONF_SPEED_MASK	= 0x00c0,
+> > +	MV_MOD_CONF_SPEED_1000	= BIT(7),
+> > +
+> 
+> Where did you get these values from? My documentation says:
+>   Mode Configuration
+>   Device 31, Register 0xF000
+>   Bits
+>   7:6   Reserved  R/W  0x3  This must always be 11.
 
-Let me know so I can send you our order list to quote for us.
+The closest is from the 88x3310 documentation that indicates these are
+the default speed, which are used when the media side is down. There
+is a specific sequence to update these.
 
-I await your response.
+However, as we seem to be talking about the 2110 here, that should be
+reflected in these definitions.
 
-Thanks,
+Finally, using BIT() for definitions of a field which can be one of
+four possible values is not acceptable. BIT() is for single bits
+not for a multi-bit field which can take any possible value but just
+the value we're representing there just happens to have a single bit
+set.
 
--
-
-Mit freundlichen Gr=FC=DFen / Kind regards
-
-Maria Andran
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
