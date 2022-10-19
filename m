@@ -2,132 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C47E460427B
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 13:05:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A17460415A
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 12:43:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230292AbiJSLFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 07:05:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39916 "EHLO
+        id S232495AbiJSKm4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 06:42:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234068AbiJSLDl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 07:03:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 264A1B489A
-        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 03:32:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1666175521;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=owPDeMElgBtwxyZbMxAAYSiYM74n7F8RQNiynGcF0kw=;
-        b=Z7QuSIRjMf6O6JMawHJTZsn4F30kwekvyZtIB/UkEwmtKLoY4FGNgfJkwqApOBNhOWZ8Uy
-        mOCkxYYS3lo6KV4m72ABo0carz5iUrmLtTVztbJ/p18y2RX5u+y75U97BdoL6fdjYOqkZF
-        +16vZgwCJb2z8fshXyf9FhXWCNHCy/U=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-367-RdbcssAaMMGCZ6SfOW6UXQ-1; Wed, 19 Oct 2022 06:02:32 -0400
-X-MC-Unique: RdbcssAaMMGCZ6SfOW6UXQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S232482AbiJSKmN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 06:42:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB3E61D5D
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 03:19:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C835080280D;
-        Wed, 19 Oct 2022 10:02:31 +0000 (UTC)
-Received: from gerbillo.redhat.com (unknown [10.39.194.193])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4F52F2024CBF;
-        Wed, 19 Oct 2022 10:02:30 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, mptcp@lists.linux.dev,
-        David Ahern <dsahern@kernel.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>
-Subject: [PATCH net-next 1/2] net: introduce and use custom sockopt socket flag
-Date:   Wed, 19 Oct 2022 12:02:00 +0200
-Message-Id: <b9ca7b78bec42047bc9935be2697328c7b71b391.1666173045.git.pabeni@redhat.com>
-In-Reply-To: <cover.1666173045.git.pabeni@redhat.com>
-References: <cover.1666173045.git.pabeni@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 394BFB824EF
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 10:02:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D9ADC433C1;
+        Wed, 19 Oct 2022 10:02:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666173731;
+        bh=6x3I55G9plZ+ANLMw2UTaG/1zUMLEiAlAvQUUVAFiI0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Y9gEiJXJYHf+zjqCZ4Gyym+hIbWUXruUuOx0OycXi1t824PTNzaxBC3NbbrwvfM6J
+         yL///m33OS8YG7VuuXaPNlMkIeBeMUfUJLdNIMo5Mb4IszrGbGoHO6nSg/Zidri6Tz
+         s+zwZsD3yrzMy3uM/gz5uIBzht2x4/8j4TNAaWRA8nDEGR2zOFeT8oAR/9u0Yk71ZW
+         vRAZB+lgl/dDBA7Q2rGFvEGaJQWtox5hYvVQmpfod3JVHw/Pgq/9zJefrIbIVhxCDh
+         XaPInirAw+LuCi4FLA3UCehNOQ+98xVrycKz/2XOuXxUHCXANR7SZB7Dt1rZXFo7Q7
+         e+r9IB9Z+5FBQ==
+Date:   Wed, 19 Oct 2022 13:02:07 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     shaozhengchao <shaozhengchao@huawei.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, keescook@chromium.org,
+        gustavoars@kernel.org, gregkh@linuxfoundation.org, ast@kernel.org,
+        peter.chen@kernel.org, bin.chen@corigine.com, luobin9@huawei.com,
+        weiyongjun1@huawei.com, yuehaibing@huawei.com
+Subject: Re: [PATCH net 3/4] net: hinic: fix the issue of CMDQ memory leaks
+Message-ID: <Y0/LH7tqsILpoI0G@unreal>
+References: <20221019024220.376178-1-shaozhengchao@huawei.com>
+ <20221019024220.376178-4-shaozhengchao@huawei.com>
+ <Y0+lRITJ1kPNCY0c@unreal>
+ <8d79818c-21a3-9a78-7b80-15f5c60875a4@huawei.com>
+ <Y0+3rd/tmB289uPX@unreal>
+ <7a64d717-250c-80e5-3384-835a2c72b4bb@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7a64d717-250c-80e5-3384-835a2c72b4bb@huawei.com>
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We will soon introduce custom setsockopt for UDP sockets, too.
-Instead of doing even more complex arbitrary checks inside
-sock_use_custom_sol_socket(), add a new socket flag and set it
-for the relevant socket types (currently only MPTCP).
+On Wed, Oct 19, 2022 at 05:37:42PM +0800, shaozhengchao wrote:
+> 
+> 
+> On 2022/10/19 16:39, Leon Romanovsky wrote:
+> > On Wed, Oct 19, 2022 at 03:41:06PM +0800, shaozhengchao wrote:
+> > > 
+> > > 
+> > > On 2022/10/19 15:20, Leon Romanovsky wrote:
+> > > > On Wed, Oct 19, 2022 at 10:42:19AM +0800, Zhengchao Shao wrote:
+> > > > > When hinic_set_cmdq_depth() fails in hinic_init_cmdqs(), the cmdq memory is
+> > > > > not released correctly. Fix it.
+> > > > > 
+> > > > > Fixes: 72ef908bb3ff ("hinic: add three net_device_ops of vf")
+> > > > > Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> > > > > ---
+> > > > >    drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c | 5 +++++
+> > > > >    1 file changed, 5 insertions(+)
+> > > > 
+> > > > <...>
+> > > > 
+> > > > > +	cmdq_type = HINIC_CMDQ_SYNC;
+> > > > > +	for (; cmdq_type < HINIC_MAX_CMDQ_TYPES; cmdq_type++)
+> > > > 
+> > > > Why do you have this "for loops" in all places? There is only one cmdq_type.
+> > > > 
+> > > > Thanks
+> > > Hi Leon:
+> > > 	Thank you for your review. Now, only the synchronous CMDQ is
+> > > enabled for the current CMDQs. New type of CMDQ could be added later.
+> > 
+> > Single command type was added in 2017, and five years later, new type wasn't added yet.
+> > 
+> OK, I will modify in V2, and I will do cleanup in another patch.
 
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- include/linux/net.h  | 1 +
- net/mptcp/protocol.c | 4 ++++
- net/socket.c         | 8 +-------
- 3 files changed, 6 insertions(+), 7 deletions(-)
+Thanks
 
-diff --git a/include/linux/net.h b/include/linux/net.h
-index 711c3593c3b8..59350fd85823 100644
---- a/include/linux/net.h
-+++ b/include/linux/net.h
-@@ -41,6 +41,7 @@ struct net;
- #define SOCK_NOSPACE		2
- #define SOCK_PASSCRED		3
- #define SOCK_PASSSEC		4
-+#define SOCK_CUSTOM_SOCKOPT	5
- 
- #ifndef ARCH_HAS_SOCKET_TYPES
- /**
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index f599ad44ed24..0448a5c3da3c 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -2708,6 +2708,8 @@ static int mptcp_init_sock(struct sock *sk)
- 	if (ret)
- 		return ret;
- 
-+	set_bit(SOCK_CUSTOM_SOCKOPT, &sk->sk_socket->flags);
-+
- 	/* fetch the ca name; do it outside __mptcp_init_sock(), so that clone will
- 	 * propagate the correct value
- 	 */
-@@ -3684,6 +3686,8 @@ static int mptcp_stream_accept(struct socket *sock, struct socket *newsock,
- 		struct mptcp_subflow_context *subflow;
- 		struct sock *newsk = newsock->sk;
- 
-+		set_bit(SOCK_CUSTOM_SOCKOPT, &newsock->flags);
-+
- 		lock_sock(newsk);
- 
- 		/* PM/worker can now acquire the first subflow socket
-diff --git a/net/socket.c b/net/socket.c
-index 00da9ce3dba0..55c5d536e5f6 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -2199,13 +2199,7 @@ SYSCALL_DEFINE4(recv, int, fd, void __user *, ubuf, size_t, size,
- 
- static bool sock_use_custom_sol_socket(const struct socket *sock)
- {
--	const struct sock *sk = sock->sk;
--
--	/* Use sock->ops->setsockopt() for MPTCP */
--	return IS_ENABLED(CONFIG_MPTCP) &&
--	       sk->sk_protocol == IPPROTO_MPTCP &&
--	       sk->sk_type == SOCK_STREAM &&
--	       (sk->sk_family == AF_INET || sk->sk_family == AF_INET6);
-+	return test_bit(SOCK_CUSTOM_SOCKOPT, &sock->flags);
- }
- 
- /*
--- 
-2.37.3
-
+> 
+> Thanks
+> 
+> Zhengchao Shao
+> 
+> > > So looping style is maintained on both the allocation and release paths.
+> > > 
+> > > Zhengchao Shao
