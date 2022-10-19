@@ -2,95 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31A47604A6C
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 17:05:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB3EE604A62
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 17:04:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230055AbiJSPEV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 11:04:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60680 "EHLO
+        id S230255AbiJSPEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 11:04:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232013AbiJSPEA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 11:04:00 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A1AF189C3E;
-        Wed, 19 Oct 2022 07:58:32 -0700 (PDT)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1666191366;
+        with ESMTP id S231867AbiJSPDz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 11:03:55 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D0261BF84A;
+        Wed, 19 Oct 2022 07:58:13 -0700 (PDT)
+Message-ID: <204f1ef4-77b1-7d4b-4953-00a99ce83be4@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1666191411;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=6uEJOM0caPrcvNJcHiErtW6cO4rX4lvkgAL5ZPoAngE=;
-        b=CapeSp4lIuUCMT3A2F+Nh1MiAgJLkP2QvT6kPUMQDmJJFQsukbmY9zgoaeE4Mq6UuBqXXb
-        FrZc++ZOPgsuLs9l7PcPyG4j8PgQByAcFR2QTb5ZOiIdmXyyFYqlRtydfmDmoK5yA3OP78
-        U0XmnXaelSW/V/NwDwJUqlWqX2IcrI2b9QoB5wTOni/8eC59uwoJspmELM/0AK/+2z5J0G
-        bd1oHF0zuZVLDhAFAcJJT5y3CPqV4fXZIaKcBDHjVUzgpVkWqsTRUcD5J9GUYo05fhBIDg
-        fYj1DxyE3Wu0F0Ede8aUNYGFTPayP73PEUKd+FQ5qnHfrV5Nu/mSQTYm2wS3RQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1666191366;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6uEJOM0caPrcvNJcHiErtW6cO4rX4lvkgAL5ZPoAngE=;
-        b=ZQecdyT7PQky3Pel/Hzc+4qBo3aS7NXlfHW9v7oMg/iE63aGG0BcneUC9VkDNd/cxE1gob
-        fBX8kx6iiefyiNCg==
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: [PATCH printk v2 09/38] netconsole: use console_is_enabled()
-Date:   Wed, 19 Oct 2022 17:01:31 +0206
-Message-Id: <20221019145600.1282823-10-john.ogness@linutronix.de>
-In-Reply-To: <20221019145600.1282823-1-john.ogness@linutronix.de>
-References: <20221019145600.1282823-1-john.ogness@linutronix.de>
+        bh=kU7BtG77M/ab+DXgf8+I8IYdsDkahSG2ZOcGzVisnBA=;
+        b=oWs0XLC9kkNRU8MU8zw2y6jF4xWvndFwanpEjkSnhxbeymE0odhLIr81TQ6cSOdSH+E8Hs
+        LreGRNgHXuoFonOS66m9dX8sCPAVv+neaz3s+mD6nxsScg7x/xMlYeyBXDBD2yAiAklC3A
+        zoDyzWX2luSJOWQU9l2daR0UjtZZ1S4=
+Date:   Wed, 19 Oct 2022 22:56:45 +0800
 MIME-Version: 1.0
+Subject: Re: [PATCHv2 0/6] Fix the problem that rxe can not work in net
+To:     yanjun.zhu@linux.dev, jgg@ziepe.ca, leon@kernel.org,
+        zyjzyj2000@gmail.com, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, davem@davemloft.net
+Cc:     Zhu Yanjun <yanjun.zhu@intel.com>
+References: <20221006085921.1323148-1-yanjun.zhu@linux.dev>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Yanjun Zhu <yanjun.zhu@linux.dev>
+In-Reply-To: <20221006085921.1323148-1-yanjun.zhu@linux.dev>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,INVALID_DATE_TZ_ABSURD,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace (console->flags & CON_ENABLED) usage with console_is_enabled().
+在 2022/10/6 16:59, yanjun.zhu@linux.dev 写道:
+> From: Zhu Yanjun <yanjun.zhu@intel.com>
+> 
+> When run "ip link add" command to add a rxe rdma link in a net
+> namespace, normally this rxe rdma link can not work in a net
+> name space.
+> 
+> The root cause is that a sock listening on udp port 4791 is created
+> in init_net when the rdma_rxe module is loaded into kernel. That is,
+> the sock listening on udp port 4791 is created in init_net. Other net
+> namespace is difficult to use this sock.
+> 
+> The following commits will solve this problem.
+> 
+> In the first commit, move the creating sock listening on udp port 4791
+> from module_init function to rdma link creating functions. That is,
+> after the module rdma_rxe is loaded, the sock will not be created.
+> When run "rdma link add ..." command, the sock will be created. So
+> when creating a rdma link in the net namespace, the sock will be
+> created in this net namespace.
+> 
+> In the second commit, the functions udp4_lib_lookup and udp6_lib_lookup
+> will check the sock exists in the net namespace or not. If yes, rdma
+> link will increase the reference count of this sock, then continue other
+> jobs instead of creating a new sock to listen on udp port 4791. Since the
+> network notifier is global, when the module rdma_rxe is loaded, this
+> notifier will be registered.
+> 
+> After the rdma link is created, the command "rdma link del" is to
+> delete rdma link at the same time the sock is checked. If the reference
+> count of this sock is greater than the sock reference count needed by
+> udp tunnel, the sock reference count is decreased by one. If equal, it
+> indicates that this rdma link is the last one. As such, the udp tunnel
+> is shut down and the sock is closed. The above work should be
+> implemented in linkdel function. But currently no dellink function in
+> rxe. So the 3rd commit addes dellink function pointer. And the 4th
+> commit implements the dellink function in rxe.
+> 
+> To now, it is not necessary to keep a global variable to store the sock
+> listening udp port 4791. This global variable can be replaced by the
+> functions udp4_lib_lookup and udp6_lib_lookup totally. Because the
+> function udp6_lib_lookup is in the fast path, a member variable l_sk6
+> is added to store the sock. If l_sk6 is NULL, udp6_lib_lookup is called
+> to lookup the sock, then the sock is stored in l_sk6, in the future,it
+> can be used directly.
+> 
+> All the above work has been done in init_net. And it can also work in
+> the net namespace. So the init_net is replaced by the individual net
+> namespace. This is what the 6th commit does. Because rxe device is
+> dependent on the net device and the sock listening on udp port 4791,
+> every rxe device is in exclusive mode in the individual net namespace.
+> Other rdma netns operations will be considerred in the future.
+> 
+> Test steps:
+> 1) Suppose that 2 NICs are in 2 different net namespaces.
+> 
+>   # ip netns exec net0 ip link
+>   3: eno2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP
+>      link/ether 00:1e:67:a0:22:3f brd ff:ff:ff:ff:ff:ff
+>      altname enp5s0
+> 
+>   # ip netns exec net1 ip link
+>   4: eno3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel
+>      link/ether f8:e4:3b:3b:e4:10 brd ff:ff:ff:ff:ff:ff
+> 
+> 2) Add rdma link in the different net namespace
+>     net0:
+>     ip netns exec net0 rdma link add rxe0 type rxe netdev eno2
+> 
+>     net1:
+>     ip netns exec net1 rdma link add rxe1 type rxe netdev eno3
+> 
+> 3) Run rping test.
+>     net0
+>     # ip netns exec net0 rping -s -a 192.168.2.1 -C 1&
+>     [1] 1737
+>     # ip netns exec net1 rping -c -a 192.168.2.1 -d -v -C 1
+>     verbose
+>     count 1
+>     ...
+>     ping data: rdma-ping-0: ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqr
+>     ...
+> 
+> 4) Remove the rdma links from the net namespaces.
+>     net0:
+>     ip netns exec net0 rdma link del rxe0
+>     net1:
+>     ip netns exec net1 rdma link del rxe1
+> 
+> ---
+> V1->V2: Add the explicit initialization of sk6.
+> ---
+> Zhu Yanjun (6):
+>    RDMA/rxe: Creating listening sock in newlink function
+>    RDMA/rxe: Support more rdma links in init_net
+>    RDMA/nldev: Add dellink function pointer
+>    RDMA/rxe: Implement dellink in rxe
+>    RDMA/rxe: Replace global variable with sock lookup functions
+>    RDMA/rxe: add the support of net namespace
 
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
----
- drivers/net/netconsole.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Gently ping
 
-diff --git a/drivers/net/netconsole.c b/drivers/net/netconsole.c
-index bdff9ac5056d..073e59a06f21 100644
---- a/drivers/net/netconsole.c
-+++ b/drivers/net/netconsole.c
-@@ -332,7 +332,7 @@ static ssize_t enabled_store(struct config_item *item,
- 	}
- 
- 	if (enabled) {	/* true */
--		if (nt->extended && !(netconsole_ext.flags & CON_ENABLED)) {
-+		if (nt->extended && !console_is_enabled(&netconsole_ext)) {
- 			netconsole_ext.flags |= CON_ENABLED;
- 			register_console(&netconsole_ext);
- 		}
-@@ -915,7 +915,7 @@ static int __init init_netconsole(void)
- 	if (err)
- 		goto undonotifier;
- 
--	if (netconsole_ext.flags & CON_ENABLED)
-+	if (console_is_enabled(&netconsole_ext))
- 		register_console(&netconsole_ext);
- 	register_console(&netconsole);
- 	pr_info("network logging started\n");
--- 
-2.30.2
+Zhu Yanjun
+
+> 
+>   drivers/infiniband/core/nldev.c       |   6 ++
+>   drivers/infiniband/sw/rxe/rxe.c       |  26 +++++-
+>   drivers/infiniband/sw/rxe/rxe_net.c   | 129 ++++++++++++++++++++------
+>   drivers/infiniband/sw/rxe/rxe_net.h   |   9 +-
+>   drivers/infiniband/sw/rxe/rxe_verbs.h |   1 +
+>   include/rdma/rdma_netlink.h           |   2 +
+>   6 files changed, 134 insertions(+), 39 deletions(-)
+> 
 
