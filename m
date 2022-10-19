@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42726604849
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 15:53:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 946A5604697
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 15:15:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233749AbiJSNxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 09:53:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34422 "EHLO
+        id S231396AbiJSNPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 09:15:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231302AbiJSNw4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 09:52:56 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40634193EFA
-        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 06:36:28 -0700 (PDT)
+        with ESMTP id S231358AbiJSNPR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 09:15:17 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E0E12A8B
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 06:01:09 -0700 (PDT)
 Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Msm734Zf2z1P6hj;
-        Wed, 19 Oct 2022 17:45:19 +0800 (CST)
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MsmDP5YDQzHv5m;
+        Wed, 19 Oct 2022 17:49:57 +0800 (CST)
 Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
  (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 19 Oct
- 2022 17:50:02 +0800
+ 2022 17:50:04 +0800
 From:   Zhengchao Shao <shaozhengchao@huawei.com>
 To:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
         <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
@@ -29,9 +29,9 @@ CC:     <keescook@chromium.org>, <gustavoars@kernel.org>,
         <peter.chen@kernel.org>, <bin.chen@corigine.com>,
         <luobin9@huawei.com>, <weiyongjun1@huawei.com>,
         <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH net,v2 2/4] net: hinic: fix memory leak when reading function table
-Date:   Wed, 19 Oct 2022 17:57:52 +0800
-Message-ID: <20221019095754.189119-3-shaozhengchao@huawei.com>
+Subject: [PATCH net,v2 4/4] net: hinic: fix the issue of double release MBOX callback of VF
+Date:   Wed, 19 Oct 2022 17:57:54 +0800
+Message-ID: <20221019095754.189119-5-shaozhengchao@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20221019095754.189119-1-shaozhengchao@huawei.com>
 References: <20221019095754.189119-1-shaozhengchao@huawei.com>
@@ -49,59 +49,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the input parameter idx meets the expected case option in
-hinic_dbg_get_func_table(), read_data is not released. Fix it.
+In hinic_vf_func_init(), if VF fails to register information with PF
+through the MBOX, the MBOX callback function of VF is released once. But
+it is released again in hinic_init_hwdev(). Remove one.
 
-Fixes: 5215e16244ee ("hinic: add support to query function table")
+Fixes: 7dd29ee12865 ("hinic: add sriov feature support")
 Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- .../net/ethernet/huawei/hinic/hinic_debugfs.c  | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/huawei/hinic/hinic_sriov.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_debugfs.c b/drivers/net/ethernet/huawei/hinic/hinic_debugfs.c
-index 19eb839177ec..061952c6c21a 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_debugfs.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_debugfs.c
-@@ -85,6 +85,7 @@ static int hinic_dbg_get_func_table(struct hinic_dev *nic_dev, int idx)
- 	struct tag_sml_funcfg_tbl *funcfg_table_elem;
- 	struct hinic_cmd_lt_rd *read_data;
- 	u16 out_size = sizeof(*read_data);
-+	int ret = ~0;
- 	int err;
- 
- 	read_data = kzalloc(sizeof(*read_data), GFP_KERNEL);
-@@ -111,20 +112,25 @@ static int hinic_dbg_get_func_table(struct hinic_dev *nic_dev, int idx)
- 
- 	switch (idx) {
- 	case VALID:
--		return funcfg_table_elem->dw0.bs.valid;
-+		ret = funcfg_table_elem->dw0.bs.valid;
-+		break;
- 	case RX_MODE:
--		return funcfg_table_elem->dw0.bs.nic_rx_mode;
-+		ret = funcfg_table_elem->dw0.bs.nic_rx_mode;
-+		break;
- 	case MTU:
--		return funcfg_table_elem->dw1.bs.mtu;
-+		ret = funcfg_table_elem->dw1.bs.mtu;
-+		break;
- 	case RQ_DEPTH:
--		return funcfg_table_elem->dw13.bs.cfg_rq_depth;
-+		ret = funcfg_table_elem->dw13.bs.cfg_rq_depth;
-+		break;
- 	case QUEUE_NUM:
--		return funcfg_table_elem->dw13.bs.cfg_q_num;
-+		ret = funcfg_table_elem->dw13.bs.cfg_q_num;
-+		break;
- 	}
- 
- 	kfree(read_data);
- 
--	return ~0;
-+	return ret;
- }
- 
- static ssize_t hinic_dbg_cmd_read(struct file *filp, char __user *buffer, size_t count,
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
+index a5f08b969e3f..f7e05b41385b 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
+@@ -1174,7 +1174,6 @@ int hinic_vf_func_init(struct hinic_hwdev *hwdev)
+ 			dev_err(&hwdev->hwif->pdev->dev,
+ 				"Failed to register VF, err: %d, status: 0x%x, out size: 0x%x\n",
+ 				err, register_info.status, out_size);
+-			hinic_unregister_vf_mbox_cb(hwdev, HINIC_MOD_L2NIC);
+ 			return -EIO;
+ 		}
+ 	} else {
 -- 
 2.17.1
 
