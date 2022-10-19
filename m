@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9221F603833
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 04:47:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EBE260388F
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 05:20:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229543AbiJSCrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 22:47:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46782 "EHLO
+        id S229893AbiJSDUb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 23:20:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiJSCrf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 22:47:35 -0400
+        with ESMTP id S229554AbiJSDU0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 23:20:26 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8030F7DF68
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 19:47:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BE963AB38;
+        Tue, 18 Oct 2022 20:20:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C410615FD
-        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 02:47:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FFACC433C1;
-        Wed, 19 Oct 2022 02:47:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FE2061769;
+        Wed, 19 Oct 2022 03:20:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EB57CC433B5;
+        Wed, 19 Oct 2022 03:20:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666147653;
-        bh=8V1/pYP2gowpe+s/XT682CTKnH8eXrJHgCK2to9HZ/8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rFfV2nhiQs9T3VNQ8zFjwTBcLQiUdmF0J3HhkmUb8Fe7lehPMfbSO7KC0A/sy9xdN
-         4omT1GspZgOCDozy1HN0LyNHNiWPv+8JkxGJrHoKB3D2lYcb6OwImE7NhRdFrCAZ/M
-         3dDnd539MMbaz3Iq/RoA1Z+3IEMduQDyLHx5hIRQWSfn2EhrTfBQB4JV7BqvGAgOCG
-         /r7hFyynbxjHyBbARARnhCDW2EpH9QghwrraH2CxKp41Xqvz7ton/9K7NgeNeDc+pg
-         j3CGkYpJaeR4ihVnCNGGbO08e0IHHc21q/zGYLQpXtDq1gFy75SR8UuU1l3Y1Xu/v5
-         4mjPBL0x7OV0g==
-Date:   Tue, 18 Oct 2022 19:47:32 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vadim Fedorenko <vfedorenko@novek.ru>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        netdev@vger.kernel.org, Vadim Fedorenko <vadfed@fb.com>,
-        Charles Parent <charles.parent@orolia2s.com>
-Subject: Re: [PATCH net-next v3 2/5] ptp: ocp: add Orolia timecard support
-Message-ID: <20221018194732.16f7d413@kernel.org>
-In-Reply-To: <20221018090122.3361-3-vfedorenko@novek.ru>
-References: <20221018090122.3361-1-vfedorenko@novek.ru>
-        <20221018090122.3361-3-vfedorenko@novek.ru>
+        s=k20201202; t=1666149623;
+        bh=9u7rEZt/xjd0rgaxCm7SoCQ0VkF5XvCkAb8VyutZSa0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=VjTCCpJYAFbgdmtiFIHd8BI7V769KUYxhPEHzuIc8XPhQEIAPRnLu1Qq2FEgQOD0K
+         In5LMMThMEmbkFyGB02HxRNsEd+Oga5h/6N3MJehv6epPykNusG8+G58WJSqRWSZS7
+         bhvI2hARfQTcF69tzwOtmrc2rmTlhbxukam6yn2LPqCjtPhRa0rAO/17JzPFwA55CH
+         TLF4Ne3BLmLSk0PGoD2SqgO34JIlN/Uq0WyYgTQkOkwnbBSf/tf4XMPu0+cpWwucrw
+         bncYlal1LgX2uy9tfpRNUx1HXWpU7iBVxlFolNptOmkpJ71rb1rGSITe0on1gs9vaW
+         RGEzpvfv3tUDg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C9264E52513;
+        Wed, 19 Oct 2022 03:20:22 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: remove smc911x driver
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166614962282.9993.3785570586231787923.git-patchwork-notify@kernel.org>
+Date:   Wed, 19 Oct 2022 03:20:22 +0000
+References: <20221017121900.3520108-1-arnd@kernel.org>
+In-Reply-To: <20221017121900.3520108-1-arnd@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, steve.glendinning@shawell.net, arnd@arndb.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -55,27 +56,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 18 Oct 2022 12:01:19 +0300 Vadim Fedorenko wrote:
-> From: Vadim Fedorenko <vadfed@fb.com>
+Hello:
+
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Mon, 17 Oct 2022 14:18:26 +0200 you wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
-> This brings in the Orolia timecard support from the GitHub repository.
-> The card uses different drivers to provide access to i2c EEPROM and
-> firmware SPI flash. And it also has a bit different EEPROM map, but
-> other parts of the code are the same and could be reused.
+> This driver was used on Arm and SH machines until 2009, when the
+> last platforms moved to the smsc911x driver for the same hardware.
+> 
+> Time to retire this version.
+> 
+> [...]
 
-> +static const struct ocp_attr_group art_timecard_groups[];
-> +static const struct ocp_sma_op ocp_art_sma_op;
+Here is the summary with links:
+  - net: remove smc911x driver
+    https://git.kernel.org/netdev/net-next/c/a2fd08448f2b
 
-Clang is not on board:
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-drivers/ptp/ptp_ocp.c:384:32: warning: tentative definition of variable with internal linkage has incomplete non-array type 'const struct ocp_sma_op' [-Wtentative-definition-incomplete-type]
-static const struct ocp_sma_op ocp_art_sma_op;
-                               ^
-drivers/ptp/ptp_ocp.c:349:15: note: forward declaration of 'struct ocp_sma_op'
-        const struct ocp_sma_op *sma_op;
-                     ^
 
-You may need to throw an extern in there.
-
-Is it not possible to just order things correctly in the first place? 
-Is there a dependency cycle?
