@@ -2,81 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D42D604544
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 14:29:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 442DA604566
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 14:34:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230459AbiJSM3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 08:29:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35902 "EHLO
+        id S233061AbiJSMex (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 08:34:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232885AbiJSM2y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 08:28:54 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CC1511A975;
-        Wed, 19 Oct 2022 05:05:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=vGBsCUqFwWa+5hhW0zeEah/ZUEjsYfdXFEhqLjTbsNA=; b=BlLx6D56pzr5wjMcKu3HON//TV
-        vfdQxAJ+JZLnPNKTt4sAUEBpDVQw8rOxaANkDlyM4m1EijklbdUR06/pBCX3I9sRhwfabIsHiTbzN
-        VMstuVifqL7rbwnMC83dtXsjDpK+JAy6gINl6Fmn7oHFZ55vLg1kdEv/eYC4FZQrcYbGWmNFW2GlM
-        J41OsYnW4a3NBRCJIIHPvtX/Uh29mi28rgUgtUL3drKaxIcCuZXNjujJNbQmMYChTR05drz1raQYu
-        GS8YQvLkf/3iCSc97x6KWQeBz2RSpIEqV5ihrJP684qIKyx3BNRM5/G3gzPjq+FNk/aqqjPnLd+vv
-        CEr+xVCw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34800)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ol7lX-0005cV-UB; Wed, 19 Oct 2022 13:01:43 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ol7lX-00028O-Aq; Wed, 19 Oct 2022 13:01:43 +0100
-Date:   Wed, 19 Oct 2022 13:01:43 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Sergiu Moga <sergiu.moga@microchip.com>
-Cc:     nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, f.fainelli@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: macb: Specify PHY PM management done by MAC
-Message-ID: <Y0/nJ+gtYoPQ5WNH@shell.armlinux.org.uk>
-References: <20221019095548.57650-1-sergiu.moga@microchip.com>
+        with ESMTP id S233077AbiJSMe2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 08:34:28 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2DA9B89;
+        Wed, 19 Oct 2022 05:14:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1666181661; x=1697717661;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=+QDC/ti9fpwkNu6ttuWsf4ww+GX4cuHwHLZ0BV5EjEs=;
+  b=B8cORVLoh17+kwyizObCQdOC4ysFxbPyevfe1C91/lgTUzPgy+Vr+YnA
+   9B8SdJVGW4ljqE2xdLx6ch0OCEKTnW7fhOc2WckqjUFvWkI6I6ZLw6jvc
+   AFijGj3KgbMg+O4/fA9V/SBZILO1IhVjne9r8Kz3+ezGGeheZbpefBGM+
+   Zzu7TZLXBM38B3Y2ubgDMoZDIkJu6PMIcP3RSSFFvuv6hFRAikf0N1H6T
+   V5x4hAIXn9GZayEUGx6KerLpo76b6eOA7FqjLsqciOvqP/588JFa/QCy3
+   FnjH7bc2pS0051bJszi89W5w3JlWVflHaSQ7vNtK67fJCcX+26jmRXExN
+   w==;
+X-IronPort-AV: E=Sophos;i="5.95,196,1661842800"; 
+   d="scan'208";a="179537294"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Oct 2022 05:10:48 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Wed, 19 Oct 2022 05:10:44 -0700
+Received: from ROB-ULT-M68701.mchp-main.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Wed, 19 Oct 2022 05:10:42 -0700
+From:   Sergiu Moga <sergiu.moga@microchip.com>
+To:     <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <linux@armlinux.org.uk>,
+        <f.fainelli@gmail.com>, <tudor.ambarus@microchip.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Sergiu Moga <sergiu.moga@microchip.com>
+Subject: [PATCH v2] net: macb: Specify PHY PM management done by MAC
+Date:   Wed, 19 Oct 2022 15:09:32 +0300
+Message-ID: <20221019120929.63098-1-sergiu.moga@microchip.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221019095548.57650-1-sergiu.moga@microchip.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 19, 2022 at 12:55:50PM +0300, Sergiu Moga wrote:
-> The `macb_resume`/`macb_suspend` methods already call the
-> `phylink_start`/`phylink_stop` methods during their execution so
-> explicitly say that the PM of the PHY is done by MAC by using the
-> `mac_managed_pm` flag of the `struct phylink_config`.
-> 
-> This also fixes the warning message issued during resume:
-> WARNING: CPU: 0 PID: 237 at drivers/net/phy/phy_device.c:323 mdio_bus_phy_resume+0x144/0x148
-> 
-> Fixes: 744d23c71af3 ("net: phy: Warn about incorrect mdio_bus_phy_resume() state")
+The `macb_resume`/`macb_suspend` methods already call the
+`phylink_start`/`phylink_stop` methods during their execution so
+explicitly say that the PM of the PHY is done by MAC by using the
+`mac_managed_pm` flag of the `struct phylink_config`.
 
-Hi,
+This also fixes the warning message issued during resume:
+WARNING: CPU: 0 PID: 237 at drivers/net/phy/phy_device.c:323 mdio_bus_phy_resume+0x144/0x148
 
-You also need to mention that this commit depends on 96de900ae78e
-in the net tree, which introduced the mac_managed_pm member to
-phylink_config.
+Depends-on: 96de900ae78e ("net: phylink: add mac_managed_pm in phylink_config structure")
+Fixes: 744d23c71af3 ("net: phy: Warn about incorrect mdio_bus_phy_resume() state")
+Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
+---
 
-Thanks.
 
+v1 -> v2:
+- Add Depends-on: tag
+
+
+ drivers/net/ethernet/cadence/macb_main.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 51c9fd6f68a4..4f63f1ba3161 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -806,6 +806,7 @@ static int macb_mii_probe(struct net_device *dev)
+ 
+ 	bp->phylink_config.dev = &dev->dev;
+ 	bp->phylink_config.type = PHYLINK_NETDEV;
++	bp->phylink_config.mac_managed_pm = true;
+ 
+ 	if (bp->phy_interface == PHY_INTERFACE_MODE_SGMII) {
+ 		bp->phylink_config.poll_fixed_state = true;
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.34.1
+
