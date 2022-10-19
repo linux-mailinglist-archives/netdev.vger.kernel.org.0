@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 218A760381E
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 04:34:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A74B0603820
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 04:34:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229755AbiJSCee (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 22:34:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55052 "EHLO
+        id S229828AbiJSCeh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 22:34:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229675AbiJSCec (ORCPT
+        with ESMTP id S229800AbiJSCec (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 22:34:32 -0400
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81D00167EC
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 19:34:28 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MsZSR5MMDzmV8r;
-        Wed, 19 Oct 2022 10:29:43 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DA2918399
+        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 19:34:29 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MsZV572NwznTyh;
+        Wed, 19 Oct 2022 10:31:09 +0800 (CST)
 Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
  (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 19 Oct
- 2022 10:34:26 +0800
+ 2022 10:34:27 +0800
 From:   Zhengchao Shao <shaozhengchao@huawei.com>
 To:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
         <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
@@ -29,9 +29,9 @@ CC:     <keescook@chromium.org>, <gustavoars@kernel.org>,
         <peter.chen@kernel.org>, <bin.chen@corigine.com>,
         <luobin9@huawei.com>, <weiyongjun1@huawei.com>,
         <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH net 2/4] net: hinic: fix memory leak when reading function table
-Date:   Wed, 19 Oct 2022 10:42:18 +0800
-Message-ID: <20221019024220.376178-3-shaozhengchao@huawei.com>
+Subject: [PATCH net 3/4] net: hinic: fix the issue of CMDQ memory leaks
+Date:   Wed, 19 Oct 2022 10:42:19 +0800
+Message-ID: <20221019024220.376178-4-shaozhengchao@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20221019024220.376178-1-shaozhengchao@huawei.com>
 References: <20221019024220.376178-1-shaozhengchao@huawei.com>
@@ -49,59 +49,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the input parameter idx meets the expected case option in
-hinic_dbg_get_func_table(), read_data is not released. Fix it.
+When hinic_set_cmdq_depth() fails in hinic_init_cmdqs(), the cmdq memory is
+not released correctly. Fix it.
 
-Fixes: 5215e16244ee ("hinic: add support to query function table")
+Fixes: 72ef908bb3ff ("hinic: add three net_device_ops of vf")
 Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- .../net/ethernet/huawei/hinic/hinic_debugfs.c  | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_debugfs.c b/drivers/net/ethernet/huawei/hinic/hinic_debugfs.c
-index 19eb839177ec..061952c6c21a 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_debugfs.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_debugfs.c
-@@ -85,6 +85,7 @@ static int hinic_dbg_get_func_table(struct hinic_dev *nic_dev, int idx)
- 	struct tag_sml_funcfg_tbl *funcfg_table_elem;
- 	struct hinic_cmd_lt_rd *read_data;
- 	u16 out_size = sizeof(*read_data);
-+	int ret = ~0;
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c
+index 78190e88cd75..2a759b9bb6b6 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c
+@@ -877,6 +877,7 @@ int hinic_init_cmdqs(struct hinic_cmdqs *cmdqs, struct hinic_hwif *hwif,
+ {
+ 	struct hinic_func_to_io *func_to_io = cmdqs_to_func_to_io(cmdqs);
+ 	struct pci_dev *pdev = hwif->pdev;
++	enum hinic_cmdq_type cmdq_type;
+ 	struct hinic_hwdev *hwdev;
+ 	u16 max_wqe_size;
  	int err;
+@@ -925,6 +926,10 @@ int hinic_init_cmdqs(struct hinic_cmdqs *cmdqs, struct hinic_hwif *hwif,
+ err_set_cmdq_depth:
+ 	hinic_ceq_unregister_cb(&func_to_io->ceqs, HINIC_CEQ_CMDQ);
  
- 	read_data = kzalloc(sizeof(*read_data), GFP_KERNEL);
-@@ -111,20 +112,25 @@ static int hinic_dbg_get_func_table(struct hinic_dev *nic_dev, int idx)
- 
- 	switch (idx) {
- 	case VALID:
--		return funcfg_table_elem->dw0.bs.valid;
-+		ret = funcfg_table_elem->dw0.bs.valid;
-+		break;
- 	case RX_MODE:
--		return funcfg_table_elem->dw0.bs.nic_rx_mode;
-+		ret = funcfg_table_elem->dw0.bs.nic_rx_mode;
-+		break;
- 	case MTU:
--		return funcfg_table_elem->dw1.bs.mtu;
-+		ret = funcfg_table_elem->dw1.bs.mtu;
-+		break;
- 	case RQ_DEPTH:
--		return funcfg_table_elem->dw13.bs.cfg_rq_depth;
-+		ret = funcfg_table_elem->dw13.bs.cfg_rq_depth;
-+		break;
- 	case QUEUE_NUM:
--		return funcfg_table_elem->dw13.bs.cfg_q_num;
-+		ret = funcfg_table_elem->dw13.bs.cfg_q_num;
-+		break;
- 	}
- 
- 	kfree(read_data);
- 
--	return ~0;
-+	return ret;
- }
- 
- static ssize_t hinic_dbg_cmd_read(struct file *filp, char __user *buffer, size_t count,
++	cmdq_type = HINIC_CMDQ_SYNC;
++	for (; cmdq_type < HINIC_MAX_CMDQ_TYPES; cmdq_type++)
++		free_cmdq(&cmdqs->cmdq[cmdq_type]);
++
+ err_cmdq_ctxt:
+ 	hinic_wqs_cmdq_free(&cmdqs->cmdq_pages, cmdqs->saved_wqs,
+ 			    HINIC_MAX_CMDQ_TYPES);
 -- 
 2.17.1
 
