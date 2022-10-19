@@ -2,65 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 21E1F603B44
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 10:17:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4265D603B15
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 10:02:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230050AbiJSIRi convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 19 Oct 2022 04:17:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46628 "EHLO
+        id S230087AbiJSICV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 04:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230103AbiJSIRh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 04:17:37 -0400
-X-Greylist: delayed 7293 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 19 Oct 2022 01:17:31 PDT
-Received: from sd108198.server.idn.vn (sd108198.server.idn.vn [103.45.230.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13AE06C138;
-        Wed, 19 Oct 2022 01:17:26 -0700 (PDT)
-Received: from [192.168.0.111] ([185.248.12.38])
-        by sd108198.server.idn.vn (IceWarp 10.3.1) with ASMTP (SSL) id NQE05856;
-        Wed, 19 Oct 2022 13:11:56 +0700
-Content-Type: text/plain; charset="iso-8859-1"
+        with ESMTP id S230137AbiJSICQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 04:02:16 -0400
+X-Greylist: delayed 336 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 19 Oct 2022 01:02:13 PDT
+Received: from mail.peston.pl (mail.peston.pl [5.196.8.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 117E27AC0C
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 01:02:12 -0700 (PDT)
+Received: by mail.peston.pl (Postfix, from userid 1002)
+        id 2D40DA230C; Wed, 19 Oct 2022 07:56:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=peston.pl; s=mail;
+        t=1666166194; bh=Cc29BCeGAXKamRAYF1RC3YwJiZOOIdJ1fkzOKoOmzTc=;
+        h=Date:From:To:Subject:From;
+        b=ZJlGBUtPKIqKKbx8oNJR0AeUjv9GG6Sy1+GS2m/Eyjmpq3Vzq8MoqgHYFPmsUhEbP
+         cpSL8WpapF2F1/VQpZH9jCqbvryXiWVT+fFgcm0RKeCIogVJSkpcuABOmyXb6Kzckf
+         SJplcoQwz+QNggPU2fnTZB1DdXRJP/+Lq1lxDn6G6XHRtoqvxx1/KXZqJmOO7yc9yj
+         OldjN7sXvcmhtp26kvlMKuCM/O+6wdZ4gCxeG7uZbi+5FGqwnU4JQSrf0zZxih16Y/
+         RLipTTIcImyR5fnTYkvp8V7+nACWyvEWcx0/N568vQUxzRjk1Q65bLvuQCBh1HDW5l
+         zJPkhcJhELMNQ==
+Received: by mail.peston.pl for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 07:56:21 GMT
+Message-ID: <20221019064500-0.1.57.dviv.0.a8g6x6cq3i@peston.pl>
+Date:   Wed, 19 Oct 2022 07:56:21 GMT
+From:   "Igor Ferenz" <igor.ferenz@peston.pl>
+To:     <netdev@vger.kernel.org>
+Subject: Biznesowy angielski
+X-Mailer: mail.peston.pl
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: Re: Awaiting Your Response.
-To:     Recipients <toanbui@benhvienranghammat.vn>
-From:   "Mr. Andrew Kyle" <toanbui@benhvienranghammat.vn>
-Date:   Wed, 19 Oct 2022 09:02:32 +0300
-Reply-To: andrewkyle69@hotmail.com
-Message-ID: <aaf34ae92838144a4e1b194c790a17f2@benhvienranghammat.vn>
-X-Spam-Status: Yes, score=6.2 required=5.0 tests=BAYES_60,
-        FREEMAIL_FORGED_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,HK_NAME_MR_MRS,
-        RCVD_IN_MSPIKE_H2,RCVD_IN_VALIDITY_RPBL,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: *  1.5 BAYES_60 BODY: Bayes spam probability is 60 to 80%
-        *      [score: 0.6775]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [andrewkyle69[at]hotmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  1.3 RCVD_IN_VALIDITY_RPBL RBL: Relay in Validity RPBL,
-        *      https://senderscore.org/blocklistlookup/
-        *      [103.45.230.198 listed in bl.score.senderscore.com]
-        * -0.0 RCVD_IN_MSPIKE_H2 RBL: Average reputation (+2)
-        *      [103.45.230.198 listed in wl.mailspike.net]
-        *  1.0 HK_NAME_MR_MRS No description available.
-        *  2.1 FREEMAIL_FORGED_REPLYTO Freemail in Reply-To, but not From
-X-Spam-Level: ******
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_VALIDITY_RPBL,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Good day,
+Dzie=C5=84 dobry,=20
 
-How are you doing today, I hope this email finds you in good health. You have not responded to my previous mail to you regarding our late client Mr. Fredrick.
+czy rozwa=C5=BCali Pa=C5=84stwo rozw=C3=B3j kwalifikacji j=C4=99zykowych =
+swoich pracownik=C3=B3w?
 
-Kindly acknowledge my proposition and let me know what your decisions are, if you are taking the offer.
+Opracowali=C5=9Bmy kursy j=C4=99zykowe dla r=C3=B3=C5=BCnych bran=C5=BC, =
+w kt=C3=B3rych koncentrujemy si=C4=99 na podniesieniu poziomu s=C5=82owni=
+ctwa i jako=C5=9Bci komunikacji wykorzystuj=C4=85c autorsk=C4=85 metod=C4=
+=99, stworzon=C4=85 specjalnie dla wymagaj=C4=85cego biznesu.=20
 
-Get back to me as soon as you can for further details.
+Niestandardowy kurs on-line, dopasowany do profilu firmy i obszar=C3=B3w =
+=C5=9Bwiadczonych us=C5=82ug, w szybkim czasie przyniesie efekty, kt=C3=B3=
+re zwi=C4=99ksz=C4=85 komfort i jako=C5=9B=C4=87 pracy, rozwijaj=C4=85c m=
+o=C5=BCliwo=C5=9Bci biznesowe.=20
 
-Regards,
+Zdalne szkolenie j=C4=99zykowe to m.in. zaj=C4=99cia z native speakerami,=
+ kt=C3=B3re w szybkim czasie naucz=C4=85 pracownik=C3=B3w rozmawia=C4=87 =
+za pomoc=C4=85 jasnego i zwi=C4=99z=C5=82ego j=C4=99zyka Business English=
+=2E
 
-Andrew Kyle
+Czy m=C3=B3g=C5=82bym przedstawi=C4=87 wi=C4=99cej szczeg=C3=B3=C5=82=C3=B3=
+w i opowiedzie=C4=87 jak dzia=C5=82amy?=20
+
+
+Pozdrawiam
+Igor Ferenz
