@@ -2,102 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4714F6046F9
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 15:25:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7FF360467B
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 15:11:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231704AbiJSNZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 09:25:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52948 "EHLO
+        id S232720AbiJSNLQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 09:11:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229999AbiJSNZJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 09:25:09 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA628129085;
-        Wed, 19 Oct 2022 06:11:50 -0700 (PDT)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29JC4Awm024288;
-        Wed, 19 Oct 2022 12:16:52 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=PwpSNDQOdPBrNDCSnG37C6FJq+QMd2H/QH1abN8bGVs=;
- b=OCdSW32Y7zShllTmH+Td/iyANBYHXIZlVfxFAcdzori5cq8cUSSEg/p6U3bBMDZky/ag
- crorhfhzq0LvXQuwuCxGpTuyo2WaZCYZ1NdeIeu2bDfyD2oB9+x3vCnHBLTrothf+/0b
- ouDrdgHqyIBTowJK9jyDdWQGYmYswXy8/X6SuoKhseX3WQt9RVKPSMecDYd2+qByerj4
- 92XaRRDiEzW7yNhgPQvN5tJAVNxEw668xHC/E8Tcxu26E4HqT0PdjYaePiy9LeF2lCR/
- rYzwLKWkMketNEBFgR7Iwio1+8FBmHxaKwE0CU708KxXGqGWhrcM9iW/iitBdzjAtYJU ww== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3kagwt8jqs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 19 Oct 2022 12:16:51 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 29JCDt3P029429;
-        Wed, 19 Oct 2022 12:16:50 GMT
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3kagwt8jpa-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 19 Oct 2022 12:16:50 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29JC7b92002567;
-        Wed, 19 Oct 2022 12:16:47 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma04fra.de.ibm.com with ESMTP id 3k7mg95ac3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 19 Oct 2022 12:16:47 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29JCGiZs42271092
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 19 Oct 2022 12:16:44 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 583AC42045;
-        Wed, 19 Oct 2022 12:16:44 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 41A5D42042;
-        Wed, 19 Oct 2022 12:16:44 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Wed, 19 Oct 2022 12:16:44 +0000 (GMT)
-Received: by tuxmaker.boeblingen.de.ibm.com (Postfix, from userid 25651)
-        id E0AB8E023C; Wed, 19 Oct 2022 14:16:43 +0200 (CEST)
-From:   Christian Borntraeger <borntraeger@linux.ibm.com>
-To:     yury.norov@gmail.com
-Cc:     agordeev@linux.ibm.com, ajones@ventanamicro.com,
-        amritha.nambiar@intel.com, andriy.shevchenko@linux.intel.com,
-        bigeasy@linutronix.de, bp@alien8.de, caraitto@google.com,
-        davem@davemloft.net, edumazet@google.com, guoren@linux.alibaba.com,
-        imagedong@tencent.com, jonolson@google.com, kuba@kernel.org,
-        kuniyu@amazon.com, linux-kernel@vger.kernel.org,
-        linux@rasmusvillemoes.dk, mst@redhat.com, netdev@vger.kernel.org,
-        pabeni@redhat.com, petrm@nvidia.com, torvalds@linux-foundation.org,
-        willemb@google.com, borntraeger@linux.ibm.com
-Subject: Re: [PATCH] Revert "net: fix cpu_max_bits_warn() usage in netif_attrmask_next{,_and}"
-Date:   Wed, 19 Oct 2022 14:16:43 +0200
-Message-Id: <20221019121643.2866464-1-borntraeger@linux.ibm.com>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20221017030947.1295426-1-yury.norov@gmail.com>
-References: <20221017030947.1295426-1-yury.norov@gmail.com>
+        with ESMTP id S232757AbiJSNK6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 09:10:58 -0400
+X-Greylist: delayed 1451 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 19 Oct 2022 05:55:40 PDT
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [IPv6:2001:4b98:dc4:8::240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A141A14DF07
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 05:55:39 -0700 (PDT)
+Received: from relay5-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::225])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id B8F6FC15F4
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 12:19:10 +0000 (UTC)
+Received: (Authenticated sender: i.maximets@ovn.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id 7A8781C0012;
+        Wed, 19 Oct 2022 12:17:43 +0000 (UTC)
+Message-ID: <ef15dc87-7e70-55f5-7736-535b4e0a5d5c@ovn.org>
+Date:   Wed, 19 Oct 2022 14:17:42 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 0SPNsqdcHHjo6zUiPdWA6Sa45tpEQptl
-X-Proofpoint-ORIG-GUID: llzVULK_HBOmK1ltN1KQfhKP1jh3D7KO
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-10-19_06,2022-10-19_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 phishscore=0
- bulkscore=0 clxscore=1011 priorityscore=1501 malwarescore=0 spamscore=0
- lowpriorityscore=0 mlxlogscore=859 adultscore=0 mlxscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2209130000
- definitions=main-2210190067
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.1
+Cc:     i.maximets@ovn.org, Marcelo Leitner <mleitner@redhat.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Tianyu Yuan <tianyu.yuan@corigine.com>, dev@openvswitch.org,
+        oss-drivers <oss-drivers@corigine.com>, netdev@vger.kernel.org,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
+        Vlad Buslov <vladbu@nvidia.com>
+Content-Language: en-US
+To:     Simon Horman <simon.horman@corigine.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>
+References: <00D45065-3D74-4C4C-8988-BFE0CEB3BE2F@redhat.com>
+ <fe0cd650-0d4a-d871-5c0b-b1c831c8d0cc@ovn.org>
+ <CALnP8ZYcGvtP_BV=2gy0v3TtSfD=3nO-uzbG8E1UvjoDYD2+7A@mail.gmail.com>
+ <CAKa-r6sn1oZNn0vrnrthzq_XsxpdHGWyxw_T9b9ND0=DJk64yQ@mail.gmail.com>
+ <CALnP8ZaZ5zGD4sP3=SSvC=RBmVOOcc9MdA=aaYRQctaBOhmHfQ@mail.gmail.com>
+ <CAM0EoM=zWBzivTkEG7uBJepZ0=OZmiuqDF3RmgdWA=FgznRF6g@mail.gmail.com>
+ <CALnP8ZY2M3+m_qrg4ox5pjGJ__CAMKfshD+=OxTHCWc=EutapQ@mail.gmail.com>
+ <CAM0EoM=5wqbsOL-ZPkuhQXTJh3pTGqhdDDXuEqsjxEoAapApdQ@mail.gmail.com>
+ <b9e25530-e618-421c-922e-b9f2380bc19f@ovn.org>
+ <CAM0EoMkFhGtT5t0103V=h0YVddBrkwiAngP7BZY-vStijUVvtw@mail.gmail.com>
+ <Y0+xh2V7KUMRPaUI@corigine.com>
+From:   Ilya Maximets <i.maximets@ovn.org>
+Subject: Re: [ovs-dev] [PATCH] tests: fix reference output for meter offload
+ stats
+In-Reply-To: <Y0+xh2V7KUMRPaUI@corigine.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_NEUTRAL autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-for virtio on s390x.
+On 10/19/22 10:12, Simon Horman wrote:
+> On Fri, Oct 14, 2022 at 10:40:30AM -0400, Jamal Hadi Salim wrote:
+>> On Fri, Oct 14, 2022 at 9:00 AM Ilya Maximets <i.maximets@ovn.org> wrote:
+>>>
+>>
+>> [..]
+>>>> I thought it was pipe but maybe it is OK(in my opinion that is a bad code
+>>>> for just "count"). We have some (at least NIC) hardware folks on the list.
+>>>
+>>> IIRC, 'OK' action will stop the processing for the packet, so it can
+>>> only be used as a last action in the list.  But we need to count packets
+>>> as a very first action in the list.  So, that doesn't help.
+>>>
+>>
+>> That's why i said it is a bad code - but i believe it's what some of
+>> the hardware
+>> people are doing. Note: it's only bad if you have more actions after because
+>> it aborts the processing pipeline.
+>>
+>>>> Note: we could create an alias to PIPE and call it COUNT if it helps.
+>>>
+>>> Will that help with offloading of that action?  Why the PIPE is not
+>>> offloadable in the first place and will COUNT be offloadable?
+>>
+>> Offloadable is just a semantic choice in this case. If someone is
+>> using OK to count  today - they could should be able to use PIPE
+>> instead (their driver needs to do some transformation of course).
+> 
+> FWIIW, yes, that is my thinking too.
 
-Tested-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+I don't know that code well, but I thought that tcf_gact_offload_act_setup()
+is a generic function.  And since it explicitly forbids offload of PIPE
+action, no drivers can actually offload it even if they want to.
+So it's not really a driver's choice in the current kernel code.  Or am I
+missing something?
+
+Best regards, Ilya Maximets.
