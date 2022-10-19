@@ -2,773 +2,438 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A973604FA8
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 20:31:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD743604FBF
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 20:35:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230171AbiJSSbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 14:31:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41912 "EHLO
+        id S229729AbiJSSfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 14:35:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230403AbiJSSbE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 14:31:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2A6D1870B7
-        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 11:31:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1666204261;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cCN3nXaInVHD32MhWWcbdwlbpc4R68KG15B7DnjepoI=;
-        b=Q0IjRtod3Kr/J34Rp/DkRe8LEinY2uFHYeppzieYywpmbOwyXAlXgpkSwo6Ou/Cxa1hJCa
-        xGyA5A9swflXVzlkAgxjdoaZZHCON+wAhEB9k/yZo+YrGEVdrSFlHO42HHS2B77QyhN8Yw
-        O6eNqqpBJX2qmK7LSmNmbQUgj+0vs2g=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-241-Wt-r0j5kN0SP8etswylORg-1; Wed, 19 Oct 2022 14:30:57 -0400
-X-MC-Unique: Wt-r0j5kN0SP8etswylORg-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9978D185A7AD;
-        Wed, 19 Oct 2022 18:30:56 +0000 (UTC)
-Received: from RHTPC1VM0NT.redhat.com (unknown [10.22.8.238])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0F23C49BB63;
-        Wed, 19 Oct 2022 18:30:56 +0000 (UTC)
-From:   Aaron Conole <aconole@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Pravin B Shelar <pshelar@ovn.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S229874AbiJSSft (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 14:35:49 -0400
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2102.outbound.protection.outlook.com [40.107.96.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B76A1D2F74;
+        Wed, 19 Oct 2022 11:35:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aaNhQ7ZZX47Secoo8fMFuz4X8914Zs2IPrldbz1DJNtC8aQUTvEuLEGtlMJnQoA7UcLnDKA108fsK6+uPnUkkwnifqEKT+AAuf4UI92BPN9/SNg+KiV+LYzNSG50T4PYOhoh3LcLAQL9wEfB5sRjfM04XG6zJk1QVTfSyk1rLLvF/ovA5RROLS2oMruNS9qMRTNMdeUtEw7LXo4e3skuUhvcx367eO5m6iTdhF0W0vT3HoK8maMlGXddZoG4J+/E96b8hjn+SxWuLZR0ycVOcVz0xN5XZeVe3uJm6v2+z0Nf8kggXj/Vs1Tsg7DcZj6K5PSt+YbLW9J1mjDLK/0Rcw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FUcZ/lDTzHLt4IOXR5Gg4BGSxoJ1lmuVttC6+hkN3UE=;
+ b=IW0Yq2Sg01CWq1nXf8VJSkO9T1R2hKm77KV9RG0kGujK7pDnst4o+NSXAIUksVNbQSKtzn+EVoiRN33vEst6GAI0BOJyyXI4qI0yHi2GcKDSE8AbekEJrfiEhKa1sI05SCJYNCH8KhYE2mVVss0f9j7wz3zh8ohikKkhubzqFsLDS2h0Or73oVXfbPFiRMsX8G1pwMNoVvGm9JyuppCxzbVOJNEKpUH019yB/ghKtUZvjN6vMMp7OOx5yCpQBmQqkr3wX3v56mmXdSl+seXTQnMJeSq8jjE3lW/H1/2J1BwXYe7YTKQ/mXbE+GUyaHH2sumNeDDgJZYxvtT3mfxsWQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FUcZ/lDTzHLt4IOXR5Gg4BGSxoJ1lmuVttC6+hkN3UE=;
+ b=GOpMH7867k0uTVDDN4FAEzJOPwPetO0rOanasjL/XIuGKhquDuQH7CqLJMxW6yJW+7xhaYD8UJgY15dUuUAzgjRrvHKLJoYtNI1/kcqBPJ5+sLF96e7y58u7X7mv6zQqa5ZUJDYqT0MSD69TWcGxNu1iy+ULdyrRk/ZXPcKtgAY=
+Received: from PH7PR21MB3263.namprd21.prod.outlook.com (2603:10b6:510:1db::16)
+ by MN0PR21MB3725.namprd21.prod.outlook.com (2603:10b6:208:3d1::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.6; Wed, 19 Oct
+ 2022 18:35:32 +0000
+Received: from PH7PR21MB3263.namprd21.prod.outlook.com
+ ([fe80::7c3c:5968:72d6:3b5f]) by PH7PR21MB3263.namprd21.prod.outlook.com
+ ([fe80::7c3c:5968:72d6:3b5f%9]) with mapi id 15.20.5769.004; Wed, 19 Oct 2022
+ 18:35:32 +0000
+From:   Long Li <longli@microsoft.com>
+To:     Paolo Abeni <pabeni@redhat.com>, KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Thomas Graf <tgraf@suug.ch>,
-        Kevin Sprague <ksprague0711@gmail.com>, dev@openvswitch.org,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH net 2/2] selftests: add openvswitch selftest suite
-Date:   Wed, 19 Oct 2022 14:30:54 -0400
-Message-Id: <20221019183054.105815-3-aconole@redhat.com>
-In-Reply-To: <20221019183054.105815-1-aconole@redhat.com>
-References: <20221019183054.105815-1-aconole@redhat.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
+        Ajay Sharma <sharmaajay@microsoft.com>
+CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Subject: RE: [Patch v7 12/12] RDMA/mana_ib: Add a driver for Microsoft Azure
+ Network Adapter
+Thread-Topic: [Patch v7 12/12] RDMA/mana_ib: Add a driver for Microsoft Azure
+ Network Adapter
+Thread-Index: AQHY4l2Zbb2Vno3ZF0WOtRHtH2/w0K4T7z0AgAIcSwA=
+Date:   Wed, 19 Oct 2022 18:35:32 +0000
+Message-ID: <PH7PR21MB326316C91E41612BF733BAC9CE2B9@PH7PR21MB3263.namprd21.prod.outlook.com>
+References: <1666034441-15424-1-git-send-email-longli@linuxonhyperv.com>
+         <1666034441-15424-13-git-send-email-longli@linuxonhyperv.com>
+ <720519df325384f4bf5d1e51045ecfd402d1d859.camel@redhat.com>
+In-Reply-To: <720519df325384f4bf5d1e51045ecfd402d1d859.camel@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=17a51d90-d822-4cf1-8ebd-82cd3cfd8fbb;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-10-19T18:25:14Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH7PR21MB3263:EE_|MN0PR21MB3725:EE_
+x-ms-office365-filtering-correlation-id: 61541a68-81cf-43b7-e737-08dab200b464
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: qjOMD9ZhauJq+6QiI3XlWbulmi91BaUQaMZmPAei+bkZ8ex23lIdIQd5ZL4YFWYVCwFLfEGfarbj7+EdvWdobX4rWpgObIq11LQ3+1aJmPnKvsGpVyfQZBUmvRAXOy95KSiuTfjaAgO2tFLIzivdzHl2CJyGwnTvOjJXO3/8qyFLGtd+7rAaMCAVY69jFbin8McZzZgClsvbi1TFXFMqa3cud0JqtmU5ohGUwOhkPfoOvkctE422da58GGGREjHFoRYIfQuaniuBpiPSTDAZt8qxB+nYXpdwCGmUAuh66rFi5dC9R1DffMJhGfCsLpeL2BXg6YydzuvePJyUtCBsNhBmdYcRI9qdNy4xtIUPOJLZo1nkKBJPpjiXC0Q6tRSjiIAGYoNQ079ISdztw9m7hL598ous057bQhJo9gdnE9puB7ht2Q43405fcDHR5sUI1o8b3BA280ky1IAJl3tzPBiTFlBTvWU5HpTipwRQrQfzQbT4NogPRy0gIRbJeT64omaoG9PIYCbfyT1zFd3CkxccwsMZiEhjp91YqFyc4j44dgsIMBegYyAcklijTxWif0U5Acw7S2xk28FRgoT5pQBBGRmVzu4X4BFJaeFakb38nkUtnqyxot8WiVvk62t/48PFaaG0nJ9PtkV9AxY+1hJN83zXzBTOlU6wyqFK07TDTKlT/zK06i+29SIvJtDlrwzKDfmnc54+9jRxOQCKMEBjudvasGdY+gkQzd+271+w1OhcjXGcAeSLvzzo9xcE+KY26pCz1KJGYX3jLYwbub2xO6BhRfRQanr8oE394saa/zonq7Nn7flRlZMUUB4gtShrx3APPLVZrVi5bklKOA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR21MB3263.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(366004)(396003)(136003)(376002)(346002)(47530400004)(451199015)(122000001)(41300700001)(38100700002)(26005)(6506007)(7696005)(9686003)(6636002)(54906003)(110136005)(76116006)(66946007)(66556008)(66476007)(66446008)(64756008)(8676002)(8990500004)(316002)(33656002)(86362001)(4001150100001)(2906002)(921005)(82960400001)(82950400001)(478600001)(71200400001)(10290500003)(55016003)(4326008)(38070700005)(186003)(5660300002)(7416002)(83380400001)(8936002)(52536014)(30864003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?RjhtYlpsbXU5Q2EydWVGOGkyWFFmZUhDcUFLcFZIVnRwY1poemlWbHR4dFVs?=
+ =?utf-8?B?TzExN0NoRm44UjByZC9BYlp1RGxJVXNBakYvcTFxcnk1cDZNU2lYcUtMQVJh?=
+ =?utf-8?B?MEsvd013RG1LaDJlVWo5WktmR1NjMElEWGJZQ1FnakYxcXNRSitFbDM3eDBH?=
+ =?utf-8?B?SEdJWTNLaEtQeTRmdUd6QklxR05jUm5SU09BZ0tpTVRaL1NOamNsS05NRXFX?=
+ =?utf-8?B?b2hiZG9zejIxSVlmaEJWRi92T2YwMHQ3L0o2c2xrQlpkNUlYVkg0WFhQRnBr?=
+ =?utf-8?B?end6Y2xhakNQRnlPTmx2RzBDZitnWUlzVHZxeWhOcDR3YndmcXMxdERNTWda?=
+ =?utf-8?B?OU5tUjI1TVJBUEUrSzk3UHpxbUlselpqSFg1RHhLdFVEcXVpbHNXb1Zwbmpt?=
+ =?utf-8?B?MWhsUmduV2pZYzdyTzUrV0xyRndjS1RKMC8xbWVBdFd5bTNhWnlpUXpjbEtV?=
+ =?utf-8?B?WXhidlZRNlUrbjhmMVBXalVBTDF4My8rQjdYUzRMZXlsaXZlbGdBcWp6KzNs?=
+ =?utf-8?B?U1NLRU1HZkFzclg1WjhrUFhMdjlZY3pIYkh4UlprMkwrcDRROThhYk9GRDdr?=
+ =?utf-8?B?eDFYNkxGT3Foa0k3dW8xS3lYdHRTNjJhRXdkWHNnYnZUdG1EUGo5VjlWbkR5?=
+ =?utf-8?B?Ly9kSkJJZ2dIQklwRUp6MUlRYTlpakNzdWdyYmVERTdmNnFJNWJWeDQ3anVy?=
+ =?utf-8?B?TlVtQ1JQZTdMUmZ0NVNKaEQyTWQrbWVucllINTRBaHV5SzdkTWh4d2N6U2xr?=
+ =?utf-8?B?dmNFUXBWQXgxbDNCWVZJd3NRbGNnYzFNUHRtMTBNYVFBc1U3bzQvU3dMVUw5?=
+ =?utf-8?B?QjdrbFVjeWZaZ0dIaHcwY0FacXp1R3VyL1hISU5ZY3NvREdLTFk1ZHRtQWRM?=
+ =?utf-8?B?bEw1U3BKeXNicnRoUXBRMkloN2FQN1BuTkV3S0pNYUIrSWY1OEgzNnVTQlFT?=
+ =?utf-8?B?Ti9YYzRmUm1MQWRsMVNlVUNWK0hhTzIyM1JQYzg3VGJ0U2p6YzV2L2M3c2tk?=
+ =?utf-8?B?eXpNaEV5aG1VTklCUENOQWhrSVJ6MnNVQUxWdFRmUXFnYStzVzNlZllmY2Fv?=
+ =?utf-8?B?Y0hFd3UyUXRONVh3U3BOVXl2QnRPbTRrRVNIQ1ZlRkFnNW81aW9zOHl6ZUEw?=
+ =?utf-8?B?NUZTb3g2Ym45N3FsdTQxdFBrV2xZemFRL3pDUldGWUowOEpNWmtnMW10cW0w?=
+ =?utf-8?B?MmZZMGNZbmROc29JelMyN3pkNE1BeDlTUDRDN3dWRE02Ni9ZaXdHd0I0RjJt?=
+ =?utf-8?B?dlFBdC85dmx4NDZEbWFScnkwZjBWTnFSKzB2Y0R1WnVOYUh0WERLa0pYSm5P?=
+ =?utf-8?B?N2xMMlphakJIdHcraWEzdzZsQ0owL0JiV3RydDNjQUQwMmx6eDFBYTduWlhk?=
+ =?utf-8?B?RHZxVWR4aEZkTlZ2U0RRTHhqbWVQNmNIK3l5aHcwOW91L2NWYVJGU0RjR2Ft?=
+ =?utf-8?B?ckV1QU1BaFlLWDgwSVplNUNWKzB1R08vUkZNZ3N4SVZFWW1YRHNvS2JTY2dm?=
+ =?utf-8?B?N0V0cWU5MXRnUThYL0piRFdLTmpZYjljeWE3VjdjMHA1MnRmZC9CcG55ZjFQ?=
+ =?utf-8?B?KzdKYThlWU0xcU1JZ2xaYXFHS0FaRlFXTEV1N0o4ZStJcnM5cXFLczNTaEt1?=
+ =?utf-8?B?NEhxa0REQm5IUS8yRFVLaEJZdUN2ZXY3WHVUMWhNaGZHNVV4U3N2VHZERXF0?=
+ =?utf-8?B?cnppbVNIc2RWQlFtUnFWbkVuQWp3NTdwM1lqT0hXeWNQaU0xTXdlS0pNTGxC?=
+ =?utf-8?B?ZTJGemQyNXlKSVk4QkNORzB2RmUzZnNiaHpGWTE5WlBLRTJGOHh6di9ETnlS?=
+ =?utf-8?B?NTNwdllXWVkzV0xHa0VhakdhcWJXR0grTXB1cGUxWDBwWGhReUJtY1hVM3kv?=
+ =?utf-8?B?NHlRSWdaVElBc0hPTDRoMXloZzY5a0Y0OWxyem1neVc4ZWRRcllSc2lCeENz?=
+ =?utf-8?B?a1VPanZPY2d5VVVSTmpibHFiZ2VaUDRSQ2xta3hzb3pCOTlPN1Q3VkNGREl4?=
+ =?utf-8?B?VmJTUi9PRTVQS1Y2cmk3OGVwcngzRnMxeVlCY1luaDZ1Q1pNdjFoOHY2ck1W?=
+ =?utf-8?B?UWtqZXVPNVVIZklmZmNIRVpCYTFoV3htS3Nla2ZZUUlyQ0pPVDcxYmxOUERM?=
+ =?utf-8?Q?y1bk+PaXeptFRUas0sS4rdDuW?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR21MB3263.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 61541a68-81cf-43b7-e737-08dab200b464
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Oct 2022 18:35:32.1962
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: XdK50zCvPConL9gaq44eWhH4gwQ1jKcZvM4EOR/3qMegAJsaHx3RUUqmeJh46yhNsCG0vI00/ikdkQTmhrXRxQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR21MB3725
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Previous commit resolves a WARN splat that can be difficult to reproduce,
-but with the ovs-dpctl.py utility, it can be trivial.  Introduce a test
-case which creates a DP, and then downgrades the feature set.  This will
-include a utility 'ovs-dpctl.py' that can be extended to do additional
-work.
-
-Signed-off-by: Aaron Conole <aconole@redhat.com>
-Signed-off-by: Kevin Sprague <ksprague0711@gmail.com>
----
- MAINTAINERS                                   |   1 +
- tools/testing/selftests/Makefile              |   1 +
- .../selftests/net/openvswitch/Makefile        |  13 +
- .../selftests/net/openvswitch/openvswitch.sh  | 216 +++++++++
- .../selftests/net/openvswitch/ovs-dpctl.py    | 411 ++++++++++++++++++
- 5 files changed, 642 insertions(+)
- create mode 100644 tools/testing/selftests/net/openvswitch/Makefile
- create mode 100755 tools/testing/selftests/net/openvswitch/openvswitch.sh
- create mode 100644 tools/testing/selftests/net/openvswitch/ovs-dpctl.py
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index abbe88e1c50b..295a6b0fbe26 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -15434,6 +15434,7 @@ S:	Maintained
- W:	http://openvswitch.org
- F:	include/uapi/linux/openvswitch.h
- F:	net/openvswitch/
-+F:	tools/testing/selftests/net/openvswitch/
- 
- OPERATING PERFORMANCE POINTS (OPP)
- M:	Viresh Kumar <vireshk@kernel.org>
-diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
-index 0464b2c6c1e4..f07aef7c592c 100644
---- a/tools/testing/selftests/Makefile
-+++ b/tools/testing/selftests/Makefile
-@@ -49,6 +49,7 @@ TARGETS += net
- TARGETS += net/af_unix
- TARGETS += net/forwarding
- TARGETS += net/mptcp
-+TARGETS += net/openvswitch
- TARGETS += netfilter
- TARGETS += nsfs
- TARGETS += pidfd
-diff --git a/tools/testing/selftests/net/openvswitch/Makefile b/tools/testing/selftests/net/openvswitch/Makefile
-new file mode 100644
-index 000000000000..2f1508abc826
---- /dev/null
-+++ b/tools/testing/selftests/net/openvswitch/Makefile
-@@ -0,0 +1,13 @@
-+# SPDX-License-Identifier: GPL-2.0
-+
-+top_srcdir = ../../../../..
-+
-+CFLAGS =  -Wall -Wl,--no-as-needed -O2 -g -I$(top_srcdir)/usr/include $(KHDR_INCLUDES)
-+
-+TEST_PROGS := openvswitch.sh
-+
-+TEST_FILES := ovs-dpctl.py
-+
-+EXTRA_CLEAN := test_netlink_checks
-+
-+include ../../lib.mk
-diff --git a/tools/testing/selftests/net/openvswitch/openvswitch.sh b/tools/testing/selftests/net/openvswitch/openvswitch.sh
-new file mode 100755
-index 000000000000..bebc20f157dc
---- /dev/null
-+++ b/tools/testing/selftests/net/openvswitch/openvswitch.sh
-@@ -0,0 +1,216 @@
-+#!/bin/sh
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# OVS kernel module self tests
-+
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
-+PAUSE_ON_FAIL=no
-+VERBOSE=0
-+TRACING=0
-+
-+tests="
-+	netlink_checks				ovsnl: validate netlink attrs and settings"
-+
-+info() {
-+    [ $VERBOSE = 0 ] || echo $*
-+}
-+
-+ovs_base=`pwd`
-+sbxs=
-+sbx_add () {
-+	info "adding sandbox '$1'"
-+
-+	sbxs="$sbxs $1"
-+
-+	NO_BIN=0
-+
-+	# Create sandbox.
-+	local d="$ovs_base"/$1
-+	if [ -e $d ]; then
-+		info "removing $d"
-+		rm -rf "$d"
-+	fi
-+	mkdir "$d" || return 1
-+	ovs_setenv $1
-+}
-+
-+ovs_exit_sig() {
-+	[ -e ${ovs_dir}/cleanup ] && . "$ovs_dir/cleanup"
-+}
-+
-+on_exit() {
-+	echo "$1" > ${ovs_dir}/cleanup.tmp
-+	cat ${ovs_dir}/cleanup >> ${ovs_dir}/cleanup.tmp
-+	mv ${ovs_dir}/cleanup.tmp ${ovs_dir}/cleanup
-+}
-+
-+ovs_setenv() {
-+	sandbox=$1
-+
-+	ovs_dir=$ovs_base${1:+/$1}; export ovs_dir
-+
-+	test -e ${ovs_dir}/cleanup || : > ${ovs_dir}/cleanup
-+}
-+
-+ovs_sbx() {
-+	if test "X$2" != X; then
-+		(ovs_setenv $1; shift; "$@" >> ${ovs_dir}/debug.log)
-+	else
-+		ovs_setenv $1
-+	fi
-+}
-+
-+ovs_add_dp () {
-+	info "Adding DP/Bridge IF: sbx:$1 dp:$2 {$3, $4, $5}"
-+	ovs_sbx "$1" python3 $ovs_base/ovs-dpctl.py add-dp "$2" "$3" "$4" "$5" || return 1
-+	on_exit "ovs_sbx $1 python3 $ovs_base/ovs-dpctl.py del-dp $2;"
-+}
-+
-+usage() {
-+	echo
-+	echo "$0 [OPTIONS] [TEST]..."
-+	echo "If no TEST argument is given, all tests will be run."
-+	echo
-+	echo "Options"
-+	echo "  -t: capture traffic via tcpdump"
-+	echo "  -v: verbose"
-+	echo "  -p: pause on failure"
-+	echo
-+	echo "Available tests${tests}"
-+	exit 1
-+}
-+
-+# netlink_validation
-+# - Create a dp
-+# - check no warning with "old version" simulation
-+test_netlink_checks () {
-+	sbx_add "test_netlink_checks" || return 1
-+
-+	info "setting up new DP"
-+	ovs_add_dp "test_netlink_checks" nv0 || return 1
-+	# now try again
-+	PRE_TEST=$(dmesg | grep -E "RIP: [0-9a-fA-Fx]+:ovs_dp_cmd_new\+")
-+	ovs_add_dp "test_netlink_checks" nv0 -V 0 || return 1
-+	POST_TEST=$(dmesg | grep -E "RIP: [0-9a-fA-Fx]+:ovs_dp_cmd_new\+")
-+	if [ "$PRE_TEST" != "$POST_TEST" ]; then
-+		info "failed - gen warning"
-+		return 1
-+	fi
-+
-+	return 0
-+}
-+
-+run_test() {
-+	(
-+	tname="$1"
-+	tdesc="$2"
-+
-+	if ! lsmod | grep openvswitch >/dev/null 2>&1; then
-+		stdbuf -o0 printf "TEST: %-60s  [NOMOD]\n" "${tdesc}"
-+		return $ksft_skip
-+	fi
-+
-+	if python3 ovs-dpctl.py help 2>&1 | \
-+	     grep "Need to install the python" >/dev/null 2>&1; then
-+		stdbuf -o0 printf "TEST: %-60s  [PYLIB]\n" "${tdesc}"
-+		return $ksft_skip
-+	fi
-+	printf "TEST: %-60s  [START]\n" "${tname}"
-+
-+	unset IFS
-+
-+	eval test_${tname}
-+	ret=$?
-+
-+	if [ $ret -eq 0 ]; then
-+		printf "TEST: %-60s  [ OK ]\n" "${tdesc}"
-+		ovs_exit_sig
-+		rm -rf "$ovs_dir"
-+	elif [ $ret -eq 1 ]; then
-+		printf "TEST: %-60s  [FAIL]\n" "${tdesc}"
-+		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
-+			echo
-+			echo "Pausing. Logs in $ovs_dir/. Hit enter to continue"
-+			read a
-+		fi
-+		ovs_exit_sig
-+		[ "${PAUSE_ON_FAIL}" = "yes" ] || rm -rf "$ovs_dir"
-+		exit 1
-+	elif [ $ret -eq $ksft_skip ]; then
-+		printf "TEST: %-60s  [SKIP]\n" "${tdesc}"
-+	elif [ $ret -eq 2 ]; then
-+		rm -rf test_${tname}
-+		run_test "$1" "$2"
-+	fi
-+
-+	return $ret
-+	)
-+	ret=$?
-+	case $ret in
-+		0)
-+			[ $all_skipped = true ] && [ $exitcode=$ksft_skip ] && exitcode=0
-+			all_skipped=false
-+		;;
-+		$ksft_skip)
-+			[ $all_skipped = true ] && exitcode=$ksft_skip
-+		;;
-+		*)
-+			all_skipped=false
-+			exitcode=1
-+		;;
-+	esac
-+
-+	return $ret
-+}
-+
-+
-+exitcode=0
-+desc=0
-+all_skipped=true
-+
-+while getopts :pvt o
-+do
-+	case $o in
-+	p) PAUSE_ON_FAIL=yes;;
-+	v) VERBOSE=1;;
-+	t) if which tcpdump > /dev/null 2>&1; then
-+		TRACING=1
-+	   else
-+		echo "=== tcpdump not available, tracing disabled"
-+	   fi
-+	   ;;
-+	*) usage;;
-+	esac
-+done
-+shift $(($OPTIND-1))
-+
-+IFS="	
-+"
-+
-+for arg do
-+	# Check first that all requested tests are available before running any
-+	command -v > /dev/null "test_${arg}" || { echo "=== Test ${arg} not found"; usage; }
-+done
-+
-+name=""
-+desc=""
-+for t in ${tests}; do
-+	[ "${name}" = "" ]	&& name="${t}"	&& continue
-+	[ "${desc}" = "" ]	&& desc="${t}"
-+
-+	run_this=1
-+	for arg do
-+		[ "${arg}" != "${arg#--*}" ] && continue
-+		[ "${arg}" = "${name}" ] && run_this=1 && break
-+		run_this=0
-+	done
-+	if [ $run_this -eq 1 ]; then
-+		run_test "${name}" "${desc}"
-+	fi
-+	name=""
-+	desc=""
-+done
-+
-+exit ${exitcode}
-diff --git a/tools/testing/selftests/net/openvswitch/ovs-dpctl.py b/tools/testing/selftests/net/openvswitch/ovs-dpctl.py
-new file mode 100644
-index 000000000000..791d76b7adcd
---- /dev/null
-+++ b/tools/testing/selftests/net/openvswitch/ovs-dpctl.py
-@@ -0,0 +1,411 @@
-+#!/usr/bin/env python3
-+# SPDX-License-Identifier: GPL-2.0
-+
-+# Controls the openvswitch module.  Part of the kselftest suite, but
-+# can be used for some diagnostic purpose as well.
-+
-+import logging
-+import multiprocessing
-+import socket
-+import struct
-+import sys
-+
-+try:
-+    from libnl.attr import NLA_NESTED, NLA_STRING, NLA_U32, NLA_UNSPEC
-+    from libnl.attr import nla_get_string, nla_get_u32
-+    from libnl.attr import nla_put, nla_put_string, nla_put_u32
-+    from libnl.attr import nla_policy
-+
-+    from libnl.error import errmsg
-+
-+    from libnl.genl.ctrl import genl_ctrl_resolve
-+    from libnl.genl.genl import genl_connect, genlmsg_parse, genlmsg_put
-+
-+    from libnl.handlers import nl_cb_alloc, nl_cb_set
-+    from libnl.handlers import NL_CB_CUSTOM, NL_CB_MSG_IN, NL_CB_VALID
-+    from libnl.handlers import NL_OK, NL_STOP
-+
-+    from libnl.linux_private.netlink import NLM_F_ACK, NLM_F_DUMP
-+    from libnl.linux_private.netlink import NLM_F_REQUEST, NLMSG_DONE
-+
-+    from libnl.msg import NL_AUTO_SEQ, nlmsg_alloc, nlmsg_hdr
-+
-+    from libnl.nl import NLMSG_ERROR, nl_recvmsgs_default, nl_send_auto
-+    from libnl.socket_ import nl_socket_alloc, nl_socket_set_cb
-+    from libnl.socket_ import nl_socket_get_local_port
-+except ModuleNotFoundError:
-+    print("Need to install the python libnl3 library.")
-+    print("Exiting without error.")
-+    exit(0)
-+
-+
-+global sk
-+global ovs_families
-+
-+OVS_DATAPATH_FAMILY = "ovs_datapath"
-+OVS_VPORT_FAMILY = "ovs_vport"
-+OVS_FLOW_FAMILY = "ovs_flow"
-+OVS_PACKET_FAMILY = "ovs_packet"
-+OVS_METER_FAMILY = "ovs_meter"
-+OVS_CT_LIMIT_FAMILY = "ovs_ct_limit"
-+
-+OVS_DATAPATH_VERSION = 2
-+OVS_HDR_LEN = 4
-+OVS_DP_CMD_NEW = 1
-+OVS_DP_CMD_DEL = 2
-+OVS_DP_CMD_GET = 3
-+OVS_DP_CMD_SET = 4
-+
-+OVS_DP_F_VPORT_PIDS = 1 << 1
-+OVS_DP_F_DISPATCH_UPCALL_PER_CPU = 1 << 3
-+
-+OVS_DP_ATTR_NAME = 1
-+OVS_DP_ATTR_UPCALL_PID = 2
-+OVS_DP_ATTR_STATS = 3
-+OVS_DP_ATTR_MEGAFLOW_STATS = 4
-+OVS_DP_ATTR_USER_FEATURES = 5
-+OVS_DP_ATTR_PAD = 6
-+OVS_DP_ATTR_MASKS_CACHE_SIZE = 7
-+OVS_DP_ATTR_PER_CPU_PIDS = 8
-+OVS_DP_ATTR_MAX = 8
-+
-+OVS_VPORT_CMD_NEW = 1
-+OVS_VPORT_CMD_DEL = 2
-+OVS_VPORT_CMD_GET = 3
-+OVS_VPORT_CMD_SET = 4
-+
-+OVS_VPORT_ATTR_PORT_NO = 1
-+OVS_VPORT_ATTR_TYPE = 2
-+OVS_VPORT_ATTR_NAME = 3
-+OVS_VPORT_ATTR_OPTIONS = 4
-+OVS_VPORT_ATTR_UPCALL_PID = 5
-+OVS_VPORT_ATTR_STATS = 6
-+OVS_VPORT_ATTR_PAD = 7
-+OVS_VPORT_ATTR_IFINDEX = 8
-+OVS_VPORT_ATTR_NETNSID = 9
-+OVS_VPORT_ATTR_MAX = 9
-+
-+OVS_VPORT_TYPE_NETDEV = 1
-+OVS_VPORT_TYPE_INTERNAL = 2
-+OVS_VPORT_TYPE_GRE = 3
-+OVS_VPORT_TYPE_VXLAN = 4
-+OVS_VPORT_TYPE_GENEVE = 5
-+OVS_VPORT_TYPE_MAX = 5
-+
-+
-+def nl_sk_transaction(msg, sk, cb):
-+    nl_socket_set_cb(sk, cb)
-+    ret = nl_send_auto(sk, msg)
-+    if ret < 0:
-+        print("send error: ", end='')
-+        print(errmsg[abs(ret)])
-+    ret = nl_recvmsgs_default(sk)
-+    if ret < 0:
-+        print("recv error: ", end='')
-+        print(errmsg[abs(ret)])
-+    return ret
-+
-+
-+def if_exists(ifname):
-+    try:
-+        socket.if_nametoindex(ifname)
-+        return True
-+    except OSError:
-+        return False
-+
-+
-+def get_family(ovs_family_name):
-+    """
-+    Retrieve a GENL family ID via the global nl socket
-+    Returns: family ID for the requested family name
-+    """
-+    global sk
-+    if sk is None:
-+        raise ConnectionError("sk not correctly setup")
-+    numid = genl_ctrl_resolve(sk, ovs_family_name.encode('utf-8'))
-+    return numid
-+
-+
-+def dpctl_netlink_init():
-+    """
-+    Initializes the global netlink socket, and ovs familly dictionary
-+    Returns: 0 on success, any other value is error
-+    """
-+    global sk, ovs_families
-+    sk = nl_socket_alloc()
-+    ret = genl_connect(sk)
-+    if ret:
-+        print(errmsg[abs(ret)])
-+        sk = None
-+        return ret
-+    ovs_families = {}
-+    family_probe = [OVS_DATAPATH_FAMILY, OVS_VPORT_FAMILY, OVS_FLOW_FAMILY,
-+                    OVS_PACKET_FAMILY, OVS_METER_FAMILY, OVS_CT_LIMIT_FAMILY]
-+    for family in family_probe:
-+        ovs_families[family] = get_family(family)
-+        if ovs_families[family] == -1:
-+            return -1
-+    return 0
-+
-+
-+def parse_dp_msg(nlh, target_dict):
-+    dp_dict = {}
-+    attrs = dict((i, None) for i in range(OVS_DP_ATTR_MAX))
-+    dp_policy = dict((i, None) for i in range(OVS_DP_ATTR_MAX))
-+    dp_policy.update({
-+        OVS_DP_ATTR_NAME: nla_policy(type_=NLA_STRING, maxlen=15),
-+        OVS_DP_ATTR_UPCALL_PID: nla_policy(type_=NLA_U32),
-+        OVS_DP_ATTR_STATS: nla_policy(type_=NLA_NESTED),
-+        OVS_DP_ATTR_MEGAFLOW_STATS: nla_policy(type_=NLA_NESTED),
-+        OVS_DP_ATTR_USER_FEATURES: nla_policy(type_=NLA_U32),
-+        OVS_DP_ATTR_MASKS_CACHE_SIZE: nla_policy(type_=NLA_U32),
-+        OVS_DP_ATTR_PER_CPU_PIDS: nla_policy(type_=NLA_UNSPEC)
-+    })
-+    ret = genlmsg_parse(nlh, 4, attrs, OVS_DP_ATTR_MAX, dp_policy)
-+    if ret:
-+        print("Error parsing datapath")
-+        return -1
-+    if attrs[1] is None:
-+        print("Error?")
-+    dp_name = nla_get_string(attrs[1]).decode('utf-8')
-+    b = bytes(attrs[OVS_DP_ATTR_STATS].payload)
-+    stats = struct.unpack("=QQQQ", b[:32])
-+    dp_dict[OVS_DP_ATTR_STATS] = stats
-+    b = bytes(attrs[OVS_DP_ATTR_MEGAFLOW_STATS].payload)
-+    stats = struct.unpack("=QIIQQ", b[:32])
-+    dp_dict[OVS_DP_ATTR_MEGAFLOW_STATS] = [stats[i] for i in (0, 1, 3)]
-+    dp_dict[OVS_DP_ATTR_MASKS_CACHE_SIZE] = nla_get_u32(
-+        attrs[OVS_DP_ATTR_MASKS_CACHE_SIZE])
-+    target_dict[dp_name] = dp_dict
-+
-+
-+def show_dp_cb(msg, dp_dict):
-+    nlh = nlmsg_hdr(msg)
-+    if nlh.nlmsg_type == NLMSG_DONE:
-+        retn = NL_STOP
-+    parse_dp_msg(nlh, dp_dict)
-+    retn = NL_OK
-+    return retn
-+
-+
-+def show_vport_cb(msg, dp_vport_dict):
-+    dp, vport_dict = dp_vport_dict
-+    nlh = nlmsg_hdr(msg)
-+    retn = None
-+    if nlh.nlmsg_type == NLMSG_DONE:
-+        retn = NL_STOP
-+    attrs = dict((i, None) for i in range(OVS_DP_ATTR_MAX))
-+    port_policy = dict((i, None) for i in range(OVS_VPORT_ATTR_MAX))
-+    port_policy.update({
-+            OVS_VPORT_ATTR_PORT_NO: nla_policy(type_=NLA_U32),
-+            OVS_VPORT_ATTR_TYPE: nla_policy(type_=NLA_U32),
-+            OVS_VPORT_ATTR_NAME: nla_policy(type_=NLA_STRING, maxlen=15),
-+            OVS_VPORT_ATTR_OPTIONS: nla_policy(type_=NLA_NESTED),
-+            OVS_VPORT_ATTR_UPCALL_PID: nla_policy(type_=NLA_UNSPEC),
-+            OVS_VPORT_ATTR_STATS: nla_policy(type_=NLA_NESTED),
-+            OVS_VPORT_ATTR_IFINDEX: nla_policy(type_=NLA_U32),
-+        })
-+    genlmsg_parse(nlh, OVS_HDR_LEN, attrs, OVS_DP_ATTR_MAX, port_policy)
-+    if attrs[1] is not None:
-+        port_info = "Port " + str(nla_get_u32(attrs[1])) + ": "
-+        if attrs[3] is not None:
-+            port_info += nla_get_string(attrs[3]).decode('utf-8')
-+            if attrs[OVS_VPORT_ATTR_TYPE] is not None:
-+                port_type = nla_get_u32(attrs[OVS_VPORT_ATTR_TYPE])
-+                if port_type == OVS_VPORT_TYPE_INTERNAL:
-+                    port_info += " (internal)"
-+    vport_dict[dp].append(port_info)
-+    if retn is None:
-+        retn = NL_OK
-+    return retn
-+
-+
-+def dpctl_show_print(dp_info, vport_info):
-+    for i in dp_info:
-+        print("{}".format(i))
-+        indent = 2 * " "
-+        fields = ("Hit", "Missed", "Lost", "Flows")
-+        f_zip = zip(fields, dp_info[i][OVS_DP_ATTR_STATS])
-+        format_list = [val for pair in f_zip for val in pair]
-+        out_string = indent + "Lookups: {}: {} {}: {} {}: {}\n"
-+        out_string += indent + "{}: {}"
-+        print(out_string.format(*format_list))
-+        fields = ("Hit", "Total", "Hit")
-+        f_zip = zip(fields, dp_info[i][OVS_DP_ATTR_MEGAFLOW_STATS])
-+        format_list = [val for pair in f_zip for val in pair]
-+        out_string = indent + "Masks: {}: {} {}: {}\n"
-+        out_string += indent + "Cache: {}: {}"
-+        print(out_string.format(*format_list))
-+        print("Caches:\n" + indent + "Masks-cache: size: {}".
-+              format(dp_info[i][OVS_DP_ATTR_MASKS_CACHE_SIZE]))
-+        indent = 4 * " "
-+        for port in vport_info[i]:
-+            print(indent + port)
-+
-+
-+def dpctl_show(dp=None):
-+    global sk, ovs_families
-+    cb_dp_show = nl_cb_alloc(NL_CB_CUSTOM)
-+    dp_info = {}
-+    vport_info = {}
-+    nl_cb_set(cb_dp_show, NL_CB_VALID, NL_CB_CUSTOM, show_dp_cb, dp_info)
-+    msg_dpctl_get = nlmsg_alloc()
-+    if dp is not None:
-+        if not if_exists(dp):
-+            print("That interface does not exist.")
-+            return -1
-+        flag = NLM_F_REQUEST
-+    else:
-+        flag = NLM_F_DUMP
-+    genlmsg_put(msg_dpctl_get, 0, NL_AUTO_SEQ,
-+                ovs_families[OVS_DATAPATH_FAMILY], OVS_HDR_LEN,
-+                flag, OVS_DP_CMD_GET, OVS_DATAPATH_VERSION)
-+    if dp is not None:
-+        nla_put_string(msg_dpctl_get, OVS_DP_ATTR_NAME, dp.encode('utf-8'))
-+    nl_sk_transaction(msg_dpctl_get, sk, cb_dp_show)
-+    vport_info = dict((i, []) for i in dp_info)
-+    # for each datapath, call down and ask it to tell us its vports.
-+    for dp in vport_info:
-+        msg_vport_get = nlmsg_alloc()
-+        ba = genlmsg_put(msg_vport_get, 0, NL_AUTO_SEQ,
-+                         ovs_families[OVS_VPORT_FAMILY], OVS_HDR_LEN,
-+                         NLM_F_DUMP, OVS_VPORT_CMD_GET, OVS_DATAPATH_VERSION)
-+        ba[0:OVS_HDR_LEN] = struct.pack('=I', socket.if_nametoindex(dp))
-+        cb_vport_show = nl_cb_alloc(NL_CB_CUSTOM)
-+        nl_cb_set(cb_vport_show, NL_CB_VALID, NL_CB_CUSTOM,
-+                  show_vport_cb, (dp, vport_info))
-+        nl_sk_transaction(msg_vport_get, sk, cb_vport_show)
-+    dpctl_show_print(dp_info, vport_info)
-+
-+
-+def mod_cb(msg, add):
-+    nlh = nlmsg_hdr(msg)
-+    if nlh.nlmsg_type == NLMSG_ERROR:
-+        b = nlh.payload
-+        s = struct.unpack('=i', b[:4])[0]
-+        if s:
-+            print(errmsg[abs(s)])
-+            return NL_STOP
-+    action = "added" if add else "deleted"
-+    print("Successfully {} the datapath.".format(action))
-+    return NL_OK
-+
-+
-+def dpctl_mod_dp(args, add=True, setpid=False, hdrval=None):
-+    global ovs_families, sk
-+
-+    dp = args[0]
-+    cmd = OVS_DP_CMD_NEW if add else OVS_DP_CMD_DEL
-+    msg_dpctl_cmd = nlmsg_alloc()
-+
-+    userfeatures = 0
-+    if hdrval is None:
-+        hdrver = OVS_DATAPATH_VERSION
-+        userfeatures = OVS_DP_F_VPORT_PIDS
-+    else:
-+        segment = hdrval.find(":")
-+        if segment == -1:
-+            segment = len(hdrval)
-+        hdrver = int(hdrval[:segment], 0)
-+        if len(hdrval[:segment]):
-+            userfeatures = int(hdrval[:segment], 0)
-+
-+    genlmsg_put(msg_dpctl_cmd, 0, NL_AUTO_SEQ,
-+                ovs_families[OVS_DATAPATH_FAMILY], OVS_HDR_LEN,
-+                NLM_F_ACK, cmd, hdrver)
-+
-+    nla_put_u32(msg_dpctl_cmd, OVS_DP_ATTR_UPCALL_PID, 0)
-+    nla_put_string(msg_dpctl_cmd, OVS_DP_ATTR_NAME, dp.encode('utf-8'))
-+
-+    if setpid:
-+        userfeatures &= ~OVS_DP_F_VPORT_PIDS
-+        userfeatures |= OVS_DP_F_DISPATCH_UPCALL_PER_CPU
-+        procarray = None
-+        nproc = multiprocessing.cpu_count()
-+        for i in range(nproc):
-+            if procarray is not None:
-+                procarray += struct.pack("=I", nl_socket_get_local_port(sk))
-+            else:
-+                procarray = struct.pack('=I', nl_socket_get_local_port(sk))
-+        nla_put(msg_dpctl_cmd, OVS_DP_ATTR_UPCALL_PID, len(procarray),
-+                procarray)
-+    nla_put_u32(msg_dpctl_cmd, OVS_DP_ATTR_USER_FEATURES, userfeatures)
-+    cb_dp_mod = nl_cb_alloc(NL_CB_CUSTOM)
-+    nl_cb_set(cb_dp_mod, NL_CB_MSG_IN, NL_CB_CUSTOM, mod_cb, add)
-+    return nl_sk_transaction(msg_dpctl_cmd, sk, cb_dp_mod)
-+
-+
-+def dpctl_add_dp(dp):
-+    setpid = False
-+    dphdr = None
-+    if len(dp) > 1:
-+        for i in range(len(dp)):
-+            if dp[i] == '-u':
-+                setpid = True
-+            elif dp[i] == '-V':
-+                i += 1
-+                dphdr = dp[i]
-+
-+    return dpctl_mod_dp(dp, True, setpid, dphdr)
-+
-+
-+def dpctl_del_dp(dp):
-+    args = [dp]
-+    return dpctl_mod_dp(args, False)
-+
-+
-+def help(errStr=None):
-+    """
-+    Display a help message, include errStr if there was an error.
-+    Return: None
-+    """
-+    if errStr is None:
-+        print("ovs-dpctl.py: openvswitch module controller")
-+    else:
-+        print(errStr)
-+    print("usage:")
-+    print("  show [DP]\t\t\tDispay information about all datapaths, or DP")
-+    print("  add-dp DP\t\t\tAdd new datapath DP")
-+    print("  del-dp DP\t\t\tDelete local datapath DP")
-+
-+
-+def main(argv):
-+    if len(argv) < 2:
-+        help()
-+        return 0
-+    count = 1
-+    for arg in argv[1:]:
-+        count += 1
-+        if arg in ("-v", "--verbose"):
-+            logging.basicConfig(level=logging.DEBUG)
-+        if arg in ("-h", "--help", "help"):
-+            help()
-+            return 0
-+        if arg == "show":
-+            dpctl_netlink_init()
-+            if len(argv) <= count:
-+                dpctl_show()
-+            else:
-+                dpctl_show(argv[count])
-+            return 0
-+        elif arg == "add-dp":
-+            dpctl_netlink_init()
-+            if len(argv) < 3:   # 3rd arg should be DP name or additional opts
-+                help("Missing a DP name")
-+                return -1
-+            else:
-+                dpctl_add_dp(argv[count:])
-+            return 0
-+        elif arg == "del-dp":
-+            dpctl_netlink_init()
-+            if len(argv) < 3:   # 3rd arg MUST be DP name
-+                help("Missing a DP name")
-+                return -1
-+            else:
-+                dpctl_del_dp(argv[count])
-+            return 0
-+    return 0
-+
-+
-+if __name__ == "__main__":
-+    sys.exit(main(sys.argv))
--- 
-2.34.3
-
+PiBTdWJqZWN0OiBSZTogW1BhdGNoIHY3IDEyLzEyXSBSRE1BL21hbmFfaWI6IEFkZCBhIGRyaXZl
+ciBmb3IgTWljcm9zb2Z0DQo+IEF6dXJlIE5ldHdvcmsgQWRhcHRlcg0KPiANCj4gT24gTW9uLCAy
+MDIyLTEwLTE3IGF0IDEyOjIwIC0wNzAwLCBsb25nbGlAbGludXhvbmh5cGVydi5jb20gd3JvdGU6
+DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW5maW5pYmFuZC9ody9tYW5hL21haW4uYw0KPiA+
+IGIvZHJpdmVycy9pbmZpbmliYW5kL2h3L21hbmEvbWFpbi5jDQo+ID4gbmV3IGZpbGUgbW9kZSAx
+MDA2NDQNCj4gPiBpbmRleCAwMDAwMDAwMDAwMDAuLjU3ZTVmOWRjYTQ1NA0KPiA+IC0tLSAvZGV2
+L251bGwNCj4gPiArKysgYi9kcml2ZXJzL2luZmluaWJhbmQvaHcvbWFuYS9tYWluLmMNCj4gDQo+
+IFsuLi5dDQo+IA0KPiA+ICtzdGF0aWMgaW50IG1hbmFfZ2RfZGVzdHJveV9kb29yYmVsbF9wYWdl
+KHN0cnVjdCBnZG1hX2NvbnRleHQgKmdjLA0KPiA+ICsJCQkJCSBpbnQgZG9vcmJlbGxfcGFnZSkN
+Cj4gPiArew0KPiA+ICsJc3RydWN0IGdkbWFfZGVzdHJveV9yZXNvdXJjZV9yYW5nZV9yZXEgcmVx
+ID0ge307DQo+ID4gKwlzdHJ1Y3QgZ2RtYV9yZXNwX2hkciByZXNwID0ge307DQo+ID4gKwlpbnQg
+ZXJyOw0KPiA+ICsNCj4gPiArCW1hbmFfZ2RfaW5pdF9yZXFfaGRyKCZyZXEuaGRyLA0KPiBHRE1B
+X0RFU1RST1lfUkVTT1VSQ0VfUkFOR0UsDQo+ID4gKwkJCSAgICAgc2l6ZW9mKHJlcSksIHNpemVv
+ZihyZXNwKSk7DQo+ID4gKw0KPiA+ICsJcmVxLnJlc291cmNlX3R5cGUgPSBHRE1BX1JFU09VUkNF
+X0RPT1JCRUxMX1BBR0U7DQo+ID4gKwlyZXEubnVtX3Jlc291cmNlcyA9IDE7DQo+ID4gKwlyZXEu
+YWxsb2NhdGVkX3Jlc291cmNlcyA9IGRvb3JiZWxsX3BhZ2U7DQo+ID4gKw0KPiA+ICsJZXJyID0g
+bWFuYV9nZF9zZW5kX3JlcXVlc3QoZ2MsIHNpemVvZihyZXEpLCAmcmVxLCBzaXplb2YocmVzcCks
+DQo+ICZyZXNwKTsNCj4gPiArCWlmIChlcnIgfHwgcmVzcC5zdGF0dXMpIHsNCj4gPiArCQlkZXZf
+ZXJyKGdjLT5kZXYsDQo+ID4gKwkJCSJGYWlsZWQgdG8gZGVzdHJveSBkb29yYmVsbCBwYWdlOiBy
+ZXQgJWQsIDB4JXhcbiIsDQo+ID4gKwkJCWVyciwgcmVzcC5zdGF0dXMpOw0KPiA+ICsJCXJldHVy
+biBlcnIgPyBlcnIgOiAtRVBST1RPOw0KPiANCj4gTWlub3Igbml0OiB0aGUgcHJlZmVycmVkIHN0
+eWxlIGlzOg0KPiAJCXJldHVybiBlcnIgPzogLUVQUk9UTzsNCj4gDQo+IGEgZmV3IG90aGVyIG9j
+Y3VyZW5jZXMgYmVsb3cuDQoNCldpbGwgY2hhbmdlIHRoaXMuDQoNCj4gDQo+ID4gKwl9DQo+ID4g
+Kw0KPiA+ICsJcmV0dXJuIDA7DQo+ID4gK30NCj4gDQo+IFsuLi5dDQo+IA0KPiA+ICtpbnQgbWFu
+YV9pYl9nZF9jcmVhdGVfZG1hX3JlZ2lvbihzdHJ1Y3QgbWFuYV9pYl9kZXYgKmRldiwgc3RydWN0
+DQo+IGliX3VtZW0gKnVtZW0sDQo+ID4gKwkJCQkgbWFuYV9oYW5kbGVfdCAqZ2RtYV9yZWdpb24p
+DQo+ID4gK3sNCj4gPiArCXN0cnVjdCBnZG1hX2RtYV9yZWdpb25fYWRkX3BhZ2VzX3JlcSAqYWRk
+X3JlcSA9IE5VTEw7DQo+ID4gKwlzdHJ1Y3QgZ2RtYV9jcmVhdGVfZG1hX3JlZ2lvbl9yZXNwIGNy
+ZWF0ZV9yZXNwID0ge307DQo+ID4gKwlzdHJ1Y3QgZ2RtYV9jcmVhdGVfZG1hX3JlZ2lvbl9yZXEg
+KmNyZWF0ZV9yZXE7DQo+ID4gKwlzaXplX3QgbnVtX3BhZ2VzX2N1ciwgbnVtX3BhZ2VzX3RvX2hh
+bmRsZTsNCj4gPiArCXVuc2lnbmVkIGludCBjcmVhdGVfcmVxX21zZ19zaXplOw0KPiA+ICsJc3Ry
+dWN0IGh3X2NoYW5uZWxfY29udGV4dCAqaHdjOw0KPiA+ICsJc3RydWN0IGliX2Jsb2NrX2l0ZXIg
+Yml0ZXI7DQo+ID4gKwlzaXplX3QgbWF4X3Bnc19jcmVhdGVfY21kOw0KPiA+ICsJc3RydWN0IGdk
+bWFfY29udGV4dCAqZ2M7DQo+ID4gKwlzaXplX3QgbnVtX3BhZ2VzX3RvdGFsOw0KPiA+ICsJc3Ry
+dWN0IGdkbWFfZGV2ICptZGV2Ow0KPiA+ICsJdW5zaWduZWQgbG9uZyBwYWdlX3N6Ow0KPiA+ICsJ
+dm9pZCAqcmVxdWVzdF9idWY7DQo+ID4gKwl1bnNpZ25lZCBpbnQgaTsNCj4gPiArCWludCBlcnI7
+DQo+ID4gKw0KPiA+ICsJbWRldiA9IGRldi0+Z2RtYV9kZXY7DQo+ID4gKwlnYyA9IG1kZXYtPmdk
+bWFfY29udGV4dDsNCj4gPiArCWh3YyA9IGdjLT5od2MuZHJpdmVyX2RhdGE7DQo+ID4gKw0KPiA+
+ICsJLyogSGFyZHdhcmUgcmVxdWlyZXMgZG1hIHJlZ2lvbiB0byBhbGlnbiB0byBjaG9zZW4gcGFn
+ZSBzaXplICovDQo+ID4gKwlwYWdlX3N6ID0gaWJfdW1lbV9maW5kX2Jlc3RfcGdzeih1bWVtLCBQ
+QUdFX1NaX0JNLCAwKTsNCj4gPiArCWlmICghcGFnZV9zeikgew0KPiA+ICsJCWliZGV2X2RiZygm
+ZGV2LT5pYl9kZXYsICJmYWlsZWQgdG8gZmluZCBwYWdlIHNpemUuXG4iKTsNCj4gPiArCQlyZXR1
+cm4gLUVOT01FTTsNCj4gPiArCX0NCj4gPiArCW51bV9wYWdlc190b3RhbCA9IGliX3VtZW1fbnVt
+X2RtYV9ibG9ja3ModW1lbSwgcGFnZV9zeik7DQo+ID4gKw0KPiA+ICsJbWF4X3Bnc19jcmVhdGVf
+Y21kID0NCj4gPiArCQkoaHdjLT5tYXhfcmVxX21zZ19zaXplIC0gc2l6ZW9mKCpjcmVhdGVfcmVx
+KSkgLw0KPiBzaXplb2YodTY0KTsNCj4gPiArCW51bV9wYWdlc190b19oYW5kbGUgPQ0KPiA+ICsJ
+CW1pbl90KHNpemVfdCwgbnVtX3BhZ2VzX3RvdGFsLCBtYXhfcGdzX2NyZWF0ZV9jbWQpOw0KPiA+
+ICsJY3JlYXRlX3JlcV9tc2dfc2l6ZSA9DQo+ID4gKwkJc3RydWN0X3NpemUoY3JlYXRlX3JlcSwg
+cGFnZV9hZGRyX2xpc3QsDQo+IG51bV9wYWdlc190b19oYW5kbGUpOw0KPiA+ICsNCj4gPiArCXJl
+cXVlc3RfYnVmID0ga3phbGxvYyhod2MtPm1heF9yZXFfbXNnX3NpemUsIEdGUF9LRVJORUwpOw0K
+PiA+ICsJaWYgKCFyZXF1ZXN0X2J1ZikNCj4gPiArCQlyZXR1cm4gLUVOT01FTTsNCj4gPiArDQo+
+ID4gKwljcmVhdGVfcmVxID0gcmVxdWVzdF9idWY7DQo+ID4gKwltYW5hX2dkX2luaXRfcmVxX2hk
+cigmY3JlYXRlX3JlcS0+aGRyLA0KPiBHRE1BX0NSRUFURV9ETUFfUkVHSU9OLA0KPiA+ICsJCQkg
+ICAgIGNyZWF0ZV9yZXFfbXNnX3NpemUsIHNpemVvZihjcmVhdGVfcmVzcCkpOw0KPiA+ICsNCj4g
+PiArCWNyZWF0ZV9yZXEtPmxlbmd0aCA9IHVtZW0tPmxlbmd0aDsNCj4gPiArCWNyZWF0ZV9yZXEt
+Pm9mZnNldF9pbl9wYWdlID0gdW1lbS0+YWRkcmVzcyAmIChwYWdlX3N6IC0gMSk7DQo+ID4gKwlj
+cmVhdGVfcmVxLT5nZG1hX3BhZ2VfdHlwZSA9IG9yZGVyX2Jhc2VfMihwYWdlX3N6KSAtDQo+IFBB
+R0VfU0hJRlQ7DQo+ID4gKwljcmVhdGVfcmVxLT5wYWdlX2NvdW50ID0gbnVtX3BhZ2VzX3RvdGFs
+Ow0KPiA+ICsJY3JlYXRlX3JlcS0+cGFnZV9hZGRyX2xpc3RfbGVuID0gbnVtX3BhZ2VzX3RvX2hh
+bmRsZTsNCj4gPiArDQo+ID4gKwlpYmRldl9kYmcoJmRldi0+aWJfZGV2LCAic2l6ZV9kbWFfcmVn
+aW9uICVsdQ0KPiBudW1fcGFnZXNfdG90YWwgJWx1XG4iLA0KPiA+ICsJCSAgdW1lbS0+bGVuZ3Ro
+LCBudW1fcGFnZXNfdG90YWwpOw0KPiA+ICsNCj4gPiArCWliZGV2X2RiZygmZGV2LT5pYl9kZXYs
+ICJwYWdlX3N6ICVsdSBvZmZzZXRfaW5fcGFnZSAldVxuIiwNCj4gPiArCQkgIHBhZ2Vfc3osIGNy
+ZWF0ZV9yZXEtPm9mZnNldF9pbl9wYWdlKTsNCj4gPiArDQo+ID4gKwlpYmRldl9kYmcoJmRldi0+
+aWJfZGV2LCAibnVtX3BhZ2VzX3RvX2hhbmRsZSAlbHUsDQo+IGdkbWFfcGFnZV90eXBlICV1IiwN
+Cj4gPiArCQkgIG51bV9wYWdlc190b19oYW5kbGUsIGNyZWF0ZV9yZXEtPmdkbWFfcGFnZV90eXBl
+KTsNCj4gPiArDQo+ID4gKwlfX3JkbWFfdW1lbV9ibG9ja19pdGVyX3N0YXJ0KCZiaXRlciwgdW1l
+bSwgcGFnZV9zeik7DQo+ID4gKw0KPiA+ICsJZm9yIChpID0gMDsgaSA8IG51bV9wYWdlc190b19o
+YW5kbGU7ICsraSkgew0KPiA+ICsJCWRtYV9hZGRyX3QgY3VyX2FkZHI7DQo+ID4gKw0KPiA+ICsJ
+CV9fcmRtYV9ibG9ja19pdGVyX25leHQoJmJpdGVyKTsNCj4gPiArCQljdXJfYWRkciA9IHJkbWFf
+YmxvY2tfaXRlcl9kbWFfYWRkcmVzcygmYml0ZXIpOw0KPiA+ICsNCj4gPiArCQljcmVhdGVfcmVx
+LT5wYWdlX2FkZHJfbGlzdFtpXSA9IGN1cl9hZGRyOw0KPiA+ICsJfQ0KPiA+ICsNCj4gPiArCWVy
+ciA9IG1hbmFfZ2Rfc2VuZF9yZXF1ZXN0KGdjLCBjcmVhdGVfcmVxX21zZ19zaXplLCBjcmVhdGVf
+cmVxLA0KPiA+ICsJCQkJICAgc2l6ZW9mKGNyZWF0ZV9yZXNwKSwgJmNyZWF0ZV9yZXNwKTsNCj4g
+PiArCWlmIChlcnIgfHwgY3JlYXRlX3Jlc3AuaGRyLnN0YXR1cykgew0KPiA+ICsJCWliZGV2X2Ri
+ZygmZGV2LT5pYl9kZXYsDQo+ID4gKwkJCSAgIkZhaWxlZCB0byBjcmVhdGUgRE1BIHJlZ2lvbjog
+JWQsIDB4JXhcbiIsIGVyciwNCj4gPiArCQkJICBjcmVhdGVfcmVzcC5oZHIuc3RhdHVzKTsNCj4g
+PiArCQlpZiAoIWVycikNCj4gPiArCQkJZXJyID0gLUVQUk9UTzsNCj4gPiArDQo+ID4gKwkJa2Zy
+ZWUocmVxdWVzdF9idWYpOw0KPiA+ICsJCXJldHVybiBlcnI7DQo+IA0KPiBNaW5vciBuaXQ6IHlv
+dSBjYW4gYXZvaWQgYSBsaXR0bGUgY29kZSBkb3BsaWNhdGlvbiByZXBsYWNpbmcgdGhlIGFib3Zl
+DQo+IDIgbGluZXMgd2l0aDoNCj4gCQlnb3RvIG91dDsNCg0KR29vZCBzdWdnZXN0aW9uLCB3aWxs
+IG1ha2UgdGhlIGNoYW5nZS4NCg0KPiANCj4gYW5kIC4uLg0KPiANCj4gPiArCX0NCj4gPiArDQo+
+ID4gKwkqZ2RtYV9yZWdpb24gPSBjcmVhdGVfcmVzcC5kbWFfcmVnaW9uX2hhbmRsZTsNCj4gPiAr
+CWliZGV2X2RiZygmZGV2LT5pYl9kZXYsICJDcmVhdGVkIERNQSByZWdpb24gd2l0aCBoYW5kbGUN
+Cj4gMHglbGx4XG4iLA0KPiA+ICsJCSAgKmdkbWFfcmVnaW9uKTsNCj4gPiArDQo+ID4gKwludW1f
+cGFnZXNfY3VyID0gbnVtX3BhZ2VzX3RvX2hhbmRsZTsNCj4gPiArDQo+ID4gKwlpZiAobnVtX3Bh
+Z2VzX2N1ciA8IG51bV9wYWdlc190b3RhbCkgew0KPiA+ICsJCXVuc2lnbmVkIGludCBhZGRfcmVx
+X21zZ19zaXplOw0KPiA+ICsJCXNpemVfdCBtYXhfcGdzX2FkZF9jbWQgPQ0KPiA+ICsJCQkoaHdj
+LT5tYXhfcmVxX21zZ19zaXplIC0gc2l6ZW9mKCphZGRfcmVxKSkgLw0KPiA+ICsJCQlzaXplb2Yo
+dTY0KTsNCj4gPiArDQo+ID4gKwkJbnVtX3BhZ2VzX3RvX2hhbmRsZSA9DQo+ID4gKwkJCW1pbl90
+KHNpemVfdCwgbnVtX3BhZ2VzX3RvdGFsIC0gbnVtX3BhZ2VzX2N1ciwNCj4gPiArCQkJICAgICAg
+bWF4X3Bnc19hZGRfY21kKTsNCj4gPiArDQo+ID4gKwkJLyogQ2FsY3VsYXRlIHRoZSBtYXggbnVt
+IG9mIHBhZ2VzIHRoYXQgd2lsbCBiZSBoYW5kbGVkICovDQo+ID4gKwkJYWRkX3JlcV9tc2dfc2l6
+ZSA9IHN0cnVjdF9zaXplKGFkZF9yZXEsIHBhZ2VfYWRkcl9saXN0LA0KPiA+ICsJCQkJCSAgICAg
+ICBudW1fcGFnZXNfdG9faGFuZGxlKTsNCj4gPiArCQlhZGRfcmVxID0gcmVxdWVzdF9idWY7DQo+
+ID4gKw0KPiA+ICsJCXdoaWxlIChudW1fcGFnZXNfY3VyIDwgbnVtX3BhZ2VzX3RvdGFsKSB7DQo+
+ID4gKwkJCXN0cnVjdCBnZG1hX2dlbmVyYWxfcmVzcCBhZGRfcmVzcCA9IHt9Ow0KPiA+ICsJCQl1
+MzIgZXhwZWN0ZWRfc3RhdHVzID0gMDsNCj4gPiArDQo+ID4gKwkJCWlmIChudW1fcGFnZXNfY3Vy
+ICsgbnVtX3BhZ2VzX3RvX2hhbmRsZSA8DQo+ID4gKwkJCSAgICBudW1fcGFnZXNfdG90YWwpIHsN
+Cj4gPiArCQkJCS8qIFN0YXR1cyBpbmRpY2F0aW5nIG1vcmUgcGFnZXMgYXJlIG5lZWRlZA0KPiAq
+Lw0KPiA+ICsJCQkJZXhwZWN0ZWRfc3RhdHVzID0NCj4gR0RNQV9TVEFUVVNfTU9SRV9FTlRSSUVT
+Ow0KPiA+ICsJCQl9DQo+ID4gKw0KPiA+ICsJCQltZW1zZXQoYWRkX3JlcSwgMCwgYWRkX3JlcV9t
+c2dfc2l6ZSk7DQo+ID4gKw0KPiA+ICsJCQltYW5hX2dkX2luaXRfcmVxX2hkcigmYWRkX3JlcS0+
+aGRyLA0KPiA+ICsNCj4gR0RNQV9ETUFfUkVHSU9OX0FERF9QQUdFUywNCj4gPiArCQkJCQkgICAg
+IGFkZF9yZXFfbXNnX3NpemUsDQo+ID4gKwkJCQkJICAgICBzaXplb2YoYWRkX3Jlc3ApKTsNCj4g
+PiArCQkJYWRkX3JlcS0+ZG1hX3JlZ2lvbl9oYW5kbGUgPSAqZ2RtYV9yZWdpb247DQo+ID4gKwkJ
+CWFkZF9yZXEtPnBhZ2VfYWRkcl9saXN0X2xlbiA9DQo+IG51bV9wYWdlc190b19oYW5kbGU7DQo+
+ID4gKw0KPiA+ICsJCQlmb3IgKGkgPSAwOyBpIDwgbnVtX3BhZ2VzX3RvX2hhbmRsZTsgKytpKSB7
+DQo+ID4gKwkJCQlkbWFfYWRkcl90IGN1cl9hZGRyID0NCj4gPiArDQo+IAlyZG1hX2Jsb2NrX2l0
+ZXJfZG1hX2FkZHJlc3MoJmJpdGVyKTsNCj4gPiArCQkJCWFkZF9yZXEtPnBhZ2VfYWRkcl9saXN0
+W2ldID0gY3VyX2FkZHI7DQo+ID4gKwkJCQlfX3JkbWFfYmxvY2tfaXRlcl9uZXh0KCZiaXRlcik7
+DQo+ID4gKw0KPiA+ICsJCQkJaWJkZXZfZGJnKCZkZXYtPmliX2RldiwNCj4gPiArCQkJCQkgICJw
+YWdlX2FkZHJfbGlzdCAlbHUgYWRkciAweCVsbHhcbiIsDQo+ID4gKwkJCQkJICBudW1fcGFnZXNf
+Y3VyICsgaSwgY3VyX2FkZHIpOw0KPiA+ICsJCQl9DQo+ID4gKw0KPiA+ICsJCQllcnIgPSBtYW5h
+X2dkX3NlbmRfcmVxdWVzdChnYywgYWRkX3JlcV9tc2dfc2l6ZSwNCj4gPiArCQkJCQkJICAgYWRk
+X3JlcSwgc2l6ZW9mKGFkZF9yZXNwKSwNCj4gPiArCQkJCQkJICAgJmFkZF9yZXNwKTsNCj4gPiAr
+CQkJaWYgKGVyciB8fCBhZGRfcmVzcC5oZHIuc3RhdHVzICE9IGV4cGVjdGVkX3N0YXR1cykgew0K
+PiA+ICsJCQkJaWJkZXZfZGJnKCZkZXYtPmliX2RldiwNCj4gPiArCQkJCQkgICJGYWlsZWQgcHV0
+IERNQQ0KPiBwYWdlcyAldTogJWQsMHgleFxuIiwNCj4gPiArCQkJCQkgIGksIGVyciwgYWRkX3Jl
+c3AuaGRyLnN0YXR1cyk7DQo+ID4gKwkJCQllcnIgPSAtRVBST1RPOw0KPiA+ICsJCQkJYnJlYWs7
+DQo+ID4gKwkJCX0NCj4gPiArDQo+ID4gKwkJCW51bV9wYWdlc19jdXIgKz0gbnVtX3BhZ2VzX3Rv
+X2hhbmRsZTsNCj4gPiArCQkJbnVtX3BhZ2VzX3RvX2hhbmRsZSA9DQo+ID4gKwkJCQltaW5fdChz
+aXplX3QsIG51bV9wYWdlc190b3RhbCAtDQo+IG51bV9wYWdlc19jdXIsDQo+ID4gKwkJCQkgICAg
+ICBtYXhfcGdzX2FkZF9jbWQpOw0KPiA+ICsJCQlhZGRfcmVxX21zZ19zaXplID0gc2l6ZW9mKCph
+ZGRfcmVxKSArDQo+ID4gKwkJCQkJICAgbnVtX3BhZ2VzX3RvX2hhbmRsZSAqDQo+IHNpemVvZih1
+NjQpOw0KPiA+ICsJCX0NCj4gPiArCX0NCj4gPiArDQo+ID4gKwlrZnJlZShyZXF1ZXN0X2J1Zik7
+DQo+ID4gKw0KPiA+ICsJaWYgKGVycikNCj4gPiArCQltYW5hX2liX2dkX2Rlc3Ryb3lfZG1hX3Jl
+Z2lvbihkZXYsDQo+IGNyZWF0ZV9yZXNwLmRtYV9yZWdpb25faGFuZGxlKTsNCj4gDQo+IC4uLiBo
+ZXJlOg0KPiANCj4gCWlmIChlcnIpDQo+IAkJbWFuYV9pYl9nZF9kZXN0cm95X2RtYV9yZWdpb24o
+ZGV2LA0KPiBjcmVhdGVfcmVzcC5kbWFfcmVnaW9uX2hhbmRsZSk7DQo+IA0KPiBvdXQ6DQo+IAlr
+ZnJlZShyZXF1ZXN0X2J1Zik7DQo+IA0KPiA+ICsNCj4gPiArCXJldHVybiBlcnI7DQo+ID4gK30N
+Cj4gDQo+IFsuLi5dDQo+IA0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2luZmluaWJhbmQvaHcv
+bWFuYS9xcC5jDQo+ID4gYi9kcml2ZXJzL2luZmluaWJhbmQvaHcvbWFuYS9xcC5jIG5ldyBmaWxl
+IG1vZGUgMTAwNjQ0IGluZGV4DQo+ID4gMDAwMDAwMDAwMDAwLi5mZWM3ZDRhMDZhY2UNCj4gPiAt
+LS0gL2Rldi9udWxsDQo+ID4gKysrIGIvZHJpdmVycy9pbmZpbmliYW5kL2h3L21hbmEvcXAuYw0K
+PiA+IEBAIC0wLDAgKzEsNTA1IEBADQo+ID4gKy8vIFNQRFgtTGljZW5zZS1JZGVudGlmaWVyOiBH
+UEwtMi4wLW9ubHkNCj4gPiArLyoNCj4gPiArICogQ29weXJpZ2h0IChjKSAyMDIyLCBNaWNyb3Nv
+ZnQgQ29ycG9yYXRpb24uIEFsbCByaWdodHMgcmVzZXJ2ZWQuDQo+ID4gKyAqLw0KPiA+ICsNCj4g
+PiArI2luY2x1ZGUgIm1hbmFfaWIuaCINCj4gPiArDQo+ID4gK3N0YXRpYyBpbnQgbWFuYV9pYl9j
+ZmdfdnBvcnRfc3RlZXJpbmcoc3RydWN0IG1hbmFfaWJfZGV2ICpkZXYsDQo+ID4gKwkJCQkgICAg
+ICBzdHJ1Y3QgbmV0X2RldmljZSAqbmRldiwNCj4gPiArCQkJCSAgICAgIG1hbmFfaGFuZGxlX3Qg
+ZGVmYXVsdF9yeG9iaiwNCj4gPiArCQkJCSAgICAgIG1hbmFfaGFuZGxlX3QgaW5kX3RhYmxlW10s
+DQo+ID4gKwkJCQkgICAgICB1MzIgbG9nX2luZF90Ymxfc2l6ZSwgdTMyDQo+IHJ4X2hhc2hfa2V5
+X2xlbiwNCj4gPiArCQkJCSAgICAgIHU4ICpyeF9oYXNoX2tleSkNCj4gPiArew0KPiA+ICsJc3Ry
+dWN0IG1hbmFfcG9ydF9jb250ZXh0ICptcGMgPSBuZXRkZXZfcHJpdihuZGV2KTsNCj4gPiArCXN0
+cnVjdCBtYW5hX2NmZ19yeF9zdGVlcl9yZXEgKnJlcSA9IE5VTEw7DQo+ID4gKwlzdHJ1Y3QgbWFu
+YV9jZmdfcnhfc3RlZXJfcmVzcCByZXNwID0ge307DQo+ID4gKwltYW5hX2hhbmRsZV90ICpyZXFf
+aW5kaXJfdGFiOw0KPiA+ICsJc3RydWN0IGdkbWFfY29udGV4dCAqZ2M7DQo+ID4gKwlzdHJ1Y3Qg
+Z2RtYV9kZXYgKm1kZXY7DQo+ID4gKwl1MzIgcmVxX2J1Zl9zaXplOw0KPiA+ICsJaW50IGksIGVy
+cjsNCj4gPiArDQo+ID4gKwltZGV2ID0gZGV2LT5nZG1hX2RldjsNCj4gPiArCWdjID0gbWRldi0+
+Z2RtYV9jb250ZXh0Ow0KPiA+ICsNCj4gPiArCXJlcV9idWZfc2l6ZSA9DQo+ID4gKwkJc2l6ZW9m
+KCpyZXEpICsgc2l6ZW9mKG1hbmFfaGFuZGxlX3QpICoNCj4gTUFOQV9JTkRJUkVDVF9UQUJMRV9T
+SVpFOw0KPiA+ICsJcmVxID0ga3phbGxvYyhyZXFfYnVmX3NpemUsIEdGUF9LRVJORUwpOw0KPiA+
+ICsJaWYgKCFyZXEpDQo+ID4gKwkJcmV0dXJuIC1FTk9NRU07DQo+ID4gKw0KPiA+ICsJbWFuYV9n
+ZF9pbml0X3JlcV9oZHIoJnJlcS0+aGRyLCBNQU5BX0NPTkZJR19WUE9SVF9SWCwNCj4gcmVxX2J1
+Zl9zaXplLA0KPiA+ICsJCQkgICAgIHNpemVvZihyZXNwKSk7DQo+ID4gKw0KPiA+ICsJcmVxLT52
+cG9ydCA9IG1wYy0+cG9ydF9oYW5kbGU7DQo+ID4gKwlyZXEtPnJ4X2VuYWJsZSA9IDE7DQo+ID4g
+KwlyZXEtPnVwZGF0ZV9kZWZhdWx0X3J4b2JqID0gMTsNCj4gPiArCXJlcS0+ZGVmYXVsdF9yeG9i
+aiA9IGRlZmF1bHRfcnhvYmo7DQo+ID4gKwlyZXEtPmhkci5kZXZfaWQgPSBtZGV2LT5kZXZfaWQ7
+DQo+ID4gKw0KPiA+ICsJLyogSWYgdGhlcmUgYXJlIG1vcmUgdGhhbiAxIGVudHJpZXMgaW4gaW5k
+aXJlY3Rpb24gdGFibGUsIGVuYWJsZSBSU1MgKi8NCj4gPiArCWlmIChsb2dfaW5kX3RibF9zaXpl
+KQ0KPiA+ICsJCXJlcS0+cnNzX2VuYWJsZSA9IHRydWU7DQo+ID4gKw0KPiA+ICsJcmVxLT5udW1f
+aW5kaXJfZW50cmllcyA9IE1BTkFfSU5ESVJFQ1RfVEFCTEVfU0laRTsNCj4gPiArCXJlcS0+aW5k
+aXJfdGFiX29mZnNldCA9IHNpemVvZigqcmVxKTsNCj4gPiArCXJlcS0+dXBkYXRlX2luZGlyX3Rh
+YiA9IHRydWU7DQo+ID4gKw0KPiA+ICsJcmVxX2luZGlyX3RhYiA9IChtYW5hX2hhbmRsZV90ICop
+KHJlcSArIDEpOw0KPiA+ICsJLyogVGhlIGluZCB0YWJsZSBwYXNzZWQgdG8gdGhlIGhhcmR3YXJl
+IG11c3QgaGF2ZQ0KPiA+ICsJICogTUFOQV9JTkRJUkVDVF9UQUJMRV9TSVpFIGVudHJpZXMuIEFk
+anVzdCB0aGUgdmVyYg0KPiA+ICsJICogaW5kX3RhYmxlIHRvIE1BTkFfSU5ESVJFQ1RfVEFCTEVf
+U0laRSBpZiByZXF1aXJlZA0KPiA+ICsJICovDQo+ID4gKwlpYmRldl9kYmcoJmRldi0+aWJfZGV2
+LCAiaW5kIHRhYmxlIHNpemUgJXVcbiIsIDEgPDwNCj4gbG9nX2luZF90Ymxfc2l6ZSk7DQo+ID4g
+Kwlmb3IgKGkgPSAwOyBpIDwgTUFOQV9JTkRJUkVDVF9UQUJMRV9TSVpFOyBpKyspIHsNCj4gPiAr
+CQlyZXFfaW5kaXJfdGFiW2ldID0gaW5kX3RhYmxlW2kgJSAoMSA8PCBsb2dfaW5kX3RibF9zaXpl
+KV07DQo+ID4gKwkJaWJkZXZfZGJnKCZkZXYtPmliX2RldiwgImluZGV4ICV1IGhhbmRsZSAweCVs
+bHhcbiIsIGksDQo+ID4gKwkJCSAgcmVxX2luZGlyX3RhYltpXSk7DQo+ID4gKwl9DQo+ID4gKw0K
+PiA+ICsJcmVxLT51cGRhdGVfaGFzaGtleSA9IHRydWU7DQo+ID4gKwlpZiAocnhfaGFzaF9rZXlf
+bGVuKQ0KPiA+ICsJCW1lbWNweShyZXEtPmhhc2hrZXksIHJ4X2hhc2hfa2V5LCByeF9oYXNoX2tl
+eV9sZW4pOw0KPiA+ICsJZWxzZQ0KPiA+ICsJCW5ldGRldl9yc3Nfa2V5X2ZpbGwocmVxLT5oYXNo
+a2V5LCBNQU5BX0hBU0hfS0VZX1NJWkUpOw0KPiA+ICsNCj4gPiArCWliZGV2X2RiZygmZGV2LT5p
+Yl9kZXYsICJ2cG9ydCBoYW5kbGUgJWxsdSBkZWZhdWx0X3J4b2JqDQo+IDB4JWxseFxuIiwNCj4g
+PiArCQkgIHJlcS0+dnBvcnQsIGRlZmF1bHRfcnhvYmopOw0KPiA+ICsNCj4gPiArCWVyciA9IG1h
+bmFfZ2Rfc2VuZF9yZXF1ZXN0KGdjLCByZXFfYnVmX3NpemUsIHJlcSwgc2l6ZW9mKHJlc3ApLA0K
+PiAmcmVzcCk7DQo+ID4gKwlpZiAoZXJyKSB7DQo+ID4gKwkJbmV0ZGV2X2VycihuZGV2LCAiRmFp
+bGVkIHRvIGNvbmZpZ3VyZSB2UG9ydCBSWDogJWRcbiIsIGVycik7DQo+ID4gKwkJZ290byBvdXQ7
+DQo+ID4gKwl9DQo+ID4gKw0KPiA+ICsJaWYgKHJlc3AuaGRyLnN0YXR1cykgew0KPiA+ICsJCW5l
+dGRldl9lcnIobmRldiwgInZQb3J0IFJYIGNvbmZpZ3VyYXRpb24gZmFpbGVkOiAweCV4XG4iLA0K
+PiA+ICsJCQkgICByZXNwLmhkci5zdGF0dXMpOw0KPiA+ICsJCWVyciA9IC1FUFJPVE87DQo+IA0K
+PiBUaGlzIGlzIGNvbmZ1c2luZzogaWYgdGhpcyBlcnJvciBjb25kaXRpb24gaXMgcmVhY2hlZCwg
+Ym90aCBlcnJvciBhbmQgc3VjY2VzZnVsDQo+IGNvbmZpZ3VyYXRpb24gd2lsbCBiZSBsb2dnZWQu
+IEkgZ3Vlc3MgYW4gYWRkaXRpb25hbDoNCj4gDQo+IAkJZ290byBvdXQ7DQo+IA0KPiBpcyBuZWVk
+ZWQuDQoNClllcywgaXQncyBjb25mdXNpbmcuIFdpbGwgY2hhbmdlIHRoaXMuDQoNCj4gDQo+ID4g
+Kwl9DQo+ID4gKw0KPiA+ICsJbmV0ZGV2X2luZm8obmRldiwgIkNvbmZpZ3VyZWQgc3RlZXJpbmcg
+dlBvcnQgJWxsdQ0KPiBsb2dfZW50cmllcyAldVxuIiwNCj4gPiArCQkgICAgbXBjLT5wb3J0X2hh
+bmRsZSwgbG9nX2luZF90Ymxfc2l6ZSk7DQo+ID4gKw0KPiA+ICtvdXQ6DQo+ID4gKwlrZnJlZShy
+ZXEpOw0KPiA+ICsJcmV0dXJuIGVycjsNCj4gPiArfQ0KPiA+ICsNCj4gPiArc3RhdGljIGludCBt
+YW5hX2liX2NyZWF0ZV9xcF9yc3Moc3RydWN0IGliX3FwICppYnFwLCBzdHJ1Y3QgaWJfcGQgKnBk
+LA0KPiA+ICsJCQkJIHN0cnVjdCBpYl9xcF9pbml0X2F0dHIgKmF0dHIsDQo+ID4gKwkJCQkgc3Ry
+dWN0IGliX3VkYXRhICp1ZGF0YSkNCj4gPiArew0KPiA+ICsJc3RydWN0IG1hbmFfaWJfcXAgKnFw
+ID0gY29udGFpbmVyX29mKGlicXAsIHN0cnVjdCBtYW5hX2liX3FwLA0KPiBpYnFwKTsNCj4gPiAr
+CXN0cnVjdCBtYW5hX2liX2RldiAqbWRldiA9DQo+ID4gKwkJY29udGFpbmVyX29mKHBkLT5kZXZp
+Y2UsIHN0cnVjdCBtYW5hX2liX2RldiwgaWJfZGV2KTsNCj4gPiArCXN0cnVjdCBpYl9yd3FfaW5k
+X3RhYmxlICppbmRfdGJsID0gYXR0ci0+cndxX2luZF90Ymw7DQo+ID4gKwlzdHJ1Y3QgbWFuYV9p
+Yl9jcmVhdGVfcXBfcnNzX3Jlc3AgcmVzcCA9IHt9Ow0KPiA+ICsJc3RydWN0IG1hbmFfaWJfY3Jl
+YXRlX3FwX3JzcyB1Y21kID0ge307DQo+ID4gKwlzdHJ1Y3QgZ2RtYV9kZXYgKmdkID0gbWRldi0+
+Z2RtYV9kZXY7DQo+ID4gKwltYW5hX2hhbmRsZV90ICptYW5hX2luZF90YWJsZTsNCj4gPiArCXN0
+cnVjdCBtYW5hX3BvcnRfY29udGV4dCAqbXBjOw0KPiA+ICsJc3RydWN0IG1hbmFfY29udGV4dCAq
+bWM7DQo+ID4gKwlzdHJ1Y3QgbmV0X2RldmljZSAqbmRldjsNCj4gPiArCXN0cnVjdCBtYW5hX2li
+X2NxICpjcTsNCj4gPiArCXN0cnVjdCBtYW5hX2liX3dxICp3cTsNCj4gPiArCXVuc2lnbmVkIGlu
+dCBpbmRfdGJsX3NpemU7DQo+ID4gKwlzdHJ1Y3QgaWJfY3EgKmliY3E7DQo+ID4gKwlzdHJ1Y3Qg
+aWJfd3EgKmlid3E7DQo+ID4gKwl1MzIgcG9ydDsNCj4gPiArCWludCByZXQ7DQo+ID4gKwlpbnQg
+aTsNCj4gDQo+IFRoaXMgY2F1c2VzIGEgYnVpbGQgd2FybmluZyB3aXRoIGNsYW5nOg0KPiANCj4g
+Li4vZHJpdmVycy9pbmZpbmliYW5kL2h3L21hbmEvcXAuYzoxNzI6Njogd2FybmluZzogdmFyaWFi
+bGUgJ2knIGlzIHVzZWQNCj4gdW5pbml0aWFsaXplZCB3aGVuZXZlciAnaWYnIGNvbmRpdGlvbiBp
+cyB0cnVlIFstV3NvbWV0aW1lcy11bmluaXRpYWxpemVkXQ0KPiAgICAgICAgIGlmICghbWFuYV9p
+bmRfdGFibGUpIHsNCj4gICAgICAgICAgICAgXn5+fn5+fn5+fn5+fn5+DQo+IC4uL2RyaXZlcnMv
+aW5maW5pYmFuZC9ody9tYW5hL3FwLmM6MjQxOjk6IG5vdGU6IHVuaW5pdGlhbGl6ZWQgdXNlIG9j
+Y3Vycw0KPiBoZXJlDQo+ICAgICAgICAgd2hpbGUgKGktLSA+IDApIHsNCj4gICAgICAgICAgICAg
+ICAgXg0KPiAuLi9kcml2ZXJzL2luZmluaWJhbmQvaHcvbWFuYS9xcC5jOjE3MjoyOiBub3RlOiBy
+ZW1vdmUgdGhlICdpZicgaWYgaXRzDQo+IGNvbmRpdGlvbiBpcyBhbHdheXMgZmFsc2UNCj4gICAg
+ICAgICBpZiAoIW1hbmFfaW5kX3RhYmxlKSB7DQo+ICAgICAgICAgXn5+fn5+fn5+fn5+fn5+fn5+
+fn5+fg0KPiAuLi9kcml2ZXJzL2luZmluaWJhbmQvaHcvbWFuYS9xcC5jOjExMzo3OiBub3RlOiBp
+bml0aWFsaXplIHRoZSB2YXJpYWJsZSAnaScgdG8NCj4gc2lsZW5jZSB0aGlzIHdhcm5pbmcNCj4g
+ICAgICAgICBpbnQgaTsNCg0KVGhhbmsgeW91LiBXaWxsIGZpeCBpdC4NCg0KPiANCj4gDQo+IA0K
+PiA+ICsNCj4gPiArCW1jID0gZ2QtPmRyaXZlcl9kYXRhOw0KPiA+ICsNCj4gPiArCWlmICghdWRh
+dGEgfHwgdWRhdGEtPmlubGVuIDwgc2l6ZW9mKHVjbWQpKQ0KPiA+ICsJCXJldHVybiAtRUlOVkFM
+Ow0KPiA+ICsNCj4gPiArCXJldCA9IGliX2NvcHlfZnJvbV91ZGF0YSgmdWNtZCwgdWRhdGEsIG1p
+bihzaXplb2YodWNtZCksIHVkYXRhLQ0KPiA+aW5sZW4pKTsNCj4gPiArCWlmIChyZXQpIHsNCj4g
+PiArCQlpYmRldl9kYmcoJm1kZXYtPmliX2RldiwNCj4gPiArCQkJICAiRmFpbGVkIGNvcHkgZnJv
+bSB1ZGF0YSBmb3IgY3JlYXRlIHJzcy1xcCwgZXJyICVkXG4iLA0KPiA+ICsJCQkgIHJldCk7DQo+
+ID4gKwkJcmV0dXJuIC1FRkFVTFQ7DQo+ID4gKwl9DQo+ID4gKw0KPiA+ICsJaWYgKGF0dHItPmNh
+cC5tYXhfcmVjdl93ciA+IE1BWF9TRU5EX0JVRkZFUlNfUEVSX1FVRVVFKSB7DQo+ID4gKwkJaWJk
+ZXZfZGJnKCZtZGV2LT5pYl9kZXYsDQo+ID4gKwkJCSAgIlJlcXVlc3RlZCBtYXhfcmVjdl93ciAl
+ZCBleGNlZWRpbmcgbGltaXRcbiIsDQo+ID4gKwkJCSAgYXR0ci0+Y2FwLm1heF9yZWN2X3dyKTsN
+Cj4gPiArCQlyZXR1cm4gLUVJTlZBTDsNCj4gPiArCX0NCj4gPiArDQo+ID4gKwlpZiAoYXR0ci0+
+Y2FwLm1heF9yZWN2X3NnZSA+IE1BWF9SWF9XUUVfU0dMX0VOVFJJRVMpIHsNCj4gPiArCQlpYmRl
+dl9kYmcoJm1kZXYtPmliX2RldiwNCj4gPiArCQkJICAiUmVxdWVzdGVkIG1heF9yZWN2X3NnZSAl
+ZCBleGNlZWRpbmcgbGltaXRcbiIsDQo+ID4gKwkJCSAgYXR0ci0+Y2FwLm1heF9yZWN2X3NnZSk7
+DQo+ID4gKwkJcmV0dXJuIC1FSU5WQUw7DQo+ID4gKwl9DQo+ID4gKw0KPiA+ICsJaW5kX3RibF9z
+aXplID0gMSA8PCBpbmRfdGJsLT5sb2dfaW5kX3RibF9zaXplOw0KPiA+ICsJaWYgKGluZF90Ymxf
+c2l6ZSA+IE1BTkFfSU5ESVJFQ1RfVEFCTEVfU0laRSkgew0KPiA+ICsJCWliZGV2X2RiZygmbWRl
+di0+aWJfZGV2LA0KPiA+ICsJCQkgICJJbmRpcmVjdCB0YWJsZSBzaXplICVkIGV4Y2VlZGluZyBs
+aW1pdFxuIiwNCj4gPiArCQkJICBpbmRfdGJsX3NpemUpOw0KPiA+ICsJCXJldHVybiAtRUlOVkFM
+Ow0KPiA+ICsJfQ0KPiA+ICsNCj4gPiArCWlmICh1Y21kLnJ4X2hhc2hfZnVuY3Rpb24gIT0gTUFO
+QV9JQl9SWF9IQVNIX0ZVTkNfVE9FUExJVFopDQo+IHsNCj4gPiArCQlpYmRldl9kYmcoJm1kZXYt
+PmliX2RldiwNCj4gPiArCQkJICAiUlggSGFzaCBmdW5jdGlvbiBpcyBub3Qgc3VwcG9ydGVkLCAl
+ZFxuIiwNCj4gPiArCQkJICB1Y21kLnJ4X2hhc2hfZnVuY3Rpb24pOw0KPiA+ICsJCXJldHVybiAt
+RUlOVkFMOw0KPiA+ICsJfQ0KPiA+ICsNCj4gPiArCS8qIElCIHBvcnRzIHN0YXJ0IHdpdGggMSwg
+TUFOQSBzdGFydCB3aXRoIDAgKi8NCj4gPiArCXBvcnQgPSB1Y21kLnBvcnQ7DQo+ID4gKwlpZiAo
+cG9ydCA8IDEgfHwgcG9ydCA+IG1jLT5udW1fcG9ydHMpIHsNCj4gPiArCQlpYmRldl9kYmcoJm1k
+ZXYtPmliX2RldiwgIkludmFsaWQgcG9ydCAldSBpbiBjcmVhdGluZw0KPiBxcFxuIiwNCj4gPiAr
+CQkJICBwb3J0KTsNCj4gPiArCQlyZXR1cm4gLUVJTlZBTDsNCj4gPiArCX0NCj4gPiArCW5kZXYg
+PSBtYy0+cG9ydHNbcG9ydCAtIDFdOw0KPiA+ICsJbXBjID0gbmV0ZGV2X3ByaXYobmRldik7DQo+
+ID4gKw0KPiA+ICsJaWJkZXZfZGJnKCZtZGV2LT5pYl9kZXYsICJyeF9oYXNoX2Z1bmN0aW9uICVk
+IHBvcnQgJWRcbiIsDQo+ID4gKwkJICB1Y21kLnJ4X2hhc2hfZnVuY3Rpb24sIHBvcnQpOw0KPiA+
+ICsNCj4gPiArCW1hbmFfaW5kX3RhYmxlID0ga2NhbGxvYyhpbmRfdGJsX3NpemUsIHNpemVvZiht
+YW5hX2hhbmRsZV90KSwNCj4gPiArCQkJCSBHRlBfS0VSTkVMKTsNCj4gPiArCWlmICghbWFuYV9p
+bmRfdGFibGUpIHsNCj4gPiArCQlyZXQgPSAtRU5PTUVNOw0KPiA+ICsJCWdvdG8gZmFpbDsNCj4g
+PiArCX0NCj4gPiArDQo+ID4gKwlxcC0+cG9ydCA9IHBvcnQ7DQo+ID4gKw0KPiA+ICsJZm9yIChp
+ID0gMDsgaSA8IGluZF90Ymxfc2l6ZTsgaSsrKSB7DQo+ID4gKwkJc3RydWN0IG1hbmFfb2JqX3Nw
+ZWMgd3Ffc3BlYyA9IHt9Ow0KPiA+ICsJCXN0cnVjdCBtYW5hX29ial9zcGVjIGNxX3NwZWMgPSB7
+fTsNCj4gPiArDQo+ID4gKwkJaWJ3cSA9IGluZF90YmwtPmluZF90YmxbaV07DQo+ID4gKwkJd3Eg
+PSBjb250YWluZXJfb2YoaWJ3cSwgc3RydWN0IG1hbmFfaWJfd3EsIGlid3EpOw0KPiA+ICsNCj4g
+PiArCQlpYmNxID0gaWJ3cS0+Y3E7DQo+ID4gKwkJY3EgPSBjb250YWluZXJfb2YoaWJjcSwgc3Ry
+dWN0IG1hbmFfaWJfY3EsIGliY3EpOw0KPiA+ICsNCj4gPiArCQl3cV9zcGVjLmdkbWFfcmVnaW9u
+ID0gd3EtPmdkbWFfcmVnaW9uOw0KPiA+ICsJCXdxX3NwZWMucXVldWVfc2l6ZSA9IHdxLT53cV9i
+dWZfc2l6ZTsNCj4gPiArDQo+ID4gKwkJY3Ffc3BlYy5nZG1hX3JlZ2lvbiA9IGNxLT5nZG1hX3Jl
+Z2lvbjsNCj4gPiArCQljcV9zcGVjLnF1ZXVlX3NpemUgPSBjcS0+Y3FlICogQ09NUF9FTlRSWV9T
+SVpFOw0KPiA+ICsJCWNxX3NwZWMubW9kcl9jdHhfaWQgPSAwOw0KPiA+ICsJCWNxX3NwZWMuYXR0
+YWNoZWRfZXEgPSBHRE1BX0NRX05PX0VROw0KPiA+ICsNCj4gPiArCQlyZXQgPSBtYW5hX2NyZWF0
+ZV93cV9vYmoobXBjLCBtcGMtPnBvcnRfaGFuZGxlLA0KPiBHRE1BX1JRLA0KPiA+ICsJCQkJCSAm
+d3Ffc3BlYywgJmNxX3NwZWMsICZ3cS0NCj4gPnJ4X29iamVjdCk7DQo+ID4gKwkJaWYgKHJldCkN
+Cj4gPiArCQkJZ290byBmYWlsOw0KPiA+ICsNCj4gPiArCQkvKiBUaGUgR0RNQSByZWdpb25zIGFy
+ZSBub3cgb3duZWQgYnkgdGhlIFdRIG9iamVjdCAqLw0KPiA+ICsJCXdxLT5nZG1hX3JlZ2lvbiA9
+IEdETUFfSU5WQUxJRF9ETUFfUkVHSU9OOw0KPiA+ICsJCWNxLT5nZG1hX3JlZ2lvbiA9IEdETUFf
+SU5WQUxJRF9ETUFfUkVHSU9OOw0KPiA+ICsNCj4gPiArCQl3cS0+aWQgPSB3cV9zcGVjLnF1ZXVl
+X2luZGV4Ow0KPiA+ICsJCWNxLT5pZCA9IGNxX3NwZWMucXVldWVfaW5kZXg7DQo+ID4gKw0KPiA+
+ICsJCWliZGV2X2RiZygmbWRldi0+aWJfZGV2LA0KPiA+ICsJCQkgICJyZXQgJWQgcnhfb2JqZWN0
+IDB4JWxseCB3cSBpZCAlbGx1IGNxIGlkICVsbHVcbiIsDQo+ID4gKwkJCSAgcmV0LCB3cS0+cnhf
+b2JqZWN0LCB3cS0+aWQsIGNxLT5pZCk7DQo+ID4gKw0KPiA+ICsJCXJlc3AuZW50cmllc1tpXS5j
+cWlkID0gY3EtPmlkOw0KPiA+ICsJCXJlc3AuZW50cmllc1tpXS53cWlkID0gd3EtPmlkOw0KPiA+
+ICsNCj4gPiArCQltYW5hX2luZF90YWJsZVtpXSA9IHdxLT5yeF9vYmplY3Q7DQo+ID4gKwl9DQo+
+ID4gKwlyZXNwLm51bV9lbnRyaWVzID0gaTsNCj4gPiArDQo+ID4gKwlyZXQgPSBtYW5hX2liX2Nm
+Z192cG9ydF9zdGVlcmluZyhtZGV2LCBuZGV2LCB3cS0+cnhfb2JqZWN0LA0KPiA+ICsJCQkJCSBt
+YW5hX2luZF90YWJsZSwNCj4gPiArCQkJCQkgaW5kX3RibC0+bG9nX2luZF90Ymxfc2l6ZSwNCj4g
+PiArCQkJCQkgdWNtZC5yeF9oYXNoX2tleV9sZW4sDQo+ID4gKwkJCQkJIHVjbWQucnhfaGFzaF9r
+ZXkpOw0KPiA+ICsJaWYgKHJldCkNCj4gPiArCQlnb3RvIGZhaWw7DQo+ID4gKw0KPiA+ICsJcmV0
+ID0gaWJfY29weV90b191ZGF0YSh1ZGF0YSwgJnJlc3AsIHNpemVvZihyZXNwKSk7DQo+ID4gKwlp
+ZiAocmV0KSB7DQo+ID4gKwkJaWJkZXZfZGJnKCZtZGV2LT5pYl9kZXYsDQo+ID4gKwkJCSAgIkZh
+aWxlZCB0byBjb3B5IHRvIHVkYXRhIGNyZWF0ZSByc3MtcXAsICVkXG4iLA0KPiA+ICsJCQkgIHJl
+dCk7DQo+ID4gKwkJZ290byBmYWlsOw0KPiA+ICsJfQ0KPiA+ICsNCj4gPiArCWtmcmVlKG1hbmFf
+aW5kX3RhYmxlKTsNCj4gPiArDQo+ID4gKwlyZXR1cm4gMDsNCj4gPiArDQo+ID4gK2ZhaWw6DQo+
+ID4gKwl3aGlsZSAoaS0tID4gMCkgew0KPiA+ICsJCWlid3EgPSBpbmRfdGJsLT5pbmRfdGJsW2ld
+Ow0KPiA+ICsJCXdxID0gY29udGFpbmVyX29mKGlid3EsIHN0cnVjdCBtYW5hX2liX3dxLCBpYndx
+KTsNCj4gPiArCQltYW5hX2Rlc3Ryb3lfd3Ffb2JqKG1wYywgR0RNQV9SUSwgd3EtPnJ4X29iamVj
+dCk7DQo+ID4gKwl9DQo+ID4gKw0KPiA+ICsJa2ZyZWUobWFuYV9pbmRfdGFibGUpOw0KPiA+ICsN
+Cj4gPiArCXJldHVybiByZXQ7DQo+ID4gK30NCj4gDQo+IA0KPiBDaGVlcnMsDQo+IA0KPiBQYW9s
+bw0KDQo=
