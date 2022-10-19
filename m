@@ -2,173 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8ACC8604F4F
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 20:05:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7D09604F7A
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 20:20:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229997AbiJSSFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 14:05:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58610 "EHLO
+        id S231267AbiJSSUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 14:20:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230418AbiJSSFE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 14:05:04 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24494103D89;
-        Wed, 19 Oct 2022 11:05:00 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id q19so26437269edd.10;
-        Wed, 19 Oct 2022 11:05:00 -0700 (PDT)
+        with ESMTP id S231129AbiJSSUI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 14:20:08 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62212FE90E
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 11:20:06 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id m23so23259906lji.2
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 11:20:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=CPCOCKDfIDxOtTuewZ2m3mRc5xfkqduD2wdXQdx/mU8=;
-        b=ADPgwAJul1OCbsvtdmeFw6IGxJwMsW7s6Z60UjjwUmHcVxToOQymVLgZjdB3rEdu1w
-         Vfk6CSiDib1FMO0hzFi682a48+jkr/vKdcYk2StZzt24K18SfGLjbzQHVgrmRQDKemj6
-         CHuvQXlKFdzFfyqhi2R3f9opfnscREE/zZ9hqld/9HZ/sDn/kVn08pQUpq3ABwO36UVA
-         ZsFedh35SR04fyaWgsN+5xjC92uH6xrIbFlxpKQRU1BpLwUimvIRB9sPVDWzLHIBsQQo
-         Xkg+HNWRnBBhZPRcnNzGRoXBltZmWCPaApvTVoEzqEnwBG1GcHzlh+Kw+t9TC79nRLlC
-         ZRRw==
+        d=bell-sw-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=leGn7lYjbLsCg1ruqtqQzH3i7rIADWTNWm3R6efH+Ts=;
+        b=7IMbgOWr9aX9zK5Gxu2eiIoyOQgBCov0/9e28ADabZ3kz3vPaWWdtsE+KfmsirwNvl
+         zgUIplAyFVcrnBWhQTzxiQCQ5RNvRe4LVUTu07lLWMdPuEIIbs5poPXVzViwe2PopWx+
+         S2NRQv7xQAFbETr0CdzZhn2GxhmlookCSnrQO44Y+m83BoBVRuevSeQe9igJaNwIwn7x
+         7A6EqMLIT7TmlbGTKqSvOQzt6Kg6NbFstn1GeA8iyzksyzwbB0aD0WOIDJDQM0UsIZOo
+         t6t+w0m64sQCLVtq9fFUBeE7oYsc3dkap77omRWFLAxj2z1vF/6pDJLo9a/SZNgzeBgg
+         r3SA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=CPCOCKDfIDxOtTuewZ2m3mRc5xfkqduD2wdXQdx/mU8=;
-        b=4Frg2gKxsa8Sw6m22KKeItTY6QfBzpyK1r6b3NlCFFQutuIjdarZ/5kmDoZmMnjRhd
-         9N8cmHYJ/WgkuLTX4MWn1kiW+YSWM7zzk07NHxJgs6k55FnX1/VheILlejfsS9mrxqWd
-         iPPbLDwBdp5TPXP+GfuN3URVtqiHf4PgXG85UEaUs8s7PXAqe0LBDLEZNHSPqiiUzDlN
-         ILNm8m2bAvRX+i9reQNWtSJDeCw+vKfQupFXpBJOR3phMG4rm+ZTRg/Hu/+XnlTknCIF
-         YYJ99UyhUMhz+KBaDcXJODBubINIrS3nT8gHZNYifvLI3u2NsV5KaoRd23W66npV1Asn
-         WNQg==
-X-Gm-Message-State: ACrzQf0KT78H8x7aZZZXJ5hmJ8dQ8bZ2CTs6M9LtFCEN5/jwjORBWYcU
-        kQ3yIqUz0yYk7m89c2w5NRfZ/kWADaiMYQINlvM=
-X-Google-Smtp-Source: AMsMyM7GvA8sQUMYJHDTFwGgo06J+MYNgjMZHwRVsiAiC+LNDbveBY8taH7bT3l+WUxX1TaIpqBtX7WNYz6KwmrZFg4=
-X-Received: by 2002:aa7:cad5:0:b0:454:88dc:2c22 with SMTP id
- l21-20020aa7cad5000000b0045488dc2c22mr8708435edt.352.1666202698415; Wed, 19
- Oct 2022 11:04:58 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=leGn7lYjbLsCg1ruqtqQzH3i7rIADWTNWm3R6efH+Ts=;
+        b=5Yd4FWsaS+iD9fcx1JYXVuhDTO20lPyKZECAlxmuKAyExV3NKjbi1NFNCrB2D78Ih1
+         QrmAZekx+AMkXIN8M9DIr25dSk/N0YzBq71su2Lb0CA1E2RUmn2feyQPdxhUSODQZb68
+         V1+JafgJKJPvA5zLg50tjnm7qih7gt3d9hMmx/cAZa0svjn7SprHAXrXpawA/8SNGjgO
+         OmtmRJGk9QrpAWRfgEc4itfvN3vRBOZpaw3s2Ze23uShozYv9Wfw+XcY/8obr98O3SVQ
+         NpIOWcy3Y4qR/Ld4/UYMculWEgl+J4CqTBdRJl4/pJrr/berXBm4cDS5DdNoTM/zDSLa
+         N5yw==
+X-Gm-Message-State: ACrzQf3/x+4ZcW9bEbf8xRFMoM177Zyq9bDEZxpvucbyaxtKz/L4epRq
+        hvzk55z8FBRf3WqQTwTKbg1HTQ7NdoIp
+X-Google-Smtp-Source: AMsMyM45OeAzmZdMMd1kOsatYDjpF1Y4iE+YzFMV4oKRPzAYmMm4brFEHSt1lAOQkCcJAfznHbYpHg==
+X-Received: by 2002:a2e:7019:0:b0:26f:a8a3:81de with SMTP id l25-20020a2e7019000000b0026fa8a381demr3348187ljc.530.1666203604024;
+        Wed, 19 Oct 2022 11:20:04 -0700 (PDT)
+Received: from localhost.localdomain ([95.161.223.113])
+        by smtp.gmail.com with ESMTPSA id j23-20020ac24557000000b004a287c50c13sm2389916lfm.185.2022.10.19.11.20.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Oct 2022 11:20:03 -0700 (PDT)
+From:   Alexey Kodanev <aleksei.kodanev@bell-sw.com>
+To:     linux-sctp@vger.kernel.org
+Cc:     netdev@vger.kernel.org,
+        Alexey Kodanev <aleksei.kodanev@bell-sw.com>
+Subject: [PATCH net-next 1/3] sctp: remove unnecessary NULL check in sctp_association_init()
+Date:   Wed, 19 Oct 2022 21:07:33 +0300
+Message-Id: <20221019180735.161388-1-aleksei.kodanev@bell-sw.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20221019132503.6783-1-dnlplm@gmail.com> <87lepbsvls.fsf@miraculix.mork.no>
-In-Reply-To: <87lepbsvls.fsf@miraculix.mork.no>
-From:   Daniele Palmas <dnlplm@gmail.com>
-Date:   Wed, 19 Oct 2022 20:04:47 +0200
-Message-ID: <CAGRyCJH0sZx3PqVxjpSo06Gnf2z69j1zGLKZ3_yvrDpxkEEeOA@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/2] net: usb: qmi_wwan implement tx packets aggregation
-To:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_RANDOM_ENVFROM,
-        HK_RANDOM_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Il giorno mer 19 ott 2022 alle ore 17:04 Bj=C3=B8rn Mork <bjorn@mork.no> ha=
- scritto:
->
-> Daniele Palmas <dnlplm@gmail.com> writes:
->
-> > I verified this problem by using a MDM9207 Cat. 4 based modem (50Mbps/1=
-50Mbps
-> > max throughput). What is actually happening is pictured at
-> > https://drive.google.com/file/d/1xuAuDBfBEIM3Cdg2zHYQJ5tdk-JkfQn7/view?=
-usp=3Dsharing
-> >
-> > When rx and tx flows are tested singularly there's no issue in tx and m=
-inor
-> > issues in rx (a few spikes). When there are concurrent tx and rx flows,=
- tx
-> > throughput has an huge drop. rx a minor one, but still present.
-> >
-> > The same scenario with tx aggregation enabled is pictured at
-> > https://drive.google.com/file/d/1Kw8TVFLVgr31o841fRu4fuMX9DNZqJB5/view?=
-usp=3Dsharing
-> > showing a regular graph.
->
-> That's pretty extreme.  Are these tcp tests?  Did you experiment with
-> qdisc options? What about latency here?
->
+'&asoc->ulpq' passed to sctp_ulpq_init() as the first argument,
+then sctp_qlpq_init() initializes it and eventually returns the
+address of the struct member back. Therefore, in this case, the
+return pointer cannot be NULL.
 
-Yes, tcp with iperf. I did not try qdisc and haven't measured (yet) latency=
-.
+Moreover, it seems sctp_ulpq_init() has always been used only in
+sctp_association_init(), so there's really no need to return ulpq
+anymore.
 
-> > This issue does not happen with high-cat modems (e.g. SDX20), or at lea=
-st it
-> > does not happen at the throughputs I'm able to test currently: maybe th=
-e same
-> > could happen when moving close to the maximum rates supported by those =
-modems.
-> > Anyway, having the tx aggregation enabled should not hurt.
-> >
-> > It is interesting to note that, for what I can understand, rmnet too do=
-es not
-> > support tx aggregation.
->
-> Looks like that is missing, yes. Did you consider implementing it there
-> instead?
->
+Detected using the static analysis tool - Svace.
+Signed-off-by: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
+---
+ include/net/sctp/ulpqueue.h | 3 +--
+ net/sctp/associola.c        | 4 +---
+ net/sctp/ulpqueue.c         | 5 +----
+ 3 files changed, 3 insertions(+), 9 deletions(-)
 
-Yes, I thought about it, but it's something that has a broader impact,
-since it's not used just with usb, not really comfortable with that
-code, but I agree that's the way to go...
+diff --git a/include/net/sctp/ulpqueue.h b/include/net/sctp/ulpqueue.h
+index 0eaf8650e3b2..60f6641290c3 100644
+--- a/include/net/sctp/ulpqueue.h
++++ b/include/net/sctp/ulpqueue.h
+@@ -35,8 +35,7 @@ struct sctp_ulpq {
+ };
+ 
+ /* Prototypes. */
+-struct sctp_ulpq *sctp_ulpq_init(struct sctp_ulpq *,
+-				 struct sctp_association *);
++void sctp_ulpq_init(struct sctp_ulpq *ulpq, struct sctp_association *asoc);
+ void sctp_ulpq_flush(struct sctp_ulpq *ulpq);
+ void sctp_ulpq_free(struct sctp_ulpq *);
+ 
+diff --git a/net/sctp/associola.c b/net/sctp/associola.c
+index 3460abceba44..63ba5551c13f 100644
+--- a/net/sctp/associola.c
++++ b/net/sctp/associola.c
+@@ -226,8 +226,7 @@ static struct sctp_association *sctp_association_init(
+ 	/* Create an output queue.  */
+ 	sctp_outq_init(asoc, &asoc->outqueue);
+ 
+-	if (!sctp_ulpq_init(&asoc->ulpq, asoc))
+-		goto fail_init;
++	sctp_ulpq_init(&asoc->ulpq, asoc);
+ 
+ 	if (sctp_stream_init(&asoc->stream, asoc->c.sinit_num_ostreams, 0, gfp))
+ 		goto stream_free;
+@@ -277,7 +276,6 @@ static struct sctp_association *sctp_association_init(
+ 
+ stream_free:
+ 	sctp_stream_free(&asoc->stream);
+-fail_init:
+ 	sock_put(asoc->base.sk);
+ 	sctp_endpoint_put(asoc->ep);
+ 	return NULL;
+diff --git a/net/sctp/ulpqueue.c b/net/sctp/ulpqueue.c
+index 0a8510a0c5e6..24960dcb6a21 100644
+--- a/net/sctp/ulpqueue.c
++++ b/net/sctp/ulpqueue.c
+@@ -38,8 +38,7 @@ static void sctp_ulpq_reasm_drain(struct sctp_ulpq *ulpq);
+ /* 1st Level Abstractions */
+ 
+ /* Initialize a ULP queue from a block of memory.  */
+-struct sctp_ulpq *sctp_ulpq_init(struct sctp_ulpq *ulpq,
+-				 struct sctp_association *asoc)
++void sctp_ulpq_init(struct sctp_ulpq *ulpq, struct sctp_association *asoc)
+ {
+ 	memset(ulpq, 0, sizeof(struct sctp_ulpq));
+ 
+@@ -48,8 +47,6 @@ struct sctp_ulpq *sctp_ulpq_init(struct sctp_ulpq *ulpq,
+ 	skb_queue_head_init(&ulpq->reasm_uo);
+ 	skb_queue_head_init(&ulpq->lobby);
+ 	ulpq->pd_mode  = 0;
+-
+-	return ulpq;
+ }
+ 
+ 
+-- 
+2.25.1
 
-> > I'm aware that rmnet should be the preferred way for qmap, but I think =
-there's
-> > still value in adding this feature to qmi_wwan qmap implementation sinc=
-e there
-> > are in the field many users of that.
-> >
-> > Moreover, having this in mainline could simplify backporting for those =
-who are
-> > using qmi_wwan qmap feature but are stuck with old kernel versions.
-> >
-> > I'm also aware of the fact that sysfs files for configuration are not t=
-he
-> > preferred way, but it would feel odd changing the way for configuring t=
-he driver
-> > just for this feature, having it different from the previous knobs.
->
-> It's not just that it's not the preferred way.. I believe I promised
-> that we wouldn't add anything more to this interface.  And then I broke
-> that promise, promising that it would never happen again.  So much for
-> my integrity.
->
-> This all looks very nice to me, and the results are great, and it's just
-> another knob...
->
-> But I don't think we can continue adding this stuff.  The QMAP handling
-> should be done in the rmnet driver. Unless there is some reason it can't
-> be there? Wouldn't the same code work there?
->
-
-Ok, I admit that your reasoning makes sense.
-
-There's no real reason for not having tx aggregation in rmnet, besides
-the fact that no one has added it yet.
-
-There's some downstream code for example at
-https://source.codeaurora.org/quic/la/kernel/msm-4.19/tree/drivers/net/ethe=
-rnet/qualcomm/rmnet/rmnet_handlers.c?h=3DLA.UM.8.12.3.1#n405
-
-I can try looking at that to see if I'm able to implement the same
-feature in mainline rmnet.
-
-Thanks for your comments!
-
-Regards,
-Daniele
-
-> Luckily I can chicken out here, and leave final the decision to Jakub
-> and David.
->
->
->
-> Bj=C3=B8rn
