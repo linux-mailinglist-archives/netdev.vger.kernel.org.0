@@ -2,59 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF50D604652
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 15:06:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D791F604650
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 15:06:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229826AbiJSNGh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 09:06:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34658 "EHLO
+        id S232908AbiJSNGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 09:06:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232094AbiJSNGQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 09:06:16 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A83D1DB263;
-        Wed, 19 Oct 2022 05:50:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=LvgRD4iN2m8G6ZpNS+5FlDAbPJRUbn+oLpBhRnPeWvY=; b=duZrPGPMQ809pOr+sYnrVIU7D7
-        4Q7+nJJyxlO0d3zDQIBMXBFwC6V4p/UyXv+9X5DrmuexhHhGW+vhmVj3nkGAyrc1FpPs2R+/gRKOH
-        t3z+KLmr3IZyATGwJU4xB0l7Xu3vSz4JIIWL8RXo1vPoj7Rjc/xGd7edZeXZ03svN7Pk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ol8VO-002Rsz-BE; Wed, 19 Oct 2022 14:49:06 +0200
-Date:   Wed, 19 Oct 2022 14:49:06 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Madalin Bucur <madalin.bucur@nxp.com>,
-        Sean Anderson <sean.anderson@seco.com>,
-        Andrew Davis <afd@ti.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Camelia Alexandra Groza <camelia.groza@nxp.com>
-Subject: Re: [PATCH net] net: fman: Use physical address for userspace
- interfaces
-Message-ID: <Y0/yQhRtH2iWfozx@lunn.ch>
-References: <20221017162807.1692691-1-sean.anderson@seco.com>
- <Y07guYuGySM6F/us@lunn.ch>
- <c409789a-68cb-7aba-af31-31488b16f918@seco.com>
- <97aae18e-a96c-a81b-74b7-03e32131a58f@ti.com>
- <Y08dECNbfMc3VUcG@lunn.ch>
- <595b7903-610f-b76a-5230-f2d8ad5400b4@seco.com>
- <AM0PR04MB39729CFDBB20C133C269275AEC2B9@AM0PR04MB3972.eurprd04.prod.outlook.com>
- <CAMuHMdUZKQFWV8QAKmwxuhWz0ZbFmcsUuf4OUzS_C31maP5+Yg@mail.gmail.com>
+        with ESMTP id S232818AbiJSNGI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 09:06:08 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 658131C117F;
+        Wed, 19 Oct 2022 05:50:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=0fsK06XH6eOz8QUYu7W6haCyhqbOJ3WnbeWYAL5slVo=; b=pXNf/TpCCzgHcbe302KXLuoY7+
+        8Y/jFPJ4a4iKo5bMujxGTdL82eq5duKQVc/eXLuh1S85tm7iEza7H7XPeqm3EehVYbt7FNdBveqB8
+        CyrFEthXrArT8/uPCt7zKGMFyML0Y+Hgp/tTExGAqYmyNHAIZ+wqogCcyTXWKLyFIo4rdnAO2DDL9
+        ekr6JFNSkwDWW0ZmQS9xO/Dqm35W7iyL8ovtm3l2sb4HlqcaHYCXuENhNrcZk+xY8Bg0LvkU0o5zr
+        0si6evLOEWm2iK+LCl/7WgFhMhA+Nwd4zqP1bmDmQ7TV86V44ZaJ24pyh8eaE7ZsouNPxAbxMAQxv
+        SDNqcQYA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34802)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ol8Vo-0005fg-Oh; Wed, 19 Oct 2022 13:49:33 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ol8Vk-0002AK-MA; Wed, 19 Oct 2022 13:49:28 +0100
+Date:   Wed, 19 Oct 2022 13:49:28 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Clark Wang <xiaoning.wang@nxp.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, mcoquelin.stm32@gmail.com,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com
+Subject: Re: [PATCH] net: stmmac: linkup phy after enabled mac when system
+ resume
+Message-ID: <Y0/yWHvHs6NHdB8W@shell.armlinux.org.uk>
+References: <20221019123643.1937889-1-xiaoning.wang@nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAMuHMdUZKQFWV8QAKmwxuhWz0ZbFmcsUuf4OUzS_C31maP5+Yg@mail.gmail.com>
+In-Reply-To: <20221019123643.1937889-1-xiaoning.wang@nxp.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,25 +61,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > root@localhost:~# grep 1ae /etc/udev/rules.d/72-fsl-dpaa-persistent-networking.rules
-> > SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1ae0000", NAME="fm1-mac1"
-> > SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1ae2000", NAME="fm1-mac2"
-> > SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1ae4000", NAME="fm1-mac3"
-> > SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1ae6000", NAME="fm1-mac4"
-> > SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1ae8000", NAME="fm1-mac5"
-> > SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1aea000", NAME="fm1-mac6"
-> 
-> So you rely on the physical address.
-> It's a pity this uses a custom sysfs file.
-> Can't you obtain this information some other way?
-> Anyway, as this is in use, it became part of the ABI.
+On Wed, Oct 19, 2022 at 08:36:43PM +0800, Clark Wang wrote:
+> +	mutex_unlock(&priv->lock);
+> +	if (device_may_wakeup(priv->device) && priv->plat->pmt) {
+> +		phylink_resume(priv->phylink);
+> +	} else {
+> +		phylink_resume(priv->phylink);
+> +		if (device_may_wakeup(priv->device))
+> +			phylink_speed_up(priv->phylink);
+> +	}
+> +	mutex_lock(&priv->lock);
 
-I agree about the ABI thing. Please add this to the commit messages as
-a justification.
+First, is there a reason this isn't coded as:
 
-It would also be good to move user space away from this. You should be
-able to use the port id in the place of the physical address. That is
-what is used by Ethernet switches etc, in the udev rules for giving
-switch ports names.
+	mutex_unlock(&priv->lock);
+	phylink_resume(priv->phylink);
 
-       Andrew
+	if (!priv->plat->pmt && device_may_wakeup(priv->device))
+		phylink_speed_up(priv->phylink);
+
+	mutex_lock(&priv->lock);
+
+And secondly, is it really safe to drop this lock? What specifically
+is the lock protecting? I see this isn't documented in the driver...
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
