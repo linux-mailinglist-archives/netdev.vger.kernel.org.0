@@ -2,159 +2,518 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B833603B31
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 10:13:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F07DC603B37
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 10:14:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229874AbiJSINJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 04:13:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36528 "EHLO
+        id S230050AbiJSIOe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 04:14:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229726AbiJSINH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 04:13:07 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7D4B5466D
-        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 01:13:04 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KuTHuhUGPnaO9q5GbdJ7/3f+pdxdTv3A3G/IKxLJlIx5KX2rJ2EfabhAr1QyEH+Sg2AJ3b3CFOQ22S4IL/g8OXmWlcVwqwUEGh7HldPCPQihJ62itAOnYibUvWxeGxXsG42WrG/4wOdotpaFNGqJDMYReMTLGOFER6YW+E8Dc04zydVydcuUH99ILnwX6k+/kqpiQt27z4SDAStHCWB2Uw40UEKqIJMxcdkCO5yonQByeiWX9MAw1ECNrcKqAdaF8BCMz/ZmlTe9zZOIKqKEuxaUBUMvSJHDmQzgypjEUoR1Kivf8XK+oZAXjrKEg8jbN9mGeeU9zPMTbPs6pI4MBA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tGAydw5VOS1FBY9AAZ8CkNC2rEBurJzQWm8Z2BcfyDg=;
- b=fo4y1qrfR8QZxivpPwE809HbrbmXcHJdiLvt/dYDsdk29gEow89vzjhkptqhRVh8TrcQAL6al7VXOTYyaAbB8eYMs4uSVIef1f+YBUHCILAtCdy2/L1V0fNVnZT6AwJ60gTqyy7dcqV/0MVK2eQ/+lETrqaIF0uQam84lPEpJ31XKMJausoWCtQNlgow6NoCyeGS4GdzYxVp/XFKUKlgY4XJQ2oDeNKyAD92JEevB9CPjrN7HckwTV41XUGA5KqcVHd9gkUjoMUfIiXQLb6DXqEN5DqEHwch6s9XUyTIkHZ220DZ778UlX0Xki3RmzBzBI8oNmaTNYQIXYOZn0qIdA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tGAydw5VOS1FBY9AAZ8CkNC2rEBurJzQWm8Z2BcfyDg=;
- b=eZll+bWuGs/apJGyjt3ouCYcvdby3Pz/pystgANqVWfbgrvHVTL24r2/2KUzzWiB1uTyp4yxuBF+QvVt2dZgkGiEM0b0hYq7WYSfakTDCEGu6QbSqoAASAnRI1QRq1x+mfjlnjL8WxkAyrYwZtcmjKWylqrVT66owbxqJ+BkdHo=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by SN4PR13MB5811.namprd13.prod.outlook.com (2603:10b6:806:21b::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.19; Wed, 19 Oct
- 2022 08:13:01 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::3a35:112e:34eb:6161]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::3a35:112e:34eb:6161%6]) with mapi id 15.20.5746.016; Wed, 19 Oct 2022
- 08:13:01 +0000
-Date:   Wed, 19 Oct 2022 09:12:55 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     Ilya Maximets <i.maximets@ovn.org>,
-        Marcelo Leitner <mleitner@redhat.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Tianyu Yuan <tianyu.yuan@corigine.com>, dev@openvswitch.org,
-        oss-drivers <oss-drivers@corigine.com>, netdev@vger.kernel.org,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
-        Vlad Buslov <vladbu@nvidia.com>
-Subject: Re: [ovs-dev] [PATCH] tests: fix reference output for meter offload
- stats
-Message-ID: <Y0+xh2V7KUMRPaUI@corigine.com>
-References: <00D45065-3D74-4C4C-8988-BFE0CEB3BE2F@redhat.com>
- <fe0cd650-0d4a-d871-5c0b-b1c831c8d0cc@ovn.org>
- <CALnP8ZYcGvtP_BV=2gy0v3TtSfD=3nO-uzbG8E1UvjoDYD2+7A@mail.gmail.com>
- <CAKa-r6sn1oZNn0vrnrthzq_XsxpdHGWyxw_T9b9ND0=DJk64yQ@mail.gmail.com>
- <CALnP8ZaZ5zGD4sP3=SSvC=RBmVOOcc9MdA=aaYRQctaBOhmHfQ@mail.gmail.com>
- <CAM0EoM=zWBzivTkEG7uBJepZ0=OZmiuqDF3RmgdWA=FgznRF6g@mail.gmail.com>
- <CALnP8ZY2M3+m_qrg4ox5pjGJ__CAMKfshD+=OxTHCWc=EutapQ@mail.gmail.com>
- <CAM0EoM=5wqbsOL-ZPkuhQXTJh3pTGqhdDDXuEqsjxEoAapApdQ@mail.gmail.com>
- <b9e25530-e618-421c-922e-b9f2380bc19f@ovn.org>
- <CAM0EoMkFhGtT5t0103V=h0YVddBrkwiAngP7BZY-vStijUVvtw@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAM0EoMkFhGtT5t0103V=h0YVddBrkwiAngP7BZY-vStijUVvtw@mail.gmail.com>
-X-ClientProxiedBy: AS4P250CA0018.EURP250.PROD.OUTLOOK.COM
- (2603:10a6:20b:5e3::13) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        with ESMTP id S229983AbiJSIOc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 04:14:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA6AD38AE;
+        Wed, 19 Oct 2022 01:14:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6434061582;
+        Wed, 19 Oct 2022 08:14:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 102FDC433D6;
+        Wed, 19 Oct 2022 08:14:25 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="di8q/X+W"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1666167264;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lfeZ+/ES+ijOE12DLFbW/UQuNHQEIrRYQSj0dQtpj6E=;
+        b=di8q/X+WZmDIYUfllkCOUEIayxJ1KAneDE36VqCtSDOzdorR7hgaxUHcAb0RHsnUxyz5vB
+        6kZxk+rztZDvPUtaph6hgq15XAkEBzlBFmO3hH/uLoLCtFyi8dIDU5tznWFB/g1UmIZ0GD
+        Fn4Qkq3ktcL65NWIk6fd+1ESoDT/2HQ=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 35154328 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Wed, 19 Oct 2022 08:14:24 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Stanislaw Gruszka <stf_xl@wp.pl>,
+        Helmut Schaa <helmut.schaa@googlemail.com>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH v2] wifi: rt2x00: use explicitly signed or unsigned types
+Date:   Wed, 19 Oct 2022 02:14:17 -0600
+Message-Id: <20221019081417.3402284-1-Jason@zx2c4.com>
+In-Reply-To: <20221018202734.140489-1-Jason@zx2c4.com>
+References: <20221018202734.140489-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SN4PR13MB5811:EE_
-X-MS-Office365-Filtering-Correlation-Id: a6f6af2e-bc21-416c-46d7-08dab1a9bd6e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: PMq/9BQUXkNW1p8jzMC80A/UVRotwDBvqUP1PWQkH+KWz/50ECruZexClXFnvLIKejeEdp2I/Kc1lVDNzUR2MMseHOQgitdiCxRiIg25ImlXWj5s2jdHLzq2Dx3HIQp8phhkqc6ZVDVsgqsGGjPozmyPQR+DOcFdE6pKjXoIlgJxhpkViuBsL/IS5Uw6byzIm4EZbmcYJbhBqZ5rZaqB3tbwYXRjlSgBrNN8dUXplgLp25BhXHWUXAqS4/9RYOs9D1XB1gNgw6BmAlAPRiTkBnQj6Pbo8juHXEVsMehgrt0mbBUhjSvB56SNqxYyHE8+nwJ3GBNEpBej+8Q9pBboOHtUfckSzqAgeLBlr4vl0SLEb47UxTGt0i4pLmBeqYsggeY7zleoEasSqxAngxxXqNI9S+BZ69U/OQez6jTr3xQUEqTWi2AZREYpYYwd5tfvOyXMw4IEasHK+9ZslFeE46pvKAziEEYHBhO5ECtfvfNEMJtF/0lRCmQ5PDdYn3fs49pH/R/7AimNSjyRgkwihP4ZNgtZse8nV7xqmuZ5+d3QuP4/EGtoLUdUWdM6tXZ7I2pkA1H9pA3ISPnvJ08JzTtSjXETBecvwSbyXUBcHR2PKDa1Uezf6YBgu9+YQ9vyq06ZkMaPXk0Axo+otwYFhAwJn/EmViFA7H5AqfqapM1++9lgf6yxpfym41ZXZ7xAnlN58Q2zoeMDTuDAj6s/C70sxAz5dzAMXwgvq6FQpHAfpCDPRSJTVc6t1pYyVdhoj3/96AWfETolh4krldGz4g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39840400004)(366004)(396003)(346002)(376002)(136003)(451199015)(44832011)(86362001)(66556008)(41300700001)(8936002)(7416002)(66476007)(4326008)(36756003)(8676002)(2906002)(52116002)(38100700002)(6512007)(478600001)(53546011)(6486002)(83380400001)(66946007)(6916009)(316002)(186003)(6666004)(54906003)(6506007)(2616005)(5660300002)(67856001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZsVOPZ+yNv4/mn+Ega98WrQkLoqVcOcSPEaK8kSuYX366/ynUbncAomMlhwf?=
- =?us-ascii?Q?3MvF6i7RtXLm6F8VJ6QlpsN+hZuGHRNrgn0/sheqxtluaHcc9EucBbLVbxWs?=
- =?us-ascii?Q?kXz0RyTnDGRBMGCU5DAlx0JlEoAmwcZUjrmi34R2caGyEx83y1bCNahhN+Ux?=
- =?us-ascii?Q?oFp6vXqTqhlh2grUnnD6SGOtsepT3ap46W9CnXmIS0eB6CFyt9CrnHafWf6D?=
- =?us-ascii?Q?wM+WN+CThigowXXaUOYvY3p+9HjmJF9rCFQSDLLAwOvRIK053Ef/zmSaxUEk?=
- =?us-ascii?Q?FknYNekXUPmNSq129F3mjhBMDXxzFlTS//Dgrcw3VpJ0itnU3FjDNtvqNxSA?=
- =?us-ascii?Q?GsBu8XPViiAwARiNNbratLAXfPwSB7j4FcFrntqUbNM67nyQD/dOqDnoFWsr?=
- =?us-ascii?Q?DizaHWij/A3SLUL47tdiBwIaTiSa6PwvbPSmyK4KozVNdjJhUhtusf8Ne3Gt?=
- =?us-ascii?Q?/W+GN9fEGejEguqjTRNGctVVM7Rsp4s0V/xCwKXSlKvZr20i7ZseZ1u5LiNU?=
- =?us-ascii?Q?CJjDUSC343hjV82bFf0uwbvEs2S7pGv89eeyNVe9VTZRkf1bvdzhuzftt0Rn?=
- =?us-ascii?Q?G1DylK/HkpChjF49cLuSsrl8H83889zS/Pm2Iq3yTD8StppYYAqnJOT0A32w?=
- =?us-ascii?Q?DwVRzCjeL4yb96FlCzzrF2nNNIjv+zgGcVVRjlkwG4n8eAJjX4qgyFeoDLMA?=
- =?us-ascii?Q?Y5B0daUWLEPNnRcaJAMw7pQUSVyeYw+Gf0oVLud8GqZNuNAFZjb9bWNIu3Y1?=
- =?us-ascii?Q?UdVN2IXMPGFEpf+evoH20o95N6Scc6JrDxU/wo2ibfqO9JhSMwr2hSXyH0uZ?=
- =?us-ascii?Q?r8rS9rf81mw9Ui1amx35STojoeJNm3MQe12zTpH3aPZQM8y4Tp0b8F6D1nti?=
- =?us-ascii?Q?DwdymCm+3bU/cyGHkdmFCK0qnaBwJp/l8PT8YAvVmPQ1SS4TSfTij9jrJqlu?=
- =?us-ascii?Q?YBSXUMyruGsqa78IMbSNmCuP0GE0+FaEYHO1/I8VDADmqS4Ebmjhab21T2Y8?=
- =?us-ascii?Q?qALtHkZMt2t799xVN2iuu14rFPY0mXIkOehgxg8Usa9M227E0C3RPaYzrnOp?=
- =?us-ascii?Q?lE4T/KNd4UMSQvxUi78t+7DG2qZGGYG/7/v6rQoFcXXYZDaDyPRXIxre7DVr?=
- =?us-ascii?Q?vpinRrsOXq/jtlRnK/jYQGifOvgjyrvtwl09cRAgs1vfAtgZdDLwRhEpLnQ1?=
- =?us-ascii?Q?Kyd7o50slWgyKn9AifeqgXHpScHp64SJUK4LapBJtsPzkjAZN7hGQtMy/lmp?=
- =?us-ascii?Q?Naxg5d/jpO8jkdAUVH0hFTZVqepvNFlpmeL7wbKARGXNFU2LVUczvGw2FXp3?=
- =?us-ascii?Q?avW2N6JN1L2LpXVmIGFywvrc6AE+SKYsNu02keMJNRUH7Xjlq4rspuM3zKYU?=
- =?us-ascii?Q?Z6X3b6mqc8pT/mluCBYRKxv3y7FhI1BaQldoA5+pMzcv6zxWljmSzmyHsr3a?=
- =?us-ascii?Q?EyCrUDIBCYpP7e1UNOHp2qJT9yL6tThxNsXmvb0MGl/Oc25xX5gnLNY1vXzQ?=
- =?us-ascii?Q?FiCLDiRHhNki9W41bGSJXdA7qVysdHjwU1aIvyzWgwDtNN3ewuvt0Eku3pzh?=
- =?us-ascii?Q?CVx7Ma9IIgRon1o76gi/nuW1/wQbEqSGIp5ZYtVyfC5iN7E1GiRgM3gqPMuQ?=
- =?us-ascii?Q?gyHqNHzwIUI3zyXnPq6PqU3AYK9QH5d5be3FyfqietcIwq6qDPRkoAje0jau?=
- =?us-ascii?Q?O7HtZg=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a6f6af2e-bc21-416c-46d7-08dab1a9bd6e
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Oct 2022 08:13:01.3306
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: aKX6OXBSfwg47nDzy49aPMPuZoWkflMV7LEh+h6FjyWpKWaZHIDtlVU6fxhqeDmgdutD4AasrnjgMMSCV65X1EQJiidpd8YOaZTJS0X0FVw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN4PR13MB5811
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 14, 2022 at 10:40:30AM -0400, Jamal Hadi Salim wrote:
-> On Fri, Oct 14, 2022 at 9:00 AM Ilya Maximets <i.maximets@ovn.org> wrote:
-> >
-> 
-> [..]
-> > > I thought it was pipe but maybe it is OK(in my opinion that is a bad code
-> > > for just "count"). We have some (at least NIC) hardware folks on the list.
-> >
-> > IIRC, 'OK' action will stop the processing for the packet, so it can
-> > only be used as a last action in the list.  But we need to count packets
-> > as a very first action in the list.  So, that doesn't help.
-> >
-> 
-> That's why i said it is a bad code - but i believe it's what some of
-> the hardware
-> people are doing. Note: it's only bad if you have more actions after because
-> it aborts the processing pipeline.
-> 
-> > > Note: we could create an alias to PIPE and call it COUNT if it helps.
-> >
-> > Will that help with offloading of that action?  Why the PIPE is not
-> > offloadable in the first place and will COUNT be offloadable?
-> 
-> Offloadable is just a semantic choice in this case. If someone is
-> using OK to count  today - they could should be able to use PIPE
-> instead (their driver needs to do some transformation of course).
+On some platforms, `char` is unsigned, but this driver, for the most
+part, assumed it was signed. In other places, it uses `char` to mean an
+unsigned number, but only in cases when the values are small. And in
+still other places, `char` is used as a boolean. Put an end to this
+confusion by declaring explicit types, depending on the context.
 
-FWIIW, yes, that is my thinking too.
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Stanislaw Gruszka <stf_xl@wp.pl>
+Cc: Helmut Schaa <helmut.schaa@googlemail.com>
+Cc: Kalle Valo <kvalo@kernel.org>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ .../net/wireless/ralink/rt2x00/rt2400pci.c    |  8 +--
+ .../net/wireless/ralink/rt2x00/rt2400pci.h    |  2 +-
+ .../net/wireless/ralink/rt2x00/rt2500pci.c    |  8 +--
+ .../net/wireless/ralink/rt2x00/rt2500pci.h    |  2 +-
+ .../net/wireless/ralink/rt2x00/rt2500usb.c    |  8 +--
+ .../net/wireless/ralink/rt2x00/rt2500usb.h    |  2 +-
+ .../net/wireless/ralink/rt2x00/rt2800lib.c    | 60 +++++++++----------
+ .../net/wireless/ralink/rt2x00/rt2800lib.h    |  8 +--
+ .../net/wireless/ralink/rt2x00/rt2x00usb.c    |  6 +-
+ drivers/net/wireless/ralink/rt2x00/rt61pci.c  |  4 +-
+ drivers/net/wireless/ralink/rt2x00/rt61pci.h  |  2 +-
+ drivers/net/wireless/ralink/rt2x00/rt73usb.c  |  4 +-
+ drivers/net/wireless/ralink/rt2x00/rt73usb.h  |  2 +-
+ 13 files changed, 58 insertions(+), 58 deletions(-)
+
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt2400pci.c b/drivers/net/wireless/ralink/rt2x00/rt2400pci.c
+index 273c5eac3362..ddfc16de1b26 100644
+--- a/drivers/net/wireless/ralink/rt2x00/rt2400pci.c
++++ b/drivers/net/wireless/ralink/rt2x00/rt2400pci.c
+@@ -1023,9 +1023,9 @@ static int rt2400pci_set_state(struct rt2x00_dev *rt2x00dev,
+ {
+ 	u32 reg, reg2;
+ 	unsigned int i;
+-	char put_to_sleep;
+-	char bbp_state;
+-	char rf_state;
++	bool put_to_sleep;
++	u8 bbp_state;
++	u8 rf_state;
+ 
+ 	put_to_sleep = (state != STATE_AWAKE);
+ 
+@@ -1561,7 +1561,7 @@ static int rt2400pci_probe_hw_mode(struct rt2x00_dev *rt2x00dev)
+ {
+ 	struct hw_mode_spec *spec = &rt2x00dev->spec;
+ 	struct channel_info *info;
+-	char *tx_power;
++	u8 *tx_power;
+ 	unsigned int i;
+ 
+ 	/*
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt2400pci.h b/drivers/net/wireless/ralink/rt2x00/rt2400pci.h
+index b8187b6de143..979d5fd8babf 100644
+--- a/drivers/net/wireless/ralink/rt2x00/rt2400pci.h
++++ b/drivers/net/wireless/ralink/rt2x00/rt2400pci.h
+@@ -939,7 +939,7 @@
+ #define DEFAULT_TXPOWER	39
+ 
+ #define __CLAMP_TX(__txpower) \
+-	clamp_t(char, (__txpower), MIN_TXPOWER, MAX_TXPOWER)
++	clamp_t(u8, (__txpower), MIN_TXPOWER, MAX_TXPOWER)
+ 
+ #define TXPOWER_FROM_DEV(__txpower) \
+ 	((__CLAMP_TX(__txpower) - MAX_TXPOWER) + MIN_TXPOWER)
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt2500pci.c b/drivers/net/wireless/ralink/rt2x00/rt2500pci.c
+index 8faa0a80e73a..cd6371e25062 100644
+--- a/drivers/net/wireless/ralink/rt2x00/rt2500pci.c
++++ b/drivers/net/wireless/ralink/rt2x00/rt2500pci.c
+@@ -1176,9 +1176,9 @@ static int rt2500pci_set_state(struct rt2x00_dev *rt2x00dev,
+ {
+ 	u32 reg, reg2;
+ 	unsigned int i;
+-	char put_to_sleep;
+-	char bbp_state;
+-	char rf_state;
++	bool put_to_sleep;
++	u8 bbp_state;
++	u8 rf_state;
+ 
+ 	put_to_sleep = (state != STATE_AWAKE);
+ 
+@@ -1856,7 +1856,7 @@ static int rt2500pci_probe_hw_mode(struct rt2x00_dev *rt2x00dev)
+ {
+ 	struct hw_mode_spec *spec = &rt2x00dev->spec;
+ 	struct channel_info *info;
+-	char *tx_power;
++	u8 *tx_power;
+ 	unsigned int i;
+ 
+ 	/*
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt2500pci.h b/drivers/net/wireless/ralink/rt2x00/rt2500pci.h
+index 7e64aee2a172..ba362675c52c 100644
+--- a/drivers/net/wireless/ralink/rt2x00/rt2500pci.h
++++ b/drivers/net/wireless/ralink/rt2x00/rt2500pci.h
+@@ -1219,6 +1219,6 @@
+ 	(((u8)(__txpower)) > MAX_TXPOWER) ? DEFAULT_TXPOWER : (__txpower)
+ 
+ #define TXPOWER_TO_DEV(__txpower) \
+-	clamp_t(char, __txpower, MIN_TXPOWER, MAX_TXPOWER)
++	clamp_t(u8, __txpower, MIN_TXPOWER, MAX_TXPOWER)
+ 
+ #endif /* RT2500PCI_H */
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt2500usb.c b/drivers/net/wireless/ralink/rt2x00/rt2500usb.c
+index bb5ed6630645..4f3b0e6c6256 100644
+--- a/drivers/net/wireless/ralink/rt2x00/rt2500usb.c
++++ b/drivers/net/wireless/ralink/rt2x00/rt2500usb.c
+@@ -984,9 +984,9 @@ static int rt2500usb_set_state(struct rt2x00_dev *rt2x00dev,
+ 	u16 reg;
+ 	u16 reg2;
+ 	unsigned int i;
+-	char put_to_sleep;
+-	char bbp_state;
+-	char rf_state;
++	bool put_to_sleep;
++	u8 bbp_state;
++	u8 rf_state;
+ 
+ 	put_to_sleep = (state != STATE_AWAKE);
+ 
+@@ -1663,7 +1663,7 @@ static int rt2500usb_probe_hw_mode(struct rt2x00_dev *rt2x00dev)
+ {
+ 	struct hw_mode_spec *spec = &rt2x00dev->spec;
+ 	struct channel_info *info;
+-	char *tx_power;
++	u8 *tx_power;
+ 	unsigned int i;
+ 
+ 	/*
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt2500usb.h b/drivers/net/wireless/ralink/rt2x00/rt2500usb.h
+index 0c070288a140..746f0e950b76 100644
+--- a/drivers/net/wireless/ralink/rt2x00/rt2500usb.h
++++ b/drivers/net/wireless/ralink/rt2x00/rt2500usb.h
+@@ -839,6 +839,6 @@
+ 	(((u8)(__txpower)) > MAX_TXPOWER) ? DEFAULT_TXPOWER : (__txpower)
+ 
+ #define TXPOWER_TO_DEV(__txpower) \
+-	clamp_t(char, __txpower, MIN_TXPOWER, MAX_TXPOWER)
++	clamp_t(u8, __txpower, MIN_TXPOWER, MAX_TXPOWER)
+ 
+ #endif /* RT2500USB_H */
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt2800lib.c b/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
+index cbbb1a4849cf..eb323fb44c42 100644
+--- a/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
++++ b/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
+@@ -3372,10 +3372,10 @@ static void rt2800_config_channel_rf53xx(struct rt2x00_dev *rt2x00dev,
+ 	if (rt2x00_has_cap_bt_coexist(rt2x00dev)) {
+ 		if (rt2x00_rt_rev_gte(rt2x00dev, RT5390, REV_RT5390F)) {
+ 			/* r55/r59 value array of channel 1~14 */
+-			static const char r55_bt_rev[] = {0x83, 0x83,
++			static const u8 r55_bt_rev[] = {0x83, 0x83,
+ 				0x83, 0x73, 0x73, 0x63, 0x53, 0x53,
+ 				0x53, 0x43, 0x43, 0x43, 0x43, 0x43};
+-			static const char r59_bt_rev[] = {0x0e, 0x0e,
++			static const u8 r59_bt_rev[] = {0x0e, 0x0e,
+ 				0x0e, 0x0e, 0x0e, 0x0b, 0x0a, 0x09,
+ 				0x07, 0x07, 0x07, 0x07, 0x07, 0x07};
+ 
+@@ -3384,7 +3384,7 @@ static void rt2800_config_channel_rf53xx(struct rt2x00_dev *rt2x00dev,
+ 			rt2800_rfcsr_write(rt2x00dev, 59,
+ 					   r59_bt_rev[idx]);
+ 		} else {
+-			static const char r59_bt[] = {0x8b, 0x8b, 0x8b,
++			static const u8 r59_bt[] = {0x8b, 0x8b, 0x8b,
+ 				0x8b, 0x8b, 0x8b, 0x8b, 0x8a, 0x89,
+ 				0x88, 0x88, 0x86, 0x85, 0x84};
+ 
+@@ -3392,10 +3392,10 @@ static void rt2800_config_channel_rf53xx(struct rt2x00_dev *rt2x00dev,
+ 		}
+ 	} else {
+ 		if (rt2x00_rt_rev_gte(rt2x00dev, RT5390, REV_RT5390F)) {
+-			static const char r55_nonbt_rev[] = {0x23, 0x23,
++			static const u8 r55_nonbt_rev[] = {0x23, 0x23,
+ 				0x23, 0x23, 0x13, 0x13, 0x03, 0x03,
+ 				0x03, 0x03, 0x03, 0x03, 0x03, 0x03};
+-			static const char r59_nonbt_rev[] = {0x07, 0x07,
++			static const u8 r59_nonbt_rev[] = {0x07, 0x07,
+ 				0x07, 0x07, 0x07, 0x07, 0x07, 0x07,
+ 				0x07, 0x07, 0x06, 0x05, 0x04, 0x04};
+ 
+@@ -3406,14 +3406,14 @@ static void rt2800_config_channel_rf53xx(struct rt2x00_dev *rt2x00dev,
+ 		} else if (rt2x00_rt(rt2x00dev, RT5390) ||
+ 			   rt2x00_rt(rt2x00dev, RT5392) ||
+ 			   rt2x00_rt(rt2x00dev, RT6352)) {
+-			static const char r59_non_bt[] = {0x8f, 0x8f,
++			static const s8 r59_non_bt[] = {0x8f, 0x8f,
+ 				0x8f, 0x8f, 0x8f, 0x8f, 0x8f, 0x8d,
+ 				0x8a, 0x88, 0x88, 0x87, 0x87, 0x86};
+ 
+ 			rt2800_rfcsr_write(rt2x00dev, 59,
+ 					   r59_non_bt[idx]);
+ 		} else if (rt2x00_rt(rt2x00dev, RT5350)) {
+-			static const char r59_non_bt[] = {0x0b, 0x0b,
++			static const s8 r59_non_bt[] = {0x0b, 0x0b,
+ 				0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0a,
+ 				0x0a, 0x09, 0x08, 0x07, 0x07, 0x06};
+ 
+@@ -4035,23 +4035,23 @@ static void rt2800_iq_calibrate(struct rt2x00_dev *rt2x00dev, int channel)
+ 	rt2800_bbp_write(rt2x00dev, 159, cal != 0xff ? cal : 0);
+ }
+ 
+-static char rt2800_txpower_to_dev(struct rt2x00_dev *rt2x00dev,
++static s8 rt2800_txpower_to_dev(struct rt2x00_dev *rt2x00dev,
+ 				  unsigned int channel,
+-				  char txpower)
++				  s8 txpower)
+ {
+ 	if (rt2x00_rt(rt2x00dev, RT3593) ||
+ 	    rt2x00_rt(rt2x00dev, RT3883))
+ 		txpower = rt2x00_get_field8(txpower, EEPROM_TXPOWER_ALC);
+ 
+ 	if (channel <= 14)
+-		return clamp_t(char, txpower, MIN_G_TXPOWER, MAX_G_TXPOWER);
++		return clamp_t(s8, txpower, MIN_G_TXPOWER, MAX_G_TXPOWER);
+ 
+ 	if (rt2x00_rt(rt2x00dev, RT3593) ||
+ 	    rt2x00_rt(rt2x00dev, RT3883))
+-		return clamp_t(char, txpower, MIN_A_TXPOWER_3593,
++		return clamp_t(s8, txpower, MIN_A_TXPOWER_3593,
+ 			       MAX_A_TXPOWER_3593);
+ 	else
+-		return clamp_t(char, txpower, MIN_A_TXPOWER, MAX_A_TXPOWER);
++		return clamp_t(s8, txpower, MIN_A_TXPOWER, MAX_A_TXPOWER);
+ }
+ 
+ static void rt3883_bbp_adjust(struct rt2x00_dev *rt2x00dev,
+@@ -8530,7 +8530,7 @@ static void rt2800_r_calibration(struct rt2x00_dev *rt2x00dev)
+ 	u8 bytevalue = 0;
+ 	int rcalcode;
+ 	u8 r_cal_code = 0;
+-	char d1 = 0, d2 = 0;
++	s8 d1 = 0, d2 = 0;
+ 	u8 rfvalue;
+ 	u32 MAC_RF_BYPASS0, MAC_RF_CONTROL0, MAC_PWR_PIN_CFG;
+ 	u32 maccfg;
+@@ -8591,7 +8591,7 @@ static void rt2800_r_calibration(struct rt2x00_dev *rt2x00dev)
+ 	if (bytevalue > 128)
+ 		d1 = bytevalue - 256;
+ 	else
+-		d1 = (char)bytevalue;
++		d1 = (s8)bytevalue;
+ 	rt2800_bbp_write(rt2x00dev, 22, 0x0);
+ 	rt2800_rfcsr_write_bank(rt2x00dev, 0, 35, 0x01);
+ 
+@@ -8601,7 +8601,7 @@ static void rt2800_r_calibration(struct rt2x00_dev *rt2x00dev)
+ 	if (bytevalue > 128)
+ 		d2 = bytevalue - 256;
+ 	else
+-		d2 = (char)bytevalue;
++		d2 = (s8)bytevalue;
+ 	rt2800_bbp_write(rt2x00dev, 22, 0x0);
+ 
+ 	rcalcode = rt2800_calcrcalibrationcode(rt2x00dev, d1, d2);
+@@ -8703,7 +8703,7 @@ static void rt2800_rxdcoc_calibration(struct rt2x00_dev *rt2x00dev)
+ static u32 rt2800_do_sqrt_accumulation(u32 si)
+ {
+ 	u32 root, root_pre, bit;
+-	char i;
++	s8 i;
+ 
+ 	bit = 1 << 15;
+ 	root = 0;
+@@ -9330,11 +9330,11 @@ static void rt2800_loft_search(struct rt2x00_dev *rt2x00dev, u8 ch_idx,
+ 			       u8 alc_idx, u8 dc_result[][RF_ALC_NUM][2])
+ {
+ 	u32 p0 = 0, p1 = 0, pf = 0;
+-	char idx0 = 0, idx1 = 0;
++	s8 idx0 = 0, idx1 = 0;
+ 	u8 idxf[] = {0x00, 0x00};
+ 	u8 ibit = 0x20;
+ 	u8 iorq;
+-	char bidx;
++	s8 bidx;
+ 
+ 	rt2800_bbp_write(rt2x00dev, 158, 0xb0);
+ 	rt2800_bbp_write(rt2x00dev, 159, 0x80);
+@@ -9384,17 +9384,17 @@ static void rt2800_loft_search(struct rt2x00_dev *rt2x00dev, u8 ch_idx,
+ static void rt2800_iq_search(struct rt2x00_dev *rt2x00dev, u8 ch_idx, u8 *ges, u8 *pes)
+ {
+ 	u32 p0 = 0, p1 = 0, pf = 0;
+-	char perr = 0, gerr = 0, iq_err = 0;
+-	char pef = 0, gef = 0;
+-	char psta, pend;
+-	char gsta, gend;
++	s8 perr = 0, gerr = 0, iq_err = 0;
++	s8 pef = 0, gef = 0;
++	s8 psta, pend;
++	s8 gsta, gend;
+ 
+ 	u8 ibit = 0x20;
+ 	u8 first_search = 0x00, touch_neg_max = 0x00;
+-	char idx0 = 0, idx1 = 0;
++	s8 idx0 = 0, idx1 = 0;
+ 	u8 gop;
+ 	u8 bbp = 0;
+-	char bidx;
++	s8 bidx;
+ 
+ 	for (bidx = 5; bidx >= 1; bidx--) {
+ 		for (gop = 0; gop < 2; gop++) {
+@@ -10043,11 +10043,11 @@ static int rt2800_rf_lp_config(struct rt2x00_dev *rt2x00dev, bool btxcal)
+ 	return 0;
+ }
+ 
+-static char rt2800_lp_tx_filter_bw_cal(struct rt2x00_dev *rt2x00dev)
++static s8 rt2800_lp_tx_filter_bw_cal(struct rt2x00_dev *rt2x00dev)
+ {
+ 	unsigned int cnt;
+ 	u8 bbp_val;
+-	char cal_val;
++	s8 cal_val;
+ 
+ 	rt2800_bbp_dcoc_write(rt2x00dev, 0, 0x82);
+ 
+@@ -10079,7 +10079,7 @@ static void rt2800_bw_filter_calibration(struct rt2x00_dev *rt2x00dev,
+ 	u8 rx_filter_target_20m = 0x27, rx_filter_target_40m = 0x31;
+ 	int loop = 0, is_ht40, cnt;
+ 	u8 bbp_val, rf_val;
+-	char cal_r32_init, cal_r32_val, cal_diff;
++	s8 cal_r32_init, cal_r32_val, cal_diff;
+ 	u8 saverfb5r00, saverfb5r01, saverfb5r03, saverfb5r04, saverfb5r05;
+ 	u8 saverfb5r06, saverfb5r07;
+ 	u8 saverfb5r08, saverfb5r17, saverfb5r18, saverfb5r19, saverfb5r20;
+@@ -11550,9 +11550,9 @@ static int rt2800_probe_hw_mode(struct rt2x00_dev *rt2x00dev)
+ {
+ 	struct hw_mode_spec *spec = &rt2x00dev->spec;
+ 	struct channel_info *info;
+-	char *default_power1;
+-	char *default_power2;
+-	char *default_power3;
++	s8 *default_power1;
++	s8 *default_power2;
++	s8 *default_power3;
+ 	unsigned int i, tx_chains, rx_chains;
+ 	u32 reg;
+ 
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt2800lib.h b/drivers/net/wireless/ralink/rt2x00/rt2800lib.h
+index 3cbef77b4bd3..194de676df8f 100644
+--- a/drivers/net/wireless/ralink/rt2x00/rt2800lib.h
++++ b/drivers/net/wireless/ralink/rt2x00/rt2800lib.h
+@@ -32,10 +32,10 @@ struct rf_reg_pair {
+ struct rt2800_drv_data {
+ 	u8 calibration_bw20;
+ 	u8 calibration_bw40;
+-	char rx_calibration_bw20;
+-	char rx_calibration_bw40;
+-	char tx_calibration_bw20;
+-	char tx_calibration_bw40;
++	s8 rx_calibration_bw20;
++	s8 rx_calibration_bw40;
++	s8 tx_calibration_bw20;
++	s8 tx_calibration_bw40;
+ 	u8 bbp25;
+ 	u8 bbp26;
+ 	u8 txmixer_gain_24g;
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt2x00usb.c b/drivers/net/wireless/ralink/rt2x00/rt2x00usb.c
+index 0827bc860bf8..8fd22c69855f 100644
+--- a/drivers/net/wireless/ralink/rt2x00/rt2x00usb.c
++++ b/drivers/net/wireless/ralink/rt2x00/rt2x00usb.c
+@@ -117,12 +117,12 @@ int rt2x00usb_vendor_request_buff(struct rt2x00_dev *rt2x00dev,
+ 				  const u16 buffer_length)
+ {
+ 	int status = 0;
+-	unsigned char *tb;
++	u8 *tb;
+ 	u16 off, len, bsize;
+ 
+ 	mutex_lock(&rt2x00dev->csr_mutex);
+ 
+-	tb  = (char *)buffer;
++	tb  = (u8 *)buffer;
+ 	off = offset;
+ 	len = buffer_length;
+ 	while (len && !status) {
+@@ -215,7 +215,7 @@ void rt2x00usb_register_read_async(struct rt2x00_dev *rt2x00dev,
+ 	rd->cr.wLength = cpu_to_le16(sizeof(u32));
+ 
+ 	usb_fill_control_urb(urb, usb_dev, usb_rcvctrlpipe(usb_dev, 0),
+-			     (unsigned char *)(&rd->cr), &rd->reg, sizeof(rd->reg),
++			     (u8 *)(&rd->cr), &rd->reg, sizeof(rd->reg),
+ 			     rt2x00usb_register_read_async_cb, rd);
+ 	usb_anchor_urb(urb, rt2x00dev->anchor);
+ 	if (usb_submit_urb(urb, GFP_ATOMIC) < 0) {
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt61pci.c b/drivers/net/wireless/ralink/rt2x00/rt61pci.c
+index d92f9eb07dc9..81db7f57c7e4 100644
+--- a/drivers/net/wireless/ralink/rt2x00/rt61pci.c
++++ b/drivers/net/wireless/ralink/rt2x00/rt61pci.c
+@@ -1709,7 +1709,7 @@ static int rt61pci_set_state(struct rt2x00_dev *rt2x00dev, enum dev_state state)
+ {
+ 	u32 reg, reg2;
+ 	unsigned int i;
+-	char put_to_sleep;
++	bool put_to_sleep;
+ 
+ 	put_to_sleep = (state != STATE_AWAKE);
+ 
+@@ -2656,7 +2656,7 @@ static int rt61pci_probe_hw_mode(struct rt2x00_dev *rt2x00dev)
+ {
+ 	struct hw_mode_spec *spec = &rt2x00dev->spec;
+ 	struct channel_info *info;
+-	char *tx_power;
++	u8 *tx_power;
+ 	unsigned int i;
+ 
+ 	/*
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt61pci.h b/drivers/net/wireless/ralink/rt2x00/rt61pci.h
+index 5f208ad509bd..d72d0ffd1127 100644
+--- a/drivers/net/wireless/ralink/rt2x00/rt61pci.h
++++ b/drivers/net/wireless/ralink/rt2x00/rt61pci.h
+@@ -1484,6 +1484,6 @@ struct hw_pairwise_ta_entry {
+ 	(((u8)(__txpower)) > MAX_TXPOWER) ? DEFAULT_TXPOWER : (__txpower)
+ 
+ #define TXPOWER_TO_DEV(__txpower) \
+-	clamp_t(char, __txpower, MIN_TXPOWER, MAX_TXPOWER)
++	clamp_t(u8, __txpower, MIN_TXPOWER, MAX_TXPOWER)
+ 
+ #endif /* RT61PCI_H */
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt73usb.c b/drivers/net/wireless/ralink/rt2x00/rt73usb.c
+index e3269fd7c59e..861035444374 100644
+--- a/drivers/net/wireless/ralink/rt2x00/rt73usb.c
++++ b/drivers/net/wireless/ralink/rt2x00/rt73usb.c
+@@ -1378,7 +1378,7 @@ static int rt73usb_set_state(struct rt2x00_dev *rt2x00dev, enum dev_state state)
+ {
+ 	u32 reg, reg2;
+ 	unsigned int i;
+-	char put_to_sleep;
++	bool put_to_sleep;
+ 
+ 	put_to_sleep = (state != STATE_AWAKE);
+ 
+@@ -2090,7 +2090,7 @@ static int rt73usb_probe_hw_mode(struct rt2x00_dev *rt2x00dev)
+ {
+ 	struct hw_mode_spec *spec = &rt2x00dev->spec;
+ 	struct channel_info *info;
+-	char *tx_power;
++	u8 *tx_power;
+ 	unsigned int i;
+ 
+ 	/*
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt73usb.h b/drivers/net/wireless/ralink/rt2x00/rt73usb.h
+index 1b56d285c34b..bb0a68516c08 100644
+--- a/drivers/net/wireless/ralink/rt2x00/rt73usb.h
++++ b/drivers/net/wireless/ralink/rt2x00/rt73usb.h
+@@ -1063,6 +1063,6 @@ struct hw_pairwise_ta_entry {
+ 	(((u8)(__txpower)) > MAX_TXPOWER) ? DEFAULT_TXPOWER : (__txpower)
+ 
+ #define TXPOWER_TO_DEV(__txpower) \
+-	clamp_t(char, __txpower, MIN_TXPOWER, MAX_TXPOWER)
++	clamp_t(u8, __txpower, MIN_TXPOWER, MAX_TXPOWER)
+ 
+ #endif /* RT73USB_H */
+-- 
+2.38.1
+
