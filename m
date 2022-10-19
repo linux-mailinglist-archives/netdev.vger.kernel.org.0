@@ -2,65 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DEC1605138
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 22:23:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6432C605190
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 22:49:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230198AbiJSUXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 16:23:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57436 "EHLO
+        id S231183AbiJSUtJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 16:49:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229731AbiJSUXK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 16:23:10 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5496E1946D8;
-        Wed, 19 Oct 2022 13:23:07 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id r14so26948225edc.7;
-        Wed, 19 Oct 2022 13:23:07 -0700 (PDT)
+        with ESMTP id S230348AbiJSUtF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 16:49:05 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61BAE1D6391
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 13:48:52 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id l1so18363940pld.13
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 13:48:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=o+VYBjQB7Yx50yVwU1MMoGB+C5Q6N6YATcengMcXkS4=;
-        b=maJ4ID2tVxHZZAoMKoeqJXCydTsVNuP8MO2Qc/tCXj56BC6pY6vC+GKk1+h/4mCSeF
-         a7CceTwNp526d3puJTN2HR+8C1835bDZTxdwwA/uGYiF6+fcFVX/ANzqifmYSXpYgr4+
-         LQon0C74Dx+jOE8LinzEmpeWEItNTKSzFIM00th0qfatmlEcMF8ivI/CuOH9yX5Ygkth
-         IoGuXKuNk0fEWPiNEcs818MgQ/ZS777piseOfdhkwKbOjczM6JrTQ+FWfm9z0M9HSwU9
-         lNtnpBWeTNxPBj8LODgUXzIcc2UZwztFcGmiK/G61CuwPphy+kc1ogwyf4BuamUDmb1l
-         MtSw==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Wry+KP7sYp0XZ/vCTFAnki1YjGKEZ1XpsHIUXmUgsKw=;
+        b=ZFU8eFE5C5TwFKewKkU2T9pk7rP6lUZ+ggSQFN85DmRDotWJQe9z9CsPtlW917vJ+k
+         cr/v70JFblCTxvmvM48iXTLFkPToKI6QR+xmKeppvzivMTd6ecGeDPIt3EKpHxt40ud8
+         3Pq5ZPiHJkKE981/oXTuT5ZA9uBiEUdpQ8iYbBGLF3g5luNMfkJmUIm0uqyRVSnBETki
+         MjJ19Jd0Cuhf1CYTaJpneCbexLqt3Ev1SwPTjOsUKLPALOdMnaRnUmNUaMehfeN2yIDr
+         /USnj6mdGZ80am+x+1s0OS7gcGXMe6Wr3wceP3Udc6SCfrNRpvElTkFByZNfaUSNDuZk
+         Usng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=o+VYBjQB7Yx50yVwU1MMoGB+C5Q6N6YATcengMcXkS4=;
-        b=Do0nSj4IfH62a0C+hwsrL8CIyxxwDA7NfsQVQUXhTq+qVAzv7/Yyv3w8OjVWf6tq/m
-         NUiEpeOogRev5S9XueoCifj9stKc4M6A78XTvrOTCrMOdgrd6n3x7y3Y6avpGSHK2qWI
-         CgaX831jfB0trkCszW7j2kMe0G1rBIuqaO/76Y7CwRUjMp6IgAN72ZGibvzG2nHyJ5ll
-         9ikTFZltikaH/e31C7Bsox5zK81vFXIzgYbdNaDu7syOZ5QXe41NbaWaaOy0TnSUfJT1
-         ABLu7PSo4o3PAxiRQqYtjBVEI5e0UkvamMwzWBYkNl4IXnLuOayJNp2NVwCOp/PQZj4s
-         f7Pg==
-X-Gm-Message-State: ACrzQf3VNS7NjvYl4aEocUu45QZZP8ZvnIaik088YF7Jl6OMCHRIDEKC
-        NkFUeZ5vyqfulK6bzaw6du6nI4Lx5hfV3OxCNmI=
-X-Google-Smtp-Source: AMsMyM7QHLOnjUcuw+YPbwf9zp3UxH7nNT3H0S3AbAefvgiEyD9Omi4cxsf0AeHwB9ag6ycMbPgoeANwqxaeXLd6xp0=
-X-Received: by 2002:a05:6402:3546:b0:45d:a52f:2d38 with SMTP id
- f6-20020a056402354600b0045da52f2d38mr8912353edd.403.1666210985810; Wed, 19
- Oct 2022 13:23:05 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Wry+KP7sYp0XZ/vCTFAnki1YjGKEZ1XpsHIUXmUgsKw=;
+        b=jVR1wy+vZNMZ6GN214Y5/hWmiPZv89Xd4CuwMXn0rwyxzG+HKA3v5yvmA8r8BU/v5z
+         yALFkiVcazPc8TDpKND2XxA7OkB1DhZqpocguB49p+j8HgS4NGFe6KSkTt9+VxZMF6L/
+         tOBoTmj0kzxpLEeW0jfS6MF+VBHxOOcSgUiNh3iHmqNp79OOfaMqdJzipcCqFM83DtMI
+         nKZNNUaikVzr6aFgkrgAje++F0LwdS9sZpCIwqTcASRqVErZORF1L8A7L3dA8DVapOZI
+         l39BCAPDZE94wofNfahiI+NjJ1kxm7VMQjngowgSP5LOlK+33MIgViVySONxioY/1JY5
+         preA==
+X-Gm-Message-State: ACrzQf1cJnqb1qawInIBf4uf2/9iQeIH/7F2B0t4WJ+U92wudBLydsNE
+        Y6Ylg3+ztN0n/6n2Oh75L+9LJNwmM0ca0g==
+X-Google-Smtp-Source: AMsMyM4JWk0jrLz9E+Lqr6FtXUSu1keSUWXGQzpPeo6PRfR/hKkaG7LXX9w6C/LmOO1ctUpRVOhY3w==
+X-Received: by 2002:a17:90a:7e14:b0:210:dcec:ffe9 with SMTP id i20-20020a17090a7e1400b00210dcecffe9mr2260717pjl.157.1666212531071;
+        Wed, 19 Oct 2022 13:48:51 -0700 (PDT)
+Received: from ?IPV6:2620:10d:c085:2103:475:ef07:bb37:8b7b? ([2620:10d:c090:400::5:904c])
+        by smtp.gmail.com with ESMTPSA id w4-20020a628204000000b005623fa9ad42sm11292558pfd.153.2022.10.19.13.48.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Oct 2022 13:48:50 -0700 (PDT)
+Message-ID: <c5404247-2359-99fc-e0aa-1408b44e9024@gmail.com>
+Date:   Wed, 19 Oct 2022 13:48:48 -0700
 MIME-Version: 1.0
-References: <20220907183129.745846-1-joannelkoong@gmail.com>
- <20220907183129.745846-2-joannelkoong@gmail.com> <cd8d201b-74f7-4045-ad2f-6d26ed608d1e@linux.dev>
-In-Reply-To: <cd8d201b-74f7-4045-ad2f-6d26ed608d1e@linux.dev>
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Wed, 19 Oct 2022 13:22:54 -0700
-Message-ID: <CAJnrk1ZTbHcFsQPKWnZ+Au8BsiFc++Ud7y=24mAhNXNbYQaXhA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v6 1/3] bpf: Add skb dynptrs
-To:     Martin KaFai Lau <martin.lau@linux.dev>
-Cc:     andrii@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        martin.lau@kernel.org, kuba@kernel.org, memxor@gmail.com,
-        toke@redhat.com, netdev@vger.kernel.org, kernel-team@fb.com,
-        bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.3.3
+Subject: Re: [PATCH net-next v4 0/5] ptp: ocp: add support for Orolia ART-CARD
+Content-Language: en-US
+To:     Vadim Fedorenko <vfedorenko@novek.ru>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org
+References: <20221019185112.28294-1-vfedorenko@novek.ru>
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+In-Reply-To: <20221019185112.28294-1-vfedorenko@novek.ru>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -69,69 +76,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 9, 2022 at 4:12 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
->
-> On 9/7/22 11:31 AM, Joanne Koong wrote:
-> > For bpf prog types that don't support writes on skb data, the dynptr is
-> > read-only (bpf_dynptr_write() will return an error and bpf_dynptr_data()
-> > will return NULL; for a read-only data slice, there will be a separate
-> > API bpf_dynptr_data_rdonly(), which will be added in the near future).
-> >
-> I just caught up on the v4 discussion about loadtime-vs-runtime error on
-> write.  From a user perspective, I am not concerned on which error.
-> Either way, I will quickly find out the packet header is not changed.
->
-> For the dynptr init helper bpf_dynptr_from_skb(), the user does not need
-> to know its skb is read-only or not and uses the same helper.  The
-> verifier in this case uses its knowledge on the skb context and uses
-> bpf_dynptr_from_skb_rdonly_proto or bpf_dynptr_from_skb_rdwr_proto
-> accordingly.
->
-> Now for the slice helper, the user needs to remember its skb is read
-> only (or not) and uses bpf_dynptr_data() vs bpf_dynptr_data_rdonly()
-> accordingly.  Yes, if it only needs to read, the user can always stay
-> with bpf_dynptr_data_rdonly (which is not the initially supported one
-> though).  However, it is still unnecessary burden and surprise to user.
-> It is likely it will silently turn everything into bpf_dynptr_read()
-> against the user intention. eg:
->
-> if (bpf_dynptr_from_skb(skb, 0, &dynptr))
->         return 0;
-> ip6h = bpf_dynptr_data(&dynptr, 0, sizeof(*ip6h));
-> if (!ip6h) {
->         /* Unlikely case, in non-linear section, just bpf_dynptr_read()
->          * Oops...actually bpf_dynptr_data_rdonly() should be used.
->          */
->         bpf_dynptr_read(buf, sizeof(*ip6h), &dynptr, 0, 0);
->         ip6h = buf;
-> }
->
+For the series:
+   Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 
-I see your point. I agree that it'd be best if we could prevent this
-burden on the user, but I think the trade-off would be that if we have
-bpf_dynptr_data return data slices that are read-only and data slices
-that are writable (where rd-only vs. writable is tracked by verifier),
-then in the future we won't be able to support dynptrs that are
-dynamically read-only (since to reject at load time, the verifier must
-know statically whether the dynptr is read-only or not). I'm not sure
-how likely it is that we'd run into a case where we'll need dynamic
-read-only dynptrs though. What are your thoughts on this?
+Also, if you need to do another respin, swap patches 2/3.  Patch 3 
+introduces mro50_serial_activate, but this is referenced in patch 2.
 
->
-> > +     case BPF_DYNPTR_TYPE_SKB:
-> > +     {
-> > +             struct sk_buff *skb = ptr->data;
-> > +
-> > +             /* if the data is paged, the caller needs to pull it first */
-> > +             if (ptr->offset + offset + len > skb->len - skb->data_len)
->
-> nit. skb_headlen(skb)
->
-> The patches can't be applied cleanly also. Please remember to rebase.
-> eg. commit afef88e65554 ("selftests/bpf: Store BPF object files with
-> .bpf.o extension") has landed on Sep 2.
+-- 
+Jonathan
 
-I will use skb_headlen(skb) and rebase for the next iteration :)
-Thanks for reviewing this!
->
->
+On 10/19/22 11:51 AM, Vadim Fedorenko wrote:
+> Orolia company created alternative open source TimeCard. The hardware of
+> the card provides similar to OCP's card functions, that's why the support
+> is added to current driver.
+> 
+> The first patch in the series changes the way to store information about
+> serial ports and is more like preparation.
+> 
+> The patches 2 to 4 introduces actual hardware support.
+> 
+> The last patch removes fallback from devlink flashing interface to protect
+> against flashing wrong image. This became actual now as we have 2 different
+> boards supported and wrong image can ruin hardware easily.
+> 
+> v2:
+>    Address comments from Jonathan Lemon
+> 
+> v3:
+>    Fix issue reported by kernel test robot <lkp@intel.com>
+> 
+> v4:
+>    Fix clang build issue
+> 
+> Vadim Fedorenko (5):
+>    ptp: ocp: upgrade serial line information
+>    ptp: ocp: add Orolia timecard support
+>    ptp: ocp: add serial port of mRO50 MAC on ART card
+>    ptp: ocp: expose config and temperature for ART card
+>    ptp: ocp: remove flash image header check fallback
+> 
+>   drivers/ptp/ptp_ocp.c | 566 ++++++++++++++++++++++++++++++++++++++----
+>   1 file changed, 519 insertions(+), 47 deletions(-)
+> 
+
