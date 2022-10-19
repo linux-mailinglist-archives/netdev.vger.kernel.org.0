@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D27EB6039DD
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 08:39:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91BA96039DF
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 08:39:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230110AbiJSGjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 02:39:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46784 "EHLO
+        id S230118AbiJSGjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 02:39:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230077AbiJSGiq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 02:38:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174396DF82
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 23:38:42 -0700 (PDT)
+        with ESMTP id S230080AbiJSGiw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 02:38:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A062E6DFA0
+        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 23:38:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4443AB8223F
+        by ams.source.kernel.org (Postfix) with ESMTPS id 778FBB81D51
         for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 06:38:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F39EAC433C1;
-        Wed, 19 Oct 2022 06:38:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DD77C433D6;
+        Wed, 19 Oct 2022 06:38:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666161520;
-        bh=0h94l9YOdj9P/2b8gUDf5pTe4YpWtfs4WGuTnJIs3xQ=;
+        s=k20201202; t=1666161521;
+        bh=x+1BR6BCvekzlj0AzzLYhIK0igqse7ww39XRfPp3sys=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ODN6AktRqJjvSNRnpvtaFxbVUE4LbNxR7rNKez09SCN7BOA4Lh5Cj4V3OjeiM1Bjh
-         cxmarSLyygVrN9g8KMN9yYaWJ74QAT21wDh4CdrZgJNB7PXztNSlYRmRdSgxZl97xg
-         xZIfh3E6IIJFuH0+6NUW/iVt/En5Mz9gyVG6hcYbVyM8dP6houzfeRE5wsgV8nHxG+
-         W6NTQ/WL2bJV+cgeQltpzwBsUmq/d+UHxM9m3o90nlMRIH9gn9f5Y5n8JKq9cTO8wA
-         5TryApd0SsnZJQbht3OpuSD2m8K5wT0TDgwExo3Q+EEvttJPWNWOvlsASCb+wOdPXe
-         7Hjz3voPVmIbw==
+        b=Gl2SK1LCxcWAw3Ihu9cjBp+otWE6wk+oviHhcI0t7ihqzcPggAUWq6QdPdyI2P2IQ
+         nB2jG+H/6OlJCQ3BXdWzsDcoWzGcs20yNdfINJhOBOnpxKxxrrKdepr1gI3c0V1Xhu
+         6QPQoQhtYi1FazXA0keHahSU2hxqTLtf8nu5zea2QKA33NKNRfzFu7S3qjvhnPwCpo
+         YCr+lQy/rz7ELYMcHypD+xf2CyHjxcJ1pCT0ZLKr7ql0yHaCIhuE6ZWk2yCJsNFmpA
+         Pv28FtvDrqzaU/6ckQV17P0mCxHcmuenLZa2ZUGnRSWKtSC5sxKB0SaF7DhpkHeYHt
+         A1w2EUl8Hgb5w==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,10 +38,10 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>
-Subject: [net 06/16] net/mlx5: ASO, Create the ASO SQ with the correct timestamp format
-Date:   Tue, 18 Oct 2022 23:38:03 -0700
-Message-Id: <20221019063813.802772-7-saeed@kernel.org>
+        Moshe Shemesh <moshe@nvidia.com>
+Subject: [net 07/16] net/mlx5: Fix possible use-after-free in async command interface
+Date:   Tue, 18 Oct 2022 23:38:04 -0700
+Message-Id: <20221019063813.802772-8-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221019063813.802772-1-saeed@kernel.org>
 References: <20221019063813.802772-1-saeed@kernel.org>
@@ -56,59 +56,205 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Tariq Toukan <tariqt@nvidia.com>
 
-mlx5 SQs must select the timestamp format explicitly according to the
-active clock mode, select the current active timestamp mode so ASO SQ create
-will succeed.
+mlx5_cmd_cleanup_async_ctx should return only after all its callback
+handlers were completed. Before this patch, the below race between
+mlx5_cmd_cleanup_async_ctx and mlx5_cmd_exec_cb_handler was possible and
+lead to a use-after-free:
 
-This fixes the following error prints when trying to create ipsec ASO SQ
-while the timestamp format is real time mode.
+1. mlx5_cmd_cleanup_async_ctx is called while num_inflight is 2 (i.e.
+   elevated by 1, a single inflight callback).
+2. mlx5_cmd_cleanup_async_ctx decreases num_inflight to 1.
+3. mlx5_cmd_exec_cb_handler is called, decreases num_inflight to 0 and
+   is about to call wake_up().
+4. mlx5_cmd_cleanup_async_ctx calls wait_event, which returns
+   immediately as the condition (num_inflight == 0) holds.
+5. mlx5_cmd_cleanup_async_ctx returns.
+6. The caller of mlx5_cmd_cleanup_async_ctx frees the mlx5_async_ctx
+   object.
+7. mlx5_cmd_exec_cb_handler goes on and calls wake_up() on the freed
+   object.
 
-mlx5_cmd_out_err:778:(pid 34874): CREATE_SQ(0x904) op_mod(0x0) failed, status bad parameter(0x3), syndrome (0xd61c0b), err(-22)
-mlx5_aso_create_sq:285:(pid 34874): Failed to open aso wq sq, err=-22
-mlx5e_ipsec_init:436:(pid 34874): IPSec initialization failed, -22
+Fix it by syncing using a completion object. Mark it completed when
+num_inflight reaches 0.
 
-Fixes: cdd04f4d4d71 ("net/mlx5: Add support to create SQ and CQ for ASO")
+Trace:
+
+BUG: KASAN: use-after-free in do_raw_spin_lock+0x23d/0x270
+Read of size 4 at addr ffff888139cd12f4 by task swapper/5/0
+
+CPU: 5 PID: 0 Comm: swapper/5 Not tainted 6.0.0-rc3_for_upstream_debug_2022_08_30_13_10 #1
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+Call Trace:
+ <IRQ>
+ dump_stack_lvl+0x57/0x7d
+ print_report.cold+0x2d5/0x684
+ ? do_raw_spin_lock+0x23d/0x270
+ kasan_report+0xb1/0x1a0
+ ? do_raw_spin_lock+0x23d/0x270
+ do_raw_spin_lock+0x23d/0x270
+ ? rwlock_bug.part.0+0x90/0x90
+ ? __delete_object+0xb8/0x100
+ ? lock_downgrade+0x6e0/0x6e0
+ _raw_spin_lock_irqsave+0x43/0x60
+ ? __wake_up_common_lock+0xb9/0x140
+ __wake_up_common_lock+0xb9/0x140
+ ? __wake_up_common+0x650/0x650
+ ? destroy_tis_callback+0x53/0x70 [mlx5_core]
+ ? kasan_set_track+0x21/0x30
+ ? destroy_tis_callback+0x53/0x70 [mlx5_core]
+ ? kfree+0x1ba/0x520
+ ? do_raw_spin_unlock+0x54/0x220
+ mlx5_cmd_exec_cb_handler+0x136/0x1a0 [mlx5_core]
+ ? mlx5_cmd_cleanup_async_ctx+0x220/0x220 [mlx5_core]
+ ? mlx5_cmd_cleanup_async_ctx+0x220/0x220 [mlx5_core]
+ mlx5_cmd_comp_handler+0x65a/0x12b0 [mlx5_core]
+ ? dump_command+0xcc0/0xcc0 [mlx5_core]
+ ? lockdep_hardirqs_on_prepare+0x400/0x400
+ ? cmd_comp_notifier+0x7e/0xb0 [mlx5_core]
+ cmd_comp_notifier+0x7e/0xb0 [mlx5_core]
+ atomic_notifier_call_chain+0xd7/0x1d0
+ mlx5_eq_async_int+0x3ce/0xa20 [mlx5_core]
+ atomic_notifier_call_chain+0xd7/0x1d0
+ ? irq_release+0x140/0x140 [mlx5_core]
+ irq_int_handler+0x19/0x30 [mlx5_core]
+ __handle_irq_event_percpu+0x1f2/0x620
+ handle_irq_event+0xb2/0x1d0
+ handle_edge_irq+0x21e/0xb00
+ __common_interrupt+0x79/0x1a0
+ common_interrupt+0x78/0xa0
+ </IRQ>
+ <TASK>
+ asm_common_interrupt+0x22/0x40
+RIP: 0010:default_idle+0x42/0x60
+Code: c1 83 e0 07 48 c1 e9 03 83 c0 03 0f b6 14 11 38 d0 7c 04 84 d2 75 14 8b 05 eb 47 22 02 85 c0 7e 07 0f 00 2d e0 9f 48 00 fb f4 <c3> 48 c7 c7 80 08 7f 85 e8 d1 d3 3e fe eb de 66 66 2e 0f 1f 84 00
+RSP: 0018:ffff888100dbfdf0 EFLAGS: 00000242
+RAX: 0000000000000001 RBX: ffffffff84ecbd48 RCX: 1ffffffff0afe110
+RDX: 0000000000000004 RSI: 0000000000000000 RDI: ffffffff835cc9bc
+RBP: 0000000000000005 R08: 0000000000000001 R09: ffff88881dec4ac3
+R10: ffffed1103bd8958 R11: 0000017d0ca571c9 R12: 0000000000000005
+R13: ffffffff84f024e0 R14: 0000000000000000 R15: dffffc0000000000
+ ? default_idle_call+0xcc/0x450
+ default_idle_call+0xec/0x450
+ do_idle+0x394/0x450
+ ? arch_cpu_idle_exit+0x40/0x40
+ ? do_idle+0x17/0x450
+ cpu_startup_entry+0x19/0x20
+ start_secondary+0x221/0x2b0
+ ? set_cpu_sibling_map+0x2070/0x2070
+ secondary_startup_64_no_verify+0xcd/0xdb
+ </TASK>
+
+Allocated by task 49502:
+ kasan_save_stack+0x1e/0x40
+ __kasan_kmalloc+0x81/0xa0
+ kvmalloc_node+0x48/0xe0
+ mlx5e_bulk_async_init+0x35/0x110 [mlx5_core]
+ mlx5e_tls_priv_tx_list_cleanup+0x84/0x3e0 [mlx5_core]
+ mlx5e_ktls_cleanup_tx+0x38f/0x760 [mlx5_core]
+ mlx5e_cleanup_nic_tx+0xa7/0x100 [mlx5_core]
+ mlx5e_detach_netdev+0x1ca/0x2b0 [mlx5_core]
+ mlx5e_suspend+0xdb/0x140 [mlx5_core]
+ mlx5e_remove+0x89/0x190 [mlx5_core]
+ auxiliary_bus_remove+0x52/0x70
+ device_release_driver_internal+0x40f/0x650
+ driver_detach+0xc1/0x180
+ bus_remove_driver+0x125/0x2f0
+ auxiliary_driver_unregister+0x16/0x50
+ mlx5e_cleanup+0x26/0x30 [mlx5_core]
+ cleanup+0xc/0x4e [mlx5_core]
+ __x64_sys_delete_module+0x2b5/0x450
+ do_syscall_64+0x3d/0x90
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+Freed by task 49502:
+ kasan_save_stack+0x1e/0x40
+ kasan_set_track+0x21/0x30
+ kasan_set_free_info+0x20/0x30
+ ____kasan_slab_free+0x11d/0x1b0
+ kfree+0x1ba/0x520
+ mlx5e_tls_priv_tx_list_cleanup+0x2e7/0x3e0 [mlx5_core]
+ mlx5e_ktls_cleanup_tx+0x38f/0x760 [mlx5_core]
+ mlx5e_cleanup_nic_tx+0xa7/0x100 [mlx5_core]
+ mlx5e_detach_netdev+0x1ca/0x2b0 [mlx5_core]
+ mlx5e_suspend+0xdb/0x140 [mlx5_core]
+ mlx5e_remove+0x89/0x190 [mlx5_core]
+ auxiliary_bus_remove+0x52/0x70
+ device_release_driver_internal+0x40f/0x650
+ driver_detach+0xc1/0x180
+ bus_remove_driver+0x125/0x2f0
+ auxiliary_driver_unregister+0x16/0x50
+ mlx5e_cleanup+0x26/0x30 [mlx5_core]
+ cleanup+0xc/0x4e [mlx5_core]
+ __x64_sys_delete_module+0x2b5/0x450
+ do_syscall_64+0x3d/0x90
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+Fixes: e355477ed9e4 ("net/mlx5: Make mlx5_cmd_exec_cb() a safe API")
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Reported-by: Leon Romanovsky <leonro@nvidia.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c | 10 +++++-----
+ include/linux/mlx5/driver.h                   |  2 +-
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c
-index baa8092f335e..c971ff04dd04 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c
-@@ -3,6 +3,7 @@
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+index 0377392848d9..46ba4c2faad2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+@@ -2004,7 +2004,7 @@ void mlx5_cmd_init_async_ctx(struct mlx5_core_dev *dev,
+ 	ctx->dev = dev;
+ 	/* Starts at 1 to avoid doing wake_up if we are not cleaning up */
+ 	atomic_set(&ctx->num_inflight, 1);
+-	init_waitqueue_head(&ctx->wait);
++	init_completion(&ctx->inflight_done);
+ }
+ EXPORT_SYMBOL(mlx5_cmd_init_async_ctx);
  
- #include <linux/mlx5/device.h>
- #include <linux/mlx5/transobj.h>
-+#include "clock.h"
- #include "aso.h"
- #include "wq.h"
- 
-@@ -179,6 +180,7 @@ static int create_aso_sq(struct mlx5_core_dev *mdev, int pdn,
+@@ -2018,8 +2018,8 @@ EXPORT_SYMBOL(mlx5_cmd_init_async_ctx);
+  */
+ void mlx5_cmd_cleanup_async_ctx(struct mlx5_async_ctx *ctx)
  {
- 	void *in, *sqc, *wq;
- 	int inlen, err;
-+	u8 ts_format;
+-	atomic_dec(&ctx->num_inflight);
+-	wait_event(ctx->wait, atomic_read(&ctx->num_inflight) == 0);
++	if (!atomic_dec_and_test(&ctx->num_inflight))
++		wait_for_completion(&ctx->inflight_done);
+ }
+ EXPORT_SYMBOL(mlx5_cmd_cleanup_async_ctx);
  
- 	inlen = MLX5_ST_SZ_BYTES(create_sq_in) +
- 		sizeof(u64) * sq->wq_ctrl.buf.npages;
-@@ -195,6 +197,11 @@ static int create_aso_sq(struct mlx5_core_dev *mdev, int pdn,
- 	MLX5_SET(sqc,  sqc, state, MLX5_SQC_STATE_RST);
- 	MLX5_SET(sqc,  sqc, flush_in_error_en, 1);
+@@ -2032,7 +2032,7 @@ static void mlx5_cmd_exec_cb_handler(int status, void *_work)
+ 	status = cmd_status_err(ctx->dev, status, work->opcode, work->out);
+ 	work->user_callback(status, work);
+ 	if (atomic_dec_and_test(&ctx->num_inflight))
+-		wake_up(&ctx->wait);
++		complete(&ctx->inflight_done);
+ }
  
-+	ts_format = mlx5_is_real_time_sq(mdev) ?
-+			MLX5_TIMESTAMP_FORMAT_REAL_TIME :
-+			MLX5_TIMESTAMP_FORMAT_FREE_RUNNING;
-+	MLX5_SET(sqc, sqc, ts_format, ts_format);
-+
- 	MLX5_SET(wq,   wq, wq_type,       MLX5_WQ_TYPE_CYCLIC);
- 	MLX5_SET(wq,   wq, uar_page,      mdev->mlx5e_res.hw_objs.bfreg.index);
- 	MLX5_SET(wq,   wq, log_wq_pg_sz,  sq->wq_ctrl.buf.page_shift -
+ int mlx5_cmd_exec_cb(struct mlx5_async_ctx *ctx, void *in, int in_size,
+@@ -2050,7 +2050,7 @@ int mlx5_cmd_exec_cb(struct mlx5_async_ctx *ctx, void *in, int in_size,
+ 	ret = cmd_exec(ctx->dev, in, in_size, out, out_size,
+ 		       mlx5_cmd_exec_cb_handler, work, false);
+ 	if (ret && atomic_dec_and_test(&ctx->num_inflight))
+-		wake_up(&ctx->wait);
++		complete(&ctx->inflight_done);
+ 
+ 	return ret;
+ }
+diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
+index a12929bc31b2..af2ceb4160bc 100644
+--- a/include/linux/mlx5/driver.h
++++ b/include/linux/mlx5/driver.h
+@@ -970,7 +970,7 @@ void mlx5_cmd_allowed_opcode(struct mlx5_core_dev *dev, u16 opcode);
+ struct mlx5_async_ctx {
+ 	struct mlx5_core_dev *dev;
+ 	atomic_t num_inflight;
+-	struct wait_queue_head wait;
++	struct completion inflight_done;
+ };
+ 
+ struct mlx5_async_work;
 -- 
 2.37.3
 
