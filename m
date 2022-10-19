@@ -2,49 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1305E6037E5
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 04:09:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 544AB603815
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 04:29:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229903AbiJSCJr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 22:09:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44512 "EHLO
+        id S229828AbiJSC3P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 22:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229720AbiJSCJq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 22:09:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018A312ABC
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 19:09:46 -0700 (PDT)
+        with ESMTP id S229508AbiJSC3O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 22:29:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E2F66D9F7;
+        Tue, 18 Oct 2022 19:29:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AEC65B82035
-        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 02:09:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6F8AC433C1;
-        Wed, 19 Oct 2022 02:09:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC9BB61757;
+        Wed, 19 Oct 2022 02:29:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBC34C433D6;
+        Wed, 19 Oct 2022 02:29:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666145383;
-        bh=1psKlUDxPEHUVdpxCvbxIlQJmKMRj1BX0OOiyvnMkhM=;
+        s=k20201202; t=1666146546;
+        bh=XaMinZPA6FphhuKxsMEDvnDI0O6vGbqFBXSn9EvEMzo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KRRGSx9WiGO7+5Pc98EmkiIFIHCDecNgLG2uLeBxnxzyS6E0UH6ocbwaKRRvviMhL
-         0EdVOAELl7OMGMXaXkM9L9+udpRfTw/i+iej1l93Snc/M94xmyMTco+CHPHoweh1k6
-         LGpYJsolKiVvWb4rXuy0SFuJuHQJtyHgr37iIekcDm6iExdhtqr3phoqnnEk3FHi8L
-         aY6tKRzAkZhiPOlv7pezKtav58h4FOjeKEIVz9jxDtrPVXpwu1UWiWzpdOseUSha6A
-         8voo9+6L2SLFqB9Zw89f4qufV1uOn+1jqiVpqO71en1iDclwzGy2brrnyTLuyutura
-         hWUre+OvkRMsg==
-Date:   Tue, 18 Oct 2022 19:09:41 -0700
+        b=Nq2rbg4nhr2EYB4wSOHKcIRTCvJogAODraO/mzJKBbb0Pj+ddVdp9d784KG9KO4IN
+         v8yveHyKHgh8AWMBY8C04GGQAx5luw2+ypUoz4kTiS34UNjCT0HqYeL9dRHQTdENzX
+         sMzyuHdq73VYmiPiKBEw4ojPXcAAMpYJeYOhlanhpOHT75qv4EB+Fuo0g7NtHxNuR2
+         KvYE5uUJk1tGLDCWOVLH1kEWf+wChQGsRlpqQrUkNnVbhgvkkj/wkCAUj1nMFKZYCQ
+         DcNN+BMJcZhV4pUWRZI2pcoclaBzF79mGbxEjBUhUpim9+aYGcGpF1vycaFdcqwEpT
+         iV1ttqJkS0mHg==
+Date:   Tue, 18 Oct 2022 19:29:04 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     <edward.cree@amd.com>
-Cc:     <netdev@vger.kernel.org>, <linux-net-drivers@amd.com>,
-        <davem@davemloft.net>, <pabeni@redhat.com>, <edumazet@google.com>,
-        <habetsm.xilinx@gmail.com>, <johannes@sipsolutions.net>,
-        <marcelo.leitner@gmail.com>, <jiri@resnulli.us>,
-        Edward Cree <ecree.xilinx@gmail.com>
-Subject: Re: [PATCH v3 net-next 1/3] netlink: add support for formatted
- extack messages
-Message-ID: <20221018190941.39142f63@kernel.org>
-In-Reply-To: <f6cdbbf29de087257201abd06ddaff0593236106.1666102698.git.ecree.xilinx@gmail.com>
-References: <cover.1666102698.git.ecree.xilinx@gmail.com>
-        <f6cdbbf29de087257201abd06ddaff0593236106.1666102698.git.ecree.xilinx@gmail.com>
+To:     Doug Berger <opendmb@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] net: bcmgenet: add RX_CLS_LOC_ANY support
+Message-ID: <20221018192904.4beb2f41@kernel.org>
+In-Reply-To: <20221017213237.814861-1-opendmb@gmail.com>
+References: <20221017213237.814861-1-opendmb@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,16 +56,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 18 Oct 2022 15:37:27 +0100 edward.cree@amd.com wrote:
-> From: Edward Cree <ecree.xilinx@gmail.com>
-> 
-> Include an 80-byte buffer in struct netlink_ext_ack that can be used
->  for scnprintf()ed messages.  This does mean that the resulting string
->  can't be enumerated, translated etc. in the way NL_SET_ERR_MSG() was
->  designed to allow.
-> 
-> Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
+On Mon, 17 Oct 2022 14:32:37 -0700 Doug Berger wrote:
+> +	__u32 tmp;
 
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
-
-Thanks!
+nit: please name this more appropriately and use normal u32 or unsigned
+int type, __u* types are for uAPI definitions only.
