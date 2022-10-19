@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB813604FEB
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 20:51:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51085604FF0
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 20:52:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229879AbiJSSvy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 14:51:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33814 "EHLO
+        id S230175AbiJSSw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 14:52:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229597AbiJSSvv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 14:51:51 -0400
+        with ESMTP id S230196AbiJSSwY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 14:52:24 -0400
 Received: from novek.ru (unknown [213.148.174.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20B451958F1
-        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 11:51:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEFD2196B57
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 11:52:22 -0700 (PDT)
 Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id 7E057504ECB;
-        Wed, 19 Oct 2022 21:48:12 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 7E057504ECB
+        by novek.ru (Postfix) with ESMTPSA id E048F504ECD;
+        Wed, 19 Oct 2022 21:48:13 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru E048F504ECD
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1666205293; bh=DW5nFYcgvXTUFIE6sFmtf5r1sh/I2/XwxCLTjGpmS0o=;
+        t=1666205295; bh=rrcojiHEGdTalHMJUCoiXmTaDBjAYuomC2SSYCOidgI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JkAlz5SAmXiz+U+QiXzEWONLEODMOCnlmr5pkyS6MvN8bu1+dNz1n2m95GsySvsnI
-         1yCsE/lvzH/M9wrl//KDPWAmG47mEjkP+0UHE92rSD28TFy4i7YDC+FS5CDutixbyS
-         cigWe3XSIkNmYj2OFiIh8V6if/6l7PUSMnl6MbMk=
+        b=EYSjo22o/PmHvgOpqxynpw5GRGbAnC+fqjl5CWBcN5bkNjZngLQ8krPSOa3HTzzPt
+         ZF1CbDCkVAneoO7W0Ui+MwKs2tSDVmdAw7/CI6TcOCmMBHeWm2+/OiDSkbjwSPf9NR
+         XRmiOIkJPLUJds6rdMExA6k21Q4RTyPPV8WkvTJA=
 From:   Vadim Fedorenko <vfedorenko@novek.ru>
 To:     Richard Cochran <richardcochran@gmail.com>,
         Jonathan Lemon <jonathan.lemon@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Vadim Fedorenko <vadfed@fb.com>,
         Charles Parent <charles.parent@orolia2s.com>
-Subject: [PATCH net-next v4 3/5] ptp: ocp: add serial port of mRO50 MAC on ART card
-Date:   Wed, 19 Oct 2022 21:51:10 +0300
-Message-Id: <20221019185112.28294-4-vfedorenko@novek.ru>
+Subject: [PATCH net-next v4 4/5] ptp: ocp: expose config and temperature for ART card
+Date:   Wed, 19 Oct 2022 21:51:11 +0300
+Message-Id: <20221019185112.28294-5-vfedorenko@novek.ru>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20221019185112.28294-1-vfedorenko@novek.ru>
 References: <20221019185112.28294-1-vfedorenko@novek.ru>
@@ -51,59 +51,191 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vadim Fedorenko <vadfed@fb.com>
 
-ART card provides interface to access to serial port of miniature atomic
-clock found on the card. Add support for this device and configure it
-during init phase.
+Orolia card has disciplining configuration and temperature table
+stored in EEPROM. This patch exposes them as binary attributes to
+have read and write access.
 
 Co-developed-by: Charles Parent <charles.parent@orolia2s.com>
 Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 Signed-off-by: Vadim Fedorenko <vadfed@fb.com>
 ---
- drivers/ptp/ptp_ocp.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ drivers/ptp/ptp_ocp.c | 137 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 137 insertions(+)
 
 diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index 59b226518ee4..9bdfb82d5402 100644
+index 9bdfb82d5402..dd6a68762231 100644
 --- a/drivers/ptp/ptp_ocp.c
 +++ b/drivers/ptp/ptp_ocp.c
-@@ -208,6 +208,11 @@ struct frequency_reg {
- 	u32	ctrl;
- 	u32	status;
+@@ -690,6 +690,9 @@ static struct ocp_resource ocp_fb_resource[] = {
+ 	{ }
+ };
+ 
++#define OCP_ART_CONFIG_SIZE		144
++#define OCP_ART_TEMP_TABLE_SIZE		368
++
+ struct ocp_art_gpio_reg {
+ 	struct {
+ 		u32	gpio;
+@@ -3334,6 +3337,131 @@ DEVICE_FREQ_GROUP(freq2, 1);
+ DEVICE_FREQ_GROUP(freq3, 2);
+ DEVICE_FREQ_GROUP(freq4, 3);
+ 
++static ssize_t
++disciplining_config_read(struct file *filp, struct kobject *kobj,
++	    struct bin_attribute *bin_attr, char *buf,
++	    loff_t off, size_t count)
++{
++	struct ptp_ocp *bp = dev_get_drvdata(kobj_to_dev(kobj));
++	size_t size = OCP_ART_CONFIG_SIZE;
++	struct nvmem_device *nvmem;
++	ssize_t err;
++
++	nvmem = ptp_ocp_nvmem_device_get(bp, NULL);
++	if (IS_ERR(nvmem))
++		return PTR_ERR(nvmem);
++
++	if (off > size) {
++		err = 0;
++		goto out;
++	}
++
++	if (off + count > size)
++		count = size - off;
++
++	// the configuration is in the very beginning of the EEPROM
++	err = nvmem_device_read(nvmem, off, count, buf);
++	if (err != count) {
++		err = -EFAULT;
++		goto out;
++	}
++
++out:
++	ptp_ocp_nvmem_device_put(&nvmem);
++
++	return err;
++}
++
++static ssize_t
++disciplining_config_write(struct file *filp, struct kobject *kobj,
++	     struct bin_attribute *bin_attr, char *buf,
++	     loff_t off, size_t count)
++{
++	struct ptp_ocp *bp = dev_get_drvdata(kobj_to_dev(kobj));
++	struct nvmem_device *nvmem;
++	ssize_t err;
++
++	/* Allow write of the whole area only */
++	if (off || count != OCP_ART_CONFIG_SIZE)
++		return -EFAULT;
++
++	nvmem = ptp_ocp_nvmem_device_get(bp, NULL);
++	if (IS_ERR(nvmem))
++		return PTR_ERR(nvmem);
++
++
++	err = nvmem_device_write(nvmem, 0x00, count, buf);
++	if (err != count)
++		err = -EFAULT;
++
++	ptp_ocp_nvmem_device_put(&nvmem);
++
++	return err;
++}
++static BIN_ATTR_RW(disciplining_config, OCP_ART_CONFIG_SIZE);
++
++static ssize_t
++temperature_table_read(struct file *filp, struct kobject *kobj,
++	    struct bin_attribute *bin_attr, char *buf,
++	    loff_t off, size_t count)
++{
++	struct ptp_ocp *bp = dev_get_drvdata(kobj_to_dev(kobj));
++	size_t size = OCP_ART_TEMP_TABLE_SIZE;
++	struct nvmem_device *nvmem;
++	ssize_t err;
++
++	nvmem = ptp_ocp_nvmem_device_get(bp, NULL);
++	if (IS_ERR(nvmem))
++		return PTR_ERR(nvmem);
++
++	if (off > size) {
++		err = 0;
++		goto out;
++	}
++
++	if (off + count > size)
++		count = size - off;
++
++	// the configuration is in the very beginning of the EEPROM
++	err = nvmem_device_read(nvmem, 0x90 + off, count, buf);
++	if (err != count) {
++		err = -EFAULT;
++		goto out;
++	}
++
++out:
++	ptp_ocp_nvmem_device_put(&nvmem);
++
++	return err;
++}
++
++static ssize_t
++temperature_table_write(struct file *filp, struct kobject *kobj,
++			struct bin_attribute *bin_attr, char *buf,
++			loff_t off, size_t count)
++{
++	struct ptp_ocp *bp = dev_get_drvdata(kobj_to_dev(kobj));
++	struct nvmem_device *nvmem;
++	ssize_t err;
++
++	/* Allow write of the whole area only */
++	if (off || count != OCP_ART_TEMP_TABLE_SIZE)
++		return -EFAULT;
++
++	nvmem = ptp_ocp_nvmem_device_get(bp, NULL);
++	if (IS_ERR(nvmem))
++		return PTR_ERR(nvmem);
++
++	err = nvmem_device_write(nvmem, 0x90, count, buf);
++	if (err != count)
++		err = -EFAULT;
++
++	ptp_ocp_nvmem_device_put(&nvmem);
++
++	return err;
++}
++static BIN_ATTR_RW(temperature_table, OCP_ART_TEMP_TABLE_SIZE);
++
+ static struct attribute *fb_timecard_attrs[] = {
+ 	&dev_attr_serialnum.attr,
+ 	&dev_attr_gnss_sync.attr,
+@@ -3353,9 +3481,11 @@ static struct attribute *fb_timecard_attrs[] = {
+ 	&dev_attr_tod_correction.attr,
+ 	NULL,
  };
 +
-+struct board_config_reg {
-+	u32 mro50_serial_activate;
+ static const struct attribute_group fb_timecard_group = {
+ 	.attrs = fb_timecard_attrs,
+ };
++
+ static const struct ocp_attr_group fb_timecard_groups[] = {
+ 	{ .cap = OCP_CAP_BASIC,	    .group = &fb_timecard_group },
+ 	{ .cap = OCP_CAP_SIGNAL,    .group = &fb_timecard_signal0_group },
+@@ -3384,8 +3514,15 @@ static struct attribute *art_timecard_attrs[] = {
+ 	NULL,
+ };
+ 
++static struct bin_attribute *bin_art_timecard_attrs[] = {
++	&bin_attr_disciplining_config,
++	&bin_attr_temperature_table,
++	NULL,
 +};
 +
- #define FREQ_STATUS_VALID	BIT(31)
- #define FREQ_STATUS_ERROR	BIT(30)
- #define FREQ_STATUS_OVERRUN	BIT(29)
-@@ -299,6 +304,7 @@ struct ptp_ocp {
- 	struct tod_reg __iomem	*tod;
- 	struct pps_reg __iomem	*pps_to_ext;
- 	struct pps_reg __iomem	*pps_to_clk;
-+	struct board_config_reg __iomem	*board_config;
- 	struct gpio_reg __iomem	*pps_select;
- 	struct gpio_reg __iomem	*sma_map1;
- 	struct gpio_reg __iomem	*sma_map2;
-@@ -795,6 +801,17 @@ static struct ocp_resource ocp_art_resource[] = {
- 			},
- 		},
- 	},
-+	{
-+		OCP_SERIAL_RESOURCE(mac_port),
-+		.offset = 0x00190000, .irq_vec = 7,
-+		.extra = &(struct ptp_ocp_serial_port) {
-+			.baud = 9600,
-+		},
-+	},
-+	{
-+		OCP_MEM_RESOURCE(board_config),
-+		.offset = 0x210000, .size = 0x1000,
-+	},
- 	{
- 		.setup = ptp_ocp_art_board_init,
- 	},
+ static const struct attribute_group art_timecard_group = {
+ 	.attrs = art_timecard_attrs,
++	.bin_attrs = bin_art_timecard_attrs,
+ };
+ 
+ static const struct ocp_attr_group art_timecard_groups[] = {
 -- 
 2.27.0
 
