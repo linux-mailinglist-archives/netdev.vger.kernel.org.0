@@ -2,60 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A93F7604D07
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 18:19:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8138B604D11
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 18:21:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230259AbiJSQTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 12:19:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48056 "EHLO
+        id S230053AbiJSQVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 12:21:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230118AbiJSQT1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 12:19:27 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C7EB1D331
-        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 09:19:24 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id ot12so41266409ejb.1
-        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 09:19:24 -0700 (PDT)
+        with ESMTP id S229552AbiJSQVL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 12:21:11 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9781418B758
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 09:21:08 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id a13so26089734edj.0
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 09:21:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=oMpul0HS3FSF+fhAdRCiYLkKUFe1L4nLM8pv7QwNRZw=;
-        b=bLuhZcodzW8fNTUn/qisGy5RJxSO2z8KLhAphbEhCCJJ5tiUPzjLHhmTQ2T6XXJFEI
-         9fijYHhdM3Z600EBsTqb5gLqLU7Lvh2EESvRWornyrUOxl3MuJBaEqf6HUGfKuEMpg0w
-         q2DksSdhGe/DlGe5DbuJOLzAHj5c1sWboJYK+9oMzBxHLwZjsbAis1nBE9Zytb8olPf6
-         gE64K1lnvEHrHMa8FsUAezfWZrvUdS6g/DeIVcVp/yrvXCPr5BAye103uIYOfI9kOSAC
-         0hQNibp76Nh3Em51592LrXnYw8XelT2soNmR8IYyXjbH3mBewZY6Se/qzO1DGZ8um5bC
-         M/5w==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=CZ7nAXxeNiEPkBF+BWrrkCSvv+94jSgXynCiBbKMTek=;
+        b=O4SPCro70vBeFvMuMXEG+b4r44W5mW2uMvCDV4Bwak2QnV4vLnvrg+T73wku0zEqKg
+         n2EUr5roy20BCq9NyzeFhhlbVhFFbUdwjYAj8pdz4zUvUqO+uDx+jpNs8lTx1c6Y/5Gh
+         QQMer4r3EUtXCZRHADp5NaM/rL3RMmuukdFz+D+BmewdS8V0pJYCQ01f5o5rooU+PHsY
+         9zJUiXcSLVXwkbJVDS2Bj68BbMVGOweM+OzowvuBx7herWzDsq3Kmxn4gkmpHhYCey+m
+         wDCJROt2rYSgTm0HeCol6/AFjhYUZiEqMbIZiLWe37EcOvT+todqq0wZ2KaW+hbsNhI0
+         sxjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=oMpul0HS3FSF+fhAdRCiYLkKUFe1L4nLM8pv7QwNRZw=;
-        b=j2DDZc28CCTTOsO1MvkZSNpZu0I4OruZcxKhxSfjpjnpNY1i+OQubwL8+enMZ7ZhWY
-         8sZ2rV8l0eQiTPWL4a+cQFUQg3bsXK6wINlUYWlifTV1S7M1VKDfg6WeLDOYNr3LT8ka
-         PgW+iyzGcJEA/Y0llSOv61sOHYpf8ep0cRE/oNYFl15Yh32yblkAPTRb2DVjpzhKwqjB
-         kw3QMKSMBWIbLqpIyhqFshlNWGIeJmpStoBw7wdwI+c/4drjqiOziDlcOdnmgTYzq0/T
-         RH86WR6DmNjIiPuPvpuOUjIBy/EbXXxyFBy9m8HCKe4kE4kRm4sSFBBg9lZvDBcN4YnM
-         OSiA==
-X-Gm-Message-State: ACrzQf2ROL8A6PvBPkZLowq7eNDlA0YxVIddG/buQCnpDquzlclA/gbo
-        pZeA7qtAbkac5s41taQ1ZxyE3o9hcCVjw4u1NJ0=
-X-Google-Smtp-Source: AMsMyM5h9/CaDGODL0svcaauU8P2eogi7OwSfvoIMFGT3SnyVSZ1t0hFjRaBwgtCGO5vdzN7fbJ0cEBYnBbHxsJHCOU=
-X-Received: by 2002:a17:906:ef8c:b0:78d:96b9:a0ad with SMTP id
- ze12-20020a170906ef8c00b0078d96b9a0admr7570237ejb.529.1666196362497; Wed, 19
- Oct 2022 09:19:22 -0700 (PDT)
-MIME-Version: 1.0
-References: <20221013155724.2911050-1-saproj@gmail.com> <20221017155536.hfetulaedgmvjoc5@skbuf>
-In-Reply-To: <20221017155536.hfetulaedgmvjoc5@skbuf>
+        bh=CZ7nAXxeNiEPkBF+BWrrkCSvv+94jSgXynCiBbKMTek=;
+        b=a7OQf/5+sB0GbOUD55DRd8CqkViaAok1TDpgQugFXcqgKAf6bk+HPukKWtGXH9uFsj
+         0PRhug+u0gecMpUWZ0BFEh+ue08E0K6QyVEc9uxzJf2+VXbKML5R/wxoDBaYiUdOWVAm
+         AObnBQ873qib5CywKyj+0jAlrBFCD+OnEz/LE2eTaeOTyt2iqFRdR9AY5HRo1fwPKtkB
+         YvdAh9LDIS5j7f+x2SFGnBpD4UHVoHu2VF7y6EAugQeF0GS5X0bzDYTZG/k3vFRccahm
+         Jq4ywEUoBTUbbTRHXXgQ81unueFw99Ft7N6uqycavpFCTRIRVZb6vPrr2HjCD1Bbh7MQ
+         cZpQ==
+X-Gm-Message-State: ACrzQf3pHBi+/2LH6jhHMCPqNHE4mcX5w2OumEswtSo8CqHunXJA1+bY
+        tMYeG1u+33UK5zKKy4Qe/3noGtMRHi08jg==
+X-Google-Smtp-Source: AMsMyM7aDNebVjwGlc2l0wU/qEJQOS4DYCRXd5UAW1BFWktv0bbLl11I3syGyPRLbDwDevYKZNS4WA==
+X-Received: by 2002:a05:6402:1842:b0:458:e6f2:bd3d with SMTP id v2-20020a056402184200b00458e6f2bd3dmr8043336edy.169.1666196466860;
+        Wed, 19 Oct 2022 09:21:06 -0700 (PDT)
+Received: from saproj-Latitude-5501.yandex.net ([2a02:6b8:0:40c:449e:b0ae:8d1e:9cdb])
+        by smtp.gmail.com with ESMTPSA id e16-20020a170906315000b0073d7b876621sm9001905eje.205.2022.10.19.09.21.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Oct 2022 09:21:06 -0700 (PDT)
 From:   Sergei Antonov <saproj@gmail.com>
-Date:   Wed, 19 Oct 2022 19:19:11 +0300
-Message-ID: <CABikg9zmmSysguNTXmM7cG8KqKBoEKshLKUCb5o_kpNqFm2KRA@mail.gmail.com>
-Subject: Re: [PATCH v3 net] net: ftmac100: support frames with DSA tag
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, Andrew Lunn <andrew@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, andrew@lunn.ch,
+        Sergei Antonov <saproj@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH v4 net-next] net: ftmac100: support mtu > 1500
+Date:   Wed, 19 Oct 2022 19:20:58 +0300
+Message-Id: <20221019162058.289712-1-saproj@gmail.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -66,21 +70,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 17 Oct 2022 at 18:55, Vladimir Oltean <olteanv@gmail.com> wrote:
-> 6. Actually implement the ndo_change_mtu() for this driver, and even though you
->    don't make any hardware change based on the precise value, you could do one
->    important thing. Depending on whether the dev->mtu is <= 1500 or not, you could
->    set or unset the FTL bit, and this could allow for less CPU cycles spent
->    dropping S/G frames when the MTU of the interface is standard 1500.
+The ftmac100 controller considers some packets FTL (frame
+too long) and drops them. An example of a dropped packet:
+6 bytes - dst MAC
+6 bytes - src MAC
+2 bytes - EtherType IPv4 (0800)
+1504 bytes - IPv4 packet
 
-Can I do the mtu>1500 check and set FTL in ndo_open() (which is called
-after ndo_change_mtu())? I am submitting a v4 of the patch, and your
-feedback to it would be helpful. I got rid of all mentions of DSA
-tagging there, so patch description and a code comment are new. Thanks
-for clearing things up regarding EtherType 0800.
+Do the following to let the driver receive these packets.
+Set FTMAC100_MACCR_RX_FTL when mtu>1500 in the MAC Control Register.
+For received packets marked with FTMAC100_RXDES0_FTL check if packet
+length (with FCS excluded) is within expected limits, that is not
+greater than netdev->mtu + 14 (Ethernet headers). Otherwise trigger
+an error.
 
-> With these changes, you would leave the ftmac100 driver in a more civilized
-> state, you wouldn't need to implement S/G RX unless you wanted to, and
-> as a side effect, it would also operate well as a DSA master.
+Fixes: 8d77c036b57c ("net: add Faraday FTMAC100 10/100 Ethernet driver")
+Signed-off-by: Sergei Antonov <saproj@gmail.com>
+Suggested-by: Vladimir Oltean <olteanv@gmail.com>
+---
+ drivers/net/ethernet/faraday/ftmac100.c | 29 ++++++++++++++++++++++---
+ 1 file changed, 26 insertions(+), 3 deletions(-)
 
-What does S/G stand for?
+diff --git a/drivers/net/ethernet/faraday/ftmac100.c b/drivers/net/ethernet/faraday/ftmac100.c
+index d95d78230828..f89b53845f21 100644
+--- a/drivers/net/ethernet/faraday/ftmac100.c
++++ b/drivers/net/ethernet/faraday/ftmac100.c
+@@ -159,6 +159,7 @@ static void ftmac100_set_mac(struct ftmac100 *priv, const unsigned char *mac)
+ static int ftmac100_start_hw(struct ftmac100 *priv)
+ {
+ 	struct net_device *netdev = priv->netdev;
++	unsigned int maccr;
+ 
+ 	if (ftmac100_reset(priv))
+ 		return -EIO;
+@@ -175,7 +176,20 @@ static int ftmac100_start_hw(struct ftmac100 *priv)
+ 
+ 	ftmac100_set_mac(priv, netdev->dev_addr);
+ 
+-	iowrite32(MACCR_ENABLE_ALL, priv->base + FTMAC100_OFFSET_MACCR);
++	maccr = MACCR_ENABLE_ALL;
++
++	/* We have to set FTMAC100_MACCR_RX_FTL in case MTU > 1500
++	 * and do extra length check in ftmac100_rx_packet_error().
++	 * Otherwise the controller silently drops these packets.
++	 *
++	 * When the MTU of the interface is standard 1500, rely on
++	 * the controller's functionality to drop too long packets
++	 * and save some CPU time.
++	 */
++	if (netdev->mtu > 1500)
++		maccr |= FTMAC100_MACCR_RX_FTL;
++
++	iowrite32(maccr, priv->base + FTMAC100_OFFSET_MACCR);
+ 	return 0;
+ }
+ 
+@@ -337,9 +351,18 @@ static bool ftmac100_rx_packet_error(struct ftmac100 *priv,
+ 		error = true;
+ 	}
+ 
+-	if (unlikely(ftmac100_rxdes_frame_too_long(rxdes))) {
++	/* If the frame-too-long flag FTMAC100_RXDES0_FTL is set, check
++	 * if ftmac100_rxdes_frame_length(rxdes) exceeds the currently
++	 * set MTU plus ETH_HLEN.
++	 * The controller would set FTMAC100_RXDES0_FTL for all incoming
++	 * frames longer than 1518 (includeing FCS) in the presense of
++	 * FTMAC100_MACCR_RX_FTL in the MAC Control Register.
++	 */
++	if (unlikely(ftmac100_rxdes_frame_too_long(rxdes) &&
++		     ftmac100_rxdes_frame_length(rxdes) > netdev->mtu + ETH_HLEN)) {
+ 		if (net_ratelimit())
+-			netdev_info(netdev, "rx frame too long\n");
++			netdev_info(netdev, "rx frame too long (%u)\n",
++				    ftmac100_rxdes_frame_length(rxdes));
+ 
+ 		netdev->stats.rx_length_errors++;
+ 		error = true;
+-- 
+2.34.1
+
