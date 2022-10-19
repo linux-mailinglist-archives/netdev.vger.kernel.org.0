@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 20E4B605243
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 23:52:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A20E160524A
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 23:54:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230023AbiJSVwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 17:52:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46342 "EHLO
+        id S230195AbiJSVyV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 17:54:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229932AbiJSVwl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 17:52:41 -0400
-Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAF07192996;
-        Wed, 19 Oct 2022 14:52:40 -0700 (PDT)
-Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-13ae8117023so743159fac.9;
-        Wed, 19 Oct 2022 14:52:40 -0700 (PDT)
+        with ESMTP id S230098AbiJSVyT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 17:54:19 -0400
+Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E4C6193EDA;
+        Wed, 19 Oct 2022 14:54:18 -0700 (PDT)
+Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-1364357a691so22338000fac.7;
+        Wed, 19 Oct 2022 14:54:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=f9RMYhC8HnulW5HipCdWjW2jvG1uG9+hyMRLGZVjYO4=;
-        b=Uh4ftnT0LUl73pP5iwf+uLlz7+W6lt/1oLfPU6OKkSDljGOmRDv5/9WuBygY043bfV
-         s6LaVF94fxFD2UnyqLNmUbxGirB48+fbgo+UBmcfCZl6cw4cFTagvN2XnJzLH5Rhxz1T
-         LLWi4+BLjJyGGNEm2LIuenmQnjBMQhtim6Jfx6MLEkYBF6qq+P/4QPOasWPTUXAZgAwV
-         vm96bQNx2vK1Onc02803yfM2vptja6Z5BpwEMGXdqQB/brKWJ1fpiJUZhx4Fn7p94Lux
-         y9t6L3CUZW3N1A6bOe3rk9aQHkdhcY/+Us7CG+N/ZRkaRX0AGuoJ5bpzHSYzYhdpBezI
-         qq/g==
+        bh=YJ+gcKy3+ICExSUxeGNVeYxwKRMLEpodZAR4x+ytUmQ=;
+        b=dDJ0JQ93bZPq2dQ6HHs4BM3P7y7x3ex4Udx/f3oV107fIAGRqCqiUAK4T6/mclRUTL
+         k6VXDsJCo+3VOLCazldKjjHM+lJ8QOakQMzFCtwXIigRqYJpthjSWHrUjldK/XyX2l/l
+         iKOv53hDmtNPRgk4yKn68UV8V+zEdg05C0xPy9JrWNc2IUpCk3ldysiIHF2222Zrz4cS
+         LK6W0jibjbXYKBBw5Q1xhDVsALV0y/74K62EaojRNgGc4MO64kHLT6PSIH7xOjVPiab9
+         gfOe9o2Am9w2RJuip/fqKfHsokGMnFI4g5rBGqa+6SEQ0g8xiGnd7jFNXe8RRo8UaCED
+         3oVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=f9RMYhC8HnulW5HipCdWjW2jvG1uG9+hyMRLGZVjYO4=;
-        b=rSbXnCV/HfKKDg2YCpsLAjZngEX4QM38fcnQ8laEyfwT+AZOPg4n1RAlkR35VU4KE6
-         bWnWW3d6Fk0f7Q9VFdXDZIYBtqF8lV1cNN69+FAwPl64xPTUYky9tKtuHLa84UjJnkY8
-         7Qs4ahVbMl4K9eKrA/zwfAZI/GyZQIRr7eieAgLklISVrc3fcgf04pM1l9I5b+G+Kfq7
-         eB2ytlLhOEnNDdc+kO5EF2L9FPa8XMDFJXiH+So4PYcfPx7pX/5W9B07Q2u+tkQZX2/d
-         YBhfuMB71tL4NEdzPUpjbu783rrelgFIp6kqQm0/MN0rzgK5fVHOyO+tHCYoUz6CF6Rk
-         1uJw==
-X-Gm-Message-State: ACrzQf0bgSXrsipCpR/JfoveaQWxw93M389TRh7scK2MR22sukqSmw5g
-        JyIIyMhX9RxsCHkE8WnnmnHdVVFg0JN0/AHSP0lVDAhMvW0=
-X-Google-Smtp-Source: AMsMyM7iJQkhqI7bxWXaO/FqZum5ZcSmYhHtfC/rKvQCRET3anOifqis5Vbut1c5Dg/L8R8WUX6j91POILNeM4OugKg=
+        bh=YJ+gcKy3+ICExSUxeGNVeYxwKRMLEpodZAR4x+ytUmQ=;
+        b=t8MYsd9bKlXGZ1qcaUanYvjenaWaE0tEG1+HRBHk2XUmCKfWDdU4m4FPZ1p8AEQKBc
+         lxuL3Z4gGAeVRysVdkAcRTw/APDtjHHOfhmgHBlM9Tz0Y2F/r5O9/dynp9fuNPsAmxqz
+         BoRieBjWaqqjzE5cWLvVB+pLnccizBd+Spj6cMjcWc0S0ydNl9YU1l95Sd56/lJRiclf
+         mFMVZl/8tcsmu3Qn6pHvEvPjeoOJdQTgj7fqFA/AdmBH8kZCG5olDlU4jDt+mjjf9kjc
+         aQoziRHL7xastWW7A0DdX+IZPnh+BuOY27GxBO7NC60pYcN5kytAfeAEQsDrNlWh/o/7
+         KzcA==
+X-Gm-Message-State: ACrzQf2tZt4Hp0RBXl50/PJwuOtrCQxM4GMGIG00RJ+4K7Rl/0qiSo0u
+        qmJT5CkmqRlH+aewE9q8TIthAUvItXozS7Uw5oSLv5gI66Y=
+X-Google-Smtp-Source: AMsMyM6xVu23n1WzC5jBi8l3VQrxg/vVtSsZD3E9sLqVSYnql7UC+za1j/nF8djhGSf29UDOy4693nVx540OzUxovGg=
 X-Received: by 2002:a05:6870:9614:b0:11d:3906:18fc with SMTP id
- d20-20020a056870961400b0011d390618fcmr23556205oaq.190.1666216360272; Wed, 19
- Oct 2022 14:52:40 -0700 (PDT)
+ d20-20020a056870961400b0011d390618fcmr23560049oaq.190.1666216457895; Wed, 19
+ Oct 2022 14:54:17 -0700 (PDT)
 MIME-Version: 1.0
-References: <20221019180735.161388-1-aleksei.kodanev@bell-sw.com>
-In-Reply-To: <20221019180735.161388-1-aleksei.kodanev@bell-sw.com>
+References: <20221019180735.161388-1-aleksei.kodanev@bell-sw.com> <20221019180735.161388-2-aleksei.kodanev@bell-sw.com>
+In-Reply-To: <20221019180735.161388-2-aleksei.kodanev@bell-sw.com>
 From:   Xin Long <lucien.xin@gmail.com>
-Date:   Wed, 19 Oct 2022 17:25:10 -0400
-Message-ID: <CADvbK_fhsgfuuqOWp4Y=yJ-CbmU400U4PbGEran4BYW2zQfCbQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/3] sctp: remove unnecessary NULL check in sctp_association_init()
+Date:   Wed, 19 Oct 2022 17:26:48 -0400
+Message-ID: <CADvbK_edAKXgrQUgcPMxkVFADOnPuyU3+Dzumi_3MubYoHvvRg@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/3] sctp: remove unnecessary NULL check in sctp_ulpq_tail_event()
 To:     Alexey Kodanev <aleksei.kodanev@bell-sw.com>
 Cc:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
@@ -65,85 +65,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 19, 2022 at 2:29 PM Alexey Kodanev
+On Wed, Oct 19, 2022 at 2:33 PM Alexey Kodanev
 <aleksei.kodanev@bell-sw.com> wrote:
 >
-> '&asoc->ulpq' passed to sctp_ulpq_init() as the first argument,
-> then sctp_qlpq_init() initializes it and eventually returns the
-> address of the struct member back. Therefore, in this case, the
-> return pointer cannot be NULL.
->
-> Moreover, it seems sctp_ulpq_init() has always been used only in
-> sctp_association_init(), so there's really no need to return ulpq
-> anymore.
+> After commit 013b96ec6461 ("sctp: Pass sk_buff_head explicitly to
+> sctp_ulpq_tail_event().") there is one more unneeded check of
+> skb_list for NULL.
 >
 > Detected using the static analysis tool - Svace.
 > Signed-off-by: Alexey Kodanev <aleksei.kodanev@bell-sw.com>
 > ---
->  include/net/sctp/ulpqueue.h | 3 +--
->  net/sctp/associola.c        | 4 +---
->  net/sctp/ulpqueue.c         | 5 +----
->  3 files changed, 3 insertions(+), 9 deletions(-)
+>  net/sctp/ulpqueue.c | 5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
 >
-> diff --git a/include/net/sctp/ulpqueue.h b/include/net/sctp/ulpqueue.h
-> index 0eaf8650e3b2..60f6641290c3 100644
-> --- a/include/net/sctp/ulpqueue.h
-> +++ b/include/net/sctp/ulpqueue.h
-> @@ -35,8 +35,7 @@ struct sctp_ulpq {
->  };
->
->  /* Prototypes. */
-> -struct sctp_ulpq *sctp_ulpq_init(struct sctp_ulpq *,
-> -                                struct sctp_association *);
-> +void sctp_ulpq_init(struct sctp_ulpq *ulpq, struct sctp_association *asoc);
->  void sctp_ulpq_flush(struct sctp_ulpq *ulpq);
->  void sctp_ulpq_free(struct sctp_ulpq *);
->
-> diff --git a/net/sctp/associola.c b/net/sctp/associola.c
-> index 3460abceba44..63ba5551c13f 100644
-> --- a/net/sctp/associola.c
-> +++ b/net/sctp/associola.c
-> @@ -226,8 +226,7 @@ static struct sctp_association *sctp_association_init(
->         /* Create an output queue.  */
->         sctp_outq_init(asoc, &asoc->outqueue);
->
-> -       if (!sctp_ulpq_init(&asoc->ulpq, asoc))
-> -               goto fail_init;
-> +       sctp_ulpq_init(&asoc->ulpq, asoc);
->
->         if (sctp_stream_init(&asoc->stream, asoc->c.sinit_num_ostreams, 0, gfp))
->                 goto stream_free;
-> @@ -277,7 +276,6 @@ static struct sctp_association *sctp_association_init(
->
->  stream_free:
->         sctp_stream_free(&asoc->stream);
-> -fail_init:
->         sock_put(asoc->base.sk);
->         sctp_endpoint_put(asoc->ep);
->         return NULL;
 > diff --git a/net/sctp/ulpqueue.c b/net/sctp/ulpqueue.c
-> index 0a8510a0c5e6..24960dcb6a21 100644
+> index 24960dcb6a21..b05daafd369a 100644
 > --- a/net/sctp/ulpqueue.c
 > +++ b/net/sctp/ulpqueue.c
-> @@ -38,8 +38,7 @@ static void sctp_ulpq_reasm_drain(struct sctp_ulpq *ulpq);
->  /* 1st Level Abstractions */
+> @@ -256,10 +256,7 @@ int sctp_ulpq_tail_event(struct sctp_ulpq *ulpq, struct sk_buff_head *skb_list)
+>         return 1;
 >
->  /* Initialize a ULP queue from a block of memory.  */
-> -struct sctp_ulpq *sctp_ulpq_init(struct sctp_ulpq *ulpq,
-> -                                struct sctp_association *asoc)
-> +void sctp_ulpq_init(struct sctp_ulpq *ulpq, struct sctp_association *asoc)
->  {
->         memset(ulpq, 0, sizeof(struct sctp_ulpq));
+>  out_free:
+> -       if (skb_list)
+> -               sctp_queue_purge_ulpevents(skb_list);
+> -       else
+> -               sctp_ulpevent_free(event);
+> +       sctp_queue_purge_ulpevents(skb_list);
 >
-> @@ -48,8 +47,6 @@ struct sctp_ulpq *sctp_ulpq_init(struct sctp_ulpq *ulpq,
->         skb_queue_head_init(&ulpq->reasm_uo);
->         skb_queue_head_init(&ulpq->lobby);
->         ulpq->pd_mode  = 0;
-> -
-> -       return ulpq;
+>         return 0;
 >  }
->
->
 > --
 > 2.25.1
 >
