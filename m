@@ -2,119 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B806603784
-	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 03:30:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0411D603786
+	for <lists+netdev@lfdr.de>; Wed, 19 Oct 2022 03:30:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229785AbiJSBaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Oct 2022 21:30:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57462 "EHLO
+        id S229926AbiJSBaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Oct 2022 21:30:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229751AbiJSBaM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 21:30:12 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88A5877E8F
-        for <netdev@vger.kernel.org>; Tue, 18 Oct 2022 18:30:09 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MsY2M0vx0zVhyd;
-        Wed, 19 Oct 2022 09:25:31 +0800 (CST)
-Received: from kwepemm600008.china.huawei.com (7.193.23.88) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 19 Oct 2022 09:29:34 +0800
-Received: from [10.174.176.230] (10.174.176.230) by
- kwepemm600008.china.huawei.com (7.193.23.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 19 Oct 2022 09:29:33 +0800
-Message-ID: <677a98a6-6eea-ae1b-f6f6-0055bd8f584a@huawei.com>
-Date:   Wed, 19 Oct 2022 09:29:32 +0800
+        with ESMTP id S229606AbiJSBaR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Oct 2022 21:30:17 -0400
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCB7F7C75D;
+        Tue, 18 Oct 2022 18:30:14 -0700 (PDT)
+Message-ID: <f3dd8b70-f44b-128a-42a5-98135d457ffd@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1666143012;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TcinjzPPUyIAAtvVKfgwiEVJHGd6fl9qqGsnp+ptdxg=;
+        b=da+LKlvPEMnOdDjF7ORfNbFqGAN32/ZnZi/jsoe/fMBtiqe7s38cyOeU2DwrORfQWy1a3Z
+        vCKcPxqL8VAync4uIxiRkoE9MP7qvVDrAeJwrK/EY3N8i/Yqa80MGGZmbgeFJt/F8xdZhE
+        IyDdrE7S9NQ5cbVS5AkHii9MXgHNKHE=
+Date:   Tue, 18 Oct 2022 18:30:07 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.0
-Subject: Re: [PATCH v2] nfc: virtual_ncidev: Fix memory leak in
- virtual_nci_send()
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        <bongsu.jeon@samsung.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>
-References: <20221018114935.8871-1-shangxiaojing@huawei.com>
- <a14a28c7-946d-fa2b-f3f1-69faaf269fbf@linaro.org>
-From:   shangxiaojing <shangxiaojing@huawei.com>
-In-Reply-To: <a14a28c7-946d-fa2b-f3f1-69faaf269fbf@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.176.230]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600008.china.huawei.com (7.193.23.88)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: Re: [net 1/2] selftests/net: fix opening object file failed
+Content-Language: en-US
+To:     wangyufen <wangyufen@huawei.com>
+Cc:     Lina Wang <lina.wang@mediatek.com>, bpf@vger.kernel.org,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        deso@posteo.net, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+References: <1665482267-30706-1-git-send-email-wangyufen@huawei.com>
+ <1665482267-30706-2-git-send-email-wangyufen@huawei.com>
+ <469d28c0-8156-37ad-d0d9-c11608ca7e07@linux.dev>
+ <b38c7c5e-bd88-0257-42f4-773d8791330a@huawei.com>
+ <793d2d69-cf52-defc-6964-8b7c95bb45c4@huawei.com>
+ <20221018110031.299ecb23@kernel.org>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+In-Reply-To: <20221018110031.299ecb23@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2022/10/18 22:06, Krzysztof Kozlowski wrote:
-> On 18/10/2022 07:49, Shang XiaoJing wrote:
->> skb should be free in virtual_nci_send(), otherwise kmemleak will report
->> memleak.
+On 10/18/22 11:00 AM, Jakub Kicinski wrote:
+> On Tue, 18 Oct 2022 17:50:19 +0800 wangyufen wrote:
+>> So, there are two possible approaches:  the first moving nat6to4.c and
+>> the actual test programs to selftests/bpf;
 >>
->> Steps for reproduction (simulated in qemu):
->> 	cd tools/testing/selftests/nci
->> 	make
->> 	./nci_dev
+>> second add make dependency on libbpf for the nat6to4.c.
 >>
->> BUG: memory leak
->> unreferenced object 0xffff888107588000 (size 208):
->>    comm "nci_dev", pid 206, jiffies 4294945376 (age 368.248s)
->>    hex dump (first 32 bytes):
->>      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->>      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->>    backtrace:
->>      [<000000008d94c8fd>] __alloc_skb+0x1da/0x290
->>      [<00000000278bc7f8>] nci_send_cmd+0xa3/0x350
->>      [<0000000081256a22>] nci_reset_req+0x6b/0xa0
->>      [<000000009e721112>] __nci_request+0x90/0x250
->>      [<000000005d556e59>] nci_dev_up+0x217/0x5b0
->>      [<00000000e618ce62>] nfc_dev_up+0x114/0x220
->>      [<00000000981e226b>] nfc_genl_dev_up+0x94/0xe0
->>      [<000000009bb03517>] genl_family_rcv_msg_doit.isra.14+0x228/0x2d0
->>      [<00000000b7f8c101>] genl_rcv_msg+0x35c/0x640
->>      [<00000000c94075ff>] netlink_rcv_skb+0x11e/0x350
->>      [<00000000440cfb1e>] genl_rcv+0x24/0x40
->>      [<0000000062593b40>] netlink_unicast+0x43f/0x640
->>      [<000000001d0b13cc>] netlink_sendmsg+0x73a/0xbf0
->>      [<000000003272487f>] __sys_sendto+0x324/0x370
->>      [<00000000ef9f1747>] __x64_sys_sendto+0xdd/0x1b0
->>      [<000000001e437841>] do_syscall_64+0x3f/0x90
->>
->> Fixes: e624e6c3e777 ("nfc: Add a virtual nci device driver")
->> Signed-off-by: Shang XiaoJing <shangxiaojing@huawei.com>
->> ---
->> changes in v2:
->> - free skb in error paths too.
->> ---
->>   drivers/nfc/virtual_ncidev.c | 3 +++
->>   1 file changed, 3 insertions(+)
->>
->> diff --git a/drivers/nfc/virtual_ncidev.c b/drivers/nfc/virtual_ncidev.c
->> index f577449e4935..3a4ad95b40a7 100644
->> --- a/drivers/nfc/virtual_ncidev.c
->> +++ b/drivers/nfc/virtual_ncidev.c
->> @@ -54,16 +54,19 @@ static int virtual_nci_send(struct nci_dev *ndev, struct sk_buff *skb)
->>   	mutex_lock(&nci_mutex);
->>   	if (state != virtual_ncidev_enabled) {
->>   		mutex_unlock(&nci_mutex);
->> +		consume_skb(skb);
+>> Which one is better?
 > 
-> Ehhh... This looks ok, but now I wonder why none of other NCI send
-> driver do it. If the finding is correct, all drivers have same issue.
+> Can we move the programs and create a dependency from them back
+> to networking? Perhaps shared components like udpgso_* need to live
+> under tools/net so they can be easily "depended on"?
+> 
+> Either that or they need to switch to a different traffic generator for
+> the BPF test, cause there's more networking selftests using the UDP
+> generators :(
 
-yes, i'll try to reproduce these issues, and make another patch set if 
-there are the issues.
-
-Thanks,
--- 
-Shang XiaoJing
+All (at least most) of the selftests/bpf/test_prog's tests generate its own 
+traffic for unit test purpose such that each test is self contained.  The 
+udpgro_frglist test should do the same in selftests/bpf/test_prog (meaning the 
+test itself should generate its own testing traffic).  Also, it does not look 
+like it is actually using udpgso_bench_* to do benchmarking.
