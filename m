@@ -2,174 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0773E605EF4
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 13:35:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D507605F74
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 13:55:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231347AbiJTLfV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 07:35:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33724 "EHLO
+        id S229739AbiJTLyw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 07:54:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231360AbiJTLfS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 07:35:18 -0400
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC848836C8;
-        Thu, 20 Oct 2022 04:35:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1666265715; x=1697801715;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=tbxr2V7JYwCA3mhaiBgOpd4JKYyc01i3DlNbArOXhME=;
-  b=T2UI2wkWdP1H/ATuWaPTZKM6OEgLHnit2rWMnMnkclD+FDgG+RBF6ym4
-   isC2RYMhJNscqI2CHHePPE0iJYqTpN57hLsQKlXcItrNDdX0BPP6+LtPE
-   cVUNX91+bbQoVxY4+idQiSWBHNhaOtzeGvY0KzoIsIRydZHex5JpjY6Gu
-   5DvV1pdScAuGLLGDSDML7N8Yv0Tn4PA/KNNAGNpeEmV5UkKl2mnH4nSME
-   hiuGoQS2gm98PDqDR9nz2wCcOj21Ts3U7Z2LH6E6g6QveweMkJTl11ANc
-   pDz2ufmIXuAz+zKDxhZKfX61ZqbwaeDYlk86lSvm0VGutPt3qAPe5t8Lt
-   w==;
-X-IronPort-AV: E=Sophos;i="5.95,198,1661810400"; 
-   d="scan'208";a="26872140"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 20 Oct 2022 13:35:10 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Thu, 20 Oct 2022 13:35:10 +0200
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Thu, 20 Oct 2022 13:35:10 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1666265710; x=1697801710;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=tbxr2V7JYwCA3mhaiBgOpd4JKYyc01i3DlNbArOXhME=;
-  b=mxBQNx/8xNFuofsGzY8dvPEvKDmyC0HHJhybQtBWIRfE8FRhUtVkLy+J
-   YBXBIjDgENTksqwh5qs+vM0uWBZ9SI1JNurX23ec1qGgRVRha4OH9t+GE
-   izB7zXRHIIvIO2a6+HrvCgRsuEZKEOLyplyyIGb8OLNE0I60xi5QSzdN4
-   giRB4TEIz10llmH5KDFxcVp1dV9Dg/RfDt9mqklp6Y0FGirKv8S70aRLM
-   QT4zSiNMPXOSlGKxvpMdX4D6HO8ClhNpz44KfOLvL/tr8P9INOXvFu4mt
-   MFy7L2rrWmHIleBLcCXywpFuf8vS8nOyqX2FVxl9tmTskAWaYi64xsxws
-   g==;
-X-IronPort-AV: E=Sophos;i="5.95,198,1661810400"; 
-   d="scan'208";a="26872139"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 20 Oct 2022 13:35:10 +0200
-Received: from steina-w.localnet (unknown [10.123.53.21])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        with ESMTP id S229685AbiJTLyn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 07:54:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25BFA1D0D2;
+        Thu, 20 Oct 2022 04:54:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 4EB6B280072;
-        Thu, 20 Oct 2022 13:35:10 +0200 (CEST)
-From:   Alexander Stein <alexander.stein@ew.tq-group.com>
-To:     Andy Chiu <andy.chiu@sifive.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, michal.simek@xilinx.com,
-        radhey.shyam.pandey@xilinx.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, andy.chiu@sifive.com,
-        greentime.hu@sifive.com
-Subject: Re: [PATCH net-next 1/2] net:xilinx_axi: set mdio frequency according to DT
-Date:   Thu, 20 Oct 2022 13:35:06 +0200
-Message-ID: <5953785.aeNJFYEL58@steina-w>
-Organization: TQ-Systems GmbH
-In-Reply-To: <20221020094106.559266-2-andy.chiu@sifive.com>
-References: <20221020094106.559266-1-andy.chiu@sifive.com> <20221020094106.559266-2-andy.chiu@sifive.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC1D0B82712;
+        Thu, 20 Oct 2022 11:54:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EF3EC433C1;
+        Thu, 20 Oct 2022 11:54:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666266873;
+        bh=gPDeLlGv5sanaXqP06t21wZhZ1fAuLnrnAmtJV6iA58=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GhZ6QyQ5tb4dmwBop9SC8Z/qz+f5cyTHmznzuS+QQY8rKScu9UsxyLGGzseSYIXuG
+         c3eSuAehlwnKttfeEvsfx8BPmiUGyI5HMMMAPYBTQwKOPOId2Zlgx5LJLwszL6/xTQ
+         wP+3RBlcXzM2bY81DPSnMn9+ZzGZbZBYRSvd3guGB1HKPbm2HNRYpbal4oxNtRignZ
+         nrwAl90UDHYK0d9ryEJNXPEAZwzZ+PUl7tgtKOWDvb7u7IaTXgvi+pdVQHYE+lHuKY
+         gU66JD2KGcTH6XvIWaZWgTpzQjwAomzg+pHWlVEKRgeo1gkvokt84XR0kYJAZdI8HZ
+         oF5BPoIpGg+cg==
+Date:   Thu, 20 Oct 2022 14:54:30 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Aru <aru.kolappan@oracle.com>
+Cc:     jgg@ziepe.ca, saeedm@nvidia.com, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        manjunath.b.patil@oracle.com, rama.nichanamatlu@oracle.com
+Subject: Re: [PATCH 1/1] net/mlx5: add dynamic logging for mlx5_dump_err_cqe
+Message-ID: <Y1E29kg8yuZjCV4v@unreal>
+References: <1665618772-11048-1-git-send-email-aru.kolappan@oracle.com>
+ <Y0frx6g/iadBBYgQ@unreal>
+ <a7fad299-6df5-e79b-960a-c85c7ea4235a@oracle.com>
+ <Y05aGuXSEtSt2aS2@unreal>
+ <60899818-61fc-3d1e-e908-fb595cac1940@oracle.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <60899818-61fc-3d1e-e908-fb595cac1940@oracle.com>
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu, Oct 20, 2022 at 01:24:54AM -0700, Aru wrote:
+> On 10/18/22 12:47 AM, Leon Romanovsky wrote:
+> > On Fri, Oct 14, 2022 at 12:12:36PM -0700, Aru wrote:
+> > > Hi Leon,
+> > > 
+> > > Thank you for reviewing the patch.
+> > > 
+> > > The method you mentioned disables the dump permanently for the kernel.
+> > > We thought vendor might have enabled it for their consumption when needed.
+> > > Hence we made it dynamic, so that it can be enabled/disabled at run time.
+> > > 
+> > > Especially, in a production environment, having the option to turn this log
+> > > on/off
+> > > at runtime will be helpful.
+> > While you are interested on/off this specific warning, your change will
+> > cause "to hide" all syndromes as it is unlikely that anyone runs in
+> > production with debug prints.
+> > 
+> >   -   mlx5_ib_warn(dev, "dump error cqe\n");
+> >   +   mlx5_ib_dbg(dev, "dump error cqe\n");
+> > 
+> > Something like this will do the trick without interrupting to the others.
+> > 
+> > diff --git a/drivers/infiniband/hw/mlx5/cq.c b/drivers/infiniband/hw/mlx5/cq.c
+> > index 457f57b088c6..966206085eb3 100644
+> > --- a/drivers/infiniband/hw/mlx5/cq.c
+> > +++ b/drivers/infiniband/hw/mlx5/cq.c
+> > @@ -267,10 +267,29 @@ static void handle_responder(struct ib_wc *wc, struct mlx5_cqe64 *cqe,
+> >   	wc->wc_flags |= IB_WC_WITH_NETWORK_HDR_TYPE;
+> >   }
+> > -static void dump_cqe(struct mlx5_ib_dev *dev, struct mlx5_err_cqe *cqe)
+> > +static void dump_cqe(struct mlx5_ib_dev *dev, struct mlx5_err_cqe *cqe,
+> > +		     struct ib_wc *wc, int dump)
+> >   {
+> > -	mlx5_ib_warn(dev, "dump error cqe\n");
+> > -	mlx5_dump_err_cqe(dev->mdev, cqe);
+> > +	const char *level;
+> > +
+> > +	if (!dump)
+> > +		return;
+> > +
+> > +	mlx5_ib_warn(dev, "WC error: %d, Message: %s\n", wc->status,
+> > +		     ib_wc_status_msg(wc->status));
+> > +
+> > +	if (dump == 1) {
+> > +		mlx5_ib_warn(dev, "dump error cqe\n");
+> > +		level = KERN_WARNING;
+> > +	}
+> > +
+> > +	if (dump == 2) {
+> > +		mlx5_ib_dbg(dev, "dump error cqe\n");
+> > +		level = KERN_DEBUG;
+> > +	}
+> > +
+> > +	print_hex_dump(level, "", DUMP_PREFIX_OFFSET, 16, 1, cqe, sizeof(*cqe),
+> > +		       false);
+> >   }
+> Hi Leon,
+> 
+> Thank you for the reply and your suggested method to handle this debug
+> logging.
+> 
+> We set 'dump=2' for the syndromes applicable to our scenario: 
+> MLX5_CQE_SYNDROME_REMOTE_ACCESS_ERR,
+> MLX5_CQE_SYNDROME_REMOTE_OP_ERR and MLX5_CQE_SYNDROME_LOCAL_PROT_ERR.
+> We verified this code change and by default, the dump_cqe is not printed to
+> syslog until
+> the level is changed to KERN_DEBUG level. This works as expected.
+> 
+> I will send out another email with the patch using your method.
+> 
+> Is it fine with you If I add your name in the 'suggested-by' field in the
+> new patch?
 
-Am Donnerstag, 20. Oktober 2022, 11:41:05 CEST schrieb Andy Chiu:
-> Some FPGA platforms has 80KHz MDIO bus frequency constraint when
-> conecting Ethernet to its on-board external Marvell PHY. Thus, we may
-> have to set MDIO clock according to the DT. Otherwise, use the default
-> 2.5 MHz, as specified by 802.3, if the entry is not present.
-> 
-> Signed-off-by: Andy Chiu <andy.chiu@sifive.com>
-> Reviewed-by: Greentime Hu <greentime.hu@sifive.com>
-> ---
->  .../net/ethernet/xilinx/xilinx_axienet_mdio.c | 25 ++++++++++++++++---
->  1 file changed, 21 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_mdio.c
-> b/drivers/net/ethernet/xilinx/xilinx_axienet_mdio.c index
-> 0b3b6935c558..d07c39d3bcf0 100644
-> --- a/drivers/net/ethernet/xilinx/xilinx_axienet_mdio.c
-> +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_mdio.c
-> @@ -18,6 +18,7 @@
->  #include "xilinx_axienet.h"
-> 
->  #define MAX_MDIO_FREQ		2500000 /* 2.5 MHz */
-> +#define MDIO_CLK_DIV_MASK	0x3f /* bits[5:0] */
->  #define DEFAULT_HOST_CLOCK	150000000 /* 150 MHz */
-> 
->  /* Wait till MDIO interface is ready to accept a new transaction.*/
-> @@ -155,7 +156,9 @@ static int axienet_mdio_write(struct mii_bus *bus, int
-> phy_id, int reg, **/
->  int axienet_mdio_enable(struct axienet_local *lp)
->  {
-> +	u32 clk_div;
->  	u32 host_clock;
-> +	u32 mdio_freq;
-> 
->  	lp->mii_clk_div = 0;
-> 
-> @@ -184,6 +187,13 @@ int axienet_mdio_enable(struct axienet_local *lp)
->  			    host_clock);
->  	}
-> 
-> +	if (of_property_read_u32(lp->dev->of_node, "xlnx,mdio-freq",
-> +				 &mdio_freq)) {
-> +		mdio_freq = MAX_MDIO_FREQ;
-> +		netdev_info(lp->ndev, "Setting default mdio clock to 
-%u\n",
-> +			    mdio_freq);
+Whatever works for you.
 
-I would opt to print this message only if using non-default frequency.
-
-Best regards,
-Alexander
-
-> +	}
-> +
->  	/* clk_div can be calculated by deriving it from the equation:
->  	 * fMDIO = fHOST / ((1 + clk_div) * 2)
->  	 *
-> @@ -209,13 +219,20 @@ int axienet_mdio_enable(struct axienet_local *lp)
->  	 * "clock-frequency" from the CPU
->  	 */
-> 
-> -	lp->mii_clk_div = (host_clock / (MAX_MDIO_FREQ * 2)) - 1;
-> +	clk_div = (host_clock / (mdio_freq * 2)) - 1;
->  	/* If there is any remainder from the division of
-> -	 * fHOST / (MAX_MDIO_FREQ * 2), then we need to add
-> +	 * fHOST / (mdio_freq * 2), then we need to add
->  	 * 1 to the clock divisor or we will surely be above 2.5 MHz
->  	 */
-> -	if (host_clock % (MAX_MDIO_FREQ * 2))
-> -		lp->mii_clk_div++;
-> +	if (host_clock % (mdio_freq * 2))
-> +		clk_div++;
-> +
-> +	/* Check for overflow of mii_clk_div */
-> +	if (clk_div & ~MDIO_CLK_DIV_MASK) {
-> +		netdev_dbg(lp->ndev, "MDIO clock divisor overflow, 
-setting to maximum
-> value\n"); +		clk_div = MDIO_CLK_DIV_MASK;
-> +	}
-> +	lp->mii_clk_div = (u8)clk_div;
-> 
->  	netdev_dbg(lp->ndev,
->  		   "Setting MDIO clock divisor to %u/%u Hz host clock.
-\n",
-
-
-
-
+Thanks
