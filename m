@@ -2,158 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 92B346057B9
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 08:56:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59F9C6057D2
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 09:01:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229691AbiJTG4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 02:56:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36594 "EHLO
+        id S229894AbiJTHBC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 03:01:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229667AbiJTG4T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 02:56:19 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E941162F1;
-        Wed, 19 Oct 2022 23:56:18 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id h185so18393166pgc.10;
-        Wed, 19 Oct 2022 23:56:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=1pwnbAK9KKNITLHun9Ms0l02kwgq26mhZcJVsIfPh/U=;
-        b=WGlJMa4/j+mKh6MeeDQKT6eGvFSecJ8hTc1C0OxySPaTxTAG2nSImpnU5nl/JEslN/
-         gUyxiBOJN3it75fNSSrk220kO8GhpjNCUWOpp5PyiBkeUnWdZeYdr26r5I2sRSna34Zv
-         9tKk9Iy3O+5BK7Y2tFx9m4bv/V50PftcB7TtOR6g7V//9FC4fuxD/48DO1l8gCVHLdcL
-         YkrrudZgPDYC0Cc6oYG29Fi3KZ3Ka657bjRI9iKYOBuY8WoFq8hi49hP+D5RAGF0TKB6
-         EW9mrvHbz37rFTthh4aKS3fV4TzLntv9j1nXWQpliixSsZGORy+EeOzILkXPge+htKwD
-         6LBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=1pwnbAK9KKNITLHun9Ms0l02kwgq26mhZcJVsIfPh/U=;
-        b=Tj7iIgXHXVdOfuOg+4Unw00Y+K47/i9O0kh4D2ouTJOnyKP+kWXXuchO7le348vfGb
-         sG/O/MQLAdsq2OX21PR8bYRgPJCM2TaOjgZsJ0VB7SUKN39W+Y7VsYkvO3GIx8b3p+BA
-         zV74GhdNebpQ5cO9Lv42kMB0YFecdcgg2J1BsiEDNQ2Qa5jbv2hf8NN21Y5jgYYjA1Fb
-         WNFDf9nhfJTRQxlHLpfMkYOQtw4rR9xTRoOMhIR5OTtG5MlAQQM+d+n4214tuSS31AKb
-         ilMSCgr6A3EZC6YjXMrYVNXl7tl+8pjitsMnrcPRyz3/B/DyngEK/S13xKHIVyKw8gRY
-         XIsA==
-X-Gm-Message-State: ACrzQf0HBs++7AJpb9auk37nBbjFsNgRiRGPgkGlz/FlRyn1FQWPXKuS
-        VBlsuhA86u6rcvZEtP6FO2A=
-X-Google-Smtp-Source: AMsMyM6Yrdv3mY5mW4r4IWOp5pN+YW4h0qoyaVefW6f+cosZFCTExrzS7N5qjQBJvUQp+AHMOFMa8A==
-X-Received: by 2002:aa7:9212:0:b0:562:b5f6:f7d7 with SMTP id 18-20020aa79212000000b00562b5f6f7d7mr12898288pfo.70.1666248977615;
-        Wed, 19 Oct 2022 23:56:17 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id a9-20020a1709027e4900b0017f8094a52asm11972756pln.29.2022.10.19.23.56.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Oct 2022 23:56:16 -0700 (PDT)
-From:   xu.xin.sc@gmail.com
-X-Google-Original-From: xu.xin16@zte.com.cn
-To:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     edumazet@google.com, pabeni@redhat.com, dsahern@kernel.org,
-        xu xin <xu.xin16@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
-        Zhang Yunkai <zhang.yunkai@zte.com.cn>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>
-Subject: [PATCHv2 linux-next] net: remove useless parameter of __sock_cmsg_send
-Date:   Thu, 20 Oct 2022 06:54:41 +0000
-Message-Id: <20221020065440.397406-1-xu.xin16@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229796AbiJTHA6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 03:00:58 -0400
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430AA110B1C;
+        Thu, 20 Oct 2022 00:00:55 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VSe.paA_1666249247;
+Received: from 30.221.146.23(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VSe.paA_1666249247)
+          by smtp.aliyun-inc.com;
+          Thu, 20 Oct 2022 15:00:52 +0800
+Message-ID: <62001adc-129a-d477-c916-7a4cf2000553@linux.alibaba.com>
+Date:   Thu, 20 Oct 2022 15:00:46 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.0
+Subject: Re: [PATCH net-next v3 00/10] optimize the parallelism of SMC-R
+ connections
+Content-Language: en-US
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     jaka@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+References: <1666248232-63751-1-git-send-email-alibuda@linux.alibaba.com>
+In-Reply-To: <1666248232-63751-1-git-send-email-alibuda@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: xu xin <xu.xin16@zte.com.cn>
 
-The parameter 'msg' has never been used by __sock_cmsg_send, so we can remove it
-safely.
+Hi Jan,
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: xu xin <xu.xin16@zte.com.cn>
-Reviewed-by: Zhang Yunkai <zhang.yunkai@zte.com.cn>
-Acked-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Sorry for the long delay, The main purpose of v3 is to put optimizes also works on SMC-D, dues to the environment,
+I can only tests it in SMC-R, so please help us to verify the stability and functional in SMC-D,
+Thanks a lot.
 
----
-v1->v2:
-fix the title and commit log.
+If you have any problems, please let us know.
 
----
- include/net/sock.h     | 2 +-
- net/core/sock.c        | 4 ++--
- net/ipv4/ip_sockglue.c | 2 +-
- net/ipv6/datagram.c    | 2 +-
- 4 files changed, 5 insertions(+), 5 deletions(-)
+Besides, PATCH bug fixes need to be reordered. After the code review passes and the SMC-D test goes stable, I will adjust it
+in next serial.
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 9e464f6409a7..b1dacc4d68c9 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1901,7 +1901,7 @@ static inline void sockcm_init(struct sockcm_cookie *sockc,
- 	*sockc = (struct sockcm_cookie) { .tsflags = sk->sk_tsflags };
- }
- 
--int __sock_cmsg_send(struct sock *sk, struct msghdr *msg, struct cmsghdr *cmsg,
-+int __sock_cmsg_send(struct sock *sk, struct cmsghdr *cmsg,
- 		     struct sockcm_cookie *sockc);
- int sock_cmsg_send(struct sock *sk, struct msghdr *msg,
- 		   struct sockcm_cookie *sockc);
-diff --git a/net/core/sock.c b/net/core/sock.c
-index a3ba0358c77c..944a9ea75f65 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -2730,7 +2730,7 @@ struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
- }
- EXPORT_SYMBOL(sock_alloc_send_pskb);
- 
--int __sock_cmsg_send(struct sock *sk, struct msghdr *msg, struct cmsghdr *cmsg,
-+int __sock_cmsg_send(struct sock *sk, struct cmsghdr *cmsg,
- 		     struct sockcm_cookie *sockc)
- {
- 	u32 tsflags;
-@@ -2784,7 +2784,7 @@ int sock_cmsg_send(struct sock *sk, struct msghdr *msg,
- 			return -EINVAL;
- 		if (cmsg->cmsg_level != SOL_SOCKET)
- 			continue;
--		ret = __sock_cmsg_send(sk, msg, cmsg, sockc);
-+		ret = __sock_cmsg_send(sk, cmsg, sockc);
- 		if (ret)
- 			return ret;
- 	}
-diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
-index 6e19cad154f5..5f16807d3235 100644
---- a/net/ipv4/ip_sockglue.c
-+++ b/net/ipv4/ip_sockglue.c
-@@ -267,7 +267,7 @@ int ip_cmsg_send(struct sock *sk, struct msghdr *msg, struct ipcm_cookie *ipc,
- 		}
- #endif
- 		if (cmsg->cmsg_level == SOL_SOCKET) {
--			err = __sock_cmsg_send(sk, msg, cmsg, &ipc->sockc);
-+			err = __sock_cmsg_send(sk, cmsg, &ipc->sockc);
- 			if (err)
- 				return err;
- 			continue;
-diff --git a/net/ipv6/datagram.c b/net/ipv6/datagram.c
-index 5ecb56522f9d..df7e032ce87d 100644
---- a/net/ipv6/datagram.c
-+++ b/net/ipv6/datagram.c
-@@ -771,7 +771,7 @@ int ip6_datagram_send_ctl(struct net *net, struct sock *sk,
- 		}
- 
- 		if (cmsg->cmsg_level == SOL_SOCKET) {
--			err = __sock_cmsg_send(sk, msg, cmsg, &ipc6->sockc);
-+			err = __sock_cmsg_send(sk, cmsg, &ipc6->sockc);
- 			if (err)
- 				return err;
- 			continue;
--- 
-2.25.1
 
+On 10/20/22 2:43 PM, D.Wythe wrote:
+> From: "D.Wythe" <alibuda@linux.alibaba.com>
+> 
+> This patch set attempts to optimize the parallelism of SMC-R connections,
+> mainly to reduce unnecessary blocking on locks, and to fix exceptions that
+> occur after thoses optimization.
+> 
+> According to Off-CPU graph, SMC worker's off-CPU as that:
+> 
+> smc_close_passive_work                  (1.09%)
+>          smcr_buf_unuse                  (1.08%)
+>                  smc_llc_flow_initiate   (1.02%)
+> 
+> smc_listen_work                         (48.17%)
+>          __mutex_lock.isra.11            (47.96%)
+> 
+> 
+> An ideal SMC-R connection process should only block on the IO events
+> of the network, but it's quite clear that the SMC-R connection now is
+> queued on the lock most of the time.
+> 
+> The goal of this patchset is to achieve our ideal situation where
+> network IO events are blocked for the majority of the connection lifetime.
+> 
+> There are three big locks here:
+> 
+> 1. smc_client_lgr_pending & smc_server_lgr_pending
+> 
+> 2. llc_conf_mutex
+> 
+> 3. rmbs_lock & sndbufs_lock
+> 
+> And an implementation issue:
+> 
+> 1. confirm/delete rkey msg can't be sent concurrently while
+> protocol allows indeed.
+> 
+> Unfortunately,The above problems together affect the parallelism of
+> SMC-R connection. If any of them are not solved. our goal cannot
+> be achieved.
+> 
+> After this patch set, we can get a quite ideal off-CPU graph as
+> following:
+> 
+> smc_close_passive_work                                  (41.58%)
+>          smcr_buf_unuse                                  (41.57%)
+>                  smc_llc_do_delete_rkey                  (41.57%)
+> 
+> smc_listen_work                                         (39.10%)
+>          smc_clc_wait_msg                                (13.18%)
+>                  tcp_recvmsg_locked                      (13.18)
+>          smc_listen_find_device                          (25.87%)
+>                  smcr_lgr_reg_rmbs                       (25.87%)
+>                          smc_llc_do_confirm_rkey         (25.87%)
+> 
+> We can see that most of the waiting times are waiting for network IO
+> events. This also has a certain performance improvement on our
+> short-lived conenction wrk/nginx benchmark test:
+> 
+> +--------------+------+------+-------+--------+------+--------+
+> |conns/qps     |c4    | c8   |  c16  |  c32   | c64  |  c200  |
+> +--------------+------+------+-------+--------+------+--------+
+> |SMC-R before  |9.7k  | 10k  |  10k  |  9.9k  | 9.1k |  8.9k  |
+> +--------------+------+------+-------+--------+------+--------+
+> |SMC-R now     |13k   | 19k  |  18k  |  16k   | 15k  |  12k   |
+> +--------------+------+------+-------+--------+------+--------+
+> |TCP           |15k   | 35k  |  51k  |  80k   | 100k |  162k  |
+> +--------------+------+------+-------+--------+------+--------+
+> 
+> The reason why the benefit is not obvious after the number of connections
+> has increased dues to workqueue. If we try to change workqueue to UNBOUND,
+> we can obtain at least 4-5 times performance improvement, reach up to half
+> of TCP. However, this is not an elegant solution, the optimization of it
+> will be much more complicated. But in any case, we will submit relevant
+> optimization patches as soon as possible.
+> 
+> Please note that the premise here is that the lock related problem
+> must be solved first, otherwise, no matter how we optimize the workqueue,
+> there won't be much improvement.
+> 
+> Because there are a lot of related changes to the code, if you have
+> any questions or suggestions, please let me know.
+> 
+> Thanks
+> D. Wythe
+> 
+> v1 -> v2:
+> 
+> 1. Fix panic in SMC-D scenario
+> 2. Fix lnkc related hashfn calculation exception, caused by operator
+> priority
+> 3. Only wake up one connection if the lnk is not active
+> 4. Delete obsolete unlock logic in smc_listen_work()
+> 5. PATCH format, do Reverse Christmas tree
+> 6. PATCH format, change all xxx_lnk_xxx function to xxx_link_xxx
+> 7. PATCH format, add correct fix tag for the patches for fixes.
+> 8. PATCH format, fix some spelling error
+> 9. PATCH format, rename slow to do_slow
+> 
+> v2 -> v3:
+> 
+> 1. add SMC-D support, remove the concept of link cluster since SMC-D has
+> no link at all. Replace it by lgr decision maker, who provides suggestions
+> to SMC-D and SMC-R on whether to create new link group.
+> 
+> 2. Fix the corruption problem described by PATCH 'fix application
+> data exception' on SMC-D.
+> 
+> D. Wythe (10):
+>    net/smc: remove locks smc_client_lgr_pending and
+>      smc_server_lgr_pending
+>    net/smc: fix SMC_CLC_DECL_ERR_REGRMB without smc_server_lgr_pending
+>    net/smc: allow confirm/delete rkey response deliver multiplex
+>    net/smc: make SMC_LLC_FLOW_RKEY run concurrently
+>    net/smc: llc_conf_mutex refactor, replace it with rw_semaphore
+>    net/smc: use read semaphores to reduce unnecessary blocking in
+>      smc_buf_create() & smcr_buf_unuse()
+>    net/smc: reduce unnecessary blocking in smcr_lgr_reg_rmbs()
+>    net/smc: replace mutex rmbs_lock and sndbufs_lock with rw_semaphore
+>    net/smc: Fix potential panic dues to unprotected
+>      smc_llc_srv_add_link()
+>    net/smc: fix application data exception
+> 
+>   net/smc/af_smc.c   |  70 ++++----
+>   net/smc/smc_core.c | 478 +++++++++++++++++++++++++++++++++++++++++++++++------
+>   net/smc/smc_core.h |  36 +++-
+>   net/smc/smc_llc.c  | 277 ++++++++++++++++++++++---------
+>   net/smc/smc_llc.h  |   6 +
+>   net/smc/smc_wr.c   |  10 --
+>   net/smc/smc_wr.h   |  10 ++
+>   7 files changed, 712 insertions(+), 175 deletions(-)
+> 
