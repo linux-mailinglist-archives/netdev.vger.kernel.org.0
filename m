@@ -2,131 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A984B60619F
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 15:28:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98BB2606266
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 16:04:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229930AbiJTN2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 09:28:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36858 "EHLO
+        id S230053AbiJTOEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 10:04:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbiJTN2n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 09:28:43 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5FF01A1B03;
-        Thu, 20 Oct 2022 06:28:41 -0700 (PDT)
-Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MtSwn1g4qzmVDF;
-        Thu, 20 Oct 2022 21:23:53 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by kwepemi500015.china.huawei.com
- (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 20 Oct
- 2022 21:28:37 +0800
-From:   Lu Wei <luwei32@huawei.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <yoshfuji@linux-ipv6.org>,
-        <dsahern@kernel.org>, <ast@kernel.org>, <martin.lau@kernel.org>,
-        <kuniyu@amazon.com>, <asml.silence@gmail.com>,
-        <imagedong@tencent.com>, <ncardwell@google.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next,v2] tcp: fix a signed-integer-overflow bug in tcp_add_backlog()
-Date:   Thu, 20 Oct 2022 22:32:01 +0800
-Message-ID: <20221020143201.339599-1-luwei32@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S229779AbiJTOEI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 10:04:08 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE2B11D5850;
+        Thu, 20 Oct 2022 07:04:06 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id bj12so47591559ejb.13;
+        Thu, 20 Oct 2022 07:04:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=VcnoQx3qI7fpXJUKM0CZbdSa56iEX07NlfTNetUmqRw=;
+        b=l5bu8brHSu0lV8jpdsslwekKWTitm3jcIzunKjSvYW6ZHEoyPulraEujek+0GP/Hvd
+         VGynsaEV431/P0R4Up0JmdjgrLdZCAEXuS4thXeD1IkB0tL1c1TYwuHI0t7KEYQ28Ngi
+         OjfuEUQIW5cD1w1T5Wl38wkB5vFtRrmJ1I+460JqsxkhwjNxe2MY/MZLUVaLfNXb9rxB
+         mvWyTgjjiRaVTJ1C2POs4n/gmyaptI+zmwL5wEC99pA8loysp0dqVPy7tyoy7eWkwaRH
+         0PWHvnaY1M5vrwXfwri59mlcpsoC38vvExyhtVa9UiFedcueAmfgCoofwGx7+yQve6jp
+         dbcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=VcnoQx3qI7fpXJUKM0CZbdSa56iEX07NlfTNetUmqRw=;
+        b=MGTpiQJDH0M8YHrF40zLf6Tnlo5FCi+KomiQDetLNZ5sb9pJyaEUvHg6vY9OW9LN1x
+         WS6paqtC6HbqWCVJQXdZSwdlmdez9xlnr9ryRt8l9qoPbfaxoNVWAg5OOeFQ075lGlh+
+         LJFGeChVyMhtAZ2TPlF5XqBX8nHsO5QBjBJ3PzaHdSWE5PJLyPqwmrvFcDxOUXPvyF0/
+         PqoFnYn2Ww1ZCTQquhHslfDeNR3DpRCdGNXg9sfeQKmOlJbTy00urFUYoXzCvVHU18rd
+         8gCh9Rh83lcck4PN9guVZYqQczNN/T8HXq5g7CTwzkQgtulBGm7xLZC5gKMnnJxqVKNg
+         gNzg==
+X-Gm-Message-State: ACrzQf2uNIf5YEutIhOPHsPEMpsCo0Vc7458GpleWLPySMKiGBpDrrYd
+        sBfjcyjWka+XIDUUzuymt7SjqDgol6VZuw==
+X-Google-Smtp-Source: AMsMyM4SZEZSqVPTVYvWzQRYrzgh/kATVwZIqEmKTRuF0c5R/E5+UHJTLTdHcYlKatrB4zrmQDmY/g==
+X-Received: by 2002:a17:906:cc0b:b0:78e:1d51:36ea with SMTP id ml11-20020a170906cc0b00b0078e1d5136eamr11264073ejb.408.1666274645060;
+        Thu, 20 Oct 2022 07:04:05 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id nb36-20020a1709071ca400b0073ddb2eff27sm10450359ejc.167.2022.10.20.07.04.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Oct 2022 07:04:04 -0700 (PDT)
+Date:   Thu, 20 Oct 2022 17:04:00 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     "Hans J. Schultz" <netdev@kapio-technology.com>,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Hans Schultz <schultz.hans@gmail.com>,
+        Joachim Wiberg <troglobit@gmail.com>,
+        Amit Cohen <amcohen@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v8 net-next 05/12] net: dsa: propagate the locked flag
+ down through the DSA layer
+Message-ID: <20221020140400.h4czo4wwv7erncy7@skbuf>
+References: <20221018165619.134535-1-netdev@kapio-technology.com>
+ <20221018165619.134535-1-netdev@kapio-technology.com>
+ <20221018165619.134535-6-netdev@kapio-technology.com>
+ <20221018165619.134535-6-netdev@kapio-technology.com>
+ <20221020130224.6ralzvteoxfdwseb@skbuf>
+ <Y1FMAI9BzDRUPi5Y@shredder>
+ <20221020133506.76wroc7owpwjzrkg@skbuf>
+ <Y1FTzyPdTbAF+ODT@shredder>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemi500015.china.huawei.com (7.221.188.92)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y1FTzyPdTbAF+ODT@shredder>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The type of sk_rcvbuf and sk_sndbuf in struct sock is int, and
-in tcp_add_backlog(), the variable limit is caculated by adding
-sk_rcvbuf, sk_sndbuf and 64 * 1024, it may exceed the max value
-of int and overflow. This patch limits sk_rcvbuf and sk_sndbuf
-to 0x7fff000 and transfers them to u32 to avoid signed-integer
-overflow.
+On Thu, Oct 20, 2022 at 04:57:35PM +0300, Ido Schimmel wrote:
+> On Thu, Oct 20, 2022 at 04:35:06PM +0300, Vladimir Oltean wrote:
+> > On Thu, Oct 20, 2022 at 04:24:16PM +0300, Ido Schimmel wrote:
+> > > On Thu, Oct 20, 2022 at 04:02:24PM +0300, Vladimir Oltean wrote:
+> > > > On Tue, Oct 18, 2022 at 06:56:12PM +0200, Hans J. Schultz wrote:
+> > > > > @@ -3315,6 +3316,7 @@ static int dsa_slave_fdb_event(struct net_device *dev,
+> > > > >  	struct dsa_port *dp = dsa_slave_to_port(dev);
+> > > > >  	bool host_addr = fdb_info->is_local;
+> > > > >  	struct dsa_switch *ds = dp->ds;
+> > > > > +	u16 fdb_flags = 0;
+> > > > >  
+> > > > >  	if (ctx && ctx != dp)
+> > > > >  		return 0;
+> > > > > @@ -3361,6 +3363,9 @@ static int dsa_slave_fdb_event(struct net_device *dev,
+> > > > >  		   orig_dev->name, fdb_info->addr, fdb_info->vid,
+> > > > >  		   host_addr ? " as host address" : "");
+> > > > >  
+> > > > > +	if (fdb_info->locked)
+> > > > > +		fdb_flags |= DSA_FDB_FLAG_LOCKED;
+> > > > 
+> > > > This is the bridge->driver direction. In which of the changes up until
+> > > > now/through which mechanism will the bridge emit a
+> > > > SWITCHDEV_FDB_ADD_TO_DEVICE with fdb_info->locked = true?
+> > > 
+> > > I believe it can happen in the following call chain:
+> > > 
+> > > br_handle_frame_finish
+> > >    br_fdb_update // p->flags & BR_PORT_MAB
+> > >        fdb_notify
+> > >            br_switchdev_fdb_notify
+> > > 
+> > > This can happen with Spectrum when a packet ingresses via a locked port
+> > > and incurs an FDB miss in hardware. The packet will be trapped and
+> > > injected to the Rx path where it should invoke the above call chain.
+> > 
+> > Ah, so this is the case which in mv88e6xxx would generate an ATU
+> > violation interrupt; in the Spectrum case it generates a special packet.
+> 
+> Not sure what you mean by "special" :) It's simply the packet that
+> incurred the FDB miss on the SMAC.
+> 
+> > Right now this packet isn't generated, right?
+> 
+> Right. We don't support BR_PORT_LOCKED so these checks are not currently
+> enabled in hardware. To be clear, only packets received via locked ports
+> are able to trigger the check.
+> 
+> > 
+> > I think we have the same thing in ocelot, a port can be configured to
+> > send "learn frames" to the CPU.
+> > 
+> > Should these packets be injected into the bridge RX path in the first
+> > place? They reach the CPU because of an FDB miss, not because the CPU
+> > was the intended destination.
+> 
+> The reason to inject them to the Rx path is so that they will trigger
+> the creation of the "locked" entry in the bridge driver (when MAB is
+> on), thereby notifying user space about the presence of a new MAC behind
+> the locked port. We can try to parse them in the driver and notify the
+> bridge driver via SWITCHDEV_FDB_ADD_TO_BRIDGE, but it's quite ugly...
 
-Fixes: c9c3321257e1 ("tcp: add tcp_add_backlog()")
-Signed-off-by: Lu Wei <luwei32@huawei.com>
----
- include/net/sock.h  |  5 +++++
- net/core/sock.c     | 10 ++++++----
- net/ipv4/tcp_ipv4.c |  3 ++-
- 3 files changed, 13 insertions(+), 5 deletions(-)
+"ugly" => your words, not mine... But abstracting things a bit, doing
+what you just said (SWITCHDEV_FDB_ADD_TO_BRIDGE) for learn frames would
+be exactly the same thing as what mv88e6xxx is doing (so your "ugly"
+comment equally applies to Marvell). The learn frames are "special" in
+the sense that they don't belong to the data path of the software
+bridge*, they are just hardware specific information which the driver
+must deal with, using a channel that happens to be Ethernet and not an
+IRQ/MDIO.
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 9e464f6409a7..cc2d6c4047c2 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -2529,6 +2529,11 @@ static inline void sk_wake_async(const struct sock *sk, int how, int band)
- #define SOCK_MIN_SNDBUF		(TCP_SKB_MIN_TRUESIZE * 2)
- #define SOCK_MIN_RCVBUF		 TCP_SKB_MIN_TRUESIZE
- 
-+/* limit sk_sndbuf and sk_rcvbuf to 0x7fff0000 to prevent overflow
-+ * when adding sk_sndbuf, sk_rcvbuf and 64K in tcp_add_backlog()
-+ */
-+#define SOCK_MAX_SNDRCVBUF		(INT_MAX - 0xFFFF)
-+
- static inline void sk_stream_moderate_sndbuf(struct sock *sk)
- {
- 	u32 val;
-diff --git a/net/core/sock.c b/net/core/sock.c
-index a3ba0358c77c..33acc5e71100 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -950,7 +950,7 @@ static void __sock_set_rcvbuf(struct sock *sk, int val)
- 	/* Ensure val * 2 fits into an int, to prevent max_t() from treating it
- 	 * as a negative value.
- 	 */
--	val = min_t(int, val, INT_MAX / 2);
-+	val = min_t(int, val, SOCK_MAX_SNDRCVBUF / 2);
- 	sk->sk_userlocks |= SOCK_RCVBUF_LOCK;
- 
- 	/* We double it on the way in to account for "struct sk_buff" etc.
-@@ -1142,7 +1142,7 @@ int sk_setsockopt(struct sock *sk, int level, int optname,
- 		/* Ensure val * 2 fits into an int, to prevent max_t()
- 		 * from treating it as a negative value.
- 		 */
--		val = min_t(int, val, INT_MAX / 2);
-+		val = min_t(int, val, SOCK_MAX_SNDRCVBUF / 2);
- 		sk->sk_userlocks |= SOCK_SNDBUF_LOCK;
- 		WRITE_ONCE(sk->sk_sndbuf,
- 			   max_t(int, val * 2, SOCK_MIN_SNDBUF));
-@@ -3365,8 +3365,10 @@ void sock_init_data(struct socket *sock, struct sock *sk)
- 	timer_setup(&sk->sk_timer, NULL, 0);
- 
- 	sk->sk_allocation	=	GFP_KERNEL;
--	sk->sk_rcvbuf		=	READ_ONCE(sysctl_rmem_default);
--	sk->sk_sndbuf		=	READ_ONCE(sysctl_wmem_default);
-+	sk->sk_rcvbuf		=	min_t(int, SOCK_MAX_SNDRCVBUF,
-+					      READ_ONCE(sysctl_rmem_default));
-+	sk->sk_sndbuf		=	min_t(int, SOCK_MAX_SNDRCVBUF,
-+					      READ_ONCE(sysctl_wmem_default));
- 	sk->sk_state		=	TCP_CLOSE;
- 	sk_set_socket(sk, sock);
- 
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 7a250ef9d1b7..5340733336a6 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1878,7 +1878,8 @@ bool tcp_add_backlog(struct sock *sk, struct sk_buff *skb,
- 	 * to reduce memory overhead, so add a little headroom here.
- 	 * Few sockets backlog are possibly concurrently non empty.
- 	 */
--	limit = READ_ONCE(sk->sk_rcvbuf) + READ_ONCE(sk->sk_sndbuf) + 64*1024;
-+	limit = (u32)READ_ONCE(sk->sk_rcvbuf) +
-+		(u32)READ_ONCE(sk->sk_sndbuf) + 64*1024;
- 
- 	if (unlikely(sk_add_backlog(sk, skb, limit))) {
- 		bh_unlock_sock(sk);
--- 
-2.31.1
+*in other words, a bridge with proper RX filtering should not even
+receive these frames, or would need special casing for BR_PORT_MAB to
+not drop them in the first place.
 
+I would incline towards an unified approach for CPU assisted learning,
+regardless of this (minor, IMO) difference between Marvell and other
+vendors.
