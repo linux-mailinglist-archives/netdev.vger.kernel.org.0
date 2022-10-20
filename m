@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 19BD4606797
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 20:00:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A324606792
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 20:00:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230034AbiJTSAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 14:00:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59308 "EHLO
+        id S230196AbiJTSAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 14:00:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230160AbiJTSAA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 14:00:00 -0400
-Received: from na01-obe.outbound.protection.outlook.com (mail-westcentralusazon11022018.outbound.protection.outlook.com [40.93.200.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19A131EA573;
-        Thu, 20 Oct 2022 10:59:09 -0700 (PDT)
+        with ESMTP id S230116AbiJTR7z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 13:59:55 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-westcentralusazon11022019.outbound.protection.outlook.com [40.93.200.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 305C21EB542;
+        Thu, 20 Oct 2022 10:58:56 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XWweT4EQ8KUkmk1s3e5Trah6hb5DDak1OcwNWx6mP023yYWNa1Q7P5WPSJMgVs8nvc2NsVTtX6s97PE6wE6LBY/1qh86F/wN1FJoZKo8syn6BDVKG5DK/vHea9Se2qt46kF/rmwCa5JUsgJ7PJYGsCtIH2kILNpiqE4QHc+tN77RM7vBJCBi/1PmWLRbloWGvjZR1PQ8W9P00HSbTSGFQRTFwYlZBCXQlyCD4cJp1D9B9dJDy0s3rpUnFov4L8aA7SDkiMoqqq/YQalIlclosfM5MvFy3iflgI6HETVpa0iOiKA3PK806sVnTLesrmG3TENDASFDrVxRVQMBNhHHVg==
+ b=bbKWJ2ahj+hMI6+Y5mQjp/Ods7M9pAGw+CPc+3JLvo5qHoXgUpMqSKGis8MJUzIYcKqY/46dbq1+INwznyqHELXlrqQa/n6RxJFXkSgxc2ufSd8nRWop5iAvj8ctTCAOY13fTbR4mFsKtgH33pGnW3mROO8NczJel3iNeNEeb2PBGa7PZzYEd5i4osWEnS3QSsSIsL0hDc3PSL3ZldSrXKYXJmLYzspwrV7jPvG9M0leIq8j/suQhhDLJFZFCJEQNq69wTEPSfafRE5mXvSUmd2yRw65jGlZjFOKtaiVVjQQ9e8a5MewGkR+4usGX+gCm/473JouZpG4kmS4a6EdQQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qeAXZg3STGQ4uhs+C+hLKwvmdp9vlTnfXiY2BSEKWok=;
- b=EL6Rtlq81mMshQYJvFrxAq93QkYkFY92ggd/cNoARNBO/8M250AWK3T86DMRYhS0YizJsXTOh7EcevUFkiaVyaDJ91xO74yayDLHefd+PeGbnqSbFMpKz3abJl4tfeMSPKsOXIsKCTR64yb/hxNXkh8MXjeMpoN/4zsXDdAz8hL7wmZ1aSKYCnEhPAT/uAk/BMYprmIH50ZvzQoJExdtPznlQ3W30YUO0KUisHh14j3BjqwKwKyH/bBwBbohxrvnHZ3kLVOFck88eao8d6X8t+FxPoCu93p4j4j8SBiEAeSb0pqHn7TO/gZ84XnXr1+RLVQL/EceZuASgQsKc/GoGg==
+ bh=HxJ8C3oTdHyjmsriP5KiVxO5k6CUwNZJzZyGZWis3kU=;
+ b=btym7Ecp0Y0CO0TLtJV1D6MhLsd9WzKbCdzWDI+ANFgiKfmSxqHab2HwXjPzkGYr1mkMN0sWQ/R8WL11gl2fkI1SPfggEG9TrfRRXNSkeXWXb7LzOtnWPTRBzCnFzpjSp427mbeRDXHp9UaoEzJizQ4SfWkRdy0s82hu3RGxyMrfP0WiYJYnbQIgsaHouNUeY2SWXx/l+/15XncRLdrZZd+jSgmjiSiOtpUAEe8o5LyT7kwIsQ1hfPlY2OERHKtQZcc+DMfnhVpTCPqrRH1sAla9qdUN2pfkBfr23HqI0Jng+3m+4akQDRRRLXeMsqYzkBiKBXt47/kDUFV3vFD7HQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=microsoft.com; dmarc=pass action=none
  header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qeAXZg3STGQ4uhs+C+hLKwvmdp9vlTnfXiY2BSEKWok=;
- b=SHPTmDVV19xK2EPBTagY9CRg+R2uGiE2a0E3yTA5P03CKgAuKmL+asiK6JY2DF4cb0fQ+KalK2+DKZPb7bhzUMkWWhSpO/VEuWnZW7h7yZpgH9D1273U0XuDB0ki+SC5c9Yrrb/2vUDFiwOOLdwGRv6X5kZds6bBFcNF0UQx6Yw=
+ bh=HxJ8C3oTdHyjmsriP5KiVxO5k6CUwNZJzZyGZWis3kU=;
+ b=afP3SQy/kHh5Dul1DeUV+YJWDWaiYpSWU0cfyHemXCg2Pfw1EnVWV5l0OS5V6UkE1KroEwgoEwMjjk4GMDlA+FlB9OjuoLYUcw/gt+HMM5UVyEono+M4CIUJVs8zy0k/HCrT8/kjU4tA6f458OpmCAXUhp5uAMhZ6yfjqfT4UZU=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=microsoft.com;
 Received: from DM6PR21MB1370.namprd21.prod.outlook.com (2603:10b6:5:16b::28)
  by MW4PR21MB1857.namprd21.prod.outlook.com (2603:10b6:303:74::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.17; Thu, 20 Oct
- 2022 17:58:37 +0000
+ 2022 17:58:39 +0000
 Received: from DM6PR21MB1370.namprd21.prod.outlook.com
  ([fe80::be79:e2dc:1dba:44fa]) by DM6PR21MB1370.namprd21.prod.outlook.com
  ([fe80::be79:e2dc:1dba:44fa%3]) with mapi id 15.20.5723.019; Thu, 20 Oct 2022
- 17:58:37 +0000
+ 17:58:39 +0000
 From:   Michael Kelley <mikelley@microsoft.com>
 To:     hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
         sthemmin@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
@@ -59,9 +59,9 @@ To:     hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
         linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
         iommu@lists.linux.dev
 Cc:     mikelley@microsoft.com
-Subject: [PATCH 07/12] Drivers: hv: vmbus: Remove second mapping of VMBus monitor pages
-Date:   Thu, 20 Oct 2022 10:57:10 -0700
-Message-Id: <1666288635-72591-8-git-send-email-mikelley@microsoft.com>
+Subject: [PATCH 08/12] Drivers: hv: vmbus: Remove second way of mapping ring buffers
+Date:   Thu, 20 Oct 2022 10:57:11 -0700
+Message-Id: <1666288635-72591-9-git-send-email-mikelley@microsoft.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1666288635-72591-1-git-send-email-mikelley@microsoft.com>
 References: <1666288635-72591-1-git-send-email-mikelley@microsoft.com>
@@ -73,51 +73,51 @@ MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: DM6PR21MB1370:EE_|MW4PR21MB1857:EE_
-X-MS-Office365-Filtering-Correlation-Id: 667e529d-2595-4149-d742-08dab2c4b655
+X-MS-Office365-Filtering-Correlation-Id: e9300016-2963-43f5-8bdb-08dab2c4b7af
 X-LD-Processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: pbQrPcZ1dg5+ljl9eSXN0BogOtE3RCdIpI1qYRZPASGIlW9w4VbKTkzBzmkvZg1i4b2rFawdzISsxrb1GjLWxRVOnWjZYOXZcqWbqLDFgycxjDDCp0wb6UQxG2GBTWMrlIH0iVkAfne8ra1nRELHK3YFbVv45MWuJNFC5oJMSwteOwKvKl90r43EdKuSaPfFV3V5QGLp7vXQNUh3+jKQRFIl7KgvCNLw3YQkPxf/9Dkm2XkYYr90265PwCrXLe39nXRpqX+gTAiMcVI6zXzHcpoaZMArGKMY0+ihotvf5UsdGLrpJkBQEZTx11aE0MZwgF0fv4B1W6jSCBXjMPrsDFwssZSvOYeJqqmkSFMgNCHbn8LyVZ+PM1B6rRkmS6H2mQHIOxjdCRM8R01DEI3qAh1PlwG8qwtWn3CTU/pUJzxiivgFOLV4o8AMehGULzaDAeRJjyRuH0XiqfBnWeWNGIuLOA+KT6ozUDggmBPSJl/j3eFHQZYcEkqzNBur264fbC65hWcdNh+Z+jS1ApaD/2uzyO8ZlPgtsXE2HRUn8kJayeeiyDXm5FK8NfdGD8GR6YcNo0u8UzNX3Ja5p3+hS+v8cGp1/ye/I0QVDRi1g1/S7l8YDUGpKWRT4MkR1GU2OzQ49yoqnn1b1vzMFT+j9N0B0qTKme+x9efL17ezCnnSJ9jBm7tddAV7byDvvrf9+nhz4BxXAnlsDEjJGwKFNZLU3bn/qcSIl7r9QVE9d+AEzJMgwhW2pNMvMbF4T9XDMx6OfW85D3ObbsopRUQMCdhhygJRrM/7Dj5b6x0HPk+umQxMFrHkMjkLGwWWcpOz
+X-Microsoft-Antispam-Message-Info: 2UedVTZwPVZup/+B3I+GCrQ04u1QlDrkoz74NV02WzZkqYvqFGDkSHtc7gPRhzD78NgUgdM39uXve9mA/SaqHYu9IP05fACqezq1YvwFcKJbDKWtdBCHgAbDOsKUB0/uBoLTEGDKMNn8UcrOBvAznwroQDKSG2EQDehSnbckkJc4byDl5xJUCAgT1M6BIuylAReQ33Te9xVuwWpGtz6WpScZsNS39YKZztjrnp8FGh+AHX/RvNbhNfU6OL/qNg3COoaanrb8rS/2RJL1pe3BF3M6TyQi2RPYRX+sd03QwOmVk4no5nGRlF+TrUPVIZ7gtGVophrobNGw0frlfY4dU1nf+TuReWkWTbniqN7zelHpYz/tbDYy80aovDSbLKHiOHOs7CSwv3bzkPwJmIU/IR4cDbHUUXFamuLPu8cWpVXpb8940pwoEh2ZIi/z/HNbvs9dQeCWsQo9xQKbtnbh8d4I0BYxJNAfLT6FzTbXKZWQek+Xo9KEOtkIyBMnFKXwUdZ5akJN32kU0bJKWnaE+MhcXXuLwqJzKp/f8D43RGEQVkINjmjLv1zX8GkkMwmm/GCCqh6Mv9imw9EpQW123HPAqk4FvqyCzPqN9/4yon8ja63PY0L3zi7jyPRHYjiKSKwiWU2bFMPHGW3o6Gh3vGyO4xuGgIORxuaL7uZmtVK9X4SsWkymTjcMePi4QkW2b3dDAmqaioZr/8m4Rf10HmLrnX2E7OFopb7u8SPJOjAyQQRg4r+Gu8ntdf4p4o1eKbMCpdUZhakTLLiq6FtVH8/zUuUOfX4/yphUZEmHnmM5ttEI1b6Bov2Uo7CvSEfyk9D/wk7mB+kJ5zIDc9zZwQ==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1370.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(136003)(346002)(376002)(396003)(39860400002)(451199015)(186003)(6512007)(6666004)(107886003)(83380400001)(7416002)(52116002)(26005)(2906002)(5660300002)(6506007)(66556008)(41300700001)(8676002)(478600001)(8936002)(316002)(4326008)(66476007)(66946007)(6486002)(10290500003)(82950400001)(36756003)(86362001)(2616005)(7406005)(82960400001)(38100700002)(38350700002)(921005);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9AbbhGm3Bdfvwa5WCmefqYD8T/1pV9v19C6EIhDFfABvVcY7HH/PqXmq3UBV?=
- =?us-ascii?Q?7BjSlzxCSerBJ6bEYNDUkDm1GwLHfoo51RMyj8Hsq/N3N5pRmtbQzhVLOfVJ?=
- =?us-ascii?Q?cBHioRHEgzmzGm1p0J9zTDV5Fok3ZN9/unvdMR0xJaNkXww2YlsGMyPBQpcn?=
- =?us-ascii?Q?F84CM2P3XyyGo0iv4stomQl/5oOlauDHzRqEiHlfcr+flpxWBHB53KGlDMAP?=
- =?us-ascii?Q?JkV7gOzf1E6LDSyFtKWLLLm3YUGeWhsY1z9w1eL8URcaIcCB1PXtTtmPkH1C?=
- =?us-ascii?Q?+ZqTCDuopyXsag/+jUkFxpyFOeNm2By+g4uiLZ64ogtAmNeH6Hm1JaCJj/R+?=
- =?us-ascii?Q?7cY2ZSPUKClDGuOGu0gpGKOFLLv2O5C7Zl0z4EsWfUN5WwhByovf9I1WGWVA?=
- =?us-ascii?Q?44F+12jeD+iN1/aao8fh3deLEnvCFibffBPSz6MHpjLDpzHkGDrk6xk3TplL?=
- =?us-ascii?Q?jWyk84gvJJ5ne5P5EeOCGphBTHRMtRLifsSuaadMCTDikz0iaQhiKeLab8zx?=
- =?us-ascii?Q?2CGH2ZKa3lfMChohUACYaR1E0Y5FH1ngToVgV80K6YgijcC5v9JGMfXwz/5v?=
- =?us-ascii?Q?L7m4AB2QXvRYqS0cpK8FmvvqmWii9bKyp5ot/AIGx0VbnRCKd8EwmaNWcASO?=
- =?us-ascii?Q?Pp+Y0VCumCoD+RY3ksVA5x4gIZ5zmZQI7eXUICYrRrqrPz3HVaWZSYPMRWIu?=
- =?us-ascii?Q?ZcQqnq7/Zq4oX/9Oh/lx0PZ8l38atOr3LpxMXfV9T61ZG76/JTlHtaVpDKZT?=
- =?us-ascii?Q?WUQV/edMZG6cARB4KOQNSqbJr4TCB4Nhd2pdfSlTcvQGq4yAG2rGYX5L5Nky?=
- =?us-ascii?Q?zF4SjJjVpMGZiNAthrbi7M7ZQRPZxycwdmA737yLXzkXSWC3WKKAOMjQdqse?=
- =?us-ascii?Q?HrQQid5GTNw+5eCtBHRqoQ0KIrAnRkRCQWym8wo06BHB1KGLcDm/LinAqNl3?=
- =?us-ascii?Q?neHUi5o2LkNL+s2KRvJGhUQiSjCsrJbSjnBDuDKUpN9SoX1WhywCf58vqN1M?=
- =?us-ascii?Q?Gun6yun6wvlUhdVenqc6wXdGTiU5RqmFJjaGJQbbNmAm6JAtRmq8BC/JHNgO?=
- =?us-ascii?Q?YkzwV3Q8y3Iz9f54KL102cUGx8D1ZOOxRsz+ESenghPQ2Ttk1a7oyHKmP+sw?=
- =?us-ascii?Q?22JjSDNuMYmEPN3t41W3arxcGxGSKT9yPMm5wdcVLvnmjymQQKIrqh3DxHGm?=
- =?us-ascii?Q?OX1yKmSkJri87ZNQw9TQTVKO2y19c12mFiu/DM5Olyc7HmKJ1dv3o8BeeoVL?=
- =?us-ascii?Q?Zq9RZzDYr22G/lUpGrRZ8pAeCBF0zolNn9tT9jaZx+E7EvpmFhoJUK1kUSed?=
- =?us-ascii?Q?11vmpFtqg6rfxlDMZ7NgdvuZeTQh2sqSM5TjBJv9y8hUqFc5wdYPVlw+lVN0?=
- =?us-ascii?Q?wjhnjESJwA8SUMGewzirPRql+7x0na9/xuQlFHmq7BVOVYBy79VY+Ks7dRLq?=
- =?us-ascii?Q?H2D0HYzobiw1Fx+r+Ce0iJu5KeE0rg1bXDjWlgeHEdIlxDsK9KYUIKf/ARia?=
- =?us-ascii?Q?4RP8JL2CRvAaVSua3PhwNUhjdhCRZFLrtgHmj2Boc/msGVDCC6kCwQHRuge2?=
- =?us-ascii?Q?ptrQrpYtf4oWdI3DajOcQafFAY4VTJF4q/ke25RM?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0ax73wboF2ftmeUuCMabcf9O9Aj+tJouZqd/UdNtkIrw/eerTnExyB6j/xLu?=
+ =?us-ascii?Q?1rx0rEY9/mKdY6jcFmvtkL4xNWgL23I7vCef3UqA62yN6oPkQMWj6UHsTO9L?=
+ =?us-ascii?Q?Pzef/N2q8/66ptslWz8LnZxjw0z+tk9id50yhPqYd3tYCz0dKJ/0n4ksYtQb?=
+ =?us-ascii?Q?ftpw9lor2RWzxah3//XAqlIRPsa9exPonzT7BtBUeI8yBd4am3UMreFu8kM8?=
+ =?us-ascii?Q?VLFHTHRo+lOHjeQ+oalCJa/TEcTSQE3CVTM0n8ugUGZEYhWx+yzNvzAfC+Nb?=
+ =?us-ascii?Q?RM0cuTT+2EsWBr8fgD9yLtpQ+LPJ5KhhawITiezm2X2ELm2l5gVm0JL9L4K9?=
+ =?us-ascii?Q?ZWwUZUIMWral+igx4aIiD4dkL1ZP59qADzH8f5AA0qLPRfX9n3aODPcYerDg?=
+ =?us-ascii?Q?uZkbHiJ3uEL/BiGkOfANfYUf8770giZY+sOcLf0pEQxKNEayvDjguEVDV8yF?=
+ =?us-ascii?Q?EWLeKmKWCn5pdnhJ3JFJzCVwR8G8+yWaCghQyrkb+ckXdsSQc4whOvGsurDV?=
+ =?us-ascii?Q?F+KbGQmwBKQn/tKPDgywTIeb9jNYv9E8ZawrxGkD3hphh/ypObrLp7iBb5ek?=
+ =?us-ascii?Q?YYtCnrWV3strnC8qmRa/yzNiZYt9OOEC/NWUxrmaIUzyvXPC7BYbJ01qyajP?=
+ =?us-ascii?Q?52pAwR/gDjS8i8tid5uqoxojevEgqAhFT2mgLkFX5lEcTgGtsuzjoUQTcFnZ?=
+ =?us-ascii?Q?acsO3ViTKW1F+Lnst92oU4Xx0LQs2QPOizIE0L3PgY2nWSN4PsfF+Q2rmOqn?=
+ =?us-ascii?Q?uW2pj9ypZmsNKugZvq2UUYVnvl/cLsE+ReyENz0AVXSL+CV6yn5RXrjyH45N?=
+ =?us-ascii?Q?aYzC7wx3TScpsSBYQSAB0k5cFgM/QnNy9YbbO2Qu5Q2ieMRixO3xXYK+sWTf?=
+ =?us-ascii?Q?viw7TvYBt2ya9C2Xr9idRGRiH42FlX6N+Lc8RGfiR4WJayMttEP+BjbEfC/h?=
+ =?us-ascii?Q?53UvLLuSHLQ/jbgSgnXdNFhW83rpto3wQrJVIT42auaGZVhXt7cMVi+/Xd2a?=
+ =?us-ascii?Q?IcOGwFh6dvpaH0fDHKRR47ciRAz4ctvJHOSuKqS1gi5RnJhgvP4FKfUFLg7T?=
+ =?us-ascii?Q?ecI33HH9IM5y8Malk3+sRdmpK4wqXyMCw4UrdpkTFhSUUVlzK5N/kGWwVaen?=
+ =?us-ascii?Q?ngz8APPWY00M3UxNEDuZfGZ7b/A67FvGl9uJ27sHV+XVF0X1iWL6sMdax1jy?=
+ =?us-ascii?Q?OIQ3lDD8S3skkPfG5TDgL/73bYk+YfxOMmCV7MyF818dQNGxhQcWyHl/2/qR?=
+ =?us-ascii?Q?fZtl8AS1xAFNlZ2MY7gkrxIM9ZCP77hhRy8mRSK71HlMB4tIul5LwJNdRHUP?=
+ =?us-ascii?Q?0bGlht7ioWV3t/GY9/kCcx2Bc1dqu0aqAGnmEWnTOcEqpxIqKFO9/I3NJ51x?=
+ =?us-ascii?Q?RI0M6WO/XJwCJqs+hwBqYtNe0riLvKmhLvm6NY2OfIsWqsL+YzPdhe5wMdBZ?=
+ =?us-ascii?Q?HaxJBE9aNlBRHObmA3Pny1WTCe72f2VXe6DyIvJ4hQwdEjauwT9ZlT78YM1E?=
+ =?us-ascii?Q?TApurLV5Yl9czRBBFWLP+4L8obqIeTbiALukYgnGSX1sJwg47wfyq3tnklm6?=
+ =?us-ascii?Q?oDsGjGDUh7Zty5+BGBGopuh5bETw0FLTlT9iqqoD?=
 X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 667e529d-2595-4149-d742-08dab2c4b655
+X-MS-Exchange-CrossTenant-Network-Message-Id: e9300016-2963-43f5-8bdb-08dab2c4b7af
 X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1370.namprd21.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2022 17:58:37.0790
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2022 17:58:39.3759
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mc14Ni/G97dftdclL4XaQqbJldWOg1pGtCxzzW0jjsWOsFUxuxxaIQkL3BfcePP4I/0eJBiP3Q9T9BN5Z0H5NA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: t4qlx55nTvzptZ7mZlrTYVx8eP2JC7jY8fd0x5yTZI8LZ/lbfJUNFSuoxdq3WOBegKlzYuS9itE25OxpyD5CFg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR21MB1857
 X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -129,181 +129,103 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 With changes to how Hyper-V guest VMs flip memory between private
-(encrypted) and shared (decrypted), creating a second kernel virtual
-mapping for shared memory is no longer necessary.  Everything needed
-for the transition to shared is handled by set_memory_decrypted().
+(encrypted) and shared (decrypted), it's no longer necessary to
+have separate code paths for mapping VMBus ring buffers for
+for normal VMs and for Confidential VMs.
 
-As such, remove the code to create and manage the second
-mapping for VMBus monitor pages. Because set_memory_decrypted()
-and set_memory_encrypted() are no-ops in normal VMs, it's
-not even necessary to test for being in a Confidential VM
-(a.k.a., "Isolation VM").
+As such, remove the code path that uses vmap_pfn(), and set
+the protection flags argument to vmap() to account for the
+difference between normal and Confidential VMs.
 
 Signed-off-by: Michael Kelley <mikelley@microsoft.com>
 ---
- drivers/hv/connection.c   | 113 ++++++++++++----------------------------------
- drivers/hv/hyperv_vmbus.h |   2 -
- 2 files changed, 28 insertions(+), 87 deletions(-)
+ drivers/hv/ring_buffer.c | 62 ++++++++++++++++--------------------------------
+ 1 file changed, 20 insertions(+), 42 deletions(-)
 
-diff --git a/drivers/hv/connection.c b/drivers/hv/connection.c
-index 9dc27e5..e473b69 100644
---- a/drivers/hv/connection.c
-+++ b/drivers/hv/connection.c
-@@ -104,8 +104,14 @@ int vmbus_negotiate_version(struct vmbus_channel_msginfo *msginfo, u32 version)
- 		vmbus_connection.msg_conn_id = VMBUS_MESSAGE_CONNECTION_ID;
- 	}
+diff --git a/drivers/hv/ring_buffer.c b/drivers/hv/ring_buffer.c
+index b4a91b1..20a0631 100644
+--- a/drivers/hv/ring_buffer.c
++++ b/drivers/hv/ring_buffer.c
+@@ -186,8 +186,6 @@ int hv_ringbuffer_init(struct hv_ring_buffer_info *ring_info,
+ 		       struct page *pages, u32 page_cnt, u32 max_pkt_size)
+ {
+ 	struct page **pages_wraparound;
+-	unsigned long *pfns_wraparound;
+-	u64 pfn;
+ 	int i;
  
--	msg->monitor_page1 = vmbus_connection.monitor_pages_pa[0];
--	msg->monitor_page2 = vmbus_connection.monitor_pages_pa[1];
-+	/*
-+	 * shared_gpa_boundary is zero in non-SNP VMs, so it's safe to always
-+	 * do the add
-+	 */
-+	msg->monitor_page1 = virt_to_phys(vmbus_connection.monitor_pages[0]) +
-+				ms_hyperv.shared_gpa_boundary;
-+	msg->monitor_page2 = virt_to_phys(vmbus_connection.monitor_pages[1]) +
-+				ms_hyperv.shared_gpa_boundary;
- 
- 	msg->target_vcpu = hv_cpu_number_to_vp_number(VMBUS_CONNECT_CPU);
- 
-@@ -219,72 +225,27 @@ int vmbus_connect(void)
- 	 * Setup the monitor notification facility. The 1st page for
- 	 * parent->child and the 2nd page for child->parent
+ 	BUILD_BUG_ON((sizeof(struct hv_ring_buffer) != PAGE_SIZE));
+@@ -196,50 +194,30 @@ int hv_ringbuffer_init(struct hv_ring_buffer_info *ring_info,
+ 	 * First page holds struct hv_ring_buffer, do wraparound mapping for
+ 	 * the rest.
  	 */
--	vmbus_connection.monitor_pages[0] = (void *)hv_alloc_hyperv_zeroed_page();
--	vmbus_connection.monitor_pages[1] = (void *)hv_alloc_hyperv_zeroed_page();
-+	vmbus_connection.monitor_pages[0] = (void *)hv_alloc_hyperv_page();
-+	vmbus_connection.monitor_pages[1] = (void *)hv_alloc_hyperv_page();
- 	if ((vmbus_connection.monitor_pages[0] == NULL) ||
- 	    (vmbus_connection.monitor_pages[1] == NULL)) {
- 		ret = -ENOMEM;
- 		goto cleanup;
- 	}
+-	if (hv_isolation_type_snp()) {
+-		pfn = page_to_pfn(pages) +
+-			PFN_DOWN(ms_hyperv.shared_gpa_boundary);
++	pages_wraparound = kcalloc(page_cnt * 2 - 1,
++				   sizeof(struct page *),
++				   GFP_KERNEL);
++	if (!pages_wraparound)
++		return -ENOMEM;
  
--	vmbus_connection.monitor_pages_original[0]
--		= vmbus_connection.monitor_pages[0];
--	vmbus_connection.monitor_pages_original[1]
--		= vmbus_connection.monitor_pages[1];
--	vmbus_connection.monitor_pages_pa[0]
--		= virt_to_phys(vmbus_connection.monitor_pages[0]);
--	vmbus_connection.monitor_pages_pa[1]
--		= virt_to_phys(vmbus_connection.monitor_pages[1]);
+-		pfns_wraparound = kcalloc(page_cnt * 2 - 1,
+-			sizeof(unsigned long), GFP_KERNEL);
+-		if (!pfns_wraparound)
+-			return -ENOMEM;
 -
--	if (hv_is_isolation_supported()) {
--		ret = set_memory_decrypted((unsigned long)
--					   vmbus_connection.monitor_pages[0],
--					   1);
--		ret |= set_memory_decrypted((unsigned long)
--					    vmbus_connection.monitor_pages[1],
--					    1);
--		if (ret)
--			goto cleanup;
+-		pfns_wraparound[0] = pfn;
+-		for (i = 0; i < 2 * (page_cnt - 1); i++)
+-			pfns_wraparound[i + 1] = pfn + i % (page_cnt - 1) + 1;
 -
--		/*
--		 * Isolation VM with AMD SNP needs to access monitor page via
--		 * address space above shared gpa boundary.
--		 */
--		if (hv_isolation_type_snp()) {
--			vmbus_connection.monitor_pages_pa[0] +=
--				ms_hyperv.shared_gpa_boundary;
--			vmbus_connection.monitor_pages_pa[1] +=
--				ms_hyperv.shared_gpa_boundary;
+-		ring_info->ring_buffer = (struct hv_ring_buffer *)
+-			vmap_pfn(pfns_wraparound, page_cnt * 2 - 1,
+-				 pgprot_decrypted(PAGE_KERNEL_NOENC));
+-		kfree(pfns_wraparound);
 -
--			vmbus_connection.monitor_pages[0]
--				= memremap(vmbus_connection.monitor_pages_pa[0],
--					   HV_HYP_PAGE_SIZE,
--					   MEMREMAP_WB);
--			if (!vmbus_connection.monitor_pages[0]) {
--				ret = -ENOMEM;
--				goto cleanup;
--			}
+-		if (!ring_info->ring_buffer)
+-			return -ENOMEM;
 -
--			vmbus_connection.monitor_pages[1]
--				= memremap(vmbus_connection.monitor_pages_pa[1],
--					   HV_HYP_PAGE_SIZE,
--					   MEMREMAP_WB);
--			if (!vmbus_connection.monitor_pages[1]) {
--				ret = -ENOMEM;
--				goto cleanup;
--			}
--		}
+-		/* Zero ring buffer after setting memory host visibility. */
+-		memset(ring_info->ring_buffer, 0x00, PAGE_SIZE * page_cnt);
+-	} else {
+-		pages_wraparound = kcalloc(page_cnt * 2 - 1,
+-					   sizeof(struct page *),
+-					   GFP_KERNEL);
+-		if (!pages_wraparound)
+-			return -ENOMEM;
 -
--		/*
--		 * Set memory host visibility hvcall smears memory
--		 * and so zero monitor pages here.
--		 */
--		memset(vmbus_connection.monitor_pages[0], 0x00,
--		       HV_HYP_PAGE_SIZE);
--		memset(vmbus_connection.monitor_pages[1], 0x00,
--		       HV_HYP_PAGE_SIZE);
-+	ret = set_memory_decrypted((unsigned long)
-+				vmbus_connection.monitor_pages[0], 1);
-+	ret |= set_memory_decrypted((unsigned long)
-+				vmbus_connection.monitor_pages[1], 1);
-+	if (ret)
-+		goto cleanup;
+-		pages_wraparound[0] = pages;
+-		for (i = 0; i < 2 * (page_cnt - 1); i++)
+-			pages_wraparound[i + 1] =
+-				&pages[i % (page_cnt - 1) + 1];
++	pages_wraparound[0] = pages;
++	for (i = 0; i < 2 * (page_cnt - 1); i++)
++		pages_wraparound[i + 1] =
++			&pages[i % (page_cnt - 1) + 1];
  
+-		ring_info->ring_buffer = (struct hv_ring_buffer *)
+-			vmap(pages_wraparound, page_cnt * 2 - 1, VM_MAP,
+-				PAGE_KERNEL);
++	ring_info->ring_buffer = (struct hv_ring_buffer *)
++		vmap(pages_wraparound, page_cnt * 2 - 1, VM_MAP,
++			pgprot_decrypted(PAGE_KERNEL_NOENC));
+ 
+-		kfree(pages_wraparound);
+-		if (!ring_info->ring_buffer)
+-			return -ENOMEM;
 -	}
++	kfree(pages_wraparound);
++	if (!ring_info->ring_buffer)
++		return -ENOMEM;
+ 
 +	/*
-+	 * Set_memory_decrypted() will change the memory contents if
-+	 * decryption occurs, so zero monitor pages here.
++	 * Ensure the header page is zero'ed since
++	 * encryption status may have changed.
 +	 */
-+	memset(vmbus_connection.monitor_pages[0], 0x00, HV_HYP_PAGE_SIZE);
-+	memset(vmbus_connection.monitor_pages[1], 0x00, HV_HYP_PAGE_SIZE);
++	memset(ring_info->ring_buffer, 0, HV_HYP_PAGE_SIZE);
  
- 	msginfo = kzalloc(sizeof(*msginfo) +
- 			  sizeof(struct vmbus_channel_initiate_contact),
-@@ -376,31 +337,13 @@ void vmbus_disconnect(void)
- 		vmbus_connection.int_page = NULL;
- 	}
- 
--	if (hv_is_isolation_supported()) {
--		/*
--		 * memunmap() checks input address is ioremap address or not
--		 * inside. It doesn't unmap any thing in the non-SNP CVM and
--		 * so not check CVM type here.
--		 */
--		memunmap(vmbus_connection.monitor_pages[0]);
--		memunmap(vmbus_connection.monitor_pages[1]);
--
--		set_memory_encrypted((unsigned long)
--			vmbus_connection.monitor_pages_original[0],
--			1);
--		set_memory_encrypted((unsigned long)
--			vmbus_connection.monitor_pages_original[1],
--			1);
--	}
-+	set_memory_encrypted((unsigned long)vmbus_connection.monitor_pages[0], 1);
-+	set_memory_encrypted((unsigned long)vmbus_connection.monitor_pages[1], 1);
- 
--	hv_free_hyperv_page((unsigned long)
--		vmbus_connection.monitor_pages_original[0]);
--	hv_free_hyperv_page((unsigned long)
--		vmbus_connection.monitor_pages_original[1]);
--	vmbus_connection.monitor_pages_original[0] =
--		vmbus_connection.monitor_pages[0] = NULL;
--	vmbus_connection.monitor_pages_original[1] =
--		vmbus_connection.monitor_pages[1] = NULL;
-+	hv_free_hyperv_page((unsigned long)vmbus_connection.monitor_pages[0]);
-+	hv_free_hyperv_page((unsigned long)vmbus_connection.monitor_pages[1]);
-+	vmbus_connection.monitor_pages[0] = NULL;
-+	vmbus_connection.monitor_pages[1] = NULL;
- }
- 
- /*
-diff --git a/drivers/hv/hyperv_vmbus.h b/drivers/hv/hyperv_vmbus.h
-index dc673ed..167ac51 100644
---- a/drivers/hv/hyperv_vmbus.h
-+++ b/drivers/hv/hyperv_vmbus.h
-@@ -241,8 +241,6 @@ struct vmbus_connection {
- 	 * is child->parent notification
- 	 */
- 	struct hv_monitor_page *monitor_pages[2];
--	void *monitor_pages_original[2];
--	phys_addr_t monitor_pages_pa[2];
- 	struct list_head chn_msg_list;
- 	spinlock_t channelmsg_lock;
- 
+ 	ring_info->ring_buffer->read_index =
+ 		ring_info->ring_buffer->write_index = 0;
 -- 
 1.8.3.1
 
