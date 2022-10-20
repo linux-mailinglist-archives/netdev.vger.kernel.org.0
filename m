@@ -2,81 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EEC46067F3
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 20:10:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA9B26067FA
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 20:11:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229968AbiJTSKp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 14:10:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41390 "EHLO
+        id S230336AbiJTSLn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 14:11:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229836AbiJTSKn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 14:10:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA78E161FE1
-        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 11:10:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A6C1961CD7
-        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 18:09:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2EEAC433C1;
-        Thu, 20 Oct 2022 18:09:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666289392;
-        bh=wlHkS6DyCa12Il2rxSLAcEGqSzgs8168sAeC6T6V1Ek=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qq58qILKYcUclTnQnkKpETfcwiM47Ti08gLBGx/K3lLVC26wIHI3h1zqiRNg7jpy4
-         IXoSpXQoT3fiaW9NJcYKb2Kykhmh0bEfWKkiUzyiuIEgv9AcCsxYE2dGiQvJfDaYl4
-         6zitFs3utB/FSd2Cmt7Afxfh3U1AD/EGZLK1WU2dMJQ0Q08pLUx2XZ241tT7beRYxs
-         H8OLcTyu4S3kphdXXUcTq2d1Jr+WKls0kd2iWvGwL84eSXlE5Mu9rhPj0NtIOViplh
-         UxajIynkp3+vk9WY/YoNT6/BjAz4wnIhr0wduvrD3bszC+6Lot3DP38ZRmql0Wy8GA
-         /r2DUz2Dckrkw==
-Date:   Thu, 20 Oct 2022 11:09:50 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, jiri@resnulli.us, razor@blackwall.org,
-        nicolas.dichtel@6wind.com, gnault@redhat.com,
-        jacob.e.keller@intel.com, fw@strlen.de
-Subject: Re: [PATCH net-next 12/13] genetlink: allow families to use split
- ops directly
-Message-ID: <20221020110950.6e91f9bb@kernel.org>
-In-Reply-To: <683f4c655dd09a2af718956e8c8d56e6451e11ac.camel@sipsolutions.net>
-References: <20221018230728.1039524-1-kuba@kernel.org>
-        <20221018230728.1039524-13-kuba@kernel.org>
-        <a23c47631957c3ba3aaa87bc325553da04f99a0c.camel@sipsolutions.net>
-        <20221019122504.0cb9d326@kernel.org>
-        <dfac0b6e09e9739c7f613cb8ed77c81f9db0bb44.camel@sipsolutions.net>
-        <20221019125745.3f2e7659@kernel.org>
-        <683f4c655dd09a2af718956e8c8d56e6451e11ac.camel@sipsolutions.net>
+        with ESMTP id S230339AbiJTSLS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 14:11:18 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 798E61F8136
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 11:11:08 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id y72so489412yby.13
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 11:11:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=tBL3aRwUgQUHuZUNC4jwdua60RCbVw2xqjxs/jrsiOY=;
+        b=Ozit37Lg3V8qNDWvugetwUYRsrSuzY3/T4X+wJPki5rL49iKw7VRXPMPkfVl7MLBL4
+         cKnH0mQSDxAWAiibRbuL17a8xBLn4oP/qs580GwUAHJDppZRwkQu4oPsJJGIQ8pjTV7/
+         gyIX+o7BAhaL5A8Y0F19j8/WvLwzK/dR1dVV/lgeM7EXY4M71VL1PJ+qrs3FyidamHDJ
+         3+cNXYSnJ6kLXx7JiykwfChelyaKVzNxBl56ebTQ5KwJ/IoC5HsyKMrQ0kqUmnRDFLyb
+         cbVWbLkl12SjCDahuVZ1TlyJ4jyp8MTqZ9uVowqZjtT8BkDgN98dr8mcVngc9ssV1J43
+         Ecpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=tBL3aRwUgQUHuZUNC4jwdua60RCbVw2xqjxs/jrsiOY=;
+        b=2xvaWz15krbIu3jtWjA49sMMKNO0XqPcTsCChz4l2JAPz7k5N8QAPM5InyenD0ZXh6
+         XVxFx6/ygGJ1lfFfKsBDWe6yp1EFbQhDWqCX5jJne2lYInx6LRY0vK8uWrDrVghICA2Q
+         37g2SBQaikJK3u0lDlJspsncvP8nras0tICeh1ZVT/QvqCnC3QTkaJXfnwQXXPG3AgvN
+         tg1RRf3tFby2XQVG8bavLnunWkN8LrAOGjcXbXd5eguYMVvXPDtLy+6oY5HJZr5TQlRO
+         hLB7MnhS6NnpC7GpyopkERD2NmD+1GOSMWG6WrbExLUuC2fYr1TJsAUKdtWFzU9H7deU
+         yRoQ==
+X-Gm-Message-State: ACrzQf1PJCpIB0HjbkTgNdQxzVI/aj8vlB+TJghAItmKYZpm1yL93Y94
+        yoC6Tw+3IFkcacQ3uRbtEzdMmBtXm+Wub8L9F/RAkg==
+X-Google-Smtp-Source: AMsMyM6wiAHXJPANGgJl9CjkzhwhrSekfszm2WhY2dqHdR7RzVOaNo2QG3mCMmGpgPtExYhYBOw5u1q3kklsXZpAsbo=
+X-Received: by 2002:a25:3187:0:b0:6c1:822b:eab1 with SMTP id
+ x129-20020a253187000000b006c1822beab1mr11892405ybx.427.1666289466590; Thu, 20
+ Oct 2022 11:11:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <cover.1666287924.git.pabeni@redhat.com> <2dede94e742d8096d6ac5e0f1979054ee158d9a8.1666287924.git.pabeni@redhat.com>
+In-Reply-To: <2dede94e742d8096d6ac5e0f1979054ee158d9a8.1666287924.git.pabeni@redhat.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 20 Oct 2022 11:10:54 -0700
+Message-ID: <CANn89iLSgJSqc27UYDJ26YeinSzBWtDH6sj1KAHuuAkCmxuwpg@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 2/2] udp: track the forward memory release
+ threshold in an hot cacheline
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, mptcp@lists.linux.dev,
+        David Ahern <dsahern@kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 20 Oct 2022 09:32:17 +0200 Johannes Berg wrote:
-> Hmm. The codegen/YAML part likely won't really happen for all of the
-> families so perhaps some simplification would be good?
-> 
-> I feel like I probably should've changed this when adding
-> GENL_DONT_VALIDATE_DUMP_STRICT / GENL_DONT_VALIDATE_STRICT, but I guess
-> that's too late now :(
-> 
-> I guess we could add another set of flags, but that'd be annoying.
+On Thu, Oct 20, 2022 at 10:49 AM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> When the receiver process and the BH runs on different cores,
+> udp_rmem_release() experience a cache miss while accessing sk_rcvbuf,
+> as the latter shares the same cacheline with sk_forward_alloc, written
+> by the BH.
+>
+> With this patch, UDP tracks the rcvbuf value and its update via custom
+> SOL_SOCKET socket options, and copies the forward memory threshold value
+> used by udp_rmem_release() in a different cacheline, already accessed by
+> the above function and uncontended.
+>
+> Since the UDP socket init operation grown a bit, factor out the common
+> code between v4 and v6 in a shared helper.
+>
+> Overall the above give a 10% peek throughput increase under UDP flood.
+>
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 
-Perhaps we could hang it of the .resv_start_op as well?
-Any op past that would treat policy == NULL as reject all?
 
-We'd need to add GENL_DONT_VALIDATE_DO for families which 
-want to parse inside the callbacks. I wonder if people would
-get annoyed.
-
-> OTOH, it's nicer if future things are better, and we don't need to add a
-> "reject all" policy to all of them?
+Reviewed-by: Eric Dumazet <edumazet@google.com>
