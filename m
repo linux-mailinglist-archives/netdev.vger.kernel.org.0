@@ -2,52 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 472B86058F0
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 09:46:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 379D86058F3
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 09:47:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230431AbiJTHqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 03:46:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42938 "EHLO
+        id S230266AbiJTHrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 03:47:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230460AbiJTHqI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 03:46:08 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC2C798CB8
-        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 00:46:02 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MtKQm1xKJzHv7n;
-        Thu, 20 Oct 2022 15:45:52 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 20 Oct 2022 15:45:18 +0800
-Received: from [10.174.178.174] (10.174.178.174) by
- dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 20 Oct 2022 15:45:17 +0800
-Subject: Re: [PATCH net] net: hns: fix possible memory leak in
- hnae_ae_register()
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     <netdev@vger.kernel.org>, <yisen.zhuang@huawei.com>,
-        <salil.mehta@huawei.com>, <davem@davemloft.net>
-References: <20221018122451.1749171-1-yangyingliang@huawei.com>
- <Y06i/kWwJNT5mbj8@unreal>
-From:   Yang Yingliang <yangyingliang@huawei.com>
-Message-ID: <bcde51e2-3abf-6ff7-b5a5-c23c7886d2f4@huawei.com>
-Date:   Thu, 20 Oct 2022 15:45:17 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        with ESMTP id S230462AbiJTHrB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 03:47:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7DBD16F776
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 00:47:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1666252019;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tWdmITFN27a7eSxxtUrIyl/9Iyy7F3ME8iTOdJg2TmM=;
+        b=H2Qydv4IwLtLBroBNBeyRrUlB/bxeNfuHcO2utlzkpFbsD/ATg1QRxbY4Ri74MyG5ERY0n
+        Ij2JFSPW7K4umifhaGRhlYjdZoyzyF8OmnI9d2PjRePPhVd0NoFlmSY8uOLkWJxlMKi0L1
+        dnzu9G05FYoaFm5+U5IJnJj9QTJnf1g=
+Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
+ [209.85.216.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-152-aMTgEobeOfGmIqC2H-3ozA-1; Thu, 20 Oct 2022 03:46:58 -0400
+X-MC-Unique: aMTgEobeOfGmIqC2H-3ozA-1
+Received: by mail-pj1-f69.google.com with SMTP id w13-20020a17090a1b8d00b0021177fe317cso910346pjc.7
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 00:46:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=tWdmITFN27a7eSxxtUrIyl/9Iyy7F3ME8iTOdJg2TmM=;
+        b=1rm6vA6REM3GYd2POgw2pvy0wkrKWLGFCwMjy6tiMLKnTTkPNCEDK6QwmxMCXamrr4
+         z7oHUAlXO7/Aie66bKDNJMOEUeS593LyD9YbA0q6sp1RduZai9gboD7wuW+GBo3o2y46
+         CKpP3aZckMrQeOnyxV+VYcJBHtwSNA4Q1LmO+hJqWm1mzkL3+1a7Lx2muw3ndvnVA1gG
+         DHCrbVQskd4TSS6/r4W1m+SIr4eHQVdxKiUM8Cl/q+uyn7pCcD+dMYxi10c/9ydhbZ0G
+         sDedRBFXIP6ZN2qjUIJmtft1yfn/f19QXdCnWGblnOnvu+j0ibeD5Avwa6uUZdxsUgjo
+         9srA==
+X-Gm-Message-State: ACrzQf1njEVYzlFVLKkgepNce+LApTqu8e0JRhLyfSGNGriXvjm6OLFO
+        Aqha7MFqeg0kSFlDBv7/kQdv9HdcAVyzDlYQSbAUBNANQJIr0E+DBuScbmldEIHXH8+Cyw6ci/e
+        KgKeWg3AblgraYWuLnmiSO/St5KA5dZ2c
+X-Received: by 2002:a63:5422:0:b0:466:41b5:77d4 with SMTP id i34-20020a635422000000b0046641b577d4mr10421297pgb.547.1666252017116;
+        Thu, 20 Oct 2022 00:46:57 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM6VSZtRrC9uQuGe50MucTEohLaiyb3ETi9sIHZSNHoyaI8iOXzgEtopUJty7WL3b7gmQ6UIdBLG/VyLNcIuVsA=
+X-Received: by 2002:a63:5422:0:b0:466:41b5:77d4 with SMTP id
+ i34-20020a635422000000b0046641b577d4mr10421283pgb.547.1666252016828; Thu, 20
+ Oct 2022 00:46:56 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <Y06i/kWwJNT5mbj8@unreal>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Originating-IP: [10.174.178.174]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20221014103443.138574-1-ihuguet@redhat.com> <Y0lSYQ99lBSqk+eH@lunn.ch>
+ <CACT4ouct9H+TQ33S=bykygU_Rpb61LMQDYQ1hjEaM=-LxAw9GQ@mail.gmail.com>
+ <Y0llmkQqmWLDLm52@lunn.ch> <CACT4oudn-sS16O7_+eihVYUqSTqgshbbqMFRBhgxkgytphsN-Q@mail.gmail.com>
+ <Y0rNLpmCjHVoO+D1@lunn.ch> <CACT4oucrz5gDazdAF3BpEJX8XTRestZjiLAOxSHGAxSqf_o+LQ@mail.gmail.com>
+ <Y03y/D8WszbjmSwZ@lunn.ch> <20221017194404.0f841a52@kernel.org>
+ <CACT4oueGEDLzZLXdd_Pt+tK=CpkMM7uE9ubVL9i6wTO7VkzccA@mail.gmail.com>
+ <20221018085906.76f70073@kernel.org> <CACT4oud9B-yCD5jVWRt9c4JXq2_Ap-qMkr9y3xJ5cgTTggYT1w@mail.gmail.com>
+ <20221019083913.09437041@kernel.org>
+In-Reply-To: <20221019083913.09437041@kernel.org>
+From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
+Date:   Thu, 20 Oct 2022 09:46:45 +0200
+Message-ID: <CACT4oucNqbFv=xVtOA0HzgjyuCuAMGFxJm14-qgd7tiVT3wSSw@mail.gmail.com>
+Subject: Re: [PATCH net] atlantic: fix deadlock at aq_nic_stop
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, irusskikh@marvell.com,
+        dbogdanov@marvell.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        Li Liang <liali@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,66 +83,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Oct 19, 2022 at 5:39 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> Dunno, locks don't protect operations, they protect state (as the link
+> Andrew sent probably explains?),
 
-On 2022/10/18 20:58, Leon Romanovsky wrote:
-> On Tue, Oct 18, 2022 at 08:24:51PM +0800, Yang Yingliang wrote:
->> Inject fault while probing module, if device_register() fails,
->> but the refcount of kobject is not decreased to 0, the name
->> allocated in dev_set_name() is leaked. Fix this by calling
->> put_device(), so that name can be freed in callback function
->> kobject_cleanup().
->>
->> unreferenced object 0xffff00c01aba2100 (size 128):
->>    comm "systemd-udevd", pid 1259, jiffies 4294903284 (age 294.152s)
->>    hex dump (first 32 bytes):
->>      68 6e 61 65 30 00 00 00 18 21 ba 1a c0 00 ff ff  hnae0....!......
->>      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->>    backtrace:
->>      [<0000000034783f26>] slab_post_alloc_hook+0xa0/0x3e0
->>      [<00000000748188f2>] __kmem_cache_alloc_node+0x164/0x2b0
->>      [<00000000ab0743e8>] __kmalloc_node_track_caller+0x6c/0x390
->>      [<000000006c0ffb13>] kvasprintf+0x8c/0x118
->>      [<00000000fa27bfe1>] kvasprintf_const+0x60/0xc8
->>      [<0000000083e10ed7>] kobject_set_name_vargs+0x3c/0xc0
->>      [<000000000b87affc>] dev_set_name+0x7c/0xa0
->>      [<000000003fd8fe26>] hnae_ae_register+0xcc/0x190 [hnae]
->>      [<00000000fe97edc9>] hns_dsaf_ae_init+0x9c/0x108 [hns_dsaf]
->>      [<00000000c36ff1eb>] hns_dsaf_probe+0x548/0x748 [hns_dsaf]
->>
->> Fixes: 6fe6611ff275 ("net: add Hisilicon Network Subsystem hnae framework support")
->> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
->> ---
->>   drivers/net/ethernet/hisilicon/hns/hnae.c | 4 +++-
->>   1 file changed, 3 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/ethernet/hisilicon/hns/hnae.c b/drivers/net/ethernet/hisilicon/hns/hnae.c
->> index 00fafc0f8512..430eccea8e5e 100644
->> --- a/drivers/net/ethernet/hisilicon/hns/hnae.c
->> +++ b/drivers/net/ethernet/hisilicon/hns/hnae.c
->> @@ -419,8 +419,10 @@ int hnae_ae_register(struct hnae_ae_dev *hdev, struct module *owner)
->>   	hdev->cls_dev.release = hnae_release;
->>   	(void)dev_set_name(&hdev->cls_dev, "hnae%d", hdev->id);
->                ^^^^^^^^^^^^ this is unexpected in netdev code.
-Did you mean the 'void' can be removed ?
->
->>   	ret = device_register(&hdev->cls_dev);
->> -	if (ret)
->> +	if (ret) {
->> +		put_device(&hdev->cls_dev);
->>   		return ret;
->> +	}
->>   
->>   	__module_get(THIS_MODULE);
->          ^^^^^^^^ I'm curious why? I don't see why you need this.
-hnae_ae_register() is called from hns_dsaf.ko(hns_dsaf_probe()), the
-refcount of module hnae is already be got while loading hns_dsaf.ko
-in resolve_symbol(),  so I think this can be removed.
+Yes, you're completely right. I understood that well, and Andrew's
+link (which is very good, thanks Andrew) explains it too. I wrongly
+said "operations" because in this case the lock/unlock must be done
+mainly inside the macsec_ops (operations), and thus my confusion.
 
-Thanks,
-Yang
->
-> The change itself is ok.
->
-> Thanks,
-> Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-> .
+I'm about to send my patch. If you still feel that it's not the best
+solution, feel free to insist on the refcount or any other approach
+you think is better.
+
+Thanks and sorry for the noise
+--=20
+=C3=8D=C3=B1igo Huguet
+
