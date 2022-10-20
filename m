@@ -2,81 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A43B06054A3
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 03:00:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 831B26054A7
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 03:01:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230102AbiJTBAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 21:00:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37596 "EHLO
+        id S229746AbiJTBBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 21:01:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229921AbiJTBAN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 21:00:13 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1263CFAE6F
-        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 18:00:10 -0700 (PDT)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Mt8QM4vfFzHv5N;
-        Thu, 20 Oct 2022 08:59:55 +0800 (CST)
-Received: from kwepemm600008.china.huawei.com (7.193.23.88) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 20 Oct 2022 09:00:01 +0800
-Received: from [10.174.176.230] (10.174.176.230) by
- kwepemm600008.china.huawei.com (7.193.23.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 20 Oct 2022 09:00:00 +0800
-Message-ID: <281db3e6-fde9-7fb6-9c44-d2f149c21304@huawei.com>
-Date:   Thu, 20 Oct 2022 08:59:59 +0800
+        with ESMTP id S229685AbiJTBBM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 21:01:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C144143A66
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 18:01:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4A60DB82648
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 01:01:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53761C433C1;
+        Thu, 20 Oct 2022 01:01:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666227668;
+        bh=C/4vGf5vXBYNQl1OLn7WOgTlElaIGQVUO9hZuKgzfgs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ClOavNofcQN1rCxiU13kksEAgu62N5zqs5fySVt1BdaUIzqvZ/NeJwHOAN2rLYqEf
+         k8woCsCK4eMT3wpDR48N3B9Rx/zgA3FPDuJ8qIY2MkzA5Kdyl7HtZ4bK2t6rJTgKIv
+         K806cjPxjJoUU5Z0UsY2FZ9HpzRH1GuJuL8AKNm1S7OVn/wbPK9LD6tCneNYyh8Yxx
+         yc3sowCSN961VSM9su1DXi5iK+b/vpioG/mnAhrAylHG7K9TkmgXFltJiO3vsylAWW
+         GS+9ucZuwVsfpTn+O6G2UBEc2xikzptFmenmOLNKmGL7nemgC0DI9tYSoUsWYc43CM
+         FatpMe//MDHsw==
+Date:   Wed, 19 Oct 2022 18:01:06 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Gal Pressman <gal@nvidia.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Peng Zhang <peng.zhang@corigine.com>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com
+Subject: Re: [PATCH net-next 0/3] nfp: support VF multi-queues configuration
+Message-ID: <20221019180106.6c783d65@kernel.org>
+In-Reply-To: <20221019140943.18851-1-simon.horman@corigine.com>
+References: <20221019140943.18851-1-simon.horman@corigine.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.0
-Subject: Re: [PATCH v2] nfc: virtual_ncidev: Fix memory leak in
- virtual_nci_send()
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <bongsu.jeon@samsung.com>, <krzysztof.kozlowski@linaro.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>
-References: <20221018114935.8871-1-shangxiaojing@huawei.com>
- <20221019173351.4e3a8ab7@kernel.org>
-From:   shangxiaojing <shangxiaojing@huawei.com>
-In-Reply-To: <20221019173351.4e3a8ab7@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.176.230]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600008.china.huawei.com (7.193.23.88)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2022/10/20 8:33, Jakub Kicinski wrote:
-> On Tue, 18 Oct 2022 19:49:35 +0800 Shang XiaoJing wrote:
->> --- a/drivers/nfc/virtual_ncidev.c
->> +++ b/drivers/nfc/virtual_ncidev.c
->> @@ -54,16 +54,19 @@ static int virtual_nci_send(struct nci_dev *ndev, struct sk_buff *skb)
->>   	mutex_lock(&nci_mutex);
->>   	if (state != virtual_ncidev_enabled) {
->>   		mutex_unlock(&nci_mutex);
->> +		consume_skb(skb);
->>   		return 0;
->>   	}
->>   
->>   	if (send_buff) {
->>   		mutex_unlock(&nci_mutex);
->> +		consume_skb(skb);
->>   		return -1;
+On Wed, 19 Oct 2022 16:09:40 +0200 Simon Horman wrote:
+> this short series adds the max_vf_queue generic devlink device parameter,
+> the intention of this is to allow configuration of the number of queues
+> associated with VFs, and facilitates having VFs with different queue
+> counts.
 > 
-> these two should be kfree_skb() as we're dropping a packet
+> The series also adds support for multi-queue VFs to the nfp driver
+> and support for the max_vf_queue feature described above.
 
-ok, will be fixed in v3.
+I appreciate CCing a wider group this time, but my concerns about using
+devlink params for resource allocation still stand. I don't remember
+anyone refuting that.
 
-Thanks,
--- 
-Shang XiaoJing
+https://lore.kernel.org/all/20220921063448.5b0dd32b@kernel.org/
