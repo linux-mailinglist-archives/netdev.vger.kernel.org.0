@@ -2,79 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E66256058B4
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 09:34:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8DEA6058BD
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 09:36:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229785AbiJTHeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 03:34:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60262 "EHLO
+        id S230258AbiJTHgI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 03:36:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230111AbiJTHdi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 03:33:38 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C8F816CA76;
-        Thu, 20 Oct 2022 00:33:29 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id n12so32724680wrp.10;
-        Thu, 20 Oct 2022 00:33:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references
-         :organization:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=q5B8S0M2o2uUytBDrLp672dBG0Iv2EFMVtSM/og4kSs=;
-        b=juxGtVSwyUQfOhwgoGn8ij3Xwe9iwD+Pk6wu2Ns7/XrNgaOMJLp73k2BQVC0EKxM2A
-         sSd2XOXw1VftvkY1ExWxkH11cZcLxRIPmOmZIUTp8x1SSzcoyq31U5KBXXL/GK1j+ZC3
-         ebBd1bQB/aJ5pYEKeTTIvjKPQ604mQrvvJFg8zifXMgQ/av7eKuJTbl+NfaAmfd+zRTM
-         ZK5DZ2Cna+37DpkMnfUVtT27Aq5W1T9kJ9YoHqwc/W6nFy+cd/05aWdwGZBaNSurMhyr
-         lBI/VHLabihcETMMdMb2KEC8uA96rI6rNpNWgl1OLHoV1ud29ase1yVMWbTnA7ZqRsh1
-         murg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references
-         :organization:message-id:subject:cc:to:from:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=q5B8S0M2o2uUytBDrLp672dBG0Iv2EFMVtSM/og4kSs=;
-        b=zAvNgMn5ukp5bP6LEesbgTlU0rzvFKs0Bw70xYfSFXVXBSQtdfwukO5OrbvbA8MOqA
-         84TVtQ1ukinJ6qdC3VdFuI5kR84azsRLe9LNCc6b4+QzhRQF34iCVCs32KVH7K2L10Ve
-         KFfjMRIpDGai8ky3zLJ1ZoBqPO0e/WRSV8rPm+HtBzcEtU/Pt7/hFhSSigYkDZ4bqRZ3
-         dQs4LZwjlsNvKogjKhXazw1Dy1Nukw8FSqxCYxjar6DS+QzbZ1yHNes3RqJ6BDAdRuEE
-         q57i0IhYNcQfT/Jog2SjJxnfrytXZcVz0xhVcfXXt3IPrrMnG4tP9ZG83mFrd7XWtq1W
-         +xUg==
-X-Gm-Message-State: ACrzQf1V5tdsXBPd0HoV87mVE2fbaBrxFt7Tz8qMgb05pXgGieVLqMQD
-        usdSadLy1/88HEBpU62p9P/L7wk7kuxMDhCX
-X-Google-Smtp-Source: AMsMyM7q6ukO743b7FG/axXaUoVVfgJq5/N1Dunfb4iLrBN8XSE+V8nv0qyY8MUcQmShGI1Qrg6Dlg==
-X-Received: by 2002:a05:6000:2cd:b0:22e:5cef:4332 with SMTP id o13-20020a05600002cd00b0022e5cef4332mr7296468wry.540.1666251206977;
-        Thu, 20 Oct 2022 00:33:26 -0700 (PDT)
-Received: from wse-c0155 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id e9-20020adffc49000000b002206203ed3dsm15646418wrs.29.2022.10.20.00.33.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Oct 2022 00:33:26 -0700 (PDT)
-Date:   Thu, 20 Oct 2022 09:33:25 +0200
-From:   Casper Andersson <casper.casan@gmail.com>
-To:     Steen Hegelund <steen.hegelund@microchip.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, UNGLinuxDriver@microchip.com,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Wan Jiabing <wanjiabing@vivo.com>,
-        Nathan Huckleberry <nhuck@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH net-next v2 5/9] net: microchip: sparx5: Adding port
- keyset config and callback interface
-Message-ID: <20221020073325.hr33d5mck7vlwxh6@wse-c0155>
-Organization: Westermo Network Technologies AB
-References: <20221019114215.620969-1-steen.hegelund@microchip.com>
- <20221019114215.620969-6-steen.hegelund@microchip.com>
+        with ESMTP id S229928AbiJTHgG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 03:36:06 -0400
+Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2122.outbound.protection.outlook.com [40.107.113.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86982166572;
+        Thu, 20 Oct 2022 00:36:02 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=F2n4nAKK8RrqejrnDTzsZbbIB13IG/WJZEyrPN3WiDUOv08wQVXZOura1PXMHeVIeFGXltcjp68Kif5xTJp29m0Yn27GNNU2TwHrTN1YKsCcpR0iSnvAjHr+BrBQfJcMn0ohvTrNGOSdoRkFzkYMNioK5C0URHzFTk06jpC+Wdn61k5teeL9TICEN6VskzfLYf6bwpmzb4wmJYZBMm+0jwWrWvipeCsjRAY9p6QP7jHltOzH7yTOkKomET65U9KWYP92+fsc2OHWmjcpryxGBiD83qJJbcHRFxLHNHidmuM4BdG7pSKO2Qm0kZ/CZPxL6o6gz+HCTAqJqOfcvlnVKA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9cu4IcvDw3yDTatQvDx4wIeT5EsjfbAMHYK/Ad9bsSE=;
+ b=l/j4KRK+ON+EBHZdOn4WuskajU+ds5S7eowbidW38OmyikRMsH/yc/daonA7vikCn9Qs4GcdAqmaB4OUytmwLXb1mvx6KSgsA8f1CEI6cyjGGqf05D6Xg0hldJQcN+B1L0urlBYuOdMb8ZXF70v5GUSr6rhinuTKKK00jI7AC0v+qv9q/ngA97eGS0VdHSd73z7U7Ks8mL6Wks6XHJMTAYgBWnymRTmKtassuW1mkfSjx0Z1aHHfwzyENIn+CPfe8f/dOo8D7opn5RLqeBxEM+Nm3sCu/C7OcP/mee/6jbhGekDSCEWOsAuy9nfhNuSLc7W0rs6ESfT9pRCiTghPOg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9cu4IcvDw3yDTatQvDx4wIeT5EsjfbAMHYK/Ad9bsSE=;
+ b=StdUc/I7Lr1VKzcIQpqkjfEN0BM1QeBXmDxRa3wbocMYwSieZcPgl0GpuF49bhnHdJLb9/cilaSMYXHFBQEvR+v+XcXyvRc7kznDdx+C4oaVsFkzgTlD+kuVqeutLsAcD8k28t4vj2C2maVPryo/f4c2YXd0hD1fwzyu333sFds=
+Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
+ (2603:1096:404:8028::13) by OS3PR01MB9463.jpnprd01.prod.outlook.com
+ (2603:1096:604:1c7::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.34; Thu, 20 Oct
+ 2022 07:35:59 +0000
+Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
+ ([fe80::51b0:c391:5c63:4af4]) by TYBPR01MB5341.jpnprd01.prod.outlook.com
+ ([fe80::51b0:c391:5c63:4af4%3]) with mapi id 15.20.5723.034; Thu, 20 Oct 2022
+ 07:35:59 +0000
+From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Subject: RE: [PATCH v4 2/3] net: ethernet: renesas: Add Ethernet Switch driver
+Thread-Topic: [PATCH v4 2/3] net: ethernet: renesas: Add Ethernet Switch
+ driver
+Thread-Index: AQHY45W84OTfYE+kgU+A+iXKytdlb64WjrIAgABMRaA=
+Date:   Thu, 20 Oct 2022 07:35:59 +0000
+Message-ID: <TYBPR01MB5341BFDA86EE48F07DBC9882D82A9@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+References: <20221019083518.933070-1-yoshihiro.shimoda.uh@renesas.com>
+ <20221019083518.933070-3-yoshihiro.shimoda.uh@renesas.com>
+ <ccd7f1fc-b2e2-7acf-d7fd-85191564603a@gmail.com>
+In-Reply-To: <ccd7f1fc-b2e2-7acf-d7fd-85191564603a@gmail.com>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=renesas.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: TYBPR01MB5341:EE_|OS3PR01MB9463:EE_
+x-ms-office365-filtering-correlation-id: 2dafb0ee-951a-494e-72e3-08dab26dbbca
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: reg/OvlmlpI8BubbJ604H0LifJUblWUuSG1zCJX3G06/BTaZK1hpQN70fXGmYGz4p06E/1vXkzd+5dz4ONTb+XljY0fbYb9y8x/wdZJ9CsJxlBx4GqIwqUgtZYkB2/Pkm1KoIrhSlu38Izna94XdVZIkaBhZu4ZG6Rpfh/oyWxtppTdYt9KbDsgdNn1UMpp3QZlaw7JuYGGnXIAsMqcQ4h2Sz8crJstV+/iLRAJBcdyH3MmdF7coQr0m7yD6NWOfa273n2AFmtOFe5L3Zu+uSmii4/VDu/eSDOBA5YRcnWOZ5s7+FD7LM4wOzETQziIuy9Liq7fHYfYg82Ugtz2lWetsx1fuOAVRUL6VvmGW9SXLJMX23EfDWTGjvVmF3mGWqQ/2Mr13UM7MDbb897o6agcQq070ksHOdiaQzjWd2+Y0K9Ifbv+14IyHSg+OmScGTaUoqVsIthJSJnJNchihDWEr4phJwqFdMQoxpDqTUe+2UlMpi+TtY3bZMyjuZI08DUgGcd0c3ssLDNrk9YMUHm3L9ZohBvrvFUxy9qqQ0IGxphte8u3BHi2FNduHA4xo41FYmteKQZkuZEzcga51d1UnHCjyLEEGEt3yXfmdsDy4HPg3wtCLZ4NgJo5sEWF519KrIhP7Ph0QPuo0k2BWUvi13RZy4Fiq30LFCUUfVq2DKGGteigiPxxju/T4gyH6sncKvnmVCyY75lCam6SPGjoCD06cy5ZB8wcppV8uYG6vJrmClW7ske4UbJOe+CiFugwHHO8Hnhj8jokfH0d23Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYBPR01MB5341.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(376002)(346002)(366004)(136003)(39860400002)(451199015)(55016003)(2906002)(41300700001)(66946007)(66556008)(8936002)(52536014)(66446008)(66476007)(4326008)(64756008)(8676002)(5660300002)(7416002)(6506007)(54906003)(186003)(33656002)(71200400001)(316002)(110136005)(86362001)(38100700002)(76116006)(38070700005)(9686003)(478600001)(7696005)(53546011)(122000001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?eXVhVk5YU2dZcnJsb3pQNGxPQVFzMS9HY09BN0hzVzdFRXQ0dERQem1TS1Vl?=
+ =?utf-8?B?cm9HWDVtRmpHYlhGSWpBSHBrRmNwSVdQdzB2TnRTeEZCekpiVkdyVzdscXJ4?=
+ =?utf-8?B?NkpRYmpuWmZPd1VwVFBIR0xNdTdPeFozNFVGOWE2WUdjRDQrQVR6elkxU2Ru?=
+ =?utf-8?B?UzdNZmVTNlJ5azFkb2paRkN0VVB0b2tWR2dtbzFOV1RRb1BBN1dtRUFKREg3?=
+ =?utf-8?B?dm1hcTQ0WllzdGFjYkJaaDBVcHcyR0pjTTBVVlVnTG51eUNQcVl3VjNCWUdI?=
+ =?utf-8?B?SmZ3TkhaTkFaNWRGZU9zamJpSHFBSkRiV3RjeWMwaE9sS3V4aUVvNkMzS1Yr?=
+ =?utf-8?B?NGxQeWtRWVh2SVJSRkRHcllIM2tUU1NFUlBLSEpMWTB6YjAxbEt3MmFVd2NF?=
+ =?utf-8?B?dXdTcWczV1dJa1Nzb1NkeVVsdExkS0ViMW5rb1RwRjFzamdvdlo2WGVnQWpF?=
+ =?utf-8?B?ZDRueUxpRlUvWWF4NmY0R1djWVpFZzdkUE9CdHRuU0hRTFFTUzlpTmlRcWFk?=
+ =?utf-8?B?S2Z3VkJBNnByTHAzbFYxaW5ocWZ0UlNXZGFydzMybmh6L0Ria0duWm9iOCtH?=
+ =?utf-8?B?bjE0Mk5ZdE1ZNGpkUCtMMjNRaGNvUlRPRDJOcys0ZWhCT3hMRlJ3M1dMWklt?=
+ =?utf-8?B?NFRDUFFSbUxPZVVRcXQzZlowL2ZHM0lvbjZaQ3RGdE9kMFBZaFFvajdoaTNm?=
+ =?utf-8?B?RGwrL0R2TzdCbnZQSDBVYWtycWo1WHJTbG5QVzc4b284NmFxOGtxZTZ0WWRk?=
+ =?utf-8?B?V1N3Y1Fvc3BOeUYzS3VIZkJUTXpQRG1QZkkxZjZSS05YbExPekNpblU5cFJM?=
+ =?utf-8?B?eTAvNUJHcUNGM0gwaDRmS0dxaEp5Wk9mSVpaZmNqMFlGakpyV3FtTjRNRmpY?=
+ =?utf-8?B?UUpIQ1VEcFZMNkU3Y2RWZktlRm4vQmNET2Q0dDVuZlliSGwrTlVGYWVzQXRm?=
+ =?utf-8?B?c1pQei9wWEpMRTZ1MFRKUEhhWWlQNVBHOU0wNFJMTWlGMllYQmY5R3E0bzFO?=
+ =?utf-8?B?MWE1Q2ZrNTdmanNvWm5KbUpZVzlTQTBQSnFsNTlNOVlkYkEwckovaGNSeXA4?=
+ =?utf-8?B?WExQOTFvQlNKZ0pCa3lGQmVuNHhrd2FKMkV1K0RpSW5GUzU5VzJ4ZXdXeWxT?=
+ =?utf-8?B?SEJhQndnbXVWVVllV00zTExuWDRWdjBFY2cvcFBGR05sY1k2SE5Zd0lUeG1U?=
+ =?utf-8?B?Z1RZcDlaUlYwclI5ZnJzK0IwQTRmU0NaM2F2bGIwcGNGelpIOVkzSllvOE5w?=
+ =?utf-8?B?elVMcUlibzBLV0hvOWJBUXh1Yk11RXFEcVJWTFJ1bnE4U0hJZloyRkpkZldT?=
+ =?utf-8?B?b28vYmpYeExxcksxZ3JINnExb3UxMGVTR09SMWY3T3NkQ0NLWHVGTkNVK3pq?=
+ =?utf-8?B?KytYOFczZ3VWaHppYm8xZTZQcHBtRjhhMkNRa1ZUZEZwZms5LzQ1ZFFvLzkx?=
+ =?utf-8?B?TlVLckVFS1hrNGY1WmZQRWh4K1FjSkkzbHA3d1p0TWUzN2VQTTBKKzF0N0RW?=
+ =?utf-8?B?enVTSGU0YUV2bnIzUFEzOG9mbU13NUFtZC9XTGxia0dLWUQrWThZejFveWtq?=
+ =?utf-8?B?eXRxTHdpV0VuR3JpdlVJclRaaVRhcmNxUmdJNWI4MWx2Q2pYclBoNXRaOXVn?=
+ =?utf-8?B?T1kyR0IrcFk4Ynd1VXRQb2hxQ3VzNHFzRm02STJyNjB2akp3anlJMzN1WGFm?=
+ =?utf-8?B?eE9oQ3VId0dwWlpBMkd6MHNLSW00cXYrSHBtNHBqeXp1OHFFTUJ6em5yaVRM?=
+ =?utf-8?B?WU0vbmlFZEdOQVhWM0FDWlpTTVZQNHRNUGFwVDZWWVBuRU8rSDRkVG9IMzQw?=
+ =?utf-8?B?VnVic3J4SVRkbFVRV3hIbEJudGcyQkNMWTZQcnJ0ZTFxWllaL2NxaC9veld6?=
+ =?utf-8?B?SWZhaXgxajJEejFXeTdjaHN6aFFEdGsrT2pQSkRPWFV2Sk5MYng4aTM2Tzlt?=
+ =?utf-8?B?cnRkcDRDSmsrQ2ZLNjI3Mm0vVUNWbE5KdDkrQnMxT1J5YnMvMktDczNHSFhO?=
+ =?utf-8?B?azhMSUozZDBZZEdBSFhJSFA4Yko3aGVBOFRmcE9YQnpIWHdWVDBGQ3dvTDJa?=
+ =?utf-8?B?T2FVZG10RTFIUDRaYjVRNGE4cTBTRUh5T001NFd4N09NcTJIc1RLLytoV3hh?=
+ =?utf-8?B?end3TWFIUlluUFBNSXNqY3N1VmZnam50Y2p5bFRGdXJxbTFBV1cyWnZuTjFW?=
+ =?utf-8?B?eXpQQ05INlNYMG9yOWVVNG5MbWVLSmFtOGtxa2RGejZOeDJSWlVWeHZIRU1I?=
+ =?utf-8?B?ckxHUkVzTUFUMS8rbTBqQ1I4dHpBPT0=?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221019114215.620969-6-steen.hegelund@microchip.com>
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TYBPR01MB5341.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2dafb0ee-951a-494e-72e3-08dab26dbbca
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Oct 2022 07:35:59.7820
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 4hHI6+8zVcc/Wb8mwzTP0mpe4QeS9pV1zjxoNMXYlbPW/1NPA4caK2Ex7Oele3Djumr7rTNu3X/D6SroRzSsLcOCMZ3K4LvHwW0PK4/91vOILly5jx5nwo/01PTnuaFe
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS3PR01MB9463
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,570 +139,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Steen,
-
-On 2022-10-19 13:42, Steen Hegelund wrote:
-> This provides a default port keyset configuration for the Sparx5 IS2 VCAP
-> where all ports and all lookups in IS2 use the same keyset (MAC_ETYPE) for
-> all types of traffic.
-> 
-> This means that no matter what frame type is received on any front port it
-> will generate the MAC_ETYPE keyset in the IS VCAP and any rule in the IS2
-> VCAP that uses this keyset will be matched against the keys in the
-> MAC_ETYPE keyset.
-> 
-> The callback interface used by the VCAP API is populated with Sparx5
-> specific handler functions that takes care of the actual reading and
-> writing to data to the Sparx5 IS2 VCAP instance.
-> 
-> A few functions are also added to the VCAP API to support addition of rule
-> fields such as the ingress port mask and the lookup bit.
-> 
-> The IS2 VCAP in Sparx5 is really divided in two instances with lookup 0
-> and 1 in the first instance and lookup 2 and 3 in the second instance.
-> The lookup bit selects lookup 0 or 3 in the respective instance when it is
-> set.
-> 
-> Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-> ---
->  .../microchip/sparx5/sparx5_vcap_impl.c       | 345 ++++++++++++++++++
->  .../net/ethernet/microchip/vcap/vcap_api.c    |  81 ++++
->  .../ethernet/microchip/vcap/vcap_api_client.h |   5 +
->  3 files changed, 431 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
-> index 5ec005e636aa..dbd2c2c4d346 100644
-> --- a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
-> +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
-> @@ -22,6 +22,54 @@
->  
->  #define SPARX5_IS2_LOOKUPS 4
->  
-> +/* IS2 port keyset selection control */
-> +
-> +/* IS2 non-ethernet traffic type keyset generation */
-> +enum vcap_is2_port_sel_noneth {
-> +	VCAP_IS2_PS_NONETH_MAC_ETYPE,
-> +	VCAP_IS2_PS_NONETH_CUSTOM_1,
-> +	VCAP_IS2_PS_NONETH_CUSTOM_2,
-> +	VCAP_IS2_PS_NONETH_NO_LOOKUP
-> +};
-> +
-> +/* IS2 IPv4 unicast traffic type keyset generation */
-> +enum vcap_is2_port_sel_ipv4_uc {
-> +	VCAP_IS2_PS_IPV4_UC_MAC_ETYPE,
-> +	VCAP_IS2_PS_IPV4_UC_IP4_TCP_UDP_OTHER,
-> +	VCAP_IS2_PS_IPV4_UC_IP_7TUPLE,
-> +};
-> +
-> +/* IS2 IPv4 multicast traffic type keyset generation */
-> +enum vcap_is2_port_sel_ipv4_mc {
-> +	VCAP_IS2_PS_IPV4_MC_MAC_ETYPE,
-> +	VCAP_IS2_PS_IPV4_MC_IP4_TCP_UDP_OTHER,
-> +	VCAP_IS2_PS_IPV4_MC_IP_7TUPLE,
-> +	VCAP_IS2_PS_IPV4_MC_IP4_VID,
-> +};
-> +
-> +/* IS2 IPv6 unicast traffic type keyset generation */
-> +enum vcap_is2_port_sel_ipv6_uc {
-> +	VCAP_IS2_PS_IPV6_UC_MAC_ETYPE,
-> +	VCAP_IS2_PS_IPV6_UC_IP_7TUPLE,
-> +	VCAP_IS2_PS_IPV6_UC_IP6_STD,
-> +	VCAP_IS2_PS_IPV6_UC_IP4_TCP_UDP_OTHER,
-> +};
-> +
-> +/* IS2 IPv6 multicast traffic type keyset generation */
-> +enum vcap_is2_port_sel_ipv6_mc {
-> +	VCAP_IS2_PS_IPV6_MC_MAC_ETYPE,
-> +	VCAP_IS2_PS_IPV6_MC_IP_7TUPLE,
-> +	VCAP_IS2_PS_IPV6_MC_IP6_VID,
-> +	VCAP_IS2_PS_IPV6_MC_IP6_STD,
-> +	VCAP_IS2_PS_IPV6_MC_IP4_TCP_UDP_OTHER,
-> +};
-> +
-> +/* IS2 ARP traffic type keyset generation */
-> +enum vcap_is2_port_sel_arp {
-> +	VCAP_IS2_PS_ARP_MAC_ETYPE,
-> +	VCAP_IS2_PS_ARP_ARP,
-> +};
-> +
->  static struct sparx5_vcap_inst {
->  	enum vcap_type vtype; /* type of vcap */
->  	int vinst; /* instance number within the same type */
-> @@ -58,6 +106,296 @@ static struct sparx5_vcap_inst {
->  	},
->  };
->  
-> +/* Await the super VCAP completion of the current operation */
-> +static void sparx5_vcap_wait_super_update(struct sparx5 *sparx5)
-> +{
-> +	u32 value;
-> +
-> +	read_poll_timeout(spx5_rd, value,
-> +			  !VCAP_SUPER_CTRL_UPDATE_SHOT_GET(value), 500, 10000,
-> +			  false, sparx5, VCAP_SUPER_CTRL);
-> +}
-> +
-> +/* Initializing a VCAP address range: only IS2 for now */
-> +static void _sparx5_vcap_range_init(struct sparx5 *sparx5,
-> +				    struct vcap_admin *admin,
-> +				    u32 addr, u32 count)
-> +{
-> +	u32 size = count - 1;
-> +
-> +	spx5_wr(VCAP_SUPER_CFG_MV_NUM_POS_SET(0) |
-> +		VCAP_SUPER_CFG_MV_SIZE_SET(size),
-> +		sparx5, VCAP_SUPER_CFG);
-> +	spx5_wr(VCAP_SUPER_CTRL_UPDATE_CMD_SET(VCAP_CMD_INITIALIZE) |
-> +		VCAP_SUPER_CTRL_UPDATE_ENTRY_DIS_SET(0) |
-> +		VCAP_SUPER_CTRL_UPDATE_ACTION_DIS_SET(0) |
-> +		VCAP_SUPER_CTRL_UPDATE_CNT_DIS_SET(0) |
-> +		VCAP_SUPER_CTRL_UPDATE_ADDR_SET(addr) |
-> +		VCAP_SUPER_CTRL_CLEAR_CACHE_SET(true) |
-> +		VCAP_SUPER_CTRL_UPDATE_SHOT_SET(true),
-> +		sparx5, VCAP_SUPER_CTRL);
-> +	sparx5_vcap_wait_super_update(sparx5);
-> +}
-> +
-> +/* Initializing VCAP rule data area */
-> +static void sparx5_vcap_block_init(struct sparx5 *sparx5,
-> +				   struct vcap_admin *admin)
-> +{
-> +	_sparx5_vcap_range_init(sparx5, admin, admin->first_valid_addr,
-> +				admin->last_valid_addr -
-> +					admin->first_valid_addr);
-> +}
-> +
-> +/* Get the keyset name from the sparx5 VCAP model */
-> +static const char *sparx5_vcap_keyset_name(struct net_device *ndev,
-> +					   enum vcap_keyfield_set keyset)
-> +{
-> +	struct sparx5_port *port = netdev_priv(ndev);
-> +
-> +	return port->sparx5->vcap_ctrl->stats->keyfield_set_names[keyset];
-> +}
-> +
-> +/* Check if this is the first lookup of IS2 */
-> +static bool sparx5_vcap_is2_is_first_chain(struct vcap_rule *rule)
-> +{
-> +	return (rule->vcap_chain_id >= SPARX5_VCAP_CID_IS2_L0 &&
-> +		rule->vcap_chain_id < SPARX5_VCAP_CID_IS2_L1) ||
-> +		((rule->vcap_chain_id >= SPARX5_VCAP_CID_IS2_L2 &&
-> +		  rule->vcap_chain_id < SPARX5_VCAP_CID_IS2_L3));
-> +}
-> +
-> +/* Set the narrow range ingress port mask on a rule */
-> +static void sparx5_vcap_add_range_port_mask(struct vcap_rule *rule,
-> +					    struct net_device *ndev)
-> +{
-> +	struct sparx5_port *port = netdev_priv(ndev);
-> +	u32 port_mask;
-> +	u32 range;
-> +
-> +	range = port->portno / BITS_PER_TYPE(u32);
-> +	/* Port bit set to match-any */
-> +	port_mask = ~BIT(port->portno % BITS_PER_TYPE(u32));
-> +	vcap_rule_add_key_u32(rule, VCAP_KF_IF_IGR_PORT_MASK_SEL, 0, 0xf);
-> +	vcap_rule_add_key_u32(rule, VCAP_KF_IF_IGR_PORT_MASK_RNG, range, 0xf);
-> +	vcap_rule_add_key_u32(rule, VCAP_KF_IF_IGR_PORT_MASK, 0, port_mask);
-> +}
-> +
-> +/* Set the wide range ingress port mask on a rule */
-> +static void sparx5_vcap_add_wide_port_mask(struct vcap_rule *rule,
-> +					   struct net_device *ndev)
-> +{
-> +	struct sparx5_port *port = netdev_priv(ndev);
-> +	struct vcap_u72_key port_mask;
-> +	u32 range;
-> +
-> +	/* Port bit set to match-any */
-> +	memset(port_mask.value, 0, sizeof(port_mask.value));
-> +	memset(port_mask.mask, 0xff, sizeof(port_mask.mask));
-> +	range = port->portno / BITS_PER_BYTE;
-> +	port_mask.mask[range] = ~BIT(port->portno % BITS_PER_BYTE);
-> +	vcap_rule_add_key_u72(rule, VCAP_KF_IF_IGR_PORT_MASK, &port_mask);
-> +}
-> +
-> +/* API callback used for validating a field keyset (check the port keysets) */
-> +static enum vcap_keyfield_set
-> +sparx5_vcap_validate_keyset(struct net_device *ndev,
-> +			    struct vcap_admin *admin,
-> +			    struct vcap_rule *rule,
-> +			    struct vcap_keyset_list *kslist,
-> +			    u16 l3_proto)
-> +{
-> +	if (!kslist || kslist->cnt == 0)
-> +		return VCAP_KFS_NO_VALUE;
-> +	/* for now just return whatever the API suggests */
-> +	return kslist->keysets[0];
-> +}
-> +
-> +/* API callback used for adding default fields to a rule */
-> +static void sparx5_vcap_add_default_fields(struct net_device *ndev,
-> +					   struct vcap_admin *admin,
-> +					   struct vcap_rule *rule)
-> +{
-> +	const struct vcap_field *field;
-> +
-> +	field = vcap_lookup_keyfield(rule, VCAP_KF_IF_IGR_PORT_MASK);
-> +	if (field && field->width == SPX5_PORTS)
-> +		sparx5_vcap_add_wide_port_mask(rule, ndev);
-> +	else if (field && field->width == BITS_PER_TYPE(u32))
-> +		sparx5_vcap_add_range_port_mask(rule, ndev);
-> +	else
-> +		pr_err("%s:%d: %s: could not add an ingress port mask for: %s\n",
-> +		       __func__, __LINE__, netdev_name(ndev),
-> +		       sparx5_vcap_keyset_name(ndev, rule->keyset));
-> +	/* add the lookup bit */
-> +	if (sparx5_vcap_is2_is_first_chain(rule))
-> +		vcap_rule_add_key_bit(rule, VCAP_KF_LOOKUP_FIRST_IS, VCAP_BIT_1);
-> +	else
-> +		vcap_rule_add_key_bit(rule, VCAP_KF_LOOKUP_FIRST_IS, VCAP_BIT_0);
-> +}
-> +
-> +/* API callback used for erasing the vcap cache area (not the register area) */
-> +static void sparx5_vcap_cache_erase(struct vcap_admin *admin)
-> +{
-> +	memset(admin->cache.keystream, 0, STREAMSIZE);
-> +	memset(admin->cache.maskstream, 0, STREAMSIZE);
-> +	memset(admin->cache.actionstream, 0, STREAMSIZE);
-> +	memset(&admin->cache.counter, 0, sizeof(admin->cache.counter));
-> +}
-> +
-> +/* API callback used for writing to the VCAP cache */
-> +static void sparx5_vcap_cache_write(struct net_device *ndev,
-> +				    struct vcap_admin *admin,
-> +				    enum vcap_selection sel,
-> +				    u32 start,
-> +				    u32 count)
-> +{
-> +	struct sparx5_port *port = netdev_priv(ndev);
-> +	struct sparx5 *sparx5 = port->sparx5;
-> +	u32 *keystr, *mskstr, *actstr;
-> +	int idx;
-> +
-> +	keystr = &admin->cache.keystream[start];
-> +	mskstr = &admin->cache.maskstream[start];
-> +	actstr = &admin->cache.actionstream[start];
-> +	switch (sel) {
-> +	case VCAP_SEL_ENTRY:
-> +		for (idx = 0; idx < count; ++idx) {
-> +			/* Avoid 'match-off' by setting value & mask */
-> +			spx5_wr(keystr[idx] & mskstr[idx], sparx5,
-> +				VCAP_SUPER_VCAP_ENTRY_DAT(idx));
-> +			spx5_wr(~mskstr[idx], sparx5,
-> +				VCAP_SUPER_VCAP_MASK_DAT(idx));
-> +		}
-> +		break;
-> +	case VCAP_SEL_ACTION:
-> +		for (idx = 0; idx < count; ++idx)
-> +			spx5_wr(actstr[idx], sparx5,
-> +				VCAP_SUPER_VCAP_ACTION_DAT(idx));
-> +		break;
-> +	case VCAP_SEL_ALL:
-> +		pr_err("%s:%d: cannot write all streams at once\n",
-> +		       __func__, __LINE__);
-> +		break;
-> +	default:
-> +		break;
-> +	}
-> +}
-> +
-> +/* API callback used for reading from the VCAP into the VCAP cache */
-> +static void sparx5_vcap_cache_read(struct net_device *ndev,
-> +				   struct vcap_admin *admin,
-> +				   enum vcap_selection sel, u32 start,
-> +				   u32 count)
-> +{
-> +	/* this will be added later */
-> +}
-> +
-> +/* API callback used for initializing a VCAP address range */
-> +static void sparx5_vcap_range_init(struct net_device *ndev,
-> +				   struct vcap_admin *admin, u32 addr,
-> +				   u32 count)
-> +{
-> +	struct sparx5_port *port = netdev_priv(ndev);
-> +	struct sparx5 *sparx5 = port->sparx5;
-> +
-> +	_sparx5_vcap_range_init(sparx5, admin, addr, count);
-> +}
-> +
-> +/* API callback used for updating the VCAP cache */
-> +static void sparx5_vcap_update(struct net_device *ndev,
-> +			       struct vcap_admin *admin, enum vcap_command cmd,
-> +			       enum vcap_selection sel, u32 addr)
-> +{
-> +	struct sparx5_port *port = netdev_priv(ndev);
-> +	struct sparx5 *sparx5 = port->sparx5;
-> +	bool clear;
-> +
-> +	clear = (cmd == VCAP_CMD_INITIALIZE);
-> +	spx5_wr(VCAP_SUPER_CFG_MV_NUM_POS_SET(0) |
-> +		VCAP_SUPER_CFG_MV_SIZE_SET(0), sparx5, VCAP_SUPER_CFG);
-> +	spx5_wr(VCAP_SUPER_CTRL_UPDATE_CMD_SET(cmd) |
-> +		VCAP_SUPER_CTRL_UPDATE_ENTRY_DIS_SET((VCAP_SEL_ENTRY & sel) == 0) |
-> +		VCAP_SUPER_CTRL_UPDATE_ACTION_DIS_SET((VCAP_SEL_ACTION & sel) == 0) |
-> +		VCAP_SUPER_CTRL_UPDATE_CNT_DIS_SET((VCAP_SEL_COUNTER & sel) == 0) |
-> +		VCAP_SUPER_CTRL_UPDATE_ADDR_SET(addr) |
-> +		VCAP_SUPER_CTRL_CLEAR_CACHE_SET(clear) |
-> +		VCAP_SUPER_CTRL_UPDATE_SHOT_SET(true),
-> +		sparx5, VCAP_SUPER_CTRL);
-> +	sparx5_vcap_wait_super_update(sparx5);
-> +}
-> +
-> +/* API callback used for moving a block of rules in the VCAP */
-> +static void sparx5_vcap_move(struct net_device *ndev, struct vcap_admin *admin,
-> +			     u32 addr, int offset, int count)
-> +{
-> +	/* this will be added later */
-> +}
-> +
-> +/* Provide port information via a callback interface */
-> +static int sparx5_port_info(struct net_device *ndev, enum vcap_type vtype,
-> +			    int (*pf)(void *out, int arg, const char *fmt, ...),
-> +			    void *out, int arg)
-> +{
-> +	/* this will be added later */
-> +	return 0;
-> +}
-> +
-> +/* API callback operations: only IS2 is supported for now */
-> +static struct vcap_operations sparx5_vcap_ops = {
-> +	.validate_keyset = sparx5_vcap_validate_keyset,
-> +	.add_default_fields = sparx5_vcap_add_default_fields,
-> +	.cache_erase = sparx5_vcap_cache_erase,
-> +	.cache_write = sparx5_vcap_cache_write,
-> +	.cache_read = sparx5_vcap_cache_read,
-> +	.init = sparx5_vcap_range_init,
-> +	.update = sparx5_vcap_update,
-> +	.move = sparx5_vcap_move,
-> +	.port_info = sparx5_port_info,
-> +};
-> +
-> +/* Enable lookups per port and set the keyset generation: only IS2 for now */
-> +static void sparx5_vcap_port_key_selection(struct sparx5 *sparx5,
-> +					   struct vcap_admin *admin)
-> +{
-> +	int portno, lookup;
-> +	u32 keysel;
-> +
-> +	/* enable all 4 lookups on all ports */
-> +	for (portno = 0; portno < SPX5_PORTS; ++portno)
-> +		spx5_wr(ANA_ACL_VCAP_S2_CFG_SEC_ENA_SET(0xf), sparx5,
-> +			ANA_ACL_VCAP_S2_CFG(portno));
-> +
-> +	/* all traffic types generate the MAC_ETYPE keyset for now in all
-> +	 * lookups on all ports
-> +	 */
-> +	keysel = ANA_ACL_VCAP_S2_KEY_SEL_KEY_SEL_ENA_SET(true) |
-> +		ANA_ACL_VCAP_S2_KEY_SEL_NON_ETH_KEY_SEL_SET(VCAP_IS2_PS_NONETH_MAC_ETYPE) |
-> +		ANA_ACL_VCAP_S2_KEY_SEL_IP4_MC_KEY_SEL_SET(VCAP_IS2_PS_IPV4_MC_MAC_ETYPE) |
-> +		ANA_ACL_VCAP_S2_KEY_SEL_IP4_UC_KEY_SEL_SET(VCAP_IS2_PS_IPV4_UC_MAC_ETYPE) |
-> +		ANA_ACL_VCAP_S2_KEY_SEL_IP6_MC_KEY_SEL_SET(VCAP_IS2_PS_IPV6_MC_MAC_ETYPE) |
-> +		ANA_ACL_VCAP_S2_KEY_SEL_IP6_UC_KEY_SEL_SET(VCAP_IS2_PS_IPV6_UC_MAC_ETYPE) |
-> +		ANA_ACL_VCAP_S2_KEY_SEL_ARP_KEY_SEL_SET(VCAP_IS2_PS_ARP_MAC_ETYPE);
-> +	for (lookup = 0; lookup < admin->lookups; ++lookup) {
-> +		for (portno = 0; portno < SPX5_PORTS; ++portno) {
-> +			spx5_wr(keysel, sparx5,
-> +				ANA_ACL_VCAP_S2_KEY_SEL(portno, lookup));
-> +		}
-> +	}
-> +}
-> +
-> +/* Disable lookups per port and set the keyset generation: only IS2 for now */
-> +static void sparx5_vcap_port_key_deselection(struct sparx5 *sparx5,
-> +					     struct vcap_admin *admin)
-> +{
-> +	int portno;
-> +
-> +	for (portno = 0; portno < SPX5_PORTS; ++portno)
-> +		spx5_rmw(ANA_ACL_VCAP_S2_CFG_SEC_ENA_SET(0),
-> +			 ANA_ACL_VCAP_S2_CFG_SEC_ENA,
-> +			 sparx5,
-> +			 ANA_ACL_VCAP_S2_CFG(portno));
-> +}
-> +
->  static void sparx5_vcap_admin_free(struct vcap_admin *admin)
->  {
->  	if (!admin)
-> @@ -138,6 +476,7 @@ int sparx5_vcap_init(struct sparx5 *sparx5)
->  	 *   - Lists of rules
->  	 *   - Address information
->  	 *   - Initialize VCAP blocks
-> +	 *   - Configure port keysets
->  	 */
->  	ctrl = kzalloc(sizeof(*ctrl), GFP_KERNEL);
->  	if (!ctrl)
-> @@ -147,6 +486,8 @@ int sparx5_vcap_init(struct sparx5 *sparx5)
->  	/* select the sparx5 VCAP model */
->  	ctrl->vcaps = sparx5_vcaps;
->  	ctrl->stats = &sparx5_vcap_stats;
-> +	/* Setup callbacks to allow the API to use the VCAP HW */
-> +	ctrl->ops = &sparx5_vcap_ops;
->  
->  	INIT_LIST_HEAD(&ctrl->list);
->  	for (idx = 0; idx < ARRAY_SIZE(sparx5_vcap_inst_cfg); ++idx) {
-> @@ -159,6 +500,9 @@ int sparx5_vcap_init(struct sparx5 *sparx5)
->  			return err;
->  		}
->  		sparx5_vcap_block_alloc(sparx5, admin, cfg);
-> +		sparx5_vcap_block_init(sparx5, admin);
-> +		if (cfg->vinst == 0)
-> +			sparx5_vcap_port_key_selection(sparx5, admin);
->  		list_add_tail(&admin->list, &ctrl->list);
->  	}
->  
-> @@ -174,6 +518,7 @@ void sparx5_vcap_destroy(struct sparx5 *sparx5)
->  		return;
->  
->  	list_for_each_entry_safe(admin, admin_next, &ctrl->list, list) {
-> +		sparx5_vcap_port_key_deselection(sparx5, admin);
->  		list_del(&admin->list);
->  		sparx5_vcap_admin_free(admin);
->  	}
-> diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
-> index aa6b451d79a6..d929d2d00b6c 100644
-> --- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
-> +++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
-> @@ -21,6 +21,17 @@ struct vcap_rule_internal {
->  	u32 addr; /* address in the VCAP at insertion */
->  };
->  
-> +/* Return the list of keyfields for the keyset */
-> +static const struct vcap_field *vcap_keyfields(struct vcap_control *vctrl,
-> +					       enum vcap_type vt,
-> +					       enum vcap_keyfield_set keyset)
-> +{
-> +	/* Check that the keyset exists in the vcap keyset list */
-> +	if (keyset >= vctrl->vcaps[vt].keyfield_set_size)
-> +		return NULL;
-> +	return vctrl->vcaps[vt].keyfield_set_map[keyset];
-> +}
-> +
->  /* Update the keyset for the rule */
->  int vcap_set_rule_set_keyset(struct vcap_rule *rule,
->  			     enum vcap_keyfield_set keyset)
-> @@ -227,6 +238,24 @@ int vcap_del_rule(struct vcap_control *vctrl, struct net_device *ndev, u32 id)
->  }
->  EXPORT_SYMBOL_GPL(vcap_del_rule);
->  
-> +/* Find information on a key field in a rule */
-> +const struct vcap_field *vcap_lookup_keyfield(struct vcap_rule *rule,
-> +					      enum vcap_key_field key)
-> +{
-> +	struct vcap_rule_internal *ri = (struct vcap_rule_internal *)rule;
-> +	enum vcap_keyfield_set keyset = rule->keyset;
-> +	enum vcap_type vt = ri->admin->vtype;
-> +	const struct vcap_field *fields;
-> +
-> +	if (keyset == VCAP_KFS_NO_VALUE)
-> +		return NULL;
-> +	fields = vcap_keyfields(ri->vctrl, vt, keyset);
-> +	if (!fields)
-> +		return NULL;
-> +	return &fields[key];
-> +}
-> +EXPORT_SYMBOL_GPL(vcap_lookup_keyfield);
-> +
->  static void vcap_copy_from_client_keyfield(struct vcap_rule *rule,
->  					   struct vcap_client_keyfield *field,
->  					   struct vcap_client_keyfield_data *data)
-> @@ -253,6 +282,47 @@ static int vcap_rule_add_key(struct vcap_rule *rule,
->  	return 0;
->  }
->  
-> +static void vcap_rule_set_key_bitsize(struct vcap_u1_key *u1, enum vcap_bit val)
-> +{
-> +	switch (val) {
-> +	case VCAP_BIT_0:
-> +		u1->value = 0;
-> +		u1->mask = 1;
-> +		break;
-> +	case VCAP_BIT_1:
-> +		u1->value = 1;
-> +		u1->mask = 1;
-> +		break;
-> +	case VCAP_BIT_ANY:
-> +		u1->value = 0;
-> +		u1->mask = 0;
-> +		break;
-> +	}
-> +}
-> +
-> +/* Add a bit key with value and mask to the rule */
-> +int vcap_rule_add_key_bit(struct vcap_rule *rule, enum vcap_key_field key,
-> +			  enum vcap_bit val)
-> +{
-> +	struct vcap_client_keyfield_data data;
-> +
-> +	vcap_rule_set_key_bitsize(&data.u1, val);
-> +	return vcap_rule_add_key(rule, key, VCAP_FIELD_BIT, &data);
-> +}
-> +EXPORT_SYMBOL_GPL(vcap_rule_add_key_bit);
-> +
-> +/* Add a 32 bit key field with value and mask to the rule */
-> +int vcap_rule_add_key_u32(struct vcap_rule *rule, enum vcap_key_field key,
-> +			  u32 value, u32 mask)
-> +{
-> +	struct vcap_client_keyfield_data data;
-> +
-> +	data.u32.value = value;
-> +	data.u32.mask = mask;
-> +	return vcap_rule_add_key(rule, key, VCAP_FIELD_U32, &data);
-> +}
-> +EXPORT_SYMBOL_GPL(vcap_rule_add_key_u32);
-> +
->  /* Add a 48 bit key with value and mask to the rule */
->  int vcap_rule_add_key_u48(struct vcap_rule *rule, enum vcap_key_field key,
->  			  struct vcap_u48_key *fieldval)
-> @@ -264,6 +334,17 @@ int vcap_rule_add_key_u48(struct vcap_rule *rule, enum vcap_key_field key,
->  }
->  EXPORT_SYMBOL_GPL(vcap_rule_add_key_u48);
->  
-> +/* Add a 72 bit key with value and mask to the rule */
-> +int vcap_rule_add_key_u72(struct vcap_rule *rule, enum vcap_key_field key,
-> +			  struct vcap_u72_key *fieldval)
-> +{
-> +	struct vcap_client_keyfield_data data;
-> +
-> +	memcpy(&data.u72, fieldval, sizeof(data.u72));
-> +	return vcap_rule_add_key(rule, key, VCAP_FIELD_U72, &data);
-> +}
-> +EXPORT_SYMBOL_GPL(vcap_rule_add_key_u72);
-> +
->  static void vcap_copy_from_client_actionfield(struct vcap_rule *rule,
->  					      struct vcap_client_actionfield *field,
->  					      struct vcap_client_actionfield_data *data)
-> diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_client.h b/drivers/net/ethernet/microchip/vcap/vcap_api_client.h
-> index 2c4fd9d022f9..b0a2eae81dbe 100644
-> --- a/drivers/net/ethernet/microchip/vcap/vcap_api_client.h
-> +++ b/drivers/net/ethernet/microchip/vcap/vcap_api_client.h
-> @@ -173,6 +173,8 @@ int vcap_rule_add_key_u32(struct vcap_rule *rule, enum vcap_key_field key,
->  			  u32 value, u32 mask);
->  int vcap_rule_add_key_u48(struct vcap_rule *rule, enum vcap_key_field key,
->  			  struct vcap_u48_key *fieldval);
-> +int vcap_rule_add_key_u72(struct vcap_rule *rule, enum vcap_key_field key,
-> +			  struct vcap_u72_key *fieldval);
->  int vcap_rule_add_action_bit(struct vcap_rule *rule,
->  			     enum vcap_action_field action, enum vcap_bit val);
->  int vcap_rule_add_action_u32(struct vcap_rule *rule,
-> @@ -181,6 +183,9 @@ int vcap_rule_add_action_u32(struct vcap_rule *rule,
->  /* VCAP lookup operations */
->  /* Lookup a vcap instance using chain id */
->  struct vcap_admin *vcap_find_admin(struct vcap_control *vctrl, int cid);
-> +/* Find information on a key field in a rule */
-> +const struct vcap_field *vcap_lookup_keyfield(struct vcap_rule *rule,
-> +					      enum vcap_key_field key);
->  /* Find a rule id with a provided cookie */
->  int vcap_lookup_rule_by_cookie(struct vcap_control *vctrl, u64 cookie);
->  
-> -- 
-> 2.38.1
-> 
-
-Tested on Microchip PCB135 switch.
-
-Tested-by: Casper Andersson <casper.casan@gmail.com>
-Reviewed-by: Casper Andersson <casper.casan@gmail.com>
-
+SGkgRmxvcmlhbiwNCg0KPiBGcm9tOiBGbG9yaWFuIEZhaW5lbGxpLCBTZW50OiBUaHVyc2RheSwg
+T2N0b2JlciAyMCwgMjAyMiAxMToyMyBBTQ0KPiANCj4gT24gMTAvMTkvMjAyMiAxOjM1IEFNLCBZ
+b3NoaWhpcm8gU2hpbW9kYSB3cm90ZToNCj4gPiBBZGQgUmVuZXNhcyBFdGhlcm5ldCBTd2l0Y2gg
+ZHJpdmVyIGZvciBSLUNhciBTNC04IHRvIGJlIHVzZWQgYXMgYW4NCj4gPiBldGhlcm5ldCBjb250
+cm9sbGVyLg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogWW9zaGloaXJvIFNoaW1vZGEgPHlvc2hp
+aGlyby5zaGltb2RhLnVoQHJlbmVzYXMuY29tPg0KPiANCj4gSG93IGNhbiB0aGlzIGJlIGEgc3dp
+dGNoIGRyaXZlciB3aGVuIGl0IGRvZXMgbm90IGluY2x1ZGUgYW55IHN3aXRjaGRldg0KPiBoZWFk
+ZXIgZmlsZXMgbm9yIGRvZXMgaXQgYXR0ZW1wdCB0byBiZSB1c2luZyB0aGUgRFNBIGZyYW1ld29y
+az8gWW91IGFyZQ0KPiBjZXJ0YWlubHkgZHVwbGljYXRpbmcgYSBsb3Qgb2YgdGhpbmdzIHRoYXQg
+RFNBIHdvdWxkIGRvIGZvciB5b3UgbGlrZQ0KPiBtYW5hZ2luZyBQSFlzIGFuZCByZWdpc3Rlcmlu
+ZyBwZXItcG9ydCBuZXdvcmsgZGV2aWNlcy4gV2h5Pw0KDQpUaGUgY3VycmVudCBkcml2ZXIgZG9l
+c24ndCBzdXBwb3J0IGFueSBmb3J3YXJkaW5nIG9mZmxvYWQuIEFuZCwgYXQgdGhlIGZpcnN0DQpz
+dGVwIG9mIHN1cHBvcnRpbmcgdGhpcyBoYXJkd2FyZSwgSSdkIGxpa2UgdG8gdXNlIHRoZSBoYXJk
+d2FyZSBhcyBhbiBldGhlcm5ldA0KY29udHJvbGxlciBmb3Igc2VuZGluZy9yZWNlaXZpbmcgZnJh
+bWVzLiBTbywgSSBkaWRuJ3QgdXNlIHRoZSBzd2l0Y2hkZXYgYW5kDQp0aGUgRFNBIGZyYW1ld29y
+a3MuDQoNCkJ5IHRoZSB3YXksIHRoZSBoYXJkd2FyZSBuYW1lIGlzICJFdGhlcm5ldCBTd2l0Y2gi
+IHNvIHRoYXQgSSB3cm90ZQ0KdGhlIHN1YmplY3QgYXMgIkFkZCBFdGhlcm5ldCBTd2l0Y2ggZHJp
+dmVyIi4gQnV0LCBJJ20gdGhpbmtpbmcgdGhhdA0KdGhpcyBzdWJqZWN0L2NvbW1pdCBkZXNjcmlw
+dGlvbiBzaG91bGQgYmUgY2hhbmdlZCBsaWtlIGJlbG93Og0KLS0tDQpTdWJqZWN0OiBuZXQ6IGV0
+aGVybmV0OiByZW5lc2FzOiBBZGQgc3VwcG9ydCBmb3IgIkV0aGVybmV0IFN3aXRjaCINCg0KQWRk
+IGluaXRpYWwgc3VwcG9ydCBmb3IgUmVuZXNhcyBFdGhlcm5ldCBTd2l0Y2ggb2YgUi1DYXIgUzQt
+OC4NClRoZSBoYXJkd2FyZSBoYXMgZmVhdHVyZXMgYWJvdXQgZm9yd2FyZGluZyBmb3IgYW4gZXRo
+ZXJuZXQgc3dpdGNoDQpkZXZpY2UuIEJ1dCwgZm9yIG5vdywgaXQgYWN0cyBhcyBhbiBldGhlcm5l
+dCBjb250cm9sbGVyIHNvIHRoYXQgYW55DQpmb3J3YXJkaW5nIG9mZmxvYWQgZmVhdHVyZXMgYXJl
+IG5vdCBzdXBwb3J0ZWQuDQotLS0NCg0KQmVzdCByZWdhcmRzLA0KWW9zaGloaXJvIFNoaW1vZGEN
+Cg0KPiAtLQ0KPiBGbG9yaWFuDQo=
