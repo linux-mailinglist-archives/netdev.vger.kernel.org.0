@@ -2,84 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C0BE6055CC
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 05:10:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DF916055D7
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 05:16:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230017AbiJTDKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 23:10:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45788 "EHLO
+        id S230017AbiJTDQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 23:16:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230230AbiJTDKh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 23:10:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51102B44B4;
-        Wed, 19 Oct 2022 20:10:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D746EB8267A;
-        Thu, 20 Oct 2022 03:10:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9BD1CC4314B;
-        Thu, 20 Oct 2022 03:10:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666235417;
-        bh=DLmJbCWm+8J3OOBfb+g83kn7KJJ+LObNdGTvbZBxvpk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=b+3lRG5zHjB43z0WDX2NmVFjNjyXwHEXKUx2tt3x3wp388pcAO58FLeTPQOH/hJlL
-         25ftJ4QliL4o2pNr0yawGIY6Lxagh/ZKTa7AGIamCKFBAvsghOXuPfSdiP5XR9y104
-         C5kBLiAqTB3XswTyaAq54QnvdW972NN1ozHeHNsL3WcSiM3wsVEUATcH1PHRsSAET8
-         JQvB0O95n5q0uj2wp5lsDN4cDpOLI8iTcl0GYfGoGHdS2HxnVDYYg1g02kqlwmpuZM
-         dAsebSZrGv8+v5JPjJnzUds0C9j8DgVA4H1LgO94FuRkiIHteXZfAJgKf9SxLRiDm5
-         nZ6NLH2Evzx6g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 78602E4D007;
-        Thu, 20 Oct 2022 03:10:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229796AbiJTDQA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 23:16:00 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49F66149DEB
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 20:15:58 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id f140so19074726pfa.1
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 20:15:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=LAWpY3E6Odlf4ICMNyOR7W/BCVPWauSgjaNbb0CZ754=;
+        b=ZUqUJ72dXjhcn/bj5k420ENm26GupZK5UWxDq+plYI2uuOR/tj7IBpkzQUbdwvd5Ai
+         ckgHLIa0xBk7p3u9CSOGzRwcPvR+QQ8U4FYaMPBRGEp9NQ1/vibFChyBzLj6dDtBS0nJ
+         1ds7d5CO7XpPCO086DIX48INxtRGYLgU3oGH9xjYv/Zgpo15w56NR5d3Y4uNVBanLYWz
+         1vtieVGwgjyxKVJoQt1LOuOXBaiVdU9tFJUXjdXPbh8SKTHtsVfVdUn68FbRalQfh2YQ
+         Y4Azx7ODO7bHbVk44pwcXa+i+R/4Rl4XxiHNrxUpPBdIQ9v9BXF/IDl7Wc+AllZorMDV
+         f1ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=LAWpY3E6Odlf4ICMNyOR7W/BCVPWauSgjaNbb0CZ754=;
+        b=a/OPaaxFBvDnPktIYBujWVHt8dAKASJGe189lF71VuUqaXJny8JM6Kh8HA79G0sdSw
+         VmsMRxRzq4PtTT8QyVZH/vyhXzCwVAL4CHGYR9c2rk0vN42PCvtiViBnGzUlACk6mImK
+         Sg5Mr0WIlwMg6f33dKmsoO7jW7EXicJFTwWSDuuiLgmtMPUKXKVwBDJTR566uynRpZKI
+         CXnjEdSGUxAbUQve6XG+dUnKQvdluwY5kaAntFg28x8xyQZ8Z1hwxTX9FdxF6VRDCeab
+         CiWJc2+sCCKyS1V87JGUDkot9D1q5ZAWA9VW1jGTKeP/KREVNJx1kQihlGn4+g7SCy1H
+         CCGw==
+X-Gm-Message-State: ACrzQf1o8JAeqO1URwDeUQ7tqmGK9WzEBssfXWmStSVv0bbajklz/pbJ
+        YgkYzjANsG0p+7OnsWHBLas=
+X-Google-Smtp-Source: AMsMyM5aBroRInJXfweYyjIdVdKCfmGI/bcUNBHiVE15B8rCzIH3Lq1fSj2v9UvS/TmL8z29FgMuSA==
+X-Received: by 2002:a63:5a46:0:b0:434:e36b:438f with SMTP id k6-20020a635a46000000b00434e36b438fmr9898376pgm.351.1666235757773;
+        Wed, 19 Oct 2022 20:15:57 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id on16-20020a17090b1d1000b0020b21019086sm3740594pjb.3.2022.10.19.20.15.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Oct 2022 20:15:56 -0700 (PDT)
+Date:   Wed, 19 Oct 2022 20:15:54 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com
+Subject: Re: [PATCH net] MAINTAINERS: add keyword match on PTP
+Message-ID: <Y1C9avfKu3CmmOSL@hoboy.vegasvil.org>
+References: <20221020021913.1203867-1-kuba@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: phy: dp83822: disable MDI crossover status change
- interrupt
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166623541748.4513.6862768242982620991.git-patchwork-notify@kernel.org>
-Date:   Thu, 20 Oct 2022 03:10:17 +0000
-References: <20221018104755.30025-1-svc.sw.rte.linux@sma.de>
-In-Reply-To: <20221018104755.30025-1-svc.sw.rte.linux@sma.de>
-To:     Felix Riemann <svc.sw.rte.linux@sma.de>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, felix.riemann@sma.de
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221020021913.1203867-1-kuba@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, Oct 19, 2022 at 07:19:13PM -0700, Jakub Kicinski wrote:
+> Most of PTP drivers live under ethernet and we have to keep
+> telling people to CC the PTP maintainers. Let's try a keyword
+> match, we can refine as we go if it causes false positives.
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+This is great, thanks!
 
-On Tue, 18 Oct 2022 12:47:54 +0200 you wrote:
-> From: Felix Riemann <felix.riemann@sma.de>
-> 
-> If the cable is disconnected the PHY seems to toggle between MDI and
-> MDI-X modes. With the MDI crossover status interrupt active this causes
-> roughly 10 interrupts per second.
-> 
-> As the crossover status isn't checked by the driver, the interrupt can
-> be disabled to reduce the interrupt load.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net] net: phy: dp83822: disable MDI crossover status change interrupt
-    https://git.kernel.org/netdev/net/c/7f378c03aa49
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Richard
