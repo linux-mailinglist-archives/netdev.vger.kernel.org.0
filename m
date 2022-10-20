@@ -2,88 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4262C606838
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 20:31:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1B12606850
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 20:40:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229967AbiJTSbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 14:31:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36252 "EHLO
+        id S230029AbiJTSkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 14:40:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiJTSbW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 14:31:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CDE11FAE43;
-        Thu, 20 Oct 2022 11:31:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 548B861C14;
-        Thu, 20 Oct 2022 18:30:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6508AC433C1;
-        Thu, 20 Oct 2022 18:30:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666290656;
-        bh=LidB1smPJLiSNxSiSTWkVKWdSRC18cTLNqF64oUkfHE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=azjdQmvVop6YiLzTrQi8TsKUZ/7QxA9UJU9hniriVRdmYQKs0Kr45m/eZyfjnnIp7
-         tVRAX4Sni6RDHmISP4DV5y22UqZDN+0BzClbPJ02ZgYpvak8uif5J/Ake4kifp4a08
-         T/8r30MLbpNA83fPAW+J4SAaHUuiGyybkotMkhQTRYtVPt1VZKzCdt4Zam/kwqDdQo
-         o2M/tjJlu+SSh7f2g/xJO48QO9RbyfjY2x6KTtTUtWn65M8uojg9aSU8A+dRMX0DpD
-         No8Sy0uTdgcwWpaxd30iebnWaKf333ZjQPf9xMjnwZMZoVbg3NduHZ7xiSm4XHb5ZH
-         wQ5juq379qtdw==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        bpf@vger.kernel.org, jesse.brandeburg@intel.com,
-        linux-doc@vger.kernel.org, corbet@lwn.net,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net] docs: netdev: offer performance feedback to contributors
-Date:   Thu, 20 Oct 2022 11:30:31 -0700
-Message-Id: <20221020183031.1245964-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.37.3
+        with ESMTP id S230126AbiJTSkQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 14:40:16 -0400
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E48441988;
+        Thu, 20 Oct 2022 11:40:13 -0700 (PDT)
+Received: (Authenticated sender: i.maximets@ovn.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id 7290820004;
+        Thu, 20 Oct 2022 18:40:08 +0000 (UTC)
+Message-ID: <b0495014-0673-1ac3-5c9f-b12f947d9cb2@ovn.org>
+Date:   Thu, 20 Oct 2022 20:40:07 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.1
+Cc:     i.maximets@ovn.org, Pravin B Shelar <pshelar@ovn.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Thomas Graf <tgraf@suug.ch>,
+        Kevin Sprague <ksprague0711@gmail.com>, dev@openvswitch.org,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Content-Language: en-US
+To:     Aaron Conole <aconole@redhat.com>, netdev@vger.kernel.org
+References: <20221019183054.105815-1-aconole@redhat.com>
+ <20221019183054.105815-2-aconole@redhat.com>
+From:   Ilya Maximets <i.maximets@ovn.org>
+Subject: Re: [PATCH net 1/2] openvswitch: switch from WARN to pr_warn
+In-Reply-To: <20221019183054.105815-2-aconole@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NEUTRAL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some of us gotten used to producing large quantities of peer feedback
-at work, every 3 or 6 months. Extending the same courtesy to community
-members seems like a logical step. It may be hard for some folks to
-get validation of how important their work is internally, especially
-at smaller companies which don't employ many kernel experts.
+On 10/19/22 20:30, Aaron Conole wrote:
+> As noted by Paolo Abeni, pr_warn doesn't generate any splat and can still
+> preserve the warning to the user that feature downgrade occurred.  We
+> likely cannot introduce other kinds of checks / enforcement here because
+> syzbot can generate different genl versions to the datapath.
+> 
+> Reported-by: syzbot+31cde0bef4bbf8ba2d86@syzkaller.appspotmail.com
+> Fixes: 44da5ae5fbea ("openvswitch: Drop user features if old user space attempted to create datapath")
+> Cc: Thomas Graf <tgraf@suug.ch>
+> Signed-off-by: Aaron Conole <aconole@redhat.com>
+> ---
+>  net/openvswitch/datapath.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+> index c8a9075ddd0a..155263e73512 100644
+> --- a/net/openvswitch/datapath.c
+> +++ b/net/openvswitch/datapath.c
+> @@ -1616,7 +1616,8 @@ static void ovs_dp_reset_user_features(struct sk_buff *skb,
+>  	if (IS_ERR(dp))
+>  		return;
+>  
+> -	WARN(dp->user_features, "Dropping previously announced user features\n");
+> +	pr_warn("%s: Dropping previously announced user features\n",
+> +		ovs_dp_name(dp));
+>  	dp->user_features = 0;
+>  }
+>  
 
-The concept of "peer feedback" may be a hyperscaler / silicon valley
-thing so YMMV. Hopefully we can build more context as we go.
+Works fine.  Thanks!
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- Documentation/process/maintainer-netdev.rst | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/Documentation/process/maintainer-netdev.rst b/Documentation/process/maintainer-netdev.rst
-index d14007081595..1fa5ab8754d3 100644
---- a/Documentation/process/maintainer-netdev.rst
-+++ b/Documentation/process/maintainer-netdev.rst
-@@ -319,3 +319,13 @@ unpatched tree to confirm infrastructure didn't mangle it.
- Finally, go back and read
- :ref:`Documentation/process/submitting-patches.rst <submittingpatches>`
- to be sure you are not repeating some common mistake documented there.
-+
-+My company uses peer feedback in employee performance reviews. Can I ask netdev maintainers for feedback?
-+---------------------------------------------------------------------------------------------------------
-+
-+Yes, especially if you spend significant amount of time reviewing code
-+and go out of your way to improve shared infrastructure.
-+
-+The feedback must be requested by you, the contributor, and will always
-+be shared with you (even if you request for it to be submitted to your
-+manager).
--- 
-2.37.3
-
+Acked-by: Ilya Maximets <i.maximets@ovn.org>
