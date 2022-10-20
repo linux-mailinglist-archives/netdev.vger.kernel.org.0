@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6316E60676E
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 19:58:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C78560677B
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 19:58:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229962AbiJTR6b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 13:58:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53562 "EHLO
+        id S229802AbiJTR6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 13:58:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiJTR6a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 13:58:30 -0400
-Received: from na01-obe.outbound.protection.outlook.com (mail-westcentralusazon11022023.outbound.protection.outlook.com [40.93.200.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0405A199F4A;
-        Thu, 20 Oct 2022 10:58:29 -0700 (PDT)
+        with ESMTP id S230063AbiJTR6n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 13:58:43 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-westcentralusazon11022019.outbound.protection.outlook.com [40.93.200.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A42A199F58;
+        Thu, 20 Oct 2022 10:58:40 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lmvhNkBCc/lnveXm898BUcfxzo+nODD77nqIR1IjeQofUMNxf3VaCsakcfoqyxf7DxTXZ+n5yQJAS6O6zHiZAI/8dW3478Q1nuNFiYbo4Bv1S8hNPIBKGN6NRSDl5/9B13TKq2aJ9yHs4Ssp+KH+ZoCCBsZtCuk6ohMQE7S74RLVstqPOPxDXFzcMzbQREAZfzFt5lm5GC1fE6i003ypH4tsD19wSnT3XRtaZBvuvxsDzCw4Pt057tQULP+os0WTU9x9gVufFSrjwKAibri1XinMO9/IsMq1XBATrPMG18+0mwyoks0AMqn4CsCQXC7hTmsGf5tL3ffcS3YW7aI8ag==
+ b=ODiWjPYpXxSwNH2jjBGvME8rMJrqocIvhpXYhHQvETXeYSDuOZ2QXHX7Ea7yHZKmSTyrp+C3ltXrFD4ic+0nUPfyPUGzFonQOWnC/bOJM5udhQ6YDdSp7yfuRABOwBC4f5ib3rq+WVQgCxyVTEtvAKoEIm0PUl6ZVOuG7OIkv9VWtghPnQ8IaGaM6X/R6Va0F4iA6igKPpKCipGo1JYNMnjGNWSeflCuRuh/kGwmeobohxB9g0S6hubTpEgV4SYmUIJVaIQpaEp8tfqbwC9hjvjZBPnA7jMkhJKVh86nAXUnyFKlpbWKMxx41pAc0p+SnhBrRBEAfMH56qD15xlH4g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qPFQFBJ2cy3ptAG94AF8myzZ+oHcLnbdNyGAmv7MIzY=;
- b=d7FcQtP9aXY5P9ZOOxHyeTUJVV+ZD+Dfu469/M9/HmnMfxRQH2sZ48+5aCfuHkXt8P7IsC7bkWhZKGcOkyYDjZy92fTdV+RF1VcYhk5n+DqJTCrrF5UAxhCF2GW/P40hb7OL12TqJka7gRI9FEk0Y0FBE+zPKZkzuBraGqcEPJ24tqfNQhm2/an1lNIVfZbeTEypquIfw6JgAij75LFcfguuYQL0R6V9bVa8YtlIzQO2kSNFH4FBIsRmMOKQYKyHD3oob/z1/rf4bPPIqrMsKFBIHrI+5XP9ssKqAJuOzbZVXqptp/yd/9Tsn1Cqyy+YkQ5ZXNgXr/rkrcn9T1MVcA==
+ bh=Sel3qdBw1/pze8y63YrYV2DOyju1dhU548BTTT17Xjw=;
+ b=dxOzsxTNaSd66FhZemfPsOvMamcdCXwzxT3RWLL2r9dWf03gJYWkuVeUHPPMF+ikiOGT/JWzqaF9QJCkmWQjLyCeU/ioZFd7rkrAIjjlCryh++7IL0yTQdXeXtXLy0BGQ0/H1cWJP/KRTBM1CUC63Se9pf4qZTufdx+mVOmJlgMZCS/JHqtWVnnBpErK9FdH0N/rKenTJabF/04239QZ+dXSaGjRlO0cZXN6BiAg7ANE79CoB5KJZ00ER6hRvQ9Am9hyW7nR8P5htSVUALvLKclzuQMOPaVi37t1zakO5IUH6oMrvhIUYrWxA/d0ZXK8WVFdhXBaZwZQHeZguwK5rw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=microsoft.com; dmarc=pass action=none
  header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qPFQFBJ2cy3ptAG94AF8myzZ+oHcLnbdNyGAmv7MIzY=;
- b=IK1LYIczikzzumQ5UAp4NLuHNcIil/+RFAS/mN1XXqZVSHjrCf1MswMZUzjlS8eriEyuCkPQgcIzSds7XrwCttER7rgGIuKJiItP5EMjAGuzvqKOz6WEWpDcXECt9npN5kALyppnaTeA5tEpyAeofe1SH3Hqa7SDLWsFQUPcbV0=
+ bh=Sel3qdBw1/pze8y63YrYV2DOyju1dhU548BTTT17Xjw=;
+ b=J7HqNINvL7+bqaRWB3ksYTwxfxc0FvcdoCnqfp/u0sE1UWS6R3SyI2MQenaOqDjRPvrSyPqoa76quN/F/3jAqyrvKW9fb5QhD8BpUAyyqr4ULwGdUxIZTYfiejihgKErZ8Ojw7mrz7KXHcUvDm8kC+olJmmYOLTWu7Nf4RdIibY=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=microsoft.com;
 Received: from DM6PR21MB1370.namprd21.prod.outlook.com (2603:10b6:5:16b::28)
  by MW4PR21MB1857.namprd21.prod.outlook.com (2603:10b6:303:74::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.17; Thu, 20 Oct
- 2022 17:58:25 +0000
+ 2022 17:58:28 +0000
 Received: from DM6PR21MB1370.namprd21.prod.outlook.com
  ([fe80::be79:e2dc:1dba:44fa]) by DM6PR21MB1370.namprd21.prod.outlook.com
  ([fe80::be79:e2dc:1dba:44fa%3]) with mapi id 15.20.5723.019; Thu, 20 Oct 2022
- 17:58:25 +0000
+ 17:58:28 +0000
 From:   Michael Kelley <mikelley@microsoft.com>
 To:     hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
         sthemmin@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
@@ -59,9 +59,9 @@ To:     hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
         linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
         iommu@lists.linux.dev
 Cc:     mikelley@microsoft.com
-Subject: [PATCH 02/12] x86/ioapic: Gate decrypted mapping on cc_platform_has() attribute
-Date:   Thu, 20 Oct 2022 10:57:05 -0700
-Message-Id: <1666288635-72591-3-git-send-email-mikelley@microsoft.com>
+Subject: [PATCH 03/12] x86/hyperv: Reorder code in prep for subsequent patch
+Date:   Thu, 20 Oct 2022 10:57:06 -0700
+Message-Id: <1666288635-72591-4-git-send-email-mikelley@microsoft.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1666288635-72591-1-git-send-email-mikelley@microsoft.com>
 References: <1666288635-72591-1-git-send-email-mikelley@microsoft.com>
@@ -73,51 +73,51 @@ MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: DM6PR21MB1370:EE_|MW4PR21MB1857:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9db358de-a263-4117-ea11-08dab2c4af91
+X-MS-Office365-Filtering-Correlation-Id: 8f60293a-f598-40c7-9417-08dab2c4b0e9
 X-LD-Processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zrSbdrQ7y7RyiqAaqk7qcG1PKbmWmmf2gZiH9JgPp7x9L/b+dHabbn7UhxIvsSGy+Kf3pqUalakPxrpRSwnFtYps5H2J1BK+gXzKZCJNODkLrN6H5SjLoZcd0fvMJq7o3V+3pcRdo8NKAf31d9bL14Dt4WwiuOX8ttRYAqXeAMkkYDrnxCxfdJnBFdhaVf2Q3/5v54nr4dBf0H65yM8l//QhFOE08AVijosBg8UbT0cxu7axDkxi7bvUUB8GaUUIUPc/jPfxhEZbD9Ny+3rmM94xAJTTCObfk6XuvhD3Uj2UTalI9VCK0tYMF0af7ZFVmFFaRGir0XLNpSnXVHojhnbykxvsgs0vU8ifExrDh59pHnV5qSOhNPwwMxjklY7VZENe9lMzx6wPKM3BTMDA0Ea6P8CELyHjH5quDsncIquy7j4LGKnXz3nXDvaxoVeKUlb5Dqxh+mZKJ0622z4Cj4eVSbAi/E/yRu+veVFnRvpUq47T1vQbuj1XPUiDTEvoVaPdvIMnfwLbQ1il4ZS3b/x2bH3V4KHqZNcVLtdsz7aNlKPBSB7X7dSZUdalKf2VDe9TOAlbtFoofXFHUqFWvojf7msiLNFx3b9Fby9XIsncAgawYrPf90SORi6k8EQGxPMtDeRjve94PY8LryFiYQdzZKt+949YwzF5NtszmsBJVFZ2ODyf9YszZfUBRQdeObHwb0oXYQ3Y1kDJjmXh8e6PYrdu2YHvalgrOheKUq0jvWfSrbXcPi54k62LsgZmHGf+iKdxMcbURDW7qoePEC88/i5n7Xb77nJ1+z/HPGy5z7aj1o0zBDq765pTQU/FIrU3J4zBldhak9vZrSqYJw==
+X-Microsoft-Antispam-Message-Info: Iiv5k2GBEmtRLjzhnVO+EE4VEuWd9LGe84JUBsn6zZP86m0e5T7z6RlzI7PqMO/VAKgHMZGKjRXb5BH0AbalyMOskO8JQG9R3JVL8ZqKNchGrAusi2LTyHSLkw4bwb9x7YN34KVXjEKbGXrT3+An5nCYaPRdw/bCusAyLisnpXDN4F3/2Zh/yLiGTe2mUcyfCEHEuInWur6uI0IpNrCfIo71XIyDV7KfV7nNjR9Z0joIK31kpELTRMF4boeSI8Rn7FKo/KAMBY6jWERS3ApOvzeAhh5VP4d2DfaiXvKMlCUo8SzQ0eDvDoGGK3o4nNtn469UpwAdMF9/Vpv3NeLutrEr+DrYewnH69QdBoWCukQ1h0M6gOW2Dpl8RcWZEyagsmkboqMwsuLI/dDT1yNphlhSIpT67RcnRBDGR9vCT4QRQkL0zbSdWXGMuxsj5a3ClORJWoQYw6FpqXmSXmLOcY1gzcFK5pFEPDLZJLNaR1+IoRclCMCWZelrXSAexFMbbo6+W21sGDdail7Xa3683CSCAttrCFIMNjd5F6wsgky3qvOcLcDW5OzBAIocj2bmWMQtML+WyuXr8+NZLXhB1GUPso7WqSzQMsIUaAqqP6axXGQVUmFA+kpDoF7owUkYXmcZ7US1SYCnmOOlXGJ8U/wwrLzkAmArgjbJGWZuD6ZkIeFq8bwZQiu8G1K6vxn1ll0t2D+60WlrjL6Tah4GnWnFt8j+1iPhJm8xuqbClMK0YAXLE699O2W6lfjKyWzOypGiHjS1+V+YMfIEpAUBHONn7FXODSfH9eeNiMsc45LOHzC0Gy4IwL0/Z4zyppGo3vCTJkBsS12GvgKoL4dyUw==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1370.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(136003)(346002)(376002)(396003)(39860400002)(451199015)(186003)(6512007)(6666004)(107886003)(83380400001)(7416002)(52116002)(26005)(2906002)(5660300002)(6506007)(66556008)(41300700001)(8676002)(478600001)(8936002)(316002)(4326008)(66476007)(66946007)(6486002)(10290500003)(82950400001)(36756003)(86362001)(2616005)(7406005)(82960400001)(38100700002)(38350700002)(921005);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wgQ0kXLr14ZHtrrea7b2Cq2FNSjWvg+I/OxrgKVpkgb16N+qyurJ2oAXXeN+?=
- =?us-ascii?Q?Y/wrjSN1f5sJmzBLYcQX8Qvx2azYJ58Xytqf2Yz7Ci+uw8LSHafFNgtZjifF?=
- =?us-ascii?Q?SVTzPDlaL1bX1yIv0Ibx5W9RlzY74JRo/1pyrwTwZQ67XpnlkiIJ15suPCzA?=
- =?us-ascii?Q?2kxU6Yv0n4ttumiQxstUo8pxzPnJJBXfntYwKYybspl+0IuVZaryVXHhWjV6?=
- =?us-ascii?Q?9wkX2eQMwk3anlDXDHNmzsh5f00x6GMXQhVzFs0qtT6sGJHJfuIdcnenZAfF?=
- =?us-ascii?Q?/qBXV6VJrvyeIe2cOvXBUcqWXZCTICoSzMMTKszQkTw32cpS8UIL7395LGRm?=
- =?us-ascii?Q?C3FkQ7YgDqgsH9rLokwYnLQ7+3bZPz0PIJt1IJCaswAeyDlHR7sJNMqL9bmG?=
- =?us-ascii?Q?88mTaEUpcEPRZy/E/0RPAc/CR/VwEdzNMOSPHFaxlCmi6X61gncc84LEbs8w?=
- =?us-ascii?Q?QxRzBlJXDHVGaLY/QILGKK29ORa+EnuQZ4f1RPRPU+pc91ro9Hw7HfQFXwM3?=
- =?us-ascii?Q?Wwd7+yPzLiXLQ7tcARrWrUBrfsI0aS3+4GhNm64GHmLdq1CxuITNAKG8q+oE?=
- =?us-ascii?Q?okVDVshlz2JmEdoy9yA5+Y1PlDUjXf+pjKW/SreGJx8IQg+LaEEFxRkaBqoq?=
- =?us-ascii?Q?gTNrFWqCGM3KIWfGbatlzMyPLaGJRLtWPdXUIsNj1jTyp0D8dJuOiUBZJk/6?=
- =?us-ascii?Q?XExAkOIe+rGMK5Bmh2loguFAya3HyrLFTXxMD6T1/NZ3sK2iqXMuu6eA+5Qk?=
- =?us-ascii?Q?0EVNTwMz2Fr4cnSEgXwRPzCnGixHCdQHR6zcHJOJt1AW1VgOyDN4zCcctaOS?=
- =?us-ascii?Q?zcEH46N5LwMu11F+xvr56HTuYfisHsL3NpRSA6qh6vGqiLaM6W+oYZ+AkQcz?=
- =?us-ascii?Q?s2nNvW3TuZviZLIBe+5vVTrl3R2cVuEEyb25Xc0Zc8XUUhLBmcN96KkZPTBu?=
- =?us-ascii?Q?y9Jchdw4iAAaVzEjMKwQxrywBNiqOEN3n9sOqps6PoTGL8ylRDbvRtdSbwZv?=
- =?us-ascii?Q?BGmJSHcHzFLV50Wl/akk10xxLe5lCkL4sNNq9gZq0X3HTOsf26SHKFrYVN0X?=
- =?us-ascii?Q?SPWKXoP2Fu+k3Yg0UnKVyUecwYtoe8XuyeIgrK6Nv2+drhwLpaAVkv3+20Uf?=
- =?us-ascii?Q?HJoiXIMkWnw6YvDOx2Yi6FdXxcFazX3NgHBWHDckRcejWpxwb/8XLjpsX0mR?=
- =?us-ascii?Q?1OSY2/ZH8lPsqxQmFGxh5GxvHQp6d54RT6P4Kzgy5wFMNZnz3UBENRa/K37S?=
- =?us-ascii?Q?VGdJzXx3LDtpP1+jYcoBBqSYMthVHpx80EjGjygYAzzyGM2kh7OkHAm+u6Zu?=
- =?us-ascii?Q?hnRw8fm3rHhPSoe8/F7yHmtG0WPD9ZM3Lqg3W+DF0MsnrfaNfifCENlnsBC6?=
- =?us-ascii?Q?q35lwXKODoS8Dt5xOI6yFZHAymG8IgB2nRoGhHImNopHug9V78gI/hQCujUd?=
- =?us-ascii?Q?Dljqnqaf+wrE4aYdmB0wX0wGFiujaPkIWsGuocfHr9mTJLzdljwxEeCRcsn6?=
- =?us-ascii?Q?0Sw7zGAtWViCc8j2eKCIgjjAZNqUpmq6NKSWX2WTvrpol1NDbe2CwgimOPgu?=
- =?us-ascii?Q?/ZuEvz2VDy2t/gtobOkUdU6Zug8zkR//JUMenBIi?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?qSFTG6byjCYRwNja6FMW3kl9qpg164TVX8jVuUX3oBIPx2ADLZjeyBFAjn8r?=
+ =?us-ascii?Q?nf7a/Z0rVLUudArRJ3OmXIYgb0e+3AGoiKt00DIk6oS19AFP9PKEhPBHcDYl?=
+ =?us-ascii?Q?OpfeEhd/ssbEYFtSBbeHpeRmLtl3lKntnhgZqQB6MMry+i4YPR+z/t9z4XBL?=
+ =?us-ascii?Q?LeaVuFzt8ANSwfgkeSUPtLoaHLQF8r+IE4fktPQ0n4lYCUaf7f5BlxrrqaKs?=
+ =?us-ascii?Q?oMG0WJ2ngdpparJfpxZd6xllutFfInruRjUA0QP1TQFzBHRN/M1M/oKmP8U9?=
+ =?us-ascii?Q?xrBQnpj9HqItaPcO9CTZ284R0kqLc/vp2wd2LknlOpYE1bM58NMVsS0rLjdn?=
+ =?us-ascii?Q?kWq8Kj+AAkHLzFVdS48iFrf/wjscpQU4lD4ZKsKZXS5PMQicryzoxp2hDXPG?=
+ =?us-ascii?Q?vsOX69QTl1s6aKlsSASbPKcMZX7hkz1/yksLn9A+ctT+8+p7LwV/mGuxRmwD?=
+ =?us-ascii?Q?eRw3NypKdvjHFIpGUxKOhLrht6av2MRM70zyq2wsnENKsMNEm+tkBC+iaWog?=
+ =?us-ascii?Q?znY+4x4vilqKeNVrZIFLQxV6gUpJybWljJKBbyqWZ+MJM1HinHu0vNjwUbWf?=
+ =?us-ascii?Q?h9vEcFoLt92MWgSwiyqw8hEUt7dOEsFrEJh4uSRNQCotzIrqvydH2b0i5Pg+?=
+ =?us-ascii?Q?1KH9rNFBa8FL5xacV6VwoDZInNbZOEQBjJUjZSOczitNfOlQgUdCLiKbm+Qr?=
+ =?us-ascii?Q?aZTKgaszb12JV5Z3B8+NKUYAJ/61//PqZSPp8Rdbb4IaYHhthw6vnFo/UbHx?=
+ =?us-ascii?Q?BgH2M+8923/CwyKdfGKIL7zUQoA0w+Zx/9emxh0E2KIRPwE7Q5XZMSP56tAP?=
+ =?us-ascii?Q?I2AAbCwzkqnqHFZK2E63WmkbHaqE3GL+VWqF7oInuWNn4K40Co83SNxKLftD?=
+ =?us-ascii?Q?0qjLdulHKeeWJAIR2Wq79NbtIJrJG46HpXIrpn8IEA0mhAAStrruUYBWBLat?=
+ =?us-ascii?Q?i2HGX/DNcPJ0EnV7lHDOPl4LjoMct08GDSHyu4oHdXrB03XwkRbqLURdan2U?=
+ =?us-ascii?Q?3j82o5Jr2CKlgiijZhgVB0ueJGQixtLjj4M9E6grBRrro0ce+A5idki/4Rw0?=
+ =?us-ascii?Q?3VerRBLYWXCHSwDsHIFnsPrucJNOXTre7AlcfM5s/x5Z3VDyIzqzoEet/5RO?=
+ =?us-ascii?Q?orLnnRgAdgXMpsacZYeSHMgaknb3s6PCA64++jIew8oa7IApFe642yMHI6xr?=
+ =?us-ascii?Q?wGGCzoGbv1j47upL0NzaYb3Lsb+URhiLD7MYMTgZ0YiI3W3egKPa1axiD6uf?=
+ =?us-ascii?Q?/FpYzonkfMzdQgI+F/v2J1JH7M+MZ6kfst5LzHXKgvo3y/g8rfm/VnhBfooy?=
+ =?us-ascii?Q?GwYxF3+cnBSygd+ZXcwakRfBsff+y89zldq4l7Jg2V9CTWd3CKQTVuPOLqj4?=
+ =?us-ascii?Q?OLYzUJxxnvgRp1ClVZHBcWmRq39zYZMvx+9zbmlQHCfNqQmEc2sRl/tJomxx?=
+ =?us-ascii?Q?WEVh8vGV0I5Rr0W64t4ah1RQhXl2PhHARZOy1wlpb2lvh14IJfdVPmFaD9I1?=
+ =?us-ascii?Q?X12mpdG4OYfU5AcsQjwiQiX+oibtcqthKISS6IEgmBJF8b793HodhmwE6p2m?=
+ =?us-ascii?Q?yLe1CWbnjBrLo8M5VvDUSkovaa1/8o33aFvTewiV?=
 X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9db358de-a263-4117-ea11-08dab2c4af91
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8f60293a-f598-40c7-9417-08dab2c4b0e9
 X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1370.namprd21.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2022 17:58:25.7455
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2022 17:58:28.0122
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8Y1g9Un+cEQ2h7ORI9rfj8GXvsXH6+d/F+/QNpbKmVZbuEbrqvIrhWjQENud+dfpZjAUosbWwKGLL7e180FzAQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: HqpGP/2OtfcTq0ZYvcinz/6lCZRCIf30aUdzgXSsZLdyv/k5YG0qTSX7Uu3SnCgo5Ch6PLhE051M0e5L4DD+PQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR21MB1857
 X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -128,61 +128,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Current code always maps the IOAPIC as shared (decrypted) in a
-confidential VM. But Hyper-V guest VMs on AMD SEV-SNP with vTOM
-enabled use a paravisor running in VMPL0 to emulate the IOAPIC.
-In such a case, the IOAPIC must be accessed as private (encrypted).
-
-Fix this by gating the IOAPIC decrypted mapping on a new
-cc_platform_has() attribute that a subsequent patch in the series
-will set only for Hyper-V guests. The new attribute is named
-somewhat generically because similar paravisor emulation cases
-may arise in the future.
+Reorder some code as preparation for a subsequent patch.  No
+functional change.
 
 Signed-off-by: Michael Kelley <mikelley@microsoft.com>
 ---
- arch/x86/kernel/apic/io_apic.c |  3 ++-
- include/linux/cc_platform.h    | 13 +++++++++++++
- 2 files changed, 15 insertions(+), 1 deletion(-)
+ arch/x86/hyperv/ivm.c | 68 +++++++++++++++++++++++++--------------------------
+ 1 file changed, 34 insertions(+), 34 deletions(-)
 
-diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-index a868b76..d2c1bf7 100644
---- a/arch/x86/kernel/apic/io_apic.c
-+++ b/arch/x86/kernel/apic/io_apic.c
-@@ -2686,7 +2686,8 @@ static void io_apic_set_fixmap(enum fixed_addresses idx, phys_addr_t phys)
- 	 * Ensure fixmaps for IOAPIC MMIO respect memory encryption pgprot
- 	 * bits, just like normal ioremap():
- 	 */
--	flags = pgprot_decrypted(flags);
-+	if (!cc_platform_has(CC_ATTR_HAS_PARAVISOR))
-+		flags = pgprot_decrypted(flags);
+diff --git a/arch/x86/hyperv/ivm.c b/arch/x86/hyperv/ivm.c
+index 1dbcbd9..f33c67e 100644
+--- a/arch/x86/hyperv/ivm.c
++++ b/arch/x86/hyperv/ivm.c
+@@ -235,40 +235,6 @@ void hv_ghcb_msr_read(u64 msr, u64 *value)
+ EXPORT_SYMBOL_GPL(hv_ghcb_msr_read);
+ #endif
  
- 	__set_fixmap(idx, phys, flags);
+-enum hv_isolation_type hv_get_isolation_type(void)
+-{
+-	if (!(ms_hyperv.priv_high & HV_ISOLATION))
+-		return HV_ISOLATION_TYPE_NONE;
+-	return FIELD_GET(HV_ISOLATION_TYPE, ms_hyperv.isolation_config_b);
+-}
+-EXPORT_SYMBOL_GPL(hv_get_isolation_type);
+-
+-/*
+- * hv_is_isolation_supported - Check system runs in the Hyper-V
+- * isolation VM.
+- */
+-bool hv_is_isolation_supported(void)
+-{
+-	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))
+-		return false;
+-
+-	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV))
+-		return false;
+-
+-	return hv_get_isolation_type() != HV_ISOLATION_TYPE_NONE;
+-}
+-
+-DEFINE_STATIC_KEY_FALSE(isolation_type_snp);
+-
+-/*
+- * hv_isolation_type_snp - Check system runs in the AMD SEV-SNP based
+- * isolation VM.
+- */
+-bool hv_isolation_type_snp(void)
+-{
+-	return static_branch_unlikely(&isolation_type_snp);
+-}
+-
+ /*
+  * hv_mark_gpa_visibility - Set pages visible to host via hvcall.
+  *
+@@ -387,3 +353,37 @@ void hv_unmap_memory(void *addr)
+ {
+ 	vunmap(addr);
  }
-diff --git a/include/linux/cc_platform.h b/include/linux/cc_platform.h
-index cb0d6cd..b6c4a79 100644
---- a/include/linux/cc_platform.h
-+++ b/include/linux/cc_platform.h
-@@ -90,6 +90,19 @@ enum cc_attr {
- 	 * Examples include TDX Guest.
- 	 */
- 	CC_ATTR_HOTPLUG_DISABLED,
 +
-+	/**
-+	 * @CC_ATTR_HAS_PARAVISOR: Guest VM is running with a paravisor
-+	 *
-+	 * The platform/OS is running as a guest/virtual machine with
-+	 * a paravisor in VMPL0. Having a paravisor affects things
-+	 * like whether the I/O APIC is emulated and operates in the
-+	 * encrypted or decrypted portion of the guest physical address
-+	 * space.
-+	 *
-+	 * Examples include Hyper-V SEV-SNP guests using vTOM.
-+	 */
-+	CC_ATTR_HAS_PARAVISOR,
- };
- 
- #ifdef CONFIG_ARCH_HAS_CC_PLATFORM
++enum hv_isolation_type hv_get_isolation_type(void)
++{
++	if (!(ms_hyperv.priv_high & HV_ISOLATION))
++		return HV_ISOLATION_TYPE_NONE;
++	return FIELD_GET(HV_ISOLATION_TYPE, ms_hyperv.isolation_config_b);
++}
++EXPORT_SYMBOL_GPL(hv_get_isolation_type);
++
++/*
++ * hv_is_isolation_supported - Check system runs in the Hyper-V
++ * isolation VM.
++ */
++bool hv_is_isolation_supported(void)
++{
++	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))
++		return false;
++
++	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV))
++		return false;
++
++	return hv_get_isolation_type() != HV_ISOLATION_TYPE_NONE;
++}
++
++DEFINE_STATIC_KEY_FALSE(isolation_type_snp);
++
++/*
++ * hv_isolation_type_snp - Check system runs in the AMD SEV-SNP based
++ * isolation VM.
++ */
++bool hv_isolation_type_snp(void)
++{
++	return static_branch_unlikely(&isolation_type_snp);
++}
 -- 
 1.8.3.1
 
