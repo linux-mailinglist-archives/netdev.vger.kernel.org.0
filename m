@@ -2,95 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9903F606B53
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 00:38:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76E72606BB5
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 00:55:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229744AbiJTWiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 18:38:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50230 "EHLO
+        id S229893AbiJTWzI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 18:55:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbiJTWiT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 18:38:19 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 909621C5A73;
-        Thu, 20 Oct 2022 15:38:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=d1uOCKlJdY/yPHuKmQEyZZ8R2iRmAZNykCdT1OMy84s=; b=hJjRN+9eKGnr+4+zGPmG0xStZx
-        DmKNQolz1r3Thm99kcT1Fcvq4mgQkSJybJHt8PGV+yx11j0adMDpX7hfA+sKiBWFu2OT7ZriVR1ok
-        75kxOAypPBWZMPpz6uhcBMSY5v1VVEDF8C4NtQDNIh4VHhT1oHNC1yOARuc616zpMcb3XprYd8rzu
-        nn5Qb5sU7mv5UN9uyWAiyT/xQN1hlt444TE2NmGkdoOEW2RCmqIc0fxs+l0cRPzvL7lTIK7qT7fZD
-        Eora7w2UPe0L4BShALsNWJwPbcaNYASxhknHkqEkkCQ9TksN+FzK2opjCm7aQ22UUu9w7e35d31f3
-        7O5hk7fA==;
-Received: from [179.113.159.85] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1oleAu-002Whx-TJ; Fri, 21 Oct 2022 00:38:06 +0200
-Message-ID: <ec384313-e19b-379b-4dd5-23ec8cefc9b0@igalia.com>
-Date:   Thu, 20 Oct 2022 19:37:48 -0300
+        with ESMTP id S229731AbiJTWzC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 18:55:02 -0400
+X-Greylist: delayed 621 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 20 Oct 2022 15:54:55 PDT
+Received: from mailgate.kemenperin.go.id (mailgate.kemenperin.go.id [202.47.80.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27064726BA
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 15:54:52 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mailgate.kemenperin.go.id (Postfix) with ESMTP id A098E37EA028;
+        Fri, 21 Oct 2022 05:43:43 +0700 (WIB)
+Received: from mailgate.kemenperin.go.id ([127.0.0.1])
+        by localhost (mailgate.kemenperin.go.id [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id N1nzCS0-Z54V; Fri, 21 Oct 2022 05:43:42 +0700 (WIB)
+Received: from localhost (localhost [127.0.0.1])
+        by mailgate.kemenperin.go.id (Postfix) with ESMTP id 2022D37EA02F;
+        Fri, 21 Oct 2022 05:43:38 +0700 (WIB)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mailgate.kemenperin.go.id 2022D37EA02F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kemenperin.go.id;
+        s=3298A942-BBC6-11E3-B333-483736368EC2; t=1666305818;
+        bh=PX9IJQi0gQZiZbkHZv9gmE2aVkyOm9WrV6Vq1muqeKk=;
+        h=Date:From:Message-ID:MIME-Version;
+        b=TDP4NwxWkC3B9JV9694EuedD+qfjQUBBi5wiHlHCj77U9L7eBz/J9WUszYLyGiubx
+         U1LrZQTqx3RkagWeeUKz/CE22cEyAcsgeX6LXJBlc5x1f9ilPbc3tmB94p6EFwmOdy
+         MV5Jmr1fySXyFE2GszuGtlv56a2Yi6eQif/cchYI=
+X-Virus-Scanned: amavisd-new at kemenperin.go.id
+Received: from mailgate.kemenperin.go.id ([127.0.0.1])
+        by localhost (mailgate.kemenperin.go.id [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id Vg85ID97cF-z; Fri, 21 Oct 2022 05:43:38 +0700 (WIB)
+Received: from mailgate.kemenperin.go.id (mailgate.kemenperin.go.id [10.1.0.89])
+        by mailgate.kemenperin.go.id (Postfix) with ESMTP id 4917637E9FF5;
+        Fri, 21 Oct 2022 05:43:27 +0700 (WIB)
+Date:   Fri, 21 Oct 2022 05:43:27 +0700 (WIB)
+From:   "Iccrea Banca S.p.A. Istituto Centrale Del Cooperativo" 
+        <wibowo-chandra@kemenperin.go.id>
+Reply-To: "Iccrea Banca S.p.A. Istituto Centrale Del Cooperativo" 
+          <info@iccreabancn.org>
+Message-ID: <1154508413.20194.1666305807242.JavaMail.zimbra@kemenperin.go.id>
+Subject: =?utf-8?Q?(=E2=82=AC280_000,00)_erfolgreich_a?=
+ =?utf-8?Q?uf_Ihr_Bankkonto_=C3=BCberwiesen?=
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.2
-Subject: Re: [PATCH V3 06/11] tracing: Improve panic/die notifiers
-Content-Language: en-US
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
-        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
-        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, senozhatsky@chromium.org,
-        stern@rowland.harvard.edu, tglx@linutronix.de, vgoyal@redhat.com,
-        vkuznets@redhat.com, will@kernel.org, xuqiang36@huawei.com,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>
-References: <20220819221731.480795-1-gpiccoli@igalia.com>
- <20220819221731.480795-7-gpiccoli@igalia.com>
- <20221020172908.25c6e3a5@gandalf.local.home>
- <6e2396d1-d0b2-0d1e-d146-f3ad7f2b39f8@igalia.com>
- <20221020182249.691bb82a@gandalf.local.home>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <20221020182249.691bb82a@gandalf.local.home>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Originating-IP: [10.1.0.89]
+Thread-Index: /V2M/KvO9xyA0rbkNNa7iAog+odjiA==
+Thread-Topic: =?utf-8?Q?=28=E2=82=AC280_000=2C00=29_erfolgreich_auf_Ihr_Bankkonto_=C3=BCberwiesen?=
+X-Spam-Status: No, score=3.2 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,MISSING_HEADERS,
+        RCVD_IN_MSPIKE_H2,REPLYTO_WITHOUT_TO_CC,SPF_HELO_NONE,SPF_PASS,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ***
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/10/2022 19:22, Steven Rostedt wrote:
-> On Thu, 20 Oct 2022 18:53:43 -0300
-> "Guilherme G. Piccoli" <gpiccoli@igalia.com> wrote:
-> 
->> Could you pick it in your tree? Or do you prefer that I re-send as a
->> solo patch, with your ACK?
-> 
-> I wasn't sure there were any dependencies on this. If not, I can take it.
-> 
-> -- Steve
-
-Thank you! No dependency at all...I just piled a bunch of independent
-panic notifiers fixes, so they can be reviewed by the maintainers and
-picked individually.
-
-Some maintainers though prefer them to be sent individually, as solo
-patches...hence my question.
-
-Cheers,
 
 
-Guilherme
+Herzliche Gl=C3=BCckw=C3=BCnsche!
+Ihre =C3=9Cberweisung auf Ihr Bankkonto ist erfolgreich abgeschlossen!
+Haben Sie das auf Ihr Bankkonto =C3=BCberwiesene Geld als Unterst=C3=BCtzun=
+g aus dem Europ=C3=A4ischen Fonds f=C3=BCr humanit=C3=A4re Hilfe best=C3=A4=
+tigt?
+Ihr Name und Ihre E-Mail-Adresse waren das E-Mail-Extrahierungsprogramm f=
+=C3=BCr humanit=C3=A4re Unterst=C3=BCtzung. Wenn Sie Ihr Geld noch nicht au=
+f Ihrem Bankkonto best=C3=A4tigt haben, best=C3=A4tigen Sie bitte Ihre Zahl=
+ung bei Iccrea Banca S.p.A. Istituto Centrale del Credito Cooperativo, Via =
+Lucrezia Romana, 41/47, 00178 Roma RM, Italien.
+
+E-Mail1: info@iccreabancn.org
+E-Mail2: ibspaicdc@gmail.com
+
+Guido Josef
+Tel. +39 03 8829911
+E-Mail: info@iccreabancn.org
+E-Mail: customercare@iccreabancn.org
+E-Mail: ibspaicdc@gmail.com
+Forma giuridica: Societa Per Azioni Con Socio
+Tipo di azienda: Sede Centrale P. Iva: 04774801007
