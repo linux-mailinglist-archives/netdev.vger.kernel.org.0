@@ -2,91 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 769716060BD
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 14:57:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 764116060CC
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 14:59:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230035AbiJTM5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 08:57:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50238 "EHLO
+        id S229822AbiJTM7m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 08:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229973AbiJTM5X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 08:57:23 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 424131578B4;
-        Thu, 20 Oct 2022 05:57:22 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id a6-20020a17090abe0600b0020d7c0c6650so3428722pjs.0;
-        Thu, 20 Oct 2022 05:57:21 -0700 (PDT)
+        with ESMTP id S230293AbiJTM7j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 08:59:39 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A7AE2B273
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 05:59:31 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id b5so19145039pgb.6
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 05:59:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=RGzI2xTjckuAW3hVQGc+Pzc+7ksS8aSUUgI7rwODeNw=;
-        b=AFAs7EP6zykYYreGg7FW3rkbLrOwSY+ge4rj39XBvXgYM0Qj5yCqRl3ro60ZgJyN9K
-         dvow5TrDjOja4R7h/Ah5TxPVBC7O5kJMhx27V5DW+g0WAVZqQ9lpT+ZA1n0RDQUPgNup
-         SXh2Ojj1QbByfSUSUax/uyiZjyqjfbdjviSY8U28cP44M2CFMwwC5P3h9hZYQjP16Jfh
-         7We60X4CW1X861PwBw5hsrV6VFQ0ArirebTizYHX8Yw3vB7zh961wFuMJBGoTIqOLi9C
-         +j5OudDSs4eneT8PRjerBIUrMCft3yhDUsaSBy5BPF29vLmZRGGn1fapRJEAo7ezTQbw
-         8LfQ==
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Px3F0OTpQiOMR9pViG1tn7PPh9JYF29aRogvbKYxqqg=;
+        b=JJo1f2JJaSsouex3+DXOgb55rouwB5x49yUT/XAR5ykKspgc/NcV7ezSDoxMwJ6ZuT
+         ctcEfWnR8ybiHUkgljOUHZVlKR8LCfeajreYKtp0Q1HnoiGF1T+qn8UmOc3MieuHkTUg
+         lPteJey3pN4MWKiGg6IkY5N1FEBDFCwT9sdJ/soX4bU6uHj4Pg37cuw++M62sohdmE0e
+         WkRc4ROrZvncz0gH3JQqjHyqg0sRm7pe4APLzZSFgc4376H8lEUPQyH0O2Ml+go/FaQQ
+         23I09L24ltnUF/cJUyU9jipodYcPFmq/3rA2rkjHG8x9Qvu+ehTxCfYzt8MNYG/gtpuJ
+         uqHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RGzI2xTjckuAW3hVQGc+Pzc+7ksS8aSUUgI7rwODeNw=;
-        b=z0CTXBdI2X6W6HYnhPdUGz/fDLngtssZuvso8fKZdTXye6cNQpQbaGr06BwPbTApjp
-         CehvVWHOM6N+Xs9ufmKJ+73YsFC0NElD3CgiuaoAvE/+CO8xl7AoFKRRrEBgR67eglvn
-         qQFiP7JrFpunl4/QEo+tPoVsxI8q4uqmPZC3Wcv7EBlN8DHkojuMYOGdCfv0DbQEfiEf
-         wLqrymdEWobPOd5xivd6DxVzrOL9PwJ9i7ordSF94FNaLFIuCZrOSwvPkthDOyuVvXQL
-         NRSc6bxSNU6F35lfFm714IsemGWxtqJGkhrTTHAAn1V62w57JmWg/tgbwHZRthjdrt49
-         0z4Q==
-X-Gm-Message-State: ACrzQf3mVepq4EHuCCZi+g4RLh6P4kgHBP3t1O1LiBWluR6H8UCTejbb
-        Y8Ya+9W4oRK10c0HzHl7qrMDki7oL/o=
-X-Google-Smtp-Source: AMsMyM6LATzCVk6eC7hTTrqx7ZRbtMCEy3zD3ZdEdv1ahXovELCqw8eAuWjIdcxH1DYt8TfvbELjcQ==
-X-Received: by 2002:a17:90b:3a90:b0:20d:a54c:e5cd with SMTP id om16-20020a17090b3a9000b0020da54ce5cdmr43742988pjb.183.1666270641091;
-        Thu, 20 Oct 2022 05:57:21 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id x190-20020a6286c7000000b0055f1db26b3csm13129637pfd.37.2022.10.20.05.57.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Oct 2022 05:57:20 -0700 (PDT)
-Date:   Thu, 20 Oct 2022 05:57:18 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     wei.fang@nxp.com
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, frank.li@nxp.com
-Subject: Re: [PATCH net-next] net: fec: Add support for periodic output
- signal of PPS
-Message-ID: <Y1FFrjjNyU3VaYBI@hoboy.vegasvil.org>
-References: <20221020043556.3859006-1-wei.fang@nxp.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Px3F0OTpQiOMR9pViG1tn7PPh9JYF29aRogvbKYxqqg=;
+        b=C4Z4K0DdTCpg8tCUBDWUoiYyM2QYRPq47TTVl/FpLoN9TvsYkvjeNPC5dHyPy2nztp
+         Q8txwpf5oya2w2uzK+MmDZbB1iLKTSHeD+3pdVZhxnGDaR5uihTcwNvpoWExQQLiHWAq
+         7o0yVy4CsrBWP2g4xbFGvECTnAl02S6ZE5V/X6LOZi+71v1lD2+Kl8dRcIF6yXLrIPfj
+         0GBwjDMixThMDGCViEveTsqQeoCQxYNIZQbb8PNJhI2OfnHOBqubhgcvZwxSRuADhbxS
+         t89EOcsAYD6VjV5AwcTbWDpNf63jCGlzRGwAbhashYoHN3PgNMqk9PLN9FthNYvQsUho
+         kSLA==
+X-Gm-Message-State: ACrzQf1EtmUfo8brA9QfhcDJ7jUAIxmt/9XBCx9bERsLCKg+LXVHDRMZ
+        /lbecTGAAi9sd3zCTEbhX4NOmw==
+X-Google-Smtp-Source: AMsMyM5JtaZBrNENdT8Dk3Wn0YCOfVNJwRzMLfsAXPaY0S7jSCD/9qt7idfaKMo084FA1QMv/SC12w==
+X-Received: by 2002:a63:e113:0:b0:439:e032:c879 with SMTP id z19-20020a63e113000000b00439e032c879mr11644863pgh.287.1666270770606;
+        Thu, 20 Oct 2022 05:59:30 -0700 (PDT)
+Received: from [192.168.4.201] (cpe-72-132-29-68.dc.res.rr.com. [72.132.29.68])
+        by smtp.gmail.com with ESMTPSA id i3-20020aa796e3000000b005633a06ad67sm13196716pfq.64.2022.10.20.05.59.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Oct 2022 05:59:30 -0700 (PDT)
+Message-ID: <c31e5b41-2433-e947-c42e-cecb86c1429a@kernel.dk>
+Date:   Thu, 20 Oct 2022 05:59:29 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221020043556.3859006-1-wei.fang@nxp.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.3
+Subject: Re: [PATCH for-6.1 1/2] io_uring/net: fail zc send for unsupported
+ protocols
+Content-Language: en-US
+To:     Pavel Begunkov <asml.silence@gmail.com>,
+        Stefan Metzmacher <metze@samba.org>, io-uring@vger.kernel.org
+Cc:     netdev@vger.kernel.org
+References: <cover.1666229889.git.asml.silence@gmail.com>
+ <ee7c163db8cea65b208d327610a6a96f936c1c6f.1666229889.git.asml.silence@gmail.com>
+ <f60d98e7-c798-b4a9-f305-4adc16341eca@samba.org>
+ <ed49aa87-5481-ae92-2488-e959121e8869@kernel.dk>
+ <2177dc51-ec7d-6065-c320-76fb0f79b542@gmail.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <2177dc51-ec7d-6065-c320-76fb0f79b542@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 20, 2022 at 12:35:56PM +0800, wei.fang@nxp.com wrote:
-> From: Wei Fang <wei.fang@nxp.com>
+On 10/20/22 5:53 AM, Pavel Begunkov wrote:
+> On 10/20/22 13:49, Jens Axboe wrote:
+>> On 10/20/22 2:13 AM, Stefan Metzmacher wrote:
+>>> Hi Pavel,
+>>>
+>>>> If a protocol doesn't support zerocopy it will silently fall back to
+>>>> copying. This type of behaviour has always been a source of troubles
+>>>> so it's better to fail such requests instead. For now explicitly
+>>>> whitelist supported protocols in io_uring, which should be turned later
+>>>> into a socket flag.
+>>>>
+>>>> Cc: <stable@vger.kernel.org> # 6.0
+>>>> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+>>>> ---
+>>>> ?? io_uring/net.c | 9 +++++++++
+>>>> ?? 1 file changed, 9 insertions(+)
+>>>>
+>>>> diff --git a/io_uring/net.c b/io_uring/net.c
+>>>> index 8c7226b5bf41..28127f1de1f0 100644
+>>>> --- a/io_uring/net.c
+>>>> +++ b/io_uring/net.c
+>>>> @@ -120,6 +120,13 @@ static void io_netmsg_recycle(struct io_kiocb *req, unsigned int issue_flags)
+>>>> ?????? }
+>>>> ?? }
+>>>> ?? +static inline bool io_sock_support_zc(struct socket *sock)
+>>>> +{
+>>>> +??? return likely(sock->sk && sk_fullsock(sock->sk) &&
+>>>> +???????????? (sock->sk->sk_protocol == IPPROTO_TCP ||
+>>>> +????????????? sock->sk->sk_protocol == IPPROTO_UDP));
+>>>> +}
+>>>
+>>> Can we please make this more generic (at least for 6.1, which is likely be an lts release)
+>>>
+>>> It means my out of tree smbdirect driver would not be able to provide SENDMSG_ZC.
+>>>
+>>> Currently sk_setsockopt has this logic:
+>>>
+>>> ???????? case SO_ZEROCOPY:
+>>> ???????????????? if (sk->sk_family == PF_INET || sk->sk_family == PF_INET6) {
+>>> ???????????????????????? if (!(sk_is_tcp(sk) ||
+>>> ?????????????????????????????? (sk->sk_type == SOCK_DGRAM &&
+>>> ??????????????????????????????? sk->sk_protocol == IPPROTO_UDP)))
+>>> ???????????????????????????????? ret = -EOPNOTSUPP;
+>>> ???????????????? } else if (sk->sk_family != PF_RDS) {
+>>> ???????????????????????? ret = -EOPNOTSUPP;
+>>> ???????????????? }
+>>> ???????????????? if (!ret) {
+>>> ???????????????????????? if (val < 0 || val > 1)
+>>> ???????????????????????????????? ret = -EINVAL;
+>>> ???????????????????????? else
+>>> ???????????????????????????????? sock_valbool_flag(sk, SOCK_ZEROCOPY, valbool);
+>>> ???????????????? }
+>>> ???????????????? break;
+>>>
+>>> Maybe the socket creation code could set
+>>> unsigned char skc_so_zerocopy_supported:1;
+>>> and/or
+>>> unsigned char skc_zerocopy_msg_ubuf_supported:1;
+>>>
+>>> In order to avoid the manual complex tests.
+>>
+>> I agree that would be cleaner, even for 6.1. Let's drop these two
+>> for now.
 > 
-> This patch adds the support for configuring periodic output
-> signal of PPS. So the PPS can be output at a specified time
-> and period.
-> For developers or testers, they can use the command "echo
-> <channel> <start.sec> <start.nsec> <period.sec> <period.
-> nsec> > /sys/class/ptp/ptp0/period" to specify time and
-> period to output PPS signal.
-> Notice that, the channel can only be set to 0. In addtion,
-> the start time must larger than the current PTP clock time.
-> So users can use the command "phc_ctl /dev/ptp0 -- get" to
-> get the current PTP clock time before.
-> 
-> Signed-off-by: Wei Fang <wei.fang@nxp.com>
+> As I mentioned let's drop, but if not for smb I do think it's
+> better as doesn't require changes in multiple /net files.
 
-Acked-by: Richard Cochran <richardcochran@gmail.com>
+I do think it's cleaner to do as a socket flag rather than hardcode it
+in the caller (and potentially making bad assumptions, even if the
+out-of-tree code is a bit of a reach for sure).
+
+-- 
+Jens Axboe
