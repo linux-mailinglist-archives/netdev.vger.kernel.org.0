@@ -2,100 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08FB3605A56
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 10:56:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B61F6605A5D
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 10:59:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229542AbiJTI4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 04:56:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44130 "EHLO
+        id S229634AbiJTI7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 04:59:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiJTI4K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 04:56:10 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A33EB18C439
-        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 01:56:09 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29K6Q8Rk009159;
-        Thu, 20 Oct 2022 01:55:42 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pfpt0220;
- bh=axocrftwap9y+ZJCsoRHYWOyESLCAY3EFMkMfgOiIQc=;
- b=e0+cB00f5JTObgvClaIn8tfupVSx2qCMY4O5LGLJZuy+3jLNXbdnkfqF1CGeroSSs0r3
- CLU9KKY8T21dja0aA3CsXwrCpeGPu94+48kJxQrwgnNBigAkFgu8thA4zdHv6ZhhBle4
- eTHqirzKQelgUj8PMaZFW4SXOjFTBzhNPqTk3RPJGkyDCrM0jllPgWCHAvyBXiUY2o5z
- n8xzIbobk9vLxv8OJKL+ZbnGikf9TDD5dj5fyFDgfmPZZQNy/Qty5MgsSoUB/bV7Nazh
- tfA5qj+PnXbN3ijo9j8aPHwYWcVBt+cH4yjMfGAK0/kumLNmXg1l2BvniX/tOCumGAJS gg== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3kb1258fhx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 20 Oct 2022 01:55:42 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 20 Oct
- 2022 01:55:40 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Thu, 20 Oct 2022 01:55:40 -0700
-Received: from [10.9.118.29] (EL-LT0043.marvell.com [10.9.118.29])
-        by maili.marvell.com (Postfix) with ESMTP id 1A1893F704A;
-        Thu, 20 Oct 2022 01:55:18 -0700 (PDT)
-Message-ID: <2945b16a-87b2-9489-cb4f-f578c368f814@marvell.com>
-Date:   Thu, 20 Oct 2022 10:55:14 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101
- Thunderbird/106.0
-Subject: Re: [PATCH v2 net] atlantic: fix deadlock at aq_nic_stop
-To:     =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>,
-        <kuba@kernel.org>, <andrew@lunn.ch>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
-        <mstarovo@pm.me>, <netdev@vger.kernel.org>,
-        Li Liang <liali@redhat.com>
-References: <20221014103443.138574-1-ihuguet@redhat.com>
- <20221020075310.15226-1-ihuguet@redhat.com>
-Content-Language: en-US
-From:   Igor Russkikh <irusskikh@marvell.com>
-In-Reply-To: <20221020075310.15226-1-ihuguet@redhat.com>
+        with ESMTP id S229931AbiJTI7A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 04:59:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9A1B194225
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 01:58:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1666256338;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=z4JdVTNocmv+5C7FFGGGdfOf1ttmjLbFkFJntY9Bfk4=;
+        b=Zax5i9ayjz8anF3R1dvhueLGwcykDdKonXoTXAxpPEO6EpDS1Ei5MdnH1O3YyH0eOysSok
+        21CWRRwb6H9R5GrEBh/DVRMwOkBn0rVJPWZS0KYrBt19q2Ta9dkeSSD3usuVX3XgQEtdAX
+        cm6d674C8dAKQGeCTepqF6EzDIJhEqI=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-379-hqBvP5AkNIGfiQyY-IoGIA-1; Thu, 20 Oct 2022 04:58:56 -0400
+X-MC-Unique: hqBvP5AkNIGfiQyY-IoGIA-1
+Received: by mail-qt1-f200.google.com with SMTP id bz12-20020a05622a1e8c00b0039ae6e887ffso14401899qtb.8
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 01:58:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=z4JdVTNocmv+5C7FFGGGdfOf1ttmjLbFkFJntY9Bfk4=;
+        b=SqctnDVpxYAXGKbPpiiJTATwJTfBYk0dexllvRXlIP7CdwBYZpRGmHEh87ry2jVXmY
+         oS9O+a6h9tjH8N5oPWXlcF/isaxUaKMnKbJegAKNlFVlNWb1u6MJCwqkoXiQQroZbohN
+         UeeLhu8CCA0tyNEAiDg23FuIi1CdvLrFYbNCdtmrYtS4yOE9CNzhXdUViu7SEqB2WWdf
+         pUVMfqEgVJmPp/WaU4prIXYGgJ0xW1zJnenuB3uVgWPqzjTH29fCj0ZwRzlSMNv4Z8Ws
+         o1p8+yrWKbPRxZvOmYLNsFo+lUHbA6UcuzYra0RS1N2TNtkSukOcEObHjwamsfFAjSFC
+         e0NQ==
+X-Gm-Message-State: ACrzQf2uqhx0yZLQtw5DoAFVtluLCJ09SpLrqXtn/JrmBsfjAq0PvJmZ
+        hMcAR1X9iv7zgphtD5h5ytSuIlx9RVsZaeKx/u5q9Pfx0LGf76I3+EO3CP7yODTG7nYOox+wuDO
+        FkH5pzrfZrFonEUOa
+X-Received: by 2002:a0c:cb88:0:b0:4b8:d79e:b2c1 with SMTP id p8-20020a0ccb88000000b004b8d79eb2c1mr694658qvk.85.1666256336287;
+        Thu, 20 Oct 2022 01:58:56 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM4bXCasRwb46Qr+S4wxdTnTzsOhS4+ji7UC6MR7ZQFF8dYmBWGwTTEIKInkUbNKjOcrOIHvKQ==
+X-Received: by 2002:a0c:cb88:0:b0:4b8:d79e:b2c1 with SMTP id p8-20020a0ccb88000000b004b8d79eb2c1mr694632qvk.85.1666256336012;
+        Thu, 20 Oct 2022 01:58:56 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-103-235.dyn.eolo.it. [146.241.103.235])
+        by smtp.gmail.com with ESMTPSA id z15-20020a05622a124f00b0039a08c0a594sm5671319qtx.82.2022.10.20.01.58.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Oct 2022 01:58:55 -0700 (PDT)
+Message-ID: <bd11473cd4e2a92c4ce2a32d370800522862ad4b.camel@redhat.com>
+Subject: Re: [PATCH][next] net: dev: Convert sa_data to flexible array in
+ struct sockaddr
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Kees Cook <keescook@chromium.org>, Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Dylan Yudaken <dylany@fb.com>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Petr Machata <petrm@nvidia.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        syzbot <syzkaller@googlegroups.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        netdev@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>,
+        "D. Wythe" <alibuda@linux.alibaba.com>,
+        Jeremy Kerr <jk@codeconstruct.com.au>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Menglong Dong <imagedong@tencent.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Congyu Liu <liu3101@purdue.edu>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Ziyang Xuan <william.xuanziyang@huawei.com>,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        linux-hardening@vger.kernel.org
+Date:   Thu, 20 Oct 2022 10:58:50 +0200
+In-Reply-To: <20221018095503.never.671-kees@kernel.org>
+References: <20221018095503.never.671-kees@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: Jw2FJismqX6C_OLFM0v9yhq5Cx1x8w_F
-X-Proofpoint-ORIG-GUID: Jw2FJismqX6C_OLFM0v9yhq5Cx1x8w_F
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-10-20_02,2022-10-19_04,2022-06-22_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
+On Tue, 2022-10-18 at 02:56 -0700, Kees Cook wrote:
+> One of the worst offenders of "fake flexible arrays" is struct sockaddr,
+> as it is the classic example of why GCC and Clang have been traditionally
+> forced to treat all trailing arrays as fake flexible arrays: in the
+> distant misty past, sa_data became too small, and code started just
+> treating it as a flexible array, even though it was fixed-size. The
+> special case by the compiler is specifically that sizeof(sa->sa_data)
+> and FORTIFY_SOURCE (which uses __builtin_object_size(sa->sa_data, 1))
+> do not agree (14 and -1 respectively), which makes FORTIFY_SOURCE treat
+> it as a flexible array.
+> 
+> However, the coming -fstrict-flex-arrays compiler flag will remove
+> these special cases so that FORTIFY_SOURCE can gain coverage over all
+> the trailing arrays in the kernel that are _not_ supposed to be treated
+> as a flexible array. To deal with this change, convert sa_data to a true
+> flexible array. To keep the structure size the same, move sa_data into
+> a union with a newly introduced sa_data_min with the original size. The
+> result is that FORTIFY_SOURCE can continue to have no idea how large
+> sa_data may actually be, but anything using sizeof(sa->sa_data) must
+> switch to sizeof(sa->sa_data_min).
+> 
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Jens Axboe <axboe@kernel.dk>
+> Cc: Pavel Begunkov <asml.silence@gmail.com>
+> Cc: David Ahern <dsahern@kernel.org>
+> Cc: Dylan Yudaken <dylany@fb.com>
+> Cc: Yajun Deng <yajun.deng@linux.dev>
+> Cc: Petr Machata <petrm@nvidia.com>
+> Cc: Hangbin Liu <liuhangbin@gmail.com>
+> Cc: Leon Romanovsky <leon@kernel.org>
+> Cc: syzbot <syzkaller@googlegroups.com>
+> Cc: Willem de Bruijn <willemb@google.com>
+> Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+>  include/linux/socket.h |  5 ++++-
+>  net/core/dev.c         |  2 +-
+>  net/core/dev_ioctl.c   |  2 +-
+>  net/packet/af_packet.c | 10 +++++-----
+>  4 files changed, 11 insertions(+), 8 deletions(-)
+> 
+> diff --git a/include/linux/socket.h b/include/linux/socket.h
+> index de3701a2a212..13c3a237b9c9 100644
+> --- a/include/linux/socket.h
+> +++ b/include/linux/socket.h
+> @@ -33,7 +33,10 @@ typedef __kernel_sa_family_t	sa_family_t;
+>  
+>  struct sockaddr {
+>  	sa_family_t	sa_family;	/* address family, AF_xxx	*/
+> -	char		sa_data[14];	/* 14 bytes of protocol address	*/
+> +	union {
+> +		char sa_data_min[14];		/* Minimum 14 bytes of protocol address	*/
+> +		DECLARE_FLEX_ARRAY(char, sa_data);
 
-On 10/20/2022 9:53 AM, Íñigo Huguet wrote:
-> NIC is stopped with rtnl_lock held, and during the stop it cancels the
-> 'service_task' work and free irqs.
+Any special reason to avoid preserving the old name for the array and
+e.g. using sa_data_flex for the new field, so we don't have to touch
+the sockaddr users?
 
-Hi Íñigo, thanks for taking care of this.
+Thanks!
 
-Just reviewed, overall looks reasonable for me. Unfortunately I don't recall
-now why RTNL lock was used originally, most probably we've tried to secure
-parallel "ip macsec configure something" commands execution.
+Paolo
 
-But the model with internal mutex looks safe for me.
-
-Unfortunately I now have no ability to verify your patch, edge usecase here
-would be to try stress running in parallel:
-"ethtool -S <iface>"
-"ip macsec show"
-"ip macsec <change something>"
-Plus ideal would be link flipping.
-
-Have you tried something like that?
-
-Reviewed-by: Igor Russkikh <irusskikh@marvell.com>
-
-Regards,
-  Igor
