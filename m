@@ -2,95 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A559605BE7
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 12:14:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 599E3605BC7
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 12:02:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230289AbiJTKN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 06:13:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50378 "EHLO
+        id S229552AbiJTKCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 06:02:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229928AbiJTKN6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 06:13:58 -0400
-X-Greylist: delayed 839 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 20 Oct 2022 03:13:57 PDT
-Received: from level.ms.sapientia.ro (level.ms.sapientia.ro [193.16.218.95])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1F0121D0671
-        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 03:13:57 -0700 (PDT)
-Received: from localhost (level.ms.sapientia.ro [127.0.0.1])
-        by level.ms.sapientia.ro (Postfix) with ESMTP id EC2646CD5847;
-        Thu, 20 Oct 2022 12:58:29 +0300 (EEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 level.ms.sapientia.ro EC2646CD5847
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ms.sapientia.ro;
-        s=default; t=1666259910;
-        bh=0E9m7amv2gS5FYAp0O+/uRtUTrfd4d6FtPUURJxepf8=;
-        h=Date:From:To:Subject:Reply-To:From;
-        b=QWWdwZRFK+9SSI9AJ8Z69aUKPnTicn/jxfFvtQHJAJEzKFYIInzUH7oNG34BV0JZ7
-         /3gcFYK2jA6oJtdG8PDE2Oj3xZVWwi9qFQuZ1QcE6MkA9pNJoCEFD+yj9QHKAhsigE
-         gwQR/jnrcHjlv4sHnVQ4OVE5URUN+LSOLKIGr9jY=
-X-Virus-Scanned: by B3 SapScan
-Received: from level.ms.sapientia.ro ([127.0.0.1])
-        by localhost (level.ms.sapientia.ro [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id PHmZ30kOndtF; Thu, 20 Oct 2022 12:58:28 +0300 (EEST)
-Received: from level.ms.sapientia.ro (level.ms.sapientia.ro [127.0.0.1])
-        by level.ms.sapientia.ro (Postfix) with ESMTPSA id 4B56C6CD454D;
-        Thu, 20 Oct 2022 12:58:24 +0300 (EEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 level.ms.sapientia.ro 4B56C6CD454D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ms.sapientia.ro;
-        s=default; t=1666259905;
-        bh=0E9m7amv2gS5FYAp0O+/uRtUTrfd4d6FtPUURJxepf8=;
-        h=Date:From:To:Subject:Reply-To:From;
-        b=evyY8oMW/xf5hrlfGz9npQfTTdCOxs0z0qWpYUqxJfTWRM0WVkd6qkSfvlU7Cuhpt
-         cx671joQtYPKlj2hgSs8OjujSwcMBBX9fvJXVqRdHxhESnpSmW2MxseyhA55BlKKBw
-         Bntul9NDTaeRZxK3+oZdHoxFPKyfkFdFweODYhIo=
+        with ESMTP id S229866AbiJTKCd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 06:02:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33177270C
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 03:02:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1666260117;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7IUYOhzeuyc+CvCyFdQqPRa5begr27mKnMbe0QZvpVo=;
+        b=JTHh6TwfXFIZNrYCXrPLZY2GZkxny7EWbUb2Hr6ApbL6ABQ+N3qTObcM0o67rMMzDNXTqJ
+        7T8QatgGM2msf1o9hX8MxW7V5FbjpvNC3MQtE7tibJErkl7b3KHAQqnK8lN3KvdDU0H0MD
+        uGhbGL1m/BZgRo7Oh7rr9xBRTZmuHK0=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-467-Wd1pT2b1O76djFQS0UrlEw-1; Thu, 20 Oct 2022 06:01:56 -0400
+X-MC-Unique: Wd1pT2b1O76djFQS0UrlEw-1
+Received: by mail-qk1-f198.google.com with SMTP id h9-20020a05620a244900b006ee944ec451so16952584qkn.13
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 03:01:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=7IUYOhzeuyc+CvCyFdQqPRa5begr27mKnMbe0QZvpVo=;
+        b=R7QtV2GtQ+JSt+c44XpFYv6uGw4lWo6J2t0bWv3+9+UM7s/78p4o3jzq3Dk1+DiLKC
+         xBB08xL68EfRqEc2WtQSSGqbLSldv9zgGE40NuQcedpA7nxJVQp9eXv5qY0gwFUsDTTa
+         1qjCXQUekSwsGKmPFogxNe5KF8Nsq+Di/CaW7hvrjQNBorcU6cD2qI2QylWUx35kZvaT
+         yQztuLC5N9BVxBPRlIIE0ecjuAz+dJAjjnwI5alELglEa6h1DHP8g1woVkHZAKc6s10I
+         qnVjaErAtRCWAlrz2OKbVGGTrKDiG7SuqVNekuyWWHeZbxpNAHEEdOFvCgXi5hpiLdIF
+         VO+w==
+X-Gm-Message-State: ACrzQf0o6fy+piyeTv3Z96pnfuDPB4wQQIMbMrtNVPxOqgGR+LNajUDk
+        9iO2aUxkSsTV7vCztmsWlYs0oOIqfTpSP5VQSTd24q95ccphXmEuDIt4Fbnnl7fPEJn32yFkuUO
+        hf9jq9+drxG4rHghM
+X-Received: by 2002:a05:620a:29cd:b0:6d2:c5d6:6fe0 with SMTP id s13-20020a05620a29cd00b006d2c5d66fe0mr8902973qkp.148.1666260115370;
+        Thu, 20 Oct 2022 03:01:55 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM6u4Cw0xdMvHD/bD0LbBi+bLRWROc3JkUovuWyzZU6Flh9tkWJAa4r1LzWLL2+KnDGykxlfsQ==
+X-Received: by 2002:a05:620a:29cd:b0:6d2:c5d6:6fe0 with SMTP id s13-20020a05620a29cd00b006d2c5d66fe0mr8902958qkp.148.1666260115163;
+        Thu, 20 Oct 2022 03:01:55 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-103-235.dyn.eolo.it. [146.241.103.235])
+        by smtp.gmail.com with ESMTPSA id az13-20020a05620a170d00b006eea461177csm7177053qkb.29.2022.10.20.03.01.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Oct 2022 03:01:54 -0700 (PDT)
+Message-ID: <5cf6d7cbb2824f03fcfee2f60e21c4eddf732320.camel@redhat.com>
+Subject: Re: [net 02/16] net/mlx5: Wait for firmware to enable CRS before
+ pci_restore_state
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>
+Date:   Thu, 20 Oct 2022 12:01:51 +0200
+In-Reply-To: <20221019063813.802772-3-saeed@kernel.org>
+References: <20221019063813.802772-1-saeed@kernel.org>
+         <20221019063813.802772-3-saeed@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
 Content-Transfer-Encoding: 7bit
-Date:   Thu, 20 Oct 2022 11:58:24 +0200
-From:   Evan <molnarkati@ms.sapientia.ro>
-To:     undisclosed-recipients:;
-Subject: Hi Gorgeous,
-Reply-To: bakker.evan01@gmail.com
-Mail-Reply-To: bakker.evan01@gmail.com
-Message-ID: <3741c8fcf5b6afa7f03db6c29ab9ebaa@ms.sapientia.ro>
-X-Sender: molnarkati@ms.sapientia.ro
-User-Agent: Roundcube Webmail/1.3.4
-X-Spam-Status: Yes, score=6.0 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_REPLYTO,
-        FREEMAIL_REPLYTO_END_DIGIT,ODD_FREEM_REPTO,SPF_HELO_PASS,SPF_PASS,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: *  0.0 URIBL_BLOCKED ADMINISTRATOR NOTICE: The query to URIBL was
-        *      blocked.  See
-        *      http://wiki.apache.org/spamassassin/DnsBlocklists#dnsbl-block
-        *      for more information.
-        *      [URIs: sapientia.ro]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5002]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        * -0.0 SPF_HELO_PASS SPF: HELO matches SPF record
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [bakker.evan01[at]gmail.com]
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  2.9 ODD_FREEM_REPTO Has unusual reply-to header
-        *  2.1 FREEMAIL_FORGED_REPLYTO Freemail in Reply-To, but not From
-X-Spam-Level: *****
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Gorgeous,
-Am sorry to bother you, but I am single and lonely in need of a caring, 
-loving and romantic companion.
-I am a secret admirer and would like to explore the opportunity to learn 
-more about each other.
-Hopefully it will be the beginning of a long term communication between 
-the both of us.
-Please let me know what you, will be glad to hear from you again.
-Hugs and kisses,
-Evan.
+Hello,
+
+On Tue, 2022-10-18 at 23:37 -0700, Saeed Mahameed wrote:
+> From: Moshe Shemesh <moshe@nvidia.com>
+> 
+> After firmware reset driver should verify firmware already enabled CRS
+> and became responsive to pci config cycles before restoring pci state.
+> Fix that by waiting till device_id is readable through PCI again.
+> 
+> Fixes: eabe8e5e88f5 ("net/mlx5: Handle sync reset now event")
+> Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+
+@Saeed: in the PR, this commit is missing your SoB:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git/commit/?h=mlx5-fixes-2022-10-14&id=e63eae9bf56d005a79ee5f8aca0aea757e208598
+
+Could you update the PR?
+
+Thanks!
+
+Paolo
+
