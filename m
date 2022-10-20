@@ -2,72 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 312ED606BBD
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 00:56:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 909FB606BC7
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 00:57:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229739AbiJTWz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 18:55:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53436 "EHLO
+        id S229987AbiJTW5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 18:57:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229932AbiJTWz5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 18:55:57 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A263219A20A
-        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 15:55:44 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id p6-20020a17090a748600b002103d1ef63aso1104484pjk.1
-        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 15:55:44 -0700 (PDT)
+        with ESMTP id S229893AbiJTW5h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 18:57:37 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4AEA22E0D4;
+        Thu, 20 Oct 2022 15:57:35 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id k2so3126022ejr.2;
+        Thu, 20 Oct 2022 15:57:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=cj0CH83gG502oU3XoyUvan58JOVquo6gEhkWxu6syvA=;
-        b=DWI323io4MlnG9mZWvKL+Z1nreAWi5G6EUWK13mpJBRC2tO0Rh6oIclRw0yRfd5W/d
-         s0PgKUYoK+SKSPh8NlzkJfzEmld7Ju4i8ywLL6vbtgwQuRtfzrYEDQ9+e8tC2GQWo6Kl
-         N3P8Fem1xr8ioafs3NmDTkO+sOiye3JbUNchNvfc6Fbl1dx/4JVIGBZ24m56TZ0Qw1wu
-         /saBPbn0esXYAYDYRaXfWMd6seYtkRuSlsLtBK/TVujVubMjyTtqxBdvDM556GfpHskl
-         oinW+/MuugN1eiccRrBDnQo1irD6ysfVFV3HxTIdNlgY0B6ZXQxYoSf28dojgTMXYxti
-         EHlw==
+        bh=JuxcgTkIRC5WG6rM4q/CSaRgfUH0Ti3MoOBIFAp7H8s=;
+        b=XBJzFhduueKPu1ACZxmcj5cXRa0nb0p5dX8b6x8utN2F40sVgNnz2Vwo93T3WLnBcx
+         Yx3WwrvmN9Nuh/q4vOjOu0pqXnDTWqYB4KV9B3sCwZOf7c8OCwjoNM/D1TNvmc045ZzX
+         Poo3JVc6Gu+DF650q6sVaij7GSbGVXbKX5JW9xSnGo2M+EdB4pcsbE0152s/sylYv+Nc
+         ALPztrqDuyQF/Ci2P4snXxWjZKRtHnNH3GhbYR/zFvz6RX+vOKF1y9KazvTME97oRexc
+         94w80ZyNJO0Z5bBflaDs/V5ISm1JA/Dg+OYU7d/pyJvJYa/mJ0Vv6e7Q6YanX5FVgqB4
+         eYew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=cj0CH83gG502oU3XoyUvan58JOVquo6gEhkWxu6syvA=;
-        b=0aHbIvqCAkxbE1aPFqP8VXtZMZGmZWb59oXRHqcNmr4Q/+g2ibBGFzVPZItqQnL0c3
-         qq3XN2pQa2mEBYOC6k2saGEDdnBjrd/W+6/md/uRAgecvVWBsrCdQsHi4qEz+kKGFoJm
-         mld+58fzO6UlTcfWZffqDl1MuKPS655MDs18/kIuHx6Hhagn51FkCAElhdIGAXfSZ6Az
-         hW00I3RYFJz8bljfXxQxexF/poSAqKmHHJEb4I7omhKFxN+xC1UrdRxJp6mpA7QH33LS
-         UPKeNlkYQs024Lgp70M3iA81/lhBCHFICCVIfvS+GDYU+bkxm0hPTH2kajosoAaVcoFI
-         613g==
-X-Gm-Message-State: ACrzQf3tjqdd1XzIny8QIdI9oamZRIcqdPNUplFQd/G+OJo90LuD/ZaC
-        pclD5v3rKNpDpq/E3EihC75KpQ==
-X-Google-Smtp-Source: AMsMyM7xu8+xvqWY3jJ1ibBaZl6XXcj+/fwoWgCdqgZIvkseoRwZ0PNDPWe94+Iy8lLHNvFVmRhCjw==
-X-Received: by 2002:a17:90b:4c86:b0:20d:402d:6155 with SMTP id my6-20020a17090b4c8600b0020d402d6155mr52693449pjb.229.1666306543213;
-        Thu, 20 Oct 2022 15:55:43 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id i6-20020a628706000000b00553b37c7732sm13771966pfe.105.2022.10.20.15.55.42
+        bh=JuxcgTkIRC5WG6rM4q/CSaRgfUH0Ti3MoOBIFAp7H8s=;
+        b=4kUdMb+u2XRrHmLU+EuuqbCdyOLgAcdkFgOu3kjz+hT63LZn9HJN8JLgOG3m1fcFSs
+         ciwI27DxgE7r3MPhcJz+0geVtmW/fyvjfnjkrQVm58QLC3D2cWNLikxhCxe6ijJJwwGc
+         i4XoZtEffNkwbqSnazLDctBLW7pTyKVnAFUpfoGcPrH5pUqK/mpKJVIxzzVh4YwjB9C7
+         E69LIXrT6zmbMcTGInfAnsdIadX7Jpt63bdJLCvOzkyF0N37QwxGwzWnE/Xw8Vjis6xs
+         JCHveLz1vaXGEerP/VAldmnFM/xpr3YerlKqu4jOx7MKtnomlae6WrWIcDF6NOu/Nlnj
+         vm0w==
+X-Gm-Message-State: ACrzQf1Wqw1ZAfXF4phW1hSUJexp1pXGNAXHSk3DUKopWpm/KP2ag+s0
+        toc0VvqFAQ4dydTSKuplXm7zQW6khpPfOQ==
+X-Google-Smtp-Source: AMsMyM7/vnHFskrIzjNC7ybOEBIlorfKrTTq/Ou6mds57aeFaKcu+F9HahwfD0wuLF52vhDnh4xpcw==
+X-Received: by 2002:a17:906:58cc:b0:78d:ce9c:3787 with SMTP id e12-20020a17090658cc00b0078dce9c3787mr12707611ejs.715.1666306643405;
+        Thu, 20 Oct 2022 15:57:23 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id l6-20020a1709062a8600b0073d796a1043sm10750046eje.123.2022.10.20.15.57.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Oct 2022 15:55:42 -0700 (PDT)
-Date:   Thu, 20 Oct 2022 22:55:39 +0000
-From:   Carlos Llamas <cmllamas@google.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, liuwei.a@oppo.com
-Subject: Re: [PATCH net] inet: fully convert sk->sk_rx_dst to RCU rules
-Message-ID: <Y1HR61VKKNFRv/X9@google.com>
-References: <20211220143330.680945-1-eric.dumazet@gmail.com>
- <Y1G4HufHb+sEIUD6@google.com>
- <CANn89iJsZsmw9+RryFzMhEBqdqUMD=LRkJZ85k1ksdAzypfefg@mail.gmail.com>
+        Thu, 20 Oct 2022 15:57:22 -0700 (PDT)
+Date:   Fri, 21 Oct 2022 01:57:19 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     netdev@kapio-technology.com
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Hans Schultz <schultz.hans@gmail.com>,
+        Joachim Wiberg <troglobit@gmail.com>,
+        Amit Cohen <amcohen@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v8 net-next 10/12] net: dsa: mv88e6xxx: mac-auth/MAB
+ implementation
+Message-ID: <20221020225719.l5iw6vndmm7gvjo3@skbuf>
+References: <20221018165619.134535-1-netdev@kapio-technology.com>
+ <20221018165619.134535-1-netdev@kapio-technology.com>
+ <20221018165619.134535-11-netdev@kapio-technology.com>
+ <20221018165619.134535-11-netdev@kapio-technology.com>
+ <20221020132538.reirrskemcjwih2m@skbuf>
+ <2565c09bb95d69142522c3c3bcaa599e@kapio-technology.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CANn89iJsZsmw9+RryFzMhEBqdqUMD=LRkJZ85k1ksdAzypfefg@mail.gmail.com>
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+In-Reply-To: <2565c09bb95d69142522c3c3bcaa599e@kapio-technology.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,20 +107,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 20, 2022 at 02:53:06PM -0700, Eric Dumazet wrote:
-> On Thu, Oct 20, 2022 at 2:05 PM Carlos Llamas <cmllamas@google.com> wrote:
-> >
-> > On Mon, Dec 20, 2021 at 06:33:30AM -0800, Eric Dumazet wrote:
-> 
-> >
-> > Eric, this patch was picked for v5.15 stable and I wonder whether this
-> > needs to be backported to older branches too. The Fixes commit quoted
-> > here seems to go back all the way to v3.5. Would you know?
-> 
-> I guess nobody cared to address some merge conflicts on older kernel versions.
-> 
-> If you want, you could handle the backport, this patch can help some
-> rare race windows
-> on preemptable kernels.
+On Thu, Oct 20, 2022 at 10:20:50PM +0200, netdev@kapio-technology.com wrote:
+> In general locked ports block traffic from a host based on if there is a
+> FDB entry or not. In the non-offloaded case, there is only CPU assisted
+> learning, so the normal learning mechanism has to be disabled as any
+> learned entry will open the port for the learned MAC,vlan.
 
-Sounds good, I'll have a look at backporting this patch.
+Does it have to be that way? Why can't BR_LEARNING on a BR_PORT_LOCKED
+cause the learned FDB entries to have BR_FDB_LOCKED, and everything
+would be ok in that case (the port will not be opened for the learned
+MAC/VLAN)?
+
+> Thus learning is off for locked ports, which of course includes MAB.
+> 
+> So the 'learning' is based on authorizing MAC,vlan addresses, which
+> is done by userspace daemons, e.g. hostapd or what could be called
+> mabd.
