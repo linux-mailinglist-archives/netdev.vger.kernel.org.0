@@ -2,128 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EDAD60589D
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 09:31:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF4306058A6
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 09:32:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230176AbiJTHbm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 03:31:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58136 "EHLO
+        id S230242AbiJTHcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 03:32:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230097AbiJTHbk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 03:31:40 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E266E4C60B;
-        Thu, 20 Oct 2022 00:31:38 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id a10so32825807wrm.12;
-        Thu, 20 Oct 2022 00:31:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references
-         :organization:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=Z79Arkt5xOzvPjY1a5juI5H/rNW3whMoxZF+FvMREbw=;
-        b=RazdqWN63yJXfYJ86StBl23cef6DFTs5JNs2/ZCRIwVnhutMysChXxhU8M9VSS1Wfm
-         SI8ookk3ByODVTHkQMUMCF47BEnH3WixOPlAVXBu0alhZWYJsv5GG/uvRmRgs0mD/3dt
-         HhpfZ3OMnUuDZX8b3oysjgcSGbKyTeZcrven8zrs04Sobujice4hGfA8Vx+AnYKHw9Cm
-         T03WOBhUwsdDjqUyRkTCsqvayy/Tkp3ZADK1xbYGa93YY2t1qox0Rli6/Tu2ECCDJtOp
-         sWYdAee7c+5mN6tT61P18nAFXCuz8NyRBGLyKnlcdYAL4qBNf0rLivoYtEq39dPls5Lq
-         PukA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references
-         :organization:message-id:subject:cc:to:from:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Z79Arkt5xOzvPjY1a5juI5H/rNW3whMoxZF+FvMREbw=;
-        b=UWhvHMZw/f0eKZYzBTUk2RdJ2UK6gSaUoZ/sNCdwKOH4WurJ7IIBMYW956ozyCwnb1
-         TNaP8pUnJYDUoKjH6N2qMDmpntNdNMH0aBAc0WQRKkqp/bgU+lmlrBdaUWghf9/gJOCU
-         oiIdMhKPSUF1M0QjWaKs8d79YorDEI1KMzSuDJa6HLpJT4cGGFZu0sr7IzrNRP9Q9xod
-         VPNAhsL3JM7onh4MHcIsDaCd+gUsKriDowrlKDe0tDD5ktjy5Uhi93byMivl8mxVZKrW
-         SvmJCATCJxfVOCGoRXUF6J+hzE89nCiu2QgC0NUrfAow8dsJcvYvxPOkukZhxRRmOHgs
-         2PRw==
-X-Gm-Message-State: ACrzQf2mGpaBS1Pu+O68MdRKenFKoBWaXkeKpRk28KJCCr2GKcsu4Dp3
-        firC8Nmkeu17sH87FoHqzwbKQ5LWSjuErQ==
-X-Google-Smtp-Source: AMsMyM5+QRPiCIoscx0FYAMfyyMa5WCoxHLYwyqDSBoJXzHftg3D/UDHRqFl1w0DiSjYcUA1llFtBg==
-X-Received: by 2002:adf:f58c:0:b0:22d:69b8:da75 with SMTP id f12-20020adff58c000000b0022d69b8da75mr7541882wro.220.1666251096969;
-        Thu, 20 Oct 2022 00:31:36 -0700 (PDT)
-Received: from wse-c0155 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id q3-20020a056000136300b0022e3cba367fsm15427829wrz.100.2022.10.20.00.31.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Oct 2022 00:31:35 -0700 (PDT)
-Date:   Thu, 20 Oct 2022 09:31:34 +0200
-From:   Casper Andersson <casper.casan@gmail.com>
-To:     Steen Hegelund <steen.hegelund@microchip.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, UNGLinuxDriver@microchip.com,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Wan Jiabing <wanjiabing@vivo.com>,
-        Nathan Huckleberry <nhuck@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH net-next v2 4/9] net: microchip: sparx5: Adding initial
- tc flower support for VCAP API
-Message-ID: <20221020073134.ru2p5m5ittadthzr@wse-c0155>
-Organization: Westermo Network Technologies AB
-References: <20221019114215.620969-1-steen.hegelund@microchip.com>
- <20221019114215.620969-5-steen.hegelund@microchip.com>
+        with ESMTP id S230248AbiJTHcg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 03:32:36 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6B4516EA1D
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 00:32:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=0XL+Bo6JL7tOrlyi5GwtltZ3Y4ZTvUdfQo54VVIV8Jc=;
+        t=1666251145; x=1667460745; b=wM1cKdY4LzskCb5236QPdeIxkXOUh3gIxikSu80Lgc10sjQ
+        /BDD49AGM3fcU+bu/B4e1/0zXOu+OrZR8yyudACZl5Z9OejEz68//rlKyhOnIdP/An9U8g5do4Pjc
+        mOZhWLdRKpGRSewIUVLDqpm8lZCKa3gr+/I5uU28P4vr7gyHWCMF5JdnbdYHIlKiLbd9q2utr4ksc
+        qnWkJnIjJVUrTeyP6qS43/odv5EOty4KIdyec4ve+vpQt3ogzkq9jF8wbj3/QWcjKHGADPolDd5r1
+        wuVR74wHA8WfZGKkaEOA3jIksvirpz/cuJTobwL9Qbus/vZk7eukUdIzjknH9tMQ==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1olQ2M-00Btfp-2O;
+        Thu, 20 Oct 2022 09:32:18 +0200
+Message-ID: <683f4c655dd09a2af718956e8c8d56e6451e11ac.camel@sipsolutions.net>
+Subject: Re: [PATCH net-next 12/13] genetlink: allow families to use split
+ ops directly
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, jiri@resnulli.us, razor@blackwall.org,
+        nicolas.dichtel@6wind.com, gnault@redhat.com,
+        jacob.e.keller@intel.com, fw@strlen.de
+Date:   Thu, 20 Oct 2022 09:32:17 +0200
+In-Reply-To: <20221019125745.3f2e7659@kernel.org>
+References: <20221018230728.1039524-1-kuba@kernel.org>
+         <20221018230728.1039524-13-kuba@kernel.org>
+         <a23c47631957c3ba3aaa87bc325553da04f99a0c.camel@sipsolutions.net>
+         <20221019122504.0cb9d326@kernel.org>
+         <dfac0b6e09e9739c7f613cb8ed77c81f9db0bb44.camel@sipsolutions.net>
+         <20221019125745.3f2e7659@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221019114215.620969-5-steen.hegelund@microchip.com>
+X-malware-bazaar: not-scanned
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Steen,
+On Wed, 2022-10-19 at 12:57 -0700, Jakub Kicinski wrote:
+> > Oh, I see now, you were basically saying "it's only 9% bigger for all
+> > that extra flexibility" ... didn't read that right before.
+>=20
+> Yup, BTW one annoying bit is that we treat maxattr =3D=3D 0 as=20
+> "no validation" rather than "reject everything".
+>=20
+> Right now I add a reject-all policy in the family itself (with two
+> entries, argh), and hook it up to parameter-less dumps. But we could=20
+> do something else - like modify the behavior in case the op was declared
+> as split at the family level.
+>=20
+> I opted for having family add the reject-all policy because I code gen
+> the policies based on YAML spec, anyway, so not much extra effort, and
+> the uniformity between different type of ops seems worth maintaining.
+>=20
+> WDYT?
 
-It's a pretty big patch series, but overall I think it looks very good.
-I've got some minor comments. I also tested it on the Microchip PCB135
-switch and it works as described.
+Hmm. The codegen/YAML part likely won't really happen for all of the
+families so perhaps some simplification would be good?
 
-On 2022-10-19 13:42, Steen Hegelund wrote:
-> +static void sparx5_tc_flower_set_exterr(struct net_device *ndev,
-> +					struct flow_cls_offload *fco,
-> +					struct vcap_rule *vrule)
-> +{
-> +	switch (vrule->exterr) {
-> +	case VCAP_ERR_NONE:
-> +		break;
-> +	case VCAP_ERR_NO_ADMIN:
-> +		NL_SET_ERR_MSG_MOD(fco->common.extack,
-> +				   "Missing VCAP instance");
-> +		break;
-> +	case VCAP_ERR_NO_NETDEV:
-> +		NL_SET_ERR_MSG_MOD(fco->common.extack,
-> +				   "Missing network interface");
-> +		break;
-> +	case VCAP_ERR_NO_KEYSET_MATCH:
-> +		NL_SET_ERR_MSG_MOD(fco->common.extack,
-> +				   "No keyset matched the filter keys");
-> +		break;
-> +	case VCAP_ERR_NO_ACTIONSET_MATCH:
-> +		NL_SET_ERR_MSG_MOD(fco->common.extack,
-> +				   "No actionset matched the filter actions");
-> +		break;
-> +	case VCAP_ERR_NO_PORT_KEYSET_MATCH:
-> +		NL_SET_ERR_MSG_MOD(fco->common.extack,
-> +				   "No port keyset matched the filter keys");
-> +		break;
-> +	}
-> +}
+I feel like I probably should've changed this when adding
+GENL_DONT_VALIDATE_DUMP_STRICT / GENL_DONT_VALIDATE_STRICT, but I guess
+that's too late now :(
 
-Could this also be shared in the VCAP API? It currently doesn't use
-anything Sparx5 specific. Though, net_device is unused so I'm guessing
-you might have plans for this in the future. And it might fit better
-here according to your design goals.
+I guess we could add another set of flags, but that'd be annoying.
 
-Tested-by: Casper Andersson <casper.casan@gmail.com>
-Reviewed-by: Casper Andersson <casper.casan@gmail.com>
+OTOH, it's nicer if future things are better, and we don't need to add a
+"reject all" policy to all of them?
 
+johannes
