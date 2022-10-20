@@ -2,103 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75D476068DB
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 21:29:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDC2E6068DF
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 21:30:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229962AbiJTT3L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 15:29:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33432 "EHLO
+        id S229729AbiJTTaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 15:30:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229667AbiJTT3K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 15:29:10 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E296317E21D;
-        Thu, 20 Oct 2022 12:29:08 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 5A96F18838D4;
-        Thu, 20 Oct 2022 19:29:06 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 48C0C25001FA;
-        Thu, 20 Oct 2022 19:29:06 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 3A7E29EC0002; Thu, 20 Oct 2022 19:29:06 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S229695AbiJTTae (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 15:30:34 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56CD11A5B1C;
+        Thu, 20 Oct 2022 12:30:32 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id w18so1889147ejq.11;
+        Thu, 20 Oct 2022 12:30:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=bb8tUZkUDdEfCtbj9v9BtSlOnFqvAoDEAD0yrPFqVao=;
+        b=RkgZgoAGFYQuM4tjiPOGCTBZJSZA908D7jM1AoLLBWm2VVMPlAWzOzIIU4Er+vwsQi
+         i5/zoREWaEi8sVHRW4gDzCS10puiFGmcZqhGECuJKuEqYSZpLvy+qyFFLVQtGe2U1cuG
+         VS0Fhqgjq/iOgT/3k0zDb+V25p5gmqaIzJ4RnXB1ZXE/XHDrB3BWeZ1FRIyEEvedKkSK
+         JD2CctoPwIf94swm/zF1jZ1Y7XJhoywP5RWGOI9gq9VCCOqUNuO14NzzPxlz3/SH3/Ju
+         kbYl6FEmdT+7mcYLhvUxeHVSoFCPgCM/1vep69dv5twb4jGe3+PNk0se9Ctj3yHX8tLJ
+         C85A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=bb8tUZkUDdEfCtbj9v9BtSlOnFqvAoDEAD0yrPFqVao=;
+        b=McmlG50oIX0yb1Jo3laA7fHxxaDL+gBwEyiDAvoPWFhYLNEr7CjiaC9AYyIkntX6ru
+         UI1S7OVLQLYE4XxtdSqOA6E5y52CaKuthATsacnSYTAq5e5qIegBnshJNMrLm/6CCcg4
+         BImnA2KnSjqbmUQ2vcmclVE7ayRYM9Nl69JPX3sFzSdWIqgdzLcnNA2Shfrm/MIoF/n9
+         zzZ9H9DjdkvDGSac3UHzjk6nydkF6L6oCXzhO+QM4/Kf7xL55rOXUK0/ds3w8rxqSQov
+         kA9xqK00AsMR1JyN2NdL7AZofLlewlHxArB/d+miLv1dEuu79L4/7UpzzBfnuvYxTxbm
+         NCxw==
+X-Gm-Message-State: ACrzQf1ls3tddcmKM2SrhCi/RbFfD9hetbxfOY+gL3DscR3quh2pGZS6
+        5ZRM0IhrLKyi7EXGYR6AUotGX4asoQLfDZYE2EQ=
+X-Google-Smtp-Source: AMsMyM7rx+/3Di2dVksUzUjLlaIThVXf0csRoYO8+j/ReOYbCaEOpLjmAeXEjPpVD0euLhrYmlf1bk2eX706CpU1U3o=
+X-Received: by 2002:a17:907:1dd8:b0:78d:cbdc:ff1f with SMTP id
+ og24-20020a1709071dd800b0078dcbdcff1fmr12123904ejc.412.1666294230824; Thu, 20
+ Oct 2022 12:30:30 -0700 (PDT)
 MIME-Version: 1.0
-Date:   Thu, 20 Oct 2022 21:29:06 +0200
-From:   netdev@kapio-technology.com
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Hans Schultz <schultz.hans@gmail.com>,
-        Joachim Wiberg <troglobit@gmail.com>,
-        Amit Cohen <amcohen@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v8 net-next 03/12] net: bridge: enable bridge to install
- locked fdb entries from drivers
-In-Reply-To: <20221020125549.v6kls2lk7etvay7c@skbuf>
-References: <20221018165619.134535-1-netdev@kapio-technology.com>
- <20221018165619.134535-4-netdev@kapio-technology.com>
- <20221020125549.v6kls2lk7etvay7c@skbuf>
-User-Agent: Gigahost Webmail
-Message-ID: <e1184c879642c35e4ff6f19e0fd5de46@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220907183129.745846-1-joannelkoong@gmail.com>
+ <20220907183129.745846-2-joannelkoong@gmail.com> <cd8d201b-74f7-4045-ad2f-6d26ed608d1e@linux.dev>
+ <CAJnrk1ZTbHcFsQPKWnZ+Au8BsiFc++Ud7y=24mAhNXNbYQaXhA@mail.gmail.com>
+ <8f900712-8dcc-5f39-7a66-b6b2e4162f94@linux.dev> <de696460-ab5c-0770-017a-2af06eab5187@linux.dev>
+In-Reply-To: <de696460-ab5c-0770-017a-2af06eab5187@linux.dev>
+From:   Joanne Koong <joannelkoong@gmail.com>
+Date:   Thu, 20 Oct 2022 12:30:19 -0700
+Message-ID: <CAJnrk1YXr5R679Usko8V8b3dDO5eUcL=mTp14yPHbPXnkfk7Ew@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v6 1/3] bpf: Add skb dynptrs
+To:     Martin KaFai Lau <martin.lau@linux.dev>
+Cc:     andrii@kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        martin.lau@kernel.org, kuba@kernel.org, memxor@gmail.com,
+        toke@redhat.com, netdev@vger.kernel.org, kernel-team@fb.com,
+        bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-10-20 14:55, Vladimir Oltean wrote:
-> On Tue, Oct 18, 2022 at 06:56:10PM +0200, Hans J. Schultz wrote:
->> diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
->> index 8f3d76c751dd..c6b938c01a74 100644
->> --- a/net/bridge/br_switchdev.c
->> +++ b/net/bridge/br_switchdev.c
->> @@ -136,6 +136,7 @@ static void br_switchdev_fdb_populate(struct 
->> net_bridge *br,
->>  	item->added_by_user = test_bit(BR_FDB_ADDED_BY_USER, &fdb->flags);
->>  	item->offloaded = test_bit(BR_FDB_OFFLOADED, &fdb->flags);
->>  	item->is_local = test_bit(BR_FDB_LOCAL, &fdb->flags);
->> +	item->locked = test_bit(BR_FDB_LOCKED, &fdb->flags);
-> 
-> Shouldn't this be set to 0 here, since it is the bridge->driver
-> direction?
-> 
+On Wed, Oct 19, 2022 at 11:40 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
+>
+> On 10/19/22 11:34 PM, Martin KaFai Lau wrote:
+> > On 10/19/22 1:22 PM, Joanne Koong wrote:
+> >> On Fri, Sep 9, 2022 at 4:12 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
+> >>>
+> >>> On 9/7/22 11:31 AM, Joanne Koong wrote:
+> >>>> For bpf prog types that don't support writes on skb data, the dynptr is
+> >>>> read-only (bpf_dynptr_write() will return an error and bpf_dynptr_data()
+> >>>> will return NULL; for a read-only data slice, there will be a separate
+> >>>> API bpf_dynptr_data_rdonly(), which will be added in the near future).
+> >>>>
+> >>> I just caught up on the v4 discussion about loadtime-vs-runtime error on
+> >>> write.  From a user perspective, I am not concerned on which error.
+> >>> Either way, I will quickly find out the packet header is not changed.
+> >>>
+> >>> For the dynptr init helper bpf_dynptr_from_skb(), the user does not need
+> >>> to know its skb is read-only or not and uses the same helper.  The
+> >>> verifier in this case uses its knowledge on the skb context and uses
+> >>> bpf_dynptr_from_skb_rdonly_proto or bpf_dynptr_from_skb_rdwr_proto
+> >>> accordingly.
+> >>>
+> >>> Now for the slice helper, the user needs to remember its skb is read
+> >>> only (or not) and uses bpf_dynptr_data() vs bpf_dynptr_data_rdonly()
+> >>> accordingly.  Yes, if it only needs to read, the user can always stay
+> >>> with bpf_dynptr_data_rdonly (which is not the initially supported one
+> >>> though).  However, it is still unnecessary burden and surprise to user.
+> >>> It is likely it will silently turn everything into bpf_dynptr_read()
+> >>> against the user intention. eg:
+> >>>
+> >>> if (bpf_dynptr_from_skb(skb, 0, &dynptr))
+> >>>          return 0;
+> >>> ip6h = bpf_dynptr_data(&dynptr, 0, sizeof(*ip6h));
+> >>> if (!ip6h) {
+> >>>          /* Unlikely case, in non-linear section, just bpf_dynptr_read()
+> >>>           * Oops...actually bpf_dynptr_data_rdonly() should be used.
+> >>>           */
+> >>>          bpf_dynptr_read(buf, sizeof(*ip6h), &dynptr, 0, 0);
+> >>>          ip6h = buf;
+> >>> }
+> >>>
+> >>
+> >> I see your point. I agree that it'd be best if we could prevent this
+> >> burden on the user, but I think the trade-off would be that if we have
+> >> bpf_dynptr_data return data slices that are read-only and data slices
+> >> that are writable (where rd-only vs. writable is tracked by verifier),
+> >> then in the future we won't be able to support dynptrs that are
+> >> dynamically read-only (since to reject at load time, the verifier must
+> >> know statically whether the dynptr is read-only or not). I'm not sure
+> >> how likely it is that we'd run into a case where we'll need dynamic
+> >> read-only dynptrs though. What are your thoughts on this?
+> >
+> > Out of all dynptr helpers, bpf_dynptr_data() is pretty much the only important
+> > function for header parsing because of the runtime offset.  This offset is good
+> > to be tracked in runtime to avoid smart compiler getting in the way.  imo,
+> > making this helper less usage surprise is important.  If the verifier can help,
+> > then static checking is useful here.
+> >
+> > It is hard to comment without a real use case on when we want to flip a dynptr
+> > to rdonly in a dynamic/runtime way.  Thus, comparing with the example like the
+> > skb here, my preference is pretty obvious :)
+> > Beside, a quick thought is doing this static checking now should now stop the
+>
+> typo: should *not* stop the... :(
+>
+> > dynamic rdonly flip later.  I imagine it will be a helper call like
+> > bpf_dynptr_set_rdonly().  The verifier should be able to track this helper call.'
+>
 
-Wouldn't it be a good idea to allow drivers to add what corresponds to a 
-blackhole
-entry when using the bridge input chain to activate the MAB feature, or 
-in general
-to leave the decision of what to do to the driver implementation?
+Great! I'll change this in v7 to have bpf_dynptr_data() be able to
+return both read-writable and read-only data slices, where the rd-only
+property is enforced by the verifier.
