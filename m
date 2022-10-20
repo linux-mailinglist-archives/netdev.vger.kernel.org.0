@@ -2,124 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9740B606244
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 15:54:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9421D606211
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 15:45:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229936AbiJTNyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 09:54:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43378 "EHLO
+        id S229501AbiJTNpg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 09:45:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229648AbiJTNyQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 09:54:16 -0400
-X-Greylist: delayed 556 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 20 Oct 2022 06:54:12 PDT
-Received: from rs07.intra2net.com (rs07.intra2net.com [85.214.138.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657FF5B703
-        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 06:54:12 -0700 (PDT)
-Received: from mail.m.i2n (unknown [172.17.128.1])
-        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by rs07.intra2net.com (Postfix) with ESMTPS id F0941150021E;
-        Thu, 20 Oct 2022 15:44:54 +0200 (CEST)
-Received: from localhost (mail.m.i2n [127.0.0.1])
-        by localhost (Postfix) with ESMTP id D0ACF737;
-        Thu, 20 Oct 2022 15:44:54 +0200 (CEST)
-X-Virus-Scanned: by Intra2net Mail Security (AVE=8.3.64.212,VDF=8.19.26.100)
-X-Spam-Status: 
-Received: from localhost (storm.m.i2n [172.16.1.2])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.m.i2n (Postfix) with ESMTPS id CEF8572B;
-        Thu, 20 Oct 2022 15:44:53 +0200 (CEST)
-Date:   Thu, 20 Oct 2022 15:44:53 +0200
-From:   Thomas Jarosch <thomas.jarosch@intra2net.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Antony Antony <antony.antony@secunet.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        netdev@vger.kernel.org, Tobias Brunner <tobias@strongswan.org>
-Subject: Re: [PATCH RFC ipsec] xfrm: fix panic in xfrm_delete from userspace
- on ARM 32
-Message-ID: <20221020134453.3pacvts4gfbxcygo@intra2net.com>
-References: <00959f33ee52c4b3b0084d42c430418e502db554.1652340703.git.antony.antony@secunet.com>
- <Yn1J20HaaXeOjhLk@unreal>
- <20221020131602.5gzed3e6jrfbaeps@intra2net.com>
+        with ESMTP id S229777AbiJTNpa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 09:45:30 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B432F88A39;
+        Thu, 20 Oct 2022 06:45:25 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id 186-20020a1c02c3000000b003c6c154d528so2361772wmc.4;
+        Thu, 20 Oct 2022 06:45:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:subject:from:cc:to:content-language
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6To4dqhauA/lNuhZyK3fZtVSZbHxlKTu7B0L5LEK/Yo=;
+        b=CzlLc1mjdc+QchcuDhLaaelFcrROLlu4x7FS9NFybcqcK8EAFZrjWi+DWHJDza4G1H
+         TrPzzWUKo19v67l4zT/DWiI0XmYlpYMtvQ267/VC+YcLsrHYOWFMN+c+AEr8X4sgdlj9
+         1cRPsuBYg8n80NtO+MHCXVFk+Rt4mZTVpn6WwjXmmIVFYPDmmAzraV69k4NuhpUXlxIz
+         3jDaU9QZypNNSM4/mZ5N0NYcEdE1wPjYWfG48XNJCe8tEJFW/CpK840/X4+AXfJCNEDc
+         OjIELKUFc3GprMUa5OeukbxTWzQeCE9DT+A+sMaj2o/7ip3hHcDMieTwC9dG3eRLRpMJ
+         ZIvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:subject:from:cc:to:content-language
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=6To4dqhauA/lNuhZyK3fZtVSZbHxlKTu7B0L5LEK/Yo=;
+        b=bhoo2i3HpNjWk4Eaa+Bt+Mb40NMWK2sISpetQJDBgYwGQLfMNkP+19KKhgjsQYLMLS
+         Cn6v9M09Kl5+Z4UA9ZNkwk5wKdgXMsdS/6eM//aLkQr0rdjIAvX21JyCUCF/IElWgO0n
+         7GZIwCE7BeeWfBuRFC52jX5hsuLvDQEEZ647dsfS4ECHf/bU8pIV8LOO/aAjAfMeDjfp
+         WuhifzaSOUJ4L8ZCmJmFLUNGSpci1yKUC7/sOqBGVqUKcDsCw8CAFd6omstDRi3QlR4l
+         htjf0/xRlIHl43ADuJUDfcdd3N2cikgGB5mWF3Pmwo2bnlwJjC7wQRMZZpM8fzEhr98J
+         ElXw==
+X-Gm-Message-State: ACrzQf1fOH7l+kYwjvFzmrYtEH+GVqPMlR/6cYrV7rmr1PT1aphUm+si
+        W93m/qbY5XwA2/bS4dB3SSM=
+X-Google-Smtp-Source: AMsMyM76T/qopuD0DaE6ZJN9tzIHPuUatWBeKmIGrdkD0rnWEouWSaE+JVHoBokPUiZ7yvTzg/L6Zw==
+X-Received: by 2002:a1c:2743:0:b0:3b3:4066:fa61 with SMTP id n64-20020a1c2743000000b003b34066fa61mr31145675wmn.79.1666273524099;
+        Thu, 20 Oct 2022 06:45:24 -0700 (PDT)
+Received: from [192.168.0.210] (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.googlemail.com with ESMTPSA id k33-20020a05600c1ca100b003c6cd82596esm3110001wms.43.2022.10.20.06.45.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Oct 2022 06:45:23 -0700 (PDT)
+Message-ID: <01410678-ab7d-1733-8d5a-e06d1a4b6c9e@gmail.com>
+Date:   Thu, 20 Oct 2022 14:45:22 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221020131602.5gzed3e6jrfbaeps@intra2net.com>
-User-Agent: NeoMutt/20180716
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Content-Language: en-US
+To:     =?UTF-8?Q?Tomislav_Po=c5=beega?= <pozega.tomislav@gmail.com>
+Cc:     Stanislaw Gruszka <stf_xl@wp.pl>,
+        Helmut Schaa <helmut.schaa@googlemail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+From:   "Colin King (gmail)" <colin.i.king@gmail.com>
+Subject: re: wifi: rt2x00: add TX LOFT calibration for MT7620
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-You wrote on Thu, Oct 20, 2022 at 03:16:02PM +0200:
-> > We all know that it can't be a fix. It is hard to judge by this
-> > calltrace, but it looks like something in x->km is not set. It is
-> > probably ".all" field.
+Hi,
 
-small update: I'm not sure if I can trust the output of my disassembly,
-but I just recompiled the kernel rpm under test with CONFIG_DEBUG_INFO
-and when I do this with the address from the backtrace:
+I noticed a signed / unsigned comparison warning when building 
+linux-next with clang. I believe it was introduced in the following commit:
 
-(gdb) list *__xfrm_state_delete+0xc9
+commit dab902fe1d29dc0fa1dccc8d13dc89ffbf633881
+Author: Tomislav Požega <pozega.tomislav@gmail.com>
+Date:   Sat Sep 17 21:28:43 2022 +0100
 
-0x2269 is in __xfrm_state_delete (./include/linux/list.h:856).
-851     static inline void __hlist_del(struct hlist_node *n)
-852     {
-853             struct hlist_node *next = n->next;
-854             struct hlist_node **pprev = n->pprev;
-855
-856             WRITE_ONCE(*pprev, next);
-857             if (next)
-858                     WRITE_ONCE(next->pprev, pprev);
-859     }
-860
+     wifi: rt2x00: add TX LOFT calibration for MT7620
 
-which seems to match the suspected "list_del(&x->km.all)"
-call from the code in 5.15.73:
 
-*******************************
-int __xfrm_state_delete(struct xfrm_state *x)
-{
-        struct net *net = xs_net(x);
-        int err = -ESRCH;
+The warning is as follows:
 
-        if (x->km.state != XFRM_STATE_DEAD) {
-                x->km.state = XFRM_STATE_DEAD;
-                spin_lock(&net->xfrm.xfrm_state_lock);
-                list_del(&x->km.all);
-                hlist_del_rcu(&x->bydst);
-                hlist_del_rcu(&x->bysrc);
-                if (x->km.seq)
-                        hlist_del_rcu(&x->byseq);
-                if (x->id.spi)
-                        hlist_del_rcu(&x->byspi);
-                net->xfrm.state_num--;
-                spin_unlock(&net->xfrm.xfrm_state_lock);
+drivers/net/wireless/ralink/rt2x00/rt2800lib.c:9472:15: warning: result 
+of comparison of constant -7 with expression of type 'char' is always 
+false [-Wtautological-constant-out-of-range-compare]
+         gerr = (gerr < -0x07) ? -0x07 : (gerr > 0x05) ? 0x05 : gerr;
+                 ~~~~ ^ ~~~~~
+drivers/net/wireless/ralink/rt2x00/rt2800lib.c:9476:15: warning: result 
+of comparison of constant -31 with expression of type 'char' is always 
+false [-Wtautological-constant-out-of-range-compare]
+         perr = (perr < -0x1f) ? -0x1f : (perr > 0x1d) ? 0x1d : perr;
+                 ~~~~ ^ ~~~~~
 
-                if (x->encap_sk)
-                        sock_put(rcu_dereference_raw(x->encap_sk));
+The variables gerr and perr are declared as a char, which in this case 
+seems to be defaulting to signed on the clang build for x86-64 and hence 
+this warning. I suspect making it signed char will do the trick, but I 
+wanted to flag this up in-case there were some other issues with making 
+them signed.
 
-                xfrm_dev_state_delete(x);
-
-                /* All xfrm_state objects are created by xfrm_state_alloc.
-                 * The xfrm_state_alloc call gives a reference, and that
-                 * is what we are dropping here.
-                 */
-                xfrm_state_put(x);
-                err = 0;
-        }
-
-        return err;
-}
-*******************************
-
-I'll still wait for another crash to appear using
-a CONFIG_DEBUG_INFO enabled kernel to be sure.
-
-HTH,
-Thomas
+Colin
