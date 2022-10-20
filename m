@@ -2,137 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E471606083
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 14:45:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 977AB606095
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 14:50:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230224AbiJTMp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 08:45:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48178 "EHLO
+        id S230266AbiJTMuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 08:50:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230219AbiJTMpZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 08:45:25 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7918D16910F
-        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 05:45:21 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id l14-20020a05600c1d0e00b003c6ecc94285so2317429wms.1
-        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 05:45:21 -0700 (PDT)
+        with ESMTP id S230261AbiJTMuF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 08:50:05 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39A5AA59A5;
+        Thu, 20 Oct 2022 05:50:03 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id bv10so34180704wrb.4;
+        Thu, 20 Oct 2022 05:50:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google;
+        d=gmail.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=W7TpexVXzoD6Pi9Bw4JOhzbTLopx5qELK6AW5BpVBlg=;
-        b=POonAFutxlJ5UiTLuwhgcNB0+oFdCIjAtq2PfAamQpywlez401oRmlVDeOvEux7vnt
-         h+ZBBiDfIudQJjPsVLH7DMRJhNaphLp2Niq02RWtEAqjHahi9zlB3yTZ1EVBywgkKftG
-         u6e7Dvy6c3PAMooOBg8vSY81Hp6vhVDaqm8z3VwNfdZ6wTdsnp0rnC3vCkBRgy5R2Equ
-         ExEHFLnyltUlyjl3dj9bT8+vsLCOpKBUwHv5m2P/LwM47BBCqaCNfwJlLUx7rurSEeXW
-         /r4A8X7dmQF+MW4O9ng8VKgBDNvhyCuJwAp1TYoeDpW2iguYlW0pbyv/FEMKhYkvHo0w
-         ssfw==
+        bh=aJYEkwkUk+rdScG5sDf+MTUme3atMrdD7pys6ZbE0sk=;
+        b=ZpgPF8gsB/RYH+8vrAKwvFmKUuAwuP8fjZG04ZBT8tiT+zWlB1/nDiUZGx5ia0Y4D9
+         zCE/qNQOOolhSo8uPEzvoUsgYe4ltoNaYjKKts//kxuAob4/9rBNYB0ohgAMK3RIAeej
+         xGnY8C5GfYpmq1lHgrGy7Bg2UlOri5j2k/yABBEqrBVSgpGIu7JyDU9UIxmfKdhOfCxZ
+         NWjgn3x1TClUQuOy31YILu8ZRa4SeiNN9+n+7bNKvObbM4PbJWeDLZVfXWohQPAtu8T3
+         RBuT7BCZddw9ZIyUyo7lhEA067AWPsLxABcDp0avHzeoxcb3w3VeJ6381fa17TRpivz5
+         uisw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=W7TpexVXzoD6Pi9Bw4JOhzbTLopx5qELK6AW5BpVBlg=;
-        b=t1llOPOlCfIQt9v+K9GypytE8/VU2HQ1ItSRpNdJJGyW6ABhdKqUSZ6lxZPflqQy4n
-         blbfbvAyPDVB00RdM3QzmTJtLqHbtNQbhEgLl2zWeujhc7U72YrdptsdASrL5lTyPmEU
-         6Y3wOHF4HfA2Py0VC81zVNaazS9voRBMKv7qpq5FmQkXHLVM95EVc/q6K1g8jlz9nuG9
-         JxC1ZVkuf9sZQBUIbZaQMmEdLyX5BscrawchZzXjcAPtabSxiyTnWBd5jLvuBkgxmcI+
-         8kA4yl+kJa7dIMCWh+9ayXy4bOe0dJjentwPXYPNJjG3DsdD7xWf22wvP5v4Oi1mz7Uu
-         25RQ==
-X-Gm-Message-State: ACrzQf1cwmTIR5/DT3rlcj3OrWUUiaqGOzMy6P0KiPQ9TVLsp244IIgi
-        zOkEg0eE7loLXXMf14F0EjUANg==
-X-Google-Smtp-Source: AMsMyM7kmIKbIy0Q4AvE6vV+FPVTFZDhMltJBAwIwo1aakb0ftG8fFF3hY2kgJfaz8Br7UGgrz9KSQ==
-X-Received: by 2002:a05:600c:4e8c:b0:3c6:ea09:9cf0 with SMTP id f12-20020a05600c4e8c00b003c6ea099cf0mr9165284wmq.43.1666269919638;
-        Thu, 20 Oct 2022 05:45:19 -0700 (PDT)
-Received: from ?IPV6:2a02:578:8593:1200:d3a7:8451:3ef5:2fdf? ([2a02:578:8593:1200:d3a7:8451:3ef5:2fdf])
-        by smtp.gmail.com with ESMTPSA id e9-20020a5d5009000000b0022e3d7c9887sm16186491wrt.101.2022.10.20.05.45.18
+        bh=aJYEkwkUk+rdScG5sDf+MTUme3atMrdD7pys6ZbE0sk=;
+        b=AHNoiJGrubjrBRzvRt7bS38I4FCmcFtNDQvvNGc34a3uASjFkPlaRS9ioXhB7xfMyl
+         QUzCyhoUW9n9KrOoyvBjOYvQnb2x4vZDzqtQoDTXbvn6xwp6uWHEFGCvqqPvNwSaSMQr
+         GAFGmVUtkcP7HAXhDbkut72EXmjvQxkMMIizRUzCLNhFaHyzG8vY5UQ1y3J4j0PNScbI
+         AFlj6GWhuXuwML28eNmnJoZMR874oJ9Gh8Y+nIuCrT+lNR0VzsOnHuxZhG0uak4y3xeb
+         uu4Q549lD3tXCgMG52HW3empwjLAo4Cc32bZvbbMY0sDp8g2LdeS/O29C3lqu20JtyGD
+         OcNg==
+X-Gm-Message-State: ACrzQf3kl2MJBrO1iH5DW/HNhK4QVTDMjay10j38r3ApeyCjr6Zjum7b
+        1lO15P1uz4gTBMWNAYDc/sErguoX8Gc=
+X-Google-Smtp-Source: AMsMyM7Na04f4Lg0ByjVUtFgFHBlIczX1VXS15YEL362trJjoNeXoiuZAC0MuPZgBZ55lywkTSo4aQ==
+X-Received: by 2002:a5d:4451:0:b0:236:58:b88f with SMTP id x17-20020a5d4451000000b002360058b88fmr1807130wrr.181.1666270201633;
+        Thu, 20 Oct 2022 05:50:01 -0700 (PDT)
+Received: from ?IPV6:2620:10d:c096:310::22ef? ([2620:10d:c092:600::2:93dd])
+        by smtp.gmail.com with ESMTPSA id q2-20020adff502000000b0022cc0a2cbecsm16758469wro.15.2022.10.20.05.50.00
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Oct 2022 05:45:19 -0700 (PDT)
-Message-ID: <d92dae5c-30bd-897d-8ffe-13a1a860541c@tessares.net>
-Date:   Thu, 20 Oct 2022 14:45:18 +0200
+        Thu, 20 Oct 2022 05:50:01 -0700 (PDT)
+Message-ID: <d2eb10cb-3cce-429c-7a72-7153b5442377@gmail.com>
+Date:   Thu, 20 Oct 2022 13:48:37 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.3.1
-Subject: Re: [PATCH v2 net-next 1/5] inet6: Remove inet6_destroy_sock() in
- sk->sk_prot->destroy().
-Content-Language: en-GB
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Cc:     Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        mptcp@lists.linux.dev
-References: <20221019223603.22991-1-kuniyu@amazon.com>
- <20221019223603.22991-2-kuniyu@amazon.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-In-Reply-To: <20221019223603.22991-2-kuniyu@amazon.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH for-6.1 1/2] io_uring/net: fail zc send for unsupported
+ protocols
+Content-Language: en-US
+To:     Stefan Metzmacher <metze@samba.org>, io-uring@vger.kernel.org
+Cc:     Jens Axboe <axboe@kernel.dk>, netdev@vger.kernel.org
+References: <cover.1666229889.git.asml.silence@gmail.com>
+ <ee7c163db8cea65b208d327610a6a96f936c1c6f.1666229889.git.asml.silence@gmail.com>
+ <f60d98e7-c798-b4a9-f305-4adc16341eca@samba.org>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <f60d98e7-c798-b4a9-f305-4adc16341eca@samba.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kuniyuki
-
-On 20/10/2022 00:35, Kuniyuki Iwashima wrote:
-> After commit d38afeec26ed ("tcp/udp: Call inet6_destroy_sock()
-> in IPv6 sk->sk_destruct()."), we call inet6_destroy_sock() in
-> sk->sk_destruct() by setting inet6_sock_destruct() to it to make
-> sure we do not leak inet6-specific resources.
+On 10/20/22 10:13, Stefan Metzmacher wrote:
+> Hi Pavel,
 > 
-> Now we can remove unnecessary inet6_destroy_sock() calls in
-> sk->sk_prot->destroy().
+>> If a protocol doesn't support zerocopy it will silently fall back to
+>> copying. This type of behaviour has always been a source of troubles
+>> so it's better to fail such requests instead. For now explicitly
+>> whitelist supported protocols in io_uring, which should be turned later
+>> into a socket flag.
+>>
+>> Cc: <stable@vger.kernel.org> # 6.0
+>> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+>> ---
+>>   io_uring/net.c | 9 +++++++++
+>>   1 file changed, 9 insertions(+)
+>>
+>> diff --git a/io_uring/net.c b/io_uring/net.c
+>> index 8c7226b5bf41..28127f1de1f0 100644
+>> --- a/io_uring/net.c
+>> +++ b/io_uring/net.c
+>> @@ -120,6 +120,13 @@ static void io_netmsg_recycle(struct io_kiocb *req, unsigned int issue_flags)
+>>       }
+>>   }
+>> +static inline bool io_sock_support_zc(struct socket *sock)
+>> +{
+>> +    return likely(sock->sk && sk_fullsock(sock->sk) &&
+>> +             (sock->sk->sk_protocol == IPPROTO_TCP ||
+>> +              sock->sk->sk_protocol == IPPROTO_UDP));
+>> +}
 > 
-> DCCP and SCTP have their own sk->sk_destruct() function, so we
-> change them separately in the following patches.
+> Can we please make this more generic (at least for 6.1, which is likely be an lts release)
+> 
+> It means my out of tree smbdirect driver would not be able to provide SENDMSG_ZC.
+> 
+> Currently sk_setsockopt has this logic:
+> 
+>          case SO_ZEROCOPY:
+>                  if (sk->sk_family == PF_INET || sk->sk_family == PF_INET6) {
+>                          if (!(sk_is_tcp(sk) ||
+>                                (sk->sk_type == SOCK_DGRAM &&
+>                                 sk->sk_protocol == IPPROTO_UDP)))
+>                                  ret = -EOPNOTSUPP;
+>                  } else if (sk->sk_family != PF_RDS) {
+>                          ret = -EOPNOTSUPP;
+>                  }
+>                  if (!ret) {
+>                          if (val < 0 || val > 1)
+>                                  ret = -EINVAL;
+>                          else
+>                                  sock_valbool_flag(sk, SOCK_ZEROCOPY, valbool);
+>                  }
+>                  break;
+> 
+> Maybe the socket creation code could set
+> unsigned char skc_so_zerocopy_supported:1;
+> and/or
+> unsigned char skc_zerocopy_msg_ubuf_supported:1;
+> 
+> In order to avoid the manual complex tests.
+> 
+> What do you think?
 
-(...)
+Ok, wanted to do it rather later but let me to try fiddle with it.
 
-> diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-> index f599ad44ed24..2e16c897c229 100644
-> --- a/net/mptcp/protocol.c
-> +++ b/net/mptcp/protocol.c
-> @@ -3898,12 +3898,6 @@ static const struct proto_ops mptcp_v6_stream_ops = {
->  
->  static struct proto mptcp_v6_prot;
->  
-> -static void mptcp_v6_destroy(struct sock *sk)
-> -{
-> -	mptcp_destroy(sk);
-> -	inet6_destroy_sock(sk);
-> -}
-> -
->  static struct inet_protosw mptcp_v6_protosw = {
->  	.type		= SOCK_STREAM,
->  	.protocol	= IPPROTO_MPTCP,
-> @@ -3919,7 +3913,6 @@ int __init mptcp_proto_v6_init(void)
->  	mptcp_v6_prot = mptcp_prot;
->  	strcpy(mptcp_v6_prot.name, "MPTCPv6");
->  	mptcp_v6_prot.slab = NULL;
-> -	mptcp_v6_prot.destroy = mptcp_v6_destroy;
->  	mptcp_v6_prot.obj_size = sizeof(struct mptcp6_sock);
->  
->  	err = proto_register(&mptcp_v6_prot, 1);
+btw, what's happening with smbdirect? Do you plan upstream it one day
+and it's just maturing out of tree?
 
-Thank you for the new version!
-
-For the modifications in net/mptcp here above:
-
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-
-Cheers,
-Matt
 -- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+Pavel Begunkov
