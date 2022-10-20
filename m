@@ -2,81 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE8DD60549C
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 02:56:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A43B06054A3
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 03:00:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229961AbiJTA4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 20:56:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59030 "EHLO
+        id S230102AbiJTBAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 21:00:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229736AbiJTA4B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 20:56:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11AEB160221;
-        Wed, 19 Oct 2022 17:56:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 981106190F;
-        Thu, 20 Oct 2022 00:56:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99969C433C1;
-        Thu, 20 Oct 2022 00:55:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666227360;
-        bh=2RJYQ8e9m+rLoTQGEA0xbregMWe5Mn5O6syDO6EAIH4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=USgRZOGSWTVA6vmBlhwMsz6eAyCSGgmAyI7Gq81PC5Jzdnbk8p2TNaysknUEqvL+Y
-         GhWc48kZIzp8iMGe0+gYy841/1vua2x70d6GXBvBpumRt5v/BNiqjyXsolYTszthtl
-         8PSOilf24u8tEGjQSRw+Cpj8pE0+I3XDTNY1PW0/gO45USZ0u9twM/yjN/70K1Tmhh
-         EFlAO5wxq2twciSdF/DkqxsurFEEyLQ0oWsV/zTIk/PHl/Juf8vY0bFEypxFMqYYHK
-         OvdrCYZXb1WRD7waQjTYrc7OaN2FHkF5F9ejF1uaXx4gK6R0b8h24N9u7/2SWjbQJn
-         3BMZukr3zwO7A==
-Date:   Wed, 19 Oct 2022 17:55:58 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Daniele Palmas <dnlplm@gmail.com>
-Cc:     =?UTF-8?B?QmrDuHJu?= Mork <bjorn@mork.no>,
-        David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 0/2] net: usb: qmi_wwan implement tx packets
- aggregation
-Message-ID: <20221019175558.0683711d@kernel.org>
-In-Reply-To: <Y1AcU0CH/j69uvwx@kroah.com>
-References: <20221019132503.6783-1-dnlplm@gmail.com>
-        <87lepbsvls.fsf@miraculix.mork.no>
-        <Y1AcU0CH/j69uvwx@kroah.com>
+        with ESMTP id S229921AbiJTBAN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 21:00:13 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1263CFAE6F
+        for <netdev@vger.kernel.org>; Wed, 19 Oct 2022 18:00:10 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Mt8QM4vfFzHv5N;
+        Thu, 20 Oct 2022 08:59:55 +0800 (CST)
+Received: from kwepemm600008.china.huawei.com (7.193.23.88) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 20 Oct 2022 09:00:01 +0800
+Received: from [10.174.176.230] (10.174.176.230) by
+ kwepemm600008.china.huawei.com (7.193.23.88) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 20 Oct 2022 09:00:00 +0800
+Message-ID: <281db3e6-fde9-7fb6-9c44-d2f149c21304@huawei.com>
+Date:   Thu, 20 Oct 2022 08:59:59 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.0
+Subject: Re: [PATCH v2] nfc: virtual_ncidev: Fix memory leak in
+ virtual_nci_send()
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <bongsu.jeon@samsung.com>, <krzysztof.kozlowski@linaro.org>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>
+References: <20221018114935.8871-1-shangxiaojing@huawei.com>
+ <20221019173351.4e3a8ab7@kernel.org>
+From:   shangxiaojing <shangxiaojing@huawei.com>
+In-Reply-To: <20221019173351.4e3a8ab7@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Originating-IP: [10.174.176.230]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600008.china.huawei.com (7.193.23.88)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 19 Oct 2022 17:48:35 +0200 Greg KH wrote:
-> > It's not just that it's not the preferred way.. I believe I promised
-> > that we wouldn't add anything more to this interface.  And then I broke
-> > that promise, promising that it would never happen again.  So much for
-> > my integrity.
-> > 
-> > This all looks very nice to me, and the results are great, and it's just
-> > another knob...
-> >   
-> 
-> Please no more sysfs files for stuff like this.  This turns into
-> vendor-specific random files that no one knows how to change over time
-> with no way to know what userspace tools are accessing them, or if even
-> anyone is using them at all.
-> 
-> Shouldn't there be standard ethtool apis for this?
 
-Not yet, but there should. We can add the new params to 
-struct kernel_ethtool_coalesce, and plumb them thru ethtool netlink.
-No major surgery required. Feel free to ask for more guidance if the
-netlink-y stuff is confusing.
+
+On 2022/10/20 8:33, Jakub Kicinski wrote:
+> On Tue, 18 Oct 2022 19:49:35 +0800 Shang XiaoJing wrote:
+>> --- a/drivers/nfc/virtual_ncidev.c
+>> +++ b/drivers/nfc/virtual_ncidev.c
+>> @@ -54,16 +54,19 @@ static int virtual_nci_send(struct nci_dev *ndev, struct sk_buff *skb)
+>>   	mutex_lock(&nci_mutex);
+>>   	if (state != virtual_ncidev_enabled) {
+>>   		mutex_unlock(&nci_mutex);
+>> +		consume_skb(skb);
+>>   		return 0;
+>>   	}
+>>   
+>>   	if (send_buff) {
+>>   		mutex_unlock(&nci_mutex);
+>> +		consume_skb(skb);
+>>   		return -1;
+> 
+> these two should be kfree_skb() as we're dropping a packet
+
+ok, will be fixed in v3.
+
+Thanks,
+-- 
+Shang XiaoJing
