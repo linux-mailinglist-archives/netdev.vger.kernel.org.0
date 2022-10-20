@@ -2,115 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B07A46063E8
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 17:11:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC1186063FE
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 17:15:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230144AbiJTPLX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 11:11:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43278 "EHLO
+        id S229940AbiJTPPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 11:15:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230173AbiJTPLT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 11:11:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70BE51A045D;
-        Thu, 20 Oct 2022 08:11:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A00F561BDF;
-        Thu, 20 Oct 2022 15:11:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59ECCC433C1;
-        Thu, 20 Oct 2022 15:11:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666278675;
-        bh=9tJciRsKBhYoViFTQp4Jzyo6krWJs9KAQXG4IOS7utk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=aibgDG8H1jmvy/0hGWGi9jBcH831JbtU5ipO+SdQWABxiVnWt70Or5gaA9y1XuFKq
-         HyXxvJjo8poBaZd2GZv+K3o+dvvHpgoRtf6Yg1tgf5+qDRjdN7CDuj1dQXYxqX4Dsa
-         5EX4SdCNEfQFny8EFXKVsSYW/UIuNN5uvuLAUNz10vgp9zaVW4YAsldw4yzp3wnUZK
-         dxbTs22eCRnmzbn78ye4IH9agTOSh0OvWArwRogj7ozQMGxKZH9k2VuW2wkarABKxx
-         ESlouU94E1riDmXadO1iPCHBUqiYVkMUxXeslfo3kAViGKokhdk8nQtcKukOmcd8jl
-         khRV9DVqIsiAw==
-Date:   Thu, 20 Oct 2022 08:11:12 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Colin Ian King <colin.i.king@gmail.com>
-Cc:     Jes Sorensen <Jes.Sorensen@gmail.com>,
+        with ESMTP id S229850AbiJTPPl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 11:15:41 -0400
+Received: from mx3.wp.pl (mx3.wp.pl [212.77.101.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 350603B987
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 08:15:27 -0700 (PDT)
+Received: (wp-smtpd smtp.wp.pl 4459 invoked from network); 20 Oct 2022 17:15:23 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1666278923; bh=fEnzvgcsJeNbZprUh21cKq/9USyvXftXBPCl1AVe/Jk=;
+          h=From:To:Cc:Subject;
+          b=gHxB2v0TC5KTHeARoHbdR1J9nsxImZ+simA4h1p7+eLoRpQKxKuoawwD4XEN08PCR
+           DM2JjkyX4mucggCkalp1oQJeaak7lwkNhpqQ7m4P4ZeWTFcLgJHoq100/OToqXp+XG
+           X74WiqsM0cEA+P2PFXiAum2TuQSLfjz93fPY4BPg=
+Received: from 89-64-7-202.dynamic.chello.pl (HELO localhost) (stf_xl@wp.pl@[89.64.7.202])
+          (envelope-sender <stf_xl@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <colin.i.king@gmail.com>; 20 Oct 2022 17:15:23 +0200
+Date:   Thu, 20 Oct 2022 17:15:22 +0200
+From:   Stanislaw Gruszka <stf_xl@wp.pl>
+To:     "Colin King (gmail)" <colin.i.king@gmail.com>
+Cc:     Tomislav =?utf-8?Q?Po=C5=BEega?= <pozega.tomislav@gmail.com>,
+        Helmut Schaa <helmut.schaa@googlemail.com>,
         Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Bitterblue Smith <rtl8821cerfe2@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] wifi: rtl8xxxu: Fix reads of uninitialized
- variables hw_ctrl_s1, sw_ctrl_s1
-Message-ID: <Y1FlEABysKCjobzu@thelio-3990X>
-References: <20221020135709.1549086-1-colin.i.king@gmail.com>
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: wifi: rt2x00: add TX LOFT calibration for MT7620
+Message-ID: <20221020151522.GA99236@wp.pl>
+References: <01410678-ab7d-1733-8d5a-e06d1a4b6c9e@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20221020135709.1549086-1-colin.i.king@gmail.com>
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <01410678-ab7d-1733-8d5a-e06d1a4b6c9e@gmail.com>
+X-WP-MailID: 78bdfce7f51fbd7d7bf58efa97131f14
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 0000000 [0SM0]                               
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 20, 2022 at 02:57:09PM +0100, Colin Ian King wrote:
-> Variables hw_ctrl_s1 and sw_ctrl_s1 are not being initialized and
-> potentially can contain any garbage value. Currently there is an if
-> statement that sets one or the other of these variables, followed
-> by an if statement that checks if any of these variables have been
-> set to a non-zero value. In the case where they may contain
-> uninitialized non-zero values, the latter if statement may be
-> taken as true when it was not expected to.
+On Thu, Oct 20, 2022 at 02:45:22PM +0100, Colin King (gmail) wrote:
+> I noticed a signed / unsigned comparison warning when building linux-next
+> with clang. I believe it was introduced in the following commit:
 > 
-> Fix this by ensuring hw_ctrl_s1 and sw_ctrl_s1 are initialized.
+> commit dab902fe1d29dc0fa1dccc8d13dc89ffbf633881
+> Author: Tomislav Požega <pozega.tomislav@gmail.com>
+> Date:   Sat Sep 17 21:28:43 2022 +0100
 > 
-> Cleans up clang warning:
-> drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8188f.c:432:7: warning:
-> variable 'hw_ctrl_s1' is used uninitialized whenever 'if' condition is
-> false [-Wsometimes-uninitialized]
->                 if (hw_ctrl) {
->                     ^~~~~~~
-> drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8188f.c:440:7: note: uninitialized
-> use occurs here
->                 if (hw_ctrl_s1 || sw_ctrl_s1) {
->                     ^~~~~~~~~~
-> drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8188f.c:432:3: note: remove the 'if'
-> if its condition is always true
->                 if (hw_ctrl) {
->                 ^~~~~~~~~~~~~
+>     wifi: rt2x00: add TX LOFT calibration for MT7620
 > 
-> Fixes: c888183b21f3 ("wifi: rtl8xxxu: Support new chip RTL8188FU")
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> 
+> The warning is as follows:
+> 
+> drivers/net/wireless/ralink/rt2x00/rt2800lib.c:9472:15: warning: result of
+> comparison of constant -7 with expression of type 'char' is always false
+> [-Wtautological-constant-out-of-range-compare]
+>         gerr = (gerr < -0x07) ? -0x07 : (gerr > 0x05) ? 0x05 : gerr;
 
-I was getting ready to send a similar patch.
+This was very currently addressed:
+https://lore.kernel.org/linux-wireless/20221019155541.3410813-1-Jason@zx2c4.com/
 
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-
-> ---
->  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8188f.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8188f.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8188f.c
-> index 99610bb2afd5..0025bb32538d 100644
-> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8188f.c
-> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8188f.c
-> @@ -412,7 +412,7 @@ static void rtl8188f_spur_calibration(struct rtl8xxxu_priv *priv, u8 channel)
->  	};
->  
->  	const u8 threshold = 0x16;
-> -	bool do_notch, hw_ctrl, sw_ctrl, hw_ctrl_s1, sw_ctrl_s1;
-> +	bool do_notch, hw_ctrl, sw_ctrl, hw_ctrl_s1 = 0, sw_ctrl_s1 = 0;
->  	u32 val32, initial_gain, reg948;
->  
->  	val32 = rtl8xxxu_read32(priv, REG_OFDM0_RX_D_SYNC_PATH);
-> -- 
-> 2.37.3
-> 
-> 
+Regards
+Stanislaw
