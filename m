@@ -2,118 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFF0460680F
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 20:18:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81A33606814
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 20:20:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229731AbiJTSSS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 14:18:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60266 "EHLO
+        id S229939AbiJTSUB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 14:20:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229615AbiJTSSR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 14:18:17 -0400
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 141192A70E
-        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 11:18:15 -0700 (PDT)
-Received: by mail-qk1-x72c.google.com with SMTP id a18so522465qko.0
-        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 11:18:15 -0700 (PDT)
+        with ESMTP id S229615AbiJTSUA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 14:20:00 -0400
+Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A1963878
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 11:19:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=YNdPx9O5euUhDJMz7WaT2WiuYbxbt3FHOSwAmndunww=;
-        b=bjUTSa4pSc5uYn5Mu0Cp66yb10ABCznen5d7DgCdx6F33Fzrai/UvyFJ0jCmNKvm2m
-         kRI54cbR/18kb2tugZspr31VJ3i1QGttdTl3umgS91nJPbNk1fZn1l80T/a3oXXG6nmE
-         vXTjrW3WnqZfCUxlH5T47AZF/m+GNilgAH/Ai2OfKJlvfEr2GAkZEwNPRGhESq0UylwT
-         oq7Nh3sEQqGuUh20WqCiIfWcj6XfLlRLZ5vH/+T+JE3Dj0U1D5G3Y18R5UR6ksV78gxp
-         2GxCRWJKfx9ktVFVJK3RrrZWi9+JVS5aIk7xgQdIrkrCoQAYDNoR9cOIHzA3nh/PhdYu
-         BaFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=YNdPx9O5euUhDJMz7WaT2WiuYbxbt3FHOSwAmndunww=;
-        b=S9Sgb8gMY7w1FQ9+MBOYWkFbhMHbWObuljcYfUSs7QNfr9VGK5xW5jFooJa9k7wxNl
-         H2I6oFmpIaF0ET2ZuqQzbDA2y1eXddGQwu2YnLwtK+660bYLFY1HQZjPPv2VnHqfnkjE
-         RSN6KNlo/v9FnB6qFGh5tR5flcMY94zy6VicmqZ+p7oI9hrI5FZAaoi+INmMvaFhXkjZ
-         OOygTjgX4Aw03u7oZKYn35INkJb8yy9qBeHDrDvdXWtTCxl2rGsFSwtzqmCTPr8M1S63
-         v+QdFuwqSVan13fMS3Z9MNtsLwT8iM2VO/LOxHdYyzo09X96zMcfTv0JlpzHgw6aoLqI
-         u6SA==
-X-Gm-Message-State: ACrzQf29OM1MrZscB9ih/tgxNWMCcEe9MirhOgVhnQLycFRSK6KVz5Ba
-        BRrUIX00K7Bq+rMCXVhXKdQXPA==
-X-Google-Smtp-Source: AMsMyM6uaXeGLamozQX44irnQtPEdqkBIO+GO61SsjCLfxZxSTg0aKXpqk6z2VpyIPel9XbZKEaT0g==
-X-Received: by 2002:a05:620a:284b:b0:6b4:8685:2aa6 with SMTP id h11-20020a05620a284b00b006b486852aa6mr10571977qkp.780.1666289894118;
-        Thu, 20 Oct 2022 11:18:14 -0700 (PDT)
-Received: from [192.168.10.124] (pool-72-83-177-149.washdc.east.verizon.net. [72.83.177.149])
-        by smtp.gmail.com with ESMTPSA id w22-20020a05620a445600b006bbc09af9f5sm1785119qkp.101.2022.10.20.11.18.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Oct 2022 11:18:12 -0700 (PDT)
-Message-ID: <f5b4aff3-6dd8-1dd1-6a60-c295f8b87f92@linaro.org>
-Date:   Thu, 20 Oct 2022 14:18:10 -0400
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1666289999; x=1697825999;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=VXv+5nw1uniG4kx/+4kbwmBBcXy/t5DQjqLqRBz/u+8=;
+  b=K35y3tgyFtMGVM/XBVcT6mS7Q2goI+JGNC10kjzYXGLEshCYJuqzeXsN
+   5fEax1F++IMPUPUdvyQ/PkMLNPCXJtOq86Ku96CgvPoz+6ORS67uD/J0o
+   eebS8KUp3D3uULxvRBIatMgYUeDQ+K51qfgJIgQ3mem87jOsx5F9x+ZXf
+   Q=;
+X-IronPort-AV: E=Sophos;i="5.95,199,1661817600"; 
+   d="scan'208";a="1066072278"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-m6i4x-af372327.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2022 18:19:50 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2a-m6i4x-af372327.us-west-2.amazon.com (Postfix) with ESMTPS id 706196112D;
+        Thu, 20 Oct 2022 18:19:49 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.42; Thu, 20 Oct 2022 18:19:38 +0000
+Received: from 88665a182662.ant.amazon.com.com (10.43.161.58) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.15;
+ Thu, 20 Oct 2022 18:19:36 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <pabeni@redhat.com>
+CC:     <davem@davemloft.net>, <dsahern@kernel.org>, <edumazet@google.com>,
+        <kuba@kernel.org>, <kuniyu@amazon.com>,
+        <mathew.j.martineau@linux.intel.com>,
+        <matthieu.baerts@tessares.net>, <mptcp@lists.linux.dev>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 1/2] net: introduce and use custom sockopt socket flag
+Date:   Thu, 20 Oct 2022 11:19:26 -0700
+Message-ID: <20221020181926.192-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <dc549a4d5c1d2031c64794c8e12bed55afb85c3e.1666287924.git.pabeni@redhat.com>
+References: <dc549a4d5c1d2031c64794c8e12bed55afb85c3e.1666287924.git.pabeni@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [PATCH v3] nfc: virtual_ncidev: Fix memory leak in
- virtual_nci_send()
-Content-Language: en-US
-To:     Shang XiaoJing <shangxiaojing@huawei.com>, bongsu.jeon@samsung.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-References: <20221020030505.15572-1-shangxiaojing@huawei.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221020030505.15572-1-shangxiaojing@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.161.58]
+X-ClientProxiedBy: EX13D39UWB001.ant.amazon.com (10.43.161.5) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/10/2022 23:05, Shang XiaoJing wrote:
-> skb should be free in virtual_nci_send(), otherwise kmemleak will report
-> memleak.
+From:   Paolo Abeni <pabeni@redhat.com>
+Date:   Thu, 20 Oct 2022 19:48:51 +0200
+> We will soon introduce custom setsockopt for UDP sockets, too.
+> Instead of doing even more complex arbitrary checks inside
+> sock_use_custom_sol_socket(), add a new socket flag and set it
+> for the relevant socket types (currently only MPTCP).
 > 
-> Steps for reproduction (simulated in qemu):
-> 	cd tools/testing/selftests/nci
-> 	make
-> 	./nci_dev
-> 
-> BUG: memory leak
-> unreferenced object 0xffff888107588000 (size 208):
->   comm "nci_dev", pid 206, jiffies 4294945376 (age 368.248s)
->   hex dump (first 32 bytes):
->     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->   backtrace:
->     [<000000008d94c8fd>] __alloc_skb+0x1da/0x290
->     [<00000000278bc7f8>] nci_send_cmd+0xa3/0x350
->     [<0000000081256a22>] nci_reset_req+0x6b/0xa0
->     [<000000009e721112>] __nci_request+0x90/0x250
->     [<000000005d556e59>] nci_dev_up+0x217/0x5b0
->     [<00000000e618ce62>] nfc_dev_up+0x114/0x220
->     [<00000000981e226b>] nfc_genl_dev_up+0x94/0xe0
->     [<000000009bb03517>] genl_family_rcv_msg_doit.isra.14+0x228/0x2d0
->     [<00000000b7f8c101>] genl_rcv_msg+0x35c/0x640
->     [<00000000c94075ff>] netlink_rcv_skb+0x11e/0x350
->     [<00000000440cfb1e>] genl_rcv+0x24/0x40
->     [<0000000062593b40>] netlink_unicast+0x43f/0x640
->     [<000000001d0b13cc>] netlink_sendmsg+0x73a/0xbf0
->     [<000000003272487f>] __sys_sendto+0x324/0x370
->     [<00000000ef9f1747>] __x64_sys_sendto+0xdd/0x1b0
->     [<000000001e437841>] do_syscall_64+0x3f/0x90
-> 
-> Fixes: e624e6c3e777 ("nfc: Add a virtual nci device driver")
-> Signed-off-by: Shang XiaoJing <shangxiaojing@huawei.com>
+> Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+
+Acked-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+
+
 > ---
-
-
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-Best regards,
-Krzysztof
-
+>  include/linux/net.h  | 1 +
+>  net/mptcp/protocol.c | 4 ++++
+>  net/socket.c         | 8 +-------
+>  3 files changed, 6 insertions(+), 7 deletions(-)
+> 
+> diff --git a/include/linux/net.h b/include/linux/net.h
+> index 711c3593c3b8..59350fd85823 100644
+> --- a/include/linux/net.h
+> +++ b/include/linux/net.h
+> @@ -41,6 +41,7 @@ struct net;
+>  #define SOCK_NOSPACE		2
+>  #define SOCK_PASSCRED		3
+>  #define SOCK_PASSSEC		4
+> +#define SOCK_CUSTOM_SOCKOPT	5
+>  
+>  #ifndef ARCH_HAS_SOCKET_TYPES
+>  /**
+> diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+> index f599ad44ed24..0448a5c3da3c 100644
+> --- a/net/mptcp/protocol.c
+> +++ b/net/mptcp/protocol.c
+> @@ -2708,6 +2708,8 @@ static int mptcp_init_sock(struct sock *sk)
+>  	if (ret)
+>  		return ret;
+>  
+> +	set_bit(SOCK_CUSTOM_SOCKOPT, &sk->sk_socket->flags);
+> +
+>  	/* fetch the ca name; do it outside __mptcp_init_sock(), so that clone will
+>  	 * propagate the correct value
+>  	 */
+> @@ -3684,6 +3686,8 @@ static int mptcp_stream_accept(struct socket *sock, struct socket *newsock,
+>  		struct mptcp_subflow_context *subflow;
+>  		struct sock *newsk = newsock->sk;
+>  
+> +		set_bit(SOCK_CUSTOM_SOCKOPT, &newsock->flags);
+> +
+>  		lock_sock(newsk);
+>  
+>  		/* PM/worker can now acquire the first subflow socket
+> diff --git a/net/socket.c b/net/socket.c
+> index 00da9ce3dba0..55c5d536e5f6 100644
+> --- a/net/socket.c
+> +++ b/net/socket.c
+> @@ -2199,13 +2199,7 @@ SYSCALL_DEFINE4(recv, int, fd, void __user *, ubuf, size_t, size,
+>  
+>  static bool sock_use_custom_sol_socket(const struct socket *sock)
+>  {
+> -	const struct sock *sk = sock->sk;
+> -
+> -	/* Use sock->ops->setsockopt() for MPTCP */
+> -	return IS_ENABLED(CONFIG_MPTCP) &&
+> -	       sk->sk_protocol == IPPROTO_MPTCP &&
+> -	       sk->sk_type == SOCK_STREAM &&
+> -	       (sk->sk_family == AF_INET || sk->sk_family == AF_INET6);
+> +	return test_bit(SOCK_CUSTOM_SOCKOPT, &sock->flags);
+>  }
+>  
+>  /*
+> -- 
+> 2.37.3
