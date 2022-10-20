@@ -2,136 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D507605F74
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 13:55:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3E4F605FA6
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 14:03:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229739AbiJTLyw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 07:54:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
+        id S229871AbiJTMDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 08:03:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229685AbiJTLyn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 07:54:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25BFA1D0D2;
-        Thu, 20 Oct 2022 04:54:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC1D0B82712;
-        Thu, 20 Oct 2022 11:54:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EF3EC433C1;
-        Thu, 20 Oct 2022 11:54:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666266873;
-        bh=gPDeLlGv5sanaXqP06t21wZhZ1fAuLnrnAmtJV6iA58=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GhZ6QyQ5tb4dmwBop9SC8Z/qz+f5cyTHmznzuS+QQY8rKScu9UsxyLGGzseSYIXuG
-         c3eSuAehlwnKttfeEvsfx8BPmiUGyI5HMMMAPYBTQwKOPOId2Zlgx5LJLwszL6/xTQ
-         wP+3RBlcXzM2bY81DPSnMn9+ZzGZbZBYRSvd3guGB1HKPbm2HNRYpbal4oxNtRignZ
-         nrwAl90UDHYK0d9ryEJNXPEAZwzZ+PUl7tgtKOWDvb7u7IaTXgvi+pdVQHYE+lHuKY
-         gU66JD2KGcTH6XvIWaZWgTpzQjwAomzg+pHWlVEKRgeo1gkvokt84XR0kYJAZdI8HZ
-         oF5BPoIpGg+cg==
-Date:   Thu, 20 Oct 2022 14:54:30 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Aru <aru.kolappan@oracle.com>
-Cc:     jgg@ziepe.ca, saeedm@nvidia.com, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        manjunath.b.patil@oracle.com, rama.nichanamatlu@oracle.com
-Subject: Re: [PATCH 1/1] net/mlx5: add dynamic logging for mlx5_dump_err_cqe
-Message-ID: <Y1E29kg8yuZjCV4v@unreal>
-References: <1665618772-11048-1-git-send-email-aru.kolappan@oracle.com>
- <Y0frx6g/iadBBYgQ@unreal>
- <a7fad299-6df5-e79b-960a-c85c7ea4235a@oracle.com>
- <Y05aGuXSEtSt2aS2@unreal>
- <60899818-61fc-3d1e-e908-fb595cac1940@oracle.com>
+        with ESMTP id S229784AbiJTMDk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 08:03:40 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B7091843D8;
+        Thu, 20 Oct 2022 05:03:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1666267368;
+        bh=D+hEsIZ5MqHmy/cfeQgHzMHMoHuUmID1yqX63F16548=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=Q54MWZ6IspGF/8DRWgMHHIJIFKtF3tD+rr3I5AVF5LbgcvaYEvX4BowHjP4rYPQBh
+         sB99yt0XiUetkey1MrQzSPgZhhq+nVx1hoKad3Jl8PiPj2EvbGUGHGGt6aFhy43syh
+         vfB4Uo9VfeMdLbXw2w74Pu/Xz21aOownn1KNWj44=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [217.61.146.75] ([217.61.146.75]) by web-mail.gmx.net
+ (3c-app-gmx-bs65.server.lan [172.19.170.209]) (via HTTP); Thu, 20 Oct 2022
+ 14:02:48 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <60899818-61fc-3d1e-e908-fb595cac1940@oracle.com>
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Message-ID: <trinity-72a267fb-f4a0-4d9d-9a1b-f6a1ce3a43ec-1666267368826@3c-app-gmx-bs65>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Frank Wunderlich <linux@fw-web.de>,
+        linux-mediatek@lists.infradead.org,
+        Alexander Couzens <lynxis@fe80.eu>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Aw: Re: [PATCH] net: mtk_sgmii: implement mtk_pcs_ops
+Content-Type: text/plain; charset=UTF-8
+Date:   Thu, 20 Oct 2022 14:02:48 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <Y1EHy0t5nXOF/3Mw@shell.armlinux.org.uk>
+References: <20221018153506.60944-1-linux@fw-web.de>
+ <Y07Wpd1A1xxLhIVc@shell.armlinux.org.uk>
+ <949F5EE5-B22D-40E2-9783-0F75ACFE2C1F@public-files.de>
+ <Y1EHy0t5nXOF/3Mw@shell.armlinux.org.uk>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:mNvPlxKiBmdiWAYpi/kJ+DODyjnMKBtEVLi/DReg3FWYbWdKOBqmfXkS53KdL3KT8Wc58
+ 3qPYbsjwEfQ8WieLv/R5DqfyAWUtUkJlFZVOntWOLj2HG/nLCuxieEg6wxeB8sB0ekyVUA0CsQ4+
+ +10XX+CqhswsZjMw1jD0n/tc+s16+ssb1tCD+z1Nuowh14LuyQrrB8Bt3TPkGmLxXQFib5RSb3Rn
+ GbGdVQj5PkpNvDPmMn4FRXS9SAcuW7UJ3saXQwKgeDOu983RqtiRm71sI8nehUuC+YrfjqvIq3lW
+ 9M=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:sIK5fFpPQVw=:SCT0AitDal3oCczr9xpbYt
+ 6w2bGprDyMNI5loZRPHhnzvhQ3CQAbyR9vn4lnt+O9cgroFMcDOAuss/dKyaGICMt6nYt+4MT
+ tEJE62Otdq+eIT9ZoDlAPKH0m/pfKlj+peXIdYDZPSQUsVNAvufRloZ62sbFPtu0uQ4shT50l
+ EQzVNyJMTmNBgCzYGPsD225Vnwvgt7DqW2h7Ggn5uRRVJ1ZvPlLqUuW3/mHeq/lYrJNuOW0lb
+ Ek7n/GD+vyJNiuDaNSBGhCGdt8epSbIxPdkH9lj4F/LfctgtALR3peEsqtOVAAjzfSHRzrLi6
+ wSgLGxEyf/ghv3n1v8T5eeFRhOsx6NyCn539u/tTFIDmzLI8akThvK3uGEd2Ox9MxTEE+YMbq
+ Jt8C7eZdYhlCt+3Pf8Q8cQyB5B7IWxrnqOhjIlASJ2FWBIUL8KaaM0E8+94PFIwN5xjuVbyRj
+ i+sfLZII1S9Gb9A6KDB+B49uNGXOYpqpL93mg4ICY0HCa4MYDZJWX9XcuskuWM9FccpbO26E4
+ tNLfWznLEtES1ZFUx36EkH9RQ+nJNLfsw2Lt6yjzljir+4bw6qwRt/WhWOGsWuowStUyJtaco
+ A8ciA1EknN9W8UIF37qiaSTIN0vPy8YfQ905MfBT3JnMTAP2D5WpuvKJrH+iKuE+9gK7xVVCd
+ ctVYjo5+RR+mgquFdH9PlpvEFn8YjQea+qJiDOkzzx1hFI/vEyyQGFL1Qw8OkGLoRNy4/qB6s
+ 6nOD0DBOu9ZSgQi+y9fEKNnGnd23orwQPwCIFqK5xbzIPJKxBbP16/fAmTJXxHnYN7WeS/9dQ
+ zOUw1jtYaB7R17sQTDlFMYUxE1JfTpf1CIqN9XUcXThlmwO65wvZ/ca2eRoWUPORimiBxoIJF
+ SwuiGArVGzAisPoxXic2NnpGZ+cBpHPdxkgJyT48p3lRIPKHXGTQ6FaiBAXmiMS6JFdxhipG7
+ hof94x/OV0tkUxj6wQiYcyJ4ac8o4U5W+AygX87voeeNgt7NBy6S2u7IXHyGbTeCOdcRenx+1
+ mAAQZJGDY4BZ1+VqE4R8wybNfIH3uPTwVnUhNIn4fuQAEYDqQrZryFvz7JJLx0KmDD/n/b4kS
+ 1X4FaIvxjf8wozW2NQagad1Y3s8LA51MFZyID3NqYQeQR2oEVQ7VLn16fdy3ykckb2KEL0cuT
+ Dl3G2tpgxxzFj+oudmG2YBaj4SsclHIRbPS9NZJu+yTPzzNy946316JIzxcYOTmxfTzXuX0CC
+ 8gYco+EqtjMsxKxCqgUlvFkVBkt+HzCtM6hM+yd7iB73yrDZCdRzSPXm3HlDcVtrZo66yEyWk
+ cKYphK3I
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 20, 2022 at 01:24:54AM -0700, Aru wrote:
-> On 10/18/22 12:47 AM, Leon Romanovsky wrote:
-> > On Fri, Oct 14, 2022 at 12:12:36PM -0700, Aru wrote:
-> > > Hi Leon,
-> > > 
-> > > Thank you for reviewing the patch.
-> > > 
-> > > The method you mentioned disables the dump permanently for the kernel.
-> > > We thought vendor might have enabled it for their consumption when needed.
-> > > Hence we made it dynamic, so that it can be enabled/disabled at run time.
-> > > 
-> > > Especially, in a production environment, having the option to turn this log
-> > > on/off
-> > > at runtime will be helpful.
-> > While you are interested on/off this specific warning, your change will
-> > cause "to hide" all syndromes as it is unlikely that anyone runs in
-> > production with debug prints.
-> > 
-> >   -   mlx5_ib_warn(dev, "dump error cqe\n");
-> >   +   mlx5_ib_dbg(dev, "dump error cqe\n");
-> > 
-> > Something like this will do the trick without interrupting to the others.
-> > 
-> > diff --git a/drivers/infiniband/hw/mlx5/cq.c b/drivers/infiniband/hw/mlx5/cq.c
-> > index 457f57b088c6..966206085eb3 100644
-> > --- a/drivers/infiniband/hw/mlx5/cq.c
-> > +++ b/drivers/infiniband/hw/mlx5/cq.c
-> > @@ -267,10 +267,29 @@ static void handle_responder(struct ib_wc *wc, struct mlx5_cqe64 *cqe,
-> >   	wc->wc_flags |= IB_WC_WITH_NETWORK_HDR_TYPE;
-> >   }
-> > -static void dump_cqe(struct mlx5_ib_dev *dev, struct mlx5_err_cqe *cqe)
-> > +static void dump_cqe(struct mlx5_ib_dev *dev, struct mlx5_err_cqe *cqe,
-> > +		     struct ib_wc *wc, int dump)
-> >   {
-> > -	mlx5_ib_warn(dev, "dump error cqe\n");
-> > -	mlx5_dump_err_cqe(dev->mdev, cqe);
-> > +	const char *level;
-> > +
-> > +	if (!dump)
-> > +		return;
-> > +
-> > +	mlx5_ib_warn(dev, "WC error: %d, Message: %s\n", wc->status,
-> > +		     ib_wc_status_msg(wc->status));
-> > +
-> > +	if (dump == 1) {
-> > +		mlx5_ib_warn(dev, "dump error cqe\n");
-> > +		level = KERN_WARNING;
-> > +	}
-> > +
-> > +	if (dump == 2) {
-> > +		mlx5_ib_dbg(dev, "dump error cqe\n");
-> > +		level = KERN_DEBUG;
-> > +	}
-> > +
-> > +	print_hex_dump(level, "", DUMP_PREFIX_OFFSET, 16, 1, cqe, sizeof(*cqe),
-> > +		       false);
-> >   }
-> Hi Leon,
-> 
-> Thank you for the reply and your suggested method to handle this debug
-> logging.
-> 
-> We set 'dump=2' for the syndromes applicable to our scenario: 
-> MLX5_CQE_SYNDROME_REMOTE_ACCESS_ERR,
-> MLX5_CQE_SYNDROME_REMOTE_OP_ERR and MLX5_CQE_SYNDROME_LOCAL_PROT_ERR.
-> We verified this code change and by default, the dump_cqe is not printed to
-> syslog until
-> the level is changed to KERN_DEBUG level. This works as expected.
-> 
-> I will send out another email with the patch using your method.
-> 
-> Is it fine with you If I add your name in the 'suggested-by' field in the
-> new patch?
 
-Whatever works for you.
+> Gesendet: Donnerstag, 20. Oktober 2022 um 10:33 Uhr
+> Von: "Russell King (Oracle)" <linux@armlinux.org.uk>
+> An: "Frank Wunderlich" <frank-w@public-files.de>
+> Cc: "Frank Wunderlich" <linux@fw-web.de>, linux-mediatek@lists.infradead=
+.org, "Alexander Couzens" <lynxis@fe80.eu>, "Felix Fietkau" <nbd@nbd.name>=
+, "John Crispin" <john@phrozen.org>, "Sean Wang" <sean.wang@mediatek.com>,=
+ "Mark Lee" <Mark-MC.Lee@mediatek.com>, "David S. Miller" <davem@davemloft=
+.net>, "Eric Dumazet" <edumazet@google.com>, "Jakub Kicinski" <kuba@kernel=
+.org>, "Paolo Abeni" <pabeni@redhat.com>, "Matthias Brugger" <matthias.bgg=
+@gmail.com>, netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,=
+ linux-kernel@vger.kernel.org
+> Betreff: Re: [PATCH] net: mtk_sgmii: implement mtk_pcs_ops
+>
+> On Thu, Oct 20, 2022 at 07:54:49AM +0200, Frank Wunderlich wrote:
+> > Am 18. Oktober 2022 18:39:01 MESZ schrieb "Russell King (Oracle)" <lin=
+ux@armlinux.org.uk>:
+> > >Hi,
+> > >
+> > >A couple of points:
+> > >
+> > >On Tue, Oct 18, 2022 at 05:35:06PM +0200, Frank Wunderlich wrote:
+> >
+> > >> +	regmap_read(mpcs->regmap, SGMSYS_PCS_CONTROL_1, &val);
+> > >> +	state->an_complete =3D !!(val & SGMII_AN_COMPLETE);
+> > >> +	state->link =3D !!(val & SGMII_LINK_STATYS);
+> > >> +	state->pause =3D 0;
+> > >
+> > >Finally, something approaching a reasonable implementation for this!
+> > >Two points however:
+> > >1) There's no need to set state->pause if there is no way to get that
+> > >   state.
+> > >2) There should also be a setting for state->pause.
+> >
+> > Currently it looks like pause cannot be controlled in sgmii-mode so we=
+ disabled it here to not leave it undefined. Should i drop assignment here=
+?
+>
+> Why do you think it would be undefined?
+>
+> static void phylink_mac_pcs_get_state(struct phylink *pl,
+>                                       struct phylink_link_state *state)
+> {
+> ...
+>         if  (state->an_enabled) {
+> ...
+>                 state->pause =3D MLO_PAUSE_NONE;
+>         } else {
+> ,,,
+>                 state->pause =3D pl->link_config.pause;
+> 	}
+> ...
+>         if (pl->pcs)
+>                 pl->pcs->ops->pcs_get_state(pl->pcs, state);
+>
+> So, phylink will call your pcs_get_state() function having initialised
+> it to something sensible.
 
-Thanks
+ok, then i drop the pause setting for now
+
+regards Frank
