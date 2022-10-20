@@ -2,98 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3EC7606822
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 20:22:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4262C606838
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 20:31:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229692AbiJTSWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 14:22:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43650 "EHLO
+        id S229967AbiJTSbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 14:31:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229744AbiJTSWp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 14:22:45 -0400
-Received: from esa1.hgst.iphmx.com (esa1.hgst.iphmx.com [68.232.141.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF2B91E8B99
-        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 11:22:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1666290164; x=1697826164;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=7DH5Tc7N5vz5OSJxVbnZKGHjBfWMwLYi6ILT8dLaLBs=;
-  b=b15DlkjRNZ3Eh/OLoFmdkvzVJu5Qmjxu+r41OyB8uYTfuqQkOu9EKhf4
-   yGCCA/KwkP6es+iWEceHpBcIRNszNGlIoy/YCY6s2LUArQuErnjzmc7d7
-   O2WoDIjRlmvcYU2aQ+V7MpVCE0nR41B9CCLeyDz68aSfv8pEHCeT7b1n1
-   mosdeOxFQJlve0lwmXETDR+R2wco0N5qZ1t0Jljn7Q3QnTQyeK0Lkg7KK
-   JvALQLM1nr0JaoAiyEFs/JFat0IrKHt5FSnAW7RLu9UFOwWXG2y4rKIe7
-   SCnFSjkmd5Itbkz/GVTqjhEe0lhO/2y8NBC+391CShOYXCBUHq3bAUKZv
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.95,199,1661788800"; 
-   d="scan'208";a="326465855"
-Received: from h199-255-45-15.hgst.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
-  by ob1.hgst.iphmx.com with ESMTP; 21 Oct 2022 02:22:44 +0800
-IronPort-SDR: Iv811/5MEm5L1bkSV3n4vt3MjXsg4COowbcVXv6Xq6B3++hMf8sUHFSZ9PQhJJaNwLsdTXZSTm
- VCqmTHrSSIUo1pptSFKYZ9pK3mnZBzOwsnZ74I4NcdhI1E2lF+F4mti6he89g/Ncq7SFCjzE+m
- hba5Gq7hPK9Zy20o2a0lU/P/VfsrylWqkUe39MUfgjlT5x3231DeRJyesg1p8gG67IlFeyEPYB
- TfS1643YBZL/lm4pRdzkbrcYp8+T/KRs3MjEhlzgnlmbcsWbsURCM/Ws3koNqqj0pQ2ruSSLOd
- amnbHPWHq8FR6vGpi8WlDJl9
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 20 Oct 2022 10:36:33 -0700
-IronPort-SDR: 7dBU/QEyrb5bp8Y7cG++CfsWL81a7TVeh/t0zxOlK5WCticwqGrH5B9EVOshFS1KMskzXmPb3L
- 6KOFfsTr8muz/3ntg3rI4IJGAg5n8lgTJOORsPCnTWJbPA/CbtB/b1p209IE8FsVmcHTsfaD7t
- m97XEf8cUXJiMvLe3/uQwY6zESu5Bb8bdsy/aKARpvUFQVxHx+3v6VkSgsCMOw1oe7MKnyXuJs
- +3YKsKO3VEG5cSFHUgOLSq25BtB99ksAAh73AQh+Q4wG3075WdwbSYKK8S70b98OqhIDfZzC+T
- N7Y=
-WDCIronportException: Internal
-Received: from ros-3.k2.wdc.com ([10.203.225.83])
-  by uls-op-cesaip02.wdc.com with ESMTP; 20 Oct 2022 11:22:43 -0700
-From:   Kamaljit Singh <kamaljit.singh1@wdc.com>
-To:     edumazet@google.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, Niklas.Cassel@wdc.com,
-        Damien.LeMoal@wdc.com, kamaljit.singh1@wdc.com
-Subject: [PATCH v1 2/2] tcp: Ignore OOO handling for TCP ACKs
-Date:   Thu, 20 Oct 2022 11:22:42 -0700
-Message-Id: <20221020182242.503107-3-kamaljit.singh1@wdc.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20221020182242.503107-1-kamaljit.singh1@wdc.com>
-References: <20221020182242.503107-1-kamaljit.singh1@wdc.com>
+        with ESMTP id S229491AbiJTSbW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 14:31:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CDE11FAE43;
+        Thu, 20 Oct 2022 11:31:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 548B861C14;
+        Thu, 20 Oct 2022 18:30:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6508AC433C1;
+        Thu, 20 Oct 2022 18:30:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666290656;
+        bh=LidB1smPJLiSNxSiSTWkVKWdSRC18cTLNqF64oUkfHE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=azjdQmvVop6YiLzTrQi8TsKUZ/7QxA9UJU9hniriVRdmYQKs0Kr45m/eZyfjnnIp7
+         tVRAX4Sni6RDHmISP4DV5y22UqZDN+0BzClbPJ02ZgYpvak8uif5J/Ake4kifp4a08
+         T/8r30MLbpNA83fPAW+J4SAaHUuiGyybkotMkhQTRYtVPt1VZKzCdt4Zam/kwqDdQo
+         o2M/tjJlu+SSh7f2g/xJO48QO9RbyfjY2x6KTtTUtWn65M8uojg9aSU8A+dRMX0DpD
+         No8Sy0uTdgcwWpaxd30iebnWaKf333ZjQPf9xMjnwZMZoVbg3NduHZ7xiSm4XHb5ZH
+         wQ5juq379qtdw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        bpf@vger.kernel.org, jesse.brandeburg@intel.com,
+        linux-doc@vger.kernel.org, corbet@lwn.net,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net] docs: netdev: offer performance feedback to contributors
+Date:   Thu, 20 Oct 2022 11:30:31 -0700
+Message-Id: <20221020183031.1245964-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
-        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Even with the TCP window fix to tcp_acceptable_seq(), occasional
-out-of-order host ACKs were still seen under heavy write workloads thus
-Impacting performance.  By removing the OoO optionality for ACKs in
-__tcp_transmit_skb() that issue seems to be fixed as well.
+Some of us gotten used to producing large quantities of peer feedback
+at work, every 3 or 6 months. Extending the same courtesy to community
+members seems like a logical step. It may be hard for some folks to
+get validation of how important their work is internally, especially
+at smaller companies which don't employ many kernel experts.
 
-Signed-off-by: Kamaljit Singh <kamaljit.singh1@wdc.com>
+The concept of "peer feedback" may be a hyperscaler / silicon valley
+thing so YMMV. Hopefully we can build more context as we go.
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- net/ipv4/tcp_output.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ Documentation/process/maintainer-netdev.rst | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 322e061edb72..1cd77493f32c 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -1307,7 +1307,10 @@ static int __tcp_transmit_skb(struct sock *sk, struct sk_buff *skb,
- 	 * TODO: Ideally, in-flight pure ACK packets should not matter here.
- 	 * One way to get this would be to set skb->truesize = 2 on them.
- 	 */
--	skb->ooo_okay = sk_wmem_alloc_get(sk) < SKB_TRUESIZE(1);
-+	if (likely(tcb->tcp_flags & TCPHDR_ACK))
-+		skb->ooo_okay = 0;
-+	else
-+		skb->ooo_okay = sk_wmem_alloc_get(sk) < SKB_TRUESIZE(1);
- 
- 	/* If we had to use memory reserve to allocate this skb,
- 	 * this might cause drops if packet is looped back :
+diff --git a/Documentation/process/maintainer-netdev.rst b/Documentation/process/maintainer-netdev.rst
+index d14007081595..1fa5ab8754d3 100644
+--- a/Documentation/process/maintainer-netdev.rst
++++ b/Documentation/process/maintainer-netdev.rst
+@@ -319,3 +319,13 @@ unpatched tree to confirm infrastructure didn't mangle it.
+ Finally, go back and read
+ :ref:`Documentation/process/submitting-patches.rst <submittingpatches>`
+ to be sure you are not repeating some common mistake documented there.
++
++My company uses peer feedback in employee performance reviews. Can I ask netdev maintainers for feedback?
++---------------------------------------------------------------------------------------------------------
++
++Yes, especially if you spend significant amount of time reviewing code
++and go out of your way to improve shared infrastructure.
++
++The feedback must be requested by you, the contributor, and will always
++be shared with you (even if you request for it to be submitted to your
++manager).
 -- 
-2.25.1
+2.37.3
 
