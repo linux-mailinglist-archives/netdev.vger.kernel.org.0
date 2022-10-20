@@ -2,88 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56554606A8C
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 23:54:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DDB3606AF7
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 00:06:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230078AbiJTVyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 17:54:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53572 "EHLO
+        id S230131AbiJTWG1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 18:06:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230076AbiJTVye (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 17:54:34 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 622DC2E6B4;
-        Thu, 20 Oct 2022 14:54:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=cEtqs1MQcagup4Gfi2oEJoAWnCl0qRYzXZ6/4HturA0=; b=GUCP/T6HJlhOD1kPHYTJmDGe8g
-        uhbjtDkiaMbCrXGwggLm3/TWw+xbb4ycvLWpyQGUIQpZOOKOK+ICd/aEssRNRZht3nOLrO0trUzQN
-        NbtDUF6gE/eWfobD5uQj5B96MIgB/rOAKtV2VJaZfUdJCN1MaVvQDZwfRpLHoE3i5PMqAAJw8VXVX
-        JeZjUgfhOTEb77zoYZZ2jIGV+1JYpVraB8B3SzHNtJfJJIMc+m5xGxUktfotOkSOK+xnpjFLPq5BE
-        iamrDYO9Df/UXdouwOrbD3mcJUoegEOUUxuDjoT7pb+acgiZkk0Ubd66HojweepGmnTRCx916xjqa
-        0/Qo9XgA==;
-Received: from [179.113.159.85] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1oldUH-002UDP-4v; Thu, 20 Oct 2022 23:54:01 +0200
-Message-ID: <6e2396d1-d0b2-0d1e-d146-f3ad7f2b39f8@igalia.com>
-Date:   Thu, 20 Oct 2022 18:53:43 -0300
+        with ESMTP id S230133AbiJTWGY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 18:06:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B89DE21129A;
+        Thu, 20 Oct 2022 15:06:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 193FB61D3E;
+        Thu, 20 Oct 2022 22:06:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 777E2C4347C;
+        Thu, 20 Oct 2022 22:06:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666303582;
+        bh=LEXz6lQTYIKv1JGpfH2q1eepeDnKvg6Ve/0W4r24DcM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=TI6kczEW5L03DA6teLr/ZYBF2LUic/qvr3GEU62OpZhvZqQuGp+Hb0F1YzPRdCft/
+         Bm48bUrIFbnSdN/X9MndJBkxJ7l4b7DHgkM+G8O19zd27skxz1ywQewfIrGHQq4o9P
+         bCeZAlUxbK4VuYm2wXwUKvEo8U0Ai005IdlzfFMTu0LYkfrYQAsbe3SvJh8gY6DANh
+         PC4mOAFTTMI43JckWE0WwC75a753LS6px95gnMlpQHRbYwuy2HnQJs1201x43XoTKt
+         V1WXwHIq6M+F5hmEguVcHE5L/QYuO4ONEpHo6tSOR/0rVylbNkTvBA5X6EHosHhtg7
+         dnr7ifmE3oRNQ==
+Received: by mail-vk1-f174.google.com with SMTP id a66so534602vkc.3;
+        Thu, 20 Oct 2022 15:06:22 -0700 (PDT)
+X-Gm-Message-State: ACrzQf3aWj6UBvP0xfvNjuK4AQnZUZmrY3i3V1f1JUKE0YW6zry/yB9+
+        vvpqMYmYavtfovmdY2+0GYqqM0o51rDv6Mu1Pg==
+X-Google-Smtp-Source: AMsMyM4AlVdebaHlddeCi13gpZs/ZxpSNKAz6ATtMZsm9Gau8xHw25ymZZEs8Df/CGSiDgOtAWC2KxSw2+7ZKzRCqWQ=
+X-Received: by 2002:a1f:60cd:0:b0:3ae:da42:89d0 with SMTP id
+ u196-20020a1f60cd000000b003aeda4289d0mr8750783vkb.15.1666303581383; Thu, 20
+ Oct 2022 15:06:21 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.2
-Subject: Re: [PATCH V3 06/11] tracing: Improve panic/die notifiers
-Content-Language: en-US
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
-        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
-        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, senozhatsky@chromium.org,
-        stern@rowland.harvard.edu, tglx@linutronix.de, vgoyal@redhat.com,
-        vkuznets@redhat.com, will@kernel.org, xuqiang36@huawei.com,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>
-References: <20220819221731.480795-1-gpiccoli@igalia.com>
- <20220819221731.480795-7-gpiccoli@igalia.com>
- <20221020172908.25c6e3a5@gandalf.local.home>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <20221020172908.25c6e3a5@gandalf.local.home>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+References: <Y0/7dAB8OU3jrbz6@shell.armlinux.org.uk> <E1ol97m-00EDSR-46@rmk-PC.armlinux.org.uk>
+ <166622204824.13053.10147527260423850821.robh@kernel.org> <Y1EGqR6IEhPfx7gd@shell.armlinux.org.uk>
+ <20221020141923.GA1252205-robh@kernel.org> <CAL_JsqKn0bn4nnzXXyZEVv9ZsFA6UXpV2SDHW7nkncH3Z3tsKA@mail.gmail.com>
+ <Y1FydexHzzOKS1V+@shell.armlinux.org.uk>
+In-Reply-To: <Y1FydexHzzOKS1V+@shell.armlinux.org.uk>
+From:   Rob Herring <robh@kernel.org>
+Date:   Thu, 20 Oct 2022 17:06:12 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqKrJppdZzH2xtb+0SjJwir0rpdEzrGCf43t03eGriz3gg@mail.gmail.com>
+Message-ID: <CAL_JsqKrJppdZzH2xtb+0SjJwir0rpdEzrGCf43t03eGriz3gg@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/7] dt-bindings: net: sff,sfp: update binding
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/10/2022 18:29, Steven Rostedt wrote:
-> [...]
-> Sorry for the late reply.
-> 
-> Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-> 
-> -- Steve
+On Thu, Oct 20, 2022 at 11:08 AM Russell King (Oracle)
+<linux@armlinux.org.uk> wrote:
+>
+> On Thu, Oct 20, 2022 at 09:27:44AM -0500, Rob Herring wrote:
+> > On Thu, Oct 20, 2022 at 9:19 AM Rob Herring <robh@kernel.org> wrote:
+> > >
+> > > On Thu, Oct 20, 2022 at 09:28:25AM +0100, Russell King (Oracle) wrote=
+:
+> > > > On Wed, Oct 19, 2022 at 06:31:53PM -0500, Rob Herring wrote:
+> > > > > On Wed, 19 Oct 2022 14:28:46 +0100, Russell King (Oracle) wrote:
+> > > > > > Add a minimum and default for the maximum-power-milliwatt optio=
+n;
+> > > > > > module power levels were originally up to 1W, so this is the de=
+fault
+> > > > > > and the minimum power level we can have for a functional SFP ca=
+ge.
+> > > > > >
+> > > > > > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.u=
+k>
+> > > > > > ---
+> > > > > >  Documentation/devicetree/bindings/net/sff,sfp.yaml | 2 ++
+> > > > > >  1 file changed, 2 insertions(+)
+> > > > > >
+> > > > >
+> > > > > My bot found errors running 'make DT_CHECKER_FLAGS=3D-m dt_bindin=
+g_check'
+> > > > > on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> > > > >
+> > > > > yamllint warnings/errors:
+> > > > >
+> > > > > dtschema/dtc warnings/errors:
+> > > > > /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bi=
+ndings/net/sff,sfp.yaml: properties:maximum-power-milliwatt: 'minimum' shou=
+ld not be valid under {'enum': ['const', 'enum', 'exclusiveMaximum', 'exclu=
+siveMinimum', 'minimum', 'maximum', 'multipleOf', 'pattern']}
+> > > > >     hint: Scalar and array keywords cannot be mixed
+> > > > >     from schema $id: http://devicetree.org/meta-schemas/keywords.=
+yaml#
+> > > >
+> > > > I'm reading that error message and it means absolutely nothing to m=
+e.
+> > > > Please can you explain it (and also re-word it to be clearer)?
+> > >
+> > > 'maxItems' is a constraint for arrays. 'maximum' is a constraint for
+> > > scalar values. Mixing them does not make sense.
+> >
+> > TBC, dropping 'maxItems' is what is needed here.
+>
+> So how does this work?
 
-No need for apologies! Appreciate your review/ack =)
+Do you really want to know? ;)
 
-Could you pick it in your tree? Or do you prefer that I re-send as a
-solo patch, with your ACK?
+>
+> maxItems: 1
 
-Cheers,
+json-schema happily ignores any keywords that it doesn't understand or
+don't make sense for a specific context. The DT meta-schema tries to
+prevent that.
 
+> tells it that there should be an array of one property, which is at the
+> DT level fundamentally the same as a scalar property.
 
-Guilherme
+Yes, it is true that the YAML encoded DT and (currently) the internal
+encoding used by the tools encode everything as matrices simply
+because dtc doing the YAML encoding doesn't know the types beyond what
+DTS source level provides, so everything has to be the same encoding.
+Now we use the type information in the schemas to decode the DTBs
+directly and don't have that limitation. Once I remove the YAML
+encoding, we can stop encoding everything as a matrix and having to
+fixup the schemas from scalar -> array -> matrix.
+
+> minimum:
+> default:
+> maximum:
+>
+> tells it that this is a scalar property, so there should be exactly one
+> item or the property should not be mentioned?
+
+Not sure I follow the question. As the property is defined as a
+scalar, it only needs scalar keywords. Internally, the schema gets
+expanded to:
+
+prop:
+  minItems: 1
+  maxItems: 1
+  items:
+    - maxItems: 1
+      minItems: 1
+      items:
+        - maximum: ???
+          minimum: ???
+          default: ???
+
+This is what processed-schemas.json will contain if you just have the
+scalar keywords.
+
+It's a bit more messy now with the unit suffixes as initially they
+were all scalars, but over time we've had to allow for arrays. So it's
+really they default to scalars unless you need an array in which you
+can define:
+
+prop:
+  maxItems: 2
+  items:
+    maximum: ???
+
+Could you do 'maxItems: 1' here? Yes, that would be a valid schema,
+but IIRC we'll still complain because it is redundant.
+
+Rob
