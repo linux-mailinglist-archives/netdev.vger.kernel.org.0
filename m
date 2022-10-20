@@ -2,203 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3ADBF606A66
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 23:38:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7402606A6B
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 23:41:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229959AbiJTVim (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 17:38:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43488 "EHLO
+        id S230018AbiJTVlE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 17:41:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229720AbiJTVik (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 17:38:40 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34572101E05
-        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 14:38:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666301919; x=1697837919;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Z+lCYKs7GRVys/ecFGKcPpNHT4Zwbw/6FkBXH1NoRlU=;
-  b=Jtt6/Rep328xJCPVV6IsUxMiP6558kGGYqZBJxE2z6B6WP8Fgyoqq/FF
-   /8Ohe4osRLGZ8bN+tmyDjYIbSWbe8RjceUiJl5CAhE11aQebPfX4gge0k
-   ZUtFhYmgn7Doo929nJv7E9ESDHGDVZdx3pTKgITxrIK2VLx0SxFaRX2VF
-   uK5Koo9tf+x9/GUqAyYE3nW6+Zh5GJX3CF0SGKR3iTcS9GaIXjPWCWXlI
-   JxS1dTbdOIgTCZKdC1zYs4t8JlC8AmaxsynBy5B14pbv1c/r/2BKuEfdl
-   h6pwEw1W1N6+Xp035H+7ZPk9CcUDzrK8ci0ZMYnn6NTgGEgX90XUsNxbA
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10506"; a="305580694"
-X-IronPort-AV: E=Sophos;i="5.95,199,1661842800"; 
-   d="scan'208";a="305580694"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2022 14:38:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10506"; a="663318836"
-X-IronPort-AV: E=Sophos;i="5.95,199,1661842800"; 
-   d="scan'208";a="663318836"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by orsmga001.jf.intel.com with ESMTP; 20 Oct 2022 14:38:38 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 20 Oct 2022 14:38:38 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 20 Oct 2022 14:38:37 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Thu, 20 Oct 2022 14:38:37 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.173)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Thu, 20 Oct 2022 14:38:35 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EPST+JDYWxAR3v1Cm57uBLJvUB2SMzsSk9Dq1GF5zljfEqLSz7V6V9wyZWmpOxBskY3rA7q9Iz1kB4XL6AuoRqb5xveVgIXpDpfBxkozxtiMjZNyw+vLYuOskMS9rJ9tE/+LLxbVzf6Ukq7cc9YEr510fyXXQLbGfZCZeWoFv4eBQ4E1P2FEk+o7wfWyogu5UtRNyzhYVuUZ6YxRg2wfyiPX5SlpdHWsu8qLVylnDe5w0UnnRWy/oNIt+7K4106jjDYEqVfsILCutQufD5mZSiTluWvLB62zCjb6ckwCqBPHaUmQlP0c/7T2brWnNt2jSqP+LTuLGRARD/bjNCGnWw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8aCgGJPtiH5BnH0KaiZT+F+lxzN+15N1p4rf86meZcQ=;
- b=iUMSFkgWraHL+HI7pkc+ozfnp7h0jrRyvPPIrvx21YZYGs0ObIkr7U0oDbdYrbNdrMMlyW7OvkkI/sWo3t+m/SdbQ63U1LylcMSFAmWSWFNz73CDE6kZZ/PGL4P8uzDabFksouMBHRsIQghjqQwCFlXKRpyIzYFLDctH5GyY6WsIi6Z9+sw+MYinncbkyv5wJYyqeV78ccjUtF6AFuJghLpuWMEDiIVoFXb8RBM4JA/9JkC7MyhBxDDYrj6J26XZ34wB6Beo7WnZJUu7Gg/asyx/YoZh7NsXvmgyXQCk19ACuhO5HvOoiJ1ejYifhd0uwvCGXP1MkNsl74jzFk4jow==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
- by SA0PR11MB4656.namprd11.prod.outlook.com (2603:10b6:806:96::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.34; Thu, 20 Oct
- 2022 21:38:29 +0000
-Received: from CO1PR11MB5089.namprd11.prod.outlook.com
- ([fe80::e314:2938:1e97:8cbf]) by CO1PR11MB5089.namprd11.prod.outlook.com
- ([fe80::e314:2938:1e97:8cbf%7]) with mapi id 15.20.5723.033; Thu, 20 Oct 2022
- 21:38:29 +0000
-Message-ID: <53101dd4-c136-dc1d-0416-f3683e234315@intel.com>
-Date:   Thu, 20 Oct 2022 14:38:17 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.13.1
-Subject: Re: [PATCH] i40e: add a fault tolerance judgment
-Content-Language: en-US
-To:     xiaolinkui <xiaolinkui@126.com>, <jesse.brandeburg@intel.com>,
-        <anthony.l.nguyen@intel.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC:     <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
-        Linkui Xiao <xiaolinkui@kylinos.cn>
-References: <20221020033425.11471-1-xiaolinkui@126.com>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-In-Reply-To: <20221020033425.11471-1-xiaolinkui@126.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY3PR10CA0025.namprd10.prod.outlook.com
- (2603:10b6:a03:255::30) To CO1PR11MB5089.namprd11.prod.outlook.com
- (2603:10b6:303:9b::16)
+        with ESMTP id S229987AbiJTVlC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 17:41:02 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81E051D6A64
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 14:41:00 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29KL9RU4032685
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 21:40:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=bjvSBAgRnfo6afQ5lMTh5iVDSBEPgoM4p/osS26dkc0=;
+ b=fuJGIjjGZifiUKOr/U8MzaGGeAi7a8iLBa5HmRlteTnnwVRBZ6MwI6lk5QDG7tit9t9d
+ 2BVTQs01IrX9Z92LC2oHknZ1heJAE5D5rCee/+N4eOMqkacZh+rZSKTNtrGmBJH2SU+S
+ crd+PuAXNyNQ2uJXO2vDUxIydbSF7b93zyOXB0sDJSFVCJgdkaIZEfEJkecT2uaY5iwf
+ odXsiL7sVBWdin66svAfO43ZCxCOKljHegQE1Dt6zGzO8IRo+4aomXAvd0yWuqo6hdTe
+ iBERKz8GgLCH+7p7+7YkZS2FPFaAn7CuJDxIqlDAzPGh+g/YlDppM/Z9V+01v1PfkDzL /A== 
+Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3kbdv28yx7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 21:40:59 +0000
+Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
+        by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29KLZ77A029339
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 21:40:59 GMT
+Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
+        by ppma04wdc.us.ibm.com with ESMTP id 3kakejtytp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 21:40:59 +0000
+Received: from smtpav02.wdc07v.mail.ibm.com ([9.208.128.114])
+        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29KLeu9O19268186
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 20 Oct 2022 21:40:57 GMT
+Received: from smtpav02.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9FC315805E;
+        Thu, 20 Oct 2022 21:40:56 +0000 (GMT)
+Received: from smtpav02.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CA1FA5805F;
+        Thu, 20 Oct 2022 21:40:55 +0000 (GMT)
+Received: from li-8d37cfcc-31b9-11b2-a85c-83226d7135c9.ibm.com (unknown [9.77.147.33])
+        by smtpav02.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+        Thu, 20 Oct 2022 21:40:55 +0000 (GMT)
+From:   Nick Child <nnac123@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     nick.child@ibm.com, Nick Child <nnac123@linux.ibm.com>
+Subject: [PATCH v2 net-next] ibmveth: Always stop tx queues during close
+Date:   Thu, 20 Oct 2022 16:40:52 -0500
+Message-Id: <20221020214052.33737-1-nnac123@linux.ibm.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PR11MB5089:EE_|SA0PR11MB4656:EE_
-X-MS-Office365-Filtering-Correlation-Id: 70602274-920a-43ab-fb6b-08dab2e36d8e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ntwtP+4ERvnllFMTHNqxj6+OIyaf69uGmgfLeFpvPatLsEMZ/3a1uCce+J+NG9UJtKYwreAlYFIQ+ZBSOw1f9sqU5G6pLtdscDJefNPU1wDm+5ASwfN/ASr9+xJnw58Q4aM/X2BVTRUDMYzCUN71UxtBI7VIR8zCRNNS26WCUi6FC39QYDsGYBL1GUP3PC+BfaXq6ulcHDHMmpGeXwicN5tGeDtu4nEra2CK1Gb5Nei1hxW2gMIUiQcqt2vZ6LWnvbFVm1Vi10REo1jntsHwfSPSX96LNZPAzD6sA+eLRlqY9nsXtWeIz8SmFOnJp/cBTYWCzMhscCMeipZ8UodzDRLnmyJVPg7bZ15SYvP9M5R+jxkLUDDvUhfPEYqchILdIJBVPxHhCKgnXdVIRItKBeqvNn2nklpMhCFvZzAvtZkGjUnR0NR4mOa7j5HMyuTXocZUQYLfLx7sd2O69hGbBHWFUzqXv/B61v0vpSNNb6XA8BK4HdQky4aVdgOOLNVQZbrri//YMDgDr31DTnuU7+8qeoW1al1hsWlf29IWUl6nSQos2OeSndqosM1qGcfhmUbm3zJLTEai5bMGARpe3lSAKIsE9NQakoSD90W3GtSzB1vZGUEnwoyjTTBaUz9aW4ufYOSyXxls/4b1/ImvTVF4ABn3gcAopxOmwq20YND0RCf3k0VHFrsiWwDZMziq3erA3Q5s7g3yvbm2qi1XeCFyfHkitGFjVjFnfkmp6O/Aw9S2mxRUvqkID/rGIaXfsU0P9dsx3srEjUITdTHGh20Tn+lsWcZZ8F9tjT6SriQ=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(39860400002)(376002)(346002)(136003)(366004)(451199015)(86362001)(31696002)(38100700002)(36756003)(31686004)(82960400001)(2906002)(26005)(5660300002)(83380400001)(186003)(6506007)(2616005)(6512007)(53546011)(6666004)(66556008)(6486002)(41300700001)(316002)(478600001)(66476007)(4326008)(8676002)(8936002)(66946007)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?c29aSTdyVkRVNVBEY1JGSllydTl0QU5Fell4SklYbkd5bzU3L2FxZkpQZEdm?=
- =?utf-8?B?aGRVZVdSS0hUVmlSbFQ1amhHK3pVamt2SElCalFPTmJKdjA1b3cvQ1BoaFM1?=
- =?utf-8?B?Ujc5S1dHU01rbnJwMEZSS2dyQ09YR1J1ZUJ5VEV1K3FSbWlYUjA1TTYyc1JT?=
- =?utf-8?B?QmtmNFFneVNiR1V4M0Q2RTlRb0lsZUo0bFo1b2J6Q0VxZjRBNW92czNBcU01?=
- =?utf-8?B?R0lJQ25lU291QUNieHBqeHBHM2VkVi9xdjlyRzhzRG5udk9HUGUyVzFHc21m?=
- =?utf-8?B?ZzNrVUUzeWQ4VTNJU0ZzS1lXMExzdzdNQkRETEsyK1FxRzk4YXpRaStKK2JW?=
- =?utf-8?B?V2MrRU5HR3RkNS9KcDFkZ3pBb21zcWZvMk1ESDFQWlU4QzlpbGpRSnp5V291?=
- =?utf-8?B?cG5Tb2RvbFR6TG1HOEZHZDVVdzRaQk01TFlnQ2dOcHRVTWJCTlRXSGJSYVQw?=
- =?utf-8?B?NjVhbDZnam0wNkJnaDBvaGhYSHBGL3MrRkJFaVpGMk5HSXN6NGxXdDE5QW9U?=
- =?utf-8?B?UFJvbDNmeldBUlYvYkRYUk02RXFQOWJ6RXF5NnhaakJrTFk3YXcxeFloVDFO?=
- =?utf-8?B?dUlObE8zcktKdHpNdnExU3R5N1ZiWTBuL2ZZUU9aeTEyeDdrbDJQVlVGNWJF?=
- =?utf-8?B?aHFhRWV1ZWNxSSt1V3BCSXFmTUIyMXFWekwydUFjY3NFaWJzYjdpcHBlZjNY?=
- =?utf-8?B?SXV5ZWlmaHZsQ0k4dHJyUXlzM1ZQSUM5UnNzTXVKMm83Y1hDckM3OTBoWmE3?=
- =?utf-8?B?bHN6ekJtQWI4SFFtNXRPTXFDYUxOZmdhZWVPakd5ejVRNUJVRFRkY3BrK2Jv?=
- =?utf-8?B?bFVLM05EWmFOVGxOWUdYU2xzbk45QTMrdEpvQ3gybE8wVFcySjEyT010a3cr?=
- =?utf-8?B?bjlhNTJacTBCa2NDUXpzdGlTdWduODFpWUlsZzUvRnA5NWdPOFo1TlR1MGl6?=
- =?utf-8?B?dmRzZVkyTnVQQm0yWVNrVk5iWlZqZTRkWEdhVUl5ajJvYUdMWU5tRThBTDN4?=
- =?utf-8?B?eXp6SWhId1BlRnc5bDFBTms1dURpbkI0STFqVVZQeXRCMklQY3JycGlpWlYv?=
- =?utf-8?B?Qkh2SEU4Z2dUaVl1VVlZUDBGc1FmZlgwUFRYL01LRTdmMEJ2V0djajdSRXlX?=
- =?utf-8?B?NUVMQXJDWm1BbEU2aVJBYnhHYUNGVHB3TjJvRm95Q2JKVHh3YnhYdlJOSVA4?=
- =?utf-8?B?bmI4c0gzMmk5VlhxU2JzUmdoQzJmQmx6NHJLTFdoY1BSd0JjeVFubWVzVVlj?=
- =?utf-8?B?VThjMU1LM0FveTRsSUNiNEgyS1JFdXhrN0d5dkVENGpKaDYwWnFXSHF1Z3BY?=
- =?utf-8?B?NnVCeVlwNE5XVjZ0eXBXbXQ2aGFUR3Y2OE4wT0V1Nm1kdmZRV0w0WFl3V3ZD?=
- =?utf-8?B?MHZ4ek9VVEY1czJCUCt2MDN0aUJQMkxtTG03VkYwVk9WYXFjK3R1alJKY1hI?=
- =?utf-8?B?d0ZyUHZoeXBIRHN0b1hBbHA3UzhMamQzS3dJeG5KbVY3RXR1SEdjOTJjVGEz?=
- =?utf-8?B?b1hMVlgwU0hWbFRjdFVFVjVid0VoaE1ZdWYvSzA4d0o1OStZYW5PVkVVZlNj?=
- =?utf-8?B?NGc3R3dvWGdScDZlTzU4RSt6RjdWQ2Y4R214NzZwV0VSYnBPam5PYUxVK3lC?=
- =?utf-8?B?bkFiU2JZRFg1Vy9sSmdkeDRxK3VVQUtoYmVXVUNpVXRjTENtK3BzMVlpbHFZ?=
- =?utf-8?B?WkpPSEEvSUVkZTJpRHl2Z1RPd0dYN3dXeFhBaU9DbmkxZ2t2UW1sT3hKbDlw?=
- =?utf-8?B?UzZDMmNvYmcrdmJxSEc1NklxUUkzUE9PS3IzZmtUdU5TaWw4WFJaUkpQQjRG?=
- =?utf-8?B?N0g1TGJGK3N5SEpjcFpERUZIN1pSM3BaQkJrV2hJeTNrN1BKQ3J4SldZV1Nz?=
- =?utf-8?B?cDJYZVg4Y1pxa0ZtSnNtSE01WU1Rd2ROZXpwaGN2QTJncDVuNFl3VHh2RUcx?=
- =?utf-8?B?VnpDNkgrc2lhNHZZZXFwU0R5RXFURmVYQkxEWEtvbE1Wd3AwbGhuNHAvYTRP?=
- =?utf-8?B?Yk80SCtlbHhyekZ5SmpJQmwybWtPNnhsalVCa2FUZS9Ic0dqMCtKQWMvWklt?=
- =?utf-8?B?Yy96ekI4bHZ6cGtGVjJFd25ub2l2dUVHWm5VYU1DRDNKMDBDVHhIT2hWaXUz?=
- =?utf-8?B?U1c4R1hldTRLb0UrdVRaVllrajIzNjlpY0dDUW5McDRubFR2WWtpcFJReVU1?=
- =?utf-8?B?Znc9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 70602274-920a-43ab-fb6b-08dab2e36d8e
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2022 21:38:29.3160
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MN5MN3hX2GWP+iLod4mZBe7cdagMzHIdhvd0AsOuLEm08mWwqo1Q+gScVIqygcvuy6SXg488ll1c57PoVuq1kT7xTXj6xKGhJtLKKQ4nni4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB4656
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: ZKGW1gMHB4wuaKvt88IXqbkW8BEN3D70
+X-Proofpoint-GUID: ZKGW1gMHB4wuaKvt88IXqbkW8BEN3D70
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-10-20_11,2022-10-20_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
+ phishscore=0 priorityscore=1501 malwarescore=0 bulkscore=0 mlxlogscore=999
+ lowpriorityscore=0 suspectscore=0 spamscore=0 adultscore=0 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2209130000
+ definitions=main-2210200136
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+netif_stop_all_queues must be called before calling H_FREE_LOGICAL_LAN.
+As a result, we can remove the pool_config field from the ibmveth
+adapter structure.
 
+Some device configuration changes call ibmveth_close in order to free
+the current resources held by the device. These functions then make
+their changes and call ibmveth_open to reallocate and reserve resources
+for the device.
 
-On 10/19/2022 8:34 PM, xiaolinkui wrote:
-> From: Linkui Xiao <xiaolinkui@kylinos.cn>
-> 
-> Avoid requesting memory when system memory resources are insufficient.
-> Reference function i40e_setup_tx_descriptors, adding fault tolerance
-> handling.
-> 
-> Signed-off-by: Linkui Xiao <xiaolinkui@kylinos.cn>
-> ---
->  drivers/net/ethernet/intel/i40e/i40e_txrx.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-> index d4226161a3ef..673f2f0d078f 100644
-> --- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-> +++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-> @@ -1565,6 +1565,9 @@ int i40e_setup_rx_descriptors(struct i40e_ring *rx_ring)
->  	struct device *dev = rx_ring->dev;
->  	int err;
->  
-> +	if (!dev)
-> +		return -ENOMEM;
-> +
+Prior to this commit, the flag pool_config was used to tell ibmveth_close
+that it should not halt the transmit queue. pool_config was introduced in
+commit 860f242eb534 ("[PATCH] ibmveth change buffer pools dynamically")
+to avoid interrupting the tx flow when making rx config changes. Since
+then, other commits adopted this approach, even if making tx config
+changes.
 
-What is this trying to protect against? When does a ring not have a dev
-pointer? This seems more like patching over a buggy setup where we
-failed to assign a device pointer.
+The issue with this approach was that the hypervisor freed all of
+the devices control structures after the hcall H_FREE_LOGICAL_LAN
+was performed but the transmit queues were never stopped. So the higher
+layers in the network stack would continue transmission but any
+H_SEND_LOGICAL_LAN hcall would fail with H_PARAMETER until the
+hypervisor's structures for the device were allocated with the
+H_REGISTER_LOGICAL_LAN hcall in ibmveth_open. This resulted in
+no real networking harm but did cause several of these error
+messages to be logged: "h_send_logical_lan failed with rc=-4"
 
-How does this protect against use of system memory resources? It also
-doesn't seem like it would significantly improve fault tolerance since
-its possible to have a non-NULL but invalid dev pointer...
+So, instead of trying to keep the transmit queues alive during network
+configuration changes, just stop the queues, make necessary changes then
+restart the queues.
 
-Thanks,
-Jake
+Signed-off-by: Nick Child <nnac123@linux.ibm.com>
+---
+ drivers/net/ethernet/ibm/ibmveth.c | 18 +-----------------
+ drivers/net/ethernet/ibm/ibmveth.h |  1 -
+ 2 files changed, 1 insertion(+), 18 deletions(-)
 
->  	u64_stats_init(&rx_ring->syncp);
->  
->  	/* Round up to nearest 4K */
+diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
+index 3b14dc93f59d..7d79006250ae 100644
+--- a/drivers/net/ethernet/ibm/ibmveth.c
++++ b/drivers/net/ethernet/ibm/ibmveth.c
+@@ -690,8 +690,7 @@ static int ibmveth_close(struct net_device *netdev)
+ 
+ 	napi_disable(&adapter->napi);
+ 
+-	if (!adapter->pool_config)
+-		netif_tx_stop_all_queues(netdev);
++	netif_tx_stop_all_queues(netdev);
+ 
+ 	h_vio_signal(adapter->vdev->unit_address, VIO_IRQ_DISABLE);
+ 
+@@ -799,9 +798,7 @@ static int ibmveth_set_csum_offload(struct net_device *dev, u32 data)
+ 
+ 	if (netif_running(dev)) {
+ 		restart = 1;
+-		adapter->pool_config = 1;
+ 		ibmveth_close(dev);
+-		adapter->pool_config = 0;
+ 	}
+ 
+ 	set_attr = 0;
+@@ -883,9 +880,7 @@ static int ibmveth_set_tso(struct net_device *dev, u32 data)
+ 
+ 	if (netif_running(dev)) {
+ 		restart = 1;
+-		adapter->pool_config = 1;
+ 		ibmveth_close(dev);
+-		adapter->pool_config = 0;
+ 	}
+ 
+ 	set_attr = 0;
+@@ -1535,9 +1530,7 @@ static int ibmveth_change_mtu(struct net_device *dev, int new_mtu)
+ 	   only the buffer pools necessary to hold the new MTU */
+ 	if (netif_running(adapter->netdev)) {
+ 		need_restart = 1;
+-		adapter->pool_config = 1;
+ 		ibmveth_close(adapter->netdev);
+-		adapter->pool_config = 0;
+ 	}
+ 
+ 	/* Look for an active buffer pool that can hold the new MTU */
+@@ -1701,7 +1694,6 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 	adapter->vdev = dev;
+ 	adapter->netdev = netdev;
+ 	adapter->mcastFilterSize = be32_to_cpu(*mcastFilterSize_p);
+-	adapter->pool_config = 0;
+ 	ibmveth_init_link_settings(netdev);
+ 
+ 	netif_napi_add_weight(netdev, &adapter->napi, ibmveth_poll, 16);
+@@ -1841,9 +1833,7 @@ static ssize_t veth_pool_store(struct kobject *kobj, struct attribute *attr,
+ 					return -ENOMEM;
+ 				}
+ 				pool->active = 1;
+-				adapter->pool_config = 1;
+ 				ibmveth_close(netdev);
+-				adapter->pool_config = 0;
+ 				if ((rc = ibmveth_open(netdev)))
+ 					return rc;
+ 			} else {
+@@ -1869,10 +1859,8 @@ static ssize_t veth_pool_store(struct kobject *kobj, struct attribute *attr,
+ 			}
+ 
+ 			if (netif_running(netdev)) {
+-				adapter->pool_config = 1;
+ 				ibmveth_close(netdev);
+ 				pool->active = 0;
+-				adapter->pool_config = 0;
+ 				if ((rc = ibmveth_open(netdev)))
+ 					return rc;
+ 			}
+@@ -1883,9 +1871,7 @@ static ssize_t veth_pool_store(struct kobject *kobj, struct attribute *attr,
+ 			return -EINVAL;
+ 		} else {
+ 			if (netif_running(netdev)) {
+-				adapter->pool_config = 1;
+ 				ibmveth_close(netdev);
+-				adapter->pool_config = 0;
+ 				pool->size = value;
+ 				if ((rc = ibmveth_open(netdev)))
+ 					return rc;
+@@ -1898,9 +1884,7 @@ static ssize_t veth_pool_store(struct kobject *kobj, struct attribute *attr,
+ 			return -EINVAL;
+ 		} else {
+ 			if (netif_running(netdev)) {
+-				adapter->pool_config = 1;
+ 				ibmveth_close(netdev);
+-				adapter->pool_config = 0;
+ 				pool->buff_size = value;
+ 				if ((rc = ibmveth_open(netdev)))
+ 					return rc;
+diff --git a/drivers/net/ethernet/ibm/ibmveth.h b/drivers/net/ethernet/ibm/ibmveth.h
+index daf6f615c03f..4f8357187292 100644
+--- a/drivers/net/ethernet/ibm/ibmveth.h
++++ b/drivers/net/ethernet/ibm/ibmveth.h
+@@ -146,7 +146,6 @@ struct ibmveth_adapter {
+     dma_addr_t filter_list_dma;
+     struct ibmveth_buff_pool rx_buff_pool[IBMVETH_NUM_BUFF_POOLS];
+     struct ibmveth_rx_q rx_queue;
+-    int pool_config;
+     int rx_csum;
+     int large_send;
+     bool is_active_trunk;
+-- 
+2.31.1
+
