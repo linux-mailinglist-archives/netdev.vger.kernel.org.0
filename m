@@ -2,107 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C29DE6065E9
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 18:34:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43C736065FE
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 18:40:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229746AbiJTQeo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 12:34:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34404 "EHLO
+        id S229695AbiJTQkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 12:40:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230147AbiJTQej (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 12:34:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4968114016
-        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 09:34:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1666283659;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=iFX+Je1+5VjilA4nu1QFlaYd99bLwTzHit3WzGmVmo8=;
-        b=Pzj2iO11a/8tYYzfiSY0YsC8Nlo+LNfaItWGvt+lvblGStShc3m/2oS9sE++nreNtrO1+U
-        9R6JvrRE90CPEqWWFnIhU5YfQPjmrhb2ZHbwu8PKtdp6sasLrcquLNN2Qs5Kx8bUtkMWHU
-        50Av1gOik+VtF/l5BVxan8E1/8VFWvA=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-190-dlvLNt7CM5GuMFrhHbEB6w-1; Thu, 20 Oct 2022 12:34:17 -0400
-X-MC-Unique: dlvLNt7CM5GuMFrhHbEB6w-1
-Received: by mail-ej1-f69.google.com with SMTP id sa6-20020a1709076d0600b0078d84ed54b9so136219ejc.18
-        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 09:34:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=iFX+Je1+5VjilA4nu1QFlaYd99bLwTzHit3WzGmVmo8=;
-        b=KBh74a2u2taQN1QypwhpPxCCoiA+v6chxs/qvCEPPhnMc6NnoIYSeTk3ag5krhJWhP
-         YAGNrwoUXGHIces1dp60BxCF0pZskvGz15Bi/bByziiBRytdHy5++FyicFRId+ogduMv
-         6+6TbtNefcezEM0F/WFONVRJcPRjkuk9h1BB8nXx86aCsANV1uNupgcP8dCwsGPROPf3
-         HXcO5Xe34QtrvnKt1mGg7XnwxO0mmX+egiaMy1aUVRjLAPppPVEbGWDfTemjIyI2j4aS
-         eDCOoMda8RXwS8kBHv8SuFbO8QDf3UCO7TqXMzb/kBxZwqKXyaBczQY5nmq3tFB0Os8b
-         C2Bg==
-X-Gm-Message-State: ACrzQf2l5A5ExfcGU+pd6oMuUow3VVtI8LU8juaYpC27hqLmtYfc9PUf
-        Z7PRvWSVKRaY+O2IDi6A5Ilkj9xHhMFsZfdd/OJjj7vYinXH0AgWvPKPCcW7pNv+o9TKMNg4fgI
-        BRh/M/7O7e9RPcmHh
-X-Received: by 2002:a17:907:7245:b0:78d:ec9c:e743 with SMTP id ds5-20020a170907724500b0078dec9ce743mr11937179ejc.466.1666283654290;
-        Thu, 20 Oct 2022 09:34:14 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM7KRuB4bQjHQh2P5gLUINzx7swd+TyxlaC5D8RG3Jyk6kK3vmnITIkZ+QnBk+5FLm+3S061Ig==
-X-Received: by 2002:a17:907:7245:b0:78d:ec9c:e743 with SMTP id ds5-20020a170907724500b0078dec9ce743mr11937115ejc.466.1666283653343;
-        Thu, 20 Oct 2022 09:34:13 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id 17-20020a170906201100b007803083a36asm10435224ejo.115.2022.10.20.09.34.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Oct 2022 09:34:12 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 579B76EA0D8; Thu, 20 Oct 2022 18:34:12 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Heng Qi <hengqi@linux.alibaba.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229622AbiJTQkQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 12:40:16 -0400
+Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38567C4D94
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 09:40:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1666284015; x=1697820015;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=sOTEOC0id1lu3fGhcOlVt5RztjdTYG3j0MS7vZ01OXc=;
+  b=CvSDcK2BHqcrDf8FFJbjL50c/HKdwm231+WG9TXv9k+uqbO37vf/JFRe
+   nYC16uek+MYItdzMCyc8PKyzW29Gn8y2jT2i8xNySn8t9aqdC6VYKrsq9
+   nrWuLHQpi1r2j+hcr+xO1Hcs2nacYM0mhCA9EEidbmnnRdCv1ElMrKB/j
+   0=;
+X-IronPort-AV: E=Sophos;i="5.95,199,1661817600"; 
+   d="scan'208";a="254293448"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-m6i4x-1cca8d67.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2022 16:40:11 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2a-m6i4x-1cca8d67.us-west-2.amazon.com (Postfix) with ESMTPS id 91ED281132;
+        Thu, 20 Oct 2022 16:40:07 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.42; Thu, 20 Oct 2022 16:40:06 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.208) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.15;
+ Thu, 20 Oct 2022 16:40:04 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH net] veth: Avoid drop packets when xdp_redirect performs
-In-Reply-To: <c128d468-0c87-8759-e7de-b482abf8aab6@linux.alibaba.com>
-References: <1664267413-75518-1-git-send-email-hengqi@linux.alibaba.com>
- <87wn9proty.fsf@toke.dk>
- <f760701a-fb9d-11e5-f555-ebcf773922c3@linux.alibaba.com>
- <87v8p7r1f2.fsf@toke.dk>
- <189b8159-c05f-1730-93f3-365999755f72@linux.alibaba.com>
- <567d3635f6e7969c4e1a0e4bc759556c472d1dff.camel@redhat.com>
- <c1831b89-c896-80c3-7258-01bcf2defcbc@linux.alibaba.com>
- <87o7uymlh5.fsf@toke.dk>
- <c128d468-0c87-8759-e7de-b482abf8aab6@linux.alibaba.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 20 Oct 2022 18:34:12 +0200
-Message-ID: <87bkq6v4hn.fsf@toke.dk>
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Martin KaFai Lau <martin.lau@kernel.org>,
+        Craig Gallek <kraig@google.com>,
+        Kazuho Oku <kazuhooku@gmail.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH v2 net-next 0/2] soreuseport: Fix issues related to the faster selection algorithm.
+Date:   Thu, 20 Oct 2022 09:39:52 -0700
+Message-ID: <20221020163954.93618-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Originating-IP: [10.43.162.208]
+X-ClientProxiedBy: EX13D15UWA003.ant.amazon.com (10.43.160.182) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Heng Qi <hengqi@linux.alibaba.com> writes:
+setsockopt(SO_INCOMING_CPU) for UDP/TCP is broken since 4.5/4.6 due to
+these commits:
 
-> maybe we should consider a simpler method: when loading xdp in veth,
-> we can automatically enable the napi ring of peer veth, which seems to
-> have no performance impact and functional impact on the veth pair, and
-> no longer requires users to do more things for peer veth (after all,
-> they may be unaware of more requirements for peer veth). Do you think
-> this is feasible?
+  * e32ea7e74727 ("soreuseport: fast reuseport UDP socket selection")
+  * c125e80b8868 ("soreuseport: fast reuseport TCP socket selection")
 
-It could be, perhaps? One issue is what to do once the XDP program is
-then unloaded? We should probably disable NAPI on the peer in this case,
-but then we'd need to track whether it was enabled by loading an XDP
-program; we don't want to disable GRO/NAPI if the user requested it
-explicitly. This kind of state tracking gets icky fast, so I guess it'll
-depend on the patch...
+These commits introduced the O(1) socket selection algorithm and removed
+O(n) iteration over the list, but it ignores the score calculated by
+compute_score().  As a result, it caused two misbehaviours:
 
--Toke
+  * Unconnected sockets receive packets sent to connected sockets
+  * SO_INCOMING_CPU does not work
+
+The former is fixed by commit acdcecc61285 ("udp: correct reuseport
+selection with connected sockets").  This series fixes the latter and
+adds some tests for SO_INCOMING_CPU.
+
+
+Changes:
+  v2:
+    * patch 1
+      * Rename helper functions
+      * Remove unnecessary arg sk from '__' helpers
+      * Fix reuseport_update_incoming_cpu() logic
+    * patch 2
+      * Add test cases
+        * Change when to set SO_INCOMING_CPU
+        * Add/Remove non-SO_INCOMING_CPU socket
+
+  v1: https://lore.kernel.org/netdev/20221010174351.11024-1-kuniyu@amazon.com/
+
+
+Kuniyuki Iwashima (2):
+  soreuseport: Fix socket selection for SO_INCOMING_CPU.
+  selftest: Add test for SO_INCOMING_CPU.
+
+ include/net/sock_reuseport.h                  |   3 +
+ net/core/sock.c                               |   2 +-
+ net/core/sock_reuseport.c                     |  94 ++++++-
+ tools/testing/selftests/net/.gitignore        |   1 +
+ tools/testing/selftests/net/Makefile          |   1 +
+ tools/testing/selftests/net/so_incoming_cpu.c | 242 ++++++++++++++++++
+ 6 files changed, 337 insertions(+), 6 deletions(-)
+ create mode 100644 tools/testing/selftests/net/so_incoming_cpu.c
+
+-- 
+2.30.2
 
