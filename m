@@ -2,70 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EF26605AAA
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 11:09:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCA21605AAC
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 11:09:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230382AbiJTJJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 05:09:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46040 "EHLO
+        id S230047AbiJTJJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 05:09:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230318AbiJTJIz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 05:08:55 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 762FD19C22F;
-        Thu, 20 Oct 2022 02:08:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1666256934; x=1697792934;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=VzVml3ru9djMLT9juNFps09rLYH/GdhMKWk//DGKRRE=;
-  b=UUHovZC8jKpokzjM5tjAsox5audJw7IsNF6FxHdKejfvgiSvkkRtwIVS
-   vDxOFEfAtgEKZ8+9B5kJ7zl61U5h6U2my/jJMhTQU9R2JqTbyAoCAtm9s
-   2UUa0rtidpPJRsvdLIlciuIGZpFaLM5QT0nX1vw4+F0pT/07t0QYbJMHo
-   09vvrR6hEPTDEdp7ifZHzBcWyJo3JoQJP1kOesKpiPeOMnP/EX57dkb+s
-   5x9X7COhheL6un8dwB15rjIuycH3hEe/CrGX+pzDk7G4WBRYfQMxPIn/X
-   WW+EWp4MyAu9adnk5rhFro8AUokgZV5i27ue5kYjKeQgKdxdlWZz+cwpC
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.95,198,1661842800"; 
-   d="scan'208";a="196270069"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Oct 2022 02:08:53 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Thu, 20 Oct 2022 02:08:53 -0700
-Received: from den-dk-m31857.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Thu, 20 Oct 2022 02:08:51 -0700
-Message-ID: <194f5d4aba163e9afeaa427d968bbcd3a0e4cbc5.camel@microchip.com>
-Subject: Re: [PATCH net-next v2 4/9] net: microchip: sparx5: Adding initial
- tc flower support for VCAP API
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Casper Andersson <casper.casan@gmail.com>
-CC:     "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229751AbiJTJJl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 05:09:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BAAA43632
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 02:09:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1666256978;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uHu0qC5sRtM8JjGOnMBUHJXSljfPka+x5n6ab2sNzgk=;
+        b=K5YWTclqvsCSW8WcIbnjHqQgbfPTFQi6YAzwkm+pUUzw7SM7ae/eAZutnmDAHusIZ/FGLq
+        ojnNB0GXHvr8OD94l8FbZPNblV2Z2SRZzLYF6wprvdIxeSW004xbnW0KTukyZrSQdmiMks
+        LBmLnyCLUQ4SFR4s8JYDD821WN9i3SM=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-614-Bnu5dyVdNEqgG6r7Ywr_UQ-1; Thu, 20 Oct 2022 05:09:37 -0400
+X-MC-Unique: Bnu5dyVdNEqgG6r7Ywr_UQ-1
+Received: by mail-qk1-f199.google.com with SMTP id j13-20020a05620a288d00b006be7b2a758fso16627914qkp.1
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 02:09:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=uHu0qC5sRtM8JjGOnMBUHJXSljfPka+x5n6ab2sNzgk=;
+        b=inmpVBMGs7PRhN2B7+suqd7wP9/oz0ORuVHQtqSVowTVbJl2WdftBLnLF+spMgzWwv
+         p6eAwyHNURsg8sxGcEtuXM7OUf+62XT5HqXzPZbzPA1mjazFiLPCWWZuG7SdfUOoHiQf
+         mhnOA2ayrFWvZDGqyBgTtlRgdQeMLzciMen4SUyLO0fGUX8g7YENzHqjQGAqseX/KgSf
+         HQpZsPl/QMri65NwbP46dKmeyoXB5OPqPnzIiAbrfxVdJDl9LaGzpt5PXFgT/xfYNKy9
+         eeb2qLY4gnfjq74DjRCJmMPTC0em+ER3NoLnyy6vi2fQRTG87REROa52qFxuf9bTOctP
+         oCOw==
+X-Gm-Message-State: ACrzQf24siPG9SdSzB+8wpBHpd3R0qzP2ID9oHLGiRMDl5j31Tk/5Q6Q
+        ft8WuEeJBMtLRoJlQGpwTdt6de5/rlgaDT4vXCFunB/1kNGif4IGobKSAdrA7qNQ9N+orgr1nCO
+        JMHWT7Q2gJg1TjJhJ
+X-Received: by 2002:ac8:58d0:0:b0:39c:f032:e3d9 with SMTP id u16-20020ac858d0000000b0039cf032e3d9mr10036630qta.355.1666256976022;
+        Thu, 20 Oct 2022 02:09:36 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM4FqxktITMoXXWuOnUhPQfDHyB1nUqhKaWXbgfF1n14dKm7rB4v6zBHarIOL1LTaKeEedfvwQ==
+X-Received: by 2002:ac8:58d0:0:b0:39c:f032:e3d9 with SMTP id u16-20020ac858d0000000b0039cf032e3d9mr10036618qta.355.1666256975772;
+        Thu, 20 Oct 2022 02:09:35 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-103-235.dyn.eolo.it. [146.241.103.235])
+        by smtp.gmail.com with ESMTPSA id o6-20020a05620a2a0600b006ee9d734479sm7068437qkp.33.2022.10.20.02.09.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Oct 2022 02:09:35 -0700 (PDT)
+Message-ID: <d9bac72cf3c7ee92ad399fff5dcaae85903adda5.camel@redhat.com>
+Subject: Re: [PATCH v3] net: hinic: Set max_mtu/min_mtu directly to simplify
+ the code.
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Cai Huoqing <cai.huoqing@linux.dev>, kuba@kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        <UNGLinuxDriver@microchip.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        "Wan Jiabing" <wanjiabing@vivo.com>,
-        Nathan Huckleberry <nhuck@google.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Date:   Thu, 20 Oct 2022 11:08:50 +0200
-In-Reply-To: <20221020073134.ru2p5m5ittadthzr@wse-c0155>
-References: <20221019114215.620969-1-steen.hegelund@microchip.com>
-         <20221019114215.620969-5-steen.hegelund@microchip.com>
-         <20221020073134.ru2p5m5ittadthzr@wse-c0155>
+        Qiao Ma <mqaio@linux.alibaba.com>,
+        Zhengchao Shao <shaozhengchao@huawei.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 20 Oct 2022 11:09:31 +0200
+In-Reply-To: <20221018110701.3958-1-cai.huoqing@linux.dev>
+References: <20221018110701.3958-1-cai.huoqing@linux.dev>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-User-Agent: Evolution 3.44.4 
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,51 +84,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgQ2FzcGVyLAoKT24gVGh1LCAyMDIyLTEwLTIwIGF0IDA5OjMxICswMjAwLCBDYXNwZXIgQW5k
-ZXJzc29uIHdyb3RlOgo+IEVYVEVSTkFMIEVNQUlMOiBEbyBub3QgY2xpY2sgbGlua3Mgb3Igb3Bl
-biBhdHRhY2htZW50cyB1bmxlc3MgeW91IGtub3cgdGhlIGNvbnRlbnQgaXMgc2FmZQo+IAo+IEhp
-IFN0ZWVuLAo+IAo+IEl0J3MgYSBwcmV0dHkgYmlnIHBhdGNoIHNlcmllcywgYnV0IG92ZXJhbGwg
-SSB0aGluayBpdCBsb29rcyB2ZXJ5IGdvb2QuCj4gSSd2ZSBnb3Qgc29tZSBtaW5vciBjb21tZW50
-cy4gSSBhbHNvIHRlc3RlZCBpdCBvbiB0aGUgTWljcm9jaGlwIFBDQjEzNQo+IHN3aXRjaCBhbmQg
-aXQgd29ya3MgYXMgZGVzY3JpYmVkLgoKUmVhbGx5IGdvb2QgdGhhdCB5b3UgY291bGQgZmluZCB0
-aW1lIHRvIGRvIHRoaXMhCgo+IAo+IE9uIDIwMjItMTAtMTkgMTM6NDIsIFN0ZWVuIEhlZ2VsdW5k
-IHdyb3RlOgo+ID4gK3N0YXRpYyB2b2lkIHNwYXJ4NV90Y19mbG93ZXJfc2V0X2V4dGVycihzdHJ1
-Y3QgbmV0X2RldmljZSAqbmRldiwKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc3RydWN0IGZsb3dfY2xz
-X29mZmxvYWQgKmZjbywKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc3RydWN0IHZjYXBfcnVsZSAqdnJ1
-bGUpCj4gPiArewo+ID4gK8KgwqDCoMKgIHN3aXRjaCAodnJ1bGUtPmV4dGVycikgewo+ID4gK8Kg
-wqDCoMKgIGNhc2UgVkNBUF9FUlJfTk9ORToKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
-YnJlYWs7Cj4gPiArwqDCoMKgwqAgY2FzZSBWQ0FQX0VSUl9OT19BRE1JTjoKPiA+ICvCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqAgTkxfU0VUX0VSUl9NU0dfTU9EKGZjby0+Y29tbW9uLmV4dGFjaywK
-PiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoCAiTWlzc2luZyBWQ0FQIGluc3RhbmNlIik7Cj4gPiArwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgIGJyZWFrOwo+ID4gK8KgwqDCoMKgIGNhc2UgVkNBUF9FUlJfTk9fTkVUREVWOgo+
-ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBOTF9TRVRfRVJSX01TR19NT0QoZmNvLT5jb21t
-b24uZXh0YWNrLAo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgICJNaXNzaW5nIG5ldHdvcmsgaW50ZXJmYWNlIik7Cj4gPiAr
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGJyZWFrOwo+ID4gK8KgwqDCoMKgIGNhc2UgVkNBUF9F
-UlJfTk9fS0VZU0VUX01BVENIOgo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBOTF9TRVRf
-RVJSX01TR19NT0QoZmNvLT5jb21tb24uZXh0YWNrLAo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICJObyBrZXlzZXQgbWF0
-Y2hlZCB0aGUgZmlsdGVyIGtleXMiKTsKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgYnJl
-YWs7Cj4gPiArwqDCoMKgwqAgY2FzZSBWQ0FQX0VSUl9OT19BQ1RJT05TRVRfTUFUQ0g6Cj4gPiAr
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIE5MX1NFVF9FUlJfTVNHX01PRChmY28tPmNvbW1vbi5l
-eHRhY2ssCj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqAgIk5vIGFjdGlvbnNldCBtYXRjaGVkIHRoZSBmaWx0ZXIgYWN0aW9u
-cyIpOwo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBicmVhazsKPiA+ICvCoMKgwqDCoCBj
-YXNlIFZDQVBfRVJSX05PX1BPUlRfS0VZU0VUX01BVENIOgo+ID4gK8KgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCBOTF9TRVRfRVJSX01TR19NT0QoZmNvLT5jb21tb24uZXh0YWNrLAo+ID4gK8KgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-ICJObyBwb3J0IGtleXNldCBtYXRjaGVkIHRoZSBmaWx0ZXIga2V5cyIpOwo+ID4gK8KgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoCBicmVhazsKPiA+ICvCoMKgwqDCoCB9Cj4gPiArfQo+IAo+IENvdWxk
-IHRoaXMgYWxzbyBiZSBzaGFyZWQgaW4gdGhlIFZDQVAgQVBJPyBJdCBjdXJyZW50bHkgZG9lc24n
-dCB1c2UKPiBhbnl0aGluZyBTcGFyeDUgc3BlY2lmaWMuIFRob3VnaCwgbmV0X2RldmljZSBpcyB1
-bnVzZWQgc28gSSdtIGd1ZXNzaW5nCj4geW91IG1pZ2h0IGhhdmUgcGxhbnMgZm9yIHRoaXMgaW4g
-dGhlIGZ1dHVyZS4gQW5kIGl0IG1pZ2h0IGZpdCBiZXR0ZXIKPiBoZXJlIGFjY29yZGluZyB0byB5
-b3VyIGRlc2lnbiBnb2Fscy4KClllcyB0aGlzIGlzIG5vdCBTcGFyeDUgc3BlY2lmaWMgc28gaXQg
-Y291bGQgYmUgYWRkZWQgdG8gdGhlIEFQSSAod2hlcmUgdGhlIGVudW1zIGFyZSBkZWZpbmVkCmFu
-eXdheSkuCgo+IAo+IFRlc3RlZC1ieTogQ2FzcGVyIEFuZGVyc3NvbiA8Y2FzcGVyLmNhc2FuQGdt
-YWlsLmNvbT4KPiBSZXZpZXdlZC1ieTogQ2FzcGVyIEFuZGVyc3NvbiA8Y2FzcGVyLmNhc2FuQGdt
-YWlsLmNvbT4KPiAKClRoYW5rcyBmb3IgdGhlIHJldmlldy4KCkJSClN0ZWVuCg==
+On Tue, 2022-10-18 at 19:06 +0800, Cai Huoqing wrote:
+> Set max_mtu/min_mtu directly to avoid making the validity judgment
+> when set mtu, because the judgment is made in net/core: dev_validate_mtu,
+> so to simplify the code.
+> 
+> Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
+> ---
+> v1->v2:
+> 	1.Update changelog.
+> 	2.Reverse MAX_MTU to max jumbo frame size.
+> 
+> v2->v3:
+> 	1.Update signature
+> 
+> 	v1 link: https://lore.kernel.org/lkml/20221012082945.10353-1-cai.huoqing@linux.dev/
+>         v2 link: https://lore.kernel.org/lkml/20220429033733.GA15753@chq-T47/
+> 
+> 
+>  drivers/net/ethernet/huawei/hinic/hinic_dev.h  |  4 ++++
+>  drivers/net/ethernet/huawei/hinic/hinic_main.c |  3 ++-
+>  drivers/net/ethernet/huawei/hinic/hinic_port.c | 17 +----------------
+>  3 files changed, 7 insertions(+), 17 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/huawei/hinic/hinic_dev.h b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
+> index a4fbf44f944c..2bbc94c0a9c1 100644
+> --- a/drivers/net/ethernet/huawei/hinic/hinic_dev.h
+> +++ b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
+> @@ -22,6 +22,10 @@
+>  
+>  #define LP_PKT_CNT		64
+>  
+> +#define HINIC_MAX_JUMBO_FRAME_SIZE 	15872
+> +#define HINIC_MAX_MTU_SIZE 	(HINIC_MAX_JUMBO_FRAME_SIZE - ETH_HLEN - ETH_FCS_LEN)
+> +#define HINIC_MIN_MTU_SIZE 	256
+
+I'm sorry for the nit pick, but the above is whitespace-damaged: you
+are mixing spaces and tabs.
+
+Cheers,
+
+Paolo
 
