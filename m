@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4226660674C
+	by mail.lfdr.de (Postfix) with ESMTP id 8DD2460674D
 	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 19:49:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229817AbiJTRtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 13:49:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58254 "EHLO
+        id S230083AbiJTRtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 13:49:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229629AbiJTRtk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 13:49:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D1C815A1A
-        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 10:49:36 -0700 (PDT)
+        with ESMTP id S229692AbiJTRtm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 13:49:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A222FAE79
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 10:49:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1666288176;
+        s=mimecast20190719; t=1666288178;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=4Pb3/emoyHa57dBaQPwwjztj9mw+OTDfOL34jgo14T4=;
-        b=KGWW7923xqhhKA5RlkjdJJAFQPYbchT/OJ++fy8Bvr477yCXgXC3hfwubo6QqrS3CYNO9s
-        ilEnimeCPWBxmTbR7nhIOJ1N0d4ep9zFVI2Hf64q0OEN2eXHrhzLywNrJpCC70N6E7qUQg
-        AUtfK8IrVm7useHBe4+E/QWntbrSh58=
+        bh=JSqL0qYiG8iF8Q2dZujhqIpzkNeCX2hBCyo0QWm/22w=;
+        b=KFHKghY6HJIc/gTW+uKjRq8rdJq9jL0R98oiWzkkZYecwy9QKJkJ04bTSYIOKlRddKnwtZ
+        h4MfKfaM3NTjQ/83rSVBOs/XGhzOylYEvnQhesFjPnZXRmwgDdsfbxrJxI7QDXRwUVCleJ
+        DFbeUs407hdHjG3KZf1hqxc6SLB88L8=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-21-KO5O6rouMVCezPVgm3rEJQ-1; Thu, 20 Oct 2022 13:49:30 -0400
-X-MC-Unique: KO5O6rouMVCezPVgm3rEJQ-1
+ us-mta-190-MgwX3JluPHmaqyOt18wUSQ-1; Thu, 20 Oct 2022 13:49:27 -0400
+X-MC-Unique: MgwX3JluPHmaqyOt18wUSQ-1
 Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8BE3387B2A2;
-        Thu, 20 Oct 2022 17:49:23 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 096F31871CD4;
+        Thu, 20 Oct 2022 17:49:27 +0000 (UTC)
 Received: from gerbillo.redhat.com (unknown [10.39.194.216])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DFC164A9255;
-        Thu, 20 Oct 2022 17:49:11 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D207D49BB67;
+        Thu, 20 Oct 2022 17:49:17 +0000 (UTC)
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -46,9 +46,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Matthieu Baerts <matthieu.baerts@tessares.net>,
         Kuniyuki Iwashima <kuniyu@amazon.com>
-Subject: [PATCH net-next v2 1/2] net: introduce and use custom sockopt socket flag
-Date:   Thu, 20 Oct 2022 19:48:51 +0200
-Message-Id: <dc549a4d5c1d2031c64794c8e12bed55afb85c3e.1666287924.git.pabeni@redhat.com>
+Subject: [PATCH net-next v2 2/2] udp: track the forward memory release threshold in an hot cacheline
+Date:   Thu, 20 Oct 2022 19:48:52 +0200
+Message-Id: <2dede94e742d8096d6ac5e0f1979054ee158d9a8.1666287924.git.pabeni@redhat.com>
 In-Reply-To: <cover.1666287924.git.pabeni@redhat.com>
 References: <cover.1666287924.git.pabeni@redhat.com>
 MIME-Version: 1.0
@@ -64,72 +64,138 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We will soon introduce custom setsockopt for UDP sockets, too.
-Instead of doing even more complex arbitrary checks inside
-sock_use_custom_sol_socket(), add a new socket flag and set it
-for the relevant socket types (currently only MPTCP).
+When the receiver process and the BH runs on different cores,
+udp_rmem_release() experience a cache miss while accessing sk_rcvbuf,
+as the latter shares the same cacheline with sk_forward_alloc, written
+by the BH.
 
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+With this patch, UDP tracks the rcvbuf value and its update via custom
+SOL_SOCKET socket options, and copies the forward memory threshold value
+used by udp_rmem_release() in a different cacheline, already accessed by
+the above function and uncontended.
+
+Since the UDP socket init operation grown a bit, factor out the common
+code between v4 and v6 in a shared helper.
+
+Overall the above give a 10% peek throughput increase under UDP flood.
+
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- include/linux/net.h  | 1 +
- net/mptcp/protocol.c | 4 ++++
- net/socket.c         | 8 +-------
- 3 files changed, 6 insertions(+), 7 deletions(-)
+v1 -> v2:
+ - factor out common init helper for udp && udpv6 sock (Kuniyuki)
+---
+ include/linux/udp.h |  3 +++
+ include/net/udp.h   |  9 +++++++++
+ net/ipv4/udp.c      | 18 +++++++++++++++---
+ net/ipv6/udp.c      |  4 ++--
+ 4 files changed, 29 insertions(+), 5 deletions(-)
 
-diff --git a/include/linux/net.h b/include/linux/net.h
-index 711c3593c3b8..59350fd85823 100644
---- a/include/linux/net.h
-+++ b/include/linux/net.h
-@@ -41,6 +41,7 @@ struct net;
- #define SOCK_NOSPACE		2
- #define SOCK_PASSCRED		3
- #define SOCK_PASSSEC		4
-+#define SOCK_CUSTOM_SOCKOPT	5
+diff --git a/include/linux/udp.h b/include/linux/udp.h
+index e96da4157d04..5cdba00a904a 100644
+--- a/include/linux/udp.h
++++ b/include/linux/udp.h
+@@ -87,6 +87,9 @@ struct udp_sock {
  
- #ifndef ARCH_HAS_SOCKET_TYPES
- /**
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index f599ad44ed24..0448a5c3da3c 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -2708,6 +2708,8 @@ static int mptcp_init_sock(struct sock *sk)
- 	if (ret)
- 		return ret;
+ 	/* This field is dirtied by udp_recvmsg() */
+ 	int		forward_deficit;
++
++	/* This fields follows rcvbuf value, and is touched by udp_recvmsg */
++	int		forward_threshold;
+ };
  
+ #define UDP_MAX_SEGMENTS	(1 << 6UL)
+diff --git a/include/net/udp.h b/include/net/udp.h
+index fee053bcd17c..de4b528522bb 100644
+--- a/include/net/udp.h
++++ b/include/net/udp.h
+@@ -174,6 +174,15 @@ INDIRECT_CALLABLE_DECLARE(int udpv6_rcv(struct sk_buff *));
+ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
+ 				  netdev_features_t features, bool is_ipv6);
+ 
++static inline void udp_lib_init_sock(struct sock *sk)
++{
++	struct udp_sock *up = udp_sk(sk);
++
++	skb_queue_head_init(&up->reader_queue);
++	up->forward_threshold = sk->sk_rcvbuf >> 2;
 +	set_bit(SOCK_CUSTOM_SOCKOPT, &sk->sk_socket->flags);
++}
 +
- 	/* fetch the ca name; do it outside __mptcp_init_sock(), so that clone will
- 	 * propagate the correct value
- 	 */
-@@ -3684,6 +3686,8 @@ static int mptcp_stream_accept(struct socket *sock, struct socket *newsock,
- 		struct mptcp_subflow_context *subflow;
- 		struct sock *newsk = newsock->sk;
- 
-+		set_bit(SOCK_CUSTOM_SOCKOPT, &newsock->flags);
-+
- 		lock_sock(newsk);
- 
- 		/* PM/worker can now acquire the first subflow socket
-diff --git a/net/socket.c b/net/socket.c
-index 00da9ce3dba0..55c5d536e5f6 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -2199,13 +2199,7 @@ SYSCALL_DEFINE4(recv, int, fd, void __user *, ubuf, size_t, size,
- 
- static bool sock_use_custom_sol_socket(const struct socket *sock)
+ /* hash routines shared between UDPv4/6 and UDP-Litev4/6 */
+ static inline int udp_lib_hash(struct sock *sk)
  {
--	const struct sock *sk = sock->sk;
--
--	/* Use sock->ops->setsockopt() for MPTCP */
--	return IS_ENABLED(CONFIG_MPTCP) &&
--	       sk->sk_protocol == IPPROTO_MPTCP &&
--	       sk->sk_type == SOCK_STREAM &&
--	       (sk->sk_family == AF_INET || sk->sk_family == AF_INET6);
-+	return test_bit(SOCK_CUSTOM_SOCKOPT, &sock->flags);
- }
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 8126f67d18b3..e361ad93999e 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -1448,7 +1448,7 @@ static void udp_rmem_release(struct sock *sk, int size, int partial,
+ 	if (likely(partial)) {
+ 		up->forward_deficit += size;
+ 		size = up->forward_deficit;
+-		if (size < (sk->sk_rcvbuf >> 2) &&
++		if (size < READ_ONCE(up->forward_threshold) &&
+ 		    !skb_queue_empty(&up->reader_queue))
+ 			return;
+ 	} else {
+@@ -1622,7 +1622,7 @@ static void udp_destruct_sock(struct sock *sk)
  
- /*
+ int udp_init_sock(struct sock *sk)
+ {
+-	skb_queue_head_init(&udp_sk(sk)->reader_queue);
++	udp_lib_init_sock(sk);
+ 	sk->sk_destruct = udp_destruct_sock;
+ 	return 0;
+ }
+@@ -2671,6 +2671,18 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
+ 	int err = 0;
+ 	int is_udplite = IS_UDPLITE(sk);
+ 
++	if (level == SOL_SOCKET) {
++		err = sk_setsockopt(sk, level, optname, optval, optlen);
++
++		if (optname == SO_RCVBUF || optname == SO_RCVBUFFORCE) {
++			sockopt_lock_sock(sk);
++			/* paired with READ_ONCE in udp_rmem_release() */
++			WRITE_ONCE(up->forward_threshold, sk->sk_rcvbuf >> 2);
++			sockopt_release_sock(sk);
++		}
++		return err;
++	}
++
+ 	if (optlen < sizeof(int))
+ 		return -EINVAL;
+ 
+@@ -2784,7 +2796,7 @@ EXPORT_SYMBOL(udp_lib_setsockopt);
+ int udp_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,
+ 		   unsigned int optlen)
+ {
+-	if (level == SOL_UDP  ||  level == SOL_UDPLITE)
++	if (level == SOL_UDP  ||  level == SOL_UDPLITE || level == SOL_SOCKET)
+ 		return udp_lib_setsockopt(sk, level, optname,
+ 					  optval, optlen,
+ 					  udp_push_pending_frames);
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 8d09f0ea5b8c..b0bc4e27ec2f 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -64,7 +64,7 @@ static void udpv6_destruct_sock(struct sock *sk)
+ 
+ int udpv6_init_sock(struct sock *sk)
+ {
+-	skb_queue_head_init(&udp_sk(sk)->reader_queue);
++	udp_lib_init_sock(sk);
+ 	sk->sk_destruct = udpv6_destruct_sock;
+ 	return 0;
+ }
+@@ -1671,7 +1671,7 @@ void udpv6_destroy_sock(struct sock *sk)
+ int udpv6_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,
+ 		     unsigned int optlen)
+ {
+-	if (level == SOL_UDP  ||  level == SOL_UDPLITE)
++	if (level == SOL_UDP  ||  level == SOL_UDPLITE || level == SOL_SOCKET)
+ 		return udp_lib_setsockopt(sk, level, optname,
+ 					  optval, optlen,
+ 					  udp_v6_push_pending_frames);
 -- 
 2.37.3
 
