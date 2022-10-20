@@ -2,76 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1666605578
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 04:25:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7010A60557A
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 04:26:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230250AbiJTCZa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Oct 2022 22:25:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37712 "EHLO
+        id S230350AbiJTC0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Oct 2022 22:26:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229634AbiJTCZ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 22:25:28 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE79210CFB5;
-        Wed, 19 Oct 2022 19:25:27 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id v130-20020a1cac88000000b003bcde03bd44so1304459wme.5;
-        Wed, 19 Oct 2022 19:25:27 -0700 (PDT)
+        with ESMTP id S229634AbiJTC0E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Oct 2022 22:26:04 -0400
+Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB2618709F;
+        Wed, 19 Oct 2022 19:26:02 -0700 (PDT)
+Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-1324e7a1284so22965643fac.10;
+        Wed, 19 Oct 2022 19:26:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=lhSC6rFfgkPq0fs2z88hSez5K7IyZJVYndqeAxDCxN8=;
-        b=XZDZfTuWKp7piCfNBsvxsyrIBkxEPfTiV7RUo0+QlCxkCIFcIlfDG6DTzPo/TOnHJp
-         csGXbFs6Nt4XuFryCtLAtq78TPst3TTAfEx87ia1FCyJeiIHXgjlBFI4DNtMPocEuEtH
-         AMYhY2rgcNZoftPqHlWHFQSLafCCja5dZmmaFr6D+6/m3J6Y9PMRh+t+deSngHSwD61T
-         Lx7WgJJ/2DlqfX0NOyh8ZMudxkyMEDizehQMa8YpM48SxZmMvnw8r5VB2JDwlCHwHpCo
-         +tMkL2lY4+Q+UOLxUFf/DvLgQC4KGabPPjaLGXnI6VEwvHo9kwByCpbRxaZZnLDHkNqn
-         Ys1g==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Ptk7zp6IkNleKHwHubY4igTNtlfyPoJ7FlT7dwYbRpE=;
+        b=ezD3a5Fd9yGQ/piZ2pLJk3QbPgGRKagMalO7MF/AUHHEJfm5Foc7OYjlBuLY2rfZxY
+         ts3GvbEoDwi1+LnJq/fjt/g5GMo9i6CG4RhyQFnZrAorGusidNYI86UwOhs6Ia76rUAb
+         hWlxPUgUaHikNAnwninh8ok3pzwhnM2NhTS0jX3xVttEyYwQGQgFpeudsF76VupgknoO
+         nX0z9iBPNpy4dBasZoMIQyblxfc4O9tkZM20jtwDoN15MqU8kV4ffoJFOlA7q8C51gV1
+         Y3+H0kF2QjqnauwbHGqIXx35z12tbzR54j6SsajLheQkWOZI8F2RwvehxNvFlQnDBD5g
+         lhFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=lhSC6rFfgkPq0fs2z88hSez5K7IyZJVYndqeAxDCxN8=;
-        b=tBN2+LjU23mLJHKPNhvNaAjjj7ttJlZuQoneK/vHoyrvcfhkpUtQlN+SpHuhOmlAng
-         UpIeU5tJupxMOGZ0PuQsAmp25pmU87aGOhHWXX3Sxz4fBpRQIWQjf37XQd/SCEsa2QGd
-         wpTunrrVaZ4800U7njzgaUtl/CK6GtJ5eCfuxLDB7vL0cs+O7iWw979sZEgUgJt4K28F
-         xGCnUPPZmNNIKWL9e6WiYo+EIEmeq+ra+/hCGTdgt6v6FXq+kfe2ZKJ3DXzT+NFOn+Hw
-         fQjNwK4OUjSONDkgP5Jc2Gyqvt5tWhCz6HBYTtPtsTlGimfoEgBe99j+5caYhDyWNteq
-         Uobw==
-X-Gm-Message-State: ACrzQf0KTIW79WwLop5XLbESoWkKJVcxNuIRR87YlnfkioE5SMXpFQaK
-        ulT1Pe5r2hZTSyaMEzsKxKg=
-X-Google-Smtp-Source: AMsMyM5PNQOWP7WuGkV/RnzwBcipYb+HamcMIV1dsB3rhF/xcbwjMEPjyFrBk6iLmW52k83kKE0amQ==
-X-Received: by 2002:a05:600c:1906:b0:3c6:f154:d4b5 with SMTP id j6-20020a05600c190600b003c6f154d4b5mr7582780wmq.94.1666232726354;
-        Wed, 19 Oct 2022 19:25:26 -0700 (PDT)
-Received: from [192.168.8.100] (94.197.72.2.threembb.co.uk. [94.197.72.2])
-        by smtp.gmail.com with ESMTPSA id j8-20020a05600c1c0800b003c6b7f5567csm4543158wms.0.2022.10.19.19.25.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Oct 2022 19:25:25 -0700 (PDT)
-Message-ID: <fb6a7599-8a9b-15e5-9b64-6cd9d01c6ff4@gmail.com>
-Date:   Thu, 20 Oct 2022 03:24:21 +0100
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Ptk7zp6IkNleKHwHubY4igTNtlfyPoJ7FlT7dwYbRpE=;
+        b=6yQ/bNctDcfbKFoJ7O0bPHVFwDCa9EYHHs4ZF5WTNNbfHLwfb8GoZ6KPv9f2rBUUIW
+         jul+UJZ/hPtE+wwbUhMJwnXoO13dQC7FjXWADEOlxukiJfu9Zaw+TSA/AoBdXWlU5c3+
+         cWEUIMvK6XbtuFoumKcNKVwRiHgsqr957TZgm0uTTkSmVopOoFpXzWwoFY9hluLHmLiY
+         Hf6JFVS3a9lWvn9tb16fS3chXciqyFzngWJahiyFDv0A9kdAAIFStq5VHXwwYQeTwRRt
+         nTcV9DNrrO7GD1c3rVQTYLN+ltEBBJ/LI8/506HHsxBHXhguzq5SKk3ghN5aLsWfd13I
+         4Mag==
+X-Gm-Message-State: ACrzQf1UdVOicnb8DSD43B7DYqcWEuExkHbjGMasGYcjIKXP6M2f/lTz
+        e6I3iUsq2EQq2hXCh667ppYKxajG6uNNMxSD1yU=
+X-Google-Smtp-Source: AMsMyM57Fz6tHcq5MZql+TypZ7KQEoKOaPjePV9B4MTL02bhHuSjL9ZgU5qNUGaRzXlTJJCj+hcRayFE3TDmvBHXdkI=
+X-Received: by 2002:a05:6870:523:b0:131:2d50:e09c with SMTP id
+ j35-20020a056870052300b001312d50e09cmr24409054oao.129.1666232762024; Wed, 19
+ Oct 2022 19:26:02 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.1
-Subject: Re: IORING_CQE_F_COPIED
-Content-Language: en-US
-To:     Stefan Metzmacher <metze@samba.org>,
-        io-uring <io-uring@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
-        Dylan Yudaken <dylany@fb.com>
-References: <4385ba84-55dd-6b08-0ca7-6b4a43f9d9a2@samba.org>
- <6f0a9137-2d2b-7294-f59f-0fcf9cdfc72d@gmail.com>
- <4bbf6bc1-ee4b-8758-7860-a06f57f35d14@samba.org>
- <cd87b6d0-a6d6-8f24-1af4-4b8845aa669c@gmail.com>
- <df47dbd0-75e4-5f39-58ad-ec28e50d0b9c@samba.org>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <df47dbd0-75e4-5f39-58ad-ec28e50d0b9c@samba.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <00000000000044139d05eb617b1c@google.com> <20221019153018.2ca0580d@kernel.org>
+In-Reply-To: <20221019153018.2ca0580d@kernel.org>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Wed, 19 Oct 2022 22:25:47 -0400
+Message-ID: <CADvbK_cXfDVFJ-eo-+uqXXPT1Xt7qf4bg0Cu6U5Zg7TCLeqoUw@mail.gmail.com>
+Subject: Re: [syzbot] general protection fault in pse_prepare_data
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     syzbot <syzbot+81c4b4bbba6eea2cfcae@syzkaller.appspotmail.com>,
+        andrew@lunn.ch, bagasdotme@gmail.com, davem@davemloft.net,
+        edumazet@google.com, linux-kernel@vger.kernel.org,
+        linux@rempel-privat.de, lkp@intel.com, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,109 +69,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/19/22 17:12, Stefan Metzmacher wrote:
-> Hi Pavel,
-> 
->>> As I basically use the same logic that's used to generate SO_EE_CODE_ZEROCOPY_COPIED
->>> for the native MSG_ZEROCOPY, I don't see the problem with IORING_CQE_F_COPIED.
->>> Can you be more verbose why you're thinking about something different?
->>
->> Because it feels like something that should be done roughly once and in
->> advance. Performance wise, I agree that a bunch of extra instructions in
->> the (io_uring) IO path won't make difference as the net overhead is
->> already high, but I still prefer to keep it thin. The complexity is a
->> good point though, if only we could piggy back it onto MSG_PROBE.
->> Ok, let's do IORING_CQE_F_COPIED and aim 6.2 + possibly backport.
-> 
-> Thanks!
-> 
-> Experimenting with this stuff lets me wish to have a way to
-> have a different 'user_data' field for the notif cqe,
-> maybe based on a IORING_RECVSEND_ flag, it may make my life
-> easier and would avoid some complexity in userspace...
-> As I need to handle retry on short writes even with MSG_WAITALL
-> as EINTR and other errors could cause them.
-> 
-> What do you think?
-> 
->> First, there is no more ubuf_info::zerocopy, see for-next, but you can
->> grab space in io_kiocb, io_kiocb::iopoll_completed is a good candidate.
-> 
-> Ok I found your "net: introduce struct ubuf_info_msgzc" and
-> "net: shrink struct ubuf_info" commits.
-> 
-> I think the change would be trivial, the zerocopy field would just move
-> to struct io_notif_data..., maybe as 'bool copied'.
-> 
->> You would want to take one io_uring patch I'm going to send (will CC
->> you), with that you won't need to change anything in net/.
-> 
-> The problem is that e.g. tcp_sendmsg_locked() won't ever call
-> the callback at all if 'zc' is false.
-> 
-> That's why there's the:
-> 
->                          if (!zc)
->                                  uarg->zerocopy = 0;
-> 
-> Maybe I can inverse the logic and use two variables 'zero_copied'
-> and 'copied'.
-> 
-> We'd start with both being false and this logic in the callback:> 
-> if (success) {
->      if (unlikely(!nd->zero_copied && !nd->copied))
->         nd->zero_copied = true;
-> } else {
->      if (unlikely(!nd->copied)) {
->         nd->copied = true;
->         nd->zero_copied = false;
->      }
-> }
-
-Yep, sth like that should do, but let's guard against
-spurious net_zcopy_put() just in case.
-
-used = false;
-copied = false;
-
-callback(skb, success, ubuf) {
-	if (skb)
-		used = true;
-	if (!success)
-		copied = true;
-}
-complete() {
-	if (!used || copied)
-		set_flag(IORING_CQE_F_COPIED);
-}
-
-> And __io_notif_complete_tw still needs:
-> 
->          if (!nd->zero_copied)
->                  notif->cqe.flags |= IORING_CQE_F_COPIED;
-
-Which can be shoved in a custom callback
+On Wed, Oct 19, 2022 at 6:31 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Wed, 19 Oct 2022 04:26:35 -0700 syzbot wrote:
+> > HEAD commit:    55be6084c8e0 Merge tag 'timers-core-2022-10-05' of git://g..
+> > git tree:       upstream
+> > console+strace: https://syzkaller.appspot.com/x/log.txt?x=140d5a2c880000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=df75278aabf0681a
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=81c4b4bbba6eea2cfcae
+> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13470244880000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=146e88b4880000
+> >
+> > Downloadable assets:
+> > disk image: https://storage.googleapis.com/syzbot-assets/9d967e5d91fa/disk-55be6084.raw.xz
+> > vmlinux: https://storage.googleapis.com/syzbot-assets/9a8cffcbc089/vmlinux-55be6084.xz
+> >
+> > Bisection is inconclusive: the first bad commit could be any of:
+> >
+> > 331834898f2b Merge branch 'add-generic-pse-support'
+> > 66741b4e94ca net: pse-pd: add regulator based PSE driver
+> > 2a4187f4406e once: rename _SLOW to _SLEEPABLE
+> > f05dfdaf567a dt-bindings: net: pse-dt: add bindings for regulator based PoDL PSE controller
+> > 18ff0bcda6d1 ethtool: add interface to interact with Ethernet Power Equipment
+> > e52f7c1ddf3e Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net
+> > 681bf011b9b5 eth: pse: add missing static inlines
+> >
+> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11fc42b4880000
+> >
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+81c4b4bbba6eea2cfcae@syzkaller.appspotmail.com
+> >
+> > general protection fault, probably for non-canonical address 0xdffffc0000000008: 0000 [#1] PREEMPT SMP KASAN
+> > KASAN: null-ptr-deref in range [0x0000000000000040-0x0000000000000047]
+> > CPU: 1 PID: 3609 Comm: syz-executor227 Not tainted 6.0.0-syzkaller-09589-g55be6084c8e0 #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/22/2022
+> > RIP: 0010:pse_prepare_data+0x66/0x1e0 net/ethtool/pse-pd.c:67
+>
+> Yeah, looking at ethtool internals - info can be NULL :(
+It seems that eeprom_prepare_data() doesn't check info before
+accessing info->extack either.
 
 
->> And the last bit, let's make the zc probing conditional under IORING_RECVSEND_* flag,
->> I'll make it zero overhead when not set later by replacing the callback.
-> 
-> And the if statement to select a highspeed callback based on
-> a IORING_RECVSEND_ flag is less overhead than
-> the if statements in the slow callback version?
-
-I'm more concerned about future changes around it, but there won't
-be extra ifs.
-
-#define COMMON_FLAGS (RECVSEND_FIRST_POLL|...)
-#define ALL_FLAGS (COMMON_FLAGS|RECVSEND_PROBE)
-
-if (flags & ~COMMON_FLAGS) {
-	if (flags & ~ALL_FLAGS)
-		return err;
-	if (flags & RECVSEND_PROBE)
-		set_callback(notif);
-}
-
--- 
-Pavel Begunkov
+>
+> For reasons I haven't quite grasped yet myself we use a different
+> structure for info on do and dump which makes getting to extack in
+> generic code inconvenient.
