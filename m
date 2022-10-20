@@ -2,101 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 806EC6059AD
-	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 10:26:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07CBA6059BB
+	for <lists+netdev@lfdr.de>; Thu, 20 Oct 2022 10:28:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229971AbiJTI0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 04:26:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48728 "EHLO
+        id S229731AbiJTI2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 04:28:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229909AbiJTI0L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 04:26:11 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 78AE5BC61F;
-        Thu, 20 Oct 2022 01:26:07 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 29K8P8KM0007657, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 29K8P8KM0007657
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Thu, 20 Oct 2022 16:25:08 +0800
-Received: from RTEXDAG01.realtek.com.tw (172.21.6.100) by
- RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.9; Thu, 20 Oct 2022 16:25:40 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXDAG01.realtek.com.tw (172.21.6.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Thu, 20 Oct 2022 16:25:39 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::add3:284:fd3d:8adb]) by
- RTEXMBS04.realtek.com.tw ([fe80::add3:284:fd3d:8adb%5]) with mapi id
- 15.01.2375.007; Thu, 20 Oct 2022 16:25:39 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     Colin Ian King <colin.i.king@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229664AbiJTI2m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 04:28:42 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDEEC18B4A4;
+        Thu, 20 Oct 2022 01:28:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=lbsZ/YW7ZnIezwA4BRfrow1LCllF86bNZlcUisWMgkY=; b=0RNLUrzBGOpPkxhVKlJw1XP1dt
+        7yQ5SsKHRlKyD3skl5phrZiBJoPInAdZbvlrGNDSpq+pP1w1UMtuUMYcclPDwc/tRbNS7MyFB/A+3
+        7BimswlwrF9gfnESIs5s+LpUGfcXJmXKYSUd+rY5dsOJsyR3Rp9UCkYJMm2+WGAo0DFmxm9H60wLn
+        mrFA/MC+RTbx9j2/EAt6o13O609mCl0+un6MBBfHDkpFe6DG6wl4tz6euxlqHVZiH3XJjMqD6iFZJ
+        Z47Pxaf51r16Bef5RprJFUf1kUS9pt6b03cLG2lsAhF+1sVdFv+P87tZarXRWkBOu2+wNSCoTCmPr
+        RJVWgqZg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34816)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1olQuh-0006ie-NW; Thu, 20 Oct 2022 09:28:27 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1olQuf-000311-Qb; Thu, 20 Oct 2022 09:28:25 +0100
+Date:   Thu, 20 Oct 2022 09:28:25 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH][next] wifi: rtw89: 8852b: Fix spelling mistake KIP_RESOTRE -> KIP_RESTORE
-Thread-Topic: [PATCH][next] wifi: rtw89: 8852b: Fix spelling mistake
- KIP_RESOTRE -> KIP_RESTORE
-Thread-Index: AQHY5FVYzEwt5nqXEUGEagTPXukM1q4W8X9g
-Date:   Thu, 20 Oct 2022 08:25:39 +0000
-Message-ID: <bef9e90fb8bd44eb8fc3acb26103314a@realtek.com>
-References: <20221020072646.1513307-1-colin.i.king@gmail.com>
-In-Reply-To: <20221020072646.1513307-1-colin.i.king@gmail.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXDAG01.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEwLzIwIOS4iuWNiCAwNjozNjowMA==?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next 1/7] dt-bindings: net: sff,sfp: update binding
+Message-ID: <Y1EGqR6IEhPfx7gd@shell.armlinux.org.uk>
+References: <Y0/7dAB8OU3jrbz6@shell.armlinux.org.uk>
+ <E1ol97m-00EDSR-46@rmk-PC.armlinux.org.uk>
+ <166622204824.13053.10147527260423850821.robh@kernel.org>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <166622204824.13053.10147527260423850821.robh@kernel.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IENvbGluIElhbiBLaW5nIDxj
-b2xpbi5pLmtpbmdAZ21haWwuY29tPg0KPiBTZW50OiBUaHVyc2RheSwgT2N0b2JlciAyMCwgMjAy
-MiAzOjI3IFBNDQo+IFRvOiBQaW5nLUtlIFNoaWggPHBrc2hpaEByZWFsdGVrLmNvbT47IEthbGxl
-IFZhbG8gPGt2YWxvQGtlcm5lbC5vcmc+OyBEYXZpZCBTIC4gTWlsbGVyDQo+IDxkYXZlbUBkYXZl
-bWxvZnQubmV0PjsgRXJpYyBEdW1hemV0IDxlZHVtYXpldEBnb29nbGUuY29tPjsgSmFrdWIgS2lj
-aW5za2kgPGt1YmFAa2VybmVsLm9yZz47IFBhb2xvIEFiZW5pDQo+IDxwYWJlbmlAcmVkaGF0LmNv
-bT47IGxpbnV4LXdpcmVsZXNzQHZnZXIua2VybmVsLm9yZzsgbmV0ZGV2QHZnZXIua2VybmVsLm9y
-Zw0KPiBDYzoga2VybmVsLWphbml0b3JzQHZnZXIua2VybmVsLm9yZzsgbGludXgta2VybmVsQHZn
-ZXIua2VybmVsLm9yZw0KPiBTdWJqZWN0OiBbUEFUQ0hdW25leHRdIHdpZmk6IHJ0dzg5OiA4ODUy
-YjogRml4IHNwZWxsaW5nIG1pc3Rha2UgS0lQX1JFU09UUkUgLT4gS0lQX1JFU1RPUkUNCj4gDQo+
-IFRoZXIgaXMgYSBzcGVsbGluZyBtaXN0YWtlIGluIGEgcnR3ODlfZGVidWcgbWVzc2FnZS4gRml4
-IGl0Lg0KPiANCj4gU2lnbmVkLW9mZi1ieTogQ29saW4gSWFuIEtpbmcgPGNvbGluLmkua2luZ0Bn
-bWFpbC5jb20+DQoNCkFja2VkLWJ5OiBQaW5nLUtlIFNoaWggPHBrc2hpaEByZWFsdGVrLmNvbT4N
-Cg0KPiAtLS0NCj4gIGRyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODkvcnR3ODg1MmJf
-cmZrLmMgfCAyICstDQo+ICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRp
-b24oLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0
-dzg5L3J0dzg4NTJiX3Jmay5jDQo+IGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4
-OS9ydHc4ODUyYl9yZmsuYw0KPiBpbmRleCA4ZmQwMTUwMmFjNWIuLjcyMmFlMzRiMDljMSAxMDA2
-NDQNCj4gLS0tIGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OS9ydHc4ODUyYl9y
-ZmsuYw0KPiArKysgYi9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg5L3J0dzg4NTJi
-X3Jmay5jDQo+IEBAIC0xNzU0LDcgKzE3NTQsNyBAQCBzdGF0aWMgdm9pZCBfZHBrX29uZV9zaG90
-KHN0cnVjdCBydHc4OV9kZXYgKnJ0d2RldiwgZW51bSBydHc4OV9waHlfaWR4IHBoeSwNCj4gIAkJ
-ICAgIGlkID09IDB4MTQgPyAiUFdSX0NBTCIgOg0KPiAgCQkgICAgaWQgPT0gMHgxNSA/ICJEUEtf
-UlhBR0MiIDoNCj4gIAkJICAgIGlkID09IDB4MTYgPyAiS0lQX1BSRVNFVCIgOg0KPiAtCQkgICAg
-aWQgPT0gMHgxNyA/ICJLSVBfUkVTT1RSRSIgOiAiRFBLX1RYQUdDIiwNCj4gKwkJICAgIGlkID09
-IDB4MTcgPyAiS0lQX1JFU1RPUkUiIDogIkRQS19UWEFHQyIsDQo+ICAJCSAgICBkcGtfY21kKTsN
-Cj4gIH0NCj4gDQo+IC0tDQo+IDIuMzcuMw0KPiANCj4gDQo+IC0tLS0tLVBsZWFzZSBjb25zaWRl
-ciB0aGUgZW52aXJvbm1lbnQgYmVmb3JlIHByaW50aW5nIHRoaXMgZS1tYWlsLg0K
+On Wed, Oct 19, 2022 at 06:31:53PM -0500, Rob Herring wrote:
+> On Wed, 19 Oct 2022 14:28:46 +0100, Russell King (Oracle) wrote:
+> > Add a minimum and default for the maximum-power-milliwatt option;
+> > module power levels were originally up to 1W, so this is the default
+> > and the minimum power level we can have for a functional SFP cage.
+> > 
+> > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> > ---
+> >  Documentation/devicetree/bindings/net/sff,sfp.yaml | 2 ++
+> >  1 file changed, 2 insertions(+)
+> > 
+> 
+> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> 
+> yamllint warnings/errors:
+> 
+> dtschema/dtc warnings/errors:
+> /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/sff,sfp.yaml: properties:maximum-power-milliwatt: 'minimum' should not be valid under {'enum': ['const', 'enum', 'exclusiveMaximum', 'exclusiveMinimum', 'minimum', 'maximum', 'multipleOf', 'pattern']}
+> 	hint: Scalar and array keywords cannot be mixed
+> 	from schema $id: http://devicetree.org/meta-schemas/keywords.yaml#
+
+I'm reading that error message and it means absolutely nothing to me.
+Please can you explain it (and also re-word it to be clearer)?
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
