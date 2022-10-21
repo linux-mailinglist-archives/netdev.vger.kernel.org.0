@@ -2,503 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CAD8607888
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 15:33:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7172D60788C
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 15:33:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231193AbiJUNdD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 09:33:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47114 "EHLO
+        id S230329AbiJUNdc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 09:33:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231196AbiJUNcf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 09:32:35 -0400
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCBE5272109
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 06:32:20 -0700 (PDT)
-Received: by mail-pf1-x449.google.com with SMTP id i14-20020aa78d8e000000b0056b275d8a48so468209pfr.20
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 06:32:20 -0700 (PDT)
+        with ESMTP id S229843AbiJUNda (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 09:33:30 -0400
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D832527211A
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 06:33:24 -0700 (PDT)
+Received: by mail-qk1-x72b.google.com with SMTP id z30so1956950qkz.13
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 06:33:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=jp4hpv4gJ+tp+9AycHnQVOwX6dlsIJ5rZx9ZvD0xk+8=;
-        b=afrC0UtDcFYZDsNzROUMW9L/n8MBKaZZ0HQLtGmP5kLlQGoTmDxPuDZTcTaUjCioci
-         tgrOTAeIUvZWm0MPyDabEEOYqzabnoezWcNIg0D0kc7+JjSGwQjLH3/kvMgW8OuHL9tO
-         GLpFBUUaBxwc1T4wDbjm4WGGkyDBfkoKxNEdCaO8lL51SYfn+78ixDod6Z+I77ixuObh
-         eHAtssHnPnTdxXZu4HZ3HJ+S8/YGm0m9RB7s5Clwdh8u4dB60gp3LZ8yoLu/xWh08kfk
-         Y6adHtAIjFrdUAKMDFquYH75qok8LJ+zPucw4515IcdiLURUBSvKOxNy2nBqjl2291E5
-         YZjw==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=A72BE+IY0ZrHLTBIHgimMdusQVYAjUJuQP7S8i5Lgzg=;
+        b=NSMmHp4D72Xj1JgY7/qmYBJ84+8CoWjIgZn+LlXfl5MOa/ypvZGuIOMc0zqIRgSiuA
+         W7KinC3ipcNrUAOHnMjwM9ImAH4Z0622rc3FiQa/rRHO0tDAwjrlBI32Ts+z7yP0kILA
+         A4SOg22jgqdJKf7i9HSlvvwbjee9SmmKWgajtWSJlbIGre6kFnT2QmUB3g6aYAv1IT+x
+         skWsg5X/BgtB5/NkFmfwno16ZNTUpp1AyLXZBJ5zuy+C3GmgRMvYXjF041rcmzkmIq+3
+         96/rRo+9PsHQAfcAm5ZCudDnpc9XKX8CcXckUaVOw03P6UT+T/WCCxIJti2HA13rrYB+
+         +BuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=jp4hpv4gJ+tp+9AycHnQVOwX6dlsIJ5rZx9ZvD0xk+8=;
-        b=eifrW4brPq1ZA16jSiupZmOGoEzFO1X6aWOWHQvEYst9OzGZ3fo6OMDkiFZ4buqjeM
-         KwvdzRflmYT3GkK9qNnCTexwnTht77yeDt7LHftvn4ErNwfj8If4N3eec84z0wnqLhq4
-         VhxedPvG/YFlHEI53oNAXv+pvgz2oD+KQSDZUkirvWL/4YoQ+cubQCDV5H0fpT45MWL7
-         25hkmJAM/OvJTv2eJ54OTHdLqaqvSwj6fEmVlUuexXgwOoByoBb5rIKJK9RQ+nYE4Usn
-         i7xX9eUPzX3it2UvrbqEg+39CsTg7fLiS/9XFFLjTqZXB4+VTkgzzOIF2VmpIGxP7IEQ
-         5Frg==
-X-Gm-Message-State: ACrzQf3g2Qmn3ZlIoAZ9i6SZkKXchj8lwNfjAycaizP3txOAqZUq+6CJ
-        3PElW1KjcgaeCczuNb5IJPeG7SJAVV8c0g==
-X-Google-Smtp-Source: AMsMyM7UxBlRye7WRtbLFsCAwG9nSSzNEQjkyLeak6/aqAwHlRP/GaLn3KuttToXzGN+aO2yMImaoVvSrpM+vw==
-X-Received: from xllamas.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5070])
- (user=cmllamas job=sendgmr) by 2002:a05:6a00:10cf:b0:528:48c3:79e0 with SMTP
- id d15-20020a056a0010cf00b0052848c379e0mr19312316pfu.18.1666359139258; Fri,
- 21 Oct 2022 06:32:19 -0700 (PDT)
-Date:   Fri, 21 Oct 2022 13:32:07 +0000
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.38.0.135.g90850a2211-goog
-Message-ID: <20221021133207.3135568-1-cmllamas@google.com>
-Subject: [PATCH 5.10] inet: fully convert sk->sk_rx_dst to RCU rules
-From:   Carlos Llamas <cmllamas@google.com>
-To:     stable@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-team@android.com, Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Carlos Llamas <cmllamas@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=A72BE+IY0ZrHLTBIHgimMdusQVYAjUJuQP7S8i5Lgzg=;
+        b=BhMxYI2rVtp5Hc181ESu6nNKa29U66yhmDfdL0gbnD5J8U137yxSFVyMdpoMz3SAyk
+         9sC7fke28kTAHzxN4Vr+waLR5tRzDE68kk1PmqvSfwWXWz2xl37Shu2QzAXTb9OyY200
+         pB5QQc4hxbhpPZ8Ms2rjjJ5f6Ho/wKx3K/aMW3lMaP9yHxN3/qnRQ+8nTVl13xhdlfms
+         brKz/yuMtJ0KUhSX2t1iPuyP3hnGJhYX6lTDHlOahXHdlG6qQlNOBCFtPg3DI4h4SIjJ
+         Vg5hKgSFm4MXG2SozqBSHS167snkQRvw/cyadtMo2i3fzuHM4w0Qdqo2yMTB1L6jECTb
+         GtuQ==
+X-Gm-Message-State: ACrzQf02yedGHB7UNWqzbUG/kJmAa9iWIm3YIK2By+gFcMvWART04eqO
+        TBEddh9E+RHntSdNQPy0qndFig==
+X-Google-Smtp-Source: AMsMyM5qZak5lIY8DroovbcZWF2ESpxujwqRcUN1jNE81aHgGbe/231Ljtl9XkXmUws8ZJyuf658jg==
+X-Received: by 2002:a05:620a:304:b0:6ee:77f1:ecf9 with SMTP id s4-20020a05620a030400b006ee77f1ecf9mr13922921qkm.94.1666359203197;
+        Fri, 21 Oct 2022 06:33:23 -0700 (PDT)
+Received: from [192.168.10.124] (pool-72-83-177-149.washdc.east.verizon.net. [72.83.177.149])
+        by smtp.gmail.com with ESMTPSA id r2-20020ae9d602000000b006ceb933a9fesm9459881qkk.81.2022.10.21.06.33.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 21 Oct 2022 06:33:22 -0700 (PDT)
+Message-ID: <3b1e28f4-c057-670f-af36-d332e3afb61e@linaro.org>
+Date:   Fri, 21 Oct 2022 09:33:20 -0400
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [PATCH net-next v5 1/5] net: dt-bindings: Introduce the Qualcomm
+ IPQESS Ethernet controller
+Content-Language: en-US
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Luka Perkov <luka.perkov@sartura.hr>,
+        Robert Marko <robert.marko@sartura.hr>
+References: <20221021124556.100445-1-maxime.chevallier@bootlin.com>
+ <20221021124556.100445-2-maxime.chevallier@bootlin.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221021124556.100445-2-maxime.chevallier@bootlin.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On 21/10/2022 08:45, Maxime Chevallier wrote:
+> Add the DT binding for the IPQESS Ethernet Controller. This is a simple
+> controller, only requiring the phy-mode, interrupts, clocks, and
+> possibly a MAC address setting.
+> 
+> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+> ---
+> V4->V5:
+>  - Remove stray quotes arount the ref property
+>  - Rename the binding to match the compatible string
 
-commit 8f905c0e7354ef261360fb7535ea079b1082c105 upstream.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-syzbot reported various issues around early demux,
-one being included in this changelog [1]
-
-sk->sk_rx_dst is using RCU protection without clearly
-documenting it.
-
-And following sequences in tcp_v4_do_rcv()/tcp_v6_do_rcv()
-are not following standard RCU rules.
-
-[a]    dst_release(dst);
-[b]    sk->sk_rx_dst = NULL;
-
-They look wrong because a delete operation of RCU protected
-pointer is supposed to clear the pointer before
-the call_rcu()/synchronize_rcu() guarding actual memory freeing.
-
-In some cases indeed, dst could be freed before [b] is done.
-
-We could cheat by clearing sk_rx_dst before calling
-dst_release(), but this seems the right time to stick
-to standard RCU annotations and debugging facilities.
-
-[1]
-BUG: KASAN: use-after-free in dst_check include/net/dst.h:470 [inline]
-BUG: KASAN: use-after-free in tcp_v4_early_demux+0x95b/0x960 net/ipv4/tcp_ipv4.c:1792
-Read of size 2 at addr ffff88807f1cb73a by task syz-executor.5/9204
-
-CPU: 0 PID: 9204 Comm: syz-executor.5 Not tainted 5.16.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0x8d/0x320 mm/kasan/report.c:247
- __kasan_report mm/kasan/report.c:433 [inline]
- kasan_report.cold+0x83/0xdf mm/kasan/report.c:450
- dst_check include/net/dst.h:470 [inline]
- tcp_v4_early_demux+0x95b/0x960 net/ipv4/tcp_ipv4.c:1792
- ip_rcv_finish_core.constprop.0+0x15de/0x1e80 net/ipv4/ip_input.c:340
- ip_list_rcv_finish.constprop.0+0x1b2/0x6e0 net/ipv4/ip_input.c:583
- ip_sublist_rcv net/ipv4/ip_input.c:609 [inline]
- ip_list_rcv+0x34e/0x490 net/ipv4/ip_input.c:644
- __netif_receive_skb_list_ptype net/core/dev.c:5508 [inline]
- __netif_receive_skb_list_core+0x549/0x8e0 net/core/dev.c:5556
- __netif_receive_skb_list net/core/dev.c:5608 [inline]
- netif_receive_skb_list_internal+0x75e/0xd80 net/core/dev.c:5699
- gro_normal_list net/core/dev.c:5853 [inline]
- gro_normal_list net/core/dev.c:5849 [inline]
- napi_complete_done+0x1f1/0x880 net/core/dev.c:6590
- virtqueue_napi_complete drivers/net/virtio_net.c:339 [inline]
- virtnet_poll+0xca2/0x11b0 drivers/net/virtio_net.c:1557
- __napi_poll+0xaf/0x440 net/core/dev.c:7023
- napi_poll net/core/dev.c:7090 [inline]
- net_rx_action+0x801/0xb40 net/core/dev.c:7177
- __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
- invoke_softirq kernel/softirq.c:432 [inline]
- __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
- irq_exit_rcu+0x5/0x20 kernel/softirq.c:649
- common_interrupt+0x52/0xc0 arch/x86/kernel/irq.c:240
- asm_common_interrupt+0x1e/0x40 arch/x86/include/asm/idtentry.h:629
-RIP: 0033:0x7f5e972bfd57
-Code: 39 d1 73 14 0f 1f 80 00 00 00 00 48 8b 50 f8 48 83 e8 08 48 39 ca 77 f3 48 39 c3 73 3e 48 89 13 48 8b 50 f8 48 89 38 49 8b 0e <48> 8b 3e 48 83 c3 08 48 83 c6 08 eb bc 48 39 d1 72 9e 48 39 d0 73
-RSP: 002b:00007fff8a413210 EFLAGS: 00000283
-RAX: 00007f5e97108990 RBX: 00007f5e97108338 RCX: ffffffff81d3aa45
-RDX: ffffffff81d3aa45 RSI: 00007f5e97108340 RDI: ffffffff81d3aa45
-RBP: 00007f5e97107eb8 R08: 00007f5e97108d88 R09: 0000000093c2e8d9
-R10: 0000000000000000 R11: 0000000000000000 R12: 00007f5e97107eb0
-R13: 00007f5e97108338 R14: 00007f5e97107ea8 R15: 0000000000000019
- </TASK>
-
-Allocated by task 13:
- kasan_save_stack+0x1e/0x50 mm/kasan/common.c:38
- kasan_set_track mm/kasan/common.c:46 [inline]
- set_alloc_info mm/kasan/common.c:434 [inline]
- __kasan_slab_alloc+0x90/0xc0 mm/kasan/common.c:467
- kasan_slab_alloc include/linux/kasan.h:259 [inline]
- slab_post_alloc_hook mm/slab.h:519 [inline]
- slab_alloc_node mm/slub.c:3234 [inline]
- slab_alloc mm/slub.c:3242 [inline]
- kmem_cache_alloc+0x202/0x3a0 mm/slub.c:3247
- dst_alloc+0x146/0x1f0 net/core/dst.c:92
- rt_dst_alloc+0x73/0x430 net/ipv4/route.c:1613
- ip_route_input_slow+0x1817/0x3a20 net/ipv4/route.c:2340
- ip_route_input_rcu net/ipv4/route.c:2470 [inline]
- ip_route_input_noref+0x116/0x2a0 net/ipv4/route.c:2415
- ip_rcv_finish_core.constprop.0+0x288/0x1e80 net/ipv4/ip_input.c:354
- ip_list_rcv_finish.constprop.0+0x1b2/0x6e0 net/ipv4/ip_input.c:583
- ip_sublist_rcv net/ipv4/ip_input.c:609 [inline]
- ip_list_rcv+0x34e/0x490 net/ipv4/ip_input.c:644
- __netif_receive_skb_list_ptype net/core/dev.c:5508 [inline]
- __netif_receive_skb_list_core+0x549/0x8e0 net/core/dev.c:5556
- __netif_receive_skb_list net/core/dev.c:5608 [inline]
- netif_receive_skb_list_internal+0x75e/0xd80 net/core/dev.c:5699
- gro_normal_list net/core/dev.c:5853 [inline]
- gro_normal_list net/core/dev.c:5849 [inline]
- napi_complete_done+0x1f1/0x880 net/core/dev.c:6590
- virtqueue_napi_complete drivers/net/virtio_net.c:339 [inline]
- virtnet_poll+0xca2/0x11b0 drivers/net/virtio_net.c:1557
- __napi_poll+0xaf/0x440 net/core/dev.c:7023
- napi_poll net/core/dev.c:7090 [inline]
- net_rx_action+0x801/0xb40 net/core/dev.c:7177
- __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
-
-Freed by task 13:
- kasan_save_stack+0x1e/0x50 mm/kasan/common.c:38
- kasan_set_track+0x21/0x30 mm/kasan/common.c:46
- kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
- ____kasan_slab_free mm/kasan/common.c:366 [inline]
- ____kasan_slab_free mm/kasan/common.c:328 [inline]
- __kasan_slab_free+0xff/0x130 mm/kasan/common.c:374
- kasan_slab_free include/linux/kasan.h:235 [inline]
- slab_free_hook mm/slub.c:1723 [inline]
- slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1749
- slab_free mm/slub.c:3513 [inline]
- kmem_cache_free+0xbd/0x5d0 mm/slub.c:3530
- dst_destroy+0x2d6/0x3f0 net/core/dst.c:127
- rcu_do_batch kernel/rcu/tree.c:2506 [inline]
- rcu_core+0x7ab/0x1470 kernel/rcu/tree.c:2741
- __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
-
-Last potentially related work creation:
- kasan_save_stack+0x1e/0x50 mm/kasan/common.c:38
- __kasan_record_aux_stack+0xf5/0x120 mm/kasan/generic.c:348
- __call_rcu kernel/rcu/tree.c:2985 [inline]
- call_rcu+0xb1/0x740 kernel/rcu/tree.c:3065
- dst_release net/core/dst.c:177 [inline]
- dst_release+0x79/0xe0 net/core/dst.c:167
- tcp_v4_do_rcv+0x612/0x8d0 net/ipv4/tcp_ipv4.c:1712
- sk_backlog_rcv include/net/sock.h:1030 [inline]
- __release_sock+0x134/0x3b0 net/core/sock.c:2768
- release_sock+0x54/0x1b0 net/core/sock.c:3300
- tcp_sendmsg+0x36/0x40 net/ipv4/tcp.c:1441
- inet_sendmsg+0x99/0xe0 net/ipv4/af_inet.c:819
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:724
- sock_write_iter+0x289/0x3c0 net/socket.c:1057
- call_write_iter include/linux/fs.h:2162 [inline]
- new_sync_write+0x429/0x660 fs/read_write.c:503
- vfs_write+0x7cd/0xae0 fs/read_write.c:590
- ksys_write+0x1ee/0x250 fs/read_write.c:643
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-The buggy address belongs to the object at ffff88807f1cb700
- which belongs to the cache ip_dst_cache of size 176
-The buggy address is located 58 bytes inside of
- 176-byte region [ffff88807f1cb700, ffff88807f1cb7b0)
-The buggy address belongs to the page:
-page:ffffea0001fc72c0 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x7f1cb
-flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
-raw: 00fff00000000200 dead000000000100 dead000000000122 ffff8881413bb780
-raw: 0000000000000000 0000000000100010 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Unmovable, gfp_mask 0x112a20(GFP_ATOMIC|__GFP_NOWARN|__GFP_NORETRY|__GFP_HARDWALL), pid 5, ts 108466983062, free_ts 108048976062
- prep_new_page mm/page_alloc.c:2418 [inline]
- get_page_from_freelist+0xa72/0x2f50 mm/page_alloc.c:4149
- __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5369
- alloc_pages+0x1a7/0x300 mm/mempolicy.c:2191
- alloc_slab_page mm/slub.c:1793 [inline]
- allocate_slab mm/slub.c:1930 [inline]
- new_slab+0x32d/0x4a0 mm/slub.c:1993
- ___slab_alloc+0x918/0xfe0 mm/slub.c:3022
- __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3109
- slab_alloc_node mm/slub.c:3200 [inline]
- slab_alloc mm/slub.c:3242 [inline]
- kmem_cache_alloc+0x35c/0x3a0 mm/slub.c:3247
- dst_alloc+0x146/0x1f0 net/core/dst.c:92
- rt_dst_alloc+0x73/0x430 net/ipv4/route.c:1613
- __mkroute_output net/ipv4/route.c:2564 [inline]
- ip_route_output_key_hash_rcu+0x921/0x2d00 net/ipv4/route.c:2791
- ip_route_output_key_hash+0x18b/0x300 net/ipv4/route.c:2619
- __ip_route_output_key include/net/route.h:126 [inline]
- ip_route_output_flow+0x23/0x150 net/ipv4/route.c:2850
- ip_route_output_key include/net/route.h:142 [inline]
- geneve_get_v4_rt+0x3a6/0x830 drivers/net/geneve.c:809
- geneve_xmit_skb drivers/net/geneve.c:899 [inline]
- geneve_xmit+0xc4a/0x3540 drivers/net/geneve.c:1082
- __netdev_start_xmit include/linux/netdevice.h:4994 [inline]
- netdev_start_xmit include/linux/netdevice.h:5008 [inline]
- xmit_one net/core/dev.c:3590 [inline]
- dev_hard_start_xmit+0x1eb/0x920 net/core/dev.c:3606
- __dev_queue_xmit+0x299a/0x3650 net/core/dev.c:4229
-page last free stack trace:
- reset_page_owner include/linux/page_owner.h:24 [inline]
- free_pages_prepare mm/page_alloc.c:1338 [inline]
- free_pcp_prepare+0x374/0x870 mm/page_alloc.c:1389
- free_unref_page_prepare mm/page_alloc.c:3309 [inline]
- free_unref_page+0x19/0x690 mm/page_alloc.c:3388
- qlink_free mm/kasan/quarantine.c:146 [inline]
- qlist_free_all+0x5a/0xc0 mm/kasan/quarantine.c:165
- kasan_quarantine_reduce+0x180/0x200 mm/kasan/quarantine.c:272
- __kasan_slab_alloc+0xa2/0xc0 mm/kasan/common.c:444
- kasan_slab_alloc include/linux/kasan.h:259 [inline]
- slab_post_alloc_hook mm/slab.h:519 [inline]
- slab_alloc_node mm/slub.c:3234 [inline]
- kmem_cache_alloc_node+0x255/0x3f0 mm/slub.c:3270
- __alloc_skb+0x215/0x340 net/core/skbuff.c:414
- alloc_skb include/linux/skbuff.h:1126 [inline]
- alloc_skb_with_frags+0x93/0x620 net/core/skbuff.c:6078
- sock_alloc_send_pskb+0x783/0x910 net/core/sock.c:2575
- mld_newpack+0x1df/0x770 net/ipv6/mcast.c:1754
- add_grhead+0x265/0x330 net/ipv6/mcast.c:1857
- add_grec+0x1053/0x14e0 net/ipv6/mcast.c:1995
- mld_send_initial_cr.part.0+0xf6/0x230 net/ipv6/mcast.c:2242
- mld_send_initial_cr net/ipv6/mcast.c:1232 [inline]
- mld_dad_work+0x1d3/0x690 net/ipv6/mcast.c:2268
- process_one_work+0x9b2/0x1690 kernel/workqueue.c:2298
- worker_thread+0x658/0x11f0 kernel/workqueue.c:2445
-
-Memory state around the buggy address:
- ffff88807f1cb600: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88807f1cb680: fb fb fb fb fb fb fc fc fc fc fc fc fc fc fc fc
->ffff88807f1cb700: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                                        ^
- ffff88807f1cb780: fb fb fb fb fb fb fc fc fc fc fc fc fc fc fc fc
- ffff88807f1cb800: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-
-Fixes: 41063e9dd119 ("ipv4: Early TCP socket demux.")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/20211220143330.680945-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-[cmllamas: fixed trivial merge conflict]
-Signed-off-by: Carlos Llamas <cmllamas@google.com>
----
- include/net/sock.h   |  2 +-
- net/ipv4/af_inet.c   |  2 +-
- net/ipv4/tcp.c       |  3 +--
- net/ipv4/tcp_input.c |  2 +-
- net/ipv4/tcp_ipv4.c  | 11 +++++++----
- net/ipv4/udp.c       |  6 +++---
- net/ipv6/tcp_ipv6.c  | 11 +++++++----
- net/ipv6/udp.c       |  4 ++--
- 8 files changed, 23 insertions(+), 18 deletions(-)
-
-diff --git a/include/net/sock.h b/include/net/sock.h
-index d53fb6437476..90a8b8b26a20 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -421,7 +421,7 @@ struct sock {
- #ifdef CONFIG_XFRM
- 	struct xfrm_policy __rcu *sk_policy[2];
- #endif
--	struct dst_entry	*sk_rx_dst;
-+	struct dst_entry __rcu	*sk_rx_dst;
- 	struct dst_entry __rcu	*sk_dst_cache;
- 	atomic_t		sk_omem_alloc;
- 	int			sk_sndbuf;
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index a733ce1a3f8f..87d73a3e92ba 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -158,7 +158,7 @@ void inet_sock_destruct(struct sock *sk)
- 
- 	kfree(rcu_dereference_protected(inet->inet_opt, 1));
- 	dst_release(rcu_dereference_protected(sk->sk_dst_cache, 1));
--	dst_release(sk->sk_rx_dst);
-+	dst_release(rcu_dereference_protected(sk->sk_rx_dst, 1));
- 	sk_refcnt_debug_dec(sk);
- }
- EXPORT_SYMBOL(inet_sock_destruct);
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index bfeb05f62b94..a012b8214b7c 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -2814,8 +2814,7 @@ int tcp_disconnect(struct sock *sk, int flags)
- 	icsk->icsk_ack.rcv_mss = TCP_MIN_MSS;
- 	memset(&tp->rx_opt, 0, sizeof(tp->rx_opt));
- 	__sk_dst_reset(sk);
--	dst_release(sk->sk_rx_dst);
--	sk->sk_rx_dst = NULL;
-+	dst_release(xchg((__force struct dst_entry **)&sk->sk_rx_dst, NULL));
- 	tcp_saved_syn_free(tp);
- 	tp->compressed_ack = 0;
- 	tp->segs_in = 0;
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 4ecd85b1e806..377cba9b124d 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -5777,7 +5777,7 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
- 	trace_tcp_probe(sk, skb);
- 
- 	tcp_mstamp_refresh(tp);
--	if (unlikely(!sk->sk_rx_dst))
-+	if (unlikely(!rcu_access_pointer(sk->sk_rx_dst)))
- 		inet_csk(sk)->icsk_af_ops->sk_rx_dst_set(sk, skb);
- 	/*
- 	 *	Header prediction.
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 0d165ce2d80a..5c1e6b0687e2 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1670,15 +1670,18 @@ int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb)
- 	struct sock *rsk;
- 
- 	if (sk->sk_state == TCP_ESTABLISHED) { /* Fast path */
--		struct dst_entry *dst = sk->sk_rx_dst;
-+		struct dst_entry *dst;
-+
-+		dst = rcu_dereference_protected(sk->sk_rx_dst,
-+						lockdep_sock_is_held(sk));
- 
- 		sock_rps_save_rxhash(sk, skb);
- 		sk_mark_napi_id(sk, skb);
- 		if (dst) {
- 			if (inet_sk(sk)->rx_dst_ifindex != skb->skb_iif ||
- 			    !dst->ops->check(dst, 0)) {
-+				RCU_INIT_POINTER(sk->sk_rx_dst, NULL);
- 				dst_release(dst);
--				sk->sk_rx_dst = NULL;
- 			}
- 		}
- 		tcp_rcv_established(sk, skb);
-@@ -1753,7 +1756,7 @@ int tcp_v4_early_demux(struct sk_buff *skb)
- 		skb->sk = sk;
- 		skb->destructor = sock_edemux;
- 		if (sk_fullsock(sk)) {
--			struct dst_entry *dst = READ_ONCE(sk->sk_rx_dst);
-+			struct dst_entry *dst = rcu_dereference(sk->sk_rx_dst);
- 
- 			if (dst)
- 				dst = dst_check(dst, 0);
-@@ -2162,7 +2165,7 @@ void inet_sk_rx_dst_set(struct sock *sk, const struct sk_buff *skb)
- 	struct dst_entry *dst = skb_dst(skb);
- 
- 	if (dst && dst_hold_safe(dst)) {
--		sk->sk_rx_dst = dst;
-+		rcu_assign_pointer(sk->sk_rx_dst, dst);
- 		inet_sk(sk)->rx_dst_ifindex = skb->skb_iif;
- 	}
- }
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index e498c7666ec6..4446aa8237ff 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -2193,7 +2193,7 @@ bool udp_sk_rx_dst_set(struct sock *sk, struct dst_entry *dst)
- 	struct dst_entry *old;
- 
- 	if (dst_hold_safe(dst)) {
--		old = xchg(&sk->sk_rx_dst, dst);
-+		old = xchg((__force struct dst_entry **)&sk->sk_rx_dst, dst);
- 		dst_release(old);
- 		return old != dst;
- 	}
-@@ -2383,7 +2383,7 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 		struct dst_entry *dst = skb_dst(skb);
- 		int ret;
- 
--		if (unlikely(sk->sk_rx_dst != dst))
-+		if (unlikely(rcu_dereference(sk->sk_rx_dst) != dst))
- 			udp_sk_rx_dst_set(sk, dst);
- 
- 		ret = udp_unicast_rcv_skb(sk, skb, uh);
-@@ -2541,7 +2541,7 @@ int udp_v4_early_demux(struct sk_buff *skb)
- 
- 	skb->sk = sk;
- 	skb->destructor = sock_efree;
--	dst = READ_ONCE(sk->sk_rx_dst);
-+	dst = rcu_dereference(sk->sk_rx_dst);
- 
- 	if (dst)
- 		dst = dst_check(dst, 0);
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 8d91f36cb11b..c14eaec64a0b 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -107,7 +107,7 @@ static void inet6_sk_rx_dst_set(struct sock *sk, const struct sk_buff *skb)
- 	if (dst && dst_hold_safe(dst)) {
- 		const struct rt6_info *rt = (const struct rt6_info *)dst;
- 
--		sk->sk_rx_dst = dst;
-+		rcu_assign_pointer(sk->sk_rx_dst, dst);
- 		inet_sk(sk)->rx_dst_ifindex = skb->skb_iif;
- 		tcp_inet6_sk(sk)->rx_dst_cookie = rt6_get_cookie(rt);
- 	}
-@@ -1482,15 +1482,18 @@ static int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
- 		opt_skb = skb_clone(skb, sk_gfp_mask(sk, GFP_ATOMIC));
- 
- 	if (sk->sk_state == TCP_ESTABLISHED) { /* Fast path */
--		struct dst_entry *dst = sk->sk_rx_dst;
-+		struct dst_entry *dst;
-+
-+		dst = rcu_dereference_protected(sk->sk_rx_dst,
-+						lockdep_sock_is_held(sk));
- 
- 		sock_rps_save_rxhash(sk, skb);
- 		sk_mark_napi_id(sk, skb);
- 		if (dst) {
- 			if (inet_sk(sk)->rx_dst_ifindex != skb->skb_iif ||
- 			    dst->ops->check(dst, np->rx_dst_cookie) == NULL) {
-+				RCU_INIT_POINTER(sk->sk_rx_dst, NULL);
- 				dst_release(dst);
--				sk->sk_rx_dst = NULL;
- 			}
- 		}
- 
-@@ -1842,7 +1845,7 @@ INDIRECT_CALLABLE_SCOPE void tcp_v6_early_demux(struct sk_buff *skb)
- 		skb->sk = sk;
- 		skb->destructor = sock_edemux;
- 		if (sk_fullsock(sk)) {
--			struct dst_entry *dst = READ_ONCE(sk->sk_rx_dst);
-+			struct dst_entry *dst = rcu_dereference(sk->sk_rx_dst);
- 
- 			if (dst)
- 				dst = dst_check(dst, tcp_inet6_sk(sk)->rx_dst_cookie);
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 4e90e5a52945..9b504bf49214 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -941,7 +941,7 @@ int __udp6_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 		struct dst_entry *dst = skb_dst(skb);
- 		int ret;
- 
--		if (unlikely(sk->sk_rx_dst != dst))
-+		if (unlikely(rcu_dereference(sk->sk_rx_dst) != dst))
- 			udp6_sk_rx_dst_set(sk, dst);
- 
- 		if (!uh->check && !udp_sk(sk)->no_check6_rx) {
-@@ -1055,7 +1055,7 @@ INDIRECT_CALLABLE_SCOPE void udp_v6_early_demux(struct sk_buff *skb)
- 
- 	skb->sk = sk;
- 	skb->destructor = sock_efree;
--	dst = READ_ONCE(sk->sk_rx_dst);
-+	dst = rcu_dereference(sk->sk_rx_dst);
- 
- 	if (dst)
- 		dst = dst_check(dst, inet6_sk(sk)->rx_dst_cookie);
--- 
-2.38.0.135.g90850a2211-goog
+Best regards,
+Krzysztof
 
