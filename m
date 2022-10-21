@@ -2,81 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BFE38607607
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 13:22:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BEC560760A
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 13:22:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230175AbiJULWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 07:22:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34918 "EHLO
+        id S230132AbiJULWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 07:22:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiJULWG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 07:22:06 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41EBE261429;
-        Fri, 21 Oct 2022 04:22:04 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id bp11so4026035wrb.9;
-        Fri, 21 Oct 2022 04:22:04 -0700 (PDT)
+        with ESMTP id S229716AbiJULWb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 07:22:31 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875A6264E44;
+        Fri, 21 Oct 2022 04:22:22 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id b12so4572994edd.6;
+        Fri, 21 Oct 2022 04:22:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=H7R3Me6hwrctNsT3YD93NqotZPBZa2fhmCWp5NtHQaA=;
-        b=GoyN4FgL4+UdBb8NraWG4aetcfcnB8Tczy/Nv9UZgb4yqyWZZUXQWSsqhYq31kwwD5
-         +UGaOOLmvS7J6YzJ5ftGTcRCn5vwtEeXlgSpWBqM7dCxWhfjyjlEo5TVp7+kcxU94/K3
-         M8hSvEVmjsptYR0XN7urRtT6qWHkAiNDVsgmbo+oh3wpxoza6IeUIsN2h5Irt0jdjkxW
-         ayqZoPATtyhb0lrRS0ZTENMLlUZNZF6SCJQ9MReJYNM0SrltnaqVEpUV6EjwwOnISdjH
-         JvQDWCfDtBUxl/xQ40qH2RLHfHmWedFOMNKLrvVlUNVEWWjEenYoCjky4rX+vZWcZOLs
-         QicA==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=y83I/EEj5O1WzvhlqMvy69bC2C3kma+TguYlktElg+U=;
+        b=aqI400aFX+Hv1if94yQ/9coImAcoL5xm5EE9Z8Pnq+JQ7MqId0ZuB5eW9kjAqCiUrN
+         KMZPlHItsw5EctvNgdlnTcP5laLuqUz+SV1o33najcKCsjf0QARB5ow9Z44sTZTOmSeg
+         UrpNC6fH6ciHR2X4rGmdJWOSbH4r9VMHXzYepV/zYSLDnnNwqU+kf3Zv2sg7HE61xVNl
+         7t3a9w2kLyvF5PibwmB0qSxZXtgVyxt+2/Ir7YJLUZG06dtskhoVW5tz2mc4jA71zIm4
+         UhnubOmNzJl78yCv0QqxYV7AfFoBR+16JycwYyxr/dmdd6j59K4vgycD/Tzgpk9gib2d
+         VCVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=H7R3Me6hwrctNsT3YD93NqotZPBZa2fhmCWp5NtHQaA=;
-        b=o9kLTIyMN3h+9dROAndlDnYtK6RwOBkpW/u4sZQ4J8EIwrqKooeaJBRj/V/HonnUdf
-         t9vtzmVjSqvyNKHdjx9TPWZAUTHYUlK2GKYGG533EpNbzaGh8LW+fPuuXUKSWFwo++qg
-         ILQVjNiij1Wd44mGjV2cUbrtdiiEygFq6xeVbk4tOGVi45fP/1kmyHcM8ZbZCQ2kKhF1
-         zSVuTe7kgz0TFlS6VXDHqdo6mF65yGhO2vZzw0zFUI6jZ9xYSVvyqyhcpI0j/IsYPY0n
-         H8Oh9SIv74fh49pwY4jmd3sQ9mhEA42HOj5YNoy7mLGwmx9SdXODJeDpwfudRlSVO5Ja
-         qRFQ==
-X-Gm-Message-State: ACrzQf2OHfNZLsXMugbrHDqsdbAJimCktQH90j2Al0slpPCJFgZ92UeI
-        5dcahluHHiylK4Gx+bGLEc0=
-X-Google-Smtp-Source: AMsMyM7Y4CV/b8X5RSfdJrS7ckTnOmU0Iq7G4+8Jp4vsF5b+uD/wvHB32X9NqnFgPhUCVe6ouKxBkQ==
-X-Received: by 2002:adf:f2c1:0:b0:231:3f1c:2fb with SMTP id d1-20020adff2c1000000b002313f1c02fbmr11512851wrp.602.1666351322247;
-        Fri, 21 Oct 2022 04:22:02 -0700 (PDT)
-Received: from ?IPV6:2620:10d:c096:310::22ef? ([2620:10d:c092:600::2:f27e])
-        by smtp.gmail.com with ESMTPSA id z23-20020a1cf417000000b003c6b874a0dfsm2744358wma.14.2022.10.21.04.22.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 21 Oct 2022 04:22:01 -0700 (PDT)
-Message-ID: <2092f2db-d847-dd78-1690-359ed9bb7f14@gmail.com>
-Date:   Fri, 21 Oct 2022 12:20:57 +0100
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=y83I/EEj5O1WzvhlqMvy69bC2C3kma+TguYlktElg+U=;
+        b=Zu7GJbQ5TZlq8kH3vSDfX32h0DpvTIuuQNUkPQ9vNy6ffF/Fdd5NenNwr+hjJd6FQd
+         IiRhebil1Oj4gj5stR4NrQLqrwlScAPWbqDicS5XY4hmYIhqoXqkK24EnVNFmaOUryXh
+         gL7OGQrXccV2meGHaSrPFXzkUwzoUOP81Lcm71M0YFZF3NWMPWE0FwPiXkile2or1J5D
+         dbwMlcnfQ8xX5d3yrMjfYI/K3pnderM4JFhCqAZloZHg76cFzOXg8+e7OWkvthjGde2L
+         Ojln8bY0L2m2KBD1q3z2QgFqYYJ3BdhAoc46lMhY1pxfmQIK70KroP4EEvCbETYG/Zf6
+         V7dQ==
+X-Gm-Message-State: ACrzQf1Ru5sTUk8bEuzce1bgXu9Co2uAzt4h14NqO2T1eR8dgHNC/oOv
+        S+BjpNducF+Zbp14uG1BXpI=
+X-Google-Smtp-Source: AMsMyM4Ljgcs84MFVGjjaNn1SINn2K1OMLuiOgFc7iq4/CDwKUIaipwaA3YvQFgGhkmQ345GuQJlMw==
+X-Received: by 2002:a17:906:db0e:b0:77b:82cf:54a6 with SMTP id xj14-20020a170906db0e00b0077b82cf54a6mr14838182ejb.691.1666351340215;
+        Fri, 21 Oct 2022 04:22:20 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id g22-20020a50d5d6000000b00457160c3c77sm13487340edj.20.2022.10.21.04.22.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Oct 2022 04:22:19 -0700 (PDT)
+Date:   Fri, 21 Oct 2022 14:22:16 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     netdev@kapio-technology.com
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Hans Schultz <schultz.hans@gmail.com>,
+        Joachim Wiberg <troglobit@gmail.com>,
+        Amit Cohen <amcohen@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v8 net-next 10/12] net: dsa: mv88e6xxx: mac-auth/MAB
+ implementation
+Message-ID: <20221021112216.6bw6sjrieh2znlti@skbuf>
+References: <20221018165619.134535-1-netdev@kapio-technology.com>
+ <20221018165619.134535-1-netdev@kapio-technology.com>
+ <20221018165619.134535-11-netdev@kapio-technology.com>
+ <20221018165619.134535-11-netdev@kapio-technology.com>
+ <20221020132538.reirrskemcjwih2m@skbuf>
+ <2565c09bb95d69142522c3c3bcaa599e@kapio-technology.com>
+ <20221020225719.l5iw6vndmm7gvjo3@skbuf>
+ <82d23b100b8d2c9e4647b8a134d5cbbf@kapio-technology.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.1
-Subject: Re: IORING_SEND_NOTIF_USER_DATA (was Re: IORING_CQE_F_COPIED)
-Content-Language: en-US
-To:     Stefan Metzmacher <metze@samba.org>,
-        io-uring <io-uring@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
-        Dylan Yudaken <dylany@fb.com>
-References: <4385ba84-55dd-6b08-0ca7-6b4a43f9d9a2@samba.org>
- <6f0a9137-2d2b-7294-f59f-0fcf9cdfc72d@gmail.com>
- <4bbf6bc1-ee4b-8758-7860-a06f57f35d14@samba.org>
- <cd87b6d0-a6d6-8f24-1af4-4b8845aa669c@gmail.com>
- <df47dbd0-75e4-5f39-58ad-ec28e50d0b9c@samba.org>
- <fb6a7599-8a9b-15e5-9b64-6cd9d01c6ff4@gmail.com>
- <3e7b7606-c655-2d10-f2ae-12aba9abbc76@samba.org>
- <ae88cd67-906a-7c89-eaf8-7ae190c4674b@gmail.com>
- <86763cf2-72ed-2d05-99c3-237ce4905611@samba.org>
- <fc3967d3-ef72-7940-2436-3d8aa329151e@gmail.com>
- <a5bf4d77-0fad-1d3f-159f-b97128f58af2@samba.org>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <a5bf4d77-0fad-1d3f-159f-b97128f58af2@samba.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <82d23b100b8d2c9e4647b8a134d5cbbf@kapio-technology.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -85,47 +109,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/21/22 10:45, Stefan Metzmacher wrote:
-> Am 21.10.22 um 11:27 schrieb Pavel Begunkov:
->> On 10/21/22 09:32, Stefan Metzmacher wrote:
->>> Hi Pavel,
->>>
->>>>>>> Experimenting with this stuff lets me wish to have a way to
->>>>>>> have a different 'user_data' field for the notif cqe,
->>>>>>> maybe based on a IORING_RECVSEND_ flag, it may make my life
->>>>>>> easier and would avoid some complexity in userspace...
->>>>>>> As I need to handle retry on short writes even with MSG_WAITALL
->>>>>>> as EINTR and other errors could cause them.
->>>>>>>
->>>>>>> What do you think?
->>>>>
->>>>> Any comment on this?
->>>>>
->>>>> IORING_SEND_NOTIF_USER_DATA could let us use
->>>>> notif->cqe.user_data = sqe->addr3;
->>>>
->>>> I'd rather not use the last available u64, tbh, that was the
->>>> reason for not adding a second user_data in the first place.
->>>
->>> As far as I can see io_send_zc_prep has this:
->>>
->>>          if (unlikely(READ_ONCE(sqe->__pad2[0]) || READ_ONCE(sqe->addr3)))
->>>                  return -EINVAL;
->>>
->>> both are u64...
->>
->> Hah, true, completely forgot about that one
+On Fri, Oct 21, 2022 at 08:47:42AM +0200, netdev@kapio-technology.com wrote:
+> On 2022-10-21 00:57, Vladimir Oltean wrote:
+> > On Thu, Oct 20, 2022 at 10:20:50PM +0200, netdev@kapio-technology.com
+> > wrote:
+> > > In general locked ports block traffic from a host based on if there
+> > > is a
+> > > FDB entry or not. In the non-offloaded case, there is only CPU
+> > > assisted
+> > > learning, so the normal learning mechanism has to be disabled as any
+> > > learned entry will open the port for the learned MAC,vlan.
+> > 
+> > Does it have to be that way? Why can't BR_LEARNING on a BR_PORT_LOCKED
+> > cause the learned FDB entries to have BR_FDB_LOCKED, and everything
+> > would be ok in that case (the port will not be opened for the learned
+> > MAC/VLAN)?
 > 
-> So would a commit like below be fine for you?
+> I suppose you are right that basing it solely on BR_FDB_LOCKED is possible.
 > 
-> Do you have anything in mind for SEND[MSG]_ZC that could possibly use
-> another u64 in future?
+> The question is then maybe if the common case where you don't need learned
+> entries for the scheme to work, e.g. with EAPOL link local packets, requires
+> less CPU load to work and is cleaner than if using BR_FDB_LOCKED entries?
 
-It'll most likely be taken in the future, some features are planned
-some I can imagine. The question is how necessary this one is and/or
-how much simpler it would make it considering that CQEs are ordered
-and apps still need to check for F_MORE. It shouldn't even require
-refcounting. Can you elaborate on the simplifying userspace part?
+I suppose the real question is what does the bridge currently do with
+BR_LEARNING + BR_PORT_LOCKED, and if that is sane and useful in any case?
+It isn't a configuration that's rejected, for sure. The configuration
+could be rejected via a bug fix patch, then in net-next it could be made
+to learn these addresses with the BR_FDB_LOCKED flag.
 
--- 
-Pavel Begunkov
+To your question regarding the common case (no MAB): that can be supported
+just fine when BR_LEARNING is off and BR_PORT_LOCKED is on, no?
+No BR_FDB_LOCKED entries will be learned.
