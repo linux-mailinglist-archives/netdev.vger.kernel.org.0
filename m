@@ -2,84 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA0B76070A1
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 09:00:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3020D6070FA
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 09:24:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229679AbiJUHAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 03:00:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43668 "EHLO
+        id S229763AbiJUHYb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 03:24:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229933AbiJUHAn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 03:00:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D541F96222;
-        Fri, 21 Oct 2022 00:00:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 924ACB80B3C;
-        Fri, 21 Oct 2022 07:00:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B9DCC433C1;
-        Fri, 21 Oct 2022 07:00:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666335639;
-        bh=EmSAQ2/Kn6SeX4zoucILX3L8Z9heMrfHbWNEHW6Q2l4=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=e4+Sq01BCa8YRnrios+qESSSuSqKTOcGxqrwWxeMJaRt1ROo5Ty4gYnvGXmsNiea1
-         ju9/hoH+UswIh1q4sAHPVG9n7felNKOc4zwBfrJkGV4UqHiIqkOjc62uEsMdQbL88O
-         z+RavP3ybXkp9+jJ4OPRoZiY62Qwu/eEe+dyGzYd0VzlP9kuovrI3rep+HUACxo+Ip
-         d12dFkpvzpWSw6m+4aKd8aBZTyb8040iY2ZYVYfjJpkSWAitcjD8/uRT3s90H+DbyU
-         JpsaiLJrn2VFetrgjpTmBdMPsxY1iBjrrMeEOrQveGxDzVrrsYEBFqWC+WG1XGAnnP
-         apwFXSCjZvYsw==
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229948AbiJUHY3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 03:24:29 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF86BF79;
+        Fri, 21 Oct 2022 00:24:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=3QJldfimGMGhCUVfS4T2fQs9aVrQkUBT9b7wxuInmVs=; b=ZTILIayE9X7wdaGqo8oZBO6jEI
+        kFjfze0pHhiT162fcjz9zR0xhMJ5vcnIrncJcnVcB4ahsQ6sXSXUmk6shy20vj3tx89/uKqfrH5GX
+        BBbMyV3A0SwzM+6Mj8+53QROktOQLRY1QD99ecZmOIt7x/ovkwEs6zLXR084uOfH93qghfLYVQOBN
+        e4gHzybzRtjgNAUIEVYYaMgmJ9wqSR0QyeF2+yWYawQ0S8Ae/6h0ocAHRtQgg/26xYQv9pSOsU4cw
+        2r1XQ3X9ZB6AkBeG8KC17SX+27NsTkgUQGsznB6cl/zJVqUsDiFTfkP4n4c2zqB9cReJRQ2QoXAJQ
+        kSdWR6Ow==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34848)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1olmNz-0008Ix-Po; Fri, 21 Oct 2022 08:24:07 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1olmNu-0003yS-L9; Fri, 21 Oct 2022 08:24:02 +0100
+Date:   Fri, 21 Oct 2022 08:24:02 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Frank Wunderlich <frank-w@public-files.de>
+Cc:     Frank Wunderlich <linux@fw-web.de>,
+        linux-mediatek@lists.infradead.org,
+        Alexander Couzens <lynxis@fe80.eu>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: mtk_sgmii: implement mtk_pcs_ops
+Message-ID: <Y1JJEtvra2F3JGQS@shell.armlinux.org.uk>
+References: <20221020144431.126124-1-linux@fw-web.de>
+ <Y1F0pSrJnNlYzehq@shell.armlinux.org.uk>
+ <02A54E45-2084-440A-A643-772C0CC9F988@public-files.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v3] wifi: rt2x00: use explicitly signed or unsigned types
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20221019155541.3410813-1-Jason@zx2c4.com>
-References: <20221019155541.3410813-1-Jason@zx2c4.com>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Stanislaw Gruszka <stf_xl@wp.pl>,
-        Helmut Schaa <helmut.schaa@googlemail.com>
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <166633563389.6242.13987912613257140089.kvalo@kernel.org>
-Date:   Fri, 21 Oct 2022 07:00:37 +0000 (UTC)
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <02A54E45-2084-440A-A643-772C0CC9F988@public-files.de>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Jason A. Donenfeld" <Jason@zx2c4.com> wrote:
+On Fri, Oct 21, 2022 at 08:04:51AM +0200, Frank Wunderlich wrote:
+> On my board (bpi-r3) we have no autoneg on the gmacs. We have a switch (mt7531) with fixed-link on the first and a sfp-cage on the other. Second mac gets speed-setting (1000base-X or 2500base-X) from sfp eeprom, but no advertisement from the "other end". Imho it is always full duplex.
 
-> On some platforms, `char` is unsigned, but this driver, for the most
-> part, assumed it was signed. In other places, it uses `char` to mean an
-> unsigned number, but only in cases when the values are small. And in
-> still other places, `char` is used as a boolean. Put an end to this
-> confusion by declaring explicit types, depending on the context.
-> 
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Cc: Stanislaw Gruszka <stf_xl@wp.pl>
-> Cc: Helmut Schaa <helmut.schaa@googlemail.com>
-> Cc: Kalle Valo <kvalo@kernel.org>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> Acked-by: Stanislaw Gruszka <stf_xl@wp.pl>
-
-Patch applied to wireless.git, thanks.
-
-66063033f77e wifi: rt2x00: use explicitly signed or unsigned types
+If it's a fixed link, then this function you're adding won't be called.
+It's only called for in-band mode which is exclusive with fixed-link
+mode.
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20221019155541.3410813-1-Jason@zx2c4.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
