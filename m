@@ -2,58 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5384F607015
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 08:29:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9DCC60701D
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 08:31:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230139AbiJUG3u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 02:29:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34328 "EHLO
+        id S229834AbiJUGbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 02:31:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230008AbiJUG3t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 02:29:49 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B70233A16
-        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 23:29:47 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id t10-20020a17090a4e4a00b0020af4bcae10so1914586pjl.3
-        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 23:29:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=J9+J6TqrdKWyEehYJ+qdJ0CcFt5kjpQ3w0dEpwrcqY8=;
-        b=L8ssRtfV5+sajE8elPTNScgQ4lMfFw7XKX3/AqEQ7zWowZa96JS0xxGpo8RnXsbPq5
-         su4eGCK5F9IeIpd+vZ4KewntSpLbos6s8o1itU7VZ6Ye2anf6J+Fz6Ncjxma2IpWSzvX
-         DE3wHjvUBF7KKCBLf/GeocnUQwqc/EWzwC/MRNfHjkm5Mb+z9ienzrU2FBLGtQGgw5as
-         eEvuJ5+4mMgZSRW1qpAbo806djvvWMpHaglXZdSHglhPTdnXQT6j2UYcbP38kEkj6FFW
-         sHyZcUgasBoBHDHv0U4t5z6ls8ldhE2/MmEbK6SV7AMiitUpXJsI/lK+Y47iquKrLPiX
-         pSqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=J9+J6TqrdKWyEehYJ+qdJ0CcFt5kjpQ3w0dEpwrcqY8=;
-        b=tB5SkY43JSLKuDT8vJbLG7kSc81UApr11pn7a3koaEyUF931dX/T9nxghKpo2Lv6PE
-         xYAuOV5dhToKznflyHGYeMZpxDJaemqrmZGZktiRXGMEN9VBdpScMADWasIsPYhtZ1/S
-         vqMJVFMSHw3l/AWO2hiKGRgEXlOFUwM4FowQiwAouStBbWAZsFhUQX83j33X6k9sobew
-         68uIo9NgUji1C/2VsJSVmc570uPhc59dda8fI78gheL6taRyU7bEHH8aZpEX5TrGyXiF
-         ikdt7aSDsI6mSY91vsAIvzenRgyYrHs78tRz2jppRnueiQEXAAEY1sdusr6x4C1kwO5b
-         tChw==
-X-Gm-Message-State: ACrzQf3xrC77sdz4zxdLCyZMvBdNVLVphkdlLbzQNn/Jp8IzV/CSICBp
-        MG2qiITpdDsPnInq4A152Zqz98956YYX1hN2aOaBP+ugzTy7KA==
-X-Google-Smtp-Source: AMsMyM54xkuApdOHNIV8jK3DePhSeSPMszD4H88khXfs9fI5LB1JUXAOXU61bWpw//W0TlUfGpN1U12YzlBKhVuCWxs=
-X-Received: by 2002:a17:90a:7a85:b0:20d:2891:15f with SMTP id
- q5-20020a17090a7a8500b0020d2891015fmr20836174pjf.107.1666333786548; Thu, 20
- Oct 2022 23:29:46 -0700 (PDT)
+        with ESMTP id S229707AbiJUGbV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 02:31:21 -0400
+Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 134E819A211
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 23:31:12 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R351e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VSiCvao_1666333868;
+Received: from 30.221.148.62(mailfrom:hengqi@linux.alibaba.com fp:SMTPD_---0VSiCvao_1666333868)
+          by smtp.aliyun-inc.com;
+          Fri, 21 Oct 2022 14:31:09 +0800
+Message-ID: <3a9b641a-f84d-92e0-a416-43bbde26f866@linux.alibaba.com>
+Date:   Fri, 21 Oct 2022 14:31:06 +0800
 MIME-Version: 1.0
-From:   "J.J. Mars" <mars14850@gmail.com>
-Date:   Fri, 21 Oct 2022 14:29:26 +0800
-Message-ID: <CAHUXu_WyYzuTOiz75VfhST6nL3gm0B49dDMjgkzEQ0m_h4Rh1g@mail.gmail.com>
-Subject: Confused about ip_summed member in sk_buff
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:106.0)
+ Gecko/20100101 Thunderbird/106.0
+Subject: Re: [PATCH net] veth: Avoid drop packets when xdp_redirect performs
+To:     =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+References: <1664267413-75518-1-git-send-email-hengqi@linux.alibaba.com>
+ <87wn9proty.fsf@toke.dk>
+ <f760701a-fb9d-11e5-f555-ebcf773922c3@linux.alibaba.com>
+ <87v8p7r1f2.fsf@toke.dk>
+ <189b8159-c05f-1730-93f3-365999755f72@linux.alibaba.com>
+ <567d3635f6e7969c4e1a0e4bc759556c472d1dff.camel@redhat.com>
+ <c1831b89-c896-80c3-7258-01bcf2defcbc@linux.alibaba.com>
+ <87o7uymlh5.fsf@toke.dk>
+ <c128d468-0c87-8759-e7de-b482abf8aab6@linux.alibaba.com>
+ <87bkq6v4hn.fsf@toke.dk>
+From:   Heng Qi <hengqi@linux.alibaba.com>
+In-Reply-To: <87bkq6v4hn.fsf@toke.dk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,23 +54,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi everyone, I'm new here and I hope this mail won't disturb you :)
 
-Recently I was working with something about ip_summed, and I'm really
-confused about the question what does ip_summed exactly mean?
-This member is defined with comment Driver fed us an IP checksum'. So
-I guess it's about IP/L3 checksum status.
-But the possible value of ip_summed like CHECKSUM_UNNECESSARY is about L4.
 
-What confused me a lot is ip_summed seems to tell us the checksum of
-IP/L3 layer is available from its name.
-But it seems to tell us the checksum status of L4 layer from its value.
+在 2022/10/21 上午12:34, Toke Høiland-Jørgensen 写道:
+> Heng Qi <hengqi@linux.alibaba.com> writes:
+>
+>> maybe we should consider a simpler method: when loading xdp in veth,
+>> we can automatically enable the napi ring of peer veth, which seems to
+>> have no performance impact and functional impact on the veth pair, and
+>> no longer requires users to do more things for peer veth (after all,
+>> they may be unaware of more requirements for peer veth). Do you think
+>> this is feasible?
+> It could be, perhaps? One issue is what to do once the XDP program is
+> then unloaded? We should probably disable NAPI on the peer in this case,
+> but then we'd need to track whether it was enabled by loading an XDP
+> program; we don't want to disable GRO/NAPI if the user requested it
+> explicitly. This kind of state tracking gets icky fast, so I guess it'll
+> depend on the patch...
 
-Besides, in ip_rcv() it seems the ip_summed is not used before
-calculating the checksum of IP header.
+Regarding tracking whether we disable the napi of peer veth when unloading
+the veth's xdp program, this can actually be handled cleanly.
 
-So does ip_summed indicate the status of L3 checksum status or L4
-checksum status?
-If L4, why is it named like that?
+We need to note that when peer veth enable GRO, the peer veth device will
+update the `dev->wanted_features` with NETIF_F_GRO of peer veth (refer to
+__netdev_update_features() and veth_set_features() ).
 
-Best regards, Mars
+When veth loads the xdp program and the napi of peer veth is not ready
+(that is, peer veth does not load the xdp program or has no enable gro),
+at this time, we can choose `ethtool -K veth0 gro on` to enable the napi of
+peer veth, this command also makes the peer veth device update their
+wanted_features, or choose we automatically enable napi for peer veth.
+
+If we want to unload the xdp program for veth, peer veth cannot directly
+disable its napi, because we need to judge whether peer veth is gro_requested
+( ref to veth_gro_requested() ) or has its priv->_xdp_prog, if so, just
+clean veth's xdp environment and disable the napi of veth instead of
+directly disable the napi of peer veth, because of the existence of the
+gro_requested and the xdp program loading on peer veth.
+
+But, if peer veth does not have gro_requested or xdp_program loading on itself,
+then we can directly disable the napi of peer veth.
+
+Thanks.
+
+> -Toke
+
