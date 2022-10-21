@@ -2,99 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 529B3607BCF
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 18:10:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2519607BD2
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 18:10:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230251AbiJUQKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 12:10:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54406 "EHLO
+        id S230222AbiJUQKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 12:10:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230091AbiJUQKY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 12:10:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 960AA182C74;
-        Fri, 21 Oct 2022 09:10:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 71DD5B82C9C;
-        Fri, 21 Oct 2022 16:10:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2A55DC433D7;
-        Fri, 21 Oct 2022 16:10:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666368618;
-        bh=nYztXilJidiwuNQXGMBogrDzoLmO1qqdokwpRA9JrZg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=d64BIImt8+RKbGieSA+k1Gi1Pe350xYcc8exflCocjhoixI24Pc9dzHuguQp8i8LM
-         DOUo3NBzrZiNqoqKxTWo9QE1tRR4/wiv/3fo0kgOPxCusTxvxnK962FGycrLYCl2Gf
-         XzPlcNIK9bmG0nnJwa2nKviHpcIl5JQasDj0fPODqYp6tTfrn6VYe1H+ziEqOsM++i
-         SJmsbM2Mq0x9PRNPE8BYEDS8RbzcjbUZQ6ZJrtxvqrlUpiaa7dmuqIyQAMjhWnK9mU
-         cIlM/kkObg1fADlWGIExYMWWeqTSujpSER2fm6s1Ce66zNsho8J/Nj/2VHtib8tp+c
-         4394N+5bNS02w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 08CF5E270DF;
-        Fri, 21 Oct 2022 16:10:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229959AbiJUQK3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 12:10:29 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FF8C1A3E1A
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 09:10:23 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id c24so2775665plo.3
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 09:10:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=FDqnpfZF/Nba9iYmW6afwPV/BMJnF3T8pQZy3ug2lYs=;
+        b=VhgDsydIsST92Z8iLWFT8d537teN8JdhwWV9Y5XaFP3t43g8INhBSMM4r2y9VtiyqJ
+         KcVTFWIpbQ9V8f1FNT9bkfza/ITvG0mrZmI1U4ngEjEenk8ZvFon0Ny8Qj8gR2aheBFM
+         PLhy3siwCWSHxwLVevJILDvYx1txt2fYHVIdk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=FDqnpfZF/Nba9iYmW6afwPV/BMJnF3T8pQZy3ug2lYs=;
+        b=O7n9yUEuPV0SAEAWK1W5VPduZE+T9fIM90Vt9mTAAjYeI06kwv2NQuWat03EftSfqL
+         4hSkft2IAqfLomROw9oOnmRuZHrjYBzorW0ocM07XO4Rd8FwCT4g+zeZfBQ8z+UAClmr
+         dlJqlvTFlqY6Qv0eaxFpOaUelzJRevXRc+EYnOMIxvKWR1J3ChGt2yiP29nSYJpb2lcn
+         zZmWkAQhra5g2D7QwHouS26Vb6Jb+TCj04IkWDvtL0b9kbYvtNzAcbNkFNyATrNngFU6
+         Rjcj/pCJcmy9Y32dMQnHZdLsB+J0mM6sGM4qXzekQBSbd2HWdQJQ7QdEhQ0LkcndGsV+
+         y3BQ==
+X-Gm-Message-State: ACrzQf37/3uMQAFhjtescPGXwcp+h+/BFWvF8IW+4upe0yWt5FwyLLJE
+        TcQag7LPNhuCe6bFQ1I0Yf4Osg==
+X-Google-Smtp-Source: AMsMyM6M95hLAa5MMJ+J4YgUSd5tsutQHFC5gF7615PbGgrbbJFxj0hfKDmnrgng3LBBSLDfIP/MKg==
+X-Received: by 2002:a17:902:cf01:b0:186:810c:d994 with SMTP id i1-20020a170902cf0100b00186810cd994mr2366202plg.151.1666368622967;
+        Fri, 21 Oct 2022 09:10:22 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id o125-20020a62cd83000000b00561c179e17dsm15345794pfg.76.2022.10.21.09.10.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Oct 2022 09:10:22 -0700 (PDT)
+Date:   Fri, 21 Oct 2022 09:10:21 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Menglong Dong <imagedong@tencent.com>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v3][next] skbuff: Proactively round up to kmalloc bucket
+ size
+Message-ID: <202210210909.76CDB7A2@keescook>
+References: <20221018093005.give.246-kees@kernel.org>
+ <0ea1fc165a6c6117f982f4f135093e69cb884930.camel@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [bpf-next v9 0/3] bpftool: Add autoattach for bpf prog load|loadall
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166636861803.30010.17887941246508343977.git-patchwork-notify@kernel.org>
-Date:   Fri, 21 Oct 2022 16:10:18 +0000
-References: <1665736275-28143-1-git-send-email-wangyufen@huawei.com>
-In-Reply-To: <1665736275-28143-1-git-send-email-wangyufen@huawei.com>
-To:     Wang Yufen <wangyufen@huawei.com>
-Cc:     quentin@isovalent.com, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
-        sdf@google.com, haoluo@google.com, jolsa@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, hawk@kernel.org,
-        nathan@kernel.org, ndesaulniers@google.com, trix@redhat.com,
-        bpf@vger.kernel.org, netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0ea1fc165a6c6117f982f4f135093e69cb884930.camel@redhat.com>
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to bpf/bpf-next.git (master)
-by Alexei Starovoitov <ast@kernel.org>:
-
-On Fri, 14 Oct 2022 16:31:12 +0800 you wrote:
-> This patchset add "autoattach" optional for "bpftool prog load(_all)" to support
-> one-step load-attach-pin_link.
+On Thu, Oct 20, 2022 at 10:42:47AM +0200, Paolo Abeni wrote:
+> >  	size = SKB_DATA_ALIGN(size);
+> >  	size += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+> > -	data = kmalloc_reserve(size, gfp_mask, node, &pfmemalloc);
+> > -	if (unlikely(!data))
+> > -		goto nodata;
 > 
-> v8 -> v9: fix link leak, and change pathname_concat(specify not just buffer
-> 	  pointer, but also it's size)
-> v7 -> v8: for the programs not supporting autoattach, fall back to reguler pinning
-> 	  instead of skipping
-> v6 -> v7: add info msg print and update doc for the skip program
-> v5 -> v6: skip the programs not supporting auto-attach,
-> 	  and change optional name from "auto_attach" to "autoattach"
-> v4 -> v5: some formatting nits of doc
-> v3 -> v4: rename functions, update doc, bash and do_help()
-> v2 -> v3: switch to extend prog load command instead of extend perf
-> v2: https://patchwork.kernel.org/project/netdevbpf/patch/20220824033837.458197-1-weiyongjun1@huawei.com/
-> v1: https://patchwork.kernel.org/project/netdevbpf/patch/20220816151725.153343-1-weiyongjun1@huawei.com/
+> I'm sorry for not noticing the above in the previous iteration, but I
+> think this revision will produce worse code than the V1, as
+> kmalloc_reserve() now pollutes an additional register.
 > 
-> [...]
+> Why did you prefer adding an additional parameter to kmalloc_reserve()?
+> I think computing the alloc_size in the caller is even more readable.
+> 
+> Additionally, as a matter of personal preference, I would not introduce
+> an additional variable for alloc_size, just:
+> 
+> 	// ...
+> 	size = kmalloc_size_roundup(size);
+> 	data = kmalloc_reserve(size, gfp_mask, node, &pfmemalloc);
+> 
+> The rationale is smaller diff, and consistent style with the existing
+> code where 'size' is already adjusted multiple times icrementally.
 
-Here is the summary with links:
-  - [bpf-next,v9,1/3] bpftool: Add autoattach for bpf prog load|loadall
-    https://git.kernel.org/bpf/bpf-next/c/19526e701ea0
-  - [bpf-next,v9,2/3] bpftool: Update doc (add autoattach to prog load)
-    https://git.kernel.org/bpf/bpf-next/c/ff0e9a579ec9
-  - [bpf-next,v9,3/3] bpftool: Update the bash completion(add autoattach to prog load)
-    https://git.kernel.org/bpf/bpf-next/c/b81a67740075
+Sure, I can do that. I will respin it. :)
 
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Kees Cook
