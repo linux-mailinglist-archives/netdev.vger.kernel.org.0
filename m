@@ -2,78 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD79A606CE7
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 03:11:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7558F606D45
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 03:57:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229983AbiJUBL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 21:11:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38412 "EHLO
+        id S229645AbiJUB5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 21:57:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbiJUBLz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 21:11:55 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E8B233995;
-        Thu, 20 Oct 2022 18:11:48 -0700 (PDT)
-Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MtmZS6xMszDsHn;
-        Fri, 21 Oct 2022 09:09:04 +0800 (CST)
-Received: from dggpeml500006.china.huawei.com (7.185.36.76) by
- dggpeml500020.china.huawei.com (7.185.36.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 21 Oct 2022 09:11:45 +0800
-Received: from localhost.localdomain (10.175.112.70) by
- dggpeml500006.china.huawei.com (7.185.36.76) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 21 Oct 2022 09:11:45 +0800
-From:   Zhang Changzhong <zhangchangzhong@huawei.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        John Crispin <blogic@openwrt.org>,
-        Ralph Hempel <ralph.hempel@lantiq.com>,
-        Ralf Baechle <ralf@linux-mips.org>
-CC:     Zhang Changzhong <zhangchangzhong@huawei.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net] net: lantiq_etop: don't free skb when returning NETDEV_TX_BUSY
-Date:   Fri, 21 Oct 2022 09:32:24 +0800
-Message-ID: <1666315944-30898-1-git-send-email-zhangchangzhong@huawei.com>
-X-Mailer: git-send-email 1.8.3.1
+        with ESMTP id S229604AbiJUB47 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 21:56:59 -0400
+Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A06A224A85
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 18:56:55 -0700 (PDT)
+X-QQ-mid: bizesmtp66t1666317410tcp9xs1j
+Received: from wxdbg.localdomain.com ( [183.129.236.74])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Fri, 21 Oct 2022 09:56:32 +0800 (CST)
+X-QQ-SSF: 01400000000000H0V000000A0000000
+X-QQ-FEAT: uGhnJwy6xZJWDmG6GUHM34FL+A8CgOTQaHJNSBF3DD4BWgL45gUHkm3H3vCo7
+        kwDIEhlAd2Fyg2J1hlAYul+9EdM4nA2rL+C0mQGD7+w0lNdFek2CpMJs2nljYw4IRAgBFVP
+        fbuVow4cc4RXmW+bO7CmlozweTJvj+omU09VzmFmJRXZxe9k/nfGIBsS7b+tTy/qh51xglJ
+        vcXyK5qryebiLaBs4kklEDU24UkFf8QXna3cmdW1TEw8TL3zG5Sra4gZp6Mj7H6MxzTnLW7
+        t8o7LN/8pFem4YjSXMOxgrD5AsduqufnMzHnbGlchJ9zWYUW9qyUMc4g4LlvU4Kk9WFvOj5
+        q02NLF4rCBzETG1FSc88V6vJjqD2BBbiNvwWkRlTQz85QAxK7Y=
+X-QQ-GoodBg: 2
+From:   Jiawen Wu <jiawenwu@trustnetic.com>
+To:     netdev@vger.kernel.org
+Cc:     mengyuanlou@net-swift.com, Jiawen Wu <jiawenwu@trustnetic.com>
+Subject: [RESEND PATCH net-next v4 0/3] net: WangXun txgbe ethernet driver
+Date:   Fri, 21 Oct 2022 10:07:17 +0800
+Message-Id: <20221021020720.519223-1-jiawenwu@trustnetic.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.70]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500006.china.huawei.com (7.185.36.76)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:trustnetic.com:qybglogicsvr:qybglogicsvr5
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ndo_start_xmit() method must not free skb when returning
-NETDEV_TX_BUSY, since caller is going to requeue freed skb.
+This patch series adds support for WangXun 10 gigabit NIC, to initialize
+hardware, set mac address, and register netdev.
 
-Fixes: 504d4721ee8e ("MIPS: Lantiq: Add ethernet driver")
-Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
----
- drivers/net/ethernet/lantiq_etop.c | 1 -
- 1 file changed, 1 deletion(-)
+Change log:
+v4: address comments:
+    Andrew Lunn: https://lore.kernel.org/all/YzXROBtztWopeeaA@lunn.ch/
+v3: address comments:
+    Andrew Lunn: remove hw function ops, reorder functions, use BIT(n)
+                 for register bit offset, move the same code of txgbe
+                 and ngbe to libwx
+v2: address comments:
+    Andrew Lunn: https://lore.kernel.org/netdev/YvRhld5rD%2FxgITEg@lunn.ch/
 
-diff --git a/drivers/net/ethernet/lantiq_etop.c b/drivers/net/ethernet/lantiq_etop.c
-index 59aab40..f5961bd 100644
---- a/drivers/net/ethernet/lantiq_etop.c
-+++ b/drivers/net/ethernet/lantiq_etop.c
-@@ -485,7 +485,6 @@ ltq_etop_tx(struct sk_buff *skb, struct net_device *dev)
- 	len = skb->len < ETH_ZLEN ? ETH_ZLEN : skb->len;
- 
- 	if ((desc->ctl & (LTQ_DMA_OWN | LTQ_DMA_C)) || ch->skb[ch->dma.desc]) {
--		dev_kfree_skb_any(skb);
- 		netdev_err(dev, "tx ring full\n");
- 		netif_tx_stop_queue(txq);
- 		return NETDEV_TX_BUSY;
+Jiawen Wu (3):
+  net: txgbe: Store PCI info
+  net: txgbe: Reset hardware
+  net: txgbe: Set MAC address and register netdev
+
+ drivers/net/ethernet/wangxun/Kconfig          |   6 +
+ drivers/net/ethernet/wangxun/Makefile         |   1 +
+ drivers/net/ethernet/wangxun/libwx/Makefile   |   7 +
+ drivers/net/ethernet/wangxun/libwx/wx_hw.c    | 475 ++++++++++++++++++
+ drivers/net/ethernet/wangxun/libwx/wx_hw.h    |  18 +
+ drivers/net/ethernet/wangxun/libwx/wx_type.h  | 239 +++++++++
+ drivers/net/ethernet/wangxun/txgbe/Makefile   |   3 +-
+ drivers/net/ethernet/wangxun/txgbe/txgbe.h    |  22 +-
+ drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c |  99 ++++
+ drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h |   9 +
+ .../net/ethernet/wangxun/txgbe/txgbe_main.c   | 382 +++++++++++++-
+ .../net/ethernet/wangxun/txgbe/txgbe_type.h   |  33 +-
+ 12 files changed, 1275 insertions(+), 19 deletions(-)
+ create mode 100644 drivers/net/ethernet/wangxun/libwx/Makefile
+ create mode 100644 drivers/net/ethernet/wangxun/libwx/wx_hw.c
+ create mode 100644 drivers/net/ethernet/wangxun/libwx/wx_hw.h
+ create mode 100644 drivers/net/ethernet/wangxun/libwx/wx_type.h
+ create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c
+ create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h
+
 -- 
-2.9.5
+2.27.0
 
