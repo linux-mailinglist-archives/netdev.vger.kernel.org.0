@@ -2,151 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76F5E60773C
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 14:46:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A556B607749
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 14:49:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229917AbiJUMqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 08:46:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41748 "EHLO
+        id S229606AbiJUMtR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 08:49:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229994AbiJUMqP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 08:46:15 -0400
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89430262DE2;
-        Fri, 21 Oct 2022 05:46:10 -0700 (PDT)
-Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 9576360015;
-        Fri, 21 Oct 2022 12:46:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1666356368;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZPwF2UjPl7y7IX+Y6gImoAKgcTPqVNQNiaKw7TX3r9Y=;
-        b=TfaArumbxEPSY0Qw9NyxCw2g2/FYgtpNZRDflJa7HtsUGcxM8h7F00UwNr9YEJ7Vh7r5Rl
-        cnT5yHDfAo/JoWYff4mfi4TGm/blNVJRtTCfiC36cOg887vRO1yaOu1PrZtXuE2O4xCbZk
-        EVZfPJzM40CcMXyWK09rRta2QX8rAdGJUTBW6JEDtYq8PcjQpOOhkhqh92aNR0uBsZbxig
-        eqpmKwy2nOwNhT9gAjfUrZiZMFR5YHmsmeuLGc4q30nx//jKKSnhpxxwmWuvV2KLPIDcb3
-        zEnMlOEP4Q5tPhI2ymWbiI/r/uFvIo/yrPdY+4NwnnIKAL6XAQDg+f+ikkrdqQ==
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Robert Marko <robert.marko@sartura.hr>
-Subject: [PATCH net-next v5 5/5] ARM: dts: qcom: ipq4019: Add description for the IPQESS Ethernet controller
-Date:   Fri, 21 Oct 2022 14:45:56 +0200
-Message-Id: <20221021124556.100445-6-maxime.chevallier@bootlin.com>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20221021124556.100445-1-maxime.chevallier@bootlin.com>
-References: <20221021124556.100445-1-maxime.chevallier@bootlin.com>
+        with ESMTP id S230099AbiJUMtN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 08:49:13 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6B42681F4
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 05:48:49 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id m6so2540226pfb.0
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 05:48:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=5C3AVO3KQTZSkl5k56jSXrjjeWkXIjKnpVmOu2WKA+w=;
+        b=j1MjZpD+ug0V6KhohONi2vJRizcJYRla7DkjaDonrhtb6ZWMDlcQe/1dN2rp8x4Rxp
+         1IdL9k7mW5V3S29XHgxgn3eM/CQ+W6noeMlQR2kn3rUhNbPF0ukRzBBhtmgdQZc7AzrH
+         8oFLnpLfLqpoTYBXTWXL7k0tC4ZnwD5slQW9fhjhPBDQMiOxav15pEuULmzftJLzttav
+         2yTGq75fNO6nWxvBmXN0jxYf08giZO0gVe3N84hfeYJC3LMK1QxPTsdmZeK+UwHv28pd
+         eeq8+GlNd+kxF0wCR0HmhT7pp1syG/sjuZiKdwYEN3Y/K0UaNwMSgc/2sjMVmClMpDq9
+         6mJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5C3AVO3KQTZSkl5k56jSXrjjeWkXIjKnpVmOu2WKA+w=;
+        b=pO3/Kei33H9NoSxWt0h5f5OTBq6Ab2VrH+DdOK4hIe2xBkg/bTqWal1EF/7g9YMWiw
+         tYU/2OH6+Hp4EL1SLX3jVxWirWUHDwtjtcSdMVZFZT188ltsh9PW+0nizsWoGgze08a5
+         jRWvlV9chdfPbDZgWlJQE1XXGEKHStxuO4SZ6RM60La5L5G+jtpyjvqCxnrB49OVvazj
+         fTI1kFN2YchCZmuhJxeG9Nep6mjgjdXJG8I0lF2Knk5sVqsiPYU0nFpHURGHyM8e7TiL
+         6aoFW5DBbasex/A/7oXcoE1Osp8vVI8EnrsMuhdaiG/5kFMIAMMMEAdg0tCAf98/hHto
+         voOg==
+X-Gm-Message-State: ACrzQf0N8dfTpTfW/krxr3GP9SXthW1opxPKsgQIxt7S1r253X1BUPop
+        EPfJm9AmEnyBWJm+JTBrG9E=
+X-Google-Smtp-Source: AMsMyM7l2QhXJZ8XnYp2zbPdQYvi0a48z/41cisCjeTh1CWC1Gzh62rJ3VQlyrUmnMeZriZmp84M+A==
+X-Received: by 2002:a05:6a00:15ce:b0:562:cafb:2844 with SMTP id o14-20020a056a0015ce00b00562cafb2844mr19223942pfu.75.1666356527930;
+        Fri, 21 Oct 2022 05:48:47 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id a15-20020a170902710f00b0017f8290fcc0sm14489927pll.252.2022.10.21.05.48.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Oct 2022 05:48:46 -0700 (PDT)
+Date:   Fri, 21 Oct 2022 05:48:44 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     "Zulkifli, Muhammad Husaini" <muhammad.husaini.zulkifli@intel.com>
+Cc:     "intel-wired-lan@osuosl.org" <intel-wired-lan@osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "Gunasekaran, Aravindhan" <aravindhan.gunasekaran@intel.com>,
+        "gal@nvidia.com" <gal@nvidia.com>,
+        "saeed@kernel.org" <saeed@kernel.org>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
+        "andy@greyhouse.net" <andy@greyhouse.net>,
+        "Gomes, Vinicius" <vinicius.gomes@intel.com>
+Subject: Re: [PATCH v2 0/5] Add support for DMA timestamp for non-PTP packets
+Message-ID: <Y1KVLAR2Qi6JeSBj@hoboy.vegasvil.org>
+References: <20221018010733.4765-1-muhammad.husaini.zulkifli@intel.com>
+ <Y06RzWQnTw2RJGPr@hoboy.vegasvil.org>
+ <SJ1PR11MB618053D058C8171AAC4D3FADB8289@SJ1PR11MB6180.namprd11.prod.outlook.com>
+ <Y09i12Wcqr0whToP@hoboy.vegasvil.org>
+ <SJ1PR11MB6180F00C9051443BCEA22AB2B82D9@SJ1PR11MB6180.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <SJ1PR11MB6180F00C9051443BCEA22AB2B82D9@SJ1PR11MB6180.namprd11.prod.outlook.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Qualcomm IPQ4019 includes an internal 5 ports switch, which is
-connected to the CPU through the internal IPQESS Ethernet controller.
+On Fri, Oct 21, 2022 at 12:25:13AM +0000, Zulkifli, Muhammad Husaini wrote:
 
-Add support for this internal interface, which is internally connected to a
-modified version of the QCA8K Ethernet switch.
+> Sorry for misinterpreting SOFTWARE as HARDWARE in my previous reply.
+> DMA Timestamping is definitely better than SOFTWARE timestamp because 
+> we sample the time at the controller MAC level.
 
-This Ethernet controller only support a specific internal interface mode
-for connection to the switch.
+Do you have numbers to back up this claim?
 
-Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
-V4->V5:
- - Reword the commit log
-V3->V4:
- - No Changes
-V2->V3:
- - No Changes
-V1->V2:
- - Added clock and resets
- arch/arm/boot/dts/qcom-ipq4019.dtsi | 46 +++++++++++++++++++++++++++++
- 1 file changed, 46 insertions(+)
+> Could you please provide additional details about this? What do you meant by 
+> offering 1 HW Timestamp with many SW timestamps? 
 
-diff --git a/arch/arm/boot/dts/qcom-ipq4019.dtsi b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-index b23591110bd2..0092a881dbf4 100644
---- a/arch/arm/boot/dts/qcom-ipq4019.dtsi
-+++ b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-@@ -38,6 +38,7 @@ aliases {
- 		spi1 = &blsp1_spi2;
- 		i2c0 = &blsp1_i2c3;
- 		i2c1 = &blsp1_i2c4;
-+		ethernet0 = &gmac;
- 	};
- 
- 	cpus {
-@@ -591,6 +592,51 @@ wifi1: wifi@a800000 {
- 			status = "disabled";
- 		};
- 
-+		gmac: ethernet@c080000 {
-+			compatible = "qcom,ipq4019-ess-edma";
-+			reg = <0xc080000 0x8000>;
-+			resets = <&gcc ESS_RESET>;
-+			reset-names = "ess";
-+			clocks = <&gcc GCC_ESS_CLK>;
-+			clock-names = "ess";
-+			interrupts = <GIC_SPI  65 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  66 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  67 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  68 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  69 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  70 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  71 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  72 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  73 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  74 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  75 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  76 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  77 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  78 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  79 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  80 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 240 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 241 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 242 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 243 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 244 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 245 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 246 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 247 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 248 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 249 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 250 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 251 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 252 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 253 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 254 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 255 IRQ_TYPE_EDGE_RISING>;
-+
-+			status = "disabled";
-+
-+			phy-mode = "internal";
-+		};
-+
- 		mdio: mdio@90000 {
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--- 
-2.37.3
+- Let the PTP stack use hardware time stamps.
 
+- Let all other applications use software time stamps.
+
+Hm?
+
+Thanks,
+Richard
