@@ -2,105 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6468D607541
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 12:43:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B0D5607558
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 12:48:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229961AbiJUKnS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 06:43:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34372 "EHLO
+        id S230138AbiJUKs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 06:48:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230015AbiJUKnP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 06:43:15 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A3BB2608D4;
-        Fri, 21 Oct 2022 03:43:09 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id v130-20020a1cac88000000b003bcde03bd44so4695762wme.5;
-        Fri, 21 Oct 2022 03:43:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=K900jaFVQB4K0wGNMX2hVD9xV9wtPx941ilke2G2ejc=;
-        b=kk6F187v7S/2DaSwkVn7AYwGNeT/SUdk1QGRlZ7a2mPbKa/9w3y+E81TQqYfTeK7Vk
-         WH1M5XPBjhxBVfDy0NxVSEJJczcjlxuaYAwvMDm1xjYYRcM0BgW4ZdFGpFS1O/M83Eux
-         DgBhf+mHGwt8/8EzDhIrzfqYdHpgqFC5VeqJuqBNjc1YaJ1uKx5S4uISwMyF7bjJA66M
-         p6w/oebKX5Twho8YFYogBjYWjQZ3dMvh68us5zMBcowZeJSw3A6QsAIRuPhyxuaevtAI
-         uoFu/mf9+z/74mEZCMTFlo+UdxAYN6pTHAB1rgqTB6hJnBt9NnGfM9ZqW4/MG06TdaJy
-         QLLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=K900jaFVQB4K0wGNMX2hVD9xV9wtPx941ilke2G2ejc=;
-        b=6Eh9QD6D4nKKPS2GIzyTFLAIb490VT/WKeJRPmtRLxSqLyO6YjTMoJAHxv7gA0r7Vx
-         YqU5o0CFyFzyvB5JU3nWaA3KYmiv2l0hdrw2qZUKzSyQabuFfA+9Ri+tVq7Vf1DwkCXe
-         09gPL5Leqnw/qHXeFyEq9Y8aSlKron9+ONiyRS9XNCgY+vpTpJF0zaDmc53K/8X5XCCn
-         17dHUQiTJIP+HKFP8GHKuo76vPOoFVoznHqQlDCYcXnWgImCbizNaOFgzzM9RMU6kPj4
-         VABGb/DQdI/8ddcN4iBj0ASAGt4gvKfoHey3Ijg9uCFXDo0tkBc+guS1605hAz8vpsxa
-         +1qQ==
-X-Gm-Message-State: ACrzQf0NGJrfNdNV/as3GUItkFMP5EPCI56qESYncMFSdGfzNocche/J
-        koPElaTuhNQ618drKnmFEqg=
-X-Google-Smtp-Source: AMsMyM59jxEr89fUEQfETrvjtA3uNs6Awj6UASKKz2gE7TWy+nAKmZA/S9Q3OyI2FCiDtJ4cTHXeQw==
-X-Received: by 2002:a05:600c:468f:b0:3c6:f85c:25a1 with SMTP id p15-20020a05600c468f00b003c6f85c25a1mr12190600wmo.60.1666348988161;
-        Fri, 21 Oct 2022 03:43:08 -0700 (PDT)
-Received: from ?IPV6:2620:10d:c096:310::22ef? ([2620:10d:c092:600::2:f27e])
-        by smtp.gmail.com with ESMTPSA id c5-20020a05600c0a4500b003bdd2add8fcsm2493181wmq.24.2022.10.21.03.43.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 21 Oct 2022 03:43:07 -0700 (PDT)
-Message-ID: <114a0ef7-325d-61c7-dc47-3ecd575fd2bf@gmail.com>
-Date:   Fri, 21 Oct 2022 11:42:07 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.1
-Subject: Re: [PATCH for-6.1 0/3] fail io_uring zc with sockets not supporting
- it
-To:     Stefan Metzmacher <metze@samba.org>, Jens Axboe <axboe@kernel.dk>,
+        with ESMTP id S230078AbiJUKsZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 06:48:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173F525F1F4;
+        Fri, 21 Oct 2022 03:48:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B35AB82B95;
+        Fri, 21 Oct 2022 10:48:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7943C433B5;
+        Fri, 21 Oct 2022 10:48:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666349301;
+        bh=Yl3qRQQpWdMPUbGxJERyNc/a/LusWFS2QJF+ezf+FSQ=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=TgA9vbS6vmkee+djXhez8XsX6q6q1k2rY96M7LgzmPrdDZPi5mQ6jF/HZBcaB7ySU
+         j8m64Y7onysoEui/gN8yxtcBzMLgXCrmYn6oRiTicigWyuHey2t6Auz21mRvYeqpS5
+         fpN/oagLoQJJi25vqOB90BmrTDzvB8MJl+/zuRLSdckp2f1e+iemccjiKzuDF9/ylz
+         rLREgmw9skT4GXZwRZSS3HUvqxq59RRVIjQGYf/7aEycG3OCnepfg1pF2lwqEkR/sO
+         fKbdssWhwxeVuoQ/Ge0+keJL7SqL0oMs9a+yj0bntYMeqVElqeHoOz+zaOoD888Khx
+         6QW13DEahU5hw==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     Jes Sorensen <Jes.Sorensen@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     io-uring@vger.kernel.org, netdev@vger.kernel.org
-References: <cover.1666346426.git.asml.silence@gmail.com>
- <d4d6f627-46cc-8176-6d52-c93219db8c2f@samba.org>
-Content-Language: en-US
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <d4d6f627-46cc-8176-6d52-c93219db8c2f@samba.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Bitterblue Smith <rtl8821cerfe2@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] wifi: rtl8xxxu: Fix reads of uninitialized variables hw_ctrl_s1, sw_ctrl_s1
+References: <20221020135709.1549086-1-colin.i.king@gmail.com>
+        <87ilkdlq48.fsf@kernel.org>
+Date:   Fri, 21 Oct 2022 13:48:11 +0300
+In-Reply-To: <87ilkdlq48.fsf@kernel.org> (Kalle Valo's message of "Fri, 21 Oct
+        2022 08:09:27 +0300")
+Message-ID: <87bkq51mhg.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/21/22 11:27, Stefan Metzmacher wrote:
-> Hi Pavel,
-> 
->> Some sockets don't care about msghdr::ubuf_info and would execute the
->> request by copying data. Such fallback behaviour was always a pain in
->> my experience, so we'd rather want to fail such requests and have a more
->> robust api in the future.
+Kalle Valo <kvalo@kernel.org> writes:
+
+> Colin Ian King <colin.i.king@gmail.com> writes:
+>
+>> Variables hw_ctrl_s1 and sw_ctrl_s1 are not being initialized and
+>> potentially can contain any garbage value. Currently there is an if
+>> statement that sets one or the other of these variables, followed
+>> by an if statement that checks if any of these variables have been
+>> set to a non-zero value. In the case where they may contain
+>> uninitialized non-zero values, the latter if statement may be
+>> taken as true when it was not expected to.
 >>
->> Mark struct socket that support it with a new SOCK_SUPPORT_ZC flag.
->> I'm not entirely sure it's the best place for the flag but at least
->> we don't have to do a bunch of extra dereferences in the hot path.
-> 
-> I'd give the flag another name that indicates msg_ubuf and
+>> Fix this by ensuring hw_ctrl_s1 and sw_ctrl_s1 are initialized.
+>>
+>> Cleans up clang warning:
+>> drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8188f.c:432:7: warning:
+>> variable 'hw_ctrl_s1' is used uninitialized whenever 'if' condition is
+>> false [-Wsometimes-uninitialized]
+>>                 if (hw_ctrl) {
+>>                     ^~~~~~~
+>> drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8188f.c:440:7: note: uninitialized
+>> use occurs here
+>>                 if (hw_ctrl_s1 || sw_ctrl_s1) {
+>>                     ^~~~~~~~~~
+>> drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8188f.c:432:3: note: remove the 'if'
+>> if its condition is always true
+>>                 if (hw_ctrl) {
+>>                 ^~~~~~~~~~~~~
+>>
+>> Fixes: c888183b21f3 ("wifi: rtl8xxxu: Support new chip RTL8188FU")
+>> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+>
+> I'll queue this to v6.1.
 
-Could be renamed, e.g. SOCK_SUPPORT_MSGHDR_UBUF or maybe
-SOCK_SUPPORT_EXTERNAL_UBUF
-
-> have a 2nd flag that can indicate support for SO_ZEROCOPY in sk_setsockopt()
-
-There is absolutely no reason to introduce a second flag here, it has
-nothing to do with SO_ZEROCOPY.
-
-> The SO_ZEROCOPY version is also provided by AF_RDS.
+Actually commit c888183b21f3 is in wireless-next so this patch should go
+to wireless-next, for v6.2.
 
 -- 
-Pavel Begunkov
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
