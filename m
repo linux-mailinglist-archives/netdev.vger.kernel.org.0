@@ -2,90 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6C46607A0B
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 17:01:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 158B4607A1B
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 17:08:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229478AbiJUPBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 11:01:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55078 "EHLO
+        id S230052AbiJUPIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 11:08:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229958AbiJUPBQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 11:01:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD7C165CA6
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 08:01:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99A5D61EE5
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 15:01:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A8E0C433D6;
-        Fri, 21 Oct 2022 15:01:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666364475;
-        bh=doHC0D7wW67LMJdd2J1ouVmmvTFM00QK6Lq1RljaD40=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lwDLlACeJwIIE57igups36nM2VQRRlRDRm1JMxqTc8DMVtlGB4DR7XwGJWYhWTTtY
-         c2vC0zUvrLKJsU0Uu+08D9kRcwotuKcjW7Y6BPANcg5G4x+wwDuksid4Yux1ZWtXv2
-         t9iRmhRS0QKONYyqM2YKTGDd4z4mFjCoOAh+YEqsCBDi0+ZpJ5oXPQwbEMBTbavPbZ
-         5HrERCFI+mDHLOW1KVaVwBihcgUrvDYGCVtH/lejw+xgtS/g2KWilHY9Unk5fR9ECz
-         +78gpHHSlBJ9mdHV+0UxTUh+wo22NRZ9rW/A3mXBrKFxtE5ylm3GGO9MQTeFlRaQRd
-         r2NEl+RrAIOZw==
-Date:   Fri, 21 Oct 2022 08:01:13 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, jiri@resnulli.us, razor@blackwall.org,
-        nicolas.dichtel@6wind.com, gnault@redhat.com,
-        jacob.e.keller@intel.com, fw@strlen.de
-Subject: Re: [PATCH net-next 12/13] genetlink: allow families to use split
- ops directly
-Message-ID: <20221021080113.6cee1270@kernel.org>
-In-Reply-To: <8380d344eb5bc084f457920b0133e58ae05f6f2b.camel@sipsolutions.net>
-References: <20221018230728.1039524-1-kuba@kernel.org>
-        <20221018230728.1039524-13-kuba@kernel.org>
-        <a23c47631957c3ba3aaa87bc325553da04f99a0c.camel@sipsolutions.net>
-        <20221019122504.0cb9d326@kernel.org>
-        <dfac0b6e09e9739c7f613cb8ed77c81f9db0bb44.camel@sipsolutions.net>
-        <20221019125745.3f2e7659@kernel.org>
-        <683f4c655dd09a2af718956e8c8d56e6451e11ac.camel@sipsolutions.net>
-        <20221020110950.6e91f9bb@kernel.org>
-        <8380d344eb5bc084f457920b0133e58ae05f6f2b.camel@sipsolutions.net>
+        with ESMTP id S230037AbiJUPIj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 11:08:39 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80FC826103;
+        Fri, 21 Oct 2022 08:08:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=GOAGy8/6xEfh0KekibQjm9pbCbT1mmXCmKJqDE3M+nU=; b=Zfe9ZmaGlXLOWHC+DwN0yNa/XH
+        fAL/I3Z4TCUwg0WZe0TpNZJJ1y8gRnSX4SPYhbjTezVmWNgI/N6VnKMPGjQ5ILgDUkVkX559yxY9u
+        3XNCpoQjU1cALZLH+fhwahtxWptUFQ+GXayvt3GpAJTrQWqXaEzLCy5LijSBE5Wyroo6CTOzJ6dmM
+        3NMg93OBMoRMUfMdHtZeUuSp0iRyvVqTRmxOMxMiKsrKNz+3etVLyAmNisF5jDxwDdi6KmWnpr9xA
+        5IzvMnB4t98ZenN6G0Y3aVDibxFKQV2Lm4vvWTteaMuOvv/hakF/jwtlNjVYHlEV+3nLh8M/kC9Fb
+        miAL2j7A==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34868)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oltdQ-0000Ln-2P; Fri, 21 Oct 2022 16:08:32 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oltdN-0004FO-Ne; Fri, 21 Oct 2022 16:08:29 +0100
+Date:   Fri, 21 Oct 2022 16:08:29 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: [PATCH net-next v2 0/7] net: sfp: improve high power module
+ implementation
+Message-ID: <Y1K17UtfFopACIi2@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 21 Oct 2022 13:02:31 +0200 Johannes Berg wrote:
-> > Perhaps we could hang it of the .resv_start_op as well?  
-> 
-> Yes, hopefully? Maybe?
-> 
-> > Any op past that would treat policy == NULL as reject all?  
-> 
-> Right. The only danger is that someone already added new stuff somewhere
-> and bad/broken userspace already used it with garbage attrs.
-> 
-> But the chances of that are probably low.
-> 
-> So I'd say go for it, and worst case we bump up the resv_start_op for
-> anything that breaks? Wouldn't be a huge loss either.
+Hi,
 
-resv_start_op are only present in -rc kernels, so I think we can break
-things risking only common anger not uAPI wrath :)
+This series aims to improve the power level switching between standard
+level 1 and the higher power levels.
 
-> > We'd need to add GENL_DONT_VALIDATE_DO for families which 
-> > want to parse inside the callbacks. I wonder if people would
-> > get annoyed.  
-> 
-> Why would anyone really want to _parse_ in the callbacks?
+The first patch updates the DT binding documentation to include the
+minimum and default of 1W, which is the base level that every SFP cage
+must support. Hence, it makes sense to document this in the binding.
 
-Until recently that was the only way to do per-op policies, I don't
-know if anyone actually used per-op policies outside of ethtool tho.
+The second patch enforces a minimum of 1W when parsing the firmware
+description, and optimises the code for that case; there's no need to
+check for SFF8472 compliance since we will not need to touch the
+A2h registers.
+
+Patch 3 validates that the module supports SFF-8472 rev 10.2 before
+checking for power level 2 - rev 10.2 is where support for power
+levels was introduced, so if the module doesn't support this revision,
+it doesn't support power levels. Setting the power level 2 declaration
+bit is likely to be spurious.
+
+Patch 4 does the same for power level 3, except this was introduced in
+SFF-8472 rev 11.9. The revision code was never updated, so we use the
+rev 11.4 to signify this.
+
+Patch 5 cleans up the code - rather than using BIT(0), we now use a
+properly named value for the power level select bit.
+
+Patch 6 introduces a read-modify-write helper.
+
+Patch 7 gets rid of the DM7052 hack (which sets a power level
+declaration bit but is not compatible with SFF-8472 rev 10.2, and
+the module does not implement the A2h I2C address.)
+
+Series tested with my DM7052.
+
+v2: update sff.sfp.yaml with Rob's feedback
+
+ Documentation/devicetree/bindings/net/sff,sfp.yaml |  3 +-
+ drivers/net/phy/sfp.c                              | 85 +++++++++++-----------
+ include/linux/sfp.h                                |  2 +
+ 3 files changed, 48 insertions(+), 42 deletions(-)
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
