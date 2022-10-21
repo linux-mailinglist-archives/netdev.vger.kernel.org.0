@@ -2,50 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E6EE606C77
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 02:26:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75981606C91
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 02:41:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229864AbiJUA0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Oct 2022 20:26:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36028 "EHLO
+        id S230023AbiJUAli (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Oct 2022 20:41:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229846AbiJUA0R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 20:26:17 -0400
+        with ESMTP id S229958AbiJUAlc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Oct 2022 20:41:32 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF59F1D6A4A
-        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 17:26:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E008C1905DF;
+        Thu, 20 Oct 2022 17:41:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 99DFCB82A07
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 00:26:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFAF3C433D6;
-        Fri, 21 Oct 2022 00:26:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8764CB82A07;
+        Fri, 21 Oct 2022 00:41:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 38172C433C1;
+        Fri, 21 Oct 2022 00:41:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666311974;
-        bh=o7IQeE9hQiOBqTi3cAA1b5V9lUEkjB/RP3VVoIPrSM8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uu7fu/v8CquQI4jKv188aMfjYjq9sDkjhIr35DkhaUNrIfOgPLhfAaLWnca5JpZkX
-         XsdzABwWoI7w6xvjcrz8qP2ox21S++TpYdanDepxFyToKHvF9WQ367M7TC2VZY5RFY
-         Si9xElf25oscldaVcMVIRLDj5RVeF4ZevqM9VYvdGAL7eMPNKeoR+zUoFlzFmAGlEm
-         H33dz0AH4lXjjjJLV7f6VN5Dk75DowBWbcOGQecbtPWCHSg1trvY+b1dw2HposLWZg
-         FDix7sKIVrXwXDkEUfqQCdrdZVXxeAYHBCYUusplFXOKO5A9tfz2cXz8KL5moLadKM
-         fHd0lIy4WWvTg==
-Date:   Thu, 20 Oct 2022 17:26:12 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Zhengchao Shao <shaozhengchao@huawei.com>
-Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <pabeni@redhat.com>, <jiri@mellanox.com>,
-        <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>
-Subject: Re: [PATCH net 1/2] netdevsim: fix memory leak in nsim_drv_probe()
- when nsim_dev_resources_register() failed
-Message-ID: <20221020172612.0a8e60bb@kernel.org>
-In-Reply-To: <20221020023358.263414-2-shaozhengchao@huawei.com>
-References: <20221020023358.263414-1-shaozhengchao@huawei.com>
-        <20221020023358.263414-2-shaozhengchao@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        s=k20201202; t=1666312875;
+        bh=Q50p4JIcJ/8as09SO3LEbYhem9K0aoaH/P9z+61DN9A=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=bzGhdPuIkfQqesRgH3oiOS1zBOUxl/9IO4wDPfFHZwbriKla3YJpv6lCX2YH/jvs9
+         NNQqu5fxr93yk9pARKHPbwV51BFA8c3Hwr03IQjcI/JlXWP9cXlekMUpzvhag8QTRC
+         TcuCh+QUreirvoHobjBBSQhEEDhRfK83KlO1yVty2xwD4sTIG56geT0cAp3FCL64ax
+         E+AZmZ461NYolnI4ExGnfHHVoo351vUjtmpi9WSPTbyMc9jDc7tNJse/wm1gslHHwv
+         n3kgxfPqAmEldJiQ5/5zHSrim1UMyeBr901inqEf4dqNluSDE8wK3Vq32vN0cdx1oY
+         P44aECXRy63Bw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 25049E270E3;
+        Fri, 21 Oct 2022 00:41:15 +0000 (UTC)
+Subject: Re: [GIT PULL] Networking for 6.1-rc2
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20221020130114.34410-1-pabeni@redhat.com>
+References: <20221020130114.34410-1-pabeni@redhat.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20221020130114.34410-1-pabeni@redhat.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.1-rc2
+X-PR-Tracked-Commit-Id: 7f378c03aa4952507521174fb0da7b24a9ad0be6
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 6d36c728bc2e2d632f4b0dea00df5532e20dfdab
+Message-Id: <166631287514.10394.5130973453682128292.pr-tracker-bot@kernel.org>
+Date:   Fri, 21 Oct 2022 00:41:15 +0000
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -55,33 +60,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 20 Oct 2022 10:33:57 +0800 Zhengchao Shao wrote:
-> Fixes: 8fb4bc6fd5bd ("netdevsim: rename devlink.c to dev.c to contain per-dev(asic) items")
+The pull request you sent on Thu, 20 Oct 2022 15:01:14 +0200:
 
-Looks like a rename patch.
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.1-rc2
 
-The Fixes tag must point to the commit which introduced the bug.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/6d36c728bc2e2d632f4b0dea00df5532e20dfdab
 
-> diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-> index 794fc0cc73b8..39231c5319de 100644
-> --- a/drivers/net/netdevsim/dev.c
-> +++ b/drivers/net/netdevsim/dev.c
-> @@ -1554,7 +1554,7 @@ int nsim_drv_probe(struct nsim_bus_dev *nsim_bus_dev)
->  
->  	err = nsim_dev_resources_register(devlink);
->  	if (err)
-> -		goto err_vfc_free;
-> +		goto err_dl_unregister;
+Thank you!
 
-It's better to add the devl_resources_unregister() call to the error
-path of nsim_dev_resources_register(). There should be no need to clean
-up after functions when they fail.
-
->  	err = devlink_params_register(devlink, nsim_devlink_params,
->  				      ARRAY_SIZE(nsim_devlink_params));
-> @@ -1627,7 +1627,6 @@ int nsim_drv_probe(struct nsim_bus_dev *nsim_bus_dev)
->  				  ARRAY_SIZE(nsim_devlink_params));
->  err_dl_unregister:
->  	devl_resources_unregister(devlink);
-> -err_vfc_free:
->  	kfree(nsim_dev->vfconfigs);
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
