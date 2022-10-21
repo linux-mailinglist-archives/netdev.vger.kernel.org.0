@@ -2,441 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B85B6081C6
-	for <lists+netdev@lfdr.de>; Sat, 22 Oct 2022 00:41:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B74766081DF
+	for <lists+netdev@lfdr.de>; Sat, 22 Oct 2022 00:56:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229965AbiJUWln (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 18:41:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40536 "EHLO
+        id S229633AbiJUW4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 18:56:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229952AbiJUWlm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 18:41:42 -0400
-Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E142892CB;
-        Fri, 21 Oct 2022 15:41:40 -0700 (PDT)
-Received: by mail-oi1-f180.google.com with SMTP id g130so4780076oia.13;
-        Fri, 21 Oct 2022 15:41:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Ryaf/nHDVcA/eQWFjnz2HeLV82v94Yc8HmkS0sZ9140=;
-        b=3FuSAFo9o0K5f+FbwouKnIIeWc0rro0f8TigD0B41u/0Bd9Bqnk7DJxdU9zyqNrtve
-         x3h9XofNnN87btBp568tMkzzfuUNW3tYUpmIX/ScJYZ9YtyKu/+Tr5RP2/TxyGGUa323
-         ho7WeOx/4ipTsPaFDhH4ksHMUcM64QVLwJjqn57O+/H1QjmHNVGUzUOTbiEPIsLlQucH
-         NI3EEqRX8hGOiEDkgJz1wAWVxOCKV7hKhGGtpYpdDykZd/RaNtw6PzfOc4MTwSXxrAiV
-         Yi1eVqN+3eTnu+3Qf2SUahYSZr77qj77+90kybJbCPlX6FbF0T8F+nvyiGuHuCBKX8s/
-         Mr4Q==
-X-Gm-Message-State: ACrzQf3hhxZ+1g5xVmc4NNFrMHW4oYo2UOqwcVIInOZoEnR7JGNemdNW
-        Y+P77OQNJglF/U7qavfG4g==
-X-Google-Smtp-Source: AMsMyM6TS4WdNKukLr6w1bc4tvmj8BCa0q5TVhC669ruBejn8dfeAcDtEB9g0XfM3sKjLIGa7+E5iA==
-X-Received: by 2002:a05:6808:2209:b0:354:68e4:fd28 with SMTP id bd9-20020a056808220900b0035468e4fd28mr25458920oib.250.1666392099919;
-        Fri, 21 Oct 2022 15:41:39 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id l24-20020a4a3518000000b00432ac97ad09sm9150784ooa.26.2022.10.21.15.41.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Oct 2022 15:41:39 -0700 (PDT)
-Received: (nullmailer pid 586928 invoked by uid 1000);
-        Fri, 21 Oct 2022 22:41:40 -0000
-Date:   Fri, 21 Oct 2022 17:41:40 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
-        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, matthias.bgg@gmail.com,
-        linux-mediatek@lists.infradead.org, lorenzo.bianconi@redhat.com,
-        Bo.Jiao@mediatek.com, sujuan.chen@mediatek.com,
-        ryder.Lee@mediatek.com, evelyn.tsai@mediatek.com,
-        devicetree@vger.kernel.org, daniel@makrotopia.org
-Subject: Re: [PATCH net-next 2/6] dt-bindings: net: mediatek: add WED RX
- binding for MT7986 eth driver
-Message-ID: <20221021224140.GA574155-robh@kernel.org>
-References: <cover.1666368566.git.lorenzo@kernel.org>
- <7a454984f0001a71964114b71f353cb47af95ee6.1666368566.git.lorenzo@kernel.org>
+        with ESMTP id S229514AbiJUW4I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 18:56:08 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-eastusazon11020019.outbound.protection.outlook.com [52.101.51.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C56B325E0A0;
+        Fri, 21 Oct 2022 15:55:56 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HnamNShl5W7Cwrbp+T121CUJ0d8sNubVTizurCL1WtcxV7OL61lmR4I03auO90svhQgFK7XgbWZgeG4O0e0BdQO9LvO1tPWjeJp/5+uAIydjYsMs3pXmB7jegBiuhOOrGLqZ7TCrJwski7DUZdIknaf0GizX9Wc99YL+jpCedWwlu3GvLUsIqJAD00drsKTPG12eHZsQ+3EQ3/2wXy8fv5li2qjjhfSgsdm0lLUoCdeDT7QrPy0850JNprNAoamEChWACHln4wXdatvuY5rYG2t2qiwuMGvs3iwZ0xA8aK6kOhFDgv9uAxwQA6EiyEOSLGtqBI2IsjMsl86rdkT0eg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=G+Is4lSVZsFEteOtvBd3YIty6Xw0pJ1xSnPUCbyisGI=;
+ b=Qzhzre57qxwCwvRA+2DrAAunvJiqhsr6aDOlAeZdOa2lT7AA6qAFmI3vb11ZxDEmXtxhQG8ULxnxSXyLpEhMLHKXW6w+FQnQUQyHdAusTXTefkNiBqCFYfblrw2G8vzDePCYMvkTJdZfps6Z+PIMhoXDfiLPir8RkK227UEncPT+K+XzS9cvM8G0LCwrqbvXL7GRsUh/antMb2ldb3hmgcDmzJX9RdX7XGRkbfUrT1ApBncr/XI+uTJaZfCC4oqvORtoIhgkbXLVIuoGwpQP6lzarBolCHtmZfxiQLVUP/TxQbIEDUXa5f9OOqItuxGsghwef/oHPL1Gf3ePSoYHkg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=G+Is4lSVZsFEteOtvBd3YIty6Xw0pJ1xSnPUCbyisGI=;
+ b=Vsh2ZxnA0ndezsJ7dfZfvyYu7ElqobAm+S1KAwMZ2Oek4875d1tbW2nyutIOuZ8WFuGNoywQJiYyh74uxoAaYDhGYKY8zyerpXlGHQa1ieboHmqQRN9pR8jsWJftpi0wTX+bRq6HCYHC/t2gkYoBQYR+D/BOztWvEofETjnQ98A=
+Received: from PH7PR21MB3263.namprd21.prod.outlook.com (2603:10b6:510:1db::16)
+ by IA1PR21MB3402.namprd21.prod.outlook.com (2603:10b6:208:3e1::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.6; Fri, 21 Oct
+ 2022 22:55:54 +0000
+Received: from PH7PR21MB3263.namprd21.prod.outlook.com
+ ([fe80::c376:127c:aa44:f3c8]) by PH7PR21MB3263.namprd21.prod.outlook.com
+ ([fe80::c376:127c:aa44:f3c8%7]) with mapi id 15.20.5769.006; Fri, 21 Oct 2022
+ 22:55:53 +0000
+From:   Long Li <longli@microsoft.com>
+To:     Bernard Metzler <BMT@zurich.ibm.com>, tom <tom@talpey.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
+        Ajay Sharma <sharmaajay@microsoft.com>
+CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Subject: RE: [Patch v8 12/12] RDMA/mana_ib: Add a driver for Microsoft Azure
+ Network Adapter
+Thread-Topic: [Patch v8 12/12] RDMA/mana_ib: Add a driver for Microsoft Azure
+ Network Adapter
+Thread-Index: AQHY5AmQQ427gtVraEOIJ5+rCERFPa4XHQ2AgACeAYCAATEdAIAAAKcAgACKjjA=
+Date:   Fri, 21 Oct 2022 22:55:53 +0000
+Message-ID: <PH7PR21MB3263A40A380B9D7F00F02529CE2D9@PH7PR21MB3263.namprd21.prod.outlook.com>
+References: <1666218252-32191-1-git-send-email-longli@linuxonhyperv.com>
+ <1666218252-32191-13-git-send-email-longli@linuxonhyperv.com>
+ <SA0PR15MB39198F9538CBDC8A88D63DF0992A9@SA0PR15MB3919.namprd15.prod.outlook.com>
+ <PH7PR21MB3263D4CFF3B0AAB0C4FAE5D5CE2A9@PH7PR21MB3263.namprd21.prod.outlook.com>
+ <9af99f89-8f1d-b83f-6e77-4e411223f412@talpey.com>
+ <SA0PR15MB3919DE8DE2C407D8E8A07E1F992D9@SA0PR15MB3919.namprd15.prod.outlook.com>
+In-Reply-To: <SA0PR15MB3919DE8DE2C407D8E8A07E1F992D9@SA0PR15MB3919.namprd15.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=266bb13f-4e91-409b-a8a0-a180da70baf2;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-10-21T22:51:58Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH7PR21MB3263:EE_|IA1PR21MB3402:EE_
+x-ms-office365-filtering-correlation-id: f399286d-928d-4634-5ce8-08dab3b7686a
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ZEwQox/9F56GU4R2sAhjZzV/5vP7lbFoeOOp2eKPf6B0F50cZEDS/2vPeyfvDE7ZsuVZweUQCxeTt+FU4ojKzo61+SQuTvOgra/dqMlXGaU/7wyHFHK/BlayL64biFz8bN4F+QQytfxsUN+Q9TjS5OCsTRgL7aL2MHszostRw1HtNzMqvoUzYIEZ6G5q5CdVQYOL0rrkshG4RrCu5XSqJWk6mMXDfGY9jXSCDZiXOKlEY9zHqADLKzo3k9pcnL1poXYRt54vNJwBHAc1kZTBE9HfEHh/tUWfentJ3Ul5K1C1Bu8UfKY1xuaeWvn+LdbXYK/q0jhNvbPkKfCYDvzyv4bygJd5hz+aA32TiLVcHM/10q4X2wgtx1k9ztbpPNaQ8+4fUtMaC+m7o9plMaPm4y5pnG+G/N7ozO5kS2ayCgXJiifRsbHD114ANRAySFcoVRDiiHfN4wznJRLZsSslS1bnoKYRkFhLUD49xBpDwbvwHv8AQqgOl82qBbxJW3zfsVSlisucjgyC31SStu+XP+YIA0CYHtM34i/GPBJWeKB9qs4Js1uerTaJjX+nED8SZHuEJ9K1cMJ5uIgZS6MnGPwDC1NKuwh5fkR+hV8zCXyLTlbyA2PrCZ00NsE27JZMksf6y/tkDDb6VBtvFM3PDb10Nv6KvkRtFjId8Ro1GJ02Sy6JQ7chV30G3ZM8TUo3vpeVQZHHEF70ycnxZrtEzuIv2dXclXsI3oQrrMVNhy/pGi3WQOciL5qWncWWDQDP6TiyjYB73zX+oyxDWvg1yCJHTEQ1rYPWG0/GZLBQsqwM8x4qoqTZHRkzru5aIEBqzkxrchDkYv7+XRq4pgoNwA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR21MB3263.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(366004)(376002)(39860400002)(346002)(396003)(47530400004)(451199015)(4744005)(38100700002)(7416002)(8990500004)(33656002)(86362001)(82950400001)(41300700001)(66946007)(8936002)(82960400001)(66476007)(52536014)(66446008)(8676002)(64756008)(38070700005)(6636002)(316002)(71200400001)(54906003)(6506007)(76116006)(4326008)(921005)(26005)(122000001)(478600001)(10290500003)(7696005)(5660300002)(9686003)(186003)(55016003)(110136005)(2906002)(66556008)(83380400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Z3dhUk5Ca0x1amQvY3RoNG0ySDVKcGdxNWtNUzM5a0h2Mm03d1R5TFA2VERy?=
+ =?utf-8?B?UER2NkNSUkVLeEFxR213S2wrU0dtR014RGFlRkRvVnp4NXFPYnFSbmN0Rlls?=
+ =?utf-8?B?RUovUHpuT09rTkhDVnFhcURkdHVjSmpXNk9MaDh0TERCSUU3djV1WHh2N012?=
+ =?utf-8?B?V2ZscUJhanZCeTBKUnZoY3B3dnYvWGtyYXhzdFRvSXQ5VE9qUjhRVkV1Q2VI?=
+ =?utf-8?B?cC9tbm44aS9uNG1ScDdZb043Zys2TkxTM3ZHd20wZ2NCcU5pTHZoS1plWnFz?=
+ =?utf-8?B?UHd3bWZsRG8xbXhQdS95cW1jV3JmZlNnbDZIWncwRFV5NDNLRXpBdkx0TE5y?=
+ =?utf-8?B?UHNiUjVxcDdYa29lZER0N0ZSRC9QVS9yWGZJY0dnaXNhL0NuUnJCVVlsN3VM?=
+ =?utf-8?B?Q2lNcHloeSsxOHFoOUtTQXIvQnJEUFU3YnZMMUkrNHY2WmZhYUVnMTY1OTZ6?=
+ =?utf-8?B?TEhvbHRpRWxUZUQ1SFhRM1lnR240N0tDTzVTclphZTcyeG12ZlM1NE4rZzh5?=
+ =?utf-8?B?ejRiWm5yUTB0Z0ZYV01wSkNBdWNRTU9HTHJvWkErbUlTaUFqTkVBcGxQRzJW?=
+ =?utf-8?B?dENFbm9Zc0xjZGxIdUpEUU9uTXI3YnZlSFFET2tFakZOZUY4d0FmeUcwY2oy?=
+ =?utf-8?B?ZEdBbW5zcmVXZWxrYUYrYXZQNVd0TGRTZ2JnRzdLNDdGRlRsY0o4RGJ5WHpX?=
+ =?utf-8?B?eTlJYnNGNTU5RjlRV1I2VGp0VlBZZmNLMUo0Ky9INlBYaE5HRmRudTVpY0xE?=
+ =?utf-8?B?SW1XUUVtUy9JTERzcmJNRkxsR2JqdjI1QlZyTHlPQTltUUk4OG85QjJIVGI5?=
+ =?utf-8?B?RGgwRHYxREpTQTBjRmUxT2pRSGs4UVBqc0VscmRtc1dVS3kvZDA4Wnc0VDF4?=
+ =?utf-8?B?SjUyUHhqZDBUUWhpUDdhRlZTMVJzUVVlbDNpanZNc0dhTHI4MXZaM00rNzdB?=
+ =?utf-8?B?WGdQSWd3N1BoenFFZENmK1BvNkdmYkVLejlWeXMxYXFLUzhOOUlYemNZc0dv?=
+ =?utf-8?B?SE5hNUZHRG4yK2x5Y1hkMGc1TXl2ZkM2SnpUN2xkT2JSbTMvMjRIZDVzZUpU?=
+ =?utf-8?B?Ky9NalZ6TEl0UVFoUVI5RzVwRmlRMVBBa284Wi9RS09KWEs1M3VyUGdwUWEx?=
+ =?utf-8?B?R054YzU1cnU2eWZXTXgvNjdQSzA0OHdzOHRDdTA0Yk15VVYzRHVlMVpBdjdk?=
+ =?utf-8?B?cW9lWnc0YUNEMHhTV0Nnc1dnQnE4RWVWTzZUZnJMZDVsNDJQQzcxWElxMllh?=
+ =?utf-8?B?VllXTThRb3A5QW45RHJ6K3Q0OGQ2SUsvQWxiOUNZa1U3M1NSTXd2WlVwL1Fk?=
+ =?utf-8?B?ZTJxbXpnNTFtWUJqc25YR2VwamdIWUkwak5yT1VabFNzZEphNG5LQTYvT3I0?=
+ =?utf-8?B?RU9RaVNCeXJpKzV5N0F4M0lxT1F0SVhRWk9iZ2VKbXBWV3VYdmFkb2hsMS8v?=
+ =?utf-8?B?cDFXdTFVYzIvQlhKNXpzZWRsTlptMGNFZkJwTjhHRU9wTUFTenVpcHpwRjdB?=
+ =?utf-8?B?Q3VxM0VPT21ueEpNSjBKMTBuMVNBSjFrYVdlTzlxQ0dpdXg0MHFNYUo4RUta?=
+ =?utf-8?B?UWdERytoMVZrZnpEdnJXSm9QOUFGSFk1UW0zVHNpNjNudEJOY0Y4Q1hiOEJi?=
+ =?utf-8?B?cEZ2SmE5OTllam1wQlJ1ZXJZdmJRL3VGdGxYTUJDdEs5OW94OENBMHdTcnlG?=
+ =?utf-8?B?UnMwM1I5YlF1T3hzaU1HQkpxZlZHQVVvYXBqeXBZaFJGVmN3Qk5LckhPYVdZ?=
+ =?utf-8?B?VmdmTm1KZnhiSWJVME9VWE5SaHpFaHpCamFXZWRwYkJweTVKYmx1ZGFQU05o?=
+ =?utf-8?B?aDhrZVpncVVUV09IQ1pYRWJiMXg1ZjJHdGNmYmErOVdvUTFXVkd0R2FmNFQ0?=
+ =?utf-8?B?eUxSdm9kT21XWjFJbmoxa3g3R2ova0J5VHhKTjJiNnNJNk0rZWpEOU5nZzdJ?=
+ =?utf-8?B?dllZZi9KTi9ENE9sRHA0M1pIcHhHZ3N2V0hSZ2svUGJyalNpZTFNbVpqbDNJ?=
+ =?utf-8?B?Z3pMNElZTlBnVThjaThvRndPOXBMUWZpdk03TVFhV3JnMHQ2YUlqNG5hbXNj?=
+ =?utf-8?B?YXg2TUxYSlFPSmNiRWtiVldnQVlidHlLM3R0QVdUQnArakxFa1R3dVpTOVRH?=
+ =?utf-8?Q?zUUPLNRcigyYOc7ZOfGm80scI?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7a454984f0001a71964114b71f353cb47af95ee6.1666368566.git.lorenzo@kernel.org>
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.6
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR21MB3263.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f399286d-928d-4634-5ce8-08dab3b7686a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Oct 2022 22:55:53.8378
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: DsW9nma91iKiV3XE+QF4JBkPRFpvO8VqpcfvrFRB//TVzB0JrLOdKpKKmpaCpaMdcM8sJ/q7Aohaab5jCcMhLg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR21MB3402
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 21, 2022 at 06:18:32PM +0200, Lorenzo Bianconi wrote:
-> Document the binding for the RX Wireless Ethernet Dispatch core on the
-> MT7986 ethernet driver used to offload traffic received by WLAN NIC and
-> forwarded to LAN/WAN one.
-> 
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->  .../arm/mediatek/mediatek,mt7622-wed.yaml     | 126 ++++++++++++++++++
->  .../arm/mediatek/mediatek,mt7986-wo-boot.yaml |  45 +++++++
->  .../arm/mediatek/mediatek,mt7986-wo-ccif.yaml |  49 +++++++
->  .../arm/mediatek/mediatek,mt7986-wo-dlm.yaml  |  66 +++++++++
->  4 files changed, 286 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-boot.yaml
->  create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-ccif.yaml
->  create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-dlm.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
-> index 84fb0a146b6e..623f11df5545 100644
-> --- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
-> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
-> @@ -29,6 +29,59 @@ properties:
->    interrupts:
->      maxItems: 1
->  
-> +  mediatek,wocpu_emi:
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    maxItems: 1
-> +    description:
-> +      Phandle to a node describing reserved memory used by mtk wed firmware
-> +      (see bindings/reserved-memory/reserved-memory.txt)
-
-What does that file contain?
-
-There's a standard property to refer to reserved-memory nodes, use it.
-
-> +
-> +  mediatek,wocpu_data:
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    maxItems: 1
-> +    description:
-> +      Phandle to a node describing reserved memory used by mtk wed firmware
-> +      (see bindings/reserved-memory/reserved-memory.txt)
-> +
-> +  mediatek,wocpu_ilm:
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    maxItems: 1
-> +    description:
-> +      Phandle to a node describing memory used by mtk wed firmware
-> +
-> +  mediatek,ap2woccif:
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    maxItems: 1
-> +    description:
-> +      Phandle to the mediatek wed-wo controller.
-> +
-> +  mediatek,wocpu_boot:
-
-s/_/-/
-
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    maxItems: 1
-> +    description:
-> +      Phandle to the mediatek wed-wo boot interface.
-> +
-> +  mediatek,wocpu_dlm:
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    maxItems: 1
-> +    description:
-> +      Phandle to the mediatek wed-wo rx hw ring.
-> +
-> +allOf:
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: mediatek,mt7986-wed
-> +    then:
-> +      properties:
-> +        mediatek,wocpu_data: true
-> +        mediatek,wocpu_boot: true
-> +        mediatek,wocpu_emi: true
-> +        mediatek,wocpu_ilm: true
-> +        mediatek,ap2woccif: true
-> +        mediatek,wocpu_dlm: true
-> +
->  required:
->    - compatible
->    - reg
-> @@ -49,3 +102,76 @@ examples:
->          interrupts = <GIC_SPI 214 IRQ_TYPE_LEVEL_LOW>;
->        };
->      };
-> +
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    #include <dt-bindings/reset/ti-syscon.h>
-> +    soc {
-> +      #address-cells = <2>;
-> +      #size-cells = <2>;
-> +      reserved-memory {
-> +        #address-cells = <2>;
-> +        #size-cells = <2>;
-> +        wocpu0_emi: wocpu0_emi@4fd00000 {
-> +          reg = <0 0x4fd00000 0 0x40000>;
-> +          no-map;
-> +        };
-> +
-> +        wocpu_data: wocpu_data@4fd80000 {
-> +          reg = <0 0x4fd80000 0 0x240000>;
-> +          no-map;
-> +        };
-> +      };
-> +
-> +      ethsys: syscon@15000000 {
-> +        #address-cells = <1>;
-> +        #size-cells = <1>;
-> +        compatible = "mediatek,mt7986-ethsys", "syscon";
-> +        reg = <0 0x15000000 0 0x1000>;
-> +
-> +        #clock-cells = <1>;
-> +        #reset-cells = <1>;
-> +        ethsysrst: reset-controller {
-> +          compatible = "ti,syscon-reset";
-> +          #reset-cells = <1>;
-> +          ti,reset-bits = <0x34 4 0x34 4 0x34 4 (ASSERT_SET | DEASSERT_CLEAR | STATUS_SET)>;
-> +        };
-
-You don't need to show providers in examples. Presumably we already have 
-an example of them in their binding.
-
-> +      };
-> +
-> +      wocpu0_ilm: wocpu0_ilm@151e0000 {
-> +        compatible = "mediatek,wocpu0_ilm";
-> +        reg = <0 0x151e0000 0 0x8000>;
-> +      };
-> +
-> +      cpu_boot: wocpu_boot@15194000 {
-> +        compatible = "mediatek,wocpu_boot", "syscon";
-> +        reg = <0 0x15194000 0 0x1000>;
-> +      };
-> +
-> +      ap2woccif0: ap2woccif@151a5000 {
-> +        compatible = "mediatek,ap2woccif", "syscon";
-> +        reg = <0 0x151a5000 0 0x1000>;
-> +        interrupts = <GIC_SPI 211 IRQ_TYPE_LEVEL_HIGH>;
-> +      };
-> +
-> +      wocpu0_dlm: wocpu_dlm@151e8000 {
-> +        compatible = "mediatek,wocpu_dlm";
-> +        reg = <0 0x151e8000 0 0x2000>;
-> +        resets = <&ethsysrst 0>;
-> +        reset-names = "wocpu_rst";
-> +      };
-> +
-> +      wed1: wed@1020a000 {
-> +        compatible = "mediatek,mt7986-wed","syscon";
-> +        reg = <0 0x15010000 0 0x1000>;
-> +        interrupts = <GIC_SPI 205 IRQ_TYPE_LEVEL_HIGH>;
-> +
-> +        mediatek,wocpu_data = <&wocpu_data>;
-> +        mediatek,ap2woccif = <&ap2woccif0>;
-> +        mediatek,wocpu_ilm = <&wocpu0_ilm>;
-> +        mediatek,wocpu_dlm = <&wocpu0_dlm>;
-> +        mediatek,wocpu_emi = <&wocpu_emi>;
-> +        mediatek,wocpu_boot = <&cpu_boot>;
-> +      };
-> +    };
-> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-boot.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-boot.yaml
-> new file mode 100644
-> index 000000000000..dc8fdb706960
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-boot.yaml
-> @@ -0,0 +1,45 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/arm/mediatek/mediatek,mt7986-wo-boot.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: MediaTek WED WO boot controller interface for MT7986
-
-What is 'WED'?
-
-> +
-> +maintainers:
-> +  - Lorenzo Bianconi <lorenzo@kernel.org>
-> +  - Felix Fietkau <nbd@nbd.name>
-> +
-> +description:
-> +  The mediatek wo-boot provides a configuration interface for WED WO
-> +  boot controller on MT7986 soc.
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - enum:
-> +          - mediatek,wocpu_boot
-
-This needs to be SoC specific.
-
-And s/_/-/
-
-> +      - const: syscon
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    soc {
-> +      #address-cells = <2>;
-> +      #size-cells = <2>;
-> +      cpu_boot: wocpu_boot@15194000 {
-> +        compatible = "mediatek,wocpu_boot", "syscon";
-> +        reg = <0 0x15194000 0 0x1000>;
-> +      };
-> +    };
-> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-ccif.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-ccif.yaml
-> new file mode 100644
-> index 000000000000..8fea86425983
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-ccif.yaml
-> @@ -0,0 +1,49 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/arm/mediatek/mediatek,mt7986-wo-ccif.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: MediaTek WED WO Controller for MT7986
-> +
-> +maintainers:
-> +  - Lorenzo Bianconi <lorenzo@kernel.org>
-> +  - Felix Fietkau <nbd@nbd.name>
-> +
-> +description:
-> +  The mediatek WO-ccif provides a configuration interface for WED WO
-> +  controller on MT7986 soc.
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - enum:
-> +          - mediatek,ap2woccif
-
-SoC specific.
-
-> +      - const: syscon
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    soc {
-> +      #address-cells = <2>;
-> +      #size-cells = <2>;
-> +      ap2woccif0: ap2woccif@151a5000 {
-> +        compatible = "mediatek,ap2woccif", "syscon";
-> +        reg = <0 0x151a5000 0 0x1000>;
-> +        interrupts = <GIC_SPI 205 IRQ_TYPE_LEVEL_HIGH>;
-> +      };
-> +    };
-> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-dlm.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-dlm.yaml
-> new file mode 100644
-> index 000000000000..529343c57e4b
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-dlm.yaml
-> @@ -0,0 +1,66 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/arm/mediatek/mediatek,mt7986-wo-dlm.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: MediaTek WED WO hw rx ring interface for MT7986
-> +
-> +maintainers:
-> +  - Lorenzo Bianconi <lorenzo@kernel.org>
-> +  - Felix Fietkau <nbd@nbd.name>
-> +
-> +description:
-> +  The mediatek WO-dlm provides a configuration interface for WED WO
-> +  rx ring on MT7986 soc.
-> +
-> +properties:
-> +  compatible:
-> +    const: mediatek,wocpu_dlm
-
-Soc specific
-
-s/_/-/
-
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  resets:
-> +    maxItems: 1
-> +
-> +  reset-names:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - resets
-> +  - reset-names
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/reset/ti-syscon.h>
-> +    soc {
-> +      #address-cells = <2>;
-> +      #size-cells = <2>;
-> +
-> +      ethsys: syscon@15000000 {
-> +        #address-cells = <1>;
-> +        #size-cells = <1>;
-> +        compatible = "mediatek,mt7986-ethsys", "syscon";
-> +        reg = <0 0x15000000 0 0x1000>;
-> +
-> +        #clock-cells = <1>;
-> +        #reset-cells = <1>;
-> +        ethsysrst: reset-controller {
-> +          compatible = "ti,syscon-reset";
-> +          #reset-cells = <1>;
-> +          ti,reset-bits = <0x34 4 0x34 4 0x34 4 (ASSERT_SET | DEASSERT_CLEAR | STATUS_SET)>;
-> +        };
-> +      };
-
-Again, don't need the provider here.
-
-> +
-> +      wocpu0_dlm: wocpu_dlm@151e8000 {
-> +        compatible = "mediatek,wocpu_dlm";
-> +        reg = <0 0x151e8000 0 0x2000>;
-> +        resets = <&ethsysrst 0>;
-> +        reset-names = "wocpu_rst";
-> +      };
-> +    };
-> -- 
-> 2.37.3
-> 
-> 
+PiA+IFRoZSB1cHBlciA4IGJpdHMgb2YgYW4gaWJfbXIgcmVtb3RlIHRva2VuIGFyZSByZXNlcnZl
+ZCBmb3IgdXNlIGFzIGENCj4gPiByb3RhdGluZyBrZXksIHRoaXMgYWxsb3dzIGEgY29uc3VtZXIg
+dG8gbW9yZSBzYWZlbHkgcmV1c2UgYW4gaWJfbXINCj4gPiB3aXRob3V0IGhhdmluZyB0byBvdmVy
+YWxsb2NhdGUgbGFyZ2UgcmVnaW9uIHBvb2xzLg0KPiA+DQo+ID4gVG9tLg0KPiANCj4gUmlnaHQs
+IG15IHBvaW50IHdhcyB0aGF0IG9uZSBjYW5ub3QgZW5jb2RlIElOVF9NQVggZGlmZmVyZW50IE1S
+DQo+IGlkZW50aWZpZXJzIGludG8gMzIgLSA4ID0gMjQgYml0cy4NCj4gDQo+IEJlc3QsDQo+IEJl
+cm5hcmQuDQoNClRoZSBoYXJkd2FyZSBleHBvc2VzIHRoZSBudW1iZXIgb2YgTVJzIHRoYXQgZXhj
+ZWVkcyBVSU5UMzJfTUFYLg0KVGhlcmUgaXMgbm8gc29mdHdhcmUgc3RhY2sgbGltaXQgZnJvbSBo
+YXJkd2FyZSBwZXJzcGVjdGl2ZS4NCg0KSW4gdGhpcyBjYXNlLCBtYXliZSBpdCdzIGEgZ29vZCBp
+ZGVhIHRvIHNldCBpdCB0byAweEZGRkZGRi4gSSdtIG1ha2luZyB0aGUgY2hhbmdlLg0KDQpUaGFu
+a3MsDQpMb25nDQo=
