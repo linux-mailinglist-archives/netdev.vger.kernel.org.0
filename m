@@ -2,107 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A5CD607662
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 13:41:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0074F607694
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 13:56:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230226AbiJULlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 07:41:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38748 "EHLO
+        id S229919AbiJUL4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 07:56:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230156AbiJULlA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 07:41:00 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 165931E8B8A;
-        Fri, 21 Oct 2022 04:40:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ybzj+4INELQ+p10Y7K/jRSkq7s5IXHsyCClX4FS/l14=; b=F2+zcW8NX3aYgLlejVS2joun3r
-        cnmlcNvTL3nMYgQY7GkQpFApFoz44GGlQWZHwEkSi95aUNkzJBxNSGCPhORGM3aE751T/TtnrgiEn
-        RwFzIcPrbWy2phovgkzgpy5TaWRvz5bTyCsQSTBundZzGkYHA1sJIFQCoO5nFdfqoHi5p7T+jZAWu
-        KHEsmUF7hRWuG/Nu+8gga/kd9/B4ncS1S3ElH2yqHWLbRWWtCnJsZPjwFtVJuvac3McqEnZsEhwK1
-        8K6092yiN3hd9Unz8UitPmn2i63TD2xt1eLJPPUGP/XD8OlrtLuiyq5rO5X1mZvLlchZSHkc7v28V
-        xGc2YRbg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34860)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1olqOT-00008I-FO; Fri, 21 Oct 2022 12:40:53 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1olqOR-00048B-B4; Fri, 21 Oct 2022 12:40:51 +0100
-Date:   Fri, 21 Oct 2022 12:40:51 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, lxu@maxlinear.com,
-        hkallweit1@gmail.com, pabeni@redhat.com, edumazet@google.com,
-        UNGLinuxDriver@microchip.com, andrew@lunn.ch,
-        Ian.Saturley@microchip.com
-Subject: Re: [PATCH net-next] net: phy: mxl-gpy: Add PHY Auto/MDI/MDI-X set
- driver for GPY211 chips
-Message-ID: <Y1KFQ3emJhg8gXOj@shell.armlinux.org.uk>
-References: <20221021100305.6576-1-Raju.Lakkaraju@microchip.com>
+        with ESMTP id S229832AbiJUL4e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 07:56:34 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04DA5263964;
+        Fri, 21 Oct 2022 04:56:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1666353390; x=1697889390;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Rtll0/nGhqW301uS5yfdR9R0zXk9od1cA+YGVzH/vYA=;
+  b=nbDCEMIUyrpr7IwTriwxi2GG3V1yrfAV2H8ITQ47fIwv17waLH0XzhPt
+   xoWEYk9migK/zxJ1IVq1xzNp6VyZIiZ1nsQGfIGZofCXcEs18FZSYppGy
+   /7Z5cDkPFjdBfsdvh813ony9wpEZSTPt6J8fSeskAkFIpaSEH9ffwxgpT
+   l2bZIohdckV3AxUCzJ8ZWdqURP/e7U7IrEwyvqX3Mpbr0hLCrM7kxjlLu
+   9/DCXbcnSIZ8PNyjX2OQIFfnFCrJOaCTYRcbgYchQxVCD83OWe8KjCyDy
+   EPc7LVFF613ukw/FrglpAxbwqacLNVXbeTicejdmFtyZwwCUucFbpZTJf
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10506"; a="393286599"
+X-IronPort-AV: E=Sophos;i="5.95,200,1661842800"; 
+   d="scan'208";a="393286599"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2022 04:56:28 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10506"; a="632891119"
+X-IronPort-AV: E=Sophos;i="5.95,200,1661842800"; 
+   d="scan'208";a="632891119"
+Received: from junxiaochang.bj.intel.com ([10.238.135.52])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2022 04:56:25 -0700
+From:   Junxiao Chang <junxiao.chang@intel.com>
+To:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, mcoquelin.stm32@gmail.com,
+        Joao.Pinto@synopsys.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     junxiao.chang@intel.com
+Subject: [PATCH net-next 1/2] net: stmmac: fix unsafe MTL DMA macro
+Date:   Fri, 21 Oct 2022 19:47:10 +0800
+Message-Id: <20221021114711.1610797-1-junxiao.chang@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221021100305.6576-1-Raju.Lakkaraju@microchip.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Macro like "#define abc(x) (x, x)" is unsafe which might introduce
+side effects. Each MTL RxQ DMA channel mask is 4 bits, so using
+(0xf << chan) instead of GENMASK(x + 3, x) to avoid unsafe macro.
 
-On Fri, Oct 21, 2022 at 03:33:05PM +0530, Raju Lakkaraju wrote:
-> @@ -370,6 +415,38 @@ static int gpy_config_aneg(struct phy_device *phydev)
->  			      VSPEC1_SGMII_CTRL_ANRS, VSPEC1_SGMII_CTRL_ANRS);
->  }
->  
-> +static void gpy_update_mdix(struct phy_device *phydev)
-> +{
-> +	int ret;
-> +
-> +	ret = phy_read(phydev, PHY_CTL1);
-> +	if (ret < 0) {
-> +		phydev_err(phydev, "Error: MDIO register access failed: %d\n",
-> +			   ret);
-> +		return;
-> +	}
-> +
-> +	if (ret & PHY_CTL1_AMDIX)
-> +		phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
-> +	else
-> +		if (ret & PHY_CTL1_MDICD || ret & PHY_CTL1_MDIAB)
-> +			phydev->mdix_ctrl = ETH_TP_MDI_X;
-> +		else
-> +			phydev->mdix_ctrl = ETH_TP_MDI;
+Fixes: d43042f4da3e ("net: stmmac: mapping mtl rx to dma channel")
+Signed-off-by: Junxiao Chang <junxiao.chang@intel.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac4.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I think this would be better formatted as:
-
-	if (...)
-		...
-	else if (...)
-		...
-	else
-		...
-
-We don't indent unless there's braces, and if there's braces, coding
-style advises braces on both sides of the "else". So, much better to
-use the formatting I suggest above.
-
-Apart from that, nothing stands out as being wrong in this patch.
-
-Thanks.
-
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
+index 71dad409f78b0..3c1490408a1c3 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
+@@ -333,7 +333,7 @@ enum power_event {
+ #define MTL_RXQ_DMA_MAP1		0x00000c34 /* queue 4 to 7 */
+ #define MTL_RXQ_DMA_Q04MDMACH_MASK	GENMASK(3, 0)
+ #define MTL_RXQ_DMA_Q04MDMACH(x)	((x) << 0)
+-#define MTL_RXQ_DMA_QXMDMACH_MASK(x)	GENMASK(11 + (8 * ((x) - 1)), 8 * (x))
++#define MTL_RXQ_DMA_QXMDMACH_MASK(x)	(0xf << 8 * (x))
+ #define MTL_RXQ_DMA_QXMDMACH(chan, q)	((chan) << (8 * (q)))
+ 
+ #define MTL_CHAN_BASE_ADDR		0x00000d00
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.25.1
+
