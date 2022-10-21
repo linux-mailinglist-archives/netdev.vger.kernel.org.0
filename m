@@ -2,74 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 597DA607E2D
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 20:17:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59F75607E32
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 20:18:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230177AbiJUSRG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 14:17:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44784 "EHLO
+        id S230162AbiJUSSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 14:18:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229928AbiJUSRF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 14:17:05 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBF25FD04
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 11:17:03 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id d142so2982735iof.7
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 11:17:03 -0700 (PDT)
+        with ESMTP id S229761AbiJUSSy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 14:18:54 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFFD95FC2;
+        Fri, 21 Oct 2022 11:18:52 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id u21so8941609edi.9;
+        Fri, 21 Oct 2022 11:18:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wvLdmliFR2SKm6eCNwAm/4QIGsn5wXe4C8GHrmUGfXM=;
-        b=oEO8rLolFNNWne18FpRM4cpwYEqfJCmMYpRueQWewdRlV93KrzlFgQJFN2NHciTuxt
-         1EdwW1bruLPOEkJkFFJn6/GVSigF7QTeyejWONJs0fbfYA5dLko85h+vavqJBVGujI3R
-         4ew6riNfdq09qAo7WYPjLmpRhHbQZH1RUF3jY0BElcPELZR4fDf1FRkgPkRHl+OFO3Qc
-         uBmY2nWY6Oym9jPwFLZbHAMWel/JLey4YAqCZlxrdMZnOyVQ4fM3obvMreNIlhwILan8
-         hd1oMx64KoF0qtATV5d+0Nyn/EdgvJ8XatsHqdnSZUgtk1M+l3GysqVbTdmCkgV8AFyY
-         X2HA==
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=HBy852p/eFXTHVwkFlaYMzpbGvpT4Vnv3Ued5+TSdT0=;
+        b=gmJLVnkwL3+648iF7oobHbK+Rl5eRiwbOP/+YztPxkWicIqLQTvyrjgzSiy9HTd7M4
+         2seQ2DnnNHOCBNtXZ5rINSLl9OXcgKKZENY8LBu9QEBNfh8pwaJNzmYdRdzzfiOGi1v7
+         d/B+cFbD85GD4/nwfR1KmVoP2s/G0iuipUu4esi32tTz3o3RzLgSphJFZ77c3EuFAXRd
+         rwIYPT7Mfv1trYAd0c6Fkaiqh+2V3UYx4DPa3JGr26tjC7AKqPeBHuskUYumlcQfZR+b
+         7dVkeEm6hizboBTBaTJYR9+aVREzhcxHyoIZnXdpfhVuG0Sj2J6XNZBLgZAx7HXbeG9e
+         CfBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=wvLdmliFR2SKm6eCNwAm/4QIGsn5wXe4C8GHrmUGfXM=;
-        b=rGXwJ1YVsKnbZXr2ZWee1kIpNGIeHyJH+lCJqx2YXcDMdfpJL05mqOXnbe3KR0p8o4
-         vm+++bNdGMfmxtJyzftNxUkBH1h+HAgL8dDgvA4HY7sgi6J8et447o8+HUDdFwA9UfA2
-         hUxdrGDHRTidjO28y7vdFphpIXN6HFtAjbT6OwUDjrkRsgYGdZbOm8ZSHu4oxoO/x7Nz
-         PE+MGGG5XNg8u1GgKlFpQxkwbqhMSflH7HqgNaV8ZhHscBW6aXz2/JQkpcOtAeia1iPz
-         yAvDajdnV1Gyou4Y5luwW2LQ+4AIcdOG/VAqZLn0P46Gyg0j++HVmD4QanF5VMjmON/3
-         B+nA==
-X-Gm-Message-State: ACrzQf3TIogRkB0HXO/f2IiNQRJyev8E0ab/pNu9GQFN2n4yvVoBgUh3
-        7HRXCPfHimnOjEVIMNUNhe0Mp8u9H3IhU4PpD1PdQw==
-X-Google-Smtp-Source: AMsMyM7J4Kl/L/00vhnDMppduUu47qOi1Je4HGioL9myni1UY1dm0l9AKJbMYFH3WkpsCkch3nWw3SJDG+6HHCf2v68=
-X-Received: by 2002:a05:6638:19c4:b0:363:afc3:b403 with SMTP id
- bi4-20020a05663819c400b00363afc3b403mr16736235jab.144.1666376222288; Fri, 21
- Oct 2022 11:17:02 -0700 (PDT)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=HBy852p/eFXTHVwkFlaYMzpbGvpT4Vnv3Ued5+TSdT0=;
+        b=Vp2lvqEa1XAioiKHcCyOr840y1ExIsMv4bFRbYGEWfL3k1ebNtzsks1MqWKW8d6ptO
+         O83dgOwsPuMfj6IZEzcijqoDCQCXxtP6/IgTD3cBlXdRd/W1HIfMJfI2olU4pqwGuAcZ
+         rve6gACbCo8yz8acTFsDpMUdRx9YRXHcf9KT3ib6V87ZJ8cl/Qsk/kPM1PCqgavX6BOK
+         Z1iiAG9TxR0IcoEieujeZM2+AqQAglyo8Y71zx52IFiG2pnnd0iuRsibE7SFNJ6X4Mtk
+         aWmmVv3QgtSMB5mQ5mZ1SPPkvLQPBXlQQXb9eykkvfQ79AG+cXh8XsKwh9ZKcNUKZ4PY
+         u5wg==
+X-Gm-Message-State: ACrzQf28egm5S5N2IcSKM9DEssA7qkMRp7ldLquK1hzlMJSf6cnbkX5L
+        hXkK9rU8KOwPiA0721keZRCevlVkApH1MzY1Ee9aYE2MCFo=
+X-Google-Smtp-Source: AMsMyM5tP9EcZoBMgjdZMwEr67Y+wX0+oOJLb6VbWoOSvQbk9JuKQ//RzTpAqxWNhMrPap0yP7GvET0EfnRokuzhjbo=
+X-Received: by 2002:a17:907:2cca:b0:78d:ec48:ac29 with SMTP id
+ hg10-20020a1709072cca00b0078dec48ac29mr16544045ejc.114.1666376331530; Fri, 21
+ Oct 2022 11:18:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20221015092448.117563-1-shaozhengchao@huawei.com>
- <CAKH8qBugSdWHP7mtNxrnLLR+56u_0OCx3xQOkJSV-+RUvDAeNg@mail.gmail.com>
- <d830980c-4a38-5537-b594-bc5fb86b0acd@huawei.com> <CAKH8qBtyfS0Otpugn7_ZiG5APA_WTKOVAe1wsFfyaxF-03X=5w@mail.gmail.com>
- <87f67a8c-2fb2-9478-adbb-f55c7a7c94f9@huawei.com>
-In-Reply-To: <87f67a8c-2fb2-9478-adbb-f55c7a7c94f9@huawei.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Fri, 21 Oct 2022 11:16:51 -0700
-Message-ID: <CAKH8qBsOMxVaemF0Oy=vE1V0vKO8ORUcVGB5YANS3HdKOhVjjw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: fix issue that packet only contains l2 is dropped
-To:     shaozhengchao <shaozhengchao@huawei.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, haoluo@google.com,
-        jolsa@kernel.org, oss@lmb.io, weiyongjun1@huawei.com,
-        yuehaibing@huawei.com
+References: <20221003214941.6f6ea10d@kernel.org> <YzvV0CFSi9KvXVlG@krava>
+ <20221004072522.319cd826@kernel.org> <Yz1SSlzZQhVtl1oS@krava>
+ <20221005084442.48cb27f1@kernel.org> <20221005091801.38cc8732@kernel.org>
+ <Yz3kHX4hh8soRjGE@krava> <20221013080517.621b8d83@kernel.org>
+ <Y0iNVwxTJmrddRuv@krava> <CAEf4Bzbow+8-f4rg2LRRRUD+=1wbv1MjpAh-P4=smUPtrzfZ3Q@mail.gmail.com>
+ <Y0kF/radV0cg4JYk@krava>
+In-Reply-To: <Y0kF/radV0cg4JYk@krava>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 21 Oct 2022 11:18:39 -0700
+Message-ID: <CAEf4BzZm2ViaHKiR+4pmWj6yzcPy23q-g_e+cJ90sXuDzkLmSw@mail.gmail.com>
+Subject: Re: WARN: multiple IDs found for 'nf_conn': 92168, 117897 - using 92168
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Martin KaFai Lau <martin.lau@kernel.org>,
+        bpf@vger.kernel.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,149 +73,128 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 21, 2022 at 12:25 AM shaozhengchao <shaozhengchao@huawei.com> w=
-rote:
+On Thu, Oct 13, 2022 at 11:47 PM Jiri Olsa <olsajiri@gmail.com> wrote:
 >
+> On Thu, Oct 13, 2022 at 03:24:59PM -0700, Andrii Nakryiko wrote:
+> > On Thu, Oct 13, 2022 at 3:12 PM Jiri Olsa <olsajiri@gmail.com> wrote:
+> > >
+> > > On Thu, Oct 13, 2022 at 08:05:17AM -0700, Jakub Kicinski wrote:
+> > > > On Wed, 5 Oct 2022 22:07:57 +0200 Jiri Olsa wrote:
+> > > > > > Yeah, it's there on linux-next, too.
+> > > > > >
+> > > > > > Let me grab a fresh VM and try there. Maybe it's my system. Somehow.
+> > > > >
+> > > > > ok, I will look around what's the way to install that centos 8 thing
+> > > >
+> > > > Any luck?
+> > >
+> > > now BTFIDS warnings..
+> > >
+> > > I can see following on centos8 with gcc 8.5:
+> > >
+> > >           BTFIDS  vmlinux
+> > >         WARN: multiple IDs found for 'task_struct': 300, 56614 - using 300
+> > >         WARN: multiple IDs found for 'file': 540, 56649 - using 540
+> > >         WARN: multiple IDs found for 'vm_area_struct': 549, 56652 - using 549
+> > >         WARN: multiple IDs found for 'seq_file': 953, 56690 - using 953
+> > >         WARN: multiple IDs found for 'inode': 1132, 56966 - using 1132
+> > >         WARN: multiple IDs found for 'path': 1164, 56995 - using 1164
+> > >         WARN: multiple IDs found for 'task_struct': 300, 61905 - using 300
+> > >         WARN: multiple IDs found for 'file': 540, 61943 - using 540
+> > >         WARN: multiple IDs found for 'vm_area_struct': 549, 61946 - using 549
+> > >         WARN: multiple IDs found for 'inode': 1132, 62029 - using 1132
+> > >         WARN: multiple IDs found for 'path': 1164, 62058 - using 1164
+> > >         WARN: multiple IDs found for 'cgroup': 1190, 62067 - using 1190
+> > >         WARN: multiple IDs found for 'seq_file': 953, 62253 - using 953
+> > >         WARN: multiple IDs found for 'sock': 7960, 62374 - using 7960
+> > >         WARN: multiple IDs found for 'sk_buff': 1876, 62485 - using 1876
+> > >         WARN: multiple IDs found for 'bpf_prog': 6094, 62542 - using 6094
+> > >         WARN: multiple IDs found for 'socket': 7993, 62545 - using 7993
+> > >         WARN: multiple IDs found for 'xdp_buff': 6191, 62836 - using 6191
+> > >         WARN: multiple IDs found for 'sock_common': 8164, 63152 - using 8164
+> > >         WARN: multiple IDs found for 'request_sock': 17296, 63204 - using 17296
+> > >         WARN: multiple IDs found for 'inet_request_sock': 36292, 63222 - using 36292
+> > >         WARN: multiple IDs found for 'inet_sock': 32700, 63225 - using 32700
+> > >         WARN: multiple IDs found for 'inet_connection_sock': 33944, 63240 - using 33944
+> > >         WARN: multiple IDs found for 'tcp_request_sock': 36299, 63260 - using 36299
+> > >         WARN: multiple IDs found for 'tcp_sock': 33969, 63264 - using 33969
+> > >         WARN: multiple IDs found for 'bpf_map': 6623, 63343 - using 6623
+> > >
+> > > I'll need to check on that..
+> > >
+> > > and I just actually saw the 'nf_conn' warning on linux-next/master with
+> > > latest fedora/gcc-12:
+> > >
+> > >           BTF [M] net/netfilter/nf_nat.ko
+> > >         WARN: multiple IDs found for 'nf_conn': 106518, 120156 - using 106518
+> > >         WARN: multiple IDs found for 'nf_conn': 106518, 121853 - using 106518
+> > >         WARN: multiple IDs found for 'nf_conn': 106518, 123126 - using 106518
+> > >         WARN: multiple IDs found for 'nf_conn': 106518, 124537 - using 106518
+> > >         WARN: multiple IDs found for 'nf_conn': 106518, 126442 - using 106518
+> > >         WARN: multiple IDs found for 'nf_conn': 106518, 128256 - using 106518
+> > >           LD [M]  net/netfilter/nf_nat_tftp.ko
+> > >
+> > > looks like maybe dedup missed this struct for some reason
+> > >
+> > > nf_conn dump from module:
+> > >
+> > >         [120155] PTR '(anon)' type_id=120156
+> > >         [120156] STRUCT 'nf_conn' size=320 vlen=14
+> > >                 'ct_general' type_id=105882 bits_offset=0
+> > >                 'lock' type_id=180 bits_offset=64
+> > >                 'timeout' type_id=113 bits_offset=640
+> > >                 'zone' type_id=106520 bits_offset=672
+> > >                 'tuplehash' type_id=106533 bits_offset=704
+> > >                 'status' type_id=1 bits_offset=1600
+> > >                 'ct_net' type_id=3215 bits_offset=1664
+> > >                 'nat_bysource' type_id=139 bits_offset=1728
+> > >                 '__nfct_init_offset' type_id=949 bits_offset=1856
+> > >                 'master' type_id=120155 bits_offset=1856
+> > >                 'mark' type_id=106351 bits_offset=1920
+> > >                 'secmark' type_id=106351 bits_offset=1952
+> > >                 'ext' type_id=106536 bits_offset=1984
+> > >                 'proto' type_id=106532 bits_offset=2048
+> > >
+> > > nf_conn dump from vmlinux:
+> > >
+> > >         [106517] PTR '(anon)' type_id=106518
+> > >         [106518] STRUCT 'nf_conn' size=320 vlen=14
+> > >                 'ct_general' type_id=105882 bits_offset=0
+> > >                 'lock' type_id=180 bits_offset=64
+> > >                 'timeout' type_id=113 bits_offset=640
+> > >                 'zone' type_id=106520 bits_offset=672
+> > >                 'tuplehash' type_id=106533 bits_offset=704
+> > >                 'status' type_id=1 bits_offset=1600
+> > >                 'ct_net' type_id=3215 bits_offset=1664
+> > >                 'nat_bysource' type_id=139 bits_offset=1728
+> > >                 '__nfct_init_offset' type_id=949 bits_offset=1856
+> > >                 'master' type_id=106517 bits_offset=1856
+> > >                 'mark' type_id=106351 bits_offset=1920
+> > >                 'secmark' type_id=106351 bits_offset=1952
+> > >                 'ext' type_id=106536 bits_offset=1984
+> > >                 'proto' type_id=106532 bits_offset=2048
+> > >
+> > > look identical.. Andrii, any idea?
+> >
+> > I'm pretty sure they are not identical. There is somewhere a STRUCT vs
+> > FWD difference. We had a similar discussion recently with Alan
+> > Maguire.
+> >
+> > >                 'master' type_id=120155 bits_offset=1856
+> >
+> > vs
+> >
+> > >                 'master' type_id=106517 bits_offset=1856
 >
+> master is pointer to same 'nf_conn' object, and rest of the ids are same
 >
-> On 2022/10/21 1:45, Stanislav Fomichev wrote:
-> > On Wed, Oct 19, 2022 at 6:47 PM shaozhengchao <shaozhengchao@huawei.com=
-> wrote:
-> >>
-> >>
-> >>
-> >> On 2022/10/18 0:36, Stanislav Fomichev wrote:
-> >>> On Sat, Oct 15, 2022 at 2:16 AM Zhengchao Shao <shaozhengchao@huawei.=
-com> wrote:
-> >>>>
-> >>>> As [0] see, bpf_prog_test_run_skb() should allow user space to forwa=
-rd
-> >>>> 14-bytes packet via BPF_PROG_RUN instead of dropping packet directly=
-.
-> >>>> So fix it.
-> >>>>
-> >>>> 0: https://github.com/cilium/ebpf/commit/a38fb6b5a46ab3b5639ea4d4212=
-32a10013596c0
-> >>>>
-> >>>> Fixes: fd1894224407 ("bpf: Don't redirect packets with invalid pkt_l=
-en")
-> >>>> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-> >>>> ---
-> >>>>    net/bpf/test_run.c | 6 +++---
-> >>>>    1 file changed, 3 insertions(+), 3 deletions(-)
-> >>>>
-> >>>> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-> >>>> index 13d578ce2a09..aa1b49f19ca3 100644
-> >>>> --- a/net/bpf/test_run.c
-> >>>> +++ b/net/bpf/test_run.c
-> >>>> @@ -979,9 +979,6 @@ static int convert___skb_to_skb(struct sk_buff *=
-skb, struct __sk_buff *__skb)
-> >>>>    {
-> >>>>           struct qdisc_skb_cb *cb =3D (struct qdisc_skb_cb *)skb->cb=
-;
-> >>>>
-> >>>> -       if (!skb->len)
-> >>>> -               return -EINVAL;
-> >>>> -
-> >>>>           if (!__skb)
-> >>>>                   return 0;
-> >>>>
-> >>>> @@ -1102,6 +1099,9 @@ int bpf_prog_test_run_skb(struct bpf_prog *pro=
-g, const union bpf_attr *kattr,
-> >>>>           if (IS_ERR(data))
-> >>>>                   return PTR_ERR(data);
-> >>>>
-> >>>> +       if (size =3D=3D ETH_HLEN)
-> >>>> +               is_l2 =3D true;
-> >>>> +
-> >>>
-> >>> Don't think this will work? That is_l2 is there to expose proper l2/l=
-3
-> >>> skb for specific hooks; we can't suddenly start exposing l2 headers t=
-o
-> >>> the hooks that don't expect it.
-> >>> Does it make sense to start with a small reproducer that triggers the
-> >>> issue first? We can have a couple of cases for
-> >>> len=3D0/ETH_HLEN-1/ETH_HLEN+1 and trigger them from the bpf program t=
-hat
-> >>> redirects to different devices (to trigger dev_is_mac_header_xmit).
-> >>>
-> >>>
-> >> Hi Stanislav:
-> >>          Thank you for your review. Is_l2 is the flag of a specific
-> >> hook. Therefore, do you mean that if skb->len is equal to 0, just
-> >> add the length back?
-> >
-> > Not sure I understand your question. All I'm saying is - you can't
-> > flip that flag arbitrarily. This flag depends on the attach point that
-> > you're running the prog against. Some attach points expect packets
-> > with l2, some expect packets without l2.
-> >
-> > What about starting with a small reproducer? Does it make sense to
-> > create a small selftest that adds net namespace + fq_codel +
-> > bpf_prog_test run and do redirect ingress/egress with len
-> > 0/1...tcphdr? Because I'm not sure I 100% understand whether it's only
-> > len=3D0 that's problematic or some other combination as well?
-> >
-> yes, only skb->len =3D 0 will cause null-ptr-deref issue.
-> The following is the process of triggering the problem:
-> enqueue a skb:
-> fq_codel_enqueue()
->         ...
->         idx =3D fq_codel_classify()        --->if idx !=3D 0
->         flow =3D &q->flows[idx];
->         flow_queue_add(flow, skb);       --->add skb to flow[idex]
->         q->backlogs[idx] +=3D qdisc_pkt_len(skb); --->backlogs =3D 0
->         ...
->         fq_codel_drop()                  --->set sch->limit =3D 0, always
-> drop packets
->                 ...
->                 idx =3D i                  --->becuase backlogs in every
-> flows is 0, so idx =3D 0
->                 ...
->                 flow =3D &q->flows[idx];   --->get idx=3D0 flow
->                 ...
->                 dequeue_head()
->                         skb =3D flow->head; --->flow->head =3D NULL
->                         flow->head =3D skb->next; --->cause null-ptr-dere=
-f
-> So, if skb->len !=3D0=EF=BC=8Cfq_codel_drop() could get the correct idx, =
-and
-> then skb!=3DNULL, it will be OK.
-> Maybe, I will fix it in fq_codel.
 
-I think the consensus here is that the stack, in general, doesn't
-expect the packets like this. So there are probably more broken things
-besides fq_codel. Thus, it's better if we remove the ability to
-generate them from the bpf side instead of fixing the individual users
-like fq_codel.
+You are right, they should be identical once PTR is deduplicated
+properly. Sorry, was too quick to jump to conclusions. I was thinking
+about situations explained by Alan.
 
-> But, as I know, skb->len =3D 0 is just invalid packet. I prefer to add th=
-e
-> length back, like bellow:
->         if (is_l2 || !skb->len)
->                 __skb_push(skb, hh_len);
-> is it OK?
+So, is this still an issue or this was fixed by [0]?
 
-Probably not?
+  [0] https://lore.kernel.org/bpf/1666364523-9648-1-git-send-email-alan.maguire@oracle.com/
 
-Looking at the original syzkaller report, prog_type is
-BPF_PROG_TYPE_LWT_XMIT which does expect a packet without l2 header.
-Can we do something like:
-
-if (!is_l2 && !skb->len) {
-  // append some dummy byte to the skb ?
-}
-
-
-}
-
-> >>>
-> >>>
-> >>>
-> >>>>           ctx =3D bpf_ctx_init(kattr, sizeof(struct __sk_buff));
-> >>>>           if (IS_ERR(ctx)) {
-> >>>>                   kfree(data);
-> >>>> --
-> >>>> 2.17.1
-> >>>>
+> jirka
