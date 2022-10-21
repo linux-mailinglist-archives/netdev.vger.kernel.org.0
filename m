@@ -2,157 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0912C60732F
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 11:03:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 653F66073A4
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 11:13:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230406AbiJUJDG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 05:03:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49450 "EHLO
+        id S230492AbiJUJNT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 05:13:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230230AbiJUJDD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 05:03:03 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE7C02527C6;
-        Fri, 21 Oct 2022 02:03:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1666342983; x=1697878983;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=xgDHZDyzvlvCXScq/7p55/MCpFwOFhGPVzkOBo9ENoM=;
-  b=zGkDplqS6/k9ahwkk2WeTliotPyYliCuLqNt898fYms6xuJax7YYhK3S
-   iFNosXf3XvmgTE76n39EO105pZCQ9Y4T8lqaL+M/BPHuDIq8yP3PdKxYg
-   wVLAwBQEg4Gj8yooPHk7F0duCQmnFxqi35xLaX92bUtQRFu5Kv98bwQv0
-   pZ/1ab9L/aFaKaX7shtsybNXsyLeQZNp+aW4wA9Mli9sOC59XbNf6M1I4
-   JRe8kK73xcSKpJYaJOWcd6PIqYMsydyYub039B0UfKeh6K5Pzjrw1NrR4
-   4OkAnx4Y0KYmkkDwhPeFfxQbqWR0dFhGN4U7yJzOCm02oK3gw2KUIh4HB
-   A==;
-X-IronPort-AV: E=Sophos;i="5.95,200,1661842800"; 
-   d="scan'208";a="179906665"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Oct 2022 02:03:01 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+        with ESMTP id S231223AbiJUJM5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 05:12:57 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD1D2570B3;
+        Fri, 21 Oct 2022 02:12:31 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 48AD42019D;
+        Fri, 21 Oct 2022 11:11:29 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 9l94Wvjqj3yJ; Fri, 21 Oct 2022 11:11:28 +0200 (CEST)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id CD98720189;
+        Fri, 21 Oct 2022 11:11:28 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout1.secunet.com (Postfix) with ESMTP id BE90980004A;
+        Fri, 21 Oct 2022 11:11:28 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 21 Oct 2022 02:03:00 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Fri, 21 Oct 2022 02:02:58 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <UNGLinuxDriver@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net] net: lan966x: Stop replacing tx dcbs and dcbs_buf when changing MTU
-Date:   Fri, 21 Oct 2022 11:07:11 +0200
-Message-ID: <20221021090711.3749009-1-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.38.0
+ 15.1.2375.31; Fri, 21 Oct 2022 11:11:28 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Fri, 21 Oct
+ 2022 11:11:28 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id ADD1B3182AD5; Fri, 21 Oct 2022 11:11:27 +0200 (CEST)
+Date:   Fri, 21 Oct 2022 11:11:27 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Christian Langrock <christian.langrock@secunet.com>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "David Ahern" <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "open list:NETWORKING [IPSEC]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH ipsec v7] xfrm: replay: Fix ESN wrap around for GSO
+Message-ID: <20221021091127.GQ3294086@gauss3.secunet.de>
+References: <20221017063447.1816366-1-christian.langrock@secunet.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20221017063447.1816366-1-christian.langrock@secunet.com>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a frame is sent using FDMA, the skb is mapped and then the mapped
-address is given to an tx dcb that is different than the last used tx
-dcb. Once the HW finish with this frame, it would generate an interrupt
-and then the dcb can be reused and memory can be freed. For each dcb
-there is an dcb buf that contains some meta-data(is used by PTP, is
-it free). There is 1 to 1 relationship between dcb and dcb_buf.
-The following issue was observed. That sometimes after changing the MTU
-to allocate new tx dcbs and dcbs_buf, two frames were not
-transmitted. The frames were not transmitted because when reloading the
-tx dcbs, it was always presuming to use the first dcb but that was not
-always happening. Because it could be that the last tx dcb used before
-changing MTU was first dcb and then when it tried to get the next dcb it
-would take dcb 1 instead of 0. Because it is supposed to take a
-different dcb than the last used one. This can be fixed simply by
-changing tx->last_in_use to -1 when the fdma is disabled to reload the
-new dcb and dcbs_buff.
-But there could be a different issue. For example, right after the frame
-is sent, the MTU is changed. Now all the dcbs and dcbs_buf will be
-cleared. And now get the interrupt from HW that it finished with the
-frame. So when we try to clear the skb, it is not possible because we
-lost all the dcbs_buf.
-The solution here is to stop replacing the tx dcbs and dcbs_buf when
-changing MTU because the TX doesn't care what is the MTU size, it is
-only the RX that needs this information.
+On Mon, Oct 17, 2022 at 08:34:47AM +0200, Christian Langrock wrote:
+> When using GSO it can happen that the wrong seq_hi is used for the last
+> packets before the wrap around. This can lead to double usage of a
+> sequence number. To avoid this, we should serialize this last GSO
+> packet.
+> 
+> Fixes: d7dbefc45cf5 ("xfrm: Add xfrm_replay_overflow functions for offloading")
+> Co-developed-by: Steffen Klassert <steffen.klassert@secunet.com>
+> Signed-off-by: Christian Langrock <christian.langrock@secunet.com>
 
-Fixes: 2ea1cbac267e ("net: lan966x: Update FDMA to change MTU.")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- .../ethernet/microchip/lan966x/lan966x_fdma.c | 24 +++----------------
- 1 file changed, 3 insertions(+), 21 deletions(-)
-
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-index 7e4061c854f0e..a42035cec611c 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-@@ -309,6 +309,7 @@ static void lan966x_fdma_tx_disable(struct lan966x_tx *tx)
- 		lan966x, FDMA_CH_DB_DISCARD);
- 
- 	tx->activated = false;
-+	tx->last_in_use = -1;
- }
- 
- static void lan966x_fdma_tx_reload(struct lan966x_tx *tx)
-@@ -687,17 +688,14 @@ static int lan966x_qsys_sw_status(struct lan966x *lan966x)
- 
- static int lan966x_fdma_reload(struct lan966x *lan966x, int new_mtu)
- {
--	void *rx_dcbs, *tx_dcbs, *tx_dcbs_buf;
--	dma_addr_t rx_dma, tx_dma;
-+	dma_addr_t rx_dma;
-+	void *rx_dcbs;
- 	u32 size;
- 	int err;
- 
- 	/* Store these for later to free them */
- 	rx_dma = lan966x->rx.dma;
--	tx_dma = lan966x->tx.dma;
- 	rx_dcbs = lan966x->rx.dcbs;
--	tx_dcbs = lan966x->tx.dcbs;
--	tx_dcbs_buf = lan966x->tx.dcbs_buf;
- 
- 	napi_synchronize(&lan966x->napi);
- 	napi_disable(&lan966x->napi);
-@@ -715,17 +713,6 @@ static int lan966x_fdma_reload(struct lan966x *lan966x, int new_mtu)
- 	size = ALIGN(size, PAGE_SIZE);
- 	dma_free_coherent(lan966x->dev, size, rx_dcbs, rx_dma);
- 
--	lan966x_fdma_tx_disable(&lan966x->tx);
--	err = lan966x_fdma_tx_alloc(&lan966x->tx);
--	if (err)
--		goto restore_tx;
--
--	size = sizeof(struct lan966x_tx_dcb) * FDMA_DCB_MAX;
--	size = ALIGN(size, PAGE_SIZE);
--	dma_free_coherent(lan966x->dev, size, tx_dcbs, tx_dma);
--
--	kfree(tx_dcbs_buf);
--
- 	lan966x_fdma_wakeup_netdev(lan966x);
- 	napi_enable(&lan966x->napi);
- 
-@@ -735,11 +722,6 @@ static int lan966x_fdma_reload(struct lan966x *lan966x, int new_mtu)
- 	lan966x->rx.dcbs = rx_dcbs;
- 	lan966x_fdma_rx_start(&lan966x->rx);
- 
--restore_tx:
--	lan966x->tx.dma = tx_dma;
--	lan966x->tx.dcbs = tx_dcbs;
--	lan966x->tx.dcbs_buf = tx_dcbs_buf;
--
- 	return err;
- }
- 
--- 
-2.38.0
-
+Applied, thanks a lot Christian!
