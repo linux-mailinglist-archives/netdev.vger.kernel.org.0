@@ -2,68 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BFD3608013
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 22:46:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F27F8608065
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 22:55:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230070AbiJUUqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 16:46:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53904 "EHLO
+        id S230115AbiJUUzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 16:55:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230089AbiJUUqD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 16:46:03 -0400
-Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012C738A12
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 13:45:38 -0700 (PDT)
+        with ESMTP id S230071AbiJUUzP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 16:55:15 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C89836FC;
+        Fri, 21 Oct 2022 13:55:10 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id e18so10318194edj.3;
+        Fri, 21 Oct 2022 13:55:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1666385139; x=1697921139;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=2ZntcRy7KzO4212BaiUCjp/5fOYTSImbE9ddX3rn/Os=;
-  b=EeqeQbPwoOa5IeA7crsBHufDy30M8srkHxsc1mpCff5zr9vtDFHJtV5X
-   zAXuqA4ArtS8eTB54kPABraQ8hvJeB4DgM17xr24h3RVkWKNYU7XJf2n/
-   icQ+JoY9bo8rfA/5BAK3O+xUsOzv6XYDw8OiXTB74eXLST88rm/4hrf/2
-   U=;
-X-IronPort-AV: E=Sophos;i="5.95,203,1661817600"; 
-   d="scan'208";a="258504523"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-b1c0e1d0.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2022 20:45:18 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2c-m6i4x-b1c0e1d0.us-west-2.amazon.com (Postfix) with ESMTPS id 51BD981095;
-        Fri, 21 Oct 2022 20:45:17 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.42; Fri, 21 Oct 2022 20:45:16 +0000
-Received: from 88665a182662.ant.amazon.com.com (10.43.160.203) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.15;
- Fri, 21 Oct 2022 20:45:13 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     "David S. Miller" <davem@davemloft.net>,
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=MgNLT44Fi7WL4VBnJfXfs2StY3uKraQEThQA3rU8sVM=;
+        b=ClFfSj4Hf3Hfg+xt0BrrTxzkN5I65/D5ejg3LNE/dprh+ihPUbF231N1JmFYvYTZUw
+         SFAqB5K6CujUp8FMJ9EWKzFitJE2+ops1i+G4DsBL/6AxKS4P2DrXq4g2IfzLQUnjtzp
+         jfMI/YocVzeM6V+ryJ/pEL1VFYlzhp86/oVWQsMspQIYzIfR/i/dpnLL0RQb+kvVUSLe
+         4BQh86VpfXamVmyDTRB6Hiy8cJkd6kCbrTf1BOczFeTzryoQw2xLrq9fTF4tmZ/u9YUX
+         mugWTW5i/xBeZAYtpasw7307LoDWDDA6wstJ3nQ/kfbTNUns4uO3/RVRYaRJSPwYRv8t
+         HGTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=MgNLT44Fi7WL4VBnJfXfs2StY3uKraQEThQA3rU8sVM=;
+        b=ghzaKUyVigw4ls8WMVzTPnqNrS3amctLoJ87N3uWffpHX5lEH5/2reykosP0GYuErt
+         E/saB3ghsreS/zlUbuIfn5Ivj67F2jkFKTQlf+wkwknJM+k6Q6keU0kG1kVOCoTYLzk2
+         /cCi7+QafPQURI7S5gw0zE+YAEoQ2Ly7GsQHAd0l2ugTdBZpieCPqXjPeoDB/0NimuNq
+         ahYr08TVB0p8dtK2vTZZui8xxXNIkvJ3a8Smxg+A+oOQerEpbiWVRr/OVSGexnqQ/1FW
+         Cyeij2Xzz7vL+7lZXdvGbcjyrmdoMdDe1u1L1+zO3OnWblp6Z1wy+JqWQ79uyNU1Di5w
+         JcJQ==
+X-Gm-Message-State: ACrzQf0dW+sQmcmC3vc3PYM+qwGuaXfnsThLyG2iOWJ1htySJMZNDf4e
+        o5S5V2QMO4nYMkC2f/H4VPA=
+X-Google-Smtp-Source: AMsMyM4UYHObmdaLYfMZl+HLERw4uBb20nSBcQLdFuJwKAUd+fdZ6u2Za2RUDdEGdMhDG2O1+3/beQ==
+X-Received: by 2002:a05:6402:28cd:b0:459:19c3:43d0 with SMTP id ef13-20020a05640228cd00b0045919c343d0mr19053600edb.197.1666385709053;
+        Fri, 21 Oct 2022 13:55:09 -0700 (PDT)
+Received: from ?IPV6:2a01:c22:7b40:ea00:b919:c359:7abe:713e? (dynamic-2a01-0c22-7b40-ea00-b919-c359-7abe-713e.c22.pool.telefonica.de. [2a01:c22:7b40:ea00:b919:c359:7abe:713e])
+        by smtp.googlemail.com with ESMTPSA id q1-20020a170906360100b00773c60c2129sm12264706ejb.141.2022.10.21.13.55.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 21 Oct 2022 13:55:08 -0700 (PDT)
+Message-ID: <2333ef88-6e3e-a5ad-dcdc-89a405ba2f9e@gmail.com>
+Date:   Fri, 21 Oct 2022 22:55:01 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Content-Language: en-US
+To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-CC:     Martin KaFai Lau <martin.lau@kernel.org>,
-        Craig Gallek <kraig@google.com>,
-        Kazuho Oku <kazuhooku@gmail.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH v3 net-next 2/2] selftest: Add test for SO_INCOMING_CPU.
-Date:   Fri, 21 Oct 2022 13:44:35 -0700
-Message-ID: <20221021204435.4259-3-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221021204435.4259-1-kuniyu@amazon.com>
-References: <20221021204435.4259-1-kuniyu@amazon.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.203]
-X-ClientProxiedBy: EX13D39UWB001.ant.amazon.com (10.43.161.5) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20221021174552.6828-1-hayashi.kunihiko@socionext.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net] net: ethernet: ave: Remove duplicate suspend/resume
+ calls for phy
+In-Reply-To: <20221021174552.6828-1-hayashi.kunihiko@socionext.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,335 +80,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some highly optimised applications use SO_INCOMING_CPU to make them
-efficient, but they didn't test if it's working correctly by getsockopt()
-to avoid slowing down.  As a result, no one noticed it had been broken
-for years, so it's a good time to add a test to catch future regression.
+On 21.10.2022 19:45, Kunihiko Hayashi wrote:
+> Since AVE has its own suspend/resume functions, there is no need to call
+> mdio_bus suspend/resume functions. Set phydev->mac_managed_pm to true
+> to avoid the calls.
+> 
+The commit description doesn't make clear (any longer) what the issue
+is that you're fixing. You should mention the WARN_ON() dump here
+like in your first attempt.
 
-The test does
+> In addition, ave_open() executes __phy_resume() via phy_start() in
+> ave_resume(), so no need to call phy_resume() explicitly. Remove it.
+> 
+This sounds like an improvement, being independent of the actual fix.
+The preferred approach would be:
+- submit the fix to net
+- submit the improvement in a separate patch to net-next
 
-  1) Create $(nproc) TCP listeners associated with each CPU.
-
-  2) Create 32 child sockets for each listener by calling
-     sched_setaffinity() for each CPU.
-
-  3) Check if accept()ed sockets' sk_incoming_cpu matches
-     listener's one.
-
-If we see -EAGAIN, SO_INCOMING_CPU is broken.  However, we might not see
-any error even if broken; the kernel could miraculously distribute all SYN
-to correct listeners.  Not to let that happen, we must increase the number
-of clients and CPUs to some extent, so the test requires $(nproc) >= 2 and
-creates 64 sockets at least.
-
-Test:
-  $ nproc
-  96
-  $ ./so_incoming_cpu
-
-Before the previous patch:
-
-  # Starting 12 tests from 5 test cases.
-  #  RUN           so_incoming_cpu.before_reuseport.test1 ...
-  # so_incoming_cpu.c:191:test1:Expected cpu (5) == i (0)
-  # test1: Test terminated by assertion
-  #          FAIL  so_incoming_cpu.before_reuseport.test1
-  not ok 1 so_incoming_cpu.before_reuseport.test1
-  ...
-  # FAILED: 0 / 12 tests passed.
-  # Totals: pass:0 fail:12 xfail:0 xpass:0 skip:0 error:0
-
-After:
-
-  # Starting 12 tests from 5 test cases.
-  #  RUN           so_incoming_cpu.before_reuseport.test1 ...
-  # so_incoming_cpu.c:199:test1:SO_INCOMING_CPU is very likely to be working correctly with 3072 sockets.
-  #            OK  so_incoming_cpu.before_reuseport.test1
-  ok 1 so_incoming_cpu.before_reuseport.test1
-  ...
-  # PASSED: 12 / 12 tests passed.
-  # Totals: pass:12 fail:0 xfail:0 xpass:0 skip:0 error:0
-
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
----
- tools/testing/selftests/net/.gitignore        |   1 +
- tools/testing/selftests/net/Makefile          |   1 +
- tools/testing/selftests/net/so_incoming_cpu.c | 242 ++++++++++++++++++
- 3 files changed, 244 insertions(+)
- create mode 100644 tools/testing/selftests/net/so_incoming_cpu.c
-
-diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selftests/net/.gitignore
-index 3d7adee7a3e6..ff8807cc9c2e 100644
---- a/tools/testing/selftests/net/.gitignore
-+++ b/tools/testing/selftests/net/.gitignore
-@@ -25,6 +25,7 @@ rxtimestamp
- sk_bind_sendto_listen
- sk_connect_zero_addr
- socket
-+so_incoming_cpu
- so_netns_cookie
- so_txtime
- stress_reuseport_listen
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 69c58362c0ed..cec4800cb017 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -71,6 +71,7 @@ TEST_GEN_FILES += bind_bhash
- TEST_GEN_PROGS += sk_bind_sendto_listen
- TEST_GEN_PROGS += sk_connect_zero_addr
- TEST_PROGS += test_ingress_egress_chaining.sh
-+TEST_GEN_PROGS += so_incoming_cpu
- 
- TEST_FILES := settings
- 
-diff --git a/tools/testing/selftests/net/so_incoming_cpu.c b/tools/testing/selftests/net/so_incoming_cpu.c
-new file mode 100644
-index 000000000000..0e04f9fef986
---- /dev/null
-+++ b/tools/testing/selftests/net/so_incoming_cpu.c
-@@ -0,0 +1,242 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright Amazon.com Inc. or its affiliates. */
-+#define _GNU_SOURCE
-+#include <sched.h>
-+
-+#include <netinet/in.h>
-+#include <sys/socket.h>
-+#include <sys/sysinfo.h>
-+
-+#include "../kselftest_harness.h"
-+
-+#define CLIENT_PER_SERVER	32 /* More sockets, more reliable */
-+#define NR_SERVER		self->nproc
-+#define NR_CLIENT		(CLIENT_PER_SERVER * NR_SERVER)
-+
-+FIXTURE(so_incoming_cpu)
-+{
-+	int nproc;
-+	int *servers;
-+	union {
-+		struct sockaddr addr;
-+		struct sockaddr_in in_addr;
-+	};
-+	socklen_t addrlen;
-+};
-+
-+enum when_to_set {
-+	BEFORE_REUSEPORT,
-+	BEFORE_LISTEN,
-+	AFTER_LISTEN,
-+	AFTER_ALL_LISTEN,
-+};
-+
-+FIXTURE_VARIANT(so_incoming_cpu)
-+{
-+	int when_to_set;
-+};
-+
-+FIXTURE_VARIANT_ADD(so_incoming_cpu, before_reuseport)
-+{
-+	.when_to_set = BEFORE_REUSEPORT,
-+};
-+
-+FIXTURE_VARIANT_ADD(so_incoming_cpu, before_listen)
-+{
-+	.when_to_set = BEFORE_LISTEN,
-+};
-+
-+FIXTURE_VARIANT_ADD(so_incoming_cpu, after_listen)
-+{
-+	.when_to_set = AFTER_LISTEN,
-+};
-+
-+FIXTURE_VARIANT_ADD(so_incoming_cpu, after_all_listen)
-+{
-+	.when_to_set = AFTER_ALL_LISTEN,
-+};
-+
-+FIXTURE_SETUP(so_incoming_cpu)
-+{
-+	self->nproc = get_nprocs();
-+	ASSERT_LE(2, self->nproc);
-+
-+	self->servers = malloc(sizeof(int) * NR_SERVER);
-+	ASSERT_NE(self->servers, NULL);
-+
-+	self->in_addr.sin_family = AF_INET;
-+	self->in_addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-+	self->in_addr.sin_port = htons(0);
-+	self->addrlen = sizeof(struct sockaddr_in);
-+}
-+
-+FIXTURE_TEARDOWN(so_incoming_cpu)
-+{
-+	int i;
-+
-+	for (i = 0; i < NR_SERVER; i++)
-+		close(self->servers[i]);
-+
-+	free(self->servers);
-+}
-+
-+void set_so_incoming_cpu(struct __test_metadata *_metadata, int fd, int cpu)
-+{
-+	int ret;
-+
-+	ret = setsockopt(fd, SOL_SOCKET, SO_INCOMING_CPU, &cpu, sizeof(int));
-+	ASSERT_EQ(ret, 0);
-+}
-+
-+int create_server(struct __test_metadata *_metadata,
-+		  FIXTURE_DATA(so_incoming_cpu) *self,
-+		  const FIXTURE_VARIANT(so_incoming_cpu) *variant,
-+		  int cpu)
-+{
-+	int fd, ret;
-+
-+	fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
-+	ASSERT_NE(fd, -1);
-+
-+	if (variant->when_to_set == BEFORE_REUSEPORT)
-+		set_so_incoming_cpu(_metadata, fd, cpu);
-+
-+	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &(int){1}, sizeof(int));
-+	ASSERT_EQ(ret, 0);
-+
-+	ret = bind(fd, &self->addr, self->addrlen);
-+	ASSERT_EQ(ret, 0);
-+
-+	if (variant->when_to_set == BEFORE_LISTEN)
-+		set_so_incoming_cpu(_metadata, fd, cpu);
-+
-+	/* We don't use CLIENT_PER_SERVER here not to block
-+	 * this test at connect() if SO_INCOMING_CPU is broken.
-+	 */
-+	ret = listen(fd, NR_CLIENT);
-+	ASSERT_EQ(ret, 0);
-+
-+	if (variant->when_to_set == AFTER_LISTEN)
-+		set_so_incoming_cpu(_metadata, fd, cpu);
-+
-+	return fd;
-+}
-+
-+void create_servers(struct __test_metadata *_metadata,
-+		    FIXTURE_DATA(so_incoming_cpu) *self,
-+		    const FIXTURE_VARIANT(so_incoming_cpu) *variant)
-+{
-+	int i, ret;
-+
-+	for (i = 0; i < NR_SERVER; i++) {
-+		self->servers[i] = create_server(_metadata, self, variant, i);
-+
-+		if (i == 0) {
-+			ret = getsockname(self->servers[i], &self->addr, &self->addrlen);
-+			ASSERT_EQ(ret, 0);
-+		}
-+	}
-+
-+	if (variant->when_to_set == AFTER_ALL_LISTEN) {
-+		for (i = 0; i < NR_SERVER; i++)
-+			set_so_incoming_cpu(_metadata, self->servers[i], i);
-+	}
-+}
-+
-+void create_clients(struct __test_metadata *_metadata,
-+		    FIXTURE_DATA(so_incoming_cpu) *self)
-+{
-+	cpu_set_t cpu_set;
-+	int i, j, fd, ret;
-+
-+	for (i = 0; i < NR_SERVER; i++) {
-+		CPU_ZERO(&cpu_set);
-+
-+		CPU_SET(i, &cpu_set);
-+		ASSERT_EQ(CPU_COUNT(&cpu_set), 1);
-+		ASSERT_NE(CPU_ISSET(i, &cpu_set), 0);
-+
-+		/* Make sure SYN will be processed on the i-th CPU
-+		 * and finally distributed to the i-th listener.
-+		 */
-+		sched_setaffinity(0, sizeof(cpu_set), &cpu_set);
-+		ASSERT_EQ(ret, 0);
-+
-+		for (j = 0; j < CLIENT_PER_SERVER; j++) {
-+			fd  = socket(AF_INET, SOCK_STREAM, 0);
-+			ASSERT_NE(fd, -1);
-+
-+			ret = connect(fd, &self->addr, self->addrlen);
-+			ASSERT_EQ(ret, 0);
-+
-+			close(fd);
-+		}
-+	}
-+}
-+
-+void verify_incoming_cpu(struct __test_metadata *_metadata,
-+			 FIXTURE_DATA(so_incoming_cpu) *self)
-+{
-+	int i, j, fd, cpu, ret, total = 0;
-+	socklen_t len = sizeof(int);
-+
-+	for (i = 0; i < NR_SERVER; i++) {
-+		for (j = 0; j < CLIENT_PER_SERVER; j++) {
-+			/* If we see -EAGAIN here, SO_INCOMING_CPU is broken */
-+			fd = accept(self->servers[i], &self->addr, &self->addrlen);
-+			ASSERT_NE(fd, -1);
-+
-+			ret = getsockopt(fd, SOL_SOCKET, SO_INCOMING_CPU, &cpu, &len);
-+			ASSERT_EQ(ret, 0);
-+			ASSERT_EQ(cpu, i);
-+
-+			close(fd);
-+			total++;
-+		}
-+	}
-+
-+	ASSERT_EQ(total, NR_CLIENT);
-+	TH_LOG("SO_INCOMING_CPU is very likely to be "
-+	       "working correctly with %d sockets.", total);
-+}
-+
-+TEST_F(so_incoming_cpu, test1)
-+{
-+	create_servers(_metadata, self, variant);
-+	create_clients(_metadata, self);
-+	verify_incoming_cpu(_metadata, self);
-+}
-+
-+TEST_F(so_incoming_cpu, test2)
-+{
-+	int server;
-+
-+	create_servers(_metadata, self, variant);
-+
-+	/* No CPU specified */
-+	server = create_server(_metadata, self, variant, -1);
-+	close(server);
-+
-+	create_clients(_metadata, self);
-+	verify_incoming_cpu(_metadata, self);
-+}
-+
-+TEST_F(so_incoming_cpu, test3)
-+{
-+	int server, client;
-+
-+	create_servers(_metadata, self, variant);
-+
-+	/* No CPU specified */
-+	server = create_server(_metadata, self, variant, -1);
-+
-+	create_clients(_metadata, self);
-+
-+	/* Never receive any requests */
-+	client = accept(server, &self->addr, &self->addrlen);
-+	ASSERT_EQ(client, -1);
-+
-+	verify_incoming_cpu(_metadata, self);
-+}
-+
-+TEST_HARNESS_MAIN
--- 
-2.30.2
+> Suggested-by: Heiner Kallweit <hkallweit1@gmail.com>
+> Fixes: 0ba78b4a4989 ("net: ethernet: ave: Add suspend/resume support")
+> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+> ---
+>  drivers/net/ethernet/socionext/sni_ave.c | 8 ++------
+>  1 file changed, 2 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/socionext/sni_ave.c b/drivers/net/ethernet/socionext/sni_ave.c
+> index 14cdd2e8373c..b4e0c57af7c3 100644
+> --- a/drivers/net/ethernet/socionext/sni_ave.c
+> +++ b/drivers/net/ethernet/socionext/sni_ave.c
+> @@ -1271,6 +1271,8 @@ static int ave_init(struct net_device *ndev)
+>  
+>  	phy_support_asym_pause(phydev);
+>  
+> +	phydev->mac_managed_pm = true;
+> +
+>  	phy_attached_info(phydev);
+>  
+>  	return 0;
+> @@ -1806,12 +1808,6 @@ static int ave_resume(struct device *dev)
+>  	wol.wolopts = priv->wolopts;
+>  	__ave_ethtool_set_wol(ndev, &wol);
+>  
+> -	if (ndev->phydev) {
+> -		ret = phy_resume(ndev->phydev);
+> -		if (ret)
+> -			return ret;
+> -	}
+> -
+>  	if (netif_running(ndev)) {
+>  		ret = ave_open(ndev);
+>  		netif_device_attach(ndev);
 
