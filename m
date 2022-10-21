@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D50E607329
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 11:00:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C22B60733C
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 11:06:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230448AbiJUJAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 05:00:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43384 "EHLO
+        id S230243AbiJUJGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 05:06:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229939AbiJUJAs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 05:00:48 -0400
+        with ESMTP id S230434AbiJUJGp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 05:06:45 -0400
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C6E034990;
-        Fri, 21 Oct 2022 02:00:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A914A1B65D4;
+        Fri, 21 Oct 2022 02:06:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
         MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=4iMBphw13KTQLLQRfUG/2Q1TsUUh89Ar5EYrCCnD96k=; b=wh3/gEmC9mepUk1fTEqfrqlJEy
-        7LxX5iGvzCultd99ss4GAQLzu47Tznnc1PQKPA+dLeQQ1U/2J0eqEGdpKKoAMVIlGBtg41DJUL7cD
-        kcASAQQfNiEmBACrIMYPnPdNwR1cusbIry2QS08ZHAZiCmSloL5Ym4v98A+J/P1nkT590E9zRlIua
-        25f64/PnDS4f9cbTgmeBIOoleCgTLQcVqfoLRA/XV0olSiogHasssrNWEnijciwmDoNXVvTVafw+/
-        lA7mEPSANpOChXuPjPHmwwrtNfqsNiOMwW05rDG0nm9rCzYooiOCisTqROtT2k8ckMA2rME1CHzYi
-        1ZAZ8JSw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34854)
+        bh=Btl6lB7/jBAwJDOo52HZvR/bEdbyeTvFLPuY3K4Zko0=; b=pyplzieDCI1Jkh1GoGLbvsYVVx
+        uHCqQJzf9myydjTTCZyJlfAgIL1Ad0QHfgNBMrbpvkz7KgN1NltByM6anYZbVpEgik+sT8GiBRbAT
+        003jASt0qJW3q47hyaUXY64m2CxLNu4WQ7Emdhdc804IodgwWCgGWPPZN6k0zHLCnvWsiAGQf5Ue8
+        V/plhE17pQYby+ANZNCJzfQM3Bk0iBn/UjzZcx62Xbi8kABllHXJLFTR+reIcdzdrFJHv5LHpqIi6
+        hJLuuJb6YzhZpjpzeiql/TKGeFMOoYRkwlvDaqIW6SALh19LUTHxkNhnXwgZKfqymljlkOrHSfqOF
+        NU6e4DpQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34856)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <linux@armlinux.org.uk>)
-        id 1olnt7-0008PG-Jd; Fri, 21 Oct 2022 10:00:21 +0100
+        id 1olnz3-0008Q4-Ka; Fri, 21 Oct 2022 10:06:29 +0100
 Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
         (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1olnt2-000421-4a; Fri, 21 Oct 2022 10:00:16 +0100
-Date:   Fri, 21 Oct 2022 10:00:16 +0100
+        id 1olnyz-00042A-Dw; Fri, 21 Oct 2022 10:06:25 +0100
+Date:   Fri, 21 Oct 2022 10:06:25 +0100
 From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Frank Wunderlich <linux@fw-web.de>
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
+To:     Frank Wunderlich <frank-w@public-files.de>
+Cc:     Frank Wunderlich <linux@fw-web.de>,
         linux-mediatek@lists.infradead.org,
         Alexander Couzens <lynxis@fe80.eu>,
         Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
@@ -51,16 +51,14 @@ Cc:     Frank Wunderlich <frank-w@public-files.de>,
         netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v2] net: mtk_sgmii: implement mtk_pcs_ops
-Message-ID: <Y1JfoAD8NxvvR8+6@shell.armlinux.org.uk>
+Message-ID: <Y1JhEWU5Ac6kd2ne@shell.armlinux.org.uk>
 References: <20221020144431.126124-1-linux@fw-web.de>
  <Y1F0pSrJnNlYzehq@shell.armlinux.org.uk>
  <02A54E45-2084-440A-A643-772C0CC9F988@public-files.de>
- <Y1JJEtvra2F3JGQS@shell.armlinux.org.uk>
- <9E91B812-8687-463D-8B98-3C4BF26CBE08@fw-web.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9E91B812-8687-463D-8B98-3C4BF26CBE08@fw-web.de>
+In-Reply-To: <02A54E45-2084-440A-A643-772C0CC9F988@public-files.de>
 Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
@@ -71,23 +69,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 21, 2022 at 10:41:22AM +0200, Frank Wunderlich wrote:
-> Am 21. Oktober 2022 09:24:02 MESZ schrieb "Russell King (Oracle)" <linux@armlinux.org.uk>:
-> >On Fri, Oct 21, 2022 at 08:04:51AM +0200, Frank Wunderlich wrote:
-> >> On my board (bpi-r3) we have no autoneg on the gmacs. We have a switch (mt7531) with fixed-link on the first and a sfp-cage on the other. Second mac gets speed-setting (1000base-X or 2500base-X) from sfp eeprom, but no advertisement from the "other end". Imho it is always full duplex.
-> >
-> >If it's a fixed link, then this function you're adding won't be called.
-> >It's only called for in-band mode which is exclusive with fixed-link
-> >mode.
-> >
-> >-- 
-> >RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> >FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
-> 
-> Right, i get this trace for the second mac which is without fixed-link because of in-band-managed for sfp (read speed settings from sfp eeprom).
+On Fri, Oct 21, 2022 at 08:04:51AM +0200, Frank Wunderlich wrote:
+> I have no register documentation to check if there is any way to read out pause/duplex setting. Maybe MTK can answer this or extend function later.
 
-So, you need to set state->duplex to DUPLEX_FULL if this is what the
-hardware is actually doing.
+I suspect we can probably guess.
+
+Looking at SGMSYS_PCS_CONTROL_1, this is actually the standard BMCR in
+the low 16 bits, and BMSR in the upper 16 bits, so:
+
+At address 4, I'd expect the PHYSID.
+At address 8, I'd expect the advertisement register in the low 16 bits
+and the link partner advertisement in the upper 16 bits.
+
+Can you try an experiment, and in mtk_sgmii_init() try accessing the
+regmap at address 0, 4, and 8 and print their contents please?
 
 -- 
 RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
