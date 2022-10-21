@@ -2,141 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BEC560760A
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 13:22:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5566060761B
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 13:27:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230132AbiJULWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 07:22:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36054 "EHLO
+        id S229918AbiJUL1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 07:27:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229716AbiJULWb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 07:22:31 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875A6264E44;
-        Fri, 21 Oct 2022 04:22:22 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id b12so4572994edd.6;
-        Fri, 21 Oct 2022 04:22:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=y83I/EEj5O1WzvhlqMvy69bC2C3kma+TguYlktElg+U=;
-        b=aqI400aFX+Hv1if94yQ/9coImAcoL5xm5EE9Z8Pnq+JQ7MqId0ZuB5eW9kjAqCiUrN
-         KMZPlHItsw5EctvNgdlnTcP5laLuqUz+SV1o33najcKCsjf0QARB5ow9Z44sTZTOmSeg
-         UrpNC6fH6ciHR2X4rGmdJWOSbH4r9VMHXzYepV/zYSLDnnNwqU+kf3Zv2sg7HE61xVNl
-         7t3a9w2kLyvF5PibwmB0qSxZXtgVyxt+2/Ir7YJLUZG06dtskhoVW5tz2mc4jA71zIm4
-         UhnubOmNzJl78yCv0QqxYV7AfFoBR+16JycwYyxr/dmdd6j59K4vgycD/Tzgpk9gib2d
-         VCVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=y83I/EEj5O1WzvhlqMvy69bC2C3kma+TguYlktElg+U=;
-        b=Zu7GJbQ5TZlq8kH3vSDfX32h0DpvTIuuQNUkPQ9vNy6ffF/Fdd5NenNwr+hjJd6FQd
-         IiRhebil1Oj4gj5stR4NrQLqrwlScAPWbqDicS5XY4hmYIhqoXqkK24EnVNFmaOUryXh
-         gL7OGQrXccV2meGHaSrPFXzkUwzoUOP81Lcm71M0YFZF3NWMPWE0FwPiXkile2or1J5D
-         dbwMlcnfQ8xX5d3yrMjfYI/K3pnderM4JFhCqAZloZHg76cFzOXg8+e7OWkvthjGde2L
-         Ojln8bY0L2m2KBD1q3z2QgFqYYJ3BdhAoc46lMhY1pxfmQIK70KroP4EEvCbETYG/Zf6
-         V7dQ==
-X-Gm-Message-State: ACrzQf1Ru5sTUk8bEuzce1bgXu9Co2uAzt4h14NqO2T1eR8dgHNC/oOv
-        S+BjpNducF+Zbp14uG1BXpI=
-X-Google-Smtp-Source: AMsMyM4Ljgcs84MFVGjjaNn1SINn2K1OMLuiOgFc7iq4/CDwKUIaipwaA3YvQFgGhkmQ345GuQJlMw==
-X-Received: by 2002:a17:906:db0e:b0:77b:82cf:54a6 with SMTP id xj14-20020a170906db0e00b0077b82cf54a6mr14838182ejb.691.1666351340215;
-        Fri, 21 Oct 2022 04:22:20 -0700 (PDT)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id g22-20020a50d5d6000000b00457160c3c77sm13487340edj.20.2022.10.21.04.22.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Oct 2022 04:22:19 -0700 (PDT)
-Date:   Fri, 21 Oct 2022 14:22:16 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     netdev@kapio-technology.com
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        with ESMTP id S229501AbiJUL1y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 07:27:54 -0400
+Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1181825D64F;
+        Fri, 21 Oct 2022 04:27:52 -0700 (PDT)
+Received: from unknown (HELO iyokan2-ex.css.socionext.com) ([172.31.9.54])
+  by mx.socionext.com with ESMTP; 21 Oct 2022 20:27:52 +0900
+Received: from mail.mfilter.local (m-filter-2 [10.213.24.62])
+        by iyokan2-ex.css.socionext.com (Postfix) with ESMTP id 6D0DF20584CE;
+        Fri, 21 Oct 2022 20:27:52 +0900 (JST)
+Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Fri, 21 Oct 2022 20:27:52 +0900
+Received: from [10.212.242.61] (unknown [10.212.242.61])
+        by kinkan2.css.socionext.com (Postfix) with ESMTP id 20D3CB62A4;
+        Fri, 21 Oct 2022 20:27:52 +0900 (JST)
+Subject: Re: [PATCH net] net: phy: Avoid WARN_ON for PHY_NOLINK during
+ resuming
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
         Russell King <linux@armlinux.org.uk>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Hans Schultz <schultz.hans@gmail.com>,
-        Joachim Wiberg <troglobit@gmail.com>,
-        Amit Cohen <amcohen@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v8 net-next 10/12] net: dsa: mv88e6xxx: mac-auth/MAB
- implementation
-Message-ID: <20221021112216.6bw6sjrieh2znlti@skbuf>
-References: <20221018165619.134535-1-netdev@kapio-technology.com>
- <20221018165619.134535-1-netdev@kapio-technology.com>
- <20221018165619.134535-11-netdev@kapio-technology.com>
- <20221018165619.134535-11-netdev@kapio-technology.com>
- <20221020132538.reirrskemcjwih2m@skbuf>
- <2565c09bb95d69142522c3c3bcaa599e@kapio-technology.com>
- <20221020225719.l5iw6vndmm7gvjo3@skbuf>
- <82d23b100b8d2c9e4647b8a134d5cbbf@kapio-technology.com>
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20221021074154.25906-1-hayashi.kunihiko@socionext.com>
+ <4d2d6349-6910-3e73-e6c5-db9041bcfdb8@gmail.com>
+ <86262217-a620-dc5b-cf5a-3a23ea869834@socionext.com>
+ <125eddc1-8791-e8c4-39ac-fb5b864d91ba@gmail.com>
+From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Message-ID: <fe078840-b54d-d18b-da73-e6e66406bede@socionext.com>
+Date:   Fri, 21 Oct 2022 20:27:52 +0900
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <82d23b100b8d2c9e4647b8a134d5cbbf@kapio-technology.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <125eddc1-8791-e8c4-39ac-fb5b864d91ba@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 21, 2022 at 08:47:42AM +0200, netdev@kapio-technology.com wrote:
-> On 2022-10-21 00:57, Vladimir Oltean wrote:
-> > On Thu, Oct 20, 2022 at 10:20:50PM +0200, netdev@kapio-technology.com
-> > wrote:
-> > > In general locked ports block traffic from a host based on if there
-> > > is a
-> > > FDB entry or not. In the non-offloaded case, there is only CPU
-> > > assisted
-> > > learning, so the normal learning mechanism has to be disabled as any
-> > > learned entry will open the port for the learned MAC,vlan.
-> > 
-> > Does it have to be that way? Why can't BR_LEARNING on a BR_PORT_LOCKED
-> > cause the learned FDB entries to have BR_FDB_LOCKED, and everything
-> > would be ok in that case (the port will not be opened for the learned
-> > MAC/VLAN)?
-> 
-> I suppose you are right that basing it solely on BR_FDB_LOCKED is possible.
-> 
-> The question is then maybe if the common case where you don't need learned
-> entries for the scheme to work, e.g. with EAPOL link local packets, requires
-> less CPU load to work and is cleaner than if using BR_FDB_LOCKED entries?
+On 2022/10/21 20:12, Heiner Kallweit wrote:
+> On 21.10.2022 11:35, Kunihiko Hayashi wrote:
+>> Hi Heiner,
+>>
+>> Thank you for your comment.
+>>
+>> On 2022/10/21 17:38, Heiner Kallweit wrote:
+>>> On 21.10.2022 09:41, Kunihiko Hayashi wrote:
+>>>> When resuming from sleep, if there is a time lag from link-down to
+>>>> link-up
+>>>> due to auto-negotiation, the phy status has been still PHY_NOLINK, so
+>>>> WARN_ON dump occurs in mdio_bus_phy_resume(). For example, UniPhier AVE
+>>>> ethernet takes about a few seconds to link up after resuming.
+>>>>
+>>> That autoneg takes some time is normal. If this would actually the root
+>>> cause then basically every driver should be affected. But it's not.
+>>
+>> Although the auto-neg should happen normally, I'm not sure about other
+>> platforms.
+>>
+>>>> To avoid this issue, should remove PHY_NOLINK the WARN_ON conditions.
+>>>>
+>>>> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+>>>> ---
+>>>>    drivers/net/phy/phy_device.c | 8 ++++----
+>>>>    1 file changed, 4 insertions(+), 4 deletions(-)
+>>>>
+>>>> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+>>>> index 57849ac0384e..c647d027bb5d 100644
+>>>> --- a/drivers/net/phy/phy_device.c
+>>>> +++ b/drivers/net/phy/phy_device.c
+>>>> @@ -318,12 +318,12 @@ static __maybe_unused int
+>>>> mdio_bus_phy_resume(struct
+>>>> device *dev)
+>>>>        phydev->suspended_by_mdio_bus = 0;
+>>>>
+>>>>        /* If we managed to get here with the PHY state machine in a state
+>>>> -     * neither PHY_HALTED, PHY_READY nor PHY_UP, this is an indication
+>>>> -     * that something went wrong and we should most likely be using
+>>>> -     * MAC managed PM, but we are not.
+>>>> +     * neither PHY_HALTED, PHY_READY, PHY_UP nor PHY_NOLINK, this is an
+>>>> +     * indication that something went wrong and we should most likely
+>>>> +     * be using MAC managed PM, but we are not.
+>>>>         */
+>>>
+>>> Did you read the comment you're changing? ave_resume() calls
+>>> phy_resume(),
+>>> so you should follow the advice in the comment.
+>>
+>> I understand something is wrong with "PHY_NOLINK" here, and need to
+>> investigate
+>> the root cause of the phy state issue.
+>>
+> Best look at how phydev->mac_managed_pm is used in phylib and by MAC
+> drivers.
 
-I suppose the real question is what does the bridge currently do with
-BR_LEARNING + BR_PORT_LOCKED, and if that is sane and useful in any case?
-It isn't a configuration that's rejected, for sure. The configuration
-could be rejected via a bug fix patch, then in net-next it could be made
-to learn these addresses with the BR_FDB_LOCKED flag.
+Thank you for the clue!
+I'll try the flag and check the behavior of MAC/PHY.
 
-To your question regarding the common case (no MAB): that can be supported
-just fine when BR_LEARNING is off and BR_PORT_LOCKED is on, no?
-No BR_FDB_LOCKED entries will be learned.
+Thank you,
+
+---
+Best Regards
+Kunihiko Hayashi
