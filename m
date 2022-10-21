@@ -2,74 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02CA6607DAD
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 19:40:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F38B5607DD3
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 19:46:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229871AbiJURk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 13:40:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54460 "EHLO
+        id S229678AbiJURqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 13:46:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230306AbiJURkX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 13:40:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8220843AE9;
-        Fri, 21 Oct 2022 10:40:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6B7FB82CB6;
-        Fri, 21 Oct 2022 17:40:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51182C433D6;
-        Fri, 21 Oct 2022 17:40:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666374017;
-        bh=1oenVn7qVDln5aafmQiPCgANd8wRAgIk+bXpPnLDZsc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TyiQM07qPB6Cv/z8nDgK0NOV1aJgSDEs1i937iZ1okeKYZ8y3iazAymLSoawO945+
-         3XVLXxJMOkYFJ/Q/ZQyp5e2FBLkeW3xFzOn2oKZRC15VsN0rFEefXzaqYfwEPKiej1
-         viz9uQhe67D8kMYoNTDZs9+hOu5aVyD77Dl4EAqQ2r72waZCyAyaW8jp/g9A7h/US+
-         HpQ5FG096N6H5S8o3aXb3Vxe/BJNmwANKnpHZE6kIU6rwIsgThDgh7iEb/0kw8INzw
-         PwaO0GfANQLt4JnlSo/+aH4rhHTtTa3N/wYuGQwgQMkHBkDtwRFzlSX9ao2QYsUKT4
-         u27B6ZoIN7V7Q==
-Date:   Fri, 21 Oct 2022 10:40:16 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, pabeni@redhat.com, cgroups@vger.kernel.org,
-        roman.gushchin@linux.dev, weiwan@google.com, ncardwell@google.com,
-        ycheng@google.com
-Subject: Re: [PATCH net] net-memcg: avoid stalls when under memory pressure
-Message-ID: <20221021104016.407cbda9@kernel.org>
-In-Reply-To: <CALvZod5di3saFdDJ1cwFDgvLPmnEJ7XB9P8YBTJ3uzfBKAFi3Q@mail.gmail.com>
-References: <20221021160304.1362511-1-kuba@kernel.org>
-        <CALvZod4eezAXpehT4jMiQry4JQ5igJs7Nwi1Q+YhVpDcQ8BMRA@mail.gmail.com>
-        <CANn89iKTi5TYyFOOpgw3P0eTi1Gqn4k-eX+xRTX78Q4sAunm2Q@mail.gmail.com>
-        <CALvZod5di3saFdDJ1cwFDgvLPmnEJ7XB9P8YBTJ3uzfBKAFi3Q@mail.gmail.com>
+        with ESMTP id S229742AbiJURq1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 13:46:27 -0400
+Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3628E21E101;
+        Fri, 21 Oct 2022 10:46:17 -0700 (PDT)
+Received: from unknown (HELO iyokan2-ex.css.socionext.com) ([172.31.9.54])
+  by mx.socionext.com with ESMTP; 22 Oct 2022 02:46:17 +0900
+Received: from mail.mfilter.local (m-filter-2 [10.213.24.62])
+        by iyokan2-ex.css.socionext.com (Postfix) with ESMTP id 33C4F20584CE;
+        Sat, 22 Oct 2022 02:46:17 +0900 (JST)
+Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Sat, 22 Oct 2022 02:46:17 +0900
+Received: from plum.e01.socionext.com (unknown [10.212.243.119])
+        by kinkan2.css.socionext.com (Postfix) with ESMTP id 9DB20B62A4;
+        Sat, 22 Oct 2022 02:46:16 +0900 (JST)
+From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Subject: [PATCH net] net: ethernet: ave: Remove duplicate suspend/resume calls for phy
+Date:   Sat, 22 Oct 2022 02:45:52 +0900
+Message-Id: <20221021174552.6828-1-hayashi.kunihiko@socionext.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 21 Oct 2022 09:34:20 -0700 Shakeel Butt wrote:
-> > > How about just using gfp_any() and we can remove gfp_memcg_charge()?  
-> >
-> > How about keeping gfp_memcg_charge() and adding a comment on its intent ?
-> >
-> > gfp_any() is very generic :/  
+Since AVE has its own suspend/resume functions, there is no need to call
+mdio_bus suspend/resume functions. Set phydev->mac_managed_pm to true
+to avoid the calls.
 
-That was my thinking, and I'm not sure what I could put in a comment.
-Wouldn't it be some mix of words 'flags', 'memory', 'cgroup' and
-'charge'... which is just spelling out the name of the function? 
+In addition, ave_open() executes __phy_resume() via phy_start() in
+ave_resume(), so no need to call phy_resume() explicitly. Remove it.
 
-I mean:
+Suggested-by: Heiner Kallweit <hkallweit1@gmail.com>
+Fixes: 0ba78b4a4989 ("net: ethernet: ave: Add suspend/resume support")
+Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+---
+ drivers/net/ethernet/socionext/sni_ave.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-	/* Alloc flags for passing to cgroup socket memory charging */
+diff --git a/drivers/net/ethernet/socionext/sni_ave.c b/drivers/net/ethernet/socionext/sni_ave.c
+index 14cdd2e8373c..b4e0c57af7c3 100644
+--- a/drivers/net/ethernet/socionext/sni_ave.c
++++ b/drivers/net/ethernet/socionext/sni_ave.c
+@@ -1271,6 +1271,8 @@ static int ave_init(struct net_device *ndev)
+ 
+ 	phy_support_asym_pause(phydev);
+ 
++	phydev->mac_managed_pm = true;
++
+ 	phy_attached_info(phydev);
+ 
+ 	return 0;
+@@ -1806,12 +1808,6 @@ static int ave_resume(struct device *dev)
+ 	wol.wolopts = priv->wolopts;
+ 	__ave_ethtool_set_wol(ndev, &wol);
+ 
+-	if (ndev->phydev) {
+-		ret = phy_resume(ndev->phydev);
+-		if (ret)
+-			return ret;
+-	}
+-
+ 	if (netif_running(ndev)) {
+ 		ret = ave_open(ndev);
+ 		netif_device_attach(ndev);
+-- 
+2.25.1
 
-does not add much value, right? 
