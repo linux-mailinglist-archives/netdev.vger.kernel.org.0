@@ -2,140 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4544960781A
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 15:17:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8EC2607818
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 15:17:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230319AbiJUNR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 09:17:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53844 "EHLO
+        id S230242AbiJUNR0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 09:17:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230195AbiJUNRY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 09:17:24 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D95425A15C;
-        Fri, 21 Oct 2022 06:17:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666358233; x=1697894233;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=67TEJpud3tBGYj0e5MnovwOYbbICjK4y1xG4dR2yYi0=;
-  b=JSYW4dpHngrcegdk8AZLnsRos+91tnLMDlRdnSTKbRdPmNxdiFPU4lzW
-   9U5elHUjC8vg2LS0PskXXC6hgJGnIK1doYvbDTnzgZVWjxEUhzkoV+KEP
-   y0QDgqSQQU2hs3cB3Gad2FcjWo+g4HwuKW+Qagj7NMe5zzyzDjew/+/tK
-   iKo7TUAWSZwfsYGl3rp1RQqwP8outde+9u/7sITKtZUWD1X/6S1hoxhxr
-   NIIpku2y5hyH+jXzoFxgp6SzhNbaGAksTZ0vrCyvFqtiUGk+uitru3zUC
-   gHcIB+9kH6gWPfm+GFLgUvna05nYU5O1fQ8jAr54MPbj43HL6ZwncmPXa
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10507"; a="305736330"
-X-IronPort-AV: E=Sophos;i="5.95,200,1661842800"; 
-   d="scan'208";a="305736330"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2022 06:16:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10507"; a="699338736"
-X-IronPort-AV: E=Sophos;i="5.95,200,1661842800"; 
-   d="scan'208";a="699338736"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga004.fm.intel.com with ESMTP; 21 Oct 2022 06:16:20 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1olrsn-00BAgP-0n;
-        Fri, 21 Oct 2022 16:16:17 +0300
-Date:   Fri, 21 Oct 2022 16:16:17 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Valentin Schneider <vschneid@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Yury Norov <yury.norov@gmail.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: Re: [PATCH v5 2/3] sched/topology: Introduce for_each_numa_hop_mask()
-Message-ID: <Y1KboXN0f8dLjqit@smile.fi.intel.com>
-References: <20221021121927.2893692-1-vschneid@redhat.com>
- <20221021121927.2893692-3-vschneid@redhat.com>
+        with ESMTP id S229657AbiJUNRX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 09:17:23 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA50E17F98E;
+        Fri, 21 Oct 2022 06:17:09 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 03CB41884D82;
+        Fri, 21 Oct 2022 13:16:22 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id EDB80250007B;
+        Fri, 21 Oct 2022 13:16:21 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id E48979EC0009; Fri, 21 Oct 2022 13:16:21 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221021121927.2893692-3-vschneid@redhat.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Date:   Fri, 21 Oct 2022 15:16:21 +0200
+From:   netdev@kapio-technology.com
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Hans Schultz <schultz.hans@gmail.com>,
+        Joachim Wiberg <troglobit@gmail.com>,
+        Amit Cohen <amcohen@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v8 net-next 10/12] net: dsa: mv88e6xxx: mac-auth/MAB
+ implementation
+In-Reply-To: <20221021112216.6bw6sjrieh2znlti@skbuf>
+References: <20221018165619.134535-1-netdev@kapio-technology.com>
+ <20221018165619.134535-1-netdev@kapio-technology.com>
+ <20221018165619.134535-11-netdev@kapio-technology.com>
+ <20221018165619.134535-11-netdev@kapio-technology.com>
+ <20221020132538.reirrskemcjwih2m@skbuf>
+ <2565c09bb95d69142522c3c3bcaa599e@kapio-technology.com>
+ <20221020225719.l5iw6vndmm7gvjo3@skbuf>
+ <82d23b100b8d2c9e4647b8a134d5cbbf@kapio-technology.com>
+ <20221021112216.6bw6sjrieh2znlti@skbuf>
+User-Agent: Gigahost Webmail
+Message-ID: <7bfaae46b1913fe81654a4cd257d98b1@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 21, 2022 at 01:19:26PM +0100, Valentin Schneider wrote:
-> The recently introduced sched_numa_hop_mask() exposes cpumasks of CPUs
-> reachable within a given distance budget, wrap the logic for iterating over
-> all (distance, mask) values inside an iterator macro.
+On 2022-10-21 13:22, Vladimir Oltean wrote:
+> On Fri, Oct 21, 2022 at 08:47:42AM +0200, netdev@kapio-technology.com 
+> wrote:
+>> On 2022-10-21 00:57, Vladimir Oltean wrote:
+>> > On Thu, Oct 20, 2022 at 10:20:50PM +0200, netdev@kapio-technology.com
+>> > wrote:
+>> > > In general locked ports block traffic from a host based on if there
+>> > > is a
+>> > > FDB entry or not. In the non-offloaded case, there is only CPU
+>> > > assisted
+>> > > learning, so the normal learning mechanism has to be disabled as any
+>> > > learned entry will open the port for the learned MAC,vlan.
+>> >
+>> > Does it have to be that way? Why can't BR_LEARNING on a BR_PORT_LOCKED
+>> > cause the learned FDB entries to have BR_FDB_LOCKED, and everything
+>> > would be ok in that case (the port will not be opened for the learned
+>> > MAC/VLAN)?
+>> 
+>> I suppose you are right that basing it solely on BR_FDB_LOCKED is 
+>> possible.
+>> 
+>> The question is then maybe if the common case where you don't need 
+>> learned
+>> entries for the scheme to work, e.g. with EAPOL link local packets, 
+>> requires
+>> less CPU load to work and is cleaner than if using BR_FDB_LOCKED 
+>> entries?
+> 
+> I suppose the real question is what does the bridge currently do with
+> BR_LEARNING + BR_PORT_LOCKED, and if that is sane and useful in any 
+> case?
+> It isn't a configuration that's rejected, for sure. The configuration
+> could be rejected via a bug fix patch, then in net-next it could be 
+> made
+> to learn these addresses with the BR_FDB_LOCKED flag.
+> 
+> To your question regarding the common case (no MAB): that can be 
+> supported
+> just fine when BR_LEARNING is off and BR_PORT_LOCKED is on, no?
+> No BR_FDB_LOCKED entries will be learned.
 
-...
+As it is now in the bridge, the locked port part is handled before 
+learning
+in the ingress data path, so with BR_LEARNING and BR_PORT_LOCKED, I 
+think it
+will work as it does now except link local packages.
 
->  #ifdef CONFIG_NUMA
-> -extern const struct cpumask *sched_numa_hop_mask(int node, int hops);
-> +extern const struct cpumask *sched_numa_hop_mask(unsigned int node, unsigned int hops);
->  #else
-> -static inline const struct cpumask *sched_numa_hop_mask(int node, int hops)
-> +static inline const struct cpumask *
-> +sched_numa_hop_mask(unsigned int node, unsigned int hops)
->  {
-> -	if (node == NUMA_NO_NODE && !hops)
-> -		return cpu_online_mask;
-> -
->  	return ERR_PTR(-EOPNOTSUPP);
->  }
->  #endif	/* CONFIG_NUMA */
-
-I didn't get how the above two changes are related to the 3rd one which
-introduces a for_each type of macro.
-
-If you need change int --> unsigned int, perhaps it can be done in a separate
-patch.
-
-The change inside inliner I dunno about. Not an expert.
-
-...
-
-> +#define for_each_numa_hop_mask(mask, node)				     \
-> +	for (unsigned int __hops = 0;					     \
-> +	     /*								     \
-> +	      * Unsightly trickery required as we can't both initialize	     \
-> +	      * @mask and declare __hops in for()'s first clause	     \
-> +	      */							     \
-> +	     mask = __hops > 0 ? mask :					     \
-> +		    node == NUMA_NO_NODE ?				     \
-> +		    cpu_online_mask : sched_numa_hop_mask(node, 0),	     \
-> +	     !IS_ERR_OR_NULL(mask);					     \
-
-> +	     __hops++,							     \
-> +	     mask = sched_numa_hop_mask(node, __hops))
-
-This can be unified with conditional, see for_each_gpio_desc_with_flag() as
-example how.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+If your suggestion of BR_LEARNING causing BR_FDB_LOCKED on a locked 
+port, I
+guess it would be implemented under br_fdb_update() and BR_LEARNING +
+BR_PORT_LOCKED would go together, forcing BR_LEARNING in this case, thus 
+also
+for all drivers?
