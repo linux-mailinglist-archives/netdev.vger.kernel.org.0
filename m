@@ -2,102 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7172D60788C
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 15:33:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1AD8607893
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 15:35:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230329AbiJUNdc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 09:33:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49566 "EHLO
+        id S230355AbiJUNfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 09:35:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229843AbiJUNda (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 09:33:30 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D832527211A
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 06:33:24 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id z30so1956950qkz.13
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 06:33:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=A72BE+IY0ZrHLTBIHgimMdusQVYAjUJuQP7S8i5Lgzg=;
-        b=NSMmHp4D72Xj1JgY7/qmYBJ84+8CoWjIgZn+LlXfl5MOa/ypvZGuIOMc0zqIRgSiuA
-         W7KinC3ipcNrUAOHnMjwM9ImAH4Z0622rc3FiQa/rRHO0tDAwjrlBI32Ts+z7yP0kILA
-         A4SOg22jgqdJKf7i9HSlvvwbjee9SmmKWgajtWSJlbIGre6kFnT2QmUB3g6aYAv1IT+x
-         skWsg5X/BgtB5/NkFmfwno16ZNTUpp1AyLXZBJ5zuy+C3GmgRMvYXjF041rcmzkmIq+3
-         96/rRo+9PsHQAfcAm5ZCudDnpc9XKX8CcXckUaVOw03P6UT+T/WCCxIJti2HA13rrYB+
-         +BuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=A72BE+IY0ZrHLTBIHgimMdusQVYAjUJuQP7S8i5Lgzg=;
-        b=BhMxYI2rVtp5Hc181ESu6nNKa29U66yhmDfdL0gbnD5J8U137yxSFVyMdpoMz3SAyk
-         9sC7fke28kTAHzxN4Vr+waLR5tRzDE68kk1PmqvSfwWXWz2xl37Shu2QzAXTb9OyY200
-         pB5QQc4hxbhpPZ8Ms2rjjJ5f6Ho/wKx3K/aMW3lMaP9yHxN3/qnRQ+8nTVl13xhdlfms
-         brKz/yuMtJ0KUhSX2t1iPuyP3hnGJhYX6lTDHlOahXHdlG6qQlNOBCFtPg3DI4h4SIjJ
-         Vg5hKgSFm4MXG2SozqBSHS167snkQRvw/cyadtMo2i3fzuHM4w0Qdqo2yMTB1L6jECTb
-         GtuQ==
-X-Gm-Message-State: ACrzQf02yedGHB7UNWqzbUG/kJmAa9iWIm3YIK2By+gFcMvWART04eqO
-        TBEddh9E+RHntSdNQPy0qndFig==
-X-Google-Smtp-Source: AMsMyM5qZak5lIY8DroovbcZWF2ESpxujwqRcUN1jNE81aHgGbe/231Ljtl9XkXmUws8ZJyuf658jg==
-X-Received: by 2002:a05:620a:304:b0:6ee:77f1:ecf9 with SMTP id s4-20020a05620a030400b006ee77f1ecf9mr13922921qkm.94.1666359203197;
-        Fri, 21 Oct 2022 06:33:23 -0700 (PDT)
-Received: from [192.168.10.124] (pool-72-83-177-149.washdc.east.verizon.net. [72.83.177.149])
-        by smtp.gmail.com with ESMTPSA id r2-20020ae9d602000000b006ceb933a9fesm9459881qkk.81.2022.10.21.06.33.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 21 Oct 2022 06:33:22 -0700 (PDT)
-Message-ID: <3b1e28f4-c057-670f-af36-d332e3afb61e@linaro.org>
-Date:   Fri, 21 Oct 2022 09:33:20 -0400
+        with ESMTP id S230076AbiJUNfB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 09:35:01 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 645253FEF1;
+        Fri, 21 Oct 2022 06:34:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1666359299; x=1697895299;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=osQLTHLjWVpHUs3ch1GfhTTRewL1usATqGUUi7FJVFk=;
+  b=XtqGkpZVvifKaq7GKt2shMcMqNeQVmJUjGM9s2GB+iqqjkV3nN4fUj5K
+   vB9z/TIRtjGnpNN+UhmgXEECcEpBBNv7LBBwA3TtLgIKQr+m3ZmV0ZWB5
+   MvIuZ9uD+0husmgyRZRvayrXwW8y4hRLbrbtPax2BtFCtn12Xv7/E32CN
+   mOmL/Swn7HXERqPkDJeqG9ngwZK02ScH3vIy2j4l8AdiYIgfTGDIw11ld
+   99eE7RW015UH6RHNKYQikUqvv1RIazqEe8wXP+sGad4MtTRHbMASrmMPN
+   c1RfeqmYgGEShQH/uvq2TuWhBY2gLeYG5cW3vqzzYzsLbuWggX8oGdyzH
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10507"; a="306995586"
+X-IronPort-AV: E=Sophos;i="5.95,200,1661842800"; 
+   d="scan'208";a="306995586"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2022 06:34:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10507"; a="661605500"
+X-IronPort-AV: E=Sophos;i="5.95,200,1661842800"; 
+   d="scan'208";a="661605500"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga008.jf.intel.com with ESMTP; 21 Oct 2022 06:34:52 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1olsAj-00BBvj-22;
+        Fri, 21 Oct 2022 16:34:49 +0300
+Date:   Fri, 21 Oct 2022 16:34:49 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Valentin Schneider <vschneid@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Yury Norov <yury.norov@gmail.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>
+Subject: Re: [PATCH v5 2/3] sched/topology: Introduce for_each_numa_hop_mask()
+Message-ID: <Y1Kf+aZPIxGCbksM@smile.fi.intel.com>
+References: <20221021121927.2893692-1-vschneid@redhat.com>
+ <20221021121927.2893692-3-vschneid@redhat.com>
+ <Y1KboXN0f8dLjqit@smile.fi.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [PATCH net-next v5 1/5] net: dt-bindings: Introduce the Qualcomm
- IPQESS Ethernet controller
-Content-Language: en-US
-To:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Robert Marko <robert.marko@sartura.hr>
-References: <20221021124556.100445-1-maxime.chevallier@bootlin.com>
- <20221021124556.100445-2-maxime.chevallier@bootlin.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221021124556.100445-2-maxime.chevallier@bootlin.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y1KboXN0f8dLjqit@smile.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21/10/2022 08:45, Maxime Chevallier wrote:
-> Add the DT binding for the IPQESS Ethernet Controller. This is a simple
-> controller, only requiring the phy-mode, interrupts, clocks, and
-> possibly a MAC address setting.
+On Fri, Oct 21, 2022 at 04:16:17PM +0300, Andy Shevchenko wrote:
+> On Fri, Oct 21, 2022 at 01:19:26PM +0100, Valentin Schneider wrote:
+
+...
+
+> > +#define for_each_numa_hop_mask(mask, node)				     \
+> > +	for (unsigned int __hops = 0;					     \
+> > +	     /*								     \
+> > +	      * Unsightly trickery required as we can't both initialize	     \
+> > +	      * @mask and declare __hops in for()'s first clause	     \
+> > +	      */							     \
+> > +	     mask = __hops > 0 ? mask :					     \
+> > +		    node == NUMA_NO_NODE ?				     \
+> > +		    cpu_online_mask : sched_numa_hop_mask(node, 0),	     \
+> > +	     !IS_ERR_OR_NULL(mask);					     \
 > 
-> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
-> ---
-> V4->V5:
->  - Remove stray quotes arount the ref property
->  - Rename the binding to match the compatible string
+> > +	     __hops++,							     \
+> > +	     mask = sched_numa_hop_mask(node, __hops))
+> 
+> This can be unified with conditional, see for_each_gpio_desc_with_flag() as
+> example how.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Something like
 
-Best regards,
-Krzysztof
+	mask = (__hops || node != NUMA_NO_NODE) ? sched_numa_hop_mask(node, __hops) : cpu_online_mask
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
