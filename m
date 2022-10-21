@@ -2,84 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8616A607BAB
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 18:02:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56ED1607AB9
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 17:32:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230116AbiJUQB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 12:01:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60142 "EHLO
+        id S229652AbiJUPcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 11:32:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229880AbiJUQB5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 12:01:57 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C06A8272123
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 09:01:41 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id o70so3855380yba.7
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 09:01:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=QFj00Pytc1eVtk5kxWQzFS9bf1Zt+kboGQFUu9iOLCY=;
-        b=blMCRxL83xZvPorKkb258kqBGV3yOjTV223sbCqOZEW/FqDCYKdFJCIDfKYnjtci0b
-         5OCBCZbAnOmLoHzqtYU6C9+L19aZ91UeDMCqkVnaev5R5AJseFQkMUMvSJUtcORNHJcp
-         red3TSWbYa2+dwPdgk9HXvAAenhWIDP89wGcZsZJ/nVxfHxKtbpiKtsyP3pgcM0eNe5n
-         96empZlfTZZlxeQaogqSZQLfg/PP0Bg53dvvp9zHRswkTSgKDFxKN2gSFdNRjb7V/em5
-         B5OKAbBMwBM/G6VoSH2Gj1VDlPLDBS+lVopx202o3+PPj66HcipjN4DO91HBYdghgxv6
-         +OrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=QFj00Pytc1eVtk5kxWQzFS9bf1Zt+kboGQFUu9iOLCY=;
-        b=Y7Aq/60Nt9c6tIjMwtsLnxVHNbP5q9D0rU+g0ESvLRDT3lbf9rXPsOpUISiMbqwQP8
-         D4NzW7l+yYiPjfhR574aAngCtQCov/+3AtHY57BCFe3ntP8qm6fBZWpYWJ3FfGzx3oLx
-         YMCok00iUE7PByyV/6xqWLOGZVxPnBBse7RN2sbN9M3zTKRo7LH9eZ7Wemy0BvFpK9rV
-         4MY2m73AMX0J0E40+fL4fde5NBqxkpkTBtu04geevZUUFLUvI+NM0HjwgHPFYQmgy4Qn
-         zvWdHvT0Ia+U8EKgFGmXoUCO6Lr4Pf4/NEanCB2w7ElM7ruShnUnfOU/p51HyRft171Y
-         aBgA==
-X-Gm-Message-State: ACrzQf30ecVUxni0EZFQ9yHBHjDkoQfU/UsPhZICq1OaQwP/mqWYLwcu
-        Bax5Sm4RkfXSdv/cKtWbvjTigyn7WGkIZlUGsV7jUw==
-X-Google-Smtp-Source: AMsMyM7Tz3m5Pg1s6h7WSF0K+et5CufbXX1+XkslpjM/+CmQIbfo4cWyRz0IbZVJX5H02ofpOoQYXWcf2rm+wzmDowQ=
-X-Received: by 2002:a25:ab2c:0:b0:6ca:1f6e:da97 with SMTP id
- u41-20020a25ab2c000000b006ca1f6eda97mr10150236ybi.231.1666368100015; Fri, 21
- Oct 2022 09:01:40 -0700 (PDT)
+        with ESMTP id S229491AbiJUPbp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 11:31:45 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0434A182C70
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 08:31:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1666366288; x=1697902288;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=OmhR76mBlTGTWlMBXJ5TMMfa7pH3dMNavgRQzSAITXI=;
+  b=FA91fpR8JTmBL23ufDz5OERr6sjkotFIvMGY8kZJGfAAvUgweuHnL8JI
+   eG2JRpxjN9mGX3kknqNHjo1qpRePWrK1zoSLO5os/YRBGUi2G9Fst4hj+
+   lWJoZdREspjRwT0A0XSJxqWDnWej+i8sLg/jgMDgXShh2m8ROVc07r2FR
+   +oZD/5XHoxszQZF0Bpvkh0ScrM4Vk0dGouHGGSqY3eKxzPYAON1BEQrUE
+   66QwDBKXg2FmbCkbfCmybmWSFNbLn34nCXPRNj1d6WHTo5lp6g8tdTG8W
+   WhUSxNHUpbYxcWxSK34aFCiZydehoSSjPU0n+4huJdhBDgYuLTAxV7ew6
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10507"; a="287430774"
+X-IronPort-AV: E=Sophos;i="5.95,202,1661842800"; 
+   d="scan'208";a="287430774"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2022 08:31:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10507"; a="581633080"
+X-IronPort-AV: E=Sophos;i="5.95,202,1661842800"; 
+   d="scan'208";a="581633080"
+Received: from bswcg005.iind.intel.com ([10.224.174.25])
+  by orsmga003.jf.intel.com with ESMTP; 21 Oct 2022 08:31:11 -0700
+From:   m.chetan.kumar@linux.intel.com
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        krishna.c.sudi@intel.com, m.chetan.kumar@linux.intel.com,
+        linuxwwan@intel.com, linuxwwan_5g@intel.com
+Subject: [PATCH V4 net-next 1/2] net: wwan: t7xx: use union to group port type specific data
+Date:   Sat, 22 Oct 2022 02:29:00 +0530
+Message-Id: <20221021205900.1764650-1-m.chetan.kumar@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20221021040622.815143-1-luwei32@huawei.com>
-In-Reply-To: <20221021040622.815143-1-luwei32@huawei.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 21 Oct 2022 09:01:28 -0700
-Message-ID: <CANn89iK2N5Vo3XoTcxHJWu3XtDD=B1Axnr1axx-NbKvnAEHXxw@mail.gmail.com>
-Subject: Re: [PATCH net,v3] tcp: fix a signed-integer-overflow bug in tcp_add_backlog()
-To:     Lu Wei <luwei32@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, ast@kernel.org,
-        martin.lau@kernel.org, kuniyu@amazon.com, asml.silence@gmail.com,
-        imagedong@tencent.com, ncardwell@google.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DATE_IN_FUTURE_03_06,
+        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 20, 2022 at 8:03 PM Lu Wei <luwei32@huawei.com> wrote:
->
-> The type of sk_rcvbuf and sk_sndbuf in struct sock is int, and
-> in tcp_add_backlog(), the variable limit is caculated by adding
-> sk_rcvbuf, sk_sndbuf and 64 * 1024, it may exceed the max value
-> of int and overflow. This patch reduces the limit budget by
-> halving the sndbuf to solve this issue since ACK packets are much
-> smaller than the payload.
->
-> Fixes: c9c3321257e1 ("tcp: add tcp_add_backlog()")
-> Signed-off-by: Lu Wei <luwei32@huawei.com>
+From: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+Use union inside t7xx_port to group port type specific data members.
+
+Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+---
+ drivers/net/wwan/t7xx/t7xx_port.h      |  6 +++++-
+ drivers/net/wwan/t7xx/t7xx_port_wwan.c | 16 ++++++++--------
+ 2 files changed, 13 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/net/wwan/t7xx/t7xx_port.h b/drivers/net/wwan/t7xx/t7xx_port.h
+index dc4133eb433a..fbc6d724b7c2 100644
+--- a/drivers/net/wwan/t7xx/t7xx_port.h
++++ b/drivers/net/wwan/t7xx/t7xx_port.h
+@@ -99,7 +99,6 @@ struct t7xx_port_conf {
+ struct t7xx_port {
+ 	/* Members not initialized in definition */
+ 	const struct t7xx_port_conf	*port_conf;
+-	struct wwan_port		*wwan_port;
+ 	struct t7xx_pci_dev		*t7xx_dev;
+ 	struct device			*dev;
+ 	u16				seq_nums[2];	/* TX/RX sequence numbers */
+@@ -122,6 +121,11 @@ struct t7xx_port {
+ 	int				rx_length_th;
+ 	bool				chan_enable;
+ 	struct task_struct		*thread;
++	union {
++		struct {
++			struct wwan_port		*wwan_port;
++		} wwan;
++	};
+ };
+ 
+ struct sk_buff *t7xx_port_alloc_skb(int payload);
+diff --git a/drivers/net/wwan/t7xx/t7xx_port_wwan.c b/drivers/net/wwan/t7xx/t7xx_port_wwan.c
+index 33931bfd78fd..24bd21942403 100644
+--- a/drivers/net/wwan/t7xx/t7xx_port_wwan.c
++++ b/drivers/net/wwan/t7xx/t7xx_port_wwan.c
+@@ -109,12 +109,12 @@ static int t7xx_port_wwan_init(struct t7xx_port *port)
+ 
+ static void t7xx_port_wwan_uninit(struct t7xx_port *port)
+ {
+-	if (!port->wwan_port)
++	if (!port->wwan.wwan_port)
+ 		return;
+ 
+ 	port->rx_length_th = 0;
+-	wwan_remove_port(port->wwan_port);
+-	port->wwan_port = NULL;
++	wwan_remove_port(port->wwan.wwan_port);
++	port->wwan.wwan_port = NULL;
+ }
+ 
+ static int t7xx_port_wwan_recv_skb(struct t7xx_port *port, struct sk_buff *skb)
+@@ -129,7 +129,7 @@ static int t7xx_port_wwan_recv_skb(struct t7xx_port *port, struct sk_buff *skb)
+ 		return 0;
+ 	}
+ 
+-	wwan_port_rx(port->wwan_port, skb);
++	wwan_port_rx(port->wwan.wwan_port, skb);
+ 	return 0;
+ }
+ 
+@@ -158,10 +158,10 @@ static void t7xx_port_wwan_md_state_notify(struct t7xx_port *port, unsigned int
+ 	if (state != MD_STATE_READY)
+ 		return;
+ 
+-	if (!port->wwan_port) {
+-		port->wwan_port = wwan_create_port(port->dev, port_conf->port_type,
+-						   &wwan_ops, port);
+-		if (IS_ERR(port->wwan_port))
++	if (!port->wwan.wwan_port) {
++		port->wwan.wwan_port = wwan_create_port(port->dev, port_conf->port_type,
++							&wwan_ops, port);
++		if (IS_ERR(port->wwan.wwan_port))
+ 			dev_err(port->dev, "Unable to create WWWAN port %s", port_conf->name);
+ 	}
+ }
+-- 
+2.34.1
+
