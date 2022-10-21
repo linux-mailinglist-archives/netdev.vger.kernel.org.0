@@ -2,47 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3FBB606F0B
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 06:46:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 782EB606F1A
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 07:05:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229652AbiJUEqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 00:46:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39484 "EHLO
+        id S229731AbiJUFFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 01:05:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229670AbiJUEqV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 00:46:21 -0400
+        with ESMTP id S229596AbiJUFFn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 01:05:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64DC1187DF9
-        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 21:46:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAD70152C7C
+        for <netdev@vger.kernel.org>; Thu, 20 Oct 2022 22:05:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 81DD561DB5
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 04:46:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DA3EC433C1;
-        Fri, 21 Oct 2022 04:46:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EDC961DB4
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 05:05:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 046CAC433C1;
+        Fri, 21 Oct 2022 05:05:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666327576;
-        bh=VdDqIzvjJw+xKs3EKv+5XTQnwceL1XPSD8LTZweyiK8=;
+        s=k20201202; t=1666328741;
+        bh=ik0qCeO7x7gDxThiGNslgszS5S/5jn/mqyzKI9T4MjE=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PEQlesapz94p4mWAQ3QNFS+MUGyWivJR4ofcywPXS3PR8SGUEyVVSd/HwjrUlzIBF
-         dXgBuNfYfXo7kMs3tkmOwsRNdIdiwJF2sBH4KbTZ8madhgLEfyVlTFfncRJmSIbSKx
-         Q845C7a4rXoTbF7EvRk0LH4Ed4RLppbs3/45/QGTSI5OvlEZPpS1VkJ84rs/ku5HrR
-         WAT0oJM6+5RpkplXzqwiLVuNNp0bJYbrpTinvsFvIec3Y79ZysSyiwQm82vOwk/DT+
-         +3JA4sdMvFIqk9F2+FG++prMOk5hZ3QJabrujVBkticymrMbniHYOCQm+gqM4I9uPb
-         23hnFiyMD6M5Q==
-Date:   Thu, 20 Oct 2022 21:46:15 -0700
+        b=LxOfCJXJhEVcsqX/X41JhyUYVsFM5/jEzN3bNwspL1wNxQuC36ujBub8Qrn0dbbff
+         2CWEdxQph5nqFLdHEJ+OPaQ8gUYhoZibaj0t2uWdRxB2OWXJ2JlRk3krI0cKJcpaRm
+         e0n1gZjGwKKc1QrjmABX5ba8Di36nL0z+qSl6ks7IEuuAFjprH+/IXwjgFAEr0F19d
+         Wvw+DSAHj/c+H5mrVfe14HyAr9tAy9FmJBFmUfhWezeybWDk6pq0tURmuN57sP5P6t
+         svpHbTROQXp8vE17MYj1CA14YhOGjhx4XME+dCQVBTvakr8166hNCoqjJOzhzkjRre
+         ON3pLJnVUghig==
+Date:   Thu, 20 Oct 2022 22:05:40 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Raju Rangoju <Raju.Rangoju@amd.com>
-Cc:     <thomas.lendacky@amd.com>, <Shyam-sundar.S-k@amd.com>,
-        <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <Rajesh1.Kumar@amd.com>
-Subject: Re: [PATCH v3 net 1/5] amd-xgbe: Yellow carp devices do not need
- rrc
-Message-ID: <20221020214615.767a8c35@kernel.org>
-In-Reply-To: <20221020064215.2341278-2-Raju.Rangoju@amd.com>
-References: <20221020064215.2341278-1-Raju.Rangoju@amd.com>
-        <20221020064215.2341278-2-Raju.Rangoju@amd.com>
+To:     Aurelien Aptel <aaptel@nvidia.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, saeedm@nvidia.com, tariqt@nvidia.com,
+        linux-nvme@lists.infradead.org, sagi@grimberg.me, hch@lst.de,
+        kbusch@kernel.org, axboe@fb.com, chaitanyak@nvidia.com,
+        smalin@nvidia.com, ogerlitz@nvidia.com, yorayz@nvidia.com,
+        borisp@nvidia.com, aurelien.aptel@gmail.com, malin1024@gmail.com
+Subject: Re: [PATCH v6 01/23] net: Introduce direct data placement tcp
+ offload
+Message-ID: <20221020220540.363b0d02@kernel.org>
+In-Reply-To: <20221020101838.2712846-2-aaptel@nvidia.com>
+References: <20221020101838.2712846-1-aaptel@nvidia.com>
+        <20221020101838.2712846-2-aaptel@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,16 +58,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 20 Oct 2022 12:12:11 +0530 Raju Rangoju wrote:
-> Link stability issues are noticed on Yellow carp platforms when Receiver
-> Reset Cycle is issued. Since the CDR workaround is disabled on these
-> platforms, the Receiver Reset Cycle is not needed.
-> 
-> So, avoid issuing rrc on Yellow carp platforms.
+On Thu, 20 Oct 2022 13:18:16 +0300 Aurelien Aptel wrote:
+> +#ifdef CONFIG_ULP_DDP
+> +	__u8                    ulp_ddp:1;
+> +	__u8			ulp_crc:1;
+> +#define IS_ULP_DDP(skb) ((skb)->ulp_ddp)
+> +#define IS_ULP_CRC(skb) ((skb)->ulp_crc)
+> +#else
+> +#define IS_ULP_DDP(skb) (0)
+> +#define IS_ULP_CRC(skb) (0)
+> +#endif
 
-Let me retry [1] the same question:
+This spews 10000 sparse warnings. I think it may be because of 
+the struct_group() magic. Try moving the macros outside of the struct
+definition. And make it a static inline while at it, dunno why you used
+a define in the first place :S
 
-These devices are only present on SoCs? Changing global data during
-probe looks odd.
-
-[1] https://lore.kernel.org/all/20221006172654.45372b3b@kernel.org/
+Please don't repost before Monday just for that, maybe someone will find
+time to review over the weekend... 
