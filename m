@@ -2,216 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 39D9A6080CF
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 23:34:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 896CE6080D6
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 23:38:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229752AbiJUVeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 17:34:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53220 "EHLO
+        id S229846AbiJUVia (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 17:38:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229658AbiJUVeY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 17:34:24 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4B4629F12A;
-        Fri, 21 Oct 2022 14:34:18 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id q19so10576350edd.10;
-        Fri, 21 Oct 2022 14:34:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=jrXcu1cs8mUU1TtnRXfQswXB6SSw+gLwRssXFFyK6aw=;
-        b=RBqlX5AL/fKKP/NAJncZ4XbYleL3aDEfbJ0+3R8Ndzx+NKHfgzs9JKmckEmlEXwCVi
-         dAn8JLP3ed/800IFqRBleJ253SyGHSd33jc6BFLdN95HwZcPo2SqLW60pb4IYfxeFFSK
-         16rEIjS6vjGM6zDl/ywAsNxeb1gzwzOiR46DalPrFjHBVjFGzDRnrjpQBG4cOT7s/3VC
-         +OQWM/6gM5ktjN2wHEy0BvT8FObqLKZoKgYGhz3KRgB57xV7pemm2Y9BSnbY9B2d5Ke7
-         ZDAVV9qUY4uZHsuLjWth/MQEatyoczxntm6m1GEyrv3vM2kMPlEwXmOgMpq5bsDxzGCC
-         RKgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jrXcu1cs8mUU1TtnRXfQswXB6SSw+gLwRssXFFyK6aw=;
-        b=q3mgEop4380QXPk5oUXJOdd2h4ixi5fLsi2XsyBj1msI0n1en77mafFTVcJ3RhN9lm
-         JPw62KTyI4p2J1BlU0njpLu4BtTxyFoTwmKXpMp/S2I5YD1kuIVfMQ9GNxyjFNEDgRbc
-         eCFACjxp5p/YRSg0VSe9fxtwG3rft4O72ynUNMqcE4iJUzI+DBYPJWLxVEzWXHn/HF18
-         Ig7CO5tCblFzJ5xBD0uuAhVzt6skHEk+cMbpn1lcgqZmUNaCxfXna71f7jjWbaq84jFU
-         4z8cEDtxkIrM9Nbx0h9r6NQ2zY8j8Av7V6favcQqXJaqGxY8XyYLEdGlQheW7mwn2Tcg
-         sHvA==
-X-Gm-Message-State: ACrzQf2RxKZ3RNxTzddFZlknzctsJlZxmDtxI4QyMGe4p8anhAmaHgEa
-        hTpaXN+d/iMi+brB4yADKwE=
-X-Google-Smtp-Source: AMsMyM5FZXqa0GOc4cce2wBxA6Q0ICKnN+9btOZXMAFmNHXxtLxBfZn+N5OLl/VB3rVrbILrsUkcew==
-X-Received: by 2002:aa7:cb87:0:b0:43b:e650:6036 with SMTP id r7-20020aa7cb87000000b0043be6506036mr19602043edt.350.1666388056891;
-        Fri, 21 Oct 2022 14:34:16 -0700 (PDT)
-Received: from krava ([83.240.63.167])
-        by smtp.gmail.com with ESMTPSA id t14-20020a05640203ce00b00459e3a3f3ddsm14070103edw.79.2022.10.21.14.34.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Oct 2022 14:34:16 -0700 (PDT)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Fri, 21 Oct 2022 23:34:13 +0200
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <olsajiri@gmail.com>, Jakub Kicinski <kuba@kernel.org>,
-        Martin KaFai Lau <martin.lau@kernel.org>,
-        bpf@vger.kernel.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: WARN: multiple IDs found for 'nf_conn': 92168, 117897 - using
- 92168
-Message-ID: <Y1MQVbq2rjH/zPi2@krava>
-References: <20221004072522.319cd826@kernel.org>
- <Yz1SSlzZQhVtl1oS@krava>
- <20221005084442.48cb27f1@kernel.org>
- <20221005091801.38cc8732@kernel.org>
- <Yz3kHX4hh8soRjGE@krava>
- <20221013080517.621b8d83@kernel.org>
- <Y0iNVwxTJmrddRuv@krava>
- <CAEf4Bzbow+8-f4rg2LRRRUD+=1wbv1MjpAh-P4=smUPtrzfZ3Q@mail.gmail.com>
- <Y0kF/radV0cg4JYk@krava>
- <CAEf4BzZm2ViaHKiR+4pmWj6yzcPy23q-g_e+cJ90sXuDzkLmSw@mail.gmail.com>
+        with ESMTP id S229520AbiJUVi2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 17:38:28 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 874FC2A523F
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 14:38:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1666388306; x=1697924306;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=QPIZfeDaxJHF9rNVBvVZUX2M8RKkQ/V3SUJxEU1u2HA=;
+  b=c9IfrqvTU1Sl1EIv90JOaGMpeXUYPy4hOGC091hOrdVAXLTpB17c9W5E
+   RkkFfR3nLsDRBEgECqBbwKKRPTJTvap3eEYlIDs+nBmk3Qem01ADvmYNo
+   hvHDNx2t/xu4e6KJ7geIm02jb7fQGzrdJ58r3D3vcYir8JmnQulgVOVXG
+   E+9pnicB5IJRBxoDza1PHOtUFkPw7KY59ls9g98slVhR0jQ7Uftky+j85
+   IcogbcuvxToJnv4/P5Qn4lo/aXiT33nOBLCV2nSwy8hJ6SSLEnHXeClU6
+   7ggqRIgNbnniN5fM1+gZ4wJW1C0llsmFExgEdzdHdixsgVXpQXxprpIwY
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10507"; a="371331953"
+X-IronPort-AV: E=Sophos;i="5.95,203,1661842800"; 
+   d="scan'208";a="371331953"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2022 14:38:25 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10507"; a="693879908"
+X-IronPort-AV: E=Sophos;i="5.95,203,1661842800"; 
+   d="scan'208";a="693879908"
+Received: from jekeller-desk.amr.corp.intel.com ([10.166.241.7])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2022 14:38:24 -0700
+From:   Jacob Keller <jacob.e.keller@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Slawomir Laba <slawomirx.laba@intel.com>,
+        Michal Jaron <michalx.jaron@intel.com>,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH net] i40e: Fix ethtool rx-flow-hash setting for X722
+Date:   Fri, 21 Oct 2022 14:38:19 -0700
+Message-Id: <20221021213819.3958289-1-jacob.e.keller@intel.com>
+X-Mailer: git-send-email 2.38.0.83.gd420dda05763
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZm2ViaHKiR+4pmWj6yzcPy23q-g_e+cJ90sXuDzkLmSw@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 21, 2022 at 11:18:39AM -0700, Andrii Nakryiko wrote:
-> On Thu, Oct 13, 2022 at 11:47 PM Jiri Olsa <olsajiri@gmail.com> wrote:
-> >
-> > On Thu, Oct 13, 2022 at 03:24:59PM -0700, Andrii Nakryiko wrote:
-> > > On Thu, Oct 13, 2022 at 3:12 PM Jiri Olsa <olsajiri@gmail.com> wrote:
-> > > >
-> > > > On Thu, Oct 13, 2022 at 08:05:17AM -0700, Jakub Kicinski wrote:
-> > > > > On Wed, 5 Oct 2022 22:07:57 +0200 Jiri Olsa wrote:
-> > > > > > > Yeah, it's there on linux-next, too.
-> > > > > > >
-> > > > > > > Let me grab a fresh VM and try there. Maybe it's my system. Somehow.
-> > > > > >
-> > > > > > ok, I will look around what's the way to install that centos 8 thing
-> > > > >
-> > > > > Any luck?
-> > > >
-> > > > now BTFIDS warnings..
-> > > >
-> > > > I can see following on centos8 with gcc 8.5:
-> > > >
-> > > >           BTFIDS  vmlinux
-> > > >         WARN: multiple IDs found for 'task_struct': 300, 56614 - using 300
-> > > >         WARN: multiple IDs found for 'file': 540, 56649 - using 540
-> > > >         WARN: multiple IDs found for 'vm_area_struct': 549, 56652 - using 549
-> > > >         WARN: multiple IDs found for 'seq_file': 953, 56690 - using 953
-> > > >         WARN: multiple IDs found for 'inode': 1132, 56966 - using 1132
-> > > >         WARN: multiple IDs found for 'path': 1164, 56995 - using 1164
-> > > >         WARN: multiple IDs found for 'task_struct': 300, 61905 - using 300
-> > > >         WARN: multiple IDs found for 'file': 540, 61943 - using 540
-> > > >         WARN: multiple IDs found for 'vm_area_struct': 549, 61946 - using 549
-> > > >         WARN: multiple IDs found for 'inode': 1132, 62029 - using 1132
-> > > >         WARN: multiple IDs found for 'path': 1164, 62058 - using 1164
-> > > >         WARN: multiple IDs found for 'cgroup': 1190, 62067 - using 1190
-> > > >         WARN: multiple IDs found for 'seq_file': 953, 62253 - using 953
-> > > >         WARN: multiple IDs found for 'sock': 7960, 62374 - using 7960
-> > > >         WARN: multiple IDs found for 'sk_buff': 1876, 62485 - using 1876
-> > > >         WARN: multiple IDs found for 'bpf_prog': 6094, 62542 - using 6094
-> > > >         WARN: multiple IDs found for 'socket': 7993, 62545 - using 7993
-> > > >         WARN: multiple IDs found for 'xdp_buff': 6191, 62836 - using 6191
-> > > >         WARN: multiple IDs found for 'sock_common': 8164, 63152 - using 8164
-> > > >         WARN: multiple IDs found for 'request_sock': 17296, 63204 - using 17296
-> > > >         WARN: multiple IDs found for 'inet_request_sock': 36292, 63222 - using 36292
-> > > >         WARN: multiple IDs found for 'inet_sock': 32700, 63225 - using 32700
-> > > >         WARN: multiple IDs found for 'inet_connection_sock': 33944, 63240 - using 33944
-> > > >         WARN: multiple IDs found for 'tcp_request_sock': 36299, 63260 - using 36299
-> > > >         WARN: multiple IDs found for 'tcp_sock': 33969, 63264 - using 33969
-> > > >         WARN: multiple IDs found for 'bpf_map': 6623, 63343 - using 6623
-> > > >
-> > > > I'll need to check on that..
-> > > >
-> > > > and I just actually saw the 'nf_conn' warning on linux-next/master with
-> > > > latest fedora/gcc-12:
-> > > >
-> > > >           BTF [M] net/netfilter/nf_nat.ko
-> > > >         WARN: multiple IDs found for 'nf_conn': 106518, 120156 - using 106518
-> > > >         WARN: multiple IDs found for 'nf_conn': 106518, 121853 - using 106518
-> > > >         WARN: multiple IDs found for 'nf_conn': 106518, 123126 - using 106518
-> > > >         WARN: multiple IDs found for 'nf_conn': 106518, 124537 - using 106518
-> > > >         WARN: multiple IDs found for 'nf_conn': 106518, 126442 - using 106518
-> > > >         WARN: multiple IDs found for 'nf_conn': 106518, 128256 - using 106518
-> > > >           LD [M]  net/netfilter/nf_nat_tftp.ko
-> > > >
-> > > > looks like maybe dedup missed this struct for some reason
-> > > >
-> > > > nf_conn dump from module:
-> > > >
-> > > >         [120155] PTR '(anon)' type_id=120156
-> > > >         [120156] STRUCT 'nf_conn' size=320 vlen=14
-> > > >                 'ct_general' type_id=105882 bits_offset=0
-> > > >                 'lock' type_id=180 bits_offset=64
-> > > >                 'timeout' type_id=113 bits_offset=640
-> > > >                 'zone' type_id=106520 bits_offset=672
-> > > >                 'tuplehash' type_id=106533 bits_offset=704
-> > > >                 'status' type_id=1 bits_offset=1600
-> > > >                 'ct_net' type_id=3215 bits_offset=1664
-> > > >                 'nat_bysource' type_id=139 bits_offset=1728
-> > > >                 '__nfct_init_offset' type_id=949 bits_offset=1856
-> > > >                 'master' type_id=120155 bits_offset=1856
-> > > >                 'mark' type_id=106351 bits_offset=1920
-> > > >                 'secmark' type_id=106351 bits_offset=1952
-> > > >                 'ext' type_id=106536 bits_offset=1984
-> > > >                 'proto' type_id=106532 bits_offset=2048
-> > > >
-> > > > nf_conn dump from vmlinux:
-> > > >
-> > > >         [106517] PTR '(anon)' type_id=106518
-> > > >         [106518] STRUCT 'nf_conn' size=320 vlen=14
-> > > >                 'ct_general' type_id=105882 bits_offset=0
-> > > >                 'lock' type_id=180 bits_offset=64
-> > > >                 'timeout' type_id=113 bits_offset=640
-> > > >                 'zone' type_id=106520 bits_offset=672
-> > > >                 'tuplehash' type_id=106533 bits_offset=704
-> > > >                 'status' type_id=1 bits_offset=1600
-> > > >                 'ct_net' type_id=3215 bits_offset=1664
-> > > >                 'nat_bysource' type_id=139 bits_offset=1728
-> > > >                 '__nfct_init_offset' type_id=949 bits_offset=1856
-> > > >                 'master' type_id=106517 bits_offset=1856
-> > > >                 'mark' type_id=106351 bits_offset=1920
-> > > >                 'secmark' type_id=106351 bits_offset=1952
-> > > >                 'ext' type_id=106536 bits_offset=1984
-> > > >                 'proto' type_id=106532 bits_offset=2048
-> > > >
-> > > > look identical.. Andrii, any idea?
-> > >
-> > > I'm pretty sure they are not identical. There is somewhere a STRUCT vs
-> > > FWD difference. We had a similar discussion recently with Alan
-> > > Maguire.
-> > >
-> > > >                 'master' type_id=120155 bits_offset=1856
-> > >
-> > > vs
-> > >
-> > > >                 'master' type_id=106517 bits_offset=1856
-> >
-> > master is pointer to same 'nf_conn' object, and rest of the ids are same
-> >
-> 
-> You are right, they should be identical once PTR is deduplicated
-> properly. Sorry, was too quick to jump to conclusions. I was thinking
-> about situations explained by Alan.
-> 
-> So, is this still an issue or this was fixed by [0]?
-> 
->   [0] https://lore.kernel.org/bpf/1666364523-9648-1-git-send-email-alan.maguire@oracle.com/
+From: Slawomir Laba <slawomirx.laba@intel.com>
 
-yes, it seems to be fixed by that
+When enabling flow type for RSS hash via ethtool:
 
-Jakub,
-could you check with pahole fix [1]?
+ethtool -N $pf rx-flow-hash tcp4|tcp6|udp4|udp6 s|d
 
-thanks,
-jirka
+the driver would fail to setup this setting on X722
+device since it was using the mask on the register
+dedicated for X710 devices.
+
+Apply a different mask on the register when setting the
+RSS hash for the X722 device.
+
+When displaying the flow types enabled via ethtool:
+
+ethtool -n $pf rx-flow-hash tcp4|tcp6|udp4|udp6
+
+the driver would print wrong values for X722 device.
+
+Fix this issue by testing masks for X722 device in
+i40e_get_rss_hash_opts function.
+
+Fixes: eb0dd6e4a3b3 ("i40e: Allow RSS Hash set with less than four parameters")
+Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
+Signed-off-by: Michal Jaron <michalx.jaron@intel.com>
+Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+---
+ .../net/ethernet/intel/i40e/i40e_ethtool.c    | 31 ++++++++++++++-----
+ drivers/net/ethernet/intel/i40e/i40e_type.h   |  4 +++
+ 2 files changed, 27 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+index 87f36d1ce800..314ef40aa260 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+@@ -3185,10 +3185,17 @@ static int i40e_get_rss_hash_opts(struct i40e_pf *pf, struct ethtool_rxnfc *cmd)
+ 
+ 		if (cmd->flow_type == TCP_V4_FLOW ||
+ 		    cmd->flow_type == UDP_V4_FLOW) {
+-			if (i_set & I40E_L3_SRC_MASK)
+-				cmd->data |= RXH_IP_SRC;
+-			if (i_set & I40E_L3_DST_MASK)
+-				cmd->data |= RXH_IP_DST;
++			if (hw->mac.type == I40E_MAC_X722) {
++				if (i_set & I40E_X722_L3_SRC_MASK)
++					cmd->data |= RXH_IP_SRC;
++				if (i_set & I40E_X722_L3_DST_MASK)
++					cmd->data |= RXH_IP_DST;
++			} else {
++				if (i_set & I40E_L3_SRC_MASK)
++					cmd->data |= RXH_IP_SRC;
++				if (i_set & I40E_L3_DST_MASK)
++					cmd->data |= RXH_IP_DST;
++			}
+ 		} else if (cmd->flow_type == TCP_V6_FLOW ||
+ 			  cmd->flow_type == UDP_V6_FLOW) {
+ 			if (i_set & I40E_L3_V6_SRC_MASK)
+@@ -3546,12 +3553,15 @@ static int i40e_get_rxnfc(struct net_device *netdev, struct ethtool_rxnfc *cmd,
+ 
+ /**
+  * i40e_get_rss_hash_bits - Read RSS Hash bits from register
++ * @hw: hw structure
+  * @nfc: pointer to user request
+  * @i_setc: bits currently set
+  *
+  * Returns value of bits to be set per user request
+  **/
+-static u64 i40e_get_rss_hash_bits(struct ethtool_rxnfc *nfc, u64 i_setc)
++static u64 i40e_get_rss_hash_bits(struct i40e_hw *hw,
++				  struct ethtool_rxnfc *nfc,
++				  u64 i_setc)
+ {
+ 	u64 i_set = i_setc;
+ 	u64 src_l3 = 0, dst_l3 = 0;
+@@ -3570,8 +3580,13 @@ static u64 i40e_get_rss_hash_bits(struct ethtool_rxnfc *nfc, u64 i_setc)
+ 		dst_l3 = I40E_L3_V6_DST_MASK;
+ 	} else if (nfc->flow_type == TCP_V4_FLOW ||
+ 		  nfc->flow_type == UDP_V4_FLOW) {
+-		src_l3 = I40E_L3_SRC_MASK;
+-		dst_l3 = I40E_L3_DST_MASK;
++		if (hw->mac.type == I40E_MAC_X722) {
++			src_l3 = I40E_X722_L3_SRC_MASK;
++			dst_l3 = I40E_X722_L3_DST_MASK;
++		} else {
++			src_l3 = I40E_L3_SRC_MASK;
++			dst_l3 = I40E_L3_DST_MASK;
++		}
+ 	} else {
+ 		/* Any other flow type are not supported here */
+ 		return i_set;
+@@ -3686,7 +3701,7 @@ static int i40e_set_rss_hash_opt(struct i40e_pf *pf, struct ethtool_rxnfc *nfc)
+ 					       flow_pctype)) |
+ 			((u64)i40e_read_rx_ctl(hw, I40E_GLQF_HASH_INSET(1,
+ 					       flow_pctype)) << 32);
+-		i_set = i40e_get_rss_hash_bits(nfc, i_setc);
++		i_set = i40e_get_rss_hash_bits(&pf->hw, nfc, i_setc);
+ 		i40e_write_rx_ctl(hw, I40E_GLQF_HASH_INSET(0, flow_pctype),
+ 				  (u32)i_set);
+ 		i40e_write_rx_ctl(hw, I40E_GLQF_HASH_INSET(1, flow_pctype),
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_type.h b/drivers/net/ethernet/intel/i40e/i40e_type.h
+index 7b3f30beb757..388c3d36d96a 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_type.h
++++ b/drivers/net/ethernet/intel/i40e/i40e_type.h
+@@ -1404,6 +1404,10 @@ struct i40e_lldp_variables {
+ #define I40E_PFQF_CTL_0_HASHLUTSIZE_512	0x00010000
+ 
+ /* INPUT SET MASK for RSS, flow director, and flexible payload */
++#define I40E_X722_L3_SRC_SHIFT		49
++#define I40E_X722_L3_SRC_MASK		(0x3ULL << I40E_X722_L3_SRC_SHIFT)
++#define I40E_X722_L3_DST_SHIFT		41
++#define I40E_X722_L3_DST_MASK		(0x3ULL << I40E_X722_L3_DST_SHIFT)
+ #define I40E_L3_SRC_SHIFT		47
+ #define I40E_L3_SRC_MASK		(0x3ULL << I40E_L3_SRC_SHIFT)
+ #define I40E_L3_V6_SRC_SHIFT		43
+
+base-commit: 4d814b329a4d54cd10eee4bd2ce5a8175646cc16
+-- 
+2.38.0.83.gd420dda05763
+
