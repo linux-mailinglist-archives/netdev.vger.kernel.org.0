@@ -2,118 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 55571607A31
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 17:11:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7EE5607A50
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 17:16:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230147AbiJUPKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 11:10:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47936 "EHLO
+        id S230255AbiJUPQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 11:16:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230218AbiJUPKQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 11:10:16 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65A79D57E4;
-        Fri, 21 Oct 2022 08:10:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=FrqeS3VJw+FPcz82Z8ZW8s1SnKOZDXvq0uXtD4FCNRo=; b=dMqKwHMcH0f+rymxcxYZGyiBYQ
-        9Rv61ktnInDexzmbXEOWXU9wDcpddIrs474JEz7HNuBzJRS5Zm+jWQssPPNocrhU+c6OCjvCDqaM7
-        KDbogLfepujVWEvhv8CxypmCA55pgk3UsLpseCc3Igatuh64roHATZlDkkSDxvZ4PzsHrV1C0v3Dp
-        D98IxkbNhcCHrrFBdTdul4JgFxo60Gl+PPEetCqr3V0Hq43BoRhOuFg5iZDoAmvj6moBaIolXVnOp
-        zj3WBdivYTfHp/ipGThBmWHtV9nl7epfSwMFLH5GDTpO7WINl47TQr3Q4GlolmMG66abDAz70lSxj
-        /3uJgC4Q==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:42526 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1oltf0-0000NO-CS; Fri, 21 Oct 2022 16:10:10 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1oltez-00FwxN-Nn; Fri, 21 Oct 2022 16:10:09 +0100
-In-Reply-To: <Y1K17UtfFopACIi2@shell.armlinux.org.uk>
-References: <Y1K17UtfFopACIi2@shell.armlinux.org.uk>
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: [PATCH net-next 7/7] net: sfp: get rid of DM7052 hack when enabling
- high power
+        with ESMTP id S230206AbiJUPQl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 11:16:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A802751A7
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 08:16:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0A1A61EDE
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 15:16:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DC14C433D6;
+        Fri, 21 Oct 2022 15:16:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666365399;
+        bh=rkVYIFg2K7PlTr6JQ7UFxz4FZNgle+eLu4pZ7sU4gX0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bAIebSUqM9giQkjUrSo/xPocD7OwYDevTwlp6w2EzNtajPf64YkIva06TS0Kj38K6
+         /PeznQG/F+d9kLf+YmnQWPdN2x7VIu4J97mQUI66oCvQO7vuknpG+dX6dBobymBuPh
+         sgnFvyqdIUJgx1JeHkXFUM0OX5wPi070ea2n9CKvVV8CxDyRoGu7vvKuwABiXJ0OtR
+         +WLCKbKAEZyvKHmICaZxuV1B2tLAy60ZEUpbDMKswSjqKGU90ZAFuW+g8eeeAt0J8a
+         SPmmOxENh9K8MWs2kDFpT9SF1VyzP8J70FVAFDq2EXO/4NVlJ5NfhJgQpWazJuM1Dc
+         VEK3rMjCfwDDw==
+Date:   Fri, 21 Oct 2022 08:16:37 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     "Zulkifli, Muhammad Husaini" <muhammad.husaini.zulkifli@intel.com>,
+        "intel-wired-lan@osuosl.org" <intel-wired-lan@osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "Gunasekaran, Aravindhan" <aravindhan.gunasekaran@intel.com>,
+        "gal@nvidia.com" <gal@nvidia.com>,
+        "saeed@kernel.org" <saeed@kernel.org>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
+        "andy@greyhouse.net" <andy@greyhouse.net>,
+        "Gomes, Vinicius" <vinicius.gomes@intel.com>
+Subject: Re: [PATCH v2 0/5] Add support for DMA timestamp for non-PTP
+ packets
+Message-ID: <20221021081637.5195953b@kernel.org>
+In-Reply-To: <Y1KVLAR2Qi6JeSBj@hoboy.vegasvil.org>
+References: <20221018010733.4765-1-muhammad.husaini.zulkifli@intel.com>
+        <Y06RzWQnTw2RJGPr@hoboy.vegasvil.org>
+        <SJ1PR11MB618053D058C8171AAC4D3FADB8289@SJ1PR11MB6180.namprd11.prod.outlook.com>
+        <Y09i12Wcqr0whToP@hoboy.vegasvil.org>
+        <SJ1PR11MB6180F00C9051443BCEA22AB2B82D9@SJ1PR11MB6180.namprd11.prod.outlook.com>
+        <Y1KVLAR2Qi6JeSBj@hoboy.vegasvil.org>
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1oltez-00FwxN-Nn@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Fri, 21 Oct 2022 16:10:09 +0100
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since we no longer mis-detect high-power mode with the DM7052 module,
-we no longer need the hack in sfp_module_enable_high_power(), and can
-now switch this to use sfp_modify_u8().
+On Fri, 21 Oct 2022 05:48:44 -0700 Richard Cochran wrote:
+> > Could you please provide additional details about this? What do you meant by 
+> > offering 1 HW Timestamp with many SW timestamps?   
+> 
+> - Let the PTP stack use hardware time stamps.
+> 
+> - Let all other applications use software time stamps.
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
- drivers/net/phy/sfp.c | 29 ++++++-----------------------
- 1 file changed, 6 insertions(+), 23 deletions(-)
-
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 921bbedd9b22..39fd1811375c 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -1837,31 +1837,14 @@ static int sfp_module_parse_power(struct sfp *sfp)
- 
- static int sfp_sm_mod_hpower(struct sfp *sfp, bool enable)
- {
--	u8 val;
- 	int err;
- 
--	err = sfp_read(sfp, true, SFP_EXT_STATUS, &val, sizeof(val));
--	if (err != sizeof(val)) {
--		dev_err(sfp->dev, "Failed to read EEPROM: %pe\n", ERR_PTR(err));
--		return -EAGAIN;
--	}
--
--	/* DM7052 reports as a high power module, responds to reads (with
--	 * all bytes 0xff) at 0x51 but does not accept writes.  In any case,
--	 * if the bit is already set, we're already in high power mode.
--	 */
--	if (!!(val & SFP_EXT_STATUS_PWRLVL_SELECT) == enable)
--		return 0;
--
--	if (enable)
--		val |= SFP_EXT_STATUS_PWRLVL_SELECT;
--	else
--		val &= ~SFP_EXT_STATUS_PWRLVL_SELECT;
--
--	err = sfp_write(sfp, true, SFP_EXT_STATUS, &val, sizeof(val));
--	if (err != sizeof(val)) {
--		dev_err(sfp->dev, "Failed to write EEPROM: %pe\n",
--			ERR_PTR(err));
-+	err = sfp_modify_u8(sfp, true, SFP_EXT_STATUS,
-+			    SFP_EXT_STATUS_PWRLVL_SELECT,
-+			    enable ? SFP_EXT_STATUS_PWRLVL_SELECT : 0);
-+	if (err != sizeof(u8)) {
-+		dev_err(sfp->dev, "failed to %sable high power: %pe\n",
-+			enable ? "en" : "dis", ERR_PTR(err));
- 		return -EAGAIN;
- 	}
- 
--- 
-2.30.2
-
+We do need HW stamps for congestion control, the Rx ring queuing 
+(as well as Tx ring scheduling jitter) is very often in 10s of msec.
+Comparing the SW stamp to the HW stamp is where we derive the signal
+that the system is under excessive load.
