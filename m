@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13CCB6074E9
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 12:19:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9F376074EA
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 12:19:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230512AbiJUKT2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 06:19:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47456 "EHLO
+        id S230513AbiJUKTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 06:19:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230123AbiJUKSt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 06:18:49 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 345662413E4;
-        Fri, 21 Oct 2022 03:18:41 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id c3-20020a1c3503000000b003bd21e3dd7aso4675232wma.1;
-        Fri, 21 Oct 2022 03:18:40 -0700 (PDT)
+        with ESMTP id S231184AbiJUKSs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 06:18:48 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9DB725DAF3;
+        Fri, 21 Oct 2022 03:18:42 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id iv17so1856596wmb.4;
+        Fri, 21 Oct 2022 03:18:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=M2LfrtTV1vRKc7J7VJ5UwaKJfx82Qm1fvaWqDX51XpU=;
-        b=VfwUVkR/Cnq8Ix+NAH+WJ3Qp07261Kqnye9ofG37njZ3mhGP5i90wRwkrSZmUFvBrq
-         7qpalCNbeA7zRDAplaFY7Uxk6fVXxLdqE838IIv9PeauMVvOuocl1z+bO6A4Kwgr9fr1
-         r7sHxE+koFFFC/cvTMVJgk0hnvLYPB2AXSoWG2XE5bKQqe+EgQkpsp9o3krdmG/tL3uX
-         NosuNfUkQTiFiA4Vi5P81SL7AV+sCtJZesU3vgQIeqlbqxR4igh8IpQ5qZRZR69o5PwS
-         TzKWHOldo62wJnLKMbUbR6b86clvzh6l43WpmIU41M+TVOtU2ucC0UnGCii0OOR5eYWq
-         sKZg==
+        bh=M/A4q3HXrE5Zm8Jfq7QBtdlkzWJNy1pjXWdj/kLDVls=;
+        b=cj9sSxFCdimjWtRyw8D7kG8AtHwWzcLT8BPA2YG8stWB07xQNMhvGRel/9RWcCEdFh
+         eTG/Pr8blMWgpBHWHEZU6hbtUk3GlIsr1rt/20NOu6uCorb+/IUnUfUSYpron6dz4EUv
+         yG3agISXBKHqsa2BpflAscVh6QSFLUuuUs6Yok5wlLPG0nEcEezzzYdhj9XAGWHhkU+Z
+         4JE/A9x5sbIh0KzAOdS3SOkVwaOQWGN5CPMAxzmttBjX26zXan+5EZYIdFIAmHllSKJq
+         hvVyqyga/a7DnLZfG6R4uVOcnT/q53vRGdNVdHHEHUboMpxT8r9uJNTvjjJ9G8UHONdf
+         dJsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=M2LfrtTV1vRKc7J7VJ5UwaKJfx82Qm1fvaWqDX51XpU=;
-        b=C1iWTekz/BX9e4Nh6dCSQLAYi3USvR+Wu21z6rK3bndE8+diLABsMkDCXEAfLO7EFU
-         hI3seHWVpaLnm6vprHbyUWR1qxhJ4jc2rhdmPfb266Xm8MvkK0Zl+GqL8AxpsvRrJD15
-         F3HZdaen0XdWAJScqYH4fr4kdKdpasW9uh/jrD3/FGfb11RK+DGdvQJ+xVJ0lwtITB9s
-         RvthUGUvmq6PfLITpofrxWy7Qc2ne+Frzhfx66lwF0Wh1O8B93qPVjTPu/JQdL8Qs6LF
-         h6A3w5QRsIxuN/XmAOjKGBIvpVc728ZlVol3DjFvcgkHzOZclvqMC5Uz4Zeo+v5YG1r2
-         sjsA==
-X-Gm-Message-State: ACrzQf1Dub7vBXqD86sxWhPN1rohj5VJbXFFaRgCuiYwHnS2UTOneDh7
-        Id9utNXNn4pzqXnEobFU7K5S3npY4vk=
-X-Google-Smtp-Source: AMsMyM7RYUkfL2yfkxUORjlpQxQfc8xn2EZhWU3TJsiP/2OGqD1DJyATIfGrO9bJZiQyANyRhrVO0Q==
-X-Received: by 2002:a05:600c:ad7:b0:3c6:facf:1f5f with SMTP id c23-20020a05600c0ad700b003c6facf1f5fmr15552036wmr.171.1666347518942;
-        Fri, 21 Oct 2022 03:18:38 -0700 (PDT)
+        bh=M/A4q3HXrE5Zm8Jfq7QBtdlkzWJNy1pjXWdj/kLDVls=;
+        b=5/gufWgQR9EfUnHO/urSbxLbiBGFc6Q1eDHwsU0M1NIFlS8UCTJIJVpBAIAc0crZi7
+         hzqMRFNQM+ORxvSYo4ghBkHTHWj+x+ao9D0/5efjp1ibzmgnzbPqnkb/yabYIVjUOHVT
+         lLS3AH1nxlzpKu86YfUlxSp5ErHlghsb4+oEo8Edq/r0CrXZB3Dq/OcuiFlYZk/tU80R
+         eufX+q1O6oXKYy6Sb3NrTsJHZMqMtFXIAuYcfN/5ZG318D8cof9v6Qwi44N+M8LpMevK
+         sveTXrV4sxiQt/7JWh/ErcHSXMGYP1ZXrm4V32XbEugnghVkc9SOxcHN8mvmZPiXT+7k
+         VQdg==
+X-Gm-Message-State: ACrzQf2QBjonEihBG+nL/lxPpa/CpqO8tgSldXJO6PgyYrJoXrPXS6M3
+        t+P2R9hcjxhEW1NKbTtLz1uNFrPLAso=
+X-Google-Smtp-Source: AMsMyM48tf2dQfO7hQr6iPZ99mqU9YYyg/Mbx68rSS7aHJKyLp80qNh4oX/6gYCXq+MQsP10VVyZ0w==
+X-Received: by 2002:a7b:c841:0:b0:3c6:ce2f:3438 with SMTP id c1-20020a7bc841000000b003c6ce2f3438mr12551544wml.51.1666347520315;
+        Fri, 21 Oct 2022 03:18:40 -0700 (PDT)
 Received: from 127.0.0.1localhost.com ([2620:10d:c092:600::2:f27e])
-        by smtp.gmail.com with ESMTPSA id ba3-20020a0560001c0300b002365254ea42sm1565184wrb.1.2022.10.21.03.18.37
+        by smtp.gmail.com with ESMTPSA id ba3-20020a0560001c0300b002365254ea42sm1565184wrb.1.2022.10.21.03.18.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Oct 2022 03:18:38 -0700 (PDT)
+        Fri, 21 Oct 2022 03:18:39 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     Jens Axboe <axboe@kernel.dk>, Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         "David S . Miller" <davem@davemloft.net>
 Cc:     io-uring@vger.kernel.org, asml.silence@gmail.com,
         netdev@vger.kernel.org, Stefan Metzmacher <metze@samba.org>
-Subject: [PATCH for-6.1 2/3] io_uring/net: fail zc send when unsupported by socket
-Date:   Fri, 21 Oct 2022 11:16:40 +0100
-Message-Id: <2db3c7f16bb6efab4b04569cd16e6242b40c5cb3.1666346426.git.asml.silence@gmail.com>
+Subject: [PATCH for-6.1 3/3] io_uring/net: fail zc sendmsg when unsupported by socket
+Date:   Fri, 21 Oct 2022 11:16:41 +0100
+Message-Id: <0854e7bb4c3d810a48ec8b5853e2f61af36a0467.1666346426.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.38.0
 In-Reply-To: <cover.1666346426.git.asml.silence@gmail.com>
 References: <cover.1666346426.git.asml.silence@gmail.com>
@@ -73,29 +73,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If a protocol doesn't support zerocopy it will silently fall back to
-copying. This type of behaviour has always been a source of troubles
-so it's better to fail such requests instead.
+The previous patch fails zerocopy send requests for protocols that don't
+support it, do the same for zerocopy sendmsg.
 
-Cc: <stable@vger.kernel.org> # 6.0
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
  io_uring/net.c | 2 ++
  1 file changed, 2 insertions(+)
 
 diff --git a/io_uring/net.c b/io_uring/net.c
-index 8c7226b5bf41..26ff3675214d 100644
+index 26ff3675214d..15dea91625e2 100644
 --- a/io_uring/net.c
 +++ b/io_uring/net.c
-@@ -1056,6 +1056,8 @@ int io_send_zc(struct io_kiocb *req, unsigned int issue_flags)
+@@ -1153,6 +1153,8 @@ int io_sendmsg_zc(struct io_kiocb *req, unsigned int issue_flags)
  	sock = sock_from_file(req->file);
  	if (unlikely(!sock))
  		return -ENOTSOCK;
 +	if (!test_bit(SOCK_SUPPORT_ZC, &sock->flags))
 +		return -EOPNOTSUPP;
  
- 	msg.msg_name = NULL;
- 	msg.msg_control = NULL;
+ 	if (req_has_async_data(req)) {
+ 		kmsg = req->async_data;
 -- 
 2.38.0
 
