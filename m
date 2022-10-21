@@ -2,102 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B0D5607558
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 12:48:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B63D607596
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 13:02:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230138AbiJUKs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 06:48:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46794 "EHLO
+        id S229823AbiJULCq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 07:02:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230078AbiJUKsZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 06:48:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173F525F1F4;
-        Fri, 21 Oct 2022 03:48:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5B35AB82B95;
-        Fri, 21 Oct 2022 10:48:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7943C433B5;
-        Fri, 21 Oct 2022 10:48:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666349301;
-        bh=Yl3qRQQpWdMPUbGxJERyNc/a/LusWFS2QJF+ezf+FSQ=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=TgA9vbS6vmkee+djXhez8XsX6q6q1k2rY96M7LgzmPrdDZPi5mQ6jF/HZBcaB7ySU
-         j8m64Y7onysoEui/gN8yxtcBzMLgXCrmYn6oRiTicigWyuHey2t6Auz21mRvYeqpS5
-         fpN/oagLoQJJi25vqOB90BmrTDzvB8MJl+/zuRLSdckp2f1e+iemccjiKzuDF9/ylz
-         rLREgmw9skT4GXZwRZSS3HUvqxq59RRVIjQGYf/7aEycG3OCnepfg1pF2lwqEkR/sO
-         fKbdssWhwxeVuoQ/Ge0+keJL7SqL0oMs9a+yj0bntYMeqVElqeHoOz+zaOoD888Khx
-         6QW13DEahU5hw==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Colin Ian King <colin.i.king@gmail.com>
-Cc:     Jes Sorensen <Jes.Sorensen@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Bitterblue Smith <rtl8821cerfe2@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] wifi: rtl8xxxu: Fix reads of uninitialized variables hw_ctrl_s1, sw_ctrl_s1
-References: <20221020135709.1549086-1-colin.i.king@gmail.com>
-        <87ilkdlq48.fsf@kernel.org>
-Date:   Fri, 21 Oct 2022 13:48:11 +0300
-In-Reply-To: <87ilkdlq48.fsf@kernel.org> (Kalle Valo's message of "Fri, 21 Oct
-        2022 08:09:27 +0300")
-Message-ID: <87bkq51mhg.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S229588AbiJULCm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 07:02:42 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7021425FD06
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 04:02:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=pJcp6g7CIfQJ6GjbKC9pe/tKr/mSwQS3l5pSw4QUrmc=;
+        t=1666350161; x=1667559761; b=jO3A7qk+egGjPIsEgHhOuArLLDVOTYciDypfuyoUNXRO47f
+        dsDdHa9U129ug6yQ8IHoHcBs69TnXG79u5comFZDL3yLrYTHPGOBCTejYKFJARsx/Is1HTTmzBJvK
+        YZQkEXFb8fy0AnK/S5pGmzPr9pm9Wut1LZ3H3ktHF9iKuCt+WCw914oX1IU7RWo56ieIyXDDfCx6Z
+        CrpPBN6Dewa3qWg1r5zPpJK4n5S9aUgFe25MpgC8O9vtCwX+J2cyBDP06VNnPi0kKGC3wiI+9zSrK
+        jXR6Z2qA664tiSa3QQExXJ6u1OErT3pSnbV5ZXiKjaNWKEGHCHsDvDvj3ufdK+xg==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1olpnM-00Cpst-1e;
+        Fri, 21 Oct 2022 13:02:32 +0200
+Message-ID: <8380d344eb5bc084f457920b0133e58ae05f6f2b.camel@sipsolutions.net>
+Subject: Re: [PATCH net-next 12/13] genetlink: allow families to use split
+ ops directly
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, jiri@resnulli.us, razor@blackwall.org,
+        nicolas.dichtel@6wind.com, gnault@redhat.com,
+        jacob.e.keller@intel.com, fw@strlen.de
+Date:   Fri, 21 Oct 2022 13:02:31 +0200
+In-Reply-To: <20221020110950.6e91f9bb@kernel.org>
+References: <20221018230728.1039524-1-kuba@kernel.org>
+         <20221018230728.1039524-13-kuba@kernel.org>
+         <a23c47631957c3ba3aaa87bc325553da04f99a0c.camel@sipsolutions.net>
+         <20221019122504.0cb9d326@kernel.org>
+         <dfac0b6e09e9739c7f613cb8ed77c81f9db0bb44.camel@sipsolutions.net>
+         <20221019125745.3f2e7659@kernel.org>
+         <683f4c655dd09a2af718956e8c8d56e6451e11ac.camel@sipsolutions.net>
+         <20221020110950.6e91f9bb@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-malware-bazaar: not-scanned
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kalle Valo <kvalo@kernel.org> writes:
+On Thu, 2022-10-20 at 11:09 -0700, Jakub Kicinski wrote:
+> On Thu, 20 Oct 2022 09:32:17 +0200 Johannes Berg wrote:
+> > Hmm. The codegen/YAML part likely won't really happen for all of the
+> > families so perhaps some simplification would be good?
+> >=20
+> > I feel like I probably should've changed this when adding
+> > GENL_DONT_VALIDATE_DUMP_STRICT / GENL_DONT_VALIDATE_STRICT, but I guess
+> > that's too late now :(
+> >=20
+> > I guess we could add another set of flags, but that'd be annoying.
+>=20
+> Perhaps we could hang it of the .resv_start_op as well?
 
-> Colin Ian King <colin.i.king@gmail.com> writes:
->
->> Variables hw_ctrl_s1 and sw_ctrl_s1 are not being initialized and
->> potentially can contain any garbage value. Currently there is an if
->> statement that sets one or the other of these variables, followed
->> by an if statement that checks if any of these variables have been
->> set to a non-zero value. In the case where they may contain
->> uninitialized non-zero values, the latter if statement may be
->> taken as true when it was not expected to.
->>
->> Fix this by ensuring hw_ctrl_s1 and sw_ctrl_s1 are initialized.
->>
->> Cleans up clang warning:
->> drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8188f.c:432:7: warning:
->> variable 'hw_ctrl_s1' is used uninitialized whenever 'if' condition is
->> false [-Wsometimes-uninitialized]
->>                 if (hw_ctrl) {
->>                     ^~~~~~~
->> drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8188f.c:440:7: note: uninitialized
->> use occurs here
->>                 if (hw_ctrl_s1 || sw_ctrl_s1) {
->>                     ^~~~~~~~~~
->> drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8188f.c:432:3: note: remove the 'if'
->> if its condition is always true
->>                 if (hw_ctrl) {
->>                 ^~~~~~~~~~~~~
->>
->> Fixes: c888183b21f3 ("wifi: rtl8xxxu: Support new chip RTL8188FU")
->> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
->
-> I'll queue this to v6.1.
+Yes, hopefully? Maybe?
 
-Actually commit c888183b21f3 is in wireless-next so this patch should go
-to wireless-next, for v6.2.
+> Any op past that would treat policy =3D=3D NULL as reject all?
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+Right. The only danger is that someone already added new stuff somewhere
+and bad/broken userspace already used it with garbage attrs.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+But the chances of that are probably low.
+
+So I'd say go for it, and worst case we bump up the resv_start_op for
+anything that breaks? Wouldn't be a huge loss either.
+
+> We'd need to add GENL_DONT_VALIDATE_DO for families which=20
+> want to parse inside the callbacks. I wonder if people would
+> get annoyed.
+
+Why would anyone really want to _parse_ in the callbacks?
+
+johannes
