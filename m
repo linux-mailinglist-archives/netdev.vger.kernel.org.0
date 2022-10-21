@@ -2,165 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2502B60821A
-	for <lists+netdev@lfdr.de>; Sat, 22 Oct 2022 01:38:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9113C608238
+	for <lists+netdev@lfdr.de>; Sat, 22 Oct 2022 01:49:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229783AbiJUXiG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 19:38:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39676 "EHLO
+        id S229851AbiJUXtr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 19:49:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiJUXiF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 19:38:05 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9ED434705
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 16:38:03 -0700 (PDT)
-Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com [209.85.216.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id AA932412E5
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 23:38:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1666395480;
-        bh=pn941OvGFxDKPACrQ8rKzh4x6uwFhSh6MF8WKrhH73c=;
-        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
-         Content-Type:Date:Message-ID;
-        b=EEn6sMCqfwSbIA4rq6wW7qsWrf3jF0PngrUqnzrZ3hWXaawJDyetNJ6fQx3nHZALS
-         EWD0m203JStGgPUZTxXobNbnhbyxcr7RusdJUz5rgoE9jF888Ds1u0IR0tVvza6f9S
-         wFq6yVZoYwzAoT+YpL9S54rjw5qsSY/9T4htDvcAuLklysL2DOZb5o9Xv74eKkotba
-         NIKaB1Rl7sr0thEdUc7WMJcr90W7H75hrxEW6I669KwcjIDkKdv0Nqoo3v9tgtgojn
-         jyrukoT/EKBn5V8zm0xtoms2Pfz2iTefOqVG1rqRkrx4AgrFfJVgAt4PXfEs9GB7EY
-         OQXn+ESXfg1RA==
-Received: by mail-pj1-f72.google.com with SMTP id il7-20020a17090b164700b0020d1029ceaaso4889438pjb.8
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 16:38:00 -0700 (PDT)
+        with ESMTP id S229800AbiJUXto (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 19:49:44 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4829C3684E
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 16:49:42 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id f23so3710305plr.6
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 16:49:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=8BvgID2Mlp1LOZxFRRSQflp2rM/AmsvDLSJ/CidGjBk=;
+        b=SipCePk/H4Ki27ow1q+KXNmCpWZJrBEfUawrVZrBsrf5flcWPAmOAbGluKxY12Iw/G
+         bVtX/aW+LoBt1hQNS5jlDmWnBHFYNm84mGdiUKexkqYKjorbdT9UX3ZNLwsHmrTBQPvx
+         YQ0XzkJG+Y1al9YY/M3wkrM4PXev+5RvO+WJc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=message-id:date:content-transfer-encoding:content-id:mime-version
-         :comments:references:in-reply-to:subject:cc:to:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=pn941OvGFxDKPACrQ8rKzh4x6uwFhSh6MF8WKrhH73c=;
-        b=Q8D/E2e+wDwo/RAN8BQZw0kLwcnNQa6xVtsDQsyor4YJXfLufu301Yvr8cZoKXVQ2Q
-         q6HxPo7qxr4RJdkHoYQtUkHCtryTRr6htk3FDZ6VEBwdB07zQyEuwHCVO178sGpzr/6p
-         i+grt01SdCCSfrQ+w7t4hAna8TfeShxlG8JU5NCKTyE3PVpxddCwogFHuWNO7bmFgedL
-         NYVJQTBXAj9dhKDyRB7ZJVNN0N5znKorSIENk6JWVAFyt05MgDIir/d7Pf8b7mlVPvnQ
-         PWFEeCph9D0GKeBJsadAJtwTK8tEBmLwhW9Zcha1Gos3xuVvFebq/z0Hp4CFSq70H729
-         kO7g==
-X-Gm-Message-State: ACrzQf1h7tKVEvsrbUnckb+ClXKv5ujrto9V8PqbhXcJRxOmzXFfaL0A
-        STVFdCrf3/c7L6X6Q2Cbo+YHJFoNF2K1XTOcBRKKhGRzbcH3tWEcoYA1MZSCvqp/xncP351bfFp
-        sSxrOnj+zc9pfqBqX6phJf0EBguBxy4WZRg==
-X-Received: by 2002:a17:90b:17cf:b0:20d:b274:6f50 with SMTP id me15-20020a17090b17cf00b0020db2746f50mr51158526pjb.231.1666395479106;
-        Fri, 21 Oct 2022 16:37:59 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM6RO5rX/ffUKSV2DVbgE3480NCI8atDwsJBo/AGKUQk9T6sAO+ZTOjkgRBT+KETrRSjv4YD5g==
-X-Received: by 2002:a17:90b:17cf:b0:20d:b274:6f50 with SMTP id me15-20020a17090b17cf00b0020db2746f50mr51158509pjb.231.1666395478840;
-        Fri, 21 Oct 2022 16:37:58 -0700 (PDT)
-Received: from famine.localdomain ([50.125.80.157])
-        by smtp.gmail.com with ESMTPSA id l8-20020a170903120800b0016c09a0ef87sm15609809plh.255.2022.10.21.16.37.58
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 21 Oct 2022 16:37:58 -0700 (PDT)
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id B1CF360DBF; Fri, 21 Oct 2022 16:37:57 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id AA0A8A06A7;
-        Fri, 21 Oct 2022 16:37:57 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Petr Machata <petrm@nvidia.com>
-cc:     "David S. Miller" <davem@davemloft.net>,
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=8BvgID2Mlp1LOZxFRRSQflp2rM/AmsvDLSJ/CidGjBk=;
+        b=Oy5bWOA7Iji5vAfelXCx13bAiG4xHZv3hAO+3Tz73zR0Pxre6yWtxtYeKkmY06Lm6T
+         OIM5fffiGVnEJK1OPnYUgKSFAu6tIAB/VgShAWfxws8OTElfTWUd4gcPBLAD3gL6UB6P
+         7Fq6/QZe4eMnaVUzlK4yGQW/XMz1jg3lWxVj3UOS8VQs4Ezm3uNfljV521OGSwjcl3NT
+         h01eGBh0/PibrcGldIgUVGIaCXwT3jkM4eYDJOAu3t/Hh0Y0zlRiOAB1NBts6MTD9haa
+         9ZjI7bG5xmsEAgsQYtlvOcbLNsGr3FSIoHV/MhpyG4Sy+B4dr4iO15s5I8a8Y3xScEa7
+         Vh2Q==
+X-Gm-Message-State: ACrzQf3RqNLkg4TCOZH0lza/Vp16uNCz2NTDf4mwUKbuiT1pQykrQLV3
+        JZx9lepNEsvojas7U7AwK4iAjw==
+X-Google-Smtp-Source: AMsMyM4/tYwwOvCUIhmt8St2bueqQMk53krDt6Pxm+2ScI1STCM9fObrX/gRa0a5O/cIC5IEGbZKew==
+X-Received: by 2002:a17:90a:e297:b0:212:dc30:7fed with SMTP id d23-20020a17090ae29700b00212dc307fedmr2146955pjz.90.1666396181692;
+        Fri, 21 Oct 2022 16:49:41 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id n21-20020a63ee55000000b00439d071c110sm13864837pgk.43.2022.10.21.16.49.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Oct 2022 16:49:40 -0700 (PDT)
+From:   Kees Cook <keescook@chromium.org>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Kees Cook <keescook@chromium.org>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Amit Cohen <amcohen@nvidia.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        David Ahern <dsahern@kernel.org>, mlxsw@nvidia.com
-Subject: Re: [PATCH net-next 3/3] bonding: 3ad: Add support for 800G speed
-In-reply-to: <9684b0698215ae746447b2d8b4fd983ad283ce0a.1666277135.git.petrm@nvidia.com>
-References: <cover.1666277135.git.petrm@nvidia.com> <9684b0698215ae746447b2d8b4fd983ad283ce0a.1666277135.git.petrm@nvidia.com>
-Comments: In-reply-to Petr Machata <petrm@nvidia.com>
-   message dated "Thu, 20 Oct 2022 17:20:05 +0200."
-X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Menglong Dong <imagedong@tencent.com>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: [PATCH v4] skbuff: Proactively round up to kmalloc bucket size
+Date:   Fri, 21 Oct 2022 16:49:36 -0700
+Message-Id: <20221021234713.you.031-kees@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <16040.1666395477.1@famine>
-Content-Transfer-Encoding: quoted-printable
-Date:   Fri, 21 Oct 2022 16:37:57 -0700
-Message-ID: <16041.1666395477@famine>
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5254; h=from:subject:message-id; bh=mBqppqtvL2/WoVg/f5+5q7YdX/5rZQrDaP9jvq5SNds=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBjUzAQj4YnF7sfaNOXHp6h942Zp2pVBhavIZsxhufy hDpdcbqJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCY1MwEAAKCRCJcvTf3G3AJlswD/ 9Y3r9CwzM02Mmy50J+PYZcLUgI4ibXyNuMNwupIkwi6KUI2W9fvMVSawsAkM5b/x+M1CWBOI0Y8Koe YtS6rlW11Th17D7xxNhqDh2MViFxJSFl9x1j5zs7OR895024SdmRLS/eT+GonMGTWn65cJoNCutmED 7tuxvlsf4mYqHJkQT/f6ewQ18P9JVGQhhu+aR1dFaiEAHE/2WuZflnqMP6crdv/DEfH2pc6kwKXjy/ 97qL1b2eKrjXbKQX3EydGxGUPRVD0ceddrFUGftCdz0J2H4sZHhFMCQRzbcCrJDNSiAAIVqdbyvrvI Jt+jYK4+8/K5qUobuq2jd85Yrp9gyfx7TX5TmMMWPq9ylU3VD8rCk3x//Wcf0+gJH8QzVFEbPas4OS XK8PyLEgI+uqZZhyHZCbo1hND4yu4lSZfeoRYp3nn3vyqOzaX6+CAPOJUD7+Yl4FSBZZa2EwDVkwKe FfNAS6xx79PI5Fvkyu2+hz6JPiOauASQTiFUe9wC/G+drcJFepnqlm8uPEqlCf02NGzyRrQUnkzDL7 rCEZs2bEF/laMbAR8K1Jq6vke2ET07GdEDOYiheaSE0SM6XfAq5rcn9hTReprIdJWKY6qJsB6986Qv nkOewbajlHJi/78QLUwtnxa+p096QwNqqhJpAAolsFrvQVy2XY5vLah1Snnw==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Petr Machata <petrm@nvidia.com> wrote:
+Instead of discovering the kmalloc bucket size _after_ allocation, round
+up proactively so the allocation is explicitly made for the full size,
+allowing the compiler to correctly reason about the resulting size of
+the buffer through the existing __alloc_size() hint.
 
->From: Amit Cohen <amcohen@nvidia.com>
->
->Add support for 800Gbps speed to allow using 3ad mode with 800G devices.
->
->Signed-off-by: Amit Cohen <amcohen@nvidia.com>
->Reviewed-by: Ido Schimmel <idosch@nvidia.com>
->Signed-off-by: Petr Machata <petrm@nvidia.com>
+This will allow for kernels built with CONFIG_UBSAN_BOUNDS or the
+coming dynamic bounds checking under CONFIG_FORTIFY_SOURCE to gain
+back the __alloc_size() hints that were temporarily reverted in commit
+93dd04ab0b2b ("slab: remove __alloc_size attribute from __kmalloc_track_caller")
 
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Cc: David Rientjes <rientjes@google.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+---
+v4: use kmalloc_size_roundup() in callers, not kmalloc_reserve()
+v3: https://lore.kernel.org/lkml/20221018093005.give.246-kees@kernel.org
+v2: https://lore.kernel.org/lkml/20220923202822.2667581-4-keescook@chromium.org
+---
+ net/core/skbuff.c | 50 +++++++++++++++++++++++------------------------
+ 1 file changed, 25 insertions(+), 25 deletions(-)
 
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 651a82d30b09..77af430296e2 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -508,14 +508,14 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
+ 	 */
+ 	size = SKB_DATA_ALIGN(size);
+ 	size += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+-	data = kmalloc_reserve(size, gfp_mask, node, &pfmemalloc);
++	osize = kmalloc_size_roundup(size);
++	data = kmalloc_reserve(osize, gfp_mask, node, &pfmemalloc);
+ 	if (unlikely(!data))
+ 		goto nodata;
+ 	/* kmalloc(size) might give us more room than requested.
+ 	 * Put skb_shared_info exactly at the end of allocated zone,
+ 	 * to allow max possible filling before reallocation.
+ 	 */
+-	osize = ksize(data);
+ 	size = SKB_WITH_OVERHEAD(osize);
+ 	prefetchw(data + size);
+ 
+@@ -1816,10 +1816,11 @@ EXPORT_SYMBOL(__pskb_copy_fclone);
+ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
+ 		     gfp_t gfp_mask)
+ {
+-	int i, osize = skb_end_offset(skb);
+-	int size = osize + nhead + ntail;
++	unsigned int osize = skb_end_offset(skb);
++	unsigned int size = osize + nhead + ntail;
+ 	long off;
+ 	u8 *data;
++	int i;
+ 
+ 	BUG_ON(nhead < 0);
+ 
+@@ -1827,15 +1828,16 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
+ 
+ 	skb_zcopy_downgrade_managed(skb);
+ 
+-	size = SKB_DATA_ALIGN(size);
+-
+ 	if (skb_pfmemalloc(skb))
+ 		gfp_mask |= __GFP_MEMALLOC;
+-	data = kmalloc_reserve(size + SKB_DATA_ALIGN(sizeof(struct skb_shared_info)),
+-			       gfp_mask, NUMA_NO_NODE, NULL);
++
++	size = SKB_DATA_ALIGN(size);
++	size += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
++	size = kmalloc_size_roundup(size);
++	data = kmalloc_reserve(size, gfp_mask, NUMA_NO_NODE, NULL);
+ 	if (!data)
+ 		goto nodata;
+-	size = SKB_WITH_OVERHEAD(ksize(data));
++	size = SKB_WITH_OVERHEAD(size);
+ 
+ 	/* Copy only real data... and, alas, header. This should be
+ 	 * optimized for the cases when header is void.
+@@ -6169,21 +6171,20 @@ static int pskb_carve_inside_header(struct sk_buff *skb, const u32 off,
+ 				    const int headlen, gfp_t gfp_mask)
+ {
+ 	int i;
+-	int size = skb_end_offset(skb);
++	unsigned int size = skb_end_offset(skb);
+ 	int new_hlen = headlen - off;
+ 	u8 *data;
+ 
+-	size = SKB_DATA_ALIGN(size);
+-
+ 	if (skb_pfmemalloc(skb))
+ 		gfp_mask |= __GFP_MEMALLOC;
+-	data = kmalloc_reserve(size +
+-			       SKB_DATA_ALIGN(sizeof(struct skb_shared_info)),
+-			       gfp_mask, NUMA_NO_NODE, NULL);
++
++	size = SKB_DATA_ALIGN(size);
++	size += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
++	size = kmalloc_size_roundup(size);
++	data = kmalloc_reserve(size, gfp_mask, NUMA_NO_NODE, NULL);
+ 	if (!data)
+ 		return -ENOMEM;
+-
+-	size = SKB_WITH_OVERHEAD(ksize(data));
++	size = SKB_WITH_OVERHEAD(size);
+ 
+ 	/* Copy real data, and all frags */
+ 	skb_copy_from_linear_data_offset(skb, off, data, new_hlen);
+@@ -6288,22 +6289,21 @@ static int pskb_carve_inside_nonlinear(struct sk_buff *skb, const u32 off,
+ 				       int pos, gfp_t gfp_mask)
+ {
+ 	int i, k = 0;
+-	int size = skb_end_offset(skb);
++	unsigned int size = skb_end_offset(skb);
+ 	u8 *data;
+ 	const int nfrags = skb_shinfo(skb)->nr_frags;
+ 	struct skb_shared_info *shinfo;
+ 
+-	size = SKB_DATA_ALIGN(size);
+-
+ 	if (skb_pfmemalloc(skb))
+ 		gfp_mask |= __GFP_MEMALLOC;
+-	data = kmalloc_reserve(size +
+-			       SKB_DATA_ALIGN(sizeof(struct skb_shared_info)),
+-			       gfp_mask, NUMA_NO_NODE, NULL);
++
++	size = SKB_DATA_ALIGN(size);
++	size += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
++	size = kmalloc_size_roundup(size);
++	data = kmalloc_reserve(size, gfp_mask, NUMA_NO_NODE, NULL);
+ 	if (!data)
+ 		return -ENOMEM;
+-
+-	size = SKB_WITH_OVERHEAD(ksize(data));
++	size = SKB_WITH_OVERHEAD(size);
+ 
+ 	memcpy((struct skb_shared_info *)(data + size),
+ 	       skb_shinfo(skb), offsetof(struct skb_shared_info, frags[0]));
+-- 
+2.34.1
 
->---
-> drivers/net/bonding/bond_3ad.c | 9 +++++++++
-> 1 file changed, 9 insertions(+)
->
->diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3a=
-d.c
->index e58a1e0cadd2..455b555275f1 100644
->--- a/drivers/net/bonding/bond_3ad.c
->+++ b/drivers/net/bonding/bond_3ad.c
->@@ -75,6 +75,7 @@ enum ad_link_speed_type {
-> 	AD_LINK_SPEED_100000MBPS,
-> 	AD_LINK_SPEED_200000MBPS,
-> 	AD_LINK_SPEED_400000MBPS,
->+	AD_LINK_SPEED_800000MBPS,
-> };
-> =
-
-> /* compare MAC addresses */
->@@ -251,6 +252,7 @@ static inline int __check_agg_selection_timer(struct =
-port *port)
->  *     %AD_LINK_SPEED_100000MBPS
->  *     %AD_LINK_SPEED_200000MBPS
->  *     %AD_LINK_SPEED_400000MBPS
->+ *     %AD_LINK_SPEED_800000MBPS
->  */
-> static u16 __get_link_speed(struct port *port)
-> {
->@@ -326,6 +328,10 @@ static u16 __get_link_speed(struct port *port)
-> 			speed =3D AD_LINK_SPEED_400000MBPS;
-> 			break;
-> =
-
->+		case SPEED_800000:
->+			speed =3D AD_LINK_SPEED_800000MBPS;
->+			break;
->+
-> 		default:
-> 			/* unknown speed value from ethtool. shouldn't happen */
-> 			if (slave->speed !=3D SPEED_UNKNOWN)
->@@ -753,6 +759,9 @@ static u32 __get_agg_bandwidth(struct aggregator *agg=
-regator)
-> 		case AD_LINK_SPEED_400000MBPS:
-> 			bandwidth =3D nports * 400000;
-> 			break;
->+		case AD_LINK_SPEED_800000MBPS:
->+			bandwidth =3D nports * 800000;
->+			break;
-> 		default:
-> 			bandwidth =3D 0; /* to silence the compiler */
-> 		}
->-- =
-
->2.35.3
->
