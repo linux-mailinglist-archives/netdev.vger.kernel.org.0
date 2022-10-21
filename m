@@ -2,137 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 966B86075FA
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 13:20:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFE38607607
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 13:22:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230321AbiJULUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 07:20:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53762 "EHLO
+        id S230175AbiJULWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 07:22:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230287AbiJULTz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 07:19:55 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2062.outbound.protection.outlook.com [40.107.223.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2018E6170B
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 04:19:51 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AFiZSvcUdt/jYuQleXJZncr616va7MMYYbV1faGMVD9/NbeKWlHLOrjxulnfTXjctMVVk/br2k8W/aPRQZqbOigKuwHrg1Mr/FvMDfE+Obx8+o74kGJPVNUAdu1gSeMPQut+YfdmEyV+uNh8cJZ1GCnegouumNQduqqQGLlk3AM2U5sICQBuxgKGDlAVwh5RyG+84AUqeZxErOl0lkfZY1HVFzZc/uiYNirkJUjlP2a7+E0stxLAhzvwdhnLUKF2+tG9R2tIgxMt1CQgjwpj8t7qKhDFkI8yfK9Z6LVHByq1ud/viLp9C1jcrygmYrz64DV1GPwdxgqI1MH+0gvl/g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hVoyD1Q6EFBTA4VL7KQRJf9SC5LDmjsqm9S9JnQSXOM=;
- b=XKJo4ChACSZNpSAcqcRuyF9zPjLnL6geVs7X6eobZ91r1iSN/IStJDydWROK3SZYQ98UHScr79gVB6WMuiO6ZpO55jIOjZWXhz/Xiz8zLDdRsuXeprM2vzjh6JsoPiDHxPt2GlSRmiFcFe1TBR6aVycd1Brkxv+HdCXcSdPytumXhrqLTONwlYrU3aSmsDAQndZITwbwBIPaVjH8UIJx4B+R267QPGdbzZ6v3N4xFcVQOQprlG3DrTH7N6oxiyMLhifpf5n4rWBA/kXQySCnzKz3bw3dVSGdDFc7hSvS4Pi3dTJFhvIyw8mwSCrfdrblTREtJd0dbSioV9U3Fr8hlQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hVoyD1Q6EFBTA4VL7KQRJf9SC5LDmjsqm9S9JnQSXOM=;
- b=g9KS2Qoo4TnrUM+6dD/ZQM4RMSEkbZUtLy7R4Qu1Do1apbeEqPHQveGrEHyeM1WJKYVgczJ7khwqZTBKAIACioUWJkDBNjUWrBrZQ7zd40f9DHu5708O0whV/QIeXIbfAfMe4IMnttthoe8ZEFFjQG7adgoys27S8P38Qb481+Humw4MZFRbxHM0J685wHys4vBhKsVk9hB6ENR6ZMo6tFA1TyyF0Ep7JOMyrRAkuwa5Mq/ALJry1eBgAxw4+CMxszn07eVCQT2F6j80CsChUp1G/dgLirKO3TqeTfQswcGJpD+X8NK1OWkoMfvg6MPlGdq5UHcfDhZwMu19Y5pZnQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from SJ1PR12MB6075.namprd12.prod.outlook.com (2603:10b6:a03:45e::8)
- by CH2PR12MB4924.namprd12.prod.outlook.com (2603:10b6:610:6b::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.34; Fri, 21 Oct
- 2022 11:19:48 +0000
-Received: from SJ1PR12MB6075.namprd12.prod.outlook.com
- ([fe80::b8be:60e9:7ad8:c088]) by SJ1PR12MB6075.namprd12.prod.outlook.com
- ([fe80::b8be:60e9:7ad8:c088%3]) with mapi id 15.20.5723.033; Fri, 21 Oct 2022
- 11:19:48 +0000
-From:   Aurelien Aptel <aaptel@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, saeedm@nvidia.com, tariqt@nvidia.com,
-        linux-nvme@lists.infradead.org, sagi@grimberg.me, hch@lst.de,
-        kbusch@kernel.org, axboe@fb.com, chaitanyak@nvidia.com,
-        smalin@nvidia.com, ogerlitz@nvidia.com, yorayz@nvidia.com,
-        borisp@nvidia.com, aurelien.aptel@gmail.com, malin1024@gmail.com
-Subject: Re: [PATCH v6 01/23] net: Introduce direct data placement tcp offload
-In-Reply-To: <20221020220540.363b0d02@kernel.org>
-References: <20221020101838.2712846-1-aaptel@nvidia.com>
- <20221020101838.2712846-2-aaptel@nvidia.com>
- <20221020220540.363b0d02@kernel.org>
-Date:   Fri, 21 Oct 2022 14:19:43 +0300
-Message-ID: <253y1t9v2y8.fsf@mtr-vdi-124.i-did-not-set--mail-host-address--so-tickle-me>
-Content-Type: text/plain
-X-ClientProxiedBy: LO4P123CA0459.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:1aa::14) To SJ1PR12MB6075.namprd12.prod.outlook.com
- (2603:10b6:a03:45e::8)
+        with ESMTP id S229478AbiJULWG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 07:22:06 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41EBE261429;
+        Fri, 21 Oct 2022 04:22:04 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id bp11so4026035wrb.9;
+        Fri, 21 Oct 2022 04:22:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=H7R3Me6hwrctNsT3YD93NqotZPBZa2fhmCWp5NtHQaA=;
+        b=GoyN4FgL4+UdBb8NraWG4aetcfcnB8Tczy/Nv9UZgb4yqyWZZUXQWSsqhYq31kwwD5
+         +UGaOOLmvS7J6YzJ5ftGTcRCn5vwtEeXlgSpWBqM7dCxWhfjyjlEo5TVp7+kcxU94/K3
+         M8hSvEVmjsptYR0XN7urRtT6qWHkAiNDVsgmbo+oh3wpxoza6IeUIsN2h5Irt0jdjkxW
+         ayqZoPATtyhb0lrRS0ZTENMLlUZNZF6SCJQ9MReJYNM0SrltnaqVEpUV6EjwwOnISdjH
+         JvQDWCfDtBUxl/xQ40qH2RLHfHmWedFOMNKLrvVlUNVEWWjEenYoCjky4rX+vZWcZOLs
+         QicA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=H7R3Me6hwrctNsT3YD93NqotZPBZa2fhmCWp5NtHQaA=;
+        b=o9kLTIyMN3h+9dROAndlDnYtK6RwOBkpW/u4sZQ4J8EIwrqKooeaJBRj/V/HonnUdf
+         t9vtzmVjSqvyNKHdjx9TPWZAUTHYUlK2GKYGG533EpNbzaGh8LW+fPuuXUKSWFwo++qg
+         ILQVjNiij1Wd44mGjV2cUbrtdiiEygFq6xeVbk4tOGVi45fP/1kmyHcM8ZbZCQ2kKhF1
+         zSVuTe7kgz0TFlS6VXDHqdo6mF65yGhO2vZzw0zFUI6jZ9xYSVvyqyhcpI0j/IsYPY0n
+         H8Oh9SIv74fh49pwY4jmd3sQ9mhEA42HOj5YNoy7mLGwmx9SdXODJeDpwfudRlSVO5Ja
+         qRFQ==
+X-Gm-Message-State: ACrzQf2OHfNZLsXMugbrHDqsdbAJimCktQH90j2Al0slpPCJFgZ92UeI
+        5dcahluHHiylK4Gx+bGLEc0=
+X-Google-Smtp-Source: AMsMyM7Y4CV/b8X5RSfdJrS7ckTnOmU0Iq7G4+8Jp4vsF5b+uD/wvHB32X9NqnFgPhUCVe6ouKxBkQ==
+X-Received: by 2002:adf:f2c1:0:b0:231:3f1c:2fb with SMTP id d1-20020adff2c1000000b002313f1c02fbmr11512851wrp.602.1666351322247;
+        Fri, 21 Oct 2022 04:22:02 -0700 (PDT)
+Received: from ?IPV6:2620:10d:c096:310::22ef? ([2620:10d:c092:600::2:f27e])
+        by smtp.gmail.com with ESMTPSA id z23-20020a1cf417000000b003c6b874a0dfsm2744358wma.14.2022.10.21.04.22.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 21 Oct 2022 04:22:01 -0700 (PDT)
+Message-ID: <2092f2db-d847-dd78-1690-359ed9bb7f14@gmail.com>
+Date:   Fri, 21 Oct 2022 12:20:57 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PR12MB6075:EE_|CH2PR12MB4924:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8791e088-7358-4fe9-deab-08dab35629ff
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: oXDFE0KGCfk9P+Q5ehmmz9GqPSENlEK8OHo8Zt1JEosGXxa591inGl8jgKRN5H4Kke/gdFbz2geqTF/sEqKq++14omnH90XRjFJvEZAN76dbp8H7YxM9g0cuvDEJOWGjFocMVHQ4PoJS9RFVQKpl+RlIpB+IDjuGcMEXqX3BVBKbll7wJZpC24eo5S3mHKUBS2dP77HGrsAws/HaCJzlb+V1nKnB11F71/WSDL+6vwL5NcWPCH2DS02BDcrE+NODrsqWzFdFrPBT8w6EgveUJYHzHePakQd+L7kZS4fGE5iyrK1q8uOh27nd2mgFBzXjcmazTNW5+xMfZmEeTcNIeMTjpm/KF0j8ClX2IH0k4TOo9Mb+meogxWj/7pI/rQcfuk8OqJIg8qKfn75yLE0TPJuXx+k0fvevc3YLOLtxJM3SqYEu9/n9B1joU8pcHk4m/3TdHfFUt2ZC9Xz/XiZF2Ve10RfeyciIj8sm5Kud5gfEew1WEfIuwtBjfPHJamdxaBjj/vbwLVml4lbYCEagoD6O5grdAbuXYDSKwFa0Zi+QEu78Y/CcSSPlxB8QIcriydKSEdTDOqg/41XdduhEgQKG/UN3txt81gF1mH5R8iHWUHSr0mZAh1ava8Krha+VT/RzaAJCuFQJc/FfLLxuX+G2xA5qXPzOaEQqgpPC2FVMUP7cPFtKeVMpE+Ugq6Ub61m94Tm5K2aFnWu7BPwWWw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ1PR12MB6075.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(366004)(396003)(376002)(39860400002)(136003)(451199015)(86362001)(38100700002)(5660300002)(6666004)(4744005)(26005)(6506007)(6512007)(186003)(83380400001)(7416002)(6486002)(316002)(66556008)(9686003)(2906002)(8676002)(478600001)(6916009)(41300700001)(66476007)(4326008)(66946007)(8936002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cZ7oyMdpqfmZP8LBZrU8dPTfFSsesKAVcfnYnsO0gH9arPfkHp1q3a1FHaZK?=
- =?us-ascii?Q?TOt1cT+IBFVfrNPRSZdB36Abns9Iw05orL8L/R9YhErb69a9L+vFpQoNngiG?=
- =?us-ascii?Q?a693c7Pyhvybbg1etbVUb0+dKV3X6vjKfPtoB3Lys9EhSgeFq+EdaAuQDvXu?=
- =?us-ascii?Q?H3RvqYy+f5gpSkgigZFceZbalBE0ROaqukojTRnzRH7BtK4kcYOPMhxl31VW?=
- =?us-ascii?Q?UIcGyfCjh0jru8tO2GwvNqvNPeeG+zpSiGk46JW/9F8AYIyLwNlTuVZOPYV4?=
- =?us-ascii?Q?j28P7jDH2d3xlLnDQLetd4s/Py774VAlVs6InhoIqfvlLtHgY1BjL5PqVC9y?=
- =?us-ascii?Q?dt3AZvE53KuJ2ErsuRZthqAiPaPlmWo2NFvSqOKdIp8rBu2SfTrMRu3bfGSr?=
- =?us-ascii?Q?xpB35D1TBW157pl8UHaZTqPlw7N04HWjsLzCBxHC5mv3GVv9IKOahQeBRTuY?=
- =?us-ascii?Q?3AckDcbyxopcjF9tQ0Ls44k/jKtmaflBYGfN45b1IEgSF93d6DLSyJyedOaX?=
- =?us-ascii?Q?oZJoTMdG6d02m888xN5Db9yaxmim6RVoxlaKswPYYE78o0jD6OHr7EAi+dPQ?=
- =?us-ascii?Q?mVT3tXZAAtIt1vFxj86t2OrPUZYcDPaovEzKjPkJrIk0h0SjyL3c+OXFJSDc?=
- =?us-ascii?Q?IwA9xxuLc3Uc8CBMB3ketQnhmVPBPt5QQCSgMrUT37JbpNgrm7R0TbyBuerv?=
- =?us-ascii?Q?M0SsU1FkMmHtBNA8v4kNs47Sy3bpcqo5VJ0tzaVLuFTJgGKohRRvcDMVn4j8?=
- =?us-ascii?Q?X9FjlXvnE+zo6TV+SBpoa0v3QHzDap9KIwCfbAN+FfRMpxrtmNv2TkoLnPN9?=
- =?us-ascii?Q?2mLiTANXJ9fkDyobVa5CAxoeqYzPJ7Xe9TwSMTgkdR++zJgrNU4Rx9Nau9hH?=
- =?us-ascii?Q?/g29kR0b5A8xeQ21tBRE9NOxJ3Cp2UyZ8kLZb9rzRrCk5RLo9wA95lCYsNMP?=
- =?us-ascii?Q?hAw8Bjd7th7rMN5Uhc+FEXmU90aCYaXBCA2q8XwLWmLk3O7H6bmfZTsCfbls?=
- =?us-ascii?Q?uBgiVQabLPZe47njSdSgUmfCnzlBc1DUN2/3z4xmnVHmuWFOgsulQgfel6Aj?=
- =?us-ascii?Q?sjCZbu15dLOgrUPpGagnwj4RtK8tp7sHOqer70h5yq7CRDKpudGNBcAAdYn1?=
- =?us-ascii?Q?n3HrHmzKsGOAwecc7/NdFubT46wd/WMoWV8tRmJYME2Iz+SFGGuowP8PLXMB?=
- =?us-ascii?Q?ignoYJgTUo2wN+dBSF5KEAuzAbhqE4pQjG1El7+mV7afBsJy3UeKfbfrCtrW?=
- =?us-ascii?Q?YypQth+yH5XLiIO/GCLzCyp0ghYqeClhnCd0CZ/F1lZN906HgeqKDRwXgjlo?=
- =?us-ascii?Q?39ECEkEH8tesZETa/b7advTIDr43YXBvJPv6smUWPSt4Xuqf/hFulYJJGNEV?=
- =?us-ascii?Q?s4Rm9n+9gUIHkIcq3szN+vKlHn9QonzZjASk62Gq6xXP4uf84RzWD1ZJCGxX?=
- =?us-ascii?Q?HcQnSmj7bNR/rHavDJvlk4ZRZ2kuLeXCwshVz5XyyTYPr/DlRfodbWXh48hN?=
- =?us-ascii?Q?Tpiu1soL6bcUKgfnC79tY75dxuKK4xg3osXNwvT+r1AYlk+mLAQJbWt6cZpi?=
- =?us-ascii?Q?DeiDnbWW4Y9TtMo2c8Ku0EqDCkLiQxSqmvI3M06x?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8791e088-7358-4fe9-deab-08dab35629ff
-X-MS-Exchange-CrossTenant-AuthSource: SJ1PR12MB6075.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Oct 2022 11:19:48.1259
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eKSrm5J1OIw80VMWtfctiW0rIytPMw81+sNNpjPNn65Lfm30J9KzjAGUKFskSWZG/V8WeG0xGYucK+OSxp0sIg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4924
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.1
+Subject: Re: IORING_SEND_NOTIF_USER_DATA (was Re: IORING_CQE_F_COPIED)
+Content-Language: en-US
+To:     Stefan Metzmacher <metze@samba.org>,
+        io-uring <io-uring@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
+        Dylan Yudaken <dylany@fb.com>
+References: <4385ba84-55dd-6b08-0ca7-6b4a43f9d9a2@samba.org>
+ <6f0a9137-2d2b-7294-f59f-0fcf9cdfc72d@gmail.com>
+ <4bbf6bc1-ee4b-8758-7860-a06f57f35d14@samba.org>
+ <cd87b6d0-a6d6-8f24-1af4-4b8845aa669c@gmail.com>
+ <df47dbd0-75e4-5f39-58ad-ec28e50d0b9c@samba.org>
+ <fb6a7599-8a9b-15e5-9b64-6cd9d01c6ff4@gmail.com>
+ <3e7b7606-c655-2d10-f2ae-12aba9abbc76@samba.org>
+ <ae88cd67-906a-7c89-eaf8-7ae190c4674b@gmail.com>
+ <86763cf2-72ed-2d05-99c3-237ce4905611@samba.org>
+ <fc3967d3-ef72-7940-2436-3d8aa329151e@gmail.com>
+ <a5bf4d77-0fad-1d3f-159f-b97128f58af2@samba.org>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <a5bf4d77-0fad-1d3f-159f-b97128f58af2@samba.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+On 10/21/22 10:45, Stefan Metzmacher wrote:
+> Am 21.10.22 um 11:27 schrieb Pavel Begunkov:
+>> On 10/21/22 09:32, Stefan Metzmacher wrote:
+>>> Hi Pavel,
+>>>
+>>>>>>> Experimenting with this stuff lets me wish to have a way to
+>>>>>>> have a different 'user_data' field for the notif cqe,
+>>>>>>> maybe based on a IORING_RECVSEND_ flag, it may make my life
+>>>>>>> easier and would avoid some complexity in userspace...
+>>>>>>> As I need to handle retry on short writes even with MSG_WAITALL
+>>>>>>> as EINTR and other errors could cause them.
+>>>>>>>
+>>>>>>> What do you think?
+>>>>>
+>>>>> Any comment on this?
+>>>>>
+>>>>> IORING_SEND_NOTIF_USER_DATA could let us use
+>>>>> notif->cqe.user_data = sqe->addr3;
+>>>>
+>>>> I'd rather not use the last available u64, tbh, that was the
+>>>> reason for not adding a second user_data in the first place.
+>>>
+>>> As far as I can see io_send_zc_prep has this:
+>>>
+>>>          if (unlikely(READ_ONCE(sqe->__pad2[0]) || READ_ONCE(sqe->addr3)))
+>>>                  return -EINVAL;
+>>>
+>>> both are u64...
+>>
+>> Hah, true, completely forgot about that one
+> 
+> So would a commit like below be fine for you?
+> 
+> Do you have anything in mind for SEND[MSG]_ZC that could possibly use
+> another u64 in future?
 
-Thanks for looking at this.
+It'll most likely be taken in the future, some features are planned
+some I can imagine. The question is how necessary this one is and/or
+how much simpler it would make it considering that CQEs are ordered
+and apps still need to check for F_MORE. It shouldn't even require
+refcounting. Can you elaborate on the simplifying userspace part?
 
-Jakub Kicinski <kuba@kernel.org> writes:
-> This spews 10000 sparse warnings. I think it may be because of
-> the struct_group() magic. Try moving the macros outside of the struct
-> definition. And make it a static inline while at it, dunno why you used
-> a define in the first place :S
-
-Sure, we will update it.
-
-> Please don't repost before Monday just for that, maybe someone will find
-> time to review over the weekend...
-
-Ok
-
-Thanks,
-
+-- 
+Pavel Begunkov
