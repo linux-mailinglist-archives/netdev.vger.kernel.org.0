@@ -2,108 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E9A9607C40
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 18:30:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0D00607C53
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 18:34:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230161AbiJUQae (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 12:30:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33274 "EHLO
+        id S230158AbiJUQeh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 12:34:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230117AbiJUQaX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 12:30:23 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAC44DCEB8;
-        Fri, 21 Oct 2022 09:30:11 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id m15so7843765edb.13;
-        Fri, 21 Oct 2022 09:30:11 -0700 (PDT)
+        with ESMTP id S230027AbiJUQeg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 12:34:36 -0400
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 105CA36BE0
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 09:34:32 -0700 (PDT)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-369426664f9so28458507b3.12
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 09:34:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=diC8NAGcMEsNdERayclB3yX1bYh/brVTx+qg6EEm8xY=;
-        b=QuCjTmmNppPf/d2WZbw804dsVjsBi340rAtZVZBKAdL56fNNBr1wJsqU6uehAaZ4uG
-         ZtNSVVp1WySs2XoXeGLLjrLOQ2/UPjvVqzt0nE48zKk/lEn51q5YwoeNTyaWjDpCr4ro
-         rEEtRW/plhq9pEAd5d282djUJQcff2x5nnmiZL8ObV7Ftlxj+u9V6Wmmc+rPu+HC554S
-         SQXQ+C4Di/dR0DgOjpgfOvcamTaZ4UxeBHSLnN9nSGPv+aGxbp4wL2HNetoY+mkGHl37
-         SRiV4Enc2XcTkoX3a2qs0/CNN4LPYg+jxr7LHk0ksefOcZ8x4woYWzX95F6ix3YkfteB
-         z52g==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=eezqEwsIGJ/3LQ+iomLSnITt2mDK2P9swpPnQUGCMyw=;
+        b=eeYBEPOInivK/gm9Wbwr5myNmL3Je14M9B/vkpy9C6yuJsq62jmu+St6YRyVSeo6K7
+         eYigHE3TI0fmuyXCzTIeDm0E9yzx0c/RPTwgh2ANcXRBYFOTDDRZNqGhHovA9qDCFejO
+         vJc7kvg5AQw0o23AGo1zxjljqKjjlDzQ4/9oWZ+KzHTVFdUUaWfKCsw3j0Rb1e4nnEkV
+         niAvcIdmPNqpdQYKwhRTKgy0FUoNEsMb0GmjXbbwqbQAqzJxUgojWyJCVvdEfo+iEpz6
+         s3z4l01ggnsAsEryGKg0Pvr+Xl2Pw+sshGyIzje1hKAUDEWm9qbDhhavsAFChCl8Dcy4
+         rUNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=diC8NAGcMEsNdERayclB3yX1bYh/brVTx+qg6EEm8xY=;
-        b=kEXcJFDaK6tyH8oO9+Zs4LSujA5Qo6Bu3ZjNm/j4uI3zU6txeh8V3n663ptweEutEL
-         IXTyvOW4C9axdzyIfXPsZQ6kme9xiACqBjVA/0//ACFurGs7STyjlGAO4aWMrDR3W2fc
-         w/1EG+A+NgoE8SQ5mQ2l9PrGWFNcr2cdG9MvnykfqcMS4oxU4SjYeNIEltiOy8u0h7wM
-         Klj90zBjIgFiuJ9Inn7SkS2AlcuZZoAlJxh5NxHr4bNyaQ708NBmOdchDhgQqCnLJG9u
-         cMS7otqJ+YCduuHLTHQH3s8xpP6vy0h8N0Nei5BOSlJBAD1PgwCRnD4I5teGpjGInCmI
-         LRaA==
-X-Gm-Message-State: ACrzQf2Im8apH7abLeNDyB79whcehqjKOeQ6s03gd1sSTyfuC+GFMhXJ
-        kpw/Y+CT/0TnMxv/exZif1E=
-X-Google-Smtp-Source: AMsMyM78n56+svgX29OjlxCyk6mv2WVNTWp9uU9Jnba9JeGUv0mD6os2HIJ6ZxfS90tmLdfQOT0Awg==
-X-Received: by 2002:a05:6402:3896:b0:45c:93c3:3569 with SMTP id fd22-20020a056402389600b0045c93c33569mr18660749edb.37.1666369810213;
-        Fri, 21 Oct 2022 09:30:10 -0700 (PDT)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id e18-20020a17090618f200b007828150a2f1sm11938898ejf.36.2022.10.21.09.30.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Oct 2022 09:30:09 -0700 (PDT)
-Date:   Fri, 21 Oct 2022 19:30:05 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     netdev@kapio-technology.com
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Hans Schultz <schultz.hans@gmail.com>,
-        Joachim Wiberg <troglobit@gmail.com>,
-        Amit Cohen <amcohen@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v8 net-next 10/12] net: dsa: mv88e6xxx: mac-auth/MAB
- implementation
-Message-ID: <20221021163005.xljk2j3fkikr6uge@skbuf>
-References: <20221018165619.134535-1-netdev@kapio-technology.com>
- <20221018165619.134535-1-netdev@kapio-technology.com>
- <20221018165619.134535-11-netdev@kapio-technology.com>
- <20221018165619.134535-11-netdev@kapio-technology.com>
- <20221020132538.reirrskemcjwih2m@skbuf>
- <2565c09bb95d69142522c3c3bcaa599e@kapio-technology.com>
- <20221020225719.l5iw6vndmm7gvjo3@skbuf>
- <82d23b100b8d2c9e4647b8a134d5cbbf@kapio-technology.com>
- <20221021112216.6bw6sjrieh2znlti@skbuf>
- <7bfaae46b1913fe81654a4cd257d98b1@kapio-technology.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=eezqEwsIGJ/3LQ+iomLSnITt2mDK2P9swpPnQUGCMyw=;
+        b=TB5AImcJylu/HDmjKcoZLgeMjcqsFbut1q1m/CG8+Yc56PCduKRb0uW+KxyWvL5Uh9
+         penkDGewHZSA6e/fpvWWatSb/iOwkoim4mg1fPLEAhMwN/eTrWpm0Y+TXCV7zmXaNzMt
+         RN6Vp/pjD72qKeRqNz1AjET4hD1PH2PJ2nLEYqUryp92mkUMgzMU3vJMyn+YWNmtnZ+e
+         wgJwEbxG4XEB9EQ8oUe01HsLszzox73J+Suegc0iFYvKirYWDtrNxdGgaU7/US5s2Jib
+         QNEf8YDuqS5Z214wGZY6UkL1YMDuhTZ8G4k69EpOqskXqsISqKCPJs3UPktrdqJWKYgV
+         o9eg==
+X-Gm-Message-State: ACrzQf1tERAdUAHH9RJIELlmfOa1bdW+i4xX8xp47rodFNuguRYIjUF1
+        IVifczYshE9xR+FfJjkclT+bPJRxCc96dhg1RCFMY7VJvuM=
+X-Google-Smtp-Source: AMsMyM4ANDQPBUw4NtIbT6ahOVpd4py92PgVK1DB3C4kWmACZ4DJQUVXOt9FeSdSZvqmlz2Q2lG+IsBHsjxCgbVAFQY=
+X-Received: by 2002:a0d:ff01:0:b0:353:380e:ca03 with SMTP id
+ p1-20020a0dff01000000b00353380eca03mr17607801ywf.466.1666370071183; Fri, 21
+ Oct 2022 09:34:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7bfaae46b1913fe81654a4cd257d98b1@kapio-technology.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20221021160304.1362511-1-kuba@kernel.org> <CALvZod4eezAXpehT4jMiQry4JQ5igJs7Nwi1Q+YhVpDcQ8BMRA@mail.gmail.com>
+ <CANn89iKTi5TYyFOOpgw3P0eTi1Gqn4k-eX+xRTX78Q4sAunm2Q@mail.gmail.com>
+In-Reply-To: <CANn89iKTi5TYyFOOpgw3P0eTi1Gqn4k-eX+xRTX78Q4sAunm2Q@mail.gmail.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Fri, 21 Oct 2022 09:34:20 -0700
+Message-ID: <CALvZod5di3saFdDJ1cwFDgvLPmnEJ7XB9P8YBTJ3uzfBKAFi3Q@mail.gmail.com>
+Subject: Re: [PATCH net] net-memcg: avoid stalls when under memory pressure
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, pabeni@redhat.com, cgroups@vger.kernel.org,
+        roman.gushchin@linux.dev, weiwan@google.com, ncardwell@google.com,
+        ycheng@google.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -111,42 +70,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 21, 2022 at 03:16:21PM +0200, netdev@kapio-technology.com wrote:
-> As it is now in the bridge, the locked port part is handled before learning
-> in the ingress data path, so with BR_LEARNING and BR_PORT_LOCKED, I think it
-> will work as it does now except link local packages.
+On Fri, Oct 21, 2022 at 9:28 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Fri, Oct 21, 2022 at 9:26 AM Shakeel Butt <shakeelb@google.com> wrote:
+> >
+> > On Fri, Oct 21, 2022 at 9:03 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> > >
+> > > As Shakeel explains the commit under Fixes had the unintended
+> > > side-effect of no longer pre-loading the cached memory allowance.
+> > > Even tho we previously dropped the first packet received when
+> > > over memory limit - the consecutive ones would get thru by using
+> > > the cache. The charging was happening in batches of 128kB, so
+> > > we'd let in 128kB (truesize) worth of packets per one drop.
+> > >
+> > > After the change we no longer force charge, there will be no
+> > > cache filling side effects. This causes significant drops and
+> > > connection stalls for workloads which use a lot of page cache,
+> > > since we can't reclaim page cache under GFP_NOWAIT.
+> > >
+> > > Some of the latency can be recovered by improving SACK reneg
+> > > handling but nowhere near enough to get back to the pre-5.15
+> > > performance (the application I'm experimenting with still
+> > > sees 5-10x worst latency).
+> > >
+> > > Apply the suggested workaround of using GFP_ATOMIC. We will now
+> > > be more permissive than previously as we'll drop _no_ packets
+> > > in softirq when under pressure. But I can't think of any good
+> > > and simple way to address that within networking.
+> > >
+> > > Link: https://lore.kernel.org/all/20221012163300.795e7b86@kernel.org/
+> > > Suggested-by: Shakeel Butt <shakeelb@google.com>
+> > > Fixes: 4b1327be9fe5 ("net-memcg: pass in gfp_t mask to mem_cgroup_charge_skmem()")
+> > > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> > > ---
+> > > CC: weiwan@google.com
+> > > CC: shakeelb@google.com
+> > > CC: ncardwell@google.com
+> > > CC: ycheng@google.com
+> > > ---
+> > >  include/net/sock.h | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/include/net/sock.h b/include/net/sock.h
+> > > index 9e464f6409a7..22f8bab583dd 100644
+> > > --- a/include/net/sock.h
+> > > +++ b/include/net/sock.h
+> > > @@ -2585,7 +2585,7 @@ static inline gfp_t gfp_any(void)
+> > >
+> > >  static inline gfp_t gfp_memcg_charge(void)
+> > >  {
+> > > -       return in_softirq() ? GFP_NOWAIT : GFP_KERNEL;
+> > > +       return in_softirq() ? GFP_ATOMIC : GFP_KERNEL;
+> > >  }
+> > >
+> >
+> > How about just using gfp_any() and we can remove gfp_memcg_charge()?
+>
+> How about keeping gfp_memcg_charge() and adding a comment on its intent ?
+>
+> gfp_any() is very generic :/
 
-If link-local learning is enabled on a locked port, I think those
-addresses should also be learned with the BR_FDB_LOCKED flag. The
-creation of those locked FDB entries can be further suppressed by the
-BROPT_NO_LL_LEARN flag.
-
-> If your suggestion of BR_LEARNING causing BR_FDB_LOCKED on a locked port, I
-> guess it would be implemented under br_fdb_update() and BR_LEARNING +
-> BR_PORT_LOCKED would go together, forcing BR_LEARNING in this case, thus also
-> for all drivers?
-
-Yes, basically where this is placed right now (in br_handle_frame_finish):
-
-	if (p->flags & BR_PORT_LOCKED) {
-		struct net_bridge_fdb_entry *fdb_src =
-			br_fdb_find_rcu(br, eth_hdr(skb)->h_source, vid);
-
-		if (!fdb_src) {
-			unsigned long flags = 0;
-
-			if (p->flags & BR_PORT_MAB) {
-			   ~~~~~~~~~~~~~~~~~~~~~~~~
-			   except check for BR_LEARNING
-
-				__set_bit(BR_FDB_LOCKED, &flags);
-				br_fdb_update(br, p, eth_hdr(skb)->h_source,
-					      vid, flags);
-			}
-			goto drop;
-		} else if (READ_ONCE(fdb_src->dst) != p ||
-			   test_bit(BR_FDB_LOCAL, &fdb_src->flags) ||
-			   test_bit(BR_FDB_LOCKED, &fdb_src->flags)) {
-			goto drop;
-		}
-	}
+SGTM.
