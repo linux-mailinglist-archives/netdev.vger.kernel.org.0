@@ -2,206 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 69C35607962
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 16:21:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86A77607967
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 16:22:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231178AbiJUOVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 10:21:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55386 "EHLO
+        id S230184AbiJUOWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 10:22:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230184AbiJUOVB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 10:21:01 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2086.outbound.protection.outlook.com [40.107.22.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1A8A265C69;
-        Fri, 21 Oct 2022 07:21:00 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CfRAbdvUutVKD/nb8SpZrUHC+KTkEm5Q2zBtYcqmoaVUdEZPjN0e6wq1+0bXsuf5aHAFVqc6zkT39eP50oKGyv6ov/Xxkbnxdj8GocCkbF5M2i5bH6yKvqZVsIRaAHbrrfzMzYtjC33Bf+hV33kngnFESui14iwCSh0NMLOF5BInBtX/a0YAnoP188TeB7MFMDP8aNsJd7Y88ERXBiSBvuh2ovFeHSjsLBRvsDAXCfmUPNZWrmqq4C5RSSGq0E3GMUgF3reLnL2vGwNysrMv2pCGmYexV3vozcaeS8BZTs9tYa+QTBSMq68AXp3HNnDfTbJoKLdiV+v86ARGxXr6Vw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jXaFyJIQS2DJD6eoMegLZnDjvisITtqz741sMDc/3Qo=;
- b=DlUkAg4g92O2g7fZugRRuWh280uQN6hHBAoDFZfcEoBwim0lV2br7LT1drq48jZgD7dEv5eL8BT8TBaeLuV/MomwzdLPh9m4i9K9SQXKvRt8GyT2++L4wSEAP7LX6At494B2I5N7B3of3KBrivI96KPLkLxP6dKbNfjtPdE0yWna/cvmKcrmzL7M6YN79hXZo+6qMKQJd71XUrL02AXmAfNNxddbgqHcjuDcatz4qBZWoL469qyJwlgI1sTb73VD9qP55BpVCNRPdp5i6LAOwXukoV3MEsnJlSi53A8k5tW2theQ65RHybsFkYQrIOd6YuNLyvFkfR5oTX7PcxTyxQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jXaFyJIQS2DJD6eoMegLZnDjvisITtqz741sMDc/3Qo=;
- b=M/p5TPBgKuWsHlLs3nCnf7vNi55cMrNBVSP3MnXAfCvrwS6SzsDpE5/Q+FzYlrRynbpe3ApcHWDPYEttKmOsZC0LXyg46rq55YRj7L8NpAs2ZxxW/Ec/i/tBKrOQj1qidqK2pHXkrz1EdqcHLULW25eJmN4docymavNQLGOP/QU=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by PA4PR04MB9488.eurprd04.prod.outlook.com (2603:10a6:102:2af::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.34; Fri, 21 Oct
- 2022 14:20:58 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::a67a:849c:aeff:cad1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::a67a:849c:aeff:cad1%7]) with mapi id 15.20.5723.035; Fri, 21 Oct 2022
- 14:20:58 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Robert Marko <robert.marko@sartura.hr>
-Subject: Re: [PATCH net-next v5 5/5] ARM: dts: qcom: ipq4019: Add description
- for the IPQESS Ethernet controller
-Thread-Topic: [PATCH net-next v5 5/5] ARM: dts: qcom: ipq4019: Add description
- for the IPQESS Ethernet controller
-Thread-Index: AQHY5UsZufLiXBWDx0irerpeDpuMhw==
-Date:   Fri, 21 Oct 2022 14:20:58 +0000
-Message-ID: <20221021142057.zbc3xfny4hfdshei@skbuf>
-References: <20221021124556.100445-1-maxime.chevallier@bootlin.com>
- <20221021124556.100445-1-maxime.chevallier@bootlin.com>
- <20221021124556.100445-6-maxime.chevallier@bootlin.com>
- <20221021124556.100445-6-maxime.chevallier@bootlin.com>
-In-Reply-To: <20221021124556.100445-6-maxime.chevallier@bootlin.com>
- <20221021124556.100445-6-maxime.chevallier@bootlin.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: VI1PR04MB5136:EE_|PA4PR04MB9488:EE_
-x-ms-office365-filtering-correlation-id: 0ff54a62-3b2d-40a1-1a2e-08dab36f792d
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: mh4X/tVOIpNiEmIafNDs9j2jBJD4T1Lu5Yh6Podb0bX4kH/6tX7E2BMWMZR4iD0fcHSBorwY2CUnuHoB80y5SCEgEV3IPzevbA1rTY4hKGME8TeEY3RCRqcbyrpjTOIgfNTSbYrZ4UcQN7aCdrKqxhXy8tHo1iLRm72di8sUcj24BtwuUdpEJziVfIbOIJ9C8pQR5+oshpwR+PNDS5J9JDSb0VbvxA7ppJXsWw2B/P0K2UepgShAmeVFxKhzpHBvq28sCj1ejRvdxCJHr53OlrhXRXaxNjGX0EIQbP+q7k4HkRJmF5y9IR4CRi+03ulZy8ZCQP2rwwj9fWolpz64CS9Aydfv1DxqxQHE/qFKJZj6JRAVS+ANpf1A5P4vS/DK14uDoVzI36zGITXFqJmoPzeEIRHW0GDVsYQDQzWjXXqOGLBdCCb7lro8JSP6DZhasIF8KPnh1ld/ctb8xY2pZOwqXBIdBx3Xw1utZqC46nJp1p5r0llDq7zfsG6tD+KhTomxT72I7yzl8gw1ul8vNfS+c/o+5FGlAG7AnenwbddeR+eHRf1KZWrPimfGmFFz2/IaqhLQ7ISldNUHlU6E0zbwwk1FgAsnj5KinPs8IqiEXzbUerDSP+pDNYIvBUCIdEx3PMog1Tqr2ZlksRiP7s1v/flXCKIPP4wA977g3XdiggP76gAYK4I89SyVNvWSuTz5Kla8LnAR6NSdPVZ/F2qe8hNjMUFTHzYkp2AY8TYBXSTTYgeD/WqAraALJPvq1qISjKbiTfMr1D/rfdc6Mg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(376002)(346002)(39860400002)(366004)(136003)(396003)(451199015)(122000001)(86362001)(38070700005)(38100700002)(2906002)(5660300002)(4744005)(6506007)(7416002)(26005)(6916009)(44832011)(1076003)(186003)(316002)(9686003)(6512007)(6486002)(54906003)(83380400001)(66476007)(478600001)(64756008)(66946007)(66556008)(66446008)(4326008)(8676002)(41300700001)(71200400001)(8936002)(33716001)(76116006);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?yD803O0s5jAfnU+BWQQWWP3Xjwx6MAOEpuGlMbuS8pzBENl147Kd7K4cAyXK?=
- =?us-ascii?Q?M8o0TT+tAH+fR/VQv9iMhNuggrzpwj433+n/VUqV6Kxov5lyTQ+vXGYTmW4k?=
- =?us-ascii?Q?NjEysgIJod8XwF5Yf1ZUizIqNxNPjSZBqKoV+/+5Tq5BpJphygu9n7t/eEfq?=
- =?us-ascii?Q?dfwydo+t/mYofBFK29Zl8HVNNfVAXVbMpz9NIzX006YfouEF48ptT7rfFYED?=
- =?us-ascii?Q?Makwr7aHZ3DJa5lx1gbImHUAB9xWEkUxRM+mf9DY2dJYXQLFBN4aSanC+fCl?=
- =?us-ascii?Q?BYaTrVME+C6IvYY2+skrBt7wK2L2C6twt5P92mBzAjcKARch1UAR9RoRRXUm?=
- =?us-ascii?Q?FSpTLen6luuLqBx/7Dk3f5C4BB6FazCvGMEgCObEVqOGLKGw47JupoMM3ZfW?=
- =?us-ascii?Q?bINZDjgxi/dBZr6RCQdmicU9BFaHM6qGEIJt06vMxuoWFOmUTT94tK0JMa5F?=
- =?us-ascii?Q?SHT5Hwn1QxWHLKjKGsKjzSCzo4z33jjs8wLbKTdnwqbzfbeZ8w++x1xGdYYj?=
- =?us-ascii?Q?O62uZzZoG9JeaKAGAVcCDzIEsqiXOux4rCAvPBLTXm0SGfEwRlzYbgzaT+WB?=
- =?us-ascii?Q?Xakvnwyd3wOugv/YcHQoXIY/G4P9HvJ2N0OOq63E+7Wvr/XJLxSi7RFq85SX?=
- =?us-ascii?Q?VVItx1kG2YfMu1foHtXjTa+/00xiDP3Jmnvi7oXrgZnOTUT2rDYggaw1WZ1m?=
- =?us-ascii?Q?qSATIK3vpcbkDgIDCI0FvWL7HkxGxQfzuExGxJY+h2g9xjuCVRDv8O9zkx0y?=
- =?us-ascii?Q?yNRPMw3TZuSBG9405Ta57f4anY7cx6ziPAqMshYEcHmben5Y19QmGzhPWUjQ?=
- =?us-ascii?Q?EfjMNZXrRO027lPliL4zrAn9izoy0Tfjy/UBdAlNB6aiVaAabHfTR7MlJ5hU?=
- =?us-ascii?Q?i84XK9e/oOzgyiDFYQCt7wprlsOoHfiv2IQ6hxusEpn8oVqLjHmhvfBnspJB?=
- =?us-ascii?Q?fBGAbxbkO5yewpkZqCPQvSNC3MF/+svg8G+U2Ao26h1G7Zo3LhkOjH9QQPqL?=
- =?us-ascii?Q?5jUFhnFz8JDz0KXxIXz2MeZ+Pn7+TmBW/Kil13QgGh+WPdsE5zx2ocDRn78E?=
- =?us-ascii?Q?pvmqNII+iipCqHU/+EkdQogk9yOMhY+KEqxG6dwWXqFfKDfsVMS8NnZnAmKy?=
- =?us-ascii?Q?4TUE9THfm2wKnYXzLjjIGLTghiLrqIOZbw8uDy4IMjbOnQXbpzmRia2lUlMZ?=
- =?us-ascii?Q?Nuk3TlwBe+02Fc0ikMsKxLv8837/P7Gbjcd6F7NUnOmYH6yCUTrq26Ir8ZC0?=
- =?us-ascii?Q?VXJxgl8+4ccFcDUS5Frn7MgmG1FNfCCd9hi6VJ7Nj+zw3omiG7kCt6bSaXdD?=
- =?us-ascii?Q?V5i7FQdtoZpdV1Pae+JRuesla2G1HFDNXuT8sgIyKF+XlmHTNuQjGVFY0E1x?=
- =?us-ascii?Q?P9J0anp1pYNd0tt5IMAs5YV0VC4Yr5RBTZTlSvwqouYT26B+KJFuhDhxrjh1?=
- =?us-ascii?Q?EikXG/6d293B3zkRB+V7Q2yGzbZ4uk5xEOpLJ3hGk7W0t45qvEpqhrZKBfJx?=
- =?us-ascii?Q?8nweUfovFvntv38/xJOpcxyOhJZaY9Op20sVarMc5aM5Gv8IhEjv1Lbwly3/?=
- =?us-ascii?Q?Wmen4i1qzaEaGo3hq2jGYHMZGEYgwHaAp1rjYH/20zDeEtadTrBar41ipVkw?=
- =?us-ascii?Q?lg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <27A1C4204E45554489665B36E3A728DF@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S229634AbiJUOWv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 10:22:51 -0400
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4376A265C69
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 07:22:51 -0700 (PDT)
+Received: by mail-qt1-x831.google.com with SMTP id f22so1715353qto.3
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 07:22:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=wNMbt44i9GLJs6vfdaRE6Jr0kQTB0qFi6v1dXWZLgTY=;
+        b=YVg+Dy0uGv3W0m0cWg0ryvUIbjRLgJsckXEtp+TSo5eQF8VIye8ovJZ4YRIqevFNZv
+         cmChqaI0vvZf4VuDkk0bq/tn+Yif/87uIcN1L8FbqlfpDYxt/4SBptOUTrQrCNIA4AdG
+         BhK921Iek/jKGV86MU1al9uUaW+Hwia+Iv8vjhbCuqim17wUN6EVJk/OhCfUtOKYAJNV
+         wUSlpnKPmm1iPh05q7HCQeEXgfwkmHPcBeaVD2sBKuJm3mRWrlAPAQT4rRV24gVWQJ0S
+         Tx6sgewRYzowOxxghzl4vsuxgeNEMy4PQBCKg4Q4umQVt5LyLOgM0+kq8bb9EY01PIAg
+         QsPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=wNMbt44i9GLJs6vfdaRE6Jr0kQTB0qFi6v1dXWZLgTY=;
+        b=UgpBgdafGOQ9mVX8ZX16XPpxJadFeQ4WU7/syLgS2NskWxgQOeHZzMvqSDZmiVLRw+
+         hRzjGM8ZKxbH6Dz7EUIfB+cXvE3p0KtncoKBOg8kWdYIZU3j3oteaWHcDKr0voVzsRQu
+         UGanQjbwf/kzSZJbJqwFkel6wH66+jGoralQUfPbS10wGIe45ssU1qBJ0ba1T2yPW29J
+         6SOpPYjHJKkscrlmZeV6pauK+w5neB0MQyC2YCHLZzxx688t9tPp6+7j+fhZB480uyQI
+         5ly7ud4Tl/0GKITunu88pI0hZhv8uO6Gz7VyTO+L6ldMFFI+0ZftZDESS1w9LCjQeSNk
+         Jk2Q==
+X-Gm-Message-State: ACrzQf1qxsW9CKvmFDjh/GmdoyuBme2t0dcGQ8iV12czwTp3ZdbmKqNL
+        cjR5iCYhGzu77tcYQNcGiITcAw3bvC4=
+X-Google-Smtp-Source: AMsMyM4nFHOeeHGdFN2SXh3TfRYqcU5R0c02QdGeWRYRG/aR9U06pUwyX1gYj07Dw7sdQ/1Isemgtg==
+X-Received: by 2002:a05:622a:285:b0:39c:e04a:4f43 with SMTP id z5-20020a05622a028500b0039ce04a4f43mr16892866qtw.390.1666362170097;
+        Fri, 21 Oct 2022 07:22:50 -0700 (PDT)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id u7-20020a05620a430700b006cf8fc6e922sm9614093qko.119.2022.10.21.07.22.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Oct 2022 07:22:49 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vladyslav Tarasiuk <vladyslavt@nvidia.com>
+Subject: [PATCH net] ethtool: eeprom: fix null-deref on genl_info in dump
+Date:   Fri, 21 Oct 2022 10:22:47 -0400
+Message-Id: <5575919a2efc74cd9ad64021880afc3805c54166.1666362167.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0ff54a62-3b2d-40a1-1a2e-08dab36f792d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Oct 2022 14:20:58.1462
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: wZYeO7SwvSInKt6HieYA5tAxgdwn5swOv9PUDelARpOttu9Y5EzsgDJR15aGvsweyHjF9Sje5v7ki9t3+sspLw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB9488
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,UPPERCASE_50_75,URIBL_BLOCKED
-        autolearn=no autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 21, 2022 at 02:45:56PM +0200, Maxime Chevallier wrote:
-> @@ -591,6 +592,51 @@ wifi1: wifi@a800000 {
->  			status =3D "disabled";
->  		};
-> =20
-> +		gmac: ethernet@c080000 {
+The similar fix as commit 46cdedf2a0fa ("ethtool: pse-pd: fix null-deref on
+genl_info in dump") is also needed for ethtool eeprom.
 
-Pretty random ordering in this dts, you'd expect nodes are sorted by
-address...
+Fixes: c781ff12a2f3 ("ethtool: Allow network drivers to dump arbitrary EEPROM data")
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/ethtool/eeprom.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> +			compatible =3D "qcom,ipq4019-ess-edma";
-> +			reg =3D <0xc080000 0x8000>;
-> +			resets =3D <&gcc ESS_RESET>;
-> +			reset-names =3D "ess";
-> +			clocks =3D <&gcc GCC_ESS_CLK>;
-> +			clock-names =3D "ess";
-> +			interrupts =3D <GIC_SPI  65 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI  66 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI  67 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI  68 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI  69 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI  70 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI  71 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI  72 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI  73 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI  74 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI  75 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI  76 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI  77 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI  78 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI  79 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI  80 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 240 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 241 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 242 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 243 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 244 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 245 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 246 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 247 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 248 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 249 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 250 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 251 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 252 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 253 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 254 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 255 IRQ_TYPE_EDGE_RISING>;
+diff --git a/net/ethtool/eeprom.c b/net/ethtool/eeprom.c
+index 1c94bb8ea03f..49c0a2a77f02 100644
+--- a/net/ethtool/eeprom.c
++++ b/net/ethtool/eeprom.c
+@@ -124,7 +124,7 @@ static int eeprom_prepare_data(const struct ethnl_req_info *req_base,
+ 	if (ret)
+ 		goto err_free;
+ 
+-	ret = get_module_eeprom_by_page(dev, &page_data, info->extack);
++	ret = get_module_eeprom_by_page(dev, &page_data, info ? info->extack : NULL);
+ 	if (ret < 0)
+ 		goto err_ops;
+ 
+-- 
+2.31.1
 
-32 interrupts, and no interrupt-names? :)
-
-> +
-> +			status =3D "disabled";
-> +
-
-Could you drop these 2 blank lines? They aren't generally added between
-properties.
-
-> +			phy-mode =3D "internal";
-
-And the fixed-link from the schema example no?
-
-> +		};
-> +
->  		mdio: mdio@90000 {
->  			#address-cells =3D <1>;
->  			#size-cells =3D <0>;
-> --=20
-> 2.37.3
->=
