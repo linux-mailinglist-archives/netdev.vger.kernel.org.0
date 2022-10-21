@@ -2,85 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF57B607EE6
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 21:15:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55247607F19
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 21:35:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229556AbiJUTPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 15:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54168 "EHLO
+        id S229613AbiJUTf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 15:35:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230438AbiJUTPX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 15:15:23 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9319D253BCF
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 12:14:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=wOs78wkzasX/DXA5fij9FjGUZbMlq/K0qB4VOk8q0X4=; b=hipesc9bZbw6+HROQvWVTU0Ykr
-        LK+TB6tz7bUrzyT6W6vU5S0tXurrxa0RpDBgncAz0g9D0kjwwxQNkqdEaDqvjAejocKdf9HdKJZak
-        Lbfjbas9EOwmKd+beWQVa81FE6ndBPzxOF8FSG8ZS+Dy0rC8CKxFYIY54D4i9+Nu4GiSRqXFssIv4
-        gScuoaAOSFRLYhx18A9Uc4oM7ANtsXco0DQriMW7QxyBamuZkZlzT/7kJLp70qUcW/qNinj1j0hWd
-        Q10s3/StT0YO0bIT6WVpBJKbPxkZgw6xsrJWkkPpoG135yCE4+/8YAMyZWrygAJf3AO4EILY/qTRd
-        kASnkK2g==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34878)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1olxTM-0000cR-Ub; Fri, 21 Oct 2022 20:14:24 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1olxTL-0004Ok-Gm; Fri, 21 Oct 2022 20:14:23 +0100
-Date:   Fri, 21 Oct 2022 20:14:23 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 7/7] net: sfp: get rid of DM7052 hack when
- enabling high power
-Message-ID: <Y1Lvj5vGL8/9Ojk+@shell.armlinux.org.uk>
-References: <Y0/7dAB8OU3jrbz6@shell.armlinux.org.uk>
- <E1ol98G-00EDT1-Q6@rmk-PC.armlinux.org.uk>
- <Y1LAVAUSQJrmO+63@lunn.ch>
- <20221021091618.30c27249@kernel.org>
+        with ESMTP id S229719AbiJUTfv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 15:35:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBA6515B301
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 12:35:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 171B061F38
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 19:35:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24745C433C1;
+        Fri, 21 Oct 2022 19:35:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666380946;
+        bh=Pgz3n7P2C3NhFXujtJz2Ci4Z63Cb/moas0UjFt3K+54=;
+        h=From:To:Cc:Subject:Date:From;
+        b=uaKm0BHvDY56OAjw2YfgYRfxQKpW3C1Bao8nmLWD87teBKjqFol6jTC8IRRMud2mL
+         fRyKMIkyrVQNskIMxAFc765/yUYWR2qHIr393unMMJVsxNe3a6Idv2Zxz88KtaMLgU
+         EFDAg8T/10ELmuqPwI3xcjMV8CrHhRXpmWWT9P3Uuf41eS/ud2+9BSU3ZSpIuIK9TV
+         HC3CVNFD04d0O6wYNlvovsaMLT9pElHFjuU0Zqm+G4s/Dog8iDLQuDorMQ5pswReiQ
+         5AK/k+HW+MMeSIs2vFFY/0VpguJJ8JpBB9V2odyHeGx8LhsAcBqa42BOJs63nov+QN
+         F0shf3N8KuveA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net, johannes@sipsolutions.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        jacob.e.keller@intel.com, fw@strlen.de,
+        Jakub Kicinski <kuba@kernel.org>, jiri@nvidia.com
+Subject: [PATCH net] genetlink: piggy back on resv_op to default to a reject policy
+Date:   Fri, 21 Oct 2022 12:35:32 -0700
+Message-Id: <20221021193532.1511293-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221021091618.30c27249@kernel.org>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 21, 2022 at 09:16:18AM -0700, Jakub Kicinski wrote:
-> On Fri, 21 Oct 2022 17:52:52 +0200 Andrew Lunn wrote:
-> > On Wed, Oct 19, 2022 at 02:29:16PM +0100, Russell King (Oracle) wrote:
-> > > Since we no longer mis-detect high-power mode with the DM7052 module,
-> > > we no longer need the hack in sfp_module_enable_high_power(), and can
-> > > now switch this to use sfp_modify_u8().
-> > > 
-> > > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>  
-> > 
-> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> 
-> FWIW there is a v2 of this, somewhat mis-subjected (pw-bot's
-> auto-Superseding logic missed it for example):
-> https://lore.kernel.org/all/E1oltef-00Fwwz-3t@rmk-PC.armlinux.org.uk/
+To keep backward compatibility we used to leave attribute parsing
+to the family if no policy is specified. This becomes tedious as
+we move to more strict validation. Families must define reject all
+policies if they don't want any attributes accepted.
 
-Yes, sadly I forgot to update the subject line prefix. Getting
-everything correct every time is quite difficult.
+Piggy back on the resv_start_op field as the switchover point.
+AFAICT only ethtool has added new commands since the resv_start_op
+was defined, and it has per-op policies so this should be a no-op.
 
+Nonetheless the patch should still go into v6.1 for consistency.
+
+Link: https://lore.kernel.org/all/20221019125745.3f2e7659@kernel.org/
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+CC: jiri@nvidia.com
+---
+ include/net/genetlink.h | 10 +++++++++-
+ net/netlink/genetlink.c | 23 +++++++++++++++++++++++
+ 2 files changed, 32 insertions(+), 1 deletion(-)
+
+diff --git a/include/net/genetlink.h b/include/net/genetlink.h
+index 3d08e67b3cfc..9f97f73615b6 100644
+--- a/include/net/genetlink.h
++++ b/include/net/genetlink.h
+@@ -41,13 +41,21 @@ struct genl_info;
+  * @mcgrps: multicast groups used by this family
+  * @n_mcgrps: number of multicast groups
+  * @resv_start_op: first operation for which reserved fields of the header
+- *	can be validated, new families should leave this field at zero
++ *	can be validated and policies are required (see below);
++ *	new families should leave this field at zero
+  * @mcgrp_offset: starting number of multicast group IDs in this family
+  *	(private)
+  * @ops: the operations supported by this family
+  * @n_ops: number of operations supported by this family
+  * @small_ops: the small-struct operations supported by this family
+  * @n_small_ops: number of small-struct operations supported by this family
++ *
++ * Attribute policies (the combination of @policy and @maxattr fields)
++ * can be attached at the family level or at the operation level.
++ * If both are present the per-operation policy takes precedence.
++ * For operations before @resv_start_op lack of policy means that the core
++ * will perform no attribute parsing or validation. For newer operations
++ * if policy is not provided core will reject all TLV attributes.
+  */
+ struct genl_family {
+ 	int			id;		/* private */
+diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
+index 39b7c00e4cef..b1fd059c9992 100644
+--- a/net/netlink/genetlink.c
++++ b/net/netlink/genetlink.c
+@@ -78,10 +78,29 @@ static unsigned long mc_group_start = 0x3 | BIT(GENL_ID_CTRL) |
+ static unsigned long *mc_groups = &mc_group_start;
+ static unsigned long mc_groups_longs = 1;
+ 
++/* We need the last attribute with non-zero ID therefore a 2-entry array */
++static struct nla_policy genl_policy_reject_all[] = {
++	{ .type = NLA_REJECT },
++	{ .type = NLA_REJECT },
++};
++
+ static int genl_ctrl_event(int event, const struct genl_family *family,
+ 			   const struct genl_multicast_group *grp,
+ 			   int grp_id);
+ 
++static void
++genl_op_fill_in_reject_policy(const struct genl_family *family,
++			      struct genl_ops *op)
++{
++	BUILD_BUG_ON(ARRAY_SIZE(genl_policy_reject_all) - 1 != 1);
++
++	if (op->policy || op->cmd < family->resv_start_op)
++		return;
++
++	op->policy = genl_policy_reject_all;
++	op->maxattr = 1;
++}
++
+ static const struct genl_family *genl_family_find_byid(unsigned int id)
+ {
+ 	return idr_find(&genl_fam_idr, id);
+@@ -113,6 +132,8 @@ static void genl_op_from_full(const struct genl_family *family,
+ 		op->maxattr = family->maxattr;
+ 	if (!op->policy)
+ 		op->policy = family->policy;
++
++	genl_op_fill_in_reject_policy(family, op);
+ }
+ 
+ static int genl_get_cmd_full(u32 cmd, const struct genl_family *family,
+@@ -142,6 +163,8 @@ static void genl_op_from_small(const struct genl_family *family,
+ 
+ 	op->maxattr = family->maxattr;
+ 	op->policy = family->policy;
++
++	genl_op_fill_in_reject_policy(family, op);
+ }
+ 
+ static int genl_get_cmd_small(u32 cmd, const struct genl_family *family,
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.37.3
+
