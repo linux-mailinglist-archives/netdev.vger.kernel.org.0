@@ -2,120 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5566060761B
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 13:27:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A5CD607662
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 13:41:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229918AbiJUL1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 07:27:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50358 "EHLO
+        id S230226AbiJULlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 07:41:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiJUL1y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 07:27:54 -0400
-Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1181825D64F;
-        Fri, 21 Oct 2022 04:27:52 -0700 (PDT)
-Received: from unknown (HELO iyokan2-ex.css.socionext.com) ([172.31.9.54])
-  by mx.socionext.com with ESMTP; 21 Oct 2022 20:27:52 +0900
-Received: from mail.mfilter.local (m-filter-2 [10.213.24.62])
-        by iyokan2-ex.css.socionext.com (Postfix) with ESMTP id 6D0DF20584CE;
-        Fri, 21 Oct 2022 20:27:52 +0900 (JST)
-Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Fri, 21 Oct 2022 20:27:52 +0900
-Received: from [10.212.242.61] (unknown [10.212.242.61])
-        by kinkan2.css.socionext.com (Postfix) with ESMTP id 20D3CB62A4;
-        Fri, 21 Oct 2022 20:27:52 +0900 (JST)
-Subject: Re: [PATCH net] net: phy: Avoid WARN_ON for PHY_NOLINK during
- resuming
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20221021074154.25906-1-hayashi.kunihiko@socionext.com>
- <4d2d6349-6910-3e73-e6c5-db9041bcfdb8@gmail.com>
- <86262217-a620-dc5b-cf5a-3a23ea869834@socionext.com>
- <125eddc1-8791-e8c4-39ac-fb5b864d91ba@gmail.com>
-From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Message-ID: <fe078840-b54d-d18b-da73-e6e66406bede@socionext.com>
-Date:   Fri, 21 Oct 2022 20:27:52 +0900
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        with ESMTP id S230156AbiJULlA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 07:41:00 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 165931E8B8A;
+        Fri, 21 Oct 2022 04:40:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ybzj+4INELQ+p10Y7K/jRSkq7s5IXHsyCClX4FS/l14=; b=F2+zcW8NX3aYgLlejVS2joun3r
+        cnmlcNvTL3nMYgQY7GkQpFApFoz44GGlQWZHwEkSi95aUNkzJBxNSGCPhORGM3aE751T/TtnrgiEn
+        RwFzIcPrbWy2phovgkzgpy5TaWRvz5bTyCsQSTBundZzGkYHA1sJIFQCoO5nFdfqoHi5p7T+jZAWu
+        KHEsmUF7hRWuG/Nu+8gga/kd9/B4ncS1S3ElH2yqHWLbRWWtCnJsZPjwFtVJuvac3McqEnZsEhwK1
+        8K6092yiN3hd9Unz8UitPmn2i63TD2xt1eLJPPUGP/XD8OlrtLuiyq5rO5X1mZvLlchZSHkc7v28V
+        xGc2YRbg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34860)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1olqOT-00008I-FO; Fri, 21 Oct 2022 12:40:53 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1olqOR-00048B-B4; Fri, 21 Oct 2022 12:40:51 +0100
+Date:   Fri, 21 Oct 2022 12:40:51 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, lxu@maxlinear.com,
+        hkallweit1@gmail.com, pabeni@redhat.com, edumazet@google.com,
+        UNGLinuxDriver@microchip.com, andrew@lunn.ch,
+        Ian.Saturley@microchip.com
+Subject: Re: [PATCH net-next] net: phy: mxl-gpy: Add PHY Auto/MDI/MDI-X set
+ driver for GPY211 chips
+Message-ID: <Y1KFQ3emJhg8gXOj@shell.armlinux.org.uk>
+References: <20221021100305.6576-1-Raju.Lakkaraju@microchip.com>
 MIME-Version: 1.0
-In-Reply-To: <125eddc1-8791-e8c4-39ac-fb5b864d91ba@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221021100305.6576-1-Raju.Lakkaraju@microchip.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/10/21 20:12, Heiner Kallweit wrote:
-> On 21.10.2022 11:35, Kunihiko Hayashi wrote:
->> Hi Heiner,
->>
->> Thank you for your comment.
->>
->> On 2022/10/21 17:38, Heiner Kallweit wrote:
->>> On 21.10.2022 09:41, Kunihiko Hayashi wrote:
->>>> When resuming from sleep, if there is a time lag from link-down to
->>>> link-up
->>>> due to auto-negotiation, the phy status has been still PHY_NOLINK, so
->>>> WARN_ON dump occurs in mdio_bus_phy_resume(). For example, UniPhier AVE
->>>> ethernet takes about a few seconds to link up after resuming.
->>>>
->>> That autoneg takes some time is normal. If this would actually the root
->>> cause then basically every driver should be affected. But it's not.
->>
->> Although the auto-neg should happen normally, I'm not sure about other
->> platforms.
->>
->>>> To avoid this issue, should remove PHY_NOLINK the WARN_ON conditions.
->>>>
->>>> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
->>>> ---
->>>>    drivers/net/phy/phy_device.c | 8 ++++----
->>>>    1 file changed, 4 insertions(+), 4 deletions(-)
->>>>
->>>> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
->>>> index 57849ac0384e..c647d027bb5d 100644
->>>> --- a/drivers/net/phy/phy_device.c
->>>> +++ b/drivers/net/phy/phy_device.c
->>>> @@ -318,12 +318,12 @@ static __maybe_unused int
->>>> mdio_bus_phy_resume(struct
->>>> device *dev)
->>>>        phydev->suspended_by_mdio_bus = 0;
->>>>
->>>>        /* If we managed to get here with the PHY state machine in a state
->>>> -     * neither PHY_HALTED, PHY_READY nor PHY_UP, this is an indication
->>>> -     * that something went wrong and we should most likely be using
->>>> -     * MAC managed PM, but we are not.
->>>> +     * neither PHY_HALTED, PHY_READY, PHY_UP nor PHY_NOLINK, this is an
->>>> +     * indication that something went wrong and we should most likely
->>>> +     * be using MAC managed PM, but we are not.
->>>>         */
->>>
->>> Did you read the comment you're changing? ave_resume() calls
->>> phy_resume(),
->>> so you should follow the advice in the comment.
->>
->> I understand something is wrong with "PHY_NOLINK" here, and need to
->> investigate
->> the root cause of the phy state issue.
->>
-> Best look at how phydev->mac_managed_pm is used in phylib and by MAC
-> drivers.
+Hi,
 
-Thank you for the clue!
-I'll try the flag and check the behavior of MAC/PHY.
+On Fri, Oct 21, 2022 at 03:33:05PM +0530, Raju Lakkaraju wrote:
+> @@ -370,6 +415,38 @@ static int gpy_config_aneg(struct phy_device *phydev)
+>  			      VSPEC1_SGMII_CTRL_ANRS, VSPEC1_SGMII_CTRL_ANRS);
+>  }
+>  
+> +static void gpy_update_mdix(struct phy_device *phydev)
+> +{
+> +	int ret;
+> +
+> +	ret = phy_read(phydev, PHY_CTL1);
+> +	if (ret < 0) {
+> +		phydev_err(phydev, "Error: MDIO register access failed: %d\n",
+> +			   ret);
+> +		return;
+> +	}
+> +
+> +	if (ret & PHY_CTL1_AMDIX)
+> +		phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
+> +	else
+> +		if (ret & PHY_CTL1_MDICD || ret & PHY_CTL1_MDIAB)
+> +			phydev->mdix_ctrl = ETH_TP_MDI_X;
+> +		else
+> +			phydev->mdix_ctrl = ETH_TP_MDI;
 
-Thank you,
+I think this would be better formatted as:
 
----
-Best Regards
-Kunihiko Hayashi
+	if (...)
+		...
+	else if (...)
+		...
+	else
+		...
+
+We don't indent unless there's braces, and if there's braces, coding
+style advises braces on both sides of the "else". So, much better to
+use the formatting I suggest above.
+
+Apart from that, nothing stands out as being wrong in this patch.
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
