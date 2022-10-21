@@ -2,209 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0D75607C0E
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 18:20:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C81C5607C26
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 18:26:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230353AbiJUQUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 12:20:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55642 "EHLO
+        id S229732AbiJUQ0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 12:26:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230440AbiJUQTy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 12:19:54 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D71A748C84;
-        Fri, 21 Oct 2022 09:19:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C432FCE2B2E;
-        Fri, 21 Oct 2022 16:19:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF7C0C433D6;
-        Fri, 21 Oct 2022 16:19:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666369174;
-        bh=qXT4GPzDeP9IpTekE6kjrT6VMQoqce0Ms6UpGOHy2nk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZR8r9yjYUOErfzFZjbKYliEB6G0CWhEdE86roAA2ixpSF6HKWxaBhAL1LLPy3f5J+
-         qDe6zRxqGywbnEkTgkJBeGkd04AV/3+chi3DhIWIYT82/U/tsj8spD+lJvGlz7s3z9
-         H+L2UssekGHzy3/AyU1gD40XlNn8rAuSBphXPwdbXjPLpceKLe9sLsc6AG+LpyI4P0
-         0dRO+bc+m7zLVzekDSpj5N0F0lQ/f3JdmBuaiKX4R79WlanecZbigdKGE1gc55dVW7
-         426gl1RctB9Irr9zWHXLOK8ad65Wom/pLFe1LEWnKRihjhT1Gj3YqwgB8PuAOl7jST
-         1zJRp4T6AC6KQ==
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
-        Mark-MC.Lee@mediatek.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, matthias.bgg@gmail.com,
-        linux-mediatek@lists.infradead.org, lorenzo.bianconi@redhat.com,
-        Bo.Jiao@mediatek.com, sujuan.chen@mediatek.com,
-        ryder.Lee@mediatek.com, evelyn.tsai@mediatek.com,
-        devicetree@vger.kernel.org, robh@kernel.org, daniel@makrotopia.org
-Subject: [PATCH net-next 6/6] net: ethernet: mtk_wed: add rx mib counters
-Date:   Fri, 21 Oct 2022 18:18:36 +0200
-Message-Id: <5909a53b0b37b9409b74335919d0a0efb307d1d5.1666368566.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <cover.1666368566.git.lorenzo@kernel.org>
-References: <cover.1666368566.git.lorenzo@kernel.org>
+        with ESMTP id S229719AbiJUQ0I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 12:26:08 -0400
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 982112690A4
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 09:26:04 -0700 (PDT)
+Received: by mail-yb1-xb36.google.com with SMTP id e62so3931319yba.6
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 09:26:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=sNPu8q/nEQ+Rmy7Su/VoleNiyJ0OnMotxKUK2gAU0uY=;
+        b=C2vuIkV6NxalUVMmtDZIgEbOvdeVqSTHJ0CDZh5xIi5nemi4/4AGB8vtIe3vcfwk0v
+         I/0iqJSeHSBkLwA9NbVxgEUEDoKNas8Z5qG8Ppw/t+HmWJAgmeQxPs9m38GX+WqH6N6K
+         yhF3ahpKFBV+kqJ1PmU7xTOGIJD1fZ9O/xNiWNaLDuO/2R4aPx2fRDUKsb/NvyDLk8kG
+         /sfsU6w01Yd0JP+yPp9nDlz4JBeKKBWm9vFd3z66ZGwiqw5vgQAoYp5rDN0bwO8O7HXQ
+         5vka+zbV3IFXAK/reZ4c4Q1IZ/CsAwU408y7C9SycoR0nqeCvixEfv5+E6S5FnQsLjHE
+         YDuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=sNPu8q/nEQ+Rmy7Su/VoleNiyJ0OnMotxKUK2gAU0uY=;
+        b=Sx5ipHXxWkRw+Mgu+os3B9tpGFtQ+owBsqKGxaZCidwP7wxSQ1AQsiJGEbSEkePnCe
+         1z+E14sznEfzNq6prNRI1MLlZGV0nuJb/KO2BWJDc0RICj1ZNYJ42W4Mim9/T5lAhP2/
+         9zsYVDBGMyZC6+I7F9w36qzP8mIMoFUI9cvwj23XUbDB24bo2TEPyhIZ6UWhMKLRUQMT
+         0sh1/EJFsTy4GgXVFNjKQ9+DFk0d+OtmoFz7ASTi5XgA7Xao+cHYDv0akEf+sh9BaqKY
+         8rUDn5OfpnTQbqa0b4Q4OwGP8tOsWcilOB2eeSdic852BwiGC89G9cFjpIteoJVOJcON
+         alhw==
+X-Gm-Message-State: ACrzQf1zwLMMm982zvIsQOCHs/8ozRyj8zV2rGiVMISZMpZxsGcwsZZo
+        S1KfPDVJtautrM7f3wlsRyVUfwpWXGx4vWL5qzUdkI9sbRJnTw==
+X-Google-Smtp-Source: AMsMyM51Wwi8FOc1Ubi7lsll0AnIeI6w/e11geLcPMNryQ1brrnLpKcVUsSSRF+oZJanThzMZuz2vx5IF5QAn+aBh/k=
+X-Received: by 2002:a25:664b:0:b0:6ca:6c0c:9cb0 with SMTP id
+ z11-20020a25664b000000b006ca6c0c9cb0mr3207178ybm.368.1666369563680; Fri, 21
+ Oct 2022 09:26:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221021160304.1362511-1-kuba@kernel.org>
+In-Reply-To: <20221021160304.1362511-1-kuba@kernel.org>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Fri, 21 Oct 2022 09:25:52 -0700
+Message-ID: <CALvZod4eezAXpehT4jMiQry4JQ5igJs7Nwi1Q+YhVpDcQ8BMRA@mail.gmail.com>
+Subject: Re: [PATCH net] net-memcg: avoid stalls when under memory pressure
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     edumazet@google.com, netdev@vger.kernel.org, davem@davemloft.net,
+        pabeni@redhat.com, cgroups@vger.kernel.org,
+        roman.gushchin@linux.dev, weiwan@google.com, ncardwell@google.com,
+        ycheng@google.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce WED RX MIB counters support available on MT7986a SoC.
+On Fri, Oct 21, 2022 at 9:03 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> As Shakeel explains the commit under Fixes had the unintended
+> side-effect of no longer pre-loading the cached memory allowance.
+> Even tho we previously dropped the first packet received when
+> over memory limit - the consecutive ones would get thru by using
+> the cache. The charging was happening in batches of 128kB, so
+> we'd let in 128kB (truesize) worth of packets per one drop.
+>
+> After the change we no longer force charge, there will be no
+> cache filling side effects. This causes significant drops and
+> connection stalls for workloads which use a lot of page cache,
+> since we can't reclaim page cache under GFP_NOWAIT.
+>
+> Some of the latency can be recovered by improving SACK reneg
+> handling but nowhere near enough to get back to the pre-5.15
+> performance (the application I'm experimenting with still
+> sees 5-10x worst latency).
+>
+> Apply the suggested workaround of using GFP_ATOMIC. We will now
+> be more permissive than previously as we'll drop _no_ packets
+> in softirq when under pressure. But I can't think of any good
+> and simple way to address that within networking.
+>
+> Link: https://lore.kernel.org/all/20221012163300.795e7b86@kernel.org/
+> Suggested-by: Shakeel Butt <shakeelb@google.com>
+> Fixes: 4b1327be9fe5 ("net-memcg: pass in gfp_t mask to mem_cgroup_charge_skmem()")
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> CC: weiwan@google.com
+> CC: shakeelb@google.com
+> CC: ncardwell@google.com
+> CC: ycheng@google.com
+> ---
+>  include/net/sock.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/include/net/sock.h b/include/net/sock.h
+> index 9e464f6409a7..22f8bab583dd 100644
+> --- a/include/net/sock.h
+> +++ b/include/net/sock.h
+> @@ -2585,7 +2585,7 @@ static inline gfp_t gfp_any(void)
+>
+>  static inline gfp_t gfp_memcg_charge(void)
+>  {
+> -       return in_softirq() ? GFP_NOWAIT : GFP_KERNEL;
+> +       return in_softirq() ? GFP_ATOMIC : GFP_KERNEL;
+>  }
+>
 
-Tested-by: Daniel Golle <daniel@makrotopia.org>
-Co-developed-by: Sujuan Chen <sujuan.chen@mediatek.com>
-Signed-off-by: Sujuan Chen <sujuan.chen@mediatek.com>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- .../net/ethernet/mediatek/mtk_wed_debugfs.c   | 87 +++++++++++++++++++
- 1 file changed, 87 insertions(+)
-
-diff --git a/drivers/net/ethernet/mediatek/mtk_wed_debugfs.c b/drivers/net/ethernet/mediatek/mtk_wed_debugfs.c
-index f420f187e837..56f663439721 100644
---- a/drivers/net/ethernet/mediatek/mtk_wed_debugfs.c
-+++ b/drivers/net/ethernet/mediatek/mtk_wed_debugfs.c
-@@ -2,6 +2,7 @@
- /* Copyright (C) 2021 Felix Fietkau <nbd@nbd.name> */
- 
- #include <linux/seq_file.h>
-+#include <linux/soc/mediatek/mtk_wed.h>
- #include "mtk_wed.h"
- #include "mtk_wed_regs.h"
- 
-@@ -18,6 +19,8 @@ enum {
- 	DUMP_TYPE_WDMA,
- 	DUMP_TYPE_WPDMA_TX,
- 	DUMP_TYPE_WPDMA_TXFREE,
-+	DUMP_TYPE_WPDMA_RX,
-+	DUMP_TYPE_WED_RRO,
- };
- 
- #define DUMP_STR(_str) { _str, 0, DUMP_TYPE_STRING }
-@@ -36,6 +39,9 @@ enum {
- 
- #define DUMP_WPDMA_TX_RING(_n) DUMP_RING("WPDMA_TX" #_n, 0, DUMP_TYPE_WPDMA_TX, _n)
- #define DUMP_WPDMA_TXFREE_RING DUMP_RING("WPDMA_RX1", 0, DUMP_TYPE_WPDMA_TXFREE)
-+#define DUMP_WPDMA_RX_RING(_n)	DUMP_RING("WPDMA_RX" #_n, 0, DUMP_TYPE_WPDMA_RX, _n)
-+#define DUMP_WED_RRO_RING(_base)DUMP_RING("WED_RRO_MIOD", MTK_##_base, DUMP_TYPE_WED_RRO)
-+#define DUMP_WED_RRO_FDBK(_base)DUMP_RING("WED_RRO_FDBK", MTK_##_base, DUMP_TYPE_WED_RRO)
- 
- static void
- print_reg_val(struct seq_file *s, const char *name, u32 val)
-@@ -57,6 +63,7 @@ dump_wed_regs(struct seq_file *s, struct mtk_wed_device *dev,
- 				   cur > regs ? "\n" : "",
- 				   cur->name);
- 			continue;
-+		case DUMP_TYPE_WED_RRO:
- 		case DUMP_TYPE_WED:
- 			val = wed_r32(dev, cur->offset);
- 			break;
-@@ -69,6 +76,9 @@ dump_wed_regs(struct seq_file *s, struct mtk_wed_device *dev,
- 		case DUMP_TYPE_WPDMA_TXFREE:
- 			val = wpdma_txfree_r32(dev, cur->offset);
- 			break;
-+		case DUMP_TYPE_WPDMA_RX:
-+			val = wpdma_rx_r32(dev, cur->base, cur->offset);
-+			break;
- 		}
- 		print_reg_val(s, cur->name, val);
- 	}
-@@ -132,6 +142,80 @@ wed_txinfo_show(struct seq_file *s, void *data)
- }
- DEFINE_SHOW_ATTRIBUTE(wed_txinfo);
- 
-+static int
-+wed_rxinfo_show(struct seq_file *s, void *data)
-+{
-+	static const struct reg_dump regs[] = {
-+		DUMP_STR("WPDMA RX"),
-+		DUMP_WPDMA_RX_RING(0),
-+		DUMP_WPDMA_RX_RING(1),
-+
-+		DUMP_STR("WPDMA RX"),
-+		DUMP_WED(WED_WPDMA_RX_D_MIB(0)),
-+		DUMP_WED_RING(WED_WPDMA_RING_RX_DATA(0)),
-+		DUMP_WED(WED_WPDMA_RX_D_PROCESSED_MIB(0)),
-+		DUMP_WED(WED_WPDMA_RX_D_MIB(1)),
-+		DUMP_WED_RING(WED_WPDMA_RING_RX_DATA(1)),
-+		DUMP_WED(WED_WPDMA_RX_D_PROCESSED_MIB(1)),
-+		DUMP_WED(WED_WPDMA_RX_D_COHERENT_MIB),
-+
-+		DUMP_STR("WED RX"),
-+		DUMP_WED_RING(WED_RING_RX_DATA(0)),
-+		DUMP_WED_RING(WED_RING_RX_DATA(1)),
-+
-+		DUMP_STR("WED RRO"),
-+		DUMP_WED_RRO_RING(WED_RROQM_MIOD_CTRL0),
-+		DUMP_WED(WED_RROQM_MID_MIB),
-+		DUMP_WED(WED_RROQM_MOD_MIB),
-+		DUMP_WED(WED_RROQM_MOD_COHERENT_MIB),
-+		DUMP_WED_RRO_FDBK(WED_RROQM_FDBK_CTRL0),
-+		DUMP_WED(WED_RROQM_FDBK_IND_MIB),
-+		DUMP_WED(WED_RROQM_FDBK_ENQ_MIB),
-+		DUMP_WED(WED_RROQM_FDBK_ANC_MIB),
-+		DUMP_WED(WED_RROQM_FDBK_ANC2H_MIB),
-+
-+		DUMP_STR("WED Route QM"),
-+		DUMP_WED(WED_RTQM_R2H_MIB(0)),
-+		DUMP_WED(WED_RTQM_R2Q_MIB(0)),
-+		DUMP_WED(WED_RTQM_Q2H_MIB(0)),
-+		DUMP_WED(WED_RTQM_R2H_MIB(1)),
-+		DUMP_WED(WED_RTQM_R2Q_MIB(1)),
-+		DUMP_WED(WED_RTQM_Q2H_MIB(1)),
-+		DUMP_WED(WED_RTQM_Q2N_MIB),
-+		DUMP_WED(WED_RTQM_Q2B_MIB),
-+		DUMP_WED(WED_RTQM_PFDBK_MIB),
-+
-+		DUMP_STR("WED WDMA TX"),
-+		DUMP_WED(WED_WDMA_TX_MIB),
-+		DUMP_WED_RING(WED_WDMA_RING_TX),
-+
-+		DUMP_STR("WDMA TX"),
-+		DUMP_WDMA(WDMA_GLO_CFG),
-+		DUMP_WDMA_RING(WDMA_RING_TX(0)),
-+		DUMP_WDMA_RING(WDMA_RING_TX(1)),
-+
-+		DUMP_STR("WED RX BM"),
-+		DUMP_WED(WED_RX_BM_BASE),
-+		DUMP_WED(WED_RX_BM_RX_DMAD),
-+		DUMP_WED(WED_RX_BM_PTR),
-+		DUMP_WED(WED_RX_BM_TKID_MIB),
-+		DUMP_WED(WED_RX_BM_BLEN),
-+		DUMP_WED(WED_RX_BM_STS),
-+		DUMP_WED(WED_RX_BM_INTF2),
-+		DUMP_WED(WED_RX_BM_INTF),
-+		DUMP_WED(WED_RX_BM_ERR_STS),
-+	};
-+	struct mtk_wed_hw *hw = s->private;
-+	struct mtk_wed_device *dev = hw->wed_dev;
-+
-+	if (!dev)
-+		return 0;
-+
-+	dump_wed_regs(s, dev, regs, ARRAY_SIZE(regs));
-+
-+	return 0;
-+}
-+DEFINE_SHOW_ATTRIBUTE(wed_rxinfo);
- 
- static int
- mtk_wed_reg_set(void *data, u64 val)
-@@ -175,4 +259,7 @@ void mtk_wed_hw_add_debugfs(struct mtk_wed_hw *hw)
- 	debugfs_create_u32("regidx", 0600, dir, &hw->debugfs_reg);
- 	debugfs_create_file_unsafe("regval", 0600, dir, hw, &fops_regval);
- 	debugfs_create_file_unsafe("txinfo", 0400, dir, hw, &wed_txinfo_fops);
-+	if (hw->version != 1)
-+		debugfs_create_file_unsafe("rxinfo", 0400, dir, hw,
-+					   &wed_rxinfo_fops);
- }
--- 
-2.37.3
-
+How about just using gfp_any() and we can remove gfp_memcg_charge()?
