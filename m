@@ -2,60 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6876C6078B0
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 15:42:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 246826078D1
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 15:45:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230478AbiJUNmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 09:42:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50540 "EHLO
+        id S231213AbiJUNph (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 09:45:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230235AbiJUNmO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 09:42:14 -0400
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 246BC16655B
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 06:42:12 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 11F4220571;
-        Fri, 21 Oct 2022 15:42:10 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id ftka2Sw_K_Ke; Fri, 21 Oct 2022 15:42:09 +0200 (CEST)
-Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 918572056D;
-        Fri, 21 Oct 2022 15:42:09 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout2.secunet.com (Postfix) with ESMTP id 82CD580004A;
-        Fri, 21 Oct 2022 15:42:09 +0200 (CEST)
-Received: from mbx-essen-02.secunet.de (10.53.40.198) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 21 Oct 2022 15:42:09 +0200
-Received: from moon.secunet.de (172.18.149.2) by mbx-essen-02.secunet.de
- (10.53.40.198) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Fri, 21 Oct
- 2022 15:42:09 +0200
-Date:   Fri, 21 Oct 2022 15:42:01 +0200
-From:   Antony Antony <antony.antony@secunet.com>
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-CC:     <netdev@vger.kernel.org>, Tobias Brunner <tobias@strongswan.org>,
-        "Antony Antony" <antony@phenome.org>
-Subject: [PATCH ipsec-next v2] xfrm: update x->lastused for every packet
-Message-ID: <1c3bdbd480bd3018175525a23ba623911fec74e1.1666359531.git.antony.antony@secunet.com>
-Reply-To: <antony.antony@secunet.com>
-References: <3e201e1156639286e1874ebc29233741b8b2ac54.1657260947.git.antony.antony@secunet.com>
+        with ESMTP id S231190AbiJUNpe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 09:45:34 -0400
+Received: from mail.sf-mail.de (mail.sf-mail.de [IPv6:2a01:4f8:1c17:6fae:616d:6c69:616d:6c69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 804D792CCE
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 06:45:28 -0700 (PDT)
+Received: (qmail 18684 invoked from network); 21 Oct 2022 13:44:36 -0000
+Received: from p200300cf07087500581cdcfffecf391f.dip0.t-ipconnect.de ([2003:cf:708:7500:581c:dcff:fecf:391f]:60600 HELO eto.sf-tec.de) (auth=eike@sf-mail.de)
+        by mail.sf-mail.de (Qsmtpd 0.38dev) with (TLS_AES_256_GCM_SHA384 encrypted) ESMTPSA
+        for <tgraf@suug.ch>; Fri, 21 Oct 2022 15:44:36 +0200
+From:   Rolf Eike Beer <eike@sf-mail.de>
+To:     Thomas Graf <tgraf@suug.ch>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Florian Westphal <fw@strlen.de>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH] rhashtable: make test actually random
+Date:   Fri, 21 Oct 2022 15:45:23 +0200
+Message-ID: <12102372.O9o76ZdvQC@eto.sf-tec.de>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 7Bit
 Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <3e201e1156639286e1874ebc29233741b8b2ac54.1657260947.git.antony.antony@secunet.com>
-Organization: secunet
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-02.secunet.de (10.53.40.198)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,54 +38,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-x->lastused was only updated for outgoing mobile IPv6 packet.
-With this fix update it for every, in and out, packet.
+The "random rhlist add/delete operations" actually wasn't very random, as all
+cases tested the same bit. Since the later parts of this loop depend on the
+first case execute this unconditionally, and then test on different bits for the
+remaining tests. While at it only request as much random bits as are actually
+used.
 
-This is useful to check if the a SA is still in use, or when was
-the last time an SA was used. lastused time of in SA can used
-to check IPsec path is functional.
-
-Signed-off-by: Antony Antony <antony.antony@secunet.com>
+Signed-off-by: Rolf Eike Beer <eike-kernel@sf-tec.de>
 ---
- v1 -> v2 now ipsec-next has the required patches.
+ lib/test_rhashtable.c | 58 ++++++++++++++++---------------------------
+ 1 file changed, 22 insertions(+), 36 deletions(-)
 
- net/xfrm/xfrm_input.c  | 1 +
- net/xfrm/xfrm_output.c | 3 +--
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-index 97074f6f2bde..c06e54a10540 100644
---- a/net/xfrm/xfrm_input.c
-+++ b/net/xfrm/xfrm_input.c
-@@ -671,6 +671,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
-
- 		x->curlft.bytes += skb->len;
- 		x->curlft.packets++;
-+		x->lastused = ktime_get_real_seconds();
-
- 		spin_unlock(&x->lock);
-
-diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
-index 9a5e79a38c67..78cb8d0a6a18 100644
---- a/net/xfrm/xfrm_output.c
-+++ b/net/xfrm/xfrm_output.c
-@@ -209,8 +209,6 @@ static int xfrm6_ro_output(struct xfrm_state *x, struct sk_buff *skb)
- 	__skb_pull(skb, hdr_len);
- 	memmove(ipv6_hdr(skb), iph, hdr_len);
-
--	x->lastused = ktime_get_real_seconds();
+diff --git a/lib/test_rhashtable.c b/lib/test_rhashtable.c
+index b358a74ed7ed..f2ba5787055a 100644
+--- a/lib/test_rhashtable.c
++++ b/lib/test_rhashtable.c
+@@ -369,18 +369,10 @@ static int __init test_rhltable(unsigned int entries)
+ 	pr_info("test %d random rhlist add/delete operations\n", entries);
+ 	for (j = 0; j < entries; j++) {
+ 		u32 i = prandom_u32_max(entries);
+-		u32 prand = get_random_u32();
++		u32 prand = prandom_u32_max(4);
+ 
+ 		cond_resched();
+ 
+-		if (prand == 0)
+-			prand = get_random_u32();
 -
- 	return 0;
- #else
- 	WARN_ON_ONCE(1);
-@@ -534,6 +532,7 @@ static int xfrm_output_one(struct sk_buff *skb, int err)
+-		if (prand & 1) {
+-			prand >>= 1;
+-			continue;
+-		}
+-
+ 		err = rhltable_remove(&rhlt, &rhl_test_objects[i].list_node, test_rht_params);
+ 		if (test_bit(i, obj_in_table)) {
+ 			clear_bit(i, obj_in_table);
+@@ -393,35 +385,29 @@ static int __init test_rhltable(unsigned int entries)
+ 		}
+ 
+ 		if (prand & 1) {
+-			prand >>= 1;
+-			continue;
+-		}
+-
+-		err = rhltable_insert(&rhlt, &rhl_test_objects[i].list_node, test_rht_params);
+-		if (err == 0) {
+-			if (WARN(test_and_set_bit(i, obj_in_table), "succeeded to insert same object %d", i))
+-				continue;
+-		} else {
+-			if (WARN(!test_bit(i, obj_in_table), "failed to insert object %d", i))
+-				continue;
+-		}
+-
+-		if (prand & 1) {
+-			prand >>= 1;
+-			continue;
++			err = rhltable_insert(&rhlt, &rhl_test_objects[i].list_node, test_rht_params);
++			if (err == 0) {
++				if (WARN(test_and_set_bit(i, obj_in_table), "succeeded to insert same object %d", i))
++					continue;
++			} else {
++				if (WARN(!test_bit(i, obj_in_table), "failed to insert object %d", i))
++					continue;
++			}
+ 		}
+ 
+-		i = prandom_u32_max(entries);
+-		if (test_bit(i, obj_in_table)) {
+-			err = rhltable_remove(&rhlt, &rhl_test_objects[i].list_node, test_rht_params);
+-			WARN(err, "cannot remove element at slot %d", i);
+-			if (err == 0)
+-				clear_bit(i, obj_in_table);
+-		} else {
+-			err = rhltable_insert(&rhlt, &rhl_test_objects[i].list_node, test_rht_params);
+-			WARN(err, "failed to insert object %d", i);
+-			if (err == 0)
+-				set_bit(i, obj_in_table);
++		if (prand & 2) {
++			i = prandom_u32_max(entries);
++			if (test_bit(i, obj_in_table)) {
++				err = rhltable_remove(&rhlt, &rhl_test_objects[i].list_node, test_rht_params);
++				WARN(err, "cannot remove element at slot %d", i);
++				if (err == 0)
++					clear_bit(i, obj_in_table);
++			} else {
++				err = rhltable_insert(&rhlt, &rhl_test_objects[i].list_node, test_rht_params);
++				WARN(err, "failed to insert object %d", i);
++				if (err == 0)
++					set_bit(i, obj_in_table);
++			}
+ 		}
+ 	}
+ 
+-- 
+2.35.3
 
- 		x->curlft.bytes += skb->len;
- 		x->curlft.packets++;
-+		x->lastused = ktime_get_real_seconds();
 
- 		spin_unlock_bh(&x->lock);
 
---
-2.30.2
 
