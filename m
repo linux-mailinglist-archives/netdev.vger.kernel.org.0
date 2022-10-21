@@ -2,114 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1306560770F
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 14:39:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25D3F6076B4
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 14:10:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230183AbiJUMjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 08:39:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40416 "EHLO
+        id S229913AbiJUMKp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 08:10:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230158AbiJUMiz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 08:38:55 -0400
-Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23E462681CE
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 05:38:39 -0700 (PDT)
-Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20221021123837epoutp02a069f0f5742449dfa295f9dccd616ce9~gFeC8kfMA0141801418epoutp02I
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 12:38:37 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20221021123837epoutp02a069f0f5742449dfa295f9dccd616ce9~gFeC8kfMA0141801418epoutp02I
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1666355917;
-        bh=biFlnjuZ8k7mTMxR0OX0eBniKYxMuKThwFDjh9fvDPg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fM/6QpP77QqhvdyX4IMUTsW3Snw5E3jfZMJqCOnubcf3zz4RNNnjUgM1XrqG77+BB
-         gDPtEitKhaZOqkx6qiKvoZlHlakFTj2jKeU2vSVV7NcjD+2/k++gdIzHqS1DhEQbYH
-         Nk1vS30dxzgPLCswBzRzzbVhOotPRDCGRbgvoeYU=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTP id
-        20221021123836epcas5p26af5b3a891b3f64ace2e9353297721d1~gFeCVtaPu1049710497epcas5p2R;
-        Fri, 21 Oct 2022 12:38:36 +0000 (GMT)
-Received: from epsmges5p1new.samsung.com (unknown [182.195.38.179]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 4Mv3t15TyZz4x9Pw; Fri, 21 Oct
-        2022 12:38:33 +0000 (GMT)
-Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
-        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        BA.EB.20812.9C292536; Fri, 21 Oct 2022 21:38:33 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
-        20221021102642epcas5p24fec1e1e90632f6d9e768f7d25dc5480~gDq4NHe3l0419604196epcas5p2Z;
-        Fri, 21 Oct 2022 10:26:42 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20221021102642epsmtrp28fea699862896241631581e17642ead7~gDq4MJMPm0776407764epsmtrp2P;
-        Fri, 21 Oct 2022 10:26:42 +0000 (GMT)
-X-AuditID: b6c32a49-b09f97000001514c-61-635292c956f6
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        56.26.14392.2E372536; Fri, 21 Oct 2022 19:26:42 +0900 (KST)
-Received: from cheetah.sa.corp.samsungelectronics.net (unknown
-        [107.109.115.53]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20221021102640epsmtip1194c12f5c871cadc8caa52e6fb12ce21~gDq2Ud8bo2758127581epsmtip1B;
-        Fri, 21 Oct 2022 10:26:40 +0000 (GMT)
-From:   Vivek Yadav <vivek.2311@samsung.com>
-To:     rcsekar@samsung.com, wg@grandegger.com, mkl@pengutronix.de,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, pankaj.dubey@samsung.com,
-        ravi.patel@samsung.com, alim.akhtar@samsung.com
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Vivek Yadav <vivek.2311@samsung.com>
-Subject: [PATCH 7/7] arm64: dts: fsd: Add support for error correction code
- for message RAM
-Date:   Fri, 21 Oct 2022 15:28:33 +0530
-Message-Id: <20221021095833.62406-8-vivek.2311@samsung.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20221021095833.62406-1-vivek.2311@samsung.com>
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFuplk+LIzCtJLcpLzFFi42LZdlhTQ/fkpKBkgw87NC0ezNvGZjHnfAuL
-        xdNjj9gtLmzrY7VY9X0qs8XlXXPYLNYvmsJicWyBmMW3028YLRZt/cJu8fDDHnaLWRd2sFr8
-        WniYxWLpvZ2sDnweW1beZPJYsKnU4+Ol24wem1Z1snn0/zXweL/vKptH35ZVjB6fN8kFcERl
-        22SkJqakFimk5iXnp2TmpdsqeQfHO8ebmhkY6hpaWpgrKeQl5qbaKrn4BOi6ZeYAXa2kUJaY
-        UwoUCkgsLlbSt7Mpyi8tSVXIyC8usVVKLUjJKTAp0CtOzC0uzUvXy0stsTI0MDAyBSpMyM74
-        2PmRqWAHb8XfK/NZGhjvcHUxcnJICJhItM57wNTFyMUhJLCbUeLqpQ/MEM4nRomzG9+zgVQJ
-        CXxjlLjSHAHT0fXpBCtE0V5GiW0NE9ggnFYmiVtvm1lBqtgEtCQedy5gAbFFBO4ySlxbnNnF
-        yMHBLFAtceAIH0hYWCBW4sKlXWALWARUJb48OcAIYvMKWEs8aZnMBLFMXmL1hgPMIDangI3E
-        q/lbGEF2SQhM5JDYuPMzM0SRi8Tyn5OgGoQlXh3fwg5hS0l8freXDcJOltjxr5MVws6QWDBx
-        DyOEbS9x4MocFojbNCXW79KHCMtKTD21DmwkswCfRO/vJ1DjeSV2zIOxVSRefJ7ACtIKsqr3
-        nDBE2EPi8qP/0PDpZ5SYNPk02wRGuVkIGxYwMq5ilEwtKM5NTy02LTDMSy2Hx1lyfu4mRnC6
-        1PLcwXj3wQe9Q4xMHIyHGCU4mJVEeC3qgpKFeFMSK6tSi/Lji0pzUosPMZoCw28is5Rocj4w
-        YeeVxBuaWBqYmJmZmVgamxkqifMunqGVLCSQnliSmp2aWpBaBNPHxMEp1cCksYnryO7uRxfD
-        onYcUurYJP6w6dHHZga5r1ovY65r/xcu0Xq49dqknyXTbtYl3n2axl9X7VM+VXNN/a/Htmsc
-        05O6y76e8Ct88a2FY9rxJI9HN+bFOUg9aMvq8Aq6H3+o47mLvURl5ZI1M/3/fwv3srW4eX9R
-        nahmZ/mdCXO/P5cQvNJrLiT7yqf2WOHtjB9qGerB0oFtvYHWZ/9MFv6Yasbs0nuorHe+7B1u
-        vunOrF+E10r3XFqynmWP6N0rWqumqLvf3n7JWGoxT43NrgOJXu9mfA7ZIHOWU/NwR7PzjBW5
-        u+/89mQ7k519aHlsoxxvhubch3qOCnvD+6VLfglPn/rZjC2nSvPFL5UAO3MlluKMREMt5qLi
-        RADlduDdIAQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrGLMWRmVeSWpSXmKPExsWy7bCSnO6j4qBkg3NL9CwezNvGZjHnfAuL
-        xdNjj9gtLmzrY7VY9X0qs8XlXXPYLNYvmsJicWyBmMW3028YLRZt/cJu8fDDHnaLWRd2sFr8
-        WniYxWLpvZ2sDnweW1beZPJYsKnU4+Ol24wem1Z1snn0/zXweL/vKptH35ZVjB6fN8kFcERx
-        2aSk5mSWpRbp2yVwZXzs/MhUsIO34u+V+SwNjHe4uhg5OSQETCS6Pp1g7WLk4hAS2M0oMfvN
-        XkaIhJTElDMvWSBsYYmV/56zQxQ1M0nsXHqICSTBJqAl8bhzAViRiMBLRomWs2wgNrNAvcS7
-        MzfZQWxhgWiJfx+Pgg1lEVCV+PLkAJjNK2At8aRlMhPEAnmJ1RsOMIPYnAI2Eq/mbwGrEQKq
-        WfboJvsERr4FjAyrGCVTC4pz03OLDQsM81LL9YoTc4tL89L1kvNzNzGCg1pLcwfj9lUf9A4x
-        MnEwHmKU4GBWEuEteBeQLMSbklhZlVqUH19UmpNafIhRmoNFSZz3QtfJeCGB9MSS1OzU1ILU
-        IpgsEwenVAPTfK03/yMiLobMV/hzY9Mpo9LbTB8dJFlsrwktuSm+S797dnZ2fdSW2RLHZrTN
-        O9hz+MNaNa8tfFMf7HC4KvkjrPyuYseBY17f7kfEJHjHWNx1OnHxV4n2w+qA7fMv7ktlXFK6
-        6EZq9RfDiT8mr+k5Oq218ccaM5fLYcs8zh2UfGKWJuO2eWbpU1U1+xk2qj+WXn9zSi3B/Hht
-        vcNiP6aK52F7N23cHaMwLyrhxpfQrxe2797mkVP+5HaPyOXP0dEz0i0NGaM0JS0XRP/euvpo
-        b9j/ikNJkwu+di1NiltuX/9cfZK95Wbf6x9OzlVa7dBlNHv3wwUlLLr7TqprNh9PflLRdP5i
-        TG5s6N6MDc8z9imxFGckGmoxFxUnAgBdRuRs2QIAAA==
-X-CMS-MailID: 20221021102642epcas5p24fec1e1e90632f6d9e768f7d25dc5480
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20221021102642epcas5p24fec1e1e90632f6d9e768f7d25dc5480
-References: <20221021095833.62406-1-vivek.2311@samsung.com>
-        <CGME20221021102642epcas5p24fec1e1e90632f6d9e768f7d25dc5480@epcas5p2.samsung.com>
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        with ESMTP id S229531AbiJUMKn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 08:10:43 -0400
+Received: from hr2.samba.org (hr2.samba.org [IPv6:2a01:4f8:192:486::2:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDA1F2112A3;
+        Fri, 21 Oct 2022 05:10:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=samba.org;
+        s=42; h=From:Cc:To:Date:Message-ID;
+        bh=nUxwDjmQZFDmqopuW/cyPC3LxSsMIIgXqtPnaDKVD0s=; b=uvaYuXFcBbRaZyjByrM/jsba3Z
+        dvtWm4wkOUQA/PIYGS1eiCsbhMAzgFWwsLKkak9wXGqnWct78GygrstUXMOPQx7N7wW0MplpZLsmF
+        aaN27lO2CQuQwRXOZtt98kLjePR9MG2Y5op/oiic6GkIUiBpI3aTt7tpWfCoEjD9WOMsmrD2rSHrq
+        Ei3WU8cIbMfxsml1JGW4g52SnILsx/W8KKfxjTXLR1bWfhAiC6ycP55TpgCtmnZWr4XedMSDIzibx
+        rvkrKJTIb2SCf4SlSvzGE89derlHpDemDd479RVZo5e4HeP9LTR2gOlC9jDrQHOzDT7uxKM/OgU2m
+        CDChHgUrNT3vb554/r96oeKwtAPbcOeuk//b18tlWB7wF6vlfd2ojQssJ3VydGecOsX5wiXLm4dl/
+        EdJFYgFsFBrNav4cp3oqV9w6mIEdIe4579iiNSneeDs5RmVHFXEQozHJ/SXHROzov9Ue6SroDtGaN
+        98rNtEzFXWK2hQB+nWjA33kK;
+Received: from [127.0.0.2] (localhost [127.0.0.1])
+        by hr2.samba.org with esmtpsa (TLS1.3:ECDHE_SECP256R1__ECDSA_SECP256R1_SHA256__CHACHA20_POLY1305:256)
+        (Exim)
+        id 1olqrF-0059fa-7Z; Fri, 21 Oct 2022 12:10:37 +0000
+Message-ID: <43d3dad4-2158-dbcc-1c62-5b4021b95376@samba.org>
+Date:   Fri, 21 Oct 2022 14:10:36 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Content-Language: en-US
+To:     Pavel Begunkov <asml.silence@gmail.com>,
+        io-uring <io-uring@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
+        Dylan Yudaken <dylany@fb.com>
+References: <4385ba84-55dd-6b08-0ca7-6b4a43f9d9a2@samba.org>
+ <6f0a9137-2d2b-7294-f59f-0fcf9cdfc72d@gmail.com>
+ <4bbf6bc1-ee4b-8758-7860-a06f57f35d14@samba.org>
+ <cd87b6d0-a6d6-8f24-1af4-4b8845aa669c@gmail.com>
+ <df47dbd0-75e4-5f39-58ad-ec28e50d0b9c@samba.org>
+ <fb6a7599-8a9b-15e5-9b64-6cd9d01c6ff4@gmail.com>
+ <3e7b7606-c655-2d10-f2ae-12aba9abbc76@samba.org>
+ <ae88cd67-906a-7c89-eaf8-7ae190c4674b@gmail.com>
+ <86763cf2-72ed-2d05-99c3-237ce4905611@samba.org>
+ <fc3967d3-ef72-7940-2436-3d8aa329151e@gmail.com>
+ <a5bf4d77-0fad-1d3f-159f-b97128f58af2@samba.org>
+ <2092f2db-d847-dd78-1690-359ed9bb7f14@gmail.com>
+From:   Stefan Metzmacher <metze@samba.org>
+Subject: Re: IORING_SEND_NOTIF_USER_DATA (was Re: IORING_CQE_F_COPIED)
+In-Reply-To: <2092f2db-d847-dd78-1690-359ed9bb7f14@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -117,52 +65,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add mram-ecc-cfg property which indicates the error correction code config
-and enable the same for FSD platform.
+Am 21.10.22 um 13:20 schrieb Pavel Begunkov:
+> On 10/21/22 10:45, Stefan Metzmacher wrote:
+>> Am 21.10.22 um 11:27 schrieb Pavel Begunkov:
+>>> On 10/21/22 09:32, Stefan Metzmacher wrote:
+>>>> Hi Pavel,
+>>>>
+>>>>>>>> Experimenting with this stuff lets me wish to have a way to
+>>>>>>>> have a different 'user_data' field for the notif cqe,
+>>>>>>>> maybe based on a IORING_RECVSEND_ flag, it may make my life
+>>>>>>>> easier and would avoid some complexity in userspace...
+>>>>>>>> As I need to handle retry on short writes even with MSG_WAITALL
+>>>>>>>> as EINTR and other errors could cause them.
+>>>>>>>>
+>>>>>>>> What do you think?
+>>>>>>
+>>>>>> Any comment on this?
+>>>>>>
+>>>>>> IORING_SEND_NOTIF_USER_DATA could let us use
+>>>>>> notif->cqe.user_data = sqe->addr3;
+>>>>>
+>>>>> I'd rather not use the last available u64, tbh, that was the
+>>>>> reason for not adding a second user_data in the first place.
+>>>>
+>>>> As far as I can see io_send_zc_prep has this:
+>>>>
+>>>>          if (unlikely(READ_ONCE(sqe->__pad2[0]) || READ_ONCE(sqe->addr3)))
+>>>>                  return -EINVAL;
+>>>>
+>>>> both are u64...
+>>>
+>>> Hah, true, completely forgot about that one
+>>
+>> So would a commit like below be fine for you?
+>>
+>> Do you have anything in mind for SEND[MSG]_ZC that could possibly use
+>> another u64 in future?
+> 
+> It'll most likely be taken in the future, some features are planned
+> some I can imagine.
 
-In FSD, error correction code (ECC) is configured via PERIC SYSREG registers.
+Can give examples? As I can't imagine any possible feature.
 
-Signed-off-by: Vivek Yadav <vivek.2311@samsung.com>
----
- arch/arm64/boot/dts/tesla/fsd.dtsi | 4 ++++
- 1 file changed, 4 insertions(+)
+> The question is how necessary this one is and/or
+> how much simpler it would make it considering that CQEs are ordered
+> and apps still need to check for F_MORE. It shouldn't even require
+> refcounting. Can you elaborate on the simplifying userspace part?
+> 
+It's not critical, it would just make it easier to dispatch
+a different callback functions for the two cases.
 
-diff --git a/arch/arm64/boot/dts/tesla/fsd.dtsi b/arch/arm64/boot/dts/tesla/fsd.dtsi
-index 154fd3fc5895..03d46a113612 100644
---- a/arch/arm64/boot/dts/tesla/fsd.dtsi
-+++ b/arch/arm64/boot/dts/tesla/fsd.dtsi
-@@ -778,6 +778,7 @@
- 			clocks = <&clock_peric PERIC_MCAN0_IPCLKPORT_PCLK>,
- 				<&clock_peric PERIC_MCAN0_IPCLKPORT_CCLK>;
- 			clock-names = "hclk", "cclk";
-+			mram-ecc-cfg = <&sysreg_peric 0x700>;
- 			bosch,mram-cfg = <0x0 128 64 64 64 64 32 32>;
- 			status = "disabled";
- 		};
-@@ -795,6 +796,7 @@
- 			clocks = <&clock_peric PERIC_MCAN1_IPCLKPORT_PCLK>,
- 				<&clock_peric PERIC_MCAN1_IPCLKPORT_CCLK>;
- 			clock-names = "hclk", "cclk";
-+			mram-ecc-cfg = <&sysreg_peric 0x704>;
- 			bosch,mram-cfg = <0x0 128 64 64 64 64 32 32>;
- 			status = "disabled";
- 		};
-@@ -812,6 +814,7 @@
- 			clocks = <&clock_peric PERIC_MCAN2_IPCLKPORT_PCLK>,
- 				<&clock_peric PERIC_MCAN2_IPCLKPORT_CCLK>;
- 			clock-names = "hclk", "cclk";
-+			mram-ecc-cfg = <&sysreg_peric 0x708>;
- 			bosch,mram-cfg = <0x0 128 64 64 64 64 32 32>;
- 			status = "disabled";
- 		};
-@@ -829,6 +832,7 @@
- 			clocks = <&clock_peric PERIC_MCAN3_IPCLKPORT_PCLK>,
- 				<&clock_peric PERIC_MCAN3_IPCLKPORT_CCLK>;
- 			clock-names = "hclk", "cclk";
-+			mram-ecc-cfg = <&sysreg_peric 0x70c>;
- 			bosch,mram-cfg = <0x0 128 64 64 64 64 32 32>;
- 			status = "disabled";
- 		};
--- 
-2.17.1
+The current problem I'm facing is that I have a structure
+holding the state of an response and that has a single embedded
+completion structure:
 
+(simplified) struct completion {
+    uint32_t generation;
+    void (*callback_fn)(void *callback_private, const struct io_uring_cqe *cqe);
+    void *callback_private;
+};
+
+I use the memory address of the completion structure glued with the lower bits of the generation
+as 'user_data'. Imagine that I got a short write from SENDMSG_ZC/WAITALL
+because EINTR was generated, then I need to retry from userspace, which
+I'd try immediately without waiting for the NOTIF cqe to arrive.
+
+For each incoming cqe I get the completion address and the generation
+out of user_data and then verify the generation against the one stored in
+the completion in order to detect bugs, before passing over to callback_fn().
+
+Because I still need to handle the NOTIF cqe from the first try
+I can't change the generation for the next try.
+
+I thought about using two completion structures, one for the main SENDMSG_ZC result
+(which gets its generation incremented with each retry) and one for the NOTIF cqes
+just keeping generation stable having a simple callback_fn just waiting for a
+refcount to get 0.
+
+Most likely I just need to sit down concentrated to get the
+recounting and similar things sorted out.
+
+If there are really useful things we will do with addr3 and __pad2[0],
+I can try to cope with it... It would just be sad if they wouldn't be used anyway.
+
+metze
