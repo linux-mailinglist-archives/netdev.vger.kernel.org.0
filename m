@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EDE5C607C02
-	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 18:19:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDF10607C03
+	for <lists+netdev@lfdr.de>; Fri, 21 Oct 2022 18:19:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229966AbiJUQTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 12:19:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52850 "EHLO
+        id S230252AbiJUQTf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 12:19:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229997AbiJUQTU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 12:19:20 -0400
+        with ESMTP id S230382AbiJUQTb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 12:19:31 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC124285B5A;
-        Fri, 21 Oct 2022 09:19:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A70260D;
+        Fri, 21 Oct 2022 09:19:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0600A61F1C;
-        Fri, 21 Oct 2022 16:19:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14A22C433D6;
-        Fri, 21 Oct 2022 16:19:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 73DA061EF0;
+        Fri, 21 Oct 2022 16:19:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 870C2C433D6;
+        Fri, 21 Oct 2022 16:19:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666369156;
-        bh=Ja1c5TLvRUJZ5yA/TNCgNqMFbfeQ7091tgqg/zH5PCc=;
+        s=k20201202; t=1666369160;
+        bh=72igWJwcF0ePTnW6WI4m55sGzV00wEG+1zXzkuHijMU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i90H23GTaAwjaBybJSxB/AfvreN4Amdmd0mxiZpJe6V2aW2X63wiXcHCRTabE8e9r
-         VqFB1vFiOfjJqLZ0qZJfMZ36UhISaBBudckZicN8/Hbs3r/miGmQqnKtPYTpQaIOGP
-         KZ+fvqRf+WyOMYpDQxvVwBIFz3vlfa9QqH8ynrs3GbxGEh4Gs7cliVd6vgoWbRwlKE
-         rUttoDfGbt6GTPuederwk+/C+TmRhSWuUx8eK/2VC5Hq/JwOLmQnSPWNgHsHMjcQ9a
-         ZpXi9GEhrrDSaoZ3G5vs8OcJ3z9qj8iN2fwHLsjUhQ6sl4edDwFgMtAFgAJ8BPEfO9
-         e8MI8v3XnE46w==
+        b=UZ74TvxBxKgWqw0kjtyNgnHRoIMxDO9N652ab4/D/kmzsIEAjNVJI244XopQiZi74
+         CcsaOqYSgaO18IroaP1dGHi+gp1Rfm6dFMqp6hKjp82EsX37d3auMVqWW+SNYFc+CG
+         s87IuoV1SGU5ifrgQQr+VxqC8xJDGBv1TikFrN9a4u4rt1qyWd0/6ilcu1HWZDGD78
+         16TMap0p7XWn+kpp4NdZLAmRyyucV5xv0YJa1JnMGhwk/AyVyCfW8GAu12cznFNOFI
+         jALyFJK/gDhk3kNUss9f15qcOuwg4OyUmqrvEeEW1BLhov1kmCyukiTHjV5kdk6tfR
+         Zs0z3qsZ9BTVg==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
@@ -40,9 +40,9 @@ Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
         Bo.Jiao@mediatek.com, sujuan.chen@mediatek.com,
         ryder.Lee@mediatek.com, evelyn.tsai@mediatek.com,
         devicetree@vger.kernel.org, robh@kernel.org, daniel@makrotopia.org
-Subject: [PATCH net-next 2/6] dt-bindings: net: mediatek: add WED RX binding for MT7986 eth driver
-Date:   Fri, 21 Oct 2022 18:18:32 +0200
-Message-Id: <7a454984f0001a71964114b71f353cb47af95ee6.1666368566.git.lorenzo@kernel.org>
+Subject: [PATCH net-next 3/6] net: ethernet: mtk_wed: introduce wed mcu support
+Date:   Fri, 21 Oct 2022 18:18:33 +0200
+Message-Id: <9aeb73670ec404e8e973ee65d7ff1dffb52086d6.1666368566.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <cover.1666368566.git.lorenzo@kernel.org>
 References: <cover.1666368566.git.lorenzo@kernel.org>
@@ -50,348 +50,607 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Document the binding for the RX Wireless Ethernet Dispatch core on the
-MT7986 ethernet driver used to offload traffic received by WLAN NIC and
-forwarded to LAN/WAN one.
+Introduce WED mcu support used to configure WED WO chip.
+This is a preliminary patch in order to add RX Wireless
+Ethernet Dispatch available on MT7986 SoC.
 
+Tested-by: Daniel Golle <daniel@makrotopia.org>
+Co-developed-by: Sujuan Chen <sujuan.chen@mediatek.com>
+Signed-off-by: Sujuan Chen <sujuan.chen@mediatek.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- .../arm/mediatek/mediatek,mt7622-wed.yaml     | 126 ++++++++++++++++++
- .../arm/mediatek/mediatek,mt7986-wo-boot.yaml |  45 +++++++
- .../arm/mediatek/mediatek,mt7986-wo-ccif.yaml |  49 +++++++
- .../arm/mediatek/mediatek,mt7986-wo-dlm.yaml  |  66 +++++++++
- 4 files changed, 286 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-boot.yaml
- create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-ccif.yaml
- create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-dlm.yaml
+ drivers/net/ethernet/mediatek/Makefile       |   2 +-
+ drivers/net/ethernet/mediatek/mtk_wed_mcu.c  | 347 +++++++++++++++++++
+ drivers/net/ethernet/mediatek/mtk_wed_regs.h |   1 +
+ drivers/net/ethernet/mediatek/mtk_wed_wo.h   | 152 ++++++++
+ include/linux/soc/mediatek/mtk_wed.h         |  29 ++
+ 5 files changed, 530 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/net/ethernet/mediatek/mtk_wed_mcu.c
+ create mode 100644 drivers/net/ethernet/mediatek/mtk_wed_wo.h
 
-diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
-index 84fb0a146b6e..623f11df5545 100644
---- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
-+++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
-@@ -29,6 +29,59 @@ properties:
-   interrupts:
-     maxItems: 1
+diff --git a/drivers/net/ethernet/mediatek/Makefile b/drivers/net/ethernet/mediatek/Makefile
+index 45ba0970504a..d4bdefa77159 100644
+--- a/drivers/net/ethernet/mediatek/Makefile
++++ b/drivers/net/ethernet/mediatek/Makefile
+@@ -5,7 +5,7 @@
  
-+  mediatek,wocpu_emi:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    maxItems: 1
-+    description:
-+      Phandle to a node describing reserved memory used by mtk wed firmware
-+      (see bindings/reserved-memory/reserved-memory.txt)
-+
-+  mediatek,wocpu_data:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    maxItems: 1
-+    description:
-+      Phandle to a node describing reserved memory used by mtk wed firmware
-+      (see bindings/reserved-memory/reserved-memory.txt)
-+
-+  mediatek,wocpu_ilm:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    maxItems: 1
-+    description:
-+      Phandle to a node describing memory used by mtk wed firmware
-+
-+  mediatek,ap2woccif:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    maxItems: 1
-+    description:
-+      Phandle to the mediatek wed-wo controller.
-+
-+  mediatek,wocpu_boot:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    maxItems: 1
-+    description:
-+      Phandle to the mediatek wed-wo boot interface.
-+
-+  mediatek,wocpu_dlm:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    maxItems: 1
-+    description:
-+      Phandle to the mediatek wed-wo rx hw ring.
-+
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: mediatek,mt7986-wed
-+    then:
-+      properties:
-+        mediatek,wocpu_data: true
-+        mediatek,wocpu_boot: true
-+        mediatek,wocpu_emi: true
-+        mediatek,wocpu_ilm: true
-+        mediatek,ap2woccif: true
-+        mediatek,wocpu_dlm: true
-+
- required:
-   - compatible
-   - reg
-@@ -49,3 +102,76 @@ examples:
-         interrupts = <GIC_SPI 214 IRQ_TYPE_LEVEL_LOW>;
-       };
-     };
-+
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/reset/ti-syscon.h>
-+    soc {
-+      #address-cells = <2>;
-+      #size-cells = <2>;
-+      reserved-memory {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+        wocpu0_emi: wocpu0_emi@4fd00000 {
-+          reg = <0 0x4fd00000 0 0x40000>;
-+          no-map;
-+        };
-+
-+        wocpu_data: wocpu_data@4fd80000 {
-+          reg = <0 0x4fd80000 0 0x240000>;
-+          no-map;
-+        };
-+      };
-+
-+      ethsys: syscon@15000000 {
-+        #address-cells = <1>;
-+        #size-cells = <1>;
-+        compatible = "mediatek,mt7986-ethsys", "syscon";
-+        reg = <0 0x15000000 0 0x1000>;
-+
-+        #clock-cells = <1>;
-+        #reset-cells = <1>;
-+        ethsysrst: reset-controller {
-+          compatible = "ti,syscon-reset";
-+          #reset-cells = <1>;
-+          ti,reset-bits = <0x34 4 0x34 4 0x34 4 (ASSERT_SET | DEASSERT_CLEAR | STATUS_SET)>;
-+        };
-+      };
-+
-+      wocpu0_ilm: wocpu0_ilm@151e0000 {
-+        compatible = "mediatek,wocpu0_ilm";
-+        reg = <0 0x151e0000 0 0x8000>;
-+      };
-+
-+      cpu_boot: wocpu_boot@15194000 {
-+        compatible = "mediatek,wocpu_boot", "syscon";
-+        reg = <0 0x15194000 0 0x1000>;
-+      };
-+
-+      ap2woccif0: ap2woccif@151a5000 {
-+        compatible = "mediatek,ap2woccif", "syscon";
-+        reg = <0 0x151a5000 0 0x1000>;
-+        interrupts = <GIC_SPI 211 IRQ_TYPE_LEVEL_HIGH>;
-+      };
-+
-+      wocpu0_dlm: wocpu_dlm@151e8000 {
-+        compatible = "mediatek,wocpu_dlm";
-+        reg = <0 0x151e8000 0 0x2000>;
-+        resets = <&ethsysrst 0>;
-+        reset-names = "wocpu_rst";
-+      };
-+
-+      wed1: wed@1020a000 {
-+        compatible = "mediatek,mt7986-wed","syscon";
-+        reg = <0 0x15010000 0 0x1000>;
-+        interrupts = <GIC_SPI 205 IRQ_TYPE_LEVEL_HIGH>;
-+
-+        mediatek,wocpu_data = <&wocpu_data>;
-+        mediatek,ap2woccif = <&ap2woccif0>;
-+        mediatek,wocpu_ilm = <&wocpu0_ilm>;
-+        mediatek,wocpu_dlm = <&wocpu0_dlm>;
-+        mediatek,wocpu_emi = <&wocpu_emi>;
-+        mediatek,wocpu_boot = <&cpu_boot>;
-+      };
-+    };
-diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-boot.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-boot.yaml
+ obj-$(CONFIG_NET_MEDIATEK_SOC) += mtk_eth.o
+ mtk_eth-y := mtk_eth_soc.o mtk_sgmii.o mtk_eth_path.o mtk_ppe.o mtk_ppe_debugfs.o mtk_ppe_offload.o
+-mtk_eth-$(CONFIG_NET_MEDIATEK_SOC_WED) += mtk_wed.o
++mtk_eth-$(CONFIG_NET_MEDIATEK_SOC_WED) += mtk_wed.o mtk_wed_mcu.o
+ ifdef CONFIG_DEBUG_FS
+ mtk_eth-$(CONFIG_NET_MEDIATEK_SOC_WED) += mtk_wed_debugfs.o
+ endif
+diff --git a/drivers/net/ethernet/mediatek/mtk_wed_mcu.c b/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
 new file mode 100644
-index 000000000000..dc8fdb706960
+index 000000000000..4100258b0ec1
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-boot.yaml
-@@ -0,0 +1,45 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/arm/mediatek/mediatek,mt7986-wo-boot.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++++ b/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
+@@ -0,0 +1,347 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (C) 2022 Lorenzo Bianconi <lorenzo@kernel.org>  */
 +
-+title: MediaTek WED WO boot controller interface for MT7986
++#include <linux/firmware.h>
++#include <linux/of_address.h>
++#include <linux/mfd/syscon.h>
++#include <linux/soc/mediatek/mtk_wed.h>
 +
-+maintainers:
-+  - Lorenzo Bianconi <lorenzo@kernel.org>
-+  - Felix Fietkau <nbd@nbd.name>
++#include "mtk_wed_regs.h"
++#include "mtk_wed_wo.h"
++#include "mtk_wed.h"
 +
-+description:
-+  The mediatek wo-boot provides a configuration interface for WED WO
-+  boot controller on MT7986 soc.
++static u32 wo_r32(struct mtk_wed_wo *wo, u32 reg)
++{
++	u32 val;
 +
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - mediatek,wocpu_boot
-+      - const: syscon
++	if (regmap_read(wo->boot, reg, &val))
++		val = ~0;
 +
-+  reg:
-+    maxItems: 1
++	return val;
++}
 +
-+  interrupts:
-+    maxItems: 1
++static void wo_w32(struct mtk_wed_wo *wo, u32 reg, u32 val)
++{
++	regmap_write(wo->boot, reg, val);
++}
 +
-+required:
-+  - compatible
-+  - reg
++static struct sk_buff *
++mtk_wed_mcu_msg_alloc(const void *data, int data_len)
++{
++	int length = sizeof(struct mtk_wed_mcu_hdr) + data_len;
++	struct sk_buff *skb;
 +
-+additionalProperties: false
++	skb = alloc_skb(length, GFP_KERNEL);
++	if (!skb)
++		return NULL;
 +
-+examples:
-+  - |
-+    soc {
-+      #address-cells = <2>;
-+      #size-cells = <2>;
-+      cpu_boot: wocpu_boot@15194000 {
-+        compatible = "mediatek,wocpu_boot", "syscon";
-+        reg = <0 0x15194000 0 0x1000>;
-+      };
-+    };
-diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-ccif.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-ccif.yaml
++	memset(skb->head, 0, length);
++	skb_reserve(skb, sizeof(struct mtk_wed_mcu_hdr));
++	if (data && data_len)
++		skb_put_data(skb, data, data_len);
++
++	return skb;
++}
++
++static struct sk_buff *
++mtk_wed_mcu_get_response(struct mtk_wed_wo *wo, unsigned long expires)
++{
++	if (!time_is_after_jiffies(expires))
++		return NULL;
++
++	wait_event_timeout(wo->mcu.wait, !skb_queue_empty(&wo->mcu.res_q),
++			   expires - jiffies);
++	return skb_dequeue(&wo->mcu.res_q);
++}
++
++void mtk_wed_mcu_rx_event(struct mtk_wed_wo *wo, struct sk_buff *skb)
++{
++	skb_queue_tail(&wo->mcu.res_q, skb);
++	wake_up(&wo->mcu.wait);
++}
++
++void mtk_wed_mcu_rx_unsolicited_event(struct mtk_wed_wo *wo,
++				      struct sk_buff *skb)
++{
++	struct mtk_wed_mcu_hdr *hdr = (struct mtk_wed_mcu_hdr *)skb->data;
++
++	switch (hdr->cmd) {
++	case MTK_WED_WO_EVT_LOG_DUMP: {
++		const char *msg = (const char *)(skb->data + sizeof(*hdr));
++
++		dev_notice(wo->hw->dev, "%s\n", msg);
++		break;
++	}
++	case MTK_WED_WO_EVT_PROFILING: {
++		struct mtk_wed_wo_log_info *info;
++		u32 count = (skb->len - sizeof(*hdr)) / sizeof(*info);
++		int i;
++
++		info = (struct mtk_wed_wo_log_info *)(skb->data + sizeof(*hdr));
++		for (i = 0 ; i < count ; i++)
++			dev_notice(wo->hw->dev,
++				   "SN:%u latency: total=%u, rro:%u, mod:%u\n",
++				   le32_to_cpu(info[i].sn),
++				   le32_to_cpu(info[i].total),
++				   le32_to_cpu(info[i].rro),
++				   le32_to_cpu(info[i].mod));
++		break;
++	}
++	case MTK_WED_WO_EVT_RXCNT_INFO:
++		break;
++	default:
++		break;
++	}
++
++	dev_kfree_skb(skb);
++}
++
++static int
++mtk_wed_mcu_skb_send_msg(struct mtk_wed_wo *wo, struct sk_buff *skb,
++			 int id, int cmd, u16 *wait_seq, bool wait_resp)
++{
++	struct mtk_wed_mcu_hdr *hdr;
++
++	/* TODO: make it dynamic based on cmd */
++	wo->mcu.timeout = 20 * HZ;
++
++	hdr = (struct mtk_wed_mcu_hdr *)skb_push(skb, sizeof(*hdr));
++	hdr->cmd = cmd;
++	hdr->length = cpu_to_le16(skb->len);
++
++	if (wait_resp && wait_seq) {
++		u16 seq = ++wo->mcu.seq;
++
++		if (!seq)
++			seq = ++wo->mcu.seq;
++		*wait_seq = seq;
++
++		hdr->flag |= cpu_to_le16(MTK_WED_WARP_CMD_FLAG_NEED_RSP);
++		hdr->seq = cpu_to_le16(seq);
++	}
++	if (id == MTK_WED_MODULE_ID_WO)
++		hdr->flag |= cpu_to_le16(MTK_WED_WARP_CMD_FLAG_FROM_TO_WO);
++
++	dev_kfree_skb(skb);
++	return 0;
++}
++
++static int
++mtk_wed_mcu_parse_response(struct mtk_wed_wo *wo, struct sk_buff *skb,
++			   int cmd, int seq)
++{
++	struct mtk_wed_mcu_hdr *hdr;
++
++	if (!skb) {
++		dev_err(wo->hw->dev, "Message %08x (seq %d) timeout\n",
++			cmd, seq);
++		return -ETIMEDOUT;
++	}
++
++	hdr = (struct mtk_wed_mcu_hdr *)skb->data;
++	if (le16_to_cpu(hdr->seq) != seq)
++		return -EAGAIN;
++
++	skb_pull(skb, sizeof(*hdr));
++	switch (cmd) {
++	case MTK_WED_WO_CMD_RXCNT_INFO:
++	default:
++		break;
++	}
++
++	return 0;
++}
++
++int mtk_wed_mcu_send_msg(struct mtk_wed_wo *wo, int id, int cmd,
++			 const void *data, int len, bool wait_resp)
++{
++	unsigned long expires;
++	struct sk_buff *skb;
++	u16 seq;
++	int ret;
++
++	skb = mtk_wed_mcu_msg_alloc(data, len);
++	if (!skb)
++		return -ENOMEM;
++
++	mutex_lock(&wo->mcu.mutex);
++
++	ret = mtk_wed_mcu_skb_send_msg(wo, skb, id, cmd, &seq, wait_resp);
++	if (ret || !wait_resp)
++		goto unlock;
++
++	expires = jiffies + wo->mcu.timeout;
++	do {
++		skb = mtk_wed_mcu_get_response(wo, expires);
++		ret = mtk_wed_mcu_parse_response(wo, skb, cmd, seq);
++		dev_kfree_skb(skb);
++	} while (ret == -EAGAIN);
++
++unlock:
++	mutex_unlock(&wo->mcu.mutex);
++
++	return ret;
++}
++
++static int
++mtk_wed_get_firmware_metadata(struct mtk_wed_wo *wo,
++			      struct mtk_wed_fw_region_meta *meta)
++{
++	struct device_node *np;
++	struct resource res;
++	int ret;
++
++	np = of_parse_phandle(wo->hw->node, meta->name, 0);
++	if (!np)
++		return -ENODEV;
++
++	ret = of_address_to_resource(np, 0, &res);
++	if (ret)
++		goto out;
++
++	meta->phy_addr = res.start;
++	meta->size = resource_size(&res);
++	meta->addr = devm_ioremap(wo->hw->dev, res.start, meta->size);
++	if (!meta->addr)
++		ret = -ENOMEM;
++out:
++	of_node_put(np);
++
++	return ret;
++}
++
++static int
++mtk_wed_mcu_load_firmware(struct mtk_wed_wo *wo)
++{
++	static struct mtk_wed_fw_region_meta fw_region[] = {
++		[MTK_WED_WO_FW_EMI] = {
++			.name = "mediatek,wocpu_emi",
++		},
++		[MTK_WED_WO_FW_ILM] = {
++			.name = "mediatek,wocpu_ilm",
++		},
++		[MTK_WED_WO_FW_DATA] = {
++			.name = "mediatek,wocpu_data",
++			.shared = true,
++		},
++	};
++	const struct mtk_wed_fw_trailer *trailer;
++	const struct mtk_wed_fw_region *region;
++	const u8 *region_ptr, *trailer_ptr;
++	u32 val, offset = 0, boot_cr;
++	const struct firmware *fw;
++	int ret, i, count = 0;
++	const char *fw_name;
++
++	/* load firmware region metadata */
++	for (i = 0; i < ARRAY_SIZE(fw_region); i++) {
++		ret = mtk_wed_get_firmware_metadata(wo, &fw_region[i]);
++		if (ret)
++			return ret;
++	}
++
++	wo->boot = syscon_regmap_lookup_by_phandle(wo->hw->node,
++						   "mediatek,wocpu_boot");
++	if (IS_ERR_OR_NULL(wo->boot))
++		return PTR_ERR(wo->boot);
++
++	/* set dummy cr */
++	wed_w32(wo->hw->wed_dev, MTK_WED_SCR0 + 4 * MTK_WED_DUMMY_CR_FWDL,
++		wo->hw->index + 1);
++
++	/* load firmware */
++	fw_name = wo->hw->index ? MT7986_FIRMWARE_WO1 : MT7986_FIRMWARE_WO0;
++	ret = request_firmware(&fw, fw_name, wo->hw->dev);
++	if (ret)
++		return ret;
++
++	trailer_ptr = fw->data + fw->size - sizeof(*trailer);
++	trailer = (const struct mtk_wed_fw_trailer *)trailer_ptr;
++	dev_info(wo->hw->dev,
++		 "MTK WED WO Firmware Version: %.10s, Build Time: %.15s\n",
++		 trailer->fw_ver, trailer->build_date);
++	dev_info(wo->hw->dev, "MTK WED WO Chid ID %02x Region %d\n",
++		 trailer->chip_id, trailer->num_region);
++
++	if (fw->size - sizeof(*trailer) < trailer->num_region * sizeof(*region)) {
++		dev_err(wo->hw->dev, "Invalid fw num_region %d\n",
++			trailer->num_region);
++		ret = -EINVAL;
++		goto out;
++	}
++
++	region_ptr = trailer_ptr - trailer->num_region * sizeof(*region);
++	while (region_ptr < trailer_ptr) {
++		int j;
++
++		region = (const struct mtk_wed_fw_region *)region_ptr;
++		for (j = 0; j < ARRAY_SIZE(fw_region); j++) {
++			if (fw_region[j].phy_addr != region->addr)
++				continue;
++
++			if (fw_region[j].size < region->len)
++				continue;
++
++			if (trailer_ptr < fw->data + offset + region->len)
++				continue;
++
++			if (!fw_region[j].shared || !fw_region[j].consumed) {
++				memcpy(fw_region[j].addr, fw->data + offset,
++				       region->len);
++				fw_region[j].consumed = true;
++				count++;
++			} else if (fw_region[j].shared) {
++				count++;
++			}
++		}
++		region_ptr += sizeof(*region);
++		offset += region->len;
++	}
++
++	if (count != ARRAY_SIZE(fw_region)) {
++		dev_err(wo->hw->dev, "Failed to load firmware\n");
++		ret = -EINVAL;
++		goto out;
++	}
++
++	/* set the start address */
++	boot_cr = wo->hw->index ? MTK_WO_MCU_CFG_LS_WA_BOOT_ADDR_ADDR
++				: MTK_WO_MCU_CFG_LS_WM_BOOT_ADDR_ADDR;
++	wo_w32(wo, boot_cr, fw_region[MTK_WED_WO_FW_EMI].phy_addr >> 16);
++	/* wo firmware reset */
++	wo_w32(wo, MTK_WO_MCU_CFG_LS_WF_MCCR_CLR_ADDR, 0xc00);
++
++	val = wo_r32(wo, MTK_WO_MCU_CFG_LS_WF_MCU_CFG_WM_WA_ADDR);
++	val |= wo->hw->index ? MTK_WO_MCU_CFG_LS_WF_WM_WA_WA_CPU_RSTB_MASK
++			     : MTK_WO_MCU_CFG_LS_WF_WM_WA_WM_CPU_RSTB_MASK;
++	wo_w32(wo, MTK_WO_MCU_CFG_LS_WF_MCU_CFG_WM_WA_ADDR, val);
++out:
++	release_firmware(fw);
++
++	return ret;
++}
++
++int mtk_wed_mcu_init(struct mtk_wed_wo *wo)
++{
++	u32 val;
++	int ret;
++
++	skb_queue_head_init(&wo->mcu.res_q);
++	init_waitqueue_head(&wo->mcu.wait);
++	mutex_init(&wo->mcu.mutex);
++
++	ret = mtk_wed_mcu_load_firmware(wo);
++	if (ret)
++		return ret;
++
++	do {
++		/* get dummy cr */
++		val = wed_r32(wo->hw->wed_dev,
++			      MTK_WED_SCR0 + 4 * MTK_WED_DUMMY_CR_FWDL);
++	} while (val && !time_after(jiffies, jiffies + MTK_FW_DL_TIMEOUT));
++
++	return val ? -EBUSY : 0;
++}
++
++MODULE_FIRMWARE(MT7986_FIRMWARE_WO0);
++MODULE_FIRMWARE(MT7986_FIRMWARE_WO1);
+diff --git a/drivers/net/ethernet/mediatek/mtk_wed_regs.h b/drivers/net/ethernet/mediatek/mtk_wed_regs.h
+index e270fb336143..c940b3bb215b 100644
+--- a/drivers/net/ethernet/mediatek/mtk_wed_regs.h
++++ b/drivers/net/ethernet/mediatek/mtk_wed_regs.h
+@@ -152,6 +152,7 @@ struct mtk_wdma_desc {
+ 
+ #define MTK_WED_RING_RX(_n)				(0x400 + (_n) * 0x10)
+ 
++#define MTK_WED_SCR0					0x3c0
+ #define MTK_WED_WPDMA_INT_TRIGGER			0x504
+ #define MTK_WED_WPDMA_INT_TRIGGER_RX_DONE		BIT(1)
+ #define MTK_WED_WPDMA_INT_TRIGGER_TX_DONE		GENMASK(5, 4)
+diff --git a/drivers/net/ethernet/mediatek/mtk_wed_wo.h b/drivers/net/ethernet/mediatek/mtk_wed_wo.h
 new file mode 100644
-index 000000000000..8fea86425983
+index 000000000000..bf33adcb7320
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-ccif.yaml
-@@ -0,0 +1,49 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/arm/mediatek/mediatek,mt7986-wo-ccif.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++++ b/drivers/net/ethernet/mediatek/mtk_wed_wo.h
+@@ -0,0 +1,152 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/* Copyright (C) 2022 Lorenzo Bianconi <lorenzo@kernel.org>  */
 +
-+title: MediaTek WED WO Controller for MT7986
++#ifndef __MTK_WED_WO_H
++#define __MTK_WED_WO_H
 +
-+maintainers:
-+  - Lorenzo Bianconi <lorenzo@kernel.org>
-+  - Felix Fietkau <nbd@nbd.name>
++#include <linux/skbuff.h>
++#include <linux/netdevice.h>
 +
-+description:
-+  The mediatek WO-ccif provides a configuration interface for WED WO
-+  controller on MT7986 soc.
++struct mtk_wed_hw;
 +
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - mediatek,ap2woccif
-+      - const: syscon
++struct mtk_wed_mcu_hdr {
++	/* DW0 */
++	u8 version;
++	u8 cmd;
++	__le16 length;
 +
-+  reg:
-+    maxItems: 1
++	/* DW1 */
++	__le16 seq;
++	__le16 flag;
 +
-+  interrupts:
-+    maxItems: 1
++	/* DW2 */
++	__le32 status;
 +
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
++	/* DW3 */
++	u8 rsv[20];
++};
 +
-+additionalProperties: false
++struct mtk_wed_wo_log_info {
++	__le32 sn;
++	__le32 total;
++	__le32 rro;
++	__le32 mod;
++};
 +
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    soc {
-+      #address-cells = <2>;
-+      #size-cells = <2>;
-+      ap2woccif0: ap2woccif@151a5000 {
-+        compatible = "mediatek,ap2woccif", "syscon";
-+        reg = <0 0x151a5000 0 0x1000>;
-+        interrupts = <GIC_SPI 205 IRQ_TYPE_LEVEL_HIGH>;
-+      };
-+    };
-diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-dlm.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-dlm.yaml
-new file mode 100644
-index 000000000000..529343c57e4b
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-dlm.yaml
-@@ -0,0 +1,66 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/arm/mediatek/mediatek,mt7986-wo-dlm.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++enum mtk_wed_wo_event {
++	MTK_WED_WO_EVT_LOG_DUMP		= 0x1,
++	MTK_WED_WO_EVT_PROFILING	= 0x2,
++	MTK_WED_WO_EVT_RXCNT_INFO	= 0x3,
++};
 +
-+title: MediaTek WED WO hw rx ring interface for MT7986
++#define MTK_WED_MODULE_ID_WO		1
++#define MTK_FW_DL_TIMEOUT		(4 * HZ)
++#define MTK_WOCPU_TIMEOUT		(2 * HZ)
 +
-+maintainers:
-+  - Lorenzo Bianconi <lorenzo@kernel.org>
-+  - Felix Fietkau <nbd@nbd.name>
++enum {
++	MTK_WED_WARP_CMD_FLAG_RSP		= BIT(0),
++	MTK_WED_WARP_CMD_FLAG_NEED_RSP		= BIT(1),
++	MTK_WED_WARP_CMD_FLAG_FROM_TO_WO	= BIT(2),
++};
 +
-+description:
-+  The mediatek WO-dlm provides a configuration interface for WED WO
-+  rx ring on MT7986 soc.
++enum {
++	MTK_WED_WO_FW_EMI,
++	MTK_WED_WO_FW_ILM,
++	MTK_WED_WO_FW_DATA,
++	MTK_WED_WO_FW_BOOT,
++};
 +
-+properties:
-+  compatible:
-+    const: mediatek,wocpu_dlm
++enum mtk_wed_dummy_cr_idx {
++	MTK_WED_DUMMY_CR_FWDL,
++	MTK_WED_DUMMY_CR_WO_STATUS,
++};
 +
-+  reg:
-+    maxItems: 1
++#define MT7986_FIRMWARE_WO0	"mediatek/mt7986_wo_0.bin"
++#define MT7986_FIRMWARE_WO1	"mediatek/mt7986_wo_1.bin"
 +
-+  resets:
-+    maxItems: 1
++#define MTK_WO_MCU_CFG_LS_BASE				0 /* XXX: 0x15194000 */
++#define MTK_WO_MCU_CFG_LS_HW_VER_ADDR			(MTK_WO_MCU_CFG_LS_BASE + 0x000)
++#define MTK_WO_MCU_CFG_LS_FW_VER_ADDR			(MTK_WO_MCU_CFG_LS_BASE + 0x004)
++#define MTK_WO_MCU_CFG_LS_CFG_DBG1_ADDR			(MTK_WO_MCU_CFG_LS_BASE + 0x00c)
++#define MTK_WO_MCU_CFG_LS_CFG_DBG2_ADDR			(MTK_WO_MCU_CFG_LS_BASE + 0x010)
++#define MTK_WO_MCU_CFG_LS_WF_MCCR_ADDR			(MTK_WO_MCU_CFG_LS_BASE + 0x014)
++#define MTK_WO_MCU_CFG_LS_WF_MCCR_SET_ADDR		(MTK_WO_MCU_CFG_LS_BASE + 0x018)
++#define MTK_WO_MCU_CFG_LS_WF_MCCR_CLR_ADDR		(MTK_WO_MCU_CFG_LS_BASE + 0x01c)
++#define MTK_WO_MCU_CFG_LS_WF_MCU_CFG_WM_WA_ADDR		(MTK_WO_MCU_CFG_LS_BASE + 0x050)
++#define MTK_WO_MCU_CFG_LS_WM_BOOT_ADDR_ADDR		(MTK_WO_MCU_CFG_LS_BASE + 0x060)
++#define MTK_WO_MCU_CFG_LS_WA_BOOT_ADDR_ADDR		(MTK_WO_MCU_CFG_LS_BASE + 0x064)
 +
-+  reset-names:
-+    maxItems: 1
++#define MTK_WO_MCU_CFG_LS_WF_WM_WA_WM_CPU_RSTB_MASK	BIT(5)
++#define MTK_WO_MCU_CFG_LS_WF_WM_WA_WA_CPU_RSTB_MASK	BIT(0)
 +
-+required:
-+  - compatible
-+  - reg
-+  - resets
-+  - reset-names
++struct mtk_wed_fw_region_meta {
++	const char *name;
++	void __iomem *addr;
++	phys_addr_t phy_addr;
++	u32 size;
++	bool shared:1;
++	bool consumed:1;
++};
 +
-+additionalProperties: false
++struct mtk_wed_fw_region {
++	__le32 decomp_crc;
++	__le32 decomp_len;
++	__le32 decomp_blk_sz;
++	u8 rsv0[4];
++	__le32 addr;
++	__le32 len;
++	u8 feature_set;
++	u8 rsv1[15];
++} __packed;
 +
-+examples:
-+  - |
-+    #include <dt-bindings/reset/ti-syscon.h>
-+    soc {
-+      #address-cells = <2>;
-+      #size-cells = <2>;
++struct mtk_wed_fw_trailer {
++	u8 chip_id;
++	u8 eco_code;
++	u8 num_region;
++	u8 format_ver;
++	u8 format_flag;
++	u8 rsv[2];
++	char fw_ver[10];
++	char build_date[15];
++	u32 crc;
++};
 +
-+      ethsys: syscon@15000000 {
-+        #address-cells = <1>;
-+        #size-cells = <1>;
-+        compatible = "mediatek,mt7986-ethsys", "syscon";
-+        reg = <0 0x15000000 0 0x1000>;
++struct mtk_wed_wo {
++	struct mtk_wed_hw *hw;
++	struct regmap *boot;
 +
-+        #clock-cells = <1>;
-+        #reset-cells = <1>;
-+        ethsysrst: reset-controller {
-+          compatible = "ti,syscon-reset";
-+          #reset-cells = <1>;
-+          ti,reset-bits = <0x34 4 0x34 4 0x34 4 (ASSERT_SET | DEASSERT_CLEAR | STATUS_SET)>;
-+        };
-+      };
++	struct {
++		struct mutex mutex;
++		int timeout;
++		u16 seq;
 +
-+      wocpu0_dlm: wocpu_dlm@151e8000 {
-+        compatible = "mediatek,wocpu_dlm";
-+        reg = <0 0x151e8000 0 0x2000>;
-+        resets = <&ethsysrst 0>;
-+        reset-names = "wocpu_rst";
-+      };
-+    };
++		struct sk_buff_head res_q;
++		wait_queue_head_t wait;
++	} mcu;
++};
++
++static inline int
++mtk_wed_mcu_check_msg(struct mtk_wed_wo *wo, struct sk_buff *skb)
++{
++	struct mtk_wed_mcu_hdr *hdr = (struct mtk_wed_mcu_hdr *)skb->data;
++
++	if (hdr->version)
++		return -EINVAL;
++
++	if (skb->len < sizeof(*hdr))
++		return -EINVAL;
++
++	if (skb->len != le16_to_cpu(hdr->length))
++		return -EINVAL;
++
++	return 0;
++}
++
++void mtk_wed_mcu_rx_event(struct mtk_wed_wo *wo, struct sk_buff *skb);
++void mtk_wed_mcu_rx_unsolicited_event(struct mtk_wed_wo *wo,
++				      struct sk_buff *skb);
++int mtk_wed_mcu_send_msg(struct mtk_wed_wo *wo, int id, int cmd,
++			 const void *data, int len, bool wait_resp);
++int mtk_wed_mcu_init(struct mtk_wed_wo *wo);
++
++#endif /* __MTK_WED_WO_H */
+diff --git a/include/linux/soc/mediatek/mtk_wed.h b/include/linux/soc/mediatek/mtk_wed.h
+index 4450c8b7a1cb..2cc2f1e43ba9 100644
+--- a/include/linux/soc/mediatek/mtk_wed.h
++++ b/include/linux/soc/mediatek/mtk_wed.h
+@@ -11,6 +11,35 @@
+ struct mtk_wed_hw;
+ struct mtk_wdma_desc;
+ 
++enum mtk_wed_wo_cmd {
++	MTK_WED_WO_CMD_WED_CFG,
++	MTK_WED_WO_CMD_WED_RX_STAT,
++	MTK_WED_WO_CMD_RRO_SER,
++	MTK_WED_WO_CMD_DBG_INFO,
++	MTK_WED_WO_CMD_DEV_INFO,
++	MTK_WED_WO_CMD_BSS_INFO,
++	MTK_WED_WO_CMD_STA_REC,
++	MTK_WED_WO_CMD_DEV_INFO_DUMP,
++	MTK_WED_WO_CMD_BSS_INFO_DUMP,
++	MTK_WED_WO_CMD_STA_REC_DUMP,
++	MTK_WED_WO_CMD_BA_INFO_DUMP,
++	MTK_WED_WO_CMD_FBCMD_Q_DUMP,
++	MTK_WED_WO_CMD_FW_LOG_CTRL,
++	MTK_WED_WO_CMD_LOG_FLUSH,
++	MTK_WED_WO_CMD_CHANGE_STATE,
++	MTK_WED_WO_CMD_CPU_STATS_ENABLE,
++	MTK_WED_WO_CMD_CPU_STATS_DUMP,
++	MTK_WED_WO_CMD_EXCEPTION_INIT,
++	MTK_WED_WO_CMD_PROF_CTRL,
++	MTK_WED_WO_CMD_STA_BA_DUMP,
++	MTK_WED_WO_CMD_BA_CTRL_DUMP,
++	MTK_WED_WO_CMD_RXCNT_CTRL,
++	MTK_WED_WO_CMD_RXCNT_INFO,
++	MTK_WED_WO_CMD_SET_CAP,
++	MTK_WED_WO_CMD_CCIF_RING_DUMP,
++	MTK_WED_WO_CMD_WED_END
++};
++
+ enum mtk_wed_bus_tye {
+ 	MTK_WED_BUS_PCIE,
+ 	MTK_WED_BUS_AXI,
 -- 
 2.37.3
 
