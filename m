@@ -2,47 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE1E66084C0
-	for <lists+netdev@lfdr.de>; Sat, 22 Oct 2022 07:48:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54CCC6084C6
+	for <lists+netdev@lfdr.de>; Sat, 22 Oct 2022 07:50:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbiJVFsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Oct 2022 01:48:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55674 "EHLO
+        id S229514AbiJVFuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Oct 2022 01:50:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiJVFsH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Oct 2022 01:48:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E1C32B2E17
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 22:48:06 -0700 (PDT)
+        with ESMTP id S229535AbiJVFuV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Oct 2022 01:50:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB26DC4D9F
+        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 22:50:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0A756B82DE9
-        for <netdev@vger.kernel.org>; Sat, 22 Oct 2022 05:48:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95896C433D7;
-        Sat, 22 Oct 2022 05:48:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6591D60A4D
+        for <netdev@vger.kernel.org>; Sat, 22 Oct 2022 05:50:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C0088C433D6;
+        Sat, 22 Oct 2022 05:50:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666417683;
-        bh=/C3cchOyTq1IwiuQJJKe5zmFGMMALp/V/ZnSK5GuaNM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oQciKBgXs6XGrLd9+arOuu4Do9yLH0IeLEOxJf2MDK9quESTAjORsBatzm5Lz8XHL
-         tmfNIGANlRRjBNCaBb+62ZeJLdZbatdzh7yngilu/2fnB7oQTlHgKRDoj86Ax+0l2O
-         XQraUl3XoaCyPxK8IaWde59gqYl+N2T/U+FeWV1EmNL+D14n49XW1O27QGQ/7t++2d
-         8+7kb+COL18ACVvlrFX8nrYrKqAFlnNJlLviUGxVOrRBqS/5RD7J6fL9vwRix6nSRn
-         6XZpRMoxFrVyfK/OioUHmXaomM8/82Ow2OrlStnHuR0PHQC6oZ8yoyiu+l4NJ302Mm
-         RcwGnOhMcvMAA==
-Date:   Fri, 21 Oct 2022 22:48:02 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiawen Wu <jiawenwu@trustnetic.com>
-Cc:     netdev@vger.kernel.org, mengyuanlou@net-swift.com
-Subject: Re: [RESEND PATCH net-next v4 2/3] net: txgbe: Reset hardware
-Message-ID: <20221021224802.6eebde64@kernel.org>
-In-Reply-To: <20221021020720.519223-3-jiawenwu@trustnetic.com>
-References: <20221021020720.519223-1-jiawenwu@trustnetic.com>
-        <20221021020720.519223-3-jiawenwu@trustnetic.com>
+        s=k20201202; t=1666417818;
+        bh=Ed4rck0yBwtMD3DwtbpesWVeT2FUiPrROI7Zt9EnqSc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=s5V+5iw0t+v0ohnJ1uGr8g6D1ujS/bq8gLFl/TIVhGLRqNKuxS76OA6DmfbO/Wnf0
+         lL4+a9DeQV37nXth8OcmIGeoADwDR8C8USmiF4WX3TZjAOh5Cp7UcfeiKz/P1pc7Wz
+         WjHwjmhN46UGEiUtLOMtefGKy1CdsnqSPDwajaLR25EnnNE9dlQIlVvywruyARzCkK
+         uRaR9SCZhqgGNfw3K18hXanLIFYlWC+DT4AYm2fcHY5fwD0QU7WTJHCNo1aahwM7S1
+         hlyrKB08F0RRhcXqyECzCKs5I5YgO/Fa0VLLuEd5YPscL7FsGPXsTd12UoatM556Iw
+         o9qADImRWpFWA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A1B8BC4166D;
+        Sat, 22 Oct 2022 05:50:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] nfp: only clean `sp_indiff` when application firmware is
+ unloaded
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166641781865.12745.11154802832887559310.git-patchwork-notify@kernel.org>
+Date:   Sat, 22 Oct 2022 05:50:18 +0000
+References: <20221020081411.80186-1-simon.horman@corigine.com>
+In-Reply-To: <20221020081411.80186-1-simon.horman@corigine.com>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, oss-drivers@corigine.com,
+        yinjun.zhang@corigine.com
 X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -52,10 +57,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 21 Oct 2022 10:07:19 +0800 Jiawen Wu wrote:
-> Reset and initialize the hardware by configuring the MAC layer.
+Hello:
 
-Please ensure clean build with W=1 C=1 of all the patches:
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-drivers/net/ethernet/wangxun/libwx/wx_hw.c:139: warning: Function parameter or member 'wxhw' not described in 'wx_stop_adapter'
-drivers/net/ethernet/wangxun/libwx/wx_hw.c:139: warning: Excess function parameter 'hw' description in 'wx_stop_adapter'
+On Thu, 20 Oct 2022 09:14:11 +0100 you wrote:
+> From: Yinjun Zhang <yinjun.zhang@corigine.com>
+> 
+> Currently `sp_indiff` is cleaned when driver is removed. This will
+> cause problem in multi-PF/multi-host case, considering one PF is
+> removed while another is still in use.
+> 
+> Since `sp_indiff` is the application firmware property, it should
+> only be cleaned when the firmware is unloaded. Now let management
+> firmware to clean it when necessary, driver only set it.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net] nfp: only clean `sp_indiff` when application firmware is unloaded
+    https://git.kernel.org/netdev/net/c/0bda03623e6b
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
