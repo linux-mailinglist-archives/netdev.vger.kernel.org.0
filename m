@@ -2,123 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 72619608369
-	for <lists+netdev@lfdr.de>; Sat, 22 Oct 2022 03:52:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7667F60836B
+	for <lists+netdev@lfdr.de>; Sat, 22 Oct 2022 03:53:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbiJVBwo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 21:52:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55056 "EHLO
+        id S229777AbiJVBxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 21:53:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229652AbiJVBwm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 21:52:42 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBCDD2CDEB
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 18:52:41 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id pq16so3874446pjb.2
-        for <netdev@vger.kernel.org>; Fri, 21 Oct 2022 18:52:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=afdPZP8v0TX/Zy/NVaOu1EQ1KzFRj9XO5sdt02N1QIw=;
-        b=byBUNwzD8BfQT9gPd+UCau35i3Ec29XlEf03viviGcFtuMa8DoaRnaCDMKhdTiatp8
-         5dQWKnm+fZbZN4Vmkd4XLd73XU6Vzb6AR5kS9QxTBuDw+YrG5xKFVjsWgwTFndV+RIZC
-         Uf0XNfm4mPIBksl8MOtKh14ETZpxxZjKMiFoc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=afdPZP8v0TX/Zy/NVaOu1EQ1KzFRj9XO5sdt02N1QIw=;
-        b=atsjo8bQ0FtxOMqIQAhNaQ5S3y4m+nR1uQb6nOUTIfD50/8p5h88DU6X23GpTHkg55
-         zI7HyRc3jHKVCfGlH9Sz10Ch7DvjkykRnGgHcgmUBhRBAeuEmfOebfTkf2+Py8daoqKw
-         NMvzTlFQu89kBOByXqk51y3UvjPM2D/SetJx7UWYCTlmJPK0SU/qE0OjgHutxs+S+ila
-         b1z61oGVUEiFRlQKe4IxwL2jyiU0iMAQEWOvPACreQk0UqmfNx2nB8EqJt6ZzMCsgjsP
-         tgn9ejWpGnRLWO81IUAsMwojvPSc9yDgW1c50rHO3quD6REiEte4WjOsUYWW9RtqZzK1
-         zxgg==
-X-Gm-Message-State: ACrzQf1+3rQ/z15H1wODpK5ihgopFcT0oIt4t6pFVgFtpYOFrwozAzsm
-        1HqrzpRMsnsUCbeNlGIEsT+IqA==
-X-Google-Smtp-Source: AMsMyM7l25D5mnCDMTSTKy8YeC1DWpS7hmUeK83OHYzC79a0fjn9W2pNlDjM9O49hOYPIB1DCr7NCw==
-X-Received: by 2002:a17:902:d2ce:b0:185:3f05:acf4 with SMTP id n14-20020a170902d2ce00b001853f05acf4mr22427322plc.35.1666403561336;
-        Fri, 21 Oct 2022 18:52:41 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id pf9-20020a17090b1d8900b00212cf2fe8c3sm3180998pjb.1.2022.10.21.18.52.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Oct 2022 18:52:40 -0700 (PDT)
-Date:   Fri, 21 Oct 2022 18:52:39 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Dylan Yudaken <dylany@fb.com>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Petr Machata <petrm@nvidia.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        syzbot <syzkaller@googlegroups.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        netdev@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>,
-        "D. Wythe" <alibuda@linux.alibaba.com>,
-        Jeremy Kerr <jk@codeconstruct.com.au>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Menglong Dong <imagedong@tencent.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Congyu Liu <liu3101@purdue.edu>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Ziyang Xuan <william.xuanziyang@huawei.com>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH][next] net: dev: Convert sa_data to flexible array in
- struct sockaddr
-Message-ID: <202210211841.031AB46@keescook>
-References: <20221018095503.never.671-kees@kernel.org>
- <bd11473cd4e2a92c4ce2a32d370800522862ad4b.camel@redhat.com>
+        with ESMTP id S229585AbiJVBxO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 21:53:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA1A52CDEB;
+        Fri, 21 Oct 2022 18:53:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 74564B80CB0;
+        Sat, 22 Oct 2022 01:53:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE1A6C43470;
+        Sat, 22 Oct 2022 01:53:10 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="hrD1fy18"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1666403588;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rZmgGNrZrKnSHJUXdPvr1CVgxx3pz8zkqE2JHpWrLoo=;
+        b=hrD1fy181ftNPMbLIWvdq1TNmPl2/0CdM7/Lk64vw7BAl7M3MktAAgao0pqv3r7qgniXsO
+        4BD4bX4lfMYnva80UWxouoW5ERbvot+JnSptzx/6Yzykm7WremVTgfjhY9iKkxDyjOWqpC
+        /2+jF0qKe+aEBbQ/Vq7qoHvdyFxkTMQ=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 6e0cb5ea (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Sat, 22 Oct 2022 01:53:08 +0000 (UTC)
+Received: by mail-ua1-f41.google.com with SMTP id f12so2931157uae.3;
+        Fri, 21 Oct 2022 18:53:07 -0700 (PDT)
+X-Gm-Message-State: ACrzQf3t87fLmziRZtK/py17szxZwPNJ4oh/SxdzHoTUq6tEI3CagJUp
+        Focj4BQduO9MEXXvNQxE+lVnteReIM4It3Afn10=
+X-Google-Smtp-Source: AMsMyM7ESXRvCZptaWCL4tIaUktlfbhaS7HlVAdnbJrL1GncaUouT2QrgQVBs6Gulq+WjUOj02W9TYHyY5dXtNj1mQI=
+X-Received: by 2002:ab0:6413:0:b0:3e1:b113:2dfa with SMTP id
+ x19-20020ab06413000000b003e1b1132dfamr15868037uao.102.1666403587008; Fri, 21
+ Oct 2022 18:53:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bd11473cd4e2a92c4ce2a32d370800522862ad4b.camel@redhat.com>
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <5894765.lOV4Wx5bFT@eto.sf-tec.de>
+In-Reply-To: <5894765.lOV4Wx5bFT@eto.sf-tec.de>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Fri, 21 Oct 2022 21:52:56 -0400
+X-Gmail-Original-Message-ID: <CAHmME9oHzopzm9PjpaYsLFujY5O+mdt0_NujUcpEp764CvGU8Q@mail.gmail.com>
+Message-ID: <CAHmME9oHzopzm9PjpaYsLFujY5O+mdt0_NujUcpEp764CvGU8Q@mail.gmail.com>
+Subject: Re: [PATCH][Resend] rhashtable: make test actually random
+To:     eike-kernel@sf-tec.de
+Cc:     Thomas Graf <tgraf@suug.ch>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 20, 2022 at 10:58:50AM +0200, Paolo Abeni wrote:
-> On Tue, 2022-10-18 at 02:56 -0700, Kees Cook wrote:
-> > [...]
-> >  struct sockaddr {
-> >  	sa_family_t	sa_family;	/* address family, AF_xxx	*/
-> > -	char		sa_data[14];	/* 14 bytes of protocol address	*/
-> > +	union {
-> > +		char sa_data_min[14];		/* Minimum 14 bytes of protocol address	*/
-> > +		DECLARE_FLEX_ARRAY(char, sa_data);
-> 
-> Any special reason to avoid preserving the old name for the array and
-> e.g. using sa_data_flex for the new field, so we don't have to touch
-> the sockaddr users?
+Hi,
 
-Yes -- the reason is exactly to not touch the sockaddr users (who
-generally treat sa_data as a fake flexible array). By switching it to a
-flex-array the behavior will stay the same (especially under the coming
--fstrict-flex-arrays option), except that it breaks sizeof(). But the
-broken sizeof() allows us to immediately find all the places where the
-code explicitly depends on sa_data being 14 bytes. And for those cases,
-we switch to sizeof(sa_data_min).
+On Fri, Oct 21, 2022 at 9:47 AM Rolf Eike Beer <eike-kernel@sf-tec.de> wrote:
+>
+> The "random rhlist add/delete operations" actually wasn't very random, as all
+> cases tested the same bit. Since the later parts of this loop depend on the
+> first case execute this unconditionally, and then test on different bits for the
+> remaining tests. While at it only request as much random bits as are actually
+> used.
 
-If we went the reverse route (and added -fstrict-flex-arrays) we might
-end up adding a bunch of false positives all at once, because the places
-that treated it as a flex-array would suddenly all begin behaving as a
-14-byte array.
+Seems reasonable to me. If it's okay with Thomas, who you CC'd, I'd
+like to take this through my random tree, as that'll prevent it from
+conflicting with a series I have out currently:
+https://lore.kernel.org/lkml/20221022014403.3881893-1-Jason@zx2c4.com/
 
--- 
-Kees Cook
+Jason
