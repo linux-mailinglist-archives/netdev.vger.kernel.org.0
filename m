@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E6D27608289
-	for <lists+netdev@lfdr.de>; Sat, 22 Oct 2022 02:02:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCF75608290
+	for <lists+netdev@lfdr.de>; Sat, 22 Oct 2022 02:02:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230101AbiJVACD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Oct 2022 20:02:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51844 "EHLO
+        id S230003AbiJVACG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Oct 2022 20:02:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230024AbiJVABs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 20:01:48 -0400
+        with ESMTP id S230033AbiJVABt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Oct 2022 20:01:49 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 43DC426CDCC;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 441E626D902;
         Fri, 21 Oct 2022 17:01:43 -0700 (PDT)
 Received: by linux.microsoft.com (Postfix, from userid 1004)
-        id 6A75120FF4E8; Fri, 21 Oct 2022 17:01:41 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6A75120FF4E8
+        id DDB9F20FF4EE; Fri, 21 Oct 2022 17:01:41 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com DDB9F20FF4EE
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxonhyperv.com;
         s=default; t=1666396901;
-        bh=jONrZhhKFLS3dleWg98wZ6FgVfueM2/7lN9acbPbclk=;
+        bh=XCdAPyY3QKtJwrvrDmLBBK0K2ZN06sCmO+Hdg9ph1/0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:Reply-To:From;
-        b=eybYVpy7LQEeNtEwDUp3+xt2NwD/jxXDevZPUdORbKEjVMmzxwDzaYKRVURVqeIpd
-         mgjIT4Gdf1DloIwhJp5A8xgWY0EwE8nW/+KNw9gShNHeJzRo3mWYZJXhuNcbs8mgKI
-         B9pRn7Y03pXcZptIKAY7ZHKfBPkk1UVT4nQ09oBU=
+        b=faA+oiyAlFd7vGuIT2sfiAWGev0+Q8HkghW02Cha5wsLc9B22gKphi71HW1es33ka
+         ATH6a53lvZmNZ7CV1HBv25C19dklB3Ul3D5j2fNeNMaTlKTxUcoec9jDkk3f8OyLWN
+         +E1Lg2ORB2KTc0wwOguHnZoaYJquQM6IRclES/5Y=
 From:   longli@linuxonhyperv.com
 To:     "K. Y. Srinivasan" <kys@microsoft.com>,
         Haiyang Zhang <haiyangz@microsoft.com>,
@@ -38,9 +38,9 @@ To:     "K. Y. Srinivasan" <kys@microsoft.com>,
 Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
         Long Li <longli@microsoft.com>
-Subject: [Patch v9 09/12] net: mana: Define and process GDMA response code GDMA_STATUS_MORE_ENTRIES
-Date:   Fri, 21 Oct 2022 17:01:26 -0700
-Message-Id: <1666396889-31288-10-git-send-email-longli@linuxonhyperv.com>
+Subject: [Patch v9 10/12] net: mana: Define data structures for allocating doorbell page from GDMA
+Date:   Fri, 21 Oct 2022 17:01:27 -0700
+Message-Id: <1666396889-31288-11-git-send-email-longli@linuxonhyperv.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1666396889-31288-1-git-send-email-longli@linuxonhyperv.com>
 References: <1666396889-31288-1-git-send-email-longli@linuxonhyperv.com>
@@ -55,47 +55,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ajay Sharma <sharmaajay@microsoft.com>
+From: Long Li <longli@microsoft.com>
 
-When doing memory registration, the PF may respond with
-GDMA_STATUS_MORE_ENTRIES to indicate a follow request is needed. This is
-not an error and should be processed as expected.
+The RDMA device needs to allocate doorbell pages for each user context.
+Define the GDMA data structures for use by the RDMA driver.
 
-Signed-off-by: Ajay Sharma <sharmaajay@microsoft.com>
 Reviewed-by: Dexuan Cui <decui@microsoft.com>
 Signed-off-by: Long Li <longli@microsoft.com>
 Acked-by: Haiyang Zhang <haiyangz@microsoft.com>
 ---
- drivers/net/ethernet/microsoft/mana/hw_channel.c | 2 +-
- include/net/mana/gdma.h                          | 2 ++
- 2 files changed, 3 insertions(+), 1 deletion(-)
+Change log:
+v4: use EXPORT_SYMBOL_NS
+v7: move mana_gd_allocate_doorbell_page() and mana_gd_destroy_doorbell_page() to the RDMA driver
+v8: remove extra line in header file
 
-diff --git a/drivers/net/ethernet/microsoft/mana/hw_channel.c b/drivers/net/ethernet/microsoft/mana/hw_channel.c
-index 76829ab43d40..9d1507eba5b9 100644
---- a/drivers/net/ethernet/microsoft/mana/hw_channel.c
-+++ b/drivers/net/ethernet/microsoft/mana/hw_channel.c
-@@ -836,7 +836,7 @@ int mana_hwc_send_request(struct hw_channel_context *hwc, u32 req_len,
- 		goto out;
- 	}
- 
--	if (ctx->status_code) {
-+	if (ctx->status_code && ctx->status_code != GDMA_STATUS_MORE_ENTRIES) {
- 		dev_err(hwc->dev, "HWC: Failed hw_channel req: 0x%x\n",
- 			ctx->status_code);
- 		err = -EPROTO;
+ include/net/mana/gdma.h | 25 +++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
 diff --git a/include/net/mana/gdma.h b/include/net/mana/gdma.h
-index 0b0c0cd0b6bd..a9b7930dfbf8 100644
+index a9b7930dfbf8..055408a5baf3 100644
 --- a/include/net/mana/gdma.h
 +++ b/include/net/mana/gdma.h
-@@ -9,6 +9,8 @@
+@@ -24,11 +24,15 @@ enum gdma_request_type {
+ 	GDMA_GENERATE_TEST_EQE		= 10,
+ 	GDMA_CREATE_QUEUE		= 12,
+ 	GDMA_DISABLE_QUEUE		= 13,
++	GDMA_ALLOCATE_RESOURCE_RANGE	= 22,
++	GDMA_DESTROY_RESOURCE_RANGE	= 24,
+ 	GDMA_CREATE_DMA_REGION		= 25,
+ 	GDMA_DMA_REGION_ADD_PAGES	= 26,
+ 	GDMA_DESTROY_DMA_REGION		= 27,
+ };
  
- #include "shm_channel.h"
- 
-+#define GDMA_STATUS_MORE_ENTRIES	0x00000105
++#define GDMA_RESOURCE_DOORBELL_PAGE	27
 +
- /* Structures labeled with "HW DATA" are exchanged with the hardware. All of
-  * them are naturally aligned and hence don't need __packed.
-  */
+ enum gdma_queue_type {
+ 	GDMA_INVALID_QUEUE,
+ 	GDMA_SQ,
+@@ -587,6 +591,26 @@ struct gdma_register_device_resp {
+ 	u32 db_id;
+ }; /* HW DATA */
+ 
++struct gdma_allocate_resource_range_req {
++	struct gdma_req_hdr hdr;
++	u32 resource_type;
++	u32 num_resources;
++	u32 alignment;
++	u32 allocated_resources;
++};
++
++struct gdma_allocate_resource_range_resp {
++	struct gdma_resp_hdr hdr;
++	u32 allocated_resources;
++};
++
++struct gdma_destroy_resource_range_req {
++	struct gdma_req_hdr hdr;
++	u32 resource_type;
++	u32 num_resources;
++	u32 allocated_resources;
++};
++
+ /* GDMA_CREATE_QUEUE */
+ struct gdma_create_queue_req {
+ 	struct gdma_req_hdr hdr;
 -- 
 2.17.1
 
