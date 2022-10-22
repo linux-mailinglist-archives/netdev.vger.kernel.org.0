@@ -2,64 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88999608D52
-	for <lists+netdev@lfdr.de>; Sat, 22 Oct 2022 15:05:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACA92608D53
+	for <lists+netdev@lfdr.de>; Sat, 22 Oct 2022 15:06:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229587AbiJVNFc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Oct 2022 09:05:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51926 "EHLO
+        id S229695AbiJVNGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Oct 2022 09:06:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiJVNFb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Oct 2022 09:05:31 -0400
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C926E10A7EC
-        for <netdev@vger.kernel.org>; Sat, 22 Oct 2022 06:05:29 -0700 (PDT)
-Received: by mail-io1-xd2f.google.com with SMTP id h203so4431248iof.1
-        for <netdev@vger.kernel.org>; Sat, 22 Oct 2022 06:05:29 -0700 (PDT)
+        with ESMTP id S229449AbiJVNGB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Oct 2022 09:06:01 -0400
+Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B834D54C9B
+        for <netdev@vger.kernel.org>; Sat, 22 Oct 2022 06:05:58 -0700 (PDT)
+Received: by mail-il1-x12a.google.com with SMTP id l6so3037307ilq.3
+        for <netdev@vger.kernel.org>; Sat, 22 Oct 2022 06:05:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=0ibHJh2sht/y2IJVf3hrb3FpaN0hhH/mzHIt3bRRCdw=;
-        b=q741EJmaAENuD63lxbWUSYNvrDZyYuWYxR1b7vWYB5oCd+o5kpOqY0yasJFXiOgy8p
-         LJ6JJ1CdbpIABC6NS9Gk6nalX57IbXqvOGKhRB1xComBlOdAKd1d2Do7pMnQatYRRr6l
-         vI/19zMCrN0OD2YhgbRi5k/vQBVxvwEq0+wU46Jm78WQLI9AvJ3k/dSU/7cZTtZzmBb7
-         2A1ggEfm3p4O1fDasamK5nxk7GeuFQ9gQ6Z/SAPwBZbOq8DyMl05LeZTx37edqr3LJp7
-         nm/F4Lc6RXZDnZ5csi/Cih9VItbkWahumyNZj9yLs1YYqYmd/8KBsXtjBptvqD8mou//
-         CbMQ==
+        bh=DirEIYhKHX7unSsOb6Xwy+qguUF2PFewZWGcxOFvURo=;
+        b=BGmT5nwF09wDpXG73GWsTwskNMsyhDNEVsumVVDqAH61DaBflgzYSqCLNBK1ZtjuRF
+         b+p6hahqT5gvB8rG/raRGvRTas/94eI5xBYn2FIujlQpKXlpIe5sXq0m5nPfidbDZArI
+         drbasfYHFsxnvtBuAapoGDad2labdLJK64xJ+WPBPvBjmVhAa/gEqVSbebrCPstPNotN
+         SWhhjWrHj0Xjso60GphK+QGQ92URuht1Is+NjidzirLdM3Urob8B6zt0WxupCnLqq6o1
+         WCvLwpcbzMMcwjWoHkTw4UrltxE2jP3EbWQ6s6JhTMKZTqOgr7GGpPapzbewfaouEyA3
+         3VwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=0ibHJh2sht/y2IJVf3hrb3FpaN0hhH/mzHIt3bRRCdw=;
-        b=8MHt4EgMtNCssCb5FFEXfMHcaB22MaCcVIIW/5fkXRHnOBf9pi7EpMcHGR1hfgW+f8
-         CdCmBAt2Ixwy2y3o6qlO5AZG6pOSsgYKJc3gochopAJc/0i8xng9tFABaZMsfiJ2UpFy
-         z6u5rpsBRLA6CfBOtK8aSVwY+OjHoRAB+m8v5Fg943+ZEBhf52HQMSe95pLUtjnL1mae
-         mKQPWhYMSb9yQSek9LJfU1W+ZJiIzoXzLLWmXCTagfOt4py8sM/L6ARcnIlLdeSqd1sJ
-         39rTOEojaA1HINQQxlnIYatLPL4NAd6s9G8O19WDwA0jlsORnhRnWrh3GCDRejwsVbLp
-         HXUw==
-X-Gm-Message-State: ACrzQf1FNzyQ3wX5jYkqhvdO4JrA+aBJfNmqG63JvKQIXUKeaTGA2UUF
-        0FkvB6EaZoVXT2B32qGQEtOuUaZzh4CXWt0iMmU=
-X-Google-Smtp-Source: AMsMyM7866pv+2hcJKZiqbbxoJJrpMnBZ4nz6nv7+bDIkVcAgBWR9yD/cnHmS1T6ZMCoYx0WxILBEf0XRnjpuowsLlw=
-X-Received: by 2002:a05:6638:4987:b0:363:c403:28ff with SMTP id
- cv7-20020a056638498700b00363c40328ffmr15755988jab.235.1666443929194; Sat, 22
- Oct 2022 06:05:29 -0700 (PDT)
+        bh=DirEIYhKHX7unSsOb6Xwy+qguUF2PFewZWGcxOFvURo=;
+        b=u+/lzLXVCEEXl9pgsBOqI1ArGhZZTmuYgChkYwuO7nU6auR6x3GrPdy+IV9V5IVKJL
+         cVOMqXWM1uFLTnSKHkI7j8iIjPWNNeSo4erU1duAwN7wi0SWnxUc0bQbNARQZKJTj9D8
+         AIRe55XVLR7kaE8EKA4rxBNU5OCVKn1ebEjdk6tz65vXqIq7Cuq+5sHcrGP4MrDs5dPK
+         YBN+8kQG8UvpuwAP9rrS4RuyXoldzFhvTDB6RX+bqBtsQL0fgDaYgWXI+y0s7ria/j9t
+         o1GNaaJk1qJ88HSm5+TywPLpFFuJd3zpBA9A9hfFvuiJ1lakb5/3yNuVOAHsugzC+ezo
+         ujBw==
+X-Gm-Message-State: ACrzQf0D4on4UQJ/ZJyMZGNvJHHJvRfIYJeC5kIZ8G95j4iNxNGtOYGF
+        klBWCRtCMfmeDWAQQAUdqfqMi08XtGktA4je/eU=
+X-Google-Smtp-Source: AMsMyM6dr5Iv9Xlf4fCPswMGBCAct1O6qfnsVI6eq6UggenR3MttcfbNpNpMls5mZ7V7Lw1ccZmgqZpY41f1xlLFjvo=
+X-Received: by 2002:a05:6e02:16c8:b0:2ff:6bd9:6c11 with SMTP id
+ 8-20020a056e0216c800b002ff6bd96c11mr7245945ilx.85.1666443958218; Sat, 22 Oct
+ 2022 06:05:58 -0700 (PDT)
 MIME-Version: 1.0
-References: <20221021205917.1764666-1-m.chetan.kumar@linux.intel.com>
-In-Reply-To: <20221021205917.1764666-1-m.chetan.kumar@linux.intel.com>
+References: <20221021205900.1764650-1-m.chetan.kumar@linux.intel.com>
+In-Reply-To: <20221021205900.1764650-1-m.chetan.kumar@linux.intel.com>
 From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Sat, 22 Oct 2022 17:05:27 +0400
-Message-ID: <CAHNKnsQzfBEpMMDNq27BEn9RL=zzhsQroeyVVMwJHe=Gpq-WKQ@mail.gmail.com>
-Subject: Re: [PATCH V4 net-next 2/2] net: wwan: t7xx: Add port for modem logging
+Date:   Sat, 22 Oct 2022 17:05:56 +0400
+Message-ID: <CAHNKnsSJCPdv64q=1GBjcYmNSWtwN9P9tA8RyYuH+AqG8XV71w@mail.gmail.com>
+Subject: Re: [PATCH V4 net-next 1/2] net: wwan: t7xx: use union to group port
+ type specific data
 To:     m.chetan.kumar@linux.intel.com
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
         johannes@sipsolutions.net, loic.poulain@linaro.org,
         krishna.c.sudi@intel.com, linuxwwan@intel.com,
-        linuxwwan_5g@intel.com,
-        Moises Veleta <moises.veleta@linux.intel.com>,
-        Devegowda Chandrashekar <chandrashekar.devegowda@intel.com>,
-        Ricardo Martinez <ricardo.martinez@linux.intel.com>
+        linuxwwan_5g@intel.com
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -72,16 +70,8 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, Oct 21, 2022 at 7:31 PM <m.chetan.kumar@linux.intel.com> wrote:
-> The Modem Logging (MDL) port provides an interface to collect modem
-> logs for debugging purposes. MDL is supported by the relay interface,
-> and the mtk_t7xx port infrastructure. MDL allows user-space apps to
-> control logging via mbim command and to collect logs via the relay
-> interface, while port infrastructure facilitates communication between
-> the driver and the modem.
+> Use union inside t7xx_port to group port type specific data members.
 >
-> Signed-off-by: Moises Veleta <moises.veleta@linux.intel.com>
 > Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-> Signed-off-by: Devegowda Chandrashekar <chandrashekar.devegowda@intel.com>
-> Acked-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
 
 Reviewed-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
