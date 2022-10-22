@@ -2,73 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C4AAD608498
-	for <lists+netdev@lfdr.de>; Sat, 22 Oct 2022 07:32:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAEDB60849E
+	for <lists+netdev@lfdr.de>; Sat, 22 Oct 2022 07:36:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229506AbiJVFc6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Oct 2022 01:32:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43552 "EHLO
+        id S229796AbiJVFgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Oct 2022 01:36:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiJVFct (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Oct 2022 01:32:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25C202B02D4;
-        Fri, 21 Oct 2022 22:32:46 -0700 (PDT)
+        with ESMTP id S229776AbiJVFgS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Oct 2022 01:36:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B0F28DC1E;
+        Fri, 21 Oct 2022 22:36:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A63E760917;
-        Sat, 22 Oct 2022 05:32:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9AE7C433D6;
-        Sat, 22 Oct 2022 05:32:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1950160A6A;
+        Sat, 22 Oct 2022 05:36:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3312EC433D7;
+        Sat, 22 Oct 2022 05:36:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666416765;
-        bh=uf/R6l7THqxM2eHX/ustV805xoE8PhYT+1NbCR1d9A0=;
+        s=k20201202; t=1666416973;
+        bh=azzTvMYzLDNzfzEAHCDfv8mwDjw2ToLglxQlH51QNz0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XiKRpGGCmE/1hVye3ks4VJsdgQWl4ep8RDm+RId5IAAujaPtM2G+4i6YdPrtEB8nH
-         q1Qj8HSnwQEOWQWPR8bzNYtYmBI1rIvEGKyk/TxU5aHsFRNHSNZO56sQy1qHdU3rI9
-         U0WQ+d+xKvGWN2I6VU9wZCRGKaE4CeIj2zJodGKNkBO8/gxw10rMKSLqOi9+fm9XL2
-         aVxqSKiID3UJMx6AplycmP9wIR/o3WiE2TTEdqTvywk+wi1rvKyOtrwa5kAC+IvOzs
-         /uJLZkjhd3iv/Hr57ZGnG61GWwtYesQTjbIs3uQ9LNEHWpQYfNMZdpP0JfeK0o9opa
-         S++WYI56QMg6A==
-Date:   Fri, 21 Oct 2022 22:32:42 -0700
+        b=MnieiHnQw6AWKIhPC5P4jbFs6Y2BdojTjGMgIRniNz2TrzzBJn1IqK9L0qFWwVOdU
+         ZV6V8nm2VvVbJEWgUF9KUgY2h0fiQLzDd/lP1bXLZCjAz/9rfhK4tlSRoWWAx6/meJ
+         wX7TEEqJbtCP4RZTLjQ3WVd7aBx+UVu+9QPVrQRAtU51L7UPVbmiRqZjGb4Z/sP9OJ
+         P/vSeeJJUEfTxIHB0VYcdVLtt2SV+v5dpTA3+AUB543BGPcbqdaja0BzNMNDFVAmE4
+         8R0JBHAiNx0S/aHVwTg29WK3bmq/JugH2wSMQrkJe7gPwKdunuWKcSb5ujyFh9zggh
+         EKj5isyxXI5CA==
+Date:   Fri, 21 Oct 2022 22:36:12 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Christoph =?UTF-8?B?QsO2aG13YWxkZXI=?= 
-        <christoph.boehmwalder@linbit.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        "Darrick J . Wong" <djwong@kernel.org>,
-        SeongJae Park <sj@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Helge Deller <deller@gmx.de>, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev,
-        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-mmc@vger.kernel.org, linux-parisc@vger.kernel.org
-Subject: Re: [PATCH v1 0/5] convert tree to
- get_random_u32_{below,above,between}()
-Message-ID: <20221021223242.05df0a5b@kernel.org>
-In-Reply-To: <Y1NwJJOIB4gI5G11@zx2c4.com>
-References: <20221022014403.3881893-1-Jason@zx2c4.com>
-        <20221021205522.6b56fd24@kernel.org>
-        <Y1NwJJOIB4gI5G11@zx2c4.com>
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Martin KaFai Lau <martin.lau@kernel.org>,
+        bpf@vger.kernel.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: WARN: multiple IDs found for 'nf_conn': 92168, 117897 - using
+ 92168
+Message-ID: <20221021223612.42ba3122@kernel.org>
+In-Reply-To: <Y1MQVbq2rjH/zPi2@krava>
+References: <20221004072522.319cd826@kernel.org>
+        <Yz1SSlzZQhVtl1oS@krava>
+        <20221005084442.48cb27f1@kernel.org>
+        <20221005091801.38cc8732@kernel.org>
+        <Yz3kHX4hh8soRjGE@krava>
+        <20221013080517.621b8d83@kernel.org>
+        <Y0iNVwxTJmrddRuv@krava>
+        <CAEf4Bzbow+8-f4rg2LRRRUD+=1wbv1MjpAh-P4=smUPtrzfZ3Q@mail.gmail.com>
+        <Y0kF/radV0cg4JYk@krava>
+        <CAEf4BzZm2ViaHKiR+4pmWj6yzcPy23q-g_e+cJ90sXuDzkLmSw@mail.gmail.com>
+        <Y1MQVbq2rjH/zPi2@krava>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -81,57 +65,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 22 Oct 2022 00:23:00 -0400 Jason A. Donenfeld wrote:
-> > How big is it?  Can you provide a stable branch to pull in the new
-> > helpers and then everyone will be able to apply the patches to their
-> > subsystem?  
+On Fri, 21 Oct 2022 23:34:13 +0200 Jiri Olsa wrote:
+> > You are right, they should be identical once PTR is deduplicated
+> > properly. Sorry, was too quick to jump to conclusions. I was thinking
+> > about situations explained by Alan.
+> > 
+> > So, is this still an issue or this was fixed by [0]?
+> > 
+> >   [0] https://lore.kernel.org/bpf/1666364523-9648-1-git-send-email-alan.maguire@oracle.com/  
 > 
-> It's a patch. But what you suggest sounds crazy to me. Supply some
-> branch and have every tree merge that branch separately, in duplicate,
-> and then get all of the conversion patches through every tree, and then
-> somehow coordinate the removal of the deprecated function after all of
-> that, and then baby sit the grand orchestration of all this over the
-> course of two and half months, watch it fail because of some
-> unmaintained corner that's affected, and then try to herd it through for
-> another two and a half months after that? Holy crap. That's torture.
-
-I clean up some random networking API every couple of releases.
-Unfortunately other subsystems use networking APIs too, so I have 
-to do what you describe as "torture". It's not that hard in my
-experience but perhaps I'm incredibly gifted. Or resilient to pain.
-
-> Were this an actually technically interesting patchset that required
-> some really detailed expert review, maybe that'd have some iota of
-> merit. But this is a really boring refactoring, mostly automated with
-> Coccinelle. If having to baby sit one hundred separate patches over the
-> course of months, handling confusion of walking maintainers through the
-> exercise of merging some weird duplicate branch into their trees before,
-> and so forth, is required to get this kind of grunt work done, I'm just
-> going to wind up losing all motivation for this kind of thing, and
-> naturally, as a matter of human nature, stop doing it. The result will
-> be that we have garbage pile up over time that operates on the principle
-> of "least hassle to deal with for the time being" rather than "love of
-> the code and a desire for long term maintainability and quality". The
-> former is sometimes how things go. The latter is what I'm striving for.
+> yes, it seems to be fixed by that
 > 
-> So what you suggest sounds really dreadful to me. Sorry.
-> 
-> Instead, this series follows the same template as the last one, and the
-> last one was much more nuanced and invasive and went fine. In the very
-> worst case, it'll require me to be on the ball with what's happening
-> with -next, which is something I've done before and can do again.
+> Jakub,
+> could you check with pahole fix [1]?
 
-Not sure what you mean by "being on the ball with what's happening with
--next" surely it's Steven who'll be fixing the conflicts and paying
-with his time? Or carrying extra patches because neither you will be
-able to convert the new cases in your tree nor in the origin tree since
-it won't have your new helpers.
+If you mean the warning from the subject then those do seem to be gone.
+But if I'm completely honest I don't remember how I triggered them in
+the first place :S There weren't there on every build for me.
 
-To me putting the new helpers first, on a clean branch off Linus's tree
-so in case of emergency it can be pulled into a random^W arbitrary tree
-is just good hygiene.
+The objtool warning is still here:
 
-But whatever. I mean - hopefully there aren't any conflicts in the ~50
-networking files you touch. I just wish that people didn't pipe up with
-the tree wide changes right after the merge window. Feels like the
-worst possible timing.
+$ make PAHOLE=~/pahole O=build_allmodconfig/ -j 60 >/tmp/stdout 2>/tmp/stderr; \
+    cat /tmp/stderr 
+
+vmlinux.o: warning: objtool: ___ksymtab+bpf_dispatcher_xdp_func+0x0: data relocation to !ENDBR: bpf_dispatcher_xdp_func+0x0 
+vmlinux.o: warning: objtool: bpf_dispatcher_xdp+0xa0: data relocation to !ENDBR: bpf_dispatcher_xdp_func+0x0
