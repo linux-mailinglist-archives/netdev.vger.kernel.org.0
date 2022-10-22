@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DEC7D6084AC
-	for <lists+netdev@lfdr.de>; Sat, 22 Oct 2022 07:41:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92AE86084AE
+	for <lists+netdev@lfdr.de>; Sat, 22 Oct 2022 07:43:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229904AbiJVFlj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Oct 2022 01:41:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39742 "EHLO
+        id S229907AbiJVFnO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Oct 2022 01:43:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229865AbiJVFli (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Oct 2022 01:41:38 -0400
-Received: from bg4.exmail.qq.com (bg4.exmail.qq.com [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E41222B0925;
-        Fri, 21 Oct 2022 22:41:36 -0700 (PDT)
-X-QQ-mid: bizesmtp78t1666417268tlhfzo3k
+        with ESMTP id S229865AbiJVFnN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Oct 2022 01:43:13 -0400
+Received: from bg4.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 187802B0933;
+        Fri, 21 Oct 2022 22:43:11 -0700 (PDT)
+X-QQ-mid: bizesmtp62t1666417371t3sr5ka6
 Received: from localhost.localdomain ( [182.148.15.254])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Sat, 22 Oct 2022 13:41:06 +0800 (CST)
+        id ; Sat, 22 Oct 2022 13:42:50 +0800 (CST)
 X-QQ-SSF: 01000000000000C0E000000A0000000
-X-QQ-FEAT: 6ArnuSDJ+in4EeIG92JgWxQwoWx5R/AGXbjJCS5GRcwdh/lpoZcW74/N2mF8m
-        9/V3dbC1LBoWQG/K16oWVMuY3K/NIFdGYfSyo0SnMD4s+zjbH0GNg402gDWSMEgtj6ax1nv
-        QoZqJwkImJgyV1C2AP+1DQDmPdX3XMoZ8N/M+iXbh9kxiL+PB/VSv7LjTDOplOKTmtWKy8u
-        C6L9Iu7E+shWTd8puhjKRN/o5u2bc3o/HvYezaPMgpA4rO9xWP3xLFVeK8P1I9UvpRtpeL7
-        7GHUZLMrKYdJa2ETbqoOTQcoNKdP7EKSwMXkEQGGRcRFgdwBxfvp9Qdka5goxX8tmu8DZQ/
-        MPw6AWggXk6DwsG3dzWC4sy0hzXiHyY0Xqo8o+n9V9q1JluX0s=
+X-QQ-FEAT: /+iK7ZpVlLRnZYf9ZV4xBBazYX0WBMAdPSgrhKjq0hmEMiq1VQ8q+a0dtmaBf
+        MKJPfrNEmcKt7+seP6av5ZWQEyw5IQJgTtmJn1Y5WL3NwYKaKge+p+hqAt3ipffzDpGDqag
+        nc+rUPcXIYMhMjfD4rEQpdfTsj/XjbJarNi38tejUN3Z0ETGKYrT7Hsx71aLi+8kEblB7tz
+        cISLi2p2xTth74HS+ecBMHmSnV1WmPzXQw1Qz3zaolk6ZuChutWtt1zbtGTY1DVQVitzCY4
+        IomNINk2Dfr841O9IlHxJ4KpvQ2HiWlPODOoOGGKCz2GtYwwC76LJ8Ke/76kGsv7zRStZ5p
+        E/ng1q9z7AbdS4g2LTOCVYPuu54aZe0N7MYiwr0NQCzjxtPzjY=
 X-QQ-GoodBg: 0
 From:   wangjianli <wangjianli@cdjrlc.com>
 To:     gregory.greenman@intel.com, kvalo@kernel.org, davem@davemloft.net,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
 Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        inux-kernel@vger.kernel.org, wangjianli <wangjianli@cdjrlc.com>
-Subject: [PATCH] fw/api: fix repeated words in comments
-Date:   Sat, 22 Oct 2022 13:41:00 +0800
-Message-Id: <20221022054100.30299-1-wangjianli@cdjrlc.com>
+        linux-kernel@vger.kernel.org, wangjianli <wangjianli@cdjrlc.com>
+Subject: [PATCH] iwlwifi/mvm: fix repeated words in comments
+Date:   Sat, 22 Oct 2022 13:42:44 +0800
+Message-Id: <20221022054244.31996-1-wangjianli@cdjrlc.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-QQ-SENDSIZE: 520
 Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr7
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -51,22 +51,22 @@ Delete the redundant word 'the'.
 
 Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
 ---
- drivers/net/wireless/intel/iwlwifi/fw/api/tx.h | 2 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/fw/api/tx.h b/drivers/net/wireless/intel/iwlwifi/fw/api/tx.h
-index ecc6706f66ed..742a6b7b029d 100644
---- a/drivers/net/wireless/intel/iwlwifi/fw/api/tx.h
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/api/tx.h
-@@ -200,7 +200,7 @@ enum iwl_tx_offload_assist_bz {
-  *	cleared. Combination of RATE_MCS_*
-  * @sta_id: index of destination station in FW station table
-  * @sec_ctl: security control, TX_CMD_SEC_*
-- * @initial_rate_index: index into the the rate table for initial TX attempt.
-+ * @initial_rate_index: index into the rate table for initial TX attempt.
-  *	Applied if TX_CMD_FLG_STA_RATE_MSK is set, normally 0 for data frames.
-  * @reserved2: reserved
-  * @key: security key
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c b/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
+index a3cefbc43e80..abf8585bf3bd 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
+@@ -29,7 +29,7 @@ u8 iwl_mvm_get_channel_width(struct cfg80211_chan_def *chandef)
+ 
+ /*
+  * Maps the driver specific control channel position (relative to the center
+- * freq) definitions to the the fw values
++ * freq) definitions to the fw values
+  */
+ u8 iwl_mvm_get_ctrl_pos(struct cfg80211_chan_def *chandef)
+ {
 -- 
 2.36.1
 
