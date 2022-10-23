@@ -2,124 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A6406092F1
-	for <lists+netdev@lfdr.de>; Sun, 23 Oct 2022 14:44:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AAAF60935F
+	for <lists+netdev@lfdr.de>; Sun, 23 Oct 2022 15:11:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230295AbiJWMoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Oct 2022 08:44:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57446 "EHLO
+        id S230124AbiJWNLx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Oct 2022 09:11:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230292AbiJWMo2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Oct 2022 08:44:28 -0400
-Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED47DB84;
-        Sun, 23 Oct 2022 05:44:19 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R691e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VSpfJxN_1666529057;
-Received: from j66a10360.sqa.eu95.tbsite.net(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VSpfJxN_1666529057)
-          by smtp.aliyun-inc.com;
-          Sun, 23 Oct 2022 20:44:17 +0800
-From:   "D.Wythe" <alibuda@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [PATCH net-next v4 10/10] net/smc: fix application data exception
-Date:   Sun, 23 Oct 2022 20:44:02 +0800
-Message-Id: <1666529042-40828-11-git-send-email-alibuda@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1666529042-40828-1-git-send-email-alibuda@linux.alibaba.com>
-References: <1666529042-40828-1-git-send-email-alibuda@linux.alibaba.com>
-X-Spam-Status: No, score=-8.7 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NORMAL_HTTP_TO_IP,NUMERIC_HTTP_ADDR,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S230199AbiJWNLt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Oct 2022 09:11:49 -0400
+X-Greylist: delayed 216 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 23 Oct 2022 06:11:32 PDT
+Received: from jari.cn (unknown [218.92.28.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E4D08625D2;
+        Sun, 23 Oct 2022 06:11:31 -0700 (PDT)
+Received: by ajax-webmail-localhost.localdomain (Coremail) ; Sun, 23 Oct
+ 2022 21:07:00 +0800 (GMT+08:00)
+X-Originating-IP: [182.148.15.254]
+Date:   Sun, 23 Oct 2022 21:07:00 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   "KaiLong Wang" <wangkailong@jari.cn>
+To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: replace ternary operator with min()
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT6.0.1 build 20210329(c53f3fee)
+ Copyright (c) 2002-2022 www.mailtech.cn
+ mispb-4e503810-ca60-4ec8-a188-7102c18937cf-zhkzyfz.cn
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
+MIME-Version: 1.0
+Message-ID: <4e5c1182.347.18404f42721.Coremail.wangkailong@jari.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: AQAAfwAXIW90PFVjtuVoAA--.1430W
+X-CM-SenderInfo: 5zdqwypdlo00nj6mt2flof0/1tbiAQAIB2FEYxtOnAACsD
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
+X-Spam-Status: No, score=2.2 required=5.0 tests=BAYES_00,RCVD_IN_PBL,RDNS_NONE,
+        T_SPF_HELO_PERMERROR,T_SPF_PERMERROR,XPRIO autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Level: **
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "D. Wythe" <alibuda@linux.alibaba.com>
-
-After we optimize the parallel capability of SMC-R connection
-establishment, There is a certain probability that following
-exceptions will occur in the wrk benchmark test:
-
-Running 10s test @ http://11.213.45.6:80
-  8 threads and 64 connections
-  Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     3.72ms   13.94ms 245.33ms   94.17%
-    Req/Sec     1.96k   713.67     5.41k    75.16%
-  155262 requests in 10.10s, 23.10MB read
-Non-2xx or 3xx responses: 3
-
-We will find that the error is HTTP 400 error, which is a serious
-exception in our test, which means the application data was
-corrupted.
-
-Consider the following scenarios:
-
-CPU0                            CPU1
-
-buf_desc->used = 0;
-                                cmpxchg(buf_desc->used, 0, 1)
-                                deal_with(buf_desc)
-
-memset(buf_desc->cpu_addr,0);
-
-This will cause the data received by a victim connection to be cleared,
-thus triggering an HTTP 400 error in the server.
-
-This patch exchange the order between clear used and memset, add
-barrier to ensure memory consistency.
-
-Fixes: 1c5526968e27 ("net/smc: Clear memory when release and reuse buffer")
-Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
----
- net/smc/smc_core.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
-
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index b09a3fd..448b851 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -1401,8 +1401,9 @@ static void smcr_buf_unuse(struct smc_buf_desc *buf_desc, bool is_rmb,
- 
- 		smc_buf_free(lgr, is_rmb, buf_desc);
- 	} else {
--		buf_desc->used = 0;
--		memset(buf_desc->cpu_addr, 0, buf_desc->len);
-+		/* memzero_explicit provides potential memory barrier semantics */
-+		memzero_explicit(buf_desc->cpu_addr, buf_desc->len);
-+		WRITE_ONCE(buf_desc->used, 0);
- 	}
- }
- 
-@@ -1413,19 +1414,17 @@ static void smc_buf_unuse(struct smc_connection *conn,
- 		if (!lgr->is_smcd && conn->sndbuf_desc->is_vm) {
- 			smcr_buf_unuse(conn->sndbuf_desc, false, lgr);
- 		} else {
--			conn->sndbuf_desc->used = 0;
--			memset(conn->sndbuf_desc->cpu_addr, 0,
--			       conn->sndbuf_desc->len);
-+			memzero_explicit(conn->sndbuf_desc->cpu_addr, conn->sndbuf_desc->len);
-+			WRITE_ONCE(conn->sndbuf_desc->used, 0);
- 		}
- 	}
- 	if (conn->rmb_desc) {
- 		if (!lgr->is_smcd) {
- 			smcr_buf_unuse(conn->rmb_desc, true, lgr);
- 		} else {
--			conn->rmb_desc->used = 0;
--			memset(conn->rmb_desc->cpu_addr, 0,
--			       conn->rmb_desc->len +
--			       sizeof(struct smcd_cdc_msg));
-+			memzero_explicit(conn->rmb_desc->cpu_addr,
-+					 conn->rmb_desc->len + sizeof(struct smcd_cdc_msg));
-+			WRITE_ONCE(conn->rmb_desc->used, 0);
- 		}
- 	}
- }
--- 
-1.8.3.1
-
+Rml4IHRoZSBmb2xsb3dpbmcgY29jY2ljaGVjayB3YXJuaW5nOgoKbmV0L2lwdjQvaWdtcC5jOjI2
+MjE6IFdBUk5JTkcgb3Bwb3J0dW5pdHkgZm9yIG1pbigpCm5ldC9pcHY0L2lnbXAuYzoyNTc0OiBX
+QVJOSU5HIG9wcG9ydHVuaXR5IGZvciBtaW4oKQpuZXQvaXB2NC9pcF9zb2NrZ2x1ZS5jOjI4NTog
+V0FSTklORyBvcHBvcnR1bml0eSBmb3IgbWluKCkKClNpZ25lZC1vZmYtYnk6IEthaUxvbmcgV2Fu
+ZyA8d2FuZ2thaWxvbmdAamFyaS5jbj4KLS0tCiBuZXQvaXB2NC9pZ21wLmMgICAgICAgIHwgNCAr
+Ky0tCiBuZXQvaXB2NC9pcF9zb2NrZ2x1ZS5jIHwgMiArLQogMiBmaWxlcyBjaGFuZ2VkLCAzIGlu
+c2VydGlvbnMoKyksIDMgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvbmV0L2lwdjQvaWdtcC5j
+IGIvbmV0L2lwdjQvaWdtcC5jCmluZGV4IDgxYmUzZTBmMGU3MC4uNzkzOWQ4ZmViYjJiIDEwMDY0
+NAotLS0gYS9uZXQvaXB2NC9pZ21wLmMKKysrIGIvbmV0L2lwdjQvaWdtcC5jCkBAIC0yNTcxLDcg
+KzI1NzEsNyBAQCBpbnQgaXBfbWNfbXNmZ2V0KHN0cnVjdCBzb2NrICpzaywgc3RydWN0IGlwX21z
+ZmlsdGVyICptc2YsCiAJfSBlbHNlIHsKIAkJY291bnQgPSBwc2wtPnNsX2NvdW50OwogCX0KLQlj
+b3B5Y291bnQgPSBjb3VudCA8IG1zZi0+aW1zZl9udW1zcmMgPyBjb3VudCA6IG1zZi0+aW1zZl9u
+dW1zcmM7CisJY29weWNvdW50ID0gbWluKGNvdW50LCBtc2YtPmltc2ZfbnVtc3JjKTsKIAlsZW4g
+PSBmbGV4X2FycmF5X3NpemUocHNsLCBzbF9hZGRyLCBjb3B5Y291bnQpOwogCW1zZi0+aW1zZl9u
+dW1zcmMgPSBjb3VudDsKIAltc2Zfc2l6ZSA9IElQX01TRklMVEVSX1NJWkUoY29weWNvdW50KTsK
+QEAgLTI2MTgsNyArMjYxOCw3IEBAIGludCBpcF9tY19nc2ZnZXQoc3RydWN0IHNvY2sgKnNrLCBz
+dHJ1Y3QgZ3JvdXBfZmlsdGVyICpnc2YsCiAJZ3NmLT5nZl9mbW9kZSA9IHBtYy0+c2Ztb2RlOwog
+CXBzbCA9IHJ0bmxfZGVyZWZlcmVuY2UocG1jLT5zZmxpc3QpOwogCWNvdW50ID0gcHNsID8gcHNs
+LT5zbF9jb3VudCA6IDA7Ci0JY29weWNvdW50ID0gY291bnQgPCBnc2YtPmdmX251bXNyYyA/IGNv
+dW50IDogZ3NmLT5nZl9udW1zcmM7CisJY29weWNvdW50ID0gbWluKGNvdW50LCBnc2YtPmdmX251
+bXNyYyk7CiAJZ3NmLT5nZl9udW1zcmMgPSBjb3VudDsKIAlmb3IgKGkgPSAwOyBpIDwgY29weWNv
+dW50OyBpKyspIHsKIAkJc3RydWN0IHNvY2thZGRyX3N0b3JhZ2Ugc3M7CmRpZmYgLS1naXQgYS9u
+ZXQvaXB2NC9pcF9zb2NrZ2x1ZS5jIGIvbmV0L2lwdjQvaXBfc29ja2dsdWUuYwppbmRleCA2ZTE5
+Y2FkMTU0ZjUuLjE5YWQzNzg5NzIyNyAxMDA2NDQKLS0tIGEvbmV0L2lwdjQvaXBfc29ja2dsdWUu
+YworKysgYi9uZXQvaXB2NC9pcF9zb2NrZ2x1ZS5jCkBAIC0yODIsNyArMjgyLDcgQEAgaW50IGlw
+X2Ntc2dfc2VuZChzdHJ1Y3Qgc29jayAqc2ssIHN0cnVjdCBtc2doZHIgKm1zZywgc3RydWN0IGlw
+Y21fY29va2llICppcGMsCiAJCQkvKiBPdXIgY2FsbGVyIGlzIHJlc3BvbnNpYmxlIGZvciBmcmVl
+aW5nIGlwYy0+b3B0ICovCiAJCQllcnIgPSBpcF9vcHRpb25zX2dldChuZXQsICZpcGMtPm9wdCwK
+IAkJCQkJICAgICBLRVJORUxfU09DS1BUUihDTVNHX0RBVEEoY21zZykpLAotCQkJCQkgICAgIGVy
+ciA8IDQwID8gZXJyIDogNDApOworCQkJCQkgICAgIG1pbihlcnIsIDQwKSk7CiAJCQlpZiAoZXJy
+KQogCQkJCXJldHVybiBlcnI7CiAJCQlicmVhazsKLS0gCjIuMjUuMQo=
