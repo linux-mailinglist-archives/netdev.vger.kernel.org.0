@@ -2,81 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB707609667
-	for <lists+netdev@lfdr.de>; Sun, 23 Oct 2022 23:09:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 225FB60968F
+	for <lists+netdev@lfdr.de>; Sun, 23 Oct 2022 23:33:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229773AbiJWVJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Oct 2022 17:09:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56644 "EHLO
+        id S229484AbiJWVdR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Oct 2022 17:33:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbiJWVJE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Oct 2022 17:09:04 -0400
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83D396686E;
-        Sun, 23 Oct 2022 14:09:03 -0700 (PDT)
-Received: from cwcc.thunk.org (pool-173-48-120-46.bstnma.fios.verizon.net [173.48.120.46])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 29NL7D2p025712
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 23 Oct 2022 17:07:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-        t=1666559243; bh=zbENVyGNAon7zNh9ohkJFECSMTzXRXbcNrepMHxrEAM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=FXNrxCWraFmMAOW+vqR38ZOexAnGjiiR9A8LdOwTHYuoNMBlL77R2zP0ktOpr83lt
-         VqRJZ2eM6bTmotP3IJ0ZjbLCm4EYxGWCpxZWFf6OGNB4ci103uHdfxC4WF6VQ2zTX/
-         sdIQ8AMmuFf2tnrWyiobYzmlMOkVIMT/l7Xfqoj9INuJk54r2BALT8VjDgqDT3Zhdd
-         VJdERnwc5/7VlgvkT7OeoHx0mHgokAaWpeUY/UYmdBjcPk3IReiiQVTczMP0A0m8lc
-         roc5e18VhoTm14PI9JdmJ03W1yO7BPKEnbbIuJ9deFvxdyuN3p81VawGcIo+Cv1H4t
-         KETGAaOyQuEfg==
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id BE8CB15C33A3; Sun, 23 Oct 2022 17:07:13 -0400 (EDT)
-Date:   Sun, 23 Oct 2022 17:07:13 -0400
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Christoph =?iso-8859-1?Q?B=F6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        "Darrick J . Wong" <djwong@kernel.org>,
-        SeongJae Park <sj@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Helge Deller <deller@gmx.de>, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev,
-        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-mmc@vger.kernel.org, linux-parisc@vger.kernel.org
-Subject: Re: [PATCH v1 0/5] convert tree to
- get_random_u32_{below,above,between}()
-Message-ID: <Y1WtAZfciG1z2CC7@mit.edu>
-References: <20221022014403.3881893-1-Jason@zx2c4.com>
- <20221021205522.6b56fd24@kernel.org>
- <Y1NwJJOIB4gI5G11@zx2c4.com>
- <20221021223242.05df0a5b@kernel.org>
- <Y1OD2tdVwQsydSNV@zx2c4.com>
- <20221021230322.00dd045c@kernel.org>
+        with ESMTP id S229608AbiJWVdP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Oct 2022 17:33:15 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 510F46C944
+        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 14:33:14 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id 63so9176406ybq.4
+        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 14:33:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=knsQJRxhDINme/Qdnf0gCt2O9Wr/+W3AyV7JHm/gPMQ=;
+        b=CaCuFzLH1RCIwdB+sOjaj0Hr0tFjhPThAqp/KkWBbY3BZhRJW5bUOvgcHh/pTEKWoS
+         +G+laevVFIo8P0zKEhicGosd0z7T1YGHZU9w7kr23lYTTYbyHgeZohfX9hWVB0xOhmsJ
+         adosakiQ/rNPwrC4QpA9mm4bxoFkiD4xyELgVtdTfZ4OXQ7Q5xbfBit4USMpBqlJ22rF
+         W23F84c5I43nv5dtOijd1pJQaLuyRYsVIPo5KToA/z2FRK48Qoap61TZr1I1VXEANkuJ
+         f3wb0MByY6yC0J3nFS1Z+rUfoo76rfBxBQMSgOeOHSucqUqU3N4VfDlZO/nsbyY3O6hF
+         FA9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=knsQJRxhDINme/Qdnf0gCt2O9Wr/+W3AyV7JHm/gPMQ=;
+        b=SmIWK+OZV4JevQeburFd2hMGrbP/P6+orMDYQEEWoa4swt+aMO655JSUkZsXvuTL6h
+         WbawLyCPcF11lI8QX1chnMOeLSoVC4N/ApNnOZNw8aNlkgC8f+kAeJllwbTVjSMgMYv7
+         pur3dpFPETLLhMwWQAMrJoBIUfLCAGbZqSCKMb3FBN5DGKgpxn94HJ0oAiGGRARVdGDb
+         yvJKUz+f3gs/RVgHngM8Joz0JjBgUMAXQiaRK1ueZfkBO1jIFKoFtGWa2jDl0cuanxmv
+         EXHdVDEIz2b9IdW3wGaiCgoygIhWPsLRDmDPsMN6wIWziOcEm8hJrhz0smQlZcEuik/F
+         Mtrw==
+X-Gm-Message-State: ACrzQf2D1XH6eCN/QOquk7DndytRF9ZSZ7Pw530eLdmYGvn7ga8AIbF+
+        b3pUj9AlTL1L5oUZ4UFDmGpV/vhvlk4iHoCGStoZLA==
+X-Google-Smtp-Source: AMsMyM4p1T8kOtyXx+aC8lBlX/a0e2b5m9+7jQjgLkSvpGPbuH78GY3le80vPvvEpMSHbHUxRFKW/Xg+rOQ3wNFiinQ=
+X-Received: by 2002:a25:156:0:b0:6ca:258:9d24 with SMTP id 83-20020a250156000000b006ca02589d24mr20258804ybb.598.1666560793238;
+ Sun, 23 Oct 2022 14:33:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221021230322.00dd045c@kernel.org>
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+References: <20221020224512.3211657-1-edumazet@google.com> <20221020224512.3211657-3-edumazet@google.com>
+ <Y1SrBJUOKkpEHiPz@pop-os.localdomain>
+In-Reply-To: <Y1SrBJUOKkpEHiPz@pop-os.localdomain>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Sun, 23 Oct 2022 14:33:02 -0700
+Message-ID: <CANn89iLRkPu6XVhcwridPTrPRtfwQu61jdKZGcZ7aOXRkJy0zQ@mail.gmail.com>
+Subject: Re: [PATCH net 2/2] kcm: annotate data-races around kcm->rx_wait
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        eric.dumazet@gmail.com, syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,37 +69,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 21, 2022 at 11:03:22PM -0700, Jakub Kicinski wrote:
-> On Sat, 22 Oct 2022 07:47:06 +0200 Jason A. Donenfeld wrote:
-> > On Fri, Oct 21, 2022 at 10:32:42PM -0700, Jakub Kicinski wrote:
-> > > But whatever. I mean - hopefully there aren't any conflicts in the ~50
-> > > networking files you touch. I just wish that people didn't pipe up with
-> > > the tree wide changes right after the merge window. Feels like the
-> > > worst possible timing.  
-> > 
-> > Oh, if the timing is what makes this especially worrisome, I have
-> > no qualms about rebasing much later, and reposting this series then.
-> > I'll do that.
-> 
-> Cool, thanks! I promise to not be grumpy if you repost around rc6 :)
+On Sat, Oct 22, 2022 at 7:46 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> On Thu, Oct 20, 2022 at 10:45:12PM +0000, Eric Dumazet wrote:
+> > kcm->rx_psock can be read locklessly in kcm_rfree().
+>
+> Copy-n-paste typo here.
+>
+> > Annotate the read and writes accordingly.
+>
+> I wonder why not simply acquire mux->rx_lock earlier?
 
-One way of making things less painful for the stable branch and for
-the upstream branch is to *add* new helpers instead of playing
-replacement games like s/prandom_u32_max/get_random_u32_below/.  This
-is what causes the patch conflict problems.
+I would think kcm_rfree() is called very often (per skb)
 
-One advantage of at least adding the new functions to the stable
-branches, even if we don't do the wholesale replacement, is that it
-makes it much less likely that a backported patch, which uses the new
-API, won't fail to compile --- and of course, the major headache case
-is one where it's not noticed at first because it didn't get picked up
-in people's test compiles until after the Linux x.y.z release has been
-pushed out.
+Grabbing the spinlock would add a performance regression.
 
-Whether it's worth doing the wholesale replacement is a different
-question, but separating "add the new functions with one or two use
-cases so the functions are actulaly _used_" from the "convert the
-world to use the new functions" from the "remove the old functions",
-might life easier.
+READ_ONCE()  is a no brainer here.
 
-					- Ted
+>
+> Thanks.
