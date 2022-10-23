@@ -2,149 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41B44609251
-	for <lists+netdev@lfdr.de>; Sun, 23 Oct 2022 12:43:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA46060927C
+	for <lists+netdev@lfdr.de>; Sun, 23 Oct 2022 13:38:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230309AbiJWKlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Oct 2022 06:41:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51144 "EHLO
+        id S230018AbiJWL2k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Oct 2022 07:28:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230106AbiJWKlg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Oct 2022 06:41:36 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A8172B5E
-        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 03:41:34 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id d6-20020a056e02214600b002fa23a188ebso6911741ilv.6
-        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 03:41:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=qpNFTxcSpPo8ecI5kvYJisJb2tg21P+66J49GuZR0Pg=;
-        b=JyP1MWw4A1FKYtmetCOKCNxjNmZw1aq6b/4QqmD/1mJ8J6CY9sOOB3CHHyOld5Vb0X
-         AYgl/3IGEVupu44fp/N7dlfS2nIlqvYERHjl+jJ7dPFxkx/uvxso2qs44/+5+BW0IS2R
-         8YlCzX0Vrco9w1JXP29BvcSiPFElWzehH19o8tyXI+VZ40NFXQ/NSDrDU8MwLT1TV4yd
-         BPVTTYYa16UusBb5mo8hswByMd1+1IPcHeoVadN2pRGtlSusR+sbJ8nQ0SJw2vd+cWS0
-         QCb6dNm/KRwTNemSr+/QvPC1FkV4w0BqzpGNrb8XzvLSsSNJHMuaI2/7EE5SQh/sRxzW
-         nGBA==
-X-Gm-Message-State: ACrzQf0rImdBmcOZV4KJ4G14cpZ95I80K0zq01M3acd3ysHg/5mIROu6
-        0FgYkPLny7zCr+4VW2L1Q11Fzrr8aI4I8DbqgSjnHGRVvL4F
-X-Google-Smtp-Source: AMsMyM6yCJ1fjd1c0P8z6vMm5DiAxhaPcPmqoWkxDUreIJTyCye7aLLU3PnnmoVUDjARpY3g/aKTxeaqlYS8/tfeflLZXkThj0bM
+        with ESMTP id S229649AbiJWL2j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Oct 2022 07:28:39 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2076.outbound.protection.outlook.com [40.107.243.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46B3962933
+        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 04:28:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=X982/FdVD64nH/Ed9vTb0sLdhbuiTW9y1rD/zSVCWVur//Sqmc6U9JkGfZ4+I+gGO4WX5SlAEf9is8IRomglSptSDXsb0ogRVHUGOryiu/LA/eo9gF/YddPaV6NwmjcrXmG5BJxeRz4heNsFeVbIURlxlj8pxETZq4OZjV4pVKq4STQO/hWaHUflH8JBdgGOKJ9YnhPU50L1eMVbmk3qKlFVzX+BVizamGnl1RccTuPBV5fsZCG4Q2A73bvWSCGYdxZMBlBpbGenA8Dti4JZA+ONPv0s1Es8XwVZXiRxrb/9kh9Pbp4/i++uUVrroNzChk5lilC3InVlafgznykHnA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qY7WTqtYnd3IJdAJ4CWfJ0itvKZDlfO1H2EnaN5vP1o=;
+ b=Jue19QU/Iw3yGRHtwzpdLGshAHqcqXvDdJbWOqbTGU/OCJipa3CnEes4QEGY5yRA8Cd3MjbXvUNGKP02BevBOxapaA507pyT/TLsG7+Xn9ZlCE1Dk0eIoXDBNkUVSjJcCZ1goEtdmAHfbZ/uv2Lu0GnBLd/0/iX9m7WE1eh5vItAeZgX/WNx8gOyO0JApuoZ9z9vthZI7cPqP6Wn5q43r+tHBNy1eFwz8bqwxVVDp+DvQfG8463uV9fWuSBldnVJ/IdP95ultR14PAIBbpt0GT1FNDsp4JIEatbTsEtF09B98Grv9+YfUNRSayWFxjUh65MnfRchLcL4zd94wee1dA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qY7WTqtYnd3IJdAJ4CWfJ0itvKZDlfO1H2EnaN5vP1o=;
+ b=sZUmKt6s8mNSp7SK6yZlDhfJOiYOLwYdKfyzAnQPlHg2g0VXhZmqg26CXNvFa56ZXIIqkVfMI3/WGLLHBa+41+e1FjoVcLNVODaRdlRB6Nuv5CnocJxG52P/DLiw4AlxS/nv/VrXabm6VhhUgIMcs7ZkLMYBzFPdZjoIdDxzou66AZAGtO2oRw+FT3UmwkGwOkxrq7aH+/UaB9BmtpLdj/D28wHnzpREqBXZ5cu953NKbmulV3POF6ds+2/FOvQy+4LE/OQvdyBxOdA+qQlipMh+dpzjzt41qbrbcGcQFaDzfiFijiMZeqQBpQGN3DHUMdnwqWpFnuojSGtGh6s1iw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DS7PR12MB6288.namprd12.prod.outlook.com (2603:10b6:8:93::7) by
+ MW5PR12MB5650.namprd12.prod.outlook.com (2603:10b6:303:19e::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.29; Sun, 23 Oct
+ 2022 11:28:33 +0000
+Received: from DS7PR12MB6288.namprd12.prod.outlook.com
+ ([fe80::1926:baf5:ba03:cd6]) by DS7PR12MB6288.namprd12.prod.outlook.com
+ ([fe80::1926:baf5:ba03:cd6%3]) with mapi id 15.20.5723.032; Sun, 23 Oct 2022
+ 11:28:33 +0000
+Message-ID: <3c830f86-a814-d564-df7d-670d294b8890@nvidia.com>
+Date:   Sun, 23 Oct 2022 14:28:24 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.1
+Subject: Re: [PATCH net-next 2/3] devlink: Add new "max_vf_queue" generic
+ device param
+Content-Language: en-US
+To:     Simon Horman <simon.horman@corigine.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Michael Chan <michael.chan@broadcom.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Peng Zhang <peng.zhang@corigine.com>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com
+References: <20221019140943.18851-1-simon.horman@corigine.com>
+ <20221019140943.18851-3-simon.horman@corigine.com>
+From:   Gal Pressman <gal@nvidia.com>
+In-Reply-To: <20221019140943.18851-3-simon.horman@corigine.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR3P281CA0164.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a2::18) To DS7PR12MB6288.namprd12.prod.outlook.com
+ (2603:10b6:8:93::7)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:118b:b0:2ff:c7c6:885 with SMTP id
- y11-20020a056e02118b00b002ffc7c60885mr2344809ili.25.1666521694165; Sun, 23
- Oct 2022 03:41:34 -0700 (PDT)
-Date:   Sun, 23 Oct 2022 03:41:34 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000009763b605ebb1519a@google.com>
-Subject: [syzbot] BUG: corrupted list in p9_fd_cancel (2)
-From:   syzbot <syzbot+9b69b8d10ab4a7d88056@syzkaller.appspotmail.com>
-To:     asmadeus@codewreck.org, davem@davemloft.net, edumazet@google.com,
-        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux_oss@crudebyte.com, lucho@ionkov.net, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
-        v9fs-developer@lists.sourceforge.net
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6288:EE_|MW5PR12MB5650:EE_
+X-MS-Office365-Filtering-Correlation-Id: ea48077b-a852-4264-c228-08dab4e9b7db
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: w6t90k8mNzoefAq0bFs6InwiHIzDUeqRFxcXiihcuaoVZRhEKEs5yQD1VHkVK1iy5tZUmKeqUHwg2EI2hR14HDWqH0JBZQGYA4lBBIPb9IwyK4VUx38Ad/VqZlWLVo6od5p87cWaax1y2nURXfepqGszJtFi/SdIMR0cYeKPcQYQVSD0v9ehFK9n/SoGxgsS1PDrZLAdmSMKFBszcr50ad/o+lrovaAoM5624TMLJDd1cjVJXJ+2Vs4TAHVO9hChFatzvfbD1Fy4c/j9fv8KJve1ffe8C8j28v2CyehaNAkw6jqADpUf16L0aGBvfKDr0Lanwj8Bx9MDQMu5wMNL99iqMelsIWvwst4nS6eVe8Gb0fC7dW2TGgOo21KyBG6PzkjPFQmDv+dEIOplBkxDdguu33PeMe9PqKUxU7DZPbufk5b8Y57ZnppeXMKA/2K6gGDbt0KJGbAFXGFClP3spfGLBXua9OlbU0AwvjC0qP1Ogpd7t1bWKaJIhvFlHio0HGdxlR2DCNr1f4MEsLY5ae9FEMkkihHmZBCtOjEYEawdzdxPeU7JxhV6hO/dwsYTz/9/3cnLApWkzapyLKa1cCRwk42wlxHOKr+q9j+k9dX50kkzfM+W8Gw5KSlJeXI0cO92LoZ0e8lofE663JZrWKfJWr+xTe+42qhI+qNf/SdMAo9J5vgpVgsRjbIItyRJBiTkqpgCtW4DpHmLxtF/6Hp/zhoWmE7PwOc06WFAYcd0TrRtQ5xPMpgZELFiPUil4uyZZTDlQXZE6qyXGj62e3l3OIyyVAxp5vUrO4L5jWfD3tPStk1pGY39aBC2MHhrRl86M16NHz6zTVf+JBvD1A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6288.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(346002)(136003)(376002)(366004)(39860400002)(451199015)(186003)(31686004)(2906002)(86362001)(66556008)(4326008)(8676002)(36756003)(66946007)(66476007)(478600001)(110136005)(6486002)(54906003)(7416002)(6666004)(5660300002)(8936002)(41300700001)(316002)(31696002)(6506007)(6512007)(53546011)(2616005)(38100700002)(26005)(41533002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZjJWdXhGdURMRUptVEo5alZxeGhaZnc3d2F5OGV2M3lIMGpHL1MxUzd5RHRs?=
+ =?utf-8?B?NjNYUEMwbVFtVWZkSFNmakJJUzEyMkYwaHgrODZHNVV2d1grTGRNWWQ4RW9q?=
+ =?utf-8?B?dGs1VE9JZ2ZoR3VyY3lXVTNScHdMZGZ4UUJLcW0rWTByaFFvQmZVMjFRQTd6?=
+ =?utf-8?B?Yk9hY3Q4Y1dlN3JsbS9jbUxsMm1HRTM2eVBpeEozR01DUmxyaHZBdks5WS9v?=
+ =?utf-8?B?eVJiNWJRVEZqcGwwY3FGWFBNZno3amZPSFVScUJmMWk1T3NFcmIxZWVCN2o2?=
+ =?utf-8?B?N3VCcnk5VG5sNTZuN3BQcklxb2pMSUZXaVI4clhVZDdMeTJ6WHRtUytiR1ox?=
+ =?utf-8?B?bTQva2VyNDZmc0xjQWp2eEkxdmVTcUJKakljZmczREU1Wmt6MEY0MkVUQTRO?=
+ =?utf-8?B?ZHpRSjg2MFJXVFhrekZuWFZ4QUdEaDZjbFR1eC8yK2Q1NFlCRXZZZUJ1djRB?=
+ =?utf-8?B?bGQ5RUtsVE9Jd20wWVQvWGFYcTBSajBEZjZ1Z0h6amF2RzlEZ29CMUVzUFVN?=
+ =?utf-8?B?LzA5Q05zWTNseUlGNDNtcFNkQk11TFhkWjdtOU9GR1RmRnVuT2JvRnVNK01S?=
+ =?utf-8?B?MzZpaDdKUUpHcDZyMWRBUTUrYXBaQU5DNDhrMzlUM0VIcmRHejJmOFo2Rkl3?=
+ =?utf-8?B?NHorMm9lOUlEOE82ZVBSeFh5aiszTnNHMHJLbHpEVUJBOXlmd2ltSlRjNlFO?=
+ =?utf-8?B?SUJ1SzQxMXA1Rjg1ZVpHV0FLZFZVVVE2L2NEUVpCc0pJWkZSdi80QTlsVytX?=
+ =?utf-8?B?cU1rNS9hYnRmeFpCMVRnODdnSEpOakJFaUlLbzlzTlpFZmp4SU0rWFl4RFl6?=
+ =?utf-8?B?UUp4M0doWXRBK2FIa25WVmN1MmUzSUJNeEtjMEhjQkdMZHpyN1BoS3k4Q00z?=
+ =?utf-8?B?dDY2Qk1RR09rK1ZMUmlJbjVsY2wzbHlYK1N0QlJxOWpka0ZZTjBFUzVwZEEy?=
+ =?utf-8?B?Vmx4djNlSDkvVHE1M2V5TVVNQzMwSDhaRlZEOEVyaGpBOGVaYVFUYTVMRGdh?=
+ =?utf-8?B?T0lXc1A1WHFwU0ZxRnZIV2tyN3BYaVdKRUJIU0wvYmJCQnFBUkd5NThOdGhq?=
+ =?utf-8?B?Y1cyOWtQOGowNXpXTkMrQ0dVYjk4Yk5rTk1BamxiS0FoY01wK2NodmZIdVZM?=
+ =?utf-8?B?WHBvTUN3b0lMQ1dLMUhVQmlSamg2THc1YlZSRVhuWHVBZjVGVElaZVJKRyto?=
+ =?utf-8?B?cmVSTWtjaVJKb05nRTdpT3htNERwN0NrVGExd1ZQZE0rTURHdFhYVEJUalNh?=
+ =?utf-8?B?QzhLcmZJRDB4Y28zdTRRdVc2T29NWmI5bkFQWVRKVWhUQkNERjFLTXFmWkpv?=
+ =?utf-8?B?cG45UmF1bGQvZVdyTmpNaXJmb1pqaDEwdTEzYm9lY0pTMzN1ZG81QURIdk1i?=
+ =?utf-8?B?TTV2T2VnRWJzbndoRk1CNDEwT2xCYk9pM3E1Q2pBOEQ1NFZFcHdmNHE0dU5F?=
+ =?utf-8?B?cEJua25DV21kOG5FOTVPVFprNHpaVkp5RDBZWERPNllwem5MMVd2SkFiRnZF?=
+ =?utf-8?B?Zlgvb1dXZkFLR0NBdlFqYzlZbnEzZk9mMjZ2ZEk2WXZCaFUrYmt3LzNYUmxE?=
+ =?utf-8?B?U3VFVVNUYUdzR1BrcUt6cWtmdXlDYlpSYWowa0w1Yk40YUFQakpZR0JmM0JK?=
+ =?utf-8?B?TjkvTms3ak5LcXl4MmhCa0czdDhXUmpUd0cra1VKRWxvTmpGSjZDRWFtSitr?=
+ =?utf-8?B?WWRDRTFsK3RlL3hENzVpbzRpYmlZSlRKMTVwSkJ5NlU0eUl4SHFETjRnSUI5?=
+ =?utf-8?B?NTVBejlMQTg2V0RMRm9YMjFoc25EZU5LMTVMVjhjdmJEZ0wvQVYwQjFLbXIz?=
+ =?utf-8?B?dE1IVmhDK0dQclNHNlR5cERBVzNwNk9rYTM2YkNYRUlxSmlDYUU0enduMDR1?=
+ =?utf-8?B?WjUyZjZyK2orbkxHT3V5MFlNYzlWcHh3UmNpZXJ4SWl1My9EMnJjVHQwWjgw?=
+ =?utf-8?B?Z3Q3YmlzeUVZWHY4VWVUU1RFeVBCakNrL3pDOVBMVjdUblY4YlJ5MmxuV04x?=
+ =?utf-8?B?RGpBdW9WMGk4TDdwVFNaZDZnK085NVhLYUdzYVE5em1nK3B4QkJpTVVzb2Nn?=
+ =?utf-8?B?cFJYZDR1Mlk3ZGpxTFFHcFJtMzlQZGJqZzRHdUg3Q3RKWFJjeGppc2s5YnVX?=
+ =?utf-8?Q?aS/XOGqKgYb8oryred15KCsr7?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ea48077b-a852-4264-c228-08dab4e9b7db
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6288.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Oct 2022 11:28:33.6982
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: oJggtSiSWJwo8faSpiY7BMUaYK3cHf2k+jLS+ZdILg7po2on+Q0/aY1ddeEQlyxc
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR12MB5650
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 19/10/2022 17:09, Simon Horman wrote:
+> From: Peng Zhang <peng.zhang@corigine.com>
+>
+> VF max-queue-number is the MAX num of queues which the VF has.
+>
+> Add new device generic parameter to configure the max-queue-number
+> of the each VF to be generated dynamically.
+>
+> The string format is decided ad vendor specific. The suggested
+> format is ...-V-W-X-Y-Z, the V represents generating V VFs that
+> have 16 queues, the W represents generating W VFs that have 8
+> queues, and so on, the Z represents generating Z VFs that have
+> 1 queue.
 
-syzbot found the following issue on:
+Having a vendor specific string contradicts the point of having a
+generic parameter, why not do it as a vendor param, or generalize the
+string?
 
-HEAD commit:    d47136c28015 Merge tag 'hwmon-for-v6.1-rc2' of git://git.k..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=12f36de2880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=4789759e8a6d5f57
-dashboard link: https://syzkaller.appspot.com/bug?extid=9b69b8d10ab4a7d88056
-compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1076cb7c880000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=102eabd2880000
+>
+> For example, to configure
+> * 1x VF with 128 queues
+> * 1x VF with 64 queues
+> * 0x VF with 32 queues
+> * 0x VF with 16 queues
+> * 12x VF with 8 queues
+> * 2x VF with 4 queues
+> * 2x VF with 2 queues
+> * 0x VF with 1 queue, execute:
+>
+> $ devlink dev param set pci/0000:01:00.0 \
+>                           name max_vf_queue value \
+>                           "1-1-0-0-12-2-2-0" cmode runtime
+>
+> When created VF number is bigger than that is configured by this
+> parameter, the extra VFs' max-queue-number is decided as vendor
+> specific.
+>
+> If the config doesn't be set, the VFs' max-queue-number is decided
+> as vendor specific.
+>
+> Signed-off-by: Peng Zhang <peng.zhang@corigine.com>
+> Signed-off-by: Simon Horman <simon.horman@corigine.com>
+>
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/5664e231e97f/disk-d47136c2.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/9bbe0daa4a04/vmlinux-d47136c2.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+9b69b8d10ab4a7d88056@syzkaller.appspotmail.com
-
-list_del corruption, ffff88802295c4b0->next is LIST_POISON1 (dead000000000100)
-------------[ cut here ]------------
-kernel BUG at lib/list_debug.c:55!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 4018 Comm: syz-executor365 Not tainted 6.1.0-rc1-syzkaller-00427-gd47136c28015 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/11/2022
-RIP: 0010:__list_del_entry_valid+0xef/0x130 lib/list_debug.c:53
-Code: 29 40 03 06 0f 0b 48 c7 c7 e0 bf 0a 8b 4c 89 fe 31 c0 e8 16 40 03 06 0f 0b 48 c7 c7 40 c0 0a 8b 4c 89 fe 31 c0 e8 03 40 03 06 <0f> 0b 48 c7 c7 a0 c0 0a 8b 4c 89 fe 31 c0 e8 f0 3f 03 06 0f 0b 48
-RSP: 0018:ffffc900044c7630 EFLAGS: 00010246
-RAX: 000000000000004e RBX: dead000000000122 RCX: 5051969350135b00
-RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
-RBP: 0000000000000001 R08: ffffffff816cec5d R09: fffff52000898e7d
-R10: fffff52000898e7d R11: 1ffff92000898e7c R12: dffffc0000000000
-R13: 1ffff1100452b880 R14: dead000000000100 R15: ffff88802295c4b0
-FS:  00007f0d52859700(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020001000 CR3: 000000007ed87000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- __list_del_entry include/linux/list.h:134 [inline]
- list_del include/linux/list.h:148 [inline]
- p9_fd_cancel+0x9c/0x230 net/9p/trans_fd.c:703
- p9_client_rpc+0x92c/0xad0 net/9p/client.c:723
- p9_client_create+0x997/0x1030 net/9p/client.c:1015
- v9fs_session_init+0x1e3/0x1990 fs/9p/v9fs.c:408
- v9fs_mount+0xd2/0xcb0 fs/9p/vfs_super.c:126
- legacy_get_tree+0xea/0x180 fs/fs_context.c:610
- vfs_get_tree+0x88/0x270 fs/super.c:1530
- do_new_mount+0x289/0xad0 fs/namespace.c:3040
- do_mount fs/namespace.c:3383 [inline]
- __do_sys_mount fs/namespace.c:3591 [inline]
- __se_sys_mount+0x2e3/0x3d0 fs/namespace.c:3568
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f0d528a89f9
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 a1 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f0d528592f8 EFLAGS: 00000246 ORIG_RAX: 00000000000000a5
-RAX: ffffffffffffffda RBX: 00007f0d529344e0 RCX: 00007f0d528a89f9
-RDX: 0000000020000040 RSI: 0000000020000000 RDI: 0000000000000000
-RBP: 00007f0d52901174 R08: 0000000020000080 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0030656c69662f2e
-R13: 0000000000000004 R14: 64663d736e617274 R15: 00007f0d529344e8
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:__list_del_entry_valid+0xef/0x130 lib/list_debug.c:53
-Code: 29 40 03 06 0f 0b 48 c7 c7 e0 bf 0a 8b 4c 89 fe 31 c0 e8 16 40 03 06 0f 0b 48 c7 c7 40 c0 0a 8b 4c 89 fe 31 c0 e8 03 40 03 06 <0f> 0b 48 c7 c7 a0 c0 0a 8b 4c 89 fe 31 c0 e8 f0 3f 03 06 0f 0b 48
-RSP: 0018:ffffc900044c7630 EFLAGS: 00010246
-RAX: 000000000000004e RBX: dead000000000122 RCX: 5051969350135b00
-RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
-RBP: 0000000000000001 R08: ffffffff816cec5d R09: fffff52000898e7d
-R10: fffff52000898e7d R11: 1ffff92000898e7c R12: dffffc0000000000
-R13: 1ffff1100452b880 R14: dead000000000100 R15: ffff88802295c4b0
-FS:  00007f0d52859700(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020001000 CR3: 000000007ed87000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Does this command have to be run before the VFs are created? What
+happens to existing VFs?
