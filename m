@@ -2,126 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DEA56095AC
-	for <lists+netdev@lfdr.de>; Sun, 23 Oct 2022 20:45:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 537286095B5
+	for <lists+netdev@lfdr.de>; Sun, 23 Oct 2022 20:52:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230435AbiJWSpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Oct 2022 14:45:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40378 "EHLO
+        id S230401AbiJWSw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Oct 2022 14:52:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230395AbiJWSpT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Oct 2022 14:45:19 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5618E3FEEC;
-        Sun, 23 Oct 2022 11:45:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1666550719; x=1698086719;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=eVE2lQ5w+2D1pFZYr6+909z4xn/w37Zq+2kgclL7XFo=;
-  b=WUrNW6X8J04JeyR55yOjf+DQNgeEAkGx9wjCCcHtw60YaeIiPyyGWOtQ
-   dQdMwhXgFK5G8PsmjoK/dkI/HcJpaZI7iyfcwSq4NRAPZRTx7/ZrJxFKU
-   vKGpBR8JMElASA1gQG/EywrruvyCzowwBfXtWiZcA2/pMi2pwHuq1KHaZ
-   23ZLI9PL1x4nAUcrSV6CLKAdQ0Sijbx0oa6OmEYeVdQfYJ30JgbSAP7bA
-   6wk7wNwmb2/oTAkme5tnciEn6gZ+Xn97jXADiLnSKDQPq3X8c0/9E7hCW
-   2KqBkAMOyP+xDl6VV/jAN06bhqsbF7ys/rJssCiG2IEWCBp4meoiKnYRl
-   A==;
-X-IronPort-AV: E=Sophos;i="5.95,207,1661842800"; 
-   d="scan'208";a="180146172"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Oct 2022 11:45:18 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Sun, 23 Oct 2022 11:45:17 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Sun, 23 Oct 2022 11:45:16 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <UNGLinuxDriver@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net 3/3] net: lan966x: Fix FDMA when MTU is changed
-Date:   Sun, 23 Oct 2022 20:48:38 +0200
-Message-ID: <20221023184838.4128061-4-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.38.0
-In-Reply-To: <20221023184838.4128061-1-horatiu.vultur@microchip.com>
-References: <20221023184838.4128061-1-horatiu.vultur@microchip.com>
+        with ESMTP id S230060AbiJWSwZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Oct 2022 14:52:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED4CC5A2F7;
+        Sun, 23 Oct 2022 11:52:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BBFC60F3A;
+        Sun, 23 Oct 2022 18:52:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FF3CC433C1;
+        Sun, 23 Oct 2022 18:52:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666551142;
+        bh=HNwcqER76u92VjnWqSlerVcCGjVrALqwLw5X+szcw8k=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=M5PNJf4C74L472H9YDvVkkubU7NczmOc6Eqfgroo3ASHEhHJUJ7jY96CZx1xWmITR
+         B/GfR72xzNy1Zob3FDhufWgjrHG8bf1n8gkGaoUyzdX5t9Izlwbhvh6t/Uqv1XYimA
+         0WvdmyG9EIWZYsX68Toe0G+mZkXeJJDNborQKlmLC+Cqc9h3G5Vs9aiizr9+wqifzy
+         gfl6p/SUbK8U4qeVS094olPQhd7IdKlOf56EEG84tm3wsFKLyPXig33aJkjF9Z/T/0
+         NAsEIZ+omwjaoBUqfMNH/M6ntEUSlp7+L6gthjyzBSq8mIzI3wdPAScMRLm53GQuP0
+         YDPWtAwWdySLA==
+From:   =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org
+Subject: Re: [PATCH net-next v3 00/12] net: dpaa2-eth: AF_XDP zero-copy support
+In-Reply-To: <20221018141901.147965-1-ioana.ciornei@nxp.com>
+References: <20221018141901.147965-1-ioana.ciornei@nxp.com>
+Date:   Sun, 23 Oct 2022 20:52:19 +0200
+Message-ID: <87r0yy2x0c.fsf@all.your.base.are.belong.to.us>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When MTU is changed, FDMA is required to calculate what is the maximum
-size of the frame that it can received. So it can calculate what is the
-page order needed to allocate for the received frames.
-The first problem was that, when the max MTU was calculated it was
-reading the value from dev and not from HW, so in this way it was
-missing L2 header + the FCS.
-The other problem was that once the skb is created using
-__build_skb_around, it would reserve some space for skb_shared_info.
-So if we received a frame which size is at the limit of the page order
-then the creating will failed because it would not have space to put all
-the data.
+Ioana Ciornei <ioana.ciornei@nxp.com> writes:
 
-Fixes: 2ea1cbac267e ("net: lan966x: Update FDMA to change MTU.")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c | 7 +++++--
- drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 2 +-
- 2 files changed, 6 insertions(+), 3 deletions(-)
+> This patch set adds support for AF_XDP zero-copy in the dpaa2-eth
+> driver. The support is available on the LX2160A SoC and its variants and
+> only on interfaces (DPNIs) with a maximum of 8 queues (HW limitations
+> are the root cause).
+>
+> We are first implementing the .get_channels() callback since this a
+> dependency for further work.
+>
+> Patches 2-3 are working on making the necessary changes for multiple
+> buffer pools on a single interface. By default, without an AF_XDP socket
+> attached, only a single buffer pool will be used and shared between all
+> the queues. The changes in the functions are made in this patch, but the
+> actual allocation and setup of a new BP is done in patch#10.
+>
+> Patches 4-5 are improving the information exposed in debugfs. We are
+> exposing a new file to show which buffer pool is used by what channels
+> and how many buffers it currently has.
+>
+> The 6th patch updates the dpni_set_pools() firmware API so that we are
+> capable of setting up a different buffer per queue in later patches.
+>
+> In the 7th patch the generic dev_open/close APIs are used instead of the
+> dpaa2-eth internal ones.
+>
+> Patches 8-9 are rearranging the existing code in dpaa2-eth.c in order to
+> create new functions which will be used in the XSK implementation in
+> dpaa2-xsk.c
+>
+> Finally, the last 3 patches are adding the actual support for both the
+> Rx and Tx path of AF_XDP zero-copy and some associated tracepoints.
+> Details on the implementation can be found in the actual patch.
+>
+> Changes in v2:
+>  - 3/12:  Export dpaa2_eth_allocate_dpbp/dpaa2_eth_free_dpbp in this
+>    patch to avoid a build warning. The functions will be used in next
+>    patches.
+>  - 6/12:  Use __le16 instead of u16 for the dpbp_id field.
+>  - 12/12: Use xdp_buff->data_hard_start when tracing the BP seeding.
+>
+> Changes in v3:
+>  - 3/12: fix leaking of bp on error path
+>
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-index a42035cec611c..5a5603f9e9fd3 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-@@ -668,12 +668,14 @@ static int lan966x_fdma_get_max_mtu(struct lan966x *lan966x)
- 	int i;
- 
- 	for (i = 0; i < lan966x->num_phys_ports; ++i) {
-+		struct lan966x_port *port;
- 		int mtu;
- 
--		if (!lan966x->ports[i])
-+		port = lan966x->ports[i];
-+		if (!port)
- 			continue;
- 
--		mtu = lan966x->ports[i]->dev->mtu;
-+		mtu = lan_rd(lan966x, DEV_MAC_MAXLEN_CFG(port->chip_port));
- 		if (mtu > max_mtu)
- 			max_mtu = mtu;
- 	}
-@@ -733,6 +735,7 @@ int lan966x_fdma_change_mtu(struct lan966x *lan966x)
- 
- 	max_mtu = lan966x_fdma_get_max_mtu(lan966x);
- 	max_mtu += IFH_LEN * sizeof(u32);
-+	max_mtu += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
- 
- 	if (round_up(max_mtu, PAGE_SIZE) / PAGE_SIZE - 1 ==
- 	    lan966x->rx.page_order)
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index b3070c3fcad0a..20ee5b28f70a5 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -395,7 +395,7 @@ static int lan966x_port_change_mtu(struct net_device *dev, int new_mtu)
- 
- 	err = lan966x_fdma_change_mtu(lan966x);
- 	if (err) {
--		lan_wr(DEV_MAC_MAXLEN_CFG_MAX_LEN_SET(old_mtu),
-+		lan_wr(DEV_MAC_MAXLEN_CFG_MAX_LEN_SET(LAN966X_HW_MTU(old_mtu)),
- 		       lan966x, DEV_MAC_MAXLEN_CFG(port->chip_port));
- 		dev->mtu = old_mtu;
- 	}
--- 
-2.38.0
+Again, sorry about the feedback delay.
 
+I don't have access to the hardware, so I mostly glossed over the
+patches that didn't touch AF_XDP directly.
+
+The series looks clean, and is easy to follow. The XSK pool usage looks
+correct. Awesome to see yet another AF_XDP capable driver!
+
+Feel free to add:
+Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn@kernel.org>
