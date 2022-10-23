@@ -2,201 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6B3A609294
-	for <lists+netdev@lfdr.de>; Sun, 23 Oct 2022 14:07:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71CEA6092DF
+	for <lists+netdev@lfdr.de>; Sun, 23 Oct 2022 14:44:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230116AbiJWMG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Oct 2022 08:06:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57712 "EHLO
+        id S230257AbiJWMoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Oct 2022 08:44:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230074AbiJWMGo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Oct 2022 08:06:44 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1612572854
-        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 05:06:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 117DDCE0EBF
-        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 12:06:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DBB3C433D7;
-        Sun, 23 Oct 2022 12:06:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666526797;
-        bh=vR/V5BHVB4iVbF5OXZAc6nS+e2MwsrVg6xSMEyBfIOc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AXxRzCB3Kj7vlKt4CkVFn5niZst+5iOj1cEXHYAiUCnEXmFKzm5YaG0nCN5cifQcR
-         ZWvJoElocZdymaizA8PHDQgo9F7WugAnAMhM+fGEZcM+hL0dn4T1Yqe4VqElo6NRNq
-         69Xj5vSeCk9XXlsmlPYojJyI4NMCThVrF1+3HuMsDsDaPyaYxZyP6DvAFSpjRLtWBs
-         SZ4WLYOm663FUovZHzrpP4TEZw/1oXOvOAHsm0wbXsn65KaqOHNBxLAfCQ64eEl/iM
-         mNvv4l8dOeXnENez4W72AphZy8cHGuUkOvKcYoL0Bqz2GRbBaG/0FKuM1PiTbGaJqa
-         yPHmo80DyFcxg==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     Leon Romanovsky <leonro@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Bharat Bhushan <bbhushan2@marvell.com>
-Subject: [PATCH xfrm-next v5 8/8] xfrm: document IPsec full offload mode
-Date:   Sun, 23 Oct 2022 15:06:00 +0300
-Message-Id: <1f52c2bc048940ab3679d01f621230f1fc49ba16.1666525321.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <cover.1666525321.git.leonro@nvidia.com>
-References: <cover.1666525321.git.leonro@nvidia.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S230085AbiJWMoQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Oct 2022 08:44:16 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D23B06CF4B;
+        Sun, 23 Oct 2022 05:44:14 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R371e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VSpfJs5_1666529042;
+Received: from j66a10360.sqa.eu95.tbsite.net(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VSpfJs5_1666529042)
+          by smtp.aliyun-inc.com;
+          Sun, 23 Oct 2022 20:44:11 +0800
+From:   "D.Wythe" <alibuda@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: [PATCH net-next v4 00/10] optimize the parallelism of SMC-R connections
+Date:   Sun, 23 Oct 2022 20:43:52 +0800
+Message-Id: <1666529042-40828-1-git-send-email-alibuda@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+From: "D.Wythe" <alibuda@linux.alibaba.com>
 
-Extend XFRM device offload API description with newly
-added full offload mode.
+This patch set attempts to optimize the parallelism of SMC-R connections,
+mainly to reduce unnecessary blocking on locks, and to fix exceptions that
+occur after thoses optimization.
 
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- Documentation/networking/xfrm_device.rst | 62 ++++++++++++++++++++----
- 1 file changed, 53 insertions(+), 9 deletions(-)
+According to Off-CPU graph, SMC worker's off-CPU as that:
 
-diff --git a/Documentation/networking/xfrm_device.rst b/Documentation/networking/xfrm_device.rst
-index 01391dfd37d9..499f9d4ca021 100644
---- a/Documentation/networking/xfrm_device.rst
-+++ b/Documentation/networking/xfrm_device.rst
-@@ -5,6 +5,7 @@ XFRM device - offloading the IPsec computations
- ===============================================
- 
- Shannon Nelson <shannon.nelson@oracle.com>
-+Leon Romanovsky <leonro@nvidia.com>
- 
- 
- Overview
-@@ -18,10 +19,21 @@ can radically increase throughput and decrease CPU utilization.  The XFRM
- Device interface allows NIC drivers to offer to the stack access to the
- hardware offload.
- 
-+Right now, there are two types of hardware offload that kernel supports.
-+ * IPsec crypto offload:
-+   * NIC performs encrypt/decrypt
-+   * Kernel does everything else
-+ * IPsec full offload:
-+   * NIC performs encrypt/decrypt
-+   * NIC does encapsulation
-+   * Kernel and NIC have SA and policy in-sync
-+   * NIC handles the SA and policies states
-+   * The Kernel talks to the keymanager
-+
- Userland access to the offload is typically through a system such as
- libreswan or KAME/raccoon, but the iproute2 'ip xfrm' command set can
- be handy when experimenting.  An example command might look something
--like this::
-+like this for crypto offload:
- 
-   ip x s add proto esp dst 14.0.0.70 src 14.0.0.52 spi 0x07 mode transport \
-      reqid 0x07 replay-window 32 \
-@@ -29,6 +41,17 @@ like this::
-      sel src 14.0.0.52/24 dst 14.0.0.70/24 proto tcp \
-      offload dev eth4 dir in
- 
-+and for full offload
-+
-+  ip x s add proto esp dst 14.0.0.70 src 14.0.0.52 spi 0x07 mode transport \
-+     reqid 0x07 replay-window 32 \
-+     aead 'rfc4106(gcm(aes))' 0x44434241343332312423222114131211f4f3f2f1 128 \
-+     sel src 14.0.0.52/24 dst 14.0.0.70/24 proto tcp \
-+     offload full dev eth4 dir in
-+
-+  ip x p add src 14.0.0.70 dst 14.0.0.52 offload full dev eth4 dir in
-+  tmpl src 14.0.0.70 dst 14.0.0.52 proto esp reqid 10000 mode transport
-+
- Yes, that's ugly, but that's what shell scripts and/or libreswan are for.
- 
- 
-@@ -40,17 +63,24 @@ Callbacks to implement
- 
-   /* from include/linux/netdevice.h */
-   struct xfrmdev_ops {
-+        /* Crypto and Full offload callbacks */
- 	int	(*xdo_dev_state_add) (struct xfrm_state *x);
- 	void	(*xdo_dev_state_delete) (struct xfrm_state *x);
- 	void	(*xdo_dev_state_free) (struct xfrm_state *x);
- 	bool	(*xdo_dev_offload_ok) (struct sk_buff *skb,
- 				       struct xfrm_state *x);
- 	void    (*xdo_dev_state_advance_esn) (struct xfrm_state *x);
-+
-+        /* Solely full offload callbacks */
-+	void    (*xdo_dev_state_update_curlft) (struct xfrm_state *x);
-+	int	(*xdo_dev_policy_add) (struct xfrm_policy *x);
-+	void	(*xdo_dev_policy_delete) (struct xfrm_policy *x);
-+	void	(*xdo_dev_policy_free) (struct xfrm_policy *x);
-   };
- 
--The NIC driver offering ipsec offload will need to implement these
--callbacks to make the offload available to the network stack's
--XFRM subsystem.  Additionally, the feature bits NETIF_F_HW_ESP and
-+The NIC driver offering ipsec offload will need to implement callbacks
-+relevant to supported offload to make the offload available to the network
-+stack's XFRM subsystem. Additionally, the feature bits NETIF_F_HW_ESP and
- NETIF_F_HW_ESP_TX_CSUM will signal the availability of the offload.
- 
- 
-@@ -79,7 +109,8 @@ and an indication of whether it is for Rx or Tx.  The driver should
- 
- 		===========   ===================================
- 		0             success
--		-EOPNETSUPP   offload not supported, try SW IPsec
-+		-EOPNETSUPP   offload not supported, try SW IPsec,
-+                              not applicable for full offload mode
- 		other         fail the request
- 		===========   ===================================
- 
-@@ -96,6 +127,7 @@ will serviceable.  This can check the packet information to be sure the
- offload can be supported (e.g. IPv4 or IPv6, no IPv4 options, etc) and
- return true of false to signify its support.
- 
-+Crypto offload mode:
- When ready to send, the driver needs to inspect the Tx packet for the
- offload information, including the opaque context, and set up the packet
- send accordingly::
-@@ -139,13 +171,25 @@ the stack in xfrm_input().
- In ESN mode, xdo_dev_state_advance_esn() is called from xfrm_replay_advance_esn().
- Driver will check packet seq number and update HW ESN state machine if needed.
- 
-+Full offload mode:
-+HW adds and deletes XFRM headers. So in RX path, XFRM stack is bypassed if HW
-+reported success. In TX path, the packet lefts kernel without extra header
-+and not encrypted, the HW is responsible to perform it.
-+
- When the SA is removed by the user, the driver's xdo_dev_state_delete()
--is asked to disable the offload.  Later, xdo_dev_state_free() is called
--from a garbage collection routine after all reference counts to the state
-+and xdo_dev_policy_delete() are asked to disable the offload.  Later,
-+xdo_dev_state_free() and xdo_dev_policy_free() are called from a garbage
-+collection routine after all reference counts to the state and policy
- have been removed and any remaining resources can be cleared for the
- offload state.  How these are used by the driver will depend on specific
- hardware needs.
- 
- As a netdev is set to DOWN the XFRM stack's netdev listener will call
--xdo_dev_state_delete() and xdo_dev_state_free() on any remaining offloaded
--states.
-+xdo_dev_state_delete(), xdo_dev_policy_delete(), xdo_dev_state_free() and
-+xdo_dev_policy_free() on any remaining offloaded states.
-+
-+Outcome of HW handling packets, the XFRM core can't count hard, soft limits.
-+The HW/driver are responsible to perform it and provide accurate data when
-+xdo_dev_state_update_curlft() is called. In case of one of these limits
-+occuried, the driver needs to call to xfrm_state_check_expire() to make sure
-+that XFRM performs rekeying sequence.
+smc_close_passive_work                  (1.09%)
+        smcr_buf_unuse                  (1.08%)
+                smc_llc_flow_initiate   (1.02%)
+
+smc_listen_work                         (48.17%)
+        __mutex_lock.isra.11            (47.96%)
+
+
+An ideal SMC-R connection process should only block on the IO events
+of the network, but it's quite clear that the SMC-R connection now is
+queued on the lock most of the time.
+
+The goal of this patchset is to achieve our ideal situation where
+network IO events are blocked for the majority of the connection lifetime.
+
+There are three big locks here:
+
+1. smc_client_lgr_pending & smc_server_lgr_pending
+
+2. llc_conf_mutex
+
+3. rmbs_lock & sndbufs_lock
+
+And an implementation issue:
+
+1. confirm/delete rkey msg can't be sent concurrently while
+protocol allows indeed.
+
+Unfortunately,The above problems together affect the parallelism of
+SMC-R connection. If any of them are not solved. our goal cannot
+be achieved.
+
+After this patch set, we can get a quite ideal off-CPU graph as
+following:
+
+smc_close_passive_work                                  (41.58%)
+        smcr_buf_unuse                                  (41.57%)
+                smc_llc_do_delete_rkey                  (41.57%)
+
+smc_listen_work                                         (39.10%)
+        smc_clc_wait_msg                                (13.18%)
+                tcp_recvmsg_locked                      (13.18)
+        smc_listen_find_device                          (25.87%)
+                smcr_lgr_reg_rmbs                       (25.87%)
+                        smc_llc_do_confirm_rkey         (25.87%)
+
+We can see that most of the waiting times are waiting for network IO
+events. This also has a certain performance improvement on our
+short-lived conenction wrk/nginx benchmark test:
+
++--------------+------+------+-------+--------+------+--------+
+|conns/qps     |c4    | c8   |  c16  |  c32   | c64  |  c200  |
++--------------+------+------+-------+--------+------+--------+
+|SMC-R before  |9.7k  | 10k  |  10k  |  9.9k  | 9.1k |  8.9k  |
++--------------+------+------+-------+--------+------+--------+
+|SMC-R now     |13k   | 19k  |  18k  |  16k   | 15k  |  12k   |
++--------------+------+------+-------+--------+------+--------+
+|TCP           |15k   | 35k  |  51k  |  80k   | 100k |  162k  |
++--------------+------+------+-------+--------+------+--------+
+
+The reason why the benefit is not obvious after the number of connections
+has increased dues to workqueue. If we try to change workqueue to UNBOUND,
+we can obtain at least 4-5 times performance improvement, reach up to half
+of TCP. However, this is not an elegant solution, the optimization of it
+will be much more complicated. But in any case, we will submit relevant
+optimization patches as soon as possible.
+
+Please note that the premise here is that the lock related problem
+must be solved first, otherwise, no matter how we optimize the workqueue,
+there won't be much improvement.
+
+Because there are a lot of related changes to the code, if you have
+any questions or suggestions, please let me know.
+
+Thanks
+D. Wythe
+
+v1 -> v2:
+
+1. Fix panic in SMC-D scenario
+2. Fix lnkc related hashfn calculation exception, caused by operator
+priority
+3. Only wake up one connection if the lnk is not active
+4. Delete obsolete unlock logic in smc_listen_work()
+5. PATCH format, do Reverse Christmas tree
+6. PATCH format, change all xxx_lnk_xxx function to xxx_link_xxx 
+7. PATCH format, add correct fix tag for the patches for fixes.
+8. PATCH format, fix some spelling error
+9. PATCH format, rename slow to do_slow
+
+v2 -> v3:
+
+1. add SMC-D support, remove the concept of link cluster since SMC-D has
+no link at all. Replace it by lgr decision maker, who provides suggestions
+to SMC-D and SMC-R on whether to create new link group.
+
+2. Fix the corruption problem described by PATCH 'fix application
+data exception' on SMC-D.
+
+v3 -> v4:
+
+1. Fix panic caused by uninitialization map.
+
+D. Wythe (10):
+  net/smc: remove locks smc_client_lgr_pending and
+    smc_server_lgr_pending
+  net/smc: fix SMC_CLC_DECL_ERR_REGRMB without smc_server_lgr_pending
+  net/smc: allow confirm/delete rkey response deliver multiplex
+  net/smc: make SMC_LLC_FLOW_RKEY run concurrently
+  net/smc: llc_conf_mutex refactor, replace it with rw_semaphore
+  net/smc: use read semaphores to reduce unnecessary blocking in
+    smc_buf_create() & smcr_buf_unuse()
+  net/smc: reduce unnecessary blocking in smcr_lgr_reg_rmbs()
+  net/smc: replace mutex rmbs_lock and sndbufs_lock with rw_semaphore
+  net/smc: Fix potential panic dues to unprotected
+    smc_llc_srv_add_link()
+  net/smc: fix application data exception
+
+ net/smc/af_smc.c   |  70 ++++----
+ net/smc/smc_core.c | 478 +++++++++++++++++++++++++++++++++++++++++++++++------
+ net/smc/smc_core.h |  36 +++-
+ net/smc/smc_llc.c  | 277 ++++++++++++++++++++++---------
+ net/smc/smc_llc.h  |   6 +
+ net/smc/smc_wr.c   |  10 --
+ net/smc/smc_wr.h   |  10 ++
+ 7 files changed, 712 insertions(+), 175 deletions(-)
+
 -- 
-2.37.3
+1.8.3.1
 
