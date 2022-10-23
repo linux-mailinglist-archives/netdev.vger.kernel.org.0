@@ -2,64 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 860F36090CD
-	for <lists+netdev@lfdr.de>; Sun, 23 Oct 2022 04:31:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A09B6090D6
+	for <lists+netdev@lfdr.de>; Sun, 23 Oct 2022 04:48:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229908AbiJWCbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Oct 2022 22:31:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59296 "EHLO
+        id S229728AbiJWCqc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Oct 2022 22:46:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229728AbiJWCbA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Oct 2022 22:31:00 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00CD57D798
-        for <netdev@vger.kernel.org>; Sat, 22 Oct 2022 19:30:59 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id w196so7517955oiw.8
-        for <netdev@vger.kernel.org>; Sat, 22 Oct 2022 19:30:59 -0700 (PDT)
+        with ESMTP id S229515AbiJWCqb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Oct 2022 22:46:31 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C683213D28
+        for <netdev@vger.kernel.org>; Sat, 22 Oct 2022 19:46:30 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id m6so4373712qkm.4
+        for <netdev@vger.kernel.org>; Sat, 22 Oct 2022 19:46:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=tdQkUlrSmov1XrjFnl9UgkC+Tyxyg/IT9ERVW2khmA0=;
-        b=i3aGR6OYAhZdDxKH1S4Qs02E5JIdPSdqjCX7YXvjsVwK666103Bkljw5ywUi8p77tV
-         i9de3pP1+1hRz3pTTyQb5fopzvppyFQRHUzTvORhXxhnnOrpewx4NhLNctLD3LnDDjpJ
-         CK8ZsNz2bJ4EE3nQ8EuNK8Kvkol/GEOASz/SyAhDVpk/CUbSGPXfk1dNSOURVDkbAjJj
-         LX+R/3T1PxTUcOKCRu1SBIJG8mmQ8b+X3QqAAqxizWDHRO5JjTRrTMCafrqNRiURloE2
-         iZ6xNb6HUxpKUg6iAo99KLXZTpOvGYJo92hmk8HU+4enmJ9XiDZwNR3PBmqztMk8VqI9
-         kUlQ==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=4i51PJ9VgqBLKpdx9sPDZ4sore9gWcit4rjaa1kuwD4=;
+        b=pQ3Z4wwn9TX18JmvGrhfoUvZsd4hSqvwLWb9II4rUpcaT8AGR0qoM39mt3IYXbdUau
+         vIuqtILxTylk3VrTLq59lPDDG8DoXZhIV/kAlpAFAZLepf2ybG9IQzcsvwd0Wohn3X7l
+         YOy2bXK9KgzGuW8XSYVSR88J0C6tdprD727o4uLJMhUMe5u9OBHI9Qi5eKCFqzEFOm4s
+         skE9gPdbhfaAeWos1mOUGT32GD+lgcHCpjnI2T+JgvxOzA2OHtckSxyU2bcodlTMFZc9
+         x6tnygr/thRkro17J6bppzbXaKsNRaffJJDj2x2rz6Ndv3ZpuS+ijdAu8c8z5FYF2AwU
+         H+IA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=tdQkUlrSmov1XrjFnl9UgkC+Tyxyg/IT9ERVW2khmA0=;
-        b=LxZTSz2AjFXtvvg9KyYy5rL2xABkdspAcbOJGy/lGTa4eHiPvPNuODtteI1m/0UJPt
-         9IBxOO7OZdIFyaLk50QdXQ1uKQJxJUURrUL7sa0Hd6AII3AMZxjoyZqV+bW+3TG00dDD
-         aY1qSnnigpEJiSqhnlvgB66sTnL985IySPzUMOuYk4BIIo2HDSnLmt4zU/kpg7Xrma0/
-         Dmk9WB1IO//08JQfzqVPM3XqDlA8TF+yhCWQOyBiGjGqgV34Ap0lsQ4B9ewn7FaOj/Ql
-         d6s3DfbkDzIkuB6LIIFCs7e40fbQViVXCuB50k9r+oou1ZSLB597en5HTeZhx6WS83Tj
-         oK8w==
-X-Gm-Message-State: ACrzQf1mg6pkbiSYxKgTtzTMQNs8sCmOpZms4vKidr502mbrk6wXj7/F
-        0Q1T1B1PMHBqbJPKTXu2N+m1SVrj1ds=
-X-Google-Smtp-Source: AMsMyM4hlumR726Hl1Z7KtWUfTFaGLr2vuCl0JbKKqetKVbACXRtnt6Q7RmnflgB7WSXu/s36uJJJA==
-X-Received: by 2002:a05:6808:14c4:b0:355:40d5:400 with SMTP id f4-20020a05680814c400b0035540d50400mr13123575oiw.249.1666492258846;
-        Sat, 22 Oct 2022 19:30:58 -0700 (PDT)
-Received: from pop-os.attlocal.net ([2600:1700:65a0:ab60:2e02:af9:d9bc:69c5])
-        by smtp.gmail.com with ESMTPSA id l10-20020a4a434a000000b004768f725b7csm10128992ooj.23.2022.10.22.19.30.57
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4i51PJ9VgqBLKpdx9sPDZ4sore9gWcit4rjaa1kuwD4=;
+        b=e/8CHD2BSm8tswwVofAyePNIp3uHO+NRO7KyHlL8YcBUttLYe3Ae/O9ntcm+d4UtZ7
+         bj9qPWy2c3HY4N606/1hWKx7tZBewtRDdX7EpPJ4CMHhD4pAi1+Niuo33KxL24Z3uTP8
+         4oCKf6viacy0qk4k5P88oymWfkql0FatTbjvSs5m1LwUbDxqm+6KrP9mXf5U6kUv+asW
+         2aZ6MhB5ylf8WrGiHxF9T9EBXdXtzkh5KoEh0J0XJtmWpZK6GEp+oS6R6hw1gWR0PFgL
+         k5Mf1DVLnZLPnSRBLOwZVbdTibOcFk4toG7+XKhdzlpUeetqk9dbHX1nR0YtRAm6aEYO
+         twxA==
+X-Gm-Message-State: ACrzQf0tPUScyZd0++A+dwgKWFQU1Ug+EzajOVLy+GWImR9GIvWmKJE7
+        wswJ9BdbOSCtHPVC0RrypLA=
+X-Google-Smtp-Source: AMsMyM7iVF8pw9hMT0W+/JeeZuO7UubRxJaf2lvHz2tytQWh+t93vwet2vz9yBGzvFnMGrbvTtDNVg==
+X-Received: by 2002:ae9:f707:0:b0:6e7:2317:8318 with SMTP id s7-20020ae9f707000000b006e723178318mr18177302qkg.571.1666493189955;
+        Sat, 22 Oct 2022 19:46:29 -0700 (PDT)
+Received: from localhost ([2600:1700:65a0:ab60:2e02:af9:d9bc:69c5])
+        by smtp.gmail.com with ESMTPSA id v2-20020a05620a0f0200b006cfc1d827cbsm12866967qkl.9.2022.10.22.19.46.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 Oct 2022 19:30:58 -0700 (PDT)
+        Sat, 22 Oct 2022 19:46:29 -0700 (PDT)
+Date:   Sat, 22 Oct 2022 19:46:28 -0700
 From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Cong Wang <cong.wang@bytedance.com>,
-        shaozhengchao <shaozhengchao@huawei.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Tom Herbert <tom@herbertland.com>
-Subject: [Patch net] kcm: fix a race condition in kcm_recvmsg()
-Date:   Sat, 22 Oct 2022 19:30:44 -0700
-Message-Id: <20221023023044.149357-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.34.1
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        eric.dumazet@gmail.com, syzbot <syzkaller@googlegroups.com>
+Subject: Re: [PATCH net 2/2] kcm: annotate data-races around kcm->rx_wait
+Message-ID: <Y1SrBJUOKkpEHiPz@pop-os.localdomain>
+References: <20221020224512.3211657-1-edumazet@google.com>
+ <20221020224512.3211657-3-edumazet@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221020224512.3211657-3-edumazet@google.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -70,50 +73,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
+On Thu, Oct 20, 2022 at 10:45:12PM +0000, Eric Dumazet wrote:
+> kcm->rx_psock can be read locklessly in kcm_rfree().
 
-sk->sk_receive_queue is protected by skb queue lock, but for KCM
-sockets its RX path takes mux->rx_lock to protect more than just
-skb queue, so grabbing skb queue lock is not necessary when
-mux->rx_lock is already held. But kcm_recvmsg() still only grabs
-the skb queue lock, so race conditions still exist.
+Copy-n-paste typo here.
 
-Close this race condition by taking mux->rx_lock in kcm_recvmsg()
-too. This way is much simpler than enforcing skb queue lock
-everywhere.
+> Annotate the read and writes accordingly.
 
-Fixes: ab7ac4eb9832 ("kcm: Kernel Connection Multiplexor module")
-Tested-by: shaozhengchao <shaozhengchao@huawei.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Tom Herbert <tom@herbertland.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
----
- net/kcm/kcmsock.c | 3 +++
- 1 file changed, 3 insertions(+)
+I wonder why not simply acquire mux->rx_lock earlier?
 
-diff --git a/net/kcm/kcmsock.c b/net/kcm/kcmsock.c
-index 27725464ec08..8b4e5d0ab2b6 100644
---- a/net/kcm/kcmsock.c
-+++ b/net/kcm/kcmsock.c
-@@ -1116,6 +1116,7 @@ static int kcm_recvmsg(struct socket *sock, struct msghdr *msg,
- {
- 	struct sock *sk = sock->sk;
- 	struct kcm_sock *kcm = kcm_sk(sk);
-+	struct kcm_mux *mux = kcm->mux;
- 	int err = 0;
- 	long timeo;
- 	struct strp_msg *stm;
-@@ -1156,8 +1157,10 @@ static int kcm_recvmsg(struct socket *sock, struct msghdr *msg,
- msg_finished:
- 			/* Finished with message */
- 			msg->msg_flags |= MSG_EOR;
-+			spin_lock_bh(&mux->rx_lock);
- 			KCM_STATS_INCR(kcm->stats.rx_msgs);
- 			skb_unlink(skb, &sk->sk_receive_queue);
-+			spin_unlock_bh(&mux->rx_lock);
- 			kfree_skb(skb);
- 		}
- 	}
--- 
-2.34.1
-
+Thanks.
