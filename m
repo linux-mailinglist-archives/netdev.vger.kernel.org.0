@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75703609292
-	for <lists+netdev@lfdr.de>; Sun, 23 Oct 2022 14:06:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12A78609295
+	for <lists+netdev@lfdr.de>; Sun, 23 Oct 2022 14:07:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230139AbiJWMGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Oct 2022 08:06:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57046 "EHLO
+        id S230125AbiJWMHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Oct 2022 08:07:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230072AbiJWMGd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Oct 2022 08:06:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00AB458B4B
-        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 05:06:30 -0700 (PDT)
+        with ESMTP id S230175AbiJWMGz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Oct 2022 08:06:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF065A8B4
+        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 05:06:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9D43CB80B51
-        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 12:06:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDCF5C43148;
-        Sun, 23 Oct 2022 12:06:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D3CF2B80D53
+        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 12:06:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4DC2C433C1;
+        Sun, 23 Oct 2022 12:06:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666526788;
-        bh=y1hEzzMV9eK0WTR2Isz/Tv4PO0UwnikO/Pt42xPlypo=;
+        s=k20201202; t=1666526801;
+        bh=oM+fcFpcFUee9VAzjbqo/+6YEgmIciJRbXNK4THg3Vg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EeGtxzuj8IA9yE7tOweWNk6e1SuiEXouRkMK5IRtB8L1luQlSbXoi5OlQQr7mHwWB
-         8SwYUm8OyL8FTuMlE7ElLp3JPFps3AQyhye8cvMnVUlhldveq+ytCCzaj2VxeHAehp
-         VXKI6uITde/VAETp4YCYj+cHNBLMk7VUpo01dTHhYXi9ddYmbsO1ZthkJo94Fth0QT
-         8s7VvN+sIEfPhHIOtCX1YkKHKIZ8yHWgswjSzZCcscXMcmUAWW7QbDvLt/AWSSGDEz
-         E4XMz74B3bc+dCQNMUX+yXxcMbgN7PtlNFNwmWLJwGm3RkDUoN1rfWjQx6EwLU3dkM
-         /ljdQIYM6Iokw==
+        b=oHDYp6J0IgmberVhAwavTTJ2nR34AwvUTKCmvPX4f4p6w9d/aswL8p29bpMt2DErI
+         J3WTxfLdVf9yPulOAK9daaBvq8ZYVWUIjL5VDaONzm0AvGLKIMqjKEvYyr+3oiWyY3
+         7KN681vQkCJifVUx+A1CfJo9CR+oMQtd57Mv+gvi/GXYlnAIVVWs8e2NeQ6Pxmm9LJ
+         E0cjHuBY9tDSj6GdNAse+9ravOYXmj813xGp7MzqB26zurOjoiFjPDpuS4JOUU6S1S
+         dLyPjyfJQDNF/TOt+2kz7ZpTVpffikmPiWDlkQhTA353r/rhNgI4DWtVG8dL/AIBMJ
+         TrL55cS7y70Mw==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Steffen Klassert <steffen.klassert@secunet.com>
 Cc:     Leon Romanovsky <leonro@nvidia.com>,
@@ -41,9 +41,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Paolo Abeni <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>,
         Bharat Bhushan <bbhushan2@marvell.com>
-Subject: [PATCH xfrm-next v5 6/8] xfrm: Speed-up lookup of HW policies
-Date:   Sun, 23 Oct 2022 15:05:58 +0300
-Message-Id: <09577c71179027f7ffb99bace5a4608e7e857c82.1666525321.git.leonro@nvidia.com>
+Subject: [PATCH xfrm-next v5 7/8] xfrm: add support to HW update soft and hard limits
+Date:   Sun, 23 Oct 2022 15:05:59 +0300
+Message-Id: <a552155c11090a83fc4445522ae87d38d233eaec.1666525321.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <cover.1666525321.git.leonro@nvidia.com>
 References: <cover.1666525321.git.leonro@nvidia.com>
@@ -60,54 +60,99 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Devices that implement IPsec full offload mode should offload policies
-too. In RX path, it causes to the situation that HW will always have
-higher priority over any SW policies.
+Both in RX and TX, the traffic that performs IPsec full offload
+transformation is accounted by HW. It is needed to properly handle
+hard limits that require to drop the packet.
 
-It means that we don't need to perform any search of inexact policies
-and/or priority checks if HW policy was discovered. In such situation,
-the HW will catch the packets anyway and HW can still implement inexact
-lookups.
+It means that XFRM core needs to update internal counters with the one
+that accounted by the HW, so new callbacks are introduced in this patch.
 
-In case specific policy is not found, we will continue with full lookup and
-check for existence of HW policies in inexact list.
-
-HW policies are added to the head of SPD to ensure fast lookup, as XFRM
-iterates over all policies in the loop.
+In case of soft or hard limit is occurred, the driver should call to
+xfrm_state_check_expire() that will perform key rekeying exactly as
+done by XFRM core.
 
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- net/xfrm/xfrm_policy.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ include/linux/netdevice.h |  1 +
+ include/net/xfrm.h        | 17 +++++++++++++++++
+ net/xfrm/xfrm_output.c    |  1 -
+ net/xfrm/xfrm_state.c     |  4 ++++
+ 4 files changed, 22 insertions(+), 1 deletion(-)
 
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index b07ed169f501..aa73e630aef5 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -1562,9 +1562,12 @@ static struct xfrm_policy *xfrm_policy_insert_list(struct hlist_head *chain,
- 			break;
- 	}
- 
--	if (newpos)
-+	if (newpos && policy->xdo.type != XFRM_DEV_OFFLOAD_FULL)
- 		hlist_add_behind_rcu(&policy->bydst, &newpos->bydst);
- 	else
-+		/* Full offload policies are enteded
-+		 * to the head to speed-up lookups.
-+		 */
- 		hlist_add_head_rcu(&policy->bydst, chain);
- 
- 	return delpol;
-@@ -2180,6 +2183,9 @@ static struct xfrm_policy *xfrm_policy_lookup_bytype(struct net *net, u8 type,
- 			break;
- 		}
- 	}
-+	if (!ret && ret->xdo.type == XFRM_DEV_OFFLOAD_FULL)
-+		goto skip_inexact;
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 169387b2e104..49d80295812f 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -1033,6 +1033,7 @@ struct xfrmdev_ops {
+ 	bool	(*xdo_dev_offload_ok) (struct sk_buff *skb,
+ 				       struct xfrm_state *x);
+ 	void	(*xdo_dev_state_advance_esn) (struct xfrm_state *x);
++	void	(*xdo_dev_state_update_curlft) (struct xfrm_state *x);
+ 	int	(*xdo_dev_policy_add) (struct xfrm_policy *x);
+ 	void	(*xdo_dev_policy_delete) (struct xfrm_policy *x);
+ 	void	(*xdo_dev_policy_free) (struct xfrm_policy *x);
+diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+index 976361976ed5..41f8aaafe755 100644
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -1571,6 +1571,23 @@ struct xfrm_state *xfrm_stateonly_find(struct net *net, u32 mark, u32 if_id,
+ struct xfrm_state *xfrm_state_lookup_byspi(struct net *net, __be32 spi,
+ 					      unsigned short family);
+ int xfrm_state_check_expire(struct xfrm_state *x);
++#ifdef CONFIG_XFRM_OFFLOAD
++static inline void xfrm_dev_state_update_curlft(struct xfrm_state *x)
++{
++	struct xfrm_dev_offload *xdo = &x->xso;
++	struct net_device *dev = xdo->dev;
 +
- 	bin = xfrm_policy_inexact_lookup_rcu(net, type, family, dir, if_id);
- 	if (!bin || !xfrm_policy_find_inexact_candidates(&cand, bin, saddr,
- 							 daddr))
++	if (x->xso.type != XFRM_DEV_OFFLOAD_FULL)
++		return;
++
++	if (dev && dev->xfrmdev_ops &&
++	    dev->xfrmdev_ops->xdo_dev_state_update_curlft)
++		dev->xfrmdev_ops->xdo_dev_state_update_curlft(x);
++
++}
++#else
++static inline void xfrm_dev_state_update_curlft(struct xfrm_state *x) {}
++#endif
+ void xfrm_state_insert(struct xfrm_state *x);
+ int xfrm_state_add(struct xfrm_state *x);
+ int xfrm_state_update(struct xfrm_state *x);
+diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
+index dde009be8463..a22033350ddc 100644
+--- a/net/xfrm/xfrm_output.c
++++ b/net/xfrm/xfrm_output.c
+@@ -560,7 +560,6 @@ static int xfrm_output_one(struct sk_buff *skb, int err)
+ 			XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTSTATEPROTOERROR);
+ 			goto error_nolock;
+ 		}
+-
+ 		dst = skb_dst_pop(skb);
+ 		if (!dst) {
+ 			XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTERROR);
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index 81df34b3da6e..f2d31eeef193 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -549,6 +549,8 @@ static enum hrtimer_restart xfrm_timer_handler(struct hrtimer *me)
+ 	int err = 0;
+ 
+ 	spin_lock(&x->lock);
++	xfrm_dev_state_update_curlft(x);
++
+ 	if (x->km.state == XFRM_STATE_DEAD)
+ 		goto out;
+ 	if (x->km.state == XFRM_STATE_EXPIRED)
+@@ -1786,6 +1788,8 @@ EXPORT_SYMBOL(xfrm_state_update);
+ 
+ int xfrm_state_check_expire(struct xfrm_state *x)
+ {
++	xfrm_dev_state_update_curlft(x);
++
+ 	if (!x->curlft.use_time)
+ 		x->curlft.use_time = ktime_get_real_seconds();
+ 
 -- 
 2.37.3
 
