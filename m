@@ -2,184 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA46060927C
-	for <lists+netdev@lfdr.de>; Sun, 23 Oct 2022 13:38:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5F2E60928D
+	for <lists+netdev@lfdr.de>; Sun, 23 Oct 2022 14:06:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230018AbiJWL2k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Oct 2022 07:28:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59966 "EHLO
+        id S229588AbiJWMGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Oct 2022 08:06:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229649AbiJWL2j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Oct 2022 07:28:39 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2076.outbound.protection.outlook.com [40.107.243.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46B3962933
-        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 04:28:36 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=X982/FdVD64nH/Ed9vTb0sLdhbuiTW9y1rD/zSVCWVur//Sqmc6U9JkGfZ4+I+gGO4WX5SlAEf9is8IRomglSptSDXsb0ogRVHUGOryiu/LA/eo9gF/YddPaV6NwmjcrXmG5BJxeRz4heNsFeVbIURlxlj8pxETZq4OZjV4pVKq4STQO/hWaHUflH8JBdgGOKJ9YnhPU50L1eMVbmk3qKlFVzX+BVizamGnl1RccTuPBV5fsZCG4Q2A73bvWSCGYdxZMBlBpbGenA8Dti4JZA+ONPv0s1Es8XwVZXiRxrb/9kh9Pbp4/i++uUVrroNzChk5lilC3InVlafgznykHnA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qY7WTqtYnd3IJdAJ4CWfJ0itvKZDlfO1H2EnaN5vP1o=;
- b=Jue19QU/Iw3yGRHtwzpdLGshAHqcqXvDdJbWOqbTGU/OCJipa3CnEes4QEGY5yRA8Cd3MjbXvUNGKP02BevBOxapaA507pyT/TLsG7+Xn9ZlCE1Dk0eIoXDBNkUVSjJcCZ1goEtdmAHfbZ/uv2Lu0GnBLd/0/iX9m7WE1eh5vItAeZgX/WNx8gOyO0JApuoZ9z9vthZI7cPqP6Wn5q43r+tHBNy1eFwz8bqwxVVDp+DvQfG8463uV9fWuSBldnVJ/IdP95ultR14PAIBbpt0GT1FNDsp4JIEatbTsEtF09B98Grv9+YfUNRSayWFxjUh65MnfRchLcL4zd94wee1dA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qY7WTqtYnd3IJdAJ4CWfJ0itvKZDlfO1H2EnaN5vP1o=;
- b=sZUmKt6s8mNSp7SK6yZlDhfJOiYOLwYdKfyzAnQPlHg2g0VXhZmqg26CXNvFa56ZXIIqkVfMI3/WGLLHBa+41+e1FjoVcLNVODaRdlRB6Nuv5CnocJxG52P/DLiw4AlxS/nv/VrXabm6VhhUgIMcs7ZkLMYBzFPdZjoIdDxzou66AZAGtO2oRw+FT3UmwkGwOkxrq7aH+/UaB9BmtpLdj/D28wHnzpREqBXZ5cu953NKbmulV3POF6ds+2/FOvQy+4LE/OQvdyBxOdA+qQlipMh+dpzjzt41qbrbcGcQFaDzfiFijiMZeqQBpQGN3DHUMdnwqWpFnuojSGtGh6s1iw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DS7PR12MB6288.namprd12.prod.outlook.com (2603:10b6:8:93::7) by
- MW5PR12MB5650.namprd12.prod.outlook.com (2603:10b6:303:19e::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.29; Sun, 23 Oct
- 2022 11:28:33 +0000
-Received: from DS7PR12MB6288.namprd12.prod.outlook.com
- ([fe80::1926:baf5:ba03:cd6]) by DS7PR12MB6288.namprd12.prod.outlook.com
- ([fe80::1926:baf5:ba03:cd6%3]) with mapi id 15.20.5723.032; Sun, 23 Oct 2022
- 11:28:33 +0000
-Message-ID: <3c830f86-a814-d564-df7d-670d294b8890@nvidia.com>
-Date:   Sun, 23 Oct 2022 14:28:24 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.1
-Subject: Re: [PATCH net-next 2/3] devlink: Add new "max_vf_queue" generic
- device param
-Content-Language: en-US
-To:     Simon Horman <simon.horman@corigine.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Michael Chan <michael.chan@broadcom.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Peng Zhang <peng.zhang@corigine.com>, netdev@vger.kernel.org,
-        oss-drivers@corigine.com
-References: <20221019140943.18851-1-simon.horman@corigine.com>
- <20221019140943.18851-3-simon.horman@corigine.com>
-From:   Gal Pressman <gal@nvidia.com>
-In-Reply-To: <20221019140943.18851-3-simon.horman@corigine.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR3P281CA0164.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a2::18) To DS7PR12MB6288.namprd12.prod.outlook.com
- (2603:10b6:8:93::7)
+        with ESMTP id S229995AbiJWMGJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Oct 2022 08:06:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78DB2580BE
+        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 05:06:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF939601C0
+        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 12:06:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3C05C433D7;
+        Sun, 23 Oct 2022 12:06:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666526766;
+        bh=YRQv1W4OdzZGtFsQhCn0mqu2nD9KYdhnrDTDlcgRnBU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=dUnYcbLvuax0/ZUnBF1/RGbr+qHtlDM7LyTHt/ms76LD1DLuGWIxB7qeDUivis8PN
+         yuc+bplZGbLT2me0fHAshJ0QWFmfBTNjTJMQfrEinMi1wPb+zL/OIxU+fq0LzjRBTu
+         oAKLcI22nXva14Tvv22jj+wrCm/vrdS+yij0ggl4DKI2cM3ABJBTw2M+Gz5M6gPFA5
+         860OFfa+jnaUTUTXPgJEvB48BgwXGCYG7oMc9S1AfKnd0nmqBuJM1nEswZWF04WFbK
+         TOIFA6giysmqNQu/pD4/7KRt9HJX7359yCINDKbjxiJozeCTomvfuTID0n2HPuxo+r
+         UZ4Xb9BHn9dhw==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     Leon Romanovsky <leonro@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Bharat Bhushan <bbhushan2@marvell.com>
+Subject: [PATCH xfrm-next v5 0/8] Extend XFRM core to allow full offload configuration
+Date:   Sun, 23 Oct 2022 15:05:52 +0300
+Message-Id: <cover.1666525321.git.leonro@nvidia.com>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6288:EE_|MW5PR12MB5650:EE_
-X-MS-Office365-Filtering-Correlation-Id: ea48077b-a852-4264-c228-08dab4e9b7db
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: w6t90k8mNzoefAq0bFs6InwiHIzDUeqRFxcXiihcuaoVZRhEKEs5yQD1VHkVK1iy5tZUmKeqUHwg2EI2hR14HDWqH0JBZQGYA4lBBIPb9IwyK4VUx38Ad/VqZlWLVo6od5p87cWaax1y2nURXfepqGszJtFi/SdIMR0cYeKPcQYQVSD0v9ehFK9n/SoGxgsS1PDrZLAdmSMKFBszcr50ad/o+lrovaAoM5624TMLJDd1cjVJXJ+2Vs4TAHVO9hChFatzvfbD1Fy4c/j9fv8KJve1ffe8C8j28v2CyehaNAkw6jqADpUf16L0aGBvfKDr0Lanwj8Bx9MDQMu5wMNL99iqMelsIWvwst4nS6eVe8Gb0fC7dW2TGgOo21KyBG6PzkjPFQmDv+dEIOplBkxDdguu33PeMe9PqKUxU7DZPbufk5b8Y57ZnppeXMKA/2K6gGDbt0KJGbAFXGFClP3spfGLBXua9OlbU0AwvjC0qP1Ogpd7t1bWKaJIhvFlHio0HGdxlR2DCNr1f4MEsLY5ae9FEMkkihHmZBCtOjEYEawdzdxPeU7JxhV6hO/dwsYTz/9/3cnLApWkzapyLKa1cCRwk42wlxHOKr+q9j+k9dX50kkzfM+W8Gw5KSlJeXI0cO92LoZ0e8lofE663JZrWKfJWr+xTe+42qhI+qNf/SdMAo9J5vgpVgsRjbIItyRJBiTkqpgCtW4DpHmLxtF/6Hp/zhoWmE7PwOc06WFAYcd0TrRtQ5xPMpgZELFiPUil4uyZZTDlQXZE6qyXGj62e3l3OIyyVAxp5vUrO4L5jWfD3tPStk1pGY39aBC2MHhrRl86M16NHz6zTVf+JBvD1A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6288.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(346002)(136003)(376002)(366004)(39860400002)(451199015)(186003)(31686004)(2906002)(86362001)(66556008)(4326008)(8676002)(36756003)(66946007)(66476007)(478600001)(110136005)(6486002)(54906003)(7416002)(6666004)(5660300002)(8936002)(41300700001)(316002)(31696002)(6506007)(6512007)(53546011)(2616005)(38100700002)(26005)(41533002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZjJWdXhGdURMRUptVEo5alZxeGhaZnc3d2F5OGV2M3lIMGpHL1MxUzd5RHRs?=
- =?utf-8?B?NjNYUEMwbVFtVWZkSFNmakJJUzEyMkYwaHgrODZHNVV2d1grTGRNWWQ4RW9q?=
- =?utf-8?B?dGs1VE9JZ2ZoR3VyY3lXVTNScHdMZGZ4UUJLcW0rWTByaFFvQmZVMjFRQTd6?=
- =?utf-8?B?Yk9hY3Q4Y1dlN3JsbS9jbUxsMm1HRTM2eVBpeEozR01DUmxyaHZBdks5WS9v?=
- =?utf-8?B?eVJiNWJRVEZqcGwwY3FGWFBNZno3amZPSFVScUJmMWk1T3NFcmIxZWVCN2o2?=
- =?utf-8?B?N3VCcnk5VG5sNTZuN3BQcklxb2pMSUZXaVI4clhVZDdMeTJ6WHRtUytiR1ox?=
- =?utf-8?B?bTQva2VyNDZmc0xjQWp2eEkxdmVTcUJKakljZmczREU1Wmt6MEY0MkVUQTRO?=
- =?utf-8?B?ZHpRSjg2MFJXVFhrekZuWFZ4QUdEaDZjbFR1eC8yK2Q1NFlCRXZZZUJ1djRB?=
- =?utf-8?B?bGQ5RUtsVE9Jd20wWVQvWGFYcTBSajBEZjZ1Z0h6amF2RzlEZ29CMUVzUFVN?=
- =?utf-8?B?LzA5Q05zWTNseUlGNDNtcFNkQk11TFhkWjdtOU9GR1RmRnVuT2JvRnVNK01S?=
- =?utf-8?B?MzZpaDdKUUpHcDZyMWRBUTUrYXBaQU5DNDhrMzlUM0VIcmRHejJmOFo2Rkl3?=
- =?utf-8?B?NHorMm9lOUlEOE82ZVBSeFh5aiszTnNHMHJLbHpEVUJBOXlmd2ltSlRjNlFO?=
- =?utf-8?B?SUJ1SzQxMXA1Rjg1ZVpHV0FLZFZVVVE2L2NEUVpCc0pJWkZSdi80QTlsVytX?=
- =?utf-8?B?cU1rNS9hYnRmeFpCMVRnODdnSEpOakJFaUlLbzlzTlpFZmp4SU0rWFl4RFl6?=
- =?utf-8?B?UUp4M0doWXRBK2FIa25WVmN1MmUzSUJNeEtjMEhjQkdMZHpyN1BoS3k4Q00z?=
- =?utf-8?B?dDY2Qk1RR09rK1ZMUmlJbjVsY2wzbHlYK1N0QlJxOWpka0ZZTjBFUzVwZEEy?=
- =?utf-8?B?Vmx4djNlSDkvVHE1M2V5TVVNQzMwSDhaRlZEOEVyaGpBOGVaYVFUYTVMRGdh?=
- =?utf-8?B?T0lXc1A1WHFwU0ZxRnZIV2tyN3BYaVdKRUJIU0wvYmJCQnFBUkd5NThOdGhq?=
- =?utf-8?B?Y1cyOWtQOGowNXpXTkMrQ0dVYjk4Yk5rTk1BamxiS0FoY01wK2NodmZIdVZM?=
- =?utf-8?B?WHBvTUN3b0lMQ1dLMUhVQmlSamg2THc1YlZSRVhuWHVBZjVGVElaZVJKRyto?=
- =?utf-8?B?cmVSTWtjaVJKb05nRTdpT3htNERwN0NrVGExd1ZQZE0rTURHdFhYVEJUalNh?=
- =?utf-8?B?QzhLcmZJRDB4Y28zdTRRdVc2T29NWmI5bkFQWVRKVWhUQkNERjFLTXFmWkpv?=
- =?utf-8?B?cG45UmF1bGQvZVdyTmpNaXJmb1pqaDEwdTEzYm9lY0pTMzN1ZG81QURIdk1i?=
- =?utf-8?B?TTV2T2VnRWJzbndoRk1CNDEwT2xCYk9pM3E1Q2pBOEQ1NFZFcHdmNHE0dU5F?=
- =?utf-8?B?cEJua25DV21kOG5FOTVPVFprNHpaVkp5RDBZWERPNllwem5MMVd2SkFiRnZF?=
- =?utf-8?B?Zlgvb1dXZkFLR0NBdlFqYzlZbnEzZk9mMjZ2ZEk2WXZCaFUrYmt3LzNYUmxE?=
- =?utf-8?B?U3VFVVNUYUdzR1BrcUt6cWtmdXlDYlpSYWowa0w1Yk40YUFQakpZR0JmM0JK?=
- =?utf-8?B?TjkvTms3ak5LcXl4MmhCa0czdDhXUmpUd0cra1VKRWxvTmpGSjZDRWFtSitr?=
- =?utf-8?B?WWRDRTFsK3RlL3hENzVpbzRpYmlZSlRKMTVwSkJ5NlU0eUl4SHFETjRnSUI5?=
- =?utf-8?B?NTVBejlMQTg2V0RMRm9YMjFoc25EZU5LMTVMVjhjdmJEZ0wvQVYwQjFLbXIz?=
- =?utf-8?B?dE1IVmhDK0dQclNHNlR5cERBVzNwNk9rYTM2YkNYRUlxSmlDYUU0enduMDR1?=
- =?utf-8?B?WjUyZjZyK2orbkxHT3V5MFlNYzlWcHh3UmNpZXJ4SWl1My9EMnJjVHQwWjgw?=
- =?utf-8?B?Z3Q3YmlzeUVZWHY4VWVUU1RFeVBCakNrL3pDOVBMVjdUblY4YlJ5MmxuV04x?=
- =?utf-8?B?RGpBdW9WMGk4TDdwVFNaZDZnK085NVhLYUdzYVE5em1nK3B4QkJpTVVzb2Nn?=
- =?utf-8?B?cFJYZDR1Mlk3ZGpxTFFHcFJtMzlQZGJqZzRHdUg3Q3RKWFJjeGppc2s5YnVX?=
- =?utf-8?Q?aS/XOGqKgYb8oryred15KCsr7?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ea48077b-a852-4264-c228-08dab4e9b7db
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6288.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Oct 2022 11:28:33.6982
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oJggtSiSWJwo8faSpiY7BMUaYK3cHf2k+jLS+ZdILg7po2on+Q0/aY1ddeEQlyxc
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR12MB5650
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/10/2022 17:09, Simon Horman wrote:
-> From: Peng Zhang <peng.zhang@corigine.com>
->
-> VF max-queue-number is the MAX num of queues which the VF has.
->
-> Add new device generic parameter to configure the max-queue-number
-> of the each VF to be generated dynamically.
->
-> The string format is decided ad vendor specific. The suggested
-> format is ...-V-W-X-Y-Z, the V represents generating V VFs that
-> have 16 queues, the W represents generating W VFs that have 8
-> queues, and so on, the Z represents generating Z VFs that have
-> 1 queue.
+From: Leon Romanovsky <leonro@nvidia.com>
 
-Having a vendor specific string contradicts the point of having a
-generic parameter, why not do it as a vendor param, or generalize the
-string?
+Changelog:
+v5:
+ * Rebased to latest ipsec-next.
+ * Replaced HW priority patch with solution which mimics separated SPDs
+   for SW and HW. See more description in this cover letter.
+ * Dropped RFC tag, usecase, API and implementation are clear.
+v4: https://lore.kernel.org/all/cover.1662295929.git.leonro@nvidia.com
+ * Changed title from "PATCH" to "PATCH RFC" per-request.
+ * Added two new patches: one to update hard/soft limits and another
+   initial take on documentation.
+ * Added more info about lifetime/rekeying flow to cover letter, see
+   relevant section.
+ * perf traces for crypto mode will come later.
+v3: https://lore.kernel.org/all/cover.1661260787.git.leonro@nvidia.com
+ * I didn't hear any suggestion what term to use instead of
+   "full offload", so left it as is. It is used in commit messages
+   and documentation only and easy to rename.
+ * Added performance data and background info to cover letter
+ * Reused xfrm_output_resume() function to support multiple XFRM transformations
+ * Add PMTU check in addition to driver .xdo_dev_offload_ok validation
+ * Documentation is in progress, but not part of this series yet.
+v2: https://lore.kernel.org/all/cover.1660639789.git.leonro@nvidia.com
+ * Rebased to latest 6.0-rc1
+ * Add an extra check in TX datapath patch to validate packets before
+   forwarding to HW.
+ * Added policy cleanup logic in case of netdev down event
+v1: https://lore.kernel.org/all/cover.1652851393.git.leonro@nvidia.com
+ * Moved comment to be before if (...) in third patch.
+v0: https://lore.kernel.org/all/cover.1652176932.git.leonro@nvidia.com
+-----------------------------------------------------------------------
 
->
-> For example, to configure
-> * 1x VF with 128 queues
-> * 1x VF with 64 queues
-> * 0x VF with 32 queues
-> * 0x VF with 16 queues
-> * 12x VF with 8 queues
-> * 2x VF with 4 queues
-> * 2x VF with 2 queues
-> * 0x VF with 1 queue, execute:
->
-> $ devlink dev param set pci/0000:01:00.0 \
->                           name max_vf_queue value \
->                           "1-1-0-0-12-2-2-0" cmode runtime
->
-> When created VF number is bigger than that is configured by this
-> parameter, the extra VFs' max-queue-number is decided as vendor
-> specific.
->
-> If the config doesn't be set, the VFs' max-queue-number is decided
-> as vendor specific.
->
-> Signed-off-by: Peng Zhang <peng.zhang@corigine.com>
-> Signed-off-by: Simon Horman <simon.horman@corigine.com>
->
+The following series extends XFRM core code to handle a new type of IPsec
+offload - full offload.
 
-Does this command have to be run before the VFs are created? What
-happens to existing VFs?
+In this mode, the HW is going to be responsible for the whole data path,
+so both policy and state should be offloaded.
+
+IPsec full offload is an improved version of IPsec crypto mode,
+In full mode, HW is responsible to trim/add headers in addition to
+decrypt/encrypt. In this mode, the packet arrives to the stack as already
+decrypted and vice versa for TX (exits to HW as not-encrypted).
+
+Devices that implement IPsec full offload mode offload policies too.
+In the RX path, it causes the situation that HW can't effectively
+handle mixed SW and HW priorities unless users make sure that HW offloaded
+policies have higher priorities.
+
+It means that we don't need to perform any search of inexact policies
+and/or priority checks if HW policy was discovered. In such situation,
+the HW will catch the packets anyway and HW can still implement inexact
+lookups.
+
+In case specific policy is not found, we will continue with full lookup
+and check for existence of HW policies in inexact list.
+
+HW policies are added to the head of SPD to ensure fast lookup, as XFRM
+iterates over all policies in the loop.
+
+This simple solution allows us to achieve same benefits of separate HW/SW
+policies databases without over-engineering the code to iterate and manage
+two databases at the same path.
+
+To not over-engineer the code, HW policies are treated as SW ones and
+don't take into account netdev to allow reuse of the same priorities for
+different devices.
+
+There are several deliberate limitations:
+ * No software fallback
+ * Fragments are dropped, both in RX and TX
+ * No sockets policies
+ * Only IPsec transport mode is implemented
+
+================================================================================
+Rekeying:
+
+In order to support rekeying, as XFRM core is skipped, the HW/driver should
+do the following:
+ * Count the handled packets
+ * Raise event that limits are reached
+ * Drop packets once hard limit is occurred.
+
+The XFRM core calls to newly introduced xfrm_dev_state_update_curlft()
+function in order to perform sync between device statistics and internal
+structures. On HW limit event, driver calls to xfrm_state_check_expire()
+to allow XFRM core take relevant decisions.
+
+This separation between control logic (in XFRM) and data plane allows us
+to fully reuse SW stack.
+
+================================================================================
+Configuration:
+
+iproute2: https://lore.kernel.org/netdev/cover.1652179360.git.leonro@nvidia.com/
+
+Full offload mode:
+  ip xfrm state offload full dev <if-name> dir <in|out>
+  ip xfrm policy .... offload full dev <if-name>
+Crypto offload mode:
+  ip xfrm state offload crypto dev <if-name> dir <in|out>
+or (backward compatibility)
+  ip xfrm state offload dev <if-name> dir <in|out>
+
+================================================================================
+Performance results:
+
+TCP multi-stream, using iperf3 instance per-CPU.
++----------------------+--------+--------+--------+--------+---------+---------+
+|                      | 1 CPU  | 2 CPUs | 4 CPUs | 8 CPUs | 16 CPUs | 32 CPUs |
+|                      +--------+--------+--------+--------+---------+---------+
+|                      |                   BW (Gbps)                           |
++----------------------+--------+--------+-------+---------+---------+---------+
+| Baseline             | 27.9   | 59     | 93.1  | 92.8    | 93.7    | 94.4    |
++----------------------+--------+--------+-------+---------+---------+---------+
+| Software IPsec       | 6      | 11.9   | 23.3  | 45.9    | 83.8    | 91.8    |
++----------------------+--------+--------+-------+---------+---------+---------+
+| IPsec crypto offload | 15     | 29.7   | 58.5  | 89.6    | 90.4    | 90.8    |
++----------------------+--------+--------+-------+---------+---------+---------+
+| IPsec full offload   | 28     | 57     | 90.7  | 91      | 91.3    | 91.9    |
+IPsec full offload mode behaves as baseline and reaches linerate with same amount
+of CPUs.
+
+Setups details (similar for both sides):
+* NIC: ConnectX6-DX dual port, 100 Gbps each.
+  Single port used in the tests.
+* CPU: Intel(R) Xeon(R) Platinum 8380 CPU @ 2.30GHz
+
+================================================================================
+Series together with mlx5 part:
+https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/log/?h=xfrm-next
+
+Thanks
+
+Leon Romanovsky (8):
+  xfrm: add new full offload flag
+  xfrm: allow state full offload mode
+  xfrm: add an interface to offload policy
+  xfrm: add TX datapath support for IPsec full offload mode
+  xfrm: add RX datapath protection for IPsec full offload mode
+  xfrm: Speed-up lookup of HW policies
+  xfrm: add support to HW update soft and hard limits
+  xfrm: document IPsec full offload mode
+
+ Documentation/networking/xfrm_device.rst      |  62 +++++++--
+ .../inline_crypto/ch_ipsec/chcr_ipsec.c       |   4 +
+ .../net/ethernet/intel/ixgbe/ixgbe_ipsec.c    |   5 +
+ drivers/net/ethernet/intel/ixgbevf/ipsec.c    |   5 +
+ .../mellanox/mlx5/core/en_accel/ipsec.c       |   4 +
+ drivers/net/netdevsim/ipsec.c                 |   5 +
+ include/linux/netdevice.h                     |   4 +
+ include/net/xfrm.h                            | 123 ++++++++++++++----
+ include/uapi/linux/xfrm.h                     |   6 +
+ net/xfrm/xfrm_device.c                        | 109 ++++++++++++++--
+ net/xfrm/xfrm_output.c                        |  13 +-
+ net/xfrm/xfrm_policy.c                        |  76 ++++++++++-
+ net/xfrm/xfrm_state.c                         |   4 +
+ net/xfrm/xfrm_user.c                          |  20 +++
+ 14 files changed, 397 insertions(+), 43 deletions(-)
+
+-- 
+2.37.3
+
