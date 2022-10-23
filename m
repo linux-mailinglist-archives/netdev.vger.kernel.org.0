@@ -2,174 +2,253 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54BAD609195
-	for <lists+netdev@lfdr.de>; Sun, 23 Oct 2022 09:15:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A64760919F
+	for <lists+netdev@lfdr.de>; Sun, 23 Oct 2022 09:27:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230084AbiJWHPV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Oct 2022 03:15:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40492 "EHLO
+        id S230116AbiJWH1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Oct 2022 03:27:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230086AbiJWHPT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Oct 2022 03:15:19 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2056.outbound.protection.outlook.com [40.107.93.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1991840BEE
-        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 00:15:17 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l8UhT8jSSkqSczajqZBi4P73o2TJ0D/pQlPuG39JiEj5JidoGGX3XAdQlAUtezXgAQpS3yG3KzMREhFPiRwsobyuQwtctYdIdodaTw+VSp7GEyes6kP7EMwE6fud2b4KUKe0nk9aPAM5Q9qv+z8bAdwJW6a09bKD8XHRFy7BkRRK1jPCOIFEolsyvv/Et4VjkaiOClIbonpWs1Kg6gxKjPx4OQRzdhXMyyR2OE9MolZ62MJ7VcbA6TsVL/9J2Q722RzuAy5QznaxRCVh2jJbRfptbeuS5U3e1dgi74qefGjJ32iYEdmneSHutYAq52iNMVL3e+7G9IvLBeMpyazdMg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1NS+L8LjS5xYqVwGCbH0JjsuLnyNWzDugJA0WwwNz8E=;
- b=T0Qf1nJS6gT3MpE36wUbIwU7CYLyhOEkdMKo1R8sIYtKMoItXZs3YTqFCR6hvodVivZQeW5eIVBRzUoCyZ3r5DXrsvREnmWBnzVOU0VqEKeFV95Wl9RCPDnmZZETzogrAJEclsgdLcn4ogX30+bMvxSXacGqnPCR5CfN4sGFPLdVs8BG1fc9PS1O6bMaQK3PVtjlemRZ0kxrHycUWd/zDIsJ0hC+tCvDYCoUlbq5E+/+h5HyCgINlnvruoQcGH1D65rJSxfGdrpdsAlvhPedYbMO3rjW66EVdIBg7b+I6X7oKf+moxrhqAqEZ+uCjCKZdWjJ2kkxwXohVchQkK4xww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1NS+L8LjS5xYqVwGCbH0JjsuLnyNWzDugJA0WwwNz8E=;
- b=pfqbzyfdRBfm7Ckl0VKancIAnD9e+neqHZZRyikSpQwyPAI/36zb1w0bXZR1Vrgo7wiA9Nll/t90MFv390q7QYFMoRWRP/VCAVmw1661wExakX83aFahduYcodiRrfaZ2DH0AaRuJpzlxvoHpuwEYBS0ZzJYdm7TP7kLr6i4B+CLTxgdJWHwfWZe7Zkrcu8X3r36vEDOp0jho2uWiTmLNbm/RKjW8QaO9I2NY3rJFg5j3QtT8Fg8xG6vkSwCPI481T+DiOYrbimONTwxVBe1JLOJKUfGTFO3Id+uQOB8KGQlxCNlm9ebM3mZ6p9xFxHe6/x/2ccwQGpOjM0VE7MtlQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DS7PR12MB6288.namprd12.prod.outlook.com (2603:10b6:8:93::7) by
- IA1PR12MB6329.namprd12.prod.outlook.com (2603:10b6:208:3e5::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.21; Sun, 23 Oct
- 2022 07:15:15 +0000
-Received: from DS7PR12MB6288.namprd12.prod.outlook.com
- ([fe80::1926:baf5:ba03:cd6]) by DS7PR12MB6288.namprd12.prod.outlook.com
- ([fe80::1926:baf5:ba03:cd6%3]) with mapi id 15.20.5723.032; Sun, 23 Oct 2022
- 07:15:15 +0000
-Message-ID: <acb0cac6-17a9-3443-71f4-1f52b2186de7@nvidia.com>
-Date:   Sun, 23 Oct 2022 10:15:06 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.1
-Subject: Re: [PATCH v2 0/5] Add support for DMA timestamp for non-PTP packets
-Content-Language: en-US
-To:     "Zulkifli, Muhammad Husaini" <muhammad.husaini.zulkifli@intel.com>,
-        "intel-wired-lan@osuosl.org" <intel-wired-lan@osuosl.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "Gunasekaran, Aravindhan" <aravindhan.gunasekaran@intel.com>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "saeed@kernel.org" <saeed@kernel.org>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
-        "andy@greyhouse.net" <andy@greyhouse.net>,
-        "Gomes, Vinicius" <vinicius.gomes@intel.com>
-References: <20221018010733.4765-1-muhammad.husaini.zulkifli@intel.com>
- <44132260-2eba-1b92-af75-883a3c4e908c@nvidia.com>
- <SJ1PR11MB6180523C0BEBB1AECB72C109B82B9@SJ1PR11MB6180.namprd11.prod.outlook.com>
-From:   Gal Pressman <gal@nvidia.com>
-In-Reply-To: <SJ1PR11MB6180523C0BEBB1AECB72C109B82B9@SJ1PR11MB6180.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P123CA0293.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:196::10) To DS7PR12MB6288.namprd12.prod.outlook.com
- (2603:10b6:8:93::7)
+        with ESMTP id S230111AbiJWH11 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Oct 2022 03:27:27 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4890560503;
+        Sun, 23 Oct 2022 00:27:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1666509999;
+        bh=TBP4iOY9tjkCxnRBE9igXp4oZM6sQ2L6B0wuAA1Mwgc=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=dJ172UiEEjI+ecsVuMEq+4o+dn2FK9TvJqshgTVXF+4K2rA9uxwkZAvBW3oBHYtOA
+         5q8YB3b0LQyW2rOZylhksPoMHzoPS3ZqP3zJ05+mPuvnycNcMe1+3b2WYpkYsHsNHk
+         2/ZZEvrsG+k5FncYijst8nenyTmj+YIq83LJgHUU=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [80.245.79.234] ([80.245.79.234]) by web-mail.gmx.net
+ (3c-app-gmx-bap20.server.lan [172.19.172.90]) (via HTTP); Sun, 23 Oct 2022
+ 09:26:39 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6288:EE_|IA1PR12MB6329:EE_
-X-MS-Office365-Filtering-Correlation-Id: cdcd49b1-681f-4a36-ec9b-08dab4c65518
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: IP4Ti1IPohuhVlzhmHN4B5sYBxcj83afTHDKkXyD2gzYjSH8fybVxgBgxXfbnV7CqZVC+9etFoD4S4drNm10Lna3BJH3YNEbqrOvqx6alipUR9BDFhfGaRd3dReLcGBRgZnjUbf3Evv9DwKZnK7gG10kq9ss6qPTffOYEUVoNK1lLNuJpZDgpYo5aPNJA0wWwX0YPh8vrNZBHAmkZDa7llsqEbHVy/DYoHgtKZO2yKgRRF4n/emmjQYZGQ1EXS2QoBr4ij8qGkUxc1ayFkM4ctu2XqOKDuKmftvQOQT9bn182eTXnwxRSP1sJiZkwbgQtgabGm7zS8V+GTvycnHt/JYD2oXrwannLcTnLE8E8Hh+0A+YvtQsa/Cq0zuiaRE/LXKv51qkIMFbNh8SWfYzyQVv7zWkBCMLhKfcsmjUXv0mTqUXsnP2Hbbl/OkUdGM8mJ+aA7aEM5B4xTHfgPxFZxXe/1zPnEZwm0EjJFTSur/pltKlCAv8DFczVWLQP+m1RJYFOcrHichWjf6UTBhY23ev9W+z/FLhunaJJA5w8seMCHF3LINHdDZFB1EgDR0Yp64y/Nn6cbj0IMM7mYc8EyxbPOZPyZY0/iKaHGxThA6Yi6RrwzJ/gG2/twJwF7LnzOQ86W86y16YZXB/kuCS0unfaGrC4PLdqXgtgW3r/Idv7mP/N5LlXAZVGYfE63ELJoupnV0vCt1ObUyssvyiBt59/Cb7Axp7BtW74UdEbKB1Sm/MdLwo+3+XwsLKHCVPBLmDxsPxoZoFGZtOSmeRva2GaxccgW8a6njkktgWC3M=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6288.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(376002)(366004)(396003)(346002)(39860400002)(451199015)(31686004)(36756003)(31696002)(86362001)(38100700002)(41300700001)(83380400001)(5660300002)(2616005)(8676002)(6506007)(53546011)(186003)(6486002)(6666004)(478600001)(2906002)(8936002)(7416002)(110136005)(316002)(6512007)(26005)(66946007)(54906003)(66556008)(66476007)(4326008)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Z21lcVRJSmpGRlJtQ21zTVpXZkZrWWNkRHNDRHRNaHIyQnIrUVJyTlRDL0Y5?=
- =?utf-8?B?azJ3WXltYzEwZnZyS2F3UFArNmh5cVdZNmEreGw3dTZWQ0ZNRGtIQUtvQnBR?=
- =?utf-8?B?S1lWUFY2eVVSbkhaSTNJYnNHV0FPVmN5YjhxbUZEckdTWHozajhKWlQ0NEhN?=
- =?utf-8?B?L2hJcmhPR3dlNTdRcE9NY1VPMmQvdnQrTm01VnlNZ2QycFMwU0tacHNQU1p0?=
- =?utf-8?B?YnhJalR2dk5YdGtUMVNaRHBrUGN2YUlYRUlBZklCaEZBbHZVTmRFQ0Nkb2ph?=
- =?utf-8?B?NTZJdVZrdlM0V2J6NU5iVGhPZDdnNjBVYnJWd0xxZlQ3SU9zYzlZQ3c2azU1?=
- =?utf-8?B?VWNndTZSVy9TSURhTFBEcTVYeW9TSUJIVjVzYnVFclNkOVl4VWl1bGxIZVhn?=
- =?utf-8?B?MVk2S0Rqc2VSdnNkSHNUUDFhN095ZGN3TUhKeFVEWlFNQ2FhR2NDYk1GeW0y?=
- =?utf-8?B?MFRuME9OYk80R0Z3WVV2dzR3aGQwNVRjemIzWFI5MlBzTHREbDhzb0RaSUhv?=
- =?utf-8?B?bDhjTnR2amo5N25OcjhEN1dReFQ3c011YUZ2TzQ2MUpCK25tUk9MMmRUSlBo?=
- =?utf-8?B?MnRGZmFtUHYvL2J2a3dBVUg2SlFlNGhPcnJKWUhvQnNpTkdvVEc1VmJ5MHd3?=
- =?utf-8?B?NHhLWU5YcmhSL1VHc2M3dlRJeWdueVJzR1FYemt1TzYvZnJIYXZVWXMxcldm?=
- =?utf-8?B?aTZ2MjI0SytQZG1xTHEySndrRUNib0ZURWF5Wk9vTmw0by9JNWhrTE5TNnV0?=
- =?utf-8?B?blV4NlMxcTRFTTVab1JFTjVnZTlnd2hHaDBUNTFSaVNYK09rbVNhMlpUb2ZI?=
- =?utf-8?B?UEdGRWJwRnZOVU5VRjhjRmJWN08ybnpCRDhNQTZKZ1NlU210ZkhHTEMzUTBi?=
- =?utf-8?B?STRpZGNGZzc4cFpWaGF4WTAxbFdnclZJVWdCN3FhWGt4V0ppY012NTdmOUFO?=
- =?utf-8?B?a2UzUjRXQ3gxUW92ZlNpTnBLWk5JQm5CVzh1bWM5bnBMSTNRV0VpMkRkVFhw?=
- =?utf-8?B?d3BrNkpuOVh3c0ZJVkJ1NUhCUjRmdjk4aUMzMWFwRDV2MjlQZDV2bjJUanlT?=
- =?utf-8?B?MDZnSFhIZmR3QlVxem55cEpTY1I3RFVsdU9OZWxkVjBvOVFlY2c5eDVPdjN4?=
- =?utf-8?B?dEFFaUxEN2NuRVorcGZhd2lFcVFNNUJGV2pYMi9DUlJzT1pXSCtyd0MvWHdh?=
- =?utf-8?B?VUdnR2Q1RUlCb0ljTjRBZ1FPMkM3YkcrZVEwNEw3cSs4cTdtTUoreks3cE5z?=
- =?utf-8?B?d053SElCN1hqbVozUGZhY1kwQ2dnaUxtaStnTEJHaGZmSlEyTHBXelhvTjR5?=
- =?utf-8?B?ZXlIc0d0RnRkNjdtaFd5WlZyVytwUzlsL1hkN3EyV1FqZ3d5b1BFQXpXbXFB?=
- =?utf-8?B?WCtyMW05bHZtajE5cEI1MTRBc2J3Y05pUC9nSTNCYm5oV1c0bXl1QmNHM3M2?=
- =?utf-8?B?Um4vNVZ1dUhyZ0hMa09vMERYWndLRzRFbkJKR1dJUHVUUjBCVFc3RVpGTVdP?=
- =?utf-8?B?RTlFZjVaTVJ2WlYxM0FMTE5MeFFXV0hJbkZWTVRJWnRrMjhSUXVBdENkVWVn?=
- =?utf-8?B?R1lHYldHTmZsWm5ROHU4Tm1GdURSMUM2VTVhWmdnN1RnZHEvZXMydW04SC9h?=
- =?utf-8?B?K1M4WDlGOXdveWF5eFFLUWZDWWRSUHlHUE5JMzd6WXA3UjBjdDBiL2gvWXdq?=
- =?utf-8?B?R2F4UHpHbjBsNVpyZnp1TW1Hemwxd0dYc281NkwrR2lHUzBvSzdLd3E0Qy9u?=
- =?utf-8?B?QUlXcTFLd0FVcnFXRDFsaHMxb05STDB1c25kRjBobzIwRFF4ekJ2SVhLcFZH?=
- =?utf-8?B?a2Q1WENxb01JRytxQWd2bEVTakF6OVlTc2U1VDRsVHIrTWVyM1BxMkZEVVU3?=
- =?utf-8?B?K1AzM1dOMmVzYy9naHRJcUxuVnMxQ3ZLaHBtcmJDcWd6bnNJcEZYVmZtS2Vp?=
- =?utf-8?B?cU5IbXhxN01RV01hN04zeitVa0dkVXZJV2xjL3FoZlhIc2wwUVRJU1Z1N29R?=
- =?utf-8?B?cnBRdWZxa3ZZSzJtUWxlREEySWY0QUEwOEpYYXR1YjZncmZLTE9sTFZVY1NT?=
- =?utf-8?B?czFndXdVQVBUajBmQ29UY2ExdUhEVC9JQW1TaWtZMThLajMxOXV5dmhaR2FU?=
- =?utf-8?Q?7mL8t+D8rwu+2FUTNMuNoXzMU?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cdcd49b1-681f-4a36-ec9b-08dab4c65518
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6288.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Oct 2022 07:15:15.2598
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7ZRtNwtaApmQI208ukgcxMfVPzWKFHPSa/CMLj+btyP33WFTYqQJ/scDG3jgTflC
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6329
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Message-ID: <trinity-ff9bb15b-b10c-46d6-8af2-09a03563c3c8-1666509999435@3c-app-gmx-bap20>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Frank Wunderlich <linux@fw-web.de>,
+        linux-mediatek@lists.infradead.org,
+        Alexander Couzens <lynxis@fe80.eu>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Aw: Re: Re: Re: Re: Re: [PATCH v2] net: mtk_sgmii: implement
+ mtk_pcs_ops
+Content-Type: text/plain; charset=UTF-8
+Date:   Sun, 23 Oct 2022 09:26:39 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <Y1RCA+l2OHkrFfhB@shell.armlinux.org.uk>
+References: <Y1JhEWU5Ac6kd2ne@shell.armlinux.org.uk>
+ <trinity-e60759de-3f0f-4b1e-bc0f-b33c4f8ac201-1666374467573@3c-app-gmx-bap55>
+ <Y1LlnMdm8pGVXC6d@shell.armlinux.org.uk>
+ <trinity-b567c57e-b87f-4fe8-acf7-5c9020f85aed-1666381956560@3c-app-gmx-bap55>
+ <Y1MO6cyuVtFxTGuP@shell.armlinux.org.uk>
+ <9BC397B2-3E0B-4687-99E5-B15472A1762B@fw-web.de>
+ <Y1Ozp2ASm2Y+if3Q@shell.armlinux.org.uk>
+ <trinity-4470b00b-771b-466e-9f3a-a3df72758208-1666435920485@3c-app-gmx-bs49>
+ <Y1Qi55IwJZulL1X/@shell.armlinux.org.uk>
+ <trinity-164dc5a6-98ce-464c-a43d-b00b91ca69e5-1666461195968@3c-app-gmx-bs49>
+ <Y1RCA+l2OHkrFfhB@shell.armlinux.org.uk>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:fFpMM08aDl7L3vJnHWI9VzJxzjSaqFYWnegZeGXcufbN2HSYZTKGL29DMoGoorA2ESYtf
+ 3ig4K3+MW+7vFLe4lJiGBlZX1TvVACfYMzSs65M09dU5NrSK+qvKX43ydGTi8aHMdvJNwXFytE9B
+ Hxdxcy7s7UvDLUy2gUI9d205cs/rBHT2A810JkA9U5OHNgozV1Ge5t53b/Js8RVb8xjPUlKRFlOM
+ dAdgDO14Lylc157PdNIPBl7ti5X9NvgBp8H7mHq0pKrA15yNqenwg54PWxheraeaCA6B/azGR6ir
+ lI=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:+D3LZqzXfm0=:DTybMHmw8WUh42tKrj2BCc
+ XSvY72QQo5BivLO3AR+F3KVvkeQbJaGJTEmslVVChr4n0Jz2ubOboOo23LfWHKlD+mXKHXr+N
+ CklAroo7LZDbRwkDnqApFIKFicAfrEr9bNTRPVoErklKnqgAjyYJ0kA6X8eLLI5GPj/4AopwV
+ cxyL6Vx0UUa+wiLCZKJe5VC0uX8dRgoyUgb4bjXvwPwMXm3ppuKDF/PRThLLNdV+CKySc/sZy
+ 8DQLdt3ZCcEYGDu9HmILORoKzE0s10txv/iWKOC2P1AMYufZw3ZK9e4aTA3q7v+rCP4p0cwEg
+ wwAv8Jg4PLgK9f6rj6ncLEf2CszxQxJVf3/s5wkrECEMNRqWL9qnhq9YrSuQjtKORL0NEMlnM
+ HNuYHpYFsJHcGu+4kj9Gs9I6beHMCXYmvxpTfRFkkLQ4H/A84CzBlo4iPaN+E+mFJHZHlPwte
+ 1maIINWadY0xL6wfmmljUxEhIZRTd3luK1pNxBiWBgPN/zwxP+4OKZ7TVIpbsgnByWtcCvllS
+ a8+JwhmVS+gWmzypZfmPSNX16wGpFbnyz6pvqkHamsg8kTQQs0h+S9JRMbLrkAtNS5xY0+dq9
+ am2EWBV0AnYxnYV1wa4jUAq623mRSESZuJUdTXQNRtN26hOKrKGmgocBdP8WwmkRwFLwKMnSD
+ qKbU2PWVnsjBaKmklfHF2EE3iEOKv5LXKiid1U6P3+1xN8JHD2Pgcs1iE2WsqEKaHl7I6eaYX
+ en8X1mJHFo1p/IOI3jBojJd4j0HNp8AdUee6itvs1G+eW+CD0OXZXKboMf5X1belk/SGbIddu
+ eNasLJMD1KE+59uVwhFMCpF4XWnGKcWSvL59P5sPTDIev34XJzWmm75BW8SO2UtBSdNY3K2ZY
+ GSaXiHZXdULx/dF7J8yqdJh7EJOjNiQxOYMuyk24oKqgUPvvrj7oXZ3JKc3qkxQkzlcPTw9XP
+ LahaGh6kVS81dUlbl9PVb2/d/s8QP9gMuiQQlrR9PYHCAtdA69nkmvfBrXN+VseIVzYDQBSVC
+ gEJVvenhGH4lJ+1uOQDdzE4RzD8i6tIWmeyqorMc/kU4+7VfQB40NKtTsR/L02jwFYXFjAuW1
+ bz0jhIUjGlvEWqBfv2whxmoTpZ7XU+xUpg+bUd7F8e4zwFG9N0pdpNE9madBPONKGPhehc1Cr
+ /cplgytuO4u5bZ4QNgFm/ghVYsuLsl5b+fLsiGKE5hkGn6IAFaX3yYjfo9nmGkmn8xyp9N2LE
+ 1Ss/CTg/4krH2edo3Vur5rviAgcOPCkXQuPCWnW5R32h7F/0eoVprk1VMZIueDWRbYbaIKpDf
+ DYR//5eV
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/10/2022 17:23, Zulkifli, Muhammad Husaini wrote:
->>> DMA timestamps through socket options are not currently available to
->>> the user. Because if the user wants to, they can configure the
->>> hwtstamp config option to use the new introduced DMA Time Stamp flag
->>> through the setsockopt().
->>>
->>> With these additional socket options, users can continue to utilise HW
->>> timestamps for PTP while specifying non-PTP packets to use DMA
->>> timestamps if the NIC can support them.
->> Is it per socket?
-> Yes it is per socket.
+> Gesendet: Samstag, 22. Oktober 2022 um 21:18 Uhr
+> Von: "Russell King (Oracle)" <linux@armlinux.org.uk>
+> An: "Frank Wunderlich" <frank-w@public-files.de>
+> Cc: "Frank Wunderlich" <linux@fw-web.de>, linux-mediatek@lists.infradead=
+.org, "Alexander Couzens" <lynxis@fe80.eu>, "Felix Fietkau" <nbd@nbd.name>=
+, "John Crispin" <john@phrozen.org>, "Sean Wang" <sean.wang@mediatek.com>,=
+ "Mark Lee" <Mark-MC.Lee@mediatek.com>, "David S. Miller" <davem@davemloft=
+.net>, "Eric Dumazet" <edumazet@google.com>, "Jakub Kicinski" <kuba@kernel=
+.org>, "Paolo Abeni" <pabeni@redhat.com>, "Matthias Brugger" <matthias.bgg=
+@gmail.com>, netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,=
+ linux-kernel@vger.kernel.org
+> Betreff: Re: Re: Re: Re: Re: [PATCH v2] net: mtk_sgmii: implement mtk_pc=
+s_ops
 >
->> Will there be a way to know which types of timestamps are going to be used
->> on queues setup time?
-> We can get the which timestamp that is supported through "ethtool -T" command.
-> May I know why you want to know which timestamp need to configure during queue setup?
-
-In mlx5 we need dedicated queues which support port timestamp. In
-today's implementation we have a setup time priv-flag which dictates
-whether these queues should be opened or not.
-
+> Hi,
 >
->>> This patch series also add a new HWTSTAMP_FILTER_DMA_TIMESTAMP
->> receive
->>> filters. This filter can be configured for devices that support/allow
->>> the DMA timestamp retrieval on receive side.
->> So if I understand correctly, to solve the problem you described at the
->> beginning, you'll disable port timestamp for all incoming packets? ptp
->> included?
-> For ptp, it will always use Port Timestamp.
-> Other application that want to use DMA Timestamp can request for the same.
+> On Sat, Oct 22, 2022 at 07:53:16PM +0200, Frank Wunderlich wrote:
+> > > Gesendet: Samstag, 22. Oktober 2022 um 19:05 Uhr
+> > > Von: "Russell King (Oracle)" <linux@armlinux.org.uk>
+> > > On Sat, Oct 22, 2022 at 12:52:00PM +0200, Frank Wunderlich wrote:
+> > > > > Gesendet: Samstag, 22. Oktober 2022 um 11:11 Uhr
+> > > > > Von: "Russell King (Oracle)" <linux@armlinux.org.uk>
+> >
+> > > > this patch breaks connectivity at least on the sfp-port (eth1).
+> >
+> > > > pcs_get_state
+> > > > [   65.522936] offset:0 0x2c1140
+> > > > [   65.522950] offset:4 0x4d544950
+> > > > [   65.525914] offset:8 0x40e041a0
+> > > > [  177.346183] offset:0 0x2c1140
+> > > > [  177.346202] offset:4 0x4d544950
+> > > > [  177.349168] offset:8 0x40e041a0
+> > > > [  177.352477] offset:0 0x2c1140
+> > > > [  177.356952] offset:4 0x4d544950
+> > >
+> > > Hi,
+> > >
+> > > Thanks. Well, the results suggest that the register at offset 8 is
+> > > indeed the advertisement and link-partner advertisement register. So
+> > > we have a bit of progress and a little more understanding of this
+> > > hardware.
+> > >
+> > > Do you know if your link partner also thinks the link is up?
+> >
+> > yes link is up on my switch, cannot enable autoneg for fibre-port, so =
+port is fixed to 1000M/full flowcontrol enabled.
+> >
+> > > What I notice is:
+> > >
+> > > mtk_soc_eth 15100000.ethernet eth1: Link is Up - 1Gbps/Unknown - flo=
+w control off
+> > >
+> > > The duplex is "unknown" which means you're not filling in the
+> > > state->duplex field in your pcs_get_state() function. Given the
+> > > link parter adverisement is 0x00e0, this means the link partner
+> > > supports PAUSE, 1000base-X/Half and 1000base-X/Full. The resolution
+> > > is therefore full duplex, so can we hack that in to your
+> > > pcs_get_state() so we're getting that right for this testing please?
+> >
+> > 0xe0 is bits 5-7 are set (in lower byte from upper word)..which one is=
+ for duplex?
+> >
+> > so i should set state->duplex/pause based on this value (maybe compare=
+ with own caps)?
+> >
+> > found a documentation where 5=3Dfull,6=3Dhalf, and bits 7+8 are for pa=
+use (symetric/asymetric)
+> >
+> > regmap_read(mpcs->regmap, SGMSYS_PCS_CONTROL_1+8, &val);
+> > partner_advertising =3D (val & 0x00ff0000) >> 16;
 >
+> Not quite :) When we have the link partner's advertisement and the BMSR,
+> we have a helper function in phylink to do all the gritty work:
+>
+> 	regmap_read(mpcs->regmap, SGMSYS_PCS_CONTROL_1, &bm);
+> 	regmap_read(mpcs->regmap, SGMSYS_PCS_CONTROL_1 + 8, &adv);
+>
+> 	phylink_mii_c22_pcs_decode_state(state, bm >> 16, adv >> 16);
+>
+> will do all the work for you without having to care about whether
+> you're operating at 2500base-X, 1000base-X or SGMII mode.
+>
+> > > Now, I'm wondering what SGMII_IF_MODE_BIT0 and SGMII_IF_MODE_BIT5 do
+> > > in the SGMSYS_SGMII_MODE register. Does one of these bits set the
+> > > format for the 16-bit control word that's used to convey the
+> > > advertisements. I think the next step would be to play around with
+> > > these and see what effect setting or clearing these bits has -
+> > > please can you give that a go?
+> >
+> > these is not clear to me...should i blindly set these and how to
+> > verify what they do?
+>
+> Yes please - I don't think anyone knows what they do.
 
-How?
-When a packet arrives from the wire the hardware doesn't know if it's
-ptp or not. Does your hardware inspect the packet headers to decide when
-to timestamp it?
+i guess BIT0 is the SGMII_EN flag like in other sgmii implementations.
+Bit5 is "reserved" in all docs i've found....maybe it is related to HSGMII
+or for 1G vs. 2G5.
+
+but how to check what has changed...i guess only the register itself chang=
+ed
+and i have to readout another to check whats changed.
+
+do we really need these 2 bits? reading/setting duplex/pause from/to the r=
+egister
+makes sense, but digging into undocumented bits is much work and we still =
+only guess.
+
+so i would first want to get sgmii working again and then strip the pause/=
+duplex from it.
+
+> > is network broken because of wrong duplex/pause setting? do not
+> > fully understand your Patch.
+>
+> I suspect not having the duplex correct _could_ break stuff, but I
+> also wonder whether the PCS is trying to decode the advertisements
+> itself and coming out with the wrong settings.
+>
+> If it's interpreting a link partner advertisement of 0x00e0 using
+> SGMII rules, then it will be looking at bits 11 and 10 for the
+> speed, both of which are zero, which means 10Mbps - and 1000base-X
+> doesn't operate at 10Mbps!
+
+so maybe this breaks sgmii? have you changed this behaviour with your Patc=
+h?
+
+> So my hunch is that one of those two IF_MODE_BIT{0,5} _might_ change
+> the way the PCS interprets the control word, but as we don't have
+> any documentation to go on, only experimentation will answer this
+> question.
+>
+> If these registers are MMIO, you could ensure that you have /dev/mem
+> access enabled, and use devmem2 to poke at this register which would
+> probably be quicker than doing a build-boot-test cycle with the
+> kernel - this is how I do a lot of this kind of discovery when
+> documentation is lacking.
+>
+> > But the timer-change can also break sgmii...
+>
+> SGMII mode should be writing the same value to the link timer, but
+> looking at it now, I see I ended up with one too many zeros on the
+> 16000000! It should be 1.6ms in nanoseconds, so 1600000. Please
+> correct for future testing.
+
+tried removing 1  zero from the 16000000, but same result.
+tried also setting duplex with ethtool, but  after read it is still unknow=
+n.
+and i get no traffic working...i wonder because duplex was not set before =
+your
+patch too, but interface was working.
+
+> Many thanks for your patience.
+
+i do what i can, but i'm limited in time.
+
+Frank
