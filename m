@@ -2,107 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 099426094AF
-	for <lists+netdev@lfdr.de>; Sun, 23 Oct 2022 18:20:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1B196094C1
+	for <lists+netdev@lfdr.de>; Sun, 23 Oct 2022 18:38:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230023AbiJWQUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Oct 2022 12:20:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53466 "EHLO
+        id S229707AbiJWQim (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Oct 2022 12:38:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230235AbiJWQUK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Oct 2022 12:20:10 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A41972DAA6
-        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 09:20:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Date:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Cc:To:From:Subject:Message-ID:Sender:
-        Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=ZDjNX3pk5i7R9iOuCRDDqivE9UdIuBlP7ou5DS8iHE8=;
-        t=1666542007; x=1667751607; b=llDbt3Z/1gA00sEKuB+yo1rMmkBCXVWH0uEwkzP4U8ReJ4F
-        cu2CDEqeeeJbWAlOaEsr0oj0c+Qs+IGCyiUcv2JCUVXrIT1LlmscosvWbya79hhJHM86NVrL5rm+0
-        PaZSyybA0W/AQ5azdjKRk7iSowOyoch9f2OxHT/XtfcxzR+q1r686ZXY9x1fNiBvEFuho2vjwlzE9
-        Sx3s+GMu4/o/LJzTdTp6bn0QNrVMgk1Qa0H44QpM9qyaMZbxQDHt/FBjP0KgEkjRyzItcwtICTwn2
-        Sxw20+mPoygmpb4u39fVcUu6nSOPgi5VU9uoXocsAreZagMRsW4zD0//9fh/g6qw==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.96)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1omdhe-00EbrB-1z;
-        Sun, 23 Oct 2022 18:19:59 +0200
-Message-ID: <1b5ce217d872cdb59b73f1dc745819861e46c8cb.camel@sipsolutions.net>
-Subject: Re: [PATCH net] genetlink: piggy back on resv_op to default to a
- reject policy
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, jacob.e.keller@intel.com, fw@strlen.de,
-        jiri@nvidia.com
-In-Reply-To: <20221021210815.44e8220f@kernel.org>
-References: <20221021193532.1511293-1-kuba@kernel.org>
-         <6ba9f727e555fd376623a298d5d305ad408c3d47.camel@sipsolutions.net>
-         <20221021210815.44e8220f@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Date:   Sun, 23 Oct 2022 18:19:51 +0200
+        with ESMTP id S229649AbiJWQij (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Oct 2022 12:38:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 070A21D646
+        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 09:38:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EF9B60C05
+        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 16:38:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27242C433D6;
+        Sun, 23 Oct 2022 16:38:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666543118;
+        bh=FSRDRfFlGGlPIzaQwJERVcJaJvHEUxttTLK/bXfvGzw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TrOUOd9cW0YfCyZJsn/DimqRo4mdE4yhp+WHomBhcDEJe+s8cXw0e4rd8N+3UPJrW
+         jtqFNSh6q9rwV7cW53+DZ7CCU6wJJIjky8nwuXD7FVzgOWlB/t/6Hk4o1kVKxxrmcu
+         7UAIoHaIDvMT8F+pKUlM1xuAu4xzOhATHYye9PwmkAdFllTDGXHEe3GQtplQsxm753
+         A2/w4gffsGsSv+CLdv3NOJWAMhNQXYuuAgGoKv8ThyRg/yCt9eSeEWQiDBA2pBJ+zt
+         6lsH2PX0LEIHgsg/k6T/si1uDjkTxRFgaG5PRb6K8qDd9evyBzpaT+bky40uMrSQVH
+         9x87brIAGRZ+w==
+Date:   Sun, 23 Oct 2022 19:38:33 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Slawomir Laba <slawomirx.laba@intel.com>,
+        Michal Jaron <michalx.jaron@intel.com>,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: Re: [PATCH net] i40e: Fix ethtool rx-flow-hash setting for X722
+Message-ID: <Y1VuCYixOEqWgBdc@unreal>
+References: <20221021213819.3958289-1-jacob.e.keller@intel.com>
 MIME-Version: 1.0
-User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
-X-malware-bazaar: not-scanned
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221021213819.3958289-1-jacob.e.keller@intel.com>
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2022-10-21 at 21:08 -0700, Jakub Kicinski wrote:
-> On Fri, 21 Oct 2022 21:57:53 +0200 Johannes Berg wrote:
-> > It feels it might've been easier to implement as simply, apart from the
-> > doc changes:
-> >=20
-> > --- a/net/netlink/genetlink.c
-> > +++ b/net/netlink/genetlink.c
-> > @@ -529,6 +529,10 @@ genl_family_rcv_msg_attrs_parse(const struct genl_=
-family *family,
-> >  	struct nlattr **attrbuf;
-> >  	int err;
-> > =20
-> > +	if (ops->cmd >=3D family->resv_start_op && !ops->maxattr &&
-> > +	    nlmsg_attrlen(nlh, hdrlen))
-> > +		return ERR_PTR(-EINVAL);
-> > +
-> >  	if (!ops->maxattr)
-> >  		return NULL;
-> >=20
-> > But maybe I'm missing something in the relation with the new split ops
-> > etc.
->=20
-> The reason was that payload length check is... "unintrospectable"?
+On Fri, Oct 21, 2022 at 02:38:19PM -0700, Jacob Keller wrote:
+> From: Slawomir Laba <slawomirx.laba@intel.com>
+> 
+> When enabling flow type for RSS hash via ethtool:
+> 
+> ethtool -N $pf rx-flow-hash tcp4|tcp6|udp4|udp6 s|d
+> 
+> the driver would fail to setup this setting on X722
+> device since it was using the mask on the register
+> dedicated for X710 devices.
+> 
+> Apply a different mask on the register when setting the
+> RSS hash for the X722 device.
+> 
+> When displaying the flow types enabled via ethtool:
+> 
+> ethtool -n $pf rx-flow-hash tcp4|tcp6|udp4|udp6
+> 
+> the driver would print wrong values for X722 device.
+> 
+> Fix this issue by testing masks for X722 device in
+> i40e_get_rss_hash_opts function.
+> 
+> Fixes: eb0dd6e4a3b3 ("i40e: Allow RSS Hash set with less than four parameters")
+> Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
+> Signed-off-by: Michal Jaron <michalx.jaron@intel.com>
+> Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+> Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+> ---
 
-Fair enough.
+Jacob,
 
-> The reject all policy shows up in GETPOLICY. Dunno how much it matters
-> in practice but that was the motivation. LMK which way you prefer.
+I don't see your SOB here.
 
-No I guess it's fine, it just felt a lot of overhead for what could've
-been a one-line check. Having it introspectable is a nice benefit I
-didn't think about :)
-
-> > Anyway, for the intended use it works, and I guess it'd be a stupid
-> > family that makes sure to set this but then still uses non-strict
-> > validation, though I've seen people (try to) copy/paste non-strict
-> > validation into new ops ...
->=20
-> Hm, yeah, adding DONT*_STRICT for new commands would be pretty odd as
-> you say. Someone may copy & paste an existing command, tho, without
-> understanding what this flag does.=20
->=20
-> I can add a check separately I reckon. It's more of a "no new command
-> should set this flag" thing rather than inherently related to the
-> reject-all policy, right?
-
-Yes. In fact there's also the strict_start_type in the policy[0] entry
-too, which was kind of similar.
-
-johannes
+Thanks
