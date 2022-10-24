@@ -2,106 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1375E60B837
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 21:43:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B71960B651
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 20:55:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230465AbiJXTms (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 15:42:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53312 "EHLO
+        id S232640AbiJXSy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 14:54:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231784AbiJXTlw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 15:41:52 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FF32265517;
-        Mon, 24 Oct 2022 11:11:32 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id n14so2789261wmq.3;
-        Mon, 24 Oct 2022 11:11:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=yvPcFlw6lM+Z4kH9nDAFT0Arkjdhr1idqjBqC9Ky3Kw=;
-        b=MUZ7iaB3iWtFgeLi5pIjcRc7HXnLWLrBmoA0lvgXcBrQWKK8HBx9ce0VYt9pVrW27H
-         09m1rykXg6YUDCQwsmeInLz/OeIdpMJ+cSMG6vx8saDiSbm+rMicQGLKcSSSP3GCrz7O
-         8YBZCGfInLxHW5y88EDyPCNxi+Bm9L1RcTLJvNXAKwVKmNQscfxX2sJecaBuHvWsiABK
-         Y4XmoJvethqru/stSjFpKykkzAqSBjIOCqnPpYU78TA+j8/zjolYKUMVeh1wXHpU5RNM
-         Gxno7Gtm5sUB24yl8zYkEhayBbSG/IgLsjIF4w3XccG4VnXx6FLNeBQAc4Sk3Ty+hNzv
-         om5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=yvPcFlw6lM+Z4kH9nDAFT0Arkjdhr1idqjBqC9Ky3Kw=;
-        b=UzKpPOMgekmk1+Qoq1PQPEz9Tw2Q8aWpXa9tr1IE5v6UAvxZln6fvGtc61U9dB+UiM
-         vytr/k959Ktb7UpIwWorYEmVoRFmGtuKT4ke8R0A6goMbuYbrvg8/oGLSMYEPMXQ7qXE
-         LtcPB3tEQVOfRHL4QV6yEbmHV8r4e4OPqSDACgff7MozEzuAQW6BuJp/7TTqIO2Be5xD
-         gUIHWEGC/aUYE5HSvKB8HpBn2UAhbuMinEuCYvOah9xhK7aHM04xUAIwyBpdUiDY+Sgo
-         62advRbcWpLaGLw1icEB6F9KBI3l7JFmeem4l6HGRu7Ca/g1cW5y/GM8qriQmh4cqPYk
-         oxaQ==
-X-Gm-Message-State: ACrzQf2OTRhDVmExEjqz0ncAxKvqUOEU2yGsa2cIE1RGAVT+OZVGqhbz
-        JubRZBusx1j0HLQZ5EIQi/fVYgS0Q0rVm7RH
-X-Google-Smtp-Source: AMsMyM5rIEPKlhEcUBOaCv6On9SyEcsFNO7IYk+unK8cRtGodPkeczvInbtItNUIdeGmjuIUXCmz+w==
-X-Received: by 2002:a7b:c005:0:b0:3c3:6b2a:33bf with SMTP id c5-20020a7bc005000000b003c36b2a33bfmr22193340wmb.167.1666619448014;
-        Mon, 24 Oct 2022 06:50:48 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id bj19-20020a0560001e1300b002238ea5750csm11529340wrb.72.2022.10.24.06.50.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Oct 2022 06:50:47 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S233326AbiJXSyS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 14:54:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BEC1FE93D
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 10:35:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A2EE961274
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 14:00:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52F76C433D6;
+        Mon, 24 Oct 2022 14:00:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666620016;
+        bh=RKphfuFEND5H3il0xztnmbmz++ltSaGRZlxxeqpNybY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rFIcUpolztCsRX7dWujdu1kGSdcq1N1YYXyTkZNQm6JSoY22aHmAFPaA82gN/ME+Z
+         +a9xyh5BSlUgPAcrB4SqasNqA4Q/aRmAkGFHEN2EYLRyyWRMbJpj5AtAGKj6+EO9k9
+         ZDeD2c7fD3azlQNt7VQ+VCxXLo3B3gAoV+PMYIvEQ/2IzMC0P1D3uZJFOQ2A/U81rd
+         Rzqz2zGZFB4yVV7t0ss+JKaB4XP3+r5l04VOJQyOOKCkyWajBbJZAGeTQj4BQnkECL
+         uLcfnoA0Rx998kI9vf0dgCMCxEoaahU+fu+qJM4fsEt0suqVadsySCTZ5x33r5BpO/
+         5GNCnx+tacLxA==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net/rds: remove variable total_copied
-Date:   Mon, 24 Oct 2022 14:50:46 +0100
-Message-Id: <20221024135046.2159523-1-colin.i.king@gmail.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Alex Vesker <valex@nvidia.com>
+Subject: [net-next 02/14] net/mlx5: DR, Fix the SMFS sync_steering for fast teardown
+Date:   Mon, 24 Oct 2022 14:57:22 +0100
+Message-Id: <20221024135734.69673-3-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20221024135734.69673-1-saeed@kernel.org>
+References: <20221024135734.69673-1-saeed@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Variable total_copied is just being incremented and it's never used
-anywhere else. The variable and the increment are redundant so
-remove it.
+From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+If sync happens when the device is in fast teardown, just bail
+and don't do anything, because the PCI device is not there any more.
+
+Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
+Reviewed-by: Alex Vesker <valex@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- net/rds/message.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/net/rds/message.c b/net/rds/message.c
-index 44dbc612ef54..b47e4f0a1639 100644
---- a/net/rds/message.c
-+++ b/net/rds/message.c
-@@ -366,7 +366,6 @@ static int rds_message_zcopy_from_user(struct rds_message *rm, struct iov_iter *
- 	struct scatterlist *sg;
- 	int ret = 0;
- 	int length = iov_iter_count(from);
--	int total_copied = 0;
- 	struct rds_msg_zcopy_info *info;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
+index 16d65fe4f654..b4739eafc180 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
+@@ -271,6 +271,13 @@ int mlx5dr_cmd_sync_steering(struct mlx5_core_dev *mdev)
+ {
+ 	u32 in[MLX5_ST_SZ_DW(sync_steering_in)] = {};
  
- 	rm->m_inc.i_hdr.h_len = cpu_to_be32(iov_iter_count(from));
-@@ -404,7 +403,6 @@ static int rds_message_zcopy_from_user(struct rds_message *rm, struct iov_iter *
- 			ret = -EFAULT;
- 			goto err;
- 		}
--		total_copied += copied;
- 		length -= copied;
- 		sg_set_page(sg, pages, copied, start);
- 		rm->data.op_nents++;
++	/* Skip SYNC in case the device is internal error state.
++	 * Besides a device error, this also happens when we're
++	 * in fast teardown
++	 */
++	if (mdev->state == MLX5_DEVICE_STATE_INTERNAL_ERROR)
++		return 0;
++
+ 	MLX5_SET(sync_steering_in, in, opcode, MLX5_CMD_OP_SYNC_STEERING);
+ 
+ 	return mlx5_cmd_exec_in(mdev, sync_steering, in);
 -- 
 2.37.3
 
