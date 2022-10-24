@@ -2,79 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0202A60ABB8
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 15:55:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1DA360AE35
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 16:52:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236679AbiJXNza (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 09:55:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46054 "EHLO
+        id S231920AbiJXOwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 10:52:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236915AbiJXNyb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 09:54:31 -0400
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E53EBB
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 05:44:20 -0700 (PDT)
-Received: by mail-wr1-f53.google.com with SMTP id h9so4868440wrt.0
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 05:44:19 -0700 (PDT)
+        with ESMTP id S233030AbiJXOwQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 10:52:16 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 645A9356E2;
+        Mon, 24 Oct 2022 06:29:53 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id v11so6587121wmd.1;
+        Mon, 24 Oct 2022 06:29:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:reply-to:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=hS9JG4WHdO3CwJJioolnxCNpR8bEZ9L4YEaSVpziqPU=;
-        b=bDi/RSWZVeIXfBuRToCjVbt2mtGGydHkFP+VlOJJ4UKLf1pxznyIP6bjv4R4TlL4wA
-         BsABe1Agh4I+Hy4tYs48bPzbZS+zxMJ2hmo82NUnnkZ98/MMBVXtg6cbjM3YJ37C7SaK
-         MVKCEe88KU3KhTJQgQNHZgBXUIr+TkOOcUZhDoc0Vo3+jl8tcMyJtrszTres0de7q7AG
-         ZQGmyfIvbYVSBHAMwH82gc9YUDsg/zh1ZDTQzclMkwAkAAXBiKGrYZLX05qggiaRQoK+
-         6PH5GVfUH4XdIJrlFJ3WOzoOdnGY1YQkfE1EjFusX37ckZ7nKZ83Fc68XgBUi5HArimK
-         UP7g==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=xC70jAVieGTzMnfL7IzZSmpj/LnjOjc/7R5G039BdH4=;
+        b=cxwnRuee9VdpxGyeEmF8k/HuqMe2jOY2jNiCnas50PQCqNiw1TVLQwe1WX0v/MXQfo
+         GR5sQ0qfyKRsqghWwvF8Ly/JgwWsYP8dishLvgkaS9S986ocrhWh7uxI9ReKikKJmtAv
+         SRbJ9L7b2EmcTxOQ3dsCQk6rOSECeS4oGtbzvh74BY0KwYAh2NsJoO9km72lQ6DFkgFe
+         +8XkcNlii2xPTTxe9ni3ooxJeYRZE1Ez4YIyhJZoqE9CZm24C7IURcwz26RVQIyluF0U
+         kMibKNSnkn7u9VqdCOqq4ye/dBo3Iu/Sz4tbZA9rbJk1kRv5GAr/al/5vM0c2z7MNGcD
+         WJ3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:reply-to:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hS9JG4WHdO3CwJJioolnxCNpR8bEZ9L4YEaSVpziqPU=;
-        b=5wk9TCnHKXKWz6h82GV0c/3Ly2/1GMkFrIKx+H9IKWAJ0PlSL6I4d+8pVEYSnEvs60
-         vOsz3snMzlenlkzXdnYCFi59UBicD0VztsrCJpwQ3Y8RRktlFtS1w9EpwauKc0vaN0CL
-         d3zdyay+u6gTtadW4Wtdc3gjNhwe4yM/j75yvMHZVqv7+Qmh5nCl4mF5IOYEtKDLA05G
-         O0d6tDAF4lnydhKfoMtcurWiDJJbTJy3YSKuv1HPDWUPgIQ3m85NjCz0PKpno1Zr5n1x
-         I0LYfQ8TJdAOq7d/d/2yJlbQe5X75hfKgDNvMgUIL+OzcrPmARUzIy1K7hnaFWkYj+Ub
-         HU4w==
-X-Gm-Message-State: ACrzQf1F286YimXDk4PTx1c/j/98i4a3xw2LBpGkeQ0ZrTllWP13/N0I
-        k3N2sSeF8uaOM8ZLpWZBa6ZJmTc/RowLzw==
-X-Google-Smtp-Source: AMsMyM7ycCSSePYyPxj705uthaHEwcRKtdoXCS3YaRl1Rmu7oS5hS3l6kfEEtFwhEoE+RazQaoqnMQ==
-X-Received: by 2002:a05:6000:1287:b0:236:712d:2545 with SMTP id f7-20020a056000128700b00236712d2545mr3175939wrx.52.1666614441006;
-        Mon, 24 Oct 2022 05:27:21 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:b41:c160:416:9ea1:405b:86ea? ([2a01:e0a:b41:c160:416:9ea1:405b:86ea])
-        by smtp.gmail.com with ESMTPSA id fc18-20020a05600c525200b003b505d26776sm8853533wmb.5.2022.10.24.05.27.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Oct 2022 05:27:20 -0700 (PDT)
-Message-ID: <5af190a8-ac35-82a6-b099-e9a817757676@6wind.com>
-Date:   Mon, 24 Oct 2022 14:27:19 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [RFE net-next] net: tun: 1000x speed up
-Content-Language: en-US
-To:     Ilya Maximets <i.maximets@ovn.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=xC70jAVieGTzMnfL7IzZSmpj/LnjOjc/7R5G039BdH4=;
+        b=IWH6jsJ6zjM2g/WQfZoq8fphvR91YgJiIbPQugS76zy9CYwIcMPGQ1sSoY8h4PFbla
+         afg9gKDENnp56XnbA294p5pu5SxcUfZO9Wi8pOimaswU2sfKWdj3DxxxFkuorHg1wOHr
+         4TxF00lMDkYPnSQJaG0aw/fqDDSswjjFep22fqOSxpEPmXjacb/Dnmj57R74EvFUyibL
+         OEEmas2I8qImm775j+AZbn1gKZ7U1i8Cbr9z2ce/la7c8PcQGBWtBQ2zb2qS00+MjiXc
+         GO0ZrkiNTPozCCVJwaX19pVoH3X3i8EdS81X83LLFYrdSO3BFCID34vqPFq4TRod+zc+
+         UHOQ==
+X-Gm-Message-State: ACrzQf0BDwwH6OqbSrTVfg9YKzgIpIpclvBP4QrCM8bQAXfdLKwVY1dP
+        sAz2bCXpeDPkP8TtyaDbIUozj1cysLtWQQ==
+X-Google-Smtp-Source: AMsMyM6DcAgzKC/cIzaK2ZMOgz1RyVjsweCP0E7jveVudP7Itkbi3YwYgpS97bkg0E0rGV4eu1qfNg==
+X-Received: by 2002:a05:600c:4e06:b0:3c6:ce02:ece4 with SMTP id b6-20020a05600c4e0600b003c6ce02ece4mr21217981wmq.58.1666616393256;
+        Mon, 24 Oct 2022 05:59:53 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id h42-20020a05600c49aa00b003a5537bb2besm10734058wmp.25.2022.10.24.05.59.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Oct 2022 05:59:52 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Rasesh Mody <rmody@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-References: <20221021114921.3705550-1-i.maximets@ovn.org>
- <20221021090756.0ffa65ee@kernel.org>
- <eb6903b7-c0d9-cc70-246e-8dbde0412433@6wind.com>
- <ded477ea-08fa-b96d-c192-9640977b42e6@ovn.org>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-In-Reply-To: <ded477ea-08fa-b96d-c192-9640977b42e6@ovn.org>
-Content-Type: text/plain; charset=UTF-8
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] bna: remove variable num_entries
+Date:   Mon, 24 Oct 2022 13:59:51 +0100
+Message-Id: <20221024125951.2155434-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.37.3
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,70 +74,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 24/10/2022 à 13:56, Ilya Maximets a écrit :
-> On 10/24/22 11:44, Nicolas Dichtel wrote:
->> Le 21/10/2022 à 18:07, Jakub Kicinski a écrit :
->>> On Fri, 21 Oct 2022 13:49:21 +0200 Ilya Maximets wrote:
->>>> Bump the advertised speed to at least match the veth.  10Gbps also
->>>> seems like a more or less fair assumption these days, even though
->>>> CPUs can do more.  Alternative might be to explicitly report UNKNOWN
->>>> and let the application/user decide on a right value for them.
->>>
->>> UNKOWN would seem more appropriate but at this point someone may depend
->>> on the speed being populated so it could cause regressions, I fear :S
->> If it is put in a bonding, it may cause some trouble. Maybe worth than
->> advertising 10M.
-> 
-> My thoughts were that changing the number should have a minimal impact
-> while changing it to not report any number may cause some issues in
-> applications that doesn't expect that for some reason (not having a
-> fallback in case reported speed is unknown isn't great, and the argument
-> can be made that applications should check that, but it's hard to tell
-> for every application if they actually do that today).
-> 
-> Bonding is also a good point indeed, since it's even in-kernel user.
-> 
-> 
-> The speed bump doesn't solve the problem per se.  It kind of postpones
-> the decision, since we will run into the same issue eventually again.
-> That's why I wanted to discuss that first.
-> 
-> Though I think that at least unification across virtual devices (tun and
-> veth) should be a step in a right direction.
-Just to make it clear, I'm not against aligning speed with veth, I'm only
-against reporting UNKNOWN.
+Variable num_entries is just being incremented and it's never used
+anywhere else. The variable and the increment are redundant so
+remove it.
 
-> 
->>
->> Note that this value could be configured with ethtool:
->> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=4e24f2dd516ed
-> 
-> This is interesting, but it's a bit hard to manage, because in order
-> to make a decision to bump the speed, application should already know
-> that this is a tun/tap device.  So, there has to be a special case
-But this should be done by the application which creates this tun interface. Not
-by the application that uses this information.
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/net/ethernet/brocade/bna/bfa_msgq.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-> implemented in the code that detects the driver and changes the speed
-> (this is about application that is using the interface, but didn't
-> create it), but if we already know the driver, then it doesn't make
-> sense to actually change the speed in many cases as application can
-> already act accordingly.
-> 
-> Also, the application may not have permissions to do that (I didn't
-> check the requirements, but my guess would be at least CAP_NET_ADMIN?).
-Sure, but the one who creates it, has the right to configure it correctly. It's
-part of the configuration of the interface.
+diff --git a/drivers/net/ethernet/brocade/bna/bfa_msgq.c b/drivers/net/ethernet/brocade/bna/bfa_msgq.c
+index 47125f419530..fa40d5ec6f1c 100644
+--- a/drivers/net/ethernet/brocade/bna/bfa_msgq.c
++++ b/drivers/net/ethernet/brocade/bna/bfa_msgq.c
+@@ -202,7 +202,6 @@ static void
+ __cmd_copy(struct bfa_msgq_cmdq *cmdq, struct bfa_msgq_cmd_entry *cmd)
+ {
+ 	size_t len = cmd->msg_size;
+-	int num_entries = 0;
+ 	size_t to_copy;
+ 	u8 *src, *dst;
+ 
+@@ -219,7 +218,6 @@ __cmd_copy(struct bfa_msgq_cmdq *cmdq, struct bfa_msgq_cmd_entry *cmd)
+ 		BFA_MSGQ_INDX_ADD(cmdq->producer_index, 1, cmdq->depth);
+ 		dst = (u8 *)cmdq->addr.kva;
+ 		dst += (cmdq->producer_index * BFI_MSGQ_CMD_ENTRY_SIZE);
+-		num_entries++;
+ 	}
+ 
+ }
+-- 
+2.37.3
 
-Setting an higher default speed seems to be a workaround to fix an incorrect
-configuration. And as you said, it will probably be wrong again in a few years ;-)
-
-> 
-> For the human user it's still one extra configuration step that they
-> need to remember to perform.
-I don't buy this argument. There are already several steps: creating and
-configuring an interface requires more than one command.
-
-
-Regards,
-Nicolas
