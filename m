@@ -2,176 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F38B0609C74
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 10:26:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2742609CBE
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 10:32:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230189AbiJXI0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 04:26:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53016 "EHLO
+        id S230297AbiJXIcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 04:32:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230226AbiJXI0d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 04:26:33 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 718013F1EC;
-        Mon, 24 Oct 2022 01:25:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1666599936; x=1698135936;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=h6vVDwnnEIYrZbU2Lnzxt0EZEFuZqlq6YJWy0K1QXkw=;
-  b=JsJHSGipunFV/VAE+28BxIMm6bLT2p7I5rKI2l327Av2QxOlMGQ2XeuJ
-   rDRNjEoE0x1Rui0PficdUV/doz2TKWraMPyft4BlC2j3Ap5nR+FxU/6wz
-   Qp/wZZQl7YdzrPt+lPS8dtRhfJlbYagsbRNXep1Cs4Jhkk62nGmSWOOpr
-   8u6M00OsRCH/QKV85P3wFYtMKEjtWEd5Cr6XlOqDrfngsNLeJ712ecsDF
-   U3i6wjCEoHnGh/ZoQmOjZl/Fi2nFr3Cnw35EugncPfFWIChaE19Oi44lU
-   0Jsq2AKSmJF7v/DJvZPMHcsLoxSrnjKFyzvbeHBaaO40ufZucUaq96GxD
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.95,207,1661842800"; 
-   d="scan'208";a="185983469"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Oct 2022 01:25:34 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Mon, 24 Oct 2022 01:25:32 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Mon, 24 Oct 2022 01:25:28 -0700
-From:   Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bryan.whitehead@microchip.com>,
-        <hkallweit1@gmail.com>, <pabeni@redhat.com>, <edumazet@google.com>,
-        <linux@armlinux.org.uk>, <UNGLinuxDriver@microchip.com>,
-        <andrew@lunn.ch>, <Ian.Saturley@microchip.com>
-Subject: [PATCH net-next V1 2/2] net: phy: micrel: Add PHY Auto/MDI/MDI-X set driver for KSZ9131
-Date:   Mon, 24 Oct 2022 13:55:16 +0530
-Message-ID: <20221024082516.661199-3-Raju.Lakkaraju@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20221024082516.661199-1-Raju.Lakkaraju@microchip.com>
-References: <20221024082516.661199-1-Raju.Lakkaraju@microchip.com>
+        with ESMTP id S231164AbiJXIcE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 04:32:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37C9F66F1C;
+        Mon, 24 Oct 2022 01:31:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 561EEB80F62;
+        Mon, 24 Oct 2022 08:30:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0AD22C433D7;
+        Mon, 24 Oct 2022 08:30:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666600220;
+        bh=EHtIBEnqwO8OTxRcLhosYYv9nlqvYEyu/1vJwIPI8tE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=r5CpeRNzRivAQYTpwtFHMityznFW9ivTvgxmpp1ePtSBsiG4IRwHtsC+4EFGk8NBy
+         aO0zgH9fvN4cH6ZGpeSO7tR/CMSvG1c5R1fDZxajPG9vqj1BcKqV629ydfSrsIvMKs
+         WTmZ8gRCQTT1JGjrExYNVYqXHh9kSeIGyY2BktRHZkzS1gOIaa8YdXSgSENfMxO8OS
+         M3tqiuyxocaNQ6D52wXfzY7DuV10uT0/fpHWC1cZLzT9eFvf3AriV+b5DiIzbrlsRB
+         klRl3Cfds1o5F7AZEN5uAO63Z6vT91+dHXJummfuHXiav/i8ub8mkY9MMkLnqoN+bi
+         31b2c7B6CLzlQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DABE1E270DE;
+        Mon, 24 Oct 2022 08:30:19 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net-next v3 00/12] net: dpaa2-eth: AF_XDP zero-copy support
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166660021989.31349.8801845015313190458.git-patchwork-notify@kernel.org>
+Date:   Mon, 24 Oct 2022 08:30:19 +0000
+References: <20221018141901.147965-1-ioana.ciornei@nxp.com>
+In-Reply-To: <20221018141901.147965-1-ioana.ciornei@nxp.com>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        bpf@vger.kernel.org
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for MDI-X status and configuration for KSZ9131 chips
+Hello:
 
-Signed-off-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
----
-Change List:
-============
-V0 -> V1:
- - Drop the "_" from the end of the macros
- - Add KSZ9131 MDI-X specific register contain 9131 in macro names 
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
- drivers/net/phy/micrel.c | 77 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 77 insertions(+)
+On Tue, 18 Oct 2022 17:18:49 +0300 you wrote:
+> This patch set adds support for AF_XDP zero-copy in the dpaa2-eth
+> driver. The support is available on the LX2160A SoC and its variants and
+> only on interfaces (DPNIs) with a maximum of 8 queues (HW limitations
+> are the root cause).
+> 
+> We are first implementing the .get_channels() callback since this a
+> dependency for further work.
+> 
+> [...]
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 54a17b576eac..26ce0c5defcd 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -1295,6 +1295,81 @@ static int ksz9131_config_init(struct phy_device *phydev)
- 	return 0;
- }
- 
-+#define MII_KSZ9131_AUTO_MDIX		0x1C
-+#define MII_KSZ9131_AUTO_MDI_SET	BIT(7)
-+#define MII_KSZ9131_AUTO_MDIX_SWAP_OFF	BIT(6)
-+
-+static int ksz9131_mdix_update(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	ret = phy_read(phydev, MII_KSZ9131_AUTO_MDIX);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (ret & MII_KSZ9131_AUTO_MDIX_SWAP_OFF) {
-+		if (ret & MII_KSZ9131_AUTO_MDI_SET)
-+			phydev->mdix_ctrl = ETH_TP_MDI;
-+		else
-+			phydev->mdix_ctrl = ETH_TP_MDI_X;
-+	} else {
-+		phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
-+	}
-+
-+	if (ret & MII_KSZ9131_AUTO_MDI_SET)
-+		phydev->mdix = ETH_TP_MDI;
-+	else
-+		phydev->mdix = ETH_TP_MDI_X;
-+
-+	return 0;
-+}
-+
-+static int ksz9131_config_mdix(struct phy_device *phydev, u8 ctrl)
-+{
-+	u16 val;
-+
-+	switch (ctrl) {
-+	case ETH_TP_MDI:
-+		val = MII_KSZ9131_AUTO_MDIX_SWAP_OFF |
-+		      MII_KSZ9131_AUTO_MDI_SET;
-+		break;
-+	case ETH_TP_MDI_X:
-+		val = MII_KSZ9131_AUTO_MDIX_SWAP_OFF;
-+		break;
-+	case ETH_TP_MDI_AUTO:
-+		val = 0;
-+		break;
-+	default:
-+		return 0;
-+	}
-+
-+	return phy_modify(phydev, MII_KSZ9131_AUTO_MDIX,
-+			  MII_KSZ9131_AUTO_MDIX_SWAP_OFF |
-+			  MII_KSZ9131_AUTO_MDI_SET, val);
-+}
-+
-+static int ksz9131_read_status(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	ret = ksz9131_mdix_update(phydev);
-+	if (ret < 0)
-+		return ret;
-+
-+	return genphy_read_status(phydev);
-+}
-+
-+static int ksz9131_config_aneg(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	ret = ksz9131_config_mdix(phydev, phydev->mdix_ctrl);
-+	if (ret)
-+		return ret;
-+
-+	return genphy_config_aneg(phydev);
-+}
-+
- #define KSZ8873MLL_GLOBAL_CONTROL_4	0x06
- #define KSZ8873MLL_GLOBAL_CONTROL_4_DUPLEX	BIT(6)
- #define KSZ8873MLL_GLOBAL_CONTROL_4_SPEED	BIT(4)
-@@ -3304,6 +3379,8 @@ static struct phy_driver ksphy_driver[] = {
- 	.probe		= kszphy_probe,
- 	.config_init	= ksz9131_config_init,
- 	.config_intr	= kszphy_config_intr,
-+	.config_aneg	= ksz9131_config_aneg,
-+	.read_status	= ksz9131_read_status,
- 	.handle_interrupt = kszphy_handle_interrupt,
- 	.get_sset_count = kszphy_get_sset_count,
- 	.get_strings	= kszphy_get_strings,
+Here is the summary with links:
+  - [net-next,v3,01/12] net: dpaa2-eth: add support to query the number of queues through ethtool
+    https://git.kernel.org/netdev/net-next/c/14e493ddc341
+  - [net-next,v3,02/12] net: dpaa2-eth: rearrange variable in dpaa2_eth_get_ethtool_stats
+    https://git.kernel.org/netdev/net-next/c/331320682767
+  - [net-next,v3,03/12] net: dpaa2-eth: add support for multiple buffer pools per DPNI
+    https://git.kernel.org/netdev/net-next/c/095174dafc74
+  - [net-next,v3,04/12] net: dpaa2-eth: export the CH#<index> in the 'ch_stats' debug file
+    https://git.kernel.org/netdev/net-next/c/96b44697e53a
+  - [net-next,v3,05/12] net: dpaa2-eth: export buffer pool info into a new debugfs file
+    https://git.kernel.org/netdev/net-next/c/b1dd9bf6ead8
+  - [net-next,v3,06/12] net: dpaa2-eth: update the dpni_set_pools() API to support per QDBIN pools
+    https://git.kernel.org/netdev/net-next/c/801c76dd067c
+  - [net-next,v3,07/12] net: dpaa2-eth: use dev_close/open instead of the internal functions
+    https://git.kernel.org/netdev/net-next/c/e3caeb2ddbf2
+  - [net-next,v3,08/12] net: dpaa2-eth: create and export the dpaa2_eth_alloc_skb function
+    https://git.kernel.org/netdev/net-next/c/129902a351bf
+  - [net-next,v3,09/12] net: dpaa2-eth: create and export the dpaa2_eth_receive_skb() function
+    https://git.kernel.org/netdev/net-next/c/ee2a3bdef94b
+  - [net-next,v3,10/12] net: dpaa2-eth: AF_XDP RX zero copy support
+    https://git.kernel.org/netdev/net-next/c/48276c08cf5d
+  - [net-next,v3,11/12] net: dpaa2-eth: AF_XDP TX zero copy support
+    https://git.kernel.org/netdev/net-next/c/4a7f6c5ac9e5
+  - [net-next,v3,12/12] net: dpaa2-eth: add trace points on XSK events
+    https://git.kernel.org/netdev/net-next/c/3817b2ac71de
+
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
