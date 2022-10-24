@@ -2,107 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1DA360AE35
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 16:52:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD06860AE89
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 17:07:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231920AbiJXOwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 10:52:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35512 "EHLO
+        id S231720AbiJXPHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 11:07:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233030AbiJXOwQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 10:52:16 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 645A9356E2;
-        Mon, 24 Oct 2022 06:29:53 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id v11so6587121wmd.1;
-        Mon, 24 Oct 2022 06:29:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=xC70jAVieGTzMnfL7IzZSmpj/LnjOjc/7R5G039BdH4=;
-        b=cxwnRuee9VdpxGyeEmF8k/HuqMe2jOY2jNiCnas50PQCqNiw1TVLQwe1WX0v/MXQfo
-         GR5sQ0qfyKRsqghWwvF8Ly/JgwWsYP8dishLvgkaS9S986ocrhWh7uxI9ReKikKJmtAv
-         SRbJ9L7b2EmcTxOQ3dsCQk6rOSECeS4oGtbzvh74BY0KwYAh2NsJoO9km72lQ6DFkgFe
-         +8XkcNlii2xPTTxe9ni3ooxJeYRZE1Ez4YIyhJZoqE9CZm24C7IURcwz26RVQIyluF0U
-         kMibKNSnkn7u9VqdCOqq4ye/dBo3Iu/Sz4tbZA9rbJk1kRv5GAr/al/5vM0c2z7MNGcD
-         WJ3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=xC70jAVieGTzMnfL7IzZSmpj/LnjOjc/7R5G039BdH4=;
-        b=IWH6jsJ6zjM2g/WQfZoq8fphvR91YgJiIbPQugS76zy9CYwIcMPGQ1sSoY8h4PFbla
-         afg9gKDENnp56XnbA294p5pu5SxcUfZO9Wi8pOimaswU2sfKWdj3DxxxFkuorHg1wOHr
-         4TxF00lMDkYPnSQJaG0aw/fqDDSswjjFep22fqOSxpEPmXjacb/Dnmj57R74EvFUyibL
-         OEEmas2I8qImm775j+AZbn1gKZ7U1i8Cbr9z2ce/la7c8PcQGBWtBQ2zb2qS00+MjiXc
-         GO0ZrkiNTPozCCVJwaX19pVoH3X3i8EdS81X83LLFYrdSO3BFCID34vqPFq4TRod+zc+
-         UHOQ==
-X-Gm-Message-State: ACrzQf0BDwwH6OqbSrTVfg9YKzgIpIpclvBP4QrCM8bQAXfdLKwVY1dP
-        sAz2bCXpeDPkP8TtyaDbIUozj1cysLtWQQ==
-X-Google-Smtp-Source: AMsMyM6DcAgzKC/cIzaK2ZMOgz1RyVjsweCP0E7jveVudP7Itkbi3YwYgpS97bkg0E0rGV4eu1qfNg==
-X-Received: by 2002:a05:600c:4e06:b0:3c6:ce02:ece4 with SMTP id b6-20020a05600c4e0600b003c6ce02ece4mr21217981wmq.58.1666616393256;
-        Mon, 24 Oct 2022 05:59:53 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id h42-20020a05600c49aa00b003a5537bb2besm10734058wmp.25.2022.10.24.05.59.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Oct 2022 05:59:52 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Rasesh Mody <rmody@marvell.com>,
-        Sudarsana Kalluru <skalluru@marvell.com>,
-        GR-Linux-NIC-Dev@marvell.com,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] bna: remove variable num_entries
-Date:   Mon, 24 Oct 2022 13:59:51 +0100
-Message-Id: <20221024125951.2155434-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.37.3
+        with ESMTP id S231734AbiJXPGx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 11:06:53 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on20602.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe59::602])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D6C1552E2
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 06:43:50 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OqDv5d9EoyldvZK6/Y59le8B2f62Y2Vsk5mTIckBAc1M6++Ut/2IX3DgCtn4Q/iga4ah25QxIqD4+yJAl8laOJYMfswEdduKXLMOFB+ngJUbQ5HgQwMNheoL+Nxc5Okfv97cE9mC8esDXY5CLzKFUrN+wvLbcgImkUfe7MFG9Bib9Z40L5I45f7oXr5/tmB37lP/YaBGMLk5It6mWUHNXIo6sqCRVWwgbiHUmB0GptjDQwJZVqT1UvihgeAUUjfYB6JN7IL38AZsy2O5I5S1Dn1vgF1j/vgdkWgML6ITcKdeQ8M9JQ7pD8Ckr3H5csCOttdYn8w8UrBqtAowoFM3MQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=26UdGesoCp58z3sSEuteC0+nLku1JGd3KI5hEhbUEyY=;
+ b=Acdb6uYfbEf9DFLDCC4eHtIFngaJOUcnTeAkIZJwDjIk5KTNH3wC11tVqxQymxdK7Ye1rR0IaWOHg6QvBQc0sAIQIl8F7FZTqkpOYMdgWfjOnstLDo9dgkZDQurotGA5JrrBGRz2P+2kBs+uOXySohWpJ0FFr7Y5He9ZTCr9xEP0HlP/O3SPuHpQj+yFzXkckXg0UBcPHQQhty0aikPQYcqZxY+uNL9tHOIoFxyt7+5GoKTM2ct2hhkKdCeZNfzHiSZ+zU+jnaY85iGha6a/bKa3tKrPUeOS4tgHFrWXlKvzcYXwxkE5z5TCI/907CwhCb8HuYHFxZ2JSfMT8UnEig==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=26UdGesoCp58z3sSEuteC0+nLku1JGd3KI5hEhbUEyY=;
+ b=A+01OlAEHDmG1I6rbdoyz2ZxJesBpxVb7EaeonW/aqNWVKjIP5W7gLGG8/zOkz8kxUcMtnk1sft8kByAyERZ8sPgYQON5WKnxkeHB0et/56cUZb9YHCU1Lh31eUkGEnk/CusBKgUAh5EYSEmYwdjKUqCps40dZ332mCodU0GToIU3aSsNqKZMIKSKSEHDfkyw2E6jGQnTjsa+7j9ERgro+bEaraDk9Y/xe1ieOodvqT+SJFlte7XyENaNbcp2pZqz0Ye8VlCI/XI2ZdxCP5Qj/LBCv1UJ+4EKMijhohRv7JGqCByl6GvMBa5iY46Ec8InHBMs0SsMCLiQkMWKvsccg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from SJ1PR12MB6075.namprd12.prod.outlook.com (2603:10b6:a03:45e::8)
+ by DM4PR12MB5986.namprd12.prod.outlook.com (2603:10b6:8:69::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.33; Mon, 24 Oct
+ 2022 13:09:07 +0000
+Received: from SJ1PR12MB6075.namprd12.prod.outlook.com
+ ([fe80::b8be:60e9:7ad8:c088]) by SJ1PR12MB6075.namprd12.prod.outlook.com
+ ([fe80::b8be:60e9:7ad8:c088%3]) with mapi id 15.20.5723.033; Mon, 24 Oct 2022
+ 13:09:07 +0000
+From:   Aurelien Aptel <aaptel@nvidia.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, saeedm@nvidia.com,
+        tariqt@nvidia.com, linux-nvme@lists.infradead.org,
+        sagi@grimberg.me, hch@lst.de, kbusch@kernel.org, axboe@fb.com,
+        chaitanyak@nvidia.com, smalin@nvidia.com, ogerlitz@nvidia.com,
+        yorayz@nvidia.com, borisp@nvidia.com, aurelien.aptel@gmail.com,
+        malin1024@gmail.com
+Subject: Re: [PATCH v6 01/23] net: Introduce direct data placement tcp offload
+In-Reply-To: <Y1Z1XzLusUVjfnLp@unreal>
+References: <20221020101838.2712846-1-aaptel@nvidia.com>
+ <20221020101838.2712846-2-aaptel@nvidia.com> <Y1Z1XzLusUVjfnLp@unreal>
+Date:   Mon, 24 Oct 2022 16:09:01 +0300
+Message-ID: <253y1t5weqa.fsf@mtr-vdi-124.i-did-not-set--mail-host-address--so-tickle-me>
+Content-Type: text/plain
+X-ClientProxiedBy: AS9PR06CA0500.eurprd06.prod.outlook.com
+ (2603:10a6:20b:49b::25) To SJ1PR12MB6075.namprd12.prod.outlook.com
+ (2603:10b6:a03:45e::8)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ1PR12MB6075:EE_|DM4PR12MB5986:EE_
+X-MS-Office365-Filtering-Correlation-Id: f895abfe-3e02-4dbc-32da-08dab5c0eeba
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: BYnPDpVe+o7pDqfthW1WqW9mB9gTdNydNoVqCjpzambgKaGyheE50sAJJI013WnXE5J7gWW1Rx9LDZ5qp3Rp8vjd0dafZ4gaIG2vgWAxx9P5N4sCOc+gfpLtkh1o0iI45wd23OmLBs5Qagu4giI3E8+yQVOHw+I59qjmEK0e/0kwgfsBPA5rdbIbDIhyGbgyxbeZAPOvWTihIatZlzOvFWvdIbPZZucrhbfs5a01kdQJq0gQs4Jf7uX0anBgXICpYDVNuwcMUtn5Zyv5EL6a7w78FIbDoPFgwbWE+ohL21Ynx+7NW+XhaVBKaGIPZSBlb856Rr1Qd7NL1kGcpRvqQSVzs+snxn+JuH33ljlT3C57atche4hw4Cm0VmOWCxNLNSn3KOQeWOCbWc6o94Hcohmu4HlRtmB47FEPacUfEKdzijbRF8C5sxaTEx+bqDaYj51UbmCLWibnf9yoFZXKVeeEDx8RJs/EpOkZah8m2xD6Bbj9b6c48qB6SxZUm4zu19av/tRccM/OvIzQAhZtwLlKyMdIesdnbAKtAtMidNQaGY10sFf0Ol6S/vyDcxrMmESNsGV/5pHxh+KTsOruNdiwyNR57GaNcBe7s/P0pOZFpF3+odD2gcljSi2xEPbbCoXz4KqmJorgPk7+PHrCclLcj+sA2XEXxTYymlkHm3a0scAFaQ5ilaZnqcbd0JJEwPJ8SoO5+U68U1G99SehXg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ1PR12MB6075.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(376002)(396003)(346002)(39860400002)(136003)(451199015)(316002)(66556008)(6916009)(6666004)(66946007)(8676002)(66476007)(4326008)(478600001)(6486002)(5660300002)(6512007)(41300700001)(7416002)(186003)(8936002)(83380400001)(6506007)(86362001)(26005)(9686003)(2906002)(38100700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/PG6blt6IyYj8E9hsmqa6nQAAiNTNVw/D+UHuVDf8Xgx/Jn6/TPAEJpVr2Mh?=
+ =?us-ascii?Q?4jfDZ4ZBGR4j9PKVuZjUH0LLCqHvE1BozZ5C7Hzd8AzSFvcjSLnk6WygVjBK?=
+ =?us-ascii?Q?cocQw5Rva+aP22kLch7ugQOKdmBoM6lqSH7FVFwtG/E2bYKTmAn1x/yQXpZg?=
+ =?us-ascii?Q?4s/TDdkF2cqvNG6OgZVKHek1lbe4ryQU46kgFrqsQTrNnvlANEiotoeSj8JV?=
+ =?us-ascii?Q?NKz+CPfScoY2XBYc9GZ/nY8w/eYmbUOrzfJqzt7kG33x+6362bISiJRHtOgK?=
+ =?us-ascii?Q?ubZj6duhHvU9xkKbSgJwv1qIB/QfNMT9xH0tXeMndSK08NdUw81UeNa9CSJf?=
+ =?us-ascii?Q?nT6T7J/F4X6Pqs3lmd9VA9+YPeLOcnDr8RWNybf844baO7q1vP7TGHBHiWGE?=
+ =?us-ascii?Q?EmAt8B1SziX1DCiNQGM+YUoafjsNzGrxAYYRprF9AEoKhHqWI00wys7ql/jO?=
+ =?us-ascii?Q?DradED7FuJZK5n3vnkCe58GZsAlay9Ym2a1tzSf1pMVbyFyijnJXGc42NMQL?=
+ =?us-ascii?Q?CRc7vNQkVQPxOooQf3MbBNCx5VqxxAd5tjbqIZNEgKiLhUcxT/Y5MIWQ056l?=
+ =?us-ascii?Q?fGAPk824U5sTgMLnsD9L5ob/Sv0WlfDyM/eamqza+RncXUjQe2X32nGWwfec?=
+ =?us-ascii?Q?xNw8Z96PfQmygZcb4uV6GTL3K7gG0oDm2afIkAeYNSgI5gYpWJGCUELrRmFw?=
+ =?us-ascii?Q?fJnBXALwhDpbGRDLqqgR/usN34vnA5I45SL79NxCQ2+Y/eESXU60PIvJ8eJA?=
+ =?us-ascii?Q?7tTagUzVbEvl7mnajVvzXP7Ok7mJS2H/UHj8XnohamEgnSvDuR3q/82jw/lF?=
+ =?us-ascii?Q?AwPC2ufdNt/RcOJ9Rvd/d26vZxb53MCvH1kaVjMYcxT0yWbjtuK4kNWG5ung?=
+ =?us-ascii?Q?+A30DWJfxeAU1fdAn78uP9UypTIfMsyViZw7QQOzpuEB0amWHMb6sGVd/+6K?=
+ =?us-ascii?Q?pJSwHhoq1OyX3ePH1YZfnknblQpcg2SLNXPTzUT1k/U5JHknKG+Eu/WVCmOZ?=
+ =?us-ascii?Q?p+4j2cXrEjNr4fYnhuop+H5ESlnTdDqLjoppL+4B0+RiNpD5bU5aWApojGUt?=
+ =?us-ascii?Q?/rf2Ih7wIjL48EE97gYvSR3tTaCIftH46d54E8cC+iGBaR2ljCSwvuBlY01V?=
+ =?us-ascii?Q?8rBhZQzvqpr0ktQ4aL4PuTO8Gw9WZvHzFSw3TYdCrtzm4LCDDWsEYNjxnCXE?=
+ =?us-ascii?Q?DC5ZeJyWXGjHzjWUUpcbtQ93CvIfyTXySohEaTinoghmCIP34qpsaaEUtON3?=
+ =?us-ascii?Q?h0LKz37kQXVcLO44oE7EI1RgK/EO8xvRU7+zKb33d1ar8U6VnjJpGGkFbSY5?=
+ =?us-ascii?Q?ggq0fjD+sEg1jvWMxgnloFBujQcww5L7vdnmwBOlh4vH0R/4LpjB8eDFAInp?=
+ =?us-ascii?Q?NFWL3aDgvjD/TyTj6gVIaU3fia+mc4eqZXvE49hiCneKdAziSks9Pcgyo3P3?=
+ =?us-ascii?Q?V8MbJnJow/ZNPSsCaWDxLPNR6LvoRjHmYQtL1GyiaY4qgZlEqAeuUpNeVrks?=
+ =?us-ascii?Q?+SCbnvRy20f5MnhscPIA0uBxwZvP5BXOfq54VQ6HZYWlKdA3hM6ZUTVjTrFd?=
+ =?us-ascii?Q?VP/mr0R40P5GP5ia4BWWV6xCSoFFK3L4dPGwXhM2?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f895abfe-3e02-4dbc-32da-08dab5c0eeba
+X-MS-Exchange-CrossTenant-AuthSource: SJ1PR12MB6075.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Oct 2022 13:09:07.0812
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: G3rows/ZVSZp8EsR91udaCmYeb3H9ICzOJ6rZSfIgX+7u5Pzhju9owPmGDBoB9cYttMrymueytmo7U/g8jDHbA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5986
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        SPF_HELO_PASS,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Variable num_entries is just being incremented and it's never used
-anywhere else. The variable and the increment are redundant so
-remove it.
+Leon Romanovsky <leon@kernel.org> writes:
+>>       __u8                    csum_not_inet:1;
+>> +#ifdef CONFIG_ULP_DDP
+>> +     __u8                    ulp_ddp:1;
+>> +     __u8                    ulp_crc:1;
+>> +#define IS_ULP_DDP(skb) ((skb)->ulp_ddp)
+>> +#define IS_ULP_CRC(skb) ((skb)->ulp_crc)
+>> +#else
+>> +#define IS_ULP_DDP(skb) (0)
+>> +#define IS_ULP_CRC(skb) (0)
+>
+> All users of this define are protected by ifdef CONFIG_ULP_DDP.
+> It is easier to wrap user of IS_ULP_DDP() too and remove #else
+> lag from here.
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/net/ethernet/brocade/bna/bfa_msgq.c | 2 --
- 1 file changed, 2 deletions(-)
+We have changed the macros to inline functions (as suggested by Jakub).
 
-diff --git a/drivers/net/ethernet/brocade/bna/bfa_msgq.c b/drivers/net/ethernet/brocade/bna/bfa_msgq.c
-index 47125f419530..fa40d5ec6f1c 100644
---- a/drivers/net/ethernet/brocade/bna/bfa_msgq.c
-+++ b/drivers/net/ethernet/brocade/bna/bfa_msgq.c
-@@ -202,7 +202,6 @@ static void
- __cmd_copy(struct bfa_msgq_cmdq *cmdq, struct bfa_msgq_cmd_entry *cmd)
- {
- 	size_t len = cmd->msg_size;
--	int num_entries = 0;
- 	size_t to_copy;
- 	u8 *src, *dst;
- 
-@@ -219,7 +218,6 @@ __cmd_copy(struct bfa_msgq_cmdq *cmdq, struct bfa_msgq_cmd_entry *cmd)
- 		BFA_MSGQ_INDX_ADD(cmdq->producer_index, 1, cmdq->depth);
- 		dst = (u8 *)cmdq->addr.kva;
- 		dst += (cmdq->producer_index * BFI_MSGQ_CMD_ENTRY_SIZE);
--		num_entries++;
- 	}
- 
- }
--- 
-2.37.3
+There are other users in later patches which are not wrapped.  In fact
+we could remove all the #ifdef wraps in this commit but I followed the
+conventions of the file.
 
+>> + * ulp_ddp.h
+>> + *   Author: Boris Pismenny <borisp@nvidia.com>
+>> + *   Copyright (C) 2022 NVIDIA CORPORATION & AFFILIATES.
+>
+> The official format is:
+> Copyright (C) 2022, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+>                  ^^^^                            ^^^^^^^^^^^^^^^^^^
+
+Sure, will update.
+
+>> +config ULP_DDP
+>> +     bool "ULP direct data placement offload"
+>> +     default n
+>
+> No need to set "n" explicitly, it is already default.
+
+Sure, will update.
+
+Thanks
