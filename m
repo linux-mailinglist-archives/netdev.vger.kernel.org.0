@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7AE860B55B
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 20:22:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4402B60B557
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 20:21:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231576AbiJXSWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 14:22:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35150 "EHLO
+        id S231278AbiJXSVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 14:21:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231562AbiJXSVV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 14:21:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 796B514D1C8
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 10:02:24 -0700 (PDT)
+        with ESMTP id S231245AbiJXSVD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 14:21:03 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D4092018D
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 10:02:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B67BD611E0
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 17:00:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86CCFC433B5;
-        Mon, 24 Oct 2022 17:00:17 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6DFFFCE184A
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 17:00:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31003C433D6;
+        Mon, 24 Oct 2022 17:00:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666630818;
-        bh=kdFLX4zkPArAT6rZgWYL08h5O/rycFS3UjzsipuSQFA=;
+        s=k20201202; t=1666630809;
+        bh=pP9hlLMujiVLzkBS4BAe+6oUuA9UHzDEnbtXDhe6idM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C5yNkmBlJ5hxsqphxA6bppSrU58Gfyq4oxPofwBFhhU6EjvO6FnTaXZYn4Io99dfg
-         NHi8B59tos6I1YQMcG7s8O3UDFR0Su9N86ylQN1qqFNhVOSXMPzpp2QIXqxFtibv7D
-         hWAQjFr6v5AKHB3PGEbFZTF0hfKSW9pSjScYsQ+M8eUhH96PylUJlNsmMSs4inCgBi
-         nCRUUeMjcGKnvDzKpxWWvaIttAqrkxrj5acMzwkT6Ex5DMBAnbFX7Bx5bdpH+O3UJ8
-         24YTF9572KNk1Yclc358N6QDFFZ6Eu/Pv3TeJQJD9paMUl1Ur5c3T9Hu2oRRAUwhq1
-         KKI6n/GrGLGyA==
+        b=hvrVsSZjDnqwJ4AFcfOkrEbR3Iu7yJPh1O/jFcnp08JXyvlliNGk+gZ0F/Aog6swD
+         eVx9tZ9hkm5JvfUK0wEbuU7cWNrPh3B7o60Ifpm4qCOwKtwP/H3UtSjf2A3p3Pqy5A
+         qgZp7/+EsunNy9g/ooWxGe+lL0kPEbDg2nsm1JNTwl/76eJMOt9B+hX9AArX1/+4u1
+         cJhPmt+++DZmWRK6ScqEAIU/0cHg7jTks2eo3Vsuud3mk5ncB99Gvr2f3Nb5Mm9UYz
+         ZIykOintWayE+6y1U7clmdg/2/lsT87YmcoXuA3Rg8AgsmuW7pf0cFWEwBYWFtnr0W
+         LOb7dgr/JCmDA==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -38,9 +38,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
         Paolo Abeni <pabeni@redhat.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH net-next v1 1/6] net/mlx5e: Support devlink reload of IPsec core
-Date:   Mon, 24 Oct 2022 19:59:54 +0300
-Message-Id: <2ef26b5cfbc2870e65391320bbf70491cda6321f.1666630548.git.leonro@nvidia.com>
+Subject: [PATCH net-next v1 2/6] net/mlx5: Return ready to use ASO WQE
+Date:   Mon, 24 Oct 2022 19:59:55 +0300
+Message-Id: <9fbfb27de2599c20b2d09c56598fb4b7c6960e8d.1666630548.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <cover.1666630548.git.leonro@nvidia.com>
 References: <cover.1666630548.git.leonro@nvidia.com>
@@ -48,7 +48,8 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -57,186 +58,64 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Change IPsec initialization flow to allow future creation of hardware
-resources that should be released and allocated during devlink reload
-operation. As part of that change, update function signature to be
-void as no callers are actually interested in it.
+There is no need in hiding returned ASO WQE type by providing void*,
+use the real type instead. Do it together with zeroing that memory,
+so ASO WQE will be ready to use immediately.
 
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- .../mellanox/mlx5/core/en_accel/ipsec.c         | 17 ++++++++---------
- .../mellanox/mlx5/core/en_accel/ipsec.h         |  5 ++---
- .../net/ethernet/mellanox/mlx5/core/en_main.c   |  7 ++-----
- .../net/ethernet/mellanox/mlx5/core/en_rep.c    |  9 +++------
- 4 files changed, 15 insertions(+), 23 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c | 1 -
+ drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c     | 7 +++++--
+ drivers/net/ethernet/mellanox/mlx5/core/lib/aso.h     | 2 +-
+ 3 files changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-index 2a8fd7020622..325b56ff3e8c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-@@ -348,29 +348,27 @@ static void mlx5e_xfrm_free_state(struct xfrm_state *x)
- 	kfree(sa_entry);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
+index be74e1403328..25cd449e8aad 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
+@@ -162,7 +162,6 @@ mlx5e_tc_meter_modify(struct mlx5_core_dev *mdev,
+ 			   MLX5_ACCESS_ASO_OPC_MOD_FLOW_METER);
+ 
+ 	aso_ctrl = &aso_wqe->aso_ctrl;
+-	memset(aso_ctrl, 0, sizeof(*aso_ctrl));
+ 	aso_ctrl->data_mask_mode = MLX5_ASO_DATA_MASK_MODE_BYTEWISE_64BYTE << 6;
+ 	aso_ctrl->condition_1_0_operand = MLX5_ASO_ALWAYS_TRUE |
+ 					  MLX5_ASO_ALWAYS_TRUE << 4;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c
+index baa8092f335e..88655d5746d6 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c
+@@ -349,12 +349,15 @@ void mlx5_aso_build_wqe(struct mlx5_aso *aso, u8 ds_cnt,
+ 	cseg->general_id = cpu_to_be32(obj_id);
  }
  
--int mlx5e_ipsec_init(struct mlx5e_priv *priv)
-+void mlx5e_ipsec_init(struct mlx5e_priv *priv)
+-void *mlx5_aso_get_wqe(struct mlx5_aso *aso)
++struct mlx5_aso_wqe *mlx5_aso_get_wqe(struct mlx5_aso *aso)
  {
- 	struct mlx5e_ipsec *ipsec;
--	int ret;
-+	int ret = -ENOMEM;
++	struct mlx5_aso_wqe *wqe;
+ 	u16 pi;
  
- 	if (!mlx5_ipsec_device_caps(priv->mdev)) {
- 		netdev_dbg(priv->netdev, "Not an IPSec offload device\n");
--		return 0;
-+		return;
- 	}
- 
- 	ipsec = kzalloc(sizeof(*ipsec), GFP_KERNEL);
- 	if (!ipsec)
--		return -ENOMEM;
-+		return;
- 
- 	hash_init(ipsec->sadb_rx);
- 	spin_lock_init(&ipsec->sadb_rx_lock);
- 	ipsec->mdev = priv->mdev;
- 	ipsec->wq = alloc_ordered_workqueue("mlx5e_ipsec: %s", 0,
- 					    priv->netdev->name);
--	if (!ipsec->wq) {
--		ret = -ENOMEM;
-+	if (!ipsec->wq)
- 		goto err_wq;
--	}
- 
- 	ret = mlx5e_accel_ipsec_fs_init(ipsec);
- 	if (ret)
-@@ -378,13 +376,14 @@ int mlx5e_ipsec_init(struct mlx5e_priv *priv)
- 
- 	priv->ipsec = ipsec;
- 	netdev_dbg(priv->netdev, "IPSec attached to netdevice\n");
--	return 0;
-+	return;
- 
- err_fs_init:
- 	destroy_workqueue(ipsec->wq);
- err_wq:
- 	kfree(ipsec);
--	return (ret != -EOPNOTSUPP) ? ret : 0;
-+	mlx5_core_err(priv->mdev, "IPSec initialization failed, %d\n", ret);
-+	return;
+ 	pi = mlx5_wq_cyc_ctr2ix(&aso->wq, aso->pc);
+-	return mlx5_wq_cyc_get_wqe(&aso->wq, pi);
++	wqe = mlx5_wq_cyc_get_wqe(&aso->wq, pi);
++	memset(wqe, 0, sizeof(*wqe));
++	return wqe;
  }
  
- void mlx5e_ipsec_cleanup(struct mlx5e_priv *priv)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-index 16bcceec16c4..4c47347d0ee2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-@@ -146,7 +146,7 @@ struct mlx5e_ipsec_sa_entry {
- 	struct mlx5e_ipsec_modify_state_work modify_work;
- };
+ void mlx5_aso_post_wqe(struct mlx5_aso *aso, bool with_data,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.h
+index 2d40dcf9d42e..4312614bf3bc 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.h
+@@ -77,7 +77,7 @@ enum {
  
--int mlx5e_ipsec_init(struct mlx5e_priv *priv);
-+void mlx5e_ipsec_init(struct mlx5e_priv *priv);
- void mlx5e_ipsec_cleanup(struct mlx5e_priv *priv);
- void mlx5e_ipsec_build_netdev(struct mlx5e_priv *priv);
+ struct mlx5_aso;
  
-@@ -174,9 +174,8 @@ mlx5e_ipsec_sa2dev(struct mlx5e_ipsec_sa_entry *sa_entry)
- 	return sa_entry->ipsec->mdev;
- }
- #else
--static inline int mlx5e_ipsec_init(struct mlx5e_priv *priv)
-+static inline void mlx5e_ipsec_init(struct mlx5e_priv *priv)
- {
--	return 0;
- }
- 
- static inline void mlx5e_ipsec_cleanup(struct mlx5e_priv *priv)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 364f04309149..6a97d0d96bf8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -5225,10 +5225,6 @@ static int mlx5e_nic_init(struct mlx5_core_dev *mdev,
- 	}
- 	priv->fs = fs;
- 
--	err = mlx5e_ipsec_init(priv);
--	if (err)
--		mlx5_core_err(mdev, "IPSec initialization failed, %d\n", err);
--
- 	err = mlx5e_ktls_init(priv);
- 	if (err)
- 		mlx5_core_err(mdev, "TLS initialization failed, %d\n", err);
-@@ -5241,7 +5237,6 @@ static void mlx5e_nic_cleanup(struct mlx5e_priv *priv)
- {
- 	mlx5e_health_destroy_reporters(priv);
- 	mlx5e_ktls_cleanup(priv);
--	mlx5e_ipsec_cleanup(priv);
- 	mlx5e_fs_cleanup(priv->fs);
- }
- 
-@@ -5370,6 +5365,7 @@ static void mlx5e_nic_enable(struct mlx5e_priv *priv)
- 	int err;
- 
- 	mlx5e_fs_init_l2_addr(priv->fs, netdev);
-+	mlx5e_ipsec_init(priv);
- 
- 	err = mlx5e_macsec_init(priv);
- 	if (err)
-@@ -5433,6 +5429,7 @@ static void mlx5e_nic_disable(struct mlx5e_priv *priv)
- 	mlx5_lag_remove_netdev(mdev, priv->netdev);
- 	mlx5_vxlan_reset_to_default(mdev->vxlan);
- 	mlx5e_macsec_cleanup(priv);
-+	mlx5e_ipsec_cleanup(priv);
- }
- 
- int mlx5e_update_nic_rx(struct mlx5e_priv *priv)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index 794cd8dfe9c9..324e5759b049 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -761,7 +761,6 @@ static int mlx5e_init_ul_rep(struct mlx5_core_dev *mdev,
- 			     struct net_device *netdev)
- {
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
--	int err;
- 
- 	priv->fs = mlx5e_fs_init(priv->profile, mdev,
- 				 !test_bit(MLX5E_STATE_DESTROYING, &priv->state));
-@@ -770,10 +769,6 @@ static int mlx5e_init_ul_rep(struct mlx5_core_dev *mdev,
- 		return -ENOMEM;
- 	}
- 
--	err = mlx5e_ipsec_init(priv);
--	if (err)
--		mlx5_core_err(mdev, "Uplink rep IPsec initialization failed, %d\n", err);
--
- 	mlx5e_vxlan_set_netdev_info(priv);
- 	mlx5e_build_rep_params(netdev);
- 	mlx5e_timestamp_init(priv);
-@@ -783,7 +778,6 @@ static int mlx5e_init_ul_rep(struct mlx5_core_dev *mdev,
- static void mlx5e_cleanup_rep(struct mlx5e_priv *priv)
- {
- 	mlx5e_fs_cleanup(priv->fs);
--	mlx5e_ipsec_cleanup(priv);
- }
- 
- static int mlx5e_create_rep_ttc_table(struct mlx5e_priv *priv)
-@@ -1074,6 +1068,8 @@ static void mlx5e_rep_enable(struct mlx5e_priv *priv)
- {
- 	struct mlx5e_rep_priv *rpriv = priv->ppriv;
- 
-+	mlx5e_ipsec_init(priv);
-+
- 	mlx5e_set_netdev_mtu_boundaries(priv);
- 	mlx5e_rep_neigh_init(rpriv);
- }
-@@ -1083,6 +1079,7 @@ static void mlx5e_rep_disable(struct mlx5e_priv *priv)
- 	struct mlx5e_rep_priv *rpriv = priv->ppriv;
- 
- 	mlx5e_rep_neigh_cleanup(rpriv);
-+	mlx5e_ipsec_cleanup(priv);
- }
- 
- static int mlx5e_update_rep_rx(struct mlx5e_priv *priv)
+-void *mlx5_aso_get_wqe(struct mlx5_aso *aso);
++struct mlx5_aso_wqe *mlx5_aso_get_wqe(struct mlx5_aso *aso);
+ void mlx5_aso_build_wqe(struct mlx5_aso *aso, u8 ds_cnt,
+ 			struct mlx5_aso_wqe *aso_wqe,
+ 			u32 obj_id, u32 opc_mode);
 -- 
 2.37.3
 
