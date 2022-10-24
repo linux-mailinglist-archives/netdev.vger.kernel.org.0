@@ -2,140 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC31360BBFC
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 23:20:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81B8960B9CA
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 22:21:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233919AbiJXVTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 17:19:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50560 "EHLO
+        id S234222AbiJXUV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 16:21:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235412AbiJXVTe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 17:19:34 -0400
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [IPv6:2001:4b98:dc4:8::240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D121C96CD;
-        Mon, 24 Oct 2022 12:25:46 -0700 (PDT)
-Received: from relay2-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::222])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id 08002C16B0;
-        Mon, 24 Oct 2022 15:40:51 +0000 (UTC)
-Received: (Authenticated sender: i.maximets@ovn.org)
-        by mail.gandi.net (Postfix) with ESMTPSA id 9001540008;
-        Mon, 24 Oct 2022 15:39:14 +0000 (UTC)
-Message-ID: <1ac55929-4399-484c-e3ee-1a04f8e90046@ovn.org>
-Date:   Mon, 24 Oct 2022 17:39:13 +0200
+        with ESMTP id S232814AbiJXUU6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 16:20:58 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E05BFAA44
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 11:37:25 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id d6so18094545lfs.10
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 11:37:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=ZGC7atfqxheyWtYJV2fSN3wRAJFliN5cIUQehbg9BNg=;
+        b=Z1ykJ9EPsWhB4i00HbSi64ik4tLLQVTWk0slUcZHdtFZ1mu91XFyg1Xg/BqvsK3quS
+         UC/mlYhX7DELVAVzqDs0unSh9WYAXyav/s+sP6tA88wwcjNqWw+Ei0Ij5sLLdQJxbJpF
+         kSbq8X9xPrtanTvyAJKpea0W+WV2bA/LeK0fg2EMdCPESUc3CkrfFZx2zWsfuwi23O3J
+         IsYOryUcc+dfvbDPJLOybzn2OtjPvfq52HMVGJuH3+/Q9VSP8n5g6MU6R0XMjcuGZqOD
+         3wm/KTyCj/U0i/f6BIoGjNhVUvEwqJUf2SUswPDl1iiy4VvIt3ZujH6f061i2YM5PVR1
+         Mcxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ZGC7atfqxheyWtYJV2fSN3wRAJFliN5cIUQehbg9BNg=;
+        b=Z11S83yoD9eCEY3AzV90Pi6UFmB/yYpBazNw4BId/BD5hfkvhO/q2phpocFCVHSgV7
+         snMsy1wICDC4mh5/Zir5lID0gjGYWCgij6Gmo+T8iEr8okzgHnuhKV06HsQGfod0+oT8
+         pZW70+qw04WNMYcLT6X90CHHKmpbIohAOgQ194FuvRLSjmGRg/Iux/RiLeAKkMTOVHNq
+         GkWBUGUULBFXddummL3uEoN0Zcuvq+ouJwSUREXupx3+g8LC+rqPVmpzZsJYBYUHpRVY
+         Vbo82owou40Shd0rpWtwifLfVIcmq923QN72ozt5ijQRDd77mFGhvAvQBlpP/+9dFesX
+         o6DA==
+X-Gm-Message-State: ACrzQf3ilNP2twTykVkxGdrpr0ICMnohbIZFjiDY1OCqwPxrSZsQOZMx
+        98GXh+EAQd9WZs6rDgBindzyo+GX9kxb0XDjXON/aKvDe3s=
+X-Google-Smtp-Source: AMsMyM7hptZbx3udGvL61tFFqekR1qELDLrye+YkUzWxqT4sa1UvbUSZ4dEFe2HsfnBDYmjLKZng7s4EMTIXgjCdKxA=
+X-Received: by 2002:a05:6402:847:b0:453:944a:ba8e with SMTP id
+ b7-20020a056402084700b00453944aba8emr30840951edz.326.1666626642530; Mon, 24
+ Oct 2022 08:50:42 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.1
-Cc:     i.maximets@ovn.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-Content-Language: en-US
-To:     nicolas.dichtel@6wind.com, Jakub Kicinski <kuba@kernel.org>
-References: <20221021114921.3705550-1-i.maximets@ovn.org>
- <20221021090756.0ffa65ee@kernel.org>
- <eb6903b7-c0d9-cc70-246e-8dbde0412433@6wind.com>
- <ded477ea-08fa-b96d-c192-9640977b42e6@ovn.org>
- <5af190a8-ac35-82a6-b099-e9a817757676@6wind.com>
-From:   Ilya Maximets <i.maximets@ovn.org>
-Subject: Re: [RFE net-next] net: tun: 1000x speed up
-In-Reply-To: <5af190a8-ac35-82a6-b099-e9a817757676@6wind.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_NEUTRAL autolearn=no autolearn_force=no version=3.4.6
+References: <20221019162058.289712-1-saproj@gmail.com> <20221019165516.sgoddwmdx6srmh5e@skbuf>
+ <CABikg9xBT-CPhuwAiQm3KLf8PTsWRNztryPpeP2Xb6SFzXDO0A@mail.gmail.com> <20221019184203.4ywx3ighj72hjbqz@skbuf>
+In-Reply-To: <20221019184203.4ywx3ighj72hjbqz@skbuf>
+From:   Sergei Antonov <saproj@gmail.com>
+Date:   Mon, 24 Oct 2022 18:50:31 +0300
+Message-ID: <CABikg9x8SGyva2C5HUgygS3r-c-_nv6H1g_CaBq-8m3rKp1o0g@mail.gmail.com>
+Subject: Re: [PATCH v4 net-next] net: ftmac100: support mtu > 1500
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, andrew@lunn.ch
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/24/22 14:27, Nicolas Dichtel wrote:
-> Le 24/10/2022 à 13:56, Ilya Maximets a écrit :
->> On 10/24/22 11:44, Nicolas Dichtel wrote:
->>> Le 21/10/2022 à 18:07, Jakub Kicinski a écrit :
->>>> On Fri, 21 Oct 2022 13:49:21 +0200 Ilya Maximets wrote:
->>>>> Bump the advertised speed to at least match the veth.  10Gbps also
->>>>> seems like a more or less fair assumption these days, even though
->>>>> CPUs can do more.  Alternative might be to explicitly report UNKNOWN
->>>>> and let the application/user decide on a right value for them.
->>>>
->>>> UNKOWN would seem more appropriate but at this point someone may depend
->>>> on the speed being populated so it could cause regressions, I fear :S
->>> If it is put in a bonding, it may cause some trouble. Maybe worth than
->>> advertising 10M.
->>
->> My thoughts were that changing the number should have a minimal impact
->> while changing it to not report any number may cause some issues in
->> applications that doesn't expect that for some reason (not having a
->> fallback in case reported speed is unknown isn't great, and the argument
->> can be made that applications should check that, but it's hard to tell
->> for every application if they actually do that today).
->>
->> Bonding is also a good point indeed, since it's even in-kernel user.
->>
->>
->> The speed bump doesn't solve the problem per se.  It kind of postpones
->> the decision, since we will run into the same issue eventually again.
->> That's why I wanted to discuss that first.
->>
->> Though I think that at least unification across virtual devices (tun and
->> veth) should be a step in a right direction.
-> Just to make it clear, I'm not against aligning speed with veth, I'm only
-> against reporting UNKNOWN.
+On Wed, 19 Oct 2022 at 21:42, Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> On Wed, Oct 19, 2022 at 09:36:21PM +0300, Sergei Antonov wrote:
+> > On Wed, 19 Oct 2022 at 19:55, Vladimir Oltean <olteanv@gmail.com> wrote:
+> > >
+> > > On Wed, Oct 19, 2022 at 07:20:58PM +0300, Sergei Antonov wrote:
+> > > > The ftmac100 controller considers some packets FTL (frame
+> > > > too long) and drops them. An example of a dropped packet:
+> > > > 6 bytes - dst MAC
+> > > > 6 bytes - src MAC
+> > > > 2 bytes - EtherType IPv4 (0800)
+> > > > 1504 bytes - IPv4 packet
+> > >
+> > > Why do you insist writing these confusing messages?
 
-Ack.  Thanks for the clarification!
+Working on a better version of the patch. And here is another question.
+Unless the flag is set, the controller drops packets bigger than 1518
+(that is 1500 payload + 14 Ethernet header + 4 FCS). So if mtu is 1500
+the driver can enable the controller's functionality (clear the
+FTMAC100_MACCR_RX_FTL flag) and save CPU time. When mtu is less or
+greater than 1500, should the driver do the following:
+if (ftmac100_rxdes_frame_length(rxdes) > netdev->mtu + ETH_HLEN) {
+    drop the packet
+}
+I mean, is it driver's duty to drop oversized packets?
 
-> 
->>
->>>
->>> Note that this value could be configured with ethtool:
->>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=4e24f2dd516ed
->>
->> This is interesting, but it's a bit hard to manage, because in order
->> to make a decision to bump the speed, application should already know
->> that this is a tun/tap device.  So, there has to be a special case
-> But this should be done by the application which creates this tun interface. Not
-> by the application that uses this information.
-> 
->> implemented in the code that detects the driver and changes the speed
->> (this is about application that is using the interface, but didn't
->> create it), but if we already know the driver, then it doesn't make
->> sense to actually change the speed in many cases as application can
->> already act accordingly.
->>
->> Also, the application may not have permissions to do that (I didn't
->> check the requirements, but my guess would be at least CAP_NET_ADMIN?).
-> Sure, but the one who creates it, has the right to configure it correctly. It's
-> part of the configuration of the interface.
-I mostly agree with that, but that still means changing userspace
-applications.  I'm pretty sure very little number of applications,
-if any at all, do that today.
-
-> 
-> Setting an higher default speed seems to be a workaround to fix an incorrect
-> configuration. And as you said, it will probably be wrong again in a few years ;-)
-
-Yep.
-
-Workarounds do exist today.  For example, if you specify max-rate
-in QoS configuration for OVS, it will not use the link speed as a
-reference at all.  I'm just not sure if replacing one workaround
-with another workaround is a good option.  Especially because that
-will require changing userspace applications and the problem itself
-is kind of artificial.
-
-> 
->>
->> For the human user it's still one extra configuration step that they
->> need to remember to perform.
-> I don't buy this argument. There are already several steps: creating and
-> configuring an interface requires more than one command.
-
-Muscle memory, I guess. :)
-But yes, might not be a huge deal for human users, I agree.
-
-It's more of a concern for multi-layer systems where actual interfaces
-are created somewhere deep inside the software stack and actual humans
-don't really perform these commands by hands.
-
-Best regards, Ilya Maximets.
+In the current version of the driver, if, for example, mtu is 1400 and
+the incoming packet is 1450 bytes it is not dropped. Or is mtu < 1500
+incorrect for Ethernet cards so there is no need to write code
+handling it?
