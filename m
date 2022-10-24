@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F43460BFA1
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 02:33:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B41F760BFA5
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 02:33:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230337AbiJYAdd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 20:33:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57736 "EHLO
+        id S230457AbiJYAds (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 20:33:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230381AbiJYAdJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 20:33:09 -0400
+        with ESMTP id S229945AbiJYAdS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 20:33:18 -0400
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3060820347;
-        Mon, 24 Oct 2022 15:57:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B07D757BE4;
+        Mon, 24 Oct 2022 15:58:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666652281; x=1698188281;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=/QFYcqzzhog465CEp7hJCINJC63rwNPJ/l0XxVVSM6g=;
-  b=IphW3CK6tjTAbqJpyvEU5yD+tVjeukfE0aGA9BR5AnSK/KieuDcM1yT8
-   5ebACnvzZEQ4A4odoBErIgAmiIuTzSLVj6oF28kClfGeOrIX39sYggBeZ
-   tIP/09DEy6WgTrX29qzOIEi1GXRNgnP2x9u0ypx24JpCdddvoyhEfz9SJ
-   MQ/Nc30R4B4Vz/x6Jfw8o1DtKcZvFGmLhrO7GmJNXdIVs8ugOpUy2ZZ+j
-   pHTSvedNCrVFEYZ3yLIi2hXt/0dmT4SxE3L5dLyHxerecemflRhzJDEk5
-   yjyDN6y4zwx7NzCftQUKAmVhb6f2IJfmpSfw9HgPmj9Y8ca7OrLfHtxOR
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="308633271"
+  t=1666652294; x=1698188294;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=t3bv2MkjydtsyaQXVR2HQj9d69MKIx3tGIYCICf7vKY=;
+  b=aQxgHaZdJNYAbonuzsqyEAE9Y4sl0jDSCJoSSfd5mL4a+CYBr/TDVdIE
+   4Az5nQ1kMpKjb4OUs+oJmIBzCckUDRbjHGOgOfaj2p1GoKictzIwzjFYG
+   rtpRDL+oQ4OuEZMhwPGepkk70uma5xwUC4umyvF3gUrDKZ2PbPN5NzVl6
+   C9zbm8RZSDHBQTBny8HvbVb0JVFcrfgbINLvC7Skevtu0PApU62z3csDe
+   jNSE0QgacAvr6Q70noiv6IB47K1Gd6pzeYaIRCif9mAU6jPZRREeouNGi
+   sa2ujiCWAVOwBvKQLsZ9IXTrlSw2/UckrIa74+wXOaiCa3iz+NT6T9vTM
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="308633274"
 X-IronPort-AV: E=Sophos;i="5.95,210,1661842800"; 
-   d="scan'208";a="308633271"
+   d="scan'208";a="308633274"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
   by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2022 15:57:56 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="609363400"
+X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="609363403"
 X-IronPort-AV: E=Sophos;i="5.95,210,1661842800"; 
-   d="scan'208";a="609363400"
+   d="scan'208";a="609363403"
 Received: from pkearns-mobl1.amr.corp.intel.com (HELO guptapa-desk.intel.com) ([10.252.131.64])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2022 15:57:55 -0700
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2022 15:57:56 -0700
 From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 To:     scott.d.constable@intel.com, daniel.sneddon@linux.intel.com,
         Jakub Kicinski <kuba@kernel.org>, dave.hansen@intel.com,
@@ -47,15 +47,16 @@ To:     scott.d.constable@intel.com, daniel.sneddon@linux.intel.com,
         Eric Dumazet <edumazet@google.com>
 Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
         x86@kernel.org, gregkh@linuxfoundation.org, netdev@vger.kernel.org
-Subject: [RFC PATCH 0/2] Branch Target Injection (BTI) gadget in minstrel
-Date:   Mon, 24 Oct 2022 15:57:45 -0700
-Message-Id: <cover.1666651511.git.pawan.kumar.gupta@linux.intel.com>
+Subject: [RFC PATCH 1/2] nospec: Add a generic barrier_nospec()
+Date:   Mon, 24 Oct 2022 15:57:46 -0700
+Message-Id: <a29745ae921ed03084b7d4bdec38c7b01d764fb9.1666651511.git.pawan.kumar.gupta@linux.intel.com>
 X-Mailer: git-send-email 2.37.3
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <cover.1666651511.git.pawan.kumar.gupta@linux.intel.com>
+References: <cover.1666651511.git.pawan.kumar.gupta@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
-        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -64,48 +65,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+barrier_nospec() is a speculation barrier with an arch dependent
+implementation. Architectures that don't need a speculation barrier
+shouldn't have to define an arch specific version.
 
-There is a theoretical possibility of using
-minstrel_ht_get_expected_throughput() as a disclosure gadget for Branch
-History Injection (BHI)/Intra-mode Branch Target Injection (IMBTI) [1].
-Requesting feedback on the couple of patches that mitigates this.
+To be able to use barrier_nospec() in non-architecture code add a
+generic version that does nothing. Architectures needing speculation
+barrier can override the generic version in their asm/barrier.h.
 
-First patch adds a generic speculation barrier. Second patch uses the
-speculation barrier to mitigate BHI/IMBTI.
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+---
+ include/linux/nospec.h | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-The other goal of this series is to start a discussion on whether such
-hard to exploit, but theoretical possible attacks deems to be mitigated.
-
-In general Branch Target Injection class of attacks involves an adversary
-controlling an indirect branch target to misspeculate to a disclosure gadget.
-For a successful attack an adversary also needs to control the register
-contents used by the disclosure gadget.
-
-Assuming preconditions are met, a disclosure gadget would transiently do
-below:
-
-  1. Loads an attacker chosen data from memory.
-  2. Based on the data, modifies cache state that is observable by an attacker.
-
-Although both these operations are architecturally invisible, the cache state
-changes could be used to infer the data.
-
-Disclosure gadget is mitigated by adding a speculation barrier.
-
-Thanks,
-Pawan
-
-[1] https://www.intel.com/content/www/us/en/developer/articles/technical/software-security-guidance/technical-documentation/branch-history-injection.html
-
-Pawan Gupta (2):
-  nospec: Add a generic barrier_nospec()
-  minstrel_ht: Mitigate BTI gadget minstrel_ht_get_expected_throughput()
-
- include/linux/nospec.h             | 4 ++++
- net/mac80211/rc80211_minstrel_ht.c | 9 +++++++++
- 2 files changed, 13 insertions(+)
-
+diff --git a/include/linux/nospec.h b/include/linux/nospec.h
+index c1e79f72cd89..60e040a5df27 100644
+--- a/include/linux/nospec.h
++++ b/include/linux/nospec.h
+@@ -60,6 +60,10 @@ static inline unsigned long array_index_mask_nospec(unsigned long index,
+ 	(typeof(_i)) (_i & _mask);					\
+ })
+ 
++#ifndef barrier_nospec
++#define barrier_nospec()	do { } while (0)
++#endif
++
+ /* Speculation control prctl */
+ int arch_prctl_spec_ctrl_get(struct task_struct *task, unsigned long which);
+ int arch_prctl_spec_ctrl_set(struct task_struct *task, unsigned long which,
 -- 
 2.37.3
 
