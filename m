@@ -2,69 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43CA3609E0B
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 11:30:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16F02609E0C
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 11:31:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230265AbiJXJas (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 05:30:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45230 "EHLO
+        id S230337AbiJXJbE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 05:31:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230234AbiJXJac (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 05:30:32 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2045.outbound.protection.outlook.com [40.107.92.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 732BC49B5E
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 02:30:31 -0700 (PDT)
+        with ESMTP id S230229AbiJXJap (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 05:30:45 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2053.outbound.protection.outlook.com [40.107.237.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D6D52823
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 02:30:37 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OBlY6meJl8vE4BsAz+12AQUUhGfzpsnXU4B1r0tYE/3bT94ljDUYIsxpbJm1FLtfJumn9nv96mks+1EFk98ahXzeeHIChO4eD2BPGVe6F3Sana3yL4oyHK2Znyp3ZtyI/xd/di+DJS2DHjw37vLZdVkYn9yKd4J2+q8ONPG3RgjH8Dmn8KcKZyZW1V5O7r1PLb5yx2iUeWv+Wf7IVrj+/a3ownnmWGzrnVvjrmarszAMQYCvLVkK/0BdXKSriGqFNmZbbIsvV3GRPef75m+MB30ZjkW8yfHGo7WyqXVysczsPTP7LeQghkS6nTstspmkXixequmeRaXEuH4HtOuq1g==
+ b=OSeWN7JwKl5X23WoDU4ucVOMmri3XKpOjzMJ9a1Q+t+Z0Ndde0TS/RTqqgWrHlGLBhRnF5CzIx3zgqmvjTL9jo18e7Kvo05W/1Owq8wEFL8ZSazNNAKaqUr63oKvQY/WkzQ9s0KGm6zRXDOILhCIh4RMk7yyC15zapZjcDmYTv6WhEJSfRg3ioQuDVg7s079BhWVGY2lGBb1niDM8mUm6WfuOHH+kc3/3rA7Jp1b7qy4fNJOPQlQhxI2kbiMMR6sNUTpO8pHLcC1jw7N+Qg4rn4s1dfYB14uoig8wPNRiGOyRb+ynv3g9sv/PL+D1J6V6nrgX231kXTry8aN/thh0w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Fa86n8gaD59PsofhNsSbHk6vtq1e+crTjpk660LiLOM=;
- b=T8JfgJ58JJ8O+Okk2eALN+R6mrmgzOztUnWEyte9QPfb9VQNP/DlzO3JybbJmXhNeWFC16vL1Dfet4JENeuOgDgAOCbnHRCYrswVTupt93druKeX6zEzfHiOz3osZ6plb9BUsZxkSaDG81ry3E3jf3RbrYCAx+gy5excpGbeqXpvK99dHos4KEre1rJ/ImdvoeDH8k8bx3t4KjgirZuaUihWazbZg2P/0E8NSdVW7KWbjflGeDEPIqlXy4+tet5vsurLmIc0v8+FbOCNuZTxIF/pLviv/4/ngnDQsnQm9nlCh92BRyg9WhWuXA2KJaoVkiMcpKkGyL8ChdWjD+TmKg==
+ bh=YE4GQ70AcuyPgMvCr/DL4EcuWyY0iXA1gt4/dgl/yPw=;
+ b=jyeOVaDzhuFbgEbVsYe9rDKPHrFz9yEMuCGkuJ18FPI08bAF9kLKr2SOxLm74cOdkt4BqgfTsPkucs2DFPrqL4APCpq2GJW8Q3yppXGxJ5PkrEaV2rpY3sop8UyHLowQ2l+ZB5qf8ZqTMBwNAgyHDPFqTIawWhZgHze2r68HLNlkWr2mrVJnRctTt78pKR4Jv7An6uwhIMMNPGh3U8eFSldzQVFe44z4N3nMyEjKIaWd8j2honY6aIsIJYKQEyEstouHzMxBUQ+4QLEeG7QDmbw4D81I77m+rsReGSX22RGrYSzRUiaGv3PHfdgorvEXjDEO7PRKMbM7aD4d5RGa9A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Fa86n8gaD59PsofhNsSbHk6vtq1e+crTjpk660LiLOM=;
- b=XH9CBpSYYUwTk2l/w83yt0fpU0IFCLGw9V7LZNZY9d1FMKr8XNQ8ls+pjd2wAJh5F4iK3kWiuj5nWe9EO6cNicB6N0RoX/1Bz/oxE6i/ZDtn3eFUgUliVSlhwy8VsFQ9K8oQpLO75KKWG+qpzZxHIt26cs9lvTZPbIWkE4kmpv8=
-Received: from BN0PR04CA0180.namprd04.prod.outlook.com (2603:10b6:408:eb::35)
- by MN0PR12MB6003.namprd12.prod.outlook.com (2603:10b6:208:37f::17) with
+ bh=YE4GQ70AcuyPgMvCr/DL4EcuWyY0iXA1gt4/dgl/yPw=;
+ b=d5Wl+FodwOJi6SiIQPRi8SDTpzezZdA01Ss4lB8ZHTKAJJ2reV96AV/jHfEHHswcGw4dx63wPD6SmZz+0K8F0nYVLqvbyKdv1tD/wdkSZ7KOnPGXxbTJ2ztjRkxfpTuWegN6Rcj39lbT4WIX1wZbDE27xJhQm9HH2yMy9SvqRDA=
+Received: from MW4PR03CA0046.namprd03.prod.outlook.com (2603:10b6:303:8e::21)
+ by DM4PR12MB5293.namprd12.prod.outlook.com (2603:10b6:5:390::24) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.33; Mon, 24 Oct
- 2022 09:30:29 +0000
-Received: from BN8NAM11FT068.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:eb:cafe::37) by BN0PR04CA0180.outlook.office365.com
- (2603:10b6:408:eb::35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.28 via Frontend
- Transport; Mon, 24 Oct 2022 09:30:29 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.34; Mon, 24 Oct
+ 2022 09:30:34 +0000
+Received: from CO1NAM11FT074.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:8e:cafe::cb) by MW4PR03CA0046.outlook.office365.com
+ (2603:10b6:303:8e::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.27 via Frontend
+ Transport; Mon, 24 Oct 2022 09:30:34 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
 Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- BN8NAM11FT068.mail.protection.outlook.com (10.13.177.69) with Microsoft SMTP
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT074.mail.protection.outlook.com (10.13.174.254) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5746.16 via Frontend Transport; Mon, 24 Oct 2022 09:30:29 +0000
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ 15.20.5746.16 via Frontend Transport; Mon, 24 Oct 2022 09:30:34 +0000
+Received: from SATLEXMB06.amd.com (10.181.40.147) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Mon, 24 Oct
- 2022 04:30:28 -0500
+ 2022 04:30:30 -0500
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB06.amd.com
+ (10.181.40.147) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Mon, 24 Oct
+ 2022 04:30:30 -0500
 Received: from xcbecree41x.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31 via Frontend
- Transport; Mon, 24 Oct 2022 04:30:27 -0500
+ Transport; Mon, 24 Oct 2022 04:30:29 -0500
 From:   <edward.cree@amd.com>
 To:     <netdev@vger.kernel.org>, <linux-net-drivers@amd.com>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
         <edumazet@google.com>, <habetsm.xilinx@gmail.com>,
         Edward Cree <ecree.xilinx@gmail.com>
-Subject: [PATCH net-next 4/5] sfc: add Layer 3 flag matches to ef100 TC offload
-Date:   Mon, 24 Oct 2022 10:29:24 +0100
-Message-ID: <468d6bc820d682f91ea9215953df90f87b01b881.1666603600.git.ecree.xilinx@gmail.com>
+Subject: [PATCH net-next 5/5] sfc: add Layer 4 matches to ef100 TC offload
+Date:   Mon, 24 Oct 2022 10:29:25 +0100
+Message-ID: <9d30e1b05dd84ab47d7627b1a0236ea79d70b5fa.1666603600.git.ecree.xilinx@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <cover.1666603600.git.ecree.xilinx@gmail.com>
 References: <cover.1666603600.git.ecree.xilinx@gmail.com>
@@ -73,23 +77,23 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT068:EE_|MN0PR12MB6003:EE_
-X-MS-Office365-Filtering-Correlation-Id: 08b325db-d696-4c81-8cbd-08dab5a26407
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT074:EE_|DM4PR12MB5293:EE_
+X-MS-Office365-Filtering-Correlation-Id: d3c46e16-bede-424f-4e9f-08dab5a266e0
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Rh8BYm0YTD77Vk7f8Vzd0A/xs/mDNSqkeZMl6+reOGbEDlVpeRMN5DVDl0ga+buqRtgB37H1Pj9iskAEVTwzmWM1itOTFhr5IZz2msnJomT/v5wj3PVzlEPU/T0d6EqBnkKN1b17dKbHQsBK49DGsp8NUvLXsxtOC8JwxYSQB7A8OWoedP//HCzvZJYUHA3h9jnworpWcqo8soTv/MtJF2PGe0C4n0D2rMz0gnEqRrYG4FFgmLDzvqtWJna4fk8mNjl/RCUOgiqkCzJAdTaYQC7YiERuat1MBTeG+u7wEhe2a8kg/trYqojrnJTKLMQrkaqwZfZuNJ/RhiHBPjxwGn1qAaS0tkY8m+37j+X9LfGdDwr8u7ZyfdDp/jy19rIHIEzBaGxHrCRaIi7gHMRvwqnqmIqjBe/dVbYrdHvKhmwn/QV3uqhDhtJc8OY/hUZ++MOH1w91Pz4CzbXsn/AD0uW6E/3P5tqeOGUnXz2RkkegM5V3RrqF/UB3s2oDBbngL+win64xceFr7nBzElUvvlUTQDEcKQid//ALSLzHW6XZD2h3wQUqWoH13TWY49dYBw5CVO5Dkf6TGQx1AHQDn6TEWv7VNOqhVxRhEx4MrutZyuh1+kHrMq8VOWT0rlXJfipbLK1t7wraT2UOqpBblSzdg4tqdZUbjNgLExXEbxA/y8YeXYbgMMotT1ByklDnXIrSfT1opz1MnwSeXu5z/gWqXIrN3MbDMt4K4gvZ53t6N6lpHYRNU7jas0qFEtKfQ85bN5/AZhbWA5G+yUmyUj91/DfLR1mr+EZrshKFuNavB7R2eZP27taBRJDNhdGL
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(376002)(346002)(396003)(136003)(39860400002)(451199015)(36840700001)(40470700004)(46966006)(70206006)(70586007)(9686003)(4326008)(6666004)(47076005)(86362001)(82740400003)(36756003)(186003)(5660300002)(2876002)(2906002)(8936002)(41300700001)(82310400005)(8676002)(356005)(40480700001)(26005)(336012)(426003)(36860700001)(40460700003)(81166007)(55446002)(6636002)(110136005)(54906003)(83380400001)(316002)(478600001)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: BnBvVWBBFEkRf/2o7r26+O7Btg2kzRmyEfNOuhdPTIQpsRFxUvZ4AsL1qt0dA+qAF/n52BpNiL3vFLkjF9tMxctwfSDjewNJgwK+H6AEKZ5RsjzJd4kFULEm6NXr6hZSMc/k6ZASMScm//X6r17Mnob6JXDBsi4cCrzRXIuIS4EOvR9hRYSRzMAl/5IX8WLcKy8lRV9x5hvlKtQsDohJvezmNG0IZxYHhI4bffrZXkzkmtP/o27D3PDPvqz+2LyhCv+M+6XI++71jSDCorpiwz8BPZyFhynwjPR4SVbN5vrQ2NMu0n5OdFhoyG7Hds56VgVjfFE/aEJtvCoKrauDwfEXOPoUz9JYqnMmM3mY/DYiigJIxjcU3YgeXf+5p/RCGfFI9a4sudY944Oo3J5KjPGTTHkT6bbzuUXT3oFkh8OUdiORhANwYnRG4B31eReaBMnCy1fdNS83g+C7Ln7SA92Ngl3xYpn/kd5j4V85gkxov1LFg9X1TIh66Hmsw9Ce93sL9BNbRSC7QSOhZ+LRCf5oDDqY4wSguG3U41FSC/74tJKiD1IWXQR9ys2mwTxjcf+AGOwioxkAkP2u137AgttkD8hOUDODapw83KuUh98fIVUaZxbtvOAVDhP+ZZBnkg0kGqOgEF5kKCvQGQ+dpEmRCd5ZbAVBn++NPyrBIEX8WjjVt8taB4ACdO+Xew4icQA1t8unvlLTwIq1nxOSiorjllZaVaquQiU0JZ2M5LY9i7M5EV2+gmUW9AjxwQtKqc1SAL7w7eijKHpc6epVVtDEs8RXXMH1qbalt+XJS5yHsirRXiALtM42+0bobSGT
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(376002)(346002)(136003)(396003)(39860400002)(451199015)(46966006)(36840700001)(40470700004)(82310400005)(36756003)(55446002)(426003)(41300700001)(82740400003)(356005)(86362001)(47076005)(36860700001)(336012)(5660300002)(40460700003)(83380400001)(81166007)(316002)(2876002)(40480700001)(26005)(478600001)(70586007)(6666004)(2906002)(70206006)(8676002)(4326008)(6636002)(8936002)(9686003)(110136005)(186003)(54906003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Oct 2022 09:30:29.3423
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Oct 2022 09:30:34.0089
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 08b325db-d696-4c81-8cbd-08dab5a26407
+X-MS-Exchange-CrossTenant-Network-Message-Id: d3c46e16-bede-424f-4e9f-08dab5a266e0
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT068.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT074.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6003
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5293
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
@@ -102,99 +106,113 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Edward Cree <ecree.xilinx@gmail.com>
 
-Support matching on ip_frag and ip_firstfrag.
+Support matching on UDP/TCP source and destination ports and TCP flags,
+ with masking if supported by the hardware.
 
 Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
 ---
- drivers/net/ethernet/sfc/mae.c | 26 ++++++++++++++++++++++++++
- drivers/net/ethernet/sfc/tc.c  | 10 +++++++++-
- drivers/net/ethernet/sfc/tc.h  |  1 +
- 3 files changed, 36 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/sfc/mae.c | 15 +++++++++++++++
+ drivers/net/ethernet/sfc/tc.c  | 21 +++++++++++++++++++--
+ drivers/net/ethernet/sfc/tc.h  |  3 +++
+ 3 files changed, 37 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/sfc/mae.c b/drivers/net/ethernet/sfc/mae.c
-index 74de6a907a80..76b75b3975d5 100644
+index 76b75b3975d5..19b73cef5b30 100644
 --- a/drivers/net/ethernet/sfc/mae.c
 +++ b/drivers/net/ethernet/sfc/mae.c
-@@ -264,6 +264,19 @@ static int efx_mae_match_check_cap_typ(u8 support, enum mask_type typ)
- 		return rc;						       \
- 	}								       \
- } while (0)
-+/* Booleans need special handling */
-+#define CHECK_BIT(_mcdi, _field)	do {				       \
-+	enum mask_type typ = mask->_field ? MASK_ONES : MASK_ZEROES;	       \
-+									       \
-+	rc = efx_mae_match_check_cap_typ(supported_fields[MAE_FIELD_ ## _mcdi],\
-+					 typ);				       \
-+	if (rc) {							       \
-+		NL_SET_ERR_MSG_FMT_MOD(extack,				       \
-+				       "No support for %s mask in field %s",   \
-+				       mask_type_name(typ), #_field);	       \
-+		return rc;						       \
-+	}								       \
-+} while (0)
- 
- int efx_mae_match_check_caps(struct efx_nic *efx,
- 			     const struct efx_tc_match_fields *mask,
-@@ -300,9 +313,12 @@ int efx_mae_match_check_caps(struct efx_nic *efx,
+@@ -313,6 +313,9 @@ int efx_mae_match_check_caps(struct efx_nic *efx,
  	CHECK(SRC_IP6, src_ip6);
  	CHECK(DST_IP6, dst_ip6);
  #endif
-+	CHECK_BIT(IS_IP_FRAG, ip_frag);
-+	CHECK_BIT(IP_FIRST_FRAG, ip_firstfrag);
++	CHECK(L4_SPORT, l4_sport);
++	CHECK(L4_DPORT, l4_dport);
++	CHECK(TCP_FLAGS, tcp_flags);
+ 	CHECK_BIT(IS_IP_FRAG, ip_frag);
+ 	CHECK_BIT(IP_FIRST_FRAG, ip_firstfrag);
  	CHECK(RECIRC_ID, recirc_id);
+@@ -560,6 +563,18 @@ static int efx_mae_populate_match_criteria(MCDI_DECLARE_STRUCT_PTR(match_crit),
+ 	memcpy(MCDI_STRUCT_PTR(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_DST_IP6_BE_MASK),
+ 			       &match->mask.dst_ip6, sizeof(struct in6_addr));
+ #endif
++	MCDI_STRUCT_SET_WORD_BE(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_L4_SPORT_BE,
++				match->value.l4_sport);
++	MCDI_STRUCT_SET_WORD_BE(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_L4_SPORT_BE_MASK,
++				match->mask.l4_sport);
++	MCDI_STRUCT_SET_WORD_BE(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_L4_DPORT_BE,
++				match->value.l4_dport);
++	MCDI_STRUCT_SET_WORD_BE(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_L4_DPORT_BE_MASK,
++				match->mask.l4_dport);
++	MCDI_STRUCT_SET_WORD_BE(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_TCP_FLAGS_BE,
++				match->value.tcp_flags);
++	MCDI_STRUCT_SET_WORD_BE(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_TCP_FLAGS_BE_MASK,
++				match->mask.tcp_flags);
  	return 0;
  }
-+#undef CHECK_BIT
- #undef CHECK
  
- static bool efx_mae_asl_id(u32 id)
-@@ -472,6 +488,16 @@ static int efx_mae_populate_match_criteria(MCDI_DECLARE_STRUCT_PTR(match_crit),
- 	}
- 	MCDI_STRUCT_SET_DWORD(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_INGRESS_MPORT_SELECTOR_MASK,
- 			      match->mask.ingress_port);
-+	EFX_POPULATE_DWORD_2(*_MCDI_STRUCT_DWORD(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_FLAGS),
-+			     MAE_FIELD_MASK_VALUE_PAIRS_V2_IS_IP_FRAG,
-+			     match->value.ip_frag,
-+			     MAE_FIELD_MASK_VALUE_PAIRS_V2_IP_FIRST_FRAG,
-+			     match->value.ip_firstfrag);
-+	EFX_POPULATE_DWORD_2(*_MCDI_STRUCT_DWORD(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_FLAGS_MASK),
-+			     MAE_FIELD_MASK_VALUE_PAIRS_V2_IS_IP_FRAG,
-+			     match->mask.ip_frag,
-+			     MAE_FIELD_MASK_VALUE_PAIRS_V2_IP_FIRST_FRAG,
-+			     match->mask.ip_firstfrag);
- 	MCDI_STRUCT_SET_BYTE(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_RECIRC_ID,
- 			     match->value.recirc_id);
- 	MCDI_STRUCT_SET_BYTE(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_RECIRC_ID_MASK,
 diff --git a/drivers/net/ethernet/sfc/tc.c b/drivers/net/ethernet/sfc/tc.c
-index d992fafc844e..1a9cc2ad1335 100644
+index 1a9cc2ad1335..17e1a3447554 100644
 --- a/drivers/net/ethernet/sfc/tc.c
 +++ b/drivers/net/ethernet/sfc/tc.c
-@@ -168,7 +168,15 @@ static int efx_tc_flower_parse_match(struct efx_nic *efx,
- 				break;
- 			}
+@@ -190,6 +190,8 @@ static int efx_tc_flower_parse_match(struct efx_nic *efx,
+ 	      BIT(FLOW_DISSECTOR_KEY_CVLAN) |
+ 	      BIT(FLOW_DISSECTOR_KEY_IPV4_ADDRS) |
+ 	      BIT(FLOW_DISSECTOR_KEY_IPV6_ADDRS) |
++	      BIT(FLOW_DISSECTOR_KEY_PORTS) |
++	      BIT(FLOW_DISSECTOR_KEY_TCP) |
+ 	      BIT(FLOW_DISSECTOR_KEY_IP))) {
+ 		NL_SET_ERR_MSG_FMT_MOD(extack, "Unsupported flower keys %#x",
+ 				       dissector->used_keys);
+@@ -204,8 +206,10 @@ static int efx_tc_flower_parse_match(struct efx_nic *efx,
+ 		if (dissector->used_keys &
+ 		    (BIT(FLOW_DISSECTOR_KEY_IPV4_ADDRS) |
+ 		     BIT(FLOW_DISSECTOR_KEY_IPV6_ADDRS) |
+-		     BIT(FLOW_DISSECTOR_KEY_IP))) {
+-			NL_SET_ERR_MSG_FMT_MOD(extack, "L3 flower keys %#x require protocol ipv[46]",
++		     BIT(FLOW_DISSECTOR_KEY_PORTS) |
++		     BIT(FLOW_DISSECTOR_KEY_IP) |
++		     BIT(FLOW_DISSECTOR_KEY_TCP))) {
++			NL_SET_ERR_MSG_FMT_MOD(extack, "L3/L4 flower keys %#x require protocol ipv[46]",
+ 					       dissector->used_keys);
+ 			return -EINVAL;
+ 		}
+@@ -249,6 +253,16 @@ static int efx_tc_flower_parse_match(struct efx_nic *efx,
+ 	}
  
--		if (fm.mask->flags) {
-+		if (fm.mask->flags & FLOW_DIS_IS_FRAGMENT) {
-+			match->value.ip_frag = fm.key->flags & FLOW_DIS_IS_FRAGMENT;
-+			match->mask.ip_frag = true;
+ 	MAP_KEY_AND_MASK(BASIC, basic, ip_proto, ip_proto);
++	/* Make sure we're TCP/UDP if any L4 keys used. */
++	if ((match->value.ip_proto != IPPROTO_UDP &&
++	     match->value.ip_proto != IPPROTO_TCP) || !IS_ALL_ONES(match->mask.ip_proto))
++		if (dissector->used_keys &
++		    (BIT(FLOW_DISSECTOR_KEY_PORTS) |
++		     BIT(FLOW_DISSECTOR_KEY_TCP))) {
++			NL_SET_ERR_MSG_FMT_MOD(extack, "L4 flower keys %#x require ipproto udp or tcp",
++					       dissector->used_keys);
++			return -EINVAL;
 +		}
-+		if (fm.mask->flags & FLOW_DIS_FIRST_FRAG) {
-+			match->value.ip_firstfrag = fm.key->flags & FLOW_DIS_FIRST_FRAG;
-+			match->mask.ip_firstfrag = true;
-+		}
-+		if (fm.mask->flags & ~(FLOW_DIS_IS_FRAGMENT | FLOW_DIS_FIRST_FRAG)) {
- 			NL_SET_ERR_MSG_FMT_MOD(extack, "Unsupported match on control.flags %#x",
- 					       fm.mask->flags);
- 			return -EOPNOTSUPP;
+ 	MAP_KEY_AND_MASK(IP, ip, tos, ip_tos);
+ 	MAP_KEY_AND_MASK(IP, ip, ttl, ip_ttl);
+ 	if (ipv == 4) {
+@@ -261,6 +275,9 @@ static int efx_tc_flower_parse_match(struct efx_nic *efx,
+ 		MAP_KEY_AND_MASK(IPV6_ADDRS, ipv6_addrs, dst, dst_ip6);
+ 	}
+ #endif
++	MAP_KEY_AND_MASK(PORTS, ports, src, l4_sport);
++	MAP_KEY_AND_MASK(PORTS, ports, dst, l4_dport);
++	MAP_KEY_AND_MASK(TCP, tcp, flags, tcp_flags);
+ 
+ 	return 0;
+ }
 diff --git a/drivers/net/ethernet/sfc/tc.h b/drivers/net/ethernet/sfc/tc.h
-index aebe9c251b2c..d2b61926657b 100644
+index d2b61926657b..4240c375a8e6 100644
 --- a/drivers/net/ethernet/sfc/tc.h
 +++ b/drivers/net/ethernet/sfc/tc.h
-@@ -38,6 +38,7 @@ struct efx_tc_match_fields {
- #ifdef CONFIG_IPV6
+@@ -39,6 +39,9 @@ struct efx_tc_match_fields {
  	struct in6_addr src_ip6, dst_ip6;
  #endif
-+	bool ip_frag, ip_firstfrag;
+ 	bool ip_frag, ip_firstfrag;
++	/* L4 */
++	__be16 l4_sport, l4_dport; /* Ports (UDP, TCP) */
++	__be16 tcp_flags;
  };
  
  struct efx_tc_match {
