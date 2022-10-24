@@ -2,112 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F2A1460A7E2
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 15:00:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0202A60ABB8
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 15:55:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234673AbiJXNAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 09:00:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41024 "EHLO
+        id S236679AbiJXNza (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 09:55:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234993AbiJXM7G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 08:59:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05A4D9A2B0
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 05:18:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5047C61333
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 12:16:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3347DC433D7;
-        Mon, 24 Oct 2022 12:16:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666613790;
-        bh=Xx5tTP3pvNhKb1i5IJPWHoMmha+2D4WmXgj5im+1Dk8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rWXaO9ofLYJF7plkMdpLW11trYt0IEoYzrNRHrEfAgrBOJalDPb7hwi9EggttVBEJ
-         21mNAn5Bly3saDl6sKRghOCw8y5BgifGpy3ADwEc/7pTzlfZS4PPF4+eC+Ok26IrYF
-         04hFwUrF6K8TBActU4r1jeUBfh188SFhwCLesQEYrscC1cXr1faEQX+3Hu6FARncws
-         O7aJRIPrLBB0npJf91jEMsjenUDwFIQmy9r0W8OIPqF30Lhn22w+9ZnKqaENcXTZjC
-         xghDIKqJkH4WFLygi7E23W82SsJy3xMLh49ALqBNGuh4hKJjMnU8kHSay7HbN+mtQb
-         utWEZ0bKwm/fw==
-Date:   Mon, 24 Oct 2022 15:16:26 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        drivers@pensando.io
-Subject: Re: [PATCH net-next 3/5] ionic: new ionic device identity level and
- VF start control
-Message-ID: <Y1aCGgypfvK/+iwn@unreal>
-References: <20221024101717.458-1-snelson@pensando.io>
- <20221024101717.458-4-snelson@pensando.io>
+        with ESMTP id S236915AbiJXNyb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 09:54:31 -0400
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E53EBB
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 05:44:20 -0700 (PDT)
+Received: by mail-wr1-f53.google.com with SMTP id h9so4868440wrt.0
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 05:44:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:reply-to:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=hS9JG4WHdO3CwJJioolnxCNpR8bEZ9L4YEaSVpziqPU=;
+        b=bDi/RSWZVeIXfBuRToCjVbt2mtGGydHkFP+VlOJJ4UKLf1pxznyIP6bjv4R4TlL4wA
+         BsABe1Agh4I+Hy4tYs48bPzbZS+zxMJ2hmo82NUnnkZ98/MMBVXtg6cbjM3YJ37C7SaK
+         MVKCEe88KU3KhTJQgQNHZgBXUIr+TkOOcUZhDoc0Vo3+jl8tcMyJtrszTres0de7q7AG
+         ZQGmyfIvbYVSBHAMwH82gc9YUDsg/zh1ZDTQzclMkwAkAAXBiKGrYZLX05qggiaRQoK+
+         6PH5GVfUH4XdIJrlFJ3WOzoOdnGY1YQkfE1EjFusX37ckZ7nKZ83Fc68XgBUi5HArimK
+         UP7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:reply-to:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hS9JG4WHdO3CwJJioolnxCNpR8bEZ9L4YEaSVpziqPU=;
+        b=5wk9TCnHKXKWz6h82GV0c/3Ly2/1GMkFrIKx+H9IKWAJ0PlSL6I4d+8pVEYSnEvs60
+         vOsz3snMzlenlkzXdnYCFi59UBicD0VztsrCJpwQ3Y8RRktlFtS1w9EpwauKc0vaN0CL
+         d3zdyay+u6gTtadW4Wtdc3gjNhwe4yM/j75yvMHZVqv7+Qmh5nCl4mF5IOYEtKDLA05G
+         O0d6tDAF4lnydhKfoMtcurWiDJJbTJy3YSKuv1HPDWUPgIQ3m85NjCz0PKpno1Zr5n1x
+         I0LYfQ8TJdAOq7d/d/2yJlbQe5X75hfKgDNvMgUIL+OzcrPmARUzIy1K7hnaFWkYj+Ub
+         HU4w==
+X-Gm-Message-State: ACrzQf1F286YimXDk4PTx1c/j/98i4a3xw2LBpGkeQ0ZrTllWP13/N0I
+        k3N2sSeF8uaOM8ZLpWZBa6ZJmTc/RowLzw==
+X-Google-Smtp-Source: AMsMyM7ycCSSePYyPxj705uthaHEwcRKtdoXCS3YaRl1Rmu7oS5hS3l6kfEEtFwhEoE+RazQaoqnMQ==
+X-Received: by 2002:a05:6000:1287:b0:236:712d:2545 with SMTP id f7-20020a056000128700b00236712d2545mr3175939wrx.52.1666614441006;
+        Mon, 24 Oct 2022 05:27:21 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:b41:c160:416:9ea1:405b:86ea? ([2a01:e0a:b41:c160:416:9ea1:405b:86ea])
+        by smtp.gmail.com with ESMTPSA id fc18-20020a05600c525200b003b505d26776sm8853533wmb.5.2022.10.24.05.27.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Oct 2022 05:27:20 -0700 (PDT)
+Message-ID: <5af190a8-ac35-82a6-b099-e9a817757676@6wind.com>
+Date:   Mon, 24 Oct 2022 14:27:19 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221024101717.458-4-snelson@pensando.io>
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [RFE net-next] net: tun: 1000x speed up
+Content-Language: en-US
+To:     Ilya Maximets <i.maximets@ovn.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+References: <20221021114921.3705550-1-i.maximets@ovn.org>
+ <20221021090756.0ffa65ee@kernel.org>
+ <eb6903b7-c0d9-cc70-246e-8dbde0412433@6wind.com>
+ <ded477ea-08fa-b96d-c192-9640977b42e6@ovn.org>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+In-Reply-To: <ded477ea-08fa-b96d-c192-9640977b42e6@ovn.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 24, 2022 at 03:17:15AM -0700, Shannon Nelson wrote:
-> A new ionic dev_cmd is added to the interface in ionic_if.h,
-> with a new capabilities field in the ionic device identity to
-> signal its availability in the FW.  The identity level code is
-> incremented to '2' to show support for this new capabilities
-> bitfield.
+Le 24/10/2022 à 13:56, Ilya Maximets a écrit :
+> On 10/24/22 11:44, Nicolas Dichtel wrote:
+>> Le 21/10/2022 à 18:07, Jakub Kicinski a écrit :
+>>> On Fri, 21 Oct 2022 13:49:21 +0200 Ilya Maximets wrote:
+>>>> Bump the advertised speed to at least match the veth.  10Gbps also
+>>>> seems like a more or less fair assumption these days, even though
+>>>> CPUs can do more.  Alternative might be to explicitly report UNKNOWN
+>>>> and let the application/user decide on a right value for them.
+>>>
+>>> UNKOWN would seem more appropriate but at this point someone may depend
+>>> on the speed being populated so it could cause regressions, I fear :S
+>> If it is put in a bonding, it may cause some trouble. Maybe worth than
+>> advertising 10M.
 > 
-> If the driver has indicated with the new identity level that
-> it has the VF_CTRL command, newer FW will wait for the start
-> command before starting the VFs after a FW update or crash
-> recovery.
+> My thoughts were that changing the number should have a minimal impact
+> while changing it to not report any number may cause some issues in
+> applications that doesn't expect that for some reason (not having a
+> fallback in case reported speed is unknown isn't great, and the argument
+> can be made that applications should check that, but it's hard to tell
+> for every application if they actually do that today).
 > 
-> This patch updates the driver to make use of the new VF start
-> control in fw_up path to be sure that the PF has set the user
-> attributes on the VF before the FW allows the VFs to restart.
+> Bonding is also a good point indeed, since it's even in-kernel user.
 > 
-> Signed-off-by: Shannon Nelson <snelson@pensando.io>
-> ---
->  .../net/ethernet/pensando/ionic/ionic_dev.c   | 20 +++++++++
->  .../net/ethernet/pensando/ionic/ionic_dev.h   |  3 ++
->  .../net/ethernet/pensando/ionic/ionic_if.h    | 41 +++++++++++++++++++
->  .../net/ethernet/pensando/ionic/ionic_lif.c   |  2 +
->  .../net/ethernet/pensando/ionic/ionic_main.c  |  2 +-
->  5 files changed, 67 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.c b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-> index 9d0514cfeb5c..20a0d87c9fce 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-> @@ -481,6 +481,26 @@ int ionic_dev_cmd_vf_getattr(struct ionic *ionic, int vf, u8 attr,
->  	return err;
->  }
->  
-> +void ionic_vf_start(struct ionic *ionic, int vf)
-> +{
-> +	union ionic_dev_cmd cmd = {
-> +		.vf_ctrl.opcode = IONIC_CMD_VF_CTRL,
-> +	};
-> +
-> +	if (!(ionic->ident.dev.capabilities & cpu_to_le64(IONIC_DEV_CAP_VF_CTRL)))
-> +		return;
-> +
-> +	if (vf == -1) {
-> +		cmd.vf_ctrl.ctrl_opcode = IONIC_VF_CTRL_START_ALL;
-> +	} else {
-> +		cmd.vf_ctrl.ctrl_opcode = IONIC_VF_CTRL_START;
-> +		cmd.vf_ctrl.vf_index = cpu_to_le16(vf);
-> +	}
+> The speed bump doesn't solve the problem per se.  It kind of postpones
+> the decision, since we will run into the same issue eventually again.
+> That's why I wanted to discuss that first.
+> 
+> Though I think that at least unification across virtual devices (tun and
+> veth) should be a step in a right direction.
+Just to make it clear, I'm not against aligning speed with veth, I'm only
+against reporting UNKNOWN.
 
-<...>
+> 
+>>
+>> Note that this value could be configured with ethtool:
+>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=4e24f2dd516ed
+> 
+> This is interesting, but it's a bit hard to manage, because in order
+> to make a decision to bump the speed, application should already know
+> that this is a tun/tap device.  So, there has to be a special case
+But this should be done by the application which creates this tun interface. Not
+by the application that uses this information.
 
-> +	ionic_vf_start(ionic, -1)
+> implemented in the code that detects the driver and changes the speed
+> (this is about application that is using the interface, but didn't
+> create it), but if we already know the driver, then it doesn't make
+> sense to actually change the speed in many cases as application can
+> already act accordingly.
+> 
+> Also, the application may not have permissions to do that (I didn't
+> check the requirements, but my guess would be at least CAP_NET_ADMIN?).
+Sure, but the one who creates it, has the right to configure it correctly. It's
+part of the configuration of the interface.
 
-I see only call with "-1" in this series. It is better to add code when
-it is actually used.
+Setting an higher default speed seems to be a workaround to fix an incorrect
+configuration. And as you said, it will probably be wrong again in a few years ;-)
 
-Thanks
+> 
+> For the human user it's still one extra configuration step that they
+> need to remember to perform.
+I don't buy this argument. There are already several steps: creating and
+configuring an interface requires more than one command.
+
+
+Regards,
+Nicolas
