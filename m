@@ -2,136 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6550E60B193
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 18:28:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E07360B260
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 18:46:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232533AbiJXQ1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 12:27:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53492 "EHLO
+        id S234969AbiJXQqB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 12:46:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233627AbiJXQ1Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 12:27:25 -0400
-Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC74328E32;
-        Mon, 24 Oct 2022 08:14:04 -0700 (PDT)
-Received: by mail-qk1-f169.google.com with SMTP id a5so6237092qkl.6;
-        Mon, 24 Oct 2022 08:14:04 -0700 (PDT)
+        with ESMTP id S234771AbiJXQos (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 12:44:48 -0400
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD23D132241;
+        Mon, 24 Oct 2022 08:30:55 -0700 (PDT)
+Received: by mail-qk1-x72b.google.com with SMTP id 8so6277443qka.1;
+        Mon, 24 Oct 2022 08:30:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=m4viJHxfacreRm9wTZHfw/EqLzaLhJI57ZF7n+4sesI=;
-        b=lddOhnkSKqyV2/fbsZbKMLZdAwM9Y/gUuPCGVvtUPfVT/jTGajqv3g6uH7kAKNtS2T
-         tFa6RmIdpi/lUs9ONaT9r20sWi2CmpUJ91rusL8/c/hSzUK2hh2fDoKNltiyypMfpsYz
-         11EM+YAxQWKHidSXxqigA9UXaTlzmlT5vqXF9lKavWpXZPzQmy1iQxsKKCC/CN6+lDaI
-         in79LpkqyLJWruosf+GiwUhTNhjGHG5aD50uSY6j8tKdrXHpTh8m4V90KIXKC+0telWQ
-         LRUoS7FvixiekIDUQSQPGhhYFCreQHEA+6nfeGvmPhsvtWb7xzEB1vxsffzh9+AM9eCT
-         MNGQ==
-X-Gm-Message-State: ACrzQf16LyWeCKMPetNzTI2vEW3Zg3oPezbgo6UONIjDrOY5OgSUDkvA
-        We9rF5lYQHvtutoxAlObWTiiwUlX2JcA7w==
-X-Google-Smtp-Source: AMsMyM66KLH3yXhQf1WGFA8wXaMs+RlBpXmfGyKsiH1ejjEA5fUSplb+c2cRmWGIYbu9/1gNyDHzaA==
-X-Received: by 2002:ac8:4e4f:0:b0:39c:e080:3643 with SMTP id e15-20020ac84e4f000000b0039ce0803643mr27954535qtw.426.1666623570029;
-        Mon, 24 Oct 2022 07:59:30 -0700 (PDT)
-Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com. [209.85.219.172])
-        by smtp.gmail.com with ESMTPSA id cq13-20020a05622a424d00b003972790deb9sm32320qtb.84.2022.10.24.07.59.29
+        bh=cHT5Rt2YRD3TxMdqZcnrFfX+ch7zR8neoaazNIgvH4s=;
+        b=o8UYQnYqagOJk7xHL7ioRItrsBk4Qv7WzL2+wKOHKL98J666DOd7Ceoqs44x6TqF+h
+         4RBe8hHOwdDaRf4CZij0jLuG0ExctYqHhJBq+2AFPJucTPiOI60tSGlI6Smk3eIgJwMa
+         p8lduArEWE4JPCaWcUoxSBY5DF6Jl7AQ8iUHI+d2TPTzASa50EXQyzk0kUxTDe/NYF0O
+         ejhHvs1TZHgphuoE8EI9fqka1snqi76MZ3OcpcqFqCloivxTlFYI1UwCrUdVFM6p88x2
+         gVAoTsi4sDb+Advoty8x2kvCV/WRPXYNPsTNyMtY2U+7K2086PF6gaC+fZoIswYvG9Hw
+         2AKA==
+X-Gm-Message-State: ACrzQf2pNrSLoSSBDKSahyLaSPk/ux+EZ3etTuPI1FGV+oZIYq2RrFJ9
+        bfjNVsEZbxT86JEck6isCUTsw+iOp/RWhw==
+X-Google-Smtp-Source: AMsMyM4Vkd7cp4pbO1rM/WpR2yqfdH7jEaPA2xKnICY7kI7XOc/KqJfpkN+1sY6S7VC0Kr3Hgqfa9g==
+X-Received: by 2002:a05:620a:244e:b0:6c6:f3b8:9c3 with SMTP id h14-20020a05620a244e00b006c6f3b809c3mr23359764qkn.218.1666625281759;
+        Mon, 24 Oct 2022 08:28:01 -0700 (PDT)
+Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com. [209.85.128.170])
+        by smtp.gmail.com with ESMTPSA id d19-20020a05620a241300b006cfc01b4461sm103204qkn.118.2022.10.24.08.28.00
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Oct 2022 07:59:29 -0700 (PDT)
-Received: by mail-yb1-f172.google.com with SMTP id y72so11261489yby.13;
-        Mon, 24 Oct 2022 07:59:29 -0700 (PDT)
-X-Received: by 2002:a25:26c1:0:b0:6c3:bdae:c6d6 with SMTP id
- m184-20020a2526c1000000b006c3bdaec6d6mr30854658ybm.36.1666623568821; Mon, 24
- Oct 2022 07:59:28 -0700 (PDT)
+        Mon, 24 Oct 2022 08:28:01 -0700 (PDT)
+Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-35befab86a4so88605387b3.8;
+        Mon, 24 Oct 2022 08:28:00 -0700 (PDT)
+X-Received: by 2002:a81:99d8:0:b0:368:909b:a111 with SMTP id
+ q207-20020a8199d8000000b00368909ba111mr19866197ywg.502.1666625280651; Mon, 24
+ Oct 2022 08:28:00 -0700 (PDT)
 MIME-Version: 1.0
-References: <20221022104357.1276740-1-biju.das.jz@bp.renesas.com> <20221022104357.1276740-7-biju.das.jz@bp.renesas.com>
-In-Reply-To: <20221022104357.1276740-7-biju.das.jz@bp.renesas.com>
+References: <20221019083518.933070-3-yoshihiro.shimoda.uh@renesas.com> <202210191806.RZK10y3x-lkp@intel.com>
+In-Reply-To: <202210191806.RZK10y3x-lkp@intel.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 24 Oct 2022 16:59:17 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdV8MmTMMPnCGgXbZZ-gb4CVduAUBBG3BdAecBrc3J7RLQ@mail.gmail.com>
-Message-ID: <CAMuHMdV8MmTMMPnCGgXbZZ-gb4CVduAUBBG3BdAecBrc3J7RLQ@mail.gmail.com>
-Subject: Re: [PATCH 6/6] can: rcar_canfd: Add has_gerfl_eef to struct rcar_canfd_hw_info
-To:     biju.das.jz@bp.renesas.com
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        =?UTF-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
+Date:   Mon, 24 Oct 2022 17:27:49 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXBT2cEqfy00u+0VB=cRUAtrgH9LD26gXgavdvmQyN+pQ@mail.gmail.com>
+Message-ID: <CAMuHMdXBT2cEqfy00u+0VB=cRUAtrgH9LD26gXgavdvmQyN+pQ@mail.gmail.com>
+Subject: Re: [PATCH v4 2/3] net: ethernet: renesas: Add Ethernet Switch driver
+To:     kernel test robot <lkp@intel.com>
+Cc:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, kbuild-all@lists.01.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
         FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Biju,
-
-On Sat, Oct 22, 2022 at 1:03 PM Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> R-Car has ECC error flags in global error interrupts whereas it is
-> not available on RZ/G2L.
+On Wed, Oct 19, 2022 at 1:17 PM kernel test robot <lkp@intel.com> wrote:
+> I love your patch! Perhaps something to improve:
 >
-> Add has_gerfl_eef to struct rcar_canfd_hw_info so that rcar_canfd_
-> global_error() will process ECC errors only for R-Car.
+> [auto build test WARNING on net-next/master]
+> [also build test WARNING on net/master robh/for-next linus/master v6.1-rc1 next-20221019]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch#_base_tree_information]
 >
-> whilst, this patch fixes the below checkpatch warnings
->   CHECK: Unnecessary parentheses around 'ch == 0'
->   CHECK: Unnecessary parentheses around 'ch == 1'
+> url:    https://github.com/intel-lab-lkp/linux/commits/Yoshihiro-Shimoda/net-ethernet-renesas-Add-Ethernet-Switch-driver/20221019-163806
+> patch link:    https://lore.kernel.org/r/20221019083518.933070-3-yoshihiro.shimoda.uh%40renesas.com
+> patch subject: [PATCH v4 2/3] net: ethernet: renesas: Add Ethernet Switch driver
+> config: m68k-allyesconfig
+> compiler: m68k-linux-gcc (GCC) 12.1.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://github.com/intel-lab-lkp/linux/commit/f310f8cc37dfb090cfb06ae38530276327569464
+>         git remote add linux-review https://github.com/intel-lab-lkp/linux
+>         git fetch --no-tags linux-review Yoshihiro-Shimoda/net-ethernet-renesas-Add-Ethernet-Switch-driver/20221019-163806
+>         git checkout f310f8cc37dfb090cfb06ae38530276327569464
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash drivers/net/
 >
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-
-Thanks for your patch!
-
-> --- a/drivers/net/can/rcar/rcar_canfd.c
-> +++ b/drivers/net/can/rcar/rcar_canfd.c
-> @@ -523,6 +523,7 @@ struct rcar_canfd_hw_info {
->         unsigned multi_global_irqs:1;   /* Has multiple global irqs  */
->         unsigned clk_postdiv:1;         /* Has CAN clk post divider  */
->         unsigned multi_channel_irqs:1;  /* Has multiple channel irqs  */
-> +       unsigned has_gerfl_eef:1;       /* Has ECC Error Flag  */
-
-Do you really need this flag? According to the RZ/G2L docs, the
-corresponding register bits are always read as zero.
-
->  };
+> If you fix the issue, kindly add following tag where applicable
+> | Reported-by: kernel test robot <lkp@intel.com>
 >
->  /* Channel priv data */
-
-> @@ -947,17 +950,18 @@ static void rcar_canfd_global_error(struct net_device *ndev)
->  {
->         struct rcar_canfd_channel *priv = netdev_priv(ndev);
->         struct rcar_canfd_global *gpriv = priv->gpriv;
-> +       const struct rcar_canfd_hw_info *info = gpriv->info;
->         struct net_device_stats *stats = &ndev->stats;
->         u32 ch = priv->channel;
->         u32 gerfl, sts;
->         u32 ridx = ch + RCANFD_RFFIFO_IDX;
+> All warnings (new ones prefixed by >>):
 >
->         gerfl = rcar_canfd_read(priv->base, RCANFD_GERFL);
-> -       if ((gerfl & RCANFD_GERFL_EEF0) && (ch == 0)) {
-> +       if (info->has_gerfl_eef && (gerfl & RCANFD_GERFL_EEF0) && ch == 0) {
->                 netdev_dbg(ndev, "Ch0: ECC Error flag\n");
->                 stats->tx_dropped++;
->         }
-> -       if ((gerfl & RCANFD_GERFL_EEF1) && (ch == 1)) {
-> +       if (info->has_gerfl_eef && (gerfl & RCANFD_GERFL_EEF1) && ch == 1) {
->                 netdev_dbg(ndev, "Ch1: ECC Error flag\n");
->                 stats->tx_dropped++;
->         }
+>    drivers/net/ethernet/renesas/rswitch.c: In function 'rswitch_ext_desc_get_dptr':
+> >> drivers/net/ethernet/renesas/rswitch.c:355:71: warning: left shift count >= width of type [-Wshift-count-overflow]
+>      355 |         return __le32_to_cpu(desc->dptrl) | (dma_addr_t)(desc->dptrh) << 32;
+>          |                                                                       ^~
+>    drivers/net/ethernet/renesas/rswitch.c: In function 'rswitch_ext_ts_desc_get_dptr':
+>    drivers/net/ethernet/renesas/rswitch.c:367:71: warning: left shift count >= width of type [-Wshift-count-overflow]
+>      367 |         return __le32_to_cpu(desc->dptrl) | (dma_addr_t)(desc->dptrh) << 32;
+>          |                                                                       ^~
+>
+>
+> vim +355 drivers/net/ethernet/renesas/rswitch.c
+>
+>    352
+>    353  static dma_addr_t rswitch_ext_desc_get_dptr(struct rswitch_ext_desc *desc)
+>    354  {
+>  > 355          return __le32_to_cpu(desc->dptrl) | (dma_addr_t)(desc->dptrh) << 32;
 
-Just wrap both checks inside a single "if (gpriv->info->has_gerfl) { ... }"?
+A simple fix would be to replace the cast to "dma_addr_t" by a cast to "u64".
+A more convoluted fix would be:
+
+    dma_addr_t dma;
+
+    dma = __le32_to_cpu(desc->dptrl);
+    if (IS_ENABLED(CONFIG_ARCH_DMA_ADDR_T_64BIT))
+            dma |= (u64)desc->dptrh << 32;
+    return dma;
+
+Looking at the gcc compiler output, the both cases are optimized to the
+exact same code, for both arm32 and arm64, so I'd go for the simple fix.
+
+BTW, if struct rswitch_ext_desc would just extend struct rswitch_desc,
+you could use rswitch_ext_desc_get_dptr() for both.
+
+>    356  }
+>    357
 
 Gr{oetje,eeting}s,
 
