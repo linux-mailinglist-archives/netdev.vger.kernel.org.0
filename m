@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 945DA609A42
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 08:13:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8CFD609A40
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 08:13:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230108AbiJXGNL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 02:13:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37010 "EHLO
+        id S230181AbiJXGNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 02:13:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230196AbiJXGNG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 02:13:06 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 874B85E64A
-        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 23:13:05 -0700 (PDT)
+        with ESMTP id S230224AbiJXGNK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 02:13:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36DDC5E55E
+        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 23:13:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8541ACE10C7
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 06:13:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51D86C433C1;
-        Mon, 24 Oct 2022 06:13:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA22DB80E49
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 06:13:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4834C433D6;
+        Mon, 24 Oct 2022 06:13:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666591981;
-        bh=JJx00aAAtwUypuCtcolO+cWhVO7D9ur6mP4+srJ//2s=;
+        s=k20201202; t=1666591985;
+        bh=f6/MonIYi56jFppHWg+g0BIwso7kY+yyNU6yof9Gns0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jlQijYLbTAFiuxoA7L6B6raouON3nlanII+38f/U9G6OEG/LlHQVCdznyb32THLVF
-         3o7I7BTKYA4BYT9lFd+w+26BJt8yip+BqJIzXl/iPI69i+9FcWn4+l5TyY70Gezje9
-         8y5e9grnpIBm2T0s/lIFy1gzeUcwaPEj4ky4cogoBCP1RXj45vUsWviH5tjnsaEyCb
-         8oBD0FSIdLhtnjMzJD+fbvVUVVSkPBDM+6P/UteKQ+k3BuMoQIMPOn6Kp/DRMkc3k2
-         TiffdxBMhBxbHziu2DZpoOMSrHqWuwdcwjvmTB7gTmdQCJ2VwyQ5uphKhbWOaKhFI/
-         RcESFtd64c1wQ==
+        b=vGUr1l/osCX29lca83G4UNbpKJr3Wi4JLsbuVhQ4zq8YjpMW9zXadHOEAuWukDTan
+         VmRui2GShW+XBjQh1ud1wHczLYxBBqSKeO0IRFPKhIfn92AFhg+F2zptEzKjgfIX6n
+         GFHYH7vdgekrFfZ0J6WO76F1V4KbDaWyOqGoEinUWhHS1T/Af3YUXTovFHHGyDNP0f
+         H0My1gY43HqaCfBypJtAwQWFZ//1svDvUk+StmY4pqfYQTOKJwVLGmzPLMgV3yNAOp
+         inkx89Xm61MKZGj0ot1va3OHQLauXOSV44WJ7omh7Bbfmmdsnos24B5xt3Hs3/1bIZ
+         rLMkIJOthC1IA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,10 +38,10 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
-        Moshe Shemesh <moshe@nvidia.com>
-Subject: [V2 net 02/16] net/mlx5: Wait for firmware to enable CRS before pci_restore_state
-Date:   Mon, 24 Oct 2022 07:12:06 +0100
-Message-Id: <20221024061220.81662-3-saeed@kernel.org>
+        Rongwei Liu <rongweil@nvidia.com>
+Subject: [V2 net 03/16] net/mlx5: DR, Fix matcher disconnect error flow
+Date:   Mon, 24 Oct 2022 07:12:07 +0100
+Message-Id: <20221024061220.81662-4-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221024061220.81662-1-saeed@kernel.org>
 References: <20221024061220.81662-1-saeed@kernel.org>
@@ -56,47 +56,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Moshe Shemesh <moshe@nvidia.com>
+From: Rongwei Liu <rongweil@nvidia.com>
 
-After firmware reset driver should verify firmware already enabled CRS
-and became responsive to pci config cycles before restoring pci state.
-Fix that by waiting till device_id is readable through PCI again.
+When 2nd flow rules arrives, it will merge together with the
+1st one if matcher criteria is the same.
 
-Fixes: eabe8e5e88f5 ("net/mlx5: Handle sync reset now event")
-Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
+If merge fails, driver will rollback the merge contents, and
+reject the 2nd rule. At rollback stage, matcher can't be
+disconnected unconditionally, otherise the 1st rule can't be
+hit anymore.
+
+Add logic to check if the matcher should be disconnected or not.
+
+Fixes: cc2295cd54e4 ("net/mlx5: DR, Improve steering for empty or RX/TX-only matchers)
+Signed-off-by: Rongwei Liu <rongweil@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/fw_reset.c  | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-index e8896f368362..07c583996c29 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-@@ -358,6 +358,23 @@ static int mlx5_pci_link_toggle(struct mlx5_core_dev *dev)
- 		err = -ETIMEDOUT;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
+index ddfaf7891188..91ff19f67695 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
+@@ -1200,7 +1200,8 @@ dr_rule_create_rule_nic(struct mlx5dr_rule *rule,
  	}
  
-+	do {
-+		err = pci_read_config_word(dev->pdev, PCI_DEVICE_ID, &reg16);
-+		if (err)
-+			return err;
-+		if (reg16 == dev_id)
-+			break;
-+		msleep(20);
-+	} while (!time_after(jiffies, timeout));
-+
-+	if (reg16 == dev_id) {
-+		mlx5_core_info(dev, "Firmware responds to PCI config cycles again\n");
-+	} else {
-+		mlx5_core_err(dev, "Firmware is not responsive (0x%04x) after %llu ms\n",
-+			      reg16, mlx5_tout_ms(dev, PCI_TOGGLE));
-+		err = -ETIMEDOUT;
-+	}
-+
- restore:
- 	list_for_each_entry(sdev, &bridge_bus->devices, bus_list) {
- 		pci_cfg_access_unlock(sdev);
+ remove_from_nic_tbl:
+-	mlx5dr_matcher_remove_from_tbl_nic(dmn, nic_matcher);
++	if (!nic_matcher->rules)
++		mlx5dr_matcher_remove_from_tbl_nic(dmn, nic_matcher);
+ 
+ free_hw_ste:
+ 	mlx5dr_domain_nic_unlock(nic_dmn);
 -- 
 2.37.3
 
