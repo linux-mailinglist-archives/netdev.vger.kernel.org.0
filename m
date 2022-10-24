@@ -2,84 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D56BB609E08
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 11:30:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1D3D609E10
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 11:31:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230235AbiJXJad (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 05:30:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44336 "EHLO
+        id S229838AbiJXJbt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 05:31:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230265AbiJXJaY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 05:30:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AD473BC70
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 02:30:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F3C1B81032
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 09:30:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0D0F7C433D6;
-        Mon, 24 Oct 2022 09:30:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666603816;
-        bh=gjWqjMcsNChVuu8i2uUqm9/QsqrR1jbP8nqR0arrozg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=eWRQKRlpIsSPP/52aZAMP1GsS34rdAWU0+acwTWH8PL5L5VRcRkJK3HQGpIR3MU1I
-         TO3suWMF+UpG0EH3Is2hklIj8/PIniz1ZFraoJK1bmzYiTe2u0LHDw94fOPBfuIUVX
-         wSTyR0MDnDELwjcJjzf/AZ33mV/1tFDkC/dQvzlh8KQRxiAnvOXte05p+f7q+SM3uO
-         ZwY0qwqxRaxOHEb4BlHkjKDvdnaApZPNi0g3jAp6g1u1BRXQK34npH7LzaDBpqtF2o
-         FzELYuNYijbE2NWN/4wwfWbeCC9ljp4B/+urpcEHI5/prqJCZnmn431ChUTB0ltAf7
-         xtjvXO3K4rsfA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E4531C4166D;
-        Mon, 24 Oct 2022 09:30:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230250AbiJXJbi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 05:31:38 -0400
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC7960519
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 02:31:11 -0700 (PDT)
+Received: by mail-il1-x136.google.com with SMTP id q5so2268744ilt.13
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 02:31:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=vUlUUGoJnQ7g2LC8QuezYDhUG0fdMvocBfT6skXTjsI=;
+        b=Pfg7Jt0WWpz7Eis6P+ENGI7IFG5pdh4rUXkqi6bjdIdAUbtNXR0j9DL5zQX8bgrXSy
+         wlA5RsWja1UdJO3hc/Kgmwa2oVNBIkKGQWfgrFLxrvy0JUVpA234seGOeNhMFUtpJA2M
+         EsRNH62C7LiH8NsqZxNWMioJITnvTTbqHIruvzx7vUlYhllFo0T0Mn7x7wp6gU4PqkV4
+         QjSM6uD1ztLuNzgunmBYZytI2c4ODNMUMXfWhZ9g7vfdBBsYrRPeAT0kOGuw2ysEB2Vp
+         REesogsXY5o1ggcjjY/59orSs+u93BruK5r5RlFnZ7NRhi+U9ROdTQaZFucPmZnaDo+E
+         A4/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=vUlUUGoJnQ7g2LC8QuezYDhUG0fdMvocBfT6skXTjsI=;
+        b=SWHnp4niH6ALYK2we8JjaoZb/KOR/bvv0Jrl7v7/vTjNkAk1SftHXZz58nnO9NN0Lo
+         1qWsw+W7AHOhpR1zZRC6/4VcAG+5Uz1SGmNcpy09Xjzu/Nh7lZuAsaK63SM0j7gTPvku
+         8e94mAmtPXZ9rq+Oek2I/OPE5oa7L+x5UCUEA0EqGPlGqsZlG9RbhrqzlHhAT4vIhK5x
+         u2IliwGoJB7tEWHXEHQCSDtxYNpscEA0r69hDhBE1/lAMF8QdgStFEptKU1Uwc3Mgrq6
+         hdjunEWwCT25DE4J6nd8SRcH4IWTk6PKLETxXt1U7sdTdc43XVbm7Dn08TGeise6EH2G
+         x/Rw==
+X-Gm-Message-State: ACrzQf0IPEkdPuBbvdleov/zGs+Dbk5p4JURYQXSND0MZCxU6EZL1sV0
+        ceH1EWLo40ml1baxA7cLghufOKNuXpY9g3hACE8=
+X-Google-Smtp-Source: AMsMyM6FOD3ZZLvVX370JqdMg3MqKgOrewBJM/g8ZEvKg1A0oKGFRyFvqKwS/YViLltq6LPiga8H5PsaCa1gfLOAAso=
+X-Received: by 2002:a92:d5c4:0:b0:2ff:c073:5cb4 with SMTP id
+ d4-20020a92d5c4000000b002ffc0735cb4mr5005429ilq.82.1666603862903; Mon, 24 Oct
+ 2022 02:31:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net] atlantic: fix deadlock at aq_nic_stop
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166660381593.16636.18419272488332420903.git-patchwork-notify@kernel.org>
-Date:   Mon, 24 Oct 2022 09:30:15 +0000
-References: <20221020075310.15226-1-ihuguet@redhat.com>
-In-Reply-To: <20221020075310.15226-1-ihuguet@redhat.com>
-To:     =?utf-8?b?w43DsWlnbyBIdWd1ZXQgPGlodWd1ZXRAcmVkaGF0LmNvbT4=?=@ci.codeaurora.org
-Cc:     irusskikh@marvell.com, kuba@kernel.org, andrew@lunn.ch,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        dbogdanov@marvell.com, mstarovo@pm.me, netdev@vger.kernel.org,
-        liali@redhat.com
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20221014093632.8487-1-hdegoede@redhat.com> <CAHNKnsSvvM3_JEdr1znAWTup-LG-A=cuO8h-A8G6Cwf=h_rjNQ@mail.gmail.com>
+ <ea022df4-2baf-48ae-e5ed-85a6242a5774@redhat.com> <CAHNKnsSaNuU3xcnRpnP2CM8ycOqomaaeT9Tz40FLJbbKFXgTzw@mail.gmail.com>
+ <e78222b2-947f-b922-a8a7-e04f6a1d868e@redhat.com>
+In-Reply-To: <e78222b2-947f-b922-a8a7-e04f6a1d868e@redhat.com>
+From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Date:   Mon, 24 Oct 2022 13:31:01 +0400
+Message-ID: <CAHNKnsTV0FjqQiaTiayPPwaJ-nkt7-LAczBh3vnXOXn==ZVKnw@mail.gmail.com>
+Subject: Re: [PATCH] net: wwan: iosm: initialize pc_wwan->if_mutex earlier
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     M Chetan Kumar <m.chetan.kumar@intel.com>,
+        Intel Corporation <linuxwwan@intel.com>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Mon, Oct 24, 2022 at 1:17 PM Hans de Goede <hdegoede@redhat.com> wrote:
+> On 10/24/22 11:14, Sergey Ryazanov wrote:
+>> On Mon, Oct 24, 2022 at 12:04 PM Hans de Goede <hdegoede@redhat.com> wrote:
+>>> On 10/15/22 09:55, Sergey Ryazanov wrote:
+>>>> On Fri, Oct 14, 2022 at 1:36 PM Hans de Goede <hdegoede@redhat.com> wrote:
+>>>>> wwan_register_ops() ends up calls ipc_wwan_newlink() before it returns.
+>>>>>
+>>>>> ipc_wwan_newlink() uses pc_wwan->if_mutex, so we must initialize it
+>>>>> before calling wwan_register_ops(). This fixes the following WARN()
+>>>>> when lock-debugging is enabled:
+>>>>>
+>>>>> [skipped]
+>>>>>
+>>>>> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+>>>>
+>>>> Should we add a Fixes: tag for this change? Besides this:
+>>>
+>>> This issue was present already in the driver as originally introduced, so:
+>>>
+>>> Fixes: 2a54f2c77934 ("net: iosm: net driver")
+>>>
+>>> I guess?
+>>
+>> The wwan_register_ops() call has been here since the driver
+>> introduction. But at that time, this call did not create any
+>> interfaces. The issue was most probably introduced by my change:
+>>
+>> 83068395bbfc ("net: iosm: create default link via WWAN core")
+>>
+>> after which the wwan_register_ops() call was modified in such a way
+>> that it started calling ipc_wwan_newlink() internally.
+>
+> Ok, lets go with:
+>
+> Fixes: 83068395bbfc ("net: iosm: create default link via WWAN core")
+>
+> Shall I send a v2 with this ? or is this just going to get added
+> in while merging this?
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+Yes. Send the v2 with Fixes and Reviewed-by tags please. This will
+make the work of the netdev maintainer more productive.
 
-On Thu, 20 Oct 2022 09:53:10 +0200 you wrote:
-> NIC is stopped with rtnl_lock held, and during the stop it cancels the
-> 'service_task' work and free irqs.
-> 
-> However, if CONFIG_MACSEC is set, rtnl_lock is acquired both from
-> aq_nic_service_task and aq_linkstate_threaded_isr. Then a deadlock
-> happens if aq_nic_stop tries to cancel/disable them when they've already
-> started their execution.
-> 
-> [...]
-
-Here is the summary with links:
-  - [v2,net] atlantic: fix deadlock at aq_nic_stop
-    https://git.kernel.org/netdev/net/c/6960d133f66e
-
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Sergey
