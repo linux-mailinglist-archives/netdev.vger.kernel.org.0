@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3380E60B6CE
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 21:11:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98BC360B564
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 20:23:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232990AbiJXTLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 15:11:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50348 "EHLO
+        id S231974AbiJXSXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 14:23:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232994AbiJXTKy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 15:10:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A33B170B52
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 10:49:52 -0700 (PDT)
+        with ESMTP id S231357AbiJXSXF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 14:23:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 235502930BA
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 10:04:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0DD9CB81612
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 17:00:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F359C433C1;
-        Mon, 24 Oct 2022 17:00:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C9F7C614C9
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 17:00:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEBC0C433B5;
+        Mon, 24 Oct 2022 17:00:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666630813;
+        s=k20201202; t=1666630814;
         bh=oTQX8U0CkCI1jZO7NeZVpll2bILxaj0l8QSH7FuhFX0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e09kOQL3DYOYrESJY7M3LSDJxH+J3rkdy2jjjcxpUE2znCQPj+lDGsRDKg8FI+/tX
-         COb9GzxRP3N0QALwKK5Sw8E9WD4pHxGTkwcuy1VW03FYgjFE6LcXTrOW13esRYp/T3
-         h2+Tl/OvkJWXRRYB9ZcBSt9F1+Yku6JtG2Z1p4dLwhUbup6zpvoWfDuGo+c01EZNOu
-         qiXaeuhDGTJ9MXyHOZVt/Bo/1ixqL+RfA6SZBlzZUD5cnHLOkp6Gn251gB49gAZgXq
-         hFSO60zXATLFU9+myLGtDRcAk1tGhJAFF97T2cOK4lXyAjHn1u8jmr3VFr58OSlNVz
-         S3vmDerdvepNw==
+        b=t39wuNLSJ4wvWr6DbiEzsYatDhxXithYhXUU//IpM3V/r7AnnHF+Upmwnd2DtJcXH
+         bMzMiPewAZGIog6lhomWhxSzbdk18LhrG0fyZJV9ABDraz4U+SVqfV3lpG7aN6epj8
+         GcRcsSIYudmAxaPMvJaZdk/rVjSBxGVSjIRN6X7SL5/GcVT34Fp7yr9W2hOCbjwMyT
+         8Cbi5/0PpIrYjIgnFhG0tptl+lMR6EFD3eEyRpnOL2CexoQbQ0e0DBIXGyvMN67XUp
+         1vxhYX+fxDYCj8DhBeANfPn1ThppsnlVDKB9D7qIK2N3n4dceprFWBu64+yIEEOU12
+         xK/MRSIYaCUlw==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -48,8 +48,7 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
