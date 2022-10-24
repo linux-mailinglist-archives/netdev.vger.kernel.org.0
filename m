@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E02A60B17C
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 18:26:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E30660B17D
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 18:26:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231614AbiJXQ0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 12:26:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54402 "EHLO
+        id S230477AbiJXQ0i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 12:26:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231625AbiJXQZx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 12:25:53 -0400
+        with ESMTP id S232141AbiJXQ0R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 12:26:17 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C37B9185E
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 08:12:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B201A1633AE
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 08:12:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D4B7961373
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 14:00:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3F3FC433D6;
-        Mon, 24 Oct 2022 14:00:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9159261376
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 14:00:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CC0DC433D6;
+        Mon, 24 Oct 2022 14:00:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666620048;
-        bh=98/P9v6OS3CoLWGGUxd42Qt5ATm7nnSFElef4v82yJA=;
+        s=k20201202; t=1666620052;
+        bh=vkJAR8gPXYXxewNJIAj8D42aCJ/PToLkkRkDZZ8JzzE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mBcGd6Fk2kG8x+LyUE46AzSJf3UNN/X7dcQcgN8RyH9jaMgB8FAH+k7kEMMZSaiVo
-         dPdOnXPV5DEQKjI127YaSk0h8eIs1n6YLb2oAxrrWaKHC3hztGLN6hGxjg9cgwT7TI
-         Dprqoff05UbU6NGhY/3AwBcokHvz3ZvvsXYHx1wuWgk4nFtIzjR2MZsIIOnNwsSLh0
-         pb3/HAS7GzeRJLa198kelJbClRa5OQm+LhaeSLnIeVvzQQgR0h3+49CLz9DXUfcyMM
-         f9v0el17ZM9MMZgsWaIEpI/eQtcRHXxdzGRz1TDEM4RiQbY56yuFSSyVWdQ/LK7ZjQ
-         lOc+yMtxelj6Q==
+        b=ZvvCp/6gm4Mj2ozRRH8S8sMl5BTxzHys8XDdiy408SsUYOFhsNwxkI5bOHRCus96C
+         j/befugzuZ01HYFnCqtm54kduKsUcWatcgLnHDHFadJ19Vq6B3Lc3My0txnovRZtEc
+         4lnwHNGQxaYFWWOytAZU9EX7zIDOSToaPpAPqfa47FgQxi/I94kLx3iwwIb7QO9Fy3
+         gVnOFQ7eULu8bc+3kW99ImlBqEAZNCfmcvyIhJ/p94iA7zRxBewA9ozG1O5q5Ulype
+         1ALNaDutS2eR1/t0put8SSsDCAQoyvKkXinvcwX80XUiiNaU1XQ60i+9K/CyQWBKUO
+         2Ow3KgLMQQV1A==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -40,9 +40,9 @@ Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Yevgeny Kliteynik <kliteyn@nvidia.com>,
         Alex Vesker <valex@nvidia.com>
-Subject: [net-next 10/14] net/mlx5: DR, Allocate icm_chunks from their own slab allocator
-Date:   Mon, 24 Oct 2022 14:57:30 +0100
-Message-Id: <20221024135734.69673-11-saeed@kernel.org>
+Subject: [net-next 11/14] net/mlx5: DR, Allocate htbl from its own slab allocator
+Date:   Mon, 24 Oct 2022 14:57:31 +0100
+Message-Id: <20221024135734.69673-12-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221024135734.69673-1-saeed@kernel.org>
 References: <20221024135734.69673-1-saeed@kernel.org>
@@ -59,125 +59,151 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-SW steering allocates/frees lots of icm_chunk structs. To make this more
-efficiently, create a separate kmem_cache and allocate these chunks from
-this allocator.
-By doing this we observe that the alloc/free "hiccups" frequency has
-become much lower, which allows for a more steady rule insersion rate.
+SW steering allocates/frees lots of htbl structs. Create a
+separate kmem_cache and allocate htbls from this allocator.
 
 Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Reviewed-by: Alex Vesker <valex@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/steering/dr_domain.c       | 15 ++++++++++++++-
- .../mellanox/mlx5/core/steering/dr_icm_pool.c     | 11 +++++++++--
- .../mellanox/mlx5/core/steering/dr_types.h        |  1 +
- 3 files changed, 24 insertions(+), 3 deletions(-)
+ .../mellanox/mlx5/core/steering/dr_domain.c        | 14 +++++++++++++-
+ .../mellanox/mlx5/core/steering/dr_icm_pool.c      | 10 ++++++++++
+ .../ethernet/mellanox/mlx5/core/steering/dr_ste.c  | 12 +++++++++---
+ .../mellanox/mlx5/core/steering/dr_types.h         |  4 ++++
+ 4 files changed, 36 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
-index 3dc784b22741..3fbcb2883a26 100644
+index 3fbcb2883a26..9a9836218c8e 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
-@@ -60,10 +60,19 @@ static int dr_domain_init_mem_resources(struct mlx5dr_domain *dmn)
- {
- 	int ret;
+@@ -68,11 +68,20 @@ static int dr_domain_init_mem_resources(struct mlx5dr_domain *dmn)
+ 		return -ENOMEM;
+ 	}
  
-+	dmn->chunks_kmem_cache = kmem_cache_create("mlx5_dr_chunks",
-+						   sizeof(struct mlx5dr_icm_chunk), 0,
-+						   SLAB_HWCACHE_ALIGN, NULL);
-+	if (!dmn->chunks_kmem_cache) {
-+		mlx5dr_err(dmn, "Couldn't create chunks kmem_cache\n");
-+		return -ENOMEM;
++	dmn->htbls_kmem_cache = kmem_cache_create("mlx5_dr_htbls",
++						  sizeof(struct mlx5dr_ste_htbl), 0,
++						  SLAB_HWCACHE_ALIGN, NULL);
++	if (!dmn->htbls_kmem_cache) {
++		mlx5dr_err(dmn, "Couldn't create hash tables kmem_cache\n");
++		ret = -ENOMEM;
++		goto free_chunks_kmem_cache;
 +	}
 +
  	dmn->ste_icm_pool = mlx5dr_icm_pool_create(dmn, DR_ICM_TYPE_STE);
  	if (!dmn->ste_icm_pool) {
  		mlx5dr_err(dmn, "Couldn't get icm memory\n");
--		return -ENOMEM;
-+		ret = -ENOMEM;
-+		goto free_chunks_kmem_cache;
+ 		ret = -ENOMEM;
+-		goto free_chunks_kmem_cache;
++		goto free_htbls_kmem_cache;
  	}
  
  	dmn->action_icm_pool = mlx5dr_icm_pool_create(dmn, DR_ICM_TYPE_MODIFY_ACTION);
-@@ -85,6 +94,9 @@ static int dr_domain_init_mem_resources(struct mlx5dr_domain *dmn)
+@@ -94,6 +103,8 @@ static int dr_domain_init_mem_resources(struct mlx5dr_domain *dmn)
  	mlx5dr_icm_pool_destroy(dmn->action_icm_pool);
  free_ste_icm_pool:
  	mlx5dr_icm_pool_destroy(dmn->ste_icm_pool);
-+free_chunks_kmem_cache:
-+	kmem_cache_destroy(dmn->chunks_kmem_cache);
-+
- 	return ret;
- }
++free_htbls_kmem_cache:
++	kmem_cache_destroy(dmn->htbls_kmem_cache);
+ free_chunks_kmem_cache:
+ 	kmem_cache_destroy(dmn->chunks_kmem_cache);
  
-@@ -93,6 +105,7 @@ static void dr_domain_uninit_mem_resources(struct mlx5dr_domain *dmn)
+@@ -105,6 +116,7 @@ static void dr_domain_uninit_mem_resources(struct mlx5dr_domain *dmn)
  	mlx5dr_send_info_pool_destroy(dmn);
  	mlx5dr_icm_pool_destroy(dmn->action_icm_pool);
  	mlx5dr_icm_pool_destroy(dmn->ste_icm_pool);
-+	kmem_cache_destroy(dmn->chunks_kmem_cache);
++	kmem_cache_destroy(dmn->htbls_kmem_cache);
+ 	kmem_cache_destroy(dmn->chunks_kmem_cache);
  }
  
- static int dr_domain_init_resources(struct mlx5dr_domain *dmn)
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
-index 7ca1ef073f55..be02546a7de0 100644
+index be02546a7de0..ca91a0211a5c 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
-@@ -9,6 +9,8 @@ struct mlx5dr_icm_pool {
- 	enum mlx5dr_icm_type icm_type;
- 	enum mlx5dr_icm_chunk_size max_log_chunk_sz;
- 	struct mlx5dr_domain *dmn;
-+	struct kmem_cache *chunks_kmem_cache;
-+
- 	/* memory management */
- 	struct mutex mutex; /* protect the ICM pool and ICM buddy */
- 	struct list_head buddy_mem_list;
-@@ -193,10 +195,13 @@ static void dr_icm_chunk_ste_init(struct mlx5dr_icm_chunk *chunk, int offset)
- 
- static void dr_icm_chunk_destroy(struct mlx5dr_icm_chunk *chunk)
- {
-+	struct kmem_cache *chunks_cache =
-+		chunk->buddy_mem->pool->chunks_kmem_cache;
-+
- 	chunk->buddy_mem->used_memory -= mlx5dr_icm_pool_get_chunk_byte_size(chunk);
- 	list_del(&chunk->chunk_list);
- 
--	kvfree(chunk);
-+	kmem_cache_free(chunks_cache, chunk);
+@@ -470,6 +470,16 @@ void mlx5dr_icm_free_chunk(struct mlx5dr_icm_chunk *chunk)
+ 	mutex_unlock(&pool->mutex);
  }
  
- static int dr_icm_buddy_init_ste_cache(struct mlx5dr_icm_buddy_mem *buddy)
-@@ -302,10 +307,11 @@ dr_icm_chunk_create(struct mlx5dr_icm_pool *pool,
- 		    struct mlx5dr_icm_buddy_mem *buddy_mem_pool,
- 		    unsigned int seg)
++struct mlx5dr_ste_htbl *mlx5dr_icm_pool_alloc_htbl(struct mlx5dr_icm_pool *pool)
++{
++	return kmem_cache_alloc(pool->dmn->htbls_kmem_cache, GFP_KERNEL);
++}
++
++void mlx5dr_icm_pool_free_htbl(struct mlx5dr_icm_pool *pool, struct mlx5dr_ste_htbl *htbl)
++{
++	kmem_cache_free(pool->dmn->htbls_kmem_cache, htbl);
++}
++
+ struct mlx5dr_icm_pool *mlx5dr_icm_pool_create(struct mlx5dr_domain *dmn,
+ 					       enum mlx5dr_icm_type icm_type)
  {
-+	struct kmem_cache *chunks_cache = buddy_mem_pool->pool->chunks_kmem_cache;
- 	struct mlx5dr_icm_chunk *chunk;
- 	int offset;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
+index 09ebd3088857..9e19a8dc9022 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
+@@ -491,7 +491,7 @@ struct mlx5dr_ste_htbl *mlx5dr_ste_htbl_alloc(struct mlx5dr_icm_pool *pool,
+ 	u32 num_entries;
+ 	int i;
  
--	chunk = kvzalloc(sizeof(*chunk), GFP_KERNEL);
-+	chunk = kmem_cache_alloc(chunks_cache, GFP_KERNEL);
- 	if (!chunk)
+-	htbl = kzalloc(sizeof(*htbl), GFP_KERNEL);
++	htbl = mlx5dr_icm_pool_alloc_htbl(pool);
+ 	if (!htbl)
  		return NULL;
  
-@@ -482,6 +488,7 @@ struct mlx5dr_icm_pool *mlx5dr_icm_pool_create(struct mlx5dr_domain *dmn,
- 	pool->dmn = dmn;
- 	pool->icm_type = icm_type;
- 	pool->max_log_chunk_sz = max_log_chunk_sz;
-+	pool->chunks_kmem_cache = dmn->chunks_kmem_cache;
+@@ -503,6 +503,9 @@ struct mlx5dr_ste_htbl *mlx5dr_ste_htbl_alloc(struct mlx5dr_icm_pool *pool,
+ 	htbl->lu_type = lu_type;
+ 	htbl->byte_mask = byte_mask;
+ 	htbl->refcount = 0;
++	htbl->pointing_ste = NULL;
++	htbl->ctrl.num_of_valid_entries = 0;
++	htbl->ctrl.num_of_collisions = 0;
+ 	num_entries = mlx5dr_icm_pool_get_chunk_num_of_entries(chunk);
  
- 	INIT_LIST_HEAD(&pool->buddy_mem_list);
+ 	for (i = 0; i < num_entries; i++) {
+@@ -517,17 +520,20 @@ struct mlx5dr_ste_htbl *mlx5dr_ste_htbl_alloc(struct mlx5dr_icm_pool *pool,
+ 	return htbl;
+ 
+ out_free_htbl:
+-	kfree(htbl);
++	mlx5dr_icm_pool_free_htbl(pool, htbl);
+ 	return NULL;
+ }
+ 
+ int mlx5dr_ste_htbl_free(struct mlx5dr_ste_htbl *htbl)
+ {
++	struct mlx5dr_icm_pool *pool = htbl->chunk->buddy_mem->pool;
++
+ 	if (htbl->refcount)
+ 		return -EBUSY;
+ 
+ 	mlx5dr_icm_free_chunk(htbl->chunk);
+-	kfree(htbl);
++	mlx5dr_icm_pool_free_htbl(pool, htbl);
++
+ 	return 0;
+ }
  
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-index 244685453a27..4f38f0f5b352 100644
+index 4f38f0f5b352..b645c0ab9a72 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-@@ -915,6 +915,7 @@ struct mlx5dr_domain {
- 	struct mlx5dr_icm_pool *action_icm_pool;
+@@ -916,6 +916,7 @@ struct mlx5dr_domain {
  	struct mlx5dr_send_info_pool *send_info_pool_rx;
  	struct mlx5dr_send_info_pool *send_info_pool_tx;
-+	struct kmem_cache *chunks_kmem_cache;
+ 	struct kmem_cache *chunks_kmem_cache;
++	struct kmem_cache *htbls_kmem_cache;
  	struct mlx5dr_send_ring *send_ring;
  	struct mlx5dr_domain_info info;
  	struct xarray csum_fts_xa;
+@@ -1162,6 +1163,9 @@ u32 mlx5dr_icm_pool_get_chunk_num_of_entries(struct mlx5dr_icm_chunk *chunk);
+ u32 mlx5dr_icm_pool_get_chunk_byte_size(struct mlx5dr_icm_chunk *chunk);
+ u8 *mlx5dr_ste_get_hw_ste(struct mlx5dr_ste *ste);
+ 
++struct mlx5dr_ste_htbl *mlx5dr_icm_pool_alloc_htbl(struct mlx5dr_icm_pool *pool);
++void mlx5dr_icm_pool_free_htbl(struct mlx5dr_icm_pool *pool, struct mlx5dr_ste_htbl *htbl);
++
+ static inline int
+ mlx5dr_icm_pool_dm_type_to_entry_size(enum mlx5dr_icm_type icm_type)
+ {
 -- 
 2.37.3
 
