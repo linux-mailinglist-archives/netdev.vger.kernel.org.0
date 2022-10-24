@@ -2,89 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF411609D7A
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 11:07:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 539D7609D88
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 11:10:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230180AbiJXJHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 05:07:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48700 "EHLO
+        id S230138AbiJXJK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 05:10:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231128AbiJXJHi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 05:07:38 -0400
-Received: from hust.edu.cn (unknown [202.114.0.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 331E012D33;
-        Mon, 24 Oct 2022 02:07:19 -0700 (PDT)
-Received: from localhost.localdomain ([172.16.0.254])
-        (user=dzm91@hust.edu.cn mech=LOGIN bits=0)
-        by mx1.hust.edu.cn  with ESMTP id 29O94ftr027533-29O94ftu027533
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Mon, 24 Oct 2022 17:04:45 +0800
-From:   Dongliang Mu <dzm91@hust.edu.cn>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        =?UTF-8?q?Sebastian=20W=C3=BCrl?= <sebastian.wuerl@ororatech.com>,
-        Dongliang Mu <dzm91@hust.edu.cn>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        =?UTF-8?q?Timo=20Schl=C3=BC=C3=9Fler?= <schluessler@krause.de>
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] can: mcp251x: fix error handling code in mcp251x_can_probe
-Date:   Mon, 24 Oct 2022 17:02:52 +0800
-Message-Id: <20221024090256.717236-1-dzm91@hust.edu.cn>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S230458AbiJXJK1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 05:10:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B0029C99
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 02:10:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D4A861127
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 09:10:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D667BC433D7;
+        Mon, 24 Oct 2022 09:10:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666602616;
+        bh=oZHeITMKk/qfhiIniS+hT5SX5c0MXj8HVpqZDsHbC9k=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=NNpnEwTvNoSJ/GoNRHo7lO2MJ3ru8sqfhO6sL3ZY6/B1dnt/axv1DGn7k1lWBCJCe
+         u2jObFL33pUwJN2S4TSzHW15yov/vnpzchdL+98S0DpdaNQgnq2EH+f4sr3Ax9Pat2
+         BWrOxwL29+GWm8T9hH+q+CiK9kE1rDO0ZElKSlogsu4p2AI9nhrAtgn2H2IYiWdtKp
+         o2kNYuqoWTP8kQk+rTLW0kA9LRqKOYhh+CofPAyobnm3+/1qCaWp+uq9RwFesVty/A
+         DiH4P8ET1DkMIApr+JhiY5JcAW3FpJEQStfm8INuSQ9CvATwZqtMgUmcLRj0qJ7xqH
+         vsgTcEtsCkvhA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BCAB0C4166D;
+        Mon, 24 Oct 2022 09:10:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-FEAS-AUTH-USER: dzm91@hust.edu.cn
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH v2 net-next 0/5] inet6: Remove inet6_destroy_sock() calls.
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166660261676.3485.16310457743644962563.git-patchwork-notify@kernel.org>
+Date:   Mon, 24 Oct 2022 09:10:16 +0000
+References: <20221019223603.22991-1-kuniyu@amazon.com>
+In-Reply-To: <20221019223603.22991-1-kuniyu@amazon.com>
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, dsahern@kernel.org, yoshfuji@linux-ipv6.org,
+        kuni1840@gmail.com, netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In mcp251x_can_probe, if mcp251x_gpio_setup fails, it forgets to
-unregister the can device.
+Hello:
 
-Fix this by unregistering can device in mcp251x_can_probe.
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Fixes: 2d52dabbef60 ("can: mcp251x: add GPIO support")
-Signed-off-by: Dongliang Mu <dzm91@hust.edu.cn>
----
-v1->v2: add fixes tag
- drivers/net/can/spi/mcp251x.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+On Wed, 19 Oct 2022 15:35:58 -0700 you wrote:
+> This is a follow-up series for commit d38afeec26ed ("tcp/udp: Call
+> inet6_destroy_sock() in IPv6 sk->sk_destruct().").
+> 
+> This series cleans up unnecessary inet6_destory_sock() calls in
+> sk->sk_prot->destroy() and call it from sk->sk_destruct() to make
+> sure we do not leak memory related to IPv6 specific-resources.
+> 
+> [...]
 
-diff --git a/drivers/net/can/spi/mcp251x.c b/drivers/net/can/spi/mcp251x.c
-index c320de474f40..00ed46683656 100644
---- a/drivers/net/can/spi/mcp251x.c
-+++ b/drivers/net/can/spi/mcp251x.c
-@@ -1415,11 +1415,14 @@ static int mcp251x_can_probe(struct spi_device *spi)
- 
- 	ret = mcp251x_gpio_setup(priv);
- 	if (ret)
--		goto error_probe;
-+		goto err_reg_candev;
- 
- 	netdev_info(net, "MCP%x successfully initialized.\n", priv->model);
- 	return 0;
- 
-+err_reg_candev:
-+	unregister_candev(net);
-+
- error_probe:
- 	destroy_workqueue(priv->wq);
- 	priv->wq = NULL;
+Here is the summary with links:
+  - [v2,net-next,1/5] inet6: Remove inet6_destroy_sock() in sk->sk_prot->destroy().
+    https://git.kernel.org/netdev/net-next/c/b5fc29233d28
+  - [v2,net-next,2/5] dccp: Call inet6_destroy_sock() via sk->sk_destruct().
+    https://git.kernel.org/netdev/net-next/c/1651951ebea5
+  - [v2,net-next,3/5] sctp: Call inet6_destroy_sock() via sk->sk_destruct().
+    https://git.kernel.org/netdev/net-next/c/6431b0f6ff16
+  - [v2,net-next,4/5] inet6: Remove inet6_destroy_sock().
+    https://git.kernel.org/netdev/net-next/c/1f8c4eeb9455
+  - [v2,net-next,5/5] inet6: Clean up failure path in do_ipv6_setsockopt().
+    https://git.kernel.org/netdev/net-next/c/b45a337f061e
+
+You are awesome, thank you!
 -- 
-2.35.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
