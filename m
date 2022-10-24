@@ -2,101 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67E4E609F12
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 12:31:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89049609F21
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 12:34:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229772AbiJXKbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 06:31:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40800 "EHLO
+        id S229866AbiJXKeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 06:34:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229817AbiJXKbN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 06:31:13 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4558F3335D
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 03:31:12 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id B1E131FD66;
-        Mon, 24 Oct 2022 10:31:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1666607470; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xXa1ahBEXTNEByQZKb8q7VWoPUh/iBrjUQzdw2pnW/w=;
-        b=nqZgJInsG1Q+dZK+4lcHUxYA+HgUuxs+9pgiDZCamri5t0LZmOjoM5vbS78cEgbGY5ScEL
-        8qn3dEUCNj3CEZSQXQcTboqa4loJrqupSbuK4kRhCXjOXWqgm740bAA8pNd06tr4zzlDX9
-        Qq1/jgouqHva2njsXO/1AXuMG6Hn560=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1666607470;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xXa1ahBEXTNEByQZKb8q7VWoPUh/iBrjUQzdw2pnW/w=;
-        b=DShoosqgRGHZv79ayy4Oarm/uM+ud2DdADNJaZHkRyWQDoNJiOQoyzLc93DP5RGx/kBbeh
-        xb5Ghe5+HWSu80Bg==
-Received: from lion.mk-sys.cz (unknown [10.163.44.94])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id A70D12C141;
-        Mon, 24 Oct 2022 10:31:10 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 8BBFC604C3; Mon, 24 Oct 2022 12:31:10 +0200 (CEST)
-Date:   Mon, 24 Oct 2022 12:31:10 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Xose Vazquez Perez <xose.vazquez@gmail.com>
-Cc:     Alexandru Tachici <alexandru.tachici@analog.com>,
-        NETDEV ML <netdev@vger.kernel.org>
-Subject: Re: ethtool: missing ETHTOOL_LINK_MODE_10baseT1L_Full_BIT
-Message-ID: <20221024103110.4oypxzog7aug2jgo@lion.mk-sys.cz>
-References: <4f4d4ddb-62c7-d073-91d1-2dbb9127b8fa@gmail.com>
+        with ESMTP id S229634AbiJXKeA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 06:34:00 -0400
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1939255B1;
+        Mon, 24 Oct 2022 03:33:58 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1666607636;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=qpUmDlUO3lFzWoHe1gc5HAzZMJB7JaPr1kJnHfNQapk=;
+        b=keKUL2kM4SepU5a7A4+p+xyjH1lDFSjkI5Rkp7jzgrN0eULsLMawfXmc3TPdNt4JCYwhSn
+        VHdK3s8SvjAGD1YIAcxVa3aGwPkb3Y1rshdlostDzfq/cshLMdBWH4E1wCOoWMTNygglAy
+        57kIdkKbJW3iD4AMrjTaciZYTtsSQko=
+From:   Cai Huoqing <cai.huoqing@linux.dev>
+To:     pabeni@redhat.com
+Cc:     caihuoqing <cai.huoqing@linux.dev>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Qiao Ma <mqaio@linux.alibaba.com>,
+        Zhengchao Shao <shaozhengchao@huawei.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4] net: hinic: Set max_mtu/min_mtu directly to simplify the code.
+Date:   Mon, 24 Oct 2022 18:33:35 +0800
+Message-Id: <20221024103349.4494-1-cai.huoqing@linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="xvohivna64fztwdr"
-Content-Disposition: inline
-In-Reply-To: <4f4d4ddb-62c7-d073-91d1-2dbb9127b8fa@gmail.com>
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_SOFTFAIL autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: caihuoqing <cai.huoqing@linux.dev>
 
---xvohivna64fztwdr
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Set max_mtu/min_mtu directly to avoid making the validity judgment
+when set mtu, because the judgment is made in net/core: dev_validate_mtu,
+so to simplify the code.
 
-On Sun, Oct 23, 2022 at 12:17:12AM +0200, Xose Vazquez Perez wrote:
->=20
-> It was defined in the kernel:
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit=
-/?id=3D3254e0b9eb5649ffaa48717ebc9c593adc4ee6a9
-> but missing in ethtool.
+Signed-off-by: caihuoqing <cai.huoqing@linux.dev>
+---
+v1->v2:
+	1.Update changelog.
+	2.Reverse MAX_MTU to max jumbo frame size.
+v2->v3:
+    1.Update signature
+v3->v4:
+	1.Fix whitespace-damaged
 
-I'll send a patch updating ethtool later today but one of the advantages
-of the way this part of the netlink interface is designed is that you do
-not actually need special support for the new link modes in ethtool
-utility. In other words, as long as running kernel supports the new
-mode, any sufficiently recent ethtool (with netlink support) should
-display and set it correctly.
+	v1 link: https://lore.kernel.org/lkml/20221012082945.10353-1-cai.huoqing@linux.dev/
+	v2 link: https://lore.kernel.org/lkml/20221013083558.110621be@kernel.org/
+	v3 link: https://lore.kernel.org/lkml/d9bac72cf3c7ee92ad399fff5dcaae85903adda5.camel@redhat.com/
 
-Michal
+ drivers/net/ethernet/huawei/hinic/hinic_dev.h  |  4 ++++
+ drivers/net/ethernet/huawei/hinic/hinic_main.c |  3 ++-
+ drivers/net/ethernet/huawei/hinic/hinic_port.c | 17 +----------------
+ 3 files changed, 7 insertions(+), 17 deletions(-)
 
---xvohivna64fztwdr
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_dev.h b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
+index a4fbf44f944c..2bbc94c0a9c1 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_dev.h
++++ b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
+@@ -22,6 +22,10 @@
+ 
+ #define LP_PKT_CNT		64
+ 
++#define HINIC_MAX_JUMBO_FRAME_SIZE      15872
++#define HINIC_MAX_MTU_SIZE      (HINIC_MAX_JUMBO_FRAME_SIZE - ETH_HLEN - ETH_FCS_LEN)
++#define HINIC_MIN_MTU_SIZE      256
++
+ enum hinic_flags {
+ 	HINIC_LINK_UP = BIT(0),
+ 	HINIC_INTF_UP = BIT(1),
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+index c23ee2ddbce3..41e52f775aae 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+@@ -1189,7 +1189,8 @@ static int nic_dev_init(struct pci_dev *pdev)
+ 	else
+ 		netdev->netdev_ops = &hinicvf_netdev_ops;
+ 
+-	netdev->max_mtu = ETH_MAX_MTU;
++	netdev->max_mtu = HINIC_MAX_MTU_SIZE;
++	netdev->min_mtu = HINIC_MIN_MTU_SIZE;
+ 
+ 	nic_dev = netdev_priv(netdev);
+ 	nic_dev->netdev = netdev;
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.c b/drivers/net/ethernet/huawei/hinic/hinic_port.c
+index 28ae6f1201a8..0a39c3dffa9a 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_port.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_port.c
+@@ -17,9 +17,6 @@
+ #include "hinic_port.h"
+ #include "hinic_dev.h"
+ 
+-#define HINIC_MIN_MTU_SIZE              256
+-#define HINIC_MAX_JUMBO_FRAME_SIZE      15872
+-
+ enum mac_op {
+ 	MAC_DEL,
+ 	MAC_SET,
+@@ -147,24 +144,12 @@ int hinic_port_get_mac(struct hinic_dev *nic_dev, u8 *addr)
+  **/
+ int hinic_port_set_mtu(struct hinic_dev *nic_dev, int new_mtu)
+ {
+-	struct net_device *netdev = nic_dev->netdev;
+ 	struct hinic_hwdev *hwdev = nic_dev->hwdev;
+ 	struct hinic_port_mtu_cmd port_mtu_cmd;
+ 	struct hinic_hwif *hwif = hwdev->hwif;
+ 	u16 out_size = sizeof(port_mtu_cmd);
+ 	struct pci_dev *pdev = hwif->pdev;
+-	int err, max_frame;
+-
+-	if (new_mtu < HINIC_MIN_MTU_SIZE) {
+-		netif_err(nic_dev, drv, netdev, "mtu < MIN MTU size");
+-		return -EINVAL;
+-	}
+-
+-	max_frame = new_mtu + ETH_HLEN + ETH_FCS_LEN;
+-	if (max_frame > HINIC_MAX_JUMBO_FRAME_SIZE) {
+-		netif_err(nic_dev, drv, netdev, "mtu > MAX MTU size");
+-		return -EINVAL;
+-	}
++	int err;
+ 
+ 	port_mtu_cmd.func_idx = HINIC_HWIF_FUNC_IDX(hwif);
+ 	port_mtu_cmd.mtu = new_mtu;
+-- 
+2.25.1
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmNWaWkACgkQ538sG/LR
-dpVgIgf8Dx9THsvezDyA50+UwxMOuL7Y+2rjd/1ZuP3KPVSK4QuW3WSEhZsa+k+C
-ousDnq8j8Pdah51UYmEo/unHge7IqIcT+Cl5H4/XplTKtP8YL9iP08i3NnLFL7yB
-WPkaGX3KjOLZNJXjzNnYttb6DF529xZOtFr9mxEAiydSzJKEWVt0XOnOCqzoF8yy
-xYoUSraLIxwett1X+P2RPJEKnKFbBIIpGWGNDc6egFOgKWY51Ga6Tj/O9kAw4BLb
-iAA8hnNHaSy9NaFoYljxMQORq2eHEX7ZUpeuaptpIlXeNXdXYLMSoyt0VIV1c3TQ
-DZo5ypkJSbjp8rctZEcwEWBI+r5/6A==
-=DN33
------END PGP SIGNATURE-----
-
---xvohivna64fztwdr--
