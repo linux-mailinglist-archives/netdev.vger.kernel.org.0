@@ -2,89 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43AEA60B8FB
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 22:00:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DB5760B968
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 22:10:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233759AbiJXT7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 15:59:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52934 "EHLO
+        id S232994AbiJXUKp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 16:10:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234125AbiJXT7I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 15:59:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 279AA1A39B;
-        Mon, 24 Oct 2022 11:22:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 82619B811B1;
-        Mon, 24 Oct 2022 18:21:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CC00C433C1;
-        Mon, 24 Oct 2022 18:21:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666635672;
-        bh=Sm3Otxq+YEJ8aZhxWt0m0arM/JhdPmMSj+3nytYHJPg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XMQN1c1X9aQsv7zPPFiwCfUdRS+ReNyCJNH65bDglHa1ChMUK2NsdLVnef1opyJqp
-         F0HIR01kOpsK6ipb7wzZ2cxeaFUeIyWQo1Lgn/8/u0SJba+SzqdVOPOK+2UwIFdIRK
-         MPxrW1/zqkspUvvHt52N7LfCAsJSLItB3GtL+266XpQSLlh6y2AZ82sAle/kyuLTDq
-         IN+BpZhooTGioB1fi8MqB0M8MWqFDfj7S0XBkL41DEgZfh6MCIQtowJ46VvG/O6h5y
-         /2cJrI9juzr44zVDDQW2TuMz3qU6wqfxDwgO3SogjbP96vhwElUakGQs6YEuJYhCSV
-         jWoyHMbWpOEJg==
-Date:   Mon, 24 Oct 2022 11:21:11 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jiri Olsa <olsajiri@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Martin KaFai Lau <martin.lau@kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: WARN: multiple IDs found for 'nf_conn': 92168, 117897 - using
- 92168
-Message-ID: <20221024112111.6d8b9c40@kernel.org>
-In-Reply-To: <CAADnVQKUSfGUM5WBsbAN00rDO9hKHnMFdEin7MbW4an03W3jGg@mail.gmail.com>
-References: <20221004072522.319cd826@kernel.org>
-        <Yz1SSlzZQhVtl1oS@krava>
-        <20221005084442.48cb27f1@kernel.org>
-        <20221005091801.38cc8732@kernel.org>
-        <Yz3kHX4hh8soRjGE@krava>
-        <20221013080517.621b8d83@kernel.org>
-        <Y0iNVwxTJmrddRuv@krava>
-        <CAEf4Bzbow+8-f4rg2LRRRUD+=1wbv1MjpAh-P4=smUPtrzfZ3Q@mail.gmail.com>
-        <Y0kF/radV0cg4JYk@krava>
-        <CAEf4BzZm2ViaHKiR+4pmWj6yzcPy23q-g_e+cJ90sXuDzkLmSw@mail.gmail.com>
-        <Y1MQVbq2rjH/zPi2@krava>
-        <20221021223612.42ba3122@kernel.org>
-        <CAADnVQKUSfGUM5WBsbAN00rDO9hKHnMFdEin7MbW4an03W3jGg@mail.gmail.com>
+        with ESMTP id S234324AbiJXUJn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 16:09:43 -0400
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [IPv6:2001:4b98:dc4:8::240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2A1B28;
+        Mon, 24 Oct 2022 11:29:29 -0700 (PDT)
+Received: from relay10.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::230])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id CF241CF059;
+        Mon, 24 Oct 2022 11:57:32 +0000 (UTC)
+Received: (Authenticated sender: i.maximets@ovn.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id 62719240007;
+        Mon, 24 Oct 2022 11:56:50 +0000 (UTC)
+Message-ID: <ded477ea-08fa-b96d-c192-9640977b42e6@ovn.org>
+Date:   Mon, 24 Oct 2022 13:56:49 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.1
+Cc:     i.maximets@ovn.org, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Content-Language: en-US
+To:     nicolas.dichtel@6wind.com, Jakub Kicinski <kuba@kernel.org>
+References: <20221021114921.3705550-1-i.maximets@ovn.org>
+ <20221021090756.0ffa65ee@kernel.org>
+ <eb6903b7-c0d9-cc70-246e-8dbde0412433@6wind.com>
+From:   Ilya Maximets <i.maximets@ovn.org>
+Subject: Re: [RFE net-next] net: tun: 1000x speed up
+In-Reply-To: <eb6903b7-c0d9-cc70-246e-8dbde0412433@6wind.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_NEUTRAL autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 22 Oct 2022 18:18:49 -0700 Alexei Starovoitov wrote:
-> > If you mean the warning from the subject then those do seem to be gone.
-> > But if I'm completely honest I don't remember how I triggered them in
-> > the first place :S There weren't there on every build for me.
-> >
-> > The objtool warning is still here:
-> >
-> > $ make PAHOLE=~/pahole O=build_allmodconfig/ -j 60 >/tmp/stdout 2>/tmp/stderr; \
-> >     cat /tmp/stderr
-> >
-> > vmlinux.o: warning: objtool: ___ksymtab+bpf_dispatcher_xdp_func+0x0: data relocation to !ENDBR: bpf_dispatcher_xdp_func+0x0
-> > vmlinux.o: warning: objtool: bpf_dispatcher_xdp+0xa0: data relocation to !ENDBR: bpf_dispatcher_xdp_func+0x0  
-> 
-> The effect of the compiler bug was addressed by this fix:
-> https://lore.kernel.org/all/20221018075934.574415-1-jolsa@kernel.org/
-> 
-> It's in the bpf tree, but the warning will stay.
-> While the compiler is broken the objtool should keep complaining.
+On 10/24/22 11:44, Nicolas Dichtel wrote:
+> Le 21/10/2022 à 18:07, Jakub Kicinski a écrit :
+>> On Fri, 21 Oct 2022 13:49:21 +0200 Ilya Maximets wrote:
+>>> Bump the advertised speed to at least match the veth.  10Gbps also
+>>> seems like a more or less fair assumption these days, even though
+>>> CPUs can do more.  Alternative might be to explicitly report UNKNOWN
+>>> and let the application/user decide on a right value for them.
+>>
+>> UNKOWN would seem more appropriate but at this point someone may depend
+>> on the speed being populated so it could cause regressions, I fear :S
+> If it is put in a bonding, it may cause some trouble. Maybe worth than
+> advertising 10M.
 
-Thanks! I'll stop tracking it
+My thoughts were that changing the number should have a minimal impact
+while changing it to not report any number may cause some issues in
+applications that doesn't expect that for some reason (not having a
+fallback in case reported speed is unknown isn't great, and the argument
+can be made that applications should check that, but it's hard to tell
+for every application if they actually do that today).
+
+Bonding is also a good point indeed, since it's even in-kernel user.
+
+
+The speed bump doesn't solve the problem per se.  It kind of postpones
+the decision, since we will run into the same issue eventually again.
+That's why I wanted to discuss that first.
+
+Though I think that at least unification across virtual devices (tun and
+veth) should be a step in a right direction.
+
+> 
+> Note that this value could be configured with ethtool:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=4e24f2dd516ed
+
+This is interesting, but it's a bit hard to manage, because in order
+to make a decision to bump the speed, application should already know
+that this is a tun/tap device.  So, there has to be a special case
+implemented in the code that detects the driver and changes the speed
+(this is about application that is using the interface, but didn't
+create it), but if we already know the driver, then it doesn't make
+sense to actually change the speed in many cases as application can
+already act accordingly.
+
+Also, the application may not have permissions to do that (I didn't
+check the requirements, but my guess would be at least CAP_NET_ADMIN?).
+
+For the human user it's still one extra configuration step that they
+need to remember to perform.
+
+Very useful for testing purposes though.  Thanks for pointing out!
+
+> 
+>>
+>>> Sorry for the clickbait subject line.
+>>
+>> Nicely done, worked on me :)
+> Works for me also :D
+
+Sorry again.  :):
+
+Best regards, Ilya Maximets.
