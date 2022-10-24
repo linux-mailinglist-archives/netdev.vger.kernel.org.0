@@ -2,205 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 739BA60B45A
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 19:39:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B275A60B4B5
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 20:01:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231475AbiJXRje (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 13:39:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46234 "EHLO
+        id S231232AbiJXSBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 14:01:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234826AbiJXRjS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 13:39:18 -0400
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A64D17E337
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 09:14:56 -0700 (PDT)
-Received: by mail-io1-f71.google.com with SMTP id u11-20020a6b490b000000b006bbcc07d893so6657866iob.9
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 09:14:56 -0700 (PDT)
+        with ESMTP id S231979AbiJXSAV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 14:00:21 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5107A172B57
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 09:40:49 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id a15so8831504ljb.7
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 09:40:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=9ewHs1WtNxesCvYdThMPfxZaMvkBvNzoFEJgKI+JRlc=;
+        b=k+GAKnekpI+zcQTN9AMIl5m+QttWddOkEdY/iVDVj32WcLAWxhNeJmbF9+VXqwPdOk
+         b5OiK3L/z7g0TD5leSDE/5o6ecJTGRSA6UG0kRQp+xHIaqlU5H/EiExHb00b4QdklSR+
+         5qtxANWJupMSw6KJspkitEOk4WEkToZ1kxt3N0sQdm+lIMH27VAjRBnbq/y/P9ogQNj2
+         nBbwv9Y4Tkg42LBxOwD9unY/uuAd77mQ21sACWyzcH5EeROrBe+EsWL3v91dG+Hirr/Y
+         JdMSw2OwRpVDFUNyfNt1KBU77brLM94rUXO6lKYgnjVBAeOPy1pF9f437a2uc7UkEAhq
+         6isA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=lb+LQ2K08rAb3t0rKlKNkf0GAL9zHh/qpN8CoY0pM2E=;
-        b=5QoQnllcp+CQvxZgFOQB1MRA+2J/65dp6txAbTt8cX861/+AI9OuFHAOuT5NkeO0Je
-         CKFEO94P+kDfr7S9l/UtdrfdO00E1dzJkSZbLFXtH5BK317DySdcH4mtG12Kw2szzKmA
-         V+WZ3vWP4zC7WDQ6qARZ4eGsxQpHCASVioV38WO74q6qfMZXh3IwuG/hMTrBv31UgCpv
-         bA61Wv7wLVXXe63zeKk8vomfBLV9WAxkv60E5mkD0qc8wiJj1xaARCdGla67vEv1rmZn
-         ziP8z44XXXmhWXSFqvrEGIRjOmSAGnFDaO0FjXfovUxY9BXqnu2SBApaXgfcII2Nvn3S
-         zSmw==
-X-Gm-Message-State: ACrzQf1bLCGB2YMD/n5mh3GFN9kHAcXG2i2XBzmJsy3iOyStaiOrjNK5
-        Xh5xy7bER8caIhEs5wlb5za6o6Emi/h1cupnXIa6IWQsPQwt
-X-Google-Smtp-Source: AMsMyM6fpfQV7xdYzZLyr63H09qZM9poQ1yOCTwpDJPZySbb3nkZ5g1tmZUW1qFCt4Rm9C3LJCyFlCJsu+aficnQMfJpbVTpmLHt
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=9ewHs1WtNxesCvYdThMPfxZaMvkBvNzoFEJgKI+JRlc=;
+        b=jm61R1g90Q3BLHxEQdx/zvJUgJNjdTSt6Yz4JGBMSdJLJnxBfEGyWWYt4bZnrXzEHH
+         V4YjTjWXnmYWp2J7LiCh2GYTWXR3QeZ65CvmHrsJMAQFMWcIChM7IQ9mU9r+BgrHdCbt
+         UOs6XZI61m5xw7gv8spTvbt3ztfF7txhw5hPkqNk4Bre7F2//6MygdgN3vZLz9Y1jMYx
+         VKW+K3fsycFr6ag2QiSI9ALK0ksh5fAWMRxwy9jE9gaeCNmDLYQjXgRjFk/iR9q1XtUO
+         alVqwJQKxdZqt829L0IEH1tSLvWAhEpX2DP7vgSwMVRee/3mHOJ0mrFS7XizdBnwTl3Z
+         i1dg==
+X-Gm-Message-State: ACrzQf2m56HA6/GQf4GozPiKZj5XYTBrxf0R8aKrDneqPytBS8txSH2t
+        ZQqQMwkEhw7onGJV691d3pKnlTxlrOQmDg==
+X-Google-Smtp-Source: AMsMyM6z2w/excwozJ6BviTwV358hsRtNkFRUXEe+yDxBrSohoGF1PedTaQNTCvA8HLZuEEfWcwVcA==
+X-Received: by 2002:a17:907:7f1c:b0:78d:ddc7:dfb1 with SMTP id qf28-20020a1709077f1c00b0078dddc7dfb1mr29237770ejc.189.1666628678553;
+        Mon, 24 Oct 2022 09:24:38 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id i9-20020a17090685c900b0078ae0fb3d11sm100407ejy.54.2022.10.24.09.24.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Oct 2022 09:24:38 -0700 (PDT)
+Date:   Mon, 24 Oct 2022 19:24:36 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Sergei Antonov <saproj@gmail.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Subject: Re: [PATCH v4 net-next] net: ftmac100: support mtu > 1500
+Message-ID: <20221024162436.y22ynsugtguyeteh@skbuf>
+References: <20221019162058.289712-1-saproj@gmail.com>
+ <20221019165516.sgoddwmdx6srmh5e@skbuf>
+ <CABikg9xBT-CPhuwAiQm3KLf8PTsWRNztryPpeP2Xb6SFzXDO0A@mail.gmail.com>
+ <20221019184203.4ywx3ighj72hjbqz@skbuf>
+ <CABikg9x8SGyva2C5HUgygS3r-c-_nv6H1g_CaBq-8m3rKp1o0g@mail.gmail.com>
+ <Y1a4no+U1cbXAWLi@lunn.ch>
+ <20221024162145.4t35ucrwpafbyhbc@skbuf>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1ba1:b0:2fc:5691:3020 with SMTP id
- n1-20020a056e021ba100b002fc56913020mr20843178ili.227.1666627365886; Mon, 24
- Oct 2022 09:02:45 -0700 (PDT)
-Date:   Mon, 24 Oct 2022 09:02:45 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000001de5c505ebc9ec59@google.com>
-Subject: [syzbot] memory leak in regulatory_hint_core
-From:   syzbot <syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com,
-        johannes@sipsolutions.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221024162145.4t35ucrwpafbyhbc@skbuf>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, Oct 24, 2022 at 07:21:45PM +0300, Vladimir Oltean wrote:
+> The only given guarantee is that packets with an L2 length <= dev->mtu
+> are accepted.
 
-syzbot found the following issue on:
-
-HEAD commit:    aae703b02f92 Merge tag 'for-6.1-rc1-tag' of git://git.kern..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=113ed1b4880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d2f454d7d3b63980
-dashboard link: https://syzkaller.appspot.com/bug?extid=232ebdbd36706c965ebf
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=124b8de2880000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12ae6a4a880000
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/a6542869e73f/disk-aae703b0.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/1a8ac40b2df8/vmlinux-aae703b0.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com
-
-executing program
-BUG: memory leak
-unreferenced object 0xffff8881450a3900 (size 64):
-  comm "swapper/0", pid 1, jiffies 4294937964 (age 66.260s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    ff ff ff ff 00 00 00 00 00 00 00 00 30 30 00 00  ............00..
-  backtrace:
-    [<ffffffff814cf9f0>] kmalloc_trace+0x20/0x90 mm/slab_common.c:1046
-    [<ffffffff84070f62>] kmalloc include/linux/slab.h:576 [inline]
-    [<ffffffff84070f62>] kzalloc include/linux/slab.h:712 [inline]
-    [<ffffffff84070f62>] regulatory_hint_core+0x22/0x60 net/wireless/reg.c:3242
-    [<ffffffff8722bfc1>] regulatory_init_db+0x222/0x2de net/wireless/reg.c:4312
-    [<ffffffff81000fde>] do_one_initcall+0x5e/0x2e0 init/main.c:1303
-    [<ffffffff8718db35>] do_initcall_level init/main.c:1376 [inline]
-    [<ffffffff8718db35>] do_initcalls init/main.c:1392 [inline]
-    [<ffffffff8718db35>] do_basic_setup init/main.c:1411 [inline]
-    [<ffffffff8718db35>] kernel_init_freeable+0x255/0x2cf init/main.c:1631
-    [<ffffffff8460cb9a>] kernel_init+0x1a/0x1c0 init/main.c:1519
-    [<ffffffff8100224f>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
-
-BUG: memory leak
-unreferenced object 0xffff88810c287f00 (size 256):
-  comm "syz-executor105", pid 3600, jiffies 4294943292 (age 12.990s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffff814cf9f0>] kmalloc_trace+0x20/0x90 mm/slab_common.c:1046
-    [<ffffffff839c9e07>] kmalloc include/linux/slab.h:576 [inline]
-    [<ffffffff839c9e07>] kmalloc_array include/linux/slab.h:627 [inline]
-    [<ffffffff839c9e07>] kcalloc include/linux/slab.h:659 [inline]
-    [<ffffffff839c9e07>] tcf_exts_init include/net/pkt_cls.h:250 [inline]
-    [<ffffffff839c9e07>] tcindex_set_parms+0xa7/0xbe0 net/sched/cls_tcindex.c:342
-    [<ffffffff839caa1f>] tcindex_change+0xdf/0x120 net/sched/cls_tcindex.c:553
-    [<ffffffff8394db62>] tc_new_tfilter+0x4f2/0x1100 net/sched/cls_api.c:2147
-    [<ffffffff8389e91c>] rtnetlink_rcv_msg+0x4dc/0x5d0 net/core/rtnetlink.c:6082
-    [<ffffffff839eba67>] netlink_rcv_skb+0x87/0x1d0 net/netlink/af_netlink.c:2540
-    [<ffffffff839eab87>] netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
-    [<ffffffff839eab87>] netlink_unicast+0x397/0x4c0 net/netlink/af_netlink.c:1345
-    [<ffffffff839eb046>] netlink_sendmsg+0x396/0x710 net/netlink/af_netlink.c:1921
-    [<ffffffff8383e796>] sock_sendmsg_nosec net/socket.c:714 [inline]
-    [<ffffffff8383e796>] sock_sendmsg+0x56/0x80 net/socket.c:734
-    [<ffffffff8383eb08>] ____sys_sendmsg+0x178/0x410 net/socket.c:2482
-    [<ffffffff83843678>] ___sys_sendmsg+0xa8/0x110 net/socket.c:2536
-    [<ffffffff838439c5>] __sys_sendmmsg+0x105/0x330 net/socket.c:2622
-    [<ffffffff83843c14>] __do_sys_sendmmsg net/socket.c:2651 [inline]
-    [<ffffffff83843c14>] __se_sys_sendmmsg net/socket.c:2648 [inline]
-    [<ffffffff83843c14>] __x64_sys_sendmmsg+0x24/0x30 net/socket.c:2648
-    [<ffffffff84605fd5>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-    [<ffffffff84605fd5>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-    [<ffffffff84800087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-BUG: memory leak
-unreferenced object 0xffff88810c287e00 (size 256):
-  comm "syz-executor105", pid 3600, jiffies 4294943292 (age 12.990s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffff814cf9f0>] kmalloc_trace+0x20/0x90 mm/slab_common.c:1046
-    [<ffffffff839c9e07>] kmalloc include/linux/slab.h:576 [inline]
-    [<ffffffff839c9e07>] kmalloc_array include/linux/slab.h:627 [inline]
-    [<ffffffff839c9e07>] kcalloc include/linux/slab.h:659 [inline]
-    [<ffffffff839c9e07>] tcf_exts_init include/net/pkt_cls.h:250 [inline]
-    [<ffffffff839c9e07>] tcindex_set_parms+0xa7/0xbe0 net/sched/cls_tcindex.c:342
-    [<ffffffff839caa1f>] tcindex_change+0xdf/0x120 net/sched/cls_tcindex.c:553
-    [<ffffffff8394db62>] tc_new_tfilter+0x4f2/0x1100 net/sched/cls_api.c:2147
-    [<ffffffff8389e91c>] rtnetlink_rcv_msg+0x4dc/0x5d0 net/core/rtnetlink.c:6082
-    [<ffffffff839eba67>] netlink_rcv_skb+0x87/0x1d0 net/netlink/af_netlink.c:2540
-    [<ffffffff839eab87>] netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
-    [<ffffffff839eab87>] netlink_unicast+0x397/0x4c0 net/netlink/af_netlink.c:1345
-    [<ffffffff839eb046>] netlink_sendmsg+0x396/0x710 net/netlink/af_netlink.c:1921
-    [<ffffffff8383e796>] sock_sendmsg_nosec net/socket.c:714 [inline]
-    [<ffffffff8383e796>] sock_sendmsg+0x56/0x80 net/socket.c:734
-    [<ffffffff8383eb08>] ____sys_sendmsg+0x178/0x410 net/socket.c:2482
-    [<ffffffff83843678>] ___sys_sendmsg+0xa8/0x110 net/socket.c:2536
-    [<ffffffff838439c5>] __sys_sendmmsg+0x105/0x330 net/socket.c:2622
-    [<ffffffff83843c14>] __do_sys_sendmmsg net/socket.c:2651 [inline]
-    [<ffffffff83843c14>] __se_sys_sendmmsg net/socket.c:2648 [inline]
-    [<ffffffff83843c14>] __x64_sys_sendmmsg+0x24/0x30 net/socket.c:2648
-    [<ffffffff84605fd5>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-    [<ffffffff84605fd5>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-    [<ffffffff84800087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-BUG: memory leak
-unreferenced object 0xffff88810c1c6d00 (size 256):
-  comm "syz-executor105", pid 3601, jiffies 4294943831 (age 7.600s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffff814cf9f0>] kmalloc_trace+0x20/0x90 mm/slab_common.c:1046
-    [<ffffffff839c9e07>] kmalloc include/linux/slab.h:576 [inline]
-    [<ffffffff839c9e07>] kmalloc_array include/linux/slab.h:627 [inline]
-    [<ffffffff839c9e07>] kcalloc include/linux/slab.h:659 [inline]
-    [<ffffffff839c9e07>] tcf_exts_init include/net/pkt_cls.h:250 [inline]
-    [<ffffffff839c9e07>] tcindex_set_parms+0xa7/0xbe0 net/sched/cls_tcindex.c:342
-    [<ffffffff839caa1f>] tcindex_change+0xdf/0x120 net/sched/cls_tcindex.c:553
-    [<ffffffff8394db62>] tc_new_tfilter+0x4f2/0x1100 net/sched/cls_api.c:2147
-    [<ffffffff8389e91c>] rtnetlink_rcv_msg+0x4dc/0x5d0 net/core/rtnetlink.c:6082
-    [<ffffffff839eba67>] netlink_rcv_skb+0x87/0x1d0 net/netlink/af_netlink.c:2540
-    [<ffffffff839eab87>] netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
-    [<ffffffff839eab87>] netlink_unicast+0x397/0x4c0 net/netlink/af_netlink.c:1345
-    [<ffffffff839eb046>] netlink_sendmsg+0x396/0x710 net/netlink/af_netlink.c:1921
-    [<ffffffff8383e796>] sock_sendmsg_nosec net/socket.c:714 [inline]
-    [<ffffffff8383e796>] sock_sendmsg+0x56/0x80 net/socket.c:734
-    [<ffffffff8383eb08>] ____sys_sendmsg+0x178/0x410 net/socket.c:2482
-    [<ffffffff83843678>] ___sys_sendmsg+0xa8/0x110 net/socket.c:2536
-    [<ffffffff838439c5>] __sys_sendmmsg+0x105/0x330 net/socket.c:2622
-    [<ffffffff83843c14>] __do_sys_sendmmsg net/socket.c:2651 [inline]
-    [<ffffffff83843c14>] __se_sys_sendmmsg net/socket.c:2648 [inline]
-    [<ffffffff83843c14>] __x64_sys_sendmmsg+0x24/0x30 net/socket.c:2648
-    [<ffffffff84605fd5>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-    [<ffffffff84605fd5>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-    [<ffffffff84800087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+L2 payload* length, i.e. the bytes between the Ethernet/VLAN header and
+the FCS.
