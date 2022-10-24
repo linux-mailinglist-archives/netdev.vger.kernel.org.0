@@ -2,79 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3091B60B95A
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 22:09:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C91F760BBD9
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 23:16:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231511AbiJXUJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 16:09:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42460 "EHLO
+        id S231390AbiJXVQm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 17:16:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233998AbiJXUI7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 16:08:59 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F99CB4481;
-        Mon, 24 Oct 2022 11:28:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=smrlip5a13obHQefsrQCDEQn5FVgi9wQ3jfaysBd41A=; b=NsKy3KADUVtTLDLcow8PjYW4Wo
-        u6xSIAOYezInwqNo4+VT4wXNh9YuZGynjlYH9HyRLsxjXAu7kOE3YYpM5vo2KK5Pd+utDaLWiQbYC
-        HRXXEhnWxE4UH/sbLmRBRQr0Xt9ABDoMTGEbbr4YxdTsO1AI5D+O2/MoLsnrLCzvQ/823wQayvkRq
-        FhklZ7JXqNnbcsXc9bH5iJMN03RBwLg5kZ7KeA8EJBlppNQ3vcpgBt2Jj3NjIoakO14Nx+KJKtJ9m
-        GrXYA5oVoFe3jLO7ovLun05d0vuXmlnCFUL7TNGWThrId8XaRc6F1+Ve1ZxMF/YkvUsUQ3HPSO1r2
-        lA9+dfiQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1omzUq-0026gk-I2; Mon, 24 Oct 2022 15:36:12 +0000
-Date:   Mon, 24 Oct 2022 08:36:12 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Michael Kelley <mikelley@microsoft.com>
-Cc:     hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
-        sthemmin@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
-        luto@kernel.org, peterz@infradead.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        lpieralisi@kernel.org, robh@kernel.org, kw@linux.com,
-        bhelgaas@google.com, arnd@arndb.de, hch@infradead.org,
-        m.szyprowski@samsung.com, robin.murphy@arm.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        Tianyu.Lan@microsoft.com, kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
-        isaku.yamahata@intel.com, dan.j.williams@intel.com,
-        jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-        iommu@lists.linux.dev
-Subject: Re: [PATCH 06/12] swiotlb: Remove bounce buffer remapping for Hyper-V
-Message-ID: <Y1aw7L5IdpjFpQvw@infradead.org>
-References: <1666288635-72591-1-git-send-email-mikelley@microsoft.com>
- <1666288635-72591-7-git-send-email-mikelley@microsoft.com>
+        with ESMTP id S230453AbiJXVQ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 17:16:26 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AADE2D20F6
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 12:22:18 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1omzWE-0007KN-4k; Mon, 24 Oct 2022 17:37:38 +0200
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:1bbf:91f6:fcf3:6f78])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id DEF08108A71;
+        Mon, 24 Oct 2022 15:37:34 +0000 (UTC)
+Date:   Mon, 24 Oct 2022 17:37:26 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Ulrich Hecht <uli+renesas@fpond.eu>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Rob Herring <robh@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH 1/3] can: rcar_canfd: Fix IRQ storm on global fifo receive
+Message-ID: <20221024153726.72avg6xbgzwyboms@pengutronix.de>
+References: <20221022081503.1051257-1-biju.das.jz@bp.renesas.com>
+ <20221022081503.1051257-2-biju.das.jz@bp.renesas.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="pp2dauigdnxmzpha"
 Content-Disposition: inline
-In-Reply-To: <1666288635-72591-7-git-send-email-mikelley@microsoft.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20221022081503.1051257-2-biju.das.jz@bp.renesas.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 20, 2022 at 10:57:09AM -0700, Michael Kelley wrote:
-> With changes to how Hyper-V guest VMs flip memory between private
-> (encrypted) and shared (decrypted), creating a second kernel virtual
-> mapping for shared memory is no longer necessary. Everything needed
-> for the transition to shared is handled by set_memory_decrypted().
-> 
-> As such, remove swiotlb_unencrypted_base and the associated
-> code.
-> 
-> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
 
-I'm more than glad that we can kill this code:
+--pp2dauigdnxmzpha
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Acked-by: Christoph Hellwig <hch@lst.de>
+On 22.10.2022 09:15:01, Biju Das wrote:
+> We are seeing IRQ storm on global receive IRQ line under heavy CAN
+> bus load conditions with both CAN channels are enabled.
+>=20
+> Conditions:
+>   The global receive IRQ line is shared between can0 and can1, either
+>   of the channels can trigger interrupt while the other channel irq
+>   line is disabled(rfie).
+>   When global receive IRQ interrupt occurs, we mask the interrupt in
+>   irqhandler. Clearing and unmasking of the interrupt is happening in
+>   rx_poll(). There is a race condition where rx_poll unmask the
+>   interrupt, but the next irq handler does not mask the irq due to
+>   NAPIF_STATE_MISSED flag.
+
+Why does this happen? Is it a problem that you call
+rcar_canfd_handle_global_receive() for a channel that has the IRQs
+actually disabled in hardware?
+
+>   (for eg: can0 rx fifo interrupt enable is
+>   disabled and can1 is triggering rx interrupt, the delay in rx_poll()
+>   processing results in setting NAPIF_STATE_MISSED flag) leading to IRQ
+>   storm.
+>=20
+> This patch fixes the issue by checking irq is masked or not in
+> irq handler and it masks the interrupt if it is unmasked.
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--pp2dauigdnxmzpha
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmNWsTMACgkQrX5LkNig
+012EJgf/TJuBlGVYoPZqvkLueDAZ6s8nJzeI8sB5zxTsvDBoWpHaFk+gHd2PO9ai
+X4yfVczOEQfJBcT1yho2dWMoADFmAVWFTizWsblTTxYQd7cwhN/Y/itcXf6+rAqv
+1ej8FTyWI0gyguG1/IaN6LHpCzkHpxhzZaV1kkMpWPuutYsLPCYGSt1NH7j0d0ih
+GDcUVfprkzyNmUJb/SjYLsi23e5kLe+y7B+T6RZLc83+1tTZujjkn/tOkGjBGEQ2
+aZd6QviFmC7I/BmOVcVDWs7IIi/nDDSqsJx+57DgrjCVaPRHuJDoQZ23102H6izP
+HcXRZw9IKKbUqhIpqFNboYy8f32C7g==
+=3yl4
+-----END PGP SIGNATURE-----
+
+--pp2dauigdnxmzpha--
