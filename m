@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26B5F60B6D9
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 21:12:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7AE860B55B
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 20:22:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233175AbiJXTMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 15:12:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50342 "EHLO
+        id S231576AbiJXSWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 14:22:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232068AbiJXTLy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 15:11:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC8BC1781FD
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 10:50:33 -0700 (PDT)
+        with ESMTP id S231562AbiJXSVV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 14:21:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 796B514D1C8
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 10:02:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A0069B81626
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 17:00:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3BD2C433D6;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B67BD611E0
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 17:00:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86CCFC433B5;
         Mon, 24 Oct 2022 17:00:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1666630818;
@@ -48,8 +48,7 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
