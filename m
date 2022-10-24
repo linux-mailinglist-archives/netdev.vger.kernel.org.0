@@ -2,66 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 501D260BEAF
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 01:35:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EC9060BEEA
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 01:47:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229932AbiJXXf2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 19:35:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38436 "EHLO
+        id S230037AbiJXXru (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 19:47:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229983AbiJXXfK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 19:35:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 793902F7E57;
-        Mon, 24 Oct 2022 14:55:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58AC1B810B2;
-        Mon, 24 Oct 2022 21:55:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 866F9C433D6;
-        Mon, 24 Oct 2022 21:55:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666648529;
-        bh=oQ9KNEH5p9KGrsnEcH5S1RduBGb6wJ0EGUHoylNIUA0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=owCi5MX6mT/TF8uDWZXk/zB9Mvqn4fHQ+Z09FxiZbMlhfGo/km40JdiQRn+Th/D/h
-         qo2T9XR3Wqhn+6FfAQv3Flhg/LYkRHu+Tjjd3RsVi4/9bgOiUYS9dedx1JEPH8K7+W
-         7Oqu6Et9S70kCC+V2cR/eHwe69kMssr3xbUFZ6432fsDgrk9FfPjyYkdZicN0BVUMa
-         EXfZY9NRnItX/1zYXfzyj8nC4kYB0LXrXC377Av1LnRfYDokrgTNOqRpe3I9SEBsEf
-         2QkV1CUUnJ3GnbpWNXWNhSaMDF401o5mxDxG/xI20wA0k0iS4d3qwTHoq6Q8kukfZt
-         lLoBNP6hs8E0g==
-Date:   Mon, 24 Oct 2022 14:55:27 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     kernel test robot <lkp@intel.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, ntfs3@lists.linux.dev,
-        netdev@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        amd-gfx@lists.freedesktop.org,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: Re: [linux-next:master] BUILD SUCCESS WITH WARNING
- 76cf65d1377f733af1e2a55233e3353ffa577f54
-Message-ID: <20221024145527.0eff7844@kernel.org>
-In-Reply-To: <6356c451.pwLIF+9EvDUrDjTY%lkp@intel.com>
-References: <6356c451.pwLIF+9EvDUrDjTY%lkp@intel.com>
+        with ESMTP id S229817AbiJXXrX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 19:47:23 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F26B333A99;
+        Mon, 24 Oct 2022 15:05:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1666649143; x=1698185143;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=o6EZzwIuG3lKm3iYYLguTM9aIweOE9YaLFfrddeogvQ=;
+  b=JSAlA28t+zRSMp7brm9wAvbGLSot1N6vAtV9X1gENmJitJG0XcAuQodx
+   uhmAn0YOa2oeelVHC+1mvqIjqV884Knerdlo8GJt3JiqZwhtWrZT4dhjj
+   ZTsldpc0jtyZ7Dt3S5mRii9zmMkoNNuWzC5F1oO+NAVeXQlT5Zgn6hDUA
+   pf1oqxc+CVTgimJdLtNIb7S4gSHGjlH/VZ8DXgfLGTCTcIzuN6Ud/56G/
+   nh5/9fN4JQcpo0I63XbVcPUlPFcDbfpRcF4SJRx+JWCzV+DgJmvYcmWxP
+   oH816q76umeuMABVB7q9frzcK/Ut/wv19v7Dw7iBbl6Fc+QaFYZ91z3Fr
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="305144607"
+X-IronPort-AV: E=Sophos;i="5.95,210,1661842800"; 
+   d="scan'208";a="305144607"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2022 15:04:29 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="631415597"
+X-IronPort-AV: E=Sophos;i="5.95,210,1661842800"; 
+   d="scan'208";a="631415597"
+Received: from mlotfi-mobl.amr.corp.intel.com ([10.212.254.208])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2022 15:04:29 -0700
+Date:   Mon, 24 Oct 2022 15:04:28 -0700 (PDT)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     wangjianli <wangjianli@cdjrlc.com>
+cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        mptcp@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net/mptcp: fix repeated words in comments
+In-Reply-To: <Y1VF1DBYePbkTk8x@debian.me>
+Message-ID: <162b5545-7d24-3cf2-9158-3100ef644e03@linux.intel.com>
+References: <20221022070527.55960-1-wangjianli@cdjrlc.com> <Y1VF1DBYePbkTk8x@debian.me>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 Oct 2022 00:58:57 +0800 kernel test robot wrote:
-> drivers/net/phy/phylink.c:588 phylink_validate_mask_caps() warn: variable dereferenced before check 'state' (see line 583)
+On Sun, 23 Oct 2022, Bagas Sanjaya wrote:
 
-Hi Russell, I think the warning is semi-legit. Your commit f392a1846489
-("net: phylink: provide phylink_validate_mask_caps() helper") added an 
-if (state) before defer'ing state but it's already deref'ed higher up
-so can't be null.
+> On Sat, Oct 22, 2022 at 03:05:27PM +0800, wangjianli wrote:
+>> Delete the redundant word 'the'.
+>>
+>> Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
+>> ---
+>>  net/mptcp/token.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/net/mptcp/token.c b/net/mptcp/token.c
+>> index f52ee7b26aed..b817c2564300 100644
+>> --- a/net/mptcp/token.c
+>> +++ b/net/mptcp/token.c
+>> @@ -287,7 +287,7 @@ EXPORT_SYMBOL_GPL(mptcp_token_get_sock);
+>>   * This function returns the first mptcp connection structure found inside the
+>>   * token container starting from the specified position, or NULL.
+>>   *
+>> - * On successful iteration, the iterator is move to the next position and the
+>> + * On successful iteration, the iterator is move to the next position and
+>>   * the acquires a reference to the returned socket.
+>>   */
+>>  struct mptcp_sock *mptcp_token_iter_next(const struct net *net, long *s_slot,
+>
+> NAK!
+>
+> Instead, slightly reword the comment above as "On successful iteration,
+> the iterator moves to the next position and acquires a reference to the
+> returned socket.".
+>
+
+Agree on this rewording.
+
+This particular duplicated word came up before, and I thought it would be 
+best if the author sent a v2 - but they never did. I will fix this in the 
+MPTCP tree next week if there's no suitable v2 by then.
+
+--
+Mat Martineau
+Intel
