@@ -2,111 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B58560B3E5
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 19:20:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 589F860B348
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 19:01:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230026AbiJXRUc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 13:20:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45764 "EHLO
+        id S229817AbiJXRBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 13:01:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230474AbiJXRUE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 13:20:04 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C36760FE
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 08:54:52 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 0210121A5B;
-        Mon, 24 Oct 2022 15:28:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1666625336; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc;
-        bh=MBq7iXIrmBOBfgn5SORrhloUoXEUXDJebRjMAcJ5RRQ=;
-        b=1YwHoiAcUuMR7yc/ycK19BExtFe8vIECE+kVifuXaDam64xODLst1gCJossBlA6No8Y2ne
-        9KGTl4glc83dLh9gUaJrhHsBITEojCbMGMAoQ73rhA7cgJHNX+nXxePMoiG+eorRbRnLoE
-        iRIixkye4XeLoPwrHPUHcjk+6QUy3h8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1666625336;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc;
-        bh=MBq7iXIrmBOBfgn5SORrhloUoXEUXDJebRjMAcJ5RRQ=;
-        b=bCpyan8uo1pmedKcF4Gi4JY+pitqWxJj2TqmpsZFMjGsBZDbrnCqsOz4xJXTvAr7pzeNTu
-        fho4tBGoHcOu0CAQ==
-Received: from lion.mk-sys.cz (unknown [10.163.44.94])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id EDD3A2C141;
-        Mon, 24 Oct 2022 15:28:55 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id D0D6E604C3; Mon, 24 Oct 2022 17:28:55 +0200 (CEST)
-From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH ethtool] add 10baseT1L mode to link mode tables
-To:     netdev@vger.kernel.org
-Cc:     Xose Vazquez Perez <xose.vazquez@gmail.com>,
-        Alexandru Tachici <alexandru.tachici@analog.com>
-Message-Id: <20221024152855.D0D6E604C3@lion.mk-sys.cz>
-Date:   Mon, 24 Oct 2022 17:28:55 +0200 (CEST)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S235279AbiJXRAV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 13:00:21 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C4FA1C93E
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 08:37:51 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id n130so11408390yba.10
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 08:37:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=3Al1Yz3zV3klBXyN8hzYqwzw3aRUMACYNNTKdspj56I=;
+        b=PUoI+jPf4kEVcKR6NmIcbTKe7drpKyXmk7dcgdHKZEIa9mZVbK6Gvrtsrh+kU/16eq
+         OA9Ix8KVSNdrLi1GsxhxxVuIKHfD5le6jRLKpyJdoe/mVKgmifjDqI4n4q6ZmKAkkStD
+         8/zFaJyrBCBe4bA9Z6TmHfBugiHZ+NZ3gVpEcuBqVLIap3LHrm4VF52HcBrxDLJ0RZjt
+         VXk1n8QG6muZmmeFepiCoSS1vKYwyXmWt0vgZlGpGtnXCTgKZXTDXTzRKwg8ei026WJs
+         vHkrbtUreyYm3R4dART7ppHvWafEkgr36FYdcmsVRgASBQwuZM5jJ52I9kxDLZMcue0y
+         FItg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=3Al1Yz3zV3klBXyN8hzYqwzw3aRUMACYNNTKdspj56I=;
+        b=bvbiJRx9EEv3EiTcUldI47JHCdZpRfVpC4/dEWaIxCdZk32Mti/nv2SRGCNlQhep3q
+         tWgxfjzP2dXqSSDSgWSUDXrm9nAzSwbub/IFGvTpmMk7IJ2Lq31h3cgH/Vf0IsvHYF4/
+         YWebVzM8rRHHXf1d0a1HbzOmwJjnPEUoeLImtjyFxXUV2jQA8w8zuXe3OPCQBLJaZqgN
+         edRqp8K9vBFz0NHGQyP9onwsTpUdmrWCumb1kGW8dNN1Xj3ONLqh9vrCr399V+Ms4SPF
+         zipl7QYElz31RARuE8Tce8O6xduDqaEl/WWJevgPLr//ZD4j9HZ6NN92kKEnFOZibdYp
+         N96Q==
+X-Gm-Message-State: ACrzQf1p7gH69NELKzDhL1t8dMG+Xccw9aaxSGPqDbpQAvlBdbLtQgXS
+        y2/KHHylzW8+v48GJg956QjqhYvgFny6r2jHJc8Y+A==
+X-Google-Smtp-Source: AMsMyM6yZMmWPEhmV+OU5hfTZ2BqRaiYft7Om29+GECG3iDVT16diYRLDWCohn3DZ8zC5u1xyrhQplZAPV8kHI2446c=
+X-Received: by 2002:a25:d914:0:b0:6cb:13e2:a8cb with SMTP id
+ q20-20020a25d914000000b006cb13e2a8cbmr4849686ybg.231.1666625784889; Mon, 24
+ Oct 2022 08:36:24 -0700 (PDT)
+MIME-Version: 1.0
+References: <20221024144753.479152-1-windhl@126.com>
+In-Reply-To: <20221024144753.479152-1-windhl@126.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 24 Oct 2022 08:36:13 -0700
+Message-ID: <CANn89iL==crwYiOpcgx=zVG1porMpMt23RCp=_JGpQmxOwK04w@mail.gmail.com>
+Subject: Re: [PATCH] appletalk: Fix potential refcount leak
+To:     Liang He <windhl@126.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add recently added 10baseT1L/Full link mode to man page and ioctl and
-fallback code paths.
+On Mon, Oct 24, 2022 at 8:25 AM Liang He <windhl@126.com> wrote:
+>
+> In atrtr_create(), we have added a dev_hold for the new reference.
+> However, based on the code, if the 'rt' is not NULL and its 'dev'
+> is not NULL, we should use dev_put() for the replaced reference.
+>
+> Signed-off-by: Liang He <windhl@126.com>
+> ---
+>  net/appletalk/ddp.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/net/appletalk/ddp.c b/net/appletalk/ddp.c
+> index a06f4d4a6f47..7e317d6448d1 100644
+> --- a/net/appletalk/ddp.c
+> +++ b/net/appletalk/ddp.c
+> @@ -564,6 +564,7 @@ static int atrtr_create(struct rtentry *r, struct net_device *devhint)
+>         /* Fill in the routing entry */
+>         rt->target  = ta->sat_addr;
+>         dev_hold(devhint);
+> +       dev_put(rt->dev);
+>         rt->dev     = devhint;
+>         rt->flags   = r->rt_flags;
+>         rt->gateway = ga->sat_addr;
+>
 
-Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
----
- ethtool.8.in       | 1 +
- ethtool.c          | 3 +++
- netlink/settings.c | 1 +
- 3 files changed, 5 insertions(+)
+IMO appletalk is probably completely broken.
 
-diff --git a/ethtool.8.in b/ethtool.8.in
-index 1c0e2346f3a1..dee39ddb434a 100644
---- a/ethtool.8.in
-+++ b/ethtool.8.in
-@@ -776,6 +776,7 @@ nokeep;
- lB	l	lB.
- 0x001	10baseT Half
- 0x002	10baseT Full
-+0x100000000000000000000000	10baseT1L Full
- 0x004	100baseT Half
- 0x008	100baseT Full
- 0x80000000000000000	100baseT1 Full
-diff --git a/ethtool.c b/ethtool.c
-index 7b400da32c6f..5d4930252c9b 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -475,6 +475,7 @@ static void init_global_link_mode_masks(void)
- 		ETHTOOL_LINK_MODE_400000baseCR4_Full_BIT,
- 		ETHTOOL_LINK_MODE_100baseFX_Half_BIT,
- 		ETHTOOL_LINK_MODE_100baseFX_Full_BIT,
-+		ETHTOOL_LINK_MODE_10baseT1L_Full_BIT,
- 	};
- 	static const enum ethtool_link_mode_bit_indices
- 		additional_advertised_flags_bits[] = {
-@@ -715,6 +716,8 @@ static void dump_link_caps(const char *prefix, const char *an_prefix,
- 		  "100baseFX/Half" },
- 		{ 1, ETHTOOL_LINK_MODE_100baseFX_Full_BIT,
- 		  "100baseFX/Full" },
-+		{ 0, ETHTOOL_LINK_MODE_10baseT1L_Full_BIT,
-+		  "10baseT1L/Full" },
- 	};
- 	int indent;
- 	int did1, new_line_pend;
-diff --git a/netlink/settings.c b/netlink/settings.c
-index dda4ac9bcf35..ea86e365383b 100644
---- a/netlink/settings.c
-+++ b/netlink/settings.c
-@@ -164,6 +164,7 @@ static const struct link_mode_info link_modes[] = {
- 	[ETHTOOL_LINK_MODE_400000baseCR4_Full_BIT]	= __REAL(400000),
- 	[ETHTOOL_LINK_MODE_100baseFX_Half_BIT]		= __HALF_DUPLEX(100),
- 	[ETHTOOL_LINK_MODE_100baseFX_Full_BIT]		= __REAL(100),
-+	[ETHTOOL_LINK_MODE_10baseT1L_Full_BIT]		= __REAL(10),
- };
- const unsigned int link_modes_count = ARRAY_SIZE(link_modes);
- 
--- 
-2.38.0
+atalk_routes_lock is not held while other threads might use rt->dev
+and would not expect rt->dev to be changed under them
+(atalk_route_packet() )
 
+I would vote to remove it completely, unless someone is willing to
+test any change in it.
