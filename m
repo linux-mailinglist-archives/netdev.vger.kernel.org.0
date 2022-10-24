@@ -2,151 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 266B260BF2F
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 02:03:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0577260BF43
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 02:11:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230382AbiJYADl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 20:03:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41178 "EHLO
+        id S230490AbiJYALL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 20:11:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230307AbiJYADU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 20:03:20 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ABCCBC784
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 15:18:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666649925; x=1698185925;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=KmLMyjGvXiMzko+fYqtjb8QT3end50Z2AC7XuUk3r/4=;
-  b=TVbzVJw4fg95dXu+iwIYDfwN3orF5osUjRIeKw8im4U/pFK/dZdKnZ5t
-   VdhBVzubpFC1pjRAXywilnHY1naSamj4HyAev/UYFzGH91/iHWG2HVk9N
-   cuqtOOio1lkMNORlf/CNtU46v0v4LI9RiDcFsnM0+w/3Pc4ZH20WmZukh
-   Mkg3HvUn0GsTpv1eNm+zdh/3N3QLpcHEHIi+N9tQtY2RA+0RIe5/xmISL
-   2B4tiYBtKqTXlbLCI3VdaTBzuT5+KhRGasuBGCoT9JgNgx8FdLyI6IJIh
-   ypwlKjTG1wJgsNO9G7FkhNSq1LqG7RSCEgjCLwVloKEIgQsq3zPCN8jDc
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="290837989"
-X-IronPort-AV: E=Sophos;i="5.95,210,1661842800"; 
-   d="scan'208";a="290837989"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2022 15:18:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="960591352"
-X-IronPort-AV: E=Sophos;i="5.95,210,1661842800"; 
-   d="scan'208";a="960591352"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by fmsmga005.fm.intel.com with ESMTP; 24 Oct 2022 15:18:44 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 24 Oct 2022 15:18:43 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 24 Oct 2022 15:18:43 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Mon, 24 Oct 2022 15:18:43 -0700
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.40) by
- edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Mon, 24 Oct 2022 15:18:43 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LhVzpbZql1SbahvXBj2o7orAp0WCfY9nfaf//QfxsIVm1yJCQjlIcA2zNozxF8oAuiHIABj6qSwVW2HKtgLIRjfqXv1MXsjLxynfz25l8oMKKGFW7hKfGfjowX1HF8i/SV0JfweD/ItXffKifek8RPgAtjGM1lm3/BoNKSvzoAmBUewadTWSNx72kbJfotBSuIInYt37iRF2g68Z2o1lLtD4kG2J+QNAdYSy/2snq2xOgoMFYSgSRoQqorqDM6GeR3oxaxV/DT6kGjVRGfYEibXct5chQjFIBAlXsOLBi8cTie+w/kulIEXNHi1IvXeTTeLle9RfHThTBwOTM9FQjQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bG/3iGrOAjrUhAks5OLZUKTIO8f2MWqBZysPtuy6Ndg=;
- b=mSl/QF4wcSChJZPIcM3rKv+GeXtpHm/TuNCmQMw1XICK+TnyBwecMW2YWUZMLDj+bd8bGMFqnlgwiNFuscaXAr+qBdVte/ITX70QZMQOoE84zP+eNsqfVqwiUyAR92abtFCWhAw7elZEdY0aPqerH1ycahkSA0zG9aV5/3XOyS2vVrOLMOwXAr62rq9cJY/kIeOc+yNs2soc41z7V5FB07rj6r45JJVDEitjV2PQYMuWTCMW5urZf96OM4uUQVBpcmK2fxB3cWGakmzPRl7G5wV6I0yZ6oRiwItKj9qJgIpJZq7Vus0X8f7GGZOx57i1JDARqvHOI/MAci1B4QCDQw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
- by MW4PR11MB5912.namprd11.prod.outlook.com (2603:10b6:303:18a::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.26; Mon, 24 Oct
- 2022 22:18:41 +0000
-Received: from CO1PR11MB5089.namprd11.prod.outlook.com
- ([fe80::d408:e9e3:d620:1f94]) by CO1PR11MB5089.namprd11.prod.outlook.com
- ([fe80::d408:e9e3:d620:1f94%4]) with mapi id 15.20.5746.027; Mon, 24 Oct 2022
- 22:18:41 +0000
-From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Laba, SlawomirX" <slawomirx.laba@intel.com>,
-        "Jaron, MichalX" <michalx.jaron@intel.com>,
-        "Palczewski, Mateusz" <mateusz.palczewski@intel.com>,
-        "G, GurucharanX" <gurucharanx.g@intel.com>
-Subject: RE: [PATCH v2 1/3] i40e: Fix ethtool rx-flow-hash setting for X722
-Thread-Topic: [PATCH v2 1/3] i40e: Fix ethtool rx-flow-hash setting for X722
-Thread-Index: AQHY55ArGmXo0OLvbUWJE3OVAqIXv64eHekA
-Date:   Mon, 24 Oct 2022 22:18:41 +0000
-Message-ID: <CO1PR11MB50892671BA9380FBA2D9EEB1D62E9@CO1PR11MB5089.namprd11.prod.outlook.com>
-References: <20221024100526.1874914-1-jacob.e.keller@intel.com>
-In-Reply-To: <20221024100526.1874914-1-jacob.e.keller@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: CO1PR11MB5089:EE_|MW4PR11MB5912:EE_
-x-ms-office365-filtering-correlation-id: acb339b2-88c4-4faa-8829-08dab60db4eb
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: HRSv4xtPiYcolQIjpERzfB7JIxLTOxrAwnxKuAdk5iDDA4Js8cgyWleIBkkuZ87CnTR5QIJGT1Mw57RctKKBbmWaHhFIQsSTJ+BtACvYmBVlwJj+4LuWM7QmNpCW5ci4kLNRm8Q8jUzZE2ruB4VXb9roPKfK02eXdj7HekCfKDppMFVqfVQuDC3L8x5sJ9AAVfj6VFJqFXQD8Ed/nwGlcqy937SvFVu5Ytww9B/JzehoqoTsp/eLZiu9TH9WDfl+IbTmOd0VfcMx4v0uLBY7i019b9Xbp1jn/WgfdMFvMGzVjynoZs/ZZ00qFhzKyr1ohPgqlYVWf+2ZE79TCB1M0sB41c15S0aPcjKndD+FwieCorZDfaTDhw+QTOlFRts9zNxs6lj8szr6iv9Mp5dFFcGcqASua8S78rYsSiFdl2MLk5mNfuxdY9o6OKtJYPxS56HJKcaCiXsFBaiCCMS5NwbEbaOwAzKmFen7KA0iN7ZOUv1dkBee/Z1Lk/DV2Kndo0E4Q8Tqj5PM+/63l1lkvopN4ifQGKUy6TT2fD/IKLNgTmnGviyizpXZv5UfLeLL92ZN3OdN7qXCgDLIggAUBMGqQNY3SqzERgf4Tdg4FmGCMlNdBj44hF7drScIGUiwmtDuyOpBOGYjcu5kMxr2a0wf85sqmUfZKsQTC5aOUoTyX3MXw3ojdcNeigqIzPCjhOCYAIPNf/WakCI568Z79OcfeOwNe1SZZpkQe0NT5Qc8CKyuRk/OjB3MxuJRtjsz+FOylfIP+fBFHqNnp4y33w==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(366004)(396003)(376002)(136003)(346002)(39860400002)(451199015)(82960400001)(38070700005)(33656002)(86362001)(107886003)(55016003)(38100700002)(83380400001)(122000001)(71200400001)(76116006)(54906003)(66946007)(316002)(66556008)(5660300002)(110136005)(52536014)(6506007)(66476007)(2906002)(8676002)(186003)(478600001)(64756008)(7696005)(53546011)(26005)(4326008)(9686003)(66446008)(8936002)(41300700001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?JqIpy4KG4F2zIrkX2r2jlvOkVHBDxhiRRNbe2wCr7oeARaHliq+3oGLds89b?=
- =?us-ascii?Q?aTXhKYxOq8fAJ2wlhJByHubo6Fi7Ja301AVZl0C66rnf5mX/gZsI9PnLUoJL?=
- =?us-ascii?Q?kjgdPOSW0aphhU0h3o57w4zhxmzhvcJnhYzCv0qKFvbI2Qt6vgfBhNNYUeO6?=
- =?us-ascii?Q?dcwszTQdQy5EZgfZVmaVtgEFWK+YUFe3Nq8ocE0JZ35mdar0WiGgVTDRbRTC?=
- =?us-ascii?Q?dU5ht01jn5OSXS7gKSuK5BxArv+opnbBwgclY9khuyGwwiTVHy4O1KZk/UCN?=
- =?us-ascii?Q?ZBMeUwx/Mh1wnjuW46vaz6/n+PwLk+HPOmwfafu0Gs4imCrn27pyVkm1Z93l?=
- =?us-ascii?Q?paankunB4ky10fAH8HbSzCE5GI94qzHsEBeg0suBBuyVdxEzgnz238ckSL2j?=
- =?us-ascii?Q?r54dHZzxEccmfva45vLBzyZugOLCPr6ksKg0qiN9pFKwTZcjdYvG10zVX+6h?=
- =?us-ascii?Q?Ljsrq4PN9CnQyln+RzhlZ6zBdd22Jinp9bicrpATvUlkRI9Zv0v3P0EqzjAD?=
- =?us-ascii?Q?6Vg854SADsTp5Oz4FN4csz8rneqmdpQ7HPPKwbapDcdn0WeLi7EBJ5BP2Twt?=
- =?us-ascii?Q?QHIr8ilcL6JkmQdW8GzdovZgQHHn6bA2qKVoPJR1MrlGR1YPgDYoOhwhiGfK?=
- =?us-ascii?Q?IoxDxfSieD1N2JgjSLwBqn6WYo51D3BWDK9KVszfSgPLO46YsBv8gmOqbyjS?=
- =?us-ascii?Q?gOLLmSb8qeTPxIhluqTsA6yIwjye4gnR8Eg5OYrlhPGwarI7NwVlqhjeC9IA?=
- =?us-ascii?Q?20sNjOuBtWnoqfJVO3rS3kGA7BF7/EOuxUhttyzdNg9ihzdK7LC1QE/x3gG2?=
- =?us-ascii?Q?kZln3kyYK4WYAksFk3pfghD5X63zhA2S/vIitYXhPl4A8mordbmRBqMqyZaE?=
- =?us-ascii?Q?SBS3qOkkD9LliOikb5oP53aktAPk/h6zrDPKms8qspEsF6YpCc0cxCEhQLX5?=
- =?us-ascii?Q?M073mRX4+V/0EXa4s9+78avGNmCeiLXn8fwp4dp0czJPkC1Aicbs+frv+RMg?=
- =?us-ascii?Q?tEyrSGcLEfgAhyjaDcUsbFhP5sZ79OAZB6uX7BvBBI95+qXlecqFBoUvlGk6?=
- =?us-ascii?Q?hAn1Mv9xPA+vS1+v5v7gfcuY+H1Uisj5V/hw6IVMOzbvEivcUd/56mUQSaKO?=
- =?us-ascii?Q?2tYPOinC0vpUOLO+m9VN9R/Gib4+G5D3+jScDiOgZVuY3C9o9DYS4AigVtOf?=
- =?us-ascii?Q?y5pr4+Ru+AyZEmODf2nPBR8rJW7lrlIvOPb01nC1tl73IxgFfD2RKWb7kx2B?=
- =?us-ascii?Q?Zt4oTS90YgGutgKqGYf8iUr99r0tVtBYteDyxnn+lhP3xx2+ahTpvm4I3Br2?=
- =?us-ascii?Q?xNasWF1eorwPfo5D2ZAe3k02ITB/yy93XBSSQkJVAkj4hvTC/Jv++Xxc5nlm?=
- =?us-ascii?Q?ucM5GPVqNLnfzyq4CwTX36Nco7+HfUo1/reKY1kEHAz64rerKg8iocVFTuAR?=
- =?us-ascii?Q?5p4plAhJ/S7w9QRWX4FZXCMIcEp1XztW9S03RPibhu6IvKdKzHh4OtwZZ2qf?=
- =?us-ascii?Q?6GdMORLlSTNCeipvUfOE1TNDkKafw//ZmpmR+VRnhoRgQy8UQn1BTLH2ooGD?=
- =?us-ascii?Q?axvgmg6mkYpv3BEak76lV83gdpAIG/xZ7VtBHCf4?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S230468AbiJYAKx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 20:10:53 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4345D24AAED;
+        Mon, 24 Oct 2022 15:28:59 -0700 (PDT)
+Received: from mercury (unknown [185.209.196.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: sre)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 3FF466602820;
+        Mon, 24 Oct 2022 23:28:53 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1666650533;
+        bh=DSMOaz0bSVEM135EYGKdHyt8dv6g/81o2jOsEPTmjt0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=CccIu3a0gJwdR9patHIs+EHGRyRtsd+TOd4mwzj09V6PGXbLmhIvvx2qm+b8bdHw7
+         WrND0GIoo6By0kXgigfziOCvdlY/nB6UPHATA9DjvUr2roq3A/gVh6ED3Ial1UI0Wy
+         +C4PM4B7VdvplAMiaLwq6aP9FEBjPtCd8I53RvKaaRPQe8XMHTNLzbrFNnPGudQJdD
+         lxksbBPzaf+2P0SA4uZ8V7F7LV5VDPzgATo9kdEZkFMhYPUry8KTqp0U+SDUzvY9CJ
+         2BdH9ne99wXS9U3BbeQfMcgIuEy5eXpFpYUZ8PaQgbCRIb+uxqArJ0pwBn+0SFv8bU
+         pYsiQ8Hm04YMw==
+Received: by mercury (Postfix, from userid 1000)
+        id B8A4410607D6; Tue, 25 Oct 2022 00:28:50 +0200 (CEST)
+Date:   Tue, 25 Oct 2022 00:28:50 +0200
+From:   Sebastian Reichel <sebastian.reichel@collabora.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com
+Subject: Re: [PATCH 1/1] dt-bindings: net: snps,dwmac: Document queue config
+ subnodes
+Message-ID: <20221024222850.5zq426cnn75twmvn@mercury.elektranox.org>
+References: <20221021171055.85888-1-sebastian.reichel@collabora.com>
+ <761d6ae2-e779-2a4b-a735-960c716c3024@linaro.org>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: acb339b2-88c4-4faa-8829-08dab60db4eb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Oct 2022 22:18:41.2198
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: mKvCwQ4ozvEoG/8fLRt3Ra1RfIqpkxLNjmOfPPufdEN4xbBXWDyWeUxz1slFEwaY8fx5QC3K4m0I/BxIKaiWX2jREI5ezHvcpkeaxo8Xnr8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB5912
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="vt336faofz3rlkrt"
+Content-Disposition: inline
+In-Reply-To: <761d6ae2-e779-2a4b-a735-960c716c3024@linaro.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -154,156 +67,203 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--vt336faofz3rlkrt
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> -----Original Message-----
-> From: Keller, Jacob E <jacob.e.keller@intel.com>
-> Sent: Monday, October 24, 2022 3:05 AM
-> To: Jakub Kicinski <kuba@kernel.org>; David Miller <davem@davemloft.net>
-> Cc: netdev@vger.kernel.org; Laba, SlawomirX <slawomirx.laba@intel.com>;
-> Jaron, MichalX <michalx.jaron@intel.com>; Palczewski, Mateusz
-> <mateusz.palczewski@intel.com>; G, GurucharanX <gurucharanx.g@intel.com>;
-> Keller, Jacob E <jacob.e.keller@intel.com>
-> Subject: [PATCH v2 1/3] i40e: Fix ethtool rx-flow-hash setting for X722
->=20
+Hi,
 
-Fix one thing, screw up another... I forgot to tag these as [net]..
+On Sat, Oct 22, 2022 at 12:05:15PM -0400, Krzysztof Kozlowski wrote:
+> On 21/10/2022 13:10, Sebastian Reichel wrote:
+> > The queue configuration is referenced by snps,mtl-rx-config and
+> > snps,mtl-tx-config. Most in-tree DTs put the referenced object
+> > as child node of the dwmac node.
+> >=20
+> > This adds proper description for this setup, which has the
+> > advantage of properly making sure only known properties are
+> > used.
+> >=20
+> > Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+> > ---
+>> [...]
+>=20
+> Please update the DTS example with all this.
 
-> From: Slawomir Laba <slawomirx.laba@intel.com>
->=20
-> When enabling flow type for RSS hash via ethtool:
->=20
-> ethtool -N $pf rx-flow-hash tcp4|tcp6|udp4|udp6 s|d
->=20
-> the driver would fail to setup this setting on X722
-> device since it was using the mask on the register
-> dedicated for X710 devices.
->=20
-> Apply a different mask on the register when setting the
-> RSS hash for the X722 device.
->=20
-> When displaying the flow types enabled via ethtool:
->=20
-> ethtool -n $pf rx-flow-hash tcp4|tcp6|udp4|udp6
->=20
-> the driver would print wrong values for X722 device.
->=20
-> Fix this issue by testing masks for X722 device in
-> i40e_get_rss_hash_opts function.
->=20
-> Fixes: eb0dd6e4a3b3 ("i40e: Allow RSS Hash set with less than four parame=
-ters")
-> Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
-> Signed-off-by: Michal Jaron <michalx.jaron@intel.com>
-> Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-> Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at
-> Intel)
-> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-> ---
-> Changes since v1
-> * Rebased to fix conflicts, sent as series properly
-> * Added my missing signed-off-by
->=20
->  .../net/ethernet/intel/i40e/i40e_ethtool.c    | 31 ++++++++++++++-----
->  drivers/net/ethernet/intel/i40e/i40e_type.h   |  4 +++
->  2 files changed, 27 insertions(+), 8 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-> b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-> index 87f36d1ce800..314ef40aa260 100644
-> --- a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-> +++ b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-> @@ -3185,10 +3185,17 @@ static int i40e_get_rss_hash_opts(struct i40e_pf =
-*pf,
-> struct ethtool_rxnfc *cmd)
->=20
->  		if (cmd->flow_type =3D=3D TCP_V4_FLOW ||
->  		    cmd->flow_type =3D=3D UDP_V4_FLOW) {
-> -			if (i_set & I40E_L3_SRC_MASK)
-> -				cmd->data |=3D RXH_IP_SRC;
-> -			if (i_set & I40E_L3_DST_MASK)
-> -				cmd->data |=3D RXH_IP_DST;
-> +			if (hw->mac.type =3D=3D I40E_MAC_X722) {
-> +				if (i_set & I40E_X722_L3_SRC_MASK)
-> +					cmd->data |=3D RXH_IP_SRC;
-> +				if (i_set & I40E_X722_L3_DST_MASK)
-> +					cmd->data |=3D RXH_IP_DST;
-> +			} else {
-> +				if (i_set & I40E_L3_SRC_MASK)
-> +					cmd->data |=3D RXH_IP_SRC;
-> +				if (i_set & I40E_L3_DST_MASK)
-> +					cmd->data |=3D RXH_IP_DST;
-> +			}
->  		} else if (cmd->flow_type =3D=3D TCP_V6_FLOW ||
->  			  cmd->flow_type =3D=3D UDP_V6_FLOW) {
->  			if (i_set & I40E_L3_V6_SRC_MASK)
-> @@ -3546,12 +3553,15 @@ static int i40e_get_rxnfc(struct net_device *netd=
-ev,
-> struct ethtool_rxnfc *cmd,
->=20
->  /**
->   * i40e_get_rss_hash_bits - Read RSS Hash bits from register
-> + * @hw: hw structure
->   * @nfc: pointer to user request
->   * @i_setc: bits currently set
->   *
->   * Returns value of bits to be set per user request
->   **/
-> -static u64 i40e_get_rss_hash_bits(struct ethtool_rxnfc *nfc, u64 i_setc)
-> +static u64 i40e_get_rss_hash_bits(struct i40e_hw *hw,
-> +				  struct ethtool_rxnfc *nfc,
-> +				  u64 i_setc)
->  {
->  	u64 i_set =3D i_setc;
->  	u64 src_l3 =3D 0, dst_l3 =3D 0;
-> @@ -3570,8 +3580,13 @@ static u64 i40e_get_rss_hash_bits(struct ethtool_r=
-xnfc
-> *nfc, u64 i_setc)
->  		dst_l3 =3D I40E_L3_V6_DST_MASK;
->  	} else if (nfc->flow_type =3D=3D TCP_V4_FLOW ||
->  		  nfc->flow_type =3D=3D UDP_V4_FLOW) {
-> -		src_l3 =3D I40E_L3_SRC_MASK;
-> -		dst_l3 =3D I40E_L3_DST_MASK;
-> +		if (hw->mac.type =3D=3D I40E_MAC_X722) {
-> +			src_l3 =3D I40E_X722_L3_SRC_MASK;
-> +			dst_l3 =3D I40E_X722_L3_DST_MASK;
-> +		} else {
-> +			src_l3 =3D I40E_L3_SRC_MASK;
-> +			dst_l3 =3D I40E_L3_DST_MASK;
-> +		}
->  	} else {
->  		/* Any other flow type are not supported here */
->  		return i_set;
-> @@ -3686,7 +3701,7 @@ static int i40e_set_rss_hash_opt(struct i40e_pf *pf=
-,
-> struct ethtool_rxnfc *nfc)
->  					       flow_pctype)) |
->  			((u64)i40e_read_rx_ctl(hw, I40E_GLQF_HASH_INSET(1,
->  					       flow_pctype)) << 32);
-> -		i_set =3D i40e_get_rss_hash_bits(nfc, i_setc);
-> +		i_set =3D i40e_get_rss_hash_bits(&pf->hw, nfc, i_setc);
->  		i40e_write_rx_ctl(hw, I40E_GLQF_HASH_INSET(0, flow_pctype),
->  				  (u32)i_set);
->  		i40e_write_rx_ctl(hw, I40E_GLQF_HASH_INSET(1, flow_pctype),
-> diff --git a/drivers/net/ethernet/intel/i40e/i40e_type.h
-> b/drivers/net/ethernet/intel/i40e/i40e_type.h
-> index 7b3f30beb757..388c3d36d96a 100644
-> --- a/drivers/net/ethernet/intel/i40e/i40e_type.h
-> +++ b/drivers/net/ethernet/intel/i40e/i40e_type.h
-> @@ -1404,6 +1404,10 @@ struct i40e_lldp_variables {
->  #define I40E_PFQF_CTL_0_HASHLUTSIZE_512	0x00010000
->=20
->  /* INPUT SET MASK for RSS, flow director, and flexible payload */
-> +#define I40E_X722_L3_SRC_SHIFT		49
-> +#define I40E_X722_L3_SRC_MASK		(0x3ULL <<
-> I40E_X722_L3_SRC_SHIFT)
-> +#define I40E_X722_L3_DST_SHIFT		41
-> +#define I40E_X722_L3_DST_MASK		(0x3ULL <<
-> I40E_X722_L3_DST_SHIFT)
->  #define I40E_L3_SRC_SHIFT		47
->  #define I40E_L3_SRC_MASK		(0x3ULL << I40E_L3_SRC_SHIFT)
->  #define I40E_L3_V6_SRC_SHIFT		43
->=20
-> base-commit: c99f0f7e68376dda5df8db7950cd6b67e73c6d3c
-> --
-> 2.38.0.83.gd420dda05763
+ok
 
+>=20
+> > =20
+> >    snps,mtl-tx-config:
+> >      $ref: /schemas/types.yaml#/definitions/phandle
+> >      description:
+> > -      Multiple TX Queues parameters. Phandle to a node that can
+> > -      contain the following properties
+> > -        * snps,tx-queues-to-use, number of TX queues to be used in the
+> > -          driver
+> > -        * Choose one of these TX scheduling algorithms
+> > -          * snps,tx-sched-wrr, Weighted Round Robin
+> > -          * snps,tx-sched-wfq, Weighted Fair Queuing
+> > -          * snps,tx-sched-dwrr, Deficit Weighted Round Robin
+> > -          * snps,tx-sched-sp, Strict priority
+> > -        * For each TX queue
+> > -          * snps,weight, TX queue weight (if using a DCB weight
+> > -            algorithm)
+> > -          * Choose one of these modes
+> > -            * snps,dcb-algorithm, TX queue will be working in DCB
+> > -            * snps,avb-algorithm, TX queue will be working in AVB
+> > -              [Attention] Queue 0 is reserved for legacy traffic
+> > -                          and so no AVB is available in this queue.
+> > -          * Configure Credit Base Shaper (if AVB Mode selected)
+> > -            * snps,send_slope, enable Low Power Interface
+> > -            * snps,idle_slope, unlock on WoL
+> > -            * snps,high_credit, max write outstanding req. limit
+> > -            * snps,low_credit, max read outstanding req. limit
+> > -          * snps,priority, bitmask of the priorities assigned to the q=
+ueue.
+> > -            When a PFC frame is received with priorities matching the =
+bitmask,
+> > -            the queue is blocked from transmitting for the pause time =
+specified
+> > -            in the PFC frame.
+> > +      Multiple TX Queues parameters. Phandle to a node that
+> > +      implements the 'tx-queues-config' object described in
+> > +      this binding.
+> > +
+> > +  tx-queues-config:
+> > +    type: object
+> > +    properties:
+> > +      snps,tx-queues-to-use:
+> > +        $ref: /schemas/types.yaml#/definitions/uint32
+> > +        description: number of TX queues to be used in the driver
+> > +      snps,tx-sched-wrr:
+> > +        type: boolean
+> > +        description: Weighted Round Robin
+> > +      snps,tx-sched-wfq:
+> > +        type: boolean
+> > +        description: Weighted Fair Queuing
+> > +      snps,tx-sched-dwrr:
+> > +        type: boolean
+> > +        description: Deficit Weighted Round Robin
+> > +      snps,tx-sched-sp:
+> > +        type: boolean
+> > +        description: Strict priority
+> > +    patternProperties:
+> > +      "^queue[0-9]$":
+> > +        description: Each subnode represents a queue.
+> > +        type: object
+> > +        properties:
+> > +          snps,weight:
+> > +            $ref: /schemas/types.yaml#/definitions/uint32
+> > +            description: TX queue weight (if using a DCB weight algori=
+thm)
+> > +          snps,dcb-algorithm:
+> > +            type: boolean
+> > +            description: TX queue will be working in DCB
+> > +          snps,avb-algorithm:
+>=20
+> Is DCB and AVB compatible with each other? If not, then this should be
+> rather enum (with a string for algorithm name).
+>=20
+> This applies also to other fields which are mutually exclusive.
+
+Yes and I agree it is ugly. But this is not a new binding, but just
+properly describing the existing binding. It's not my fault :)
+
+> > +            type: boolean
+> > +            description:
+> > +              TX queue will be working in AVB.
+> > +              Queue 0 is reserved for legacy traffic and so no AVB is
+> > +              available in this queue.
+> > +          snps,send_slope:
+>=20
+> Use hyphens, no underscores.
+> (This is already an incompatible change in bindings, so we can fix up
+> the naming)
+
+No, this is not an incompatible change in the bindings. It's 100%
+compatible. What this patch does is removing the text description
+for 'snps,mtl-tx-config' and instead documenting the node in YAML
+syntax. 'snps,mtl-tx-config' does not specify where this node should
+be, so many DTS files do this:
+
+ethernet {
+    compatible =3D "blabla";
+    snps,mtl-tx-config =3D <&eth_tx_setup>;
+    snps,mtl-rx-config =3D <&eth_rx_setup>;
+
+    eth_tx_setup: tx-queues-config {
+        properties;
+    };
+
+    eth_rx_setup: rx-queues-config {
+        properties;
+    };
+};
+
+This right now triggers a dt-validate warning, because the binding
+does not expect 'tx-queues-config' and 'rx-queues-config'. This
+patch fixes the binding to allow that common setup. Also it improves
+the validation for this common case. Having the queue config stored
+somewhere else is still supported, but in that case the node is not
+validated.
+
+> > +            type: boolean
+> > +            description: enable Low Power Interface
+> > +          snps,idle_slope:
+> > +            type: boolean
+> > +            description: unlock on WoL
+> > +          snps,high_credit:
+> > +            type: boolean
+> > +            description: max write outstanding req. limit
+>=20
+> Is it really a boolean?
+>
+> > +          snps,low_credit:
+> > +            type: boolean
+> > +            description: max read outstanding req. limit
+>=20
+> Same question
+
+No, they are mistakes on my side. I will fix this in v2.
+
+> > +          snps,priority:
+> > +            $ref: /schemas/types.yaml#/definitions/uint32
+> > +            description:
+> > +              Bitmask of the tagged frames priorities assigned to the =
+queue.
+> > +              When a PFC frame is received with priorities matching th=
+e bitmask,
+> > +              the queue is blocked from transmitting for the pause tim=
+e specified
+> > +              in the PFC frame.
+> > +    additionalProperties: false
+> > =20
+> >    snps,reset-gpio:
+> >      deprecated: true
+
+Thanks,
+
+-- Sebastian
+
+--vt336faofz3rlkrt
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmNXEZ8ACgkQ2O7X88g7
++prUZhAAggHrtds4P7tj6UwZKlbRaSbYuggDdM5yO2DJMsexdTBWANLDpRrnq2hh
+MdHuFs2xJjwuQLNwr198RMpm6GY4iJQ+PVjiaTSaReXZHj2snKrS+oBqKkS69qzB
+DeZ6l/1e/O/eBmAHTXHQOEGt+Upgqh1kI4pB3WhVRIEaxZTbIt7CAN+GQNHSpu8r
+7UDpIDkbjbpXlc31nvVJP4p50tUpAtBx14yfknL+plgn9AUwQ9HQ17HfWvMlCbCh
+qhD3uvyYPWQ0cmXYZsoDDcQNXuLv1VueeXHtPPFkwsBSMZRAqqc8hgxrV0nesq3i
+lxAWDCYSKuid4lL2F0eY12miL4q922EsQ/qSUA4SYAO5Nm3JW+2ozZRSYvLTN1iC
+VgF9zY6sdOfYRPU2juo1LkcNjT23nT8552tmQ9i8Y6jyyxrFaMz8Il8FNjYR4SZa
+KoPdhnJgTxZLNEtJXbMIoDktf90idm3r5kb0Y7mgwqd5kl5GCDNvYBONmuMsfrlx
+3JKSfWAAW2x9a+d2lf5OyVxCp+56H7LjKq+Oi0T6NvkwGokTtPSX8KyYP/Ywz6CB
+e+92vYFnjd+M5v1Ku7KlDGdYuvWUr5Fvo5SDjKv/FKvaVBFTAMt++2PQ0RmftwlO
+GGwQaF/vQ9VoMRo3u3Ld1N0u2In/ZAJpbJcyTEsPfggmFcYKlmM=
+=j9gW
+-----END PGP SIGNATURE-----
+
+--vt336faofz3rlkrt--
