@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B5B86609A58
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 08:15:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FB35609A5A
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 08:15:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230294AbiJXGO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 02:14:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38580 "EHLO
+        id S230397AbiJXGPG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 02:15:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230401AbiJXGOE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 02:14:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF47B5FF72
-        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 23:13:44 -0700 (PDT)
+        with ESMTP id S230230AbiJXGOi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 02:14:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42EF560508
+        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 23:13:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D738B80E23
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 06:13:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 709E3C43470;
-        Mon, 24 Oct 2022 06:13:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C554B80E49
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 06:13:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75DAFC433D7;
+        Mon, 24 Oct 2022 06:13:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666592021;
-        bh=IFNo5RdpG7AHcX8bFrPO0F7pMMmXawwb4r4LICt6uBQ=;
+        s=k20201202; t=1666592024;
+        bh=ea9+mvIPS2DY34sTnpzGry2VsVROAjau+PY83Aj+Rtc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SAJEtUJGzpuBxGZI5fWG0PUC29zjodeNWREtjywY+kTaw49x6oA2+gJxrdMWxL+pw
-         z3363yCwICirPuGgPuMuvcTpCuhMXYUVfohv30WtFo+pBa/9Tg3JwxOL53EGyxESZy
-         uSjvMYIck/UcHbh0McCHerSt4o0O1q8iTD3i8wQwpSrhh1ndGywh9yoNQKAAzy4uDT
-         xvxOeuTW2nJ6BkMeblJlzWK34jeglFDbkI/Q2eUcqemeaFE5HxiHYOLUmC76pxNXRk
-         yJhyyEvC800cjunAyzSJWelTCApbP03Uf6scf4mZh0R5qIPT8ZQ4m6kxPhoTuMVpqD
-         hk8M2aFViA7fw==
+        b=ul1rsUUoxSgtefPKRQLemX6TZw/GnVqjNWCouLWbINcbCXmJvwqAZ+8dkI722JnAZ
+         5v7W58y2so0Oe86wk57PQcArW9BvFByh2VozjZFONUU4YWIINC7fhJ2h5Ez/8ard8W
+         K+FIa3bGVae1gdeYNucoK6BsVtCxM0Ke8MlbexJjG6WGygO+ZjpqMgGsh5oIO89oWT
+         FyOCcDAt+L1Re3D/F0Zx7FLe73t013oIX7H8jL6obSZPHDaLeltDaw43SavIvV33m1
+         F58oSaXOitzw0PZL6iI+JDxPfWNiy98A52xzW9aSykO/gVxzJ//FO2ytSHZLtJrE0l
+         Q4ZDngnyd8a3w==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,9 +38,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>, Raed Salem <raeds@nvidia.com>
-Subject: [V2 net 14/16] net/mlx5e: Fix macsec rx security association (SA) update/delete
-Date:   Mon, 24 Oct 2022 07:12:18 +0100
-Message-Id: <20221024061220.81662-15-saeed@kernel.org>
+Subject: [V2 net 15/16] net/mlx5e: Fix wrong bitwise comparison usage in macsec_fs_rx_add_rule function
+Date:   Mon, 24 Oct 2022 07:12:19 +0100
+Message-Id: <20221024061220.81662-16-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221024061220.81662-1-saeed@kernel.org>
 References: <20221024061220.81662-1-saeed@kernel.org>
@@ -57,55 +57,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Raed Salem <raeds@nvidia.com>
 
-The cited commit adds the support for update/delete MACsec Rx SA,
-naturally, these operations need to check if the SA in question exists
-to update/delete the SA and return error code otherwise, however they
-do just the opposite i.e. return with error if the SA exists
+The cited commit produces a sparse check error of type
+"sparse: error: restricted __be64 degrades to integer". The
+offending line wrongly did a bitwise operation between two different
+storage types one of 64 bit when the other smaller side is 16 bit
+which caused the above sparse error, furthermore bitwise operation
+usage here is wrong in the first place as the constant MACSEC_PORT_ES
+is not a bitwise field.
 
-Fix by change the check to return error in case the SA in question does
-not exist, adjust error message and code accordingly.
+Fix by using the right mask to get the lower 16 bit if the sci number,
+and use comparison operator '==' instead of bitwise '&' operator.
 
-Fixes: aae3454e4d4c ("net/mlx5e: Add MACsec offload Rx command support")
+Fixes: 3b20949cb21b ("net/mlx5e: Add MACsec RX steering rules")
 Signed-off-by: Raed Salem <raeds@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en_accel/macsec.c    | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec_fs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-index d111e86afe72..975fedf6bfd6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-@@ -999,11 +999,11 @@ static int mlx5e_macsec_upd_rxsa(struct macsec_context *ctx)
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec_fs.c
+index 13dc628b988a..1ac0cf04e811 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec_fs.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec_fs.c
+@@ -1180,7 +1180,7 @@ macsec_fs_rx_add_rule(struct mlx5e_macsec_fs *macsec_fs,
+ 	rx_rule->rule[0] = rule;
  
- 	rx_sa = rx_sc->rx_sa[assoc_num];
--	if (rx_sa) {
-+	if (!rx_sa) {
- 		netdev_err(ctx->netdev,
--			   "MACsec offload rx_sc sci %lld rx_sa %d already exist\n",
-+			   "MACsec offload rx_sc sci %lld rx_sa %d doesn't exist\n",
- 			   sci, assoc_num);
--		err = -EEXIST;
-+		err = -EINVAL;
- 		goto out;
- 	}
- 
-@@ -1055,11 +1055,11 @@ static int mlx5e_macsec_del_rxsa(struct macsec_context *ctx)
- 	}
- 
- 	rx_sa = rx_sc->rx_sa[assoc_num];
--	if (rx_sa) {
-+	if (!rx_sa) {
- 		netdev_err(ctx->netdev,
--			   "MACsec offload rx_sc sci %lld rx_sa %d already exist\n",
-+			   "MACsec offload rx_sc sci %lld rx_sa %d doesn't exist\n",
- 			   sci, assoc_num);
--		err = -EEXIST;
-+		err = -EINVAL;
- 		goto out;
- 	}
- 
+ 	/* Rx crypto table without SCI rule */
+-	if (cpu_to_be64((__force u64)attrs->sci) & ntohs(MACSEC_PORT_ES)) {
++	if ((cpu_to_be64((__force u64)attrs->sci) & 0xFFFF) == ntohs(MACSEC_PORT_ES)) {
+ 		memset(spec, 0, sizeof(struct mlx5_flow_spec));
+ 		memset(&dest, 0, sizeof(struct mlx5_flow_destination));
+ 		memset(&flow_act, 0, sizeof(flow_act));
 -- 
 2.37.3
 
