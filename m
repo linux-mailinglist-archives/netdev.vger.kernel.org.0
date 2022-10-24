@@ -2,57 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8722660B361
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 19:05:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A25560B17F
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 18:26:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233406AbiJXRF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 13:05:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47270 "EHLO
+        id S232430AbiJXQ0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 12:26:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235361AbiJXRE1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 13:04:27 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D09EBBA267
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 08:40:27 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1omxuW-0000Tz-Bu; Mon, 24 Oct 2022 15:54:36 +0200
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:1bbf:91f6:fcf3:6f78])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id D94CB108980;
-        Mon, 24 Oct 2022 13:54:30 +0000 (UTC)
-Date:   Mon, 24 Oct 2022 15:54:22 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Dongliang Mu <dzm91@hust.edu.cn>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S233917AbiJXQ01 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 12:26:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C43ADF83
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 08:13:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A49F661290
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 14:00:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61B03C433B5;
+        Mon, 24 Oct 2022 14:00:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666620008;
+        bh=Nn95pCdy02rwGmegWbPaejloYS1SV380lGFVHPlVmM8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=T3bucdvwy/09mglhJkYG7JwXBnlpp3QMgWNT4h523wteE0kOoLeaYhG4blCIBHqqn
+         VIwRkt3KwuIN2qdh+22GE623eUNb2zcVughMxwAqJ/e6iXzacvTlytxtxZsU9Iu1Qv
+         1KENCwUxmk/f666WNAAm4HQWI5tBP4N5boxD3eQKQ8W+dS1vup7NuzVXZeRd5mGq1Y
+         EC5Zv+LooR5LZb0yzyfVKfhKyAA+O9TMFWAQLLytGplzjB36vkJ+w2TsJwlfRlpI06
+         LhRxKCSK5otC3sXP0EyN1itBAh+5MwDGKFytjBHd2bM9zEdh0NtI7Xs4vzaXgzy2JA
+         ujiggPy1zoscQ==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] can: usb: ucan: modify unregister_netdev to
- unregister_candev
-Message-ID: <20221024135422.egkcbxvudtj7z3ie@pengutronix.de>
-References: <20221024110033.727542-1-dzm91@hust.edu.cn>
+        Eric Dumazet <edumazet@google.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [pull request][net-next 00/14] mlx5 updates 2022-10-24
+Date:   Mon, 24 Oct 2022 14:57:20 +0100
+Message-Id: <20221024135734.69673-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="xnap6ow5gg7x5npq"
-Content-Disposition: inline
-In-Reply-To: <20221024110033.727542-1-dzm91@hust.edu.cn>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,44 +53,135 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Saeed Mahameed <saeedm@nvidia.com>
 
---xnap6ow5gg7x5npq
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This series provides optimizations to mlx5 SW steering.
+For more information please see tag log below.
 
-On 24.10.2022 19:00:30, Dongliang Mu wrote:
-> From API pairing, modify unregister_netdev to unregister_candev since
-> the registeration function is register_candev. Actually, they are the
-            ^ typo
-> same.
->=20
-> Signed-off-by: Dongliang Mu <dzm91@hust.edu.cn>
-
-Fixed while applying.
+Please pull and let me know if there is any problem.
 
 Thanks,
-Marc
+Saeed.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
---xnap6ow5gg7x5npq
-Content-Type: application/pgp-signature; name="signature.asc"
+The following changes since commit 86d6f77a3cce1189ab7c31e52e4d47ca58e7a601:
 
------BEGIN PGP SIGNATURE-----
+  Merge branch 'ptp-ocxp-Oroli-ART-CARD' (2022-10-24 13:10:40 +0100)
 
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmNWmQsACgkQrX5LkNig
-0121mAf7BiRgfNOG9M3efutpUwqUshfIiVD/k+sS1Ppxu6bs8vQVw3hOny4M6sf0
-8oWz6I45twfV9eBZMuueFzt51OQnczM2Ygmauk2F6je16tFWBLa4xbRlYam+uwSO
-8w70ZMpOFVpGz2EjN06JMvsS2CxNv+KQnOP5AaoFFaAvX+e6aKFIUUT0dA4fC82j
-98ygrX05X/FXIrhPgY/vKIhLCpi0z1qYcqzFzG61ViIMjROFvFDy8D0JHQF4MLLq
-4I0HxwjDTpFfzIaQQsbt8sy8lu4aD6ehw6eOnyiwNdb46I9NrsgZ8/cBHvGjOb8m
-vOd94T9UO9jvlVbRyDW6N4+2opsTCA==
-=MNLr
------END PGP SIGNATURE-----
+are available in the Git repository at:
 
---xnap6ow5gg7x5npq--
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2022-10-24
+
+for you to fetch changes up to 3f940390fcb2fc8a14268e23933466f83c81e46e:
+
+  net/mlx5: DR, Remove the buddy used_list (2022-10-24 14:52:05 +0100)
+
+----------------------------------------------------------------
+mlx5-updates-2022-10-24
+
+SW steering updates from Yevgeny Kliteynik:
+
+1) 1st Four patches: small fixes / optimizations for SW steering:
+
+ - Patch 1: Don't abort destroy flow if failed to destroy table - continue
+   and free everything else.
+ - Patches 2 and 3 deal with fast teardown:
+    + Skip sync during fast teardown, as PCI device is not there any more.
+    + Check device state when polling CQ - otherwise SW steering keeps polling
+      the CQ forever, because nobody is there to flush it.
+ - Patch 4: Removing unneeded function argument.
+
+2) Deal with the hiccups that we get during rules insertion/deletion,
+which sometimes reach 1/4 of a second. While insertion/deletion rate
+improvement was not the focus here, it still is a by-product of removing these
+hiccups.
+
+Another by-product is the reduced standard deviation in measuring the duration
+of rules insertion/deletion bursts.
+
+In the testing we add K rules (warm-up phase), and then continuously do
+insertion/deletion bursts of N rules.
+During the test execution, the driver measures hiccups (amount and duration)
+and total time for insertion/deletion of a batch of rules.
+
+Here are some numbers, before and after these patches:
+
++--------------------------------------------+-----------------+----------------+
+|                                            |   Create rules  |  Delete rules  |
+|                                            +--------+--------+--------+-------+
+|                                            | Before |  After | Before | After |
++--------------------------------------------+--------+--------+--------+-------+
+| Max hiccup [msec]                          |    253 |     42 |    254 |    68 |
++--------------------------------------------+--------+--------+--------+-------+
+| Avg duration of 10K rules add/remove [msec]| 140.07 | 124.32 | 106.99 | 99.51 |
++--------------------------------------------+--------+--------+--------+-------+
+| Num of hiccups per 100K rules add/remove   |   7.77 |   7.97 |  12.60 | 11.57 |
++--------------------------------------------+--------+--------+--------+-------+
+| Avg hiccup duration [msec]                 |  36.92 |  33.25 |  36.15 | 33.74 |
++--------------------------------------------+--------+--------+--------+-------+
+
+ - Patch 5: Allocate a short array on stack instead of dynamically- it is
+   destroyed at the end of the function.
+ - Patch 6: Rather than cleaning the corresponding chunk's section of
+   ste_arrays on chunk deletion, initialize these areas upon chunk creation.
+   Chunk destruction tend to come in large batches (during pool syncing),
+   so instead of doing huge memory initialization during pool sync,
+   we amortize this by doing small initsializations on chunk creation.
+ - Patch 7: In order to simplifies error flow and allows cleaner addition
+   of new pools, handle creation/destruction of all the domain's memory pools
+   and other memory-related fields in a separate init/uninit functions.
+ - Patch 8: During rehash, write each table row immediately instead of waiting
+   for the whole table to be ready and writing it all - saves allocations
+   of ste_send_info structures and improves performance.
+ - Patch 9: Instead of allocating/freeing send info objects dynamically,
+   manage them in pool. The number of send info objects doesn't depend on
+   number of rules, so after pre-populating the pool with an initial batch of
+   send info objects, the pool is not expected to grow.
+   This way we save alloc/free during writing STEs to ICM, which by itself can
+   sometimes take up to 40msec.
+ - Patch 10: Allocate icm_chunks from their own slab allocator, which lowered
+   the alloc/free "hiccups" frequency.
+ - Patch 11: Similar to patch 9, allocate htbl from its own slab allocator.
+ - Patch 12: Lower sync threshold for ICM hot memory - set the threshold for
+   sync to 1/4 of the pool instead of 1/2 of the pool. Although we will have
+   more syncs, each     sync will be shorter and will help with insertion rate
+   stability. Also, notice that the overall number of hiccups wasn't increased
+   due to all the other patches.
+ - Patch 13: Keep track of hot ICM chunks in an array instead of list.
+   After steering sync, we traverse the hot list and finally free all the
+   chunks. It appears that traversing a long list takes unusually long time
+   due to cache misses on many entries, which causes a big "hiccup" during
+   rule insertion. This patch replaces the list with pre-allocated array that
+   stores only the bookkeeping information that is needed to later free the
+   chunks in its buddy allocator.
+ - Patch 14: Remove the unneeded buddy used_list - we don't need to have the
+   list of used chunks, we only need the total amount of used memory.
+
+----------------------------------------------------------------
+Yevgeny Kliteynik (14):
+      net/mlx5: DR, In destroy flow, free resources even if FW command failed
+      net/mlx5: DR, Fix the SMFS sync_steering for fast teardown
+      net/mlx5: DR, Check device state when polling CQ
+      net/mlx5: DR, Remove unneeded argument from dr_icm_chunk_destroy
+      net/mlx5: DR, Allocate ste_arr on stack instead of dynamically
+      net/mlx5: DR, Initialize chunk's ste_arrays at chunk creation
+      net/mlx5: DR, Handle domain memory resources init/uninit separately
+      net/mlx5: DR, In rehash write the line in the entry immediately
+      net/mlx5: DR, Manage STE send info objects in pool
+      net/mlx5: DR, Allocate icm_chunks from their own slab allocator
+      net/mlx5: DR, Allocate htbl from its own slab allocator
+      net/mlx5: DR, Lower sync threshold for ICM hot memory
+      net/mlx5: DR, Keep track of hot ICM chunks in an array instead of list
+      net/mlx5: DR, Remove the buddy used_list
+
+ .../mellanox/mlx5/core/steering/dr_buddy.c         |   2 -
+ .../ethernet/mellanox/mlx5/core/steering/dr_cmd.c  |   7 +
+ .../mellanox/mlx5/core/steering/dr_domain.c        |  89 ++++++++---
+ .../mellanox/mlx5/core/steering/dr_icm_pool.c      | 174 ++++++++++++---------
+ .../ethernet/mellanox/mlx5/core/steering/dr_rule.c |  61 ++++----
+ .../ethernet/mellanox/mlx5/core/steering/dr_send.c | 141 ++++++++++++++++-
+ .../ethernet/mellanox/mlx5/core/steering/dr_ste.c  |  12 +-
+ .../mellanox/mlx5/core/steering/dr_table.c         |   2 +-
+ .../mellanox/mlx5/core/steering/dr_types.h         |  16 +-
+ .../ethernet/mellanox/mlx5/core/steering/mlx5dr.h  |   9 +-
+ 10 files changed, 380 insertions(+), 133 deletions(-)
