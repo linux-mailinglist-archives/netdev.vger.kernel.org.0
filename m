@@ -2,193 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1390260B6B9
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 21:09:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C38260B70A
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 21:16:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233016AbiJXTIu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 15:08:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38786 "EHLO
+        id S229536AbiJXTP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 15:15:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232853AbiJXTIa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 15:08:30 -0400
-Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on20716.outbound.protection.outlook.com [IPv6:2a01:111:f403:700c::716])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF70329CAB;
-        Mon, 24 Oct 2022 10:47:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AdKd16mWorGiDTpU4jE6HSDSGloipJsIuo27ZhB/MrLgGc+4Af+C7j0jb+zU7dTtw/GLLb2s3TsdPnNo/GwWb9CqED9+GanfQbJdZHQ9gB8F3STUI9iNVi3FzHcC5MqUWVBMZRLfgiuz6UvYtTj0a2ct/9nw1bOb2Bib4hal72Jtnz27r5MnfG/qmX7tUCImsmHUYmRpGxJ7ewv9geS7uD10GjvVGq+kurad0ENatc4sGPbizPqNbSoI8Cja0dBlQORatJKJnvGh+gXemjS8w7zlnl4qVZt8yr7AYIOevY/Dtph2JF55TuZQpc4dfAratl+ruaALbfDnpmj/7vbaJA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=v4gX4Xzkr7mbteIhahmD9/C9SGR5wIUs5Ab4WDSmVPE=;
- b=PxIvW7rD0Sy5YCyKRzr3kxtaTT91S576iUmQqYyQ5SHSCifpDqSi3mdf/I7ptWPezFKuDqNzAfiyjuSIe/a2CiAKyZPem7I10J3Pug2T5rNT8JDdFeZAETdDPVNMXApVu2p5MVS2IaGzVa83MD10QSERD/4tJvLgBcmSbhGLAPtBqOXMUgFx47dd6iq60ADgBUGx6XS5rAuxvkBDKznm0Bkjxbp1GKMvS5yTSnsCobBVlXQ898fr2VpJ1ORITpq4F+syX9y5TH39u9Fiq8hXX5rNjuzmFeAO6tMsN5x3FLqKI8l6WmxPIvyqiPt6jpeUUOB/BEDfQYIScW0CSuRpyQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v4gX4Xzkr7mbteIhahmD9/C9SGR5wIUs5Ab4WDSmVPE=;
- b=cPkxC97J4BheuQiD/sfFS3VYdiKooRpvVh3Jxp/IzhB48cYvjkcvitecIrkV3RpUanchRma7/QEbeJZDx/kR+uX7+VR13kB13HT8BCk1mMrIcBENoEGnEsWdsCt91/ReQ5lQFIbd9QlqgOTGh6rNaCGe7xhmJOtuk23y6wYruvI=
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
- by TYWPR01MB8495.jpnprd01.prod.outlook.com (2603:1096:400:173::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.28; Mon, 24 Oct
- 2022 17:46:11 +0000
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::fea0:9039:b0b3:968f]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::fea0:9039:b0b3:968f%7]) with mapi id 15.20.5746.028; Mon, 24 Oct 2022
- 17:46:05 +0000
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-CC:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        with ESMTP id S233100AbiJXTO6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 15:14:58 -0400
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [IPv6:2001:4b98:dc4:8::240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00FBF15A942;
+        Mon, 24 Oct 2022 10:53:18 -0700 (PDT)
+Received: from relay3-d.mail.gandi.net (unknown [217.70.183.195])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id 32703C5D48;
+        Mon, 24 Oct 2022 17:49:59 +0000 (UTC)
+Received: (Authenticated sender: i.maximets@ovn.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id DACCA6000C;
+        Mon, 24 Oct 2022 17:48:35 +0000 (UTC)
+Message-ID: <ed60523e-d94c-8a41-7322-c2da0ac6a097@ovn.org>
+Date:   Mon, 24 Oct 2022 19:48:35 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.1
+Cc:     i.maximets@ovn.org, netdev@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        =?utf-8?B?U3RlZmFuIE3DpHRqZQ==?= <stefan.maetje@esd.eu>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH 6/6] can: rcar_canfd: Add has_gerfl_eef to struct
- rcar_canfd_hw_info
-Thread-Topic: [PATCH 6/6] can: rcar_canfd: Add has_gerfl_eef to struct
- rcar_canfd_hw_info
-Thread-Index: AQHY5gXl7pCMlngFIEKI2bQeSzUzv64dplSAgAAo/iA=
-Date:   Mon, 24 Oct 2022 17:46:05 +0000
-Message-ID: <OS0PR01MB592206905C515C449EAC5EA9862E9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-References: <20221022104357.1276740-1-biju.das.jz@bp.renesas.com>
- <20221022104357.1276740-7-biju.das.jz@bp.renesas.com>
- <CAMuHMdV8MmTMMPnCGgXbZZ-gb4CVduAUBBG3BdAecBrc3J7RLQ@mail.gmail.com>
-In-Reply-To: <CAMuHMdV8MmTMMPnCGgXbZZ-gb4CVduAUBBG3BdAecBrc3J7RLQ@mail.gmail.com>
-Accept-Language: en-GB, en-US
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bp.renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: OS0PR01MB5922:EE_|TYWPR01MB8495:EE_
-x-ms-office365-filtering-correlation-id: 2245b41e-92de-4e33-30d0-08dab5e7a028
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: vdKNwxqj6IBawX1CeNqzvFOtF8IaTO8hVflI/ULecEj282Ze+UnxPWHVmIMMRAIG2UA+cCr2fw3NIPrL5usB/rzkuxL8fd03K2c9QV7ofNAZK9jb0gb4pBfu/es5QGKf1fEw759cnVa/P/qcU93b0eqKaA2k2SjaRO0gVZn07zAfyx3b5YJBAn7u06kpqmfoD/sgs3t3VbV1PfN+U11gfnKdTqZjXVPGgqROQvCnKxvXD7jHBwvOp152yyAiGYMGQPF6swWu/Ke7sSE+sG9ZWlHadpdODKHF6eifIEP4mmM+biBLNMDULaH+vrbhMrHaUPftdj3ZFGsEkQKcY4u/q+TfBwF4JDy+JrlL9Z4Ev1gh5h/jynPDT8VacJpPNXABePqCz3xzsJTwSk73KrUzDGzlDaGDDGEA4KQuFBHK+GWW/yyVgiZkQX1ViBjVXYy3dLk3hP+yy7NBM7UvwPCS/X6yaperDO/R0e7L5AZRjmmU0IVqH7VRAfkeqdha474KYHYsJMh6AExdq3j5bgK9dXVAANqtSlqkwE5VXCt74CButxyoEbD2AeK38YXgiy+HzGEjktDgzqr3naO3YfnMsqZKntUGiiQC/tOU7GAH3A6+tD3gxnXWgj+AHiMoDl+CTjm37K19vuvWCYzGFivGArrLOPEe7UxF6mCNxYY1novltkaspETlCInIOJVc8fRq2YSmAiHySVjbxTN2OJ2YOv1Ht9JC5Aa1J+Al/SS01i1Jo44BPA7RxYti0ZRoukIh3fS50LjORfUOHtZv4U77xg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(366004)(396003)(376002)(136003)(346002)(451199015)(38100700002)(122000001)(478600001)(38070700005)(6916009)(316002)(55016003)(54906003)(9686003)(26005)(4326008)(76116006)(66446008)(8676002)(86362001)(186003)(41300700001)(71200400001)(83380400001)(53546011)(2906002)(5660300002)(52536014)(8936002)(33656002)(66556008)(66946007)(7416002)(64756008)(66476007)(7696005)(6506007);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?blc0bVl0eTRQOUZHcWoydTIySUUvRVh5K0g2ZWZLbDFPNzl0NDFwUkptSVlZ?=
- =?utf-8?B?azBDTHp4VDNKd2dFbjE4N0tobmk1c1kvcTNXK1ZXUThqc3o3ZHA4Nkw2SlQx?=
- =?utf-8?B?WWNNTlNIS2tQRVZuYlNRb3A4QzZJYlJjRjVMeENsSXFZa2hvM0w5eEdlTnl3?=
- =?utf-8?B?M1RMSHNjVldzN0pWYkRycU1SdU9HV3Z0Nkh1ajh5TmRZNldMdy9oT09SdjBU?=
- =?utf-8?B?RGc5SDBhd1FtVUZ0ek0yV2VvZCtpQTFLQlVCcW05bEFnWnFETEFYYU53MU1n?=
- =?utf-8?B?VDN2eG1BNWxScnFTMDVkWkk4SjFSRmlHaHJXenR4b3Y2ajFhY1V2ek1LazRK?=
- =?utf-8?B?RVJGVWRhTU4wZVdkck8rUGh2ckNEVW8zd3pqUmZ0alhVM01oN0lEaXk1T01y?=
- =?utf-8?B?dUF4NWxBUzkyQ0wzcE5RUXJxK0R3dEk1dFE3NFdFaTIxMWw2VHU3R1B3bGtx?=
- =?utf-8?B?YUk3L1czTHFocE1XUy92c0hwNXR4dTNTSXFmUHVtbWU2L250ZlZmYWdtOHZE?=
- =?utf-8?B?bmRlZWk1dUVJWk5ybjdaQ0dJNFNNVnZZbm02em03bTdlNVhoMkxVbVlxYkw3?=
- =?utf-8?B?d2tnSDZCbjB0dGVNRzI3dkRUZzkxMC9xVitITmRNbitBaHJtWmxXbTlydTFR?=
- =?utf-8?B?Z0VKcGh5aDVTTTJ0UDZWZmZhRHdVTERkRWZEN0ZrbjRCRVcvKzJscmQ0TmNU?=
- =?utf-8?B?WmJCT00yK2JRNytCS1NyWnBYeGhLYnVRSXFMMTFvOHZUaURKWHBpb3U4SDhF?=
- =?utf-8?B?NEZ6UTJPbjZqVlc4ZzFYZSs0MFcwQWx0TXYrTDErMHB4QTNHTmRUWm8yN2I2?=
- =?utf-8?B?Yjd4TEFicGRvMzI4MmpNR2NqRGd4dnR5TVJPUFNIZmM0dCtrZ2VZeGJYYkFS?=
- =?utf-8?B?SndZQmY5VktOYzV6aTRXMG9aeDBCbFQwc1RCTURJcnA2K3hNMldTWVc5YVk5?=
- =?utf-8?B?eGVqbnMyc3ZIMW9jb3ZUcXZFU2Y1ZVIyZDZxYmtSUkRYNlRrR2x0RjRYRzVP?=
- =?utf-8?B?dExmaTYzSGlhdXBDRzhaT21OMXhFVlVNYm51L3hJSzVIdUlNVWR6a1NCM3NM?=
- =?utf-8?B?ckMvV2RmYU4yUVY3cGwwR1hobkRIWnpzMEY3eGJjbVF3SUdXdHdVRXEvN2tr?=
- =?utf-8?B?ci9LYzYzVTdNUm5yN1l3UUFiT210c2dQYVBaT0c0VTRPbkUwSHFERlo3a0x0?=
- =?utf-8?B?NGk3NXJlQ3NhbzFTSDROa2NyTkJXS0VyVUJkMXduNFA4cnBaNlRJWkZuTmZS?=
- =?utf-8?B?OHdsaDJDNmVJTE4yYWp3K2djSVBJcEVuSStMZ2trMmh1UEZNdEt0ckdubmlS?=
- =?utf-8?B?NVdKUDhKSmtXcldySE9TVks0L2plQ2FPSEJTeThybXdxMW5XNjhINzhPUTVj?=
- =?utf-8?B?ci9SYjRXTmVKYUdRKzNFUG5hQVRuM2ZnU0FYMGUrano5Mmlxbm0zdkQwNzdW?=
- =?utf-8?B?NVpJZ0xUM3hKc3B1dDRpY0JmYjVOU1ZxK3U5YU4wcUZzcXZoS1hpYWpzaUV4?=
- =?utf-8?B?UUNjenJFSkVmOTRERFFMaVlLdHhwUzBISkhWcCtjUmE1ZFV3dFJPZEFUTDMv?=
- =?utf-8?B?UlFUZURScDVpL2NGNzREbWNrbnZUNnpZTEUxY0pLV3JGbjdLUmFaKzJ3NDlD?=
- =?utf-8?B?a215Q211NmU2UmJNSnlFVW1FMDlmSkhUVW5aVFBpME16T1VKUFliNURydHh1?=
- =?utf-8?B?ZFBUWThHZi9XdG9DcDIwRGVydXRveFl0ekcwUFoxbE5hNG1QWjdBYllTWUtH?=
- =?utf-8?B?d3VZY1ZDU28wMU42eUl6K2RSTFN0eHJvSnlacjRwVjdWWlJDMDFiMUJSUEJa?=
- =?utf-8?B?VVlrUlJUcDhIUlljMlprVTBsL2t5VURCbkRpdUxXSjNBZ3BzOHFSeDQxQjN3?=
- =?utf-8?B?ZE5iaDl1Ym0xcHh6NXcyaTdzS3hZV2g3Yy9JWGVrcGlTczRIbnoraHlvRkU0?=
- =?utf-8?B?WFlqZStVNVhnOTQ5QmN2aGVGZEhVWW41ZGF3UnlUZjcxNjRXU3VKbzF6aG5G?=
- =?utf-8?B?bm9RNngxdnlnUTJFOW4wNEdOVGc1dWNyZnJRU2d0elplQkpMN2lHMThrNmR3?=
- =?utf-8?B?N3JOMExyMDFUSm9YS3NMSFRHMlJBS3NPZEdxS2RrTzdhWE5YeUk5Qk45REdG?=
- =?utf-8?B?MExZcU54bWR6MWJZcDQxZmFRSmpmVFU4UnVSaFJtbjVtckV3bk1qazZQMTlL?=
- =?utf-8?B?M0E9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2245b41e-92de-4e33-30d0-08dab5e7a028
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Oct 2022 17:46:05.4938
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: LaxCTveuD9Ul+9bDmurw50MNuce+QXcs0QTtUdFHc1bHyJpD93+XfoNp2j5GZlJNamGgUtgMMt/k/XYidJghzTcovh0/BnnIypfhGbglTXI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYWPR01MB8495
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+To:     Antonio Quartulli <antonio@openvpn.net>, nicolas.dichtel@6wind.com,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20221021114921.3705550-1-i.maximets@ovn.org>
+ <20221021090756.0ffa65ee@kernel.org>
+ <eb6903b7-c0d9-cc70-246e-8dbde0412433@6wind.com>
+ <ded477ea-08fa-b96d-c192-9640977b42e6@ovn.org>
+ <5af190a8-ac35-82a6-b099-e9a817757676@6wind.com>
+ <cd51cf56-c729-87da-5e2e-03447c9a3d42@openvpn.net>
+From:   Ilya Maximets <i.maximets@ovn.org>
+Subject: Re: [RFE net-next] net: tun: 1000x speed up
+In-Reply-To: <cd51cf56-c729-87da-5e2e-03447c9a3d42@openvpn.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_NEUTRAL autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgR2VlcnQsDQoNClRoYW5rcyBmb3IgdGhlIGZlZWRiYWNrLg0KDQo+IFN1YmplY3Q6IFJlOiBb
-UEFUQ0ggNi82XSBjYW46IHJjYXJfY2FuZmQ6IEFkZCBoYXNfZ2VyZmxfZWVmIHRvIHN0cnVjdA0K
-PiByY2FyX2NhbmZkX2h3X2luZm8NCj4gDQo+IEhpIEJpanUsDQo+IA0KPiBPbiBTYXQsIE9jdCAy
-MiwgMjAyMiBhdCAxOjAzIFBNIEJpanUgRGFzIDxiaWp1LmRhcy5qekBicC5yZW5lc2FzLmNvbT4N
-Cj4gd3JvdGU6DQo+ID4gUi1DYXIgaGFzIEVDQyBlcnJvciBmbGFncyBpbiBnbG9iYWwgZXJyb3Ig
-aW50ZXJydXB0cyB3aGVyZWFzIGl0IGlzDQo+IG5vdA0KPiA+IGF2YWlsYWJsZSBvbiBSWi9HMkwu
-DQo+ID4NCj4gPiBBZGQgaGFzX2dlcmZsX2VlZiB0byBzdHJ1Y3QgcmNhcl9jYW5mZF9od19pbmZv
-IHNvIHRoYXQgcmNhcl9jYW5mZF8NCj4gPiBnbG9iYWxfZXJyb3IoKSB3aWxsIHByb2Nlc3MgRUND
-IGVycm9ycyBvbmx5IGZvciBSLUNhci4NCj4gPg0KPiA+IHdoaWxzdCwgdGhpcyBwYXRjaCBmaXhl
-cyB0aGUgYmVsb3cgY2hlY2twYXRjaCB3YXJuaW5ncw0KPiA+ICAgQ0hFQ0s6IFVubmVjZXNzYXJ5
-IHBhcmVudGhlc2VzIGFyb3VuZCAnY2ggPT0gMCcNCj4gPiAgIENIRUNLOiBVbm5lY2Vzc2FyeSBw
-YXJlbnRoZXNlcyBhcm91bmQgJ2NoID09IDEnDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBCaWp1
-IERhcyA8YmlqdS5kYXMuanpAYnAucmVuZXNhcy5jb20+DQo+IA0KPiBUaGFua3MgZm9yIHlvdXIg
-cGF0Y2ghDQo+IA0KPiA+IC0tLSBhL2RyaXZlcnMvbmV0L2Nhbi9yY2FyL3JjYXJfY2FuZmQuYw0K
-PiA+ICsrKyBiL2RyaXZlcnMvbmV0L2Nhbi9yY2FyL3JjYXJfY2FuZmQuYw0KPiA+IEBAIC01MjMs
-NiArNTIzLDcgQEAgc3RydWN0IHJjYXJfY2FuZmRfaHdfaW5mbyB7DQo+ID4gICAgICAgICB1bnNp
-Z25lZCBtdWx0aV9nbG9iYWxfaXJxczoxOyAgIC8qIEhhcyBtdWx0aXBsZSBnbG9iYWwgaXJxcw0K
-PiAqLw0KPiA+ICAgICAgICAgdW5zaWduZWQgY2xrX3Bvc3RkaXY6MTsgICAgICAgICAvKiBIYXMg
-Q0FOIGNsayBwb3N0IGRpdmlkZXINCj4gKi8NCj4gPiAgICAgICAgIHVuc2lnbmVkIG11bHRpX2No
-YW5uZWxfaXJxczoxOyAgLyogSGFzIG11bHRpcGxlIGNoYW5uZWwgaXJxcw0KPiA+ICovDQo+ID4g
-KyAgICAgICB1bnNpZ25lZCBoYXNfZ2VyZmxfZWVmOjE7ICAgICAgIC8qIEhhcyBFQ0MgRXJyb3Ig
-RmxhZyAgKi8NCj4gDQo+IERvIHlvdSByZWFsbHkgbmVlZCB0aGlzIGZsYWc/IEFjY29yZGluZyB0
-byB0aGUgUlovRzJMIGRvY3MsIHRoZQ0KPiBjb3JyZXNwb25kaW5nIHJlZ2lzdGVyIGJpdHMgYXJl
-IGFsd2F5cyByZWFkIGFzIHplcm8uDQoNClRoZXNlIGFyZSByZXNlcnZlZCBiaXRzIHdpdGggMCB2
-YWx1ZSwgQnV0IGl0IGlzIG5vdCBkb2N1bWVudGVkIGFzIEVDQyBFcnJvciBmbGFnIGZvciBSWi9H
-MkwuDQpTbyBqdXN0IHdhbnQgdG8gYmUgY2xlYXIgaXQgaXMgYSBodyBmZWF0dXJlIHRoYXQgbm90
-IHN1cHBvcnRlZCBmb3IgUlovRzJMLiAgDQoNCj4gDQo+ID4gIH07DQo+ID4NCj4gPiAgLyogQ2hh
-bm5lbCBwcml2IGRhdGEgKi8NCj4gDQo+ID4gQEAgLTk0NywxNyArOTUwLDE4IEBAIHN0YXRpYyB2
-b2lkIHJjYXJfY2FuZmRfZ2xvYmFsX2Vycm9yKHN0cnVjdA0KPiA+IG5ldF9kZXZpY2UgKm5kZXYp
-ICB7DQo+ID4gICAgICAgICBzdHJ1Y3QgcmNhcl9jYW5mZF9jaGFubmVsICpwcml2ID0gbmV0ZGV2
-X3ByaXYobmRldik7DQo+ID4gICAgICAgICBzdHJ1Y3QgcmNhcl9jYW5mZF9nbG9iYWwgKmdwcml2
-ID0gcHJpdi0+Z3ByaXY7DQo+ID4gKyAgICAgICBjb25zdCBzdHJ1Y3QgcmNhcl9jYW5mZF9od19p
-bmZvICppbmZvID0gZ3ByaXYtPmluZm87DQo+ID4gICAgICAgICBzdHJ1Y3QgbmV0X2RldmljZV9z
-dGF0cyAqc3RhdHMgPSAmbmRldi0+c3RhdHM7DQo+ID4gICAgICAgICB1MzIgY2ggPSBwcml2LT5j
-aGFubmVsOw0KPiA+ICAgICAgICAgdTMyIGdlcmZsLCBzdHM7DQo+ID4gICAgICAgICB1MzIgcmlk
-eCA9IGNoICsgUkNBTkZEX1JGRklGT19JRFg7DQo+ID4NCj4gPiAgICAgICAgIGdlcmZsID0gcmNh
-cl9jYW5mZF9yZWFkKHByaXYtPmJhc2UsIFJDQU5GRF9HRVJGTCk7DQo+ID4gLSAgICAgICBpZiAo
-KGdlcmZsICYgUkNBTkZEX0dFUkZMX0VFRjApICYmIChjaCA9PSAwKSkgew0KPiA+ICsgICAgICAg
-aWYgKGluZm8tPmhhc19nZXJmbF9lZWYgJiYgKGdlcmZsICYgUkNBTkZEX0dFUkZMX0VFRjApICYm
-IGNoDQo+ID4gKyA9PSAwKSB7DQo+ID4gICAgICAgICAgICAgICAgIG5ldGRldl9kYmcobmRldiwg
-IkNoMDogRUNDIEVycm9yIGZsYWdcbiIpOw0KPiA+ICAgICAgICAgICAgICAgICBzdGF0cy0+dHhf
-ZHJvcHBlZCsrOw0KPiA+ICAgICAgICAgfQ0KPiA+IC0gICAgICAgaWYgKChnZXJmbCAmIFJDQU5G
-RF9HRVJGTF9FRUYxKSAmJiAoY2ggPT0gMSkpIHsNCj4gPiArICAgICAgIGlmIChpbmZvLT5oYXNf
-Z2VyZmxfZWVmICYmIChnZXJmbCAmIFJDQU5GRF9HRVJGTF9FRUYxKSAmJiBjaA0KPiA+ICsgPT0g
-MSkgew0KPiA+ICAgICAgICAgICAgICAgICBuZXRkZXZfZGJnKG5kZXYsICJDaDE6IEVDQyBFcnJv
-ciBmbGFnXG4iKTsNCj4gPiAgICAgICAgICAgICAgICAgc3RhdHMtPnR4X2Ryb3BwZWQrKzsNCj4g
-PiAgICAgICAgIH0NCj4gDQo+IEp1c3Qgd3JhcCBib3RoIGNoZWNrcyBpbnNpZGUgYSBzaW5nbGUg
-ImlmIChncHJpdi0+aW5mby0+aGFzX2dlcmZsKSB7DQo+IC4uLiB9Ij8NCj4gDQoNCk9LLCBjaGVl
-cnMsDQpCaWp1DQo=
+On 10/24/22 17:59, Antonio Quartulli wrote:
+> Hi,
+> 
+> On 24/10/2022 14:27, Nicolas Dichtel wrote:
+>> Le 24/10/2022 à 13:56, Ilya Maximets a écrit :
+>>> On 10/24/22 11:44, Nicolas Dichtel wrote:
+>>>> Le 21/10/2022 à 18:07, Jakub Kicinski a écrit :
+>>>>> On Fri, 21 Oct 2022 13:49:21 +0200 Ilya Maximets wrote:
+>>>>>> Bump the advertised speed to at least match the veth.  10Gbps also
+>>>>>> seems like a more or less fair assumption these days, even though
+>>>>>> CPUs can do more.  Alternative might be to explicitly report UNKNOWN
+>>>>>> and let the application/user decide on a right value for them.
+>>>>>
+>>>>> UNKOWN would seem more appropriate but at this point someone may depend
+>>>>> on the speed being populated so it could cause regressions, I fear :S
+>>>> If it is put in a bonding, it may cause some trouble. Maybe worth than
+>>>> advertising 10M.
+>>>
+>>> My thoughts were that changing the number should have a minimal impact
+>>> while changing it to not report any number may cause some issues in
+>>> applications that doesn't expect that for some reason (not having a
+>>> fallback in case reported speed is unknown isn't great, and the argument
+>>> can be made that applications should check that, but it's hard to tell
+>>> for every application if they actually do that today).
+>>>
+>>> Bonding is also a good point indeed, since it's even in-kernel user.
+>>>
+>>>
+>>> The speed bump doesn't solve the problem per se.  It kind of postpones
+>>> the decision, since we will run into the same issue eventually again.
+>>> That's why I wanted to discuss that first.
+>>>
+>>> Though I think that at least unification across virtual devices (tun and
+>>> veth) should be a step in a right direction.
+>> Just to make it clear, I'm not against aligning speed with veth, I'm only
+>> against reporting UNKNOWN.
+>>
+>>>
+>>>>
+>>>> Note that this value could be configured with ethtool:
+>>>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=4e24f2dd516ed
+>>>
+>>> This is interesting, but it's a bit hard to manage, because in order
+>>> to make a decision to bump the speed, application should already know
+>>> that this is a tun/tap device.  So, there has to be a special case
+>> But this should be done by the application which creates this tun interface. Not
+>> by the application that uses this information.
+>>
+>>> implemented in the code that detects the driver and changes the speed
+>>> (this is about application that is using the interface, but didn't
+>>> create it), but if we already know the driver, then it doesn't make
+>>> sense to actually change the speed in many cases as application can
+>>> already act accordingly.
+>>>
+>>> Also, the application may not have permissions to do that (I didn't
+>>> check the requirements, but my guess would be at least CAP_NET_ADMIN?).
+>> Sure, but the one who creates it, has the right to configure it correctly. It's
+>> part of the configuration of the interface.
+>>
+>> Setting an higher default speed seems to be a workaround to fix an incorrect
+>> configuration. And as you said, it will probably be wrong again in a few years ;-)
+>>
+> 
+> What if the real throughput is in the order of 10Mbps?
+> 
+> The tun driver can be used for many purposes and the throughput will depend on the specific case.
+> 
+> Imagine an application using the reported speed for computing some kind of metric: having 10Gbps will corrupt the result entirely.
+> 
+> OTOH it is true that 10Mbps may corrupt the metric as well, but the latter is closer to reality IMHO (when using tun to process and send traffic over the network).
+> 
+> At the end I also agree that the speed should be set by whoever creates the interface. As they are the only one who knows what to expect for real.
+> 
+> (Note: tun is used also to implement userspace VPNs, with throughput ranging from 10Mbps to 1Gbps).
+
+That's an interesting perspective, Antonio.  Thanks!
+
+However, before we can answer your questions, I think we need to define
+what the link speed of a tun/tap interface actually is.
+
+IMHO, we should not mix up the link speed and the application performance.
+
+I'm thinking about the link speed as a speed at which kernel driver can
+make packets available to the userpsace application or the speed at which
+kernel driver is able to send out packets received from the application.
+
+The performance of the application itself is a bit orthogonal to
+parameters of the device.
+
+I think, as we do not blame a physical network card or the veth interface
+for the processing speed of the application on the other side of the
+network, the same way we should not blame the tun driver/interface for
+the processing speed in the application that opened it.
+
+In that sense the link speed of a tap interface is the speed at which
+kernel can enqueue/dequeue packets to/from userspace.
+On a modern CPU that speed will be relatively high.  If it's actually
+10 Mbps, than it means that you're likely running on a very slow CPU and
+will probably not be able to generate more traffic for it anyway.
+
+For the calculation of some kind of metric based on the reported link
+speed, I'm not sure I understand how that may corrupt the result.  The
+reported 10 Mbps is not correct either way, so calculations make no
+practical sense.  If the application expects the link speed to be 10 Mbps,
+than I'm not sure why it is checking the link speed in the first place.
+
+Do you have some examples of such metrics?
+
+
+All in all, TUN/TAP is a transport, not an end user of the packets it
+handles.  And it seems to be a work for transport layer protocols to
+handle the mismatch between the wire speed and the application speed on
+the other end.
+
+
+Saying that, I agree that it makes sense to set the link speed in the
+application that creates the interface if that application does actually
+know what it is capable of.  But not all applications know what speed
+they can handle, so it's not always easy, and will also depend on the
+CPU speed in many cases.
+
+Best regards, Ilya Maximets.
