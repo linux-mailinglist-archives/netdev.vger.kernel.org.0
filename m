@@ -2,123 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C91F760BBD9
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 23:16:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC31360BBFC
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 23:20:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231390AbiJXVQm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 17:16:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43628 "EHLO
+        id S233919AbiJXVTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 17:19:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230453AbiJXVQ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 17:16:26 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AADE2D20F6
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 12:22:18 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1omzWE-0007KN-4k; Mon, 24 Oct 2022 17:37:38 +0200
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:1bbf:91f6:fcf3:6f78])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id DEF08108A71;
-        Mon, 24 Oct 2022 15:37:34 +0000 (UTC)
-Date:   Mon, 24 Oct 2022 17:37:26 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        with ESMTP id S235412AbiJXVTe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 17:19:34 -0400
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [IPv6:2001:4b98:dc4:8::240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D121C96CD;
+        Mon, 24 Oct 2022 12:25:46 -0700 (PDT)
+Received: from relay2-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::222])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id 08002C16B0;
+        Mon, 24 Oct 2022 15:40:51 +0000 (UTC)
+Received: (Authenticated sender: i.maximets@ovn.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id 9001540008;
+        Mon, 24 Oct 2022 15:39:14 +0000 (UTC)
+Message-ID: <1ac55929-4399-484c-e3ee-1a04f8e90046@ovn.org>
+Date:   Mon, 24 Oct 2022 17:39:13 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.1
+Cc:     i.maximets@ovn.org, netdev@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Rob Herring <robh@kernel.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH 1/3] can: rcar_canfd: Fix IRQ storm on global fifo receive
-Message-ID: <20221024153726.72avg6xbgzwyboms@pengutronix.de>
-References: <20221022081503.1051257-1-biju.das.jz@bp.renesas.com>
- <20221022081503.1051257-2-biju.das.jz@bp.renesas.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="pp2dauigdnxmzpha"
-Content-Disposition: inline
-In-Reply-To: <20221022081503.1051257-2-biju.das.jz@bp.renesas.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Content-Language: en-US
+To:     nicolas.dichtel@6wind.com, Jakub Kicinski <kuba@kernel.org>
+References: <20221021114921.3705550-1-i.maximets@ovn.org>
+ <20221021090756.0ffa65ee@kernel.org>
+ <eb6903b7-c0d9-cc70-246e-8dbde0412433@6wind.com>
+ <ded477ea-08fa-b96d-c192-9640977b42e6@ovn.org>
+ <5af190a8-ac35-82a6-b099-e9a817757676@6wind.com>
+From:   Ilya Maximets <i.maximets@ovn.org>
+Subject: Re: [RFE net-next] net: tun: 1000x speed up
+In-Reply-To: <5af190a8-ac35-82a6-b099-e9a817757676@6wind.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_NEUTRAL autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 10/24/22 14:27, Nicolas Dichtel wrote:
+> Le 24/10/2022 à 13:56, Ilya Maximets a écrit :
+>> On 10/24/22 11:44, Nicolas Dichtel wrote:
+>>> Le 21/10/2022 à 18:07, Jakub Kicinski a écrit :
+>>>> On Fri, 21 Oct 2022 13:49:21 +0200 Ilya Maximets wrote:
+>>>>> Bump the advertised speed to at least match the veth.  10Gbps also
+>>>>> seems like a more or less fair assumption these days, even though
+>>>>> CPUs can do more.  Alternative might be to explicitly report UNKNOWN
+>>>>> and let the application/user decide on a right value for them.
+>>>>
+>>>> UNKOWN would seem more appropriate but at this point someone may depend
+>>>> on the speed being populated so it could cause regressions, I fear :S
+>>> If it is put in a bonding, it may cause some trouble. Maybe worth than
+>>> advertising 10M.
+>>
+>> My thoughts were that changing the number should have a minimal impact
+>> while changing it to not report any number may cause some issues in
+>> applications that doesn't expect that for some reason (not having a
+>> fallback in case reported speed is unknown isn't great, and the argument
+>> can be made that applications should check that, but it's hard to tell
+>> for every application if they actually do that today).
+>>
+>> Bonding is also a good point indeed, since it's even in-kernel user.
+>>
+>>
+>> The speed bump doesn't solve the problem per se.  It kind of postpones
+>> the decision, since we will run into the same issue eventually again.
+>> That's why I wanted to discuss that first.
+>>
+>> Though I think that at least unification across virtual devices (tun and
+>> veth) should be a step in a right direction.
+> Just to make it clear, I'm not against aligning speed with veth, I'm only
+> against reporting UNKNOWN.
 
---pp2dauigdnxmzpha
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Ack.  Thanks for the clarification!
 
-On 22.10.2022 09:15:01, Biju Das wrote:
-> We are seeing IRQ storm on global receive IRQ line under heavy CAN
-> bus load conditions with both CAN channels are enabled.
->=20
-> Conditions:
->   The global receive IRQ line is shared between can0 and can1, either
->   of the channels can trigger interrupt while the other channel irq
->   line is disabled(rfie).
->   When global receive IRQ interrupt occurs, we mask the interrupt in
->   irqhandler. Clearing and unmasking of the interrupt is happening in
->   rx_poll(). There is a race condition where rx_poll unmask the
->   interrupt, but the next irq handler does not mask the irq due to
->   NAPIF_STATE_MISSED flag.
+> 
+>>
+>>>
+>>> Note that this value could be configured with ethtool:
+>>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=4e24f2dd516ed
+>>
+>> This is interesting, but it's a bit hard to manage, because in order
+>> to make a decision to bump the speed, application should already know
+>> that this is a tun/tap device.  So, there has to be a special case
+> But this should be done by the application which creates this tun interface. Not
+> by the application that uses this information.
+> 
+>> implemented in the code that detects the driver and changes the speed
+>> (this is about application that is using the interface, but didn't
+>> create it), but if we already know the driver, then it doesn't make
+>> sense to actually change the speed in many cases as application can
+>> already act accordingly.
+>>
+>> Also, the application may not have permissions to do that (I didn't
+>> check the requirements, but my guess would be at least CAP_NET_ADMIN?).
+> Sure, but the one who creates it, has the right to configure it correctly. It's
+> part of the configuration of the interface.
+I mostly agree with that, but that still means changing userspace
+applications.  I'm pretty sure very little number of applications,
+if any at all, do that today.
 
-Why does this happen? Is it a problem that you call
-rcar_canfd_handle_global_receive() for a channel that has the IRQs
-actually disabled in hardware?
+> 
+> Setting an higher default speed seems to be a workaround to fix an incorrect
+> configuration. And as you said, it will probably be wrong again in a few years ;-)
 
->   (for eg: can0 rx fifo interrupt enable is
->   disabled and can1 is triggering rx interrupt, the delay in rx_poll()
->   processing results in setting NAPIF_STATE_MISSED flag) leading to IRQ
->   storm.
->=20
-> This patch fixes the issue by checking irq is masked or not in
-> irq handler and it masks the interrupt if it is unmasked.
+Yep.
 
-Marc
+Workarounds do exist today.  For example, if you specify max-rate
+in QoS configuration for OVS, it will not use the link speed as a
+reference at all.  I'm just not sure if replacing one workaround
+with another workaround is a good option.  Especially because that
+will require changing userspace applications and the problem itself
+is kind of artificial.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+> 
+>>
+>> For the human user it's still one extra configuration step that they
+>> need to remember to perform.
+> I don't buy this argument. There are already several steps: creating and
+> configuring an interface requires more than one command.
 
---pp2dauigdnxmzpha
-Content-Type: application/pgp-signature; name="signature.asc"
+Muscle memory, I guess. :)
+But yes, might not be a huge deal for human users, I agree.
 
------BEGIN PGP SIGNATURE-----
+It's more of a concern for multi-layer systems where actual interfaces
+are created somewhere deep inside the software stack and actual humans
+don't really perform these commands by hands.
 
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmNWsTMACgkQrX5LkNig
-012EJgf/TJuBlGVYoPZqvkLueDAZ6s8nJzeI8sB5zxTsvDBoWpHaFk+gHd2PO9ai
-X4yfVczOEQfJBcT1yho2dWMoADFmAVWFTizWsblTTxYQd7cwhN/Y/itcXf6+rAqv
-1ej8FTyWI0gyguG1/IaN6LHpCzkHpxhzZaV1kkMpWPuutYsLPCYGSt1NH7j0d0ih
-GDcUVfprkzyNmUJb/SjYLsi23e5kLe+y7B+T6RZLc83+1tTZujjkn/tOkGjBGEQ2
-aZd6QviFmC7I/BmOVcVDWs7IIi/nDDSqsJx+57DgrjCVaPRHuJDoQZ23102H6izP
-HcXRZw9IKKbUqhIpqFNboYy8f32C7g==
-=3yl4
------END PGP SIGNATURE-----
-
---pp2dauigdnxmzpha--
+Best regards, Ilya Maximets.
