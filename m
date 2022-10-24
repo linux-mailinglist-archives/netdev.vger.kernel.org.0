@@ -2,117 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D2C960BE3E
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 01:10:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA6F760BEA1
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 01:32:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230527AbiJXXK4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 19:10:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52870 "EHLO
+        id S229864AbiJXXcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 19:32:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231157AbiJXXK3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 19:10:29 -0400
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 637F82920DE;
-        Mon, 24 Oct 2022 14:31:37 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 06C895C003F;
-        Mon, 24 Oct 2022 16:47:25 -0400 (EDT)
-Received: from imap51 ([10.202.2.101])
-  by compute3.internal (MEProxy); Mon, 24 Oct 2022 16:47:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1666644445; x=1666730845; bh=bssarCcp+y
-        bz5Owzby5mbuikPgqNGdz7c6tjuDYrQ3g=; b=NkbkhwyyD8JqPgTF3GX90T1KBu
-        yQ9e/V+AO1CLTjIi8zfuuZgeQvpaXwrxX3ya+3+OrAeyAVYdNmr/+ER8a0OZRltT
-        gtBshfPPACEOHBCVWScZexae8sa5OK+3kFWDS8K4B3EEWxyjLrxzofvUU7BQDyaT
-        L1ttZShK16j3WsJsBjSZzbUUJG8wqDH6bM0lyj4+iVFQRiMIa6GBfQuRbQWuqoPJ
-        nACfYzQR+oRqWGthATSqXV6yjH7CyjTWUlSfLIkIq+ZNPPiP/Ofbzgf09p5Krmms
-        xvZ7ssFg9cppnaZVin+3puzx5Y5sPAAoR4QKsYXch+L4FQtwwhLtyQmj8Frg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1666644445; x=1666730845; bh=bssarCcp+ybz5Owzby5mbuikPgqN
-        Gdz7c6tjuDYrQ3g=; b=drKbqYTA/JMvghcg/uGUzDqCxegdFYCtOvrnfLxKVxsL
-        YvvCToAcYe+J+FDw6gKgduCxZBDY5aqlsjNCTNyzcMaeVWGdN54Ee2uu5Qc/iINn
-        yDAakJpSu0Oabj+beUPP5mzdiWC0ajS7FxsntXwvgMQeuGThdf4JMTGwovs/WHiQ
-        y5bDGDQCpDax8fFUnbjaLlNdbAJieVj4WWwSl4s/ja9SFr+ZJ+BdHqv3Qp9A1GOB
-        Jg7yGvTECSNyR15ey/fH8E4j4QwcD6JxUrqgEJQoDkTS6ccSrEo9S44zFMC0ODqK
-        ixhR6QkVRTNR4rXGh+00xldsi6GUEOikMEeFxPUiVg==
-X-ME-Sender: <xms:3PlWY_8dsRmJoEusUvxzYpneAlbj4D0Va88JoH-QpCpEhfzlCcsO1A>
-    <xme:3PlWY7v7ZiKOPhXQSUaFWtVcHadM8SdhtRKwyYRZOSR63Jc7OX8Cm4IJFaVcrRHZZ
-    uETvbTcx2CRiykDXO8>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrgedtgedgudegkecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdet
-    rhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrg
-    htthgvrhhnpeffheeugeetiefhgeethfejgfdtuefggeejleehjeeutefhfeeggefhkedt
-    keetffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    grrhhnugesrghrnhgusgdruggv
-X-ME-Proxy: <xmx:3PlWY9CIx10DAbClCvAaaTKzMKfdX3FYjdeR1Le5MNK-QKmc5-QUEg>
-    <xmx:3PlWY7eMg_ctgRs8qmbJdIMKJhJlN5RjEG9erEWUWCIohDToyFvgjA>
-    <xmx:3PlWY0MYZzo6cj_FYlLaDQ_d2nFYY3lbeOWhMkX4XADrN03uytQCkw>
-    <xmx:3flWY1FBIFFnkCiZjIK7VUixKdIKbF9oyYYYnwyvqR_F1hN2K0ZZhw>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id F3B47B60086; Mon, 24 Oct 2022 16:47:23 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-1047-g9e4af4ada4-fm-20221005.001-g9e4af4ad
-Mime-Version: 1.0
-Message-Id: <3df2007f-acd2-4cd1-8f96-8ebd6070770a@app.fastmail.com>
-In-Reply-To: <CAMuHMdWbkro70fmyauUnEPyKZYytWD0o4a06=UzDTzCZ9-B6vw@mail.gmail.com>
-References: <20221019083518.933070-3-yoshihiro.shimoda.uh@renesas.com>
- <202210191806.RZK10y3x-lkp@intel.com>
- <CAMuHMdXBT2cEqfy00u+0VB=cRUAtrgH9LD26gXgavdvmQyN+pQ@mail.gmail.com>
- <d7c9b9b4-4ee8-4754-b32f-e3205daf47b3@app.fastmail.com>
- <CAMuHMdWbkro70fmyauUnEPyKZYytWD0o4a06=UzDTzCZ9-B6vw@mail.gmail.com>
-Date:   Mon, 24 Oct 2022 22:47:02 +0200
-From:   "Arnd Bergmann" <arnd@arndb.de>
-To:     "Geert Uytterhoeven" <geert@linux-m68k.org>
-Cc:     "kernel test robot" <lkp@intel.com>,
-        "Yoshihiro Shimoda" <yoshihiro.shimoda.uh@renesas.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org, kbuild-all@lists.01.org,
-        Netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-Subject: Re: [PATCH v4 2/3] net: ethernet: renesas: Add Ethernet Switch driver
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S231222AbiJXXbo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 19:31:44 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D50F0C4C10
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 14:52:43 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id d142so8874349iof.7
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 14:52:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=GkmpsNViylq9BB1MxlxYNFU9pC/HN95G5AphBwXIurI=;
+        b=PGDd8ik8IIwKMIUsrm1jKXFQuLvqCRne6jdZeJ4bATC8PlKLBy+xP6ra7bzvwU4EDY
+         nG7fYF+SYQWA92kpD6XvUbVp9/qx/y3igNzKGu9EYc1cj6D3upzQNZFGXOoW1iSBTB5E
+         fn+RNtDYNRhYQbHmf8/0aYChksmKoUhSIJ41QkPi/i8MY8PsPh0Zw8ecuMEi31Gei4Q6
+         nV5UIGT7Qjq2PgPXhjD4edUcxw/KIYWvXF4/hPeDoFxtrxAx4jgLDQA8cchQHhKLY/4v
+         RCV0M9sfC1ZDdi/pnUjMyNcZYUD4ja8t8FS6F3Yoduk/RpvMADAyzhsyMc+XgIoLSXhG
+         uFmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=GkmpsNViylq9BB1MxlxYNFU9pC/HN95G5AphBwXIurI=;
+        b=GXAX7huKgrkwNiDs6uaIP0t1FNL+WJkkLru2wzwbqqH99hf0YOctEv6M+oLwz1Mbdv
+         mowlf4B52Tif+sVUyubOyRireUZ/Lm+/6cw9l9KTJ/NmYmX6RhSFSQZQEZznx+Db2K8R
+         tlZ3Mw7Ss26YQOfc3KlgFHbRFwjr9hQx/6emE6KeCsRv/BIIe0I04u0bbbuaJNOzO9Lx
+         eDBL6ymSPIBAEitY4MRTnMfEj/2kFTZZm1fqIaXWxsQo33+5YAoXnuDct6mFG+LzEBO6
+         YPHgDvlff5ozZx05VOE9/tiP+nn0mqP9Dq+jZ0DCdATLTQtkvyGxnZ6cvvyD0/7dNx7j
+         1RwQ==
+X-Gm-Message-State: ACrzQf0e82FdnJdicb8oVZYSbT0V+BIUV23Ip38ovj1gwRDkId5Wn7uA
+        NhNXNylKfRLhaBsC1NGegS34gNBLrH6B2Q==
+X-Google-Smtp-Source: AMsMyM6ZkZ/psZ7xFtzSk2+QefOCkJiSaxQwDA09YPJIno7suqbPrkOOfDSNwZb+THNYQaurWqW+lA==
+X-Received: by 2002:a05:620a:28d2:b0:6ef:a7f:dee4 with SMTP id l18-20020a05620a28d200b006ef0a7fdee4mr16570214qkp.400.1666644475623;
+        Mon, 24 Oct 2022 13:47:55 -0700 (PDT)
+Received: from [192.168.1.8] ([64.57.193.93])
+        by smtp.gmail.com with ESMTPSA id w3-20020ac857c3000000b0039442ee69c5sm490305qta.91.2022.10.24.13.47.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Oct 2022 13:47:55 -0700 (PDT)
+Message-ID: <e9608a55-7b2f-330d-df98-eedd0be53f47@linaro.org>
+Date:   Mon, 24 Oct 2022 16:47:53 -0400
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [PATCH 1/1] dt-bindings: net: snps,dwmac: Document queue config
+ subnodes
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>
+Cc:     Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com
+References: <20221021171055.85888-1-sebastian.reichel@collabora.com>
+ <761d6ae2-e779-2a4b-a735-960c716c3024@linaro.org>
+ <20221024185312.GA2037160-robh@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221024185312.GA2037160-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 24, 2022, at 22:35, Geert Uytterhoeven wrote:
-
+On 24/10/2022 14:53, Rob Herring wrote:
+> On Sat, Oct 22, 2022 at 12:05:15PM -0400, Krzysztof Kozlowski wrote:
+>> On 21/10/2022 13:10, Sebastian Reichel wrote:
+>>> The queue configuration is referenced by snps,mtl-rx-config and
+>>> snps,mtl-tx-config. Most in-tree DTs put the referenced object
+>>> as child node of the dwmac node.
+>>>
+>>> This adds proper description for this setup, which has the
+>>> advantage of properly making sure only known properties are
+>>> used.
+>>>
+>>> Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+>>> ---
+>>>  .../devicetree/bindings/net/snps,dwmac.yaml   | 154 ++++++++++++------
+>>>  1 file changed, 108 insertions(+), 46 deletions(-)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+>>> index 13b984076af5..0bf6112cec2f 100644
+>>> --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+>>> +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+>>> @@ -167,56 +167,118 @@ properties:
+>>>    snps,mtl-rx-config:
+>>>      $ref: /schemas/types.yaml#/definitions/phandle
+>>>      description:
+>>> -      Multiple RX Queues parameters. Phandle to a node that can
+>>> -      contain the following properties
+>>> -        * snps,rx-queues-to-use, number of RX queues to be used in the
+>>> -          driver
+>>> -        * Choose one of these RX scheduling algorithms
+>>> -          * snps,rx-sched-sp, Strict priority
+>>> -          * snps,rx-sched-wsp, Weighted Strict priority
+>>> -        * For each RX queue
+>>> -          * Choose one of these modes
+>>> -            * snps,dcb-algorithm, Queue to be enabled as DCB
+>>> -            * snps,avb-algorithm, Queue to be enabled as AVB
+>>> -          * snps,map-to-dma-channel, Channel to map
+>>> -          * Specifiy specific packet routing
+>>> -            * snps,route-avcp, AV Untagged Control packets
+>>> -            * snps,route-ptp, PTP Packets
+>>> -            * snps,route-dcbcp, DCB Control Packets
+>>> -            * snps,route-up, Untagged Packets
+>>> -            * snps,route-multi-broad, Multicast & Broadcast Packets
+>>> -          * snps,priority, bitmask of the tagged frames priorities assigned to
+>>> -            the queue
+>>> +      Multiple RX Queues parameters. Phandle to a node that
+>>> +      implements the 'rx-queues-config' object described in
+>>> +      this binding.
+>>> +
+>>> +  rx-queues-config:
 >>
->> Regardless of which way this is expressed, it looked like there is
->> a missing __le32_to_cpu() around the high word.
->
-> I think it's OK, because desc->dptrh is u8:
->
->     struct rswitch_desc {
->             __le16 info_ds; /* Descriptor size */
->             u8 die_dt;      /* Descriptor interrupt enable and type */
->             __u8  dptrh;    /* Descriptor pointer MSB */
->             __le32 dptrl;   /* Descriptor pointer LSW */
->     } __packed;
+>> If this field is specific to this device, then you need vendor prefix:
+>> snps,rq-queues-config
+> 
+> Not for a node name...
 
-Right, that makes sense. On a completely unrelated note, you might
-want to remove the __packed annotation though, as the compiler
-might otherwise use bytewise access to the dptrl field instead of
-a word access, which would cause some overhead in case this is
-in uncached memory.
+Right.
 
-       Arnd
+Best regards,
+Krzysztof
+
