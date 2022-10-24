@@ -2,103 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EC9060BEEA
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 01:47:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B95D560BEF4
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 01:49:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230037AbiJXXru (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 19:47:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40440 "EHLO
+        id S229695AbiJXXtV convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 24 Oct 2022 19:49:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229817AbiJXXrX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 19:47:23 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F26B333A99;
-        Mon, 24 Oct 2022 15:05:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666649143; x=1698185143;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=o6EZzwIuG3lKm3iYYLguTM9aIweOE9YaLFfrddeogvQ=;
-  b=JSAlA28t+zRSMp7brm9wAvbGLSot1N6vAtV9X1gENmJitJG0XcAuQodx
-   uhmAn0YOa2oeelVHC+1mvqIjqV884Knerdlo8GJt3JiqZwhtWrZT4dhjj
-   ZTsldpc0jtyZ7Dt3S5mRii9zmMkoNNuWzC5F1oO+NAVeXQlT5Zgn6hDUA
-   pf1oqxc+CVTgimJdLtNIb7S4gSHGjlH/VZ8DXgfLGTCTcIzuN6Ud/56G/
-   nh5/9fN4JQcpo0I63XbVcPUlPFcDbfpRcF4SJRx+JWCzV+DgJmvYcmWxP
-   oH816q76umeuMABVB7q9frzcK/Ut/wv19v7Dw7iBbl6Fc+QaFYZ91z3Fr
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="305144607"
-X-IronPort-AV: E=Sophos;i="5.95,210,1661842800"; 
-   d="scan'208";a="305144607"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2022 15:04:29 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="631415597"
-X-IronPort-AV: E=Sophos;i="5.95,210,1661842800"; 
-   d="scan'208";a="631415597"
-Received: from mlotfi-mobl.amr.corp.intel.com ([10.212.254.208])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2022 15:04:29 -0700
-Date:   Mon, 24 Oct 2022 15:04:28 -0700 (PDT)
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     wangjianli <wangjianli@cdjrlc.com>
-cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        mptcp@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net/mptcp: fix repeated words in comments
-In-Reply-To: <Y1VF1DBYePbkTk8x@debian.me>
-Message-ID: <162b5545-7d24-3cf2-9158-3100ef644e03@linux.intel.com>
-References: <20221022070527.55960-1-wangjianli@cdjrlc.com> <Y1VF1DBYePbkTk8x@debian.me>
+        with ESMTP id S230384AbiJXXsp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 19:48:45 -0400
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [207.211.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C133833503C
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 15:06:37 -0700 (PDT)
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-643-ZCiO6XYeNbG-reXi1wsRZw-1; Mon, 24 Oct 2022 18:05:37 -0400
+X-MC-Unique: ZCiO6XYeNbG-reXi1wsRZw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 808B43814583;
+        Mon, 24 Oct 2022 22:05:36 +0000 (UTC)
+Received: from hog (unknown [10.39.192.185])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 59F6B2166B35;
+        Mon, 24 Oct 2022 22:05:35 +0000 (UTC)
+Date:   Tue, 25 Oct 2022 00:05:02 +0200
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Antoine Tenart <atenart@kernel.org>, netdev@vger.kernel.org,
+        Mark Starovoytov <mstarovoitov@marvell.com>,
+        Igor Russkikh <irusskikh@marvell.com>
+Subject: Re: [PATCH net 0/5] macsec: offload-related fixes
+Message-ID: <Y1cMDkGJSlG5SS1B@hog>
+References: <cover.1665416630.git.sd@queasysnail.net>
+ <Y0j+E+n/RggT05km@unreal>
+ <Y0kTMXzY3l4ncegR@hog>
+ <Y0lCHaGTQjsNvzVN@unreal>
+ <166575623691.3451.2587099917911763555@kwain>
+ <Y05HeGnTKBY0RVI4@unreal>
+ <Y1FTFOsZxELhvWT4@hog>
+ <Y1Ty2LlrdrhVvLYA@unreal>
+ <Y1ZLvNE3W9Ph+qqJ@hog>
+ <Y1ZQLtjs18YOvRXF@unreal>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <Y1ZQLtjs18YOvRXF@unreal>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 23 Oct 2022, Bagas Sanjaya wrote:
+2022-10-24, 11:43:26 +0300, Leon Romanovsky wrote:
+> On Mon, Oct 24, 2022 at 10:24:28AM +0200, Sabrina Dubroca wrote:
+> > 2022-10-23, 10:52:56 +0300, Leon Romanovsky wrote:
+> > > On Thu, Oct 20, 2022 at 03:54:28PM +0200, Sabrina Dubroca wrote:
+> > > > 2022-10-18, 09:28:08 +0300, Leon Romanovsky wrote:
+> > > > > On Fri, Oct 14, 2022 at 04:03:56PM +0200, Antoine Tenart wrote:
+> > > > > > Quoting Leon Romanovsky (2022-10-14 13:03:57)
+> > > > > > > On Fri, Oct 14, 2022 at 09:43:45AM +0200, Sabrina Dubroca wrote:
+> > > > > > > > 2022-10-14, 09:13:39 +0300, Leon Romanovsky wrote:
+> > > > > > > > > On Thu, Oct 13, 2022 at 04:15:38PM +0200, Sabrina Dubroca wrote:
+> > > 
+> > > <...>
+> > > 
+> > > > > > - With the revert: IPsec and MACsec can be offloaded to the lower dev.
+> > > > > >   Some features might not propagate to the MACsec dev, which won't allow
+> > > > > >   some performance optimizations in the MACsec data path.
+> > > > > 
+> > > > > My concern is related to this sentence: "it's not possible to offload macsec
+> > > > > to lower devices that also support ipsec offload", because our devices support
+> > > > > both macsec and IPsec offloads at the same time.
+> > > > > 
+> > > > > I don't want to see anything (even in commit messages) that assumes that IPsec
+> > > > > offload doesn't exist.
+> > > > 
+> > > > I don't understand what you're saying here. Patch #1 from this series
+> > > > is exactly about the macsec device acknowledging that ipsec offload
+> > > > exists. The rest of the patches is strictly macsec stuff and says
+> > > > nothing about ipsec. Can you point out where, in this series, I'm
+> > > > claiming that ipsec offload doesn't exist?
+> > > 
+> > > All this conversation is about one sentence, which I cited above - "it's not possible
+> > > to offload macsec to lower devices that also support ipsec offload". From the comments,
+> > > I think that you wanted to say "macsec offload is not working due to performance
+> > > optimization, where IPsec offload feature flag was exposed from lower device." Did I get
+> > > it correctly, now?
+> > 
+> > Yes. "In the current state" (that I wrote in front of the sentence you
+> > quoted) refers to the changes introduced by commit c850240b6c41. The
+> > details are present in the commit message for patch 1.
+> > 
+> > Do you object to the revert, if I rephrase the justification, and then
+> > re-add the features that make sense in net-next?
+> 
+> I don't have any objections.
 
-> On Sat, Oct 22, 2022 at 03:05:27PM +0800, wangjianli wrote:
->> Delete the redundant word 'the'.
->>
->> Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
->> ---
->>  net/mptcp/token.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/net/mptcp/token.c b/net/mptcp/token.c
->> index f52ee7b26aed..b817c2564300 100644
->> --- a/net/mptcp/token.c
->> +++ b/net/mptcp/token.c
->> @@ -287,7 +287,7 @@ EXPORT_SYMBOL_GPL(mptcp_token_get_sock);
->>   * This function returns the first mptcp connection structure found inside the
->>   * token container starting from the specified position, or NULL.
->>   *
->> - * On successful iteration, the iterator is move to the next position and the
->> + * On successful iteration, the iterator is move to the next position and
->>   * the acquires a reference to the returned socket.
->>   */
->>  struct mptcp_sock *mptcp_token_iter_next(const struct net *net, long *s_slot,
->
-> NAK!
->
-> Instead, slightly reword the comment above as "On successful iteration,
-> the iterator moves to the next position and acquires a reference to the
-> returned socket.".
->
+Would this be ok for the cover letter?
 
-Agree on this rewording.
+    ----
+    The first patch is a revert of commit c850240b6c41 ("net: macsec:
+    report real_dev features when HW offloading is enabled"). That
+    commit tried to improve the performance of macsec offload by
+    taking advantage of some of the NIC's features, but in doing so,
+    broke macsec offload when the lower device supports both macsec
+    and ipsec offload, as the ipsec offload feature flags were copied
+    from the real device. Since the macsec device doesn't provide
+    xdo_* ops, the XFRM core rejects the registration of the new
+    macsec device in xfrm_api_check.
 
-This particular duplicated word came up before, and I thought it would be 
-best if the author sent a v2 - but they never did. I will fix this in the 
-MPTCP tree next week if there's no suitable v2 by then.
+    I'm working on re-adding those feature flags when offload is
+    available, but I haven't fully solved that yet. I think it would
+    be safer to do that second part in net-next considering how
+    complex feature interactions tend to be.
+    ----
 
---
-Mat Martineau
-Intel
+Do you want something added to the commit message of the revert as
+well?
+
+Thanks.
+
+-- 
+Sabrina
+
