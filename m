@@ -2,84 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 590CB609EC1
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 12:11:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85ADB609ECE
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 12:17:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230296AbiJXKLa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 06:11:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36048 "EHLO
+        id S230189AbiJXKR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 06:17:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231287AbiJXKLR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 06:11:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB74548E82;
-        Mon, 24 Oct 2022 03:11:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62637B810CC;
-        Mon, 24 Oct 2022 10:10:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F307EC433C1;
-        Mon, 24 Oct 2022 10:10:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666606216;
-        bh=Wj5xGNUHkLkjRz+Sks+fImmtlPHNGd9XD5LspGPBhOE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=V3MMfCYl1LgYxbKUs55A/7LZjeo6WtpYZJc8ILK/3cG0y8Ru82eKQwuKB/tFPifqc
-         p0ueGRH6CLU612TgaspHvXdevvcrCMqMx1/DsOM3URT5DI7yTujKCQj/7Di0iYuCtn
-         271JfvW6X3wR9HozMIsl9TrwqvE66RLfH+Us8kM8oExEVmQFmWJ61YotyroSjdJ1+c
-         nHsEF7NAwLd1Pu0abI6tN+MWBe0JeuMh9vlGfKTpr2mGpxXFyBhKI3AAd8BLg+Pp73
-         nFMr3vevuFyGhOURga6D2kEHuG52iCAecEP7KCXhGd2OhcWe4Md2KdateJm+q6rxm4
-         eEisR4fGwez5Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D69A8C4166D;
-        Mon, 24 Oct 2022 10:10:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] docs: netdev: offer performance feedback to contributors
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166660621587.6109.10588903646372875602.git-patchwork-notify@kernel.org>
-Date:   Mon, 24 Oct 2022 10:10:15 +0000
-References: <20221020183031.1245964-1-kuba@kernel.org>
-In-Reply-To: <20221020183031.1245964-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, bpf@vger.kernel.org, jesse.brandeburg@intel.com,
-        linux-doc@vger.kernel.org, corbet@lwn.net
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229719AbiJXKR1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 06:17:27 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C22B688AE
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 03:17:26 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id b11so1667149pjp.2
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 03:17:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Qtq0Y7iJLOJt5tEoFMGaufQDTcmOOi4G++ouu0YsoMg=;
+        b=AXxMN96wHT7o+i2az/GiY7ys6UycOhZpA2NhJaK9xDF4ocYOxfM24LQxy5duS5THc5
+         gOvh2gTVS4LSeeEmjkdwa6DrZQsO1a/7/RXXSI11mUG5aisfik96FNyWcINDAmzNf9my
+         O1bTtmVbCGEI8cWxr20pKq9O3Lw0c/HLLVFT5Fu5IFVv88rbH4CtkGujuPV1O3Y5Jx2S
+         17wLlXTdbDaihlfj4m75j+v5k/vCZwe0N6XRMzrb8eDQJgfROPNRGMPF6Gbt2+bsJqoI
+         DZ825M2ygPTWwK+T7EICjAFUTmKGPPb01A06GSm77+3Rq0rLXdcvNC650G6gXM/OPqXt
+         +h6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Qtq0Y7iJLOJt5tEoFMGaufQDTcmOOi4G++ouu0YsoMg=;
+        b=y4divGJfUqncGA9UxwlnrsuG4la6K2so3PzdVRe8wkyOyk03r7J9DG7mfrznvXCXg7
+         1qzLN85lSGHWCPrzyWdWPktWSNDGVx+LAiFxVpFZWqAydnHdyXJIh7n6K5O3gBAOseEQ
+         FJp2IzpYTxhGFmNFe3iKnDx9xbrTUKwrBhLbjC+olDrOcLPQeXh1rZ4GAHho/izDa26P
+         REzRYazNKS2XVSOqmHlrtkZ77pNjDqBd3I/LhJ3PFn0hVhF2zKG4P0WpIAuuZ8AHb4nh
+         XfNRHW9OUNlJ1OWysbJ/VceEI4xM7DbHVmXdtw8LgWcII4jkIcIEtruZ+rxwVFiZukQa
+         xxbw==
+X-Gm-Message-State: ACrzQf2UYkqm7XsO3n0jKYLY/8+I0eQkgBqSidr/hH2RUqJ9vTFfq4i2
+        fSkIKYMNIaAqNN9HpeHb6eB+Xg==
+X-Google-Smtp-Source: AMsMyM5ekFDuM3fSthud8xozJNIQ2uyNgc357IbtVwToAwtriEcvxF6BqeVfnvDlbDoJ0EWt9jl1kw==
+X-Received: by 2002:a17:90b:4d05:b0:202:ec78:9d73 with SMTP id mw5-20020a17090b4d0500b00202ec789d73mr37621805pjb.103.1666606645972;
+        Mon, 24 Oct 2022 03:17:25 -0700 (PDT)
+Received: from driver-dev1.pensando.io ([12.226.153.42])
+        by smtp.gmail.com with ESMTPSA id h197-20020a6283ce000000b0056bf6cd44cdsm586290pfe.91.2022.10.24.03.17.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Oct 2022 03:17:25 -0700 (PDT)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
+Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH net-next 0/5] ionic: VF attr replay and other updates
+Date:   Mon, 24 Oct 2022 03:17:12 -0700
+Message-Id: <20221024101717.458-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+For better VF management when a FW update restart or a FW crash recover is
+detected, the PF now will replay any user specified VF attributes to be
+sure the FW hasn't lost them in the restart.
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+Newer FW offers more packet processing offloads, so we now support them in
+the driver.
 
-On Thu, 20 Oct 2022 11:30:31 -0700 you wrote:
-> Some of us gotten used to producing large quantities of peer feedback
-> at work, every 3 or 6 months. Extending the same courtesy to community
-> members seems like a logical step. It may be hard for some folks to
-> get validation of how important their work is internally, especially
-> at smaller companies which don't employ many kernel experts.
-> 
-> The concept of "peer feedback" may be a hyperscaler / silicon valley
-> thing so YMMV. Hopefully we can build more context as we go.
-> 
-> [...]
+A small refactor of the Rx buffer fill cleans a bit of code and will help
+future work on buffer caching.
 
-Here is the summary with links:
-  - [net] docs: netdev: offer performance feedback to contributors
-    https://git.kernel.org/netdev/net/c/c5884ef477b4
+Neel Patel (2):
+  ionic: enable tunnel offloads
+  ionic: refactor use of ionic_rx_fill()
 
-You are awesome, thank you!
+Shannon Nelson (3):
+  ionic: replay VF attributes after fw crash recovery
+  ionic: only save the user set VF attributes
+  ionic: new ionic device identity level and VF start control
+
+ .../net/ethernet/pensando/ionic/ionic_dev.c   |  20 ++++
+ .../net/ethernet/pensando/ionic/ionic_dev.h   |   3 +
+ .../net/ethernet/pensando/ionic/ionic_if.h    |  41 +++++++
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 113 +++++++++++++++---
+ .../net/ethernet/pensando/ionic/ionic_main.c  |   2 +-
+ .../net/ethernet/pensando/ionic/ionic_txrx.c  |  31 +++--
+ 6 files changed, 179 insertions(+), 31 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.17.1
 
