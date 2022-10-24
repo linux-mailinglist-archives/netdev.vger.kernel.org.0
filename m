@@ -2,64 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 589F860B348
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 19:01:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 111BD60B46C
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 19:43:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229817AbiJXRBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 13:01:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44568 "EHLO
+        id S231842AbiJXRn3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 13:43:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235279AbiJXRAV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 13:00:21 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C4FA1C93E
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 08:37:51 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id n130so11408390yba.10
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 08:37:51 -0700 (PDT)
+        with ESMTP id S231794AbiJXRnG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 13:43:06 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00A2DA50DF;
+        Mon, 24 Oct 2022 09:17:59 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id o4so8812687wrq.6;
+        Mon, 24 Oct 2022 09:17:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=3Al1Yz3zV3klBXyN8hzYqwzw3aRUMACYNNTKdspj56I=;
-        b=PUoI+jPf4kEVcKR6NmIcbTKe7drpKyXmk7dcgdHKZEIa9mZVbK6Gvrtsrh+kU/16eq
-         OA9Ix8KVSNdrLi1GsxhxxVuIKHfD5le6jRLKpyJdoe/mVKgmifjDqI4n4q6ZmKAkkStD
-         8/zFaJyrBCBe4bA9Z6TmHfBugiHZ+NZ3gVpEcuBqVLIap3LHrm4VF52HcBrxDLJ0RZjt
-         VXk1n8QG6muZmmeFepiCoSS1vKYwyXmWt0vgZlGpGtnXCTgKZXTDXTzRKwg8ei026WJs
-         vHkrbtUreyYm3R4dART7ppHvWafEkgr36FYdcmsVRgASBQwuZM5jJ52I9kxDLZMcue0y
-         FItg==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=7aiClwPR9sAvkuS66cGq13emR+XEGSOWezje9CRd5Ko=;
+        b=AXE1YHREz/ElPMozg6VRmr+8PZ5DdwECsVZN7yJ4+M7mMjSuztlivbhKAGSPlpO8xS
+         mVyPlRhBrJ4UV7tEiyzPBNqT8sOhCp2I/SCgVpB2ffO6n7BhMASip8PXg85j18sD9ybG
+         VzqiFw2yKpDaaQ6tRZ6yhHM/qi4r1iRhKLjZUZhwOuXOjn+7buIwW8gmw/ppPFAQvXw5
+         SwhpwSCZauJoF3nJMna0pVro0QhhpmPydJ7MXabd7CbJDBUsvsVEerLJ2yzz7DOCig5c
+         m+K9nvR+SI3JHF3UE9QIseWkYn7rx74gahSTUQkqTV90/O5VJZ6M77gIkJz2V5Nr8Mf2
+         27RQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=3Al1Yz3zV3klBXyN8hzYqwzw3aRUMACYNNTKdspj56I=;
-        b=bvbiJRx9EEv3EiTcUldI47JHCdZpRfVpC4/dEWaIxCdZk32Mti/nv2SRGCNlQhep3q
-         tWgxfjzP2dXqSSDSgWSUDXrm9nAzSwbub/IFGvTpmMk7IJ2Lq31h3cgH/Vf0IsvHYF4/
-         YWebVzM8rRHHXf1d0a1HbzOmwJjnPEUoeLImtjyFxXUV2jQA8w8zuXe3OPCQBLJaZqgN
-         edRqp8K9vBFz0NHGQyP9onwsTpUdmrWCumb1kGW8dNN1Xj3ONLqh9vrCr399V+Ms4SPF
-         zipl7QYElz31RARuE8Tce8O6xduDqaEl/WWJevgPLr//ZD4j9HZ6NN92kKEnFOZibdYp
-         N96Q==
-X-Gm-Message-State: ACrzQf1p7gH69NELKzDhL1t8dMG+Xccw9aaxSGPqDbpQAvlBdbLtQgXS
-        y2/KHHylzW8+v48GJg956QjqhYvgFny6r2jHJc8Y+A==
-X-Google-Smtp-Source: AMsMyM6yZMmWPEhmV+OU5hfTZ2BqRaiYft7Om29+GECG3iDVT16diYRLDWCohn3DZ8zC5u1xyrhQplZAPV8kHI2446c=
-X-Received: by 2002:a25:d914:0:b0:6cb:13e2:a8cb with SMTP id
- q20-20020a25d914000000b006cb13e2a8cbmr4849686ybg.231.1666625784889; Mon, 24
- Oct 2022 08:36:24 -0700 (PDT)
+        bh=7aiClwPR9sAvkuS66cGq13emR+XEGSOWezje9CRd5Ko=;
+        b=OsatyBm0RJPxmdBfYKd2xJSrkiq02WOBO/t38SR0feOyDcaX+BXLnArTtHgaMEdbhW
+         23HreML8fEAKJ5Octm/ZsSW1NEmh4drGF8AZRa5CDs+kXVXUjoNMNgq74SfG31gmRIs3
+         yIbFgXCg2BP7GkqOPx3Cw8orYPUohXHWri9jQVKScLLaE+qA4hfGi0W8OtuNDo+r+SLK
+         xqh81EeZLeTUq66EnMijhnhvdtDyNkTP36CFk480cp6Dn1zOnXuZN9iOcRFmvP16h6et
+         VAyDCxzQtKxAxYGzID3e3oWFgTh0ko9LUtwrDXxndCvPv/eX/YuO3UBG23W2BzUnLHHQ
+         Lhwg==
+X-Gm-Message-State: ACrzQf3ZgWsxKlnX3FMjQpY0Yo0Lcyn0cSiLCMRIpu55GP3sGrJ8VWzI
+        0o1vNTTTHyA0O8S+hd0RkJBIdHsV9L9nK4Ga
+X-Google-Smtp-Source: AMsMyM79gyjjA1L/l7GuLr9GMJwmIUmhcGN19aJsAyi2OUBUUVgXjjYM2Ikso+u3DDCb8NxBRju7WQ==
+X-Received: by 2002:adf:e3c1:0:b0:236:6d5d:ffa2 with SMTP id k1-20020adfe3c1000000b002366d5dffa2mr5420960wrm.557.1666625995849;
+        Mon, 24 Oct 2022 08:39:55 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id h17-20020a5d4311000000b002366ded5864sm4241575wrq.116.2022.10.24.08.39.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Oct 2022 08:39:55 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ath9k: remove variable sent
+Date:   Mon, 24 Oct 2022 16:39:54 +0100
+Message-Id: <20221024153954.2168503-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-References: <20221024144753.479152-1-windhl@126.com>
-In-Reply-To: <20221024144753.479152-1-windhl@126.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 24 Oct 2022 08:36:13 -0700
-Message-ID: <CANn89iL==crwYiOpcgx=zVG1porMpMt23RCp=_JGpQmxOwK04w@mail.gmail.com>
-Subject: Re: [PATCH] appletalk: Fix potential refcount leak
-To:     Liang He <windhl@126.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,36 +74,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 24, 2022 at 8:25 AM Liang He <windhl@126.com> wrote:
->
-> In atrtr_create(), we have added a dev_hold for the new reference.
-> However, based on the code, if the 'rt' is not NULL and its 'dev'
-> is not NULL, we should use dev_put() for the replaced reference.
->
-> Signed-off-by: Liang He <windhl@126.com>
-> ---
->  net/appletalk/ddp.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/net/appletalk/ddp.c b/net/appletalk/ddp.c
-> index a06f4d4a6f47..7e317d6448d1 100644
-> --- a/net/appletalk/ddp.c
-> +++ b/net/appletalk/ddp.c
-> @@ -564,6 +564,7 @@ static int atrtr_create(struct rtentry *r, struct net_device *devhint)
->         /* Fill in the routing entry */
->         rt->target  = ta->sat_addr;
->         dev_hold(devhint);
-> +       dev_put(rt->dev);
->         rt->dev     = devhint;
->         rt->flags   = r->rt_flags;
->         rt->gateway = ga->sat_addr;
->
+Variable sent is just being incremented and it's never used
+anywhere else. The variable and the increment are redundant so
+remove it.
 
-IMO appletalk is probably completely broken.
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/net/wireless/ath/ath9k/xmit.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-atalk_routes_lock is not held while other threads might use rt->dev
-and would not expect rt->dev to be changed under them
-(atalk_route_packet() )
+diff --git a/drivers/net/wireless/ath/ath9k/xmit.c b/drivers/net/wireless/ath/ath9k/xmit.c
+index ba271a10d4ab..39abb59d8771 100644
+--- a/drivers/net/wireless/ath/ath9k/xmit.c
++++ b/drivers/net/wireless/ath/ath9k/xmit.c
+@@ -1678,7 +1678,6 @@ void ath9k_release_buffered_frames(struct ieee80211_hw *hw,
+ 	struct ieee80211_tx_info *info;
+ 	struct list_head bf_q;
+ 	struct ath_buf *bf_tail = NULL, *bf = NULL;
+-	int sent = 0;
+ 	int i, ret;
+ 
+ 	INIT_LIST_HEAD(&bf_q);
+@@ -1707,7 +1706,6 @@ void ath9k_release_buffered_frames(struct ieee80211_hw *hw,
+ 
+ 			bf_tail = bf;
+ 			nframes--;
+-			sent++;
+ 			TX_STAT_INC(sc, txq->axq_qnum, a_queued_hw);
+ 
+ 			if (an->sta && skb_queue_empty(&tid->retry_q))
+-- 
+2.37.3
 
-I would vote to remove it completely, unless someone is willing to
-test any change in it.
