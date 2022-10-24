@@ -2,54 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 112B660A7CE
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 14:58:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C657D60A500
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 14:20:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234788AbiJXM6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 08:58:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42198 "EHLO
+        id S233095AbiJXMUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 08:20:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234790AbiJXM5a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 08:57:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B4E97D43
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 05:16:53 -0700 (PDT)
+        with ESMTP id S233420AbiJXMT2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 08:19:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F9775FDA
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 04:58:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9ECC6612C9
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 11:50:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 04188C433D6;
-        Mon, 24 Oct 2022 11:50:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF946B81150
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 11:54:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA23AC433C1;
+        Mon, 24 Oct 2022 11:54:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666612215;
-        bh=YIgtoT3+hcagjwMxPgwl1UZ4hx7tfXCV/RsKIoG6jOo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=BXjsWld/Hio4i5A4JS0BoBzZ94Jinents5Q/Wx1tGuoIuV7cc3RYmRhQR7dbB33q2
-         nf9pFvia40xUJlHvx/fC1TFpc9CAQyGmpoQnrZ7eJN5Ckb+6pzFe2tjgXDXFETLj19
-         Bu4rmoa60DZk9GY7szBkhe/SY/QhEsgppy9LhbJ/klSgks5PBT//vYYc/ozEF1LEux
-         d8XNoYuIYecfmoj6UOLyhYEYDtg795Mm7j7bHS7/6r4/Sdp6BzKMPdJvypm4YUvECl
-         9Yl8D5n6jr+z1RPKmu0oR0hSKDQUNAOu7L8sQZ3YkuGj1IRV+JiKVmkL/lYVxPIl6R
-         iOkm1omTt6R7g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D9E57E270DD;
-        Mon, 24 Oct 2022 11:50:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1666612448;
+        bh=7HQ1deySWXZEEYDhV7KbOqdQs9aT16o8QBa/BV1ulZM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=sxRViLgfiUYgR2i0RXkv35j/2+r1aKyLofyndTnTEcTGueOA8xp17e31Bl0qrCQ2Z
+         3k6vebWix33AKj4eeaLIOCv7ZvmKDRbyq199HEWxVhP2wigW8r6jgl4MMghPpu3aPv
+         PHcRp0UCY8roy0+wfQ8AVc19eDTk9WZbmgAiMXKFTDag2PhZBPteBBbDY8vJw3562y
+         eqKoHOgJvMq2SowxoQrr+wOpzSeLOof9ehynXKnbhTRzFiqVQXIivxPlvxj+k9kGP/
+         DqzSmmuYGQzW+Sco7s9sOaPA+t5FKtL/x38aubZO2NFhv3ZETk1MFDSpZsuiYpDN+8
+         e1ME7KO5P8ldw==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Hyong Youb Kim <hyonkim@cisco.com>,
+        Leon Romanovsky <leonro@nvidia.com>
+Subject: [V3 net 01/16] net/mlx5e: Do not increment ESN when updating IPsec ESN state
+Date:   Mon, 24 Oct 2022 12:53:42 +0100
+Message-Id: <20221024115357.37278-2-saeed@kernel.org>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20221024115357.37278-1-saeed@kernel.org>
+References: <20221024115357.37278-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: fix UAF issue in nfqnl_nf_hook_drop() when
- ops_init() failed
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166661221488.6085.16932100870985132190.git-patchwork-notify@kernel.org>
-Date:   Mon, 24 Oct 2022 11:50:14 +0000
-References: <20221020024213.264324-1-shaozhengchao@huawei.com>
-In-Reply-To: <20221020024213.264324-1-shaozhengchao@huawei.com>
-To:     shaozhengchao <shaozhengchao@huawei.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, shakeelb@google.com,
-        roman.gushchin@linux.dev, hmukos@yandex-team.ru, memxor@gmail.com,
-        vasily.averin@linux.dev, ebiederm@xmission.com,
-        weiyongjun1@huawei.com, yuehaibing@huawei.com
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -59,41 +57,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Hyong Youb Kim <hyonkim@cisco.com>
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+An offloaded SA stops receiving after about 2^32 + replay_window
+packets. For example, when SA reaches <seq-hi 0x1, seq 0x2c>, all
+subsequent packets get dropped with SA-icv-failure (integrity_failed).
 
-On Thu, 20 Oct 2022 10:42:13 +0800 you wrote:
-> When the ops_init() interface is invoked to initialize the net, but
-> ops->init() fails, data is released. However, the ptr pointer in
-> net->gen is invalid. In this case, when nfqnl_nf_hook_drop() is invoked
-> to release the net, invalid address access occurs.
-> 
-> The process is as follows:
-> setup_net()
-> 	ops_init()
-> 		data = kzalloc(...)   ---> alloc "data"
-> 		net_assign_generic()  ---> assign "date" to ptr in net->gen
-> 		...
-> 		ops->init()           ---> failed
-> 		...
-> 		kfree(data);          ---> ptr in net->gen is invalid
-> 	...
-> 	ops_exit_list()
-> 		...
-> 		nfqnl_nf_hook_drop()
-> 			*q = nfnl_queue_pernet(net) ---> q is invalid
-> 
-> [...]
+To reproduce the bug:
+- ConnectX-6 Dx with crypto enabled (FW 22.30.1004)
+- ipsec.conf:
+  nic-offload = yes
+  replay-window = 32
+  esn = yes
+  salifetime=24h
+- Run netperf for a long time to send more than 2^32 packets
+  netperf -H <device-under-test> -t TCP_STREAM -l 20000
 
-Here is the summary with links:
-  - [net] net: fix UAF issue in nfqnl_nf_hook_drop() when ops_init() failed
-    https://git.kernel.org/netdev/net/c/d266935ac43d
+When 2^32 + replay_window packets are received, the replay window
+moves from the 2nd half of subspace (overlap=1) to the 1st half
+(overlap=0). The driver then updates the 'esn' value in NIC
+(i.e. seq_hi) as follows.
 
-You are awesome, thank you!
+ seq_hi = xfrm_replay_seqhi(seq_bottom)
+ new esn in NIC = seq_hi + 1
+
+The +1 increment is wrong, as seq_hi already contains the correct
+seq_hi. For example, when seq_hi=1, the driver actually tells NIC to
+use seq_hi=2 (esn). This incorrect esn value causes all subsequent
+packets to fail integrity checks (SA-icv-failure). So, do not
+increment.
+
+Fixes: cb01008390bb ("net/mlx5: IPSec, Add support for ESN")
+Signed-off-by: Hyong Youb Kim <hyonkim@cisco.com>
+Acked-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+index 2a8fd7020622..a715601865d3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+@@ -101,7 +101,6 @@ static bool mlx5e_ipsec_update_esn_state(struct mlx5e_ipsec_sa_entry *sa_entry)
+ 	struct xfrm_replay_state_esn *replay_esn;
+ 	u32 seq_bottom = 0;
+ 	u8 overlap;
+-	u32 *esn;
+ 
+ 	if (!(sa_entry->x->props.flags & XFRM_STATE_ESN)) {
+ 		sa_entry->esn_state.trigger = 0;
+@@ -116,11 +115,9 @@ static bool mlx5e_ipsec_update_esn_state(struct mlx5e_ipsec_sa_entry *sa_entry)
+ 
+ 	sa_entry->esn_state.esn = xfrm_replay_seqhi(sa_entry->x,
+ 						    htonl(seq_bottom));
+-	esn = &sa_entry->esn_state.esn;
+ 
+ 	sa_entry->esn_state.trigger = 1;
+ 	if (unlikely(overlap && seq_bottom < MLX5E_IPSEC_ESN_SCOPE_MID)) {
+-		++(*esn);
+ 		sa_entry->esn_state.overlap = 0;
+ 		return true;
+ 	} else if (unlikely(!overlap &&
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.37.3
 
