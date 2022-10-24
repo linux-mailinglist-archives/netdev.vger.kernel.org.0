@@ -2,116 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1D3D609E10
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 11:31:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9207C609E28
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 11:39:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229838AbiJXJbt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 05:31:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51200 "EHLO
+        id S230005AbiJXJjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 05:39:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230250AbiJXJbi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 05:31:38 -0400
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC7960519
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 02:31:11 -0700 (PDT)
-Received: by mail-il1-x136.google.com with SMTP id q5so2268744ilt.13
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 02:31:11 -0700 (PDT)
+        with ESMTP id S230219AbiJXJjt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 05:39:49 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B8E0167ED
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 02:39:47 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id y69so9980510ede.5
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 02:39:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=vUlUUGoJnQ7g2LC8QuezYDhUG0fdMvocBfT6skXTjsI=;
-        b=Pfg7Jt0WWpz7Eis6P+ENGI7IFG5pdh4rUXkqi6bjdIdAUbtNXR0j9DL5zQX8bgrXSy
-         wlA5RsWja1UdJO3hc/Kgmwa2oVNBIkKGQWfgrFLxrvy0JUVpA234seGOeNhMFUtpJA2M
-         EsRNH62C7LiH8NsqZxNWMioJITnvTTbqHIruvzx7vUlYhllFo0T0Mn7x7wp6gU4PqkV4
-         QjSM6uD1ztLuNzgunmBYZytI2c4ODNMUMXfWhZ9g7vfdBBsYrRPeAT0kOGuw2ysEB2Vp
-         REesogsXY5o1ggcjjY/59orSs+u93BruK5r5RlFnZ7NRhi+U9ROdTQaZFucPmZnaDo+E
-         A4/w==
+        d=cloudflare.com; s=google;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
+        bh=vSob/wpwRuqflqb3iLshpo2hBXzsESt/go/728dGgK8=;
+        b=qC6F21rcHdEqikV+5dB0ENzstAf8RWJcg3DkPHk4jDZhsZREqaTHs7j7vJ3cTetnPF
+         9vpPY74n99On3nfNnlfFloFrH7BgXmJ/Y2kIwQT9ejEgn1Kxh7UgUEYymiYctvufPua1
+         zrpvaIpqgYSXEug4sqlEuqmos0hyuzQjZAE5I=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=vUlUUGoJnQ7g2LC8QuezYDhUG0fdMvocBfT6skXTjsI=;
-        b=SWHnp4niH6ALYK2we8JjaoZb/KOR/bvv0Jrl7v7/vTjNkAk1SftHXZz58nnO9NN0Lo
-         1qWsw+W7AHOhpR1zZRC6/4VcAG+5Uz1SGmNcpy09Xjzu/Nh7lZuAsaK63SM0j7gTPvku
-         8e94mAmtPXZ9rq+Oek2I/OPE5oa7L+x5UCUEA0EqGPlGqsZlG9RbhrqzlHhAT4vIhK5x
-         u2IliwGoJB7tEWHXEHQCSDtxYNpscEA0r69hDhBE1/lAMF8QdgStFEptKU1Uwc3Mgrq6
-         hdjunEWwCT25DE4J6nd8SRcH4IWTk6PKLETxXt1U7sdTdc43XVbm7Dn08TGeise6EH2G
-         x/Rw==
-X-Gm-Message-State: ACrzQf0IPEkdPuBbvdleov/zGs+Dbk5p4JURYQXSND0MZCxU6EZL1sV0
-        ceH1EWLo40ml1baxA7cLghufOKNuXpY9g3hACE8=
-X-Google-Smtp-Source: AMsMyM6FOD3ZZLvVX370JqdMg3MqKgOrewBJM/g8ZEvKg1A0oKGFRyFvqKwS/YViLltq6LPiga8H5PsaCa1gfLOAAso=
-X-Received: by 2002:a92:d5c4:0:b0:2ff:c073:5cb4 with SMTP id
- d4-20020a92d5c4000000b002ffc0735cb4mr5005429ilq.82.1666603862903; Mon, 24 Oct
- 2022 02:31:02 -0700 (PDT)
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vSob/wpwRuqflqb3iLshpo2hBXzsESt/go/728dGgK8=;
+        b=r8Ktk2QX+Gpdg3qq0WyeByA6VOOQHb7/0R3SpkQdOKAalU03+X0Pl23Z5nGHF939sI
+         jc7gs7rv+QGJZZfwuDPh0JKN3SIO1xVkqoyHaU2c1jQhGm2jlA/aUp47thhESlk+Wfgq
+         3EeXZZIjJJKKFYWZ7M3Vbs+GOAzFDc58fZo8gqmf6bVbEzcVbRL6JKCOr3Tu1UUAoy0C
+         IyeAmum3lBV2+IARwmlNseEKsSBe7lde/PUM3bQ1YIJCOAxAm+1i8QqSGDmrRik23vaK
+         33nzFm3VMVtBHd2/WOVJ4hKodyJMIE7UNrp85YA1Y4Z7e2yg7GkoGwXz90DHz4Qcg30p
+         KYKg==
+X-Gm-Message-State: ACrzQf2tJ9ZqMbH4C3QIwlGlPleyuVAEUAziCae+Ez/y9Do7bAGbgrID
+        BI6z8HHOrYg0nqB0Z2elDLuPXg==
+X-Google-Smtp-Source: AMsMyM48KNepC0k/zdSk/Byr9J2IG1zVWhcrFtRJGG4n8Hl6UNJ+pHXmaCW1BFVoJHekkA1++onVyQ==
+X-Received: by 2002:a05:6402:5296:b0:461:b6e5:ea63 with SMTP id en22-20020a056402529600b00461b6e5ea63mr5291974edb.248.1666604385626;
+        Mon, 24 Oct 2022 02:39:45 -0700 (PDT)
+Received: from cloudflare.com (79.191.56.44.ipv4.supernova.orange.pl. [79.191.56.44])
+        by smtp.gmail.com with ESMTPSA id kv2-20020a17090778c200b0077e6be40e4asm15516502ejc.175.2022.10.24.02.39.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Oct 2022 02:39:44 -0700 (PDT)
+References: <Y0csu2SwegJ8Tab+@google.com> <87bkqfigzv.fsf@cloudflare.com>
+ <Y0xJUc/LRu8K/Af8@pop-os.localdomain>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     sdf@google.com, john.fastabend@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
+        Martin KaFai Lau <martin.lau@linux.dev>
+Subject: Re: Lockdep warning after c0feea594e058223973db94c1c32a830c9807c86
+Date:   Mon, 24 Oct 2022 11:36:47 +0200
+In-reply-to: <Y0xJUc/LRu8K/Af8@pop-os.localdomain>
+Message-ID: <87ilk9ftls.fsf@cloudflare.com>
 MIME-Version: 1.0
-References: <20221014093632.8487-1-hdegoede@redhat.com> <CAHNKnsSvvM3_JEdr1znAWTup-LG-A=cuO8h-A8G6Cwf=h_rjNQ@mail.gmail.com>
- <ea022df4-2baf-48ae-e5ed-85a6242a5774@redhat.com> <CAHNKnsSaNuU3xcnRpnP2CM8ycOqomaaeT9Tz40FLJbbKFXgTzw@mail.gmail.com>
- <e78222b2-947f-b922-a8a7-e04f6a1d868e@redhat.com>
-In-Reply-To: <e78222b2-947f-b922-a8a7-e04f6a1d868e@redhat.com>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Mon, 24 Oct 2022 13:31:01 +0400
-Message-ID: <CAHNKnsTV0FjqQiaTiayPPwaJ-nkt7-LAczBh3vnXOXn==ZVKnw@mail.gmail.com>
-Subject: Re: [PATCH] net: wwan: iosm: initialize pc_wwan->if_mutex earlier
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     M Chetan Kumar <m.chetan.kumar@intel.com>,
-        Intel Corporation <linuxwwan@intel.com>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 24, 2022 at 1:17 PM Hans de Goede <hdegoede@redhat.com> wrote:
-> On 10/24/22 11:14, Sergey Ryazanov wrote:
->> On Mon, Oct 24, 2022 at 12:04 PM Hans de Goede <hdegoede@redhat.com> wrote:
->>> On 10/15/22 09:55, Sergey Ryazanov wrote:
->>>> On Fri, Oct 14, 2022 at 1:36 PM Hans de Goede <hdegoede@redhat.com> wrote:
->>>>> wwan_register_ops() ends up calls ipc_wwan_newlink() before it returns.
->>>>>
->>>>> ipc_wwan_newlink() uses pc_wwan->if_mutex, so we must initialize it
->>>>> before calling wwan_register_ops(). This fixes the following WARN()
->>>>> when lock-debugging is enabled:
->>>>>
->>>>> [skipped]
->>>>>
->>>>> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
->>>>
->>>> Should we add a Fixes: tag for this change? Besides this:
->>>
->>> This issue was present already in the driver as originally introduced, so:
->>>
->>> Fixes: 2a54f2c77934 ("net: iosm: net driver")
->>>
->>> I guess?
->>
->> The wwan_register_ops() call has been here since the driver
->> introduction. But at that time, this call did not create any
->> interfaces. The issue was most probably introduced by my change:
->>
->> 83068395bbfc ("net: iosm: create default link via WWAN core")
->>
->> after which the wwan_register_ops() call was modified in such a way
->> that it started calling ipc_wwan_newlink() internally.
+On Sun, Oct 16, 2022 at 11:11 AM -07, Cong Wang wrote:
+> On Thu, Oct 13, 2022 at 10:39:08PM +0200, Jakub Sitnicki wrote:
+>> Hi Stan,
+>> 
+>> On Wed, Oct 12, 2022 at 02:08 PM -07, sdf@google.com wrote:
+>> > Hi John & Jakub,
+>> >
+>> > Upstream commit c0feea594e05 ("workqueue: don't skip lockdep work
+>> > dependency in cancel_work_sync()") seems to trigger the following
+>> > lockdep warning during test_prog's sockmap_listen:
+>> >
+>> > [  +0.003631] WARNING: possible circular locking dependency detected
+>> 
+>> [...]
+>> 
+>> > Are you ware? Any idea what's wrong?
+>> > Is there some stable fix I'm missing in bpf-next?
+>> 
+>> Thanks for bringing it up. I didn't know.
+>> 
+>> The mentioned commit doesn't look that fresh
+>> 
+>> commit c0feea594e058223973db94c1c32a830c9807c86
+>> Author: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+>> Date:   Fri Jul 29 13:30:23 2022 +0900
+>> 
+>>     workqueue: don't skip lockdep work dependency in cancel_work_sync()
+>> 
+>> ... but then it just landed not so long ago, which explains things:
+>> 
+>> $ git describe --contains c0feea594e058223973db94c1c32a830c9807c86 --match 'v*'
+>> v6.0-rc7~10^2
+>> 
+>> I've untangled the call chains leading to the potential dead-lock a
+>> bit. There does seem to be a window of opportunity there.
+>> 
+>> psock->work.func = sk_psock_backlog()
+>>   ACQUIRE psock->work_mutex
+>>     sk_psock_handle_skb()
+>>       skb_send_sock()
+>>         __skb_send_sock()
+>>           sendpage_unlocked()
+>>             kernel_sendpage()
+>>               sock->ops->sendpage = inet_sendpage()
+>>                 sk->sk_prot->sendpage = tcp_sendpage()
+>>                   ACQUIRE sk->sk_lock
+>>                     tcp_sendpage_locked()
+>>                   RELEASE sk->sk_lock
+>>   RELEASE psock->work_mutex
+>> 
+>> sock_map_close()
+>>   ACQUIRE sk->sk_lock
+>>   sk_psock_stop()
+>>     sk_psock_clear_state(psock, SK_PSOCK_TX_ENABLED)
+>>     cancel_work_sync()
+>>       __cancel_work_timer()
+>>         __flush_work()
+>>           // wait for psock->work to finish
+>>   RELEASE sk->sk_lock
+>> 
+>> There is no fix I know of. Need to think. Ideas welcome.
+>> 
 >
-> Ok, lets go with:
+> Thanks for the analysis.
 >
-> Fixes: 83068395bbfc ("net: iosm: create default link via WWAN core")
->
-> Shall I send a v2 with this ? or is this just going to get added
-> in while merging this?
+> I wonder if we can simply move this cancel_work_sync() out of sock
+> lock... Something like this:
 
-Yes. Send the v2 with Fixes and Reviewed-by tags please. This will
-make the work of the netdev maintainer more productive.
+[...]
 
--- 
-Sergey
+> diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+> index a660baedd9e7..81beb16ab1eb 100644
+> --- a/net/core/sock_map.c
+> +++ b/net/core/sock_map.c
+> @@ -1596,7 +1596,7 @@ void sock_map_destroy(struct sock *sk)
+>  	saved_destroy = psock->saved_destroy;
+>  	sock_map_remove_links(sk, psock);
+>  	rcu_read_unlock();
+> -	sk_psock_stop(psock, false);
+> +	sk_psock_stop(psock);
+>  	sk_psock_put(sk, psock);
+>  	saved_destroy(sk);
+>  }
+> @@ -1619,9 +1619,10 @@ void sock_map_close(struct sock *sk, long timeout)
+>  	saved_close = psock->saved_close;
+>  	sock_map_remove_links(sk, psock);
+>  	rcu_read_unlock();
+> -	sk_psock_stop(psock, true);
+> -	sk_psock_put(sk, psock);
+> +	sk_psock_stop(psock);
+>  	release_sock(sk);
+> +	cancel_work_sync(&psock->work);
+> +	sk_psock_put(sk, psock);
+>  	saved_close(sk, timeout);
+>  }
+>  EXPORT_SYMBOL_GPL(sock_map_close);
+
+Sorry for the delay. I've been out.
+
+Great idea. I don't see why not.
