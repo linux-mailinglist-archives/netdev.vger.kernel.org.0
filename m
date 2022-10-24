@@ -2,199 +2,275 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65DD460B7A1
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 21:28:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86BD860B8D8
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 21:55:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232952AbiJXT21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 15:28:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48870 "EHLO
+        id S233745AbiJXTy4 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 24 Oct 2022 15:54:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232757AbiJXT1p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 15:27:45 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D74013CC0
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 10:59:31 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id b2so17991712lfp.6
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 10:59:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=wat2wDgkkLK6F0fgO5Mq6n4q8cRpJuAITWLiaEShUng=;
-        b=BG7Wlf4IxwqAmCeStohIC12GCw+6vdOfu8TaZVOjZUjlrjEvnwcCwdkcpuWrf8vkKI
-         1dF9dU/PnF37GjIWQJu79lWjGcRJOHlVD/zLj181rQJgJhhB8DY72JIItT+S3iRf/Lwt
-         kJMqAiL0S66FJrB5N4tNvklSjrGbeIfL9eoGmrkqAeEVckAbo5fslXuHi5PlasB/SswL
-         44WQLZ74L5wDASUzPKhZKXlnBg8T4Ia8YTKyDEM1mR10VUogvivOmYMVZF/va9Qr0U+2
-         VFPyZNSd0SktTWwzrax9vr6jOK4J2A/IqYlaCZIXQehh5piP/5j5UN5+G1+ccZambRkj
-         lIIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=wat2wDgkkLK6F0fgO5Mq6n4q8cRpJuAITWLiaEShUng=;
-        b=w2uOF4zSqADkPwevmUkmpEwadZ+4wNYNEEot4vXUqeQvPqzL1bSghX2sA0WS/Td0oA
-         0GbgXMgarfXdJly8rH/nqwq+CmBtiUFf8409/5+KqIRZbg+Ozl9auXWQyLeMudED+pF7
-         PwqFDXCTg8HLtdzw5mg8vl5yGZsULvUbF61CSWX3raJNJydMjQlpeYuiv+pAZqD2mriM
-         XmNG/+DLfFoHDAfh4Pgsd3PUmsyehTK1UsIRTP4QDMO4tVeUKIDKyBsHoqyOAlo0+E4Q
-         5PEhUJsZRBeSD2GyrEgaEXJ15ilwFGberQyDVC7/mAWtLhI+KmAEcoKVa51J8l94TJhA
-         FVhQ==
-X-Gm-Message-State: ACrzQf1ir+mWZMuyhmdbdPHzWDd90dSjrvmVzlxQBVzvcMAngynEbCIT
-        r7XrhZ+a3HUW1r0WZaN0FtviUtsfEGTWCg==
-X-Google-Smtp-Source: AMsMyM4OogD4hiZThf/GTaG1oyen8IKNdFEg6LcD/aK5YEoD8CwEeIim00OBk7ikk7+jgZg5w9IibA==
-X-Received: by 2002:a05:6512:2815:b0:4a4:5399:82bf with SMTP id cf21-20020a056512281500b004a4539982bfmr11736527lfb.16.1666634324015;
-        Mon, 24 Oct 2022 10:58:44 -0700 (PDT)
-Received: from saproj-Latitude-5501.yandex.net ([2a02:6b8:0:40c:edda:6b39:d3b6:5eb0])
-        by smtp.gmail.com with ESMTPSA id p10-20020a2eb7ca000000b0027700021d0csm78529ljo.3.2022.10.24.10.58.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Oct 2022 10:58:43 -0700 (PDT)
-From:   Sergei Antonov <saproj@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     olteanv@gmail.com, andrew@lunn.ch, pabeni@redhat.com,
-        kuba@kernel.org, edumazet@google.com, davem@davemloft.net,
-        Sergei Antonov <saproj@gmail.com>
-Subject: [PATCH v5 net-next] net: ftmac100: support mtu > 1500
-Date:   Mon, 24 Oct 2022 20:58:23 +0300
-Message-Id: <20221024175823.145894-1-saproj@gmail.com>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S234115AbiJXTy1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 15:54:27 -0400
+X-Greylist: delayed 1000 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 24 Oct 2022 11:18:45 PDT
+Received: from einhorn-mail-out.in-berlin.de (einhorn.in-berlin.de [192.109.42.8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE60275BAB
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 11:18:44 -0700 (PDT)
+X-Envelope-From: thomas@osterried.de
+Received: from x-berg.in-berlin.de (x-change.in-berlin.de [217.197.86.40])
+        by einhorn.in-berlin.de  with ESMTPS id 29OI04nQ1929842
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Mon, 24 Oct 2022 20:00:04 +0200
+Received: from x-berg.in-berlin.de ([217.197.86.42] helo=smtpclient.apple)
+        by x-berg.in-berlin.de with esmtpa (Exim 4.94.2)
+        (envelope-from <thomas@osterried.de>)
+        id 1on1k3-0008Bw-Pu; Mon, 24 Oct 2022 20:00:04 +0200
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.120.41.1.1\))
+Subject: Re: [AX25] patch did not fix --  was: ax25: fix incorrect dev_tracker
+ usage
+From:   Thomas Osterried <thomas@osterried.de>
+In-Reply-To: <Yxx5sJh/TLzSR5xU@x-berg.in-berlin.de>
+Date:   Mon, 24 Oct 2022 20:00:00 +0200
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Bernard Pidoux <f6bvp@free.fr>,
+        Duoming Zhou <duoming@zju.edu.cn>, netdev@vger.kernel.org,
+        linux-hams@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <2B6541B7-FF35-41D2-8A20-18D5EEE7A919@osterried.de>
+References: <Yxw5siQ3FC6VHo7C@x-berg.in-berlin.de>
+ <Yxx5sJh/TLzSR5xU@x-berg.in-berlin.de>
+To:     Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+X-Mailer: Apple Mail (2.3696.120.41.1.1)
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ftmac100 controller considers packets >1518 (1500 + Ethernet + FCS)
-FTL (frame too long) and drops them. That is fine with mtu 1500 or less
-and it saves CPU time. When DSA is present, mtu is bigger (for VLAN
-tagging) and the controller's built-in behavior is not desired then. We
-can make the controller deliver FTL packets to the driver by setting
-FTMAC100_MACCR_RX_FTL. Then we have to check ftmac100_rxdes_frame_length()
-(packet length sans FCS) on packets marked with FTMAC100_RXDES0_FTL flag.
+Hello,
 
-Check for mtu > 1500 in .ndo_open() and set FTMAC100_MACCR_RX_FTL to let
-the driver FTL packets. Implement .ndo_change_mtu() and check for
-mtu > 1500 to set/clear FTMAC100_MACCR_RX_FTL dynamically.
+perhaps my questions in my last post were too complex.
 
-Fixes: 8d77c036b57c ("net: add Faraday FTMAC100 10/100 Ethernet driver")
-Signed-off-by: Sergei Antonov <saproj@gmail.com>
----
-v5:
-* Handle ndo_change_mtu().
-* Make description and code comments correct (hopefully).
+I seem to not fully understand the concept of netdev_hold() / netdev_put().
+I'll restart with my question "1" of my previous post, and for convenience,
+I try to answer my question by myself (-> "yes" or "no" makes it easier
+to answer ;)
 
-v4:
-* Set FTMAC100_MACCR_RX_FTL depending on the "mtu > 1500" condition.
-* DSA tagging seems unrelated to the issue - updated description and a
-code comment accordingly.
 
-v3:
-* Corrected the explanation of the problem: datasheet is correct.
-* Rewrote the code to use the currently set mtu to handle DSA frames.
+  I) Why do we need these trackers?
 
-v2:
-* Typos in description fixed.
+     If we remove a network device, there may be active network structures
+     (in our case AX.25-sessions) that use the device.
+     It's a good idea to trace them (and inform), so we know that they linger
+     around, and even more, we could wait until they are cleaned up properly.
 
- drivers/net/ethernet/faraday/ftmac100.c | 52 +++++++++++++++++++++++--
- 1 file changed, 49 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/faraday/ftmac100.c b/drivers/net/ethernet/faraday/ftmac100.c
-index d95d78230828..f276d54bcd85 100644
---- a/drivers/net/ethernet/faraday/ftmac100.c
-+++ b/drivers/net/ethernet/faraday/ftmac100.c
-@@ -159,6 +159,7 @@ static void ftmac100_set_mac(struct ftmac100 *priv, const unsigned char *mac)
- static int ftmac100_start_hw(struct ftmac100 *priv)
- {
- 	struct net_device *netdev = priv->netdev;
-+	unsigned int maccr;
- 
- 	if (ftmac100_reset(priv))
- 		return -EIO;
-@@ -175,7 +176,20 @@ static int ftmac100_start_hw(struct ftmac100 *priv)
- 
- 	ftmac100_set_mac(priv, netdev->dev_addr);
- 
--	iowrite32(MACCR_ENABLE_ALL, priv->base + FTMAC100_OFFSET_MACCR);
-+	maccr = MACCR_ENABLE_ALL;
-+
-+	/* We have to set FTMAC100_MACCR_RX_FTL in case MTU > 1500
-+	 * and do extra length check in ftmac100_rx_packet_error().
-+	 * Otherwise the controller silently drops these packets.
-+	 *
-+	 * When the MTU of the interface is standard 1500, rely on
-+	 * the controller's functionality to drop too long packets
-+	 * and save some CPU time.
-+	 */
-+	if (netdev->mtu > 1500)
-+		maccr |= FTMAC100_MACCR_RX_FTL;
-+
-+	iowrite32(maccr, priv->base + FTMAC100_OFFSET_MACCR);
- 	return 0;
- }
- 
-@@ -337,9 +351,18 @@ static bool ftmac100_rx_packet_error(struct ftmac100 *priv,
- 		error = true;
- 	}
- 
--	if (unlikely(ftmac100_rxdes_frame_too_long(rxdes))) {
-+	/* If the frame-too-long flag FTMAC100_RXDES0_FTL is set, check
-+	 * if ftmac100_rxdes_frame_length(rxdes) exceeds the currently
-+	 * set MTU plus ETH_HLEN. FCS is not included here.
-+	 * The controller would set FTMAC100_RXDES0_FTL for all incoming
-+	 * frames longer than 1518 (includeing FCS) in the presence of
-+	 * FTMAC100_MACCR_RX_FTL in the MAC Control Register.
-+	 */
-+	if (unlikely(ftmac100_rxdes_frame_too_long(rxdes) &&
-+		     ftmac100_rxdes_frame_length(rxdes) > netdev->mtu + ETH_HLEN)) {
- 		if (net_ratelimit())
--			netdev_info(netdev, "rx frame too long\n");
-+			netdev_info(netdev, "rx frame too long (%u)\n",
-+				    ftmac100_rxdes_frame_length(rxdes));
- 
- 		netdev->stats.rx_length_errors++;
- 		error = true;
-@@ -1037,6 +1060,28 @@ static int ftmac100_do_ioctl(struct net_device *netdev, struct ifreq *ifr, int c
- 	return generic_mii_ioctl(&priv->mii, data, cmd, NULL);
- }
- 
-+static int ftmac100_change_mtu(struct net_device *netdev, int new_mtu)
-+{
-+	struct ftmac100 *priv = netdev_priv(netdev);
-+	unsigned int maccr;
-+
-+	maccr = ioread32(priv->base + FTMAC100_OFFSET_MACCR);
-+	if (new_mtu <= 1500) {
-+		/* Let the controller drop incoming packets greater
-+		 * than 1518 (that is 1500 + 14 Ethernet + 4 FCS).
-+		 */
-+		maccr &= ~FTMAC100_MACCR_RX_FTL;
-+	} else {
-+		/* process FTL packets in the driver */
-+		maccr |= FTMAC100_MACCR_RX_FTL;
-+	}
-+	iowrite32(maccr, priv->base + FTMAC100_OFFSET_MACCR);
-+
-+	netdev->mtu = new_mtu;
-+	netdev_info(netdev, "changed mtu to %d\n", new_mtu);
-+	return 0;
-+}
-+
- static const struct net_device_ops ftmac100_netdev_ops = {
- 	.ndo_open		= ftmac100_open,
- 	.ndo_stop		= ftmac100_stop,
-@@ -1044,6 +1089,7 @@ static const struct net_device_ops ftmac100_netdev_ops = {
- 	.ndo_set_mac_address	= eth_mac_addr,
- 	.ndo_validate_addr	= eth_validate_addr,
- 	.ndo_eth_ioctl		= ftmac100_do_ioctl,
-+	.ndo_change_mtu		= ftmac100_change_mtu,
- };
- 
- /******************************************************************************
--- 
-2.34.1
+ II) What consequences has the tracker counter?
+
+     As far as I can see by kernel messages, the netdev tracker forces the
+     kernel to wait
+       (on ifdown (i.e. ifconfig ax0 down) 
+        or rmmod (i.e. rmmod bpqether or rmmod ax25) )
+     until all references to the network device are freed.
+     If there's a bug (refcount > 0 or < 0), kernel obviously waits for ever.
+
+
+III) Is it only to track sessions initiated from userspace?
+
+     I think no.
+     But in the current implementation, netdev_hold() is only
+     called in ax25_bind(). And even there, not in all cases.
+     But netdev_put() is called in all cases -> wrong count possible.
+     There's no netdev_hold() for new
+        - incoming AX.25-connects
+     or
+        - outgoing AX.25-sessions (initiated by i.e. by a packet of type
+          IP-over-AX.25, netrom or rose).
+     "Luckily" (in regard of the refcounter), there's also no netdev_put()
+     if the AX.25 session get disconnected.
+     
+     Can this be correct?
+
+
+Thank you for your help,
+
+	- Thomas  dl9sau
+
+> Am 10.09.2022 um 13:49 schrieb Thomas Osterried <thomas@osterried.de>:
+> 
+> Hello,
+> 
+> please allow me the question what the patch tries to fix.
+> 
+> 1. we add sessions to the list of active sessions ax25_cb_add(ax25),
+>   and remove them on close.
+>   Why do we need a tracker?
+> 
+> 2. ax25_dev.c:
+>   ax25_dev_device_up():
+>     netdev_hold(dev, &ax25_dev->dev_tracker, GFP_KERNEL);
+>   ax25_dev_device_down():
+>     netdev_put(dev, &ax25_dev->dev_tracker);
+>   ax25_dev_free():
+>     netdev_put(ax25_dev->dev, &ax25_dev->dev_tracker);
+> 
+>   Just to be sure: It's the list of active ax25-interface, correct?
+> 
+>   -> Looks good to me.
+> 
+> 3. On device status change, i.e. NETDEV_DOWN, ax25_device_event() calls
+>   ax25_kill_by_device(dev)
+>     and
+>   ax25_dev_device_down(dev) (we saw in 2)).
+> 
+>   Before patches
+>     7c6327c77d509e78bff76f2a4551fcfee851682e /	d7c4c9e075f8cc6d88d277bc24e5d99297f03c06
+>   we did
+>    in ax25_relase(): netdev_put(ax25_dev->dev, &ax25_dev->dev_tracker);
+>   and
+>    in ax25_bind(); netdev_hold(ax25_dev->dev, &ax25_dev->dev_tracker, GFP_ATOMIC);
+> 
+>   ax25_kill_by_device() traverses through the list of active connections
+>   (ax25_list):
+>       if (sk->sk_socket) {
+>               netdev_put(ax25_dev->dev,
+>                      &ax25_dev->dev_tracker);
+>               ax25_dev_put(ax25_dev);
+>       }
+> 
+>    The patches mentioned above were:
+>      ax25_release(): netdev_put(ax25_dev->dev, &ax25->dev_tracker);
+>      ax25_bind(): netdev_hold(ax25_dev->dev, &ax25->dev_tracker, GFP_ATOMIC);
+> 
+>    -> Previously, each session (ax25_cb) was added to it's device with the
+>         dev_tracker of the _device_ (&ax25_dev->dev_tracker)
+>       Now, each session (ax25_cb) is added with it's own dev_tracker
+>         &ax25->dev_tracker
+>       But:
+>         ax25_kill_by_device() goes through the list of active sessions and
+>         does
+>           netdev_put(ax25_dev->dev, &ax25_dev->dev_tracker);
+>         instead of the new concept; I would have expected:
+>           netdev_put(ax25_dev->dev, &s->dev_tracker);
+> 
+>         If we netdev_put() to a non-existent tracker, this may explain
+>         the warnings
+>           unregister_netdevice: waiting for bpq1 to become free. Usage count = -2
+>         and
+>           refcount_t: underflow; use-after-free.
+>         that I observed in my previous mail.
+> 
+> 
+> 4. Again, my question for understanding about the dev_tracker concept:
+>   should _all_ in- and outgoing sessions be tracked?
+>   If so, I argue we have to add
+>     - new outbound sessions to the tracker (i.E. if a IP mode VC frame is
+>       sent)
+>     - new inbound sessions to the tracker
+> 
+> 
+>   Also, ax25_bind() currently does not track all sessions:
+> 
+>        /*
+>         * User already set interface with SO_BINDTODEVICE
+>         */
+>        if (ax25->ax25_dev != NULL)
+>                goto done;
+>        ...
+>        if (ax25_dev) {
+>                ax25_fillin_cb(ax25, ax25_dev);
+>                netdev_hold(ax25_dev->dev, &ax25->dev_tracker, GFP_ATOMIC);
+>        }
+> 	done:
+>        	ax25_cb_add(ax25);
+> 
+>    -> If user has previously called ax25_setsockopt() with SO_BINDTODEVICE,
+>       the device has been added to ax25->ax25_dev. But ax25_bind() does not
+>       add it to the tracker list (see above, ax25->ax25_dev is != NULL).
+> 
+> 
+>   ax25_connect() does also currently not track all sessions:
+> 
+>      There's a spcial condition sock_flag(sk, SOCK_ZAPPED), where connect()
+>      is allowed to be called without having gone through ax25_bind().
+>      Via ax25_rt_autobind(ax25, ..) it get's the appropriete ax25>dev.
+>      -> ax25_fillin_cb(ax25, ax25->ax25_dev);
+>         ax25_cb_add(ax25);
+>      => No tracker is added for this session.
+> 
+> 
+>   ax25_kill_by_device() does remove the tracker. I argued above, it removes
+>   the wrong tracker here:
+>                        if (sk->sk_socket) {
+>                                netdev_put(ax25_dev->dev,
+>                                           &ax25_dev->dev_tracker);
+>                                ax25_dev_put(ax25_dev);
+>                        }
+>   ..instead of &s->dev_tracker.
+> 
+>   And if we have trackers for all sessions (not only those that came via
+>   ax25_bind() from userspace), it's not enough to remove the tracker only
+>   for sessions with sk->socket.
+> 
+>   -> I would have expeted
+>      ax25_for_each(s, &ax25_list) {
+>        if (s->ax25_dev == ax25_dev) {
+>          if (s->ax25_dev == ax25_dev) {
+>            netdev_put(ax25_dev->dev, &s->dev_tracker);
+>            ...
+> 
+> 
+>   Finally:
+>   On normal session close (userspace program, or idle timer expiry),
+>   we need to have timers running for correct AX.25-session-close:
+>   If we are in connected state (AX25_STATE_3 or AX25_STATE_4), we need
+>   to send DISC in interval until max retry reached, or until we receive
+>   a DM-). 
+>   In ax25_release(), we see:
+>     if (ax25_dev) {
+>         ...
+>         netdev_put(ax25_dev->dev, &ax25->dev_tracker);
+>         ax25_dev_put(ax25_dev);
+>   But we need have timers running for ax25_cb's that still refer to
+>   the network dev (and need to be there until correct session
+>   termination), we have a conflict here, because
+>   netdev_put() assures here we are not allowed to refer to the
+>   dev anymore.
+>   That needs to be resolved.
+> 
+> 
+> Context:
+> 
+> diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+> index bbac3cb4dc99d..d82a51e69386b 100644
+> --- a/net/ax25/af_ax25.c
+> +++ b/net/ax25/af_ax25.c
+> @@ -1066,7 +1066,7 @@ static int ax25_release(struct socket *sock)
+> 			del_timer_sync(&ax25->t3timer);
+> 			del_timer_sync(&ax25->idletimer);
+> 		}
+> -		netdev_put(ax25_dev->dev, &ax25_dev->dev_tracker);
+> +		netdev_put(ax25_dev->dev, &ax25->dev_tracker);
+> 		ax25_dev_put(ax25_dev);
+> 	}
+> 
+> @@ -1147,7 +1147,7 @@ static int ax25_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
+> 
+> 	if (ax25_dev) {
+> 		ax25_fillin_cb(ax25, ax25_dev);
+> -		netdev_hold(ax25_dev->dev, &ax25_dev->dev_tracker, GFP_ATOMIC);
+> +		netdev_hold(ax25_dev->dev, &ax25->dev_tracker, GFP_ATOMIC);
+> 	}
+> 
+> done:
+> 
+> 
+> 
+> 
 
