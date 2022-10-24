@@ -2,68 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9970609996
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 07:01:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C71756099A7
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 07:10:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230148AbiJXFBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 01:01:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50368 "EHLO
+        id S229738AbiJXFKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 01:10:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230132AbiJXFBt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 01:01:49 -0400
+        with ESMTP id S229689AbiJXFKr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 01:10:47 -0400
 Received: from formenos.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CFDD7AC1C;
-        Sun, 23 Oct 2022 22:01:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA59363360;
+        Sun, 23 Oct 2022 22:10:46 -0700 (PDT)
 Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
         by formenos.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1ompa3-005TdM-7f; Mon, 24 Oct 2022 13:01:32 +0800
-Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Mon, 24 Oct 2022 13:01:31 +0800
-Date:   Mon, 24 Oct 2022 13:01:31 +0800
+        id 1ompin-005Tir-QH; Mon, 24 Oct 2022 13:10:35 +0800
+Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Mon, 24 Oct 2022 13:10:34 +0800
+Date:   Mon, 24 Oct 2022 13:10:34 +0800
 From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     syzbot <syzbot+1e9af9185d8850e2c2fa@syzkaller.appspotmail.com>,
-        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        steffen.klassert@secunet.com, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] kernel BUG in warn_crc32c_csum_combine
-Message-ID: <Y1YcK0LPqP5nan40@gondor.apana.org.au>
+To:     syzbot <syzbot+1e9af9185d8850e2c2fa@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, steffen.klassert@secunet.com,
+        syzkaller-bugs@googlegroups.com
+Subject: [PATCH] af_key: Fix send_acquire race with pfkey_register
+Message-ID: <Y1YeSj2vwPvRAW61@gondor.apana.org.au>
 References: <000000000000fd9a4005ebbeac67@google.com>
- <CANn89iJdYrAsp8X61ojw=ZVPEZeYu2vWaTcyDQL8NQ5aZW+8cA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CANn89iJdYrAsp8X61ojw=ZVPEZeYu2vWaTcyDQL8NQ5aZW+8cA@mail.gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <000000000000fd9a4005ebbeac67@google.com>
+X-Spam-Status: No, score=0.6 required=5.0 tests=BAYES_00,SORTED_RECIPS,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 23, 2022 at 07:49:44PM -0700, Eric Dumazet wrote:
->
-> pfkey_send_acquire() allocates and skb, and then later this skb seems
-> to be too small to fit all dump info.
-> 
-> Maybe ->available status flips during the duration of the call ?
-> 
-> (So count_esp_combs() might return a value, but later dump_esp_combs()
-> needs more space)
+With name space support, it is possible for a pfkey_register to
+occur in the middle of a send_acquire, thus changing the number
+of supported algorithms.
 
-Thanks!
+This can be fixed by taking a mutex to make it single-threaded
+again.
 
-> Relevant patch suggests this could happen
-> 
-> commit ba953a9d89a00c078b85f4b190bc1dde66fe16b5
-> Author: Herbert Xu <herbert@gondor.apana.org.au>
-> Date:   Thu Aug 4 18:03:46 2022 +0800
-> 
->     af_key: Do not call xfrm_probe_algs in parallel
+Reported-by: syzbot+1e9af9185d8850e2c2fa@syzkaller.appspotmail.com
+Fixes: 283bc9f35bbb ("xfrm: Namespacify xfrm state/policy locks")
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 
-Yes this looks like the same issue just in a different spot.
-
-Cheers,
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index c85df5b958d2..4ceef96fef57 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -3160,6 +3160,7 @@ static int pfkey_send_acquire(struct xfrm_state *x, struct xfrm_tmpl *t, struct
+ 		(sockaddr_size * 2) +
+ 		sizeof(struct sadb_x_policy);
+ 
++	mutex_lock(&pfkey_mutex);
+ 	if (x->id.proto == IPPROTO_AH)
+ 		size += count_ah_combs(t);
+ 	else if (x->id.proto == IPPROTO_ESP)
+@@ -3171,8 +3172,10 @@ static int pfkey_send_acquire(struct xfrm_state *x, struct xfrm_tmpl *t, struct
+ 	}
+ 
+ 	skb =  alloc_skb(size + 16, GFP_ATOMIC);
+-	if (skb == NULL)
++	if (skb == NULL) {
++		mutex_unlock(&pfkey_mutex);
+ 		return -ENOMEM;
++	}
+ 
+ 	hdr = skb_put(skb, sizeof(struct sadb_msg));
+ 	hdr->sadb_msg_version = PF_KEY_V2;
+@@ -3228,6 +3231,7 @@ static int pfkey_send_acquire(struct xfrm_state *x, struct xfrm_tmpl *t, struct
+ 		dump_ah_combs(skb, t);
+ 	else if (x->id.proto == IPPROTO_ESP)
+ 		dump_esp_combs(skb, t);
++	mutex_unlock(&pfkey_mutex);
+ 
+ 	/* security context */
+ 	if (xfrm_ctx) {
 -- 
 Email: Herbert Xu <herbert@gondor.apana.org.au>
 Home Page: http://gondor.apana.org.au/~herbert/
