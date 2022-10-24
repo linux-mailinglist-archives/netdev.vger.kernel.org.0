@@ -2,114 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15A8B60B3FE
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 19:23:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BF4D60B21B
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 18:43:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232726AbiJXRXt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 13:23:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40818 "EHLO
+        id S234666AbiJXQmi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 12:42:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231801AbiJXRXP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 13:23:15 -0400
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEECB3137F;
-        Mon, 24 Oct 2022 08:58:24 -0700 (PDT)
-Received: by mail-qk1-x730.google.com with SMTP id b25so6313442qkk.7;
-        Mon, 24 Oct 2022 08:58:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=rBAhu8NoGXuB555vSSAG6ujvGRVSYY8Ax/kYBoDzfrc=;
-        b=RgfhSQOdRoPwH8uQ9Sqev3VRD/QPcGtEwrQ8wOGXJ23uWrVjwWXprsN2K1jb5jPaVB
-         9U8FAv8lOnJfM+fADmH/J30hrJKq3qxg1yN4+p/yijJTTBjXObthNh9/GOIGFJQCm4p3
-         TwwZQlaWktcICIWiI+WV4c5wJS0uMDLCBC99Q80b2pbH1NClWQs3DnpeKihfVy19lN34
-         t4xs4EfcKFtW5rUdbvEj5XQifW8XfGzAY188Uvr375YPeW4e69WeRsUF5Rm/6CqadVnq
-         x4KkN93GjrdvWQPJRWXTtY7vCRAj3s0mkdPGPGa6ff7tUtLoTn76Gvv1ClqDlYzHLXjv
-         gr9w==
-X-Gm-Message-State: ACrzQf1z+ODL1axlhMeT2cVOelapf83cIGXrHeBqHL23oTxIOcIf02Xc
-        eOHrXG/aL3/TIi++aIqYYQ6JvXB7AOqH3Q==
-X-Google-Smtp-Source: AMsMyM5HGSVCOB4uXsgihjAyOtr3nDTUXLaAa2l+l8t3ygQCwqtHG+bjN/MjZokHFsvRUaPqQPWftA==
-X-Received: by 2002:a05:622a:15d1:b0:39c:f1da:fe0e with SMTP id d17-20020a05622a15d100b0039cf1dafe0emr27502191qty.662.1666622494858;
-        Mon, 24 Oct 2022 07:41:34 -0700 (PDT)
-Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com. [209.85.219.180])
-        by smtp.gmail.com with ESMTPSA id cm21-20020a05622a251500b0039c72bb51f3sm13314qtb.86.2022.10.24.07.41.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Oct 2022 07:41:34 -0700 (PDT)
-Received: by mail-yb1-f180.google.com with SMTP id e62so11256143yba.6;
-        Mon, 24 Oct 2022 07:41:33 -0700 (PDT)
-X-Received: by 2002:a25:4fc2:0:b0:6be:afb4:d392 with SMTP id
- d185-20020a254fc2000000b006beafb4d392mr27409858ybb.604.1666622493666; Mon, 24
- Oct 2022 07:41:33 -0700 (PDT)
-MIME-Version: 1.0
-References: <20221022104357.1276740-1-biju.das.jz@bp.renesas.com> <20221022104357.1276740-3-biju.das.jz@bp.renesas.com>
-In-Reply-To: <20221022104357.1276740-3-biju.das.jz@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 24 Oct 2022 16:41:22 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWczrC=WsDF6SchD=GwtG_OA+gAC4frF5i+qX5mpXEUfQ@mail.gmail.com>
-Message-ID: <CAMuHMdWczrC=WsDF6SchD=GwtG_OA+gAC4frF5i+qX5mpXEUfQ@mail.gmail.com>
-Subject: Re: [PATCH 2/6] can: rcar_canfd: Add max_channels to struct rcar_canfd_hw_info
-To:     biju.das.jz@bp.renesas.com
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        with ESMTP id S231881AbiJXQlr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 12:41:47 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9AC080EA5;
+        Mon, 24 Oct 2022 08:28:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=BrxfrDUbPsUFpThWqA9RSxt3bESyLFU8TgRiCKoKos4=; b=hUFyDn4iEM2Umosu5AGmbJVVWt
+        Gd8sS4dlaaccEMpfxIA+FTJfDLsCW3BaDAKG3WhFItnfHCxaubrTdZcHF8xD8CMyGl3OmKYss13IE
+        cf7PvX1v+ed7wIBYbKJjEjVdhn9MaeL34ZUWWMpOrhVUUo9bZHo4GVCsmH33ynRef9Y1jXHk6l4fg
+        G8iouAdGGN7jn0NThsBLmMWXfD+Xc0Zq7a7DnyNRFXx9xAcR78IQiUioEthdkXoKBCJEAQ2fpzM3Y
+        CHABnGcBjLNwmN00otsMN4Yv0UHBCNvxhe1dp3ZPOwFbs7nuc1SQJMrsZ+/bVPXsQK4n67mIGfEfg
+        ncRzNHSA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34932)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1omysw-0003Fd-7H; Mon, 24 Oct 2022 15:57:02 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1omysk-0007DB-GY; Mon, 24 Oct 2022 15:56:50 +0100
+Date:   Mon, 24 Oct 2022 15:56:50 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Frank Wunderlich <frank-w@public-files.de>
+Cc:     Frank Wunderlich <linux@fw-web.de>,
+        linux-mediatek@lists.infradead.org,
+        Alexander Couzens <lynxis@fe80.eu>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        =?UTF-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        linux-renesas-soc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: Re: Re: Re: [PATCH v2] net: mtk_sgmii: implement mtk_pcs_ops
+Message-ID: <Y1ansgmD69AcITWx@shell.armlinux.org.uk>
+References: <Y1UMrvk2A9aAcjo5@shell.armlinux.org.uk>
+ <trinity-5350c2bc-473d-408f-a25a-16b34bbfcba7-1666537529990@3c-app-gmx-bs01>
+ <Y1Vh5U96W2u/GCnx@shell.armlinux.org.uk>
+ <trinity-1d4cc306-d1a4-4ccf-b853-d315553515ce-1666543305596@3c-app-gmx-bs01>
+ <Y1V/asUompZKj0ct@shell.armlinux.org.uk>
+ <trinity-ac9a840b-cb06-4710-827a-4c4423686074-1666551838763@3c-app-gmx-bs01>
+ <trinity-169e3c3f-3a64-485c-9a43-b7cc595531a9-1666552897046@3c-app-gmx-bs01>
+ <Y1Wfc+M/zVdw9Di3@shell.armlinux.org.uk>
+ <Y1Zah4+hyFk50JC6@shell.armlinux.org.uk>
+ <trinity-d2f74581-c020-4473-a5f4-0fc591233293-1666622740261@3c-app-gmx-bap55>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <trinity-d2f74581-c020-4473-a5f4-0fc591233293-1666622740261@3c-app-gmx-bap55>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 22, 2022 at 1:13 PM Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> R-Car V3U supports a maximum of 8 channels whereas rest of the SoCs
-> support 2 channels.
->
-> Add max_channels variable to struct rcar_canfd_hw_info to handle this
-> difference.
->
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+On Mon, Oct 24, 2022 at 04:45:40PM +0200, Frank Wunderlich wrote:
+> Hi
+> > Gesendet: Montag, 24. Oktober 2022 um 11:27 Uhr
+> > Von: "Russell King (Oracle)" <linux@armlinux.org.uk>
+> 
+> > Here's the combined patch for where I would like mtk_sgmii to get to.
+> >
+> > It looks like this PCS is similar to what we know as pcs-lynx.c, but
+> > there do seem to be differences - the duplex bit for example appears
+> > to be inverted.
+> >
+> > Please confirm whether this still works for you, thanks.
+> 
+> basicly Patch works, but i get some (1-50) retransmitts on iperf3 on first interval in tx-mode (on r3 without -R), other 9 are clean. reverse mode is mostly clean.
+> run iperf3 multiple times, every first interval has retransmitts. same for gmac0 (fixed-link 2500baseX)
+> 
+> i notice that you have changed the timer again to 10000000 for 1000/2500baseX...maybe use here the default value too like the older code does?
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+You obviously missed my explanation. I will instead quote the 802.3
+standard which covers 1000base-X:
 
-> --- a/drivers/net/can/rcar/rcar_canfd.c
-> +++ b/drivers/net/can/rcar/rcar_canfd.c
-> @@ -525,6 +525,7 @@ struct rcar_canfd_global;
->
->  struct rcar_canfd_hw_info {
->         enum rcanfd_chip_id chip_id;
-> +       u32 max_channels;
+37.3.1.4 Timers
 
-Although I wouldn't mind "unsigned int" instead...
+ link_timer
+          Timer used to ensure Auto-Negotiation protocol stability and
+	  register read/write by the management interface.
 
->  };
->
->  /* Channel priv data */
+	  Duration: 10 ms, tolerance +10 ms, –0 s.
 
-Gr{oetje,eeting}s,
+For SGMII, the situation is different. Here is what the SGMII
+specification says:
 
-                        Geert
+  The link_timer inside the Auto-Negotiation has been changed from 10
+  msec to 1.6 msec to ensure a prompt update of the link status.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+So, 10ms is correct for 1000base-X, and 1.6ms correct for SGMII.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+However, feel free to check whether changing it solves that issue, but
+also check whether it could be some ARP related issue - remember, if
+two endpoints haven't communicated, they need to ARP to get the other
+end's ethernet addresses which adds extra latency, and may result in
+some packet loss in high packet queuing rate situations.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
