@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B923160A900
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 15:14:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4D1360A55B
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 14:23:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235829AbiJXNNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 09:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49470 "EHLO
+        id S233534AbiJXMXl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 08:23:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235708AbiJXNM0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 09:12:26 -0400
+        with ESMTP id S233302AbiJXMWr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 08:22:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC7212631
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 05:24:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F141B1DC
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 04:58:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87C74B811CF
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 11:55:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4023C433B5;
-        Mon, 24 Oct 2022 11:55:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A002B811C0
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 11:55:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 777A0C433B5;
+        Mon, 24 Oct 2022 11:55:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666612503;
-        bh=a9oHvWS79KbRkeHn6OiyH8RSidxqHPuMtu0y65tLHsM=;
+        s=k20201202; t=1666612509;
+        bh=bwX3dE+l3xsZYEto6hXAFz362lOOdVcg/Uvu97+QNKc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hA3z/Ae+t2Li5o9kSu71OE7z9mAOXHdaQfBqRJbzInRM4hH5w41W0HXsioNTat6Js
-         wcDs3kkXWjhQLDIj9jbMl/QkS4AmhJSnHtyWxbFYbCi1QoUtJl0IbL/YNcV1i9tFfK
-         NTY1BlFJqkAcZ6qTcyGtUplZDTYsKG6TbFzFGnlnVHIUZYwy2HNLRts9dFBTa08YKk
-         jsSuUjlaiwxLEPHMcDd8AHlyJ2mRZ2MjpIB0XkGuDp4jns/PngQo6HPSjHygmi8hYs
-         /SFKoHdTyisQ4LVz6Mhzax7fe8/eAck4a0aEDzmzXp0kBTL+wZaOXCyug+7AJLpYKm
-         q2bmu1kLDzBig==
+        b=n9z59HDYnHXldxiJj/IcDAg8NO6KBqvMLlh24U37wwF5t1yNdAn8pVqO4a0amn5yC
+         rPNX8S/FhfMpYE52ylynPM/V2NbYORe3WsMWsLM25UTaoVPfjKMlMvfNL5zVd6NYz8
+         A+OrPnasCc++yIZ40mlqi8Xh5CC9EsPdfhDUcys2Nn+0fGokPLVi2jFlJ+c26tHd6A
+         WhFja1LS0LnHQSYxKoYhdFAbXHppIp7fHQkNmK7jXB1ghp2VW7JGjgWRaFLIX4LxuZ
+         rb+OY62eZsxUV9VNfrAia/nFlYHAkYyLdMVWDkmdWy1Dseygu2kLF0m0DBhpW66xSc
+         lmQmupU52IhFA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,12 +38,11 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
-        Suresh Devarakonda <ramad@nvidia.com>,
-        Moshe Shemesh <moshe@nvidia.com>,
-        Bodong Wang <bodong@nvidia.com>
-Subject: [V3 net 12/16] net/mlx5: Fix crash during sync firmware reset
-Date:   Mon, 24 Oct 2022 12:53:53 +0100
-Message-Id: <20221024115357.37278-13-saeed@kernel.org>
+        Raed Salem <raeds@nvidia.com>,
+        Lior Nahmanson <liorna@nvidia.com>
+Subject: [V3 net 13/16] net/mlx5e: Fix macsec coverity issue at rx sa update
+Date:   Mon, 24 Oct 2022 12:53:54 +0100
+Message-Id: <20221024115357.37278-14-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221024115357.37278-1-saeed@kernel.org>
 References: <20221024115357.37278-1-saeed@kernel.org>
@@ -58,55 +57,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Suresh Devarakonda <ramad@nvidia.com>
+From: Raed Salem <raeds@nvidia.com>
 
-When setting Bluefield to DPU NIC mode using mlxconfig tool +  sync
-firmware reset flow, we run into scenario where the host was not
-eswitch manager at the time of mlx5 driver load but becomes eswitch manager
-after the sync firmware reset flow. This results in null pointer
-access of mpfs structure during mac filter add. This change prevents null
-pointer access but mpfs table entries will not be added.
+The cited commit at update rx sa operation passes object attributes
+to MACsec object create function without initializing/setting all
+attributes fields leaving some of them with garbage values, therefore
+violating the implicit assumption at create object function, which
+assumes that all input object attributes fields are set.
 
-Fixes: 5ec697446f46 ("net/mlx5: Add support for devlink reload action fw activate")
-Signed-off-by: Suresh Devarakonda <ramad@nvidia.com>
-Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
-Reviewed-by: Bodong Wang <bodong@nvidia.com>
+Fix by initializing the object attributes struct to zero, thus leaving
+unset fields with the legal zero value.
+
+Fixes: aae3454e4d4c ("net/mlx5e: Add MACsec offload Rx command support")
+Signed-off-by: Raed Salem <raeds@nvidia.com>
+Reviewed-by: Lior Nahmanson <liorna@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lib/mpfs.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/mpfs.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/mpfs.c
-index 839a01da110f..8ff16318e32d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/mpfs.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/mpfs.c
-@@ -122,7 +122,7 @@ void mlx5_mpfs_cleanup(struct mlx5_core_dev *dev)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
+index 4331235b21ee..250c878ba2c9 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
+@@ -432,7 +432,7 @@ static int mlx5e_macsec_update_rx_sa(struct mlx5e_macsec *macsec,
+ 				     bool active)
  {
- 	struct mlx5_mpfs *mpfs = dev->priv.mpfs;
- 
--	if (!MLX5_ESWITCH_MANAGER(dev))
-+	if (!mpfs)
- 		return;
- 
- 	WARN_ON(!hlist_empty(mpfs->hash));
-@@ -137,7 +137,7 @@ int mlx5_mpfs_add_mac(struct mlx5_core_dev *dev, u8 *mac)
+ 	struct mlx5_core_dev *mdev = macsec->mdev;
+-	struct mlx5_macsec_obj_attrs attrs;
++	struct mlx5_macsec_obj_attrs attrs = {};
  	int err = 0;
- 	u32 index;
  
--	if (!MLX5_ESWITCH_MANAGER(dev))
-+	if (!mpfs)
- 		return 0;
- 
- 	mutex_lock(&mpfs->lock);
-@@ -185,7 +185,7 @@ int mlx5_mpfs_del_mac(struct mlx5_core_dev *dev, u8 *mac)
- 	int err = 0;
- 	u32 index;
- 
--	if (!MLX5_ESWITCH_MANAGER(dev))
-+	if (!mpfs)
- 		return 0;
- 
- 	mutex_lock(&mpfs->lock);
+ 	if (rx_sa->active != active)
 -- 
 2.37.3
 
