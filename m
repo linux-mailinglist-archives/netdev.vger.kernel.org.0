@@ -2,36 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51F82609EE6
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 12:23:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5767609F0B
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 12:30:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229772AbiJXKXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 06:23:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43894 "EHLO
+        id S229787AbiJXKaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 06:30:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229629AbiJXKXJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 06:23:09 -0400
-Received: from proxima.lasnet.de (proxima.lasnet.de [78.47.171.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C0DD57DC4;
-        Mon, 24 Oct 2022 03:23:08 -0700 (PDT)
-Received: from localhost.localdomain (unknown [217.17.28.204])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        with ESMTP id S229635AbiJXKaX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 06:30:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F019C30542
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 03:30:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: stefan@sostec.de)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id B1797C0434;
-        Mon, 24 Oct 2022 12:23:06 +0200 (CEST)
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wpan@vger.kernel.org, alex.aring@gmail.com,
-        netdev@vger.kernel.org
-Subject: pull-request: ieee802154 for net 2022-10-24
-Date:   Mon, 24 Oct 2022 12:23:01 +0200
-Message-Id: <20221024102301.9433-1-stefan@datenfreihafen.org>
-X-Mailer: git-send-email 2.37.3
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A585611DD
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 10:30:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CBFCCC433B5;
+        Mon, 24 Oct 2022 10:30:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666607419;
+        bh=FPjnR1hEM0W78WwvG9EdKb/AWVmK1Nb0mah3R0plt28=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=QndAFQEhDiIohfVVBYrPq1cHqNeP6xY/h+6kXn7XskxHMMDJKAGCMZ78u0p/YoVY5
+         QtXMLnlSF7IRD+TyziDWoKvrfe0V8pYVEriVeAcJm6wuAZiR+2IArxj+CzwS1uiI60
+         CQ1x3uWlktFBuJy+riCXU5N53wPlSg9Ru7ZDIzLHCprjtYnFxBSoGZQRJUEnN0G2Mt
+         FIseP0G1V3P/jm36aiFWprELkCG+IIN0RQ1hXBpIbAjEuu3Q2tTZBrh83XpinADiet
+         aITNiDNCVuW52CyRg3Qb3YkC8zz6Qgddncov5eaLBDIGNDz11JBBFYhsBzKvPOyY0f
+         zeyzvvPp2fclQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A92FDC4166D;
+        Mon, 24 Oct 2022 10:30:19 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Subject: Re: [PATCH net-next 0/3] Add support for 800Gbps speed
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166660741968.18313.3884972751898561670.git-patchwork-notify@kernel.org>
+Date:   Mon, 24 Oct 2022 10:30:19 +0000
+References: <cover.1666277135.git.petrm@nvidia.com>
+In-Reply-To: <cover.1666277135.git.petrm@nvidia.com>
+To:     Petr Machata <petrm@nvidia.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, idosch@nvidia.com,
+        amcohen@nvidia.com, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, dsahern@kernel.org, mlxsw@nvidia.com
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -39,44 +58,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dave, Jakub.
+Hello:
 
-An update from ieee802154 for your *net* tree:
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Two fixup patches for return code changes of an earlier commit.
-Wei Yongjun fixed a missed -EINVAL return on the recent change, while
-Alexander Aring adds handling for unknown address type cases as well.
+On Thu, 20 Oct 2022 17:20:02 +0200 you wrote:
+> Amit Cohen <amcohen@nvidia.com> writes:
+> 
+> The next Nvidia Spectrum ASIC will support 800Gbps speed.
+> The IEEE 802 LAN/MAN Standards Committee already published standards for
+> 800Gbps, see the last update [1] and the list of approved changes [2].
+> 
+> As first phase, add support for 800Gbps over 8 lanes (100Gbps/lane).
+> In the future 800Gbps over 4 lanes can be supported also.
+> 
+> [...]
 
-Miquel Raynal fixed a long standing issue with LQI value recording
-which got broken 8 years ago. (It got more attention with the work
-in progress enhancement in wpan).
+Here is the summary with links:
+  - [net-next,1/3] ethtool: Add support for 800Gbps link modes
+    https://git.kernel.org/netdev/net-next/c/404c76783f32
+  - [net-next,2/3] mlxsw: Add support for 800Gbps link modes
+    https://git.kernel.org/netdev/net-next/c/cceef209ddd7
+  - [net-next,3/3] bonding: 3ad: Add support for 800G speed
+    https://git.kernel.org/netdev/net-next/c/41305d3781d7
 
-regards
-Stefan Schmidt
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-The following changes since commit 1d22f78d05737ce21bff7b88b6e58873f35e65ba:
 
-  Merge tag 'ieee802154-for-net-2022-10-05' of git://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan (2022-10-05 20:38:46 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan.git tags/ieee802154-for-net-2022-10-24
-
-for you to fetch changes up to 5a5c4e06fd03b595542d5590f2bc05a6b7fc5c2b:
-
-  mac802154: Fix LQI recording (2022-10-24 11:07:39 +0200)
-
-----------------------------------------------------------------
-Alexander Aring (1):
-      net: ieee802154: return -EINVAL for unknown addr type
-
-Miquel Raynal (1):
-      mac802154: Fix LQI recording
-
-Wei Yongjun (1):
-      net: ieee802154: fix error return code in dgram_bind()
-
- include/net/ieee802154_netdev.h | 12 +++++++++---
- net/ieee802154/socket.c         |  4 +++-
- net/mac802154/rx.c              |  5 +++--
- 3 files changed, 15 insertions(+), 6 deletions(-)
