@@ -2,46 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7978609A3E
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 08:13:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4784B609A3F
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 08:13:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230041AbiJXGNA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 02:13:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36862 "EHLO
+        id S230077AbiJXGNB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 02:13:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229910AbiJXGM7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 02:12:59 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 259975E329
-        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 23:12:57 -0700 (PDT)
+        with ESMTP id S229914AbiJXGNA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 02:13:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41A05E314
+        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 23:12:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 62F47CE0F77
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 06:12:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06A73C433D6;
-        Mon, 24 Oct 2022 06:12:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F22061013
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 06:12:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A8D3C433D6;
+        Mon, 24 Oct 2022 06:12:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666591974;
-        bh=C9PqTM+BRGI9rBk/qXcXGg9DHejAuYxZPqCQmxxF3SQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=kr+WsoKUu3zumSAS4N52iTXFxEW1RZI3liuB/O+JElccGzrT10uYjW9GvEXRiDLaq
-         GXaJy3Ue8NbEtjzFb6zcAv3CJqvDfEOpyUrpj/LLErMkjLif1dM4HLL64pIFxVvvhs
-         bee5DzXnjRMZis7uvhTovAix7qqyP+2m9pDL/kLKXQApqY9iFm80HPFxZjHUA8QwfA
-         tznw/aMLqZfB+VU8rRsRL+YXH6l04MhHpUhtb6jH1cfs4Aj91Mryub9jHiMzqqUZTC
-         ThCZbHjtiLbD/h+GkWJUwH3zG94gQTQdZBD8KEpe1q5LurFu84OoOotUFToxX5ybF7
-         4bGmBIR30FzYA==
+        s=k20201202; t=1666591978;
+        bh=7HQ1deySWXZEEYDhV7KbOqdQs9aT16o8QBa/BV1ulZM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=TQYHTWW7Gv0IzmhAEa0PzZuDTqxMKsiQgw2GNo94tBZW8SIaIpGPbabG07jlV3b78
+         j9p3ocRYHjKxdZnlATG/myW9xidSDy2CsoDoysCTjNy8JWCiIzY/4vc1n1E0k4//j6
+         1YieSMNiW0rAJZbcIJJTDAcbLdE+zkgHv9XeKiuCL1s9aVPvb6sKLxvK+8JEHwWTIr
+         Qj1lB34lNPEcJbfcZEg+oUhURudevTcuRgGyLk8WS47Dt9OEyylEGxZ/e4zIJwk8pL
+         gB1rQPN6WyiKYdJYuAHIVIP6wz9w3mooKvKGxEJLZWn58uEO0WDEn5GUMmbmbsF/HS
+         aak/Zwv+OGllQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: [pull request][V2 net 00/16] mlx5 fixes 2022-10-14
-Date:   Mon, 24 Oct 2022 07:12:04 +0100
-Message-Id: <20221024061220.81662-1-saeed@kernel.org>
+        Tariq Toukan <tariqt@nvidia.com>,
+        Hyong Youb Kim <hyonkim@cisco.com>,
+        Leon Romanovsky <leonro@nvidia.com>
+Subject: [V2 net 01/16] net/mlx5e: Do not increment ESN when updating IPsec ESN state
+Date:   Mon, 24 Oct 2022 07:12:05 +0100
+Message-Id: <20221024061220.81662-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20221024061220.81662-1-saeed@kernel.org>
+References: <20221024061220.81662-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -53,90 +57,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Hyong Youb Kim <hyonkim@cisco.com>
 
-This series provides bug fixes to mlx5 driver.
-Please pull and let me know if there is any problem.
+An offloaded SA stops receiving after about 2^32 + replay_window
+packets. For example, when SA reaches <seq-hi 0x1, seq 0x2c>, all
+subsequent packets get dropped with SA-icv-failure (integrity_failed).
 
-v1->v2:
-  add missing sign-off.
+To reproduce the bug:
+- ConnectX-6 Dx with crypto enabled (FW 22.30.1004)
+- ipsec.conf:
+  nic-offload = yes
+  replay-window = 32
+  esn = yes
+  salifetime=24h
+- Run netperf for a long time to send more than 2^32 packets
+  netperf -H <device-under-test> -t TCP_STREAM -l 20000
 
-The following changes since commit 8df3db21919104a0589f8920e2ac70f4c2a67263:
+When 2^32 + replay_window packets are received, the replay window
+moves from the 2nd half of subspace (overlap=1) to the 1st half
+(overlap=0). The driver then updates the 'esn' value in NIC
+(i.e. seq_hi) as follows.
 
-  net/mlx5e: Fix macsec sci endianness at rx sa update (2022-10-24 06:45:39 +0100)
+ seq_hi = xfrm_replay_seqhi(seq_bottom)
+ new esn in NIC = seq_hi + 1
 
-are available in the Git repository at:
+The +1 increment is wrong, as seq_hi already contains the correct
+seq_hi. For example, when seq_hi=1, the driver actually tells NIC to
+use seq_hi=2 (esn). This incorrect esn value causes all subsequent
+packets to fail integrity checks (SA-icv-failure). So, do not
+increment.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2022-10-14
+Fixes: cb01008390bb ("net/mlx5: IPSec, Add support for ESN")
+Signed-off-by: Hyong Youb Kim <hyonkim@cisco.com>
+Acked-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-for you to fetch changes up to 8df3db21919104a0589f8920e2ac70f4c2a67263:
-
-  net/mlx5e: Fix macsec sci endianness at rx sa update (2022-10-24 06:45:39 +0100)
-
-
-Ariel Levkovich (1):
-  net/mlx5e: TC, Reject forwarding from internal port to internal port
-
-Aya Levin (1):
-  net/mlx5e: Extend SKB room check to include PTP-SQ
-
-Hyong Youb Kim (1):
-  net/mlx5e: Do not increment ESN when updating IPsec ESN state
-
-Moshe Shemesh (1):
-  net/mlx5: Wait for firmware to enable CRS before pci_restore_state
-
-Paul Blakey (1):
-  net/mlx5e: Update restore chain id for slow path packets
-
-Raed Salem (4):
-  net/mlx5e: Fix macsec coverity issue at rx sa update
-  net/mlx5e: Fix macsec rx security association (SA) update/delete
-  net/mlx5e: Fix wrong bitwise comparison usage in macsec_fs_rx_add_rule
-    function
-  net/mlx5e: Fix macsec sci endianness at rx sa update
-
-Roi Dayan (1):
-  net/mlx5e: TC, Fix cloned flow attr instance dests are not zeroed
-
-Rongwei Liu (1):
-  net/mlx5: DR, Fix matcher disconnect error flow
-
-Roy Novich (1):
-  net/mlx5: Update fw fatal reporter state on PCI handlers successful
-    recover
-
-Saeed Mahameed (1):
-  net/mlx5: ASO, Create the ASO SQ with the correct timestamp format
-
-Shay Drory (1):
-  net/mlx5: SF: Fix probing active SFs during driver probe phase
-
-Suresh Devarakonda (1):
-  net/mlx5: Fix crash during sync firmware reset
-
-Tariq Toukan (1):
-  net/mlx5: Fix possible use-after-free in async command interface
-
- drivers/net/ethernet/mellanox/mlx5/core/cmd.c | 10 +--
- .../net/ethernet/mellanox/mlx5/core/en/ptp.h  |  9 ++
- .../ethernet/mellanox/mlx5/core/en/tc_priv.h  |  2 +
- .../net/ethernet/mellanox/mlx5/core/en/txrx.h |  6 ++
- .../mellanox/mlx5/core/en_accel/ipsec.c       |  3 -
- .../mellanox/mlx5/core/en_accel/macsec.c      | 16 ++--
- .../mellanox/mlx5/core/en_accel/macsec_fs.c   |  2 +-
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 78 ++++++++++++++++-
- .../net/ethernet/mellanox/mlx5/core/en_tx.c   |  6 ++
- .../ethernet/mellanox/mlx5/core/fw_reset.c    | 17 ++++
- .../net/ethernet/mellanox/mlx5/core/lib/aso.c |  7 ++
- .../ethernet/mellanox/mlx5/core/lib/mpfs.c    |  6 +-
- .../net/ethernet/mellanox/mlx5/core/main.c    |  4 +
- .../ethernet/mellanox/mlx5/core/sf/dev/dev.c  | 86 +++++++++++++++++++
- .../net/ethernet/mellanox/mlx5/core/sf/sf.h   | 10 +++
- .../mellanox/mlx5/core/steering/dr_rule.c     |  3 +-
- include/linux/mlx5/driver.h                   |  2 +-
- 17 files changed, 242 insertions(+), 25 deletions(-)
-
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+index 2a8fd7020622..a715601865d3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+@@ -101,7 +101,6 @@ static bool mlx5e_ipsec_update_esn_state(struct mlx5e_ipsec_sa_entry *sa_entry)
+ 	struct xfrm_replay_state_esn *replay_esn;
+ 	u32 seq_bottom = 0;
+ 	u8 overlap;
+-	u32 *esn;
+ 
+ 	if (!(sa_entry->x->props.flags & XFRM_STATE_ESN)) {
+ 		sa_entry->esn_state.trigger = 0;
+@@ -116,11 +115,9 @@ static bool mlx5e_ipsec_update_esn_state(struct mlx5e_ipsec_sa_entry *sa_entry)
+ 
+ 	sa_entry->esn_state.esn = xfrm_replay_seqhi(sa_entry->x,
+ 						    htonl(seq_bottom));
+-	esn = &sa_entry->esn_state.esn;
+ 
+ 	sa_entry->esn_state.trigger = 1;
+ 	if (unlikely(overlap && seq_bottom < MLX5E_IPSEC_ESN_SCOPE_MID)) {
+-		++(*esn);
+ 		sa_entry->esn_state.overlap = 0;
+ 		return true;
+ 	} else if (unlikely(!overlap &&
 -- 
 2.37.3
 
