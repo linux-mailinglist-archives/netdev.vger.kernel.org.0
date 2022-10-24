@@ -2,113 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE28860B571
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 20:27:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBA4160B56F
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 20:26:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231516AbiJXS1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 14:27:11 -0400
+        id S229947AbiJXS0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 14:26:50 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231145AbiJXS0t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 14:26:49 -0400
-Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918963FD5D;
-        Mon, 24 Oct 2022 10:08:32 -0700 (PDT)
-Received: by mail-oi1-f170.google.com with SMTP id g130so11443567oia.13;
-        Mon, 24 Oct 2022 10:08:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=n0kYhDrwp/vsj/k7RAVnqojHJWY5hdYOtypPscTgAEQ=;
-        b=DwDqcaLUjlKm7E5s8DJZyXUyZaSBAMWNXLUzAyrcxzjB3przrq1c74OI6SlfvS3Mcz
-         yGfKomMWRO4069iP+8AJOGq5yZRMF+241Txa1IIdH9O48j6Xy77IFDgc1s2wY3pFV9HO
-         FfS4vpgESV6cc4h8bjSxVv3VQ+cacXMZ7s7n9aTi0BeUg4Y71PZy8qPtuKiSu1VfqZyr
-         a12s391voFSoVlIs60IjyRixTaaQXgmaL93tBPIEI7rqLEuplvWQ5MGgPMu7qSsEQUOI
-         47mmEq3WrO4d87l7iU4EBCIm1RKtbfAJqQ5z3dSlI4Yq3kCiuf6QkbWEfaILrpy75LrJ
-         /BHw==
-X-Gm-Message-State: ACrzQf0G00+APGfYx8Smv3h1mSM+n9GFXZv+R+BxA8yOELHNGtJUwWAW
-        OlOiYZuewINK0QlKawNDLTnnFIrrWA==
-X-Google-Smtp-Source: AMsMyM7ySHS3c7QNqcTH2KM3ZosPwpTwRr1KeMwtVTHphnl5pxNgztELYV4t/OP92+FpjfMwsXAQCw==
-X-Received: by 2002:a05:6870:89a3:b0:12b:45b6:80de with SMTP id f35-20020a05687089a300b0012b45b680demr22216102oaq.263.1666630643114;
-        Mon, 24 Oct 2022 09:57:23 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id c2-20020a544e82000000b00354b0850fb6sm41612oiy.33.2022.10.24.09.57.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Oct 2022 09:57:22 -0700 (PDT)
-Received: (nullmailer pid 1911533 invoked by uid 1000);
-        Mon, 24 Oct 2022 16:57:23 -0000
-Date:   Mon, 24 Oct 2022 11:57:23 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, richardcochran@gmail.com,
-        krzysztof.kozlowski+dt@linaro.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yangbo.lu@nxp.com, radhey.shyam.pandey@amd.com,
-        anirudha.sarangi@amd.com, harini.katakam@amd.com, git@amd.com
-Subject: Re: [PATCH net-next V2] dt-bindings: net: ethernet-controller: Add
- ptp-hardware-clock
-Message-ID: <20221024165723.GA1896281-robh@kernel.org>
-References: <20221021054111.25852-1-sarath.babu.naidu.gaddam@amd.com>
+        with ESMTP id S231881AbiJXS0d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 14:26:33 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD117F100;
+        Mon, 24 Oct 2022 10:08:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1666631284; x=1698167284;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=9hFNN8FocKL1s+t62fqYOxCC2IjJmS0OeL8/lk60yi4=;
+  b=ZB3Le7AknfvHmRCA5ulPNGOt4r+KoJBwaOnpK4h/nvonVF61OUB4S720
+   Pi+5EnIdzYU5x/GSaQcowY13AKjFsC54opoLgyHRdPcm6UYCsAyOlHTsO
+   5WlvLu6eE61RhNDirXrBkjpAuLt3eVQ92Dpe/OKKDTu6LXZNqxHNOXEC5
+   eiCSVXtbN9Ww+OtJr+jQTJ8KNOb5+VBj0dglefCjWifzND6qAw6/kA+2e
+   qSlfW55d3QM9584nwFkFIXK6iHYGeDjDKjTQXoVZTw1YmXVzROJZmOalU
+   96h/lBH2lW6T1wdGMITxZl9aHsTbKyYRWIUCNXGBkDeTAnLghVTdiyqS4
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="371689507"
+X-IronPort-AV: E=Sophos;i="5.95,209,1661842800"; 
+   d="scan'208";a="371689507"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2022 09:59:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="662496666"
+X-IronPort-AV: E=Sophos;i="5.95,209,1661842800"; 
+   d="scan'208";a="662496666"
+Received: from lkp-server02.sh.intel.com (HELO b6d29c1a0365) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 24 Oct 2022 09:59:46 -0700
+Received: from kbuild by b6d29c1a0365 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1on0nh-0005Wl-1e;
+        Mon, 24 Oct 2022 16:59:45 +0000
+Date:   Tue, 25 Oct 2022 00:58:57 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     ntfs3@lists.linux.dev, netdev@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        amd-gfx@lists.freedesktop.org,
+        Linux Memory Management List <linux-mm@kvack.org>
+Subject: [linux-next:master] BUILD SUCCESS WITH WARNING
+ 76cf65d1377f733af1e2a55233e3353ffa577f54
+Message-ID: <6356c451.pwLIF+9EvDUrDjTY%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221021054111.25852-1-sarath.babu.naidu.gaddam@amd.com>
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 20, 2022 at 11:41:10PM -0600, Sarath Babu Naidu Gaddam wrote:
-> There is currently no standard property to pass PTP device index
-> information to ethernet driver when they are independent.
-> 
-> ptp-hardware-clock property will contain phandle to PTP clock node.
-> 
-> Freescale driver currently has this implementation but it will be
-> good to agree on a generic (optional) property name to link to PTP
-> phandle to Ethernet node. In future or any current ethernet driver
-> wants to use this method of reading the PHC index,they can simply use
-> this generic name and point their own PTP clock node, instead of
-> creating separate property names in each ethernet driver DT node.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+branch HEAD: 76cf65d1377f733af1e2a55233e3353ffa577f54  Add linux-next specific files for 20221024
 
-Seems like this does the same thing as 
-Documentation/devicetree/bindings/ptp/timestamper.txt.
+Warning reports:
 
-Or perhaps what we have in bindings/timestamp/ which unfortunately does 
-about the same thing.
+https://lore.kernel.org/linux-mm/202210090954.pTR6m6rj-lkp@intel.com
+https://lore.kernel.org/linux-mm/202210110857.9s0tXVNn-lkp@intel.com
+https://lore.kernel.org/linux-mm/202210111318.mbUfyhps-lkp@intel.com
+https://lore.kernel.org/linux-mm/202210240729.zs46Cfzo-lkp@intel.com
 
-The latter one is more flexible and follows standard provider/consumer 
-patterns. So timestamper.txt should probably be deprecated.
+Warning: (recently discovered and may have been fixed)
 
-> 
-> axiethernet driver uses this method when PTP support is integrated.
-> 
-> Example:
-> 	fman0: fman@1a00000 {
-> 		ptp-hardware-clock = <&ptp_timer0>;
-> 	}
-> 
-> 	ptp_timer0: ptp-timer@1afe000 {
-> 		compatible = "fsl,fman-ptp-timer";
-> 		reg = <0x0 0x1afe000 0x0 0x1000>;
-> 	}
-> 
-> Signed-off-by: Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>
-> ---
-> We want binding to be reviewed/accepted and then make changes in freescale
-> binding documentation to use this generic binding.
+arch/parisc/kernel/setup.c:78 setup_cmdline() warn: curly braces intended?
+drivers/net/phy/phylink.c:588 phylink_validate_mask_caps() warn: variable dereferenced before check 'state' (see line 583)
 
-If you want a common binding, I want to see multiple users and 
-preferrably ones that have some differing requirements. It can be 
-something existing with a 'this is what it would look like if we had 
-used this new common binding'.
+Warning ids grouped by kconfigs:
 
-Rob
+gcc_recent_errors
+|-- i386-randconfig-s041-20221024
+|   |-- fs-ntfs3-index.c:sparse:sparse:restricted-__le32-degrades-to-integer
+|   |-- fs-ntfs3-namei.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-restricted-__le16-const-usertype-s1-got-unsigned-short
+|   `-- fs-ntfs3-namei.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-restricted-__le16-const-usertype-s2-got-unsigned-short
+|-- microblaze-randconfig-m031-20221023
+|   `-- drivers-net-phy-phylink.c-phylink_validate_mask_caps()-warn:variable-dereferenced-before-check-state-(see-line-)
+|-- parisc-randconfig-m031-20221023
+|   `-- arch-parisc-kernel-setup.c-setup_cmdline()-warn:curly-braces-intended
+`-- x86_64-randconfig-m001
+    `-- arch-x86-kernel-apic-apic.c-generic_processor_info()-warn:always-true-condition-(num_processors-()-)-(-u32max-)
+clang_recent_errors
+|-- hexagon-randconfig-r045-20221023
+|   |-- drivers-phy-mediatek-phy-mtk-hdmi-mt2701.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:(uns
+|   |-- drivers-phy-mediatek-phy-mtk-hdmi-mt8173.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:(uns
+|   |-- drivers-phy-mediatek-phy-mtk-mipi-dsi-mt8173.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:
+|   |-- drivers-phy-mediatek-phy-mtk-mipi-dsi-mt8183.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:
+|   |-- drivers-phy-mediatek-phy-mtk-tphy.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:(unsigned-c
+|   `-- fs-ntfs3-namei.c:warning:variable-uni1-is-used-uninitialized-whenever-if-condition-is-true
+|-- i386-randconfig-a001-20221024
+|   `-- fs-ntfs3-namei.c:warning:variable-uni1-is-used-uninitialized-whenever-if-condition-is-true
+|-- i386-randconfig-a011
+|   `-- fs-ntfs3-namei.c:warning:variable-uni1-is-used-uninitialized-whenever-if-condition-is-true
+|-- i386-randconfig-a015
+|   `-- fs-ntfs3-namei.c:warning:variable-uni1-is-used-uninitialized-whenever-if-condition-is-true
+|-- powerpc-randconfig-r015-20221023
+|   |-- drivers-gpu-drm-amd-amdgpu-mmhub_v2_0.c:warning:variable-data-is-uninitialized-when-used-here
+|   |-- drivers-phy-mediatek-phy-mtk-tphy.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:(unsigned-c
+|   `-- fs-ntfs3-namei.c:warning:variable-uni1-is-used-uninitialized-whenever-if-condition-is-true
+|-- riscv-randconfig-r042-20221023
+|   `-- ld.lld:error:undefined-symbol:dax_holder_notify_failure
+|-- s390-randconfig-r022-20221023
+|   `-- fs-ntfs3-namei.c:warning:variable-uni1-is-used-uninitialized-whenever-if-condition-is-true
+|-- s390-randconfig-r044-20221023
+|   `-- fs-ntfs3-namei.c:warning:variable-uni1-is-used-uninitialized-whenever-if-condition-is-true
+|-- x86_64-randconfig-a002-20221024
+|   `-- fs-ntfs3-namei.c:warning:variable-uni1-is-used-uninitialized-whenever-if-condition-is-true
+|-- x86_64-randconfig-a004-20221024
+|   `-- fs-ntfs3-namei.c:warning:variable-uni1-is-used-uninitialized-whenever-if-condition-is-true
+`-- x86_64-randconfig-a005-20221024
+    `-- fs-ntfs3-namei.c:warning:variable-uni1-is-used-uninitialized-whenever-if-condition-is-true
+
+elapsed time: 726m
+
+configs tested: 91
+configs skipped: 3
+
+gcc tested configs:
+um                             i386_defconfig
+um                           x86_64_defconfig
+x86_64                    rhel-8.3-kselftests
+x86_64                              defconfig
+x86_64                          rhel-8.3-func
+i386                                defconfig
+x86_64               randconfig-a013-20221024
+x86_64                               rhel-8.3
+x86_64               randconfig-a012-20221024
+x86_64                           allyesconfig
+x86_64                           rhel-8.3-syz
+x86_64                           rhel-8.3-kvm
+m68k                        m5272c3_defconfig
+x86_64               randconfig-a016-20221024
+powerpc                           allnoconfig
+arm                                 defconfig
+mips                             allyesconfig
+x86_64               randconfig-a011-20221024
+i386                          randconfig-a014
+powerpc                          allmodconfig
+x86_64               randconfig-a015-20221024
+csky                              allnoconfig
+i386                             allyesconfig
+sh                          kfr2r09_defconfig
+sh                               allmodconfig
+x86_64               randconfig-a014-20221024
+i386                          randconfig-a012
+i386                          randconfig-a016
+arc                                 defconfig
+alpha                            allyesconfig
+powerpc                      makalu_defconfig
+arm                              allyesconfig
+arm                            xcep_defconfig
+m68k                             allmodconfig
+powerpc                    amigaone_defconfig
+sh                           sh2007_defconfig
+arm64                            allyesconfig
+arc                              allyesconfig
+arc                  randconfig-r043-20221024
+m68k                             allyesconfig
+arc                         haps_hs_defconfig
+alpha                               defconfig
+sh                            migor_defconfig
+mips                     loongson1b_defconfig
+riscv                randconfig-r042-20221024
+s390                                defconfig
+parisc                generic-64bit_defconfig
+arc                  randconfig-r043-20221023
+s390                             allmodconfig
+xtensa                          iss_defconfig
+s390                 randconfig-r044-20221024
+powerpc                      bamboo_defconfig
+ia64                             allmodconfig
+s390                             allyesconfig
+arm                        shmobile_defconfig
+arm                            hisi_defconfig
+arc                          axs103_defconfig
+powerpc                        cell_defconfig
+mips                        bcm47xx_defconfig
+sparc                       sparc64_defconfig
+x86_64                         rhel-8.3-kunit
+
+clang tested configs:
+i386                 randconfig-a001-20221024
+i386                 randconfig-a002-20221024
+i386                 randconfig-a003-20221024
+i386                 randconfig-a004-20221024
+i386                 randconfig-a005-20221024
+i386                 randconfig-a006-20221024
+hexagon              randconfig-r045-20221023
+i386                          randconfig-a013
+hexagon              randconfig-r041-20221024
+i386                          randconfig-a011
+riscv                randconfig-r042-20221023
+x86_64               randconfig-a001-20221024
+arm                          moxart_defconfig
+powerpc                      obs600_defconfig
+x86_64               randconfig-a005-20221024
+x86_64               randconfig-a003-20221024
+powerpc                       ebony_defconfig
+x86_64               randconfig-a006-20221024
+i386                          randconfig-a015
+hexagon              randconfig-r045-20221024
+x86_64               randconfig-a004-20221024
+arm                             mxs_defconfig
+s390                 randconfig-r044-20221023
+mips                       rbtx49xx_defconfig
+x86_64               randconfig-a002-20221024
+arm                          pxa168_defconfig
+powerpc                     tqm8540_defconfig
+powerpc                      ppc44x_defconfig
+hexagon              randconfig-r041-20221023
+arm                            dove_defconfig
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
