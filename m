@@ -2,105 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 57D33609B3F
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 09:24:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FF69609B6C
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 09:35:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230512AbiJXHYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 03:24:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43714 "EHLO
+        id S229738AbiJXHfh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 03:35:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231124AbiJXHYh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 03:24:37 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9DD4BE1F;
-        Mon, 24 Oct 2022 00:24:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1666596270; x=1698132270;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=x2hdzbJFZkGSOjRme22bRLCPN3Dwe5K//vVXwOM7pNE=;
-  b=b02sZEcbkA/LjNmkxPIXgQgc4/sO52p3MyjY0XWEDb18BM4PTWatOj4D
-   U4H30qJUKkdaeMwtmQ0MF/TuQU+FlUy7vG37ZBX9/nL7UstU5u8QnQxhP
-   Ylz0bvXTbqkdL2xTCoy6FG9fx9yc1i4FpoGDSxL1iGPoZ7TeYHt/epIoo
-   AMPQusi44bXuoM7U1+fauTv31EjPT+RlRsS5FXxiAsR8C/tn+lkcxnAXZ
-   2NsMyssiB7fmkaFzxlUasWCCIK+J5Dc+R9fmyUD9Km0jsdABccbUqE2Et
-   QjORoEAHLq980EgIjpeV+9Qk4lGUOZAwIWdfFSKkf2W0lRkRM6ZkfZWWi
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.95,207,1661842800"; 
-   d="scan'208";a="183588946"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Oct 2022 00:24:27 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Mon, 24 Oct 2022 00:24:26 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Mon, 24 Oct 2022 00:24:22 -0700
-Date:   Mon, 24 Oct 2022 12:54:21 +0530
-From:   Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <lxu@maxlinear.com>,
-        <hkallweit1@gmail.com>, <pabeni@redhat.com>, <edumazet@google.com>,
-        <linux@armlinux.org.uk>, <UNGLinuxDriver@microchip.com>,
-        <Ian.Saturley@microchip.com>
-Subject: Re: [PATCH net-next] net: phy: mxl-gpy: Add PHY Auto/MDI/MDI-X set
- driver for GPY211 chips
-Message-ID: <20221024072421.GB653394@raju-project-pc>
-References: <20221021100305.6576-1-Raju.Lakkaraju@microchip.com>
- <Y1KmL7vTunvbw1/U@lunn.ch>
+        with ESMTP id S229692AbiJXHfg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 03:35:36 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2B58356CC
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 00:35:29 -0700 (PDT)
+Received: from ginster.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::45])
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <jbe@pengutronix.de>)
+        id 1omrzb-0004dS-BE; Mon, 24 Oct 2022 09:35:27 +0200
+Message-ID: <247811d0b88b5f57de0bd1496940b89adeb140de.camel@pengutronix.de>
+Subject: Re: [PATCH] net: fec: limit register access on i.MX6UL
+From:   Juergen Borleis <jbe@pengutronix.de>
+Reply-To: jbe@pengutronix.de
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de
+Date:   Mon, 24 Oct 2022 09:35:26 +0200
+In-Reply-To: <20220920115624.zgycbbzijudr7muc@pengutronix.de>
+References: <20220920095106.66924-1-jbe@pengutronix.de>
+         <20220920115624.zgycbbzijudr7muc@pengutronix.de>
+Organization: Pengutronix e.K.
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <Y1KmL7vTunvbw1/U@lunn.ch>
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::45
+X-SA-Exim-Mail-From: jbe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+Hi Marc,
 
-Thank you for review comments.
-
-The 10/21/2022 16:01, Andrew Lunn wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> > +static void gpy_update_mdix(struct phy_device *phydev)
-> > +{
-> > +     int ret;
+Am Dienstag, dem 20.09.2022 um 13:56 +0200 wrote Marc Kleine-Budde:
+> On 20.09.2022 11:51:06, Juergen Borleis wrote:
+> > Using 'ethtool -d […]' on an i.MX6UL leads to a kernel crash:
+> > 
+> >    Unhandled fault: external abort on non-linefetch (0x1008) at […]
+> > 
+> > due to this SoC has less registers in its FEC implementation compared to
+> > other i.MX6 variants. Thus, a run-time decision is required to avoid access
+> > to non-existing registers.
+> > 
+> > Signed-off-by: Juergen Borleis <jbe@pengutronix.de>
+> > ---
+> >  drivers/net/ethernet/freescale/fec_main.c | 50 +++++++++++++++++++++--
+> >  1 file changed, 47 insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/freescale/fec_main.c
+> > b/drivers/net/ethernet/freescale/fec_main.c
+> > index 6152f6d..ab620b4 100644
+> > --- a/drivers/net/ethernet/freescale/fec_main.c
+> > +++ b/drivers/net/ethernet/freescale/fec_main.c
+> > @@ -2382,6 +2382,31 @@ static u32 fec_enet_register_offset[] = {
+> >         IEEE_R_DROP, IEEE_R_FRAME_OK, IEEE_R_CRC, IEEE_R_ALIGN,
+> > IEEE_R_MACERR,
+> >         IEEE_R_FDXFC, IEEE_R_OCTETS_OK
+> >  };
+> > +/* for i.MX6ul */
+> > +static u32 fec_enet_register_offset_6ul[] = {
+> > +       FEC_IEVENT, FEC_IMASK, FEC_R_DES_ACTIVE_0, FEC_X_DES_ACTIVE_0,
+> > +       FEC_ECNTRL, FEC_MII_DATA, FEC_MII_SPEED, FEC_MIB_CTRLSTAT,
+> > FEC_R_CNTRL,
+> > +       FEC_X_CNTRL, FEC_ADDR_LOW, FEC_ADDR_HIGH, FEC_OPD, FEC_TXIC0,
+> > FEC_RXIC0,
+> > +       FEC_HASH_TABLE_HIGH, FEC_HASH_TABLE_LOW, FEC_GRP_HASH_TABLE_HIGH,
+> > +       FEC_GRP_HASH_TABLE_LOW, FEC_X_WMRK, FEC_R_DES_START_0,
+> > +       FEC_X_DES_START_0, FEC_R_BUFF_SIZE_0, FEC_R_FIFO_RSFL,
+> > FEC_R_FIFO_RSEM,
+> > +       FEC_R_FIFO_RAEM, FEC_R_FIFO_RAFL, FEC_RACC,
+> > +       RMON_T_DROP, RMON_T_PACKETS, RMON_T_BC_PKT, RMON_T_MC_PKT,
+> > +       RMON_T_CRC_ALIGN, RMON_T_UNDERSIZE, RMON_T_OVERSIZE, RMON_T_FRAG,
+> > +       RMON_T_JAB, RMON_T_COL, RMON_T_P64, RMON_T_P65TO127,
+> > RMON_T_P128TO255,
+> > +       RMON_T_P256TO511, RMON_T_P512TO1023, RMON_T_P1024TO2047,
+> > +       RMON_T_P_GTE2048, RMON_T_OCTETS,
+> > +       IEEE_T_DROP, IEEE_T_FRAME_OK, IEEE_T_1COL, IEEE_T_MCOL, IEEE_T_DEF,
+> > +       IEEE_T_LCOL, IEEE_T_EXCOL, IEEE_T_MACERR, IEEE_T_CSERR, IEEE_T_SQE,
+> > +       IEEE_T_FDXFC, IEEE_T_OCTETS_OK,
+> > +       RMON_R_PACKETS, RMON_R_BC_PKT, RMON_R_MC_PKT, RMON_R_CRC_ALIGN,
+> > +       RMON_R_UNDERSIZE, RMON_R_OVERSIZE, RMON_R_FRAG, RMON_R_JAB,
+> > +       RMON_R_RESVD_O, RMON_R_P64, RMON_R_P65TO127, RMON_R_P128TO255,
+> > +       RMON_R_P256TO511, RMON_R_P512TO1023, RMON_R_P1024TO2047,
+> > +       RMON_R_P_GTE2048, RMON_R_OCTETS,
+> > +       IEEE_R_DROP, IEEE_R_FRAME_OK, IEEE_R_CRC, IEEE_R_ALIGN,
+> > IEEE_R_MACERR,
+> > +       IEEE_R_FDXFC, IEEE_R_OCTETS_OK
+> > +};
+> >  #else
+> >  static __u32 fec_enet_register_version = 1;
+> >  static u32 fec_enet_register_offset[] = {
+> > @@ -2406,7 +2431,26 @@ static void fec_enet_get_regs(struct net_device
+> > *ndev,
+> >         u32 *buf = (u32 *)regbuf;
+> >         u32 i, off;
+> >         int ret;
+> > -
+> > +#if defined(CONFIG_M523x) || defined(CONFIG_M527x) || defined(CONFIG_M528x)
+> > || \
+> > +       defined(CONFIG_M520x) || defined(CONFIG_M532x) ||
+> > defined(CONFIG_ARM) || \
+> > +       defined(CONFIG_ARM64) || defined(CONFIG_COMPILE_TEST)
+> > +       struct platform_device_id *dev_info =
+> > +                       (struct platform_device_id *)fep->pdev->id_entry;
+> > +       u32 *reg_list;
+> > +       u32 reg_cnt;
 > > +
-> > +     ret = phy_read(phydev, PHY_CTL1);
-> > +     if (ret < 0) {
-> > +             phydev_err(phydev, "Error: MDIO register access failed: %d\n",
-> > +                        ret);
-> > +             return;
-> > +     }
+> > +       if (strcmp(dev_info->name, "imx6ul-fec")) {
+> > +               reg_list = fec_enet_register_offset;
+> > +               reg_cnt = ARRAY_SIZE(fec_enet_register_offset);
+> > +       } else {
+> > +               reg_list = fec_enet_register_offset_6ul;
+> > +               reg_cnt = ARRAY_SIZE(fec_enet_register_offset_6ul);
+> > +       }
 > 
-> > @@ -413,6 +490,8 @@ static void gpy_update_interface(struct phy_device *phydev)
-> >
-> >       if (phydev->speed == SPEED_2500 || phydev->speed == SPEED_1000)
-> >               genphy_read_master_slave(phydev);
-> > +
-> > +     gpy_update_mdix(phydev);
-> 
-> Do you know why gpy_update_interface() is a void function? It is
-> called from gpy_read_status() which does return error codes. And it
-> seems like gpy_read_status() would benefit from returning -EINVAL, etc.
+> What about using of_machine_is_compatible()?
 
-Do you want me to change gpy_update_interface() return type ?
-Can I do those changes as part of this commit or need to fix on "net"
-branch ?
+Good point. Thought this call requires an oftree handle. Will change it in v2.
 
+> > +#else
+> > +       /* coldfire */
+> > +       static u32 *reg_list = fec_enet_register_offset;
+> > +       static const u32 reg_cnt = ARRAY_SIZE(fec_enet_register_offset);
+> > +#endif
 > 
->       Andrew
+> Why do you need the ifdef?
+
+The coldfire variant of this part is already implemented in this way.
+
+> […]
+
+jb
 
 -- 
---------
-Thanks,
-Raju
+Pengutronix e.K.                       | Juergen Borleis             |
+Steuerwalder Str. 21                   | https://www.pengutronix.de/ |
+31137 Hildesheim, Germany              | Phone: +49-5121-206917-128  |
+Amtsgericht Hildesheim, HRA 2686       | Fax:   +49-5121-206917-9    |
+
+
