@@ -2,109 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DB5760B968
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 22:10:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A95C60B9D1
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 22:21:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232994AbiJXUKp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 16:10:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46594 "EHLO
+        id S234193AbiJXUVq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 16:21:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234324AbiJXUJn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 16:09:43 -0400
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [IPv6:2001:4b98:dc4:8::240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2A1B28;
-        Mon, 24 Oct 2022 11:29:29 -0700 (PDT)
-Received: from relay10.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::230])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id CF241CF059;
-        Mon, 24 Oct 2022 11:57:32 +0000 (UTC)
-Received: (Authenticated sender: i.maximets@ovn.org)
-        by mail.gandi.net (Postfix) with ESMTPSA id 62719240007;
-        Mon, 24 Oct 2022 11:56:50 +0000 (UTC)
-Message-ID: <ded477ea-08fa-b96d-c192-9640977b42e6@ovn.org>
-Date:   Mon, 24 Oct 2022 13:56:49 +0200
+        with ESMTP id S232593AbiJXUVH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 16:21:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE7A238A2E;
+        Mon, 24 Oct 2022 11:37:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 56B48B815A2;
+        Mon, 24 Oct 2022 12:10:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 08845C433C1;
+        Mon, 24 Oct 2022 12:10:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666613416;
+        bh=9ESBzX52CjK6XxD8MdXK9r+A7vj8YD1Vc9itBxgSk54=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=d3wA6bjcf5xb7vFZ3l0+Hy9cmk+lm7cYwe0l7Q0kTgGmS88pf8w12D4Id0Q8tg8PU
+         DA+iKviAIuco1CXwxvSNiJgSVKdQTbcHF/5Cl/HbU51aIq637Hr/fmWHFirOXXSR4I
+         SEmU1ooIHuCKMmHEZmeNyhOvBHzQa3RgCBa6oRDzxO3+ZjgGwA4F6UC8zvQFR0wnLh
+         kjBx+i3QBoXcYBdfXG5o8ZBGxl5I/OEP9jstPkByr9LIjgDW+D7hMWexXUmx1QLV7s
+         98e6cOJTpLyfywpK4Az7dD2qBwJqTYLgwIfrBvUXP0yvpP7/iIwuC40L6zqViyTiG6
+         HfgaFe4M2DWYw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D7515E270DE;
+        Mon, 24 Oct 2022 12:10:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.1
-Cc:     i.maximets@ovn.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-Content-Language: en-US
-To:     nicolas.dichtel@6wind.com, Jakub Kicinski <kuba@kernel.org>
-References: <20221021114921.3705550-1-i.maximets@ovn.org>
- <20221021090756.0ffa65ee@kernel.org>
- <eb6903b7-c0d9-cc70-246e-8dbde0412433@6wind.com>
-From:   Ilya Maximets <i.maximets@ovn.org>
-Subject: Re: [RFE net-next] net: tun: 1000x speed up
-In-Reply-To: <eb6903b7-c0d9-cc70-246e-8dbde0412433@6wind.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_NEUTRAL autolearn=no autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net] net: lantiq_etop: don't free skb when returning
+ NETDEV_TX_BUSY
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166661341587.16761.10357700348677404057.git-patchwork-notify@kernel.org>
+Date:   Mon, 24 Oct 2022 12:10:15 +0000
+References: <1666315944-30898-1-git-send-email-zhangchangzhong@huawei.com>
+In-Reply-To: <1666315944-30898-1-git-send-email-zhangchangzhong@huawei.com>
+To:     Zhang Changzhong <zhangchangzhong@huawei.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, blogic@openwrt.org, ralph.hempel@lantiq.com,
+        ralf@linux-mips.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/24/22 11:44, Nicolas Dichtel wrote:
-> Le 21/10/2022 à 18:07, Jakub Kicinski a écrit :
->> On Fri, 21 Oct 2022 13:49:21 +0200 Ilya Maximets wrote:
->>> Bump the advertised speed to at least match the veth.  10Gbps also
->>> seems like a more or less fair assumption these days, even though
->>> CPUs can do more.  Alternative might be to explicitly report UNKNOWN
->>> and let the application/user decide on a right value for them.
->>
->> UNKOWN would seem more appropriate but at this point someone may depend
->> on the speed being populated so it could cause regressions, I fear :S
-> If it is put in a bonding, it may cause some trouble. Maybe worth than
-> advertising 10M.
+Hello:
 
-My thoughts were that changing the number should have a minimal impact
-while changing it to not report any number may cause some issues in
-applications that doesn't expect that for some reason (not having a
-fallback in case reported speed is unknown isn't great, and the argument
-can be made that applications should check that, but it's hard to tell
-for every application if they actually do that today).
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Bonding is also a good point indeed, since it's even in-kernel user.
-
-
-The speed bump doesn't solve the problem per se.  It kind of postpones
-the decision, since we will run into the same issue eventually again.
-That's why I wanted to discuss that first.
-
-Though I think that at least unification across virtual devices (tun and
-veth) should be a step in a right direction.
-
+On Fri, 21 Oct 2022 09:32:24 +0800 you wrote:
+> The ndo_start_xmit() method must not free skb when returning
+> NETDEV_TX_BUSY, since caller is going to requeue freed skb.
 > 
-> Note that this value could be configured with ethtool:
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=4e24f2dd516ed
+> Fixes: 504d4721ee8e ("MIPS: Lantiq: Add ethernet driver")
+> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+> ---
+>  drivers/net/ethernet/lantiq_etop.c | 1 -
+>  1 file changed, 1 deletion(-)
 
-This is interesting, but it's a bit hard to manage, because in order
-to make a decision to bump the speed, application should already know
-that this is a tun/tap device.  So, there has to be a special case
-implemented in the code that detects the driver and changes the speed
-(this is about application that is using the interface, but didn't
-create it), but if we already know the driver, then it doesn't make
-sense to actually change the speed in many cases as application can
-already act accordingly.
+Here is the summary with links:
+  - [net] net: lantiq_etop: don't free skb when returning NETDEV_TX_BUSY
+    https://git.kernel.org/netdev/net/c/9c1eaa27ec59
 
-Also, the application may not have permissions to do that (I didn't
-check the requirements, but my guess would be at least CAP_NET_ADMIN?).
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-For the human user it's still one extra configuration step that they
-need to remember to perform.
 
-Very useful for testing purposes though.  Thanks for pointing out!
-
-> 
->>
->>> Sorry for the clickbait subject line.
->>
->> Nicely done, worked on me :)
-> Works for me also :D
-
-Sorry again.  :):
-
-Best regards, Ilya Maximets.
