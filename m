@@ -2,48 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A60E260BE73
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 01:21:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28B8460BE8C
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 01:30:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231368AbiJXXVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 19:21:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56516 "EHLO
+        id S229955AbiJXXaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 19:30:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230408AbiJXXVP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 19:21:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7FB616912C
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 14:42:17 -0700 (PDT)
+        with ESMTP id S230168AbiJXX3q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 19:29:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEE8E52DF7
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 14:51:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CCDA9B810B2
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 21:42:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F35EC433D6;
-        Mon, 24 Oct 2022 21:42:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF00CB810B2
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 21:50:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C934C433D7;
+        Mon, 24 Oct 2022 21:50:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666647721;
-        bh=PFLtKDf9zkaNVs2swoEg7kaPvDfkHSit3kHVVp2t84M=;
+        s=k20201202; t=1666648250;
+        bh=/ENvohpluG/XaH83DTw5yDWU4oCfHJULqK/EPnnj+G0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=F8y4IPvtbU7m0KO0RBXQlPzDTHePVALalRhUW2g5aUeZtvFa1ZoFtgkDqVM5ShoMv
-         muG8Di0loEJfX4+U4PmuiQGI3kFaepXiiolwCEAyKrCEYexfmaVrE73/O0EDiRN/A1
-         uNnSWcaTkmkl4di3qxwSLzofbs3gEODgsHgCz5nBHmecy+bDcb0b3XpGHRi/yyJQUW
-         EhqhfhxaITfIqHRI1T0T6J0/NfaCMyUdUITYYzxvxKAfMp4qLE6WxfJiBzuEV2fdr8
-         iiQGe8/xYi2el+KyUKHd8qWYt+T7e7HWkTOQ06LkZbZ+GR82RRZ6p3CK98W2wYtypO
-         AZXE7SxiKw9MQ==
-Date:   Mon, 24 Oct 2022 14:42:00 -0700
+        b=dkE24BHp0qxk7PFe9gSvgoaJugXtWyk/4dSWv//RbF5KLnGKM6XJOZbTghbiJdRyx
+         n6HLj/7weJOTeUgYfwGMvFOiYz2xpbja7Tj449pDQmN6E+4db16WRk0Yd3Kw/TjGF8
+         43NAZjkCmKrTnOKyEULP8AAbpzBDNGZ8MntOo1oUyxEgwlTTBdxhVLeTXA+FzWVDF6
+         lkrxjZMlzdkykEKl04Ou8aEpGIalMvSrqfxllUn23qV9dIiABbCmLRfvpMbDcFnDTG
+         Grnu0Esm6AwyGW8jSbxgxMLgTVNZVjVZEUo4+UNA6WK9H8xr7MqHece9A4rK3ck2TZ
+         /40dahpjXRJCg==
+Date:   Mon, 24 Oct 2022 14:50:48 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: [pull request][V2 net 00/16] mlx5 fixes 2022-10-14
-Message-ID: <20221024144200.021d5b35@kernel.org>
-In-Reply-To: <20221024110816.anp6pxu2tjowizh7@sx1>
-References: <20221024061220.81662-1-saeed@kernel.org>
-        <20221024110816.anp6pxu2tjowizh7@sx1>
+To:     Eric Dumazet <edumazet@google.com>, Arnd Bergmann <arnd@kernel.org>
+Cc:     Liang He <windhl@126.com>, davem@davemloft.net, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] appletalk: Fix potential refcount leak
+Message-ID: <20221024145048.2b679a59@kernel.org>
+In-Reply-To: <CANn89iL==crwYiOpcgx=zVG1porMpMt23RCp=_JGpQmxOwK04w@mail.gmail.com>
+References: <20221024144753.479152-1-windhl@126.com>
+        <CANn89iL==crwYiOpcgx=zVG1porMpMt23RCp=_JGpQmxOwK04w@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -56,13 +53,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 24 Oct 2022 12:08:16 +0100 Saeed Mahameed wrote:
-> Please don't pull yet, I will submit V3 since one patch needs to be fixed.
-> Sorry about the clutter.
+On Mon, 24 Oct 2022 08:36:13 -0700 Eric Dumazet wrote:
+> IMO appletalk is probably completely broken.
+> 
+> atalk_routes_lock is not held while other threads might use rt->dev
+> and would not expect rt->dev to be changed under them
+> (atalk_route_packet() )
+> 
+> I would vote to remove it completely, unless someone is willing to
+> test any change in it.
 
-Happens, but the rules are the rules:
++1 for killing all of appletalk.
 
-https://www.kernel.org/doc/html/next/process/maintainer-netdev.html#tl-dr
-
-please don't repost stuff within 24 hours. You should also start
-obeying the series length limit.
+Arnd, I think you suggested the removal in the past as well, or were
+you just saying to remove localtalk ?
