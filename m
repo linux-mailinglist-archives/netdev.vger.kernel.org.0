@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4784B609A3F
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 08:13:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 945DA609A42
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 08:13:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230077AbiJXGNB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 02:13:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36868 "EHLO
+        id S230108AbiJXGNL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 02:13:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229914AbiJXGNA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 02:13:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41A05E314
-        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 23:12:59 -0700 (PDT)
+        with ESMTP id S230196AbiJXGNG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 02:13:06 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 874B85E64A
+        for <netdev@vger.kernel.org>; Sun, 23 Oct 2022 23:13:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F22061013
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 06:12:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A8D3C433D6;
-        Mon, 24 Oct 2022 06:12:57 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8541ACE10C7
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 06:13:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51D86C433C1;
+        Mon, 24 Oct 2022 06:13:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666591978;
-        bh=7HQ1deySWXZEEYDhV7KbOqdQs9aT16o8QBa/BV1ulZM=;
+        s=k20201202; t=1666591981;
+        bh=JJx00aAAtwUypuCtcolO+cWhVO7D9ur6mP4+srJ//2s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TQYHTWW7Gv0IzmhAEa0PzZuDTqxMKsiQgw2GNo94tBZW8SIaIpGPbabG07jlV3b78
-         j9p3ocRYHjKxdZnlATG/myW9xidSDy2CsoDoysCTjNy8JWCiIzY/4vc1n1E0k4//j6
-         1YieSMNiW0rAJZbcIJJTDAcbLdE+zkgHv9XeKiuCL1s9aVPvb6sKLxvK+8JEHwWTIr
-         Qj1lB34lNPEcJbfcZEg+oUhURudevTcuRgGyLk8WS47Dt9OEyylEGxZ/e4zIJwk8pL
-         gB1rQPN6WyiKYdJYuAHIVIP6wz9w3mooKvKGxEJLZWn58uEO0WDEn5GUMmbmbsF/HS
-         aak/Zwv+OGllQ==
+        b=jlQijYLbTAFiuxoA7L6B6raouON3nlanII+38f/U9G6OEG/LlHQVCdznyb32THLVF
+         3o7I7BTKYA4BYT9lFd+w+26BJt8yip+BqJIzXl/iPI69i+9FcWn4+l5TyY70Gezje9
+         8y5e9grnpIBm2T0s/lIFy1gzeUcwaPEj4ky4cogoBCP1RXj45vUsWviH5tjnsaEyCb
+         8oBD0FSIdLhtnjMzJD+fbvVUVVSkPBDM+6P/UteKQ+k3BuMoQIMPOn6Kp/DRMkc3k2
+         TiffdxBMhBxbHziu2DZpoOMSrHqWuwdcwjvmTB7gTmdQCJ2VwyQ5uphKhbWOaKhFI/
+         RcESFtd64c1wQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,11 +38,10 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
-        Hyong Youb Kim <hyonkim@cisco.com>,
-        Leon Romanovsky <leonro@nvidia.com>
-Subject: [V2 net 01/16] net/mlx5e: Do not increment ESN when updating IPsec ESN state
-Date:   Mon, 24 Oct 2022 07:12:05 +0100
-Message-Id: <20221024061220.81662-2-saeed@kernel.org>
+        Moshe Shemesh <moshe@nvidia.com>
+Subject: [V2 net 02/16] net/mlx5: Wait for firmware to enable CRS before pci_restore_state
+Date:   Mon, 24 Oct 2022 07:12:06 +0100
+Message-Id: <20221024061220.81662-3-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221024061220.81662-1-saeed@kernel.org>
 References: <20221024061220.81662-1-saeed@kernel.org>
@@ -57,68 +56,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hyong Youb Kim <hyonkim@cisco.com>
+From: Moshe Shemesh <moshe@nvidia.com>
 
-An offloaded SA stops receiving after about 2^32 + replay_window
-packets. For example, when SA reaches <seq-hi 0x1, seq 0x2c>, all
-subsequent packets get dropped with SA-icv-failure (integrity_failed).
+After firmware reset driver should verify firmware already enabled CRS
+and became responsive to pci config cycles before restoring pci state.
+Fix that by waiting till device_id is readable through PCI again.
 
-To reproduce the bug:
-- ConnectX-6 Dx with crypto enabled (FW 22.30.1004)
-- ipsec.conf:
-  nic-offload = yes
-  replay-window = 32
-  esn = yes
-  salifetime=24h
-- Run netperf for a long time to send more than 2^32 packets
-  netperf -H <device-under-test> -t TCP_STREAM -l 20000
-
-When 2^32 + replay_window packets are received, the replay window
-moves from the 2nd half of subspace (overlap=1) to the 1st half
-(overlap=0). The driver then updates the 'esn' value in NIC
-(i.e. seq_hi) as follows.
-
- seq_hi = xfrm_replay_seqhi(seq_bottom)
- new esn in NIC = seq_hi + 1
-
-The +1 increment is wrong, as seq_hi already contains the correct
-seq_hi. For example, when seq_hi=1, the driver actually tells NIC to
-use seq_hi=2 (esn). This incorrect esn value causes all subsequent
-packets to fail integrity checks (SA-icv-failure). So, do not
-increment.
-
-Fixes: cb01008390bb ("net/mlx5: IPSec, Add support for ESN")
-Signed-off-by: Hyong Youb Kim <hyonkim@cisco.com>
-Acked-by: Leon Romanovsky <leonro@nvidia.com>
+Fixes: eabe8e5e88f5 ("net/mlx5: Handle sync reset now event")
+Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c | 3 ---
- 1 file changed, 3 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/fw_reset.c  | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-index 2a8fd7020622..a715601865d3 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-@@ -101,7 +101,6 @@ static bool mlx5e_ipsec_update_esn_state(struct mlx5e_ipsec_sa_entry *sa_entry)
- 	struct xfrm_replay_state_esn *replay_esn;
- 	u32 seq_bottom = 0;
- 	u8 overlap;
--	u32 *esn;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+index e8896f368362..07c583996c29 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+@@ -358,6 +358,23 @@ static int mlx5_pci_link_toggle(struct mlx5_core_dev *dev)
+ 		err = -ETIMEDOUT;
+ 	}
  
- 	if (!(sa_entry->x->props.flags & XFRM_STATE_ESN)) {
- 		sa_entry->esn_state.trigger = 0;
-@@ -116,11 +115,9 @@ static bool mlx5e_ipsec_update_esn_state(struct mlx5e_ipsec_sa_entry *sa_entry)
- 
- 	sa_entry->esn_state.esn = xfrm_replay_seqhi(sa_entry->x,
- 						    htonl(seq_bottom));
--	esn = &sa_entry->esn_state.esn;
- 
- 	sa_entry->esn_state.trigger = 1;
- 	if (unlikely(overlap && seq_bottom < MLX5E_IPSEC_ESN_SCOPE_MID)) {
--		++(*esn);
- 		sa_entry->esn_state.overlap = 0;
- 		return true;
- 	} else if (unlikely(!overlap &&
++	do {
++		err = pci_read_config_word(dev->pdev, PCI_DEVICE_ID, &reg16);
++		if (err)
++			return err;
++		if (reg16 == dev_id)
++			break;
++		msleep(20);
++	} while (!time_after(jiffies, timeout));
++
++	if (reg16 == dev_id) {
++		mlx5_core_info(dev, "Firmware responds to PCI config cycles again\n");
++	} else {
++		mlx5_core_err(dev, "Firmware is not responsive (0x%04x) after %llu ms\n",
++			      reg16, mlx5_tout_ms(dev, PCI_TOGGLE));
++		err = -ETIMEDOUT;
++	}
++
+ restore:
+ 	list_for_each_entry(sdev, &bridge_bus->devices, bus_list) {
+ 		pci_cfg_access_unlock(sdev);
 -- 
 2.37.3
 
