@@ -2,64 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32361609CE2
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 10:36:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 586B4609D01
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 10:43:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229937AbiJXIgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 04:36:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33990 "EHLO
+        id S230096AbiJXInd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 04:43:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230064AbiJXIgw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 04:36:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 258806049F
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 01:36:50 -0700 (PDT)
+        with ESMTP id S229939AbiJXInc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 04:43:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF81D6053A
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 01:43:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 17534B80F93
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 08:36:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8AB6C433D6;
-        Mon, 24 Oct 2022 08:36:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 580A560E15
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 08:43:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29021C433D6;
+        Mon, 24 Oct 2022 08:43:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666600607;
-        bh=4j6eoOd9dczQxFK8Ab8Eaf0T1aN4zudn+Om6XVuDdIk=;
+        s=k20201202; t=1666601010;
+        bh=0fayqMG9gyJKkAMexAXOx1iejA/bEvgJU/+2yGgs2xs=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=U3uhXzu4dfnWMVKy6M2EX/iciHwrqFliySQMTiLCkToPIWYlh8jjExPvKSvqUUF1K
-         LRZeU+G1593sIqKvfmjipIP/L3/ZnyRH1K/Q2nRXZPVi4OZ2F8JrQwn+XYBk1yJejX
-         CkE8+73Oy2Ko5Pfe/51pgYkFdwUf+RNrVIdtUf6GNcUcqAmWNxezMhMauizWhoj6De
-         4/vGCz7oP3sRqJ2v3OFdXPv5N2T41LshZR/m1SuULf8WSVasDsEY2Ic8ufCihebp/N
-         DNsoIY0Hhb0SUW0UBD/9WPm5MKuPlIeUzyAHljOi4ZTuqImunMzTprIpIWHArklbO5
-         CJUhRmBOTCcyw==
-Date:   Mon, 24 Oct 2022 11:36:43 +0300
+        b=A/VIz2rJbgIfjZ5uio1wNJ0T2QUx+V/leqnUfVY9QmfCPIiCI1smP08y281gnX1lc
+         kCNRpuCP20udnWYqF4RCsjzGQuGqImnujoLyMJeQ0bV90xNyUiavQSRrVHsAfZ67++
+         Lo7OF/e+jaNzLMrWUyn8kF4C5u34aq+IzqlZ4BBYe+Gm3hdIq19CW8iV2m/2GcgZux
+         to0zBJGSHPxLoukm9LAj7sWi2GJ+g6lUaqs0lJL8W0OaMHO529Q59FEzCWgtn+Srbs
+         stRJhHEjFIKqZdWDGfTPGxOcOe+sqg3CzanOFyBfZyY0D0k7yzRI2xiTdzTxGXxwJ8
+         55BbFg5/UqzkQ==
+Date:   Mon, 24 Oct 2022 11:43:26 +0300
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Yinjun Zhang <yinjun.zhang@corigine.com>
-Cc:     Gal Pressman <gal@nvidia.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Peng Zhang <peng.zhang@corigine.com>, netdev@vger.kernel.org,
-        oss-drivers@corigine.com
-Subject: Re: [PATCH net-next 2/3] devlink: Add new "max_vf_queue" generic
- device param
-Message-ID: <Y1ZOm7QrbB0bf/H8@unreal>
-References: <20221019140943.18851-1-simon.horman@corigine.com>
- <20221019140943.18851-3-simon.horman@corigine.com>
- <3c830f86-a814-d564-df7d-670d294b8890@nvidia.com>
- <20221024014713.GA20243@nj-rack01-04.nji.corigine.com>
+To:     Sabrina Dubroca <sd@queasysnail.net>
+Cc:     Antoine Tenart <atenart@kernel.org>, netdev@vger.kernel.org,
+        Mark Starovoytov <mstarovoitov@marvell.com>,
+        Igor Russkikh <irusskikh@marvell.com>
+Subject: Re: [PATCH net 0/5] macsec: offload-related fixes
+Message-ID: <Y1ZQLtjs18YOvRXF@unreal>
+References: <cover.1665416630.git.sd@queasysnail.net>
+ <Y0j+E+n/RggT05km@unreal>
+ <Y0kTMXzY3l4ncegR@hog>
+ <Y0lCHaGTQjsNvzVN@unreal>
+ <166575623691.3451.2587099917911763555@kwain>
+ <Y05HeGnTKBY0RVI4@unreal>
+ <Y1FTFOsZxELhvWT4@hog>
+ <Y1Ty2LlrdrhVvLYA@unreal>
+ <Y1ZLvNE3W9Ph+qqJ@hog>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221024014713.GA20243@nj-rack01-04.nji.corigine.com>
+In-Reply-To: <Y1ZLvNE3W9Ph+qqJ@hog>
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -69,35 +61,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 24, 2022 at 09:47:13AM +0800, Yinjun Zhang wrote:
-> On Sun, Oct 23, 2022 at 02:28:24PM +0300, Gal Pressman wrote:
-> > [Some people who received this message don't often get email from gal@nvidia.com. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
+On Mon, Oct 24, 2022 at 10:24:28AM +0200, Sabrina Dubroca wrote:
+> 2022-10-23, 10:52:56 +0300, Leon Romanovsky wrote:
+> > On Thu, Oct 20, 2022 at 03:54:28PM +0200, Sabrina Dubroca wrote:
+> > > 2022-10-18, 09:28:08 +0300, Leon Romanovsky wrote:
+> > > > On Fri, Oct 14, 2022 at 04:03:56PM +0200, Antoine Tenart wrote:
+> > > > > Quoting Leon Romanovsky (2022-10-14 13:03:57)
+> > > > > > On Fri, Oct 14, 2022 at 09:43:45AM +0200, Sabrina Dubroca wrote:
+> > > > > > > 2022-10-14, 09:13:39 +0300, Leon Romanovsky wrote:
+> > > > > > > > On Thu, Oct 13, 2022 at 04:15:38PM +0200, Sabrina Dubroca wrote:
 > > 
-> > On 19/10/2022 17:09, Simon Horman wrote:
-> > > From: Peng Zhang <peng.zhang@corigine.com>
-> > >
-> > > VF max-queue-number is the MAX num of queues which the VF has.
-> > >
-> > > Add new device generic parameter to configure the max-queue-number
-> > > of the each VF to be generated dynamically.
-> > >
-> > > The string format is decided ad vendor specific. The suggested
-> > > format is ...-V-W-X-Y-Z, the V represents generating V VFs that
-> > > have 16 queues, the W represents generating W VFs that have 8
-> > > queues, and so on, the Z represents generating Z VFs that have
-> > > 1 queue.
-
-<...>
-
+> > <...>
 > > 
-> > Does this command have to be run before the VFs are created? What
-> > happens to existing VFs?
+> > > > > - With the revert: IPsec and MACsec can be offloaded to the lower dev.
+> > > > >   Some features might not propagate to the MACsec dev, which won't allow
+> > > > >   some performance optimizations in the MACsec data path.
+> > > > 
+> > > > My concern is related to this sentence: "it's not possible to offload macsec
+> > > > to lower devices that also support ipsec offload", because our devices support
+> > > > both macsec and IPsec offloads at the same time.
+> > > > 
+> > > > I don't want to see anything (even in commit messages) that assumes that IPsec
+> > > > offload doesn't exist.
+> > > 
+> > > I don't understand what you're saying here. Patch #1 from this series
+> > > is exactly about the macsec device acknowledging that ipsec offload
+> > > exists. The rest of the patches is strictly macsec stuff and says
+> > > nothing about ipsec. Can you point out where, in this series, I'm
+> > > claiming that ipsec offload doesn't exist?
+> > 
+> > All this conversation is about one sentence, which I cited above - "it's not possible
+> > to offload macsec to lower devices that also support ipsec offload". From the comments,
+> > I think that you wanted to say "macsec offload is not working due to performance
+> > optimization, where IPsec offload feature flag was exposed from lower device." Did I get
+> > it correctly, now?
 > 
-> Yes in our current implementation, but it's up to the vendor's
-> implementation I think.
+> Yes. "In the current state" (that I wrote in front of the sentence you
+> quoted) refers to the changes introduced by commit c850240b6c41. The
+> details are present in the commit message for patch 1.
+> 
+> Do you object to the revert, if I rephrase the justification, and then
+> re-add the features that make sense in net-next?
 
-All vendors should give same look and feel for the users. It is very
-frustrating to find that same command should be run in different point
-of time just to perform same thing.
+I don't have any objections.
 
 Thanks
+
+> 
+> -- 
+> Sabrina
+> 
