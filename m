@@ -2,55 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC9C960B3B4
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 19:14:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8722660B361
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 19:05:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232417AbiJXROa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 13:14:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50598 "EHLO
+        id S233406AbiJXRF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 13:05:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235400AbiJXRN7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 13:13:59 -0400
-Received: from out199-3.us.a.mail.aliyun.com (out199-3.us.a.mail.aliyun.com [47.90.199.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9CDE30557
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 08:49:50 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VT-xL5q_1666618751;
-Received: from 30.13.191.196(mailfrom:hengqi@linux.alibaba.com fp:SMTPD_---0VT-xL5q_1666618751)
-          by smtp.aliyun-inc.com;
-          Mon, 24 Oct 2022 21:39:12 +0800
-Message-ID: <2b09c4ab-da18-3b85-d16b-46f9b0e8c278@linux.alibaba.com>
-Date:   Mon, 24 Oct 2022 21:39:08 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:106.0)
- Gecko/20100101 Thunderbird/106.0
-Subject: Re: [PATCH net] veth: Avoid drop packets when xdp_redirect performs
-To:     =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S235361AbiJXRE1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 13:04:27 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D09EBBA267
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 08:40:27 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1omxuW-0000Tz-Bu; Mon, 24 Oct 2022 15:54:36 +0200
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:1bbf:91f6:fcf3:6f78])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id D94CB108980;
+        Mon, 24 Oct 2022 13:54:30 +0000 (UTC)
+Date:   Mon, 24 Oct 2022 15:54:22 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Dongliang Mu <dzm91@hust.edu.cn>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>
-References: <1664267413-75518-1-git-send-email-hengqi@linux.alibaba.com>
- <87wn9proty.fsf@toke.dk>
- <f760701a-fb9d-11e5-f555-ebcf773922c3@linux.alibaba.com>
- <87v8p7r1f2.fsf@toke.dk>
- <189b8159-c05f-1730-93f3-365999755f72@linux.alibaba.com>
- <567d3635f6e7969c4e1a0e4bc759556c472d1dff.camel@redhat.com>
- <c1831b89-c896-80c3-7258-01bcf2defcbc@linux.alibaba.com>
- <87o7uymlh5.fsf@toke.dk>
- <c128d468-0c87-8759-e7de-b482abf8aab6@linux.alibaba.com>
- <87bkq6v4hn.fsf@toke.dk>
- <3a9b641a-f84d-92e0-a416-43bbde26f866@linux.alibaba.com>
- <089cff2e-b113-0603-d751-9ca0ad998553@linux.alibaba.com>
- <87r0yxgxba.fsf@toke.dk>
-From:   Heng Qi <hengqi@linux.alibaba.com>
-In-Reply-To: <87r0yxgxba.fsf@toke.dk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] can: usb: ucan: modify unregister_netdev to
+ unregister_candev
+Message-ID: <20221024135422.egkcbxvudtj7z3ie@pengutronix.de>
+References: <20221024110033.727542-1-dzm91@hust.edu.cn>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="xnap6ow5gg7x5npq"
+Content-Disposition: inline
+In-Reply-To: <20221024110033.727542-1-dzm91@hust.edu.cn>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -58,64 +61,43 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--xnap6ow5gg7x5npq
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-在 2022/10/24 下午9:34, Toke Høiland-Jørgensen 写道:
-> Heng Qi <hengqi@linux.alibaba.com> writes:
->
->> 在 2022/10/21 下午2:31, Heng Qi 写道:
->>>
->>> 在 2022/10/21 上午12:34, Toke Høiland-Jørgensen 写道:
->>>> Heng Qi <hengqi@linux.alibaba.com> writes:
->>>>
->>>>> maybe we should consider a simpler method: when loading xdp in veth,
->>>>> we can automatically enable the napi ring of peer veth, which seems to
->>>>> have no performance impact and functional impact on the veth pair, and
->>>>> no longer requires users to do more things for peer veth (after all,
->>>>> they may be unaware of more requirements for peer veth). Do you think
->>>>> this is feasible?
->>>> It could be, perhaps? One issue is what to do once the XDP program is
->>>> then unloaded? We should probably disable NAPI on the peer in this case,
->>>> but then we'd need to track whether it was enabled by loading an XDP
->>>> program; we don't want to disable GRO/NAPI if the user requested it
->>>> explicitly. This kind of state tracking gets icky fast, so I guess it'll
->>>> depend on the patch...
->>> Regarding tracking whether we disable the napi of peer veth when
->>> unloading
->>> the veth's xdp program, this can actually be handled cleanly.
->>>
->>> We need to note that when peer veth enable GRO, the peer veth device will
->>> update the `dev->wanted_features` with NETIF_F_GRO of peer veth (refer to
->>> __netdev_update_features() and veth_set_features() ).
->>>
->>> When veth loads the xdp program and the napi of peer veth is not ready
->>> (that is, peer veth does not load the xdp program or has no enable gro),
->>> at this time, we can choose `ethtool -K veth0 gro on` to enable the
->>> napi of
->>> peer veth, this command also makes the peer veth device update their
->>> wanted_features, or choose we automatically enable napi for peer veth.
->>>
->>> If we want to unload the xdp program for veth, peer veth cannot directly
->>> disable its napi, because we need to judge whether peer veth is
->>> gro_requested
->>> ( ref to veth_gro_requested() ) or has its priv->_xdp_prog, if so, just
->>> clean veth's xdp environment and disable the napi of veth instead of
->>> directly disable the napi of peer veth, because of the existence of the
->>> gro_requested and the xdp program loading on peer veth.
->>>
->>> But, if peer veth does not have gro_requested or xdp_program loading
->>> on itself,
->>> then we can directly disable the napi of peer veth.
->> Hi, Toke. Do you think the above solution is effective for the problem
->> of veth
->> xdp_rediect dropping packets? Or is there more to add? If the above solution
->> seems to be no problem for the time being, I'm ready to start with this idea
->> and try to make the corresponding patch.
-> I think it might? Please write a patch and we can have a look :)
+On 24.10.2022 19:00:30, Dongliang Mu wrote:
+> From API pairing, modify unregister_netdev to unregister_candev since
+> the registeration function is register_candev. Actually, they are the
+            ^ typo
+> same.
+>=20
+> Signed-off-by: Dongliang Mu <dzm91@hust.edu.cn>
 
-Okay, I will do it right away.
+Fixed while applying.
 
-Thanks.
+Thanks,
+Marc
 
->
-> -Toke
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
+--xnap6ow5gg7x5npq
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmNWmQsACgkQrX5LkNig
+0121mAf7BiRgfNOG9M3efutpUwqUshfIiVD/k+sS1Ppxu6bs8vQVw3hOny4M6sf0
+8oWz6I45twfV9eBZMuueFzt51OQnczM2Ygmauk2F6je16tFWBLa4xbRlYam+uwSO
+8w70ZMpOFVpGz2EjN06JMvsS2CxNv+KQnOP5AaoFFaAvX+e6aKFIUUT0dA4fC82j
+98ygrX05X/FXIrhPgY/vKIhLCpi0z1qYcqzFzG61ViIMjROFvFDy8D0JHQF4MLLq
+4I0HxwjDTpFfzIaQQsbt8sy8lu4aD6ehw6eOnyiwNdb46I9NrsgZ8/cBHvGjOb8m
+vOd94T9UO9jvlVbRyDW6N4+2opsTCA==
+=MNLr
+-----END PGP SIGNATURE-----
+
+--xnap6ow5gg7x5npq--
