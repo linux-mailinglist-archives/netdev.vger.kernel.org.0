@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C742760B0AD
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 18:08:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A17F160B191
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 18:27:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233354AbiJXQHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 12:07:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40790 "EHLO
+        id S231146AbiJXQ1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 12:27:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233017AbiJXQF7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 12:05:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FBC611DAA0
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 07:58:44 -0700 (PDT)
+        with ESMTP id S231240AbiJXQ1V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 12:27:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 207BF4C01C
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 08:14:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6D9EEB81A94
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 14:00:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70215C433D6;
-        Mon, 24 Oct 2022 14:00:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 37A2661350
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 14:00:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFCBFC43142;
+        Mon, 24 Oct 2022 14:00:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666620020;
-        bh=6CaUmj3FhSpm8fEwvMsuN+OoSdxQ5Y9l4u26V4MyB2Q=;
+        s=k20201202; t=1666620024;
+        bh=bQN/DYEvltT2yb8lvc8B6iR5BURcov6/IT/dptOT+vw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cDQSH/1f0SGKTufmS75mHx6a9RG5eQbAYSKbw7HMmGCV41+TbLq/0l4Ut8WM+uLCZ
-         NmhMiwejdX+QBHk25QGoZLeN9NyuIgyuS8h5VmSPr+nZUegZWqKJuZu9Av/Yj5l3eB
-         NVRJZD5nLbpQaLhQZ0+AQ6zx44m5pd0p7wPVGwzNaO1IOCBVFzwQSCGy0tM8VAtcL9
-         23lYp3OHll53eSQEF06qE07DsMidSb18ITjhMLC5gdmdmQ1xr+EwABL7qwvWJAhP9f
-         hZhmnebx1hdoJ50qTJhes3hgV4yBybA4jxhDe/+QTeKznOYPrL5vxvLXtuqbvCtjBp
-         3D+2doas8WXGQ==
+        b=XvbH+O+dJSkub2scKDBo8udhZzEXvGFEpieaRz9juqjAU80yv5dqxYDBY89g78VC4
+         FAAcWQ8loZQf9lXKr2AA8Hf3wEhypdJmuE4qvEdz+VE1p9G4O3HyQIiebRfoUOJ/8b
+         qG44LDPGE8ev9Quu2k1Ne8eDgKODWW3GVL8/Nn6RzFuSqg851V0KcnPTC+BgRsvAxK
+         /Ye2UqJcaqEK3c/vvtllnLrQr+Nqku2APvS6sr9bzceMSmqYZ6VeB8C/u8JS57CgkR
+         QIY+pcUBxpRo87/1jPYAKOUHjT+4Vga2iGY0J6RF8FtRDf4n94yjkiOtoYMf6Y/Lm6
+         MT9Se9FVY/LeQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -40,9 +40,9 @@ Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Yevgeny Kliteynik <kliteyn@nvidia.com>,
         Alex Vesker <valex@nvidia.com>
-Subject: [net-next 03/14] net/mlx5: DR, Check device state when polling CQ
-Date:   Mon, 24 Oct 2022 14:57:23 +0100
-Message-Id: <20221024135734.69673-4-saeed@kernel.org>
+Subject: [net-next 04/14] net/mlx5: DR, Remove unneeded argument from dr_icm_chunk_destroy
+Date:   Mon, 24 Oct 2022 14:57:24 +0100
+Message-Id: <20221024135734.69673-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221024135734.69673-1-saeed@kernel.org>
 References: <20221024135734.69673-1-saeed@kernel.org>
@@ -59,51 +59,56 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-Calling fast teardown as part of the normal unloading caused
-a problem with SW steering - SW steering still needs to clear
-its tables, write to ICM and poll for completions.
-When teardown has been done, SW steering keeps polling the CQ
-forever, because nobody flushes it.
-
-This patch fixes the issue by checking the device state in
-cases where no CQE was returned.
+Remove an argument that can be extracted in the function.
 
 Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Reviewed-by: Alex Vesker <valex@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/steering/dr_send.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ .../mellanox/mlx5/core/steering/dr_icm_pool.c         | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-index ef19a66f5233..6ad026123b16 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-@@ -78,8 +78,15 @@ static int dr_cq_poll_one(struct mlx5dr_cq *dr_cq)
- 	int err;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
+index 4ca67fa24cc6..4cdc9e9a54e1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
+@@ -203,12 +203,11 @@ get_chunk_icm_type(struct mlx5dr_icm_chunk *chunk)
+ 	return chunk->buddy_mem->pool->icm_type;
+ }
  
- 	cqe64 = mlx5_cqwq_get_cqe(&dr_cq->wq);
--	if (!cqe64)
-+	if (!cqe64) {
-+		if (unlikely(dr_cq->mdev->state ==
-+			     MLX5_DEVICE_STATE_INTERNAL_ERROR)) {
-+			mlx5_core_dbg_once(dr_cq->mdev,
-+					   "Polling CQ while device is shutting down\n");
-+			return CQ_POLL_ERR;
-+		}
- 		return CQ_EMPTY;
-+	}
+-static void dr_icm_chunk_destroy(struct mlx5dr_icm_chunk *chunk,
+-				 struct mlx5dr_icm_buddy_mem *buddy)
++static void dr_icm_chunk_destroy(struct mlx5dr_icm_chunk *chunk)
+ {
+ 	enum mlx5dr_icm_type icm_type = get_chunk_icm_type(chunk);
  
- 	mlx5_cqwq_pop(&dr_cq->wq);
- 	err = dr_parse_cqe(dr_cq, cqe64);
-@@ -833,6 +840,7 @@ static struct mlx5dr_cq *dr_create_cq(struct mlx5_core_dev *mdev,
+-	buddy->used_memory -= mlx5dr_icm_pool_get_chunk_byte_size(chunk);
++	chunk->buddy_mem->used_memory -= mlx5dr_icm_pool_get_chunk_byte_size(chunk);
+ 	list_del(&chunk->chunk_list);
  
- 	cq->mcq.vector = 0;
- 	cq->mcq.uar = uar;
-+	cq->mdev = mdev;
+ 	if (icm_type == DR_ICM_TYPE_STE)
+@@ -299,10 +298,10 @@ static void dr_icm_buddy_destroy(struct mlx5dr_icm_buddy_mem *buddy)
+ 	struct mlx5dr_icm_chunk *chunk, *next;
  
- 	return cq;
+ 	list_for_each_entry_safe(chunk, next, &buddy->hot_list, chunk_list)
+-		dr_icm_chunk_destroy(chunk, buddy);
++		dr_icm_chunk_destroy(chunk);
  
+ 	list_for_each_entry_safe(chunk, next, &buddy->used_list, chunk_list)
+-		dr_icm_chunk_destroy(chunk, buddy);
++		dr_icm_chunk_destroy(chunk);
+ 
+ 	dr_icm_pool_mr_destroy(buddy->icm_mr);
+ 
+@@ -376,7 +375,7 @@ static int dr_icm_pool_sync_all_buddy_pools(struct mlx5dr_icm_pool *pool)
+ 			num_entries = mlx5dr_icm_pool_get_chunk_num_of_entries(chunk);
+ 			mlx5dr_buddy_free_mem(buddy, chunk->seg, ilog2(num_entries));
+ 			pool->hot_memory_size -= mlx5dr_icm_pool_get_chunk_byte_size(chunk);
+-			dr_icm_chunk_destroy(chunk, buddy);
++			dr_icm_chunk_destroy(chunk);
+ 		}
+ 
+ 		if (!buddy->used_memory && pool->icm_type == DR_ICM_TYPE_STE)
 -- 
 2.37.3
 
