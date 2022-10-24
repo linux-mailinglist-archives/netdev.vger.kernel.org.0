@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3BAD60A4FD
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 14:20:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39F5F60A4AF
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 14:15:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232995AbiJXMUB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 08:20:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40700 "EHLO
+        id S232840AbiJXMPY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 08:15:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233492AbiJXMTk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 08:19:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E07708304D
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 04:58:17 -0700 (PDT)
+        with ESMTP id S232943AbiJXMNz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 08:13:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD5A732BA2
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 04:55:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0ABB1B811C9
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 11:54:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8656C433C1;
-        Mon, 24 Oct 2022 11:54:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 558EB612D6
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 11:54:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1042FC433C1;
+        Mon, 24 Oct 2022 11:54:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666612463;
-        bh=aFDC2HMC7UG4EKnf24gSUjOEuAo2DxfdolmB9hCG9U8=;
+        s=k20201202; t=1666612473;
+        bh=/okgLXYlIlsRXiRNU8LzAY/VaOJV5jmYf7YwTjuA4X8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P5KsAEk6FAxTpOqYrmEDbRGfY4TV7HZGEtpxdt07VUk0s0PrJ6lhjhMEg5DqaUKfc
-         KQLYG6Nwe+KeD/WEcMqSIglyGEuEvnF/MFS60tPOIHPBb/VRxO2L/e7GuX0LTPUshT
-         nh1lbypTeP6Z43DFa0bETBS6IhrDfFKEyLEH8Nw4vi/mSgpPCTGhOlXL8lEBhEn6De
-         x5wHxO/eBzhV6l+8eCGtzE6d1oPTgZn134Bs88YNDJdfz9p8XPsE8j6b+GJH0aaiQy
-         p7KjchFZnUfcbuihBwGsSM34bLOrOdA7b71tpA4S1gf/Z7IZJ9m0Wu3edBhqu1ZhSx
-         I5vExNDsp2xvA==
+        b=gsLmM3eHsfN3VDTXOIUkV4Quj30dygevhG7BPF2iLILUZPnWyu42Z2udXvcadN20/
+         h78juI+iyJ70qePMDFuTjNBOqCjl+bN84jKfoWNQVDa4bLaD6R2QmXN+rDkVHj49S3
+         6Yby+TXdLQ5TQkl8osN8jKSKF70X0o/4G/SgN09focTtpp9lhb+bzhuZvm3xuQiZzj
+         t9N6vP2yBR8Yjd8KC2wPLqBjolK5x+8xGauyng2ft5slBxGDhxTKy7uZfPn+kE490h
+         Up2OwdTLdgXaK2DYmZ91qhQDRSRgPDBgRC4CdUPrUPGG5HKLQMa5pvJYr6IitIrhvt
+         7wIr17XhSmdmA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>, Aya Levin <ayal@nvidia.com>
-Subject: [V3 net 04/16] net/mlx5e: Extend SKB room check to include PTP-SQ
-Date:   Mon, 24 Oct 2022 12:53:45 +0100
-Message-Id: <20221024115357.37278-5-saeed@kernel.org>
+        Tariq Toukan <tariqt@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>
+Subject: [V3 net 06/16] net/mlx5: ASO, Create the ASO SQ with the correct timestamp format
+Date:   Mon, 24 Oct 2022 12:53:47 +0100
+Message-Id: <20221024115357.37278-7-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221024115357.37278-1-saeed@kernel.org>
 References: <20221024115357.37278-1-saeed@kernel.org>
@@ -55,95 +56,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aya Levin <ayal@nvidia.com>
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-When tx_port_ts is set, the driver diverts all UPD traffic over PTP port
-to a dedicated PTP-SQ. The SKBs are cached until the wire-CQE arrives.
-When the packet size is greater then MTU, the firmware might drop it and
-the packet won't be transmitted to the wire, hence the wire-CQE won't
-reach the driver. In this case the SKBs are accumulated in the SKB fifo.
-Add room check to consider the PTP-SQ SKB fifo, when the SKB fifo is
-full, driver stops the queue resulting in a TX timeout. Devlink
-TX-reporter can recover from it.
+mlx5 SQs must select the timestamp format explicitly according to the
+active clock mode, select the current active timestamp mode so ASO SQ create
+will succeed.
 
-Fixes: 1880bc4e4a96 ("net/mlx5e: Add TX port timestamp support")
-Signed-off-by: Aya Levin <ayal@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+This fixes the following error prints when trying to create ipsec ASO SQ
+while the timestamp format is real time mode.
+
+mlx5_cmd_out_err:778:(pid 34874): CREATE_SQ(0x904) op_mod(0x0) failed, status bad parameter(0x3), syndrome (0xd61c0b), err(-22)
+mlx5_aso_create_sq:285:(pid 34874): Failed to open aso wq sq, err=-22
+mlx5e_ipsec_init:436:(pid 34874): IPSec initialization failed, -22
+
+Fixes: cdd04f4d4d71 ("net/mlx5: Add support to create SQ and CQ for ASO")
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Reported-by: Leon Romanovsky <leonro@nvidia.com>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h  | 9 +++++++++
- drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h | 6 ++++++
- drivers/net/ethernet/mellanox/mlx5/core/en_tx.c   | 6 ++++++
- 3 files changed, 21 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h
-index 5bce554e131a..cc7efde88ac3 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h
-@@ -6,6 +6,7 @@
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c
+index baa8092f335e..c971ff04dd04 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c
+@@ -3,6 +3,7 @@
  
- #include "en.h"
- #include "en_stats.h"
-+#include "en/txrx.h"
- #include <linux/ptp_classify.h>
+ #include <linux/mlx5/device.h>
+ #include <linux/mlx5/transobj.h>
++#include "clock.h"
+ #include "aso.h"
+ #include "wq.h"
  
- #define MLX5E_PTP_CHANNEL_IX 0
-@@ -68,6 +69,14 @@ static inline bool mlx5e_use_ptpsq(struct sk_buff *skb)
- 		fk.ports.dst == htons(PTP_EV_PORT));
- }
- 
-+static inline bool mlx5e_ptpsq_fifo_has_room(struct mlx5e_txqsq *sq)
-+{
-+	if (!sq->ptpsq)
-+		return true;
-+
-+	return mlx5e_skb_fifo_has_room(&sq->ptpsq->skb_fifo);
-+}
-+
- int mlx5e_ptp_open(struct mlx5e_priv *priv, struct mlx5e_params *params,
- 		   u8 lag_port, struct mlx5e_ptp **cp);
- void mlx5e_ptp_close(struct mlx5e_ptp *c);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-index 4456ad5cedf1..cb164b62f543 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-@@ -57,6 +57,12 @@ netdev_tx_t mlx5e_xmit(struct sk_buff *skb, struct net_device *dev);
- bool mlx5e_poll_tx_cq(struct mlx5e_cq *cq, int napi_budget);
- void mlx5e_free_txqsq_descs(struct mlx5e_txqsq *sq);
- 
-+static inline bool
-+mlx5e_skb_fifo_has_room(struct mlx5e_skb_fifo *fifo)
-+{
-+	return (*fifo->pc - *fifo->cc) < fifo->mask;
-+}
-+
- static inline bool
- mlx5e_wqc_has_room_for(struct mlx5_wq_cyc *wq, u16 cc, u16 pc, u16 n)
+@@ -179,6 +180,7 @@ static int create_aso_sq(struct mlx5_core_dev *mdev, int pdn,
  {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-index bf2232a2a836..6adca01fbdc9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-@@ -392,6 +392,11 @@ mlx5e_txwqe_complete(struct mlx5e_txqsq *sq, struct sk_buff *skb,
- 	if (unlikely(sq->ptpsq)) {
- 		mlx5e_skb_cb_hwtstamp_init(skb);
- 		mlx5e_skb_fifo_push(&sq->ptpsq->skb_fifo, skb);
-+		if (!netif_tx_queue_stopped(sq->txq) &&
-+		    !mlx5e_skb_fifo_has_room(&sq->ptpsq->skb_fifo)) {
-+			netif_tx_stop_queue(sq->txq);
-+			sq->stats->stopped++;
-+		}
- 		skb_get(skb);
- 	}
+ 	void *in, *sqc, *wq;
+ 	int inlen, err;
++	u8 ts_format;
  
-@@ -868,6 +873,7 @@ bool mlx5e_poll_tx_cq(struct mlx5e_cq *cq, int napi_budget)
+ 	inlen = MLX5_ST_SZ_BYTES(create_sq_in) +
+ 		sizeof(u64) * sq->wq_ctrl.buf.npages;
+@@ -195,6 +197,11 @@ static int create_aso_sq(struct mlx5_core_dev *mdev, int pdn,
+ 	MLX5_SET(sqc,  sqc, state, MLX5_SQC_STATE_RST);
+ 	MLX5_SET(sqc,  sqc, flush_in_error_en, 1);
  
- 	if (netif_tx_queue_stopped(sq->txq) &&
- 	    mlx5e_wqc_has_room_for(&sq->wq, sq->cc, sq->pc, sq->stop_room) &&
-+	    mlx5e_ptpsq_fifo_has_room(sq) &&
- 	    !test_bit(MLX5E_SQ_STATE_RECOVERING, &sq->state)) {
- 		netif_tx_wake_queue(sq->txq);
- 		stats->wake++;
++	ts_format = mlx5_is_real_time_sq(mdev) ?
++			MLX5_TIMESTAMP_FORMAT_REAL_TIME :
++			MLX5_TIMESTAMP_FORMAT_FREE_RUNNING;
++	MLX5_SET(sqc, sqc, ts_format, ts_format);
++
+ 	MLX5_SET(wq,   wq, wq_type,       MLX5_WQ_TYPE_CYCLIC);
+ 	MLX5_SET(wq,   wq, uar_page,      mdev->mlx5e_res.hw_objs.bfreg.index);
+ 	MLX5_SET(wq,   wq, log_wq_pg_sz,  sq->wq_ctrl.buf.page_shift -
 -- 
 2.37.3
 
