@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EAB9609ED0
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 12:17:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EE8B609ED1
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 12:17:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229976AbiJXKRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 06:17:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60000 "EHLO
+        id S230178AbiJXKRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 06:17:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230234AbiJXKR3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 06:17:29 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EECD7688AE
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 03:17:28 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id m14-20020a17090a3f8e00b00212dab39bcdso6043214pjc.0
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 03:17:28 -0700 (PDT)
+        with ESMTP id S230200AbiJXKRf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 06:17:35 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF24269187
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 03:17:30 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id pb15so7768537pjb.5
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 03:17:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=sB+p3H1YwsKkIV+Z5v1g8fBi0nOAx7Yvg5DG0vbIZoU=;
-        b=YEPVdP4cAjeRgFNbrkykGMsSyi5SB1vEB1VD2ZgrCG840ZGorPHudaOm+EP4yc5Pfm
-         0MmsXCZBHUlWUX9JD5MG6uZT1sJciJtYC71tRfi0L6URvj3UfCLRaP/czBeEmQRK1boQ
-         wX82HO4nAXcDJ+8TxReRodxXnzDXngiPYTwe8H/AWXZRq4r97igk2PxtHTQbvujTtRD6
-         mDQOCyrTKsFCXK3jTSgqXF4aUx691rSQxVyCyvSJt85xy9mmQ4YiA1d3UDPLqj3izxup
-         8/7/+apuNQEA/UF54+jV4RqZkYCEjMPaUcgP0wguWKh+WBFf6GPN38wh6LKefK/QizW/
-         aOWA==
+        bh=zTc4ueicHoN3L3GA+MWQ4FHdHNf8AObYSYE7etjh7XM=;
+        b=fQSmuomGhjh9UV4AV5pJDdHQfHAzsFX7sNLzZLpJhOx9SldLWBvRXDvlZLU7b70P+A
+         PSzZNNeFhpV7DwI1Y0TRIBCVa29zHMAiCoNgazJG4wBDxr8sRdvDT10n+W53Qw5OTxwW
+         ALP2JnMJc88Fx5iArKKrpJoz1SmW/OU1ajOgZrgBm0x3c0NOVZLY1jp+zknunSj6sJWH
+         QUcd+vPgIpryLNECjjmGp2TEg57hrqr+DveYg9hFDhw6mGLD+XG6cOy/G6Pp2FHBGldj
+         o4kVsR41xs6uMSB+8B8KHP5ahTjnYF91/fcdUSnYK158fJAmzp+Ut4a97pXPmeP9ig1c
+         W5+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=references:in-reply-to:message-id:date:subject:cc:to:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=sB+p3H1YwsKkIV+Z5v1g8fBi0nOAx7Yvg5DG0vbIZoU=;
-        b=N0AFKpePYqn8SLxBMHM+WXwC0E0/k1fBC1C1ZhJJ5YrvHk8DFA/8nyF7TbNKhpjhfX
-         YjzG62DYhFHXhBVpWwYXeP5QtJQmmHn+8Xpx1OWLogDUevr4tdvFV/f2L9ivA97AR1X/
-         A9uzfqgfP74L3btm6zS16OifYmaWmDC1NtLYlwZkZtuwvGmqxl3Zw5DluqqC25T0d3++
-         v4PvAGxB7ebaEXh2Gfdw5rqnowm6OZnRBFoq0rHyt1Wy2puwY6X18my1Wg9PN1mxL9wB
-         FCfr6bvhb6yDJ6udNPY2Elnd6ZTCfwngnV2fUJDtptsyjlaqS7Y9/TmP+SfKchZco8Rh
-         Hivg==
-X-Gm-Message-State: ACrzQf0gx8/wqDoBK0238VRA2Ech/406N23I9o1yK+pWjuwmwioPTbF4
-        6ZxWR4oWbwPO7tAlrBnD8dhY4Q==
-X-Google-Smtp-Source: AMsMyM6+xz82hpag/PeA78zlKIAcG7ppAte4i9G2ONpYaND1PMOs5UJf2fi4zf/6YDUPj5PIiRGeSg==
-X-Received: by 2002:a17:903:124e:b0:178:6946:a2ba with SMTP id u14-20020a170903124e00b001786946a2bamr32490012plh.89.1666606648483;
-        Mon, 24 Oct 2022 03:17:28 -0700 (PDT)
+        bh=zTc4ueicHoN3L3GA+MWQ4FHdHNf8AObYSYE7etjh7XM=;
+        b=FXtum686FmKALWDPbzVugGjFBtT8lFxTnQF8DN5h9w4eoTDs9fzCqcALEnHWTpc+FD
+         0Jqe+gWl8xQ9+zLEWJcBbDB6PnBySRiHU6twPaigqg8HZebXmQ2hId4w+6/V3kpK3wDd
+         UVErwDGoiUihGoNzflebKiM+8Z62KoX7Oba8qoxBVA6746yqg65R+e50bKKvjD0JHF+d
+         9M/I4q5LH8KvcOouokKVF+whb4PgH7xe1kt/5xi1354PP4CVprIzndEl2XI9dbd8Ti7Y
+         Jk9b61CnkG9mdx8T66x50n5N38ggFseHnsUuE4r4omDxt3pEkZM8HH5Uf9s+yBYLLkOj
+         RyEQ==
+X-Gm-Message-State: ACrzQf2cuNxY6PVkhRaLIwRN4VEroluEvjXqkeGypVAgAOBfDBbyGAgq
+        GO+LGKqh+k06+kxjn8a7ftnrNA==
+X-Google-Smtp-Source: AMsMyM6xUFQjNOkTHC/Wx1rr7YtMPsLBpIMf4famVmKpDsFLuGJZBux8oJzutR5AM8OzYSfd5y3ydw==
+X-Received: by 2002:a17:902:e952:b0:17c:7aaa:c679 with SMTP id b18-20020a170902e95200b0017c7aaac679mr32959587pll.74.1666606649783;
+        Mon, 24 Oct 2022 03:17:29 -0700 (PDT)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id h197-20020a6283ce000000b0056bf6cd44cdsm586290pfe.91.2022.10.24.03.17.27
+        by smtp.gmail.com with ESMTPSA id h197-20020a6283ce000000b0056bf6cd44cdsm586290pfe.91.2022.10.24.03.17.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Oct 2022 03:17:27 -0700 (PDT)
+        Mon, 24 Oct 2022 03:17:29 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
 Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net-next 2/5] ionic: only save the user set VF attributes
-Date:   Mon, 24 Oct 2022 03:17:14 -0700
-Message-Id: <20221024101717.458-3-snelson@pensando.io>
+Subject: [PATCH net-next 3/5] ionic: new ionic device identity level and VF start control
+Date:   Mon, 24 Oct 2022 03:17:15 -0700
+Message-Id: <20221024101717.458-4-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20221024101717.458-1-snelson@pensando.io>
 References: <20221024101717.458-1-snelson@pensando.io>
@@ -65,119 +65,209 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Report the current FW values for the VF attributes, but don't
-save the FW values locally, only save the vf attributes that
-are given to us from the user.  This allows us to replay user
-data, and doesn't end up confusing things like "who set the
-mac address".
+A new ionic dev_cmd is added to the interface in ionic_if.h,
+with a new capabilities field in the ionic device identity to
+signal its availability in the FW.  The identity level code is
+incremented to '2' to show support for this new capabilities
+bitfield.
+
+If the driver has indicated with the new identity level that
+it has the VF_CTRL command, newer FW will wait for the start
+command before starting the VFs after a FW update or crash
+recovery.
+
+This patch updates the driver to make use of the new VF start
+control in fw_up path to be sure that the PF has set the user
+attributes on the VF before the FW allows the VFs to restart.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- .../net/ethernet/pensando/ionic/ionic_lif.c   | 33 ++++++++++---------
- 1 file changed, 17 insertions(+), 16 deletions(-)
+ .../net/ethernet/pensando/ionic/ionic_dev.c   | 20 +++++++++
+ .../net/ethernet/pensando/ionic/ionic_dev.h   |  3 ++
+ .../net/ethernet/pensando/ionic/ionic_if.h    | 41 +++++++++++++++++++
+ .../net/ethernet/pensando/ionic/ionic_lif.c   |  2 +
+ .../net/ethernet/pensando/ionic/ionic_main.c  |  2 +-
+ 5 files changed, 67 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 5d593198ad72..39a2e693e715 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -2220,7 +2220,7 @@ static int ionic_eth_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd
- 	}
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.c b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
+index 9d0514cfeb5c..20a0d87c9fce 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_dev.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
+@@ -481,6 +481,26 @@ int ionic_dev_cmd_vf_getattr(struct ionic *ionic, int vf, u8 attr,
+ 	return err;
  }
  
--static int ionic_update_cached_vf_config(struct ionic *ionic, int vf)
-+static int ionic_get_fw_vf_config(struct ionic *ionic, int vf, struct ionic_vf *vfdata)
- {
- 	struct ionic_vf_getattr_comp comp = { 0 };
- 	int err;
-@@ -2231,14 +2231,14 @@ static int ionic_update_cached_vf_config(struct ionic *ionic, int vf)
- 	if (err && comp.status != IONIC_RC_ENOSUPP)
- 		goto err_out;
- 	if (!err)
--		ionic->vfs[vf].vlanid = comp.vlanid;
-+		vfdata->vlanid = comp.vlanid;
++void ionic_vf_start(struct ionic *ionic, int vf)
++{
++	union ionic_dev_cmd cmd = {
++		.vf_ctrl.opcode = IONIC_CMD_VF_CTRL,
++	};
++
++	if (!(ionic->ident.dev.capabilities & cpu_to_le64(IONIC_DEV_CAP_VF_CTRL)))
++		return;
++
++	if (vf == -1) {
++		cmd.vf_ctrl.ctrl_opcode = IONIC_VF_CTRL_START_ALL;
++	} else {
++		cmd.vf_ctrl.ctrl_opcode = IONIC_VF_CTRL_START;
++		cmd.vf_ctrl.vf_index = cpu_to_le16(vf);
++	}
++
++	ionic_dev_cmd_go(&ionic->idev, &cmd);
++	(void)ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
++}
++
+ /* LIF commands */
+ void ionic_dev_cmd_queue_identify(struct ionic_dev *idev,
+ 				  u16 lif_type, u8 qtype, u8 qver)
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.h b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+index 563c302eb033..b0329cfa7a1d 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_dev.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+@@ -124,6 +124,8 @@ static_assert(sizeof(struct ionic_vf_setattr_cmd) == 64);
+ static_assert(sizeof(struct ionic_vf_setattr_comp) == 16);
+ static_assert(sizeof(struct ionic_vf_getattr_cmd) == 64);
+ static_assert(sizeof(struct ionic_vf_getattr_comp) == 16);
++static_assert(sizeof(struct ionic_vf_ctrl_cmd) == 64);
++static_assert(sizeof(struct ionic_vf_ctrl_comp) == 16);
+ #endif /* __CHECKER__ */
  
- 	attr = IONIC_VF_ATTR_SPOOFCHK;
- 	err = ionic_dev_cmd_vf_getattr(ionic, vf, attr, &comp);
- 	if (err && comp.status != IONIC_RC_ENOSUPP)
- 		goto err_out;
- 	if (!err)
--		ionic->vfs[vf].spoofchk = comp.spoofchk;
-+		vfdata->spoofchk = comp.spoofchk;
+ struct ionic_devinfo {
+@@ -324,6 +326,7 @@ int ionic_dev_cmd_vf_getattr(struct ionic *ionic, int vf, u8 attr,
+ 			     struct ionic_vf_getattr_comp *comp);
+ void ionic_dev_cmd_queue_identify(struct ionic_dev *idev,
+ 				  u16 lif_type, u8 qtype, u8 qver);
++void ionic_vf_start(struct ionic *ionic, int vf);
+ void ionic_dev_cmd_lif_identify(struct ionic_dev *idev, u8 type, u8 ver);
+ void ionic_dev_cmd_lif_init(struct ionic_dev *idev, u16 lif_index,
+ 			    dma_addr_t addr);
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_if.h b/drivers/net/ethernet/pensando/ionic/ionic_if.h
+index 4a90f611c611..264ce3a427e1 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_if.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic_if.h
+@@ -54,6 +54,7 @@ enum ionic_cmd_opcode {
+ 	/* SR/IOV commands */
+ 	IONIC_CMD_VF_GETATTR			= 60,
+ 	IONIC_CMD_VF_SETATTR			= 61,
++	IONIC_CMD_VF_CTRL			= 62,
  
- 	attr = IONIC_VF_ATTR_LINKSTATE;
- 	err = ionic_dev_cmd_vf_getattr(ionic, vf, attr, &comp);
-@@ -2247,13 +2247,13 @@ static int ionic_update_cached_vf_config(struct ionic *ionic, int vf)
- 	if (!err) {
- 		switch (comp.linkstate) {
- 		case IONIC_VF_LINK_STATUS_UP:
--			ionic->vfs[vf].linkstate = IFLA_VF_LINK_STATE_ENABLE;
-+			vfdata->linkstate = IFLA_VF_LINK_STATE_ENABLE;
- 			break;
- 		case IONIC_VF_LINK_STATUS_DOWN:
--			ionic->vfs[vf].linkstate = IFLA_VF_LINK_STATE_DISABLE;
-+			vfdata->linkstate = IFLA_VF_LINK_STATE_DISABLE;
- 			break;
- 		case IONIC_VF_LINK_STATUS_AUTO:
--			ionic->vfs[vf].linkstate = IFLA_VF_LINK_STATE_AUTO;
-+			vfdata->linkstate = IFLA_VF_LINK_STATE_AUTO;
- 			break;
- 		default:
- 			dev_warn(ionic->dev, "Unexpected link state %u\n", comp.linkstate);
-@@ -2266,21 +2266,21 @@ static int ionic_update_cached_vf_config(struct ionic *ionic, int vf)
- 	if (err && comp.status != IONIC_RC_ENOSUPP)
- 		goto err_out;
- 	if (!err)
--		ionic->vfs[vf].maxrate = comp.maxrate;
-+		vfdata->maxrate = comp.maxrate;
+ 	/* QoS commands */
+ 	IONIC_CMD_QOS_CLASS_IDENTIFY		= 240,
+@@ -200,6 +201,7 @@ struct ionic_dev_reset_comp {
+ };
  
- 	attr = IONIC_VF_ATTR_TRUST;
- 	err = ionic_dev_cmd_vf_getattr(ionic, vf, attr, &comp);
- 	if (err && comp.status != IONIC_RC_ENOSUPP)
- 		goto err_out;
- 	if (!err)
--		ionic->vfs[vf].trusted = comp.trust;
-+		vfdata->trusted = comp.trust;
+ #define IONIC_IDENTITY_VERSION_1	1
++#define IONIC_DEV_IDENTITY_VERSION_2	2
  
- 	attr = IONIC_VF_ATTR_MAC;
- 	err = ionic_dev_cmd_vf_getattr(ionic, vf, attr, &comp);
- 	if (err && comp.status != IONIC_RC_ENOSUPP)
- 		goto err_out;
- 	if (!err)
--		ether_addr_copy(ionic->vfs[vf].macaddr, comp.macaddr);
-+		ether_addr_copy(vfdata->macaddr, comp.macaddr);
+ /**
+  * struct ionic_dev_identify_cmd - Driver/device identify command
+@@ -253,6 +255,14 @@ union ionic_drv_identity {
+ 	__le32 words[478];
+ };
  
- err_out:
- 	if (err)
-@@ -2295,6 +2295,7 @@ static int ionic_get_vf_config(struct net_device *netdev,
- {
- 	struct ionic_lif *lif = netdev_priv(netdev);
- 	struct ionic *ionic = lif->ionic;
-+	struct ionic_vf vfdata = { 0 };
- 	int ret = 0;
++/**
++ * enum ionic_dev_capability - Device capabilities
++ * @IONIC_DEV_CAP_VF_CTRL:     Device supports VF ctrl operations
++ */
++enum ionic_dev_capability {
++	IONIC_DEV_CAP_VF_CTRL        = BIT(0),
++};
++
+ /**
+  * union ionic_dev_identity - device identity information
+  * @version:          Version of device identify
+@@ -273,6 +283,7 @@ union ionic_drv_identity {
+  * @hwstamp_mask:     Bitmask for subtraction of hardware tick values.
+  * @hwstamp_mult:     Hardware tick to nanosecond multiplier.
+  * @hwstamp_shift:    Hardware tick to nanosecond divisor (power of two).
++ * @capabilities:     Device capabilities
+  */
+ union ionic_dev_identity {
+ 	struct {
+@@ -290,6 +301,7 @@ union ionic_dev_identity {
+ 		__le64 hwstamp_mask;
+ 		__le32 hwstamp_mult;
+ 		__le32 hwstamp_shift;
++		__le64 capabilities;
+ 	};
+ 	__le32 words[478];
+ };
+@@ -2044,6 +2056,33 @@ struct ionic_vf_getattr_comp {
+ 	u8     color;
+ };
  
- 	if (!netif_device_present(netdev))
-@@ -2308,14 +2309,14 @@ static int ionic_get_vf_config(struct net_device *netdev,
- 		ivf->vf = vf;
- 		ivf->qos = 0;
++enum ionic_vf_ctrl_opcode {
++	IONIC_VF_CTRL_START_ALL	= 0,
++	IONIC_VF_CTRL_START	= 1,
++};
++
++/**
++ * struct ionic_vf_ctrl - VF control command
++ * @opcode:         Opcode for the command
++ * @vf_index:       VF Index. It is unused if op START_ALL is used.
++ * @ctrl_opcode:    VF control operation type
++ */
++struct ionic_vf_ctrl_cmd {
++	u8	opcode;
++	u8	ctrl_opcode;
++	__le16	vf_index;
++	u8	rsvd1[60];
++};
++
++/**
++ * struct ionic_vf_ctrl_comp - VF_CTRL command completion.
++ * @status:     Status of the command (enum ionic_status_code)
++ */
++struct ionic_vf_ctrl_comp {
++	u8	status;
++	u8      rsvd[15];
++};
++
+ /**
+  * struct ionic_qos_identify_cmd - QoS identify command
+  * @opcode:  opcode
+@@ -2865,6 +2904,7 @@ union ionic_dev_cmd {
  
--		ret = ionic_update_cached_vf_config(ionic, vf);
-+		ret = ionic_get_fw_vf_config(ionic, vf, &vfdata);
- 		if (!ret) {
--			ivf->vlan         = le16_to_cpu(ionic->vfs[vf].vlanid);
--			ivf->spoofchk     = ionic->vfs[vf].spoofchk;
--			ivf->linkstate    = ionic->vfs[vf].linkstate;
--			ivf->max_tx_rate  = le32_to_cpu(ionic->vfs[vf].maxrate);
--			ivf->trusted      = ionic->vfs[vf].trusted;
--			ether_addr_copy(ivf->mac, ionic->vfs[vf].macaddr);
-+			ivf->vlan         = le16_to_cpu(vfdata.vlanid);
-+			ivf->spoofchk     = vfdata.spoofchk;
-+			ivf->linkstate    = vfdata.linkstate;
-+			ivf->max_tx_rate  = le32_to_cpu(vfdata.maxrate);
-+			ivf->trusted      = vfdata.trusted;
-+			ether_addr_copy(ivf->mac, vfdata.macaddr);
- 		}
+ 	struct ionic_vf_setattr_cmd vf_setattr;
+ 	struct ionic_vf_getattr_cmd vf_getattr;
++	struct ionic_vf_ctrl_cmd vf_ctrl;
+ 
+ 	struct ionic_lif_identify_cmd lif_identify;
+ 	struct ionic_lif_init_cmd lif_init;
+@@ -2903,6 +2943,7 @@ union ionic_dev_cmd_comp {
+ 
+ 	struct ionic_vf_setattr_comp vf_setattr;
+ 	struct ionic_vf_getattr_comp vf_getattr;
++	struct ionic_vf_ctrl_comp vf_ctrl;
+ 
+ 	struct ionic_lif_identify_comp lif_identify;
+ 	struct ionic_lif_init_comp lif_init;
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+index 39a2e693e715..b5ade86b26a0 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -2629,6 +2629,8 @@ static void ionic_vf_attr_replay(struct ionic_lif *lif)
  	}
  
+ 	up_read(&ionic->vf_op_lock);
++
++	ionic_vf_start(ionic, -1);
+ }
+ 
+ static const struct net_device_ops ionic_netdev_ops = {
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+index 56f93b030551..ed9d8c995236 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+@@ -533,7 +533,7 @@ int ionic_identify(struct ionic *ionic)
+ 	sz = min(sizeof(ident->drv), sizeof(idev->dev_cmd_regs->data));
+ 	memcpy_toio(&idev->dev_cmd_regs->data, &ident->drv, sz);
+ 
+-	ionic_dev_cmd_identify(idev, IONIC_IDENTITY_VERSION_1);
++	ionic_dev_cmd_identify(idev, IONIC_DEV_IDENTITY_VERSION_2);
+ 	err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
+ 	if (!err) {
+ 		sz = min(sizeof(ident->dev), sizeof(idev->dev_cmd_regs->data));
 -- 
 2.17.1
 
