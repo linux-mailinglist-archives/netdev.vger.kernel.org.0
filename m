@@ -2,53 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C5767609F0B
-	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 12:30:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75DA7609F0E
+	for <lists+netdev@lfdr.de>; Mon, 24 Oct 2022 12:30:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbiJXKaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 06:30:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37722 "EHLO
+        id S229841AbiJXKa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Oct 2022 06:30:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbiJXKaX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 06:30:23 -0400
+        with ESMTP id S229727AbiJXKaY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 06:30:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F019C30542
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C0B931DEF
         for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 03:30:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A585611DD
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85308611DE
         for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 10:30:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CBFCCC433B5;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E6F9DC43141;
         Mon, 24 Oct 2022 10:30:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1666607419;
-        bh=FPjnR1hEM0W78WwvG9EdKb/AWVmK1Nb0mah3R0plt28=;
+        bh=ai6z823b0G/TUEUZOfcO6d/2MYgy4Oz76tJ+jahceNo=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=QndAFQEhDiIohfVVBYrPq1cHqNeP6xY/h+6kXn7XskxHMMDJKAGCMZ78u0p/YoVY5
-         QtXMLnlSF7IRD+TyziDWoKvrfe0V8pYVEriVeAcJm6wuAZiR+2IArxj+CzwS1uiI60
-         CQ1x3uWlktFBuJy+riCXU5N53wPlSg9Ru7ZDIzLHCprjtYnFxBSoGZQRJUEnN0G2Mt
-         FIseP0G1V3P/jm36aiFWprELkCG+IIN0RQ1hXBpIbAjEuu3Q2tTZBrh83XpinADiet
-         aITNiDNCVuW52CyRg3Qb3YkC8zz6Qgddncov5eaLBDIGNDz11JBBFYhsBzKvPOyY0f
-         zeyzvvPp2fclQ==
+        b=U6QnNRxUv/gnxf0rhER25b3BlRDMXyktN6KYtfHj/MuQ6a/AbldifZHg1wSX6zn4l
+         75isqEwmu9BO6dfLSM1WomzM5pIMkaabNVmfRQaA/4GpPiZmw5K4u5rl/VhAX4UQVv
+         tjpd7FkldjI3WqMRIwVfpMT02qO0rqNb6Wf62cz2P/whuVCq6ETpOEda2dA5Miwhw9
+         YXgJ6VaqC/sYkRMUpd5QXedZEzQwmvVK2A5Uze5AYRox0KtMbV0vKKJIoXjAdtVGPU
+         3PXH6ygF/AHIWYxK52OT4GM8Z2ibDXOxeZtv0wj+eYFxBvOzO3pTdF/0seWLbm344q
+         5uascItrZgigA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A92FDC4166D;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CAA77E4D005;
         Mon, 24 Oct 2022 10:30:19 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/3] Add support for 800Gbps speed
+Subject: Re: [PATCH net-next v2 0/2] udp: avoid false sharing on receive
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166660741968.18313.3884972751898561670.git-patchwork-notify@kernel.org>
+Message-Id: <166660741981.18313.518994743736905929.git-patchwork-notify@kernel.org>
 Date:   Mon, 24 Oct 2022 10:30:19 +0000
-References: <cover.1666277135.git.petrm@nvidia.com>
-In-Reply-To: <cover.1666277135.git.petrm@nvidia.com>
-To:     Petr Machata <petrm@nvidia.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, idosch@nvidia.com,
-        amcohen@nvidia.com, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, dsahern@kernel.org, mlxsw@nvidia.com
+References: <cover.1666287924.git.pabeni@redhat.com>
+In-Reply-To: <cover.1666287924.git.pabeni@redhat.com>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, mptcp@lists.linux.dev, dsahern@kernel.org,
+        mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
+        kuniyu@amazon.com
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -63,25 +62,21 @@ Hello:
 This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Thu, 20 Oct 2022 17:20:02 +0200 you wrote:
-> Amit Cohen <amcohen@nvidia.com> writes:
+On Thu, 20 Oct 2022 19:48:50 +0200 you wrote:
+> Under high UDP load, the BH processing and the user-space receiver can
+> run on different cores.
 > 
-> The next Nvidia Spectrum ASIC will support 800Gbps speed.
-> The IEEE 802 LAN/MAN Standards Committee already published standards for
-> 800Gbps, see the last update [1] and the list of approved changes [2].
-> 
-> As first phase, add support for 800Gbps over 8 lanes (100Gbps/lane).
-> In the future 800Gbps over 4 lanes can be supported also.
+> The UDP implementation does a lot of effort to avoid false sharing in
+> the receive path, but recent changes to the struct sock layout moved
+> the sk_forward_alloc and the sk_rcvbuf fields on the same cacheline:
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/3] ethtool: Add support for 800Gbps link modes
-    https://git.kernel.org/netdev/net-next/c/404c76783f32
-  - [net-next,2/3] mlxsw: Add support for 800Gbps link modes
-    https://git.kernel.org/netdev/net-next/c/cceef209ddd7
-  - [net-next,3/3] bonding: 3ad: Add support for 800G speed
-    https://git.kernel.org/netdev/net-next/c/41305d3781d7
+  - [net-next,v2,1/2] net: introduce and use custom sockopt socket flag
+    https://git.kernel.org/netdev/net-next/c/a5ef058dc4d9
+  - [net-next,v2,2/2] udp: track the forward memory release threshold in an hot cacheline
+    https://git.kernel.org/netdev/net-next/c/8a3854c7b8e4
 
 You are awesome, thank you!
 -- 
