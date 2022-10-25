@@ -2,143 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AE9460D3A8
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 20:38:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 081FB60D3BA
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 20:41:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232207AbiJYSiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 14:38:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52748 "EHLO
+        id S232805AbiJYSl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 14:41:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231864AbiJYSiL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 14:38:11 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4CFCF53D2
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 11:38:09 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id f5-20020a17090a4a8500b002131bb59d61so1783541pjh.1
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 11:38:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=j6v7OmtMJ2b16XOxoV0FAPi5R9UZMGGxZ5W+ahrXitU=;
-        b=acruGIdn9/xBNnQh1BycNFAI8FriRd/SRPwLinDXVN7o5iRN9oVVanxX4jocckw8KE
-         rrBPuGxGWZ6Cez1O8LJl8D6ply4tTfSQNhWiQMsDvh5dJmerpIlgmpxfcO7HCTqyhiz1
-         5iKemh60aO1Vx52mirB7pUeRtXXBIv5O+XBxQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=j6v7OmtMJ2b16XOxoV0FAPi5R9UZMGGxZ5W+ahrXitU=;
-        b=jEyPrPgahKKxz6WH6KIMH3NjtJxTbLbeZNNtx0uoT6W84hiK+rOIG7+7IZRsf6atP4
-         Hk8aVpS2FE3zpAr1sN+TURYDjClbELCexdePQwuEwGyzCBg/4NCyyO5/ZnXVC/w8V4aA
-         p9o9LA/AWDnMoev9ReRoh8RKSZ4QoIoRZBOCBCdcnnuJaSg2LywmIAMm0RRzyTzRrg0E
-         OyJmDbOdJMMD6TfzmBWNrqF7aYD+6vCOKwhpkpmSca2QXdONkAGe0wuPmdoIZmzIdpDA
-         VKkY0pX3RgI3PsoCCcnaBsrjFILjQukDTA6Id7aJk/RBvrrZw26bTMU1BV5bzHxZN2SJ
-         Pn1g==
-X-Gm-Message-State: ACrzQf23iE/cO2kgwJEm5QS27wY7QGDz1dnBaXMptqfP7cShnYgawqbK
-        UV9YJcH3cPg5YvGL0o8Vo+/3HQ==
-X-Google-Smtp-Source: AMsMyM5rGUo3WGRSfCNWAsvk0fN3/AawwDye31UvQzmNmzr7avz0RZdscsKFX344zjBDmEmPlJNpAA==
-X-Received: by 2002:a17:903:181:b0:185:5696:97c2 with SMTP id z1-20020a170903018100b00185569697c2mr39858718plg.160.1666723088910;
-        Tue, 25 Oct 2022 11:38:08 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id m3-20020a63fd43000000b004393c5a8006sm1568091pgj.75.2022.10.25.11.38.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Oct 2022 11:38:08 -0700 (PDT)
-Date:   Tue, 25 Oct 2022 11:38:06 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Vlastimil Babka <vbabka@suse.cz>
-Cc:     Christoph Lameter <cl@linux.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        linux-mm@kvack.org, kasan-dev@googlegroups.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] mm: Make ksize() a reporting-only function
-Message-ID: <202210251125.BAE72214E2@keescook>
-References: <20221022180455.never.023-kees@kernel.org>
- <fabffcfd-4e7f-a4b8-69ac-2865ead36598@suse.cz>
+        with ESMTP id S232518AbiJYSlz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 14:41:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9986C108DFB
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 11:41:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 10444B8171E
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 18:41:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88900C433D6;
+        Tue, 25 Oct 2022 18:41:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666723311;
+        bh=7NKoevC5iyxfqncmaGc1Od/SqDSvHchSLeOZFM0zPQE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BtL16ConxBa4RHJlAS6OQDfsuqizt74H7WZd9xrqSkFFGcAls1RkKyH6t82TphwYs
+         EUQT/hGVteeafnb4BItJ6DRyNajTUSjJmbOKimlwwhADlO3FexZUSfwfmRXMsyO6KA
+         fia0HQz3DKti+frtSxBZGQluHq/MVk0xgZUert5iHNs2hJ+oTRllfEPlblnfS6AP4l
+         acIKPM75Ti6e64D/bSdtE/2jmXOVYjLW5gOHu+pdZROTC8Lkhq0mJOw3tvm/pv160w
+         MPSIned6OOS29z3Qd9VGII0kEMVisrSiN0llyCqnXmwPcyQm5SyXMb33EIH/qiqgrC
+         /NabhYIJSsbrA==
+Date:   Tue, 25 Oct 2022 11:41:48 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Nick Child <nnac123@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, nick.child@ibm.com, dave.taht@gmail.com
+Subject: Re: [RFC PATCH net-next 0/1] ibmveth: Implement BQL
+Message-ID: <20221025114148.1bcf194b@kernel.org>
+In-Reply-To: <20221024213828.320219-1-nnac123@linux.ibm.com>
+References: <20221024213828.320219-1-nnac123@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fabffcfd-4e7f-a4b8-69ac-2865ead36598@suse.cz>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 25, 2022 at 01:53:54PM +0200, Vlastimil Babka wrote:
-> On 10/22/22 20:08, Kees Cook wrote:
-> > With all "silently resizing" callers of ksize() refactored, remove the
-> > logic in ksize() that would allow it to be used to effectively change
-> > the size of an allocation (bypassing __alloc_size hints, etc). Users
-> > wanting this feature need to either use kmalloc_size_roundup() before an
-> > allocation, or use krealloc() directly.
-> > 
-> > For kfree_sensitive(), move the unpoisoning logic inline. Replace the
-> > some of the partially open-coded ksize() in __do_krealloc with ksize()
-> > now that it doesn't perform unpoisoning.
-> > 
-> > [...]
-> > Signed-off-by: Kees Cook <keescook@chromium.org>
+On Mon, 24 Oct 2022 16:38:27 -0500 Nick Child wrote:
+> Labeled as RFC because I am unsure if adding Byte Queue Limits (BQL) is
+> positively effecting the ibmveth driver. BQL is common among network
+> drivers so I would like to incorporate it into the virtual ethernet
+> driver, ibmveth. But I am having trouble measuring its effects.
 > 
-> Acked-by: Vlastimil Babka <vbabka@suse.cz>
-
-Thanks!
-
-> > ---
-> > This requires at least this be landed first:
-> > https://lore.kernel.org/lkml/20221021234713.you.031-kees@kernel.org/
+> From my understanding (and please correct me if I am wrong), BQL will 
+> use the number of packets sent to the NIC to approximate the minimum
+> number of packets to enqueue to a netdev_queue without starving the NIC.
+> As a result, bufferbloat in the networking queues are minimized which
+> may allow for smaller latencies.
 > 
-> Don't we need all parts to have landed first, even if the skbuff one is the
-> most prominent?
+> After performing various netperf tests under differing loads and
+> priorities, I do not see any performance effect when comparing the
+> driver with and without BQL. The ibmveth driver is a virtual driver
+> which has an abstracted view of the NIC so I am comfortable without
+> seeing any performance deltas. That being said, I would like to know if
+> BQL is actually being enforced in some way. In other words, I would
+> like to observe a change in the number of queued bytes during BQL
+> implementations. Does anyone know of a mechanism to measure the length
+> of a netdev_queue?
+> 
+> I tried creating a BPF script[1] to track the bytes in a netdev_queue
+> but again am not seeing any difference with and without BQL. I do not
+> believe anything is wrong with BQL (it is more likely that my tracing
+> is bad) but I would like to have some evidence of BQL having a
+> positive effect on the device. Any recommendations or advice would be
+> greatly appreciated.
 
-Yes, though, I suspect there will be some cases we couldn't easily find.
-
-Here are the prerequisites I'm aware of:
-
-in -next:
-  36875a063b5e ("net: ipa: Proactively round up to kmalloc bucket size")
-  ab3f7828c979 ("openvswitch: Use kmalloc_size_roundup() to match ksize() usage")
-  d6dd508080a3 ("bnx2: Use kmalloc_size_roundup() to match ksize() usage")
-
-reviewed, waiting to land (should I take these myself?)
-  btrfs: send: Proactively round up to kmalloc bucket size
-    https://lore.kernel.org/lkml/20220923202822.2667581-8-keescook@chromium.org/
-  dma-buf: Proactively round up to kmalloc bucket size
-    https://lore.kernel.org/lkml/20221018090858.never.941-kees@kernel.org/
-
-partially reviewed:
-  igb: Proactively round up to kmalloc bucket size
-    https://lore.kernel.org/lkml/20221018092340.never.556-kees@kernel.org/
-
-unreviewed:
-  coredump: Proactively round up to kmalloc bucket size
-    https://lore.kernel.org/lkml/20221018090701.never.996-kees@kernel.org/
-  devres: Use kmalloc_size_roundup() to match ksize() usage
-    https://lore.kernel.org/lkml/20221018090406.never.856-kees@kernel.org/
-
-needs updating:
-  mempool: Use kmalloc_size_roundup() to match ksize() usage
-    https://lore.kernel.org/lkml/20221018090323.never.897-kees@kernel.org/
-  bpf: Use kmalloc_size_roundup() to match ksize() usage
-    https://lore.kernel.org/lkml/20221018090550.never.834-kees@kernel.org/
-
--- 
-Kees Cook
+What qdisc are you using and what "netperf tests" are you running?
