@@ -2,123 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ADE3260D43F
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 20:56:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A189660D449
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 21:00:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229952AbiJYS4g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 14:56:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32858 "EHLO
+        id S232377AbiJYTAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 15:00:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230245AbiJYS4f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 14:56:35 -0400
-Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2083.outbound.protection.outlook.com [40.107.104.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B8F513F2F
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 11:56:32 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=J3tfcpa/wF4hk/cgN5jsvox4d5inoJMNp4gO9OygFyA+DNK2iWBI2ywwOYLIbLgss9cZ4VjOXjTUoO4ox1msnKof1UHn8QpFsOPsxCSmGHNFuSwkBzeJ5+JHtfLkhp6/MkGOSt3I9FRK3sVMX0EGBcIV2UtlxCd/mKRWmC4CEiSssDgKO9loc06Aa5IdwagRMIHZoPd5EpNySDv7UQmzIzC5ADzenKLCDVI7UUB5JDhKd6fghuJGiTFA0e+OVAdAATItN3ql5JxHTBm+FrafpPdRnKHSviW0yHxHwxa9Q/b0UKe0ZkQ8girhwTT3ArAJkjM2EtLkCHxZVhK+PoPiQg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JUUbEvqVp6FcoKDN/nfOKH/787G15SunYhZ3RB0nul0=;
- b=HaaiFOGqJgy3NzjvL6MJr8qdgFbPRoGJ6De3lu2RPFhk7GbHUXgyREq/mwJsERonR0pWGLk/Xq+UzdOeBCtw6ZkgTD/u69MlAuMw2aO32HZSuotqSsAbLjT/rjrTG5KkkHx86O4BgZxFklpcXp9bsTfA3ShZlhmSU2h6FXImPdAjV1mpLL74z6j4oHkIhSxrF1zsroRxMNuS9AEgntUzcSnTSzK0Qw89WX/6UYKUj+GV0mUTxGZP3IyCF588JtRsJiSMbL7lDpAtoATjaFaegYoEktwwlmLrGDJcKJorMzPVCNUca7Vwqv4QUCx9ZkgyBw2ljn7pHMgcHZ0cqXRC+A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JUUbEvqVp6FcoKDN/nfOKH/787G15SunYhZ3RB0nul0=;
- b=XheeCSDW0tHM2pz9oZy48eUsOlWieclUdLX5ko0uzMPcpEzcD+nf50TaMn5QTNmvHMpuRCoM8XBtc/dADXzjj+paajlO0zU4xZXq013DU4hTvQg8OW7LQoqZDLYhfm9VLZGtAPFDaNgyPiQk0hxlzQHS8iKm+qiWUuRsPn/9FBvXHyYjUzw2OEeYaxieIALFBQVX8BKWPLjUctr9P49cAM7ZG50p4lnVCr2lh9aRyN8RawyrsdmUShaNo1Y1zOPgh+umUOGTSI0JxiZ9UK4RCR4U75zeOTllkAxm7W/3uY/NwklcteYdHFJv+91mQE6lk2Q31jt05U+lyt4wo4BQSQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seco.com;
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
- by DU2PR03MB7958.eurprd03.prod.outlook.com (2603:10a6:10:2d9::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.21; Tue, 25 Oct
- 2022 18:56:29 +0000
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::447d:3157:60b0:ded8]) by DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::447d:3157:60b0:ded8%7]) with mapi id 15.20.5746.028; Tue, 25 Oct 2022
- 18:56:29 +0000
-Message-ID: <d89c52a3-8f2b-e8a2-b15b-3b702913787c@seco.com>
-Date:   Tue, 25 Oct 2022 14:56:26 -0400
+        with ESMTP id S232257AbiJYTAZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 15:00:25 -0400
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A413834703
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 12:00:19 -0700 (PDT)
+Received: by mail-qt1-x836.google.com with SMTP id hh9so8211143qtb.13
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 12:00:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=XSGZJo1bl3SUQkhMNqs386T667b+Vn5p187f1yr+7xA=;
+        b=E2HOl9ixsstjpF60K2tQ9pSVnZ4xuFcgpP4Amkng6w5crg3brzdjJzEm6hsZjD1ePV
+         hz1tvFrOXBsiHoQoa/9iv/eZ0YY/kFCSGcNYLHKEe1d9zBD8StU4EVcfZhmamPZHcVP+
+         zTbTeTrlfoF8icVwrkWoJvXjopVL5OgyDYmrpuJokZMka+HcLR6YCVQIO7u+x9fdDXIV
+         lfdvdes8cFgHIjuNfYALfdH1FRME9u6ufzs2GfSalBXDPsenHxz0ry96GiKzEZsdFoQs
+         Sy5/z9778wRR/1Nw1ZTxA5oGgBnaVRnICCvTSFrlH0pS/ugoTs1wwPzokNLXAMXXbibe
+         ADpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=XSGZJo1bl3SUQkhMNqs386T667b+Vn5p187f1yr+7xA=;
+        b=7IiJDh98XzA1CEUkKvcS3nP7mSEHJkVKd/VlDEFcuK+AOMpLZeDGih+5qcG9ijhcU3
+         xllP6gDX+kDcl30NhHoJrtFtM1cNnRIPWnWBeCRG5KTkepmTiFQ2ss74e5WGa8wNEplY
+         ejSRm4p21FpkZlD337XTbweJMrnzj2+9PF0QbQslj6jlLRkdwQYqgglhn53WMks7INjz
+         mypL//mRhlbE/9wn86gnlvo0DLt8Mszr7ltOk7IpF8gJ+yYCPZoTVuCXgr9lu8oxo0pE
+         5RJhzDKWiEhnl/CxrMMi9svAt6gIC1az8WT/v6V9SBafhFQ0Agl1Cl4XdMBmAd4ELSyi
+         PPkQ==
+X-Gm-Message-State: ACrzQf3SUfHYOz0x3yPiuRRwR5CNCoQbq7JLr0Wo1SmfbAx/ltp2xQSN
+        37QrZVd8oVBSFeEuAsHxxnkH2A==
+X-Google-Smtp-Source: AMsMyM42TQk+Zo4mpoK4izG3t0mNi637t/x1i9/FW4VVIot9yp2nF07SBAVNC4YiTTlKvyTHaZNuDA==
+X-Received: by 2002:a05:622a:f:b0:39c:f320:f7a3 with SMTP id x15-20020a05622a000f00b0039cf320f7a3mr33350384qtw.101.1666724418798;
+        Tue, 25 Oct 2022 12:00:18 -0700 (PDT)
+Received: from [192.168.1.11] ([64.57.193.93])
+        by smtp.gmail.com with ESMTPSA id x10-20020ac84a0a000000b00398ed306034sm1986707qtq.81.2022.10.25.12.00.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Oct 2022 12:00:18 -0700 (PDT)
+Message-ID: <2fedd4a8-5b13-7049-7485-307e6d01f9f9@linaro.org>
+Date:   Tue, 25 Oct 2022 15:00:16 -0400
+MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.4.0
-Subject: Re: [PATCH net-next] phylink: require valid state argument to
- phylink_validate_mask_caps()
+Subject: Re: [RFC net-next 1/2] dt-bindings: net: dsa: add bindings for GSW
+ Series switches
 Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        linux@armlinux.org.uk, andrew@lunn.ch, hkallweit1@gmail.com,
-        rmk+kernel@armlinux.org.uk
-References: <20221025185126.1720553-1-kuba@kernel.org>
-From:   Sean Anderson <sean.anderson@seco.com>
-In-Reply-To: <20221025185126.1720553-1-kuba@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Camel Guo <camel.guo@axis.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Rob Herring <robh@kernel.org>,
+        kernel@axis.com
+References: <20221025135243.4038706-1-camel.guo@axis.com>
+ <20221025135243.4038706-2-camel.guo@axis.com>
+ <16aac887-232a-7141-cc65-eab19c532592@linaro.org> <Y1f6NmjrXh77DNxs@lunn.ch>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <Y1f6NmjrXh77DNxs@lunn.ch>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BL0PR03CA0026.namprd03.prod.outlook.com
- (2603:10b6:208:2d::39) To DB7PR03MB4972.eurprd03.prod.outlook.com
- (2603:10a6:10:7d::22)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DB7PR03MB4972:EE_|DU2PR03MB7958:EE_
-X-MS-Office365-Filtering-Correlation-Id: 65062f38-f9b1-4673-64a7-08dab6baa042
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: A+9973LHgIwlv369R2HU2L3A4qM4IOBJ8ZmRcjCVODoGRR6ldZjYsNGffHjSSVhxmUW1yzfxMDiqS3qItroYdMgKX4x4YLRbqNsI3IzS0CwkUR7Pj6QAWe+RPgjFLB+cm269RG2+wUr1ECfT5XElidHI3V3jN9T4e9lVz6ZZL5fbyyQOvEKuvIYY4G3uOfPlwS8biuXvvOdImDhUlf3Wh3OFQfQpFLbOWVHPI6tokijuOgpS/NAXuyzGfdBg/WRPpQ80iAE7HlUJKkydqYZyiiS8jP6fWV+x02GZ0CXqiPujPzk7qf8QhxDqM1DJVNmhsHy596Nj7/vPenCz68EicjM668wMgTiN+dEtH+57IJHZHbTD7rJE+A/G4XHXYXW0TUcHTNS28+J9vlBhBRr0TEK9rOmiKNTG6+MiMNPCoRtrAksgB54z4RPjj4rliPSDfNC+5/xBpTSYUadAIcb26geDNdH4M7WF5ZpuxZ4Vy7sLIOw8xTFw/lLyg4YUpcfAIOQ1JXcHWDQgsskEgePbAoic3bxOp3QNztHNLCSqT26fiheR/dz3WFjR0NvOTfLV8EyavdhNRidytx0Ds6IrLkTRHWkKfTCMzVIur3SGtAarZjqbIWAoqWJJ/xIfHlMoPGzV9D7IQoxa2n//Wue1oXHwP7KW0mjpPG9i1pUHzsV/pfuEns7R50+7jKaW0wi5Ivt19IeFrNAcjfduq4IfRlKGNvLdlmxCnIEsAs82FZMQwFCdfn3nupm6Pyig7YDKBcqs+R1jxXvPD79HtB1sHv6jKhuo6KSUmGrZ/tmTh6QW5pytM/kh+jSIFEx/M+B3
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(396003)(39850400004)(136003)(346002)(366004)(451199015)(26005)(52116002)(53546011)(6666004)(6506007)(6512007)(83380400001)(478600001)(186003)(44832011)(2616005)(2906002)(66476007)(316002)(6486002)(41300700001)(8936002)(66946007)(66556008)(4326008)(8676002)(5660300002)(36756003)(86362001)(31696002)(38100700002)(38350700002)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?T2tKNEhtdSswSkZ2L1hXbTVHQzJNcmhIak83b0dMUEdmMTV4ek4rV3JzY1VS?=
- =?utf-8?B?MTFZTklTL3ZaYnR6QVJJdHZnY2NGR1ZtNUg2RG9DYzYvb0Z3V3phWG1JMElo?=
- =?utf-8?B?NU9CQXcrQ3VpbGFIbWpMYllJYU1KTFNZRlV0eHdxTnlKRWsxdEFLa0ppODBD?=
- =?utf-8?B?bHF4TTFVY29qRjhydGVBRnYrQ3F6OCtScG0yTzlkTURPeU5ONS9adnl3a1Jw?=
- =?utf-8?B?Mk1na3BpRVBXQ3RJSzZ2WHQ1K0JQTXBQbFlRbU1oVGduQ28zN2Zzd2YzWmxE?=
- =?utf-8?B?dU1wK1U0c0hJYldLZ3BqbDU0Y3NpVUFLQ0MvRkhKMFdNQlBIMnc0RXZiUVcr?=
- =?utf-8?B?alcxNERMUnJpSEg5VUFwYjYxUDZlRTdrZnFySEI5Uy9iT2kvbVlRZjlrclhH?=
- =?utf-8?B?YkpQQ3N3dXNIWXRzeXhLUllIOGwzTmFrd05BSkdxS3dDbFdSZGpPcmg3Yjdr?=
- =?utf-8?B?WjQvWGZPdit5UUY5UnZaU09ybU5ZejVCWXlJTlN6QUdkSjBjYzlaSjBBWXFp?=
- =?utf-8?B?OHVIblJ2dVVLY1hiV1hGMnhGbUtUcUZKRlZ3c0FqSWdHd096dE9mMm5ONUJ1?=
- =?utf-8?B?ZThtNXpLMDdnN1Q2YmNPV3JpbXd0eVRIS21qZDZ0bGdDekM3K0NBbDZ6eFBh?=
- =?utf-8?B?Yy9jclRad3JiWFZ3a0t5dk9ITjJ2bXZvajBvV2IvZlcvajZKdktoM3FFWGt0?=
- =?utf-8?B?aXR4eVd2REdhYlF3S0JaWG9lbVVPVjB0bnE1Wmh5dU5oWStOc1JNblJxM1BX?=
- =?utf-8?B?SmtvUVZ4c2VyNDJLTStGTzljWVVHME8rVTRVKzVqSU5sYkN1UDllQ2xpTHU3?=
- =?utf-8?B?TmRCSzFESDh4cG9QL01IeEZiR25ZMHFtVmkvbk1qb3Y3QmhxY010R2xaZDZp?=
- =?utf-8?B?LzNGSlN0QkVINkJnQWU2d0NTRDlsVi9waTQ2cDJoaGxqM2paK2VSamQyRFF5?=
- =?utf-8?B?UXU1Q05XQzQvcStVQ0diY0cxSW9WdHJWMUp3MXAyN1pJZ05URlNTWTducnhK?=
- =?utf-8?B?dllMVjl0Zml5MElGWEVEZHBjeHFHQzlPS0M3ZGVvYmVjYlRSUXdOaWhlS0RD?=
- =?utf-8?B?Wm9pT3E5ZG1JaTRsblNZQUdrTjFVWFlpdXhjdE5sRzkzUjh4YlVDWUtBU3Zm?=
- =?utf-8?B?RHNTQ1JtNktVR2xYYWFGNFQ0OUMvd05rcVc0MS96SHdNZmluNUpmN3ptcUp5?=
- =?utf-8?B?aE5wUldabTMzVFdPZC9rdmdDQTBYUkUwYmo5bDZsbEgwOURZNkZLSHpXaTZk?=
- =?utf-8?B?RlhYT29BWVNZSER0WjBDaCtucFJCTFp6VVJVaENFcDZDd1VJN1BvUXA3MHU2?=
- =?utf-8?B?OGhWeHlXZjRBc2RodDRhbWJTVFRIbU9ZWFJjQ3JsTU1tSWhBWFpZdTNFcUNB?=
- =?utf-8?B?RmVSNUhMMGt4QUluc2lCdkRNTTFwbG1KMmlFbFVjOUVkNjFPUEZ1bDFOc2FB?=
- =?utf-8?B?Q3lNTUJqOHJpWk5qVXZ1MUw4NjF2VGYxSk9EWFI5clpNNXA1b1JMTTc5MkFB?=
- =?utf-8?B?bmliKzBSNlpUWkxhWDdXV1oycnBrV2pRbDdQeGFMZ1NQMzJSdU05cEFqWmVu?=
- =?utf-8?B?aVJQWU9icFFzM0hNS0VFRFdsTlY4amxxQjVDSkZ4bzFISzFCakQxMEhOdE1J?=
- =?utf-8?B?d3UxSEF4d1dPRDdZME9Nb3grd2Y3MDJRMjNmMG52d0MwWTczSXpLRDc3TWJh?=
- =?utf-8?B?c2JUNStMQzdQT1BPOWZ3encwMDZZbHBXWlpKUmtWMVYzVVdXcUNQdStrb0lR?=
- =?utf-8?B?bTFJTnZ3M2Y5aUpMM3dzc2hXVFhTODJmRFdtUlBlVDNic2FyTjlWZG1ITWlM?=
- =?utf-8?B?UFd4aUtFUjFFdkRQRDZMbEZNTVZXU2VxSWViM0dQM3dxL0s3eUhEZEJQNHhP?=
- =?utf-8?B?Zk9USkMvNm1RQU1RZUZCeUd0TjliL0JnT3h2ZWVYdEhjcTRZbk4yUlF6QjlZ?=
- =?utf-8?B?L254NVRNM1FhSGtFZjFpazI2blJPbmVneCs0ZVNLVFNqa3M0WURTcWk0bFpG?=
- =?utf-8?B?NUZZU2pKRUdmeG1sZnJISGVrUnQyTGhlc3R4bmlQa0JXSkoxR1YxTW5IYjhw?=
- =?utf-8?B?VElPOEphN3d2UGxCVElwN1hpZUhjN3NVUUh5Qy93VFNEdU03MHcxZURUUTY5?=
- =?utf-8?B?T29pdlA2WFQ2TTlvZnpKYlNhbEgwUTlqamNpQjhkZDFVOUxEQ2pSOGNDSXI3?=
- =?utf-8?B?Zmc9PQ==?=
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 65062f38-f9b1-4673-64a7-08dab6baa042
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2022 18:56:29.6943
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: suH1eu8WX41/RQr6iFo/ufz7M3XGyo3bVTPr3U0gZvDIXgHT2RuHjY7pVOmfqGU5fW3kJx+qYOzUoLt9qP0eLA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR03MB7958
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -126,48 +89,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/25/22 14:51, Jakub Kicinski wrote:
-> state is deferenced earlier in the function, the NULL check
-> is pointless. Since we don't have any crash reports presumably
-> it's safe to assume state is not NULL.
-
-Yes, I believe this was in place just for a patch which hasn't
-been upstreamed.
-
-> Fixes: f392a1846489 ("net: phylink: provide phylink_validate_mask_caps() helper")
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> CC: linux@armlinux.org.uk
-> CC: andrew@lunn.ch
-> CC: hkallweit1@gmail.com
-> CC: sean.anderson@seco.com
-> CC: rmk+kernel@armlinux.org.uk
-> ---
->  drivers/net/phy/phylink.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
+On 25/10/2022 11:01, Andrew Lunn wrote:
+>>> +      - enum:
+>>> +          - mxl,gsw145-mdio
+>>
+>> Why "mdio" suffix?
 > 
-> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-> index 62106c9e9a9d..88f60e98b760 100644
-> --- a/drivers/net/phy/phylink.c
-> +++ b/drivers/net/phy/phylink.c
-> @@ -564,7 +564,7 @@ EXPORT_SYMBOL_GPL(phylink_get_capabilities);
->  /**
->   * phylink_validate_mask_caps() - Restrict link modes based on caps
->   * @supported: ethtool bitmask for supported link modes.
-> - * @state: an (optional) pointer to a &struct phylink_link_state.
-> + * @state: pointer to a &struct phylink_link_state.
->   * @mac_capabilities: bitmask of MAC capabilities
->   *
->   * Calculate the supported link modes based on @mac_capabilities, and restrict
-> @@ -585,8 +585,7 @@ void phylink_validate_mask_caps(unsigned long *supported,
->  	phylink_caps_to_linkmodes(mask, caps);
->  
->  	linkmode_and(supported, supported, mask);
-> -	if (state)
-> -		linkmode_and(state->advertising, state->advertising, mask);
-> +	linkmode_and(state->advertising, state->advertising, mask);
->  }
->  EXPORT_SYMBOL_GPL(phylink_validate_mask_caps);
->  
+> I wondered about that as well. At some point in the future, there
+> could be an SPI version of this driver, and a UART version. Would they
+> all use the same compatible, and then context it used to determine the
+> correct binding? I think the kernel would be happy to do that, but i
+> don't know if the YAML tools can support that?
 
-Reviewed-by: Sean Anderson <sean.anderson@seco.com>
+In general the bus should not be encoded in the device compatible. On
+which bus this device sits, is determined from the parent, not from the
+device compatible. As you wrote the context is used to determine
+properties. There are few exceptions, though, but I think this is not a
+candidate for such.
+
+> 
+>>> +examples:
+>>> +  - |
+>>> +    #include <dt-bindings/gpio/gpio.h>
+>>> +
+>>> +    mdio {
+>>
+>> Hmmm... switch with MDIO is part of MDIO?
+> 
+> Happens a lot. Nothing wrong with this.
+
+OK, everyday learning :)
+
+Best regards,
+Krzysztof
+
