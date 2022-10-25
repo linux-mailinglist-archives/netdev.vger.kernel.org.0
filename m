@@ -2,127 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83F1060C3BA
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 08:20:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC2CD60C3EB
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 08:42:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231217AbiJYGUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 02:20:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44996 "EHLO
+        id S230297AbiJYGmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 02:42:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231234AbiJYGUr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 02:20:47 -0400
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD4826575;
-        Mon, 24 Oct 2022 23:20:43 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 1F6A15C0195;
-        Tue, 25 Oct 2022 02:20:43 -0400 (EDT)
-Received: from imap42 ([10.202.2.92])
-  by compute2.internal (MEProxy); Tue, 25 Oct 2022 02:20:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to; s=fm2; t=
-        1666678843; x=1666765243; bh=7W3UXDHBfkNojsHZuhGRHr85qNsS45ct53e
-        sNjSB9hc=; b=iRthNzQHgq4jCwNYZJiQBECSxEopKaQr0iOdgDqWIRAqgoGt340
-        JrjJ9pIfLrUyf1CxrHXdTdxuV9ApWrG/lJQDV8KnKXYIEQB5OxzKupG0psRS0uZr
-        EZywIZWSNtAjUxOk3TBMF7n4jZazT2r5kXj6s4LeFQ3ANppVZ9+nBh40UIHcr71V
-        nTs77XJT5kSW0oCiq/zzTV7rVGP7tuvtQ5cWrJxdezJ8XupHEcHSMeb0jtqB54oz
-        V3id8otJG73Y/BDcCbp6TGM9npdowdd5rrF7OmOcPPaWQ4pNmcdya/CvotwPsMXz
-        7LrK60TPYwR9O0HgsDoqOZZ5QD2XITvM9iQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:message-id:mime-version
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1666678843; x=
-        1666765243; bh=7W3UXDHBfkNojsHZuhGRHr85qNsS45ct53esNjSB9hc=; b=p
-        pkyH9JYKEmuUSAapa/HXGo9qwV4s9XRC5IobH32xugrmQ0qyctmm7u+r3b+QXOGj
-        0zIUPT8srWlA4gsGDrJWz8zF1jLkyD0BfCr2ICV2X0YoPAW0z3CP2PtN1BB52OjE
-        GquVkMyWHSyR/df1VxRL5Cw9Amvhut6G4WLiqCuQlC+HQQJ7jZbf2ojP6VFQfHAe
-        O4e5WjhrsPGVUiSaOKAnvicyWc0uMs855hU0Z44gjWykHEhFaw1awk3oCpHfVfMs
-        IJNCNmtV8dnYFGcrX+kMz8nVYy5/n+TP6X/YsuDzXG3VwGWVTyqaiv8sVr4jaVLj
-        NUVxD9wx3Z/jSwidadFzw==
-X-ME-Sender: <xms:OoBXYyU0qxB8gEVxTphuY_TnQ2miRubdQP7FAERM3gmwcnYhDLvR8w>
-    <xme:OoBXY-mN0Fk5QpuiWKq36wqLq4x9EYk2w76CJIzPNY1Wuqa7cZ8ZIrl_117kp_Ox6
-    _gX6tlFDyFG9tklhw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrgedthedguddutdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enfghrlhcuvffnffculddvfedmnecujfgurhepofgfggfkfffhvfevufgtsehttdertder
-    redtnecuhfhrohhmpedfffgrnhhivghlucgiuhdfuceougiguhesugiguhhuuhdrgiihii
-    eqnecuggftrfgrthhtvghrnhepkeffhffhfedvueejhfekkeeitdetkedvjeetkeektedt
-    gfeuleeiudfgteelheetnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghdpghhithhhuh
-    gsrdgtohhmpdhnvghtfhhilhhtvghrrdhorhhgnecuvehluhhsthgvrhfuihiivgeptden
-    ucfrrghrrghmpehmrghilhhfrhhomhepugiguhesugiguhhuuhdrgiihii
-X-ME-Proxy: <xmx:OoBXY2YaeHVHIBuHbZSN3tdLhXZ1VbMsq5pPxGMBhml3U8W_FIQ4yA>
-    <xmx:OoBXY5VNxvp_NDN1SA3m16aXUF1lEk5lNFImu6Dnz67JHj5QXVaHjg>
-    <xmx:OoBXY8mqwudL1R-Yj9-lXM-ccqyR08eHFXnYD9f0E_lHDtwZsOOowg>
-    <xmx:O4BXY7taLan8SFYRH95dKXG4m2U8FvrMZ47dqP0DaB8jqo9kHlKxWQ>
-Feedback-ID: i6a694271:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 4E785BC0078; Tue, 25 Oct 2022 02:20:42 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-1047-g9e4af4ada4-fm-20221005.001-g9e4af4ad
-Mime-Version: 1.0
-Message-Id: <9a91603a-7b8f-4c6d-9012-497335e4373b@app.fastmail.com>
-Date:   Tue, 25 Oct 2022 00:19:55 -0600
-From:   "Daniel Xu" <dxu@dxuuu.xyz>
-To:     "Pablo Neira Ayuso" <pablo@netfilter.org>,
-        "Jozsef Kadlecsik" <kadlec@netfilter.org>,
-        "Florian Westphal" <fw@strlen.de>, netfilter-devel@vger.kernel.org
-Cc:     coreteam@netfilter.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ppenkov@aviatrix.com
-Subject: ip_set_hash_netiface
-Content-Type: text/plain
-X-Spam-Status: No, score=1.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FROM_SUSPICIOUS_NTLD,
-        FROM_SUSPICIOUS_NTLD_FP,PDS_OTHER_BAD_TLD,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.6
+        with ESMTP id S229515AbiJYGmO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 02:42:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFA6F20BCE
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 23:42:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 75009B81A49
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 06:42:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E182C433C1;
+        Tue, 25 Oct 2022 06:42:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666680131;
+        bh=l00E+eZjHM9+he3LnrSwL0OtgxlWvyTBo+jQSGz/0+Q=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZaCAviUMgZcTYW92ryB9+rN3mv3ijP4Xs9YCbpuVFqDTwT0u6I64uk3Av4YEHJULB
+         JdFKPC//pIAis3GCAxquJVHq6BIA/TUzisoH+Os+PVakoKgIfj1PloZ0stqBVgXvmC
+         reabi0qzjSCC2jaGkoGrRpWLl16yM8nrqG+NQUMCVA09wz/3KbOKcsHE60LB5sclQN
+         i6BaenHnhdpqzRh0IyaQIGz6ttUKdJdHNRReUtlwxPU1UdziSk60kjPnDwE80p+zb7
+         VA4BhdcyngjJo+8jXwkijiayYghcci/l4IRlSt9F4QqEtSVd/jKCNn24RVkTp8MqWE
+         NBE80p9+GUr0Q==
+Date:   Tue, 25 Oct 2022 09:42:07 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+Subject: Re: [PATCH net] net: fealnx: fix missing pci_disable_device()
+Message-ID: <Y1eFP1dGZl28atCB@unreal>
+References: <20221024135728.2894863-1-yangyingliang@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221024135728.2894863-1-yangyingliang@huawei.com>
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Pablo,
+On Mon, Oct 24, 2022 at 09:57:28PM +0800, Yang Yingliang wrote:
+> pci_disable_device() need be called while module exiting, switch
+> to use pcim_enable(), pci_disable_device() and pci_release_regions()
+> will be called in pcim_release() while unbinding device.
+> 
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> ---
+>  drivers/net/ethernet/fealnx.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/fealnx.c b/drivers/net/ethernet/fealnx.c
+> index ed18450fd2cc..fb139f295b67 100644
+> --- a/drivers/net/ethernet/fealnx.c
+> +++ b/drivers/net/ethernet/fealnx.c
+> @@ -494,7 +494,7 @@ static int fealnx_init_one(struct pci_dev *pdev,
+>  
+>  	option = card_idx < MAX_UNITS ? options[card_idx] : 0;
+>  
+> -	i = pci_enable_device(pdev);
+> +	i = pcim_enable_device(pdev);
+>  	if (i) return i;
+>  	pci_set_master(pdev);
+>  
+> @@ -670,7 +670,6 @@ static int fealnx_init_one(struct pci_dev *pdev,
+>  err_out_unmap:
+>  	pci_iounmap(pdev, ioaddr);
+>  err_out_res:
+> -	pci_release_regions(pdev);
+>  	return err;
+>  }
+>  
+> @@ -689,7 +688,6 @@ static void fealnx_remove_one(struct pci_dev *pdev)
+>  		unregister_netdev(dev);
+>  		pci_iounmap(pdev, np->mem);
+>  		free_netdev(dev);
+> -		pci_release_regions(pdev);
+>  	} else
+>  		printk(KERN_ERR "fealnx: remove for unknown device\n");
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+This path is not possible.
 
-I'm following up with our hallway chat yesterday about how ipset
-hash:net,iface can easily OOM.
-
-Here's a quick reproducer (stolen from
-https://bugzilla.kernel.org/show_bug.cgi?id=199107):
-
-        $ ipset create ACL.IN.ALL_PERMIT hash:net,iface hashsize 1048576 timeout 0
-        $ for i in $(seq 0 100); do /sbin/ipset add ACL.IN.ALL_PERMIT 0.0.0.0/0,kaf_$i timeout 0 -exist; done
-
-This used to cause a NULL ptr deref panic before
-https://github.com/torvalds/linux/commit/2b33d6ffa9e38f344418976b06 .
-
-Now it'll either allocate a huge amount of memory or fail a
-vmalloc():
-
-        [Tue Oct 25 00:13:08 2022] ipset: vmalloc error: size 1073741848, exceeds total pages
-        <...>
-        [Tue Oct 25 00:13:08 2022] Call Trace:
-        [Tue Oct 25 00:13:08 2022]  <TASK>
-        [Tue Oct 25 00:13:08 2022]  dump_stack_lvl+0x48/0x60
-        [Tue Oct 25 00:13:08 2022]  warn_alloc+0x155/0x180
-        [Tue Oct 25 00:13:08 2022]  __vmalloc_node_range+0x72a/0x760
-        [Tue Oct 25 00:13:08 2022]  ? hash_netiface4_add+0x7c0/0xb20
-        [Tue Oct 25 00:13:08 2022]  ? __kmalloc_large_node+0x4a/0x90
-        [Tue Oct 25 00:13:08 2022]  kvmalloc_node+0xa6/0xd0
-        [Tue Oct 25 00:13:08 2022]  ? hash_netiface4_resize+0x99/0x710
-        <...>
-
-Note that this behavior is somewhat documented
-(https://ipset.netfilter.org/ipset.man.html):
-
->  The internal restriction of the hash:net,iface set type is that the same
->  network prefix cannot be stored with more than 64 different interfaces
->  in a single set.
-
-I'm not sure how hard it would be to enforce a limit, but I think it would
-be a bit better to error than allocate many GBs of memory.
-
-Thanks,
-Daniel
+>  }
+> -- 
+> 2.25.1
+> 
