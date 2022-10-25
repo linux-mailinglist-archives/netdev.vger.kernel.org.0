@@ -2,176 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C11A860D726
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 00:31:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B98BE60D73F
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 00:39:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232637AbiJYWb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 18:31:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52978 "EHLO
+        id S232411AbiJYWjn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 18:39:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232614AbiJYWb2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 18:31:28 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F9402649C
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 15:31:26 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lRQdF6qSiie72fN9gSAhv6BIsZuAJAyUr0PP3Nf0J+Z03+7umuWHBisSQJ0/Ak2LSRTfVYw8Z9HFNoJtv01Cmmz5aIX2thMoD7hS1Fz435P6R3JY45QpzqmICDEZHAImJjTBsQ3JapxZVsl3IFJYoO4yKvLbciicKlvjYsrZhXHE2JkI6d2ozK9N6JGwKWCxqSeXI2wkOuTGyznOsBLUfhkCCMFWqQpvSu7Ack/mBdFfl8dtLYYsYuWaqFcP3eIFAPBc/UdQU4olDZX352GU57/QkdU7ZHc1D9jNfdJ7nQQSUgbH3e2jnnky+cSQWXKsggqITr6Yk7tCEU6qKujRGA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=v0t91Q5E5l1x1fpRBbKBJRFwYVp/mALQi2aSfLS1y7s=;
- b=GDVUt1FmaGL7TJSW8DIgRucBgo91pG8BwMjeRsgBbHFVPLXt+ZYIEdnv9CG/eEEcMEnY+5IpG+GL3E3+nlu6piigRA5mLrUj7Bw7D0JBeamXlkITrYpGriZV0zAZdGuCRvuYmhXYiL4Q3y7ryOQesDcIh8X2hB1FAe/KAeRpLUTeKRZw6WfcR/JFTdTfwikRaae8MWcNsBfdDvUaRlMvA8sU/nrXBpsW0gta7UTvlt3sKEU6a29/0+xZFN6Vbt+gBKnO3sKyNCqBYO5RPrJw/RRR1K4nqKrLrIjky2PR9HDzZCJq+7gou6hUWPT8D+EGzLkZPJzLpBfKHmpxEOp9qw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v0t91Q5E5l1x1fpRBbKBJRFwYVp/mALQi2aSfLS1y7s=;
- b=S6eV5rZA41DNPmqK7V2pAYnVHfEkztHd9vCCHMwma1fdhIT2HMaQ73Fs0SfC3Kv/nx+FyMX2O/tqCWO7Us2v7M4A5NqSoHAAGVUYPbvluFQxZkHkkGFav3j2xiV3Zq9oy9kq+kpqS0GB6/Qrq8dnDeJe6VYVY9agKva2U806Dv8wfmbZtmZADQRaPTn1WvbcOy0CUylDNj7LY3AWkA5jAkemFfztyxFEeJ1BelalM1Onw6obhdcXj0gDRmX2bo60XHVhFIwwgHkungK81c/8aHf+k0fDLa4dik3w9+Cgqqpn51cLZWXraGv1bkeZo/XmArUaKWl7T+UD7sH0rWyEgA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4373.namprd12.prod.outlook.com (2603:10b6:208:261::8)
- by MN2PR12MB4519.namprd12.prod.outlook.com (2603:10b6:208:262::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.28; Tue, 25 Oct
- 2022 22:31:25 +0000
-Received: from MN2PR12MB4373.namprd12.prod.outlook.com
- ([fe80::6c65:8f78:f54e:3c93]) by MN2PR12MB4373.namprd12.prod.outlook.com
- ([fe80::6c65:8f78:f54e:3c93%5]) with mapi id 15.20.5746.028; Tue, 25 Oct 2022
- 22:31:24 +0000
-From:   Benjamin Poirier <bpoirier@nvidia.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH iproute2] ip-monitor: Do not error out when RTNLGRP_STATS is not available
-Date:   Wed, 26 Oct 2022 07:29:09 +0900
-Message-Id: <20221025222909.1112705-1-bpoirier@nvidia.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220922082854.5aa1bffe@hermes.local>
-References: <20220922082854.5aa1bffe@hermes.local>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: TYCPR01CA0088.jpnprd01.prod.outlook.com
- (2603:1096:405:3::28) To MN2PR12MB4373.namprd12.prod.outlook.com
- (2603:10b6:208:261::8)
+        with ESMTP id S232471AbiJYWjk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 18:39:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A39DB1F9E0
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 15:39:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CDBC8B81F4D
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 22:39:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1FF3C433D6;
+        Tue, 25 Oct 2022 22:39:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666737567;
+        bh=AoyyzEpnw+t2R29yjb3Gs/q5K+EEtgxfzfWYQ8Eg0H8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=INBfO1fWQAshPScb6xwVOFbgzjSajHIINoGcfavL7C66A1YvuVwiijdTmdj6gHkBx
+         kSPwtbSP5xEPY47NThEFHzUFjnMD8JxCpFbVZbi4xMOihHJ0e4/zXVZkfe4Tt6QBw5
+         umGQuv1AJz0B6634FMxgOt/E5xRa4q22GorC3vW+DOg9PisH7FP+XWlIjGGzg/jJkC
+         Ci0Z4n6qVd+Kk7ZuMKED5kYyc0DmubkwWOn6oJuOAuDjkUvpO4S+A7L7umKmC4b6ZE
+         YFv4RC4TJT/J2UI7gFl6HS0wwYQ/hYCEQ7DVIOf85JNCUobz3AkeJj9KHIjCgseKlE
+         WlQNojUuhX3wA==
+Date:   Tue, 25 Oct 2022 15:39:25 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Aurelien Aptel <aaptel@nvidia.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, saeedm@nvidia.com, tariqt@nvidia.com,
+        leon@kernel.org, linux-nvme@lists.infradead.org, sagi@grimberg.me,
+        hch@lst.de, kbusch@kernel.org, axboe@fb.com, chaitanyak@nvidia.com,
+        smalin@nvidia.com, ogerlitz@nvidia.com, yorayz@nvidia.com,
+        borisp@nvidia.com, aurelien.aptel@gmail.com, malin1024@gmail.com
+Subject: Re: [PATCH v7 01/23] net: Introduce direct data placement tcp
+ offload
+Message-ID: <20221025153925.64b5b040@kernel.org>
+In-Reply-To: <20221025135958.6242-2-aaptel@nvidia.com>
+References: <20221025135958.6242-1-aaptel@nvidia.com>
+        <20221025135958.6242-2-aaptel@nvidia.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4373:EE_|MN2PR12MB4519:EE_
-X-MS-Office365-Filtering-Correlation-Id: aa91944f-0348-42f8-92c6-08dab6d8a633
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: PXbd80Up8PmYzb0hKEFFaptZQjxzCQ+rxqlImWPKayxV98/2uygznB9CrH9/o6nwJqwW8agdz6h5QtwD1knRyypoXw4CMNv8/5ckFUQwrZU1cYRiIVAisul4rvlvYPfU7aCQzQeM9DuhnF0xMW3s9P+Tj/plNXNkyF7G2TU3ZHWTc7OZMJ+fINKoOFp4z8QjqY3YIACFhq0jV2Fl3jvaEst4PHsBxnKlZwazn85KKEL66l0YCbLqqFHSTcy2jFoBSmXlA0OTYC1ond6xEHslEyl4v1CTPcIrn1jQ1o/SypZJS2NvoV0ad+4XSQEINw3IM+f2zE8aGdLEIee/QG2xClnhiSPdpMF+SjERWgKXU2iszPWpcHY/Rbz8WK56Yfv1on8g6Vxe9+PNyU/D4k3Bg1xJrcvE6bXY3xsLgWg+6eNA02dlE3Hkoo/EPwYjm96XVJPwfEcFmoF90Ym7yXmYR23oZUWN5V6Ks/2erv6l5Ls9kw20imgWxj4nIgDSG1x3u55U4zcf5QfDyUoao/S1koFcyZ/P/EcPA+4Ts3GWHWbfZw9G53Yf+IO/EMGDWBgEz+OwfYPOI5VT+Ek5v89ktD8Ja7tLwpdODFE3U7yPcgXr9sDSx0FdKjTzlKAngyHT/wHjoldIl9MNH33LTkEbXllamlTZyf3DMRDKdhbnPmxum4cDnabtWjObHl/E3MhBVbUgwUji8WXSdo5Ch01XAA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4373.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(346002)(376002)(366004)(396003)(39860400002)(451199015)(1076003)(186003)(26005)(6486002)(2906002)(38100700002)(86362001)(36756003)(6506007)(83380400001)(6512007)(2616005)(316002)(8676002)(4326008)(478600001)(6666004)(107886003)(41300700001)(54906003)(6916009)(5660300002)(8936002)(66946007)(66556008)(66476007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Ipn2+22snzsvMDR1OUnBrDmc2TjMrpZELYnsiSk1b+Rzlv6Zq+LgrqI9Iv7b?=
- =?us-ascii?Q?hSJkA8bWPuxI10YQ9TeX6cAt6f4UCjC2Dwq98tBdEF2AW1BHPhds7j4mSC5i?=
- =?us-ascii?Q?4O2Ph/L3+CyVdhDVG3pK45tKpb63nG7ExMUU43TFQWFtsN6/JiJx5GiZvUKq?=
- =?us-ascii?Q?3zJ/alzFCG9tcYtarOeHchFxFAdsknyr8ya1aJjVxAWZFMhLH2C0NbazQ8E6?=
- =?us-ascii?Q?gwEVzR8WyeQwx+Zo6imzjBMBYGYtZPRcef1F4b87XMpqk5un8Bffl1AuoNxr?=
- =?us-ascii?Q?8xtypklNNE9vEe+tjIav4X4x6WruMPDiX+/Mpe1igWlPL4G5vf++WmOqpsz5?=
- =?us-ascii?Q?qSywb9Bp/7D1YwNEnluTremOySV/KQN64LOGEMkTt0SFQcgqzHYpyrZ2wW6I?=
- =?us-ascii?Q?BKZ3kERIciNpMGKBBcNeMEGpN3kATKCTmM22Z6KHV/AQ3slZAzuoTiWz399C?=
- =?us-ascii?Q?1771xJzXMz3EDY1K5yUePUZHbjItjW/L9WGAlaX4LuYufraRV9ON8C5Shhzm?=
- =?us-ascii?Q?6jPWt6Ad5yk5MfXmHXNft01FYFRrTffgSYT4879f9IWoWbsDUiJRTfXba7I7?=
- =?us-ascii?Q?CtYzpUI9urs5t7QwhDrqbBuxNKlu3pz1xHf38LJC2bxbD+RDVJCYfO0uE5sy?=
- =?us-ascii?Q?z7TXC2cGyJl6BgNkyYeutGvE3md+bhD7JhrLkFGOSunBb6K+w0na8qFpyuZ8?=
- =?us-ascii?Q?jXdVKFihtep0MyMZwS2/PVahVJLgeh6ew9fTgtpUwEOQUHDhp12j/KFPbsu0?=
- =?us-ascii?Q?sr53IquAKkfXAxvm0fGwgfsQ/O9y7IuB4axkDwAZpOg9NxcYNjmfHjcqObAz?=
- =?us-ascii?Q?t+oPxcihD894dAlSUkTXE8535SBoBlYYvtkHFwUaLykFQk/+jDbZOFDul9Fw?=
- =?us-ascii?Q?gqfHEkkoXvwzjH7Hbc+i5dkxysU3o0moN8V+MrjWp6hTa9AteiNMHaQxogr2?=
- =?us-ascii?Q?vOyjOAm1Zd6lmVokTFEBROGUonRNxWqht6aLEMia2tBte5IOm52e2zHvgIFo?=
- =?us-ascii?Q?uu/OWJWrmWcvEvOm/f82EDgNEcZ6k+vHoGEbmQjAkT5zRf5P7e/aQuH+xNpu?=
- =?us-ascii?Q?yU4cbBb/U1ftewUClArasVyWhEOqewpvmS4oGU9KisOokzWJ9pvJovUGA9Kx?=
- =?us-ascii?Q?aLPubxWakeX1r+E7MRSD50gL4aac3qyDcsTICyQhwN6NMmEFRbIWY7kjgrp2?=
- =?us-ascii?Q?0mL/yxAhCbwYaHf3PY0N/JWWGuOY/HzWKXpWDPVQ/ghfOzq/5zGg87FDxXKp?=
- =?us-ascii?Q?8yGr6YiYid5KdN8OmNztBa2qNjMrNxdHAy/TykFvtpIfFi4JNY6EiGJ9tfo1?=
- =?us-ascii?Q?HeTdm6AvR4h1bFMhCcCgpL8YS2/4GhVqzqh0/Bupcq41TtovYQthajWLtrG8?=
- =?us-ascii?Q?9xzNoKols+xHHyM+AjwbQR2atTVcnEZj9+sMkG1cWL1Ur72R9R9oxXzmhMKP?=
- =?us-ascii?Q?kp6UXh7lS66AgmJofay5+Jcc5A7Jt50GH8yVF6l52ntjdYZE1ZvjlVEVnulk?=
- =?us-ascii?Q?vcCvBPoXJD9xbjgBlIEK1cnN/8E3QvQmwOyxPWp11HJFMqWP4T6Uxka97WVr?=
- =?us-ascii?Q?R0pGyH9/cNijK3uNVVuityVovQQXidYrpjqMpP39?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: aa91944f-0348-42f8-92c6-08dab6d8a633
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4373.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2022 22:31:24.7215
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qNdODsKxD8z1DYwnr29vicQV1POMGVjfny0wpcksMEJ3Gy/wmHvYFPkONcIGV3/YpF3kpF65yfFLZXWRFTg4BA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4519
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Following commit 4e8a9914c4d4 ("ip-monitor: Include stats events in default
-and "all" cases"), `ip monitor` fails to start on kernels which do not
-contain linux.git commit 5fd0b838efac ("net: rtnetlink: Add UAPI toggle for
-IFLA_OFFLOAD_XSTATS_L3_STATS") because the netlink group RTNLGRP_STATS
-doesn't exist:
+On Tue, 25 Oct 2022 16:59:36 +0300 Aurelien Aptel wrote:
+> diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
+> index 7c2d77d75a88..bf7391aa04c7 100644
+> --- a/include/linux/netdev_features.h
+> +++ b/include/linux/netdev_features.h
+> @@ -14,7 +14,7 @@ typedef u64 netdev_features_t;
+>  enum {
+>  	NETIF_F_SG_BIT,			/* Scatter/gather IO. */
+>  	NETIF_F_IP_CSUM_BIT,		/* Can checksum TCP/UDP over IPv4. */
+> -	__UNUSED_NETIF_F_1,
+> +	NETIF_F_HW_ULP_DDP_BIT,         /* ULP direct data placement offload */
 
- $ ip monitor
- Failed to add stats group to list
+Why do you need a feature bit if there is a whole caps / limit querying
+mechanism? 
 
-When "stats" is not explicitly requested, change the error to a warning so
-that `ip monitor` and `ip monitor all` continue to work on older kernels.
+>  	NETIF_F_HW_CSUM_BIT,		/* Can checksum all the packets. */
+>  	NETIF_F_IPV6_CSUM_BIT,		/* Can checksum TCP/UDP over IPV6 */
+>  	NETIF_F_HIGHDMA_BIT,		/* Can DMA to high memory. */
+> @@ -168,6 +168,7 @@ enum {
+>  #define NETIF_F_HW_HSR_TAG_RM	__NETIF_F(HW_HSR_TAG_RM)
+>  #define NETIF_F_HW_HSR_FWD	__NETIF_F(HW_HSR_FWD)
+>  #define NETIF_F_HW_HSR_DUP	__NETIF_F(HW_HSR_DUP)
+> +#define NETIF_F_HW_ULP_DDP	__NETIF_F(HW_ULP_DDP)
+>  
+>  /* Finds the next feature with the highest number of the range of start-1 till 0.
+>   */
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index eddf8ee270e7..84554f26ad6b 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -1043,6 +1043,7 @@ struct dev_ifalias {
+>  
+>  struct devlink;
+>  struct tlsdev_ops;
+> +struct ulp_ddp_dev_ops;
 
-Note that the same change is not done for RTNLGRP_NEXTHOP because its value
-is 32 and group numbers <= 32 are always supported; see the comment above
-netlink_change_ngroups() in the kernel source. Therefore
-NETLINK_ADD_MEMBERSHIP 32 does not error out even on kernels which do not
-support RTNLGRP_NEXTHOP.
+I thought forward declarations are not required for struct members, 
+are they?
 
-Reported-by: Stephen Hemminger <stephen@networkplumber.org>
-Fixes: 4e8a9914c4d4 ("ip-monitor: Include stats events in default and "all" cases")
-Signed-off-by: Benjamin Poirier <bpoirier@nvidia.com>
----
- ip/ipmonitor.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+>  struct netdev_net_notifier {
+>  	struct list_head list;
+> @@ -2096,6 +2097,10 @@ struct net_device {
+>  	const struct tlsdev_ops *tlsdev_ops;
+>  #endif
+>  
+> +#if IS_ENABLED(CONFIG_ULP_DDP)
+> +	const struct ulp_ddp_dev_ops *ulp_ddp_ops;
+> +#endif
 
-diff --git a/ip/ipmonitor.c b/ip/ipmonitor.c
-index 8a72ea42..45e4e8f1 100644
---- a/ip/ipmonitor.c
-+++ b/ip/ipmonitor.c
-@@ -195,6 +195,8 @@ static int accept_msg(struct rtnl_ctrl_data *ctrl,
- int do_ipmonitor(int argc, char **argv)
- {
- 	unsigned int groups = 0, lmask = 0;
-+	/* "needed" mask */
-+	unsigned int nmask;
- 	char *file = NULL;
- 	int ifindex = 0;
- 
-@@ -253,6 +255,7 @@ int do_ipmonitor(int argc, char **argv)
- 	ipneigh_reset_filter(ifindex);
- 	ipnetconf_reset_filter(ifindex);
- 
-+	nmask = lmask;
- 	if (!lmask)
- 		lmask = IPMON_L_ALL;
- 
-@@ -328,8 +331,11 @@ int do_ipmonitor(int argc, char **argv)
- 
- 	if (lmask & IPMON_LSTATS &&
- 	    rtnl_add_nl_group(&rth, RTNLGRP_STATS) < 0) {
-+		if (!(nmask & IPMON_LSTATS))
-+			fprintf(stderr, "Warning: ");
- 		fprintf(stderr, "Failed to add stats group to list\n");
--		exit(1);
-+		if (nmask & IPMON_LSTATS)
-+			exit(1);
- 	}
- 
- 	if (listen_all_nsid && rtnl_listen_all_nsid(&rth) < 0)
--- 
-2.37.2
+It's somewhat unclear to me why we add ops to struct net_device,
+rather than to ops.. can you explain?
+
+>  	const struct header_ops *header_ops;
+>  
+>  	unsigned char		operstate;
+
+> +#include <linux/netdevice.h>
+> +#include <net/inet_connection_sock.h>
+> +#include <net/sock.h>
+> +
+> +enum ulp_ddp_type {
+> +	ULP_DDP_NVME = 1,
+
+I think the DDP and the NVME parts should have more separation.
+
+Are you planning to implement pure TCP placement, without NIC trying 
+to also "add value" by processing whatever TCP is carrying.
+
+Can you split the DDP and NVME harder in the API, somehow?
+
+> +};
+> +
+> +enum ulp_ddp_offload_capabilities {
+> +	ULP_DDP_C_NVME_TCP = 1,
+> +	ULP_DDP_C_NVME_TCP_DDGST_RX = 2,
+> +};
+> +
+> +/**
+> + * struct ulp_ddp_limits - Generic ulp ddp limits: tcp ddp
+> + * protocol limits.
+> + * Protocol implementations must use this as the first member.
+> + * Add new instances of ulp_ddp_limits below (nvme-tcp, etc.).
+> + *
+> + * @type:		type of this limits struct
+> + * @offload_capabilities:bitmask of supported offload types
+> + * @max_ddp_sgl_len:	maximum sgl size supported (zero means no limit)
+> + * @io_threshold:	minimum payload size required to offload
+> + * @buf:		protocol-specific limits struct (if any)
+> + */
+> +struct ulp_ddp_limits {
+
+Why is this called limits not capabilities / caps?
+
+> +	enum ulp_ddp_type	type;
+> +	u64			offload_capabilities;
+> +	int			max_ddp_sgl_len;
+> +	int			io_threshold;
+> +	unsigned char		buf[];
+
+Just put a union of all the protos here.
+
+> +};
+> +
+> +/**
+> + * struct nvme_tcp_ddp_limits - nvme tcp driver limitations
+> + *
+> + * @lmt:		generic ULP limits struct
+> + * @full_ccid_range:	true if the driver supports the full CID range
+> + */
+> +struct nvme_tcp_ddp_limits {
+> +	struct ulp_ddp_limits	lmt;
+> +
+> +	bool			full_ccid_range;
+> +};
+
+> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> index 0640453fce54..df37db420110 100644
+> --- a/net/ipv4/tcp_input.c
+> +++ b/net/ipv4/tcp_input.c
+> @@ -5233,6 +5233,10 @@ tcp_collapse(struct sock *sk, struct sk_buff_head *list, struct rb_root *root,
+>  		memcpy(nskb->cb, skb->cb, sizeof(skb->cb));
+>  #ifdef CONFIG_TLS_DEVICE
+>  		nskb->decrypted = skb->decrypted;
+> +#endif
+> +#ifdef CONFIG_ULP_DDP
+> +		nskb->ulp_ddp = skb->ulp_ddp;
+> +		nskb->ulp_crc = skb->ulp_crc;
+>  #endif
+>  		TCP_SKB_CB(nskb)->seq = TCP_SKB_CB(nskb)->end_seq = start;
+>  		if (list)
+> @@ -5266,6 +5270,10 @@ tcp_collapse(struct sock *sk, struct sk_buff_head *list, struct rb_root *root,
+>  #ifdef CONFIG_TLS_DEVICE
+>  				if (skb->decrypted != nskb->decrypted)
+>  					goto end;
+> +#endif
+> +#ifdef CONFIG_ULP_DDP
+
+no ifdef needed
+
+> +				if (skb_is_ulp_crc(skb) != skb_is_ulp_crc(nskb))
+> +					goto end;
+>  #endif
+>  			}
+>  		}
 
