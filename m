@@ -2,74 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8ECD460C4C5
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 09:11:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5362460C4CB
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 09:13:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229950AbiJYHLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 03:11:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34374 "EHLO
+        id S231585AbiJYHNE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 03:13:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229976AbiJYHLY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 03:11:24 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 546C6100BEC;
-        Tue, 25 Oct 2022 00:11:23 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id y4so10456231plb.2;
-        Tue, 25 Oct 2022 00:11:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:cc:date:message-id:subject:mime-version
-         :content-transfer-encoding:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=OpGVdTHPTo8HE73NSMb14pa67PYd3cbhvavpF08Svys=;
-        b=LFPhd8kXff5Z7xDxPYwT8GK84sP92AapJRipScMeKFvJXwYapY1fMnr6PnMk5UcN2K
-         ZVe4XJF7X2BqqEiBgxCaCYvlUyDvtvTI9Q3o9jCAWVEVTj+M88JmvrDf4nndmZBlXz8k
-         O5jXS0jS6RL4aB8UmCkmiK69x4wqGAo6bd8x05Z3/b/6ZeePVA+LREPpyNIazui8XwGz
-         XJM+uosbpxVEcfLzGWaEcYUwewJyWNY/s4MTX1sEVxkmqoIY553Gg4FQhA3Gg/hjgWJb
-         RHLjwPBzcn/ivHgjhepULYkri2KaXES6BkF4Y0tfGhr6kmB+6jtMPHlK24I9Xm5RGZWl
-         ScYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:cc:date:message-id:subject:mime-version
-         :content-transfer-encoding:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=OpGVdTHPTo8HE73NSMb14pa67PYd3cbhvavpF08Svys=;
-        b=0evw5c+9UrPAHx0THwBlacaH4dYUCcMdns90XboPiT87dmQ23wQkgalPtqVZac7Ajl
-         PTKBQMk5DbR8NlNob6x7tDnpoj/NbIxD3UR4sHHFlKvuhNl801mY7Oh712PE6XRTuPjp
-         9S9rpO279R3N3gU7VXmBPhfCaA+y/EGLdB6l5HgiI+7GD1i+YezYSBLYBJEchixoDs/h
-         DrdOHseceMhVA9Hltjr6ymnfVVjG77go2JluoouSy+GAWKkM34DP97s1mjOpGNJVFgdT
-         kwL+ct8j15RAK/9h1eW89btu1l1frZtIHxiMfMydUr5hq70uPq7QYhAAIdvNoZAHpsKm
-         jbRg==
-X-Gm-Message-State: ACrzQf3IZtCZVP82SzwNyqdckNjfMaQRILBNqqpzetnjbvQk7uLqbJa+
-        2fItRU3CZOOc5CMkTVwNnXM=
-X-Google-Smtp-Source: AMsMyM78ep3vxaArGkOQSNI8U22FumC6eFJK6qze2I7VonY67ClnJIuiMq0XFH5PZaWrkMHhCxhZ8Q==
-X-Received: by 2002:a17:90b:305:b0:213:8a6:8bb4 with SMTP id ay5-20020a17090b030500b0021308a68bb4mr11792021pjb.33.1666681882711;
-        Tue, 25 Oct 2022 00:11:22 -0700 (PDT)
-Received: from smtpclient.apple ([2001:e68:541d:e8fd:fd7f:3fc0:34d8:db1])
-        by smtp.gmail.com with ESMTPSA id f15-20020a170902ce8f00b00186a2444a43sm713855plg.27.2022.10.25.00.11.19
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 25 Oct 2022 00:11:22 -0700 (PDT)
-From:   Wong Vee Khee <veekhee@gmail.com>
-Content-Type: text/plain;
-        charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.120.41.1.1\))
-Subject: Re: [PATCH net-next 2/2] net: stmmac: remove duplicate dma queue
- channel macros
-Message-Id: <03329169-560C-4319-AEBB-44BFFE959EBC@gmail.com>
-Date:   Tue, 25 Oct 2022 15:11:17 +0800
-Cc:     Joao.Pinto@synopsys.com, alexandre.torgue@foss.st.com,
-        davem@davemloft.net, edumazet@google.com, joabreu@synopsys.com,
-        kuba@kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        pabeni@redhat.com, peppe.cavallaro@st.com
-To:     junxiao.chang@intel.com
-X-Mailer: Apple Mail (2.3696.120.41.1.1)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        with ESMTP id S231153AbiJYHNC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 03:13:02 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A658517E0B
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 00:13:01 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1onE6q-0005NE-NB; Tue, 25 Oct 2022 09:12:24 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id F3F9810925C;
+        Tue, 25 Oct 2022 07:12:11 +0000 (UTC)
+Date:   Tue, 25 Oct 2022 09:12:09 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Dongliang Mu <dzm91@hust.edu.cn>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Cai Huoqing <cai.huoqing@linux.dev>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Gerhard Sittig <gsi@denx.de>,
+        Anatolij Gustschin <agust@denx.de>,
+        Mark Brown <broonie@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] can: mscan: mpc5xxx: fix error handling code in
+ mpc5xxx_can_probe
+Message-ID: <20221025071209.jwe6wxxbh33vfeob@pengutronix.de>
+References: <20221024114810.732168-1-dzm91@hust.edu.cn>
+ <Y1Z+XHdOozjBFBzF@smile.fi.intel.com>
+ <6A916694-CA4E-4D73-8CF0-B35AC8C6B9D3@hust.edu.cn>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="bxmmnmhog6mtsffw"
+Content-Disposition: inline
+In-Reply-To: <6A916694-CA4E-4D73-8CF0-B35AC8C6B9D3@hust.edu.cn>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,9 +69,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Why not combine with the other =E2=80=98if (queue < 4).. else=E2=80=99 =
-in
-this function all together?
 
-Regards,
-Vee Khee=
+--bxmmnmhog6mtsffw
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On 25.10.2022 10:29:50, Dongliang Mu wrote:
+>=20
+>=20
+> > On Oct 24, 2022, at 20:00, Andy Shevchenko <andriy.shevchenko@linux.int=
+el.com> wrote:
+> >=20
+> > On Mon, Oct 24, 2022 at 07:48:07PM +0800, Dongliang Mu wrote:
+> >> The commit 1149108e2fbf ("can: mscan: improve clock API use
+> >> ") only adds put_clock in mpc5xxx_can_remove function, forgetting to a=
+dd
+> >=20
+> > Strange indentation. Why the '")' part can't be on the previous line?
+>=20
+> :/ it is automatically done by vim in `git commit -a -s -e`. I can
+> adjust this part in v2 patch.
+
+Fixed while applying the patch.
+
+Thanks,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--bxmmnmhog6mtsffw
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmNXjEcACgkQrX5LkNig
+012TTQf/etsqXRQvWattfWnfryXMggOz2Sjuz+AVNk0LyNmySJ05MR9CZ/VZ/DHg
+tk9N/7ycolCnujDGAvNYSoIuezlLI7GrWBOrrjtUjSn5Dl30Y0G72sjNEAhHaz4b
+qamtuv+nrT2gC60IUy+11lob296T8iV5PabzO4uNPn5I2to5ZIIgMYpdaN/wrA4o
+Ssh+0OPhkfjXQyDUiDFhrKVJUx2FJViYnoCur8m9bpyeqCNCMQLH458CQiKGWFrz
+mYpMGX0jha3C6fwvXa47pBEYoPZ89RDCLB9c5Xd8hfPqBLtAOHnCh4gfzYZNukHH
+E//JZ1puSEpdNpsLz2MjeFY0AIqTkw==
+=wi2j
+-----END PGP SIGNATURE-----
+
+--bxmmnmhog6mtsffw--
