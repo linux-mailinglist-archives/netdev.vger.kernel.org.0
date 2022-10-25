@@ -2,104 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7331860CA6B
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 12:53:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F29E160CA69
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 12:53:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232424AbiJYKxf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 06:53:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59476 "EHLO
+        id S231967AbiJYKxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 06:53:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232207AbiJYKxe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 06:53:34 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2052.outbound.protection.outlook.com [40.107.223.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 999E917F9AB
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 03:53:33 -0700 (PDT)
+        with ESMTP id S232424AbiJYKxM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 06:53:12 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2064.outbound.protection.outlook.com [40.107.223.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7897818058B
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 03:53:11 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i1tO0Rx1RRzcM7Wo8RvizAHail8/gR+vbC+qmcXWy7GiCjRXXoI1QEedfbIs9/DqTGWHJOCMenfG3xnut/hrwNCCZBmQzdzO7NeVtosgP3T0wmKcRspZfQvCOslKdQdH8rspvmoTpvNIrIZ906rvgibkcd3RY33TJJh5TYRADpTmer9ZKtFUYC4S0H5CjyE+anpAKjWK0wlakEiek5ZCjg6fuKTLh3AdIkITnDW85JAOk1Iyo3Szb08s8dEZZ3a90RwWgS48wpuerJc7LjJilMb3lrDfpdei230GQXCC4z9z1tPFKkbyTUARldRDRdCVkqBBoiUqqid0DuNEoSchdw==
+ b=L6V0Y8ol0WzkyIOJHhyJ4htuOxYvZWB6QFjkXGL5m03w1NBGo9c+UT+TKDKie/JJ8yr5X9EHj1yrrPNyfLEGiJyqOD731jR1lk3N/RQOeMQ0GRplrocnDuwG/Gk+RXIr9OrYS1Ub7TUIzftSuKp0rmChwO8uqbwEPTfv5EjYAMP/3YrCrhbgB46P22BF2HpWcNRz89WHBXMSWXaTk/z9rNqKt9CUC8SbR6NZbCVii2yl42JcagsHdkEBcj0nN3uzGbzebTAx46F6aHbQHlrM+54zp6dkNQZmt+UYwDfqBITwHBQe16O6fXhL6l7og6+W8uPFuwJiegHscLYz1BFiLA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+QkwMm4WhlFKYkMm/nfotl4x0bCOxRuzEXStaZqQ2s8=;
- b=lmp8Qn7OzwhzIYqjbPm1tK/ijjrLr79GORrJ8A2VGRiRBFPqW1xlg+0X6p8fsSzPkiH/O99AJF+06xXjeIwNnmtW4iqgK0O0erFV3WlQawVsVx/7wal6Oo2GY4W8P/F2cr4i0UTvWeETuXx1OibfdbpjjKWM+rrLxT5KfdQlpfoVdPWGa4e6zJ1tSjwjrx89JLiGkvuuwUW26t6oH9bYCFDBtU/qBzGAg5KQPWQo87KFF/+WTFynS6hMFSPMt71Lvf5noW7sY7Gnsgw8ZsICky/zZKoD99eAHwmnnKGuot6XVZABfSMHT/GIAIr55fX9ltdh9J1zQn5wzLngTgoXRA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
+ bh=Mgrt68RTokIPjxFk9F1VtW4AgjAvWhPVw4wFYPgG+7o=;
+ b=F7JXfQtXbsp/tgnwRYwkh1QV9OBQ8Be3ZnvwtQhCHawKwbi9Qo3ptIDKC9TvjG4oOS5r727xzgHcnfhbL0H2IpQcrsoAIV23nitJFyaeU94f7oMlQc/RRJyawk36NAaPWKwMj6qV2xaerbFYkWzVlk+TT80nUngCquwrsYNNgxo69YY8e7gxnuZFgndhM3yxCI60I3nhrz5zpYElYZzNI1OFdL4uBQ0eJrrkI+sVoRD8tsMXL4NL6Ywt1vnZqeussFjmvoDeObNUf2SKKJVAu5najtK+J6d+qB/nNHA71XHqza/IA+RW5ENU5THMId5zvB1mftSv0l8Fi+GTQPhgHw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+QkwMm4WhlFKYkMm/nfotl4x0bCOxRuzEXStaZqQ2s8=;
- b=BjEyBh+fj76mSTr+3qgaMyuhUx2lFGVDPIZ4EtYlJYFCvqH2fMUjqXhI0hjlVv//5EhaeyFggnD4z4D7RNJqYpFCSCW3+Qx8AVc8B6sYdELmLf0B+z+AGSQn6IdzOBOwKxYYHnn32vWBw8prk0hHzo8moRBDWPKG84NbhUIk524Ko/WlWu9kkkFbbF+NWkmz7GwQ6HGIIEGS9SULtJyQVcYu1E9rZ3DZv0KszhC30DQ3vyOHfjnf6d9I3Rte5ZQIS4bquJUzX/oAbTGQC2mlVCH9QKbDKH8UDPn6u9VawgqLb8kXO6X9fyFb2UBn35A2ws8pFEVWopvSJKOcnB4KgA==
-Received: from BN8PR03CA0030.namprd03.prod.outlook.com (2603:10b6:408:94::43)
- by MN0PR12MB6002.namprd12.prod.outlook.com (2603:10b6:208:37e::10) with
+ bh=Mgrt68RTokIPjxFk9F1VtW4AgjAvWhPVw4wFYPgG+7o=;
+ b=pLRRqlS78PrNILEG8db0Kbjrzc97tg/uT92QegIJGh5zRaagxZpp6bQ26kpWJkh6R6zdpnptpPDPXrDfQy5ouBRbwinz0kugst2oK7X/DAzaqKS9XzB8MPFKRhCnvueghS4i/qEJmDVr5Sg44NrmxQnt/DQwChuXlHVDK5csoz9qH8YcTbxXlzA6rkyBVDQRokBdCnhTmc6/KJcrjxtxI+BYiW5QLYPFAxzWk97Y63fLSa5LSc2oSSB5GwwrxvVs5srFCDjFQxXKEArOswYn+Luet++fFzXyc6K1+gI5lzyENebDHzGdsfDIGkksFLeOz5cJweMYANfXiRB6Iz78Xg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
+ by DM6PR12MB4202.namprd12.prod.outlook.com (2603:10b6:5:219::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.34; Tue, 25 Oct
- 2022 10:53:31 +0000
-Received: from BN8NAM11FT026.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:94:cafe::a5) by BN8PR03CA0030.outlook.office365.com
- (2603:10b6:408:94::43) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.28 via Frontend
- Transport; Tue, 25 Oct 2022 10:53:31 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- BN8NAM11FT026.mail.protection.outlook.com (10.13.177.51) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5746.16 via Frontend Transport; Tue, 25 Oct 2022 10:53:31 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Tue, 25 Oct
- 2022 03:53:21 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Tue, 25 Oct
- 2022 03:53:20 -0700
-Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server id 15.2.986.29 via Frontend Transport; Tue, 25 Oct
- 2022 03:53:17 -0700
-From:   Tariq Toukan <tariqt@nvidia.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        <netdev@vger.kernel.org>, Saeed Mahameed <saeedm@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: [PATCH net-next] bond: Disable TLS features indication
-Date:   Tue, 25 Oct 2022 13:53:00 +0300
-Message-ID: <20221025105300.4718-1-tariqt@nvidia.com>
-X-Mailer: git-send-email 2.31.1
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.28; Tue, 25 Oct
+ 2022 10:53:09 +0000
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::4ff2:d93e:d200:227e]) by CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::4ff2:d93e:d200:227e%7]) with mapi id 15.20.5746.028; Tue, 25 Oct 2022
+ 10:53:09 +0000
+Date:   Tue, 25 Oct 2022 13:53:04 +0300
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
+        davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
+        roopa@nvidia.com, razor@blackwall.org, mlxsw@nvidia.com
+Subject: Re: [RFC PATCH net-next 00/19] bridge: mcast: Extensions for EVPN
+Message-ID: <Y1fAEDkgAG3ttvOQ@shredder>
+References: <20221018120420.561846-1-idosch@nvidia.com>
+ <20221018122112.7218792b@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221018122112.7218792b@kernel.org>
+X-ClientProxiedBy: VI1P195CA0080.EURP195.PROD.OUTLOOK.COM
+ (2603:10a6:802:59::33) To CY5PR12MB6179.namprd12.prod.outlook.com
+ (2603:10b6:930:24::22)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT026:EE_|MN0PR12MB6002:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4e0fec0a-81b2-4e96-2810-08dab67727e0
+X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|DM6PR12MB4202:EE_
+X-MS-Office365-Filtering-Correlation-Id: 92271d3f-8c8d-4b53-2faf-08dab6771af6
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Yz0V6cjrP1fRzyh4j+wkydHf7cMIrfM4ta+/0gTsa0j5vEWft4MJcCwuUxegqqMgWkfYZUCsjwxGrwdFj/dHS87TfIP/Qo/4J45T2gXy+0IO3OJidRw3FRnOR03trEl14uHvQ0gwOMNjL2POVMX9Yn0YZt8+kJ/d2y4kJodhuOsKgSQbmAn/SkQ9PjpO95x/AOzB1SS+S16yEzl76rsfxK/eM9295LTA1x4v0cbq+adKF3p67VXdOgc2Hu4V5/2ck4ASRyC1oC4+uksX2CSX9EiCAH8yo55dwh2zGO2jCdOTdE1iGcgRnXlJABwv9RgmX1u6nLMdPOeyWponzzsRuuBrQCSo0D3JiaTl9duqyX6upOUG+y3LszouUmIp9S34C++O7c7j8E/q8ueaaY8DWut6l4ctyKbIQ6arKrh102fd9Ln0XbrMqhmTNLzKRCdaG3bvOXEJ9it7Z7Rj8TiBidmyBbBECFFksMfuSMuCnK1f9WG2aN354MWe81v4NRvl5LVAnm3ky2jxDbIm3046Se6L1H9CBnrt2FcOvaoplnDK4Rt0jaTmkXKyqwu7RWpeRzc/DQxmLu/+fHGqYby4Z0gghrS092qB274cv4RMuzkOrWC6BiJMB1fHEyZc85544d03DcnpO2d5GWTRQVPToEjE48/z09ZtRMEoynZ+zGDMWiMZhsAsjqTtuz7H1NeKF/1F6VlxLoZm45BIYJhNRZx8g1cPlhLFY+kFoe9bKy4LXaxvWUzP0QrE4xhObFlNYa/KCD+Xfo2tUJDGLxQF/L1xcZCddStWZKQEWIaBojwN1voS6DBGImW/ITWKN6mBFvGM4NyzL6bAvJUNU+teL6Jp1HdG6BTf8nHkE51lqGc=
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(396003)(346002)(136003)(39860400002)(376002)(451199015)(46966006)(36840700001)(40470700004)(8936002)(70206006)(54906003)(2906002)(40480700001)(316002)(107886003)(478600001)(82310400005)(41300700001)(1076003)(5660300002)(966005)(8676002)(4326008)(47076005)(40460700003)(6666004)(7696005)(2616005)(186003)(336012)(70586007)(83380400001)(36756003)(36860700001)(426003)(110136005)(86362001)(7636003)(26005)(82740400003)(356005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Sgc7FBmQTtLZoksxk8kY7jBr6VmwJQeRIgjhtQYlsTR4k5T+Yra1s19A4CcZJ5VjGxhRszprX/BiSm8BpV/Jh4iFIFTaUPI+3DF/D7Z3Q2nz4uH39M6dz6BY/+W40fZtLIs7oueg1IisDPX7oOOIWm4nME+ieZpQMXfLb8RFDcAlcciHy7rm7TKESc8f4UKnemv4zBCCGHZV8fc9z0SRhdlR4+hwyb6K7Qk2Dq5tKOTx9/nwhGHFpPeeCx9ZWTLuNyIzzdJkAEAmRM6fKyU4iZZVVCafxRYUSSnhBwEKKWA0ghmXKDpQro0A6Y/zJLb+AHk2g30255hM0aUAernTtEEBF1/AT9kWUkmx+K+cj4nNH8V5kf9TIxTlXrs5nsga5RWyLx6eD3kwxqOvipB0DUdYb8fvuj5fenSVSMcsykZPvtXhVIdEtLkNQzZX1a2P/ZGpbAUFtRffcD1EEf2o2M8I8Dg+aASvUKJQAHZJE/ccn2kCPspEUXqcLEetenat+1iIxaW0VU0gFcmBSFb8X9Z0BkW+YVy87GdG0ernytwQMneXqwILZ0XveT4e/mwaS89Mc6UQaf90sQMynHz+RkDC/9WCbeBe0U/Dx60mzCFYEw7CqknQ9eqJhQPJuHubJHTuYZ1C2+TiwWRtFXxDLpOr+j9GRo77OyG+gNZ5kEszJjhQM1KbP0eVTIQivPDjjXYpnrOwOeN2EflyeekNZnaq2M4aBYYJOltMxnsiiJkSnDvW3+84KIKKT1AllNOphhBH4RVy7GDhyqdi3s0Vf8HdScaloaLxsndES2Dd9kE=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(136003)(346002)(39860400002)(376002)(396003)(366004)(451199015)(6916009)(966005)(478600001)(5660300002)(6486002)(8936002)(83380400001)(38100700002)(41300700001)(2906002)(66946007)(8676002)(4326008)(66476007)(66556008)(316002)(6512007)(186003)(33716001)(9686003)(26005)(107886003)(6666004)(6506007)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NtaJWn8Uug+LDLKCGe68MprmkWe46BEkP62jk6VmT75wajK5EaMKpBOlMMp1?=
+ =?us-ascii?Q?y+Ih8cNkBhaMp3pnHGZNE8mkhZllLz2h1RJzLk2wAWtHjLgT/AhAkGzvsGfV?=
+ =?us-ascii?Q?gxSHQUUdPOXi5KqaTIck0NJJzxiwjLrvT0xrThLsWFmdopjezuMXKk0kmFe6?=
+ =?us-ascii?Q?kFKjZNUBHec5ZFXhrGCnb869RglDVDfLYi+bFdnSVv7dl0hcg01GsXqYB5Wj?=
+ =?us-ascii?Q?/WaLejpO1/MzAYvQef5MgAUaZG9Cp89GABUTAbIQhGRI2nRmFY1tNDHlPehv?=
+ =?us-ascii?Q?tILRtWFtNLkwMnTuVz6wwzRlmaaIny7CBzVk/iDxfHDxAA9acoD8cgRfsnP1?=
+ =?us-ascii?Q?ek5BbJdzg7V9T06S4i0H+O41+3NHZVcd46Aq4actbYPraLfu0BAVWaeBAvH2?=
+ =?us-ascii?Q?7pwV/Ma3CgmSwidf0sQEvvh9/6nxbF3NQ/dg5b5kXNZIGbRD0JhPjML6bV5B?=
+ =?us-ascii?Q?AKoPg+Zil9pKAsALV+linxRHLSLu4CXzUHjwUdRBW4x6c8KU4UCMYvwNrvdF?=
+ =?us-ascii?Q?cwF3yct/MlC3wDHitJUVwhOpCJEXbnTlD4+Yfp754YUEcim51xLXy5vWiHL9?=
+ =?us-ascii?Q?SGor0WmUtIlsFV3dQgMu6KPfjW9z0mPhrxgV90g7v3KKJZeBQ1k6DbM8Oyas?=
+ =?us-ascii?Q?uYrzCjNr7NUjfk6uFW5HKXV5y7ch6d0kt/KIaNdTxRoCg4A70XU+UOhPvqKS?=
+ =?us-ascii?Q?n7t5ZIciILVEDDtPdr6eAiAtzWk1i234utFY4X5cix+Y338SyN1nlfI+hK6c?=
+ =?us-ascii?Q?iMr+KtIYXMjO59ugIEVkRR2fTqb/qmO62pbgVlApO6mD4ZLwaIMxb+r0UjrJ?=
+ =?us-ascii?Q?/FWFMibvbTmk4/mMdUNW5QqLNTdM/U1eYOJma7XGsNtsDNfPhjX0yjtaYfKI?=
+ =?us-ascii?Q?JtcxwqLbHyyXBY+mU/jElwmU7ZdC+yemU6zPMc77NP5vgQJIlvejKub13ug/?=
+ =?us-ascii?Q?q8fN3pT7OLLNP+2SRsFv8bbjBqoerWJOOk8AQFSfS9ZxmOapI6O74QTKqUnz?=
+ =?us-ascii?Q?/uQt51p+Sxn6Z9dnEmVT14KzuNNOzLS1DfLxLRqccAfYr5a0rXgyEbOu0Vne?=
+ =?us-ascii?Q?AstD7S6M101d94aVbmky/Mji/uiitAscYs2cAxrso9Vr6bKVWK/KjMJ2Bu/f?=
+ =?us-ascii?Q?+L9P1aUnCbmMeDb9eLkD5FDCxT4vtjYdeQgAWhnNc9b5VDhRvgd1mDNAc4FD?=
+ =?us-ascii?Q?pM8Zuq0np8VjoSj4IVcMxXtAv0SLDSp0dn/2q5gvGAEPeXC1+jXiQgDfQAdH?=
+ =?us-ascii?Q?K1vlbFRHcPQWhcwF414Zfodt3O44YVV4SIwN6uXltnqRtpQ8TGctx9hTFU8B?=
+ =?us-ascii?Q?X1KLEGvdwd9cIAxVuyknVm/H0gBqTEgNA1N/KAQlau/ijDiOw6/cqp7Ug08N?=
+ =?us-ascii?Q?cU3ArSVW3MT5lveqJwvV0QkzvA9gL3CPfURjcIeOeS0dScsrRQm+vX0DIiyu?=
+ =?us-ascii?Q?NvDi+ar1VYPt4QzqEUh4a0jt0ljbtgDlnMmhwTFIZ0690jjwbEVWzlZJAOV+?=
+ =?us-ascii?Q?2mjhAb8kXZTF5OAJPg6sarAkwRmWmMIDov9KQT5X3r4eJ/8CYwnV2CoP9eFR?=
+ =?us-ascii?Q?B16dvarjLwdS6BCIf3mRvcmAVMYCyNcbBjV8vQZi?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2022 10:53:31.0524
+X-MS-Exchange-CrossTenant-Network-Message-Id: 92271d3f-8c8d-4b53-2faf-08dab6771af6
+X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2022 10:53:09.7613
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4e0fec0a-81b2-4e96-2810-08dab67727e0
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT026.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6002
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lhAduJRhJmIbwNmWZx0d2NjhTU1UWG7WR5ZghsFwNjLinu3IlRdhTzllIIS1c35XckPB3TIdEEvXzPAh39EvpQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4202
 X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -110,139 +114,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bond agnostically interacts with TLS device-offload requests via the
-.ndo_sk_get_lower_dev operation. Return value is true iff bond
-guarantees fixed mapping between the TLS connection and a lower netdev.
+On Tue, Oct 18, 2022 at 12:21:12PM -0700, Jakub Kicinski wrote:
+> On Tue, 18 Oct 2022 15:04:01 +0300 Ido Schimmel wrote:
+> > 	[ MDBE_ATTR_SRC_LIST ]		// new
+> > 		[ MDBE_SRC_LIST_ENTRY ]
+> > 			[ MDBE_SRCATTR_ADDRESS ]
+> > 				struct in_addr / struct in6_addr
+> > 		[ ...]
+> 
+> nit: I found that the MDBE_ATTR_SRC_LIST level of wrapping corresponds
+> to how "sane" formats work, but in practice there is no need for it in
+> netlink. You can put the entry nests directly in the outer. Saves one
+> layer of parsing. Just thought I'd mention it, you can keep as is if
+> you prefer.
 
-Due to this nature, the bond TLS device offload features are not
-explicitly controllable in the bond layer. As of today, these are
-read-only values based on the evaluation of bond_sk_check().  However,
-this indication might be incorrect and misleading, when the feature bits
-are "fixed" by some dependency features.  For example,
-NETIF_F_HW_TLS_TX/RX are forcefully cleared in case the corresponding
-checksum offload is disabled. But in fact the bond ability to still
-offload TLS connections to the lower device is not hurt.
+I guess you mean:
 
-This means that these bits can not be trusted, and hence better become
-unused.
+[ MDBA_SET_ENTRY_ATTRS ]
+	[ MDBE_SRC_LIST_ENTRY ]
+		[ MDBE_SRCATTR_ADDRESS ]
+			struct in_addr / struct in6_addr
+	[ MDBE_SRC_LIST_ENTRY ]
+	[ ... ]
 
-This patch revives some old discussion [1] and proposes a much simpler
-solution: Clear the bond's TLS features bits. Everyone should stop
-reading them.
+It is a good suggestion, but I wanted to make the request format similar
+to the existing response / notification format that already has this
+level of wrapping. See example in the commit message of patch #17:
 
-[1] https://lore.kernel.org/netdev/20210526095747.22446-1-tariqt@nvidia.com/
-
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Reviewed-by: Gal Pressman <gal@nvidia.com>
----
- drivers/net/bonding/bond_main.c    | 13 +------------
- drivers/net/bonding/bond_options.c | 18 ------------------
- include/net/bonding.h              |  4 ----
- 3 files changed, 1 insertion(+), 34 deletions(-)
-
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index e84c49bf4d0c..1cd4e71916f8 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -307,7 +307,7 @@ netdev_tx_t bond_dev_queue_xmit(struct bonding *bond, struct sk_buff *skb,
- 	return dev_queue_xmit(skb);
- }
- 
--bool bond_sk_check(struct bonding *bond)
-+static bool bond_sk_check(struct bonding *bond)
- {
- 	switch (BOND_MODE(bond)) {
- 	case BOND_MODE_8023AD:
-@@ -1398,13 +1398,6 @@ static netdev_features_t bond_fix_features(struct net_device *dev,
- 	netdev_features_t mask;
- 	struct slave *slave;
- 
--#if IS_ENABLED(CONFIG_TLS_DEVICE)
--	if (bond_sk_check(bond))
--		features |= BOND_TLS_FEATURES;
--	else
--		features &= ~BOND_TLS_FEATURES;
--#endif
--
- 	mask = features;
- 
- 	features &= ~NETIF_F_ONE_FOR_ALL;
-@@ -5806,10 +5799,6 @@ void bond_setup(struct net_device *bond_dev)
- 	if (BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP)
- 		bond_dev->features |= BOND_XFRM_FEATURES;
- #endif /* CONFIG_XFRM_OFFLOAD */
--#if IS_ENABLED(CONFIG_TLS_DEVICE)
--	if (bond_sk_check(bond))
--		bond_dev->features |= BOND_TLS_FEATURES;
--#endif
- }
- 
- /* Destroy a bonding device.
-diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
-index 3498db1c1b3c..f71d5517f829 100644
---- a/drivers/net/bonding/bond_options.c
-+++ b/drivers/net/bonding/bond_options.c
-@@ -842,19 +842,6 @@ static bool bond_set_xfrm_features(struct bonding *bond)
- 	return true;
- }
- 
--static bool bond_set_tls_features(struct bonding *bond)
--{
--	if (!IS_ENABLED(CONFIG_TLS_DEVICE))
--		return false;
--
--	if (bond_sk_check(bond))
--		bond->dev->wanted_features |= BOND_TLS_FEATURES;
--	else
--		bond->dev->wanted_features &= ~BOND_TLS_FEATURES;
--
--	return true;
--}
--
- static int bond_option_mode_set(struct bonding *bond,
- 				const struct bond_opt_value *newval)
- {
-@@ -885,7 +872,6 @@ static int bond_option_mode_set(struct bonding *bond,
- 		bool update = false;
- 
- 		update |= bond_set_xfrm_features(bond);
--		update |= bond_set_tls_features(bond);
- 
- 		if (update)
- 			netdev_update_features(bond->dev);
-@@ -1418,10 +1404,6 @@ static int bond_option_xmit_hash_policy_set(struct bonding *bond,
- 		   newval->string, newval->value);
- 	bond->params.xmit_policy = newval->value;
- 
--	if (bond->dev->reg_state == NETREG_REGISTERED)
--		if (bond_set_tls_features(bond))
--			netdev_update_features(bond->dev);
--
- 	return 0;
- }
- 
-diff --git a/include/net/bonding.h b/include/net/bonding.h
-index e999f851738b..ea36ab7f9e72 100644
---- a/include/net/bonding.h
-+++ b/include/net/bonding.h
-@@ -92,8 +92,6 @@
- #define BOND_XFRM_FEATURES (NETIF_F_HW_ESP | NETIF_F_HW_ESP_TX_CSUM | \
- 			    NETIF_F_GSO_ESP)
- 
--#define BOND_TLS_FEATURES (NETIF_F_HW_TLS_TX | NETIF_F_HW_TLS_RX)
--
- #ifdef CONFIG_NET_POLL_CONTROLLER
- extern atomic_t netpoll_block_tx;
- 
-@@ -280,8 +278,6 @@ struct bond_vlan_tag {
- 	unsigned short	vlan_id;
- };
- 
--bool bond_sk_check(struct bonding *bond);
--
- /**
-  * Returns NULL if the net_device does not belong to any of the bond's slaves
-  *
--- 
-2.31.1
-
+https://lore.kernel.org/netdev/20221018120420.561846-18-idosch@nvidia.com/
