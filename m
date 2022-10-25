@@ -2,109 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3325960D618
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 23:23:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B23BF60D623
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 23:30:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232117AbiJYVXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 17:23:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59066 "EHLO
+        id S232330AbiJYVaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 17:30:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230157AbiJYVXf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 17:23:35 -0400
-Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DF72A487A;
-        Tue, 25 Oct 2022 14:23:35 -0700 (PDT)
-Received: by mail-ot1-f54.google.com with SMTP id 16-20020a9d0490000000b0066938311495so330542otm.4;
-        Tue, 25 Oct 2022 14:23:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MiZtEq0TnMZ6dVYNj/YFe/ZDFlT7YjxhP5A2iXKUkoA=;
-        b=mb0aISV+srSpQwSZcCCRT0amRdAvsKnc64HX4Bfs0ti+bhutFLXMDgD9r/Nzxa85lO
-         HhAFGAN9Ixgz9ywZqqUZm3Lj4Rn3hruuhzGLOY0JYhtVGQ8y0+GS3N5LnPfA/2ah/Pcd
-         e9U6ET4Ee5slmHJ53rh0WDI16Dz9vtZ5ZhniAWB7tcPC1tBfoeqOy9s31JQPfy44qtlC
-         ghk3fvZZsHCONCaX57cVH6d6vDYlGdSHESAVjmVeuFh2BlqDeOg3Y7+DmMJqBk64qMDJ
-         98iJPh1EQ7hGfPvtrLhi2qXoMOQ/aFbFR0OwC2S+P9g5VPEyqfjFm5KkkG93HCo8qjmW
-         CQhQ==
-X-Gm-Message-State: ACrzQf0aEAXVGLlPxS2rQczqyAGPmsmH8OyxEAkETErsvhPA37jv0zcw
-        VC+J4Cbz+Oeg68IVGkjI6Q==
-X-Google-Smtp-Source: AMsMyM4bAY+2dLYm8jZ/uFm3kd9aGE6c3QFn2578otqhf/JxJGpRVle2a9mLUPqcMdF3F83SFeG3/A==
-X-Received: by 2002:a9d:5907:0:b0:665:c301:2f1c with SMTP id t7-20020a9d5907000000b00665c3012f1cmr4332788oth.375.1666733014290;
-        Tue, 25 Oct 2022 14:23:34 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id d22-20020a4ad356000000b004805e9e9f3dsm1563131oos.1.2022.10.25.14.23.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Oct 2022 14:23:33 -0700 (PDT)
-Received: (nullmailer pid 3336858 invoked by uid 1000);
-        Tue, 25 Oct 2022 21:23:34 -0000
-Date:   Tue, 25 Oct 2022 16:23:34 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Lee Jones <lee@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        John Crispin <john@phrozen.org>,
-        DENG Qingfang <dqfext@gmail.com>,
-        linux-mediatek@lists.infradead.org,
-        =?iso-8859-1?Q?n=E7_=DCNAL?= <arinc.unal@arinc9.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH v1 net-next 7/7] dt-bindings: net: mscc,vsc7514-switch:
- utilize generic ethernet-switch.yaml
-Message-ID: <20221025212334.GB3322299-robh@kernel.org>
-References: <20221025050355.3979380-1-colin.foster@in-advantage.com>
- <20221025050355.3979380-8-colin.foster@in-advantage.com>
- <166672723302.3138577.18331816371776997839.robh@kernel.org>
+        with ESMTP id S232024AbiJYVaS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 17:30:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A773E4F64C;
+        Tue, 25 Oct 2022 14:30:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 43FB161BAC;
+        Tue, 25 Oct 2022 21:30:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 93F39C433D7;
+        Tue, 25 Oct 2022 21:30:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666733416;
+        bh=sOpXMCe9LC1xfyUXh2lmcg/3x2PBBpExWr6Hng1hpAQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=i8wngfqK8cXmbc2Bn0/GH0lD40yiiXTzQzGaoftBx6FOZOqMNz1oG92AUzTKJtfTl
+         +PDpYSNe3XbSTSKU8l5LBbV46pmxJhyThuIvEotpWbYqdJaCds48JMHC+sfG3evXVx
+         sDvef30alWKmmKuwUyMRYX0bm1VJHPjv72iwDCQGohaUX9Ouiza3CjwjVyGYbUJtON
+         0LKC38A65N1T53TjX4bmNcFe30fxMADlvL9DkhY9gy0mnEU6HQs3KkcCTpsaAxDT8d
+         8jSMlseccyi94HZJWQFWw+TwqGruQqSC5IwqzOGEBizBsfK67q3jGZe/vIXzBpMz6g
+         EGWSB2dlmasbA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 73CCEE45192;
+        Tue, 25 Oct 2022 21:30:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <166672723302.3138577.18331816371776997839.robh@kernel.org>
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH][next] net: dev: Convert sa_data to flexible array in struct
+ sockaddr
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166673341646.9987.5803101009027995896.git-patchwork-notify@kernel.org>
+Date:   Tue, 25 Oct 2022 21:30:16 +0000
+References: <20221018095503.never.671-kees@kernel.org>
+In-Reply-To: <20221018095503.never.671-kees@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     kuba@kernel.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, axboe@kernel.dk, asml.silence@gmail.com,
+        dsahern@kernel.org, dylany@fb.com, yajun.deng@linux.dev,
+        petrm@nvidia.com, liuhangbin@gmail.com, leon@kernel.org,
+        syzkaller@googlegroups.com, willemb@google.com,
+        pablo@netfilter.org, netdev@vger.kernel.org, nathan@kernel.org,
+        ndesaulniers@google.com, trix@redhat.com,
+        alibuda@linux.alibaba.com, jk@codeconstruct.com.au,
+        bigeasy@linutronix.de, imagedong@tencent.com, kuniyu@amazon.com,
+        liu3101@purdue.edu, wsa+renesas@sang-engineering.com,
+        william.xuanziyang@huawei.com, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, linux-hardening@vger.kernel.org
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 25, 2022 at 03:05:02PM -0500, Rob Herring wrote:
-> On Mon, 24 Oct 2022 22:03:55 -0700, Colin Foster wrote:
-> > Several bindings for ethernet switches are available for non-dsa switches
-> > by way of ethernet-switch.yaml. Remove these duplicate entries and utilize
-> > the common bindings for the VSC7514.
-> > 
-> > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> > Suggested-by: Vladimir Oltean <olteanv@gmail.com>
-> > ---
-> >  .../bindings/net/mscc,vsc7514-switch.yaml     | 36 +------------------
-> >  1 file changed, 1 insertion(+), 35 deletions(-)
-> > 
-> 
-> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-> on your patch (DT_CHECKER_FLAGS is new in v5.13):
-> 
-> yamllint warnings/errors:
-> 
-> dtschema/dtc warnings/errors:
-> ./Documentation/devicetree/bindings/net/mscc,vsc7514-switch.yaml: Unable to find schema file matching $id: http://devicetree.org/schemas/net/ethernet-switch.yaml
-> Documentation/devicetree/bindings/net/mscc,vsc7514-switch.example.dtb:0:0: /example-0/switch@1010000: failed to match any schema with compatible: ['mscc,vsc7514-switch']
+Hello:
 
-This one you can ignore. The base tree is reset if a prior patch failed.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Rob
+On Tue, 18 Oct 2022 02:56:03 -0700 you wrote:
+> One of the worst offenders of "fake flexible arrays" is struct sockaddr,
+> as it is the classic example of why GCC and Clang have been traditionally
+> forced to treat all trailing arrays as fake flexible arrays: in the
+> distant misty past, sa_data became too small, and code started just
+> treating it as a flexible array, even though it was fixed-size. The
+> special case by the compiler is specifically that sizeof(sa->sa_data)
+> and FORTIFY_SOURCE (which uses __builtin_object_size(sa->sa_data, 1))
+> do not agree (14 and -1 respectively), which makes FORTIFY_SOURCE treat
+> it as a flexible array.
+> 
+> [...]
+
+Here is the summary with links:
+  - [next] net: dev: Convert sa_data to flexible array in struct sockaddr
+    https://git.kernel.org/netdev/net-next/c/b5f0de6df6dc
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
