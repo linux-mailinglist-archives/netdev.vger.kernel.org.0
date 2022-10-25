@@ -2,103 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8885460CAC0
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 13:18:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9552D60CAC4
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 13:20:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231987AbiJYLSG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 07:18:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46144 "EHLO
+        id S231766AbiJYLUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 07:20:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231828AbiJYLSE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 07:18:04 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3BF111E471
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 04:18:03 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id o4so11975556wrq.6
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 04:18:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:subject:from:to:content-language
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mlv9YpH+89iDQBPgSgeaqKToqtOHPB/QKXHLgRQ2ZZ4=;
-        b=Vt2mwNa80CIu3r9jTO25MeE49mThPGR2K+9AfrsI+DrTkdfu/FQj8HBvooXjubPhim
-         CTLZYbnw+m6fUjr+I884vav3ZNv8Ni3ycUQfnloHNqdzv0XGib9fmPC0ewF+7/RU/bjr
-         2o/1bA3xBIzza4nCgaPCtlzqMps19IVR9XiFHf2rMGrZgJAOzXLtsRVl5+ENGOwJrHxB
-         IbqBYNlF/3InNyTNKj1n9+9xyxMRxDsHDb2/34Fb25CXM3M9/n/56chS6wCCMngMNw5U
-         roLlYQ6AjTgOr2HLQmPr6tr3s6Av1zZMyqYdQjWHdcxcTG8yW70LBSnPYqenubq2qm2+
-         obhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:subject:from:to:content-language
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=mlv9YpH+89iDQBPgSgeaqKToqtOHPB/QKXHLgRQ2ZZ4=;
-        b=sHvGnHkmDC02uCbrwm4Q11vQzaLQMa4zDv08UI6TObourNPluH8txGSL0b6ENatRqI
-         jE+bi8iEIG+NAtFzx8aDNydNGnlFbq6UZ29blWCez2oB0i2yzqp04+JviOiRLgmFVszS
-         kEDVa7k+/1jvsYQjRANwoMTQ0+doiOGv9bV07aUAD29CKdJ8wK839p6qShh9YVUT79Xv
-         9pc/i3//VE+MvemuHlLZI2Y6DrVvxmDOqc3/HhnOrhTtzYfDWbMjD+oVyLZiQ8wgquzg
-         ZfhYFDXjBJnim569gTDGOkkguT+7FoAAWuzyTOIcI7MeHtQKag7WK9HA9nUNdVZUyEti
-         svFA==
-X-Gm-Message-State: ACrzQf3it0oU8gMdojv2mZOJ0KhzNYr9otf8cn2grqj0IELe/ITvL6Ae
-        35DZWbQ5/8vZlbM6fmqMq/k8gm/e418=
-X-Google-Smtp-Source: AMsMyM6v+NVVGizVUy8YGMVx/pRApKc2VjDQslJTXhUiP3Ax4ywUlep1sXUOIX3m8xQtt5L9kd2MJQ==
-X-Received: by 2002:a5d:64e2:0:b0:22e:7060:b4a7 with SMTP id g2-20020a5d64e2000000b0022e7060b4a7mr23784283wri.129.1666696682266;
-        Tue, 25 Oct 2022 04:18:02 -0700 (PDT)
-Received: from [192.168.0.121] (buscust41-118.static.cytanet.com.cy. [212.31.107.118])
-        by smtp.googlemail.com with ESMTPSA id k3-20020a05600c1c8300b003c6b7f5567csm1449237wms.0.2022.10.25.04.18.01
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Oct 2022 04:18:01 -0700 (PDT)
-Message-ID: <2528510b-3463-8a8b-25c2-9402a8a78fcd@gmail.com>
-Date:   Tue, 25 Oct 2022 14:18:00 +0300
+        with ESMTP id S229876AbiJYLUR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 07:20:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3514855A3;
+        Tue, 25 Oct 2022 04:20:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 88188618C5;
+        Tue, 25 Oct 2022 11:20:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D3030C433D6;
+        Tue, 25 Oct 2022 11:20:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666696815;
+        bh=U162O3bGj7nv99ZVG9NgsSTPlPrzIqMUpNZG/wdu75M=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Soq9eQc163E5pUYs4qjxez8XxuhvCnSHx0bvTxH9JLT4pengYTO/Lqq7xJ9jNfrnw
+         /5Ns7GEDnmlWouIxawGrLsSb+U3j7ENqXYnjLTp5Eu/5HIhu7bCM5GFCb6MO7Ujohp
+         yq5B2vAbdB9f1cN1ZQeYo6O5LmT/6MsIzAS/VwhrDTsE+TQqCiramjthPhDyny9/oL
+         h7l1xHGW84ehxFjNeWHkB5RaWXMzzhVZyKIJV6OwCVabwaGpOYczk+fWjzdAE+Wnxt
+         NkLkI8JmeGsKrGq+XIj6f0rFwRltYJ05HpvIZlz8n+oRvyH/OJySE+kdZWVN7lIeMF
+         hlR1dtdzOCbaw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B75A5E29F32;
+        Tue, 25 Oct 2022 11:20:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.1
-Content-Language: en-US
-To:     netdev@vger.kernel.org
-From:   George Shuklin <george.shuklin@gmail.com>
-Subject: Bug in netlink monitor
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] bnx2: Use kmalloc_size_roundup() to match ksize() usage
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166669681574.30918.11457311323167299344.git-patchwork-notify@kernel.org>
+Date:   Tue, 25 Oct 2022 11:20:15 +0000
+References: <20221022021004.gonna.489-kees@kernel.org>
+In-Reply-To: <20221022021004.gonna.489-kees@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     rmody@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I found that if veth interface is created in a namespace using netns 
-option for ip, no events are logged in `ip monitor all-nsid`.
+Hello:
 
-Steps to reproduce:
+This patch was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
+On Fri, 21 Oct 2022 19:10:47 -0700 you wrote:
+> Round up allocations with kmalloc_size_roundup() so that build_skb()'s
+> use of ksize() is always accurate and no special handling of the memory
+> is needed by KASAN, UBSAN_BOUNDS, nor FORTIFY_SOURCE.
+> 
+> Cc: Rasesh Mody <rmody@marvell.com>
+> Cc: GR-Linux-NIC-Dev@marvell.com
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> 
+> [...]
 
-(console1)
+Here is the summary with links:
+  - [v2] bnx2: Use kmalloc_size_roundup() to match ksize() usage
+    https://git.kernel.org/netdev/net-next/c/d6dd508080a3
 
-ip monitor all-nsid
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-
-(console 2)
-
-ip net add foobar
-
-ip link add netns foobar type veth
-
-
-Expected results:
-
-Output in `ip monitor`. Actual result: no output, (but there are two new 
-veth interaces in foobar namespace).
-
-Additional observation: namespace 'foobar' does not have id in output of 
-`ip net`:
-
-# ip net
-foobar
-test (id: 0)
-test2 (id: 1)
 
