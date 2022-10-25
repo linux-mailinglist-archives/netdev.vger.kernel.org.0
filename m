@@ -2,154 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 38F1B60CADD
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 13:24:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B596460CADF
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 13:25:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232255AbiJYLYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 07:24:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54610 "EHLO
+        id S232254AbiJYLZO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 07:25:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232052AbiJYLYn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 07:24:43 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3139A11DAB8
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 04:24:42 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id q9-20020a17090a178900b00212fe7c6bbeso5711255pja.4
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 04:24:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=EVLVwUvbbdRnPXpgkgorL4XSYztL7If2w8Rlat5ya04=;
-        b=B+PjiOXl3uyRro39W/RmHy6rmv8Ru3iBDmXuMq/Zbc4Ctz2ySTsqhpCapMgLP7qbHk
-         oRvpAZS6jUO272k2c4+7mkAzboUbr4aHKDNK8qwVqBlk9TSdKHgKOK8ju+24h4m12jUQ
-         384ae+rXjL0XotL9jhCMp0N/JLR5VlkRXld2mScUm8XFmPqeiauuYYgGWLbzq5z4OIQk
-         DT1eUcR/NVZp8GyWxoe5YDrmrN0WZ3S7WLQOdw00EpaddOWDstWLPFjNJ5Xv0YKmeMp/
-         4Or1PUQsLSTOP7vMQ6ijLHJx8f7uju9UlyJ6BwAShoR5GvWahldxUpx1arvsQYV5Bhvn
-         +dvA==
+        with ESMTP id S232234AbiJYLYs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 07:24:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36BB216D561
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 04:24:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1666697085;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1ETYihh/7NrZ4zfN9zxgiV3XM9iKgQJSxjADQD9DQAo=;
+        b=J5OWYXOqGCN/NYtfnDyQZPgARAzZWE3cpghyop1jYELrnIKfFYAoADo0afOKsXNGNDOOtJ
+        FVK1b3MKS1DQc36RuRgcTtdxOaeqLPiihQ1K+tpMILAFN1UXaNUbFInnK2ldVRc35uxR+K
+        4tZWBItsvGfAf5OUHFUOBRXJNoPBa6I=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-597-g7txyEswPQ285MFE_IpLDA-1; Tue, 25 Oct 2022 07:24:41 -0400
+X-MC-Unique: g7txyEswPQ285MFE_IpLDA-1
+Received: by mail-qk1-f198.google.com with SMTP id o13-20020a05620a2a0d00b006cf9085682dso11105966qkp.7
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 04:24:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=EVLVwUvbbdRnPXpgkgorL4XSYztL7If2w8Rlat5ya04=;
-        b=OlTOHmNQuwybWu8Vexh8eOGcL5n4a8oiJY13x2MR/87oh6qnpCYrp6O7wgHXKCKAJM
-         xmPqwAjpgV8MLtNKT8shetE35NU4GlWUffeXw8ZSkQnd3JbomqSfR6/k9ERg0yEGsphu
-         r7QmZY0myMWc20Vt56YE9aNFBNA3HSbmgzmAtxzug8wN6gVtevT4sv2/8Qj65qLigk0c
-         /WLCcCcO9XPK75nQXLQiW2afZKjOXGxbifzfI4M6lFQgdGzvgHAIVnkPA+D6MYXfDcag
-         raB+kqq1uxBQmZh7pqZa0ld2noL/CHMhV4+AT1zVe1ph7Iopg4lvqqSE1Ewwnp27Ct05
-         eN9A==
-X-Gm-Message-State: ACrzQf39lBAy5V2FJBrF9lCEwDOCH+9aQ+eBwBQPSFrlTRCynA3MDW5A
-        OO8TJTh9mNlzz7TS659IHYZNag==
-X-Google-Smtp-Source: AMsMyM7dGFlYKwlhHXWEh+DWwenDj4Nb4ymEUMYayoi9BLqaDzfWSBSE+2YFKOXoVdDNG8c7kFmNxg==
-X-Received: by 2002:a17:903:2307:b0:17f:78a5:5484 with SMTP id d7-20020a170903230700b0017f78a55484mr38323295plh.15.1666697081691;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=1ETYihh/7NrZ4zfN9zxgiV3XM9iKgQJSxjADQD9DQAo=;
+        b=I0jOoCkf7PMf4w9/qoA3xVFpipP0J0g8AQ1DnYu7k+rdh8ovZnlj9+KK4hpqHBH7iV
+         DCT5Xozx10G3LpQF68SR9I4UtKdoB1afHob2WHou7LmlvvZW/mCQpudmSb05J9U/NKqg
+         st8jHyKzQNvpsGHkcKn2rgxgbVlXNbghPRTMh3sejEW+dQTREHsQ0otGwb+ISnffUpLB
+         YWv+5Z6Um0pva4ojU90PbdhvS5Sux1lvX8NWy5oMX2loNOheauNZNv2nCW3m7OYdx1gF
+         M3XlzTPUPK27bEFo/nSJfcaTUhG/xUO+aBOFvA9a5CRCcqL2SUAtuO/R12Z/bKMYkncl
+         PJpQ==
+X-Gm-Message-State: ACrzQf2rspI1PeHHGlUO4LCTAeyQBZuZUybrhT6T3vJtJDl6AdO12VUp
+        LepYAUCd9rD4jFp3Wlyr5CYyCm2lgNyxzEa9Nx0tRNYx0Zi5OL40aCqpiWZZEhtXxJYC6waxWTa
+        Yel27lfMoS+qbFl8D
+X-Received: by 2002:a05:622a:2d2:b0:39c:f1cf:e82e with SMTP id a18-20020a05622a02d200b0039cf1cfe82emr31508165qtx.484.1666697081228;
         Tue, 25 Oct 2022 04:24:41 -0700 (PDT)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id w20-20020a1709029a9400b00185507b5ef8sm1073425plp.50.2022.10.25.04.24.40
+X-Google-Smtp-Source: AMsMyM5z0kZXgrTyCqncDZczPbFnWuNat5f8Sx4a75i8sYJidH5GdDDlNYXy0gvkpfNtt9hoAt5t9g==
+X-Received: by 2002:a05:622a:2d2:b0:39c:f1cf:e82e with SMTP id a18-20020a05622a02d200b0039cf1cfe82emr31508147qtx.484.1666697080938;
+        Tue, 25 Oct 2022 04:24:40 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-103-235.dyn.eolo.it. [146.241.103.235])
+        by smtp.gmail.com with ESMTPSA id g3-20020ac87d03000000b00342f8984348sm1483977qtb.87.2022.10.25.04.24.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Oct 2022 04:24:41 -0700 (PDT)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        leon@kernel.org
-Cc:     drivers@pensando.io, Neel Patel <neel@pensando.io>,
-        Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v2 net-next 5/5] ionic: refactor use of ionic_rx_fill()
-Date:   Tue, 25 Oct 2022 04:24:26 -0700
-Message-Id: <20221025112426.8954-6-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20221025112426.8954-1-snelson@pensando.io>
-References: <20221025112426.8954-1-snelson@pensando.io>
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-        autolearn=no autolearn_force=no version=3.4.6
+        Tue, 25 Oct 2022 04:24:40 -0700 (PDT)
+Message-ID: <c66f5b5d68fe15a60cecc2ad213e78f8b1d442ec.camel@redhat.com>
+Subject: Re: [PATCH net,v2 1/2] netdevsim: fix memory leak in
+ nsim_drv_probe() when nsim_dev_resources_register() failed
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Zhengchao Shao <shaozhengchao@huawei.com>, netdev@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, edumazet@google.com
+Cc:     dsa@cumulusnetworks.com, jiri@mellanox.com, weiyongjun1@huawei.com,
+        yuehaibing@huawei.com
+Date:   Tue, 25 Oct 2022 13:24:37 +0200
+In-Reply-To: <20221022044847.61995-2-shaozhengchao@huawei.com>
+References: <20221022044847.61995-1-shaozhengchao@huawei.com>
+         <20221022044847.61995-2-shaozhengchao@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Neel Patel <neel@pensando.io>
+On Sat, 2022-10-22 at 12:48 +0800, Zhengchao Shao wrote:
+> If some items in nsim_dev_resources_register() fail, memory leak will
+> occur. The following is the memory leak information.
+> 
+> unreferenced object 0xffff888074c02600 (size 128):
+>   comm "echo", pid 8159, jiffies 4294945184 (age 493.530s)
+>   hex dump (first 32 bytes):
+>     40 47 ea 89 ff ff ff ff 01 00 00 00 00 00 00 00  @G..............
+>     ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff  ................
+>   backtrace:
+>     [<0000000011a31c98>] kmalloc_trace+0x22/0x60
+>     [<0000000027384c69>] devl_resource_register+0x144/0x4e0
+>     [<00000000a16db248>] nsim_drv_probe+0x37a/0x1260
+>     [<000000007d1f448c>] really_probe+0x20b/0xb10
+>     [<00000000c416848a>] __driver_probe_device+0x1b3/0x4a0
+>     [<00000000077e0351>] driver_probe_device+0x49/0x140
+>     [<0000000054f2465a>] __device_attach_driver+0x18c/0x2a0
+>     [<000000008538f359>] bus_for_each_drv+0x151/0x1d0
+>     [<0000000038e09747>] __device_attach+0x1c9/0x4e0
+>     [<00000000dd86e533>] bus_probe_device+0x1d5/0x280
+>     [<00000000839bea35>] device_add+0xae0/0x1cb0
+>     [<000000009c2abf46>] new_device_store+0x3b6/0x5f0
+>     [<00000000fb823d7f>] bus_attr_store+0x72/0xa0
+>     [<000000007acc4295>] sysfs_kf_write+0x106/0x160
+>     [<000000005f50cb4d>] kernfs_fop_write_iter+0x3a8/0x5a0
+>     [<0000000075eb41bf>] vfs_write+0x8f0/0xc80
+> 
+> Fixes: 37923ed6b8ce ("netdevsim: Add simple FIB resource controller via devlink")
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> ---
+>  drivers/net/netdevsim/dev.c | 20 +++++++++++++-------
+>  1 file changed, 13 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+> index 794fc0cc73b8..07b1a3b3afaf 100644
+> --- a/drivers/net/netdevsim/dev.c
+> +++ b/drivers/net/netdevsim/dev.c
+> @@ -442,7 +442,7 @@ static int nsim_dev_resources_register(struct devlink *devlink)
+>  				     &params);
+>  	if (err) {
+>  		pr_err("Failed to register IPv4 top resource\n");
+> -		goto out;
+> +		goto err_out;
+>  	}
+>  
+>  	err = devl_resource_register(devlink, "fib", (u64)-1,
+> @@ -450,7 +450,7 @@ static int nsim_dev_resources_register(struct devlink *devlink)
+>  				     NSIM_RESOURCE_IPV4, &params);
+>  	if (err) {
+>  		pr_err("Failed to register IPv4 FIB resource\n");
+> -		return err;
+> +		goto err_out;
+>  	}
+>  
+>  	err = devl_resource_register(devlink, "fib-rules", (u64)-1,
+> @@ -458,7 +458,7 @@ static int nsim_dev_resources_register(struct devlink *devlink)
+>  				     NSIM_RESOURCE_IPV4, &params);
+>  	if (err) {
+>  		pr_err("Failed to register IPv4 FIB rules resource\n");
+> -		return err;
+> +		goto err_out;
+>  	}
+>  
+>  	/* Resources for IPv6 */
+> @@ -468,7 +468,7 @@ static int nsim_dev_resources_register(struct devlink *devlink)
+>  				     &params);
+>  	if (err) {
+>  		pr_err("Failed to register IPv6 top resource\n");
+> -		goto out;
+> +		goto err_out;
+>  	}
+>  
+>  	err = devl_resource_register(devlink, "fib", (u64)-1,
+> @@ -476,7 +476,7 @@ static int nsim_dev_resources_register(struct devlink *devlink)
+>  				     NSIM_RESOURCE_IPV6, &params);
+>  	if (err) {
+>  		pr_err("Failed to register IPv6 FIB resource\n");
+> -		return err;
+> +		goto err_out;
+>  	}
+>  
+>  	err = devl_resource_register(devlink, "fib-rules", (u64)-1,
+> @@ -484,7 +484,7 @@ static int nsim_dev_resources_register(struct devlink *devlink)
+>  				     NSIM_RESOURCE_IPV6, &params);
+>  	if (err) {
+>  		pr_err("Failed to register IPv6 FIB rules resource\n");
+> -		return err;
+> +		goto err_out;
+>  	}
+>  
+>  	/* Resources for nexthops */
+> @@ -492,8 +492,14 @@ static int nsim_dev_resources_register(struct devlink *devlink)
+>  				     NSIM_RESOURCE_NEXTHOPS,
+>  				     DEVLINK_RESOURCE_ID_PARENT_TOP,
+>  				     &params);
+> +	if (err) {
+> +		pr_err("Failed to register NEXTHOPS resource\n");
+> +		goto err_out;
+> +	}
+> +	return err;
 
-The same pre-work code is used before each call to
-ionic_rx_fill(), so bring it in and make it a part of
-the routine.
+Nit pick: I think it would be more clear if here you do:
 
-Signed-off-by: Neel Patel <neel@pensando.io>
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
----
- .../net/ethernet/pensando/ionic/ionic_txrx.c  | 23 ++++++++++---------
- 1 file changed, 12 insertions(+), 11 deletions(-)
+	return 0;
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-index 190681aa7187..0c3977416cd1 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-@@ -348,16 +348,25 @@ void ionic_rx_fill(struct ionic_queue *q)
- 	struct ionic_rxq_sg_desc *sg_desc;
- 	struct ionic_rxq_sg_elem *sg_elem;
- 	struct ionic_buf_info *buf_info;
-+	unsigned int fill_threshold;
- 	struct ionic_rxq_desc *desc;
- 	unsigned int remain_len;
- 	unsigned int frag_len;
- 	unsigned int nfrags;
-+	unsigned int n_fill;
- 	unsigned int i, j;
- 	unsigned int len;
- 
-+	n_fill = ionic_q_space_avail(q);
-+
-+	fill_threshold = min_t(unsigned int, IONIC_RX_FILL_THRESHOLD,
-+			       q->num_descs / IONIC_RX_FILL_DIV);
-+	if (n_fill < fill_threshold)
-+		return;
-+
- 	len = netdev->mtu + ETH_HLEN + VLAN_HLEN;
- 
--	for (i = ionic_q_space_avail(q); i; i--) {
-+	for (i = n_fill; i; i--) {
- 		nfrags = 0;
- 		remain_len = len;
- 		desc_info = &q->info[q->head_idx];
-@@ -511,7 +520,6 @@ int ionic_rx_napi(struct napi_struct *napi, int budget)
- 	struct ionic_cq *cq = napi_to_cq(napi);
- 	struct ionic_dev *idev;
- 	struct ionic_lif *lif;
--	u16 rx_fill_threshold;
- 	u32 work_done = 0;
- 	u32 flags = 0;
- 
-@@ -521,10 +529,7 @@ int ionic_rx_napi(struct napi_struct *napi, int budget)
- 	work_done = ionic_cq_service(cq, budget,
- 				     ionic_rx_service, NULL, NULL);
- 
--	rx_fill_threshold = min_t(u16, IONIC_RX_FILL_THRESHOLD,
--				  cq->num_descs / IONIC_RX_FILL_DIV);
--	if (work_done && ionic_q_space_avail(cq->bound_q) >= rx_fill_threshold)
--		ionic_rx_fill(cq->bound_q);
-+	ionic_rx_fill(cq->bound_q);
- 
- 	if (work_done < budget && napi_complete_done(napi, work_done)) {
- 		ionic_dim_update(qcq, IONIC_LIF_F_RX_DIM_INTR);
-@@ -550,7 +555,6 @@ int ionic_txrx_napi(struct napi_struct *napi, int budget)
- 	struct ionic_dev *idev;
- 	struct ionic_lif *lif;
- 	struct ionic_cq *txcq;
--	u16 rx_fill_threshold;
- 	u32 rx_work_done = 0;
- 	u32 tx_work_done = 0;
- 	u32 flags = 0;
-@@ -565,10 +569,7 @@ int ionic_txrx_napi(struct napi_struct *napi, int budget)
- 	rx_work_done = ionic_cq_service(rxcq, budget,
- 					ionic_rx_service, NULL, NULL);
- 
--	rx_fill_threshold = min_t(u16, IONIC_RX_FILL_THRESHOLD,
--				  rxcq->num_descs / IONIC_RX_FILL_DIV);
--	if (rx_work_done && ionic_q_space_avail(rxcq->bound_q) >= rx_fill_threshold)
--		ionic_rx_fill(rxcq->bound_q);
-+	ionic_rx_fill(rxcq->bound_q);
- 
- 	if (rx_work_done < budget && napi_complete_done(napi, rx_work_done)) {
- 		ionic_dim_update(qcq, 0);
--- 
-2.17.1
+The above is actually almost an excuse to ask you to repost with a
+better/more describing cover letter, as the current one is practically
+empty.
+
+Thanks!
+
+Paolo
 
