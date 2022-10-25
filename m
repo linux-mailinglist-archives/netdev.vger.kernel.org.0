@@ -2,98 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76B6460CB9B
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 14:16:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ECF060CBB7
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 14:25:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231164AbiJYMQT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 08:16:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43458 "EHLO
+        id S230469AbiJYMZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 08:25:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229950AbiJYMQR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 08:16:17 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CB08139C23
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 05:16:10 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MxW6N1R2rzpVsH;
-        Tue, 25 Oct 2022 20:12:44 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 25 Oct 2022 20:16:08 +0800
-Received: from [10.174.178.174] (10.174.178.174) by
- dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 25 Oct 2022 20:16:08 +0800
-Subject: Re: [PATCH net] net: ehea: fix possible memory leak in
- ehea_register_port()
-To:     Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>
-CC:     <dougmill@linux.ibm.com>, <davem@davemloft.net>, <kuba@kernel.org>
-References: <20221022113722.3409846-1-yangyingliang@huawei.com>
- <0ea0057771c623ca3a37a79fc953fd34c54aa815.camel@redhat.com>
-From:   Yang Yingliang <yangyingliang@huawei.com>
-Message-ID: <207fa9fb-2ea5-fa0e-ab56-22d535749132@huawei.com>
-Date:   Tue, 25 Oct 2022 20:16:08 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        with ESMTP id S230294AbiJYMZo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 08:25:44 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C1A11A95C
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 05:25:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=OrYkcL3FU3lBnzrVrd4qigZWw48YJxVfoA/kAXx5de8=; b=GISyhBTgWuElsGch8kE7ExRok8
+        lupM/PXpyCgWvm5cfrbddwsN4TqY8ZLWhXkhGU+W9lMAPLYlwhNGxxwUKFdMCel3H8tpEV5PWmprH
+        8ZD/ovBTEjRLiBqEbupvf6auAhyXNr/L2hwi9XRTWiXyE0k1pLT4JRKB/HTcU0IvR0m8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1onIzd-000WvA-DA; Tue, 25 Oct 2022 14:25:17 +0200
+Date:   Tue, 25 Oct 2022 14:25:17 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Fabio Estevam <festevam@gmail.com>
+Cc:     kuba@kernel.org, dmurphy@ti.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dp83822: Print the SOR1 strap status
+Message-ID: <Y1fVrectVW3Ki9WQ@lunn.ch>
+References: <20221025120109.779337-1-festevam@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <0ea0057771c623ca3a37a79fc953fd34c54aa815.camel@redhat.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.174.178.174]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221025120109.779337-1-festevam@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, Oct 25, 2022 at 09:01:09AM -0300, Fabio Estevam wrote:
+> During the bring-up of the Ethernet PHY, it is very useful to
+> see the bootstrap status information, as it can help identifying
+> hardware bootstrap mistakes.
+> 
+> Allow printing the SOR1 register, which contains the strap status
+> to ease the bring-up.
+> 
+> Signed-off-by: Fabio Estevam <festevam@gmail.com>
 
-On 2022/10/25 19:55, Paolo Abeni wrote:
-> Hello,
->
-> On Sat, 2022-10-22 at 19:37 +0800, Yang Yingliang wrote:
->> dev_set_name() in ehea_register_port() allocates memory for name,
->> it need be freed when of_device_register() fails, call put_device()
->> to give up the reference that hold in device_initialize(), so that
->> it can be freed in kobject_cleanup() when the refcount hit to 0.
->>
->> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
->> ---
->>   drivers/net/ethernet/ibm/ehea/ehea_main.c | 1 +
->>   1 file changed, 1 insertion(+)
->>
->> diff --git a/drivers/net/ethernet/ibm/ehea/ehea_main.c b/drivers/net/ethernet/ibm/ehea/ehea_main.c
->> index 294bdbbeacc3..b4aff59b3eb4 100644
->> --- a/drivers/net/ethernet/ibm/ehea/ehea_main.c
->> +++ b/drivers/net/ethernet/ibm/ehea/ehea_main.c
->> @@ -2900,6 +2900,7 @@ static struct device *ehea_register_port(struct ehea_port *port,
->>   	ret = of_device_register(&port->ofdev);
->>   	if (ret) {
->>   		pr_err("failed to register device. ret=%d\n", ret);
->> +		put_device(&port->ofdev.dev);
->>   		goto out;
->>   	}
-> You need to include a suitable Fixes tag into the commit message.
-> Additionally, if you have a kmemleak splat handy, please include even
-> that in the commit message.
-Fixes: 1fa5ae857bb1 ("driver core: get rid of struct device's bus_id 
-string array")
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Afer commit 1fa5ae857bb1 ("driver core: get rid of struct device's
-bus_id string array"), the name of device is allocated dynamically.
-
->
-> Thanks!
->
-> Paolo
->
->
-> .
+    Andrew
