@@ -2,56 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78A3A60D7C9
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 01:17:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16A5A60D7CC
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 01:20:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232575AbiJYXRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 19:17:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48120 "EHLO
+        id S232646AbiJYXUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 19:20:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232560AbiJYXRW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 19:17:22 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1853171BD3;
-        Tue, 25 Oct 2022 16:17:21 -0700 (PDT)
+        with ESMTP id S232523AbiJYXUS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 19:20:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FFBB3F1F9;
+        Tue, 25 Oct 2022 16:20:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 43506CE1ED6;
-        Tue, 25 Oct 2022 23:17:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1CB3C433D6;
-        Tue, 25 Oct 2022 23:17:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C028861BEC;
+        Tue, 25 Oct 2022 23:20:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1CF21C433B5;
+        Tue, 25 Oct 2022 23:20:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666739838;
-        bh=nV7OVDrwGLapIVrA2MkHe7ePYFXFsBK++LsqBN3LGxk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jgmD4R4nRxyvZqQf+RFkpy8OzZlwZWaN3uMpSb/mKDFK4G0lCt3Ub6SDpdtaf3acw
-         RZVWqtWUdVWFpdnLdaoRDbX+u2XI7TUZeUGvvX6eMRqfThv4W+1QhoXi6FhA0uiu3U
-         PNjHDugBCqcOWYunfi/Rxn2nqZEUG6HpBB5lfDfbMkst0/sSI7ZTmhUxaSyxO3Dp5g
-         X0HKBuHzTUAQJMZ+v2mw/xPvuoxoT7NR1OW7a7axArGENNfisA0CnRHJWsile+/6Db
-         VyiNFed0Lk2ahgi29Z9TjFLF2VANpmwGA00vmUK5eYV1xioMDnC9uB8Re4MJZgl8vv
-         jUNx3NlKFq+vw==
-Date:   Tue, 25 Oct 2022 16:17:16 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Doug Berger <opendmb@gmail.com>
-Cc:     kernel test robot <lkp@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        ntfs3@lists.linux.dev, netdev@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-scsi@vger.kernel.org,
-        linux-mm@kvack.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Julia Lawall <Julia.Lawall@inria.fr>
-Subject: Re: [linux-next:master] BUILD REGRESSION
- 89bf6e28373beef9577fa71f996a5f73a569617c
-Message-ID: <20221025161716.1b92a033@kernel.org>
-In-Reply-To: <8fbc9d02-3c73-5990-85af-82eecb6d64e3@gmail.com>
-References: <63581a3c.U6bx8B6mFoRe2pWN%lkp@intel.com>
-        <20221025154150.729bbbd0@kernel.org>
-        <8fbc9d02-3c73-5990-85af-82eecb6d64e3@gmail.com>
+        s=k20201202; t=1666740017;
+        bh=ne3U+oQfV5sNsgWjdiKzZ6svPdsA2np8PE8E18nZQi0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=cL+OWZkQVcBqHdgXAJ2ep6G38PNv5qwT9uJil6CEOBqWyrHMwflCzfKIPL/F6E8hQ
+         nsE/2ba9iYtK7+czRDPcyO7VSj5oSe2cqsn6aYDy035CAR8d5b3NPQdRy3nMeMBQtX
+         WydyMuxOrK3PvP51xvjRT5wWfvF+5uoUIC4W0p6M7IVxla+RGky0k2L7mBQwyvatTE
+         mAkkn2AtDntHblHDa8trJSpGyfOT729uSS16peRktY4ZqbY4lJtqsJ9kgl3syzw3d6
+         rJgZuwI8UpkMl5i2C/Iv1DoKpD2tVrU8ljtkzNjD/Aurbnk/8GD4nHLJ99c6uxaFXm
+         QMN+0ENw3e0WA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F33D4E45192;
+        Tue, 25 Oct 2022 23:20:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next V1 0/2] net: lan743x: PCI11010 / PCI11414 devices
+ Enhancements
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166674001698.2407.17199010916093041489.git-patchwork-notify@kernel.org>
+Date:   Tue, 25 Oct 2022 23:20:16 +0000
+References: <20221024082516.661199-1-Raju.Lakkaraju@microchip.com>
+In-Reply-To: <20221024082516.661199-1-Raju.Lakkaraju@microchip.com>
+To:     Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, bryan.whitehead@microchip.com,
+        hkallweit1@gmail.com, pabeni@redhat.com, edumazet@google.com,
+        linux@armlinux.org.uk, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, Ian.Saturley@microchip.com
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -61,24 +59,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 Oct 2022 16:04:15 -0700 Doug Berger wrote:
-> > On Wed, 26 Oct 2022 01:17:48 +0800 kernel test robot wrote:  
-> >> drivers/net/ethernet/broadcom/genet/bcmgenet.c:1497:5-13: ERROR: invalid reference to the index variable of the iterator on line 1475  
-> > 
-> > CC Doug  
-> Thanks for highlighting this for me, but I happened to catch it from the 
-> linux-mm list and was just looking into it.
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Mon, 24 Oct 2022 13:55:14 +0530 you wrote:
+> This patch series continues with the addition of supported features for the
+> Ethernet function of the PCI11010 / PCI11414 devices to the LAN743x driver.
 > 
-> It looks to me like a false positive since I am initializing the 
-> loc_rule variable in all paths outside of the list_for_each_entry() loop 
-> prior to its use on line 1497.
+> Raju Lakkaraju (2):
+>   net: lan743x: Add support for get_pauseparam and set_pauseparam
+>   net: phy: micrel: Add PHY Auto/MDI/MDI-X set driver for KSZ9131
+> 
+> [...]
 
-Ack, indeed the code looks right. Thanks for investigating.
+Here is the summary with links:
+  - [net-next,V1,1/2] net: lan743x: Add support for get_pauseparam and set_pauseparam
+    https://git.kernel.org/netdev/net-next/c/cdc045402594
+  - [net-next,V1,2/2] net: phy: micrel: Add PHY Auto/MDI/MDI-X set driver for KSZ9131
+    https://git.kernel.org/netdev/net-next/c/b64e6a8794d9
 
-> If desired I can submit a new patch to make coccinelle happy.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-I wonder if Cocci can detect writes. Let me add Julia for visibility.
 
-If not we can use a different variable for the "check if already
-exists" iteration? It could make the code easier to follow, IMHO.
-Or leave it be.
