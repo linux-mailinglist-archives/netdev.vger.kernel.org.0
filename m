@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B61960C292
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 06:20:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1432660C296
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 06:24:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230428AbiJYEU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 00:20:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60488 "EHLO
+        id S229868AbiJYEY0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 00:24:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230357AbiJYEUZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 00:20:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 826B29B840;
-        Mon, 24 Oct 2022 21:20:24 -0700 (PDT)
+        with ESMTP id S229894AbiJYEYY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 00:24:24 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 049FE638B
+        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 21:24:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 21A2E61716;
-        Tue, 25 Oct 2022 04:20:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7A23AC433B5;
-        Tue, 25 Oct 2022 04:20:23 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 50543CE1B7D
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 04:24:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FC6EC433D6;
+        Tue, 25 Oct 2022 04:24:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666671623;
-        bh=R9BvFUzyKbsbhLmesEyNT5dPBM6rnz8sqaKUMfXrKtE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=S79n2CFhE+Z3j0cWmDBXDsRW0iSTcMgNTAc/RsAI/Jg4WpjXckV9zP+j88f5SK8/X
-         KV+hBtA88VZJVL9XqwMfRXvT0wi8OyGyoBpOpBFXK52orziiu7Xphjsx8h0sOX/xr3
-         RMAVEjCktZtAzjMN9jP+pSv5FSg3QV+M0N/2YtexagtIWxIxDADLUy4OVWBLv/jeWn
-         fH+MtWY9pOejLbd/k4bVnOretcfeTP7vkBg3iewdz9dtTgtljNEQRElw5PMkXk9rFv
-         Fx/24knh5oKS4VQZmbaF1SxT+mR4RD8jhggJjdTocL/Zkmg+ghnIqMgsRczmLn1/n/
-         M55dtZs5DHMng==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3CD21E29F30;
-        Tue, 25 Oct 2022 04:20:23 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1666671860;
+        bh=6xrZ7p3zp9IDZ36aWUQwITJ2skZp5zc7Iw00IDnWnrQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MZe1JOn1WSvFlvXHer80aaQ+xpV2hCskKg2qHM8HjyMPw6fU0KqkTfTGu/GEfis4D
+         XLPvvruVQfBXOjhkXHzSZao8qXaF2746iztjWLKGRIKkLCNd9OgodG1Ta7Vi3MVL4q
+         XqUbDQ2Eydhz5tciQnw7homneOJp9Hak2XyJ4LNGv5Dt2ctiOfmO0S0pq07yAolq1r
+         9U1nBHkXCw+zaQF5ad2zIicr/u7xPW5v/QSXXqcLNNaCF0D2F42iAVMQBsALwHSfGV
+         UZSZx0jVNpaxz1gpnL8DiQT9Jei6GkGOikYpqL1crnOuZPoAELWCS8q7U8kEEWV4kp
+         qYO5lNeA+noQg==
+Date:   Mon, 24 Oct 2022 21:24:19 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Alex Vesker <valex@nvidia.com>
+Subject: Re: [net-next 05/14] net/mlx5: DR, Allocate ste_arr on stack
+ instead of dynamically
+Message-ID: <20221024212419.003b3056@kernel.org>
+In-Reply-To: <20221024135734.69673-6-saeed@kernel.org>
+References: <20221024135734.69673-1-saeed@kernel.org>
+        <20221024135734.69673-6-saeed@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/7] net: sfp: improve high power module
- implementation
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166667162324.8210.9772168919348975383.git-patchwork-notify@kernel.org>
-Date:   Tue, 25 Oct 2022 04:20:23 +0000
-References: <Y1K17UtfFopACIi2@shell.armlinux.org.uk>
-In-Reply-To: <Y1K17UtfFopACIi2@shell.armlinux.org.uk>
-To:     Russell King (Oracle) <linux@armlinux.org.uk>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        devicetree@vger.kernel.org, edumazet@google.com,
-        hkallweit1@gmail.com, krzysztof.kozlowski+dt@linaro.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, robh+dt@kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,42 +59,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Mon, 24 Oct 2022 14:57:25 +0100 Saeed Mahameed wrote:
+> From: Yevgeny Kliteynik <kliteyn@nvidia.com>
+>=20
+> While creting rule, ste_arr is a short array that is allocated in
+> the beginning of the function and freed at the end.
+> To avoid memory allocation "hiccups" that sometimes take up to 10ms,
+> allocate it on stack.
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+There's a reason, 32bit x86 does not like this:
 
-On Fri, 21 Oct 2022 16:08:29 +0100 you wrote:
-> Hi,
-> 
-> This series aims to improve the power level switching between standard
-> level 1 and the higher power levels.
-> 
-> The first patch updates the DT binding documentation to include the
-> minimum and default of 1W, which is the base level that every SFP cage
-> must support. Hence, it makes sense to document this in the binding.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,1/7] dt-bindings: net: sff,sfp: update binding
-    https://git.kernel.org/netdev/net-next/c/a272bcb9e5ef
-  - [net-next,2/7] net: sfp: check firmware provided max power
-    https://git.kernel.org/netdev/net-next/c/02eaf5a79100
-  - [net-next,3/7] net: sfp: ignore power level 2 prior to SFF-8472 Rev 10.2
-    https://git.kernel.org/netdev/net-next/c/18cc659e95ab
-  - [net-next,4/7] net: sfp: ignore power level 3 prior to SFF-8472 Rev 11.4
-    https://git.kernel.org/netdev/net-next/c/f8810ca75829
-  - [net-next,5/7] net: sfp: provide a definition for the power level select bit
-    https://git.kernel.org/netdev/net-next/c/398900498485
-  - [net-next,6/7] net: sfp: add sfp_modify_u8() helper
-    https://git.kernel.org/netdev/net-next/c/a3c536fc7580
-  - [net-next,7/7] net: sfp: get rid of DM7052 hack when enabling high power
-    https://git.kernel.org/netdev/net-next/c/bd1432f68ddc
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c: In function =E2=
+=80=98dr_rule_create_rule_nic=E2=80=99:
+drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c:1202:1: warning:=
+ the frame size of 1568 bytes is larger than 1024 bytes [-Wframe-larger-tha=
+n=3D]
+1202 | }
+     | ^
