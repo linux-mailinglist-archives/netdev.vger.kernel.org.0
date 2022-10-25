@@ -2,224 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 893D260D56D
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 22:19:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 547A060D534
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 22:05:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232818AbiJYUTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 16:19:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51478 "EHLO
+        id S232733AbiJYUFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 16:05:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232805AbiJYUTH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 16:19:07 -0400
-X-Greylist: delayed 67 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 25 Oct 2022 13:19:05 PDT
-Received: from relay04.th.seeweb.it (relay04.th.seeweb.it [IPv6:2001:4b7a:2000:18::165])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98BAC7D7BC;
-        Tue, 25 Oct 2022 13:19:05 -0700 (PDT)
-Received: from cp.tophost.it (vm1054.cs12.seeweb.it [217.64.195.253])
-        by m-r1.th.seeweb.it (Postfix) with ESMTPA id 1239F1F8DD;
-        Tue, 25 Oct 2022 22:19:04 +0200 (CEST)
-MIME-Version: 1.0
-Date:   Tue, 25 Oct 2022 23:03:07 +0300
-From:   Jami Kettunen <jami.kettunen@somainline.org>
-To:     Caleb Connolly <caleb.connolly@linaro.org>
-Cc:     Alex Elder <elder@linaro.org>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S232685AbiJYUFI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 16:05:08 -0400
+Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7133F1E725;
+        Tue, 25 Oct 2022 13:05:06 -0700 (PDT)
+Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-13bef14ea06so3359743fac.3;
+        Tue, 25 Oct 2022 13:05:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=date:subject:message-id:references:in-reply-to:cc:to:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=eCcoXzqCOTLs/OXhRR73dWp6fEmoY2vqrJfVEZfm4bk=;
+        b=JPdyLs0Ez8tEhDJoEG3HnBWZQYfhLSmnk1iQMhutWdtTF/xyM12x1pAWiVHVQHrrM/
+         7DAohWN6Bx4i3TO0Z+Sisw5auKSa9erlgMoZO7Uf1qj9BD96GVbTV9fYRI8O/D2l13SE
+         FkM8M60R8NJV0NuEQHJA1rv6AJBsqQ6PRfqi9jv3xQoQiPBEVtPtU8Hslv+xIyfpQl/S
+         6ktNDIKy08+jxtkpiM9sfpgfSWf6RjDD1PeOr7U6H/gledzbcZ0xdL2/ogLUNS0U6w10
+         PrsNwKmVW4uDlpQPLAZxY07+xEmWC5YPWlbxKVY9DNc8OxD2Cj1G9gDbcWqOiTAKjmGK
+         ZvoQ==
+X-Gm-Message-State: ACrzQf1AwNMv74tK6BOdfj1Ymo0YydfwNqKi5QAeKiwZrRTrbfMWFY7r
+        Yo28D2dLDJueoZ1J6Mm1Mw==
+X-Google-Smtp-Source: AMsMyM6mcgNjxW6i/qnU+iYP+pBcCoyzMgXv5PdueWJlslCfweAIm0U9+f++poSxkgEwaRpzT1rZlQ==
+X-Received: by 2002:a05:6870:d107:b0:137:11e5:6a95 with SMTP id e7-20020a056870d10700b0013711e56a95mr15898oac.146.1666728305645;
+        Tue, 25 Oct 2022 13:05:05 -0700 (PDT)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id y16-20020a056871011000b0010e73e252b8sm2095073oab.6.2022.10.25.13.05.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Oct 2022 13:05:05 -0700 (PDT)
+Received: (nullmailer pid 3155080 invoked by uid 1000);
+        Tue, 25 Oct 2022 20:05:02 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Alex Elder <elder@kernel.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] net: ipa: fix v3.1 resource limit masks
-In-Reply-To: <20221024210336.4014983-2-caleb.connolly@linaro.org>
-References: <20221024210336.4014983-1-caleb.connolly@linaro.org>
- <20221024210336.4014983-2-caleb.connolly@linaro.org>
-User-Agent: Roundcube Webmail/1.4.6
-Message-ID: <1b3438b9c5c33eeae0f648843ab0eb10@somainline.org>
-X-Sender: jami.kettunen@somainline.org
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Lee Jones <lee@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        John Crispin <john@phrozen.org>,
+        DENG Qingfang <dqfext@gmail.com>,
+        linux-mediatek@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        =?utf-8?b?bsOnIMOcTkFM?= <arinc.unal@arinc9.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Paolo Abeni <pabeni@redhat.com>
+In-Reply-To: <20221025050355.3979380-8-colin.foster@in-advantage.com>
+References: <20221025050355.3979380-1-colin.foster@in-advantage.com> <20221025050355.3979380-8-colin.foster@in-advantage.com>
+Message-Id: <166672723302.3138577.18331816371776997839.robh@kernel.org>
+Subject: Re: [PATCH v1 net-next 7/7] dt-bindings: net: mscc,vsc7514-switch: utilize generic ethernet-switch.yaml
+Date:   Tue, 25 Oct 2022 15:05:02 -0500
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25.10.2022 00:03, Caleb Connolly wrote:
-> The resource group limits for IPA v3.1 mistakenly used 6 bit wide mask
-> values, when the hardware actually uses 8. Out of range values were
-> silently ignored before, so the IPA worked as expected. However the
-> new generalised register definitions introduce stricter checking here,
-> they now cause some splats and result in the value 0 being written
-> instead. Fix the limit bitmask widths so that the correct values can be
-> written.
+On Mon, 24 Oct 2022 22:03:55 -0700, Colin Foster wrote:
+> Several bindings for ethernet switches are available for non-dsa switches
+> by way of ethernet-switch.yaml. Remove these duplicate entries and utilize
+> the common bindings for the VSC7514.
 > 
-> Fixes: 1c418c4a929c ("net: ipa: define resource group/type IPA register 
-> fields")
-> Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
-
-Tested-by: Jami Kettunen <jami.kettunen@somainline.org>
-
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> Suggested-by: Vladimir Oltean <olteanv@gmail.com>
 > ---
->  drivers/net/ipa/reg/ipa_reg-v3.1.c | 96 ++++++++++--------------------
->  1 file changed, 32 insertions(+), 64 deletions(-)
+>  .../bindings/net/mscc,vsc7514-switch.yaml     | 36 +------------------
+>  1 file changed, 1 insertion(+), 35 deletions(-)
 > 
-> diff --git a/drivers/net/ipa/reg/ipa_reg-v3.1.c
-> b/drivers/net/ipa/reg/ipa_reg-v3.1.c
-> index 116b27717e3d..0d002c3c38a2 100644
-> --- a/drivers/net/ipa/reg/ipa_reg-v3.1.c
-> +++ b/drivers/net/ipa/reg/ipa_reg-v3.1.c
-> @@ -127,112 +127,80 @@ static const u32 ipa_reg_counter_cfg_fmask[] = {
->  IPA_REG_FIELDS(COUNTER_CFG, counter_cfg, 0x000001f0);
-> 
->  static const u32 ipa_reg_src_rsrc_grp_01_rsrc_type_fmask[] = {
-> -	[X_MIN_LIM]					= GENMASK(5, 0),
-> -						/* Bits 6-7 reserved */
-> -	[X_MAX_LIM]					= GENMASK(13, 8),
-> -						/* Bits 14-15 reserved */
-> -	[Y_MIN_LIM]					= GENMASK(21, 16),
-> -						/* Bits 22-23 reserved */
-> -	[Y_MAX_LIM]					= GENMASK(29, 24),
-> -						/* Bits 30-31 reserved */
-> +	[X_MIN_LIM]					= GENMASK(7, 0),
-> +	[X_MAX_LIM]					= GENMASK(15, 8),
-> +	[Y_MIN_LIM]					= GENMASK(23, 16),
-> +	[Y_MAX_LIM]					= GENMASK(31, 24),
->  };
-> 
->  IPA_REG_STRIDE_FIELDS(SRC_RSRC_GRP_01_RSRC_TYPE, 
-> src_rsrc_grp_01_rsrc_type,
->  		      0x00000400, 0x0020);
-> 
->  static const u32 ipa_reg_src_rsrc_grp_23_rsrc_type_fmask[] = {
-> -	[X_MIN_LIM]					= GENMASK(5, 0),
-> -						/* Bits 6-7 reserved */
-> -	[X_MAX_LIM]					= GENMASK(13, 8),
-> -						/* Bits 14-15 reserved */
-> -	[Y_MIN_LIM]					= GENMASK(21, 16),
-> -						/* Bits 22-23 reserved */
-> -	[Y_MAX_LIM]					= GENMASK(29, 24),
-> -						/* Bits 30-31 reserved */
-> +	[X_MIN_LIM]					= GENMASK(7, 0),
-> +	[X_MAX_LIM]					= GENMASK(15, 8),
-> +	[Y_MIN_LIM]					= GENMASK(23, 16),
-> +	[Y_MAX_LIM]					= GENMASK(31, 24),
->  };
-> 
->  IPA_REG_STRIDE_FIELDS(SRC_RSRC_GRP_23_RSRC_TYPE, 
-> src_rsrc_grp_23_rsrc_type,
->  		      0x00000404, 0x0020);
-> 
->  static const u32 ipa_reg_src_rsrc_grp_45_rsrc_type_fmask[] = {
-> -	[X_MIN_LIM]					= GENMASK(5, 0),
-> -						/* Bits 6-7 reserved */
-> -	[X_MAX_LIM]					= GENMASK(13, 8),
-> -						/* Bits 14-15 reserved */
-> -	[Y_MIN_LIM]					= GENMASK(21, 16),
-> -						/* Bits 22-23 reserved */
-> -	[Y_MAX_LIM]					= GENMASK(29, 24),
-> -						/* Bits 30-31 reserved */
-> +	[X_MIN_LIM]					= GENMASK(7, 0),
-> +	[X_MAX_LIM]					= GENMASK(15, 8),
-> +	[Y_MIN_LIM]					= GENMASK(23, 16),
-> +	[Y_MAX_LIM]					= GENMASK(31, 24),
->  };
-> 
->  IPA_REG_STRIDE_FIELDS(SRC_RSRC_GRP_45_RSRC_TYPE, 
-> src_rsrc_grp_45_rsrc_type,
->  		      0x00000408, 0x0020);
-> 
->  static const u32 ipa_reg_src_rsrc_grp_67_rsrc_type_fmask[] = {
-> -	[X_MIN_LIM]					= GENMASK(5, 0),
-> -						/* Bits 6-7 reserved */
-> -	[X_MAX_LIM]					= GENMASK(13, 8),
-> -						/* Bits 14-15 reserved */
-> -	[Y_MIN_LIM]					= GENMASK(21, 16),
-> -						/* Bits 22-23 reserved */
-> -	[Y_MAX_LIM]					= GENMASK(29, 24),
-> -						/* Bits 30-31 reserved */
-> +	[X_MIN_LIM]					= GENMASK(7, 0),
-> +	[X_MAX_LIM]					= GENMASK(15, 8),
-> +	[Y_MIN_LIM]					= GENMASK(23, 16),
-> +	[Y_MAX_LIM]					= GENMASK(31, 24),
->  };
-> 
->  IPA_REG_STRIDE_FIELDS(SRC_RSRC_GRP_67_RSRC_TYPE, 
-> src_rsrc_grp_67_rsrc_type,
->  		      0x0000040c, 0x0020);
-> 
->  static const u32 ipa_reg_dst_rsrc_grp_01_rsrc_type_fmask[] = {
-> -	[X_MIN_LIM]					= GENMASK(5, 0),
-> -						/* Bits 6-7 reserved */
-> -	[X_MAX_LIM]					= GENMASK(13, 8),
-> -						/* Bits 14-15 reserved */
-> -	[Y_MIN_LIM]					= GENMASK(21, 16),
-> -						/* Bits 22-23 reserved */
-> -	[Y_MAX_LIM]					= GENMASK(29, 24),
-> -						/* Bits 30-31 reserved */
-> +	[X_MIN_LIM]					= GENMASK(7, 0),
-> +	[X_MAX_LIM]					= GENMASK(15, 8),
-> +	[Y_MIN_LIM]					= GENMASK(23, 16),
-> +	[Y_MAX_LIM]					= GENMASK(31, 24),
->  };
-> 
->  IPA_REG_STRIDE_FIELDS(DST_RSRC_GRP_01_RSRC_TYPE, 
-> dst_rsrc_grp_01_rsrc_type,
->  		      0x00000500, 0x0020);
-> 
->  static const u32 ipa_reg_dst_rsrc_grp_23_rsrc_type_fmask[] = {
-> -	[X_MIN_LIM]					= GENMASK(5, 0),
-> -						/* Bits 6-7 reserved */
-> -	[X_MAX_LIM]					= GENMASK(13, 8),
-> -						/* Bits 14-15 reserved */
-> -	[Y_MIN_LIM]					= GENMASK(21, 16),
-> -						/* Bits 22-23 reserved */
-> -	[Y_MAX_LIM]					= GENMASK(29, 24),
-> -						/* Bits 30-31 reserved */
-> +	[X_MIN_LIM]					= GENMASK(7, 0),
-> +	[X_MAX_LIM]					= GENMASK(15, 8),
-> +	[Y_MIN_LIM]					= GENMASK(23, 16),
-> +	[Y_MAX_LIM]					= GENMASK(31, 24),
->  };
-> 
->  IPA_REG_STRIDE_FIELDS(DST_RSRC_GRP_23_RSRC_TYPE, 
-> dst_rsrc_grp_23_rsrc_type,
->  		      0x00000504, 0x0020);
-> 
->  static const u32 ipa_reg_dst_rsrc_grp_45_rsrc_type_fmask[] = {
-> -	[X_MIN_LIM]					= GENMASK(5, 0),
-> -						/* Bits 6-7 reserved */
-> -	[X_MAX_LIM]					= GENMASK(13, 8),
-> -						/* Bits 14-15 reserved */
-> -	[Y_MIN_LIM]					= GENMASK(21, 16),
-> -						/* Bits 22-23 reserved */
-> -	[Y_MAX_LIM]					= GENMASK(29, 24),
-> -						/* Bits 30-31 reserved */
-> +	[X_MIN_LIM]					= GENMASK(7, 0),
-> +	[X_MAX_LIM]					= GENMASK(15, 8),
-> +	[Y_MIN_LIM]					= GENMASK(23, 16),
-> +	[Y_MAX_LIM]					= GENMASK(31, 24),
->  };
-> 
->  IPA_REG_STRIDE_FIELDS(DST_RSRC_GRP_45_RSRC_TYPE, 
-> dst_rsrc_grp_45_rsrc_type,
->  		      0x00000508, 0x0020);
-> 
->  static const u32 ipa_reg_dst_rsrc_grp_67_rsrc_type_fmask[] = {
-> -	[X_MIN_LIM]					= GENMASK(5, 0),
-> -						/* Bits 6-7 reserved */
-> -	[X_MAX_LIM]					= GENMASK(13, 8),
-> -						/* Bits 14-15 reserved */
-> -	[Y_MIN_LIM]					= GENMASK(21, 16),
-> -						/* Bits 22-23 reserved */
-> -	[Y_MAX_LIM]					= GENMASK(29, 24),
-> -						/* Bits 30-31 reserved */
-> +	[X_MIN_LIM]					= GENMASK(7, 0),
-> +	[X_MAX_LIM]					= GENMASK(15, 8),
-> +	[Y_MIN_LIM]					= GENMASK(23, 16),
-> +	[Y_MAX_LIM]					= GENMASK(31, 24),
->  };
-> 
->  IPA_REG_STRIDE_FIELDS(DST_RSRC_GRP_67_RSRC_TYPE, 
-> dst_rsrc_grp_67_rsrc_type,
+
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
+
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+./Documentation/devicetree/bindings/net/mscc,vsc7514-switch.yaml: Unable to find schema file matching $id: http://devicetree.org/schemas/net/ethernet-switch.yaml
+Documentation/devicetree/bindings/net/mscc,vsc7514-switch.example.dtb:0:0: /example-0/switch@1010000: failed to match any schema with compatible: ['mscc,vsc7514-switch']
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
