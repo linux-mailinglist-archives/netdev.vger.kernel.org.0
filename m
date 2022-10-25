@@ -2,155 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5176160CCE1
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 15:03:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8E8F60CD00
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 15:09:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232716AbiJYNDM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 09:03:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52446 "EHLO
+        id S232245AbiJYNJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 09:09:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232600AbiJYNCX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 09:02:23 -0400
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 757FBA8356;
-        Tue, 25 Oct 2022 06:00:45 -0700 (PDT)
-Date:   Tue, 25 Oct 2022 15:00:40 +0200
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Michael Lilja <michael.lilja@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
-Subject: Re: [PATCH] Periodically flow expire from flow offload tables
-Message-ID: <Y1fd+DEPZ8xM2x5B@salvia>
-References: <20221023171658.69761-1-michael.lilja@gmail.com>
- <Y1fC5K0EalIYuB7Y@salvia>
- <381FF5B6-4FEF-45E9-92D6-6FE927A5CC2D@gmail.com>
+        with ESMTP id S232401AbiJYNJE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 09:09:04 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 319A26171A
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 06:09:01 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MxXFn49WFzVj2d;
+        Tue, 25 Oct 2022 21:04:13 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 25 Oct 2022 21:08:59 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Tue, 25 Oct
+ 2022 21:08:59 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <leon@kernel.org>
+Subject: [PATCH net v2] net: fealnx: fix missing pci_disable_device()
+Date:   Tue, 25 Oct 2022 21:07:51 +0800
+Message-ID: <20221025130751.1075684-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="1rcC1yEX000eNPzk"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <381FF5B6-4FEF-45E9-92D6-6FE927A5CC2D@gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Add missing pci_disable_device() in error path of probe() and remove() path.
 
---1rcC1yEX000eNPzk
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Suggested-by: Leon Romanovsky <leon@kernel.org>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+v1 -> v2:
+  Don't use pcim_enable_device(), call pci_disable_device() directly.
+---
+ drivers/net/ethernet/fealnx.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-Hi,
+diff --git a/drivers/net/ethernet/fealnx.c b/drivers/net/ethernet/fealnx.c
+index ed18450fd2cc..d72256391d49 100644
+--- a/drivers/net/ethernet/fealnx.c
++++ b/drivers/net/ethernet/fealnx.c
+@@ -502,7 +502,8 @@ static int fealnx_init_one(struct pci_dev *pdev,
+ 	if (len < MIN_REGION_SIZE) {
+ 		dev_err(&pdev->dev,
+ 			   "region size %ld too small, aborting\n", len);
+-		return -ENODEV;
++		err = -ENODEV;
++		goto err_out_disable;
+ 	}
+ 
+ 	i = pci_request_regions(pdev, boardname);
+@@ -671,6 +672,8 @@ static int fealnx_init_one(struct pci_dev *pdev,
+ 	pci_iounmap(pdev, ioaddr);
+ err_out_res:
+ 	pci_release_regions(pdev);
++err_out_disable:
++	pci_disable_device(pdev);
+ 	return err;
+ }
+ 
+@@ -690,6 +693,7 @@ static void fealnx_remove_one(struct pci_dev *pdev)
+ 		pci_iounmap(pdev, np->mem);
+ 		free_netdev(dev);
+ 		pci_release_regions(pdev);
++		pci_disable_device(pdev);
+ 	} else
+ 		printk(KERN_ERR "fealnx: remove for unknown device\n");
+ }
+-- 
+2.25.1
 
-On Tue, Oct 25, 2022 at 02:36:35PM +0200, Michael Lilja wrote:
-> Hi,
-> 
-> No problem. Here is a snippet of the rulesets in play. I simplified it because there are a lot of devices and a lot of schedules per device. The ‘mark’ is set by userspace so not all flow types are offloaded, that is controlled by userspace:
-> 
-> - - - - snip start - - - - 
-> table inet fw4 {
-> 	flowtable ft {
-> 	hook ingress priority filter
-> 	devices = { lan1, lan2, wan }
-> 	flags offload
-> }
-> 
->  chain mangle_forward {
-> 	type filter hook forward priority mangle; policy
-> 	meta mark set ct mark
-> 	meta mark 0x00000000/16 queue flags bypass to 0
->  }
-> 
-> 
-> chain my_devices_rules {
-> 	ether saddr 96:68:97:a7:e8:a7 jump fw_p0_dev0 comment “Device match”
-> }
-> 
-> chain fw_p0_dev0 {
-> 	meta time >= "2022-10-09 18:46:50" meta time < "2022-10-09 19:16:50" counter packets 0 bytes 0 drop comment "!Schedule OFFLINE override"
-> 	meta day “Tuesday" meta hour >= "06:00" meta hour < "07:00" drop
-> }
-> 
-> chain forward {
-> 	 type filter hook forward priority filter; policy accept;
-> 	jump my_devices_rules
-> }
-> 
-> chain my_forward_offload {
-> 	type filter hook forward priority filter + 1; policy accept;
-> 	meta mark != 0x00000000/16 meta l4proto { tcp, udp } flow add @ft
-> }
-> 
-> chain mangle_postrouting {
-> 	type filter hook postrouting priority mangle; policy accept;
-> 	ct mark set meta mark
-> }
-> - - - - snip end - - - -
-> 
-> The use case is that I have schedules per device to control when
-> they are allowed access to the internet and if the flows are
-> offloaded they will not get dropped once the schedule kicks in.
-
-Thanks for explaining.
-
-I suggest to move your 'forward' chain to netdev/ingress using priority
-
-      filter - 1
-
-so the time schedule evaluation is always done before the flowtable
-lookup, that is, schedules rules will be always evaluated.
-
-In your example, you are using a linear ruleset, which might defeat
-the purpose of the flowtable. So I'm attaching a new ruleset
-transformed to use maps and the ingress chain as suggested.
-
---1rcC1yEX000eNPzk
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: attachment; filename="schedules.nft"
-
-table netdev filter {
-	map ether_to_chain {
-		typeof ether saddr : verdict
-		elements = { 96:68:97:a7:e8:a7 comment "Device match" : jump fw_p0_dev0 }
-	}
-
-	map schedule_time {
-		typeof meta time : verdict
-		flags interval
-		counter
-		elements = { "2022-10-09 18:46:50" - "2022-10-09 19:16:50" comment "!Schedule OFFLINE override" : drop }
-	}
-
-	map schedule_day {
-		typeof meta day . meta hour : verdict
-		flags interval
-		counter
-		elements = { "Tuesday" . "06:00" - "07:00" : drop }
-	}
-
-	chain fw_p0_dev0 {
-		meta time vmap @schedule_time
-		meta day . meta hour vmap @schedule_day
-	}
-
-	chain my_devices_rules {
-		ether saddr vmap @ether_to_chain
-	}
-
-	chain ingress {
-		type filter hook ingress device eth0 priority filter; policy accept;
-		jump my_devices_rules
-	}
-}
-
---1rcC1yEX000eNPzk--
