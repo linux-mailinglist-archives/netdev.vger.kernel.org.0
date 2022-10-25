@@ -2,85 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A9E8560C19A
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 04:20:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96CCB60C1B4
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 04:28:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231295AbiJYCUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Oct 2022 22:20:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60866 "EHLO
+        id S231245AbiJYC2p convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 24 Oct 2022 22:28:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230286AbiJYCUT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 22:20:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9551A1CFF6
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 19:20:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 77B8D61705
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 02:20:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CB4DDC433B5;
-        Tue, 25 Oct 2022 02:20:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666664415;
-        bh=vgFxY4qHkJR9JhH/NflfauK21Lag8e2UwQ8Ou+OHZ6E=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=up33ZruXQ1T/9EPmgSuMW7XnhKPCfbQlK/4uHdKeqnXr0XbNU+aNbkLZREROSEwLk
-         78aJV0FwQWlJsh1Ey5kAgeLeRybi09iKXn4KaTVS+OnYP48+LP8SkBbb8Q2QgxwwOE
-         R56aLOVyo6eM6rlBPRE66WV9NRFd8t7j71ambU+spRzNvNyWiSdSwB+UqUZ7CRGRJY
-         +GIAa9LJcI2ekHhpgcKjv04w9alTelGO5+cR676189fbaLYFqY/7dpufVT6SBarh3f
-         cDx8j02PQZcpskrjU4+yTJvPDwKfCV3qKueg5tvL5lsUsTZZO3UGhX3Xa1uO1XYbLw
-         S5mupklvufScA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AE4C3E29F32;
-        Tue, 25 Oct 2022 02:20:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] genetlink: piggy back on resv_op to default to a reject
- policy
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166666441571.15570.13995760382513953418.git-patchwork-notify@kernel.org>
-Date:   Tue, 25 Oct 2022 02:20:15 +0000
-References: <20221021193532.1511293-1-kuba@kernel.org>
-In-Reply-To: <20221021193532.1511293-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, johannes@sipsolutions.net,
-        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        jacob.e.keller@intel.com, fw@strlen.de, jiri@nvidia.com
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S230098AbiJYC2n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Oct 2022 22:28:43 -0400
+Received: from hust.edu.cn (unknown [202.114.0.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50494102DDE;
+        Mon, 24 Oct 2022 19:28:42 -0700 (PDT)
+Received: from smtpclient.apple ([172.16.0.254])
+        (user=dzm91@hust.edu.cn mech=PLAIN bits=0)
+        by mx1.hust.edu.cn  with ESMTP id 29P2RCr3017668-29P2RCr5017668
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Tue, 25 Oct 2022 10:27:12 +0800
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.120.41.1.1\))
+Subject: Re: [PATCH] can: usb: ucan: modify unregister_netdev to
+ unregister_candev
+From:   Dongliang Mu <dzm91@hust.edu.cn>
+In-Reply-To: <20221024135422.egkcbxvudtj7z3ie@pengutronix.de>
+Date:   Tue, 25 Oct 2022 10:27:12 +0800
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        =?utf-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <43C42E60-73A1-4F8A-A587-588B0E76F654@hust.edu.cn>
+References: <20221024110033.727542-1-dzm91@hust.edu.cn>
+ <20221024135422.egkcbxvudtj7z3ie@pengutronix.de>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+X-Mailer: Apple Mail (2.3696.120.41.1.1)
+X-FEAS-AUTH-USER: dzm91@hust.edu.cn
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
 
-On Fri, 21 Oct 2022 12:35:32 -0700 you wrote:
-> To keep backward compatibility we used to leave attribute parsing
-> to the family if no policy is specified. This becomes tedious as
-> we move to more strict validation. Families must define reject all
-> policies if they don't want any attributes accepted.
+> On Oct 24, 2022, at 21:54, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
 > 
-> Piggy back on the resv_start_op field as the switchover point.
-> AFAICT only ethtool has added new commands since the resv_start_op
-> was defined, and it has per-op policies so this should be a no-op.
+> On 24.10.2022 19:00:30, Dongliang Mu wrote:
+>> From API pairing, modify unregister_netdev to unregister_candev since
+>> the registeration function is register_candev. Actually, they are the
+>            ^ typo
+
+:(
+
+>> same.
+>> 
+>> Signed-off-by: Dongliang Mu <dzm91@hust.edu.cn>
 > 
-> [...]
+> Fixed while applying.
 
-Here is the summary with links:
-  - [net] genetlink: piggy back on resv_op to default to a reject policy
-    https://git.kernel.org/netdev/net/c/4fa86555d1cd
+You mean it is already done in your own tree? If yes, that’s fine.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+> 
+> Thanks,
+> Marc
+> 
+> -- 
+> Pengutronix e.K.                 | Marc Kleine-Budde           |
+> Embedded Linux                   | https://www.pengutronix.de  |
+> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
