@@ -2,383 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 875A260D764
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 00:52:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3451260D765
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 00:53:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232530AbiJYWww (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 18:52:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52614 "EHLO
+        id S232637AbiJYWxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 18:53:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232161AbiJYWwu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 18:52:50 -0400
-Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4106A2AB4;
-        Tue, 25 Oct 2022 15:52:48 -0700 (PDT)
-Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-13be3ef361dso5334386fac.12;
-        Tue, 25 Oct 2022 15:52:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=vG/lM5Scm6C9fOjiqfUwMglRna/2JcnpcVVOfgMSFA8=;
-        b=olCjmLfJzbRfBXfq37NiKrcBsXljjtDNLHug9VvhPMC8vdS3PMVoolfqw1jSP9Lo3G
-         aC1gHUera6n09znBDfgK7EFXuHLUciRZ+UiEGAjvBf4dcJ9oPZ1tBa1C+nT8vjpfvb4o
-         UswJXpFHXy26RPn1ksSGY8mJlpzB3bDtEN4ZTjlkkYZTnVmUvKsH6Dx+Ef3m0r8QZ/6k
-         Zysoq7C+NfLtKVwxe5xxtwK9/IuYrk3jPcJK3XBoB3BwIwaT2/wlEcLWWv/Ej/vxQiNJ
-         Ui1bnQL/cZ2nJPQmyST/X4tNA50A6K9FFAt4RpoPaYaNPq3IVoXHA2IF4mjpCdS2VjPm
-         LMQg==
-X-Gm-Message-State: ACrzQf11RREkmAEQ8+xslqvwbt8ZjUPF5TxPvWezG0030xUpNdCP5jJs
-        lJ/qyCaSEUAFZ9Sq80RPpg==
-X-Google-Smtp-Source: AMsMyM7uqt69DYPo5oMYk1VBEOnMyfPkaQavwbL3DqnR48ZxOmOrmki3NBlMxEca4YIAYU4wk/sTMw==
-X-Received: by 2002:a05:6870:8306:b0:13c:c80:6cbd with SMTP id p6-20020a056870830600b0013c0c806cbdmr405081oae.68.1666738368011;
-        Tue, 25 Oct 2022 15:52:48 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id eo33-20020a056870eca100b0010d5d5c3fc3sm2300105oab.8.2022.10.25.15.52.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Oct 2022 15:52:47 -0700 (PDT)
-Received: (nullmailer pid 3412950 invoked by uid 1000);
-        Tue, 25 Oct 2022 22:52:48 -0000
-Date:   Tue, 25 Oct 2022 17:52:48 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
-        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, matthias.bgg@gmail.com,
-        linux-mediatek@lists.infradead.org, lorenzo.bianconi@redhat.com,
-        Bo.Jiao@mediatek.com, sujuan.chen@mediatek.com,
-        ryder.Lee@mediatek.com, evelyn.tsai@mediatek.com,
-        devicetree@vger.kernel.org, daniel@makrotopia.org
-Subject: Re: [PATCH v2 net-next 2/6] dt-bindings: net: mediatek: add WED RX
- binding for MT7986 eth driver
-Message-ID: <20221025225248.GA3405306-robh@kernel.org>
-References: <cover.1666549145.git.lorenzo@kernel.org>
- <337ef332ca50e6a40f3fdceeb7262d91165c6323.1666549145.git.lorenzo@kernel.org>
+        with ESMTP id S232161AbiJYWxO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 18:53:14 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61056A4841
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 15:53:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1666738391; x=1698274391;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=suNiHrJ2/sBXwz4ycG7EH0K3kVTlC72S4qJ6sfruLSQ=;
+  b=XdlP3fz9SHEZ363J/BUPRGI6S3fRfWBpiCbfZvIyKGS1J1AZMDPhpoCF
+   Evk8PVMVExyYHzzSGqq31scA/wb6zOjcWWDRe7O4Pfo06EbrbVgZBFVyG
+   9+H0zLoc5198UtTQNniO6iv7kJxGbKIN7VIHC7z+7hBScCQjoK7eEfm7y
+   9ni1bYof9AwvwWH7SEEH6V1YsX9NuQoNpklF+OdcX4gbIrKwyE8VSpFv3
+   w1pr5Iu1k2AcGTt4ey0Kqm5gK+PJ06YWUH30IR717XGAiMpNfn3EF5N6h
+   B4hHATQu/rv3G6CiKVyrH4Z1RIieJz8nwwCaqsttF9BG6XVmR62ioJrgo
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10511"; a="308903688"
+X-IronPort-AV: E=Sophos;i="5.95,213,1661842800"; 
+   d="scan'208";a="308903688"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2022 15:53:11 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10511"; a="876978107"
+X-IronPort-AV: E=Sophos;i="5.95,213,1661842800"; 
+   d="scan'208";a="876978107"
+Received: from knnguyen-mobl1.amr.corp.intel.com ([10.209.107.240])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2022 15:53:10 -0700
+Date:   Tue, 25 Oct 2022 15:53:10 -0700 (PDT)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     Eric Dumazet <edumazet@google.com>
+cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        eric.dumazet@gmail.com, syzbot <syzkaller@googlegroups.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>
+Subject: Re: [PATCH net-next] mptcp: fix tracking issue in
+ mptcp_subflow_create_socket()
+In-Reply-To: <20221025180546.652251-1-edumazet@google.com>
+Message-ID: <b4e63f00-ab23-9926-b943-531caa1ae9ac@linux.intel.com>
+References: <20221025180546.652251-1-edumazet@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <337ef332ca50e6a40f3fdceeb7262d91165c6323.1666549145.git.lorenzo@kernel.org>
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 23, 2022 at 08:28:06PM +0200, Lorenzo Bianconi wrote:
-> Document the binding for the RX Wireless Ethernet Dispatch core on the
-> MT7986 ethernet driver used to offload traffic received by WLAN NIC and
-> forwarded to LAN/WAN one.
-> 
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+On Tue, 25 Oct 2022, Eric Dumazet wrote:
+
+> My recent patch missed that mptcp_subflow_create_socket()
+> was creating a 'kernel' socket, then converted it to 'user' socket.
+>
+> Fixes: 0cafd77dcd03 ("net: add a refcount tracker for kernel sockets")
+> Reported-by: syzbot <syzkaller@googlegroups.com>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Mat Martineau <mathew.j.martineau@linux.intel.com>
+> Cc: Matthieu Baerts <matthieu.baerts@tessares.net>
+> Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
 > ---
->  .../arm/mediatek/mediatek,mt7622-wed.yaml     | 91 +++++++++++++++++++
->  .../arm/mediatek/mediatek,mt7986-wo-boot.yaml | 46 ++++++++++
->  .../arm/mediatek/mediatek,mt7986-wo-ccif.yaml | 49 ++++++++++
->  .../arm/mediatek/mediatek,mt7986-wo-dlm.yaml  | 50 ++++++++++
->  4 files changed, 236 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-boot.yaml
->  create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-ccif.yaml
->  create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-dlm.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
-> index 84fb0a146b6e..8e2905004790 100644
-> --- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
-> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
-> @@ -29,6 +29,41 @@ properties:
->    interrupts:
->      maxItems: 1
->  
-> +  memory-region:
-> +    minItems: 3
-> +    maxItems: 3
 
-What is each entry? Need to define them.
+Hi Eric -
 
-> +    description:
-> +      phandles to nodes describing reserved memory used by mt7986-wed firmware
-> +      (see bindings/reserved-memory/reserved-memory.txt)
+I also missed this quirk in MPTCP subflow handling, thanks for the fix:
 
-What does that document say?
+Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 
-(You don't need generic descriptions/refs of common properties)
 
-> +
-> +  mediatek,wo-ccif:
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    description:
-> +      Phandle to the mediatek wed-wo controller.
-> +
-> +  mediatek,wo-boot:
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    description:
-> +      Phandle to the mediatek wed-wo boot interface.
-> +
-> +  mediatek,wo-dlm:
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    description:
-> +      Phandle to the mediatek wed-wo rx hw ring.
-> +
-> +allOf:
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: mediatek,mt7986-wed
-> +    then:
-> +      properties:
-> +        mediatek,wo-boot: true
-> +        mediatek,wo-ccif: true
-> +        mediatek,wo-dlm: true
-> +        memory-region: true
 
-This does nothing. You need the opposite? Disallow these properties for 
-7622?
-
-> +
->  required:
->    - compatible
->    - reg
-> @@ -49,3 +84,59 @@ examples:
->          interrupts = <GIC_SPI 214 IRQ_TYPE_LEVEL_LOW>;
->        };
->      };
-> +
-> +  - |
-
-Why a new example? 
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    soc {
-> +      #address-cells = <2>;
-> +      #size-cells = <2>;
-> +      reserved-memory {
-> +        #address-cells = <2>;
-> +        #size-cells = <2>;
-> +
-> +        wo_emi: wo-emi@4fd00000 {
-> +          reg = <0 0x4fd00000 0 0x40000>;
-> +          no-map;
-> +        };
-> +
-> +        wo_data: wo-data@4fd80000 {
-> +          reg = <0 0x4fd80000 0 0x240000>;
-> +          no-map;
-> +        };
-> +
-> +        wo_ilm: wo-ilm@151e0000 {
-> +          reg = <0 0x151e0000 0 0x8000>;
-> +          no-map;
-> +        };
-> +      };
-
-Don't need to show /reserved-memory in examples.
-
-> +
-> +      wo_boot: wo-boot@15194000 {
-> +        compatible = "mediatek,mt7986-wo-boot","syscon";
-> +        reg = <0 0x15194000 0 0x1000>;
-> +      };
-> +
-> +      wo_ccif0: wo-ccif@151a5000 {
-> +        compatible = "mediatek,mt7986-wo-ccif","syscon";
-> +        reg = <0 0x151a5000 0 0x1000>;
-> +        interrupts = <GIC_SPI 211 IRQ_TYPE_LEVEL_HIGH>;
-> +      };
-
-Don't really need to show these either. You already have them in their 
-own schemas and we don't need 2 examples.
-
-Didn't I already say this?
-
-> +
-> +      wo_dlm0: wo-dlm@151e8000 {
-> +        compatible = "mediatek,mt7986-wo-dlm";
-> +        reg = <0 0x151e8000 0 0x2000>;
-> +        resets = <&ethsysrst 0>;
-> +        reset-names = "wocpu_rst";
-> +      };
-> +
-> +      wed1: wed@1020a000 {
-> +        compatible = "mediatek,mt7986-wed","syscon";
-> +        reg = <0 0x15010000 0 0x1000>;
-> +        interrupts = <GIC_SPI 205 IRQ_TYPE_LEVEL_HIGH>;
-> +
-> +        memory-region = <&wo_emi>, <&wo_data>, <&wo_ilm>;
-> +        mediatek,wo-ccif = <&wo_ccif0>;
-> +        mediatek,wo-boot = <&wo_boot>;
-> +        mediatek,wo-dlm = <&wo_dlm0>;
-> +      };
-> +    };
-> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-boot.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-boot.yaml
-> new file mode 100644
-> index 000000000000..ce9c971e6604
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-boot.yaml
-> @@ -0,0 +1,46 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/arm/mediatek/mediatek,mt7986-wo-boot.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title:
-> +  MediaTek Wireless Ethernet Dispatch WO boot controller interface for MT7986
-> +
-> +maintainers:
-> +  - Lorenzo Bianconi <lorenzo@kernel.org>
-> +  - Felix Fietkau <nbd@nbd.name>
-> +
-> +description:
-> +  The mediatek wo-boot provides a configuration interface for WED WO
-> +  boot controller on MT7986 soc.
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - enum:
-> +          - mediatek,mt7986-wo-boot
-> +      - const: syscon
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    soc {
-> +      #address-cells = <2>;
-> +      #size-cells = <2>;
-> +      wo_boot: wo-boot@15194000 {
-> +        compatible = "mediatek,mt7986-wo-boot","syscon";
-> +        reg = <0 0x15194000 0 0x1000>;
-> +      };
-> +    };
-> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-ccif.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-ccif.yaml
-> new file mode 100644
-> index 000000000000..48cb27bcc4cd
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-ccif.yaml
-> @@ -0,0 +1,49 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/arm/mediatek/mediatek,mt7986-wo-ccif.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: MediaTek Wireless Ethernet Dispatch WO Controller for MT7986
-> +
-> +maintainers:
-> +  - Lorenzo Bianconi <lorenzo@kernel.org>
-> +  - Felix Fietkau <nbd@nbd.name>
-> +
-> +description:
-> +  The mediatek wo-ccif provides a configuration interface for WED WO
-> +  controller on MT7986 soc.
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - enum:
-> +          - mediatek,mt7986-wo-ccif
-> +      - const: syscon
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    soc {
-> +      #address-cells = <2>;
-> +      #size-cells = <2>;
-> +      wo_ccif0: wo-ccif@151a5000 {
-> +        compatible = "mediatek,mt7986-wo-ccif","syscon";
-> +        reg = <0 0x151a5000 0 0x1000>;
-> +        interrupts = <GIC_SPI 205 IRQ_TYPE_LEVEL_HIGH>;
-> +      };
-> +    };
-> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-dlm.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-dlm.yaml
-> new file mode 100644
-> index 000000000000..db9252598a42
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wo-dlm.yaml
-> @@ -0,0 +1,50 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/arm/mediatek/mediatek,mt7986-wo-dlm.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: MediaTek Wireless Ethernet Dispatch WO hw rx ring interface for MT7986
-> +
-> +maintainers:
-> +  - Lorenzo Bianconi <lorenzo@kernel.org>
-> +  - Felix Fietkau <nbd@nbd.name>
-> +
-> +description:
-> +  The mediatek wo-dlm provides a configuration interface for WED WO
-> +  rx ring on MT7986 soc.
-> +
-> +properties:
-> +  compatible:
-> +    const: mediatek,mt7986-wo-dlm
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  resets:
-> +    maxItems: 1
-> +
-> +  reset-names:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - resets
-> +  - reset-names
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    soc {
-> +      #address-cells = <2>;
-> +      #size-cells = <2>;
-> +
-> +      wo_dlm0: wo-dlm@151e8000 {
-> +        compatible = "mediatek,mt7986-wo-dlm";
-> +        reg = <0 0x151e8000 0 0x2000>;
-> +        resets = <&ethsysrst 0>;
-> +        reset-names = "wocpu_rst";
-> +      };
-> +    };
+> net/mptcp/subflow.c | 2 ++
+> 1 file changed, 2 insertions(+)
+>
+> diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+> index 07dd23d0fe04ac37f4cc66c0c21d4d41f50fb3f4..120f792fda9764271f020771b36d27c6e44d8618 100644
+> --- a/net/mptcp/subflow.c
+> +++ b/net/mptcp/subflow.c
+> @@ -1595,7 +1595,9 @@ int mptcp_subflow_create_socket(struct sock *sk, struct socket **new_sock)
+>
+> 	/* kernel sockets do not by default acquire net ref, but TCP timer
+> 	 * needs it.
+> +	 * Update ns_tracker to current stack trace and refcounted tracker.
+> 	 */
+> +	__netns_tracker_free(net, &sf->sk->ns_tracker, false);
+> 	sf->sk->sk_net_refcnt = 1;
+> 	get_net_track(net, &sf->sk->ns_tracker, GFP_KERNEL);
+> 	sock_inuse_add(net, 1);
 > -- 
-> 2.37.3
-> 
-> 
+> 2.38.0.135.g90850a2211-goog
+>
+>
+
+--
+Mat Martineau
+Intel
