@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85F6460D742
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 00:40:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA33B60D74A
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 00:42:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231259AbiJYWkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 18:40:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53848 "EHLO
+        id S232530AbiJYWl7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 18:41:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232805AbiJYWkO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 18:40:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 649816B8D3
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 15:40:06 -0700 (PDT)
+        with ESMTP id S231693AbiJYWlz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 18:41:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96BD0D73CA;
+        Tue, 25 Oct 2022 15:41:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B536A61BD4
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 22:40:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A4C4C433D6;
-        Tue, 25 Oct 2022 22:40:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48E4FB81F4D;
+        Tue, 25 Oct 2022 22:41:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 708D9C433D6;
+        Tue, 25 Oct 2022 22:41:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666737605;
-        bh=QsLmNQLK9hrQ+9w+DGymM2b2NqUKEtn19jUXECHyZNM=;
+        s=k20201202; t=1666737711;
+        bh=3ReAlpbuxb1p9jUT1Tt05lQ1bFQXcNMX2FBhJvCl64U=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Oby3UgqXWtt3rznL3m+4YgqhxRbxTKnQj69atceDrteKQp9/THJmL7oI2EcVnL/+p
-         9Zgb3k4BQdD0N0XN9ECjCd0VZxB0zyq9SV7KXBl4wQMCwMBMGFrxMzRn4pvrvbPvLv
-         xY4hvkOOHWED5HA69HutQ6Nmf1d2nPC801KrIAA0p+Xu0ZDDgF/UraynAYw5ZRa3R8
-         UfusV25HfnGDGreiCBQC9FBs1Qvv4o9OdQn5V280ksllhvykew7wq8aUkfHCSisCkq
-         KJwGUbiOCfe9igfUEElgcDfdYFry6s2cQ9MAnjtZybH0ft2p3iJWq5ApkAHp4Q+qMj
-         Lfci2h0I73j/g==
-Date:   Tue, 25 Oct 2022 15:40:03 -0700
+        b=CHENs7+Jm2JhwnGqKVG6LBdPWTr/zoY37HBmpX5axP8gH4//7lYRP+SI07XpMe+Ca
+         D+C2b5iwFp3jS6wY9M7rNui0VaCv79pxRRSE1Rm51kMzFUJuvUcQfXsSF841ZP7lpu
+         ys88kwX5Dn80rrnzny+sciuwoa9xxwFWymnQhvJ2s8bsH2UH6ZS/uWF2ffOy8rxhMg
+         uJ+dXnvYzzgkN+UA1k5mPdKPPoONNgo8MMI4SsB/9jnTLlN4op6rN4GANBGakjbQZ5
+         ybr0sZXx/kuN6dfeRXD/w4TpWBuY4CNTBobf5u92SrIEZWC0kPkQdB9MD5mG3ut2gh
+         e5+V9qhiJrpPw==
+Date:   Tue, 25 Oct 2022 15:41:50 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Aurelien Aptel <aaptel@nvidia.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, saeedm@nvidia.com, tariqt@nvidia.com,
-        leon@kernel.org, linux-nvme@lists.infradead.org, sagi@grimberg.me,
-        hch@lst.de, kbusch@kernel.org, axboe@fb.com, chaitanyak@nvidia.com,
-        smalin@nvidia.com, ogerlitz@nvidia.com, yorayz@nvidia.com,
-        borisp@nvidia.com, aurelien.aptel@gmail.com, malin1024@gmail.com
-Subject: Re: [PATCH v7 02/23] iov_iter: DDP copy to iter/pages
-Message-ID: <20221025154003.686cb8b1@kernel.org>
-In-Reply-To: <20221025135958.6242-3-aaptel@nvidia.com>
-References: <20221025135958.6242-1-aaptel@nvidia.com>
-        <20221025135958.6242-3-aaptel@nvidia.com>
+To:     kernel test robot <lkp@intel.com>, Doug Berger <opendmb@gmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, ntfs3@lists.linux.dev,
+        netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-scsi@vger.kernel.org, linux-mm@kvack.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [linux-next:master] BUILD REGRESSION
+ 89bf6e28373beef9577fa71f996a5f73a569617c
+Message-ID: <20221025154150.729bbbd0@kernel.org>
+In-Reply-To: <63581a3c.U6bx8B6mFoRe2pWN%lkp@intel.com>
+References: <63581a3c.U6bx8B6mFoRe2pWN%lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,28 +57,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 Oct 2022 16:59:37 +0300 Aurelien Aptel wrote:
-> Signed-off-by: Ben Ben-Ishay <benishay@nvidia.com>
-> Signed-off-by: Boris Pismenny <borisp@nvidia.com>
-> Signed-off-by: Or Gerlitz <ogerlitz@nvidia.com>
-> Signed-off-by: Yoray Zack <yorayz@nvidia.com>
-> Signed-off-by: Shai Malin <smalin@nvidia.com>
-> Signed-off-by: Aurelien Aptel <aaptel@nvidia.com>
+On Wed, 26 Oct 2022 01:17:48 +0800 kernel test robot wrote:
+> drivers/net/ethernet/broadcom/genet/bcmgenet.c:1497:5-13: ERROR: invalid reference to the index variable of the iterator on line 1475
 
-Great stuff :) Please get someone who matters to ack this.
-
-> Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-> ---
->  lib/iov_iter.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/lib/iov_iter.c b/lib/iov_iter.c
-> index c3ca28ca68a6..75470a4b8ab3 100644
-> --- a/lib/iov_iter.c
-> +++ b/lib/iov_iter.c
-> @@ -526,7 +526,7 @@ size_t _copy_to_iter(const void *addr, size_t bytes, struct iov_iter *i)
->  		might_fault();
->  	iterate_and_advance(i, bytes, base, len, off,
->  		copyout(base, addr + off, len),
-> -		memcpy(base, addr + off, len)
-> +		(base != addr + off) && memcpy(base, addr + off, len)
+CC Doug 
