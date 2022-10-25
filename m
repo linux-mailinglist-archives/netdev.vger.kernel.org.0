@@ -2,109 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 109CB60D710
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 00:27:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C11A860D726
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 00:31:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231548AbiJYW15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 18:27:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42530 "EHLO
+        id S232637AbiJYWb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 18:31:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231191AbiJYW1z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 18:27:55 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BFF01ADAC;
-        Tue, 25 Oct 2022 15:27:54 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id sc25so16457354ejc.12;
-        Tue, 25 Oct 2022 15:27:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=QQH4TaYIF6o38h7xbsFuFuW1teTfoq+Fiszi+NsDgAM=;
-        b=iEqpYCwY/QVTnjy4gBWJRmoe3Liq1KuoPKwrWuNlpEGzeZXOhDJpUiEj3kT9vW7NA/
-         n7Bldio0YTQRAJrAB5UJF391QPEcFHf93zLfCQ0Gvn6osvR1S4etwVwMlBSiuZWwPKG+
-         HM5tUBIMYq0PHOguc3cpA8ZjYjgHg5D+iycaQrxBSFsoGsqiKbuXvxAbCqB1q+LAtCVF
-         SS7DgOEA5Vn8bCi7EQGT0teXoRjIT32KudE2spuo4w+yApmVbwFSd1M4ghPtYIP+b/Fv
-         GWFR3Ffp75tp3SNFEdrgXr1XGD/RBidr1h4LT1eoCSv0raqElEqQx37Og87uy5Y9JjOU
-         b3CQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=QQH4TaYIF6o38h7xbsFuFuW1teTfoq+Fiszi+NsDgAM=;
-        b=nzPBE1zPK876xpAY8ESupVgY6tlBT/wT6de4uwmnRNaL+9PFFpETA/68wfPvdC1TPH
-         D7vYKOKSSgf/fFcyaPhH4VvkN353XiJNYxp9eKGzF4vek3ao+lEXYbbtRyQy3DgLV7EE
-         rB3r8E5BR6pXiimuhu86l4HRD1HDBFm9dI9TdTaxQQXnqKQsnqS1mBT0KiYkBREUI3G5
-         ifccLKwfidAIAL1Tme8T+B/N9+P581rB6oPwADYhnMoVF6Ll84oUlQgBKQz6Uopm55dn
-         MhjMyY2F9OFQoTFLeytAjdHH0K6vOWPHyjhDae+mvRX3l645QerZMoMUJ07tlLA+ZXq+
-         Zwgg==
-X-Gm-Message-State: ACrzQf3ivpHrBnRc7/WhEkKvVQKu+WcnhOXWdcglzWhsJ57xs1qZCeF0
-        8K3Jir6B/Yn/3Nfd5RAcWYQ=
-X-Google-Smtp-Source: AMsMyM4yuBBqbTkrLresixT63VODi3DoEvd2NVhI8pHLQRLJHMmALipMbV/mqYxTnflvOY/B8Waj0g==
-X-Received: by 2002:a17:907:e93:b0:78d:46b3:3a76 with SMTP id ho19-20020a1709070e9300b0078d46b33a76mr33905029ejc.133.1666736872599;
-        Tue, 25 Oct 2022 15:27:52 -0700 (PDT)
-Received: from hoboy.vegasvil.org (81-223-89-254.static.upcbusiness.at. [81.223.89.254])
-        by smtp.gmail.com with ESMTPSA id m8-20020a509308000000b0045bd257b307sm2302860eda.22.2022.10.25.15.27.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Oct 2022 15:27:51 -0700 (PDT)
-Date:   Tue, 25 Oct 2022 15:27:49 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, krzysztof.kozlowski+dt@linaro.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yangbo.lu@nxp.com,
-        radhey.shyam.pandey@amd.com, anirudha.sarangi@amd.com,
-        harini.katakam@amd.com, git@amd.com
-Subject: Re: [PATCH net-next V2] dt-bindings: net: ethernet-controller: Add
- ptp-hardware-clock
-Message-ID: <Y1hi5YHS/ATx79JJ@hoboy.vegasvil.org>
-References: <20221021054111.25852-1-sarath.babu.naidu.gaddam@amd.com>
- <20221024165723.GA1896281-robh@kernel.org>
+        with ESMTP id S232614AbiJYWb2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 18:31:28 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F9402649C
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 15:31:26 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lRQdF6qSiie72fN9gSAhv6BIsZuAJAyUr0PP3Nf0J+Z03+7umuWHBisSQJ0/Ak2LSRTfVYw8Z9HFNoJtv01Cmmz5aIX2thMoD7hS1Fz435P6R3JY45QpzqmICDEZHAImJjTBsQ3JapxZVsl3IFJYoO4yKvLbciicKlvjYsrZhXHE2JkI6d2ozK9N6JGwKWCxqSeXI2wkOuTGyznOsBLUfhkCCMFWqQpvSu7Ack/mBdFfl8dtLYYsYuWaqFcP3eIFAPBc/UdQU4olDZX352GU57/QkdU7ZHc1D9jNfdJ7nQQSUgbH3e2jnnky+cSQWXKsggqITr6Yk7tCEU6qKujRGA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=v0t91Q5E5l1x1fpRBbKBJRFwYVp/mALQi2aSfLS1y7s=;
+ b=GDVUt1FmaGL7TJSW8DIgRucBgo91pG8BwMjeRsgBbHFVPLXt+ZYIEdnv9CG/eEEcMEnY+5IpG+GL3E3+nlu6piigRA5mLrUj7Bw7D0JBeamXlkITrYpGriZV0zAZdGuCRvuYmhXYiL4Q3y7ryOQesDcIh8X2hB1FAe/KAeRpLUTeKRZw6WfcR/JFTdTfwikRaae8MWcNsBfdDvUaRlMvA8sU/nrXBpsW0gta7UTvlt3sKEU6a29/0+xZFN6Vbt+gBKnO3sKyNCqBYO5RPrJw/RRR1K4nqKrLrIjky2PR9HDzZCJq+7gou6hUWPT8D+EGzLkZPJzLpBfKHmpxEOp9qw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=v0t91Q5E5l1x1fpRBbKBJRFwYVp/mALQi2aSfLS1y7s=;
+ b=S6eV5rZA41DNPmqK7V2pAYnVHfEkztHd9vCCHMwma1fdhIT2HMaQ73Fs0SfC3Kv/nx+FyMX2O/tqCWO7Us2v7M4A5NqSoHAAGVUYPbvluFQxZkHkkGFav3j2xiV3Zq9oy9kq+kpqS0GB6/Qrq8dnDeJe6VYVY9agKva2U806Dv8wfmbZtmZADQRaPTn1WvbcOy0CUylDNj7LY3AWkA5jAkemFfztyxFEeJ1BelalM1Onw6obhdcXj0gDRmX2bo60XHVhFIwwgHkungK81c/8aHf+k0fDLa4dik3w9+Cgqqpn51cLZWXraGv1bkeZo/XmArUaKWl7T+UD7sH0rWyEgA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4373.namprd12.prod.outlook.com (2603:10b6:208:261::8)
+ by MN2PR12MB4519.namprd12.prod.outlook.com (2603:10b6:208:262::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.28; Tue, 25 Oct
+ 2022 22:31:25 +0000
+Received: from MN2PR12MB4373.namprd12.prod.outlook.com
+ ([fe80::6c65:8f78:f54e:3c93]) by MN2PR12MB4373.namprd12.prod.outlook.com
+ ([fe80::6c65:8f78:f54e:3c93%5]) with mapi id 15.20.5746.028; Tue, 25 Oct 2022
+ 22:31:24 +0000
+From:   Benjamin Poirier <bpoirier@nvidia.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH iproute2] ip-monitor: Do not error out when RTNLGRP_STATS is not available
+Date:   Wed, 26 Oct 2022 07:29:09 +0900
+Message-Id: <20221025222909.1112705-1-bpoirier@nvidia.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220922082854.5aa1bffe@hermes.local>
+References: <20220922082854.5aa1bffe@hermes.local>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: TYCPR01CA0088.jpnprd01.prod.outlook.com
+ (2603:1096:405:3::28) To MN2PR12MB4373.namprd12.prod.outlook.com
+ (2603:10b6:208:261::8)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221024165723.GA1896281-robh@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4373:EE_|MN2PR12MB4519:EE_
+X-MS-Office365-Filtering-Correlation-Id: aa91944f-0348-42f8-92c6-08dab6d8a633
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: PXbd80Up8PmYzb0hKEFFaptZQjxzCQ+rxqlImWPKayxV98/2uygznB9CrH9/o6nwJqwW8agdz6h5QtwD1knRyypoXw4CMNv8/5ckFUQwrZU1cYRiIVAisul4rvlvYPfU7aCQzQeM9DuhnF0xMW3s9P+Tj/plNXNkyF7G2TU3ZHWTc7OZMJ+fINKoOFp4z8QjqY3YIACFhq0jV2Fl3jvaEst4PHsBxnKlZwazn85KKEL66l0YCbLqqFHSTcy2jFoBSmXlA0OTYC1ond6xEHslEyl4v1CTPcIrn1jQ1o/SypZJS2NvoV0ad+4XSQEINw3IM+f2zE8aGdLEIee/QG2xClnhiSPdpMF+SjERWgKXU2iszPWpcHY/Rbz8WK56Yfv1on8g6Vxe9+PNyU/D4k3Bg1xJrcvE6bXY3xsLgWg+6eNA02dlE3Hkoo/EPwYjm96XVJPwfEcFmoF90Ym7yXmYR23oZUWN5V6Ks/2erv6l5Ls9kw20imgWxj4nIgDSG1x3u55U4zcf5QfDyUoao/S1koFcyZ/P/EcPA+4Ts3GWHWbfZw9G53Yf+IO/EMGDWBgEz+OwfYPOI5VT+Ek5v89ktD8Ja7tLwpdODFE3U7yPcgXr9sDSx0FdKjTzlKAngyHT/wHjoldIl9MNH33LTkEbXllamlTZyf3DMRDKdhbnPmxum4cDnabtWjObHl/E3MhBVbUgwUji8WXSdo5Ch01XAA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4373.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(346002)(376002)(366004)(396003)(39860400002)(451199015)(1076003)(186003)(26005)(6486002)(2906002)(38100700002)(86362001)(36756003)(6506007)(83380400001)(6512007)(2616005)(316002)(8676002)(4326008)(478600001)(6666004)(107886003)(41300700001)(54906003)(6916009)(5660300002)(8936002)(66946007)(66556008)(66476007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Ipn2+22snzsvMDR1OUnBrDmc2TjMrpZELYnsiSk1b+Rzlv6Zq+LgrqI9Iv7b?=
+ =?us-ascii?Q?hSJkA8bWPuxI10YQ9TeX6cAt6f4UCjC2Dwq98tBdEF2AW1BHPhds7j4mSC5i?=
+ =?us-ascii?Q?4O2Ph/L3+CyVdhDVG3pK45tKpb63nG7ExMUU43TFQWFtsN6/JiJx5GiZvUKq?=
+ =?us-ascii?Q?3zJ/alzFCG9tcYtarOeHchFxFAdsknyr8ya1aJjVxAWZFMhLH2C0NbazQ8E6?=
+ =?us-ascii?Q?gwEVzR8WyeQwx+Zo6imzjBMBYGYtZPRcef1F4b87XMpqk5un8Bffl1AuoNxr?=
+ =?us-ascii?Q?8xtypklNNE9vEe+tjIav4X4x6WruMPDiX+/Mpe1igWlPL4G5vf++WmOqpsz5?=
+ =?us-ascii?Q?qSywb9Bp/7D1YwNEnluTremOySV/KQN64LOGEMkTt0SFQcgqzHYpyrZ2wW6I?=
+ =?us-ascii?Q?BKZ3kERIciNpMGKBBcNeMEGpN3kATKCTmM22Z6KHV/AQ3slZAzuoTiWz399C?=
+ =?us-ascii?Q?1771xJzXMz3EDY1K5yUePUZHbjItjW/L9WGAlaX4LuYufraRV9ON8C5Shhzm?=
+ =?us-ascii?Q?6jPWt6Ad5yk5MfXmHXNft01FYFRrTffgSYT4879f9IWoWbsDUiJRTfXba7I7?=
+ =?us-ascii?Q?CtYzpUI9urs5t7QwhDrqbBuxNKlu3pz1xHf38LJC2bxbD+RDVJCYfO0uE5sy?=
+ =?us-ascii?Q?z7TXC2cGyJl6BgNkyYeutGvE3md+bhD7JhrLkFGOSunBb6K+w0na8qFpyuZ8?=
+ =?us-ascii?Q?jXdVKFihtep0MyMZwS2/PVahVJLgeh6ew9fTgtpUwEOQUHDhp12j/KFPbsu0?=
+ =?us-ascii?Q?sr53IquAKkfXAxvm0fGwgfsQ/O9y7IuB4axkDwAZpOg9NxcYNjmfHjcqObAz?=
+ =?us-ascii?Q?t+oPxcihD894dAlSUkTXE8535SBoBlYYvtkHFwUaLykFQk/+jDbZOFDul9Fw?=
+ =?us-ascii?Q?gqfHEkkoXvwzjH7Hbc+i5dkxysU3o0moN8V+MrjWp6hTa9AteiNMHaQxogr2?=
+ =?us-ascii?Q?vOyjOAm1Zd6lmVokTFEBROGUonRNxWqht6aLEMia2tBte5IOm52e2zHvgIFo?=
+ =?us-ascii?Q?uu/OWJWrmWcvEvOm/f82EDgNEcZ6k+vHoGEbmQjAkT5zRf5P7e/aQuH+xNpu?=
+ =?us-ascii?Q?yU4cbBb/U1ftewUClArasVyWhEOqewpvmS4oGU9KisOokzWJ9pvJovUGA9Kx?=
+ =?us-ascii?Q?aLPubxWakeX1r+E7MRSD50gL4aac3qyDcsTICyQhwN6NMmEFRbIWY7kjgrp2?=
+ =?us-ascii?Q?0mL/yxAhCbwYaHf3PY0N/JWWGuOY/HzWKXpWDPVQ/ghfOzq/5zGg87FDxXKp?=
+ =?us-ascii?Q?8yGr6YiYid5KdN8OmNztBa2qNjMrNxdHAy/TykFvtpIfFi4JNY6EiGJ9tfo1?=
+ =?us-ascii?Q?HeTdm6AvR4h1bFMhCcCgpL8YS2/4GhVqzqh0/Bupcq41TtovYQthajWLtrG8?=
+ =?us-ascii?Q?9xzNoKols+xHHyM+AjwbQR2atTVcnEZj9+sMkG1cWL1Ur72R9R9oxXzmhMKP?=
+ =?us-ascii?Q?kp6UXh7lS66AgmJofay5+Jcc5A7Jt50GH8yVF6l52ntjdYZE1ZvjlVEVnulk?=
+ =?us-ascii?Q?vcCvBPoXJD9xbjgBlIEK1cnN/8E3QvQmwOyxPWp11HJFMqWP4T6Uxka97WVr?=
+ =?us-ascii?Q?R0pGyH9/cNijK3uNVVuityVovQQXidYrpjqMpP39?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: aa91944f-0348-42f8-92c6-08dab6d8a633
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4373.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2022 22:31:24.7215
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qNdODsKxD8z1DYwnr29vicQV1POMGVjfny0wpcksMEJ3Gy/wmHvYFPkONcIGV3/YpF3kpF65yfFLZXWRFTg4BA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4519
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 24, 2022 at 11:57:23AM -0500, Rob Herring wrote:
-> On Thu, Oct 20, 2022 at 11:41:10PM -0600, Sarath Babu Naidu Gaddam wrote:
-> > There is currently no standard property to pass PTP device index
-> > information to ethernet driver when they are independent.
-> > 
-> > ptp-hardware-clock property will contain phandle to PTP clock node.
-> > 
-> > Freescale driver currently has this implementation but it will be
-> > good to agree on a generic (optional) property name to link to PTP
-> > phandle to Ethernet node. In future or any current ethernet driver
-> > wants to use this method of reading the PHC index,they can simply use
-> > this generic name and point their own PTP clock node, instead of
-> > creating separate property names in each ethernet driver DT node.
-> 
-> Seems like this does the same thing as 
-> Documentation/devicetree/bindings/ptp/timestamper.txt.
-> 
-> Or perhaps what we have in bindings/timestamp/ which unfortunately does 
-> about the same thing.
-> 
-> The latter one is more flexible and follows standard provider/consumer 
-> patterns. So timestamper.txt should probably be deprecated.
+Following commit 4e8a9914c4d4 ("ip-monitor: Include stats events in default
+and "all" cases"), `ip monitor` fails to start on kernels which do not
+contain linux.git commit 5fd0b838efac ("net: rtnetlink: Add UAPI toggle for
+IFLA_OFFLOAD_XSTATS_L3_STATS") because the netlink group RTNLGRP_STATS
+doesn't exist:
 
-I don't see how you can do that.  The provider/consumer semantics are
-completely opposite.
+ $ ip monitor
+ Failed to add stats group to list
 
-The three (including present patch) bindings specify three different
-relationships.
+When "stats" is not explicitly requested, change the error to a warning so
+that `ip monitor` and `ip monitor all` continue to work on older kernels.
 
-Thanks,
-Richard
+Note that the same change is not done for RTNLGRP_NEXTHOP because its value
+is 32 and group numbers <= 32 are always supported; see the comment above
+netlink_change_ngroups() in the kernel source. Therefore
+NETLINK_ADD_MEMBERSHIP 32 does not error out even on kernels which do not
+support RTNLGRP_NEXTHOP.
+
+Reported-by: Stephen Hemminger <stephen@networkplumber.org>
+Fixes: 4e8a9914c4d4 ("ip-monitor: Include stats events in default and "all" cases")
+Signed-off-by: Benjamin Poirier <bpoirier@nvidia.com>
+---
+ ip/ipmonitor.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/ip/ipmonitor.c b/ip/ipmonitor.c
+index 8a72ea42..45e4e8f1 100644
+--- a/ip/ipmonitor.c
++++ b/ip/ipmonitor.c
+@@ -195,6 +195,8 @@ static int accept_msg(struct rtnl_ctrl_data *ctrl,
+ int do_ipmonitor(int argc, char **argv)
+ {
+ 	unsigned int groups = 0, lmask = 0;
++	/* "needed" mask */
++	unsigned int nmask;
+ 	char *file = NULL;
+ 	int ifindex = 0;
+ 
+@@ -253,6 +255,7 @@ int do_ipmonitor(int argc, char **argv)
+ 	ipneigh_reset_filter(ifindex);
+ 	ipnetconf_reset_filter(ifindex);
+ 
++	nmask = lmask;
+ 	if (!lmask)
+ 		lmask = IPMON_L_ALL;
+ 
+@@ -328,8 +331,11 @@ int do_ipmonitor(int argc, char **argv)
+ 
+ 	if (lmask & IPMON_LSTATS &&
+ 	    rtnl_add_nl_group(&rth, RTNLGRP_STATS) < 0) {
++		if (!(nmask & IPMON_LSTATS))
++			fprintf(stderr, "Warning: ");
+ 		fprintf(stderr, "Failed to add stats group to list\n");
+-		exit(1);
++		if (nmask & IPMON_LSTATS)
++			exit(1);
+ 	}
+ 
+ 	if (listen_all_nsid && rtnl_listen_all_nsid(&rth) < 0)
+-- 
+2.37.2
+
