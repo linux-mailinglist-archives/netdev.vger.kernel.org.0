@@ -2,118 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BC2060CBB4
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 14:25:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6240260CBFA
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 14:37:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231608AbiJYMZV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 08:25:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34940 "EHLO
+        id S231837AbiJYMg7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 08:36:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231586AbiJYMZQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 08:25:16 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 652D2CF85F;
-        Tue, 25 Oct 2022 05:25:14 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MxWNX1DrqzHv52;
-        Tue, 25 Oct 2022 20:25:00 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Tue, 25 Oct
- 2022 20:25:11 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <johannes@sipsolutions.net>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC:     <alexander@wetzel-home.de>, <weiyongjun1@huawei.com>,
-        <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH] wifi: mac80211: fix general-protection-fault in ieee80211_subif_start_xmit()
-Date:   Tue, 25 Oct 2022 20:32:50 +0800
-Message-ID: <20221025123250.143952-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S231869AbiJYMgy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 08:36:54 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AAE9188A95;
+        Tue, 25 Oct 2022 05:36:49 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id r12so5441773lfp.1;
+        Tue, 25 Oct 2022 05:36:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=aN0HUd/KgdtdxIcVM/vKgUbuOtmAYYeHHt78w+aGgt8=;
+        b=aBIuiwmv8MKm72HVyQhGu5WmoBtAmK3XF/1PTz0bzUU25A25s8Y5i0ItMqk6lRYdVH
+         YV5y+EijhyMyuMew0RWl/OmZQnFfkvGCldxDFIjWJ7qSvti/EbuHtHUHOPbd627uWer4
+         LuYPIphGZM38WcXgaCsRv4okvvyEEd2dWEIIPg8sZU8Rw46hMovTJSa1nB2tPRc4gqr1
+         824l0BE4MehGzfSLqLoiwpK4h+jyz9Gm1J8ven5v03tBbHJpMjwmg0nbqFdahyicksVy
+         ImlgpQvBcnThc91pdWbWQ0POZGO6hNk4GhKkeRj0HVtk3t2cGkkuyyV6ioRdp6S0bTWa
+         90vA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=aN0HUd/KgdtdxIcVM/vKgUbuOtmAYYeHHt78w+aGgt8=;
+        b=O15ZBmApGkvN4WdgXEg7F+6LaUc4dpzwrqZo/IybkWEdCM5j4Udj3T5NP7OGMT3CT8
+         +J5g3Y1SOL5W/V/5V8YtXXrZ/+Cz1lsl1uExHI0XQgRMZv0tBbMOzl1cuzARFlBJabsO
+         dYIvHYo7Lz61VJyp1l1D5FBUnuZqEQD9grINI8L9EEwrwxc5kVqUqbzxsemoJKyf118w
+         +XR8CLF/3D8/R75qUg4WVyTYH7qSs1ls1yWoY/6UYnfFbAuHB0D5TGw9z7B5Y+nXJxve
+         R9ibBaXAEEpTOtWI+N1Kt5pFRMxqH1LfvScDW47XpeE/QAnDFFBDLyjQxEkkfTCN5Phm
+         fERw==
+X-Gm-Message-State: ACrzQf1DXqAhMO+G4dr1tm6kDr6Mzpmz2peuPETTNGVdifC8eE7HMf39
+        p482n4KjZITxJ1iXrVP53sMAhAF5XPHTFw==
+X-Google-Smtp-Source: AMsMyM7h0NPWCWOmu+/lzjO76zWSA+WPzlrK1l1KOvhtU9YeqQqpJXOhYDnbXvle5a0Lk+y1HMyhiQ==
+X-Received: by 2002:a05:6512:3dac:b0:4a4:8044:9c3 with SMTP id k44-20020a0565123dac00b004a4804409c3mr13225634lfv.145.1666701407419;
+        Tue, 25 Oct 2022 05:36:47 -0700 (PDT)
+Received: from smtpclient.apple (188-177-109-202-dynamic.dk.customer.tdc.net. [188.177.109.202])
+        by smtp.gmail.com with ESMTPSA id r2-20020a19da02000000b0049f9799d349sm395131lfg.187.2022.10.25.05.36.46
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 25 Oct 2022 05:36:46 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.200.110.1.12\))
+Subject: Re: [PATCH] Periodically flow expire from flow offload tables
+From:   Michael Lilja <michael.lilja@gmail.com>
+In-Reply-To: <Y1fC5K0EalIYuB7Y@salvia>
+Date:   Tue, 25 Oct 2022 14:36:35 +0200
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <381FF5B6-4FEF-45E9-92D6-6FE927A5CC2D@gmail.com>
+References: <20221023171658.69761-1-michael.lilja@gmail.com>
+ <Y1fC5K0EalIYuB7Y@salvia>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+X-Mailer: Apple Mail (2.3731.200.110.1.12)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When device is running and the interface status is changed, the gpf issue
-is triggered. The problem triggering process is as follows:
-Thread A:                           Thread B
-ieee80211_runtime_change_iftype()   process_one_work()
-    ...                                 ...
-    ieee80211_do_stop()                 ...
-    ...                                 ...
-        sdata->bss = NULL               ...
-        ...                             ieee80211_subif_start_xmit()
-                                            ieee80211_multicast_to_unicast
-                                    //!sdata->bss->multicast_to_unicast
-                                      cause gpf issue
+Hi,
 
-When the interface status is changed, the sending queue continues to send
-packets. After the bss is set to NULL, the bss is accessed. As a result,
-this causes a general-protection-fault issue.
+No problem. Here is a snippet of the rulesets in play. I simplified it =
+because there are a lot of devices and a lot of schedules per device. =
+The =E2=80=98mark=E2=80=99 is set by userspace so not all flow types are =
+offloaded, that is controlled by userspace:
 
-The following is the stack information:
-general protection fault, probably for non-canonical address
-0xdffffc000000002f: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000178-0x000000000000017f]
-Workqueue: mld mld_ifc_work
-RIP: 0010:ieee80211_subif_start_xmit+0x25b/0x1310
-Call Trace:
-<TASK>
-dev_hard_start_xmit+0x1be/0x990
-__dev_queue_xmit+0x2c9a/0x3b60
-ip6_finish_output2+0xf92/0x1520
-ip6_finish_output+0x6af/0x11e0
-ip6_output+0x1ed/0x540
-mld_sendpack+0xa09/0xe70
-mld_ifc_work+0x71c/0xdb0
-process_one_work+0x9bf/0x1710
-worker_thread+0x665/0x1080
-kthread+0x2e4/0x3a0
-ret_from_fork+0x1f/0x30
-</TASK>
+- - - - snip start - - - -=20
+table inet fw4 {
+	flowtable ft {
+	hook ingress priority filter
+	devices =3D { lan1, lan2, wan }
+	flags offload
+}
 
-Fixes: 107395f9cf44 ("wifi: mac80211: Drop support for TX push path")
-Reported-by: syzbot+c6e8fca81c294fd5620a@syzkaller.appspotmail.com
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- net/mac80211/iface.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ chain mangle_forward {
+	type filter hook forward priority mangle; policy
+	meta mark set ct mark
+	meta mark 0x00000000/16 queue flags bypass to 0
+ }
 
-diff --git a/net/mac80211/iface.c b/net/mac80211/iface.c
-index dd9ac1f7d2ea..5a924459bfd1 100644
---- a/net/mac80211/iface.c
-+++ b/net/mac80211/iface.c
-@@ -1900,6 +1900,9 @@ static int ieee80211_runtime_change_iftype(struct ieee80211_sub_if_data *sdata,
- 				  IEEE80211_QUEUE_STOP_REASON_IFTYPE_CHANGE);
- 	synchronize_net();
- 
-+	if (sdata->dev)
-+		netif_tx_stop_all_queues(sdata->dev);
-+
- 	ieee80211_do_stop(sdata, false);
- 
- 	ieee80211_teardown_sdata(sdata);
-@@ -1922,6 +1925,9 @@ static int ieee80211_runtime_change_iftype(struct ieee80211_sub_if_data *sdata,
- 	err = ieee80211_do_open(&sdata->wdev, false);
- 	WARN(err, "type change: do_open returned %d", err);
- 
-+	if (sdata->dev)
-+		netif_tx_start_all_queues(sdata->dev);
-+
- 	ieee80211_wake_vif_queues(local, sdata,
- 				  IEEE80211_QUEUE_STOP_REASON_IFTYPE_CHANGE);
- 	return ret;
--- 
-2.17.1
+
+chain my_devices_rules {
+	ether saddr 96:68:97:a7:e8:a7 jump fw_p0_dev0 comment =E2=80=9CDev=
+ice match=E2=80=9D
+}
+
+chain fw_p0_dev0 {
+	meta time >=3D "2022-10-09 18:46:50" meta time < "2022-10-09 =
+19:16:50" counter packets 0 bytes 0 drop comment "!Schedule OFFLINE =
+override"
+	meta day =E2=80=9CTuesday" meta hour >=3D "06:00" meta hour < =
+"07:00" drop
+}
+
+chain forward {
+	 type filter hook forward priority filter; policy accept;
+	jump my_devices_rules
+}
+
+chain my_forward_offload {
+	type filter hook forward priority filter + 1; policy accept;
+	meta mark !=3D 0x00000000/16 meta l4proto { tcp, udp } flow add =
+@ft
+}
+
+chain mangle_postrouting {
+	type filter hook postrouting priority mangle; policy accept;
+	ct mark set meta mark
+}
+- - - - snip end - - - -
+
+The use case is that I have schedules per device to control when they =
+are allowed access to the internet and if the flows are offloaded they =
+will not get dropped once the schedule kicks in.
+
+Thanks
+
+> On 25 Oct 2022, at 13.05, Pablo Neira Ayuso <pablo@netfilter.org> =
+wrote:
+>=20
+> Hi,
+>=20
+> On Sun, Oct 23, 2022 at 07:16:58PM +0200, Michael Lilja wrote:
+>> When a flow is added to a flow table for offload SW/HW-offload
+>> the user has no means of controlling the flow once it has
+>> been offloaded. If a number of firewall rules has been made using
+>> time schedules then these rules doesn't apply for the already
+>> offloaded flows. Adding new firewall rules also doesn't affect
+>> already offloaded flows.
+>>=20
+>> This patch handle flow table retirement giving the user the option
+>> to at least periodically get the flow back into control of the
+>> firewall rules so already offloaded flows can be dropped or be
+>> pushed back to flow offload tables.
+>>=20
+>> The flow retirement is disabled by default and can be set in seconds
+>> using sysctl -w net.netfilter.nf_flowtable_retire
+>=20
+> How does your ruleset look like? Could you detail your usecase?
+>=20
+> Thanks.
+
 
