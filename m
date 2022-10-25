@@ -2,241 +2,279 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F1DB60D6E3
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 00:16:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5885660D6F7
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 00:23:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232060AbiJYWQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 18:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35920 "EHLO
+        id S232579AbiJYWXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 18:23:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229952AbiJYWQR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 18:16:17 -0400
-Received: from smtp113.iad3a.emailsrvr.com (smtp113.iad3a.emailsrvr.com [173.203.187.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3653BA260
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 15:16:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=openvpn.net;
-        s=20170822-45nk5nwl; t=1666736168;
-        bh=KvJRaes09j+CespjZK53rwSzMfWXnO+XHlSz+cot65E=;
-        h=Date:Subject:To:From:From;
-        b=WXnZshQU7Q7BXpb/X8TTYZX0KyIvVu+lkBmZfJqAOyvgqkvObp6cPmfCBEEyUiq4/
-         N7m7/mUJ8it9kN3Gf9LRAu6wOS5ZyOOj0D1UZSXSYllNO4tLy012dv4O7pkfGst5UP
-         6nSiAKiBB8MaXQfQjBm7OCu84TP9bW7wVYNv/LOE=
-X-Auth-ID: antonio@openvpn.net
-Received: by smtp7.relay.iad3a.emailsrvr.com (Authenticated sender: antonio-AT-openvpn.net) with ESMTPSA id D3ECB4DC1;
-        Tue, 25 Oct 2022 18:16:06 -0400 (EDT)
-Message-ID: <b60779d3-cb7e-922d-2915-099ad03dcf54@openvpn.net>
-Date:   Wed, 26 Oct 2022 00:16:05 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: [RFE net-next] net: tun: 1000x speed up
-Content-Language: en-US
-To:     Ilya Maximets <i.maximets@ovn.org>, nicolas.dichtel@6wind.com,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230453AbiJYWXf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 18:23:35 -0400
+Received: from mxd1.seznam.cz (mxd1.seznam.cz [IPv6:2a02:598:a::78:210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7277558A;
+        Tue, 25 Oct 2022 15:23:32 -0700 (PDT)
+Received: from email.seznam.cz
+        by email-smtpc24b.ko.seznam.cz (email-smtpc24b.ko.seznam.cz [10.53.18.33])
+        id 757841dd91d492e374a5e0b3;
+        Wed, 26 Oct 2022 00:22:42 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seznam.cz; s=beta;
+        t=1666736562; bh=6GDtThpj3NN+LEEr3gicdW2ugccmoKw5NTQ1pWky2/A=;
+        h=Received:Date:From:To:Cc:Subject:Message-ID:References:
+         MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+        b=Qlmj0TV32seBqamYRxJ2A94bpCLO8ZRwPiGtRNxbscYV/tR2tJT+s4UGk6+GDi4qv
+         L1OdsQ/fXVnNIgWQRf31Bl3WeUMXQZaC33Ns7Dp5CfXjpl4hApKeg8hjfdBeAH7S57
+         rFGr7rWr77pEEZpu5lTamQ75f/swUihAZGf1sirU=
+Received: from hopium (2a02:8308:900d:2600:d7fc:ccab:3140:290d [2a02:8308:900d:2600:d7fc:ccab:3140:290d])
+        by email-relay5.ng.seznam.cz (Seznam SMTPD 1.3.138) with ESMTP;
+        Wed, 26 Oct 2022 00:22:39 +0200 (CEST)  
+Date:   Wed, 26 Oct 2022 00:22:37 +0200
+From:   Matej Vasilevski <matej.vasilevski@seznam.cz>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Pavel Pisa <pisa@cmp.felk.cvut.cz>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-References: <20221021114921.3705550-1-i.maximets@ovn.org>
- <20221021090756.0ffa65ee@kernel.org>
- <eb6903b7-c0d9-cc70-246e-8dbde0412433@6wind.com>
- <ded477ea-08fa-b96d-c192-9640977b42e6@ovn.org>
- <5af190a8-ac35-82a6-b099-e9a817757676@6wind.com>
- <cd51cf56-c729-87da-5e2e-03447c9a3d42@openvpn.net>
- <ed60523e-d94c-8a41-7322-c2da0ac6a097@ovn.org>
-From:   Antonio Quartulli <antonio@openvpn.net>
-In-Reply-To: <ed60523e-d94c-8a41-7322-c2da0ac6a097@ovn.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Classification-ID: a8b22ac8-c9aa-4d41-82a5-f09855f6c165-1-1
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v5 2/4] can: ctucanfd: add HW timestamps to RX and error
+ CAN frames
+Message-ID: <20221025222237.GA4635@hopium>
+References: <20221012062558.732930-1-matej.vasilevski@seznam.cz>
+ <20221012062558.732930-3-matej.vasilevski@seznam.cz>
+ <20221024200238.tgqkjjyagklglshu@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221024200238.tgqkjjyagklglshu@pengutronix.de>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24/10/2022 19:48, Ilya Maximets wrote:
-> On 10/24/22 17:59, Antonio Quartulli wrote:
->> Hi,
->>
->> On 24/10/2022 14:27, Nicolas Dichtel wrote:
->>> Le 24/10/2022 à 13:56, Ilya Maximets a écrit :
->>>> On 10/24/22 11:44, Nicolas Dichtel wrote:
->>>>> Le 21/10/2022 à 18:07, Jakub Kicinski a écrit :
->>>>>> On Fri, 21 Oct 2022 13:49:21 +0200 Ilya Maximets wrote:
->>>>>>> Bump the advertised speed to at least match the veth.  10Gbps also
->>>>>>> seems like a more or less fair assumption these days, even though
->>>>>>> CPUs can do more.  Alternative might be to explicitly report UNKNOWN
->>>>>>> and let the application/user decide on a right value for them.
->>>>>>
->>>>>> UNKOWN would seem more appropriate but at this point someone may depend
->>>>>> on the speed being populated so it could cause regressions, I fear :S
->>>>> If it is put in a bonding, it may cause some trouble. Maybe worth than
->>>>> advertising 10M.
->>>>
->>>> My thoughts were that changing the number should have a minimal impact
->>>> while changing it to not report any number may cause some issues in
->>>> applications that doesn't expect that for some reason (not having a
->>>> fallback in case reported speed is unknown isn't great, and the argument
->>>> can be made that applications should check that, but it's hard to tell
->>>> for every application if they actually do that today).
->>>>
->>>> Bonding is also a good point indeed, since it's even in-kernel user.
->>>>
->>>>
->>>> The speed bump doesn't solve the problem per se.  It kind of postpones
->>>> the decision, since we will run into the same issue eventually again.
->>>> That's why I wanted to discuss that first.
->>>>
->>>> Though I think that at least unification across virtual devices (tun and
->>>> veth) should be a step in a right direction.
->>> Just to make it clear, I'm not against aligning speed with veth, I'm only
->>> against reporting UNKNOWN.
->>>
->>>>
->>>>>
->>>>> Note that this value could be configured with ethtool:
->>>>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=4e24f2dd516ed
->>>>
->>>> This is interesting, but it's a bit hard to manage, because in order
->>>> to make a decision to bump the speed, application should already know
->>>> that this is a tun/tap device.  So, there has to be a special case
->>> But this should be done by the application which creates this tun interface. Not
->>> by the application that uses this information.
->>>
->>>> implemented in the code that detects the driver and changes the speed
->>>> (this is about application that is using the interface, but didn't
->>>> create it), but if we already know the driver, then it doesn't make
->>>> sense to actually change the speed in many cases as application can
->>>> already act accordingly.
->>>>
->>>> Also, the application may not have permissions to do that (I didn't
->>>> check the requirements, but my guess would be at least CAP_NET_ADMIN?).
->>> Sure, but the one who creates it, has the right to configure it correctly. It's
->>> part of the configuration of the interface.
->>>
->>> Setting an higher default speed seems to be a workaround to fix an incorrect
->>> configuration. And as you said, it will probably be wrong again in a few years ;-)
->>>
->>
->> What if the real throughput is in the order of 10Mbps?
->>
->> The tun driver can be used for many purposes and the throughput will depend on the specific case.
->>
->> Imagine an application using the reported speed for computing some kind of metric: having 10Gbps will corrupt the result entirely.
->>
->> OTOH it is true that 10Mbps may corrupt the metric as well, but the latter is closer to reality IMHO (when using tun to process and send traffic over the network).
->>
->> At the end I also agree that the speed should be set by whoever creates the interface. As they are the only one who knows what to expect for real.
->>
->> (Note: tun is used also to implement userspace VPNs, with throughput ranging from 10Mbps to 1Gbps).
+Hi Marc,
+thanks for another review from you.
+I'll merge the responses for all three mails from you, so I don't spam
+the mailing list too much.
+
+On Mon, Oct 24, 2022 at 10:02:38PM +0200, Marc Kleine-Budde wrote:
+> On 12.10.2022 08:25:56, Matej Vasilevski wrote:
+> > This patch adds support for retrieving hardware timestamps to RX and
 > 
-> That's an interesting perspective, Antonio.  Thanks!
-> 
-> However, before we can answer your questions, I think we need to define
-> what the link speed of a tun/tap interface actually is.
-
-good point
-
-> 
-> IMHO, we should not mix up the link speed and the application performance.
-> 
-> I'm thinking about the link speed as a speed at which kernel driver can
-> make packets available to the userpsace application or the speed at which
-> kernel driver is able to send out packets received from the application.
-
-Mh I understand your perspective, however, if you think about the value 
-reported by Ethernet devices, they will give you the 
-hypothetical/nominal speed they can reach on link - they don't give you 
-the speed of the kernel driver.
-
-> 
-> The performance of the application itself is a bit orthogonal to
-> parameters of the device.
-> 
-> I think, as we do not blame a physical network card or the veth interface
-> for the processing speed of the application on the other side of the
-> network, the same way we should not blame the tun driver/interface for
-> the processing speed in the application that opened it.
-
-Well, but in the case of the tun driver the application can be 
-considered as the "userspace driver" of that device.
-
-It's different from an application listening on an interface and 
-processing packets as they arrive from the network.
-
-> 
-> In that sense the link speed of a tap interface is the speed at which
-> kernel can enqueue/dequeue packets to/from userspace.
-
-But like I said above, other drivers don't give you that speed: they 
-return the speed at which they expect to be able to send packets out.
-
-> On a modern CPU that speed will be relatively high.  If it's actually
-> 10 Mbps, than it means that you're likely running on a very slow CPU and
-> will probably not be able to generate more traffic for it anyway.
+> Later in the code you set struct ethtool_ts_info::tx_types but the
+> driver doesn't set TX timestamps, does it?
 > 
 
-> For the calculation of some kind of metric based on the reported link
-> speed, I'm not sure I understand how that may corrupt the result.  The
-> reported 10 Mbps is not correct either way, so calculations make no
-> practical sense.  If the application expects the link speed to be 10 Mbps,
-> than I'm not sure why it is checking the link speed in the first place.
+No, it doesn't explicitly. Unless something changed and I don't know about it,
+all the drivers using can_put_echo_skb() (includes ctucanfd) now report
+software (hardware if available) tx timestamps thanks to Vincent's patch.
+https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git/commit/?id=12a18d79dc14c80b358dbd26461614b97f2ea4a6
 
-You are right. If the returned value is far from the real throughput, 
-the metric will be bogus anyway.
+> > error CAN frames. It uses timecounter and cyclecounter structures,
+> > because the timestamping counter width depends on the IP core integration
+> > (it might not always be 64-bit).
+> > For platform devices, you should specify "ts" clock in device tree.
+> > For PCI devices, the timestamping frequency is assumed to be the same
+> > as bus frequency.
+> > 
+> > Signed-off-by: Matej Vasilevski <matej.vasilevski@seznam.cz>
+> 
+> [...]
+> 
+> > diff --git a/drivers/net/can/ctucanfd/ctucanfd_base.c b/drivers/net/can/ctucanfd/ctucanfd_base.c
+> > index b8da15ea6ad9..079819d53e23 100644
+> > --- a/drivers/net/can/ctucanfd/ctucanfd_base.c
+> > +++ b/drivers/net/can/ctucanfd/ctucanfd_base.c
+> 
+> [...]
+> 
+> > @@ -950,6 +986,11 @@ static int ctucan_rx_poll(struct napi_struct *napi, int quota)
+> >  			cf->data[1] |= CAN_ERR_CRTL_RX_OVERFLOW;
+> >  			stats->rx_packets++;
+> >  			stats->rx_bytes += cf->can_dlc;
+> > +			if (priv->timestamp_enabled) {
+> > +				u64 tstamp = ctucan_read_timestamp_counter(priv);
+> > +
+> > +				ctucan_skb_set_timestamp(priv, skb, tstamp);
+> > +			}
+> >  			netif_rx(skb);
+> >  		}
+> >  
+> > @@ -1230,6 +1271,9 @@ static int ctucan_open(struct net_device *ndev)
+> >  		goto err_chip_start;
+> >  	}
+> >  
+> > +	if (priv->timestamp_possible)
+> > +		ctucan_timestamp_init(priv);
+> > +
+> 
+> This is racy. You have to init the timestamping before the start of the
+> chip, i.e. enabling the IRQs. I had the same problem with the gs_usb
+> driver:
+> 
+> | https://lore.kernel.org/all/20220921081329.385509-1-mkl@pengutronix.de
 
-However, I believe 10Gbps is going to be quite far from the real 
-performance in most of the cases. Probably 100Mbps or 1Gbps might be 
-more appropriate, IMHO.
+Thanks for pointing this out, I'll fix this.
 
 > 
-> Do you have some examples of such metrics?
-
-BATMAN-Advanced (net/batman-adv/bat_v_elp.c:129) uses the speed returned 
-by the ethtool API to compute its throughput based metric, when the 
-provided interface is not a wireless device.
-
-Some people liked to throw tap devices at batman-adv.
-
-Of course, best would again be that whoever created the interface also 
-set the expected speed (based on the application driving the tap device).
-
-Hence I liked the suggestion of setting UNKNOWN as default and then 
-forcing the application to take action.
-
+> >  	netdev_info(ndev, "ctu_can_fd device registered\n");
+> >  	napi_enable(&priv->napi);
+> >  	netif_start_queue(ndev);
+> > @@ -1262,6 +1306,8 @@ static int ctucan_close(struct net_device *ndev)
+> >  	ctucan_chip_stop(ndev);
+> >  	free_irq(ndev->irq, ndev);
+> >  	close_candev(ndev);
+> > +	if (priv->timestamp_possible)
+> > +		ctucan_timestamp_stop(priv);
 > 
+> Can you make this symmetric with respect to the ctucan_open() function.
+
+Yes, will do.
+
+> >  
+> >  	pm_runtime_put(priv->dev);
+> >  
+> > @@ -1294,15 +1340,88 @@ static int ctucan_get_berr_counter(const struct net_device *ndev, struct can_ber
+> >  	return 0;
+> >  }
 > 
-> All in all, TUN/TAP is a transport, not an end user of the packets it
-> handles.  And it seems to be a work for transport layer protocols to
-> handle the mismatch between the wire speed and the application speed on
-> the other end.
+> [...]
 > 
+> > @@ -1385,15 +1534,29 @@ int ctucan_probe_common(struct device *dev, void __iomem *addr, int irq, unsigne
+> >  
+> >  	/* Getting the can_clk info */
+> >  	if (!can_clk_rate) {
+> > -		priv->can_clk = devm_clk_get(dev, NULL);
+> > +		priv->can_clk = devm_clk_get_optional(dev, "core");
+> > +		if (!priv->can_clk)
+> > +			/* For compatibility with (older) device trees without clock-names */
+> > +			priv->can_clk = devm_clk_get(dev, NULL);
+> >  		if (IS_ERR(priv->can_clk)) {
+> > -			dev_err(dev, "Device clock not found.\n");
+> > +			dev_err(dev, "Device clock not found: %pe.\n", priv->can_clk);
+> >  			ret = PTR_ERR(priv->can_clk);
+> >  			goto err_free;
+> >  		}
+> >  		can_clk_rate = clk_get_rate(priv->can_clk);
+> >  	}
+> >  
+> > +	if (!timestamp_clk_rate) {
+> > +		priv->timestamp_clk = devm_clk_get(dev, "ts");
+> > +		if (IS_ERR(priv->timestamp_clk)) {
+> > +			/* Take the core clock instead */
+> > +			dev_info(dev, "Failed to get ts clk\n");
+> > +			priv->timestamp_clk = priv->can_clk;
+> > +		}
+> > +		clk_prepare_enable(priv->timestamp_clk);
+> > +		timestamp_clk_rate = clk_get_rate(priv->timestamp_clk);
+> > +	}
+> > +
+> >  	priv->write_reg = ctucan_write32_le;
+> >  	priv->read_reg = ctucan_read32_le;
+> >  
+> > @@ -1424,6 +1587,50 @@ int ctucan_probe_common(struct device *dev, void __iomem *addr, int irq, unsigne
+> >  
+> >  	priv->can.clock.freq = can_clk_rate;
+> >  
+> > +	/* Obtain timestamping counter bit size */
+> > +	timestamp_bit_size = FIELD_GET(REG_ERR_CAPT_TS_BITS,
+> > +				       ctucan_read32(priv, CTUCANFD_ERR_CAPT));
+> > +
+> > +	/* The register value is actually bit_size - 1 */
+> > +	if (timestamp_bit_size) {
+> > +		timestamp_bit_size += 1;
+> > +	} else {
+> > +		/* For 2.x versions of the IP core, we will assume 64-bit counter
+> > +		 * if there was a 0 in the register.
+> > +		 */
+> > +		u32 version_reg = ctucan_read32(priv, CTUCANFD_DEVICE_ID);
+> > +		u32 major = FIELD_GET(REG_DEVICE_ID_VER_MAJOR, version_reg);
+> > +
+> > +		if (major == 2)
+> > +			timestamp_bit_size = 64;
+> > +		else
+> > +			priv->timestamp_possible = false;
+> > +	}
+> > +
+> > +	/* Setup conversion constants and work delay */
+> > +	if (priv->timestamp_possible) {
+> > +		u64 max_cycles;
+> > +		u64 work_delay_ns;
+> > +		u32 maxsec;
+> > +
+> > +		priv->cc.read = ctucan_read_timestamp_cc_wrapper;
+> > +		priv->cc.mask = CYCLECOUNTER_MASK(timestamp_bit_size);
+> > +		maxsec = min_t(u32, CTUCANFD_MAX_WORK_DELAY_SEC,
+> > +			       div_u64(priv->cc.mask, timestamp_clk_rate));
+> > +		clocks_calc_mult_shift(&priv->cc.mult, &priv->cc.shift,
+> > +				       timestamp_clk_rate, NSEC_PER_SEC, maxsec);
+> > +
+> > +		/* shortened copy of clocks_calc_max_nsecs() */
+> > +		max_cycles = div_u64(ULLONG_MAX, priv->cc.mult);
+> > +		max_cycles = min(max_cycles, priv->cc.mask);
+> > +		work_delay_ns = clocksource_cyc2ns(max_cycles, priv->cc.mult,
+> > +						   priv->cc.shift) >> 2;
 > 
-> Saying that, I agree that it makes sense to set the link speed in the
-> application that creates the interface if that application does actually
-> know what it is capable of.  But not all applications know what speed
-> they can handle, so it's not always easy, and will also depend on the
-> CPU speed in many cases.
+> I think we can use cyclecounter_cyc2ns() for this, see:
+> 
+> | https://elixir.bootlin.com/linux/v6.0.3/source/drivers/net/ethernet/ti/cpts.c#L642
+> 
+> BTW: This is the only networking driver using clocks_calc_mult_shift()
+> (so far) :D
+> 
 
-Totally agree!
+I don't really see the benefit at the moment (I have to include
+clocksource.h anyway due to the clocks_calc_mult_shift()), but sure,
+I'll use cyclecounter_cyc2ns().
 
-And exactly for these reasons you just mentioned, don't you think it is 
-a bit unsafe to just set 10Gbps by default (knowing that there are 
-consumers for this value)?
+Fun fact :-D I might look into the cpts.c
 
+> > +		priv->work_delay_jiffies = nsecs_to_jiffies(work_delay_ns);
+> > +
+> > +		if (priv->work_delay_jiffies == 0)
+> > +			priv->timestamp_possible = false;
+> > +	}
+> > +
+> 
+> regards,
+> Marc
+> 
+> -- 
+> Pengutronix e.K.                 | Marc Kleine-Budde           |
+> Embedded Linux                   | https://www.pengutronix.de  |
+> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-In any case, I only wanted to express my perplexity at throwing such a 
-high number at tun. But since we agree that this number will likely be 
-wrong in most of the cases, I don't really have a strong opinion either.
+Mail 2:
+>Regarding the timestamp_clk handling:
+>
+>If you prepare_enable the timestamp_clk during probe_common() and don't
+>disable_unprepare it, it stays on the whole lifetime of the driver. So
+>there's no need/reason for the runtime suspend/resume functions.
+>
+>So either keep the clock powered and remove the suspend/resume functions
+>or shut down the clock after probe.
+>
+>If you want to make things 1000% clean, you can get the timestamp's
+>clock rate during open() and re-calculate the mult and shift. The
+>background is that the clock rate might change if the clock is not
+>enabled (at least that's not guaranteed by the common clock framework).
+>Actual HW implementations might differ.
 
+Hmm, I thought that pm_runtime_put() will eventually run runtime suspend
+callback, but now I see that it will run only the idle callback (which
+I haven't defined).
+I'll remove the runtime suspend/resume callbacks.
 
-Best Regards,
-
-
--- 
-Antonio Quartulli
-OpenVPN Inc.
+Best regards,
+Matej
