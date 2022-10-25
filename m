@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DD5760CA7B
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 13:00:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A993B60CA88
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 13:04:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231649AbiJYLAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 07:00:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56588 "EHLO
+        id S232305AbiJYLEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 07:04:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232170AbiJYLAj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 07:00:39 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40930B3B1E
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 04:00:38 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id ud5so7913126ejc.4
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 04:00:38 -0700 (PDT)
+        with ESMTP id S231752AbiJYLDx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 07:03:53 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5425718024A
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 04:03:52 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id q9so11646258ejd.0
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 04:03:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=XwmRTbb7Z1iwYqyAXL7gKB2BP7kYpxso4h/Svsr1CMI=;
-        b=csA4tV2W4ZPfUGsLZe9XIg6GPvBX0o6HttxaPDBrirhtOECbekGMAlDBM9lzWqmKwc
-         VvLUe4zPT5C27KQ5VReqNEn/JzcranIVRM2aqTI5a0qoBhn1lBsCvpVl6dngfsH21ug1
-         /j3HZXqMMiRSLTjWU7CLja/lLWLp0YhnCddQN2LR88Gk/kqI0YxcC9SWNXE9C8wIrvOn
-         dNJnFVt9Rv5S4ldgQFqBMQFkfQxXX6nGQXugGQTNJMyqZbSI4+lMgDobYZuJ8zbTf2yM
-         8N2r79YY8ICkwGzHJ9ZaHoC3JkkCBZ7pT/Zz2aWFe1ojKQ2NWuXvq40+gLFhbAg+sfiJ
-         PztQ==
+        bh=5EB9AVAb0CKe/bZtFL9Z2aSwLhDuu3g5m22iVMqNVNo=;
+        b=WspXucyOJ4shf+jlfrMxHZh0eLF1c4KqgCQaD1vpHLh0OCOyovmur/BcvV+48YVObS
+         DlPwI4XE05qi2pHaMUWqBDCFgxs3h8F0RAxShXj5gI6ebFmVEK529iVoi4lChcnw8VZ1
+         8LWgRzZanwj15lXAPOFY/GnjkNluBysiFFKQ7DZXO1618jti3fOBv8SFcYENlVATUKwx
+         y7bILplB9+esl8cEf4rVdFcgz8ljniRBGwE8ZkQp0Z3mm0gDRbKoouPUkcqB5g268vef
+         ZlGfHjnW6u5vnLRG16EqZsInn7I545JJohzz3AfbeQ8sf79cVg9lB7d+lA54zu48ifM8
+         f3Ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=XwmRTbb7Z1iwYqyAXL7gKB2BP7kYpxso4h/Svsr1CMI=;
-        b=A2PUV5qjjuSjkxX5abjyLhpnzCPevsB2MhyQsP3FvkGL7f9Wrtyfu/la/np9Y6V3QO
-         CiTVH+5Dz2a6S7uCGfvKKPW9Jw5KHHRDincJBPjWjug1/ubBR1N5gaaYIoz2Rf4z2QV6
-         7Ucdvp8KbdQNQqTeVll5/usEOFQMMqVaWEVcd+uctYFqlrOlPHxVBEXG8b7SubJjXzV2
-         Vt+94b9sMfJcBOz0nNH404ng3L5UVRIzt+Q59GrU7pb+tuNPIVnQ5O5nVdfxqyjTmlhC
-         1wYtmxxzrhAfnG9J515Y/pl1xOlL/cRdM+Mb1+ngVZz1usJF5P4VmtnJmDWfHGNVEooP
-         l35Q==
-X-Gm-Message-State: ACrzQf2YEjJ0pqZ+uUeBtlsCkbv4zogxaNtXE2tvbDeWV6A6+/5Gagug
-        FRP2tC0OKLojDZ2L8PZ6RRB7+A==
-X-Google-Smtp-Source: AMsMyM5TvxPC6AZyWop4BCjg3BEgUkG4n9UgYEwrn78ckvahizQdXWcBIl9MWSA+mIKv19MxMIN5UQ==
-X-Received: by 2002:a17:906:ef8b:b0:791:9980:b7b9 with SMTP id ze11-20020a170906ef8b00b007919980b7b9mr32017396ejb.636.1666695636384;
-        Tue, 25 Oct 2022 04:00:36 -0700 (PDT)
+        bh=5EB9AVAb0CKe/bZtFL9Z2aSwLhDuu3g5m22iVMqNVNo=;
+        b=gQh1eDHLxN5x9Kt/wqUrUo6LaEoyPHpN1i8m7AurD5VjL1xMOSDgQVZIi7OIT/JD5n
+         gmCgiN1TsEqnkQhkFYVLsox5359Wj+C9p8vlmeXBME9XMJDXnbUri9QV6pfOr060mjAf
+         FZBYSoJvNyWrz4axIeC7e3K5rq9cyyVRcrkvTPuB24aQHVANjjaq589Fgivbj8xeZ/pM
+         7uJUHS/trDHi0ezGIWi6hl7E58ndkd2pYxhVD4q+V+JYF70SOQyAU2/4pSCQPTvY//Rj
+         Q/j/GFNwBoZbVcpsdzhh3iZvM1+albEXASs2IvZG6EBdgwx2Or+h48B3rxwRUKvPZk6S
+         V/AA==
+X-Gm-Message-State: ACrzQf0qK2BVqpXrhxv+6pwtsJxf2f6uwxuXSOaInUZD/JZ0AJSJWGws
+        Mzlh86oKKKa5EA16tPsVOMK9Jg==
+X-Google-Smtp-Source: AMsMyM7Oe07nZK3s/GsiDJtVjCrw97/j7fj6lyYUHRtua05N+MMRPLKl+JrdZ7gy3Y0CHEMTBnMzQw==
+X-Received: by 2002:a17:906:5a4b:b0:78d:8790:d4a1 with SMTP id my11-20020a1709065a4b00b0078d8790d4a1mr31907110ejc.329.1666695830600;
+        Tue, 25 Oct 2022 04:03:50 -0700 (PDT)
 Received: from [192.168.0.161] (79-100-144-200.ip.btc-net.bg. [79.100.144.200])
-        by smtp.gmail.com with ESMTPSA id z17-20020a170906271100b0078a543e9301sm1165349ejc.200.2022.10.25.04.00.35
+        by smtp.gmail.com with ESMTPSA id w21-20020a50fa95000000b0045c47b2a800sm1405702edr.67.2022.10.25.04.03.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Oct 2022 04:00:36 -0700 (PDT)
-Message-ID: <9c0eb6c4-a52c-f2a9-b9be-c4b9805ac44f@blackwall.org>
-Date:   Tue, 25 Oct 2022 14:00:34 +0300
+        Tue, 25 Oct 2022 04:03:50 -0700 (PDT)
+Message-ID: <9dc0592e-04a0-bc92-0ced-a7d43f8a0016@blackwall.org>
+Date:   Tue, 25 Oct 2022 14:03:48 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.2.1
-Subject: Re: [RFC PATCH net-next 01/16] bridge: Add MAC Authentication Bypass
- (MAB) support
+Subject: Re: [RFC PATCH net-next 04/16] bridge: switchdev: Allow device
+ drivers to install locked FDB entries
 Content-Language: en-US
 To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
         bridge@lists.linux-foundation.org
@@ -64,9 +64,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         ivecera@redhat.com, roopa@nvidia.com, netdev@kapio-technology.com,
         vladimir.oltean@nxp.com, mlxsw@nvidia.com
 References: <20221025100024.1287157-1-idosch@nvidia.com>
- <20221025100024.1287157-2-idosch@nvidia.com>
+ <20221025100024.1287157-5-idosch@nvidia.com>
 From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20221025100024.1287157-2-idosch@nvidia.com>
+In-Reply-To: <20221025100024.1287157-5-idosch@nvidia.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -81,47 +81,29 @@ X-Mailing-List: netdev@vger.kernel.org
 On 25/10/2022 13:00, Ido Schimmel wrote:
 > From: "Hans J. Schultz" <netdev@kapio-technology.com>
 > 
-> Hosts that support 802.1X authentication are able to authenticate
-> themselves by exchanging EAPOL frames with an authenticator (Ethernet
-> bridge, in this case) and an authentication server. Access to the
-> network is only granted by the authenticator to successfully
-> authenticated hosts.
+> When the bridge is offloaded to hardware, FDB entries are learned and
+> aged-out by the hardware. Some device drivers synchronize the hardware
+> and software FDBs by generating switchdev events towards the bridge.
 > 
-> The above is implemented in the bridge using the "locked" bridge port
-> option. When enabled, link-local frames (e.g., EAPOL) can be locally
-> received by the bridge, but all other frames are dropped unless the host
-> is authenticated. That is, unless the user space control plane installed
-> an FDB entry according to which the source address of the frame is
-> located behind the locked ingress port. The entry can be dynamic, in
-> which case learning needs to be enabled so that the entry will be
-> refreshed by incoming traffic.
+> When a port is locked, the hardware must not learn autonomously, as
+> otherwise any host will blindly gain authorization. Instead, the
+> hardware should generate events regarding hosts that are trying to gain
+> authorization and their MAC addresses should be notified by the device
+> driver as locked FDB entries towards the bridge driver.
 > 
-> There are deployments in which not all the devices connected to the
-> authenticator (the bridge) support 802.1X. Such devices can include
-> printers and cameras. One option to support such deployments is to
-> unlock the bridge ports connecting these devices, but a slightly more
-> secure option is to use MAB. When MAB is enabled, the MAC address of the
-> connected device is used as the user name and password for the
-> authentication.
+> Allow device drivers to notify the bridge driver about such entries by
+> extending the 'switchdev_notifier_fdb_info' structure with the 'locked'
+> bit. The bit can only be set by device drivers and not by the bridge
+> driver.
 > 
-> For MAB to work, the user space control plane needs to be notified about
-> MAC addresses that are trying to gain access so that they will be
-> compared against an allow list. This can be implemented via the regular
-> learning process with the following differences:
+> Prevent a locked entry from being installed if MAB is not enabled on the
+> bridge port. By placing this check in the bridge driver we avoid the
+> need to reflect the 'BR_PORT_MAB' flag to device drivers.
 > 
-> 1. Learned FDB entries are installed with a new "locked" flag indicating
->    that the entry cannot be used to authenticate the device. The flag
->    cannot be set by user space, but user space can clear the flag by
->    replacing the entry, thereby authenticating the device.
-> 
-> 2. FDB entries cannot roam to locked ports to prevent unauthenticated
->    devices from disrupting traffic destined to already authenticated
->    devices.
-> 
-> Enable this behavior using a new bridge port option called "mab". It can
-> only be enabled on a bridge port that is both locked and has learning
-> enabled. A new option is added because there are pure 802.1X deployments
-> that are not interested in notifications about "locked" FDB entries.
+> If an entry already exists in the bridge driver, reject the locked entry
+> if the current entry does not have the "locked" flag set or if it points
+> to a different port. The same semantics are implemented in the software
+> data path.
 > 
 > Signed-off-by: Hans J. Schultz <netdev@kapio-technology.com>
 > Signed-off-by: Ido Schimmel <idosch@nvidia.com>
@@ -131,23 +113,18 @@ On 25/10/2022 13:00, Ido Schimmel wrote:
 >     Changes made by me:
 >     
 >      * Reword commit message.
->      * Reword comment regarding 'NTF_EXT_LOCKED'.
->      * Use extack in br_fdb_add().
->      * Forbid MAB when learning is disabled.
+>      * Forbid locked entries when MAB is not enabled.
+>      * Forbid roaming of locked entries.
+>      * Avoid setting 'locked' bit towards device drivers.
 > 
->  include/linux/if_bridge.h      |  1 +
->  include/uapi/linux/if_link.h   |  1 +
->  include/uapi/linux/neighbour.h |  8 +++++++-
->  net/bridge/br_fdb.c            | 24 ++++++++++++++++++++++++
->  net/bridge/br_input.c          | 15 +++++++++++++--
->  net/bridge/br_netlink.c        | 13 ++++++++++++-
->  net/bridge/br_private.h        |  3 ++-
->  net/core/rtnetlink.c           |  5 +++++
->  8 files changed, 65 insertions(+), 5 deletions(-)
+>  include/net/switchdev.h   |  1 +
+>  net/bridge/br.c           |  3 ++-
+>  net/bridge/br_fdb.c       | 22 ++++++++++++++++++++--
+>  net/bridge/br_private.h   |  2 +-
+>  net/bridge/br_switchdev.c |  1 +
+>  5 files changed, 25 insertions(+), 4 deletions(-)
 > 
 
-Thanks for finalizing this, the patch looks good to me.
 Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
 
-Thanks,
- Nik
+
