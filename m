@@ -2,1129 +2,505 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0172060CDFB
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 15:53:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 721E360CE3E
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 16:02:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232392AbiJYNxC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 09:53:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60390 "EHLO
+        id S232546AbiJYOCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 10:02:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231341AbiJYNw7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 09:52:59 -0400
-Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBCBF112AA8;
-        Tue, 25 Oct 2022 06:52:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1666705977;
-  x=1698241977;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=51IkYYQzj/DjJ02fpm/wLPje788xVAqGLK/ZhFdLnmE=;
-  b=K9brY9stvNRgQGpzu0seiiJedgcNJZzMFYxsS9c79Av/Dhag4D/T3gY7
-   oFhW3cr1tm6xJk/dKTfUzJJ9X9f71oXSs877I3iFtVX1BzY0n7b1qMQL+
-   ZVXnpbHJIkCl/Ixq3xu/TaHkz1r25n8S33N3t+gsyqlgLAiL8F5m9vPmp
-   pEY/Dh/hhF7e8tu5x8Cit9Mtaeawif1oIZfn8kqIypAF/VhONs3alBp8n
-   k+mRWqIUX9I8B0o5AxbapN9oNEz92LYwYucuNqd4mwQMHR/Mc0ymzAXip
-   Yvas7nAKY6e9Yhum/iAlFxvpRkn06QQiHB2Mxk201XpP3jbTWANJGjZAK
-   w==;
-From:   Camel Guo <camel.guo@axis.com>
-To:     Andrew Lunn <andrew@lunn.ch>, Camel Guo <camel.guo@axis.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, Rob Herring <robh@kernel.org>,
-        <kernel@axis.com>
-Subject: [RFC net-next 2/2] net: dsa: Add driver for Maxlinear GSW1XX switch
-Date:   Tue, 25 Oct 2022 15:52:41 +0200
-Message-ID: <20221025135243.4038706-3-camel.guo@axis.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221025135243.4038706-1-camel.guo@axis.com>
-References: <20221025135243.4038706-1-camel.guo@axis.com>
-MIME-Version: 1.0
+        with ESMTP id S232542AbiJYOBt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 10:01:49 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2079.outbound.protection.outlook.com [40.107.92.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B27825E66C
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 07:00:14 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=R8QwjGMUXMfdV7RFPCxac15SCUM3HRbBqHp/LB6eHLgOESjZd6C6X4bqqJDbXbOYwSu7GnIPTntLp3i54jyIbFg9liFiYVG4O8y/AuzrGcHXWP/4PPYouDpxynLsjkoImokz25LYvTWQIuiTQLys8ajkaTMJY2ze81K98ueglBT7RxXTFimdcfr1u2Covw6R5I+wicUylGykSbgNgpwXAxZtA7hK6dwZ8LzBaLmYKL/GOXnLRORbvAOzmaxbXImRwxyCFWrIkAJhNWjiAFnHDRSuLk2ZHdunJ4RFmZ77+ZRFkGh8LL7cy7HGwssR/4WvZMq11SX43QPW9b0R9rgWvA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=USztB3tlvIT4LPu+Wx85cavscUcM0EJ9zv9ztOIVC0A=;
+ b=aKx6pnjG+7vpNCK0X8BQ3mGRwauCC/pWhoDqPFQQ3CgYgMcbcyscF87bpJ6X/K8UDm6NZx7P98xwL7IVHeR1EdNySmtchsFLupYnjfR+dS9DyGkyCUwsFNDxEAEnTWP09U1mHiigPRqNuYOZQU+vZZlMxTDW7YXN+jnOYGD+UtSlwJCrSkjkE3vG8ynd813uRidne5ER+YrXSr3cm6nuHaIJx6t1lko/ADEa5+Y/1s0Bb4osqxwD6eSL/55emN+H1nMH/sPtIUlScGqHqyNATGEv5el53P7YMAvorqTZ88T72ieOoXTDmgxKrQzBuGB/39WC5kxosM/thherTSKIBw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=USztB3tlvIT4LPu+Wx85cavscUcM0EJ9zv9ztOIVC0A=;
+ b=kw7JHv43GmJCP0Tag0a9TDY0LaOOUTPEom/YMcOvUbb1/6CUVXE9pynQFtYE07fbcEf72cscI9fiqqf4IbtqjXMC/eJyxD1dQNqVosedQPfHWKSSoVgRXeYMrNx4Kct+HiFC6FW91tg6EM9Ufsvfz9UpvK+kkZgKH7ftwWE0VWoflLgh+UQP8ZvJqEuOQPPI5VC9d6Xo2D7o/N9rOxNNjcKSuydLX4uhWA1KW+bIzR5iWePMRmwxthImrUKIl2IHPqX/PUBM9FvhxqyKW4h8zVhkfEu4Vz9gsfS2p4oHpinG1a9XpaxnVuHdDRRr0olbsT8z1yoLbgKWSiyNH9fWOQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from SJ1PR12MB6075.namprd12.prod.outlook.com (2603:10b6:a03:45e::8)
+ by BL3PR12MB6521.namprd12.prod.outlook.com (2603:10b6:208:3bd::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.23; Tue, 25 Oct
+ 2022 14:00:04 +0000
+Received: from SJ1PR12MB6075.namprd12.prod.outlook.com
+ ([fe80::6713:a338:b6aa:871]) by SJ1PR12MB6075.namprd12.prod.outlook.com
+ ([fe80::6713:a338:b6aa:871%3]) with mapi id 15.20.5746.028; Tue, 25 Oct 2022
+ 14:00:04 +0000
+From:   Aurelien Aptel <aaptel@nvidia.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, saeedm@nvidia.com,
+        tariqt@nvidia.com, leon@kernel.org, linux-nvme@lists.infradead.org,
+        sagi@grimberg.me, hch@lst.de, kbusch@kernel.org, axboe@fb.com,
+        chaitanyak@nvidia.com
+Cc:     smalin@nvidia.com, aaptel@nvidia.com, ogerlitz@nvidia.com,
+        yorayz@nvidia.com, borisp@nvidia.com, aurelien.aptel@gmail.com,
+        malin1024@gmail.com
+Subject: [PATCH v7 00/23] nvme-tcp receive offloads
+Date:   Tue, 25 Oct 2022 16:59:35 +0300
+Message-Id: <20221025135958.6242-1-aaptel@nvidia.com>
+X-Mailer: git-send-email 2.31.1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
-        SPF_PASS,TO_EQ_FM_DIRECT_MX,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+X-ClientProxiedBy: LO4P123CA0652.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:296::13) To SJ1PR12MB6075.namprd12.prod.outlook.com
+ (2603:10b6:a03:45e::8)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ1PR12MB6075:EE_|BL3PR12MB6521:EE_
+X-MS-Office365-Filtering-Correlation-Id: 905318d4-7a69-4356-920c-08dab691372f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 1mZEsguXb2z2XkQOaR7ePYQtOeiSmVmbZKx7rjWwKX/y2VXw8g45ld0tdjRsygDOlnmXe7/P3sC2vzN+6w49d/Z/QuktZAQ1c9DKdrQF1+87drFSqBc2HoJagcfRXDtrm0L1TY50wW2hwvs/p29cUuyo3QB4NB2G00H6TjQBxK2QKwDmImNuewlVUbyZFpGKnu23lELyXx2aP/hArixupzDsgibHDm136PRndlmeV2A7cZucluvFiD43Jobj+mk+uWfmv5LIpWoexf+RRYSkuwCZXgXCWU9rzig8jQsBof/JuvM8bguXXLt7RRiCa7Le4iH/fKOGBJsv580yBxJ7FpNxIjH/NdThqZdTeTCebhPwrEPeV/Xs7NNxIkdDTrJ/28hTyykLXXvbNzk5SGNquQUsCnonBAjRI2SYExZh7Bi7iQqtKOolQhy76Dygnj9140NMElnI7imAo6xVL4esPg9HxtwGojvB+iizA4jtvxNmS0b3nvy3S+UYQXsRoRRBO7nE8frHODIEUOPEyTvDgHwHcRvZohgohZAdATZsLzqcJ9MzEarTOyY17JZb3t37bZr3Ds6/cYSEQ/kcH4VvSRbQw7B1YbQv7oyvk/L6DP8ou4BeZUtPjsesiY2SwQw6zQGnsKvEMtPTF1oP+aI+LlagZIQwNwtsfMQCn2BFP3/Gwx7k74xsSzEbBLCafRDTcu5bvbxKZzmiDwSBqTHkENcQjTmuwFjLx2vFrQptAZ3S2RS1mmA2+SUfFaUbv8wcU1GMohRfrr7c9+vT6EnQEoBVkxCToGSt8FgJO3etREYFB1eAJZRC1HXrCympzeYkxBh9EGV1Lzd4ZTCYaM+gtH7+sH07R6C3ho5HsqTeo7I=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ1PR12MB6075.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(39860400002)(376002)(396003)(346002)(366004)(451199015)(921005)(83380400001)(1076003)(186003)(2616005)(86362001)(38100700002)(2906002)(41300700001)(8936002)(5660300002)(478600001)(7416002)(30864003)(966005)(26005)(6506007)(6666004)(6486002)(4326008)(8676002)(66556008)(66476007)(316002)(6636002)(66946007)(6512007)(66899015)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZEdWdTBsdEdITGVIVFpMYmxaem45dWs4bnczS2xoMTFIWllBM3NvS1ZKQXNu?=
+ =?utf-8?B?RVNqakhINjA5V0xRSW1DSEswdHlPU1dvT0JGNUJnUWJ0eG5sbkFZN1cvaHh2?=
+ =?utf-8?B?YXBoREgraW13Y1ZxWlNkbFBuRU9nTjR3eHNQbHdoYmR5cDBRMFdPQXBmeWFk?=
+ =?utf-8?B?djhSU3l5ZTFmdXJSd29WZnk1NU1kSnZkRVdiQ0JiZzJuTE0zRW40eXA0NFI1?=
+ =?utf-8?B?SHVqS2x6MjVnMTZDa2dITU5aYTZFQ2g2RU9jU2UrYjg4S1FjdjN1eWFKeEJh?=
+ =?utf-8?B?Vmg3SEVnVm5iVzN5MzNkTnJqeS9CdWpqUkU4cVY0OEptYm1QZWFIdHdPUXFk?=
+ =?utf-8?B?SEdZTHRtQ3diWkR4bTRUSEN5aE13ZlVOSzI4NGh1b0ZRVUx1bldQbloyaGtY?=
+ =?utf-8?B?Q3psL2ZFbUZ2RktKTkdLajNxak1FdG9SM0M5cFh1andxRjdYQ3NMZUI4VWg2?=
+ =?utf-8?B?Y1NmNXNBVWQ0N2g2R0dFSG9kMzBybmF2NmRRSzlrblRMOTJ4YkZvWkZBVUxq?=
+ =?utf-8?B?SFhLanRTRjRZOHNqZlhWR21KTUNWRVdTV2NnOWxhWGtMN3VBbkhnRDJYUDVW?=
+ =?utf-8?B?a0p1YTRxMnRxTlZEdlJxMDRvbnR6Vk14ZlhLaEdYTFhIVVdISzVzUGNHemh6?=
+ =?utf-8?B?VnB4UjNKZXY3U2IwMDRpYnVzUkJiRTFGcExnaW91OHhyZno2UjE1bmdrTUww?=
+ =?utf-8?B?WDFFT3ZXNmk2WGtxbkJyVm1QQ05EUFNoY2RadWlNVnN3NUx1K3lUUjRtVWM0?=
+ =?utf-8?B?Z1orN1U4cnA2K0dPMHQvaXRkM1I3bk53Ni93VThtc2x4SFVMbjhhNWtrV3hy?=
+ =?utf-8?B?TlhtSGJTM3R0SUFUd245dkgydDJROTFYM0plaGRxSkNxVzNuU0g3UjBTM2NF?=
+ =?utf-8?B?Vkd0dmt2R2FUSlMwb2cydEN2VnZ4bEdBWVNkMURPQ2tRUHkyRWVrSnkrZmRl?=
+ =?utf-8?B?MXNqeCtMV1k2S29DVjdraGgxdXZlM09aL0V6R0pLY3daSUVlSXprVGEwWGZ1?=
+ =?utf-8?B?VERabXVsRWhSbkpnempBM1lpc1VEeG15NUE2SVJPaTlCWjlDL0xlV2VBSXNi?=
+ =?utf-8?B?eUY1b3R6M290dndEM2V2K1BlMWROTHRhOTU5U0VxcVlyYkxyRjc3bG9pSXdh?=
+ =?utf-8?B?Z21nU0dGY24yVnJ0ZnUvMWFWWlhpY2t1amVOcjljU0JpRk9HU0crYzF3WHZq?=
+ =?utf-8?B?dHdJOXg3dml0aSt5emVCWmR5NGdXbXlCeTVPY0hMaW95NVV1U0NjekpWVkdE?=
+ =?utf-8?B?Yi9ubVZWbU5MeGpxay90RVZxOW1aQzlSemZJRVc0SCtoenEvdnkxM3FrZzdZ?=
+ =?utf-8?B?VEczMjhKYVF6Tml4OFdrRFF5QWVtY2lhNS9FbytXZWdoaTAvaG1MdWI1Nmhh?=
+ =?utf-8?B?eVBPQkwxODduZmprU1VvR2doSnBnUDZObjB2UEFlaUlpL3MvWU9ScXJlSnlJ?=
+ =?utf-8?B?UEhiLzl0WXRSc053M1J0d2Q1SWhJQ2Y2SHNLMXBNOFo1RmxxVXFuQWo3aVlG?=
+ =?utf-8?B?NkJSVFhuWStTSTl3ZUhReHR0Kzloc09CSkFocUtJMVFNQXFBQ1BqTFpML003?=
+ =?utf-8?B?Y1BWeVVTN0VTc3ZiZldzV0JmY3VqZjVpZlhLaTJPb2ZTSUpqM0FOdG90dXdj?=
+ =?utf-8?B?K3phak1KdW41b0cyN3E4NXlwb1Npbk5GYWJtY0dsWEErNVNZcS9COFhETFdl?=
+ =?utf-8?B?NGc3bmMxdnRqMDl1SkNLK0Y2dStXUEEyQlNzVWEzRjJ2OTQ1MW1LdWN6cVhJ?=
+ =?utf-8?B?SmN4dnJ5MWJqc3hzT0Z3NklaZVQ2ZmZSaEFuWm1EZ1I4ZjhQdnZudW9yQzlz?=
+ =?utf-8?B?VTI3TUs4Yi9SZ3ZTTExRQVl4ekRhM2NzNm41ZkRlSUVubk9KQk9pYkFCZy9G?=
+ =?utf-8?B?a2M1TnJ2d1dEaWlBekllWWVVMXVGZTdsSGpLTTlmcFcrZ2NiQXBIcHlDU1Bu?=
+ =?utf-8?B?RWkxTm05UDNrMGNDMGJLMENlaWJMam13amdPTVVQdDNLRkFpaHpjdUkyQ2gz?=
+ =?utf-8?B?TW9YNjNDWXl4a3BaTis3YmZnUlZMMlJHMGpuTTR3SmtQc2VYZm9iMkRNelVY?=
+ =?utf-8?B?WmptK3BpNFh6UDQxbGd5eXRVa0x0S0ROZzZlRlNTT3Q0NnA4WE5nODJRSnNL?=
+ =?utf-8?Q?7YiyWl16WNDhsUaUVI5Q4EBSN?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 905318d4-7a69-4356-920c-08dab691372f
+X-MS-Exchange-CrossTenant-AuthSource: SJ1PR12MB6075.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2022 14:00:03.9973
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: IRGWvjNwdL47iKGNaGcWWP/+tj/RQ80k8EQEqquJeIlVDVTJer6PyQnNgIDv/n5qs5aw6qsBrRf/QUGiLGIk6Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR12MB6521
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add initial framework for Maxlinear's GSW1xx switch and
-currently only GSW145 in MDIO managed mode is supported.
+Hi,
 
-Signed-off-by: Camel Guo <camel.guo@axis.com>
----
- MAINTAINERS                   |   3 +
- drivers/net/dsa/Kconfig       |  16 +
- drivers/net/dsa/Makefile      |   2 +
- drivers/net/dsa/gsw1xx.h      |  27 ++
- drivers/net/dsa/gsw1xx_core.c | 823 ++++++++++++++++++++++++++++++++++
- drivers/net/dsa/gsw1xx_mdio.c | 128 ++++++
- 6 files changed, 999 insertions(+)
- create mode 100644 drivers/net/dsa/gsw1xx.h
- create mode 100644 drivers/net/dsa/gsw1xx_core.c
- create mode 100644 drivers/net/dsa/gsw1xx_mdio.c
+The nvme-tcp receive offloads series v7 was sent to both net-next and
+nvme.  It is the continuation of v5 which was sent on July 2021
+https://lore.kernel.org/netdev/20210722110325.371-1-borisp@nvidia.com/ .
+V7 is now working on a real HW.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index df88faabdb53..40371dc9e2dd 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12590,6 +12590,9 @@ M:	Camel Guo <camel.guo@axis.com>
- L:	netdev@vger.kernel.org
- S:	Maintained
- F:	Documentation/devicetree/bindings/net/dsa/mxl,gsw.yaml
-+F:	drivers/net/dsa/gsw1xx.h
-+F:	drivers/net/dsa/gsw1xx_core.c
-+F:	drivers/net/dsa/gsw1xx_mdio.c
- 
- MCBA MICROCHIP CAN BUS ANALYZER TOOL DRIVER
- R:	Yasushi SHOJI <yashi@spacecubics.com>
-diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
-index 07507b4820d7..af57b92f786a 100644
---- a/drivers/net/dsa/Kconfig
-+++ b/drivers/net/dsa/Kconfig
-@@ -122,4 +122,20 @@ config NET_DSA_VITESSE_VSC73XX_PLATFORM
- 	  This enables support for the Vitesse VSC7385, VSC7388, VSC7395
- 	  and VSC7398 SparX integrated ethernet switches, connected over
- 	  a CPU-attached address bus and work in memory-mapped I/O mode.
-+
-+config NET_DSA_MXL_GSW1XX
-+	tristate
-+	select REGMAP
-+	help
-+	  This enables support for the Maxlinear GSW1XX integrated ethernet
-+	  switch chips.
-+
-+config NET_DSA_MXL_GSW1XX_MDIO
-+	tristate "MaxLinear GSW1XX ethernet switch in MDIO managed mode"
-+	select NET_DSA_MXL_GSW1XX
-+	select FIXED_PHY
-+	help
-+	  This enables access functions if the MaxLinear GSW1XX is configured
-+	  for MDIO managed mode.
-+
- endmenu
-diff --git a/drivers/net/dsa/Makefile b/drivers/net/dsa/Makefile
-index 16eb879e0cb4..022fc661107b 100644
---- a/drivers/net/dsa/Makefile
-+++ b/drivers/net/dsa/Makefile
-@@ -15,6 +15,8 @@ obj-$(CONFIG_NET_DSA_SMSC_LAN9303_MDIO) += lan9303_mdio.o
- obj-$(CONFIG_NET_DSA_VITESSE_VSC73XX) += vitesse-vsc73xx-core.o
- obj-$(CONFIG_NET_DSA_VITESSE_VSC73XX_PLATFORM) += vitesse-vsc73xx-platform.o
- obj-$(CONFIG_NET_DSA_VITESSE_VSC73XX_SPI) += vitesse-vsc73xx-spi.o
-+obj-$(CONFIG_NET_DSA_MXL_GSW1XX) += gsw1xx_core.o
-+obj-$(CONFIG_NET_DSA_MXL_GSW1XX_MDIO) += gsw1xx_mdio.o
- obj-y				+= b53/
- obj-y				+= hirschmann/
- obj-y				+= microchip/
-diff --git a/drivers/net/dsa/gsw1xx.h b/drivers/net/dsa/gsw1xx.h
-new file mode 100644
-index 000000000000..08b2975e1267
---- /dev/null
-+++ b/drivers/net/dsa/gsw1xx.h
-@@ -0,0 +1,27 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef GSW1XX_H
-+#define GSW1XX_H
-+
-+#include <linux/regmap.h>
-+#include <linux/device.h>
-+#include <net/dsa.h>
-+
-+struct gsw1xx_hw_info {
-+	int max_ports;
-+	int cpu_port;
-+};
-+
-+struct gsw1xx_priv {
-+	struct device *dev;
-+	struct regmap *regmap;
-+	struct dsa_switch *ds;
-+	const struct gsw1xx_hw_info *hw_info;
-+};
-+
-+extern const struct regmap_access_table gsw1xx_register_set;
-+
-+int gsw1xx_probe(struct gsw1xx_priv *priv, struct device *dev);
-+void gsw1xx_remove(struct gsw1xx_priv *priv);
-+void gsw1xx_shutdown(struct gsw1xx_priv *priv);
-+
-+#endif /* GSW1XX_H */
-diff --git a/drivers/net/dsa/gsw1xx_core.c b/drivers/net/dsa/gsw1xx_core.c
-new file mode 100644
-index 000000000000..1b3cbee4addc
---- /dev/null
-+++ b/drivers/net/dsa/gsw1xx_core.c
-@@ -0,0 +1,823 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/delay.h>
-+#include <linux/etherdevice.h>
-+#include <linux/if_bridge.h>
-+#include <linux/if_vlan.h>
-+#include <linux/module.h>
-+#include <linux/of_mdio.h>
-+#include <linux/of_net.h>
-+#include <linux/of_platform.h>
-+#include <linux/phy.h>
-+#include <linux/phylink.h>
-+#include <linux/regmap.h>
-+#include <net/dsa.h>
-+
-+#include "gsw1xx.h"
-+
-+/* GSW1XX MDIO Registers */
-+#define GSW1XX_MDIO_BASE_ADDR		0xF400
-+#define GSW1XX_MDIO_REG_LEN		0x0422
-+#define GSW1XX_MDIO_GLOB		0x00
-+#define  GSW1XX_MDIO_GLOB_ENABLE	BIT(15)
-+#define GSW1XX_MDIO_CTRL		0x08
-+#define  GSW1XX_MDIO_CTRL_BUSY		BIT(12)
-+#define  GSW1XX_MDIO_CTRL_RD		BIT(11)
-+#define  GSW1XX_MDIO_CTRL_WR		BIT(10)
-+#define  GSW1XX_MDIO_CTRL_PHYAD_MASK	0x1F
-+#define  GSW1XX_MDIO_CTRL_PHYAD_SHIFT	5
-+#define  GSW1XX_MDIO_CTRL_REGAD_MASK	0x1F
-+#define GSW1XX_MDIO_READ		0x09
-+#define GSW1XX_MDIO_WRITE		0x0A
-+#define GSW1XX_MDIO_MDC_CFG0		0x0B
-+#define GSW1XX_MDIO_PHYp(p)		(0x15 - (p))
-+#define  GSW1XX_MDIO_PHY_LINK_MASK	0x6000
-+#define  GSW1XX_MDIO_PHY_LINK_AUTO	0x0000
-+#define  GSW1XX_MDIO_PHY_LINK_DOWN	0x4000
-+#define  GSW1XX_MDIO_PHY_LINK_UP	0x2000
-+#define  GSW1XX_MDIO_PHY_SPEED_MASK	0x1800
-+#define  GSW1XX_MDIO_PHY_SPEED_AUTO	0x1800
-+#define  GSW1XX_MDIO_PHY_SPEED_M10	0x0000
-+#define  GSW1XX_MDIO_PHY_SPEED_M100	0x0800
-+#define  GSW1XX_MDIO_PHY_SPEED_G1	0x1000
-+#define  GSW1XX_MDIO_PHY_FDUP_MASK	0x0600
-+#define  GSW1XX_MDIO_PHY_FDUP_AUTO	0x0000
-+#define  GSW1XX_MDIO_PHY_FDUP_EN	0x0200
-+#define  GSW1XX_MDIO_PHY_FDUP_DIS	0x0600
-+#define  GSW1XX_MDIO_PHY_FCONTX_MASK	0x0180
-+#define  GSW1XX_MDIO_PHY_FCONTX_AUTO	0x0000
-+#define  GSW1XX_MDIO_PHY_FCONTX_EN	0x0100
-+#define  GSW1XX_MDIO_PHY_FCONTX_DIS	0x0180
-+#define  GSW1XX_MDIO_PHY_FCONRX_MASK	0x0060
-+#define  GSW1XX_MDIO_PHY_FCONRX_AUTO	0x0000
-+#define  GSW1XX_MDIO_PHY_FCONRX_EN	0x0020
-+#define  GSW1XX_MDIO_PHY_FCONRX_DIS	0x0060
-+#define  GSW1XX_MDIO_PHY_ADDR_MASK	0x001F
-+#define  GSW1XX_MDIO_PHY_MASK		(GSW1XX_MDIO_PHY_ADDR_MASK | \
-+					 GSW1XX_MDIO_PHY_FCONRX_MASK | \
-+					 GSW1XX_MDIO_PHY_FCONTX_MASK | \
-+					 GSW1XX_MDIO_PHY_LINK_MASK | \
-+					 GSW1XX_MDIO_PHY_SPEED_MASK | \
-+					 GSW1XX_MDIO_PHY_FDUP_MASK)
-+
-+/* GSW1XX_IP Core Registers */
-+#define GSW1XX_IP_BASE_ADDR		0xE000
-+#define GSW1XX_IP_REG_LEN		0x0D46
-+#define GSW1XX_IP_SWRES			0x000
-+#define  GSW1XX_IP_SWRES_R1		BIT(1)	/* Software reset */
-+#define  GSW1XX_IP_SWRES_R0		BIT(0)	/* Hardware reset */
-+#define GSW1XX_IP_VERSION		0x013
-+#define  GSW1XX_IP_VERSION_REV_SHIFT	0
-+#define  GSW1XX_IP_VERSION_REV_MASK	GENMASK(7, 0)
-+#define  GSW1XX_IP_VERSION_MOD_SHIFT	8
-+#define  GSW1XX_IP_VERSION_MOD_MASK	GENMASK(15, 8)
-+#define   GSW1XX_IP_VERSION_2_3		0x023
-+
-+#define GSW1XX_IP_BM_RAM_VAL(x)		(0x043 - (x))
-+#define GSW1XX_IP_BM_RAM_ADDR		0x044
-+#define GSW1XX_IP_BM_RAM_CTRL		0x045
-+#define  GSW1XX_IP_BM_RAM_CTRL_BAS		BIT(15)
-+#define  GSW1XX_IP_BM_RAM_CTRL_OPMOD		BIT(5)
-+#define  GSW1XX_IP_BM_RAM_CTRL_ADDR_MASK	GENMASK(4, 0)
-+#define GSW1XX_IP_BM_QUEUE_GCTRL		0x04A
-+#define  GSW1XX_IP_BM_QUEUE_GCTRL_GL_MOD	BIT(10)
-+/* buffer management Port Configuration Register */
-+#define GSW1XX_IP_BM_PCFGp(p)		(0x080 + ((p) * 2))
-+#define  GSW1XX_IP_BM_PCFG_CNTEN	BIT(0)	/* RMON Counter Enable */
-+/* PCE */
-+#define GSW1XX_IP_PCE_PMAP2		0x454	/* Default Multicast port map */
-+#define GSW1XX_IP_PCE_PMAP3		0x455	/* Default Unknown Unicast port map */
-+#define GSW1XX_IP_PCE_GCTRL_0		0x456
-+#define  GSW1XX_IP_PCE_GCTRL_0_MTFL	BIT(0)  /* MAC Table Flushing */
-+#define  GSW1XX_IP_PCE_GCTRL_0_MC_VALID	BIT(3)
-+#define GSW1XX_IP_PCE_PCTRL_0p(p)	(0x480 + ((p) * 0xA))
-+#define  GSW1XX_IP_PCE_PCTRL_0_PSTATE_LISTEN		0x0
-+#define  GSW1XX_IP_PCE_PCTRL_0_PSTATE_RX		0x1
-+#define  GSW1XX_IP_PCE_PCTRL_0_PSTATE_TX		0x2
-+#define  GSW1XX_IP_PCE_PCTRL_0_PSTATE_LEARNING		0x3
-+#define  GSW1XX_IP_PCE_PCTRL_0_PSTATE_FORWARDING	0x7
-+#define  GSW1XX_IP_PCE_PCTRL_0_PSTATE_MASK		GENMASK(2, 0)
-+
-+#define GSW1XX_IP_MAC_FLEN			0x8C5
-+#define GSW1XX_IP_MAC_CTRL_0p(p)		(0x903 + ((p) * 0xC))
-+#define  GSW1XX_IP_MAC_CTRL_0_PADEN		BIT(8)
-+#define  GSW1XX_IP_MAC_CTRL_0_FCS_EN		BIT(7)
-+#define  GSW1XX_IP_MAC_CTRL_0_FCON_MASK		0x0070
-+#define  GSW1XX_IP_MAC_CTRL_0_FCON_AUTO		0x0000
-+#define  GSW1XX_IP_MAC_CTRL_0_FCON_RX		0x0010
-+#define  GSW1XX_IP_MAC_CTRL_0_FCON_TX		0x0020
-+#define  GSW1XX_IP_MAC_CTRL_0_FCON_RXTX		0x0030
-+#define  GSW1XX_IP_MAC_CTRL_0_FCON_NONE		0x0040
-+#define  GSW1XX_IP_MAC_CTRL_0_FDUP_MASK		0x000C
-+#define  GSW1XX_IP_MAC_CTRL_0_FDUP_AUTO		0x0000
-+#define  GSW1XX_IP_MAC_CTRL_0_FDUP_EN		0x0004
-+#define  GSW1XX_IP_MAC_CTRL_0_FDUP_DIS		0x000C
-+#define  GSW1XX_IP_MAC_CTRL_0_GMII_MASK		0x0003
-+#define  GSW1XX_IP_MAC_CTRL_0_GMII_AUTO		0x0000
-+#define  GSW1XX_IP_MAC_CTRL_0_GMII_MII		0x0001
-+#define  GSW1XX_IP_MAC_CTRL_0_GMII_RGMII	0x0002
-+#define GSW1XX_IP_MAC_CTRL_2p(p)		(0x905 + ((p) * 0xC))
-+#define GSW1XX_IP_MAC_CTRL_2_MLEN		BIT(3) /* Maximum Untagged Frame Lnegth */
-+#define GSW1XX_IP_MAC_CTRL_4p(p)		(0x907 + ((p) * 0xC))
-+#define  GSW1XX_IP_MAC_CTRL_4_LPIEN		BIT(7)
-+
-+/* Ethernet Switch Fetch DMA Port Control Register */
-+#define GSW1XX_IP_FDMA_PCTRLp(p)		(0xA80 + ((p) * 0x6))
-+#define  GSW1XX_IP_FDMA_PCTRL_EN		BIT(0)	/* FDMA Port Enable */
-+
-+/* Ethernet Switch Store DMA Port Control Register */
-+#define GSW1XX_IP_SDMA_PCTRLp(p)		(0xBC0 + ((p) * 0x6))
-+#define  GSW1XX_IP_SDMA_PCTRL_EN		BIT(0)	/* SDMA Port Enable */
-+#define  GSW1XX_IP_SDMA_PCTRL_FCEN		BIT(1)	/* Flow Control Enable */
-+#define  GSW1XX_IP_SDMA_PCTRL_PAUFWD		BIT(3)	/* Pause Frame Forwarding */
-+
-+struct gsw1xx_rmon_cnt_desc {
-+	unsigned int size;
-+	unsigned int offset;
-+	const char *name;
-+};
-+
-+#define MIB_DESC(_size, _offset, _name)                                        \
-+	{                                                                      \
-+		.size = _size, .offset = _offset, .name = _name                \
-+	}
-+
-+static const struct gsw1xx_rmon_cnt_desc gsw1xx_rmon_cnt[] = {
-+	/** Receive Packet Count (only packets that are accepted and not discarded). */
-+	MIB_DESC(1, 0x1F, "RxGoodPkts"),
-+	MIB_DESC(1, 0x23, "RxUnicastPkts"),
-+	MIB_DESC(1, 0x22, "RxMulticastPkts"),
-+	MIB_DESC(1, 0x21, "RxFCSErrorPkts"),
-+	MIB_DESC(1, 0x1D, "RxUnderSizeGoodPkts"),
-+	MIB_DESC(1, 0x1E, "RxUnderSizeErrorPkts"),
-+	MIB_DESC(1, 0x1B, "RxOversizeGoodPkts"),
-+	MIB_DESC(1, 0x1C, "RxOversizeErrorPkts"),
-+	MIB_DESC(1, 0x20, "RxGoodPausePkts"),
-+	MIB_DESC(1, 0x1A, "RxAlignErrorPkts"),
-+	MIB_DESC(1, 0x12, "Rx64BytePkts"),
-+	MIB_DESC(1, 0x13, "Rx127BytePkts"),
-+	MIB_DESC(1, 0x14, "Rx255BytePkts"),
-+	MIB_DESC(1, 0x15, "Rx511BytePkts"),
-+	MIB_DESC(1, 0x16, "Rx1023BytePkts"),
-+	/** Receive Size 1024-1522 (or more, if configured) Packet Count. */
-+	MIB_DESC(1, 0x17, "RxMaxBytePkts"),
-+	MIB_DESC(1, 0x18, "RxDroppedPkts"),
-+	MIB_DESC(1, 0x19, "RxFilteredPkts"),
-+	MIB_DESC(2, 0x24, "RxGoodBytes"),
-+	MIB_DESC(2, 0x26, "RxBadBytes"),
-+	MIB_DESC(1, 0x11, "TxAcmDroppedPkts"),
-+	MIB_DESC(1, 0x0C, "TxGoodPkts"),
-+	MIB_DESC(1, 0x06, "TxUnicastPkts"),
-+	MIB_DESC(1, 0x07, "TxMulticastPkts"),
-+	MIB_DESC(1, 0x00, "Tx64BytePkts"),
-+	MIB_DESC(1, 0x01, "Tx127BytePkts"),
-+	MIB_DESC(1, 0x02, "Tx255BytePkts"),
-+	MIB_DESC(1, 0x03, "Tx511BytePkts"),
-+	MIB_DESC(1, 0x04, "Tx1023BytePkts"),
-+	/** Transmit Size 1024-1522 (or more, if configured) Packet Count. */
-+	MIB_DESC(1, 0x05, "TxMaxBytePkts"),
-+	MIB_DESC(1, 0x08, "TxSingleCollCount"),
-+	MIB_DESC(1, 0x09, "TxMultCollCount"),
-+	MIB_DESC(1, 0x0A, "TxLateCollCount"),
-+	MIB_DESC(1, 0x0B, "TxExcessCollCount"),
-+	MIB_DESC(1, 0x0D, "TxPauseCount"),
-+	MIB_DESC(1, 0x10, "TxDroppedPkts"),
-+	MIB_DESC(2, 0x0E, "TxGoodBytes"),
-+};
-+
-+static u32 gsw1xx_switch_r(struct gsw1xx_priv *priv, u32 offset)
-+{
-+	int ret = 0;
-+	u32 val = 0;
-+
-+	ret = regmap_read(priv->regmap, GSW1XX_IP_BASE_ADDR + offset, &val);
-+
-+	return ret < 0 ? (u32)ret : val;
-+}
-+
-+static void gsw1xx_switch_w(struct gsw1xx_priv *priv, u32 val, u32 offset)
-+{
-+	regmap_write(priv->regmap, GSW1XX_IP_BASE_ADDR + offset, val);
-+}
-+
-+static u32 gsw1xx_mdio_r(struct gsw1xx_priv *priv, u32 offset)
-+{
-+	int ret = 0;
-+	u32 val = 0;
-+
-+	ret = regmap_read(priv->regmap, GSW1XX_MDIO_BASE_ADDR + offset, &val);
-+
-+	return ret < 0 ? (u32)ret : val;
-+}
-+
-+static void gsw1xx_mdio_w(struct gsw1xx_priv *priv, u32 val, u32 offset)
-+{
-+	regmap_write(priv->regmap, GSW1XX_MDIO_BASE_ADDR + offset, val);
-+}
-+
-+static void gsw1xx_mdio_mask(struct gsw1xx_priv *priv, u32 clear, u32 set,
-+			     u32 offset)
-+{
-+	u32 val = gsw1xx_mdio_r(priv, offset);
-+
-+	val &= ~(clear);
-+	val |= set;
-+	gsw1xx_mdio_w(priv, val, offset);
-+}
-+
-+static void gsw1xx_switch_mask(struct gsw1xx_priv *priv, u32 clear, u32 set,
-+			       u32 offset)
-+{
-+	u32 val = gsw1xx_switch_r(priv, offset);
-+
-+	val &= ~(clear);
-+	val |= set;
-+	gsw1xx_switch_w(priv, val, offset);
-+}
-+
-+static u32 gsw1xx_switch_r_timeout(struct gsw1xx_priv *priv, u32 offset,
-+				   u32 cleared)
-+{
-+	u32 val;
-+
-+	return read_poll_timeout(gsw1xx_switch_r, val, (val & cleared) == 0, 20,
-+				 50000, true, priv, offset);
-+}
-+
-+static int gsw1xx_mdio_poll(struct gsw1xx_priv *priv)
-+{
-+	int cnt = 100;
-+
-+	while (likely(cnt--)) {
-+		u32 ctrl = gsw1xx_mdio_r(priv, GSW1XX_MDIO_CTRL);
-+
-+		if ((ctrl & GSW1XX_MDIO_CTRL_BUSY) == 0)
-+			return 0;
-+		usleep_range(20, 40);
-+	}
-+
-+	return -ETIMEDOUT;
-+}
-+
-+static int gsw1xx_mdio_wr(struct mii_bus *bus, int addr, int reg, u16 val)
-+{
-+	struct gsw1xx_priv *priv = bus->priv;
-+	int err;
-+
-+	err = gsw1xx_mdio_poll(priv);
-+	if (err) {
-+		dev_err(&bus->dev, "timeout while waiting for MDIO bus\n");
-+		return err;
-+	}
-+
-+	gsw1xx_mdio_w(priv, val, GSW1XX_MDIO_WRITE);
-+	gsw1xx_mdio_w(priv,
-+		      GSW1XX_MDIO_CTRL_WR |
-+			      ((addr & GSW1XX_MDIO_CTRL_PHYAD_MASK)
-+			       << GSW1XX_MDIO_CTRL_PHYAD_SHIFT) |
-+			      (reg & GSW1XX_MDIO_CTRL_REGAD_MASK),
-+		      GSW1XX_MDIO_CTRL);
-+
-+	return 0;
-+}
-+
-+static int gsw1xx_mdio_rd(struct mii_bus *bus, int addr, int reg)
-+{
-+	struct gsw1xx_priv *priv = bus->priv;
-+	int err;
-+
-+	err = gsw1xx_mdio_poll(priv);
-+	if (err) {
-+		dev_err(&bus->dev, "timeout while waiting for MDIO bus\n");
-+		return err;
-+	}
-+
-+	gsw1xx_mdio_w(priv,
-+		      GSW1XX_MDIO_CTRL_RD |
-+			      ((addr & GSW1XX_MDIO_CTRL_PHYAD_MASK)
-+			       << GSW1XX_MDIO_CTRL_PHYAD_SHIFT) |
-+			      (reg & GSW1XX_MDIO_CTRL_REGAD_MASK),
-+		      GSW1XX_MDIO_CTRL);
-+
-+	err = gsw1xx_mdio_poll(priv);
-+	if (err) {
-+		dev_err(&bus->dev, "timeout while waiting for MDIO bus\n");
-+		return err;
-+	}
-+
-+	return gsw1xx_mdio_r(priv, GSW1XX_MDIO_READ);
-+}
-+
-+static int gsw1xx_mdio(struct gsw1xx_priv *priv, struct device_node *mdio_np)
-+{
-+	struct dsa_switch *ds = priv->ds;
-+	int err;
-+
-+	ds->slave_mii_bus = mdiobus_alloc();
-+	if (!ds->slave_mii_bus)
-+		return -ENOMEM;
-+
-+	ds->slave_mii_bus->priv = priv;
-+	ds->slave_mii_bus->read = gsw1xx_mdio_rd;
-+	ds->slave_mii_bus->write = gsw1xx_mdio_wr;
-+	ds->slave_mii_bus->name = "mxl,gsw1xx-mdio";
-+	snprintf(ds->slave_mii_bus->id, MII_BUS_ID_SIZE, "%s-mii",
-+		 dev_name(priv->dev));
-+	ds->slave_mii_bus->parent = priv->dev;
-+	ds->slave_mii_bus->phy_mask = ~ds->phys_mii_mask;
-+
-+	err = of_mdiobus_register(ds->slave_mii_bus, mdio_np);
-+	if (err)
-+		mdiobus_free(ds->slave_mii_bus);
-+
-+	return err;
-+}
-+
-+static int gsw1xx_port_enable(struct dsa_switch *ds, int port,
-+			      struct phy_device *phydev)
-+{
-+	struct gsw1xx_priv *priv = ds->priv;
-+
-+	if (!dsa_is_user_port(ds, port))
-+		return 0;
-+
-+	/* RMON Counter Enable for port */
-+	gsw1xx_switch_w(priv, GSW1XX_IP_BM_PCFG_CNTEN,
-+			GSW1XX_IP_BM_PCFGp(port));
-+
-+	/* enable port fetch/store dma */
-+	gsw1xx_switch_mask(priv, 0, GSW1XX_IP_FDMA_PCTRL_EN,
-+			   GSW1XX_IP_FDMA_PCTRLp(port));
-+	gsw1xx_switch_mask(priv, 0, GSW1XX_IP_SDMA_PCTRL_EN,
-+			   GSW1XX_IP_SDMA_PCTRLp(port));
-+
-+	if (!dsa_is_cpu_port(ds, port)) {
-+		u32 mdio_phy = 0;
-+
-+		if (phydev)
-+			mdio_phy =
-+				phydev->mdio.addr & GSW1XX_MDIO_PHY_ADDR_MASK;
-+
-+		gsw1xx_mdio_mask(priv, GSW1XX_MDIO_PHY_ADDR_MASK, mdio_phy,
-+				 GSW1XX_MDIO_PHYp(port));
-+	}
-+
-+	return 0;
-+}
-+
-+static void gsw1xx_port_disable(struct dsa_switch *ds, int port)
-+{
-+	struct gsw1xx_priv *priv = ds->priv;
-+
-+	if (!dsa_is_user_port(ds, port))
-+		return;
-+
-+	gsw1xx_switch_mask(priv, GSW1XX_IP_FDMA_PCTRL_EN, 0,
-+			   GSW1XX_IP_FDMA_PCTRLp(port));
-+	gsw1xx_switch_mask(priv, GSW1XX_IP_SDMA_PCTRL_EN, 0,
-+			   GSW1XX_IP_SDMA_PCTRLp(port));
-+}
-+
-+static int gsw1xx_setup(struct dsa_switch *ds)
-+{
-+	struct gsw1xx_priv *priv = ds->priv;
-+	unsigned int cpu_port = priv->hw_info->cpu_port;
-+	int i;
-+	int err;
-+
-+	gsw1xx_switch_w(priv, GSW1XX_IP_SWRES_R0, GSW1XX_IP_SWRES);
-+	usleep_range(5000, 10000);
-+	gsw1xx_switch_w(priv, 0, GSW1XX_IP_SWRES);
-+
-+	/* disable port fetch/store dma on all ports */
-+	for (i = 0; i < priv->hw_info->max_ports; i++)
-+		gsw1xx_port_disable(ds, i);
-+
-+	/* enable Switch */
-+	gsw1xx_mdio_mask(priv, 0, GSW1XX_MDIO_GLOB_ENABLE, GSW1XX_MDIO_GLOB);
-+
-+	gsw1xx_switch_w(priv, 0x7F, GSW1XX_IP_PCE_PMAP2);
-+	gsw1xx_switch_w(priv, 0x7F, GSW1XX_IP_PCE_PMAP3);
-+
-+	/* Deactivate MDIO PHY auto polling since it affects mmd read/write.
-+	 */
-+	gsw1xx_mdio_w(priv, 0x0, GSW1XX_MDIO_MDC_CFG0);
-+
-+	gsw1xx_switch_mask(priv, 1, GSW1XX_IP_MAC_CTRL_2_MLEN,
-+			   GSW1XX_IP_MAC_CTRL_2p(cpu_port));
-+	gsw1xx_switch_mask(priv, 0, GSW1XX_IP_BM_QUEUE_GCTRL_GL_MOD,
-+			   GSW1XX_IP_BM_QUEUE_GCTRL);
-+
-+	/* Flush MAC Table */
-+	gsw1xx_switch_mask(priv, 0, GSW1XX_IP_PCE_GCTRL_0_MTFL,
-+			   GSW1XX_IP_PCE_GCTRL_0);
-+	err = gsw1xx_switch_r_timeout(priv, GSW1XX_IP_PCE_GCTRL_0,
-+				      GSW1XX_IP_PCE_GCTRL_0_MTFL);
-+	if (err) {
-+		dev_err(priv->dev, "MAC flushing didn't finish\n");
-+		return err;
-+	}
-+
-+	gsw1xx_port_enable(ds, cpu_port, NULL);
-+
-+	return 0;
-+}
-+
-+static enum dsa_tag_protocol gsw1xx_get_tag_protocol(struct dsa_switch *ds,
-+						     int port,
-+						     enum dsa_tag_protocol mp)
-+{
-+	return DSA_TAG_PROTO_NONE;
-+}
-+
-+static void gsw1xx_port_stp_state_set(struct dsa_switch *ds, int port, u8 state)
-+{
-+	struct gsw1xx_priv *priv = ds->priv;
-+	u32 stp_state;
-+
-+	switch (state) {
-+	case BR_STATE_DISABLED:
-+		gsw1xx_switch_mask(priv, GSW1XX_IP_SDMA_PCTRL_EN, 0,
-+				   GSW1XX_IP_SDMA_PCTRLp(port));
-+		return;
-+	case BR_STATE_BLOCKING:
-+	case BR_STATE_LISTENING:
-+		stp_state = GSW1XX_IP_PCE_PCTRL_0_PSTATE_LISTEN;
-+		break;
-+	case BR_STATE_LEARNING:
-+		stp_state = GSW1XX_IP_PCE_PCTRL_0_PSTATE_LEARNING;
-+		break;
-+	case BR_STATE_FORWARDING:
-+		stp_state = GSW1XX_IP_PCE_PCTRL_0_PSTATE_FORWARDING;
-+		break;
-+	default:
-+		dev_err(priv->dev, "invalid STP state: %d\n", state);
-+		return;
-+	}
-+
-+	gsw1xx_switch_mask(priv, 0, GSW1XX_IP_SDMA_PCTRL_EN,
-+			   GSW1XX_IP_SDMA_PCTRLp(port));
-+	gsw1xx_switch_mask(priv, GSW1XX_IP_PCE_PCTRL_0_PSTATE_MASK, stp_state,
-+			   GSW1XX_IP_PCE_PCTRL_0p(port));
-+}
-+
-+static void gsw1xx_port_set_link(struct gsw1xx_priv *priv, int port, bool link)
-+{
-+	u32 mdio_phy;
-+
-+	if (link)
-+		mdio_phy = GSW1XX_MDIO_PHY_LINK_UP;
-+	else
-+		mdio_phy = GSW1XX_MDIO_PHY_LINK_DOWN;
-+
-+	gsw1xx_mdio_mask(priv, GSW1XX_MDIO_PHY_LINK_MASK, mdio_phy,
-+			 GSW1XX_MDIO_PHYp(port));
-+}
-+
-+static void gsw1xx_port_set_speed(struct gsw1xx_priv *priv, int port, int speed,
-+				  phy_interface_t interface)
-+{
-+	u32 mdio_phy = 0, mac_ctrl_0 = 0;
-+
-+	switch (speed) {
-+	case SPEED_10:
-+		mdio_phy = GSW1XX_MDIO_PHY_SPEED_M10;
-+		mac_ctrl_0 = GSW1XX_IP_MAC_CTRL_0_GMII_MII;
-+		break;
-+
-+	case SPEED_100:
-+		mdio_phy = GSW1XX_MDIO_PHY_SPEED_M100;
-+		mac_ctrl_0 = GSW1XX_IP_MAC_CTRL_0_GMII_MII;
-+		break;
-+
-+	case SPEED_1000:
-+		mdio_phy = GSW1XX_MDIO_PHY_SPEED_G1;
-+		mac_ctrl_0 = GSW1XX_IP_MAC_CTRL_0_GMII_RGMII;
-+		break;
-+	}
-+
-+	gsw1xx_mdio_mask(priv, GSW1XX_MDIO_PHY_SPEED_MASK, mdio_phy,
-+			 GSW1XX_MDIO_PHYp(port));
-+	gsw1xx_switch_mask(priv, GSW1XX_IP_MAC_CTRL_0_GMII_MASK, mac_ctrl_0,
-+			   GSW1XX_IP_MAC_CTRL_0p(port));
-+}
-+
-+static void gsw1xx_port_set_duplex(struct gsw1xx_priv *priv, int port,
-+				   int duplex)
-+{
-+	u32 mac_ctrl_0, mdio_phy;
-+
-+	if (duplex == DUPLEX_FULL) {
-+		mac_ctrl_0 = GSW1XX_IP_MAC_CTRL_0_FDUP_EN;
-+		mdio_phy = GSW1XX_MDIO_PHY_FDUP_EN;
-+	} else {
-+		mac_ctrl_0 = GSW1XX_IP_MAC_CTRL_0_FDUP_DIS;
-+		mdio_phy = GSW1XX_MDIO_PHY_FDUP_DIS;
-+	}
-+
-+	gsw1xx_switch_mask(priv, GSW1XX_IP_MAC_CTRL_0_FDUP_MASK, mac_ctrl_0,
-+			   GSW1XX_IP_MAC_CTRL_0p(port));
-+	gsw1xx_mdio_mask(priv, GSW1XX_MDIO_PHY_FDUP_MASK, mdio_phy,
-+			 GSW1XX_MDIO_PHYp(port));
-+}
-+
-+static void gsw1xx_port_set_pause(struct gsw1xx_priv *priv, int port,
-+				  bool tx_pause, bool rx_pause)
-+{
-+	u32 mac_ctrl_0, mdio_phy;
-+
-+	if (tx_pause && rx_pause) {
-+		mac_ctrl_0 = GSW1XX_IP_MAC_CTRL_0_FCON_RXTX;
-+		mdio_phy =
-+			GSW1XX_MDIO_PHY_FCONTX_EN | GSW1XX_MDIO_PHY_FCONRX_EN;
-+	} else if (tx_pause) {
-+		mac_ctrl_0 = GSW1XX_IP_MAC_CTRL_0_FCON_TX;
-+		mdio_phy =
-+			GSW1XX_MDIO_PHY_FCONTX_EN | GSW1XX_MDIO_PHY_FCONRX_DIS;
-+	} else if (rx_pause) {
-+		mac_ctrl_0 = GSW1XX_IP_MAC_CTRL_0_FCON_RX;
-+		mdio_phy =
-+			GSW1XX_MDIO_PHY_FCONTX_DIS | GSW1XX_MDIO_PHY_FCONRX_EN;
-+	} else {
-+		mac_ctrl_0 = GSW1XX_IP_MAC_CTRL_0_FCON_NONE;
-+		mdio_phy =
-+			GSW1XX_MDIO_PHY_FCONTX_DIS | GSW1XX_MDIO_PHY_FCONRX_DIS;
-+	}
-+
-+	gsw1xx_switch_mask(priv, GSW1XX_IP_MAC_CTRL_0_FCON_MASK, mac_ctrl_0,
-+			   GSW1XX_IP_MAC_CTRL_0p(port));
-+	gsw1xx_mdio_mask(priv,
-+			 GSW1XX_MDIO_PHY_FCONTX_MASK | GSW1XX_MDIO_PHY_FCONRX_MASK,
-+			 mdio_phy, GSW1XX_MDIO_PHYp(port));
-+}
-+
-+static void gsw1xx_phylink_mac_link_down(struct dsa_switch *ds, int port,
-+					 unsigned int mode,
-+					 phy_interface_t interface)
-+{
-+	struct gsw1xx_priv *priv = ds->priv;
-+
-+	if (!dsa_is_cpu_port(ds, port))
-+		gsw1xx_port_set_link(priv, port, false);
-+}
-+
-+static void gsw1xx_phylink_mac_link_up(struct dsa_switch *ds, int port,
-+				       unsigned int mode,
-+				       phy_interface_t interface,
-+				       struct phy_device *phydev, int speed,
-+				       int duplex, bool tx_pause, bool rx_pause)
-+{
-+	struct gsw1xx_priv *priv = ds->priv;
-+
-+	if (!dsa_is_cpu_port(ds, port)) {
-+		gsw1xx_port_set_link(priv, port, true);
-+		gsw1xx_port_set_speed(priv, port, speed, interface);
-+		gsw1xx_port_set_duplex(priv, port, duplex);
-+		gsw1xx_port_set_pause(priv, port, tx_pause, rx_pause);
-+	}
-+}
-+
-+static void gsw1xx_get_strings(struct dsa_switch *ds, int port, u32 stringset,
-+			       uint8_t *data)
-+{
-+	int i;
-+
-+	if (stringset != ETH_SS_STATS)
-+		return;
-+
-+	for (i = 0; i < ARRAY_SIZE(gsw1xx_rmon_cnt); i++)
-+		strncpy(data + i * ETH_GSTRING_LEN, gsw1xx_rmon_cnt[i].name,
-+			ETH_GSTRING_LEN);
-+}
-+
-+static u32 gsw1xx_bcm_ram_entry_read(struct gsw1xx_priv *priv, u32 port,
-+				     u32 index)
-+{
-+	u32 result;
-+	int err;
-+
-+	gsw1xx_switch_w(priv, index, GSW1XX_IP_BM_RAM_ADDR);
-+	gsw1xx_switch_mask(priv,
-+			   GSW1XX_IP_BM_RAM_CTRL_ADDR_MASK | GSW1XX_IP_BM_RAM_CTRL_OPMOD,
-+			   port | GSW1XX_IP_BM_RAM_CTRL_BAS,
-+			   GSW1XX_IP_BM_RAM_CTRL);
-+
-+	err = gsw1xx_switch_r_timeout(priv, GSW1XX_IP_BM_RAM_CTRL,
-+				      GSW1XX_IP_BM_RAM_CTRL_BAS);
-+	if (err) {
-+		dev_err(priv->dev,
-+			"timeout while reading entry: %u from RMON table for port: %u",
-+			index, port);
-+		return 0;
-+	}
-+
-+	result = gsw1xx_switch_r(priv, GSW1XX_IP_BM_RAM_VAL(0));
-+	result |= gsw1xx_switch_r(priv, GSW1XX_IP_BM_RAM_VAL(1)) << 16;
-+
-+	return result;
-+}
-+
-+static void gsw1xx_get_ethtool_stats(struct dsa_switch *ds, int port,
-+				     uint64_t *data)
-+{
-+	struct gsw1xx_priv *priv = ds->priv;
-+	const struct gsw1xx_rmon_cnt_desc *rmon_cnt;
-+	int i;
-+	u64 high;
-+
-+	for (i = 0; i < ARRAY_SIZE(gsw1xx_rmon_cnt); i++) {
-+		rmon_cnt = &gsw1xx_rmon_cnt[i];
-+
-+		data[i] =
-+			gsw1xx_bcm_ram_entry_read(priv, port, rmon_cnt->offset);
-+		if (rmon_cnt->size == 2) {
-+			high = gsw1xx_bcm_ram_entry_read(priv, port,
-+							 rmon_cnt->offset + 1);
-+			data[i] |= high << 32;
-+		}
-+	}
-+}
-+
-+static int gsw1xx_get_sset_count(struct dsa_switch *ds, int port, int sset)
-+{
-+	if (sset != ETH_SS_STATS)
-+		return 0;
-+
-+	return ARRAY_SIZE(gsw1xx_rmon_cnt);
-+}
-+
-+static int gsw1xx_get_mac_eee(struct dsa_switch *ds, int port,
-+			      struct ethtool_eee *e)
-+{
-+	struct gsw1xx_priv *priv = (struct gsw1xx_priv *)ds->priv;
-+	u32 val = 0;
-+
-+	val = gsw1xx_switch_r(priv, GSW1XX_IP_MAC_CTRL_4p(port));
-+	e->tx_lpi_enabled = !!(val & GSW1XX_IP_MAC_CTRL_4_LPIEN);
-+
-+	e->tx_lpi_timer = 20;
-+
-+	return 0;
-+}
-+
-+static int gsw1xx_set_mac_eee(struct dsa_switch *ds, int port,
-+			      struct ethtool_eee *e)
-+{
-+	struct gsw1xx_priv *priv = (struct gsw1xx_priv *)ds->priv;
-+
-+	if (e->tx_lpi_enabled) {
-+		gsw1xx_switch_mask(priv, 0, GSW1XX_IP_MAC_CTRL_4_LPIEN,
-+				   GSW1XX_IP_MAC_CTRL_4p(port));
-+	} else {
-+		gsw1xx_switch_mask(priv, GSW1XX_IP_MAC_CTRL_4_LPIEN, 0,
-+				   GSW1XX_IP_MAC_CTRL_4p(port));
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct dsa_switch_ops gsw1xx_switch_ops = {
-+	.get_tag_protocol	= gsw1xx_get_tag_protocol,
-+	.setup			= gsw1xx_setup,
-+	.set_mac_eee		= gsw1xx_set_mac_eee,
-+	.get_mac_eee		= gsw1xx_get_mac_eee,
-+	.port_enable		= gsw1xx_port_enable,
-+	.port_disable		= gsw1xx_port_disable,
-+	.port_stp_state_set	= gsw1xx_port_stp_state_set,
-+	.phylink_mac_link_down	= gsw1xx_phylink_mac_link_down,
-+	.phylink_mac_link_up	= gsw1xx_phylink_mac_link_up,
-+	.get_strings		= gsw1xx_get_strings,
-+	.get_ethtool_stats	= gsw1xx_get_ethtool_stats,
-+	.get_sset_count		= gsw1xx_get_sset_count,
-+};
-+
-+int gsw1xx_probe(struct gsw1xx_priv *priv, struct device *dev)
-+{
-+	struct device_node *np, *mdio_np;
-+	int err;
-+	u32 version;
-+
-+	if (!priv->regmap || IS_ERR(priv->regmap))
-+		return -EINVAL;
-+
-+	priv->hw_info = of_device_get_match_data(dev);
-+	if (!priv->hw_info)
-+		return -EINVAL;
-+
-+	priv->ds = devm_kzalloc(dev, sizeof(*priv->ds), GFP_KERNEL);
-+	if (!priv->ds)
-+		return -ENOMEM;
-+
-+	priv->ds->dev = dev;
-+	priv->ds->num_ports = priv->hw_info->max_ports;
-+	priv->ds->priv = priv;
-+	priv->ds->ops = &gsw1xx_switch_ops;
-+	priv->dev = dev;
-+	version = gsw1xx_switch_r(priv, GSW1XX_IP_VERSION);
-+
-+	np = dev->of_node;
-+	switch (version) {
-+	case GSW1XX_IP_VERSION_2_3:
-+		if (!of_device_is_compatible(np, "mxl,gsw145-mdio"))
-+			return -EINVAL;
-+		break;
-+	default:
-+		dev_err(dev, "unknown GSW1XX_IP version: 0x%x", version);
-+		return -ENOENT;
-+	}
-+
-+	/* bring up the mdio bus */
-+	mdio_np = of_get_child_by_name(np, "mdio");
-+	if (!mdio_np) {
-+		dev_err(dev, "missing child mdio node\n");
-+		return -EINVAL;
-+	}
-+
-+	err = gsw1xx_mdio(priv, mdio_np);
-+	if (err) {
-+		dev_err(dev, "mdio probe failed\n");
-+		goto put_mdio_node;
-+	}
-+
-+	err = dsa_register_switch(priv->ds);
-+	if (err) {
-+		dev_err(dev, "dsa switch register failed: %i\n", err);
-+		goto mdio_bus;
-+	}
-+	if (!dsa_is_cpu_port(priv->ds, priv->hw_info->cpu_port)) {
-+		dev_err(dev,
-+			"wrong CPU port defined, HW only supports port: %i",
-+			priv->hw_info->cpu_port);
-+		err = -EINVAL;
-+		goto disable_switch;
-+	}
-+
-+	dev_set_drvdata(dev, priv);
-+
-+	return 0;
-+
-+disable_switch:
-+	gsw1xx_mdio_mask(priv, GSW1XX_MDIO_GLOB_ENABLE, 0, GSW1XX_MDIO_GLOB);
-+	dsa_unregister_switch(priv->ds);
-+mdio_bus:
-+	if (mdio_np) {
-+		mdiobus_unregister(priv->ds->slave_mii_bus);
-+		mdiobus_free(priv->ds->slave_mii_bus);
-+	}
-+put_mdio_node:
-+	of_node_put(mdio_np);
-+	return err;
-+}
-+EXPORT_SYMBOL(gsw1xx_probe);
-+
-+void gsw1xx_remove(struct gsw1xx_priv *priv)
-+{
-+	if (!priv)
-+		return;
-+
-+	/* disable the switch */
-+	gsw1xx_mdio_mask(priv, GSW1XX_MDIO_GLOB_ENABLE, 0, GSW1XX_MDIO_GLOB);
-+
-+	dsa_unregister_switch(priv->ds);
-+
-+	if (priv->ds->slave_mii_bus) {
-+		mdiobus_unregister(priv->ds->slave_mii_bus);
-+		of_node_put(priv->ds->slave_mii_bus->dev.of_node);
-+		mdiobus_free(priv->ds->slave_mii_bus);
-+	}
-+
-+	dev_set_drvdata(priv->dev, NULL);
-+}
-+EXPORT_SYMBOL(gsw1xx_remove);
-+
-+void gsw1xx_shutdown(struct gsw1xx_priv *priv)
-+{
-+	if (!priv)
-+		return;
-+
-+	/* disable the switch */
-+	gsw1xx_mdio_mask(priv, GSW1XX_MDIO_GLOB_ENABLE, 0, GSW1XX_MDIO_GLOB);
-+
-+	dsa_switch_shutdown(priv->ds);
-+
-+	dev_set_drvdata(priv->dev, NULL);
-+}
-+EXPORT_SYMBOL(gsw1xx_shutdown);
-+
-+static const struct regmap_range gsw1xx_valid_regs[] = {
-+	/* GSWIP Core Registers */
-+	regmap_reg_range(GSW1XX_IP_BASE_ADDR,
-+			 GSW1XX_IP_BASE_ADDR + GSW1XX_IP_REG_LEN),
-+	/* Top Level PDI Registers, MDIO Master Reigsters */
-+	regmap_reg_range(GSW1XX_MDIO_BASE_ADDR,
-+			 GSW1XX_MDIO_BASE_ADDR + GSW1XX_MDIO_REG_LEN),
-+};
-+
-+const struct regmap_access_table gsw1xx_register_set = {
-+	.yes_ranges = gsw1xx_valid_regs,
-+	.n_yes_ranges = ARRAY_SIZE(gsw1xx_valid_regs),
-+};
-+EXPORT_SYMBOL(gsw1xx_register_set);
-+
-+MODULE_AUTHOR("Camel Guo <camel.guo@axis.com>");
-+MODULE_DESCRIPTION("Core Driver for MaxLinear GSM1XX ethernet switch");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/net/dsa/gsw1xx_mdio.c b/drivers/net/dsa/gsw1xx_mdio.c
-new file mode 100644
-index 000000000000..8328001041ed
---- /dev/null
-+++ b/drivers/net/dsa/gsw1xx_mdio.c
-@@ -0,0 +1,128 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * MaxLinear switch driver for GSW1XX in MDIO managed mode
-+ */
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/mdio.h>
-+#include <linux/phy.h>
-+#include <linux/of.h>
-+
-+#include "gsw1xx.h"
-+
-+#define GSW1XX_SMDIO_TARGET_BASE_ADDR_REG	0x1F
-+
-+static int gsw1xx_mdio_write(void *ctx, uint32_t reg, uint32_t val)
-+{
-+	struct mdio_device *mdiodev = (struct mdio_device *)ctx;
-+	int ret = 0;
-+
-+	mutex_lock_nested(&mdiodev->bus->mdio_lock, MDIO_MUTEX_NESTED);
-+
-+	ret = mdiodev->bus->write(mdiodev->bus, mdiodev->addr,
-+				  GSW1XX_SMDIO_TARGET_BASE_ADDR_REG, reg);
-+	if (ret < 0)
-+		goto out;
-+
-+	ret = mdiodev->bus->write(mdiodev->bus, mdiodev->addr, 0, val);
-+
-+out:
-+	mutex_unlock(&mdiodev->bus->mdio_lock);
-+
-+	return ret;
-+}
-+
-+static int gsw1xx_mdio_read(void *ctx, uint32_t reg, uint32_t *val)
-+{
-+	struct mdio_device *mdiodev = (struct mdio_device *)ctx;
-+	int ret = 0;
-+
-+	mutex_lock_nested(&mdiodev->bus->mdio_lock, MDIO_MUTEX_NESTED);
-+
-+	ret = mdiodev->bus->write(mdiodev->bus, mdiodev->addr,
-+				  GSW1XX_SMDIO_TARGET_BASE_ADDR_REG, reg);
-+	if (ret < 0)
-+		goto out;
-+
-+	*val = mdiodev->bus->read(mdiodev->bus, mdiodev->addr, 0);
-+
-+out:
-+	mutex_unlock(&mdiodev->bus->mdio_lock);
-+
-+	return ret;
-+}
-+
-+static const struct regmap_config gsw1xx_mdio_regmap_config = {
-+	.reg_bits = 16,
-+	.val_bits = 16,
-+	.reg_stride = 1,
-+
-+	.disable_locking = true,
-+
-+	.volatile_table = &gsw1xx_register_set,
-+	.wr_table = &gsw1xx_register_set,
-+	.rd_table = &gsw1xx_register_set,
-+
-+	.reg_read = gsw1xx_mdio_read,
-+	.reg_write = gsw1xx_mdio_write,
-+
-+	.cache_type = REGCACHE_NONE,
-+};
-+
-+static int gsw1xx_mdio_probe(struct mdio_device *mdiodev)
-+{
-+	struct gsw1xx_priv *priv;
-+	struct device *dev = &mdiodev->dev;
-+	int ret;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	priv->regmap = devm_regmap_init(dev, NULL, mdiodev,
-+					&gsw1xx_mdio_regmap_config);
-+	if (IS_ERR(priv->regmap)) {
-+		ret = PTR_ERR(priv->regmap);
-+		dev_err(dev, "regmap init failed: %d\n", ret);
-+		return ret;
-+	}
-+
-+	return gsw1xx_probe(priv, dev);
-+}
-+
-+static void gsw1xx_mdio_remove(struct mdio_device *mdiodev)
-+{
-+	gsw1xx_remove(dev_get_drvdata(&mdiodev->dev));
-+}
-+
-+static void gsw1xx_mdio_shutdown(struct mdio_device *mdiodev)
-+{
-+	gsw1xx_shutdown(dev_get_drvdata(&mdiodev->dev));
-+}
-+
-+static const struct gsw1xx_hw_info gsw145_hw_info = {
-+	.max_ports = 6,
-+	.cpu_port = 5,
-+};
-+
-+static const struct of_device_id gsw1xx_mdio_of_match[] = {
-+	{ .compatible = "mxl,gsw145-mdio", .data = &gsw145_hw_info },
-+	{ /* sentinel */ },
-+};
-+MODULE_DEVICE_TABLE(of, gsw1xx_mdio_of_match);
-+
-+static struct mdio_driver gsw1xx_mdio_driver = {
-+	.probe  = gsw1xx_mdio_probe,
-+	.remove = gsw1xx_mdio_remove,
-+	.shutdown = gsw1xx_mdio_shutdown,
-+	.mdiodrv.driver = {
-+		.name = "GSW1XX_MDIO",
-+		.of_match_table = of_match_ptr(gsw1xx_mdio_of_match),
-+	},
-+};
-+
-+mdio_module_driver(gsw1xx_mdio_driver);
-+
-+MODULE_AUTHOR("Camel Guo <camel.guo@axis.com>");
-+MODULE_DESCRIPTION("Driver for MaxLinear GSM1XX ethernet switch in MDIO managed mode");
-+MODULE_LICENSE("GPL");
+The feature will also be presented in netdev this week
+https://netdevconf.info/0x16/session.html?NVMeTCP-Offload-%E2%80%93-Implementation-and-Performance-Gains
+
+Currently the series is aligned to net-next, please update us if you will prefer otherwise.
+
+Thanks,
+Shai, Aurelien
+
+==== COVER LETTER ====
+From: Aurelien Aptel <aaptel@nvidia.com>
+From: Shai Malin <smalin@nvidia.com>
+From: Ben Ben-Ishay <benishay@nvidia.com>
+From: Boris Pismenny <borisp@nvidia.com>
+From: Or Gerlitz <ogerlitz@nvidia.com>
+From: Yoray Zack <yorayz@nvidia.com>
+
+=========================================
+
+This series adds support for NVMe-TCP receive offloads. The method here
+does not mandate the offload of the network stack to the device.
+Instead, these work together with TCP to offload:
+1. copy from SKB to the block layer buffers.
+2. CRC calculation and verification for received PDU.
+
+The series implements these as a generic offload infrastructure for storage
+protocols, which calls TCP Direct Data Placement and TCP Offload CRC
+respectively. We use this infrastructure to implement NVMe-TCP offload for
+copy and CRC.
+Future implementations can reuse the same infrastructure for other protocols
+such as iSCSI.
+
+Note:
+These offloads are similar in nature to the packet-based NIC TLS offloads,
+which are already upstream (see net/tls/tls_device.c).
+You can read more about TLS offload here:
+https://www.kernel.org/doc/html/latest/networking/tls-offload.html
+
+Queue Level
+===========
+The offload for IO queues is initialized after the handshake of the
+NVMe-TCP protocol is finished by calling `nvme_tcp_offload_socket`
+with the tcp socket of the nvme_tcp_queue:
+This operation sets all relevant hardware contexts in
+hardware. If it fails, then the IO queue proceeds as usual with no offload.
+If it succeeds then `nvme_tcp_setup_ddp` and `nvme_tcp_teardown_ddp` may be
+called to perform copy offload, and crc offload will be used.
+This initialization does not change the normal operation of NVMe-TCP in any
+way besides adding the option to call the above mentioned NDO operations.
+
+For the admin queue, NVMe-TCP does not initialize the offload.
+Instead, NVMe-TCP calls the driver to configure limits for the controller,
+such as max_hw_sectors and max_segments, these must be limited to accommodate
+potential HW resource limits, and to improve performance.
+
+If some error occurs, and the IO queue must be closed or reconnected, then
+offload is teardown and initialized again. Additionally, we handle netdev
+down events via the existing error recovery flow.
+
+IO Level
+========
+The NVMe-TCP layer calls the NIC driver to map block layer buffers to CID
+using `nvme_tcp_setup_ddp` before sending the read request. When the response
+is received, then the NIC HW will write the PDU payload directly into the
+designated buffer, and build an SKB such that it points into the destination
+buffer. This SKB represents the entire packet received on the wire, but it
+points to the block layer buffers. Once NVMe-TCP attempts to copy data from
+this SKB to the block layer buffer it can skip the copy by checking in the
+copying function: if (src == dst) -> skip copy
+
+Finally, when the PDU has been processed to completion, the NVMe-TCP layer
+releases the NIC HW context by calling `nvme_tcp_teardown_ddp` which
+asynchronously unmaps the buffers from NIC HW.
+
+The NIC must release its mapping between command IDs and the target buffers.
+This mapping is released when NVMe-TCP calls the NIC
+driver (`nvme_tcp_offload_socket`).
+As completing IOs is performance critical, we introduce asynchronous
+completions for NVMe-TCP, i.e. NVMe-TCP calls the NIC, which will later
+call NVMe-TCP to complete the IO (`nvme_tcp_ddp_teardown_done`).
+
+On the IO level, and in order to use the offload only when a clear
+performance improvement is expected, the offload is used only for IOs
+which are bigger than io_threshold.
+
+SKB
+===
+The DDP (zero-copy) and CRC offloads require two additional bits in the SKB.
+The ddp bit is useful to prevent condensing of SKBs which are targeted
+for zero-copy. The crc bit is useful to prevent GRO coalescing SKBs with
+different offload values. This bit is similar in concept to the
+"decrypted" bit.
+
+After offload is initialized, we use the SKB's crc bit to indicate that:
+"there was no problem with the verification of all CRC fields in this packet's
+payload". The bit is set to zero if there was an error, or if HW skipped
+offload for some reason. If *any* SKB in a PDU has (crc != 1), then the
+calling driver must compute the CRC, and check it. We perform this check, and
+accompanying software fallback at the end of the processing of a received PDU.
+
+Resynchronization flow
+======================
+The resynchronization flow is performed to reset the hardware tracking of
+NVMe-TCP PDUs within the TCP stream. The flow consists of a request from
+the hardware proxied by the driver, regarding a possible location of a
+PDU header. Followed by a response from the NVMe-TCP driver.
+
+This flow is rare, and it should happen only after packet loss or
+reordering events that involve NVMe-TCP PDU headers.
+
+CID Mapping
+===========
+ConnectX-7 assumes linear CID (0...N-1 for queue of size N) where the Linux NVMe
+driver uses part of the 16 bit CCID for generation counter.
+To address that, we use the existing quirk in the NVMe layer when the HW
+driver advertises that they don't support the full 16 bit CCID range.
+
+Enablement on ConnectX-7
+========================
+By default, NVMeTCP offload is disabled in the mlx driver. In order to enable it:
+
+	# Disable CQE compression (specific for ConnectX)
+	ethtool --set-priv-flags <device> rx_cqe_compress off
+
+	# Enable the ULP-DDP
+	ethtool -K <device> ulp-ddp-offload on
+
+	# Enable ULP offload in nvme-tcp
+	modprobe nvme-tcp ulp_offload=1
+
+Following the device ULP-DDP enablement, all the IO queues/sockets which are
+running on the device are offloaded.
+
+Performance
+===========
+With this implementation, using the ConnectX-7 NIC, we were able to
+demonstrate the following CPU utilization improvement:
+
+Without data digest:
+For  64K queued read IOs – up to 32% improvement in the BW/IOPS (111 Gbps vs. 84 Gbps).
+For 512K queued read IOs – up to 55% improvement in the BW/IOPS (148 Gbps vs. 98 Gbps).
+
+With data digest:
+For  64K queued read IOs – up to 107% improvement in the BW/IOPS (111 Gbps vs. 53 Gbps).
+For 512K queued read IOs – up to 138% improvement in the BW/IOPS (146 Gbps vs. 61 Gbps).
+
+With small IOs we are not expecting that the offload will show
+a performance gain.
+
+The test configuration:
+- fio command: qd=128, jobs=8.
+- Server: Intel(R) Xeon(R) Platinum 8380 CPU @ 2.30GHz, 160 cores.
+
+Patches
+=======
+Patch 1:  Introduce the infrastructure for all ULP DDP and ULP DDP CRC offloads.
+Patch 2:  The iov_iter change to skip copy if (src == dst).
+Patch 3:  Export the get_netdev_for_sock function from TLS to generic location.
+Patch 4:  Revert nvme_tcp_queue->queue_size removal
+Patch 5:  NVMe-TCP changes to call NIC driver on queue init/teardown and resync
+Patch 6:  NVMe-TCP changes to call NIC driver on IO operation
+          setup/teardown, and support async completions
+Patch 7:  NVMe-TCP changes to support CRC offload on receive
+          Also, this patch moves CRC calculation to the end of PDU
+          in case offload requires software fallback
+Patch 8:  NVMe-TCP handling of netdev events: stop the offload if netdev is
+          going down.
+Patch 9:  Add module parameter to the NVMe-TCP control the enable ULP offload
+Patch 10: Documentation of ULP DDP offloads
+
+The rest of the series is the mlx5 implementation of the offload.
+
+Testing
+=======
+This series was tested on ConnectX-7 HW using various configurations
+of IO sizes, queue depths, MTUs, and with both the SPDK and kernel NVMe-TCP
+targets.
+
+Future Work
+===========
+- NVMeTCP transmit offload.
+- NVMeTCP target offload.
+
+Changes since v6:
+=================
+- Moved IS_ULP_{DDP,CRC} macros to skb_is_ulp_{ddp,crc} inline functions (Jakub).
+- Fix copyright notice (Leon).
+- Added missing ifdef to allow build with MLX5_EN_TLS disabled.
+- Fix space alignement, indent and long lines (max 99 columns).
+- Add missing field documentation in ulp_ddp.h.
+
+Changes since v5:
+=================
+- Limit the series to RX offloads.
+- Added two separated skb indications to avoid wrong flushing of GRO
+  when aggerating offloaded packets.
+- Use accessor functions for skb->ddp and skb->crc (Eric D) bits.
+- Add kernel-doc for get_netdev_for_sock (Christoph).
+- Remove ddp_iter* routines and only modify _copy_to_iter (Al Viro, Christoph).
+- Remove consume skb (Sagi).
+- Add a knob in the ddp limits struct for the HW driver to advertise
+  if they need the nvme-tcp driver to apply the generation counter
+  quirk. Use this knob for the mlx5 CX7 offload.
+- bugfix: use u8 flags instead of bool in mlx5e_nvmeotcp_queue->dgst.
+- bugfix: use sg_dma_len(sgl) instead of sgl->length.
+- bugfix: remove sgl leak in nvme_tcp_setup_ddp().
+- bugfix: remove sgl leak when only using DDGST_RX offload.
+- Add error check for dma_map_sg().
+- Reduce #ifdef by using dummy macros/functions.
+- Remove redundant netdev null check in nvme_tcp_pdu_last_send().
+- Rename ULP_DDP_RESYNC_{REQ -> PENDING}.
+- Add per-ulp limits struct (Sagi).
+- Add ULP DDP capabilities querying (Sagi).
+- Simplify RX DDGST logic (Sagi).
+- Document resync flow better.
+- Add ulp_offload param to nvme-tcp module to enable ULP offload (Sagi).
+- Add a revert commit to reintroduce nvme_tcp_queue->queue_size.
+
+Changes since v4:
+=================
+- Add transmit offload patches.
+- Use one feature bit for both receive and transmit offload.
+
+Changes since v3:
+=================
+- Use DDP_TCP ifdefs in iov_iter and skb iterators to minimize impact
+  when compiled out (Christoph).
+- Simplify netdev references and reduce the use of
+  get_netdev_for_sock (Sagi).
+- Avoid "static" in it's own line, move it one line down (Christoph)
+- Pass (queue, skb, *offset) and retrieve the pdu_seq in
+  nvme_tcp_resync_response (Sagi).
+- Add missing assignment of offloading_netdev to null in offload_limits
+  error case (Sagi).
+- Set req->offloaded = false once -- the lifetime rules are:
+  set to false on cmd_setup / set to true when ddp setup succeeds (Sagi).
+- Replace pr_info_ratelimited with dev_info_ratelimited (Sagi).
+- Add nvme_tcp_complete_request and invoke it from two similar call
+  sites (Sagi).
+- Introduce nvme_tcp_req_map_sg earlier in the series (Sagi).
+- Add nvme_tcp_consume_skb and put into it a hunk from
+  nvme_tcp_recv_data to handle copy with and without offload.
+
+Changes since v2:
+=================
+- Use skb->ddp_crc for copy offload to avoid skb_condense.
+- Default mellanox driver support to no (experimental feature).
+- In iov_iter use non-ddp functions for kvec and iovec.
+- Remove typecasting in NVMe-TCP.
+
+Changes since v1:
+=================
+- Rework iov_iter copy skip if src==dst to be less intrusive (David Ahern).
+- Add tcp-ddp documentation (David Ahern).
+- Refactor mellanox driver patches into more patches (Saeed Mahameed).
+- Avoid pointer casting (David Ahern).
+- Rename NVMe-TCP offload flags (Shai Malin).
+- Update cover-letter according to the above.
+
+Changes since RFC v1:
+=====================
+- Split mlx5 driver patches to several commits.
+- Fix NVMe-TCP handling of recovery flows. In particular, move queue offload.
+  init/teardown to the start/stop functions.
+
+Signed-off-by: Or Gerlitz <ogerlitz@nvidia.com>
+
+Aurelien Aptel (2):
+  Revert "nvme-tcp: remove the unused queue_size member in
+    nvme_tcp_queue"
+  nvme-tcp: Add modparam to control the ULP offload enablement
+
+Ben Ben-Ishay (10):
+  iov_iter: DDP copy to iter/pages
+  net/tls: export get_netdev_for_sock
+  net/mlx5: Add NVMEoTCP caps, HW bits, 128B CQE and enumerations
+  net/mlx5e: NVMEoTCP, offload initialization
+  net/mlx5e: NVMEoTCP, use KLM UMRs for buffer registration
+  net/mlx5e: NVMEoTCP, queue init/teardown
+  net/mlx5e: NVMEoTCP, ddp setup and resync
+  net/mlx5e: NVMEoTCP, async ddp invalidation
+  net/mlx5e: NVMEoTCP, data-path for DDP+DDGST offload
+  net/mlx5e: NVMEoTCP, statistics
+
+Boris Pismenny (4):
+  net: Introduce direct data placement tcp offload
+  nvme-tcp: Add DDP offload control path
+  nvme-tcp: Add DDP data-path
+  net/mlx5e: TCP flow steering for nvme-tcp acceleration
+
+Or Gerlitz (5):
+  nvme-tcp: Deal with netdevice DOWN events
+  net/mlx5e: Rename from tls to transport static params
+  net/mlx5e: Refactor ico sq polling to get budget
+  net/mlx5e: Have mdev pointer directly on the icosq structure
+  net/mlx5e: Refactor doorbell function to allow avoiding a completion
+
+Yoray Zack (2):
+  nvme-tcp: RX DDGST offload
+  Documentation: add ULP DDP offload documentation
+
+ Documentation/networking/index.rst            |    1 +
+ Documentation/networking/ulp-ddp-offload.rst  |  368 ++++++
+ .../net/ethernet/mellanox/mlx5/core/Kconfig   |   11 +
+ .../net/ethernet/mellanox/mlx5/core/Makefile  |    3 +
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |   10 +
+ .../net/ethernet/mellanox/mlx5/core/en/fs.h   |    4 +-
+ .../ethernet/mellanox/mlx5/core/en/params.c   |   12 +-
+ .../ethernet/mellanox/mlx5/core/en/params.h   |    3 +
+ .../mellanox/mlx5/core/en/reporter_rx.c       |    4 +-
+ .../ethernet/mellanox/mlx5/core/en/rx_res.c   |   28 +
+ .../ethernet/mellanox/mlx5/core/en/rx_res.h   |    4 +
+ .../net/ethernet/mellanox/mlx5/core/en/tir.c  |   15 +
+ .../net/ethernet/mellanox/mlx5/core/en/tir.h  |    2 +
+ .../net/ethernet/mellanox/mlx5/core/en/txrx.h |   28 +-
+ .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   |    1 +
+ .../ethernet/mellanox/mlx5/core/en/xsk/rx.h   |    1 +
+ .../mlx5/core/en_accel/common_utils.h         |   32 +
+ .../mellanox/mlx5/core/en_accel/en_accel.h    |    3 +
+ .../mellanox/mlx5/core/en_accel/fs_tcp.c      |   12 +-
+ .../mellanox/mlx5/core/en_accel/fs_tcp.h      |    2 +-
+ .../mellanox/mlx5/core/en_accel/ktls.c        |    2 +-
+ .../mellanox/mlx5/core/en_accel/ktls_rx.c     |    8 +-
+ .../mellanox/mlx5/core/en_accel/ktls_tx.c     |    8 +-
+ .../mellanox/mlx5/core/en_accel/ktls_txrx.c   |   36 +-
+ .../mellanox/mlx5/core/en_accel/ktls_utils.h  |   17 +-
+ .../mellanox/mlx5/core/en_accel/nvmeotcp.c    | 1068 +++++++++++++++++
+ .../mellanox/mlx5/core/en_accel/nvmeotcp.h    |  144 +++
+ .../mlx5/core/en_accel/nvmeotcp_rxtx.c        |  325 +++++
+ .../mlx5/core/en_accel/nvmeotcp_rxtx.h        |   37 +
+ .../mlx5/core/en_accel/nvmeotcp_stats.c       |   61 +
+ .../mlx5/core/en_accel/nvmeotcp_utils.h       |   66 +
+ .../ethernet/mellanox/mlx5/core/en_ethtool.c  |    5 +
+ .../net/ethernet/mellanox/mlx5/core/en_fs.c   |    4 +-
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |   39 +-
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   |   78 +-
+ .../ethernet/mellanox/mlx5/core/en_stats.c    |   38 +
+ .../ethernet/mellanox/mlx5/core/en_stats.h    |   12 +
+ .../net/ethernet/mellanox/mlx5/core/en_txrx.c |    4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fw.c  |    6 +
+ .../net/ethernet/mellanox/mlx5/core/main.c    |    1 +
+ drivers/nvme/host/tcp.c                       |  537 ++++++++-
+ include/linux/mlx5/device.h                   |   59 +-
+ include/linux/mlx5/mlx5_ifc.h                 |   82 +-
+ include/linux/mlx5/qp.h                       |    1 +
+ include/linux/netdev_features.h               |    3 +-
+ include/linux/netdevice.h                     |    5 +
+ include/linux/skbuff.h                        |   24 +
+ include/net/inet_connection_sock.h            |    4 +
+ include/net/sock.h                            |   23 +
+ include/net/ulp_ddp.h                         |  182 +++
+ lib/iov_iter.c                                |    2 +-
+ net/Kconfig                                   |   10 +
+ net/core/skbuff.c                             |    3 +-
+ net/ethtool/common.c                          |    1 +
+ net/ipv4/tcp_input.c                          |    8 +
+ net/ipv4/tcp_ipv4.c                           |    3 +
+ net/ipv4/tcp_offload.c                        |    3 +
+ net/tls/tls_device.c                          |   16 -
+ 58 files changed, 3331 insertions(+), 138 deletions(-)
+ create mode 100644 Documentation/networking/ulp-ddp-offload.rst
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/common_utils.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_stats.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_utils.h
+ create mode 100644 include/net/ulp_ddp.h
+
 -- 
-2.30.2
+2.31.1
 
