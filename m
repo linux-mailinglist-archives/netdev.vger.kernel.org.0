@@ -2,249 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C89260CB4C
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 13:54:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64FAC60CB50
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 13:55:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230294AbiJYLx7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 07:53:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53150 "EHLO
+        id S231497AbiJYLzj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 07:55:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231800AbiJYLx4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 07:53:56 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B799F4181;
-        Tue, 25 Oct 2022 04:53:56 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id B6FB51F898;
-        Tue, 25 Oct 2022 11:53:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1666698834; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+        with ESMTP id S231229AbiJYLzf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 07:55:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 472D910052
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 04:55:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1666698925;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=lRKktY4aU99itUG0r84bU0CD/8p8OYqUqOyB0oh37xY=;
-        b=kPGJPSHP/ctcYyrSx4oh8j7Pq2g4jdSlpl1HIhd3g5GbEnEvnmILzJduBPl/Ub/M7WIJHT
-        +lvatm9XT01VSQouX3Vu/3blEzbDvFMnJ91eE0gllEI199WDbVL9gwUgWn9mp3e8TepnLj
-        V/VRSEaQ+FCUgjPX9loL17ric1YBQM4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1666698834;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lRKktY4aU99itUG0r84bU0CD/8p8OYqUqOyB0oh37xY=;
-        b=tq6qoYZadZVZsQfxh7vkftnRYo6UjWbK0LsSW0/VjN+Q7oNHoEjGITPqyvHjMXtFTMA41p
-        R8yevLb3/5Lue1Cg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7056A134CA;
-        Tue, 25 Oct 2022 11:53:54 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id ynO5GlLOV2OJBwAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Tue, 25 Oct 2022 11:53:54 +0000
-Message-ID: <fabffcfd-4e7f-a4b8-69ac-2865ead36598@suse.cz>
-Date:   Tue, 25 Oct 2022 13:53:54 +0200
+        bh=60KoSEJtdyP4csO4prhLVlSmVMFXsv78bMTFXEfeup0=;
+        b=gSCy4ZZelOlISG9husTb7KTBqu7M+TAqt4u1dk3EKTjPYUWKQVgLMStQfCal2so5uMBBXf
+        tSIx1d1WsPz7b+XMRyzFTI4zC6xowF6wWnDo+IxlPsvrUoZaX+JN+/epuTtYOIklSB+yOT
+        28+r54bs4IYTUReDFNW+RvbRv1mwLB4=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-553-zB1K1m85MLCQidoJ7LPoaA-1; Tue, 25 Oct 2022 07:55:23 -0400
+X-MC-Unique: zB1K1m85MLCQidoJ7LPoaA-1
+Received: by mail-qv1-f69.google.com with SMTP id ok8-20020a0562143c8800b004b07e9ca57eso6856734qvb.19
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 04:55:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=60KoSEJtdyP4csO4prhLVlSmVMFXsv78bMTFXEfeup0=;
+        b=qxIO4cqZy6/FB6tR8o9HOmrbbVeB/NGngzr2QhoZf3kZIYQeIK2Btp2BfP5TpqIkRX
+         0T86nFCt6XQN/uSsKBZscRpnOaIWURqVeWK3DueadYGDbY2sUPRh4XzoufuvRXWdj7nb
+         FKKYGcP85VI2N8mlaqCczjC2Xt0Vmj7ZTtrr3f5Saglm+fLxl84M8JF9Weyulya+08aU
+         vk24QCwDj2g9wCmZUnlGAjzh5IlXf6xjojRmd5Xzf9gwayLdyVcpmA4YDwTC8RjjrbJW
+         WPZIk9FZK4SK1WbkzmoYXbBf33jfkHzwCxeAxwi5s3SICVZMG/jH21nRqeaSKDCh0eHv
+         89mg==
+X-Gm-Message-State: ACrzQf13i+yxbvu7i+OFpBOC3bJRTvOHg9bxOhJMlyAc6FwKQzFH9gmU
+        yqnUa8FknS/cUnb+X1IMtI0+kCVa+YGFPCOwZWNrpyAlM56j9VmZo+NHNmk6Qv/aGjcfzyGjMLu
+        CVwzCBq8ebwckJWN6
+X-Received: by 2002:a05:6214:411e:b0:4b1:a97e:454 with SMTP id kc30-20020a056214411e00b004b1a97e0454mr30951766qvb.118.1666698923377;
+        Tue, 25 Oct 2022 04:55:23 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM5bkmSsNJp+aQvxeVgnIQPmeAh0WtUGJe771r7tIdB5z+CtZmx3gcRPXFE0E93ny3E8vK4AIw==
+X-Received: by 2002:a05:6214:411e:b0:4b1:a97e:454 with SMTP id kc30-20020a056214411e00b004b1a97e0454mr30951749qvb.118.1666698923122;
+        Tue, 25 Oct 2022 04:55:23 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-103-235.dyn.eolo.it. [146.241.103.235])
+        by smtp.gmail.com with ESMTPSA id e4-20020ac80644000000b0039d085a2571sm1489128qth.55.2022.10.25.04.55.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Oct 2022 04:55:22 -0700 (PDT)
+Message-ID: <0ea0057771c623ca3a37a79fc953fd34c54aa815.camel@redhat.com>
+Subject: Re: [PATCH net] net: ehea: fix possible memory leak in
+ ehea_register_port()
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>, netdev@vger.kernel.org
+Cc:     dougmill@linux.ibm.com, davem@davemloft.net, kuba@kernel.org
+Date:   Tue, 25 Oct 2022 13:55:20 +0200
+In-Reply-To: <20221022113722.3409846-1-yangyingliang@huawei.com>
+References: <20221022113722.3409846-1-yangyingliang@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.3
-Subject: Re: [PATCH] mm: Make ksize() a reporting-only function
-Content-Language: en-US
-To:     Kees Cook <keescook@chromium.org>,
-        Christoph Lameter <cl@linux.com>,
-        Dmitry Vyukov <dvyukov@google.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        linux-mm@kvack.org, kasan-dev@googlegroups.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-References: <20221022180455.never.023-kees@kernel.org>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20221022180455.never.023-kees@kernel.org>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/22/22 20:08, Kees Cook wrote:
-> With all "silently resizing" callers of ksize() refactored, remove the
-> logic in ksize() that would allow it to be used to effectively change
-> the size of an allocation (bypassing __alloc_size hints, etc). Users
-> wanting this feature need to either use kmalloc_size_roundup() before an
-> allocation, or use krealloc() directly.
-> 
-> For kfree_sensitive(), move the unpoisoning logic inline. Replace the
-> some of the partially open-coded ksize() in __do_krealloc with ksize()
-> now that it doesn't perform unpoisoning.
-> 
-> Adjust the KUnit tests to match the new ksize() behavior.
-> 
-> Cc: Dmitry Vyukov <dvyukov@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: Christoph Lameter <cl@linux.com>
-> Cc: Pekka Enberg <penberg@kernel.org>
-> Cc: David Rientjes <rientjes@google.com>
-> Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: Vlastimil Babka <vbabka@suse.cz>
-> Cc: Roman Gushchin <roman.gushchin@linux.dev>
-> Cc: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-> Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
-> Cc: Alexander Potapenko <glider@google.com>
-> Cc: Andrey Konovalov <andreyknvl@gmail.com>
-> Cc: Vincenzo Frascino <vincenzo.frascino@arm.com>
-> Cc: linux-mm@kvack.org
-> Cc: kasan-dev@googlegroups.com
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+Hello,
 
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
-
+On Sat, 2022-10-22 at 19:37 +0800, Yang Yingliang wrote:
+> dev_set_name() in ehea_register_port() allocates memory for name,
+> it need be freed when of_device_register() fails, call put_device()
+> to give up the reference that hold in device_initialize(), so that
+> it can be freed in kobject_cleanup() when the refcount hit to 0.
+> 
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 > ---
-> This requires at least this be landed first:
-> https://lore.kernel.org/lkml/20221021234713.you.031-kees@kernel.org/
-
-Don't we need all parts to have landed first, even if the skbuff one is the
-most prominent?
-
-> I suspect given that is the most central ksize() user, this ksize()
-> fix might be best to land through the netdev tree...
-> ---
->  mm/kasan/kasan_test.c |  8 +++++---
->  mm/slab_common.c      | 33 ++++++++++++++-------------------
->  2 files changed, 19 insertions(+), 22 deletions(-)
+>  drivers/net/ethernet/ibm/ehea/ehea_main.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/mm/kasan/kasan_test.c b/mm/kasan/kasan_test.c
-> index 0d59098f0876..cb5c54adb503 100644
-> --- a/mm/kasan/kasan_test.c
-> +++ b/mm/kasan/kasan_test.c
-> @@ -783,7 +783,7 @@ static void kasan_global_oob_left(struct kunit *test)
->  	KUNIT_EXPECT_KASAN_FAIL(test, *(volatile char *)p);
->  }
->  
-> -/* Check that ksize() makes the whole object accessible. */
-> +/* Check that ksize() does NOT unpoison whole object. */
->  static void ksize_unpoisons_memory(struct kunit *test)
->  {
->  	char *ptr;
-> @@ -791,15 +791,17 @@ static void ksize_unpoisons_memory(struct kunit *test)
->  
->  	ptr = kmalloc(size, GFP_KERNEL);
->  	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, ptr);
-> +
->  	real_size = ksize(ptr);
-> +	KUNIT_EXPECT_GT(test, real_size, size);
->  
->  	OPTIMIZER_HIDE_VAR(ptr);
->  
->  	/* This access shouldn't trigger a KASAN report. */
-> -	ptr[size] = 'x';
-> +	ptr[size - 1] = 'x';
->  
->  	/* This one must. */
-> -	KUNIT_EXPECT_KASAN_FAIL(test, ((volatile char *)ptr)[real_size]);
-> +	KUNIT_EXPECT_KASAN_FAIL(test, ((volatile char *)ptr)[real_size - 1]);
->  
->  	kfree(ptr);
->  }
-> diff --git a/mm/slab_common.c b/mm/slab_common.c
-> index 33b1886b06eb..eabd66fcabd0 100644
-> --- a/mm/slab_common.c
-> +++ b/mm/slab_common.c
-> @@ -1333,11 +1333,11 @@ __do_krealloc(const void *p, size_t new_size, gfp_t flags)
->  	void *ret;
->  	size_t ks;
->  
-> -	/* Don't use instrumented ksize to allow precise KASAN poisoning. */
-> +	/* Check for double-free before calling ksize. */
->  	if (likely(!ZERO_OR_NULL_PTR(p))) {
->  		if (!kasan_check_byte(p))
->  			return NULL;
-> -		ks = kfence_ksize(p) ?: __ksize(p);
-> +		ks = ksize(p);
->  	} else
->  		ks = 0;
->  
-> @@ -1405,8 +1405,10 @@ void kfree_sensitive(const void *p)
->  	void *mem = (void *)p;
->  
->  	ks = ksize(mem);
-> -	if (ks)
-> +	if (ks) {
-> +		kasan_unpoison_range(mem, ks);
->  		memzero_explicit(mem, ks);
-> +	}
->  	kfree(mem);
->  }
->  EXPORT_SYMBOL(kfree_sensitive);
-> @@ -1415,10 +1417,11 @@ EXPORT_SYMBOL(kfree_sensitive);
->   * ksize - get the actual amount of memory allocated for a given object
->   * @objp: Pointer to the object
->   *
-> - * kmalloc may internally round up allocations and return more memory
-> + * kmalloc() may internally round up allocations and return more memory
->   * than requested. ksize() can be used to determine the actual amount of
-> - * memory allocated. The caller may use this additional memory, even though
-> - * a smaller amount of memory was initially specified with the kmalloc call.
-> + * allocated memory. The caller may NOT use this additional memory, unless
-> + * it calls krealloc(). To avoid an alloc/realloc cycle, callers can use
-> + * kmalloc_size_roundup() to find the size of the associated kmalloc bucket.
->   * The caller must guarantee that objp points to a valid object previously
->   * allocated with either kmalloc() or kmem_cache_alloc(). The object
->   * must not be freed during the duration of the call.
-> @@ -1427,13 +1430,11 @@ EXPORT_SYMBOL(kfree_sensitive);
->   */
->  size_t ksize(const void *objp)
->  {
-> -	size_t size;
-> -
->  	/*
-> -	 * We need to first check that the pointer to the object is valid, and
-> -	 * only then unpoison the memory. The report printed from ksize() is
-> -	 * more useful, then when it's printed later when the behaviour could
-> -	 * be undefined due to a potential use-after-free or double-free.
-> +	 * We need to first check that the pointer to the object is valid.
-> +	 * The KASAN report printed from ksize() is more useful, then when
-> +	 * it's printed later when the behaviour could be undefined due to
-> +	 * a potential use-after-free or double-free.
->  	 *
->  	 * We use kasan_check_byte(), which is supported for the hardware
->  	 * tag-based KASAN mode, unlike kasan_check_read/write().
-> @@ -1447,13 +1448,7 @@ size_t ksize(const void *objp)
->  	if (unlikely(ZERO_OR_NULL_PTR(objp)) || !kasan_check_byte(objp))
->  		return 0;
->  
-> -	size = kfence_ksize(objp) ?: __ksize(objp);
-> -	/*
-> -	 * We assume that ksize callers could use whole allocated area,
-> -	 * so we need to unpoison this area.
-> -	 */
-> -	kasan_unpoison_range(objp, size);
-> -	return size;
-> +	return kfence_ksize(objp) ?: __ksize(objp);
->  }
->  EXPORT_SYMBOL(ksize);
->  
+> diff --git a/drivers/net/ethernet/ibm/ehea/ehea_main.c b/drivers/net/ethernet/ibm/ehea/ehea_main.c
+> index 294bdbbeacc3..b4aff59b3eb4 100644
+> --- a/drivers/net/ethernet/ibm/ehea/ehea_main.c
+> +++ b/drivers/net/ethernet/ibm/ehea/ehea_main.c
+> @@ -2900,6 +2900,7 @@ static struct device *ehea_register_port(struct ehea_port *port,
+>  	ret = of_device_register(&port->ofdev);
+>  	if (ret) {
+>  		pr_err("failed to register device. ret=%d\n", ret);
+> +		put_device(&port->ofdev.dev);
+>  		goto out;
+>  	}
+
+You need to include a suitable Fixes tag into the commit message.
+Additionally, if you have a kmemleak splat handy, please include even
+that in the commit message.
+
+Thanks!
+
+Paolo
+
 
