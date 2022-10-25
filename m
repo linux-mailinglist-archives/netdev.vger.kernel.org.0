@@ -2,85 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 69AB560D6AF
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 00:00:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4BC960D6B7
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 00:03:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231829AbiJYWAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 18:00:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51574 "EHLO
+        id S231646AbiJYWDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 18:03:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229937AbiJYWAi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 18:00:38 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 074987E82A;
-        Tue, 25 Oct 2022 15:00:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666735238; x=1698271238;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=44neLNb+622C3/v3IvkT8+w76MsPFc0VdmFApC/mlJI=;
-  b=jvFDf5cNiksrX72OlI1IwLQf/ZzzlsYqYiIVmJp5VDxQ8TlFsDHklOIl
-   rHX5pM0k90uRSzu+uG0SxL6S8JgiSgtZemdWOZ5bhZkPI+EUMucDQz5SX
-   SKaWQlJCUxVIZCLddJkRSoFjNB9kJ1FP6CenG1CPCjujwuihDnwu8UVFm
-   i3+sY1mY/aljTNKlRsBB+/lfUQj0OjTIzIo3pNby1CLhJyrxBGIqDqmxl
-   fFFLbHcHMDa7uRHSafTTUqI5U+vlgbnfo/xJnDolOGfpRbMmZTkA5ITXk
-   xzQwJS5qw0K/NhPhu7eE7nm3C52550uhKLTbv7y1QCVmCmhGatjQMPSGe
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10511"; a="308895372"
-X-IronPort-AV: E=Sophos;i="5.95,213,1661842800"; 
-   d="scan'208";a="308895372"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2022 15:00:37 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10511"; a="774360203"
-X-IronPort-AV: E=Sophos;i="5.95,213,1661842800"; 
-   d="scan'208";a="774360203"
-Received: from jlluce-mobl1.amr.corp.intel.com (HELO [10.212.217.182]) ([10.212.217.182])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2022 15:00:36 -0700
-Message-ID: <b4a64b97-32d2-d83d-9146-ebc9a4cc9ff6@intel.com>
-Date:   Tue, 25 Oct 2022 15:00:35 -0700
+        with ESMTP id S229714AbiJYWC7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 18:02:59 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 209EC26D8;
+        Tue, 25 Oct 2022 15:02:58 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id b12so38565744edd.6;
+        Tue, 25 Oct 2022 15:02:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=B5TwB3HwahgA/DvlgI1SO+JR6TGYUK+JWhOPn24MHF0=;
+        b=p7YTe7u30t+3wLVC4on7U1c71rPI4CrZqHI5DQkoHELmnlDvpjydeOPWiCA8eVfhV2
+         DUXq3wOnR/TXRGLkGp/Jr6hEU6Hpv0fS2FkBpEVRR1vE62xHJZjCglHXCRGwPH0RFdJI
+         +h8qr/Z2VX+X75+ugv8x7SFtcXVhom/3Q1107MN9aSk5pczjy2ipe8LyublfYgVgvrR1
+         gEs0zQQlnwtY5eWiBDerpaZYcyLGsOG3/V9xmVorqjvWUiEfaz/G1+LkzoeOlDF365cJ
+         /gezABV4ssoMCo6gzRkE9V5xO2CAYVFlOmRS9Q4khn4VEhCTCi34X+cW4DeV0pXE78cy
+         SuSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=B5TwB3HwahgA/DvlgI1SO+JR6TGYUK+JWhOPn24MHF0=;
+        b=R2IpioQU8d3n+O3okdJ3fsyDHUQP1DjLdl+nLUMJhwjcVMWkodvzxI/PAFBD/Iipm5
+         Ln2VapqdQlefEw0Meu5NjyJFbxaoRJZHfP6AIwKs2DvdVK7fbBBOn7nBjM4oAIqM9FTZ
+         PwLfcvYpz35pATXPWzC7YvyLKQM6Y+vuui78uglQPSolcDvphwIqAgYglU/6xBSxaV2L
+         xJiJMFq/mZG4WDaraeocQ9w1itJbRYGg0kNCVwqWbAYGHwHEIaZsRt3AEZuZOOM4xgOK
+         ZyB2Pnc4uzmGLEJiFC+VY7efQyNjI7l9PyZroXKF2l6ylAeHb+XAsNnC+V4PmkAgJVJE
+         lqhQ==
+X-Gm-Message-State: ACrzQf1iAMDGeNZudIaNqdeP++yN5oqzNs0CnO7icru6pwtOFex0pkwv
+        gGnkKwfiEIEeUFwmaymKTl4=
+X-Google-Smtp-Source: AMsMyM7t1sEqNP3xIjCsI9ZLSpusyMAHmRLROxmox+0BByHaB+dCyYs+tl0tjAQ9uELNr3DURzMF7Q==
+X-Received: by 2002:a50:ed03:0:b0:461:9f73:b8d9 with SMTP id j3-20020a50ed03000000b004619f73b8d9mr14573439eds.140.1666735376681;
+        Tue, 25 Oct 2022 15:02:56 -0700 (PDT)
+Received: from hoboy.vegasvil.org (81-223-89-254.static.upcbusiness.at. [81.223.89.254])
+        by smtp.gmail.com with ESMTPSA id kk20-20020a170907767400b0077d37a5d401sm2003091ejc.33.2022.10.25.15.02.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Oct 2022 15:02:56 -0700 (PDT)
+Date:   Tue, 25 Oct 2022 15:02:53 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, krzysztof.kozlowski+dt@linaro.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yangbo.lu@nxp.com,
+        radhey.shyam.pandey@amd.com, anirudha.sarangi@amd.com,
+        harini.katakam@amd.com, git@amd.com
+Subject: Re: [PATCH net-next V2] dt-bindings: net: ethernet-controller: Add
+ ptp-hardware-clock
+Message-ID: <Y1hdDc2O0jJG9V+T@hoboy.vegasvil.org>
+References: <20221021054111.25852-1-sarath.babu.naidu.gaddam@amd.com>
+ <20221024165723.GA1896281-robh@kernel.org>
+ <Y1hZID8iRtg73hV3@hoboy.vegasvil.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [RFC PATCH 0/2] Branch Target Injection (BTI) gadget in minstrel
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Cc:     scott.d.constable@intel.com, daniel.sneddon@linux.intel.com,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        antonio.gomez.iglesias@linux.intel.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        x86@kernel.org, gregkh@linuxfoundation.org, netdev@vger.kernel.org
-References: <cover.1666651511.git.pawan.kumar.gupta@linux.intel.com>
- <Y1fDiJtxTe8mtBF8@hirez.programming.kicks-ass.net>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <Y1fDiJtxTe8mtBF8@hirez.programming.kicks-ass.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y1hZID8iRtg73hV3@hoboy.vegasvil.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/25/22 04:07, Peter Zijlstra wrote:
-> I think the focus should be on finding the source sites, not protecting
-> the target sites. Where can an attacker control the register content and
-> have an indirect jump/call.
+On Tue, Oct 25, 2022 at 02:46:08PM -0700, Richard Cochran wrote:
+> On Mon, Oct 24, 2022 at 11:57:23AM -0500, Rob Herring wrote:
+> > On Thu, Oct 20, 2022 at 11:41:10PM -0600, Sarath Babu Naidu Gaddam wrote:
+> > > There is currently no standard property to pass PTP device index
+> > > information to ethernet driver when they are independent.
+> > > 
+> > > ptp-hardware-clock property will contain phandle to PTP clock node.
+> > > 
+> > > Freescale driver currently has this implementation but it will be
+> > > good to agree on a generic (optional) property name to link to PTP
+> > > phandle to Ethernet node. In future or any current ethernet driver
+> > > wants to use this method of reading the PHC index,they can simply use
+> > > this generic name and point their own PTP clock node, instead of
+> > > creating separate property names in each ethernet driver DT node.
+> > 
+> > Seems like this does the same thing as 
+> > Documentation/devicetree/bindings/ptp/timestamper.txt.
+> 
+> That is different. It goes from:
+> 
+>    MAC -> time stamp generator
 
-How would this work with something like 'struct file_operations' which
-provide a rich set of indirect calls that frequently have fully
-user-controlled values in registers?
+actually:
+     PHY -> time stamp generator
 
-It certainly wouldn't *hurt* to be zeroing out the registers that are
-unused at indirect call sites.  But, the majority of gadgets in this
-case used rdi and rsi, which are the least likely to be able to be
-zapped at call sites.
+> The proposed binding goes from:
+> 
+>   MAC (with built in time stamp generator) -> PTP Hardware Clock (with get/settime etc)
+> 
+> 
+> Thanks,
+> Richard
