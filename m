@@ -2,72 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9A2460D81B
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 01:42:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6196660D82A
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 01:50:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232864AbiJYXml (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 19:42:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50258 "EHLO
+        id S232963AbiJYXuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 19:50:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233056AbiJYXmZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 19:42:25 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E0A41740A;
-        Tue, 25 Oct 2022 16:42:21 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id r19so8820500qtx.6;
-        Tue, 25 Oct 2022 16:42:21 -0700 (PDT)
+        with ESMTP id S232936AbiJYXuE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 19:50:04 -0400
+Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE1B3B706
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 16:50:00 -0700 (PDT)
+Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-369c2f83697so123784597b3.3
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 16:50:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=KzON37HtcPKShg855491Hc+Jv/my7RTdOwTJBPVLddY=;
-        b=k75whvR6wb0GL5eGZn2cLvJ73YnpQYwEpCreRbXYodXbfUjjXiO8ulcrXCXZsAOOlG
-         pPZQp8WkDNFlhO2wP6DPkGR9ULI/uEvAjJWWIhO8y4I9IGofiY5Z0MPm0oLxUy8m+lQ7
-         GIK5FZGbZJr2D26UEbhjDXidF8hTajLro4Yext4n4171MZ0twY/puu/N7UeP1E4a3vGh
-         pfDqD41kySyVxif5oWsylPmNo71vH84crzWFbUkir5aeaiWKFS5TeLV26l573Tpy33lh
-         qWofTuCNMNL3Rri5IHn7i2BaOMNNDFUISJdCmAqIN0TkJ6KLvSbtk20N4/AOLXQvehqm
-         w4+w==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=/62MVg5pgFg8Vpt7pgBRV0gOYFDrcMUSU00wTJps7/w=;
+        b=CUXOWwnENJaTPXi24segoZe3AC2BYed1yu3V/IJRrd0aR9PXBw9vjwAbwF59o/HVe3
+         3+qRBEnSvTZQzu8mMs4OvdGjrrrIPClVCnsz8KKUcgnAzPuL7J+Ils8jzDRnJsFmG97l
+         LxVVF7+oyw1p3ubgozdI1ER9MfHjTN4/szLB3pSk7o9CjHhNy1h5klZRgpqm54TFjJbL
+         q5QHR+8Py7WbnBm8bG1SjXAUsqg+JjauvyYzS9e9CPWrEfLHwZpVQlwfFfT2gFz4mO2z
+         WRIYEXGJSZvaa5rLOrDOc1tlP49NFrC3PDuLr6kK9dRJbFqTUpW5EmGf9Z+7Ve7yGVCd
+         kvzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=KzON37HtcPKShg855491Hc+Jv/my7RTdOwTJBPVLddY=;
-        b=If+xYFesQGQiXNGQDzh0zdb7FJZhJO2iV9vTnx3BG2qLCXNMYfnp9E5xf2+APLDERE
-         hgAeSLEAphKqssPwod+Xal4vy6KwGu8Dn2uPWFhADf6IoZAleoh4+AhkssMMIc8Wv2vp
-         pflg1DuDbeSAqKXPdnHYzWdmKnIZAM1MO5d/cRTPXlBslcDSR/hY0XTf7AGkd1nvyOTA
-         SwEBFeUrJ6ocqndl46LBupTdrp3khj6pJMixko9l7GFdKJRuw1TaTSbO5Kf+ax5ahqcc
-         FTRevqoGMiWP7lmfEAqRKmhdWH/8+zXcfMwYd/BGmXHMM6ASZzVC9qc5xh5hO7ye+O6n
-         yuaw==
-X-Gm-Message-State: ACrzQf3LTYqa4nxDUaVzOEaObkRwwu06ktYjEfmc3eBBDK5quxH0VS9p
-        O8Ss9fiHlV0bks8hbBVn0vHNMVYXzQdrEw==
-X-Google-Smtp-Source: AMsMyM6mMBVuscxqAwcod0NzoPNMqN0k90jOIm0lKKJ4Wcqa7HvK+Q0WDGAJrN8/rQFpH0gqNCab1A==
-X-Received: by 2002:a05:622a:350:b0:39a:286b:1b21 with SMTP id r16-20020a05622a035000b0039a286b1b21mr34020468qtw.427.1666741339732;
-        Tue, 25 Oct 2022 16:42:19 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id a1-20020a05620a438100b006cea2984c9bsm2882502qkp.100.2022.10.25.16.42.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Oct 2022 16:42:19 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net] net: bcmsysport: Indicate MAC is in charge of PHY PM
-Date:   Tue, 25 Oct 2022 16:42:01 -0700
-Message-Id: <20221025234201.2549360-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        bh=/62MVg5pgFg8Vpt7pgBRV0gOYFDrcMUSU00wTJps7/w=;
+        b=RMsd0PfnyE6N1JeJQGkc6bIBj5sbmbIrjqj0ELwnHPLG2KDw9pRz5n//B41YFVYUcO
+         RBekmkKs9if33q8uFbs/f9c+KQA37cCWKPtZUCW74/3M+n6aZnOiPzB17CCO/fVdcLlC
+         EVnBr9sgsxHdQwYCY5RlgmHXlzbkWdFSsIGKDCYInv2JxLPNC9nz67SgqeOys/X7irkb
+         B6Wi/4LKkugqq45aI46nbT+26DAeypvDM4L7vltDFP+QA3lKpDRnlg1t7JvfC8MVOPOS
+         z9fPRiNrGmwW+I/D+5ucC0h8fUDlezrC9LefAcWsvfFAVUmf0iMPqjpZQ9Hom41+tLvl
+         d6aA==
+X-Gm-Message-State: ACrzQf0tCM8k0sMepka1F40cwK00X9i/dz+1uAduy+cdteZ8eJ9EGw4O
+        kis9jePTT9Gz3wfhPJDCA/7UiqfK6/Ox42SNDAYnZw==
+X-Google-Smtp-Source: AMsMyM4r+RBZWH8ylsgrOMs8ws5hL0jxA43n+91dfLpe488v+Pl/0jldyx3L2Yhs90HWyP1m3Om/gpp7nt5GP5SSYYc=
+X-Received: by 2002:a81:9a4f:0:b0:367:fbf9:b9f1 with SMTP id
+ r76-20020a819a4f000000b00367fbf9b9f1mr30181010ywg.55.1666741799829; Tue, 25
+ Oct 2022 16:49:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20221023023044.149357-1-xiyou.wangcong@gmail.com> <20221025160222.5902e899@kernel.org>
+In-Reply-To: <20221025160222.5902e899@kernel.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 25 Oct 2022 16:49:48 -0700
+Message-ID: <CANn89iJr+RdwnyoBmFmtc0m7KDSOg-5GboBpCOc4Diut9W8W6A@mail.gmail.com>
+Subject: Re: [Patch net] kcm: fix a race condition in kcm_recvmsg()
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org,
+        Cong Wang <cong.wang@bytedance.com>,
+        shaozhengchao <shaozhengchao@huawei.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Tom Herbert <tom@herbertland.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,31 +70,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Avoid the PHY library call unnecessarily into the suspend/resume
-functions by setting phydev->mac_managed_pm to true. The SYSTEMPORT
-driver essentially does exactly what mdio_bus_phy_resume() does by
-calling phy_resume().
+On Tue, Oct 25, 2022 at 4:02 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Sat, 22 Oct 2022 19:30:44 -0700 Cong Wang wrote:
+> > +                     spin_lock_bh(&mux->rx_lock);
+> >                       KCM_STATS_INCR(kcm->stats.rx_msgs);
+> >                       skb_unlink(skb, &sk->sk_receive_queue);
+> > +                     spin_unlock_bh(&mux->rx_lock);
+>
+> Why not switch to __skb_unlink() at the same time?
+> Abundance of caution?
+>
+> Adding Eric who was fixing KCM bugs recently.
 
-Fixes: fba863b81604 ("net: phy: make PHY PM ops a no-op if MAC driver manages PHY PM")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/ethernet/broadcom/bcmsysport.c | 3 +++
- 1 file changed, 3 insertions(+)
+I think kcm_queue_rcv_skb() might have a similar problem if/when
+called from requeue_rx_msgs()
 
-diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
-index 867f14c30e09..425d6ccd5413 100644
---- a/drivers/net/ethernet/broadcom/bcmsysport.c
-+++ b/drivers/net/ethernet/broadcom/bcmsysport.c
-@@ -1991,6 +1991,9 @@ static int bcm_sysport_open(struct net_device *dev)
- 		goto out_clk_disable;
- 	}
- 
-+	/* Indicate that the MAC is responsible for PHY PM */
-+	phydev->mac_managed_pm = true;
-+
- 	/* Reset house keeping link status */
- 	priv->old_duplex = -1;
- 	priv->old_link = -1;
--- 
-2.25.1
+(The mux->rx_lock spinlock is not acquired, and skb_queue_tail() is used)
 
+I agree we should stick to one lock, and if this is not the standard
+skb head lock, we should not use it at all
+(ie use __skb_queue_tail() and friends)
