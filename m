@@ -2,45 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0D9A60C3AB
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 08:13:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A65D60C3B2
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 08:17:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231172AbiJYGNj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 02:13:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46790 "EHLO
+        id S231194AbiJYGRq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 02:17:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231154AbiJYGNi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 02:13:38 -0400
-Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DEC510693B;
-        Mon, 24 Oct 2022 23:13:36 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R291e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VT1jQdO_1666678413;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0VT1jQdO_1666678413)
-          by smtp.aliyun-inc.com;
-          Tue, 25 Oct 2022 14:13:34 +0800
-Date:   Tue, 25 Oct 2022 14:13:32 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     Jan Karcher <jaka@linux.ibm.com>
-Cc:     "D. Wythe" <alibuda@linux.alibaba.com>, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: Re: [PATCH net-next v3 00/10] optimize the parallelism of SMC-R
- connections
-Message-ID: <Y1d+jDQiyn4LSKlu@TonyMac-Alibaba>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <1666248232-63751-1-git-send-email-alibuda@linux.alibaba.com>
- <62001adc-129a-d477-c916-7a4cf2000553@linux.alibaba.com>
- <79e3bccb-55c2-3b92-b14a-7378ef02dd78@linux.ibm.com>
- <4127d84d-e3b4-ca44-2531-8aed12fdee3f@linux.alibaba.com>
- <f8ea7943-4267-8b8d-f8b4-831fea7f3963@linux.ibm.com>
+        with ESMTP id S231182AbiJYGRp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 02:17:45 -0400
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140138.outbound.protection.outlook.com [40.107.14.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD66443179;
+        Mon, 24 Oct 2022 23:17:42 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UMEoDe2nIt+bCB8pz/a8L6CvJiGhqZSba3HSURRirbzqhvWnZfk0pGGXH/E9iYeTrgAvI7PDZ4+7XNNPqxHP41x60QlxtQ/3kr8JUvNU2NFV6hv17F64RSajqTHnrM6snRasTZLdMcwNNH+gMIWMef933eyhV020dIY20uK9bXeoQw4JOQSB1bSpHyHB8fx4ByKhtTiZ7NyekjviigyD1II91qwN/6wcmqeeVxyV0AcPg20epcGB084Ao+1358Od+Mnh7ofP1NXPZCyZorfqUnSNcIa5iQeWzPBeBmNJjB/N0mkAH/Qa65wDo1ghr+GEwtOzT1NRayFSGW7fT3+0aQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+4RQNJGc32rL50YW6Du2OWPmie5zimEStLpi+52w3fk=;
+ b=BLxQfCsnMfm0L5ycwK7Az/tm5ErDnViFWIb8luemDeakcVfKoH06vtg/KpvnyhAwqCUyExeLArAW3WKRxU5PWNW0sCFsNBTyntFLa8nV70BkldGF3up2NEIrqMmJX9SjVpWMzV7uGsPtM51ifaDU2ReU5msi/2flfAdumnwYWHbXva8dANh84L8KmGPgWKwacgWGw3zuP2UZ3sw1On8tld2saQ8Hv5u0ZuZZ8QAxnwtgoiT5DJURioaRmn+e/QlPdF4lJfx0js5fFiZU/tdFWsNbbG9sXDm2Lzy6c9vLFTjgI1JWiSYkPvI1L9p+TdG+VkpX0E2rxDiLZlClWQlgoA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
+ 217.111.95.7) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=arri.de;
+ dmarc=none action=none header.from=arri.de; dkim=none (message not signed);
+ arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=arrigroup.onmicrosoft.com; s=selector1-arrigroup-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+4RQNJGc32rL50YW6Du2OWPmie5zimEStLpi+52w3fk=;
+ b=V0M+i6JXh3eJaZ9naYzImvQK6ZSXGMf3wLu5FUxXkNHtFh31mxSc+02Rtlw5eAs9V+RaUsAE0q7VwpR4QkVawhzHwKWoUDk2nCBz+Poi7iWcGEbI61fbXq9U5U5oezL64ITe81uawjST3nI9JBwDwhTjwsU7beeMQNHQfqkb1t0=
+Received: from AS9PR06CA0238.eurprd06.prod.outlook.com (2603:10a6:20b:45e::8)
+ by DB9PR07MB8498.eurprd07.prod.outlook.com (2603:10a6:10:36d::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.28; Tue, 25 Oct
+ 2022 06:17:39 +0000
+Received: from VE1EUR02FT074.eop-EUR02.prod.protection.outlook.com
+ (2603:10a6:20b:45e:cafe::d4) by AS9PR06CA0238.outlook.office365.com
+ (2603:10a6:20b:45e::8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.23 via Frontend
+ Transport; Tue, 25 Oct 2022 06:17:39 +0000
+X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 217.111.95.7)
+ smtp.mailfrom=arri.de; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=arri.de;
+Received-SPF: Fail (protection.outlook.com: domain of arri.de does not
+ designate 217.111.95.7 as permitted sender) receiver=protection.outlook.com;
+ client-ip=217.111.95.7; helo=mta.arri.de;
+Received: from mta.arri.de (217.111.95.7) by
+ VE1EUR02FT074.mail.protection.outlook.com (10.152.13.220) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5746.16 via Frontend Transport; Tue, 25 Oct 2022 06:17:38 +0000
+Received: from n95hx1g2.localnet (192.168.54.54) by mta.arri.de (10.10.18.5)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.32; Tue, 25 Oct
+ 2022 08:17:37 +0200
+From:   Christian Eggers <ceggers@arri.de>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>
+CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
+        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <olteanv@gmail.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <linux@armlinux.org.uk>, <Tristram.Ha@microchip.com>,
+        <richardcochran@gmail.com>
+Subject: Re: [RFC Patch net-next 5/6] net: dsa: microchip: Adding the ptp packet reception logic
+Date:   Tue, 25 Oct 2022 08:17:37 +0200
+Message-ID: <4458429.LvFx2qVVIh@n95hx1g2>
+Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+In-Reply-To: <20221014152857.32645-6-arun.ramadoss@microchip.com>
+References: <20221014152857.32645-1-arun.ramadoss@microchip.com> <20221014152857.32645-6-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f8ea7943-4267-8b8d-f8b4-831fea7f3963@linux.ibm.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Originating-IP: [192.168.54.54]
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VE1EUR02FT074:EE_|DB9PR07MB8498:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0ee67875-df49-434f-866c-08dab6509de3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: yhwEbcjCakc/E8OF8ICBMq2tu0BXQwDb8S1LicWtJyqRx5jIQCraqvcjyrhLIwUEBfYLuW7btETRKRhOF+Tcp0T3Oa2OubTObwGpAu+NA8jo4whA1uIpvRJ4hwH2SEeuXuH7dIQOKl/Mx+tt27D5fdq4YxGc5ox+LFrDL0+0jHBxIc/LfkliQgYoByQ7RPtKAsOVWX3p0O6ZCxHdXx489XCKD8ZUQfuVjYQhMbzjBpSBgXce2l+K0JT7So1dkjl5Y702yNyZXHv3uSfIa46dQWBynegwXZxA/FLh7w05ul/hpRogUiN5luf3Wn7IqmNrmlHFDkZECqZA0CeC+2U2IOyeDRuQV4wqPvW8Yl9XeFELmEMj4OIRc5hfUQMVBRPZI1lxCdnriVS65ZSb+v3vPOpObwZQlxwIwz81yuu5fVZBe8IufDFng3ppeT3risED81xh+gPOT5LeKdguX6uxBYYcgFvFuredooMjwD+1kLccCmsuTiX4FxvG7f5gMxgYNAT5+QHeDBizRdEUEPbd/HtQuBf1ISpwtiiYInRMO+WRIhGXlv5QJWq/QDtmBX8ZuSVHnGCvQgAM/+g6walylNINnUWy8MV3+GvFnI8/MQ7vrvxW+q60Qv6QdPwADygg4PNCHiT5fealZgM7KBkEB4U66+5jHfQ1KGecSHcG3BPFAoKHpCR3HaUndw0jHDljuTLFWmJ6PtpXYIJp1mkvIkpY+Wh1/81topsLvVxKY0CA1tUb1gk55lS8QOoV4McqgKW7Cv7aX3LxL74gd8Swu/rpcBBOsT5dyXBYQaRcN126anJLugs75tXHK7VOeLP5nLK1U3n1WuXhN8CpH4c01gXuxlIma8XYf680/jy6aiQ=
+X-Forefront-Antispam-Report: CIP:217.111.95.7;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mta.arri.de;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(396003)(39860400002)(346002)(376002)(136003)(451199015)(46966006)(36840700001)(478600001)(83380400001)(26005)(41300700001)(9576002)(8936002)(450100002)(107886003)(70586007)(5660300002)(8676002)(4326008)(186003)(16526019)(336012)(316002)(36916002)(2906002)(9686003)(54906003)(110136005)(40480700001)(47076005)(426003)(86362001)(70206006)(82310400005)(33716001)(82740400003)(81166007)(356005)(36860700001)(39026012)(36900700001);DIR:OUT;SFP:1102;
+X-OriginatorOrg: arri.de
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2022 06:17:38.8294
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0ee67875-df49-434f-866c-08dab6509de3
+X-MS-Exchange-CrossTenant-Id: e6a73a5a-614d-4c51-b3e3-53b660a9433a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=e6a73a5a-614d-4c51-b3e3-53b660a9433a;Ip=[217.111.95.7];Helo=[mta.arri.de]
+X-MS-Exchange-CrossTenant-AuthSource: VE1EUR02FT074.eop-EUR02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR07MB8498
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -48,234 +101,219 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 24, 2022 at 03:10:54PM +0200, Jan Karcher wrote:
-> Hi D. Wythe,
+Hi Arun,
+
+On Friday, 14 October 2022, 17:28:56 CEST, Arun Ramadoss wrote:
+> This patch adds the routines for timestamping received ptp packets.
+> Whenever the ptp packet is received, the 4 byte hardware time stamped
+> value is append to its packet. This 4 byte value is extracted from the
+> tail tag and reconstructed to absolute time and assigned to skb
+> hwtstamp.
 > 
-> I reply with the feedback on your fix to your v4 fix.
+> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+> ---
+>  drivers/net/dsa/microchip/ksz_common.c | 12 +++++++++++
+>  drivers/net/dsa/microchip/ksz_ptp.c    | 25 +++++++++++++++++++++
+>  drivers/net/dsa/microchip/ksz_ptp.h    |  6 ++++++
+>  include/linux/dsa/ksz_common.h         | 15 +++++++++++++
+>  net/dsa/tag_ksz.c                      | 30 ++++++++++++++++++++++----
+>  5 files changed, 84 insertions(+), 4 deletions(-)
 > 
-> Regarding your questions:
-> We are aware of this situation and we are currently evaluating how we want
-> to deal with SMC-D in the future because as of right now i can understand
-> your frustration regarding the SMC-D testing.
-> Please give me some time to hit up the right people and collect some
-> information to answer your question. I'll let you know as soon as i have an
-> answer.
+> diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+> index 0c0fdb7b7879..388731959b23 100644
+> --- a/drivers/net/dsa/microchip/ksz_common.c
+> +++ b/drivers/net/dsa/microchip/ksz_common.c
+> @@ -2426,6 +2426,17 @@ static enum dsa_tag_protocol ksz_get_tag_protocol(struct dsa_switch *ds,
+>  	return proto;
+>  }
+>  
+> +static int ksz_connect_tag_protocol(struct dsa_switch *ds,
+> +				    enum dsa_tag_protocol proto)
+> +{
+> +	struct ksz_tagger_data *tagger_data;
+> +
+> +	tagger_data = ksz_tagger_data(ds);
 
-Hi Jan,
+NULL pointer dereference is here:
 
-We sent a RFC [1] to mock SMC-D device for inter-VM communication. The
-original purpose is not to test, but for now it could be useful for the
-people who are going to test without physical devices in the community.
+ksz_connect() is only called for "lan937x", not for the other KSZ switches.
+If ksz_connect() shall only be called for PTP switches, the result of
+ksz_tagger_data() may be NULL.
 
-This driver basically works but I would improve it for testing. Before
-that, what do you think about it?
+> +	tagger_data->meta_tstamp_handler = ksz_tstamp_reconstruct;
+> +
+> +	return 0;
+> +}
+> +
+>  static int ksz_port_vlan_filtering(struct dsa_switch *ds, int port,
+>  				   bool flag, struct netlink_ext_ack *extack)
+>  {
+> @@ -2819,6 +2830,7 @@ static int ksz_switch_detect(struct ksz_device *dev)
+>  
+>  static const struct dsa_switch_ops ksz_switch_ops = {
+>  	.get_tag_protocol	= ksz_get_tag_protocol,
+> +	.connect_tag_protocol   = ksz_connect_tag_protocol,
+>  	.get_phy_flags		= ksz_get_phy_flags,
+>  	.setup			= ksz_setup,
+>  	.teardown		= ksz_teardown,
+> diff --git a/drivers/net/dsa/microchip/ksz_ptp.c b/drivers/net/dsa/microchip/ksz_ptp.c
+> index 2cae543f7e0b..5ae6eedb6b39 100644
+> --- a/drivers/net/dsa/microchip/ksz_ptp.c
+> +++ b/drivers/net/dsa/microchip/ksz_ptp.c
+> @@ -372,6 +372,31 @@ static int ksz_ptp_start_clock(struct ksz_device *dev)
+>  	return 0;
+>  }
+>  
+> +ktime_t ksz_tstamp_reconstruct(struct dsa_switch *ds, ktime_t tstamp)
+> +{
+> +	struct ksz_device *dev = ds->priv;
+> +	struct ksz_ptp_data *ptp_data = &dev->ptp_data;
+> +	struct timespec64 ts = ktime_to_timespec64(tstamp);
+> +	struct timespec64 ptp_clock_time;
+> +	struct timespec64 diff;
+> +
+> +	spin_lock_bh(&ptp_data->clock_lock);
+> +	ptp_clock_time = ptp_data->clock_time;
+> +	spin_unlock_bh(&ptp_data->clock_lock);
+> +
+> +	/* calculate full time from partial time stamp */
+> +	ts.tv_sec = (ptp_clock_time.tv_sec & ~3) | ts.tv_sec;
+> +
+> +	/* find nearest possible point in time */
+> +	diff = timespec64_sub(ts, ptp_clock_time);
+> +	if (diff.tv_sec > 2)
+> +		ts.tv_sec -= 4;
+> +	else if (diff.tv_sec < -2)
+> +		ts.tv_sec += 4;
+> +
+> +	return timespec64_to_ktime(ts);
+> +}
+> +
+>  static const struct ptp_clock_info ksz_ptp_caps = {
+>  	.owner		= THIS_MODULE,
+>  	.name		= "Microchip Clock",
+> diff --git a/drivers/net/dsa/microchip/ksz_ptp.h b/drivers/net/dsa/microchip/ksz_ptp.h
+> index 7e5d374d2acf..9589909ab7d5 100644
+> --- a/drivers/net/dsa/microchip/ksz_ptp.h
+> +++ b/drivers/net/dsa/microchip/ksz_ptp.h
+> @@ -28,6 +28,7 @@ int ksz_hwtstamp_get(struct dsa_switch *ds, int port, struct ifreq *ifr);
+>  int ksz_hwtstamp_set(struct dsa_switch *ds, int port, struct ifreq *ifr);
+>  int ksz_ptp_irq_setup(struct dsa_switch *ds, u8 p);
+>  void ksz_ptp_irq_free(struct dsa_switch *ds, u8 p);
+> +ktime_t ksz_tstamp_reconstruct(struct dsa_switch *ds, ktime_t tstamp);
+>  
+>  #else
+>  
+> @@ -64,6 +65,11 @@ static inline int ksz_ptp_irq_setup(struct dsa_switch *ds, u8 p)
+>  
+>  static inline void ksz_ptp_irq_free(struct dsa_switch *ds, u8 p) {}
+>  
+> +static inline ktime_t ksz_tstamp_reconstruct(struct dsa_switch *ds, ktime_t tstamp)
+> +{
+> +	return 0;
+> +}
+> +
+>  #endif	/* End of CONFIG_NET_DSA_MICROCHIOP_KSZ_PTP */
+>  
+>  #endif
+> diff --git a/include/linux/dsa/ksz_common.h b/include/linux/dsa/ksz_common.h
+> index 8903bce4753b..82edd7228b3c 100644
+> --- a/include/linux/dsa/ksz_common.h
+> +++ b/include/linux/dsa/ksz_common.h
+> @@ -9,9 +9,24 @@
+>  
+>  #include <net/dsa.h>
+>  
+> +/* All time stamps from the KSZ consist of 2 bits for seconds and 30 bits for
+> + * nanoseconds. This is NOT the same as 32 bits for nanoseconds.
+> + */
+> +#define KSZ_TSTAMP_SEC_MASK  GENMASK(31, 30)
+> +#define KSZ_TSTAMP_NSEC_MASK GENMASK(29, 0)
+> +
+> +static inline ktime_t ksz_decode_tstamp(u32 tstamp)
+> +{
+> +	u64 ns = FIELD_GET(KSZ_TSTAMP_SEC_MASK, tstamp) * NSEC_PER_SEC +
+> +		 FIELD_GET(KSZ_TSTAMP_NSEC_MASK, tstamp);
+> +
+> +	return ns_to_ktime(ns);
+> +}
+> +
+>  struct ksz_tagger_data {
+>  	bool (*hwtstamp_get_state)(struct dsa_switch *ds);
+>  	void (*hwtstamp_set_state)(struct dsa_switch *ds, bool on);
+> +	ktime_t (*meta_tstamp_handler)(struct dsa_switch *ds, ktime_t tstamp);
+>  };
+>  
+>  static inline struct ksz_tagger_data *
+> diff --git a/net/dsa/tag_ksz.c b/net/dsa/tag_ksz.c
+> index ca1261b04fe7..937a3e70b471 100644
+> --- a/net/dsa/tag_ksz.c
+> +++ b/net/dsa/tag_ksz.c
+> @@ -164,6 +164,25 @@ MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_KSZ8795);
+>  #define KSZ9477_TAIL_TAG_OVERRIDE	BIT(9)
+>  #define KSZ9477_TAIL_TAG_LOOKUP		BIT(10)
+>  
+> +static void ksz_rcv_timestamp(struct sk_buff *skb, u8 *tag,
+> +			      struct net_device *dev, unsigned int port)
+> +{
+> +	struct skb_shared_hwtstamps *hwtstamps = skb_hwtstamps(skb);
+> +	u8 *tstamp_raw = tag - KSZ9477_PTP_TAG_LEN;
+> +	struct dsa_switch *ds = dev->dsa_ptr->ds;
+> +	struct ksz_tagger_data *tagger_data;
+> +	ktime_t tstamp;
+> +
+> +	tagger_data = ksz_tagger_data(ds);
 
-And where to put this driver? In kernel with SMC code or merge into 
-separate SMC test cases. I haven't made up my mind yet.
-
-[1] https://lore.kernel.org/netdev/20220720170048.20806-1-tonylu@linux.alibaba.com/
-
-Cheers,
-Tony Lu
+another potential NULL pointer dereference here:
+> +	if (!tagger_data->meta_tstamp_handler)
+> +		return;
+> +
+> +	/* convert time stamp and write to skb */
+> +	tstamp = ksz_decode_tstamp(get_unaligned_be32(tstamp_raw));
+> +	memset(hwtstamps, 0, sizeof(*hwtstamps));
+> +	hwtstamps->hwtstamp = tagger_data->meta_tstamp_handler(ds, tstamp);
+> +}
+> +
+>  static struct sk_buff *ksz9477_xmit(struct sk_buff *skb,
+>  				    struct net_device *dev)
+>  {
+> @@ -197,8 +216,10 @@ static struct sk_buff *ksz9477_rcv(struct sk_buff *skb, struct net_device *dev)
+>  	unsigned int len = KSZ_EGRESS_TAG_LEN;
+>  
+>  	/* Extra 4-bytes PTP timestamp */
+> -	if (tag[0] & KSZ9477_PTP_TAG_INDICATION)
+> +	if (tag[0] & KSZ9477_PTP_TAG_INDICATION) {
+> +		ksz_rcv_timestamp(skb, tag, dev, port);
+>  		len += KSZ9477_PTP_TAG_LEN;
+> +	}
+>  
+>  	return ksz_common_rcv(skb, dev, port, len);
+>  }
+> @@ -257,10 +278,11 @@ MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_KSZ9893);
+>   * tag0 : represents tag override, lookup and valid
+>   * tag1 : each bit represents port (eg, 0x01=port1, 0x02=port2, 0x80=port8)
+>   *
+> - * For rcv, 1 byte is added before FCS.
+> + * For rcv, 1/5 bytes is added before FCS.
+>   * ---------------------------------------------------------------------------
+> - * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|tag0(1byte)|FCS(4bytes)
+> + * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|ts(4bytes)|tag0(1byte)|FCS(4bytes)
+>   * ---------------------------------------------------------------------------
+> + * ts   : time stamp (Present only if bit 7 of tag0 is set)
+>   * tag0 : zero-based value represents port
+>   *	  (eg, 0x00=port1, 0x02=port3, 0x07=port8)
+>   */
+> @@ -304,7 +326,7 @@ static const struct dsa_device_ops lan937x_netdev_ops = {
+>  	.rcv	= ksz9477_rcv,
+>  	.connect = ksz_connect,
+>  	.disconnect = ksz_disconnect,
+> -	.needed_tailroom = LAN937X_EGRESS_TAG_LEN,
+> +	.needed_tailroom = LAN937X_EGRESS_TAG_LEN + KSZ9477_PTP_TAG_LEN,
+>  };
+>  
+>  DSA_TAG_DRIVER(lan937x_netdev_ops);
 > 
-> Thanks
-> - Jan
-> 
-> On 21/10/2022 17:57, D. Wythe wrote:
-> > Hi Jan,
-> > 
-> > Sorry for this bug. It's my bad to do not enough code checking, here is
-> > the problems:
-> > 
-> > int __init smc_core_init(void)
-> > {
-> >          int i;
-> > 
-> >          /* init smc lgr decision maker builder */
-> >          for (i = 0; i < SMC_TYPE_D; i++)
-> > 
-> > 
-> > i < SMC_TYPE_D should change to i <= SMC_TYPE_D, otherwise the SMC-D
-> > related
-> > map has not init yet. i thinks the two bugs was all caused by it.
-> > 
-> > 
-> > I has reproduced the first problem and verified that it can be fixed.
-> > Please help me to see if the SMC-D problem can be fixed too after this
-> > change, thx.
-> > 
-> > By the way, Is there any way to simulate SMC-D dev for testing? All of
-> > our problems are caused by poor consideration on SMC-D.
-> > In fact, we have some SMC-D related work plans in the future. It seems
-> > not a perfect way to bother you every time.
-> > 
-> > 
-> > Best Wishes.
-> > D. Wythe
-> > 
-> > On 10/21/22 7:57 PM, Jan Karcher wrote:
-> > > 
-> > > 
-> > > On 20/10/2022 09:00, D. Wythe wrote:
-> > > > 
-> > > > Hi Jan,
-> > > > 
-> > > > Sorry for the long delay, The main purpose of v3 is to put
-> > > > optimizes also works on SMC-D, dues to the environment,
-> > > > I can only tests it in SMC-R, so please help us to verify the
-> > > > stability and functional in SMC-D,
-> > > > Thanks a lot.
-> > > > 
-> > > > If you have any problems, please let us know.
-> > > > 
-> > > > Besides, PATCH bug fixes need to be reordered. After the code
-> > > > review passes and the SMC-D test goes stable, I will adjust it
-> > > > in next serial.
-> > > > 
-> > > > 
-> > > 
-> > > Hi D. Wythe,
-> > > 
-> > > thank you again for your submission. I ran the first tests and here
-> > > are my findings:
-> > > 
-> > > For SMC-R we are facing problems during unloading of the smc module:
-> > > 
-> > > vvvvvvvvvv
-> > > 
-> > > [root@testsys10 ~]# dmesg -C
-> > > [root@testsys10 ~]# dmesg
-> > > [root@testsys10 ~]# rmmod ism
-> > > [root@testsys10 ~]# rmmod smc_diag
-> > > [root@testsys10 ~]# dmesg
-> > > [   51.671365] smc: removing smcd device 1522:00:00.0
-> > > [root@testsys10 ~]# rmmod smc
-> > > [root@testsys10 ~]# dmesg
-> > > [   51.671365] smc: removing smcd device 1522:00:00.0
-> > > [   65.378445] NET: Unregistered PF_SMC protocol family
-> > > [   65.378463] ------------[ cut here ]------------
-> > > [   65.378465] WARNING: CPU: 0 PID: 1155 at kernel/workqueue.c:3066
-> > > __flush_work.isra.0+0x28a/0x298
-> > > [   65.378476] Modules linked in: nft_fib_inet nft_fib_ipv4
-> > > nft_fib_ipv6 nft_fib nft_reject_inet nf_reject_ipv4 nf_reject_ipv6
-> > > nft_reject nft_ct nft_chain_nat nf_nat mlx5_ib nf_conntrack
-> > > ib_uverbs nf_defrag_ipv6 nf_defrag_ipv4 ip_set nf_tables nfnetlink
-> > > mlx5_core smc(-) ib_core vfio_ccw s390_trng mdev vfio_iommu_type1
-> > > vfio sch_fq_codel configfs ghash_s390 prng chacha_s390 libchacha
-> > > aes_s390 des_s390 libdes sha3_512_s390 sha3_256_s390 sha512_s390
-> > > sha256_s390 sha1_s390 sha_common pkey zcrypt rng_core autofs4 [last
-> > > unloaded: smc_diag]
-> > > [   65.378509] CPU: 0 PID: 1155 Comm: rmmod Not tainted
-> > > 6.1.0-rc1-00035-g9980a965416f #4
-> > > [   65.378514] Hardware name: IBM 8561 T01 701 (z/VM 7.2.0)
-> > > [   65.378517] Krnl PSW : 0704c00180000000 00000000f9d5f17e
-> > > (__flush_work.isra.0+0x28e/0x298)
-> > > [   65.378523]            R:0 T:1 IO:1 EX:1 Key:0 M:1 W:0 P:0 AS:3
-> > > CC:0 PM:0 RI:0 EA:3
-> > > [   65.380675] Krnl GPRS: 8000000000000001 0000000000000000
-> > > 000003ff7fd40270 0000000000000000
-> > > [   65.380683]            0000038000c73d70 000e002100000000
-> > > 0000000000000000 0000000000000001
-> > > [   65.380686]            0000038000c73d70 0000000000000000
-> > > 000003ff7fd40270 000003ff7fd40270
-> > > [   65.380688]            000000009b8d2100 000003ffe38f98f8
-> > > 0000038000c73cd0 0000038000c73c30
-> > > [   65.380697] Krnl Code: 00000000f9d5f172: a7780000            lhi %r7,0
-> > >                            00000000f9d5f176: a7f4ff7b            brc
-> > > 15,00000000f9d5f06c
-> > >                           #00000000f9d5f17a: af000000
-> > > mc      0,0
-> > >                           >00000000f9d5f17e: a7780000            lhi
-> > > %r7,0
-> > >                            00000000f9d5f182: a7f4ff75            brc
-> > > 15,00000000f9d5f06c
-> > >                            00000000f9d5f186: 0707                bcr
-> > > 0,%r7
-> > >                            00000000f9d5f188: c004005daa34       
-> > > brcl 0,00000000fa9145f0
-> > >                            00000000f9d5f18e: ebaff0680024       
-> > > stmg %r10,%r15,104(%r15)
-> > > [   65.380773] Call Trace:
-> > > [   65.380774]  [<00000000f9d5f17e>] __flush_work.isra.0+0x28e/0x298
-> > > [   65.380779]  [<00000000f9d61228>] __cancel_work_timer+0x130/0x1c0
-> > > [   65.380782]  [<00000000fa46b1b4>]
-> > > rhashtable_free_and_destroy+0x2c/0x170
-> > > [   65.380787]  [<000003ff7fd3a08e>] smc_exit+0x3e/0x1b8 [smc]
-> > > [   65.380804]  [<00000000f9de946a>] __do_sys_delete_module+0x1a2/0x298
-> > > [   65.380809]  [<00000000fa8f85ac>] __do_syscall+0x1d4/0x200
-> > > [   65.380814]  [<00000000fa907722>] system_call+0x82/0xb0
-> > > [   65.380817] Last Breaking-Event-Address:
-> > > [   65.380818]  [<00000000f9d5ef24>] __flush_work.isra.0+0x34/0x298
-> > > [   65.380820] ---[ end trace 0000000000000000 ]---
-> > > [   65.380828] smc: removing ib device mlx5_0
-> > > [   65.380833] smc: removing ib device mlx5_1
-> > > 
-> > > ^^^^^^^^^^
-> > > 
-> > > For SMC-D it seems like your decisionmaker is causing some troubles
-> > > (crash). I did not have the time yet to look into it, i still dump
-> > > you the console log - maybe you're seeing the problem faster then
-> > > me:
-> > > 
-> > > 
-> > > vvvvvvvvvv
-> > > 
-> > > [  135.528259] smc-tests: test_cs_security started
-> > > [  136.397056] illegal operation: 0001 ilc:1 [#1] SMP
-> > > [  136.397064] Modules linked in: tcp_diag inet_diag ism mlx5_ib
-> > > ib_uverbs mlx5_core smc_diag smc ib_core vmur nft_fib_inet nft_fib_
-> > > ipv4 nft_fib_ipv6 nft_fib nft_reject_inet nf_reject_ipv4
-> > > nf_reject_ipv6 nft_reject nft_ct nft_chain_nat nf_nat nf_conntrack
-> > > nf_defra
-> > > g_ipv6 nf_defrag_ipv4 ip_set nf_tab
-> > > [  136.397093] CPU: 0 PID: 9 Comm: kworker/0:1 Not tainted
-> > > 6.1.0-rc1-00035-g1c11cab281ca #4
-> > > [  136.397098] Hardware name: IBM 8561 T01 701 (z/VM 7.2.0)
-> > > [  136.397100] Workqueue: smc_hs_wq smc_listen_work [smc]
-> > > [  136.397123] Krnl PSW : 0704e00180000000 0000000000000002 (0x2)
-> > > [  136.397128]            R:0 T:1 IO:1 EX:1 Key:0 M:1 W:0 P:0 AS:3
-> > > CC:2 PM:0 RI:0 EA:3
-> > > [  136.397133] Krnl GPRS: 0000000000000001 0000000000000000
-> > > 00000000a5670600 0000000000000000
-> > > 
-> > > [  136.398410]            0000000000000000 000003ff7feee620
-> > > 00000000000000c8 0000000000000000
-> > > [  136.398417]            000003ff7feed2b8 00000000a5670600
-> > > 000003ff7feed168 000003ff7fed1628
-> > > [  136.398420]            0000000080334200 0000000000000001
-> > > 000003ff7fed3ab0 0000037fffb5fa30
-> > > [  136.398425] Krnl Code:#0000000000000000: 0000                illegal
-> > > [  136.398425]           >0000000000000002: 0000                illegal
-> > > [  136.398425]            0000000000000004: 0000                illegal
-> > > [  136.398425]            0000000000000006: 0000                illegal
-> > > [  136.398425]            0000000000000008: 0000                illegal
-> > > [  136.398425]            000000000000000a: 0000                illegal
-> > > [  136.398425]            000000000000000c: 0000                illegal
-> > > [  136.398425]            000000000000000e: 0000                illegal
-> > > [  136.398465] Call Trace:
-> > > [  136.398469]  [<0000000000000002>] 0x2
-> > > [  136.398472] ([<00000001790fdbde>] release_sock+0x6e/0xd8)
-> > > [  136.398482]  [<000003ff7fed746a>] smc_conn_create+0xc2/0x9d8 [smc]
-> > > 01: HCPGSP2629I The virtual machine is placed in CP mode due to a
-> > > SIGP stop from CPU 01.
-> > > 01: HCPGSP2629I The virtual machine is placed in CP mode due to a
-> > > SIGP stop from CPU 00.
-> > > 
-> > > [  136.408436]  [<000003ff7fec8206>]
-> > > smc_find_ism_v2_device_serv+0x186/0x288 [smc]
-> > > [  136.408444]  [<000003ff7fec8336>]
-> > > smc_listen_find_device+0x2e/0x370 [smc]
-> > > [  136.408452]  [<000003ff7fecaa8a>] smc_listen_work+0x2ca/0x580 [smc]
-> > > [  136.408459]  [<00000001788481e8>] process_one_work+0x200/0x458
-> > > [  136.408466]  [<000000017884896e>] worker_thread+0x66/0x480
-> > > [  136.408470]  [<0000000178851888>] kthread+0x108/0x110
-> > > [  136.408474]  [<00000001787d72cc>] __ret_from_fork+0x3c/0x58
-> > > [  136.408478]  [<00000001793ef75a>] ret_from_fork+0xa/0x40
-> > > [  136.408484] Last Breaking-Event-Address:
-> > > [  136.408486]  [<000003ff7fed3aae>]
-> > > smc_get_or_create_lgr_decision_maker.constprop.0+0xe6/0x398 [smc]
-> > > [  136.408495] Kernel panic - not syncing: Fatal exception in interrupt
-> > > 
-> > > ^^^^^^^^^^
-> > > 
-> > > - Jan
+
+
+
+
