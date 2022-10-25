@@ -2,108 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 288DF60C5D8
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 09:51:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1C8760C5DA
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 09:53:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232001AbiJYHvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 03:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56410 "EHLO
+        id S231953AbiJYHxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 03:53:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230040AbiJYHvt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 03:51:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D70B9166986
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 00:51:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 712316179E
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 07:51:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7FD7C433C1;
-        Tue, 25 Oct 2022 07:51:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666684306;
-        bh=BEoXf9l8ATg+t4ETAQBEYKKdgy/XFs9JsdalTIvKUKE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MjkPgn4lCJL+qWjGJTI7ZFV0WLvGB/gkp6ypb1FoZFLN7AqVUJi6O07LYxQ399sSQ
-         pMpaun1xfNpvRDKZ2wk8vh/rYaRZOOzYG6Kjb6SPXX3B895TuUGLvWoYoeq69r5FjO
-         zD23+F2nlWStPDaErGEqDZOeyOyy3BUp/KNfAEB1af1AgiyvxwWQWry9KWsYlF7wx/
-         nsEZHPM5kCuGLYAzUgwwMBRdrJ4KknyoFkSZF1YTMw5pUw80CR3yhjllOh6ZDPwmlL
-         ibgSe1d36LdQQc+HxQK8fh8usZv9Op+x8nHaFeHWjicfwAMQNQVJqItkVSfe4TOuY0
-         4weKAEezl4dww==
-Date:   Tue, 25 Oct 2022 08:51:41 +0100
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Yinjun Zhang <yinjun.zhang@corigine.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Simon Horman <simon.horman@corigine.com>,
-        David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Gal Pressman <gal@nvidia.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Peng Zhang <peng.zhang@corigine.com>, netdev@vger.kernel.org,
-        oss-drivers@corigine.com
-Subject: Re: [PATCH net-next 0/3] nfp: support VF multi-queues configuration
-Message-ID: <20221025075141.v5rlybjvj3hgtdco@sx1>
-References: <20221019140943.18851-1-simon.horman@corigine.com>
- <20221019180106.6c783d65@kernel.org>
- <20221020013524.GA27547@nj-rack01-04.nji.corigine.com>
+        with ESMTP id S230084AbiJYHxY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 03:53:24 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 095BF1669A6;
+        Tue, 25 Oct 2022 00:53:23 -0700 (PDT)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29P6ReX9013086;
+        Tue, 25 Oct 2022 03:52:54 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3kcde82hdr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 25 Oct 2022 03:52:53 -0400
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 29P7qqGq019923
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 25 Oct 2022 03:52:52 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Tue, 25 Oct 2022 03:52:51 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Tue, 25 Oct 2022 03:52:51 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Tue, 25 Oct 2022 03:52:51 -0400
+Received: from tachici-Precision-5530.ad.analog.com ([10.48.65.157])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 29P7qTrr022073;
+        Tue, 25 Oct 2022 03:52:36 -0400
+From:   Alexandru Tachici <alexandru.tachici@analog.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <andrew@lunn.ch>, <linux@armlinux.org.uk>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <lennart@lfdomain.com>
+Subject: [net v3 0/1] net: ethernet: adi: adin1110: Fix notifiers
+Date:   Tue, 25 Oct 2022 10:52:26 +0300
+Message-ID: <20221025075227.9276-1-alexandru.tachici@analog.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20221020013524.GA27547@nj-rack01-04.nji.corigine.com>
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: oUTUPEgVlgsETQF_6N00N2X8_Q2dsF5H
+X-Proofpoint-ORIG-GUID: oUTUPEgVlgsETQF_6N00N2X8_Q2dsF5H
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-10-25_03,2022-10-21_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 mlxscore=0
+ phishscore=0 lowpriorityscore=0 mlxlogscore=765 adultscore=0 clxscore=1015
+ bulkscore=0 impostorscore=0 malwarescore=0 priorityscore=1501 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2209130000
+ definitions=main-2210250044
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20 Oct 09:35, Yinjun Zhang wrote:
->On Wed, Oct 19, 2022 at 06:01:06PM -0700, Jakub Kicinski wrote:
->> On Wed, 19 Oct 2022 16:09:40 +0200 Simon Horman wrote:
->> > this short series adds the max_vf_queue generic devlink device parameter,
->> > the intention of this is to allow configuration of the number of queues
->> > associated with VFs, and facilitates having VFs with different queue
->> > counts.
->> >
->> > The series also adds support for multi-queue VFs to the nfp driver
->> > and support for the max_vf_queue feature described above.
->>
->> I appreciate CCing a wider group this time, but my concerns about using
->> devlink params for resource allocation still stand. I don't remember
->> anyone refuting that.
->>
->> https://lore.kernel.org/all/20220921063448.5b0dd32b@kernel.org/
->
->Sorry this part was neglected, we'll take a look into the resource APIs.
->Thanks.
->
+ADIN1110 was registering netdev_notifiers on each device probe.
+This leads to warnings/probe failures because of double registration
+of the same notifier when to adin1110/2111 devices are connected to
+the same system.
 
-The problem with this is that this should be a per function parameter,
-devlink params or resources is not the right place for this as this
-should be a configuration of a specific devlink object that is not the
-parent device (namely devlink port function), otherwise we will have to
-deal with ugly string parsing to address the specific vf attributes. 
+Move the registration of netdev_notifiers in module init call,
+in this way multiple driver instances can use the same notifiers.
 
-let's use devlink port:
-https://www.kernel.org/doc/html/latest/networking/devlink/devlink-port.html
 
-devlink ports have attributes and we should extend attributes to act like
-devlink parameters.
+Alexandru Tachici (1):
+  net: ethernet: adi: adin1110: Fix notifiers
 
-   devlink port function set DEV/PORT_INDEX [ queue_count count ] ...
+Changelog v2 -> v3:
+  - moved spi_driver registration after nofiers registration in order to avoid
+  a small window where events could be lost
 
-https://man7.org/linux/man-pages/man8/devlink-port.8.html
+ drivers/net/ethernet/adi/adin1110.c | 32 +++++++++++++++++++++--------
+ 1 file changed, 23 insertions(+), 9 deletions(-)
 
-Alternatively you should also consider limiting vf msix, as we did in mlx5
-https://patchwork.kernel.org/project/linux-rdma/cover/20210314124256.70253-1-leon@kernel.org/
-  
+-- 
+2.34.1
+
