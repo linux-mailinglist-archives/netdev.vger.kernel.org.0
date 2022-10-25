@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B038B60CADA
+	by mail.lfdr.de (Postfix) with ESMTP id 650D960CAD9
 	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 13:24:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232211AbiJYLYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 07:24:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54546 "EHLO
+        id S231695AbiJYLYn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 07:24:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231430AbiJYLYj (ORCPT
+        with ESMTP id S232140AbiJYLYj (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 07:24:39 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E6061211DC
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 04:24:36 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id l22-20020a17090a3f1600b00212fbbcfb78so6358561pjc.3
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 04:24:36 -0700 (PDT)
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F8113C1FA
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 04:24:37 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id u8-20020a17090a5e4800b002106dcdd4a0so15929979pji.1
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 04:24:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=ryvnisjp6FqvGD+eQPde85PGfq1lBI/RzVG5wn3Q2SY=;
-        b=YiY9IMDqdculw6vYihrguNmCp5hHFXIrfw/JKfoUQrvSJ/YFc/L7MK5LaJfI4r/JRE
-         HubVFJhtiokom2pOYwyoj6n5u613VgEoKUAnQ8BLHWMaK+jZmB7rdGX9R42BrrkWOqaj
-         AT/U0kglnOedPfx8ES5jtO0fQm4pg3WBrfKmUzuICh3KBbKBhZ1doqLOalqo1lpvYXJs
-         gN3VUYqzRJmMVaqFx1l0rQRXZNCshhBw/rpF0NQEoDOXi75k78grOIcdDdTxKffRJeoU
-         01ZD5zJYXXh3EbBsTbG9JyBtgfco2eLVJxAM4KpDVvS7JIG0qj8H85hSmmeQ3KGq9H60
-         dOdQ==
+        bh=eTIJsZgmqePOP9eZKpB6HgjGD81o6xb78AHrtf1ewuw=;
+        b=DQpvxxeLqCF9uIV+4/nAUuXbfRIb2WwqbKU4HfAkZBBA5P1L7ogRELWNYr0703kns2
+         awZDfByRDbB08Y0aY/6oPnU2h0Dyi0nKWkt94WUeIVKkLSNUaCVxSAchuB+JK7AO7N4T
+         P0eHeGC3jN60vX/Pq105TDn7G0R528x5hggUabxn7BAypIFIv3cXjJWm1jTVjC5hrenw
+         QKyhpw+sB2dYd/oZ499E35VWiWAzK6FXoppO/iARAQ6XeCj+8S9xwd2Ynh5G9O7Knt0B
+         2wTKtZVq1pRfg72agdGa1uB6+yBPYOtmP2eZwT698ssI98Af8DhuScyokSyMA3bu5R7f
+         OkYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=references:in-reply-to:message-id:date:subject:cc:to:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ryvnisjp6FqvGD+eQPde85PGfq1lBI/RzVG5wn3Q2SY=;
-        b=yjwMMXWf38Cthajjk4rVIxVK2AGxQNYhUOMvmchL/hISl/9JV0Se0tlK49P/Dulinv
-         gX9iAnFWKBsC+czMAFHvCikEvp5nfyWypVhP+wQaj/kNpusyd+zN8lVS4AJfb8qkj3vi
-         z8tmp68/2yZUK+HafxfSHl7dAH+WwfNNCR5cthTPb06fxbFmuEi1+bnOt1NeeVD+cNFh
-         3LgFHIalW/W18MJ/UpYly+VU9yTnPYBZb0Er3txbgSNZ7F1Zj5cXLVZ2+SuNBQ0ZMGB2
-         YaY/C4h6P/qjL19bsy+zliyILjIGE9Ai1Cy9/Do8sHah3V8iVVfSwSbvgRQ3M2DYdq/5
-         2TvA==
-X-Gm-Message-State: ACrzQf1Dkwnhg5gFRO/7dbSJEOfMe2jTBH8lFEqqjYhiI2M0NXNv7ebM
-        qsveITIOX6xsBDcjhgWzcUA7iQ==
-X-Google-Smtp-Source: AMsMyM4xM/IVd3JJukdqKD08igMpYIu423A9A775cQfrXkXp2Jgka8ZSgPUwDyICcDaOv5SF6Sh0bw==
-X-Received: by 2002:a17:90b:3b8d:b0:20d:5c7a:abf1 with SMTP id pc13-20020a17090b3b8d00b0020d5c7aabf1mr45350856pjb.118.1666697075753;
-        Tue, 25 Oct 2022 04:24:35 -0700 (PDT)
+        bh=eTIJsZgmqePOP9eZKpB6HgjGD81o6xb78AHrtf1ewuw=;
+        b=DxmSyAZteaf/1pYX7nh4NuKgUGOacJrrtsZN7sGuCE58/jGrk/h681EYuiW6+Fhy/l
+         LrcHqa25Jt8M422octTEm9m0TzXE6xiLHA3g/XVxi4+qQzVMk6fJApySBh3xTYvoMEjd
+         Gw6Un6O2pIEA1+7LV25U5KZFEDmmBLd+EQuZeQdtUToW7inJo05A1jBzBDgS6IptPylX
+         j6Vg13A1+xT1fk2Ir/WLeLiz9g2iLUKQqhrY9a3eCypwCIZYkdjT3++LRKUOaLI23Xiq
+         o/HTWjn7rPyN5JlAUisokp9Mz5BGkLCbC+yjAdMRVO2DOiBlm1bwXP1vqKacMFcHKJi7
+         XAYw==
+X-Gm-Message-State: ACrzQf3SOUbP7ey/qSt3J1ouvBA71yVh9FxeSEXRRuqgJzIz3IpD46V9
+        2Zdou+VMs9cwpE+l71T08aHV8g==
+X-Google-Smtp-Source: AMsMyM75GqlI/2xU9PkwQMz2XrvK3qcypNY7Kj3ZvRxO2Gor92Syu5agSJoe/hlNpfnd8ZNVNvKTrg==
+X-Received: by 2002:a17:90a:a017:b0:213:ad3:4d1a with SMTP id q23-20020a17090aa01700b002130ad34d1amr12064867pjp.120.1666697077192;
+        Tue, 25 Oct 2022 04:24:37 -0700 (PDT)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id w20-20020a1709029a9400b00185507b5ef8sm1073425plp.50.2022.10.25.04.24.34
+        by smtp.gmail.com with ESMTPSA id w20-20020a1709029a9400b00185507b5ef8sm1073425plp.50.2022.10.25.04.24.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Oct 2022 04:24:35 -0700 (PDT)
+        Tue, 25 Oct 2022 04:24:36 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
         leon@kernel.org
 Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v2 net-next 1/5] ionic: replay VF attributes after fw crash recovery
-Date:   Tue, 25 Oct 2022 04:24:22 -0700
-Message-Id: <20221025112426.8954-2-snelson@pensando.io>
+Subject: [PATCH v2 net-next 2/5] ionic: only save the user set VF attributes
+Date:   Tue, 25 Oct 2022 04:24:23 -0700
+Message-Id: <20221025112426.8954-3-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20221025112426.8954-1-snelson@pensando.io>
 References: <20221025112426.8954-1-snelson@pensando.io>
@@ -66,104 +66,118 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The VF attributes that the user has set into the FW through
-the PF can be lost over a FW crash recovery.  Much like we
-already replay the PF mac/vlan filters, we now add a replay
-in the recovery path to be sure the FW has the up-to-date
-VF configurations.
+Report the current FW values for the VF attributes, but don't
+save the FW values locally, only save the vf attributes that
+are given to us from the user.  This allows us to replay user
+data, and doesn't end up confusing things like "who set the
+mac address".
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- .../net/ethernet/pensando/ionic/ionic_lif.c   | 70 +++++++++++++++++++
- 1 file changed, 70 insertions(+)
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 33 ++++++++++---------
+ 1 file changed, 17 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 19d4848df17d..865ee58a3b1f 100644
+index 865ee58a3b1f..a06b2da1e0c4 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -2562,6 +2562,74 @@ static int ionic_set_vf_link_state(struct net_device *netdev, int vf, int set)
- 	return ret;
+@@ -2220,7 +2220,7 @@ static int ionic_eth_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd
+ 	}
  }
  
-+static void ionic_vf_attr_replay(struct ionic_lif *lif)
-+{
-+	struct ionic_vf_setattr_cmd vfc = { };
-+	struct ionic *ionic = lif->ionic;
-+	struct ionic_vf *v;
-+	int i;
-+
-+	if (!ionic->vfs)
-+		return;
-+
-+	down_read(&ionic->vf_op_lock);
-+
-+	for (i = 0; i < ionic->num_vfs; i++) {
-+		v = &ionic->vfs[i];
-+
-+		if (v->stats_pa) {
-+			vfc.attr = IONIC_VF_ATTR_STATSADDR;
-+			vfc.stats_pa = cpu_to_le64(v->stats_pa);
-+			ionic_set_vf_config(ionic, i, &vfc);
-+			vfc.stats_pa = 0;
-+		}
-+
-+		if (!is_zero_ether_addr(v->macaddr)) {
-+			vfc.attr = IONIC_VF_ATTR_MAC;
-+			ether_addr_copy(vfc.macaddr, v->macaddr);
-+			ionic_set_vf_config(ionic, i, &vfc);
-+			eth_zero_addr(vfc.macaddr);
-+		}
-+
-+		if (v->vlanid) {
-+			vfc.attr = IONIC_VF_ATTR_VLAN;
-+			vfc.vlanid = v->vlanid;
-+			ionic_set_vf_config(ionic, i, &vfc);
-+			vfc.vlanid = 0;
-+		}
-+
-+		if (v->maxrate) {
-+			vfc.attr = IONIC_VF_ATTR_RATE;
-+			vfc.maxrate = v->maxrate;
-+			ionic_set_vf_config(ionic, i, &vfc);
-+			vfc.maxrate = 0;
-+		}
-+
-+		if (v->spoofchk) {
-+			vfc.attr = IONIC_VF_ATTR_SPOOFCHK;
-+			vfc.spoofchk = v->spoofchk;
-+			ionic_set_vf_config(ionic, i, &vfc);
-+			vfc.spoofchk = 0;
-+		}
-+
-+		if (v->trusted) {
-+			vfc.attr = IONIC_VF_ATTR_TRUST;
-+			vfc.trust = v->trusted;
-+			ionic_set_vf_config(ionic, i, &vfc);
-+			vfc.trust = 0;
-+		}
-+
-+		if (v->linkstate) {
-+			vfc.attr = IONIC_VF_ATTR_LINKSTATE;
-+			vfc.linkstate = v->linkstate;
-+			ionic_set_vf_config(ionic, i, &vfc);
-+			vfc.linkstate = 0;
-+		}
-+	}
-+
-+	up_read(&ionic->vf_op_lock);
-+}
-+
- static const struct net_device_ops ionic_netdev_ops = {
- 	.ndo_open               = ionic_open,
- 	.ndo_stop               = ionic_stop,
-@@ -3042,6 +3110,8 @@ static void ionic_lif_handle_fw_up(struct ionic_lif *lif)
- 	if (err)
- 		goto err_qcqs_free;
+-static int ionic_update_cached_vf_config(struct ionic *ionic, int vf)
++static int ionic_get_fw_vf_config(struct ionic *ionic, int vf, struct ionic_vf *vfdata)
+ {
+ 	struct ionic_vf_getattr_comp comp = { 0 };
+ 	int err;
+@@ -2231,14 +2231,14 @@ static int ionic_update_cached_vf_config(struct ionic *ionic, int vf)
+ 	if (err && comp.status != IONIC_RC_ENOSUPP)
+ 		goto err_out;
+ 	if (!err)
+-		ionic->vfs[vf].vlanid = comp.vlanid;
++		vfdata->vlanid = comp.vlanid;
  
-+	ionic_vf_attr_replay(lif);
-+
- 	if (lif->registered)
- 		ionic_lif_set_netdev_info(lif);
+ 	attr = IONIC_VF_ATTR_SPOOFCHK;
+ 	err = ionic_dev_cmd_vf_getattr(ionic, vf, attr, &comp);
+ 	if (err && comp.status != IONIC_RC_ENOSUPP)
+ 		goto err_out;
+ 	if (!err)
+-		ionic->vfs[vf].spoofchk = comp.spoofchk;
++		vfdata->spoofchk = comp.spoofchk;
+ 
+ 	attr = IONIC_VF_ATTR_LINKSTATE;
+ 	err = ionic_dev_cmd_vf_getattr(ionic, vf, attr, &comp);
+@@ -2247,13 +2247,13 @@ static int ionic_update_cached_vf_config(struct ionic *ionic, int vf)
+ 	if (!err) {
+ 		switch (comp.linkstate) {
+ 		case IONIC_VF_LINK_STATUS_UP:
+-			ionic->vfs[vf].linkstate = IFLA_VF_LINK_STATE_ENABLE;
++			vfdata->linkstate = IFLA_VF_LINK_STATE_ENABLE;
+ 			break;
+ 		case IONIC_VF_LINK_STATUS_DOWN:
+-			ionic->vfs[vf].linkstate = IFLA_VF_LINK_STATE_DISABLE;
++			vfdata->linkstate = IFLA_VF_LINK_STATE_DISABLE;
+ 			break;
+ 		case IONIC_VF_LINK_STATUS_AUTO:
+-			ionic->vfs[vf].linkstate = IFLA_VF_LINK_STATE_AUTO;
++			vfdata->linkstate = IFLA_VF_LINK_STATE_AUTO;
+ 			break;
+ 		default:
+ 			dev_warn(ionic->dev, "Unexpected link state %u\n", comp.linkstate);
+@@ -2266,21 +2266,21 @@ static int ionic_update_cached_vf_config(struct ionic *ionic, int vf)
+ 	if (err && comp.status != IONIC_RC_ENOSUPP)
+ 		goto err_out;
+ 	if (!err)
+-		ionic->vfs[vf].maxrate = comp.maxrate;
++		vfdata->maxrate = comp.maxrate;
+ 
+ 	attr = IONIC_VF_ATTR_TRUST;
+ 	err = ionic_dev_cmd_vf_getattr(ionic, vf, attr, &comp);
+ 	if (err && comp.status != IONIC_RC_ENOSUPP)
+ 		goto err_out;
+ 	if (!err)
+-		ionic->vfs[vf].trusted = comp.trust;
++		vfdata->trusted = comp.trust;
+ 
+ 	attr = IONIC_VF_ATTR_MAC;
+ 	err = ionic_dev_cmd_vf_getattr(ionic, vf, attr, &comp);
+ 	if (err && comp.status != IONIC_RC_ENOSUPP)
+ 		goto err_out;
+ 	if (!err)
+-		ether_addr_copy(ionic->vfs[vf].macaddr, comp.macaddr);
++		ether_addr_copy(vfdata->macaddr, comp.macaddr);
+ 
+ err_out:
+ 	if (err)
+@@ -2295,6 +2295,7 @@ static int ionic_get_vf_config(struct net_device *netdev,
+ {
+ 	struct ionic_lif *lif = netdev_priv(netdev);
+ 	struct ionic *ionic = lif->ionic;
++	struct ionic_vf vfdata = { 0 };
+ 	int ret = 0;
+ 
+ 	if (!netif_device_present(netdev))
+@@ -2308,14 +2309,14 @@ static int ionic_get_vf_config(struct net_device *netdev,
+ 		ivf->vf = vf;
+ 		ivf->qos = 0;
+ 
+-		ret = ionic_update_cached_vf_config(ionic, vf);
++		ret = ionic_get_fw_vf_config(ionic, vf, &vfdata);
+ 		if (!ret) {
+-			ivf->vlan         = le16_to_cpu(ionic->vfs[vf].vlanid);
+-			ivf->spoofchk     = ionic->vfs[vf].spoofchk;
+-			ivf->linkstate    = ionic->vfs[vf].linkstate;
+-			ivf->max_tx_rate  = le32_to_cpu(ionic->vfs[vf].maxrate);
+-			ivf->trusted      = ionic->vfs[vf].trusted;
+-			ether_addr_copy(ivf->mac, ionic->vfs[vf].macaddr);
++			ivf->vlan         = le16_to_cpu(vfdata.vlanid);
++			ivf->spoofchk     = vfdata.spoofchk;
++			ivf->linkstate    = vfdata.linkstate;
++			ivf->max_tx_rate  = le32_to_cpu(vfdata.maxrate);
++			ivf->trusted      = vfdata.trusted;
++			ether_addr_copy(ivf->mac, vfdata.macaddr);
+ 		}
+ 	}
  
 -- 
 2.17.1
