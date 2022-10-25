@@ -2,52 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD18460C29D
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 06:29:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9716060C2A3
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 06:30:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229894AbiJYE3u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 00:29:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37224 "EHLO
+        id S230503AbiJYEae (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 00:30:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230507AbiJYE3q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 00:29:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01E4064FD
-        for <netdev@vger.kernel.org>; Mon, 24 Oct 2022 21:29:45 -0700 (PDT)
+        with ESMTP id S230521AbiJYEaY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 00:30:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E8E233B4;
+        Mon, 24 Oct 2022 21:30:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CAE961716
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 04:29:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BAAAC43140;
-        Tue, 25 Oct 2022 04:29:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FDB361738;
+        Tue, 25 Oct 2022 04:30:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E2254C43140;
+        Tue, 25 Oct 2022 04:30:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666672183;
-        bh=yUmlHjDQGXXwSHkt/nLrLVQX7FlWjMT/JS7WuPxsa9o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FaqVwcdAlf5ivUIUuKe14FNop08WO/qvNq1Y5Lc1UmZsP5l9rMgcv+tfiVTxRUi4c
-         XN/aytg4LDjVMLtQOjzf5i2Y+te8f+y5YUL3sZHkReOl6ZwyfGbf3xxYJcRWZBJAXc
-         YURomccYLJdEO3/Y2lquDJYx4LyBzATfrFEX3mghJwKyUv5Yohm6WwcJzUjbmyMkUx
-         xSfpXh0xWwzRtxhEDr9pvsKif2pAE46+5+9L43g2kzxLGYgGkB9pETLmoHzCy5aJ0A
-         oxlUp7tTZ7I0qzOsHJl6bo6IGf7fPacjLPm8b/kO38DiBF+YNh4JEVjRey6X1mYcX3
-         KrJ42wZ7NPSBQ==
-Date:   Mon, 24 Oct 2022 21:29:42 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
-Cc:     David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Laba, SlawomirX" <slawomirx.laba@intel.com>,
-        "Jaron, MichalX" <michalx.jaron@intel.com>,
-        "Palczewski, Mateusz" <mateusz.palczewski@intel.com>,
-        "G, GurucharanX" <gurucharanx.g@intel.com>
-Subject: Re: [PATCH v2 1/3] i40e: Fix ethtool rx-flow-hash setting for X722
-Message-ID: <20221024212942.1c6198ff@kernel.org>
-In-Reply-To: <CO1PR11MB50892671BA9380FBA2D9EEB1D62E9@CO1PR11MB5089.namprd11.prod.outlook.com>
-References: <20221024100526.1874914-1-jacob.e.keller@intel.com>
-        <CO1PR11MB50892671BA9380FBA2D9EEB1D62E9@CO1PR11MB5089.namprd11.prod.outlook.com>
+        s=k20201202; t=1666672218;
+        bh=DZ5f0hcQi5M4+K6VeNVXl2gdC/uaNsgc+nI6C+rYZYE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=JKaW81hmB72au1x9+EAj8V5QB8JnqD1kviqx/HiRuh5iNWIOICb2uuQuLG9YJUwqn
+         29ftIFzSNG+lwWseAOlK2BUgvTCU3Z6IdO6yMJhAyis5tXPetiYDkBjWBeBK0MMrAP
+         cqSgoWO0nEhOfH1JtsTZeFWuCFs37GGqpfeZuuOHIM8CmZO2FjPWuVawZ+o+BgOb6s
+         JQ+y7ml2ubV4M1NBW43/iXufX6i80TgkxhTg7cXMdzAwnwkcWBhtyWNZI5YOzcMfTI
+         WLO+MajZtW6MYxSVcNkDBltrya4UrInP/pL7r7vRf7jhehb3EjfqPDRSCtNrMBUqp3
+         MjVLhzQRRW3Mw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C80E9E4D005;
+        Tue, 25 Oct 2022 04:30:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: ieee802154 for net 2022-10-24
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166667221781.14254.9707515554053242753.git-patchwork-notify@kernel.org>
+Date:   Tue, 25 Oct 2022 04:30:17 +0000
+References: <20221024102301.9433-1-stefan@datenfreihafen.org>
+In-Reply-To: <20221024102301.9433-1-stefan@datenfreihafen.org>
+To:     Stefan Schmidt <stefan@datenfreihafen.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-wpan@vger.kernel.org,
+        alex.aring@gmail.com, netdev@vger.kernel.org
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -57,8 +55,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 24 Oct 2022 22:18:41 +0000 Keller, Jacob E wrote:
-> Fix one thing, screw up another... I forgot to tag these as [net]..
+Hello:
 
-FWIW no need to repost just for that, looks like i40e is identical 
-in both trees.
+This pull request was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Mon, 24 Oct 2022 12:23:01 +0200 you wrote:
+> Hello Dave, Jakub.
+> 
+> An update from ieee802154 for your *net* tree:
+> 
+> Two fixup patches for return code changes of an earlier commit.
+> Wei Yongjun fixed a missed -EINVAL return on the recent change, while
+> Alexander Aring adds handling for unknown address type cases as well.
+> 
+> [...]
+
+Here is the summary with links:
+  - pull-request: ieee802154 for net 2022-10-24
+    https://git.kernel.org/netdev/net/c/baee5a14ab2c
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
