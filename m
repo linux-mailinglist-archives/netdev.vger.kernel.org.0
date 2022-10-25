@@ -2,132 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D06160D250
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 19:17:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60F2C60D257
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 19:18:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232348AbiJYRQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 13:16:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36498 "EHLO
+        id S232329AbiJYRSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 13:18:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232227AbiJYRQ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 13:16:56 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3085B157F55;
-        Tue, 25 Oct 2022 10:16:56 -0700 (PDT)
+        with ESMTP id S231645AbiJYRSY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 13:18:24 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A89F159A37;
+        Tue, 25 Oct 2022 10:18:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666718216; x=1698254216;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=tWI0CC/wYBfwZBoYYtn6VEm9PD6POSQYRocuvbf90tQ=;
-  b=TkI/nSaj1OZJ1Gsd8EHSz7QId2rmeJeb1B4u3SvyOegvh1EUoeOky7nF
-   NwWBvvKyFZESujTnRFTUx1ZD6jhLGIFIC0RglJBmTi6xjiVv7rfe3nAU8
-   nvUtT7vfL2rO/w/pPDR7lCrlXklTd3O135tMw7FuU5Erd48NHR7PGxbn/
-   C0nVo32LOfTHKZCpldxkQmZq7v25hFJZP6L1pG099n0u7Qe6f1phTkCo7
-   z6rJYYb4sRlGcFIive4gP39DKKm9Dp7ilXEyJzbZxNWki8JArj56swlrk
-   zejMB3qZBO1HBFt/TCbhU7TkpXCAFFM5T7RkTzRq3t72X7wTM7pzUSOtU
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10511"; a="288136398"
+  t=1666718303; x=1698254303;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=o+HzEuDfAAEoVRMr0f+9fq2bvIH6vQ0gqFpLaf4Zkdw=;
+  b=LzjbAQCh/U9D3m4WH9YidHSLA3/8VgMThlVysJrpLvbYErl/z25HNr/8
+   C5TxEw0iAbilugUTE18NYm8REBOkQ+kVhYHF/MJyXdn/sTTExtydBnMBb
+   uwe79LKIufIHBX5EWmAgO2INzAEKPUi3wp4bBh3j/hY5P3tZNxhAJbqV8
+   XCKBu3XByLQkM/hhGb8QBLMMlg+lPRXX5LNiromdAvBNpkjZUHxw0C+FS
+   Jh9E4979aT6TMQgqc2J/CL0nQ+1xja25rQfZt0I7/C96hL1wxLdZ496AF
+   ZdiMWIlu/Jq/zgqURTBVLB5Yzw0clQZLg//wrVtE3ZLkycY/W3VRkkRty
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10511"; a="287458334"
 X-IronPort-AV: E=Sophos;i="5.95,212,1661842800"; 
-   d="scan'208";a="288136398"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2022 10:16:55 -0700
+   d="scan'208";a="287458334"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2022 10:18:22 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10511"; a="609646608"
+X-IronPort-AV: E=McAfee;i="6500,9779,10511"; a="631707576"
 X-IronPort-AV: E=Sophos;i="5.95,212,1661842800"; 
-   d="scan'208";a="609646608"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga006.jf.intel.com with ESMTP; 25 Oct 2022 10:16:50 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1onNXj-002Aw0-1l;
-        Tue, 25 Oct 2022 20:16:47 +0300
-Date:   Tue, 25 Oct 2022 20:16:47 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Gene Chen <gene_chen@richtek.com>,
-        Andrew Jeffery <andrew@aj.id.au>, linux-leds@vger.kernel.org,
+   d="scan'208";a="631707576"
+Received: from lkp-server02.sh.intel.com (HELO b6d29c1a0365) ([10.239.97.151])
+  by orsmga002.jf.intel.com with ESMTP; 25 Oct 2022 10:18:19 -0700
+Received: from kbuild by b6d29c1a0365 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1onNZD-0006UG-0E;
+        Tue, 25 Oct 2022 17:18:19 +0000
+Date:   Wed, 26 Oct 2022 01:17:48 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     ntfs3@lists.linux.dev, netdev@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-scsi@vger.kernel.org,
+        linux-mm@kvack.org, linux-mediatek@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Pavel Machek <pavel@ucw.cz>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Lee Jones <lee@kernel.org>
-Subject: Re: [PATCH v3 00/11] leds: deduplicate led_init_default_state_get()
-Message-ID: <Y1gZ/zBtc2KgXlbw@smile.fi.intel.com>
-References: <20220906135004.14885-1-andriy.shevchenko@linux.intel.com>
+        Linux Memory Management List <linux-mm@kvack.org>
+Subject: [linux-next:master] BUILD REGRESSION
+ 89bf6e28373beef9577fa71f996a5f73a569617c
+Message-ID: <63581a3c.U6bx8B6mFoRe2pWN%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220906135004.14885-1-andriy.shevchenko@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE,SUSPICIOUS_RECIPS,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 06, 2022 at 04:49:53PM +0300, Andy Shevchenko wrote:
-> There are several users of LED framework that reimplement the
-> functionality of led_init_default_state_get(). In order to
-> deduplicate them move the declaration to the global header
-> (patch 2) and convert users (patche 3-11).
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+branch HEAD: 89bf6e28373beef9577fa71f996a5f73a569617c  Add linux-next specific files for 20221025
 
-Dear LED maintainers, is there any news on this series? It's hanging around
-for almost 2 months now...
+Error/Warning reports:
 
-> Changelog v3:
-> - added tag to patch 11 (Kurt)
-> - Cc'ed to Lee, who might help with LED subsystem maintenance
-> 
-> Changelog v2:
-> - added missed patch 2 and hence make it the series
-> - appended tag to patch 7
-> - new patch 1
-> 
-> Andy Shevchenko (11):
->   leds: add missing includes and forward declarations in leds.h
->   leds: Move led_init_default_state_get() to the global header
->   leds: an30259a: Get rid of custom led_init_default_state_get()
->   leds: bcm6328: Get rid of custom led_init_default_state_get()
->   leds: bcm6358: Get rid of custom led_init_default_state_get()
->   leds: mt6323: Get rid of custom led_init_default_state_get()
->   leds: mt6360: Get rid of custom led_init_default_state_get()
->   leds: pca955x: Get rid of custom led_init_default_state_get()
->   leds: pm8058: Get rid of custom led_init_default_state_get()
->   leds: syscon: Get rid of custom led_init_default_state_get()
->   net: dsa: hellcreek: Get rid of custom led_init_default_state_get()
-> 
->  drivers/leds/flash/leds-mt6360.c           | 38 +++--------------
->  drivers/leds/leds-an30259a.c               | 21 ++--------
->  drivers/leds/leds-bcm6328.c                | 49 +++++++++++-----------
->  drivers/leds/leds-bcm6358.c                | 32 +++++++-------
->  drivers/leds/leds-mt6323.c                 | 30 ++++++-------
->  drivers/leds/leds-pca955x.c                | 26 +++---------
->  drivers/leds/leds-pm8058.c                 | 29 ++++++-------
->  drivers/leds/leds-syscon.c                 | 49 ++++++++++------------
->  drivers/leds/leds.h                        |  1 -
->  drivers/net/dsa/hirschmann/hellcreek_ptp.c | 45 ++++++++++----------
->  include/linux/leds.h                       | 15 ++++---
->  11 files changed, 143 insertions(+), 192 deletions(-)
-> 
-> -- 
-> 2.35.1
-> 
+https://lore.kernel.org/linux-mm/202210110857.9s0tXVNn-lkp@intel.com
+https://lore.kernel.org/linux-mm/202210240729.zs46Cfzo-lkp@intel.com
+https://lore.kernel.org/linux-mm/202210251946.eT92YAhG-lkp@intel.com
+https://lore.kernel.org/llvm/202210260009.9qq1JXZi-lkp@intel.com
+
+Error/Warning: (recently discovered and may have been fixed)
+
+drivers/net/ethernet/broadcom/genet/bcmgenet.c:1497:5-13: ERROR: invalid reference to the index variable of the iterator on line 1475
+drivers/scsi/pm8001/pm8001_sas.c:996 pm8001_abort_task() warn: variable dereferenced before check 'task' (see line 986)
+
+Unverified Error/Warning (likely false positive, please contact us if interested):
+
+ERROR: modpost: "devm_ioremap" [drivers/net/ethernet/altera/altera_tse.ko] undefined!
+ERROR: modpost: "ioremap" [drivers/net/ethernet/fujitsu/fmvj18x_cs.ko] undefined!
+ERROR: modpost: "ioremap" [drivers/tty/ipwireless/ipwireless.ko] undefined!
+ERROR: modpost: "iounmap" [drivers/net/ethernet/fujitsu/fmvj18x_cs.ko] undefined!
+ERROR: modpost: "iounmap" [drivers/tty/ipwireless/ipwireless.ko] undefined!
+mm/khugepaged.c:1729:7: warning: variable 'index' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
+mm/khugepaged.c:1729:7: warning: variable 'nr' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
+
+Error/Warning ids grouped by kconfigs:
+
+gcc_recent_errors
+|-- ia64-randconfig-c033-20221025
+|   `-- drivers-net-ethernet-broadcom-genet-bcmgenet.c:ERROR:invalid-reference-to-the-index-variable-of-the-iterator-on-line
+`-- x86_64-randconfig-m001-20221024
+    `-- drivers-scsi-pm8001-pm8001_sas.c-pm8001_abort_task()-warn:variable-dereferenced-before-check-task-(see-line-)
+clang_recent_errors
+|-- arm-randconfig-r013-20221024
+|   |-- drivers-phy-mediatek-phy-mtk-hdmi-mt2701.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:(uns
+|   |-- drivers-phy-mediatek-phy-mtk-hdmi-mt8173.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:(uns
+|   |-- drivers-phy-mediatek-phy-mtk-mipi-dsi-mt8173.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:
+|   |-- drivers-phy-mediatek-phy-mtk-mipi-dsi-mt8183.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:
+|   `-- fs-ntfs3-namei.c:warning:variable-uni1-is-used-uninitialized-whenever-if-condition-is-true
+|-- arm-randconfig-r014-20221024
+|   |-- drivers-phy-mediatek-phy-mtk-hdmi-mt2701.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:(uns
+|   |-- drivers-phy-mediatek-phy-mtk-hdmi-mt8173.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:(uns
+|   |-- drivers-phy-mediatek-phy-mtk-mipi-dsi-mt8173.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:
+|   |-- drivers-phy-mediatek-phy-mtk-mipi-dsi-mt8183.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:
+|   |-- drivers-phy-mediatek-phy-mtk-tphy.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:(unsigned-c
+|   `-- fs-ntfs3-namei.c:warning:variable-uni1-is-used-uninitialized-whenever-if-condition-is-true
+|-- hexagon-randconfig-r045-20221023
+|   |-- drivers-phy-mediatek-phy-mtk-hdmi-mt2701.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:(uns
+|   |-- drivers-phy-mediatek-phy-mtk-hdmi-mt8173.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:(uns
+|   |-- drivers-phy-mediatek-phy-mtk-mipi-dsi-mt8173.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:
+|   |-- drivers-phy-mediatek-phy-mtk-mipi-dsi-mt8183.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:
+|   |-- drivers-phy-mediatek-phy-mtk-tphy.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:(unsigned-c
+|   `-- fs-ntfs3-namei.c:warning:variable-uni1-is-used-uninitialized-whenever-if-condition-is-true
+|-- i386-randconfig-a001-20221024
+|   |-- fs-ntfs3-namei.c:warning:variable-uni1-is-used-uninitialized-whenever-if-condition-is-true
+|   `-- mm-khugepaged.c:warning:variable-index-is-used-uninitialized-whenever-if-condition-is-true
+|-- mips-randconfig-r012-20221024
+|   `-- fs-ntfs3-namei.c:warning:variable-uni1-is-used-uninitialized-whenever-if-condition-is-true
+|-- powerpc-randconfig-r024-20221025
+|   `-- arch-powerpc-mm-nohash-e500.c:error:no-previous-prototype-for-function-relocate_init-Werror-Wmissing-prototypes
+|-- riscv-randconfig-r042-20221023
+|   `-- ld.lld:error:undefined-symbol:dax_holder_notify_failure
+|-- s390-randconfig-r004-20221024
+|   |-- fs-ntfs3-namei.c:warning:variable-uni1-is-used-uninitialized-whenever-if-condition-is-true
+|   |-- mm-khugepaged.c:warning:variable-index-is-used-uninitialized-whenever-if-condition-is-true
+|   `-- mm-khugepaged.c:warning:variable-nr-is-used-uninitialized-whenever-if-condition-is-true
+|-- s390-randconfig-r012-20221023
+|   `-- fs-ntfs3-namei.c:warning:variable-uni1-is-used-uninitialized-whenever-if-condition-is-true
+|-- s390-randconfig-r026-20221025
+|   `-- fs-ntfs3-namei.c:warning:variable-uni1-is-used-uninitialized-whenever-if-condition-is-true
+|-- s390-randconfig-r044-20221023
+|   `-- fs-ntfs3-namei.c:warning:variable-uni1-is-used-uninitialized-whenever-if-condition-is-true
+|-- s390-randconfig-r044-20221025
+|   |-- ERROR:devm_ioremap-drivers-net-ethernet-altera-altera_tse.ko-undefined
+|   |-- ERROR:ioremap-drivers-net-ethernet-fujitsu-fmvj18x_cs.ko-undefined
+|   |-- ERROR:ioremap-drivers-tty-ipwireless-ipwireless.ko-undefined
+|   |-- ERROR:iounmap-drivers-net-ethernet-fujitsu-fmvj18x_cs.ko-undefined
+|   `-- ERROR:iounmap-drivers-tty-ipwireless-ipwireless.ko-undefined
+|-- x86_64-randconfig-a004-20221024
+|   `-- fs-ntfs3-namei.c:warning:variable-uni1-is-used-uninitialized-whenever-if-condition-is-true
+|-- x86_64-randconfig-a005-20221024
+|   `-- fs-ntfs3-namei.c:warning:variable-uni1-is-used-uninitialized-whenever-if-condition-is-true
+|-- x86_64-randconfig-a012
+
+elapsed time: 726m
+
+configs tested: 74
+configs skipped: 2
+
+gcc tested configs:
+powerpc                           allnoconfig
+um                             i386_defconfig
+arc                                 defconfig
+um                           x86_64_defconfig
+alpha                               defconfig
+x86_64                              defconfig
+s390                                defconfig
+x86_64                           rhel-8.3-syz
+s390                             allmodconfig
+x86_64                         rhel-8.3-kunit
+x86_64                        randconfig-a013
+x86_64                           rhel-8.3-kvm
+x86_64                        randconfig-a011
+x86_64                          rhel-8.3-func
+x86_64                    rhel-8.3-kselftests
+x86_64                        randconfig-a015
+s390                             allyesconfig
+i386                                defconfig
+x86_64                               rhel-8.3
+arm                                 defconfig
+arc                  randconfig-r043-20221024
+i386                 randconfig-a014-20221024
+i386                 randconfig-a013-20221024
+riscv                randconfig-r042-20221024
+i386                 randconfig-a012-20221024
+arc                  randconfig-r043-20221023
+i386                             allyesconfig
+i386                 randconfig-a016-20221024
+x86_64                           allyesconfig
+arm                              allyesconfig
+i386                 randconfig-a011-20221024
+powerpc                       eiger_defconfig
+i386                 randconfig-a015-20221024
+sh                               allmodconfig
+m68k                             allmodconfig
+arm64                            allyesconfig
+s390                 randconfig-r044-20221024
+powerpc                      chrp32_defconfig
+sh                            migor_defconfig
+arc                              allyesconfig
+mips                             allyesconfig
+sh                      rts7751r2d1_defconfig
+csky                             alldefconfig
+powerpc                          allmodconfig
+alpha                            allyesconfig
+m68k                             allyesconfig
+sh                          lboxre2_defconfig
+powerpc                     tqm8555_defconfig
+sh                           se7712_defconfig
+
+clang tested configs:
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+hexagon              randconfig-r041-20221024
+x86_64                        randconfig-a016
+riscv                randconfig-r042-20221023
+x86_64               randconfig-a001-20221024
+hexagon              randconfig-r045-20221024
+i386                 randconfig-a001-20221024
+x86_64               randconfig-a003-20221024
+x86_64               randconfig-a004-20221024
+s390                 randconfig-r044-20221023
+i386                 randconfig-a002-20221024
+x86_64               randconfig-a002-20221024
+x86_64               randconfig-a005-20221024
+i386                 randconfig-a005-20221024
+i386                 randconfig-a003-20221024
+hexagon              randconfig-r041-20221023
+x86_64                          rhel-8.3-rust
+powerpc                 xes_mpc85xx_defconfig
+i386                 randconfig-a004-20221024
+hexagon              randconfig-r045-20221023
+x86_64               randconfig-a006-20221024
+i386                 randconfig-a006-20221024
+powerpc                 mpc832x_mds_defconfig
+powerpc                     powernv_defconfig
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
