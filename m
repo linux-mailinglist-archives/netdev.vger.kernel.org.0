@@ -2,114 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 500C460D4C9
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 21:39:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 140B460D4F6
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 21:52:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231937AbiJYTiu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 15:38:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45062 "EHLO
+        id S232429AbiJYTv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 15:51:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230012AbiJYTit (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 15:38:49 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03C24F419A;
-        Tue, 25 Oct 2022 12:38:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666726729; x=1698262729;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=OYfu/Ih3RtDuymYcrXVSOOOZhD0CiItWCsuhin+KdPw=;
-  b=SjMbf8/ro4jC5Hdp69h0QQPZirfeG96hZAbhckwkIU5axcNiGMNjig30
-   74oI1W8FoKxQ7oLRCLcS6t6HbE7rj4pfJGsWz5txqNpDBxdCQ6VGpCPVf
-   crfRsWJVgXSaosbDyr3l5/cjkIKQIk4TporPrXsrgkvhJ/IxjJvBn97G+
-   vLY67RrJ0bteUc4SX1harK61g6de3+8wMvO/6u8lbLlSDWxr3dU0+qFIV
-   iFtahP9bN1MGKL/3vr34JcJzhoQDuk4Ao9hogQQKDKxDO11tlUk2E6pkM
-   mFPagZ2ijDAhKZRDp7bM4BYC6frqlO+EC0bRC9KvB1qPpjg6Kvj0+rgK3
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10511"; a="369840837"
-X-IronPort-AV: E=Sophos;i="5.95,212,1661842800"; 
-   d="scan'208";a="369840837"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2022 12:38:48 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10511"; a="736954700"
-X-IronPort-AV: E=Sophos;i="5.95,212,1661842800"; 
-   d="scan'208";a="736954700"
-Received: from swatthag-mobl1.amr.corp.intel.com (HELO desk) ([10.209.27.104])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2022 12:38:47 -0700
-Date:   Tue, 25 Oct 2022 12:38:45 -0700
-From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     scott.d.constable@intel.com, daniel.sneddon@linux.intel.com,
-        Jakub Kicinski <kuba@kernel.org>, dave.hansen@intel.com,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        antonio.gomez.iglesias@linux.intel.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        x86@kernel.org, gregkh@linuxfoundation.org, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 0/2] Branch Target Injection (BTI) gadget in minstrel
-Message-ID: <20221025193845.z7obsqotxi2yiwli@desk>
-References: <cover.1666651511.git.pawan.kumar.gupta@linux.intel.com>
- <Y1fDiJtxTe8mtBF8@hirez.programming.kicks-ass.net>
+        with ESMTP id S232403AbiJYTv4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 15:51:56 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59A32106E08
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 12:51:50 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id 11so647517iou.0
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 12:51:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=KifJwYm2J4wmA/ryKiExPDIUq5ZgsA0XWIcfAcXckDw=;
+        b=AzhqEQxy38tnrpHWl3m17NBt7Vpd28ILazW48sWm3eymf46kVobx1Dzqs7FA3X0yRp
+         l6BSkD3KVC7b9sDw3Ah0TjpifpJoeiyljvtG2Yld0c9ShsJDfZtw3HtT8bKAybXT+eEq
+         MM/7wWD+RrGN2GpGJJ2xAyixXBgDZOTSCnkSM4F2J3u8zp4ff37N7EjDAPu5erzMx2YG
+         PizQPMYBomLufXMWOeWrGk58Rgra7/ckO69nMcUXgtBgLviAc2wPRkPX9DFLSbFE1gWP
+         3QgIG9vp8ehCUgv8R0Kz1B9aNF2z6tBhRqKb3j+3zR26s8ar4PmOERxykf8HI5yX5qML
+         QVaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=KifJwYm2J4wmA/ryKiExPDIUq5ZgsA0XWIcfAcXckDw=;
+        b=rdC64lYRn7DPbS/VMy9LnGNno5uHug+Cwq7+r0Kj7cz12OzTBgFFwqnYkHibEkUmnB
+         Jc49ofjezwo7VJTZXE8aFOX16pFm/g8cgf+lL7P98CupvB6iFc8U/tSTv85Mk4TnQSgz
+         yC7se0PQgo/7zHbJhlfTMSe57JhaeucGykIjitwmjpr1LK00MeoJBsFO80IfXjnidJfJ
+         vPvxUJEiWuPtp5z5uhIReEMFVUtkA59zovkG2TNk7zx5bV9t3Bg6FrqV+Wq6uW0AkHVO
+         CJKLTPRYbH9NNHJWqByJP/zPqs6cOeLTADO/WUBdoiT4n0+RsHunlqYjqpOLfjsGbP9Y
+         XraQ==
+X-Gm-Message-State: ACrzQf3SlKLnJFMPcFVosXxrYWfwN5D/Y2M9E3RcxHhCWVvTZfvCWAeK
+        15O6T5JvBcslArSfISBQCQoXnA==
+X-Google-Smtp-Source: AMsMyM7qxpmz8WvoeDvhc9mOywqCGFqzNUqateWYVncIOfZr6tBq7Y68i5HFAanYcAmmgzuijdI+Jw==
+X-Received: by 2002:a6b:ba55:0:b0:6b4:de08:ee55 with SMTP id k82-20020a6bba55000000b006b4de08ee55mr23276948iof.148.1666727509415;
+        Tue, 25 Oct 2022 12:51:49 -0700 (PDT)
+Received: from localhost.localdomain ([98.61.227.136])
+        by smtp.gmail.com with ESMTPSA id y10-20020a056638014a00b00349d2d52f6asm1211719jao.37.2022.10.25.12.51.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Oct 2022 12:51:47 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     mka@chromium.org, evgreen@chromium.org, andersson@kernel.org,
+        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
+        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
+        elder@kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/4] net: ipa: don't use fixed table sizes
+Date:   Tue, 25 Oct 2022 14:51:39 -0500
+Message-Id: <20221025195143.255934-1-elder@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <Y1fDiJtxTe8mtBF8@hirez.programming.kicks-ass.net>
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 25, 2022 at 01:07:52PM +0200, Peter Zijlstra wrote:
->On Mon, Oct 24, 2022 at 03:57:45PM -0700, Pawan Gupta wrote:
->
->> The other goal of this series is to start a discussion on whether such
->> hard to exploit, but theoretical possible attacks deems to be mitigated.
->>
->> In general Branch Target Injection class of attacks involves an adversary
->> controlling an indirect branch target to misspeculate to a disclosure gadget.
->> For a successful attack an adversary also needs to control the register
->> contents used by the disclosure gadget.
->
->I'm thinking this is going about it wrong. You're going to be randomly
->sprinking LFENCEs around forever if you go down this path making stuff
->slower and slower.
+Currently, routing and filter tables are assumed to have a fixed
+size for all platforms.  In fact, these tables can support many more
+entries than what has been assumed; the only limitation is the size
+of the IPA-resident memory regions that contain them.
 
-Right, an alternative to LFENCE is to mask the indexes(wherever
-possible) for gadgets that are called frequently. But still its not a
-clean solution.
+This series rearranges things so that the size of the table is
+determined from the memory region size defined in configuration
+data, rather than assuming it is fixed.
 
->Not to mention that it's going to bitrot; the function might change but
->the LFENCE will stay, protecting nothing but still being slow.
+This will required for IPA versions 5.0+, where the number of
+entries in a routing table is larger.
 
-Totally agree with this.
+					-Alex
 
->I think the focus should be on finding the source sites, not protecting
->the target sites. Where can an attacker control the register content and
->have an indirect jump/call.
+Alex Elder (4):
+  net: ipa: record the route table size in the IPA structure
+  net: ipa: determine route table size from memory region
+  net: ipa: don't assume 8 modem routing table entries
+  net: ipa: determine filter table size from memory region
 
-That is an interesting approach. I am wondering what mitigation can
-be applied at source? LFENCE before an indirect branch can greatly
-reduce the speculation window, but will not completely eliminate it.
-Also LFENCE at sources could be costlier than masking the indexes at
-targets or LFENCE at the targets.
+ drivers/net/ipa/data/ipa_data-v3.1.c   | 19 ++++----
+ drivers/net/ipa/data/ipa_data-v3.5.1.c | 27 ++++++------
+ drivers/net/ipa/data/ipa_data-v4.11.c  | 17 +++----
+ drivers/net/ipa/data/ipa_data-v4.2.c   | 17 +++----
+ drivers/net/ipa/data/ipa_data-v4.5.c   | 17 +++----
+ drivers/net/ipa/data/ipa_data-v4.9.c   | 17 +++----
+ drivers/net/ipa/ipa.h                  |  6 +++
+ drivers/net/ipa/ipa_cmd.c              | 21 ++++-----
+ drivers/net/ipa/ipa_data.h             |  2 +
+ drivers/net/ipa/ipa_main.c             |  6 +++
+ drivers/net/ipa/ipa_mem.c              |  4 +-
+ drivers/net/ipa/ipa_qmi.c              |  9 ++--
+ drivers/net/ipa/ipa_table.c            | 61 ++++++++++++++------------
+ drivers/net/ipa/ipa_table.h            | 13 +-----
+ 14 files changed, 123 insertions(+), 113 deletions(-)
 
->Also, things like FineIBT will severely limit the viability of all this.
+-- 
+2.34.1
 
-Yes.
-
->And how is sprinking random LFENCEs around better than running with
->spectre_v2=eibrs,retpoline which is the current recommended mitigation
->against all this IIRC (or even eibrs,lfence for lesser values of
->paranoia).
-
-Its a trade-off between performance and spot fixing (hopefully handful
-of) gadgets. Even the gadget in question here is not demonstrated to be
-exploitable. If this scenario changes, polluting the kernel all over is
-definitely not the right approach.
