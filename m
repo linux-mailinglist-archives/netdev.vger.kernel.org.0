@@ -2,95 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4365E60D0FB
-	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 17:51:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC68A60D119
+	for <lists+netdev@lfdr.de>; Tue, 25 Oct 2022 17:57:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230366AbiJYPv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 11:51:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38490 "EHLO
+        id S232161AbiJYP5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 11:57:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230307AbiJYPv0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 11:51:26 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D23DB760
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 08:51:24 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id f193so11901813pgc.0
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 08:51:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=p3IsRHkRc4bEl50neUQe2Cwg6NxTTrju09y+ZMRWKHg=;
-        b=WCIrwZWCW2YycWO9vWIVT2sAc6cNdb2o80CB+qu5lLpmpYArQjP5+LZukvbY4B1/5N
-         4O6Stk4CVXUI00ciswJC1ytUhidkC4sDt4Zjy+Yt81IVxZh3MdEfZyjUHZr2wEYMDB7D
-         hawUdBrGOtvxRaYynvjOuYVtq1CvkU1Mn476ydzEt2nU9UHxdn4uyZSFhgYqzoy5uS4x
-         /9SqokTROQC9FbfAfQt46zfl6+2wi8BQadJAZIMezGpMYNKCZbDdWzdnz5MMqmdGGC60
-         eZq6n8E9Dmt+xSkG8idqXl7+QlDOTB9iKgxapnZ7z9llpJD1dCx+k3LXJoFBsNQn0Jqi
-         aHhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=p3IsRHkRc4bEl50neUQe2Cwg6NxTTrju09y+ZMRWKHg=;
-        b=FE62mHrSJ5E0df2M8rgqb+e5BZ8WqqiW32kdxatDROeBJD+/7xzeqNkGApvNx/LZKd
-         erOxFzAIpcjyrotgbp130vnpkVX4UYC1smLEg+TMKVPPGLEh0hPSCnE71M/KeVtJ26+g
-         xdwYxFBZGr4bGZJqOx3wbykzHnupGg7HuBPAUq2zFxwq2H7O55lxgxWIoOln7AVbuQ9y
-         31JiTXWhS37hj+J5jvqsA8UC717cSSdRn7AfZecOrxePKgmXOIUZ//CSqFsBLZ7bquIy
-         hP2lEl6rnrrXecirAuoN2tZcLPNs1V3G1JiIrArnJjWbjhP2qzPvdi9ezvOPFQ1nl+17
-         aKJw==
-X-Gm-Message-State: ACrzQf3dAvDigWwdQumwfzSMCN0/HroHHN8SsuLQg6+BjMkY03KvKdd3
-        u/o9X48uSRf8/dpkG/VKBdMYxQ==
-X-Google-Smtp-Source: AMsMyM4J6klp650HU/VWvGmKFG0A7GlUEZyBTQMEIEX2npsoiEHGz+hIfWcOpijO9zqwIO+I1JQoOQ==
-X-Received: by 2002:a65:6055:0:b0:42a:7b2b:dc71 with SMTP id a21-20020a656055000000b0042a7b2bdc71mr33054438pgp.23.1666713084160;
-        Tue, 25 Oct 2022 08:51:24 -0700 (PDT)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id f137-20020a62388f000000b0056bd6b14144sm1524847pfa.180.2022.10.25.08.51.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Oct 2022 08:51:23 -0700 (PDT)
-Date:   Tue, 25 Oct 2022 08:51:22 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Benjamin Poirier <bpoirier@nvidia.com>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH iproute2 3/4] ip-monitor: Include stats events in
- default and "all" cases
-Message-ID: <20221025085122.3e1e58f9@hermes.local>
-In-Reply-To: <20220922061938.202705-4-bpoirier@nvidia.com>
-References: <20220922061938.202705-1-bpoirier@nvidia.com>
-        <20220922061938.202705-4-bpoirier@nvidia.com>
+        with ESMTP id S232540AbiJYP5J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 11:57:09 -0400
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AD55F17D86C;
+        Tue, 25 Oct 2022 08:57:06 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.95,212,1661785200"; 
+   d="scan'208";a="140317228"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie6.idc.renesas.com with ESMTP; 26 Oct 2022 00:57:05 +0900
+Received: from localhost.localdomain (unknown [10.226.92.152])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 2409540083F9;
+        Wed, 26 Oct 2022 00:56:59 +0900 (JST)
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Ulrich Hecht <uli+renesas@fpond.eu>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Rob Herring <robh@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        linux-renesas-soc@vger.kernel.org
+Subject: [PATCH v2 0/3] R-Car CANFD fixes
+Date:   Tue, 25 Oct 2022 16:56:54 +0100
+Message-Id: <20221025155657.1426948-1-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=0.4 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 22 Sep 2022 15:19:37 +0900
-Benjamin Poirier <bpoirier@nvidia.com> wrote:
+This patch series fixes the below issues in R-Car CAN FD driver.
 
-> It seems that stats were omitted from `ip monitor` and `ip monitor all`.
-> Since all other event types are included, include stats as well. Use the
-> same logic as for nexthops.
-> 
-> Fixes: a05a27c07cbf ("ipmonitor: Add monitoring support for stats events")
-> Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-> Signed-off-by: Benjamin Poirier <bpoirier@nvidia.com>
+ 1) Race condition in CAN driver under heavy CAN load condition
+    with both channels enabled results in IRQ storm on global fifo
+    receive irq line.
+ 2) Add channel specific tx interrupts handling for RZ/G2L SoC as it has
+    separate IRQ lines for each tx.
+ 3) Remove unnecessary SoC specific checks in probe.
 
-This change has caused a regression. Simple ip monitor command now fails.
+v1->v2:
+ * Added check for irq active and enabled before handling the irq on a
+   particular channel.
 
-$ ip monitor
-Failed to add stats group to list
+Biju Das (3):
+  can: rcar_canfd: Fix IRQ storm on global fifo receive
+  can: rcar_canfd: Fix channel specific IRQ handling for RZ/G2L
+  can: rcar_canfd: Use devm_reset_control_get_optional_exclusive
 
-The failure is from setsockopt() returning -EINVAL
+ drivers/net/can/rcar/rcar_canfd.c | 46 +++++++++++++++----------------
+ 1 file changed, 22 insertions(+), 24 deletions(-)
 
-Using git bisect this patch is identified as the cause.
-Please fix ASAP or will revert from next release and maybe even make
-a point release to remove it.
+-- 
+2.25.1
 
