@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 705B360E6B5
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 19:44:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F0FC60E6BC
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 19:47:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234063AbiJZRoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 13:44:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41786 "EHLO
+        id S234087AbiJZRrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 13:47:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233540AbiJZRoW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 13:44:22 -0400
-Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com [209.85.160.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B56D2FE930;
-        Wed, 26 Oct 2022 10:44:21 -0700 (PDT)
-Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-1322d768ba7so21092429fac.5;
-        Wed, 26 Oct 2022 10:44:21 -0700 (PDT)
+        with ESMTP id S233578AbiJZRrG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 13:47:06 -0400
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B451A99D2;
+        Wed, 26 Oct 2022 10:47:04 -0700 (PDT)
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-13b23e29e36so20383254fac.8;
+        Wed, 26 Oct 2022 10:47:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=yZ+i/SF4l9FMWNRr/cPA8I6Wy/mpZ+a7Vqb6QMxr248=;
-        b=k0qFmGW3kHlOmc8RgEe5/cXD1Wyw9auZRYcvUGlacdBZYofm39ATEs+VCEI1TfxUx8
-         nHGPylX2rR3X9AmziqfLj2ir3PjZDgfLkfZ+qAkCsORUEvULzZgevtTA3A3ibQ+8oQh+
-         Kbz1jgrqd//L7RcQs6jrRmA1/S9UOu5F1v6Dox7lTmjxfeBlY6PLmC/s293DZI813ITr
-         oJ3JOFv+cQV8HLOVtQQTgFzC7rnEWop+AOeNKZlJ30vRYVqIM+48ZZsXm44SeDZP7mjN
-         0VMNMHcaR07CC5A9ypVvHS7eFkwxHr4rIhPWeqZcmF0UgAITBAT6CGSlQW34j3/BaFtx
-         Onyw==
-X-Gm-Message-State: ACrzQf3jBiI9SyhTphSgrvR6PSx+W7Jcem4wfultv91ltZGNk0lLoCHw
-        2Hh7+6H203R147h/piFh1g==
-X-Google-Smtp-Source: AMsMyM67Pw/bp++Kwpi4bAgdItQrAnVSBhLzRwXb2hhebp/wuZMaR60Sn/XNDJMCXdMpka6OF32FZw==
-X-Received: by 2002:a05:6870:e98e:b0:12b:8d8d:1116 with SMTP id r14-20020a056870e98e00b0012b8d8d1116mr2981248oao.165.1666806260917;
-        Wed, 26 Oct 2022 10:44:20 -0700 (PDT)
+        bh=HB//srE+jyi0FWpKiy+4h9s6yd6ZaGXhIBWWMCtKONM=;
+        b=tUd3qmxA3RYvZ+yKS51u5YN5DrGffrZmHU9MBVrgSntXbW+TdYxjAWtU3G3K2+dYIJ
+         SHW7WFdPyZmbh1NlB+flShomMCfroDnFcl45/5ni87G0+S5QE6oslRUrQWxbzlGuc7C+
+         ureB3qWfpCEg7v0x7+jjq3Z5v6kq+QEdxxE9tBWw2kbGxu69nHtsLTbzg69M/uvks6bh
+         DPu2xRDES/b8hyUKfb5cM0aciFCXrxAI/GgC3KzAVRcuiITiOYac2GmLgrmBAdb5njv5
+         ZV8uJ2QN6IMCkjjLcA3/mHdhJ1SUveepZCLcpMv525gBhR0Vq5tQMNnNA67E8/FTVGGe
+         b20w==
+X-Gm-Message-State: ACrzQf0ElWXZx6bIqQTEsPUJTFDaOzKPiQir4FqhgxzP6Zoh+OQck6EB
+        tEA0S8d44Ha0vA/BQxsjcw==
+X-Google-Smtp-Source: AMsMyM7519BMQbcZ6P8S30eJ39PNdmtUMBDMdv4cp8EuTysDhqzQIi3UvRg1RXimILV387Wj+AclvQ==
+X-Received: by 2002:a05:6870:63aa:b0:13a:fe6c:5ed0 with SMTP id t42-20020a05687063aa00b0013afe6c5ed0mr3049476oap.257.1666806423841;
+        Wed, 26 Oct 2022 10:47:03 -0700 (PDT)
 Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id b6-20020a4ae206000000b0044b125e5dabsm2360665oot.35.2022.10.26.10.44.19
+        by smtp.gmail.com with ESMTPSA id z22-20020a4a2256000000b004767df8f231sm2349508ooe.39.2022.10.26.10.47.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Oct 2022 10:44:20 -0700 (PDT)
-Received: (nullmailer pid 808914 invoked by uid 1000);
-        Wed, 26 Oct 2022 17:44:21 -0000
-Date:   Wed, 26 Oct 2022 12:44:21 -0500
+        Wed, 26 Oct 2022 10:47:03 -0700 (PDT)
+Received: (nullmailer pid 811863 invoked by uid 1000);
+        Wed, 26 Oct 2022 17:47:04 -0000
+Date:   Wed, 26 Oct 2022 12:47:04 -0500
 From:   Rob Herring <robh@kernel.org>
 To:     Colin Foster <colin.foster@in-advantage.com>
 Cc:     linux-mediatek@lists.infradead.org,
@@ -63,162 +63,51 @@ Cc:     linux-mediatek@lists.infradead.org,
         Andrew Lunn <andrew@lunn.ch>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Lee Jones <lee@kernel.org>
-Subject: Re: [PATCH v1 net-next 6/7] dt-bindings: net: add generic
- ethernet-switch-port binding
-Message-ID: <20221026174421.GA794561-robh@kernel.org>
+Subject: Re: [PATCH v1 net-next 7/7] dt-bindings: net: mscc,vsc7514-switch:
+ utilize generic ethernet-switch.yaml
+Message-ID: <20221026174704.GA809642-robh@kernel.org>
 References: <20221025050355.3979380-1-colin.foster@in-advantage.com>
- <20221025050355.3979380-7-colin.foster@in-advantage.com>
+ <20221025050355.3979380-8-colin.foster@in-advantage.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221025050355.3979380-7-colin.foster@in-advantage.com>
+In-Reply-To: <20221025050355.3979380-8-colin.foster@in-advantage.com>
 X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
         FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-        autolearn_force=no version=3.4.6
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 24, 2022 at 10:03:54PM -0700, Colin Foster wrote:
-> The dsa-port.yaml binding had several references that can be common to all
-> ethernet ports, not just dsa-specific ones. Break out the generic bindings
-> to ethernet-switch-port.yaml they can be used by non-dsa drivers.
+On Mon, Oct 24, 2022 at 10:03:55PM -0700, Colin Foster wrote:
+> Several bindings for ethernet switches are available for non-dsa switches
+> by way of ethernet-switch.yaml. Remove these duplicate entries and utilize
+> the common bindings for the VSC7514.
 > 
 > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
 > Suggested-by: Vladimir Oltean <olteanv@gmail.com>
 > ---
->  .../devicetree/bindings/net/dsa/dsa-port.yaml | 26 +----------
->  .../bindings/net/ethernet-switch-port.yaml    | 44 +++++++++++++++++++
->  .../bindings/net/ethernet-switch.yaml         |  4 +-
->  MAINTAINERS                                   |  1 +
->  4 files changed, 50 insertions(+), 25 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/net/ethernet-switch-port.yaml
+>  .../bindings/net/mscc,vsc7514-switch.yaml     | 36 +------------------
+>  1 file changed, 1 insertion(+), 35 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml b/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
-> index 10ad7e71097b..c5144e733511 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
-> +++ b/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
-> @@ -4,7 +4,7 @@
->  $id: http://devicetree.org/schemas/net/dsa/dsa-port.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
->  
-> -title: Ethernet Switch port Device Tree Bindings
-> +title: DSA Switch port Device Tree Bindings
->  
->  maintainers:
->    - Andrew Lunn <andrew@lunn.ch>
-> @@ -15,12 +15,9 @@ description:
->    Ethernet switch port Description
->  
->  allOf:
-> -  - $ref: /schemas/net/ethernet-controller.yaml#
-> +  - $ref: /schemas/net/ethernet-switch-port.yaml#
+> diff --git a/Documentation/devicetree/bindings/net/mscc,vsc7514-switch.yaml b/Documentation/devicetree/bindings/net/mscc,vsc7514-switch.yaml
+> index ee0a504bdb24..1703bd46c3ca 100644
+> --- a/Documentation/devicetree/bindings/net/mscc,vsc7514-switch.yaml
+> +++ b/Documentation/devicetree/bindings/net/mscc,vsc7514-switch.yaml
+> @@ -19,11 +19,8 @@ description: |
+>    packet extraction/injection.
 >  
 >  properties:
-> -  reg:
-> -    description: Port number
+> -  $nodename:
+> -    pattern: "^switch@[0-9a-f]+$"
 > -
->    label:
->      description:
->        Describes the label associated with this port, which will become
-> @@ -57,25 +54,6 @@ properties:
->        - rtl8_4t
->        - seville
->  
-> -  phy-handle: true
-> -
-> -  phy-mode: true
-> -
-> -  fixed-link: true
-> -
-> -  mac-address: true
-> -
-> -  sfp: true
-> -
-> -  managed: true
-> -
-> -  rx-internal-delay-ps: true
-> -
-> -  tx-internal-delay-ps: true
-> -
-> -required:
-> -  - reg
-> -
->  # CPU and DSA ports must have phylink-compatible link descriptions
->  if:
->    oneOf:
-> diff --git a/Documentation/devicetree/bindings/net/ethernet-switch-port.yaml b/Documentation/devicetree/bindings/net/ethernet-switch-port.yaml
-> new file mode 100644
-> index 000000000000..cb1e5e12bf0a
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/ethernet-switch-port.yaml
-> @@ -0,0 +1,44 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/ethernet-switch-port.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Ethernet Switch port Device Tree Bindings
-> +
-> +maintainers:
-> +  - Andrew Lunn <andrew@lunn.ch>
-> +  - Florian Fainelli <f.fainelli@gmail.com>
-> +  - Vivien Didelot <vivien.didelot@gmail.com>
-> +
-> +description:
-> +  Ethernet switch port Description
-> +
-> +$ref: ethernet-controller.yaml#
-> +
-> +properties:
-> +  reg:
-> +    description: Port number
-> +
-> +  phy-handle: true
-> +
-> +  phy-mode: true
-> +
-> +  fixed-link: true
-> +
-> +  mac-address: true
-> +
-> +  sfp: true
-> +
-> +  managed: true
-> +
-> +  rx-internal-delay-ps: true
-> +
-> +  tx-internal-delay-ps: true
-> +
-> +required:
-> +  - reg
-> +
-> +additionalProperties: true
-> +
-> +...
-> diff --git a/Documentation/devicetree/bindings/net/ethernet-switch.yaml b/Documentation/devicetree/bindings/net/ethernet-switch.yaml
-> index fbaac536673d..f698857619da 100644
-> --- a/Documentation/devicetree/bindings/net/ethernet-switch.yaml
-> +++ b/Documentation/devicetree/bindings/net/ethernet-switch.yaml
-> @@ -36,7 +36,9 @@ patternProperties:
->          type: object
->          description: Ethernet switch ports
->  
-> -        $ref: /schemas/net/dsa/dsa-port.yaml#
-> +        allOf:
-> +          - $ref: /schemas/net/dsa/dsa-port.yaml#
-> +          - $ref: ethernet-switch-port.yaml#
+>    compatible:
+> -    const: mscc,vsc7514-switch
+> +    $ref: ethernet-switch.yaml#
 
-dsa-port.yaml references ethernet-switch-port.yaml, so you shouldn't 
-need both here.
-
-I imagine what you were trying to do here was say it is either one of 
-these, not both. I don't think this is going work for the same reasons I 
-mentioned with unevaluatedProperties.
+??? 'compatible' is a node?
 
 Rob
