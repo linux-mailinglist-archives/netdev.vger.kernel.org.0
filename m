@@ -2,44 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EEA460DC95
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 09:55:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEA8D60DC97
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 09:55:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232944AbiJZHzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S229452AbiJZHzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 26 Oct 2022 03:55:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49388 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232783AbiJZHz1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 03:55:27 -0400
+        with ESMTP id S233192AbiJZHz3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 03:55:29 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76B633CBDA
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 00:55:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC8912A91
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 00:55:27 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1onbG0-0000ZW-W7
+        id 1onbG1-0000aR-TY
         for netdev@vger.kernel.org; Wed, 26 Oct 2022 09:55:25 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 7832F109FE3
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 07:55:24 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 59EEC109FEA
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 07:55:25 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 225EE109FD7;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 66669109FD8;
         Wed, 26 Oct 2022 07:55:23 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 5551b5ff;
-        Wed, 26 Oct 2022 07:55:21 +0000 (UTC)
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 48c58dae;
+        Wed, 26 Oct 2022 07:55:22 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: [PATCH net 0/n] pull-request: can 2022-10-25
-Date:   Wed, 26 Oct 2022 09:55:18 +0200
-Message-Id: <20221026075520.1502520-1-mkl@pengutronix.de>
+        kernel@pengutronix.de, Dongliang Mu <dzm91@hust.edu.cn>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH net 1/2] can: mscan: mpc5xxx: mpc5xxx_can_probe(): add missing put_clock() in error path
+Date:   Wed, 26 Oct 2022 09:55:19 +0200
+Message-Id: <20221026075520.1502520-2-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20221026075520.1502520-1-mkl@pengutronix.de>
+References: <20221026075520.1502520-1-mkl@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
@@ -55,45 +58,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Jakub, hello David,
+From: Dongliang Mu <dzm91@hust.edu.cn>
 
-this is a pull request of 2 patches for net/master.
+The commit 1149108e2fbf ("can: mscan: improve clock API use") only
+adds put_clock() in mpc5xxx_can_remove() function, forgetting to add
+put_clock() in the error handling code.
 
-Both patches are by Dongliang Mu.
+Fix this bug by adding put_clock() in the error handling code.
 
-The 1st patch adds a missing cleanup call in the error path of the
-probe function in mpc5xxx glue code for the mscan driver.
-
-The 2nd patch adds a missing cleanup call in the error path of the
-probe function of the mcp251x driver.
-
-regards,
-Marc
-
+Fixes: 1149108e2fbf ("can: mscan: improve clock API use")
+Signed-off-by: Dongliang Mu <dzm91@hust.edu.cn>
+Link: https://lore.kernel.org/all/20221024133828.35881-1-mkl@pengutronix.de
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
-
-The following changes since commit baee5a14ab2c9a8f8df09d021885c8f5de458a38:
-
-  Merge tag 'ieee802154-for-net-2022-10-24' of git://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan (2022-10-24 21:17:03 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-6.1-20221025
-
-for you to fetch changes up to b1a09b63684cea56774786ca14c13b7041ffee63:
-
-  can: mcp251x: mcp251x_can_probe(): add missing unregister_candev() in error path (2022-10-25 09:13:14 +0200)
-
-----------------------------------------------------------------
-linux-can-fixes-for-6.1-20221025
-
-----------------------------------------------------------------
-Dongliang Mu (2):
-      can: mscan: mpc5xxx: mpc5xxx_can_probe(): add missing put_clock() in error path
-      can: mcp251x: mcp251x_can_probe(): add missing unregister_candev() in error path
-
  drivers/net/can/mscan/mpc5xxx_can.c | 8 +++++---
- drivers/net/can/spi/mcp251x.c       | 5 ++++-
- 2 files changed, 9 insertions(+), 4 deletions(-)
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/can/mscan/mpc5xxx_can.c b/drivers/net/can/mscan/mpc5xxx_can.c
+index c469b2f3e57d..b0ed798ae70f 100644
+--- a/drivers/net/can/mscan/mpc5xxx_can.c
++++ b/drivers/net/can/mscan/mpc5xxx_can.c
+@@ -322,14 +322,14 @@ static int mpc5xxx_can_probe(struct platform_device *ofdev)
+ 					       &mscan_clksrc);
+ 	if (!priv->can.clock.freq) {
+ 		dev_err(&ofdev->dev, "couldn't get MSCAN clock properties\n");
+-		goto exit_free_mscan;
++		goto exit_put_clock;
+ 	}
+ 
+ 	err = register_mscandev(dev, mscan_clksrc);
+ 	if (err) {
+ 		dev_err(&ofdev->dev, "registering %s failed (err=%d)\n",
+ 			DRV_NAME, err);
+-		goto exit_free_mscan;
++		goto exit_put_clock;
+ 	}
+ 
+ 	dev_info(&ofdev->dev, "MSCAN at 0x%p, irq %d, clock %d Hz\n",
+@@ -337,7 +337,9 @@ static int mpc5xxx_can_probe(struct platform_device *ofdev)
+ 
+ 	return 0;
+ 
+-exit_free_mscan:
++exit_put_clock:
++	if (data->put_clock)
++		data->put_clock(ofdev);
+ 	free_candev(dev);
+ exit_dispose_irq:
+ 	irq_dispose_mapping(irq);
+
+base-commit: baee5a14ab2c9a8f8df09d021885c8f5de458a38
+-- 
+2.35.1
 
 
