@@ -2,135 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4E3B60E173
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 15:05:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06F8460E0BB
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 14:34:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233571AbiJZNFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 09:05:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56200 "EHLO
+        id S233539AbiJZMeH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 08:34:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232823AbiJZNFr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 09:05:47 -0400
-X-Greylist: delayed 1200 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 26 Oct 2022 06:05:45 PDT
-Received: from smtp-out.kfki.hu (smtp-out.kfki.hu [148.6.0.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73919ACF4E;
-        Wed, 26 Oct 2022 06:05:45 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by smtp2.kfki.hu (Postfix) with ESMTP id 314E0CC016B;
-        Wed, 26 Oct 2022 14:26:11 +0200 (CEST)
-X-Virus-Scanned: Debian amavisd-new at smtp2.kfki.hu
-Received: from smtp2.kfki.hu ([127.0.0.1])
-        by localhost (smtp2.kfki.hu [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP; Wed, 26 Oct 2022 14:26:08 +0200 (CEST)
-Received: from blackhole.kfki.hu (blackhole.szhk.kfki.hu [148.6.240.2])
-        by smtp2.kfki.hu (Postfix) with ESMTP id 754C6CC010C;
-        Wed, 26 Oct 2022 14:26:08 +0200 (CEST)
-Received: by blackhole.kfki.hu (Postfix, from userid 1000)
-        id 3E6B03431DF; Wed, 26 Oct 2022 14:26:08 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by blackhole.kfki.hu (Postfix) with ESMTP id 3CF51343155;
-        Wed, 26 Oct 2022 14:26:08 +0200 (CEST)
-Date:   Wed, 26 Oct 2022 14:26:08 +0200 (CEST)
-From:   Jozsef Kadlecsik <kadlec@netfilter.org>
-To:     Daniel Xu <dxu@dxuuu.xyz>
-cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ppenkov@aviatrix.com
-Subject: Re: ip_set_hash_netiface
-In-Reply-To: <9a91603a-7b8f-4c6d-9012-497335e4373b@app.fastmail.com>
-Message-ID: <7fcf3bbb-95d2-a286-e3a-4d4dd87f713a@netfilter.org>
-References: <9a91603a-7b8f-4c6d-9012-497335e4373b@app.fastmail.com>
+        with ESMTP id S232625AbiJZMeG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 08:34:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A1A8AF1AA;
+        Wed, 26 Oct 2022 05:34:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 434DAB821D9;
+        Wed, 26 Oct 2022 12:34:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20DAFC433D6;
+        Wed, 26 Oct 2022 12:34:02 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Xx5KKuxr"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1666787640;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ZeAi1MGyrPwsr84DGCNB/7Ek0xszjHGR2vlAtEQhd1A=;
+        b=Xx5KKuxrtpwoY9Wy+CYd1WDXBT9sCoNC9fjwsGkstHhNbN1WpvKcBizZeRpT/FCzCiS4RQ
+        tcs+Bt7NF3eTh8IExPNnbvvnyDYVtjOIBQ7zCHExZIsoRAGhDA8m5Mp/+dUQ/2ed4jN+pX
+        1b2G92MsVRvv78DJhUgz7++3kx0ah/c=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 8a7530bf (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Wed, 26 Oct 2022 12:33:59 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Julian Anastasov <ja@ssi.bg>,
+        Simon Horman <horms@verge.net.au>, stable@vger.kernel.org
+Subject: [PATCH] ipvs: use explicitly signed chars
+Date:   Wed, 26 Oct 2022 14:32:16 +0200
+Message-Id: <20221026123216.1575440-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Daniel,
+The `char` type with no explicit sign is sometimes signed and sometimes
+unsigned. This code will break on platforms such as arm, where char is
+unsigned. So mark it here as explicitly signed, so that the
+todrop_counter decrement and subsequent comparison is correct.
 
-On Tue, 25 Oct 2022, Daniel Xu wrote:
+Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+Cc: Julian Anastasov <ja@ssi.bg>
+Cc: Simon Horman <horms@verge.net.au>
+Cc: stable@vger.kernel.org
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ net/netfilter/ipvs/ip_vs_conn.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> I'm following up with our hallway chat yesterday about how ipset 
-> hash:net,iface can easily OOM.
-> 
-> Here's a quick reproducer (stolen from
-> https://bugzilla.kernel.org/show_bug.cgi?id=199107):
-> 
->         $ ipset create ACL.IN.ALL_PERMIT hash:net,iface hashsize 1048576 timeout 0
->         $ for i in $(seq 0 100); do /sbin/ipset add ACL.IN.ALL_PERMIT 0.0.0.0/0,kaf_$i timeout 0 -exist; done
-> 
-> This used to cause a NULL ptr deref panic before
-> https://github.com/torvalds/linux/commit/2b33d6ffa9e38f344418976b06 .
-> 
-> Now it'll either allocate a huge amount of memory or fail a
-> vmalloc():
-> 
->         [Tue Oct 25 00:13:08 2022] ipset: vmalloc error: size 1073741848, exceeds total pages
->         <...>
->         [Tue Oct 25 00:13:08 2022] Call Trace:
->         [Tue Oct 25 00:13:08 2022]  <TASK>
->         [Tue Oct 25 00:13:08 2022]  dump_stack_lvl+0x48/0x60
->         [Tue Oct 25 00:13:08 2022]  warn_alloc+0x155/0x180
->         [Tue Oct 25 00:13:08 2022]  __vmalloc_node_range+0x72a/0x760
->         [Tue Oct 25 00:13:08 2022]  ? hash_netiface4_add+0x7c0/0xb20
->         [Tue Oct 25 00:13:08 2022]  ? __kmalloc_large_node+0x4a/0x90
->         [Tue Oct 25 00:13:08 2022]  kvmalloc_node+0xa6/0xd0
->         [Tue Oct 25 00:13:08 2022]  ? hash_netiface4_resize+0x99/0x710
->         <...>
-> 
-> Note that this behavior is somewhat documented
-> (https://ipset.netfilter.org/ipset.man.html):
-> 
-> >  The internal restriction of the hash:net,iface set type is that the same
-> >  network prefix cannot be stored with more than 64 different interfaces
-> >  in a single set.
-> 
-> I'm not sure how hard it would be to enforce a limit, but I think it would
-> be a bit better to error than allocate many GBs of memory.
-
-That's a bug, actually the limit is not enforced in spite of the 
-documentation. The next patch fixes it and I'm going to submit to Pablo:
-
-diff --git a/net/netfilter/ipset/ip_set_hash_gen.h b/net/netfilter/ipset/ip_set_hash_gen.h
-index 6e391308431d..3f8853ed32e9 100644
---- a/net/netfilter/ipset/ip_set_hash_gen.h
-+++ b/net/netfilter/ipset/ip_set_hash_gen.h
-@@ -61,10 +61,6 @@ tune_bucketsize(u8 curr, u32 multi)
- 	 */
- 	return n > curr && n <= AHASH_MAX_TUNED ? n : curr;
- }
--#define TUNE_BUCKETSIZE(h, multi)	\
--	((h)->bucketsize = tune_bucketsize((h)->bucketsize, multi))
--#else
--#define TUNE_BUCKETSIZE(h, multi)
+diff --git a/net/netfilter/ipvs/ip_vs_conn.c b/net/netfilter/ipvs/ip_vs_conn.c
+index 8c04bb57dd6f..7c4866c04343 100644
+--- a/net/netfilter/ipvs/ip_vs_conn.c
++++ b/net/netfilter/ipvs/ip_vs_conn.c
+@@ -1249,40 +1249,40 @@ static const struct seq_operations ip_vs_conn_sync_seq_ops = {
+ 	.next  = ip_vs_conn_seq_next,
+ 	.stop  = ip_vs_conn_seq_stop,
+ 	.show  = ip_vs_conn_sync_seq_show,
+ };
  #endif
  
- /* A hash bucket */
-@@ -936,7 +932,11 @@ mtype_add(struct ip_set *set, void *value, const struct ip_set_ext *ext,
- 		goto set_full;
- 	/* Create a new slot */
- 	if (n->pos >= n->size) {
--		TUNE_BUCKETSIZE(h, multi);
-+#ifdef IP_SET_HASH_WITH_MULTI
-+		if (h->bucketsize >= AHASH_MAX_TUNED)
-+			goto set_full;
-+		h->bucketsize = tune_bucketsize(h->bucketsize, multi);
-+#endif
- 		if (n->size >= AHASH_MAX(h)) {
- 			/* Trigger rehashing */
- 			mtype_data_next(&h->next, d);
+ 
+ /* Randomly drop connection entries before running out of memory
+  * Can be used for DATA and CTL conns. For TPL conns there are exceptions:
+  * - traffic for services in OPS mode increases ct->in_pkts, so it is supported
+  * - traffic for services not in OPS mode does not increase ct->in_pkts in
+  * all cases, so it is not supported
+  */
+ static inline int todrop_entry(struct ip_vs_conn *cp)
+ {
+ 	/*
+ 	 * The drop rate array needs tuning for real environments.
+ 	 * Called from timer bh only => no locking
+ 	 */
+-	static const char todrop_rate[9] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+-	static char todrop_counter[9] = {0};
++	static const signed char todrop_rate[9] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
++	static signed char todrop_counter[9] = {0};
+ 	int i;
+ 
+ 	/* if the conn entry hasn't lasted for 60 seconds, don't drop it.
+ 	   This will leave enough time for normal connection to get
+ 	   through. */
+ 	if (time_before(cp->timeout + jiffies, cp->timer.expires + 60*HZ))
+ 		return 0;
+ 
+ 	/* Don't drop the entry if its number of incoming packets is not
+ 	   located in [0, 8] */
+ 	i = atomic_read(&cp->in_pkts);
+ 	if (i > 8 || i < 0) return 0;
+ 
+ 	if (!todrop_rate[i]) return 0;
+ 	if (--todrop_counter[i] > 0) return 0;
+ 
+ 	todrop_counter[i] = todrop_rate[i];
+ 	return 1;
+ }
+-- 
+2.38.1
 
-Best regards,
-Jozsef
--
-E-mail  : kadlec@blackhole.kfki.hu, kadlecsik.jozsef@wigner.hu
-PGP key : https://wigner.hu/~kadlec/pgp_public_key.txt
-Address : Wigner Research Centre for Physics
-          H-1525 Budapest 114, POB. 49, Hungary
