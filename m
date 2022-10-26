@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 710CD60DC84
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 09:51:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B05A60DC86
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 09:51:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232685AbiJZHv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 03:51:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40264 "EHLO
+        id S231937AbiJZHvd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 03:51:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233311AbiJZHvX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 03:51:23 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B07697D42
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 00:51:18 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id b29so10088540pfp.13
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 00:51:18 -0700 (PDT)
+        with ESMTP id S233368AbiJZHvZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 03:51:25 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CF919F769
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 00:51:22 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id v13-20020a17090a6b0d00b0021332e5388fso1425342pjj.1
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 00:51:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sipanda-io.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ZHMbWA1YIfQyBW74SEpUanplgfNuRf18Rn1cev4gkyw=;
-        b=CfyQ8P2RCT0Quypw1rYTtBQxRw/wC+gSSWT5A67FbCG8GnB5qxH5txGdZsgJp5xeY5
-         qd8yLiUsOhEBTwjhDxLygQHdptun9Bdp93fI8kzCq8VLVVpDMFlZSet32WaSskrkijwB
-         rEbvWXZlTrWHIq6WZkyIvfAp5ye63HSBCRI3XAhmsSpT1Y4l0T3i5Bx5ZNEnAT64uLcq
-         KnNvUcVTVwABVSAZDGgJkwCq1i53m2qGpNDJEXWhMes/MkWHgq7A0iCdhIDOowbJZBnq
-         Jp1OAlzUX3jdgYEj97o1YpmaghiZeE/vttb6Jiu3lMqGxuzepfIKH9+7ppWFeZ8CI+4G
-         FrIA==
+        bh=JuZCI5rm8dc1oWyYiTggf/OvLlqDlw76m69EATS+oUE=;
+        b=0RZN1IwfVZk22lJYY0LWKEq6BZo2dfoEnk8g9QBGXzF1QW65nXwDH35Mhnm053Mgkb
+         jxikm9Q7YK91TFuGqmLm9xWSxzcTs+jXHQel2/MwsMAxE/s2BcsefvVVJ7FfZfMFA5+4
+         igoVsanSv0VAUtOLJTAPC8LM5nRC+mchmC1OZqVZCsjDDuE6TY0hlls2/fE/xfotHvYl
+         Auf1hK2qb97GiG9wTECIS+1q+tujwYELk+IJChfB2rPNeBDOifLb30tEWDKTzLA3xVEk
+         HmHoEVzEUaxRnN/TBICYhoa+Wr9m6AgHGpkAxeXNCU7Iog2TJFviXZ1Xa2/r7v9pVnBQ
+         YBWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=ZHMbWA1YIfQyBW74SEpUanplgfNuRf18Rn1cev4gkyw=;
-        b=pjcpkLGfye+D1egGylTVQdSozyIw5aNY7P2W4L422slv+vZd2dQfQIqOUHcPk8bS41
-         GoZsus2hXSx8F0g27DROL31Z3WcaQYx85zksg9AHWPh0NzHa2AsiXdc5/GzLsJ24u2L5
-         9dVGUtcwI8JqPn1Z1C/Hg0Kk7IpeFCHRx5DRQl8pg0TX8lx+2q3foL6hBDdSqugFUSkO
-         a9uCesgxJIvmJvhqLifbn3fznZ2HvFxJCzteWtIYDkXwgzW0vqo56nBX9wg5q2lKz2Vo
-         nxyjtpy0x4gec/SlElI/bq6X79Fqyg6rRtXkf7uI9XoI5sdQ68U1QpkS8IZbmJsqY9lI
-         w/tg==
-X-Gm-Message-State: ACrzQf2ugxq5DEEgApbJtqfW/B7GDtoXJNr1YbL7ec3rVHG73IPjkk7n
-        jpl86NS4Xv7aQaHw7I6nuYAeXBALWNcZaw==
-X-Google-Smtp-Source: AMsMyM7tghnDDSABEjzdcsfz+ABuYWs83mRJauhX+mwaipQw40RNQfFVk4W2p/Lku2/qO5BQVYgiwA==
-X-Received: by 2002:a05:6a00:1912:b0:564:f6be:11fd with SMTP id y18-20020a056a00191200b00564f6be11fdmr41954871pfi.32.1666770677539;
-        Wed, 26 Oct 2022 00:51:17 -0700 (PDT)
+        bh=JuZCI5rm8dc1oWyYiTggf/OvLlqDlw76m69EATS+oUE=;
+        b=DpagNyrwaktIcWrVya2VIZihDNH6d4l04LckZh4YPU/rjHCA3u8sCNFNa1pHweKjR6
+         gXtmTM308V8Gyz0P3hV8Pdp/NZYYIrMvx5/iz3u83jI4EsMr6H4vYvf24eZY1lrQCYLX
+         kDH+5Ei0CWitTN/Vk6c57rQbw4iwieqLF7IF2DMR7YsNcQ1sPY1uEnFyhgEyRZj+0uLL
+         eC1kvRe7EsEZyrkRIgDK9PqAoYOWOBlHsJElcGa3ZkW6DSKrQ22qhCXJxWm06J1zndiq
+         R/qDssKwaKND50CsKaRrTj6KvULYHMVbXKuh2XsYWqmaNa/+8DhcYVYyj9w+bsyX1vu+
+         BXng==
+X-Gm-Message-State: ACrzQf2PwprZVKctL8utfNYUMhuIpZ5hxsvfjj9QPGlQ5KnDmfCno73G
+        YOyq6oSkdmj3gR8opJbJDhdswhOWzrRk4g==
+X-Google-Smtp-Source: AMsMyM7srAyrlmHma4SxMDTA74ZMLMf5cLHrHi0e/Chm/AWyEYC9weEnW9kr+bnf0uDAyigeAJV6HQ==
+X-Received: by 2002:a17:902:8212:b0:186:a260:50a0 with SMTP id x18-20020a170902821200b00186a26050a0mr15692190pln.157.1666770681568;
+        Wed, 26 Oct 2022 00:51:21 -0700 (PDT)
 Received: from linkdev2.localdomain ([49.37.37.214])
-        by smtp.gmail.com with ESMTPSA id w20-20020a170902ca1400b001714e7608fdsm2310913pld.256.2022.10.26.00.51.14
+        by smtp.gmail.com with ESMTPSA id w20-20020a170902ca1400b001714e7608fdsm2310913pld.256.2022.10.26.00.51.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Oct 2022 00:51:17 -0700 (PDT)
+        Wed, 26 Oct 2022 00:51:21 -0700 (PDT)
 From:   Pratyush Kumar Khan <pratyush@sipanda.io>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     tom@sipanda.io, abuduri@ventanamicro.com, chethan@sipanda.io,
         Aravind Kumar Buduri <aravind.buduri@gmail.com>
-Subject: [RFC PATCH 3/4] xdp: Support for kParser as bpf helper function
-Date:   Wed, 26 Oct 2022 13:20:53 +0530
-Message-Id: <20221026075054.119069-4-pratyush@sipanda.io>
+Subject: [RFC PATCH 4/4] xdp: Support for flow_dissector as bpf helper function
+Date:   Wed, 26 Oct 2022 13:20:54 +0530
+Message-Id: <20221026075054.119069-5-pratyush@sipanda.io>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221026075054.119069-1-pratyush@sipanda.io>
 References: <20221026075054.119069-1-pratyush@sipanda.io>
@@ -63,7 +63,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,278 +73,279 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Aravind Kumar Buduri <aravind.buduri@gmail.com>
 
-	This patch adds an XDP helper to parse packets
-	using the kParser. The metadata produced by the
-	kParser is returned in the buf pointer whose
-	size is len. conf provides a key that
-	identifies the kParser to invoke and conf_len
-	is the length of the key.
-	The sample xdp program is loaded into xdp hook
-	calls xdp helper function to get the metadata.
+        xdp program which is loaded into the xdp hook
+	calls the xdp helper function to get the metadata.
 
-	bpf helper function prototype for kParser.
-	long bpf_xdp_kparser(struct xdp_buff *xdp_md,
-			     void *conf, u32 conf_len,
-			     void *buf, u32 len);
-            xdp_md          - xdp buffer pointer
-            conf            - kParser parser identifier
-			      (hash key,name)
-            conf_len        - size of conf in bytes
-            buf             - metadata buffer to pass
-			      to kparser
-            len             - metadata size in bytes
+        bpf helper function prototype for flow dissector:
+        long bpf_xdp_flow_dissector(struct xdp_buff *xdp_md,
+                                    u32 flowd_sel,
+				    void *buf, u32 len);
+        xdp_md          - xdp buffer pointer
+        flowd_sel       - key selection (either basic
+			  keys(0) or big parser keys(1))
+	buf             - received metadata buffer
+        len             - size of the metadata buffer
 
-	This helper parses a packet using the kParser.
-	The metadata produced by the parser is returned
-	in the buf pointer whose size is len. conf provides
-	a key that identifies the parser to invoke and
-	conf_len is the length of the key
-
-	metadata is mapped to bpf map.So that user space bpf
-        program or bpftool can read the map(metadata is
-        displayed in BTF format).
-
-        funchooks are callbacks for packet parsing functions
-	of the kParser module and will be populated after
-	the kParser module is loaded.
-
-        bpf xdp helper function is defined for kernel
-	parser(kParser).
-        kParser is configured via userspace ip command.
-        kParser data path API's as mentioned in kparser.h are
-	invoked using registered callback hooks.
-        xdp frame is passed on to kParser via the xdp helper function
-        and metadata is populated in the user specified buffer.
-
-        xdp user space component, which loads xdp kernel component
-        into xdp hook and displays number of packets
-        transmitted/received per second.
+        This helper parses a packet using the Flow dissector
+	API.
+        The metadata produced by the Flow dissecor is returned
+	in the buf pointer whose size is len. The parameter
+	flowd_sel will specify which type of keys(either basic
+	keys or big parser keys) used for parsing.
+   
+        Below are the steps implemented,
+        bpf xdp helper function is defined for the flow
+	dissector.xdp frame is passed on to Flow dissector
+	call and with keys(either basic keys or big parser
+	keys).bpf helper function calls __skb_flow_dissector()
+	with xdp buffer,keys and user specified buffer
+	for metadata.
+        xdp frame is passed via xdp helper function and metadata
+	is populated in the user specified buffer.
+       
+        xdp user space component, which loads xdp kernel
+	component into xdp hook and displays number of packets
+	transmitted/received per second.
 
 Signed-off-by: Aravind Kumar Buduri <aravind.buduri@gmail.com>
 ---
- include/uapi/linux/bpf.h       |  10 ++
- net/core/filter.c              |  97 +++++++++++++++++++
- samples/bpf/Makefile           |   3 +
- samples/bpf/metadata_def.h     |  21 ++++
- samples/bpf/xdp_kparser_kern.c |  94 ++++++++++++++++++
- samples/bpf/xdp_kparser_user.c | 171 +++++++++++++++++++++++++++++++++
- tools/include/uapi/linux/bpf.h |  10 ++
- 7 files changed, 406 insertions(+)
- create mode 100644 samples/bpf/metadata_def.h
- create mode 100644 samples/bpf/xdp_kparser_kern.c
- create mode 100644 samples/bpf/xdp_kparser_user.c
+ include/uapi/linux/bpf.h              |  10 ++
+ net/core/filter.c                     | 147 ++++++++++++++++++++++
+ samples/bpf/Makefile                  |   3 +
+ samples/bpf/xdp_flow_dissector_kern.c |  91 ++++++++++++++
+ samples/bpf/xdp_flow_dissector_user.c | 170 ++++++++++++++++++++++++++
+ tools/include/uapi/linux/bpf.h        |  10 ++
+ 6 files changed, 431 insertions(+)
+ create mode 100644 samples/bpf/xdp_flow_dissector_kern.c
+ create mode 100644 samples/bpf/xdp_flow_dissector_user.c
 
 diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 17f61338f8f8..b88d0aa689a9 100644
+index b88d0aa689a9..24f48268268c 100644
 --- a/include/uapi/linux/bpf.h
 +++ b/include/uapi/linux/bpf.h
-@@ -5435,6 +5435,15 @@ union bpf_attr {
-  *		**-E2BIG** if user-space has tried to publish a sample which is
-  *		larger than the size of the ring buffer, or which cannot fit
-  *		within a struct bpf_dynptr.
+@@ -5444,6 +5444,15 @@ union bpf_attr {
+  *              in *buf* of *len* bytes.
+  *      Return
+  *              0 on success, or a negative error in case of failure.
 + *
-+ * long bpf_xdp_kparser(struct xdp_buff *xdp_md, void *conf, u32 conf_len, void *buf, u32 len)
++ * long bpf_xdp_flow_dissector(struct xdp_buff *xdp_md, u32 flowd_sel, void *buf, u32 len)
 + *      Description
-+ *              This helper is provided as an easy way to parse the metadata in
-+ *              xdp buffer .The frame associated to *xdp_md*,configuration *conf*
-+ *              config len of *conf_len* and metadata is stored
-+ *              in *buf* of *len* bytes.
++ *              This helper is provided as an easy way to parse the metadata
++ *              and test the functionality. The frame associated to *xdp_md*,
++ *              choosing flowd *flowd_sel* and metadata is stored in *buf* of
++ *              *len* bytes.
 + *      Return
 + *              0 on success, or a negative error in case of failure.
   */
  #define ___BPF_FUNC_MAPPER(FN, ctx...)			\
  	FN(unspec, 0, ##ctx)				\
-@@ -5647,6 +5656,7 @@ union bpf_attr {
- 	FN(tcp_raw_check_syncookie_ipv6, 207, ##ctx)	\
+@@ -5657,6 +5666,7 @@ union bpf_attr {
  	FN(ktime_get_tai_ns, 208, ##ctx)		\
  	FN(user_ringbuf_drain, 209, ##ctx)		\
-+	FN(xdp_kparser, 210, ##ctx)			\
+ 	FN(xdp_kparser, 210, ##ctx)			\
++	FN(xdp_flow_dissector, 211, ##ctx)		\
  	/* */
  
  /* backwards-compatibility macros for users of __BPF_FUNC_MAPPER that don't
 diff --git a/net/core/filter.c b/net/core/filter.c
-index bb0136e7a8e4..98b884123814 100644
+index 98b884123814..ffd290914de8 100644
 --- a/net/core/filter.c
 +++ b/net/core/filter.c
-@@ -81,6 +81,13 @@
- #include <net/xdp.h>
- #include <net/mptcp.h>
- 
-+#if IS_ENABLED(CONFIG_KPARSER)
-+#include <linux/kparser.h>
-+#include <net/kparser.h>
-+#include <linux/rhashtable.h>
-+#include <linux/ktime.h>
-+#define KPARSER_DEBUG 1
-+#endif
- static const struct bpf_func_proto *
- bpf_sk_base_func_proto(enum bpf_func_id func_id);
- 
-@@ -3977,6 +3984,92 @@ static const struct bpf_func_proto bpf_xdp_store_bytes_proto = {
+@@ -3984,6 +3984,149 @@ static const struct bpf_func_proto bpf_xdp_store_bytes_proto = {
  	.arg4_type	= ARG_CONST_SIZE,
  };
  
 +#if IS_ENABLED(CONFIG_KPARSER)
-+struct get_kparser_funchooks kparser_funchooks = {
-+	.kparser_get_parser_hook = NULL,
-+	.__kparser_parse_hook = NULL,
-+	.kparser_put_parser_hook = NULL,
-+};
-+EXPORT_SYMBOL_GPL(kparser_funchooks);
-+
-+int kparser_xdp_parse(struct xdp_buff *xdp, void *conf, size_t conf_len,
-+		      void *_metadata, size_t metadata_len)
++static int xdp_flow_dissector(struct xdp_buff *xdp, u32 flowd_sel, void *buf, u32 len)
 +{
-+	struct kparser_hkey *keyptr = (struct kparser_hkey *)conf;
++	void *data = xdp->data;
++	struct ethhdr *eth = (struct ethhdr *)data;
 +	ktime_t start_time, stop_time, elapsed_time;
-+	struct kparser_hkey key;
-+	const void *parser;
-+	void *data;
-+	int pktlen;
-+	int rc = 0;
++	struct iphdr *ip = data + sizeof(*eth);
++	struct flow_keys_basic keys;
++	struct vlan_hdr *vlan_hdr;
++	unsigned short  proto;
++	struct flow_keys flow;
++	struct flow_keys *flowptr = &flow;
++	struct ipv6hdr *ip6h;
++	struct arphdr  *arph;
++	int nh_off;
++	int hlen;
++	bool ret;
 +
-+	key.id = keyptr->id;
-+	strcpy(key.name, keyptr->name);
-+	pktlen = xdp_get_buff_len(xdp);
-+	data = (void *)(long)xdp->data;
-+	if (!kparser_funchooks.kparser_get_parser_hook) {
-+		pr_err("\n kparser module not loaded\n");
++	proto =  eth->h_proto;
++
++	if (!buf || flowd_sel > 0xffff || len > 0xffff) {
++		pr_err("\n%s %d len =\n ", __func__, __LINE__);
 +		return -EINVAL;
-+	} else {
-+		parser = kparser_funchooks.kparser_get_parser_hook(&key);
-+		if (!parser) {
-+			pr_err("kparser_get_parser() failed, key:{%s:%u}\n",
-+			       key.name, key.id);
++	}
++	if (flowd_sel == 0) {
++		if (len < sizeof(struct flow_keys_basic)) {
++			pr_err("\n%s %d len = %d size flow_keys_basic= %d len error\n",
++			       __func__, __LINE__, sizeof(struct flow_keys_basic));
++			return -EINVAL;
++		}
++	} else if (flowd_sel == 1) {
++		if (len < sizeof(struct flow_keys)) {
++			pr_err("\n%s %d len = %d size flow_keys= %d len error\n",
++			       __func__, __LINE__, sizeof(struct flow_keys));
 +			return -EINVAL;
 +		}
 +	}
++	nh_off = sizeof(*eth);
++#if KPARSER_DEBUG
++	pr_debug("\n%s nh_off = %d hlen= %d\n",	__func__, nh_off, hlen);
++	pr_debug("%s proto = %d htons(ETH_P_IP)= %d\n",
++		 __func__, proto, htons(ETH_P_IP));
++	pr_debug("%s eth->h_proto = %d ETH_P_IP= %d\n",
++		 __func__, eth->h_proto, ETH_P_IP);
++#endif
++	/* Extract L3 protocol */
++	switch (proto) {
++	case htons(ETH_P_8021Q):
++		hlen = sizeof(*eth) + sizeof(*vlan_hdr);
++		break;
++	case htons(ETH_P_IP):
++		hlen = sizeof(*eth) + sizeof(*ip);
++		break;
++	case htons(ETH_P_IPV6):
++		hlen = sizeof(*eth) + sizeof(*ip6h);
++		break;
++	case htons(ETH_P_ARP):
++		hlen = sizeof(*eth) + sizeof(*arph);
++		break;
++	default:
++		break;
++	}
 +
-+	if (!kparser_funchooks.__kparser_parse_hook) {
-+		pr_err("\n kparser module not loaded\n");
-+		return -EINVAL;
-+	} else {
++	if (flowd_sel == 0) {
++		memset(&keys, 0, sizeof(keys));
++		start_time = ktime_get();
++		ret = __skb_flow_dissect(NULL, NULL, &flow_keys_basic_dissector,
++					 &keys, data, proto, nh_off, hlen, 0);
++		stop_time = ktime_get();
++		elapsed_time = ktime_sub(stop_time, start_time);
++		pr_err("elapsed Time : %lld\n",  ktime_to_ns(elapsed_time));
++		if (ret == true) {
++#if KPARSER_DEBUG
++			pr_debug("\n%d %s keys.control.thoff= %d\n",
++				 __LINE__, __func__, keys.control.thoff);
++			pr_debug("%d %s keys.control.addr_type= %d\n",
++				 __LINE__, __func__, keys.control.addr_type);
++			pr_debug("%d %s keys.control.flags= %d\n",
++				 __LINE__, __func__, keys.control.flags);
++			pr_debug("%d %s keys.basic.n_proto= 0x0x\n",
++				 __LINE__, __func__, ntohs(keys.basic.n_proto));
++			pr_debug("%d %s keys.basic.ip_proto= %d\n",
++				 __LINE__, __func__, keys.basic.ip_proto);
++#endif
++		}
++		memcpy((char *)buf, &keys, sizeof(keys));
++		return 0;
++	} else if (flowd_sel == 1) {
++		memset(&flow, 0, sizeof(flow));
 +#if KPARSER_DEBUG
 +		start_time = ktime_get();
 +#endif
-+		rc = kparser_funchooks.__kparser_parse_hook(parser, data, pktlen,
-+							    _metadata, metadata_len);
++		ret = __skb_flow_dissect(NULL, NULL, &flow_keys_dissector,
++					 &flow, data, proto, nh_off, hlen, 0);
 +#if KPARSER_DEBUG
 +		stop_time = ktime_get();
 +		elapsed_time = ktime_sub(stop_time, start_time);
-+		pr_err("elapsedTime : %lld\n",  ktime_to_ns(elapsed_time));
++		pr_debug("elapsed Time : %lld\n",  ktime_to_ns(elapsed_time));
 +#endif
-+		if (!kparser_funchooks.kparser_put_parser_hook) {
-+			pr_err("\n kparser module not loaded\n");
-+			return -EINVAL;
-+		} else {
-+			if (kparser_funchooks.kparser_put_parser_hook(parser) != true)
-+				pr_err("kparser_put_parser() failed\n");
-+		}
++		if (ret == true) {
 +#if KPARSER_DEBUG
-+		pr_debug("%s:rc:{%d:%s}\n", __func__, rc, kparser_code_to_text(rc));
++			pr_debug("%d %s control.thoff= %d\n",
++				 __LINE__, __func__, flowptr->control.thoff);
++			pr_debug("%d %s keys.control.addr_type= %d\n",
++				 __LINE__, __func__, flowptr->control.addr_type);
++			pr_debug("%d %s keys.control.flags= %d\n",
++				 __LINE__, __func__, flowptr->control.flags);
++			pr_debug("%d %s flowptr->basic.n_proto= 0x0%x\n",
++				 __LINE__, __func__, ntohs(flowptr->basic.n_proto));
++			pr_debug("%d %s flowptr->basic.ip_proto= %d\n",
++				 __LINE__, __func__, flowptr->basic.ip_proto);
++			pr_debug("%d %s flowptr->addrs.v4addrs.src = %pI4\n",
++				 __LINE__, __func__, &flowptr->addrs.v4addrs.src);
++			pr_debug("%d %s flowptr->addrs.v4addrs.dst = %pI4\n",
++				 __LINE__, __func__, &flowptr->addrs.v4addrs.dst);
 +#endif
++		}
++		memcpy((char *)buf, &flow, sizeof(flow));
++		return 0;
 +	}
-+	return rc;
-+}
-+
-+BPF_CALL_5(bpf_xdp_kparser, struct xdp_buff *, xdp, void *, conf,
-+	   u32, conf_len, void *, buf, u32, len)
-+{
-+	int len1;
-+	int err;
-+
-+	len1 = xdp_get_buff_len(xdp);
-+	err = kparser_xdp_parse(xdp, conf, conf_len, buf, len);
 +	return 0;
 +}
 +
-+const struct bpf_func_proto bpf_xdp_kparser_proto = {
-+	.func           = bpf_xdp_kparser,
++BPF_CALL_4(bpf_xdp_flow_dissector, struct xdp_buff *, xdp, u32, flowd_sel,
++	   void *, buf, u32, len)
++{
++	int ret;
++
++	ret = xdp_flow_dissector(xdp, flowd_sel, buf, len);
++	return ret;
++}
++
++const struct bpf_func_proto bpf_xdp_flow_dissector_proto = {
++	.func           = bpf_xdp_flow_dissector,
 +	.gpl_only       = false,
 +	.ret_type       = RET_INTEGER,
 +	.arg1_type      = ARG_PTR_TO_CTX,
-+	.arg2_type      = ARG_PTR_TO_MEM | MEM_RDONLY,
-+	.arg3_type      = ARG_CONST_SIZE,
-+	.arg4_type      = ARG_PTR_TO_UNINIT_MEM,
-+	.arg5_type      = ARG_CONST_SIZE,
++	.arg2_type      = ARG_ANYTHING,
++	.arg3_type      = ARG_PTR_TO_UNINIT_MEM,
++	.arg4_type      = ARG_CONST_SIZE,
 +};
 +#endif
 +
- static int bpf_xdp_frags_increase_tail(struct xdp_buff *xdp, int offset)
- {
- 	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
-@@ -7979,6 +8072,10 @@ xdp_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 	case BPF_FUNC_tcp_raw_check_syncookie_ipv6:
- 		return &bpf_tcp_raw_check_syncookie_ipv6_proto;
- #endif
+ #if IS_ENABLED(CONFIG_KPARSER)
+ struct get_kparser_funchooks kparser_funchooks = {
+ 	.kparser_get_parser_hook = NULL,
+@@ -8076,6 +8219,10 @@ xdp_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ #if IS_ENABLED(CONFIG_KPARSER)
+ 	case BPF_FUNC_xdp_kparser:
+ 		return &bpf_xdp_kparser_proto;
 +#endif
 +#if IS_ENABLED(CONFIG_KPARSER)
-+	case BPF_FUNC_xdp_kparser:
-+		return &bpf_xdp_kparser_proto;
++	case BPF_FUNC_xdp_flow_dissector:
++		return &bpf_xdp_flow_dissector_proto;
  #endif
  	default:
  		return bpf_sk_base_func_proto(func_id);
 diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index 727da3c5879b..0777447b7c88 100644
+index 0777447b7c88..108e29d097dc 100644
 --- a/samples/bpf/Makefile
 +++ b/samples/bpf/Makefile
-@@ -46,6 +46,7 @@ tprogs-y += syscall_tp
- tprogs-y += cpustat
+@@ -47,6 +47,7 @@ tprogs-y += cpustat
  tprogs-y += xdp_adjust_tail
  tprogs-y += xdp_fwd
-+tprogs-y += xdp_kparser
+ tprogs-y += xdp_kparser
++tprogs-y += xdp_flow_dissector
  tprogs-y += task_fd_query
  tprogs-y += xdp_sample_pkts
  tprogs-y += ibumad
-@@ -106,6 +107,7 @@ xdp_rxq_info-objs := xdp_rxq_info_user.o
- syscall_tp-objs := syscall_tp_user.o
+@@ -108,6 +109,7 @@ syscall_tp-objs := syscall_tp_user.o
  cpustat-objs := cpustat_user.o
  xdp_adjust_tail-objs := xdp_adjust_tail_user.o
-+xdp_kparser-objs := xdp_kparser_user.o
+ xdp_kparser-objs := xdp_kparser_user.o
++xdp_flow_dissector-objs := xdp_flow_dissector_user.o
  xdp_fwd-objs := xdp_fwd_user.o
  task_fd_query-objs := task_fd_query_user.o $(TRACE_HELPERS)
  xdp_sample_pkts-objs := xdp_sample_pkts_user.o
-@@ -168,6 +170,7 @@ always-y += syscall_tp_kern.o
- always-y += cpustat_kern.o
+@@ -171,6 +173,7 @@ always-y += cpustat_kern.o
  always-y += xdp_adjust_tail_kern.o
  always-y += xdp_fwd_kern.o
-+always-y += xdp_kparser_kern.o
+ always-y += xdp_kparser_kern.o
++always-y += xdp_flow_dissector_kern.o
  always-y += task_fd_query_kern.o
  always-y += xdp_sample_pkts_kern.o
  always-y += ibumad_kern.o
-diff --git a/samples/bpf/metadata_def.h b/samples/bpf/metadata_def.h
+diff --git a/samples/bpf/xdp_flow_dissector_kern.c b/samples/bpf/xdp_flow_dissector_kern.c
 new file mode 100644
-index 000000000000..114849d04e12
+index 000000000000..778e65c3b039
 --- /dev/null
-+++ b/samples/bpf/metadata_def.h
-@@ -0,0 +1,21 @@
-+/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
-+/* Copyright (c) 2022-23 Aravind Kumar Buduri <aravind.buduri@gmail.com>
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of version 2 of the GNU General Public
-+ * License as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful, but
-+ * WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-+ * General Public License for more details.
-+ */
-+struct user_frame {
-+	unsigned short ip_offset;
-+	unsigned short l4_offset;
-+	unsigned int ipv4_addrs[2];
-+	unsigned short ports[2];
-+} __packed;
-+
-+struct user_metadata {
-+	struct user_frame frames;
-+} __packed;
-diff --git a/samples/bpf/xdp_kparser_kern.c b/samples/bpf/xdp_kparser_kern.c
-new file mode 100644
-index 000000000000..bc4146bc3a94
---- /dev/null
-+++ b/samples/bpf/xdp_kparser_kern.c
-@@ -0,0 +1,94 @@
++++ b/samples/bpf/xdp_flow_dissector_kern.c
+@@ -0,0 +1,91 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/* Copyright (c) 2022-23 Aravind Kumar Buduri <aravind.buduri@gmail.com>
 + * This program is free software; you can redistribute it and/or
@@ -356,7 +357,6 @@ index 000000000000..bc4146bc3a94
 + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 + * General Public License for more details.
 + */
-+
 +#define KBUILD_MODNAME "foo"
 +#include <uapi/linux/bpf.h>
 +#include <linux/in.h>
@@ -365,11 +365,11 @@ index 000000000000..bc4146bc3a94
 +#include <linux/if_vlan.h>
 +#include <linux/ip.h>
 +#include <linux/ipv6.h>
-+#include <linux/kparser.h>
++
 +#include <bpf/bpf_helpers.h>
-+#include "metadata_def.h"
-+#define IPV6_FLOWINFO_MASK              cpu_to_be32(0x0FFFFFFF)
-+#define DEBUG 0
++#include <net/flow_dissector.h>
++
++#define FLOWD_DEBUG 0
 +
 +struct {
 +	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
@@ -392,59 +392,57 @@ index 000000000000..bc4146bc3a94
 +	}
 +}
 +
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__uint(max_entries, 2);
-+	__type(key, __u32);
-+	__type(value, struct user_metadata);
-+} ctx_map SEC(".maps");
-+
-+static __always_inline void xdp_update_ctx(const void *buffer, size_t len)
++void dump_flowd_user_buf(void *buf, int len)
 +{
-+	const struct user_metadata *buf = buffer;
-+	__u32 key = 1;
++	struct flow_keys *flowptr = (struct flow_keys *)buf;
 +
-+	if (!buf || len < sizeof(*buf)) {
-+		bpf_printk("Insufficient buffer error\n");
++	if (!buf || len < sizeof(*flowptr)) {
++		bpf_printk(" Insufficient buffer\n");
 +		return;
 +	}
-+	bpf_map_update_elem(&ctx_map, &key, buf, BPF_ANY);
++#if FLOWD_DEBUG
++	bpf_printk("pkts received = %lu\n ", pkts);
++	bpf_printk("control.thoff= %d\n ",
++			flowptr->control.thoff);
++	bpf_printk("keys.control.addr_type= %d\n ",
++			flowptr->control.addr_type);
++	bpf_printk("keys.control.flags= %d\n ",
++			flowptr->control.flags);
++	bpf_printk("flowptr->basic.n_proto= 0x0%x\n ",
++			ntohs(flowptr->basic.n_proto));
++	bpf_printk("flowptr->basic.ip_proto= %d\n ",
++			flowptr->basic.ip_proto);
++	bpf_printk("flowptr->addrs.v4addrs.src = %pi4\n ",
++			&flowptr->addrs.v4addrs.src);
++	bpf_printk("flowptr->addrs.v4addrs.dst = %pi4\n ",
++			&flowptr->addrs.v4addrs.dst);
++#endif
++
 +}
 +
-+static struct user_metadata user_metadata_buffer;
-+static struct kparser_hkey key;
++char arr1[512] = {0};
 +
 +SEC("prog")
-+int xdp_parser_prog(struct xdp_md *ctx)
++int xdp_flowd_prog(struct xdp_md *ctx)
 +{
-+	/* prepare a parser key which is already created and configured via the ip cli */
-+	key.id = 0xffff;
-+	strcpy(key.name, "tuple_parser");
-+
-+	/* set all bits to 1 in user metadata buffer to easily determine later which
-+	 * fields were set/updated by kParser KMOD
++	/*
++	 * code for flow dissector
++	 * 2nd parameter differenciate flow dissector selection
++	 * 0 - basic key flow dissector
++	 * 1 - big key flow dissector
 +	 */
-+	memset(&user_metadata_buffer, 0xff, sizeof(user_metadata_buffer));
-+
-+	bpf_xdp_kparser(ctx, &key, sizeof(key), &user_metadata_buffer,
-+			sizeof(user_metadata_buffer));
-+
-+	/* now dump the metadata to be displayed by bpftool */
-+	xdp_update_ctx(&user_metadata_buffer, sizeof(user_metadata_buffer));
-+
-+	/* count how many packets were processed in this interval */
++	bpf_xdp_flow_dissector(ctx, 1, arr1, 512);
 +	count_pkts();
-+
 +	return XDP_PASS;
 +}
 +
 +char _license[] SEC("license") = "GPL";
-diff --git a/samples/bpf/xdp_kparser_user.c b/samples/bpf/xdp_kparser_user.c
+diff --git a/samples/bpf/xdp_flow_dissector_user.c b/samples/bpf/xdp_flow_dissector_user.c
 new file mode 100644
-index 000000000000..0ebcadce0431
+index 000000000000..7fc1be3f6f14
 --- /dev/null
-+++ b/samples/bpf/xdp_kparser_user.c
-@@ -0,0 +1,171 @@
++++ b/samples/bpf/xdp_flow_dissector_user.c
+@@ -0,0 +1,170 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/* Copyright (c) 2022-23 Aravind Kumar Buduri <aravind.buduri@gmail.com>
 + *
@@ -615,32 +613,31 @@ index 000000000000..0ebcadce0431
 +
 +	return 0;
 +}
-+
 diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 17f61338f8f8..b88d0aa689a9 100644
+index b88d0aa689a9..24f48268268c 100644
 --- a/tools/include/uapi/linux/bpf.h
 +++ b/tools/include/uapi/linux/bpf.h
-@@ -5435,6 +5435,15 @@ union bpf_attr {
-  *		**-E2BIG** if user-space has tried to publish a sample which is
-  *		larger than the size of the ring buffer, or which cannot fit
-  *		within a struct bpf_dynptr.
+@@ -5444,6 +5444,15 @@ union bpf_attr {
+  *              in *buf* of *len* bytes.
+  *      Return
+  *              0 on success, or a negative error in case of failure.
 + *
-+ * long bpf_xdp_kparser(struct xdp_buff *xdp_md, void *conf, u32 conf_len, void *buf, u32 len)
++ * long bpf_xdp_flow_dissector(struct xdp_buff *xdp_md, u32 flowd_sel, void *buf, u32 len)
 + *      Description
-+ *              This helper is provided as an easy way to parse the metadata in
-+ *              xdp buffer .The frame associated to *xdp_md*,configuration *conf*
-+ *              config len of *conf_len* and metadata is stored
-+ *              in *buf* of *len* bytes.
++ *              This helper is provided as an easy way to parse the metadata
++ *              and test the functionality. The frame associated to *xdp_md*,
++ *              choosing flowd *flowd_sel* and metadata is stored in *buf* of
++ *              *len* bytes.
 + *      Return
 + *              0 on success, or a negative error in case of failure.
   */
  #define ___BPF_FUNC_MAPPER(FN, ctx...)			\
  	FN(unspec, 0, ##ctx)				\
-@@ -5647,6 +5656,7 @@ union bpf_attr {
- 	FN(tcp_raw_check_syncookie_ipv6, 207, ##ctx)	\
+@@ -5657,6 +5666,7 @@ union bpf_attr {
  	FN(ktime_get_tai_ns, 208, ##ctx)		\
  	FN(user_ringbuf_drain, 209, ##ctx)		\
-+	FN(xdp_kparser, 210, ##ctx)			\
+ 	FN(xdp_kparser, 210, ##ctx)			\
++	FN(xdp_flow_dissector, 211, ##ctx)		\
  	/* */
  
  /* backwards-compatibility macros for users of __BPF_FUNC_MAPPER that don't
