@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 38FA260E1BE
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 15:16:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8752760E1C4
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 15:16:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234019AbiJZNQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 09:16:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51568 "EHLO
+        id S233663AbiJZNQn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 09:16:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233390AbiJZNQf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 09:16:35 -0400
+        with ESMTP id S234034AbiJZNQh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 09:16:37 -0400
 Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21AA4A99D5;
-        Wed, 26 Oct 2022 06:16:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 548118306F;
+        Wed, 26 Oct 2022 06:16:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1666790194; x=1698326194;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=mjFPBPmpLWz/562nklZTla4ladz+0IGVjIOFuv2LArA=;
-  b=g2Yh5SKETTVgbyXjbhuqHF8wiqtjMF3HD/VnrHDKwvzXNmYOJDKFQxw/
-   3u4XyEyUFqjIzr9LsK68QWeHA1zswcujuWJ5/ALwhaaqvcWdeqxVY3pE5
-   1S0ZcUXDUtrKbdf9EfaNk4dAN4tkZe5ch89w0J4F4DeCGExBBX5vyDmcf
-   V2+b5DSxKMaJ9phlsHoyAC+D7mTjnzt/QzDHpweZbj+1UxWhBXBWjgt3A
-   EEL8Sweo/izH6dickrdNPA1t2ng/I78+hLL0y4aIz/v3knfSAimXt6Bj+
-   FJJJVGRn6pu+pJnmZs0clvlRzh3eDVJHl3UTuGJxtwTWbTURlmaEL4wTj
-   g==;
+  t=1666790196; x=1698326196;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=rmV74reOQIhMVx3wfFt0WNHhPTZ+EE2t0X4nueZsE3E=;
+  b=lwV9B2/GGH8BD3LR4e9svhvvx7RNQizqm6gj1u8lWwh2uS3mbd2h7m77
+   fFIeenw0jw/sk36Jn7aB0/3WrSp0hL8FXfH2ZmWULWIKn+xthB/wfu0o+
+   ZBsxG0dMlFqe2vKriIiEh9HpznGjM3EH8yUW1KIryzddTvbzCcTwpW7MJ
+   NF7GBKeuu/1t0Cinlw6WPO1PYp5Jvbv9lpEOZkAP0uBqIMbpc0lL3Rk4I
+   dZlsGK1d153gvSVyeNXgRCb1NPTwDbtBfJtG0cofHZfv5BNuWtn0A0PW5
+   f7weVBgDd80tPnUa8YQLJgSzJCqUt9KtMF+Wg70X6SeXKVXrXJCCscCTv
+   A==;
 X-IronPort-AV: E=Sophos;i="5.95,214,1661810400"; 
-   d="scan'208";a="26988467"
+   d="scan'208";a="26988469"
 Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
   by mx1-pgp.tq-group.com with ESMTP; 26 Oct 2022 15:16:31 +0200
 Received: from mx1.tq-group.com ([192.168.6.7])
@@ -39,23 +39,23 @@ X-PGP-Universal: processed;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
   t=1666790191; x=1698326191;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=mjFPBPmpLWz/562nklZTla4ladz+0IGVjIOFuv2LArA=;
-  b=VkLkxiFpxIRXSvtH9mdheulw/zvTruyrS/vc9L0P69NBK8JYa8AMRgYJ
-   hEHrAkXwDGTMCnRVT3yX3frv80r/tPy4dAIfcw4LCm38awoH0Vhb8HOH7
-   YWwetleT4ujenU/RvxoXQ2C85ybsZxE9caxuoY89vpapB+JyO7UZ1W99U
-   PtlWKjo/aWDCmUwiVMye0cDfpowfV51SzGDFO0X55SBjdxO9w/SHuDvJV
-   M1RBKlZ/FcnataEHlp2nlFDAKxqKcuATaVjAdDKZ0HTFh4LAjsqvh6DQL
-   RlQz/n1KCzIVoVXfO6kMdVolcnzFfap1Mu/4efFQ76vsoduJJfNx5J87C
-   w==;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=rmV74reOQIhMVx3wfFt0WNHhPTZ+EE2t0X4nueZsE3E=;
+  b=FXDp8xAAIqGd6/RL9y8KrOnNq0i/vgBaqMYdKGbnkXh0qoMQa68LPoQ3
+   5JBbE5FQHNkEgB0edF+VAwEUnlpvFXIynS+aBvLjzFu9ClGKITol5aLab
+   Ndh6731IPrB2/3d+OG5sVUbsWvU1m+RVoRpmf0Te2jM0r7qI/AbPip9n6
+   vIT5zrl4QaS8x9eUdclxXUnA52znNWj8c64Y1PODYEuhDJQbzJxOyxBEb
+   sfl/JUUIDDL5qJ9wr+Wo2UCO8p3YPG5kx2eclsonv9VPs9hEOMxZnvT44
+   CD2caRrZVFM8riiFR/i0e115nWeWRJjm7jJyc6udD37yC8gx/F7vDMAyU
+   g==;
 X-IronPort-AV: E=Sophos;i="5.95,214,1661810400"; 
-   d="scan'208";a="26988466"
+   d="scan'208";a="26988468"
 Received: from vtuxmail01.tq-net.de ([10.115.0.20])
   by mx1.tq-group.com with ESMTP; 26 Oct 2022 15:16:31 +0200
 Received: from localhost.localdomain (SCHIFFERM-M2.tq-net.de [10.121.49.14])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id BFB01280056;
-        Wed, 26 Oct 2022 15:16:29 +0200 (CEST)
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 21BFC280072;
+        Wed, 26 Oct 2022 15:16:30 +0200 (CEST)
 From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 To:     Arnd Bergmann <arnd@arndb.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -77,10 +77,12 @@ Cc:     Marcel Holtmann <marcel@holtmann.org>,
         netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux@ew.tq-group.com,
         Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Subject: [RFC 0/5] "notify-device" for cross-driver readiness notification
-Date:   Wed, 26 Oct 2022 15:15:29 +0200
-Message-Id: <cover.1666786471.git.matthias.schiffer@ew.tq-group.com>
+Subject: [RFC 1/5] misc: introduce notify-device driver
+Date:   Wed, 26 Oct 2022 15:15:30 +0200
+Message-Id: <db30127ab4741d4e71b768881197f4791174f545.1666786471.git.matthias.schiffer@ew.tq-group.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1666786471.git.matthias.schiffer@ew.tq-group.com>
+References: <cover.1666786471.git.matthias.schiffer@ew.tq-group.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -92,81 +94,199 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series is obviously missing documentation, MAINTAINERS
-entries, etc., but I'd like to solicit some basic feedback on whether
-this approach makes sense at all before I proceed. If it does, the
-naming is also very much open for bikeshedding - I'm not too happy with
-"notify-device".
+A notify-device is a synchronization facility that allows to query
+"readiness" across drivers, without creating a direct dependency between
+the driver modules. The notify-device can also be used to trigger deferred
+probes.
 
-The basic problem that the notify-device tries to solve is the
-synchronization of firmware loading readiness between the Marvell/NXP
-WLAN and Bluetooth drivers, but it may also be applicable to other
-drivers.
-
-The WLAN and Bluetooth adapters are handled by separate drivers, and may
-be connected to the CPU using different interfaces (for example SDIO for
-WLAN and UART for Bluetooth). However, both adapters share a single
-firmware that may be uploaded via either interface.
-
-For the SDIO+UART case, uploading the firmware via SDIO is usually
-preferable, but even when the interface doesn't matter, it seems like a
-good idea to clearly define which driver should handle it. To avoid
-making the Bluetooth driver more complicated than necessary in this case,
-we'd like to defer the probing of the driver until the firmware is ready.
-
-For this purpose, we are introducing a notify-device, with the following
-properties:
-
-- The device is created by a driver as soon as some "readiness
-  condition" is satisfied
-- Creating the device also binds a stub driver, so deferred probes are
-  triggered
-- Looking up the notify device is possible via OF node / phandle reference
-
-This approach avoids a hard dependency between the WLAN and Bluetooth
-driver, and works regardless of the driver load order.
-
-The first patch implementes the notify-device driver itself, and the
-rest shows how the device could be hooked up to the mwifiex and hci_mrvl
-drivers. A device tree making use of the notify-device could look like
-the following:
-
-    &sdhci1 {
-        wifi@1 {
-            compatible = "marvell,sd8987";
-            reg = <1>;
-    
-            wifi_firmware: firmware-notifier {};
-        };
-    };
-
-    &main_uart3 {
-        bluetooth {
-            compatible = "marvell,sd8987-bt";
-            firmware-ready = <&wifi_firmware>;
-        };
-    };
-
-
-Matthias Schiffer (5):
-  misc: introduce notify-device driver
-  wireless: mwifiex: signal firmware readiness using notify-device
-  bluetooth: hci_mrvl: select firmwares to load by match data
-  bluetooth: hci_mrvl: add support for SD8987
-  bluetooth: hci_mrvl: allow waiting for firmware load using
-    notify-device
-
- drivers/bluetooth/hci_mrvl.c                |  77 ++++++++++++--
- drivers/misc/Kconfig                        |   4 +
- drivers/misc/Makefile                       |   1 +
- drivers/misc/notify-device.c                | 109 ++++++++++++++++++++
- drivers/net/wireless/marvell/mwifiex/main.c |  14 +++
- drivers/net/wireless/marvell/mwifiex/main.h |   1 +
- include/linux/notify-device.h               |  33 ++++++
- 7 files changed, 228 insertions(+), 11 deletions(-)
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+---
+ drivers/misc/Kconfig          |   4 ++
+ drivers/misc/Makefile         |   1 +
+ drivers/misc/notify-device.c  | 109 ++++++++++++++++++++++++++++++++++
+ include/linux/notify-device.h |  33 ++++++++++
+ 4 files changed, 147 insertions(+)
  create mode 100644 drivers/misc/notify-device.c
  create mode 100644 include/linux/notify-device.h
 
+diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+index 358ad56f6524..63559e9f854c 100644
+--- a/drivers/misc/Kconfig
++++ b/drivers/misc/Kconfig
+@@ -496,6 +496,10 @@ config VCPU_STALL_DETECTOR
+ 
+ 	  If you do not intend to run this kernel as a guest, say N.
+ 
++config NOTIFY_DEVICE
++	tristate "Notify device"
++	depends on OF
++
+ source "drivers/misc/c2port/Kconfig"
+ source "drivers/misc/eeprom/Kconfig"
+ source "drivers/misc/cb710/Kconfig"
+diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+index ac9b3e757ba1..1e8012112b43 100644
+--- a/drivers/misc/Makefile
++++ b/drivers/misc/Makefile
+@@ -62,3 +62,4 @@ obj-$(CONFIG_HI6421V600_IRQ)	+= hi6421v600-irq.o
+ obj-$(CONFIG_OPEN_DICE)		+= open-dice.o
+ obj-$(CONFIG_GP_PCI1XXXX)	+= mchp_pci1xxxx/
+ obj-$(CONFIG_VCPU_STALL_DETECTOR)	+= vcpu_stall_detector.o
++obj-$(CONFIG_NOTIFY_DEVICE)	+= notify-device.o
+diff --git a/drivers/misc/notify-device.c b/drivers/misc/notify-device.c
+new file mode 100644
+index 000000000000..42e0980394ea
+--- /dev/null
++++ b/drivers/misc/notify-device.c
+@@ -0,0 +1,109 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++
++#include <linux/device/class.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/notify-device.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
++
++static void notify_device_release(struct device *dev)
++{
++	of_node_put(dev->of_node);
++	kfree(dev);
++}
++
++static struct class notify_device_class = {
++	.name = "notify-device",
++	.owner = THIS_MODULE,
++	.dev_release = notify_device_release,
++};
++
++static struct platform_driver notify_device_driver = {
++	.driver = {
++		.name = "notify-device",
++	},
++};
++
++struct device *notify_device_create(struct device *parent, const char *child)
++{
++	struct device_node *node;
++	struct device *dev;
++	int err;
++
++	if (!parent->of_node)
++		return ERR_PTR(-EINVAL);
++
++	node = of_get_child_by_name(parent->of_node, child);
++	if (!node)
++		return NULL;
++
++	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
++	if (!dev) {
++		of_node_put(node);
++		return ERR_PTR(-ENOMEM);
++	}
++
++	dev_set_name(dev, "%s:%s", dev_name(parent), child);
++	dev->class = &notify_device_class;
++	dev->parent = parent;
++	dev->of_node = node;
++	err = device_register(dev);
++	if (err) {
++		put_device(dev);
++		return ERR_PTR(err);
++	}
++
++	dev->driver = &notify_device_driver.driver;
++	err = device_bind_driver(dev);
++	if (err) {
++		device_unregister(dev);
++		return ERR_PTR(err);
++	}
++
++	return dev;
++}
++EXPORT_SYMBOL_GPL(notify_device_create);
++
++void notify_device_destroy(struct device *dev)
++{
++	if (!dev)
++		return;
++
++	device_release_driver(dev);
++	device_unregister(dev);
++}
++EXPORT_SYMBOL_GPL(notify_device_destroy);
++
++struct device *notify_device_find_by_of_node(struct device_node *node)
++{
++	return class_find_device_by_of_node(&notify_device_class, node);
++}
++EXPORT_SYMBOL_GPL(notify_device_find_by_of_node);
++
++static int __init notify_device_init(void)
++{
++	int err;
++
++	err = class_register(&notify_device_class);
++	if (err)
++		return err;
++
++	err = platform_driver_register(&notify_device_driver);
++	if (err) {
++		class_unregister(&notify_device_class);
++		return err;
++	}
++
++	return 0;
++}
++
++static void __exit notify_device_exit(void)
++{
++	platform_driver_unregister(&notify_device_driver);
++	class_unregister(&notify_device_class);
++}
++
++module_init(notify_device_init);
++module_exit(notify_device_exit);
++MODULE_LICENSE("GPL");
+diff --git a/include/linux/notify-device.h b/include/linux/notify-device.h
+new file mode 100644
+index 000000000000..f8c3e15d3b8f
+--- /dev/null
++++ b/include/linux/notify-device.h
+@@ -0,0 +1,33 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#ifndef _LINUX_NOTIFY_DEVICE_H
++#define _LINUX_NOTIFY_DEVICE_H
++#include <linux/device.h>
++#include <linux/of.h>
++
++#ifdef CONFIG_NOTIFY_DEVICE
++
++struct device *notify_device_create(struct device *parent, const char *child);
++void notify_device_destroy(struct device *dev);
++struct device *notify_device_find_by_of_node(struct device_node *node);
++
++#else
++
++static inline struct device *notify_device_create(struct device *parent,
++						  const char *child)
++{
++	return NULL;
++}
++
++static inline void notify_device_destroy(struct device *dev)
++{
++}
++
++static inline struct device *notify_device_find_by_of_node(struct device_node *node)
++{
++	return NULL;
++}
++
++#endif
++
++#endif /* _LINUX_NOTIFY_DEVICE_H */
 -- 
 2.25.1
 
