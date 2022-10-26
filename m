@@ -2,109 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12CF860DEBE
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 12:17:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C270C60DEB9
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 12:15:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233393AbiJZKRB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 06:17:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37044 "EHLO
+        id S233040AbiJZKPp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 06:15:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233376AbiJZKQ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 06:16:58 -0400
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2042.outbound.protection.outlook.com [40.107.212.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F07D99938B;
-        Wed, 26 Oct 2022 03:16:55 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=P7CpjzV/o6SuVZR/Vh6G5J0Rwg6dpiTT2Bpr4onG3yuHxxG9t2j0VGJCrOJuxpPaRPjeLhVwCjnT0/zF5tritXdazTh4vOJw9t9McYA7TFSWIxuupIXSJxyWk5/hj6IqH5Zr2b41CHkxLA0vmxZINE87MakmWWSzgIcG1u1JORa52xHZHVz+ZgFBiWrmNKMTu3pXk/QjO5PzJNNXpHks0cfqXKW+iYOsqeF1blYluOt9IR9Mwt/YpiORuTIMxySYoHmXN+T2DDtJl7J0FQL4HC6qRXaWJXHxzv9HTe16LW7HIehi/o7Wy9dowuwM2B/zHP6/ngsxyennGfra3/O4eQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hBKBbNO0bOu2v7KsYLLKIJtlTZ3HmDBiQlJZsdZuuZI=;
- b=S2MkspV5BZrmx9Mj+ZJ1vS9dO2w70chizyBlo6Co8VyUV3DwIe0VF4x7dc2T/rxlWDqa9MB9ww9vBdD9XrCjC1YnsJifwyPVQ16yKc8+vSNQOAvMhhuz8nwekWcSmfdPnkE3gJpuOezHfyg4ejULApyYeYXBFpw9OMZYjHDJFPaUKo5tcDS8gz8b5NlsPiZs+D47DC0FoKY/P4vpBK+fcTjldmfddGcorwah56gGxbA9xHNB8XpS9ocrXlgYKKej6FoSWh8LWxAuRYF24QR6Ss5VqZ9N87VZ06PztKyZGWR6Y0OM7eu/K5eK77BFw1a8MiKS0DbxADOgJu/BZ0wgdw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=lists.infradead.org
- smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hBKBbNO0bOu2v7KsYLLKIJtlTZ3HmDBiQlJZsdZuuZI=;
- b=Btjx7i6PuPmgSDOzNSAyu1Wc9/nMJ8lOqUdu2Y0wS9E9W66tX3kqazG4oDcyI7Gs5PTNUl0l4OZyIXrOjMJ9lFXtJQelEgtvEtYIiQTrDeHgePIM3ps/rio7peQbL6O5yw4FVAMxSSU+4bk7vsDK+P/ZCzJOo8HzzSwVwM3llGZii+xa6Uk40jfTJNDdKW7sd8pr0Y74NMCwk5OjHBg1CrDXEHvP0wMs2Ji5f2MoBmFkSxdLDE3SvF8ogzRZmgcMRV76Nkny0nN3XUi3OPzjSU9eude2yVcnHOQnk/M0xtmFwavT6/ICxvVoSVRZuZcaJWJLcYbJ6eHIk95WVHpZtQ==
-Received: from DM6PR21CA0013.namprd21.prod.outlook.com (2603:10b6:5:174::23)
- by CH0PR12MB5386.namprd12.prod.outlook.com (2603:10b6:610:d5::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.32; Wed, 26 Oct
- 2022 10:16:52 +0000
-Received: from DM6NAM11FT048.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:174:cafe::fd) by DM6PR21CA0013.outlook.office365.com
- (2603:10b6:5:174::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.8 via Frontend
- Transport; Wed, 26 Oct 2022 10:16:52 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- DM6NAM11FT048.mail.protection.outlook.com (10.13.173.114) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5746.16 via Frontend Transport; Wed, 26 Oct 2022 10:16:52 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Wed, 26 Oct
- 2022 03:16:47 -0700
-Received: from yaviefel (10.126.230.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Wed, 26 Oct
- 2022 03:16:43 -0700
-References: <20221024091333.1048061-1-daniel.machon@microchip.com>
- <20221024091333.1048061-2-daniel.machon@microchip.com>
-User-agent: mu4e 1.6.6; emacs 28.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     Daniel Machon <daniel.machon@microchip.com>
-CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <petrm@nvidia.com>, <maxime.chevallier@bootlin.com>,
-        <thomas.petazzoni@bootlin.com>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>,
-        <lars.povlsen@microchip.com>, <Steen.Hegelund@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, <joe@perches.com>,
-        <linux@armlinux.org.uk>, <horatiu.vultur@microchip.com>,
-        <Julia.Lawall@inria.fr>, <vladimir.oltean@nxp.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [net-next v3 1/6] net: dcb: add new pcp selector to app object
-Date:   Wed, 26 Oct 2022 12:11:08 +0200
-In-Reply-To: <20221024091333.1048061-2-daniel.machon@microchip.com>
-Message-ID: <874jvq28l3.fsf@nvidia.com>
+        with ESMTP id S233111AbiJZKPj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 06:15:39 -0400
+Received: from mg.ssi.bg (mg.ssi.bg [193.238.174.37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9291C40E31;
+        Wed, 26 Oct 2022 03:15:33 -0700 (PDT)
+Received: from mg.ssi.bg (localhost [127.0.0.1])
+        by mg.ssi.bg (Proxmox) with ESMTP id 7750B1102D;
+        Wed, 26 Oct 2022 13:15:31 +0300 (EEST)
+Received: from ink.ssi.bg (unknown [193.238.174.40])
+        by mg.ssi.bg (Proxmox) with ESMTP id 56210111A8;
+        Wed, 26 Oct 2022 13:15:29 +0300 (EEST)
+Received: from ja.ssi.bg (unknown [178.16.129.10])
+        by ink.ssi.bg (Postfix) with ESMTPS id 3440E3C07D9;
+        Wed, 26 Oct 2022 13:15:29 +0300 (EEST)
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.17.1/8.16.1) with ESMTP id 29QAFR91036797;
+        Wed, 26 Oct 2022 13:15:28 +0300
+Date:   Wed, 26 Oct 2022 13:15:27 +0300 (EEST)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     Ziyang Xuan <william.xuanziyang@huawei.com>
+cc:     netdev@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] ipv4: fix source address and gateway mismatch under
+ multiple default gateways
+In-Reply-To: <20221026032017.3675060-1-william.xuanziyang@huawei.com>
+Message-ID: <5e0249d-b6e1-44fa-147b-e2af65e56f64@ssi.bg>
+References: <20221026032017.3675060-1-william.xuanziyang@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT048:EE_|CH0PR12MB5386:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6d506958-7796-4482-25b0-08dab73b338c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: luPBNY5a6bbJR4uyeqHibCbfWkkCjbrOdE5EQN/IwWZQtVmJD7tBznsVh0CcznrBnohPkGjFSIhuS33PP6wxA4ZnQRzvL5FqzmnalBZ3MlnPa0BUQBaf0I+Qe/j2Xfs8R64PKT0drlHnPh9U4zXt3KdXzN0TDGsqAizPWTjVVV4qqD1SzZQIj2kBDfXvC+ik47C2E/imc1dhI4mHM4AUyWkrLwD2e3tSxZQOfkgiKbPahs/fTNp9D+8rF+5vV190BACKO/ou6NyBjjGjlnydhwwyXLNHmAvCB/qQ0ThYgQfpUuhrfPW9GjDUjQEXQeDvs0KI9tnE1s3FRvCw+Gd+E3akTDl9xqmc2/cf82qlW94ath5AvQMv/oHVUe4/hkN3tNT+wAEjleWwFZkA+LuVWWagelW3BiP7L+RUtCvwseJ/HfoJW520c7H/+/0C+1ghKRr2m/dIDZJIvtGG3P/DQGnl0RL/TBxBEaHDi3t2b1VPvaeSn8Huw5sTjiqjgp7Oi8OceN7R+8n/qzw1x0ie+wS1IYXzGrdk0WtMlGVtb996pOx6YmbLw0hEuutsiXa8s9IjzvrgIymc9aluYe/6XKsj68cMwzvMHhA4LnD3hFkLlFK/zVY/LXDZY5iM4NABQk1yqg55Ij1NQsocmQ59HpBF0vMrqP9FfsRAmGLt+dFV/Fju3g2zd7tIf7ModEKHQoV8cOtTPSS2ibWtTSyLrGiHDiLAYsnFTyLKfMvqhGbNtu5eM+m3LNhe3BvPwMGH
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(396003)(39860400002)(376002)(346002)(136003)(451199015)(46966006)(40470700004)(36840700001)(54906003)(6666004)(41300700001)(5660300002)(4326008)(8676002)(26005)(70586007)(70206006)(2616005)(8936002)(6916009)(478600001)(316002)(7636003)(83380400001)(186003)(426003)(40480700001)(82740400003)(356005)(2906002)(36756003)(47076005)(86362001)(7416002)(82310400005)(16526019)(40460700003)(336012)(36860700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Oct 2022 10:16:52.0560
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6d506958-7796-4482-25b0-08dab73b338c
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT048.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5386
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -112,67 +46,132 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-Daniel Machon <daniel.machon@microchip.com> writes:
+	Hello,
 
-> Add new PCP selector for the 8021Qaz APP managed object.
->
-> As the PCP selector is not part of the 8021Qaz standard, a new non-std
-> extension attribute DCB_ATTR_DCB_APP has been introduced. Also two
-> helper functions to translate between selector and app attribute type
-> has been added. The new selector has been given a value of 255, to
-> minimize the risk of future overlap of std- and non-std attributes.
->
-> The new DCB_ATTR_DCB_APP is sent alongside the ieee std attribute in the
-> app table. This means that the dcb_app struct can now both contain std-
-> and non-std app attributes. Currently there is no overlap between the
-> selector values of the two attributes.
->
-> The purpose of adding the PCP selector, is to be able to offload
-> PCP-based queue classification to the 8021Q Priority Code Point table,
-> see 6.9.3 of IEEE Std 802.1Q-2018.
->
-> PCP and DEI is encoded in the protocol field as 8*dei+pcp, so that a
-> mapping of PCP 2 and DEI 1 to priority 3 is encoded as {255, 10, 3}.
->
-> Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
+On Wed, 26 Oct 2022, Ziyang Xuan wrote:
 
->  static struct sk_buff *dcbnl_newmsg(int type, u8 cmd, u32 port, u32 seq,
->  				    u32 flags, struct nlmsghdr **nlhp)
->  {
-> @@ -1116,8 +1143,9 @@ static int dcbnl_ieee_fill(struct sk_buff *skb, struct net_device *netdev)
->  	spin_lock_bh(&dcb_lock);
->  	list_for_each_entry(itr, &dcb_app_list, list) {
->  		if (itr->ifindex == netdev->ifindex) {
-> -			err = nla_put(skb, DCB_ATTR_IEEE_APP, sizeof(itr->app),
-> -					 &itr->app);
-> +			enum ieee_attrs_app type =
-> +				dcbnl_app_attr_type_get(itr->app.selector);
-> +			err = nla_put(skb, type, sizeof(itr->app), &itr->app);
->  			if (err) {
->  				spin_unlock_bh(&dcb_lock);
->  				return -EMSGSIZE;
-> @@ -1495,7 +1523,7 @@ static int dcbnl_ieee_set(struct net_device *netdev, struct nlmsghdr *nlh,
->  		nla_for_each_nested(attr, ieee[DCB_ATTR_IEEE_APP_TABLE], rem) {
->  			struct dcb_app *app_data;
+> We found a problem that source address doesn't match with selected gateway
+> under multiple default gateways. The reproducer is as following:
+> 
+> Setup in client as following:
+> 
+> $ ip link add link eth2 dev eth2.71 type vlan id 71
+> $ ip link add link eth2 dev eth2.72 type vlan id 72
+> $ ip addr add 192.168.71.41/24 dev eth2.71
+> $ ip addr add 192.168.72.41/24 dev eth2.72
+> $ ip link set eth2.71 up
+> $ ip link set eth2.72 up
+> $ route add -net default gw 192.168.71.1 dev eth2.71
+> $ route add -net default gw 192.168.72.1 dev eth2.72
+
+	Second route goes to first position due to the
+prepend operation for the route add command. That is
+why 192.168.72.41 is selected.
+
+> Add a nameserver configuration in the following file:
+> $ cat /etc/resolv.conf
+> nameserver 8.8.8.8
+> 
+> Setup in peer server as following:
+> 
+> $ ip link add link eth2 dev eth2.71 type vlan id 71
+> $ ip link add link eth2 dev eth2.72 type vlan id 72
+> $ ip addr add 192.168.71.1/24 dev eth2.71
+> $ ip addr add 192.168.72.1/24 dev eth2.72
+> $ ip link set eth2.71 up
+> $ ip link set eth2.72 up
+> 
+> Use the following command trigger DNS packet in client:
+> $ ping www.baidu.com
+> 
+> Capture packets with tcpdump in client when ping:
+> $ tcpdump -i eth2 -vne
+> ...
+> 20:30:22.996044 52:54:00:20:23:a9 > 52:54:00:d2:4f:e3, ethertype 802.1Q (0x8100), length 77: vlan 71, p 0, ethertype IPv4, (tos 0x0, ttl 64, id 25407, offset 0, flags [DF], proto UDP (17), length 59)
+>     192.168.72.41.42666 > 8.8.8.8.domain: 58562+ A? www.baidu.com. (31)
+> ...
+> 
+> We get the problem that IPv4 saddr "192.168.72.41" do not match with
+> selected VLAN device "eth2.71".
+
+	The problem could be that source address is selected
+once and later used as source address in following routing lookups.
+
+	And your routing rules do not express the restriction that
+both addresses can not be used for specific route. If you have
+such restriction which is common, you should use source-specific routes:
+
+1. ip rule to consider table main only for link routes,
+no default routes here
+
+ip rule add prio 10 table main
+
+2. source-specific routes:
+
+ip rule add prio 20 from 192.168.71.0/24 table 20
+ip route append default via 192.168.71.1 dev eth2.71 src 192.168.71.41 table 20
+ip rule add prio 30 from 192.168.72.0/24 table 30
+ip route append default via 192.168.72.1 dev eth2.72 src 192.168.72.41 table 30
+
+3. Store default alternative routes not in table main:
+ip rule add prio 200 table 200
+ip route append default via 192.168.71.1 dev eth2.71 src 192.168.71.41 table 200
+ip route append default via 192.168.72.1 dev eth2.72 src 192.168.72.41 table 200
+
+	Above routes should work even without specifying prefsrc.
+
+	As result, table 200 is used only for routing lookups
+without specific source address, usually for first packet in
+connection, next packets should hit tables 20/30.
+
+	You can check https://ja.ssi.bg/dgd-usage.txt for such
+examples, see under 2. Alternative routes and dead gateway detection
+
+> In above scenario, the process does __ip_route_output_key() twice in
+> ip_route_connect(), the two processes have chosen different default gateway,
+> and the last choice is not the best.
+> 
+> Add flowi4->saddr and fib_nh_common->nhc_gw.ipv4 matching consideration in
+> fib_select_default() to fix that.
+
+	Other setups may not have such restriction, they can
+prefer any gateway in reachable state no matter the saddr.
+
+> Fixes: 19baf839ff4a ("[IPV4]: Add LC-Trie FIB lookup algorithm.")
+> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+> ---
+>  net/ipv4/fib_semantics.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+> index e9a7f70a54df..8bd94875a009 100644
+> --- a/net/ipv4/fib_semantics.c
+> +++ b/net/ipv4/fib_semantics.c
+> @@ -2046,6 +2046,7 @@ static void fib_select_default(const struct flowi4 *flp, struct fib_result *res)
+>  	int order = -1, last_idx = -1;
+>  	struct fib_alias *fa, *fa1 = NULL;
+>  	u32 last_prio = res->fi->fib_priority;
+> +	u8 prefix, max_prefix = 0;
+>  	dscp_t last_dscp = 0;
 >  
-> -			if (nla_type(attr) != DCB_ATTR_IEEE_APP)
-> +			if (!dcbnl_app_attr_type_validate(nla_type(attr)))
->  				continue;
+>  	hlist_for_each_entry_rcu(fa, fa_head, fa_list) {
+> @@ -2078,6 +2079,11 @@ static void fib_select_default(const struct flowi4 *flp, struct fib_result *res)
+>  		if (!nhc->nhc_gw_family || nhc->nhc_scope != RT_SCOPE_LINK)
+>  			continue;
 >  
->  			if (nla_len(attr) < sizeof(struct dcb_app)) {
-> @@ -1556,7 +1584,7 @@ static int dcbnl_ieee_del(struct net_device *netdev, struct nlmsghdr *nlh,
->  		nla_for_each_nested(attr, ieee[DCB_ATTR_IEEE_APP_TABLE], rem) {
->  			struct dcb_app *app_data;
+> +		prefix = __ffs(flp->saddr ^ nhc->nhc_gw.ipv4);
+> +		if (prefix < max_prefix)
+> +			continue;
+> +		max_prefix = max_t(u8, prefix, max_prefix);
+> +
+>  		fib_alias_accessed(fa);
 >  
-> -			if (nla_type(attr) != DCB_ATTR_IEEE_APP)
-> +			if (!dcbnl_app_attr_type_validate(nla_type(attr)))
->  				continue;
->  			app_data = nla_data(attr);
->  			if (ops->ieee_delapp)
+>  		if (!fi) {
+> -- 
+> 2.25.1
 
-I'm missing a validation that DCB_APP_SEL_PCP is always sent in
-DCB_ATTR_DCB_APP encapsulation. Wouldn't the current code permit
-sending it in the IEEE encap? This should be forbidden.
+Regards
 
-And vice versa: I'm not sure we want to permit sending the standard
-attributes in the DCB encap.
+--
+Julian Anastasov <ja@ssi.bg>
+
