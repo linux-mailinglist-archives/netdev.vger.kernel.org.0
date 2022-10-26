@@ -2,43 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 53CF160D957
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 04:39:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D5D960D96C
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 04:50:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231909AbiJZCjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 22:39:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58520 "EHLO
+        id S232646AbiJZCuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 22:50:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229544AbiJZCjf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 22:39:35 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F807182;
-        Tue, 25 Oct 2022 19:39:29 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MxtGT5qsVzpSxV;
-        Wed, 26 Oct 2022 10:36:01 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 26 Oct
- 2022 10:39:26 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <johannes@sipsolutions.net>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC:     <toke@kernel.org>, <alexander@wetzel-home.de>, <nbd@nbd.name>,
-        <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
-        <shaozhengchao@huawei.com>
-Subject: [PATCH net,v2] wifi: mac80211: fix general-protection-fault in ieee80211_subif_start_xmit()
-Date:   Wed, 26 Oct 2022 10:47:03 +0800
-Message-ID: <20221026024703.150668-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S232509AbiJZCuT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 22:50:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A9A33E769;
+        Tue, 25 Oct 2022 19:50:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 609AAB81FEE;
+        Wed, 26 Oct 2022 02:50:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E8E41C43470;
+        Wed, 26 Oct 2022 02:50:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666752615;
+        bh=n9sJ4KLB0FhlXT692AcX2PeP8h09PGHq9UBiYs6qD8o=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=q+DiQMyPGAx9dpdzPmRZXUMBArxNKqHI689FtnEK4Hpvu+F1zKGOiezCN61CNffHY
+         jQvfNMp+un8KcVdCqg4iIs+ykyxqfRMM4+wtm1XJi/yUaw0NqLF2WAhUDVZZkx0Qe/
+         OPJZNBBX/Xgcsv1Esef5yFCNAfj5WutfQVOIRfW9Lwu8QIi9qhrfQK6eYnq1oA1pXh
+         dWn1c8H9/3aJXdGqd0OsTFANR90FTpGWlS6eM3S7a4lwlfdMTcPT6Eioa3zOz//f9A
+         nC+JvM3o98GbOheBHLQ6eSMBVBL15zGnQ87mQerl0mHd+ffpwI2lE2YI8TN8ZxSi9w
+         eKeztujVSPsmg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CEC1FE29F32;
+        Wed, 26 Oct 2022 02:50:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v4] net: hinic: Set max_mtu/min_mtu directly to simplify the
+ code.
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166675261484.3838.2180607229263110846.git-patchwork-notify@kernel.org>
+Date:   Wed, 26 Oct 2022 02:50:14 +0000
+References: <20221024103349.4494-1-cai.huoqing@linux.dev>
+In-Reply-To: <20221024103349.4494-1-cai.huoqing@linux.dev>
+To:     Cai Huoqing <cai.huoqing@linux.dev>
+Cc:     pabeni@redhat.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, mqaio@linux.alibaba.com, shaozhengchao@huawei.com,
+        christophe.jaillet@wanadoo.fr, gustavoars@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -46,67 +58,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When device is running and the interface status is changed, the gpf issue
-is triggered. The problem triggering process is as follows:
-Thread A:                           Thread B
-ieee80211_runtime_change_iftype()   process_one_work()
-    ...                                 ...
-    ieee80211_do_stop()                 ...
-    ...                                 ...
-        sdata->bss = NULL               ...
-        ...                             ieee80211_subif_start_xmit()
-                                            ieee80211_multicast_to_unicast
-                                    //!sdata->bss->multicast_to_unicast
-                                      cause gpf issue
+Hello:
 
-When the interface status is changed, the sending queue continues to send
-packets. After the bss is set to NULL, the bss is accessed. As a result,
-this causes a general-protection-fault issue.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-The following is the stack information:
-general protection fault, probably for non-canonical address
-0xdffffc000000002f: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000178-0x000000000000017f]
-Workqueue: mld mld_ifc_work
-RIP: 0010:ieee80211_subif_start_xmit+0x25b/0x1310
-Call Trace:
-<TASK>
-dev_hard_start_xmit+0x1be/0x990
-__dev_queue_xmit+0x2c9a/0x3b60
-ip6_finish_output2+0xf92/0x1520
-ip6_finish_output+0x6af/0x11e0
-ip6_output+0x1ed/0x540
-mld_sendpack+0xa09/0xe70
-mld_ifc_work+0x71c/0xdb0
-process_one_work+0x9bf/0x1710
-worker_thread+0x665/0x1080
-kthread+0x2e4/0x3a0
-ret_from_fork+0x1f/0x30
-</TASK>
+On Mon, 24 Oct 2022 18:33:35 +0800 you wrote:
+> From: caihuoqing <cai.huoqing@linux.dev>
+> 
+> Set max_mtu/min_mtu directly to avoid making the validity judgment
+> when set mtu, because the judgment is made in net/core: dev_validate_mtu,
+> so to simplify the code.
+> 
+> Signed-off-by: caihuoqing <cai.huoqing@linux.dev>
+> 
+> [...]
 
-Fixes: f856373e2f31 ("wifi: mac80211: do not wake queues on a vif that is being stopped")
-Reported-by: syzbot+c6e8fca81c294fd5620a@syzkaller.appspotmail.com
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- net/mac80211/tx.c | 5 +++++
- 1 file changed, 5 insertions(+)
+Here is the summary with links:
+  - [v4] net: hinic: Set max_mtu/min_mtu directly to simplify the code.
+    https://git.kernel.org/netdev/net-next/c/022f19cf361b
 
-diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
-index a364148149f9..c38485f39d2b 100644
---- a/net/mac80211/tx.c
-+++ b/net/mac80211/tx.c
-@@ -4418,6 +4418,11 @@ netdev_tx_t ieee80211_subif_start_xmit(struct sk_buff *skb,
- 	if (likely(!is_multicast_ether_addr(eth->h_dest)))
- 		goto normal;
- 
-+	if (unlikely(!ieee80211_sdata_running(sdata))) {
-+                kfree_skb(skb);
-+                return NETDEV_TX_OK;
-+        }
-+
- 	if (unlikely(ieee80211_multicast_to_unicast(skb, dev))) {
- 		struct sk_buff_head queue;
- 
+You are awesome, thank you!
 -- 
-2.17.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
