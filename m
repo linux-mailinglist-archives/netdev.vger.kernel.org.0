@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67AA260EB07
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 23:57:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D56160EB09
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 23:57:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233669AbiJZV5X convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Oct 2022 17:57:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53394 "EHLO
+        id S233664AbiJZV5f convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Oct 2022 17:57:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233642AbiJZV5T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 17:57:19 -0400
+        with ESMTP id S233666AbiJZV5W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 17:57:22 -0400
 Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6600997EFD
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 14:57:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BF1E7CABD
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 14:57:22 -0700 (PDT)
 Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
  [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-428-iP2RleERMuiTtSp6PgT8dA-1; Wed, 26 Oct 2022 17:57:15 -0400
-X-MC-Unique: iP2RleERMuiTtSp6PgT8dA-1
+ us-mta-612-CcyluB-KPxKwQO_MWHrA0A-1; Wed, 26 Oct 2022 17:57:16 -0400
+X-MC-Unique: CcyluB-KPxKwQO_MWHrA0A-1
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 99DAA1C0A103;
-        Wed, 26 Oct 2022 21:57:14 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 067B51C05157;
+        Wed, 26 Oct 2022 21:57:16 +0000 (UTC)
 Received: from hog.localdomain (unknown [10.39.192.185])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D2E681121339;
-        Wed, 26 Oct 2022 21:57:13 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E87DA1121339;
+        Wed, 26 Oct 2022 21:57:14 +0000 (UTC)
 From:   Sabrina Dubroca <sd@queasysnail.net>
 To:     netdev@vger.kernel.org
 Cc:     Leon Romanovsky <leon@kernel.org>,
         Antoine Tenart <atenart@kernel.org>,
         Sabrina Dubroca <sd@queasysnail.net>
-Subject: [PATCH net v2 4/5] macsec: fix detection of RXSCs when toggling offloading
-Date:   Wed, 26 Oct 2022 23:56:26 +0200
-Message-Id: <0f3ab52fc5a5377c02e1f2dfc14a8d087f56124a.1666793468.git.sd@queasysnail.net>
+Subject: [PATCH net v2 5/5] macsec: clear encryption keys from the stack after setting up offload
+Date:   Wed, 26 Oct 2022 23:56:27 +0200
+Message-Id: <685b32aea1db3864560f7c72f280bd44ac7b3450.1666793468.git.sd@queasysnail.net>
 In-Reply-To: <cover.1666793468.git.sd@queasysnail.net>
 References: <cover.1666793468.git.sd@queasysnail.net>
 MIME-Version: 1.0
@@ -51,34 +51,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-macsec_is_configured incorrectly uses secy->n_rx_sc to check if some
-RXSCs exist. secy->n_rx_sc only counts the number of active RXSCs, but
-there can also be inactive SCs as well, which may be stored in the
-driver (in case we're disabling offloading), or would have to be
-pushed to the device (in case we're trying to enable offloading).
+macsec_add_rxsa and macsec_add_txsa copy the key to an on-stack
+offloading context to pass it to the drivers, but leaves it there when
+it's done. Clear it with memzero_explicit as soon as it's not needed
+anymore.
 
-As long as RXSCs active on creation and never turned off, the issue is
-not visible.
-
-Fixes: dcb780fb2795 ("net: macsec: add nla support for changing the offloading selection")
+Fixes: 3cf3227a21d1 ("net: macsec: hardware offloading infrastructure")
 Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
 ---
- drivers/net/macsec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/macsec.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 48e2dd2d5778..5a2c1bd65d89 100644
+index 5a2c1bd65d89..7710d549012f 100644
 --- a/drivers/net/macsec.c
 +++ b/drivers/net/macsec.c
-@@ -2572,7 +2572,7 @@ static bool macsec_is_configured(struct macsec_dev *macsec)
- 	struct macsec_tx_sc *tx_sc = &secy->tx_sc;
- 	int i;
+@@ -1839,6 +1839,7 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
+ 		       secy->key_len);
  
--	if (secy->n_rx_sc > 0)
-+	if (secy->rx_sc)
- 		return true;
+ 		err = macsec_offload(ops->mdo_add_rxsa, &ctx);
++		memzero_explicit(ctx.sa.key, secy->key_len);
+ 		if (err)
+ 			goto cleanup;
+ 	}
+@@ -2082,6 +2083,7 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
+ 		       secy->key_len);
  
- 	for (i = 0; i < MACSEC_NUM_AN; i++)
+ 		err = macsec_offload(ops->mdo_add_txsa, &ctx);
++		memzero_explicit(ctx.sa.key, secy->key_len);
+ 		if (err)
+ 			goto cleanup;
+ 	}
 -- 
 2.38.0
 
