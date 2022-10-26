@@ -2,136 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D8C660DC31
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 09:36:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3150D60DC45
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 09:40:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233150AbiJZHgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 03:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55582 "EHLO
+        id S233265AbiJZHkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 03:40:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231926AbiJZHgf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 03:36:35 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93785B867
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 00:36:34 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1onaxR-0006Ls-JD; Wed, 26 Oct 2022 09:36:13 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 38126109F73;
-        Wed, 26 Oct 2022 07:36:10 +0000 (UTC)
-Date:   Wed, 26 Oct 2022 09:36:08 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
+        with ESMTP id S233305AbiJZHkb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 03:40:31 -0400
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C62CB2FC19;
+        Wed, 26 Oct 2022 00:40:22 -0700 (PDT)
+Received: by mail-qt1-f181.google.com with SMTP id bb5so9327100qtb.11;
+        Wed, 26 Oct 2022 00:40:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=bHRQt+Zpb7FZyHHkqxk7rEuqUhLqeuOhbQbiY4XuYX8=;
+        b=G/BbkkZqY4YtuXzpJ18PvV6tapWNncQ/lQjKXiXz7x/LdcUl7AKhEBLOOYalZ2Fw8q
+         9AcR4Ef7jYhaNBBcVwMjIkflX1u7t+D2mzaMcrLVkBnVVvMpiERWsTJgTxR4R3FtuljS
+         Z6q4Rrk7vqeZQkv7UaEEqG4cvNBdu+bLTCm4GSqZPZ3RUnEDmLGgo5eeIdq9swsyyrCT
+         cUOuOfCuUlTsPw93v07d/iCPI8IouGrijp08YzSZKCuSuOm1T075aHBGiL6S/3Pabh0N
+         dVomgkDDRd169K7WOxuOp+Q2xE6g89ENUdctrnAvqG9wjA1K9ylqT3QrjQgXPzRqKSLd
+         czKg==
+X-Gm-Message-State: ACrzQf0TDf6lZ58KfiFHiYvCdid0QOKy9ROBFqGMHzgoHKk/APle6Jub
+        fawAY16W0Hz6O1C5J1NpLEBF0e5gaaJ5jg==
+X-Google-Smtp-Source: AMsMyM5yjBZ9VVTidsNkzqTG3z98tE3ZnXsj6HOD5DwTwMvBFYwfgpm69s3v2wgmQD41jT8Tzsn7gg==
+X-Received: by 2002:ac8:5d8a:0:b0:39c:d3a8:3f91 with SMTP id d10-20020ac85d8a000000b0039cd3a83f91mr35256496qtx.324.1666770021297;
+        Wed, 26 Oct 2022 00:40:21 -0700 (PDT)
+Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com. [209.85.128.174])
+        by smtp.gmail.com with ESMTPSA id l10-20020ac84cca000000b0039d0366af44sm2856878qtv.1.2022.10.26.00.40.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Oct 2022 00:40:19 -0700 (PDT)
+Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-369c2f83697so131745127b3.3;
+        Wed, 26 Oct 2022 00:40:19 -0700 (PDT)
+X-Received: by 2002:a81:3d2:0:b0:36b:6772:75a3 with SMTP id
+ 201-20020a8103d2000000b0036b677275a3mr18653884ywd.383.1666770019103; Wed, 26
+ Oct 2022 00:40:19 -0700 (PDT)
+MIME-Version: 1.0
+References: <20221025155657.1426948-1-biju.das.jz@bp.renesas.com> <20221025155657.1426948-4-biju.das.jz@bp.renesas.com>
+In-Reply-To: <20221025155657.1426948-4-biju.das.jz@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 26 Oct 2022 09:40:07 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVk+o3Sx-2uu=ApH8Mj_EWEDN0r1Hed9FtpP3y_VStNrg@mail.gmail.com>
+Message-ID: <CAMuHMdVk+o3Sx-2uu=ApH8Mj_EWEDN0r1Hed9FtpP3y_VStNrg@mail.gmail.com>
+Subject: Re: [PATCH v2 3/3] can: rcar_canfd: Use devm_reset_control_get_optional_exclusive
 To:     Biju Das <biju.das.jz@bp.renesas.com>
 Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
+        =?UTF-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>,
         Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
         Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Ulrich Hecht <uli+renesas@fpond.eu>,
         Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>,
         Chris Paterson <Chris.Paterson2@renesas.com>,
         linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] can: rcar_canfd: Fix channel specific IRQ
- handling for RZ/G2L
-Message-ID: <20221026073608.7h47b2axcayakfnn@pengutronix.de>
-References: <20221025155657.1426948-1-biju.das.jz@bp.renesas.com>
- <20221025155657.1426948-3-biju.das.jz@bp.renesas.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="dxbcrzybrdje44e5"
-Content-Disposition: inline
-In-Reply-To: <20221025155657.1426948-3-biju.das.jz@bp.renesas.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Oct 25, 2022 at 6:03 PM Biju Das <biju.das.jz@bp.renesas.com> wrote:
+> Replace devm_reset_control_get_exclusive->devm_reset_control_
+> get_optional_exclusive so that we can avoid unnecessary
+> SoC specific check in probe().
+>
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 
---dxbcrzybrdje44e5
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-On 25.10.2022 16:56:56, Biju Das wrote:
-> RZ/G2L has separate channel specific IRQs for transmit and error
-> interrupt. But the IRQ handler, process the code for both channels
-> even if there is no interrupt occurred on one of the channels.
->=20
-> This patch fixes the issue by passing channel specific context
-> parameter instead of global one for irq register and on irq handler,
-> it just handles the channel which is triggered the interrupt.
+Gr{oetje,eeting}s,
 
-Please clean up signatures of the IRQ handlers you touch, it's a little
-mess. Change:
+                        Geert
 
-| rcar_canfd_handle_channel_tx(struct rcar_canfd_global *gpriv, u32 ch)
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-to:
-
-| rcar_canfd_handle_channel_tx(struct rcar_canfd_channel *priv)
-
-Same for:
-
-| static void rcar_canfd_handle_channel_err(struct rcar_canfd_global *gpriv=
-, u32 ch)
-
-
-
-In a separate patch, please clean up these, too:
-
-| static void rcar_canfd_handle_global_err(struct rcar_canfd_global *gpriv,=
- u32 ch)
-| static void rcar_canfd_handle_global_receive(struct rcar_canfd_global *gp=
-riv, u32 ch)
-| static void rcar_canfd_channel_remove(struct rcar_canfd_global *gpriv, u3=
-2 ch)
-
-Why are 2 of the above functions called "global" as they work on a
-specific channel? That can be streamlined, too.
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---dxbcrzybrdje44e5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmNY42YACgkQrX5LkNig
-013Aowf/XjqEH3zizsFw3biOLnHEEPBF8LFUC9IGjtwtUQrNIWw5/Ocxh8iiqpeO
-31P2OaSl/GGhyhAysS4/sdgx1yTm9HZG6ZfMaduhhyU3ObvAbjaiiU9rOKdDkK0u
-hUSG3ADTWl6M4epdSp0KH51XQOxjGl6AICGhqw/3CttAeVkvXsPPia+tE89Gy3i9
-hIHAcGqZ1mlu9ypL0wdc+8P4jjoSvPxYp+XqNcnUpjzJ+S5e1zRH7CKi5DIm/TEl
-4bEUYfcrFZiUuY+Es/F5OFk2A3nbYX59QZErPvgDGblALywCAs6SrIPjCdkfScfU
-Hxlxnkn7/L/x5/BtfY6N39xlwlT6BA==
-=UVOm
------END PGP SIGNATURE-----
-
---dxbcrzybrdje44e5--
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
