@@ -2,54 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56A5460E55B
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 18:17:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F25C760E56D
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 18:24:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234601AbiJZQRp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 12:17:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49498 "EHLO
+        id S233040AbiJZQYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 12:24:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234415AbiJZQRn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 12:17:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CACB610A7EC
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 09:17:41 -0700 (PDT)
+        with ESMTP id S231681AbiJZQYw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 12:24:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4633A1F631
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 09:24:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 36D1E61FA2
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 16:17:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F18DAC433C1;
-        Wed, 26 Oct 2022 16:17:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C342161FB2
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 16:24:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 493EAC433D6;
+        Wed, 26 Oct 2022 16:24:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666801060;
-        bh=8QEk12W7sy52oMpghJI6kxQ1gsKPdRcXD+d5Y4G/iZY=;
+        s=k20201202; t=1666801491;
+        bh=sdMVHJ7YVzmlZFdgGUBqaHkQQ3i1Zkvt/syyOVJqNLs=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=U8i7s5dJd1uZhrK1LHDZnG27naiqp8kULqdwddcK6C/kN9aGEIzODfDMcw/XuYlmZ
-         +mnu4Poi5+oKTjfbHJPPeRgPb3QXHGiuT6f8d8hC7DT+ViYp0tshsmISgxuSkHoqUO
-         0nc/T+74bPB3Zgs6fX5VXTY8Kz9Mb3wFn9GTa6PkkrRsRulUumMvnaTBSeaAydpvK2
-         r2l6hqTfpooP2xZBQ3LKSkGFuPSHsfr6gVjmJsjdTl6AnkQgLExmd0GLlNR2ukkuzn
-         +XWGTZlvv48OZvV4mmmExr5U2E0iifp/rHv3YU6zHe4ULxjH2q8ScDrYBF1AM03IWe
-         e8POhIsMUA4Kg==
-Date:   Wed, 26 Oct 2022 09:17:38 -0700
+        b=B3zDHdYQU5LGZWkXKLRPfBH5Yqev1WITEWmIwcxJuFUJK7Mz2Xx2h6TevrrofOZHv
+         daJjzkPae3KfOSqmu/H/9SnMsDgwhSecmHzLteyi1BKe2CTwQzeeOdTMhML19mHet8
+         0SkL/Pmm6yVIVlt93J9Olfo2LTUwGwrVa3LxwfhpVsOKeNOOQCL1YWugefEEZ+YMpt
+         QzOZg8442oNy3YB/73DWq7C2WouCMZbgQyDwj48QiDgZUV+LqQIiCDmuTlXNfysYLS
+         ToELU9qBKOE63MhQFG2ZqxOmfw95wUGUZ3kNrX1HE0bXlriU6tr3mlNt+hAt/iifj3
+         TQmY1gzRUxXxQ==
+Date:   Wed, 26 Oct 2022 09:24:49 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Roi Dayan <roid@nvidia.com>
-Cc:     Amritha Nambiar <amritha.nambiar@intel.com>,
-        netdev@vger.kernel.org, alexander.duyck@gmail.com,
-        jhs@mojatatu.com, jiri@resnulli.us, xiyou.wangcong@gmail.com,
-        vinicius.gomes@intel.com, sridhar.samudrala@intel.com,
-        Maor Dickman <maord@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
+To:     Shai Malin <smalin@nvidia.com>
+Cc:     Aurelien Aptel <aaptel@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
         Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: Re: [net-next PATCH v3 1/3] act_skbedit: skbedit queue mapping for
- receive queue
-Message-ID: <20221026091738.57a72c85@kernel.org>
-In-Reply-To: <c04ab396-bea0-fcb2-7b5a-deafa3daffa5@nvidia.com>
-References: <166633888716.52141.3425659377117969638.stgit@anambiarhost.jf.intel.com>
-        <166633911976.52141.3907831602027668289.stgit@anambiarhost.jf.intel.com>
-        <c04ab396-bea0-fcb2-7b5a-deafa3daffa5@nvidia.com>
+        Tariq Toukan <tariqt@nvidia.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        "sagi@grimberg.me" <sagi@grimberg.me>, "hch@lst.de" <hch@lst.de>,
+        "kbusch@kernel.org" <kbusch@kernel.org>,
+        "axboe@fb.com" <axboe@fb.com>,
+        Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+        Or Gerlitz <ogerlitz@nvidia.com>,
+        Yoray Zack <yorayz@nvidia.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        "aurelien.aptel@gmail.com" <aurelien.aptel@gmail.com>,
+        "malin1024@gmail.com" <malin1024@gmail.com>
+Subject: Re: [PATCH v7 01/23] net: Introduce direct data placement tcp
+ offload
+Message-ID: <20221026092449.5f839b36@kernel.org>
+In-Reply-To: <DM6PR12MB3564FB23C582CEF338D11435BC309@DM6PR12MB3564.namprd12.prod.outlook.com>
+References: <20221025135958.6242-1-aaptel@nvidia.com>
+        <20221025135958.6242-2-aaptel@nvidia.com>
+        <20221025153925.64b5b040@kernel.org>
+        <DM6PR12MB3564FB23C582CEF338D11435BC309@DM6PR12MB3564.namprd12.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -62,20 +72,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 26 Oct 2022 14:40:39 +0300 Roi Dayan wrote:
-> This patch broke mlx5_core TC offloads.
-> We have a generic code part going over the enum values and have a list
-> of action pointers to handle parsing each action without knowing the action.
-> The list of actions depends on being aligned with the values order of
-> the enum which I think usually new values should go to the end of the list.
-> I'm not sure if other code parts are broken from this change but at
-> least one part is.
-> New values were always inserted at the end.
+On Wed, 26 Oct 2022 15:01:42 +0000 Shai Malin wrote:
+> > > @@ -14,7 +14,7 @@ typedef u64 netdev_features_t;
+> > >  enum {
+> > >       NETIF_F_SG_BIT,                 /* Scatter/gather IO. */
+> > >       NETIF_F_IP_CSUM_BIT,            /* Can checksum TCP/UDP over IPv4. */
+> > > -     __UNUSED_NETIF_F_1,
+> > > +     NETIF_F_HW_ULP_DDP_BIT,         /* ULP direct data placement offload */  
+> > 
+> > Why do you need a feature bit if there is a whole caps / limit querying
+> > mechanism?  
 > 
-> Can you make a fixup patch to move FLOW_ACTION_RX_QUEUE_MAPPING to
-> the end of the enum list?
-> i.e. right before NUM_FLOW_ACTIONS.
+> The caps are used for the HW device to publish the supported 
+> capabilities/limitation, while the feature bit is used for the DDP 
+> enablement "per net-device".
+> 
+> Disabling will be required in case that another feature which is 
+> mutually exclusive to the DDP is needed (as an example in the mlx case, 
+> CQE compress which is controlled from ethtool).
 
-Odd, can you point us to the exact code that got broken?
-There are no guarantees on ordering of kernel-internal enum
-and I think it's a bad idea to make such precedent.
+It's a big enough feature to add a genetlink or at least a ethtool
+command to control. If you add more L5 protos presumably you'll want
+to control disable / enable separately for them. Also it'd be cleaner
+to expose the full capabilities and report stats via a dedicated API.
+Feature bits are not a good fix for complex control-pathy features.
+
+> > It's somewhat unclear to me why we add ops to struct net_device,
+> > rather than to ops.. can you explain?  
+> 
+> We were trying to follow the TLS design which is similar.
+
+Ack, TLS should really move as well, IMHO, but that's a separate convo.
+
+> Can you please clarify what do you mean by "rather than to ops.."?
+
+Add the ulp_dpp_ops pointer to struct net_device_ops rather than struct
+net_device.
