@@ -2,105 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 913F060DF08
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 12:50:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2F1F60DF36
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 13:03:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233187AbiJZKui (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 06:50:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40606 "EHLO
+        id S233522AbiJZLDE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 07:03:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230090AbiJZKuh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 06:50:37 -0400
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1A9CC419A4;
-        Wed, 26 Oct 2022 03:50:35 -0700 (PDT)
-Date:   Wed, 26 Oct 2022 12:50:28 +0200
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Michael Lilja <michael.lilja@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
-Subject: Re: [PATCH] Periodically flow expire from flow offload tables
-Message-ID: <Y1kQ9FhrwxCKIdoe@salvia>
-References: <20221023171658.69761-1-michael.lilja@gmail.com>
- <Y1fC5K0EalIYuB7Y@salvia>
- <381FF5B6-4FEF-45E9-92D6-6FE927A5CC2D@gmail.com>
- <Y1fd+DEPZ8xM2x5B@salvia>
- <F754AC3A-D89A-4CF7-97AE-CA59B18A758E@gmail.com>
+        with ESMTP id S233518AbiJZLCr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 07:02:47 -0400
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BCC5BC78D
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 04:02:40 -0700 (PDT)
+Received: by mail-wr1-f50.google.com with SMTP id z14so12180658wrn.7
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 04:02:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=LMjfY9UYMjWL6dm7905skNAQCrE1/dBAyB7CzPbBVNE=;
+        b=CwMw7Nv2L3Q4OASsVUc0r4M70ZalTm12mREJVQV0AbtLaTAxDghKzovoOLrvPfCqM3
+         nfFvcj2vfe2QYXftvfGtfQfIpaCQBgT8BhOkdJeMIs7f1gZvOyG9CnL5zreGgVZeKG8o
+         +5WpbPXqVX1hPvCCC42qYs3BayKvAKU+AX/AMSR1kvUGDXYAIzScPKLG4GHY3I0bhFIY
+         cxHwToajAgYkjXFacYONtuxHYGhe9KTfcG5haYqHFVB9JJl0+C0bT5hGfsPzrchwmFwu
+         8ixh1pfyAxreEVEZkU4JYlKLctEsHq3T3/EDyieY/qpABqC4P+yFFu50Y/G38Kq+JlRU
+         48Fg==
+X-Gm-Message-State: ACrzQf2QRvcuM2mZefNQvt5Wd5xoJQYTZ/n6DazqUENInnQ3GzOE8w2B
+        WMS6T//UukF3lTfIICoLv+0=
+X-Google-Smtp-Source: AMsMyM7kn+Deq53dx5kuzGh+Jm5M8zS0Nq0FyeyXkh3sz5FDwwFKHLGGVSZjt64MCyyH1k0jyN1F2w==
+X-Received: by 2002:a5d:5c13:0:b0:236:5575:a3fd with SMTP id cc19-20020a5d5c13000000b002365575a3fdmr18119108wrb.475.1666782158532;
+        Wed, 26 Oct 2022 04:02:38 -0700 (PDT)
+Received: from [192.168.64.94] (bzq-219-42-90.isdn.bezeqint.net. [62.219.42.90])
+        by smtp.gmail.com with ESMTPSA id n66-20020a1ca445000000b003cdf141f363sm1657727wme.11.2022.10.26.04.02.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Oct 2022 04:02:37 -0700 (PDT)
+Message-ID: <4a721959-c3c3-4377-d1e3-7fa7d6c3e814@grimberg.me>
+Date:   Wed, 26 Oct 2022 14:02:34 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <F754AC3A-D89A-4CF7-97AE-CA59B18A758E@gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH v7 04/23] Revert "nvme-tcp: remove the unused queue_size
+ member in nvme_tcp_queue"
+Content-Language: en-US
+To:     Christoph Hellwig <hch@lst.de>, Aurelien Aptel <aaptel@nvidia.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, saeedm@nvidia.com,
+        tariqt@nvidia.com, leon@kernel.org, linux-nvme@lists.infradead.org,
+        kbusch@kernel.org, axboe@fb.com, chaitanyak@nvidia.com,
+        smalin@nvidia.com, ogerlitz@nvidia.com, yorayz@nvidia.com,
+        borisp@nvidia.com, aurelien.aptel@gmail.com, malin1024@gmail.com
+References: <20221025135958.6242-1-aaptel@nvidia.com>
+ <20221025135958.6242-5-aaptel@nvidia.com> <20221025161442.GD26372@lst.de>
+From:   Sagi Grimberg <sagi@grimberg.me>
+In-Reply-To: <20221025161442.GD26372@lst.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-On Tue, Oct 25, 2022 at 03:32:51PM +0200, Michael Lilja wrote:
-> Hi, 
+>> This reverts commit fb8745d040ef5b9080003325e56b91fefe1022bb.
+>>
+>> The newly added NVMeTCP offload requires the field
+>> nvme_tcp_queue->queue_size in the patch
+>> "nvme-tcp: Add DDP offload control path" in nvme_tcp_offload_socket().
+>> The queue size is part of struct ulp_ddp_config
+>> parameters.
 > 
-> Thanks for the optimisation suggestions, my nft is a rough
-> conversion from iptables, I will look into using maps.
-> 
-> The ingress chain will work fine for SW OFFLOAD but HW OFFLOAD is
-> not solved by this, at least what I see is that once a flow is
-> offloaded to HW the driver doesn’t see the packets?
->
-> If I use the ingress chain I guess I don’t have access to ‘ct mark’
-> yet? I could think of a use-case where schedules should only some
-> ‘flow type’: meta mask != 0x12340000/16 meta day “Tuesday" meta hour
-> >= "06:00" meta hour < "07:00" drop 
-> 
-> I have more advanced rules that check the ct mark and will need to
-> drop if mark == something. These mark == something rules are applied
-> ‘runtime’ and flowables doesn’t seem to be flushed on nft load,
-> which is also a reason for my ‘flow retire’ from the tables.
+> Please never do reverts if you just bring something back for an entirely
+> differenet reason.
 
-It should be also possible to notify the flowtable that the ruleset
-has been updated. That won't cover the meta day, hour, time scenario
-though. I think both mechanism (the 'retire' feature you propose) and
-ruleset update notifications are complementary each other and they
-would be good to have.
+Agreed.
 
-> So my overall goal is to receive packets, mark them with a value
-> depending on 'flow type' and then for the flows that are allowed to
-> be forwarded offload them to the ingress flow table for either HW or
-> SW offload. Once in a while I will change the verdict of a ‘flow
-> type’ and will need that to apply for all existing flows and future
-> flows, besides the fixed schedules, and it should work both for SW
-> OFFLOAD and HW OFFLOAD.
->
-> I only have the M7621 device to play with for HW OFFLOAD, but it
-> works fine with my patch.
+> And I think we need a really good justification of
+> why you have a code path that can get the queue struct and not the
+> controller, which really should not happen.
 
-Thanks for explaining.
-
-My suggestions are:
-
-- Add support for this in the flowtable netlink interface (instead of
-  sysctl), I'm going to post a patch to add support for setting the
-  flowtable size, it can be used as reference to expose this new
-  'retire' feature.
-
-- flow_offload_teardown() already unsets the IPS_OFFLOAD bit, so
-  probably your patch can follow that path too (instead of clearing
-  IPS_OFFLOAD_BIT from flow_offload_del).
-
-static void nf_flow_offload_gc_step(struct nf_flowtable *flow_table,
-                                    struct flow_offload *flow, void *data)
-{
-        if (nf_flow_has_expired(flow) ||
-            nf_ct_is_dying(flow->ct))
-                flow_offload_teardown(flow);
+What is wrong with just using either ctrl->sqsize/NVME_AQ_DEPTH based
+on the qid?
