@@ -2,179 +2,255 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E872C60E068
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 14:11:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C5F360E073
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 14:13:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233865AbiJZMLs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 08:11:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49030 "EHLO
+        id S233523AbiJZMNs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 08:13:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233119AbiJZMLQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 08:11:16 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D054491C6;
-        Wed, 26 Oct 2022 05:10:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1666786231; x=1698322231;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=w52UFWvClTdw7CwIPvtVZRysG8gCu2aRNukjc6c5mQ0=;
-  b=d7NJmqryVzBF7T/cKSftHTTAawyxcEuIqvJ7NvgANFcj6T7jnCzAXTVG
-   gPve8TLOPU2bxfeksY3PKW5O5osv+TdE9+RHoLw1r2K3+g3tCwH1zIknJ
-   cM48dejvfQkc3PCmYOZ5P8qLHZU+4MY6vdfXElagT7dSF82xTX2OYIe1c
-   M5ShM51rEpApH6HhFKRZP4cxs5/Bl+E0oDbRWPdzaoUwtqpVrpRvZDK13
-   hpx6W2whgdsF49Xy4p4ChEfQVZdfxQSNpJcv+7lP2tlDelflaoQ0KxZwW
-   K2Nat4BeM5rNyp1hsplviusiQo+vZywSrM8K5LMu5t39FXOF/59lzRTGX
-   A==;
-X-IronPort-AV: E=Sophos;i="5.95,214,1661842800"; 
-   d="scan'208";a="120425247"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Oct 2022 05:10:29 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 26 Oct 2022 05:10:29 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12 via Frontend Transport; Wed, 26 Oct 2022 05:10:29 -0700
+        with ESMTP id S233282AbiJZMNq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 08:13:46 -0400
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70089.outbound.protection.outlook.com [40.107.7.89])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B85F9A282;
+        Wed, 26 Oct 2022 05:13:43 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FxN/q8ioJrNnGWYcMKPmxwPAPGnHxyagxpnQQPcy+c/Da3Z25e94EZJukucwExp9Oeh4Z/XVfUcQVqiTFua5akmzYJ885p/GkFUDvp1YdBWAiaXdKzJ52FlcdOmP3DSx7HbMEM4G9VT6rJgT9ZQVl6YjQEXU/5NhwDtJBxfoh5ZbY5xQ56ZuQBKs4u8IHE7oVNXp+DvEhYYhSIYSEkruarlYmqzCwZWwRYYJSd8J8gWn1NcrZWpyAG4n1tedYOO/hvSv7LG1H/kC0t7PqTb0D4Sg4GYw3vZdPtNpkrK4pCMxyWgkr+ccZkB87d4jeRRw0B4490UoEgvOHUIrZCe84w==
+ b=Ct+chf7XKGCi3fMHxMcvXvEVXX6m2kyPLrKGozf30djhhfvd3dpAAPVbu90mZ0LHt4QRJB/e+B0oRcb4WunNMQudZb03OiiJ+NUhRn2FgXunsUSQQK79KRZGRchDM8NPgclNTJweZTnM80t9y390xs8RSAotS0DIekG6GRMR7GnIUTrnPm3RdEVtpZkHr7RhkcVWa6zZZYV5WqObAD4/O2b9wRf2Nse0tKGdrQpRzpmUOfqpApWOFSdaHRXmTBHsad6D5nndPQJLFXtTqZtaHq4s0pWCSsO5Ko8OKfE5jZA+VHJT587GajpvukztoLaVCvPcRvelHTDQAu4h+pb+/Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9c8B8ZbPiwDv4vfOEBRsYPFF8GwOqJFhoWKg8MsAygc=;
- b=QZnMiZ1zN30uvg7jSdiz6Lw7lSGf5u9hx5pkuC3OcVW/dTA83eUIoNOLzAxo0YoldIt2Ib80d3F/fYzJP2lD8wWB0k5VAWolKgapkNolZyEnpOCk8v0TUuIlKRbxLuV9R6KTiAfCrImsK0abEXiZU12BOPdrgC7lOpj4xhImpcl9Ok0Q+AlsplrSZt53gOFMb4Cvrfda7yh68Q+TLwqon04LozpWy8/D9z3/QJV75y4OXSJr2gLxLalwxrKYIGGKywaiRxzgWNP9k6+PpR26TepiQDZ9tV0jvYyioSaGyCp7ttD192u50ry0wzIw4Md9Gka8zRrS6tYkev9jCmh4NQ==
+ bh=PCOQQStCCUlSL6cxBh9AvRyINUScTi3wc40RxfMBBV0=;
+ b=NjcfCFXK7wKgBIr9sAbwzV5/ESbqVt1dLwRyEOxZuB2n81I5gMc0lITHKXRVCH9fGxTIvS2i03AK+ZtbMmrJE3bdVyfbH/JbaWh/+atlfBcCfuKAaIWyWcXIKxVHFE9CPkOGXgUKlMdwQT2Zc9QNPKqKCvCcu8ylfN6h7p3wVvbaVOsv5kJ1K1D3RMevpQFsByxV/d8mDPcJzabRprN8ueIiIWcWY19YmkFKr57U6SzgZdm9J+zCWfkyi89/Xv0zgQH1p1vSwoaqfplpgXPQuGc+X+blLz7qhAhY8CdEQQ7cI6mR6ZHg7nr91yMbWohR1pHL2Pj7NeMYa6tN29xa9w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9c8B8ZbPiwDv4vfOEBRsYPFF8GwOqJFhoWKg8MsAygc=;
- b=cCDQIEQPcdH3YBSLT4A/o7ejXGHnqBpn4O+HESwfLLVaLkc49Ezh6G+HQYJHR6k3PoMgpqmFNQvo31pOHuU0dymn/a9/6Hg4o5/RWQlXiIDEM+7jb00LDyah3QAS67GvKpXYx+NmjcXMFO+S+Os4e07bM1nrcy2YlWmeWRCbnIc=
-Received: from CO6PR11MB5569.namprd11.prod.outlook.com (2603:10b6:303:139::20)
- by DS0PR11MB6495.namprd11.prod.outlook.com (2603:10b6:8:c1::22) with
+ bh=PCOQQStCCUlSL6cxBh9AvRyINUScTi3wc40RxfMBBV0=;
+ b=L33plVaEnvWlnDmGOXlJ3/Js/DMfVLoNA8M316H9j14CpdBTNs/L6ZaYcIe7dNgMlnsxi3aeohIufCA4ZPx2Pj2Z9RSo372tVfroNrosmjW3NvVWUwBAp2rc2Y4N/T9t4CCAJNz83550I1QRds20ThteK7ERW5CpVexr28WuFns=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM7PR04MB7109.eurprd04.prod.outlook.com (2603:10a6:20b:117::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.23; Wed, 26 Oct
- 2022 12:10:24 +0000
-Received: from CO6PR11MB5569.namprd11.prod.outlook.com
- ([fe80::a2ae:2047:6ef5:6a45]) by CO6PR11MB5569.namprd11.prod.outlook.com
- ([fe80::a2ae:2047:6ef5:6a45%5]) with mapi id 15.20.5746.026; Wed, 26 Oct 2022
- 12:10:24 +0000
-From:   <Daniel.Machon@microchip.com>
-To:     <petrm@nvidia.com>
-CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <maxime.chevallier@bootlin.com>, <thomas.petazzoni@bootlin.com>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <Lars.Povlsen@microchip.com>, <Steen.Hegelund@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, <joe@perches.com>,
-        <linux@armlinux.org.uk>, <Horatiu.Vultur@microchip.com>,
-        <Julia.Lawall@inria.fr>, <vladimir.oltean@nxp.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [net-next v3 2/6] net: dcb: add new apptrust attribute
-Thread-Topic: [net-next v3 2/6] net: dcb: add new apptrust attribute
-Thread-Index: AQHY54eplZCAOpJ79E+/+KGuQyJoL64ghtyAgAAUtQA=
-Date:   Wed, 26 Oct 2022 12:10:23 +0000
-Message-ID: <Y1kmBMXluPI1Wmu/@DEN-LT-70577>
-References: <20221024091333.1048061-1-daniel.machon@microchip.com>
- <20221024091333.1048061-3-daniel.machon@microchip.com>
- <87zgdizvfq.fsf@nvidia.com>
-In-Reply-To: <87zgdizvfq.fsf@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: CO6PR11MB5569:EE_|DS0PR11MB6495:EE_
-x-ms-office365-filtering-correlation-id: 827e83db-abec-4fe3-9bbc-08dab74b0fb1
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: fA3BivyHaSQZuWb4iHUEeK9nrKxkmu0LzzaM/VsQ8zMsCNVj/fzheYL+SHhw41f2PDmAAULMgpgngZoHx83UQBidXSPOj0++/Vq77fV7ci7dV5bLDvvo0br2vc41SXmOkoTm8PO/OexeoagAo+92lSssa8CQIVhGm9tSmD8l0+nQUXX2bHy4nACrenmrvOqvUVkvDxrYlsAjyrfNd5af/gaO1oWMtVCOg8wCacg749qrbWpqBqjpGtUuMKDxgPE0M4y0l5fQgRhKQXqBzc6jNFDg+NaLm528v4EcIWzPoEthOLrM38pxgVrE488qy9WoaBCGclRZlgF8cbil8986L8m6HlUzJd1VFZ6F+JTlbnJKzyp8kphBfmlbskvIFi9A7wjyXru++s7mrtrdyR4fP2qajo8o8rU/LrUbJ+IxcNZmIHopvNrvvhMs9U54QexfmqK3VWVwdwtP9oHUcsYXo/ZDmNdQVwQhyTifAdwlXoNZbamhGle6pPduSCDw3UfxiU8D7kSzc1G4ezRI7JNV9jnivy+j5VhahliGYAGahVvHaGMNFNd6DGwlxYqq9qhEZWIIaLV3oS1f3tafPobtt8obiSGE5cmlo1hsHvzXSZqzYWZ8QBZxMVP7mP3jVcwwnRd2YsRwMUkXeo4IkEfGRSRJT+dOk+MMG12ZeZAyaoXTJ4eXL0w6hA2MF2M49+PVqB+6kqu74RbzVhQhp1zH7Dwh2p4sca7Pz18s3fMN7oCTEwHBq0wJ5ohEz9wYmx77LFt+cbbDGPKF26BrWcbHbg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR11MB5569.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(366004)(396003)(136003)(346002)(39860400002)(376002)(451199015)(33716001)(4744005)(4326008)(7416002)(91956017)(122000001)(66446008)(186003)(38100700002)(5660300002)(64756008)(66556008)(2906002)(66476007)(8676002)(76116006)(54906003)(8936002)(316002)(86362001)(41300700001)(6916009)(71200400001)(26005)(6512007)(66946007)(6506007)(9686003)(38070700005)(478600001)(6486002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?F5NlBlF1gRoZo7RN8FsOBNwIR0ftd1DP+uYFoYeE1KNMH4lPCP+b7CPkjxbb?=
- =?us-ascii?Q?qcCeU5deT17HdqC4V9ezcmZlClZP7yNA8uMSMQdFzdPMEtds1mDLX+DJ6tL2?=
- =?us-ascii?Q?+DwnwqrNZMufgODi72YFO7Zc3HM0+qT1Hp2EbiIuM52eBvoWleu12XmrKf9X?=
- =?us-ascii?Q?CBOkb+TdQ0uVjjpDeO9YdKRqXI2xRNcRv2JUrjrFLQ/w4zGTQuAc3GadsP7K?=
- =?us-ascii?Q?SKRHbGL4Ye9hP6SxOD1Htr6tzw2qZFqjQX6sy6HPGIrwkV5Jl2SnpjWnMbiQ?=
- =?us-ascii?Q?KKX1W9ioPJL9IfBWvwZ9bQ8OZlzERDLj5woeXRlC39fP4IvniV1d0KwWryZb?=
- =?us-ascii?Q?ae9En298Usg6D/vzZAdHgZto12NJ4AJtvVRbWFJDMS3/w+lWl2UgxyZQk/Kg?=
- =?us-ascii?Q?j5Kv62MqeJmrtsmBzApBKvLj/N/smAjiCtGASbKwK4sSmYWgihasmFGaIxGz?=
- =?us-ascii?Q?A7TcYViqHCXh29Mbwp7C5U70JAkUxqlNDgDm+pTyUC6POs/SsZujgK5L+FJO?=
- =?us-ascii?Q?5VR1cVls8L+mvxeWCLaPOwIxjsfFZLZ9EWnpgqwPPjR9OcF3tuhqwGi0mD5j?=
- =?us-ascii?Q?53HXBk3TJmVj/h43ltOMxKBFJWvCU2AQ8ywKtROtLJETL5bIYP+uKUvWyPvL?=
- =?us-ascii?Q?HStfMuPJ7YFfYBcHOR0xJzxdTPVW7kJyyi3dqmVogocPqbwRWmcsRT62cP8F?=
- =?us-ascii?Q?htnTtJw/+czo6VebCmZ9DNjBN9keSz+KZaJV8sBNuMIqBZ18r1WPGU80kpcN?=
- =?us-ascii?Q?y54rBBQAjJYkiJw5S8RMBi/QVu+N4L52IQg4O/9sEawc6zetAc0rKcel4+fi?=
- =?us-ascii?Q?cZj3gl4+xZOJNX5adSDCripJnfZofANbGVnRoE1e+qVk9+z0ETQpUugNfZDM?=
- =?us-ascii?Q?0dShuv2pMsb4d46XYf7J0D3c52eYrUeq33DIW3NkKh+XontbITXg017/MAfB?=
- =?us-ascii?Q?nUFnuunKZ7Bph2Emc72y38DL10A04F1knu2RCDJ7+SW+MSupYI+0EziHoJTA?=
- =?us-ascii?Q?hobbYdcudVZiMvLZJuB42OJBKmuJlU1gygre/RG6SONNpcUzoRDP07xYcd//?=
- =?us-ascii?Q?5r6mDnsnk8bVTQvNI+scpQie86ABXjGWT0+P7VdzF+YMZU4ZSw8Fhl9I7nYR?=
- =?us-ascii?Q?PQYTZBPKI7h7uQE5CPbt0UowYFHFrcgwAIdDezTyVARJqILjq6zERosan5rs?=
- =?us-ascii?Q?23VCmHxMsEnUQoESoXuqXo1iy5SnEWCb7neO/3DV1QhAPxeEmkhVOQgWeTrd?=
- =?us-ascii?Q?NKLX2waRx/qvik3D7AUKjd0I1WlG9w8X73mSRSziPp9ssuvEY9ErhtpxPZ0B?=
- =?us-ascii?Q?P0BEvEQKa/MBO9XC7Hvo3khs8A9yoIeRr6CoxttN6FLqyH2BA1L8Z8Cr4Ddq?=
- =?us-ascii?Q?zKPrivr1EsA5V5HLFE7TMJkREHnSjTLQFOlAixweSO7mSXoQEU1LbVh4ed3r?=
- =?us-ascii?Q?khNlcCZAwuGx7kiJgp0Zr5TIgfVFwmlOamZsThstr1tUY5cCxRZCatCJ1mjG?=
- =?us-ascii?Q?0aQGyjIbnKALN+WrM9XZylrTuWbjqdrJokKzwkvLW8ZSLtFbSbZKSEZ1+hzE?=
- =?us-ascii?Q?KsF+YG0c9JhKciqGI4VPajZgQEVe71g1Ddoh2o67dfV3NQ0zwu/ZlQm7YDXr?=
- =?us-ascii?Q?ejhDY+qS5vnIxD5vknVgmTg=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <43C2229516C31245BCF1DA520B6ED02B@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.21; Wed, 26 Oct
+ 2022 12:13:40 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::6710:c5fd:bc88:2035]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::6710:c5fd:bc88:2035%6]) with mapi id 15.20.5746.023; Wed, 26 Oct 2022
+ 12:13:40 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 net] net: enetc: survive memory pressure without crashing
+Date:   Wed, 26 Oct 2022 15:13:30 +0300
+Message-Id: <20221026121330.2042989-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: PR3P193CA0024.EURP193.PROD.OUTLOOK.COM
+ (2603:10a6:102:50::29) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AM7PR04MB7109:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2d9fc093-2155-416a-f67e-08dab74b8487
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: CIEmt0OxnCEXuoyYvQ3YOrh+G04CoAdViAGGrLRz/sWz9KGoUFRw/BeKG17SyJolu5lnTmaTxGhAwmlZTyNKYcQt0mNKEEqaQkBC7fPiTNyE8lBC5PboPl4AxxyvcMTnW9NXwNIfxp5VB7Idzle+yZbL9hPI52CBV+R6iikb/IHwDS3YykjSqmrpV4OKmDLg1SucXbYREOXFgWwPYgvJD4PX6TvEzkcF/XGS3XU1CubjiJ4IMDApQi3ck3tPim6uArywAC9mfn1n8ueb99xyJDI2cxl2O6Y1xFIBtoW6sGy9ZbTB4N37mLVRgAneAEngHBvnkeWGipP5KhKyqWJqSwT0mm6nEvq1zGpHt5FT9CaF7ludaucBngkFu2XZVqXSCKtfy+Tsj3Y48vCyRocNomq5o3x2s0PBlM37Jg8/d9w/GcRjg+/NXfVyh6WpBSeqkeXE8Gv5IpNMG1MpjxFuWitaiQrNF4D5veER1RFmCrH77IW1KWX505aYwMeX1O0RypAg7XLZaVV/tqMmgQ+q2kvJGbGPlPqVkwOWoLcChjU4cT8+hkIA9oEg/3+d3CXDxjNgia+RW1nqtJvSZV3bA4Pg7ZYCimY/ER1SBiP7k6SnhEm3fK9HmmDs6IMRHUYVLhVivaZt/LbIxa+8ARsXCaTDEyx3aIaOqcBk4sRVzSjPtIcaq4fbT8fRlfr5xed9qjkgKADqFQbGds78+JlofETG7O5Vvf0ABLIlomU3neaK7UX5exq4J1ZzmqZMtcTqrkX8OQnIOqI9pNP37joANGGqzjt6Owb6qeYIBQWrOCQ=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(366004)(396003)(376002)(136003)(39860400002)(451199015)(2616005)(1076003)(6666004)(52116002)(6506007)(186003)(6512007)(26005)(44832011)(8936002)(83380400001)(5660300002)(478600001)(54906003)(6916009)(66556008)(966005)(4326008)(41300700001)(8676002)(316002)(66946007)(6486002)(66476007)(86362001)(2906002)(36756003)(38350700002)(38100700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?yAHvRCeCXYP62XzwA5qhtgFjyBKmKMl0XbSFjrOG4MHfJih04KGiCRQqXL0e?=
+ =?us-ascii?Q?f2DemmTF7z8jG5RoA/Y+PAsLXgW0OHFlrQiMa+iETjX8krBt+a5Fz98RAXPM?=
+ =?us-ascii?Q?rHvKv7bvfNxVN+HFbOq71w2c+H83/b52gJr7GCSq+gbsDsoawdRElgHfVXaZ?=
+ =?us-ascii?Q?qXCSez64uk+qCUwXaCrabW0FTGLkLr/c1fJY3+MPiZqr2mdlZpxLFNXNbyCE?=
+ =?us-ascii?Q?n8JuOerV3YdzzMh/QGiTzu+DUEgRFRPPKwWQJNoJRFy5fxnJudSWpVAl0AHF?=
+ =?us-ascii?Q?Bx19chvOhqQhrapAzvnz2eREXWYY4zaQq5I48d0VLwk52DovFzhYzff8VgC1?=
+ =?us-ascii?Q?XL5GcCSViIlXhihWg9hfNRHkG6wTy0s4b2w08z6EQCizD+Pd8lSNtOMz0mTk?=
+ =?us-ascii?Q?3W40BQgiqzxiGduH06UA+XEjPvmYuSMb/B3hlW/jG3PbDQx/dkGC1/flLO+/?=
+ =?us-ascii?Q?NAFXjLSKmMR9MQQ+Tf5gPR6GXgQaNeHcU8GhA51Rlj61uIMSdcrtdFrQirpk?=
+ =?us-ascii?Q?usFfApMpiXbdz6lyMWsJ2TXuO1eUfPNnJJab00Hii03uHJTEvyhFJgtMPZ7R?=
+ =?us-ascii?Q?kLabtncZzqfTi/X8rUXbhLNKw4LH2Dr7BcMkf+lTGWja9DtMiVhYgxViLmGD?=
+ =?us-ascii?Q?4/ZuxI4DG+SR/WT+qA9i3h7r+LNlnvTNbUHt+jftG2tOhrk30ZYYlDgY0xTp?=
+ =?us-ascii?Q?wnXsOGENiXAkDTh/rJsYVmRzr8+XaB25doH8BJQHOwOV393hhfk2AlM32psq?=
+ =?us-ascii?Q?t500+TnMlJN4LyfNasiygZ4hSrBUn4nO70rSV20fFHcDsJ49UJpbS2J9zqKb?=
+ =?us-ascii?Q?ilbkY01r+COtlHWMG/L/FEngpc04FQoxw1m6MSLBOLxzac68n38vhiXLpgef?=
+ =?us-ascii?Q?CgkTY418i8wB1SgGd4qqU5KCQtLFpPwC2+YQasx/+BAzdvGDR8NuUAoV11Yc?=
+ =?us-ascii?Q?H6yLTjOTV/7GvG6Qv1FVKuBNvLfipIyeUK1gDYlw2FBHbKyLTx0J2WwChcav?=
+ =?us-ascii?Q?8nFLaqPDA8a6g9+S4ddlY8Hk4Gze0JFBQsQUNAxwgViqiUgzn2UL+91Xt1gQ?=
+ =?us-ascii?Q?Oa1tIp8tpCkAAguJsW8+tyMwVMq8+uG57oj0heOFxVQnc9HyGAY275UwGUTI?=
+ =?us-ascii?Q?4GQDZk1aUQ9XH+K8ticCAo4YF8476e+K2BPg/UxTZA+Sb7xnDTqk3TkCt5bZ?=
+ =?us-ascii?Q?geNUNtRzIxH2PsMH2iRbmGD1xpGSfEmjrGFRUwjRwvQ+OsfF7EQplZwtawuz?=
+ =?us-ascii?Q?aXJUXNtxRet05jUMkUGhQkvzBpp7MOOarVpu0DiDDJKKp7xPlQIhBqS2Cnnp?=
+ =?us-ascii?Q?wtk8NsfLLq2/hngUZieJgvLKYJYxbLLyyO2076lwiX8ZGV+ED7qIuq3BXOFD?=
+ =?us-ascii?Q?CJ4wTd2whaFQpdSQikD4oiJV1tI0fvueVoTCVUyu6ijdLCNPVPbq+7ebNP4d?=
+ =?us-ascii?Q?bqgt5jqooq3MS5k8PApp0QTmeqPX9f9DXsRlyuLc11zQpOvkxz5wz5fqTB+P?=
+ =?us-ascii?Q?4Cr6uvBp+QOSKcaIAlkNwg2y3V1eefXmCOwyvCmSk9TzEtiACpfX7T2Pk+Lc?=
+ =?us-ascii?Q?Wz1hGRL7xpUIurc13zKimOou7q+zI7Tdq6SDy/6/sFW9E2SW2lHaiDOEoiH3?=
+ =?us-ascii?Q?xg=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2d9fc093-2155-416a-f67e-08dab74b8487
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO6PR11MB5569.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 827e83db-abec-4fe3-9bbc-08dab74b0fb1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Oct 2022 12:10:23.9606
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Oct 2022 12:13:40.2623
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 0mAxMlDTa1m64XG8YaD2bb0kBG91b42eS8rkVKkr+o2hbG9L5pNKrmhvyq/kSshXvwlDCULOQjplsvtMfv8S48HDF2mztTDMw21ptpMePX0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB6495
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
-        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sKVC6NqcYROWYdZgDZvVQ9ZGHuYzAxUWivr8QnrGQWTVSvKhdRHZEEn3j4fAR/PvlGuORjjcYQQ6aEf4A4fhGA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB7109
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > +     if (ops->dcbnl_getapptrust) {
-> > +             u8 selectors[IEEE_8021QAZ_APP_SEL_MAX + 1] =3D {0};
-> > +             int nselectors;
-> > +
-> > +             apptrust =3D nla_nest_start(skb, DCB_ATTR_DCB_APP_TRUST_T=
-ABLE);
-> > +             if (!app)
-> > +                     return -EMSGSIZE;
-> > +
-> > +             err =3D ops->dcbnl_getapptrust(netdev, selectors, &nselec=
-tors);
-> > +             if (err)
-> > +                     return -EMSGSIZE;
->=20
-> This should return the error coming from the driver instead of
-> -EMSGSIZE.
+Under memory pressure, enetc_refill_rx_ring() may fail, and when called
+during the enetc_open() -> enetc_setup_rxbdr() procedure, this is not
+checked for.
 
-Hmm. The question is whether we should return at all if dcbnl_getapptrust()
-fails, or just continue to fill whatever other ieee information is availabl=
-e?
-Seems to be like the rest of the code in ieee_fill() just ignore that error=
-.
+An extreme case of memory pressure will result in exactly zero buffers
+being allocated for the RX ring, and in such a case it is expected that
+hardware drops all RX packets due to lack of buffers.
 
->=20
-> Also, it should cancel the nest before returning.
+There are 2 problems. One is that the hardware drop doesn't happen, the
+other is that even if this is fixed, the driver has undefined behavior
+and may even crash. Explanation for the latter follows below.
 
-Ack.=
+The enetc NAPI poll procedure is shared between RX and TX conf, and
+enetc_poll() calls enetc_clean_rx_ring() even if the reason why NAPI was
+scheduled is TX.
+
+The enetc_clean_rx_ring() function (and its XDP derivative) is not
+prepared to handle such a condition. It has this loop exit condition:
+
+		rxbd = enetc_rxbd(rx_ring, i);
+		bd_status = le32_to_cpu(rxbd->r.lstatus);
+		if (!bd_status)
+			break;
+
+otherwise said, the NAPI poll procedure does not look at the Producer
+Index of the RX ring, instead it just walks circularly through the
+descriptors until it finds one which is not Ready.
+
+The driver undefined behavior is caused by the fact that the
+enetc_rxbd(rx_ring, i) RX descriptor is only initialized by
+enetc_refill_rx_ring() if page allocation has succeeded.
+
+If memory allocation ever failed, enetc_clean_rx_ring() looks at
+rxbd->r.lstatus as an exit condition, but "rxbd" itself is uninitialized
+memory. If it contains junk, then junk buffers will be processed.
+
+To fix this problem, memset the DMA coherent area used for RX buffer
+descriptors in enetc_dma_alloc_bdr(). This makes all BDs be "not ready"
+by default, which makes enetc_clean_rx_ring() exit early from the BD
+processing loop when there is no valid buffer available.
+
+The other problem (hardware does not drop packet in lack of buffers)
+is due to an initial misconfiguration of the RX ring consumer index,
+misconfiguration which is usually masked away by the proper
+configuration done by enetc_refill_rx_ring() - when page allocation does
+not fail.
+
+The hardware guide recommends BD rings to be configured as follows:
+
+| Configure the receive ring producer index register RBaPIR with a value
+| of 0. The producer index is initially configured by software but owned
+| by hardware after the ring has been enabled. Hardware increments the
+| index when a frame is received which may consume one or more BDs.
+| Hardware is not allowed to increment the producer index to match the
+| consumer index since it is used to indicate an empty condition. The ring
+| can hold at most RBLENR[LENGTH]-1 received BDs.
+|
+| Configure the receive ring consumer index register RBaCIR. The
+| consumer index is owned by software and updated during operation of the
+| of the BD ring by software, to indicate that any receive data occupied
+| in the BD has been processed and it has been prepared for new data.
+| - If consumer index and producer index are initialized to the same
+|   value, it indicates that all BDs in the ring have been prepared and
+|   hardware owns all of the entries.
+| - If consumer index is initialized to producer index plus N, it would
+|   indicate N BDs have been prepared. Note that hardware cannot start if
+|   only a single buffer is prepared due to the restrictions described in
+|   (2).
+| - Software may write consumer index to match producer index anytime
+|   while the ring is operational to indicate all received BDs prior have
+|   been processed and new BDs prepared for hardware.
+
+The reset-default value of the consumer index is 0, and this makes the
+ENETC think that all buffers have been initialized (when in reality none
+were).
+
+To operate using no buffer, we must initialize the CI to PI + 1.
+
+Fixes: d4fd0404c1c9 ("enetc: Introduce basic PF and VF ENETC ethernet drivers")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+v1->v2:
+- also add an initial value for the RX ring consumer index, to be used
+  when page allocation fails
+- update the commit message
+- deliberately not pick up Claudiu's review tag due to the above changes
+
+v1 at:
+https://patchwork.kernel.org/project/netdevbpf/patch/20221024172049.4187400-1-vladimir.oltean@nxp.com/
+
+ drivers/net/ethernet/freescale/enetc/enetc.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
+index 54bc92fc6bf0..a787114c9ede 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc.c
+@@ -1738,18 +1738,21 @@ void enetc_get_si_caps(struct enetc_si *si)
+ 
+ static int enetc_dma_alloc_bdr(struct enetc_bdr *r, size_t bd_size)
+ {
+-	r->bd_base = dma_alloc_coherent(r->dev, r->bd_count * bd_size,
+-					&r->bd_dma_base, GFP_KERNEL);
++	size_t size = r->bd_count * bd_size;
++
++	r->bd_base = dma_alloc_coherent(r->dev, size, &r->bd_dma_base,
++					GFP_KERNEL);
+ 	if (!r->bd_base)
+ 		return -ENOMEM;
+ 
+ 	/* h/w requires 128B alignment */
+ 	if (!IS_ALIGNED(r->bd_dma_base, 128)) {
+-		dma_free_coherent(r->dev, r->bd_count * bd_size, r->bd_base,
+-				  r->bd_dma_base);
++		dma_free_coherent(r->dev, size, r->bd_base, r->bd_dma_base);
+ 		return -EINVAL;
+ 	}
+ 
++	memset(r->bd_base, 0, size);
++
+ 	return 0;
+ }
+ 
+@@ -2090,7 +2093,12 @@ static void enetc_setup_rxbdr(struct enetc_hw *hw, struct enetc_bdr *rx_ring)
+ 	else
+ 		enetc_rxbdr_wr(hw, idx, ENETC_RBBSR, ENETC_RXB_DMA_SIZE);
+ 
++	/* Also prepare the consumer index in case page allocation never
++	 * succeeds. In that case, hardware will never advance producer index
++	 * to match consumer index, and will drop all frames.
++	 */
+ 	enetc_rxbdr_wr(hw, idx, ENETC_RBPIR, 0);
++	enetc_rxbdr_wr(hw, idx, ENETC_RBCIR, 1);
+ 
+ 	/* enable Rx ints by setting pkt thr to 1 */
+ 	enetc_rxbdr_wr(hw, idx, ENETC_RBICR0, ENETC_RBICR0_ICEN | 0x1);
+-- 
+2.34.1
+
