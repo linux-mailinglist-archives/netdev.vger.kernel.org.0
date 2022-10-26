@@ -2,142 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13E4F60E9E3
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 22:08:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A13860E9E6
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 22:08:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234018AbiJZUH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 16:07:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39076 "EHLO
+        id S234605AbiJZUIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 16:08:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234828AbiJZUHk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 16:07:40 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E371613332A;
-        Wed, 26 Oct 2022 13:07:34 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id b12so43511123edd.6;
-        Wed, 26 Oct 2022 13:07:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=SMe4ztje59yCgYCGVuiDIj/z3i7JsmR1qOmIgpndbO0=;
-        b=P8SRkqp6J2kS9c6yqxbdaEGejFc1UkHRd5VKkpWFuxTonKGK/AWQSH5tjDtlBvZUbv
-         49dn3GZYrRB9iuoJhzQLcrKrVUXsj/k8DmZAvJaDQm4JkLrX0kXt98OM8SI8Kxcl6RQe
-         TyFculnQAaC7xKxSpkj5wos+xsi1eBM0GwYxfdeiPnSvuDq4aazqVaAw9peM6GgGaTye
-         xTNQ/hzCZHVMi5NS4if74U8kqUdjsPMQqF38zzz+JOF19q9W2myoHgRDm/5sRzWrZxgU
-         QV1dBlfHwKrqlHCLXYNGCQHPCZ02RsAveb6/oXGvv/E7UhIy8oL/cZR+V3b8iEqaPfSZ
-         mzqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=SMe4ztje59yCgYCGVuiDIj/z3i7JsmR1qOmIgpndbO0=;
-        b=wwhSnNfSuYdOVvFLcIBnAaJf8Ul5sgLzEYdpznvJQSLLjtm17hT47+02ElDSa8ubwo
-         UHEfWJtkVLs5vDJ/QUV1qr71qHSpzokeyvOcD+BPdgIFwXWxHG6L2Q2FfTFRYNmeozAG
-         YBg8lNskrcjJWt7G38aYcPmaa/CJRzLLneyrqjqZumR/B2YlEyqGmQxi3RMpokNGXxVk
-         srz01L4PXeDbyU9Y77Y0dD0o89ihbwEMkGNhikdh/6CqUzoxrRsimUh3FBOBNmqK2EUK
-         kDm/sKbOecc37z52M5Am06pom0AqkLeTQBti08qkHZMluk2p86F31MeHOm3kIbjywc4h
-         YNFw==
-X-Gm-Message-State: ACrzQf1q+r/T0xzP0SkAWwlTbjOw0Xrd291qwAUMh8O62lOy3k4ZbIK4
-        +ekUwro293WIqxbjZpNFfEs=
-X-Google-Smtp-Source: AMsMyM4OXkYCOQgAPOhMmMMEOl9fW/cznVnimULGHVkhPK0Bj2s2CUq64sqHEGr1YOe6DJAhzxjSDQ==
-X-Received: by 2002:aa7:cd92:0:b0:456:cbb5:2027 with SMTP id x18-20020aa7cd92000000b00456cbb52027mr42171665edv.384.1666814853248;
-        Wed, 26 Oct 2022 13:07:33 -0700 (PDT)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id n26-20020aa7c69a000000b0045bef7cf489sm4008353edq.89.2022.10.26.13.07.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Oct 2022 13:07:32 -0700 (PDT)
-Date:   Wed, 26 Oct 2022 23:07:30 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun.Ramadoss@microchip.com
-Cc:     ceggers@arri.de, andrew@lunn.ch, linux-kernel@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, vivien.didelot@gmail.com,
-        linux@armlinux.org.uk, Tristram.Ha@microchip.com,
-        f.fainelli@gmail.com, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, richardcochran@gmail.com,
-        netdev@vger.kernel.org, Woojung.Huh@microchip.com,
-        davem@davemloft.net, b.hutchman@gmail.com
-Subject: Re: [RFC Patch net-next 0/6] net: dsa: microchip: add gPTP support
- for LAN937x switch
-Message-ID: <20221026200730.ggyd4jhhbwpezmhs@skbuf>
-References: <20221014152857.32645-1-arun.ramadoss@microchip.com>
- <20221018102924.g2houe3fz6wxlril@skbuf>
- <d8459511785de2f6d503341ce5f87c6e6064d7b5.camel@microchip.com>
- <1843632.tdWV9SEqCh@n95hx1g2>
- <42c713fb7ad6aebe8ad2d3e0740f1e4678b10902.camel@microchip.com>
+        with ESMTP id S234647AbiJZUHp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 16:07:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67AAA137287
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 13:07:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0363362092
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 20:07:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D718EC433D6;
+        Wed, 26 Oct 2022 20:07:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666814863;
+        bh=2i9Ki80Rh7tPc9WIwVUnVsAcjE3qZsSkoXZGDfEps34=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nAPfzRCD2hzfUQu3D7ZVcEIyqRlCjuXoSlberpSJiazemvClMx+rnCbukyvJm9WRY
+         oWTUdKNL0tqmOeMl5Niq5r4CTPFT7SEC6m74Cm4fRZq4MafC1vtcnFWPr5Vho2pTLN
+         jtINLZ3zLjRW6teP3TT4hXXHxCETOtZVOdjVkSk/Ntd30l3LK3RPv+HV3G72snLADK
+         hAampRVqJSRVe5hCdbUkVvgGX7GdiUn00qH7TFAcj67qJpNUrF23H3T+cfZ+DRF04G
+         MadPeusB2WFdKPgQPYjDAUuhVAMSnOXGLk9mDMfw2MzAWLyPfCAfXbnTcQ8dRv4XCF
+         OXFM+/Dp4mDwA==
+Date:   Wed, 26 Oct 2022 13:07:41 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     Yinjun Zhang <yinjun.zhang@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Gal Pressman <gal@nvidia.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Nole Zhang <peng.zhang@corigine.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        oss-drivers <oss-drivers@corigine.com>
+Subject: Re: [PATCH net-next 0/3] nfp: support VF multi-queues configuration
+Message-ID: <20221026130741.1b8f118c@kernel.org>
+In-Reply-To: <20221026142221.7vp4pkk6qgbwcrjk@sx1>
+References: <20221019140943.18851-1-simon.horman@corigine.com>
+        <20221019180106.6c783d65@kernel.org>
+        <20221020013524.GA27547@nj-rack01-04.nji.corigine.com>
+        <20221025075141.v5rlybjvj3hgtdco@sx1>
+        <DM6PR13MB370566F6E88DB8A258B93F29FC319@DM6PR13MB3705.namprd13.prod.outlook.com>
+        <20221025110514.urynvqlh7kasmwap@sx1>
+        <DM6PR13MB3705B01B27C679D20E0224F4FC319@DM6PR13MB3705.namprd13.prod.outlook.com>
+        <20221026142221.7vp4pkk6qgbwcrjk@sx1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <42c713fb7ad6aebe8ad2d3e0740f1e4678b10902.camel@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arun,
-
-On Tue, Oct 25, 2022 at 03:41:26AM +0000, Arun.Ramadoss@microchip.com wrote:
-> > CONFIG_PTP_1588_CLOCK=m
-> > CONFIG_NET_DSA=m
-> > CONFIG_NET_DSA_MICROCHIP_KSZ_COMMON=m [ksz_switch.ko]
-> > CONFIG_NET_DSA_MICROCHIP_KSZ9477_I2C=m
-> > CONFIG_NET_DSA_MICROCHIP_KSZ_PTP=y [builtin]
-> > 
-> > With this configuration, kbuild doesn't even try to compile
-> > ksz_ptp.c:
-> > 
-> > ERROR: modpost: "ksz_hwtstamp_get"
-> > [drivers/net/dsa/microchip/ksz_switch.ko] undefined!
-> > ERROR: modpost: "ksz_hwtstamp_set"
-> > [drivers/net/dsa/microchip/ksz_switch.ko] undefined!
-> > ERROR: modpost: "ksz_port_txtstamp"
-> > [drivers/net/dsa/microchip/ksz_switch.ko] undefined!
-> > ERROR: modpost: "ksz_ptp_clock_register"
-> > [drivers/net/dsa/microchip/ksz_switch.ko] undefined!
-> > ERROR: modpost: "ksz_port_deferred_xmit"
-> > [drivers/net/dsa/microchip/ksz_switch.ko] undefined!
-> > ERROR: modpost: "ksz_ptp_clock_unregister"
-> > [drivers/net/dsa/microchip/ksz_switch.ko] undefined!
-> > ERROR: modpost: "ksz_ptp_irq_free"
-> > [drivers/net/dsa/microchip/ksz_switch.ko] undefined!
-> > ERROR: modpost: "ksz_tstamp_reconstruct"
-> > [drivers/net/dsa/microchip/ksz_switch.ko] undefined!
-> > ERROR: modpost: "ksz_get_ts_info"
-> > [drivers/net/dsa/microchip/ksz_switch.ko] undefined!
-> > ERROR: modpost: "ksz_ptp_irq_setup"
-> > [drivers/net/dsa/microchip/ksz_switch.ko] undefined!
-> > 
-> > After setting all of the above to 'y', the build process works (but
-> > I would prefer being able to build as modules). 
+On Wed, 26 Oct 2022 15:22:21 +0100 Saeed Mahameed wrote:
+> >Sorry, I thought you meant each VF creates a devlink obj. So still one devlink obj
+> >and each VF registers a devlink port, right? But the configuration is supposed to
+> >be done before VFs are created, it maybe not appropriate to register ports before
+> >relevant VFs are created I think.
 > 
-> May be this is due to kconfig of config_ksz_ptp  defined bool instead
-> of tristate. Do I need to change the config_ksz_ptp to tristate in
-> order to compile as modules?
+> Usually you create the VFs unbound, configure them and then bind them.
+> otherwise a query will have to query any possible VF which for some vendors
+> can be thousands ! it's better to work on created but not yet deployed vfs
 
-You don't want a separate kernel module for PTP support, so no, you
-don't want to make CONFIG_NET_DSA_MICROCHIP_KSZ_PTP tristate.
+And the vendors who need to configure before spawning will do what,
+exactly? Let's be practical.
 
-But what you want is for the ksz_ptp.o object file to be included into
-ksz_switch-objs when CONFIG_NET_DSA_MICROCHIP_KSZ_PTP is enabled.
+> >> can you provide an example of how you imagine the reosurce vf-max-queue
+> >> api
+> >> will look like ?  
+> >
+> >Two options,
+> >one is from VF's perspective, you need configure one by one, very straightforward:
+> >```
+> >pci/xxxx:xx:xx.x:
+> >  name max_q size 128 unit entry
+> >    resources:
+> >      name VF0 size 1 unit entry size_min 1 size_max 128 size_gran 1
+> >      name VF1 size 1 unit entry size_min 1 size_max 128 size_gran 1
+> >      ...  
+> 
+> the above semantics are really weird, 
+> VF0 can't be a sub-resource of max_q ! 
+> 
+> sorry i can't think of a way where devlink resoruce semantics can work for
+> VF resource allocation.
 
-See how sja1105 does it:
+It's just an API section. New forms of configuration can be added.
+In fact they should so we can stop having this conversation.
 
-ifdef CONFIG_NET_DSA_SJA1105_PTP
-sja1105-objs += sja1105_ptp.o
-endif
+> Unless a VF becomes a resource and it's q_table becomes a sub resource of that
+> VF, which means you will have to register each vf as a resource individually.
+> 
+> Note that i called the resource "q_table" and not "max_queues",
+> since semantically max_queues is a parameter where q_table can be looked at
+> as a sub-resource of the VF, the q_table size decides the max_queues a VF
+> will accept, so there you go ! 
 
-You'll also want to make NET_DSA_MICROCHIP_KSZ9477_I2C and
-NET_DSA_MICROCHIP_KSZ_SPI to depend on PTP_1588_CLOCK_OPTIONAL, because
-CONFIG_PTP_1588_CLOCK can be compiled as module (as Christian shows),
-and in that case, you'll want the KSZ drivers to also be built as
-modules (otherwise they're built-in, and built-in code cannot depend on
-symbols exported from modules, because the modules may never be inserted).
+Somewhere along the way you missed the other requirements to also allow
+configuring guaranteed count that came from brcm as some point.
 
-It's best to actually experiment with this, you cannot get it right if
-you don't experiment.
+> arghh weird.. just make it an attribute for devlink port function and name it
+> max_q as god intended it to be ;)
+
+Let's not equate what fits the odd world of Melvidia FW with god.
+
+> Fix your FW to allow changing VF maxqueue for unbound VFs if needed.
+
+Not every device out there is all FW. Thankfully.
