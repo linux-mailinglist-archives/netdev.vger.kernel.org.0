@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA89960E1C8
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 15:16:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8625960E1CC
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 15:17:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233884AbiJZNQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 09:16:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51706 "EHLO
+        id S234061AbiJZNQy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 09:16:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233619AbiJZNQh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 09:16:37 -0400
+        with ESMTP id S232625AbiJZNQi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 09:16:38 -0400
 Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B27CC87085;
-        Wed, 26 Oct 2022 06:16:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7BFCFAA60;
+        Wed, 26 Oct 2022 06:16:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1666790196; x=1698326196;
+  t=1666790197; x=1698326197;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=SZraRyM7DZleVZcuBicugzAwWfORdbPbN+RhQtnWZ+c=;
-  b=Yy6Jurd1G+5PuVFvg87d3TfPLMvJuQdJkQs0Qc7iZGYioj30LSxiNHx9
-   f5SyReOTX0J+iYi2hN68qgl7Bx87SSJ0p1tLfaFi/5KWDFVtxLuTCmH0T
-   502Xm9/xOBX/pjTZu9BZrNI0i+XyOFcS3kRJzfcfFVivANF30rPTg4NTs
-   MUty3laK0vfokZguG174gaJg3rq9iCdnWvKU7ORHZbLKGtorOic13thuu
-   xy7wREcTF6GDlUSbrD71Dt1lwz2VZYn0kIXVPFGJQ3prUg/lpI2hVsYMM
-   mBslZn1740sCAYvrV8XTKA9DpRlqhMdBI+jN0DA+4yqSdKRK084XtbKo3
+  bh=uD3B1j8AxBWEwgk4/bzdEnH3IBUS1p5ckVASZEy9HSQ=;
+  b=iSp/2XKnaAngenVIBu4Dpp8SnEcvEOmoe4gcUI4RTPqf0SVbfqnaBmC0
+   W4zyVeTr0aIpAwCQJ3XZifMQTdJyOU/2QZMyLtX8bY6o81St3oCbhMoDJ
+   eKZSuZYTXV+MitqNVmbKg1eDdLMVVhIMXgt4wKgHeVVJKsaw9AEtmVeBh
+   EPxLBn/3VNL7OjzZhTKRhPlGZFPC16Owq+p5F4nxn5ybYrDUPdzoArSJI
+   U2RDPJLXLgJvWmchJHi5053E2JxWECFwlxH+oV6V4/2TrmryelMx/cYFE
+   O63sR5oILlAOnH5ekbODXCUNkGIcCXBLb+F5HKYPAPJeYpsHvbDXPrHfG
    Q==;
 X-IronPort-AV: E=Sophos;i="5.95,214,1661810400"; 
-   d="scan'208";a="26988471"
+   d="scan'208";a="26988473"
 Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 26 Oct 2022 15:16:31 +0200
+  by mx1-pgp.tq-group.com with ESMTP; 26 Oct 2022 15:16:32 +0200
 Received: from mx1.tq-group.com ([192.168.6.7])
   by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Wed, 26 Oct 2022 15:16:31 +0200
+  Wed, 26 Oct 2022 15:16:32 +0200
 X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Wed, 26 Oct 2022 15:16:31 +0200
+        by tq-pgp-pr1.tq-net.de on Wed, 26 Oct 2022 15:16:32 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1666790191; x=1698326191;
+  t=1666790192; x=1698326192;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=SZraRyM7DZleVZcuBicugzAwWfORdbPbN+RhQtnWZ+c=;
-  b=bxJFbnSHUHAVIw6Ud7sc0xIgs2fxUXz60xwsj6VVdyN6zDf6tPCP8NSk
-   baon64StCZvSWTltBrb5UtB3HjXaxSJ2gnHgXOdIaX9JcKzxbj1FBHHrM
-   GyTJBu1B261V/S979rb6438CiTcaIxEltvXiJXz9GFpaCt6irKEUnGnBo
-   QrHEAy0J4VAvlC0oPtDBDY5E37DgtDr8V9/UEUrYzqaWv+Bxsva6EUvp4
-   8sp1nJqg778KyuJZvJy27N0TySSwpCMZmX4uvrPtRjkfVanqH+pxTv5wZ
-   UWKEnKvyvZQi4FQ921CZbza+eTYiikcH/xcS0cFdqGdH8RWceRYtd3UtX
-   Q==;
+  bh=uD3B1j8AxBWEwgk4/bzdEnH3IBUS1p5ckVASZEy9HSQ=;
+  b=qtmEsX8/qH2EXnLlTpIwKrKrOgC1DZ3uM3SSju+YcoTKgV81NBav9tyt
+   ZWWbw9sLueP6Niakhin9beVoVcazw7AVz/pJLa0B5Z610gajyVagK+s3s
+   LHFrkECj5a/QwNicakJM64TIVDFT6Qa/OQa6On/+SBNkw27+s3yw1SENL
+   TDfpF4wjXxI9d5zYwWqUnSkfZmtYx8vOk6GNA8jmsJQztpjqtZjwrMHoc
+   0fRhQOy2ii6nTfGyPXmi9iKc0zjVc/3Bq0cTDjeamzWETp13EhQhn3+0S
+   +oxI7nRpFYpiF5HnFM5hxkeGXGP/ZJeEa1SgJ0UKXBNobAjwYx2znZlQ+
+   g==;
 X-IronPort-AV: E=Sophos;i="5.95,214,1661810400"; 
-   d="scan'208";a="26988470"
+   d="scan'208";a="26988472"
 Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 26 Oct 2022 15:16:31 +0200
+  by mx1.tq-group.com with ESMTP; 26 Oct 2022 15:16:32 +0200
 Received: from localhost.localdomain (SCHIFFERM-M2.tq-net.de [10.121.49.14])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 7212E280056;
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id C3A53280073;
         Wed, 26 Oct 2022 15:16:30 +0200 (CEST)
 From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 To:     Arnd Bergmann <arnd@arndb.de>,
@@ -77,9 +77,9 @@ Cc:     Marcel Holtmann <marcel@holtmann.org>,
         netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux@ew.tq-group.com,
         Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Subject: [RFC 2/5] wireless: mwifiex: signal firmware readiness using notify-device
-Date:   Wed, 26 Oct 2022 15:15:31 +0200
-Message-Id: <5d5e1e4b2f4d6c8abc4332f8664f911f26b18878.1666786471.git.matthias.schiffer@ew.tq-group.com>
+Subject: [RFC 3/5] bluetooth: hci_mrvl: select firmwares to load by match data
+Date:   Wed, 26 Oct 2022 15:15:32 +0200
+Message-Id: <8417016ef049fa74a3b2961fdbc91638aebaf3a6.1666786471.git.matthias.schiffer@ew.tq-group.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1666786471.git.matthias.schiffer@ew.tq-group.com>
 References: <cover.1666786471.git.matthias.schiffer@ew.tq-group.com>
@@ -94,63 +94,130 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Make the driver more generic by adding a driver info struct. We also add
+support for devices without firmware (for example when the firmware is
+loaded by the WLAN driver on a combined module).
+
 Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 ---
- drivers/net/wireless/marvell/mwifiex/main.c | 14 ++++++++++++++
- drivers/net/wireless/marvell/mwifiex/main.h |  1 +
- 2 files changed, 15 insertions(+)
+ drivers/bluetooth/hci_mrvl.c | 57 +++++++++++++++++++++++++++++-------
+ 1 file changed, 46 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/main.c b/drivers/net/wireless/marvell/mwifiex/main.c
-index da2e6557e684..92176e90b11e 100644
---- a/drivers/net/wireless/marvell/mwifiex/main.c
-+++ b/drivers/net/wireless/marvell/mwifiex/main.c
-@@ -5,6 +5,7 @@
-  * Copyright 2011-2020 NXP
-  */
+diff --git a/drivers/bluetooth/hci_mrvl.c b/drivers/bluetooth/hci_mrvl.c
+index fbc3f7c3a5c7..5d191687a34a 100644
+--- a/drivers/bluetooth/hci_mrvl.c
++++ b/drivers/bluetooth/hci_mrvl.c
+@@ -14,6 +14,7 @@
+ #include <linux/module.h>
+ #include <linux/tty.h>
+ #include <linux/of.h>
++#include <linux/of_device.h>
+ #include <linux/serdev.h>
  
-+#include <linux/notify-device.h>
- #include <linux/suspend.h>
+ #include <net/bluetooth/bluetooth.h>
+@@ -33,6 +34,20 @@ enum {
+ 	STATE_FW_REQ_PENDING,
+ };
  
- #include "main.h"
-@@ -661,6 +662,16 @@ static int _mwifiex_fw_dpc(const struct firmware *firmware, void *context)
- 	mwifiex_drv_get_driver_version(adapter, fmt, sizeof(fmt) - 1);
- 	mwifiex_dbg(adapter, MSG, "driver_version = %s\n", fmt);
- 	adapter->is_up = true;
++struct mrvl_driver_info {
++	const char *firmware_helper;
++	const char *firmware;
++};
 +
-+	adapter->notify_dev = notify_device_create(adapter->dev, "firmware-notifier");
-+	if (IS_ERR(adapter->notify_dev)) {
-+		/* This error is not fatal */
-+		mwifiex_dbg(adapter, ERROR,
-+			    "cannot create firmware notify device: %d\n",
-+			    PTR_ERR(adapter->notify_dev));
-+		adapter->notify_dev = NULL;
-+	}
++static const struct mrvl_driver_info mrvl_driver_info_8897 = {
++	.firmware_helper = "mrvl/helper_uart_3000000.bin",
++	.firmware = "mrvl/uart8897_bt.bin",
++};
 +
- 	goto done;
++/* Fallback for non-OF instances */
++static const struct mrvl_driver_info *const mrvl_driver_info_default =
++	&mrvl_driver_info_8897;
++
+ struct mrvl_data {
+ 	struct sk_buff *rx_skb;
+ 	struct sk_buff_head txq;
+@@ -44,6 +59,7 @@ struct mrvl_data {
  
- err_add_intf:
-@@ -1482,6 +1493,9 @@ static void mwifiex_uninit_sw(struct mwifiex_adapter *adapter)
- 		rtnl_unlock();
+ struct mrvl_serdev {
+ 	struct hci_uart hu;
++	const struct mrvl_driver_info *info;
+ };
+ 
+ struct hci_mrvl_pkt {
+@@ -353,18 +369,29 @@ static int mrvl_load_firmware(struct hci_dev *hdev, const char *name)
+ 
+ static int mrvl_setup(struct hci_uart *hu)
+ {
++	const struct mrvl_driver_info *info;
+ 	int err;
+ 
+-	hci_uart_set_flow_control(hu, true);
++	if (hu->serdev) {
++		struct mrvl_serdev *mrvldev = serdev_device_get_drvdata(hu->serdev);
+ 
+-	err = mrvl_load_firmware(hu->hdev, "mrvl/helper_uart_3000000.bin");
+-	if (err) {
+-		bt_dev_err(hu->hdev, "Unable to download firmware helper");
+-		return -EINVAL;
++		info = mrvldev->info;
++	} else {
++		info = mrvl_driver_info_default;
  	}
  
-+	notify_device_destroy(adapter->notify_dev);
-+	adapter->notify_dev = NULL;
+-	/* Let the final ack go out before switching the baudrate */
+-	hci_uart_wait_until_sent(hu);
++	if (info->firmware_helper) {
++		hci_uart_set_flow_control(hu, true);
 +
- 	wiphy_unregister(adapter->wiphy);
- 	wiphy_free(adapter->wiphy);
- 	adapter->wiphy = NULL;
-diff --git a/drivers/net/wireless/marvell/mwifiex/main.h b/drivers/net/wireless/marvell/mwifiex/main.h
-index 63f861e6b28a..b28e90db3128 100644
---- a/drivers/net/wireless/marvell/mwifiex/main.h
-+++ b/drivers/net/wireless/marvell/mwifiex/main.h
-@@ -870,6 +870,7 @@ struct mwifiex_adapter {
- 	int winner;
- 	struct device *dev;
- 	struct wiphy *wiphy;
-+	struct device *notify_dev;
- 	u8 perm_addr[ETH_ALEN];
- 	unsigned long work_flags;
- 	u32 fw_release_number;
++		err = mrvl_load_firmware(hu->hdev, info->firmware_helper);
++		if (err) {
++			bt_dev_err(hu->hdev, "Unable to download firmware helper");
++			return -EINVAL;
++		}
++
++		/* Let the final ack go out before switching the baudrate */
++		hci_uart_wait_until_sent(hu);
++	}
+ 
+ 	if (hu->serdev)
+ 		serdev_device_set_baudrate(hu->serdev, 3000000);
+@@ -373,9 +400,11 @@ static int mrvl_setup(struct hci_uart *hu)
+ 
+ 	hci_uart_set_flow_control(hu, false);
+ 
+-	err = mrvl_load_firmware(hu->hdev, "mrvl/uart8897_bt.bin");
+-	if (err)
+-		return err;
++	if (info->firmware) {
++		err = mrvl_load_firmware(hu->hdev, info->firmware);
++		if (err)
++			return err;
++	}
+ 
+ 	return 0;
+ }
+@@ -401,6 +430,12 @@ static int mrvl_serdev_probe(struct serdev_device *serdev)
+ 	if (!mrvldev)
+ 		return -ENOMEM;
+ 
++	if (IS_ENABLED(CONFIG_OF)) {
++		mrvldev->info = of_device_get_match_data(&serdev->dev);
++		if (!mrvldev->info)
++			return -ENODEV;
++	}
++
+ 	mrvldev->hu.serdev = serdev;
+ 	serdev_device_set_drvdata(serdev, mrvldev);
+ 
+@@ -416,7 +451,7 @@ static void mrvl_serdev_remove(struct serdev_device *serdev)
+ 
+ #ifdef CONFIG_OF
+ static const struct of_device_id mrvl_bluetooth_of_match[] = {
+-	{ .compatible = "mrvl,88w8897" },
++	{ .compatible = "mrvl,88w8897", .data = &mrvl_driver_info_8897 },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, mrvl_bluetooth_of_match);
 -- 
 2.25.1
 
