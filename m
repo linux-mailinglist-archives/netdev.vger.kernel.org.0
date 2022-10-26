@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BB4E60DE2C
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 11:35:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 145C160DE2E
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 11:35:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230134AbiJZJfX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 05:35:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44566 "EHLO
+        id S231628AbiJZJfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 05:35:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233111AbiJZJfN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 05:35:13 -0400
+        with ESMTP id S233283AbiJZJfT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 05:35:19 -0400
 Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1E5B7F4A;
-        Wed, 26 Oct 2022 02:35:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E198BB878A;
+        Wed, 26 Oct 2022 02:35:13 -0700 (PDT)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id BE46B20002;
-        Wed, 26 Oct 2022 09:35:06 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 27EA020009;
+        Wed, 26 Oct 2022 09:35:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1666776909;
+        t=1666776911;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=4ZB5f0usf5IvMcUvkbGgXBKLz/Oi1uhjhHZiBstgC44=;
-        b=lVYi0HdhoqiRdiRgwOB8205END4+BwCRrm6LMc8bep3dWPqLj+v0fQpjVvCczq6iZjMDf6
-        QXuMA5LTKmWnsTHFWsTC2CFRztct0x2QnnfJ/6mJasvuqLbm05WVNDFUVsrY49uLFmUOtv
-        MH49BMhGAo1mxC27S58GVmQ4KpXNKarpJfIQ7qf7cGwAqqxahvT+5fiVgolpTdOhAxhHAS
-        Vo/dkPOPRrL/FXI8yM5S6BKHddl1HKfSh1yVyF7FYYp61/vcReDB7hnbmC3TL7I38JcLob
-        tp/t5NopSpR3eF0UNnLEYhuKBlrP56lr2Y4Cu9fbkCUwKTFXBBL2Mc/n86v5bA==
+        bh=Q7Xi58osnvUAmjzJGDqgNmzgjEezFGzGtZoGo66Sjzg=;
+        b=AAMA/Lc3fC/RCCT5o4glV4C7PmXWYV8U4KIeRPNMOpweCGKo0fvjgVEtt/Yi3iKYM/4fAm
+        VGo/QwzA87pigPLEIWbDcrrIHl4gh8X7IUNXu6HG6QEuuL0pK4d5fAUJKqdNfWay//CWBM
+        7HJ/3FF/glsNi+2KTkyHpJ5oW+Jk4NskrVGswwMrb34usPjVT2BujOQIx3dYgWkBCqEgo6
+        8im/hayp8vZq4iP1q7GwlzV2t1cFy61dLvKq92HLpePZewGyDVfFhyODvTf/j724Ci2nxO
+        XZGGC8dSIlTAADKjMIkUTcPZMNNm0iJf118iXvTaxCX2kUm4uoLDJxWfhfzCWA==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -44,9 +44,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Guilhem Imberton <guilhem.imberton@qorvo.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan-next v2 1/3] mac802154: Move an skb free within the rx path
-Date:   Wed, 26 Oct 2022 11:35:00 +0200
-Message-Id: <20221026093502.602734-2-miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next v2 2/3] mac802154: Clarify an expression
+Date:   Wed, 26 Oct 2022 11:35:01 +0200
+Message-Id: <20221026093502.602734-3-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221026093502.602734-1-miquel.raynal@bootlin.com>
 References: <20221026093502.602734-1-miquel.raynal@bootlin.com>
@@ -62,64 +62,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It may appear clearer to free the skb at the end of the path rather than
-in the middle, within a helper.
+While going through the whole interface opening logic in my head I was
+consistently bothered by the condition checking whether there was only
+one interface of type NODE/COORD opened at the same time. What actually
+bothered me was the fact that in one case we would use the wpan_dev
+pointer directly while in the other case we would use the sdata pointer,
+making it harder to differentiate both. In practice the condition should
+be straightforward to read. IMHO dropping the wpan_dev indirection
+allows to clarify the check.
 
-Move kfree_skb() from the end of __ieee802154_rx_handle_packet() to
-right after it in the calling function ieee802154_rx(). Doing so implies
-reworking a little bit the exit path.
-
-Suggested-by: Alexander Aring <alex.aring@gmail.com>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- net/mac802154/rx.c | 13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
+ net/mac802154/iface.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/mac802154/rx.c b/net/mac802154/rx.c
-index 334aa4e415cc..9f3e72a278cb 100644
---- a/net/mac802154/rx.c
-+++ b/net/mac802154/rx.c
-@@ -234,8 +234,6 @@ __ieee802154_rx_handle_packet(struct ieee802154_local *local,
- 		skb = NULL;
- 		break;
- 	}
--
--	kfree_skb(skb);
- }
+diff --git a/net/mac802154/iface.c b/net/mac802154/iface.c
+index d9b50884d34e..f21132dd82cf 100644
+--- a/net/mac802154/iface.c
++++ b/net/mac802154/iface.c
+@@ -254,7 +254,6 @@ ieee802154_check_concurrent_iface(struct ieee802154_sub_if_data *sdata,
+ 				  enum nl802154_iftype iftype)
+ {
+ 	struct ieee802154_local *local = sdata->local;
+-	struct wpan_dev *wpan_dev = &sdata->wpan_dev;
+ 	struct ieee802154_sub_if_data *nsdata;
  
- static void
-@@ -274,7 +272,7 @@ void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb)
- 	WARN_ON_ONCE(softirq_count() == 0);
- 
- 	if (local->suspended)
--		goto drop;
-+		goto free_skb;
- 
- 	/* TODO: When a transceiver omits the checksum here, we
- 	 * add an own calculated one. This is currently an ugly
-@@ -292,20 +290,17 @@ void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb)
- 	/* Level 1 filtering: Check the FCS by software when relevant */
- 	if (local->hw.phy->filtering == IEEE802154_FILTERING_NONE) {
- 		crc = crc_ccitt(0, skb->data, skb->len);
--		if (crc) {
--			rcu_read_unlock();
-+		if (crc)
- 			goto drop;
--		}
- 	}
- 	/* remove crc */
- 	skb_trim(skb, skb->len - 2);
- 
- 	__ieee802154_rx_handle_packet(local, skb);
- 
--	rcu_read_unlock();
--
--	return;
- drop:
-+	rcu_read_unlock();
-+free_skb:
- 	kfree_skb(skb);
- }
+ 	/* we hold the RTNL here so can safely walk the list */
+@@ -267,7 +266,7 @@ ieee802154_check_concurrent_iface(struct ieee802154_sub_if_data *sdata,
+ 			 * exist really an use case if we need to support
+ 			 * multiple node types at the same time.
+ 			 */
+-			if (wpan_dev->iftype == NL802154_IFTYPE_NODE &&
++			if (sdata->wpan_dev.iftype == NL802154_IFTYPE_NODE &&
+ 			    nsdata->wpan_dev.iftype == NL802154_IFTYPE_NODE)
+ 				return -EBUSY;
  
 -- 
 2.34.1
