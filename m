@@ -2,174 +2,292 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 203EE60E147
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 14:56:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37F9760E148
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 14:56:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233808AbiJZM4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 08:56:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39254 "EHLO
+        id S233806AbiJZM44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 08:56:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233912AbiJZM4k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 08:56:40 -0400
-Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2102.outbound.protection.outlook.com [40.107.113.102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFBCB36431;
-        Wed, 26 Oct 2022 05:56:38 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bJ92zRzR9sIFiOZC5fYWS2/bFYRXNeGgjc+9My8JQs80mbVxLs4k2feT6kSiRn7dfXN4yIEQ4sze/pL54Di5Smy2zcf9RRU2K4cW1Myilpa10E8SxR7+UQ5ZC32q9SLEj/07xFuyfMWsdQKDfvJ4LKTUGUEtjv6OZ/v2csjaLHLHOmoSYry48b60yknXmrNMCjpyDqzGAq5zoexQscKdg/XNvdILBoUZjq/8fWxrKHsTUSIVms+8CmOK+p5TacSEHIrlyavn7L3DFlIlgxZpSWDvM3xR/EYcwPPR5b/zzi3331sey0sAmpVVF9qa6FWNpgqgy+DFPLjBi99k/bAcPg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+SdoGDkxqKoy5MxaTGMuclJKOapqN7EjMJur1X7F0dM=;
- b=YxqKByIvv/1f3nHldxDZkrUdl/onvC6xF7oUX9D3GvHlLLsN/lcMaqb8AMgW9yBz6IAH0Hx0P7S6Pbx2NvwEYewFf7ycZeuFyt/kl0bpeX51M7ZOjLS0tep+ichfPP3XTSTNdEl6mVsnIFuUnI7AJmDhMmzhicKbRk3Gc5RKqN2nTM5vOoMXT5CAHA8FgKPJzmX3QKKxv4bNrJueoYJ5UjInYJhTMTn4lTvj7GH/YJQL4/oBEAVsaHLHcV81dIH7UX76H0x6rKVkMQzF0bQtYgMKEDmThAZEnJ72WvfjMoPuZCUKAQXHwZy3M8BGiHMdzhUlRFRSVB48+RIGA8tD6g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+SdoGDkxqKoy5MxaTGMuclJKOapqN7EjMJur1X7F0dM=;
- b=DDo8u2wdMA29z/GoZsq/fbtiEj/Iaeomw3AFw7sPsh0ljwH4HU7QDUdeRJSduI2go+FzjaG5Jehe5eF/J+QhRjXQWsj6pagfKEhSEKySKyFYafPtdIt949S9gKChGyjElWtG6jsjuvVn7Yb1Bw5681ll8a08f/aut/p2JldM5Gg=
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
- by TYWPR01MB9646.jpnprd01.prod.outlook.com (2603:1096:400:1a3::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.23; Wed, 26 Oct
- 2022 12:56:35 +0000
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::fea0:9039:b0b3:968f]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::fea0:9039:b0b3:968f%7]) with mapi id 15.20.5746.028; Wed, 26 Oct 2022
- 12:56:35 +0000
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-CC:     Wolfgang Grandegger <wg@grandegger.com>,
+        with ESMTP id S233938AbiJZM4x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 08:56:53 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE07B8B2D6;
+        Wed, 26 Oct 2022 05:56:50 -0700 (PDT)
+Received: (Authenticated sender: i.maximets@ovn.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id 3BDAB40004;
+        Wed, 26 Oct 2022 12:56:47 +0000 (UTC)
+Message-ID: <a55ef4dd-36b6-bc7b-16e8-92a74c5ac689@ovn.org>
+Date:   Wed, 26 Oct 2022 14:56:46 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.1
+Cc:     i.maximets@ovn.org, netdev@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        =?utf-8?B?U3RlZmFuIE3DpHRqZQ==?= <stefan.maetje@esd.eu>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH v2 2/3] can: rcar_canfd: Fix channel specific IRQ handling
- for RZ/G2L
-Thread-Topic: [PATCH v2 2/3] can: rcar_canfd: Fix channel specific IRQ
- handling for RZ/G2L
-Thread-Index: AQHY6Ip2RBA8f39PzUqILbm0/1Sk/64gSiQAgAAUPdCAAD8zAIAABM6Q
-Date:   Wed, 26 Oct 2022 12:56:35 +0000
-Message-ID: <OS0PR01MB5922B83EE681BFAE56B420D386309@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-References: <20221025155657.1426948-1-biju.das.jz@bp.renesas.com>
- <20221025155657.1426948-3-biju.das.jz@bp.renesas.com>
- <20221026073608.7h47b2axcayakfnn@pengutronix.de>
- <OS0PR01MB5922FCC50E590DFDD041F99386309@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <20221026123446.c6ob45mbke5aj7f5@pengutronix.de>
-In-Reply-To: <20221026123446.c6ob45mbke5aj7f5@pengutronix.de>
-Accept-Language: en-GB, en-US
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bp.renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: OS0PR01MB5922:EE_|TYWPR01MB9646:EE_
-x-ms-office365-filtering-correlation-id: 81449d3d-9351-4f3d-0538-08dab75183af
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: QHth/u9K+q9InnyDcjBD/8ukdyMbAqGBPH0yWUe3uBWLemTcmCwVmmgYltXNf14KoVHCHIhjvFlwZoQNQO+9ZyQSlWTlEOZbCUrHHXxNSuFD7A/5NHRX4RHUZS87sWgiwVgViaV9T7Y1hxMoUp8ZdVSlZ5Jv0JBpIX9uTZO7eBcTDl0iVXIJ+AhEBEnEEvTXjqq7kRj3t2N3WX/+rcfN0LIUb/izX+iZhzTIJVvpdsXatpCCuDe+zgOIVGamiCRCREIU6xPJTQ2ywiWm5tN5J86I4kOuM4MOOm7vZPVUZse1+A2SwNfG6jSXKVxJUANCAfsvA7QOzHqeO+ZGQTgmZPQCbE4x+b/OZ7GKoYR703qifovIKQkOPyapeb61ji75L/+uLwTyTQHo+ZW+33Pj+YY1yPyGEaKlG0DmtC0sj2oqnsLaOuOUAlZ2+pmldh5QMPt1IeHLaCmautEhTIqdNIrnCg8XbJNNf3Ln+gViit71OchcJDDj9bXHi/4xUJrmWroaQSs6U2cvnSJPopcHtgxiQyORyJs4QQoq5EqHDJEIyuE0e/E1HFLtGykqPTdzWXXSTQRmewANgxgUkRpHo2SJHdOcVfNQcZ9Sn7njCBzGTCcfQPIcdo83Qz/VKgdjCfuVfBlg7BaoSrLvQnq21xVfCwZf8N4DNe/fbZwwrDSF2TEPb1hFhX/cGhTH/HG/19zWdKN8u6LK7kKnkfC/d6dW/cR716YyYbPoB/K9Nderu+E8CBNhNOtGQmkEMruNY0/GW1VKtOJ3xO5G6DE8AQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(366004)(396003)(136003)(39860400002)(346002)(451199015)(478600001)(86362001)(71200400001)(66446008)(66946007)(53546011)(66476007)(64756008)(7696005)(66556008)(8676002)(4326008)(41300700001)(5660300002)(9686003)(76116006)(7416002)(52536014)(8936002)(6916009)(33656002)(122000001)(54906003)(55016003)(6506007)(186003)(2906002)(38100700002)(316002)(26005)(38070700005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?U01uY0tSSUxBOUViN21PQ2pocDBkLzdQYWI5dWJ3UlFIQmNneWsxbklwK2p1?=
- =?utf-8?B?Nno4T0orOHVvZnE4RDNoYWZiODBUWU5wZkYvbkQxMGdrbnVsazNpWE1BMGJN?=
- =?utf-8?B?ZURzcERKV3ZxV0pCYVJxUXVxR3o4NXZjOHJ3enQxTEdzOCsvWGQ4Y2Y3dlpC?=
- =?utf-8?B?aTI4b0VSUHhtN08rK1lJN3JyUjFnL1hFT1FrYXNtcDBVV0kvOXd5TnhSaDM1?=
- =?utf-8?B?Y2Jpdm91YzgwUFU3QUw4VzRrSFNOSzdDYlRxNU9VVytoYjF3a1FPbDZwdGhX?=
- =?utf-8?B?YWdYY1N0SU5wdFE1dEdNUXZ5VXpyb3VsN1FMQ3YzdjhZZWZHT3FKUysxSG1D?=
- =?utf-8?B?T2dJTVV2TWV3VEZMUkprUGlhdlBPVmNNQXkrRHZScWhlYnNMdG0wRjh6ZERH?=
- =?utf-8?B?Rm5ZRFhNQll1L0V0akU2d3hDSXZxZXQ4L3ZNSEVERkR5L2l5bUhVZWRsN2dV?=
- =?utf-8?B?ZVFia2hSL2c4ZHdNcExDUGhidmZLV1dQY3ZTQlZRcUQzNEF3Uytjd1FUNVdY?=
- =?utf-8?B?NWRXeFNCOXNTUTFtZHN5S2U5WDlZRkFOdmZrd25WTEpHRXRwd2YxT1BwV1NU?=
- =?utf-8?B?amVUdnBPcmhhdGNlbjduQUlMUlBjTVZFbmVGeUp0dFNoOEo0S2pzWjVtdWxZ?=
- =?utf-8?B?b3RaRzQxUXZzaHA3dVhNdWQzcTJQWjJNd2h1ZTRjcFZFLzVNOUNGR2poUTZq?=
- =?utf-8?B?TFVmZ20yOGVnSmEvOEs4VDBoUFlQUFA5cDJNY1d1KzZ4VEdtR2tsekRaR0xv?=
- =?utf-8?B?dml3VWlFWUVsS3QzdWd0a05HT1hhcXZjUTR4L0cvdHdhNStka0FJTmhPb3Ra?=
- =?utf-8?B?MnZWbWE0dzlFMjVjY3RmMkQzMnRpMFpzaGNPMEIyQkpSOFZBU3Zwam4xY01H?=
- =?utf-8?B?Y3hwWm1JWWgzbzJqem5BMjBwQmFhb1hIejIwV0s4My9zVjl5bWxGcTZJbjkz?=
- =?utf-8?B?cUkvUHlKZ1pobExBbHVKdGRlR29tV2ZwYkdsTmwxY0ttaWpzWTdPU25ZUFk0?=
- =?utf-8?B?Y0pGY002OVY2OUw4MUt2VUpXNlVORThpNzhVOHRDTUZsSVJQSGxJSzJFeU1j?=
- =?utf-8?B?M0d0Q2dEYnRsRllVRkdYV0pjZVhJVUFEZGpVZm9qcGttMmRkVlpGZjRFQkk1?=
- =?utf-8?B?Z2pleDJTeHdwRnJOczM2bW93cSs0Q2lsM29oZlFLUmdwUmEwaGMvdTZnQ3N0?=
- =?utf-8?B?UWNVTEFyakUxazdNYWgwSm5UYXBwVlliUUJwcXhOTnlVQlp1c3JkMkQxVkVY?=
- =?utf-8?B?ZktqazFQZEtmcUcxS2ZEdWJRVmhVaTRDSnhsZm1rTjJzYWxDTzhaZ2JsTm1u?=
- =?utf-8?B?MWhmVkg5OWwyMjRmWnFnZWVHRFV1M1BXdEtMeW9MKzJST3JsbnU0QXFKQWhP?=
- =?utf-8?B?b0xLTGs0Q1JzK1AwTG5DNjhIa29QMXkreW1KdlBMSEt6MFNQR1c5YS9TWVlu?=
- =?utf-8?B?c29VUUtyL3RQa2ZHVm9Ua2NJM0FHNjhUK1N1bFEzVy9JdGl2dE9wWUIzdmVQ?=
- =?utf-8?B?NzhOdjMzaVVxU1ZNK0U3Z0ozcEY5UlFoYlJscDhJbnBqcE9jUDd1YkdTWDdI?=
- =?utf-8?B?TlFIdHNsQkxOVFcvdFRRbDVOckZDSU9aZjVwS2dMVHNFb3RjenpUU3lScmRN?=
- =?utf-8?B?ZHRYUUdyd29NYnNZTmFIcVgzdGRmRnZNdHY5b09CODhkbjl0R1JZYTJEeW16?=
- =?utf-8?B?dWY0MEptdlI0blg5MTFnOWpmWUp4SHVYbmV0ejVuY29najAyTThGTWw2ZTFv?=
- =?utf-8?B?dXRKTGU4K2ZrM0F2UTlvalJqcEdIbC9hQjQrSWJMUzRUSWtUQVpKWEE0N2R3?=
- =?utf-8?B?aE5BZ2VySFJqRE0rNUlpRkZreHZXMC9qV0FRVHBaaFlhdy9TRDYvY01wWGN4?=
- =?utf-8?B?aGhDSTQ5dmdmQ3ZkeGhVenI1eTNjVzVGY3psOUYzKyt2K0QxdEVWeEtPdThG?=
- =?utf-8?B?emNmT1M3SURxdDc0Q1ZQMFgwQjJ3U1BacDVTNEExQ3V0SjhPZDBhTUpWWFh5?=
- =?utf-8?B?dCsyVVcyYVE5aFo3NlV4WVBOc2VNQ2JkNmpxUlBOOWpGZDNQNTBYZndsMnkv?=
- =?utf-8?B?OXBFZmJ6TlZweWR5L21EcDN2SHgvSHcrNkV6OFk1K1NCT0FiSG1MWTRhYktE?=
- =?utf-8?B?M01od0x5Znp5VklCdnA1VFZJbVZpclUwK2dDak5uYXU2Qkppc1pVWHRUNnha?=
- =?utf-8?B?d0E9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 81449d3d-9351-4f3d-0538-08dab75183af
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Oct 2022 12:56:35.5241
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: K+rjIN4eaJ4SfCWEOY3mCwkvnZNvifmn26OXXq1AobBUn2R+8NLCbZQ4JRxIuc46kymtTRb4DzdgAhyb4j+3UkAf5y0KK3AqnNKVgpm8rRA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYWPR01MB9646
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+To:     Antonio Quartulli <antonio@openvpn.net>, nicolas.dichtel@6wind.com,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20221021114921.3705550-1-i.maximets@ovn.org>
+ <20221021090756.0ffa65ee@kernel.org>
+ <eb6903b7-c0d9-cc70-246e-8dbde0412433@6wind.com>
+ <ded477ea-08fa-b96d-c192-9640977b42e6@ovn.org>
+ <5af190a8-ac35-82a6-b099-e9a817757676@6wind.com>
+ <cd51cf56-c729-87da-5e2e-03447c9a3d42@openvpn.net>
+ <ed60523e-d94c-8a41-7322-c2da0ac6a097@ovn.org>
+ <b60779d3-cb7e-922d-2915-099ad03dcf54@openvpn.net>
+From:   Ilya Maximets <i.maximets@ovn.org>
+Subject: Re: [RFE net-next] net: tun: 1000x speed up
+In-Reply-To: <b60779d3-cb7e-922d-2915-099ad03dcf54@openvpn.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgTWFyYywNCg0KVGhhbmtzIGZvciB0aGUgZmVlZGJhY2suDQoNCj4gU3ViamVjdDogUmU6IFtQ
-QVRDSCB2MiAyLzNdIGNhbjogcmNhcl9jYW5mZDogRml4IGNoYW5uZWwgc3BlY2lmaWMgSVJRDQo+
-IGhhbmRsaW5nIGZvciBSWi9HMkwNCj4gDQo+IE9uIDI2LjEwLjIwMjIgMDk6MzQ6NDEsIEJpanUg
-RGFzIHdyb3RlOg0KPiA+ID4gSW4gYSBzZXBhcmF0ZSBwYXRjaCwgcGxlYXNlIGNsZWFuIHVwIHRo
-ZXNlLCB0b286DQo+ID4gPg0KPiA+ID4gfCBzdGF0aWMgdm9pZCByY2FyX2NhbmZkX2hhbmRsZV9n
-bG9iYWxfZXJyKHN0cnVjdA0KPiByY2FyX2NhbmZkX2dsb2JhbA0KPiA+ID4gfCAqZ3ByaXYsIHUz
-MiBjaCkgc3RhdGljIHZvaWQNCj4gPiA+IHwgcmNhcl9jYW5mZF9oYW5kbGVfZ2xvYmFsX3JlY2Vp
-dmUoc3RydWN0DQo+ID4gPiB8IHJjYXJfY2FuZmRfZ2xvYmFsICpncHJpdiwgdTMyIGNoKSBzdGF0
-aWMgdm9pZA0KPiA+ID4gfCByY2FyX2NhbmZkX2NoYW5uZWxfcmVtb3ZlKHN0cnVjdCByY2FyX2Nh
-bmZkX2dsb2JhbCAqZ3ByaXYsIHUzMg0KPiBjaCkNCj4gPiA+DQo+ID4gPiBXaHkgYXJlIDIgb2Yg
-dGhlIGFib3ZlIGZ1bmN0aW9ucyBjYWxsZWQgImdsb2JhbCIgYXMgdGhleSB3b3JrIG9uIGENCj4g
-PiA+IHNwZWNpZmljIGNoYW5uZWw/IFRoYXQgY2FuIGJlIHN0cmVhbWxpbmVkLCB0b28uDQo+ID4g
-Pg0KPiA+DQo+ID4gVGhlIGZ1bmN0aW9uIG5hbWUgaXMgYXMgcGVyIHRoZSBoYXJkd2FyZSBtYW51
-YWwsIEludGVycnVwdCBzb3VyY2VzDQo+IGFyZQ0KPiA+IGNsYXNzaWZpZWQgaW50byBnbG9iYWwg
-YW5kIGNoYW5uZWwgaW50ZXJydXB0cy4NCj4gPg0KPiA+IOKAoiBHbG9iYWwgaW50ZXJydXB0cyAo
-MiBzb3VyY2VzKToNCj4gPiDigJQgUmVjZWl2ZSBGSUZPIGludGVycnVwdA0KPiA+IOKAlCBHbG9i
-YWwgZXJyb3IgaW50ZXJydXB0DQo+ID4g4oCiIENoYW5uZWwgaW50ZXJydXB0cyAoMyBzb3VyY2Vz
-L2NoYW5uZWwpOg0KPiANCj4gSSBzZWUuIEtlZXAgdGhlIGZ1bmN0aW9ucyBhcyBpcy4NCj4gDQo+
-ID4gTWF5YmUgd2UgY291bGQgY2hhbmdlDQo+ID4gInJjYXJfY2FuZmRfaGFuZGxlX2dsb2JhbF9y
-ZWNlaXZlIi0NCj4gPiJyY2FyX2NhbmZkX2hhbmRsZV9jaGFubmVsX3JlY2VpdmUNCj4gPiAiLCBh
-cyBmcm9tIGRyaXZlciBwb2ludCBJdCBpcyBub3QgZ2xvYmFsIGFueW1vcmU/PyBQbGVhc2UgbGV0
-IG1lDQo+IGtub3cuDQo+IA0KPiBOZXZlciBtaW5kIC0gdGhlIGdwcml2IGFuZCBjaGFubmVsIG51
-bWJlcnMgYXJlIG5lZWRlZCBzb21ldGltZXMgZXZlbg0KPiBpbiB0aGUgZnVuY3Rpb25zIHdvcmtp
-bmcgb24gYSBzaW5nbGUgY2hhbm5lbC4gTmV2ZXIgbWluZC4gSSdsbCB0YWtlDQo+IHBhdGNoZXMN
-Cj4gMSBhbmQgMiBhcyB0aGV5IGFyZS4NCg0KT0ssIFRoYW5rcy4NCg0KQ2hlZXJzLA0KQmlqdQ0K
-DQoNCg0KDQoNCg==
+On 10/26/22 00:16, Antonio Quartulli wrote:
+> On 24/10/2022 19:48, Ilya Maximets wrote:
+>> On 10/24/22 17:59, Antonio Quartulli wrote:
+>>> Hi,
+>>>
+>>> On 24/10/2022 14:27, Nicolas Dichtel wrote:
+>>>> Le 24/10/2022 à 13:56, Ilya Maximets a écrit :
+>>>>> On 10/24/22 11:44, Nicolas Dichtel wrote:
+>>>>>> Le 21/10/2022 à 18:07, Jakub Kicinski a écrit :
+>>>>>>> On Fri, 21 Oct 2022 13:49:21 +0200 Ilya Maximets wrote:
+>>>>>>>> Bump the advertised speed to at least match the veth.  10Gbps also
+>>>>>>>> seems like a more or less fair assumption these days, even though
+>>>>>>>> CPUs can do more.  Alternative might be to explicitly report UNKNOWN
+>>>>>>>> and let the application/user decide on a right value for them.
+>>>>>>>
+>>>>>>> UNKOWN would seem more appropriate but at this point someone may depend
+>>>>>>> on the speed being populated so it could cause regressions, I fear :S
+>>>>>> If it is put in a bonding, it may cause some trouble. Maybe worth than
+>>>>>> advertising 10M.
+>>>>>
+>>>>> My thoughts were that changing the number should have a minimal impact
+>>>>> while changing it to not report any number may cause some issues in
+>>>>> applications that doesn't expect that for some reason (not having a
+>>>>> fallback in case reported speed is unknown isn't great, and the argument
+>>>>> can be made that applications should check that, but it's hard to tell
+>>>>> for every application if they actually do that today).
+>>>>>
+>>>>> Bonding is also a good point indeed, since it's even in-kernel user.
+>>>>>
+>>>>>
+>>>>> The speed bump doesn't solve the problem per se.  It kind of postpones
+>>>>> the decision, since we will run into the same issue eventually again.
+>>>>> That's why I wanted to discuss that first.
+>>>>>
+>>>>> Though I think that at least unification across virtual devices (tun and
+>>>>> veth) should be a step in a right direction.
+>>>> Just to make it clear, I'm not against aligning speed with veth, I'm only
+>>>> against reporting UNKNOWN.
+>>>>
+>>>>>
+>>>>>>
+>>>>>> Note that this value could be configured with ethtool:
+>>>>>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=4e24f2dd516ed
+>>>>>
+>>>>> This is interesting, but it's a bit hard to manage, because in order
+>>>>> to make a decision to bump the speed, application should already know
+>>>>> that this is a tun/tap device.  So, there has to be a special case
+>>>> But this should be done by the application which creates this tun interface. Not
+>>>> by the application that uses this information.
+>>>>
+>>>>> implemented in the code that detects the driver and changes the speed
+>>>>> (this is about application that is using the interface, but didn't
+>>>>> create it), but if we already know the driver, then it doesn't make
+>>>>> sense to actually change the speed in many cases as application can
+>>>>> already act accordingly.
+>>>>>
+>>>>> Also, the application may not have permissions to do that (I didn't
+>>>>> check the requirements, but my guess would be at least CAP_NET_ADMIN?).
+>>>> Sure, but the one who creates it, has the right to configure it correctly. It's
+>>>> part of the configuration of the interface.
+>>>>
+>>>> Setting an higher default speed seems to be a workaround to fix an incorrect
+>>>> configuration. And as you said, it will probably be wrong again in a few years ;-)
+>>>>
+>>>
+>>> What if the real throughput is in the order of 10Mbps?
+>>>
+>>> The tun driver can be used for many purposes and the throughput will depend on the specific case.
+>>>
+>>> Imagine an application using the reported speed for computing some kind of metric: having 10Gbps will corrupt the result entirely.
+>>>
+>>> OTOH it is true that 10Mbps may corrupt the metric as well, but the latter is closer to reality IMHO (when using tun to process and send traffic over the network).
+>>>
+>>> At the end I also agree that the speed should be set by whoever creates the interface. As they are the only one who knows what to expect for real.
+>>>
+>>> (Note: tun is used also to implement userspace VPNs, with throughput ranging from 10Mbps to 1Gbps).
+>>
+>> That's an interesting perspective, Antonio.  Thanks!
+>>
+>> However, before we can answer your questions, I think we need to define
+>> what the link speed of a tun/tap interface actually is.
+> 
+> good point
+> 
+>>
+>> IMHO, we should not mix up the link speed and the application performance.
+>>
+>> I'm thinking about the link speed as a speed at which kernel driver can
+>> make packets available to the userpsace application or the speed at which
+>> kernel driver is able to send out packets received from the application.
+> 
+> Mh I understand your perspective, however, if you think about the value reported by Ethernet devices, they will give you the hypothetical/nominal speed they can reach on link - they don't give you the speed of the kernel driver.
+
+Sorry, I used the word 'driver' here just because we don't really
+have an actual device.  So, to clarify what I meant is:
+
+                        TUN/TAP              PHY NIC
+
+the driver+device is   tun driver         physical NIC + its driver
+
+the link is            file descriptor    Actual NIC link
+                       or a queue         (transceiver/cord)
+
+the remote host is     application        Actual remote host
+
+So, the link speed in these terms for a tun driver is a speed
+at which packets can be queued towards the application.
+In case of a physical NIC it is the possible transmission speed.
+
+These do not depend on the processing speed on the remote host
+which is an application or the actual remote host.
+
+There is a link negotiation process that can be performed, of course.
+That will be application setting the actual speed it wants on a tun/tap
+device or the actual link speed negotiation in the physical world.
+
+I hope that explains my analogy better.
+
+> 
+>>
+>> The performance of the application itself is a bit orthogonal to
+>> parameters of the device.
+>>
+>> I think, as we do not blame a physical network card or the veth interface
+>> for the processing speed of the application on the other side of the
+>> network, the same way we should not blame the tun driver/interface for
+>> the processing speed in the application that opened it.
+> 
+> Well, but in the case of the tun driver the application can be considered as the "userspace driver" of that device.
+
+I'm considering application as a remote host here, not part of the
+driver or a virtual NIC.
+
+> 
+> It's different from an application listening on an interface and processing packets as they arrive from the network.
+
+I'm not sure if that is very different.  It's virtual and a bit different,
+but it's still a network.  Application is receiving packets by calling
+recv()/read() on a file descriptor.  TUN driver is emulating a NIC
+and a link medium.
+
+> 
+>>
+>> In that sense the link speed of a tap interface is the speed at which
+>> kernel can enqueue/dequeue packets to/from userspace.
+> 
+> But like I said above, other drivers don't give you that speed: they return the speed at which they expect to be able to send packets out.
+
+Yes, sorry again for not being clear.  I was using a term 'driver'
+here only in respect to the tun driver, because we don't have any
+real NIC here.  TUN driver represents both the driver and a hardware
+component in my analogy. 
+
+> 
+>> On a modern CPU that speed will be relatively high.  If it's actually
+>> 10 Mbps, than it means that you're likely running on a very slow CPU and
+>> will probably not be able to generate more traffic for it anyway.
+>>
+> 
+>> For the calculation of some kind of metric based on the reported link
+>> speed, I'm not sure I understand how that may corrupt the result.  The
+>> reported 10 Mbps is not correct either way, so calculations make no
+>> practical sense.  If the application expects the link speed to be 10 Mbps,
+>> than I'm not sure why it is checking the link speed in the first place.
+> 
+> You are right. If the returned value is far from the real throughput, the metric will be bogus anyway.
+> 
+> However, I believe 10Gbps is going to be quite far from the real performance in most of the cases. Probably 100Mbps or 1Gbps might be more appropriate, IMHO.
+
+In case of modern virtualization environment where QEMU is creating
+a tap interface to provide a network connectivity for a guest OS,
+I'm afraid, 10 Gbps is actually far from real performance but in
+the opposite direction.  Much higher speeds can actually be achieved
+in practice.
+
+> 
+>>
+>> Do you have some examples of such metrics?
+> 
+> BATMAN-Advanced (net/batman-adv/bat_v_elp.c:129) uses the speed returned by the ethtool API to compute its throughput based metric, when the provided interface is not a wireless device.
+> 
+> Some people liked to throw tap devices at batman-adv.
+
+Yeah, the metric value will be some arbitrary number anyway, since
+the reported speed doesn't reflect reality in any way.
+The 'throughput * 10' part is also interesting.
+IIUC, the metric is used to spot sudden changes in the network,
+so the actual value doesn't really matter, right?
+
+> 
+> Of course, best would again be that whoever created the interface also set the expected speed (based on the application driving the tap device).
+> 
+> Hence I liked the suggestion of setting UNKNOWN as default and then forcing the application to take action.
+
+I agree that it is a right thing to do, but the general consensus
+seems to be that this will break a lot of stuff.
+
+> 
+>>
+>>
+>> All in all, TUN/TAP is a transport, not an end user of the packets it
+>> handles.  And it seems to be a work for transport layer protocols to
+>> handle the mismatch between the wire speed and the application speed on
+>> the other end.
+>>
+>>
+>> Saying that, I agree that it makes sense to set the link speed in the
+>> application that creates the interface if that application does actually
+>> know what it is capable of.  But not all applications know what speed
+>> they can handle, so it's not always easy, and will also depend on the
+>> CPU speed in many cases.
+> 
+> Totally agree!
+> 
+> And exactly for these reasons you just mentioned, don't you think it is a bit unsafe to just set 10Gbps by default (knowing that there are consumers for this value)?
+
+There will be corner cases, for sure.  Though replacing one arbitrary
+number with another arbitrary number, I believe, should not cause any
+unrecoverable issues, while providing a more sensible default for some
+other users.
+
+I'm not sure if VPNs do actually care about the link speed value tap
+interfaces report.  It seems to be outside of their scope of interest.
+I know for sure that applications like libvirt and OVS do care because
+they need to configure QoS on such ports in automated fashion without
+user intervention on a low level.  Same problem will eventually appear
+on veth interfaces someday in the future.
+
+> 
+> 
+> In any case, I only wanted to express my perplexity at throwing such a high number at tun.
+
+If it is a high number or not depends on a point of view, I guess.
+See my analogy explanation above.
+
+> But since we agree that this number will likely be wrong in most of the cases, I don't really have a strong opinion either.
+
+Thanks for sharing your thoughts!
+
+Best regards, Ilya Maximets.
