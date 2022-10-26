@@ -2,139 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D77760E160
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 15:00:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FAA760E1B3
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 15:13:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233390AbiJZNAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 09:00:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47182 "EHLO
+        id S234026AbiJZNNX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 09:13:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233533AbiJZNAZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 09:00:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F041E688A6;
-        Wed, 26 Oct 2022 06:00:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E07D61EBB;
-        Wed, 26 Oct 2022 13:00:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DB0C7C433C1;
-        Wed, 26 Oct 2022 13:00:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666789222;
-        bh=1er536WIQpRb9kmkTNARefOgWVYoxav06rvZa3g9Xuw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=gz4K50qqJ5xnRSAqOYXO+shxioJyZk34UakBG5y8DC2D19YmKyVbfwU7dsWGKY4iy
-         mRbOh0P+vlRLzzbc68oHcKQvV/3fCX5+dFXn4w6+/0Ugw4iLX3T08tdTEANBsm6QOt
-         CXua/MlZxUzlsBZheaZeWpOKvQShS0DwrcNZHWYwm4FgZLKQBN/vXKA4FHIZ++ninP
-         G/CEoS6JSbyeCpwuFKh2SEDQ7cQdr6edrzREUtt7CrN8lp8FrF8v2zA909xku9ItIR
-         shkkMKunlXDUD5CUPy2INH3ys76wFltxrMWdWuXaFd9VO5gwhD9HYt1DweBowPfyEw
-         eCdBusn/K5SAw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C446DE270DB;
-        Wed, 26 Oct 2022 13:00:22 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S233759AbiJZNNK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 09:13:10 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51DBAFC1F7;
+        Wed, 26 Oct 2022 06:13:09 -0700 (PDT)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29QCwTTa002523;
+        Wed, 26 Oct 2022 13:13:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=i2E+t/Pe3kj7ipB6NqOEl4e14Vgssw/e2wZiQp6qfS4=;
+ b=YB07XIJl7LQSX4pkh8IoGC5Oz0SgivyFxRl+cH690nhwyE5O3vYRXRaaIPF1qT8nnrk9
+ T0XmcytE+bJab069hkY/JfFwUXfcLENJXWkz/YrPOOMwYLEG+JOBmufmR6NvuvF5Rvzf
+ 4tX3BGifg9t8pHGvraDei42HigFRuJMGufSzu0rVVFegZlVyjdu35I/tTCZ10blV9Pif
+ TLz7O7L4MfBMTPoT5i4GK+7OMe2lkiTuWsW5SZDfCCFucIc7M13cqnTstnMdkyRxhbVD
+ fYml/UeWqjjHjPoc6kzakhCAjENE1J9VKrapgh4oUNHpr2KUEcxGzva3UisGgZ7gc2vs UA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3kf5cc8t6d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 26 Oct 2022 13:13:02 +0000
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 29QCwb53003515;
+        Wed, 26 Oct 2022 13:13:01 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3kf5cc8sxh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 26 Oct 2022 13:13:01 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29QD4xXH029864;
+        Wed, 26 Oct 2022 13:12:52 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma06ams.nl.ibm.com with ESMTP id 3kc7sj7g4u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 26 Oct 2022 13:12:52 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29QD7ZQV40042896
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 26 Oct 2022 13:07:35 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 19B6AA4054;
+        Wed, 26 Oct 2022 13:12:50 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id AB034A405B;
+        Wed, 26 Oct 2022 13:12:49 +0000 (GMT)
+Received: from [9.171.65.88] (unknown [9.171.65.88])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 26 Oct 2022 13:12:49 +0000 (GMT)
+Message-ID: <35d14144-28f7-6129-d6d3-ba16dae7a646@linux.ibm.com>
+Date:   Wed, 26 Oct 2022 15:12:48 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [PATCH net-next v3 00/10] optimize the parallelism of SMC-R
+ connections
+To:     Tony Lu <tonylu@linux.alibaba.com>
+Cc:     "D. Wythe" <alibuda@linux.alibaba.com>, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+References: <1666248232-63751-1-git-send-email-alibuda@linux.alibaba.com>
+ <62001adc-129a-d477-c916-7a4cf2000553@linux.alibaba.com>
+ <79e3bccb-55c2-3b92-b14a-7378ef02dd78@linux.ibm.com>
+ <4127d84d-e3b4-ca44-2531-8aed12fdee3f@linux.alibaba.com>
+ <f8ea7943-4267-8b8d-f8b4-831fea7f3963@linux.ibm.com>
+ <Y1d+jDQiyn4LSKlu@TonyMac-Alibaba>
+From:   Jan Karcher <jaka@linux.ibm.com>
+Organization: IBM - Network Linux on Z
+In-Reply-To: <Y1d+jDQiyn4LSKlu@TonyMac-Alibaba>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: v6H8fLsvE4Zk2OZe6YU3NfSeL9ybgeHj
+X-Proofpoint-ORIG-GUID: WV6TO0yESz1bHI3sM6OQMzFraQ2-li7G
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 01/29] can: add termination resistor documentation
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166678922279.29060.2518413007329149073.git-patchwork-notify@kernel.org>
-Date:   Wed, 26 Oct 2022 13:00:22 +0000
-References: <20221026084007.1583333-2-mkl@pengutronix.de>
-In-Reply-To: <20221026084007.1583333-2-mkl@pengutronix.de>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-can@vger.kernel.org, kernel@pengutronix.de, dan@sstrev.com
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-10-26_06,2022-10-26_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 mlxscore=0
+ malwarescore=0 impostorscore=0 mlxlogscore=593 lowpriorityscore=0
+ bulkscore=0 spamscore=0 phishscore=0 priorityscore=1501 clxscore=1015
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2210260073
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net-next.git (master)
-by Marc Kleine-Budde <mkl@pengutronix.de>:
 
-On Wed, 26 Oct 2022 10:39:39 +0200 you wrote:
-> From: "Daniel S. Trevitz" <dan@sstrev.com>
+On 25/10/2022 08:13, Tony Lu wrote:
+> On Mon, Oct 24, 2022 at 03:10:54PM +0200, Jan Karcher wrote:
+>> Hi D. Wythe,
+>>
+>> I reply with the feedback on your fix to your v4 fix.
+>>
+>> Regarding your questions:
+>> We are aware of this situation and we are currently evaluating how we want
+>> to deal with SMC-D in the future because as of right now i can understand
+>> your frustration regarding the SMC-D testing.
+>> Please give me some time to hit up the right people and collect some
+>> information to answer your question. I'll let you know as soon as i have an
+>> answer.
+
+Hi Tony (and D.),
 > 
-> Add documentation for how to use and setup the switchable termination
-> resistor support for CAN controllers.
+> Hi Jan,
 > 
-> Signed-off-by: Daniel Trevitz <dan@sstrev.com>
-> Link: https://lore.kernel.org/all/3441354.44csPzL39Z@daniel6430
-> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+> We sent a RFC [1] to mock SMC-D device for inter-VM communication. The
+> original purpose is not to test, but for now it could be useful for the
+> people who are going to test without physical devices in the community.
+
+I'm aware of the RFC and various people in IBM looked over it.
+
+As stated in the last mail we are aware that the entanglement between 
+SMC-D and ISM is causing problems for the community.
+To give you a little insight:
+
+In order to improve the code quality and usability for the broader 
+community we are working on placing an API between SMC-D and the ISM 
+device. If this API is complete it will be easier to use different 
+"devices" for SMC-D. One could be your device driver for inter-VM 
+communication (ivshmem).
+Another one could be a "Dummy-Device" which just implements the required 
+interface which acts as a loopback device. This would work only in a 
+single Linux instance, thus would be the perfect device to test SMC-D 
+logic for the broad community.
+We would hope that these changes remove the hardware restrictions and 
+that the community picks up the idea and implements devices and improves 
+SMC (including SMC-D and SMC-R) even more in the future!
+
+As i said - and also teased by Alexandra in a respond to your RFC - this 
+API feature is currently being developed and in our internal reviews. 
+This would make your idea with the inter-VM communication a lot easier 
+and would provide a clean base to build upon in the future.
+
 > 
-> [...]
+> This driver basically works but I would improve it for testing. Before
+> that, what do you think about it?
 
-Here is the summary with links:
-  - [net-next,01/29] can: add termination resistor documentation
-    https://git.kernel.org/netdev/net-next/c/85700ac19aa1
-  - [net-next,02/29] can: j1939: j1939_session_tx_eoma(): fix debug info
-    https://git.kernel.org/netdev/net-next/c/de1deb156970
-  - [net-next,03/29] can: remove obsolete PCH CAN driver
-    https://git.kernel.org/netdev/net-next/c/1dd1b521be85
-  - [net-next,04/29] can: ucan: Replace zero-length array with DECLARE_FLEX_ARRAY() helper
-    https://git.kernel.org/netdev/net-next/c/b2df8a1bc303
-  - [net-next,05/29] can: kvaser_usb: Remove -Warray-bounds exception
-    https://git.kernel.org/netdev/net-next/c/26117d92d001
-  - [net-next,06/29] can: m_can: is_lec_err(): clean up LEC error handling
-    https://git.kernel.org/netdev/net-next/c/6a8836e3c24a
-  - [net-next,07/29] can: m_can: m_can_handle_bus_errors(): add support for handling DLEC error on CAN-FD frames
-    https://git.kernel.org/netdev/net-next/c/f5071d9e729d
-  - [net-next,08/29] can: gs_usb: mention candleLight as supported device
-    https://git.kernel.org/netdev/net-next/c/b1419cbebf5d
-  - [net-next,09/29] can: gs_usb: gs_make_candev(): set netdev->dev_id
-    https://git.kernel.org/netdev/net-next/c/acff76fa45b4
-  - [net-next,10/29] can: gs_usb: gs_can_open(): allow loopback and listen only at the same time
-    https://git.kernel.org/netdev/net-next/c/deb8534e8ef3
-  - [net-next,11/29] can: gs_usb: gs_can_open(): sort checks for ctrlmode
-    https://git.kernel.org/netdev/net-next/c/f6adf410f70b
-  - [net-next,12/29] can: gs_usb: gs_can_open(): merge setting of timestamp flags and init
-    https://git.kernel.org/netdev/net-next/c/ac3f25824e4f
-  - [net-next,13/29] can: gs_usb: document GS_CAN_FEATURE_BERR_REPORTING
-    https://git.kernel.org/netdev/net-next/c/1f1835264d81
-  - [net-next,14/29] can: gs_usb: add ability to enable / disable berr reporting
-    https://git.kernel.org/netdev/net-next/c/2f3cdad1c616
-  - [net-next,15/29] can: gs_usb: document GS_CAN_FEATURE_GET_STATE
-    https://git.kernel.org/netdev/net-next/c/40e1997d4551
-  - [net-next,16/29] can: gs_usb: add support for reading error counters
-    https://git.kernel.org/netdev/net-next/c/0c9f92a4b795
-  - [net-next,17/29] can: kvaser_usb: kvaser_usb_leaf: Get capabilities from device
-    https://git.kernel.org/netdev/net-next/c/35364f5b41a4
-  - [net-next,18/29] can: kvaser_usb: kvaser_usb_leaf: Rename {leaf,usbcan}_cmd_error_event to {leaf,usbcan}_cmd_can_error_event
-    https://git.kernel.org/netdev/net-next/c/7ea56128dbf9
-  - [net-next,19/29] can: kvaser_usb: kvaser_usb_leaf: Handle CMD_ERROR_EVENT
-    https://git.kernel.org/netdev/net-next/c/b24cb2d169e0
-  - [net-next,20/29] can: kvaser_usb_leaf: Set Warning state even without bus errors
-    https://git.kernel.org/netdev/net-next/c/df1b7af2761b
-  - [net-next,21/29] can: kvaser_usb_leaf: Fix improved state not being reported
-    https://git.kernel.org/netdev/net-next/c/8d21f5927ae6
-  - [net-next,22/29] can: kvaser_usb_leaf: Fix wrong CAN state after stopping
-    https://git.kernel.org/netdev/net-next/c/a11249acf802
-  - [net-next,23/29] can: kvaser_usb_leaf: Ignore stale bus-off after start
-    https://git.kernel.org/netdev/net-next/c/abb8670938b2
-  - [net-next,24/29] can: kvaser_usb_leaf: Fix bogus restart events
-    https://git.kernel.org/netdev/net-next/c/90904d326269
-  - [net-next,25/29] can: kvaser_usb: Add struct kvaser_usb_busparams
-    https://git.kernel.org/netdev/net-next/c/00e578617764
-  - [net-next,26/29] can: kvaser_usb: Compare requested bittiming parameters with actual parameters in do_set_{,data}_bittiming
-    https://git.kernel.org/netdev/net-next/c/39d3df6b0ea8
-  - [net-next,27/29] can: m_can: use consistent indention
-    https://git.kernel.org/netdev/net-next/c/4aeb91880999
-  - [net-next,28/29] can: ucan: ucan_disconnect(): change unregister_netdev() to unregister_candev()
-    https://git.kernel.org/netdev/net-next/c/aa9832e45012
-  - [net-next,29/29] can: rcar_canfd: Use devm_reset_control_get_optional_exclusive
-    https://git.kernel.org/netdev/net-next/c/68399ff574e4
+I think it is a great idea and we should definetly give it a shot! I'm 
+also putting a lot in code quality and future maintainability. The API 
+is a key feature there improving the usability for the community and our 
+work as maintainers. So - for the sake of the future of the SMC code 
+base - I'd like to wait with putting your changes upstream for the API 
+and use your idea to see if fits our (and your) requirements.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> 
+> And where to put this driver? In kernel with SMC code or merge into
+> separate SMC test cases. I haven't made up my mind yet.
 
+We are not sure either currently, and have to think about that for a 
+bit. I think your driver could be a classic driver, since it is usable 
+for a real world problem (communication between two VMs on the same 
+host). If we look at the "Dummy-Device" above we see that it does not 
+provide any value beside testing. Feel free to share your ideas on that 
+topic.
 
+> 
+> [1] https://lore.kernel.org/netdev/20220720170048.20806-1-tonylu@linux.alibaba.com/
+> 
+> Cheers,
+> Tony Lu
+
+A friendly disclaimer: Even tho this API feature is pretty far in the 
+development process it can always be that we decide to drop it, if it 
+does not meet our quality expectations. But of course we'll keep you 
+updated.
+
+- Jan
