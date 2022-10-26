@@ -2,61 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1E1260E10B
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 14:41:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1E0160E113
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 14:42:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233966AbiJZMlG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 08:41:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54434 "EHLO
+        id S233980AbiJZMmm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 08:42:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233718AbiJZMkg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 08:40:36 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D5A6EF27;
-        Wed, 26 Oct 2022 05:40:08 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1onfhV-0006np-6n; Wed, 26 Oct 2022 14:40:05 +0200
-Message-ID: <156c9646-2cf6-ad32-56a7-d16342e87352@leemhuis.info>
-Date:   Wed, 26 Oct 2022 14:40:04 +0200
+        with ESMTP id S233881AbiJZMmZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 08:42:25 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B74F37B29B
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 05:41:46 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id a14so23319206wru.5
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 05:41:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=TH9w5IsJvdlZfuLzN2rgdQlDOUdotI8JIGVVxQ+Ul5c=;
+        b=KM2gdfEvcruQH7q+H5g45KX2FFUE7oeo/b/fyl9gM1d04vOdp6v0L5wAIv4AraNfCB
+         qt/C+zixIvHd3c5ymhXYJklvrmNF2vdCTuagEIeEAG0KyYGdrBq2HIQa55uVc2YdHgSB
+         LzKDk2rdjsyQWh0gKddMsiuS556ZcVFQGCqoIzu1OgY8RvRZ98EiaS9ZFCj/+65knUqZ
+         lx10wy97KuHhrNDIi6AaxiYCk2KiaweTS/bgYbQZwsULFBq4VGOeQcRiqYX1ou9zjQTb
+         GWRJeod8p45QJ+2KDzEg5JWqABQ4NWZLZpv4TCgC121zVoB1XsJRZMbTD2uoA8sS4+m1
+         oY5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=TH9w5IsJvdlZfuLzN2rgdQlDOUdotI8JIGVVxQ+Ul5c=;
+        b=kJOv2BoKz7oeJ3hxkguBnkJSFI/1PTusLpq15JkZZUXj9NM66xWwcl9pkXNSmBGoj3
+         37rhbvcyeTcO5CFJ2H1+k+syrgBnRq4ETr539sNJDDF+9zUCu9GuQ+EzacG63S0RkKJT
+         oz0sDtJHO8bc16q9qczT2hFIqhN/zYYZCy/fTiy3nk++QSvCRRwQGI88yqTlA2u1Hx2H
+         +7tVZgL9ZSZc+0IegGxWHxP+UQn59ksyu4MEiAS3BKMMFDCGqdxpqNeItAw1+JgKtrKj
+         OOGDK+NZCOID4fDpTluFzs2wHtop3fQOd8n/wdenbNB8K2UMvXhKe94ZlyJif9ILLO8u
+         bJUA==
+X-Gm-Message-State: ACrzQf1ywNYcV77lw9oGp5z3f9oYLPAutFsL9n0O2T1xamvJeD6VgDF5
+        0YmwXgIWLL9aaG+yTZvONYs=
+X-Google-Smtp-Source: AMsMyM4jGNPg8xUKB6PEpKJ9qRl37uhUoQIiuPvjvfurimSG7l/uClnmdTd7r6KFjIkZIj3FUXqzHQ==
+X-Received: by 2002:a5d:4043:0:b0:236:5b5a:ae10 with SMTP id w3-20020a5d4043000000b002365b5aae10mr15990441wrp.400.1666788105161;
+        Wed, 26 Oct 2022 05:41:45 -0700 (PDT)
+Received: from [192.168.0.121] (buscust41-118.static.cytanet.com.cy. [212.31.107.118])
+        by smtp.googlemail.com with ESMTPSA id bp4-20020a5d5a84000000b0022e57e66824sm6504375wrb.99.2022.10.26.05.41.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Oct 2022 05:41:44 -0700 (PDT)
+Message-ID: <9753a024-5499-af09-ccc2-21c3c614ea64@gmail.com>
+Date:   Wed, 26 Oct 2022 15:41:42 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [REGRESSION] Unable to NAT own TCP packets from another VRF with
- tcp_l3mdev_accept = 1 #forregzbot
-Content-Language: en-US, de-DE
-To:     "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
-References: <98348818-28c5-4cb2-556b-5061f77e112c@arcanite.ch>
- <20220930174237.2e89c9e1@kernel.org>
- <1eca7cd0-ad6e-014f-d4e2-490b307ab61d@gmail.com>
- <d6c3cd78-741c-d528-129a-cf7ed7ef236d@arcanite.ch>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <d6c3cd78-741c-d528-129a-cf7ed7ef236d@arcanite.ch>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1666788008;dd472315;
-X-HE-SMSGID: 1onfhV-0006np-6n
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+ Thunderbird/102.3.3
+Subject: Re: Bug in netlink monitor
+To:     nicolas.dichtel@6wind.com, netdev@vger.kernel.org
+References: <2528510b-3463-8a8b-25c2-9402a8a78fcd@gmail.com>
+ <037d30a7-15e3-34c7-8fdd-2cf356430355@6wind.com>
+Content-Language: en-US
+From:   George Shuklin <george.shuklin@gmail.com>
+In-Reply-To: <037d30a7-15e3-34c7-8fdd-2cf356430355@6wind.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[Note: this mail is primarily send for documentation purposes and/or for
-regzbot, my Linux kernel regression tracking bot. That's why I removed
-most or all folks from the list of recipients, but left any that looked
-like a mailing lists. These mails usually contain '#forregzbot' in the
-subject, to make them easy to spot and filter out.]
+On 26/10/2022 11:34, Nicolas Dichtel wrote:
+> Le 25/10/2022 à 13:18, George Shuklin a écrit :
+>> I found that if veth interface is created in a namespace using netns option for
+>> ip, no events are logged in `ip monitor all-nsid`.
+>>
+>> Steps to reproduce:
+>>
+>>
+>> (console1)
+>>
+>> ip monitor all-nsid
+>>
+>>
+>> (console 2)
+>>
+>> ip net add foobar
+>>
+>> ip link add netns foobar type veth
+>>
+>>
+>> Expected results:
+>>
+>> Output in `ip monitor`. Actual result: no output, (but there are two new veth
+>> interaces in foobar namespace).
+>>
+>> Additional observation: namespace 'foobar' does not have id in output of `ip net`:
+> This is why.
+> https://man7.org/linux/man-pages/man8/ip-monitor.8.html
+>
+> "       If the all-nsid option is set, the program listens to all network
+>         namespaces that have a nsid assigned into the network namespace
+>         were the program is running"
+>
+> You can assign one with:
+> ip netns set foobar auto
+>
+Oh, I missed that.
 
-On 12.10.22 14:24, Maximilien Cuony wrote:
+But I think it's making things a bit odd, because there are network 
+events in the system which are not visible in `ip monitor` (no matter 
+what options are set).
 
-> So we will try to not to have to use tcp_l3mdev_accept=1 to make it
-> working as expected.
-> 
-> Thanks for you help and have a nice day :)
+Are there a way to see _all_ network events?
 
-#regzbot invalid: tricky situation, reporter will work around it
 
