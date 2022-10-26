@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B70A160E2A9
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 15:54:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C1AA60E2AA
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 15:54:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233356AbiJZNy1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 09:54:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42326 "EHLO
+        id S233800AbiJZNya (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 09:54:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234084AbiJZNw7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 09:52:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D55CD100489
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 06:52:40 -0700 (PDT)
+        with ESMTP id S234091AbiJZNxB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 09:53:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C773F6C31
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 06:52:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8F5D0B82257
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 13:52:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E53DC433C1;
-        Wed, 26 Oct 2022 13:52:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2969561EFA
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 13:52:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2A38C433B5;
+        Wed, 26 Oct 2022 13:52:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666792358;
-        bh=ZjZLsaoUuMO8lKf/X5F3+6tJohQ0Q5mJBaOeKHqz1sI=;
+        s=k20201202; t=1666792362;
+        bh=VR4cjo8PYzxLQmHP5P3rcBhN9h1bGFNLccU9pIbzqrk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BZNe/aCVqEVwxl2I1AouYvX1ITAp1LClwiVINRj2BHuFJiOggaiFwkpf/V3UlJjJU
-         DV4xq4VNK61LuKc/b1P8bfwMDc62p3lmZPPTY8csigmDcpnRPqpe4ZiqEiH4y6PWDC
-         9ROpTpFCyCjx2MziRcA7sZZ5zxcCLdlwHvXx+iifR+DhIhil210/H3vIap0jJXVoZ5
-         CWwZKUkCej6oS6cMf3cgOmd5s9MIM15ywGGm+AyrZdjG4eKBbbF3DB5wtdQ7YnhQve
-         /htgdveDmegEx/a/Ca3x1PaoZ88gWhKfmfPU99F8G5xEsYEUR8weWwsodioI4kSk7l
-         4/gI011jlWDvQ==
+        b=MANkD72BSlMgNhkk8+bgZNwkoLYPqib4yAOkSj4NYQDvJDgoJbVGeCqTdfO+7KBmw
+         hW8eanI7/5C/KhBmJlYJXLzHiponj1pTdzuETmNkRH+9+Io+OehAAJzwu85WvE2c2u
+         A5nQBB+IhA5ovdcwADuNoY+H8gSQtZNBYM5o4YeyYLf5INnQ91KD5TjjrdxubP/vhE
+         WLTcrglZx2/OyI12/FOJOznA0W2/TrLLGAZJJNAFyPssdKLEbfiZZPXSd5hjdPY/Sj
+         eOih8ggn84gBE+h/dZn/GwizdWUhmK4Bn8bdvkeWvIraccHtpYjeJSTJ2Ap8btYK00
+         tukOilnzGubQg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Maor Dickman <maord@nvidia.com>
-Subject: [V4 net 09/15] net/mlx5e: TC, Fix cloned flow attr instance dests are not zeroed
-Date:   Wed, 26 Oct 2022 14:51:47 +0100
-Message-Id: <20221026135153.154807-10-saeed@kernel.org>
+        Tariq Toukan <tariqt@nvidia.com>,
+        Roy Novich <royno@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>, Aya Levin <ayal@nvidia.com>
+Subject: [V4 net 10/15] net/mlx5: Update fw fatal reporter state on PCI handlers successful recover
+Date:   Wed, 26 Oct 2022 14:51:48 +0100
+Message-Id: <20221026135153.154807-11-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221026135153.154807-1-saeed@kernel.org>
 References: <20221026135153.154807-1-saeed@kernel.org>
@@ -56,35 +57,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
+From: Roy Novich <royno@nvidia.com>
 
-On multi table split the driver creates a new attr instance with
-data being copied from prev attr instance zeroing action flags.
-Also need to reset dests properties to avoid incorrect dests per attr.
+Update devlink health fw fatal reporter state to "healthy" is needed by
+strictly calling devlink_health_reporter_state_update() after recovery
+was done by PCI error handler. This is needed when fw_fatal reporter was
+triggered due to PCI error. Poll health is called and set reporter state
+to error. Health recovery failed (since EEH didn't re-enable the PCI).
+PCI handlers keep on recover flow and succeed later without devlink
+acknowledgment. Fix this by adding devlink state update at the end of
+the PCI handler recovery process.
 
-Fixes: 8300f225268b ("net/mlx5e: Create new flow attr for multi table actions")
-Signed-off-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Maor Dickman <maord@nvidia.com>
+Fixes: 6181e5cb752e ("devlink: add support for reporter recovery completion")
+Signed-off-by: Roy Novich <royno@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Reviewed-by: Aya Levin <ayal@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 4 ++++
+ drivers/net/ethernet/mellanox/mlx5/core/main.c | 4 ++++
  1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 73f91e54e9d0..dd6fea9e9a5b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -3633,6 +3633,10 @@ mlx5e_clone_flow_attr_for_post_act(struct mlx5_flow_attr *attr,
- 	attr2->action = 0;
- 	attr2->flags = 0;
- 	attr2->parse_attr = parse_attr;
-+	attr2->esw_attr->out_count = 0;
-+	attr2->esw_attr->split_count = 0;
-+	attr2->dest_chain = 0;
-+	attr2->dest_ft = NULL;
- 	return attr2;
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index 0b459d841c3a..283c4cc28944 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1872,6 +1872,10 @@ static void mlx5_pci_resume(struct pci_dev *pdev)
  
+ 	err = mlx5_load_one(dev, false);
+ 
++	if (!err)
++		devlink_health_reporter_state_update(dev->priv.health.fw_fatal_reporter,
++						     DEVLINK_HEALTH_REPORTER_STATE_HEALTHY);
++
+ 	mlx5_pci_trace(dev, "Done, err = %d, device %s\n", err,
+ 		       !err ? "recovered" : "Failed");
+ }
 -- 
 2.37.3
 
