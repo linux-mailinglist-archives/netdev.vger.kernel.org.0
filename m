@@ -2,145 +2,281 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8389060DA3C
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 06:24:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78FFE60DA77
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 07:09:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231926AbiJZEYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 00:24:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49998 "EHLO
+        id S231628AbiJZFJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 01:09:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229949AbiJZEYC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 00:24:02 -0400
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2056.outbound.protection.outlook.com [40.107.95.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 992E4BBE23
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 21:24:00 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cZq+Izarh3J2AGRE0wchmK0YrcIjF6WhSYe4omkNSB4fNB8YJgTzUG9nGEAMSSXTSeqmoWIcLSlHjLo2ZFUu/STQW4LOa6sYwQdS9JVvW6I+e+oJd1hlCUiYvZsxqnFhSMPO0Xs2ckFkT9Bi/l9z0rAnMfRy9FiPJ4QEz5vpzyShRGLxZIfASRjU07Gow7bip1PTLpGf9y6omeVhclpPv/gpa423vGcDIMqLMZwpqscQjuOWeuKxa25XWVI19CR7Ti7HontFxcFgiWQsZhFm05JmsUOo7XTlyLbe8UpnonWWYL9zYaajGRuiAUp4kje9es49H8P2bstAWCe72OMMiA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=T+y+3yPtZ1bpdNKPkA//Gi6ztJVYlB7etMnIaSaXZVw=;
- b=eInQgyfZ8nswOvIWLYVqwJXa2SjQHLQFgPf3N7M93Ag63fcl1k9Knf0kCGBlxegy/h6XDVXE53wtK+eFYwqjBHa4SN7mM7fSeDrYgc+fFfubWWE6+wcOgxh7UNgr6NNF7BdRXZgdQpWWVuGdd1O3CK2vMKIKH1cvlC9HIJd7ipeI4SEXp+Kx2uih70grMYxUY0x8qCtTC7H+cZ6oETWYEmET7/0q7yAJArmBKwfapHFI4jecd4V0lJC07+K686CPsMewg4DuP95OKPqT3PyFgd4iJCNlBhyBVQTVFTy+hWd9VKvsytfuNtCwAv+0RSz2laQ43ohwxfBJ6iNX3oWbqg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=T+y+3yPtZ1bpdNKPkA//Gi6ztJVYlB7etMnIaSaXZVw=;
- b=PzwYGlRjrP46MNANk7oXBOYhLEifZ6JhPY/o+QWvO33N/fKIQMSnFYJM8r6LJ+hsc/W3ii2F45mfJIYJwL77XCMipn978zP3fTw1D7dkgVWeBUjPj/0ztiF5Xm5S83t4QAnGtt7jljihs8J5p8cmrxt8TYDFCfGcBEvCeoLLYq0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS0PR12MB6583.namprd12.prod.outlook.com (2603:10b6:8:d1::12) by
- PH7PR12MB6883.namprd12.prod.outlook.com (2603:10b6:510:1b9::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.28; Wed, 26 Oct
- 2022 04:23:57 +0000
-Received: from DS0PR12MB6583.namprd12.prod.outlook.com
- ([fe80::442d:d0fb:eba1:1bd7]) by DS0PR12MB6583.namprd12.prod.outlook.com
- ([fe80::442d:d0fb:eba1:1bd7%7]) with mapi id 15.20.5746.026; Wed, 26 Oct 2022
- 04:23:56 +0000
-Message-ID: <2b469008-4057-cbe0-8640-73d42490f65e@amd.com>
-Date:   Tue, 25 Oct 2022 21:23:53 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.13.1
-Subject: Re: [PATCH v2 net-next 3/5] ionic: new ionic device identity level
- and VF start control
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Shannon Nelson <snelson@pensando.io>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, leon@kernel.org,
-        drivers@pensando.io
-References: <20221025112426.8954-1-snelson@pensando.io>
- <20221025112426.8954-4-snelson@pensando.io>
- <20221025200811.553f5ab4@kernel.org>
-From:   Shannon Nelson <shnelson@amd.com>
-In-Reply-To: <20221025200811.553f5ab4@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR03CA0297.namprd03.prod.outlook.com
- (2603:10b6:a03:39e::32) To DS0PR12MB6583.namprd12.prod.outlook.com
- (2603:10b6:8:d1::12)
+        with ESMTP id S229949AbiJZFJA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 01:09:00 -0400
+Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 195F3BA27E
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 22:08:59 -0700 (PDT)
+Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-12c8312131fso18697485fac.4
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 22:08:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=v306Pm5d1giFrK0u9y2JLpdRUQEpZpzRvKWY7khI884=;
+        b=BKa6WNbNR9lg2iRBhC25+LdUc1ofwMJJ0acX/OrlVeHXhc2QT+LgbMyFP8axwVTWod
+         cYaYBrZw5lj1WXOsrmwYeZkpee1FX36CB6adNjZKlAgH8vMmKsLyCFCjM1KdDIzDos08
+         bwrTcazfSLb1EeSMlZuFwsDPLXH+GDLavTh90B+402xwtP2nA8pAthwbF317cHV3eK6X
+         XZRWg7mzsy9ilyik4dbdg9TXHJLYIsAp17FFlwEosQoaRdZeNtOyYfH7g+ug2BBwD25H
+         v4a8xY/qjsZEOWru7FQPSR7gWhFcKGwlcj+tpB7spT1izq65ACCyCuCvhsddhXeiNTog
+         9+fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=v306Pm5d1giFrK0u9y2JLpdRUQEpZpzRvKWY7khI884=;
+        b=fCKLYKeZCNiXUeySbV7hHA+e1QvPjly6LelN4VjOPade4XKWUDzzoRHo27kyNT+BrV
+         kBU62r41mzcLUoIxUYGfwyx4OljmOqwGJC8wGXFShIrR405Lc6f0ymJDWqbuhzIo1Wfx
+         5HO1ftIp7ALLFp4/J/1aHW+oFai2QESNuJ3CA2dWRs9qYLj7fta9wkEA+fWgvE/3Nq6d
+         ijfPsKP9OvhlznubFzSbSgwAryeWuQ3QXwRMqwEpmuuYi8NOS8avsHMQlpxo/Y+jAnaX
+         AQZTZk7nuXcFM7Jqc96yYRSszoXDcL68bmac+i6A9oYItT/KS0j7nFnUV41EPI3wEcB2
+         xG+Q==
+X-Gm-Message-State: ACrzQf0MY1DFdPvadg5P0NcUjvK+r8K8eUY2vkxq6jU9doZGgRgk3DYe
+        HqeZ+hQlCCkJaL3drxDb3kJhx0PCeM6oYtNDe0PQgw==
+X-Google-Smtp-Source: AMsMyM6H0JPCdNoQWhSXgUNWsFPKDKWVJduuVHBo8yFrEUCxEvxyGTbVJafsr+FRUSV6hOyCOxK6oZinjxLHtnWTmJc=
+X-Received: by 2002:a05:6870:61ca:b0:13b:ac21:a23 with SMTP id
+ b10-20020a05687061ca00b0013bac210a23mr1108937oah.106.1666760938329; Tue, 25
+ Oct 2022 22:08:58 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR12MB6583:EE_|PH7PR12MB6883:EE_
-X-MS-Office365-Filtering-Correlation-Id: fb3ab413-1f85-463b-2bfd-08dab709e5b4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 59LKGABAH2eqFss/iZ4fEesO1gfLydp2O0zo3ViEZQVG16wfN3nwroVQ0NDrLxx1poU8KqGzeF121yyEWSs2UQ/i5PL8whR5sWks+WLcPrCIU9Txvzp8XY2F3u70KJPH3+k0nWebU+iJ4g9ddib8vrxwAg6AOcA0jwBGe9UO0o7igM7yKfJSbcMgcGlorQslI1GC40VhtA40qKRZMzVkjWuv+aUhvY++RJtUiPpsGYh+mmEi4n1lk1qMNlLJdsCmgg+YAzeGPckwdXmzyn2Z0nwr3NgMlgs6Aki+QxKQOtx+TamliyfEFOKyR+c0TuxivML9c+LTtLzz835O1CS1Xe9iXHc3JzxSfbKG6Nt7WvxsGfx1y9rp1HczQuN0Ja5euD/ysqn9Z2vjWEUl9zOhFGLDaTZvPweDCUrBOdIWkbX5SlLO0T2dOq/FfyeygRiX/W8JKMyo8ufwrM1o5eQ6cCFXXHV25EWDGQDnrTi6aOA2SNY7VxfUOA41oSX4taoSoXkrg+e4ZWQsBc3ih2B2iR02ZLYG9AMnO3d4y3IhNidy0AbAYwoAzdEiSIh0wsX7C5P13Jo6P2mR5pGObvOgQHt/uu8d/xFutDn61+eDHyH2k9H9KWrtshWmDm8l6iERKlPfuQ/pudIY8RfnzVriaZ1Av2o5XE5LeiW4fbTfNPGLEAcxjxubiGRIvskNN+wiLyBaMJVxrNGTwkk+7B/Ncoy1EWaB2wIuZNlLGE9E34ZAM2C6SCorWVn50/jrzXGxFzqtDA2o5E1Pj54+BVgvHefa/JyNbf41DFZSTdonHfc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR12MB6583.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(39860400002)(396003)(376002)(366004)(346002)(451199015)(26005)(53546011)(6506007)(6666004)(6512007)(186003)(478600001)(2906002)(2616005)(316002)(4744005)(110136005)(66556008)(6486002)(8936002)(66946007)(4326008)(8676002)(66476007)(5660300002)(41300700001)(31696002)(36756003)(38100700002)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NkQvcHEvc2Njc25Vb0RYVUdzR0l5ZFpQcFl1RU1JVDlHRWJ2V2lSalF1bjhS?=
- =?utf-8?B?Y3lrRUVkdnl4THdYYloyUkhodkF3VjhaRlJOSTc3cEpTTkdNUVhrUDNIdC9T?=
- =?utf-8?B?Y1hGdU5Dbi9uUTZIeDkycmpRRVAzWjd2bzlkWXgvODI4ZGdUa1VRZlhmSkp0?=
- =?utf-8?B?TWdmNnpNZnBwT3lHMlA5SThQWHVqK2g2R2NhUDZXTUkxRWErSDZUdUdCNlQz?=
- =?utf-8?B?VnJxVHJ2d0NSRnhiQlF5ZW9IQVU2S0xjUVBpeEJ1QXFSdHVmSHRWUHpCTmtw?=
- =?utf-8?B?WkdNMU5FL2RVdVdMUlVSWVNTRmo5VUNDbVppVS84SXpxVGt1WDNtY3R2OUVT?=
- =?utf-8?B?a3dHS05UbFNNYXdyMzRxa3JUU3VqNEtzUyt2Tlp3akRzdUgzRkZ0R3B1YW8z?=
- =?utf-8?B?SFJjRHVpNUVyRDVYelhRdFBQWDVBUkxNUjV6Z0I0eDZiM0lTRzNBZW8xazBi?=
- =?utf-8?B?bzFpeStBK1IzYjNLSXNUKzREeVliVG1RVEM2cWVDTnVLTkJKdEVmUGZWdkRz?=
- =?utf-8?B?UXFGSEM3d1dWdVQrb2cxT0N6dEFqWXl4MEdpdU02amM3YXRvRGlLMlpRekhw?=
- =?utf-8?B?ZEJEbVRFWjB6UXNMdnRUbjRsazVNdVpTeXo3MkgxOVcwR1Z3NHFEQUc5VHpX?=
- =?utf-8?B?Wm5rODVTb1ZqMHBlUi9yR1ROaDhCUVEwL1dQbUJickQwRGswMEhQSlh6QkVZ?=
- =?utf-8?B?RmQ3N3k2VjVjV0JYVFFkYkdkM2YrRm5ETmlhanZrdzhUTk1sQnhEOUF1eDd5?=
- =?utf-8?B?TmNod08xM0xPaUh3TlhmL1l1eC9mdTE2RHpDR01qNlZqdzhLYXM0bEJHL1JI?=
- =?utf-8?B?QXZjcXBsenNTK3gvSGIvRHF1TVJFY21FVFpUWlMwNWZ6TjQybVlQVkg4SU12?=
- =?utf-8?B?T1UvbkFIc21vNGpXNTllSzlNSVpNZ1JXTkl5Q3F3MXdUTlB0VGJHcVl1ZGhv?=
- =?utf-8?B?STkwaE5BV3F4cm1QdldDaVd0bXpCNlZFV2lYN1JmUFJNNjF0Z2dmZ1d6UVl3?=
- =?utf-8?B?b09xKzFPNVpncktZVnViRy9PcWF4UDQzYzdqaHZhbXRNbXkxbDVnaStrNkU4?=
- =?utf-8?B?dkw4NEQrN1hpVitwWUJjbFhwQnVLY3BtcEdrdFJTSGVuNlI0YUpLYW9CbVoy?=
- =?utf-8?B?TStVTTNWMWwzTHpnWkpkazlGUXFYd2ZsS1BsRWFDdUE2VDQ1SG5PbTFJc0xj?=
- =?utf-8?B?b3hRdGZrM0FPdmYyR3hnSWdwRytWQkh6TzBHMFlpMVExbjlVRy92VUNQRnpi?=
- =?utf-8?B?aE16MmsrRWtiTGczekx1TFlROGZXOXVSSHlxeUhZTkRMd2FrQTBKSjZHSjhC?=
- =?utf-8?B?VHEvWFEya2NyZjJrNndjOEhtS01iWkpUWnFQaTlBZVdoSmtqeHBhUk0yZkZ4?=
- =?utf-8?B?aUpIVnRIWmliZTBZVlRtQlZXSUNYWkhYVmdDQ2xNV1BxcFoxTzhLS1dRN0ZC?=
- =?utf-8?B?c3hTS2h6clova3ptWVJicytJVHB1Y0xCUFdKWWMyVHcxSE50NWI4eXViTm1O?=
- =?utf-8?B?QkVObDdCSzFENE9DdkRmc1gyWUowM1pKRDNGUXRkRFdVYVlGeTdHOUJpRnhn?=
- =?utf-8?B?SnY3SENpOXhiaXNhamNwbHJuZURMdVM4Z0tzejhYeVA3VHMwdDBvd0NhcXRH?=
- =?utf-8?B?MUdDQmJLc2JDSTN2QzZ1UVRoNjduTWtKZGJwMWY5TzNRY2RPcXpsTWRXNU5Q?=
- =?utf-8?B?SVNyRjdqR09mWkVFS0RhT3lmdmxHZmZ3azlaMGdGQndwclZGd3BOZmtwRCts?=
- =?utf-8?B?NUVWb2Z2L1ZqdTdVUFo0cFFCL3lZUmZVUWVXWnBhQU9kN3VRSGlpcnorZzF6?=
- =?utf-8?B?QUd4TkYvbjBOQkIwYUMvb2xEalVGYTIzZXdzcmZqQkZQdUN2WGxVUCtCN3lm?=
- =?utf-8?B?VmNyTkxHVzU0am9DSW1VcElpUmcrNXVHTzQ4SFFyVzZJRmo2cG8vUnVGVzR2?=
- =?utf-8?B?Vy8rZGRZaHo4NkxDRlpBZTFEK1hsV2pqMzBnUjY5VnhhVWt3TjFzSXNqZGZk?=
- =?utf-8?B?dDV3NWE4UzAyL2NrOUl6TzlFQWxZeHVIN2hOUmxzT0lydWVpWEcySnFJUXM4?=
- =?utf-8?B?S000YlBiSVNiTy9DMGxLenZkYTJRbkVDUmhyVGpXNENTcEZ4aTZ6SnFiZ2Za?=
- =?utf-8?Q?mbKVrxg2pNIi5vUb7bQc/c9iA?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fb3ab413-1f85-463b-2bfd-08dab709e5b4
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR12MB6583.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Oct 2022 04:23:56.4131
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0boCJEU3atmbOALraQ6VfekRt4c8F7R3jMccG33Ic9adCEp5HSh4bVHWEXpSEfsgZJtgkhIfFV5BAJn6P9GiGQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6883
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20221024111603.2185410-1-victor@mojatatu.com>
+In-Reply-To: <20221024111603.2185410-1-victor@mojatatu.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Date:   Wed, 26 Oct 2022 01:08:47 -0400
+Message-ID: <CAM0EoMnyjyLYokQ7kC6Zbicq3CTwiBE0oueQ5bDJRFhkPN8W3g@mail.gmail.com>
+Subject: Re: [PATCH] selftests: tc-testing: Add matchJSON to tdc
+To:     Victor Nogueira <victor@mojatatu.com>
+Cc:     davem@davemloft.net, jiri@resnulli.us, kuba@kernel.org,
+        netdev@vger.kernel.org, xiyou.wangcong@gmail.com,
+        edumazet@google.com, pabeni@redhat.com,
+        Jeremy Carter <jeremy@mojatatu.com>,
+        Jeremy Carter <jeremy@jeremycarter.ca>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/25/22 8:08 PM, Jakub Kicinski wrote:
-> 
-> You need to tidy up the kdoc usage..
+On Mon, Oct 24, 2022 at 7:31 AM Victor Nogueira <victor@mojatatu.com> wrote:
+>
+> This allows the use of a matchJSON field in tests to match
+> against JSON output from the command under test, if that
+> command outputs JSON.
+>
+> You specify what you want to match against as a JSON array
+> or object in the test's matchJSON field. You can leave out
+> any fields you don't want to match against that are present
+> in the output and they will be skipped.
+>
+> An example matchJSON value would look like this:
+>
+> "matchJSON": [
+>   {
+>     "Value": {
+>       "neighIP": {
+>         "family": 4,
+>         "addr": "AQIDBA==",
+>         "width": 32
+>       },
+>       "nsflags": 142,
+>       "ncflags": 0,
+>       "LLADDR": "ESIzRFVm"
+>     }
+>   }
+> ]
+>
+> The real output from the command under test might have some
+> extra fields that we don't care about for matching, and
+> since we didn't include them in our matchJSON value, those
+> fields will not be attempted to be matched. If everything
+> we included above has the same values as the real command
+> output, the test will pass.
+>
+> The matchJSON field's type must be the same as the command
+> output's type, otherwise the test will fail. So if the
+> command outputs an array, then the value of matchJSON must
+> also be an array.
+>
+> If matchJSON is an array, it must not contain more elements
+> than the command output's array, otherwise the test will
+> fail.
+>
+> Signed-off-by: Jeremy Carter <jeremy@mojatatu.com>
+> Signed-off-by: Victor Nogueira <victor@mojatatu.com>
 
-These additions are matching the style that is already in the file, 
-which I think has some merit.  Sure, I'll fix these specific kdoc 
-complaints, but those few bits are going to look weirdly out-of-place 
-with the rest of the file.
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 
-I see that kdoc is unhappy with that whole file, but I wasn't prepared 
-today to be tweaking the rest of the file to make kdoc happy.  That is 
-now on my list of near-future To-Do items.
+cheers,
+jamal
 
-Just curious - when was the kdoc check added to the netdev submission 
-checks?  Have I just been missing it in the past?
-
-sln
+> ---
+>  tools/testing/selftests/tc-testing/tdc.py | 125 ++++++++++++++++++++--
+>  1 file changed, 118 insertions(+), 7 deletions(-)
+>
+> diff --git a/tools/testing/selftests/tc-testing/tdc.py b/tools/testing/selftests/tc-testing/tdc.py
+> index ee22e3447..7bd94f8e4 100755
+> --- a/tools/testing/selftests/tc-testing/tdc.py
+> +++ b/tools/testing/selftests/tc-testing/tdc.py
+> @@ -246,6 +246,110 @@ def prepare_env(args, pm, stage, prefix, cmdlist, output = None):
+>                  stage, output,
+>                  '"{}" did not complete successfully'.format(prefix))
+>
+> +def verify_by_json(procout, res, tidx, args, pm):
+> +    try:
+> +        outputJSON = json.loads(procout)
+> +    except json.JSONDecodeError:
+> +        res.set_result(ResultState.fail)
+> +        res.set_failmsg('Cannot decode verify command\'s output. Is it JSON?')
+> +        return res
+> +
+> +    matchJSON = json.loads(json.dumps(tidx['matchJSON']))
+> +
+> +    if type(outputJSON) != type(matchJSON):
+> +        failmsg = 'Original output and matchJSON value are not the same type: output: {} != matchJSON: {} '
+> +        failmsg = failmsg.format(type(outputJSON).__name__, type(matchJSON).__name__)
+> +        res.set_result(ResultState.fail)
+> +        res.set_failmsg(failmsg)
+> +        return res
+> +
+> +    if len(matchJSON) > len(outputJSON):
+> +        failmsg = "Your matchJSON value is an array, and it contains more elements than the command under test\'s output:\ncommand output (length: {}):\n{}\nmatchJSON value (length: {}):\n{}"
+> +        failmsg = failmsg.format(len(outputJSON), outputJSON, len(matchJSON), matchJSON)
+> +        res.set_result(ResultState.fail)
+> +        res.set_failmsg(failmsg)
+> +        return res
+> +    res = find_in_json(res, outputJSON, matchJSON, 0)
+> +
+> +    return res
+> +
+> +def find_in_json(res, outputJSONVal, matchJSONVal, matchJSONKey=None):
+> +    if res.get_result() == ResultState.fail:
+> +        return res
+> +
+> +    if type(matchJSONVal) == list:
+> +        res = find_in_json_list(res, outputJSONVal, matchJSONVal, matchJSONKey)
+> +
+> +    elif type(matchJSONVal) == dict:
+> +        res = find_in_json_dict(res, outputJSONVal, matchJSONVal)
+> +    else:
+> +        res = find_in_json_other(res, outputJSONVal, matchJSONVal, matchJSONKey)
+> +
+> +    if res.get_result() != ResultState.fail:
+> +        res.set_result(ResultState.success)
+> +        return res
+> +
+> +    return res
+> +
+> +def find_in_json_list(res, outputJSONVal, matchJSONVal, matchJSONKey=None):
+> +    if (type(matchJSONVal) != type(outputJSONVal)):
+> +        failmsg = 'Original output and matchJSON value are not the same type: output: {} != matchJSON: {}'
+> +        failmsg = failmsg.format(outputJSONVal, matchJSONVal)
+> +        res.set_result(ResultState.fail)
+> +        res.set_failmsg(failmsg)
+> +        return res
+> +
+> +    if len(matchJSONVal) > len(outputJSONVal):
+> +        failmsg = "Your matchJSON value is an array, and it contains more elements than the command under test\'s output:\ncommand output (length: {}):\n{}\nmatchJSON value (length: {}):\n{}"
+> +        failmsg = failmsg.format(len(outputJSONVal), outputJSONVal, len(matchJSONVal), matchJSONVal)
+> +        res.set_result(ResultState.fail)
+> +        res.set_failmsg(failmsg)
+> +        return res
+> +
+> +    for matchJSONIdx, matchJSONVal in enumerate(matchJSONVal):
+> +        res = find_in_json(res, outputJSONVal[matchJSONIdx], matchJSONVal,
+> +                           matchJSONKey)
+> +    return res
+> +
+> +def find_in_json_dict(res, outputJSONVal, matchJSONVal):
+> +    for matchJSONKey, matchJSONVal in matchJSONVal.items():
+> +        if type(outputJSONVal) == dict:
+> +            if matchJSONKey not in outputJSONVal:
+> +                failmsg = 'Key not found in json output: {}: {}\nMatching against output: {}'
+> +                failmsg = failmsg.format(matchJSONKey, matchJSONVal, outputJSONVal)
+> +                res.set_result(ResultState.fail)
+> +                res.set_failmsg(failmsg)
+> +                return res
+> +
+> +        else:
+> +            failmsg = 'Original output and matchJSON value are not the same type: output: {} != matchJSON: {}'
+> +            failmsg = failmsg.format(type(outputJSON).__name__, type(matchJSON).__name__)
+> +            res.set_result(ResultState.fail)
+> +            res.set_failmsg(failmsg)
+> +            return rest
+> +
+> +        if type(outputJSONVal) == dict and (type(outputJSONVal[matchJSONKey]) == dict or
+> +                type(outputJSONVal[matchJSONKey]) == list):
+> +            if len(matchJSONVal) > 0:
+> +                res = find_in_json(res, outputJSONVal[matchJSONKey], matchJSONVal, matchJSONKey)
+> +            # handling corner case where matchJSONVal == [] or matchJSONVal == {}
+> +            else:
+> +                res = find_in_json_other(res, outputJSONVal, matchJSONVal, matchJSONKey)
+> +        else:
+> +            res = find_in_json(res, outputJSONVal, matchJSONVal, matchJSONKey)
+> +    return res
+> +
+> +def find_in_json_other(res, outputJSONVal, matchJSONVal, matchJSONKey=None):
+> +    if matchJSONKey in outputJSONVal:
+> +        if matchJSONVal != outputJSONVal[matchJSONKey]:
+> +            failmsg = 'Value doesn\'t match: {}: {} != {}\nMatching against output: {}'
+> +            failmsg = failmsg.format(matchJSONKey, matchJSONVal, outputJSONVal[matchJSONKey], outputJSONVal)
+> +            res.set_result(ResultState.fail)
+> +            res.set_failmsg(failmsg)
+> +            return res
+> +
+> +    return res
+> +
+>  def run_one_test(pm, args, index, tidx):
+>      global NAMES
+>      result = True
+> @@ -292,16 +396,22 @@ def run_one_test(pm, args, index, tidx):
+>      else:
+>          if args.verbose > 0:
+>              print('-----> verify stage')
+> -        match_pattern = re.compile(
+> -            str(tidx["matchPattern"]), re.DOTALL | re.MULTILINE)
+>          (p, procout) = exec_cmd(args, pm, 'verify', tidx["verifyCmd"])
+>          if procout:
+> -            match_index = re.findall(match_pattern, procout)
+> -            if len(match_index) != int(tidx["matchCount"]):
+> -                res.set_result(ResultState.fail)
+> -                res.set_failmsg('Could not match regex pattern. Verify command output:\n{}'.format(procout))
+> +            if 'matchJSON' in tidx:
+> +                verify_by_json(procout, res, tidx, args, pm)
+> +            elif 'matchPattern' in tidx:
+> +                match_pattern = re.compile(
+> +                    str(tidx["matchPattern"]), re.DOTALL | re.MULTILINE)
+> +                match_index = re.findall(match_pattern, procout)
+> +                if len(match_index) != int(tidx["matchCount"]):
+> +                    res.set_result(ResultState.fail)
+> +                    res.set_failmsg('Could not match regex pattern. Verify command output:\n{}'.format(procout))
+> +                else:
+> +                    res.set_result(ResultState.success)
+>              else:
+> -                res.set_result(ResultState.success)
+> +                res.set_result(ResultState.fail)
+> +                res.set_failmsg('Must specify a match option: matchJSON or matchPattern\n{}'.format(procout))
+>          elif int(tidx["matchCount"]) != 0:
+>              res.set_result(ResultState.fail)
+>              res.set_failmsg('No output generated by verify command.')
+> @@ -365,6 +475,7 @@ def test_runner(pm, args, filtered_tests):
+>              res.set_result(ResultState.skip)
+>              res.set_errormsg(errmsg)
+>              tsr.add_resultdata(res)
+> +            index += 1
+>              continue
+>          try:
+>              badtest = tidx  # in case it goes bad
+> --
+> 2.25.1
+>
