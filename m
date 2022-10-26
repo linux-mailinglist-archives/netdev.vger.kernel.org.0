@@ -2,43 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EB7560DC01
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 09:20:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87A6760DC12
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 09:29:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232727AbiJZHUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 03:20:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38740 "EHLO
+        id S233035AbiJZH3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 03:29:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230025AbiJZHUS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 03:20:18 -0400
-Received: from out199-13.us.a.mail.aliyun.com (out199-13.us.a.mail.aliyun.com [47.90.199.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF1AE303FF;
-        Wed, 26 Oct 2022 00:20:15 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VT69Lai_1666768810;
-Received: from 30.221.146.122(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VT69Lai_1666768810)
-          by smtp.aliyun-inc.com;
-          Wed, 26 Oct 2022 15:20:11 +0800
-Message-ID: <8f938762-4060-10ed-32fd-ef7317b02300@linux.alibaba.com>
-Date:   Wed, 26 Oct 2022 15:20:10 +0800
+        with ESMTP id S233034AbiJZH3i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 03:29:38 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 317C955A9
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 00:29:35 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id t4so9577779wmj.5
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 00:29:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=T/IjroO2S8DcRAcgUC984Ih3tCuwktfX/cLb+yvJTYE=;
+        b=KDjhCe2pYrt5U9tgFi89KJ0PHf6g6B9GuiqZZXRyUNK1tVkhx4ZaQacn2QPYYUM45z
+         n1bpUmclo0BWzghTm3l1SiYANMm6xNoPbdIXvNwCTbLA4OFhSRJFvmqtwhnEgUG6rXiY
+         cWZn6xP/KHV0SjaRpelyL2sRGbfhLFeeTTAZ3a5ixe+oHgr/WMN4McIUUwc1DteqNCoU
+         evqSWxUg16IdfTJ3o1w2tvCoFJfQ8jYGkAe0FvDDivuuNMrbR1eFreZY5cZxFxaXY8br
+         aEABVzaThShNjSTWFhEUhFR6Dvz3x9GpG+ecGTrh5N/sweoIUe4W7CjmsZKHqy8e20ba
+         7MEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=T/IjroO2S8DcRAcgUC984Ih3tCuwktfX/cLb+yvJTYE=;
+        b=g4ydS7iCrbTM3Qgpd9Zar8O6gw6/T6E+jClpNhgL1i2n2q4IlazhuQVoVwKvebvTCZ
+         aBd0BhQ5dASZm4tkZESqlhvV3yYDGsZR02JEZTHwqpd4bzO5LKUe5AqdISy9OqtM5aV6
+         MkSay3Zt7UVhWoWzWavIhyffrJ+PnTOQ7abtsWspqcJpZBmK9kKoEHMP8kSk/FSOriZJ
+         M95UtxzEiO5UrwC93Cxdk+4DX2h+7lo2KB7PXPbVuRDWa5EyzoXMuLsSVYFT4FRGpXw9
+         KuVI0lanUDN3Oa3fxHLRsIJ0Al+v952krFvWmT5hDDH+JNw/trwIgN8dxognDYp8jsIW
+         O1UA==
+X-Gm-Message-State: ACrzQf2TVYbcFfKVn1Xmg16IRNFIGbAQtz2cdobiHgxao5nZ8SsiRv7W
+        Dnp91L414hjvb9pGFA0Cgosb1PnSSc+DD91dCI8/UA==
+X-Google-Smtp-Source: AMsMyM6DLhFMZ27HUXE4iWzamEQeTdwYl4PdiF+77+dTOOfhgmynxUIFnvXgspUsVr8ntS3TCAw4li+MloJdPqUZOjQ=
+X-Received: by 2002:a05:600c:3b97:b0:3c7:14f0:f8d2 with SMTP id
+ n23-20020a05600c3b9700b003c714f0f8d2mr1394909wms.159.1666769373579; Wed, 26
+ Oct 2022 00:29:33 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.13.0
-Subject: Re: [PATCH net-next v4 00/10] optimize the parallelism of SMC-R
- connections
-Content-Language: en-US
-To:     Jan Karcher <jaka@linux.ibm.com>, kgraul@linux.ibm.com,
-        wenjia@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <1666529042-40828-1-git-send-email-alibuda@linux.alibaba.com>
- <95feb2a1-d17a-6233-d3d0-eaebf26d2284@linux.ibm.com>
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-In-Reply-To: <95feb2a1-d17a-6233-d3d0-eaebf26d2284@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+References: <20221026011540.8499-1-haozhe.chang@mediatek.com>
+In-Reply-To: <20221026011540.8499-1-haozhe.chang@mediatek.com>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Wed, 26 Oct 2022 09:28:57 +0200
+Message-ID: <CAMZdPi_XSWeTf-eP+O2ZXGXtn5yviEp=p1Q0rs_fG76UGf2FsQ@mail.gmail.com>
+Subject: Re: [PATCH] wwan: core: Support slicing in port TX flow of WWAN subsystem
+To:     haozhe.chang@mediatek.com
+Cc:     chandrashekar.devegowda@intel.com, linuxwwan@intel.com,
+        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
+        m.chetan.kumar@linux.intel.com, ricardo.martinez@linux.intel.com,
+        ryazanov.s.a@gmail.com, johannes@sipsolutions.net,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lambert.wang@mediatek.com,
+        xiayu.zhang@mediatek.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -46,228 +72,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Haozhe,
 
-Thank you for your information. I'm trying to debug it.
-we will let you know as soon as possible.
+On Wed, 26 Oct 2022 at 03:16, <haozhe.chang@mediatek.com> wrote:
+>
+> From: haozhe chang <haozhe.chang@mediatek.com>
+>
+> wwan_port_fops_write inputs the SKB parameter to the TX callback of
+> the WWAN device driver. However, the WWAN device (e.g., t7xx) may
+> have an MTU less than the size of SKB, causing the TX buffer to be
+> sliced and copied once more in the WWAN device driver.
 
-Best Wishes.
-D. Wythe
+The benefit of putting data in an skb is that it is easy to
+manipulate, so not sure why there is an additional copy in the first
+place. Isn't possible for the t7xx driver to consume the skb
+progressively (without intermediate copy), according to its own MTU
+limitation?
 
-On 10/24/22 9:11 PM, Jan Karcher wrote:
-> Hi D. Wythe,
-> 
-> I re-run the tests with your fix.
-> SMC-R works fine now. For SMC-D we still have the following problem. It is kind of the same as i reported in v2 but even weirder:
-> 
-> smc stats:
-> 
-> t8345011
-> SMC-D Connections Summary
->    Total connections handled          2465
-> SMC-R Connections Summary
->    Total connections handled           232
-> 
-> t8345010
-> SMC-D Connections Summary
->    Total connections handled          2290
-> SMC-R Connections Summary
->    Total connections handled           231
-> 
-> 
-> smc linkgroups:
-> 
-> t8345011
-> [root@t8345011 ~]# smcr linkgroup
-> LG-ID    LG-Role  LG-Type  VLAN  #Conns  PNET-ID
-> 00000400 SERV     SYM         0       0  NET25
-> [root@t8345011 ~]# smcd linkgroup
-> LG-ID    VLAN  #Conns  PNET-ID
-> 00000300    0      16  NET25
-> 
-> t8345010
-> [root@t8345010 tela-kernel]# smcr linkgroup
-> LG-ID    LG-Role  LG-Type  VLAN  #Conns  PNET-ID
-> 00000400 CLNT     SYM         0       0  NET25
-> [root@t8345010 tela-kernel]# smcd linkgroup
-> LG-ID    VLAN  #Conns  PNET-ID
-> 00000300    0       1  NET25
-> 
-> 
-> smcss:
-> 
-> t8345011
-> [root@t8345011 ~]# smcss
-> State          UID   Inode   Local Address           Peer Address     Intf Mode
-> 
-> t8345010
-> [root@t8345010 tela-kernel]# smcss
-> State          UID   Inode   Local Address           Peer Address     Intf Mode
-> 
-> 
-> lsmod:
-> 
-> t8345011
-> [root@t8345011 ~]# lsmod | grep smc
-> smc                   225280  18 ism,smc_diag
-> t8345010
-> [root@t8345010 tela-kernel]# lsmod | grep smc
-> smc                   225280  3 ism,smc_diag
-> 
-> Also smc_dbg and netstat do not show any more information on this problem. We only see in the dmesg that the code seems to build up SMC-R linkgroups even tho we are running the SMC-D tests.
-> NOTE: we disabled the syncookies for the tests.
-> 
-> dmesg:
-> 
-> t8345011
-> smc-tests: test_smcapp_torture_test started
-> kernel: TCP: request_sock_TCP: Possible SYN flooding on port 22465. Dropping request.  Check SNMP counters.
-> kernel: smc: SMC-R lg 00000400 net 1 link added: id 00000401, peerid 00000401, ibdev mlx5_0, ibport 1
-> kernel: smc: SMC-R lg 00000400 net 1 state changed: SINGLE, pnetid NET25
-> kernel: smc: SMC-R lg 00000400 net 1 link added: id 00000402, peerid 00000402, ibdev mlx5_1, ibport 1
-> kernel: smc: SMC-R lg 00000400 net 1 state changed: SYMMETRIC, pnetid NET25
-> 
-> t8345010
-> smc-tests: test_smcapp_torture_test started
-> kernel: smc: SMC-R lg 00000400 net 1 link added: id 00000401, peerid 00000401, ibdev mlx5_0, ibport 1
-> kernel: smc: SMC-R lg 00000400 net 1 state changed: SINGLE, pnetid NET25
-> kernel: smc: SMC-R lg 00000400 net 1 link added: id 00000402, peerid 00000402, ibdev mlx5_1, ibport 1
-> kernel: smc: SMC-R lg 00000400 net 1 state changed: SYMMETRIC, pnetid NET25
-> 
-> If this output does not help and if you want us to look deeper into it feel free to let us know and we can debug further.
-> 
-> On 23/10/2022 14:43, D.Wythe wrote:
->> From: "D.Wythe" <alibuda@linux.alibaba.com>
->>
->> This patch set attempts to optimize the parallelism of SMC-R connections,
->> mainly to reduce unnecessary blocking on locks, and to fix exceptions that
->> occur after thoses optimization.
->>
->> According to Off-CPU graph, SMC worker's off-CPU as that:
->>
->> smc_close_passive_work                  (1.09%)
->>          smcr_buf_unuse                  (1.08%)
->>                  smc_llc_flow_initiate   (1.02%)
->>
->> smc_listen_work                         (48.17%)
->>          __mutex_lock.isra.11            (47.96%)
->>
->>
->> An ideal SMC-R connection process should only block on the IO events
->> of the network, but it's quite clear that the SMC-R connection now is
->> queued on the lock most of the time.
->>
->> The goal of this patchset is to achieve our ideal situation where
->> network IO events are blocked for the majority of the connection lifetime.
->>
->> There are three big locks here:
->>
->> 1. smc_client_lgr_pending & smc_server_lgr_pending
->>
->> 2. llc_conf_mutex
->>
->> 3. rmbs_lock & sndbufs_lock
->>
->> And an implementation issue:
->>
->> 1. confirm/delete rkey msg can't be sent concurrently while
->> protocol allows indeed.
->>
->> Unfortunately,The above problems together affect the parallelism of
->> SMC-R connection. If any of them are not solved. our goal cannot
->> be achieved.
->>
->> After this patch set, we can get a quite ideal off-CPU graph as
->> following:
->>
->> smc_close_passive_work                                  (41.58%)
->>          smcr_buf_unuse                                  (41.57%)
->>                  smc_llc_do_delete_rkey                  (41.57%)
->>
->> smc_listen_work                                         (39.10%)
->>          smc_clc_wait_msg                                (13.18%)
->>                  tcp_recvmsg_locked                      (13.18)
->>          smc_listen_find_device                          (25.87%)
->>                  smcr_lgr_reg_rmbs                       (25.87%)
->>                          smc_llc_do_confirm_rkey         (25.87%)
->>
->> We can see that most of the waiting times are waiting for network IO
->> events. This also has a certain performance improvement on our
->> short-lived conenction wrk/nginx benchmark test:
->>
->> +--------------+------+------+-------+--------+------+--------+
->> |conns/qps     |c4    | c8   |  c16  |  c32   | c64  |  c200  |
->> +--------------+------+------+-------+--------+------+--------+
->> |SMC-R before  |9.7k  | 10k  |  10k  |  9.9k  | 9.1k |  8.9k  |
->> +--------------+------+------+-------+--------+------+--------+
->> |SMC-R now     |13k   | 19k  |  18k  |  16k   | 15k  |  12k   |
->> +--------------+------+------+-------+--------+------+--------+
->> |TCP           |15k   | 35k  |  51k  |  80k   | 100k |  162k  |
->> +--------------+------+------+-------+--------+------+--------+
->>
->> The reason why the benefit is not obvious after the number of connections
->> has increased dues to workqueue. If we try to change workqueue to UNBOUND,
->> we can obtain at least 4-5 times performance improvement, reach up to half
->> of TCP. However, this is not an elegant solution, the optimization of it
->> will be much more complicated. But in any case, we will submit relevant
->> optimization patches as soon as possible.
->>
->> Please note that the premise here is that the lock related problem
->> must be solved first, otherwise, no matter how we optimize the workqueue,
->> there won't be much improvement.
->>
->> Because there are a lot of related changes to the code, if you have
->> any questions or suggestions, please let me know.
->>
->> Thanks
->> D. Wythe
->>
->> v1 -> v2:
->>
->> 1. Fix panic in SMC-D scenario
->> 2. Fix lnkc related hashfn calculation exception, caused by operator
->> priority
->> 3. Only wake up one connection if the lnk is not active
->> 4. Delete obsolete unlock logic in smc_listen_work()
->> 5. PATCH format, do Reverse Christmas tree
->> 6. PATCH format, change all xxx_lnk_xxx function to xxx_link_xxx
->> 7. PATCH format, add correct fix tag for the patches for fixes.
->> 8. PATCH format, fix some spelling error
->> 9. PATCH format, rename slow to do_slow
->>
->> v2 -> v3:
->>
->> 1. add SMC-D support, remove the concept of link cluster since SMC-D has
->> no link at all. Replace it by lgr decision maker, who provides suggestions
->> to SMC-D and SMC-R on whether to create new link group.
->>
->> 2. Fix the corruption problem described by PATCH 'fix application
->> data exception' on SMC-D.
->>
->> v3 -> v4:
->>
->> 1. Fix panic caused by uninitialization map.
->>
->> D. Wythe (10):
->>    net/smc: remove locks smc_client_lgr_pending and
->>      smc_server_lgr_pending
->>    net/smc: fix SMC_CLC_DECL_ERR_REGRMB without smc_server_lgr_pending
->>    net/smc: allow confirm/delete rkey response deliver multiplex
->>    net/smc: make SMC_LLC_FLOW_RKEY run concurrently
->>    net/smc: llc_conf_mutex refactor, replace it with rw_semaphore
->>    net/smc: use read semaphores to reduce unnecessary blocking in
->>      smc_buf_create() & smcr_buf_unuse()
->>    net/smc: reduce unnecessary blocking in smcr_lgr_reg_rmbs()
->>    net/smc: replace mutex rmbs_lock and sndbufs_lock with rw_semaphore
->>    net/smc: Fix potential panic dues to unprotected
->>      smc_llc_srv_add_link()
->>    net/smc: fix application data exception
->>
->>   net/smc/af_smc.c   |  70 ++++----
->>   net/smc/smc_core.c | 478 +++++++++++++++++++++++++++++++++++++++++++++++------
->>   net/smc/smc_core.h |  36 +++-
->>   net/smc/smc_llc.c  | 277 ++++++++++++++++++++++---------
->>   net/smc/smc_llc.h  |   6 +
->>   net/smc/smc_wr.c   |  10 --
->>   net/smc/smc_wr.h   |  10 ++
->>   7 files changed, 712 insertions(+), 175 deletions(-)
->>
+>
+> This patch implements the slicing in the WWAN subsystem and gives
+> the WWAN devices driver the option to slice(by chunk) or not. By
+> doing so, the additional memory copy is reduced.
+>
+> Meanwhile, this patch gives WWAN devices driver the option to reserve
+> headroom in SKB for the device-specific metadata.
+>
+> Signed-off-by: haozhe chang <haozhe.chang@mediatek.com>
+> ---
+>  drivers/net/wwan/t7xx/t7xx_port_wwan.c | 41 ++++++++++++-----------
+>  drivers/net/wwan/wwan_core.c           | 45 ++++++++++++++++++--------
+>  include/linux/wwan.h                   |  5 ++-
+>  3 files changed, 56 insertions(+), 35 deletions(-)
+>
+> diff --git a/drivers/net/wwan/t7xx/t7xx_port_wwan.c b/drivers/net/wwan/t7xx/t7xx_port_wwan.c
+> index 33931bfd78fd..5e8589582121 100644
+> --- a/drivers/net/wwan/t7xx/t7xx_port_wwan.c
+> +++ b/drivers/net/wwan/t7xx/t7xx_port_wwan.c
+> @@ -54,13 +54,12 @@ static void t7xx_port_ctrl_stop(struct wwan_port *port)
+>  static int t7xx_port_ctrl_tx(struct wwan_port *port, struct sk_buff *skb)
+>  {
+>         struct t7xx_port *port_private = wwan_port_get_drvdata(port);
+> -       size_t len, offset, chunk_len = 0, txq_mtu = CLDMA_MTU;
+>         const struct t7xx_port_conf *port_conf;
+>         struct t7xx_fsm_ctl *ctl;
+>         enum md_state md_state;
+> +       int ret;
+>
+> -       len = skb->len;
+> -       if (!len || !port_private->chan_enable)
+> +       if (!port_private->chan_enable)
+>                 return -EINVAL;
+>
+>         port_conf = port_private->port_conf;
+> @@ -72,33 +71,33 @@ static int t7xx_port_ctrl_tx(struct wwan_port *port, struct sk_buff *skb)
+>                 return -ENODEV;
+>         }
+>
+> -       for (offset = 0; offset < len; offset += chunk_len) {
+> -               struct sk_buff *skb_ccci;
+> -               int ret;
+> -
+> -               chunk_len = min(len - offset, txq_mtu - sizeof(struct ccci_header));
+> -               skb_ccci = t7xx_port_alloc_skb(chunk_len);
+> -               if (!skb_ccci)
+> -                       return -ENOMEM;
+> -
+> -               skb_put_data(skb_ccci, skb->data + offset, chunk_len);
+> -               ret = t7xx_port_send_skb(port_private, skb_ccci, 0, 0);
+> -               if (ret) {
+> -                       dev_kfree_skb_any(skb_ccci);
+> -                       dev_err(port_private->dev, "Write error on %s port, %d\n",
+> -                               port_conf->name, ret);
+> -                       return ret;
+> -               }
+> +       ret = t7xx_port_send_skb(port_private, skb, 0, 0);
+> +       if (ret) {
+> +               dev_err(port_private->dev, "Write error on %s port, %d\n",
+> +                       port_conf->name, ret);
+> +               return ret;
+>         }
+> -
+>         dev_kfree_skb(skb);
+> +
+>         return 0;
+>  }
+>
+> +static size_t t7xx_port_get_tx_rsvd_headroom(struct wwan_port *port)
+> +{
+> +       return sizeof(struct ccci_header);
+> +}
+> +
+> +static size_t t7xx_port_get_tx_chunk_len(struct wwan_port *port)
+> +{
+> +       return CLDMA_MTU - sizeof(struct ccci_header);
+> +}
+> +
+>  static const struct wwan_port_ops wwan_ops = {
+>         .start = t7xx_port_ctrl_start,
+>         .stop = t7xx_port_ctrl_stop,
+>         .tx = t7xx_port_ctrl_tx,
+> +       .get_tx_rsvd_headroom = t7xx_port_get_tx_rsvd_headroom,
+
+Can't we have a simple 'skb_headroom' or 'needed_headroom' member here?
+
+> +       .get_tx_chunk_len = t7xx_port_get_tx_chunk_len,
+>  };
+>
