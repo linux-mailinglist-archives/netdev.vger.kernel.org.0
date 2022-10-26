@@ -2,51 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4950860D992
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 05:08:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFB1B60D99C
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 05:20:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232528AbiJZDIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 23:08:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45974 "EHLO
+        id S232540AbiJZDUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 23:20:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231549AbiJZDIO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 23:08:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8A81E01C
-        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 20:08:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FEA561B7C
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 03:08:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8731C433C1;
-        Wed, 26 Oct 2022 03:08:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666753692;
-        bh=nKclqLDj6kmwfoQRx82ZS/OgaoYiSYjC1FZc1wZb++w=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QEjn6F6DtJpBF7pRPOHdI3J8hpuGjmLtAB7oEvK/nsFuWVKt83Ik9joDya9/gpb5T
-         TLQMWkkTOcsleZP4itoicQFQwjNiRjqBeBWarUcxcZZ2IpyeUW25L7U4Ge0Im6j1m2
-         K0WedYXJFadOu4SFdzj15GjcxCrmVnNbQO09X6pUzz0A2PiSN8u3p0o/7oj4+y0u2c
-         yNW2LHDMxcRs1wNXR459xuZvxIH9PPwVis8FhFmZps5n1ajF4DlxjAgfBZ8U/k+tWO
-         gsIFK9FgunvKh4P3ZLFQdDARZi65c/qF9CmhkM168PKbLqhIPRifc9k1zrIU0HO/yL
-         twRa9pkzO5HfQ==
-Date:   Tue, 25 Oct 2022 20:08:11 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, leon@kernel.org,
-        drivers@pensando.io
-Subject: Re: [PATCH v2 net-next 3/5] ionic: new ionic device identity level
- and VF start control
-Message-ID: <20221025200811.553f5ab4@kernel.org>
-In-Reply-To: <20221025112426.8954-4-snelson@pensando.io>
-References: <20221025112426.8954-1-snelson@pensando.io>
-        <20221025112426.8954-4-snelson@pensando.io>
+        with ESMTP id S229875AbiJZDU2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 23:20:28 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052B331EFC;
+        Tue, 25 Oct 2022 20:20:23 -0700 (PDT)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Mxv9h3HnszpVxl;
+        Wed, 26 Oct 2022 11:16:56 +0800 (CST)
+Received: from localhost.localdomain (10.175.104.82) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 26 Oct 2022 11:20:21 +0800
+From:   Ziyang Xuan <william.xuanziyang@huawei.com>
+To:     <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
+        <dsahern@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <Robert.Olsson@data.slu.se>,
+        <ja@ssi.bg>
+Subject: [PATCH net] ipv4: fix source address and gateway mismatch under multiple default gateways
+Date:   Wed, 26 Oct 2022 11:20:17 +0800
+Message-ID: <20221026032017.3675060-1-william.xuanziyang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -54,62 +46,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 Oct 2022 04:24:24 -0700 Shannon Nelson wrote:
-> A new ionic dev_cmd is added to the interface in ionic_if.h,
-> with a new capabilities field in the ionic device identity to
-> signal its availability in the FW.  The identity level code is
-> incremented to '2' to show support for this new capabilities
-> bitfield.
-> 
-> If the driver has indicated with the new identity level that
-> it has the VF_CTRL command, newer FW will wait for the start
-> command before starting the VFs after a FW update or crash
-> recovery.
-> 
-> This patch updates the driver to make use of the new VF start
-> control in fw_up path to be sure that the PF has set the user
-> attributes on the VF before the FW allows the VFs to restart.
+We found a problem that source address doesn't match with selected gateway
+under multiple default gateways. The reproducer is as following:
 
-You need to tidy up the kdoc usage..
+Setup in client as following:
 
-> @@ -54,6 +54,7 @@ enum ionic_cmd_opcode {
->  	/* SR/IOV commands */
->  	IONIC_CMD_VF_GETATTR			= 60,
->  	IONIC_CMD_VF_SETATTR			= 61,
-> +	IONIC_CMD_VF_CTRL			= 62,
+$ ip link add link eth2 dev eth2.71 type vlan id 71
+$ ip link add link eth2 dev eth2.72 type vlan id 72
+$ ip addr add 192.168.71.41/24 dev eth2.71
+$ ip addr add 192.168.72.41/24 dev eth2.72
+$ ip link set eth2.71 up
+$ ip link set eth2.72 up
+$ route add -net default gw 192.168.71.1 dev eth2.71
+$ route add -net default gw 192.168.72.1 dev eth2.72
 
-not documented
+Add a nameserver configuration in the following file:
+$ cat /etc/resolv.conf
+nameserver 8.8.8.8
 
->  
->  	/* QoS commands */
->  	IONIC_CMD_QOS_CLASS_IDENTIFY		= 240,
+Setup in peer server as following:
 
-> +/**
-> + * struct ionic_vf_ctrl_cmd - VF control command
-> + * @opcode:         Opcode for the command
-> + * @vf_index:       VF Index. It is unused if op START_ALL is used.
-> + * @ctrl_opcode:    VF control operation type
-> + */
-> +struct ionic_vf_ctrl_cmd {
-> +	u8	opcode;
-> +	u8	ctrl_opcode;
-> +	__le16	vf_index;
-> +	u8	rsvd1[60];
+$ ip link add link eth2 dev eth2.71 type vlan id 71
+$ ip link add link eth2 dev eth2.72 type vlan id 72
+$ ip addr add 192.168.71.1/24 dev eth2.71
+$ ip addr add 192.168.72.1/24 dev eth2.72
+$ ip link set eth2.71 up
+$ ip link set eth2.72 up
 
-not documented
+Use the following command trigger DNS packet in client:
+$ ping www.baidu.com
 
-> +};
-> +
-> +/**
-> + * struct ionic_vf_ctrl_comp - VF_CTRL command completion.
-> + * @status:     Status of the command (enum ionic_status_code)
-> + */
-> +struct ionic_vf_ctrl_comp {
-> +	u8	status;
-> +	u8      rsvd[15];
-> +};
+Capture packets with tcpdump in client when ping:
+$ tcpdump -i eth2 -vne
+...
+20:30:22.996044 52:54:00:20:23:a9 > 52:54:00:d2:4f:e3, ethertype 802.1Q (0x8100), length 77: vlan 71, p 0, ethertype IPv4, (tos 0x0, ttl 64, id 25407, offset 0, flags [DF], proto UDP (17), length 59)
+    192.168.72.41.42666 > 8.8.8.8.domain: 58562+ A? www.baidu.com. (31)
+...
 
-not documented
+We get the problem that IPv4 saddr "192.168.72.41" do not match with
+selected VLAN device "eth2.71".
 
-For the rsvd fields you can use the /* private: */ comment,
-see the docs.
+In above scenario, the process does __ip_route_output_key() twice in
+ip_route_connect(), the two processes have chosen different default gateway,
+and the last choice is not the best.
+
+Add flowi4->saddr and fib_nh_common->nhc_gw.ipv4 matching consideration in
+fib_select_default() to fix that.
+
+Fixes: 19baf839ff4a ("[IPV4]: Add LC-Trie FIB lookup algorithm.")
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+---
+ net/ipv4/fib_semantics.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+index e9a7f70a54df..8bd94875a009 100644
+--- a/net/ipv4/fib_semantics.c
++++ b/net/ipv4/fib_semantics.c
+@@ -2046,6 +2046,7 @@ static void fib_select_default(const struct flowi4 *flp, struct fib_result *res)
+ 	int order = -1, last_idx = -1;
+ 	struct fib_alias *fa, *fa1 = NULL;
+ 	u32 last_prio = res->fi->fib_priority;
++	u8 prefix, max_prefix = 0;
+ 	dscp_t last_dscp = 0;
+ 
+ 	hlist_for_each_entry_rcu(fa, fa_head, fa_list) {
+@@ -2078,6 +2079,11 @@ static void fib_select_default(const struct flowi4 *flp, struct fib_result *res)
+ 		if (!nhc->nhc_gw_family || nhc->nhc_scope != RT_SCOPE_LINK)
+ 			continue;
+ 
++		prefix = __ffs(flp->saddr ^ nhc->nhc_gw.ipv4);
++		if (prefix < max_prefix)
++			continue;
++		max_prefix = max_t(u8, prefix, max_prefix);
++
+ 		fib_alias_accessed(fa);
+ 
+ 		if (!fi) {
+-- 
+2.25.1
+
