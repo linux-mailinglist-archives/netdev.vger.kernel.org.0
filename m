@@ -2,179 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87A6760DC12
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 09:29:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F40B560DC22
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 09:32:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233035AbiJZH3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 03:29:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59214 "EHLO
+        id S232977AbiJZHcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 03:32:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233034AbiJZH3i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 03:29:38 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 317C955A9
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 00:29:35 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id t4so9577779wmj.5
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 00:29:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=T/IjroO2S8DcRAcgUC984Ih3tCuwktfX/cLb+yvJTYE=;
-        b=KDjhCe2pYrt5U9tgFi89KJ0PHf6g6B9GuiqZZXRyUNK1tVkhx4ZaQacn2QPYYUM45z
-         n1bpUmclo0BWzghTm3l1SiYANMm6xNoPbdIXvNwCTbLA4OFhSRJFvmqtwhnEgUG6rXiY
-         cWZn6xP/KHV0SjaRpelyL2sRGbfhLFeeTTAZ3a5ixe+oHgr/WMN4McIUUwc1DteqNCoU
-         evqSWxUg16IdfTJ3o1w2tvCoFJfQ8jYGkAe0FvDDivuuNMrbR1eFreZY5cZxFxaXY8br
-         aEABVzaThShNjSTWFhEUhFR6Dvz3x9GpG+ecGTrh5N/sweoIUe4W7CjmsZKHqy8e20ba
-         7MEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=T/IjroO2S8DcRAcgUC984Ih3tCuwktfX/cLb+yvJTYE=;
-        b=g4ydS7iCrbTM3Qgpd9Zar8O6gw6/T6E+jClpNhgL1i2n2q4IlazhuQVoVwKvebvTCZ
-         aBd0BhQ5dASZm4tkZESqlhvV3yYDGsZR02JEZTHwqpd4bzO5LKUe5AqdISy9OqtM5aV6
-         MkSay3Zt7UVhWoWzWavIhyffrJ+PnTOQ7abtsWspqcJpZBmK9kKoEHMP8kSk/FSOriZJ
-         M95UtxzEiO5UrwC93Cxdk+4DX2h+7lo2KB7PXPbVuRDWa5EyzoXMuLsSVYFT4FRGpXw9
-         KuVI0lanUDN3Oa3fxHLRsIJ0Al+v952krFvWmT5hDDH+JNw/trwIgN8dxognDYp8jsIW
-         O1UA==
-X-Gm-Message-State: ACrzQf2TVYbcFfKVn1Xmg16IRNFIGbAQtz2cdobiHgxao5nZ8SsiRv7W
-        Dnp91L414hjvb9pGFA0Cgosb1PnSSc+DD91dCI8/UA==
-X-Google-Smtp-Source: AMsMyM6DLhFMZ27HUXE4iWzamEQeTdwYl4PdiF+77+dTOOfhgmynxUIFnvXgspUsVr8ntS3TCAw4li+MloJdPqUZOjQ=
-X-Received: by 2002:a05:600c:3b97:b0:3c7:14f0:f8d2 with SMTP id
- n23-20020a05600c3b9700b003c714f0f8d2mr1394909wms.159.1666769373579; Wed, 26
- Oct 2022 00:29:33 -0700 (PDT)
+        with ESMTP id S229904AbiJZHcU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 03:32:20 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F96DFD31;
+        Wed, 26 Oct 2022 00:32:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=a3GBx/1SEU4nlgFOr1WH1Nhc3cu82Haw2GQSxs/IRPE=; b=N3xz1IF1GuT5qIXni60fN5NV/M
+        DY2iml2OichCv/namBi8VhhKAqZTHW7QI/g5LSozDIBop3cQLqO+9Zcv1bKSK4p/eFRaBBj0iQUX7
+        e7M5aYv0R96rJLCz7PVdjhZv05dduKUYgRoUQp82kMz/BU1TvwZA1VPnikPvPnEJlL6sk3pTTjieO
+        NUUyR8oGIYf/xFcIFtCz9H49Mr48YLOgoR7odEJa1R8/ThJ/RmBH+SGr9OBUjWFM5VqRkes7IpKXu
+        T9fo75aNFNE3+hm0F/yGjutnn1PTdpvvzXSLcJj+x9yXKzZkCdLrcZx1eIslmycVcmQSPKy8E1JD6
+        ufR+feQg==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1onasu-006Wd7-Lb; Wed, 26 Oct 2022 07:31:34 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 99B323000DD;
+        Wed, 26 Oct 2022 09:31:31 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 475ED2C259E96; Wed, 26 Oct 2022 09:31:31 +0200 (CEST)
+Date:   Wed, 26 Oct 2022 09:31:31 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        scott.d.constable@intel.com, daniel.sneddon@linux.intel.com,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        antonio.gomez.iglesias@linux.intel.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        x86@kernel.org, gregkh@linuxfoundation.org, netdev@vger.kernel.org
+Subject: Re: [RFC PATCH 0/2] Branch Target Injection (BTI) gadget in minstrel
+Message-ID: <Y1jiUzw8QbXUW/+V@hirez.programming.kicks-ass.net>
+References: <cover.1666651511.git.pawan.kumar.gupta@linux.intel.com>
+ <Y1fDiJtxTe8mtBF8@hirez.programming.kicks-ass.net>
+ <b4a64b97-32d2-d83d-9146-ebc9a4cc9ff6@intel.com>
 MIME-Version: 1.0
-References: <20221026011540.8499-1-haozhe.chang@mediatek.com>
-In-Reply-To: <20221026011540.8499-1-haozhe.chang@mediatek.com>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Wed, 26 Oct 2022 09:28:57 +0200
-Message-ID: <CAMZdPi_XSWeTf-eP+O2ZXGXtn5yviEp=p1Q0rs_fG76UGf2FsQ@mail.gmail.com>
-Subject: Re: [PATCH] wwan: core: Support slicing in port TX flow of WWAN subsystem
-To:     haozhe.chang@mediatek.com
-Cc:     chandrashekar.devegowda@intel.com, linuxwwan@intel.com,
-        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
-        m.chetan.kumar@linux.intel.com, ricardo.martinez@linux.intel.com,
-        ryazanov.s.a@gmail.com, johannes@sipsolutions.net,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lambert.wang@mediatek.com,
-        xiayu.zhang@mediatek.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b4a64b97-32d2-d83d-9146-ebc9a4cc9ff6@intel.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Haozhe,
+On Tue, Oct 25, 2022 at 03:00:35PM -0700, Dave Hansen wrote:
+> On 10/25/22 04:07, Peter Zijlstra wrote:
+> > I think the focus should be on finding the source sites, not protecting
+> > the target sites. Where can an attacker control the register content and
+> > have an indirect jump/call.
+> 
+> How would this work with something like 'struct file_operations' which
+> provide a rich set of indirect calls that frequently have fully
+> user-controlled values in registers?
+> 
+> It certainly wouldn't *hurt* to be zeroing out the registers that are
+> unused at indirect call sites.  But, the majority of gadgets in this
+> case used rdi and rsi, which are the least likely to be able to be
+> zapped at call sites.
 
-On Wed, 26 Oct 2022 at 03:16, <haozhe.chang@mediatek.com> wrote:
->
-> From: haozhe chang <haozhe.chang@mediatek.com>
->
-> wwan_port_fops_write inputs the SKB parameter to the TX callback of
-> the WWAN device driver. However, the WWAN device (e.g., t7xx) may
-> have an MTU less than the size of SKB, causing the TX buffer to be
-> sliced and copied once more in the WWAN device driver.
+Right; so FineIBT will limit the targets to the right set of functions,
+and those functions must already assume the values are user controlled
+and take appropriate measures.
 
-The benefit of putting data in an skb is that it is easy to
-manipulate, so not sure why there is an additional copy in the first
-place. Isn't possible for the t7xx driver to consume the skb
-progressively (without intermediate copy), according to its own MTU
-limitation?
+If you really truly care about the old hardware, then one solution would
+be to de-virtualize the call using LTO or something (yes, it will need
+some compiler work and you might need to annotate the code a bit and
+even have a fixed/predetermined set of loadable modules, but meh).
 
->
-> This patch implements the slicing in the WWAN subsystem and gives
-> the WWAN devices driver the option to slice(by chunk) or not. By
-> doing so, the additional memory copy is reduced.
->
-> Meanwhile, this patch gives WWAN devices driver the option to reserve
-> headroom in SKB for the device-specific metadata.
->
-> Signed-off-by: haozhe chang <haozhe.chang@mediatek.com>
-> ---
->  drivers/net/wwan/t7xx/t7xx_port_wwan.c | 41 ++++++++++++-----------
->  drivers/net/wwan/wwan_core.c           | 45 ++++++++++++++++++--------
->  include/linux/wwan.h                   |  5 ++-
->  3 files changed, 56 insertions(+), 35 deletions(-)
->
-> diff --git a/drivers/net/wwan/t7xx/t7xx_port_wwan.c b/drivers/net/wwan/t7xx/t7xx_port_wwan.c
-> index 33931bfd78fd..5e8589582121 100644
-> --- a/drivers/net/wwan/t7xx/t7xx_port_wwan.c
-> +++ b/drivers/net/wwan/t7xx/t7xx_port_wwan.c
-> @@ -54,13 +54,12 @@ static void t7xx_port_ctrl_stop(struct wwan_port *port)
->  static int t7xx_port_ctrl_tx(struct wwan_port *port, struct sk_buff *skb)
->  {
->         struct t7xx_port *port_private = wwan_port_get_drvdata(port);
-> -       size_t len, offset, chunk_len = 0, txq_mtu = CLDMA_MTU;
->         const struct t7xx_port_conf *port_conf;
->         struct t7xx_fsm_ctl *ctl;
->         enum md_state md_state;
-> +       int ret;
->
-> -       len = skb->len;
-> -       if (!len || !port_private->chan_enable)
-> +       if (!port_private->chan_enable)
->                 return -EINVAL;
->
->         port_conf = port_private->port_conf;
-> @@ -72,33 +71,33 @@ static int t7xx_port_ctrl_tx(struct wwan_port *port, struct sk_buff *skb)
->                 return -ENODEV;
->         }
->
-> -       for (offset = 0; offset < len; offset += chunk_len) {
-> -               struct sk_buff *skb_ccci;
-> -               int ret;
-> -
-> -               chunk_len = min(len - offset, txq_mtu - sizeof(struct ccci_header));
-> -               skb_ccci = t7xx_port_alloc_skb(chunk_len);
-> -               if (!skb_ccci)
-> -                       return -ENOMEM;
-> -
-> -               skb_put_data(skb_ccci, skb->data + offset, chunk_len);
-> -               ret = t7xx_port_send_skb(port_private, skb_ccci, 0, 0);
-> -               if (ret) {
-> -                       dev_kfree_skb_any(skb_ccci);
-> -                       dev_err(port_private->dev, "Write error on %s port, %d\n",
-> -                               port_conf->name, ret);
-> -                       return ret;
-> -               }
-> +       ret = t7xx_port_send_skb(port_private, skb, 0, 0);
-> +       if (ret) {
-> +               dev_err(port_private->dev, "Write error on %s port, %d\n",
-> +                       port_conf->name, ret);
-> +               return ret;
->         }
-> -
->         dev_kfree_skb(skb);
-> +
->         return 0;
->  }
->
-> +static size_t t7xx_port_get_tx_rsvd_headroom(struct wwan_port *port)
-> +{
-> +       return sizeof(struct ccci_header);
-> +}
-> +
-> +static size_t t7xx_port_get_tx_chunk_len(struct wwan_port *port)
-> +{
-> +       return CLDMA_MTU - sizeof(struct ccci_header);
-> +}
-> +
->  static const struct wwan_port_ops wwan_ops = {
->         .start = t7xx_port_ctrl_start,
->         .stop = t7xx_port_ctrl_stop,
->         .tx = t7xx_port_ctrl_tx,
-> +       .get_tx_rsvd_headroom = t7xx_port_get_tx_rsvd_headroom,
+Barring that, you could perhaps put {min,max} range information next to
+the function pointer such that you can impose value ranges before doing
+the indirect call.
 
-Can't we have a simple 'skb_headroom' or 'needed_headroom' member here?
-
-> +       .get_tx_chunk_len = t7xx_port_get_tx_chunk_len,
->  };
->
+But given this is all theoretical and FineIBT solves a lot of it I can't
+find myself to care too much.
