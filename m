@@ -2,53 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06F8460E0BB
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 14:34:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3BE760E0C5
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 14:35:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233539AbiJZMeH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 08:34:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36856 "EHLO
+        id S232289AbiJZMfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 08:35:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232625AbiJZMeG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 08:34:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A1A8AF1AA;
-        Wed, 26 Oct 2022 05:34:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 434DAB821D9;
-        Wed, 26 Oct 2022 12:34:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20DAFC433D6;
-        Wed, 26 Oct 2022 12:34:02 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Xx5KKuxr"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1666787640;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ZeAi1MGyrPwsr84DGCNB/7Ek0xszjHGR2vlAtEQhd1A=;
-        b=Xx5KKuxrtpwoY9Wy+CYd1WDXBT9sCoNC9fjwsGkstHhNbN1WpvKcBizZeRpT/FCzCiS4RQ
-        tcs+Bt7NF3eTh8IExPNnbvvnyDYVtjOIBQ7zCHExZIsoRAGhDA8m5Mp/+dUQ/2ed4jN+pX
-        1b2G92MsVRvv78DJhUgz7++3kx0ah/c=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 8a7530bf (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Wed, 26 Oct 2022 12:33:59 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Julian Anastasov <ja@ssi.bg>,
-        Simon Horman <horms@verge.net.au>, stable@vger.kernel.org
-Subject: [PATCH] ipvs: use explicitly signed chars
-Date:   Wed, 26 Oct 2022 14:32:16 +0200
-Message-Id: <20221026123216.1575440-1-Jason@zx2c4.com>
+        with ESMTP id S232733AbiJZMfR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 08:35:17 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04F5E3C8FB
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 05:35:16 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1onfcS-0004px-7R; Wed, 26 Oct 2022 14:34:52 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 410C610A4CF;
+        Wed, 26 Oct 2022 12:34:47 +0000 (UTC)
+Date:   Wed, 26 Oct 2022 14:34:46 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
+        Ulrich Hecht <uli+renesas@fpond.eu>,
+        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Subject: Re: [PATCH v2 2/3] can: rcar_canfd: Fix channel specific IRQ
+ handling for RZ/G2L
+Message-ID: <20221026123446.c6ob45mbke5aj7f5@pengutronix.de>
+References: <20221025155657.1426948-1-biju.das.jz@bp.renesas.com>
+ <20221025155657.1426948-3-biju.das.jz@bp.renesas.com>
+ <20221026073608.7h47b2axcayakfnn@pengutronix.de>
+ <OS0PR01MB5922FCC50E590DFDD041F99386309@OS0PR01MB5922.jpnprd01.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="vaotwjwncsnvez7t"
+Content-Disposition: inline
+In-Reply-To: <OS0PR01MB5922FCC50E590DFDD041F99386309@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,67 +72,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The `char` type with no explicit sign is sometimes signed and sometimes
-unsigned. This code will break on platforms such as arm, where char is
-unsigned. So mark it here as explicitly signed, so that the
-todrop_counter decrement and subsequent comparison is correct.
 
-Cc: Pablo Neira Ayuso <pablo@netfilter.org>
-Cc: Julian Anastasov <ja@ssi.bg>
-Cc: Simon Horman <horms@verge.net.au>
-Cc: stable@vger.kernel.org
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- net/netfilter/ipvs/ip_vs_conn.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+--vaotwjwncsnvez7t
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/net/netfilter/ipvs/ip_vs_conn.c b/net/netfilter/ipvs/ip_vs_conn.c
-index 8c04bb57dd6f..7c4866c04343 100644
---- a/net/netfilter/ipvs/ip_vs_conn.c
-+++ b/net/netfilter/ipvs/ip_vs_conn.c
-@@ -1249,40 +1249,40 @@ static const struct seq_operations ip_vs_conn_sync_seq_ops = {
- 	.next  = ip_vs_conn_seq_next,
- 	.stop  = ip_vs_conn_seq_stop,
- 	.show  = ip_vs_conn_sync_seq_show,
- };
- #endif
- 
- 
- /* Randomly drop connection entries before running out of memory
-  * Can be used for DATA and CTL conns. For TPL conns there are exceptions:
-  * - traffic for services in OPS mode increases ct->in_pkts, so it is supported
-  * - traffic for services not in OPS mode does not increase ct->in_pkts in
-  * all cases, so it is not supported
-  */
- static inline int todrop_entry(struct ip_vs_conn *cp)
- {
- 	/*
- 	 * The drop rate array needs tuning for real environments.
- 	 * Called from timer bh only => no locking
- 	 */
--	static const char todrop_rate[9] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
--	static char todrop_counter[9] = {0};
-+	static const signed char todrop_rate[9] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
-+	static signed char todrop_counter[9] = {0};
- 	int i;
- 
- 	/* if the conn entry hasn't lasted for 60 seconds, don't drop it.
- 	   This will leave enough time for normal connection to get
- 	   through. */
- 	if (time_before(cp->timeout + jiffies, cp->timer.expires + 60*HZ))
- 		return 0;
- 
- 	/* Don't drop the entry if its number of incoming packets is not
- 	   located in [0, 8] */
- 	i = atomic_read(&cp->in_pkts);
- 	if (i > 8 || i < 0) return 0;
- 
- 	if (!todrop_rate[i]) return 0;
- 	if (--todrop_counter[i] > 0) return 0;
- 
- 	todrop_counter[i] = todrop_rate[i];
- 	return 1;
- }
--- 
-2.38.1
+On 26.10.2022 09:34:41, Biju Das wrote:
+> > In a separate patch, please clean up these, too:
+> >=20
+> > | static void rcar_canfd_handle_global_err(struct rcar_canfd_global
+> > | *gpriv, u32 ch) static void rcar_canfd_handle_global_receive(struct
+> > | rcar_canfd_global *gpriv, u32 ch) static void
+> > | rcar_canfd_channel_remove(struct rcar_canfd_global *gpriv, u32 ch)
+> >=20
+> > Why are 2 of the above functions called "global" as they work on a
+> > specific channel? That can be streamlined, too.
+> >=20
+>=20
+> The function name is as per the hardware manual, Interrupt sources are
+> classified into global and channel interrupts.
+>=20
+> =E2=80=A2 Global interrupts (2 sources):
+> =E2=80=94 Receive FIFO interrupt
+> =E2=80=94 Global error interrupt
+> =E2=80=A2 Channel interrupts (3 sources/channel):
 
+I see. Keep the functions as is.
+
+> Maybe we could change
+> "rcar_canfd_handle_global_receive"->"rcar_canfd_handle_channel_receive",
+> as from driver point It is not global anymore?? Please let me know.
+
+Never mind - the gpriv and channel numbers are needed sometimes even in
+the functions working on a single channel. Never mind. I'll take patches
+1 and 2 as they are.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--vaotwjwncsnvez7t
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmNZKWMACgkQrX5LkNig
+012qEwf+IRYuA9W199F7lK+OZ9LCZLMzCed0EZnhpRjNzWkunT6lMfTSSNUL1apw
+Qyu3cfl+mJzHhyNOJtreY/FewgK012S9YOfoymhIf8UCZh7Q9TFxvHrXqfGWac8A
+mD1GjrRPXiljwLJZpCCGGH6sl0XdxU36Oityfen15SCHNVogOYyPH1SlfPbRfAuN
+KVc6Hd4DP/lixQtqkHM9kUtVbVEf6g5zT1z74rHRe17uYCWcLl2dK9KNA3JVrkgF
+jaQC1f1E0UJRJn/Bk+K3btsjEcOU5vVW6dsvVt89tO2nSPnie1YSubcJQpu+YtLW
+P9LuZUV9pgit9+KlAdXD4B65/Syy4A==
+=DMUx
+-----END PGP SIGNATURE-----
+
+--vaotwjwncsnvez7t--
