@@ -2,53 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4780860E12F
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 14:50:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC94760E140
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 14:54:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233397AbiJZMuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 08:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54264 "EHLO
+        id S233925AbiJZMy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 08:54:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233619AbiJZMuQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 08:50:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E76385B11E;
-        Wed, 26 Oct 2022 05:50:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 862A861EBA;
-        Wed, 26 Oct 2022 12:50:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E6791C433D7;
-        Wed, 26 Oct 2022 12:50:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666788614;
-        bh=7RDWmlcQAFx3kwj1N0nkhwHAsUQrVQLqkwGOPnD2VxU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=qpFj8bZeJ9DwzaCJVNpqg1tCzwG51Ouu3Ccjx2iqaBCuITNTp9AbaCtJ/MlSQ6LZI
-         kDcLawyGkUoE0aILfC6c7BT+i29MfGHHXsvnJ9ys2G7zYoF8ZmwVHl2IoCHBs0aK0T
-         3V509wfUFS3Pr5DG3KoJbphQ4Az8lTyXUq9TQ6BnyvFi17x7WPrstMSdfyMJRVZfSb
-         oGOsHsfTl8+5jQM56Y3XghV5Y70+YqeM3zUbDXZ9aqdMEupxF0BU+iVKSo/BKYZMv9
-         7yP5OtQ3pCxayhjDka2/JzcBvONSBlHwDUC9aUI5SL4/PZnYhAeoaeal7k29tMeaIH
-         TtYcJl/njFmQA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C6F56E45192;
-        Wed, 26 Oct 2022 12:50:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S233919AbiJZMyz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 08:54:55 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8981A3ECF3;
+        Wed, 26 Oct 2022 05:54:52 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4My7tz5VZdzVj4w;
+        Wed, 26 Oct 2022 20:50:03 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 26 Oct 2022 20:54:51 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 26 Oct
+ 2022 20:54:50 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <robin@protonic.nl>, <linux@rempel-privat.de>,
+        <kernel@pengutronix.de>, <socketcan@hartkopp.net>,
+        <mkl@pengutronix.de>
+Subject: [PATCH] can: j1939: transport: replace kfree_skb() with dev_kfree_skb_irq()
+Date:   Wed, 26 Oct 2022 20:53:54 +0800
+Message-ID: <20221026125354.911575-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH][Resend] rhashtable: make test actually random
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166678861481.24035.4960761110592518621.git-patchwork-notify@kernel.org>
-Date:   Wed, 26 Oct 2022 12:50:14 +0000
-References: <5894765.lOV4Wx5bFT@eto.sf-tec.de>
-In-Reply-To: <5894765.lOV4Wx5bFT@eto.sf-tec.de>
-To:     Rolf Eike Beer <eike-kernel@sf-tec.de>
-Cc:     tgraf@suug.ch, herbert@gondor.apana.org.au, fw@strlen.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason@zx2c4.com
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,29 +49,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+It is not allowed to call kfree_skb() from hardware interrupt
+context or with interrupts being disabled. So replace kfree_skb()
+with dev_kfree_skb_irq() under spin_lock_irqsave().
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ net/can/j1939/transport.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Fri, 21 Oct 2022 15:47:03 +0200 you wrote:
-> The "random rhlist add/delete operations" actually wasn't very random, as all
-> cases tested the same bit. Since the later parts of this loop depend on the
-> first case execute this unconditionally, and then test on different bits for the
-> remaining tests. While at it only request as much random bits as are actually
-> used.
-> 
-> Signed-off-by: Rolf Eike Beer <eike-kernel@sf-tec.de>
-> 
-> [...]
-
-Here is the summary with links:
-  - [Resend] rhashtable: make test actually random
-    https://git.kernel.org/netdev/net/c/c5f0a1728874
-
-You are awesome, thank you!
+diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
+index d7d86c944d76..b95fb759c49d 100644
+--- a/net/can/j1939/transport.c
++++ b/net/can/j1939/transport.c
+@@ -343,7 +343,7 @@ static void j1939_session_skb_drop_old(struct j1939_session *session)
+ 		/* drop ref taken in j1939_session_skb_queue() */
+ 		skb_unref(do_skb);
+ 
+-		kfree_skb(do_skb);
++		dev_kfree_skb_irq(do_skb);
+ 	}
+ 	spin_unlock_irqrestore(&session->skb_queue.lock, flags);
+ }
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.25.1
 
