@@ -2,127 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DFB1B60D99C
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 05:20:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B874960D99D
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 05:20:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232540AbiJZDUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Oct 2022 23:20:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51480 "EHLO
+        id S232903AbiJZDUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Oct 2022 23:20:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229875AbiJZDU2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 23:20:28 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052B331EFC;
-        Tue, 25 Oct 2022 20:20:23 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Mxv9h3HnszpVxl;
-        Wed, 26 Oct 2022 11:16:56 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 26 Oct 2022 11:20:21 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
-        <dsahern@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <Robert.Olsson@data.slu.se>,
-        <ja@ssi.bg>
-Subject: [PATCH net] ipv4: fix source address and gateway mismatch under multiple default gateways
-Date:   Wed, 26 Oct 2022 11:20:17 +0800
-Message-ID: <20221026032017.3675060-1-william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S232714AbiJZDUb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Oct 2022 23:20:31 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5429356FF
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 20:20:29 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id m6so14084170pfb.0
+        for <netdev@vger.kernel.org>; Tue, 25 Oct 2022 20:20:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=UijfZkhhOd/9Z5y9Qv0h/3Zkv1JGI7ZbtS+5gBiOpBk=;
+        b=CO5MWBJcTWDMD/v/VQiGPQEGy2l1mdNYtq7s5s3XCL7o8ohzqiTax3dbkoCRcwS7jr
+         S8768t7abubpUHSuEbHQSqJzt1PSDJjNiX6+hb9hhJx9J592qig3XnEnJqYYJ6RbRDWw
+         xa/1JlwRIoL2mkWhno1/Htah4T8sAP+c9nSRiTyxnIr1lWB/pjzRcKkqJg7tE9E24KGS
+         t/aC7xnlwgvB9gR6NoVw/5anpKnVKwiBaSOs+whmw22yrsh3RGhVPtLN7sXnH2BL5wO3
+         UECyyYf4TEOuwrL6vO12klYNVIYJ4HJGsH4XCjQF16xdQ5zqZjdK55SrpGFBp1xmCs+k
+         aNjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=UijfZkhhOd/9Z5y9Qv0h/3Zkv1JGI7ZbtS+5gBiOpBk=;
+        b=OAcAgm6ZEoyp5CGPGizoImEdxoF4JMYxb50wDDQKKhpXFapC0gRtdcX98b8GT7o/Ta
+         nfkazTbAjth9DMss6m7qAwbAvSC4WQOlA1CT6brWwLershMQpEPduUnB0rAJz6mLxXua
+         8spBpzFSQF91tH+JWeLVLMJqZPhMhxwouQi1SHqUImok1AVoZTCOFOqHCZgJne/NA7Gy
+         ZZ/9KJ992EhQ3NJv5jp6q1HHKibOXJHsB6L3XDgOOFjuR8hDh3HB2TMDE0TK+wvVgpBU
+         9N3zlraCjHUt/Ow5qT1U66UEVfV2oMHIfVre+IYFtfxPnOj8TRDLXzf8A+Ottw6uLMDx
+         N1vA==
+X-Gm-Message-State: ACrzQf2pGrSawfGLyqT0fF5qqrilBGZBo97vd3eA45Yl5wFWXRpy3PW+
+        QsgVtpIcYUA6VyIOyBA2jPwPPX3qGBQjGA==
+X-Google-Smtp-Source: AMsMyM4d3u8dLSiDCFgBCzejU6LdAMHeRIhZ7RhJdT82TqtwNqlBcPDAzomgo2q3eR/z6VZNfAow7w==
+X-Received: by 2002:a05:6a00:16c4:b0:535:890:d52 with SMTP id l4-20020a056a0016c400b0053508900d52mr42344739pfc.9.1666754429093;
+        Tue, 25 Oct 2022 20:20:29 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id u1-20020a17090a1d4100b0020dda7efe61sm318534pju.5.2022.10.25.20.20.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Oct 2022 20:20:28 -0700 (PDT)
+Date:   Tue, 25 Oct 2022 20:20:26 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Benjamin Poirier <bpoirier@nvidia.com>
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH iproute2] ip-monitor: Do not error out when
+ RTNLGRP_STATS is not available
+Message-ID: <20221025202026.68d92100@hermes.local>
+In-Reply-To: <20221025222909.1112705-1-bpoirier@nvidia.com>
+References: <20220922082854.5aa1bffe@hermes.local>
+        <20221025222909.1112705-1-bpoirier@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We found a problem that source address doesn't match with selected gateway
-under multiple default gateways. The reproducer is as following:
+On Wed, 26 Oct 2022 07:29:09 +0900
+Benjamin Poirier <bpoirier@nvidia.com> wrote:
 
-Setup in client as following:
+> Following commit 4e8a9914c4d4 ("ip-monitor: Include stats events in default
+> and "all" cases"), `ip monitor` fails to start on kernels which do not
+> contain linux.git commit 5fd0b838efac ("net: rtnetlink: Add UAPI toggle for
+> IFLA_OFFLOAD_XSTATS_L3_STATS") because the netlink group RTNLGRP_STATS
+> doesn't exist:
+> 
+>  $ ip monitor
+>  Failed to add stats group to list
+> 
+> When "stats" is not explicitly requested, change the error to a warning so
+> that `ip monitor` and `ip monitor all` continue to work on older kernels.
+> 
+> Note that the same change is not done for RTNLGRP_NEXTHOP because its value
+> is 32 and group numbers <= 32 are always supported; see the comment above
+> netlink_change_ngroups() in the kernel source. Therefore
+> NETLINK_ADD_MEMBERSHIP 32 does not error out even on kernels which do not
+> support RTNLGRP_NEXTHOP.
+> 
+> Reported-by: Stephen Hemminger <stephen@networkplumber.org>
+> Fixes: 4e8a9914c4d4 ("ip-monitor: Include stats events in default and "all" cases")
+> Signed-off-by: Benjamin Poirier <bpoirier@nvidia.com>
 
-$ ip link add link eth2 dev eth2.71 type vlan id 71
-$ ip link add link eth2 dev eth2.72 type vlan id 72
-$ ip addr add 192.168.71.41/24 dev eth2.71
-$ ip addr add 192.168.72.41/24 dev eth2.72
-$ ip link set eth2.71 up
-$ ip link set eth2.72 up
-$ route add -net default gw 192.168.71.1 dev eth2.71
-$ route add -net default gw 192.168.72.1 dev eth2.72
+There are two acceptable solutions:
+1. Ignore the error, and never print any warning.
+2. Don't ask for the stats feature with the default "ip monitor" and "ip monitor all"
 
-Add a nameserver configuration in the following file:
-$ cat /etc/resolv.conf
-nameserver 8.8.8.8
-
-Setup in peer server as following:
-
-$ ip link add link eth2 dev eth2.71 type vlan id 71
-$ ip link add link eth2 dev eth2.72 type vlan id 72
-$ ip addr add 192.168.71.1/24 dev eth2.71
-$ ip addr add 192.168.72.1/24 dev eth2.72
-$ ip link set eth2.71 up
-$ ip link set eth2.72 up
-
-Use the following command trigger DNS packet in client:
-$ ping www.baidu.com
-
-Capture packets with tcpdump in client when ping:
-$ tcpdump -i eth2 -vne
-...
-20:30:22.996044 52:54:00:20:23:a9 > 52:54:00:d2:4f:e3, ethertype 802.1Q (0x8100), length 77: vlan 71, p 0, ethertype IPv4, (tos 0x0, ttl 64, id 25407, offset 0, flags [DF], proto UDP (17), length 59)
-    192.168.72.41.42666 > 8.8.8.8.domain: 58562+ A? www.baidu.com. (31)
-...
-
-We get the problem that IPv4 saddr "192.168.72.41" do not match with
-selected VLAN device "eth2.71".
-
-In above scenario, the process does __ip_route_output_key() twice in
-ip_route_connect(), the two processes have chosen different default gateway,
-and the last choice is not the best.
-
-Add flowi4->saddr and fib_nh_common->nhc_gw.ipv4 matching consideration in
-fib_select_default() to fix that.
-
-Fixes: 19baf839ff4a ("[IPV4]: Add LC-Trie FIB lookup algorithm.")
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
----
- net/ipv4/fib_semantics.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-index e9a7f70a54df..8bd94875a009 100644
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -2046,6 +2046,7 @@ static void fib_select_default(const struct flowi4 *flp, struct fib_result *res)
- 	int order = -1, last_idx = -1;
- 	struct fib_alias *fa, *fa1 = NULL;
- 	u32 last_prio = res->fi->fib_priority;
-+	u8 prefix, max_prefix = 0;
- 	dscp_t last_dscp = 0;
- 
- 	hlist_for_each_entry_rcu(fa, fa_head, fa_list) {
-@@ -2078,6 +2079,11 @@ static void fib_select_default(const struct flowi4 *flp, struct fib_result *res)
- 		if (!nhc->nhc_gw_family || nhc->nhc_scope != RT_SCOPE_LINK)
- 			continue;
- 
-+		prefix = __ffs(flp->saddr ^ nhc->nhc_gw.ipv4);
-+		if (prefix < max_prefix)
-+			continue;
-+		max_prefix = max_t(u8, prefix, max_prefix);
-+
- 		fib_alias_accessed(fa);
- 
- 		if (!fi) {
--- 
-2.25.1
-
+Either way, it needs to be totally silent when built and run on older kernels.
