@@ -2,141 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 010F660E367
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 16:34:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E531360E36B
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 16:34:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234118AbiJZOd7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 10:33:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42484 "EHLO
+        id S234276AbiJZOep (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 10:34:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233693AbiJZOd5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 10:33:57 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16C8E1162CD
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 07:33:57 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id 187so10018972ybe.1
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 07:33:57 -0700 (PDT)
+        with ESMTP id S234078AbiJZOel (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 10:34:41 -0400
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A590E0A4
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 07:34:40 -0700 (PDT)
+Received: by mail-qt1-x82b.google.com with SMTP id g16so10005043qtu.2
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 07:34:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=O8ox5Vjpqbut2HWEJqXTMWMGhh1V8cXSr+71zLXWLVk=;
-        b=cS+OEkce0Epvs5RObk0TjuOpGoAyKkMtjZGrxaLSPfQQN/33ph2elTppkEOA2XMrdN
-         ePIAU6G0iXWCllBDfplra+KVD0B+p2oGhC2ji2m5uS/ariiOBEWvOw1S7LlTJyHZHIXE
-         sTj1RiZIOfhXsHK7//csSbIIpy8HyTmfhAJI3DlZotDjkFaLNROABB9iKjBY2PS1m2i8
-         0C1otqS5sAI2BIJ1JIvOc2arODS4CeGT68ZgrcA3oxlsQULr1JMSS8ETsPWJgBKdSXFf
-         qd/XgVhounSzbVVFcJnooihcNcxXP9VAPATTliDGZsnZRaw+oT4xCVTc4kh7cnL+TIRb
-         gNxw==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Aue1n5CdddDvk+uG+qHnNwSRlkDsHeAwN2g8IgZTjZc=;
+        b=ZpdLrONk4T6DRMobcv1MM1zbz53uAK5KlJ8hgYZAUAJvkLvs4p6HTb9Vjl7PS72DnZ
+         QkzWf0/9/43kJ5xqNpPlMdGbeMnd57IUjvglfjgrPoXwsXv/4OeF3mJ3XkqXFi0KxGS+
+         A+tMkaNxlmLYrkZuf1wEYuFoKFa9dSn1ugeKoDBO8Wrpz0ijxgm34ejLn+yrwnKvSbyb
+         Bng7/dtj+ITU0xggXXST+qFO4YQ1ft4FBxYZ9Hl9O0oY08Lp2ptdruM2T/ZIuRLLcL8J
+         MUwW7+WZlhkQP5QR6n7EqeqCK/F3CTVRRUuUUkSr014OsGYPC6/qm8Lp8HA1/6neaeWA
+         OnHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=O8ox5Vjpqbut2HWEJqXTMWMGhh1V8cXSr+71zLXWLVk=;
-        b=TDREe8B/xoJyIWF0Uxmo5/y9q+zK/rfnBalRfuTFq7Mpi/PHWMQQJRXWZbd6fcWqLT
-         hPDoKlCwhnqp0BieqjMEzIYkgaEAOjIox8GLVMhVrfqIM85sEr/P1edgICc2/uniA6ac
-         uxzUYqv4+RGr7LDE4xhoz1d2bhLTvfxpDl7GE7y113YkTehV/+/AcNyCvBywD5jYsTZv
-         hYflXzfC8bktiEc6Io40fazi6W6O1Q5ygJLVm858QjxyInwUu3hh+9g/q+jJ09u8YR4j
-         BqwVDGnbMgQrY+4fQE6FzRQKX+VDvnHy2z7giitQicX07Fl+XuqMWQDTLGGKUuwluL4S
-         Hn5w==
-X-Gm-Message-State: ACrzQf32/CMJivhnFSVlsgTCy1KdPBI2f9911UPHZpXq92l5uUYgNnML
-        VRkWTWSDtJJvSES0iaFRGXDCOwEcMR/oRgDcP5EKLA==
-X-Google-Smtp-Source: AMsMyM7Kj+ix8NfjCr41vIWWndaLObJzWDT2NZzLiwnVvhaUK3KUloDnlVr8djl6/9qLamliHAWkt3Hs78Zc6WBwqqQ=
-X-Received: by 2002:a25:7a01:0:b0:6b0:820:dd44 with SMTP id
- v1-20020a257a01000000b006b00820dd44mr36720991ybc.387.1666794836054; Wed, 26
- Oct 2022 07:33:56 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Aue1n5CdddDvk+uG+qHnNwSRlkDsHeAwN2g8IgZTjZc=;
+        b=RgBw8JEXFmkbET5RjlPMhJeMYKzw6WCttsK+ncxMWAAq5qc80jRdxB1w5xOo98bLHS
+         0Wwbk9V4928llvHKe9vcUdnWNs4L9gRWb6IeV+mDhN5+mZk5YN/dG75qbLsDsV8UNjWD
+         BIF5HHnO0VdOyIpc9zBkat4KxhwHHpLSDaMm+kWMu1fJK66BUfUIH06OTv9MpwuPcVs8
+         xJUuWaF5X3XgQFzfGVl56Yc7hArghHCZu/Jx8ck0cKNhHAsoTC5uppdPQmZktPDprNar
+         CGsvKhpUeMQn8Q7+afnqtnQScK4m10AT7LZm/G0yw2W0HkUfrngqv06g1Bz0qmnOAj1i
+         XqeQ==
+X-Gm-Message-State: ACrzQf1WJvfzgVtt1+5QQ2gcxzmHE29q2dTwuN+1kTuORP17yrRxXQIZ
+        ziPwmLXZt4c09VvGruzbka3kOQ==
+X-Google-Smtp-Source: AMsMyM7c1sgYx5YIZenvo5DDl/wD/h249LQ6L6+sQqdnyE+pVe7N1cKfoDBZBVAAPrt8rMe2PLHswA==
+X-Received: by 2002:ac8:5849:0:b0:39a:8e35:1bfa with SMTP id h9-20020ac85849000000b0039a8e351bfamr36305054qth.573.1666794879194;
+        Wed, 26 Oct 2022 07:34:39 -0700 (PDT)
+Received: from [192.168.1.11] ([64.57.193.93])
+        by smtp.gmail.com with ESMTPSA id c27-20020a05620a269b00b006ee7923c187sm4013390qkp.42.2022.10.26.07.34.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Oct 2022 07:34:38 -0700 (PDT)
+Message-ID: <7ceca209-9361-e811-8fe0-282639f9e967@linaro.org>
+Date:   Wed, 26 Oct 2022 10:34:36 -0400
 MIME-Version: 1.0
-References: <20221026151558.4165020-1-luwei32@huawei.com> <CANn89iJQn5ET3U9cYeiT0ijTkab2tRDBB1YP3Y6oELVq0dj6Zw@mail.gmail.com>
-In-Reply-To: <CANn89iJQn5ET3U9cYeiT0ijTkab2tRDBB1YP3Y6oELVq0dj6Zw@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 26 Oct 2022 07:33:45 -0700
-Message-ID: <CANn89iLcnPAzLZFiCazM_y==33+Zhg=3bGY70ev=5YwDoZw-Vg@mail.gmail.com>
-Subject: Re: [PATCH net] tcp: reset tp->sacked_out when sack is enabled
-To:     Lu Wei <luwei32@huawei.com>, "Denis V. Lunev" <den@openvz.org>
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, pabeni@redhat.com, xemul@parallels.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [PATCH 1/1] dt-bindings: net: snps,dwmac: Document queue config
+ subnodes
+Content-Language: en-US
+To:     Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com
+References: <20221021171055.85888-1-sebastian.reichel@collabora.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221021171055.85888-1-sebastian.reichel@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 26, 2022 at 7:30 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Wed, Oct 26, 2022 at 7:12 AM Lu Wei <luwei32@huawei.com> wrote:
-> >
-> > The meaning of tp->sacked_out depends on whether sack is enabled
-> > or not. If setsockopt is called to enable sack_ok via
-> > tcp_repair_options_est(), tp->sacked_out should be cleared, or it
-> > will trigger warning in tcp_verify_left_out as follows:
-> >
-> > ============================================
-> > WARNING: CPU: 8 PID: 0 at net/ipv4/tcp_input.c:2132
-> > tcp_timeout_mark_lost+0x154/0x160
-> > tcp_enter_loss+0x2b/0x290
-> > tcp_retransmit_timer+0x50b/0x640
-> > tcp_write_timer_handler+0x1c8/0x340
-> > tcp_write_timer+0xe5/0x140
-> > call_timer_fn+0x3a/0x1b0
-> > __run_timers.part.0+0x1bf/0x2d0
-> > run_timer_softirq+0x43/0xb0
-> > __do_softirq+0xfd/0x373
-> > __irq_exit_rcu+0xf6/0x140
-> >
-> > This warning occurs in several steps:
-> > Step1. If sack is not enabled, when server receives dup-ack,
-> >        it calls tcp_add_reno_sack() to increase tp->sacked_out.
-> >
-> > Step2. Setsockopt() is called to enable sack
-> >
-> > Step3. The retransmit timer expires, it calls tcp_timeout_mark_lost()
-> >        to increase tp->lost_out but not clear tp->sacked_out because
-> >        sack is enabled and tcp_is_reno() is false.
-> >
-> > So tp->left_out is increased repeatly in Step1 and Step3 and it is
-> > greater than tp->packets_out and trigger the warning. In function
-> > tcp_timeout_mark_lost(), tp->sacked_out will be cleared if Step2 not
-> > happen and the warning will not be triggered. So this patch clears
-> > tp->sacked_out in tcp_repair_options_est().
-> >
-> > Fixes: b139ba4e90dc ("tcp: Repair connection-time negotiated parameters")
-> > Signed-off-by: Lu Wei <luwei32@huawei.com>
-> > ---
-> >  net/ipv4/tcp.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> >
-> > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> > index ef14efa1fb70..188d5c0e440f 100644
-> > --- a/net/ipv4/tcp.c
-> > +++ b/net/ipv4/tcp.c
-> > @@ -3282,6 +3282,9 @@ static int tcp_repair_options_est(struct sock *sk, sockptr_t optbuf,
-> >                         if (opt.opt_val != 0)
-> >                                 return -EINVAL;
-> >
-> > +                       if (tcp_is_reno(tp))
-> > +                               tp->sacked_out = 0;
-> > +
-> >                         tp->rx_opt.sack_ok |= TCP_SACK_SEEN;
-> >                         break;
-> >                 case TCPOPT_TIMESTAMP:
-> > --
-> > 2.31.1
-> >
->
-> Hmm, I am not sure this is the right fix.
->
-> Probably TCP_REPAIR_OPTIONS should not be allowed if data has already been sent.
->
-> Pavel, what do you think ?
+On 21/10/2022 13:10, Sebastian Reichel wrote:
+> The queue configuration is referenced by snps,mtl-rx-config and
+> snps,mtl-tx-config. Most in-tree DTs put the referenced object
+> as child node of the dwmac node.
+> 
+> This adds proper description for this setup, which has the
+> advantage of properly making sure only known properties are
+> used.
+> 
+> Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+> ---
+>  .../devicetree/bindings/net/snps,dwmac.yaml   | 154 ++++++++++++------
+>  1 file changed, 108 insertions(+), 46 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> index 13b984076af5..0bf6112cec2f 100644
+> --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> @@ -167,56 +167,118 @@ properties:
+>    snps,mtl-rx-config:
+>      $ref: /schemas/types.yaml#/definitions/phandle
+>      description:
+> -      Multiple RX Queues parameters. Phandle to a node that can
+> -      contain the following properties
+> -        * snps,rx-queues-to-use, number of RX queues to be used in the
+> -          driver
+> -        * Choose one of these RX scheduling algorithms
+> -          * snps,rx-sched-sp, Strict priority
+> -          * snps,rx-sched-wsp, Weighted Strict priority
+> -        * For each RX queue
+> -          * Choose one of these modes
+> -            * snps,dcb-algorithm, Queue to be enabled as DCB
+> -            * snps,avb-algorithm, Queue to be enabled as AVB
+> -          * snps,map-to-dma-channel, Channel to map
+> -          * Specifiy specific packet routing
+> -            * snps,route-avcp, AV Untagged Control packets
+> -            * snps,route-ptp, PTP Packets
+> -            * snps,route-dcbcp, DCB Control Packets
+> -            * snps,route-up, Untagged Packets
+> -            * snps,route-multi-broad, Multicast & Broadcast Packets
+> -          * snps,priority, bitmask of the tagged frames priorities assigned to
+> -            the queue
+> +      Multiple RX Queues parameters. Phandle to a node that
+> +      implements the 'rx-queues-config' object described in
+> +      this binding.
+> +
+> +  rx-queues-config:
+> +    type: object
+> +    properties:
+> +      snps,rx-queues-to-use:
+> +        $ref: /schemas/types.yaml#/definitions/uint32
+> +        description: number of RX queues to be used in the driver
+> +      snps,rx-sched-sp:
+> +        type: boolean
+> +        description: Strict priority
+> +      snps,rx-sched-wsp:
+> +        type: boolean
+> +        description: Weighted Strict priority
+> +    patternProperties:
+> +      "^queue[0-9]$":
+> +        description: Each subnode represents a queue.
+> +        type: object
+> +        properties:
+> +          snps,dcb-algorithm:
+> +            type: boolean
+> +            description: Queue to be enabled as DCB
+> +          snps,avb-algorithm:
+> +            type: boolean
+> +            description: Queue to be enabled as AVB
+> +          snps,map-to-dma-channel:
+> +            $ref: /schemas/types.yaml#/definitions/uint32
+> +            description: DMA channel id to map
+> +          snps,route-avcp:
+> +            type: boolean
+> +            description: AV Untagged Control packets
+> +          snps,route-ptp:
+> +            type: boolean
+> +            description: PTP Packets
+> +          snps,route-dcbcp:
+> +            type: boolean
+> +            description: DCB Control Packets
+> +          snps,route-up:
+> +            type: boolean
+> +            description: Untagged Packets
+> +          snps,route-multi-broad:
+> +            type: boolean
+> +            description: Multicast & Broadcast Packets
+> +          snps,priority:
+> +            $ref: /schemas/types.yaml#/definitions/uint32
+> +            description: Bitmask of the tagged frames priorities assigned to the queue
 
-Routing to Denis V. Lunev <den@openvz.org>, because Pavel's address no
-longer works.
+If we are not going to fix it, at least let's improve the constraints,
+so add allOf:if:then here (with proper indentation) which disallows
+mixing mutually exclusive properties.
+Here's example:
+https://elixir.bootlin.com/linux/v5.17-rc2/source/Documentation/devicetree/bindings/mfd/samsung,s5m8767.yaml#L155
 
-Thanks !
+Best regards,
+Krzysztof
+
