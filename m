@@ -2,104 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DAFDA60DCA7
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 09:58:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C36A360DD0B
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 10:28:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233094AbiJZH6T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 03:58:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59434 "EHLO
+        id S233295AbiJZI2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 04:28:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232935AbiJZH6S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 03:58:18 -0400
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 456A2A98C7;
-        Wed, 26 Oct 2022 00:58:17 -0700 (PDT)
-Received: from [10.0.252.2] (unknown [92.79.119.98])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id BABE5C025B;
-        Wed, 26 Oct 2022 09:58:15 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1666771095;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DAHH6ooeSYjB8S/Chqr94kL7w8pMRqj/Lx1u8nNDfjE=;
-        b=XrXzJch8ujcFDz1/PPl3Esub/rn7dmzVcFO739g0V8hsiHoydHGsmTPVG6r1TKtlwGW68M
-        SPk0Mf1l3jbRfL1ml1VM2Z6scZGdDciHk+BmPtWDR5sjIBjgqGSYFuTm1bGOx24+65J0Gh
-        9bjLjpuWw4ii5sPrl4cXnSoZfb8f/zQH/xbZo8S+MakBzq3DbdkyuPCfViuNfADgtOVFGs
-        0m9affo58VA34qSlfTvw3Rx+KDHDz04+CiAu4R6GAjIq4qYUOAPptDzpyh8MeFGa56MNAi
-        m1iZbev1+m53yu5avkDyAMa0+kV2YdjGhs0AdoZ7+34xtAsgfcmkW+aucU3MAA==
-Message-ID: <6ff97af7-05ed-8659-ab25-63cd3591217c@datenfreihafen.org>
-Date:   Wed, 26 Oct 2022 09:58:15 +0200
+        with ESMTP id S232589AbiJZI2q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 04:28:46 -0400
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4028CC4DA4
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 01:28:45 -0700 (PDT)
+Received: by mail-qk1-x734.google.com with SMTP id j21so10001781qkk.9
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 01:28:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=MLSwOWFY8u6E5fLHUkZmlThgK4Uo0S+g5manfostVQc=;
+        b=XAeQFLugcon26no+DfmTPEV+PN8pOrRxNSy3aO2qp4Py8CVjyzlVTGflPAruI7kNLz
+         eR2p/8GfFeZB+zd7NrpLCLAhkDL0zobCJAECug7+u2tI09f806IGtwLbR//SpCe2WbB/
+         TyZ6FGQAY95ScGkWqjyo4FRx4JJwLynCa7f/9HIeiGe87mH0CHI2OroFs/ui5uAYFYWS
+         MvNDWQS7G+1ZEInGJDg2RLEB5DB3cEIZBsp7bqqvEMY+xa3QGAQriYQUX4QVSxnmnTK3
+         ng2a4hpcgtrg7AiE/Xn5Mts5piMZ2uiydOPi5N2wt5CBusN40OkNWRomaG12VrMS62dH
+         UmBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=MLSwOWFY8u6E5fLHUkZmlThgK4Uo0S+g5manfostVQc=;
+        b=7eFhNfp8lEQU12wNHUH4goqjL2KEi0jNsMH0RSfg9HAUPiAvzWKI1JxB3iB91lFQXH
+         PAKvCgxByemFa3YlS9vY7YthJLCm451tujFtiqI1wnpGDs6DribBK8aT8ok0BI+6NSGP
+         xjNt1Ht63C1j95g/SUtwJISDBsjY3tmq2YoFYDuaiHjfbiQgKLH8iQ65yg5o0JxzhJxy
+         eL70A2CjRdAeMT1Ou+dBKTDw6RSibIU/j11kEVoNuDPRyMBr9I7PQvGdAPBt6Of3wq9+
+         XaazvmgqkhQsxdo3HbmGN0eUrxWpuEAgDZkJWz/nwhAtCNI4IuNsqgmlkC1qug9yttEk
+         /qnQ==
+X-Gm-Message-State: ACrzQf38HKJrPsM784vZE4K1Xay+uQ4cXr6+Lig3NWb+5uKVrgynavw7
+        kpBoOLKpJZmB1gRiHHY9KAY8Og+2wfphjvZBdr8=
+X-Google-Smtp-Source: AMsMyM7Jw8Jfuk6f78c6WHth+TCmxkqeF/ei8KTlOn3wA3MlETNwu9z1dGxbXsXlqwDN4B4aHkvJSgXzHXTGKTpuC6c=
+X-Received: by 2002:a05:620a:f11:b0:6cf:be4e:e953 with SMTP id
+ v17-20020a05620a0f1100b006cfbe4ee953mr29846206qkl.437.1666772924405; Wed, 26
+ Oct 2022 01:28:44 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: pull-request: ieee802154-next 2022-10-25
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, linux-wpan@vger.kernel.org,
-        alex.aring@gmail.com, netdev@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org
-References: <20221025102029.534025-1-stefan@datenfreihafen.org>
- <20221025195920.68849bdd@kernel.org>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <20221025195920.68849bdd@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20221025135958.6242-1-aaptel@nvidia.com> <20221025160039.GA26372@lst.de>
+In-Reply-To: <20221025160039.GA26372@lst.de>
+From:   Or Gerlitz <gerlitz.or@gmail.com>
+Date:   Wed, 26 Oct 2022 11:28:35 +0300
+Message-ID: <CAJ3xEMiwkNsqOJy-0m9r3MNn+x-To00Pi7a4TifSJYPJbv=pYQ@mail.gmail.com>
+Subject: Re: [PATCH v7 00/23] nvme-tcp receive offloads
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Aurelien Aptel <aaptel@nvidia.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, saeedm@nvidia.com, tariqt@nvidia.com,
+        leon@kernel.org, linux-nvme@lists.infradead.org, sagi@grimberg.me,
+        kbusch@kernel.org, axboe@fb.com, chaitanyak@nvidia.com,
+        smalin@nvidia.com, ogerlitz@nvidia.com, yorayz@nvidia.com,
+        borisp@nvidia.com, aurelien.aptel@gmail.com, malin1024@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+On Tue, Oct 25, 2022 at 7:04 PM Christoph Hellwig <hch@lst.de> wrote:
+>
+> On Tue, Oct 25, 2022 at 04:59:35PM +0300, Aurelien Aptel wrote:
+> > The feature will also be presented in netdev this week
+> > https://netdevconf.info/0x16/session.html?NVMeTCP-Offload-%E2%80%93-Implementation-and-Performance-Gains
+>
+> That seems to miss slides.
 
-On 26.10.22 04:59, Jakub Kicinski wrote:
-> On Tue, 25 Oct 2022 12:20:29 +0200 Stefan Schmidt wrote:
->> Hello Dave, Jakub.
->> 
->> An update from ieee802154 for *net-next*
->> 
->> One of the biggest cycles for ieee802154 in a long time. We are
->> landing the first pieces of a big enhancements in managing PAN's.
->> We might have another pull request ready for this cycle later on,
->> but I want to get this one out first.
->> 
->> Miquel Raynal added support for sending frames synchronously as a
->> dependency to handle MLME commands. Also introducing more filtering
->> levels to match with the needs of a device when scanning or
->> operating as a pan coordinator. To support development and testing
->> the hwsim driver for ieee802154 was also enhanced for the new
->> filtering levels and to update the PIB attributes.
->> 
->> Alexander Aring fixed quite a few bugs spotted during reviewing
->> changes. He also added support for TRAC in the atusb driver to have
->> better failure handling if the firmware provides the needed
->> information.
->> 
->> Jilin Yuan fixed a comment with a repeated word in it.
-> 
-> nit: would you mind sorting these out before we pull ?
-> 
-> net/mac802154/util.c:27: warning: Function parameter or member 'hw'
-> not described in 'ieee802154_wake_queue' net/mac802154/util.c:27:
-> warning: Excess function parameter 'local' description in
-> 'ieee802154_wake_queue' net/mac802154/util.c:53: warning: Function
-> parameter or member 'hw' not described in 'ieee802154_stop_queue' 
-> net/mac802154/util.c:53: warning: Excess function parameter 'local'
-> description in 'ieee802154_stop_queue'
+to be presented on Friday this week.. AFAIK slides are uploaded little later
 
-I certainly can fix this up. Sorry for missing it initially.
-
-Pushed a fix and sent a new pull request as v2 with today's date.
-
-regards
-Stefan Schmidt
+The design/principles were presented last year
+https://netdevconf.info/0x15/session.html?Autonomous-NVMe-TCP-offload
