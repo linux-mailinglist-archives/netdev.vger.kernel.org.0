@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C442C60DC7D
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 09:51:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF2B360DC82
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 09:51:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233353AbiJZHvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 03:51:24 -0400
+        id S233101AbiJZHv2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 03:51:28 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233322AbiJZHvV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 03:51:21 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89BC272682
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 00:51:10 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id d24so13281635pls.4
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 00:51:10 -0700 (PDT)
+        with ESMTP id S232931AbiJZHvX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 03:51:23 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AF83900F9
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 00:51:17 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id m6-20020a17090a5a4600b00212f8dffec9so1455571pji.0
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 00:51:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sipanda-io.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=tixdFHR45z7pEuUePaQUniCdAkz42QDR32YoI0elqUM=;
-        b=HVHtkvNN1eC3kBZkWeSHqc9Z128sRXaGZMqkMvPntPD1xyhQZNgv1Vf5nYEjd8+WLl
-         ctV9+ghQt2sx9mBweil+UBw3y6dLIWsTysqduQiQDjlhGiSYs24jqRk/6Dva2C539HEF
-         CsD5Qhnhatri5fbNnfiO2ei7RoVirscZi38JniJ31qXOfCT7Qm6Irw3z5Z6Fbq5xF0vQ
-         HrlDb4g4qQ1q+vzT51QRzHbRMNdvMYDWHQqUFh5hUk3gfR38l2wQ1f8XzRNhXF9KE+95
-         jRX1IIFmJ/KGxSwZpQQxDfwTIpqEzcBdUHwsiY0VlPBK9yz44uU9TGg//YsecZRBnXQS
-         DL0g==
+        bh=Huud0eKt78gVwpD9WtoxgjZuklRbGsl/PXu3/W9jWhQ=;
+        b=DitWF3M64pK51kRetnMZCLvNLu7hnNJQX753KmD3ataCeRolncIVx/v7xIAMA/1K9j
+         zYQmmZS84fj/pxg8nhWq7RQG6Eeo41SDomW3XY2m4vMbLc3Ul1tgF/fqn1Tgh1LBc0o/
+         1bLTqrTCPcI3e/UM6byULmvDYxEz9gyTljVg9ZVOdzjmbf0xkbhclkwjX5whZh9C2f5e
+         yZWqmquphblYVepuKglpNN1yD6o6IHGihsnE5vaEhZqZUaUG916JLR/SLMgNJqBtridp
+         /tbsamr1fatI6J55CdK1X5SIsQXHJq6M1Sm6p+WQgCsdUGhe/6rVT1UGbOD/YDufoCl4
+         cpEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=tixdFHR45z7pEuUePaQUniCdAkz42QDR32YoI0elqUM=;
-        b=J4MUHTiWwJ5BHP6X6yIsIYbuWWACtFWgqxchUsAW2/Vq/O80UFx2gXLEBu8Qw8cmky
-         M/bT/BuJbpTD0m5ECPe3Qyf9JFAX4LiZ4cF1DMdX2ki414B70Ax3vVcVMZ5tvnVid4HV
-         PS+KlRCLzqMOzCFAO6BIokqODci2GYGvjVLqrI+s7uBlXixizI9icg09RBYIChJnpi3B
-         sV6SjwVVdcaCMbRjWVGRg1ndfIOE6Caui9L2A+I5+LShGEKt1ieb5+czUUNAdzcd07nI
-         2ROj+1XQOVuKKbl2ubFCg7+126cPMIoUqqeMw6D9ou2Qn8wXnhNruemwUUPyjVzsCN3U
-         kluQ==
-X-Gm-Message-State: ACrzQf3slzGDlHoDk7hMYKAwllHn2qqBJia37xNmvqwcrqnfpNi1zbIZ
-        DAwT3XR7e0hLHshGW6D43RQeb+zCRwDGcA==
-X-Google-Smtp-Source: AMsMyM7u5MqXH/bg2vRWHypy25q8vRC/uMgaX00pW6ZCvdd3QfgJLSXyAJnE+8gkvfvHO0mLBV3LfQ==
-X-Received: by 2002:a17:90b:4d84:b0:212:c78f:8d6e with SMTP id oj4-20020a17090b4d8400b00212c78f8d6emr2755971pjb.201.1666770668430;
-        Wed, 26 Oct 2022 00:51:08 -0700 (PDT)
+        bh=Huud0eKt78gVwpD9WtoxgjZuklRbGsl/PXu3/W9jWhQ=;
+        b=ixpnKn6Z/Yh7JdhsquhlTQZqSkBaMILRj3yHtaeA4nBl6lslMd8OPllLh0ezWtPEK5
+         7l/MVSp8MsqssW/JIlgp0175DHDFx38DEKCXHcX/6LZcZ/dePp0jEoIMPJSvC0/kuOcw
+         ftTbWNHDCmoWafcEKs9tGbB60dpLEqDod6WzwIfVAK2Nha+BvWYn0kLVBv2/inz5gdQ5
+         thNtHK8EJGkMETx8R44wkbgYFqAOXknY2m9KZiRk11R6/vwGyViBdEdp99IxL9629qS6
+         B3SL0IXaEtk9QKWl4E2cM18yV1wI1WdxBiGb8vVyllmyFUjJ80Ctj3lsRY9rDyXTQyPQ
+         9jZQ==
+X-Gm-Message-State: ACrzQf2GtCbRqPmGZ5vkWRGOpgHekF4JD4Hrs+8lyJH7TT2+EMiRuVip
+        Z/ruRdW8ok0Ox7E+hb8gikvZl36HldiR2w==
+X-Google-Smtp-Source: AMsMyM6ndqK292DnEUMDZiyiaWULi95sCPKphIsfxYXm3adXXgp5fuqNnW78ucnMnHQDdsJ3mCMH0A==
+X-Received: by 2002:a17:90a:cb96:b0:213:1dc2:b1de with SMTP id a22-20020a17090acb9600b002131dc2b1demr2739301pju.21.1666770673631;
+        Wed, 26 Oct 2022 00:51:13 -0700 (PDT)
 Received: from linkdev2.localdomain ([49.37.37.214])
-        by smtp.gmail.com with ESMTPSA id w20-20020a170902ca1400b001714e7608fdsm2310913pld.256.2022.10.26.00.51.04
+        by smtp.gmail.com with ESMTPSA id w20-20020a170902ca1400b001714e7608fdsm2310913pld.256.2022.10.26.00.51.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Oct 2022 00:51:07 -0700 (PDT)
+        Wed, 26 Oct 2022 00:51:12 -0700 (PDT)
 From:   Pratyush Kumar Khan <pratyush@sipanda.io>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     tom@sipanda.io, abuduri@ventanamicro.com, chethan@sipanda.io,
-        Pratyush <pratyush@sipanda.io>
-Subject: [RFC PATCH 1/4] kParser: Add new kParser KMOD
-Date:   Wed, 26 Oct 2022 13:20:51 +0530
-Message-Id: <20221026075054.119069-2-pratyush@sipanda.io>
+        Pratyush Kumar Khan <pratyush@sipanda.io>
+Subject: [RFC PATCH 2/4] docs: networking: add doc entry for kParser
+Date:   Wed, 26 Oct 2022 13:20:52 +0530
+Message-Id: <20221026075054.119069-3-pratyush@sipanda.io>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221026075054.119069-1-pratyush@sipanda.io>
 References: <20221026075054.119069-1-pratyush@sipanda.io>
@@ -71,9485 +71,2369 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pratyush <pratyush@sipanda.io>
-
-kParser, or the "Kernel Parser" is a highly programmable, high
-performance protocol parser in the Linux network stack. An instance
-of kParser is programmed by "ip parser ..." commands in iproute2.
-
-The kParser is dynamically programmable and script-able. For instance,
-to add new protocol to parse in an existing instance of kparser, CLI
-commands are executed -- there is no need to write user code or perform
-a recompile of the parser.
-
-A parser is programmed through the "ip parser" CLI, and common netlink
-interfaces are used to instantiate a parser in the kernel. A parser is
-defined by a parse graph which is implemented by kparser as a set of
-parse node definitions and protocol tables that describe the linkages
-between the nodes. Per its program, a kparser instance will report
-metadata about the packet and various protocols layers of the packet.
-Metadata is any information about the packet including header offsets
-and value of fields of interest to the programmer; the later is
-analogous to the flow information extracted by flow dissector (the
-primary difference being that kParser can extract arbitrary protocol
-fields and report on fields in multiple layers of encapsulation).
-
-kParser is called in the kernel by the kparser_parse and
-__kparser_parse functions. The output returned is a set metadata about
-the parsed packet. Metadata is any information that the parser is
-programmed to report about a packet (e.g. offsets of various headers,
-extracted IP addresses and ports, etc.). A pointer to a metadata buffer
-is input to kparser_parse, kparser will fill in the metadata as per
-the programming of the parser. Note that the structure of the metadata
-buffer is determined by the programmer, when the buffer is returned
-the caller can cast the buffer to the data structure for that parser.
-
-The iproute2 CLI for the kParser works in tandem with the KMOD kParser
-to configure any number of parser instances. If kParser KMOD is not
-statically compiled with Linux kernel, it needs to be additionally enabled,
-compiled and loaded to use the iproute2 CLI for kParser. Please note that
-the kParser CLI is scriptable meaning the parser configuration in the
-kernel can by dynamically updated without need to recompile any code or
-reload kernel module.
-
-Change description:
-Global header file include/net/kparser.h exports the kParser datapath
-KMOD APIs. The APIs are:
-
-/* kparser_parse(): Function to parse a skb using a parser instance key.
- *
- * skb: input packet skb
- * kparser_key: key of the associated kParser parser object which must
- *     be already created via CLI.
- * _metadata: User provided metadata buffer. It must be same as
- *
- * configured metadata objects in CLI.
- * metadata_len: Total length of the user provided metadata buffer.
- *
- * return: kParser error code as defined in include/uapi/linux/kparser.h
- */
-        int kparser_parse(struct sk_buff *skb,
-                          const struct kparser_hkey *kparser_key,
-                          void *_metadata, size_t metadata_len);
-
-/* __kparser_parse(): Function to parse a void * packet buffer using a
- * parser instance key.
- *
- * parser: Non NULL kparser_get_parser() returned and cached opaque
- *     pointer referencing a valid parser instance.
- * _hdr: input packet buffer
- * parse_len: length of input packet buffer
- * _metadata: User provided metadata buffer. It must be same as
- *     configured metadata objects in CLI.
- * metadata_len: Total length of the user provided metadata buffer.
- *
- * return: kParser error code as defined in include/uapi/linux/kparser.h
- */
-        int __kparser_parse(const void *parser, void *_hdr,
-                            size_t parse_len, void *_metadata,
-                            size_t metadata_len);
-
-/* kparser_get_parser(): Function to get an opaque reference of a parser
- * instance and mark it immutable so that while actively using, it can
- * not be deleted. The parser is identified by a key. It marks  the
- * associated parser and whole parse tree immutable so that when it is
- * locked, it can not be deleted.
- *
- * kparser_key: key of the associated kParser parser object which must
- *     be already created via CLI.
- *
- * return: NULL if key not found, else an opaque parser instance pointer
- *     which can be used in the following APIs 3 and 4.
- *
- * NOTE: This call makes the whole parser tree immutable. If caller
- * calls this more than once, later caller will need to release the same
- * parser exactly that many times using the API kparser_put_parser().
- */
-        const void *kparser_get_parser(const struct kparser_hkey
-                                       *kparser_key);
-
-/* kparser_put_parser(): Function to return and undo the read only
- * operation done previously by kparser_get_parser(). The parser
- * instance is identified by using a previously obtained opaque parser
- * pointer via API kparser_get_parser(). This undo the immutable
- * change so that any component of the whole parse tree can be deleted
- * again.
- *
- * parser: void *, Non NULL opaque pointer which was previously returned
- *     by kparser_get_parser(). Caller can use cached opaque pointer as
- *     long as system does not restart and kparser.ko is not reloaded.
- *
- * return: boolean, true if put operation is success, else false.
- *
- * NOTE: This call makes the whole parser tree deletable for the very
- * last call.
- */
-        bool kparser_put_parser(const void *parser);
-
-Global header file include/uapi/linux/kparser.h exports the shared data
-structures and constants with user space, i.e. ip
-
-kParser KMOD is integrated with Linux kernel using changes in
-net/Kconfig and net/Makefile
-
-net/kparser/kparser.h is KMOD kParser's private header file.
-
-net/kparser/kparser_main.c is kParser KMOD's main module source file
-with netlink opcode handlers
-
-net/kparser/kparser_cmds.c implements kParser KMOD-CLI management API
-layer
-
-net/kparser/kparser_cmds_ops.c implements kParser KMOD-CLI debug dump
-operations
-
-net/kparser/kparser_cmds_ops.c implements kParser KMOD-CLI netlink
-request operations handlers
-
-net/kparser/kparser_condexpr.h is kParser conditionals helper and
-structures header file
-
-net/kparser/kparser_datapath.c kParser main datapath source file for
-parsing logic - data path
-
-net/kparser/kparser_metaextract.h implements kParser metadata helper
-and structures
-
-net/kparser/kparser_types.h implements kParser private datapath
-configuration structures
-
-Example CLI: Five tuple parser with header offsets
-==============================================
-
-Now we can refer to an example kParser configuration which can parse
-simple IPv4 five tuples, i.e. IPv4 header offset, offset of IPv4 addresses,
-IPv4 protocol number, L4 header offset (i.e. TCP/UDP) and L4 port numbers.
-The sample ip commands are:
-
-ip parser create md-rule name md.iphdr_offset type offset md-off 0
-ip parser create md-rule name md.ipaddrs src-hdr-off 12 length 8 md-off 4
-ip parser create md-rule name md.l4_hdr.offset type offset md-off 2
-ip parser create md-rule name md.ports src-hdr-off 0 length 4 md-off 12 \
-	isendianneeded true
-ip parser create node name node.ports hdr.minlen 4	\
-	md-rule md.l4_hdr.offset md-rule md.ports
-ip parser create node name node.ipv4 hdr.minlen 20 hdr.len-field-off 0 \
-	hdr.len-field-len 1 \
-hdr.len-field-mask 0x0f hdr.len-field-multiplier 4 nxt.field-off 9 \
-	nxt.field-len 1 nxt.table-ent 6:node.ports \
-	nxt.table-ent 17:node.ports md-rule md.iphdr_offset \
-	md-rule md.ipaddrs
-ip parser create node name node.ether hdr.minlen 14 nxt.offset 12 \
-	nxt.length 2 nxt.table-ent 0x800:node.ipv4
-ip parser create parser name tuple_parser rootnode node.ether \
-	base-metametadata-size 14
-
-This sample parser will parse Ethernet/IPv4 to UDP and TCP, report the
-offsets of the innermost IP and TCP or UDP header, extract IPv4
-addresses and UDP or TCP ports (into a frame).
+Adding new docs entry for new linux networking kernel module named kParser
 
 Signed-off-by: Pratyush Kumar Khan <pratyush@sipanda.io>
 ---
- include/net/kparser.h               |   90 +
- include/uapi/linux/kparser.h        |  678 +++++
- net/Kconfig                         |    9 +
- net/Makefile                        |    1 +
- net/kparser/Makefile                |   10 +
- net/kparser/kparser.h               |  391 +++
- net/kparser/kparser_cmds.c          |  898 +++++++
- net/kparser/kparser_cmds_dump_ops.c |  532 ++++
- net/kparser/kparser_cmds_ops.c      | 3621 +++++++++++++++++++++++++++
- net/kparser/kparser_condexpr.h      |   52 +
- net/kparser/kparser_datapath.c      | 1094 ++++++++
- net/kparser/kparser_main.c          |  325 +++
- net/kparser/kparser_metaextract.h   |  896 +++++++
- net/kparser/kparser_types.h         |  586 +++++
- 14 files changed, 9183 insertions(+)
- create mode 100644 include/net/kparser.h
- create mode 100644 include/uapi/linux/kparser.h
- create mode 100644 net/kparser/Makefile
- create mode 100644 net/kparser/kparser.h
- create mode 100644 net/kparser/kparser_cmds.c
- create mode 100644 net/kparser/kparser_cmds_dump_ops.c
- create mode 100644 net/kparser/kparser_cmds_ops.c
- create mode 100644 net/kparser/kparser_condexpr.h
- create mode 100644 net/kparser/kparser_datapath.c
- create mode 100644 net/kparser/kparser_main.c
- create mode 100644 net/kparser/kparser_metaextract.h
- create mode 100644 net/kparser/kparser_types.h
+ Documentation/networking/kParser.rst          |  302 +++
+ .../networking/parse_graph_example.svg        | 2039 +++++++++++++++++
+ 2 files changed, 2341 insertions(+)
+ create mode 100644 Documentation/networking/kParser.rst
+ create mode 100644 Documentation/networking/parse_graph_example.svg
 
-diff --git a/include/net/kparser.h b/include/net/kparser.h
+diff --git a/Documentation/networking/kParser.rst b/Documentation/networking/kParser.rst
 new file mode 100644
-index 000000000000..3ee3bd0226fa
+index 000000000000..ab4315d0ca8a
 --- /dev/null
-+++ b/include/net/kparser.h
-@@ -0,0 +1,90 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/* Copyright (c) 2022, SiPanda Inc.
-+ *
-+ * kparser.h - kParser global net header file
-+ *
-+ * Authors:     Pratyush Kumar Khan <pratyush@sipanda.io>
-+ */
-+
-+#ifndef _NET_KPARSER_H
-+#define _NET_KPARSER_H
-+
-+#include <linux/kparser.h>
-+#include <linux/skbuff.h>
-+
-+/* The kParser data path API can consume max 512 bytes */
-+#define KPARSER_MAX_SKB_PACKET_LEN	512
-+
-+/* kparser_parse(): Function to parse a skb using a parser instance key.
-+ *
-+ * skb: input packet skb
-+ * kparser_key: key of the associated kParser parser object which must be
-+ *              already created via CLI.
-+ * _metadata: User provided metadata buffer. It must be same as configured
-+ *            metadata objects in CLI.
-+ * metadata_len: Total length of the user provided metadata buffer.
-+ *
-+ * return: kParser error code as defined in include/uapi/linux/kparser.h
-+ */
-+extern int kparser_parse(struct sk_buff *skb,
-+			 const struct kparser_hkey *kparser_key,
-+			 void *_metadata, size_t metadata_len);
-+
-+/* __kparser_parse(): Function to parse a void * packet buffer using a parser instance key.
-+ *
-+ * parser: Non NULL kparser_get_parser() returned and cached opaque pointer
-+ * referencing a valid parser instance.
-+ * _hdr: input packet buffer
-+ * parse_len: length of input packet buffer
-+ * _metadata: User provided metadata buffer. It must be same as configured
-+ * metadata objects in CLI.
-+ * metadata_len: Total length of the user provided metadata buffer.
-+ *
-+ * return: kParser error code as defined in include/uapi/linux/kparser.h
-+ */
-+extern int __kparser_parse(const void *parser, void *_hdr,
-+			   size_t parse_len, void *_metadata, size_t metadata_len);
-+
-+/* kparser_get_parser(): Function to get an opaque reference of a parser instance and mark it
-+ * immutable so that while actively using, it can not be deleted. The parser is identified by a key.
-+ * It marks the associated parser and whole parse tree immutable so that when it is locked, it can
-+ * not be deleted.
-+ *
-+ * kparser_key: key of the associated kParser parser object which must be
-+ * already created via CLI.
-+ *
-+ * return: NULL if key not found, else an opaque parser instance pointer which
-+ * can be used in the following APIs 3 and 4.
-+ *
-+ * NOTE: This call makes the whole parser tree immutable. If caller calls this
-+ * more than once, later caller will need to release the same parser exactly that
-+ * many times using the API kparser_put_parser().
-+ */
-+extern const void *kparser_get_parser(const struct kparser_hkey *kparser_key);
-+
-+/* kparser_put_parser(): Function to return and undo the read only operation done previously by
-+ * kparser_get_parser(). The parser instance is identified by using a previously obtained opaque
-+ * parser pointer via API kparser_get_parser(). This undo the immutable change so that any component
-+ * of the whole parse tree can be deleted again.
-+ *
-+ * parser: void *, Non NULL opaque pointer which was previously returned by kparser_get_parser().
-+ * Caller can use cached opaque pointer as long as system does not restart and kparser.ko is not
-+ * reloaded.
-+ *
-+ * return: boolean, true if put operation is success, else false.
-+ *
-+ * NOTE: This call makes the whole parser tree deletable for the very last call.
-+ */
-+extern bool kparser_put_parser(const void *parser);
-+
-+/* net/core/filter.c's callback hook structure to use kParser APIs if kParser enabled */
-+struct get_kparser_funchooks {
-+	const void * (*kparser_get_parser_hook)(const struct kparser_hkey *kparser_key);
-+	int (*__kparser_parse_hook)(const void *parser, void *_hdr,
-+				    size_t parse_len, void *_metadata, size_t metadata_len);
-+	bool (*kparser_put_parser_hook)(const void *prsr);
-+};
-+
-+extern struct get_kparser_funchooks kparser_funchooks;
-+
-+#endif /* _NET_KPARSER_H */
-diff --git a/include/uapi/linux/kparser.h b/include/uapi/linux/kparser.h
-new file mode 100644
-index 000000000000..2297355a31c0
---- /dev/null
-+++ b/include/uapi/linux/kparser.h
-@@ -0,0 +1,678 @@
-+/* SPDX-License-Identifier: GPL-2.0-only WITH Linux-syscall-note */
-+/* Copyright (c) 2022, SiPanda Inc.
-+ *
-+ * kparser.h - kParser global Linux header file
-+ *
-+ * Authors:     Tom Herbert <tom@sipanda.io>
-+ *              Pratyush Kumar Khan <pratyush@sipanda.io>
-+ */
-+
-+#ifndef _LINUX_KPARSER_H
-+#define _LINUX_KPARSER_H
-+
-+#include <linux/string.h>
-+#include <linux/types.h>
-+
-+/* *********************** NETLINK_GENERIC *********************** */
-+#define KPARSER_GENL_NAME		"kParser"
-+#define KPARSER_GENL_VERSION		0x1
-+
-+/* *********************** NETLINK CLI *********************** */
-+#define KPARSER_ERR_STR_MAX_LEN		256
-+/* *********************** Namespaces/objects *********************** */
-+enum kparser_global_namespace_ids {
-+	KPARSER_NS_INVALID,
-+	KPARSER_NS_CONDEXPRS,
-+	KPARSER_NS_CONDEXPRS_TABLE,
-+	KPARSER_NS_CONDEXPRS_TABLES,
-+	KPARSER_NS_COUNTER,
-+	KPARSER_NS_COUNTER_TABLE,
-+	KPARSER_NS_METADATA,
-+	KPARSER_NS_METALIST,
-+	KPARSER_NS_NODE_PARSE,
-+	KPARSER_NS_PROTO_TABLE,
-+	KPARSER_NS_TLV_NODE_PARSE,
-+	KPARSER_NS_TLV_PROTO_TABLE,
-+	KPARSER_NS_FLAG_FIELD,
-+	KPARSER_NS_FLAG_FIELD_TABLE,
-+	KPARSER_NS_FLAG_FIELD_NODE_PARSE,
-+	KPARSER_NS_FLAG_FIELD_PROTO_TABLE,
-+	KPARSER_NS_PARSER,
-+	KPARSER_NS_OP_PARSER_LOCK_UNLOCK,
-+	KPARSER_NS_MAX
-+};
-+
-+#define KPARSER_ATTR_RSP(id)		KPARSER_ATTR_RSP_##id
-+
-+#define KPARSER_DEFINE_ATTR_IDS(id)			\
-+	KPARSER_ATTR_CREATE_##id,	/* NLA_BINARY */\
-+	KPARSER_ATTR_UPDATE_##id,	/* NLA_BINARY */\
-+	KPARSER_ATTR_READ_##id,		/* NLA_BINARY */\
-+	KPARSER_ATTR_DELETE_##id,	/* NLA_BINARY */\
-+	KPARSER_ATTR_RSP(id)
-+
-+enum {
-+	KPARSER_ATTR_UNSPEC,	/* Add more entries after this */
-+	KPARSER_DEFINE_ATTR_IDS(KPARSER_NS_CONDEXPRS),
-+	KPARSER_DEFINE_ATTR_IDS(KPARSER_NS_CONDEXPRS_TABLE),
-+	KPARSER_DEFINE_ATTR_IDS(KPARSER_NS_CONDEXPRS_TABLES),
-+	KPARSER_DEFINE_ATTR_IDS(KPARSER_NS_COUNTER),
-+	KPARSER_DEFINE_ATTR_IDS(KPARSER_NS_COUNTER_TABLE),
-+	KPARSER_DEFINE_ATTR_IDS(KPARSER_NS_METADATA),
-+	KPARSER_DEFINE_ATTR_IDS(KPARSER_NS_METALIST),
-+	KPARSER_DEFINE_ATTR_IDS(KPARSER_NS_NODE_PARSE),
-+	KPARSER_DEFINE_ATTR_IDS(KPARSER_NS_PROTO_TABLE),
-+	KPARSER_DEFINE_ATTR_IDS(KPARSER_NS_TLV_NODE_PARSE),
-+	KPARSER_DEFINE_ATTR_IDS(KPARSER_NS_TLV_PROTO_TABLE),
-+	KPARSER_DEFINE_ATTR_IDS(KPARSER_NS_FLAG_FIELD),
-+	KPARSER_DEFINE_ATTR_IDS(KPARSER_NS_FLAG_FIELD_TABLE),
-+	KPARSER_DEFINE_ATTR_IDS(KPARSER_NS_FLAG_FIELD_NODE_PARSE),
-+	KPARSER_DEFINE_ATTR_IDS(KPARSER_NS_FLAG_FIELD_PROTO_TABLE),
-+	KPARSER_DEFINE_ATTR_IDS(KPARSER_NS_PARSER),
-+	KPARSER_DEFINE_ATTR_IDS(KPARSER_NS_OP_PARSER_LOCK_UNLOCK),
-+	KPARSER_ATTR_MAX	/* Add more entries before this */
-+};
-+
-+enum {
-+	KPARSER_CMD_UNSPEC,
-+	KPARSER_CMD_CONFIGURE,
-+	KPARSER_CMD_MAX
-+};
-+
-+/* *********************** kparser hash key (hkey) *********************** */
-+#define KPARSER_INVALID_ID		0xffff
-+
-+#define KPARSER_USER_ID_MIN		0
-+#define KPARSER_USER_ID_MAX		0x8000
-+#define KPARSER_KMOD_ID_MIN		0x8001
-+#define KPARSER_KMOD_ID_MAX		0xfffe
-+
-+#define KPARSER_MAX_NAME		128
-+#define KPARSER_MAX_DIGIT_STR_LEN	16
-+#define KPARSER_DEF_NAME_PREFIX		"kparser_default_name"
-+#define KPARSER_USER_ID_MIN		0
-+#define KPARSER_USER_ID_MAX		0x8000
-+#define KPARSER_KMOD_ID_MIN		0x8001
-+#define KPARSER_KMOD_ID_MAX		0xfffe
-+
-+struct kparser_hkey {
-+	__u16 id;
-+	char name[KPARSER_MAX_NAME];
-+};
-+
-+/* *********************** conditional expressions *********************** */
-+enum kparser_condexpr_types {
-+	KPARSER_CONDEXPR_TYPE_OR,
-+	KPARSER_CONDEXPR_TYPE_AND,
-+};
-+
-+enum kparser_expr_types {
-+	KPARSER_CONDEXPR_TYPE_EQUAL,
-+	KPARSER_CONDEXPR_TYPE_NOTEQUAL,
-+	KPARSER_CONDEXPR_TYPE_LT,
-+	KPARSER_CONDEXPR_TYPE_LTE,
-+	KPARSER_CONDEXPR_TYPE_GT,
-+	KPARSER_CONDEXPR_TYPE_GTE,
-+};
-+
-+/* One boolean condition expressions */
-+struct kparser_condexpr_expr {
-+	enum kparser_expr_types type;
-+	__u16 src_off;
-+	__u8 length;
-+	__u32 mask;
-+	__u32 value;
-+};
-+
-+struct kparser_conf_condexpr {
-+	struct kparser_hkey key;
-+	struct kparser_condexpr_expr config;
-+};
-+
-+struct kparser_conf_condexpr_table {
-+	struct kparser_hkey key;
-+	int idx;
-+	int default_fail;
-+	enum kparser_condexpr_types type;
-+	struct kparser_hkey condexpr_expr_key;
-+};
-+
-+struct kparser_conf_condexpr_tables {
-+	struct kparser_hkey key;
-+	int idx;
-+	struct kparser_hkey condexpr_expr_table_key;
-+};
-+
-+/* *********************** counter *********************** */
-+#define KPARSER_CNTR_NUM_CNTRS		7
-+
-+struct kparser_cntr_conf {
-+	bool valid_entry;
-+	__u8 index;
-+	__u32 max_value;
-+	__u32 array_limit;
-+	size_t el_size;
-+	bool reset_on_encap;
-+	bool overwrite_last;
-+	bool error_on_exceeded;
-+};
-+
-+struct kparser_conf_cntr {
-+	struct kparser_hkey key;
-+	struct kparser_cntr_conf conf;
-+};
-+
-+/* *********************** metadata *********************** */
-+enum kparser_metadata_type {
-+	KPARSER_METADATA_INVALID,
-+	KPARSER_METADATA_HDRDATA,
-+	KPARSER_METADATA_HDRDATA_NIBBS_EXTRACT,
-+	KPARSER_METADATA_HDRLEN,
-+	KPARSER_METADATA_CONSTANT_BYTE,
-+	KPARSER_METADATA_CONSTANT_HALFWORD,
-+	KPARSER_METADATA_OFFSET,
-+	KPARSER_METADATA_BIT_OFFSET,
-+	KPARSER_METADATA_NUMENCAPS,
-+	KPARSER_METADATA_NUMNODES,
-+	KPARSER_METADATA_TIMESTAMP,
-+	KPARSER_METADATA_RETURN_CODE,
-+	KPARSER_METADATA_COUNTER,
-+	KPARSER_METADATA_NOOP,
-+	KPARSER_METADATA_MAX
-+};
-+
-+enum kparser_metadata_counter_op_type {
-+	KPARSER_METADATA_COUNTEROP_NOOP,
-+	KPARSER_METADATA_COUNTEROP_INCR,
-+	KPARSER_METADATA_COUNTEROP_RST
-+};
-+
-+#define KPARSER_METADATA_OFFSET_MIN		0
-+#define KPARSER_METADATA_OFFSET_MAX		0xffffff
-+#define KPARSER_METADATA_OFFSET_INVALID		0xffffffff
-+
-+/* TODO: align and pack all struct members
-+ */
-+struct kparser_conf_metadata {
-+	struct kparser_hkey key;
-+	enum kparser_metadata_type type;
-+	enum kparser_metadata_counter_op_type cntr_op; // 3 bit
-+	bool frame;
-+	bool e_bit;
-+	__u8 cntr; // 3 bit
-+	__u8 cntr_data; // 3 bit
-+	__u8 constant_value;
-+	size_t soff;
-+	size_t doff;
-+	size_t len;
-+	size_t add_off;
-+	struct kparser_hkey counterkey;
-+};
-+
-+/* *********************** metadata list/table *********************** */
-+struct kparser_conf_metadata_table {
-+	struct kparser_hkey key;
-+	size_t metadata_keys_count;
-+	struct kparser_hkey metadata_keys[0];
-+};
-+
-+/* *********************** parse nodes *********************** */
-+/* kParser protocol node types
-+ */
-+enum kparser_node_type {
-+	/* Plain node, no super structure */
-+	KPARSER_NODE_TYPE_PLAIN,
-+	/* TLVs node with super structure for TLVs */
-+	KPARSER_NODE_TYPE_TLVS,
-+	/* Flag-fields with super structure for flag-fields */
-+	KPARSER_NODE_TYPE_FLAG_FIELDS,
-+	/* It represents the limit value */
-+	KPARSER_NODE_TYPE_MAX,
-+};
-+
-+/* Types for parameterized functions */
-+struct kparser_parameterized_len {
-+	__u16 src_off;
-+	__u8 size;
-+	bool endian;
-+	__u32 mask;
-+	__u8 right_shift;
-+	__u8 multiplier;
-+	__u8 add_value;
-+};
-+
-+struct kparser_parameterized_next_proto {
-+	__u16 src_off;
-+	__u16 mask;
-+	__u8 size;
-+	__u8 right_shift;
-+};
-+
-+struct kparser_conf_parse_ops {
-+	bool len_parameterized;
-+	struct kparser_parameterized_len pflen;
-+	struct kparser_parameterized_next_proto pfnext_proto;
-+	bool cond_exprs_parameterized;
-+	struct kparser_hkey cond_exprs_table;
-+};
-+
-+/* base nodes */
-+struct kparser_conf_node_proto {
-+	bool encap;
-+	bool overlay;
-+	size_t min_len;
-+	struct kparser_conf_parse_ops ops;
-+};
-+
-+struct kparser_conf_node_parse {
-+	int unknown_ret;
-+	struct kparser_hkey proto_table_key;
-+	struct kparser_hkey wildcard_parse_node_key;
-+	struct kparser_hkey metadata_table_key;
-+	struct kparser_conf_node_proto proto_node;
-+};
-+
-+/* TLVS */
-+struct kparser_proto_tlvs_opts {
-+	struct kparser_parameterized_len pfstart_offset;
-+	bool len_parameterized;
-+	struct kparser_parameterized_len pflen;
-+	struct kparser_parameterized_next_proto pftype;
-+};
-+
-+struct kparser_conf_proto_tlvs_node {
-+	struct kparser_proto_tlvs_opts ops;
-+	bool tlvsstdfmt;
-+	bool fixed_start_offset;
-+	size_t start_offset;
-+	__u8 pad1_val;
-+	__u8 padn_val;
-+	__u8 eol_val;
-+	bool pad1_enable;
-+	bool padn_enable;
-+	bool eol_enable;
-+	size_t min_len;
-+};
-+
-+#define KPARSER_DEFAULT_TLV_MAX_LOOP			255
-+#define KPARSER_DEFAULT_TLV_MAX_NON_PADDING		255
-+#define KPARSER_DEFAULT_TLV_MAX_CONSEC_PAD_BYTES	255
-+#define KPARSER_DEFAULT_TLV_MAX_CONSEC_PAD_OPTS		255
-+#define KPARSER_DEFAULT_TLV_DISP_LIMIT_EXCEED		0
-+#define KPARSER_DEFAULT_TLV_EXCEED_LOOP_CNT_ERR		false
-+
-+/* Two bit code that describes the action to take when a loop node
-+ * exceeds a limit
-+ */
-+enum {
-+	KPARSER_LOOP_DISP_STOP_OKAY = 0,
-+	KPARSER_LOOP_DISP_STOP_NODE_OKAY = 1,
-+	KPARSER_LOOP_DISP_STOP_SUB_NODE_OKAY = 2,
-+	KPARSER_LOOP_DISP_STOP_FAIL = 3,
-+};
-+
-+/* Configuration for a TLV node (generally loop nodes)
-+ *
-+ * max_loop: Maximum number of TLVs to process
-+ * max_non: Maximum number of non-padding TLVs to process
-+ * max_plen: Maximum consecutive padding bytes
-+ * max_c_pad: Maximum number of consecutive padding options
-+ * disp_limit_exceed: Disposition when a TLV parsing limit is exceeded. See
-+ * KPARSER_LOOP_DISP_STOP_* in parser.h
-+ * exceed_loop_cnt_is_err: True is exceeding maximum number of TLVS is an error
-+ */
-+struct kparser_loop_node_config {
-+	__u16 max_loop;
-+	__u16 max_non;
-+	__u8 max_plen;
-+	__u8 max_c_pad;
-+	__u8 disp_limit_exceed;
-+	bool exceed_loop_cnt_is_err;
-+};
-+
-+/* TODO:
-+ * disp_limit_exceed: 2;
-+ * exceed_loop_cnt_is_err: 1;
-+ */
-+struct kparser_conf_parse_tlvs {
-+	struct kparser_conf_proto_tlvs_node proto_node;
-+	struct kparser_hkey tlv_proto_table_key;
-+	int unknown_tlv_type_ret;
-+	struct kparser_hkey tlv_wildcard_node_key;
-+	struct kparser_loop_node_config config;
-+};
-+
-+/* flag fields */
-+struct kparser_parameterized_get_value {
-+	__u16 src_off;
-+	__u32 mask;
-+	__u8 size;
-+};
-+
-+struct kparser_proto_flag_fields_ops {
-+	bool get_flags_parameterized;
-+	struct kparser_parameterized_get_value pfget_flags;
-+	bool start_fields_offset_parameterized;
-+	struct kparser_parameterized_len pfstart_fields_offset;
-+	bool flag_fields_len;
-+	__u16 hdr_length;
-+};
-+
-+struct kparser_conf_node_proto_flag_fields {
-+	struct kparser_proto_flag_fields_ops ops;
-+	struct kparser_hkey flag_fields_table_hkey;
-+};
-+
-+struct kparser_conf_parse_flag_fields {
-+	struct kparser_conf_node_proto_flag_fields proto_node;
-+	struct kparser_hkey flag_fields_proto_table_key;
-+};
-+
-+struct kparser_conf_node {
-+	struct kparser_hkey key;
-+	enum kparser_node_type type;
-+	struct kparser_conf_node_parse plain_parse_node;
-+	struct kparser_conf_parse_tlvs tlvs_parse_node;
-+	struct kparser_conf_parse_flag_fields flag_fields_parse_node;
-+};
-+
-+/* *********************** tlv parse node *********************** */
-+struct kparser_conf_proto_tlv_node_ops {
-+	bool overlay_type_parameterized;
-+	struct kparser_parameterized_next_proto pfoverlay_type;
-+	bool cond_exprs_parameterized;
-+	struct kparser_hkey cond_exprs_table;
-+};
-+
-+struct kparser_conf_node_proto_tlv {
-+	size_t min_len;
-+	size_t max_len;
-+	bool is_padding;
-+	struct kparser_conf_proto_tlv_node_ops ops;
-+};
-+
-+struct kparser_conf_node_parse_tlv {
-+	struct kparser_hkey key;
-+	struct kparser_conf_node_proto_tlv node_proto;
-+	struct kparser_hkey overlay_proto_tlvs_table_key;
-+	struct kparser_hkey overlay_wildcard_parse_node_key;
-+	int unknown_ret;
-+	struct kparser_hkey metadata_table_key;
-+};
-+
-+/* *********************** flag field *********************** */
-+/* One descriptor for a flag
-+ *
-+ * flag: protocol value
-+ * mask: mask to apply to field
-+ * size: size for associated field data
-+ */
-+struct kparser_flag_field {
-+	__u32 flag;
-+	__u32 networkflag;
-+	__u32 mask;
-+	size_t size;
-+	bool endian;
-+};
-+
-+struct kparser_conf_flag_field {
-+	struct kparser_hkey key;
-+	struct kparser_flag_field conf;
-+};
-+
-+/* *********************** flag field parse node *********************** */
-+struct kparser_parse_flag_field_node_ops_conf {
-+	struct kparser_hkey cond_exprs_table_key;
-+};
-+
-+struct kparser_conf_node_parse_flag_field {
-+	struct kparser_hkey key;
-+	struct kparser_hkey metadata_table_key;
-+	struct kparser_parse_flag_field_node_ops_conf ops;
-+};
-+
-+/* *********************** generic tables *********************** */
-+struct kparser_conf_table {
-+	struct kparser_hkey key;
-+	bool add_entry;
-+	__u16 elems_cnt;
-+	int optional_value1;
-+	int optional_value2;
-+	struct kparser_hkey elem_key;
-+};
-+
-+/* *********************** parser *********************** */
-+/* Flags for parser configuration */
-+#define KPARSER_F_DEBUG		(1 << 0)
-+
-+#define KPARSER_MAX_NODES	10
-+#define KPARSER_MAX_ENCAPS	1
-+#define KPARSER_MAX_FRAMES	255
-+
-+/* Configuration for a KPARSER parser
-+ *
-+ * flags: Flags KPARSER_F_* in parser.h
-+ * max_nodes: Maximum number of nodes to parse
-+ * max_encaps: Maximum number of encapsulations to parse
-+ * max_frames: Maximum number of metadata frames
-+ * metameta_size: Size of metameta data. The metameta data is at the head
-+ * of the user defined metadata structure. This also serves as the
-+ * offset of the first metadata frame
-+ * frame_size: Size of one metadata frame
-+ */
-+struct kparser_config {
-+	__u16 flags;
-+	__u16 max_nodes;
-+	__u16 max_encaps;
-+	__u16 max_frames;
-+	size_t metameta_size;
-+	size_t frame_size;
-+};
-+
-+struct kparser_conf_parser {
-+	struct kparser_hkey key;
-+	struct kparser_config config;
-+	struct kparser_hkey root_node_key;
-+	struct kparser_hkey ok_node_key;
-+	struct kparser_hkey fail_node_key;
-+	struct kparser_hkey atencap_node_key;
-+};
-+
-+/* *********************** CLI config interface *********************** */
-+
-+/* NOTE: we can't use BITS_PER_TYPE from kernel header here and had to redefine BITS_IN_U32
-+ * since this is shared with user space code.
-+ */
-+#define BITS_IN_BYTE	8
-+#define BITS_IN_U32	(sizeof(__u32) * BITS_IN_BYTE)
-+
-+#define KPARSER_CONFIG_MAX_KEYS			128
-+#define KPARSER_CONFIG_MAX_KEYS_BV_LEN ((KPARSER_CONFIG_MAX_KEYS / BITS_IN_U32) + 1)
-+struct kparser_config_set_keys_bv {
-+	__u32 ns_keys_bvs[KPARSER_CONFIG_MAX_KEYS_BV_LEN];
-+};
-+
-+struct kparser_conf_cmd {
-+	enum kparser_global_namespace_ids namespace_id;
-+	struct kparser_config_set_keys_bv conf_keys_bv;
-+	__u8 recursive_read_delete;
-+	union {
-+		/* for read/delete commands */
-+		/* KPARSER_NS_OP_PARSER_LOCK_UNLOCK */
-+		struct kparser_hkey obj_key;
-+
-+		/* KPARSER_NS_CONDEXPRS */
-+		struct kparser_conf_condexpr cond_conf;
-+
-+		/* KPARSER_NS_COUNTER */
-+		struct kparser_conf_cntr cntr_conf;
-+
-+		/* KPARSER_NS_METADATA */
-+		struct kparser_conf_metadata md_conf;
-+
-+		/* KPARSER_NS_METALIST */
-+		struct kparser_conf_metadata_table mdl_conf;
-+
-+		/* KPARSER_NS_NODE_PARSE */
-+		struct kparser_conf_node node_conf;
-+
-+		/* KPARSER_NS_TLV_NODE_PARSE */
-+		struct kparser_conf_node_parse_tlv tlv_node_conf;
-+
-+		/* KPARSER_NS_FLAG_FIELD */
-+		struct kparser_conf_flag_field flag_field_conf;
-+
-+		/* KPARSER_NS_FLAG_FIELD_NODE_PARSE */
-+		struct kparser_conf_node_parse_flag_field flag_field_node_conf;
-+
-+		/* KPARSER_NS_PROTO_TABLE */
-+		/* KPARSER_NS_TLV_PROTO_TABLE */
-+		/* KPARSER_NS_FLAG_FIELD_TABLE */
-+		/* KPARSER_NS_FLAG_FIELD_PROTO_TABLE */
-+		/* KPARSER_NS_CONDEXPRS_TABLE */
-+		/* KPARSER_NS_CONDEXPRS_TABLES */
-+		/* KPARSER_NS_COUNTER_TABLE */
-+		struct kparser_conf_table table_conf;
-+
-+		/* KPARSER_NS_PARSER */
-+		struct kparser_conf_parser parser_conf;
-+	};
-+};
-+
-+struct kparser_cmd_rsp_hdr {
-+	int op_ret_code;
-+	__u8 err_str_buf[KPARSER_ERR_STR_MAX_LEN];
-+	struct kparser_hkey key;
-+	struct kparser_conf_cmd object;
-+	size_t objects_len;
-+	/* array of fixed size kparser_conf_cmd objects */
-+	struct kparser_conf_cmd objects[0];
-+};
-+
-+/* ***********************  kParser error code *********************** */
-+/*
-+ * There are two variants of the KPARSER return codes. The normal variant is
-+ * a number between -15 and 0 inclusive where the name for the code is
-+ * prefixed by KPARSER_. There is also a special 16-bit encoding which is
-+ * 0xfff0 + -val where val is the negative number for the code so that
-+ * corresponds to values 0xfff0 to 0xffff. Names for the 16-bit encoding
-+ * are prefixed by KPARSER_16BIT_
-+ */
-+enum {
-+	KPARSER_OKAY = 0,		/* Okay and continue */
-+	KPARSER_RET_OKAY = -1,		/* Encoding of OKAY in ret code */
-+
-+	KPARSER_OKAY_USE_WILD = -2,	/* cam instruction */
-+	KPARSER_OKAY_USE_ALT_WILD = -3,	/* cam instruction */
-+
-+	KPARSER_STOP_OKAY = -4,		/* Okay and stop parsing */
-+	KPARSER_STOP_NODE_OKAY = -5,	/* Stop parsing current node */
-+	KPARSER_STOP_SUB_NODE_OKAY = -6,/* Stop parsing currnet sub-node */
-+
-+	/* Parser failure */
-+	KPARSER_STOP_FAIL = -12,
-+	KPARSER_STOP_LENGTH = -13,
-+	KPARSER_STOP_UNKNOWN_PROTO = -14,
-+	KPARSER_STOP_ENCAP_DEPTH = -15,
-+	KPARSER_STOP_UNKNOWN_TLV = -16,
-+	KPARSER_STOP_TLV_LENGTH = -17,
-+	KPARSER_STOP_BAD_FLAG = -18,
-+	KPARSER_STOP_FAIL_CMP = -19,
-+	KPARSER_STOP_LOOP_CNT = -20,
-+	KPARSER_STOP_TLV_PADDING = -21,
-+	KPARSER_STOP_OPTION_LIMIT = -22,
-+	KPARSER_STOP_MAX_NODES = -23,
-+	KPARSER_STOP_COMPARE = -24,
-+	KPARSER_STOP_BAD_EXTRACT = -25,
-+	KPARSER_STOP_BAD_CNTR = -26,
-+	KPARSER_STOP_CNTR1 = -27,
-+	KPARSER_STOP_CNTR2 = -28,
-+	KPARSER_STOP_CNTR3 = -29,
-+	KPARSER_STOP_CNTR4 = -30,
-+	KPARSER_STOP_CNTR5 = -31,
-+	KPARSER_STOP_CNTR6 = -32,
-+	KPARSER_STOP_CNTR7 = -33,
-+};
-+
-+static inline const char *kparser_code_to_text(int code)
-+{
-+	switch (code) {
-+	case KPARSER_OKAY:
-+		return "okay";
-+	case KPARSER_RET_OKAY:
-+		return "okay-ret";
-+	case KPARSER_OKAY_USE_WILD:
-+		return "okay-use-wild";
-+	case KPARSER_OKAY_USE_ALT_WILD:
-+		return "okay-use-alt-wild";
-+	case KPARSER_STOP_OKAY:
-+		return "stop-okay";
-+	case KPARSER_STOP_NODE_OKAY:
-+		return "stop-node-okay";
-+	case KPARSER_STOP_SUB_NODE_OKAY:
-+		return "stop-sub-node-okay";
-+	case KPARSER_STOP_FAIL:
-+		return "stop-fail";
-+	case KPARSER_STOP_LENGTH:
-+		return "stop-length";
-+	case KPARSER_STOP_UNKNOWN_PROTO:
-+		return "stop-unknown-proto";
-+	case KPARSER_STOP_ENCAP_DEPTH:
-+		return "stop-encap-depth";
-+	case KPARSER_STOP_UNKNOWN_TLV:
-+		return "stop-unknown-tlv";
-+	case KPARSER_STOP_TLV_LENGTH:
-+		return "stop-tlv-length";
-+	case KPARSER_STOP_BAD_FLAG:
-+		return "stop-bad-flag";
-+	case KPARSER_STOP_FAIL_CMP:
-+		return "stop-fail-cmp";
-+	case KPARSER_STOP_LOOP_CNT:
-+		return "stop-loop-cnt";
-+	case KPARSER_STOP_TLV_PADDING:
-+		return "stop-tlv-padding";
-+	case KPARSER_STOP_OPTION_LIMIT:
-+		return "stop-option-limit";
-+	case KPARSER_STOP_MAX_NODES:
-+		return "stop-max-nodes";
-+	case KPARSER_STOP_COMPARE:
-+		return "stop-compare";
-+	case KPARSER_STOP_BAD_EXTRACT:
-+		return "stop-bad-extract";
-+	case KPARSER_STOP_BAD_CNTR:
-+		return "stop-bad-counter";
-+	default:
-+		return "unknown-code";
-+	}
-+}
-+
-+/* *********************** HKey utility APIs *********************** */
-+static inline bool kparser_hkey_id_empty(const struct kparser_hkey *key)
-+{
-+	if (!key)
-+		return true;
-+	return (key->id == KPARSER_INVALID_ID);
-+}
-+
-+static inline bool kparser_hkey_name_empty(const struct kparser_hkey *key)
-+{
-+	if (!key)
-+		return true;
-+	return ((key->name[0] == '\0') ||
-+			!strcmp(key->name, KPARSER_DEF_NAME_PREFIX));
-+}
-+
-+static inline bool kparser_hkey_empty(const struct kparser_hkey *key)
-+{
-+	return (kparser_hkey_id_empty(key) && kparser_hkey_name_empty(key));
-+}
-+
-+static inline bool kparser_hkey_user_id_invalid(const struct kparser_hkey *key)
-+{
-+	if (!key)
-+		return true;
-+	return ((key->id == KPARSER_INVALID_ID) ||
-+			(key->id > KPARSER_USER_ID_MAX));
-+}
-+
-+#endif /* _LINUX_KPARSER_H */
-diff --git a/net/Kconfig b/net/Kconfig
-index 48c33c222199..39b70349dbcc 100644
---- a/net/Kconfig
-+++ b/net/Kconfig
-@@ -471,4 +471,13 @@ config NETDEV_ADDR_LIST_TEST
- 	default KUNIT_ALL_TESTS
- 	depends on KUNIT
- 
-+config KPARSER
-+	tristate "kParser in Kernel"
-+	help
-+	  kParser stands for "The Kernel Parser". This is a programmable
-+	  network packet parser which is a ported version of the PANDA
-+	  parser. This module exposes kParser APIs in Kernel.
-+
-+	  If unsure, say N.
-+
- endif   # if NET
-diff --git a/net/Makefile b/net/Makefile
-index 6a62e5b27378..db73fd395fa0 100644
---- a/net/Makefile
-+++ b/net/Makefile
-@@ -78,3 +78,4 @@ obj-$(CONFIG_NET_NCSI)		+= ncsi/
- obj-$(CONFIG_XDP_SOCKETS)	+= xdp/
- obj-$(CONFIG_MPTCP)		+= mptcp/
- obj-$(CONFIG_MCTP)		+= mctp/
-+obj-$(CONFIG_KPARSER)		+= kparser/
-diff --git a/net/kparser/Makefile b/net/kparser/Makefile
-new file mode 100644
-index 000000000000..5a40d5cb340d
---- /dev/null
-+++ b/net/kparser/Makefile
-@@ -0,0 +1,10 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+#
-+# Makefile for KPARSER module
-+#
-+
-+ccflags-y := -DDEBUG -DKERNEL_MOD
-+
-+obj-$(CONFIG_KPARSER) += kparser.o
-+
-+kparser-objs := kparser_main.o kparser_cmds.o kparser_cmds_ops.o kparser_cmds_dump_ops.o kparser_datapath.o
-diff --git a/net/kparser/kparser.h b/net/kparser/kparser.h
-new file mode 100644
-index 000000000000..b98e057660c6
---- /dev/null
-+++ b/net/kparser/kparser.h
-@@ -0,0 +1,391 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/* Copyright (c) 2022, SiPanda Inc.
-+ *
-+ * kparser.h - kParser local header file
-+ *
-+ * Author:      Pratyush Kumar Khan <pratyush@sipanda.io>
-+ */
-+
-+#ifndef __KPARSER_H
-+#define __KPARSER_H
-+
-+#include <linux/hash.h>
-+#include <linux/kparser.h>
-+#include <linux/kref.h>
-+#include <linux/list.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/rhashtable-types.h>
-+#include <linux/skbuff.h>
-+#include <linux/xxhash.h>
-+
-+#include "kparser_types.h"
-+#include "kparser_condexpr.h"
-+#include "kparser_metaextract.h"
-+#include "kparser_types.h"
-+
-+/* These are used to track owner/owned relationship between different objects
-+ */
-+struct kparser_ref_ctx {
-+	int nsid;
-+	const void *obj;
-+	const void __rcu **link_ptr;
-+	struct kref *refcount;
-+	struct list_head *list;
-+	struct list_head list_node;
-+};
-+
-+#define KPARSER_LINK_OBJ_SIGNATURE		0xffaabbff
-+
-+/* bookkeeping structure to manage the above struct kparser_ref_ctx and map an owner with owned both
-+ * ways
-+ */
-+struct kparser_obj_link_ctx {
-+	int sig;
-+	struct kparser_ref_ctx owner_obj;
-+	struct kparser_ref_ctx owned_obj;
-+};
-+
-+/* global hash table structures */
-+struct kparser_htbl {
-+	struct rhashtable tbl;
-+	struct rhashtable_params tbl_params;
-+};
-+
-+/* it binds a netlink cli structure to an internal namespace object structure
-+ *
-+ * key: hash key, must be always the very first entry for hash functions to work correctly.
-+ * ht_node_id: ID based hash table's linking object.
-+ * ht_node_name: name based hash table's linking object.
-+ * refcount: tracks how many other objects are linked using refcount.
-+ * config: netlink msg's config structure cached, it is replayed back during read operations.
-+ * owner_list: list pointer for kparser_obj_link_ctx.owner_obj.list
-+ * owned_list: list pointer for kparser_obj_link_ctx.owned_obj.list
-+ */
-+struct kparser_glue {
-+	struct kparser_hkey key;
-+	struct rhash_head ht_node_id;
-+	struct rhash_head ht_node_name;
-+	struct kref refcount;
-+	struct kparser_conf_cmd config;
-+	struct list_head owner_list;
-+	struct list_head owned_list;
-+};
-+
-+/* internal namespace structures for conditional expressions
-+ * it binds a netlink cli structure to an internal namespace object structure
-+ */
-+struct kparser_glue_condexpr_expr {
-+	struct kparser_glue glue;
-+	struct kparser_condexpr_expr expr;
-+};
-+
-+/* internal namespace structures for conditional expressions table
-+ * it binds a netlink cli structure to an internal namespace object structure
-+ */
-+struct kparser_glue_condexpr_table {
-+	struct kparser_glue glue;
-+	struct kparser_condexpr_table table;
-+};
-+
-+/* internal namespace structures for table of conditional expressions table
-+ * it binds a netlink cli structure to an internal namespace object structure
-+ */
-+struct kparser_glue_condexpr_tables {
-+	struct kparser_glue glue;
-+	struct kparser_condexpr_tables table;
-+};
-+
-+/* internal namespace structures for counters
-+ * it binds a netlink cli structure to an internal namespace object structure
-+ */
-+struct kparser_glue_counter {
-+	struct kparser_glue glue;
-+	struct kparser_cntr_conf counter_cnf;
-+};
-+
-+/* internal namespace structures for counter table
-+ * it binds a netlink cli structure to an internal namespace object structure
-+ */
-+struct kparser_glue_counter_table {
-+	struct kparser_glue glue;
-+	__u8 elems_cnt;
-+	struct kparser_glue_counter k_cntrs[KPARSER_CNTR_NUM_CNTRS];
-+};
-+
-+/* internal namespace structures for metadata
-+ * it binds a netlink cli structure to an internal namespace object structure
-+ */
-+struct kparser_glue_metadata_extract {
-+	struct kparser_glue glue;
-+	struct kparser_metadata_extract mde;
-+};
-+
-+/* internal namespace structures for metadata list
-+ * it binds a netlink cli structure to an internal namespace object structure
-+ */
-+struct kparser_glue_metadata_table {
-+	struct kparser_glue glue;
-+	size_t md_configs_len;
-+	struct kparser_conf_cmd *md_configs;
-+	struct kparser_metadata_table metadata_table;
-+};
-+
-+/* internal namespace structures for node
-+ * it binds a netlink cli structure to an internal namespace object structure
-+ */
-+struct kparser_glue_node {
-+	struct kparser_glue glue;
-+};
-+
-+struct kparser_glue_glue_parse_node {
-+	struct kparser_glue_node glue;
-+	union {
-+		struct kparser_parse_node node;
-+		struct kparser_parse_flag_fields_node flags_parse_node;
-+		struct kparser_parse_tlvs_node tlvs_parse_node;
-+	} parse_node;
-+};
-+
-+/* internal namespace structures for table
-+ * it binds a netlink cli structure to an internal namespace object structure
-+ */
-+struct kparser_glue_protocol_table {
-+	struct kparser_glue glue;
-+	struct kparser_proto_table proto_table;
-+};
-+
-+/* internal namespace structures for tlv nodes and tables
-+ * it binds a netlink cli structure to an internal namespace object structure
-+ */
-+struct kparser_glue_parse_tlv_node {
-+	struct kparser_glue_node glue;
-+	struct kparser_parse_tlv_node tlv_parse_node;
-+};
-+
-+/* internal namespace structures for tlvs proto table
-+ * it binds a netlink cli structure to an internal namespace object structure
-+ */
-+struct kparser_glue_proto_tlvs_table {
-+	struct kparser_glue glue;
-+	struct kparser_proto_tlvs_table tlvs_proto_table;
-+};
-+
-+/* internal namespace structures for flagfields and tables
-+ * it binds a netlink cli structure to an internal namespace object structure
-+ */
-+struct kparser_glue_flag_field {
-+	struct kparser_glue glue;
-+	struct kparser_flag_field flag_field;
-+};
-+
-+/* internal namespace structures for flag field node
-+ * it binds a netlink cli structure to an internal namespace object structure
-+ */
-+struct kparser_glue_flag_fields {
-+	struct kparser_glue glue;
-+	struct kparser_flag_fields flag_fields;
-+};
-+
-+struct kparser_glue_flag_field_node {
-+	struct kparser_glue_node glue;
-+	struct kparser_parse_flag_field_node node_flag_field;
-+};
-+
-+/* internal namespace structures for flag field table
-+ * it binds a netlink cli structure to an internal namespace object structure
-+ */
-+struct kparser_glue_proto_flag_fields_table {
-+	struct kparser_glue glue;
-+	struct kparser_proto_flag_fields_table flags_proto_table;
-+};
-+
-+/* internal namespace structures for parser
-+ * it binds a netlink cli structure to an internal namespace object structure
-+ */
-+struct kparser_glue_parser {
-+	struct kparser_glue glue;
-+	struct list_head list_node;
-+	struct kparser_parser parser;
-+};
-+
-+/* name hash table's hash object comparison function callback */
-+static inline int kparser_cmp_fn_name(struct rhashtable_compare_arg *arg,
-+				      const void *ptr)
-+{
-+	const char *key2 = arg->key;
-+	const struct kparser_hkey *key1 = ptr;
-+
-+	return strcmp(key1->name, key2);
-+}
-+
-+/* ID hash table's hash object comparison function callback */
-+static inline int kparser_cmp_fn_id(struct rhashtable_compare_arg *arg,
-+				    const void *ptr)
-+{
-+	const __u16 *key2 = arg->key;
-+	const __u16 *key1 = ptr;
-+
-+	return (*key1 != *key2);
-+}
-+
-+/* name hash table's hash calculation function callback from hash key */
-+static inline __u32 kparser_generic_hash_fn_name(const void *hkey, __u32 key_len, __u32 seed)
-+{
-+	const char *key = hkey;
-+
-+	/* TODO: check if seed needs to be used here
-+	 * TODO: replace xxh32() with siphash
++++ b/Documentation/networking/kParser.rst
+@@ -0,0 +1,302 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++==========================
++kParser (the Kernel Parser)
++==========================
++
++
++Introduction
++============
++
++kParser is a fully programmable, fully functional, highly performant
++protocol parser in the Linux kernel. A parser is programmed through
++the "ip parser" CLI, and common netlink interfaces are used to
++instantiate a parser in the kernel. A parser is defined by a parse
++graph which is implemented by kparser as a set of parse node definitions
++and protocol tables that describe the linkages between the nodes.
++Per its program, a kparser instance will report metadata about the
++packet and various protocols layers of the packet. Metadata is any
++information about the packet including header offsets and value of
++fields of interest to the programmer; the later is analogous to the
++flow information extracted by flow dissector (the primary difference
++being that kParser can extract arbitrary protocol fields and report on
++fields in multiple layers of encapsulation).
++
++The iproute2 CLI for the kParser works in tandem with the KMOD kParser
++to configure any number of parser instances. If kParser KMOD is not
++statically compiled with Linux kernel, it needs to be additionally
++enabled, compiled and loaded to use the iproute2 CLI for kParser.
++Please note that the kParser CLI is scriptable meaning the parser
++configuration in the kernel can by dynamically updated without need to
++recompile any code or reload kernel module.
++
++kParser objects and namespaces
++==============================
++
++Building blocks of kParser are various objects from different
++namespaces/object types. For example, parser, node, table etc. are all
++different types of objects, also known as namespaces. All the namespaces
++are described in the next section.
++
++Each object is identified by a maximum 128 bytes long '\0' terminated
++(128 bytes including the '\0' character) human readable ASCII name
++(only character '/' is not allowed in the name, and names can not start
++with '-'). Alternatively an unsigned 16 bit ID or both ID and name can
++be used to identify objects.
++NOTE: During CLI create operations of these objects, it is must to
++specify either the name or ID. Both can also be specified.Whichever is
++not specified during create will be auto generated by the KMOD kParser
++and CLI will convey the identifiers to user for later use. User should
++save these identifiers.
++NOTE: During CLI create operations, unique name or ID must always be
++specified. Those name/ID can later be used to identify the associated
++object in further CLI operations.
++
++Various objects are:
++	* parser:
++		A parser represents a parse tree. It defines the user
++		metadata and metametadata structure size, number of
++		parsing node and encapsulation limits, root node for the
++		parse tree, success and failure case exit nodes.
++
++	* node:
++		A node (a.k.a parse node) represents a specific protocol
++		header. Defining protocol handler involves multiple
++		work, i.e. configure the parser about the associated
++		protocol's packet header, e.g. minimum header length,
++		where to look for the next protocol field in the packet,
++		etc. Along with that, it also defines the rules/handlers
++		to parse and store the required metadata by
++		associating a metalist. The table to find the next
++		protocol node is attached to node.
++		node can be 3 types:
++		* PLAIN:
++			PLAIN nodes are the basic protocol headers.
++		TLVS:
++			TLVS nodes are the Type-Length-Value protocol
++			headers, such as TCP. They also binds a
++			tlvtable to a node.
++		FLAGFIELDS:
++			FLAGFIELDS are indexed flag and associated flag
++			fields protocol headers, such as GRE headers.
++			It also binds a flagstable with a node.
++
++	* table:
++		A table is a protocol table, which associated a protocol
++		number with a node. e.g. ethernet protocol type 0x8000
++		in network order means the next node after ethernet
++		header is IPv4.
++
++		NOTE: table has key, key must be unique. Usually this
++		key is protocol number, such as ethernet type, or IPv4
++		protocol number etc.
++
++	* metadata-rule:
++		Defines the metadata structures that will be passed to
++		the kParser datapath parser API by the user. This
++		basically defines a specific metadata extraction rule.
++		This must match with the user passed metadata structure
++		in the datapath API.
++
++	* metadata-ruleset:
++		A list of metadata(s) to associate it with packet
++		parsing action handlers, i.e. parse node.
++
++	* tlvnode:
++		A tlvnode defines a specific TLV parsing rule, e.g. to
++		parse TCP option MSS, a new tlvnode needs to be defined.
++		Each tlvnode can also associate a metalist with the TLV
++		parsing rule, i.e. tlvnode
++
++	* tlvtable:
++		This is a table of multiple tlvnode(s) where the key are
++		types of TLVs (e.g. tlvnode defined for TCP MSS should
++		have the type/kind value set to 2.
++
++	* flags:
++		It describes parsing rules to extract certain protocol's
++		flags in bitfields, such as flag value, mask and size.
++
++	* flagfields:
++		It defines flagfields in packet associated with flags in
++		bitfields of the same packet.
++		e.g. GRE flagfields such as checksum, key, sequence
++		number etc.
++
++	* flagstable:
++		This defines a table of flagfields and associate them
++		with their respective flag values via their indexes.
++		Here the keys are usually indexes, because in typical
++		flag based protocol header, such as GRE, the flagfields
++		appear in protocol packet in the same order as the set
++		flag bits. The flag is defined by the flag value, mask,
++		size and associated metalist.
++
++	* condexprs:
++		"Conditional expressions" used to define and configure
++		various complex conditional expressions in kParser.
++		They are used to validate certain conditions for
++		protocol packet field values.
++
++	* condexprslist:
++		"List of Conditional expressions" used to create
++		more complex and composite expressions involving more
++		than one conditional expression(s).
++
++	* condexprstable:
++		"A table of Conditional expressions" used to
++		associate one or more than one list of Conditional
++		expressions with a packet parsing action handlers,
++		i.e. parse node.
++
++	* counter:
++		It is used to create and configure counter objects which
++		can be used for a wide range of usages such as count how
++		many VLAN headers were parsed, how many TCP options are
++		encountered etc.
++
++	* countertable:
++		kParser has a global table of counters, which supports
++		various and unique counter configurations upto seven
++		entries. Multiple kParser parser instances can share
++		this countertable.
++
++.. kernel-figure::  parse_graph_example.svg
++   :alt:	kParser parse graph example
++   :align:	center
++   :figwidth:	28em
++
++   An example of kParser parse graph
++
++
++kParser KMOD datapath APIs
++===========================
++
++There are four kernel datatpath API functions:
++
++.. code-block:: c
++
++	/* kparser_parse(): Function to parse a skb using a parser
++	 *		    instance key.
++	 *
++	 * skb: input packet skb
++	 * kparser_key: key of the associated kParser parser object
++	 *		which must be already created via CLI.
++	 * _metadata: User provided metadata buffer. It must be same as
++	 *	      configured metadata objects in CLI.
++	 * metadata_len: Total length of the user provided metadata
++	 *		 buffer.
++	 *
++	 * return: kParser error code as defined in
++	 *	   include/uapi/linux/kparser.h
 +	 */
-+	return xxh32(hkey, strlen(key), 0);
-+}
 +
-+/* ID hash table's hash calculation function callback from hash key */
-+static inline __u32 kparser_generic_hash_fn_id(const void *hkey, __u32 key_len, __u32 seed)
-+{
-+	const __u16 *key = hkey;
-+	/* TODO: check if seed needs to be used here
++		int kparser_parse(struct sk_buff *skb,
++				  const struct kparser_hkey*kparser_key,
++				  void *_metadata, size_t metadata_len);
++
++	/* __kparser_parse(): Function to parse a void * packet buffer
++	 *		      using a parser instance key.
++	 *
++	 * parser: Non NULL kparser_get_parser() returned and cached
++	 *	   opaque pointer
++	 * referencing a valid parser instance.
++	 * _hdr: input packet buffer
++	 * parse_len: length of input packet buffer
++	 * _metadata: User provided metadata buffer. It must be same as
++	 *	      configured
++	 * metadata objects in CLI.
++	 * metadata_len: Total length of the user provided metadata
++	 *		 buffer.
++	 *
++	 * return: kParser error code as defined in
++	 *	   include/uapi/linux/kparser.h
 +	 */
-+	return *key;
-+}
++		int __kparser_parse(const void *parser, void *_hdr,
++				    size_t parse_len, void *_metadata,
++				    size_t metadata_len);
 +
-+/* name hash table's hash calculation function callback from object */
-+static inline __u32 kparser_generic_obj_hashfn_name(const void *obj, __u32 key_len, __u32 seed)
-+{
-+	const struct kparser_hkey *key;
-+
-+	key = obj;
-+	/* TODO: check if seed needs to be used here
-+	 * TODO: replace xxh32() with siphash
-+	 * Note: this only works because key always in the start place
-+	 * of all the differnt kparser objects
++	/* kparser_get_parser(): Function to get an opaque reference of
++	 *			 a parser instance and mark it
++	 *			 immutable so that while actively using,
++	 *			 it can not be deleted. The parser is
++	 *			 identified by a key. It marks the
++	 *			 associated parser and whole parse
++	 *			tree immutable so that when it is
++	 *			locked, it can not be deleted.
++	 *
++	 * kparser_key: key of the associated kParser parser object
++	 *		which must be already created via CLI.
++	 *
++	 * return: NULL if key not found, else an opaque parser instance
++	 *	   pointer which can be used in the following APIs 3 and
++	 *	   4.
++	 *
++	 * NOTE: This call makes the whole parser tree immutable. If
++	 *	 caller calls this more than once, later caller will
++	 *	 need to release the same parser exactly that many times
++	 *	 using the API kparser_put_parser().
 +	 */
-+	return xxh32(key->name, strlen(key->name), 0);
-+}
++		const void *kparser_get_parser(const struct kparser_hkey
++					       *kparser_key);
 +
-+/* ID hash table's hash calculation function callback from object */
-+static inline __u32 kparser_generic_obj_hashfn_id(const void *obj, __u32 key_len, __u32 seed)
-+{
-+	/* TODO: check if seed needs to be used here
-+	 * TODO: replace xxh32() with siphash
-+	 * Note: this only works because key always is the very first object in all the differnt
-+	 * kparser objects
++	/* kparser_put_parser(): Function to return and undo the read
++	 *			 only operation done previously by
++	 *			 kparser_get_parser(). The parser
++	 *			 instance is identified by using a
++	 *			 previously obtained opaque parser
++	 *			 pointer via API kparser_get_parser().
++	 *			 This undo the immutable change so that
++	 *			 any component of the whole parse tree
++	 *			 can be deleted again.
++	 *
++	 * parser: void *, Non NULL opaque pointer which was previously
++	 *	   returned by kparser_get_parser(). Caller can use
++	 *	   cached opaque pointer as long as system does not
++	 *	   restart and kparser.ko is not reloaded.
++	 *
++	 * return: boolean, true if put operation is success, else
++	 *	   false.
++	 *
++	 * NOTE: This call makes the whole parser tree deletable for the
++	 *	 very last call.
 +	 */
-+	return ((const struct kparser_hkey *)obj)->id;
-+}
 +
-+/* internal shared functions */
-+int kparser_init(void);
-+int kparser_deinit(void);
-+int kparser_config_handler_add(const void *cmdarg, size_t cmdarglen,
-+			       struct kparser_cmd_rsp_hdr **rsp,
-+			       size_t *rsp_len);
-+int kparser_config_handler_update(const void *cmdarg, size_t cmdarglen,
-+				  struct kparser_cmd_rsp_hdr **rsp,
-+				  size_t *rsp_len);
-+int kparser_config_handler_read(const void *cmdarg, size_t cmdarglen,
-+				struct kparser_cmd_rsp_hdr **rsp,
-+				size_t *rsp_len);
-+int kparser_config_handler_delete(const void *cmdarg, size_t cmdarglen,
-+				  struct kparser_cmd_rsp_hdr **rsp,
-+				  size_t *rsp_len);
-+void *kparser_namespace_lookup(enum kparser_global_namespace_ids ns_id,
-+			       const struct kparser_hkey *key);
-+void kparser_ref_get(struct kref *refcount);
-+void kparser_ref_put(struct kref *refcount);
-+int kparser_conf_key_manager(enum kparser_global_namespace_ids ns_id,
-+			     const struct kparser_hkey *key,
-+			     struct kparser_hkey *new_key,
-+			     struct kparser_cmd_rsp_hdr *rsp,
-+			     const char *op);
-+void kparser_free(void *ptr);
-+int kparser_namespace_remove(enum kparser_global_namespace_ids ns_id,
-+			     struct rhash_head *obj_id,
-+			     struct rhash_head *obj_name);
-+int kparser_namespace_insert(enum kparser_global_namespace_ids ns_id,
-+			     struct rhash_head *obj_id,
-+			     struct rhash_head *obj_name);
++		bool kparser_put_parser(const void *parser);
 +
-+/* Generic kParser KMOD's netlink msg handler's definitions for create */
-+typedef int kparser_obj_create_update(const struct kparser_conf_cmd *conf,
-+				      size_t conf_len,
-+				      struct kparser_cmd_rsp_hdr **rsp,
-+				      size_t *rsp_len, const char *op);
-+/* Generic kParser KMOD's netlink msg handler's definitions for read and delete */
-+typedef int kparser_obj_read_del(const struct kparser_hkey *key,
-+		struct kparser_cmd_rsp_hdr **rsp,
-+		size_t *rsp_len, __u8 recursive_read,
-+		const char *op);
-+/* Generic kParser KMOD's netlink msg handler's free callbacks */
-+typedef void kparser_free_obj(void *ptr, void *arg);
-+int kparser_link_attach(const void *owner_obj,
-+			int owner_nsid,
-+			const void **owner_obj_link_ptr,
-+			struct kref *owner_obj_refcount,
-+			struct list_head *owner_list,
-+			const void *owned_obj,
-+			int owned_nsid,
-+			struct kref *owned_obj_refcount,
-+			struct list_head *owned_list,
-+			struct kparser_cmd_rsp_hdr *rsp,
-+			const char *op);
-+int kparser_link_detach(const void *obj,
-+			struct list_head *owner_list,
-+			struct list_head *owned_list,
-+			struct kparser_cmd_rsp_hdr *rsp);
-+int alloc_first_rsp(struct kparser_cmd_rsp_hdr **rsp, size_t *rsp_len, int nsid);
-+void kparser_start_new_tree_traversal(void);
-+void kparser_dump_parser_tree(const struct kparser_parser *obj);
++Example: Five tuple parser with header offsets
++==============================================
 +
-+/* kParser KMOD's netlink msg/cmd handler's, these are innermost handlers */
-+kparser_obj_create_update
-+	kparser_create_cond_exprs,
-+	kparser_create_cond_table,
-+	kparser_create_cond_tables,
-+	kparser_create_counter,
-+	kparser_create_counter_table,
-+	kparser_create_metadata,
-+	kparser_create_metalist,
-+	kparser_create_parse_node,
-+	kparser_create_proto_table,
-+	kparser_create_parse_tlv_node,
-+	kparser_create_tlv_proto_table,
-+	kparser_create_flag_field,
-+	kparser_create_flag_field_table,
-+	kparser_create_parse_flag_field_node,
-+	kparser_create_flag_field_proto_table,
-+	kparser_create_parser,
-+	kparser_parser_lock;
++Now we can refer to an example kParser configuration which can parse
++simple IPv4 five tuples, i.e. IPv4 header offset, offset of IPv4
++addresses, IPv4 protocol number, L4 header offset (i.e. TCP/UDP) and
++L4 port numbers. The sample ip commands are:
 +
-+kparser_obj_read_del
-+	kparser_read_cond_exprs,
-+	kparser_read_cond_table,
-+	kparser_read_cond_tables,
-+	kparser_read_counter,
-+	kparser_read_counter_table,
-+	kparser_read_metadata,
-+	kparser_del_metadata,
-+	kparser_read_metalist,
-+	kparser_del_metalist,
-+	kparser_read_parse_node,
-+	kparser_del_parse_node,
-+	kparser_read_proto_table,
-+	kparser_del_proto_table,
-+	kparser_read_parse_tlv_node,
-+	kparser_read_tlv_proto_table,
-+	kparser_read_flag_field,
-+	kparser_read_flag_field_table,
-+	kparser_read_parse_flag_field_node,
-+	kparser_read_flag_field_proto_table,
-+	kparser_read_parser,
-+	kparser_del_parser,
-+	kparser_parser_unlock;
++.. code-block:: shell
 +
-+kparser_free_obj
-+	kparser_free_metadata,
-+	kparser_free_metalist,
-+	kparser_free_node,
-+	kparser_free_proto_tbl,
-+	kparser_free_parser;
++	ip parser create md-rule name md.iphdr_offset type offset \
++		md-off 0
++	ip parser create md-rule name md.ipaddrs src-hdr-off 12 \
++		length 8 md-off 4
++	ip parser create md-rule name md.l4_hdr.offset type offset \
++		md-off 2
++	ip parser create md-rule name md.ports src-hdr-off 0 \
++		length 4 md-off 12 isendianneeded true
++	ip parser create node name node.ports hdr.minlen 4 \
++		md-rule md.l4_hdr.offset md-rule md.ports
++	ip parser create node name node.ipv4 hdr.minlen 20 \
++		hdr.len-field-off 0 hdr.len-field-len 1 \
++		hdr.len-field-mask 0x0f hdr.len-field-multiplier 4 \
++		nxt.field-off 9 nxt.field-len 1 \
++		nxt.table-ent 6:node.ports \
++		nxt.table-ent 17:node.ports md-rule md.iphdr_offset \
++		md-rule md.ipaddrs
++	ip parser create node name node.ether hdr.minlen 14 \
++		nxt.offset 12 nxt.length 2 \
++		nxt.table-ent 0x800:node.ipv4
++	ip parser create parser name tuple_parser rootnode node.ether \
++		base-metametadata-size 14
 +
-+#endif /* __KPARSER_H */
-diff --git a/net/kparser/kparser_cmds.c b/net/kparser/kparser_cmds.c
++This sample parser will parse Ethernet/IPv4 to UDP and TCP, report the
++offsets of the innermost IP and TCP or UDP header, extract IPv4
++addresses and UDP or TCP ports (into a frame).
+diff --git a/Documentation/networking/parse_graph_example.svg b/Documentation/networking/parse_graph_example.svg
 new file mode 100644
-index 000000000000..c656c3df4a7f
+index 000000000000..f21a695e9bde
 --- /dev/null
-+++ b/net/kparser/kparser_cmds.c
-@@ -0,0 +1,898 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2022, SiPanda Inc.
-+ *
-+ * kparser_cmds.c - kParser KMOD-CLI management API layer
-+ *
-+ * Author:      Pratyush Kumar Khan <pratyush@sipanda.io>
-+ */
-+
-+#include <linux/bitops.h>
-+#include <linux/rhashtable.h>
-+#include <linux/slab.h>
-+#include <linux/sort.h>
-+
-+#include "kparser.h"
-+
-+#define KREF_INIT_VALUE		1
-+
-+/* These are used to track node loops in parse tree traversal operations */
-+static __u64 curr_traversal_ts_id_ns;
-+
-+/* This function marks a start of a new parse tree traversal operation */
-+void kparser_start_new_tree_traversal(void)
-+{
-+	curr_traversal_ts_id_ns = ktime_get_ns();
-+}
-+
-+/* A simple wrapper for kfree for additional future internal debug info, particularly to
-+ * track memleaks
-+ */
-+void kparser_free(void *ptr)
-+{
-+	if (ptr)
-+		kfree(ptr);
-+}
-+
-+/* Kernel API kref_put() must have a non-NULL callback, since we don't need to do anything during
-+ * refcount release, kparser_release_ref() is just empty.
-+ */
-+static void kparser_release_ref(struct kref *kref)
-+{
-+}
-+
-+/* Consumer of this is datapath */
-+void kparser_ref_get(struct kref *refcount)
-+{
-+	pr_debug("{%s:%d}:refcnt:%u\n", __func__, __LINE__, kref_read(refcount));
-+
-+	kref_get(refcount);
-+}
-+
-+/* Consumer of this is datapath */
-+void kparser_ref_put(struct kref *refcount)
-+{
-+	unsigned int refcnt;
-+
-+	refcnt = kref_read(refcount);
-+	pr_debug("{%s:%d}:refcnt:%u\n", __func__, __LINE__, refcnt);
-+
-+	if (refcnt > KREF_INIT_VALUE)
-+		kref_put(refcount, kparser_release_ref);
-+	else
-+		pr_warn("refcount violation detected, val:%u", refcnt);
-+}
-+
-+/* These are to track/bookkeep owner/owned relationships(both ways) when refcount is involved among
-+ * various different types of namespace objects
-+ */
-+int kparser_link_attach(const void *owner_obj,
-+			int owner_nsid,
-+			const void **owner_obj_link_ptr,
-+			struct kref *owner_obj_refcount,
-+			struct list_head *owner_list,
-+			const void *owned_obj,
-+			int owned_nsid,
-+			struct kref *owned_obj_refcount,
-+			struct list_head *owned_list,
-+			struct kparser_cmd_rsp_hdr *rsp,
-+			const char *op)
-+{
-+	struct kparser_obj_link_ctx *reflist = NULL;
-+
-+	reflist = kzalloc(sizeof(*reflist), GFP_KERNEL);
-+	if (!reflist) {
-+		rsp->op_ret_code = ENOMEM;
-+		(void)snprintf(rsp->err_str_buf,
-+				sizeof(rsp->err_str_buf),
-+				"%s: kzalloc failed", op);
-+		return -ENOMEM;
-+	}
-+
-+	reflist->sig = KPARSER_LINK_OBJ_SIGNATURE;
-+	reflist->owner_obj.nsid = owner_nsid;
-+	reflist->owner_obj.obj = owner_obj;
-+	reflist->owner_obj.link_ptr = owner_obj_link_ptr;
-+	reflist->owner_obj.list = owner_list;
-+	reflist->owner_obj.refcount = owner_obj_refcount;
-+
-+	reflist->owned_obj.nsid = owned_nsid;
-+	reflist->owned_obj.obj = owned_obj;
-+	reflist->owned_obj.list = owned_list;
-+	reflist->owned_obj.refcount = owned_obj_refcount;
-+
-+	/* reflist is a bookkeeping tracker which maps an owner with owned, both ways.
-+	 * hence for both owner and owned map contexts, it is kept in their respective lists.
-+	 */
-+	list_add_tail(&reflist->owner_obj.list_node, reflist->owner_obj.list);
-+	list_add_tail(&reflist->owned_obj.list_node, reflist->owned_obj.list);
-+
-+	if (reflist->owned_obj.refcount)
-+		kref_get(reflist->owned_obj.refcount);
-+
-+	pr_debug("{%s:%d}:owner:%p owned:%p ref:%p\n",
-+		 __func__, __LINE__, owner_obj, owned_obj, reflist);
-+
-+	synchronize_rcu();
-+
-+	return 0;
-+}
-+
-+/* It is reverse bookkeeping action of kparser_link_attach(). when an object is detached (be it
-+ * owner or owned, the respective map links needs be properly updated to indicate this detachment.
-+ * kparser_link_break() is responsible for this removal update.
-+ */
-+static inline int kparser_link_break(const void *owner, const void *owned,
-+				     struct kparser_obj_link_ctx *ref,
-+				     struct kparser_cmd_rsp_hdr *rsp)
-+{
-+	if (!ref) {
-+		if (rsp) {
-+			rsp->op_ret_code = EFAULT;
-+			(void)snprintf(rsp->err_str_buf,
-+					sizeof(rsp->err_str_buf),
-+					"link is NULL!");
-+		}
-+		return -EFAULT;
-+	}
-+
-+	if (ref->sig != KPARSER_LINK_OBJ_SIGNATURE) {
-+		if (rsp) {
-+			rsp->op_ret_code = EFAULT;
-+			(void)snprintf(rsp->err_str_buf,
-+					sizeof(rsp->err_str_buf),
-+					"link is corrupt!");
-+		}
-+		return -EFAULT;
-+	}
-+
-+	if (owner && ref->owner_obj.obj != owner) {
-+		if (rsp) {
-+			rsp->op_ret_code = EFAULT;
-+			(void)snprintf(rsp->err_str_buf,
-+					sizeof(rsp->err_str_buf),
-+					"link owner corrupt!");
-+		}
-+		return -EFAULT;
-+	}
-+
-+	if (owned && ref->owned_obj.obj != owned) {
-+		if (rsp) {
-+			rsp->op_ret_code = EFAULT;
-+			(void)snprintf(rsp->err_str_buf,
-+					sizeof(rsp->err_str_buf),
-+					"link owned corrupt!");
-+		}
-+		return -EFAULT;
-+	}
-+
-+	if (ref->owned_obj.refcount)
-+		kref_put(ref->owned_obj.refcount, kparser_release_ref);
-+
-+	if (ref->owner_obj.link_ptr)
-+		rcu_assign_pointer(*ref->owner_obj.link_ptr, NULL);
-+
-+	list_del_init_careful(&ref->owner_obj.list_node);
-+	list_del_init_careful(&ref->owned_obj.list_node);
-+
-+	synchronize_rcu();
-+
-+	return 0;
-+}
-+
-+/* when a detachment happens, from owner object perspective, it needs to remove the bookkeeping
-+ * map contexts with respect to mapped owned objects.
-+ */
-+static inline int kparser_link_detach_owner(const void *obj,
-+					    struct list_head *list,
-+					    struct kparser_cmd_rsp_hdr *rsp)
-+{
-+	struct kparser_obj_link_ctx *tmp_list_ref = NULL, *curr_ref = NULL;
-+
-+	list_for_each_entry_safe(curr_ref, tmp_list_ref, list, owner_obj.list_node) {
-+		if (kparser_link_break(obj, NULL, curr_ref, rsp) != 0)
-+			return -EFAULT;
-+		kparser_free(curr_ref);
-+	}
-+
-+	return 0;
-+}
-+
-+/* when a detachment happens, from owned object perspective, it needs to remove the bookkeeping
-+ * map contexts with respect to mapped owner objects.
-+ */
-+static inline int kparser_link_detach_owned(const void *obj,
-+					    struct list_head *list,
-+					    struct kparser_cmd_rsp_hdr *rsp)
-+{
-+	struct kparser_obj_link_ctx *tmp_list_ref = NULL, *curr_ref = NULL;
-+	const struct kparser_glue_glue_parse_node *kparsenode;
-+	const struct kparser_glue_protocol_table *proto_table;
-+	int i;
-+
-+	list_for_each_entry_safe(curr_ref, tmp_list_ref, list, owned_obj.list_node) {
-+		/* Special case handling:
-+		 * if this is parse node and owned by a prototable, make sure
-+		 * to remove that table's entry from array separately
-+		 */
-+		if (curr_ref->owner_obj.nsid == KPARSER_NS_PROTO_TABLE &&
-+		    curr_ref->owned_obj.nsid == KPARSER_NS_NODE_PARSE) {
-+			proto_table = curr_ref->owner_obj.obj;
-+			kparsenode = curr_ref->owned_obj.obj;
-+			for (i = 0; i < proto_table->proto_table.num_ents;
-+					i++) {
-+				if (proto_table->proto_table.entries[i].node !=
-+						&kparsenode->parse_node.node)
-+					continue;
-+				rcu_assign_pointer(proto_table->proto_table.entries[i].node, NULL);
-+				memset(&proto_table->proto_table.entries[i], 0,
-+				       sizeof(proto_table->proto_table.entries[i]));
-+				synchronize_rcu();
-+				break;
-+			}
-+		}
-+
-+		if (kparser_link_break(NULL, obj, curr_ref, rsp) != 0)
-+			return -EFAULT;
-+		kparser_free(curr_ref);
-+	}
-+
-+	return 0;
-+}
-+
-+/* bookkeeping function to break a link between an owner and owned object */
-+int kparser_link_detach(const void *obj,
-+			struct list_head *owner_list,
-+			struct list_head *owned_list,
-+			struct kparser_cmd_rsp_hdr *rsp)
-+{
-+	if (kparser_link_detach_owner(obj, owner_list, rsp) != 0)
-+		return -EFAULT;
-+
-+	if (kparser_link_detach_owned(obj, owned_list, rsp) != 0)
-+		return -EFAULT;
-+
-+	return 0;
-+}
-+
-+/* kParser KMOD's namespace definitions */
-+struct kparser_mod_namespaces {
-+	enum kparser_global_namespace_ids namespace_id;
-+	const char *name;
-+	struct kparser_htbl htbl_name;
-+	struct kparser_htbl htbl_id;
-+	kparser_obj_create_update *create_handler;
-+	kparser_obj_create_update *update_handler;
-+	kparser_obj_read_del *read_handler;
-+	kparser_obj_read_del *del_handler;
-+	kparser_free_obj *free_handler;
-+	size_t bv_len;
-+	unsigned long *bv;
-+};
-+
-+/* Statically define kParser KMOD's namespaces with all the parameters */
-+#define KPARSER_DEFINE_MOD_NAMESPACE(g_ns_obj, nsid, obj_name, field, create,	\
-+				     read, update, delete, free)		\
-+static struct kparser_mod_namespaces g_ns_obj = {				\
-+	.namespace_id = nsid,							\
-+	.name = #nsid,								\
-+	.htbl_name =	{							\
-+		.tbl_params = {							\
-+			.head_offset = offsetof(				\
-+					struct obj_name,			\
-+					field.ht_node_name),			\
-+			.key_offset = offsetof(					\
-+					struct obj_name,			\
-+					field.key.name),			\
-+			.key_len = sizeof(((struct kparser_hkey *)0)->name),	\
-+			.automatic_shrinking = true,				\
-+			.hashfn = kparser_generic_hash_fn_name,			\
-+			.obj_hashfn = kparser_generic_obj_hashfn_name,		\
-+			.obj_cmpfn = kparser_cmp_fn_name,			\
-+		}								\
-+	},									\
-+	.htbl_id =	{							\
-+		.tbl_params = {							\
-+			.head_offset = offsetof(				\
-+					struct obj_name,			\
-+					field.ht_node_id),			\
-+			.key_offset = offsetof(					\
-+					struct obj_name,			\
-+					field.key.id),				\
-+			.key_len = sizeof(((struct kparser_hkey *)0)->id),	\
-+			.automatic_shrinking = true,				\
-+			.hashfn = kparser_generic_hash_fn_id,			\
-+			.obj_hashfn = kparser_generic_obj_hashfn_id,		\
-+			.obj_cmpfn = kparser_cmp_fn_id,				\
-+		}								\
-+	},									\
-+										\
-+	.create_handler = create,						\
-+	.read_handler = read,							\
-+	.update_handler = update,						\
-+	.del_handler = delete,							\
-+	.free_handler = free,							\
-+}
-+
-+KPARSER_DEFINE_MOD_NAMESPACE(kparser_mod_namespace_condexprs,
-+			     KPARSER_NS_CONDEXPRS,
-+			     kparser_glue_condexpr_expr,
-+			     glue,
-+			     kparser_create_cond_exprs,
-+			     kparser_read_cond_exprs,
-+			     NULL, NULL, NULL);
-+
-+KPARSER_DEFINE_MOD_NAMESPACE(kparser_mod_namespace_condexprs_table,
-+			     KPARSER_NS_CONDEXPRS_TABLE,
-+			     kparser_glue_condexpr_table,
-+			     glue,
-+			     kparser_create_cond_table,
-+			     kparser_read_cond_table,
-+			     NULL, NULL, NULL);
-+
-+KPARSER_DEFINE_MOD_NAMESPACE(kparser_mod_namespace_condexprs_tables,
-+			     KPARSER_NS_CONDEXPRS_TABLES,
-+			     kparser_glue_condexpr_tables,
-+			     glue,
-+			     kparser_create_cond_tables,
-+			     kparser_read_cond_tables,
-+			     NULL, NULL, NULL);
-+
-+KPARSER_DEFINE_MOD_NAMESPACE(kparser_mod_namespace_counter,
-+			     KPARSER_NS_COUNTER,
-+			     kparser_glue_counter,
-+			     glue,
-+			     kparser_create_counter,
-+			     kparser_read_counter,
-+			     NULL, NULL, NULL);
-+
-+KPARSER_DEFINE_MOD_NAMESPACE(kparser_mod_namespace_counter_table,
-+			     KPARSER_NS_COUNTER_TABLE,
-+			     kparser_glue_counter_table,
-+			     glue,
-+			     kparser_create_counter_table,
-+			     kparser_read_counter_table,
-+			     NULL, NULL, NULL);
-+
-+KPARSER_DEFINE_MOD_NAMESPACE(kparser_mod_namespace_metadata,
-+			     KPARSER_NS_METADATA,
-+			     kparser_glue_metadata_extract,
-+			     glue,
-+			     kparser_create_metadata,
-+			     kparser_read_metadata,
-+			     NULL,
-+			     kparser_del_metadata,
-+			     kparser_free_metadata);
-+
-+KPARSER_DEFINE_MOD_NAMESPACE(kparser_mod_namespace_metalist,
-+			     KPARSER_NS_METALIST,
-+			     kparser_glue_metadata_table,
-+			     glue,
-+			     kparser_create_metalist,
-+			     kparser_read_metalist,
-+			     NULL,
-+			     kparser_del_metalist,
-+			     kparser_free_metalist);
-+
-+KPARSER_DEFINE_MOD_NAMESPACE(kparser_mod_namespace_node_parse,
-+			     KPARSER_NS_NODE_PARSE,
-+			     kparser_glue_glue_parse_node,
-+			     glue.glue,
-+			     kparser_create_parse_node,
-+			     kparser_read_parse_node,
-+			     NULL,
-+			     kparser_del_parse_node,
-+			     kparser_free_node);
-+
-+KPARSER_DEFINE_MOD_NAMESPACE(kparser_mod_namespace_proto_table,
-+			     KPARSER_NS_PROTO_TABLE,
-+			     kparser_glue_protocol_table,
-+			     glue,
-+			     kparser_create_proto_table,
-+			     kparser_read_proto_table,
-+			     NULL,
-+			     kparser_del_proto_table,
-+			     kparser_free_proto_tbl);
-+
-+KPARSER_DEFINE_MOD_NAMESPACE(kparser_mod_namespace_tlv_node_parse,
-+			     KPARSER_NS_TLV_NODE_PARSE,
-+			     kparser_glue_parse_tlv_node,
-+			     glue.glue,
-+			     kparser_create_parse_tlv_node,
-+			     kparser_read_parse_tlv_node,
-+			     NULL, NULL, NULL);
-+
-+KPARSER_DEFINE_MOD_NAMESPACE(kparser_mod_namespace_tlv_proto_table,
-+			     KPARSER_NS_TLV_PROTO_TABLE,
-+			     kparser_glue_proto_tlvs_table,
-+			     glue,
-+			     kparser_create_tlv_proto_table,
-+			     kparser_read_tlv_proto_table,
-+			     NULL, NULL, NULL);
-+
-+KPARSER_DEFINE_MOD_NAMESPACE(kparser_mod_namespace_flag_field,
-+			     KPARSER_NS_FLAG_FIELD,
-+			     kparser_glue_flag_field,
-+			     glue,
-+			     kparser_create_flag_field,
-+			     kparser_read_flag_field,
-+			     NULL, NULL, NULL);
-+
-+KPARSER_DEFINE_MOD_NAMESPACE(kparser_mod_namespace_flag_field_table,
-+			     KPARSER_NS_FLAG_FIELD_TABLE,
-+			     kparser_glue_flag_fields,
-+			     glue,
-+			     kparser_create_flag_field_table,
-+			     kparser_read_flag_field_table,
-+			     NULL, NULL, NULL);
-+
-+KPARSER_DEFINE_MOD_NAMESPACE(kparser_mod_namespace_flag_field_parse_node,
-+			     KPARSER_NS_FLAG_FIELD_NODE_PARSE,
-+			     kparser_glue_flag_field_node,
-+			     glue.glue,
-+			     kparser_create_parse_flag_field_node,
-+			     kparser_read_parse_flag_field_node,
-+			     NULL, NULL, NULL);
-+
-+KPARSER_DEFINE_MOD_NAMESPACE(kparser_mod_namespace_flag_field_proto_table,
-+			     KPARSER_NS_FLAG_FIELD_PROTO_TABLE,
-+			     kparser_glue_proto_flag_fields_table,
-+			     glue,
-+			     kparser_create_flag_field_proto_table,
-+			     kparser_read_flag_field_proto_table,
-+			     NULL, NULL, NULL);
-+
-+KPARSER_DEFINE_MOD_NAMESPACE(kparser_mod_namespace_parser,
-+			     KPARSER_NS_PARSER,
-+			     kparser_glue_parser,
-+			     glue,
-+			     kparser_create_parser,
-+			     kparser_read_parser,
-+			     NULL,
-+			     kparser_del_parser,
-+			     kparser_free_parser);
-+
-+KPARSER_DEFINE_MOD_NAMESPACE(kparser_mod_namespace_parser_lock_unlock,
-+			     KPARSER_NS_OP_PARSER_LOCK_UNLOCK,
-+			     kparser_glue_parser,
-+			     glue,
-+			     kparser_parser_lock,
-+			     NULL, NULL,
-+			     kparser_parser_unlock,
-+			     NULL);
-+
-+static struct kparser_mod_namespaces *g_mod_namespaces[] = {
-+	[KPARSER_NS_INVALID] = NULL,
-+	[KPARSER_NS_CONDEXPRS] = &kparser_mod_namespace_condexprs,
-+	[KPARSER_NS_CONDEXPRS_TABLE] = &kparser_mod_namespace_condexprs_table,
-+	[KPARSER_NS_CONDEXPRS_TABLES] =
-+		&kparser_mod_namespace_condexprs_tables,
-+	[KPARSER_NS_COUNTER] = &kparser_mod_namespace_counter,
-+	[KPARSER_NS_COUNTER_TABLE] = &kparser_mod_namespace_counter_table,
-+	[KPARSER_NS_METADATA] = &kparser_mod_namespace_metadata,
-+	[KPARSER_NS_METALIST] = &kparser_mod_namespace_metalist,
-+	[KPARSER_NS_NODE_PARSE] = &kparser_mod_namespace_node_parse,
-+	[KPARSER_NS_PROTO_TABLE] = &kparser_mod_namespace_proto_table,
-+	[KPARSER_NS_TLV_NODE_PARSE] = &kparser_mod_namespace_tlv_node_parse,
-+	[KPARSER_NS_TLV_PROTO_TABLE] = &kparser_mod_namespace_tlv_proto_table,
-+	[KPARSER_NS_FLAG_FIELD] = &kparser_mod_namespace_flag_field,
-+	[KPARSER_NS_FLAG_FIELD_TABLE] =
-+		&kparser_mod_namespace_flag_field_table,
-+	[KPARSER_NS_FLAG_FIELD_NODE_PARSE] =
-+		&kparser_mod_namespace_flag_field_parse_node,
-+	[KPARSER_NS_FLAG_FIELD_PROTO_TABLE] =
-+		&kparser_mod_namespace_flag_field_proto_table,
-+	[KPARSER_NS_PARSER] = &kparser_mod_namespace_parser,
-+	[KPARSER_NS_OP_PARSER_LOCK_UNLOCK] =
-+		&kparser_mod_namespace_parser_lock_unlock,
-+	[KPARSER_NS_MAX] = NULL,
-+};
-+
-+/* Function to allocate autogen IDs for hash keys if user did not allocate themselves
-+ * TODO: free ids
-+ */
-+static inline __u16 allocate_id(__u16 id, unsigned long *bv, size_t bvsize)
-+{
-+	int i;
-+
-+	if (id != KPARSER_INVALID_ID) {
-+		/* try to allocate passed id */
-+		/* already allocated, conflict */
-+		if (!test_bit(id, bv))
-+			return KPARSER_INVALID_ID;
-+		__clear_bit(id, bv);
-+		return id;
-+	}
-+
-+	/* allocate internally, scan bitvector */
-+	for (i = 0; i < bvsize; i++) {
-+		/* avoid bit vectors which are already full */
-+		if (bv[i]) {
-+			id = __builtin_ffs(bv[i]);
-+			if (id) {
-+				id--;
-+				id += (i * BITS_PER_TYPE(unsigned long));
-+				__clear_bit(id, bv);
-+				return (id + KPARSER_KMOD_ID_MIN);
-+			}
-+			pr_alert("{%s:%d} ID alloc failed: {%d:%d}\n", __func__, __LINE__, id, i);
-+			return KPARSER_INVALID_ID;
-+		}
-+	}
-+
-+	pr_alert("{%s:%d} ID alloc failed: {%d:%d}\n", __func__, __LINE__, id, i);
-+	return KPARSER_INVALID_ID;
-+}
-+
-+/* allocate hash key's autogen ID */
-+static inline int kparser_allocate_key_id(enum kparser_global_namespace_ids ns_id,
-+					  const struct kparser_hkey *key,
-+					  struct kparser_hkey *new_key)
-+{
-+	*new_key = *key;
-+	new_key->id = allocate_id(KPARSER_INVALID_ID,
-+				  g_mod_namespaces[ns_id]->bv,
-+				  g_mod_namespaces[ns_id]->bv_len);
-+
-+	if (new_key->id == KPARSER_INVALID_ID)
-+		return -ENOENT;
-+
-+	return 0;
-+}
-+
-+/* allocate hash key's autogen name */
-+static inline bool kparser_allocate_key_name(enum kparser_global_namespace_ids ns_id,
-+					     const struct kparser_hkey *key,
-+					     struct kparser_hkey *new_key)
-+{
-+	*new_key = *key;
-+	memset(new_key->name, 0, sizeof(new_key->name));
-+	snprintf(new_key->name, sizeof(new_key->name),
-+		 "%s-%s-%u", KPARSER_DEF_NAME_PREFIX,
-+		 g_mod_namespaces[ns_id]->name, key->id);
-+	new_key->name[sizeof(new_key->name) - 1] = '\0';
-+	return true;
-+}
-+
-+/* check and decide which component of hash key needs to be allocated using autogen code */
-+int kparser_conf_key_manager(enum kparser_global_namespace_ids ns_id,
-+			     const struct kparser_hkey *key,
-+			     struct kparser_hkey *new_key,
-+			     struct kparser_cmd_rsp_hdr *rsp,
-+			     const char *op)
-+{
-+	if (kparser_hkey_empty(key)) {
-+		rsp->op_ret_code = -EINVAL;
-+		(void)snprintf(rsp->err_str_buf, sizeof(rsp->err_str_buf),
-+				"%s:HKey missing", op);
-+		return -EINVAL;
-+	}
-+
-+	if (kparser_hkey_id_empty(key) && new_key)
-+		return kparser_allocate_key_id(ns_id, key, new_key);
-+
-+	if (kparser_hkey_user_id_invalid(key)) {
-+		rsp->op_ret_code = -EINVAL;
-+		(void)snprintf(rsp->err_str_buf, sizeof(rsp->err_str_buf),
-+				"%s:HKey id invalid:%u",
-+				op, key->id);
-+		return -EINVAL;
-+	}
-+
-+	if (kparser_hkey_name_empty(key) && new_key)
-+		return kparser_allocate_key_name(ns_id, key, new_key);
-+
-+	if (new_key)
-+		*new_key = *key;
-+
-+	return 0;
-+}
-+
-+/* remove an object from namespace */
-+int kparser_namespace_remove(enum kparser_global_namespace_ids ns_id,
-+			     struct rhash_head *obj_id,
-+			     struct rhash_head *obj_name)
-+{
-+	int rc;
-+
-+	if (ns_id <= KPARSER_NS_INVALID || ns_id >= KPARSER_NS_MAX)
-+		return -EINVAL;
-+
-+	if (!g_mod_namespaces[ns_id])
-+		return -ENOENT;
-+
-+	rc = rhashtable_remove_fast(&g_mod_namespaces[ns_id]->htbl_id.tbl, obj_id,
-+				    g_mod_namespaces[ns_id]->htbl_id.tbl_params);
-+
-+	if (rc)
-+		return rc;
-+
-+	rc = rhashtable_remove_fast(&g_mod_namespaces[ns_id]->htbl_name.tbl, obj_name,
-+				    g_mod_namespaces[ns_id]->htbl_name.tbl_params);
-+
-+	return rc;
-+}
-+
-+/* lookup an object using hash key from namespace */
-+void *kparser_namespace_lookup(enum kparser_global_namespace_ids ns_id,
-+			       const struct kparser_hkey *key)
-+{
-+	void *ret;
-+
-+	if (ns_id <= KPARSER_NS_INVALID || ns_id >= KPARSER_NS_MAX)
-+		return NULL;
-+
-+	if (!g_mod_namespaces[ns_id])
-+		return NULL;
-+
-+	ret = rhashtable_lookup(&g_mod_namespaces[ns_id]->htbl_id.tbl,
-+				&key->id,
-+				g_mod_namespaces[ns_id]->htbl_id.tbl_params);
-+
-+	if (ret)
-+		return ret;
-+
-+	ret = rhashtable_lookup(&g_mod_namespaces[ns_id]->htbl_name.tbl,
-+				key->name,
-+				g_mod_namespaces[ns_id]->htbl_name.tbl_params);
-+
-+	return ret;
-+}
-+
-+/* insert an object using hash key into namespace */
-+int kparser_namespace_insert(enum kparser_global_namespace_ids ns_id,
-+			     struct rhash_head *obj_id,
-+			     struct rhash_head *obj_name)
-+{
-+	int rc;
-+
-+	if (ns_id <= KPARSER_NS_INVALID || ns_id >= KPARSER_NS_MAX)
-+		return -EINVAL;
-+
-+	if (!g_mod_namespaces[ns_id])
-+		return -ENOENT;
-+
-+	rc = rhashtable_insert_fast(&g_mod_namespaces[ns_id]->htbl_id.tbl, obj_id,
-+				    g_mod_namespaces[ns_id]->htbl_id.tbl_params);
-+	if (rc)
-+		return rc;
-+
-+	rc = rhashtable_insert_fast(&g_mod_namespaces[ns_id]->htbl_name.tbl, obj_name,
-+				    g_mod_namespaces[ns_id]->htbl_name.tbl_params);
-+
-+	return rc;
-+}
-+
-+/* allocate the manadatory very first response header (rsp) for netlink reply msg */
-+int alloc_first_rsp(struct kparser_cmd_rsp_hdr **rsp, size_t *rsp_len, int nsid)
-+{
-+	if (!rsp || *rsp || !rsp_len || (*rsp_len != 0))
-+		return -EINVAL;
-+
-+	*rsp = kzalloc(sizeof(**rsp), GFP_KERNEL);
-+	if (!(*rsp)) {
-+		pr_alert("%s:kzalloc failed for rsp, size:%lu\n", __func__, sizeof(**rsp));
-+		return -ENOMEM;
-+	}
-+
-+	*rsp_len = sizeof(struct kparser_cmd_rsp_hdr);
-+	(*rsp)->object.namespace_id = nsid;
-+	(*rsp)->objects_len = 0;
-+	return 0;
-+}
-+
-+/* initialize kParser's name space manager contexts */
-+int kparser_init(void)
-+{
-+	int err, i, j;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	for (i = 0; i < (sizeof(g_mod_namespaces) /
-+				sizeof(g_mod_namespaces[0])); i++) {
-+		if (!g_mod_namespaces[i])
-+			continue;
-+
-+		err = rhashtable_init(&g_mod_namespaces[i]->htbl_name.tbl,
-+				      &g_mod_namespaces[i]->htbl_name.tbl_params);
-+		if (err)
-+			goto handle_error;
-+
-+		err = rhashtable_init(&g_mod_namespaces[i]->htbl_id.tbl,
-+				      &g_mod_namespaces[i]->htbl_id.tbl_params);
-+		if (err)
-+			goto handle_error;
-+
-+		g_mod_namespaces[i]->bv_len =
-+			((KPARSER_KMOD_ID_MAX - KPARSER_KMOD_ID_MIN) /
-+			 BITS_PER_TYPE(unsigned long)) + 1;
-+
-+		pr_debug("{%s:%d}:bv_len:%lu, total_bytes:%lu, range:[%d:%d]\n",
-+			 __func__, __LINE__,
-+			 g_mod_namespaces[i]->bv_len,
-+			 sizeof(__u32) * g_mod_namespaces[i]->bv_len,
-+			 KPARSER_KMOD_ID_MAX, KPARSER_KMOD_ID_MIN);
-+
-+		g_mod_namespaces[i]->bv = kcalloc(g_mod_namespaces[i]->bv_len, sizeof(__u32),
-+						  GFP_KERNEL);
-+
-+		if (!g_mod_namespaces[i]->bv) {
-+			pr_alert("%s: kzalloc() failed\n", __func__);
-+			goto handle_error;
-+		}
-+
-+		memset(g_mod_namespaces[i]->bv, 0xff, g_mod_namespaces[i]->bv_len * sizeof(__u32));
-+	}
-+
-+	pr_debug("OUT: %s:%s:%d:err:%d\n", __FILE__, __func__, __LINE__, err);
-+
-+	return 0;
-+
-+handle_error:
-+	for (j = 0; j < i; j++) {
-+		if (!g_mod_namespaces[j])
-+			continue;
-+
-+		rhashtable_destroy(&g_mod_namespaces[j]->htbl_name.tbl);
-+		rhashtable_destroy(&g_mod_namespaces[j]->htbl_id.tbl);
-+
-+		kparser_free(g_mod_namespaces[j]->bv);
-+		g_mod_namespaces[j]->bv_len = 0;
-+	}
-+
-+	pr_debug("OUT: %s() failed, err: %d\n", __func__, err);
-+
-+	return err;
-+}
-+
-+/* de-initialize kParser's name space manager contexts and free and remove all entries */
-+int kparser_deinit(void)
-+{
-+	int i;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	for (i = 0; i < ARRAY_SIZE(g_mod_namespaces); i++) {
-+		if (!g_mod_namespaces[i])
-+			continue;
-+
-+		rhashtable_destroy(&g_mod_namespaces[i]->htbl_name.tbl);
-+		rhashtable_free_and_destroy(&g_mod_namespaces[i]->htbl_id.tbl,
-+					    g_mod_namespaces[i]->free_handler, NULL);
-+
-+		kparser_free(g_mod_namespaces[i]->bv);
-+
-+		g_mod_namespaces[i]->bv_len = 0;
-+	}
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return 0;
-+}
-+
-+/* pre-process handler for all the netlink msg processors */
-+static inline const struct kparser_conf_cmd
-+*kparser_config_handler_preprocess(const void *cmdarg,
-+				   size_t cmdarglen, struct kparser_cmd_rsp_hdr **rsp,
-+				   size_t *rsp_len)
-+{
-+	enum kparser_global_namespace_ids ns_id;
-+	const struct kparser_conf_cmd *conf;
-+	int rc;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	conf = cmdarg;
-+	if (!conf || cmdarglen < sizeof(*conf) || !rsp || *rsp || !rsp_len ||
-+	    (*rsp_len != 0) || conf->namespace_id <= KPARSER_NS_INVALID ||
-+	    conf->namespace_id >= KPARSER_NS_MAX) {
-+		pr_debug("{%s:%d}:[%p %lu %p %p %p %lu %d]\n",
-+			 __func__, __LINE__,
-+			 conf, cmdarglen, rsp, *rsp, rsp_len,
-+			 *rsp_len, conf->namespace_id);
-+		goto err_return;
-+	}
-+
-+	ns_id = conf->namespace_id;
-+
-+	if (!g_mod_namespaces[ns_id])
-+		goto err_return;
-+
-+	if (!g_mod_namespaces[ns_id]->create_handler)
-+		goto err_return;
-+
-+	rc = alloc_first_rsp(rsp, rsp_len, conf->namespace_id);
-+	if (rc) {
-+		pr_debug("%s:alloc_first_rsp() failed, rc:%d\n",
-+			 __func__, rc);
-+		goto err_return;
-+	}
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return cmdarg;
-+
-+err_return:
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return NULL;
-+}
-+
-+#define KPARSER_CONFIG_HANDLER_PRE()					\
-+do {									\
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);	\
-+	conf = kparser_config_handler_preprocess(cmdarg, cmdarglen,	\
-+			rsp, rsp_len);					\
-+	if (!conf)							\
-+		pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__,		\
-+				__LINE__);				\
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);	\
-+}									\
-+while (0)
-+
-+/* netlink msg processors for create */
-+int kparser_config_handler_add(const void *cmdarg, size_t cmdarglen,
-+			       struct kparser_cmd_rsp_hdr **rsp, size_t *rsp_len)
-+{
-+	const struct kparser_conf_cmd *conf;
-+
-+	KPARSER_CONFIG_HANDLER_PRE();
-+
-+	if (!conf)
-+		return KPARSER_ATTR_UNSPEC;
-+
-+	if (!g_mod_namespaces[conf->namespace_id]->create_handler)
-+		return KPARSER_ATTR_UNSPEC;
-+
-+	return g_mod_namespaces[conf->namespace_id]->create_handler(conf, cmdarglen,
-+								    rsp, rsp_len, "create");
-+}
-+
-+/* netlink msg processors for update */
-+int kparser_config_handler_update(const void *cmdarg, size_t cmdarglen,
-+				  struct kparser_cmd_rsp_hdr **rsp, size_t *rsp_len)
-+{
-+	const struct kparser_conf_cmd *conf;
-+
-+	KPARSER_CONFIG_HANDLER_PRE();
-+
-+	if (!conf)
-+		return KPARSER_ATTR_UNSPEC;
-+
-+	if (!g_mod_namespaces[conf->namespace_id]->update_handler)
-+		return KPARSER_ATTR_UNSPEC;
-+
-+	return g_mod_namespaces[conf->namespace_id]->update_handler(conf, cmdarglen,
-+								    rsp, rsp_len, "update");
-+}
-+
-+/* netlink msg processors for read */
-+int kparser_config_handler_read(const void *cmdarg, size_t cmdarglen,
-+				struct kparser_cmd_rsp_hdr **rsp, size_t *rsp_len)
-+{
-+	const struct kparser_conf_cmd *conf;
-+
-+	KPARSER_CONFIG_HANDLER_PRE();
-+
-+	if (!conf)
-+		return KPARSER_ATTR_UNSPEC;
-+
-+	if (!g_mod_namespaces[conf->namespace_id]->read_handler)
-+		return KPARSER_ATTR_UNSPEC;
-+
-+	return g_mod_namespaces[conf->namespace_id]->read_handler(&conf->obj_key, rsp, rsp_len,
-+			conf->recursive_read_delete, "read");
-+}
-+
-+/* netlink msg processors for delete */
-+int kparser_config_handler_delete(const void *cmdarg, size_t cmdarglen,
-+				  struct kparser_cmd_rsp_hdr **rsp, size_t *rsp_len)
-+{
-+	const struct kparser_conf_cmd *conf;
-+
-+	KPARSER_CONFIG_HANDLER_PRE();
-+
-+	if (!conf)
-+		return KPARSER_ATTR_UNSPEC;
-+
-+	if (!g_mod_namespaces[conf->namespace_id]->del_handler)
-+		return KPARSER_ATTR_UNSPEC;
-+
-+	return g_mod_namespaces[conf->namespace_id]->del_handler(&conf->obj_key, rsp, rsp_len,
-+			conf->recursive_read_delete, "delete");
-+}
-diff --git a/net/kparser/kparser_cmds_dump_ops.c b/net/kparser/kparser_cmds_dump_ops.c
-new file mode 100644
-index 000000000000..0a4c47cf78ea
---- /dev/null
-+++ b/net/kparser/kparser_cmds_dump_ops.c
-@@ -0,0 +1,532 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2022, SiPanda Inc.
-+ *
-+ * kparser_cmds_dump_ops.c - kParser KMOD-CLI debug dump operations
-+ *
-+ * Author:      Pratyush Kumar Khan <pratyush@sipanda.io>
-+ */
-+
-+#include "kparser.h"
-+
-+/* forward declarations of dump functions which dump config structures for debug purposes */
-+static void kparser_dump_node(const struct kparser_parse_node *obj);
-+static void kparser_dump_proto_table(const struct kparser_proto_table *obj);
-+static void kparser_dump_tlv_parse_node(const struct kparser_parse_tlv_node *obj);
-+static void kparser_dump_metadatatable(const struct kparser_metadata_table *obj);
-+static void kparser_dump_cond_tables(const struct kparser_condexpr_tables *obj);
-+
-+/* debug code: dump kparser_parameterized_len structure */
-+static void kparser_dump_param_len(const struct kparser_parameterized_len *pflen)
-+{
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	if (!pflen) {
-+		pr_debug("obj NULL");
-+		goto done;
-+	}
-+
-+	pr_debug("pflen.src_off:%u\n", pflen->src_off);
-+	pr_debug("pflen.size:%u\n", pflen->size);
-+	pr_debug("pflen.endian:%d\n", pflen->endian);
-+	pr_debug("pflen.mask:%u\n", pflen->mask);
-+	pr_debug("pflen.right_shift:%u\n", pflen->right_shift);
-+	pr_debug("pflen.multiplier:%u\n", pflen->multiplier);
-+	pr_debug("pflen.add_value:%u\n", pflen->add_value);
-+
-+done:
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+}
-+
-+/* debug code: dump kparser_parameterized_next_proto structure */
-+static void kparser_dump_param_next_proto(const struct kparser_parameterized_next_proto
-+					  *pfnext_proto)
-+{
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	if (!pfnext_proto) {
-+		pr_debug("obj NULL");
-+		goto done;
-+	}
-+
-+	pr_debug("pfnext_proto.src_off:%u\n", pfnext_proto->src_off);
-+	pr_debug("pfnext_proto.mask:%u\n", pfnext_proto->mask);
-+	pr_debug("pfnext_proto.size:%u\n", pfnext_proto->size);
-+	pr_debug("pfnext_proto.right_shift:%u\n", pfnext_proto->right_shift);
-+
-+done:
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+}
-+
-+/* debug code: dump kparser_condexpr_expr structure */
-+static void kparser_dump_cond_expr(const struct kparser_condexpr_expr *obj)
-+{
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	if (!obj) {
-+		pr_debug("obj NULL");
-+		goto done;
-+	}
-+
-+	pr_debug("type:%u, src_off:%u, len:%u, mask:%04x value:%04x\n",
-+		 obj->type, obj->src_off,
-+			obj->length, obj->mask, obj->value);
-+done:
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+}
-+
-+/* debug code: dump kparser_condexpr_table structure */
-+static void kparser_dump_cond_table(const struct kparser_condexpr_table *obj)
-+{
-+	int i;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	if (!obj) {
-+		pr_debug("obj NULL");
-+		goto done;
-+	}
-+
-+	pr_debug("default_fail:%d, type:%u\n", obj->default_fail, obj->type);
-+	pr_debug("num_ents:%u, entries:%p\n", obj->num_ents, obj->entries);
-+
-+	if (!obj->entries)
-+		goto done;
-+
-+	for (i = 0; i < obj->num_ents; i++)
-+		kparser_dump_cond_expr(obj->entries[i]);
-+
-+done:
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+}
-+
-+/* debug code: dump kparser_condexpr_tables structure */
-+static void kparser_dump_cond_tables(const struct kparser_condexpr_tables *obj)
-+{
-+	int i;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	if (!obj) {
-+		pr_debug("obj NULL");
-+		goto done;
-+	}
-+
-+	pr_debug("num_ents:%u, entries:%p\n", obj->num_ents, obj->entries);
-+	if (!obj->entries)
-+		goto done;
-+
-+	for (i = 0; i < obj->num_ents; i++)
-+		kparser_dump_cond_table(obj->entries[i]);
-+
-+done:
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+}
-+
-+/* debug code: dump kparser_proto_node structure */
-+static void kparser_dump_proto_node(const struct kparser_proto_node *obj)
-+{
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	if (!obj) {
-+		pr_debug("obj NULL");
-+		goto done;
-+	}
-+
-+	pr_debug("encap:%u\n", obj->encap);
-+	pr_debug("overlay:%u\n", obj->overlay);
-+	pr_debug("min_len:%lu\n", obj->min_len);
-+
-+	pr_debug("ops.flag_fields_length:%d\n", obj->ops.flag_fields_length);
-+
-+	pr_debug("ops.len_parameterized:%d\n", obj->ops.len_parameterized);
-+	kparser_dump_param_len(&obj->ops.pflen);
-+
-+	kparser_dump_param_next_proto(&obj->ops.pfnext_proto);
-+
-+	pr_debug("ops.cond_exprs_parameterized:%d\n", obj->ops.cond_exprs_parameterized);
-+	kparser_dump_cond_tables(&obj->ops.cond_exprs);
-+
-+done:
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+}
-+
-+/* debug code: dump kparser_proto_tlvs_table structure */
-+static void kparser_dump_proto_tlvs_table(const struct kparser_proto_tlvs_table *obj)
-+{
-+	int i;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	if (!obj) {
-+		pr_debug("obj NULL");
-+		goto done;
-+	}
-+
-+	pr_debug("num_ents:%u, entries:%p\n", obj->num_ents, obj->entries);
-+	if (!obj->entries)
-+		goto done;
-+
-+	for (i = 0; i < obj->num_ents; i++) {
-+		pr_debug("[%d]: val: %04x\n", i, obj->entries[i].type);
-+		kparser_dump_tlv_parse_node(obj->entries[i].node);
-+	}
-+
-+done:
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+}
-+
-+/* debug code: dump kparser_parse_tlv_node structure */
-+static void kparser_dump_tlv_parse_node(const struct kparser_parse_tlv_node *obj)
-+{
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	if (!obj) {
-+		pr_debug("obj NULL");
-+		goto done;
-+	}
-+
-+	pr_debug("name: %s\n", obj->name);
-+	pr_debug("unknown_tlv_type_ret:%d\n", obj->unknown_overlay_ret);
-+
-+	pr_debug("proto_tlv_node.min_len: %lu\n", obj->proto_tlv_node.min_len);
-+	pr_debug("proto_tlv_node.max_len: %lu\n", obj->proto_tlv_node.max_len);
-+	pr_debug("proto_tlv_node.is_padding: %u\n", obj->proto_tlv_node.is_padding);
-+	pr_debug("proto_tlv_node.overlay_type_parameterized: %u\n",
-+		 obj->proto_tlv_node.ops.overlay_type_parameterized);
-+	kparser_dump_param_next_proto(&obj->proto_tlv_node.ops.pfoverlay_type);
-+	pr_debug("proto_tlv_node.cond_exprs_parameterized: %u\n",
-+		 obj->proto_tlv_node.ops.cond_exprs_parameterized);
-+	kparser_dump_cond_tables(&obj->proto_tlv_node.ops.cond_exprs);
-+
-+	kparser_dump_proto_tlvs_table(obj->overlay_table);
-+	kparser_dump_tlv_parse_node(obj->overlay_wildcard_node);
-+	kparser_dump_metadatatable(obj->metadata_table);
-+done:
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+}
-+
-+/* debug code: dump kparser_parse_tlvs_node structure */
-+static void kparser_dump_tlvs_parse_node(const struct kparser_parse_tlvs_node *obj)
-+{
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	if (!obj) {
-+		pr_debug("obj NULL");
-+		goto done;
-+	}
-+
-+	kparser_dump_proto_tlvs_table(obj->tlv_proto_table);
-+
-+	pr_debug("unknown_tlv_type_ret:%d\n", obj->unknown_tlv_type_ret);
-+
-+	kparser_dump_tlv_parse_node(obj->tlv_wildcard_node);
-+
-+	pr_debug("config:max_loop: %u\n", obj->config.max_loop);
-+	pr_debug("config:max_non: %u\n", obj->config.max_non);
-+	pr_debug("config:max_plen: %u\n", obj->config.max_plen);
-+	pr_debug("config:max_c_pad: %u\n", obj->config.max_c_pad);
-+	pr_debug("config:disp_limit_exceed: %u\n", obj->config.disp_limit_exceed);
-+	pr_debug("config:exceed_loop_cnt_is_err: %u\n", obj->config.exceed_loop_cnt_is_err);
-+
-+done:
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+}
-+
-+/* debug code: dump kparser_proto_tlvs_node structure */
-+static void kparser_dump_tlvs_proto_node(const struct kparser_proto_tlvs_node *obj)
-+{
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	if (!obj) {
-+		pr_debug("obj NULL");
-+		goto done;
-+	}
-+
-+	kparser_dump_proto_node(&obj->proto_node);
-+
-+	kparser_dump_param_len(&obj->ops.pfstart_offset);
-+	pr_debug("ops.len_parameterized:%d\n", obj->ops.len_parameterized);
-+	kparser_dump_param_len(&obj->ops.pflen);
-+	kparser_dump_param_next_proto(&obj->ops.pftype);
-+
-+	pr_debug("start_offset:%lu\n", obj->start_offset);
-+	pr_debug("pad1_val:%u\n", obj->pad1_val);
-+	pr_debug("padn_val:%u\n", obj->padn_val);
-+	pr_debug("eol_val:%u\n", obj->eol_val);
-+	pr_debug("pad1_enable:%u\n", obj->pad1_enable);
-+	pr_debug("padn_enable:%u\n", obj->padn_enable);
-+	pr_debug("eol_enable:%u\n", obj->eol_enable);
-+	pr_debug("fixed_start_offset:%u\n", obj->fixed_start_offset);
-+	pr_debug("min_len:%lu\n", obj->min_len);
-+
-+done:
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+}
-+
-+/* debug code: dump kparser_flag_field structure */
-+static void kparser_dump_flag_field(const struct kparser_flag_field *obj)
-+{
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	if (!obj) {
-+		pr_debug("obj NULL");
-+		goto done;
-+	}
-+
-+	pr_debug("flag:%04x, mask:%04x size:%lu\n", obj->flag, obj->mask, obj->size);
-+
-+done:
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+}
-+
-+/* debug code: dump kparser_flag_fields structure */
-+static void kparser_dump_flag_fields(const struct kparser_flag_fields *obj)
-+{
-+	int i;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	if (!obj) {
-+		pr_debug("obj NULL");
-+		goto done;
-+	}
-+
-+	pr_debug("num_idx:%lu, fields:%p\n", obj->num_idx, obj->fields);
-+
-+	if (!obj->fields)
-+		goto done;
-+
-+	for (i = 0; i < obj->num_idx; i++)
-+		kparser_dump_flag_field(&obj->fields[i]);
-+
-+done:
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+}
-+
-+/* debug code: dump kparser_parse_flag_field_node structure */
-+static void kparser_dump_parse_flag_field_node(const struct kparser_parse_flag_field_node *obj)
-+{
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	if (!obj) {
-+		pr_debug("obj NULL");
-+		goto done;
-+	}
-+
-+	pr_debug("name: %s\n", obj->name);
-+
-+	kparser_dump_metadatatable(obj->metadata_table);
-+	kparser_dump_cond_tables(&obj->ops.cond_exprs);
-+done:
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+}
-+
-+/* debug code: dump kparser_proto_flag_fields_table structure */
-+static void kparser_dump_proto_flag_fields_table(const struct kparser_proto_flag_fields_table *obj)
-+{
-+	int i;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	if (!obj) {
-+		pr_debug("obj NULL");
-+		goto done;
-+	}
-+
-+	pr_debug("num_ents:%d, entries:%p\n", obj->num_ents, obj->entries);
-+
-+	if (!obj->entries)
-+		goto done;
-+
-+	for (i = 0; i < obj->num_ents; i++) {
-+		pr_debug("proto_flag_fields_table_entry_flag:%x\n", obj->entries[i].flag);
-+		kparser_dump_parse_flag_field_node(obj->entries[i].node);
-+	}
-+done:
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+}
-+
-+/* debug code: dump kparser_parse_flag_fields_node structure */
-+static void kparser_dump_flags_parse_node(const struct kparser_parse_flag_fields_node *obj)
-+{
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	if (!obj) {
-+		pr_debug("obj NULL");
-+		goto done;
-+	}
-+
-+	kparser_dump_proto_flag_fields_table(obj->flag_fields_proto_table);
-+done:
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+}
-+
-+/* debug code: dump kparser_proto_flag_fields_node structure */
-+static void kparser_dump_flags_proto_node(const struct kparser_proto_flag_fields_node *obj)
-+{
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	if (!obj) {
-+		pr_debug("obj NULL");
-+		goto done;
-+	}
-+
-+	kparser_dump_proto_node(&obj->proto_node);
-+
-+	pr_debug("ops.get_flags_parameterized:%d\n", obj->ops.get_flags_parameterized);
-+	pr_debug("ops.pfget_flags: src_off:%u mask:%04x size:%u\n",
-+		 obj->ops.pfget_flags.src_off,
-+		 obj->ops.pfget_flags.mask,
-+		 obj->ops.pfget_flags.size);
-+
-+	pr_debug("ops.start_fields_offset_parameterized:%d\n",
-+		 obj->ops.start_fields_offset_parameterized);
-+	kparser_dump_param_len(&obj->ops.pfstart_fields_offset);
-+
-+	pr_debug("ops.flag_feilds_len:%u ops.hdr_length:%u\n",
-+		 obj->ops.flag_fields_len, obj->ops.hdr_length);
-+
-+	kparser_dump_flag_fields(obj->flag_fields);
-+done:
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+}
-+
-+/* debug code: dump kparser_metadata_table structure */
-+static void kparser_dump_metadatatable(const struct kparser_metadata_table *obj)
-+{
-+	int i;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	if (!obj) {
-+		pr_debug("obj NULL");
-+		goto done;
-+	}
-+
-+	pr_debug("num_ents:%u, entries:%p\n", obj->num_ents, obj->entries);
-+	if (!obj->entries)
-+		goto done;
-+
-+	for (i = 0; i < obj->num_ents; i++)
-+		pr_debug("mde[%d]:%04x\n", i, obj->entries[i].val);
-+
-+done:
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+}
-+
-+/* debug code: dump kparser_proto_table structure */
-+static void kparser_dump_proto_table(const struct kparser_proto_table *obj)
-+{
-+	int i;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	if (!obj) {
-+		pr_debug("obj NULL");
-+		goto done;
-+	}
-+
-+	pr_debug("num_ents:%u, entries:%p\n", obj->num_ents, obj->entries);
-+	if (!obj->entries)
-+		goto done;
-+
-+	for (i = 0; i < obj->num_ents; i++) {
-+		pr_debug("[%d]: val: %d\n", i, obj->entries[i].value);
-+		kparser_dump_node(obj->entries[i].node);
-+	}
-+
-+done:
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+}
-+
-+/* debug code: dump kparser_parse_node structure */
-+static void kparser_dump_node(const struct kparser_parse_node *obj)
-+{
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	if (!obj) {
-+		pr_debug("obj NULL");
-+		goto done;
-+	}
-+
-+	pr_debug("name: %s: type: %d\n", obj->name, obj->node_type);
-+	pr_debug("unknown_ret:%d\n", obj->unknown_ret);
-+
-+	switch (obj->node_type) {
-+	case KPARSER_NODE_TYPE_PLAIN:
-+		kparser_dump_proto_node(&obj->proto_node);
-+		break;
-+
-+	case KPARSER_NODE_TYPE_TLVS:
-+		kparser_dump_tlvs_proto_node(&obj->tlvs_proto_node);
-+		kparser_dump_tlvs_parse_node((const struct kparser_parse_tlvs_node *)obj);
-+		break;
-+
-+	case KPARSER_NODE_TYPE_FLAG_FIELDS:
-+		kparser_dump_flags_proto_node(&obj->flag_fields_proto_node);
-+		kparser_dump_flags_parse_node((const struct kparser_parse_flag_fields_node *)obj);
-+		break;
-+
-+	default:
-+		pr_debug("unknown node type:%d\n", obj->node_type);
-+		break;
-+	}
-+
-+	kparser_dump_proto_table(obj->proto_table);
-+
-+	kparser_dump_node(obj->wildcard_node);
-+
-+	kparser_dump_metadatatable(obj->metadata_table);
-+
-+done:
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+}
-+
-+/* debug code: dump whole parse tree from kparser_parser structure */
-+void kparser_dump_parser_tree(const struct kparser_parser *obj)
-+{
-+	int i;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	if (!obj) {
-+		pr_debug("obj NULL");
-+		goto done;
-+	}
-+
-+	pr_debug("name: %s\n", obj->name);
-+
-+	pr_debug("config: flags:%02x\n", obj->config.flags);
-+	pr_debug("config: max_nodes:%u\n", obj->config.max_nodes);
-+	pr_debug("config: max_encaps:%u\n", obj->config.max_encaps);
-+	pr_debug("config: max_frames:%u\n", obj->config.max_frames);
-+	pr_debug("config: metameta_size:%lu\n", obj->config.metameta_size);
-+	pr_debug("config: frame_size:%lu\n", obj->config.frame_size);
-+
-+	pr_debug("cntrs_len: %lu\n", obj->cntrs_len);
-+	for (i = 0; i < (sizeof(obj->cntrs_conf.cntrs) /
-+				sizeof(obj->cntrs_conf.cntrs[0])); i++) {
-+		pr_debug("cntrs:%d: max_value:%u\n", i,
-+			 obj->cntrs_conf.cntrs[i].max_value);
-+		pr_debug("cntrs:%d: array_limit:%u\n", i,
-+			 obj->cntrs_conf.cntrs[i].array_limit);
-+		pr_debug("cntrs:%d: el_size:%lu\n", i,
-+			 obj->cntrs_conf.cntrs[i].el_size);
-+		pr_debug("cntrs:%d: reset_on_encap:%d\n", i,
-+			 obj->cntrs_conf.cntrs[i].reset_on_encap);
-+		pr_debug("cntrs:%d: overwrite_last:%d\n", i,
-+			 obj->cntrs_conf.cntrs[i].overwrite_last);
-+		pr_debug("cntrs:%d: error_on_exceeded:%d\n", i,
-+			 obj->cntrs_conf.cntrs[i].error_on_exceeded);
-+		if (obj->cntrs)
-+			pr_debug("cntr[%d]:%d", i, obj->cntrs->cntr[i]);
-+	}
-+
-+	kparser_dump_node(obj->root_node);
-+	kparser_dump_node(obj->okay_node);
-+	kparser_dump_node(obj->fail_node);
-+	kparser_dump_node(obj->atencap_node);
-+
-+done:
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+}
-diff --git a/net/kparser/kparser_cmds_ops.c b/net/kparser/kparser_cmds_ops.c
-new file mode 100644
-index 000000000000..d2e7a1ec4083
---- /dev/null
-+++ b/net/kparser/kparser_cmds_ops.c
-@@ -0,0 +1,3621 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2022, SiPanda Inc.
-+ *
-+ * kparser_cmds_ops.c - kParser KMOD-CLI netlink request operations handlers
-+ *
-+ * Author:      Pratyush Kumar Khan <pratyush@sipanda.io>
-+ */
-+
-+#include <linux/slab.h>
-+#include <linux/sort.h>
-+#include <net/kparser.h>
-+
-+#include "kparser.h"
-+
-+/* global netlink cmd handler mutex, all handlers must run within protection of this mutex
-+ * NOTE: never use this mutex on data path operations since they can run under interrupt contexts
-+ */
-+static DEFINE_MUTEX(kparser_config_lock);
-+
-+/* global counter config, shared among all the parsers */
-+static struct kparser_cntrs_conf cntrs_conf = {};
-+static __u8 cntrs_conf_idx;
-+
-+/* common pre-process code for create handlers */
-+static inline bool
-+kparser_cmd_create_pre_process(const char *op,
-+			       const struct kparser_conf_cmd *conf,
-+			       const struct kparser_hkey *argkey, struct kparser_hkey *newkey,
-+			       void **kobj, size_t kobjsize, struct kparser_cmd_rsp_hdr *rsp,
-+			       size_t glueoffset)
-+{
-+	struct kparser_glue *glue;
-+
-+	if (kparser_conf_key_manager(conf->namespace_id, argkey, newkey, rsp, op) != 0) {
-+		pr_alert("%s:%d\n", __func__, __LINE__);
-+		return false;
-+	}
-+
-+	pr_debug("{%s:%d} OP:%s Key{%s:%d}:{%s:%d}\n",
-+		 __func__, __LINE__,
-+		 op, argkey->name, argkey->id,
-+		 newkey->name, newkey->id);
-+
-+	if (kparser_namespace_lookup(conf->namespace_id, newkey)) {
-+		rsp->op_ret_code = EEXIST;
-+		snprintf(rsp->err_str_buf,
-+			 sizeof(rsp->err_str_buf),
-+			 "%s:Duplicate object HKey:{%s:%u}",
-+			 op, newkey->name, newkey->id);
-+		return false;
-+	}
-+
-+	*kobj = kzalloc(kobjsize, GFP_KERNEL);
-+	if (!(*kobj)) {
-+		rsp->op_ret_code = ENOMEM;
-+		snprintf(rsp->err_str_buf,
-+			 sizeof(rsp->err_str_buf),
-+			 "%s:Object allocation failed for size:%lu",
-+			 op, kobjsize);
-+		return false;
-+	}
-+
-+	glue = (*kobj) + glueoffset;
-+	glue->key = *newkey;
-+
-+	rsp->op_ret_code = kparser_namespace_insert(conf->namespace_id,
-+						    &glue->ht_node_id, &glue->ht_node_name);
-+	if (rsp->op_ret_code) {
-+		snprintf(rsp->err_str_buf,
-+			 sizeof(rsp->err_str_buf),
-+			 "%s:Htbl insert err:%d", op, rsp->op_ret_code);
-+		return false;
-+	}
-+
-+	glue->config = *conf;
-+	kref_init(&glue->refcount);
-+
-+	snprintf(rsp->err_str_buf, sizeof(rsp->err_str_buf), "%s:Success", op);
-+	rsp->key = *newkey;
-+	rsp->object.conf_keys_bv = conf->conf_keys_bv;
-+	rsp->object = *conf;
-+
-+	return true;
-+}
-+
-+/* Following functions create kParser object handlers for netlink msgs
-+ * create handler for object conditionals
-+ * NOTE: All handlers startting from here must hold mutex kparser_config_lock
-+ * before any work can be done and must release that mutex before return.
-+ */
-+int kparser_create_cond_exprs(const struct kparser_conf_cmd *conf,
-+			      size_t conf_len,
-+			      struct kparser_cmd_rsp_hdr **rsp,
-+			      size_t *rsp_len, const char *op)
-+{
-+	struct kparser_glue_condexpr_expr *kobj = NULL;
-+	const struct kparser_conf_condexpr *arg;
-+	struct kparser_hkey key;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	arg = &conf->cond_conf;
-+
-+	if (!kparser_cmd_create_pre_process(op, conf, &arg->key, &key,
-+					    (void **)&kobj, sizeof(*kobj), *rsp,
-+					    offsetof(struct kparser_glue_condexpr_expr, glue)))
-+		goto done;
-+
-+	kobj->expr = arg->config;
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "OK");
-+	(*rsp)->key = key;
-+	(*rsp)->object.conf_keys_bv = conf->conf_keys_bv;
-+	(*rsp)->object.cond_conf = kobj->glue.config.cond_conf;
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	if ((*rsp)->op_ret_code != 0)
-+		kparser_free(kobj);
-+
-+	synchronize_rcu();
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_CONDEXPRS);
-+}
-+
-+/* read handler for object conditionals */
-+int kparser_read_cond_exprs(const struct kparser_hkey *key,
-+			    struct kparser_cmd_rsp_hdr **rsp,
-+			    size_t *rsp_len, __u8 recursive_read, const char *op)
-+{
-+	struct kparser_glue_condexpr_expr *kobj;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	kobj = kparser_namespace_lookup(KPARSER_NS_CONDEXPRS, key);
-+	if (!kobj) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf),
-+			 "%s: Object key not found", __func__);
-+		goto done;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = kobj->glue.key;
-+	pr_debug("Key: {ID:%u Name:%s}\n", (*rsp)->key.id, (*rsp)->key.name);
-+	(*rsp)->object.conf_keys_bv = kobj->glue.config.conf_keys_bv;
-+	(*rsp)->object.cond_conf = kobj->glue.config.cond_conf;
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_CONDEXPRS);
-+}
-+
-+/* create handler for object conditionals table entry */
-+static bool kparser_create_cond_table_ent(const struct kparser_conf_table *arg,
-+					  struct kparser_glue_condexpr_table **proto_table,
-+					  struct kparser_cmd_rsp_hdr *rsp)
-+{
-+	const struct kparser_glue_condexpr_expr *kcondent;
-+	void *realloced_mem;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", arg->key.id, arg->key.name);
-+
-+	*proto_table = kparser_namespace_lookup(KPARSER_NS_CONDEXPRS_TABLE, &arg->key);
-+	if (!(*proto_table)) {
-+		rsp->op_ret_code = ENOENT;
-+		snprintf(rsp->err_str_buf,
-+			 sizeof(rsp->err_str_buf),
-+			 "%s: Object key not found", __func__);
-+		return false;
-+	}
-+
-+	kcondent = kparser_namespace_lookup(KPARSER_NS_CONDEXPRS, &arg->elem_key);
-+	if (!kcondent) {
-+		rsp->op_ret_code = ENOENT;
-+		snprintf(rsp->err_str_buf,
-+			 sizeof(rsp->err_str_buf),
-+			 "%s: Object key:{%s:%u} not found",
-+			 __func__, arg->elem_key.name, arg->elem_key.id);
-+		return false;
-+	}
-+
-+	(*proto_table)->table.num_ents++;
-+	realloced_mem = krealloc((*proto_table)->table.entries,
-+				 (*proto_table)->table.num_ents *
-+				 sizeof(struct kparser_condexpr_expr *),
-+				 GFP_KERNEL | ___GFP_ZERO);
-+	if (!realloced_mem) {
-+		rsp->op_ret_code = ENOMEM;
-+		snprintf(rsp->err_str_buf,
-+			 sizeof(rsp->err_str_buf),
-+			 "%s: krealloc() err, ents:%d, size:%lu",
-+			 __func__, (*proto_table)->table.num_ents,
-+			 sizeof(struct kparser_condexpr_expr));
-+		return false;
-+	}
-+	rcu_assign_pointer((*proto_table)->table.entries, realloced_mem);
-+
-+	(*proto_table)->table.entries[(*proto_table)->table.num_ents - 1] = &kcondent->expr;
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return true;
-+}
-+
-+/* create handler for object conditionals table */
-+int kparser_create_cond_table(const struct kparser_conf_cmd *conf,
-+			      size_t conf_len,
-+			      struct kparser_cmd_rsp_hdr **rsp,
-+			      size_t *rsp_len, const char *op)
-+{
-+	struct kparser_glue_condexpr_table *proto_table = NULL;
-+	const struct kparser_conf_table *arg;
-+	struct kparser_hkey key;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	arg = &conf->table_conf;
-+
-+	/* create a table entry */
-+	if (arg->add_entry) {
-+		if (kparser_create_cond_table_ent(arg, &proto_table, *rsp) == false)
-+			goto done;
-+		goto skip_table_create;
-+	}
-+
-+	if (!kparser_cmd_create_pre_process(op, conf, &arg->key, &key,
-+					    (void **)&proto_table, sizeof(*proto_table), *rsp,
-+					    offsetof(struct kparser_glue_condexpr_table, glue)))
-+		goto done;
-+
-+	proto_table->glue.config.namespace_id = conf->namespace_id;
-+	proto_table->glue.config.conf_keys_bv = conf->conf_keys_bv;
-+	proto_table->glue.config.table_conf = *arg;
-+	proto_table->glue.config.table_conf.key = key;
-+	kref_init(&proto_table->glue.refcount);
-+	proto_table->table.default_fail = arg->optional_value1;
-+	proto_table->table.type = arg->optional_value2;
-+
-+skip_table_create:
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "OK");
-+	(*rsp)->key = key;
-+	(*rsp)->object.conf_keys_bv = conf->conf_keys_bv;
-+	(*rsp)->object.table_conf = proto_table->glue.config.table_conf;
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	if ((*rsp)->op_ret_code != 0) {
-+		if (proto_table && !arg->add_entry)
-+			kparser_free(proto_table);
-+	}
-+
-+	synchronize_rcu();
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_CONDEXPRS_TABLE);
-+}
-+
-+/* read handler for object conditionals table */
-+int kparser_read_cond_table(const struct kparser_hkey *key,
-+			    struct kparser_cmd_rsp_hdr **rsp,
-+			    size_t *rsp_len, __u8 recursive_read, const char *op)
-+{
-+	const struct kparser_glue_condexpr_table *proto_table;
-+	const struct kparser_glue_condexpr_expr *kcondent;
-+	struct kparser_conf_cmd *objects = NULL;
-+	void *realloced_mem;
-+	int i;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	proto_table = kparser_namespace_lookup(KPARSER_NS_CONDEXPRS_TABLE, key);
-+	if (!proto_table) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf),
-+			 "%s: Object key not found", __func__);
-+		goto done;
-+	}
-+
-+	(*rsp)->key = proto_table->glue.key;
-+	pr_debug("Key: {ID:%u Name:%s}\n", (*rsp)->key.id, (*rsp)->key.name);
-+	(*rsp)->object.conf_keys_bv = proto_table->glue.config.conf_keys_bv;
-+	(*rsp)->object.table_conf = proto_table->glue.config.table_conf;
-+	(*rsp)->object.table_conf.optional_value1 = proto_table->table.default_fail;
-+	(*rsp)->object.table_conf.optional_value2 = proto_table->table.type;
-+
-+	for (i = 0; i < proto_table->table.num_ents; i++) {
-+		(*rsp)->objects_len++;
-+		*rsp_len = *rsp_len + sizeof(struct kparser_conf_cmd);
-+		realloced_mem = krealloc(*rsp, *rsp_len, GFP_KERNEL | ___GFP_ZERO);
-+		if (!realloced_mem) {
-+			pr_alert("%s:krealloc failed for rsp, len:%lu\n",
-+				 __func__, *rsp_len);
-+			*rsp_len = 0;
-+			mutex_unlock(&kparser_config_lock);
-+			return KPARSER_ATTR_UNSPEC;
-+		}
-+		*rsp = realloced_mem;
-+		objects = (struct kparser_conf_cmd *)(*rsp)->objects;
-+		objects[i].namespace_id = proto_table->glue.config.namespace_id;
-+		objects[i].table_conf = proto_table->glue.config.table_conf;
-+		if (!proto_table->table.entries)
-+			continue;
-+		kcondent = container_of(proto_table->table.entries[i],
-+					struct kparser_glue_condexpr_expr, expr);
-+		objects[i].table_conf.elem_key = kcondent->glue.key;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_CONDEXPRS_TABLE);
-+}
-+
-+/* create handler for object conditionals table's list entry */
-+static bool kparser_create_cond_tables_ent(const struct kparser_conf_table *arg,
-+					   struct kparser_glue_condexpr_tables **proto_table,
-+					   struct kparser_cmd_rsp_hdr *rsp)
-+{
-+	const struct kparser_glue_condexpr_table *kcondent;
-+	void *realloced_mem;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", arg->key.id, arg->key.name);
-+
-+	*proto_table = kparser_namespace_lookup(KPARSER_NS_CONDEXPRS_TABLES, &arg->key);
-+	if (!(*proto_table)) {
-+		rsp->op_ret_code = ENOENT;
-+		snprintf(rsp->err_str_buf, sizeof(rsp->err_str_buf),
-+			 "%s: Object key not found", __func__);
-+		return false;
-+	}
-+
-+	kcondent = kparser_namespace_lookup(KPARSER_NS_CONDEXPRS_TABLE, &arg->elem_key);
-+	if (!kcondent) {
-+		rsp->op_ret_code = ENOENT;
-+		snprintf(rsp->err_str_buf, sizeof(rsp->err_str_buf),
-+			 "%s: Object key:{%s:%u} not found",
-+			 __func__, arg->elem_key.name, arg->elem_key.id);
-+		return false;
-+	}
-+
-+	(*proto_table)->table.num_ents++;
-+	realloced_mem = krealloc((*proto_table)->table.entries, (*proto_table)->table.num_ents *
-+				 sizeof(struct kparser_condexpr_table *), GFP_KERNEL | ___GFP_ZERO);
-+	if (!realloced_mem) {
-+		rsp->op_ret_code = ENOMEM;
-+		snprintf(rsp->err_str_buf, sizeof(rsp->err_str_buf),
-+			 "%s: krealloc() err, ents:%d, size:%lu",
-+			 __func__, (*proto_table)->table.num_ents,
-+			 sizeof(struct kparser_condexpr_table *));
-+		return false;
-+	}
-+	rcu_assign_pointer((*proto_table)->table.entries, realloced_mem);
-+
-+	(*proto_table)->table.entries[(*proto_table)->table.num_ents - 1] = &kcondent->table;
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return true;
-+}
-+
-+/* create handler for object conditionals table's list */
-+int kparser_create_cond_tables(const struct kparser_conf_cmd *conf,
-+			       size_t conf_len,
-+			       struct kparser_cmd_rsp_hdr **rsp,
-+			       size_t *rsp_len, const char *op)
-+{
-+	struct kparser_glue_condexpr_tables *proto_table = NULL;
-+	const struct kparser_conf_table *arg;
-+	struct kparser_hkey key;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	arg = &conf->table_conf;
-+
-+	/* create a table entry */
-+	if (arg->add_entry) {
-+		if (kparser_create_cond_tables_ent(arg, &proto_table, *rsp) == false)
-+			goto done;
-+		goto skip_table_create;
-+	}
-+
-+	if (!kparser_cmd_create_pre_process(op, conf, &arg->key, &key,
-+					    (void **)&proto_table, sizeof(*proto_table), *rsp,
-+					    offsetof(struct kparser_glue_condexpr_tables, glue)))
-+		goto done;
-+
-+	proto_table->glue.config.namespace_id = conf->namespace_id;
-+	proto_table->glue.config.conf_keys_bv = conf->conf_keys_bv;
-+	proto_table->glue.config.table_conf = *arg;
-+	proto_table->glue.config.table_conf.key = key;
-+	kref_init(&proto_table->glue.refcount);
-+
-+skip_table_create:
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = key;
-+	(*rsp)->object.conf_keys_bv = conf->conf_keys_bv;
-+	(*rsp)->object.table_conf = proto_table->glue.config.table_conf;
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	if ((*rsp)->op_ret_code != 0) {
-+		if (proto_table && !arg->add_entry)
-+			kparser_free(proto_table);
-+	}
-+
-+	synchronize_rcu();
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_CONDEXPRS_TABLES);
-+}
-+
-+/* read handler for object conditionals table's list */
-+int kparser_read_cond_tables(const struct kparser_hkey *key,
-+			     struct kparser_cmd_rsp_hdr **rsp,
-+			     size_t *rsp_len, __u8 recursive_read, const char *op)
-+{
-+	const struct kparser_glue_condexpr_tables *proto_table;
-+	const struct kparser_glue_condexpr_table *kcondent;
-+	struct kparser_conf_cmd *objects = NULL;
-+	void *realloced_mem;
-+	int i;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	proto_table = kparser_namespace_lookup(KPARSER_NS_CONDEXPRS_TABLES, key);
-+	if (!proto_table) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf),
-+			 "%s: Object key not found", __func__);
-+		goto done;
-+	}
-+
-+	(*rsp)->key = proto_table->glue.key;
-+	pr_debug("Key: {ID:%u Name:%s}\n", (*rsp)->key.id, (*rsp)->key.name);
-+	(*rsp)->object.conf_keys_bv = proto_table->glue.config.conf_keys_bv;
-+	(*rsp)->object.table_conf = proto_table->glue.config.table_conf;
-+
-+	for (i = 0; i < proto_table->table.num_ents; i++) {
-+		(*rsp)->objects_len++;
-+		*rsp_len = *rsp_len + sizeof(struct kparser_conf_cmd);
-+		realloced_mem = krealloc(*rsp, *rsp_len, GFP_KERNEL | ___GFP_ZERO);
-+		if (!realloced_mem) {
-+			pr_alert("%s:krealloc failed for rsp, len:%lu\n",
-+				 __func__, *rsp_len);
-+			*rsp_len = 0;
-+			mutex_unlock(&kparser_config_lock);
-+			return KPARSER_ATTR_UNSPEC;
-+		}
-+		*rsp = realloced_mem;
-+		objects = (struct kparser_conf_cmd *)(*rsp)->objects;
-+		objects[i].namespace_id = proto_table->glue.config.namespace_id;
-+		objects[i].table_conf = proto_table->glue.config.table_conf;
-+		if (!proto_table->table.entries)
-+			continue;
-+		kcondent = container_of(proto_table->table.entries[i],
-+					struct kparser_glue_condexpr_table, table);
-+		objects[i].table_conf.elem_key = kcondent->glue.key;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_CONDEXPRS_TABLES);
-+}
-+
-+/* create handler for object counter */
-+int kparser_create_counter(const struct kparser_conf_cmd *conf,
-+			   size_t conf_len,
-+			   struct kparser_cmd_rsp_hdr **rsp,
-+			   size_t *rsp_len, const char *op)
-+{
-+	struct kparser_glue_counter *kcntr = NULL;
-+	const struct kparser_conf_cntr *arg;
-+	struct kparser_hkey key;
-+	int rc;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	arg = &conf->cntr_conf;
-+
-+	if (!arg->conf.valid_entry) {
-+		(*rsp)->op_ret_code = EINVAL;
-+		snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf),
-+			 "%s: counter entry is not valid", __func__);
-+		goto done;
-+	}
-+
-+	if (cntrs_conf_idx >= KPARSER_CNTR_NUM_CNTRS) {
-+		(*rsp)->op_ret_code = EINVAL;
-+		snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf),
-+			 "%s: counter index %d can not be >= %d",
-+			 __func__, cntrs_conf_idx, KPARSER_CNTR_NUM_CNTRS);
-+		goto done;
-+	}
-+
-+	if (kparser_conf_key_manager(conf->namespace_id, &arg->key, &key, *rsp, op) != 0) {
-+		pr_alert("here:%s:%d\n", __func__, __LINE__);
-+		goto done;
-+	}
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", arg->key.id, arg->key.name);
-+
-+	if (kparser_namespace_lookup(conf->namespace_id, &key)) {
-+		(*rsp)->op_ret_code = EEXIST;
-+		snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf),
-+			 "%s: Duplicate object key", __func__);
-+		goto done;
-+	}
-+
-+	kcntr = kzalloc(sizeof(*kcntr), GFP_KERNEL);
-+	if (!kcntr) {
-+		(*rsp)->op_ret_code = ENOMEM;
-+		snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf),
-+			 "%s: kzalloc() failed", __func__);
-+		goto done;
-+	}
-+
-+	kcntr->glue.key = key;
-+
-+	rc = kparser_namespace_insert(conf->namespace_id,
-+				      &kcntr->glue.ht_node_id, &kcntr->glue.ht_node_name);
-+	if (rc) {
-+		(*rsp)->op_ret_code = rc;
-+		snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf),
-+			 "%s: kparser_namespace_insert() err", __func__);
-+		goto done;
-+	}
-+
-+	kcntr->glue.config.namespace_id = conf->namespace_id;
-+	kcntr->glue.config.conf_keys_bv = conf->conf_keys_bv;
-+	kcntr->glue.config.cntr_conf = *arg;
-+	kcntr->glue.config.cntr_conf.key = key;
-+	kref_init(&kcntr->glue.refcount);
-+
-+	kcntr->counter_cnf = arg->conf;
-+	kcntr->counter_cnf.index = cntrs_conf_idx;
-+
-+	cntrs_conf.cntrs[cntrs_conf_idx] = kcntr->counter_cnf;
-+
-+	cntrs_conf_idx++;
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = key;
-+	(*rsp)->object.conf_keys_bv = conf->conf_keys_bv;
-+	(*rsp)->object.cntr_conf = kcntr->glue.config.cntr_conf;
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	if ((*rsp)->op_ret_code != 0)
-+		kparser_free(kcntr);
-+
-+	synchronize_rcu();
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_COUNTER);
-+}
-+
-+/* read handler for object counter */
-+int kparser_read_counter(const struct kparser_hkey *key,
-+			 struct kparser_cmd_rsp_hdr **rsp,
-+			 size_t *rsp_len, __u8 recursive_read, const char *op)
-+{
-+	struct kparser_glue_counter *kcntr;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	kcntr = kparser_namespace_lookup(KPARSER_NS_COUNTER, key);
-+	if (!kcntr) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf),
-+			 "%s: Object key not found", __func__);
-+		goto done;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = kcntr->glue.key;
-+	pr_debug("Key: {ID:%u Name:%s}\n", (*rsp)->key.id, (*rsp)->key.name);
-+	(*rsp)->object.conf_keys_bv = kcntr->glue.config.conf_keys_bv;
-+	(*rsp)->object.cntr_conf = kcntr->glue.config.cntr_conf;
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_COUNTER);
-+}
-+
-+/* create handler for object counter table */
-+int kparser_create_counter_table(const struct kparser_conf_cmd *conf,
-+				 size_t conf_len,
-+				 struct kparser_cmd_rsp_hdr **rsp,
-+				 size_t *rsp_len, const char *op)
-+{
-+	struct kparser_glue_counter_table *table = NULL;
-+	const struct kparser_conf_table *arg;
-+	struct kparser_glue_counter *kcntr;
-+	struct kparser_hkey key;
-+	int rc;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	arg = &conf->table_conf;
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", arg->key.id, arg->key.name);
-+
-+	/* create a table entry */
-+	if (arg->add_entry) {
-+		table = kparser_namespace_lookup(conf->namespace_id, &arg->key);
-+		if (!table) {
-+			(*rsp)->op_ret_code = ENOENT;
-+			snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf),
-+				 "%s: table key not found", __func__);
-+			goto done;
-+		}
-+		if (table->elems_cnt >= KPARSER_CNTR_NUM_CNTRS) {
-+			(*rsp)->op_ret_code = EINVAL;
-+			snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf),
-+				 "%s: table full:%u", __func__, table->elems_cnt);
-+			goto done;
-+		}
-+		kcntr = kparser_namespace_lookup(KPARSER_NS_COUNTER,
-+						 &arg->elem_key);
-+		if (!kcntr) {
-+			(*rsp)->op_ret_code = ENOENT;
-+			snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf),
-+				 "%s: Object key not found", __func__);
-+			goto done;
-+		}
-+		table->k_cntrs[table->elems_cnt++] = *kcntr;
-+		goto skip_table_create;
-+	}
-+
-+	if (kparser_conf_key_manager(conf->namespace_id, &arg->key, &key, *rsp, op) != 0) {
-+		pr_alert("here:%s:%d\n", __func__, __LINE__);
-+		goto done;
-+	}
-+
-+	if (kparser_namespace_lookup(conf->namespace_id, &key)) {
-+		(*rsp)->op_ret_code = EEXIST;
-+		snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf),
-+			 "%s: Duplicate object key", __func__);
-+		goto done;
-+	}
-+
-+	/* create counter table */
-+	table = kzalloc(sizeof(*table), GFP_KERNEL);
-+	if (!table) {
-+		(*rsp)->op_ret_code = ENOMEM;
-+		snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf),
-+			 "%s: kzalloc() failed", __func__);
-+		goto done;
-+	}
-+
-+	table->glue.key = key;
-+
-+	rc = kparser_namespace_insert(conf->namespace_id,
-+				      &table->glue.ht_node_id, &table->glue.ht_node_name);
-+	if (rc) {
-+		(*rsp)->op_ret_code = rc;
-+		snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf),
-+			 "%s: kparser_namespace_insert() err", __func__);
-+		goto done;
-+	}
-+
-+	table->glue.config.namespace_id = conf->namespace_id;
-+	table->glue.config.conf_keys_bv = conf->conf_keys_bv;
-+	table->glue.config.table_conf = *arg;
-+	table->glue.config.table_conf.key = key;
-+	kref_init(&table->glue.refcount);
-+
-+skip_table_create:
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = key;
-+	(*rsp)->object.conf_keys_bv = conf->conf_keys_bv;
-+	(*rsp)->object.table_conf = table->glue.config.table_conf;
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	if ((*rsp)->op_ret_code != 0)
-+		if (table && !arg->add_entry)
-+			kparser_free(table);
-+
-+	synchronize_rcu();
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_COUNTER_TABLE);
-+}
-+
-+/* read handler for object counter table */
-+int kparser_read_counter_table(const struct kparser_hkey *key,
-+			       struct kparser_cmd_rsp_hdr **rsp,
-+			       size_t *rsp_len, __u8 recursive_read, const char *op)
-+{
-+	const struct kparser_glue_counter_table *table;
-+	struct kparser_conf_cmd *objects = NULL;
-+	void *realloced_mem;
-+	int i;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	table = kparser_namespace_lookup(KPARSER_NS_COUNTER_TABLE, key);
-+	if (!table) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf),
-+			 "%s: Object key not found", __func__);
-+		goto done;
-+	}
-+
-+	(*rsp)->key = table->glue.key;
-+	pr_debug("Key: {ID:%u Name:%s}\n", (*rsp)->key.id, (*rsp)->key.name);
-+	(*rsp)->object.conf_keys_bv = table->glue.config.conf_keys_bv;
-+	(*rsp)->object.table_conf = table->glue.config.table_conf;
-+
-+	for (i = 0; i < KPARSER_CNTR_NUM_CNTRS; i++) {
-+		(*rsp)->objects_len++;
-+		*rsp_len = *rsp_len + sizeof(struct kparser_conf_cmd);
-+		realloced_mem = krealloc(*rsp, *rsp_len, GFP_KERNEL | ___GFP_ZERO);
-+		if (!realloced_mem) {
-+			pr_alert("%s:krealloc failed for rsp, len:%lu\n", __func__, *rsp_len);
-+			*rsp_len = 0;
-+			mutex_unlock(&kparser_config_lock);
-+			return KPARSER_ATTR_UNSPEC;
-+		}
-+		*rsp = realloced_mem;
-+		objects = (struct kparser_conf_cmd *)(*rsp)->objects;
-+		objects[i].namespace_id = table->k_cntrs[i].glue.config.namespace_id;
-+		objects[i].cntr_conf = table->k_cntrs[i].glue.config.cntr_conf;
-+		objects[i].cntr_conf.conf = cntrs_conf.cntrs[i];
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_COUNTER_TABLE);
-+}
-+
-+/* create handler for object metadata */
-+int kparser_create_metadata(const struct kparser_conf_cmd *conf,
-+			    size_t conf_len,
-+			    struct kparser_cmd_rsp_hdr **rsp,
-+			    size_t *rsp_len, const char *op)
-+{
-+	struct kparser_glue_metadata_extract *kmde = NULL;
-+	const struct kparser_conf_metadata *arg;
-+	struct kparser_glue_counter *kcntr;
-+	struct kparser_hkey key;
-+	int rc, cntridx = 0;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	arg = &conf->md_conf;
-+
-+	if (kparser_conf_key_manager(conf->namespace_id, &arg->key, &key, *rsp, op) != 0) {
-+		pr_alert("here:%s:%d\n", __func__, __LINE__);
-+		goto done;
-+	}
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", arg->key.id, arg->key.name);
-+
-+	if (kparser_namespace_lookup(conf->namespace_id, &key)) {
-+		(*rsp)->op_ret_code = EEXIST;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf), "%s: Duplicate object key", op);
-+		goto done;
-+	}
-+
-+	if (arg->type == KPARSER_METADATA_COUNTER) {
-+		kcntr = kparser_namespace_lookup(KPARSER_NS_COUNTER, &arg->counterkey);
-+		if (!kcntr) {
-+			(*rsp)->op_ret_code = ENOENT;
-+			snprintf((*rsp)->err_str_buf,
-+				 sizeof((*rsp)->err_str_buf),
-+				 "%s: Counter object key not found", op);
-+			goto done;
-+		}
-+		cntridx = kcntr->counter_cnf.index + 1;
-+	}
-+
-+	kmde = kzalloc(sizeof(*kmde), GFP_KERNEL);
-+	if (!kmde) {
-+		(*rsp)->op_ret_code = ENOMEM;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf), "%s: kzalloc() failed", op);
-+		goto done;
-+	}
-+
-+	kmde->glue.key = key;
-+
-+	rc = kparser_namespace_insert(conf->namespace_id,
-+				      &kmde->glue.ht_node_id, &kmde->glue.ht_node_name);
-+	if (rc) {
-+		(*rsp)->op_ret_code = rc;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: kparser_namespace_insert() err", op);
-+		goto done;
-+	}
-+
-+	kmde->glue.config.namespace_id = conf->namespace_id;
-+	kmde->glue.config.conf_keys_bv = conf->conf_keys_bv;
-+	kmde->glue.config.md_conf = *arg;
-+	kmde->glue.config.md_conf.key = key;
-+	kref_init(&kmde->glue.refcount);
-+	INIT_LIST_HEAD(&kmde->glue.owner_list);
-+	INIT_LIST_HEAD(&kmde->glue.owned_list);
-+
-+	if (!kparser_metadata_convert(arg, &kmde->mde, cntridx)) {
-+		(*rsp)->op_ret_code = EINVAL;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: kparser_metadata_convert() err", op);
-+		goto done;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = key;
-+	(*rsp)->object.conf_keys_bv = conf->conf_keys_bv;
-+	(*rsp)->object.md_conf = kmde->glue.config.md_conf;
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	if ((*rsp)->op_ret_code != 0)
-+		kparser_free(kmde);
-+
-+	synchronize_rcu();
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_METADATA);
-+}
-+
-+/* read handler for object metadata */
-+int kparser_read_metadata(const struct kparser_hkey *key,
-+			  struct kparser_cmd_rsp_hdr **rsp,
-+			  size_t *rsp_len, __u8 recursive_read, const char *op)
-+{
-+	const struct kparser_glue_metadata_extract *kmde;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	kmde = kparser_namespace_lookup(KPARSER_NS_METADATA, key);
-+	if (!kmde) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Object key not found", op);
-+		goto done;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = kmde->glue.key;
-+	pr_debug("Key: {ID:%u Name:%s}\n", (*rsp)->key.id, (*rsp)->key.name);
-+	(*rsp)->object.conf_keys_bv = kmde->glue.config.conf_keys_bv;
-+	(*rsp)->object.md_conf = kmde->glue.config.md_conf;
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_METADATA);
-+}
-+
-+/* delete handler for object metadata */
-+int kparser_del_metadata(const struct kparser_hkey *key,
-+			 struct kparser_cmd_rsp_hdr **rsp,
-+			 size_t *rsp_len, __u8 recursive_read, const char *op)
-+{
-+	struct kparser_glue_metadata_extract *kmde;
-+	int rc;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	kmde = kparser_namespace_lookup(KPARSER_NS_METADATA, key);
-+	if (!kmde) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Object key not found", op);
-+		goto done;
-+	}
-+
-+	if (kref_read(&kmde->glue.refcount) != 0) {
-+		(*rsp)->op_ret_code = EBUSY;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Metadata object is associated with a metalist, delete that metalist instead",
-+			 op);
-+		goto done;
-+	}
-+
-+	rc = kparser_namespace_remove(KPARSER_NS_METADATA,
-+				      &kmde->glue.ht_node_id, &kmde->glue.ht_node_name);
-+	if (rc) {
-+		(*rsp)->op_ret_code = rc;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf), "%s: namespace remove error", op);
-+		goto done;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = kmde->glue.key;
-+	pr_debug("Key: {ID:%u Name:%s}\n", (*rsp)->key.id, (*rsp)->key.name);
-+	(*rsp)->object.conf_keys_bv = kmde->glue.config.conf_keys_bv;
-+	(*rsp)->object.md_conf = kmde->glue.config.md_conf;
-+
-+	kparser_free(kmde);
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_METADATA);
-+}
-+
-+/* free handler for object metadata */
-+void kparser_free_metadata(void *ptr, void *arg)
-+{
-+	/* TODO: */
-+}
-+
-+/* create handler for object metadata list */
-+int kparser_create_metalist(const struct kparser_conf_cmd *conf,
-+			    size_t conf_len,
-+			    struct kparser_cmd_rsp_hdr **rsp,
-+			    size_t *rsp_len, const char *op)
-+{
-+	struct kparser_glue_metadata_extract *kmde = NULL;
-+	struct kparser_glue_metadata_table *kmdl = NULL;
-+	const struct kparser_conf_metadata_table *arg;
-+	struct kparser_conf_cmd *objects = NULL;
-+	struct kparser_hkey key;
-+	void *realloced_mem;
-+	int rc, i;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	arg = &conf->mdl_conf;
-+
-+	if (kparser_conf_key_manager(conf->namespace_id, &arg->key, &key, *rsp, op) != 0) {
-+		pr_alert("%s:%d\n", __func__, __LINE__);
-+		goto done;
-+	}
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", arg->key.id, arg->key.name);
-+
-+	if (kparser_namespace_lookup(conf->namespace_id, &key)) {
-+		(*rsp)->op_ret_code = EEXIST;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Duplicate object key", op);
-+		goto done;
-+	}
-+
-+	kmdl = kzalloc(sizeof(*kmdl), GFP_KERNEL);
-+	if (!kmdl) {
-+		(*rsp)->op_ret_code = ENOMEM;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: kzalloc() failed", op);
-+		goto done;
-+	}
-+
-+	kmdl->glue.key = key;
-+	kmdl->glue.config.namespace_id = conf->namespace_id;
-+	kmdl->glue.config.conf_keys_bv = conf->conf_keys_bv;
-+	kmdl->glue.config.mdl_conf = *arg;
-+	kmdl->glue.config.mdl_conf.key = key;
-+	kmdl->glue.config.mdl_conf.metadata_keys_count = 0;
-+	kref_init(&kmdl->glue.refcount);
-+	INIT_LIST_HEAD(&kmdl->glue.owner_list);
-+	INIT_LIST_HEAD(&kmdl->glue.owned_list);
-+
-+	conf_len -= sizeof(*conf);
-+
-+	for (i = 0; i < arg->metadata_keys_count; i++) {
-+		if (conf_len < sizeof(struct kparser_hkey)) {
-+			(*rsp)->op_ret_code = EINVAL;
-+			snprintf((*rsp)->err_str_buf,
-+				 sizeof((*rsp)->err_str_buf),
-+				 "%s: conf len/buffer incomplete", op);
-+			goto done;
-+		}
-+
-+		conf_len -= sizeof(struct kparser_hkey);
-+
-+		pr_debug("Key: {ID:%u Name:%s}\n",
-+			 arg->metadata_keys[i].id, arg->metadata_keys[i].name);
-+
-+		kmde = kparser_namespace_lookup(KPARSER_NS_METADATA, &arg->metadata_keys[i]);
-+		if (!kmde) {
-+			(*rsp)->op_ret_code = ENOENT;
-+			snprintf((*rsp)->err_str_buf,
-+				 sizeof((*rsp)->err_str_buf),
-+				 "%s: Object key {%s:%u} not found",
-+				 op, arg->metadata_keys[i].name, arg->metadata_keys[i].id);
-+			goto done;
-+		}
-+		kmdl->metadata_table.num_ents++;
-+		realloced_mem = krealloc(kmdl->metadata_table.entries,
-+					 kmdl->metadata_table.num_ents * sizeof(*kmde),
-+					 GFP_KERNEL | ___GFP_ZERO);
-+		if (!realloced_mem) {
-+			(*rsp)->op_ret_code = ENOMEM;
-+			snprintf((*rsp)->err_str_buf,
-+				 sizeof((*rsp)->err_str_buf),
-+				 "%s: krealloc() err, ents:%d, size:%lu",
-+				 op, kmdl->metadata_table.num_ents, sizeof(*kmde));
-+			goto done;
-+		}
-+		rcu_assign_pointer(kmdl->metadata_table.entries, realloced_mem);
-+
-+		kmdl->metadata_table.entries[i] = kmde->mde;
-+		kref_get(&kmde->glue.refcount);
-+
-+		(*rsp)->objects_len++;
-+		*rsp_len = *rsp_len + sizeof(struct kparser_conf_cmd);
-+		realloced_mem = krealloc(*rsp, *rsp_len, GFP_KERNEL | ___GFP_ZERO);
-+		if (!realloced_mem) {
-+			pr_alert("%s:krealloc failed for rsp, len:%lu\n", __func__, *rsp_len);
-+			*rsp_len = 0;
-+			mutex_unlock(&kparser_config_lock);
-+			if (kmdl) {
-+				kparser_free(kmdl->metadata_table.entries);
-+				kparser_free(kmdl);
-+			}
-+			return KPARSER_ATTR_UNSPEC;
-+		}
-+		*rsp = realloced_mem;
-+
-+		objects = (struct kparser_conf_cmd *)(*rsp)->objects;
-+		objects[i].namespace_id = kmde->glue.config.namespace_id;
-+		objects[i].conf_keys_bv = kmde->glue.config.conf_keys_bv;
-+		objects[i].md_conf = kmde->glue.config.md_conf;
-+
-+		kmdl->md_configs_len++;
-+		realloced_mem = krealloc(kmdl->md_configs,
-+					 kmdl->md_configs_len *
-+					 sizeof(struct kparser_conf_cmd),
-+					 GFP_KERNEL | ___GFP_ZERO);
-+		if (!realloced_mem) {
-+			(*rsp)->op_ret_code = ENOMEM;
-+			snprintf((*rsp)->err_str_buf,
-+				 sizeof((*rsp)->err_str_buf),
-+				 "%s: krealloc() err,ents:%lu, size:%lu",
-+				 op,
-+					kmdl->md_configs_len,
-+					sizeof(struct kparser_conf_cmd));
-+			goto done;
-+		}
-+		kmdl->md_configs = realloced_mem;
-+		kmdl->md_configs[i].namespace_id = kmde->glue.config.namespace_id;
-+		kmdl->md_configs[i].conf_keys_bv = kmde->glue.config.conf_keys_bv;
-+		kmdl->md_configs[i].md_conf = kmde->glue.config.md_conf;
-+	}
-+
-+	rc = kparser_namespace_insert(conf->namespace_id,
-+				      &kmdl->glue.ht_node_id, &kmdl->glue.ht_node_name);
-+	if (rc) {
-+		(*rsp)->op_ret_code = rc;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: kparser_namespace_insert() err", op);
-+		goto done;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = key;
-+	(*rsp)->object.conf_keys_bv = conf->conf_keys_bv;
-+	(*rsp)->object.mdl_conf = kmdl->glue.config.mdl_conf;
-+	(*rsp)->object.mdl_conf.metadata_keys_count = 0;
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	if ((*rsp)->op_ret_code != 0 && kmdl) {
-+		kparser_free(kmdl->metadata_table.entries);
-+		kparser_free(kmdl->md_configs);
-+		kparser_free(kmdl);
-+	}
-+
-+	synchronize_rcu();
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_METALIST);
-+}
-+
-+/* read handler for object metadata list */
-+int kparser_read_metalist(const struct kparser_hkey *key,
-+			  struct kparser_cmd_rsp_hdr **rsp,
-+			  size_t *rsp_len, __u8 recursive_read, const char *op)
-+{
-+	const struct kparser_glue_metadata_table *kmdl;
-+	struct kparser_conf_cmd *objects = NULL;
-+	void *realloced_mem;
-+	int i;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	kmdl = kparser_namespace_lookup(KPARSER_NS_METALIST, key);
-+	if (!kmdl) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Object key not found", op);
-+		goto done;
-+	}
-+
-+	(*rsp)->key = kmdl->glue.key;
-+	pr_debug("Key: {ID:%u Name:%s}\n", (*rsp)->key.id, (*rsp)->key.name);
-+	(*rsp)->object.conf_keys_bv = kmdl->glue.config.conf_keys_bv;
-+	(*rsp)->object.mdl_conf = kmdl->glue.config.mdl_conf;
-+
-+	for (i = 0; i < kmdl->md_configs_len; i++) {
-+		(*rsp)->objects_len++;
-+		*rsp_len = *rsp_len + sizeof(struct kparser_conf_cmd);
-+		realloced_mem = krealloc(*rsp, *rsp_len, GFP_KERNEL | ___GFP_ZERO);
-+		if (!realloced_mem) {
-+			pr_alert("%s:krealloc failed for rsp, len:%lu\n",
-+				 op, *rsp_len);
-+			*rsp_len = 0;
-+			mutex_unlock(&kparser_config_lock);
-+			return KPARSER_ATTR_UNSPEC;
-+		}
-+		*rsp = realloced_mem;
-+		objects = (struct kparser_conf_cmd *)(*rsp)->objects;
-+		objects[i].namespace_id = kmdl->md_configs[i].namespace_id;
-+		objects[i].conf_keys_bv = kmdl->md_configs[i].conf_keys_bv;
-+		objects[i].md_conf = kmdl->md_configs[i].md_conf;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_METALIST);
-+}
-+
-+/* delete handler for object metadata list */
-+int kparser_del_metalist(const struct kparser_hkey *key,
-+			 struct kparser_cmd_rsp_hdr **rsp,
-+			 size_t *rsp_len, __u8 recursive_read, const char *op)
-+{
-+	struct kparser_obj_link_ctx *tmp_list_ref = NULL, *curr_ref = NULL;
-+	struct kparser_obj_link_ctx *node_tmp_list_ref = NULL;
-+	struct kparser_obj_link_ctx *node_curr_ref = NULL;
-+	struct kparser_glue_glue_parse_node *kparsenode;
-+	struct kparser_glue_metadata_extract *kmde;
-+	struct kparser_glue_metadata_table *kmdl;
-+	struct kparser_conf_cmd *objects = NULL;
-+	void *realloced_mem;
-+	int i, rc;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	kmdl = kparser_namespace_lookup(KPARSER_NS_METALIST, key);
-+	if (!kmdl) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf), "%s: Object key not found", op);
-+		goto done;
-+	}
-+
-+	/* verify if there is any associated immutable parser */
-+	list_for_each_entry_safe(curr_ref, tmp_list_ref,
-+				 &kmdl->glue.owned_list, owned_obj.list_node) {
-+		if (curr_ref->owner_obj.nsid != KPARSER_NS_NODE_PARSE)
-+			continue;
-+		if (kref_read(curr_ref->owner_obj.refcount) == 0)
-+			continue;
-+		kparsenode = (struct kparser_glue_glue_parse_node *)curr_ref->owner_obj.obj;
-+		list_for_each_entry_safe(node_curr_ref, node_tmp_list_ref,
-+					 &kparsenode->glue.glue.owned_list, owned_obj.list_node) {
-+			if (node_curr_ref->owner_obj.nsid != KPARSER_NS_PARSER)
-+				continue;
-+			if (kref_read(node_curr_ref->owner_obj.refcount) != 0) {
-+				(*rsp)->op_ret_code = EBUSY;
-+				snprintf((*rsp)->err_str_buf,
-+					 sizeof((*rsp)->err_str_buf),
-+					 "%s:attached parser `%s` is immutable",
-+					 op,
-+						((struct kparser_glue_parser *)
-+						 node_curr_ref->owner_obj.obj)->glue.key.name);
-+				goto done;
-+			}
-+		}
-+	}
-+
-+	if (kparser_link_detach(kmdl, &kmdl->glue.owner_list, &kmdl->glue.owned_list, *rsp) != 0)
-+		goto done;
-+
-+	(*rsp)->key = kmdl->glue.key;
-+	pr_debug("Key: {ID:%u Name:%s}\n", (*rsp)->key.id, (*rsp)->key.name);
-+	(*rsp)->object.conf_keys_bv = kmdl->glue.config.conf_keys_bv;
-+	(*rsp)->object.mdl_conf = kmdl->glue.config.mdl_conf;
-+
-+	for (i = 0; i < kmdl->md_configs_len; i++) {
-+		(*rsp)->objects_len++;
-+		*rsp_len = *rsp_len + sizeof(struct kparser_conf_cmd);
-+		realloced_mem = krealloc(*rsp, *rsp_len, GFP_KERNEL | ___GFP_ZERO);
-+		if (!realloced_mem) {
-+			pr_alert("%s:krealloc failed for rsp, len:%lu\n",
-+				 __func__, *rsp_len);
-+			*rsp_len = 0;
-+			mutex_unlock(&kparser_config_lock);
-+			return KPARSER_ATTR_UNSPEC;
-+		}
-+		*rsp = realloced_mem;
-+		objects = (struct kparser_conf_cmd *)(*rsp)->objects;
-+		objects[i].namespace_id = kmdl->md_configs[i].namespace_id;
-+		objects[i].conf_keys_bv = kmdl->md_configs[i].conf_keys_bv;
-+		objects[i].md_conf = kmdl->md_configs[i].md_conf;
-+
-+		kmde = kparser_namespace_lookup(KPARSER_NS_METADATA, &objects[i].md_conf.key);
-+		if (!kmde) {
-+			(*rsp)->op_ret_code = ENOENT;
-+			snprintf((*rsp)->err_str_buf,
-+				 sizeof((*rsp)->err_str_buf),
-+				 "%s: Object key not found", op);
-+			goto done;
-+		}
-+
-+		rc = kparser_namespace_remove(KPARSER_NS_METADATA,
-+					      &kmde->glue.ht_node_id, &kmde->glue.ht_node_name);
-+		if (rc) {
-+			(*rsp)->op_ret_code = rc;
-+			snprintf((*rsp)->err_str_buf,
-+				 sizeof((*rsp)->err_str_buf),
-+				 "%s: namespace remove error", op);
-+			goto done;
-+		}
-+
-+		kparser_free(kmde);
-+	}
-+
-+	rc = kparser_namespace_remove(KPARSER_NS_METALIST,
-+				      &kmdl->glue.ht_node_id, &kmdl->glue.ht_node_name);
-+	if (rc) {
-+		(*rsp)->op_ret_code = rc;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf), "%s: namespace remove error", op);
-+		goto done;
-+	}
-+
-+	kparser_free(kmdl->metadata_table.entries);
-+
-+	kmdl->metadata_table.num_ents = 0;
-+
-+	kparser_free(kmdl->md_configs);
-+
-+	kparser_free(kmdl);
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_METALIST);
-+}
-+
-+/* free handler for object metadata list */
-+void kparser_free_metalist(void *ptr, void *arg)
-+{
-+	/* TODO:  */
-+}
-+
-+/* handler to convert and map netlink node context to kParser KMOD's node context */
-+static inline bool kparser_conf_node_convert(const struct kparser_conf_node *conf,
-+					     void *node, size_t node_len)
-+{
-+	struct kparser_glue_proto_flag_fields_table *kflag_fields_proto_table;
-+	struct kparser_parse_flag_fields_node *flag_fields_parse_node;
-+	struct kparser_glue_parse_tlv_node *kparsetlvwildcardnode;
-+	struct kparser_glue_glue_parse_node *kparsewildcardnode;
-+	struct kparser_glue_proto_tlvs_table *kprototlvstbl;
-+	struct kparser_glue_condexpr_tables *kcond_tables;
-+	struct kparser_parse_tlvs_node *tlvs_parse_node;
-+	struct kparser_glue_flag_fields *kflag_fields;
-+	struct kparser_glue_protocol_table *kprototbl;
-+	struct kparser_parse_node *plain_parse_node;
-+	struct kparser_glue_metadata_table *kmdl;
-+
-+	if (!conf || !node || node_len < sizeof(*plain_parse_node))
-+		return false;
-+
-+	plain_parse_node = node;
-+	plain_parse_node->node_type = conf->type;
-+	plain_parse_node->unknown_ret = conf->plain_parse_node.unknown_ret;
-+	plain_parse_node->proto_node.encap = conf->plain_parse_node.proto_node.encap;
-+	plain_parse_node->proto_node.overlay = conf->plain_parse_node.proto_node.overlay;
-+	plain_parse_node->proto_node.min_len = conf->plain_parse_node.proto_node.min_len;
-+	plain_parse_node->proto_node.ops.len_parameterized =
-+		conf->plain_parse_node.proto_node.ops.len_parameterized;
-+	plain_parse_node->proto_node.ops.pflen = conf->plain_parse_node.proto_node.ops.pflen;
-+	plain_parse_node->proto_node.ops.pfnext_proto =
-+		conf->plain_parse_node.proto_node.ops.pfnext_proto;
-+
-+	kcond_tables =
-+		kparser_namespace_lookup(KPARSER_NS_CONDEXPRS_TABLES,
-+					 &conf->plain_parse_node.proto_node.ops.cond_exprs_table);
-+	if (kcond_tables) {
-+		plain_parse_node->proto_node.ops.cond_exprs = kcond_tables->table;
-+		plain_parse_node->proto_node.ops.cond_exprs_parameterized = true;
-+	}
-+
-+	strcpy(plain_parse_node->name, conf->key.name);
-+
-+	kprototbl = kparser_namespace_lookup(KPARSER_NS_PROTO_TABLE,
-+					     &conf->plain_parse_node.proto_table_key);
-+	if (kprototbl)
-+		rcu_assign_pointer(plain_parse_node->proto_table, &kprototbl->proto_table);
-+
-+	kparsewildcardnode =
-+		kparser_namespace_lookup(KPARSER_NS_NODE_PARSE,
-+					 &conf->plain_parse_node.wildcard_parse_node_key);
-+	if (kparsewildcardnode)
-+		rcu_assign_pointer(plain_parse_node->wildcard_node,
-+				   &kparsewildcardnode->parse_node);
-+
-+	kmdl = kparser_namespace_lookup(KPARSER_NS_METALIST,
-+					&conf->plain_parse_node.metadata_table_key);
-+	if (kmdl)
-+		rcu_assign_pointer(plain_parse_node->metadata_table, &kmdl->metadata_table);
-+
-+	switch (conf->type) {
-+	case KPARSER_NODE_TYPE_PLAIN:
-+		break;
-+
-+	case KPARSER_NODE_TYPE_TLVS:
-+		if (node_len < sizeof(*tlvs_parse_node))
-+			return false;
-+
-+		tlvs_parse_node = node;
-+
-+		tlvs_parse_node->parse_node.tlvs_proto_node.ops =
-+			conf->tlvs_parse_node.proto_node.ops;
-+
-+		tlvs_parse_node->parse_node.tlvs_proto_node.start_offset =
-+			conf->tlvs_parse_node.proto_node.start_offset;
-+		tlvs_parse_node->parse_node.tlvs_proto_node.pad1_val =
-+			conf->tlvs_parse_node.proto_node.pad1_val;
-+		tlvs_parse_node->parse_node.tlvs_proto_node.padn_val =
-+			conf->tlvs_parse_node.proto_node.padn_val;
-+		tlvs_parse_node->parse_node.tlvs_proto_node.eol_val =
-+			conf->tlvs_parse_node.proto_node.eol_val;
-+		tlvs_parse_node->parse_node.tlvs_proto_node.pad1_enable =
-+			conf->tlvs_parse_node.proto_node.pad1_enable;
-+		tlvs_parse_node->parse_node.tlvs_proto_node.padn_enable =
-+			conf->tlvs_parse_node.proto_node.padn_enable;
-+		tlvs_parse_node->parse_node.tlvs_proto_node.eol_enable =
-+			conf->tlvs_parse_node.proto_node.eol_enable;
-+		tlvs_parse_node->parse_node.tlvs_proto_node.fixed_start_offset =
-+			conf->tlvs_parse_node.proto_node.fixed_start_offset;
-+		tlvs_parse_node->parse_node.tlvs_proto_node.min_len =
-+			conf->tlvs_parse_node.proto_node.min_len;
-+
-+		kprototlvstbl =
-+			kparser_namespace_lookup(KPARSER_NS_TLV_PROTO_TABLE,
-+						 &conf->tlvs_parse_node.tlv_proto_table_key);
-+		if (kprototlvstbl)
-+			rcu_assign_pointer(tlvs_parse_node->tlv_proto_table,
-+					   &kprototlvstbl->tlvs_proto_table);
-+
-+		kparsetlvwildcardnode =
-+			kparser_namespace_lookup(KPARSER_NS_TLV_NODE_PARSE,
-+						 &conf->tlvs_parse_node.tlv_wildcard_node_key);
-+		if (kparsetlvwildcardnode)
-+			rcu_assign_pointer(tlvs_parse_node->tlv_wildcard_node,
-+					   &kparsetlvwildcardnode->tlv_parse_node);
-+
-+		tlvs_parse_node->unknown_tlv_type_ret =
-+			conf->tlvs_parse_node.unknown_tlv_type_ret;
-+
-+		tlvs_parse_node->config =
-+			conf->tlvs_parse_node.config;
-+		break;
-+
-+	case KPARSER_NODE_TYPE_FLAG_FIELDS:
-+		if (node_len < sizeof(*flag_fields_parse_node))
-+			return false;
-+		flag_fields_parse_node = node;
-+
-+		flag_fields_parse_node->parse_node.flag_fields_proto_node.ops =
-+			conf->flag_fields_parse_node.proto_node.ops;
-+
-+		kflag_fields =
-+			kparser_namespace_lookup(KPARSER_NS_FLAG_FIELD_TABLE,
-+						 &conf->flag_fields_parse_node.proto_node.
-+						 flag_fields_table_hkey);
-+		if (kflag_fields)
-+			rcu_assign_pointer(flag_fields_parse_node->
-+					   parse_node.flag_fields_proto_node.flag_fields,
-+					   &kflag_fields->flag_fields);
-+
-+		kflag_fields_proto_table =
-+			kparser_namespace_lookup(KPARSER_NS_FLAG_FIELD_PROTO_TABLE,
-+						 &conf->flag_fields_parse_node.
-+						 flag_fields_proto_table_key);
-+		if (kflag_fields_proto_table)
-+			rcu_assign_pointer(flag_fields_parse_node->flag_fields_proto_table,
-+					   &kflag_fields_proto_table->flags_proto_table);
-+		break;
-+
-+	default:
-+		return false;
-+	}
-+	return true;
-+}
-+
-+/* create handler for object parse node */
-+int kparser_create_parse_node(const struct kparser_conf_cmd *conf,
-+			      size_t conf_len,
-+			      struct kparser_cmd_rsp_hdr **rsp,
-+			      size_t *rsp_len, const char *op)
-+{
-+	struct kparser_glue_glue_parse_node *kparsenode = NULL;
-+	struct kparser_glue_protocol_table *proto_table;
-+	struct kparser_glue_metadata_table *mdl;
-+	const struct kparser_conf_node *arg;
-+	struct kparser_hkey key;
-+	int rc;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	arg = &conf->node_conf;
-+
-+	if (kparser_conf_key_manager(conf->namespace_id, &arg->key, &key, *rsp, op) != 0) {
-+		pr_alert("%s:%d\n", __func__, __LINE__);
-+		goto done;
-+	}
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", arg->key.id, arg->key.name);
-+
-+	if (kparser_namespace_lookup(conf->namespace_id, &key)) {
-+		(*rsp)->op_ret_code = EEXIST;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Duplicate object key",
-+			 __func__);
-+		goto done;
-+	}
-+
-+	kparsenode = kzalloc(sizeof(*kparsenode), GFP_KERNEL);
-+	if (!kparsenode) {
-+		(*rsp)->op_ret_code = ENOMEM;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: kzalloc() failed", __func__);
-+		goto done;
-+	}
-+
-+	kparsenode->glue.glue.key = key;
-+	INIT_LIST_HEAD(&kparsenode->glue.glue.owner_list);
-+	INIT_LIST_HEAD(&kparsenode->glue.glue.owned_list);
-+
-+	rc = kparser_namespace_insert(conf->namespace_id,
-+				      &kparsenode->glue.glue.ht_node_id,
-+				      &kparsenode->glue.glue.ht_node_name);
-+	if (rc) {
-+		(*rsp)->op_ret_code = rc;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: kparser_namespace_insert() err",
-+			 __func__);
-+		goto done;
-+	}
-+
-+	kparsenode->glue.glue.config.namespace_id = conf->namespace_id;
-+	kparsenode->glue.glue.config.conf_keys_bv = conf->conf_keys_bv;
-+	kparsenode->glue.glue.config.node_conf = *arg;
-+	kparsenode->glue.glue.config.node_conf.key = key;
-+	kref_init(&kparsenode->glue.glue.refcount);
-+
-+	if (!kparser_conf_node_convert(arg, &kparsenode->parse_node,
-+				       sizeof(kparsenode->parse_node))) {
-+		(*rsp)->op_ret_code = EINVAL;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: kparser_conf_node_convert() err",
-+			 __func__);
-+		goto done;
-+	}
-+
-+	if (kparsenode->parse_node.node.proto_table) {
-+		proto_table = container_of(kparsenode->parse_node.node.proto_table,
-+					   struct kparser_glue_protocol_table,
-+					   proto_table);
-+		if (kparser_link_attach(kparsenode,
-+					KPARSER_NS_NODE_PARSE,
-+					(const void **)&kparsenode->parse_node.node.proto_table,
-+					&kparsenode->glue.glue.refcount,
-+					&kparsenode->glue.glue.owner_list,
-+					proto_table,
-+					KPARSER_NS_PROTO_TABLE,
-+					&proto_table->glue.refcount,
-+					&proto_table->glue.owned_list,
-+					*rsp, op) != 0)
-+			goto done;
-+	}
-+
-+	if (kparsenode->parse_node.node.metadata_table) {
-+		mdl = container_of(kparsenode->parse_node.node.metadata_table,
-+				   struct kparser_glue_metadata_table,
-+				   metadata_table);
-+		if (kparser_link_attach(kparsenode,
-+					KPARSER_NS_NODE_PARSE,
-+					(const void **)&kparsenode->parse_node.node.metadata_table,
-+					&kparsenode->glue.glue.refcount,
-+					&kparsenode->glue.glue.owner_list,
-+					mdl,
-+					KPARSER_NS_METALIST,
-+					&mdl->glue.refcount,
-+					&mdl->glue.owned_list,
-+					*rsp, op) != 0)
-+			goto done;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = key;
-+	(*rsp)->object.conf_keys_bv = conf->conf_keys_bv;
-+	(*rsp)->object.node_conf = kparsenode->glue.glue.config.node_conf;
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	if ((*rsp)->op_ret_code != 0)
-+		kparser_free(kparsenode);
-+
-+	synchronize_rcu();
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_NODE_PARSE);
-+}
-+
-+/* read handler for object parse node */
-+int kparser_read_parse_node(const struct kparser_hkey *key,
-+			    struct kparser_cmd_rsp_hdr **rsp,
-+			    size_t *rsp_len, __u8 recursive_read, const char *op)
-+{
-+	const struct kparser_glue_glue_parse_node *kparsenode;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	kparsenode = kparser_namespace_lookup(KPARSER_NS_NODE_PARSE, key);
-+	if (!kparsenode) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf), "%s: Object key not found", op);
-+		goto done;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = kparsenode->glue.glue.key;
-+	pr_debug("Key: {ID:%u Name:%s}\n", (*rsp)->key.id, (*rsp)->key.name);
-+	(*rsp)->object.conf_keys_bv = kparsenode->glue.glue.config.conf_keys_bv;
-+	(*rsp)->object.node_conf = kparsenode->glue.glue.config.node_conf;
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_NODE_PARSE);
-+}
-+
-+/* delete handler for object parse node */
-+int kparser_del_parse_node(const struct kparser_hkey *key,
-+			   struct kparser_cmd_rsp_hdr **rsp,
-+			   size_t *rsp_len, __u8 recursive_read, const char *op)
-+{
-+	struct kparser_obj_link_ctx *tmp_list_ref = NULL, *curr_ref = NULL;
-+	struct kparser_glue_glue_parse_node *kparsenode;
-+	int rc;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	kparsenode = kparser_namespace_lookup(KPARSER_NS_NODE_PARSE, key);
-+	if (!kparsenode) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Object key not found", op);
-+		goto done;
-+	}
-+
-+	/* verify if there is any associated immutable parser */
-+	list_for_each_entry_safe(curr_ref, tmp_list_ref,
-+				 &kparsenode->glue.glue.owned_list,
-+				 owned_obj.list_node) {
-+		if (curr_ref->owner_obj.nsid != KPARSER_NS_PARSER)
-+			continue;
-+		if (kref_read(curr_ref->owner_obj.refcount) != 0) {
-+			(*rsp)->op_ret_code = EBUSY;
-+			snprintf((*rsp)->err_str_buf,
-+				 sizeof((*rsp)->err_str_buf),
-+				 "%s:attached parser `%s` is immutable",
-+				 op, ((struct kparser_glue_parser *)
-+					curr_ref->owner_obj.obj)->glue.key.name);
-+			goto done;
-+		}
-+	}
-+
-+	if (kparser_link_detach(kparsenode, &kparsenode->glue.glue.owner_list,
-+				&kparsenode->glue.glue.owned_list, *rsp) != 0)
-+		goto done;
-+
-+	rc = kparser_namespace_remove(KPARSER_NS_NODE_PARSE,
-+				      &kparsenode->glue.glue.ht_node_id,
-+				      &kparsenode->glue.glue.ht_node_name);
-+	if (rc) {
-+		(*rsp)->op_ret_code = rc;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: namespace remove error", op);
-+		goto done;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	pr_debug("Key: {ID:%u Name:%s}\n", (*rsp)->key.id, (*rsp)->key.name);
-+	(*rsp)->object.conf_keys_bv = kparsenode->glue.glue.config.conf_keys_bv;
-+	(*rsp)->object.node_conf = kparsenode->glue.glue.config.node_conf;
-+
-+	kparser_free(kparsenode);
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_NODE_PARSE);
-+}
-+
-+/* free handler for object parse node */
-+void kparser_free_node(void *ptr, void *arg)
-+{
-+	/* TODO: */
-+}
-+
-+/* create handler for object protocol table entry */
-+static bool kparser_create_proto_table_ent(const struct kparser_conf_table *arg,
-+					   struct kparser_glue_protocol_table **proto_table,
-+					   struct kparser_cmd_rsp_hdr *rsp, const char *op)
-+{
-+	struct kparser_glue_glue_parse_node *kparsenode;
-+	void *realloced_mem;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", arg->key.id, arg->key.name);
-+
-+	*proto_table = kparser_namespace_lookup(KPARSER_NS_PROTO_TABLE, &arg->key);
-+	if (!(*proto_table)) {
-+		rsp->op_ret_code = ENOENT;
-+		snprintf(rsp->err_str_buf,
-+			 sizeof(rsp->err_str_buf),
-+			 "%s: Object key not found", op);
-+		return false;
-+	}
-+
-+	kparsenode = kparser_namespace_lookup(KPARSER_NS_NODE_PARSE, &arg->elem_key);
-+	if (!kparsenode) {
-+		rsp->op_ret_code = ENOENT;
-+		snprintf(rsp->err_str_buf,
-+			 sizeof(rsp->err_str_buf),
-+			 "%s: parse node key:{%s:%u} not found",
-+			 op, arg->elem_key.name, arg->elem_key.id);
-+		return false;
-+	}
-+
-+	(*proto_table)->proto_table.num_ents++;
-+	realloced_mem = krealloc((*proto_table)->proto_table.entries,
-+				 (*proto_table)->proto_table.num_ents *
-+				 sizeof(struct kparser_proto_table_entry),
-+				 GFP_KERNEL | ___GFP_ZERO);
-+	if (!realloced_mem) {
-+		rsp->op_ret_code = ENOMEM;
-+		snprintf(rsp->err_str_buf,
-+			 sizeof(rsp->err_str_buf),
-+			 "%s: krealloc() err, ents:%d, size:%lu",
-+			 op,
-+				(*proto_table)->proto_table.num_ents,
-+				sizeof(struct kparser_proto_table_entry));
-+		return false;
-+	}
-+	rcu_assign_pointer((*proto_table)->proto_table.entries, realloced_mem);
-+
-+	if (kparser_link_attach(*proto_table,
-+				KPARSER_NS_PROTO_TABLE,
-+				NULL, /* due to realloc, can't cache pointer here */
-+				&(*proto_table)->glue.refcount,
-+				&(*proto_table)->glue.owner_list,
-+				kparsenode,
-+				KPARSER_NS_NODE_PARSE,
-+				&kparsenode->glue.glue.refcount,
-+				&kparsenode->glue.glue.owned_list,
-+				rsp, op) != 0)
-+		return false;
-+
-+	(*proto_table)->proto_table.entries[(*proto_table)->proto_table.num_ents - 1].value =
-+			arg->optional_value1;
-+	(*proto_table)->proto_table.entries[(*proto_table)->proto_table.num_ents - 1].encap =
-+			arg->optional_value2;
-+	(*proto_table)->proto_table.entries[(*proto_table)->proto_table.num_ents - 1].node =
-+			&kparsenode->parse_node.node;
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return true;
-+}
-+
-+/* create handler for object protocol table */
-+int kparser_create_proto_table(const struct kparser_conf_cmd *conf,
-+			       size_t conf_len,
-+			       struct kparser_cmd_rsp_hdr **rsp,
-+			       size_t *rsp_len, const char *op)
-+{
-+	struct kparser_glue_protocol_table *proto_table = NULL;
-+	const struct kparser_conf_table *arg;
-+	struct kparser_hkey key;
-+	int rc;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	arg = &conf->table_conf;
-+
-+	/* create a table entry */
-+	if (arg->add_entry) {
-+		if (kparser_create_proto_table_ent(arg, &proto_table, *rsp, op) == false)
-+			goto done;
-+		goto skip_table_create;
-+	}
-+
-+	if (kparser_conf_key_manager(conf->namespace_id, &arg->key, &key, *rsp, op) != 0) {
-+		pr_alert("%s:%d\n", __func__, __LINE__);
-+		goto done;
-+	}
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", arg->key.id, arg->key.name);
-+
-+	if (kparser_namespace_lookup(conf->namespace_id, &key)) {
-+		(*rsp)->op_ret_code = EEXIST;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Duplicate object key", op);
-+		goto done;
-+	}
-+
-+	/* create protocol table */
-+	proto_table = kzalloc(sizeof(*proto_table), GFP_KERNEL);
-+	if (!proto_table) {
-+		(*rsp)->op_ret_code = ENOMEM;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf), "%s: kzalloc() failed", op);
-+		goto done;
-+	}
-+
-+	proto_table->glue.key = key;
-+
-+	rc = kparser_namespace_insert(conf->namespace_id,
-+				      &proto_table->glue.ht_node_id,
-+				      &proto_table->glue.ht_node_name);
-+	if (rc) {
-+		(*rsp)->op_ret_code = rc;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: kparser_namespace_insert() err", op);
-+		goto done;
-+	}
-+
-+	proto_table->glue.config.namespace_id = conf->namespace_id;
-+	proto_table->glue.config.conf_keys_bv = conf->conf_keys_bv;
-+	proto_table->glue.config.table_conf = *arg;
-+	proto_table->glue.config.table_conf.key = key;
-+	kref_init(&proto_table->glue.refcount);
-+	INIT_LIST_HEAD(&proto_table->glue.owner_list);
-+	INIT_LIST_HEAD(&proto_table->glue.owned_list);
-+
-+skip_table_create:
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->object.conf_keys_bv = conf->conf_keys_bv;
-+	(*rsp)->object.table_conf = *arg;
-+
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	if ((*rsp)->op_ret_code != 0)
-+		if (proto_table && !arg->add_entry)
-+			kparser_free(proto_table);
-+
-+	synchronize_rcu();
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_PROTO_TABLE);
-+}
-+
-+/* read handler for object protocol table */
-+int kparser_read_proto_table(const struct kparser_hkey *key,
-+			     struct kparser_cmd_rsp_hdr **rsp,
-+			     size_t *rsp_len, __u8 recursive_read, const char *op)
-+{
-+	const struct kparser_glue_protocol_table *proto_table;
-+	const struct kparser_glue_glue_parse_node *parse_node;
-+	struct kparser_conf_cmd *objects = NULL;
-+	void *realloced_mem;
-+	int i;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	proto_table = kparser_namespace_lookup(KPARSER_NS_PROTO_TABLE, key);
-+	if (!proto_table) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Object key not found", op);
-+		goto done;
-+	}
-+
-+	(*rsp)->key = proto_table->glue.key;
-+	pr_debug("Key: {ID:%u Name:%s}\n", (*rsp)->key.id, (*rsp)->key.name);
-+	(*rsp)->object.conf_keys_bv = proto_table->glue.config.conf_keys_bv;
-+	(*rsp)->object.table_conf = proto_table->glue.config.table_conf;
-+
-+	for (i = 0; i < proto_table->proto_table.num_ents; i++) {
-+		(*rsp)->objects_len++;
-+		*rsp_len = *rsp_len + sizeof(struct kparser_conf_cmd);
-+		realloced_mem = krealloc(*rsp, *rsp_len, GFP_KERNEL | ___GFP_ZERO);
-+		if (!realloced_mem) {
-+			pr_alert("%s:krealloc failed for rsp, len:%lu\n", __func__, *rsp_len);
-+			*rsp_len = 0;
-+			mutex_unlock(&kparser_config_lock);
-+			return KPARSER_ATTR_UNSPEC;
-+		}
-+		*rsp = realloced_mem;
-+		objects = (struct kparser_conf_cmd *)(*rsp)->objects;
-+		objects[i].namespace_id = proto_table->glue.config.namespace_id;
-+		objects[i].table_conf = proto_table->glue.config.table_conf;
-+		objects[i].table_conf.optional_value1 = proto_table->proto_table.entries[i].value;
-+		if (!proto_table->proto_table.entries[i].node)
-+			continue;
-+		parse_node = container_of(proto_table->proto_table.entries[i].node,
-+					  struct kparser_glue_glue_parse_node,
-+					  parse_node.node);
-+		objects[i].table_conf.elem_key = parse_node->glue.glue.key;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_PROTO_TABLE);
-+}
-+
-+/* delete handler for object protocol table */
-+int kparser_del_proto_table(const struct kparser_hkey *key,
-+			    struct kparser_cmd_rsp_hdr **rsp,
-+			    size_t *rsp_len, __u8 recursive_read, const char *op)
-+{
-+	struct kparser_obj_link_ctx *tmp_list_ref = NULL, *curr_ref = NULL;
-+	struct kparser_obj_link_ctx *node_tmp_list_ref = NULL;
-+	struct kparser_obj_link_ctx *node_curr_ref = NULL;
-+	struct kparser_glue_protocol_table *proto_table;
-+	struct kparser_glue_glue_parse_node *kparsenode;
-+	struct kparser_glue_glue_parse_node *parse_node;
-+	struct kparser_conf_cmd *objects = NULL;
-+	void *realloced_mem;
-+	int i, rc;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	proto_table = kparser_namespace_lookup(KPARSER_NS_PROTO_TABLE, key);
-+	if (!proto_table) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Object key not found", op);
-+		goto done;
-+	}
-+
-+	/* verify if there is any associated immutable parser */
-+	list_for_each_entry_safe(curr_ref, tmp_list_ref,
-+				 &proto_table->glue.owned_list, owned_obj.list_node) {
-+		if (curr_ref->owner_obj.nsid != KPARSER_NS_NODE_PARSE)
-+			continue;
-+		if (kref_read(curr_ref->owner_obj.refcount) == 0)
-+			continue;
-+		kparsenode = (struct kparser_glue_glue_parse_node *)
-+			curr_ref->owner_obj.obj;
-+		list_for_each_entry_safe(node_curr_ref, node_tmp_list_ref,
-+					 &kparsenode->glue.glue.owned_list, owned_obj.list_node) {
-+			if (node_curr_ref->owner_obj.nsid != KPARSER_NS_PARSER)
-+				continue;
-+			if (kref_read(node_curr_ref->owner_obj.refcount) != 0) {
-+				(*rsp)->op_ret_code = EBUSY;
-+				snprintf((*rsp)->err_str_buf,
-+					 sizeof((*rsp)->err_str_buf),
-+					 "%s:attached parser `%s` is immutable",
-+					 op,
-+						((struct kparser_glue_parser *)
-+						 node_curr_ref->owner_obj.obj)->glue.key.name);
-+				goto done;
-+			}
-+		}
-+	}
-+
-+	(*rsp)->key = proto_table->glue.key;
-+	pr_debug("Key: {ID:%u Name:%s}\n", (*rsp)->key.id, (*rsp)->key.name);
-+	(*rsp)->object.conf_keys_bv = proto_table->glue.config.conf_keys_bv;
-+	(*rsp)->object.table_conf = proto_table->glue.config.table_conf;
-+
-+	for (i = 0; i < proto_table->proto_table.num_ents; i++) {
-+		(*rsp)->objects_len++;
-+		*rsp_len = *rsp_len + sizeof(struct kparser_conf_cmd);
-+		realloced_mem = krealloc(*rsp, *rsp_len, GFP_KERNEL | ___GFP_ZERO);
-+		if (!realloced_mem) {
-+			pr_alert("%s:krealloc failed for rsp, len:%lu\n",
-+				 __func__, *rsp_len);
-+			*rsp_len = 0;
-+			mutex_unlock(&kparser_config_lock);
-+			return KPARSER_ATTR_UNSPEC;
-+		}
-+		*rsp = realloced_mem;
-+		objects = (struct kparser_conf_cmd *)(*rsp)->objects;
-+		objects[i].namespace_id = proto_table->glue.config.namespace_id;
-+		objects[i].table_conf = proto_table->glue.config.table_conf;
-+		objects[i].table_conf.optional_value1 = proto_table->proto_table.entries[i].value;
-+		if (!proto_table->proto_table.entries[i].node)
-+			continue;
-+		parse_node = container_of(proto_table->proto_table.entries[i].node,
-+					  struct kparser_glue_glue_parse_node,
-+					  parse_node.node);
-+		objects[i].table_conf.elem_key = parse_node->glue.glue.key;
-+	}
-+
-+	if (kparser_link_detach(proto_table, &proto_table->glue.owner_list,
-+				&proto_table->glue.owned_list, *rsp) != 0)
-+		goto done;
-+
-+	rc = kparser_namespace_remove(KPARSER_NS_PROTO_TABLE,
-+				      &proto_table->glue.ht_node_id,
-+				      &proto_table->glue.ht_node_name);
-+	if (rc) {
-+		(*rsp)->op_ret_code = rc;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: namespace remove error", op);
-+		goto done;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	kparser_free(proto_table->proto_table.entries);
-+	kparser_free(proto_table);
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_PROTO_TABLE);
-+}
-+
-+/* free handler for object protocol table */
-+void kparser_free_proto_tbl(void *ptr, void *arg)
-+{
-+	/* TODO: */
-+}
-+
-+/* handler to convert and map from netlink tlv node to kParser KMOD's tlv node */
-+static inline bool kparser_conf_tlv_node_convert(const struct kparser_conf_node_parse_tlv *conf,
-+						 struct kparser_parse_tlv_node *node)
-+{
-+	struct kparser_glue_parse_tlv_node *kparsewildcardnode;
-+	struct kparser_glue_condexpr_tables *kcond_tables;
-+	struct kparser_glue_proto_tlvs_table *kprototbl;
-+	struct kparser_glue_metadata_table *kmdl;
-+
-+	if (!conf || !node)
-+		return false;
-+
-+	node->proto_tlv_node.min_len = conf->node_proto.min_len;
-+	node->proto_tlv_node.max_len = conf->node_proto.max_len;
-+	node->proto_tlv_node.is_padding = conf->node_proto.is_padding;
-+
-+	node->proto_tlv_node.ops.pfoverlay_type = conf->node_proto.ops.pfoverlay_type;
-+	if (node->proto_tlv_node.ops.pfoverlay_type.src_off ||
-+	    node->proto_tlv_node.ops.pfoverlay_type.size ||
-+	    node->proto_tlv_node.ops.pfoverlay_type.right_shift)
-+		node->proto_tlv_node.ops.overlay_type_parameterized = true;
-+
-+	kcond_tables = kparser_namespace_lookup(KPARSER_NS_CONDEXPRS_TABLES,
-+						&conf->node_proto.ops.cond_exprs_table);
-+	if (kcond_tables) {
-+		node->proto_tlv_node.ops.cond_exprs = kcond_tables->table;
-+		node->proto_tlv_node.ops.cond_exprs_parameterized = true;
-+	}
-+
-+	kprototbl = kparser_namespace_lookup(KPARSER_NS_TLV_PROTO_TABLE,
-+					     &conf->overlay_proto_tlvs_table_key);
-+	if (kprototbl)
-+		rcu_assign_pointer(node->overlay_table, &kprototbl->tlvs_proto_table);
-+
-+	kparsewildcardnode = kparser_namespace_lookup(KPARSER_NS_TLV_NODE_PARSE,
-+						      &conf->overlay_wildcard_parse_node_key);
-+	if (kparsewildcardnode)
-+		rcu_assign_pointer(node->overlay_wildcard_node,
-+				   &kparsewildcardnode->tlv_parse_node);
-+
-+	node->unknown_overlay_ret = conf->unknown_ret;
-+	strcpy(node->name, conf->key.name);
-+
-+	kmdl = kparser_namespace_lookup(KPARSER_NS_METALIST,
-+					&conf->metadata_table_key);
-+	if (kmdl)
-+		rcu_assign_pointer(node->metadata_table, &kmdl->metadata_table);
-+
-+	return true;
-+}
-+
-+/* create handler for object tlv node */
-+int kparser_create_parse_tlv_node(const struct kparser_conf_cmd *conf,
-+				  size_t conf_len,
-+				  struct kparser_cmd_rsp_hdr **rsp,
-+				  size_t *rsp_len, const char *op)
-+{
-+	struct kparser_glue_parse_tlv_node *node = NULL;
-+	const struct kparser_conf_node_parse_tlv *arg;
-+	struct kparser_hkey key;
-+	int rc;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	arg = &conf->tlv_node_conf;
-+
-+	if (kparser_conf_key_manager(conf->namespace_id, &arg->key, &key, *rsp, op) != 0) {
-+		pr_alert("%s:%d\n", __func__, __LINE__);
-+		goto done;
-+	}
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", arg->key.id, arg->key.name);
-+
-+	if (kparser_namespace_lookup(conf->namespace_id, &key)) {
-+		(*rsp)->op_ret_code = EEXIST;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Duplicate object key", __func__);
-+		goto done;
-+	}
-+
-+	node = kzalloc(sizeof(*node), GFP_KERNEL);
-+	if (!node) {
-+		(*rsp)->op_ret_code = ENOMEM;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: kzalloc() failed", __func__);
-+		goto done;
-+	}
-+
-+	node->glue.glue.key = key;
-+
-+	rc = kparser_namespace_insert(conf->namespace_id,
-+				      &node->glue.glue.ht_node_id,
-+				      &node->glue.glue.ht_node_name);
-+	if (rc) {
-+		(*rsp)->op_ret_code = rc;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: kparser_namespace_insert() err",
-+			 __func__);
-+		goto done;
-+	}
-+
-+	node->glue.glue.config.namespace_id = conf->namespace_id;
-+	node->glue.glue.config.conf_keys_bv = conf->conf_keys_bv;
-+	node->glue.glue.config.tlv_node_conf = *arg;
-+	node->glue.glue.config.tlv_node_conf.key = key;
-+	kref_init(&node->glue.glue.refcount);
-+
-+	if (!kparser_conf_tlv_node_convert(arg, &node->tlv_parse_node)) {
-+		(*rsp)->op_ret_code = EINVAL;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: kparser_conf_tlv_node_convert() err",
-+			 __func__);
-+		goto done;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = key;
-+	(*rsp)->object.conf_keys_bv = conf->conf_keys_bv;
-+	(*rsp)->object.tlv_node_conf = node->glue.glue.config.tlv_node_conf;
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	if ((*rsp)->op_ret_code != 0)
-+		kparser_free(node);
-+
-+	synchronize_rcu();
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_TLV_NODE_PARSE);
-+}
-+
-+/* read handler for object tlv node */
-+int kparser_read_parse_tlv_node(const struct kparser_hkey *key,
-+				struct kparser_cmd_rsp_hdr **rsp,
-+				size_t *rsp_len, __u8 recursive_read, const char *op)
-+{
-+	const struct kparser_glue_parse_tlv_node *node;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	node = kparser_namespace_lookup(KPARSER_NS_TLV_NODE_PARSE, key);
-+	if (!node) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Object key not found",
-+			 __func__);
-+		goto done;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = node->glue.glue.key;
-+	pr_debug("Key: {ID:%u Name:%s}\n", (*rsp)->key.id, (*rsp)->key.name);
-+	(*rsp)->object.conf_keys_bv = node->glue.glue.config.conf_keys_bv;
-+	(*rsp)->object.tlv_node_conf = node->glue.glue.config.tlv_node_conf;
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_TLV_NODE_PARSE);
-+}
-+
-+/* create handler for object tlv proto table's entry */
-+static bool kparser_create_tlv_proto_table_ent(const struct kparser_conf_table *arg,
-+					       struct kparser_glue_proto_tlvs_table **proto_table,
-+					       struct kparser_cmd_rsp_hdr *rsp)
-+{
-+	const struct kparser_glue_parse_tlv_node *kparsenode;
-+	void *realloced_mem;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", arg->key.id, arg->key.name);
-+
-+	*proto_table = kparser_namespace_lookup(KPARSER_NS_TLV_PROTO_TABLE, &arg->key);
-+	if (!(*proto_table)) {
-+		rsp->op_ret_code = ENOENT;
-+		snprintf(rsp->err_str_buf,
-+			 sizeof(rsp->err_str_buf),
-+			 "%s: Object key not found",
-+			 __func__);
-+		return false;
-+	}
-+
-+	kparsenode = kparser_namespace_lookup(KPARSER_NS_TLV_NODE_PARSE, &arg->elem_key);
-+	if (!kparsenode) {
-+		rsp->op_ret_code = ENOENT;
-+		snprintf(rsp->err_str_buf,
-+			 sizeof(rsp->err_str_buf),
-+			 "%s: Object key:{%s:%u} not found",
-+			 __func__, arg->elem_key.name, arg->elem_key.id);
-+		return false;
-+	}
-+
-+	(*proto_table)->tlvs_proto_table.num_ents++;
-+	realloced_mem = krealloc((*proto_table)->tlvs_proto_table.entries,
-+				 (*proto_table)->tlvs_proto_table.num_ents *
-+				 sizeof(struct kparser_proto_tlvs_table_entry),
-+				 GFP_KERNEL | ___GFP_ZERO);
-+	if (!realloced_mem) {
-+		rsp->op_ret_code = ENOMEM;
-+		snprintf(rsp->err_str_buf,
-+			 sizeof(rsp->err_str_buf),
-+			 "%s: krealloc() err, ents:%d, size:%lu",
-+			 __func__,
-+				(*proto_table)->tlvs_proto_table.num_ents,
-+				sizeof(struct kparser_proto_tlvs_table_entry));
-+		return false;
-+	}
-+	rcu_assign_pointer((*proto_table)->tlvs_proto_table.entries, realloced_mem);
-+
-+	(*proto_table)->tlvs_proto_table.entries[(*proto_table)->tlvs_proto_table.num_ents -
-+		1].type = arg->optional_value1;
-+	(*proto_table)->tlvs_proto_table.entries[(*proto_table)->tlvs_proto_table.num_ents -
-+		1].node = &kparsenode->tlv_parse_node;
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return true;
-+}
-+
-+/* create handler for object tlv proto table */
-+int kparser_create_tlv_proto_table(const struct kparser_conf_cmd *conf,
-+				   size_t conf_len,
-+				   struct kparser_cmd_rsp_hdr **rsp,
-+				   size_t *rsp_len, const char *op)
-+{
-+	struct kparser_glue_proto_tlvs_table *proto_table = NULL;
-+	const struct kparser_conf_table *arg;
-+	struct kparser_hkey key;
-+	int rc;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	arg = &conf->table_conf;
-+
-+	/* create a table entry */
-+	if (arg->add_entry) {
-+		if (kparser_create_tlv_proto_table_ent(arg, &proto_table, *rsp) == false)
-+			goto done;
-+		goto skip_table_create;
-+	}
-+
-+	if (kparser_conf_key_manager(conf->namespace_id, &arg->key, &key, *rsp, op) != 0) {
-+		pr_alert("%s:%d\n", __func__, __LINE__);
-+		goto done;
-+	}
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", arg->key.id, arg->key.name);
-+
-+	if (kparser_namespace_lookup(conf->namespace_id, &key)) {
-+		(*rsp)->op_ret_code = EEXIST;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Duplicate object key",
-+			 __func__);
-+		goto done;
-+	}
-+
-+	/* create protocol table */
-+	proto_table = kzalloc(sizeof(*proto_table), GFP_KERNEL);
-+	if (!proto_table) {
-+		(*rsp)->op_ret_code = ENOMEM;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: kzalloc() failed", __func__);
-+		goto done;
-+	}
-+
-+	proto_table->glue.key = key;
-+
-+	rc = kparser_namespace_insert(conf->namespace_id,
-+				      &proto_table->glue.ht_node_id,
-+				      &proto_table->glue.ht_node_name);
-+	if (rc) {
-+		(*rsp)->op_ret_code = rc;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: kparser_namespace_insert() err",
-+			 __func__);
-+		goto done;
-+	}
-+
-+	proto_table->glue.config.namespace_id = conf->namespace_id;
-+	proto_table->glue.config.conf_keys_bv = conf->conf_keys_bv;
-+	proto_table->glue.config.table_conf = *arg;
-+	proto_table->glue.config.table_conf.key = key;
-+	kref_init(&proto_table->glue.refcount);
-+
-+skip_table_create:
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = key;
-+	(*rsp)->object.conf_keys_bv = conf->conf_keys_bv;
-+	(*rsp)->object.table_conf = proto_table->glue.config.table_conf;
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	if ((*rsp)->op_ret_code != 0)
-+		if (proto_table && !arg->add_entry)
-+			kparser_free(proto_table);
-+
-+	synchronize_rcu();
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_TLV_PROTO_TABLE);
-+}
-+
-+/* read handler for object tlv proto table */
-+int kparser_read_tlv_proto_table(const struct kparser_hkey *key,
-+				 struct kparser_cmd_rsp_hdr **rsp,
-+				 size_t *rsp_len, __u8 recursive_read, const char *op)
-+{
-+	const struct kparser_glue_proto_tlvs_table *proto_table;
-+	const struct kparser_glue_parse_tlv_node *parse_node;
-+	struct kparser_conf_cmd *objects = NULL;
-+	void *realloced_mem;
-+	int i;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	proto_table = kparser_namespace_lookup(KPARSER_NS_TLV_PROTO_TABLE, key);
-+	if (!proto_table) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Object key not found",
-+			 __func__);
-+		goto done;
-+	}
-+
-+	(*rsp)->key = proto_table->glue.key;
-+	pr_debug("Key: {ID:%u Name:%s}\n", (*rsp)->key.id, (*rsp)->key.name);
-+	(*rsp)->object.conf_keys_bv = proto_table->glue.config.conf_keys_bv;
-+	(*rsp)->object.table_conf = proto_table->glue.config.table_conf;
-+
-+	for (i = 0; i < proto_table->tlvs_proto_table.num_ents; i++) {
-+		(*rsp)->objects_len++;
-+		*rsp_len = *rsp_len + sizeof(struct kparser_conf_cmd);
-+		realloced_mem = krealloc(*rsp, *rsp_len, GFP_KERNEL | ___GFP_ZERO);
-+		if (!realloced_mem) {
-+			pr_alert("%s:krealloc failed for rsp, len:%lu\n", __func__, *rsp_len);
-+			*rsp_len = 0;
-+			mutex_unlock(&kparser_config_lock);
-+			return KPARSER_ATTR_UNSPEC;
-+		}
-+		*rsp = realloced_mem;
-+		objects = (struct kparser_conf_cmd *)(*rsp)->objects;
-+		objects[i].namespace_id = proto_table->glue.config.namespace_id;
-+		objects[i].table_conf = proto_table->glue.config.table_conf;
-+		objects[i].table_conf.optional_value1 =
-+			proto_table->tlvs_proto_table.entries[i].type;
-+		if (!proto_table->tlvs_proto_table.entries[i].node)
-+			continue;
-+		parse_node = container_of(proto_table->tlvs_proto_table.entries[i].node,
-+					  struct kparser_glue_parse_tlv_node, tlv_parse_node);
-+		objects[i].table_conf.elem_key = parse_node->glue.glue.key;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_TLV_PROTO_TABLE);
-+}
-+
-+/* create handler for object flag field */
-+int kparser_create_flag_field(const struct kparser_conf_cmd *conf,
-+			      size_t conf_len,
-+			      struct kparser_cmd_rsp_hdr **rsp,
-+			      size_t *rsp_len, const char *op)
-+{
-+	struct kparser_glue_flag_field *kobj = NULL;
-+	const struct kparser_conf_flag_field *arg;
-+	struct kparser_hkey key;
-+	int rc;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	arg = &conf->flag_field_conf;
-+
-+	if (kparser_conf_key_manager(conf->namespace_id, &arg->key, &key, *rsp, op) != 0) {
-+		pr_alert("%s:%d\n", __func__, __LINE__);
-+		goto done;
-+	}
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", arg->key.id, arg->key.name);
-+
-+	if (kparser_namespace_lookup(conf->namespace_id, &key)) {
-+		(*rsp)->op_ret_code = EEXIST;
-+		snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf),
-+			 "%s: Duplicate object key", op);
-+		goto done;
-+	}
-+
-+	kobj = kzalloc(sizeof(*kobj), GFP_KERNEL);
-+	if (!kobj) {
-+		(*rsp)->op_ret_code = ENOMEM;
-+		snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf),
-+			 "%s: kzalloc() failed", op);
-+		goto done;
-+	}
-+
-+	kobj->glue.key = key;
-+
-+	rc = kparser_namespace_insert(conf->namespace_id,
-+				      &kobj->glue.ht_node_id, &kobj->glue.ht_node_name);
-+	if (rc) {
-+		(*rsp)->op_ret_code = rc;
-+		snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf),
-+			 "%s: kparser_namespace_insert() err", op);
-+		goto done;
-+	}
-+
-+	kobj->glue.config.namespace_id = conf->namespace_id;
-+	kobj->glue.config.conf_keys_bv = conf->conf_keys_bv;
-+	kobj->glue.config.flag_field_conf = *arg;
-+	kobj->glue.config.flag_field_conf.key = key;
-+	kref_init(&kobj->glue.refcount);
-+
-+	kobj->flag_field = arg->conf;
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = key;
-+	(*rsp)->object.conf_keys_bv = conf->conf_keys_bv;
-+	(*rsp)->object.flag_field_conf = kobj->glue.config.flag_field_conf;
-+
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	if ((*rsp)->op_ret_code != 0)
-+		kparser_free(kobj);
-+
-+	synchronize_rcu();
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_FLAG_FIELD);
-+}
-+
-+/* read handler for object flag field */
-+int kparser_read_flag_field(const struct kparser_hkey *key,
-+			    struct kparser_cmd_rsp_hdr **rsp,
-+			    size_t *rsp_len, __u8 recursive_read, const char *op)
-+{
-+	struct kparser_glue_flag_field *kobj;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	kobj = kparser_namespace_lookup(KPARSER_NS_FLAG_FIELD, key);
-+	if (!kobj) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Object key not found", op);
-+		goto done;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = kobj->glue.key;
-+	pr_debug("Key: {ID:%u Name:%s}\n", (*rsp)->key.id, (*rsp)->key.name);
-+	(*rsp)->object.conf_keys_bv = kobj->glue.config.conf_keys_bv;
-+	(*rsp)->object.flag_field_conf = kobj->glue.config.flag_field_conf;
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_FLAG_FIELD);
-+}
-+
-+/* compare call back to sort flag fields using their flag values in qsort API */
-+static int compare(const void *lhs, const void *rhs)
-+{
-+	const struct kparser_flag_field *lhs_flag = lhs;
-+	const struct kparser_flag_field *rhs_flag = rhs;
-+
-+	pr_debug("lflag:%x rflag:%x\n", lhs_flag->flag, rhs_flag->flag);
-+
-+	if (lhs_flag->flag < rhs_flag->flag)
-+		return -1;
-+	if (lhs_flag->flag > rhs_flag->flag)
-+		return 1;
-+
-+	return 0;
-+}
-+
-+/* create handler for object flag field table entry */
-+static bool kparser_create_flag_field_table_ent(const struct kparser_conf_table *arg,
-+						struct kparser_glue_flag_fields **proto_table,
-+						struct kparser_cmd_rsp_hdr *rsp)
-+{
-+	const struct kparser_glue_flag_field *kflagent;
-+	void *realloced_mem;
-+	int i;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", arg->key.id, arg->key.name);
-+
-+	*proto_table = kparser_namespace_lookup(KPARSER_NS_FLAG_FIELD_TABLE, &arg->key);
-+	if (!(*proto_table)) {
-+		rsp->op_ret_code = ENOENT;
-+		snprintf(rsp->err_str_buf, sizeof(rsp->err_str_buf),
-+			 "%s: Object key not found", __func__);
-+		return false;
-+	}
-+
-+	kflagent = kparser_namespace_lookup(KPARSER_NS_FLAG_FIELD, &arg->elem_key);
-+	if (!kflagent) {
-+		rsp->op_ret_code = ENOENT;
-+		snprintf(rsp->err_str_buf, sizeof(rsp->err_str_buf),
-+			 "%s: Object key:{%s:%u} not found",
-+			 __func__, arg->elem_key.name, arg->elem_key.id);
-+		return false;
-+	}
-+
-+	(*proto_table)->flag_fields.num_idx++;
-+
-+	realloced_mem = krealloc((*proto_table)->flag_fields.fields,
-+				 (*proto_table)->flag_fields.num_idx *
-+				 sizeof(struct kparser_flag_field),
-+				 GFP_KERNEL | ___GFP_ZERO);
-+	if (!realloced_mem) {
-+		rsp->op_ret_code = ENOMEM;
-+		snprintf(rsp->err_str_buf,
-+			 sizeof(rsp->err_str_buf),
-+			 "%s: krealloc() err, ents:%lu, size:%lu",
-+			 __func__,
-+			 (*proto_table)->flag_fields.num_idx,
-+			 sizeof(struct kparser_flag_field));
-+		return false;
-+	}
-+	rcu_assign_pointer((*proto_table)->flag_fields.fields, realloced_mem);
-+
-+	(*proto_table)->flag_fields.fields[(*proto_table)->flag_fields.num_idx - 1] =
-+		kflagent->flag_field;
-+
-+	sort((*proto_table)->flag_fields.fields,
-+	     (*proto_table)->flag_fields.num_idx,
-+	     sizeof(struct kparser_flag_field), &compare, NULL);
-+
-+	for (i = 0; i < (*proto_table)->flag_fields.num_idx; i++)
-+		pr_debug("List[%d]:%x\n",
-+			 i, (*proto_table)->flag_fields.fields[i].flag);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return true;
-+}
-+
-+/* create handler for object flag field */
-+int kparser_create_flag_field_table(const struct kparser_conf_cmd *conf,
-+				    size_t conf_len,
-+				    struct kparser_cmd_rsp_hdr **rsp,
-+				    size_t *rsp_len, const char *op)
-+{
-+	struct kparser_glue_flag_fields *proto_table = NULL;
-+	const struct kparser_conf_table *arg;
-+	struct kparser_hkey key;
-+	int rc;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	arg = &conf->table_conf;
-+
-+	if (arg->add_entry) {
-+		if (kparser_create_flag_field_table_ent(arg, &proto_table, *rsp) == false)
-+			goto done;
-+		goto skip_table_create;
-+	}
-+
-+	if (kparser_conf_key_manager(conf->namespace_id, &arg->key, &key, *rsp, op) != 0) {
-+		pr_alert("%s:%d\n", __func__, __LINE__);
-+		goto done;
-+	}
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", arg->key.id, arg->key.name);
-+
-+	if (kparser_namespace_lookup(conf->namespace_id, &key)) {
-+		(*rsp)->op_ret_code = EEXIST;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Duplicate object key",
-+			 __func__);
-+		goto done;
-+	}
-+
-+	proto_table = kzalloc(sizeof(*proto_table), GFP_KERNEL);
-+	if (!proto_table) {
-+		(*rsp)->op_ret_code = ENOMEM;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: kzalloc() failed", __func__);
-+		goto done;
-+	}
-+
-+	proto_table->glue.key = key;
-+
-+	rc = kparser_namespace_insert(conf->namespace_id,
-+				      &proto_table->glue.ht_node_id,
-+				      &proto_table->glue.ht_node_name);
-+	if (rc) {
-+		(*rsp)->op_ret_code = rc;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: kparser_namespace_insert() err",
-+			 __func__);
-+		goto done;
-+	}
-+
-+	proto_table->glue.config.namespace_id = conf->namespace_id;
-+	proto_table->glue.config.conf_keys_bv = conf->conf_keys_bv;
-+	proto_table->glue.config.table_conf = *arg;
-+	proto_table->glue.config.table_conf.key = key;
-+	kref_init(&proto_table->glue.refcount);
-+
-+skip_table_create:
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = key;
-+	(*rsp)->object.conf_keys_bv = conf->conf_keys_bv;
-+	(*rsp)->object.table_conf =
-+		proto_table->glue.config.table_conf;
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	if ((*rsp)->op_ret_code != 0)
-+		if (proto_table && !arg->add_entry)
-+			kparser_free(proto_table);
-+
-+	synchronize_rcu();
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_FLAG_FIELD_TABLE);
-+}
-+
-+/* read handler for object flag field */
-+int kparser_read_flag_field_table(const struct kparser_hkey *key,
-+				  struct kparser_cmd_rsp_hdr **rsp,
-+				  size_t *rsp_len, __u8 recursive_read, const char *op)
-+{
-+	const struct kparser_glue_flag_fields *proto_table;
-+	const struct kparser_glue_flag_field *kflagent;
-+	struct kparser_conf_cmd *objects = NULL;
-+	void *realloced_mem;
-+	int i;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	proto_table = kparser_namespace_lookup(KPARSER_NS_FLAG_FIELD_TABLE, key);
-+	if (!proto_table) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Object key not found",
-+			 __func__);
-+		goto done;
-+	}
-+
-+	(*rsp)->key = proto_table->glue.key;
-+	pr_debug("Key: {ID:%u Name:%s}\n", (*rsp)->key.id, (*rsp)->key.name);
-+	(*rsp)->object.conf_keys_bv = proto_table->glue.config.conf_keys_bv;
-+	(*rsp)->object.table_conf = proto_table->glue.config.table_conf;
-+
-+	for (i = 0; i < proto_table->flag_fields.num_idx; i++) {
-+		(*rsp)->objects_len++;
-+		*rsp_len = *rsp_len + sizeof(struct kparser_conf_cmd);
-+		realloced_mem = krealloc(*rsp, *rsp_len, GFP_KERNEL | ___GFP_ZERO);
-+		if (!realloced_mem) {
-+			pr_alert("%s:krealloc failed for rsp, len:%lu\n", __func__, *rsp_len);
-+			*rsp_len = 0;
-+			mutex_unlock(&kparser_config_lock);
-+			return KPARSER_ATTR_UNSPEC;
-+		}
-+		*rsp = realloced_mem;
-+
-+		objects = (struct kparser_conf_cmd *)(*rsp)->objects;
-+		objects[i].namespace_id = proto_table->glue.config.namespace_id;
-+		objects[i].table_conf = proto_table->glue.config.table_conf;
-+		objects[i].table_conf.optional_value1 = i;
-+		if (!proto_table->flag_fields.fields)
-+			continue;
-+		kflagent = container_of(&proto_table->flag_fields.fields[i],
-+					struct kparser_glue_flag_field, flag_field);
-+		objects[i].table_conf.elem_key = kflagent->glue.key;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_FLAG_FIELD_TABLE);
-+}
-+
-+/* handler to convert and map netlink's flag node to kParser KMOD's flag node */
-+static inline bool
-+kparser_create_parse_flag_field_node_convert(const struct kparser_conf_node_parse_flag_field *conf,
-+					     struct kparser_parse_flag_field_node *node)
-+{
-+	struct kparser_glue_condexpr_tables *kcond_tables;
-+	struct kparser_glue_metadata_table *kmdl;
-+
-+	if (!conf || !node)
-+		return false;
-+
-+	strcpy(node->name, conf->key.name);
-+
-+	kcond_tables = kparser_namespace_lookup(KPARSER_NS_CONDEXPRS_TABLES,
-+						&conf->ops.cond_exprs_table_key);
-+	if (kcond_tables)
-+		node->ops.cond_exprs = kcond_tables->table;
-+
-+	kmdl = kparser_namespace_lookup(KPARSER_NS_METALIST, &conf->metadata_table_key);
-+	if (kmdl)
-+		rcu_assign_pointer(node->metadata_table, &kmdl->metadata_table);
-+
-+	return true;
-+}
-+
-+/* create handler for object flag field node */
-+int kparser_create_parse_flag_field_node(const struct kparser_conf_cmd *conf,
-+					 size_t conf_len,
-+					 struct kparser_cmd_rsp_hdr **rsp,
-+					 size_t *rsp_len, const char *op)
-+{
-+	const struct kparser_conf_node_parse_flag_field *arg;
-+	struct kparser_glue_flag_field_node *node = NULL;
-+	struct kparser_hkey key;
-+	int rc;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	arg = &conf->flag_field_node_conf;
-+
-+	if (kparser_conf_key_manager(conf->namespace_id, &arg->key, &key, *rsp, op) != 0) {
-+		pr_alert("%s:%d\n", __func__, __LINE__);
-+		goto done;
-+	}
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", arg->key.id, arg->key.name);
-+
-+	if (kparser_namespace_lookup(conf->namespace_id, &key)) {
-+		(*rsp)->op_ret_code = EEXIST;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Duplicate object key",
-+			 __func__);
-+		goto done;
-+	}
-+
-+	node = kzalloc(sizeof(*node), GFP_KERNEL);
-+	if (!node) {
-+		(*rsp)->op_ret_code = ENOMEM;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: kzalloc() failed", __func__);
-+		goto done;
-+	}
-+
-+	node->glue.glue.key = key;
-+
-+	rc = kparser_namespace_insert(conf->namespace_id,
-+				      &node->glue.glue.ht_node_id, &node->glue.glue.ht_node_name);
-+	if (rc) {
-+		(*rsp)->op_ret_code = rc;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: kparser_namespace_insert() err",
-+			 __func__);
-+		goto done;
-+	}
-+
-+	node->glue.glue.config.namespace_id = conf->namespace_id;
-+	node->glue.glue.config.conf_keys_bv = conf->conf_keys_bv;
-+	node->glue.glue.config.flag_field_node_conf = *arg;
-+	node->glue.glue.config.flag_field_node_conf.key = key;
-+	kref_init(&node->glue.glue.refcount);
-+
-+	if (!kparser_create_parse_flag_field_node_convert(arg, &node->node_flag_field)) {
-+		(*rsp)->op_ret_code = EINVAL;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: kparser_conf_tlv_node_convert() err",
-+			 __func__);
-+		goto done;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = key;
-+	(*rsp)->object.conf_keys_bv = conf->conf_keys_bv;
-+	(*rsp)->object.flag_field_node_conf = node->glue.glue.config.flag_field_node_conf;
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	if ((*rsp)->op_ret_code != 0)
-+		kparser_free(node);
-+
-+	synchronize_rcu();
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_FLAG_FIELD_NODE_PARSE);
-+}
-+
-+/* read handler for object flag field node */
-+int kparser_read_parse_flag_field_node(const struct kparser_hkey *key,
-+				       struct kparser_cmd_rsp_hdr **rsp,
-+				       size_t *rsp_len, __u8 recursive_read, const char *op)
-+{
-+	const struct kparser_glue_flag_field_node *node;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	node = kparser_namespace_lookup(KPARSER_NS_FLAG_FIELD_NODE_PARSE, key);
-+	if (!node) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Object key not found",
-+			 __func__);
-+		goto done;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = node->glue.glue.key;
-+	pr_debug("Key: {ID:%u Name:%s}\n", (*rsp)->key.id, (*rsp)->key.name);
-+	(*rsp)->object.conf_keys_bv = node->glue.glue.config.conf_keys_bv;
-+	(*rsp)->object.flag_field_node_conf = node->glue.glue.config.flag_field_node_conf;
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_FLAG_FIELD_NODE_PARSE);
-+}
-+
-+/* create handler for object flag field proto table's entry */
-+static bool
-+kparser_create_flag_field_proto_table_ent(const struct kparser_conf_table *arg,
-+					  struct kparser_glue_proto_flag_fields_table **proto_table,
-+					  struct kparser_cmd_rsp_hdr *rsp)
-+{
-+	const struct kparser_glue_flag_field_node *kparsenode;
-+	void *realloced_mem;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", arg->key.id, arg->key.name);
-+
-+	*proto_table = kparser_namespace_lookup(KPARSER_NS_FLAG_FIELD_PROTO_TABLE, &arg->key);
-+	if (!(*proto_table)) {
-+		rsp->op_ret_code = ENOENT;
-+		snprintf(rsp->err_str_buf,
-+			 sizeof(rsp->err_str_buf),
-+			 "%s: Object key not found",
-+			 __func__);
-+		return false;
-+	}
-+
-+	kparsenode = kparser_namespace_lookup(KPARSER_NS_FLAG_FIELD_NODE_PARSE, &arg->elem_key);
-+	if (!kparsenode) {
-+		rsp->op_ret_code = ENOENT;
-+		snprintf(rsp->err_str_buf,
-+			 sizeof(rsp->err_str_buf),
-+			 "%s: Object key:{%s:%u} not found",
-+			 __func__,
-+				arg->elem_key.name,
-+				arg->elem_key.id);
-+		return false;
-+	}
-+
-+	(*proto_table)->flags_proto_table.num_ents++;
-+	realloced_mem = krealloc((*proto_table)->flags_proto_table.entries,
-+				 (*proto_table)->flags_proto_table.num_ents *
-+				 sizeof(struct kparser_proto_flag_fields_table_entry),
-+				 GFP_KERNEL | ___GFP_ZERO);
-+	if (!realloced_mem) {
-+		rsp->op_ret_code = ENOMEM;
-+		snprintf(rsp->err_str_buf,
-+			 sizeof(rsp->err_str_buf),
-+			 "%s: krealloc() err, ents:%d, size:%lu",
-+			 __func__,
-+				(*proto_table)->flags_proto_table.num_ents,
-+				sizeof(struct kparser_proto_flag_fields_table_entry));
-+		return false;
-+	}
-+	rcu_assign_pointer((*proto_table)->flags_proto_table.entries, realloced_mem);
-+
-+	(*proto_table)->flags_proto_table.entries[(*proto_table)->flags_proto_table.num_ents -
-+		1].flag = arg->optional_value1;
-+	(*proto_table)->flags_proto_table.entries[(*proto_table)->flags_proto_table.num_ents -
-+		1].node = &kparsenode->node_flag_field;
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return true;
-+}
-+
-+/* create handler for object flag field proto table */
-+int kparser_create_flag_field_proto_table(const struct kparser_conf_cmd *conf,
-+					  size_t conf_len,
-+					  struct kparser_cmd_rsp_hdr **rsp,
-+					  size_t *rsp_len, const char *op)
-+{
-+	struct kparser_glue_proto_flag_fields_table *proto_table = NULL;
-+	const struct kparser_conf_table *arg;
-+	struct kparser_hkey key;
-+	int rc;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	arg = &conf->table_conf;
-+
-+	/* create a table entry */
-+	if (arg->add_entry) {
-+		if (kparser_create_flag_field_proto_table_ent(arg, &proto_table, *rsp) == false)
-+			goto done;
-+		goto skip_table_create;
-+	}
-+
-+	if (kparser_conf_key_manager(conf->namespace_id, &arg->key, &key, *rsp, op) != 0) {
-+		pr_alert(":%s:%d\n", __func__, __LINE__);
-+		goto done;
-+	}
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", arg->key.id, arg->key.name);
-+
-+	if (kparser_namespace_lookup(conf->namespace_id, &key)) {
-+		(*rsp)->op_ret_code = EEXIST;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Duplicate object key",
-+			 __func__);
-+		goto done;
-+	}
-+
-+	/* create protocol table */
-+	proto_table = kzalloc(sizeof(*proto_table), GFP_KERNEL);
-+	if (!proto_table) {
-+		(*rsp)->op_ret_code = ENOMEM;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: kzalloc() failed", __func__);
-+		goto done;
-+	}
-+
-+	proto_table->glue.key = key;
-+
-+	rc = kparser_namespace_insert(conf->namespace_id,
-+				      &proto_table->glue.ht_node_id,
-+				      &proto_table->glue.ht_node_name);
-+	if (rc) {
-+		(*rsp)->op_ret_code = rc;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: kparser_namespace_insert() err",
-+			 __func__);
-+		goto done;
-+	}
-+
-+	proto_table->glue.config.namespace_id = conf->namespace_id;
-+	proto_table->glue.config.conf_keys_bv = conf->conf_keys_bv;
-+	proto_table->glue.config.table_conf = *arg;
-+	proto_table->glue.config.table_conf.key = key;
-+	kref_init(&proto_table->glue.refcount);
-+
-+skip_table_create:
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = key;
-+	(*rsp)->object.conf_keys_bv = conf->conf_keys_bv;
-+	(*rsp)->object.table_conf = proto_table->glue.config.table_conf;
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	if ((*rsp)->op_ret_code != 0)
-+		if (proto_table && !arg->add_entry)
-+			kparser_free(proto_table);
-+
-+	synchronize_rcu();
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_FLAG_FIELD_PROTO_TABLE);
-+}
-+
-+/* read handler for object flag field proto table */
-+int kparser_read_flag_field_proto_table(const struct kparser_hkey *key,
-+					struct kparser_cmd_rsp_hdr **rsp,
-+					size_t *rsp_len, __u8 recursive_read, const char *op)
-+{
-+	const struct kparser_glue_proto_flag_fields_table *proto_table;
-+	const struct kparser_glue_flag_field_node *parse_node;
-+	struct kparser_conf_cmd *objects = NULL;
-+	void *realloced_mem;
-+	int i;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	proto_table = kparser_namespace_lookup(KPARSER_NS_FLAG_FIELD_PROTO_TABLE, key);
-+	if (!proto_table) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Object key not found",
-+			 __func__);
-+		goto done;
-+	}
-+
-+	(*rsp)->key = proto_table->glue.key;
-+	pr_debug("Key: {ID:%u Name:%s}\n", (*rsp)->key.id, (*rsp)->key.name);
-+	(*rsp)->object.conf_keys_bv = proto_table->glue.config.conf_keys_bv;
-+	(*rsp)->object.table_conf = proto_table->glue.config.table_conf;
-+
-+	for (i = 0; i < proto_table->flags_proto_table.num_ents; i++) {
-+		(*rsp)->objects_len++;
-+		*rsp_len = *rsp_len + sizeof(struct kparser_conf_cmd);
-+		realloced_mem = krealloc(*rsp, *rsp_len, GFP_KERNEL | ___GFP_ZERO);
-+		if (!realloced_mem) {
-+			pr_alert("%s:krealloc failed for rsp, len:%lu\n",
-+				 __func__, *rsp_len);
-+			*rsp_len = 0;
-+			mutex_unlock(&kparser_config_lock);
-+			return KPARSER_ATTR_UNSPEC;
-+		}
-+		*rsp = realloced_mem;
-+
-+		objects = (struct kparser_conf_cmd *)(*rsp)->objects;
-+		objects[i].namespace_id = proto_table->glue.config.namespace_id;
-+		objects[i].table_conf = proto_table->glue.config.table_conf;
-+		if (!proto_table->flags_proto_table.entries[i].node)
-+			continue;
-+		objects[i].table_conf.optional_value1 =
-+			proto_table->flags_proto_table.entries[i].flag;
-+		parse_node = container_of(proto_table->flags_proto_table.entries[i].node,
-+					  struct kparser_glue_flag_field_node,
-+					  node_flag_field);
-+		objects[i].table_conf.elem_key = parse_node->glue.glue.key;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_FLAG_FIELD_PROTO_TABLE);
-+}
-+
-+/* conevrt and map from netlink's parser to kParser KMOD's parser */
-+static inline bool kparser_parser_convert(const struct kparser_conf_parser *conf,
-+					  struct kparser_parser *parser)
-+{
-+	struct kparser_glue_glue_parse_node *node;
-+
-+	strcpy(parser->name, conf->key.name);
-+
-+	node = kparser_namespace_lookup(KPARSER_NS_NODE_PARSE, &conf->root_node_key);
-+	if (node)
-+		rcu_assign_pointer(parser->root_node, &node->parse_node.node);
-+	else
-+		return false;
-+
-+	node = kparser_namespace_lookup(KPARSER_NS_NODE_PARSE, &conf->ok_node_key);
-+	if (node)
-+		rcu_assign_pointer(parser->okay_node, &node->parse_node.node);
-+
-+	node = kparser_namespace_lookup(KPARSER_NS_NODE_PARSE, &conf->fail_node_key);
-+	if (node)
-+		rcu_assign_pointer(parser->fail_node, &node->parse_node.node);
-+
-+	node = kparser_namespace_lookup(KPARSER_NS_NODE_PARSE, &conf->atencap_node_key);
-+	if (node)
-+		rcu_assign_pointer(parser->atencap_node, &node->parse_node.node);
-+
-+	parser->cntrs_conf = cntrs_conf;
-+
-+	parser->config = conf->config;
-+	return true;
-+}
-+
-+/* create handler for object parser */
-+int kparser_create_parser(const struct kparser_conf_cmd *conf,
-+			  size_t conf_len,
-+			  struct kparser_cmd_rsp_hdr **rsp,
-+			  size_t *rsp_len, const char *op)
-+{
-+	struct kparser_glue_glue_parse_node *parse_node;
-+	struct kparser_glue_parser *kparser = NULL;
-+	struct kparser_counters *cntrs = NULL;
-+	const struct kparser_conf_parser *arg;
-+	struct kparser_parser parser = {};
-+	struct kparser_hkey key;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	arg = &conf->parser_conf;
-+
-+	cntrs = kzalloc(sizeof(*cntrs), GFP_KERNEL);
-+	if (!cntrs) {
-+		(*rsp)->op_ret_code = ENOMEM;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: kzalloc() failed, size:%lu",
-+			 op, sizeof(*cntrs));
-+		goto done;
-+	}
-+	rcu_assign_pointer(parser.cntrs, cntrs);
-+	parser.cntrs_len = sizeof(*cntrs);
-+	parser.kparser_start_signature = KPARSERSTARTSIGNATURE;
-+	parser.kparser_end_signature = KPARSERENDSIGNATURE;
-+	if (!kparser_parser_convert(arg, &parser)) {
-+		(*rsp)->op_ret_code = EINVAL;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: parser arg convert error", op);
-+		goto done;
-+	}
-+
-+	if (!kparser_cmd_create_pre_process(op, conf, &arg->key, &key,
-+					    (void **)&kparser, sizeof(*kparser), *rsp,
-+					    offsetof(struct kparser_glue_parser, glue)))
-+		goto done;
-+
-+	kparser->parser = parser;
-+
-+	INIT_LIST_HEAD(&kparser->glue.owner_list);
-+	INIT_LIST_HEAD(&kparser->glue.owned_list);
-+
-+	if (kparser->parser.root_node) {
-+		parse_node = container_of(kparser->parser.root_node,
-+					  struct kparser_glue_glue_parse_node,
-+					  parse_node.node);
-+		if (kparser_link_attach(kparser,
-+					KPARSER_NS_PARSER,
-+					(const void **)&kparser->parser.root_node,
-+					&kparser->glue.refcount,
-+					&kparser->glue.owner_list,
-+					parse_node,
-+					KPARSER_NS_NODE_PARSE,
-+					&parse_node->glue.glue.refcount,
-+					&parse_node->glue.glue.owned_list,
-+					*rsp, op) != 0)
-+			goto done;
-+	}
-+
-+	if (kparser->parser.okay_node) {
-+		parse_node = container_of(kparser->parser.okay_node,
-+					  struct kparser_glue_glue_parse_node,
-+					  parse_node.node);
-+		if (kparser_link_attach(kparser,
-+					KPARSER_NS_PARSER,
-+					(const void **)&kparser->parser.okay_node,
-+					&kparser->glue.refcount,
-+					&kparser->glue.owner_list,
-+					parse_node,
-+					KPARSER_NS_NODE_PARSE,
-+					&parse_node->glue.glue.refcount,
-+					&parse_node->glue.glue.owned_list,
-+					*rsp, op) != 0)
-+			goto done;
-+	}
-+
-+	if (kparser->parser.fail_node) {
-+		parse_node = container_of(kparser->parser.fail_node,
-+					  struct kparser_glue_glue_parse_node,
-+					  parse_node.node);
-+		if (kparser_link_attach(kparser,
-+					KPARSER_NS_PARSER,
-+					(const void **)&kparser->parser.fail_node,
-+					&kparser->glue.refcount,
-+					&kparser->glue.owner_list,
-+					parse_node,
-+					KPARSER_NS_NODE_PARSE,
-+					&parse_node->glue.glue.refcount,
-+					&parse_node->glue.glue.owned_list,
-+					*rsp, op) != 0)
-+			goto done;
-+	}
-+
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	if ((*rsp)->op_ret_code != 0) {
-+		kparser_free(kparser);
-+		kparser_free(cntrs);
-+	}
-+
-+	synchronize_rcu();
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_PARSER);
-+}
-+
-+static bool kparser_dump_protocol_table(const struct kparser_proto_table *obj,
-+					struct kparser_cmd_rsp_hdr **rsp, size_t *rsp_len);
-+
-+/* dump metadata list to netlink msg rsp */
-+static bool kparser_dump_metadata_table(const struct kparser_metadata_table *obj,
-+					struct kparser_cmd_rsp_hdr **rsp, size_t *rsp_len)
-+{
-+	const struct kparser_glue_metadata_table *glue_obj;
-+	struct kparser_cmd_rsp_hdr *new_rsp = NULL;
-+	size_t new_rsp_len = 0;
-+	void *realloced_mem;
-+	void *ptr;
-+	int rc;
-+
-+	if (!obj)
-+		return true;
-+
-+	rc = alloc_first_rsp(&new_rsp, &new_rsp_len, KPARSER_NS_METALIST);
-+	if (rc) {
-+		pr_debug("%s:alloc_first_rsp() failed, rc:%d\n",
-+			 __func__, rc);
-+		return false;
-+	}
-+
-+	glue_obj = container_of(obj, struct kparser_glue_metadata_table, metadata_table);
-+
-+	/* NOTE: TODO: kparser_config_lock should not be released and reacquired here. Fix later. */
-+	mutex_unlock(&kparser_config_lock);
-+	rc = kparser_read_metalist(&glue_obj->glue.key,
-+				   &new_rsp, &new_rsp_len, false, "read");
-+	mutex_lock(&kparser_config_lock);
-+
-+	if (rc != KPARSER_ATTR_RSP(KPARSER_NS_METALIST))
-+		goto error;
-+
-+	realloced_mem = krealloc(*rsp, *rsp_len + new_rsp_len, GFP_KERNEL | ___GFP_ZERO);
-+	if (!realloced_mem)
-+		goto error;
-+	*rsp = realloced_mem;
-+
-+	ptr = (*rsp);
-+	ptr += (*rsp_len);
-+	(*rsp_len) = (*rsp_len) + new_rsp_len;
-+	memcpy(ptr, new_rsp, new_rsp_len);
-+	kparser_free(new_rsp);
-+	new_rsp = NULL;
-+
-+	return true;
-+error:
-+	kparser_free(new_rsp);
-+
-+	return false;
-+}
-+
-+/* dump parse node to netlink msg rsp */
-+static bool kparser_dump_parse_node(const struct kparser_parse_node *obj,
-+				    struct kparser_cmd_rsp_hdr **rsp, size_t *rsp_len)
-+{
-+	const struct kparser_glue_glue_parse_node *glue_obj;
-+	struct kparser_cmd_rsp_hdr *new_rsp = NULL;
-+	size_t new_rsp_len = 0;
-+	void *realloced_mem;
-+	void *ptr;
-+	int rc;
-+
-+	if (!obj)
-+		return true;
-+
-+	rc = alloc_first_rsp(&new_rsp, &new_rsp_len, KPARSER_NS_NODE_PARSE);
-+	if (rc) {
-+		pr_debug("%s:alloc_first_rsp() failed, rc:%d\n",
-+			 __func__, rc);
-+		return false;
-+	}
-+
-+	glue_obj = container_of(obj, struct kparser_glue_glue_parse_node, parse_node.node);
-+
-+	/* NOTE: TODO: kparser_config_lock should not be released and reacquired here. Fix later. */
-+	mutex_unlock(&kparser_config_lock);
-+	rc = kparser_read_parse_node(&glue_obj->glue.glue.key,
-+				     &new_rsp, &new_rsp_len, false, "read");
-+	mutex_lock(&kparser_config_lock);
-+
-+	if (rc != KPARSER_ATTR_RSP(KPARSER_NS_NODE_PARSE))
-+		goto error;
-+
-+	realloced_mem = krealloc(*rsp, *rsp_len + new_rsp_len, GFP_KERNEL | ___GFP_ZERO);
-+	if (!realloced_mem)
-+		goto error;
-+	*rsp = realloced_mem;
-+
-+	ptr = (*rsp);
-+	ptr += (*rsp_len);
-+	(*rsp_len) = (*rsp_len) + new_rsp_len;
-+	memcpy(ptr, new_rsp, new_rsp_len);
-+	kparser_free(new_rsp);
-+	new_rsp = NULL;
-+
-+	if (!kparser_dump_protocol_table(obj->proto_table, rsp, rsp_len))
-+		goto error;
-+
-+	if (!kparser_dump_metadata_table(obj->metadata_table, rsp, rsp_len))
-+		goto error;
-+
-+	return true;
-+error:
-+	kparser_free(new_rsp);
-+
-+	return false;
-+}
-+
-+/* dump protocol table to netlink msg rsp */
-+static bool kparser_dump_protocol_table(const struct kparser_proto_table *obj,
-+					struct kparser_cmd_rsp_hdr **rsp, size_t *rsp_len)
-+{
-+	const struct kparser_glue_protocol_table *glue_obj;
-+	struct kparser_cmd_rsp_hdr *new_rsp = NULL;
-+	size_t new_rsp_len = 0;
-+	void *realloced_mem;
-+	void *ptr;
-+	int rc, i;
-+
-+	if (!obj)
-+		return true;
-+
-+	rc = alloc_first_rsp(&new_rsp, &new_rsp_len, KPARSER_NS_PROTO_TABLE);
-+	if (rc) {
-+		pr_debug("%s:alloc_first_rsp() failed, rc:%d\n", __func__, rc);
-+		return false;
-+	}
-+
-+	glue_obj = container_of(obj, struct kparser_glue_protocol_table,
-+				proto_table);
-+
-+	/* NOTE: TODO: kparser_config_lock should not be released and reacquired here. Fix later. */
-+	mutex_unlock(&kparser_config_lock);
-+	rc = kparser_read_proto_table(&glue_obj->glue.key,
-+				      &new_rsp, &new_rsp_len, false, "read");
-+	mutex_lock(&kparser_config_lock);
-+
-+	if (rc != KPARSER_ATTR_RSP(KPARSER_NS_PROTO_TABLE))
-+		goto error;
-+
-+	realloced_mem = krealloc(*rsp, *rsp_len + new_rsp_len, GFP_KERNEL | ___GFP_ZERO);
-+	if (!realloced_mem)
-+		goto error;
-+	*rsp = realloced_mem;
-+
-+	ptr = (*rsp);
-+	ptr += (*rsp_len);
-+	(*rsp_len) = (*rsp_len) + new_rsp_len;
-+	memcpy(ptr, new_rsp, new_rsp_len);
-+	kparser_free(new_rsp);
-+	new_rsp = NULL;
-+
-+	for (i = 0; i < glue_obj->proto_table.num_ents; i++)
-+		if (!kparser_dump_parse_node(glue_obj->proto_table.entries[i].node,
-+					     rsp, rsp_len))
-+			goto error;
-+
-+	return true;
-+error:
-+	kparser_free(new_rsp);
-+
-+	return false;
-+}
-+
-+/* dump parser to netlink msg rsp */
-+static bool kparser_dump_parser(const struct kparser_glue_parser *kparser,
-+				struct kparser_cmd_rsp_hdr **rsp, size_t *rsp_len)
-+{
-+	/* DEBUG code, if(0) avoids warning for both compiler and checkpatch */
-+	if (0)
-+		kparser_dump_parser_tree(&kparser->parser);
-+
-+	kparser_start_new_tree_traversal();
-+
-+	if (!kparser_dump_parse_node(kparser->parser.root_node, rsp, rsp_len))
-+		goto error;
-+
-+	return true;
-+error:
-+	return false;
-+}
-+
-+/* read handler for object parser */
-+int kparser_read_parser(const struct kparser_hkey *key,
-+			struct kparser_cmd_rsp_hdr **rsp,
-+			size_t *rsp_len, __u8 recursive_read, const char *op)
-+{
-+	const struct kparser_glue_parser *kparser;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	kparser = kparser_namespace_lookup(KPARSER_NS_PARSER, key);
-+	if (!kparser) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf), "%s: Object key not found", op);
-+		goto done;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = kparser->glue.key;
-+	pr_debug("Key: {ID:%u Name:%s}\n", (*rsp)->key.id, (*rsp)->key.name);
-+	(*rsp)->object.conf_keys_bv = kparser->glue.config.conf_keys_bv;
-+	(*rsp)->object.parser_conf = kparser->glue.config.parser_conf;
-+
-+	if (recursive_read &&
-+	    kparser_dump_parser(kparser, rsp, rsp_len) == false)
-+		pr_debug("kparser_dump_parser failed");
-+
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_PARSER);
-+}
-+
-+/* delete handler for object parser */
-+int kparser_del_parser(const struct kparser_hkey *key,
-+		       struct kparser_cmd_rsp_hdr **rsp,
-+		       size_t *rsp_len, __u8 recursive_read, const char *op)
-+{
-+	struct kparser_glue_parser *kparser;
-+	int rc;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	kparser = kparser_namespace_lookup(KPARSER_NS_PARSER, key);
-+	if (!kparser) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Object key not found", op);
-+		goto done;
-+	}
-+
-+	if (kparser_link_detach(kparser, &kparser->glue.owner_list,
-+				&kparser->glue.owned_list, *rsp) != 0)
-+		goto done;
-+
-+	rc = kparser_namespace_remove(KPARSER_NS_PARSER,
-+				      &kparser->glue.ht_node_id, &kparser->glue.ht_node_name);
-+	if (rc) {
-+		(*rsp)->op_ret_code = rc;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: namespace remove error", op);
-+		goto done;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = kparser->glue.key;
-+	pr_debug("Key: {ID:%u Name:%s}\n", (*rsp)->key.id, (*rsp)->key.name);
-+	(*rsp)->object.conf_keys_bv = kparser->glue.config.conf_keys_bv;
-+	(*rsp)->object.parser_conf = kparser->glue.config.parser_conf;
-+
-+	kparser_free(kparser->parser.cntrs);
-+	kparser_free(kparser);
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_PARSER);
-+}
-+
-+/* free handler for object parser */
-+void kparser_free_parser(void *ptr, void *arg)
-+{
-+	/* TODO: */
-+}
-+
-+/* handler for object parser lock */
-+int kparser_parser_lock(const struct kparser_conf_cmd *conf,
-+			size_t conf_len,
-+			struct kparser_cmd_rsp_hdr **rsp,
-+			size_t *rsp_len, const char *op)
-+{
-+	const struct kparser_parser *parser;
-+	const struct kparser_hkey *key;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	key = &conf->obj_key;
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	parser = kparser_get_parser(key);
-+	if (!parser) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: object key not found", __func__);
-+		goto done;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = *key;
-+	(*rsp)->object.conf_keys_bv = conf->conf_keys_bv;
-+	(*rsp)->object.obj_key = *key;
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	synchronize_rcu();
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_OP_PARSER_LOCK_UNLOCK);
-+}
-+
-+/* handler for object parser unlock */
-+int kparser_parser_unlock(const struct kparser_hkey *key,
-+			  struct kparser_cmd_rsp_hdr **rsp,
-+			  size_t *rsp_len, __u8 recursive_read, const char *op)
-+{
-+	const struct kparser_glue_parser *kparser;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	pr_debug("Key: {ID:%u Name:%s}\n", key->id, key->name);
-+
-+	mutex_lock(&kparser_config_lock);
-+
-+	kparser = kparser_namespace_lookup(KPARSER_NS_PARSER, key);
-+	if (!kparser) {
-+		(*rsp)->op_ret_code = ENOENT;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Object key not found", __func__);
-+		goto done;
-+	}
-+
-+	if (!kparser_put_parser(&kparser->parser)) {
-+		(*rsp)->op_ret_code = EINVAL;
-+		snprintf((*rsp)->err_str_buf,
-+			 sizeof((*rsp)->err_str_buf),
-+			 "%s: Parser unlock failed",
-+			 __func__);
-+		goto done;
-+	}
-+
-+	snprintf((*rsp)->err_str_buf, sizeof((*rsp)->err_str_buf), "Operation successful");
-+	(*rsp)->key = *key;
-+	(*rsp)->object.obj_key = *key;
-+done:
-+	mutex_unlock(&kparser_config_lock);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	return KPARSER_ATTR_RSP(KPARSER_NS_OP_PARSER_LOCK_UNLOCK);
-+}
-diff --git a/net/kparser/kparser_condexpr.h b/net/kparser/kparser_condexpr.h
-new file mode 100644
-index 000000000000..247e8cb3f231
---- /dev/null
-+++ b/net/kparser/kparser_condexpr.h
-@@ -0,0 +1,52 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/* Copyright (c) 2022, SiPanda Inc.
-+ *
-+ * kparser_condexpr.h - kParser conditionals helper and structures header file
-+ *
-+ * Authors:     Tom Herbert <tom@sipanda.io>
-+ *              Pratyush Kumar Khan <pratyush@sipanda.io>
-+ */
-+
-+#ifndef __KPARSER_CONDEXPR_H__
-+#define __KPARSER_CONDEXPR_H__
-+
-+/* Definitions for parameterized conditional expressions */
-+
-+#include "kparser_types.h"
-+#include "kparser_metaextract.h"
-+
-+/* Evaluate one conditional expression */
-+static inline bool kparser_expr_evaluate(const struct kparser_condexpr_expr *expr, void *hdr)
-+{
-+	__u64 val;
-+
-+	pr_debug("{%s:%d}: soff:%u len:%u mask:%x type:%d\n",
-+		 __func__, __LINE__, expr->src_off, expr->length, expr->mask, expr->type);
-+
-+	__kparser_metadata_bytes_extract(hdr + expr->src_off, (__u8 *)&val, expr->length, false);
-+
-+	val &= expr->mask;
-+
-+	pr_debug("{%s:%d}: type:%d val:%llx expr->value:%u\n",
-+		 __func__, __LINE__, expr->type, val, expr->value);
-+
-+	switch (expr->type) {
-+	case KPARSER_CONDEXPR_TYPE_EQUAL:
-+		return (val == expr->value);
-+	case KPARSER_CONDEXPR_TYPE_NOTEQUAL:
-+		return (val != expr->value);
-+	case KPARSER_CONDEXPR_TYPE_LT:
-+		return (val < expr->value);
-+	case KPARSER_CONDEXPR_TYPE_LTE:
-+		return (val <= expr->value);
-+	case KPARSER_CONDEXPR_TYPE_GT:
-+		return (val > expr->value);
-+	case KPARSER_CONDEXPR_TYPE_GTE:
-+		return (val >= expr->value);
-+	default:
-+		break;
-+	}
-+
-+	return false;
-+}
-+#endif /* __KPARSER_CONDEXPR_H__ */
-diff --git a/net/kparser/kparser_datapath.c b/net/kparser/kparser_datapath.c
-new file mode 100644
-index 000000000000..ad2bf2f728d5
---- /dev/null
-+++ b/net/kparser/kparser_datapath.c
-@@ -0,0 +1,1094 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2022, SiPanda Inc.
-+ *
-+ * kparser_datapath.c - kParser main datapath source file for parsing logic - data path
-+ *
-+ * Authors:     Tom Herbert <tom@sipanda.io>
-+ *              Pratyush Kumar Khan <pratyush@sipanda.io>
-+ */
-+
-+#include <linux/rhashtable.h>
-+#include <linux/skbuff.h>
-+#include <net/kparser.h>
-+
-+#include "kparser.h"
-+#include "kparser_condexpr.h"
-+#include "kparser_metaextract.h"
-+#include "kparser_types.h"
-+
-+/* Lookup a type in a node table
-+ * TODO: as of now, this table is an array, but in future, this needs to be
-+ * converted to hash table for performance benefits
-+ */
-+static const struct kparser_parse_node *lookup_node(int type,
-+						    const struct kparser_proto_table *table,
-+						    bool *isencap)
-+{
-+	struct kparser_proto_table_entry __rcu *entries;
-+	int i;
-+
-+	if (!table)
-+		return NULL;
-+
-+	pr_debug("{%s:%d}: type:0x%04x ents:%d\n", __func__, __LINE__, type, table->num_ents);
-+
-+	for (i = 0; i < table->num_ents; i++) {
-+		entries = rcu_dereference(table->entries);
-+		pr_debug("{%s:%d}: type:0x%04x evalue:0x%04x\n",
-+			 __func__, __LINE__, type, entries[i].value);
-+		if (type == entries[i].value) {
-+			*isencap = entries[i].encap;
-+			return entries[i].node;
-+		} else if (ntohs(type) == entries[i].value) {
-+			*isencap = entries[i].encap;
-+			return entries[i].node;
-+		}
-+	}
-+
-+	return NULL;
-+}
-+
-+/* Lookup a type in a node TLV table */
-+static const struct kparser_parse_tlv_node
-+*lookup_tlv_node(__u8 type,
-+		 const struct kparser_proto_tlvs_table *table)
-+{
-+	int i;
-+
-+	pr_debug("{%s:%d}: type:%d\n", __func__, __LINE__, type);
-+
-+	for (i = 0; i < table->num_ents; i++) {
-+		pr_debug("{%s:%d}: table_type:%d\n", __func__, __LINE__,
-+			 table->entries[i].type);
-+		if (type == table->entries[i].type)
-+			return table->entries[i].node;
-+	}
-+
-+	return NULL;
-+}
-+
-+/* Lookup a flag-fields index in a protocol node flag-fields table
-+ * TODO: This needs to optimized later to use array for better performance
-+ */
-+static const struct kparser_parse_flag_field_node
-+*lookup_flag_field_node(__u32 flag, const struct kparser_proto_flag_fields_table *table)
-+{
-+	int i;
-+
-+	for (i = 0; i < table->num_ents; i++) {
-+		pr_debug("{%s:%d}:flag:%x eflag[%d]:%x\n",
-+			 __func__, __LINE__, flag, i,
-+			 table->entries[i].flag);
-+		if (flag == table->entries[i].flag)
-+			return table->entries[i].node;
-+	}
-+
-+	return NULL;
-+}
-+
-+/* Metadata table processing */
-+static int extract_metadata_table(const struct kparser_parser *parser,
-+				  const struct kparser_metadata_table *metadata_table,
-+				  const void *_hdr, size_t hdr_len, size_t hdr_offset,
-+				  void *_metadata, void *_frame,
-+				  const struct kparser_ctrl_data *ctrl)
-+{
-+	struct kparser_metadata_extract *entries;
-+	int i, ret;
-+
-+	pr_debug("{%s:%d}: cnt:%d\n", __func__, __LINE__,
-+		 metadata_table->num_ents);
-+
-+	for (i = 0; i < metadata_table->num_ents; i++) {
-+		entries = rcu_dereference(metadata_table->entries);
-+		ret = kparser_metadata_extract(parser, entries[i],
-+					       _hdr, hdr_len, hdr_offset,
-+					       _metadata, _frame, ctrl);
-+		if (ret != KPARSER_OKAY)
-+			break;
-+	}
-+	return ret;
-+}
-+
-+/* evaluate next proto parameterized context */
-+static int eval_parameterized_next_proto(const struct kparser_parameterized_next_proto *pf,
-+					 void *_hdr)
-+{
-+	__u16 next_proto;
-+
-+	_hdr += pf->src_off;
-+
-+	switch (pf->size) {
-+	case 1:
-+		next_proto = *(__u8 *)_hdr;
-+		break;
-+	case 2:
-+		next_proto = *(__u16 *)_hdr;
-+		break;
-+	default:
-+		return KPARSER_STOP_UNKNOWN_PROTO;
-+	}
-+
-+	return (next_proto & pf->mask) >> pf->right_shift;
-+}
-+
-+/* evaluate len parameterized context */
-+static ssize_t eval_parameterized_len(const struct kparser_parameterized_len *pf, void *_hdr)
-+{
-+	__u32 len;
-+
-+	_hdr += pf->src_off;
-+
-+	switch (pf->size) {
-+	case 1:
-+		len = *(__u8 *)_hdr;
-+		break;
-+	case 2:
-+		len = *(__u16 *)_hdr;
-+		break;
-+	case 3:
-+		len = 0;
-+		memcpy(&len, _hdr, 3);
-+		break; /* TODO */
-+	case 4:
-+		len = *(__u32 *)_hdr;
-+		break;
-+	default:
-+		return KPARSER_STOP_LENGTH;
-+	}
-+
-+	len = (len & pf->mask) >> pf->right_shift;
-+
-+	return (len * pf->multiplier) + pf->add_value;
-+}
-+
-+/* evaluate conditionals */
-+static bool eval_cond_exprs_and_table(const struct kparser_condexpr_table *table, void *_hdr)
-+{
-+	int i;
-+
-+	for (i = 0; i < table->num_ents; i++)
-+		if (!kparser_expr_evaluate(table->entries[i], _hdr))
-+			return false;
-+
-+	return true;
-+}
-+
-+/* evaluate table of conditionals */
-+static bool eval_cond_exprs_or_table(const struct kparser_condexpr_table *table, void *_hdr)
-+{
-+	int i;
-+
-+	for (i = 0; i < table->num_ents; i++)
-+		if (kparser_expr_evaluate(table->entries[i], _hdr))
-+			return true;
-+
-+	return false;
-+}
-+
-+/* evaluate list of table of conditionals */
-+static int eval_cond_exprs(const struct kparser_condexpr_tables *tables, void *_hdr)
-+{
-+	bool res;
-+	int i;
-+
-+	for (i = 0; i < tables->num_ents; i++) {
-+		const struct kparser_condexpr_table *table = tables->entries[i];
-+
-+		pr_debug("{%s:%d}: type:%d err:%d\n", __func__, __LINE__,
-+			 table->type, table->default_fail);
-+
-+		switch (table->type) {
-+		case KPARSER_CONDEXPR_TYPE_OR:
-+			res = eval_cond_exprs_or_table(table, _hdr);
-+			break;
-+		case KPARSER_CONDEXPR_TYPE_AND:
-+			res = eval_cond_exprs_and_table(table, _hdr);
-+			break;
-+		}
-+		if (!res) {
-+			pr_debug("{%s:%d}: i:%d type:%d err:%d\n",
-+				 __func__, __LINE__, i, table->type, table->default_fail);
-+
-+			return table->default_fail;
-+		}
-+	}
-+
-+	return KPARSER_OKAY;
-+}
-+
-+/* process one tlv node */
-+static int kparser_parse_one_tlv(const struct kparser_parser *parser,
-+				 const struct kparser_parse_tlvs_node *parse_tlvs_node,
-+				 const struct kparser_parse_tlv_node *parse_tlv_node,
-+				 unsigned int flags, void *_obj_ref, void *_hdr,
-+				 size_t tlv_len, size_t tlv_offset, void *_metadata,
-+				 void *_frame, struct kparser_ctrl_data *ctrl)
-+{
-+	const struct kparser_parse_tlv_node *next_parse_tlv_node;
-+	const struct kparser_metadata_table *metadata_table;
-+	const struct kparser_proto_tlv_node *proto_tlv_node;
-+	const struct kparser_proto_tlv_node_ops *proto_ops;
-+	struct kparser_proto_tlvs_table *overlay_table;
-+	int type, ret;
-+
-+parse_again:
-+
-+	proto_tlv_node = &parse_tlv_node->proto_tlv_node;
-+
-+	if (flags & KPARSER_F_DEBUG)
-+		pr_debug("kParser parsing TLV %s\n", parse_tlv_node->name);
-+
-+	pr_debug("{%s:%d}: tlv_len:%lu min_len:%lu\n", __func__, __LINE__,
-+		 tlv_len, proto_tlv_node->min_len);
-+
-+	if (tlv_len < proto_tlv_node->min_len || tlv_len > proto_tlv_node->max_len) {
-+		/* Treat check length error as an unrecognized TLV */
-+		parse_tlv_node = rcu_dereference(parse_tlvs_node->tlv_wildcard_node);
-+		if (parse_tlv_node)
-+			goto parse_again;
-+		else
-+			return parse_tlvs_node->unknown_tlv_type_ret;
-+	}
-+
-+	proto_ops = &proto_tlv_node->ops;
-+
-+	pr_debug("{%s:%d}: cond_exprs_parameterized:%d\n",
-+		 __func__, __LINE__, proto_ops->cond_exprs_parameterized);
-+
-+	if (proto_ops->cond_exprs_parameterized) {
-+		ret = eval_cond_exprs(&proto_ops->cond_exprs, _hdr);
-+		if (ret != KPARSER_OKAY)
-+			return ret;
-+	}
-+
-+	metadata_table = rcu_dereference(parse_tlv_node->metadata_table);
-+	if (metadata_table) {
-+		ret = extract_metadata_table(parser,
-+					     metadata_table,
-+					     _hdr, tlv_len, tlv_offset,
-+					     _metadata,
-+					     _frame, ctrl);
-+		if (ret != KPARSER_OKAY)
-+			return ret;
-+	}
-+
-+	overlay_table = rcu_dereference(parse_tlv_node->overlay_table);
-+	if (!overlay_table)
-+		return KPARSER_OKAY;
-+
-+	/* We have an TLV overlay  node */
-+	if (proto_ops && proto_ops->overlay_type_parameterized)
-+		type = eval_parameterized_next_proto(&proto_ops->pfoverlay_type, _hdr);
-+	else
-+		type = tlv_len;
-+
-+	if (type < 0)
-+		return type;
-+
-+	/* Get TLV node */
-+	next_parse_tlv_node =
-+		lookup_tlv_node(type, overlay_table);
-+	if (next_parse_tlv_node) {
-+		parse_tlv_node = next_parse_tlv_node;
-+		goto parse_again;
-+	}
-+
-+	/* Unknown TLV overlay node */
-+	next_parse_tlv_node = rcu_dereference(parse_tlv_node->overlay_wildcard_node);
-+	if (next_parse_tlv_node) {
-+		parse_tlv_node = next_parse_tlv_node;
-+		goto parse_again;
-+	}
-+
-+	return parse_tlv_node->unknown_overlay_ret;
-+}
-+
-+/* tlv loop limit validator */
-+static int loop_limit_exceeded(int ret, unsigned int disp)
-+{
-+	switch (disp) {
-+	case KPARSER_LOOP_DISP_STOP_OKAY:
-+		return KPARSER_STOP_OKAY;
-+	case KPARSER_LOOP_DISP_STOP_NODE_OKAY:
-+		return KPARSER_STOP_NODE_OKAY;
-+	case KPARSER_LOOP_DISP_STOP_SUB_NODE_OKAY:
-+		return KPARSER_STOP_SUB_NODE_OKAY;
-+	case KPARSER_LOOP_DISP_STOP_FAIL:
-+	default:
-+		return ret;
-+	}
-+}
-+
-+/* process packet value using parameters provided */
-+static __u64 eval_get_value(const struct kparser_parameterized_get_value *pf, void *_hdr)
-+{
-+	__u64 ret;
-+
-+	(void)__kparser_metadata_bytes_extract(_hdr + pf->src_off, (__u8 *)&ret, pf->size, false);
-+
-+	return ret;
-+}
-+
-+/* process and parse multiple tlvs */
-+static int kparser_parse_tlvs(const struct kparser_parser *parser,
-+			      const struct kparser_parse_node *parse_node,
-+			      unsigned int flags, void *_obj_ref,
-+			      void *_hdr, size_t hdr_len, size_t hdr_offset,
-+			      void *_metadata, void *_frame,
-+			      const struct kparser_ctrl_data *ctrl)
-+{
-+	unsigned int loop_cnt = 0, non_pad_cnt = 0, pad_len = 0;
-+	const struct kparser_proto_tlvs_table *tlv_proto_table;
-+	const struct kparser_parse_tlvs_node *parse_tlvs_node;
-+	const struct kparser_proto_tlvs_node *proto_tlvs_node;
-+	const struct kparser_parse_tlv_node *parse_tlv_node;
-+	struct kparser_ctrl_data tlv_ctrl = {};
-+	unsigned int consec_pad = 0;
-+	size_t len, tlv_offset;
-+	ssize_t off, tlv_len;
-+	__u8 *cp = _hdr;
-+	int type = -1, ret;
-+
-+	parse_tlvs_node = (struct kparser_parse_tlvs_node *)parse_node;
-+	proto_tlvs_node = (struct kparser_proto_tlvs_node *)&parse_node->tlvs_proto_node;
-+
-+	pr_debug("{%s:%d}: fixed_start_offset:%d start_offset:%lu\n",
-+		 __func__, __LINE__, proto_tlvs_node->fixed_start_offset,
-+		 proto_tlvs_node->start_offset);
-+	/* Assume hlen marks end of TLVs */
-+	if (proto_tlvs_node->fixed_start_offset)
-+		off = proto_tlvs_node->start_offset;
-+	else
-+		off = eval_parameterized_len(&proto_tlvs_node->ops.pfstart_offset, cp);
-+
-+	pr_debug("{%s:%d}: off:%ld\n", __func__, __LINE__, off);
-+
-+	if (off < 0)
-+		return KPARSER_STOP_LENGTH;
-+
-+	/* We assume start offset is less than or equal to minimal length */
-+	len = hdr_len - off;
-+
-+	cp += off;
-+	tlv_offset = hdr_offset + off;
-+
-+	pr_debug("{%s:%d}: len:%ld tlv_offset:%ld\n", __func__, __LINE__, len, tlv_offset);
-+
-+	/* This is the main TLV processing loop */
-+	while (len > 0) {
-+		if (++loop_cnt > parse_tlvs_node->config.max_loop)
-+			return loop_limit_exceeded(KPARSER_STOP_LOOP_CNT,
-+						   parse_tlvs_node->config.disp_limit_exceed);
-+
-+		if (proto_tlvs_node->pad1_enable &&
-+		    *cp == proto_tlvs_node->pad1_val) {
-+			/* One byte padding, just advance */
-+			cp++;
-+			tlv_offset++;
-+			len--;
-+			if (++pad_len > parse_tlvs_node->config.max_plen ||
-+			    ++consec_pad > parse_tlvs_node->config.max_c_pad)
-+				return loop_limit_exceeded(KPARSER_STOP_TLV_PADDING,
-+							   parse_tlvs_node->
-+							   config.disp_limit_exceed);
-+			continue;
-+		}
-+
-+		if (proto_tlvs_node->eol_enable &&
-+		    *cp == proto_tlvs_node->eol_val) {
-+			cp++;
-+			tlv_offset++;
-+			len--;
-+
-+			/* Hit EOL, we're done */
-+			break;
-+		}
-+
-+		if (len < proto_tlvs_node->min_len) {
-+			/* Length error */
-+			return loop_limit_exceeded(KPARSER_STOP_TLV_LENGTH,
-+						   parse_tlvs_node->config.disp_limit_exceed);
-+		}
-+
-+		/* If the len function is not set this degenerates to an
-+		 * array of fixed sized values (which maybe be useful in
-+		 * itself now that I think about it)
-+		 */
-+		do {
-+			pr_debug("{%s:%d}: len_parameterized:%d min_len:%lu\n",
-+				 __func__, __LINE__,
-+				 proto_tlvs_node->ops.len_parameterized,
-+				 proto_tlvs_node->min_len);
-+			if (proto_tlvs_node->ops.len_parameterized) {
-+				tlv_len = eval_parameterized_len(&proto_tlvs_node->ops.pflen, cp);
-+			} else {
-+				tlv_len = proto_tlvs_node->min_len;
-+				break;
-+			}
-+
-+			pr_debug("{%s:%d}: tlv_len:%lu\n",
-+				 __func__, __LINE__, tlv_len);
-+
-+			if (!tlv_len || len < tlv_len)
-+				return loop_limit_exceeded(KPARSER_STOP_TLV_LENGTH,
-+							   parse_tlvs_node->config.
-+							   disp_limit_exceed);
-+
-+			if (tlv_len < proto_tlvs_node->min_len)
-+				return loop_limit_exceeded(KPARSER_STOP_TLV_LENGTH,
-+							   parse_tlvs_node->config.
-+							   disp_limit_exceed);
-+		} while (0);
-+
-+		type = eval_parameterized_next_proto(&proto_tlvs_node->ops.pftype, cp);
-+
-+		pr_debug("{%s:%d}: type:%d\n", __func__, __LINE__, type);
-+
-+		if (proto_tlvs_node->padn_enable &&
-+		    type == proto_tlvs_node->padn_val) {
-+			/* N byte padding, just advance */
-+			pad_len += tlv_len;
-+			if (pad_len > parse_tlvs_node->config.max_plen ||
-+			    ++consec_pad > parse_tlvs_node->config.max_c_pad)
-+				return loop_limit_exceeded(KPARSER_STOP_TLV_PADDING,
-+							   parse_tlvs_node->config.
-+							   disp_limit_exceed);
-+			goto next_tlv;
-+		}
-+
-+		/* Get TLV node */
-+		tlv_proto_table = rcu_dereference(parse_tlvs_node->tlv_proto_table);
-+		if (tlv_proto_table)
-+			parse_tlv_node = lookup_tlv_node(type, tlv_proto_table);
-+parse_one_tlv:
-+		if (parse_tlv_node) {
-+			const struct kparser_proto_tlv_node *proto_tlv_node =
-+				&parse_tlv_node->proto_tlv_node;
-+
-+			if (proto_tlv_node) {
-+				if (proto_tlv_node->is_padding) {
-+					pad_len += tlv_len;
-+					if (pad_len > parse_tlvs_node->config.max_plen ||
-+					    ++consec_pad > parse_tlvs_node->config.max_c_pad)
-+						return loop_limit_exceeded(KPARSER_STOP_TLV_PADDING,
-+									   parse_tlvs_node->config.
-+									   disp_limit_exceed);
-+				} else if (++non_pad_cnt > parse_tlvs_node->config.max_non) {
-+					return loop_limit_exceeded(KPARSER_STOP_OPTION_LIMIT,
-+								   parse_tlvs_node->
-+								   config.disp_limit_exceed);
-+				}
-+			}
-+
-+			ret = kparser_parse_one_tlv(parser, parse_tlvs_node,
-+						    parse_tlv_node,
-+						    flags, _obj_ref, cp, tlv_len,
-+						    tlv_offset, _metadata,
-+						    _frame, &tlv_ctrl);
-+			if (ret != KPARSER_OKAY)
-+				return ret;
-+		} else {
-+			/* Unknown TLV */
-+			parse_tlv_node = rcu_dereference(parse_tlvs_node->tlv_wildcard_node);
-+			if (parse_tlv_node) {
-+				/* If a wilcard node is present parse that
-+				 * node as an overlay to this one. The
-+				 * wild card node can perform error processing
-+				 */
-+				goto parse_one_tlv;
-+			}
-+			/* Return default error code. Returning
-+			 * KPARSER_OKAY means skip
-+			 */
-+			if (parse_tlvs_node->unknown_tlv_type_ret != KPARSER_OKAY)
-+				return parse_tlvs_node->unknown_tlv_type_ret;
-+		}
-+
-+		/* Move over current header */
-+next_tlv:
-+		cp += tlv_len;
-+		tlv_offset += tlv_len;
-+		len -= tlv_len;
-+	}
-+
-+	return KPARSER_OKAY;
-+}
-+
-+/* process and parse flag fields */
-+static ssize_t kparser_parse_flag_fields(const struct kparser_parser *parser,
-+					 const struct kparser_parse_node *parse_node,
-+					 unsigned int pflags, void *_obj_ref,
-+					 void *_hdr, size_t hdr_len,
-+					 size_t hdr_offset, void *_metadata,
-+					 void *_frame,
-+					 const struct kparser_ctrl_data *ctrl,
-+					 size_t parse_len)
-+{
-+	const struct kparser_parse_flag_fields_node *parse_flag_fields_node;
-+	const struct kparser_proto_flag_fields_node *proto_flag_fields_node;
-+	const struct kparser_parse_flag_field_node *parse_flag_field_node;
-+	const struct kparser_metadata_table *metadata_table;
-+	ssize_t off = -1, field_len, field_offset, res = 0;
-+	const struct kparser_flag_fields *flag_fields;
-+	__u32 flags = 0;
-+	int i, ret;
-+
-+	parse_flag_fields_node = (struct kparser_parse_flag_fields_node *)parse_node;
-+	proto_flag_fields_node = (struct kparser_proto_flag_fields_node *)&parse_node->proto_node;
-+
-+	flag_fields = rcu_dereference(proto_flag_fields_node->flag_fields);
-+	if (!flag_fields)
-+		return KPARSER_OKAY;
-+
-+	if (proto_flag_fields_node->ops.get_flags_parameterized)
-+		flags = eval_get_value(&proto_flag_fields_node->ops.pfget_flags, _hdr);
-+
-+	/* Position at start of field data */
-+	if (proto_flag_fields_node->ops.flag_fields_len)
-+		off = proto_flag_fields_node->ops.hdr_length;
-+	else if (proto_flag_fields_node->ops.start_fields_offset_parameterized)
-+		off = eval_parameterized_len(&proto_flag_fields_node->ops.pfstart_fields_offset,
-+					     _hdr);
-+	else
-+		return KPARSER_STOP_LENGTH;
-+
-+	if (off < 0)
-+		return off;
-+
-+	if (hdr_offset + off > parse_len)
-+		return KPARSER_STOP_LENGTH;
-+	_hdr += off;
-+	hdr_offset += off;
-+
-+	pr_debug("{%s:%d}: flag_fields->num_idx:%lu\n", __func__, __LINE__, flag_fields->num_idx);
-+
-+	for (i = 0; i < flag_fields->num_idx; i++) {
-+		off = kparser_flag_fields_offset(i, flags, flag_fields);
-+		pr_debug("{%s:%d}: off:%ld pflag:%x flag:%x\n",
-+			 __func__, __LINE__, off, flags, flag_fields->fields[i].flag);
-+		if (off < 0)
-+			continue;
-+
-+		if (hdr_offset + flag_fields->fields[i].size > parse_len)
-+			return KPARSER_STOP_LENGTH;
-+
-+		res += flag_fields->fields[i].size;
-+
-+		/* Flag field is present, try to find in the parse node
-+		 * table based on index in proto flag-fields
-+		 */
-+		parse_flag_field_node =
-+			lookup_flag_field_node(flag_fields->fields[i].flag,
-+					       parse_flag_fields_node->flag_fields_proto_table);
-+		if (parse_flag_field_node) {
-+			const struct kparser_parse_flag_field_node_ops
-+				*ops = &parse_flag_field_node->ops;
-+			__u8 *cp = _hdr + off;
-+
-+			field_len = flag_fields->fields[i].size;
-+			field_offset = hdr_offset + off;
-+
-+			if (field_offset > parse_len)
-+				return KPARSER_STOP_LENGTH;
-+
-+			if (pflags & KPARSER_F_DEBUG)
-+				pr_debug("kParser parsing flag-field %s\n",
-+					 parse_flag_field_node->name);
-+
-+			if (eval_cond_exprs(&ops->cond_exprs, cp) < 0)
-+				return KPARSER_STOP_COMPARE;
-+
-+			metadata_table = rcu_dereference(parse_flag_field_node->metadata_table);
-+			if (metadata_table) {
-+				ret = extract_metadata_table(parser,
-+							     parse_flag_field_node->metadata_table,
-+							     cp, field_len, field_offset, _metadata,
-+							     _frame, ctrl);
-+				if (ret != KPARSER_OKAY)
-+					return ret;
-+			}
-+		}
-+	}
-+
-+	return res;
-+}
-+
-+/* process ok/fail/atencap nodes */
-+static int __kparser_run_exit_node(const struct kparser_parser *parser,
-+				   const struct kparser_parse_node *parse_node,
-+				   void *_obj_ref, void *_hdr,
-+				   size_t hdr_offset, ssize_t hdr_len,
-+				   void *_metadata, void *_frame,
-+				   struct kparser_ctrl_data *ctrl,
-+				   unsigned int flags)
-+{
-+	const struct kparser_metadata_table *metadata_table;
-+	int ret;
-+
-+	/* Run an exit parse node. This is an okay_node, fail_node, or
-+	 * atencap_node
-+	 */
-+	metadata_table = rcu_dereference(parse_node->metadata_table);
-+	if (metadata_table) {
-+		ret = extract_metadata_table(parser, metadata_table, _hdr,
-+					     hdr_len, hdr_offset, _metadata,
-+					     _frame, ctrl);
-+		if (ret != KPARSER_OKAY)
-+			return ret;
-+	}
-+
-+	return KPARSER_OKAY;
-+}
-+
-+/* __kparser_parse(): Function to parse a void * packet buffer using a parser instance key.
-+ *
-+ * parser: Non NULL kparser_get_parser() returned and cached opaque pointer
-+ * referencing a valid parser instance.
-+ * _hdr: input packet buffer
-+ * parse_len: length of input packet buffer
-+ * _metadata: User provided metadata buffer. It must be same as configured
-+ * metadata objects in CLI.
-+ * metadata_len: Total length of the user provided metadata buffer.
-+ *
-+ * return: kParser error code as defined in include/uapi/linux/kparser.h
-+ *
-+ * rcu lock must be held before calling this function.
-+ */
-+int __kparser_parse(const void *obj, void *_hdr, size_t parse_len,
-+		    void *_metadata, size_t metadata_len)
-+{
-+	const struct kparser_parse_node *next_parse_node, *atencap_node;
-+	const struct kparser_parse_node *parse_node, *wildcard_node;
-+	struct kparser_ctrl_data ctrl = { .ret = KPARSER_OKAY };
-+	const struct kparser_metadata_table *metadata_table;
-+	const struct kparser_proto_table *proto_table;
-+	const struct kparser_proto_node *proto_node;
-+	const struct kparser_parser *parser = obj;
-+	int type = -1, i, ret, framescnt;
-+	struct kparser_counters *cntrs;
-+	void *_frame, *_obj_ref = NULL;
-+	const void *base_hdr = _hdr;
-+	ssize_t hdr_offset = 0;
-+	ssize_t hdr_len, res;
-+	__u32 frame_num = 0;
-+	unsigned int flags;
-+	bool currencap;
-+
-+	if (parser && parser->config.max_encaps > framescnt)
-+		framescnt = parser->config.max_encaps;
-+
-+	if (!parser || !_metadata || metadata_len == 0 || !_hdr || parse_len == 0 ||
-+	    (((framescnt * parser->config.frame_size) +
-+	       parser->config.metameta_size) > metadata_len)) {
-+		pr_debug("{%s:%d}: one or more empty/invalid param(s)\n", __func__, __LINE__);
-+		return -EINVAL;
-+	}
-+
-+	if (parser->kparser_start_signature != KPARSERSTARTSIGNATURE ||
-+	    parser->kparser_end_signature != KPARSERENDSIGNATURE) {
-+		pr_debug("%s:corrupted kparser signature:start:0x%02x, end:0x%02x\n",
-+			 __func__, parser->kparser_start_signature, parser->kparser_end_signature);
-+		return -EINVAL;
-+	}
-+
-+	if (parse_len < parser->config.metameta_size) {
-+		pr_debug("%s: parse buf err, parse_len:%lu, mmd_len:%lu\n",
-+			 __func__, parse_len, parser->config.metameta_size);
-+		return -EINVAL;
-+	}
-+
-+	_frame = _metadata + parser->config.metameta_size;
-+	flags = parser->config.flags;
-+
-+	ctrl.hdr_base = _hdr;
-+	ctrl.node_cnt = 0;
-+	ctrl.encap_levels = 0;
-+
-+	cntrs = rcu_dereference(parser->cntrs);
-+	if (cntrs) {
-+		/* Initialize parser counters */
-+		memset(cntrs, 0, sizeof(parser->cntrs_len));
-+	}
-+
-+	parse_node = rcu_dereference(parser->root_node);
-+	if (!parse_node) {
-+		pr_debug("%s: root node missing,parser:%s\n", __func__, parser->name);
-+		return -ENOENT;
-+	}
-+
-+	/* Main parsing loop. The loop normal teminates when we encounter a
-+	 * leaf protocol node, an error condition, hitting limit on layers of
-+	 * encapsulation, protocol condition to stop (i.e. flags that
-+	 * indicate to stop at flow label or hitting fragment), or
-+	 * unknown protocol result in table lookup for next node.
-+	 */
-+	do {
-+		pr_debug("{%s:%d}: Parsing node:%s\n", __func__, __LINE__, parse_node->name);
-+		currencap = false;
-+		proto_node = &parse_node->proto_node;
-+		hdr_len = proto_node->min_len;
-+
-+		if (++ctrl.node_cnt > parser->config.max_nodes) {
-+			ctrl.ret = KPARSER_STOP_MAX_NODES;
-+			goto parser_out;
-+		}
-+		/* Protocol node length checks */
-+		if (flags & KPARSER_F_DEBUG)
-+			pr_debug("kParser parsing %s\n", parse_node->name);
-+
-+		if (parse_len < hdr_len) {
-+			ctrl.ret = KPARSER_STOP_LENGTH;
-+			goto parser_out;
-+		}
-+
-+		do {
-+			if (!proto_node->ops.len_parameterized)
-+				break;
-+
-+			hdr_len = eval_parameterized_len(&proto_node->ops.pflen, _hdr);
-+
-+			pr_debug("{%s:%d}: eval_hdr_len:%ld min_len:%lu\n",
-+				 __func__, __LINE__, hdr_len, proto_node->min_len);
-+
-+			if (hdr_len < proto_node->min_len) {
-+				ctrl.ret = hdr_len < 0 ? hdr_len : KPARSER_STOP_LENGTH;
-+				goto parser_out;
-+			}
-+			if (parse_len < hdr_len) {
-+				ctrl.ret = KPARSER_STOP_LENGTH;
-+				goto parser_out;
-+			}
-+		} while (0);
-+
-+		hdr_offset = _hdr - base_hdr;
-+		ctrl.pkt_len = parse_len;
-+
-+		/* Callback processing order
-+		 *    1) Extract Metadata
-+		 *    2) Process TLVs
-+		 *	2.a) Extract metadata from TLVs
-+		 *	2.b) Process TLVs
-+		 *    3) Process protocol
-+		 */
-+
-+		metadata_table = rcu_dereference(parse_node->metadata_table);
-+		/* Extract metadata, per node processing */
-+		if (metadata_table) {
-+			ctrl.ret = extract_metadata_table(parser,
-+							  metadata_table,
-+							  _hdr, hdr_len, hdr_offset,
-+							  _metadata, _frame, &ctrl);
-+			if (ctrl.ret != KPARSER_OKAY)
-+				goto parser_out;
-+		}
-+
-+		/* Process node type */
-+		switch (parse_node->node_type) {
-+		case KPARSER_NODE_TYPE_PLAIN:
-+		default:
-+			break;
-+		case KPARSER_NODE_TYPE_TLVS:
-+			/* Process TLV nodes */
-+			ctrl.ret = kparser_parse_tlvs(parser,
-+						      parse_node, flags,
-+						      _obj_ref, _hdr, hdr_len,
-+						      hdr_offset, _metadata,
-+						      _frame, &ctrl);
-+check_processing_return:
-+			switch (ctrl.ret) {
-+			case KPARSER_STOP_OKAY:
-+				goto parser_out;
-+			case KPARSER_OKAY:
-+				break; /* Go to the next node */
-+			case KPARSER_STOP_NODE_OKAY:
-+				/* Note KPARSER_STOP_NODE_OKAY means that
-+				 * post loop processing is not
-+				 * performed
-+				 */
-+				ctrl.ret = KPARSER_OKAY;
-+				goto after_post_processing;
-+			case KPARSER_STOP_SUB_NODE_OKAY:
-+				ctrl.ret = KPARSER_OKAY;
-+				break; /* Just go to next node */
-+			default:
-+				goto parser_out;
-+			}
-+			break;
-+		case KPARSER_NODE_TYPE_FLAG_FIELDS:
-+			/* Process flag-fields */
-+			res = kparser_parse_flag_fields(parser, parse_node,
-+							flags, _obj_ref,
-+							_hdr, hdr_len,
-+							hdr_offset,
-+							_metadata,
-+							_frame,
-+							&ctrl, parse_len);
-+			if (res < 0) {
-+				ctrl.ret = res;
-+				goto check_processing_return;
-+			}
-+			hdr_len += res;
-+		}
-+
-+after_post_processing:
-+		/* Proceed to next protocol layer */
-+
-+		proto_table = rcu_dereference(parse_node->proto_table);
-+		wildcard_node = rcu_dereference(parse_node->wildcard_node);
-+		if (!proto_table && !wildcard_node) {
-+			/* Leaf parse node */
-+			pr_debug("{%s:%d}:\n", __func__, __LINE__);
-+			goto parser_out;
-+		}
-+
-+		if (proto_table) {
-+			do {
-+				if (proto_node->ops.cond_exprs_parameterized) {
-+					ctrl.ret =
-+						eval_cond_exprs(&proto_node->ops.cond_exprs, _hdr);
-+					if (ctrl.ret != KPARSER_OKAY)
-+						goto parser_out;
-+				}
-+
-+				if (!proto_table)
-+					break;
-+				type =
-+					eval_parameterized_next_proto(&proto_node->ops.pfnext_proto,
-+								      _hdr);
-+				pr_debug("{%s:%d}: nxt_proto key:%d\n", __func__, __LINE__, type);
-+				if (type < 0) {
-+					ctrl.ret = type;
-+					goto parser_out;
-+				}
-+
-+				/* Get next node */
-+				next_parse_node = lookup_node(type, proto_table, &currencap);
-+
-+				if (next_parse_node)
-+					goto found_next;
-+			} while (0);
-+		}
-+
-+		/* Try wildcard node. Either table lookup failed to find a
-+		 * node or there is only a wildcard
-+		 */
-+		if (wildcard_node) {
-+			/* Perform default processing in a wildcard node */
-+			next_parse_node = wildcard_node;
-+		} else {
-+			/* Return default code. Parsing will stop
-+			 * with the inidicated code
-+			 */
-+			ctrl.ret = parse_node->unknown_ret;
-+			goto parser_out;
-+		}
-+
-+found_next:
-+		/* Found next protocol node, set up to process */
-+		if (!proto_node->overlay) {
-+			/* Move over current header */
-+			_hdr += hdr_len;
-+			parse_len -= hdr_len;
-+		}
-+
-+		parse_node = next_parse_node;
-+		if (currencap || proto_node->encap) {
-+			/* Check is there is an atencap_node configured for
-+			 * the parser
-+			 */
-+			atencap_node = rcu_dereference(parser->atencap_node);
-+			if (atencap_node) {
-+				ret = __kparser_run_exit_node(parser,
-+							      atencap_node, _obj_ref,
-+							      _hdr, hdr_offset, hdr_len,
-+							      _metadata, _frame, &ctrl,
-+							      flags);
-+				if (ret != KPARSER_OKAY)
-+					goto parser_out;
-+			}
-+
-+			/* New encapsulation layer. Check against
-+			 * number of encap layers allowed and also
-+			 * if we need a new metadata frame.
-+			 */
-+			if (++ctrl.encap_levels > parser->config.max_encaps) {
-+				ctrl.ret = KPARSER_STOP_ENCAP_DEPTH;
-+				goto parser_out;
-+			}
-+
-+			if (frame_num < parser->config.max_frames) {
-+				_frame += parser->config.frame_size;
-+				frame_num++;
-+			}
-+
-+			/* Check if parser has counters that need to be reset
-+			 * at encap
-+			 */
-+			if (parser->cntrs)
-+				for (i = 0; i < KPARSER_CNTR_NUM_CNTRS; i++)
-+					if (parser->cntrs_conf.cntrs[i].reset_on_encap)
-+						cntrs->cntr[i] = 0;
-+		}
-+
-+	} while (1);
-+
-+parser_out:
-+	/* Convert PANDA_OKAY to PANDA_STOP_OKAY if parser is exiting normally.
-+	 * This means that okay_node will see PANDA_STOP_OKAY in ctrl.ret
-+	 */
-+	ctrl.ret = ctrl.ret == KPARSER_OKAY ? KPARSER_STOP_OKAY : ctrl.ret;
-+
-+	parse_node = (ctrl.ret == KPARSER_OKAY || KPARSER_IS_OK_CODE(ctrl.ret)) ?
-+		      rcu_dereference(parser->okay_node) : rcu_dereference(parser->fail_node);
-+
-+	if (!parse_node)
-+		return ctrl.ret;
-+
-+	/* Run an exit parse node. This is either the okay node or the fail
-+	 * node that is set in parser config
-+	 */
-+	ret = __kparser_run_exit_node(parser, parse_node, _obj_ref,
-+				      _hdr, hdr_offset, hdr_len,
-+				      _metadata, _frame, &ctrl, flags);
-+	if (ret != KPARSER_OKAY)
-+		ctrl.ret = (ctrl.ret == KPARSER_STOP_OKAY) ? ret : ctrl.ret;
-+
-+	return ctrl.ret;
-+}
-+EXPORT_SYMBOL(__kparser_parse);
-+
-+static inline void *
-+kparser_get_parser_ctx(const struct kparser_hkey *kparser_key)
-+{
-+	void *ptr, *parser;
-+
-+	if (!kparser_key)
-+		return NULL;
-+
-+	ptr = kparser_namespace_lookup(KPARSER_NS_PARSER, kparser_key);
-+	parser = rcu_dereference(ptr);
-+	return parser;
-+}
-+
-+/* kparser_parse(): Function to parse a skb using a parser instance key.
-+ *
-+ * skb: input packet skb
-+ * kparser_key: key of the associated kParser parser object which must be
-+ *              already created via CLI.
-+ * _metadata: User provided metadata buffer. It must be same as configured
-+ *            metadata objects in CLI.
-+ * metadata_len: Total length of the user provided metadata buffer.
-+ *
-+ * return: kParser error code as defined in include/uapi/linux/kparser.h
-+ */
-+int kparser_parse(struct sk_buff *skb,
-+		  const struct kparser_hkey *kparser_key,
-+		  void *_metadata, size_t metadata_len)
-+{
-+	struct kparser_glue_parser *k_prsr;
-+	struct kparser_parser *parser;
-+	void *data, *ptr;
-+	size_t pktlen;
-+	int err;
-+
-+	data = skb_mac_header(skb);
-+	pktlen = skb_mac_header_len(skb) + skb->len;
-+	if (pktlen > KPARSER_MAX_SKB_PACKET_LEN) {
-+		skb_pull(skb, KPARSER_MAX_SKB_PACKET_LEN);
-+		data = skb_mac_header(skb);
-+		pktlen = skb_mac_header_len(skb) + skb->len;
-+	}
-+
-+	err = skb_linearize(skb);
-+	if (err < 0)
-+		return err;
-+	WARN_ON(skb->data_len);
-+
-+	k_prsr = kparser_get_parser_ctx(kparser_key);
-+	if (!k_prsr) {
-+		pr_debug("{%s:%d}: parser is not found\n", __func__, __LINE__);
-+		return -EINVAL;
-+	}
-+
-+	rcu_read_lock();
-+
-+	kparser_ref_get(&k_prsr->glue.refcount);
-+	parser = &k_prsr->parser;
-+
-+	ptr = kparser_namespace_lookup(KPARSER_NS_PARSER, kparser_key);
-+	k_prsr = rcu_dereference(ptr);
-+	parser = &k_prsr->parser;
-+	if (!parser) {
-+		pr_debug("{%s:%d}:parser htbl lookup failure for key:{%s:%u}\n",
-+			 __func__, __LINE__,
-+			 kparser_key->name, kparser_key->id);
-+		rcu_read_unlock();
-+		kparser_ref_put(&k_prsr->glue.refcount);
-+		return -ENOENT;
-+	}
-+
-+	err = __kparser_parse(parser, data, pktlen, _metadata, metadata_len);
-+
-+	rcu_read_unlock();
-+
-+	kparser_ref_put(&k_prsr->glue.refcount);
-+
-+	return err;
-+}
-+EXPORT_SYMBOL(kparser_parse);
-+
-+/* kparser_get_parser(): Function to get an opaque reference of a parser instance and mark it
-+ * immutable so that while actively using, it can not be deleted. The parser is identified by a key.
-+ * It marks the associated parser and whole parse tree immutable so that when it is locked, it can
-+ * not be deleted.
-+ *
-+ * kparser_key: key of the associated kParser parser object which must be
-+ * already created via CLI.
-+ *
-+ * return: NULL if key not found, else an opaque parser instance pointer which
-+ * can be used in the following APIs 3 and 4.
-+ *
-+ * NOTE: This call makes the whole parser tree immutable. If caller calls this
-+ * more than once, later caller will need to release the same parser exactly that
-+ * many times using the API kparser_put_parser().
-+ */
-+const void *kparser_get_parser(const struct kparser_hkey *kparser_key)
-+{
-+	struct kparser_glue_parser *k_prsr;
-+
-+	k_prsr = kparser_get_parser_ctx(kparser_key);
-+	if (!k_prsr)
-+		return NULL;
-+	kparser_ref_get(&k_prsr->glue.refcount);
-+
-+	return &k_prsr->parser;
-+}
-+EXPORT_SYMBOL(kparser_get_parser);
-+
-+/* kparser_put_parser(): Function to return and undo the read only operation done previously by
-+ * kparser_get_parser(). The parser instance is identified by using a previously obtained opaque
-+ * parser pointer via API kparser_get_parser(). This undo the immutable change so that any component
-+ * of the whole parse tree can be deleted again.
-+ *
-+ * parser: void *, Non NULL opaque pointer which was previously returned by kparser_get_parser().
-+ * Caller can use cached opaque pointer as long as system does not restart and kparser.ko is not
-+ * reloaded.
-+ *
-+ * return: boolean, true if put operation is success, else false.
-+ *
-+ * NOTE: This call makes the whole parser tree deletable for the very last call.
-+ */
-+bool kparser_put_parser(const void *obj)
-+{
-+	const struct kparser_parser *parser = obj;
-+	struct kparser_glue_parser *k_parser;
-+
-+	if (!parser)
-+		return false;
-+	k_parser = container_of(parser, struct kparser_glue_parser, parser);
-+	kparser_ref_put(&k_parser->glue.refcount);
-+
-+	return true;
-+}
-+EXPORT_SYMBOL(kparser_put_parser);
-diff --git a/net/kparser/kparser_main.c b/net/kparser/kparser_main.c
-new file mode 100644
-index 000000000000..b8607ed427ec
---- /dev/null
-+++ b/net/kparser/kparser_main.c
-@@ -0,0 +1,325 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2022, SiPanda Inc.
-+ *
-+ * kParser KMOD main module source file with netlink handlers
-+ *
-+ * Author:      Pratyush Kumar Khan <pratyush@sipanda.io>
-+ */
-+
-+#include <linux/errno.h>
-+#include <linux/idr.h>
-+#include <linux/kernel.h>
-+#include <linux/kparser.h>
-+#include <linux/module.h>
-+#include <linux/rtnetlink.h>
-+#include <linux/skbuff.h>
-+#include <linux/slab.h>
-+#include <linux/types.h>
-+#include <net/act_api.h>
-+#include <net/genetlink.h>
-+#include <net/kparser.h>
-+#include <net/netlink.h>
-+#include <net/pkt_cls.h>
-+
-+#include "kparser.h"
-+
-+static int kparser_cli_cmd_handler(struct sk_buff *skb, struct genl_info *info);
-+
-+/* define netlink msg policies */
-+#define NS_DEFINE_POLICY_ATTR_ENTRY(id, struc_name, rsp_struc_name)	\
-+	[KPARSER_ATTR_CREATE_##id] = {					\
-+		.type = NLA_BINARY,					\
-+		.validation_type = NLA_VALIDATE_MIN,			\
-+		.min = sizeof(struct struc_name)			\
-+	},								\
-+	[KPARSER_ATTR_UPDATE_##id] = {					\
-+		.type = NLA_BINARY,					\
-+		.len = sizeof(struct struc_name),			\
-+		.validation_type = NLA_VALIDATE_MIN,			\
-+		.min = sizeof(struct struc_name)			\
-+	},								\
-+	[KPARSER_ATTR_READ_##id] = {					\
-+		.type = NLA_BINARY,					\
-+		.len = sizeof(struct struc_name),			\
-+		.validation_type = NLA_VALIDATE_MIN,			\
-+		.min = sizeof(struct struc_name)			\
-+	},								\
-+	[KPARSER_ATTR_DELETE_##id] = {					\
-+		.type = NLA_BINARY,					\
-+		.len = sizeof(struct struc_name),			\
-+		.validation_type = NLA_VALIDATE_MIN,			\
-+		.min = sizeof(struct struc_name)			\
-+	},								\
-+	[KPARSER_ATTR_RSP_##id] = {					\
-+		.type = NLA_BINARY,					\
-+		.len = sizeof(struct rsp_struc_name),			\
-+		.validation_type = NLA_VALIDATE_MIN,			\
-+		.min = sizeof(struct rsp_struc_name)			\
-+	}
-+
-+static const struct nla_policy kparser_nl_policy[KPARSER_ATTR_MAX] = {
-+	NS_DEFINE_POLICY_ATTR_ENTRY(KPARSER_NS_CONDEXPRS,
-+				    kparser_conf_cmd,
-+			kparser_cmd_rsp_hdr),
-+	NS_DEFINE_POLICY_ATTR_ENTRY(KPARSER_NS_CONDEXPRS_TABLE,
-+				    kparser_conf_cmd,
-+			kparser_cmd_rsp_hdr),
-+	NS_DEFINE_POLICY_ATTR_ENTRY(KPARSER_NS_CONDEXPRS_TABLES,
-+				    kparser_conf_cmd,
-+			kparser_cmd_rsp_hdr),
-+	NS_DEFINE_POLICY_ATTR_ENTRY(KPARSER_NS_COUNTER,
-+				    kparser_conf_cmd,
-+			kparser_cmd_rsp_hdr),
-+	NS_DEFINE_POLICY_ATTR_ENTRY(KPARSER_NS_COUNTER_TABLE,
-+				    kparser_conf_cmd,
-+			kparser_cmd_rsp_hdr),
-+	NS_DEFINE_POLICY_ATTR_ENTRY(KPARSER_NS_METADATA,
-+				    kparser_conf_cmd,
-+			kparser_cmd_rsp_hdr),
-+	NS_DEFINE_POLICY_ATTR_ENTRY(KPARSER_NS_METALIST,
-+				    kparser_conf_cmd,
-+			kparser_cmd_rsp_hdr),
-+	NS_DEFINE_POLICY_ATTR_ENTRY(KPARSER_NS_NODE_PARSE,
-+				    kparser_conf_cmd,
-+			kparser_cmd_rsp_hdr),
-+	NS_DEFINE_POLICY_ATTR_ENTRY(KPARSER_NS_PROTO_TABLE,
-+				    kparser_conf_cmd,
-+			kparser_cmd_rsp_hdr),
-+	NS_DEFINE_POLICY_ATTR_ENTRY(KPARSER_NS_TLV_NODE_PARSE,
-+				    kparser_conf_cmd,
-+			kparser_cmd_rsp_hdr),
-+	NS_DEFINE_POLICY_ATTR_ENTRY(KPARSER_NS_TLV_PROTO_TABLE,
-+				    kparser_conf_cmd,
-+			kparser_cmd_rsp_hdr),
-+	NS_DEFINE_POLICY_ATTR_ENTRY(KPARSER_NS_FLAG_FIELD,
-+				    kparser_conf_cmd,
-+			kparser_cmd_rsp_hdr),
-+	NS_DEFINE_POLICY_ATTR_ENTRY(KPARSER_NS_FLAG_FIELD_TABLE,
-+				    kparser_conf_cmd,
-+			kparser_cmd_rsp_hdr),
-+	NS_DEFINE_POLICY_ATTR_ENTRY(KPARSER_NS_FLAG_FIELD_NODE_PARSE,
-+				    kparser_conf_cmd,
-+			kparser_cmd_rsp_hdr),
-+	NS_DEFINE_POLICY_ATTR_ENTRY(KPARSER_NS_FLAG_FIELD_PROTO_TABLE,
-+				    kparser_conf_cmd,
-+			kparser_cmd_rsp_hdr),
-+	NS_DEFINE_POLICY_ATTR_ENTRY(KPARSER_NS_PARSER,
-+				    kparser_conf_cmd,
-+			kparser_cmd_rsp_hdr),
-+	NS_DEFINE_POLICY_ATTR_ENTRY(KPARSER_NS_OP_PARSER_LOCK_UNLOCK,
-+				    kparser_conf_cmd,
-+			kparser_cmd_rsp_hdr),
-+};
-+
-+/* define netlink operations and family */
-+static const struct genl_ops kparser_nl_ops[] = {
-+	{
-+	  .cmd = KPARSER_CMD_CONFIGURE,
-+	  .validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+	  .doit = kparser_cli_cmd_handler,
-+	  .flags = GENL_ADMIN_PERM,
-+	},
-+};
-+
-+struct genl_family kparser_nl_family __ro_after_init = {
-+	.hdrsize	= 0,
-+	.name		= KPARSER_GENL_NAME,
-+	.version	= KPARSER_GENL_VERSION,
-+	.maxattr	= KPARSER_ATTR_MAX - 1,
-+	.policy		= kparser_nl_policy,
-+	.netnsok	= true,
-+	.parallel_ops	= true,
-+	.module		= THIS_MODULE,
-+	.ops		= kparser_nl_ops,
-+	.n_ops		= ARRAY_SIZE(kparser_nl_ops),
-+};
-+
-+/* send response to netlink msg requests */
-+static int kparser_send_cmd_rsp(int cmd, int attrtype,
-+				const struct kparser_cmd_rsp_hdr *rsp,
-+				size_t rsp_len, struct genl_info *info)
-+{
-+	struct sk_buff *msg;
-+	size_t msgsz = NLMSG_DEFAULT_SIZE;
-+	void *hdr;
-+	int ret;
-+
-+	if (rsp_len > msgsz)
-+		msgsz = rsp_len;
-+
-+	msg = nlmsg_new(msgsz, GFP_KERNEL);
-+	if (!msg)
-+		return -ENOMEM;
-+
-+	hdr = genlmsg_put(msg, info->snd_portid, info->snd_seq,
-+			  &kparser_nl_family, 0, cmd);
-+	if (!hdr) {
-+		nlmsg_free(msg);
-+		return -ENOBUFS;
-+	}
-+
-+	if (nla_put(msg, attrtype, (int)rsp_len, rsp)) {
-+		genlmsg_cancel(msg, hdr);
-+		nlmsg_free(msg);
-+		return -EMSGSIZE;
-+	}
-+
-+	genlmsg_end(msg, hdr);
-+	ret = genlmsg_reply(msg, info);
-+
-+	// pr_debug("genlmsg_reply() ret:%d\n", ret);
-+	return ret;
-+}
-+
-+typedef int kparser_ops(const void *, size_t, struct kparser_cmd_rsp_hdr **, size_t *);
-+
-+/* define netlink msg processors */
-+#define KPARSER_NS_DEFINE_OP_HANDLERS(NS_ID)				\
-+	[KPARSER_ATTR_CREATE_##NS_ID] = kparser_config_handler_add,	\
-+	[KPARSER_ATTR_UPDATE_##NS_ID] = kparser_config_handler_update,	\
-+	[KPARSER_ATTR_READ_##NS_ID] = kparser_config_handler_read,	\
-+	[KPARSER_ATTR_DELETE_##NS_ID] = kparser_config_handler_delete,	\
-+	[KPARSER_ATTR_RSP_##NS_ID] = NULL
-+
-+static kparser_ops *kparser_ns_op_handler[KPARSER_ATTR_MAX] = {
-+	NULL,
-+	KPARSER_NS_DEFINE_OP_HANDLERS(KPARSER_NS_CONDEXPRS),
-+	KPARSER_NS_DEFINE_OP_HANDLERS(KPARSER_NS_CONDEXPRS_TABLE),
-+	KPARSER_NS_DEFINE_OP_HANDLERS(KPARSER_NS_CONDEXPRS_TABLES),
-+	KPARSER_NS_DEFINE_OP_HANDLERS(KPARSER_NS_COUNTER),
-+	KPARSER_NS_DEFINE_OP_HANDLERS(KPARSER_NS_COUNTER_TABLE),
-+	KPARSER_NS_DEFINE_OP_HANDLERS(KPARSER_NS_METADATA),
-+	KPARSER_NS_DEFINE_OP_HANDLERS(KPARSER_NS_METALIST),
-+	KPARSER_NS_DEFINE_OP_HANDLERS(KPARSER_NS_NODE_PARSE),
-+	KPARSER_NS_DEFINE_OP_HANDLERS(KPARSER_NS_PROTO_TABLE),
-+	KPARSER_NS_DEFINE_OP_HANDLERS(KPARSER_NS_TLV_NODE_PARSE),
-+	KPARSER_NS_DEFINE_OP_HANDLERS(KPARSER_NS_TLV_PROTO_TABLE),
-+	KPARSER_NS_DEFINE_OP_HANDLERS(KPARSER_NS_FLAG_FIELD),
-+	KPARSER_NS_DEFINE_OP_HANDLERS(KPARSER_NS_FLAG_FIELD_TABLE),
-+	KPARSER_NS_DEFINE_OP_HANDLERS(KPARSER_NS_FLAG_FIELD_NODE_PARSE),
-+	KPARSER_NS_DEFINE_OP_HANDLERS(KPARSER_NS_FLAG_FIELD_PROTO_TABLE),
-+	KPARSER_NS_DEFINE_OP_HANDLERS(KPARSER_NS_PARSER),
-+	KPARSER_NS_DEFINE_OP_HANDLERS(KPARSER_NS_OP_PARSER_LOCK_UNLOCK),
-+};
-+
-+/* netlink msg request handler */
-+static int kparser_cli_cmd_handler(struct sk_buff *skb, struct genl_info *info)
-+{
-+	struct kparser_cmd_rsp_hdr *rsp = NULL;
-+	size_t rsp_len = 0;
-+	int ret_attr_id;
-+	int attr_idx;
-+	int rc;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	for (attr_idx = KPARSER_ATTR_UNSPEC + 1; attr_idx < KPARSER_ATTR_MAX; attr_idx++) {
-+		if (!info->attrs[attr_idx] || !kparser_ns_op_handler[attr_idx])
-+			continue;
-+
-+		ret_attr_id = kparser_ns_op_handler[attr_idx](nla_data(info->attrs[attr_idx]),
-+							      nla_len(info->attrs[attr_idx]), &rsp,
-+							      &rsp_len);
-+
-+		if (ret_attr_id <= KPARSER_ATTR_UNSPEC || ret_attr_id >= KPARSER_ATTR_MAX) {
-+			pr_debug("%s: attr %d handler failed\n", __func__, attr_idx);
-+			rc = EIO;
-+			goto out;
-+		}
-+
-+		rc = kparser_send_cmd_rsp(KPARSER_CMD_CONFIGURE, ret_attr_id, rsp, rsp_len, info);
-+		if (rc) {
-+			pr_debug("kparser_send_cmd_rsp() failed,attr:%d, rc:%d\n", attr_idx, rc);
-+			rc = EIO;
-+			goto out;
-+		}
-+
-+		kfree(rsp);
-+		rsp = NULL;
-+		rsp_len = 0;
-+	}
-+
-+out:
-+	if (rsp)
-+		kfree(rsp);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	return rc;
-+}
-+
-+/* kParser callback hooks to be registered in core/filter.c when enabled */
-+static inline void init_kparser_hooks(void)
-+{
-+	kparser_funchooks.kparser_get_parser_hook = &kparser_get_parser;
-+	kparser_funchooks.__kparser_parse_hook = &__kparser_parse;
-+	kparser_funchooks.kparser_put_parser_hook = &kparser_put_parser;
-+}
-+
-+static inline void deinit_kparser_hooks(void)
-+{
-+	kparser_funchooks.kparser_get_parser_hook = NULL;
-+	kparser_funchooks.__kparser_parse_hook = NULL;
-+	kparser_funchooks.kparser_put_parser_hook = NULL;
-+}
-+
-+/* kParser KMOD's init handler */
-+static int __init init_kparser(void)
-+{
-+	int rc;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	rc = genl_register_family(&kparser_nl_family);
-+	if (rc) {
-+		pr_debug("genl_register_family failed\n");
-+		pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+		return rc;
-+	}
-+
-+	rc = kparser_init();
-+	if (rc) {
-+		pr_debug("kparser_init() err:%d\n", rc);
-+		goto out;
-+	}
-+	init_kparser_hooks();
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	return rc;
-+
-+out:
-+	rc = genl_unregister_family(&kparser_nl_family);
-+	if (rc != 0)
-+		pr_debug("kparser_deinit() err:%d\n", rc);
-+
-+	pr_debug("ERR OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	deinit_kparser_hooks();
-+	return rc;
-+}
-+
-+/* kParser KMOD's exit handler */
-+static void __exit exit_kparser(void)
-+{
-+	int rc;
-+
-+	pr_debug("IN: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+
-+	rc = genl_unregister_family(&kparser_nl_family);
-+	if (rc != 0)
-+		pr_debug("genl_unregister_family() err:%d\n", rc);
-+
-+	rc = kparser_deinit();
-+	if (rc != 0)
-+		pr_debug("kparser_deinit() err:%d\n", rc);
-+
-+	pr_debug("OUT: %s:%s:%d\n", __FILE__, __func__, __LINE__);
-+	deinit_kparser_hooks();
-+}
-+
-+module_init(init_kparser);
-+module_exit(exit_kparser);
-+MODULE_AUTHOR("Pratyush Khan <pratyush@sipanda.io>");
-+MODULE_AUTHOR("SiPanda Inc");
-+MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("Configurable Parameterized Parser in Kernel (KPARSER)");
-diff --git a/net/kparser/kparser_metaextract.h b/net/kparser/kparser_metaextract.h
-new file mode 100644
-index 000000000000..5f3a8f5c74df
---- /dev/null
-+++ b/net/kparser/kparser_metaextract.h
-@@ -0,0 +1,896 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/* Copyright (c) 2022, SiPanda Inc.
-+ *
-+ * kparser_metaextract.h - kParser metadata helper and structures header file
-+ *
-+ * Authors:     Tom Herbert <tom@sipanda.io>
-+ *              Pratyush Kumar Khan <pratyush@sipanda.io>
-+ */
-+
-+#ifndef __KPARSER_METAEXTRACT_H__
-+#define __KPARSER_METAEXTRACT_H__
-+
-+#include "kparser_types.h"
-+
-+#include "linux/byteorder/little_endian.h"
-+#define __BYTE_ORDER __LITTLE_ENDIAN
-+
-+#define __BIG_ENDIAN 0
-+
-+#if __BYTE_ORDER == __BIG_ENDIAN
-+#define kparser_htonll(x) (x)
-+#define kparser_ntohll(x) (x)
-+#elif __BYTE_ORDER == __LITTLE_ENDIAN
-+#define kparser_htonll(x)						\
-+	(((__u64)htonl((x) & 0xffffffff) << 32) | htonl((x) >> 32))
-+#define kparser_ntohll(x)						\
-+	(((__u64)ntohl((x) & 0xffffffff) << 32) | ntohl((x) >> 32))
-+#else
-+#error "Cannot determine endianness"
-+#endif
-+
-+/* Metadata extraction pseudo instructions
-+ *
-+ * These instructions extract header data and set control data into metadata.
-+ * Common fields are:
-+ *    - code: Describes the data being written to the metadata. See descriptions
-+ *	      below
-+ *    - frame: Boolean value. If true then the data is a written to the current
-+ *	      metadata frame (frame + dst_off), else the data is written
-+ *	      to the metadata base (metadata + dst_off)
-+ *    - cntr: Counter. If nonzero the data is written to an array defined
-+ *	      by the specified counter. Note that dst_off in this case could
-+ *	      be the base off set of an array plus the offset within an
-+ *	      element of the array
-+ *    - dst_off: Destination offset into the metadata to write the extracted
-+ *	      data. This is a nine bits to allow an offset of 0 to 511
-+ *	      bytes. In the case of writing a sixteen bit constant,
-+ *	      dst_off is an eight byte field that is multiplied by two
-+ *	      to derive the target destination offset
-+ *
-+ * Metadata extraction codes:
-+ *    - KPARSER_METADATA_BYTES_EXTRACT: bytes field
-+ *	    Extract some number of bytes of header data. The src_off field
-+ *	    indicates the source offset in bytes from the current header being
-+ *	    processed, and length indicates the number of bytes to be extracted.
-+ *	    One is added to the length to get the target length. For example,
-+ *	    to extract the IPv4 source address into metadata, src_off would be
-+ *	    set to twelve and length would be set to three (that indicates
-+ *	    to extract four bytes). If e_bit is true then the bytes are endian
-+ *	    swapped before being stored
-+ *    - KPARSER_METADATA_NIBBS_EXTRACT: nibbs field
-+ *	    Extract some number of nibbles of header data. The src_off field
-+ *	    indicates the source offset in nibbles from the current header being
-+ *	    processed, and length indicates the number of nibbles to be
-+ *	    extracted. Note that nibbles are counted such that the high order
-+ *	    nibble of the first byte is nibble zero, and the low order is
-+ *	    nibble one. When nibbles are written to be aligned to the
-+ *	    destination bytes (e.g. the high order nibble to the first
-+ *	    destination byte contains nibble zero). If an off number of nibbles
-+ *	    are written, then the last nibble is written to the high order
-+ *	    nibble of the last byte, and the low order nibble of the last
-+ *	    byte is zero. If e_bit is true then the resultant bytes are endian
-+ *	    swapped before being stored
-+ *    - KPARSER_METADATA_CONSTANT_BYTE_SET: constant_byte field
-+ *	    Set a byte constant in the metadata. The data field contains the
-+ *	    value of the byte to be written
-+ *    - KPARSER_METADATA_CONSTANT_HWORD_SET: constant_hword field
-+ *	    Set a half word (16 bits) constant in the metadata. The data field
-+ *	    contains the value of the halfword to be written. Note that dst_off
-+ *	    is multiplied by two to derive the target offset
-+ *    - KPARSER_METADATA_OFFSET_SET: offset field
-+ *	    Set the current absolute offset of a field in a packet. This
-+ *	    is the offset in two bytes of the current header being processed
-+ *	    plus the value in add_off which is the offset of the field of
-+ *	    interest in the current header. For instance, to get the offset of
-+ *	    the source IP address add_off would be set to twelve; and for a
-+ *	    plain IPv4 Ethernet packet the value written to metadata would
-+ *	    be twenty-six (offset of the IPv4 header is fourteen plus twelve
-+ *	    which is value of add_off and the offset of the source address
-+ *	    in the IPv4 header). If bit_offset is set then the bit offset of
-+ *	    the field is written. This is derived as eight times the current
-+ *	    header byte offset plus add_off. For example, to extract the
-+ *	    bit offset of the fragment offset of IPv4 header, add_off would
-+ *	    have the value fifty-one. For a plain IPv4 Ethernet packet, the
-+ *	    extract bit offset would then be 163
-+ *    - KPARSER_METADATA_CTRL_HDR_LENGTH: control field
-+ *	    Write the length of the current header to metadata. The length is
-+ *	    written in two bytes. A counter operation may be specified as
-+ *	    described below
-+ *    - KPARSER_METADATA_CTRL_NUM_NODES: control field
-+ *	    Write the current number of parse nodes that have been visited to
-+ *	    metadata. The number of nodes is written in two bytes. A counter
-+ *	    operation may be specified as described below
-+ *    - KPARSER_METADATA_CTRL_NUM_ENCAPS: control field
-+ *	    Write the current number of encapsulation levels to metadata. The
-+ *	    number of nodes is written in two bytes. A counter operation may be
-+ *	    specified as described below
-+ *    - KPARSER_METADATA_CTRL_TIMESTAMP: control field
-+ *	    Write the receive timestamp of a packet to metadata. The timestamp
-+ *	    number of nodes is written in eight bytes. A counter operation may
-+ *	    be specified as described below
-+ *    - KPARSER_METADATA_CTRL_COUNTER: control_counter field
-+ *	    Write the current value of a counter to metadata. The counter is
-+ *	    specified in counter_for_data. The counter is written in two bytes.
-+ *	    A counter operation may be specified as described below
-+ *    - KPARSER_METADATA_CTRL_NOOP: control_noop field
-+ *	    "No operation". This pseudo instruction does not write any data.
-+ *	    It's primary purpose is to allow counter operations after performing
-+ *	    non-control pseudo instructions (note that the non-control variants
-+ *	    don't have a cntr_op field)
-+ *
-+ * There are two operations that may be performed on a counter and that are
-+ * expressed in control type pseudo instructions: increment and reset. A
-+ * counter operation is set in the cntr_op field of control pseudo instructions.
-+ * The defined counter operations are:
-+ *    - KPARSER_METADATA_CNTROP_NULL: No counter operation
-+ *    - KPARSER_METADATA_CNTROP_INCREMENT: Increment the counter specified
-+ *	    in cntr by one. The configuration for the counter is check and
-+ *	    if the limit for the counter is exceeded the appropriate behavior
-+ *	    is done
-+ *    - KPARSER_METADATA_CNTROP_RESET: Reset the counter specified
-+ *          in cntr to zero
-+ */
-+
-+/* Metatdata extract codes */
-+#define KPARSER_METADATA_BYTES_EXTRACT		0 /* Var bytes */
-+#define KPARSER_METADATA_NIBBS_EXTRACT		1 /* Var bytes */
-+#define KPARSER_METADATA_CONSTANT_BYTE_SET	2 /* One byte */
-+#define KPARSER_METADATA_CONSTANT_HWORD_SET	3 /* Two bytes */
-+#define KPARSER_METADATA_OFFSET_SET		4 /* Two bytes */
-+#define KPARSER_METADATA_CTRL_HDR_LENGTH	5 /* Two bytes */
-+#define KPARSER_METADATA_CTRL_NUM_NODES		6 /* Two bytes */
-+#define KPARSER_METADATA_CTRL_NUM_ENCAPS	7 /* Two bytes */
-+#define KPARSER_METADATA_CTRL_TIMESTAMP		8 /* Eight bytes */
-+#define KPARSER_METADATA_CTRL_RET_CODE		9 /* Four bytes */
-+#define KPARSER_METADATA_CTRL_COUNTER		10 /* Two bytes */
-+#define KPARSER_METADATA_CTRL_NOOP		11 /* Zero bytes */
-+
-+#define KPARSER_METADATA_CNTROP_NULL		0
-+#define KPARSER_METADATA_CNTROP_INCREMENT	1
-+#define KPARSER_METADATA_CNTROP_RESET		2
-+
-+/* Metadata extraction pseudo instructions
-+ * This emulates the custom SiPANDA riscv instructions for metadata extractions,
-+ * hence these are called pseudo instructions
-+ */
-+struct kparser_metadata_extract {
-+	union {
-+		struct {
-+			__u32 code: 4;	// One of KPARSER_METADATA_* ops
-+			__u32 frame: 1;	// Write to frame (true) else to meta
-+			__u32 cntr: 3;	// Counter number
-+			__u32 dst_off: 9; // Target offset in frame or meta
-+			__u32 rsvd: 24;
-+		} gen;
-+		struct {
-+			__u32 code: 4;	// One of KPARSER_METADATA_* ops
-+			__u32 frame: 1;	// Write to frame (true) else to meta
-+			__u32 cntr: 3;	// Counter number
-+			__u32 dst_off: 9; // Target offset in frame or meta
-+			__u32 e_bit: 1;	// Swap endianness (true)
-+			__u32 src_off: 9; // Src offset in header
-+			__u32 length: 5; // Byte length to read/write
-+		} bytes;
-+		struct {
-+			__u32 code: 4;	// One of KPARSER_METADATA_* ops
-+			__u32 frame: 1;	// Write to frame (true) else to meta
-+			__u32 cntr: 3;	// Counter number
-+			__u32 dst_off: 9; // Target offset in frame or meta
-+			__u32 e_bit: 1;	// Swap endianness (true)
-+			__u32 src_off: 10; // Src offset in header
-+			__u32 length: 4; // Nibble length to read/write
-+		} nibbs;
-+		struct {
-+			__u32 code: 4;	// One of KPARSER_METADATA_* ops
-+			__u32 frame: 1;	// Write to frame (true) else to meta
-+			__u32 cntr: 3;	// Counter number
-+			__u32 dst_off: 9; // Target offset / 2 in frame or meta
-+			__u32 rsvd: 7;
-+			__u32 data: 8;	// Byte constant
-+		} constant_byte;
-+		struct {
-+			__u32 code: 4;	// One of KPARSER_METADATA_* ops
-+			__u32 frame: 1;	// Write to frame (true) else to meta
-+			__u32 cntr: 3;	// Counter number
-+			__u32 dst_off: 8; // Target offset / 2 in frame or meta
-+			__u32 data: 16;	// Byte constant
-+		} constant_hword;
-+		struct {
-+			__u32 code: 4;	// One of KPARSER_METADATA_* ops
-+			__u32 frame: 1;	// Write to frame (true) else to meta
-+			__u32 cntr: 3;	// Counter number
-+			__u32 dst_off: 9; // Target offset in frame or meta
-+			__u32 bit_offset: 1;
-+			__u32 rsvd: 2;
-+			__u32 add_off: 12; // 3 bits for bit offset
-+		} offset;
-+		struct {
-+			__u32 code: 4;	// One of KPARSER_METADATA_* ops
-+			__u32 frame: 1;	// Write to frame (true) else to meta
-+			__u32 cntr: 3;	// Counter number
-+			__u32 dst_off: 9; // Target offset in frame or meta
-+			__u32 cntr_op: 3; // Counter operation
-+			__u32 cntr_for_data: 3;
-+			__u32 rsvd: 9;
-+		} control;
-+		struct {
-+			__u32 code: 4;	// One of KPARSER_METADATA_* ops
-+			__u32 frame: 1;	// Write to frame (true) else to meta
-+			__u32 cntr: 3;	// Counter number
-+			__u32 cntr_op: 3; // Counter operation
-+			__u32 rsvd: 21;
-+		} control_noop;
-+		__u32 val;
-+	};
-+};
-+
-+/* Helper macros to make various pseudo instructions */
-+
-+#define __KPARSER_METADATA_MAKE_BYTES_EXTRACT(FRAME, SRC_OFF, DST_OFF, LEN, E_BIT, CNTR)	\
-+{												\
-+	.bytes.code = KPARSER_METADATA_BYTES_EXTRACT,						\
-+	.bytes.frame = FRAME,									\
-+	.bytes.src_off = SRC_OFF,								\
-+	.bytes.dst_off = DST_OFF,								\
-+	.bytes.length = LEN - 1, /* Minimum one byte */						\
-+	.bytes.e_bit = E_BIT,									\
-+	.bytes.cntr = CNTR,									\
-+}
-+
-+static inline struct kparser_metadata_extract
-+__kparser_metadata_make_bytes_extract(bool frame, size_t src_off,
-+				      size_t dst_off, size_t len,
-+				      bool e_bit,
-+				      unsigned int cntr)
-+{
-+	const struct kparser_metadata_extract mde =
-+		__KPARSER_METADATA_MAKE_BYTES_EXTRACT(frame, src_off,
-+						      dst_off, len,
-+						      e_bit, cntr);
-+	return mde;
-+}
-+
-+#define __KPARSER_METADATA_MAKE_NIBBS_EXTRACT(FRAME, NIBB_SRC_OFF,				\
-+		DST_OFF, NIBB_LEN, E_BIT, CNTR)							\
-+{												\
-+	.nibbs.code = KPARSER_METADATA_NIBBS_EXTRACT,						\
-+	.nibbs.frame = FRAME,									\
-+	.nibbs.src_off = NIBB_SRC_OFF,								\
-+	.nibbs.dst_off = DST_OFF,								\
-+	.nibbs.length = NIBB_LEN - 1, /* Minimum one nibble */					\
-+	.nibbs.e_bit = E_BIT,									\
-+	.nibbs.cntr = CNTR,									\
-+}
-+
-+static inline struct kparser_metadata_extract
-+__kparser_make_make_nibbs_extract(bool frame, size_t nibb_src_off,
-+				  size_t dst_off, size_t nibb_len,
-+				  bool e_bit, unsigned int cntr)
-+{
-+	const struct kparser_metadata_extract mde =
-+		__KPARSER_METADATA_MAKE_NIBBS_EXTRACT(frame, nibb_src_off,
-+						      dst_off, nibb_len,
-+						      e_bit, cntr);
-+
-+	return mde;
-+}
-+
-+#define __KPARSER_METADATA_MAKE_SET_CONST_BYTE(FRAME, DST_OFF, DATA, CNTR)			\
-+{												\
-+	.constant_byte.code = KPARSER_METADATA_CONSTANT_BYTE_SET,				\
-+	.constant_byte.frame = FRAME,								\
-+	.constant_byte.dst_off = DST_OFF,							\
-+	.constant_byte.data = DATA,								\
-+	.constant_byte.cntr = CNTR,								\
-+}
-+
-+static inline struct kparser_metadata_extract
-+__kparser_metadata_set_const_byte(bool frame, size_t dst_off,
-+				  __u8 data, unsigned int cntr)
-+{
-+	const struct kparser_metadata_extract mde =
-+		__KPARSER_METADATA_MAKE_SET_CONST_BYTE(frame, dst_off,
-+						       data, cntr);
-+
-+	return mde;
-+}
-+
-+#define __KPARSER_METADATA_MAKE_SET_CONST_HALFWORD(FRAME, DST_OFF, DATA, CNTR)			\
-+{												\
-+	.constant_hword.code =									\
-+	KPARSER_METADATA_CONSTANT_HWORD_SET,							\
-+	.constant_hword.frame = FRAME,								\
-+	.constant_hword.dst_off = DST_OFF,							\
-+	.constant_hword.data = DATA,								\
-+	.constant_hword.cntr = CNTR,								\
-+}
-+
-+static inline struct kparser_metadata_extract
-+__kparser_metadata_set_const_halfword(bool frame, size_t dst_off,
-+				      __u16 data,
-+				      unsigned int cntr)
-+{
-+	const struct kparser_metadata_extract mde =
-+		__KPARSER_METADATA_MAKE_SET_CONST_HALFWORD(frame, dst_off,
-+							   data, cntr);
-+
-+	return mde;
-+}
-+
-+#define __KPARSER_METADATA_MAKE_OFFSET_SET(FRAME, DST_OFF, BIT_OFFSET, ADD_OFF, CNTR)		\
-+{												\
-+	.offset.code = KPARSER_METADATA_OFFSET_SET,						\
-+	.offset.frame = FRAME,									\
-+	.offset.dst_off = DST_OFF,								\
-+	.offset.bit_offset = BIT_OFFSET,							\
-+	.offset.add_off = ADD_OFF,								\
-+	.offset.cntr = CNTR,									\
-+}
-+
-+static inline struct kparser_metadata_extract
-+__kparser_metadata_offset_set(bool frame, size_t dst_off,
-+			      bool bit_offset, size_t add_off, unsigned int cntr)
-+{
-+	const struct kparser_metadata_extract mde =
-+		__KPARSER_METADATA_MAKE_OFFSET_SET(frame, dst_off,
-+						   bit_offset, add_off, cntr);
-+	return mde;
-+}
-+
-+#define __KPARSER_METADATA_MAKE_SET_CONTROL_COUNTER(FRAME, DST_OFF, CNTR_DATA, CNTR, CNTR_OP)	\
-+{												\
-+	.control.code = KPARSER_METADATA_CTRL_COUNTER,						\
-+	.control.frame = FRAME,									\
-+	.control.dst_off = DST_OFF,								\
-+	.control.cntr = CNTR,									\
-+	.control.cntr_op = CNTR_OP,								\
-+	.control.cntr_for_data = CNTR_DATA,							\
-+}
-+
-+static inline struct kparser_metadata_extract
-+__kparser_metadata_set_control_counter(bool frame, size_t dst_off,
-+				       unsigned int cntr_data,
-+		unsigned int cntr,
-+		unsigned int cntr_op)
-+{
-+	const struct kparser_metadata_extract mde =
-+		__KPARSER_METADATA_MAKE_SET_CONTROL_COUNTER(frame,
-+							    dst_off, cntr_data, cntr,
-+							    cntr_op);
-+	return mde;
-+}
-+
-+#define __KPARSER_METADATA_MAKE_SET_CONTROL(FRAME, CODE, DST_OFF, CNTR, CNTR_OP)		\
-+{												\
-+	.control.code = CODE,									\
-+	.control.frame = FRAME,									\
-+	.control.dst_off = DST_OFF,								\
-+	.control.cntr = CNTR,									\
-+	.control.cntr_op = CNTR_OP,								\
-+}
-+
-+static inline struct kparser_metadata_extract
-+__kparser_metadata_set_control(bool frame, unsigned int code,
-+			       size_t dst_off, unsigned int cntr,
-+			       unsigned int cntr_op)
-+{
-+	const struct kparser_metadata_extract mde =
-+		__KPARSER_METADATA_MAKE_SET_CONTROL(frame, code, dst_off,
-+						    cntr, cntr_op);
-+	return mde;
-+}
-+
-+struct kparser_metadata_table {
-+	int num_ents;
-+	struct kparser_metadata_extract *entries;
-+};
-+
-+/* Extract functions */
-+static inline int __kparser_metadata_bytes_extract(const __u8 *sptr,
-+						   __u8 *dptr, size_t length, bool e_bit)
-+{
-+	__u16 v16;
-+	__u32 v32;
-+	__u64 v64;
-+	int i;
-+
-+	if (!dptr)
-+		return KPARSER_OKAY;
-+
-+	switch (length) {
-+	case sizeof(__u8):
-+		*dptr = *sptr;
-+		break;
-+	case sizeof(__u16):
-+		v16 = *(__u16 *)sptr;
-+		*((__u16 *)dptr) = e_bit ? ntohs(v16) : v16;
-+		break;
-+	case sizeof(__u32):
-+		v32 = *(__u32 *)sptr;
-+		*((__u32 *)dptr) = e_bit ? ntohl(v32) : v32;
-+		break;
-+	case sizeof(__u64):
-+		v64 = *(__u64 *)sptr;
-+		*((__u64 *)dptr) = e_bit ? kparser_ntohll(v64) : v64;
-+		break;
-+	default:
-+		if (e_bit) {
-+			for (i = 0; i < length; i++)
-+				dptr[i] = sptr[length - 1 - i];
-+		} else {
-+			memcpy(dptr, sptr, length);
-+		}
-+	}
-+
-+	return KPARSER_OKAY;
-+}
-+
-+static inline void *metadata_get_dst(size_t dst_off, void *mdata)
-+{
-+	return &((__u8 *)mdata)[dst_off];
-+}
-+
-+static inline bool __metatdata_validate_counter(const struct kparser_parser *parser,
-+						unsigned int cntr)
-+{
-+	if (!parser) {
-+		pr_warn("Metadata counter is set for extraction but no parser is set");
-+		return false;
-+	}
-+
-+	if (!parser->cntrs) {
-+		pr_warn("Metadata counter is set but no counters are configured for parser");
-+		return false;
-+	}
-+
-+	if (cntr >= KPARSER_CNTR_NUM_CNTRS) {
-+		pr_warn("Metadata counter %u is greater than maximum %u",
-+			cntr, KPARSER_CNTR_NUM_CNTRS);
-+		return false;
-+	}
-+
-+	return true;
-+}
-+
-+static inline void *metadata_get_dst_cntr(const struct kparser_parser *parser,
-+					  size_t dst_off, void *mdata,
-+		unsigned int cntr, int code)
-+{
-+	const struct kparser_cntr_conf *cntr_conf;
-+	__u8 *dptr = &((__u8 *)mdata)[dst_off];
-+	size_t step;
-+
-+	if (!cntr)
-+		return dptr;
-+
-+	cntr--; // Make zero based to access array
-+
-+	if (!__metatdata_validate_counter(parser, cntr))
-+		return dptr;
-+
-+	cntr_conf = &parser->cntrs_conf.cntrs[cntr];
-+
-+	if (code != KPARSER_METADATA_CTRL_COUNTER) {
-+		if (parser->cntrs->cntr[cntr] >= cntr_conf->array_limit) {
-+			if (!cntr_conf->array_limit ||
-+			    !cntr_conf->overwrite_last)
-+				return NULL;
-+			step = cntr_conf->array_limit - 1;
-+		} else {
-+			step = parser->cntrs->cntr[cntr];
-+		}
-+
-+		dptr += cntr_conf->el_size * step;
-+	}
-+
-+	return dptr;
-+}
-+
-+static inline int __metadata_cntr_operation(const struct kparser_parser *parser,
-+					    unsigned int operation, unsigned int cntr)
-+{
-+	/* cntr 0 means no counter attached, the index starts from 1 in this case
-+	 */
-+	if (!cntr)
-+		return KPARSER_OKAY;
-+
-+	cntr--; /* Make zero based to access array */
-+
-+	if (!__metatdata_validate_counter(parser, cntr))
-+		return KPARSER_STOP_BAD_CNTR;
-+
-+	switch (operation) {
-+	default:
-+	case KPARSER_METADATA_CNTROP_NULL:
-+		break;
-+	case KPARSER_METADATA_CNTROP_INCREMENT:
-+		/* Note: parser is const but
-+		 * parser->cntrs->cntr is writable
-+		 */
-+		if (parser->cntrs->cntr[cntr] <
-+		    parser->cntrs_conf.cntrs[cntr].max_value)
-+			parser->cntrs->cntr[cntr]++;
-+		else if (parser->cntrs_conf.cntrs[cntr].error_on_exceeded)
-+			return KPARSER_STOP_CNTR1 - cntr;
-+		break;
-+	case KPARSER_METADATA_CNTROP_RESET:
-+		parser->cntrs->cntr[cntr] = 0;
-+		break;
-+	}
-+
-+	return KPARSER_OKAY;
-+}
-+
-+static inline int kparser_metadata_bytes_extract(const struct kparser_parser *parser,
-+						 struct kparser_metadata_extract mde,
-+						 const void *hdr, void *mdata)
-+{
-+	__u8 *dptr = metadata_get_dst_cntr(parser, mde.bytes.dst_off, mdata,
-+			mde.bytes.cntr, 0);
-+	const __u8 *sptr = &((__u8 *)hdr)[mde.bytes.src_off];
-+
-+	if (!dptr)
-+		return KPARSER_OKAY;
-+
-+	return __kparser_metadata_bytes_extract(sptr, dptr,
-+			mde.bytes.length + 1,
-+			mde.bytes.e_bit);
-+}
-+
-+static inline int kparser_metadata_nibbs_extract(const struct kparser_parser *parser,
-+						 struct kparser_metadata_extract mde,
-+						 const void *hdr, void *mdata)
-+{
-+	__u8 *dptr = metadata_get_dst_cntr(parser, mde.nibbs.dst_off, mdata,
-+			mde.nibbs.cntr, 0);
-+	const __u8 *sptr = &((__u8 *)hdr)[mde.nibbs.src_off / 2];
-+	size_t nibb_len = mde.nibbs.length + 1;
-+	__u8 data;
-+	int i;
-+
-+	if (!dptr)
-+		return KPARSER_OKAY;
-+
-+	if (mde.nibbs.src_off % 2 == 0 && nibb_len % 2 == 0) {
-+		/* This is effectively a byte transfer case */
-+
-+		return __kparser_metadata_bytes_extract(sptr, dptr,
-+				mde.nibbs.length / 2,
-+				mde.nibbs.e_bit);
-+	}
-+
-+	if (mde.nibbs.e_bit) {
-+		/* Endianness bit is set. dlen is the number of bytes
-+		 * set for output
-+		 */
-+		size_t dlen = (nibb_len + 1) / 2;
-+
-+		if (mde.nibbs.src_off % 2) {
-+			/* Starting from the odd nibble */
-+			if (nibb_len % 2) {
-+				/* Odd length and odd start nibble offset. Set
-+				 * the reverse of all the bytes after the first
-+				 * nibble, and * construct the last byte from
-+				 * the low order nibble of the first input byte
-+				 */
-+				for (i = 0; i < dlen - 1; i++)
-+					dptr[i] = sptr[dlen - 1 - i];
-+				dptr[i] = sptr[0] & 0xf;
-+			} else {
-+				/* Even length and n-bit is set. Logically
-+				 * shift all the nibbles in the string left and
-+				 * then set the reversed bytes.
-+				 */
-+
-+				/* High order nibble of last byte becomes
-+				 * low order nibble of first output byte
-+				 */
-+				data = sptr[dlen] >> 4;
-+
-+				for (i = 0; i < dlen - 1; i++) {
-+					/* Construct intermediate bytes. data
-+					 * contains the input high order nibble
-+					 * of the next input byte shifted right.
-+					 * That value is or'ed with the shifted
-+					 * left low order nibble of the current
-+					 * byte. The result is set in the
-+					 * reversed position in the output
-+					 */
-+					dptr[i] = data |
-+						sptr[dlen - 1 - i] << 4;
-+
-+					/* Get the next data value */
-+					data = sptr[dlen - 1 - i] >> 4;
-+				}
-+				/* Set the last byte as the or of the last
-+				 * data value and the low order nibble of the
-+				 * zeroth byte of the input shifted left
-+				 */
-+				dptr[i] = data | sptr[0] << 4;
-+			}
-+		} else {
-+			/* Odd length (per check above) and n-bit is not
-+			 * set. Logically shift all the nibbles in the
-+			 * string right and then set the reversed bytes
-+			 */
-+
-+			/* High order nibble of last byte becomes
-+			 * low order nibble of first output byte
-+			 */
-+			data = sptr[dlen - 1] >> 4;
-+
-+			for (i = 0; i < dlen - 1; i++) {
-+				/* Construct intermediate bytes. data contains
-+				 * the input high order nibble of the next
-+				 * input byte shifted right. That value is
-+				 * or'ed with the shifted left low order nibble
-+				 * of the current byte. The result is set in the
-+				 * reversed position in the output
-+				 */
-+				dptr[i] = data | sptr[dlen - 2 - i] << 4;
-+
-+				/* Get next data value */
-+				data = sptr[dlen - 2 - i] >> 4;
-+			}
-+
-+			/* Last output byte is set to high oder nibble of first
-+			 * input byte shifted right
-+			 */
-+			dptr[i] = data;
-+		}
-+	} else {
-+		/* No e-bit (no endiannes) */
-+
-+		size_t byte_len;
-+		int ind = 0;
-+
-+		if (mde.nibbs.src_off % 2) {
-+			/* Starting from the odd nibble. Set first output byte
-+			 * to masked low order nibble of first input byte
-+			 */
-+			dptr[0] = sptr[0] & 0xf;
-+			ind = 1;
-+			nibb_len--;
-+		}
-+
-+		/* Copy all the whole intermediate bytes */
-+		byte_len = nibb_len / 2;
-+		memcpy(&dptr[ind], &sptr[ind], byte_len);
-+
-+		if (nibb_len % 2) {
-+			/* Have an odd nibble at the endian. Set the last
-+			 * output byte to the mask high order nibble of the
-+			 * last input byte
-+			 */
-+			dptr[ind + byte_len] = sptr[ind + byte_len] & 0xf0;
-+		}
-+	}
-+
-+	return KPARSER_OKAY;
-+}
-+
-+static inline int kparser_metadata_const_set_byte(const struct kparser_parser *parser,
-+						  struct kparser_metadata_extract mde,
-+						  void *mdata)
-+{
-+	__u16 *dptr = metadata_get_dst_cntr(parser, mde.constant_byte.dst_off,
-+			mdata, mde.constant_byte.cntr, 0);
-+
-+	if (dptr)
-+		*dptr = mde.constant_byte.data;
-+
-+	return KPARSER_OKAY;
-+}
-+
-+static inline int kparser_metadata_const_set_hword(const struct kparser_parser *parser,
-+						   struct kparser_metadata_extract mde,
-+						   void *mdata)
-+{
-+	__u16 *dptr = metadata_get_dst_cntr(parser, mde.constant_hword.dst_off,
-+			mdata, mde.constant_hword.cntr, 0);
-+
-+	if (dptr)
-+		*dptr = mde.constant_hword.data;
-+
-+	return KPARSER_OKAY;
-+}
-+
-+static inline int kparser_metadata_set_offset(const struct kparser_parser *parser,
-+					      struct kparser_metadata_extract mde,
-+					      void *mdata, size_t hdr_offset)
-+{
-+	__u16 *dptr = metadata_get_dst_cntr(parser, mde.offset.dst_off, mdata,
-+			mde.offset.cntr, 0);
-+
-+	if (dptr) {
-+		*dptr = mde.offset.bit_offset ?
-+			8 * hdr_offset + mde.offset.add_off :
-+			hdr_offset + mde.offset.add_off;
-+	}
-+
-+	return KPARSER_OKAY;
-+}
-+
-+static inline int __kparser_metadata_control_extract(const struct kparser_parser *parser,
-+						     const struct kparser_metadata_extract mde,
-+						     const void *_hdr, size_t hdr_len,
-+						     size_t hdr_offset, void *mdata,
-+						     const struct kparser_ctrl_data *ctrl)
-+{
-+	__u16 *dptr = metadata_get_dst_cntr(parser, mde.control.dst_off, mdata,
-+			mde.control.cntr, mde.control.code);
-+
-+	switch (mde.control.code) {
-+	case KPARSER_METADATA_CTRL_HDR_LENGTH:
-+		if (dptr)
-+			*((__u16 *)dptr) = hdr_len;
-+		break;
-+	case KPARSER_METADATA_CTRL_NUM_NODES:
-+		if (dptr)
-+			*((__u16 *)dptr) = ctrl->node_cnt;
-+		break;
-+	case KPARSER_METADATA_CTRL_NUM_ENCAPS:
-+		if (dptr)
-+			*((__u16 *)dptr) = ctrl->encap_levels;
-+		break;
-+	case KPARSER_METADATA_CTRL_TIMESTAMP:
-+		/* TODO */
-+		break;
-+	case KPARSER_METADATA_CTRL_COUNTER:
-+		if (!__metatdata_validate_counter(parser,
-+						  mde.control.cntr_for_data))
-+			return KPARSER_STOP_BAD_CNTR;
-+		if (dptr)
-+			*(__u16 *)dptr = parser->cntrs->cntr[mde.control.cntr_for_data - 1];
-+		break;
-+	case KPARSER_METADATA_CTRL_RET_CODE:
-+		if (dptr)
-+			*((int *)dptr) = ctrl->ret;
-+		break;
-+	case KPARSER_METADATA_CTRL_NOOP:
-+		break;
-+	default:
-+		pr_debug("Unknown extract\n");
-+		return KPARSER_STOP_BAD_EXTRACT;
-+	}
-+
-+	return __metadata_cntr_operation(parser, mde.control.cntr_op,
-+			mde.control.cntr);
-+}
-+
-+/* Front end functions to process one metadata extraction pseudo instruction
-+ * in the context of parsing a packet
-+ */
-+static inline int kparser_metadata_extract(const struct kparser_parser *parser,
-+					   const struct kparser_metadata_extract mde,
-+					   const void *_hdr, size_t hdr_len,
-+					   size_t hdr_offset, void *_metadata,
-+					   void *_frame,
-+					   const struct kparser_ctrl_data *ctrl)
-+{
-+	void *mdata = mde.gen.frame ? _frame : _metadata;
-+	int ret;
-+
-+	switch (mde.gen.code) {
-+	case KPARSER_METADATA_BYTES_EXTRACT:
-+		ret = kparser_metadata_bytes_extract(parser, mde,
-+						     _hdr, mdata);
-+		break;
-+	case KPARSER_METADATA_NIBBS_EXTRACT:
-+		ret = kparser_metadata_nibbs_extract(parser, mde,
-+						     _hdr, mdata);
-+		break;
-+	case KPARSER_METADATA_CONSTANT_BYTE_SET:
-+		ret = kparser_metadata_const_set_byte(parser, mde,
-+						      mdata);
-+		break;
-+	case KPARSER_METADATA_CONSTANT_HWORD_SET:
-+		ret = kparser_metadata_const_set_hword(parser, mde,
-+						       mdata);
-+		break;
-+	case KPARSER_METADATA_OFFSET_SET:
-+		ret = kparser_metadata_set_offset(parser, mde, mdata,
-+						  hdr_offset);
-+		break;
-+	default: /* Should be a control metadata extraction */
-+		ret = __kparser_metadata_control_extract(parser, mde,
-+							 _hdr,
-+							 hdr_len,
-+							 hdr_offset,
-+							 mdata, ctrl);
-+	}
-+
-+	return ret;
-+}
-+
-+static inline bool kparser_metadata_convert(const struct kparser_conf_metadata *conf,
-+					    struct kparser_metadata_extract *mde, int cntridx)
-+{
-+	__u32 encoding_type;
-+
-+	switch (conf->type) {
-+	case KPARSER_METADATA_HDRDATA:
-+		*mde = __kparser_metadata_make_bytes_extract(conf->frame,
-+							     conf->soff, conf->doff, conf->len,
-+							     conf->e_bit, cntridx);
-+		return true;
-+
-+	case KPARSER_METADATA_HDRDATA_NIBBS_EXTRACT:
-+		*mde = __kparser_make_make_nibbs_extract(conf->frame,
-+							 conf->soff,
-+							 conf->doff,
-+							 conf->len,
-+							 conf->e_bit,
-+							 cntridx);
-+		return true;
-+
-+	case KPARSER_METADATA_BIT_OFFSET:
-+		*mde =	__kparser_metadata_offset_set(conf->frame,
-+						      conf->doff,
-+						      true,
-+						      conf->add_off,
-+						      cntridx);
-+		return true;
-+
-+	case KPARSER_METADATA_OFFSET:
-+		*mde =	__kparser_metadata_offset_set(conf->frame,
-+						      conf->doff,
-+						      false,
-+						      conf->add_off,
-+						      cntridx);
-+		return true;
-+
-+	case KPARSER_METADATA_CONSTANT_BYTE:
-+		*mde =	__kparser_metadata_set_const_byte(conf->frame,
-+							  conf->doff, conf->constant_value,
-+				cntridx);
-+		return true;
-+
-+	case KPARSER_METADATA_CONSTANT_HALFWORD:
-+		*mde =	__kparser_metadata_set_const_halfword(conf->frame,
-+							      conf->doff, conf->constant_value,
-+				cntridx);
-+		return true;
-+
-+	case KPARSER_METADATA_COUNTER:
-+		*mde = __kparser_metadata_set_control_counter(conf->frame, conf->doff,
-+							      cntridx, cntridx,
-+							      conf->cntr_op);
-+		return true;
-+
-+	case KPARSER_METADATA_HDRLEN:
-+		encoding_type = KPARSER_METADATA_CTRL_HDR_LENGTH;
-+		break;
-+
-+	case KPARSER_METADATA_NUMENCAPS:
-+		encoding_type = KPARSER_METADATA_CTRL_NUM_ENCAPS;
-+		break;
-+
-+	case KPARSER_METADATA_NUMNODES:
-+		encoding_type = KPARSER_METADATA_CTRL_NUM_NODES;
-+		break;
-+
-+	case KPARSER_METADATA_TIMESTAMP:
-+		encoding_type = KPARSER_METADATA_CTRL_TIMESTAMP;
-+		break;
-+
-+	case KPARSER_METADATA_RETURN_CODE:
-+		encoding_type = KPARSER_METADATA_CTRL_RET_CODE;
-+		break;
-+
-+	case KPARSER_METADATA_COUNTEROP_NOOP:
-+		encoding_type = KPARSER_METADATA_CTRL_NOOP;
-+		break;
-+
-+	default:
-+		return false;
-+	}
-+
-+	*mde = __kparser_metadata_set_control(conf->frame, encoding_type, conf->doff,
-+					      conf->cntr, conf->cntr_op);
-+
-+	return true;
-+}
-+
-+#endif /* __KPARSER_METAEXTRACT_H__ */
-diff --git a/net/kparser/kparser_types.h b/net/kparser/kparser_types.h
-new file mode 100644
-index 000000000000..e957c556e012
---- /dev/null
-+++ b/net/kparser/kparser_types.h
-@@ -0,0 +1,586 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/* Copyright (c) 2022, SiPanda Inc.
-+ *
-+ * kparser_types.h - kParser private data types header file
-+ *
-+ * Authors:     Tom Herbert <tom@sipanda.io>
-+ *              Pratyush Kumar Khan <pratyush@sipanda.io>
-+ */
-+
-+#ifndef __KPARSER_TYPES_H
-+#define __KPARSER_TYPES_H
-+
-+#include <linux/hash.h>
-+#include <linux/kparser.h>
-+#include <linux/kref.h>
-+#include <linux/list.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/rcupdate.h>
-+#include <linux/rhashtable-types.h>
-+#include <linux/skbuff.h>
-+#include <linux/xxhash.h>
-+
-+/* Sign extend an returned signed value */
-+#define KPARSER_EXTRACT_CODE(X) ((__s64)(short)(X))
-+#define KPARSER_IS_RET_CODE(X) (KPARSER_EXTRACT_CODE(X) < 0)
-+#define KPARSER_IS_NOT_OK_CODE(X) (KPARSER_EXTRACT_CODE(X) <= KPARSER_STOP_FAIL)
-+#define KPARSER_IS_OK_CODE(X)						\
-+	(KPARSER_IS_RET_CODE(X) && KPARSER_EXTRACT_CODE(X) > KPARSER_STOP_FAIL)
-+
-+/* A table of conditional expressions, type indicates that the expressions
-+ * are or'ed of and'ed
-+ */
-+struct kparser_condexpr_table {
-+	int default_fail;
-+	enum kparser_condexpr_types type;
-+	unsigned int num_ents;
-+	const struct kparser_condexpr_expr __rcu **entries;
-+};
-+
-+/* A table of tables of conditional expressions. This is used to create more
-+ * complex expressions using and's and or's
-+ */
-+struct kparser_condexpr_tables {
-+	unsigned int num_ents;
-+	const struct kparser_condexpr_table __rcu **entries;
-+};
-+
-+/* Control data describing various values produced while parsing. This is
-+ * used an argument to metadata extraction and handler functions
-+ */
-+struct kparser_ctrl_data {
-+	int ret;
-+	size_t pkt_len;
-+	void *hdr_base;
-+	unsigned int node_cnt;
-+	unsigned int encap_levels;
-+};
-+
-+/*****************************************************************************/
-+
-+/* Protocol parsing operations:
-+ *
-+ * Operations can be specified either as a function or a parameterization
-+ * of a parameterized function
-+ *
-+ * len: Return length of protocol header. If value is NULL then the length of
-+ *	the header is taken from the min_len in the protocol node. If the
-+ *	return value < 0 (a KPARSER_STOP_* return code value) this indicates an
-+ *	error and parsing is stopped. A the return value greater than or equal
-+ *	to zero then gives the protocol length. If the returned length is less
-+ *	than the minimum protocol length, indicated in min_len by the protocol
-+ *	node, then this considered and error.
-+ * next_proto: Return next protocol. If value is NULL then there is no
-+ *	next protocol. If return value is greater than or equal to zero
-+ *	this indicates a protocol number that is used in a table lookup
-+ *	to get the next layer protocol node.
-+ * cond_exprs: Parameterization only. This describes a set of conditionals
-+ *	check before proceeding. In the case of functions being used, these
-+ *	conditionals would be in the next_proto or length function
-+ */
-+
-+struct kparser_parse_ops {
-+	bool flag_fields_length;
-+	bool len_parameterized;
-+	struct kparser_parameterized_len pflen;
-+	struct kparser_parameterized_next_proto pfnext_proto;
-+	bool cond_exprs_parameterized;
-+	struct kparser_condexpr_tables cond_exprs;
-+};
-+
-+/* Protocol node
-+ *
-+ * This structure contains the definitions to describe parsing of one type
-+ * of protocol header. Fields are:
-+ *
-+ * node_type: The type of the node (plain, TLVs, flag-fields)
-+ * encap: Indicates an encapsulation protocol (e.g. IPIP, GRE)
-+ * overlay: Indicates an overlay protocol. This is used, for example, to
-+ *	switch on version number of a protocol header (e.g. IP version number
-+ *	or GRE version number)
-+ * name: Text name of protocol node for debugging
-+ * min_len: Minimum length of the protocol header
-+ * ops: Operations to parse protocol header
-+ */
-+struct kparser_proto_node {
-+	__u8 encap;
-+	__u8 overlay;
-+	size_t min_len;
-+	struct kparser_parse_ops ops;
-+};
-+
-+/* Protocol node and parse node operations ordering. When processing a
-+ * layer, operations are called in following order:
-+ *
-+ * protoop.len
-+ * parseop.extract_metadata
-+ * parseop.handle_proto
-+ * protoop.next_proto
-+ */
-+/* One entry in a protocol table:
-+ *	value: protocol number
-+ *	node: associated parse node for the protocol number
-+ */
-+struct kparser_proto_table_entry {
-+	int value;
-+	bool encap;
-+	const struct kparser_parse_node __rcu *node;
-+};
-+
-+/* Protocol table
-+ *
-+ * Contains a protocol table that maps a protocol number to a parse
-+ * node
-+ */
-+struct kparser_proto_table {
-+	int num_ents;
-+	struct kparser_proto_table_entry __rcu *entries;
-+};
-+
-+/*****************************************************************************/
-+
-+struct kparser_cntrs_conf {
-+	struct kparser_cntr_conf cntrs[KPARSER_CNTR_NUM_CNTRS];
-+};
-+
-+struct kparser_counters {
-+	__u16 cntr[KPARSER_CNTR_NUM_CNTRS];
-+};
-+
-+/*****************************************************************************/
-+
-+/* Definitions for parsing TLVs
-+ *
-+ * Operations can be specified either as a function or a parameterization
-+ * of a parameterized function
-+ *
-+ * TLVs are a common protocol header structure consisting of Type, Length,
-+ * Value tuple (e.g. for handling TCP or IPv6 HBH options TLVs)
-+ */
-+
-+/* Descriptor for parsing operations of one type of TLV. Fields are:
-+ * For struct kparser_proto_tlvs_opts:
-+ * start_offset: Returns the offset of TLVs in a header
-+ * len: Return length of a TLV. Must be set. If the return value < 0 (a
-+ *	KPARSER_STOP_* return code value) this indicates an error and parsing
-+ *	is stopped. A the return value greater than or equal to zero then
-+ *	gives the protocol length. If the returned length is less than the
-+ *	minimum TLV option length, indicated by min_len by the TLV protocol
-+ *	node, then this considered and error.
-+ * type: Return the type of the TLV. If the return value is less than zero
-+ *	(KPARSER_STOP_* value) then this indicates and error and parsing stops
-+ */
-+
-+/* A protocol node for parsing proto with TLVs
-+ *
-+ * proto_node: proto node
-+ * ops: Operations for parsing TLVs
-+ * start_offset: When there TLVs start relative the enapsulating protocol
-+ *	(e.g. would be twenty for TCP)
-+ * pad1_val: Type value indicating one byte of TLV padding (e.g. would be
-+ *	for IPv6 HBH TLVs)
-+ * pad1_enable: Pad1 value is used to detect single byte padding
-+ * eol_val: Type value that indicates end of TLV list
-+ * eol_enable: End of list value in eol_val is used
-+ * fixed_start_offset: Take start offset from start_offset
-+ * min_len: Minimal length of a TLV option
-+ */
-+struct kparser_proto_tlvs_node {
-+	struct kparser_proto_node proto_node;
-+	struct kparser_proto_tlvs_opts ops;
-+	size_t start_offset;
-+	__u8 pad1_val;
-+	__u8 padn_val;
-+	__u8 eol_val;
-+	bool pad1_enable;
-+	bool padn_enable;
-+	bool eol_enable;
-+	bool fixed_start_offset;
-+	size_t min_len;
-+};
-+
-+/*****************************************************************************/
-+
-+/* Definitions and functions for processing and parsing flag-fields */
-+/* Definitions for parsing flag-fields
-+ *
-+ * Flag-fields is a common networking protocol construct that encodes optional
-+ * data in a set of flags and data fields. The flags indicate whether or not a
-+ * corresponding data field is present. The data fields are fixed length per
-+ * each flag-field definition and ordered by the ordering of the flags
-+ * indicating the presence of the fields (e.g. GRE and GUE employ flag-fields)
-+ */
-+
-+/* Flag-fields descriptors and tables
-+ *
-+ * A set of flag-fields is defined in a table of type struct kparser_flag_fields.
-+ * Each entry in the table is a descriptor for one flag-field in a protocol and
-+ * includes a flag value, mask (for the case of a multi-bit flag), and size of
-+ * the cooresponding field. A flag is matched if "(flags & mask) == flag"
-+ */
-+
-+/* Descriptor for a protocol field with flag fields
-+ *
-+ * Defines the flags and their data fields for one instance a flag field in
-+ * a protocol header (e.g. GRE v0 flags):
-+ *
-+ * num_idx: Number of flag_field structures
-+ * fields: List of defined flag fields
-+ */
-+struct kparser_flag_fields {
-+	size_t num_idx;
-+	struct kparser_flag_field __rcu *fields;
-+};
-+
-+/* Structure or parsing operations for flag-fields
-+ * For struct kparser_proto_flag_fields_ops
-+ * Operations can be specified either as a function or a parameterization
-+ * of a parameterized function
-+ *
-+ * flags_offset: Offset of flags in the protocol header
-+ * start_fields_offset: Return the offset in the header of the start of the
-+ *	flag fields data
-+ */
-+
-+/* A flag-fields protocol node. Note this is a super structure for aKPARSER
-+ * protocol node and type is KPARSER_NODE_TYPE_FLAG_FIELDS
-+ */
-+struct kparser_proto_flag_fields_node {
-+	struct kparser_proto_node proto_node;
-+	struct kparser_proto_flag_fields_ops ops;
-+	const struct kparser_flag_fields __rcu *flag_fields;
-+};
-+
-+/*****************************************************************************/
-+
-+/* Parse node definition. Defines parsing and processing for one node in
-+ * the parse graph of a parser. Contains:
-+ *
-+ * node_type: The type of the node (plain, TLVs, flag-fields)
-+ * unknown_ret: Code to return for a miss on the protocol table and the
-+ *	wildcard node is not set
-+ * proto_node: Protocol node
-+ * ops: Parse node operations
-+ * proto_table: Protocol table for next protocol. This must be non-null if
-+ *	next_proto is not NULL
-+ * wildcard_node: Node use for a miss on next protocol lookup
-+ * metadata_table: Table of parameterized metadata operations
-+ * thread_funcs: Thread functions
-+ */
-+struct kparser_parse_node {
-+	enum kparser_node_type node_type;
-+	char name[KPARSER_MAX_NAME];
-+	int unknown_ret;
-+	const struct kparser_proto_table __rcu *proto_table;
-+	const struct kparser_parse_node __rcu *wildcard_node;
-+	const struct kparser_metadata_table __rcu *metadata_table;
-+	union {
-+		struct kparser_proto_node proto_node;
-+		struct kparser_proto_tlvs_node tlvs_proto_node;
-+		struct kparser_proto_flag_fields_node flag_fields_proto_node;
-+	};
-+};
-+
-+/*****************************************************************************/
-+
-+/* TLV parse node operations
-+ *
-+ * Operations to process a single TLV
-+ *
-+ * Operations can be specified either as a function or a parameterization
-+ * of a parameterized function
-+ *
-+ * extract_metadata: Extract metadata for the node. Input is the meta
-+ *	data frame which points to a parser defined metadata structure.
-+ *	If the value is NULL then no metadata is extracted
-+ * handle_tlv: Per TLV type handler which allows arbitrary processing
-+ *	of a TLV. Input is the TLV data and a parser defined metadata
-+ *	structure for the current frame. Return value is a parser
-+ *	return code: KPARSER_OKAY indicates no errors, KPARSER_STOP* return
-+ *	values indicate to stop parsing
-+ * check_tlv: Function to validate a TLV
-+ * cond_exprs: Parameterization of a set of conditionals to check before
-+ *	proceeding. In the case of functions being used, these
-+ *      conditionals would be in the check_tlv function
-+ */
-+
-+/* One entry in a TLV table:
-+ *	type: TLV type
-+ *	node: associated TLV parse structure for the type
-+ */
-+struct kparser_proto_tlvs_table_entry {
-+	int type;
-+	const struct kparser_parse_tlv_node __rcu *node;
-+};
-+
-+/* TLV table
-+ *
-+ * Contains a table that maps a TLV type to a TLV parse node
-+ */
-+struct kparser_proto_tlvs_table {
-+	int num_ents;
-+	struct kparser_proto_tlvs_table_entry __rcu *entries;
-+};
-+
-+/* Parse node for parsing a protocol header that contains TLVs to be
-+ * parser:
-+ *
-+ * parse_node: Node for main protocol header (e.g. IPv6 node in case of HBH
-+ *	options) Note that node_type is set in parse_node to
-+ *	KPARSER_NODE_TYPE_TLVS and that the parse node can then be cast to a
-+ *	parse_tlv_node
-+ * tlv_proto_table: Lookup table for TLV type
-+ * unknown_tlv_type_ret: Code to return on a TLV type lookup miss and
-+ *	tlv_wildcard_node is NULL
-+ * tlv_wildcard_node: Node to use on a TLV type lookup miss
-+ * config: Loop configuration
-+ */
-+struct kparser_parse_tlvs_node {
-+	struct kparser_parse_node parse_node;
-+	const struct kparser_proto_tlvs_table __rcu *tlv_proto_table;
-+	int unknown_tlv_type_ret;
-+	const struct kparser_parse_tlv_node __rcu *tlv_wildcard_node;
-+	struct kparser_loop_node_config config;
-+};
-+
-+struct kparser_proto_tlv_node_ops {
-+	bool overlay_type_parameterized;
-+	struct kparser_parameterized_next_proto pfoverlay_type;
-+	bool cond_exprs_parameterized;
-+	struct kparser_condexpr_tables cond_exprs;
-+};
-+
-+/* A protocol node for parsing proto with TLVs
-+ *
-+ * min_len: Minimal length of TLV
-+ * max_len: Maximum size of a TLV option
-+ * is_padding: Indicates padding TLV
-+ */
-+struct kparser_proto_tlv_node {
-+	size_t min_len;
-+	size_t max_len;
-+	bool is_padding;
-+	struct kparser_proto_tlv_node_ops ops;
-+};
-+
-+/* Parse node for a single TLV. Use common parse node operations
-+ * (extract_metadata and handle_proto)
-+ *
-+ * proto_tlv_node: TLV protocol node
-+ * tlv_ops: Operations on a TLV
-+ * overlay_table: Lookup table for an overlay TLV
-+ * overlay_wildcard_node: Wildcard node to an overlay lookup miss
-+ * unknown_overlay_ret: Code to return on an overlay lookup miss and
-+ *	overlay_wildcard_node is NULL
-+ * name: Name for debugging
-+ * metadata_table: Table of parameterized metadata operations
-+ * thread_funcs: Thread functions
-+ */
-+struct kparser_parse_tlv_node {
-+	struct kparser_proto_tlv_node proto_tlv_node;
-+	struct kparser_proto_tlvs_table __rcu *overlay_table;
-+	const struct kparser_parse_tlv_node __rcu *overlay_wildcard_node;
-+	int unknown_overlay_ret;
-+	char name[KPARSER_MAX_NAME];
-+	struct kparser_metadata_table __rcu *metadata_table;
-+};
-+
-+/*****************************************************************************/
-+
-+/* Flag-field parse node operations
-+ *
-+ * Operations to process a single flag-field
-+ *
-+ * extract_metadata: Extract metadata for the node. Input is the meta
-+ *	data frame which points to a parser defined metadata structure.
-+ *	If the value is NULL then no metadata is extracted
-+ * handle_flag_field: Per flag-field handler which allows arbitrary processing
-+ *	of a flag-field. Input is the flag-field data and a parser defined
-+ *	metadata structure for the current frame. Return value is a parser
-+ *	return code: KPARSER_OKAY indicates no errors, KPARSER_STOP* return
-+ *	values indicate to stop parsing
-+ * check_flag_field: Function to validate a flag-field
-+ * cond_exprs: Parameterization of a set of conditionals to check before
-+ *      proceeding. In the case of functions being used, these
-+ *      conditionals would be in the check_flag_field function
-+ */
-+struct kparser_parse_flag_field_node_ops {
-+	struct kparser_condexpr_tables cond_exprs;
-+};
-+
-+/* A parse node for a single flag field
-+ *
-+ * name: Text name for debugging
-+ * metadata_table: Table of parameterized metadata operations
-+ * ops: Operations
-+ * thread_funcs: Thread functions
-+ */
-+struct kparser_parse_flag_field_node {
-+	char name[KPARSER_MAX_NAME];
-+	struct kparser_metadata_table __rcu *metadata_table;
-+	struct kparser_parse_flag_field_node_ops ops;
-+};
-+
-+/* One entry in a flag-fields protocol table:
-+ *	index: flag-field index (index in a flag-fields table)
-+ *	node: associated TLV parse structure for the type
-+ */
-+struct kparser_proto_flag_fields_table_entry {
-+	__u32 flag;
-+	const struct kparser_parse_flag_field_node __rcu *node;
-+};
-+
-+/* Flag-fields table
-+ *
-+ * Contains a table that maps a flag-field index to a flag-field parse node.
-+ * Note that the index correlates to an entry in a flag-fields table that
-+ * describes the flag-fields of a protocol
-+ */
-+struct kparser_proto_flag_fields_table {
-+	int num_ents;
-+	struct kparser_proto_flag_fields_table_entry __rcu *entries;
-+};
-+
-+/* A flag-fields parse node. Note this is a super structure for a KPARSER parse
-+ * node and type is KPARSER_NODE_TYPE_FLAG_FIELDS
-+ */
-+struct kparser_parse_flag_fields_node {
-+	struct kparser_parse_node parse_node;
-+	const struct kparser_proto_flag_fields_table __rcu
-+		*flag_fields_proto_table;
-+};
-+
-+static inline ssize_t __kparser_flag_fields_offset(__u32 targ_idx, __u32 flags,
-+						   const struct kparser_flag_fields *flag_fields)
-+{
-+	ssize_t offset = 0;
-+	__u32 mask, flag;
-+	int i;
-+
-+	for (i = 0; i < targ_idx; i++) {
-+		flag = flag_fields->fields[i].flag;
-+		if (flag_fields->fields[i].endian)
-+			flag = ntohs(flag);
-+		mask = flag_fields->fields[i].mask ? : flag;
-+		if ((flags & mask) == flag)
-+			offset += flag_fields->fields[i].size;
-+	}
-+
-+	return offset;
-+}
-+
-+/* Determine offset of a field given a set of flags */
-+static inline ssize_t kparser_flag_fields_offset(__u32 targ_idx, __u32 flags,
-+						 const struct kparser_flag_fields *flag_fields)
-+{
-+	__u32 mask, flag;
-+
-+	flag = flag_fields->fields[targ_idx].flag;
-+	if (flag_fields->fields[targ_idx].endian)
-+		flag = ntohs(flag);
-+	mask = flag_fields->fields[targ_idx].mask ? : flag;
-+	if ((flags & mask) != flag) {
-+		/* Flag not set */
-+		return -1;
-+	}
-+
-+	return __kparser_flag_fields_offset(targ_idx, flags, flag_fields);
-+}
-+
-+/* Check flags are legal */
-+static inline bool kparser_flag_fields_check_invalid(__u32 flags, __u32 mask)
-+{
-+	return !!(flags & ~mask);
-+}
-+
-+/* Retrieve a byte value from a flag field */
-+static inline __u8 kparser_flag_fields_get8(const __u8 *fields, __u32 targ_idx,
-+					    __u32 flags,
-+					    const struct kparser_flag_fields
-+					    *flag_fields)
-+{
-+	ssize_t offset = kparser_flag_fields_offset(targ_idx, flags,
-+			flag_fields);
-+
-+	if (offset < 0)
-+		return 0;
-+
-+	return *(__u8 *)&fields[offset];
-+}
-+
-+/* Retrieve a short value from a flag field */
-+static inline __u16 kparser_flag_fields_get16(const __u8 *fields,
-+					      __u32 targ_idx,
-+		__u32 flags,
-+		const struct kparser_flag_fields
-+		*flag_fields)
-+{
-+	ssize_t offset = kparser_flag_fields_offset(targ_idx, flags, flag_fields);
-+
-+	if (offset < 0)
-+		return 0;
-+
-+	return *(__u16 *)&fields[offset];
-+}
-+
-+/* Retrieve a 32 bit value from a flag field */
-+static inline __u32 kparser_get_flag_field32(const __u8 *fields, __u32 targ_idx,
-+					     __u32 flags,
-+		const struct kparser_flag_fields
-+		*flag_fields)
-+{
-+	ssize_t offset = kparser_flag_fields_offset(targ_idx, flags, flag_fields);
-+
-+	if (offset < 0)
-+		return 0;
-+
-+	return *(__u32 *)&fields[offset];
-+}
-+
-+/* Retrieve a 64 bit value from a flag field */
-+static inline __u64 kparser_get_flag_field64(const __u8 *fields, __u32 targ_idx,
-+					     __u32 flags,
-+		const struct kparser_flag_fields
-+		*flag_fields)
-+{
-+	ssize_t offset = kparser_flag_fields_offset(targ_idx, flags,
-+			flag_fields);
-+
-+	if (offset < 0)
-+		return 0;
-+
-+	return *(__u64 *)&fields[offset];
-+}
-+
-+/*****************************************************************************/
-+
-+/* Definition of a KPARSER parser. Fields are:
-+ *
-+ * name: Text name for the parser
-+ * root_node: Root parse node of the parser. When the parser is invoked
-+ *	parsing commences at this parse node
-+ * okay_node: Processed at parser exit if no error
-+ * fail_node: Processed at parser exit if there was an error
-+ * parser_type: e.g. KPARSER_GENERIC, KPARSER_OPTIMIZED, KPARSER_KMOD, KPARSER_XDP
-+ * parser_entry_point: Function entry point for optimized parser
-+ * parser_xdp_entry_point: Function entry point for XDP parser
-+ * config: Parser conifguration
-+ */
-+#define KPARSERSTARTSIGNATURE 0xabcd
-+#define KPARSERENDSIGNATURE 0xdcba
-+struct kparser_parser {
-+	__u16 kparser_start_signature;
-+	char name[KPARSER_MAX_NAME];
-+	const struct kparser_parse_node __rcu *root_node;
-+	const struct kparser_parse_node __rcu *okay_node;
-+	const struct kparser_parse_node __rcu *fail_node;
-+	const struct kparser_parse_node __rcu *atencap_node;
-+	size_t cntrs_len;
-+	struct kparser_counters __rcu *cntrs;
-+	struct kparser_config config;
-+	struct kparser_cntrs_conf cntrs_conf;
-+	__u16 kparser_end_signature;
-+};
-+
-+#endif /* __KPARSER_TYPES_H */
++++ b/Documentation/networking/parse_graph_example.svg
+@@ -0,0 +1,2039 @@
++<?xml version="1.0" standalone="no"?>
++<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
++ "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
++<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
++ width="1920.000000pt" height="1080.000000pt" viewBox="0 0 1920.000000 1080.000000"
++ preserveAspectRatio="xMidYMid meet">
++<metadata>
++Created by potrace 1.16, written by Peter Selinger 2001-2019
++</metadata>
++<g transform="translate(0.000000,1080.000000) scale(0.100000,-0.100000)"
++fill="#000000" stroke="none">
++<path d="M580 10285 l0 -225 145 0 145 0 0 25 0 25 -120 0 -120 0 0 80 0 80
++115 0 115 0 0 25 0 25 -115 0 -115 0 0 70 0 70 120 0 120 0 0 25 0 25 -145 0
++-145 0 0 -225z"/>
++<path d="M2570 10285 c0 -218 1 -225 20 -225 19 0 20 7 20 225 0 218 -1 225
++-20 225 -19 0 -20 -7 -20 -225z"/>
++<path d="M6440 10285 c0 -217 1 -225 20 -225 18 0 20 8 22 121 3 120 3 122 31
++143 35 26 100 28 124 3 15 -15 19 -40 21 -142 3 -115 5 -125 23 -125 18 0 19
++9 19 130 0 76 -5 139 -11 154 -23 50 -118 58 -172 16 -14 -11 -28 -20 -31 -20
++-3 0 -6 38 -6 85 0 78 -2 85 -20 85 -19 0 -20 -7 -20 -225z"/>
++<path d="M1333 10369 c-40 -20 -54 -41 -35 -53 5 -3 27 4 50 16 78 38 142 5
++142 -74 0 -21 -1 -38 -3 -38 -1 0 -20 9 -42 20 -47 24 -76 25 -120 5 -60 -29
++-73 -104 -27 -155 44 -49 92 -50 185 -2 4 2 7 -3 7 -12 0 -9 8 -16 20 -16 19
++0 20 7 20 131 0 74 -5 139 -11 151 -13 24 -67 48 -111 48 -18 0 -52 -9 -75
++-21z m135 -165 c16 -10 22 -24 22 -49 0 -43 -32 -67 -90 -69 -88 -2 -115 102
++-35 135 24 10 72 2 103 -17z"/>
++<path d="M1726 10365 c-44 -30 -46 -30 -46 -5 0 13 -7 20 -20 20 -19 0 -20 -7
++-20 -160 0 -153 1 -160 20 -160 19 0 20 7 20 119 0 118 0 120 27 140 38 31 69
++36 98 17 25 -16 25 -19 25 -146 l0 -130 25 0 25 0 0 124 0 124 28 18 c36 24
++90 24 108 -1 10 -14 14 -53 14 -142 0 -116 1 -123 20 -123 19 0 20 7 20 140 0
++138 -1 141 -26 167 -21 21 -32 25 -65 20 -22 -3 -54 -16 -71 -29 l-31 -24 -28
++28 c-35 35 -74 36 -123 3z"/>
++<path d="M2290 10379 c-13 -5 -33 -17 -42 -26 -17 -15 -18 -15 -18 5 0 17 -6
++22 -25 22 l-25 0 0 -220 0 -220 25 0 c25 0 25 1 25 80 l0 81 28 -21 c70 -51
++160 -29 200 50 39 79 19 195 -42 235 -32 21 -93 28 -126 14z m74 -39 c87 -33
++86 -208 -1 -241 -36 -13 -84 -4 -112 22 -20 19 -21 29 -19 106 l3 86 35 18
++c39 21 58 23 94 9z"/>
++<path d="M2794 10376 c-73 -33 -112 -136 -85 -219 17 -50 70 -94 124 -102 74
++-11 169 27 140 56 -8 8 -20 6 -41 -5 -76 -39 -182 8 -182 81 0 23 1 23 130 23
++129 0 130 0 130 23 0 33 -41 108 -71 130 -35 25 -105 31 -145 13z m109 -37
++c31 -16 57 -50 57 -76 0 -22 -3 -23 -105 -23 -100 0 -105 1 -105 21 0 12 15
++36 34 55 36 36 77 44 119 23z"/>
++<path d="M3356 10365 c-44 -30 -46 -30 -46 -5 0 13 -7 20 -20 20 -19 0 -20 -7
++-20 -220 0 -213 1 -220 20 -220 18 0 20 7 20 80 0 44 2 80 5 80 2 0 21 -11 41
++-25 98 -66 209 11 209 145 0 134 -111 211 -209 145z m98 -29 c20 -8 39 -27 49
++-49 61 -128 -61 -249 -168 -166 -23 19 -25 27 -25 98 0 83 8 99 60 120 34 13
++46 13 84 -3z"/>
++<path d="M3704 10371 c-47 -22 -56 -32 -45 -50 6 -10 17 -8 47 8 85 46 154 7
++154 -85 0 -29 3 -29 -45 -4 -47 24 -86 25 -125 5 -36 -18 -52 -47 -52 -90 0
++-46 18 -74 57 -91 46 -19 74 -18 120 6 47 24 45 24 45 5 0 -8 9 -15 20 -15 19
++0 20 7 20 130 0 127 0 130 -27 160 -37 41 -109 50 -169 21z m102 -151 c5 0 20
++-9 32 -20 63 -59 -25 -142 -113 -106 -36 15 -50 44 -41 82 8 28 60 56 91 49
++11 -3 25 -5 31 -5z"/>
++<path d="M4114 10376 c-18 -8 -35 -19 -38 -25 -11 -18 -26 -13 -26 9 0 13 -7
++20 -20 20 -19 0 -20 -7 -20 -160 0 -153 1 -160 20 -160 19 0 20 7 20 114 l0
++114 31 26 c17 14 41 26 55 26 19 0 24 5 24 25 0 29 -3 29 -46 11z"/>
++<path d="M4263 10375 c-37 -16 -53 -42 -53 -84 0 -39 32 -64 119 -90 83 -25
++101 -51 61 -91 -26 -26 -84 -26 -132 0 -29 15 -38 17 -47 6 -26 -31 71 -73
++145 -61 56 8 94 44 94 87 0 59 -27 82 -127 108 -41 10 -73 32 -73 51 0 5 9 18
++20 29 24 24 79 26 122 4 21 -11 33 -13 41 -5 15 15 -8 39 -52 51 -48 13 -79
++12 -118 -5z"/>
++<path d="M4632 10383 c-37 -7 -89 -64 -102 -112 -23 -85 11 -169 83 -201 48
++-22 77 -24 127 -10 50 15 77 37 63 51 -9 9 -21 8 -46 -5 -68 -32 -143 -12
++-173 45 -28 54 -19 59 121 59 l125 0 0 27 c0 15 -10 47 -21 71 -31 64 -95 91
++-177 75z m92 -43 c26 -9 66 -63 66 -87 0 -10 -29 -13 -111 -13 l-111 0 6 28
++c15 63 86 97 150 72z"/>
++<path d="M5153 10374 c-51 -25 -77 -76 -77 -149 0 -46 6 -71 22 -97 42 -68
++130 -86 194 -38 35 26 38 25 38 -5 0 -45 -26 -91 -59 -105 -38 -15 -106 -8
++-131 15 -20 18 -40 13 -40 -10 0 -40 115 -67 185 -43 25 8 48 26 62 47 22 32
++23 43 23 212 0 172 -1 179 -20 179 -13 0 -20 -7 -20 -20 0 -25 -2 -25 -46 5
++-42 29 -85 31 -131 9z m147 -53 c22 -16 25 -26 28 -93 3 -72 1 -77 -24 -97
++-104 -82 -223 27 -169 155 25 61 106 79 165 35z"/>
++<path d="M5584 10376 c-18 -8 -35 -19 -38 -25 -11 -18 -26 -13 -26 9 0 13 -7
++20 -20 20 -19 0 -20 -7 -20 -160 0 -153 1 -160 20 -160 19 0 20 7 20 114 l0
++114 31 26 c17 14 41 26 55 26 19 0 24 5 24 25 0 29 -3 29 -46 11z"/>
++<path d="M5754 10371 c-47 -21 -56 -31 -45 -49 5 -9 17 -7 46 8 50 26 86 25
++119 -1 21 -16 26 -29 26 -64 l0 -43 -37 19 c-45 23 -84 24 -123 4 -30 -16 -60
++-61 -60 -90 0 -29 30 -74 60 -90 39 -20 78 -19 123 5 31 17 37 17 37 5 0 -9 9
++-15 25 -15 l25 0 0 123 c0 138 -8 163 -60 189 -45 23 -84 22 -136 -1z m129
++-169 c9 -8 17 -29 17 -47 0 -56 -62 -87 -124 -61 -37 15 -51 44 -42 82 13 49
++104 65 149 26z"/>
++<path d="M6170 10383 c-8 -3 -27 -15 -42 -25 -28 -19 -28 -19 -28 1 0 16 -6
++21 -25 21 l-25 0 0 -220 0 -220 25 0 c25 0 25 1 25 80 l0 81 31 -23 c41 -31
++116 -32 156 -2 84 61 85 226 2 287 -27 19 -93 31 -119 20z m100 -68 c22 -22
++25 -34 25 -95 0 -63 -3 -72 -27 -97 -35 -35 -94 -38 -135 -7 -26 19 -28 27
++-31 98 -3 85 3 100 53 123 39 17 84 9 115 -22z"/>
++<path d="M930 10374 c0 -3 21 -33 47 -67 25 -34 50 -67 54 -73 5 -6 -16 -42
++-51 -88 -33 -43 -60 -80 -60 -82 0 -2 11 -4 24 -4 18 0 36 16 72 65 26 36 50
++65 53 65 3 -1 26 -30 51 -65 37 -53 50 -65 73 -65 28 0 28 0 -33 79 -33 44
++-60 83 -60 86 0 5 27 43 103 143 7 9 3 12 -17 12 -20 0 -35 -13 -69 -60 -23
++-33 -45 -60 -48 -60 -3 0 -25 27 -49 60 -32 44 -50 60 -67 60 -13 0 -23 -3
++-23 -6z"/>
++<path d="M8870 9600 l0 -240 423 0 c232 0 427 -4 433 -8 12 -7 64 -148 64
++-172 0 -7 -7 -18 -17 -25 -15 -11 -15 -13 3 -31 10 -11 31 -35 46 -54 l28 -35
++0 77 c0 74 -1 78 -22 75 -19 -2 -26 8 -49 78 -15 44 -25 83 -22 88 2 4 195 7
++429 7 l424 0 0 240 0 240 -870 0 -870 0 0 -240z m1728 -2 l2 -228 -860 0 -860
++0 0 230 0 230 858 -2 857 -3 3 -227z"/>
++<path d="M9283 9653 c-9 -3 -13 -31 -13 -89 l0 -84 70 0 c40 0 70 4 70 10 0 6
++-25 10 -55 10 -54 0 -55 0 -55 30 0 29 1 30 50 30 28 0 50 5 50 10 0 6 -23 10
++-51 10 -49 0 -50 1 -47 28 3 25 7 27 56 30 30 2 50 7 47 13 -6 9 -100 11 -122
++2z"/>
++<path d="M9443 9626 c-6 -12 -9 -33 -7 -47 13 -96 15 -99 36 -99 17 0 19 3 10
++12 -16 16 -15 80 1 97 10 11 10 14 0 18 -7 3 -13 11 -13 18 0 24 -17 25 -27 1z"/>
++<path d="M9510 9565 c0 -50 4 -85 10 -85 6 0 10 18 10 39 0 40 22 75 44 68 6
++-2 12 -27 14 -55 2 -37 7 -52 18 -52 10 0 14 13 14 48 0 64 -17 87 -58 79 -29
++-6 -32 -4 -32 18 0 14 -4 25 -10 25 -6 0 -10 -35 -10 -85z"/>
++<path d="M10162 9629 c-15 -39 -3 -138 19 -149 23 -13 34 3 14 20 -17 14 -20
++71 -5 86 7 7 6 20 -4 39 l-15 29 -9 -25z"/>
++<path d="M9668 9600 c-41 -24 -27 -109 20 -124 26 -9 72 10 72 29 0 20 -9 19
++-32 -2 -14 -13 -23 -15 -35 -7 -34 21 -26 34 21 34 42 0 46 2 46 24 0 46 -49
++70 -92 46z m62 -25 c11 -13 7 -15 -25 -15 -32 0 -36 2 -25 15 7 8 18 15 25 15
++7 0 18 -7 25 -15z"/>
++<path d="M9794 9601 c-9 -9 -3 -121 6 -121 6 0 10 12 10 28 0 45 11 70 31 75
++31 8 22 26 -12 24 -17 -1 -32 -4 -35 -6z"/>
++<path d="M9880 9543 c0 -36 4 -63 10 -63 6 0 10 20 10 44 0 47 17 70 44 60 12
++-4 16 -19 16 -55 0 -27 5 -49 10 -49 6 0 10 27 10 60 0 65 -8 73 -72 67 -27
++-2 -28 -4 -28 -64z"/>
++<path d="M10027 9592 c-34 -37 -17 -105 29 -116 32 -8 82 20 66 36 -8 8 -16 6
++-27 -6 -21 -21 -28 -20 -49 3 -18 19 -17 20 30 23 38 2 50 7 52 21 9 47 -68
++76 -101 39z m71 -19 c2 -9 -7 -13 -27 -13 -30 0 -39 9 -24 24 11 10 46 3 51
++-11z"/>
++<path d="M3290 9253 c-170 -17 -302 -52 -362 -95 -24 -17 -34 -19 -54 -10 -21
++10 -24 9 -29 -16 -19 -90 -28 -118 -38 -124 -7 -4 -180 -8 -384 -8 l-373 0 0
++-240 0 -240 875 0 875 0 0 240 0 240 -469 0 c-258 0 -477 3 -486 6 -13 5 -6
++12 27 32 24 14 51 32 61 41 18 15 18 16 0 29 -17 13 -16 15 11 37 64 51 274
++88 576 100 193 7 834 -15 1410 -50 135 -8 335 -19 445 -25 110 -6 216 -12 235
++-15 19 -2 123 -9 230 -15 107 -6 251 -15 320 -20 69 -6 233 -17 365 -25 234
++-15 672 -44 968 -65 81 -5 213 -15 295 -20 338 -24 742 -51 957 -65 365 -23
++415 -27 421 -36 3 -5 -4 -9 -15 -9 -11 0 -22 -4 -25 -9 -3 -4 -18 -11 -34 -14
++-15 -3 -59 -21 -98 -39 l-70 -33 -220 7 c-570 16 -1245 39 -1499 50 -159 6
++-674 12 -1190 12 -892 1 -913 1 -1080 -22 -215 -28 -333 -53 -465 -99 -169
++-57 -281 -121 -405 -231 -38 -34 -73 -62 -79 -62 -5 0 -14 7 -20 15 -9 13 -18
++5 -51 -50 l-40 -65 -510 -2 -510 -3 -3 -242 -2 -243 875 0 875 0 -2 243 -3
++242 -340 5 c-187 3 -333 6 -324 8 9 1 33 9 53 17 31 13 35 18 27 34 -9 15 0
++28 56 77 91 81 155 126 248 172 264 129 547 176 1150 192 307 7 1345 -2 1550
++-15 50 -3 270 -10 490 -15 220 -6 510 -15 645 -21 135 -6 358 -14 495 -17
++l250 -7 -23 -23 c-58 -58 -74 -114 -47 -162 23 -41 18 -49 -32 -53 l-48 -3 53
++-2 c44 -2 67 -10 128 -47 40 -25 78 -45 84 -45 5 0 10 -7 10 -15 0 -8 -4 -15
++-9 -15 -5 0 -53 -21 -107 -46 -55 -25 -124 -57 -154 -71 -109 -50 -317 -157
++-420 -216 -105 -60 -425 -273 -582 -385 -166 -120 -189 -137 -211 -156 -31
++-26 -156 -118 -191 -140 -20 -13 -31 -15 -39 -7 -6 6 -14 11 -18 11 -8 0 -92
++-110 -87 -115 2 -2 32 5 68 15 63 17 65 18 62 49 -1 19 3 31 10 31 9 0 160
++109 253 183 23 17 127 94 166 122 163 114 208 145 319 219 190 126 313 198
++487 285 246 123 463 221 491 221 9 0 46 -9 82 -20 163 -52 518 -100 731 -100
++l83 0 153 -87 c139 -79 153 -89 151 -112 -3 -24 1 -27 55 -35 31 -5 60 -6 63
++-3 4 3 -13 29 -37 58 -37 44 -44 49 -54 35 -7 -9 -15 -16 -19 -16 -3 0 -67 35
++-141 77 -106 60 -131 79 -116 84 10 4 81 13 157 19 77 6 157 15 179 20 211 43
++201 42 305 26 53 -9 106 -16 116 -15 38 1 -20 17 -90 24 -74 8 -81 21 -22 41
++50 18 157 72 178 91 16 14 69 15 455 9 241 -3 503 -8 583 -10 113 -3 130 -2
++75 4 -38 5 -294 12 -567 16 -352 5 -498 10 -498 18 1 6 11 23 23 38 l22 27
++500 -14 c275 -8 529 -14 565 -13 157 2 -134 17 -585 28 -258 6 -474 16 -479
++20 -5 5 -6 16 -2 25 6 15 95 16 1148 13 674 -2 1114 1 1073 6 -38 4 -555 9
++-1148 10 -1068 1 -1079 1 -1089 21 -6 11 -27 37 -46 58 l-36 37 39 1 c35 1 34
++2 -15 9 -30 4 -87 21 -127 38 -39 18 -78 32 -87 32 -8 0 -17 4 -20 8 -3 5 -31
++14 -63 21 -32 7 -69 16 -83 22 -14 5 -71 15 -128 22 -56 7 -103 17 -103 22 0
++5 25 19 56 30 40 14 55 24 52 35 -14 47 -18 45 103 51 435 25 3142 17 4085
++-11 176 -6 478 -14 670 -20 657 -19 1173 -61 1421 -115 226 -49 292 -78 446
++-197 59 -46 140 -104 180 -130 127 -82 223 -184 292 -309 53 -97 114 -279 127
++-378 19 -156 8 -564 -21 -731 -6 -31 -14 -99 -19 -152 -6 -61 -17 -109 -29
++-134 -68 -131 -320 -274 -582 -330 -124 -27 -409 -24 -537 4 -115 26 -158 48
++-225 114 -65 64 -150 173 -141 182 4 3 192 6 420 6 l413 0 -2 248 -3 247 -870
++0 -870 0 -3 -247 -2 -248 430 0 430 0 70 -89 c87 -111 155 -172 227 -206 30
++-15 53 -28 51 -31 -3 -2 -67 0 -144 6 -384 27 -564 41 -614 49 -30 5 -86 12
++-125 16 -88 8 -286 48 -363 74 -91 29 -136 56 -181 107 -93 105 -101 268 -34
++652 l16 92 444 0 443 0 0 245 0 245 -440 0 c-287 0 -440 -3 -440 -10 0 -7 152
++-10 435 -10 l435 0 0 -225 0 -224 -447 -3 c-247 -2 -634 -2 -860 0 l-413 3 0
++224 0 225 413 0 c228 0 417 3 421 7 3 4 -19 33 -50 64 -49 49 -59 56 -69 43
++-9 -13 -16 -14 -51 -2 -22 8 -65 30 -95 50 -137 90 -369 211 -535 281 -135 57
++-381 129 -484 142 -81 11 -56 -2 41 -21 84 -16 107 -22 254 -68 166 -51 496
++-203 628 -289 84 -55 170 -104 194 -111 16 -5 22 -14 20 -29 -2 -18 6 -24 43
++-34 37 -9 -26 -12 -347 -12 l-393 -1 0 -245 0 -245 406 0 407 0 -6 -73 c-4
++-40 -14 -106 -23 -147 -11 -51 -17 -126 -18 -235 -1 -145 1 -165 22 -214 56
++-133 137 -186 367 -242 50 -12 92 -24 95 -26 3 -3 -209 -3 -470 -1 l-475 5
++-80 27 c-149 51 -250 88 -310 114 -72 30 -186 103 -179 114 3 4 185 8 405 8
++l399 0 -2 248 -3 247 -870 0 -870 0 -3 -247 -2 -248 436 0 436 0 41 -34 c68
++-54 174 -109 302 -156 199 -72 200 -71 -35 -65 -454 14 -825 54 -990 107 -232
++75 -309 228 -269 538 9 75 22 154 28 176 6 21 11 54 11 72 l0 32 405 0 c357 0
++406 -2 412 -15 3 -9 -2 -22 -13 -30 -11 -7 -16 -16 -13 -20 14 -13 113 -85
++115 -82 4 4 -24 138 -30 144 -3 3 -12 0 -20 -6 -11 -10 -17 -7 -30 11 -14 19
++-16 59 -16 255 l0 233 -135 0 -134 0 -88 116 c-48 64 -103 137 -121 162 -70
++98 -85 113 -130 136 -54 27 -204 61 -312 72 -104 9 -83 -4 26 -17 120 -14 251
++-47 296 -75 20 -13 53 -48 75 -79 21 -31 68 -94 105 -140 37 -47 81 -105 98
++-130 l31 -46 -278 1 c-153 0 -479 0 -725 0 l-448 0 0 -245 0 -245 451 0 450 0
++-6 -47 c-4 -27 -14 -86 -22 -133 -9 -47 -18 -142 -20 -213 -4 -112 -2 -135 18
++-195 21 -66 59 -124 109 -170 31 -28 156 -90 198 -98 18 -4 32 -11 32 -16 0
++-7 -194 -8 -552 -5 -436 4 -577 8 -666 21 -167 24 -205 49 -200 132 l3 49 373
++3 372 2 -2 248 -3 247 -452 3 -453 2 0 78 c0 75 -1 79 -22 78 -19 -1 -27 12
++-56 94 -150 419 -231 551 -385 625 -86 42 -288 97 -303 82 -3 -3 21 -10 53
++-17 72 -14 196 -53 243 -76 19 -9 55 -33 78 -52 45 -35 122 -126 122 -143 0
++-5 -361 -10 -872 -11 l-873 -3 -3 -242 -2 -243 391 0 391 0 -6 -32 c-4 -18 -9
++-103 -12 -188 -6 -148 -5 -159 21 -245 14 -49 31 -108 37 -130 15 -51 89 -125
++154 -155 70 -32 183 -59 293 -70 53 -6 132 -15 176 -20 44 -6 211 -17 370 -25
++160 -8 369 -20 465 -26 96 -6 515 -14 930 -19 415 -5 807 -13 870 -19 250 -23
++578 -33 1345 -41 441 -5 840 -14 890 -19 50 -6 205 -18 345 -26 140 -9 291
++-19 335 -24 65 -7 83 -5 97 7 13 11 34 13 80 10 102 -8 301 9 385 32 192 52
++369 146 464 245 24 24 48 45 53 45 5 0 6 -31 2 -72 -4 -40 -15 -179 -26 -308
++-11 -129 -26 -318 -35 -420 -8 -102 -19 -214 -25 -250 -5 -36 -14 -128 -20
++-205 -6 -77 -13 -150 -15 -162 -3 -12 -12 -104 -20 -205 -8 -100 -17 -194 -20
++-208 -3 -14 -12 -88 -20 -165 -47 -449 -125 -746 -223 -849 -48 -50 -169 -107
++-292 -136 -81 -20 -129 -24 -331 -28 -254 -5 -356 4 -462 38 -78 25 -211 100
++-320 181 l-81 59 497 0 497 0 0 250 0 249 -507 3 c-280 2 -673 2 -876 0 l-367
++-2 2 -248 3 -247 355 -5 355 -5 80 -60 c221 -167 322 -212 545 -240 216 -28
++540 -6 700 47 76 25 185 81 218 111 66 62 160 316 187 507 3 25 10 65 16 90
++16 77 59 479 94 875 8 94 19 200 25 237 5 37 10 88 10 114 0 35 3 45 11 37 7
++-7 14 -102 20 -265 4 -139 13 -345 19 -458 5 -113 15 -358 20 -545 5 -187 13
++-383 16 -436 l6 -96 -28 -22 c-16 -13 -87 -77 -159 -144 -237 -222 -285 -264
++-445 -381 -178 -132 -326 -192 -580 -238 -113 -20 -653 -17 -835 5 -191 23
++-399 70 -605 137 -47 15 -112 36 -145 46 l-60 19 475 5 475 5 0 240 0 240
++-432 3 -432 2 6 65 c6 62 5 65 -16 65 -17 0 -21 6 -21 34 0 19 -9 78 -20 132
++-34 167 -82 267 -171 355 -130 130 -310 201 -674 268 -119 22 -284 38 -210 21
++22 -5 85 -16 140 -25 280 -41 455 -90 585 -162 82 -46 82 -46 155 -119 38 -38
++73 -86 94 -128 36 -74 75 -216 85 -314 7 -59 6 -64 -13 -69 -27 -7 -27 -7 9
++-65 17 -26 30 -50 30 -53 0 -3 -193 -5 -430 -5 l-430 0 0 -245 0 -244 358 -3
++357 -3 136 -47 c152 -53 276 -91 389 -119 108 -28 347 -69 405 -70 48 -1 49
++-1 20 -12 -21 -8 -190 -11 -545 -11 -449 0 -526 2 -605 18 -267 51 -424 132
++-580 298 -95 100 -148 219 -210 468 -15 58 -29 113 -31 123 -5 16 20 17 425
++17 l431 0 0 250 0 250 -462 0 -463 0 -64 41 c-58 36 -65 39 -80 25 -13 -12
++-24 -13 -47 -6 -53 18 -238 58 -294 64 -74 8 -54 0 60 -23 232 -47 255 -54
++258 -78 l3 -23 -325 0 -326 0 0 -250 0 -250 423 0 423 0 23 -92 c65 -259 124
++-409 198 -504 56 -71 191 -179 286 -226 50 -26 107 -52 125 -59 56 -20 36 -30
++-50 -24 -46 3 -227 10 -403 15 -176 6 -331 13 -345 15 -14 2 -104 9 -200 15
++-358 22 -561 79 -624 174 l-16 26 450 0 450 0 0 245 0 245 -480 0 -480 0 0 38
++c0 20 -3 54 -6 74 -6 34 -9 37 -33 32 -23 -5 -30 0 -50 38 -81 144 -287 409
++-366 469 -28 21 -78 51 -110 66 l-60 28 -295 1 c-280 1 -301 3 -415 28 -148
++33 -285 69 -460 121 -49 15 -115 34 -145 42 -87 24 -90 29 -24 48 48 14 85 16
++199 12 92 -4 125 -3 95 3 -25 5 -74 9 -110 10 -36 1 -57 4 -47 7 9 2 17 9 17
++14 0 5 7 9 16 9 23 0 149 68 181 97 l27 26 171 -7 c93 -4 242 -13 330 -21 199
++-17 482 -30 474 -21 -3 3 -129 13 -280 21 -151 8 -292 17 -314 20 -22 3 -109
++10 -194 15 -84 5 -155 11 -158 14 -6 6 3 45 14 63 12 18 1776 35 2402 23 278
++-5 506 -8 508 -6 21 21 -1842 30 -2575 13 l-332 -8 -15 35 c-44 104 -204 187
++-472 244 -40 8 -73 18 -73 22 0 4 35 32 77 61 227 158 377 232 553 273 l65 15
++-52 -5 c-131 -12 -295 -87 -525 -240 l-157 -104 -78 12 c-103 16 -652 16 -753
++0 -259 -41 -404 -79 -519 -138 -37 -18 -47 -18 -466 36 -88 11 -214 27 -280
++35 -66 8 -151 19 -190 25 -66 10 -162 22 -435 55 -152 19 -330 42 -465 60 -60
++8 -146 19 -190 25 -294 38 -583 76 -840 111 -82 11 -197 26 -255 34 -58 8
++-166 24 -240 35 -74 11 -193 29 -265 40 -378 56 -427 72 -526 169 -66 65 -81
++103 -105 276 -18 123 -42 182 -106 251 -40 43 -40 45 -23 64 14 16 15 21 4 25
++-66 24 -133 44 -136 41 -2 -2 11 -33 29 -70 30 -62 33 -65 50 -49 17 16 21 14
++59 -23 59 -57 89 -130 105 -252 25 -186 53 -244 159 -322 87 -64 133 -77 420
++-120 72 -11 191 -29 265 -40 74 -11 182 -27 240 -35 58 -8 173 -24 255 -35
++192 -27 480 -65 830 -110 44 -6 130 -17 190 -25 135 -18 313 -41 465 -60 63
++-7 205 -26 315 -40 110 -14 252 -32 315 -40 63 -8 187 -24 275 -35 88 -12 226
++-29 307 -38 81 -10 150 -21 155 -25 4 -4 -10 -24 -30 -44 -42 -41 -44 -41
++-184 1 l-83 24 0 -34 0 -34 -161 0 c-174 0 -847 -24 -1149 -40 -433 -24 -825
++-71 -1095 -132 -565 -127 -800 -311 -1130 -883 -375 -653 -561 -821 -1170
++-1060 -114 -44 -383 -136 -515 -175 -41 -13 -102 -31 -135 -41 -117 -35 -678
++-182 -820 -214 -33 -7 -100 -23 -150 -35 -49 -12 -126 -30 -170 -40 -134 -30
++-256 -59 -347 -80 -79 -18 -131 -31 -318 -75 -30 -7 -107 -26 -170 -43 -264
++-69 -425 -97 -635 -112 -195 -13 -290 -52 -360 -148 -62 -86 -92 -294 -61
++-433 40 -182 113 -260 276 -294 178 -37 369 -4 785 139 l120 41 450 5 450 5 3
++248 2 247 -257 1 c-142 1 -269 5 -283 9 -15 5 -19 8 -8 9 9 1 18 11 20 23 2
++13 16 29 33 37 17 9 75 41 130 72 255 144 505 239 815 308 52 11 124 25 159
++31 35 5 66 12 70 16 9 10 -105 -5 -199 -27 -367 -84 -581 -163 -833 -307 -102
++-59 -169 -92 -182 -92 -4 0 -13 7 -20 16 -10 14 -18 9 -68 -40 l-56 -56 -531
++0 -530 0 2 -247 3 -248 375 -3 375 -3 -90 -30 c-130 -44 -247 -78 -355 -104
++-240 -59 -451 -35 -542 62 -72 75 -105 225 -87 395 16 162 63 241 172 293 61
++28 134 41 317 55 158 12 277 34 525 97 184 46 276 69 425 103 47 11 123 28
++170 39 47 11 146 34 220 51 74 17 190 44 258 60 67 17 179 44 250 61 70 17
++186 46 257 65 72 19 166 44 210 56 44 11 107 29 140 38 160 47 213 63 250 75
++22 7 78 25 125 40 497 158 832 322 1037 510 143 131 247 271 440 594 74 124
++156 258 181 296 231 356 469 532 852 632 272 71 671 128 1065 153 393 25 524
++30 988 37 l487 6 0 -31 c0 -41 11 -41 103 2 98 46 99 46 102 11 2 -16 6 -42
++10 -57 7 -25 5 -27 -41 -32 -27 -4 -83 -11 -124 -16 -41 -6 -147 -17 -235 -25
++-315 -29 -834 -90 -843 -99 -8 -9 33 -6 158 10 63 8 176 21 250 29 74 8 167
++19 205 25 39 5 108 12 155 15 47 4 135 13 195 20 61 8 146 17 190 20 44 4 88
++9 97 11 9 3 25 -3 35 -13 27 -26 97 -73 110 -73 6 0 16 -6 22 -14 14 -17 -13
++-29 -109 -50 -36 -8 -209 -51 -385 -96 -176 -45 -347 -89 -380 -97 -33 -8 -70
++-17 -83 -20 -15 -4 -27 0 -36 12 -12 17 -18 15 -84 -24 l-70 -41 -481 0 -481
++0 0 -240 0 -240 875 0 875 0 0 240 0 240 -307 2 c-266 3 -308 5 -308 18 0 15
++77 39 239 75 37 8 72 17 76 20 4 3 36 11 71 20 35 8 100 23 144 34 44 11 116
++29 160 40 44 11 134 34 200 51 128 33 133 33 240 -1 90 -28 242 -57 373 -72
++56 -6 102 -14 102 -19 0 -4 -10 -13 -22 -19 -42 -22 -252 -161 -313 -207 -83
++-63 -266 -216 -350 -293 -39 -35 -100 -89 -135 -120 -193 -169 -177 -158 -197
++-138 -7 7 -17 1 -32 -24 -11 -19 -21 -39 -21 -44 0 -6 -7 -16 -15 -23 -8 -7
++-15 -18 -15 -25 0 -10 10 -9 43 4 77 30 87 39 81 69 -4 24 5 36 102 117 59 50
++114 97 123 106 14 14 110 99 257 227 108 95 310 239 470 335 60 36 65 37 157
++37 114 0 134 -5 114 -29 -33 -38 -91 -128 -122 -190 -34 -68 -62 -157 -52
++-167 3 -3 10 14 16 37 23 93 162 332 200 344 9 2 66 5 126 6 101 1 117 -1 195
++-31 47 -17 103 -37 125 -45 22 -7 92 -32 155 -55 63 -23 135 -49 160 -57 64
++-21 110 -43 110 -51 -1 -30 -20 -32 -371 -34 l-354 -3 -3 -247 -2 -248 480 0
++480 0 9 -22 c4 -13 11 -45 15 -73 15 -105 68 -283 107 -364 122 -249 411 -391
++889 -437 140 -14 230 -15 600 -8 800 16 1203 9 1895 -33 289 -17 400 -16 1080
++12 613 25 811 48 993 112 136 48 322 169 513 333 88 76 107 93 283 258 60 56
++112 102 116 102 15 0 21 -165 29 -799 7 -499 6 -644 -4 -680 -21 -75 -136
++-387 -182 -491 -67 -153 -142 -279 -207 -349 -57 -60 -169 -147 -232 -179 -54
++-27 -188 -61 -205 -52 -8 4 -57 15 -109 24 -222 37 -316 63 -390 109 -40 24
++-44 27 -85 61 l-30 25 423 1 422 0 0 250 0 250 -407 2 c-225 2 -616 2 -870 0
++l-463 -2 0 -250 0 -250 424 0 423 0 67 -55 c104 -85 221 -130 416 -160 50 -8
++88 -24 58 -25 -9 0 -95 -7 -190 -15 -95 -8 -272 -19 -393 -25 -121 -6 -299
++-15 -395 -20 -96 -5 -294 -12 -441 -16 -251 -6 -268 -5 -325 14 -32 11 -99 33
++-149 47 -406 123 -558 180 -605 230 l-23 25 406 0 407 0 0 250 0 250 -422 2
++c-233 2 -624 2 -870 0 l-448 -2 0 -250 0 -250 441 0 441 0 39 -40 c22 -22 65
++-52 97 -66 62 -28 353 -127 497 -169 126 -37 126 -37 75 -47 -58 -12 -1468 -2
++-1700 11 -185 11 -293 27 -461 65 -246 57 -314 82 -480 178 l-110 63 360 3
++361 2 0 250 0 250 -433 0 -433 0 -49 65 c-42 55 -51 62 -59 47 -16 -30 -27
++-30 -89 1 -34 17 -91 41 -126 54 -73 25 -166 41 -141 24 8 -6 25 -11 38 -11
++33 0 136 -36 219 -76 53 -26 70 -39 66 -51 -7 -19 13 -32 52 -34 26 0 27 -2
++10 -9 -11 -5 -194 -9 -407 -9 l-388 -1 0 -250 0 -250 476 0 477 0 117 -70
++c150 -90 277 -147 385 -173 65 -15 -175 3 -305 23 -36 6 -117 17 -180 25 -102
++13 -182 24 -470 65 -92 13 -304 46 -425 66 -124 20 -390 61 -447 69 l-48 6 0
++244 0 245 -402 2 c-222 2 -616 2 -876 0 l-472 -3 2 -247 3 -247 850 -6 c743
++-4 862 -7 945 -22 100 -18 288 -48 453 -73 53 -7 116 -18 140 -23 23 -5 69
++-12 102 -15 33 -4 83 -11 110 -16 28 -6 100 -17 160 -25 61 -9 175 -24 255
++-36 80 -11 191 -25 248 -31 263 -31 82 -37 -1338 -44 -1186 -6 -1813 2 -2020
++26 -47 6 -128 15 -180 21 -142 16 -356 60 -535 112 -42 12 -144 48 -315 113
++-30 11 24 13 378 14 l412 0 0 250 0 250 -390 0 c-358 0 -433 5 -371 25 12 4
++17 12 14 24 -6 22 78 100 134 125 21 9 46 21 55 26 10 6 59 16 109 25 94 15
++140 32 59 22 -146 -19 -253 -61 -328 -131 -26 -23 -54 -45 -64 -49 -9 -3 -19
++-19 -23 -36 l-7 -31 -459 0 -459 0 0 -244 c0 -135 4 -247 9 -250 5 -3 185 -6
++401 -6 l392 -1 97 -34 c53 -18 128 -45 166 -60 352 -131 623 -180 1175 -211
++257 -14 456 -15 1530 -10 679 3 1418 9 1641 12 345 5 427 4 540 -10 74 -9 148
++-17 164 -17 17 -1 156 -8 310 -16 536 -28 2319 -5 2860 37 72 5 216 15 320 20
++241 14 464 43 535 70 59 23 190 106 255 163 110 95 252 357 355 657 6 19 32
++91 56 160 l44 125 0 270 c0 148 -4 387 -10 530 -5 143 -14 445 -20 670 -5 226
++-15 491 -20 590 -5 99 -14 333 -20 520 -6 187 -15 417 -21 510 -16 249 -17
++699 -1 825 7 58 20 195 28 305 16 222 27 345 50 575 22 216 22 531 -1 635 -71
++329 -195 518 -453 688 -56 37 -139 96 -183 131 -84 67 -167 112 -254 139 -131
++41 -407 88 -600 102 -49 3 -128 10 -175 16 -94 10 -644 35 -1105 49 -1078 33
++-4042 49 -4440 23 l-180 -11 -26 30 -27 30 -33 -59 c-19 -32 -42 -75 -52 -94
++l-18 -36 -207 5 c-209 4 -299 -2 -560 -37 -78 -10 -162 -17 -185 -14 -23 2
++-154 10 -292 18 -137 8 -311 19 -385 24 -74 6 -205 15 -290 20 -85 6 -218 15
++-295 21 -409 29 -943 65 -1255 85 -129 8 -291 19 -360 24 -69 6 -174 13 -235
++16 -60 3 -202 12 -315 20 -113 8 -259 17 -325 20 -66 3 -181 10 -255 16 -74 5
++-274 16 -445 25 -170 8 -391 19 -490 24 -169 9 -888 11 -965 3z m498 -490 l-3
++-228 -857 -3 -858 -2 0 230 0 230 860 0 860 0 -2 -227z m6326 207 c45 -6 128
++-17 186 -25 112 -14 242 -40 275 -55 11 -5 38 -14 60 -21 116 -35 240 -118
++265 -178 29 -70 -19 -145 -130 -207 -115 -64 -264 -106 -510 -144 -105 -17
++-509 -23 -655 -11 -386 32 -697 139 -760 261 -20 39 -19 89 3 122 19 29 65 68
++80 68 5 0 16 7 23 16 26 31 186 91 322 120 65 14 121 22 342 52 98 13 403 14
++499 2z m-5534 -855 l0 -225 -855 0 -855 0 0 225 0 225 855 0 855 0 0 -225z
++m6748 -128 c45 -99 143 -348 149 -378 3 -16 10 -32 14 -35 15 -9 10 -51 -6
++-58 -23 -8 -19 -20 25 -68 22 -23 40 -46 40 -50 0 -4 -186 -9 -412 -10 l-413
++-3 -3 -247 -2 -248 474 0 c261 0 480 -2 488 -5 9 -4 12 -21 10 -60 -3 -47 -1
++-57 22 -80 14 -14 26 -29 26 -32 0 -9 -327 5 -620 28 -566 43 -690 91 -745
++285 -43 152 -47 184 -40 339 3 83 9 160 12 173 l5 22 469 0 469 0 0 240 c0
++132 3 240 8 240 4 0 18 -24 30 -53z m-48 -182 l0 -226 -481 1 c-264 1 -482 0
++-484 -2 -2 -2 -172 -2 -379 0 l-376 2 0 225 0 225 860 0 860 0 0 -225z m2125
++203 c70 -98 252 -415 243 -423 -4 -4 -565 -6 -1270 -6 l-438 1 0 225 0 225
++725 0 724 0 16 -22z m255 -178 c0 -110 -4 -200 -8 -200 -4 0 -23 28 -41 63
++-39 73 -135 237 -174 295 l-27 42 125 0 125 0 0 -200z m-1210 -695 l0 -235
++-855 0 -855 0 0 235 0 235 855 0 855 0 0 -235z m2180 0 l0 -235 -855 0 -855 0
++0 235 0 235 855 0 855 0 0 -235z m2310 0 l0 -235 -860 0 -860 0 0 235 0 235
++860 0 860 0 0 -235z m-6690 -1595 c110 -9 289 -36 340 -49 216 -59 323 -106
++389 -173 65 -65 66 -130 3 -195 -64 -65 -173 -114 -392 -174 -19 -5 -80 -16
++-135 -25 -566 -88 -1257 5 -1454 196 -121 118 -12 250 274 334 50 15 104 31
++120 36 38 12 238 41 335 50 112 10 412 10 520 0z m420 -668 c74 -22 173 -52
++220 -65 136 -40 366 -97 455 -113 22 -3 160 -6 307 -5 250 1 271 0 330 -20
++129 -45 181 -93 377 -347 19 -24 60 -87 92 -140 52 -87 56 -97 41 -108 -15
++-11 -12 -18 33 -63 l49 -51 -377 0 -377 0 0 -245 0 -245 393 0 392 0 41 -48
++c71 -82 214 -140 387 -158 37 -4 67 -10 67 -14 0 -13 -478 -23 -731 -17 -305
++9 -504 41 -687 113 -174 69 -322 188 -379 307 -44 89 -99 281 -119 415 l-7 42
++377 0 376 0 -2 248 -3 247 -435 3 -435 2 -55 45 c-50 41 -56 44 -67 28 -12
++-15 -19 -15 -100 12 -49 16 -92 32 -98 35 -5 4 -23 10 -40 14 -16 4 -43 13
++-60 21 -53 23 -290 105 -302 105 -30 0 -10 20 25 25 20 3 53 9 72 14 52 14 90
++7 240 -37z m-1930 -402 l0 -230 -857 2 -858 3 -3 228 -2 227 860 0 860 0 0
++-230z m5800 -85 l0 -235 -860 0 -860 0 0 235 0 235 860 0 860 0 0 -235z m2170
++0 l0 -235 -860 0 -860 0 0 235 0 235 860 0 860 0 0 -235z m-4800 -30 l0 -235
++-370 0 c-322 0 -370 2 -370 15 0 8 -7 15 -15 15 -8 0 -15 -7 -15 -15 0 -13
++-59 -15 -475 -15 l-475 0 0 235 0 235 860 0 860 0 0 -235z m1630 -640 l0 -225
++-855 0 -855 0 0 225 0 225 855 0 855 0 0 -225z m2190 0 l0 -225 -860 0 -860 0
++0 225 0 225 860 0 860 0 0 -225z m-13330 -1800 l0 -235 -850 0 -850 0 0 235 0
++235 850 0 850 0 0 -235z m6180 0 l0 -235 -850 0 -850 0 0 235 0 235 850 0 850
++0 0 -235z m2070 0 l0 -235 -860 0 -860 0 0 228 c0 126 3 232 7 235 3 4 390 7
++860 7 l853 0 0 -235z m2170 0 l0 -235 -860 0 -860 0 0 235 0 235 860 0 860 0
++0 -235z m2180 0 l0 -235 -860 0 -860 0 0 235 0 235 860 0 860 0 0 -235z m2060
++0 l0 -235 -860 0 -860 0 0 235 0 235 860 0 860 0 0 -235z"/>
++<path d="M2743 8808 c-13 -16 -63 -142 -63 -157 0 -20 17 -11 28 14 9 20 19
++25 47 25 28 0 38 -5 47 -25 10 -22 45 -38 36 -17 -45 111 -73 172 -79 172 -3
++0 -11 -6 -16 -12z m31 -75 c6 -20 4 -23 -18 -23 -29 0 -31 6 -15 47 11 30 19
++24 33 -24z"/>
++<path d="M2867 8813 c-4 -3 -7 -44 -7 -90 0 -63 3 -84 13 -81 6 3 13 18 15 34
++2 16 7 33 12 37 12 13 47 -9 67 -43 9 -17 23 -30 30 -30 19 0 16 15 -11 47
++-24 28 -24 29 -5 41 26 16 26 68 0 82 -22 11 -104 14 -114 3z m108 -48 c0 -16
++-8 -21 -42 -23 -40 -3 -43 -2 -43 23 0 25 3 26 43 23 34 -2 42 -7 42 -23z"/>
++<path d="M3047 8813 c-4 -3 -7 -44 -7 -90 0 -67 3 -83 15 -83 10 0 15 11 15
++35 0 34 1 35 39 35 23 0 46 7 55 16 23 22 20 60 -6 78 -22 16 -99 22 -111 9z
++m103 -47 c0 -25 -16 -36 -56 -36 -20 0 -24 5 -24 30 0 28 2 30 40 30 36 0 40
++-3 40 -24z"/>
++<path d="M9360 8740 l0 -90 65 0 c78 0 88 18 13 22 -49 3 -53 5 -56 30 -3 26
++-1 27 45 30 62 4 62 22 1 26 -43 3 -48 5 -48 28 0 23 3 24 55 24 30 0 55 5 55
++10 0 6 -28 10 -65 10 l-65 0 0 -90z"/>
++<path d="M9590 8746 c0 -47 5 -88 10 -91 6 -4 10 6 10 24 0 51 17 83 43 79 19
++-3 22 -10 25 -56 4 -65 22 -59 22 8 0 60 -20 84 -61 75 -26 -6 -29 -4 -29 19
++0 14 -4 26 -10 26 -6 0 -10 -35 -10 -84z"/>
++<path d="M9804 8817 c-10 -27 1 -160 14 -165 8 -2 12 8 12 32 0 33 2 36 31 36
++64 0 102 44 74 86 -13 21 -23 24 -71 24 -36 0 -56 -4 -60 -13z m106 -22 c21
++-26 4 -45 -40 -45 -38 0 -40 2 -40 30 0 27 3 30 34 30 18 0 39 -7 46 -15z"/>
++<path d="M9527 8798 c-2 -13 -2 -50 2 -83 5 -46 10 -61 24 -63 18 -4 24 13 7
++23 -13 8 -13 82 0 87 7 2 6 13 -2 30 -16 34 -24 35 -31 6z"/>
++<path d="M10198 8803 c-3 -42 5 -139 12 -147 5 -5 17 -6 27 -2 17 7 17 8 1 17
++-20 11 -26 85 -8 91 7 2 6 13 -2 30 -15 32 -27 36 -30 11z"/>
++<path d="M10006 8781 c-4 -6 -13 -8 -21 -4 -12 4 -15 -6 -15 -55 0 -34 5 -64
++10 -67 6 -4 10 7 10 27 0 53 10 78 32 78 11 0 18 5 16 12 -6 16 -25 21 -32 9z"/>
++<path d="M10071 8771 c-27 -27 -28 -82 -3 -104 42 -38 102 -8 102 49 -1 60
++-61 93 -99 55z m73 -36 c9 -35 -10 -67 -36 -63 -28 4 -42 29 -34 61 5 21 12
++27 35 27 22 0 30 -6 35 -25z"/>
++<path d="M10282 8774 c-28 -20 -31 -83 -4 -107 42 -38 102 -8 102 49 0 35 -8
++47 -37 63 -28 14 -34 14 -61 -5z m69 -35 c8 -16 8 -28 0 -45 -22 -50 -79 -14
++-65 41 8 32 48 34 65 4z"/>
++<path d="M10098 8534 c-11 -11 -10 -174 1 -174 6 0 11 21 13 46 6 88 68 81 68
++-8 0 -21 5 -38 10 -38 6 0 10 22 10 49 0 60 -20 86 -61 77 -25 -5 -28 -2 -31
++25 -2 17 -6 27 -10 23z"/>
++<path d="M9840 8520 c0 -5 5 -10 10 -10 6 0 10 5 10 10 0 6 -4 10 -10 10 -5 0
++-10 -4 -10 -10z"/>
++<path d="M9897 8503 c-11 -20 -13 -34 -7 -38 6 -3 10 -28 10 -55 0 -49 14 -66
++39 -50 10 5 9 9 -3 13 -18 7 -23 82 -6 92 7 4 8 11 2 18 -6 7 -12 21 -14 32
++-3 17 -6 16 -21 -12z"/>
++<path d="M9543 8483 c-7 -2 -13 -16 -13 -29 0 -19 8 -29 35 -40 19 -8 35 -19
++35 -24 0 -20 -31 -22 -50 -5 -18 16 -20 16 -20 2 0 -40 83 -44 95 -6 8 26 -9
++46 -46 54 -16 4 -29 11 -29 16 0 16 29 22 45 9 20 -17 32 -5 15 15 -12 15 -42
++18 -67 8z"/>
++<path d="M9647 8483 c-3 -5 3 -33 12 -63 22 -71 46 -79 59 -18 l9 43 13 -42
++c22 -72 53 -48 65 50 l6 42 -24 -50 -24 -50 -7 42 c-10 57 -32 63 -47 13 -15
++-49 -25 -51 -33 -5 -7 34 -21 52 -29 38z"/>
++<path d="M9982 8474 c-16 -11 -22 -25 -22 -54 0 -38 25 -70 56 -70 18 0 60 37
++52 46 -5 4 -16 0 -26 -9 -24 -22 -39 -21 -52 2 -14 26 -13 44 4 66 13 17 17
++18 40 6 31 -17 43 -10 21 13 -21 20 -44 20 -73 0z"/>
++<path d="M9840 8420 c0 -33 4 -60 10 -60 6 0 10 27 10 60 0 33 -4 60 -10 60
++-6 0 -10 -27 -10 -60z"/>
++<path d="M3390 8079 c0 -68 3 -90 13 -87 6 3 13 21 15 41 3 36 4 37 43 37 21
++0 39 5 39 10 0 6 -18 10 -40 10 -36 0 -40 3 -40 24 0 22 5 25 42 28 23 2 43 9
++46 16 3 9 -13 12 -57 12 l-61 0 0 -91z"/>
++<path d="M3566 8149 c-22 -17 -26 -28 -26 -69 0 -62 23 -91 72 -93 38 -1 78
++24 78 50 0 20 -18 16 -30 -7 -13 -25 -62 -27 -81 -4 -21 25 -17 93 6 110 27
++20 51 17 74 -7 13 -14 21 -17 26 -9 4 6 -1 20 -11 31 -23 25 -74 25 -108 -2z"/>
++<path d="M3745 8145 c-18 -17 -25 -35 -25 -64 0 -88 93 -129 147 -66 21 24 24
++36 20 74 -6 54 -34 81 -84 81 -23 0 -42 -8 -58 -25z m100 -20 c29 -28 31 -45
++10 -85 -12 -24 -22 -30 -48 -30 -43 0 -57 15 -57 65 0 44 7 59 30 68 28 10 41
++7 65 -18z"/>
++<path d="M3920 8080 l0 -90 70 0 c40 0 70 4 70 10 0 6 -25 10 -55 10 -54 0
++-55 0 -55 30 0 29 2 30 45 30 25 0 45 5 45 10 0 6 -20 10 -45 10 -41 0 -45 2
++-45 24 0 22 5 25 47 28 26 2 48 9 51 16 3 9 -14 12 -62 12 l-66 0 0 -90z"/>
++<path d="M10180 7769 c0 -68 3 -90 13 -87 6 3 13 19 15 36 3 29 7 32 35 32 62
++0 93 42 67 91 -9 15 -22 19 -70 19 l-60 0 0 -91z m105 41 c0 -22 -5 -25 -37
++-28 -36 -3 -38 -2 -38 28 0 30 2 31 38 28 32 -3 37 -6 37 -28z"/>
++<path d="M10350 7769 c0 -68 3 -90 13 -87 6 3 13 18 15 35 3 27 7 31 43 36 48
++6 69 22 69 53 0 38 -26 54 -86 54 l-54 0 0 -91z m105 41 c0 -22 -5 -25 -37
++-28 -36 -3 -38 -2 -38 28 0 30 2 31 38 28 32 -3 37 -6 37 -28z"/>
++<path d="M10520 7770 c0 -53 4 -90 10 -90 6 0 10 14 10 30 0 32 3 35 63 45 50
++8 68 42 43 80 -14 22 -24 25 -71 25 l-55 0 0 -90z m98 61 c8 -5 12 -17 10 -27
++-2 -14 -13 -20 -46 -22 -39 -3 -42 -1 -42 21 0 13 3 27 7 30 9 10 55 8 71 -2z"/>
++<path d="M12280 7845 c-7 -8 -10 -27 -7 -42 3 -15 0 -35 -6 -44 -8 -12 -8 -27
++-1 -46 7 -23 16 -29 45 -31 49 -4 78 27 62 68 -6 15 -8 40 -6 54 7 34 -12 56
++-47 56 -15 0 -33 -7 -40 -15z m64 -14 c10 -16 -5 -41 -24 -41 -23 0 -34 16
++-26 35 6 16 42 20 50 6z m-6 -70 c8 -4 12 -19 10 -32 -4 -30 -45 -33 -62 -6
++-9 15 -7 21 8 33 23 16 26 17 44 5z"/>
++<path d="M12416 7838 c-21 -29 -20 -107 0 -136 22 -32 73 -27 92 8 15 30 11
++112 -8 135 -19 23 -66 19 -84 -7z m68 -14 c3 -9 6 -33 6 -54 0 -51 -8 -70 -30
++-70 -26 0 -32 14 -32 70 0 26 3 53 6 59 11 16 43 13 50 -5z"/>
++<path d="M12562 7848 c-7 -7 -12 -19 -12 -27 0 -11 4 -11 19 3 24 22 55 17 59
++-9 2 -13 -13 -36 -43 -65 -61 -60 -59 -70 15 -70 33 0 60 4 60 10 0 6 -18 10
++-40 10 -22 0 -40 3 -40 8 0 4 18 24 40 46 22 21 40 46 40 56 0 39 -70 66 -98
++38z"/>
++<path d="M12793 7835 c-28 -27 -29 -38 -3 -30 19 6 20 2 20 -59 0 -37 4 -66
++10 -66 6 0 10 37 10 90 0 50 -3 90 -7 89 -5 -1 -18 -11 -30 -24z"/>
++<path d="M12918 7836 c-33 -25 -36 -40 -8 -31 17 5 19 0 22 -57 2 -35 8 -63
++13 -63 12 0 19 155 8 166 -4 4 -20 -2 -35 -15z"/>
++<path d="M13063 7843 c-3 -10 -17 -44 -29 -75 -13 -32 -24 -64 -24 -73 0 -24
++19 -17 26 10 11 46 87 46 98 0 4 -14 14 -25 22 -25 9 0 14 6 11 13 -59 153
++-88 194 -104 150z m41 -84 c-7 -12 -31 -12 -38 0 -3 5 -1 23 6 41 l11 32 13
++-32 c8 -18 11 -36 8 -41z"/>
++<path d="M13190 7770 l0 -90 50 0 c41 0 56 5 75 25 32 31 34 91 4 129 -18 22
++-28 26 -75 26 l-54 0 0 -90z m101 60 c30 -17 27 -94 -5 -116 -14 -8 -35 -14
++-48 -12 -20 3 -23 9 -26 57 -2 29 -1 60 2 67 6 16 49 18 77 4z"/>
++<path d="M12696 7701 c-4 -5 -2 -12 3 -15 5 -4 12 -2 15 3 4 5 2 12 -3 15 -5
++4 -12 2 -15 -3z"/>
++<path d="M11267 7193 c-4 -3 -7 -44 -7 -90 0 -67 3 -83 15 -83 12 0 15 14 16
++63 l0 62 24 -60 c12 -33 29 -61 37 -63 9 -2 21 19 35 60 l21 63 1 -62 c1 -50
++4 -63 16 -63 13 0 15 14 13 88 -4 110 -22 118 -56 22 -13 -35 -25 -66 -27 -68
++-5 -5 -13 15 -40 91 -15 43 -32 57 -48 40z"/>
++<path d="M11480 7110 c0 -49 4 -90 9 -90 6 0 11 15 13 33 3 30 6 32 43 35 50
++4 65 17 65 53 0 37 -33 59 -87 59 l-43 0 0 -90z m106 45 c10 -25 -16 -46 -50
++-43 -25 2 -32 8 -34 31 -3 26 -1 27 38 27 27 0 43 -5 46 -15z"/>
++<path d="M11646 7193 c-3 -3 -6 -44 -6 -90 l0 -83 55 0 c30 0 55 5 55 10 0 6
++-18 10 -40 10 l-40 0 0 74 c0 69 -8 95 -24 79z"/>
++<path d="M11800 7180 c-11 -11 -20 -24 -20 -30 0 -17 39 -50 59 -50 10 0 29
++-9 42 -20 21 -17 22 -21 9 -30 -23 -15 -61 -12 -82 7 -20 18 -34 12 -24 -12
++16 -42 109 -41 129 2 15 34 0 54 -54 73 -49 17 -63 44 -28 55 14 5 31 0 50
++-14 33 -25 42 -6 11 22 -25 23 -68 21 -92 -3z"/>
++<path d="M13277 7193 c-4 -3 -7 -44 -7 -90 l0 -83 60 0 c55 0 61 2 72 26 9 19
++9 30 0 44 -6 11 -9 32 -6 48 5 23 1 33 -17 46 -23 16 -90 22 -102 9z m96 -37
++c8 -20 -13 -36 -45 -36 -23 0 -28 4 -28 25 0 22 4 25 34 25 20 0 36 -6 39 -14z
++m-5 -65 c8 -5 12 -17 10 -27 -2 -14 -13 -20 -41 -22 -35 -3 -37 -2 -37 27 0
++27 3 31 28 31 15 0 33 -4 40 -9z"/>
++<path d="M13492 7188 c-11 -14 -62 -144 -62 -159 0 -19 21 -8 30 16 8 20 16
++25 45 25 28 0 38 -5 47 -25 6 -14 17 -25 25 -25 11 0 10 7 -3 38 -9 20 -23 56
++-31 79 -18 51 -36 69 -51 51z m38 -85 c0 -7 -11 -13 -25 -13 -29 0 -28 -2 -14
++40 l12 33 13 -24 c7 -13 13 -30 14 -36z"/>
++<path d="M13580 7185 c0 -10 10 -15 30 -15 l30 0 0 -75 c0 -43 4 -75 10 -75 6
++0 10 31 10 74 0 72 1 75 25 78 52 6 28 23 -37 26 -56 2 -68 0 -68 -13z"/>
++<path d="M13744 7187 c-10 -27 1 -160 14 -165 9 -3 12 15 13 65 l1 68 22 -65
++c13 -36 29 -66 37 -68 9 -2 22 18 36 55 l21 58 1 -57 c1 -45 4 -58 16 -58 13
++0 15 14 13 88 -4 109 -20 116 -55 22 -28 -74 -31 -78 -37 -59 -35 99 -49 129
++-62 129 -8 0 -17 -6 -20 -13z"/>
++<path d="M14006 7192 c-5 -9 -66 -164 -66 -169 0 -2 6 -3 13 -3 7 0 17 10 22
++23 16 35 64 36 92 1 36 -46 36 -21 0 67 -33 80 -49 101 -61 81z m32 -72 c10
++-28 9 -30 -14 -30 -25 0 -28 9 -18 47 8 28 19 22 32 -17z"/>
++<path d="M14126 7193 c-3 -4 -6 -44 -6 -90 0 -66 3 -83 15 -83 10 0 15 16 17
++63 l3 62 40 -62 c24 -37 47 -62 58 -62 16 -1 17 8 15 84 -3 99 -21 114 -28 25
++l-5 -60 -40 59 c-39 59 -57 76 -69 64z"/>
++<path d="M15845 7176 c-36 -36 -42 -73 -19 -115 24 -45 75 -61 120 -40 24 12
++29 20 29 49 0 31 -3 35 -29 38 -16 2 -33 -1 -39 -7 -8 -8 -3 -11 15 -11 32 0
++44 -16 28 -35 -16 -20 -75 -19 -94 1 -19 19 -21 74 -3 97 21 28 62 32 86 8 30
++-30 49 -15 20 15 -30 32 -82 32 -114 0z"/>
++<path d="M16020 7110 c0 -53 4 -90 10 -90 6 0 10 16 10 35 0 32 3 35 28 35 20
++0 33 -9 51 -35 13 -19 30 -35 38 -35 15 0 9 16 -20 54 -12 17 -12 21 5 38 43
++43 5 88 -74 88 l-48 0 0 -90z m79 64 c25 -5 31 -11 29 -28 -2 -17 -11 -22 -45
++-24 -40 -3 -43 -1 -43 21 0 38 7 41 59 31z"/>
++<path d="M16207 7194 c-4 -4 -7 -45 -7 -91 l0 -83 66 0 c41 0 63 4 59 10 -3 6
++-28 10 -56 10 -48 0 -49 1 -49 30 0 29 1 30 50 30 28 0 50 5 50 10 0 6 -22 10
++-50 10 -46 0 -50 2 -50 24 0 23 4 25 50 28 28 2 50 8 50 13 0 12 -102 19 -113
++9z"/>
++<path d="M9170 5320 c0 -53 4 -90 10 -90 6 0 10 37 10 90 0 53 -4 90 -10 90
++-6 0 -10 -37 -10 -90z"/>
++<path d="M9237 5403 c-4 -3 -7 -44 -7 -90 0 -67 3 -83 15 -83 10 0 15 11 15
++35 0 32 2 35 30 35 53 0 80 19 80 56 0 23 -6 37 -19 44 -22 11 -104 14 -114 3z
++m101 -25 c7 -7 12 -15 12 -19 0 -18 -34 -39 -61 -39 -27 0 -29 3 -29 35 0 33
++2 35 33 35 18 0 38 -5 45 -12z"/>
++<path d="M9470 5320 c0 -49 4 -90 9 -90 6 0 11 15 13 33 3 30 6 32 47 38 105
++14 89 109 -19 109 l-50 0 0 -90z m104 47 c9 -15 7 -21 -9 -33 -42 -31 -88 -3
++-71 42 8 21 66 14 80 -9z"/>
++<path d="M10450 5394 c0 -8 5 -12 10 -9 6 3 10 10 10 16 0 5 -4 9 -10 9 -5 0
++-10 -7 -10 -16z"/>
++<path d="M10708 5404 c-11 -11 -10 -174 1 -174 6 0 11 21 13 46 6 88 68 81 68
++-8 0 -21 5 -38 10 -38 15 0 12 93 -3 114 -10 14 -23 17 -45 14 -28 -4 -31 -2
++-34 25 -2 16 -6 25 -10 21z"/>
++<path d="M9862 5380 c-8 -23 -7 -76 4 -127 4 -23 44 -34 44 -13 0 6 -4 10 -10
++10 -14 0 -13 87 1 96 7 4 7 9 2 13 -5 3 -15 15 -21 26 -10 19 -11 19 -20 -5z"/>
++<path d="M10505 5378 c-4 -13 -6 -27 -4 -33 1 -5 5 -32 8 -60 5 -44 9 -50 31
++-53 23 -2 24 -1 8 11 -21 17 -25 86 -6 105 9 9 9 12 0 12 -7 0 -12 9 -12 20 0
++27 -16 25 -25 -2z"/>
++<path d="M9633 5344 c-9 -23 2 -108 15 -112 8 -2 12 11 12 46 0 42 4 52 20 57
++11 3 20 11 20 16 0 13 -61 7 -67 -7z"/>
++<path d="M9726 5338 c-45 -64 17 -134 85 -98 24 13 26 81 3 104 -23 24 -70 20
++-88 -6z m77 -19 c5 -9 7 -28 3 -42 -9 -36 -52 -38 -67 -3 -23 49 35 91 64 45z"/>
++<path d="M9937 5342 c-22 -25 -21 -75 1 -95 22 -20 73 -22 90 -5 17 17 15 84
++-4 102 -21 22 -67 20 -87 -2z m76 -23 c5 -9 7 -28 3 -43 -5 -22 -11 -27 -34
++-24 -21 2 -28 9 -30 31 -2 16 -1 35 2 44 7 18 46 13 59 -8z"/>
++<path d="M10144 5346 c-11 -29 1 -50 34 -60 33 -9 43 -30 18 -39 -7 -3 -24 1
++-36 10 -20 14 -22 14 -18 -3 4 -25 69 -32 87 -10 19 23 6 45 -34 62 -19 8 -35
++19 -35 24 0 14 34 12 48 -2 15 -15 26 -4 19 17 -8 20 -75 21 -83 1z"/>
++<path d="M10255 5339 c15 -56 37 -109 45 -109 12 0 22 18 30 54 l7 31 13 -43
++c19 -61 41 -52 62 26 20 73 3 82 -21 11 l-14 -44 -11 44 c-14 58 -32 62 -47
++12 -7 -23 -15 -41 -19 -41 -3 0 -11 17 -16 37 -5 20 -15 38 -23 41 -10 3 -11
++-2 -6 -19z"/>
++<path d="M10450 5295 c0 -37 4 -65 10 -65 6 0 10 28 10 65 0 37 -4 65 -10 65
++-6 0 -10 -28 -10 -65z"/>
++<path d="M10586 5344 c-23 -23 -21 -91 3 -104 28 -14 67 -12 81 5 18 22 8 41
++-12 21 -26 -25 -57 -20 -64 11 -4 14 -2 33 3 42 12 18 53 28 53 12 0 -6 7 -11
++15 -11 18 0 19 12 3 28 -17 17 -64 15 -82 -4z"/>
++<path d="M7598 4526 c-32 -16 -36 -59 -6 -80 12 -9 32 -16 44 -16 31 0 50 -25
++34 -45 -18 -21 -56 -19 -79 6 -13 14 -21 17 -26 9 -12 -20 26 -50 62 -50 50 0
++73 16 73 50 0 31 -24 50 -83 64 -20 5 -27 12 -25 24 4 23 66 30 74 8 6 -17 34
++-22 34 -8 0 13 -32 39 -57 44 -12 3 -32 0 -45 -6z"/>
++<path d="M7793 4532 c-57 -9 -83 -104 -42 -156 16 -20 29 -26 60 -26 45 0 89
++34 70 53 -8 8 -15 5 -27 -11 -18 -26 -56 -29 -78 -6 -18 18 -21 76 -6 105 13
++24 57 25 82 2 20 -18 34 -12 25 10 -7 18 -54 34 -84 29z"/>
++<path d="M7910 4520 c0 -5 11 -10 25 -10 25 0 25 -1 25 -80 0 -64 3 -80 15
++-80 12 0 15 16 15 80 l0 80 30 0 c17 0 30 5 30 10 0 6 -30 10 -70 10 -40 0
++-70 -4 -70 -10z"/>
++<path d="M8077 4523 c-4 -3 -7 -44 -7 -90 0 -67 3 -83 15 -83 10 0 15 10 15
++34 0 31 2 34 40 39 49 6 70 22 70 53 0 36 -26 54 -79 54 -26 0 -51 -3 -54 -7z
++m102 -32 c13 -24 -5 -41 -46 -44 -25 -2 -28 2 -31 31 -3 31 -2 32 32 32 24 0
++38 -6 45 -19z"/>
++<path d="M13267 4434 c-4 -4 -7 -45 -7 -91 0 -63 3 -84 13 -81 8 3 13 30 15
++76 3 69 -6 110 -21 96z"/>
++<path d="M13330 4350 c0 -53 4 -90 10 -90 6 0 10 16 10 35 0 34 1 35 40 35 42
++0 80 26 80 55 0 32 -38 55 -90 55 l-50 0 0 -90z m104 47 c9 -15 7 -21 -9 -33
++-42 -31 -88 -3 -71 42 8 21 66 14 80 -9z"/>
++<path d="M13640 4350 c0 -53 4 -90 10 -90 6 0 10 37 10 90 0 53 -4 90 -10 90
++-6 0 -10 -37 -10 -90z"/>
++<path d="M13704 4427 c-10 -27 1 -160 14 -165 8 -2 12 8 12 32 0 35 1 36 38
++36 49 0 75 19 75 55 0 16 -8 34 -19 42 -24 17 -113 17 -120 0z m110 -30 c14
++-23 -15 -47 -56 -47 -24 0 -28 4 -28 28 0 16 3 32 7 36 13 13 66 1 77 -17z"/>
++<path d="M14028 4433 c-10 -2 -23 -22 -29 -43 -24 -80 19 -157 73 -129 30 16
++38 28 38 61 0 34 -39 63 -70 53 -17 -5 -21 -3 -18 10 1 10 11 23 21 29 15 9
++21 7 32 -8 18 -23 34 -12 19 12 -11 18 -36 23 -66 15z m54 -100 c8 -36 -3 -54
++-31 -51 -26 3 -38 26 -27 54 8 20 54 18 58 -3z"/>
++<path d="M13493 4355 c-20 -43 -7 -80 34 -96 22 -8 32 -6 52 9 54 40 30 122
++-34 122 -30 0 -38 -5 -52 -35z m71 9 c22 -9 21 -70 -1 -83 -26 -14 -53 5 -53
++37 0 41 21 59 54 46z"/>
++<path d="M13866 4368 c18 -58 45 -109 55 -106 15 5 51 97 46 117 -3 10 -11 1
++-23 -26 -10 -24 -22 -43 -25 -43 -4 0 -14 18 -23 40 -17 42 -43 57 -30 18z"/>
++<path d="M15496 4433 c-3 -3 -6 -44 -6 -90 0 -67 3 -83 15 -83 12 0 15 16 15
++84 0 78 -7 105 -24 89z"/>
++<path d="M15560 4350 c0 -49 4 -90 9 -90 6 0 11 15 13 33 3 30 6 32 47 38 105
++14 89 109 -19 109 l-50 0 0 -90z m101 54 c19 -23 -1 -48 -39 -52 -26 -3 -32 1
++-38 22 -3 14 -3 30 1 35 10 17 61 13 76 -5z"/>
++<path d="M15748 4429 c-21 -12 -24 -52 -5 -67 7 -6 31 -17 53 -24 28 -9 39
++-19 39 -33 0 -32 -63 -34 -86 -3 -20 25 -39 17 -23 -10 29 -46 102 -50 130 -6
++21 32 4 61 -45 74 -49 13 -67 32 -46 50 16 13 65 6 65 -10 0 -6 7 -10 15 -10
++22 0 18 17 -7 34 -26 18 -65 20 -90 5z"/>
++<path d="M15900 4350 l0 -90 65 0 c37 0 65 4 65 10 0 6 -25 10 -56 10 -54 0
++-55 0 -52 28 3 25 7 27 51 30 26 2 47 7 47 12 0 5 -21 10 -47 12 -44 3 -48 5
++-48 28 0 23 4 25 53 28 75 4 65 22 -13 22 l-65 0 0 -90z"/>
++<path d="M16085 4415 c-27 -26 -33 -73 -16 -118 14 -37 70 -53 110 -32 19 9
++31 23 31 35 0 26 -12 25 -28 0 -14 -23 -64 -27 -79 -7 -29 36 -18 111 18 122
++22 7 59 -2 59 -16 0 -5 7 -9 15 -9 20 0 19 13 -3 33 -28 25 -78 21 -107 -8z"/>
++<path d="M10840 4320 c0 -53 4 -90 10 -90 6 0 10 37 10 90 0 53 -4 90 -10 90
++-6 0 -10 -37 -10 -90z"/>
++<path d="M10900 4319 c0 -68 3 -90 13 -87 6 3 13 18 15 35 3 27 7 31 45 37 50
++8 67 21 67 52 0 38 -26 54 -86 54 l-54 0 0 -91z m109 53 c14 -26 -4 -42 -46
++-42 -30 0 -33 3 -33 30 0 28 3 30 35 30 23 0 37 -6 44 -18z"/>
++<path d="M11074 4397 c-10 -27 1 -160 14 -165 9 -3 12 19 12 87 0 56 -4 91
++-10 91 -6 0 -13 -6 -16 -13z"/>
++<path d="M11140 4319 c0 -68 3 -90 13 -87 6 3 13 18 15 35 3 27 7 31 45 37 50
++8 67 21 67 52 0 38 -26 54 -86 54 l-54 0 0 -91z m105 41 c0 -22 -5 -25 -37
++-28 -36 -3 -38 -2 -38 28 0 30 2 31 38 28 32 -3 37 -6 37 -28z"/>
++<path d="M12910 3767 c-16 -8 -26 -23 -28 -39 -3 -28 22 -48 81 -62 29 -7 35
++-24 15 -44 -18 -18 -45 -15 -68 8 -22 22 -40 26 -40 10 0 -21 41 -50 71 -50
++46 0 69 16 69 49 0 34 -15 49 -58 57 -35 7 -57 28 -47 44 9 15 61 12 75 -5 24
++-29 41 -13 18 17 -18 22 -59 29 -88 15z"/>
++<path d="M12360 3679 c0 -68 3 -90 13 -87 7 3 14 29 17 64 4 52 6 55 13 30 5
++-17 15 -45 23 -64 18 -43 36 -32 54 33 19 66 30 65 30 -4 0 -34 4 -61 10 -61
++6 0 10 37 10 90 0 74 -3 90 -15 90 -9 0 -18 -6 -20 -12 -2 -7 -14 -40 -26 -73
++l-22 -60 -24 73 c-19 56 -29 72 -44 72 -17 0 -19 -8 -19 -91z"/>
++<path d="M12572 3685 c3 -84 20 -121 26 -57 3 26 8 32 27 32 64 0 100 43 75
++89 -9 18 -20 21 -71 21 l-60 0 3 -85z m103 35 c0 -22 -5 -25 -37 -28 -36 -3
++-38 -2 -38 28 0 30 2 31 38 28 32 -3 37 -6 37 -28z"/>
++<path d="M12740 3680 l0 -90 56 0 c66 0 72 22 8 30 l-39 5 -3 73 c-4 104 -22
++90 -22 -18z"/>
++<path d="M14670 3773 c-39 -15 -60 -47 -60 -90 0 -57 33 -93 85 -93 57 0 75
++14 75 61 0 39 -1 40 -32 37 -39 -4 -51 -28 -14 -28 32 0 35 -25 5 -40 -68 -37
++-127 54 -77 118 15 17 77 15 84 -3 6 -16 34 -21 34 -7 0 27 -68 57 -100 45z"/>
++<path d="M14810 3679 c0 -68 3 -90 13 -87 6 3 13 21 15 41 4 50 31 49 73 -3
++48 -59 71 -49 27 12 -20 28 -20 32 -5 43 20 14 22 56 5 73 -7 7 -38 12 -70 12
++l-58 0 0 -91z m111 55 c11 -14 10 -18 -6 -30 -10 -8 -31 -14 -47 -14 -24 0
++-28 4 -28 30 0 27 3 30 34 30 19 0 39 -7 47 -16z"/>
++<path d="M14990 3680 l0 -90 65 0 c51 0 65 3 65 15 0 11 -12 15 -50 15 -46 0
++-50 2 -50 24 0 23 5 25 48 28 26 2 47 8 47 13 0 6 -21 11 -47 13 -43 3 -48 5
++-48 28 0 22 4 24 50 24 28 0 50 5 50 10 0 6 -28 10 -65 10 l-65 0 0 -90z"/>
++<path d="M1337 1963 c-22 -6 -47 -53 -47 -90 0 -65 69 -106 134 -79 32 13 36
++19 36 50 0 35 -1 36 -40 36 -42 0 -56 -16 -17 -22 14 -2 22 -10 22 -23 0 -15
++-8 -21 -33 -23 -46 -5 -72 20 -72 68 0 63 58 92 100 50 13 -13 21 -16 26 -8 4
++6 -3 20 -16 30 -21 17 -54 21 -93 11z"/>
++<path d="M1494 1955 c-4 -8 -4 -43 -2 -77 4 -48 9 -65 27 -79 29 -24 63 -24
++92 0 19 15 23 28 23 87 1 89 -18 101 -22 14 -3 -71 -13 -90 -46 -90 -36 0 -46
++20 -46 86 0 61 -14 92 -26 59z"/>
++<path d="M1677 1963 c-4 -3 -7 -44 -7 -90 l0 -83 70 0 c40 0 70 4 70 10 0 6
++-25 10 -55 10 -54 0 -55 0 -55 30 0 29 1 30 50 30 64 0 66 18 3 22 -44 3 -48
++5 -48 28 0 23 4 25 53 28 30 2 50 7 47 13 -7 10 -118 13 -128 2z"/>
++<path d="M7347 1963 c-23 -6 -47 -54 -47 -93 0 -35 35 -76 73 -85 13 -4 41 0
++61 9 32 13 36 19 36 50 0 35 -1 36 -40 36 -22 0 -40 -4 -40 -10 0 -5 12 -10
++26 -10 21 0 25 -4 22 -22 -2 -19 -10 -24 -45 -26 -38 -3 -43 0 -58 28 -35 67
++38 146 89 95 16 -17 36 -20 36 -6 0 29 -62 47 -113 34z"/>
++<path d="M7506 1898 c-23 -32 -20 -65 9 -93 28 -29 42 -31 73 -9 30 21 17 38
++-14 18 -19 -13 -27 -14 -39 -4 -25 20 -17 29 27 32 49 3 61 27 32 59 -24 26
++-69 25 -88 -3z m74 -13 c11 -13 7 -15 -24 -15 -35 0 -49 13 -23 23 22 9 34 7
++47 -8z"/>
++<path d="M7640 1853 c0 -35 4 -63 10 -63 6 0 10 20 10 44 0 46 19 72 45 62 11
++-4 15 -20 15 -57 0 -36 4 -49 13 -47 16 6 21 67 8 101 -10 24 -15 27 -56 25
++l-45 -1 0 -64z"/>
++<path d="M7784 1895 c-40 -62 22 -139 81 -101 14 9 25 21 25 26 0 14 -12 12
++-34 -5 -13 -10 -24 -11 -37 -4 -31 16 -22 28 24 31 34 2 43 7 45 24 7 52 -74
++75 -104 29z m74 -12 c2 -9 -7 -13 -27 -13 -30 0 -39 9 -24 24 11 10 46 3 51
++-11z"/>
++<path d="M7910 1914 c0 -4 10 -33 22 -66 14 -40 26 -58 36 -56 14 3 49 83 51
++116 2 27 -15 9 -33 -35 l-20 -47 -19 47 c-11 26 -23 47 -28 47 -5 0 -9 -3 -9
++-6z"/>
++<path d="M8057 1902 c-17 -19 -22 -57 -11 -87 9 -24 49 -36 79 -25 24 9 36 40
++15 40 -5 0 -10 -4 -10 -9 0 -15 -32 -22 -46 -10 -24 20 -15 29 26 29 48 0 60
++18 36 55 -20 30 -65 34 -89 7z m71 -19 c2 -9 -7 -13 -27 -13 -30 0 -39 9 -24
++24 11 10 46 3 51 -11z"/>
++<path d="M9459 1941 c-73 -74 8 -188 105 -147 32 13 36 19 36 50 0 35 -1 36
++-41 36 -24 0 -38 -4 -34 -10 3 -5 12 -10 18 -10 7 0 18 -4 26 -9 23 -15 -5
++-41 -44 -41 -40 0 -65 26 -65 68 0 63 62 92 106 51 28 -26 40 -9 13 19 -30 33
++-83 29 -120 -7z"/>
++<path d="M9625 1961 c-3 -5 7 -11 22 -13 28 -3 28 -4 31 -80 2 -60 6 -78 17
++-78 12 0 15 17 15 80 l0 80 31 0 c17 0 28 4 24 10 -8 13 -132 13 -140 1z"/>
++<path d="M9790 1880 c0 -49 4 -90 9 -90 6 0 11 15 13 33 3 30 6 32 47 38 105
++14 89 109 -19 109 l-50 0 0 -90z m101 54 c20 -24 -1 -49 -42 -49 -35 0 -47 18
++-35 51 7 19 60 18 77 -2z"/>
++<path d="M10040 1860 c0 -49 3 -61 20 -70 11 -6 25 -8 32 -4 6 4 20 7 32 8 17
++1 22 8 24 40 4 48 -6 92 -18 80 -5 -5 -10 -29 -12 -54 -3 -40 -6 -45 -28 -45
++-23 0 -25 4 -28 53 -4 72 -22 66 -22 -8z"/>
++<path d="M9950 1856 c0 -11 10 -16 31 -16 38 0 35 24 -4 28 -19 2 -27 -1 -27
++-12z"/>
++<path d="M11737 1950 c-55 -43 -39 -138 26 -159 29 -10 42 -9 71 3 32 13 36
++19 36 50 0 35 -1 36 -40 36 -22 0 -40 -4 -40 -10 0 -5 11 -10 24 -10 30 0 42
++-16 26 -35 -19 -23 -76 -19 -94 7 -22 31 -20 74 4 98 26 26 58 25 87 -2 l23
++-21 0 21 c0 43 -78 57 -123 22z"/>
++<path d="M11905 1958 c-11 -28 -1 -161 13 -166 8 -2 12 8 12 32 0 60 38 60 79
++1 35 -52 59 -47 29 6 -21 38 -21 41 -5 50 18 11 22 45 8 68 -14 21 -129 28
++-136 9z m103 -17 c8 -5 12 -17 10 -27 -2 -14 -13 -20 -46 -22 -39 -3 -42 -1
++-42 21 0 13 3 27 7 30 9 10 55 8 71 -2z"/>
++<path d="M12090 1880 l0 -90 65 0 c78 0 88 18 13 22 -49 3 -53 5 -53 28 0 23
++4 25 48 28 60 4 62 22 3 22 -49 0 -61 9 -51 40 5 16 15 20 56 20 31 0 48 4 44
++10 -3 6 -33 10 -66 10 l-59 0 0 -90z"/>
++<path d="M13730 1956 c0 -30 59 -161 74 -164 9 -2 16 -2 16 0 0 2 14 36 30 77
++17 40 30 80 30 89 0 30 -25 -9 -50 -75 -12 -35 -24 -63 -25 -63 -1 0 -10 21
++-19 48 -34 91 -39 102 -47 102 -5 0 -9 -6 -9 -14z"/>
++<path d="M13910 1958 c0 -6 11 -26 25 -43 l24 -33 -29 -38 c-34 -44 -36 -54
++-15 -54 8 0 15 3 15 8 1 4 10 18 21 32 l21 25 28 -34 c41 -48 56 -35 20 19
++l-29 44 25 33 c35 46 25 64 -13 23 l-30 -33 -24 32 c-23 32 -39 40 -39 19z"/>
++<path d="M14080 1882 l0 -92 55 0 c65 0 74 17 13 22 l-43 3 -3 70 c-5 108 -22
++105 -22 -3z"/>
++<path d="M14261 1952 c-10 -19 -61 -151 -61 -158 0 -2 6 -4 14 -4 8 0 17 11
++20 25 5 21 12 25 45 25 31 0 40 -5 49 -25 11 -24 32 -35 32 -16 0 19 -67 165
++-78 169 -6 2 -15 -5 -21 -16z m33 -51 c17 -31 13 -41 -16 -41 -19 0 -22 10
++-12 48 8 28 10 28 28 -7z"/>
++<path d="M14390 1880 c0 -102 17 -124 22 -27 l3 62 43 -62 c60 -89 74 -85 70
++22 -3 97 -20 114 -28 28 l-5 -58 -43 63 c-23 34 -47 62 -52 62 -6 0 -10 -39
++-10 -90z"/>
++<path d="M15940 1880 l0 -90 55 0 c65 0 74 17 13 22 l-43 3 -3 78 c-4 108 -22
++97 -22 -13z"/>
++<path d="M16087 1963 c-4 -3 -7 -44 -7 -90 0 -67 3 -83 15 -83 12 0 15 17 15
++90 0 83 -5 101 -23 83z"/>
++<path d="M16167 1952 c-34 -37 -19 -62 49 -84 28 -9 39 -19 39 -33 0 -30 -50
++-33 -80 -5 -28 26 -42 11 -17 -19 26 -32 72 -37 105 -11 47 37 34 68 -39 92
++-28 9 -39 19 -39 33 0 27 40 32 66 9 25 -23 37 -10 14 16 -23 25 -76 26 -98 2z"/>
++<path d="M16327 1963 c-11 -10 -8 -173 2 -173 6 0 11 15 13 33 3 30 6 32 47
++38 100 13 89 109 -12 109 -24 0 -47 -3 -50 -7z m94 -29 c20 -24 -1 -49 -42
++-49 -28 0 -35 4 -37 24 -6 39 52 58 79 25z"/>
++<path d="M11655 8829 c-280 -4 -559 -10 -620 -12 -60 -2 270 -1 735 2 1083 8
++2186 7 2550 0 177 -4 258 -3 215 2 -99 13 -2269 19 -2880 8z"/>
++<path d="M14685 8800 c100 -12 357 -31 362 -27 7 8 -174 27 -302 31 -104 4
++-116 3 -60 -4z"/>
++<path d="M15062 8765 c3 -3 43 -10 89 -15 95 -11 197 -31 344 -67 278 -68 471
++-173 661 -359 123 -120 158 -204 179 -436 12 -139 13 -140 13 -53 0 103 -9
++174 -33 259 -28 102 -63 156 -150 241 -187 182 -391 294 -655 360 -190 47
++-469 91 -448 70z"/>
++<path d="M13221 8656 c6 -6 381 -37 386 -32 6 6 -57 15 -187 26 -120 10 -206
++13 -199 6z"/>
++<path d="M12081 8576 c2 -3 97 -10 209 -15 113 -6 246 -13 295 -16 66 -3 79
++-2 50 4 -70 16 -566 39 -554 27z"/>
++<path d="M8260 8529 c-124 -5 -279 -13 -345 -18 -118 -10 -117 -10 55 -5 336
++8 754 25 759 29 6 7 -194 4 -469 -6z"/>
++<path d="M7470 8493 c-47 -2 -173 -9 -280 -18 -107 -8 -240 -17 -295 -20 -290
++-17 -531 -67 -645 -134 -25 -14 -56 -26 -69 -26 -21 0 -28 -9 -45 -57 -11 -31
++-18 -60 -14 -63 3 -4 32 11 63 31 51 34 55 39 39 51 -14 10 -15 15 -3 29 55
++67 327 131 649 154 80 5 199 14 265 19 66 6 237 15 379 21 143 6 262 13 265
++15 4 5 -137 4 -309 -2z"/>
++<path d="M12090 8489 c334 -43 398 -68 549 -216 89 -87 93 -94 78 -111 -15
++-17 -13 -20 39 -61 30 -24 57 -41 60 -38 3 2 -4 31 -15 63 -13 41 -25 59 -36
++59 -9 0 -60 43 -113 95 -72 71 -115 104 -166 129 -99 48 -230 79 -361 85 -105
++4 -107 4 -35 -5z"/>
++<path d="M9189 8288 c-24 -29 -80 -94 -124 -144 -44 -50 -102 -117 -130 -149
++-27 -33 -70 -82 -95 -110 -25 -28 -79 -91 -120 -139 -41 -49 -104 -123 -140
++-165 -131 -154 -156 -186 -224 -275 -83 -109 -182 -261 -221 -336 -61 -117
++-97 -170 -114 -170 -13 0 -21 -10 -25 -31 -7 -36 -8 -109 -2 -109 3 0 25 21
++51 46 l46 47 -20 21 c-18 19 -19 25 -7 41 7 11 32 56 56 100 129 241 242 394
++605 816 55 64 123 142 150 174 28 33 88 102 134 155 198 225 244 280 234 280
++-5 0 -29 -24 -54 -52z"/>
++<path d="M9381 8250 c-7 -25 -27 -90 -46 -145 -72 -214 -114 -412 -115 -536 0
++-137 46 -261 162 -439 60 -91 149 -222 158 -230 8 -8 94 -122 103 -138 6 -8 3
++-20 -7 -31 -16 -17 -14 -20 34 -51 27 -18 50 -36 50 -41 0 -5 -101 -9 -230 -9
++l-230 0 0 -250 0 -250 873 2 872 3 0 245 0 245 -631 3 -632 2 -7 57 c-10 79
++-13 85 -44 78 -25 -5 -34 4 -118 117 -167 224 -252 361 -300 480 -70 173 -48
++369 89 782 21 65 37 126 35 135 -2 9 -9 -4 -16 -29z m1609 -1870 l0 -240 -857
++2 -858 3 -3 225 c-1 123 0 230 2 237 4 10 178 13 861 13 l855 0 0 -240z"/>
++<path d="M9910 6345 c0 -62 4 -94 10 -90 6 3 10 44 10 90 0 46 -4 87 -10 90
++-6 4 -10 -28 -10 -90z"/>
++<path d="M9978 6434 c-11 -11 -10 -172 1 -178 11 -7 21 17 21 50 0 21 4 24 39
++24 23 0 46 7 55 16 20 20 21 58 1 74 -18 15 -106 26 -117 14z m97 -54 c0 -22
++-5 -25 -37 -28 -36 -3 -38 -2 -38 28 0 30 2 31 38 28 32 -3 37 -6 37 -28z"/>
++<path d="M10286 6419 c-23 -18 -26 -28 -26 -78 0 -62 18 -91 57 -91 44 0 72
++70 42 106 -9 11 -23 14 -46 11 -36 -6 -38 -5 -23 24 12 21 40 25 58 7 6 -6 15
++-8 19 -4 8 8 -32 46 -47 46 -4 0 -19 -9 -34 -21z m60 -95 c8 -30 -14 -58 -38
++-49 -35 14 -25 75 12 75 13 0 22 -9 26 -26z"/>
++<path d="M10135 6363 c14 -57 45 -117 55 -107 18 18 50 118 41 127 -4 4 -17
++-16 -28 -44 l-20 -53 -18 52 c-20 54 -42 72 -30 25z"/>
++<path d="M5070 7900 l0 -240 875 0 875 0 0 240 0 240 -875 0 -875 0 0 -240z
++m1738 -2 l2 -228 -860 0 -860 0 0 230 0 230 858 -2 857 -3 3 -227z"/>
++<path d="M6133 7953 c-31 -6 -63 -49 -63 -85 0 -88 80 -129 138 -71 16 16 22
++28 15 30 -7 3 -21 -5 -32 -16 -43 -43 -91 -13 -91 56 0 59 42 85 83 52 30 -23
++37 -24 37 -5 0 27 -45 47 -87 39z"/>
++<path d="M5670 7941 c0 -5 12 -11 28 -13 26 -3 27 -5 30 -68 4 -97 16 -106 22
++-15 5 76 6 80 30 83 14 2 29 8 35 13 5 5 -21 9 -68 9 -42 0 -77 -4 -77 -9z"/>
++<path d="M5842 7865 c2 -48 7 -85 13 -85 6 0 11 37 13 85 2 72 0 85 -13 85
++-13 0 -15 -13 -13 -85z"/>
++<path d="M5910 7865 c0 -50 4 -85 10 -85 6 0 10 13 10 29 0 26 4 29 42 35 111
++18 104 106 -8 106 l-54 0 0 -85z m105 35 c0 -22 -5 -25 -38 -28 -39 -3 -55 13
++-43 44 4 11 17 14 43 12 33 -3 38 -6 38 -28z"/>
++<path d="M15334 7862 c-32 -5 -55 -35 -61 -80 -4 -33 -1 -44 23 -70 25 -26 38
++-31 93 -35 57 -5 62 -4 49 10 -14 13 -14 18 -1 44 34 68 -26 143 -103 131z
++m70 -44 c29 -41 16 -103 -20 -96 -11 2 -18 -2 -16 -9 3 -18 -28 -16 -50 4 -23
++20 -24 85 -2 107 23 24 70 20 88 -6z"/>
++<path d="M14540 7845 c-7 -8 -10 -27 -7 -42 3 -15 0 -35 -6 -44 -8 -12 -8 -27
++-1 -46 7 -22 17 -29 43 -31 57 -6 88 40 56 82 -11 15 -12 23 -3 33 8 10 8 20
++0 38 -13 29 -61 35 -82 10z m57 -16 c16 -16 5 -39 -17 -39 -23 0 -34 16 -26
++35 6 18 28 19 43 4z m1 -68 c8 -4 12 -19 10 -32 -4 -30 -45 -33 -62 -6 -9 15
++-7 21 8 33 23 16 26 17 44 5z"/>
++<path d="M14677 7842 c-12 -13 -17 -36 -17 -74 0 -64 21 -91 67 -86 23 2 30
++10 41 46 12 35 12 49 0 85 -11 36 -17 42 -44 45 -20 2 -36 -3 -47 -16z m62
++-16 c18 -21 10 -107 -11 -120 -23 -14 -37 0 -44 45 -10 64 25 112 55 75z"/>
++<path d="M14816 7844 c-18 -17 -21 -34 -7 -34 5 0 14 7 21 15 18 22 54 15 58
++-10 2 -13 -13 -36 -43 -65 -25 -24 -45 -50 -45 -57 0 -16 105 -18 115 -3 4 6
++-10 10 -34 10 -23 0 -41 4 -41 8 0 5 14 21 31 38 47 44 53 61 34 90 -18 28
++-65 33 -89 8z"/>
++<path d="M15052 7837 c-27 -29 -28 -40 -2 -32 19 6 20 2 20 -59 0 -37 4 -66
++10 -66 6 0 10 37 10 90 0 50 -4 90 -8 90 -5 0 -18 -10 -30 -23z"/>
++<path d="M15173 7835 c-28 -27 -29 -38 -3 -30 19 6 20 2 20 -60 0 -49 3 -66
++13 -62 15 5 17 169 2 173 -5 1 -20 -8 -32 -21z"/>
++<path d="M16353 7695 c0 -27 2 -38 4 -22 2 15 2 37 0 50 -2 12 -4 0 -4 -28z"/>
++<path d="M14955 7699 c-10 -15 3 -25 16 -12 7 7 7 13 1 17 -6 3 -14 1 -17 -5z"/>
++<path d="M16342 7594 c-2 -32 -7 -43 -21 -47 -19 -5 -19 -6 0 -68 11 -35 22
++-65 24 -67 6 -6 33 63 40 102 6 28 3 34 -13 38 -15 4 -22 16 -25 44 l-4 39 -1
++-41z"/>
++<path d="M5440 7250 l0 -240 875 0 875 0 0 240 0 240 -875 0 -875 0 0 -240z
++m1730 0 l0 -230 -860 0 -860 0 0 230 0 230 860 0 860 0 0 -230z"/>
++<path d="M5993 7304 c-9 -4 -13 -32 -13 -90 0 -68 3 -84 15 -84 11 0 15 11 15
++41 0 37 2 40 23 33 29 -8 55 -32 62 -55 5 -14 16 -19 41 -19 27 0 37 5 46 25
++10 22 17 26 47 23 26 -2 39 -9 46 -25 9 -21 41 -35 33 -15 -1 5 -16 43 -33 85
++-39 101 -53 101 -93 0 -17 -43 -35 -78 -41 -78 -6 0 -20 13 -31 30 -19 29 -19
++29 0 48 41 38 14 78 -56 83 -27 2 -55 1 -61 -2z m102 -49 c0 -16 -8 -21 -42
++-23 -40 -3 -43 -2 -43 23 0 25 3 26 43 23 34 -2 42 -7 42 -23z m149 -17 c9
++-35 8 -38 -19 -38 -28 0 -28 0 -15 34 12 32 26 33 34 4z"/>
++<path d="M6343 7304 c-20 -9 -18 -174 1 -174 10 0 16 13 18 38 2 31 6 36 23
++34 11 -2 34 -18 50 -37 41 -47 63 -46 31 1 -24 35 -24 36 -5 55 40 40 13 80
++-57 85 -27 2 -55 1 -61 -2z m102 -49 c0 -16 -8 -21 -42 -23 -40 -3 -43 -2 -43
++23 0 25 3 26 43 23 34 -2 42 -7 42 -23z"/>
++<path d="M6522 7301 c-17 -10 -13 -163 5 -168 7 -3 13 9 15 29 3 31 6 33 48
++38 51 6 77 38 59 72 -17 32 -95 50 -127 29z m102 -37 c10 -25 -12 -44 -50 -44
++-31 0 -34 3 -34 30 0 28 2 30 39 30 27 0 41 -5 45 -16z"/>
++<path d="M2784 6997 c-2 -7 -3 -116 -2 -242 l3 -230 408 -3 408 -2 -28 -38
++c-15 -20 -31 -41 -36 -47 -4 -5 -38 -50 -75 -99 l-67 -88 -76 6 c-70 6 -77 5
++-82 -13 -7 -28 -1 -31 58 -31 28 0 54 -3 58 -6 8 -8 -55 -93 -70 -94 -6 0 -14
++6 -17 13 -8 20 -33 -19 -46 -74 -8 -34 -17 -49 -28 -49 -84 -1 -455 -33 -522
++-46 -88 -17 -250 -59 -285 -74 -148 -63 -246 -136 -261 -194 -28 -115 115
++-230 370 -297 38 -10 73 -22 78 -27 6 -6 -1 -20 -17 -38 -15 -16 -75 -82 -133
++-146 -68 -76 -113 -118 -126 -119 -12 0 -15 -3 -8 -6 14 -5 1 -22 -117 -153
++-43 -47 -120 -132 -172 -190 -52 -57 -101 -112 -109 -121 -8 -9 -44 -49 -80
++-90 -36 -40 -107 -120 -159 -177 -90 -99 -94 -102 -112 -86 -12 10 -23 14 -27
++8 -15 -17 -55 -114 -50 -119 5 -6 95 31 116 48 9 7 9 13 1 23 -8 9 -1 23 28
++56 21 24 41 45 44 48 3 3 60 67 128 143 67 75 128 137 135 137 8 0 17 10 20
++23 3 12 30 47 58 77 29 31 125 136 213 235 87 99 166 187 175 196 8 9 49 54
++90 100 41 46 89 99 105 117 l30 33 65 -11 c146 -25 203 -31 369 -38 l174 -7
++20 -115 c18 -109 18 -115 1 -127 -16 -12 -16 -13 -1 -13 9 0 18 -10 21 -22 10
++-55 36 -241 46 -322 6 -49 13 -93 16 -97 2 -4 -1 -11 -7 -15 -8 -5 -8 -9 1
++-14 10 -6 24 -87 47 -271 5 -43 4 -47 -20 -53 l-26 -6 37 -71 37 -70 8 33 c5
++18 12 47 18 64 14 46 11 64 -10 64 -15 0 -22 11 -30 48 -13 60 -33 225 -30
++249 1 10 -3 29 -8 43 -6 14 -14 59 -18 100 -4 41 -11 98 -17 125 -5 28 -15 97
++-23 155 -8 58 -21 150 -29 205 -8 55 -12 103 -8 106 4 3 79 11 167 17 164 12
++214 19 370 54 341 75 516 213 436 344 -81 132 -400 240 -786 265 -204 13 -212
++16 -146 52 28 16 51 30 51 33 0 2 -5 13 -12 23 -10 17 -6 26 26 65 30 36 44
++46 68 46 30 0 30 1 25 38 -5 35 1 44 87 157 l93 120 456 3 457 2 0 245 0 245
++-870 0 c-695 0 -872 -3 -876 -13z m1736 -232 l0 -225 -439 0 -439 0 5 23 c6
++21 5 21 -14 -3 l-21 -25 -406 3 -406 2 0 225 0 225 860 0 860 0 0 -225z m-915
++-814 c284 -46 463 -110 555 -199 74 -71 78 -116 16 -188 -60 -70 -209 -135
++-418 -183 -132 -31 -425 -61 -588 -61 -153 0 -446 29 -565 56 -355 81 -519
++201 -450 334 61 118 369 227 740 260 164 15 565 4 710 -19z"/>
++<path d="M3634 6823 c-60 -11 -81 -108 -35 -157 30 -32 82 -35 111 -6 21 21
++26 40 12 40 -5 0 -17 -9 -27 -20 -23 -26 -50 -25 -76 1 -17 17 -20 29 -16 62
++3 22 11 44 19 48 23 15 67 10 77 -8 7 -13 13 -15 21 -7 22 21 -41 56 -86 47z"/>
++<path d="M3415 6810 c3 -5 17 -10 30 -10 23 0 24 -3 27 -75 2 -42 7 -75 13
++-75 6 0 11 33 13 75 3 72 4 75 27 75 13 0 27 5 30 10 4 6 -22 10 -70 10 -48 0
++-74 -4 -70 -10z"/>
++<path d="M3760 6729 c0 -68 3 -90 13 -87 6 3 13 18 15 35 3 27 7 31 43 36 50
++7 69 22 69 56 0 40 -18 51 -82 51 l-58 0 0 -91z m105 41 c0 -22 -5 -25 -37
++-28 -36 -3 -38 -2 -38 28 0 30 2 31 38 28 32 -3 37 -6 37 -28z"/>
++<path d="M2775 5730 c-43 -17 -60 -65 -44 -123 11 -41 33 -57 76 -57 33 0 73
++25 73 46 0 20 -16 18 -40 -6 -24 -24 -39 -25 -66 -6 -24 18 -27 101 -4 116 23
++15 70 12 76 -5 7 -16 34 -21 34 -6 0 14 -51 51 -69 50 -9 0 -25 -4 -36 -9z"/>
++<path d="M2565 5720 c3 -5 17 -10 31 -10 23 0 24 -2 24 -80 0 -64 3 -80 15
++-80 12 0 15 16 15 80 0 79 0 80 25 80 14 0 25 5 25 10 0 6 -30 10 -71 10 -44
++0 -68 -4 -64 -10z"/>
++<path d="M2912 5645 c3 -86 19 -115 28 -53 5 31 8 33 50 38 38 4 46 9 54 33
++16 46 -1 62 -73 65 l-62 3 3 -86z m103 35 c0 -22 -5 -25 -37 -28 -36 -3 -38
++-2 -38 28 0 30 2 31 38 28 32 -3 37 -6 37 -28z"/>
++<path d="M3450 5720 c0 -5 5 -10 10 -10 6 0 10 5 10 10 0 6 -4 10 -10 10 -5 0
++-10 -4 -10 -10z"/>
++<path d="M3704 5717 c-10 -27 1 -160 14 -165 8 -2 12 11 12 47 0 39 4 53 18
++60 28 15 42 -6 42 -61 0 -26 5 -48 10 -48 6 0 10 27 10 60 0 49 -3 61 -20 70
++-12 6 -30 8 -40 5 -16 -5 -20 -2 -20 19 0 27 -17 35 -26 13z"/>
++<path d="M3512 5704 c-9 -16 -7 -80 4 -131 3 -15 12 -23 24 -23 21 0 27 15 10
++25 -12 8 -13 82 -1 89 10 6 -9 56 -21 56 -4 0 -11 -7 -16 -16z"/>
++<path d="M3158 5679 c-32 -18 -22 -49 22 -67 22 -9 40 -21 40 -25 0 -15 -33
++-20 -52 -8 -25 15 -35 7 -18 -14 17 -21 69 -16 84 8 13 21 -2 50 -30 56 -10 2
++-25 8 -32 14 -11 8 -10 12 3 20 10 5 21 4 30 -3 23 -19 41 -7 21 13 -20 19
++-43 21 -68 6z"/>
++<path d="M3265 5655 c9 -51 31 -105 44 -105 6 0 16 19 22 43 l12 42 14 -43 c8
++-24 20 -41 27 -39 10 3 43 87 45 115 2 28 -18 9 -31 -30 l-15 -43 -14 44 c-8
++23 -18 43 -24 43 -5 0 -17 -21 -26 -47 l-16 -47 -7 34 c-3 19 -13 43 -22 54
++-14 18 -15 16 -9 -21z"/>
++<path d="M3457 5683 c-4 -3 -7 -35 -7 -70 0 -47 3 -64 13 -61 7 3 13 27 15 63
++3 55 -6 84 -21 68z"/>
++<path d="M3592 5670 c-45 -42 -16 -124 40 -118 17 2 36 11 42 20 14 24 -1 36
++-17 14 -22 -30 -57 -12 -57 28 0 45 24 65 48 42 23 -20 32 -20 32 -1 0 15 -29
++35 -52 35 -8 0 -24 -9 -36 -20z"/>
++<path d="M1040 6972 c0 -5 14 -7 30 -4 17 2 30 6 30 8 0 2 -13 4 -30 4 -16 0
++-30 -4 -30 -8z"/>
++<path d="M1153 6973 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1243 6973 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M1343 6973 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1433 6973 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M1533 6973 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1623 6973 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1723 6973 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1813 6973 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1913 6973 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2003 6973 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2093 6973 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M2193 6973 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2270 6976 c0 -2 11 -6 25 -8 14 -3 25 -1 25 3 0 5 -11 9 -25 9 -14
++0 -25 -2 -25 -4z"/>
++<path d="M1042 6890 c0 -19 2 -27 5 -17 2 9 2 25 0 35 -3 9 -5 1 -5 -18z"/>
++<path d="M2312 6895 c0 -16 2 -22 5 -12 2 9 2 23 0 30 -3 6 -5 -1 -5 -18z"/>
++<path d="M2312 6800 c0 -19 2 -27 5 -17 2 9 2 25 0 35 -3 9 -5 1 -5 -18z"/>
++<path d="M1042 6795 c0 -16 2 -22 5 -12 2 9 2 23 0 30 -3 6 -5 -1 -5 -18z"/>
++<path d="M1170 6800 c0 -5 9 -10 20 -10 18 0 20 -7 20 -56 0 -34 4 -53 10 -49
++6 3 10 28 10 56 0 43 3 49 21 49 11 0 17 5 14 10 -3 6 -26 10 -51 10 -24 0
++-44 -4 -44 -10z"/>
++<path d="M1296 6788 c-32 -46 -7 -108 43 -108 30 0 60 25 46 38 -4 4 -10 1
++-12 -5 -8 -22 -61 -16 -68 8 -12 38 2 69 33 69 15 0 33 -5 40 -12 7 -7 12 -8
++12 -2 0 37 -70 46 -94 12z"/>
++<path d="M1421 6743 c1 -44 3 -59 8 -43 5 18 17 27 44 33 35 9 38 12 35 41 -3
++29 -6 31 -45 34 l-43 3 1 -68z m74 27 c0 -23 -59 -20 -63 3 -3 15 2 18 30 15
++21 -2 33 -8 33 -18z"/>
++<path d="M1785 6788 c-9 -24 -1 -101 10 -105 7 -2 10 18 10 52 -1 56 -10 80
++-20 53z"/>
++<path d="M1598 6769 c-12 -6 -18 -22 -18 -45 0 -39 15 -50 55 -40 21 5 25 12
++25 41 0 24 -6 37 -19 45 -23 12 -22 12 -43 -1z m46 -31 c15 -24 -10 -51 -35
++-37 -22 11 -24 30 -7 47 15 15 28 11 42 -10z"/>
++<path d="M1698 6769 c-14 -8 -18 -23 -18 -64 0 -30 5 -55 10 -55 6 0 10 7 10
++15 0 8 8 15 18 15 25 0 42 20 42 50 0 43 -27 60 -62 39z m42 -39 c0 -23 -4
++-30 -20 -30 -14 0 -20 7 -20 23 0 27 7 37 27 37 8 0 13 -12 13 -30z"/>
++<path d="M1888 6768 c-36 -28 -21 -88 21 -88 40 0 60 40 37 75 -18 28 -34 31
++-58 13z m46 -23 c8 -23 -4 -45 -25 -45 -13 0 -19 7 -19 23 0 37 32 53 44 22z"/>
++<path d="M1988 6773 c-14 -3 -18 -15 -18 -51 0 -50 16 -48 22 3 2 19 9 30 18
++30 9 0 16 -11 18 -30 5 -48 22 -55 22 -9 0 55 -15 69 -62 57z"/>
++<path d="M2080 6765 c-15 -18 -6 -33 28 -46 21 -8 23 -12 12 -19 -8 -5 -22 -4
++-33 2 -15 8 -18 7 -15 -4 6 -18 52 -22 67 -5 9 12 8 18 -4 31 -9 9 -23 16 -31
++16 -8 0 -14 5 -14 11 0 7 10 9 27 4 23 -5 25 -4 14 9 -17 20 -35 20 -51 1z"/>
++<path d="M1837 6763 c-11 -10 -8 -71 3 -78 6 -4 10 12 10 39 0 47 -2 51 -13
++39z"/>
++<path d="M2428 6753 c6 -2 18 -2 25 0 6 3 1 5 -13 5 -14 0 -19 -2 -12 -5z"/>
++<path d="M2523 6753 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2613 6753 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2713 6753 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1042 6700 c0 -19 2 -27 5 -17 2 9 2 25 0 35 -3 9 -5 1 -5 -18z"/>
++<path d="M2312 6705 c0 -16 2 -22 5 -12 2 9 2 23 0 30 -3 6 -5 -1 -5 -18z"/>
++<path d="M2312 6615 c0 -16 2 -22 5 -12 2 9 2 23 0 30 -3 6 -5 -1 -5 -18z"/>
++<path d="M1042 6605 c0 -16 2 -22 5 -12 2 9 2 23 0 30 -3 6 -5 -1 -5 -18z"/>
++<path d="M7080 6380 l0 -250 508 0 507 0 140 -36 c233 -59 285 -70 272 -58 -6
++7 -113 34 -232 61 -38 8 -74 19 -80 24 -5 5 119 9 308 9 l317 0 0 250 0 250
++-870 0 -870 0 0 -250z m1728 3 l-3 -238 -855 0 -855 0 -3 225 c-1 123 0 230 2
++237 4 10 178 13 861 13 l855 0 -2 -237z"/>
++<path d="M7730 6345 c0 -62 4 -94 10 -90 6 3 10 44 10 90 0 46 -4 87 -10 90
++-6 4 -10 -28 -10 -90z"/>
++<path d="M7798 6434 c-11 -11 -10 -172 1 -178 11 -7 21 17 21 50 0 21 4 24 39
++24 23 0 46 7 55 16 20 20 21 58 1 74 -18 15 -106 26 -117 14z m97 -54 c0 -22
++-5 -25 -37 -28 -36 -3 -38 -2 -38 28 0 30 2 31 38 28 32 -3 37 -6 37 -28z"/>
++<path d="M8108 6375 c-21 -29 -38 -58 -38 -64 0 -5 17 -11 37 -13 30 -2 38 -8
++43 -28 6 -25 6 -25 23 10 11 21 14 36 7 38 -5 2 -10 28 -10 58 0 69 -14 69
++-62 -1z m42 -25 c0 -25 -4 -30 -25 -30 -29 0 -30 3 -9 35 22 33 34 31 34 -5z"/>
++<path d="M7950 6382 c0 -15 33 -107 43 -120 6 -7 14 -9 18 -5 16 17 48 118 40
++126 -5 5 -17 -13 -28 -43 l-20 -52 -17 46 c-16 42 -36 69 -36 48z"/>
++<path d="M1103 6583 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1193 6583 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M1293 6583 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1383 6583 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M1483 6583 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1573 6583 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1673 6583 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1763 6583 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1863 6583 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1953 6583 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2053 6583 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2143 6583 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2243 6583 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M5384 6569 c-3 -6 -1 -16 5 -22 8 -8 11 -8 11 1 0 7 9 12 20 12 11 0
++20 5 20 10 0 14 -47 13 -56 -1z"/>
++<path d="M5495 6570 c-4 -6 5 -10 20 -10 15 0 24 4 20 10 -3 6 -12 10 -20 10
++-8 0 -17 -4 -20 -10z"/>
++<path d="M5590 6570 c0 -5 9 -10 21 -10 11 0 17 5 14 10 -3 6 -13 10 -21 10
++-8 0 -14 -4 -14 -10z"/>
++<path d="M5685 6570 c-3 -5 3 -10 14 -10 12 0 21 5 21 10 0 6 -6 10 -14 10 -8
++0 -18 -4 -21 -10z"/>
++<path d="M5775 6570 c-4 -6 5 -10 20 -10 15 0 24 4 20 10 -3 6 -12 10 -20 10
++-8 0 -17 -4 -20 -10z"/>
++<path d="M5875 6570 c-3 -5 3 -10 14 -10 12 0 21 5 21 10 0 6 -6 10 -14 10 -8
++0 -18 -4 -21 -10z"/>
++<path d="M5965 6570 c-4 -6 5 -10 20 -10 15 0 24 4 20 10 -3 6 -12 10 -20 10
++-8 0 -17 -4 -20 -10z"/>
++<path d="M6060 6570 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M6155 6570 c-4 -6 5 -10 20 -10 15 0 24 4 20 10 -3 6 -12 10 -20 10
++-8 0 -17 -4 -20 -10z"/>
++<path d="M6250 6570 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M6345 6570 c-4 -6 5 -10 20 -10 15 0 24 4 20 10 -3 6 -12 10 -20 10
++-8 0 -17 -4 -20 -10z"/>
++<path d="M6440 6570 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M6535 6570 c-4 -6 5 -10 20 -10 15 0 24 4 20 10 -3 6 -12 10 -20 10
++-8 0 -17 -4 -20 -10z"/>
++<path d="M6630 6570 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M6710 6545 c0 -15 4 -24 10 -20 6 3 10 12 10 20 0 8 -4 17 -10 20 -6
++4 -10 -5 -10 -20z"/>
++<path d="M5380 6476 c0 -8 5 -18 10 -21 6 -3 10 3 10 14 0 12 -4 21 -10 21 -5
++0 -10 -6 -10 -14z"/>
++<path d="M6710 6451 c0 -12 5 -21 10 -21 6 0 10 6 10 14 0 8 -4 18 -10 21 -5
++3 -10 -3 -10 -14z"/>
++<path d="M5587 6403 c-11 -10 -8 -123 3 -123 6 0 10 11 10 25 0 21 5 25 28 25
++49 0 72 49 33 70 -22 11 -64 13 -74 3z m68 -33 c0 -9 -11 -16 -27 -18 -23 -3
++-28 1 -28 18 0 17 5 21 28 18 16 -2 27 -9 27 -18z"/>
++<path d="M12050 6189 l0 -221 -32 6 c-107 19 -115 19 -120 -1 -5 -20 26 -16
++-491 -62 -114 -10 -210 -21 -214 -24 -9 -10 23 -8 192 8 83 8 231 22 330 30
++178 16 180 16 193 -4 14 -20 15 -20 72 9 32 16 60 26 64 23 3 -4 6 -86 6 -184
++l0 -178 368 -3 c202 -2 841 -2 1419 0 l1053 3 2 202 3 201 25 7 25 7 -27 1
++-28 1 0 200 0 200 -1420 0 -1420 0 0 -221z m2830 -184 l0 -395 -1410 0 -1410
++0 0 395 0 395 1410 0 1410 0 0 -395z"/>
++<path d="M12197 6223 c-4 -3 -7 -44 -7 -90 l0 -83 71 0 c44 0 68 4 64 10 -3 6
++-28 10 -56 10 -48 0 -49 1 -49 30 0 29 1 30 50 30 64 0 66 18 3 22 -44 3 -48
++5 -48 28 0 23 4 25 48 28 26 2 47 7 47 13 0 10 -113 13 -123 2z"/>
++<path d="M12960 6215 c0 -8 5 -15 10 -15 6 0 10 7 10 15 0 8 -4 15 -10 15 -5
++0 -10 -7 -10 -15z"/>
++<path d="M13364 6217 c-10 -27 1 -160 14 -165 8 -2 12 10 12 40 0 52 11 71 36
++66 15 -2 20 -14 22 -56 4 -72 22 -66 22 8 0 55 -2 60 -25 66 -14 3 -32 4 -40
++0 -11 -4 -15 2 -15 24 0 31 -16 41 -26 17z"/>
++<path d="M13877 6223 c-4 -3 -7 -15 -7 -25 0 -13 -8 -18 -28 -18 -36 0 -62
++-28 -62 -67 0 -39 28 -63 73 -63 l37 0 0 90 c0 90 -1 96 -13 83z m-11 -87 c10
++-41 1 -61 -26 -61 -20 0 -26 6 -28 28 -5 40 4 57 27 57 13 0 23 -9 27 -24z"/>
++<path d="M12483 6197 c-7 -15 -7 -42 0 -85 8 -50 13 -62 28 -62 11 0 19 5 19
++10 0 6 -4 10 -10 10 -15 0 -12 87 3 94 10 5 10 7 0 12 -7 3 -13 14 -13 25 0
++26 -15 24 -27 -4z"/>
++<path d="M12367 6146 c15 -32 15 -37 -1 -61 -23 -35 -10 -47 16 -15 l20 25 18
++-23 c29 -36 44 -26 20 13 -20 32 -20 35 -4 60 21 33 9 47 -15 17 l-17 -23 -19
++20 c-28 32 -37 25 -18 -13z"/>
++<path d="M12566 6164 c-19 -18 -21 -85 -4 -102 23 -23 98 -12 98 14 0 18 -5
++18 -34 -1 -22 -14 -25 -14 -41 1 -21 22 -10 32 40 36 34 2 39 6 37 23 -7 42
++-66 60 -96 29z m72 -21 c2 -9 -7 -13 -27 -13 -21 0 -31 5 -31 16 0 19 51 16
++58 -3z"/>
++<path d="M12694 6171 c-2 -2 -4 -31 -4 -63 0 -74 23 -76 30 -2 4 38 9 50 24
++52 25 5 36 -14 36 -65 0 -24 5 -43 10 -43 16 0 12 106 -4 119 -12 10 -82 12
++-92 2z"/>
++<path d="M12843 6173 c-7 -2 -13 -15 -13 -28 0 -17 10 -27 42 -39 38 -16 40
++-18 25 -33 -15 -15 -18 -15 -37 2 -22 20 -36 15 -26 -10 4 -12 17 -15 48 -13
++40 3 43 5 43 32 0 24 -6 31 -35 41 -19 6 -34 16 -33 21 3 14 32 17 47 5 17
++-14 29 -2 15 16 -11 13 -52 16 -76 6z"/>
++<path d="M12960 6115 c0 -37 4 -65 10 -65 6 0 10 28 10 65 0 37 -4 65 -10 65
++-6 0 -10 -28 -10 -65z"/>
++<path d="M13026 6164 c-18 -18 -21 -66 -6 -95 13 -24 72 -26 94 -3 22 21 20
++77 -2 97 -23 21 -66 22 -86 1z m74 -24 c14 -26 5 -57 -20 -70 -16 -8 -22 -6
++-36 15 -14 21 -15 31 -6 50 14 30 47 33 62 5z"/>
++<path d="M13160 6113 c0 -36 4 -63 10 -63 6 0 10 19 10 43 0 51 11 70 36 65
++15 -2 20 -14 22 -56 4 -72 27 -65 27 7 -1 60 -12 72 -67 68 l-38 -2 0 -62z"/>
++<path d="M13516 6158 c-20 -29 -20 -72 0 -92 27 -28 104 -16 104 16 0 13 -20
++9 -36 -7 -18 -18 -54 -4 -54 20 0 11 12 15 45 15 37 0 45 3 45 18 0 48 -76 70
++-104 30z m72 -15 c2 -9 -7 -13 -27 -13 -30 0 -39 9 -24 24 11 10 46 3 51 -11z"/>
++<path d="M13660 6165 c-17 -21 -7 -29 18 -14 20 13 52 7 52 -10 0 -5 -15 -12
++-34 -15 -41 -8 -60 -28 -51 -56 5 -17 15 -20 61 -20 l54 0 0 39 c0 67 -14 91
++-54 91 -18 0 -39 -7 -46 -15z m70 -70 c0 -17 -36 -39 -50 -30 -16 10 -11 33 8
++38 32 9 42 7 42 -8z"/>
++<path d="M13934 6155 c-19 -30 -12 -90 12 -99 40 -15 94 0 94 26 0 13 -20 9
++-36 -7 -18 -18 -54 -4 -54 20 0 11 12 15 45 15 38 0 45 3 45 19 0 51 -77 70
++-106 26z m74 -12 c2 -9 -7 -13 -27 -13 -30 0 -39 9 -24 24 11 10 46 3 51 -11z"/>
++<path d="M14070 6115 c0 -75 17 -89 22 -18 2 38 8 50 25 59 28 13 19 24 -19
++24 -28 0 -28 0 -28 -65z"/>
++<path d="M14163 6174 c-7 -3 -13 -16 -13 -29 0 -17 10 -27 42 -39 38 -16 40
++-18 25 -33 -15 -15 -18 -15 -37 2 -22 20 -36 15 -26 -10 4 -12 17 -15 48 -13
++40 3 43 5 43 32 0 24 -6 31 -35 41 -19 6 -34 16 -33 21 3 15 33 17 50 3 13
++-11 15 -11 12 6 -4 20 -48 31 -76 19z"/>
++<path d="M12187 5944 c-10 -11 -9 -112 2 -119 5 -3 11 7 13 22 3 24 8 28 33
++28 25 0 30 -4 33 -27 6 -54 22 -27 22 37 0 37 -4 65 -10 65 -5 0 -10 -12 -10
++-26 0 -22 -3 -25 -32 -22 -24 2 -34 9 -38 26 -3 13 -8 20 -13 16z"/>
++<path d="M12320 5885 l0 -65 34 0 c46 0 58 18 50 71 -8 49 -17 59 -56 59 -28
++0 -28 -1 -28 -65z m68 28 c2 -9 -7 -13 -27 -13 -21 0 -31 5 -31 16 0 19 51 16
++58 -3z m0 -55 c3 -14 -3 -18 -27 -18 -29 0 -41 17 -24 34 13 13 48 1 51 -16z"/>
++<path d="M12440 5885 c0 -42 4 -64 10 -60 6 3 10 17 10 31 0 20 5 24 30 24 27
++0 30 -3 30 -30 0 -16 5 -30 10 -30 6 0 10 28 10 65 0 37 -4 65 -10 65 -5 0
++-10 -11 -10 -25 0 -21 -5 -25 -30 -25 -23 0 -30 5 -30 19 0 11 -4 23 -10 26
++-6 4 -10 -18 -10 -60z"/>
++<path d="M12670 5885 l0 -65 34 0 c45 0 66 22 66 70 0 44 -18 60 -69 60 l-31
++0 0 -65z m75 0 c0 -36 -3 -40 -27 -43 -27 -3 -28 -2 -28 43 0 45 1 46 28 43
++24 -3 27 -7 27 -43z"/>
++<path d="M12810 5930 c-38 -38 -14 -110 38 -110 33 0 45 8 61 38 33 63 -49
++122 -99 72z m81 -22 c23 -43 -21 -89 -59 -62 -33 23 -28 74 8 86 21 7 39 -1
++51 -24z"/>
++<path d="M13041 5883 c1 -38 4 -56 6 -41 6 39 31 43 61 8 33 -37 51 -39 27 -4
++-14 22 -15 30 -5 50 18 33 -2 54 -51 54 l-39 0 1 -67z m79 33 c0 -20 -38 -30
++-55 -16 -21 17 -9 30 26 30 18 0 29 -5 29 -14z"/>
++<path d="M13760 5885 c0 -64 16 -91 22 -37 2 19 9 28 26 30 30 5 28 22 -3 22
++-16 0 -25 6 -25 15 0 10 10 15 30 15 17 0 30 5 30 10 0 6 -18 10 -40 10 l-40
++0 0 -65z"/>
++<path d="M13368 5928 c-8 -25 4 -108 16 -108 8 0 11 16 9 48 -1 26 -2 53 -2
++60 -1 6 -5 12 -10 12 -5 0 -11 -6 -13 -12z"/>
++<path d="M13178 5909 c-21 -12 -24 -59 -6 -77 18 -18 56 -14 68 7 14 28 13 38
++-10 61 -23 23 -28 24 -52 9z m50 -35 c3 -23 -21 -49 -38 -39 -11 7 -14 48 -3
++59 13 13 38 1 41 -20z"/>
++<path d="M13274 5875 c1 -49 2 -50 34 -53 32 -3 32 -3 32 42 0 25 -4 46 -10
++46 -5 0 -10 -15 -10 -34 0 -63 -36 -55 -43 9 -3 33 -4 31 -3 -10z"/>
++<path d="M13461 5865 l2 -50 6 40 c4 27 12 41 24 43 13 3 17 -4 17 -32 0 -19
++5 -38 10 -41 6 -4 10 12 10 39 0 25 -3 47 -7 47 -5 1 -20 2 -35 3 -27 2 -28 1
++-27 -49z"/>
++<path d="M13567 5908 c-20 -10 -23 -58 -5 -76 7 -7 23 -12 36 -12 14 0 21 -4
++16 -11 -3 -6 -17 -9 -31 -6 -15 3 -22 0 -20 -7 5 -16 36 -20 52 -6 10 8 15 32
++15 69 0 52 -2 56 -23 57 -13 1 -31 -3 -40 -8z m48 -28 c9 -28 -13 -54 -31 -39
++-15 12 -19 41 -7 52 13 13 32 7 38 -13z"/>
++<path d="M13878 5913 c-13 -3 -18 -15 -18 -43 0 -53 16 -59 24 -10 4 27 11 40
++22 40 8 0 12 5 9 10 -6 10 -9 11 -37 3z"/>
++<path d="M13943 5913 c-24 -9 -13 -23 13 -17 20 5 25 3 22 -7 -2 -7 -15 -16
++-29 -19 -22 -5 -25 -11 -20 -40 0 -5 18 -10 39 -10 l38 0 -4 43 c-5 51 -22 66
++-59 50z m37 -62 c0 -14 -18 -23 -30 -16 -6 4 -8 11 -5 16 8 12 35 12 35 0z"/>
++<path d="M14035 5900 c-24 -27 -11 -73 23 -78 12 -2 22 -8 22 -14 0 -6 -11 -8
++-25 -5 -16 3 -24 0 -22 -7 7 -21 45 -18 61 6 21 29 22 108 2 108 -8 0 -21 2
++-28 5 -8 3 -23 -4 -33 -15z m50 -20 c9 -28 -13 -54 -31 -39 -15 12 -19 41 -7
++52 13 13 32 7 38 -13z"/>
++<path d="M13423 5865 c0 -27 2 -38 4 -22 2 15 2 37 0 50 -2 12 -4 0 -4 -28z"/>
++<path d="M12940 5824 c0 -8 5 -12 10 -9 6 4 8 11 5 16 -9 14 -15 11 -15 -7z"/>
++<path d="M13660 5830 c0 -5 5 -10 11 -10 5 0 7 5 4 10 -3 6 -8 10 -11 10 -2 0
++-4 -4 -4 -10z"/>
++<path d="M12575 5820 c3 -5 8 -10 11 -10 2 0 4 5 4 10 0 6 -5 10 -11 10 -5 0
++-7 -4 -4 -10z"/>
++<path d="M5380 6381 c0 -11 5 -23 10 -26 6 -4 10 5 10 19 0 14 -4 26 -10 26
++-5 0 -10 -9 -10 -19z"/>
++<path d="M5530 6340 c0 -33 4 -60 10 -60 6 0 10 27 10 60 0 33 -4 60 -10 60
++-6 0 -10 -27 -10 -60z"/>
++<path d="M5948 6388 c-8 -24 4 -108 16 -108 10 0 11 20 7 108 -1 6 -5 12 -10
++12 -5 0 -11 -6 -13 -12z"/>
++<path d="M6714 6376 c-3 -8 -4 -23 -1 -33 4 -16 6 -15 12 5 4 12 13 22 21 22
++7 0 16 5 19 10 4 6 -5 10 -20 10 -14 0 -28 -6 -31 -14z"/>
++<path d="M6820 6380 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M6920 6380 c0 -5 7 -10 15 -10 8 0 15 5 15 10 0 6 -7 10 -15 10 -8 0
++-15 -4 -15 -10z"/>
++<path d="M7010 6380 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M5752 6358 c-30 -30 -3 -82 40 -76 29 4 47 50 28 72 -15 19 -51 21
++-68 4z m53 -17 c8 -26 -5 -53 -24 -49 -29 6 -27 68 3 68 8 0 17 -8 21 -19z"/>
++<path d="M5851 6303 c1 -38 4 -58 6 -45 3 15 12 22 27 22 28 0 46 18 46 45 0
++29 -19 45 -52 45 l-28 0 1 -67z m54 22 c0 -33 -28 -47 -39 -19 -10 25 3 56 22
++52 11 -2 17 -13 17 -33z"/>
++<path d="M5999 6330 c-6 -45 -4 -58 7 -48 3 3 4 26 2 49 l-3 44 -6 -45z"/>
++<path d="M6042 6358 c-7 -7 -12 -21 -12 -33 0 -12 5 -26 12 -33 7 -7 21 -12
++33 -12 12 0 26 5 33 12 7 7 12 21 12 33 0 12 -5 26 -12 33 -7 7 -21 12 -33 12
++-12 0 -26 -5 -33 -12z m53 -33 c0 -23 -4 -30 -20 -30 -21 0 -31 25 -21 51 11
++28 41 12 41 -21z"/>
++<path d="M6141 6323 l1 -48 10 43 c12 57 40 55 49 -3 l7 -40 -2 45 c-1 43 -2
++45 -33 48 l-33 3 1 -48z"/>
++<path d="M6240 6350 c0 -13 10 -24 25 -30 14 -5 25 -14 25 -20 0 -14 -37 -12
++-43 3 -3 7 -6 4 -6 -6 -1 -15 5 -18 31 -15 42 4 51 34 15 47 -37 14 -47 36
++-13 27 18 -4 25 -3 21 4 -3 5 -17 10 -31 10 -17 0 -24 -5 -24 -20z"/>
++<path d="M5383 6294 c-3 -8 -1 -20 6 -27 8 -8 11 -4 11 16 0 30 -7 35 -17 11z"/>
++<path d="M6710 6268 c0 -16 5 -28 10 -28 13 0 13 20 0 40 -8 12 -10 9 -10 -12z"/>
++<path d="M2533 6263 c-37 -3 -53 -8 -53 -18 0 -24 18 -27 116 -20 80 6 95 10
++92 24 -3 17 -51 22 -155 14z"/>
++<path d="M2860 6251 c0 -18 9 -20 101 -23 78 -2 103 0 107 11 9 23 -20 31
++-115 31 -85 0 -93 -2 -93 -19z"/>
++<path d="M2163 6253 c-55 -4 -63 -6 -63 -24 0 -19 6 -20 103 -17 97 3 102 4
++105 26 4 24 10 23 -145 15z"/>
++<path d="M1727 6233 c-4 -3 -7 -15 -7 -26 0 -19 5 -20 77 -13 42 3 89 6 105 6
++21 0 28 5 28 20 0 19 -7 20 -98 20 -54 0 -102 -3 -105 -7z"/>
++<path d="M1387 6213 c-39 -3 -47 -7 -43 -19 3 -9 6 -18 6 -20 0 -6 134 -5 169
++2 21 5 31 12 31 25 0 20 -30 22 -163 12z"/>
++<path d="M3610 6205 c0 -21 25 -31 114 -44 56 -9 81 -10 89 -2 18 18 -3 30
++-79 46 -90 19 -124 19 -124 0z"/>
++<path d="M5382 6193 c2 -9 8 -18 15 -20 7 -3 9 3 6 16 -6 25 -26 28 -21 4z"/>
++<path d="M1028 6193 c-50 -3 -58 -7 -58 -23 0 -18 7 -20 78 -20 96 0 122 7
++122 31 0 20 -2 20 -142 12z"/>
++<path d="M15334 6186 c-3 -8 -4 -25 -1 -38 4 -21 4 -20 6 5 1 20 6 27 21 27
++11 0 20 5 20 10 0 15 -40 12 -46 -4z"/>
++<path d="M15435 6190 c3 -5 12 -10 20 -10 8 0 17 5 20 10 4 6 -5 10 -20 10
++-15 0 -24 -4 -20 -10z"/>
++<path d="M15530 6190 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10
++-11 0 -20 -4 -20 -10z"/>
++<path d="M15625 6190 c3 -5 12 -10 20 -10 8 0 17 5 20 10 4 6 -5 10 -20 10
++-15 0 -24 -4 -20 -10z"/>
++<path d="M15720 6190 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10
++-11 0 -20 -4 -20 -10z"/>
++<path d="M15815 6190 c3 -5 12 -10 20 -10 8 0 17 5 20 10 4 6 -5 10 -20 10
++-15 0 -24 -4 -20 -10z"/>
++<path d="M15910 6190 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10
++-11 0 -20 -4 -20 -10z"/>
++<path d="M16005 6190 c3 -5 12 -10 20 -10 8 0 17 5 20 10 4 6 -5 10 -20 10
++-15 0 -24 -4 -20 -10z"/>
++<path d="M16095 6190 c3 -5 15 -10 26 -10 10 0 19 5 19 10 0 6 -12 10 -26 10
++-14 0 -23 -4 -19 -10z"/>
++<path d="M16190 6190 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10
++-11 0 -20 -4 -20 -10z"/>
++<path d="M16285 6190 c3 -5 15 -10 26 -10 10 0 19 5 19 10 0 6 -12 10 -26 10
++-14 0 -23 -4 -19 -10z"/>
++<path d="M16380 6190 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10
++-11 0 -20 -4 -20 -10z"/>
++<path d="M16475 6190 c3 -5 12 -10 20 -10 8 0 17 5 20 10 4 6 -5 10 -20 10
++-15 0 -24 -4 -20 -10z"/>
++<path d="M16570 6190 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10
++-11 0 -20 -4 -20 -10z"/>
++<path d="M16665 6190 c3 -5 12 -10 20 -10 8 0 17 5 20 10 4 6 -5 10 -20 10
++-15 0 -24 -4 -20 -10z"/>
++<path d="M16760 6190 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10
++-11 0 -20 -4 -20 -10z"/>
++<path d="M16855 6190 c3 -5 12 -10 20 -10 8 0 17 5 20 10 4 6 -5 10 -20 10
++-15 0 -24 -4 -20 -10z"/>
++<path d="M16950 6191 c0 -5 7 -11 15 -15 9 -3 15 0 15 9 0 8 -7 15 -15 15 -8
++0 -15 -4 -15 -9z"/>
++<path d="M5455 6180 c-4 -6 5 -10 20 -10 15 0 24 4 20 10 -3 6 -12 10 -20 10
++-8 0 -17 -4 -20 -10z"/>
++<path d="M5550 6180 c0 -5 12 -10 28 -10 21 0 24 2 12 10 -20 13 -40 13 -40 0z"/>
++<path d="M5645 6180 c-4 -6 5 -10 20 -10 15 0 24 4 20 10 -3 6 -12 10 -20 10
++-8 0 -17 -4 -20 -10z"/>
++<path d="M5740 6180 c0 -5 12 -10 28 -10 21 0 24 2 12 10 -20 13 -40 13 -40 0z"/>
++<path d="M5835 6180 c-4 -6 5 -10 20 -10 15 0 24 4 20 10 -3 6 -12 10 -20 10
++-8 0 -17 -4 -20 -10z"/>
++<path d="M5930 6180 c0 -5 9 -10 21 -10 11 0 17 5 14 10 -3 6 -13 10 -21 10
++-8 0 -14 -4 -14 -10z"/>
++<path d="M6025 6180 c-4 -6 5 -10 20 -10 15 0 24 4 20 10 -3 6 -12 10 -20 10
++-8 0 -17 -4 -20 -10z"/>
++<path d="M6120 6180 c0 -5 9 -10 21 -10 11 0 17 5 14 10 -3 6 -13 10 -21 10
++-8 0 -14 -4 -14 -10z"/>
++<path d="M6215 6180 c-4 -6 5 -10 20 -10 15 0 24 4 20 10 -3 6 -12 10 -20 10
++-8 0 -17 -4 -20 -10z"/>
++<path d="M6305 6180 c-4 -6 5 -10 20 -10 15 0 24 4 20 10 -3 6 -12 10 -20 10
++-8 0 -17 -4 -20 -10z"/>
++<path d="M6405 6180 c-4 -6 5 -10 20 -10 15 0 24 4 20 10 -3 6 -12 10 -20 10
++-8 0 -17 -4 -20 -10z"/>
++<path d="M6495 6180 c-4 -6 5 -10 20 -10 15 0 24 4 20 10 -3 6 -12 10 -20 10
++-8 0 -17 -4 -20 -10z"/>
++<path d="M6595 6180 c-4 -6 6 -10 22 -10 22 0 25 2 13 10 -19 12 -27 12 -35 0z"/>
++<path d="M6685 6180 c-3 -5 3 -10 14 -10 12 0 21 5 21 10 0 6 -6 10 -14 10 -8
++0 -18 -4 -21 -10z"/>
++<path d="M648 6173 c-50 -3 -58 -7 -58 -23 0 -19 8 -20 100 -20 l100 0 0 25
++c0 27 4 27 -142 18z"/>
++<path d="M3986 6123 c-20 -20 1 -41 80 -83 71 -36 87 -42 95 -30 5 8 9 18 9
++21 0 10 -177 99 -184 92z"/>
++<path d="M10075 6083 c-169 -148 -235 -235 -235 -308 0 -20 -5 -25 -25 -25
++-14 0 -25 -6 -25 -12 0 -20 49 -155 50 -138 0 8 11 38 25 65 30 61 31 71 5 78
++-27 7 -26 40 4 104 25 53 83 117 191 210 32 29 57 54 54 57 -2 2 -22 -11 -44
++-31z"/>
++<path d="M16965 6107 c-4 -10 -5 -21 -1 -24 10 -10 18 4 13 24 -4 17 -4 17
++-12 0z"/>
++<path d="M15332 6065 c0 -16 2 -22 5 -12 2 9 2 23 0 30 -3 6 -5 -1 -5 -18z"/>
++<path d="M8530 6022 c8 -5 31 -13 50 -16 19 -4 58 -14 85 -21 399 -112 470
++-133 535 -161 64 -27 134 -67 188 -107 49 -37 52 -41 36 -58 -16 -18 -12 -39
++8 -39 6 0 30 -10 54 -22 24 -12 47 -18 51 -15 3 4 -3 27 -15 51 -12 24 -22 48
++-22 54 0 17 -20 25 -33 13 -9 -7 -20 -5 -39 7 -14 9 -44 29 -67 45 -103 69
++-210 110 -486 187 -82 23 -179 50 -215 60 -82 23 -151 35 -130 22z"/>
++<path d="M15478 6024 c-5 -4 -8 -34 -8 -66 l0 -58 39 0 c22 0 44 6 51 15 14
++17 16 83 3 96 -13 13 -76 23 -85 13z m72 -33 c14 -28 13 -38 -10 -61 -35 -35
++-50 -26 -50 30 0 46 2 50 25 50 14 0 29 -8 35 -19z"/>
++<path d="M15628 6023 c-27 -7 -42 -57 -26 -90 11 -24 19 -28 53 -28 32 0 42 5
++54 26 19 34 8 73 -24 87 -27 12 -29 13 -57 5z m62 -34 c27 -49 -21 -99 -61
++-63 -21 19 -24 36 -9 65 14 26 56 25 70 -2z"/>
++<path d="M15977 6023 c-4 -3 -7 -33 -7 -65 l0 -58 39 0 c47 0 71 22 53 50 -6
++11 -9 27 -5 36 11 29 -57 60 -80 37z m61 -30 c-2 -10 -13 -19 -26 -21 -17 -3
++-22 2 -22 17 0 16 6 21 26 21 19 0 25 -5 22 -17z m1 -47 c9 -10 8 -16 -4 -26
++-17 -14 -45 -7 -45 13 0 29 30 37 49 13z"/>
++<path d="M16335 6016 c-25 -18 -14 -42 30 -60 40 -17 45 -32 14 -41 -13 -4
++-28 0 -41 12 -20 18 -20 17 -17 -2 3 -15 14 -21 39 -23 66 -7 75 58 10 71 -36
++8 -42 37 -7 37 13 0 28 -5 35 -12 9 -9 12 -9 12 0 0 11 -31 32 -47 32 -5 0
++-18 -6 -28 -14z"/>
++<path d="M16963 6014 c-3 -8 -1 -20 6 -27 8 -8 11 -4 11 16 0 30 -7 35 -17 11z"/>
++<path d="M15840 5960 c0 -60 16 -84 22 -32 2 21 9 28 31 30 24 3 27 0 27 -27
++0 -17 5 -31 10 -31 6 0 10 27 10 60 0 33 -4 60 -10 60 -5 0 -10 -12 -10 -26 0
++-22 -4 -25 -27 -22 -20 2 -29 9 -31 26 -7 46 -22 20 -22 -38z"/>
++<path d="M16090 5960 c0 -60 16 -84 22 -32 2 21 8 27 28 27 17 0 26 -6 28 -20
++9 -49 22 -35 22 23 0 59 -15 87 -22 40 -2 -17 -10 -23 -28 -23 -18 0 -26 6
++-28 23 -7 46 -22 20 -22 -38z"/>
++<path d="M16440 5960 c0 -33 4 -60 10 -60 6 0 10 11 10 25 0 34 32 33 58 -2
++11 -16 24 -25 28 -21 4 5 -1 16 -10 27 -14 16 -15 23 -5 39 21 34 5 52 -46 52
++l-45 0 0 -60z m80 30 c0 -16 -7 -20 -30 -20 -23 0 -30 4 -30 20 0 16 7 20 30
++20 23 0 30 -4 30 -20z"/>
++<path d="M16660 6001 c-25 -47 -2 -106 40 -99 53 7 50 73 -4 73 -28 -1 -30 3
++-17 24 5 8 18 12 30 8 12 -3 21 -1 21 4 0 18 -59 9 -70 -10z m58 -55 c6 -29
++-15 -43 -35 -24 -14 14 -14 20 -3 33 16 19 34 15 38 -9z"/>
++<path d="M14993 6003 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M15093 6003 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M15183 6003 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M15332 5970 c0 -19 2 -27 5 -17 2 9 2 25 0 35 -3 9 -5 1 -5 -18z"/>
++<path d="M16560 5986 c0 -17 34 -86 42 -86 12 0 40 68 35 83 -3 7 -12 -4 -20
++-23 l-15 -35 -11 27 c-9 23 -31 48 -31 34z"/>
++<path d="M16960 5910 c0 -11 5 -20 10 -20 6 0 10 9 10 20 0 11 -4 20 -10 20
++-5 0 -10 -9 -10 -20z"/>
++<path d="M4296 5903 c-5 -11 11 -34 54 -77 33 -33 60 -64 60 -68 0 -13 27 -9
++39 5 8 10 -5 30 -55 85 -67 74 -87 85 -98 55z"/>
++<path d="M15746 5912 c-2 -4 -1 -14 5 -22 7 -12 9 -10 9 8 0 23 -5 28 -14 14z"/>
++<path d="M15332 5875 c0 -16 2 -22 5 -12 2 9 2 23 0 30 -3 6 -5 -1 -5 -18z"/>
++<path d="M16963 5824 c-3 -8 -1 -20 6 -27 8 -8 11 -4 11 16 0 30 -7 35 -17 11z"/>
++<path d="M15332 5785 c0 -16 2 -22 5 -12 2 9 2 23 0 30 -3 6 -5 -1 -5 -18z"/>
++<path d="M15667 5788 c-7 -20 7 -101 18 -105 9 -3 10 31 5 110 0 12 -17 8 -23
++-5z"/>
++<path d="M855 5756 c-22 -33 -10 -52 43 -72 53 -20 66 -33 50 -51 -17 -21 -65
++-16 -82 9 -18 25 -31 19 -22 -10 10 -31 58 -47 92 -30 64 31 57 73 -17 98 -32
++11 -44 21 -44 35 0 27 41 32 66 9 25 -23 37 -10 14 16 -26 29 -80 27 -100 -4z"/>
++<path d="M15478 5769 c-21 -12 -24 -59 -6 -77 18 -18 56 -14 68 7 14 27 13 47
++-6 65 -18 18 -32 20 -56 5z m50 -42 c3 -22 -1 -27 -18 -27 -23 0 -35 22 -26
++46 10 25 41 12 44 -19z"/>
++<path d="M15583 5773 c-9 -3 -13 -25 -12 -66 1 -34 3 -54 6 -44 2 9 13 17 23
++17 10 0 26 7 34 16 39 38 -1 98 -51 77z m45 -47 c-2 -13 -10 -21 -23 -21 -23
++0 -32 30 -14 51 16 19 41 -1 37 -30z"/>
++<path d="M15723 5730 c0 -30 2 -43 4 -27 2 15 2 39 0 55 -2 15 -4 2 -4 -28z"/>
++<path d="M15766 5764 c-20 -19 -20 -44 -2 -69 12 -16 19 -18 43 -10 33 12 43
++54 18 79 -21 20 -39 20 -59 0z m49 -34 c0 -18 -6 -26 -22 -28 -18 -3 -23 1
++-23 21 0 28 9 39 30 35 9 -2 15 -14 15 -28z"/>
++<path d="M15873 5773 c-8 -3 -13 -22 -12 -46 l1 -42 8 33 c9 40 15 46 35 39 9
++-4 15 -19 15 -37 0 -16 5 -30 10 -30 13 0 13 46 0 71 -10 18 -31 23 -57 12z"/>
++<path d="M15959 5764 c-12 -15 -12 -18 4 -28 10 -6 26 -17 35 -24 15 -12 12
++-13 -17 -8 -29 5 -32 4 -21 -9 16 -19 44 -19 60 0 10 12 10 18 0 30 -7 8 -19
++15 -26 15 -8 0 -14 7 -14 15 0 18 11 19 29 3 11 -11 13 -10 9 2 -7 21 -42 24
++-59 4z"/>
++<path d="M1012 5749 c-5 -13 -6 -51 -3 -84 5 -54 8 -60 31 -63 20 -3 22 -2 12
++11 -8 9 -12 39 -10 76 2 68 -15 103 -30 60z"/>
++<path d="M16960 5720 c0 -11 5 -20 10 -20 6 0 10 9 10 20 0 11 -4 20 -10 20
++-5 0 -10 -9 -10 -20z"/>
++<path d="M1080 5663 c0 -73 17 -86 22 -16 2 39 7 50 28 60 26 13 23 15 -22 17
++-28 2 -28 1 -28 -61z"/>
++<path d="M1176 5711 c-12 -13 -16 -32 -14 -57 2 -31 9 -42 31 -52 24 -12 31
++-11 53 2 29 20 34 42 5 26 -28 -14 -58 -13 -64 4 -8 21 2 26 50 26 41 0 44 2
++38 23 -14 47 -68 62 -99 28z m72 -23 c3 -14 -3 -18 -27 -18 -29 0 -41 17 -24
++34 13 13 48 1 51 -16z"/>
++<path d="M1323 5723 c-7 -2 -13 -12 -13 -21 0 -12 3 -13 12 -4 13 13 50 16 61
++5 11 -11 -14 -33 -37 -33 -12 0 -27 -5 -34 -12 -32 -32 5 -76 50 -59 13 4 29
++6 36 4 16 -6 17 98 0 115 -12 12 -52 15 -75 5z m67 -72 c0 -11 -28 -41 -38
++-41 -4 0 -14 5 -22 10 -13 9 -12 12 4 25 22 17 56 20 56 6z"/>
++<path d="M1462 5723 c-21 -4 -23 -9 -20 -59 4 -67 21 -71 28 -7 4 40 8 48 25
++48 17 0 21 -8 23 -45 4 -59 22 -78 22 -24 0 48 20 80 44 71 12 -5 16 -19 16
++-57 0 -28 5 -50 10 -50 7 0 10 22 8 56 -3 65 -23 88 -58 67 -12 -8 -21 -9 -25
++-3 -6 10 -31 11 -73 3z"/>
++<path d="M15332 5685 c0 -16 2 -22 5 -12 2 9 2 23 0 30 -3 6 -5 -1 -5 -18z"/>
++<path d="M16963 5634 c-3 -8 -1 -20 6 -27 8 -8 11 -4 11 16 0 30 -7 35 -17 11z"/>
++<path d="M4537 5618 c-16 -12 -14 -20 25 -100 30 -60 48 -88 61 -88 9 0 17 7
++17 15 0 14 -78 185 -84 185 -1 0 -10 -6 -19 -12z"/>
++<path d="M15332 5595 c0 -16 2 -22 5 -12 2 9 2 23 0 30 -3 6 -5 -1 -5 -18z"/>
++<path d="M16961 5546 c-8 -9 -11 -19 -7 -23 9 -9 29 13 24 27 -2 8 -8 7 -17
++-4z"/>
++<path d="M15340 5530 c0 -5 11 -10 25 -10 14 0 25 5 25 10 0 6 -11 10 -25 10
++-14 0 -25 -4 -25 -10z"/>
++<path d="M15440 5530 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10
++-11 0 -20 -4 -20 -10z"/>
++<path d="M15530 5530 c0 -5 11 -10 25 -10 14 0 25 5 25 10 0 6 -11 10 -25 10
++-14 0 -25 -4 -25 -10z"/>
++<path d="M15630 5530 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10
++-11 0 -20 -4 -20 -10z"/>
++<path d="M15720 5530 c0 -5 9 -10 19 -10 11 0 23 5 26 10 4 6 -5 10 -19 10
++-14 0 -26 -4 -26 -10z"/>
++<path d="M15820 5530 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10
++-11 0 -20 -4 -20 -10z"/>
++<path d="M15910 5530 c0 -5 9 -10 19 -10 11 0 23 5 26 10 4 6 -5 10 -19 10
++-14 0 -26 -4 -26 -10z"/>
++<path d="M16005 5530 c3 -5 15 -10 26 -10 10 0 19 5 19 10 0 6 -12 10 -26 10
++-14 0 -23 -4 -19 -10z"/>
++<path d="M16100 5530 c0 -5 9 -10 19 -10 11 0 23 5 26 10 4 6 -5 10 -19 10
++-14 0 -26 -4 -26 -10z"/>
++<path d="M16195 5530 c3 -5 15 -10 26 -10 10 0 19 5 19 10 0 6 -12 10 -26 10
++-14 0 -23 -4 -19 -10z"/>
++<path d="M16290 5530 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10
++-11 0 -20 -4 -20 -10z"/>
++<path d="M16385 5530 c3 -5 15 -10 26 -10 10 0 19 5 19 10 0 6 -12 10 -26 10
++-14 0 -23 -4 -19 -10z"/>
++<path d="M16480 5530 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10
++-11 0 -20 -4 -20 -10z"/>
++<path d="M16570 5530 c0 -5 9 -10 19 -10 11 0 23 5 26 10 4 6 -5 10 -19 10
++-14 0 -26 -4 -26 -10z"/>
++<path d="M16670 5530 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10
++-11 0 -20 -4 -20 -10z"/>
++<path d="M16760 5530 c0 -5 9 -10 19 -10 11 0 23 5 26 10 4 6 -5 10 -19 10
++-14 0 -26 -4 -26 -10z"/>
++<path d="M16860 5530 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10
++-11 0 -20 -4 -20 -10z"/>
++<path d="M840 5344 c0 -46 5 -86 10 -89 6 -4 10 5 10 19 0 22 5 26 29 26 38 0
++61 23 61 61 0 54 -15 69 -65 67 l-45 -1 0 -83z m79 62 c7 -8 11 -30 9 -48 -2
++-26 -8 -34 -27 -36 -40 -6 -57 51 -25 82 19 20 28 20 43 2z"/>
++<path d="M990 5415 c-19 -22 -3 -31 18 -11 11 9 26 14 36 10 28 -11 18 -31
++-19 -38 -39 -8 -58 -32 -44 -58 7 -13 21 -17 59 -15 l50 2 0 51 c0 27 -5 55
++-12 62 -17 17 -73 15 -88 -3z m68 -72 c-4 -22 -58 -31 -58 -10 0 20 10 27 37
++27 18 0 24 -5 21 -17z"/>
++<path d="M1120 5371 c0 -33 5 -63 10 -66 6 -4 10 10 10 35 0 31 6 47 26 65
++l27 25 -37 0 -36 0 0 -59z"/>
++<path d="M1205 5410 c-9 -27 8 -46 45 -54 36 -7 41 -36 7 -36 -13 0 -28 5 -35
++12 -17 17 -28 2 -12 -17 18 -21 64 -19 85 5 22 25 9 44 -42 61 -32 10 -34 13
++-19 27 12 13 19 14 28 4 16 -16 28 -15 28 3 0 11 -11 15 -39 15 -31 0 -41 -4
++-46 -20z"/>
++<path d="M1342 5418 c-31 -40 -17 -104 25 -115 27 -6 73 11 73 27 0 13 -17 13
++-25 0 -6 -9 -55 -15 -55 -6 0 2 -3 11 -6 20 -5 13 2 16 40 16 41 0 46 2 46 23
++0 13 -5 28 -12 35 -16 16 -73 15 -86 0z m66 -10 c20 -20 14 -28 -23 -28 -38 0
++-46 13 -17 29 22 13 26 13 40 -1z"/>
++<path d="M1472 5368 c4 -74 22 -84 26 -14 3 38 7 49 23 53 32 9 21 23 -16 23
++l-36 0 3 -62z"/>
++<path d="M4670 5253 c0 -10 5 -36 11 -58 6 -22 15 -59 20 -82 8 -32 15 -43 30
++-43 23 0 24 14 5 89 -8 31 -17 68 -20 84 -7 31 -46 40 -46 10z"/>
++<path d="M13981 5216 c2 -2 69 -9 149 -15 80 -6 172 -13 205 -16 47 -4 54 -3
++31 5 -48 15 -399 39 -385 26z"/>
++<path d="M14415 5172 c11 -5 47 -13 80 -16 142 -17 396 -95 595 -183 115 -50
++424 -222 459 -255 11 -10 17 -25 14 -36 -5 -22 28 -32 106 -32 l46 0 -55 54
++c-52 52 -54 53 -70 34 -15 -19 -17 -18 -90 30 -72 47 -207 122 -300 167 -91
++45 -179 85 -187 85 -4 1 -26 9 -48 20 -22 11 -46 19 -53 20 -8 0 -28 6 -45 14
++-37 17 -146 48 -267 76 -94 21 -218 36 -185 22z"/>
++<path d="M12118 5055 c174 -17 419 -29 411 -21 -7 7 -449 37 -509 35 -19 -1
++25 -7 98 -14z"/>
++<path d="M1510 5044 c0 -12 3 -14 13 -6 6 5 21 12 32 15 13 3 9 5 -12 6 -24 1
++-33 -3 -33 -15z"/>
++<path d="M1623 5053 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1723 5053 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1813 5053 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1913 5053 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2003 5053 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2103 5053 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2193 5053 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2383 5053 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2473 5053 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M2573 5053 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2663 5053 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M2763 5053 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2853 5053 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M2953 5053 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M3043 5053 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M3143 5053 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M3333 5053 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M3423 5053 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M3523 5053 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M3613 5053 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M3700 5046 c0 -8 5 -18 10 -21 6 -3 10 3 10 14 0 12 -4 21 -10 21 -5
++0 -10 -6 -10 -14z"/>
++<path d="M12551 5025 c6 -5 371 -35 428 -35 19 0 32 2 29 5 -3 3 -95 12 -204
++20 -214 16 -260 18 -253 10z"/>
++<path d="M7552 4975 c-74 -11 -119 -25 -81 -25 32 1 211 29 216 34 9 9 -42 6
++-135 -9z"/>
++<path d="M13022 4985 c4 -5 319 -35 367 -35 13 0 22 2 19 5 -6 6 -302 35 -357
++35 -19 0 -32 -2 -29 -5z"/>
++<path d="M1510 4954 c0 -14 4 -23 10 -19 6 3 10 15 10 26 0 10 -4 19 -10 19
++-5 0 -10 -12 -10 -26z"/>
++<path d="M3707 4973 c-11 -10 -8 -43 3 -43 6 0 10 11 10 25 0 26 -2 29 -13 18z"/>
++<path d="M7380 4943 c-40 -7 -220 -52 -275 -68 -190 -58 -318 -147 -413 -289
++-52 -78 -133 -278 -119 -293 3 -2 10 13 17 34 60 195 160 344 288 430 111 74
++224 114 471 164 52 11 97 22 100 24 5 6 -32 4 -69 -2z"/>
++<path d="M10982 4945 c4 -5 448 -35 517 -35 19 0 32 2 29 5 -6 6 -426 34 -507
++35 -24 0 -42 -2 -39 -5z"/>
++<path d="M13422 4945 c7 -7 299 -37 305 -31 6 6 -38 13 -159 26 -107 11 -154
++13 -146 5z"/>
++<path d="M11552 4905 c5 -6 444 -36 493 -34 51 2 -81 17 -255 28 -182 12 -246
++14 -238 6z"/>
++<path d="M4744 4858 c3 -24 8 -69 11 -100 7 -61 13 -72 34 -58 11 6 12 29 6
++104 -7 93 -8 96 -32 96 -23 0 -24 -3 -19 -42z"/>
++<path d="M1510 4865 c0 -15 4 -24 10 -20 6 3 10 12 10 20 0 8 -4 17 -10 20 -6
++4 -10 -5 -10 -20z"/>
++<path d="M2390 4871 c0 -5 12 -11 28 -13 27 -3 27 -4 30 -81 2 -56 6 -77 15
++-74 8 2 13 32 15 80 3 74 4 77 27 77 14 0 25 5 25 10 0 6 -30 10 -70 10 -38 0
++-70 -4 -70 -9z"/>
++<path d="M2560 4790 l0 -90 55 0 c65 0 74 17 13 22 l-43 3 -3 78 c-4 108 -22
++97 -22 -13z"/>
++<path d="M2712 4868 c-33 -33 -3 -77 61 -92 32 -8 47 -34 26 -47 -23 -15 -51
++-10 -75 12 -26 25 -39 11 -18 -19 23 -33 98 -31 120 3 15 23 15 27 1 49 -9 14
++-32 28 -54 33 -28 6 -38 14 -38 28 0 27 41 32 66 9 25 -23 37 -10 14 16 -20
++23 -83 28 -103 8z"/>
++<path d="M3703 4864 c-3 -8 -1 -20 6 -27 8 -8 11 -4 11 16 0 30 -7 35 -17 11z"/>
++<path d="M12081 4867 c3 -4 99 -13 215 -22 115 -8 234 -20 264 -24 30 -5 93
++-12 140 -16 47 -3 123 -12 170 -20 118 -19 216 -29 208 -20 -8 8 -235 39 -448
++60 -85 8 -189 20 -230 25 -99 12 -327 24 -319 17z"/>
++<path d="M1510 4764 c0 -14 4 -23 10 -19 6 3 10 15 10 26 0 10 -4 19 -10 19
++-5 0 -10 -12 -10 -26z"/>
++<path d="M3707 4783 c-11 -10 -8 -43 3 -43 6 0 10 11 10 25 0 26 -2 29 -13 18z"/>
++<path d="M1510 4675 c0 -15 4 -24 10 -20 6 3 10 12 10 20 0 8 -4 17 -10 20 -6
++4 -10 -5 -10 -20z"/>
++<path d="M3707 4693 c-11 -10 -8 -43 3 -43 6 0 10 11 10 25 0 26 -2 29 -13 18z"/>
++<path d="M1510 4596 c0 -10 8 -16 22 -16 12 0 19 1 17 3 -2 1 -12 9 -21 16
++-15 12 -18 11 -18 -3z"/>
++<path d="M3685 4590 c-18 -8 -17 -9 8 -9 15 -1 27 4 27 9 0 12 -8 12 -35 0z"/>
++<path d="M1603 4583 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M1703 4583 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1793 4583 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1983 4583 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2073 4583 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M2173 4583 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2263 4583 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M2363 4583 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2453 4583 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M2553 4583 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2643 4583 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M2743 4583 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2833 4583 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M2933 4583 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M3023 4583 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M3123 4583 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M3213 4583 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M3403 4583 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M3503 4583 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M3593 4583 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M4770 4420 c0 -91 2 -100 19 -100 15 0 19 10 23 63 7 93 0 137 -23
++137 -17 0 -19 -9 -19 -100z"/>
++<path d="M9804 4448 c-4 -18 -10 -96 -13 -173 -6 -140 -6 -140 -31 -145 l-26
++-5 19 -62 c10 -35 22 -63 27 -63 6 0 18 24 56 116 3 6 -4 14 -15 17 -19 5 -21
++13 -21 74 0 37 5 113 10 167 10 102 8 133 -6 74z"/>
++<path d="M6550 4239 c-5 -24 -14 -57 -18 -74 -6 -23 -14 -31 -35 -33 -23 -3
++-27 -8 -27 -35 0 -48 12 -107 20 -107 9 0 80 95 80 106 0 4 -7 12 -16 19 -15
++11 -15 17 0 85 18 77 15 112 -4 39z"/>
++<path d="M4745 4138 c-26 -80 -52 -178 -47 -182 13 -14 33 -4 43 22 20 51 48
++156 43 164 -8 12 -34 9 -39 -4z"/>
++<path d="M2943 4092 l-433 -2 0 -240 0 -240 875 0 875 0 0 240 0 240 -442 2
++c-244 2 -638 2 -875 0z m1302 -242 l0 -225 -857 -3 -858 -2 0 230 0 230 858
++-2 857 -3 0 -225z"/>
++<path d="M3147 3903 c-4 -3 -7 -44 -7 -90 0 -67 3 -83 15 -83 11 0 15 11 15
++40 0 33 3 40 19 40 21 0 43 -18 68 -56 8 -13 22 -24 29 -24 19 0 18 6 -11 44
++-25 33 -25 33 -5 51 45 41 11 85 -67 85 -27 0 -53 -3 -56 -7z m97 -19 c25 -10
++19 -43 -8 -50 -41 -10 -61 -1 -64 29 -3 24 0 27 27 27 16 0 36 -3 45 -6z"/>
++<path d="M3324 3897 c-10 -26 1 -160 13 -164 7 -3 13 9 15 29 3 30 6 33 46 40
++57 10 62 14 62 53 0 24 -6 38 -19 45 -29 15 -111 13 -117 -3z m106 -26 c13
++-26 -13 -53 -49 -49 -26 3 -38 26 -27 54 8 21 63 18 76 -5z"/>
++<path d="M3511 3884 c-23 -30 -27 -83 -10 -117 16 -30 28 -37 71 -37 42 0 86
++36 68 54 -7 7 -15 3 -26 -12 -16 -24 -44 -28 -75 -12 -24 14 -27 91 -3 114 20
++20 63 21 70 1 6 -16 34 -21 34 -7 0 20 -39 42 -73 42 -27 0 -41 -7 -56 -26z"/>
++<path d="M580 3850 l0 -240 865 0 865 0 0 240 0 240 -865 0 -865 0 0 -240z
++m1715 0 l0 -225 -852 -3 -853 -2 0 230 0 230 853 -2 852 -3 0 -225z"/>
++<path d="M1137 3903 c-4 -3 -7 -44 -7 -90 0 -67 3 -83 15 -83 11 0 15 11 15
++40 l0 40 45 0 45 0 0 -40 c0 -29 4 -40 15 -40 13 0 15 14 13 87 -2 58 -7 88
++-15 91 -9 2 -13 -8 -13 -32 0 -36 0 -36 -45 -36 -45 0 -45 0 -45 35 0 33 -8
++43 -23 28z"/>
++<path d="M1305 3900 c-4 -6 7 -10 24 -10 l31 0 0 -80 c0 -64 3 -80 15 -80 12
++0 15 16 15 80 0 79 0 80 25 80 14 0 25 5 25 10 0 6 -28 10 -64 10 -36 0 -68
++-4 -71 -10z"/>
++<path d="M1455 3900 c-4 -6 7 -10 24 -10 l31 0 0 -80 c0 -64 3 -80 15 -80 12
++0 15 16 15 80 l0 80 31 0 c17 0 28 4 24 10 -3 6 -35 10 -70 10 -35 0 -67 -4
++-70 -10z"/>
++<path d="M1627 3903 c-4 -3 -7 -44 -7 -90 0 -67 3 -83 15 -83 10 0 15 11 15
++35 0 33 2 35 33 35 18 0 43 7 55 16 28 20 30 69 3 84 -22 11 -104 14 -114 3z
++m97 -29 c9 -8 16 -17 16 -19 0 -14 -37 -35 -61 -35 -27 0 -29 3 -29 35 0 32 2
++35 29 35 16 0 37 -7 45 -16z"/>
++<path d="M7893 3962 l-743 -2 0 -245 0 -245 870 0 870 0 0 244 0 245 -127 3
++c-71 2 -462 2 -870 0z m987 -247 l0 -225 -860 0 -860 0 0 225 0 225 860 0 860
++0 0 -225z"/>
++<path d="M7834 3770 c-57 -23 -71 -99 -28 -149 33 -40 80 -42 113 -7 13 14 20
++30 16 36 -4 7 -15 2 -30 -15 -29 -30 -48 -32 -75 -5 -23 23 -27 77 -7 104 17
++24 62 24 87 1 18 -16 20 -16 20 -2 0 18 -37 47 -60 46 -8 0 -25 -4 -36 -9z"/>
++<path d="M7722 3685 c2 -48 7 -85 13 -85 6 0 11 37 13 85 2 72 0 85 -13 85
++-13 0 -15 -13 -13 -85z"/>
++<path d="M7970 3679 c0 -68 3 -90 13 -87 7 3 14 29 17 64 4 46 7 53 12 33 4
++-14 15 -42 23 -63 20 -47 30 -40 61 42 l23 57 0 -68 c1 -50 4 -68 14 -64 8 2
++12 29 12 88 0 77 -2 84 -19 84 -15 0 -24 -14 -40 -62 -11 -35 -23 -63 -28 -63
++-4 0 -12 18 -18 41 -18 64 -32 89 -52 89 -16 0 -18 -9 -18 -91z"/>
++<path d="M8182 3685 c3 -86 19 -115 28 -53 5 30 9 33 48 39 58 7 75 35 52 80
++-9 15 -22 19 -71 19 l-60 0 3 -85z m103 35 c0 -22 -5 -25 -37 -28 -36 -3 -38
++-2 -38 28 0 30 2 31 38 28 32 -3 37 -6 37 -28z"/>
++<path d="M9100 3730 l0 -240 81 0 c44 0 89 -5 99 -10 13 -7 21 -7 25 0 7 12
++781 14 789 2 2 -4 -24 -27 -59 -51 -68 -46 -104 -86 -129 -144 -8 -21 -22 -37
++-31 -37 -19 0 -14 -35 12 -99 l15 -36 29 55 c34 66 34 66 9 73 -13 3 -20 14
++-20 28 0 51 85 135 195 193 l50 26 337 0 338 0 0 240 0 240 -870 0 -870 0 0
++-240z m1730 0 l0 -230 -860 0 -860 0 0 230 0 230 860 0 860 0 0 -230z"/>
++<path d="M9720 3718 c0 -83 4 -93 43 -107 35 -14 74 -5 87 19 13 25 13 160 0
++160 -6 0 -10 -30 -10 -69 0 -77 -11 -94 -57 -89 -27 3 -28 5 -33 77 -3 47 -10
++76 -17 79 -10 3 -13 -15 -13 -70z"/>
++<path d="M9908 3784 c-5 -4 -8 -45 -8 -91 l0 -83 55 0 c69 0 95 23 95 86 0 60
++-24 85 -86 91 -27 3 -52 1 -56 -3z m99 -40 c20 -20 24 -31 19 -56 -9 -44 -24
++-58 -62 -58 l-34 0 0 63 c0 35 3 67 7 70 14 14 45 6 70 -19z"/>
++<path d="M10087 3783 c-4 -3 -7 -44 -7 -90 0 -65 3 -83 14 -83 9 0 16 12 18
++33 3 29 6 32 43 37 55 8 65 16 65 56 0 28 -5 36 -26 44 -29 11 -97 13 -107 3z
++m97 -29 c25 -25 4 -54 -39 -54 -32 0 -35 3 -35 28 0 16 3 32 7 35 12 13 51 7
++67 -9z"/>
++<path d="M5196 3944 c-3 -9 -6 -112 -6 -229 0 -117 3 -220 6 -229 6 -14 92
++-16 875 -16 l869 0 0 245 0 245 -869 0 c-783 0 -869 -2 -875 -16z m1734 -229
++l0 -225 -860 0 -860 0 0 225 0 225 860 0 860 0 0 -225z"/>
++<path d="M5960 3773 c-53 -20 -68 -116 -25 -158 41 -42 125 -23 125 28 0 21
++-1 21 -25 -6 -30 -31 -42 -33 -73 -11 -17 12 -22 25 -22 58 0 62 41 89 83 55
++30 -23 37 -24 37 -5 0 28 -64 53 -100 39z"/>
++<path d="M6143 3770 c-37 -15 -56 -55 -50 -102 7 -49 37 -77 83 -78 34 0 81
++41 69 60 -4 7 -15 2 -30 -15 -28 -29 -42 -31 -73 -9 -26 18 -31 78 -9 108 17
++23 67 24 79 2 11 -20 28 -21 28 -2 0 30 -59 52 -97 36z"/>
++<path d="M5732 3683 l3 -88 47 -3 c64 -4 98 27 98 90 0 69 -20 88 -91 88 l-60
++0 3 -87z m112 45 c35 -49 7 -108 -50 -108 l-34 0 0 65 0 65 34 0 c25 0 39 -7
++50 -22z"/>
++<path d="M6280 3680 c0 -69 3 -91 13 -88 6 3 13 21 15 41 3 36 5 37 41 37 51
++0 79 29 65 68 -9 25 -14 27 -72 30 l-62 3 0 -91z m105 40 c0 -22 -5 -25 -37
++-28 -36 -3 -38 -2 -38 28 0 30 2 31 38 28 32 -3 37 -6 37 -28z"/>
++<path d="M4600 3801 c0 -6 -27 -40 -60 -78 -53 -61 -58 -69 -43 -80 20 -15 41
++2 105 84 33 44 38 56 28 68 -14 17 -30 20 -30 6z"/>
++<path d="M4258 3516 c-58 -27 -87 -47 -88 -58 0 -29 13 -28 96 12 86 40 100
++52 87 73 -6 11 -26 6 -95 -27z"/>
++<path d="M3953 3415 c-23 -7 -67 -16 -97 -19 -44 -6 -56 -11 -56 -25 0 -31 6
++-32 149 -2 64 13 64 13 54 38 -7 19 -11 19 -50 8z"/>
++<path d="M9225 3419 c-11 -17 1 -21 15 -4 8 9 8 15 2 15 -6 0 -14 -5 -17 -11z"/>
++<path d="M3487 3351 c-31 -3 -57 -9 -57 -13 0 -5 0 -15 0 -24 0 -13 10 -15 68
++-9 119 11 132 14 132 35 0 22 -20 23 -143 11z"/>
++<path d="M9155 3349 c-11 -17 1 -21 15 -4 8 9 8 15 2 15 -6 0 -14 -5 -17 -11z"/>
++<path d="M7430 3330 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M7525 3330 c3 -5 12 -10 20 -10 8 0 17 5 20 10 4 6 -5 10 -20 10 -15
++0 -24 -4 -20 -10z"/>
++<path d="M7620 3330 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M7710 3330 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M7810 3330 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M7900 3330 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M8000 3330 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M8090 3330 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M8190 3330 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M8280 3330 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M8380 3330 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M8470 3330 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M8570 3330 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M8660 3330 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M8755 3330 c3 -5 15 -10 26 -10 10 0 19 5 19 10 0 6 -12 10 -26 10
++-14 0 -23 -4 -19 -10z"/>
++<path d="M8850 3332 c0 -5 7 -13 16 -16 10 -4 14 -1 12 6 -5 15 -28 23 -28 10z"/>
++<path d="M3108 3323 c-51 -4 -58 -7 -58 -25 0 -20 3 -21 102 -14 56 3 104 8
++106 11 2 2 2 11 -1 20 -7 15 -17 16 -149 8z"/>
++<path d="M780 3295 l0 -25 100 0 100 0 0 25 0 25 -100 0 -100 0 0 -25z"/>
++<path d="M1160 3290 c0 -19 7 -20 100 -20 93 0 100 1 100 20 0 19 -7 20 -100
++20 -93 0 -100 -1 -100 -20z"/>
++<path d="M1536 3301 c-4 -5 -3 -16 0 -25 5 -13 24 -16 105 -16 99 0 99 0 99
++25 0 25 0 25 -99 25 -55 0 -102 -4 -105 -9z"/>
++<path d="M1917 3303 c-4 -3 -7 -15 -7 -25 0 -16 10 -18 105 -18 l105 0 0 25
++c0 25 0 25 -98 25 -54 0 -102 -3 -105 -7z"/>
++<path d="M2290 3285 l0 -25 105 0 105 0 0 25 0 25 -105 0 -105 0 0 -25z"/>
++<path d="M2670 3290 c0 -19 7 -20 105 -20 98 0 105 1 105 20 0 19 -7 20 -105
++20 -98 0 -105 -1 -105 -20z"/>
++<path d="M7422 3275 c0 -16 2 -22 5 -12 2 9 2 23 0 30 -3 6 -5 -1 -5 -18z"/>
++<path d="M9099 3283 c-13 -16 -12 -17 4 -4 16 13 21 21 13 21 -2 0 -10 -8 -17
++-17z"/>
++<path d="M8863 3244 c-3 -8 -1 -20 6 -27 8 -8 11 -4 11 16 0 30 -7 35 -17 11z"/>
++<path d="M9030 3215 c-7 -9 -8 -15 -2 -15 5 0 12 7 16 15 3 8 4 15 2 15 -2 0
++-9 -7 -16 -15z"/>
++<path d="M7422 3175 c0 -16 2 -22 5 -12 2 9 2 23 0 30 -3 6 -5 -1 -5 -18z"/>
++<path d="M8863 3154 c-3 -8 -1 -20 6 -27 8 -8 11 -4 11 16 0 30 -7 35 -17 11z"/>
++<path d="M7560 3107 c0 -58 12 -77 46 -77 37 0 54 26 54 81 0 66 -18 63 -22
++-3 -3 -49 -5 -53 -30 -56 -28 -3 -28 -2 -28 52 0 31 -4 56 -10 56 -5 0 -10
++-24 -10 -53z"/>
++<path d="M7690 3095 c0 -61 1 -65 23 -65 44 0 66 12 76 42 8 23 7 36 -4 59
++-13 25 -21 29 -55 29 l-40 0 0 -65z m75 31 c24 -35 5 -78 -33 -74 -29 3 -39
++29 -28 74 8 31 41 31 61 0z"/>
++<path d="M7820 3094 c0 -41 4 -63 10 -59 6 3 10 14 10 24 0 10 12 20 32 26 68
++21 59 75 -13 75 l-39 0 0 -66z m68 44 c15 -15 -3 -38 -29 -38 -14 0 -19 7 -19
++25 0 27 26 35 48 13z"/>
++<path d="M8965 3149 c-11 -16 -1 -19 13 -3 7 8 8 14 3 14 -5 0 -13 -5 -16 -11z"/>
++<path d="M8186 3142 c-7 -12 5 -112 13 -112 8 0 6 108 -2 116 -3 3 -8 1 -11
++-4z"/>
++<path d="M7998 3118 c-24 -20 -28 -44 -12 -67 20 -27 49 -27 68 1 20 29 20 34
++-4 58 -23 23 -31 24 -52 8z m46 -24 c8 -20 -12 -56 -27 -51 -7 2 -13 18 -15
++35 -3 26 0 32 16 32 11 0 23 -7 26 -16z"/>
++<path d="M8103 3122 c-21 -3 -23 -9 -23 -63 0 -33 4 -59 10 -59 6 0 10 7 10
++15 0 8 8 15 18 15 26 0 42 20 42 52 0 30 -22 46 -57 40z m45 -35 c5 -27 -17
++-50 -34 -36 -15 12 -19 41 -7 53 12 12 38 1 41 -17z"/>
++<path d="M8288 3119 c-22 -12 -24 -62 -3 -79 8 -7 25 -10 40 -6 21 5 25 12 25
++41 0 24 -6 37 -19 45 -23 12 -22 12 -43 -1z m49 -25 c7 -18 -6 -45 -25 -52
++-15 -5 -33 33 -26 52 8 21 43 21 51 0z"/>
++<path d="M8393 3123 c-18 -3 -23 -11 -23 -33 0 -16 3 -37 7 -47 6 -13 9 -8 13
++22 3 27 10 41 23 43 14 3 17 -4 17 -32 0 -20 5 -36 10 -36 17 0 12 77 -6 84
++-9 3 -16 5 -17 5 -1 -1 -12 -4 -24 -6z"/>
++<path d="M8488 3123 c-26 -7 -22 -32 7 -45 14 -6 25 -17 25 -25 0 -16 -12 -17
++-28 -1 -6 6 -15 8 -19 4 -11 -10 18 -27 42 -24 12 2 21 12 23 25 3 17 -3 24
++-22 29 -33 8 -34 28 -1 22 28 -6 34 6 9 16 -9 3 -16 5 -17 5 -1 -1 -10 -3 -19
++-6z"/>
++<path d="M8230 3080 c0 -22 5 -40 10 -40 6 0 10 18 10 40 0 22 -4 40 -10 40
++-5 0 -10 -18 -10 -40z"/>
++<path d="M7422 3085 c0 -16 2 -22 5 -12 2 9 2 23 0 30 -3 6 -5 -1 -5 -18z"/>
++<path d="M8900 3085 c-8 -9 -8 -15 -2 -15 12 0 26 19 19 26 -2 2 -10 -2 -17
++-11z"/>
++<path d="M8865 3059 c-4 -12 -2 -26 4 -32 8 -8 11 -2 11 21 0 37 -6 41 -15 11z"/>
++<path d="M9735 3071 c-130 -14 -320 -43 -335 -51 -8 -4 -35 -11 -58 -15 -129
++-21 -310 -110 -369 -180 l-37 -45 -1666 6 c-1618 7 -3002 -5 -3215 -26 -53 -6
++-4 -7 140 -4 940 19 1823 24 3193 18 1502 -7 1542 -7 1542 -26 0 -30 29 -91
++57 -120 15 -15 24 -31 20 -34 -3 -4 -120 -1 -259 5 -362 18 -753 30 -898 29
++l-125 -1 135 -8 c74 -4 314 -13 532 -19 535 -15 677 -24 697 -46 15 -15 1 -16
++-199 -10 -118 3 -453 8 -745 10 -421 3 -464 2 -210 -4 176 -4 516 -10 755 -14
++396 -6 442 -9 510 -27 41 -12 83 -25 92 -30 10 -5 49 -14 87 -21 39 -6 68 -15
++65 -20 -3 -4 -224 -9 -492 -10 l-487 -2 625 -6 c441 -4 660 -10 743 -20 64 -8
++117 -17 117 -20 0 -3 -9 -19 -19 -37 -15 -23 -25 -30 -40 -26 -17 4 -20 -1
++-26 -39 -4 -24 -5 -56 -3 -71 l3 -27 48 46 c47 44 48 46 31 65 -17 19 -17 21
++4 57 l21 37 98 6 c231 14 365 31 522 63 43 9 80 12 90 7 9 -5 59 -11 111 -14
++57 -4 85 -3 70 3 -14 4 -41 8 -61 9 -50 1 -99 12 -99 21 0 4 16 11 35 14 40 8
++142 53 199 89 32 20 45 23 80 16 22 -5 104 -8 181 -7 l140 2 -160 6 c-88 4
++-169 8 -179 9 -19 1 -19 2 1 24 11 12 28 39 38 59 63 137 -171 287 -540 344
++-49 7 -115 19 -145 25 -67 13 -518 20 -615 10z m645 -29 c436 -59 683 -189
++645 -339 -19 -77 -167 -164 -375 -221 -357 -97 -976 -95 -1326 3 -326 92 -449
++222 -327 347 96 99 306 170 623 208 85 11 164 21 175 24 50 11 449 -4 585 -22z"/>
++<path d="M9354 2815 c-10 -25 1 -132 15 -149 9 -10 29 -16 57 -16 60 0 76 26
++72 112 -4 82 -22 81 -26 -2 -3 -71 -13 -90 -46 -90 -36 0 -46 20 -46 92 0 64
++-13 89 -26 53z"/>
++<path d="M9540 2740 l0 -90 49 0 c71 0 95 22 95 90 0 68 -24 90 -95 90 l-49 0
++0 -90z m100 50 c43 -43 10 -125 -48 -118 -25 3 -27 7 -30 57 -2 29 -1 60 2 67
++8 21 53 17 76 -6z"/>
++<path d="M9720 2739 c0 -68 3 -90 13 -87 6 3 13 19 15 36 3 29 6 32 38 32 35
++0 74 28 74 53 0 7 -7 23 -16 35 -12 18 -25 22 -70 22 l-54 0 0 -91z m104 48
++c9 -15 7 -21 -8 -33 -11 -8 -30 -14 -43 -14 -20 0 -23 5 -23 36 0 34 1 35 31
++32 18 -2 37 -11 43 -21z"/>
++<path d="M10260 2815 c0 -8 5 -15 10 -15 6 0 10 7 10 15 0 8 -4 15 -10 15 -5
++0 -10 -7 -10 -15z"/>
++<path d="M10518 2824 c-12 -11 -10 -174 2 -174 6 0 10 17 10 38 0 89 62 96 68
++8 4 -60 22 -60 22 0 0 64 -13 84 -55 84 -29 0 -34 4 -37 26 -2 14 -6 22 -10
++18z"/>
++<path d="M10321 2803 c-6 -13 -7 -45 -3 -84 6 -58 9 -64 32 -68 24 -3 24 -2 7
++16 -19 21 -24 89 -6 95 7 2 5 13 -4 32 -14 27 -16 27 -26 9z"/>
++<path d="M9957 2773 c-4 -3 -7 -17 -7 -30 0 -17 8 -26 28 -34 15 -5 34 -12 42
++-15 12 -5 12 -8 -4 -20 -17 -12 -23 -12 -42 1 -31 20 -37 19 -24 -5 7 -14 21
++-20 44 -20 63 0 74 59 14 76 -17 5 -33 15 -36 22 -5 15 30 16 46 0 15 -15 26
++-4 19 17 -6 15 -67 22 -80 8z"/>
++<path d="M10068 2775 c-6 -6 2 -38 24 -97 15 -41 37 -35 44 12 8 46 20 44 30
++-6 10 -53 34 -40 55 29 10 32 13 60 8 63 -5 3 -11 -1 -14 -8 -2 -7 -10 -26
++-16 -43 l-11 -30 -12 39 c-15 53 -32 56 -47 7 -12 -40 -29 -47 -29 -12 0 21
++-23 55 -32 46z"/>
++<path d="M10260 2715 c0 -37 4 -65 10 -65 6 0 10 28 10 65 0 37 -4 65 -10 65
++-6 0 -10 -28 -10 -65z"/>
++<path d="M10396 2764 c-19 -18 -21 -85 -4 -102 17 -17 73 -15 88 3 16 19 5 34
++-12 17 -7 -7 -22 -12 -34 -12 -26 0 -40 40 -24 70 11 20 50 28 50 10 0 -5 7
++-10 15 -10 18 0 19 12 3 28 -17 17 -64 15 -82 -4z"/>
++<path d="M7422 2985 c0 -16 2 -22 5 -12 2 9 2 23 0 30 -3 6 -5 -1 -5 -18z"/>
++<path d="M8865 2967 c-4 -10 -5 -21 -1 -24 10 -10 18 4 13 24 -4 17 -4 17 -12
++0z"/>
++<path d="M7445 2940 c-4 -6 5 -10 19 -10 14 0 26 5 26 10 0 6 -9 10 -19 10
++-11 0 -23 -4 -26 -10z"/>
++<path d="M7540 2940 c0 -5 12 -10 26 -10 14 0 23 4 19 10 -3 6 -15 10 -26 10
++-10 0 -19 -4 -19 -10z"/>
++<path d="M7635 2940 c-4 -6 5 -10 19 -10 14 0 26 5 26 10 0 6 -9 10 -19 10
++-11 0 -23 -4 -26 -10z"/>
++<path d="M7730 2940 c0 -5 12 -10 26 -10 14 0 23 4 19 10 -3 6 -15 10 -26 10
++-10 0 -19 -4 -19 -10z"/>
++<path d="M7820 2940 c0 -5 11 -10 25 -10 14 0 25 5 25 10 0 6 -11 10 -25 10
++-14 0 -25 -4 -25 -10z"/>
++<path d="M7920 2940 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M8010 2940 c0 -5 11 -10 25 -10 14 0 25 5 25 10 0 6 -11 10 -25 10
++-14 0 -25 -4 -25 -10z"/>
++<path d="M8110 2940 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M8200 2940 c0 -5 11 -10 25 -10 14 0 25 5 25 10 0 6 -11 10 -25 10
++-14 0 -25 -4 -25 -10z"/>
++<path d="M8300 2940 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M8390 2940 c0 -5 12 -10 26 -10 14 0 23 4 19 10 -3 6 -15 10 -26 10
++-10 0 -19 -4 -19 -10z"/>
++<path d="M8490 2940 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M8580 2940 c0 -5 12 -10 26 -10 14 0 23 4 19 10 -3 6 -15 10 -26 10
++-10 0 -19 -4 -19 -10z"/>
++<path d="M8680 2940 c0 -5 9 -10 20 -10 11 0 20 5 20 10 0 6 -9 10 -20 10 -11
++0 -20 -4 -20 -10z"/>
++<path d="M8770 2940 c0 -5 12 -10 26 -10 14 0 23 4 19 10 -3 6 -15 10 -26 10
++-10 0 -19 -4 -19 -10z"/>
++<path d="M13110 2778 c-283 -4 -587 -12 -675 -17 -180 -11 165 -8 1100 9 853
++16 1460 11 1995 -14 78 -4 94 -3 62 4 -134 29 -1324 37 -2482 18z"/>
++<path d="M3630 2739 c-74 -5 -157 -13 -185 -19 -43 -8 -37 -8 40 -4 276 14
++460 26 464 30 6 6 -165 2 -319 -7z"/>
++<path d="M11475 2739 c-198 -5 -373 -10 -390 -13 -46 -7 874 6 1010 14 115 7
++112 7 -70 7 -104 0 -352 -4 -550 -8z"/>
++<path d="M15675 2740 c22 -5 76 -16 120 -24 168 -30 259 -67 338 -136 55 -49
++72 -78 91 -157 10 -39 15 -49 15 -30 3 102 -69 200 -192 260 -86 42 -243 84
++-342 91 -57 4 -63 3 -30 -4z"/>
++<path d="M3245 2699 c-93 -10 -138 -19 -132 -25 6 -6 268 23 275 31 7 7 -57 4
++-143 -6z"/>
++<path d="M6070 2650 c-90 -5 -171 -11 -179 -12 -8 -2 395 -3 895 -3 500 0 844
++3 764 6 -263 12 -1312 18 -1480 9z"/>
++<path d="M5670 2623 c-30 -1 -89 -7 -130 -13 -41 -6 -138 -17 -215 -25 -238
++-25 -673 -89 -684 -101 -8 -8 87 2 194 21 114 20 280 44 425 60 69 8 161 19
++205 24 44 6 152 15 240 21 87 6 161 13 164 15 4 5 -97 4 -199 -2z"/>
++<path d="M11540 2580 c113 -5 401 -14 640 -20 239 -6 503 -15 585 -19 219 -14
++588 -21 495 -11 -41 5 -226 14 -410 20 -184 6 -416 15 -515 20 -99 5 -364 11
++-590 14 -321 3 -366 3 -205 -4z"/>
++<path d="M6510 2563 c-210 -6 -503 -25 -523 -33 -30 -12 -26 -12 193 6 132 11
++393 18 810 23 l615 7 -505 0 c-278 0 -543 -1 -590 -3z"/>
++<path d="M5870 2506 c-96 -27 -158 -71 -191 -135 -12 -24 -31 -46 -41 -49 -21
++-5 -18 -35 10 -101 l15 -36 28 60 c34 74 34 71 8 78 -17 4 -19 10 -14 29 21
++65 90 113 205 143 36 9 67 19 69 21 8 8 -45 2 -89 -10z"/>
++<path d="M13341 2516 c7 -6 440 -38 446 -33 7 8 -60 16 -222 27 -146 10 -231
++13 -224 6z"/>
++<path d="M4510 2465 c-274 -47 -611 -118 -666 -141 -24 -10 -51 -14 -75 -10
++-42 7 -43 6 -54 -81 -7 -52 3 -70 22 -40 4 6 26 28 48 46 22 19 39 40 38 46
++-4 17 34 35 106 52 138 31 381 79 580 112 62 11 116 22 119 25 8 9 -33 5 -118
++-9z"/>
++<path d="M13800 2477 c3 -3 43 -12 90 -20 99 -18 185 -53 220 -91 24 -27 24
++-28 6 -41 -18 -14 -18 -16 10 -79 l28 -65 23 62 c28 75 28 77 4 77 -10 0 -30
++15 -45 34 -32 43 -77 71 -152 95 -57 18 -194 39 -184 28z"/>
++<path d="M10902 2434 c4 -3 68 -12 145 -20 155 -15 179 -17 171 -8 -6 6 -251
++34 -297 34 -13 0 -22 -3 -19 -6z"/>
++<path d="M8298 2413 c28 -2 76 -2 105 0 28 2 5 3 -53 3 -58 0 -81 -1 -52 -3z"/>
++<path d="M11232 2395 c5 -5 221 -36 242 -34 30 1 -41 18 -120 28 -98 12 -130
++14 -122 6z"/>
++<path d="M16222 2336 c-6 -14 -19 -26 -28 -26 -8 0 -14 -3 -12 -7 2 -5 14 -30
++26 -56 12 -27 27 -47 33 -45 6 2 19 30 29 61 17 56 17 57 -1 57 -11 0 -23 9
++-27 21 -8 20 -8 20 -20 -5z"/>
++<path d="M3212 2163 l-482 -3 2 -248 3 -247 870 0 870 0 3 248 2 247 -372 0
++c-205 0 -382 1 -393 3 -11 1 -237 1 -503 0z m1248 -248 l0 -235 -860 0 -860 0
++0 228 c0 126 3 232 7 235 3 4 390 7 860 7 l853 0 0 -235z"/>
++<path d="M3367 1963 c-4 -3 -7 -44 -7 -90 l0 -83 54 0 c60 0 82 14 92 57 11
++41 -8 96 -36 110 -27 14 -92 17 -103 6z m91 -29 c16 -11 22 -25 22 -53 0 -53
++-18 -73 -60 -69 -35 3 -35 4 -38 56 -4 77 24 102 76 66z"/>
++<path d="M3547 1963 c-4 -3 -7 -44 -7 -90 0 -66 3 -83 15 -83 10 0 15 16 17
++62 l3 63 40 -63 c24 -38 47 -62 58 -62 16 0 17 9 15 85 -3 100 -21 114 -28 23
++l-5 -62 -44 67 c-43 66 -51 74 -64 60z"/>
++<path d="M3752 1963 c-43 -17 -33 -76 15 -88 16 -3 38 -13 51 -21 19 -12 21
++-18 11 -30 -17 -21 -59 -17 -86 8 -19 17 -23 19 -23 5 0 -62 121 -73 136 -12
++8 33 -7 49 -61 68 -28 10 -40 20 -40 33 0 24 46 31 65 10 16 -20 30 -20 30 -1
++0 27 -59 44 -98 28z"/>
++<path d="M5223 2162 l-433 -2 0 -250 0 -250 873 2 872 3 3 247 2 248 -442 2
++c-244 2 -638 2 -875 0z m1297 -247 l0 -235 -860 0 -860 0 0 235 0 235 860 0
++860 0 0 -235z"/>
++<path d="M5390 1952 c-15 -12 -24 -33 -27 -63 -4 -38 -1 -50 19 -74 21 -23 33
++-28 74 -29 27 -1 55 -5 62 -9 8 -5 12 -3 12 7 0 9 -4 16 -10 16 -6 0 -6 9 0
++26 29 75 -6 144 -73 144 -19 0 -45 -8 -57 -18z m92 -19 c37 -43 32 -103 -8
++-103 -13 0 -24 -4 -24 -10 0 -18 -39 -11 -50 9 -15 30 -12 82 7 103 20 23 55
++23 75 1z"/>
++<path d="M5564 1955 c-12 -30 2 -135 19 -152 26 -26 85 -22 109 7 15 19 18 36
++16 89 -4 80 -22 88 -26 11 -4 -88 -9 -100 -40 -100 -42 0 -52 17 -52 86 0 61
++-14 92 -26 59z"/>
++<path d="M5750 1881 c0 -75 3 -91 15 -91 13 0 15 14 13 87 -2 58 -7 88 -15 91
++-10 3 -13 -19 -13 -87z"/>
++<path d="M5841 1953 c-27 -22 -38 -83 -21 -122 22 -55 112 -63 139 -12 16 28
++-7 39 -25 12 -20 -27 -69 -28 -84 -2 -5 11 -10 35 -10 54 0 59 62 90 93 46 10
++-14 17 -17 22 -9 4 6 -1 20 -11 31 -22 24 -74 25 -103 2z"/>
++<path d="M1800 1640 c20 -13 33 -13 25 0 -3 6 -14 10 -23 10 -15 0 -15 -2 -2
++-10z"/>
++<path d="M7360 1620 c-13 -8 -13 -10 2 -10 9 0 20 5 23 10 8 13 -5 13 -25 0z"/>
++<path d="M1880 1606 c0 -2 7 -7 16 -10 8 -3 12 -2 9 4 -6 10 -25 14 -25 6z"/>
++<path d="M7275 1570 c-3 -6 1 -7 9 -4 18 7 21 14 7 14 -6 0 -13 -4 -16 -10z"/>
++<path d="M1970 1560 c20 -13 33 -13 25 0 -3 6 -14 10 -23 10 -15 0 -15 -2 -2
++-10z"/>
++<path d="M7195 1530 c-8 -13 5 -13 25 0 13 8 13 10 -2 10 -9 0 -20 -4 -23 -10z"/>
++<path d="M2060 1520 c8 -5 20 -10 25 -10 6 0 3 5 -5 10 -8 5 -19 10 -25 10 -5
++0 -3 -5 5 -10z"/>
++<path d="M7120 1490 c-8 -5 -10 -10 -5 -10 6 0 17 5 25 10 8 5 11 10 5 10 -5
++0 -17 -5 -25 -10z"/>
++<path d="M2140 1480 c20 -13 33 -13 25 0 -3 6 -14 10 -23 10 -15 0 -15 -2 -2
++-10z"/>
++<path d="M7025 1442 c-29 -16 -30 -17 -6 -20 25 -4 46 10 40 26 -3 6 -16 4
++-34 -6z"/>
++<path d="M2226 1436 c4 -10 18 -16 38 -16 33 1 24 11 -21 24 -18 6 -22 4 -17
++-8z"/>
++<path d="M1380 1421 c0 -4 11 -6 25 -3 14 2 25 6 25 8 0 2 -11 4 -25 4 -14 0
++-25 -4 -25 -9z"/>
++<path d="M1493 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1583 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1683 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1773 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1873 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1963 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2063 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2153 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2343 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2438 1423 c6 -2 18 -2 25 0 6 3 1 5 -13 5 -14 0 -19 -2 -12 -5z"/>
++<path d="M2533 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2623 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2723 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2813 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2913 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M3003 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M3098 1423 c6 -2 18 -2 25 0 6 3 1 5 -13 5 -14 0 -19 -2 -12 -5z"/>
++<path d="M6140 1420 c0 -6 11 -8 28 -4 39 10 40 14 4 14 -18 0 -32 -5 -32 -10z"/>
++<path d="M6263 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M6353 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M6453 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M6543 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M6638 1423 c6 -2 18 -2 25 0 6 3 1 5 -13 5 -14 0 -19 -2 -12 -5z"/>
++<path d="M6733 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M6823 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M6923 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M7113 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M7203 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M7303 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M7393 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M7493 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M7583 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M7683 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M7773 1423 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M7868 1423 c6 -2 18 -2 25 0 6 3 1 5 -13 5 -14 0 -19 -2 -12 -5z"/>
++<path d="M17895 1403 c-16 -8 -41 -25 -54 -37 -47 -42 -51 -69 -51 -316 l0
++-230 -8895 0 -8895 0 0 -410 0 -410 9600 0 9600 0 0 654 0 653 -23 34 c-12 19
++-42 44 -67 57 l-44 22 -571 0 c-500 -1 -574 -3 -600 -17z m1208 -17 c20 -10
++47 -33 60 -50 l22 -31 3 -583 c3 -659 6 -631 -73 -678 l-43 -24 -583 2 -584 3
++-33 23 c-69 50 -67 26 -70 640 -2 388 1 565 9 594 13 52 64 102 116 116 24 7
++238 10 588 9 516 -2 552 -3 588 -21z"/>
++<path d="M17914 1331 c-17 -11 -36 -34 -43 -52 -7 -21 -11 -153 -11 -404 l0
++-372 98 -6 c87 -5 105 -9 181 -46 75 -36 93 -41 156 -41 92 0 134 21 155 78
++13 37 12 45 -3 76 -20 42 -41 57 -146 100 -135 57 -191 119 -191 213 0 129 85
++203 241 211 84 4 199 -17 199 -36 0 -5 -7 -29 -16 -54 l-15 -46 -50 19 c-125
++48 -251 -3 -234 -95 8 -46 32 -65 150 -121 118 -55 163 -95 185 -160 16 -49 8
++-123 -18 -174 -20 -38 -20 -41 -4 -41 10 0 28 -7 41 -16 21 -15 26 -15 62 1
++l39 18 0 244 0 243 60 0 60 0 2 -177 3 -178 43 -6 c53 -7 62 -19 62 -84 l0
++-50 67 2 c38 1 85 2 106 3 l37 0 0 453 c0 492 1 476 -57 506 -15 8 -187 11
++-575 11 -526 0 -555 -1 -584 -19z m986 -131 c0 -60 -4 -100 -10 -100 -6 0 -10
++35 -10 85 0 81 -1 85 -22 85 -22 1 -23 1 -4 15 41 31 46 21 46 -85z m140 36
++c0 -42 4 -66 13 -70 10 -5 10 -7 0 -12 -7 -3 -13 -17 -13 -30 0 -13 -4 -24
++-10 -24 -5 0 -10 11 -10 25 0 23 -4 25 -43 25 -24 0 -46 3 -49 6 -9 8 85 143
++100 144 8 0 12 -19 12 -64z m-235 -176 c26 -29 24 -79 -4 -102 -50 -39 -121
++-9 -121 52 0 62 84 95 125 50z"/>
++<path d="M18986 1220 c-14 -22 -26 -42 -26 -45 0 -3 14 -5 30 -5 29 0 30 2 30
++45 0 25 -2 45 -4 45 -2 0 -15 -18 -30 -40z"/>
++<path d="M18790 385 c0 -72 -1 -75 -19 -65 -30 15 -83 12 -107 -8 -31 -25 -44
++-55 -44 -102 0 -35 6 -48 35 -77 32 -32 39 -35 78 -29 23 3 63 6 90 5 l47 0 0
++176 0 175 -40 0 -40 0 0 -75z m-12 -137 c16 -16 15 -53 -2 -67 -8 -7 -27 -11
++-42 -9 -53 6 -50 88 4 88 15 0 33 -5 40 -12z"/>
++<path d="M17860 275 l0 -165 45 0 45 0 0 55 0 55 49 0 c38 0 57 6 76 23 51 43
++41 157 -14 187 -11 5 -60 10 -110 10 l-91 0 0 -165z m158 93 c21 -21 15 -67
++-12 -79 -34 -16 -66 3 -66 39 0 33 16 52 45 52 12 0 26 -5 33 -12z"/>
++<path d="M17980 354 c11 -13 10 -16 -9 -21 -24 -6 -24 -21 1 -37 12 -7 21 -6
++32 3 21 17 21 57 0 65 -28 11 -37 7 -24 -10z"/>
++<path d="M18138 301 c-30 -27 -33 -35 -33 -86 0 -52 3 -59 34 -87 29 -26 39
++-29 75 -24 22 3 62 6 89 5 l47 0 0 111 0 110 -33 0 c-18 0 -38 -5 -44 -11 -8
++-8 -13 -8 -17 0 -4 6 -25 11 -46 11 -30 0 -48 -7 -72 -29z m133 -62 c17 -33
++-3 -69 -39 -69 -33 0 -52 16 -52 45 0 29 19 45 52 45 18 0 31 -7 39 -21z"/>
++<path d="M18200 235 c-18 -21 -8 -50 19 -53 19 -3 22 0 16 17 -4 14 -1 23 9
++27 9 3 13 10 10 15 -8 14 -40 11 -54 -6z"/>
++<path d="M18377 323 c-4 -3 -7 -53 -7 -110 l0 -103 40 0 40 0 0 69 c0 74 13
++98 48 87 22 -7 32 -44 32 -112 0 -44 0 -44 35 -44 l35 0 0 85 c0 78 -2 88 -25
++110 -29 29 -79 33 -107 8 -17 -15 -18 -15 -18 0 0 13 -9 17 -33 17 -19 0 -37
++-3 -40 -7z"/>
++<path d="M18941 316 c-70 -39 -67 -172 4 -204 32 -15 70 -15 96 -2 13 8 19 7
++19 0 0 -7 15 -10 38 -8 l37 3 3 108 3 108 -48 0 c-26 -1 -66 2 -88 4 -24 3
++-49 0 -64 -9z m107 -68 c33 -33 -7 -95 -51 -79 -47 18 -38 91 11 91 15 0 33
++-5 40 -12z"/>
++<path d="M18004 189 c-3 -6 -1 -22 7 -35 11 -21 10 -26 -6 -38 -18 -13 -18
++-14 3 -25 33 -17 43 -14 36 14 -5 20 -2 25 20 31 30 7 34 31 9 50 -22 16 -59
++18 -69 3z"/>
++<path d="M7892 1350 c0 -19 2 -27 5 -17 2 9 2 25 0 35 -3 9 -5 1 -5 -18z"/>
++<path d="M1382 1345 c0 -16 2 -22 5 -12 2 9 2 23 0 30 -3 6 -5 -1 -5 -18z"/>
++<path d="M3120 1350 c0 -11 5 -20 10 -20 6 0 10 9 10 20 0 11 -4 20 -10 20 -5
++0 -10 -9 -10 -20z"/>
++<path d="M6140 1340 c0 -11 5 -20 10 -20 6 0 10 9 10 20 0 11 -4 20 -10 20 -5
++0 -10 -9 -10 -20z"/>
++<path d="M3120 1255 c0 -15 4 -24 10 -20 6 3 10 12 10 20 0 8 -4 17 -10 20 -6
++4 -10 -5 -10 -20z"/>
++<path d="M7892 1255 c0 -16 2 -22 5 -12 2 9 2 23 0 30 -3 6 -5 -1 -5 -18z"/>
++<path d="M1382 1245 c0 -16 2 -22 5 -12 2 9 2 23 0 30 -3 6 -5 -1 -5 -18z"/>
++<path d="M6140 1251 c0 -11 5 -23 10 -26 6 -4 10 5 10 19 0 14 -4 26 -10 26
++-5 0 -10 -9 -10 -19z"/>
++<path d="M1526 1238 c-43 -61 16 -130 88 -102 10 4 16 18 16 35 0 24 -4 29
++-25 29 -14 0 -25 -4 -25 -10 0 -5 7 -10 15 -10 8 0 15 -7 15 -15 0 -24 -57
++-19 -70 5 -24 44 24 97 59 66 24 -22 34 -20 21 4 -15 29 -74 27 -94 -2z"/>
++<path d="M1661 1210 c-1 -63 10 -80 51 -80 34 0 48 24 48 84 0 64 -18 58 -22
++-6 -3 -49 -5 -53 -30 -56 -28 -3 -27 -6 -41 88 -3 14 -5 0 -6 -30z"/>
++<path d="M1790 1195 l0 -65 45 0 c25 0 45 5 45 10 0 6 -16 10 -35 10 -28 0
++-35 4 -35 20 0 16 7 20 36 20 21 0 33 4 29 10 -3 6 -19 10 -36 10 -19 0 -29 5
++-29 15 0 10 10 15 29 15 17 0 33 5 36 10 4 6 -12 10 -39 10 l-46 0 0 -65z"/>
++<path d="M1962 1242 c-5 -9 -6 -39 -2 -67 7 -45 7 -46 9 -13 0 20 5 39 11 43
++5 3 7 12 4 19 -3 8 -1 17 5 21 7 4 11 -13 11 -49 0 -31 5 -56 10 -56 6 0 10
++26 10 58 0 54 -2 58 -25 60 -15 1 -28 -5 -33 -16z"/>
++<path d="M2312 1243 c-11 -21 0 -123 10 -107 4 7 9 33 10 59 1 37 6 49 22 55
++19 8 19 9 -6 9 -16 1 -31 -6 -36 -16z"/>
++<path d="M2503 1195 c0 -38 2 -53 4 -32 2 20 2 52 0 70 -2 17 -4 1 -4 -38z"/>
++<path d="M2593 1241 c-3 -11 -11 -17 -18 -15 -15 6 -45 -22 -45 -42 0 -32 21
++-54 50 -54 l30 0 0 65 c0 64 -7 83 -17 46z m1 -47 c8 -22 -11 -54 -29 -48 -15
++6 -21 45 -8 57 11 12 31 7 37 -9z"/>
++<path d="M6296 1244 c-9 -8 -16 -31 -16 -49 0 -56 49 -82 101 -55 40 22 13 73
++-28 55 -17 -8 -17 -8 0 -12 9 -3 17 -11 17 -19 0 -22 -57 -18 -70 5 -14 28
++-13 38 10 61 24 24 34 25 55 4 20 -20 33 -11 15 11 -16 20 -64 19 -84 -1z"/>
++<path d="M7210 1249 c0 -5 5 -7 10 -4 6 3 10 8 10 11 0 2 -4 4 -10 4 -5 0 -10
++-5 -10 -11z"/>
++<path d="M7162 1196 c2 -33 8 -61 13 -63 15 -5 11 95 -4 110 -10 9 -11 0 -9
++-47z"/>
++<path d="M2063 1223 c-24 -9 -13 -23 12 -17 36 9 31 -9 -6 -23 -45 -17 -36
++-48 14 -48 37 -1 37 0 37 41 0 48 -19 63 -57 47z m29 -75 c-6 -6 -16 -7 -23
++-3 -9 6 -7 12 7 22 21 15 34 -1 16 -19z"/>
++<path d="M2156 1215 c-9 -9 -16 -25 -16 -35 0 -24 29 -53 46 -46 8 3 14 -1 14
++-10 0 -12 -7 -15 -25 -12 -14 3 -25 1 -25 -3 0 -12 57 -11 65 1 6 10 10 99 4
++104 -16 14 -49 15 -63 1z m44 -35 c0 -23 -4 -30 -20 -30 -14 0 -20 7 -20 23 0
++27 7 37 27 37 8 0 13 -12 13 -30z"/>
++<path d="M2406 1215 c-19 -19 -21 -56 -4 -73 13 -13 54 -16 61 -4 10 18 16 58
++9 68 -13 21 -49 25 -66 9z m49 -15 c3 -5 -3 -10 -14 -10 -12 0 -21 5 -21 10 0
++6 6 10 14 10 8 0 18 -4 21 -10z m5 -39 c0 -11 -26 -22 -34 -14 -12 12 -5 23
++14 23 11 0 20 -4 20 -9z"/>
++<path d="M2648 1219 c-26 -14 -22 -26 12 -44 17 -9 28 -20 25 -25 -4 -7 -13
++-6 -25 0 -12 6 -21 7 -25 0 -11 -18 46 -24 63 -6 16 16 16 18 -2 32 -11 8 -26
++14 -33 14 -7 0 -13 5 -13 11 0 7 10 9 25 7 28 -6 34 6 9 16 -19 7 -15 8 -36
++-5z"/>
++<path d="M6431 1213 c-41 -28 -18 -88 30 -81 23 3 43 47 33 73 -8 20 -40 24
++-63 8z m44 -13 c3 -5 -3 -10 -14 -10 -12 0 -21 5 -21 10 0 6 6 10 14 10 8 0
++18 -4 21 -10z m5 -39 c0 -16 -28 -20 -40 -5 -10 12 -8 14 14 14 14 0 26 -4 26
++-9z"/>
++<path d="M6538 1223 c-14 -3 -18 -15 -18 -49 0 -28 4 -43 10 -39 6 3 10 22 10
++41 0 28 4 35 18 32 11 -2 19 -16 23 -43 l6 -40 2 46 c1 34 -3 48 -15 53 -9 3
++-16 5 -17 5 -1 -1 -10 -3 -19 -6z"/>
++<path d="M6630 1210 c-23 -23 -25 -39 -7 -64 15 -21 58 -18 65 4 5 13 3 13
++-11 1 -14 -11 -20 -11 -34 0 -15 13 -13 15 17 19 39 6 47 21 25 44 -21 21 -31
++20 -55 -4z m45 -10 c3 -5 -3 -10 -14 -10 -12 0 -21 5 -21 10 0 6 6 10 14 10 8
++0 18 -4 21 -10z"/>
++<path d="M6820 1210 c-24 -24 -25 -43 -4 -65 19 -19 55 -16 62 5 5 13 3 13
++-12 1 -15 -12 -19 -12 -34 2 -15 16 -14 17 16 17 40 0 54 26 27 46 -25 18 -31
++18 -55 -6z m45 -10 c3 -5 -3 -10 -14 -10 -12 0 -21 5 -21 10 0 6 6 10 14 10 8
++0 18 -4 21 -10z"/>
++<path d="M6969 1211 c-20 -16 -22 -23 -14 -47 11 -32 46 -44 71 -24 21 18 18
++67 -5 80 -25 13 -25 13 -52 -9z m49 -30 c4 -28 -17 -45 -35 -29 -14 11 -17 40
++-6 52 14 14 38 0 41 -23z"/>
++<path d="M7078 1223 c-15 -4 -18 -16 -18 -64 0 -33 4 -59 10 -59 6 0 10 7 10
++15 0 8 8 15 18 15 40 0 57 54 26 84 -16 17 -17 17 -46 9z m40 -42 c4 -23 -15
++-44 -30 -35 -4 3 -8 19 -8 35 0 24 4 30 18 27 9 -2 19 -14 20 -27z"/>
++<path d="M7260 1212 c-30 -24 -21 -69 15 -78 48 -12 75 45 39 80 -20 20 -27
++20 -54 -2z m48 -33 c2 -16 -3 -29 -12 -32 -20 -8 -39 18 -31 43 9 29 39 21 43
++-11z"/>
++<path d="M7373 1222 c-20 -3 -23 -9 -23 -50 0 -50 16 -48 22 3 4 42 32 40 36
++-2 4 -44 22 -42 22 2 0 38 -19 54 -57 47z"/>
++<path d="M7463 1223 c-22 -8 -14 -39 13 -51 14 -7 22 -17 19 -22 -4 -7 -13 -6
++-27 1 -16 9 -19 8 -16 -3 3 -7 18 -13 34 -13 22 0 30 5 32 22 3 17 -3 24 -22
++29 -14 3 -26 11 -26 16 0 6 9 8 20 5 24 -6 27 8 4 17 -9 3 -16 6 -17 5 -1 0
++-8 -3 -14 -6z"/>
++<path d="M2356 1213 c-3 -3 -6 -21 -6 -40 0 -23 5 -33 15 -33 10 0 15 10 15
++34 0 34 -11 52 -24 39z"/>
++<path d="M6712 1213 c2 -5 10 -25 18 -46 17 -45 29 -43 47 8 15 44 9 60 -8 21
++-15 -33 -25 -33 -33 -1 -4 14 -11 25 -17 25 -6 0 -9 -3 -7 -7z"/>
++<path d="M7210 1174 c0 -27 4 -43 10 -39 6 3 10 24 10 46 0 21 -4 39 -10 39
++-5 0 -10 -21 -10 -46z"/>
++<path d="M2245 1180 c-3 -5 3 -10 14 -10 12 0 21 5 21 10 0 6 -6 10 -14 10 -8
++0 -18 -4 -21 -10z"/>
++<path d="M7892 1160 c0 -19 2 -27 5 -17 2 9 2 25 0 35 -3 9 -5 1 -5 -18z"/>
++<path d="M1382 1155 c0 -16 2 -22 5 -12 2 9 2 23 0 30 -3 6 -5 -1 -5 -18z"/>
++<path d="M3120 1160 c0 -11 5 -20 10 -20 6 0 10 9 10 20 0 11 -4 20 -10 20 -5
++0 -10 -9 -10 -20z"/>
++<path d="M6140 1155 c0 -14 5 -25 10 -25 6 0 10 11 10 25 0 14 -4 25 -10 25
++-5 0 -10 -11 -10 -25z"/>
++<path d="M3120 1065 c0 -15 4 -24 10 -20 6 3 10 12 10 20 0 8 -4 17 -10 20 -6
++4 -10 -5 -10 -20z"/>
++<path d="M7892 1065 c0 -16 2 -22 5 -12 2 9 2 23 0 30 -3 6 -5 -1 -5 -18z"/>
++<path d="M1382 1055 c0 -16 2 -22 5 -12 2 9 2 23 0 30 -3 6 -5 -1 -5 -18z"/>
++<path d="M6140 1060 c0 -11 5 -20 10 -20 6 0 10 9 10 20 0 11 -4 20 -10 20 -5
++0 -10 -9 -10 -20z"/>
++<path d="M1443 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1533 1033 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M1633 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1723 1033 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M1823 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M1913 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2013 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2103 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2203 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2293 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2393 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2483 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2583 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2673 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2763 1033 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M2863 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M2953 1033 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M3053 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M6213 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M6303 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M6403 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M6493 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M6583 1033 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M6683 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M6773 1033 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M6873 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M6963 1033 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M7063 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M7153 1033 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M7253 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M7343 1033 c9 -2 25 -2 35 0 9 3 1 5 -18 5 -19 0 -27 -2 -17 -5z"/>
++<path d="M7443 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M7533 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M7633 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M7723 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++<path d="M7823 1033 c9 -2 23 -2 30 0 6 3 -1 5 -18 5 -16 0 -22 -2 -12 -5z"/>
++</g>
++</svg>
 -- 
 2.34.1
 
