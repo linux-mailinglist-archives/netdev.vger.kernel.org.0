@@ -2,111 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ACAC160DD70
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 10:42:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23EC560DD79
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 10:45:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233491AbiJZImW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 04:42:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34240 "EHLO
+        id S233411AbiJZIpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 04:45:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233450AbiJZIla (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 04:41:30 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6A6A50F98
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 01:40:30 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1onbxc-000725-SI
-        for netdev@vger.kernel.org; Wed, 26 Oct 2022 10:40:28 +0200
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 69A5E10A15B
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 08:40:19 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 32AAB10A126;
-        Wed, 26 Oct 2022 08:40:17 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 2a23a055;
-        Wed, 26 Oct 2022 08:40:09 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Biju Das <biju.das.jz@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 29/29] can: rcar_canfd: Use devm_reset_control_get_optional_exclusive
-Date:   Wed, 26 Oct 2022 10:40:07 +0200
-Message-Id: <20221026084007.1583333-30-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221026084007.1583333-1-mkl@pengutronix.de>
-References: <20221026084007.1583333-1-mkl@pengutronix.de>
+        with ESMTP id S233428AbiJZIof (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 04:44:35 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C9965547
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 01:42:49 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id c2so5171140plz.11
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 01:42:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=J4/0lR7B+RHnRsLUIswacukyV2Syn4pHrQc7y6nwLcM=;
+        b=UZLfl/F7RhxzoMzw4Yi9YpOrH1geINhL9eFvvR2QrpCz3IboEb4Pn3pvu6TPn2C7Sv
+         GrICk2pB1zJ2XSdk+i6JDzb6eMCSdH9A/XStC02P4JNhgrDjtKrJJCzAvYYhMSu3ie1P
+         DRJtzaKrDNxpHDgRhYgTXXH/k177bKEDa3IteSBgqJf75uZnIcrdWu7XWnntTTHxnGJ9
+         ++uhOlUbxoiv7dAQXVNkM7v9/0r2FLp5otjfCrnV1/IndSK7S+hvh08R/w/18DlpibBG
+         o/WQaO+RGYj0T7rq9JSm7iLBLrQklHxhnol9Tfh6uAfd/mnipICNx7W00UYTno2N/KaX
+         j/Sg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=J4/0lR7B+RHnRsLUIswacukyV2Syn4pHrQc7y6nwLcM=;
+        b=XFV0dwKXciJhZRhVxg9Yg7PHG1Rx9FJlUSPPeGsTwQhLB+quTLsKc+P/WIxRaTP3+1
+         +W0Xkb8OilQYicVNoTDNmXv1gF9CKYnSSzoVQRDqSM491azx6v9WzZDu9prnLQHFyiVv
+         YzbMmSeQq04BfvO2x5S9nkIquVPyjFrrLP9WZMO87qFzchdCxmbtO7kHswXjSxWX377A
+         BkwgCAzfnr6v7NobTE7x1xVDO6xXkSfB1RwX0i9bpS5wNRa48lcyGN7pOCcHXD9VKqcx
+         A8kOEkk+R5fAQhx6+LDfTKVfZY+nG/x7+IH2HUxHHIqVt8W2xdVHP8ehNfd5dTr0kMJ5
+         sjoA==
+X-Gm-Message-State: ACrzQf0kgwb3wsjPus8rxPnXCryPEVRv1OQJ876ZkGU5pJLvNtRK0XzD
+        gcGFhrM2NpeTpT+l1fGI8irCEgK5CTW3gjF1CRg=
+X-Google-Smtp-Source: AMsMyM70cLaUFxWt4JRGpGUF/qBqdam9i+gXAncEpcI4+mHwRLldlE0lDw9yNxeERDYuhXMU6NjUfPjF9fcAquBG6Pc=
+X-Received: by 2002:a17:903:2452:b0:186:99e0:672d with SMTP id
+ l18-20020a170903245200b0018699e0672dmr18717167pls.95.1666773768855; Wed, 26
+ Oct 2022 01:42:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <20221026083203.2214468-1-zenczykowski@gmail.com>
+In-Reply-To: <20221026083203.2214468-1-zenczykowski@gmail.com>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Date:   Wed, 26 Oct 2022 17:42:37 +0900
+Message-ID: <CAHo-Ooy5JB-0R5ZNMmEXaPfGjWKBw8VdXVp0d-XW2CNeO6u34A@mail.gmail.com>
+Subject: Re: [PATCH] xfrm: fix inbound ipv4/udp/esp packets to UDPv6 dualstack sockets
+To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        Sabrina Dubroca <sd@queasysnail.net>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+On Wed, Oct 26, 2022 at 5:32 PM Maciej =C5=BBenczykowski
+<zenczykowski@gmail.com> wrote:
+>
+> From: Maciej =C5=BBenczykowski <maze@google.com>
+>
+> Before Linux v5.8 an AF_INET6 SOCK_DGRAM (udp/udplite) socket
+> with SOL_UDP, UDP_ENCAP, UDP_ENCAP_ESPINUDP{,_NON_IKE} enabled
+> would just unconditionally use xfrm4_udp_encap_rcv(), afterwards
+> such a socket would use the newly added xfrm6_udp_encap_rcv()
+> which only handles IPv6 packets.
+>
+> Cc: Sabrina Dubroca <sd@queasysnail.net>
+> Cc: Steffen Klassert <steffen.klassert@secunet.com>
+> Fixes: 0146dca70b87 ('xfrm: add support for UDPv6 encapsulation of ESP')
+> Signed-off-by: Maciej =C5=BBenczykowski <maze@google.com>
+> ---
+>  net/ipv6/xfrm6_input.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/net/ipv6/xfrm6_input.c b/net/ipv6/xfrm6_input.c
+> index 04cbeefd8982..2d1c75b42709 100644
+> --- a/net/ipv6/xfrm6_input.c
+> +++ b/net/ipv6/xfrm6_input.c
+> @@ -86,6 +86,9 @@ int xfrm6_udp_encap_rcv(struct sock *sk, struct sk_buff=
+ *skb)
+>         __be32 *udpdata32;
+>         __u16 encap_type =3D up->encap_type;
+>
+> +       if (skb->protocol =3D=3D htons(ETH_P_IP))
+> +               xfrm4_udp_encap_rcv(sk, skb);
+> +
+>         /* if this is not encapsulated socket, then just return now */
+>         if (!encap_type)
+>                 return 1;
+> --
+> 2.38.0.135.g90850a2211-goog
 
-Replace devm_reset_control_get_exclusive->devm_reset_control_
-get_optional_exclusive so that we can avoid unnecessary
-SoC specific check in probe().
+Does this seem reasonable?
 
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/all/20221025155657.1426948-4-biju.das.jz@bp.renesas.com
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- drivers/net/can/rcar/rcar_canfd.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+I'll admit that so far I've only tested that the code builds.
+However, the current code seems very obviously wrong, as it blindly
+assumes (later in the function) that there's an ipv6 header on the
+packet...
 
-diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
-index 567620d215f8..9a55a54c4507 100644
---- a/drivers/net/can/rcar/rcar_canfd.c
-+++ b/drivers/net/can/rcar/rcar_canfd.c
-@@ -1889,17 +1889,17 @@ static int rcar_canfd_probe(struct platform_device *pdev)
- 	gpriv->chip_id = chip_id;
- 	gpriv->max_channels = max_channels;
- 
--	if (gpriv->chip_id == RENESAS_RZG2L) {
--		gpriv->rstc1 = devm_reset_control_get_exclusive(&pdev->dev, "rstp_n");
--		if (IS_ERR(gpriv->rstc1))
--			return dev_err_probe(&pdev->dev, PTR_ERR(gpriv->rstc1),
--					     "failed to get rstp_n\n");
--
--		gpriv->rstc2 = devm_reset_control_get_exclusive(&pdev->dev, "rstc_n");
--		if (IS_ERR(gpriv->rstc2))
--			return dev_err_probe(&pdev->dev, PTR_ERR(gpriv->rstc2),
--					     "failed to get rstc_n\n");
--	}
-+	gpriv->rstc1 = devm_reset_control_get_optional_exclusive(&pdev->dev,
-+								 "rstp_n");
-+	if (IS_ERR(gpriv->rstc1))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(gpriv->rstc1),
-+				     "failed to get rstp_n\n");
-+
-+	gpriv->rstc2 = devm_reset_control_get_optional_exclusive(&pdev->dev,
-+								 "rstc_n");
-+	if (IS_ERR(gpriv->rstc2))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(gpriv->rstc2),
-+				     "failed to get rstc_n\n");
- 
- 	/* Peripheral clock */
- 	gpriv->clkp = devm_clk_get(&pdev->dev, "fck");
--- 
-2.35.1
+Our current API for creating these sockets specifies the port, but not
+the ip version.
+I think it would be beneficial if we could just always use AF_INET6
+(and thus dualstack) sockets,
+instead of how we currently just always use AF_INET udp sockets.
 
-
+side note: with nat64 network based packet translation you can
+actually end up with ipv6/udp/esp talking to ipv4/udp/esp, etc, and
+you might not be able to tell that this is the case from looking at
+the IP addresses themselves.
