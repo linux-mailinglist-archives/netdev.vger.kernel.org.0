@@ -2,110 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 05EF160E431
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 17:10:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6841560E3E3
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 16:58:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234010AbiJZPKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 11:10:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34008 "EHLO
+        id S234422AbiJZO6T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 10:58:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231164AbiJZPKt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 11:10:49 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 732BA6F546;
-        Wed, 26 Oct 2022 08:10:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=b/IPxq/7gvm+QsOHvtM2Gpgn9OSQlQsCELlNqyMiuooeEDtbGdjiXjoYH9gVWmccxgy1WaMu1w94IB/vAkRDONrICo6Et0+nR/HEJGqWFJK8J0wIS0qxCP4VXc4jI/s0TbsB2FG+4QsmQ3zZDLryX1CmYNVuLZOVascPrCbl5bbCC25QZSDI5HJw5EB14qWIKsTax8vpEP6TiKuksLqUd2GUOYx8qdA4+KyYyJDVch3Tb49U+dlDf8mIE5TE0BcdTQKAMRXo6X2Ed2agJ1um+FTZvdueMHtEUyEkspzGCGXdrcfNbTMbMQY00wPaoFt2qksIqQMJJnQrL9/fxwX0Mg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uA/Fq0ni94/IrNdZEN9sB4UwWl/+M80zQAq6pn/WU/4=;
- b=PJro2mE+MWq+/QQi4y6vXd9ymjnoSvmicdi+Gd126JK4479zUqDgB4stbEGdV73rW+QkZcb7lA0VHNRBHFHY77ekVUT5WgYXrdiNVsdzhMA2JUM1kP1yl2xIi7fOosfH6mjWy9dBSBQ57Xdu2Hsg3BF3rKXIPkTrLC3nzE6Asx2uPDKNG7RgWlKqaK40LjcoAzI1gfwqVfUCWoaJxn7LohgMEqkSBEqNxo585HGeRelFhxp5IBgSKSobCggton9BbWzyRhbFMYvhe6Fjmqr/OuDBRyLU5LYuOa3wcV/obkhKIdibK1R4k44o8dB5YN1xcHj15tB+TI7F75dZOoAuJw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=lists.infradead.org
- smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uA/Fq0ni94/IrNdZEN9sB4UwWl/+M80zQAq6pn/WU/4=;
- b=MNI0tWyQALtannSq31DSYBHkiBRfCDl7UUgTfQd0ko0Rq6M4KTGHXC82UG8SXOxUm0/0tK3aYpgCU1N959hjw4OtMkf3u/vqr+a2Mjv58caR4Obiqnvqxzho7DQPsAknqfDWdyBSFM7x7SJq0mkuuSOGH2tlD8x1gXoH2J1MitGvCCsPQ38p8PFctc0AMAbMzsJhf0oO8N+RujSFaxHckG/6xT8BOPN7Tohr62CwV1caROzqeB6hg/OvUb9wkD6zLoREoHwy33TQkc4FNFhZOSMa46uKC5Y8+WpB0C/WmOe73Q6s1qXXslIvn1rCWqn6j7ISQKqG3w61GqZThFcKVw==
-Received: from DM6PR17CA0022.namprd17.prod.outlook.com (2603:10b6:5:1b3::35)
- by MN2PR12MB4389.namprd12.prod.outlook.com (2603:10b6:208:262::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.27; Wed, 26 Oct
- 2022 15:10:47 +0000
-Received: from DM6NAM11FT115.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:1b3:cafe::e9) by DM6PR17CA0022.outlook.office365.com
- (2603:10b6:5:1b3::35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.21 via Frontend
- Transport; Wed, 26 Oct 2022 15:10:46 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- DM6NAM11FT115.mail.protection.outlook.com (10.13.173.33) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5746.16 via Frontend Transport; Wed, 26 Oct 2022 15:10:46 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Wed, 26 Oct
- 2022 08:10:36 -0700
-Received: from yaviefel (10.126.231.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Wed, 26 Oct
- 2022 08:10:32 -0700
-References: <20221024091333.1048061-1-daniel.machon@microchip.com>
- <20221024091333.1048061-3-daniel.machon@microchip.com>
- <87zgdizvfq.fsf@nvidia.com> <Y1kmBMXluPI1Wmu/@DEN-LT-70577>
-User-agent: mu4e 1.6.6; emacs 28.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     <Daniel.Machon@microchip.com>
-CC:     <petrm@nvidia.com>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>, <maxime.chevallier@bootlin.com>,
-        <thomas.petazzoni@bootlin.com>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>,
-        <Lars.Povlsen@microchip.com>, <Steen.Hegelund@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, <joe@perches.com>,
-        <linux@armlinux.org.uk>, <Horatiu.Vultur@microchip.com>,
-        <Julia.Lawall@inria.fr>, <vladimir.oltean@nxp.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [net-next v3 2/6] net: dcb: add new apptrust attribute
-Date:   Wed, 26 Oct 2022 16:55:31 +0200
-In-Reply-To: <Y1kmBMXluPI1Wmu/@DEN-LT-70577>
-Message-ID: <87fsfazkm2.fsf@nvidia.com>
+        with ESMTP id S233690AbiJZO6J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 10:58:09 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08DAF11DA8A
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 07:58:08 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id v4-20020a17090a088400b00212cb0ed97eso2332475pjc.5
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 07:58:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=lQspLFJNk92dGNCql3itw09Xxw2xf+/ZyAlzO0dOHWo=;
+        b=AWvAN8eu3xhaAYR219UIA8XCZMmJvJPjxPT8wqr2vcE5guF1SZzFxla4mZBi/vU1Ar
+         SZ75lUOKQYSHrD9eZp2MM8fNbyWmtD+QJmKBmBlYoar/4qGyuR2qkbmtah9ABqHN7eM6
+         1q6byFmDC2K57VwHJrFIzXdZQI8ACqrrRq/vYND3FuTdj7l7jGtMDrHBjcx+M9gssAvG
+         jlvBmhvu8zYfaLG7Wn9FiVDQlyiCKp9F5cW0PPSk7nASkH0TO1o34vaUZIDuy4S63QN4
+         3SXqAUrjgNOywT+2xDIe0NhKslZmQjJOy2PM3xd3DgKo5F0tkP/gtsucbNKIDfxstaMn
+         nZgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=lQspLFJNk92dGNCql3itw09Xxw2xf+/ZyAlzO0dOHWo=;
+        b=yDH5bKqduuRh7j83+Q+fg9Bkx3amfeH3SnOh6SqbmkgPzibaoMZ4Qe5KfdoWokKIJ1
+         Skeas4Q7fbeu8cFc9uxm1KVFf/4sNaIGP7RBiBjSceCVX99hPPbfgm6jJmdBenaNjRGZ
+         is3DSHY3L+NRipOzuhBwKppHhpL2hISYEbmcBgMDuL+Jm3hCmpB4yZIA0wA6yRlDndU9
+         LcGFrNpymWXP/lyip3BrFHql3Ze5DFhb2x3a5jFlUJGm6X7qg3NZegeopjq9LBi0rp0Z
+         eoRIJnmBU6WRbpOGKeo2yZhQgx0Mmhi/nm2COHZQLwHTJGrctB7aqq7W8wTizWGuKsq6
+         jsBg==
+X-Gm-Message-State: ACrzQf1pLwE05Ih0zO8l15tAhHrwDR2bTcd1P4B9lFqb0ognQKkZhTXU
+        C9SYNqHLAuToKSqibdePzvLgtcSlJJ8=
+X-Google-Smtp-Source: AMsMyM5XkuYtKr6/NZgXy1uGAxLWtafzFUVTzHR2a/xe69GxgLTtIr1+ooQ5AZvUQmlBpL1aY6Z6CQ==
+X-Received: by 2002:a17:90a:8b93:b0:20a:bd84:5182 with SMTP id z19-20020a17090a8b9300b0020abd845182mr4828595pjn.161.1666796288009;
+        Wed, 26 Oct 2022 07:58:08 -0700 (PDT)
+Received: from ?IPV6:2600:8802:b00:4a48:1c5e:eaed:5c17:c765? ([2600:8802:b00:4a48:1c5e:eaed:5c17:c765])
+        by smtp.gmail.com with ESMTPSA id m19-20020a62a213000000b0056bc1d7816dsm3190885pff.99.2022.10.26.07.58.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Oct 2022 07:58:07 -0700 (PDT)
+Message-ID: <9db364c8-f003-4622-8eee-fedb6e6b712e@gmail.com>
+Date:   Wed, 26 Oct 2022 07:58:06 -0700
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.231.35]
-X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT115:EE_|MN2PR12MB4389:EE_
-X-MS-Office365-Filtering-Correlation-Id: e4e97247-72f0-4ec8-ea1e-08dab7644298
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: W2xkE/NMAJTek+sOqXt3Qiyf2O9SMleVn2r8r8tXCXA8KsNCwitDg6Pq9Q+d/6YQyf94zm9/Ev4gCFHZ+MrsikEIm2e2qxXqxJU7EFcIwewUqhi93jxi5lSnHE2PTvNK4GsMNDEfaXXpUgp5pyrvlDzFnzNqHfJzrmwvTlr87KfBt9yFaMRWV1oyG7M2UnRKe+wdPs0u1R6oHN0Wm8mcQGbbEUp/0JGVAaM9jB3sp6x0rXIalpd4jBq2bL6lCcFJdPQ23anzd+Smf82BZXOqcnxepmRw8X/FUXEuv71D8WxUuJWo/dCLx5HIbGcoj+ILvzAPsIOd0H+HdPJrFpjqbmC89VJHQxuuhKZFRcXVZpKQUDQf9TPqPED2VZ+SD8Yy9ATvmL0Q+VjYMWIUqnco3hg/6cnRyebMiyEruNrM8pgRMBE73jRQKc45R73B/0aLY9HeWlpyXxbFfzV0yJ1OZtwUmnVSCk9g2uUBiy39732jIRw6h4uZfQ+rPh6LIBHIKj7dBOqiGJKr92g85iOyqFSwW/ka7YiY3YshM7Q05BAf3pLg4ZcO+0WroHTmuNK0vAaA+8dL9FWJur1LhKOR7POXr9pOsMxfqkC47W0+uW9gcL4iSM/cBa08ECWBl7qQbBGSzuNi2Y2mliDDJJ3tJIQTwzPUtEdBfL81IhF0QC8dmOM2R5fi1vzmzPvVMU70ph/wfTpBXBuQhVLJbv+qEmoKZ95xTJqa5C2Qf1COQDnZh+AutPwfYG5NGyDEpkyil8AIjmRKFkWdBGvb8Vuqvg==
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(136003)(396003)(376002)(346002)(39860400002)(451199015)(40470700004)(46966006)(36840700001)(2906002)(5660300002)(336012)(7416002)(16526019)(26005)(41300700001)(186003)(2616005)(8936002)(356005)(7636003)(4744005)(40480700001)(86362001)(82310400005)(40460700003)(47076005)(36756003)(426003)(82740400003)(70206006)(36860700001)(6916009)(54906003)(316002)(478600001)(4326008)(8676002)(70586007);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Oct 2022 15:10:46.6714
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e4e97247-72f0-4ec8-ea1e-08dab7644298
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT115.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4389
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [PATCH] net: broadcom: bcm4908_enet: report queued and
+ transmitted bytes
+To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+References: <20221026142624.19314-1-zajec5@gmail.com>
+Content-Language: en-US
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20221026142624.19314-1-zajec5@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -113,27 +80,45 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-<Daniel.Machon@microchip.com> writes:
 
->> > +     if (ops->dcbnl_getapptrust) {
->> > +             u8 selectors[IEEE_8021QAZ_APP_SEL_MAX + 1] = {0};
->> > +             int nselectors;
->> > +
->> > +             apptrust = nla_nest_start(skb, DCB_ATTR_DCB_APP_TRUST_TABLE);
->> > +             if (!app)
->> > +                     return -EMSGSIZE;
->> > +
->> > +             err = ops->dcbnl_getapptrust(netdev, selectors, &nselectors);
->> > +             if (err)
->> > +                     return -EMSGSIZE;
->> 
->> This should return the error coming from the driver instead of
->> -EMSGSIZE.
->
-> Hmm. The question is whether we should return at all if dcbnl_getapptrust()
-> fails, or just continue to fill whatever other ieee information is available?
-> Seems to be like the rest of the code in ieee_fill() just ignore that error.
+On 10/26/2022 7:26 AM, Rafał Miłecki wrote:
+> From: Rafał Miłecki <rafal@milecki.pl>
+> 
+> This allows BQL to operate avoiding buffer bloat and reducing latency.
+> 
+> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+> ---
+>   drivers/net/ethernet/broadcom/bcm4908_enet.c | 7 +++++++
+>   1 file changed, 7 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/broadcom/bcm4908_enet.c b/drivers/net/ethernet/broadcom/bcm4908_enet.c
+> index 93ccf549e2ed..e672a9ef4444 100644
+> --- a/drivers/net/ethernet/broadcom/bcm4908_enet.c
+> +++ b/drivers/net/ethernet/broadcom/bcm4908_enet.c
+> @@ -495,6 +495,7 @@ static int bcm4908_enet_stop(struct net_device *netdev)
+>   	netif_carrier_off(netdev);
+>   	napi_disable(&rx_ring->napi);
+>   	napi_disable(&tx_ring->napi);
+> +	netdev_reset_queue(netdev);
+>   
+>   	bcm4908_enet_dma_rx_ring_disable(enet, &enet->rx_ring);
+>   	bcm4908_enet_dma_tx_ring_disable(enet, &enet->tx_ring);
+> @@ -564,6 +565,8 @@ static netdev_tx_t bcm4908_enet_start_xmit(struct sk_buff *skb, struct net_devic
+>   	enet->netdev->stats.tx_bytes += skb->len;
+>   	enet->netdev->stats.tx_packets++;
+>   
+> +	netdev_sent_queue(enet->netdev, skb->len);
 
-I see. I guess the reasoning is that one broken callback shouldn't lead
-to dropping the whole query. So yeah, let's do what the rest of the code
-does. But it seems rather cavalier to disregard error codes like this.
+There is an opportunity for fixing an use after free here, after you 
+call bcm4908_enet_dma_tx_ring_enable() the hardware can start 
+transmission right away and also call the TX completion handler, so you 
+could be de-referencing a freed skb reference at this point. Also, to 
+ensure that DMA is actually functional, it is recommended to increase TX 
+stats in the TX completion handler, since that indicates that you have a 
+functional completion process.
+
+So long story short, if you record the skb length *before* calling 
+bcm4908_enet_dma_tx_ring_enable() and use that for reporting sent bytes, 
+you should be good.
+-- 
+Florian
