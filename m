@@ -2,122 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 127E860E299
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 15:52:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4461B60E29D
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 15:52:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233926AbiJZNv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 09:51:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57592 "EHLO
+        id S234012AbiJZNwo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 09:52:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233743AbiJZNvi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 09:51:38 -0400
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 586F04BD2E
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 06:51:37 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id n18so6119764qvt.11
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 06:51:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WEuotFoVaOLAiftQgcaOJhbegwvFQspN0YI1OO+4yK0=;
-        b=p84ee7jQ1JczfzHjXTdsk4pauQdbLNdNlFfmJyizFSrzqu5kDHsEpFrYnmmVwPsBnC
-         J6My4pF3eueW2/JrRTb2avSfzutmq4pxxiLBFVX20biFKJgQTIKb2ycwVtoPg27xlwyk
-         ax0E6XX1BFa7XitLkSIPkiCJLwhsplQyx8vrw3FlHK7je0MUG/eO2fgkJN3Y9H4FOy/X
-         IkIYkNhjDDwhYdvUvIuslEDSZvFPYvscu+G65Fb5ahSC+nBzhgU7HJua6ltXaV7EWaDz
-         RzkLMmw2v4TFKuzJuP1H/l9JSu9rChLDOZynNk35SaIOis32uwDHVd3+48ZRm7vetpsg
-         d9qA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=WEuotFoVaOLAiftQgcaOJhbegwvFQspN0YI1OO+4yK0=;
-        b=AOFhGfEGXPudtlCYCearuz08prZMJBHsHgPKr8q7+E2JLtsyzKoq9VWaZgxmj2vAwY
-         ILiaBqfsJbH9L4akbC+2e3PPtGeJDF32CdHvuteF8+aAz1us8wYO0CqfopZKv8Ab/iRf
-         DXMCSFBIh7yyAcV/uwmTDp0TA9snSPPtT8czjiWW6S8LUbXNEd48+ZWfV6o7LjvgQ1Ix
-         KwSpJG3KJbgitG9CvVHkglY1LZF3FBMssIGL1v1RYsHKgSJbbN8vaucmOk/JhhvoQbwb
-         cNGw4qdutZOGnQxlUdngNROJSjva/5o8/WrwYBGLSgj5VxHZvd9IMjpnueLyNoknfzGu
-         BGLg==
-X-Gm-Message-State: ACrzQf0H2y2QkaJR9mjeWP9FPhSrPjbbyz9U1IkJVmc07mggJmHvLAFL
-        NfkXcPLnBXd1JkNf9UYxDndz1nS3uJIpcw==
-X-Google-Smtp-Source: AMsMyM4TQNtjq1mbHQnBnPdPu1KSZiZsWr7NWEqYaWEZ4rIZtr3hmU4wB58b6wUCA0ukEL344mgXKg==
-X-Received: by 2002:a05:6214:2467:b0:4ba:f07c:d9f7 with SMTP id im7-20020a056214246700b004baf07cd9f7mr23300290qvb.24.1666792296294;
-        Wed, 26 Oct 2022 06:51:36 -0700 (PDT)
-Received: from mubashirq.c.googlers.com.com (74.206.145.34.bc.googleusercontent.com. [34.145.206.74])
-        by smtp.gmail.com with ESMTPSA id b24-20020ac84f18000000b00397101ac0f2sm3211836qte.3.2022.10.26.06.51.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Oct 2022 06:51:35 -0700 (PDT)
-From:   Mubashir Adnan Qureshi <mubashirmaq@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org,
-        Mubashir Adnan Qureshi <mubashirq@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
+        with ESMTP id S234000AbiJZNwF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 09:52:05 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B378103246
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 06:52:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 06EDCCE2293
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 13:52:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F77CC433D6;
+        Wed, 26 Oct 2022 13:51:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666792319;
+        bh=gQt3jehBkYCk1Hx8bT/jre0CQX1RcKv2D02N0VTH4Vw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=T6Agz7lFjO/3SYxBEBsD/X+Sv/bgBTab6Ezl+xspHrQTxqImruSwlvDvn+v3U1gtH
+         tctNnIYAfiaeUXwWEJbFaw998hH3ZpjL2t01t9n2jgudtroF+/6p5vqoHnAEfxS2kc
+         N1tpRSRc+iLUwCFMKBrHW7QDBaPjZlFA3/4GGIclhlpUbeWwPu3Iv+hg5/X0bFciKu
+         H7RIOTebQnOxZFZfTGxJWa6wSCaGw3jzsawzkdWl1cKdT8z4kzHD+MED+Vyq2GfQpA
+         KUGQwaV3yUmv6rx799ZDlFSGBQeNL0FnkUwlYPBgxrP4aHSjoR7mYw2Hdbpg7rmvL/
+         btENWn8BIN+GQ==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
-Subject: [PATCH net-next 5/5] tcp: add rcv_wnd and plb_rehash to TCP_INFO
-Date:   Wed, 26 Oct 2022 13:51:15 +0000
-Message-Id: <20221026135115.3539398-6-mubashirmaq@gmail.com>
-X-Mailer: git-send-email 2.38.0.135.g90850a2211-goog
-In-Reply-To: <20221026135115.3539398-1-mubashirmaq@gmail.com>
-References: <20221026135115.3539398-1-mubashirmaq@gmail.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [pull request][V4 net 00/15] mlx5 fixes 2022-10-14
+Date:   Wed, 26 Oct 2022 14:51:38 +0100
+Message-Id: <20221026135153.154807-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mubashir Adnan Qureshi <mubashirq@google.com>
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-rcv_wnd can be useful to diagnose TCP performance where receiver window
-becomes the bottleneck. rehash reports the PLB and timeout triggered
-rehash attempts by the TCP connection.
+v3->v4:
+  Drop the SF commit to comply with 15 patch limit and avoid build break
 
-Signed-off-by: Mubashir Adnan Qureshi <mubashirq@google.com>
-Signed-off-by: Yuchung Cheng <ycheng@google.com>
-Signed-off-by: Neal Cardwell <ncardwell@google.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
----
- include/uapi/linux/tcp.h | 5 +++++
- net/ipv4/tcp.c           | 2 ++
- 2 files changed, 7 insertions(+)
+v2->v3:
+  Initialize sf_dev->sf_table mutex at correct location
 
-diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
-index c9abe86eda5f..879eeb0a084b 100644
---- a/include/uapi/linux/tcp.h
-+++ b/include/uapi/linux/tcp.h
-@@ -284,6 +284,11 @@ struct tcp_info {
- 	__u32	tcpi_snd_wnd;	     /* peer's advertised receive window after
- 				      * scaling (bytes)
- 				      */
-+	__u32	tcpi_rcv_wnd;	     /* local advertised receive window after
-+				      * scaling (bytes)
-+				      */
-+
-+	__u32   tcpi_rehash;         /* PLB or timeout triggered rehash attempts */
- };
- 
- /* netlink attributes types for SCM_TIMESTAMPING_OPT_STATS */
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 1da7c53b6cb5..de8f0cd7cb32 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -3940,6 +3940,8 @@ void tcp_get_info(struct sock *sk, struct tcp_info *info)
- 	info->tcpi_reord_seen = tp->reord_seen;
- 	info->tcpi_rcv_ooopack = tp->rcv_ooopack;
- 	info->tcpi_snd_wnd = tp->snd_wnd;
-+	info->tcpi_rcv_wnd = tp->rcv_wnd;
-+	info->tcpi_rehash = tp->plb_rehash + tp->timeout_rehash;
- 	info->tcpi_fastopen_client_fail = tp->fastopen_client_fail;
- 	unlock_sock_fast(sk, slow);
- }
--- 
-2.38.0.135.g90850a2211-goog
+v1->v2:
+  add missing sign-off.
 
+This series provides bug fixes to mlx5 driver.
+Please pull and let me know if there is any problem.
+
+Thanks,
+Saeed.
+
+
+The following changes since commit c5f0a17288740573f4de72965c5294a60244c5fc:
+
+  rhashtable: make test actually random (2022-10-26 13:39:09 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2022-10-26
+
+for you to fetch changes up to efe8b237ea42d8e57f030136cd5c9b99318b9885:
+
+  net/mlx5e: Fix macsec sci endianness at rx sa update (2022-10-26 14:44:29 +0100)
+
+----------------------------------------------------------------
+mlx5-fixes-2022-10-26
+
+----------------------------------------------------------------
+Ariel Levkovich (1):
+      net/mlx5e: TC, Reject forwarding from internal port to internal port
+
+Aya Levin (1):
+      net/mlx5e: Extend SKB room check to include PTP-SQ
+
+Hyong Youb Kim (1):
+      net/mlx5e: Do not increment ESN when updating IPsec ESN state
+
+Moshe Shemesh (1):
+      net/mlx5: Wait for firmware to enable CRS before pci_restore_state
+
+Paul Blakey (1):
+      net/mlx5e: Update restore chain id for slow path packets
+
+Raed Salem (4):
+      net/mlx5e: Fix macsec coverity issue at rx sa update
+      net/mlx5e: Fix macsec rx security association (SA) update/delete
+      net/mlx5e: Fix wrong bitwise comparison usage in macsec_fs_rx_add_rule function
+      net/mlx5e: Fix macsec sci endianness at rx sa update
+
+Roi Dayan (1):
+      net/mlx5e: TC, Fix cloned flow attr instance dests are not zeroed
+
+Rongwei Liu (1):
+      net/mlx5: DR, Fix matcher disconnect error flow
+
+Roy Novich (1):
+      net/mlx5: Update fw fatal reporter state on PCI handlers successful recover
+
+Saeed Mahameed (1):
+      net/mlx5: ASO, Create the ASO SQ with the correct timestamp format
+
+Suresh Devarakonda (1):
+      net/mlx5: Fix crash during sync firmware reset
+
+Tariq Toukan (1):
+      net/mlx5: Fix possible use-after-free in async command interface
+
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c      | 10 +--
+ drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h   |  9 +++
+ .../net/ethernet/mellanox/mlx5/core/en/tc_priv.h   |  2 +
+ drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h  |  6 ++
+ .../ethernet/mellanox/mlx5/core/en_accel/ipsec.c   |  3 -
+ .../ethernet/mellanox/mlx5/core/en_accel/macsec.c  | 16 ++---
+ .../mellanox/mlx5/core/en_accel/macsec_fs.c        |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 78 +++++++++++++++++++++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tx.c    |  6 ++
+ drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c | 17 +++++
+ drivers/net/ethernet/mellanox/mlx5/core/lib/aso.c  |  7 ++
+ drivers/net/ethernet/mellanox/mlx5/core/lib/mpfs.c |  6 +-
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |  4 ++
+ .../ethernet/mellanox/mlx5/core/steering/dr_rule.c |  3 +-
+ include/linux/mlx5/driver.h                        |  2 +-
+ 15 files changed, 146 insertions(+), 25 deletions(-)
