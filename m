@@ -2,79 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 798EB60E9A5
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 21:54:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 736FF60E9AC
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 21:59:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234030AbiJZTyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 15:54:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39580 "EHLO
+        id S234482AbiJZT7s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 15:59:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234922AbiJZTx7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 15:53:59 -0400
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D549F6C02
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 12:53:58 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id z30so11473068qkz.13
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 12:53:58 -0700 (PDT)
+        with ESMTP id S234367AbiJZT7q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 15:59:46 -0400
+Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CCB524BED
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 12:59:39 -0700 (PDT)
+Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-36cbcda2157so102722777b3.11
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 12:59:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ne2k5MZ2liCTxhgAOY1z0SI8nB1K7mmSquubAjYik+0=;
-        b=dxliLHEkUjodRDSdkqJ7B2iRyA9ctE41uYxQ3TregubSxpd2WYJToujmVhCYa2NcTs
-         Ig3IEHOesj45OSuj7SZVf0KYPy8L96ZfZdPotfF0w4VOMoN7nNAKPNjjbrBZVBXG3qBI
-         G0Rf5gzKRFJQF9oXujKfJuWY1frU0fPq173rGb0fo7bNQUcgutR54O/erODRONV3xYqF
-         bWIsFfaeB92A8avccRYOAJDe8MgDLWmCqa3L6gGI3xfqa4YdcvEXZ/W9J2H9aahNYPYs
-         i/6oM7Em+raLqSsMXkq2dwttyxLq8e0vF3kx1ZvUROWjVO+H3WjYpEA7n16dvddiq6Wr
-         d9JQ==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=X5K3M1cKuBGcnzHdJ/ZU9f+JQhLOYZLbD++nTg1Hiz4=;
+        b=GI7gJx+oA9c3u1/SQb7gVG5T9q9tfP7iRJ7aZ4Ag1gotleqk2md3nehaImC1arfb8A
+         ArvHjDAEG4yQ9XcULB8mbgnMK45HvBC+7IDLKpWl5wHG/tvUZRVUGGcev4IJW4X8wCgO
+         KHENpP/0coe7TuW5/P/c6YP4wRe+a4dOTdHwlDvF4D0zfhZh77ad2i3YFsZ8clUDbo7W
+         o/hugjuFuS4hYTRb8aXm7YzaViqpNUTIukXlpBu59Jd14PpKF0AYIzISqUCJb+jYsP3T
+         3ubQFIkymVu2CiwHkvvn4t7rn+wjCu8MfHCL0eZnJ/cJhR6H6NIBVPwRnip4VTkd810C
+         Bs5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ne2k5MZ2liCTxhgAOY1z0SI8nB1K7mmSquubAjYik+0=;
-        b=tQBueF6GpPLW8+VI+BEGyilDM1alHWPTAY6/O3hWzevY3uYbK5mBo7R2tzEBpM66cs
-         aCZFkk7INxxZC7mveUaYsv6dOpZPucA3Wv+OvMgdWByUAIHpfSKCXDzogX5c6cI+PQSY
-         01YFES8+ljuLNQ12gy8SJAtgHvEvGdwbi3QqdsL9yYdZauVhQm+x5VeuhavXh46vMTca
-         jtgnMaeNi/HJdDRpOKD7Qiui+BItWRipnTfb/FWHsX8owvztbIkU2iIgECX5NHr0oant
-         VehXPPwC3bRGWWBOOHzkPICzzJac+BmPC0CsoBxFvaU6xedXy+tCUze0I5FOMXDLj5Hq
-         KflA==
-X-Gm-Message-State: ACrzQf3KhOwfMHrogtjyLpWuTW3Gh3hqTDqybQ7w4/iHhCgMxAAU/p+p
-        NwylpSyb0Q/hndr8HXElnLcM4clOruK4ww==
-X-Google-Smtp-Source: AMsMyM7/9t8Jk8XiMHwICF4gJ53SoExeofKwjlCpAS1BUpHVy8bZZpxyZIBlQjVJOQKqlDnfWhwyVw==
-X-Received: by 2002:ae9:ef8b:0:b0:6ee:7b1f:fc9c with SMTP id d133-20020ae9ef8b000000b006ee7b1ffc9cmr31536651qkg.186.1666814037616;
-        Wed, 26 Oct 2022 12:53:57 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id g21-20020a05620a40d500b006ee8874f5fasm4630386qko.53.2022.10.26.12.53.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Oct 2022 12:53:56 -0700 (PDT)
-Message-ID: <f0b2383e-fa08-c488-ec00-b0804d22c86d@gmail.com>
-Date:   Wed, 26 Oct 2022 12:53:50 -0700
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=X5K3M1cKuBGcnzHdJ/ZU9f+JQhLOYZLbD++nTg1Hiz4=;
+        b=HhWIztCLDlT4oDW0IXuWo0KL/jn6rIVHqd/rq/PzVgx51puczMvZeMu+d7jpBZ+xfy
+         QwmL4MiGFN+HIsv/OyBhIdM8O8h+8E920HuVEufBm5imukP7IbNCt8lZFVKZQoYhR0fh
+         2jPiUko/NiQp60PIk336EwNSKxHei7ClBBJmSWslN45vram6RQnAqLhAXGBt2NEpB46c
+         fZMLyanOcjQmKzNG3k0cv9InFXP96SPT2uHwoxaFVZEGszQdwyCDgCbnk4KqoEYEC1Ce
+         7GxUAooI1wu8syGPY0Y+RzufWsCknEAXFqoK4093BXwkWZyvQcSK4hoFRaJPSgPm5C5+
+         Krug==
+X-Gm-Message-State: ACrzQf3TLxZLTfbNNmXqj1gohRmuZW6JuTf0xRdvKQ3S8pZw5XDN7kqO
+        nOJd7IfBUMwP/h0HnzC1P5DhY4LnCMoZYI9iuRLX4g==
+X-Google-Smtp-Source: AMsMyM764c4S89wwpydebt+KOMUw3QGtem4RlFd9lYq5tb9f8HkQMZ+IeNDiFteZImOKLefmM062P4eOb2CvgQZReC0=
+X-Received: by 2002:a81:c11:0:b0:36a:bcf0:6340 with SMTP id
+ 17-20020a810c11000000b0036abcf06340mr23861479ywm.467.1666814378325; Wed, 26
+ Oct 2022 12:59:38 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH] net: broadcom: bcm4908_enet: report queued and
- transmitted bytes
-Content-Language: en-US
-To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-References: <20221026142624.19314-1-zajec5@gmail.com>
- <9db364c8-f003-4622-8eee-fedb6e6b712e@gmail.com>
- <bc15d5e0-1e48-d353-fc90-680c8039bf4f@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <bc15d5e0-1e48-d353-fc90-680c8039bf4f@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20221026151558.4165020-1-luwei32@huawei.com> <CANn89iJQn5ET3U9cYeiT0ijTkab2tRDBB1YP3Y6oELVq0dj6Zw@mail.gmail.com>
+ <CANn89iLcnPAzLZFiCazM_y==33+Zhg=3bGY70ev=5YwDoZw-Vg@mail.gmail.com> <fd9abfe4-962e-ceef-5ab8-29e654303343@virtuozzo.com>
+In-Reply-To: <fd9abfe4-962e-ceef-5ab8-29e654303343@virtuozzo.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 26 Oct 2022 12:59:27 -0700
+Message-ID: <CANn89iJ+mkitMrn3LYmY80LhCOoc7PLPP6r2wvFTyvLeBBDtLQ@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: reset tp->sacked_out when sack is enabled
+To:     "Denis V. Lunev" <den@virtuozzo.com>
+Cc:     Lu Wei <luwei32@huawei.com>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Pavel Emelianov (Gmail)" <ovzxemul@gmail.com>, avagin@gmail.com,
+        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        URIBL_BLOCKED,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,74 +72,111 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/26/22 08:12, Rafał Miłecki wrote:
-> On 26.10.2022 16:58, Florian Fainelli wrote:
->> On 10/26/2022 7:26 AM, Rafał Miłecki wrote:
->>> From: Rafał Miłecki <rafal@milecki.pl>
->>>
->>> This allows BQL to operate avoiding buffer bloat and reducing latency.
->>>
->>> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
->>> ---
->>>   drivers/net/ethernet/broadcom/bcm4908_enet.c | 7 +++++++
->>>   1 file changed, 7 insertions(+)
->>>
->>> diff --git a/drivers/net/ethernet/broadcom/bcm4908_enet.c 
->>> b/drivers/net/ethernet/broadcom/bcm4908_enet.c
->>> index 93ccf549e2ed..e672a9ef4444 100644
->>> --- a/drivers/net/ethernet/broadcom/bcm4908_enet.c
->>> +++ b/drivers/net/ethernet/broadcom/bcm4908_enet.c
->>> @@ -495,6 +495,7 @@ static int bcm4908_enet_stop(struct net_device 
->>> *netdev)
->>>       netif_carrier_off(netdev);
->>>       napi_disable(&rx_ring->napi);
->>>       napi_disable(&tx_ring->napi);
->>> +    netdev_reset_queue(netdev);
->>>       bcm4908_enet_dma_rx_ring_disable(enet, &enet->rx_ring);
->>>       bcm4908_enet_dma_tx_ring_disable(enet, &enet->tx_ring);
->>> @@ -564,6 +565,8 @@ static netdev_tx_t bcm4908_enet_start_xmit(struct 
->>> sk_buff *skb, struct net_devic
->>>       enet->netdev->stats.tx_bytes += skb->len;
->>>       enet->netdev->stats.tx_packets++;
->>> +    netdev_sent_queue(enet->netdev, skb->len);
->>
->> There is an opportunity for fixing an use after free here, after you 
->> call bcm4908_enet_dma_tx_ring_enable() the hardware can start 
->> transmission right away and also call the TX completion handler, so 
->> you could be de-referencing a freed skb reference at this point. Also, 
->> to ensure that DMA is actually functional, it is recommended to 
->> increase TX stats in the TX completion handler, since that indicates 
->> that you have a functional completion process.
-> 
-> I see the problem, thanks!
-> 
-> Actually hw may start transmission even earlier - right after filling
-> buf_desc coherent struct.
+On Wed, Oct 26, 2022 at 11:59 AM Denis V. Lunev <den@virtuozzo.com> wrote:
+>
+> On 10/26/22 16:33, Eric Dumazet wrote:
+> > On Wed, Oct 26, 2022 at 7:30 AM Eric Dumazet <edumazet@google.com> wrote:
+> >> On Wed, Oct 26, 2022 at 7:12 AM Lu Wei <luwei32@huawei.com> wrote:
+> >>> The meaning of tp->sacked_out depends on whether sack is enabled
+> >>> or not. If setsockopt is called to enable sack_ok via
+> >>> tcp_repair_options_est(), tp->sacked_out should be cleared, or it
+> >>> will trigger warning in tcp_verify_left_out as follows:
+> >>>
+> >>> ============================================
+> >>> WARNING: CPU: 8 PID: 0 at net/ipv4/tcp_input.c:2132
+> >>> tcp_timeout_mark_lost+0x154/0x160
+> >>> tcp_enter_loss+0x2b/0x290
+> >>> tcp_retransmit_timer+0x50b/0x640
+> >>> tcp_write_timer_handler+0x1c8/0x340
+> >>> tcp_write_timer+0xe5/0x140
+> >>> call_timer_fn+0x3a/0x1b0
+> >>> __run_timers.part.0+0x1bf/0x2d0
+> >>> run_timer_softirq+0x43/0xb0
+> >>> __do_softirq+0xfd/0x373
+> >>> __irq_exit_rcu+0xf6/0x140
+> >>>
+> >>> This warning occurs in several steps:
+> >>> Step1. If sack is not enabled, when server receives dup-ack,
+> >>>         it calls tcp_add_reno_sack() to increase tp->sacked_out.
+> >>>
+> >>> Step2. Setsockopt() is called to enable sack
+> >>>
+> >>> Step3. The retransmit timer expires, it calls tcp_timeout_mark_lost()
+> >>>         to increase tp->lost_out but not clear tp->sacked_out because
+> >>>         sack is enabled and tcp_is_reno() is false.
+> >>>
+> >>> So tp->left_out is increased repeatly in Step1 and Step3 and it is
+> >>> greater than tp->packets_out and trigger the warning. In function
+> >>> tcp_timeout_mark_lost(), tp->sacked_out will be cleared if Step2 not
+> >>> happen and the warning will not be triggered. So this patch clears
+> >>> tp->sacked_out in tcp_repair_options_est().
+> >>>
+> >>> Fixes: b139ba4e90dc ("tcp: Repair connection-time negotiated parameters")
+> >>> Signed-off-by: Lu Wei <luwei32@huawei.com>
+> >>> ---
+> >>>   net/ipv4/tcp.c | 3 +++
+> >>>   1 file changed, 3 insertions(+)
+> >>>
+> >>> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> >>> index ef14efa1fb70..188d5c0e440f 100644
+> >>> --- a/net/ipv4/tcp.c
+> >>> +++ b/net/ipv4/tcp.c
+> >>> @@ -3282,6 +3282,9 @@ static int tcp_repair_options_est(struct sock *sk, sockptr_t optbuf,
+> >>>                          if (opt.opt_val != 0)
+> >>>                                  return -EINVAL;
+> >>>
+> >>> +                       if (tcp_is_reno(tp))
+> >>> +                               tp->sacked_out = 0;
+> >>> +
+> >>>                          tp->rx_opt.sack_ok |= TCP_SACK_SEEN;
+> >>>                          break;
+> >>>                  case TCPOPT_TIMESTAMP:
+> >>> --
+> >>> 2.31.1
+> >>>
+> >> Hmm, I am not sure this is the right fix.
+> >>
+> >> Probably TCP_REPAIR_OPTIONS should not be allowed if data has already been sent.
+> >>
+> >> Pavel, what do you think ?
+> > Routing to Denis V. Lunev <den@openvz.org>, because Pavel's address no
+> > longer works.
+> >
+> > Thanks !
+> Hi, guys!
+>
+> This code is used in CRIU. I have added CRIU maintainers
+> Andrey Vagin, Pavel Tikhomirov and new address of Pavel
+> Emelyanov to CC list.
+>
+> Here is the quote from Pavel Tikhomirov on the topic.
+> "We do setsockopt with TCP_REPAIR_OPTIONS in CRIU just
+> after calling connect to the socket here
+> https://github.com/checkpoint-restore/criu/blob/18c6426eaeebc5fe7d0f9ca0acb592a3ec828b0c/soccr/soccr.c#L566
+>
+> and before libsoccr_restore_queue.
+>
+> So it seems there should be no data sent in this socket at
+> the moment, so I believe it is safe to prohibit
+> TCP_REPAIR_OPTIONS if data was already sent.
+>
+> Though I'd recomend running some CRIU tests after this
+> change just to be sure that we don't break it.
+> E.g.: "zdtm/static/socket-tcp*" or just
+> "./test/zdtm.py run -a --keep-going --ignore-taint".
 
-Not familiar with that hardware, but in premise yes, I suppose once you 
-write a proper address and length the DMA can notice and start 
-transmitting. Also even though you are using non-coherent memory, there 
-appears to be a missing dma_wmb() between the store to buf_desc->ctl and 
-buf_desc->addr. There is no explicit dependency between those two stores 
-and subsequent loads or stores, so the processor write buffer could 
-re-order those in theory. Unlikely to happen because this used on a 
-Cortex-A53 IIRC, but better safe than sorry.
+Thanks for confirming my suspicion.
 
-> 
-> 
->> So long story short, if you record the skb length *before* calling 
->> bcm4908_enet_dma_tx_ring_enable() and use that for reporting sent 
->> bytes, you should be good.
-> 
-> I may still end up calling netdev_completed_queue() for data for which
-> I didn't call netdev_sent_queue() yet. Is that safe?
-> 
-> Maybe I just just call netdev_sent_queue() before updating the buf_desc?
+Please Lu submit a different patch.
 
-You would want it to be as close a possible from when you hand the 
-buffer to the hardware, but I see no locking between 
-bcm4908_start_xmit() and bcm4908_enet_irq_handler() so you already have 
-a race don't you?
--- 
-Florian
+Your patch is only addressing the immediate issue (a WARNNG), but
+should really be preventing
+future bug reports because fuzzers will hit other points in the stack,
+not expecting fundamental
+TCP options being flipped in the middle of a connection.
 
+Thanks
+
+>
+> Thank you in advance,
+>      Den
