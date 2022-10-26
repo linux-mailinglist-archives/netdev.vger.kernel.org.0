@@ -2,185 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E531360E36B
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 16:34:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E444260E378
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 16:37:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234276AbiJZOep (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 10:34:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44052 "EHLO
+        id S234205AbiJZOhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 10:37:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234078AbiJZOel (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 10:34:41 -0400
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A590E0A4
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 07:34:40 -0700 (PDT)
-Received: by mail-qt1-x82b.google.com with SMTP id g16so10005043qtu.2
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 07:34:40 -0700 (PDT)
+        with ESMTP id S234208AbiJZOhu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 10:37:50 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05ABAB6036
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 07:37:50 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id m14-20020a17090a3f8e00b00212dab39bcdso2759804pjc.0
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 07:37:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Aue1n5CdddDvk+uG+qHnNwSRlkDsHeAwN2g8IgZTjZc=;
-        b=ZpdLrONk4T6DRMobcv1MM1zbz53uAK5KlJ8hgYZAUAJvkLvs4p6HTb9Vjl7PS72DnZ
-         QkzWf0/9/43kJ5xqNpPlMdGbeMnd57IUjvglfjgrPoXwsXv/4OeF3mJ3XkqXFi0KxGS+
-         A+tMkaNxlmLYrkZuf1wEYuFoKFa9dSn1ugeKoDBO8Wrpz0ijxgm34ejLn+yrwnKvSbyb
-         Bng7/dtj+ITU0xggXXST+qFO4YQ1ft4FBxYZ9Hl9O0oY08Lp2ptdruM2T/ZIuRLLcL8J
-         MUwW7+WZlhkQP5QR6n7EqeqCK/F3CTVRRUuUUkSr014OsGYPC6/qm8Lp8HA1/6neaeWA
-         OnHg==
+        d=pensando.io; s=google;
+        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Qshlrn/7P8U8o5NL/ql/XyA7iBxlSu6Y+RJl/Y030OU=;
+        b=z2qi19yYiSHB7boZ1hQaJ4K22LHeUS1hQXBJKHsq3sbaAf9TO6jXjywhADJor/h2zZ
+         HvY2I/su67CTZTWBmnTUAqTjMHbInH5LoBwtyxYqTa3lYtO4wyv/My9w7gSUdvv8fTHj
+         zoDrN1GmSZ8hux5P0Uuo3aKvh/RWTc1f/0LO48k41jMBiP4gwig6R+ByZpB9FZZnv3j5
+         OhJUqL2Ykyf9CVq/PUjGum+lxj3rh9a5re7dCMIJjukniAIpETT1vTgbVIou32oOyio3
+         7GDK8AB4dB8/7Tu5Qs894PrhHXhS5oUMeRzdtjSO18sW4yAMRE1RrEkWEdy9L25pWCVf
+         IynA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Aue1n5CdddDvk+uG+qHnNwSRlkDsHeAwN2g8IgZTjZc=;
-        b=RgBw8JEXFmkbET5RjlPMhJeMYKzw6WCttsK+ncxMWAAq5qc80jRdxB1w5xOo98bLHS
-         0Wwbk9V4928llvHKe9vcUdnWNs4L9gRWb6IeV+mDhN5+mZk5YN/dG75qbLsDsV8UNjWD
-         BIF5HHnO0VdOyIpc9zBkat4KxhwHHpLSDaMm+kWMu1fJK66BUfUIH06OTv9MpwuPcVs8
-         xJUuWaF5X3XgQFzfGVl56Yc7hArghHCZu/Jx8ck0cKNhHAsoTC5uppdPQmZktPDprNar
-         CGsvKhpUeMQn8Q7+afnqtnQScK4m10AT7LZm/G0yw2W0HkUfrngqv06g1Bz0qmnOAj1i
-         XqeQ==
-X-Gm-Message-State: ACrzQf1WJvfzgVtt1+5QQ2gcxzmHE29q2dTwuN+1kTuORP17yrRxXQIZ
-        ziPwmLXZt4c09VvGruzbka3kOQ==
-X-Google-Smtp-Source: AMsMyM7c1sgYx5YIZenvo5DDl/wD/h249LQ6L6+sQqdnyE+pVe7N1cKfoDBZBVAAPrt8rMe2PLHswA==
-X-Received: by 2002:ac8:5849:0:b0:39a:8e35:1bfa with SMTP id h9-20020ac85849000000b0039a8e351bfamr36305054qth.573.1666794879194;
-        Wed, 26 Oct 2022 07:34:39 -0700 (PDT)
-Received: from [192.168.1.11] ([64.57.193.93])
-        by smtp.gmail.com with ESMTPSA id c27-20020a05620a269b00b006ee7923c187sm4013390qkp.42.2022.10.26.07.34.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Oct 2022 07:34:38 -0700 (PDT)
-Message-ID: <7ceca209-9361-e811-8fe0-282639f9e967@linaro.org>
-Date:   Wed, 26 Oct 2022 10:34:36 -0400
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [PATCH 1/1] dt-bindings: net: snps,dwmac: Document queue config
- subnodes
-Content-Language: en-US
-To:     Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com
-References: <20221021171055.85888-1-sebastian.reichel@collabora.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221021171055.85888-1-sebastian.reichel@collabora.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Qshlrn/7P8U8o5NL/ql/XyA7iBxlSu6Y+RJl/Y030OU=;
+        b=spDl8P/OXHiDr90Xwlrhr8WYqY0jfPJeRT0hd5oMAbDDtn4E1R/aAdXN7LSilJ8eHy
+         2figDAlQYPjlMRaWHIoFFNIKykKaTUh+cPP5ir9DHySB2l6EFHIRM3G5QE5cv39+YAsx
+         0cZSht3pWqlk1Hu7Jz0wD2OhqQ8Kyd9hQA4GuVBuWQ0MXtJJEHHUrUkqWhZw/nNoZ90U
+         btRjE7PAIjic6OJvD4wGvO+O+qn3KoYLxP4Y9xPS55Al5bxOrnglYsILVA3xB/FmyEKC
+         6JDwTl65qHLeOckPRk42QsJZO3t9tmaTo5UQleW5zltJSG1HblNSbYlsRAcKALk+RVHL
+         CB/w==
+X-Gm-Message-State: ACrzQf3QbDpZh7nqPV7Wf+oBaFpaGOG2QeXRHbrNkwvi4rQJrqLJ5mQK
+        WCCRV92y3KcxbdB/lAOBGPjuGQ==
+X-Google-Smtp-Source: AMsMyM5ygqN/zcLTG266ob3zuF7owjRo3Z4Wer3zMTS1wISRq/rNr6KLifBZaDnUbTkWzrvGlwDutw==
+X-Received: by 2002:a17:90b:350d:b0:20d:5438:f594 with SMTP id ls13-20020a17090b350d00b0020d5438f594mr4701440pjb.216.1666795069580;
+        Wed, 26 Oct 2022 07:37:49 -0700 (PDT)
+Received: from driver-dev1.pensando.io ([12.226.153.42])
+        by smtp.gmail.com with ESMTPSA id d185-20020a6236c2000000b0056286c552ecsm3060484pfa.184.2022.10.26.07.37.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Oct 2022 07:37:47 -0700 (PDT)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        leon@kernel.org
+Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH v3 net-next 0/5] ionic: VF attr replay and other updates
+Date:   Wed, 26 Oct 2022 07:37:39 -0700
+Message-Id: <20221026143744.11598-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21/10/2022 13:10, Sebastian Reichel wrote:
-> The queue configuration is referenced by snps,mtl-rx-config and
-> snps,mtl-tx-config. Most in-tree DTs put the referenced object
-> as child node of the dwmac node.
-> 
-> This adds proper description for this setup, which has the
-> advantage of properly making sure only known properties are
-> used.
-> 
-> Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-> ---
->  .../devicetree/bindings/net/snps,dwmac.yaml   | 154 ++++++++++++------
->  1 file changed, 108 insertions(+), 46 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> index 13b984076af5..0bf6112cec2f 100644
-> --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> @@ -167,56 +167,118 @@ properties:
->    snps,mtl-rx-config:
->      $ref: /schemas/types.yaml#/definitions/phandle
->      description:
-> -      Multiple RX Queues parameters. Phandle to a node that can
-> -      contain the following properties
-> -        * snps,rx-queues-to-use, number of RX queues to be used in the
-> -          driver
-> -        * Choose one of these RX scheduling algorithms
-> -          * snps,rx-sched-sp, Strict priority
-> -          * snps,rx-sched-wsp, Weighted Strict priority
-> -        * For each RX queue
-> -          * Choose one of these modes
-> -            * snps,dcb-algorithm, Queue to be enabled as DCB
-> -            * snps,avb-algorithm, Queue to be enabled as AVB
-> -          * snps,map-to-dma-channel, Channel to map
-> -          * Specifiy specific packet routing
-> -            * snps,route-avcp, AV Untagged Control packets
-> -            * snps,route-ptp, PTP Packets
-> -            * snps,route-dcbcp, DCB Control Packets
-> -            * snps,route-up, Untagged Packets
-> -            * snps,route-multi-broad, Multicast & Broadcast Packets
-> -          * snps,priority, bitmask of the tagged frames priorities assigned to
-> -            the queue
-> +      Multiple RX Queues parameters. Phandle to a node that
-> +      implements the 'rx-queues-config' object described in
-> +      this binding.
-> +
-> +  rx-queues-config:
-> +    type: object
-> +    properties:
-> +      snps,rx-queues-to-use:
-> +        $ref: /schemas/types.yaml#/definitions/uint32
-> +        description: number of RX queues to be used in the driver
-> +      snps,rx-sched-sp:
-> +        type: boolean
-> +        description: Strict priority
-> +      snps,rx-sched-wsp:
-> +        type: boolean
-> +        description: Weighted Strict priority
-> +    patternProperties:
-> +      "^queue[0-9]$":
-> +        description: Each subnode represents a queue.
-> +        type: object
-> +        properties:
-> +          snps,dcb-algorithm:
-> +            type: boolean
-> +            description: Queue to be enabled as DCB
-> +          snps,avb-algorithm:
-> +            type: boolean
-> +            description: Queue to be enabled as AVB
-> +          snps,map-to-dma-channel:
-> +            $ref: /schemas/types.yaml#/definitions/uint32
-> +            description: DMA channel id to map
-> +          snps,route-avcp:
-> +            type: boolean
-> +            description: AV Untagged Control packets
-> +          snps,route-ptp:
-> +            type: boolean
-> +            description: PTP Packets
-> +          snps,route-dcbcp:
-> +            type: boolean
-> +            description: DCB Control Packets
-> +          snps,route-up:
-> +            type: boolean
-> +            description: Untagged Packets
-> +          snps,route-multi-broad:
-> +            type: boolean
-> +            description: Multicast & Broadcast Packets
-> +          snps,priority:
-> +            $ref: /schemas/types.yaml#/definitions/uint32
-> +            description: Bitmask of the tagged frames priorities assigned to the queue
+For better VF management when a FW update restart or a FW crash recover is
+detected, the PF now will replay any user specified VF attributes to be
+sure the FW hasn't lost them in the restart.
 
-If we are not going to fix it, at least let's improve the constraints,
-so add allOf:if:then here (with proper indentation) which disallows
-mixing mutually exclusive properties.
-Here's example:
-https://elixir.bootlin.com/linux/v5.17-rc2/source/Documentation/devicetree/bindings/mfd/samsung,s5m8767.yaml#L155
+Newer FW offers more packet processing offloads, so we now support them in
+the driver.
 
-Best regards,
-Krzysztof
+A small refactor of the Rx buffer fill cleans a bit of code and will help
+future work on buffer caching.
+
+v2: simplify call to ionic_vf_start() by removing unnecessary vfid arg
+    remove unnecessary function return casts
+    remove unnecessary 0 in {} declaration initializer
+
+v3: fix up kdoc complaints in patch 3
+
+Neel Patel (2):
+  ionic: enable tunnel offloads
+  ionic: refactor use of ionic_rx_fill()
+
+Shannon Nelson (3):
+  ionic: replay VF attributes after fw crash recovery
+  ionic: only save the user set VF attributes
+  ionic: new ionic device identity level and VF start control
+
+ .../net/ethernet/pensando/ionic/ionic_dev.c   |  14 +++
+ .../net/ethernet/pensando/ionic/ionic_dev.h   |   3 +
+ .../net/ethernet/pensando/ionic/ionic_if.h    |  45 ++++++-
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 113 +++++++++++++++---
+ .../net/ethernet/pensando/ionic/ionic_main.c  |   2 +-
+ .../net/ethernet/pensando/ionic/ionic_txrx.c  |  31 +++--
+ 6 files changed, 176 insertions(+), 32 deletions(-)
+
+-- 
+2.17.1
 
