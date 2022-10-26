@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 330B760DDC7
+	by mail.lfdr.de (Postfix) with ESMTP id A80CC60DDC8
 	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 11:10:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233249AbiJZJKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 05:10:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57208 "EHLO
+        id S233158AbiJZJKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 05:10:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232965AbiJZJKi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 05:10:38 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF40440576;
-        Wed, 26 Oct 2022 02:10:33 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 29Q9A8lL114229;
-        Wed, 26 Oct 2022 04:10:08 -0500
+        with ESMTP id S232966AbiJZJKk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 05:10:40 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1130F3FA1C;
+        Wed, 26 Oct 2022 02:10:34 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 29Q9ADhr005853;
+        Wed, 26 Oct 2022 04:10:13 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1666775408;
-        bh=IdNLaLzMZVzW4p9xSgPQZhZew/8sCviXSbaXRCPi30s=;
+        s=ti-com-17Q1; t=1666775413;
+        bh=YWx1XDLf8Fl9cqZIj0Gsk1/WG+6R5ZNcITJYTKSR0nQ=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=F7NlJEo8dO6GTtcHGveC2a6Ad/hHTmdLBFBCgr/p3wfZRPxTiMUYRqkuHSDJIEnLf
-         c8znn4ziYeog89KYpi3ePvLVde11gyYAdhiXr9/lcxcZVnE/Av9nsz1TxWL9wZkdFb
-         kzuECDOgDNWWOXX7jy7HrdAL6rXO+QwYkEanAZh8=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 29Q9A8QZ022848
+        b=KPPW/kDDhmCzUjIy9DLAsb+OOi5VFfVOp4h1/Ron2VGvLZh7IimbbXhU9eSrZphVm
+         Vmc8NTwfTmMeC7DXruqtdifM9XP6egvsXFOlbCvYEzWzRlqPAiTBr99FR7iinKM1la
+         1I0c/iM4ZUW13r0/1ElgfJCtYSLrxOWLNYhxgYtE=
+Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 29Q9AD3w125136
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 26 Oct 2022 04:10:08 -0500
-Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+        Wed, 26 Oct 2022 04:10:13 -0500
+Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Wed, 26
- Oct 2022 04:10:08 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
+ Oct 2022 04:10:12 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
- Frontend Transport; Wed, 26 Oct 2022 04:10:08 -0500
+ Frontend Transport; Wed, 26 Oct 2022 04:10:12 -0500
 Received: from uda0492258.dhcp.ti.com (ileaxei01-snat.itg.ti.com [10.180.69.5])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 29Q99wxq005870;
-        Wed, 26 Oct 2022 04:10:03 -0500
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 29Q99wxr005870;
+        Wed, 26 Oct 2022 04:10:08 -0500
 From:   Siddharth Vadapalli <s-vadapalli@ti.com>
 To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <pabeni@redhat.com>, <robh+dt@kernel.org>,
@@ -48,9 +48,9 @@ To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
 CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>, <s-vadapalli@ti.com>
-Subject: [PATCH v3 1/3] dt-bindings: net: ti: k3-am654-cpsw-nuss: Update bindings for J721e CPSW9G
-Date:   Wed, 26 Oct 2022 14:39:55 +0530
-Message-ID: <20221026090957.180592-2-s-vadapalli@ti.com>
+Subject: [PATCH v3 2/3] net: ethernet: ti: am65-cpsw: Enable QSGMII mode for J721e CPSW9G
+Date:   Wed, 26 Oct 2022 14:39:56 +0530
+Message-ID: <20221026090957.180592-3-s-vadapalli@ti.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20221026090957.180592-1-s-vadapalli@ti.com>
 References: <20221026090957.180592-1-s-vadapalli@ti.com>
@@ -68,88 +68,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update bindings for TI K3 J721e SoC which contains 9 ports (8 external
-ports) CPSW9G module and add compatible for it.
-
-Changes made:
-    - Add new compatible ti,j721e-cpswxg-nuss for CPSW9G.
-    - Extend pattern properties for new compatible.
-    - Change maximum number of CPSW ports to 8 for new compatible.
+CPSW9G in J721e supports additional modes like QSGMII.
+Add new compatible for J721e in am65-cpsw driver.
 
 Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
 ---
- .../bindings/net/ti,k3-am654-cpsw-nuss.yaml   | 33 ++++++++++++++++---
- 1 file changed, 29 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-index 821974815dec..900063411a20 100644
---- a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-+++ b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-@@ -57,6 +57,7 @@ properties:
-       - ti,am654-cpsw-nuss
-       - ti,j7200-cpswxg-nuss
-       - ti,j721e-cpsw-nuss
-+      - ti,j721e-cpswxg-nuss
-       - ti,am642-cpsw-nuss
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+index 7f86068f3ff6..91e294afc3ad 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+@@ -2642,11 +2642,19 @@ static const struct am65_cpsw_pdata j7200_cpswxg_pdata = {
+ 	.extra_modes = BIT(PHY_INTERFACE_MODE_QSGMII),
+ };
  
-   reg:
-@@ -111,7 +112,7 @@ properties:
-         const: 0
- 
-     patternProperties:
--      "^port@[1-4]$":
-+      "^port@[1-8]$":
-         type: object
-         description: CPSWxG NUSS external ports
- 
-@@ -121,7 +122,7 @@ properties:
-         properties:
-           reg:
-             minimum: 1
--            maximum: 4
-+            maximum: 8
-             description: CPSW port number
- 
-           phys:
-@@ -186,12 +187,36 @@ allOf:
-         properties:
-           compatible:
-             contains:
--              const: ti,j7200-cpswxg-nuss
-+              const: ti,j721e-cpswxg-nuss
-     then:
-       properties:
-         ethernet-ports:
-           patternProperties:
--            "^port@[3-4]$": false
-+            "^port@[5-8]$": false
-+            "^port@[1-4]$":
-+              properties:
-+                reg:
-+                  minimum: 1
-+                  maximum: 4
++static const struct am65_cpsw_pdata j721e_cpswxg_pdata = {
++	.quirks = 0,
++	.ale_dev_id = "am64-cpswxg",
++	.fdqring_mode = K3_RINGACC_RING_MODE_MESSAGE,
++	.extra_modes = BIT(PHY_INTERFACE_MODE_QSGMII),
++};
 +
-+  - if:
-+      not:
-+        properties:
-+          compatible:
-+            contains:
-+              enum:
-+                - ti,j721e-cpswxg-nuss
-+                - ti,j7200-cpswxg-nuss
-+    then:
-+      properties:
-+        ethernet-ports:
-+          patternProperties:
-+            "^port@[3-8]$": false
-+            "^port@[1-2]$":
-+              properties:
-+                reg:
-+                  minimum: 1
-+                  maximum: 2
- 
- additionalProperties: false
- 
+ static const struct of_device_id am65_cpsw_nuss_of_mtable[] = {
+ 	{ .compatible = "ti,am654-cpsw-nuss", .data = &am65x_sr1_0},
+ 	{ .compatible = "ti,j721e-cpsw-nuss", .data = &j721e_pdata},
+ 	{ .compatible = "ti,am642-cpsw-nuss", .data = &am64x_cpswxg_pdata},
+ 	{ .compatible = "ti,j7200-cpswxg-nuss", .data = &j7200_cpswxg_pdata},
++	{ .compatible = "ti,j721e-cpswxg-nuss", .data = &j721e_cpswxg_pdata},
+ 	{ /* sentinel */ },
+ };
+ MODULE_DEVICE_TABLE(of, am65_cpsw_nuss_of_mtable);
 -- 
 2.25.1
 
