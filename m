@@ -2,131 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62CFE60E347
-	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 16:26:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2C6960E349
+	for <lists+netdev@lfdr.de>; Wed, 26 Oct 2022 16:27:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234291AbiJZO0e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 10:26:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56046 "EHLO
+        id S234280AbiJZO1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 10:27:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230025AbiJZO0d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 10:26:33 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F24C10F8A9
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 07:26:32 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id 21so7790163edv.3
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 07:26:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=41yLh/1BRnzm5SjfyMcFszPe20OCwlTQMVfdfMxprYY=;
-        b=PjZQRWbz9Q5ZLa8c+3uoZWAmM/c+fUbeuR3VV5RvvT2Vx2PHxcsSNsdfisnv2jbYBf
-         cgX1D/7Jd6JlQHA1osucJIrhriShHWN+AljFRbzPB5OS9xi/dTMCyAsoOc0hs6pXcCed
-         +NTv65RrlmqUpOF7GurhK9RRdJfTJK4qFNKkOpAW56I2LD1XOcEZZljLUiwBDn9jiZRy
-         pHcj3G22YSfe9ZkdyLy5mZzv6RMAG2fu+ArVdgIl7i4ekMBJDEkKh9cPMvXMtcFNVeZ/
-         RePEAY728FpKR2GqI7oNUPLoVK07S6a94ZYKKXPHM8SE49vH102zL8piABt9Bi1ki0VV
-         t3bA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=41yLh/1BRnzm5SjfyMcFszPe20OCwlTQMVfdfMxprYY=;
-        b=CQBBzWy1Eg76rV7Of8xEEuYiv0NJe8jIsGGDc2+4ySw0i8ZLi/N2rX6t1zl/+nEaSz
-         e6xxSGQ8Hf/eCOyKKPP03ApRCY72svcevDXNQIZU6WH8NQxFmkCksRQdvQ9cFeQQj9tE
-         EdHIi/X2895yjPxXKh8uXVdyzlVbpxb8hUieExvUdApDH/HHDscM/kVGzINXAZ7QHJpB
-         m+p4zb3XdMAVnJa1Jf/o4usUFFhKlE4dDEjOct1IrDLqYV3sx7WHc5DzkI9qEJoxM0+6
-         uODh7//gtEH5AQDsatJoZgtO9K95LpGgkLxpQvkjyWQmeOM1TPXoU4HelKBSJrT0K4w+
-         ulJw==
-X-Gm-Message-State: ACrzQf1TOk+pPa70pMf8h0LyqnyOyDSwKiIj7Q0SLS/0tcgeiFql2XKy
-        SikDFVKPz9peXs8WqIehCs0=
-X-Google-Smtp-Source: AMsMyM6fxMkAtAx0NxPGsdYRCTLs1auvK1Ys1t/nLjv1fj0S+TJk2kej7grp56IaACbUvN7o3kBfJw==
-X-Received: by 2002:aa7:dc10:0:b0:440:b446:c0cc with SMTP id b16-20020aa7dc10000000b00440b446c0ccmr40908323edu.34.1666794391025;
-        Wed, 26 Oct 2022 07:26:31 -0700 (PDT)
-Received: from localhost.lan ([194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id et19-20020a170907295300b0073d71792c8dsm2977768ejc.180.2022.10.26.07.26.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Oct 2022 07:26:30 -0700 (PDT)
-From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S230025AbiJZO1j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 10:27:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5A3A10F8B3
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 07:27:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63EB8B822B2
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 14:27:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E99BC433D6;
+        Wed, 26 Oct 2022 14:27:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666794456;
+        bh=6TwQH+cTs6GCFpVa3ArHzD8LWLpEyIzh7FTU6Z89sV8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nHCiJuvwvNUClwuI2lPtrL7xUg2FCbPtihK94007yvNg93oF+YbJ+gG2GxLjN4JHB
+         x+QILz5eDi4fG/MlYaFwJ3oxxuqC5AkxLttu6E/Azcak3NY2jTGQrClxlagaUf+I67
+         7rFkk9uM4JciaokxCDWqbeTaeniGWS4QxZK3N0Ydqef2GJM4UY+VUsZ7/JJ7pGpsBE
+         yQsJGnfjn5p4Mcz1WEHUzQf6hq9xfsA/2IAR+lzl2QrHeVgIjKQ0pQoj1pwqMB2f2G
+         pe9nQSX6UwXiRgnl+rawb8NOUrF9waZMBTHjbmaIpaFroIMIiVuo3QShDsikPYItpR
+         le9X2UThEzh/A==
+Date:   Wed, 26 Oct 2022 15:27:31 +0100
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH] net: broadcom: bcm4908_enet: report queued and transmitted bytes
-Date:   Wed, 26 Oct 2022 16:26:24 +0200
-Message-Id: <20221026142624.19314-1-zajec5@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [PATCH net-next v1 0/6] Various cleanups for mlx5
+Message-ID: <20221026142731.nrmhssgn5dhi7jot@sx1>
+References: <cover.1666630548.git.leonro@nvidia.com>
+ <20221025110011.rurzxqqig4bdhhq5@sx1>
+ <Y1fHq9HVOhgeNhlB@unreal>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <Y1fHq9HVOhgeNhlB@unreal>
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rafał Miłecki <rafal@milecki.pl>
+On 25 Oct 14:25, Leon Romanovsky wrote:
+>On Tue, Oct 25, 2022 at 12:00:11PM +0100, Saeed Mahameed wrote:
+>> On 24 Oct 19:59, Leon Romanovsky wrote:
+>> > From: Leon Romanovsky <leonro@nvidia.com>
+>> >
+>> > Changelog:
+>> > v1:
+>> > Patch #1:
+>> > * Removed extra blank line
+>> > * Removed ipsec initialization for uplink
+>>
+>> This will break functionality, ipsec should only be enabled on nic and
+>> uplink but not on other vport representors.
+>
+>I didn't hear any complain from verification. The devlink patch is in
+>my tree for months already.
+>
 
-This allows BQL to operate avoiding buffer bloat and reducing latency.
+the regression is clear in the code. Ask Raed he added the functionality
+for uplink.
 
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
----
- drivers/net/ethernet/broadcom/bcm4908_enet.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+>>
+>> Leon let's finish review internally, this series has to go through my trees
+>> anyways.
+>
+>What about other 5 patches? Let's progress with them, please.
+>
 
-diff --git a/drivers/net/ethernet/broadcom/bcm4908_enet.c b/drivers/net/ethernet/broadcom/bcm4908_enet.c
-index 93ccf549e2ed..e672a9ef4444 100644
---- a/drivers/net/ethernet/broadcom/bcm4908_enet.c
-+++ b/drivers/net/ethernet/broadcom/bcm4908_enet.c
-@@ -495,6 +495,7 @@ static int bcm4908_enet_stop(struct net_device *netdev)
- 	netif_carrier_off(netdev);
- 	napi_disable(&rx_ring->napi);
- 	napi_disable(&tx_ring->napi);
-+	netdev_reset_queue(netdev);
- 
- 	bcm4908_enet_dma_rx_ring_disable(enet, &enet->rx_ring);
- 	bcm4908_enet_dma_tx_ring_disable(enet, &enet->tx_ring);
-@@ -564,6 +565,8 @@ static netdev_tx_t bcm4908_enet_start_xmit(struct sk_buff *skb, struct net_devic
- 	enet->netdev->stats.tx_bytes += skb->len;
- 	enet->netdev->stats.tx_packets++;
- 
-+	netdev_sent_queue(enet->netdev, skb->len);
-+
- 	return NETDEV_TX_OK;
- }
- 
-@@ -635,6 +638,7 @@ static int bcm4908_enet_poll_tx(struct napi_struct *napi, int weight)
- 	struct bcm4908_enet_dma_ring_bd *buf_desc;
- 	struct bcm4908_enet_dma_ring_slot *slot;
- 	struct device *dev = enet->dev;
-+	unsigned int bytes = 0;
- 	int handled = 0;
- 
- 	while (handled < weight && tx_ring->read_idx != tx_ring->write_idx) {
-@@ -645,6 +649,7 @@ static int bcm4908_enet_poll_tx(struct napi_struct *napi, int weight)
- 
- 		dma_unmap_single(dev, slot->dma_addr, slot->len, DMA_TO_DEVICE);
- 		dev_kfree_skb(slot->skb);
-+		bytes += slot->len;
- 		if (++tx_ring->read_idx == tx_ring->length)
- 			tx_ring->read_idx = 0;
- 
-@@ -656,6 +661,8 @@ static int bcm4908_enet_poll_tx(struct napi_struct *napi, int weight)
- 		bcm4908_enet_dma_ring_intrs_on(enet, tx_ring);
- 	}
- 
-+	netdev_completed_queue(enet->netdev, handled, bytes);
-+
- 	if (netif_queue_stopped(enet->netdev))
- 		netif_wake_queue(enet->netdev);
- 
--- 
-2.34.1
+Sure, I will take other patches into my tree, but please let's do internal
+reviews next time, no need to clutter ML with mlx5 specific stuff.
 
