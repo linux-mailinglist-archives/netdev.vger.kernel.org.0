@@ -2,145 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EF1060F74D
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 14:31:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65DC660F6C4
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 14:07:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235044AbiJ0Mbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 08:31:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51760 "EHLO
+        id S235535AbiJ0MHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 08:07:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234951AbiJ0Mbo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 08:31:44 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2042.outbound.protection.outlook.com [40.107.223.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37670D8F70;
-        Thu, 27 Oct 2022 05:31:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VNy3qzslrX4x1UskrK1uH4fqTnCZb/nf6u95tRe53VoV2nFi+TburA40th/NmGYWxA+4x+OFJ9etpSlXroyNlSDgbM7Zg8LXWRKTHqYPzhIq/cIPyeoZqabmCpO5bCwgHo1DnwqAq5czy/o1ibhLZnsO5Nw2alA6paYpCTF2Dow+bdiqbttGAJz6CZ6etbfh7z8BFi2K+lWFVZaUK2KW/3+1YucFgbYA84IxgNNTNgW9JkCJ0ybahUBLeq3VV+CAKt2hil3F6idsFNypy9RovqF6VruI2OE5pNSq7wVTlg11gNQ2ibRUQMJLdzcNbh4pHZJq+rX+kbeV46A73+ZAZA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hkskW57cuQHsxOoSREKT7vjlv3Tt7P+NdykLzP9YwUM=;
- b=hXDENEQs4kdl/xFvJ8xMyCpFAbzwIIgQ6SRDaJXeVbb33/wZClIdarwxVuKWVsB1aQcAhY2I8LUYvuJn4osqdxiP3g/NGHSRzAfhED8JzCwlg2AARnSgfbpAUCvPXl+CyGuf3kU1esTE1FdfCyeJ4Ip3nfU3H9nSI+/51p1DXmIS1TgSYT+G2D4TbkVXB/FNHdXFI26QHPHoAewn275vM5LmFRr9XbneRgFeBTNjeKAybWCnQXSQlyAAW87oYVsrUcZL+lLyGnWxjZ0IXhMZ7jZecPaAel0M1ADTsg01/fNVjj1Dklvhnys5lk72x8libffaeuzxS1AUX5gDc6wq2g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=lists.infradead.org
- smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hkskW57cuQHsxOoSREKT7vjlv3Tt7P+NdykLzP9YwUM=;
- b=l2k2imaXW82B3TSygRoh/KZmOhNuopxVoJmtJx05bahRIpI29wLtSFVa2xy52Xvr7XuYBIALDueG3ZynU9OsAJG7viWqLs8MjmQuZIuyCSdYTCx41T01Ai2e8p6f6mn3oRFJ27Btc2TYfRLvNvjBk5Yo79bRyE+KiR0OzxQBIpIleUELUfaaorQJXokDgSj47LuoOpniHQUfK6m+okMkYP/5Fh7zmpBpagpnzjI+12tvAlsTd017JFDnZB5KcJs5qktsAyJfciiOGMu6wFNvwhEI5wTTU9sQxyDAUJaT7pjlXA0UMCsG6MJf/NoGtg0IHuTbu1am2kmZVvl7TenjQQ==
-Received: from MW4PR04CA0381.namprd04.prod.outlook.com (2603:10b6:303:81::26)
- by BL1PR12MB5852.namprd12.prod.outlook.com (2603:10b6:208:397::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.28; Thu, 27 Oct
- 2022 12:31:42 +0000
-Received: from CO1NAM11FT054.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:81:cafe::21) by MW4PR04CA0381.outlook.office365.com
- (2603:10b6:303:81::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.28 via Frontend
- Transport; Thu, 27 Oct 2022 12:31:42 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CO1NAM11FT054.mail.protection.outlook.com (10.13.174.70) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5746.16 via Frontend Transport; Thu, 27 Oct 2022 12:31:41 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Thu, 27 Oct
- 2022 05:31:26 -0700
-Received: from yaviefel (10.126.230.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Thu, 27 Oct
- 2022 05:31:21 -0700
-References: <20221024091333.1048061-1-daniel.machon@microchip.com>
- <20221024091333.1048061-2-daniel.machon@microchip.com>
- <874jvq28l3.fsf@nvidia.com> <Y1kaErnPh5h4otWe@DEN-LT-70577>
- <87k04mzlc3.fsf@nvidia.com> <Y1pLHL/d96VKT3kO@DEN-LT-70577>
-User-agent: mu4e 1.6.6; emacs 28.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     <Daniel.Machon@microchip.com>
-CC:     <petrm@nvidia.com>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>, <maxime.chevallier@bootlin.com>,
-        <thomas.petazzoni@bootlin.com>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>,
-        <Lars.Povlsen@microchip.com>, <Steen.Hegelund@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, <joe@perches.com>,
-        <linux@armlinux.org.uk>, <Horatiu.Vultur@microchip.com>,
-        <Julia.Lawall@inria.fr>, <vladimir.oltean@nxp.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [net-next v3 1/6] net: dcb: add new pcp selector to app object
-Date:   Thu, 27 Oct 2022 11:59:26 +0200
-In-Reply-To: <Y1pLHL/d96VKT3kO@DEN-LT-70577>
-Message-ID: <8735b9zbvu.fsf@nvidia.com>
+        with ESMTP id S235475AbiJ0MHa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 08:07:30 -0400
+X-Greylist: delayed 321 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 27 Oct 2022 05:07:29 PDT
+Received: from mx.cjr.nz (mx.cjr.nz [51.158.111.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875E4923E8;
+        Thu, 27 Oct 2022 05:07:29 -0700 (PDT)
+Received: from authenticated-user (mx.cjr.nz [51.158.111.142])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pc)
+        by mx.cjr.nz (Postfix) with ESMTPSA id AB86B7FC01;
+        Thu, 27 Oct 2022 12:02:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cjr.nz; s=dkim;
+        t=1666872124;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MtpMGCF+iBRpVLWgZ5Ofi84bzkswm5lge9Z3x2eJ++g=;
+        b=cGaSQswDbxqhSBVj5pDq2GqhsfWTvLHXYYkMfnzUtzDu9qQoJIAheeOJh6kvSpEf5GvfRG
+        yRGEyPPCKVdpWf1B+kLxd0W9HSAJYK3NXUHVB/UXVrRGK19eRMFPdAp2TDyRAJrxZA4/mG
+        PbyYULxDaGdOHhPFJ1IGHC4xcjeMA0QplsS66eLO39jSdLEjsA2Zfgar8lFMkwj6RRssS7
+        WLUOcZngyyy5D2hJe4t1LhQrRm+4Ofop0TJ6lZWko/2wplsv9yIzIFYLYBhtes4EMzg4nM
+        CFzFh2tBjwghTEY1OzCuUpw850fnEkoZ26nkvczAP3RB+X5CfnZRv2jHEMHE/g==
+From:   Paulo Alcantara <pc@cjr.nz>
+To:     Kees Cook <keescook@chromium.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        David Howells <dhowells@redhat.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Russ Weight <russell.h.weight@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Steve French <sfrench@samba.org>,
+        Ronnie Sahlberg <lsahlber@redhat.com>,
+        Shyam Prasad N <sprasad@microsoft.com>,
+        Tom Talpey <tom@talpey.com>,
+        Namjae Jeon <linkinjeon@kernel.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna@kernel.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
+        linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] cred: Do not default to init_cred in prepare_kernel_cred()
+In-Reply-To: <20221026232943.never.775-kees@kernel.org>
+References: <20221026232943.never.775-kees@kernel.org>
+Date:   Thu, 27 Oct 2022 09:03:08 -0300
+Message-ID: <87bkpxh3sz.fsf@cjr.nz>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT054:EE_|BL1PR12MB5852:EE_
-X-MS-Office365-Filtering-Correlation-Id: 082ca371-6c69-47a8-cdf0-08dab81733f0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Xg9fYfGJ1q0jI7xZFU12PyefHZmTSRUpAr6v3+ehi+92pfx1NeaJlppucqcTMiPDsoUVduOEsdkX7e3DDyFmibPvOUlPBPwTk44tSujEMa+OlPYPyCWsYVnbeXJdrWpJnr1CG2OWV5vI9KxinJsT1lWMjtwED51dA3+i9oJOOsvBBwXubc4Hxdc3eVmJhxpGIjjC4jgU1cm2UAgnoNot8nKz36Y8J/qKKsd52uK5j1mc2UicxykFwnUH4pK3dbdInGY+eDaEiU9pLT3/AnvVL4lQFCNC7CXC9iSKp/pp41E6dZqMmoR1eZ0YXfnF1S/ZdyHfKb1uOMdx3+0TmSnMyVtY3XRAUSj/wfO+TCELP5Y0YLpwgY4iub5wv0UVNb53/7JWfOUiBhBV+KZazuePHawWLoe/bV776ZXQ6JmCNfnNuqWNouAgdGlDW2uIyJWqN2AMz9e+IpxJea+hOZnL1Jjr/qVYK7rLdMGQfIm5ZvV7gWpc1GJTouyL6QUBw89m48Naead7BamgUVdbyjjTyHOZwB7WSRscnWAOPS4cTe0/9OTsaDjO3GnohwrSCchz5dThXr2gZBE36emRObIs1cKso9BY94D60GTIJiCvfHbogHDtEcpomRYcKEj5Zn6uiimwfDrpSslIp20SBJLv5hqksk0PccKb7dcvMsOLMjeWFuM/px0X0p2I3bcnIfCf/Eh6y9CBSSewLk4ZPiNXQfoQAo2j6KxxFBR8oMGolDLFqlgnLfN0C5EX87G2W3BpWlxpu63REEGsgqoFs1fBeA==
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(396003)(136003)(346002)(376002)(39860400002)(451199015)(46966006)(40470700004)(36840700001)(82310400005)(86362001)(54906003)(40480700001)(7636003)(36756003)(356005)(8936002)(7416002)(70586007)(478600001)(70206006)(82740400003)(5660300002)(4326008)(8676002)(316002)(41300700001)(2906002)(2616005)(40460700003)(336012)(16526019)(426003)(47076005)(186003)(6916009)(36860700001)(26005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Oct 2022 12:31:41.7149
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 082ca371-6c69-47a8-cdf0-08dab81733f0
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT054.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5852
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Kees Cook <keescook@chromium.org> writes:
 
-<Daniel.Machon@microchip.com> writes:
-
->> >> And vice versa: I'm not sure we want to permit sending the standard
->> >> attributes in the DCB encap.
->> >
->> > dcbnl_app_attr_type_get() in dcbnl_ieee_fill() takes care of this. IEEE are
->> > always sent in DCB_ATTR_IEEE and non-std are sent in DCB_ATTR_DCB.
->> 
->> By "sending" I meant userspace sending this to the kernel. So bounce
->> extended opcodes that are wrapped in IEEE and bounce IEEE opcodes
->> wrapped in DCB as well.
+> A common exploit pattern for ROP attacks is to abuse prepare_kernel_cred()
+> in order to construct escalated privileges[1]. Instead of providing a
+> short-hand argument (NULL) to the "daemon" argument to indicate using
+> init_cred as the base cred, require that "daemon" is always set to
+> an actual task. Replace all existing callers that were passing NULL
+> with &init_task.
 >
-> Right. Then we only need to decide what to do with any opcode in-between
-> (not defined in uapi, neither ieee or extension opcode, 7-254). If they are 
-> sent in DCB_ATTR_DCB they should be bounced, because we agreed that we can 
-> interpret data in the new attr), _but_ if they are sent in DCB_ATTR_IEEE I 
-> guess we should accept them, to not break userspace that is already sending
-> them.
+> Future attacks will need to have sufficiently powerful read/write
+> primitives to have found an appropriately privileged task and written it
+> to the ROP stack as an argument to succeed, which is similarly difficult
+> to the prior effort needed to escalate privileges before struct cred
+> existed: locate the current cred and overwrite the uid member.
+>
+> This has the added benefit of meaning that prepare_kernel_cred() can no
+> longer exceed the privileges of the init task, which may have changed from
+> the original init_cred (e.g. dropping capabilities from the bounding set).
+>
+> [1] https://google.com/search?q=3Dcommit_creds(prepare_kernel_cred(0))
+>
+> Cc: "Eric W. Biederman" <ebiederm@xmission.com>
+> Cc: David Howells <dhowells@redhat.com>
+> Cc: Luis Chamberlain <mcgrof@kernel.org>
+> Cc: Russ Weight <russell.h.weight@intel.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+> Cc: Steve French <sfrench@samba.org>
+> Cc: Paulo Alcantara <pc@cjr.nz>
+> Cc: Ronnie Sahlberg <lsahlber@redhat.com>
+> Cc: Shyam Prasad N <sprasad@microsoft.com>
+> Cc: Tom Talpey <tom@talpey.com>
+> Cc: Namjae Jeon <linkinjeon@kernel.org>
+> Cc: Sergey Senozhatsky <senozhatsky@chromium.org>
+> Cc: Trond Myklebust <trond.myklebust@hammerspace.com>
+> Cc: Anna Schumaker <anna@kernel.org>
+> Cc: Chuck Lever <chuck.lever@oracle.com>
+> Cc: Jeff Layton <jlayton@kernel.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: "Michal Koutn=C3=BD" <mkoutny@suse.com>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: linux-cifs@vger.kernel.org
+> Cc: samba-technical@lists.samba.org
+> Cc: linux-nfs@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+>  drivers/base/firmware_loader/main.c    |  2 +-
+>  fs/cifs/cifs_spnego.c                  |  2 +-
+>  fs/cifs/cifsacl.c                      |  2 +-
+>  fs/ksmbd/smb_common.c                  |  2 +-
+>  fs/nfs/flexfilelayout/flexfilelayout.c |  4 ++--
+>  fs/nfs/nfs4idmap.c                     |  2 +-
+>  fs/nfsd/nfs4callback.c                 |  2 +-
+>  kernel/cred.c                          | 15 +++++++--------
+>  net/dns_resolver/dns_key.c             |  2 +-
+>  9 files changed, 16 insertions(+), 17 deletions(-)
 
-I see, it's not currently validating at all. It just relies on the
-driver to do the validation, but e.g. bnxt_dcbnl_ieee_setapp(), just
-lets nonsense right through.
-
-OK, but this interface is built on standards. The selector has a
-well-defined, IEEE-backed meaning with enumerators published in the UAPI
-headers. As before, even though this constitutes API breakage, IMHO if
-anyone relies on shoving random garbage through this interface, it's on
-them...
-
-I think it's kosher to start bouncing undefined selectors.
+Acked-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
