@@ -2,104 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD81A60ED27
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 02:49:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C65D60ED5A
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 03:20:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233481AbiJ0Atz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Oct 2022 20:49:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50462 "EHLO
+        id S233403AbiJ0BUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Oct 2022 21:20:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233452AbiJ0Aty (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 20:49:54 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E12512AD0;
-        Wed, 26 Oct 2022 17:49:51 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MyRnW0jxbzpW1n;
-        Thu, 27 Oct 2022 08:46:23 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 27 Oct 2022 08:49:49 +0800
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 27 Oct
- 2022 08:49:48 +0800
-Subject: Re: [PATCH V7 net-next 0/6] ethtool: add support to set/get tx
- copybreak buf size and rx buf len
-To:     Gal Pressman <gal@nvidia.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <mkubecek@suse.cz>,
-        <andrew@lunn.ch>, <amitc@mellanox.com>, <idosch@idosch.org>,
-        <danieller@nvidia.com>, <jesse.brandeburg@intel.com>,
-        <anthony.l.nguyen@intel.com>, <jdike@addtoit.com>,
-        <richard@nod.at>, <anton.ivanov@cambridgegreys.com>,
-        <netanel@amazon.com>, <akiyano@amazon.com>, <gtzalik@amazon.com>,
-        <saeedb@amazon.com>, <chris.snook@gmail.com>,
-        <ulli.kroll@googlemail.com>, <linus.walleij@linaro.org>,
-        <jeroendb@google.com>, <csully@google.com>,
-        <awogbemila@google.com>, <jdmason@kudzu.us>,
-        <rain.1986.08.12@gmail.com>, <zyjzyj2000@gmail.com>,
-        <kys@microsoft.com>, <haiyangz@microsoft.com>, <mst@redhat.com>,
-        <jasowang@redhat.com>, <doshir@vmware.com>,
-        <pv-drivers@vmware.com>, <jwi@linux.ibm.com>,
-        <kgraul@linux.ibm.com>, <hca@linux.ibm.com>, <gor@linux.ibm.com>,
-        <johannes@sipsolutions.net>
-CC:     <netdev@vger.kernel.org>, <lipeng321@huawei.com>,
-        <chenhao288@hisilicon.com>, <linux-s390@vger.kernel.org>
-References: <20211118121245.49842-1-huangguangbin2@huawei.com>
- <40d6352e-8c6b-404f-8b6a-df1816239ab0@nvidia.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <4466b159-7476-f833-ec22-ee234b70110b@huawei.com>
-Date:   Thu, 27 Oct 2022 08:49:48 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        with ESMTP id S229489AbiJ0BT7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Oct 2022 21:19:59 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D02017ABD;
+        Wed, 26 Oct 2022 18:19:50 -0700 (PDT)
+X-UUID: e8bea9f107a24e92ab4a37ac41be74f2-20221027
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=GLNIvP2G/RDPSfcqBf/x3tjU8KvaD+BtHJOdbNcA5VI=;
+        b=VV78YAlRIPs3mEdKx0jcdraQekKm3yf2yYy9cAwy14z9/LX3MONuUQtAKfUleA2Uot9BWxwp9ie1ivXoUUiY+pXHGQnRA9c8GUWVWDaoKVRrLrfLx51akbB6gd59noiUwsISqdoXTE5+1B+ku6ecT7oOx5pxsALefQKAWLq6d2A=;
+X-CID-UNFAMILIAR: 1
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.12,REQID:49d831c9-3f95-470e-8ca0-1be34a851c22,IP:0,U
+        RL:0,TC:0,Content:0,EDM:0,RT:0,SF:54,FILE:0,BULK:0,RULE:Release_Ham,ACTION
+        :release,TS:54
+X-CID-INFO: VERSION:1.1.12,REQID:49d831c9-3f95-470e-8ca0-1be34a851c22,IP:0,URL
+        :0,TC:0,Content:0,EDM:0,RT:0,SF:54,FILE:0,BULK:0,RULE:Release_HamU,ACTION:
+        release,TS:54
+X-CID-META: VersionHash:62cd327,CLOUDID:703f4127-9eb1-469f-b210-e32d06cfa36e,B
+        ulkID:221026152939UEHAN1OL,BulkQuantity:15,Recheck:0,SF:28|16|19|48|102,TC
+        :nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil,Bulk:40,QS:nil,BEC:nil,COL:0
+X-UUID: e8bea9f107a24e92ab4a37ac41be74f2-20221027
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <haozhe.chang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1971803359; Thu, 27 Oct 2022 09:19:46 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs13n1.mediatek.inc (172.21.101.193) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Thu, 27 Oct 2022 09:19:45 +0800
+Received: from mcddlt001.gcn.mediatek.inc (10.19.240.15) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.15 via Frontend Transport; Thu, 27 Oct 2022 09:19:43 +0800
+Message-ID: <3abbe6ea016b865b6762708fe8234913884a0ed5.camel@mediatek.com>
+Subject: Re: [PATCH] wwan: core: Support slicing in port TX flow of WWAN
+ subsystem
+From:   haozhe chang <haozhe.chang@mediatek.com>
+To:     Loic Poulain <loic.poulain@linaro.org>
+CC:     "chandrashekar.devegowda@intel.com" 
+        <chandrashekar.devegowda@intel.com>,
+        "linuxwwan@intel.com" <linuxwwan@intel.com>,
+        "chiranjeevi.rapolu@linux.intel.com" 
+        <chiranjeevi.rapolu@linux.intel.com>,
+        Haijun Liu =?UTF-8?Q?=28=E5=88=98=E6=B5=B7=E5=86=9B=29?= 
+        <haijun.liu@mediatek.com>,
+        "m.chetan.kumar@linux.intel.com" <m.chetan.kumar@linux.intel.com>,
+        "ricardo.martinez@linux.intel.com" <ricardo.martinez@linux.intel.com>,
+        "ryazanov.s.a@gmail.com" <ryazanov.s.a@gmail.com>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Lambert Wang =?UTF-8?Q?=28=E7=8E=8B=E4=BC=9F=29?= 
+        <Lambert.Wang@mediatek.com>,
+        "Xiayu Zhang =?UTF-8?Q?=28=E5=BC=A0=E5=A4=8F=E5=AE=87=29?=" 
+        <Xiayu.Zhang@mediatek.com>,
+        "srv_heupstream@mediatek.com" <srv_heupstream@mediatek.com>
+Date:   Thu, 27 Oct 2022 09:19:42 +0800
+In-Reply-To: <CAMZdPi_tTBgqSGCUaB29ifOUSE5nWa6ooOa=4k8T6pXJDfpO-A@mail.gmail.com>
+References: <20221026011540.8499-1-haozhe.chang@mediatek.com>
+         <CAMZdPi_XSWeTf-eP+O2ZXGXtn5yviEp=p1Q0rs_fG76UGf2FsQ@mail.gmail.com>
+         <82a7acf3176c90d9bea773bb4ea365745c1a1971.camel@mediatek.com>
+         <CAMZdPi_tTBgqSGCUaB29ifOUSE5nWa6ooOa=4k8T6pXJDfpO-A@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.1-2 
 MIME-Version: 1.0
-In-Reply-To: <40d6352e-8c6b-404f-8b6a-df1816239ab0@nvidia.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MTK:  N
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        T_SPF_TEMPERROR,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/10/26 22:00, Gal Pressman wrote:
-> On 18/11/2021 14:12, Guangbin Huang wrote:
->> From: Hao Chen <chenhao288@hisilicon.com>
->>
->> This series add support to set/get tx copybreak buf size and rx buf len via
->> ethtool and hns3 driver implements them.
->>
->> Tx copybreak buf size is used for tx copybreak feature which for small size
->> packet or frag. Use ethtool --get-tunable command to get it, and ethtool
->> --set-tunable command to set it, examples are as follow:
->>
->> 1. set tx spare buf size to 102400:
->> $ ethtool --set-tunable eth1 tx-buf-size 102400
->>
->> 2. get tx spare buf size:
->> $ ethtool --get-tunable eth1 tx-buf-size
->> tx-buf-size: 102400
+On Wed, 2022-10-26 at 22:27 +0800, Loic Poulain wrote:
+> On Wed, 26 Oct 2022 at 13:45, haozhe chang <haozhe.chang@mediatek.com
+> > wrote:
+> > 
+> > On Wed, 2022-10-26 at 15:28 +0800, Loic Poulain wrote:
+> > > Hi Haozhe,
+> > > 
+> > > On Wed, 26 Oct 2022 at 03:16, <haozhe.chang@mediatek.com> wrote:
+> > > > 
+> > > > From: haozhe chang <haozhe.chang@mediatek.com>
+> > > > 
+> > > > wwan_port_fops_write inputs the SKB parameter to the TX
+> > > > callback of
+> > > > the WWAN device driver. However, the WWAN device (e.g., t7xx)
+> > > > may
+> > > > have an MTU less than the size of SKB, causing the TX buffer to
+> > > > be
+> > > > sliced and copied once more in the WWAN device driver.
+> > > 
+> > > The benefit of putting data in an skb is that it is easy to
+> > > manipulate, so not sure why there is an additional copy in the
+> > > first
+> > > place. Isn't possible for the t7xx driver to consume the skb
+> > > progressively (without intermediate copy), according to its own
+> > > MTU
+> > > limitation?
+> > > 
+> > 
+> > t7xx driver needs to add metadata to the SKB head for each
+> > fragment, so
+> > the driver has to allocate a new buffer to copy data(skb_put_data)
+> > and
+> > insert metadata.
 > 
-> Hi Guangbin,
-> Can you please clarify the difference between TX copybreak and TX
-> copybreak buf size?
-
-Hi Gal,
-'TX copybreak buf size' is the size of buffer allocated to a queue
-in order to support copybreak handling when skb->len <= 'TX copybreak',
-
-see hns3_can_use_tx_bounce() for 'TX copybreak' and
-hns3_init_tx_spare_buffer() for 'TX copybreak buf size'.
-
-> .
+> Normally, once the first part (chunk) of the skb has been consumed
+> (skb_pull) and written to the device, it will become part of the
+> skb headroom, which can then be used for appending (skb_push) the
+> header (metadata) of the second chunks, and so... right?
 > 
+> Just want to avoid a bunch of unnecessary copy/alloc here.
+> 
+t7xx DMA can transfer multiple fragments at once, if done as
+recomended, the DMA performance will be inhibited.
+> Regards,
+> Loic
