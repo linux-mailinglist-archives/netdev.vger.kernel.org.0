@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBAC660F45B
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 12:03:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D3A460F4E1
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 12:25:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235039AbiJ0KDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 06:03:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56910 "EHLO
+        id S234187AbiJ0KZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 06:25:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234997AbiJ0KDO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 06:03:14 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD51D48CAC;
-        Thu, 27 Oct 2022 03:02:59 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Myh3j1T3qzpVxx;
-        Thu, 27 Oct 2022 17:59:29 +0800 (CST)
-Received: from localhost.localdomain (10.175.112.70) by
- canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
+        with ESMTP id S234169AbiJ0KZB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 06:25:01 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22D332D742;
+        Thu, 27 Oct 2022 03:24:55 -0700 (PDT)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MyhWM2Vkcz15M45;
+        Thu, 27 Oct 2022 18:19:59 +0800 (CST)
+Received: from localhost.localdomain (10.175.104.82) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 27 Oct 2022 18:02:55 +0800
-From:   Wang Yufen <wangyufen@huawei.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>,
-        <john.fastabend@gmail.com>, <andrii@kernel.org>,
-        <martin.lau@linux.dev>, <yhs@fb.com>, <joe@wand.net.nz>
-Subject: [PATCH net] bpf: Fix memory leaks in __check_func_call
-Date:   Thu, 27 Oct 2022 18:23:33 +0800
-Message-ID: <1666866213-4394-1-git-send-email-wangyufen@huawei.com>
-X-Mailer: git-send-email 1.8.3.1
+ 15.1.2375.31; Thu, 27 Oct 2022 18:24:53 +0800
+From:   Ziyang Xuan <william.xuanziyang@huawei.com>
+To:     <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
+        <dsahern@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <herbert@gondor.apana.org.au>
+Subject: [PATCH net] ipv6/gro: fix an out of bounds memory bug in ipv6_gro_receive()
+Date:   Thu, 27 Oct 2022 18:24:49 +0800
+Message-ID: <20221027102449.926410-1-william.xuanziyang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.70]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500010.china.huawei.com (7.192.105.118)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500006.china.huawei.com (7.192.105.130)
 X-CFilter-Loop: Reflected
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -44,119 +45,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-kmemleak reports this issue:
+IPv6 packets without NEXTHDR_NONE extension header can make continuous
+__skb_pull() until pskb_may_pull() failed in ipv6_gso_pull_exthdrs().
+That results in a big value of skb_gro_offset(), and after __skb_push()
+in ipv6_gro_receive(), skb->data will less than skb->head, an out of
+bounds memory bug occurs. That will trigger the problem as following:
 
-unreferenced object 0xffff88817139d000 (size 2048):
-  comm "test_progs", pid 33246, jiffies 4307381979 (age 45851.820s)
-  hex dump (first 32 bytes):
-    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<0000000045f075f0>] kmalloc_trace+0x27/0xa0
-    [<0000000098b7c90a>] __check_func_call+0x316/0x1230
-    [<00000000b4c3c403>] check_helper_call+0x172e/0x4700
-    [<00000000aa3875b7>] do_check+0x21d8/0x45e0
-    [<000000001147357b>] do_check_common+0x767/0xaf0
-    [<00000000b5a595b4>] bpf_check+0x43e3/0x5bc0
-    [<0000000011e391b1>] bpf_prog_load+0xf26/0x1940
-    [<0000000007f765c0>] __sys_bpf+0xd2c/0x3650
-    [<00000000839815d6>] __x64_sys_bpf+0x75/0xc0
-    [<00000000946ee250>] do_syscall_64+0x3b/0x90
-    [<0000000000506b7f>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+==================================================================
+BUG: KASAN: use-after-free in eth_type_trans+0x100/0x260
+...
+Call trace:
+ dump_backtrace+0xd8/0x130
+ show_stack+0x1c/0x50
+ dump_stack_lvl+0x64/0x7c
+ print_address_description.constprop.0+0xbc/0x2e8
+ print_report+0x100/0x1e4
+ kasan_report+0x80/0x120
+ __asan_load8+0x78/0xa0
+ eth_type_trans+0x100/0x260
+ napi_gro_frags+0x164/0x550
+ tun_get_user+0xda4/0x1270
+ tun_chr_write_iter+0x74/0x130
+ do_iter_readv_writev+0x130/0x1ec
+ do_iter_write+0xbc/0x1e0
+ vfs_writev+0x13c/0x26c
 
-The root case here is: In function prepare_func_exit(), the callee is
-not released in the abnormal scenario after "state->curframe--;".
+Add comparison between skb->data - skb_gro_offset() and skb->head
+and exception handler before __skb_push() to fix the bug.
 
-In addition, function __check_func_call() has a similar problem. In
-the abnormal scenario before "state->curframe++;", the callee is alse
-not released.
-
-Fixes: 69c087ba6225 ("bpf: Add bpf_for_each_map_elem() helper")
-Fixes: fd978bf7fd31 ("bpf: Add reference tracking to verifier")
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Fixes: 86911732d399 ("gro: Avoid copying headers of unmerged packets")
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
 ---
- kernel/bpf/verifier.c | 25 ++++++++++++++++---------
- 1 file changed, 16 insertions(+), 9 deletions(-)
+ net/ipv6/ip6_offload.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 014ee09..bff8477 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -6736,11 +6736,11 @@ static int __check_func_call(struct bpf_verifier_env *env, struct bpf_insn *insn
- 	/* Transfer references to the callee */
- 	err = copy_reference_state(callee, caller);
- 	if (err)
--		return err;
-+		goto err;
+diff --git a/net/ipv6/ip6_offload.c b/net/ipv6/ip6_offload.c
+index 3ee345672849..6659ccf25387 100644
+--- a/net/ipv6/ip6_offload.c
++++ b/net/ipv6/ip6_offload.c
+@@ -237,6 +237,10 @@ INDIRECT_CALLABLE_SCOPE struct sk_buff *ipv6_gro_receive(struct list_head *head,
+ 		proto = ipv6_gso_pull_exthdrs(skb, proto);
+ 		skb_gro_pull(skb, -skb_transport_offset(skb));
+ 		skb_reset_transport_header(skb);
++		if (unlikely(skb_headroom(skb) < skb_gro_offset(skb))) {
++			kfree_skb(skb);
++			return ERR_PTR(-EINPROGRESS);
++		}
+ 		__skb_push(skb, skb_gro_offset(skb));
  
- 	err = set_callee_state_cb(env, caller, callee, *insn_idx);
- 	if (err)
--		return err;
-+		goto err;
- 
- 	clear_caller_saved_regs(env, caller->regs);
- 
-@@ -6757,6 +6757,10 @@ static int __check_func_call(struct bpf_verifier_env *env, struct bpf_insn *insn
- 		print_verifier_state(env, callee, true);
- 	}
- 	return 0;
-+
-+err:
-+	kfree(callee);
-+	return err;
- }
- 
- int map_set_for_each_callback_args(struct bpf_verifier_env *env,
-@@ -6954,7 +6958,7 @@ static int prepare_func_exit(struct bpf_verifier_env *env, int *insn_idx)
- 	struct bpf_verifier_state *state = env->cur_state;
- 	struct bpf_func_state *caller, *callee;
- 	struct bpf_reg_state *r0;
--	int err;
-+	int ret;
- 
- 	callee = state->frame[state->curframe];
- 	r0 = &callee->regs[BPF_REG_0];
-@@ -6977,11 +6981,13 @@ static int prepare_func_exit(struct bpf_verifier_env *env, int *insn_idx)
- 
- 		if (r0->type != SCALAR_VALUE) {
- 			verbose(env, "R0 not a scalar value\n");
--			return -EACCES;
-+			ret = -EACCES;
-+			goto out;
- 		}
- 		if (!tnum_in(range, r0->var_off)) {
- 			verbose_invalid_scalar(env, r0, &range, "callback return", "R0");
--			return -EINVAL;
-+			ret = -EINVAL;
-+			goto out;
- 		}
- 	} else {
- 		/* return to the caller whatever r0 had in the callee */
-@@ -6995,9 +7001,9 @@ static int prepare_func_exit(struct bpf_verifier_env *env, int *insn_idx)
- 	 */
- 	if (!callee->in_callback_fn) {
- 		/* Transfer references to the caller */
--		err = copy_reference_state(caller, callee);
--		if (err)
--			return err;
-+		ret = copy_reference_state(caller, callee);
-+		if (ret)
-+			goto out;
- 	}
- 
- 	*insn_idx = callee->callsite + 1;
-@@ -7008,9 +7014,10 @@ static int prepare_func_exit(struct bpf_verifier_env *env, int *insn_idx)
- 		print_verifier_state(env, caller, true);
- 	}
- 	/* clear everything in the callee */
-+out:
- 	free_func_state(callee);
- 	state->frame[state->curframe + 1] = NULL;
--	return 0;
-+	return ret;
- }
- 
- static void do_refine_retval_range(struct bpf_reg_state *regs, int ret_type,
+ 		ops = rcu_dereference(inet6_offloads[proto]);
 -- 
-1.8.3.1
+2.25.1
 
