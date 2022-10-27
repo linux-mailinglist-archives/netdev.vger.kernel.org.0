@@ -2,465 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CB2260FD17
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 18:31:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70E2560FD25
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 18:33:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236146AbiJ0Qb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 12:31:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38030 "EHLO
+        id S236610AbiJ0Qdl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 12:33:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235780AbiJ0Qb1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 12:31:27 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1955F7F7;
-        Thu, 27 Oct 2022 09:31:25 -0700 (PDT)
-Received: from jupiter.universe (dyndsl-091-096-035-205.ewe-ip-backbone.de [91.96.35.205])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: sre)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id AD76B6602395;
-        Thu, 27 Oct 2022 17:31:23 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1666888283;
-        bh=tNJIBKPU1noslMNdOTmfTOssBT36wHtENk08g0qT7PY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=F4LnUtrde4AQGUth8pPLJ/X9TUpIgeHPAlMAxevseuUrpPCO7x0GjrEG4B2/SynV1
-         35HkwAyPao8RjpKwOL1HpFVN5KIMMIYTXW3QfHz6ef4Y/psCCK7pQbnWIUkSSPMMGx
-         rxrLfUig9lxJARuh0jW2bN6qgMp1/dVxawd9GUatllWamKctzgkBCSGn4IZVNAsieA
-         xlWq6OnFK3oNQm/oKHkxOr5ffC2r8vZxggfmQjJCc6Bpi2xudAVUQYFH9PA1AIgU2U
-         TrY9bvrrIPausH/tQEdbvd2OFECYL7GJT5C5B74eajeaJZWGzU2m7vNOE9VQpgqG5A
-         KfC31Cez/aJhw==
-Received: by jupiter.universe (Postfix, from userid 1000)
-        id 057BF4801B9; Thu, 27 Oct 2022 18:31:21 +0200 (CEST)
-From:   Sebastian Reichel <sebastian.reichel@collabora.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        kernel@collabora.com
-Subject: [PATCHv2 1/1] dt-bindings: net: snps,dwmac: Document queue config subnodes
-Date:   Thu, 27 Oct 2022 18:31:19 +0200
-Message-Id: <20221027163119.107092-1-sebastian.reichel@collabora.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S234812AbiJ0Qdk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 12:33:40 -0400
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C80BAB80F;
+        Thu, 27 Oct 2022 09:33:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1666888418; x=1698424418;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Kxz9+oecIDUzEW8MxjtD3nJA+i4Plx4+UwXBtItquao=;
+  b=aApm2BeQrV0vCY5aAxCim9zu3/A12myoXypEywsAu+yiEih7rlrCdW9r
+   CCWPjxJvUcG746AaYzcuUu0Ey1OvlUeNrzMburinKI51gQ39qfQKsboex
+   tJr+C0KM52ZIB/rD9xV3/U52ciGIvVSh2sCTuv0D/LwIbdNa+T4Xwf6HY
+   kp/fUN3DbXn26gl1CBbdMQpzA2+CEEUf42g+IjTxjFq0CVSPEzkyqxs6j
+   mZEGxq/2TevHqcRPmB109wupcDOy3rCBpOMCDr3WYjKt+rhrKFUM507VO
+   Voh4HrRy+hU8IVhFxJpgAdOWcsyg9M2ooWN0hAqvfjoZGImR6EV91Rm3M
+   A==;
+X-IronPort-AV: E=Sophos;i="5.95,218,1661810400"; 
+   d="scan'208";a="27019743"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 27 Oct 2022 18:33:36 +0200
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Thu, 27 Oct 2022 18:33:36 +0200
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Thu, 27 Oct 2022 18:33:36 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1666888416; x=1698424416;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Kxz9+oecIDUzEW8MxjtD3nJA+i4Plx4+UwXBtItquao=;
+  b=G7fqgSCQ4LBe0RUEM5MDckqDb5Y35BVUvrdTdJNQMi0tilvpaKJ6wpOY
+   Yldo4MzaTyx8VYqPFynHIQ2qzu9Nuj4+nPi9I3P7p+XsQo1GJuQAC8cSV
+   RphK9S/IqJWwKd8vPvF4QXLTYdsQxVtAlkEZsbQ2F2n5K/09RQGbMW5j+
+   KtEkRsY8+ZPoF5NKFsVQb3rvrnm+25B6i6jjm9Btqrv4jXFgTPSnbjqRS
+   EpDYr2L5OQWCXQVJvHyAYEVXIYz2xkZPKbwcDNjt95J/a8LP36QbgxdYY
+   88/6nA3ByG9ZvdA19QVYISSM4u+3ZnbQPcTs5QXIMa67kzdTlT1cqE1Re
+   A==;
+X-IronPort-AV: E=Sophos;i="5.95,218,1661810400"; 
+   d="scan'208";a="27019742"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 27 Oct 2022 18:33:36 +0200
+Received: from schifferm-ubuntu (unknown [192.168.66.106])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id BB624280056;
+        Thu, 27 Oct 2022 18:33:35 +0200 (CEST)
+X-CheckPoint: {635AB2DD-2-C1A14347-CAD711DE}
+X-MAIL-CPID: 2A0551D518828FB9A5B2DD3E1D5C90C0_1
+X-Control-Analysis: str=0001.0A782F26.635AB2E0.001D,ss=1,re=0.000,recu=0.000,reip=0.000,cl=1,cld=1,fgs=0
+Message-ID: <ed580c15fbf690acde24679956a9439c1c0a1137.camel@ew.tq-group.com>
+Subject: Re: [RFC 1/5] misc: introduce notify-device driver
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux@ew.tq-group.com
+Date:   Thu, 27 Oct 2022 18:33:33 +0200
+In-Reply-To: <Y1lGPRvKMbNDs1iK@kroah.com>
+References: <cover.1666786471.git.matthias.schiffer@ew.tq-group.com>
+         <db30127ab4741d4e71b768881197f4791174f545.1666786471.git.matthias.schiffer@ew.tq-group.com>
+         <Y1lGPRvKMbNDs1iK@kroah.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The queue configuration is referenced by snps,mtl-rx-config and
-snps,mtl-tx-config. Some in-tree DTs and the example put the
-referenced config nodes directly beneath the root node, but
-most in-tree DTs put it as child node of the dwmac node.
+On Wed, 2022-10-26 at 16:37 +0200, Greg Kroah-Hartman wrote:
+> On Wed, Oct 26, 2022 at 03:15:30PM +0200, Matthias Schiffer wrote:
+> > A notify-device is a synchronization facility that allows to query
+> > "readiness" across drivers, without creating a direct dependency between
+> > the driver modules. The notify-device can also be used to trigger deferred
+> > probes.
+> > 
+> > Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+> > ---
+> >  drivers/misc/Kconfig          |   4 ++
+> >  drivers/misc/Makefile         |   1 +
+> >  drivers/misc/notify-device.c  | 109 ++++++++++++++++++++++++++++++++++
+> >  include/linux/notify-device.h |  33 ++++++++++
+> >  4 files changed, 147 insertions(+)
+> >  create mode 100644 drivers/misc/notify-device.c
+> >  create mode 100644 include/linux/notify-device.h
+> > 
+> > diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+> > index 358ad56f6524..63559e9f854c 100644
+> > --- a/drivers/misc/Kconfig
+> > +++ b/drivers/misc/Kconfig
+> > @@ -496,6 +496,10 @@ config VCPU_STALL_DETECTOR
+> >  
+> >  	  If you do not intend to run this kernel as a guest, say N.
+> >  
+> > +config NOTIFY_DEVICE
+> > +	tristate "Notify device"
+> > +	depends on OF
+> > +
+> >  source "drivers/misc/c2port/Kconfig"
+> >  source "drivers/misc/eeprom/Kconfig"
+> >  source "drivers/misc/cb710/Kconfig"
+> > diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+> > index ac9b3e757ba1..1e8012112b43 100644
+> > --- a/drivers/misc/Makefile
+> > +++ b/drivers/misc/Makefile
+> > @@ -62,3 +62,4 @@ obj-$(CONFIG_HI6421V600_IRQ)	+= hi6421v600-irq.o
+> >  obj-$(CONFIG_OPEN_DICE)		+= open-dice.o
+> >  obj-$(CONFIG_GP_PCI1XXXX)	+= mchp_pci1xxxx/
+> >  obj-$(CONFIG_VCPU_STALL_DETECTOR)	+= vcpu_stall_detector.o
+> > +obj-$(CONFIG_NOTIFY_DEVICE)	+= notify-device.o
+> > diff --git a/drivers/misc/notify-device.c b/drivers/misc/notify-device.c
+> > new file mode 100644
+> > index 000000000000..42e0980394ea
+> > --- /dev/null
+> > +++ b/drivers/misc/notify-device.c
+> > @@ -0,0 +1,109 @@
+> > +// SPDX-License-Identifier: GPL-2.0-or-later
+> > +
+> > +#include <linux/device/class.h>
+> > +#include <linux/kernel.h>
+> > +#include <linux/module.h>
+> > +#include <linux/notify-device.h>
+> > +#include <linux/platform_device.h>
+> > +#include <linux/slab.h>
+> > +
+> > +static void notify_device_release(struct device *dev)
+> > +{
+> > +	of_node_put(dev->of_node);
+> > +	kfree(dev);
+> > +}
+> > +
+> > +static struct class notify_device_class = {
+> > +	.name = "notify-device",
+> > +	.owner = THIS_MODULE,
+> > +	.dev_release = notify_device_release,
+> > +};
+> > +
+> > +static struct platform_driver notify_device_driver = {
 
-This adds proper description for this setup, which has the
-advantage of validating the queue configuration node content.
+[Pruning the CC list a bit, to avoid clogging people's inboxes]
 
-The example is also updated to use the sub-node style, incl.
-the axi bus configuration node, which got the same treatment
-as the queues config in 5361660af6d3 ("dt-bindings: net: snps,dwmac:
-Document stmmac-axi-config subnode").
+> 
+> Ick, wait, this is NOT a platform device, nor driver, so it shouldn't be
+> either here.  Worst case, it's a virtual device on the virtual bus.
 
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
----
-Changes since PATCHv1:
- * https://lore.kernel.org/all/20221021171055.85888-1-sebastian.reichel@collabora.com/
- * add logic to make booleans that are actually enums mutually exclusive
- * fix type of "snps,send_slope", "snps,idle_slope", "snps,high_credit" and "snps,low_credit"
- * add missing 'additionalProperties: false' in rx-queues-config -> "^queue[0-9]$"
- * add missing 'additionalProperties: false' in tx-queues-config -> "^queue[0-9]$"
- * update example to follow the sub-node style
----
- .../devicetree/bindings/net/snps,dwmac.yaml   | 345 ++++++++++++++----
- 1 file changed, 264 insertions(+), 81 deletions(-)
+This part of the code is inspired by mac80211_hwsim, which uses a
+platform driver in a similar way, for a plain struct device. Should
+this rather use a plain struct device_driver?
 
-diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-index 13b984076af5..e88a86623fce 100644
---- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-+++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-@@ -167,56 +167,238 @@ properties:
-   snps,mtl-rx-config:
-     $ref: /schemas/types.yaml#/definitions/phandle
-     description:
--      Multiple RX Queues parameters. Phandle to a node that can
--      contain the following properties
--        * snps,rx-queues-to-use, number of RX queues to be used in the
--          driver
--        * Choose one of these RX scheduling algorithms
--          * snps,rx-sched-sp, Strict priority
--          * snps,rx-sched-wsp, Weighted Strict priority
--        * For each RX queue
--          * Choose one of these modes
--            * snps,dcb-algorithm, Queue to be enabled as DCB
--            * snps,avb-algorithm, Queue to be enabled as AVB
--          * snps,map-to-dma-channel, Channel to map
--          * Specifiy specific packet routing
--            * snps,route-avcp, AV Untagged Control packets
--            * snps,route-ptp, PTP Packets
--            * snps,route-dcbcp, DCB Control Packets
--            * snps,route-up, Untagged Packets
--            * snps,route-multi-broad, Multicast & Broadcast Packets
--          * snps,priority, bitmask of the tagged frames priorities assigned to
--            the queue
-+      Multiple RX Queues parameters. Phandle to a node that
-+      implements the 'rx-queues-config' object described in
-+      this binding.
-+
-+  rx-queues-config:
-+    type: object
-+    properties:
-+      snps,rx-queues-to-use:
-+        $ref: /schemas/types.yaml#/definitions/uint32
-+        description: number of RX queues to be used in the driver
-+      snps,rx-sched-sp:
-+        type: boolean
-+        description: Strict priority
-+      snps,rx-sched-wsp:
-+        type: boolean
-+        description: Weighted Strict priority
-+    allOf:
-+      - if:
-+          required:
-+            - snps,rx-sched-sp
-+        then:
-+          properties:
-+            snps,rx-sched-wsp: false
-+      - if:
-+          required:
-+            - snps,rx-sched-wsp
-+        then:
-+          properties:
-+            snps,rx-sched-sp: false
-+    patternProperties:
-+      "^queue[0-9]$":
-+        description: Each subnode represents a queue.
-+        type: object
-+        properties:
-+          snps,dcb-algorithm:
-+            type: boolean
-+            description: Queue to be enabled as DCB
-+          snps,avb-algorithm:
-+            type: boolean
-+            description: Queue to be enabled as AVB
-+          snps,map-to-dma-channel:
-+            $ref: /schemas/types.yaml#/definitions/uint32
-+            description: DMA channel id to map
-+          snps,route-avcp:
-+            type: boolean
-+            description: AV Untagged Control packets
-+          snps,route-ptp:
-+            type: boolean
-+            description: PTP Packets
-+          snps,route-dcbcp:
-+            type: boolean
-+            description: DCB Control Packets
-+          snps,route-up:
-+            type: boolean
-+            description: Untagged Packets
-+          snps,route-multi-broad:
-+            type: boolean
-+            description: Multicast & Broadcast Packets
-+          snps,priority:
-+            $ref: /schemas/types.yaml#/definitions/uint32
-+            description: Bitmask of the tagged frames priorities assigned to the queue
-+        allOf:
-+          - if:
-+              required:
-+                - snps,dcb-algorithm
-+            then:
-+              properties:
-+                snps,avb-algorithm: false
-+          - if:
-+              required:
-+                - snps,avb-algorithm
-+            then:
-+              properties:
-+                snps,dcb-algorithm: false
-+          - if:
-+              required:
-+                - snps,route-avcp
-+            then:
-+              properties:
-+                snps,route-ptp: false
-+                snps,route-dcbcp: false
-+                snps,route-up: false
-+                snps,route-multi-broad: false
-+          - if:
-+              required:
-+                - snps,route-ptp
-+            then:
-+              properties:
-+                snps,route-avcp: false
-+                snps,route-dcbcp: false
-+                snps,route-up: false
-+                snps,route-multi-broad: false
-+          - if:
-+              required:
-+                - snps,route-dcbcp
-+            then:
-+              properties:
-+                snps,route-avcp: false
-+                snps,route-ptp: false
-+                snps,route-up: false
-+                snps,route-multi-broad: false
-+          - if:
-+              required:
-+                - snps,route-up
-+            then:
-+              properties:
-+                snps,route-avcp: false
-+                snps,route-ptp: false
-+                snps,route-dcbcp: false
-+                snps,route-multi-broad: false
-+          - if:
-+              required:
-+                - snps,route-multi-broad
-+            then:
-+              properties:
-+                snps,route-avcp: false
-+                snps,route-ptp: false
-+                snps,route-dcbcp: false
-+                snps,route-up: false
-+        additionalProperties: false
-+    additionalProperties: false
- 
-   snps,mtl-tx-config:
-     $ref: /schemas/types.yaml#/definitions/phandle
-     description:
--      Multiple TX Queues parameters. Phandle to a node that can
--      contain the following properties
--        * snps,tx-queues-to-use, number of TX queues to be used in the
--          driver
--        * Choose one of these TX scheduling algorithms
--          * snps,tx-sched-wrr, Weighted Round Robin
--          * snps,tx-sched-wfq, Weighted Fair Queuing
--          * snps,tx-sched-dwrr, Deficit Weighted Round Robin
--          * snps,tx-sched-sp, Strict priority
--        * For each TX queue
--          * snps,weight, TX queue weight (if using a DCB weight
--            algorithm)
--          * Choose one of these modes
--            * snps,dcb-algorithm, TX queue will be working in DCB
--            * snps,avb-algorithm, TX queue will be working in AVB
--              [Attention] Queue 0 is reserved for legacy traffic
--                          and so no AVB is available in this queue.
--          * Configure Credit Base Shaper (if AVB Mode selected)
--            * snps,send_slope, enable Low Power Interface
--            * snps,idle_slope, unlock on WoL
--            * snps,high_credit, max write outstanding req. limit
--            * snps,low_credit, max read outstanding req. limit
--          * snps,priority, bitmask of the priorities assigned to the queue.
--            When a PFC frame is received with priorities matching the bitmask,
--            the queue is blocked from transmitting for the pause time specified
--            in the PFC frame.
-+      Multiple TX Queues parameters. Phandle to a node that
-+      implements the 'tx-queues-config' object described in
-+      this binding.
-+
-+  tx-queues-config:
-+    type: object
-+    properties:
-+      snps,tx-queues-to-use:
-+        $ref: /schemas/types.yaml#/definitions/uint32
-+        description: number of TX queues to be used in the driver
-+      snps,tx-sched-wrr:
-+        type: boolean
-+        description: Weighted Round Robin
-+      snps,tx-sched-wfq:
-+        type: boolean
-+        description: Weighted Fair Queuing
-+      snps,tx-sched-dwrr:
-+        type: boolean
-+        description: Deficit Weighted Round Robin
-+      snps,tx-sched-sp:
-+        type: boolean
-+        description: Strict priority
-+    allOf:
-+      - if:
-+          required:
-+            - snps,tx-sched-wrr
-+        then:
-+          properties:
-+            snps,tx-sched-wfq: false
-+            snps,tx-sched-dwrr: false
-+            snps,tx-sched-sp: false
-+      - if:
-+          required:
-+            - snps,tx-sched-wfq
-+        then:
-+          properties:
-+            snps,tx-sched-wrr: false
-+            snps,tx-sched-dwrr: false
-+            snps,tx-sched-sp: false
-+      - if:
-+          required:
-+            - snps,tx-sched-dwrr
-+        then:
-+          properties:
-+            snps,tx-sched-wrr: false
-+            snps,tx-sched-wfq: false
-+            snps,tx-sched-sp: false
-+      - if:
-+          required:
-+            - snps,tx-sched-sp
-+        then:
-+          properties:
-+            snps,tx-sched-wrr: false
-+            snps,tx-sched-wfq: false
-+            snps,tx-sched-dwrr: false
-+    patternProperties:
-+      "^queue[0-9]$":
-+        description: Each subnode represents a queue.
-+        type: object
-+        properties:
-+          snps,weight:
-+            $ref: /schemas/types.yaml#/definitions/uint32
-+            description: TX queue weight (if using a DCB weight algorithm)
-+          snps,dcb-algorithm:
-+            type: boolean
-+            description: TX queue will be working in DCB
-+          snps,avb-algorithm:
-+            type: boolean
-+            description:
-+              TX queue will be working in AVB.
-+              Queue 0 is reserved for legacy traffic and so no AVB is
-+              available in this queue.
-+          snps,send_slope:
-+            $ref: /schemas/types.yaml#/definitions/uint32
-+            description: enable Low Power Interface
-+          snps,idle_slope:
-+            $ref: /schemas/types.yaml#/definitions/uint32
-+            description: unlock on WoL
-+          snps,high_credit:
-+            $ref: /schemas/types.yaml#/definitions/uint32
-+            description: max write outstanding req. limit
-+          snps,low_credit:
-+            $ref: /schemas/types.yaml#/definitions/uint32
-+            description: max read outstanding req. limit
-+          snps,priority:
-+            $ref: /schemas/types.yaml#/definitions/uint32
-+            description:
-+              Bitmask of the tagged frames priorities assigned to the queue.
-+              When a PFC frame is received with priorities matching the bitmask,
-+              the queue is blocked from transmitting for the pause time specified
-+              in the PFC frame.
-+        allOf:
-+          - if:
-+              required:
-+                - snps,dcb-algorithm
-+            then:
-+              properties:
-+                snps,avb-algorithm: false
-+          - if:
-+              required:
-+                - snps,avb-algorithm
-+            then:
-+              properties:
-+                snps,dcb-algorithm: false
-+                snps,weight: false
-+        additionalProperties: false
-+    additionalProperties: false
- 
-   snps,reset-gpio:
-     deprecated: true
-@@ -463,41 +645,6 @@ additionalProperties: true
- 
- examples:
-   - |
--    stmmac_axi_setup: stmmac-axi-config {
--        snps,wr_osr_lmt = <0xf>;
--        snps,rd_osr_lmt = <0xf>;
--        snps,blen = <256 128 64 32 0 0 0>;
--    };
--
--    mtl_rx_setup: rx-queues-config {
--        snps,rx-queues-to-use = <1>;
--        snps,rx-sched-sp;
--        queue0 {
--            snps,dcb-algorithm;
--            snps,map-to-dma-channel = <0x0>;
--            snps,priority = <0x0>;
--        };
--    };
--
--    mtl_tx_setup: tx-queues-config {
--        snps,tx-queues-to-use = <2>;
--        snps,tx-sched-wrr;
--        queue0 {
--            snps,weight = <0x10>;
--            snps,dcb-algorithm;
--            snps,priority = <0x0>;
--        };
--
--        queue1 {
--            snps,avb-algorithm;
--            snps,send_slope = <0x1000>;
--            snps,idle_slope = <0x1000>;
--            snps,high_credit = <0x3E800>;
--            snps,low_credit = <0xFFC18000>;
--            snps,priority = <0x1>;
--        };
--    };
--
-     gmac0: ethernet@e0800000 {
-         compatible = "snps,dwxgmac-2.10", "snps,dwxgmac";
-         reg = <0xe0800000 0x8000>;
-@@ -516,6 +663,42 @@ examples:
-         snps,axi-config = <&stmmac_axi_setup>;
-         snps,mtl-rx-config = <&mtl_rx_setup>;
-         snps,mtl-tx-config = <&mtl_tx_setup>;
-+
-+        stmmac_axi_setup: stmmac-axi-config {
-+            snps,wr_osr_lmt = <0xf>;
-+            snps,rd_osr_lmt = <0xf>;
-+            snps,blen = <256 128 64 32 0 0 0>;
-+        };
-+
-+        mtl_rx_setup: rx-queues-config {
-+            snps,rx-queues-to-use = <1>;
-+            snps,rx-sched-sp;
-+            queue0 {
-+                snps,dcb-algorithm;
-+                snps,map-to-dma-channel = <0x0>;
-+                snps,priority = <0x0>;
-+            };
-+        };
-+
-+        mtl_tx_setup: tx-queues-config {
-+            snps,tx-queues-to-use = <2>;
-+            snps,tx-sched-wrr;
-+            queue0 {
-+                snps,weight = <0x10>;
-+                snps,dcb-algorithm;
-+                snps,priority = <0x0>;
-+            };
-+
-+            queue1 {
-+                snps,avb-algorithm;
-+                snps,send_slope = <0x1000>;
-+                snps,idle_slope = <0x1000>;
-+                snps,high_credit = <0x3E800>;
-+                snps,low_credit = <0xFFC18000>;
-+                snps,priority = <0x1>;
-+            };
-+        };
-+
-         mdio0 {
-             #address-cells = <1>;
-             #size-cells = <0>;
--- 
-2.35.1
+Also, what's the virtual bus? Grepping the Linux code and documentation
+didn't turn up anything.
+
+> 
+> But why is this a class at all?  Classes are a representation of a type
+> of device that userspace can see, how is this anything that userspace
+> cares about?
+
+Makes sense, I will remove the class.
+
+> 
+> Doesn't the device link stuff handle all of this type of "when this
+> device is done being probed, now I can" problems?  Why is a whole new
+> thing needed?
+
+The issue here is that (as I understand it) the device link and
+deferred probing infrastructore only cares about whether the supplier
+device has been probed successfully.
+
+This is insuffient in the case of the dependency between mwifiex and
+hci_uart/hci_mrvl that I want to express: mwifiex loads its firmware
+asynchronously, so finishing the mwifiex probe is too early to retry
+probing the Bluetooth driver.
+
+While mwifiex does create a few devices (ieee80211, netdevice) when the
+firmware has loaded, none of these bind to a driver, so they don't
+trigger the deferred probes. Using their existence as a condition for
+allowing the Bluetooth driver to probe also seems ugly too me
+(ieee80211 currently can't be looked up by OF node, and netdevices can
+be created and deleted dynamically).
+
+Because of this, I came to the conclusion that creating and binding a
+device specifically for this purpose is a good solution, as it solves
+two problems at once:
+- The driver bind triggers deferred probes
+- The driver allows to look up the device by OF node
+
+Integrating this with device links might make sense as well, but I
+haven't looked much into that yet.
+
+Thanks,
+Matthias
+
+
+> 
+> thanks,
+> 
+> greg k-h
+
+
+
 
