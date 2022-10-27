@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7168260FAEA
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 16:57:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 325B560FAEB
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 16:57:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234893AbiJ0O5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 10:57:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56788 "EHLO
+        id S235166AbiJ0O5V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 10:57:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234808AbiJ0O5J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 10:57:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F9CBB40F1
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 07:57:09 -0700 (PDT)
+        with ESMTP id S235682AbiJ0O5P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 10:57:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01BE5B56C2
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 07:57:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AD4862367
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 14:57:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF925C433D6;
-        Thu, 27 Oct 2022 14:57:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A209BB8267E
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 14:57:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBB7FC433D6;
+        Thu, 27 Oct 2022 14:57:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666882628;
-        bh=pUIJr3od4lzsGcng9IWY+FNxYIrvxUgzQ3l80dlLSoI=;
+        s=k20201202; t=1666882632;
+        bh=RKphfuFEND5H3il0xztnmbmz++ltSaGRZlxxeqpNybY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bog+YGhZfQuUyJXMEY22UdKh6m8Th8np5loQkiE/Wl+HB6+ptzV4u5RUlwex8WJmV
-         uegHzcTjRJ/CQSOj8Ng163NexectmzTFLyMv+LGZ9FDInZ+O8zUphrKB6aLLYwknkf
-         j62bnNQ+/e0CqO/lf6RX+0GGSuwroDxQAfKA+nVKM50fw0kuhcjUmXQlCdni5vxn+k
-         GbwsullafOc5BID/Z3g481y83tVYaKE4ce3KWAObxsNokjnZsz5Qf8OOxy3EH3srcL
-         g2+86eso1n3A6xuUA3RewQdfQOkGQ/ReAhG5pyJcgiUl67Yc7al6IpqgvQz4kuYh4T
-         fDc6igdM5l/eg==
+        b=F45pytP4iSUvfFpDAj6fWzyyhVWUgrGAwv3fqZvj/MlS4dcDGZOGBzEgiVAiAYS54
+         82WVhFy8Q2S/s0gjAmjCISSsM2pMXY3c57xmNCJSBcki1qDxO0gPf3vhqeKgebINId
+         aCF6TDcbKMOamPyqFzTNLH+8wbbPwJQGVN4kSUGw/5rTzNCJJVqM5zYs/fCIIGh6GT
+         zZNxs5n+V+AvcwFIG3At5Nl8V6Tm8xQOrH2eY4SYtT8PVAWTWHE6FXAb4R50dWyUX0
+         iDo86br51oEOvom0Cmfoz+YFWJwAyRC1jdw4o+Gt3yM18UG97OfkcRYZiMX01WaePS
+         Eenfrgo4LobDQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,10 +39,10 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Yevgeny Kliteynik <kliteyn@nvidia.com>,
-        Chris Mi <cmi@nvidia.com>, Alex Vesker <valex@nvidia.com>
-Subject: [net-next V2 01/14] net/mlx5: DR, In destroy flow, free resources even if FW command failed
-Date:   Thu, 27 Oct 2022 15:56:30 +0100
-Message-Id: <20221027145643.6618-2-saeed@kernel.org>
+        Alex Vesker <valex@nvidia.com>
+Subject: [net-next V2 02/14] net/mlx5: DR, Fix the SMFS sync_steering for fast teardown
+Date:   Thu, 27 Oct 2022 15:56:31 +0100
+Message-Id: <20221027145643.6618-3-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221027145643.6618-1-saeed@kernel.org>
 References: <20221027145643.6618-1-saeed@kernel.org>
@@ -59,29 +59,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-Otherwise resources will never be freed and refcount will not be decreased.
+If sync happens when the device is in fast teardown, just bail
+and don't do anything, because the PCI device is not there any more.
 
-Signed-off-by: Chris Mi <cmi@nvidia.com>
 Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Reviewed-by: Alex Vesker <valex@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_table.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_table.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_table.c
-index 31d443dd8386..eb81759244d5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_table.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_table.c
-@@ -292,7 +292,7 @@ int mlx5dr_table_destroy(struct mlx5dr_table *tbl)
- 	mlx5dr_dbg_tbl_del(tbl);
- 	ret = dr_table_destroy_sw_owned_tbl(tbl);
- 	if (ret)
--		return ret;
-+		mlx5dr_err(tbl->dmn, "Failed to destoy sw owned table\n");
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
+index 16d65fe4f654..b4739eafc180 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
+@@ -271,6 +271,13 @@ int mlx5dr_cmd_sync_steering(struct mlx5_core_dev *mdev)
+ {
+ 	u32 in[MLX5_ST_SZ_DW(sync_steering_in)] = {};
  
- 	dr_table_uninit(tbl);
++	/* Skip SYNC in case the device is internal error state.
++	 * Besides a device error, this also happens when we're
++	 * in fast teardown
++	 */
++	if (mdev->state == MLX5_DEVICE_STATE_INTERNAL_ERROR)
++		return 0;
++
+ 	MLX5_SET(sync_steering_in, in, opcode, MLX5_CMD_OP_SYNC_STEERING);
  
+ 	return mlx5_cmd_exec_in(mdev, sync_steering, in);
 -- 
 2.37.3
 
