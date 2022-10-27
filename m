@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 21683610543
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 00:00:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AC08610548
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 00:01:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234516AbiJ0WAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 18:00:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52012 "EHLO
+        id S234642AbiJ0WB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 18:01:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234137AbiJ0WAq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 18:00:46 -0400
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2046.outbound.protection.outlook.com [40.107.102.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31AA67E035
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 15:00:45 -0700 (PDT)
+        with ESMTP id S234619AbiJ0WBW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 18:01:22 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2063.outbound.protection.outlook.com [40.107.93.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 871929AFFA
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 15:00:50 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ep89zty16HrXIKMs5dGiqB2hIt0obfh9Hc4NjxB836dC8n8vXbbbf5itV7CkLmK0mCrMtWHZx4exDpcPKmp/aL8oHMWr85RZHJ37+vVx4XrZic7pjUG/be7GOM3tTxH2pvYtU7fdYge5Mufx3xeIBsg//9A5gdNUb583jFV8Ow5rplRGX+mqHk+I/Swrt91LHc4Gpg4BZApYagS4mktl35ueITpcn0tDy+lX0UzuSscTmGcv/r+JGr2IffADIF5Imv5pfzP/MGbxVhSyZ0N9SsY+aGWEGHKfPRvkKT3SzWn9niQaBND7qAB4LHz/+4dfXb/OrVNKM/jaMwV4T4bzWw==
+ b=mAjIlkWk/y6PDAEYVjTvY6kxYy+EqSdIrrxiprd/BkkuNjKGzXwL0WeLR/Q8ZoTogZ3PdTFeJPI0wkgsfUePw9No0Q6zs4pDUM/KruXpGdM5+zwKY1Bi2g2TfiBvFMm4eZweFtwb3rb7jyCcABjukha0d9X/r7WNaiImPCH/PFO+zVQsPfN058eL0Au4l1PbNdirghcqvcySm9B/cDbKud/CuTFmnMM0rcWEA/OOwR+hXNXXqVmdIYYY79nJyPgQDRzYVlhEVhUEUtAEpOrmujPwWWhyIRQYqlI9Z0/oW7ZMmBXG32uomgvJNq7xy8Ift+FHXM+TQwniy/nFgmv5ag==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uxSTsRKqgUVsgkgh4BQEl0/7FLTIf6qC6zpWhEii72M=;
- b=Rvf4Qnw1Q84xthXk6nHoHO+sH0xi0ezre9QtjXK2imFj57GquWl2zAraLvJd9Iu9A3FepryL+KjcD5N/32HHW7GYDTQyeqXW+HT60FblijDH818zfx6nXnvW4ui9dMmAZ/fUz/tzJcqqLgAgiP41D0DPyrIeyyFfgwuOMhDMFNYrv5oa2uD/Bsr26Cz0wfW+ASC78hwgkKbZYkOohRIkDsItxu9Y3Zff/xJsfvvp/aWnMztR1FIWJCq5gycOgc1RR0UEn0AeU97loOHHsU6MR+mAFhqEZzIQ1O0jcKA32aqPZfP/UbF4QIInZxUZmuULBqhBw1xaIOHyEKAmhh3E8g==
+ bh=VVW+GbofWaZBUtMnNDbE6cMaJHkwQlGBmUD9e5kWN+8=;
+ b=QIJTVGb9hWNYOWo6Aijzx97zTb9lhINn4jl2f7gWcNNSHZfKHVpvMPepevDF9DAYNzQGJfCCl/LRCE6FtbFkLIPn0225NnnbMOtvVkj3Y8VM2ZlJJG93RtSy945HgAPcImlOJAN0DGYgODehxUy0D2uQmyzx0PwBaOwL8R3eFVeRj9PonP6Hcaup2hBee+3J0ZrgOTG2SHJzBKQ/31q0nL0fu6UEXnWvyoGmnCEvChA+Mcl+pzgw/a9zQW/W1kI6hkr1btUOc+A3kxv5TYpkosXCj0EvCg3CIkJ+CehfAyofpAyWp32POaJgVNDmBi9if9MVf8aFYKospEVaxr/KCA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.160) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -28,18 +28,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uxSTsRKqgUVsgkgh4BQEl0/7FLTIf6qC6zpWhEii72M=;
- b=e2z4/Y2/EKybQqkVUtcPkKrstshgoy2MAmhK/+mFcmc9BAXHySJHWcnIBYtbLLGKIguuZEJsxD7OJrID+kFC2GvEX4Xq+SlR6z/DBiOzaILzMFKo0QJxOM1uvSahORunZurJWItG4ytAi8reQcRLpDKw+9hLbGu6Je58xePuO2fJt5xU/8tD5EbdhL6rodg+4zv/pbRBL3ZBr/1dB8haF0IrCtsEVgkj9fpAbgVY40b2/ORpDRiVhU43Az/Kg5o/nsLkLKG0mRSUAxaZgfLQ7skae19JDeWF0QvlhcDqj+VplFFbMPwM7D8OTQ3iq6XT+fb0BDTNSjlvlJYk8dPPlA==
-Received: from DS7PR03CA0206.namprd03.prod.outlook.com (2603:10b6:5:3b6::31)
- by BL1PR12MB5946.namprd12.prod.outlook.com (2603:10b6:208:399::8) with
+ bh=VVW+GbofWaZBUtMnNDbE6cMaJHkwQlGBmUD9e5kWN+8=;
+ b=lJdP80FPrVaN/3dqc2QD5OmVL8R55DRpDzEgmEikSi6cfTwzS6Dplf6L/cqT5e3scp2630cuGTnMqbItTOXtHNd4oJax6njikhQIjYfH2I7BPQJFfW5CXZeTG0cLRZute6/frgI/I/voPeuKcbxEdbvIKnERB+e7OMzVgG7+JiOR80UYlseJxsHIvLlBMzyaRCiUyV9OI8wQGmCEWnvBZ1SlXnsVrtsvl2cUXsSN3JFe9qIp3NmSosOLBaizoFIDKu2eKwvV3zlCUBS7vHPbzVF9TUsQcwhau3lb6PpS7tTbHQocXYjQi63Wt/KIpcqFGbBhSPnJ1bBKRQE1iKqyXw==
+Received: from DM6PR07CA0068.namprd07.prod.outlook.com (2603:10b6:5:74::45) by
+ PH8PR12MB6961.namprd12.prod.outlook.com (2603:10b6:510:1bc::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.31; Thu, 27 Oct
- 2022 22:00:43 +0000
-Received: from DM6NAM11FT026.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3b6:cafe::57) by DS7PR03CA0206.outlook.office365.com
- (2603:10b6:5:3b6::31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.15 via Frontend
- Transport; Thu, 27 Oct 2022 22:00:43 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.21; Thu, 27 Oct
+ 2022 22:00:47 +0000
+Received: from DM6NAM11FT013.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:74:cafe::36) by DM6PR07CA0068.outlook.office365.com
+ (2603:10b6:5:74::45) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.28 via Frontend
+ Transport; Thu, 27 Oct 2022 22:00:47 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -47,29 +47,29 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.117.160 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
 Received: from mail.nvidia.com (216.228.117.160) by
- DM6NAM11FT026.mail.protection.outlook.com (10.13.172.161) with Microsoft SMTP
+ DM6NAM11FT013.mail.protection.outlook.com (10.13.173.142) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5769.14 via Frontend Transport; Thu, 27 Oct 2022 22:00:42 +0000
+ 15.20.5769.14 via Frontend Transport; Thu, 27 Oct 2022 22:00:46 +0000
 Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
  (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Thu, 27 Oct
- 2022 15:00:26 -0700
+ 2022 15:00:30 -0700
 Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail201.nvidia.com
  (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Thu, 27 Oct
- 2022 15:00:25 -0700
+ 2022 15:00:29 -0700
 Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.10)
  with Microsoft SMTP Server id 15.2.986.29 via Frontend Transport; Thu, 27 Oct
- 2022 15:00:25 -0700
+ 2022 15:00:28 -0700
 From:   David Thompson <davthompson@nvidia.com>
 To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <pabeni@redhat.com>
 CC:     <netdev@vger.kernel.org>, <cai.huoqing@linux.dev>, <brgl@bgdev.pl>,
         <limings@nvidia.com>, David Thompson <davthompson@nvidia.com>,
         Asmaa Mnebhi <asmaa@nvidia.com>
-Subject: [PATCH net-next v1 2/4] mlxbf_gige: support 10M/100M/1G speeds on BlueField-3
-Date:   Thu, 27 Oct 2022 18:00:11 -0400
-Message-ID: <20221027220013.24276-3-davthompson@nvidia.com>
+Subject: [PATCH net-next v1 3/4] mlxbf_gige: add BlueField-3 Serdes configuration
+Date:   Thu, 27 Oct 2022 18:00:12 -0400
+Message-ID: <20221027220013.24276-4-davthompson@nvidia.com>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20221027220013.24276-1-davthompson@nvidia.com>
 References: <20221027220013.24276-1-davthompson@nvidia.com>
@@ -78,23 +78,23 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT026:EE_|BL1PR12MB5946:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2f9e9d21-9663-4863-7214-08dab866b16e
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT013:EE_|PH8PR12MB6961:EE_
+X-MS-Office365-Filtering-Correlation-Id: c87b93c4-acda-4389-6578-08dab866b3c6
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bb/f1e1ztJQ1mP984aXdCLE4oUm8YZjQPk8wTFomW4JkGA1pXxLqrXMGr2VVRabsnsLiXPE+8jgCxgSU0GGPiSO77tsjj/oWtj9pRDgwrl16Q/YDIMxQIdTrQYTMOBrgdq1djE5Qs+aEvm1pjC/u8k2Usj2zgRzGpLSfmNbQDTtYB6r6YIFKchCeHnxijDvNgvLrjzgOFvnyDMLpMMhy/aVgOncFHg67j8dCz0xphCYHseANG1+LjaXsALvemGIu+RoUF+ZaZvsitsOh/IBsDv9NRVrC/gEV/aUrqXHK0ke8KGg67hyFwdDdvPUq7vhjZzHZ/sPgNFag7TRFCY/zUw1uWZu7ymLcMU6wkpEJu/NQRmoglpzZV1fKNJ3H8N8BA/UpUuAoywwGOeTO5XdXAsYEPuzYu5SL8AK5VV5zQxQa7YsVKi2pq6KJFlWSw289Q4YFV6sVJuT3a4SHQvlM9eXmZ8juwZ787+8rAecfMT0+Jao0FCInaHZ9s56+SR/4i3NPf/xCMR7yVqxkKPZpdq/l47pIDuS5sd5PkZ4Pe3x1MKsGgmwiP8+UzWQKpKXGERNwlSue3LYspBC545LSCEOfY7KupDcNvsm/MSy1pp2f0RjBjzm0pSpj4fiEJlDyu6cnZ+nhvIZVgsM8lh92nrCKAYxcCnEQ2dnpKPXrh+nY/2eq9MCmN4/NeB+enqWNAD8v5fBQKFBgpWTDbgFut4/Ibz1XK94+fUo21LD/SEtpRM1A2o2YxncNj7g0TIjyrT/MiL9AK6AsD9E839t9DQ==
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(396003)(136003)(346002)(376002)(39860400002)(451199015)(36840700001)(46966006)(40470700004)(36756003)(26005)(41300700001)(40460700003)(5660300002)(86362001)(83380400001)(47076005)(478600001)(426003)(40480700001)(6666004)(107886003)(82310400005)(7696005)(2616005)(336012)(1076003)(186003)(7636003)(356005)(82740400003)(8676002)(4326008)(70206006)(70586007)(36860700001)(316002)(54906003)(110136005)(8936002)(2906002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Fk2mnzOwrYyULjhqSKVpvfJMZg9t0ac0QFdpZGYvOCXkAy45xfXJzQvNoAG87KTnrIGKNaGtkBSnFazorr7rXQyfVciA/jZlnjWAFz0xbBT2jWElmQXxHuiD5vs9kU4ue1l9vgI6slsfJtR8d0/Xodqziyu8OAuPMQIBzpoSJpj7yc/tDW/Xyqd26lgA3uq6WB1iTKkz3VdIVkGwxn5LBknZNFgAST6jVBVSCG/uPx5Dj98Tdx5q+aTPhDytmL3oFXU1qUVny1Rc1VqrZ+bLrcWA8I/8Iui+4utFBAaNVMr5XMsxK9hNDlOfZ7VbwMmLDEjZVQXYPDe8kA6gStXHhmbua5RRRXMz9kvCB76OorFjDlLxoZ4Gccde6sOetoXqdLTlSWDHLGY/DafN0qBLPtBG0Tw5d+34O3nhQYSMr9t+9M63nyspbB4/G4PcQL62lmtaayZ0Ldmuueqc1el6yFAgHofN2u2BiZO3NtrqgDzNdsuwAUyHQZVRGnVD9LfC/WlKMTjSBjTLkvfYNmBpltymODH0svfI3M4p3dN65JmGBua+CPWiMCQ4FuJtSQn8JpgqMomdlO8wKXadioz98R3NSUGYQ3F6hpwf75xxKfx2SGB4HjlaVvUjJvvxtKb2pGO7zis7ArGoX8XcIjnmO4kzF0LyeGHPaefs7p+22XuqClBtJKg8QR98q6VTgmAixhKy09uzha67U/O+0qN1RTa8ktdquYGY8/MHB7GnziXIYKvAQ/DyRpM0rA69nUonR0r2cz9L24C7Sg4pWqVAvZgiEHz61R7oEVwi6y8DonXyOXVbO0YYJGEpv3SRYsgaJgQegtPlytgWzDedlzN5+A==
+X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(346002)(376002)(136003)(396003)(451199015)(40470700004)(36840700001)(46966006)(336012)(47076005)(83380400001)(356005)(36756003)(70586007)(478600001)(426003)(70206006)(7636003)(86362001)(7696005)(4326008)(8676002)(186003)(40480700001)(1076003)(82310400005)(82740400003)(41300700001)(54906003)(110136005)(40460700003)(2906002)(26005)(36860700001)(2616005)(316002)(107886003)(6666004)(5660300002)(8936002)(30864003)(579004)(559001)(414714003)(473944003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Oct 2022 22:00:42.7608
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Oct 2022 22:00:46.6926
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2f9e9d21-9663-4863-7214-08dab866b16e
+X-MS-Exchange-CrossTenant-Network-Message-Id: c87b93c4-acda-4389-6578-08dab866b3c6
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT026.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT013.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5946
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6961
 X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -105,232 +105,1829 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The BlueField-3 OOB interface supports 10Mbps, 100Mbps, and 1Gbps speeds.
-The external PHY is responsible for autonegotiating the speed with the
-link partner. Once the autonegotiation is done, the BlueField PLU needs
-to be configured accordingly.
+The BlueField-3 out-of-band Ethernet interface requires
+SerDes configuration. There are two aspects to this:
 
-This patch does two things:
-1) Initialize the advertised control flow/duplex/speed in the probe
-   based on the BlueField SoC generation (2 or 3)
-2) Adjust the PLU speed config in the PHY interrupt handler
+Configuration of PLL:
+    1) Initialize UPHY registers to values dependent on p1clk clock
+    2) Load PLL best known values via the gateway register
+    3) Set the fuses to tune up the SerDes voltage
+    4) Lock the PLL
+    5) Get the lanes out of functional reset.
+    6) Configure the UPHY microcontroller via gateway reads/writes
+
+Configuration of lanes:
+    1) Configure and open TX lanes
+    2) Configure and open RX lanes
 
 Signed-off-by: David Thompson <davthompson@nvidia.com>
 Signed-off-by: Asmaa Mnebhi <asmaa@nvidia.com>
 ---
- .../ethernet/mellanox/mlxbf_gige/mlxbf_gige.h |   8 ++
- .../mellanox/mlxbf_gige/mlxbf_gige_main.c     | 109 +++++++++++++++---
- .../mellanox/mlxbf_gige/mlxbf_gige_regs.h     |  21 ++++
- 3 files changed, 123 insertions(+), 15 deletions(-)
+ .../net/ethernet/mellanox/mlxbf_gige/Makefile |    3 +-
+ .../ethernet/mellanox/mlxbf_gige/mlxbf_gige.h |    4 +-
+ .../mellanox/mlxbf_gige/mlxbf_gige_main.c     |   57 +-
+ .../mellanox/mlxbf_gige/mlxbf_gige_mdio.c     |   37 -
+ .../mellanox/mlxbf_gige/mlxbf_gige_uphy.c     | 1191 +++++++++++++++++
+ .../mellanox/mlxbf_gige/mlxbf_gige_uphy.h     |  398 ++++++
+ 6 files changed, 1646 insertions(+), 44 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_uphy.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_uphy.h
 
+diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/Makefile b/drivers/net/ethernet/mellanox/mlxbf_gige/Makefile
+index a97c2bef846b..524af17cad9c 100644
+--- a/drivers/net/ethernet/mellanox/mlxbf_gige/Makefile
++++ b/drivers/net/ethernet/mellanox/mlxbf_gige/Makefile
+@@ -7,4 +7,5 @@ mlxbf_gige-y := mlxbf_gige_ethtool.o \
+ 		mlxbf_gige_main.o \
+ 		mlxbf_gige_mdio.o \
+ 		mlxbf_gige_rx.o   \
+-		mlxbf_gige_tx.o
++		mlxbf_gige_tx.o   \
++		mlxbf_gige_uphy.o
 diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige.h b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige.h
-index 421a0b1b766c..a453b9cd9033 100644
+index a453b9cd9033..e9bd09ee0b1f 100644
 --- a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige.h
 +++ b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige.h
-@@ -14,6 +14,7 @@
- #include <linux/irqreturn.h>
- #include <linux/netdevice.h>
- #include <linux/irq.h>
-+#include <linux/phy.h>
- 
- /* The silicon design supports a maximum RX ring size of
-  * 32K entries. Based on current testing this maximum size
-@@ -84,6 +85,12 @@ struct mlxbf_gige_mdio_gw {
- 	struct mlxbf_gige_reg_param st1;
+@@ -100,6 +100,7 @@ struct mlxbf_gige {
+ 	struct platform_device *pdev;
+ 	void __iomem *mdio_io;
+ 	void __iomem *clk_io;
++	void __iomem *fuse_gw_io;
+ 	struct mii_bus *mdiobus;
+ 	spinlock_t lock;      /* for packet processing indices */
+ 	u16 rx_q_entries;
+@@ -166,7 +167,8 @@ enum mlxbf_gige_res {
+ 	MLXBF_GIGE_RES_GPIO0,
+ 	MLXBF_GIGE_RES_LLU,
+ 	MLXBF_GIGE_RES_PLU,
+-	MLXBF_GIGE_RES_CLK
++	MLXBF_GIGE_RES_CLK,
++	MLXBF_GIGE_RES_FUSE_GW
  };
  
-+struct mlxbf_gige_link_cfg {
-+	void (*set_phy_link_mode)(struct phy_device *phydev);
-+	void (*adjust_link)(struct net_device *netdev);
-+	phy_interface_t phy_mode;
-+};
-+
- struct mlxbf_gige {
- 	void __iomem *base;
- 	void __iomem *llu_base;
-@@ -121,6 +128,7 @@ struct mlxbf_gige {
- 	struct mlxbf_gige_stats stats;
- 	u8 hw_version;
- 	struct mlxbf_gige_mdio_gw *mdio_gw;
-+	int prev_speed;
- };
- 
- /* Rx Work Queue Element definitions */
+ /* Version of register data returned by mlxbf_gige_get_regs() */
 diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
-index e08c07e914c1..ddc0db54d097 100644
+index ddc0db54d097..16a404a49d28 100644
 --- a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
 +++ b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
-@@ -263,13 +263,103 @@ static const struct net_device_ops mlxbf_gige_netdev_ops = {
- 	.ndo_get_stats64        = mlxbf_gige_get_stats64,
- };
+@@ -18,6 +18,25 @@
  
--static void mlxbf_gige_adjust_link(struct net_device *netdev)
-+static void mlxbf_gige_bf2_adjust_link(struct net_device *netdev)
- {
- 	struct phy_device *phydev = netdev->phydev;
- 
- 	phy_print_status(phydev);
- }
- 
-+static void mlxbf_gige_bf3_adjust_link(struct net_device *netdev)
-+{
-+	struct mlxbf_gige *priv = netdev_priv(netdev);
-+	struct phy_device *phydev = netdev->phydev;
-+	unsigned long flags;
-+	u8 sgmii_mode;
-+	u16 ipg_size;
-+	u32 val;
+ #include "mlxbf_gige.h"
+ #include "mlxbf_gige_regs.h"
++#include "mlxbf_gige_uphy.h"
 +
-+	spin_lock_irqsave(&priv->lock, flags);
-+	if (phydev->link && phydev->speed != priv->prev_speed) {
-+		switch (phydev->speed) {
-+		case 1000:
-+			ipg_size = MLXBF_GIGE_1G_IPG_SIZE;
-+			sgmii_mode = MLXBF_GIGE_1G_SGMII_MODE;
-+			break;
-+		case 100:
-+			ipg_size = MLXBF_GIGE_100M_IPG_SIZE;
-+			sgmii_mode = MLXBF_GIGE_100M_SGMII_MODE;
-+			break;
-+		case 10:
-+			ipg_size = MLXBF_GIGE_10M_IPG_SIZE;
-+			sgmii_mode = MLXBF_GIGE_10M_SGMII_MODE;
-+			break;
-+		default:
-+			spin_unlock_irqrestore(&priv->lock, flags);
-+			return;
-+		}
++#define MLXBF_GIGE_BF2_COREPLL_ADDR 0x02800c30
++#define MLXBF_GIGE_BF2_COREPLL_SIZE 0x0000000c
++#define MLXBF_GIGE_BF3_COREPLL_ADDR 0x13409824
++#define MLXBF_GIGE_BF3_COREPLL_SIZE 0x00000020
 +
-+		val = readl(priv->plu_base + MLXBF_GIGE_PLU_TX_REG0);
-+		val &= ~(MLXBF_GIGE_PLU_TX_IPG_SIZE_MASK | MLXBF_GIGE_PLU_TX_SGMII_MODE_MASK);
-+		val |= FIELD_PREP(MLXBF_GIGE_PLU_TX_IPG_SIZE_MASK, ipg_size);
-+		val |= FIELD_PREP(MLXBF_GIGE_PLU_TX_SGMII_MODE_MASK, sgmii_mode);
-+		writel(val, priv->plu_base + MLXBF_GIGE_PLU_TX_REG0);
-+
-+		val = readl(priv->plu_base + MLXBF_GIGE_PLU_RX_REG0);
-+		val &= ~MLXBF_GIGE_PLU_RX_SGMII_MODE_MASK;
-+		val |= FIELD_PREP(MLXBF_GIGE_PLU_RX_SGMII_MODE_MASK, sgmii_mode);
-+		writel(val, priv->plu_base + MLXBF_GIGE_PLU_RX_REG0);
-+
-+		priv->prev_speed = phydev->speed;
-+	}
-+	spin_unlock_irqrestore(&priv->lock, flags);
-+
-+	phy_print_status(phydev);
-+}
-+
-+static void mlxbf_gige_bf2_set_phy_link_mode(struct phy_device *phydev)
-+{
-+	/* MAC only supports 1000T full duplex mode */
-+	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
-+	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_100baseT_Full_BIT);
-+	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_100baseT_Half_BIT);
-+	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_10baseT_Full_BIT);
-+	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_10baseT_Half_BIT);
-+
-+	/* Only symmetric pause with flow control enabled is supported so no
-+	 * need to negotiate pause.
-+	 */
-+	linkmode_clear_bit(ETHTOOL_LINK_MODE_Pause_BIT, phydev->advertising);
-+	linkmode_clear_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, phydev->advertising);
-+}
-+
-+static void mlxbf_gige_bf3_set_phy_link_mode(struct phy_device *phydev)
-+{
-+	/* MAC only supports full duplex mode */
-+	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
-+	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_100baseT_Half_BIT);
-+	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_10baseT_Half_BIT);
-+
-+	/* Only symmetric pause with flow control enabled is supported so no
-+	 * need to negotiate pause.
-+	 */
-+	linkmode_clear_bit(ETHTOOL_LINK_MODE_Pause_BIT, phydev->advertising);
-+	linkmode_clear_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, phydev->advertising);
-+}
-+
-+static struct mlxbf_gige_link_cfg mlxbf_gige_link_cfgs[] = {
++static struct resource corepll_params[] = {
 +	[MLXBF_GIGE_VERSION_BF2] = {
-+		.set_phy_link_mode = mlxbf_gige_bf2_set_phy_link_mode,
-+		.adjust_link = mlxbf_gige_bf2_adjust_link,
-+		.phy_mode = PHY_INTERFACE_MODE_GMII
++		.start = MLXBF_GIGE_BF2_COREPLL_ADDR,
++		.end = MLXBF_GIGE_BF2_COREPLL_ADDR + MLXBF_GIGE_BF2_COREPLL_SIZE - 1,
++		.name = "COREPLL_RES"
 +	},
 +	[MLXBF_GIGE_VERSION_BF3] = {
-+		.set_phy_link_mode = mlxbf_gige_bf3_set_phy_link_mode,
-+		.adjust_link = mlxbf_gige_bf3_adjust_link,
-+		.phy_mode = PHY_INTERFACE_MODE_SGMII
++		.start = MLXBF_GIGE_BF3_COREPLL_ADDR,
++		.end = MLXBF_GIGE_BF3_COREPLL_ADDR + MLXBF_GIGE_BF3_COREPLL_SIZE - 1,
++		.name = "COREPLL_RES"
 +	}
 +};
-+
- static int mlxbf_gige_probe(struct platform_device *pdev)
+ 
+ /* Allocate SKB whose payload pointer aligns with the Bluefield
+  * hardware DMA limitation, i.e. DMA operation can't cross
+@@ -364,11 +383,14 @@ static int mlxbf_gige_probe(struct platform_device *pdev)
  {
  	struct phy_device *phydev;
-@@ -359,25 +449,14 @@ static int mlxbf_gige_probe(struct platform_device *pdev)
- 	phydev->irq = phy_irq;
+ 	struct net_device *netdev;
++	struct resource *clk_res;
+ 	struct mlxbf_gige *priv;
+ 	void __iomem *llu_base;
+ 	void __iomem *plu_base;
++	void __iomem *clk_io;
+ 	void __iomem *base;
+ 	int addr, phy_irq;
++	u64 soc_version;
+ 	u64 control;
+ 	int err;
  
- 	err = phy_connect_direct(netdev, phydev,
--				 mlxbf_gige_adjust_link,
--				 PHY_INTERFACE_MODE_GMII);
-+				 mlxbf_gige_link_cfgs[priv->hw_version].adjust_link,
-+				 mlxbf_gige_link_cfgs[priv->hw_version].phy_mode);
- 	if (err) {
- 		dev_err(&pdev->dev, "Could not attach to PHY\n");
- 		goto out;
- 	}
+@@ -376,6 +398,25 @@ static int mlxbf_gige_probe(struct platform_device *pdev)
+ 	if (IS_ERR(base))
+ 		return PTR_ERR(base);
  
--	/* MAC only supports 1000T full duplex mode */
--	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
--	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_100baseT_Full_BIT);
--	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_100baseT_Half_BIT);
--	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_10baseT_Full_BIT);
--	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_10baseT_Half_BIT);
++	soc_version = readq(base + MLXBF_GIGE_VERSION);
++	if (soc_version > MLXBF_GIGE_VERSION_BF3)
++		return -ENODEV;
++
++	/* clk resource shared with other drivers so cannot use
++	 * devm_platform_ioremap_resource
++	 */
++	clk_res = platform_get_resource(pdev, IORESOURCE_MEM, MLXBF_GIGE_RES_CLK);
++	if (!clk_res) {
++		/* For backward compatibility with older ACPI tables, also keep
++		 * CLK resource internal to the driver.
++		 */
++		clk_res = &corepll_params[soc_version];
++	}
++
++	clk_io = devm_ioremap(&pdev->dev, clk_res->start, resource_size(clk_res));
++	if (!clk_io)
++		return -ENOMEM;
++
+ 	llu_base = devm_platform_ioremap_resource(pdev, MLXBF_GIGE_RES_LLU);
+ 	if (IS_ERR(llu_base))
+ 		return PTR_ERR(llu_base);
+@@ -405,17 +446,23 @@ static int mlxbf_gige_probe(struct platform_device *pdev)
+ 
+ 	spin_lock_init(&priv->lock);
+ 
+-	priv->hw_version = readq(base + MLXBF_GIGE_VERSION);
++	priv->clk_io = clk_io;
++	priv->base = base;
++	priv->llu_base = llu_base;
++	priv->plu_base = plu_base;
++	priv->hw_version = soc_version;
++
++	if (priv->hw_version == MLXBF_GIGE_VERSION_BF3) {
++		err = mlxbf_gige_config_uphy(priv);
++		if (err)
++			return err;
++	}
+ 
+ 	/* Attach MDIO device */
+ 	err = mlxbf_gige_mdio_probe(pdev, priv);
+ 	if (err)
+ 		return err;
+ 
+-	priv->base = base;
+-	priv->llu_base = llu_base;
+-	priv->plu_base = plu_base;
 -
--	/* Only symmetric pause with flow control enabled is supported so no
--	 * need to negotiate pause.
+ 	priv->rx_q_entries = MLXBF_GIGE_DEFAULT_RXQ_SZ;
+ 	priv->tx_q_entries = MLXBF_GIGE_DEFAULT_TXQ_SZ;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_mdio.c b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_mdio.c
+index 7ac06fd31011..043edf57e36b 100644
+--- a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_mdio.c
++++ b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_mdio.c
+@@ -113,24 +113,6 @@ static struct mlxbf_gige_mdio_gw mlxbf_gige_mdio_gw_t[] = {
+ /* Busy bit is set by software and cleared by hardware */
+ #define MLXBF_GIGE_MDIO_SET_BUSY	0x1
+ 
+-#define MLXBF_GIGE_BF2_COREPLL_ADDR 0x02800c30
+-#define MLXBF_GIGE_BF2_COREPLL_SIZE 0x0000000c
+-#define MLXBF_GIGE_BF3_COREPLL_ADDR 0x13409824
+-#define MLXBF_GIGE_BF3_COREPLL_SIZE 0x00000010
+-
+-static struct resource corepll_params[] = {
+-	[MLXBF_GIGE_VERSION_BF2] = {
+-		.start = MLXBF_GIGE_BF2_COREPLL_ADDR,
+-		.end = MLXBF_GIGE_BF2_COREPLL_ADDR + MLXBF_GIGE_BF2_COREPLL_SIZE - 1,
+-		.name = "COREPLL_RES"
+-	},
+-	[MLXBF_GIGE_VERSION_BF3] = {
+-		.start = MLXBF_GIGE_BF3_COREPLL_ADDR,
+-		.end = MLXBF_GIGE_BF3_COREPLL_ADDR + MLXBF_GIGE_BF3_COREPLL_SIZE - 1,
+-		.name = "COREPLL_RES"
+-	}
+-};
+-
+ /* Returns core clock i1clk in Hz */
+ static u64 calculate_i1clk(struct mlxbf_gige *priv)
+ {
+@@ -294,31 +276,12 @@ static void mlxbf_gige_mdio_cfg(struct mlxbf_gige *priv)
+ int mlxbf_gige_mdio_probe(struct platform_device *pdev, struct mlxbf_gige *priv)
+ {
+ 	struct device *dev = &pdev->dev;
+-	struct resource *res;
+ 	int ret;
+ 
+-	if (priv->hw_version > MLXBF_GIGE_VERSION_BF3)
+-		return -ENODEV;
+-
+ 	priv->mdio_io = devm_platform_ioremap_resource(pdev, MLXBF_GIGE_RES_MDIO9);
+ 	if (IS_ERR(priv->mdio_io))
+ 		return PTR_ERR(priv->mdio_io);
+ 
+-	/* clk resource shared with other drivers so cannot use
+-	 * devm_platform_ioremap_resource
 -	 */
--	linkmode_clear_bit(ETHTOOL_LINK_MODE_Pause_BIT, phydev->advertising);
--	linkmode_clear_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, phydev->advertising);
-+	mlxbf_gige_link_cfgs[priv->hw_version].set_phy_link_mode(phydev);
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, MLXBF_GIGE_RES_CLK);
+-	if (!res) {
+-		/* For backward compatibility with older ACPI tables, also keep
+-		 * CLK resource internal to the driver.
+-		 */
+-		res = &corepll_params[priv->hw_version];
+-	}
+-
+-	priv->clk_io = devm_ioremap(dev, res->start, resource_size(res));
+-	if (!priv->clk_io)
+-		return -ENOMEM;
+-
+ 	priv->mdio_gw = &mlxbf_gige_mdio_gw_t[priv->hw_version];
  
- 	/* Display information about attached PHY device */
- 	phy_attached_info(phydev);
-diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_regs.h b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_regs.h
-index 8d52dbef4adf..cd0973229c9b 100644
---- a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_regs.h
-+++ b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_regs.h
-@@ -8,6 +8,8 @@
- #ifndef __MLXBF_GIGE_REGS_H__
- #define __MLXBF_GIGE_REGS_H__
- 
+ 	mlxbf_gige_mdio_cfg(priv);
+diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_uphy.c b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_uphy.c
+new file mode 100644
+index 000000000000..9d64eb8861b0
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_uphy.c
+@@ -0,0 +1,1191 @@
++// SPDX-License-Identifier: GPL-2.0-only OR BSD-3-Clause
++
++/* UPHY support for Nvidia Gigabit Ethernet driver
++ *
++ * Copyright (C) 2022 NVIDIA CORPORATION & AFFILIATES
++ */
++
++#include <linux/bitfield.h>
++#include <linux/iopoll.h>
++#include <linux/platform_device.h>
++
++#include "mlxbf_gige.h"
++#include "mlxbf_gige_uphy.h"
++
++static const struct mlxbf_gige_uphy_cfg_reg
++mlxbf_gige_clm_init[] = {
++	{.addr = 0x001, .wdata = 0x0105},
++	{.addr = 0x008, .wdata = 0x0001},
++	{.addr = 0x00B, .wdata = 0x8420},
++	{.addr = 0x00E, .wdata = 0x0110},
++	{.addr = 0x010, .wdata = 0x3010},
++	{.addr = 0x027, .wdata = 0x0104},
++	{.addr = 0x02F, .wdata = 0x09EA},
++	{.addr = 0x055, .wdata = 0x0008},
++	{.addr = 0x058, .wdata = 0x0088},
++	{.addr = 0x072, .wdata = 0x3222},
++	{.addr = 0x073, .wdata = 0x7654},
++	{.addr = 0x074, .wdata = 0xBA98},
++	{.addr = 0x075, .wdata = 0xDDDC}
++};
++
++#define MLXBF_GIGE_UPHY_CLM_INIT_NUM_ENTRIES \
++	(sizeof(mlxbf_gige_clm_init) / sizeof(struct mlxbf_gige_uphy_cfg_reg))
++
++static const struct mlxbf_gige_uphy_cfg_reg
++mlxbf_gige_dlm_imem_init[] = {
++	{.addr = 0x39C, .wdata = 0x0000},
++	{.addr = 0x39D, .wdata = 0x0095},
++	{.addr = 0x3BF, .wdata = 0x9027},
++	{.addr = 0x39E, .wdata = 0xA8F6},
++	{.addr = 0x39F, .wdata = 0xAA10},
++	{.addr = 0x3A0, .wdata = 0xA8D4},
++	{.addr = 0x3A1, .wdata = 0xA7AE},
++	{.addr = 0x3A2, .wdata = 0xA7CC},
++	{.addr = 0x3A3, .wdata = 0x9BE4},
++	{.addr = 0x3A4, .wdata = 0xB2D2},
++	{.addr = 0x3A5, .wdata = 0xB1F2},
++	{.addr = 0x3AE, .wdata = 0x7C38},
++	{.addr = 0x3AF, .wdata = 0x7C4A},
++	{.addr = 0x3B0, .wdata = 0x7C25},
++	{.addr = 0x3B1, .wdata = 0x7C74},
++	{.addr = 0x3B2, .wdata = 0x3C00},
++	{.addr = 0x3B3, .wdata = 0x3C11},
++	{.addr = 0x3B4, .wdata = 0x3C5D},
++	{.addr = 0x3B5, .wdata = 0x3C5D}
++};
++
++#define MLXBF_GIGE_UPHY_DLM_IMEM_INIT_NUM_ENTRIES \
++	(sizeof(mlxbf_gige_dlm_imem_init) / sizeof(struct mlxbf_gige_uphy_cfg_reg))
++
++static const struct mlxbf_gige_uphy_cfg_reg
++mlxbf_gige_dlm_seq_imem_wr_en_init = {
++	.addr = 0x39A, .wdata = 0x0001
++};
++
++static const struct mlxbf_gige_uphy_cfg_reg
++mlxbf_gige_dlm_seq_imem_wr_dis_init = {
++	.addr = 0x39A, .wdata = 0x0000
++};
++
++static const struct mlxbf_gige_uphy_cfg_reg
++mlxbf_gige_dlm_imem_data[] = {
++	{ /* .iaddr = 0x0000 */ .wdata = 0x02DF},
++	{ /* .iaddr = 0x0001 */ .wdata = 0xEEC0},
++	{ /* .iaddr = 0x0002 */ .wdata = 0xD508},
++	{ /* .iaddr = 0x0003 */ .wdata = 0x022F},
++	{ /* .iaddr = 0x0004 */ .wdata = 0xC401},
++	{ /* .iaddr = 0x0005 */ .wdata = 0xD341},
++	{ /* .iaddr = 0x0006 */ .wdata = 0xC402},
++	{ /* .iaddr = 0x0007 */ .wdata = 0xD342},
++	{ /* .iaddr = 0x0008 */ .wdata = 0xC403},
++	{ /* .iaddr = 0x0009 */ .wdata = 0xD343},
++	{ /* .iaddr = 0x000A */ .wdata = 0xC404},
++	{ /* .iaddr = 0x000B */ .wdata = 0xD344},
++	{ /* .iaddr = 0x000C */ .wdata = 0xC417},
++	{ /* .iaddr = 0x000D */ .wdata = 0xD355},
++	{ /* .iaddr = 0x000E */ .wdata = 0xC418},
++	{ /* .iaddr = 0x000F */ .wdata = 0xD356},
++	{ /* .iaddr = 0x0010 */ .wdata = 0xF021},
++	{ /* .iaddr = 0x0011 */ .wdata = 0xF003},
++	{ /* .iaddr = 0x0012 */ .wdata = 0xE224},
++	{ /* .iaddr = 0x0013 */ .wdata = 0x0DA9},
++	{ /* .iaddr = 0x0014 */ .wdata = 0xF003},
++	{ /* .iaddr = 0x0015 */ .wdata = 0xE21C},
++	{ /* .iaddr = 0x0016 */ .wdata = 0xEEC1},
++	{ /* .iaddr = 0x0017 */ .wdata = 0x0D87},
++	{ /* .iaddr = 0x0018 */ .wdata = 0xEEC1},
++	{ /* .iaddr = 0x0019 */ .wdata = 0xE806},
++	{ /* .iaddr = 0x001A */ .wdata = 0xC3C5},
++	{ /* .iaddr = 0x001B */ .wdata = 0xD306},
++	{ /* .iaddr = 0x001C */ .wdata = 0xEEDF},
++	{ /* .iaddr = 0x001D */ .wdata = 0xE806},
++	{ /* .iaddr = 0x001E */ .wdata = 0xC3C6},
++	{ /* .iaddr = 0x001F */ .wdata = 0xD306},
++	{ /* .iaddr = 0x0020 */ .wdata = 0xF002},
++	{ /* .iaddr = 0x0021 */ .wdata = 0xC3C8},
++	{ /* .iaddr = 0x0022 */ .wdata = 0x409A},
++	{ /* .iaddr = 0x0023 */ .wdata = 0xF021},
++	{ /* .iaddr = 0x0024 */ .wdata = 0xEEE0},
++	{ /* .iaddr = 0x0025 */ .wdata = 0xEEC0},
++	{ /* .iaddr = 0x0026 */ .wdata = 0xD70D},
++	{ /* .iaddr = 0x0027 */ .wdata = 0xC305},
++	{ /* .iaddr = 0x0028 */ .wdata = 0xD328},
++	{ /* .iaddr = 0x0029 */ .wdata = 0xC300},
++	{ /* .iaddr = 0x002A */ .wdata = 0xD314},
++	{ /* .iaddr = 0x002B */ .wdata = 0xC301},
++	{ /* .iaddr = 0x002C */ .wdata = 0xD318},
++	{ /* .iaddr = 0x002D */ .wdata = 0xC303},
++	{ /* .iaddr = 0x002E */ .wdata = 0xD320},
++	{ /* .iaddr = 0x002F */ .wdata = 0xC302},
++	{ /* .iaddr = 0x0030 */ .wdata = 0xD31C},
++	{ /* .iaddr = 0x0031 */ .wdata = 0xC304},
++	{ /* .iaddr = 0x0032 */ .wdata = 0xD324},
++	{ /* .iaddr = 0x0033 */ .wdata = 0xC358},
++	{ /* .iaddr = 0x0034 */ .wdata = 0xD330},
++	{ /* .iaddr = 0x0035 */ .wdata = 0xC307},
++	{ /* .iaddr = 0x0036 */ .wdata = 0xD115},
++	{ /* .iaddr = 0x0037 */ .wdata = 0xF021},
++	{ /* .iaddr = 0x0038 */ .wdata = 0xD70D},
++	{ /* .iaddr = 0x0039 */ .wdata = 0xC305},
++	{ /* .iaddr = 0x003A */ .wdata = 0xD328},
++	{ /* .iaddr = 0x003B */ .wdata = 0xC300},
++	{ /* .iaddr = 0x003C */ .wdata = 0xD314},
++	{ /* .iaddr = 0x003D */ .wdata = 0xC301},
++	{ /* .iaddr = 0x003E */ .wdata = 0xD318},
++	{ /* .iaddr = 0x003F */ .wdata = 0xC303},
++	{ /* .iaddr = 0x0040 */ .wdata = 0xD320},
++	{ /* .iaddr = 0x0041 */ .wdata = 0xC302},
++	{ /* .iaddr = 0x0042 */ .wdata = 0xD31C},
++	{ /* .iaddr = 0x0043 */ .wdata = 0xC304},
++	{ /* .iaddr = 0x0044 */ .wdata = 0xD324},
++	{ /* .iaddr = 0x0045 */ .wdata = 0xC358},
++	{ /* .iaddr = 0x0046 */ .wdata = 0xD330},
++	{ /* .iaddr = 0x0047 */ .wdata = 0xC307},
++	{ /* .iaddr = 0x0048 */ .wdata = 0xD115},
++	{ /* .iaddr = 0x0049 */ .wdata = 0xF021},
++	{ /* .iaddr = 0x004A */ .wdata = 0xC70D},
++	{ /* .iaddr = 0x004B */ .wdata = 0xD70F},
++	{ /* .iaddr = 0x004C */ .wdata = 0xC328},
++	{ /* .iaddr = 0x004D */ .wdata = 0xD305},
++	{ /* .iaddr = 0x004E */ .wdata = 0xC314},
++	{ /* .iaddr = 0x004F */ .wdata = 0xD300},
++	{ /* .iaddr = 0x0050 */ .wdata = 0xC318},
++	{ /* .iaddr = 0x0051 */ .wdata = 0xD301},
++	{ /* .iaddr = 0x0052 */ .wdata = 0xC320},
++	{ /* .iaddr = 0x0053 */ .wdata = 0xD303},
++	{ /* .iaddr = 0x0054 */ .wdata = 0xC31C},
++	{ /* .iaddr = 0x0055 */ .wdata = 0xD302},
++	{ /* .iaddr = 0x0056 */ .wdata = 0xC324},
++	{ /* .iaddr = 0x0057 */ .wdata = 0xD304},
++	{ /* .iaddr = 0x0058 */ .wdata = 0xC330},
++	{ /* .iaddr = 0x0059 */ .wdata = 0xD358},
++	{ /* .iaddr = 0x005A */ .wdata = 0xC115},
++	{ /* .iaddr = 0x005B */ .wdata = 0xD307},
++	{ /* .iaddr = 0x005C */ .wdata = 0xF021},
++	{ /* .iaddr = 0x005D */ .wdata = 0x0249},
++	{ /* .iaddr = 0x005E */ .wdata = 0x0362},
++	{ /* .iaddr = 0x005F */ .wdata = 0x023D},
++	{ /* .iaddr = 0x0060 */ .wdata = 0xEEC1},
++	{ /* .iaddr = 0x0061 */ .wdata = 0x0369},
++	{ /* .iaddr = 0x0062 */ .wdata = 0xEEC1},
++	{ /* .iaddr = 0x0063 */ .wdata = 0x0CEA},
++	{ /* .iaddr = 0x0064 */ .wdata = 0xEEC2},
++	{ /* .iaddr = 0x0065 */ .wdata = 0xD701},
++	{ /* .iaddr = 0x0066 */ .wdata = 0x02C8},
++	{ /* .iaddr = 0x0067 */ .wdata = 0xC3C3},
++	{ /* .iaddr = 0x0068 */ .wdata = 0xD306},
++	{ /* .iaddr = 0x0069 */ .wdata = 0xC3C8},
++	{ /* .iaddr = 0x006A */ .wdata = 0x009A},
++	{ /* .iaddr = 0x006B */ .wdata = 0xC3D1},
++	{ /* .iaddr = 0x006C */ .wdata = 0xD309},
++	{ /* .iaddr = 0x006D */ .wdata = 0x0C46},
++	{ /* .iaddr = 0x006E */ .wdata = 0x0DE7},
++	{ /* .iaddr = 0x006F */ .wdata = 0xEEC0},
++	{ /* .iaddr = 0x0070 */ .wdata = 0xC3D9},
++	{ /* .iaddr = 0x0071 */ .wdata = 0x0DDE},
++	{ /* .iaddr = 0x0072 */ .wdata = 0x02D7},
++	{ /* .iaddr = 0x0073 */ .wdata = 0xF021},
++	{ /* .iaddr = 0x0074 */ .wdata = 0x1441},
++	{ /* .iaddr = 0x0075 */ .wdata = 0xF003},
++	{ /* .iaddr = 0x0076 */ .wdata = 0xC03F},
++	{ /* .iaddr = 0x0077 */ .wdata = 0xF704},
++	{ /* .iaddr = 0x0078 */ .wdata = 0xF009},
++	{ /* .iaddr = 0x0079 */ .wdata = 0xE21A},
++	{ /* .iaddr = 0x007A */ .wdata = 0xF002},
++	{ /* .iaddr = 0x007B */ .wdata = 0x0C52},
++	{ /* .iaddr = 0x007C */ .wdata = 0xE206},
++	{ /* .iaddr = 0x007D */ .wdata = 0xEEC1},
++	{ /* .iaddr = 0x007E */ .wdata = 0xD01A},
++	{ /* .iaddr = 0x007F */ .wdata = 0x3C5D},
++	{ /* .iaddr = 0x0080 */ .wdata = 0xEEC0},
++	{ /* .iaddr = 0x0081 */ .wdata = 0xD01A},
++	{ /* .iaddr = 0x0082 */ .wdata = 0x0E12},
++	{ /* .iaddr = 0x0083 */ .wdata = 0xEEC0},
++	{ /* .iaddr = 0x0084 */ .wdata = 0x13E1},
++	{ /* .iaddr = 0x0085 */ .wdata = 0x1441},
++	{ /* .iaddr = 0x0086 */ .wdata = 0xEEC1},
++	{ /* .iaddr = 0x0087 */ .wdata = 0xD70E},
++	{ /* .iaddr = 0x0088 */ .wdata = 0xD70F},
++	{ /* .iaddr = 0x0089 */ .wdata = 0xEEC0},
++	{ /* .iaddr = 0x008A */ .wdata = 0xD70E},
++	{ /* .iaddr = 0x008B */ .wdata = 0xC458},
++	{ /* .iaddr = 0x008C */ .wdata = 0x13BE},
++	{ /* .iaddr = 0x008D */ .wdata = 0xEEC0},
++	{ /* .iaddr = 0x008E */ .wdata = 0xF29B},
++	{ /* .iaddr = 0x008F */ .wdata = 0xE20A},
++	{ /* .iaddr = 0x0090 */ .wdata = 0xEEC1},
++	{ /* .iaddr = 0x0091 */ .wdata = 0xD01D},
++	{ /* .iaddr = 0x0092 */ .wdata = 0xEEC1},
++	{ /* .iaddr = 0x0093 */ .wdata = 0xD3FD},
++	{ /* .iaddr = 0x0094 */ .wdata = 0xF021}
++};
++
++#define MLXBF_GIGE_UPHY_DLM_IMEM_DATA_NUM_ENTRIES \
++	(sizeof(mlxbf_gige_dlm_imem_data) / sizeof(struct mlxbf_gige_uphy_cfg_reg))
++
++static const struct mlxbf_gige_uphy_cfg_reg
++mlxbf_gige_dlm_seq_imem_csum_en = {
++	.addr = 0x39A, .wdata = 0x0004
++};
++
++static const struct mlxbf_gige_uphy_cfg_reg
++mlxbf_gige_dlm_seq_imem_csum_dis = {
++	.addr = 0x39A, .wdata = 0x0000
++};
++
++static const struct mlxbf_gige_uphy_cfg_reg
++mlxbf_gige_dlm_seq_imem_bmap_clr[] = {
++	{.addr = 0x39E, .wdata = 0x0000},
++	{.addr = 0x39F, .wdata = 0x0000},
++	{.addr = 0x3A0, .wdata = 0x0000},
++	{.addr = 0x3A1, .wdata = 0x0000},
++	{.addr = 0x3A2, .wdata = 0x0000},
++	{.addr = 0x3A3, .wdata = 0x0000},
++	{.addr = 0x3A4, .wdata = 0x0000},
++	{.addr = 0x3A5, .wdata = 0x0000},
++	{.addr = 0x3A6, .wdata = 0x0000},
++	{.addr = 0x3A7, .wdata = 0x0000},
++	{.addr = 0x3A8, .wdata = 0x0000},
++	{.addr = 0x3A9, .wdata = 0x0000},
++	{.addr = 0x3AA, .wdata = 0x0000},
++	{.addr = 0x3AB, .wdata = 0x0000},
++	{.addr = 0x3AC, .wdata = 0x0000},
++	{.addr = 0x3AD, .wdata = 0x0000},
++	{.addr = 0x3AE, .wdata = 0x0000},
++	{.addr = 0x3AF, .wdata = 0x0000},
++	{.addr = 0x3B0, .wdata = 0x0000},
++	{.addr = 0x3B1, .wdata = 0x0000},
++	{.addr = 0x3B2, .wdata = 0x0000},
++	{.addr = 0x3B3, .wdata = 0x0000},
++	{.addr = 0x3B4, .wdata = 0x0000},
++	{.addr = 0x3B5, .wdata = 0x0000},
++	{.addr = 0x3B6, .wdata = 0x0000},
++	{.addr = 0x3B7, .wdata = 0x0000},
++	{.addr = 0x3B8, .wdata = 0x0000},
++	{.addr = 0x3B9, .wdata = 0x0000},
++	{.addr = 0x3BA, .wdata = 0x0000},
++	{.addr = 0x3BB, .wdata = 0x0000},
++	{.addr = 0x3BC, .wdata = 0x0000},
++	{.addr = 0x3BD, .wdata = 0x0000}
++};
++
++#define MLXBF_GIGE_DLM_SEQ_IMEM_BMAP_CLR_NUM_ENTRIES \
++	(sizeof(mlxbf_gige_dlm_seq_imem_bmap_clr) / sizeof(struct mlxbf_gige_uphy_cfg_reg))
++
++static const struct mlxbf_gige_uphy_cfg_reg
++mlxbf_gige_dlm_tx_init[] = {
++	{.addr = 0x002, .wdata = 0x5125},
++	{.addr = 0x01C, .wdata = 0x0018},
++	{.addr = 0x01E, .wdata = 0x0E00},
++	{.addr = 0x01F, .wdata = 0xC200},
++	{.addr = 0x023, .wdata = 0x0277},
++	{.addr = 0x024, .wdata = 0x026B},
++	{.addr = 0x053, .wdata = 0x0700},
++	{.addr = 0x059, .wdata = 0x1011},
++	{.addr = 0x060, .wdata = 0x0000},
++	{.addr = 0x062, .wdata = 0x0135},
++	{.addr = 0x063, .wdata = 0x0443},
++	{.addr = 0x064, .wdata = 0x0000},
++	{.addr = 0x066, .wdata = 0x0061},
++	{.addr = 0x067, .wdata = 0x0042},
++	{.addr = 0x06A, .wdata = 0x1212},
++	{.addr = 0x06B, .wdata = 0x1515},
++	{.addr = 0x06C, .wdata = 0x011A},
++	{.addr = 0x06D, .wdata = 0x0132},
++	{.addr = 0x06E, .wdata = 0x0632},
++	{.addr = 0x06F, .wdata = 0x0643},
++	{.addr = 0x070, .wdata = 0x0233},
++	{.addr = 0x071, .wdata = 0x0433},
++	{.addr = 0x07E, .wdata = 0x6A08},
++	{.addr = 0x08D, .wdata = 0x2101},
++	{.addr = 0x093, .wdata = 0x0015},
++	{.addr = 0x096, .wdata = 0x7555},
++	{.addr = 0x0A9, .wdata = 0xE754},
++	{.addr = 0x0AA, .wdata = 0x7ED1},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000}
++};
++
++#define MLXBF_GIGE_DLM_TX_NUM_ENTRIES \
++	(sizeof(mlxbf_gige_dlm_tx_init) / sizeof(struct mlxbf_gige_uphy_cfg_reg))
++
++static const struct mlxbf_gige_uphy_cfg_reg
++mlxbf_gige_dlm_rx_init[] = {
++	{.addr = 0x003, .wdata = 0x5125},
++	{.addr = 0x01D, .wdata = 0x0004},
++	{.addr = 0x028, .wdata = 0x1000},
++	{.addr = 0x029, .wdata = 0x1001},
++	{.addr = 0x02E, .wdata = 0x0004},
++	{.addr = 0x053, .wdata = 0x0700},
++	{.addr = 0x057, .wdata = 0x5044},
++	{.addr = 0x05B, .wdata = 0x1011},
++	{.addr = 0x0D2, .wdata = 0x0002},
++	{.addr = 0x0D9, .wdata = 0x0000},
++	{.addr = 0x0DA, .wdata = 0x0000},
++	{.addr = 0x0DB, .wdata = 0x0000},
++	{.addr = 0x0E2, .wdata = 0x0000},
++	{.addr = 0x0E7, .wdata = 0xBB10},
++	{.addr = 0x0E8, .wdata = 0xBB10},
++	{.addr = 0x0EC, .wdata = 0x0111},
++	{.addr = 0x0ED, .wdata = 0x1C00},
++	{.addr = 0x0F5, .wdata = 0x0000},
++	{.addr = 0x102, .wdata = 0x0CA6},
++	{.addr = 0x107, .wdata = 0x0020},
++	{.addr = 0x10C, .wdata = 0x1E31},
++	{.addr = 0x10D, .wdata = 0x1D29},
++	{.addr = 0x111, .wdata = 0x00E7},
++	{.addr = 0x112, .wdata = 0x5202},
++	{.addr = 0x117, .wdata = 0x0493},
++	{.addr = 0x11B, .wdata = 0x0148},
++	{.addr = 0x120, .wdata = 0x23DE},
++	{.addr = 0x121, .wdata = 0x2294},
++	{.addr = 0x125, .wdata = 0x03FF},
++	{.addr = 0x126, .wdata = 0x25F0},
++	{.addr = 0x12B, .wdata = 0xC633},
++	{.addr = 0x136, .wdata = 0x0F6A},
++	{.addr = 0x143, .wdata = 0x0000},
++	{.addr = 0x148, .wdata = 0x0001},
++	{.addr = 0x14E, .wdata = 0x0000},
++	{.addr = 0x155, .wdata = 0x2003},
++	{.addr = 0x15C, .wdata = 0x099B},
++	{.addr = 0x161, .wdata = 0x0088},
++	{.addr = 0x16B, .wdata = 0x0433},
++	{.addr = 0x172, .wdata = 0x099B},
++	{.addr = 0x17C, .wdata = 0x045D},
++	{.addr = 0x17D, .wdata = 0x006A},
++	{.addr = 0x181, .wdata = 0x0000},
++	{.addr = 0x189, .wdata = 0x1590},
++	{.addr = 0x18E, .wdata = 0x0080},
++	{.addr = 0x18F, .wdata = 0x90EC},
++	{.addr = 0x191, .wdata = 0x79F8},
++	{.addr = 0x194, .wdata = 0x000A},
++	{.addr = 0x195, .wdata = 0x000A},
++	{.addr = 0x1EB, .wdata = 0x0133},
++	{.addr = 0x1F0, .wdata = 0x0030},
++	{.addr = 0x1F1, .wdata = 0x0030},
++	{.addr = 0x1F5, .wdata = 0x3737},
++	{.addr = 0x1F6, .wdata = 0x3737},
++	{.addr = 0x1FA, .wdata = 0x2C00},
++	{.addr = 0x1FF, .wdata = 0x0516},
++	{.addr = 0x200, .wdata = 0x0516},
++	{.addr = 0x204, .wdata = 0x3010},
++	{.addr = 0x209, .wdata = 0x0429},
++	{.addr = 0x20E, .wdata = 0x0010},
++	{.addr = 0x213, .wdata = 0x005A},
++	{.addr = 0x214, .wdata = 0x0000},
++	{.addr = 0x216, .wdata = 0x0000},
++	{.addr = 0x218, .wdata = 0x0000},
++	{.addr = 0x225, .wdata = 0x0000},
++	{.addr = 0x22A, .wdata = 0x0000},
++	{.addr = 0x22B, .wdata = 0x0000},
++	{.addr = 0x231, .wdata = 0x0000},
++	{.addr = 0x232, .wdata = 0x0000},
++	{.addr = 0x233, .wdata = 0x0000},
++	{.addr = 0x245, .wdata = 0x0300},
++	{.addr = 0x24A, .wdata = 0x0000},
++	{.addr = 0x24F, .wdata = 0xFFF3},
++	{.addr = 0x254, .wdata = 0x0000},
++	{.addr = 0x259, .wdata = 0x0000},
++	{.addr = 0x25E, .wdata = 0x0000},
++	{.addr = 0x265, .wdata = 0x0009},
++	{.addr = 0x267, .wdata = 0x0174},
++	{.addr = 0x271, .wdata = 0x01F0},
++	{.addr = 0x273, .wdata = 0x0170},
++	{.addr = 0x275, .wdata = 0x7828},
++	{.addr = 0x279, .wdata = 0x3E3A},
++	{.addr = 0x27D, .wdata = 0x8468},
++	{.addr = 0x283, .wdata = 0x000C},
++	{.addr = 0x285, .wdata = 0x7777},
++	{.addr = 0x288, .wdata = 0x5503},
++	{.addr = 0x28C, .wdata = 0x0030},
++	{.addr = 0x28E, .wdata = 0xBBBB},
++	{.addr = 0x290, .wdata = 0xBBBB},
++	{.addr = 0x293, .wdata = 0x0021},
++	{.addr = 0x2FA, .wdata = 0x3B40},
++	{.addr = 0x2FB, .wdata = 0x7777},
++	{.addr = 0x30A, .wdata = 0x8022},
++	{.addr = 0x319, .wdata = 0x205E},
++	{.addr = 0x31B, .wdata = 0x0000},
++	{.addr = 0x31D, .wdata = 0x6004},
++	{.addr = 0x320, .wdata = 0x3014},
++	{.addr = 0x322, .wdata = 0x6004},
++	{.addr = 0x326, .wdata = 0x6004},
++	{.addr = 0x32A, .wdata = 0x5000},
++	{.addr = 0x32E, .wdata = 0x5000},
++	{.addr = 0x332, .wdata = 0x6004},
++	{.addr = 0x336, .wdata = 0x6063},
++	{.addr = 0x389, .wdata = 0x0310},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000},
++	{.addr = 0x3FF, .wdata = 0x0000}
++};
++
++#define MLXBF_GIGE_DLM_RX_NUM_ENTRIES \
++	(sizeof(mlxbf_gige_dlm_rx_init) / sizeof(struct mlxbf_gige_uphy_cfg_reg))
++
++/* returns plu clock p1clk in Hz */
++static u64 mlxbf_gige_calculate_p1clk(struct mlxbf_gige *priv)
++{
++	u8 core_od, core_r;
++	u64 freq_output;
++	u32 reg1, reg2;
++	u32 core_f;
++
++	reg1 = readl(priv->clk_io + MLXBF_GIGE_P1CLK_REG1);
++	reg2 = readl(priv->clk_io + MLXBF_GIGE_P1CLK_REG2);
++
++	core_f = (reg1 & MLXBF_GIGE_P1_CORE_F_MASK) >>
++		MLXBF_GIGE_P1_CORE_F_SHIFT;
++	core_r = (reg1 & MLXBF_GIGE_P1_CORE_R_MASK) >>
++		MLXBF_GIGE_P1_CORE_R_SHIFT;
++	core_od = (reg2 & MLXBF_GIGE_P1_CORE_OD_MASK) >>
++		MLXBF_GIGE_P1_CORE_OD_SHIFT;
++
++	/* Compute PLL output frequency as follow:
++	 *
++	 *                                     CORE_F / 16384
++	 * freq_output = freq_reference * ----------------------------
++	 *                              (CORE_R + 1) * (CORE_OD + 1)
++	 */
++	freq_output = div_u64(MLXBF_GIGE_P1_FREQ_REFERENCE * core_f,
++			      MLXBF_GIGE_P1_CLK_CONST);
++	freq_output = div_u64(freq_output, (core_r + 1) * (core_od + 1));
++
++	return freq_output;
++}
++
++static void mlxbf_gige_ugl_static_config(struct mlxbf_gige *priv)
++{
++	u32 val, p1clk_mhz;
++	u32 const_factor;
++	u64 p1clk;
++
++	/* p1clk is the PLU clock in Hz */
++	p1clk = mlxbf_gige_calculate_p1clk(priv);
++
++	/* get p1clk in MHz */
++	p1clk_mhz = div_u64(p1clk, 1000000);
++
++	/* Multiply the p1clk clock by 12 according to HW requirements */
++	const_factor = p1clk_mhz * MLXBF_GIGE_P1CLK_MULT_FACTOR;
++
++	/* ugl_cr_bridge_desc */
++	val = readl(priv->plu_base + MLXBF_GIGE_UGL_CR_BRIDGE_DESC);
++	val &= ~MLXBF_GIGE_UGL_CR_BRIDGE_ALL_MASK;
++	val |= FIELD_PREP(MLXBF_GIGE_UGL_CR_BRIDGE_SETUP_MASK,
++			  MLXBF_GIGE_UGL_CR_BRIDGE_SETUP_VAL(const_factor));
++	val |= FIELD_PREP(MLXBF_GIGE_UGL_CR_BRIDGE_PULSE_MASK,
++			  MLXBF_GIGE_UGL_CR_BRIDGE_PULSE_VAL(const_factor));
++	val |= FIELD_PREP(MLXBF_GIGE_UGL_CR_BRIDGE_HOLD_MASK,
++			  MLXBF_GIGE_UGL_CR_BRIDGE_HOLD_VAL(const_factor));
++	writel(val, priv->plu_base + MLXBF_GIGE_UGL_CR_BRIDGE_DESC);
++
++	/* pll1x_fsm_counters */
++	val = MLXBF_GIGE_PLL1X_FSM_DEFAULT_VAL(const_factor);
++	writel(val, priv->plu_base + MLXBF_GIGE_PLL1X_FSM_DEFAULT_CYCLES);
++
++	val = MLXBF_GIGE_PLL1X_FSM_SLEEP_VAL(const_factor);
++	writel(val, priv->plu_base + MLXBF_GIGE_PLL1X_FSM_SLEEP_CYCLES);
++
++	val = MLXBF_GIGE_PLL1X_FSM_RCAL_FLOW_VAL(const_factor);
++	writel(val, priv->plu_base + MLXBF_GIGE_PLL1X_FSM_RCAL_FLOW_CYCLES);
++
++	val = MLXBF_GIGE_PLL1X_FSM_CAL_FLOW_VAL(const_factor);
++	writel(val, priv->plu_base + MLXBF_GIGE_PLL1X_FSM_CAL_FLOW_CYCLES);
++
++	val = readl(priv->plu_base + MLXBF_GIGE_PLL1X_FSM_LOCKDET_STS_CYCLES);
++	val &= ~MLXBF_GIGE_PLL1X_FSM_LOCKDET_STS_MASK;
++	val |= FIELD_PREP(MLXBF_GIGE_PLL1X_FSM_LOCKDET_STS_MASK,
++			  MLXBF_GIGE_PLL1X_FSM_LOCKDET_STS_VAL(const_factor));
++	writel(val, priv->plu_base + MLXBF_GIGE_PLL1X_FSM_LOCKDET_STS_CYCLES);
++
++	/* tx_fsm_counters */
++	val = MLXBF_GIGE_TX_FSM_DEFAULT_VAL(const_factor);
++	writel(val, priv->plu_base + MLXBF_GIGE_TX_FSM_DEFAULT_CYCLES);
++
++	val = MLXBF_GIGE_TX_FSM_SLEEP_VAL(const_factor);
++	writel(val, priv->plu_base + MLXBF_GIGE_TX_FSM_SLEEP_CYCLES);
++
++	val = MLXBF_GIGE_TX_FSM_POWERUP_VAL(const_factor);
++	writel(val, priv->plu_base + MLXBF_GIGE_TX_FSM_POWERUP_CYCLES);
++
++	val = MLXBF_GIGE_TX_FSM_CAL_FLOW_VAL(const_factor);
++	writel(val, priv->plu_base + MLXBF_GIGE_TX_FSM_CAL_FLOW_CYCLES);
++
++	val = readl(priv->plu_base + MLXBF_GIGE_TX_FSM_CAL_ABORT_CYCLES);
++	val &= ~MLXBF_GIGE_TX_FSM_CAL_ABORT_MASK;
++	val |= FIELD_PREP(MLXBF_GIGE_TX_FSM_CAL_ABORT_MASK,
++			  MLXBF_GIGE_TX_FSM_CAL_ABORT_VAL(const_factor));
++	writel(val, priv->plu_base + MLXBF_GIGE_TX_FSM_CAL_ABORT_CYCLES);
++
++	/* rx_fsm_counters */
++	val = MLXBF_GIGE_RX_FSM_DEFAULT_VAL(const_factor);
++	writel(val, priv->plu_base + MLXBF_GIGE_RX_FSM_DEFAULT_CYCLES);
++
++	val = MLXBF_GIGE_RX_FSM_SLEEP_VAL(const_factor);
++	writel(val, priv->plu_base + MLXBF_GIGE_RX_FSM_SLEEP_CYCLES);
++
++	val = MLXBF_GIGE_RX_FSM_POWERUP_VAL(const_factor);
++	writel(val, priv->plu_base + MLXBF_GIGE_RX_FSM_POWERUP_CYCLES);
++
++	val = MLXBF_GIGE_RX_FSM_TERM_VAL(const_factor);
++	writel(val, priv->plu_base + MLXBF_GIGE_RX_FSM_TERM_CYCLES);
++
++	val = MLXBF_GIGE_RX_FSM_CAL_FLOW_VAL(const_factor);
++	writel(val, priv->plu_base + MLXBF_GIGE_RX_FSM_CAL_FLOW_CYCLES);
++
++	val = MLXBF_GIGE_RX_FSM_CAL_ABORT_VAL(const_factor);
++	writel(val, priv->plu_base + MLXBF_GIGE_RX_FSM_CAL_ABORT_CYCLES);
++
++	val = MLXBF_GIGE_RX_FSM_EQ_FLOW_VAL(const_factor);
++	writel(val, priv->plu_base + MLXBF_GIGE_RX_FSM_EQ_FLOW_CYCLES);
++
++	val = MLXBF_GIGE_RX_FSM_EQ_ABORT_VAL(const_factor);
++	writel(val, priv->plu_base + MLXBF_GIGE_RX_FSM_EQ_ABORT_CYCLES);
++
++	val = MLXBF_GIGE_RX_FSM_EOM_FLOW_VAL(const_factor);
++	writel(val, priv->plu_base + MLXBF_GIGE_RX_FSM_EOM_FLOW_CYCLES);
++
++	val = readl(priv->plu_base + MLXBF_GIGE_RX_FSM_CDR_LOCK_CYCLES);
++	val &= ~MLXBF_GIGE_RX_FSM_CDR_LOCK_MASK;
++	val |= FIELD_PREP(MLXBF_GIGE_RX_FSM_CDR_LOCK_MASK,
++			  MLXBF_GIGE_RX_FSM_CDR_LOCK_VAL(const_factor));
++	writel(val, priv->plu_base + MLXBF_GIGE_RX_FSM_CDR_LOCK_CYCLES);
++
++	/* periodic_flows_timer_max_value */
++	val = readl(priv->plu_base + MLXBF_GIGE_PERIOD_FLOWS_TIMER_MAX);
++	val &= ~MLXBF_GIGE_PERIOD_FLOWS_TIMER_MAX_MASK;
++	val |= FIELD_PREP(MLXBF_GIGE_PERIOD_FLOWS_TIMER_MAX_MASK,
++			  MLXBF_GIGE_PERIOD_FLOWS_TIMER_MAX_VAL(const_factor));
++	writel(val, priv->plu_base + MLXBF_GIGE_PERIOD_FLOWS_TIMER_MAX);
++
++	/* plltop.center.iddq_cycles */
++	val = readl(priv->plu_base + MLXBF_GIGE_PLL_IDDQ_CYCLES);
++	val &= ~MLXBF_GIGE_PLL_IDDQ_CYCLES_MASK;
++	val |= FIELD_PREP(MLXBF_GIGE_PLL_IDDQ_CYCLES_MASK,
++			  MLXBF_GIGE_PLL_IDDQ_CYCLES_VAL(const_factor));
++	writel(val, priv->plu_base + MLXBF_GIGE_PLL_IDDQ_CYCLES);
++
++	/* lanetop.center.iddq_cycles */
++	val = readl(priv->plu_base + MLXBF_GIGE_LANE_IDDQ_CYCLES);
++	val &= ~MLXBF_GIGE_LANE_IDDQ_CYCLES_MASK;
++	val |= FIELD_PREP(MLXBF_GIGE_LANE_IDDQ_CYCLES_MASK,
++			  MLXBF_GIGE_LANE_IDDQ_CYCLES_VAL(const_factor));
++	writel(val, priv->plu_base + MLXBF_GIGE_LANE_IDDQ_CYCLES);
++
++	/* lanetop.center.power_governor0 */
++	val = FIELD_PREP(MLXBF_GIGE_LANE_PWR_GOV0_RISE_MASK,
++			 MLXBF_GIGE_LANE_PWR_GOV0_RISE_VAL(const_factor));
++	val |= FIELD_PREP(MLXBF_GIGE_LANE_PWR_GOV0_FALL_MASK,
++			  MLXBF_GIGE_LANE_PWR_GOV0_FALL_VAL(const_factor));
++	writel(val, priv->plu_base + MLXBF_GIGE_LANE_PWR_GOV0);
++}
++
++static int mlxbf_gige_uphy_gw_write(struct mlxbf_gige *priv, u16 addr,
++				    u16 data, bool is_pll)
++{
++	u32 cmd, val;
++	int ret;
++
++	cmd = MLXBF_GIGE_UPHY_GW_CREATE_CMD(addr, data, 0, is_pll);
++
++	/* Send PLL or lane GW write request */
++	writel(cmd, priv->plu_base + MLXBF_GIGE_UPHY_GW(is_pll));
++
++	/* If the poll times out, drop the request */
++	ret = readl_poll_timeout_atomic(priv->plu_base +
++					MLXBF_GIGE_UPHY_GW(is_pll),
++					val,
++					!(val & MLXBF_GIGE_UPHY_GW_BUSY_MASK(is_pll)),
++					5, 1000000);
++	if (ret)
++		dev_dbg(priv->dev, "Failed to send GW write request\n");
++
++	return ret;
++}
++
++static int mlxbf_gige_uphy_gw_read(struct mlxbf_gige *priv, u16 addr,
++				   bool is_pll)
++{
++	u32 cmd, val;
++	int ret;
++
++	cmd = MLXBF_GIGE_UPHY_GW_CREATE_CMD(addr, 0, 1, is_pll);
++
++	/* Send PLL or lane GW read request */
++	writel(cmd, priv->plu_base + MLXBF_GIGE_UPHY_GW(is_pll));
++
++	/* If the poll times out, drop the request */
++	ret = readl_poll_timeout_atomic(priv->plu_base +
++					MLXBF_GIGE_UPHY_GW(is_pll),
++					val,
++					!(val & MLXBF_GIGE_UPHY_GW_BUSY_MASK(is_pll)),
++					5, 1000000);
++	if (ret) {
++		dev_dbg(priv->dev, "Failed to send GW read request\n");
++		return ret;
++	}
++
++	val = readl(priv->plu_base + MLXBF_GIGE_UPHY_GW_DESC0(is_pll));
++	val &= MLXBF_GIGE_UPHY_GW_DESC0_DATA_MASK(is_pll);
++
++	return val;
++}
++
++static int mlxbf_gige_load_uphy_clm_init_pkg(struct mlxbf_gige *priv)
++{
++	int ret = 0;
++	int i;
++
++	for (i = 0; i < MLXBF_GIGE_UPHY_CLM_INIT_NUM_ENTRIES; i++) {
++		ret = mlxbf_gige_uphy_gw_write(priv,
++					       mlxbf_gige_clm_init[i].addr,
++					       mlxbf_gige_clm_init[i].wdata,
++					       true);
++		if (ret) {
++			dev_dbg(priv->dev, "Failed to load clm init pkg\n");
++			return ret;
++		}
++	}
++
++	return ret;
++}
++
++static int mlxbf_gige_load_clm_production_fuses(struct mlxbf_gige *priv)
++{
++	u8 bg_trim_room;
++	u8 cvb_trim_room;
++	u8 speedo_room;
++	int ret;
++	u32 val;
++
++	val = readl(priv->fuse_gw_io);
++	bg_trim_room = (val & MLXBF_GIGE_YU_BG_TRIM_ROOM_MASK) >>
++			MLXBF_GIGE_YU_BG_TRIM_ROOM_SHIFT;
++	cvb_trim_room = (val & MLXBF_GIGE_YU_CVB_TRIM_ROOM_MASK) >>
++			MLXBF_GIGE_YU_CVB_TRIM_ROOM_SHIFT;
++	speedo_room = (val & MLXBF_GIGE_YU_SPEEDO_ROOM_MASK) >>
++			MLXBF_GIGE_YU_SPEEDO_ROOM_SHIFT;
++
++	val = ((bg_trim_room >> MLXBF_GIGE_YU_FUSE_VALID_SHIFT) <<
++		MLXBF_GIGE_PLL_MGMT_BGAP_FUSE_CTRL_BG_TRIM_VLD_SHIFT);
++	val |= ((cvb_trim_room >> MLXBF_GIGE_YU_FUSE_VALID_SHIFT) <<
++		MLXBF_GIGE_PLL_MGMT_BGAP_FUSE_CTRL_CVB_TRIM_VLD_SHIFT);
++	val |= ((speedo_room >> MLXBF_GIGE_YU_FUSE_VALID_SHIFT) <<
++		MLXBF_GIGE_PLL_MGMT_BGAP_FUSE_CTRL_SPEEDO_VLD_SHIFT);
++	val |= ((bg_trim_room & MLXBF_GIGE_YU_FUSE_MASK) <<
++		MLXBF_GIGE_PLL_MGMT_BGAP_FUSE_CTRL_BG_TRIM_SHIFT);
++	val |= ((cvb_trim_room & MLXBF_GIGE_YU_FUSE_MASK) <<
++		MLXBF_GIGE_PLL_MGMT_BGAP_FUSE_CTRL_CVB_TRIM_SHIFT);
++	val |= ((speedo_room & MLXBF_GIGE_YU_FUSE_MASK) <<
++		MLXBF_GIGE_PLL_MGMT_BGAP_FUSE_CTRL_SPEEDO_SHIFT);
++
++	ret = mlxbf_gige_uphy_gw_write(priv, MLXBF_GIGE_MGMT_BGAP_FUSE_CTRL_ADDR, val, true);
++	if (ret)
++		dev_dbg(priv->dev, "Failed to load clm production fuses\n");
++
++	return ret;
++}
++
++static int mlxbf_gige_init_pll(struct mlxbf_gige *priv)
++{
++	int ret;
++
++	ret = mlxbf_gige_load_uphy_clm_init_pkg(priv);
++	if (ret)
++		return ret;
++
++	ret = mlxbf_gige_load_clm_production_fuses(priv);
++
++	return ret;
++}
++
++static int mlxbf_gige_lock_pll(struct mlxbf_gige *priv)
++{
++	int ret;
++	u32 val;
++
++	/* plltop.center.uphy_pll_rst_reg_ */
++	val = readl(priv->plu_base + MLXBF_GIGE_UPHY_PLL_RST_REG);
++	val |= MLXBF_GIGE_UPHY_PLL_RST_REG_MASK;
++	writel(val, priv->plu_base + MLXBF_GIGE_UPHY_PLL_RST_REG);
++
++	/* cause_or.clrcause.bulk */
++	val = readl(priv->plu_base + MLXBF_GIGE_PLL1X_CAUSE_CLRCAUSE_BULK);
++	val |= MLXBF_GIGE_PLL1X_CAUSE_CLRCAUSE_BULK_MASK;
++	writel(val, priv->plu_base + MLXBF_GIGE_PLL1X_CAUSE_CLRCAUSE_BULK);
++
++	writel(0, priv->plu_base + MLXBF_GIGE_PLL_CAL);
++
++	/* Stop polling when fsm state is UGL_PLL1X_FSM_STATE_SLEEP */
++	ret = readl_poll_timeout_atomic(priv->plu_base +
++					MLXBF_GIGE_PLL_FSM_CTRL,
++					val, (val == MLXBF_GIGE_UGL_PLL1X_FSM_STATE_SLEEP),
++					5, 1000000);
++	if (ret) {
++		dev_dbg(priv->dev, "Polling timeout on fsm state sleep\n");
++		return ret;
++	}
++
++	udelay(MLXBF_GIGE_PLL_STAB_TIME);
++
++	val = readl(priv->plu_base + MLXBF_GIGE_PLL_SLEEP_FW);
++	val |= MLXBF_GIGE_PLL_SLEEP_FW_MASK;
++	writel(val, priv->plu_base + MLXBF_GIGE_PLL_SLEEP_FW);
++
++	udelay(MLXBF_GIGE_PLL_STAB_TIME);
++	writel(MLXBF_GIGE_PLL_RCAL_MASK, priv->plu_base + MLXBF_GIGE_PLL_RCAL);
++
++	/* Stop polling when fsm state is UGL_PLL1X_FSM_STATE_IDLE */
++	ret = readl_poll_timeout_atomic(priv->plu_base +
++					MLXBF_GIGE_PLL_FSM_CTRL,
++					val, (val == MLXBF_GIGE_UGL_PLL1X_FSM_STATE_IDLE),
++					5, 1000000);
++	if (ret) {
++		dev_dbg(priv->dev, "Polling timeout on fsm state idle\n");
++		return ret;
++	}
++
++	val = readl(priv->plu_base + MLXBF_GIGE_PLL_SLEEP_FW);
++	val &= ~MLXBF_GIGE_PLL_SLEEP_FW_MASK;
++	writel(val, priv->plu_base + MLXBF_GIGE_PLL_SLEEP_FW);
++
++	writel(MLXBF_GIGE_PLL_CAL_MASK, priv->plu_base + MLXBF_GIGE_PLL_CAL);
++
++	/* Stop polling when cal_valid is different from 0 */
++	ret = readl_poll_timeout_atomic(priv->plu_base + MLXBF_GIGE_PLL_CAL_VLD,
++					val, !!(val & MLXBF_GIGE_PLL_CAL_VLD_MASK),
++					5, 1000000);
++	if (ret) {
++		dev_dbg(priv->dev, "Polling timeout on cal_valid\n");
++		return ret;
++	}
++
++	/* pll_enable */
++	val = readl(priv->plu_base + MLXBF_GIGE_PLL_ENABLE);
++	val |= MLXBF_GIGE_PLL_ENABLE_MASK;
++	writel(val, priv->plu_base + MLXBF_GIGE_PLL_ENABLE);
++
++	return ret;
++}
++
++static void mlxbf_gige_get_lane_out_of_rst(struct mlxbf_gige *priv)
++{
++	u32 val;
++
++	val = readl(priv->plu_base + MLXBF_GIGE_LANE_RST_REG);
++	val |= MLXBF_GIGE_LANE_RST_REG_MASK;
++	writel(val, priv->plu_base + MLXBF_GIGE_LANE_RST_REG);
++}
++
++static int mlxbf_gige_load_imem(struct mlxbf_gige *priv)
++{
++	u16 csum_status;
++	int ret = 0;
++	int i;
++
++	for (i = 0; i < MLXBF_GIGE_UPHY_DLM_IMEM_INIT_NUM_ENTRIES; i++) {
++		ret = mlxbf_gige_uphy_gw_write(priv,
++					       mlxbf_gige_dlm_imem_init[i].addr,
++					       mlxbf_gige_dlm_imem_init[i].wdata,
++					       false);
++		if (ret)
++			return ret;
++	}
++
++	/* Resets the internal counter for MLXBF_GIGE_DLM_IMEM_DATA_ADDR to base address */
++	ret = mlxbf_gige_uphy_gw_write(priv,
++				       mlxbf_gige_dlm_seq_imem_wr_en_init.addr,
++				       mlxbf_gige_dlm_seq_imem_wr_en_init.wdata,
++				       false);
++	if (ret)
++		return ret;
++
++	/* HW increments the address MLXBF_GIGE_DLM_IMEM_DATA_ADDR internally. */
++	for (i = 0; i < MLXBF_GIGE_UPHY_DLM_IMEM_DATA_NUM_ENTRIES; i++) {
++		ret = mlxbf_gige_uphy_gw_write(priv,
++					       MLXBF_GIGE_LANE_IMEM_DATA_ADDR,
++					       mlxbf_gige_dlm_imem_data[i].wdata,
++					       false);
++		if (ret)
++			return ret;
++	}
++
++	ret = mlxbf_gige_uphy_gw_write(priv,
++				       mlxbf_gige_dlm_seq_imem_wr_dis_init.addr,
++				       mlxbf_gige_dlm_seq_imem_wr_dis_init.wdata,
++				       false);
++	if (ret)
++		return ret;
++
++	ret = mlxbf_gige_uphy_gw_write(priv,
++				       mlxbf_gige_dlm_seq_imem_csum_en.addr,
++				       mlxbf_gige_dlm_seq_imem_csum_en.wdata,
++				       false);
++	if (ret)
++		return ret;
++
++	udelay(MLXBF_GIGE_PLL_DLM_IMEM_CSUM_TIMEOUT);
++
++	ret = mlxbf_gige_uphy_gw_read(priv, MLXBF_GIGE_LANE_CSUM_STS_ADDR, false);
++	if (ret < 0)
++		return ret;
++
++	csum_status = ((ret & MLXBF_GIGE_IMEM_CSUM_STATUS_MASK) >>
++			MLXBF_GIGE_IMEM_CSUM_STATUS_SHIFT);
++
++	ret = mlxbf_gige_uphy_gw_write(priv,
++				       mlxbf_gige_dlm_seq_imem_csum_dis.addr,
++				       mlxbf_gige_dlm_seq_imem_csum_dis.wdata,
++				       false);
++	if (ret)
++		return ret;
++
++	if (csum_status != MLXBF_GIGE_IMEM_CSUM_RUN_AND_VALID) {
++		dev_err(priv->dev, "%s: invalid checksum\n", __func__);
++
++		/* recovery flow */
++		for (i = 0; i < MLXBF_GIGE_DLM_SEQ_IMEM_BMAP_CLR_NUM_ENTRIES; i++) {
++			mlxbf_gige_uphy_gw_write(priv,
++						 mlxbf_gige_dlm_seq_imem_bmap_clr[i].addr,
++						 mlxbf_gige_dlm_seq_imem_bmap_clr[i].wdata,
++						 false);
++		}
++
++		return MLXBF_GIGE_INVALID_IMEM_CSUM;
++	}
++
++	return ret;
++}
++
++static int mlxbf_gige_plu_tx_power_ctrl(struct mlxbf_gige *priv, bool is_pwr_on)
++{
++	int ret = 0;
++	u32 val;
++
++	val = readl(priv->plu_base + MLXBF_GIGE_LANE_TX_RATE_ID0_SPEED);
++	val &= ~MLXBF_GIGE_LANE_TX_SLEEP_VAL_MASK;
++	writel(val, priv->plu_base + MLXBF_GIGE_LANE_TX_RATE_ID0_SPEED);
++
++	if (is_pwr_on) {
++		val = readl(priv->plu_base + MLXBF_GIGE_LANE_TX_DATA_EN);
++		val &= ~MLXBF_GIGE_LANE_TX_IDDQ_VAL_MASK;
++		writel(val, priv->plu_base + MLXBF_GIGE_LANE_TX_DATA_EN);
++
++		val = readl(priv->plu_base + MLXBF_GIGE_PLU_POWERUP);
++		val |= MLXBF_GIGE_PLU_TX_POWERUP_MASK;
++		writel(val, priv->plu_base + MLXBF_GIGE_PLU_POWERUP);
++	} else {
++		val = readl(priv->plu_base + MLXBF_GIGE_PLU_POWERUP);
++		val &= ~MLXBF_GIGE_PLU_TX_POWERUP_MASK;
++		writel(val, priv->plu_base + MLXBF_GIGE_PLU_POWERUP);
++
++		val = readl(priv->plu_base + MLXBF_GIGE_LANE_TX_DATA_EN);
++		val |= MLXBF_GIGE_LANE_TX_IDDQ_VAL_MASK;
++		writel(val, priv->plu_base + MLXBF_GIGE_LANE_TX_DATA_EN);
++
++		ret = readl_poll_timeout_atomic(priv->plu_base +
++			MLXBF_GIGE_LANE_TX_FSM_CTRL, val,
++			((val & MLXBF_GIGE_LANE_TX_FSM_PS_MASK) == MLXBF_GIGE_TX_FSM_IDDQ),
++			5, 1000000);
++		if (ret)
++			dev_dbg(priv->dev, "Polling timeout on tx fsm iddq state\n");
++	}
++
++	return ret;
++}
++
++static int mlxbf_gige_dlm_tx_init_pkg(struct mlxbf_gige *priv)
++{
++	int ret = 0;
++	int i;
++
++	for (i = 0; i < MLXBF_GIGE_DLM_TX_NUM_ENTRIES; i++) {
++		ret = mlxbf_gige_uphy_gw_write(priv,
++					       mlxbf_gige_dlm_tx_init[i].addr,
++					       mlxbf_gige_dlm_tx_init[i].wdata,
++					       false);
++		if (ret) {
++			dev_dbg(priv->dev, "Failed to load dlm tx init pkg\n");
++			return ret;
++		}
++	}
++
++	return ret;
++}
++
++static int mlxbf_gige_tx_lane_open(struct mlxbf_gige *priv)
++{
++	u32 val;
++	int ret;
++
++	/* Prepare the TX lane before opening it */
++
++	ret = mlxbf_gige_plu_tx_power_ctrl(priv, false);
++	if (ret)
++		return ret;
++
++	/* Calibration of TX elastic buffer */
++	val = readl(priv->plu_base + MLXBF_GIGE_LANE_TX_BITS_SWAP);
++	val &= ~MLXBF_GIGE_TX_EB_BLOCK_PUSH_DIST_MASK_MASK;
++	val |= MLXBF_GIGE_TX_EB_BLOCK_PUSH_DIST_MASK_VAL;
++	writel(val, priv->plu_base + MLXBF_GIGE_LANE_TX_BITS_SWAP);
++
++	val = readl(priv->plu_base + MLXBF_GIGE_LANE_TX_DATA_EN);
++	val |= MLXBF_GIGE_LANE_TX_DATA_EN_MASK;
++	writel(val, priv->plu_base + MLXBF_GIGE_LANE_TX_DATA_EN);
++
++	writel(MLXBF_GIGE_LANE_TX_CAL_MASK, priv->plu_base + MLXBF_GIGE_LANE_TX_CAL);
++
++	val = readl(priv->plu_base + MLXBF_GIGE_LANE_TX_DATA_EN);
++	val &= ~MLXBF_GIGE_LANE_TX_RATE_ID_MASK;
++	writel(val, priv->plu_base + MLXBF_GIGE_LANE_TX_DATA_EN);
++
++	val = readl(priv->plu_base + MLXBF_GIGE_LANE_TX_RATE_ID0_SPEED);
++	val &= ~MLXBF_GIGE_LANE_TX_RATE_ID0_SPEED_MASK;
++	writel(val, priv->plu_base + MLXBF_GIGE_LANE_TX_RATE_ID0_SPEED);
++
++	/* Loading the DLM tx init package should be done before lane power on */
++	ret = mlxbf_gige_dlm_tx_init_pkg(priv);
++	if (ret)
++		return ret;
++
++	val = readl(priv->plu_base + MLXBF_GIGE_LANE_TX_BITS_SWAP);
++	val &= ~MLXBF_GIGE_LANE_TX_BITS_SWAP_MASK;
++	writel(val, priv->plu_base + MLXBF_GIGE_LANE_TX_BITS_SWAP);
++
++	ret = mlxbf_gige_plu_tx_power_ctrl(priv, true);
++	if (ret)
++		return ret;
++
++	/* After preparing the TX lane, open it for data transmission */
++
++	val = readl(priv->plu_base + MLXBF_GIGE_LANE_TX_BITS_SWAP);
++	val &= ~MLXBF_GIGE_TX_EB_BLOCK_PUSH_DIST_MASK_MASK;
++	writel(val, priv->plu_base + MLXBF_GIGE_LANE_TX_BITS_SWAP);
++
++	ret = readl_poll_timeout_atomic(priv->plu_base +
++			MLXBF_GIGE_LANE_TX_FSM_CTRL, val,
++			((val & MLXBF_GIGE_LANE_TX_FSM_PS_MASK) == MLXBF_GIGE_TX_DATA_EN),
++			5, 1000000);
++	if (ret) {
++		dev_dbg(priv->dev, "Polling timeout on fsm tx data enable state\n");
++		return ret;
++	}
++
++	val = readl(priv->plu_base + MLXBF_GIGE_LANE_TX_DATA_EN);
++	val |= MLXBF_GIGE_LANE_TX_PERIODIC_CAL_EN_MASK;
++	writel(val, priv->plu_base + MLXBF_GIGE_LANE_TX_DATA_EN);
++
++	return ret;
++}
++
++static int mlxbf_gige_dlm_rx_init_pkg(struct mlxbf_gige *priv)
++{
++	int ret = 0;
++	int i;
++
++	for (i = 0; i < MLXBF_GIGE_DLM_RX_NUM_ENTRIES; i++) {
++		ret = mlxbf_gige_uphy_gw_write(priv,
++					       mlxbf_gige_dlm_rx_init[i].addr,
++					       mlxbf_gige_dlm_rx_init[i].wdata,
++					       false);
++		if (ret) {
++			dev_dbg(priv->dev, "Failed to load dlm rx init pkg\n");
++			return ret;
++		}
++	}
++
++	return ret;
++}
++
++static int mlxbf_gige_plu_rx_power_ctrl(struct mlxbf_gige *priv, bool is_pwr_on)
++{
++	int ret = 0;
++	u32 val;
++
++	val = readl(priv->plu_base + MLXBF_GIGE_LANE_RX_RATE_ID);
++	val &= ~MLXBF_GIGE_LANE_RX_SLEEP_VAL_MASK;
++	writel(val, priv->plu_base + MLXBF_GIGE_LANE_RX_RATE_ID);
++
++	if (is_pwr_on) {
++		val = readl(priv->plu_base + MLXBF_GIGE_LANE_RX_RATE_ID);
++		val &= ~MLXBF_GIGE_LANE_RX_IDDQ_VAL_MASK;
++		writel(val, priv->plu_base + MLXBF_GIGE_LANE_RX_RATE_ID);
++
++		val = readl(priv->plu_base + MLXBF_GIGE_PLU_POWERUP);
++		val |= MLXBF_GIGE_PLU_RX_POWERUP_MASK;
++		writel(val, priv->plu_base + MLXBF_GIGE_PLU_POWERUP);
++	} else {
++		/* Enable HW watchdogs. */
++		val = readl(priv->plu_base + MLXBF_GIGE_LANE_RX_EQ_DONE_TIMER_EN);
++		val |= MLXBF_GIGE_LANE_RX_EQ_DONE_TIMER_EN_MASK;
++		val |= MLXBF_GIGE_LANE_RX_CAL_DONE_TIMER_EN_MASK;
++		writel(val, priv->plu_base + MLXBF_GIGE_LANE_RX_EQ_DONE_TIMER_EN);
++
++		val = readl(priv->plu_base + MLXBF_GIGE_PLU_POWERUP);
++		val &= ~MLXBF_GIGE_PLU_RX_POWERUP_MASK;
++		writel(val, priv->plu_base + MLXBF_GIGE_PLU_POWERUP);
++
++		val = readl(priv->plu_base + MLXBF_GIGE_LANE_RX_RATE_ID);
++		val |= MLXBF_GIGE_LANE_RX_IDDQ_VAL_MASK;
++		writel(val, priv->plu_base + MLXBF_GIGE_LANE_RX_RATE_ID);
++
++		ret = readl_poll_timeout_atomic(priv->plu_base +
++			MLXBF_GIGE_LANE_RX_FSM_CTRL, val,
++			((val & MLXBF_GIGE_LANE_RX_FSM_PS_MASK) == MLXBF_GIGE_RX_FSM_IDDQ),
++			5, 1000000);
++		if (ret) {
++			dev_dbg(priv->dev, "Polling timeout on rx fsm iddq state\n");
++			return ret;
++		}
++
++		val = readl(priv->plu_base + MLXBF_GIGE_LANE_RX_EQ_DONE_TIMER_EN);
++		val &= ~MLXBF_GIGE_LANE_RX_EQ_DONE_TIMER_EN_MASK;
++		val &= ~MLXBF_GIGE_LANE_RX_CAL_DONE_TIMER_EN_MASK;
++		writel(val, priv->plu_base + MLXBF_GIGE_LANE_RX_EQ_DONE_TIMER_EN);
++	}
++
++	return ret;
++}
++
++static int mlxbf_gige_rx_lane_open(struct mlxbf_gige *priv)
++{
++	u32 val;
++	int ret;
++
++	ret = mlxbf_gige_plu_rx_power_ctrl(priv, false);
++	if (ret)
++		return ret;
++
++	val = readl(priv->plu_base + MLXBF_GIGE_LANE_RX_RATE_ID);
++	val &= ~MLXBF_GIGE_LANE_RX_RATE_ID_MASK;
++	writel(val, priv->plu_base + MLXBF_GIGE_LANE_RX_RATE_ID);
++
++	val = readl(priv->plu_base + MLXBF_GIGE_LANE_RX_SYNC_FIFO_POP);
++	val &= ~MLXBF_GIGE_LANE_RX_SYNC_FIFO_POP_RDY_CHICKEN_MASK;
++	val &= ~MLXBF_GIGE_LANE_RX_DATA_SPLIT_LSB_VLD_CHICKEN_MASK;
++	writel(val, priv->plu_base + MLXBF_GIGE_LANE_RX_SYNC_FIFO_POP);
++
++	val = readl(priv->plu_base + MLXBF_GIGE_LANE_RX_RATE_ID);
++	val &= ~MLXBF_GIGE_LANE_RX_RATE_ID0_SPEED_MASK;
++	writel(val, priv->plu_base + MLXBF_GIGE_LANE_RX_RATE_ID);
++
++	ret = mlxbf_gige_dlm_rx_init_pkg(priv);
++	if (ret)
++		return ret;
++
++	writel(MLXBF_GIGE_LANE_RX_CAL_MASK, priv->plu_base + MLXBF_GIGE_LANE_RX_CAL);
++
++	val = readl(priv->plu_base + MLXBF_GIGE_LANE_RX_SYNC_FIFO_POP);
++	val &= ~MLXBF_GIGE_LANE_RX_CDR_RESET_REG_MASK;
++	val |= MLXBF_GIGE_LANE_RX_CDR_EN_MASK;
++	val |= MLXBF_GIGE_LANE_RX_DATA_EN_MASK;
++	writel(val, priv->plu_base + MLXBF_GIGE_LANE_RX_SYNC_FIFO_POP);
++
++	val = readl(priv->plu_base + MLXBF_GIGE_LANE_RX_EQ_TRAIN);
++	val &= ~MLXBF_GIGE_LANE_RX_EQ_TRAIN_MASK;
++	val |= MLXBF_GIGE_LANE_RX_EQ_TRAIN_VAL;
++	writel(val, priv->plu_base + MLXBF_GIGE_LANE_RX_EQ_TRAIN);
++
++	ret = mlxbf_gige_plu_rx_power_ctrl(priv, true);
++	if (ret)
++		return ret;
++
++	ret = readl_poll_timeout_atomic(priv->plu_base +
++			MLXBF_GIGE_LANE_RX_FSM_CTRL, val,
++			((val & MLXBF_GIGE_LANE_RX_FSM_PS_MASK) == MLXBF_GIGE_RX_FSM_ACTIVE),
++			5, 1000000);
++	if (ret)
++		dev_dbg(priv->dev, "Polling timeout on rx fsm active state\n");
++
++	return ret;
++}
++
++static bool mlxbf_gige_is_uphy_ready(struct mlxbf_gige *priv)
++{
++	u32 val;
++
++	val = readl(priv->plu_base + MLXBF_GIGE_LANE_TX_FSM_CTRL);
++	if ((val & MLXBF_GIGE_LANE_TX_FSM_PS_MASK) != MLXBF_GIGE_TX_DATA_EN)
++		return false;
++
++	val = readl(priv->plu_base + MLXBF_GIGE_LANE_RX_FSM_CTRL);
++	if ((val & MLXBF_GIGE_LANE_RX_FSM_PS_MASK) != MLXBF_GIGE_RX_FSM_ACTIVE)
++		return false;
++
++	return true;
++}
++
++int mlxbf_gige_config_uphy(struct mlxbf_gige *priv)
++{
++	struct platform_device *pdev = priv->pdev;
++	struct device *dev = &pdev->dev;
++	int ret = 0;
++
++	priv->fuse_gw_io = devm_platform_ioremap_resource(pdev, MLXBF_GIGE_RES_FUSE_GW);
++	if (IS_ERR(priv->fuse_gw_io))
++		return PTR_ERR(priv->fuse_gw_io);
++
++	if (mlxbf_gige_is_uphy_ready(priv))
++		return 0;
++
++	mlxbf_gige_ugl_static_config(priv);
++	ret = mlxbf_gige_init_pll(priv);
++	if (ret) {
++		dev_err(dev, "%s: Failed to initialize PLL\n", __func__);
++		return ret;
++	}
++
++	ret = mlxbf_gige_lock_pll(priv);
++	if (ret) {
++		dev_err(dev, "%s: Failed to lock PLL\n", __func__);
++		return ret;
++	}
++
++	/* Due to hardware design issue, we need to get the lanes out of reset
++	 * before configuring the imem.
++	 */
++	mlxbf_gige_get_lane_out_of_rst(priv);
++	ret = mlxbf_gige_load_imem(priv);
++	if (ret) {
++		dev_err(dev, "%s: Failed to load imem\n", __func__);
++		return ret;
++	}
++
++	ret = mlxbf_gige_tx_lane_open(priv);
++	if (ret) {
++		dev_err(dev, "%s: Failed to open tx lane\n", __func__);
++		return ret;
++	}
++
++	ret = mlxbf_gige_rx_lane_open(priv);
++	if (ret)
++		dev_err(dev, "%s: Failed to open rx lane\n", __func__);
++
++	return ret;
++}
+diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_uphy.h b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_uphy.h
+new file mode 100644
+index 000000000000..a32be2407af5
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_uphy.h
+@@ -0,0 +1,398 @@
++/* SPDX-License-Identifier: GPL-2.0-only OR BSD-3-Clause */
++
++/* UPHY support for Mellanox Gigabit Ethernet driver
++ *
++ * Copyright (C) 2022 NVIDIA CORPORATION & AFFILIATES
++ */
++
++#ifndef __MLXBF_GIGE_UPHY_H__
++#define __MLXBF_GIGE_UPHY_H__
++
 +#include <linux/bitfield.h>
 +
- #define MLXBF_GIGE_VERSION                            0x0000
- #define MLXBF_GIGE_VERSION_BF2                        0x0
- #define MLXBF_GIGE_VERSION_BF3                        0x1
-@@ -78,4 +80,23 @@
-  */
- #define MLXBF_GIGE_MMIO_REG_SZ                        (MLXBF_GIGE_MAC_CFG + 8)
- 
-+#define MLXBF_GIGE_PLU_TX_REG0                        0x80
-+#define MLXBF_GIGE_PLU_TX_IPG_SIZE_MASK               GENMASK(11, 0)
-+#define MLXBF_GIGE_PLU_TX_SGMII_MODE_MASK             GENMASK(15, 14)
-+
-+#define MLXBF_GIGE_PLU_RX_REG0                        0x10
-+#define MLXBF_GIGE_PLU_RX_SGMII_MODE_MASK             GENMASK(25, 24)
-+
-+#define MLXBF_GIGE_1G_SGMII_MODE                      0x0
-+#define MLXBF_GIGE_10M_SGMII_MODE                     0x1
-+#define MLXBF_GIGE_100M_SGMII_MODE                    0x2
-+
-+/* ipg_size default value for 1G is fixed by HW to 11 + End = 12.
-+ * So for 100M it is 12 * 10 - 1 = 119
-+ * For 10M, it is 12 * 100 - 1 = 1199
++/* Some registers' values depend on the p1clk clock. The following
++ * formula applies:
++ * ((time_in_ns*const_factor)/MLXBF_GIGE_TIME_FACTOR_TO_USEC)
 + */
-+#define MLXBF_GIGE_1G_IPG_SIZE                        11
-+#define MLXBF_GIGE_100M_IPG_SIZE                      119
-+#define MLXBF_GIGE_10M_IPG_SIZE                       1199
++#define MLXBF_GIGE_TIME_FACTOR_TO_USEC          10000
 +
- #endif /* !defined(__MLXBF_GIGE_REGS_H__) */
++/* All addresses represent the offset from the base PLU address */
++
++#define MLXBF_GIGE_PLU_POWERUP                        0x488
++#define MLXBF_GIGE_PLU_TX_POWERUP_MASK                GENMASK(28, 28)
++#define MLXBF_GIGE_PLU_RX_POWERUP_MASK                GENMASK(27, 27)
++
++#define MLXBF_GIGE_LANE_CFG_FLAT0_BASE                0x23000
++#define MLXBF_GIGE_AE_SYS_IMEM_RAM_DATA_CTRL_WDATA    0x23ef8
++#define MLXBF_GIGE_AE_SYS_IMEM_RAM_STAT_IMEM_CSUM_STS 0x23f00
++#define MLXBF_GIGE_IMEM_CSUM_STATUS_MASK              GENMASK(6, 5)
++#define MLXBF_GIGE_IMEM_CSUM_STATUS_SHIFT             5
++
++#define MLXBF_GIGE_PLL_CFG_FLAT0_BASE                         0x25000
++#define MLXBF_GIGE_PLL_CFG_FLAT0_MGMT_BGAP_FUSE_CTRL          0x251d8
++#define MLXBF_GIGE_PLL_MGMT_BGAP_FUSE_CTRL_BG_TRIM_SHIFT      0
++#define MLXBF_GIGE_PLL_MGMT_BGAP_FUSE_CTRL_CVB_TRIM_SHIFT     4
++#define MLXBF_GIGE_PLL_MGMT_BGAP_FUSE_CTRL_SPEEDO_SHIFT       8
++#define MLXBF_GIGE_PLL_MGMT_BGAP_FUSE_CTRL_BG_TRIM_VLD_SHIFT  12
++#define MLXBF_GIGE_PLL_MGMT_BGAP_FUSE_CTRL_CVB_TRIM_VLD_SHIFT 13
++#define MLXBF_GIGE_PLL_MGMT_BGAP_FUSE_CTRL_SPEEDO_VLD_SHIFT   14
++
++#define MLXBF_GIGE_LANE_TX_FSM_CTRL                0x26000
++#define MLXBF_GIGE_LANE_TX_FSM_PS_MASK             GENMASK(3, 0)
++
++#define MLXBF_GIGE_LANE_TX_BITS_SWAP               0x2600c
++#define MLXBF_GIGE_TX_EB_BLOCK_PUSH_DIST_MASK_MASK GENMASK(20, 16)
++#define MLXBF_GIGE_TX_EB_BLOCK_PUSH_DIST_MASK_VAL  \
++	FIELD_PREP(MLXBF_GIGE_TX_EB_BLOCK_PUSH_DIST_MASK_MASK, 0x3)
++#define MLXBF_GIGE_LANE_TX_BITS_SWAP_MASK          GENMASK(0, 0)
++
++#define MLXBF_GIGE_LANE_TX_DATA_EN                 0x26010
++#define MLXBF_GIGE_LANE_TX_RATE_ID_MASK            GENMASK(30, 28)
++#define MLXBF_GIGE_LANE_TX_DATA_EN_MASK            GENMASK(23, 23)
++#define MLXBF_GIGE_LANE_TX_IDDQ_VAL_MASK           GENMASK(21, 21)
++#define MLXBF_GIGE_LANE_TX_PERIODIC_CAL_EN_MASK    GENMASK(17, 17)
++
++#define MLXBF_GIGE_LANE_TX_RATE_ID0_SPEED          0x26014
++#define MLXBF_GIGE_LANE_TX_SLEEP_VAL_MASK          GENMASK(9, 8)
++#define MLXBF_GIGE_LANE_TX_RATE_ID0_SPEED_MASK     GENMASK(2, 0)
++
++#define MLXBF_GIGE_LANE_TX_CAL                     0x26018
++#define MLXBF_GIGE_LANE_TX_CAL_MASK                GENMASK(0, 0)
++
++#define MLXBF_GIGE_LANE_RX_FSM_CTRL                0x26040
++#define MLXBF_GIGE_LANE_RX_FSM_PS_MASK             GENMASK(3, 0)
++
++#define MLXBF_GIGE_LANE_RX_EQ_DONE_TIMER_EN        0x26054
++#define MLXBF_GIGE_LANE_RX_EQ_DONE_TIMER_EN_MASK   GENMASK(31, 31)
++#define MLXBF_GIGE_LANE_RX_CAL_DONE_TIMER_EN_MASK  GENMASK(30, 30)
++
++#define MLXBF_GIGE_LANE_RX_RATE_ID                 0x26058
++#define MLXBF_GIGE_LANE_RX_RATE_ID0_SPEED_MASK     GENMASK(18, 16)
++#define MLXBF_GIGE_LANE_RX_RATE_ID_MASK            GENMASK(14, 12)
++#define MLXBF_GIGE_LANE_RX_SLEEP_VAL_MASK          GENMASK(7, 6)
++#define MLXBF_GIGE_LANE_RX_IDDQ_VAL_MASK           GENMASK(4, 4)
++
++#define MLXBF_GIGE_LANE_RX_CAL                     0x2605c
++#define MLXBF_GIGE_LANE_RX_CAL_MASK                GENMASK(0, 0)
++
++#define MLXBF_GIGE_LANE_RX_SYNC_FIFO_POP                   0x26060
++#define MLXBF_GIGE_LANE_RX_DATA_SPLIT_LSB_VLD_CHICKEN_MASK GENMASK(5, 5)
++#define MLXBF_GIGE_LANE_RX_SYNC_FIFO_POP_RDY_CHICKEN_MASK  GENMASK(4, 4)
++#define MLXBF_GIGE_LANE_RX_CDR_RESET_REG_MASK              GENMASK(3, 3)
++#define MLXBF_GIGE_LANE_RX_CDR_EN_MASK                     GENMASK(2, 2)
++#define MLXBF_GIGE_LANE_RX_DATA_EN_MASK                    GENMASK(1, 1)
++
++#define MLXBF_GIGE_LANE_RX_EQ_TRAIN        0x26064
++#define MLXBF_GIGE_LANE_RX_EQ_TRAIN_MASK   GENMASK(2, 0)
++#define MLXBF_GIGE_LANE_RX_EQ_TRAIN_VAL \
++	FIELD_PREP(MLXBF_GIGE_LANE_RX_EQ_TRAIN_MASK, 0x3)
++
++#define MLXBF_GIGE_LANE_GW                 0x26100
++#define MLXBF_GIGE_LANE_GW_ADDR_MASK       GENMASK(10, 1)
++#define MLXBF_GIGE_LANE_GW_RW_MASK         GENMASK(11, 11)
++#define MLXBF_GIGE_LANE_GW_DATA_MASK       GENMASK(27, 12)
++#define MLXBF_GIGE_LANE_GW_DATA_EN_MASK    GENMASK(28, 28)
++#define MLXBF_GIGE_LANE_GW_BUSY_MASK       GENMASK(30, 30)
++#define MLXBF_GIGE_LANE_GW_ADDR_SHIFT      1
++#define MLXBF_GIGE_LANE_GW_DESC0           0x2610c
++#define MLXBF_GIGE_LANE_GW_DESC0_DATA_MASK GENMASK(15, 0)
++
++#define MLXBF_GIGE_TX_FSM_DEFAULT_CYCLES     0x26600
++#define MLXBF_GIGE_TX_FSM_DEFAULT_VAL(const_factor) \
++	((200 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++
++#define MLXBF_GIGE_TX_FSM_SLEEP_CYCLES       0x26604
++#define MLXBF_GIGE_TX_FSM_SLEEP_VAL(const_factor) \
++	((1000 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++
++#define MLXBF_GIGE_TX_FSM_POWERUP_CYCLES     0x26608
++#define MLXBF_GIGE_TX_FSM_POWERUP_VAL(const_factor) \
++	((10000 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++
++#define MLXBF_GIGE_TX_FSM_CAL_FLOW_CYCLES    0x2660c
++#define MLXBF_GIGE_TX_FSM_CAL_FLOW_VAL(const_factor) \
++	((200000 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++
++#define MLXBF_GIGE_TX_FSM_CAL_ABORT_CYCLES   0x26610
++#define MLXBF_GIGE_TX_FSM_CAL_ABORT_VAL(const_factor) \
++	((4000 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++#define MLXBF_GIGE_TX_FSM_CAL_ABORT_MASK     GENMASK(18, 0)
++
++#define MLXBF_GIGE_RX_FSM_DEFAULT_CYCLES     0x26614
++#define MLXBF_GIGE_RX_FSM_DEFAULT_VAL(const_factor) \
++	((200 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++
++#define MLXBF_GIGE_RX_FSM_SLEEP_CYCLES       0x26618
++#define MLXBF_GIGE_RX_FSM_SLEEP_VAL(const_factor) \
++	((1000 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++
++#define MLXBF_GIGE_RX_FSM_POWERUP_CYCLES     0x2661c
++#define MLXBF_GIGE_RX_FSM_POWERUP_VAL(const_factor) \
++	((10000 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++
++#define MLXBF_GIGE_RX_FSM_TERM_CYCLES        0x26620
++#define MLXBF_GIGE_RX_FSM_TERM_VAL(const_factor) \
++	((200000 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++
++#define MLXBF_GIGE_RX_FSM_CAL_FLOW_CYCLES    0x26624
++#define MLXBF_GIGE_RX_FSM_CAL_FLOW_VAL(const_factor) \
++	((200000 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++
++#define MLXBF_GIGE_RX_FSM_CAL_ABORT_CYCLES   0x26628
++#define MLXBF_GIGE_RX_FSM_CAL_ABORT_VAL(const_factor) \
++	((4000 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++
++#define MLXBF_GIGE_RX_FSM_EQ_FLOW_CYCLES     0x2662c
++#define MLXBF_GIGE_RX_FSM_EQ_FLOW_VAL(const_factor) \
++	((48000000 / MLXBF_GIGE_TIME_FACTOR_TO_USEC) * (const_factor))
++
++#define MLXBF_GIGE_RX_FSM_EQ_ABORT_CYCLES    0x26630
++#define MLXBF_GIGE_RX_FSM_EQ_ABORT_VAL(const_factor) \
++	((4000 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++
++#define MLXBF_GIGE_RX_FSM_EOM_FLOW_CYCLES    0x26634
++#define MLXBF_GIGE_RX_FSM_EOM_FLOW_VAL(const_factor) \
++	((4000000 / MLXBF_GIGE_TIME_FACTOR_TO_USEC) * (const_factor))
++
++#define MLXBF_GIGE_RX_FSM_CDR_LOCK_CYCLES    0x26638
++#define MLXBF_GIGE_RX_FSM_CDR_LOCK_VAL(const_factor) \
++	((30000 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++#define MLXBF_GIGE_RX_FSM_CDR_LOCK_MASK      GENMASK(20, 0)
++
++#define MLXBF_GIGE_LANE_PWR_GOV0                   0x26650
++#define MLXBF_GIGE_LANE_PWR_GOV0_FALL_VAL(const_factor) \
++	((5000 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++#define MLXBF_GIGE_LANE_PWR_GOV0_FALL_MASK         GENMASK(31, 16)
++#define MLXBF_GIGE_LANE_PWR_GOV0_RISE_VAL(const_factor) \
++	((5000 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++#define MLXBF_GIGE_LANE_PWR_GOV0_RISE_MASK         GENMASK(15, 0)
++
++#define MLXBF_GIGE_LANE_IDDQ_CYCLES                0x26660
++#define MLXBF_GIGE_LANE_IDDQ_CYCLES_VAL(const_factor) \
++	((2000 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++#define MLXBF_GIGE_LANE_IDDQ_CYCLES_MASK           GENMASK(28, 16)
++
++#define MLXBF_GIGE_LANE_RST_REG                    0x26660
++#define MLXBF_GIGE_LANE_RST_REG_MASK               GENMASK(7, 6)
++
++#define MLXBF_GIGE_PERIOD_FLOWS_TIMER_MAX          0x26668
++#define MLXBF_GIGE_PERIOD_FLOWS_TIMER_MAX_VAL(const_factor) \
++	((2500000 / (MLXBF_GIGE_TIME_FACTOR_TO_USEC * 8)) * (const_factor))
++#define MLXBF_GIGE_PERIOD_FLOWS_TIMER_MAX_MASK     GENMASK(22, 0)
++
++#define MLXBF_GIGE_PLL_FSM_CTRL           0x26800
++#define MLXBF_GIGE_PLL_FSM_PS_MASK        GENMASK(3, 0)
++
++#define MLXBF_GIGE_PLL_GW                 0x26810
++#define MLXBF_GIGE_PLL_GW_ADDR_MASK       GENMASK(10, 1)
++#define MLXBF_GIGE_PLL_GW_RW_MASK         GENMASK(11, 11)
++#define MLXBF_GIGE_PLL_GW_DATA_MASK       GENMASK(27, 12)
++#define MLXBF_GIGE_PLL_GW_DATA_EN_MASK    GENMASK(28, 28)
++#define MLXBF_GIGE_PLL_GW_BUSY_MASK       GENMASK(30, 30)
++#define MLXBF_GIGE_PLL_GW_ADDR_SHIFT      1
++#define MLXBF_GIGE_PLL_GW_DESC0           0x2681c
++#define MLXBF_GIGE_PLL_GW_DESC0_DATA_MASK GENMASK(15, 0)
++
++#define MLXBF_GIGE_PLL_SLEEP_FW           0x26820
++#define MLXBF_GIGE_PLL_SLEEP_FW_MASK      GENMASK(14, 14)
++
++#define MLXBF_GIGE_PLL_ENABLE             0x26820
++#define MLXBF_GIGE_PLL_ENABLE_MASK        GENMASK(1, 1)
++
++#define MLXBF_GIGE_PLL_RCAL               0x26828
++#define MLXBF_GIGE_PLL_RCAL_MASK          GENMASK(0, 0)
++
++#define MLXBF_GIGE_PLL_CAL_VLD            0x2682c
++#define MLXBF_GIGE_PLL_CAL_VLD_MASK       GENMASK(1, 0)
++
++#define MLXBF_GIGE_PLL_CAL                0x26830
++#define MLXBF_GIGE_PLL_CAL_MASK           GENMASK(0, 0)
++
++#define MLXBF_GIGE_PLL1X_CAUSE_CLRCAUSE_BULK      0x26878
++#define MLXBF_GIGE_PLL1X_CAUSE_CLRCAUSE_BULK_MASK GENMASK(16, 0)
++
++#define MLXBF_GIGE_PLL1X_FSM_DEFAULT_CYCLES       0x26900
++#define MLXBF_GIGE_PLL1X_FSM_DEFAULT_VAL(const_factor) \
++	((250 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++
++#define MLXBF_GIGE_PLL1X_FSM_SLEEP_CYCLES         0x26904
++#define MLXBF_GIGE_PLL1X_FSM_SLEEP_VAL(const_factor) \
++	((5000 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++
++#define MLXBF_GIGE_PLL1X_FSM_RCAL_FLOW_CYCLES     0x26908
++#define MLXBF_GIGE_PLL1X_FSM_RCAL_FLOW_VAL(const_factor) \
++	((40000 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++
++#define MLXBF_GIGE_PLL1X_FSM_CAL_FLOW_CYCLES      0x2690c
++#define MLXBF_GIGE_PLL1X_FSM_CAL_FLOW_VAL(const_factor) \
++	((300000 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++
++#define MLXBF_GIGE_PLL1X_FSM_LOCKDET_STS_CYCLES   0x26910
++#define MLXBF_GIGE_PLL1X_FSM_LOCKDET_STS_VAL(const_factor) \
++	((100000 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++#define MLXBF_GIGE_PLL1X_FSM_LOCKDET_STS_MASK     GENMASK(18, 0)
++
++#define MLXBF_GIGE_PLL_IDDQ_CYCLES           0x26914
++#define MLXBF_GIGE_PLL_IDDQ_CYCLES_VAL(const_factor) \
++	((2000 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++#define MLXBF_GIGE_PLL_IDDQ_CYCLES_MASK      GENMASK(28, 16)
++
++#define MLXBF_GIGE_UPHY_PLL_RST_REG          0x26914
++#define MLXBF_GIGE_UPHY_PLL_RST_REG_MASK     GENMASK(2, 2)
++
++#define MLXBF_GIGE_UGL_CR_BRIDGE_DESC       0x26a90
++#define MLXBF_GIGE_UGL_CR_BRIDGE_SETUP_MASK GENMASK(5, 0)
++#define MLXBF_GIGE_UGL_CR_BRIDGE_PULSE_MASK GENMASK(13, 8)
++#define MLXBF_GIGE_UGL_CR_BRIDGE_HOLD_MASK  GENMASK(21, 16)
++#define MLXBF_GIGE_UGL_CR_BRIDGE_ALL_MASK \
++	(MLXBF_GIGE_UGL_CR_BRIDGE_SETUP_MASK | \
++	MLXBF_GIGE_UGL_CR_BRIDGE_PULSE_MASK | \
++	MLXBF_GIGE_UGL_CR_BRIDGE_HOLD_MASK)
++
++#define MLXBF_GIGE_UGL_CR_BRIDGE_SETUP_VAL(const_factor) \
++	((10 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++#define MLXBF_GIGE_UGL_CR_BRIDGE_PULSE_VAL(const_factor) \
++	((30 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++#define MLXBF_GIGE_UGL_CR_BRIDGE_HOLD_VAL(const_factor)  \
++	((10 * (const_factor)) / MLXBF_GIGE_TIME_FACTOR_TO_USEC)
++
++/* rw = 0 for write and 1 for read.
++ * data_en should be set to 1 only for a write transaction.
++ */
++#define MLXBF_GIGE_PLL_GW_CREATE_CMD(addr, data, rw) \
++	((((addr) << MLXBF_GIGE_PLL_GW_ADDR_SHIFT) & MLXBF_GIGE_PLL_GW_ADDR_MASK) | \
++	FIELD_PREP(MLXBF_GIGE_PLL_GW_RW_MASK, rw) | \
++	FIELD_PREP(MLXBF_GIGE_PLL_GW_DATA_MASK, data) | \
++	FIELD_PREP(MLXBF_GIGE_PLL_GW_DATA_EN_MASK, !rw) | \
++	FIELD_PREP(MLXBF_GIGE_PLL_GW_BUSY_MASK, 1))
++
++#define MLXBF_GIGE_LANE_GW_CREATE_CMD(addr, data, rw) \
++	((((addr) << MLXBF_GIGE_LANE_GW_ADDR_SHIFT) & MLXBF_GIGE_LANE_GW_ADDR_MASK) | \
++	FIELD_PREP(MLXBF_GIGE_LANE_GW_RW_MASK, rw) | \
++	FIELD_PREP(MLXBF_GIGE_LANE_GW_DATA_MASK, data) | \
++	FIELD_PREP(MLXBF_GIGE_LANE_GW_DATA_EN_MASK, !rw) | \
++	FIELD_PREP(MLXBF_GIGE_LANE_GW_BUSY_MASK, 1))
++
++#define MLXBF_GIGE_UPHY_GW_CREATE_CMD(addr, data, rw, is_pll) \
++	((is_pll) ? MLXBF_GIGE_PLL_GW_CREATE_CMD(addr, data, rw) : \
++	MLXBF_GIGE_LANE_GW_CREATE_CMD(addr, data, rw))
++
++#define MLXBF_GIGE_UPHY_GW(is_pll) \
++	((is_pll) ? MLXBF_GIGE_PLL_GW : MLXBF_GIGE_LANE_GW)
++
++#define MLXBF_GIGE_UPHY_GW_DESC0(is_pll) \
++	((is_pll) ? MLXBF_GIGE_PLL_GW_DESC0 : MLXBF_GIGE_LANE_GW_DESC0)
++
++#define MLXBF_GIGE_UPHY_GW_DESC0_DATA_MASK(is_pll) \
++	((is_pll) ? MLXBF_GIGE_PLL_GW_DESC0_DATA_MASK : \
++	MLXBF_GIGE_LANE_GW_DESC0_DATA_MASK)
++
++#define MLXBF_GIGE_UPHY_GW_BUSY_MASK(is_pll) \
++	((is_pll) ? MLXBF_GIGE_PLL_GW_BUSY_MASK : \
++	MLXBF_GIGE_LANE_GW_BUSY_MASK)
++
++/* bootrecord p1clk */
++#define MLXBF_GIGE_P1CLK_REG1        0x14
++#define MLXBF_GIGE_P1CLK_REG2        0x18
++#define MLXBF_GIGE_P1_CORE_F_SHIFT   0
++#define MLXBF_GIGE_P1_CORE_F_MASK    GENMASK(25, 0)
++#define MLXBF_GIGE_P1_CORE_R_SHIFT   26
++#define MLXBF_GIGE_P1_CORE_R_MASK    GENMASK(31, 26)
++#define MLXBF_GIGE_P1_CORE_OD_SHIFT  0
++#define MLXBF_GIGE_P1_CORE_OD_MASK   GENMASK(3, 0)
++
++#define MLXBF_GIGE_P1CLK_MULT_FACTOR 12
++#define MLXBF_GIGE_P1_FREQ_REFERENCE 156250000ULL
++#define MLXBF_GIGE_P1_CLK_CONST      16384ULL
++
++/* There is a 32-bit crspace to 16-bit UPHY address encoding.
++ * The 16-bit address can be accessed via the GW register.
++ * Subtract the crspace region base address from the actual
++ * address that needs to be accessed via the gw.
++ * Then divide it by 4 since crspace registers are 4 bit aligned
++ */
++#define MLXBF_GIGE_32B_TO_16B_ADDR(addr, base) (((addr) - (base)) >> 2)
++
++#define MLXBF_GIGE_LANE_CSUM_STS_ADDR \
++	MLXBF_GIGE_32B_TO_16B_ADDR( \
++	MLXBF_GIGE_AE_SYS_IMEM_RAM_STAT_IMEM_CSUM_STS, \
++	MLXBF_GIGE_LANE_CFG_FLAT0_BASE)
++
++#define MLXBF_GIGE_IMEM_CSUM_RUN_AND_VALID              0x3
++#define MLXBF_GIGE_INVALID_IMEM_CSUM                    -1
++
++#define MLXBF_GIGE_LANE_IMEM_DATA_ADDR \
++	MLXBF_GIGE_32B_TO_16B_ADDR( \
++	MLXBF_GIGE_AE_SYS_IMEM_RAM_DATA_CTRL_WDATA, \
++	MLXBF_GIGE_LANE_CFG_FLAT0_BASE)
++
++#define MLXBF_GIGE_MGMT_BGAP_FUSE_CTRL_ADDR \
++	MLXBF_GIGE_32B_TO_16B_ADDR( \
++	MLXBF_GIGE_PLL_CFG_FLAT0_MGMT_BGAP_FUSE_CTRL, \
++	MLXBF_GIGE_PLL_CFG_FLAT0_BASE)
++
++#define MLXBF_GIGE_YU_BG_TRIM_ROOM_MASK   GENMASK(4, 0)
++#define MLXBF_GIGE_YU_BG_TRIM_ROOM_SHIFT  0
++#define MLXBF_GIGE_YU_CVB_TRIM_ROOM_MASK  GENMASK(9, 5)
++#define MLXBF_GIGE_YU_CVB_TRIM_ROOM_SHIFT 5
++#define MLXBF_GIGE_YU_SPEEDO_ROOM_MASK    GENMASK(14, 10)
++#define MLXBF_GIGE_YU_SPEEDO_ROOM_SHIFT   10
++#define MLXBF_GIGE_YU_FUSE_VALID_SHIFT    4
++/* Fuse mask without valid bit */
++#define MLXBF_GIGE_YU_FUSE_MASK           0xf
++
++enum {
++	MLXBF_GIGE_UGL_PLL1X_FSM_STATE_IDDQ,
++	MLXBF_GIGE_UGL_PLL1X_FSM_STATE_SLEEP,
++	MLXBF_GIGE_UGL_PLL1X_FSM_STATE_RCAL_DONE_WAIT1,
++	MLXBF_GIGE_UGL_PLL1X_FSM_STATE_RCAL_DONE_WAIT0,
++	MLXBF_GIGE_UGL_PLL1X_FSM_STATE_IDLE,
++	MLXBF_GIGE_UGL_PLL1X_FSM_STATE_CAL_DONE_WAIT1,
++	MLXBF_GIGE_UGL_PLL1X_FSM_STATE_CAL_DONE_WAIT0,
++	MLXBF_GIGE_UGL_PLL1X_FSM_STATE_ACTIVE,
++	MLXBF_GIGE_UGL_PLL1X_FSM_STATE_LOCK,
++	MLXBF_GIGE_UGL_PLL1X_FSM_STATE_SPEED_CHANGE
++};
++
++enum {
++	MLXBF_GIGE_TX_FSM_IDDQ,
++	MLXBF_GIGE_TX_FSM_SLEEP,
++	MLXBF_GIGE_TX_FSM_SPEED_CHANGE,
++	MLXBF_GIGE_TX_FSM_POWERUP,
++	MLXBF_GIGE_TX_UGL_TX_POWERUP,
++	MLXBF_GIGE_TX_CAL_DONE_WAIT1,
++	MLXBF_GIGE_TX_CAL_ABORT,
++	MLXBF_GIGE_TX_CAL_ABORT_DONE_WAIT1,
++	MLXBF_GIGE_TX_CAL_DONE_WAIT0,
++	MLXBF_GIGE_TX_CAL_DONE,
++	MLXBF_GIGE_TX_DATA_READY,
++	MLXBF_GIGE_TX_DATA_EN_RDY,
++	MLXBF_GIGE_TX_DATA_EN
++};
++
++enum {
++	MLXBF_GIGE_RX_FSM_IDDQ,
++	MLXBF_GIGE_RX_FSM_SLEEP,
++	MLXBF_GIGE_RX_FSM_SPEED_CHANGE,
++	MLXBF_GIGE_RX_FSM_POWERUP,
++	MLXBF_GIGE_RX_FSM_CAL,
++	MLXBF_GIGE_RX_FSM_WAIT_TERM,
++	MLXBF_GIGE_RX_FSM_DATA_EN_RDY,
++	MLXBF_GIGE_RX_FSM_DATA_EN,
++	MLXBF_GIGE_RX_FSM_CDR_EN,
++	MLXBF_GIGE_RX_FSM_ACTIVE,
++	MLXBF_GIGE_RX_FSM_EQ,
++	MLXBF_GIGE_RX_FSM_EOM
++};
++
++#define MLXBF_GIGE_PLL_STAB_TIME             6 /* us */
++#define MLXBF_GIGE_PLL_DLM_IMEM_CSUM_TIMEOUT 15 /* us */
++
++struct mlxbf_gige_uphy_cfg_reg {
++	u16 addr;
++	u16 wdata;
++};
++
++int mlxbf_gige_config_uphy(struct mlxbf_gige *priv);
++
++#endif /* __MLXBF_GIGE_UPHY_H__ */
 -- 
 2.30.1
 
