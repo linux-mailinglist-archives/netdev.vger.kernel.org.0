@@ -2,109 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 794E960F1EA
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 10:10:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFA7160F227
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 10:21:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234850AbiJ0IK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 04:10:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43824 "EHLO
+        id S234938AbiJ0IVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 04:21:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234899AbiJ0IKw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 04:10:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD0AB43AC0
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 01:10:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S234935AbiJ0IVV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 04:21:21 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0322872EC3
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 01:21:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1666858879;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=GtNroKlpZr+0jqtQZWwTzDz99PGQTifPz+tF7jg5FWg=;
+        b=Q8mUvMDL8HF5Iy4ZLEf5HekJSoAv67qG6zWay2J6EMh4DyBDMd2/NBFhHfK7hwg/k1fg0l
+        q8gu0j6XeQQpq8Y9AuTO3wFyOudZh0ynI2WwHNBfCaaqwYoaqW8kO1OYZ4ksfiMH+rm0my
+        epc8QGfIjyoAE7Br2ApTiFn1hrGdjvk=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-346-Zi-DIejXPMikq-cF3c2JjA-1; Thu, 27 Oct 2022 04:21:17 -0400
+X-MC-Unique: Zi-DIejXPMikq-cF3c2JjA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 64265B824E9
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 08:10:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7526DC433D6;
-        Thu, 27 Oct 2022 08:10:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666858249;
-        bh=EGss+lbcpZv9omK37tj4CeIMBujbXvfYax7DQtfaTMk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FEG1ElrDj3iP0wpEXgNb+4ux+DIQOCD9Goqhi5LG2LtWM/eY4gUO10RPGvq+k9TkZ
-         3w62FCsTkad5IxryCiLr3JjFzTsoZeNS68KSEzM2S440+S2ckOw9Tk5hFqkcgEqx5H
-         q+kNGZeU8+aHR2p6LPC6Kgqf41W4nGHb6BMja2GyH3KAf1vA+e8nUfhJmJXCzTojt5
-         BuxlFGWJw94bF6CuWbLeyicCOv0XR9xpUI41euVI1w8qQWlezjJr2Lvj/4RwKC1jN2
-         C+7Dhq4cbK3lhwrVzeyJCNoEYnzx+awUu7WGtjkapyhYlMEL7fc79EIceoJs/fOLro
-         DG9fVQfw9m2TQ==
-Date:   Thu, 27 Oct 2022 09:10:43 +0100
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Roi Dayan <roid@nvidia.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Amritha Nambiar <amritha.nambiar@intel.com>,
-        netdev@vger.kernel.org, alexander.duyck@gmail.com,
-        jhs@mojatatu.com, jiri@resnulli.us, xiyou.wangcong@gmail.com,
-        vinicius.gomes@intel.com, sridhar.samudrala@intel.com,
-        Maor Dickman <maord@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: Re: [net-next PATCH v3 1/3] act_skbedit: skbedit queue mapping for
- receive queue
-Message-ID: <20221027081043.agootcu3xjjetm3g@sx1>
-References: <166633888716.52141.3425659377117969638.stgit@anambiarhost.jf.intel.com>
- <166633911976.52141.3907831602027668289.stgit@anambiarhost.jf.intel.com>
- <c04ab396-bea0-fcb2-7b5a-deafa3daffa5@nvidia.com>
- <20221026091738.57a72c85@kernel.org>
- <56977d26-5aca-1340-baba-5ba0cdbb9701@nvidia.com>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E8CBD800B30;
+        Thu, 27 Oct 2022 08:21:16 +0000 (UTC)
+Received: from griffin.upir.cz (ovpn-208-2.brq.redhat.com [10.40.208.2])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 956E61415117;
+        Thu, 27 Oct 2022 08:21:14 +0000 (UTC)
+From:   Jiri Benc <jbenc@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Shmulik Ladkani <shmulik@metanetworks.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Tomas Hruby <tomas@tigera.io>,
+        Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
+Subject: [PATCH net] net: gso: fix panic on frag_list with mixed head alloc types
+Date:   Thu, 27 Oct 2022 10:20:56 +0200
+Message-Id: <559cea869928e169240d74c386735f3f95beca32.1666858629.git.jbenc@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <56977d26-5aca-1340-baba-5ba0cdbb9701@nvidia.com>
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27 Oct 10:12, Roi Dayan wrote:
->
->
->On 26/10/2022 19:17, Jakub Kicinski wrote:
->> On Wed, 26 Oct 2022 14:40:39 +0300 Roi Dayan wrote:
->>> This patch broke mlx5_core TC offloads.
->>> We have a generic code part going over the enum values and have a list
->>> of action pointers to handle parsing each action without knowing the action.
->>> The list of actions depends on being aligned with the values order of
->>> the enum which I think usually new values should go to the end of the list.
->>> I'm not sure if other code parts are broken from this change but at
->>> least one part is.
->>> New values were always inserted at the end.
->>>
->>> Can you make a fixup patch to move FLOW_ACTION_RX_QUEUE_MAPPING to
->>> the end of the enum list?
->>> i.e. right before NUM_FLOW_ACTIONS.
->>
->> Odd, can you point us to the exact code that got broken?
->> There are no guarantees on ordering of kernel-internal enum
->> and I think it's a bad idea to make such precedent.
->
->
->ok. I were in the thought order is kept.
->
->You can see our usage in drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
->in function parse_tc_actions().
->we loop over the actions and get a struct with function pointers
->that represent the flow action and we use those function pointers
->to parse whats needed without parse_tc_actions() knowing the action.
->
->the function pointers are in drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c
->see static struct mlx5e_tc_act *tc_acts_fdb[NUM_FLOW_ACTIONS].
->each function handling code is in a different file under that sub folder.
->
->if order is not important i guess i'll do a function to return the ops i need
->per enum value.
->please let me know if to continue this road.
->thanks
+Since commit 3dcbdb134f32 ("net: gso: Fix skb_segment splat when
+splitting gso_size mangled skb having linear-headed frag_list"), it is
+allowed to change gso_size of a GRO packet. However, that commit assumes
+that "checking the first list_skb member suffices; i.e if either of the
+list_skb members have non head_frag head, then the first one has too".
 
-Order is not guaranteed, let's have a robust solution.
-You can define an explicit static mapping in the driver, not in a for loop.
+It turns out this assumption does not hold. We've seen BUG_ON being hit
+in skb_segment when skbs on the frag_list had differing head_frag. That
+particular case was with vmxnet3; looking at the driver, it indeed uses
+different skb allocation strategies based on the packet size. The last
+packet in frag_list can thus be kmalloced if it is sufficiently small.
+And there's nothing preventing drivers from mixing things even more
+freely.
+
+There are three different locations where this can be fixed:
+
+(1) We could check head_frag in GRO and not allow GROing skbs with
+    different head_frag. However, that would lead to performance
+    regression (at least on vmxnet3) on normal forward paths with
+    unmodified gso_size, where mixed head_frag is not a problem.
+
+(2) Set a flag in bpf_skb_net_grow and bpf_skb_net_shrink indicating
+    that NETIF_F_SG is undesirable. That would need to eat a bit in
+    sk_buff. Furthermore, that flag can be unset when all skbs on the
+    frag_list are page backed. To retain good performance,
+    bpf_skb_net_grow/shrink would have to walk the frag_list.
+
+(3) Walk the frag_list in skb_segment when determining whether
+    NETIF_F_SG should be cleared. This of course slows things down.
+
+This patch implements (3). To limit the performance impact in
+skb_segment, the list is walked only for skbs with SKB_GSO_DODGY set
+that have gso_size changed. Normal paths thus will not hit it.
+
+Fixes: 3dcbdb134f32 ("net: gso: Fix skb_segment splat when splitting gso_size mangled skb having linear-headed frag_list")
+Signed-off-by: Jiri Benc <jbenc@redhat.com>
+---
+ net/core/skbuff.c | 36 +++++++++++++++++++-----------------
+ 1 file changed, 19 insertions(+), 17 deletions(-)
+
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 1d9719e72f9d..bbf3acff44c6 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -4134,23 +4134,25 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
+ 	int i = 0;
+ 	int pos;
+ 
+-	if (list_skb && !list_skb->head_frag && skb_headlen(list_skb) &&
+-	    (skb_shinfo(head_skb)->gso_type & SKB_GSO_DODGY)) {
+-		/* gso_size is untrusted, and we have a frag_list with a linear
+-		 * non head_frag head.
+-		 *
+-		 * (we assume checking the first list_skb member suffices;
+-		 * i.e if either of the list_skb members have non head_frag
+-		 * head, then the first one has too).
+-		 *
+-		 * If head_skb's headlen does not fit requested gso_size, it
+-		 * means that the frag_list members do NOT terminate on exact
+-		 * gso_size boundaries. Hence we cannot perform skb_frag_t page
+-		 * sharing. Therefore we must fallback to copying the frag_list
+-		 * skbs; we do so by disabling SG.
+-		 */
+-		if (mss != GSO_BY_FRAGS && mss != skb_headlen(head_skb))
+-			features &= ~NETIF_F_SG;
++	if ((skb_shinfo(head_skb)->gso_type & SKB_GSO_DODGY) &&
++	    mss != GSO_BY_FRAGS && mss != skb_headlen(head_skb)) {
++		struct sk_buff *check_skb;
++
++		for (check_skb = list_skb; check_skb; check_skb = check_skb->next) {
++			if (skb_headlen(check_skb) && !check_skb->head_frag) {
++				/* gso_size is untrusted, and we have a frag_list with
++				 * a linear non head_frag item.
++				 *
++				 * If head_skb's headlen does not fit requested gso_size,
++				 * it means that the frag_list members do NOT terminate
++				 * on exact gso_size boundaries. Hence we cannot perform
++				 * skb_frag_t page sharing. Therefore we must fallback to
++				 * copying the frag_list skbs; we do so by disabling SG.
++				 */
++				features &= ~NETIF_F_SG;
++				break;
++			}
++		}
+ 	}
+ 
+ 	__skb_push(head_skb, doffset);
+-- 
+2.37.3
 
