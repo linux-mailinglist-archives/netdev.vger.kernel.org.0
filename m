@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B0CFA60F745
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 14:30:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8803B60F744
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 14:30:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235587AbiJ0Mav (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 08:30:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43698 "EHLO
+        id S235648AbiJ0Mah (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 08:30:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235225AbiJ0Mal (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 08:30:41 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CCA64DB65
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 05:30:37 -0700 (PDT)
+        with ESMTP id S235609AbiJ0Mac (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 08:30:32 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94B7C2F397
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 05:30:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666873838; x=1698409838;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=aCj1syVk/jD+A4kLd9xm90pyuP5zqiQwqwtuX20+9OE=;
-  b=RbT4jWidi/YrxZ2gnnQh0nJZ/lQRahM7OsThVKQ2Zu1tXYgWFXTmOD1W
-   WQYqWgJ6fgDyK/KZIF7bDQ5ehFkvIl0cZT7JEFdWtWg1GJ/BdrT3zKyJ5
-   CyepJWtDhNrxYFD+aPAYKeVVUzqjlJuFqYV6AZmRQ/QtUzPr9LZaztjAl
-   lfxbgH3XcLnjcRSxtg1IffdLHtp88d+c+lQRzXE4eWm3D7N1iMPP0RVpH
-   LWrtOvzvkX5KuVhjjuzmArtQyVsfbMUM3/99F97SYLpvg8C1bX04e8Tf9
-   QBQSsWyFhIFxOgVdwgOTzR5GV/OdjMeqTlhL2QdmM45yB6xYRHoZLy5El
+  t=1666873827; x=1698409827;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=VTAhAYeH/ojSHEmFlS6a9yro8p4k5I3O554N5l7LrK0=;
+  b=QPBBORr6B2U47zqKaIaZef9WYDEwZ9boX+pHgFqDepLL8BL9DY+UUJaG
+   Hl4Rgl+lNeaojDqlELJuUnVGaPWd6azoJY4gJsp8bzLBGdn3oT9JRQRLv
+   TSCRETuce1jHFwACGIGOnhaljXVZ69sHpkbuqSh4NTrCm3xUssFsRMNqs
+   xRqvN/dOOvboXqgO6WwFSLDEcaJJR13iTKy9TWPFiJom730NnqFxQ3yge
+   TAIMYm2+2ouLqIu1VoH3myJtnJMNKaDOpnz5goPYtayi7JbjL/6wqWJjs
+   DFioQugz0K9mrw8LuA0ucH0hcabHj7gF9sYWJkVbuOqw/gfZ3/63xa3TV
    g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="291511618"
+X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="288604845"
 X-IronPort-AV: E=Sophos;i="5.95,217,1661842800"; 
-   d="scan'208";a="291511618"
+   d="scan'208";a="288604845"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 05:30:18 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="774974772"
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 05:30:27 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="774974784"
 X-IronPort-AV: E=Sophos;i="5.95,217,1661842800"; 
-   d="scan'208";a="774974772"
+   d="scan'208";a="774974784"
 Received: from sreehari-nuc.iind.intel.com ([10.223.163.48])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 05:30:13 -0700
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 05:30:22 -0700
 From:   Sreehari Kancharla <sreehari.kancharla@linux.intel.com>
 To:     netdev@vger.kernel.org
 Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
@@ -47,47 +47,681 @@ Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
         andriy.shevchenko@linux.intel.com, dinesh.sharma@intel.com,
         ilpo.jarvinen@linux.intel.com, moises.veleta@intel.com,
         sreehari.kancharla@linux.intel.com, sreehari.kancharla@intel.com
-Subject: [PATCH net-next v2 1/2] net: wwan: t7xx: Use needed_headroom instead of hard_header_len
-Date:   Thu, 27 Oct 2022 17:55:09 +0530
-Message-Id: <20221027122510.24982-1-sreehari.kancharla@linux.intel.com>
+Subject: [PATCH net-next v2 2/2] net: wwan: t7xx: Add NAPI support
+Date:   Thu, 27 Oct 2022 17:55:10 +0530
+Message-Id: <20221027122510.24982-2-sreehari.kancharla@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20221027122510.24982-1-sreehari.kancharla@linux.intel.com>
+References: <20221027122510.24982-1-sreehari.kancharla@linux.intel.com>
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Haijun Liu <haijun.liu@mediatek.com>
 
-hard_header_len is used by gro_list_prepare() but on Rx, there
-is no header so use needed_headroom instead.
+Replace the work queue based RX flow with a NAPI implementation
+Remove rx_thread and dpmaif_rxq_work.
+Enable GRO on RX path.
+Introduce dummy network device. its responsibility is
+    - Binds one NAPI object for each DL HW queue and acts as
+      the agent of all those network devices.
+    - Use NAPI object to poll DL packets.
+    - Helps to dispatch each packet to the network interface.
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
+Co-developed-by: Sreehari Kancharla <sreehari.kancharla@linux.intel.com>
 Signed-off-by: Sreehari Kancharla <sreehari.kancharla@linux.intel.com>
-Reviewed-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
+Acked-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+Acked-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+--
+v2
+ * Replace explicit runtime resume and suspend calls with counter increment
+   and decrement calls in t7xx_dpmaif_napi_rx_poll.
+ * Use atomic_fetch_inc() in t7xx_ccmni_open
+ * Use netif_napi_add_weight() to support latest API change.
+ * Add Enable GRO in commit message
 ---
- drivers/net/wwan/t7xx/t7xx_netdev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wwan/t7xx/t7xx_hif_dpmaif.h    |  14 +-
+ drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c | 217 ++++++---------------
+ drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.h |   1 +
+ drivers/net/wwan/t7xx/t7xx_netdev.c        |  89 ++++++++-
+ drivers/net/wwan/t7xx/t7xx_netdev.h        |   5 +
+ 5 files changed, 160 insertions(+), 166 deletions(-)
 
+diff --git a/drivers/net/wwan/t7xx/t7xx_hif_dpmaif.h b/drivers/net/wwan/t7xx/t7xx_hif_dpmaif.h
+index 1225ca0ed51e..0ce4505e813d 100644
+--- a/drivers/net/wwan/t7xx/t7xx_hif_dpmaif.h
++++ b/drivers/net/wwan/t7xx/t7xx_hif_dpmaif.h
+@@ -20,6 +20,7 @@
+ 
+ #include <linux/bitmap.h>
+ #include <linux/mm_types.h>
++#include <linux/netdevice.h>
+ #include <linux/sched.h>
+ #include <linux/skbuff.h>
+ #include <linux/spinlock.h>
+@@ -109,20 +110,14 @@ struct dpmaif_rx_queue {
+ 	struct dpmaif_bat_request *bat_req;
+ 	struct dpmaif_bat_request *bat_frag;
+ 
+-	wait_queue_head_t	rx_wq;
+-	struct task_struct	*rx_thread;
+-	struct sk_buff_head	skb_list;
+-	unsigned int		skb_list_max_len;
+-
+-	struct workqueue_struct	*worker;
+-	struct work_struct	dpmaif_rxq_work;
+-
+ 	atomic_t		rx_processing;
+ 
+ 	struct dpmaif_ctrl	*dpmaif_ctrl;
+ 	unsigned int		expect_pit_seq;
+ 	unsigned int		pit_remain_release_cnt;
+ 	struct dpmaif_cur_rx_skb_info rx_data_info;
++	struct napi_struct	napi;
++	bool			sleep_lock_pending;
+ };
+ 
+ struct dpmaif_tx_queue {
+@@ -168,7 +163,8 @@ enum dpmaif_txq_state {
+ struct dpmaif_callbacks {
+ 	void (*state_notify)(struct t7xx_pci_dev *t7xx_dev,
+ 			     enum dpmaif_txq_state state, int txq_number);
+-	void (*recv_skb)(struct t7xx_pci_dev *t7xx_dev, struct sk_buff *skb);
++	void (*recv_skb)(struct t7xx_ccmni_ctrl *ccmni_ctlb, struct sk_buff *skb,
++			 struct napi_struct *napi);
+ };
+ 
+ struct dpmaif_ctrl {
+diff --git a/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c b/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c
+index 91a0eb19e0d8..b38a1ea34b5e 100644
+--- a/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c
++++ b/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c
+@@ -45,6 +45,7 @@
+ #include "t7xx_dpmaif.h"
+ #include "t7xx_hif_dpmaif.h"
+ #include "t7xx_hif_dpmaif_rx.h"
++#include "t7xx_netdev.h"
+ #include "t7xx_pci.h"
+ 
+ #define DPMAIF_BAT_COUNT		8192
+@@ -76,43 +77,6 @@ static unsigned int t7xx_normal_pit_bid(const struct dpmaif_pit *pit_info)
+ 	return value;
+ }
+ 
+-static int t7xx_dpmaif_net_rx_push_thread(void *arg)
+-{
+-	struct dpmaif_rx_queue *q = arg;
+-	struct dpmaif_ctrl *hif_ctrl;
+-	struct dpmaif_callbacks *cb;
+-
+-	hif_ctrl = q->dpmaif_ctrl;
+-	cb = hif_ctrl->callbacks;
+-
+-	while (!kthread_should_stop()) {
+-		struct sk_buff *skb;
+-		unsigned long flags;
+-
+-		if (skb_queue_empty(&q->skb_list)) {
+-			if (wait_event_interruptible(q->rx_wq,
+-						     !skb_queue_empty(&q->skb_list) ||
+-						     kthread_should_stop()))
+-				continue;
+-
+-			if (kthread_should_stop())
+-				break;
+-		}
+-
+-		spin_lock_irqsave(&q->skb_list.lock, flags);
+-		skb = __skb_dequeue(&q->skb_list);
+-		spin_unlock_irqrestore(&q->skb_list.lock, flags);
+-
+-		if (!skb)
+-			continue;
+-
+-		cb->recv_skb(hif_ctrl->t7xx_dev, skb);
+-		cond_resched();
+-	}
+-
+-	return 0;
+-}
+-
+ static int t7xx_dpmaif_update_bat_wr_idx(struct dpmaif_ctrl *dpmaif_ctrl,
+ 					 const unsigned int q_num, const unsigned int bat_cnt)
+ {
+@@ -726,21 +690,10 @@ static int t7xx_dpmaifq_rx_notify_hw(struct dpmaif_rx_queue *rxq)
+ 	return ret;
+ }
+ 
+-static void t7xx_dpmaif_rx_skb_enqueue(struct dpmaif_rx_queue *rxq, struct sk_buff *skb)
+-{
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&rxq->skb_list.lock, flags);
+-	if (rxq->skb_list.qlen < rxq->skb_list_max_len)
+-		__skb_queue_tail(&rxq->skb_list, skb);
+-	else
+-		dev_kfree_skb_any(skb);
+-	spin_unlock_irqrestore(&rxq->skb_list.lock, flags);
+-}
+-
+ static void t7xx_dpmaif_rx_skb(struct dpmaif_rx_queue *rxq,
+ 			       struct dpmaif_cur_rx_skb_info *skb_info)
+ {
++	struct dpmaif_ctrl *dpmaif_ctrl = rxq->dpmaif_ctrl;
+ 	struct sk_buff *skb = skb_info->cur_skb;
+ 	struct t7xx_skb_cb *skb_cb;
+ 	u8 netif_id;
+@@ -758,11 +711,11 @@ static void t7xx_dpmaif_rx_skb(struct dpmaif_rx_queue *rxq,
+ 	skb_cb = T7XX_SKB_CB(skb);
+ 	skb_cb->netif_idx = netif_id;
+ 	skb_cb->rx_pkt_type = skb_info->pkt_type;
+-	t7xx_dpmaif_rx_skb_enqueue(rxq, skb);
++	dpmaif_ctrl->callbacks->recv_skb(dpmaif_ctrl->t7xx_dev->ccmni_ctlb, skb, &rxq->napi);
+ }
+ 
+ static int t7xx_dpmaif_rx_start(struct dpmaif_rx_queue *rxq, const unsigned int pit_cnt,
+-				const unsigned long timeout)
++				const unsigned int budget, int *once_more)
+ {
+ 	unsigned int cur_pit, pit_len, rx_cnt, recv_skb_cnt = 0;
+ 	struct device *dev = rxq->dpmaif_ctrl->dev;
+@@ -777,13 +730,14 @@ static int t7xx_dpmaif_rx_start(struct dpmaif_rx_queue *rxq, const unsigned int
+ 		struct dpmaif_pit *pkt_info;
+ 		u32 val;
+ 
+-		if (!skb_info->msg_pit_received && time_after_eq(jiffies, timeout))
++		if (!skb_info->msg_pit_received && recv_skb_cnt >= budget)
+ 			break;
+ 
+ 		pkt_info = (struct dpmaif_pit *)rxq->pit_base + cur_pit;
+ 		if (t7xx_dpmaif_check_pit_seq(rxq, pkt_info)) {
+ 			dev_err_ratelimited(dev, "RXQ%u checks PIT SEQ fail\n", rxq->index);
+-			return -EAGAIN;
++			*once_more = 1;
++			return recv_skb_cnt;
+ 		}
+ 
+ 		val = FIELD_GET(PD_PIT_PACKET_TYPE, le32_to_cpu(pkt_info->header));
+@@ -817,12 +771,7 @@ static int t7xx_dpmaif_rx_start(struct dpmaif_rx_queue *rxq, const unsigned int
+ 				}
+ 
+ 				memset(skb_info, 0, sizeof(*skb_info));
+-
+ 				recv_skb_cnt++;
+-				if (!(recv_skb_cnt & DPMAIF_RX_PUSH_THRESHOLD_MASK)) {
+-					wake_up_all(&rxq->rx_wq);
+-					recv_skb_cnt = 0;
+-				}
+ 			}
+ 		}
+ 
+@@ -837,16 +786,13 @@ static int t7xx_dpmaif_rx_start(struct dpmaif_rx_queue *rxq, const unsigned int
+ 		}
+ 	}
+ 
+-	if (recv_skb_cnt)
+-		wake_up_all(&rxq->rx_wq);
+-
+ 	if (!ret)
+ 		ret = t7xx_dpmaifq_rx_notify_hw(rxq);
+ 
+ 	if (ret)
+ 		return ret;
+ 
+-	return rx_cnt;
++	return recv_skb_cnt;
+ }
+ 
+ static unsigned int t7xx_dpmaifq_poll_pit(struct dpmaif_rx_queue *rxq)
+@@ -863,53 +809,30 @@ static unsigned int t7xx_dpmaifq_poll_pit(struct dpmaif_rx_queue *rxq)
+ 	return pit_cnt;
+ }
+ 
+-static int t7xx_dpmaif_rx_data_collect(struct dpmaif_ctrl *dpmaif_ctrl,
+-				       const unsigned int q_num, const unsigned int budget)
++static int t7xx_dpmaif_napi_rx_data_collect(struct dpmaif_ctrl *dpmaif_ctrl,
++					    const unsigned int q_num,
++					    const unsigned int budget, int *once_more)
+ {
+ 	struct dpmaif_rx_queue *rxq = &dpmaif_ctrl->rxq[q_num];
+-	unsigned long time_limit;
+ 	unsigned int cnt;
++	int ret = 0;
+ 
+-	time_limit = jiffies + msecs_to_jiffies(DPMAIF_WQ_TIME_LIMIT_MS);
+-
+-	while ((cnt = t7xx_dpmaifq_poll_pit(rxq))) {
+-		unsigned int rd_cnt;
+-		int real_cnt;
+-
+-		rd_cnt = min(cnt, budget);
+-
+-		real_cnt = t7xx_dpmaif_rx_start(rxq, rd_cnt, time_limit);
+-		if (real_cnt < 0)
+-			return real_cnt;
+-
+-		if (real_cnt < cnt)
+-			return -EAGAIN;
+-	}
+-
+-	return 0;
+-}
++	cnt = t7xx_dpmaifq_poll_pit(rxq);
++	if (!cnt)
++		return ret;
+ 
+-static void t7xx_dpmaif_do_rx(struct dpmaif_ctrl *dpmaif_ctrl, struct dpmaif_rx_queue *rxq)
+-{
+-	struct dpmaif_hw_info *hw_info = &dpmaif_ctrl->hw_info;
+-	int ret;
++	ret = t7xx_dpmaif_rx_start(rxq, cnt, budget, once_more);
++	if (ret < 0)
++		dev_err(dpmaif_ctrl->dev, "dlq%u rx ERR:%d\n", rxq->index, ret);
+ 
+-	ret = t7xx_dpmaif_rx_data_collect(dpmaif_ctrl, rxq->index, rxq->budget);
+-	if (ret < 0) {
+-		/* Try one more time */
+-		queue_work(rxq->worker, &rxq->dpmaif_rxq_work);
+-		t7xx_dpmaif_clr_ip_busy_sts(hw_info);
+-	} else {
+-		t7xx_dpmaif_clr_ip_busy_sts(hw_info);
+-		t7xx_dpmaif_dlq_unmask_rx_done(hw_info, rxq->index);
+-	}
++	return ret;
+ }
+ 
+-static void t7xx_dpmaif_rxq_work(struct work_struct *work)
++int t7xx_dpmaif_napi_rx_poll(struct napi_struct *napi, const int budget)
+ {
+-	struct dpmaif_rx_queue *rxq = container_of(work, struct dpmaif_rx_queue, dpmaif_rxq_work);
+-	struct dpmaif_ctrl *dpmaif_ctrl = rxq->dpmaif_ctrl;
+-	int ret;
++	struct dpmaif_rx_queue *rxq = container_of(napi, struct dpmaif_rx_queue, napi);
++	struct t7xx_pci_dev *t7xx_dev = rxq->dpmaif_ctrl->t7xx_dev;
++	int ret, once_more = 0, work_done = 0;
+ 
+ 	atomic_set(&rxq->rx_processing, 1);
+ 	/* Ensure rx_processing is changed to 1 before actually begin RX flow */
+@@ -917,22 +840,51 @@ static void t7xx_dpmaif_rxq_work(struct work_struct *work)
+ 
+ 	if (!rxq->que_started) {
+ 		atomic_set(&rxq->rx_processing, 0);
+-		dev_err(dpmaif_ctrl->dev, "Work RXQ: %d has not been started\n", rxq->index);
+-		return;
++		dev_err(rxq->dpmaif_ctrl->dev, "Work RXQ: %d has not been started\n", rxq->index);
++		return work_done;
+ 	}
+ 
+-	ret = pm_runtime_resume_and_get(dpmaif_ctrl->dev);
+-	if (ret < 0 && ret != -EACCES)
+-		return;
++	if (!rxq->sleep_lock_pending) {
++		pm_runtime_get_noresume(rxq->dpmaif_ctrl->dev);
++		t7xx_pci_disable_sleep(t7xx_dev);
++	}
+ 
+-	t7xx_pci_disable_sleep(dpmaif_ctrl->t7xx_dev);
+-	if (t7xx_pci_sleep_disable_complete(dpmaif_ctrl->t7xx_dev))
+-		t7xx_dpmaif_do_rx(dpmaif_ctrl, rxq);
++	ret = try_wait_for_completion(&t7xx_dev->sleep_lock_acquire);
++	if (!ret) {
++		napi_complete_done(napi, work_done);
++		rxq->sleep_lock_pending = true;
++		napi_reschedule(napi);
++		return work_done;
++	}
+ 
+-	t7xx_pci_enable_sleep(dpmaif_ctrl->t7xx_dev);
+-	pm_runtime_mark_last_busy(dpmaif_ctrl->dev);
+-	pm_runtime_put_autosuspend(dpmaif_ctrl->dev);
++	rxq->sleep_lock_pending = false;
++	while (work_done < budget) {
++		int each_budget = budget - work_done;
++		int rx_cnt = t7xx_dpmaif_napi_rx_data_collect(rxq->dpmaif_ctrl, rxq->index,
++							      each_budget, &once_more);
++		if (rx_cnt > 0)
++			work_done += rx_cnt;
++		else
++			break;
++	}
++
++	if (once_more) {
++		napi_gro_flush(napi, false);
++		work_done = budget;
++		t7xx_dpmaif_clr_ip_busy_sts(&rxq->dpmaif_ctrl->hw_info);
++	} else if (work_done < budget) {
++		napi_complete_done(napi, work_done);
++		t7xx_dpmaif_clr_ip_busy_sts(&rxq->dpmaif_ctrl->hw_info);
++		t7xx_dpmaif_dlq_unmask_rx_done(&rxq->dpmaif_ctrl->hw_info, rxq->index);
++	} else {
++		t7xx_dpmaif_clr_ip_busy_sts(&rxq->dpmaif_ctrl->hw_info);
++	}
++
++	t7xx_pci_enable_sleep(rxq->dpmaif_ctrl->t7xx_dev);
++	pm_runtime_mark_last_busy(rxq->dpmaif_ctrl->dev);
++	pm_runtime_put_noidle(rxq->dpmaif_ctrl->dev);
+ 	atomic_set(&rxq->rx_processing, 0);
++	return work_done;
+ }
+ 
+ void t7xx_dpmaif_irq_rx_done(struct dpmaif_ctrl *dpmaif_ctrl, const unsigned int que_mask)
+@@ -947,7 +899,7 @@ void t7xx_dpmaif_irq_rx_done(struct dpmaif_ctrl *dpmaif_ctrl, const unsigned int
+ 	}
+ 
+ 	rxq = &dpmaif_ctrl->rxq[qno];
+-	queue_work(rxq->worker, &rxq->dpmaif_rxq_work);
++	napi_schedule(&rxq->napi);
+ }
+ 
+ static void t7xx_dpmaif_base_free(const struct dpmaif_ctrl *dpmaif_ctrl,
+@@ -1082,50 +1034,14 @@ int t7xx_dpmaif_rxq_init(struct dpmaif_rx_queue *queue)
+ 	int ret;
+ 
+ 	ret = t7xx_dpmaif_rx_alloc(queue);
+-	if (ret < 0) {
++	if (ret < 0)
+ 		dev_err(queue->dpmaif_ctrl->dev, "Failed to allocate RX buffers: %d\n", ret);
+-		return ret;
+-	}
+-
+-	INIT_WORK(&queue->dpmaif_rxq_work, t7xx_dpmaif_rxq_work);
+-
+-	queue->worker = alloc_workqueue("dpmaif_rx%d_worker",
+-					WQ_UNBOUND | WQ_MEM_RECLAIM | WQ_HIGHPRI, 1, queue->index);
+-	if (!queue->worker) {
+-		ret = -ENOMEM;
+-		goto err_free_rx_buffer;
+-	}
+-
+-	init_waitqueue_head(&queue->rx_wq);
+-	skb_queue_head_init(&queue->skb_list);
+-	queue->skb_list_max_len = queue->bat_req->pkt_buf_sz;
+-	queue->rx_thread = kthread_run(t7xx_dpmaif_net_rx_push_thread,
+-				       queue, "dpmaif_rx%d_push", queue->index);
+-
+-	ret = PTR_ERR_OR_ZERO(queue->rx_thread);
+-	if (ret)
+-		goto err_free_workqueue;
+-
+-	return 0;
+-
+-err_free_workqueue:
+-	destroy_workqueue(queue->worker);
+-
+-err_free_rx_buffer:
+-	t7xx_dpmaif_rx_buf_free(queue);
+ 
+ 	return ret;
+ }
+ 
+ void t7xx_dpmaif_rxq_free(struct dpmaif_rx_queue *queue)
+ {
+-	if (queue->worker)
+-		destroy_workqueue(queue->worker);
+-
+-	if (queue->rx_thread)
+-		kthread_stop(queue->rx_thread);
+-
+-	skb_queue_purge(&queue->skb_list);
+ 	t7xx_dpmaif_rx_buf_free(queue);
+ }
+ 
+@@ -1188,8 +1104,6 @@ void t7xx_dpmaif_rx_stop(struct dpmaif_ctrl *dpmaif_ctrl)
+ 		struct dpmaif_rx_queue *rxq = &dpmaif_ctrl->rxq[i];
+ 		int timeout, value;
+ 
+-		flush_work(&rxq->dpmaif_rxq_work);
+-
+ 		timeout = readx_poll_timeout_atomic(atomic_read, &rxq->rx_processing, value,
+ 						    !value, 0, DPMAIF_CHECK_INIT_TIMEOUT_US);
+ 		if (timeout)
+@@ -1205,7 +1119,6 @@ static void t7xx_dpmaif_stop_rxq(struct dpmaif_rx_queue *rxq)
+ {
+ 	int cnt, j = 0;
+ 
+-	flush_work(&rxq->dpmaif_rxq_work);
+ 	rxq->que_started = false;
+ 
+ 	do {
+diff --git a/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.h b/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.h
+index 182f62dfe398..f4e1b69ad426 100644
+--- a/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.h
++++ b/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.h
+@@ -112,5 +112,6 @@ int t7xx_dpmaif_bat_alloc(const struct dpmaif_ctrl *dpmaif_ctrl, struct dpmaif_b
+ 			  const enum bat_type buf_type);
+ void t7xx_dpmaif_bat_free(const struct dpmaif_ctrl *dpmaif_ctrl,
+ 			  struct dpmaif_bat_request *bat_req);
++int t7xx_dpmaif_napi_rx_poll(struct napi_struct *napi, const int budget);
+ 
+ #endif /* __T7XX_HIF_DPMA_RX_H__ */
 diff --git a/drivers/net/wwan/t7xx/t7xx_netdev.c b/drivers/net/wwan/t7xx/t7xx_netdev.c
-index f71d3bc3b237..7639846fa3df 100644
+index 7639846fa3df..494a28e386a3 100644
 --- a/drivers/net/wwan/t7xx/t7xx_netdev.c
 +++ b/drivers/net/wwan/t7xx/t7xx_netdev.c
-@@ -161,7 +161,7 @@ static void t7xx_ccmni_post_stop(struct t7xx_ccmni_ctrl *ctlb)
+@@ -22,6 +22,7 @@
+ #include <linux/gfp.h>
+ #include <linux/if_arp.h>
+ #include <linux/if_ether.h>
++#include <linux/ip.h>
+ #include <linux/kernel.h>
+ #include <linux/list.h>
+ #include <linux/netdev_features.h>
+@@ -29,6 +30,7 @@
+ #include <linux/skbuff.h>
+ #include <linux/types.h>
+ #include <linux/wwan.h>
++#include <net/ipv6.h>
+ #include <net/pkt_sched.h>
  
- static void t7xx_ccmni_wwan_setup(struct net_device *dev)
+ #include "t7xx_hif_dpmaif_rx.h"
+@@ -39,13 +41,47 @@
+ #include "t7xx_state_monitor.h"
+ 
+ #define IP_MUX_SESSION_DEFAULT	0
++#define SBD_PACKET_TYPE_MASK	GENMASK(7, 4)
++
++static void t7xx_ccmni_enable_napi(struct t7xx_ccmni_ctrl *ctlb)
++{
++	int i;
++
++	if (ctlb->is_napi_en)
++		return;
++
++	for (i = 0; i < RXQ_NUM; i++) {
++		napi_enable(ctlb->napi[i]);
++		napi_schedule(ctlb->napi[i]);
++	}
++	ctlb->is_napi_en = true;
++}
++
++static void t7xx_ccmni_disable_napi(struct t7xx_ccmni_ctrl *ctlb)
++{
++	int i;
++
++	if (!ctlb->is_napi_en)
++		return;
++
++	for (i = 0; i < RXQ_NUM; i++) {
++		napi_synchronize(ctlb->napi[i]);
++		napi_disable(ctlb->napi[i]);
++	}
++
++	ctlb->is_napi_en = false;
++}
+ 
+ static int t7xx_ccmni_open(struct net_device *dev)
  {
--	dev->hard_header_len += sizeof(struct ccci_header);
-+	dev->needed_headroom += sizeof(struct ccci_header);
+ 	struct t7xx_ccmni *ccmni = wwan_netdev_drvpriv(dev);
++	struct t7xx_ccmni_ctrl *ccmni_ctl = ccmni->ctlb;
  
- 	dev->mtu = ETH_DATA_LEN;
- 	dev->max_mtu = CCMNI_MTU_MAX;
+ 	netif_carrier_on(dev);
+ 	netif_tx_start_all_queues(dev);
++	if (!atomic_fetch_inc(&ccmni_ctl->napi_usr_refcnt))
++		t7xx_ccmni_enable_napi(ccmni_ctl);
++
+ 	atomic_inc(&ccmni->usage);
+ 	return 0;
+ }
+@@ -53,8 +89,12 @@ static int t7xx_ccmni_open(struct net_device *dev)
+ static int t7xx_ccmni_close(struct net_device *dev)
+ {
+ 	struct t7xx_ccmni *ccmni = wwan_netdev_drvpriv(dev);
++	struct t7xx_ccmni_ctrl *ccmni_ctl = ccmni->ctlb;
+ 
+ 	atomic_dec(&ccmni->usage);
++	if (atomic_dec_and_test(&ccmni_ctl->napi_usr_refcnt))
++		t7xx_ccmni_disable_napi(ccmni_ctl);
++
+ 	netif_carrier_off(dev);
+ 	netif_tx_disable(dev);
+ 	return 0;
+@@ -127,6 +167,9 @@ static void t7xx_ccmni_start(struct t7xx_ccmni_ctrl *ctlb)
+ 			netif_carrier_on(ccmni->dev);
+ 		}
+ 	}
++
++	if (atomic_read(&ctlb->napi_usr_refcnt))
++		t7xx_ccmni_enable_napi(ctlb);
+ }
+ 
+ static void t7xx_ccmni_pre_stop(struct t7xx_ccmni_ctrl *ctlb)
+@@ -149,6 +192,9 @@ static void t7xx_ccmni_post_stop(struct t7xx_ccmni_ctrl *ctlb)
+ 	struct t7xx_ccmni *ccmni;
+ 	int i;
+ 
++	if (atomic_read(&ctlb->napi_usr_refcnt))
++		t7xx_ccmni_disable_napi(ctlb);
++
+ 	for (i = 0; i < ctlb->nic_dev_num; i++) {
+ 		ccmni = ctlb->ccmni_inst[i];
+ 		if (!ccmni)
+@@ -183,6 +229,9 @@ static void t7xx_ccmni_wwan_setup(struct net_device *dev)
+ 	dev->features |= NETIF_F_RXCSUM;
+ 	dev->hw_features |= NETIF_F_RXCSUM;
+ 
++	dev->features |= NETIF_F_GRO;
++	dev->hw_features |= NETIF_F_GRO;
++
+ 	dev->needs_free_netdev = true;
+ 
+ 	dev->type = ARPHRD_NONE;
+@@ -190,6 +239,34 @@ static void t7xx_ccmni_wwan_setup(struct net_device *dev)
+ 	dev->netdev_ops = &ccmni_netdev_ops;
+ }
+ 
++static void t7xx_init_netdev_napi(struct t7xx_ccmni_ctrl *ctlb)
++{
++	int i;
++
++	/* one HW, but shared with multiple net devices,
++	 * so add a dummy device for NAPI.
++	 */
++	init_dummy_netdev(&ctlb->dummy_dev);
++	atomic_set(&ctlb->napi_usr_refcnt, 0);
++	ctlb->is_napi_en = false;
++
++	for (i = 0; i < RXQ_NUM; i++) {
++		ctlb->napi[i] = &ctlb->hif_ctrl->rxq[i].napi;
++		netif_napi_add_weight(&ctlb->dummy_dev, ctlb->napi[i], t7xx_dpmaif_napi_rx_poll,
++				      NIC_NAPI_POLL_BUDGET);
++	}
++}
++
++static void t7xx_uninit_netdev_napi(struct t7xx_ccmni_ctrl *ctlb)
++{
++	int i;
++
++	for (i = 0; i < RXQ_NUM; i++) {
++		netif_napi_del(ctlb->napi[i]);
++		ctlb->napi[i] = NULL;
++	}
++}
++
+ static int t7xx_ccmni_wwan_newlink(void *ctxt, struct net_device *dev, u32 if_id,
+ 				   struct netlink_ext_ack *extack)
+ {
+@@ -311,7 +388,8 @@ static void init_md_status_notifier(struct t7xx_pci_dev *t7xx_dev)
+ 	t7xx_fsm_notifier_register(t7xx_dev->md, md_status_notifier);
+ }
+ 
+-static void t7xx_ccmni_recv_skb(struct t7xx_pci_dev *t7xx_dev, struct sk_buff *skb)
++static void t7xx_ccmni_recv_skb(struct t7xx_ccmni_ctrl *ccmni_ctlb, struct sk_buff *skb,
++				struct napi_struct *napi)
+ {
+ 	struct t7xx_skb_cb *skb_cb;
+ 	struct net_device *net_dev;
+@@ -321,23 +399,22 @@ static void t7xx_ccmni_recv_skb(struct t7xx_pci_dev *t7xx_dev, struct sk_buff *s
+ 
+ 	skb_cb = T7XX_SKB_CB(skb);
+ 	netif_id = skb_cb->netif_idx;
+-	ccmni = t7xx_dev->ccmni_ctlb->ccmni_inst[netif_id];
++	ccmni = ccmni_ctlb->ccmni_inst[netif_id];
+ 	if (!ccmni) {
+ 		dev_kfree_skb(skb);
+ 		return;
+ 	}
+ 
+ 	net_dev = ccmni->dev;
+-	skb->dev = net_dev;
+-
+ 	pkt_type = skb_cb->rx_pkt_type;
++	skb->dev = net_dev;
+ 	if (pkt_type == PKT_TYPE_IP6)
+ 		skb->protocol = htons(ETH_P_IPV6);
+ 	else
+ 		skb->protocol = htons(ETH_P_IP);
+ 
+ 	skb_len = skb->len;
+-	netif_rx(skb);
++	napi_gro_receive(napi, skb);
+ 	net_dev->stats.rx_packets++;
+ 	net_dev->stats.rx_bytes += skb_len;
+ }
+@@ -404,6 +481,7 @@ int t7xx_ccmni_init(struct t7xx_pci_dev *t7xx_dev)
+ 	if (!ctlb->hif_ctrl)
+ 		return -ENOMEM;
+ 
++	t7xx_init_netdev_napi(ctlb);
+ 	init_md_status_notifier(t7xx_dev);
+ 	return 0;
+ }
+@@ -419,5 +497,6 @@ void t7xx_ccmni_exit(struct t7xx_pci_dev *t7xx_dev)
+ 		ctlb->wwan_is_registered = false;
+ 	}
+ 
++	t7xx_uninit_netdev_napi(ctlb);
+ 	t7xx_dpmaif_hif_exit(ctlb->hif_ctrl);
+ }
+diff --git a/drivers/net/wwan/t7xx/t7xx_netdev.h b/drivers/net/wwan/t7xx/t7xx_netdev.h
+index f5ad49ca12a7..f5ed6f99a145 100644
+--- a/drivers/net/wwan/t7xx/t7xx_netdev.h
++++ b/drivers/net/wwan/t7xx/t7xx_netdev.h
+@@ -30,6 +30,7 @@
+ 
+ #define CCMNI_NETDEV_WDT_TO		(1 * HZ)
+ #define CCMNI_MTU_MAX			3000
++#define NIC_NAPI_POLL_BUDGET		128
+ 
+ struct t7xx_ccmni {
+ 	u8				index;
+@@ -47,6 +48,10 @@ struct t7xx_ccmni_ctrl {
+ 	unsigned int			md_sta;
+ 	struct t7xx_fsm_notifier	md_status_notify;
+ 	bool				wwan_is_registered;
++	struct net_device		dummy_dev;
++	struct napi_struct		*napi[RXQ_NUM];
++	atomic_t			napi_usr_refcnt;
++	bool				is_napi_en;
+ };
+ 
+ int t7xx_ccmni_init(struct t7xx_pci_dev *t7xx_dev);
 -- 
 2.17.1
 
