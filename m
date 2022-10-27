@@ -2,56 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3E6260FC32
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 17:44:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D94B60FC52
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 17:50:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233652AbiJ0PoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 11:44:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35744 "EHLO
+        id S236100AbiJ0PuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 11:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234474AbiJ0Pn4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 11:43:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BE6F1905F5;
-        Thu, 27 Oct 2022 08:43:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S235810AbiJ0PuP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 11:50:15 -0400
+Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8410717F9B6
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 08:50:11 -0700 (PDT)
+Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B67A7623B9;
-        Thu, 27 Oct 2022 15:43:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BBEBC433D6;
-        Thu, 27 Oct 2022 15:43:53 +0000 (UTC)
-Date:   Thu, 27 Oct 2022 11:44:07 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Menglong Dong <menglong8.dong@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Menglong Dong <imagedong@tencent.com>,
-        David Ahern <dsahern@kernel.org>,
-        Hao Peng <flyingpeng@tencent.com>,
-        Dongli Zhang <dongli.zhang@oracle.com>, robh@kernel.org,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Vasily Averin <vasily.averin@linux.dev>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next v2] net: skb: export skb drop reaons to user by
- TRACE_DEFINE_ENUM
-Message-ID: <20221027114407.6429a809@gandalf.local.home>
-In-Reply-To: <CANn89i+qp=gmhx_1b+=hEiHA7yNGkfh46YPKhUc9GFbtNYBZrA@mail.gmail.com>
-References: <20220902141715.1038615-1-imagedong@tencent.com>
-        <CANn89iK7Mm4aPpr1-VM5OgicuHrHjo9nm9P9bYgOKKH9yczFzg@mail.gmail.com>
-        <20220905103808.434f6909@gandalf.local.home>
-        <CANn89i+qp=gmhx_1b+=hEiHA7yNGkfh46YPKhUc9GFbtNYBZrA@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 894CD1D6F;
+        Thu, 27 Oct 2022 17:50:09 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+        t=1666885809;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=E7Or28xBgYu/nRUeSpH4hT5twaqUzGnlqBsG0p+ziLk=;
+        b=gt1xX2hn8OFVJ8OtCPjtRvxHJMqUkCuYZu2DEX0lNuSD9Jo0OeND+Uw/qS8AoUUTHd7ZzO
+        RlLyGMym0Y19j1jOUiP5A/qW937PT1qlRiVZYcb2CgVzOe1UZhCl9m25y4Qh/lFZSVLnJ+
+        ETUj9gKekPea0wPhxn71IX9q3CRGf6e2QmWcSz6THXJAE2vopSrKypvbrr3xFbygDC2CQL
+        v5W/RszuvBebbX9YAJ9w19DFhyK3Z+1bcvENlfdZB33e4TNT+Df+WJBypLRGVvV9zatCBe
+        XYveC8Ue2S4eyJUL9ijJOcdNoz3mkRn73odQMe4TjQK3WFu4xTJAYOneVEZA4g==
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Date:   Thu, 27 Oct 2022 17:50:09 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        UNGLinuxDriver@microchip.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Heiko Thiery <heiko.thiery@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>
+Subject: Re: [PATCH net] net: dsa: fall back to default tagger if we can't
+ load the one from DT
+In-Reply-To: <20221027145439.3086017-1-vladimir.oltean@nxp.com>
+References: <20221027145439.3086017-1-vladimir.oltean@nxp.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <40e050352de4553cb788022ed018ed91@walle.cc>
+X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,37 +66,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 27 Oct 2022 08:32:02 -0700
-Eric Dumazet <edumazet@google.com> wrote:
-
-> This seems broken again (tried on latest net-next tree)
+Am 2022-10-27 16:54, schrieb Vladimir Oltean:
+> DSA tagging protocol drivers can be changed at runtime through sysfs 
+> and
+> at probe time through the device tree (support for the latter was added
+> later).
 > 
-> perf script
+> When changing through sysfs, it is assumed that the module for the new
+> tagging protocol was already loaded into the kernel (in fact this is
+> only a concern for Ocelot/Felix switches, where we have tag_ocelot.ko
+> and tag_ocelot_8021q.ko; for every other switch, the default and
+> alternative protocols are compiled within the same .ko, so there is
+> nothing for the user to load).
+> 
+> The kernel cannot currently call request_module(), because it has no 
+> way
+> of constructing the modalias name of the tagging protocol driver
+> ("dsa_tag-%d", where the number is one of DSA_TAG_PROTO_*_VALUE).
+> The device tree only contains the string name of the tagging protocol
+> ("ocelot-8021q"), and the only mapping between the string and the
+> DSA_TAG_PROTO_OCELOT_8021Q_VALUE is present in tag_ocelot_8021q.ko.
+> So this is a chicken-and-egg situation and dsa_core.ko has nothing 
+> based
+> on which it can automatically request the insertion of the module.
+> 
+> As a consequence, if CONFIG_NET_DSA_TAG_OCELOT_8021Q is built as 
+> module,
+> the switch will forever defer probing.
+> 
+> The long-term solution is to make DSA call request_module() somehow,
+> but that probably needs some refactoring.
+> 
+> What we can do to keep operating with existing device tree blobs is to
+> cancel the attempt to change the tagging protocol with the one 
+> specified
+> there, and to remain operating with the default one. Depending on the
+> situation, the default protocol might still allow some functionality
+> (in the case of ocelot, it does), and it's better to have that than to
+> fail to probe.
+> 
+> Fixes: deff710703d8 ("net: dsa: Allow default tag protocol to be
+> overridden from DT")
+> Link: 
+> https://lore.kernel.org/lkml/20221027113248.420216-1-michael@walle.cc/
+> Reported-by: Heiko Thiery <heiko.thiery@gmail.com>
+> Reported-by: Michael Walle <michael@walle.cc>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Do you also have the latest perf and the latest libtraceevent installed?
+Tested-by: Michael Walle <michael@walle.cc>
 
--- Steve
-
->             sshd 12192 [006]   200.090602: skb:kfree_skb:
-> skbaddr=0x2fa000400000 protocol=7844 location=0x2fa000001ea4 reason:
->          swapper     0 [030]   200.497468: skb:kfree_skb:
-> skbaddr=0xba00400001 protocol=65535 location=0x9080c62800000000
-> reason:
->  kworker/30:1-ev   308 [030]   200.497476: skb:kfree_skb:
-> skbaddr=0xba00400001 protocol=65535 location=0x9080c62800000000
-> reason:
->          swapper     0 [009]   200.957881: skb:kfree_skb:
-> skbaddr=0x2fa400400000 protocol=12195 location=0x2fa400002fa3 reason:
->          swapper     0 [026]   201.515769: skb:kfree_skb:
-> skbaddr=0xb600400001 protocol=65535 location=0x9080c62800000000
-> reason:
->  kworker/26:1-mm   276 [026]   201.515797: skb:kfree_skb:
-> skbaddr=0xb600400001 protocol=65535 location=0x9080c62800000000
-> reason:
->  kworker/26:1-mm   276 [026]   201.515802: skb:kfree_skb:
-> skbaddr=0x2f9f00400000 protocol=12189 location=0x2f9f00002f9d reason:
->          swapper     0 [030]   201.521484: skb:kfree_skb:
-> skbaddr=0xba00400001 protocol=65535 location=0x9080c62800000000
-> reason:
->  kworker/30:1-ev   308 [030]   201.521491: skb:kfree_skb:
-> skbaddr=0x2fa100400000 protocol=12192 location=0x2fa100002fa0 reason:
+Thanks,
+-michael
