@@ -2,127 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34BEE60F022
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 08:29:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23D6F60F05E
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 08:35:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233978AbiJ0G3J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 02:29:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38248 "EHLO
+        id S234041AbiJ0Gf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 02:35:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234273AbiJ0G3D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 02:29:03 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E3C4160EC4
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 23:29:01 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id c3-20020a1c3503000000b003bd21e3dd7aso3374285wma.1
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 23:29:01 -0700 (PDT)
+        with ESMTP id S230330AbiJ0GfZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 02:35:25 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 182F995ADD;
+        Wed, 26 Oct 2022 23:35:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=UAU5yyUB4mbIzxXvKnUzDnBw+wtC3frKRq03Vtd4mjk=;
-        b=Z8cD2SRF8NdlhNsfIxe6nUjGhLrhsYf9WGWW9PsMmE8uc5DkWHR3lahx6cWyvRhXLl
-         z2FU0Tt3vTBYv/wlVDrsPcpDVDC9+T0MsPMrNmXEd20DF0cRbLZV8Ca5iUfyJsDdgi1i
-         1PEVzA6JI02LirahtzQ+QQrzXDhhLIx9A7bNdjH7xJ6W3EAjseypMIPMfQSuB2e4QRum
-         jh1rgsKl+qH21mjo+tjgSHIIXTVTuzd+PBgVMnqrPXvJXtlI1YebvZj8UR/KuLbxVDig
-         TY+vfFCIOcLtlmd5m+z2tiQrG8FVipheuP/8ygVtua9cZq/Hh7wSB99OgoMcXLyuoMu9
-         shEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=UAU5yyUB4mbIzxXvKnUzDnBw+wtC3frKRq03Vtd4mjk=;
-        b=WKtbo285WRHQ4y6mSPW1+isM7Q883GSj8v0zOs/fCM/DClC2+nsF9RN6tgKj5GhTFp
-         +MeSFNSYWH/QjwueM7TMWPCTaWvh7Y7S6yvxO9NQsd5RHWpVwFjsYJiB+TJ6/rqRqrES
-         RvJr5DhLbE1C7Wn5PL/TRkgMn87G/mV5r+ZiuqJZ6tDVzccWEdErcxYVxY89yZoBza2A
-         fWVJ4RuRDdpaJIzuClaVmfT5CCQe33ayrwgSNNB3eREtJyc1/RYU2zeAlGAXpBZY/RXD
-         RQqWUM+PE89zloggezl3LrVPW4Efey6tzeBXDTyXpbeIcxd8dTZVlRlKftUGu0T2OQn3
-         0nCA==
-X-Gm-Message-State: ACrzQf2u59yLsMO6K6To+hyebYg/NoOJjtfrEnUbbpnJoYMufrsW2unw
-        yrJ9T4iWe/gB1fMKbeqNlCPmJKsxLXElNFs4mry6ug==
-X-Google-Smtp-Source: AMsMyM7sIvc3ouhHdP/BMmcus+/e+M3eEwv1Rcsd+WkQCyB+TVAsfjUMV/cU6GqcBhhsX8RK4kMXEQmzTgV4Vy2BT70=
-X-Received: by 2002:a1c:ac81:0:b0:3c6:e566:cc21 with SMTP id
- v123-20020a1cac81000000b003c6e566cc21mr4771527wme.0.1666852139803; Wed, 26
- Oct 2022 23:28:59 -0700 (PDT)
+  d=axis.com; q=dns/txt; s=axis-central1; t=1666852522;
+  x=1698388522;
+  h=message-id:date:mime-version:from:subject:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=b5A2GFSPAKlPXSyQ/35gbyiEt3fO3+/e4osgD5ldbUQ=;
+  b=PHJNiL8E7KZGVPds5HjkYQsXAEH9vPkRjHKpnEqJC0AW5lwhuZKc4cQH
+   +/dKYs9c62+NUilPjaJvnHdaP2Jpzy3DQlEgf0fqo1CGerAnzVOBhG3sa
+   oqEVXfIOg06ixlzUwa70JBNIdHPF/cHHhRzVUW5S1zZB16YDAhgIHuCNn
+   Jcejlq1+ymZmo3ye0hszYC2moFLU2HVQ6Mi7dWPz6yH60eYcD6PpR+SJs
+   H9NnJ8rVHKfHAgYhBLwot77yurTjFPIGDdAUpKVsGXJ6uRNA+QeHicoRV
+   pipKXu68PhcKP7cNC50Dudg/V45RF37YxE5lKUFauPi2xpemTxMunvIPP
+   g==;
+Message-ID: <128467d6-8249-9f25-21a7-777fff9854d9@axis.com>
+Date:   Thu, 27 Oct 2022 08:35:17 +0200
 MIME-Version: 1.0
-References: <20221026020200.29222-1-zhaoping.shu@mediatek.com>
- <CAMZdPi-bAw293XWBQL0wZS-nO_COD=ZOBduBVicof87HyEmS3w@mail.gmail.com> <7e8434e1fc683de62400dd93ea7a248e28e1efaa.camel@mediatek.com>
-In-Reply-To: <7e8434e1fc683de62400dd93ea7a248e28e1efaa.camel@mediatek.com>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Thu, 27 Oct 2022 08:28:23 +0200
-Message-ID: <CAMZdPi-8dRVioPUWcOABZsT53mQrji1sDjMWnLQzdXKhBd4-rA@mail.gmail.com>
-Subject: Re: [PATCH net v1] net: wwan: iosm: fix memory leak in ipc_wwan_dellink
-To:     "zhaoping.shu" <zhaoping.shu@mediatek.com>
-Cc:     m.chetan.kumar@intel.com, linuxwwan@intel.com,
-        ryazanov.s.a@gmail.com, johannes@sipsolutions.net,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, srv_heupstream@mediatek.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        haijun.liu@mediatek.com, xiayu.zhang@mediatek.com,
-        lambert.wang@mediatek.com, "hw . he" <hw.he@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+From:   Camel Guo <camelg@axis.com>
+Subject: Re: [RFC net-next 2/2] net: dsa: Add driver for Maxlinear GSW1XX
+ switch
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CC:     Camel Guo <Camel.Guo@axis.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Rob Herring <robh@kernel.org>, kernel <kernel@axis.com>
+References: <20221025135243.4038706-1-camel.guo@axis.com>
+ <20221025135243.4038706-3-camel.guo@axis.com>
+ <d942c724-4520-4a7b-8c36-704032c68a36@linaro.org> <Y1f5HU9crkPGX3SB@lunn.ch>
+Content-Language: en-US
+In-Reply-To: <Y1f5HU9crkPGX3SB@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.0.5.60]
+X-ClientProxiedBy: se-mail06w.axis.com (10.20.40.12) To se-mail03w.axis.com
+ (10.20.40.9)
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 27 Oct 2022 at 04:08, zhaoping.shu <zhaoping.shu@mediatek.com> wrote:
->
-> Hi Loic,
->
-> On Wed, 2022-10-26 at 09:50 +0200, Loic Poulain wrote:
-> > Hi Zhaoping,
-> >
-> > On Wed, 26 Oct 2022 at 04:02, zhaoping.shu <zhaoping.shu@mediatek.com
-> > > wrote:
-> > >
-> > > From: hw.he <hw.he@mediatek.com>
-> > >
-> > > IOSM driver registers network device without setting the
-> > > needs_free_netdev flag, and does NOT call free_netdev() when
-> > > unregisters network device, which causes a memory leak.
-> > >
-> > > This patch sets needs_free_netdev to true when registers
-> > > network device, which makes netdev subsystem call free_netdev()
-> > > automatically after unregister_netdevice().
-> > >
-> > > Signed-off-by: hw.he <hw.he@mediatek.com>
-> > > Signed-off-by: zhaoping.shu <zhaoping.shu@mediatek.com>
-> >
-> > Could you please add a corresponding 'fixes' tag.
-> This issue was introduced in the first commit of this driver:
-> Fixes: 2a54f2c77934 ("net: iosm: net driver")
+On 10/25/22 16:56, Andrew Lunn wrote:
+>> > +EXPORT_SYMBOL(gsw1xx_shutdown);
+>> 
+>> 1. EXPORT_SYMBOL_GPL
+>> 2. Why do you do it in the first place? It's one driver, no need for
+>> building two modules. Same applies to other places.
+> 
+> At some point, there is likely to be SPI and UART support. The
+> communication with the chip and the core driver will then be in
+> separate modules. But i agree this is not needed at the moment when it
+> is all linked into one.
 
-Ok, fine, then simply send a V2 with that tag.
-You can append mine as well:
+Do you suggest that currently we put the content of gsw1xx_core.c and 
+gsw1xx_mdio.c into one file and split them later at the time when 
+another management mode (e,g: spi) is added?
 
-Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
+Actually I kinda hope this piece of code (gsw1xx_core.c) can be reused 
+in lantiq_gswip in short future.
 
+I tried to use the logic in lantiq_gswip directly on the gsw145 chip. 
+Unfortunately it did not work. It seems that the GSWIP part changes a lot.
 
->
-> >
-> > > ---
-> > >  drivers/net/wwan/iosm/iosm_ipc_wwan.c | 1 +
-> > >  1 file changed, 1 insertion(+)
-> > >
-> > > diff --git a/drivers/net/wwan/iosm/iosm_ipc_wwan.c
-> > > b/drivers/net/wwan/iosm/iosm_ipc_wwan.c
-> > > index 2f1f8b5d5b59..0108d8d01ff2 100644
-> > > --- a/drivers/net/wwan/iosm/iosm_ipc_wwan.c
-> > > +++ b/drivers/net/wwan/iosm/iosm_ipc_wwan.c
-> > > @@ -168,6 +168,7 @@ static void ipc_wwan_setup(struct net_device
-> > > *iosm_dev)
-> > >         iosm_dev->max_mtu = ETH_MAX_MTU;
-> > >
-> > >         iosm_dev->flags = IFF_POINTOPOINT | IFF_NOARP;
-> > > +       iosm_dev->needs_free_netdev = true;
-> >
-> > Look like we have the same problem in mhi_wwan_mbim driver, would you
-> > be able to submit a change for it as well?
-> We will submit another patch to fix it, since this patch is dedicated
-> for iosm.
+> 
+>     Andrew
+
