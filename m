@@ -2,190 +2,356 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFF886102D7
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 22:41:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F0706102F0
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 22:44:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235608AbiJ0Ulk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 16:41:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57358 "EHLO
+        id S236699AbiJ0UoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 16:44:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234377AbiJ0Ulj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 16:41:39 -0400
-Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02on2068.outbound.protection.outlook.com [40.107.249.68])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EF0E61749
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 13:41:38 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Imol2tOusGIO1plqBWurL93gVh2ExT86xTDAAoN4JDK0eHOFViKrc5PSZ5dP0kwsN4dONOL0ELIvl1em0XGv3o7GYoEAs82QbGE1msKNoUhTnEz6jk7UYt/gJT7N4qBvWZEb5sbbvkZ2GbTBpAj7JWhS3n4fmAKfZS83s9Ft5iBcnl5WbitiCL344PJuy+KMqLQp0yeM7MQN6AbONJDd+xUzbhIRV9yaDJtW38o/s26rviKVYNN819rF08JAYsc8JwyLP62uzh1SNDMwLPVLBcLztlCHPyFCTD6y98BKHBXZT/gJno9zIL9U0+catx95dPGDLdUqWdK/keWh0pQqpA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OfasP3BC81GiS0fhErJyDgXMCma8YwJVa1wG7fzEUoQ=;
- b=GL0xqZDTBu+P0O/hJOm4OaukGI3K5AKMXuuJHMqU4MTbbzJsARiGRuUoRkCQ8OMPSmoU/grqgk9skXdRP7ZGaLN0TS8G1lGGdTrtBkYkCMSNC8ZMIGl7WjhNnipYdzDHOnTRKgXzH1M9wRE9HbXFb0N6wMe8Vis5/fcD9/mgQXz/VhmGg1npYQnf8oBAYj+9qW6VraBVxCRWSUdfeaysDk+yQjlYyk4vB3EbaPDg0127K8M0Myn2M+dubYurLDbwFHZ1YocCUhNRBttLFvNRgzi2Gao/lohQKI3G7e9dZLc797Nim+P7+bFKNPpDYWxHArb8h4oi8YUX8hZeiNeqOw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OfasP3BC81GiS0fhErJyDgXMCma8YwJVa1wG7fzEUoQ=;
- b=XyMqONMFI2EA6znHumaqn7bPOTuDNPnuxoUZmtucsqqjjuNV8fL2RBh3cr2wRSqmnaKXzOr9iLzPtuMcD9evTbv69jGbdh2T3Fg1IafbnPX7Vr215u4sgcxRfyod2x6U3FyBLbApDhxMFtKkWa1DeqVQm+BTsOczvDXC/wzEvAk=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by PAXPR04MB9373.eurprd04.prod.outlook.com (2603:10a6:102:2b5::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.34; Thu, 27 Oct
- 2022 20:41:36 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::6710:c5fd:bc88:2035]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::6710:c5fd:bc88:2035%6]) with mapi id 15.20.5746.028; Thu, 27 Oct 2022
- 20:41:36 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Fabio Estevam <festevam@gmail.com>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        "tharvey@gateworks.com" <tharvey@gateworks.com>,
-        netdev <netdev@vger.kernel.org>, Marek Vasut <marex@denx.de>,
-        Fabio Estevam <festevam@denx.de>
-Subject: Re: Marvell 88E6320 connected to i.MX8MN
-Thread-Topic: Marvell 88E6320 connected to i.MX8MN
-Thread-Index: AQHY6aoyY0Ej62Wnd0Swyri7wm0Iva4ita2A
-Date:   Thu, 27 Oct 2022 20:41:35 +0000
-Message-ID: <20221027204135.grfsorkt7fdk6ccp@skbuf>
-References: <CAOMZO5DJAsj8-m2tEfrHn4xZdK6FE0bZepRZBrSD9=tWSSCNOA@mail.gmail.com>
-In-Reply-To: <CAOMZO5DJAsj8-m2tEfrHn4xZdK6FE0bZepRZBrSD9=tWSSCNOA@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: VI1PR04MB5136:EE_|PAXPR04MB9373:EE_
-x-ms-office365-filtering-correlation-id: ef263a75-bf98-410c-9e7f-08dab85ba404
-x-ld-processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 1IanwkILHWYN+roAxMU76sdvsXHqtcRQ8xOxzZ446eMjE3WBip6aVdK6RCTkXOOVlSAyyp6lJdEha3hQucK/uZ0fa4c4Azbf8ExFotSZZ3AwqKZ/D/i49URd7B80pkffVBpNGeEQcwvpCcmcWWvSbiFG+EUyC7o9kefMmGKESo+NbYS7h4qNlSoT+4nA5WZkCfmzOraYnMQ5/3gN8MWqcSjNdzqplh0zid6GBqFDX5QUCU9AdlK4Yq4CUOa+LPPcMU9RMbDbmkwSl/Ve0gh2qppsfG5F8NvjierNhcO/NXEXGDnb6Enu6EUzaUJkwr5sMqcW7VWCZAXV+wyDNuprLd+7Xr6lNSzwH6+ElRXG4fFCMEzh2FZLo+aU8MCABBLT4JSwKsuIytXNRJjpJdBy77ERURQy+M/dLWIzLAXwuk5XhOx0puoWK/LkzwE26B1ZapUaQtxev2+y0fhXCgU10ofc64/RGgag3YhWxo7sL4i0MX35kuclwqPK3zo+Bbr+MwBWQ3MWDAbojflg5uoC+9Y5D1tmI1JTTPIsl0OgFNl0lfOEdEY72Hy11gOfsARdK0R+7Ms6l/GDC5v/2FLKZJmSfEIp9kDuvsgbg9OgIZRjRTluiyuSZ3k/sTTSNMVvsl2GlbeXHWsEVBmLnB1gYMMWxeHUyYIL9OzPGWZk9f+vinPfNjck8UGClPmmrbL3rJ43fgmYQXkiqiu+giWKDbK43WsMdzitQFdbZJC/Rh90rb+gxkJTmYh3oNFw1B2lCNICn2titHpBQ96PduhlRp6sie0VNoR6JdyazZWXK3L6McCUH+ZYuOzDTKhb73bVqHAPCFS4bFWQ8mctBp5plFJPSMO407O19TlNTD6TMLM=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(136003)(396003)(376002)(39860400002)(366004)(346002)(451199015)(966005)(6486002)(83380400001)(478600001)(91956017)(71200400001)(76116006)(66946007)(66446008)(66476007)(66556008)(6506007)(4326008)(64756008)(8676002)(8936002)(5660300002)(1076003)(122000001)(316002)(86362001)(9686003)(54906003)(41300700001)(6512007)(2906002)(38100700002)(26005)(6916009)(33716001)(44832011)(186003)(38070700005)(10126625003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?E0IWGupXLPhHCkozVtiDGh4tMFWGlAC+W7YaCB2pjoSygIZ92dFj9c5XEHMO?=
- =?us-ascii?Q?VW6DI7mVQs6+jH/oyAKr9OTbPKcSoJhzApTebyBLMWQO/PCHYnOs/PdXpaRH?=
- =?us-ascii?Q?+PUXxq9k4ArsKIaLstc2Z9U0H/c6KVELm/YK2i7CB9NfZHTLmC3Ckp3n6krU?=
- =?us-ascii?Q?jwFSSxr/8eT6thBG5jKH06NE1QPlCQ7++1KZSQmBeF6YTfoQ9nQyFJ4zMkkS?=
- =?us-ascii?Q?gA7DW24SmFpvm9Oy1xFs6ooNI82LjuEw82Z2POVzu3g02Y5Ww6JFJ6RFTjeH?=
- =?us-ascii?Q?ViFc9bK2MCFTxL0ivq40HUZHCQFaRB5tli6ohWZ6VX5xdvdZ59S//c22PQMh?=
- =?us-ascii?Q?l3AFmRAku/ecEQA+15qPBcYluymIj5bkRV+as2RHeOOCobTzsJ/LR2W117Pq?=
- =?us-ascii?Q?sS08AUWm0PoabhTlhMUwJo51x7nuEvzgkFpLOQBvm6B/gHA6MmeeRfGlf/AK?=
- =?us-ascii?Q?5SaSbcFfN+0dzz03AysmuYUUVELv5D78fz2fLrFokVsSgxWZ1GrMJ7qzGzzK?=
- =?us-ascii?Q?pyypf0y+otZZ/ucJOCjx0z3d4jCEIWKbBpQRMCRXcarzl9JENjeo3KfkeLZi?=
- =?us-ascii?Q?P/6X8SYaWKOZXSWUwWOZE/Wg+2KThpoYmzTod2/sSn0lPJ4tSqcHuK5vAaMw?=
- =?us-ascii?Q?wG3MTSwDfSScXNKVm1+aynS7AlOB9K20kLw+4Pa28zQ+ZCBSA0HyDMvICwjv?=
- =?us-ascii?Q?Vlg+PFpUh71YIw3MVajnXz5IYKaAQVYBlyay6Ba6Hjpqo4BB5U2Wz6ax+Db4?=
- =?us-ascii?Q?F7UIYfq/MuPOsfYG/8JsFWDNZ0W/UhMy4p0lDJf5kkS4XgdEGmkTXQszHJAi?=
- =?us-ascii?Q?blIsyPt7OSVzPWIVi/NTAfYnRYoqJ3tkySsHb3zUe5jG7CetIVKb6vOLUuEv?=
- =?us-ascii?Q?CebgGnMLrOaBMLbmG9WU8mF4p1c09qYfbRkPKmZ1yH26CKzz2UObvwyv/G77?=
- =?us-ascii?Q?0D9bGvoe9jS9TC66s5/9e8kkadhJI7eIpaaQN+yf+jPRCQT0xTGueHj+JFVC?=
- =?us-ascii?Q?qsZ8kfGEmJ9isLLlSlt492KbiG4ZM5JnbryKgIw52W6iGgJ6Fl5ZMm3TyopZ?=
- =?us-ascii?Q?4kjfO+/H6dOnWvqpVGMj8b0jAfRguedTGM9fB50bt69SJ1JNY4bS1msgFUne?=
- =?us-ascii?Q?BKFEgp1V3Cghc8HnZgCapWfgmVguw+rBe8LlQf4akxXI2da5GoXPStLQE8dz?=
- =?us-ascii?Q?l0CL8hMfbyJdaAATUu20d5oAnVYeMm+yht79fccOb5bz/gzMC85tpyLvS0aV?=
- =?us-ascii?Q?mCC7N22geKD9uRhevebsfJsEke2OzBeNQyZuxOZHX63pirLbvGAE3Enb16qs?=
- =?us-ascii?Q?iR4ZWtSIad13Je1+Q6TUPqGIdHy1chOHUo4ZfxN3JoTfzOlP7AAYawpDHjFd?=
- =?us-ascii?Q?gJRG7TNoF5UzPwvtYQ+JRfQkD20NHjvscMhxRLWgCgsVfMEOy+GWlHmytdVh?=
- =?us-ascii?Q?J5GiIcGGEOYQws1OjPuBBFwDPc+hMbTH066qrj33ciZ/NiCyJLX+g57x0eqU?=
- =?us-ascii?Q?FoVoibZqQB07tZ/ggKgWgx/0A+S9xDOLBKA8uOn/drXfJMSCZrXyM64pUCDB?=
- =?us-ascii?Q?ZmkH+yUDasFhsJ0S1bjrAdRlm6nZdK6RuL1n1xvqx9xWUILZT64Vh6e97c+a?=
- =?us-ascii?Q?oA=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <395DE0825ACA504085DEC92D61F69DC9@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S236554AbiJ0Un6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 16:43:58 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5125A7173C
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 13:43:56 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id bs21so4165468wrb.4
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 13:43:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=arista.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=TYGHZDqvvBxnsm6EcMaKF3Cm5D7EL8Qs7lX7iPvQ5j0=;
+        b=RYI345U3vuySGiBaniPTJBMKW9tUFQHDSDdUVwcQDiEwcup36zDRObQtMNu2e9PayL
+         bc0RMaCCr1Fsw9dRGj/BkFCyJ1fZXMfCeeJ5FhCCFh8iD3oBNSpVpQk8J00BjZXE02Rh
+         1OzbWaKkCovxwhLGaR+NQU1Ym9ckcvQSFubMl/EJj4k3kUHmbCqLA1niFWVonbD5i08s
+         3uOu/KHIGUJu1rU/nn/s0X067vGiz+Aol9OzvIXja1DrmNzwUB9hK8M5lerzXmCK4WLQ
+         5eRtLe5WWcjWjQyYlyP3JOra2NilNL3EJShJS9+ortqZX4939v7dhgnSOea8uek+PhI3
+         tFDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=TYGHZDqvvBxnsm6EcMaKF3Cm5D7EL8Qs7lX7iPvQ5j0=;
+        b=lomclNdZE92K/fKnHocVCMaRFRDOrnY9xWBKIOehO2S9vwEeCCFJddem/r1+hIgFz0
+         S6JYLvrtyL/8IinynC1Q1yUCTeX+iZwGEUHpkjjCa/w6CpSGPaeqgnPXULBELDs4F5gx
+         5Xp/b0svyTJgV9T1PNB3R4NBYznQhlRTPs4PLUcWhLT8nJqVdiYCs9T1R6Hlf5c6PgVW
+         DgRYGJGN8aeYUGVEMN47CgXTdFE9vRJPeSn1SeOgQ/lNXn2tbqH37+NVRqkB36VpOrzd
+         Wm3Vrbr/NJmcjpfvi6yPGuCvX+9LGNniBa309NkNRIvQi1Uzcx9vjH9chMvznogeMapH
+         /BZw==
+X-Gm-Message-State: ACrzQf2cnQbmfCS8/2mp3IxKwCuTbQoLOJRgXsXHnchfVof7CqSTshyj
+        nZSr7W7kUp4VFmYQALZfKhROLg==
+X-Google-Smtp-Source: AMsMyM4eztAZtqknRs4qeLpH9k950PuifsLvhIzAgHD8+jckaiXLgHQax2e2xMDZ/MdYdr89UcFOyw==
+X-Received: by 2002:a5d:4e47:0:b0:236:6dca:d355 with SMTP id r7-20020a5d4e47000000b002366dcad355mr16534317wrt.498.1666903434741;
+        Thu, 27 Oct 2022 13:43:54 -0700 (PDT)
+Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
+        by smtp.gmail.com with ESMTPSA id n3-20020a5d6b83000000b00236644228besm1968739wrx.40.2022.10.27.13.43.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Oct 2022 13:43:54 -0700 (PDT)
+From:   Dmitry Safonov <dima@arista.com>
+To:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Dmitry Safonov <dima@arista.com>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Bob Gilligan <gilligan@arista.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Eric Biggers <ebiggers@kernel.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Ivan Delalande <colona@arista.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Leonard Crestez <cdleonard@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Salam Noureddine <noureddine@arista.com>,
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        linux-crypto@vger.kernel.org
+Subject: [PATCH v3 00/36] net/tcp: Add TCP-AO support
+Date:   Thu, 27 Oct 2022 21:43:11 +0100
+Message-Id: <20221027204347.529913-1-dima@arista.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ef263a75-bf98-410c-9e7f-08dab85ba404
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Oct 2022 20:41:35.9491
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: PkUJtOX4bFL6PmaoHhUQrkMwj79mnjTwQohGSf4uN9LFAqWsu3SeEyNEl1aqNJlo2eAvsXVsxRxHE1FOiHRGjA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB9373
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Fabio,
+In TODO (expect in next versions):
+- Documentation/ page about TCP-AO kernel design, UAPI
+- Support VRFs in setsockopt()
+- setsockopt() UAPI padding + a test that structures are of the same
+  size on 32-bit as on 64-bit platforms
+- IPv4-mapped-IPv6 addresses
+- Measure/benchmark TCP-AO and regular TCP connections (on hw)
+- setsockopt(TCP_REPAIR) with TCP-AO
 
-On Wed, Oct 26, 2022 at 11:16:45PM -0300, Fabio Estevam wrote:
-> Hi,
->=20
-> I am trying to make a Marvell 88E6320 switch to work on an imx8mn-based b=
-oard
-> running kernel 6.0.5.
->=20
-> Ethernet is functional in U-Boot with Tim's series:
-> https://lore.kernel.org/all/20221004164918.2251714-1-tharvey@gateworks.co=
-m/
->=20
-> However, in the kernel I am not able to retrieve an IP via DHCP:
->=20
-> mv88e6085 30be0000.ethernet-1:00: switch 0x1150 detected: Marvell 88E6320=
-, revision 2
-> fec 30be0000.ethernet eth0: registered PHC device 0
-> mv88e6085 30be0000.ethernet-1:00: switch 0x1150 detected: Marvell 88E6320=
-, revision 2
-> mv88e6085 30be0000.ethernet-1:00: configuring for fixed/rgmii-id link mod=
-e
-> mv88e6085 30be0000.ethernet-1:00: Link is Up - 1Gbps/Full - flow control =
-off
-> mv88e6085 30be0000.ethernet-1:00 lan3 (uninitialized): PHY
-> [!soc@0!bus@30800000!ethernet@30be0000!mdio!switch@0!mdio:03] driver [Gen=
-eric PHY] (irq=3DPOLL)
-> mv88e6085 30be0000.ethernet-1:00 lan4 (uninitialized): PHY
-> [!soc@0!bus@30800000!ethernet@30be0000!mdio!switch@0!mdio:04] driver [Gen=
-eric PHY] (irq=3DPOLL)
+Changes from v2:
+- Added more missing `static' declarations for local functions
+  (kernel test robot <lkp@intel.com>)
+- Building now with CONFIG_TCP_AO=n and CONFIG_TCP_MD5SIG=n
+  (kernel test robot <lkp@intel.com>)
+- Now setsockopt(TCP_AO) is allowed when it's TCP_LISTEN or TCP_CLOSE
+  state OR the key added is not the first key on a socket (by Salam)
+- CONFIG_TCP_AO does not depend on CONFIG_TCP_MD5SIG anymore
+- Don't leak tcp_md5_needed static branch counter when TCP-MD5 key
+  is modified/changed
+- TCP-AO lookups are dynamically enabled/disabled with static key when
+  there is ao_info in the system (and when it is destroyed)
+- Wired SYN cookies up to TCP-AO (by Salam)
+- Fix verification for possible re-transmitted SYN packets (by Salam)
+- use sockopt_lock_sock() instead of lock_sock()
+  (from v6.1 rebase, commit d51bbff2aba7)
+- use sockptr_t in getsockopt(TCP_AO_GET)
+  (from v6.1 rebase, commit 34704ef024ae)
+- Fixed reallocating crypto_pool's scratch area by IPI while
+  crypto_pool_get() was get by another CPU
+- selftests on older kernels (or with CONFIG_TCP_AO=n) should exit with
+  SKIP, not FAIL (Shuah Khan <shuah@kernel.org>)
+- selftests that check interaction between TCP-AO and TCP-MD5 now
+  SKIP when CONFIG_TCP_MD5SIG=n
+- Measured the performance of different hashing algorithms for TCP-AO
+  and compare with TCP-MD5 performance. This is done with hacky patches
+  to iperf (see [3]). At this moment I've done it in qemu/KVM with CPU
+  affinities set on Intel(R) Core(TM) i7-7600U CPU @ 2.80GHz.
+  No performance degradation was noticed before/after patches, but given
+  the measures were done in a VM, without measuring it on a physical dut
+  it only gives a hint of relative speed for different hash algorithms
+  with TCP-AO. Here are results, averaging on 30 measures each:
+  TCP:                    3.51Gbits/sec
+  TCP-MD5:                1.12Gbits/sec
+  TCP-AO(HMAC(SHA1)):     1.53Gbits/sec
+  TCP-AO(CMAC(AES128)):   621Mbits/sec
+  TCP-AO(HMAC(SHA512)):   1.21Gbits/sec
+  TCP-AO(HMAC(SHA384)):   1.20Gbits/sec
+  TCP-AO(HMAC(SHA224)):   961Mbits/sec
+  TCP-AO(HMAC(SHA3-512)): 157Mbits/sec
+  TCP-AO(HMAC(RMD160)):   659Mbits/sec
+  TCP-AO(HMAC(MD5):       1.12Gbits/sec
+  (the last one is just for fun, but may make sense as it provides
+  the same security as TCP-MD5, but allows multiple keys and a mechanism
+  to change them from RFC5925)
 
-Looks like you are missing the Marvell PHY driver; the generic PHY
-driver gets used. Can you enable CONFIG_MARVELL_PHY?
+Changes from v1:
+- Building now with CONFIG_IPV6=n (kernel test robot <lkp@intel.com>)
+- Added missing static declarations for local functions
+  (kernel test robot <lkp@intel.com>)
+- Addressed static analyzer and review comments by Dan Carpenter
+  (thanks, they were very useful!)
+- Fix elif without defined() for !CONFIG_TCP_AO
+- Recursively build selftests/net/tcp_ao (Shuah Khan), patches in:
+  https://lore.kernel.org/all/20220919201958.279545-1-dima@arista.com/T/#u
+- Don't leak crypto_pool reference when TCP-MD5 key is modified/changed
+- Add TCP-AO support for nettest.c and fcnal-test.sh
+  (will be used for VRF testing in later versions)
 
-> device eth0 entered promiscuous mode
-> DSA: tree 0 setup
-> ...
->=20
-> ~# udhcpc -i lan4
-> udhcpc: started, v1.31.1
-> [   25.174846] mv88e6085 30be0000.ethernet-1:00 lan4: configuring for
-> phy/gmii link mode
-> udhcpc: sending discover
-> [   27.242123] mv88e6085 30be0000.ethernet-1:00 lan4: Link is Up -
-> 100Mbps/Full - flow control rx/tx
-> [   27.251064] IPv6: ADDRCONF(NETDEV_CHANGE): lan4: link becomes ready
-> udhcpc: sending discover
-> udhcpc: sending discover
-> udhcpc: sending discover
-> ...
->=20
-> This is my devicetree:
-> https://pastebin.com/raw/TagQJK2a
->=20
-> The only way that I can get IP via DHCP to work in the kernel is if
-> I access the network inside U-Boot first and launch the kernel afterward.
->=20
-> It looks like U-Boot is doing some configuration that the kernel is missi=
-ng.
+Comparison between Leonard proposal and this (overview):
+https://lore.kernel.org/all/3cf03d51-74db-675c-b392-e4647fa5b5a6@arista.com/T/#u
 
-Yeah, sounds like the Marvell PHY driver could be what's the difference.
+Version 2: https://lore.kernel.org/all/20220923201319.493208-1-dima@arista.com/T/#u
+Version 1: https://lore.kernel.org/all/20220818170005.747015-1-dima@arista.com/T/#u
 
-> Does anyone have any suggestions, please?
+This patchset implements the TCP-AO option as described in RFC5925. There
+is a request from industry to move away from TCP-MD5SIG and it seems the time
+is right to have a TCP-AO upstreamed. This TCP option is meant to replace
+the TCP MD5 option and address its shortcomings. Specifically, it provides
+more secure hashing, key rotation and support for long-lived connections
+(see the summary of TCP-AO advantages over TCP-MD5 in (1.3) of RFC5925).
+The patch series starts with six patches that are not specific to TCP-AO
+but implement a general crypto facility that we thought is useful
+to eliminate code duplication between TCP-MD5SIG and TCP-AO as well as other
+crypto users. These six patches are being submitted separately in
+a different patchset [1]. Including them here will show better the gain
+in code sharing. Next are 18 patches that implement the actual TCP-AO option,
+followed by patches implementing selftests.
 
-If that doesn't work, the next step is to isolate things. Connect a
-cable to the other switch port, create a bridge, and forward packets
-between one station and the other. This doesn't involve the CPU port, so
-you'll learn if the internal PHYs are the problem or the CPU port is.
-Next step would be to collect ethtool -S lan0, ethtool -S eth0, and post
-those.=
+The patch set was written as a collaboration of three authors (in alphabetical
+order): Dmitry Safonov, Francesco Ruggeri and Salam Noureddine. Additional
+credits should be given to Prasad Koya, who was involved in early prototyping
+a few years back. There is also a separate submission done by Leonard Crestez
+whom we thank for his efforts getting an implementation of RFC5925 submitted
+for review upstream [2]. This is an independent implementation that makes
+different design decisions.
+
+For example, we chose a similar design to the TCP-MD5SIG implementation and
+used setsockopts to program per-socket keys, avoiding the extra complexity
+of managing a centralized key database in the kernel. A centralized database
+in the kernel has dubious benefits since it doesn’t eliminate per-socket
+setsockopts needed to specify which sockets need TCP-AO and what are the
+currently preferred keys. It also complicates traffic key caching and
+preventing deletion of in-use keys.
+
+In this implementation, a centralized database of keys can be thought of
+as living in user space and user applications would have to program those
+keys on matching sockets. On the server side, the user application programs
+keys (MKTS in TCP-AO nomenclature) on the listening socket for all peers that
+are expected to connect. Prefix matching on the peer address is supported.
+When a peer issues a successful connect, all the MKTs matching the IP address
+of the peer are copied to the newly created socket. On the active side,
+when a connect() is issued all MKTs that do not match the peer are deleted
+from the socket since they will never match the peer. This implementation
+uses three setsockopt()s for adding, deleting and modifying keys on a socket.
+All three setsockopt()s have extensive sanity checks that prevent
+inconsistencies in the keys on a given socket. A getsockopt() is provided
+to get key information from any given socket.
+
+Few things to note about this implementation:
+- Traffic keys are cached for established connections avoiding the cost of
+  such calculation for each packet received or sent.
+- Great care has been taken to avoid deleting in-use MKTs
+  as required by the RFC.
+- Any crypto algorithm supported by the Linux kernel can be used
+  to calculate packet hashes.
+- Fastopen works with TCP-AO but hasn’t been tested extensively.
+- Tested for interop with other major networking vendors (on linux-4.19),
+  including testing for key rotation and long lived connections.
+
+[1]: https://lore.kernel.org/all/20220726201600.1715505-1-dima@arista.com/
+[2]: https://lore.kernel.org/all/cover.1658815925.git.cdleonard@gmail.com/
+[3]: https://github.com/0x7f454c46/iperf/tree/tcp-md5-ao
+
+Cc: Andy Lutomirski <luto@amacapital.net>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: Bob Gilligan <gilligan@arista.com>
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: David Ahern <dsahern@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Dmitry Safonov <0x7f454c46@gmail.com>
+Cc: Eric Biggers <ebiggers@kernel.org>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: "Eric W. Biederman" <ebiederm@xmission.com>
+Cc: Francesco Ruggeri <fruggeri@arista.com>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Cc: Ivan Delalande <colona@arista.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Leonard Crestez <cdleonard@gmail.com>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Salam Noureddine <noureddine@arista.com>
+Cc: Shuah Khan <shuah@kernel.org>
+Cc: netdev@vger.kernel.org
+Cc: linux-crypto@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+
+Dmitry Safonov (36):
+  crypto: Introduce crypto_pool
+  crypto_pool: Add crypto_pool_reserve_scratch()
+  net/tcp: Separate tcp_md5sig_info allocation into
+    tcp_md5sig_info_add()
+  net/tcp: Disable TCP-MD5 static key on tcp_md5sig_info destruction
+  net/tcp: Use crypto_pool for TCP-MD5
+  net/ipv6: sr: Switch to using crypto_pool
+  tcp: Add TCP-AO config and structures
+  net/tcp: Introduce TCP_AO setsockopt()s
+  net/tcp: Prevent TCP-MD5 with TCP-AO being set
+  net/tcp: Calculate TCP-AO traffic keys
+  net/tcp: Add TCP-AO sign to outgoing packets
+  net/tcp: Add tcp_parse_auth_options()
+  net/tcp: Add AO sign to RST packets
+  net/tcp: Add TCP-AO sign to twsk
+  net/tcp: Wire TCP-AO to request sockets
+  net/tcp: Sign SYN-ACK segments with TCP-AO
+  net/tcp: Verify inbound TCP-AO signed segments
+  net/tcp: Add TCP-AO segments counters
+  net/tcp: Add TCP-AO SNE support
+  net/tcp: Add tcp_hash_fail() ratelimited logs
+  net/tcp: Ignore specific ICMPs for TCP-AO connections
+  net/tcp: Add option for TCP-AO to (not) hash header
+  net/tcp: Add getsockopt(TCP_AO_GET)
+  net/tcp: Allow asynchronous delete for TCP-AO keys (MKTs)
+  net/tcp-ao: Add static_key for TCP-AO
+  selftests/net: Add TCP-AO library
+  selftests/net: Verify that TCP-AO complies with ignoring ICMPs
+  selftest/net: Add TCP-AO ICMPs accept test
+  selftest/tcp-ao: Add a test for MKT matching
+  selftest/tcp-ao: Add test for TCP-AO add setsockopt() command
+  selftests/tcp-ao: Add TCP-AO + TCP-MD5 + no sign listen socket tests
+  selftests/aolib: Add test/benchmark for removing MKTs
+  selftests/nettest: Remove client_pw
+  selftest/nettest: Rename md5_prefix* => auth_prefix*
+  selftests/nettest: Add TCP-AO support
+  selftests/fcnal-test.sh: Add TCP-AO tests
+
+ crypto/Kconfig                                |   12 +
+ crypto/Makefile                               |    1 +
+ crypto/crypto_pool.c                          |  338 +++
+ include/crypto/pool.h                         |   33 +
+ include/linux/sockptr.h                       |   23 +
+ include/linux/tcp.h                           |   30 +-
+ include/net/dropreason.h                      |   25 +
+ include/net/seg6_hmac.h                       |    7 -
+ include/net/tcp.h                             |  195 +-
+ include/net/tcp_ao.h                          |  305 +++
+ include/uapi/linux/snmp.h                     |    5 +
+ include/uapi/linux/tcp.h                      |   62 +
+ net/ipv4/Kconfig                              |   14 +-
+ net/ipv4/Makefile                             |    1 +
+ net/ipv4/proc.c                               |    5 +
+ net/ipv4/syncookies.c                         |    2 +
+ net/ipv4/tcp.c                                |  197 +-
+ net/ipv4/tcp_ao.c                             | 2038 +++++++++++++++++
+ net/ipv4/tcp_input.c                          |  105 +-
+ net/ipv4/tcp_ipv4.c                           |  404 +++-
+ net/ipv4/tcp_minisocks.c                      |   37 +-
+ net/ipv4/tcp_output.c                         |  192 +-
+ net/ipv6/Kconfig                              |    2 +-
+ net/ipv6/Makefile                             |    1 +
+ net/ipv6/seg6.c                               |    3 -
+ net/ipv6/seg6_hmac.c                          |  204 +-
+ net/ipv6/syncookies.c                         |    2 +
+ net/ipv6/tcp_ao.c                             |  151 ++
+ net/ipv6/tcp_ipv6.c                           |  357 ++-
+ tools/testing/selftests/Makefile              |    1 +
+ tools/testing/selftests/net/fcnal-test.sh     |  471 +++-
+ tools/testing/selftests/net/nettest.c         |  217 +-
+ tools/testing/selftests/net/tcp_ao/.gitignore |    2 +
+ tools/testing/selftests/net/tcp_ao/Makefile   |   50 +
+ .../selftests/net/tcp_ao/bench-lookups.c      |  403 ++++
+ .../selftests/net/tcp_ao/connect-deny.c       |  217 ++
+ tools/testing/selftests/net/tcp_ao/connect.c  |   81 +
+ .../selftests/net/tcp_ao/icmps-accept.c       |    1 +
+ .../selftests/net/tcp_ao/icmps-discard.c      |  446 ++++
+ .../testing/selftests/net/tcp_ao/lib/aolib.h  |  336 +++
+ .../selftests/net/tcp_ao/lib/netlink.c        |  341 +++
+ tools/testing/selftests/net/tcp_ao/lib/proc.c |  267 +++
+ .../testing/selftests/net/tcp_ao/lib/setup.c  |  343 +++
+ tools/testing/selftests/net/tcp_ao/lib/sock.c |  294 +++
+ .../testing/selftests/net/tcp_ao/lib/utils.c  |   30 +
+ .../selftests/net/tcp_ao/setsockopt-closed.c  |  191 ++
+ .../selftests/net/tcp_ao/unsigned-md5.c       |  524 +++++
+ 47 files changed, 8323 insertions(+), 643 deletions(-)
+ create mode 100644 crypto/crypto_pool.c
+ create mode 100644 include/crypto/pool.h
+ create mode 100644 include/net/tcp_ao.h
+ create mode 100644 net/ipv4/tcp_ao.c
+ create mode 100644 net/ipv6/tcp_ao.c
+ create mode 100644 tools/testing/selftests/net/tcp_ao/.gitignore
+ create mode 100644 tools/testing/selftests/net/tcp_ao/Makefile
+ create mode 100644 tools/testing/selftests/net/tcp_ao/bench-lookups.c
+ create mode 100644 tools/testing/selftests/net/tcp_ao/connect-deny.c
+ create mode 100644 tools/testing/selftests/net/tcp_ao/connect.c
+ create mode 120000 tools/testing/selftests/net/tcp_ao/icmps-accept.c
+ create mode 100644 tools/testing/selftests/net/tcp_ao/icmps-discard.c
+ create mode 100644 tools/testing/selftests/net/tcp_ao/lib/aolib.h
+ create mode 100644 tools/testing/selftests/net/tcp_ao/lib/netlink.c
+ create mode 100644 tools/testing/selftests/net/tcp_ao/lib/proc.c
+ create mode 100644 tools/testing/selftests/net/tcp_ao/lib/setup.c
+ create mode 100644 tools/testing/selftests/net/tcp_ao/lib/sock.c
+ create mode 100644 tools/testing/selftests/net/tcp_ao/lib/utils.c
+ create mode 100644 tools/testing/selftests/net/tcp_ao/setsockopt-closed.c
+ create mode 100644 tools/testing/selftests/net/tcp_ao/unsigned-md5.c
+
+
+base-commit: 4dc12f37a8e98e1dca5521c14625c869537b50b6
+-- 
+2.38.1
+
