@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A02B560EFAF
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 07:53:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7A3060EFBA
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 08:01:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229670AbiJ0Fx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 01:53:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40938 "EHLO
+        id S233963AbiJ0GBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 02:01:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233280AbiJ0Fxz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 01:53:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC198155DB4
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 22:53:54 -0700 (PDT)
+        with ESMTP id S229592AbiJ0GBh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 02:01:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46C026FC6D
+        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 23:01:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D02662160
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 05:53:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BF38C433C1;
-        Thu, 27 Oct 2022 05:53:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D06C1B824D4
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 06:01:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE83CC433C1;
+        Thu, 27 Oct 2022 06:01:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666850033;
-        bh=WJwRckzlYFEfJL4za3O5g0nslZTLRi+SAykXhTx7Dcs=;
+        s=k20201202; t=1666850493;
+        bh=8ZrhjyKl2NXYjBqzCpsv4rTYsxqm52bzrzpWHZWNBoU=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iomOTaejxr8lzstEx+PnYVbae9OHJijtk4DjltLoB/uno8/ZluRunYsNqZXb+nO/s
-         cRNVvREstrawHKd4M0Tb58qQEgiaSwbN5+UgneOr6/4KiBr00xwN7h9ufZvJ6YCu4A
-         w2+xE3aUJj5UAHxsLne0MM6qKVmeFm9Cu6UkFVHK9WXjk9J2VsYID2+uLLO3OzLdW+
-         y14Pt1BCrvv2+bdOjBs1kLQh2EfXvPIA6JRtQ+bpxYv7P4iFeKHFrV4e5PeArnE4aJ
-         oCg7ZhP28DrLlvdv3Urbb+ryymC00JbfLempBEW4fjz4IsfgzXR6wOtBe+LYA0OO4v
-         jNo8e66Y0h2KA==
-Date:   Thu, 27 Oct 2022 08:53:49 +0300
+        b=TrKxvoBtOMUlw+zBcaBkYFVmEOncQBl7MBov5DZF6PTNybBvC6BeNiKI4dgYVd03E
+         cSyJdHyXe2ebSNBskArDotTjW9D+U83PiG55U4SlICw10jwkkBn7cZaGvUKad6Y8XZ
+         szJIhO3vx3VzpRt5jznfMLcqqaI02h/wicSHXFPVDXbCh65k/Jcul/bVMrO49BKGe5
+         sf5RbfCu8RthbPa/7TJzHV7TLfjUGp4g1X4FGx/sfVEUxXSaU9HkMAureo7VAD8k0M
+         bvV4tZbdiLWrk7Z7/0PmTFaLF6rccsE7qbrTk5bvqiWm2f3VAkFGnh0aRf+InCkehx
+         2oRAYVHBDooZw==
+Date:   Thu, 27 Oct 2022 09:01:29 +0300
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Yinjun Zhang <yinjun.zhang@corigine.com>
 Cc:     Saeed Mahameed <saeed@kernel.org>,
@@ -51,7 +51,7 @@ Cc:     Saeed Mahameed <saeed@kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         oss-drivers <oss-drivers@corigine.com>
 Subject: Re: [PATCH net-next 0/3] nfp: support VF multi-queues configuration
-Message-ID: <Y1oc7dRrKeuQbLId@unreal>
+Message-ID: <Y1oeuSfHPlxzRGI7@unreal>
 References: <20221019140943.18851-1-simon.horman@corigine.com>
  <20221019180106.6c783d65@kernel.org>
  <20221020013524.GA27547@nj-rack01-04.nji.corigine.com>
@@ -78,35 +78,35 @@ On Thu, Oct 27, 2022 at 02:11:55AM +0000, Yinjun Zhang wrote:
 > On Wed, 26 Oct 2022 15:22:21 +0100, Saeed Mahameed wrote:
 > > On 25 Oct 11:39, Yinjun Zhang wrote:
 > > >On Date: Tue, 25 Oct 2022 12:05:14 +0100, Saeed Mahameed wrote:
+
+<...>
+
+> > >```
+> > >another is from queue's perspective, several class is supported, not very
+> > flexible:
+> > >```
+> > >pci/xxxx:xx:xx.x:
+> > >  name max_q_class size 128 unit entry
+> > >    resources:
+> > >      # means how many VFs possess max-q-number of 16/8/..1 respectively
+> > >      name _16 size 0 unit entry size_min 0 size_max 128 size_gran 1
+> > >      name _8 size 0 unit entry size_min 0 size_max 128 size_gran 1
+> > >      ...
+> > >      name _1 size 0 unit entry size_min 0 size_max 128 size_gran 1
+> > >```
 > > 
-> > Usually you create the VFs unbound, configure them and then bind them.
-> > otherwise a query will have to query any possible VF which for some vendors
-> > can be thousands ! it's better to work on created but not yet deployed vfs
+> > weirder.
 > 
-> Usually creating and binding are not separated, that's why `sriov_drivers_autoprobe`
-> is default true.
+> Yes, kind of obscure. The intention is to avoid configuring one by one, especially
+> when there're thousands of VFs. Any better idea is welcomed.
 
-No, the situation is completely an opposite in a world which heavily uses SR-IOV.
-Data centers which rely on SR-IOV to provide VMs to customers separate creation and
-bind, as they two different stages in container/VM lifetime. Create is done when
-physical server is booted and bind is done when user requested specific properties
-of VM.
+In parallel to netdev world, we extended netlink UAPI to receive ranges
+and gave an option for users to write something like this: "cmd ... 1-100 ...",
+which in kernel was translated to loop from 1 to 100.
 
-Various container orchestration frameworks do it for them.
+Of course, we are talking about very specific fields (IDs) which can receive range.
 
-> that's why `sriov_drivers_autoprobe` is default true.
-
-It is not true either. The default value is chosen to keep kernel
-backward compatible behavior. 
-
-> unless some particular configuration requires it, like mlnx's msix
-> practice. 
-
-And it is not true either. I did MLNX implementation to be aligned with
-PCI spec and in-kernel PCI subsystem implementation. Our device can change
-MSI-X on-fly and from HW perspective unbind is not important.
-
-Saeed is right "Usually you create the VFs unbound, configure them and
-then bind them".
+It is just an idea how devlink can be extended to support batch configuration
+of same values.
 
 Thanks
