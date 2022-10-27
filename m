@@ -2,142 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65DC660F6C4
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 14:07:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6368F60F6B9
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 14:05:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235535AbiJ0MHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 08:07:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59290 "EHLO
+        id S235512AbiJ0MFP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 08:05:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235475AbiJ0MHa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 08:07:30 -0400
-X-Greylist: delayed 321 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 27 Oct 2022 05:07:29 PDT
-Received: from mx.cjr.nz (mx.cjr.nz [51.158.111.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875E4923E8;
-        Thu, 27 Oct 2022 05:07:29 -0700 (PDT)
-Received: from authenticated-user (mx.cjr.nz [51.158.111.142])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: pc)
-        by mx.cjr.nz (Postfix) with ESMTPSA id AB86B7FC01;
-        Thu, 27 Oct 2022 12:02:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cjr.nz; s=dkim;
-        t=1666872124;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MtpMGCF+iBRpVLWgZ5Ofi84bzkswm5lge9Z3x2eJ++g=;
-        b=cGaSQswDbxqhSBVj5pDq2GqhsfWTvLHXYYkMfnzUtzDu9qQoJIAheeOJh6kvSpEf5GvfRG
-        yRGEyPPCKVdpWf1B+kLxd0W9HSAJYK3NXUHVB/UXVrRGK19eRMFPdAp2TDyRAJrxZA4/mG
-        PbyYULxDaGdOHhPFJ1IGHC4xcjeMA0QplsS66eLO39jSdLEjsA2Zfgar8lFMkwj6RRssS7
-        WLUOcZngyyy5D2hJe4t1LhQrRm+4Ofop0TJ6lZWko/2wplsv9yIzIFYLYBhtes4EMzg4nM
-        CFzFh2tBjwghTEY1OzCuUpw850fnEkoZ26nkvczAP3RB+X5CfnZRv2jHEMHE/g==
-From:   Paulo Alcantara <pc@cjr.nz>
-To:     Kees Cook <keescook@chromium.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        David Howells <dhowells@redhat.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Russ Weight <russell.h.weight@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Steve French <sfrench@samba.org>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Shyam Prasad N <sprasad@microsoft.com>,
-        Tom Talpey <tom@talpey.com>,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna@kernel.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
-        linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] cred: Do not default to init_cred in prepare_kernel_cred()
-In-Reply-To: <20221026232943.never.775-kees@kernel.org>
-References: <20221026232943.never.775-kees@kernel.org>
-Date:   Thu, 27 Oct 2022 09:03:08 -0300
-Message-ID: <87bkpxh3sz.fsf@cjr.nz>
+        with ESMTP id S235503AbiJ0MFN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 08:05:13 -0400
+Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1496266F39
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 05:05:06 -0700 (PDT)
+Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-367cd2807f2so11868967b3.1
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 05:05:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=qknsrrbVYmn1Ib/QmtnzvnQ1FotFocWgYawUVExSORc=;
+        b=kDAj/+QzV+GnIAl89MVn+6bsaO43262/lst84N6GLEppFSvsHBzOeLghyWNKT1KPEl
+         eIhI29hvYay1zSC0ExaoOhUO/yRQYAmiEsjcBgRnvtNaM/NvtooZnOBlnqKhdxekYlSQ
+         HEihk43r1nvzJJYf6ZEIDPnHV1mowWHSawP1nH/06wxkhXJH3Z1CSnkKnCuslWa8oPp5
+         DgsvOnhRSy8rueiyaIGJM5onQDSvUUVyqN/2zXDns18EyQH6K9oFKwOD3n7/lbZkViSB
+         hEFnXgkpGgip7CELstT93J478R+tnrrF/GVz3ZfosMdcmtOtuL9U89r31fdECOg4+Q9O
+         Bqew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=qknsrrbVYmn1Ib/QmtnzvnQ1FotFocWgYawUVExSORc=;
+        b=aSuVzzwVLPCwUnkmog95If0sLd2z1dN4BAYFkq67p/Z/7Zj7jHHspP72S2Na+iAhP7
+         myKhkpH1HNlfbdJYAtwsvKpTe1uWMj73V+fOi2qG/4BPrpLB2e114Mh5xe6xvhElDQQl
+         PDLTlFusFTdfI2Q+1z2DrXS09b7xZDj3qx297MTavkH2EfH1jjCUBPc+j5Z19ieiekN3
+         NLs8odUWyYCvcczPz4+JfkCCd+uA9j1HBn/JdPd5oa8BPpC5KiUIjxoAz2d2alsnYNFv
+         D9vaIiP/k73yb3NO78FmDWnJ/4OgTAFH6sjBuWeU/Rp6ItmYlwDFGJAXkxwdhIyAixbl
+         XikQ==
+X-Gm-Message-State: ACrzQf09btrD81jAd8DD3rDaa98uBfxliy9YjzUyKEPr01bUAKWaYV7P
+        IguI5296BCxA97hbPhyUiQA7VBiK+AJb83TdUe66tA==
+X-Google-Smtp-Source: AMsMyM6I8YFZk6yU1HJa7CB4BQnoTdN1q32V2q3kIL4ut/vRUT+zzspyg2RYAuACG1yriwxZ9GpsUaLYvk1FNk4qgPc=
+X-Received: by 2002:a81:7585:0:b0:368:28bd:9932 with SMTP id
+ q127-20020a817585000000b0036828bd9932mr35457213ywc.332.1666872305338; Thu, 27
+ Oct 2022 05:05:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+References: <20221026151558.4165020-1-luwei32@huawei.com> <CANn89iJQn5ET3U9cYeiT0ijTkab2tRDBB1YP3Y6oELVq0dj6Zw@mail.gmail.com>
+ <CANn89iLcnPAzLZFiCazM_y==33+Zhg=3bGY70ev=5YwDoZw-Vg@mail.gmail.com>
+ <fd9abfe4-962e-ceef-5ab8-29e654303343@virtuozzo.com> <CA+XRDbMma1e26HHoYm2pExANACH8n83bE7vB_Gwh3-RZUsOe2g@mail.gmail.com>
+ <8083c822-1493-3596-d292-520fb16b113f@huawei.com>
+In-Reply-To: <8083c822-1493-3596-d292-520fb16b113f@huawei.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 27 Oct 2022 05:04:54 -0700
+Message-ID: <CANn89iJ1JVG_H-FAQRg3JdPtNkq2T++K9Xc-mLo_VaUdcp38KA@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: reset tp->sacked_out when sack is enabled
+To:     "luwei (O)" <luwei32@huawei.com>
+Cc:     Pavel Emelyanov <ovzxemul@gmail.com>,
+        "Denis V. Lunev" <den@virtuozzo.com>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, avagin@gmail.com,
+        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kees Cook <keescook@chromium.org> writes:
+On Thu, Oct 27, 2022 at 5:00 AM luwei (O) <luwei32@huawei.com> wrote:
+>
 
-> A common exploit pattern for ROP attacks is to abuse prepare_kernel_cred()
-> in order to construct escalated privileges[1]. Instead of providing a
-> short-hand argument (NULL) to the "daemon" argument to indicate using
-> init_cred as the base cred, require that "daemon" is always set to
-> an actual task. Replace all existing callers that were passing NULL
-> with &init_task.
 >
-> Future attacks will need to have sufficiently powerful read/write
-> primitives to have found an appropriately privileged task and written it
-> to the ROP stack as an argument to succeed, which is similarly difficult
-> to the prior effort needed to escalate privileges before struct cred
-> existed: locate the current cred and overwrite the uid member.
->
-> This has the added benefit of meaning that prepare_kernel_cred() can no
-> longer exceed the privileges of the init task, which may have changed from
-> the original init_cred (e.g. dropping capabilities from the bounding set).
->
-> [1] https://google.com/search?q=3Dcommit_creds(prepare_kernel_cred(0))
->
-> Cc: "Eric W. Biederman" <ebiederm@xmission.com>
-> Cc: David Howells <dhowells@redhat.com>
-> Cc: Luis Chamberlain <mcgrof@kernel.org>
-> Cc: Russ Weight <russell.h.weight@intel.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-> Cc: Steve French <sfrench@samba.org>
-> Cc: Paulo Alcantara <pc@cjr.nz>
-> Cc: Ronnie Sahlberg <lsahlber@redhat.com>
-> Cc: Shyam Prasad N <sprasad@microsoft.com>
-> Cc: Tom Talpey <tom@talpey.com>
-> Cc: Namjae Jeon <linkinjeon@kernel.org>
-> Cc: Sergey Senozhatsky <senozhatsky@chromium.org>
-> Cc: Trond Myklebust <trond.myklebust@hammerspace.com>
-> Cc: Anna Schumaker <anna@kernel.org>
-> Cc: Chuck Lever <chuck.lever@oracle.com>
-> Cc: Jeff Layton <jlayton@kernel.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: "Michal Koutn=C3=BD" <mkoutny@suse.com>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: linux-cifs@vger.kernel.org
-> Cc: samba-technical@lists.samba.org
-> Cc: linux-nfs@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
->  drivers/base/firmware_loader/main.c    |  2 +-
->  fs/cifs/cifs_spnego.c                  |  2 +-
->  fs/cifs/cifsacl.c                      |  2 +-
->  fs/ksmbd/smb_common.c                  |  2 +-
->  fs/nfs/flexfilelayout/flexfilelayout.c |  4 ++--
->  fs/nfs/nfs4idmap.c                     |  2 +-
->  fs/nfsd/nfs4callback.c                 |  2 +-
->  kernel/cred.c                          | 15 +++++++--------
->  net/dns_resolver/dns_key.c             |  2 +-
->  9 files changed, 16 insertions(+), 17 deletions(-)
+> thanks, I will send next version
 
-Acked-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
+Yeah, what about first agreeing on what the plans are ?
+
+In order to avoid confusion and lkml/netdev bloat, I think you should
+describe why existing checks are not enough.
+
+Since this was probably caught by a fuzzer like syzbot, do you have a repro ?
