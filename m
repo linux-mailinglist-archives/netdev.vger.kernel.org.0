@@ -2,202 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42FE160FAE1
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 16:55:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20CC860FAE9
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 16:57:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233473AbiJ0OzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 10:55:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49328 "EHLO
+        id S234698AbiJ0O5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 10:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236026AbiJ0Oy4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 10:54:56 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2050.outbound.protection.outlook.com [40.107.22.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6DB1A202
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 07:54:55 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eH5q7P4uVdRj3gj1fsbztQEuyr7wDvykKktlYySFtkYl592C63UM4Xs7K8od3iX9m4p28x4INKtJJqd/MPuMi67j3fRiVfyWV996cyttjaS+clIOYKw1z3gNxpSt5OaHrdhdrEAjvfQ3ECpfrz364D8K6vDzFVF7PmAVx1XhBfRVRFMYMARtWjV+lCHpgWzi17GYOutBlzvhpUrh0Zjq0Dt3GUVkf58nhOPp7BBP/cVnSQoz9QRQ5J0B9EgN5RNUYIszVmgRQft3g+drJ6gC4OUGivTQZo+LziGBc/kxbd9KXrjljpum/LP1sDqXtP3qfZnYgSpdQ+hb9pRRH7ybVw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fiEF6UHV0boHTHdrsd1IB8UwCQslNjjJaT2Pr+3pOKI=;
- b=nmFGLnfnLDWHMgqjXPJU55qdRMIXfKrh1JicOjHX1hyCijlt3/FsliEOu5qQAvvtowFKi72ZdjABhCFRtPxxlnSonMgi/sM7PmDHRt88XgHbREPikwCib3zJzV4+EFTN0OjeTBKF6Sj5DTs8Jom4WBTEr79aQ3xRoVmf+ud7DSirSprdGMymkAY03INWL7SJjZT8w1BOT4iEo01FKHNqyx78a97avWlE6gVMWhy+BbErkrXPfSekeF0WD+w/lg5lr28iiLIUtCirDcFOQ2z7hUi6LIp65R2SHuxtjpiyr/q5YUpAhyoMFHF22EbECrd/EnLG6LafFGlj2/2Y3/utZg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fiEF6UHV0boHTHdrsd1IB8UwCQslNjjJaT2Pr+3pOKI=;
- b=OlIQ2F4ngMKfbHLMJjRCtcm9itl6s6gI+9hZ+pAO99RLeQ9g+dTmvuC0QeaRZ3TlzB72h4IrPv6WDV3MNzmmVc1hc8wUmEvhJn1uoEyjZVDjZTsca+e6TAmz8o6q1A1AiElxQlz8lxIvJtwCST/ujlfEqS3cB7mF3hBgBQMp5EU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AS8PR04MB7990.eurprd04.prod.outlook.com (2603:10a6:20b:2a5::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.21; Thu, 27 Oct
- 2022 14:54:53 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::6710:c5fd:bc88:2035]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::6710:c5fd:bc88:2035%6]) with mapi id 15.20.5746.028; Thu, 27 Oct 2022
- 14:54:53 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        UNGLinuxDriver@microchip.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S235785AbiJ0O5G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 10:57:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83FCB40F1
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 07:57:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 667466236C
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 14:57:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6046DC433D6;
+        Thu, 27 Oct 2022 14:57:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666882624;
+        bh=m0NhJ4p/OcjkekmH+JRoLhgJWTxvM71OnQHQWauhrNQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=QOLsLa2qCZLWCew107EIEjCphgKO8+fd0Wy9rJukhjk1kZ0wlSP2eXsj1VPkUfXAj
+         0DRlUUH0rep/Fn9Fi93WRvk4OnZbIm7uOyGixgYnX1XNVdSjLLd+SZkl7MmD+8Pb93
+         9dxGxwG1vl3j5fLxpT+mEByvGtKyVJb8Gk4vUtYLtyWhaBbph9eDgNhuK39DFNkmKg
+         iI6gHRrYIf/Ta13OqFzAxvimFxjYrp4XhETHGii3ZCRHoMaIoTLnDThxeSDpAsJOnz
+         L8zevT042mAHB491hg7IkEez/uVyT2xFr2ykaRrSC6cwu89Wf/8jM2o3TQngHyVYwj
+         at1MWbsXp/GDQ==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Michael Walle <michael@walle.cc>,
-        Heiko Thiery <heiko.thiery@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>
-Subject: [PATCH net] net: dsa: fall back to default tagger if we can't load the one from DT
-Date:   Thu, 27 Oct 2022 17:54:39 +0300
-Message-Id: <20221027145439.3086017-1-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.34.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR02CA0027.eurprd02.prod.outlook.com
- (2603:10a6:208:3e::40) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        Eric Dumazet <edumazet@google.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [pull request][net-next V2 00/14] mlx5 updates 2022-10-24
+Date:   Thu, 27 Oct 2022 15:56:29 +0100
+Message-Id: <20221027145643.6618-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AS8PR04MB7990:EE_
-X-MS-Office365-Filtering-Correlation-Id: ea05043b-18a1-4cd1-9811-08dab82b3457
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: TcAF1sZ7HMLwpsBEqtZDKzupkRoNXmb5EvEvdgEMqXSokOGqyYRLY6SfJdSfVkiB5cw/RHU7frywiFQqH+1VH7XaF3qzVVSeR0yNAhiTs25uP/8WuOJY523JRfYZR+KBy+qcMkgWImYDY9ydJpCzqUOujG+/EYLR0WR4jMuF908z9adZ57LYiygBtUgwV7ACM4orZYjKxo0Re3/NAg3vk8IOrr91+VhZ5wwWcHwSnBxK6AqYhqz211Iq4yLxFs8w1bIL5Sd7gD09TTItNRy1DdzRR34jQJadXo+ZpbT3MKMhHQjJnTicDjUBfik+mrUuZ6Lp/Iqdxspuxa6dH6xBS7GUaFsun3NCekEmryxQd4UX+X3ul6N0wUAzbTf3c+GAGDoIySftQZTc9+R0/pfWntm3mj2qGpv1lmzSW16BH4kkipH1UL9V2tWSt+GLvgw1Jo5rynDUwCkjXnY8r+smUux+1o9mtB7tNs9yarbN9j5HjPTZd67In/RixwmxypDxRBLCFyVWeRyGkLWHbc7VRkECfoUX1PqSRmlfPhqeXCX65JVIdaDQqUNboqM15NR8jaKW/cdb8agdiw8JvzZLFfzSPU7fNy96+hQ6IHyd6H7BlJDQaPoXeSsAU+xQsyUW35TeoCD+WwiL7/OIN/+/gFjijnzkxdSrGxj9nVFH7nXTaDhkzOCzlWP/cY8Xt8totnZDnHmFLuRqCpTaVdHhELMv4rcunhlbcRJCXtcrvpB/z4mUhyXEfaGzHgrjhAFYqRMVUYeGT56eI47fG6A0yDZmc66YjR0L50iN7G9AGkk=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(396003)(346002)(376002)(39860400002)(366004)(451199015)(86362001)(36756003)(38100700002)(38350700002)(186003)(1076003)(2906002)(44832011)(52116002)(2616005)(26005)(6666004)(478600001)(6512007)(6506007)(83380400001)(8676002)(54906003)(6486002)(7416002)(8936002)(6916009)(66556008)(316002)(66476007)(4326008)(5660300002)(66946007)(966005)(41300700001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ywbKnakFqB5u5dOm/7bbDv9jun2cuKCoK6pQ1CACEzxZYNjAFKGjns6XoWEB?=
- =?us-ascii?Q?dc2VybgpEupu7ER5B9PBc2wNp5/cQEQn+/cJyx6CwHieLz98k8vbdtrDCzmj?=
- =?us-ascii?Q?tl2wOx0J/8gkyObSeCJNKC8QCaB/iyVEpLt+5KpnZHpW/wWCONExTYhXH/6l?=
- =?us-ascii?Q?zoqmoplnbmz82Kgx5cPve5x6xOfWBKF2sAfIIoW4eVrSqldtDygB2g+83svh?=
- =?us-ascii?Q?IdPs2/D3n7me9ngz0cY7OdtdfhEThaxp23ShGh+rOX0P+bFcrHtEmIi8Rk8Z?=
- =?us-ascii?Q?WWzZzR7i17d7qS5921LuVOHOht+JgxFMUdhFHgPJ78qbPGWLdozMS9oFXMuJ?=
- =?us-ascii?Q?0/XHOl67xTiRo1LJb2RX7uqhzEeg3fV99j8fX1Pb+H8zje3b6p1KpDaIIDFp?=
- =?us-ascii?Q?RUkjup5JYi7cDBq/bwQXUa5YjZ9OKFaLFT9fDLI3+Uqtc77h/FN8Gga9wJgj?=
- =?us-ascii?Q?ynnLpWGbah/2nWi9JdF/n6ga9EOeRRM/2hhuyNiHtnnOLmiuPt9bMcrIwVV3?=
- =?us-ascii?Q?oif7SxjSMlBIB0/4ZX8ztrHThghohbVxl9Zh5tZ7vVIUYe2CJLp6S3ixxqNu?=
- =?us-ascii?Q?LVFC1O9l1GMdFBBzqn6i2uAZmQuZDJnXOTYPJBv5J1Sh+b26WnuNQRr1ryj9?=
- =?us-ascii?Q?ta47C8VAk+Pn4eNA/Lk19sCJ6Rvl0SP2b8p6p8dFdZuGOJNBlQG8RGVOr8nQ?=
- =?us-ascii?Q?xTiyTEXl+Gc+/XYGnlsOhF3MbxYuNKvEVw+naaKArgR2iZZLm+9/bo78Hzms?=
- =?us-ascii?Q?NgQg3zgwjLb2Xxxmg11YvJKjUbwbrqqDjk0T9l2wG0zVMwjn9v2j89dJcvRz?=
- =?us-ascii?Q?AFvsZgmC99n4HgRBzp0dvE7zWLT1eztKGkbppHZS7tEB8lEaD+rjadrRSstK?=
- =?us-ascii?Q?yOKclh9dvo0R8lptGe0YG7vghsSUAbUyudwaqYyHWoGogvEIn76D2Y+erK/w?=
- =?us-ascii?Q?OZ0qwrQT7rVPpuLThjD7/DZJnnY/mcceS+5y/0BtazLU4uZXyUPYbYWDKCsc?=
- =?us-ascii?Q?5QhkMT4rMrLrSkfvTr8C76Zw+PzYXPE9or+nG/ZgWJlFnfcmgPRms+ocyLjf?=
- =?us-ascii?Q?SGegwQ3sP6+T1WvDnTCqsYe02Lt0ohxa5WpfmRoPCtwarViiq/cHJzL167o/?=
- =?us-ascii?Q?5YMsOHWUsBgz5KpFaKztIgUyigYbP3ukhZWPyRHu3ja83MV/8zdwqdHdUJSr?=
- =?us-ascii?Q?QI6F9Gb+N3qWUuisaUD9tuCvwKBSfPhwB9XExP69z5FVDtYkeZtA23XdnVuu?=
- =?us-ascii?Q?lKA/8K0I12zfgi4DGYc7BAQ0aFTtoASDx+CywrIwxIYYP/rDMMzpl2tleP3G?=
- =?us-ascii?Q?VSleQ3hXhOqUeBunXchSn8tsRpGHiakklyj9JpfwDNEmMX1IsROdSdIyVU6c?=
- =?us-ascii?Q?PDzqy6gAKAwChcDNpMPKbuYiH94mRFx0jVf94BvrMZEdOgMEtQgMVZeZdxt+?=
- =?us-ascii?Q?wkyQ7fathJHghlhRfRokuAKyhfztgKYhH6cpVoDX0gxJ5BAXse5a4TNSAIid?=
- =?us-ascii?Q?BKealEG4fTvsbDu/xYIcdPloBGsuk30lVfLCb7lOLN1pUAsF7SQFiKQEv1xP?=
- =?us-ascii?Q?7q47c1+vCSx/11885xJ2TeNDUusqzww8KQWv0lK21EY96ZYIbPn7S4vAXTws?=
- =?us-ascii?Q?cw=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ea05043b-18a1-4cd1-9811-08dab82b3457
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Oct 2022 14:54:52.9637
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ef//p9l/K4WQ6yjaCNpFULXyVQua9ropAtBCcD4eqPintDBKT89ZEYzXLC5lbv2YQjk4/caMTH082hgGdgkBfw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7990
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DSA tagging protocol drivers can be changed at runtime through sysfs and
-at probe time through the device tree (support for the latter was added
-later).
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-When changing through sysfs, it is assumed that the module for the new
-tagging protocol was already loaded into the kernel (in fact this is
-only a concern for Ocelot/Felix switches, where we have tag_ocelot.ko
-and tag_ocelot_8021q.ko; for every other switch, the default and
-alternative protocols are compiled within the same .ko, so there is
-nothing for the user to load).
+v1-v2:
+ - fix 32bit x86 -Wframe-larger-than
 
-The kernel cannot currently call request_module(), because it has no way
-of constructing the modalias name of the tagging protocol driver
-("dsa_tag-%d", where the number is one of DSA_TAG_PROTO_*_VALUE).
-The device tree only contains the string name of the tagging protocol
-("ocelot-8021q"), and the only mapping between the string and the
-DSA_TAG_PROTO_OCELOT_8021Q_VALUE is present in tag_ocelot_8021q.ko.
-So this is a chicken-and-egg situation and dsa_core.ko has nothing based
-on which it can automatically request the insertion of the module.
+This series provides optimizations to mlx5 SW steering.                         
+For more information please see tag log below.                                  
+                                                                                
+Please pull and let me know if there is any problem.                            
+                                                        
+Thanks,
+Saeed.
 
-As a consequence, if CONFIG_NET_DSA_TAG_OCELOT_8021Q is built as module,
-the switch will forever defer probing.
 
-The long-term solution is to make DSA call request_module() somehow,
-but that probably needs some refactoring.
+The following changes since commit 12d6c1d3a2ad0c199ec57c201cdc71e8e157a232:
 
-What we can do to keep operating with existing device tree blobs is to
-cancel the attempt to change the tagging protocol with the one specified
-there, and to remain operating with the default one. Depending on the
-situation, the default protocol might still allow some functionality
-(in the case of ocelot, it does), and it's better to have that than to
-fail to probe.
+  skbuff: Proactively round up to kmalloc bucket size (2022-10-27 15:48:19 +0200)
 
-Fixes: deff710703d8 ("net: dsa: Allow default tag protocol to be overridden from DT")
-Link: https://lore.kernel.org/lkml/20221027113248.420216-1-michael@walle.cc/
-Reported-by: Heiko Thiery <heiko.thiery@gmail.com>
-Reported-by: Michael Walle <michael@walle.cc>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- net/dsa/dsa2.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+are available in the Git repository at:
 
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index af0e2c0394ac..e504a18fc125 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -1409,9 +1409,9 @@ static enum dsa_tag_protocol dsa_get_tag_protocol(struct dsa_port *dp,
- static int dsa_port_parse_cpu(struct dsa_port *dp, struct net_device *master,
- 			      const char *user_protocol)
- {
-+	const struct dsa_device_ops *tag_ops = NULL;
- 	struct dsa_switch *ds = dp->ds;
- 	struct dsa_switch_tree *dst = ds->dst;
--	const struct dsa_device_ops *tag_ops;
- 	enum dsa_tag_protocol default_proto;
- 
- 	/* Find out which protocol the switch would prefer. */
-@@ -1434,10 +1434,17 @@ static int dsa_port_parse_cpu(struct dsa_port *dp, struct net_device *master,
- 		}
- 
- 		tag_ops = dsa_find_tagger_by_name(user_protocol);
--	} else {
--		tag_ops = dsa_tag_driver_get(default_proto);
-+		if (IS_ERR(tag_ops)) {
-+			dev_warn(ds->dev,
-+				 "Failed to find a tagging driver for protocol %s, using default\n",
-+				 user_protocol);
-+			tag_ops = NULL;
-+		}
- 	}
- 
-+	if (!tag_ops)
-+		tag_ops = dsa_tag_driver_get(default_proto);
-+
- 	if (IS_ERR(tag_ops)) {
- 		if (PTR_ERR(tag_ops) == -ENOPROTOOPT)
- 			return -EPROBE_DEFER;
--- 
-2.34.1
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2022-10-24
 
+for you to fetch changes up to edaea001442a792e4b14c7523072b9687700585e:
+
+  net/mlx5: DR, Remove the buddy used_list (2022-10-27 15:50:40 +0100)
+
+----------------------------------------------------------------
+mlx5-updates-2022-10-24
+
+SW steering updates from Yevgeny Kliteynik:
+
+1) 1st Four patches: small fixes / optimizations for SW steering:
+
+ - Patch 1: Don't abort destroy flow if failed to destroy table - continue
+   and free everything else.
+ - Patches 2 and 3 deal with fast teardown:
+    + Skip sync during fast teardown, as PCI device is not there any more.
+    + Check device state when polling CQ - otherwise SW steering keeps polling
+      the CQ forever, because nobody is there to flush it.
+ - Patch 4: Removing unneeded function argument.
+
+2) Deal with the hiccups that we get during rules insertion/deletion,
+which sometimes reach 1/4 of a second. While insertion/deletion rate
+improvement was not the focus here, it still is a by-product of removing these
+hiccups.
+
+Another by-product is the reduced standard deviation in measuring the duration
+of rules insertion/deletion bursts.
+
+In the testing we add K rules (warm-up phase), and then continuously do
+insertion/deletion bursts of N rules.
+During the test execution, the driver measures hiccups (amount and duration)
+and total time for insertion/deletion of a batch of rules.
+
+Here are some numbers, before and after these patches:
+
++--------------------------------------------+-----------------+----------------+
+|                                            |   Create rules  |  Delete rules  |
+|                                            +--------+--------+--------+-------+
+|                                            | Before |  After | Before | After |
++--------------------------------------------+--------+--------+--------+-------+
+| Max hiccup [msec]                          |    253 |     42 |    254 |    68 |
++--------------------------------------------+--------+--------+--------+-------+
+| Avg duration of 10K rules add/remove [msec]| 140.07 | 124.32 | 106.99 | 99.51 |
++--------------------------------------------+--------+--------+--------+-------+
+| Num of hiccups per 100K rules add/remove   |   7.77 |   7.97 |  12.60 | 11.57 |
++--------------------------------------------+--------+--------+--------+-------+
+| Avg hiccup duration [msec]                 |  36.92 |  33.25 |  36.15 | 33.74 |
++--------------------------------------------+--------+--------+--------+-------+
+
+ - Patch 5: Allocate a short array on stack instead of dynamically- it is
+   destroyed at the end of the function.
+ - Patch 6: Rather than cleaning the corresponding chunk's section of
+   ste_arrays on chunk deletion, initialize these areas upon chunk creation.
+   Chunk destruction tend to come in large batches (during pool syncing),
+   so instead of doing huge memory initialization during pool sync,
+   we amortize this by doing small initsializations on chunk creation.
+ - Patch 7: In order to simplifies error flow and allows cleaner addition
+   of new pools, handle creation/destruction of all the domain's memory pools
+   and other memory-related fields in a separate init/uninit functions.
+ - Patch 8: During rehash, write each table row immediately instead of waiting
+   for the whole table to be ready and writing it all - saves allocations
+   of ste_send_info structures and improves performance.
+ - Patch 9: Instead of allocating/freeing send info objects dynamically,
+   manage them in pool. The number of send info objects doesn't depend on
+   number of rules, so after pre-populating the pool with an initial batch of
+   send info objects, the pool is not expected to grow.
+   This way we save alloc/free during writing STEs to ICM, which by itself can
+   sometimes take up to 40msec.
+ - Patch 10: Allocate icm_chunks from their own slab allocator, which lowered
+   the alloc/free "hiccups" frequency.
+ - Patch 11: Similar to patch 9, allocate htbl from its own slab allocator.
+ - Patch 12: Lower sync threshold for ICM hot memory - set the threshold for
+   sync to 1/4 of the pool instead of 1/2 of the pool. Although we will have
+   more syncs, each     sync will be shorter and will help with insertion rate
+   stability. Also, notice that the overall number of hiccups wasn't increased
+   due to all the other patches.
+ - Patch 13: Keep track of hot ICM chunks in an array instead of list.
+   After steering sync, we traverse the hot list and finally free all the
+   chunks. It appears that traversing a long list takes unusually long time
+   due to cache misses on many entries, which causes a big "hiccup" during
+   rule insertion. This patch replaces the list with pre-allocated array that
+   stores only the bookkeeping information that is needed to later free the
+   chunks in its buddy allocator.
+ - Patch 14: Remove the unneeded buddy used_list - we don't need to have the
+   list of used chunks, we only need the total amount of used memory.
+
+----------------------------------------------------------------
+Yevgeny Kliteynik (14):
+      net/mlx5: DR, In destroy flow, free resources even if FW command failed
+      net/mlx5: DR, Fix the SMFS sync_steering for fast teardown
+      net/mlx5: DR, Check device state when polling CQ
+      net/mlx5: DR, Remove unneeded argument from dr_icm_chunk_destroy
+      net/mlx5: DR, For short chains of STEs, avoid allocating ste_arr dynamically
+      net/mlx5: DR, Initialize chunk's ste_arrays at chunk creation
+      net/mlx5: DR, Handle domain memory resources init/uninit separately
+      net/mlx5: DR, In rehash write the line in the entry immediately
+      net/mlx5: DR, Manage STE send info objects in pool
+      net/mlx5: DR, Allocate icm_chunks from their own slab allocator
+      net/mlx5: DR, Allocate htbl from its own slab allocator
+      net/mlx5: DR, Lower sync threshold for ICM hot memory
+      net/mlx5: DR, Keep track of hot ICM chunks in an array instead of list
+      net/mlx5: DR, Remove the buddy used_list
+
+ .../mellanox/mlx5/core/steering/dr_buddy.c         |   2 -
+ .../ethernet/mellanox/mlx5/core/steering/dr_cmd.c  |   7 +
+ .../mellanox/mlx5/core/steering/dr_domain.c        |  89 ++++++++---
+ .../mellanox/mlx5/core/steering/dr_icm_pool.c      | 174 ++++++++++++---------
+ .../ethernet/mellanox/mlx5/core/steering/dr_rule.c |  92 +++++++----
+ .../ethernet/mellanox/mlx5/core/steering/dr_send.c | 141 ++++++++++++++++-
+ .../ethernet/mellanox/mlx5/core/steering/dr_ste.c  |  12 +-
+ .../mellanox/mlx5/core/steering/dr_table.c         |   2 +-
+ .../mellanox/mlx5/core/steering/dr_types.h         |  16 +-
+ .../ethernet/mellanox/mlx5/core/steering/mlx5dr.h  |   9 +-
+ 10 files changed, 406 insertions(+), 138 deletions(-)
