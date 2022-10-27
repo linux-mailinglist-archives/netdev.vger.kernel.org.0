@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F5F460F23E
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 10:22:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61ADE60F241
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 10:22:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234947AbiJ0IWr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 04:22:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43514 "EHLO
+        id S234953AbiJ0IWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 04:22:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234998AbiJ0IWj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 04:22:39 -0400
+        with ESMTP id S234927AbiJ0IWp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 04:22:45 -0400
 Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8696161735;
-        Thu, 27 Oct 2022 01:22:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 611D61CB0C;
+        Thu, 27 Oct 2022 01:22:43 -0700 (PDT)
 X-IronPort-AV: E=Sophos;i="5.95,217,1661785200"; 
-   d="scan'208";a="140573944"
+   d="scan'208";a="140573960"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 27 Oct 2022 17:22:37 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 27 Oct 2022 17:22:43 +0900
 Received: from localhost.localdomain (unknown [10.226.93.45])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id BD4334048F22;
-        Thu, 27 Oct 2022 17:22:31 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id DCFE24048F22;
+        Thu, 27 Oct 2022 17:22:37 +0900 (JST)
 From:   Biju Das <biju.das.jz@bp.renesas.com>
 To:     Wolfgang Grandegger <wg@grandegger.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
@@ -39,9 +39,9 @@ Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         Chris Paterson <Chris.Paterson2@renesas.com>,
         Biju Das <biju.das@bp.renesas.com>,
         linux-renesas-soc@vger.kernel.org
-Subject: [PATCH v3 5/6] can: rcar_canfd: Add multi_channel_irqs to struct rcar_canfd_hw_info
-Date:   Thu, 27 Oct 2022 09:21:57 +0100
-Message-Id: <20221027082158.95895-6-biju.das.jz@bp.renesas.com>
+Subject: [PATCH v3 6/6] can: rcar_canfd: Add has_gerfl_eef to struct rcar_canfd_hw_info
+Date:   Thu, 27 Oct 2022 09:21:58 +0100
+Message-Id: <20221027082158.95895-7-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20221027082158.95895-1-biju.das.jz@bp.renesas.com>
 References: <20221027082158.95895-1-biju.das.jz@bp.renesas.com>
@@ -55,88 +55,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RZ/G2L has separate IRQ lines for tx and error interrupt for each
-channel whereas R-Car has a combined IRQ line for all the channel
-specific tx and error interrupts.
+R-Car has ECC error flags in global error interrupts whereas it is
+not available on RZ/G2L.
 
-Add multi_channel_irqs to struct rcar_canfd_hw_info to select the
-driver to choose between combined and separate irq registration for
-channel interrupts. This patch also removes enum rcanfd_chip_id and
-chip_id from both struct rcar_canfd_hw_info, as it is unused.
+Add has_gerfl_eef to struct rcar_canfd_hw_info so that rcar_canfd_
+global_error() will process ECC errors only for R-Car.
+
+whilst, this patch fixes the below checkpatch warnings
+  CHECK: Unnecessary parentheses around 'ch == 0'
+  CHECK: Unnecessary parentheses around 'ch == 1'
 
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
 v2->v3:
  * No change.
 v1->v2:
- * Added Rb tag from Geert.
+ * Replaced info->has_gerfl to gpriv->info->has_gerfl and wrapped
+   the ECC error flag check within single if statement.
 ---
- drivers/net/can/rcar/rcar_canfd.c | 16 ++++------------
- 1 file changed, 4 insertions(+), 12 deletions(-)
+ drivers/net/can/rcar/rcar_canfd.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
-index bc5df7a39f91..f8eafb132b39 100644
+index f8eafb132b39..00242eac377d 100644
 --- a/drivers/net/can/rcar/rcar_canfd.c
 +++ b/drivers/net/can/rcar/rcar_canfd.c
-@@ -41,12 +41,6 @@
- 
- #define RCANFD_DRV_NAME			"rcar_canfd"
- 
--enum rcanfd_chip_id {
--	RENESAS_RCAR_GEN3 = 0,
--	RENESAS_RZG2L,
--	RENESAS_R8A779A0,
--};
--
- /* Global register bits */
- 
- /* RSCFDnCFDGRMCFG */
-@@ -524,11 +518,11 @@ enum rcar_canfd_fcanclk {
- struct rcar_canfd_global;
- 
- struct rcar_canfd_hw_info {
--	enum rcanfd_chip_id chip_id;
- 	u8 max_channels;
- 	u8 postdiv;
+@@ -523,6 +523,7 @@ struct rcar_canfd_hw_info {
  	/* hardware features */
  	unsigned shared_global_irqs:1;	/* Has shared global irqs */
-+	unsigned multi_channel_irqs:1;	/* Has multiple channel irqs */
+ 	unsigned multi_channel_irqs:1;	/* Has multiple channel irqs */
++	unsigned has_gerfl_eef:1;	/* Has ECC Error Flag */
  };
  
  /* Channel priv data */
-@@ -599,20 +593,18 @@ static const struct can_bittiming_const rcar_canfd_bittiming_const = {
- };
- 
- static const struct rcar_canfd_hw_info rcar_gen3_hw_info = {
--	.chip_id = RENESAS_RCAR_GEN3,
+@@ -596,6 +597,7 @@ static const struct rcar_canfd_hw_info rcar_gen3_hw_info = {
  	.max_channels = 2,
  	.postdiv = 2,
  	.shared_global_irqs = 1,
++	.has_gerfl_eef = 1,
  };
  
  static const struct rcar_canfd_hw_info rzg2l_hw_info = {
--	.chip_id = RENESAS_RZG2L,
--	.postdiv = 1,
- 	.max_channels = 2,
-+	.postdiv = 1,
-+	.multi_channel_irqs = 1,
- };
- 
- static const struct rcar_canfd_hw_info r8a779a0_hw_info = {
--	.chip_id = RENESAS_R8A779A0,
+@@ -608,6 +610,7 @@ static const struct rcar_canfd_hw_info r8a779a0_hw_info = {
  	.max_channels = 8,
  	.postdiv = 2,
  	.shared_global_irqs = 1,
-@@ -1751,7 +1743,7 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
- 	priv->can.clock.freq = fcan_freq;
- 	dev_info(&pdev->dev, "can_clk rate is %u\n", priv->can.clock.freq);
++	.has_gerfl_eef = 1,
+ };
  
--	if (info->chip_id == RENESAS_RZG2L) {
-+	if (info->multi_channel_irqs) {
- 		char *irq_name;
- 		int err_irq;
- 		int tx_irq;
+ /* Helper functions */
+@@ -955,13 +958,15 @@ static void rcar_canfd_global_error(struct net_device *ndev)
+ 	u32 ridx = ch + RCANFD_RFFIFO_IDX;
+ 
+ 	gerfl = rcar_canfd_read(priv->base, RCANFD_GERFL);
+-	if ((gerfl & RCANFD_GERFL_EEF0) && (ch == 0)) {
+-		netdev_dbg(ndev, "Ch0: ECC Error flag\n");
+-		stats->tx_dropped++;
+-	}
+-	if ((gerfl & RCANFD_GERFL_EEF1) && (ch == 1)) {
+-		netdev_dbg(ndev, "Ch1: ECC Error flag\n");
+-		stats->tx_dropped++;
++	if (gpriv->info->has_gerfl_eef) {
++		if ((gerfl & RCANFD_GERFL_EEF0) && ch == 0) {
++			netdev_dbg(ndev, "Ch0: ECC Error flag\n");
++			stats->tx_dropped++;
++		}
++		if ((gerfl & RCANFD_GERFL_EEF1) && ch == 1) {
++			netdev_dbg(ndev, "Ch1: ECC Error flag\n");
++			stats->tx_dropped++;
++		}
+ 	}
+ 	if (gerfl & RCANFD_GERFL_MES) {
+ 		sts = rcar_canfd_read(priv->base,
 -- 
 2.25.1
 
