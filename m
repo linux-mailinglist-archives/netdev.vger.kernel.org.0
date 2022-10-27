@@ -2,48 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 124D7610038
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 20:30:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84139610071
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 20:40:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236438AbiJ0SaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 14:30:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52288 "EHLO
+        id S236146AbiJ0Sk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 14:40:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236363AbiJ0SaJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 14:30:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F0F52A411
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 11:29:59 -0700 (PDT)
+        with ESMTP id S236072AbiJ0SkY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 14:40:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 067BC4151C
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 11:40:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80540B82750
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 18:29:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAA2AC433D6;
-        Thu, 27 Oct 2022 18:29:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6B299B8275D
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 18:40:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E70C0C433B5;
+        Thu, 27 Oct 2022 18:40:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666895397;
-        bh=D6hEI2MefJnUUmPfixeID+z2q0LHFjWOFXH/B0/DS/M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CPyODxO3fU4nNL3gITTaWM80fAI+d6netBI4b/f6YlMtb03JAqXpXtjKmMMYW+aBo
-         IweB9aRQcGl1SLrHMYLSgETdL0pB+3j6XerMEFedbEzWfPqKSBAJVFlMfnFkiLz3Mq
-         kk01gMlMuZPBS02/JO6sppRSIaptjMPt3hGKfmQTJVAHwxep7Hoy7cdYpaDHi2g86s
-         GcNZAaKWWIWqpMAByqOqbWTZmWdSi2oy4FG1xdCBdj3uSsgcBqgs6MgwnClz7ct9Zk
-         Tkn5akbO7zn343ZrwrlUPb9X3M1WlOJ9BruRGBpm0BbbZogt7T1tz2DYKnUUT0knc/
-         OqydQXT0VdZFg==
-Date:   Thu, 27 Oct 2022 11:29:55 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sabrina Dubroca <sd@queasysnail.net>
-Cc:     netdev@vger.kernel.org, Leon Romanovsky <leon@kernel.org>,
-        Antoine Tenart <atenart@kernel.org>
-Subject: Re: [PATCH net v2 3/5] macsec: fix secy->n_rx_sc accounting
-Message-ID: <20221027112955.6a98adb4@kernel.org>
-In-Reply-To: <b54fb76f963e4b1dbecec5e073a6dfb81f25bed8.1666793468.git.sd@queasysnail.net>
-References: <cover.1666793468.git.sd@queasysnail.net>
-        <b54fb76f963e4b1dbecec5e073a6dfb81f25bed8.1666793468.git.sd@queasysnail.net>
+        s=k20201202; t=1666896018;
+        bh=ME2r36VOhEuLMzBGknUFz8tI/NUuV+E5uTHdHtvy5vQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=n7utVEHOO9X1t4IALLwYQqJBwgpEtpYG3DZ5E0d/cNi51lXf28QIR87L7NQCfwEuT
+         /FIcr+aUcFcLI8IiFAt68OEo2P5Nm2SL3TgL6NT4Jr6MdSL225FAfScCdGard7k6AG
+         xUoksCEMzup9gCrK9Trbg8eK7F8PpZJm+KHXvuF6HBUvbby+JUkj08NUHeDuENc/l+
+         +ghCgXWZDwTJl0pEfE7qnpBq1Qy1Rmh5BuKh4uaXBsjCTU6YsNOowAyzcrJ3JCW2KK
+         6x8uRTWEKGwrvzZ6t1fy4tQHCnj7ZYDF7fYiAD04Y2BTGc/LS6GlR8Z+pKl2OcNGOX
+         liMwAjgjeatVw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CABD4C73FFC;
+        Thu, 27 Oct 2022 18:40:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] kcm: do not sense pfmemalloc status in kcm_sendpage()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166689601782.10145.11518079872887521722.git-patchwork-notify@kernel.org>
+Date:   Thu, 27 Oct 2022 18:40:17 +0000
+References: <20221027040637.1107703-1-edumazet@google.com>
+In-Reply-To: <20221027040637.1107703-1-edumazet@google.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, eric.dumazet@gmail.com
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -53,10 +55,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 26 Oct 2022 23:56:25 +0200 Sabrina Dubroca wrote:
->  
-> -	rx_sc = create_rx_sc(dev, sci);
-> +
-> +	if (tb_rxsc[MACSEC_RXSC_ATTR_ACTIVE])
+Hello:
 
-nit: double new line :(
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Thu, 27 Oct 2022 04:06:37 +0000 you wrote:
+> Similar to changes done in TCP in blamed commit.
+> We should not sense pfmemalloc status in sendpage() methods.
+> 
+> Fixes: 326140063946 ("tcp: TX zerocopy should not sense pfmemalloc status")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> ---
+>  net/kcm/kcmsock.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+Here is the summary with links:
+  - [net] kcm: do not sense pfmemalloc status in kcm_sendpage()
+    https://git.kernel.org/netdev/net/c/ee15e1f38dc2
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
