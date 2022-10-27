@@ -2,213 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C6F360F69F
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 13:58:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE5EC60F6A7
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 14:00:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235445AbiJ0L62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 07:58:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34632 "EHLO
+        id S235407AbiJ0MA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 08:00:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235451AbiJ0L60 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 07:58:26 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537FC625D5;
-        Thu, 27 Oct 2022 04:58:25 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Mykhd2chCzHvKN;
-        Thu, 27 Oct 2022 19:58:09 +0800 (CST)
-Received: from [10.174.178.66] (10.174.178.66) by
- dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 27 Oct 2022 19:58:22 +0800
-Message-ID: <20e9ea01-1261-6d03-34c9-9b842298487a@huawei.com>
-Date:   Thu, 27 Oct 2022 19:58:21 +0800
+        with ESMTP id S235453AbiJ0MA0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 08:00:26 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B6973B447;
+        Thu, 27 Oct 2022 05:00:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 79E43CE2645;
+        Thu, 27 Oct 2022 12:00:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AB4DAC433D6;
+        Thu, 27 Oct 2022 12:00:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666872017;
+        bh=JfPJWLo2/MXWbmo3lmwaTqHkhHCSrHs+eujYR/yhiwE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=eNuQ7Mixoe4tj4T68o4XImg26CqvBUYlPygf8ScXRsgXp52llJQgSkfIx3Gfl4f2S
+         wOryIAR21htbRi8UYGUhQtT/otfM8OAiosvZbliN6xK0pqk6+tPskdjm381xKddm3w
+         +VGsER+hgtugW7ryPWjvM3Ffj9Lq7iUJpvSL7QjnbhLK6+OfMCp4gdQ1279W9tuKE+
+         vzdVx9JjmHMxF5r6zL8Hfbq+BCqXKkHwR58FS8FNkA4MDEbKdYYKkIq50YEFXsk6J6
+         hTKvMcG6EGUIqfNjcOMXfToA7y0d5STGrn5/fsO+kP8g8CwPSY8wsRuN/J7vOeQ/fv
+         SiOnu5M51BqUw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8C9E8E270DA;
+        Thu, 27 Oct 2022 12:00:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [PATCH bpf-next] bpf: fix issue that packet only contains l2 is
- dropped
-To:     Stanislav Fomichev <sdf@google.com>
-CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <andrii@kernel.org>, <martin.lau@linux.dev>, <song@kernel.org>,
-        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <haoluo@google.com>, <jolsa@kernel.org>, <oss@lmb.io>,
-        <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>
-References: <20221015092448.117563-1-shaozhengchao@huawei.com>
- <CAKH8qBugSdWHP7mtNxrnLLR+56u_0OCx3xQOkJSV-+RUvDAeNg@mail.gmail.com>
- <d830980c-4a38-5537-b594-bc5fb86b0acd@huawei.com>
- <CAKH8qBtyfS0Otpugn7_ZiG5APA_WTKOVAe1wsFfyaxF-03X=5w@mail.gmail.com>
- <87f67a8c-2fb2-9478-adbb-f55c7a7c94f9@huawei.com>
- <CAKH8qBsOMxVaemF0Oy=vE1V0vKO8ORUcVGB5YANS3HdKOhVjjw@mail.gmail.com>
- <7ddbf8f4-2b03-223f-4601-add0f7208855@huawei.com>
- <CAKH8qBuKVuRKd+fFiXKTiSpoB8ue4YPw1gM+pkGFKAdgNOcpTg@mail.gmail.com>
-From:   shaozhengchao <shaozhengchao@huawei.com>
-In-Reply-To: <CAKH8qBuKVuRKd+fFiXKTiSpoB8ue4YPw1gM+pkGFKAdgNOcpTg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.178.66]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net-next 0/4] net: ipa: don't use fixed table sizes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166687201757.29716.7404783392276656944.git-patchwork-notify@kernel.org>
+Date:   Thu, 27 Oct 2022 12:00:17 +0000
+References: <20221025195143.255934-1-elder@linaro.org>
+In-Reply-To: <20221025195143.255934-1-elder@linaro.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, mka@chromium.org, evgreen@chromium.org,
+        andersson@kernel.org, quic_cpratapa@quicinc.com,
+        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
+        quic_subashab@quicinc.com, elder@kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Tue, 25 Oct 2022 14:51:39 -0500 you wrote:
+> Currently, routing and filter tables are assumed to have a fixed
+> size for all platforms.  In fact, these tables can support many more
+> entries than what has been assumed; the only limitation is the size
+> of the IPA-resident memory regions that contain them.
+> 
+> This series rearranges things so that the size of the table is
+> determined from the memory region size defined in configuration
+> data, rather than assuming it is fixed.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,1/4] net: ipa: record the route table size in the IPA structure
+    https://git.kernel.org/netdev/net-next/c/fc094058ce01
+  - [net-next,2/4] net: ipa: determine route table size from memory region
+    https://git.kernel.org/netdev/net-next/c/0439e6743c5c
+  - [net-next,3/4] net: ipa: don't assume 8 modem routing table entries
+    https://git.kernel.org/netdev/net-next/c/8defab8bdfb1
+  - [net-next,4/4] net: ipa: determine filter table size from memory region
+    https://git.kernel.org/netdev/net-next/c/f787d8483015
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-On 2022/10/25 1:13, Stanislav Fomichev wrote:
-> On Sat, Oct 22, 2022 at 4:36 AM shaozhengchao <shaozhengchao@huawei.com> wrote:
->>
->>
->>
->> On 2022/10/22 2:16, Stanislav Fomichev wrote:
->>> On Fri, Oct 21, 2022 at 12:25 AM shaozhengchao <shaozhengchao@huawei.com> wrote:
->>>>
->>>>
->>>>
->>>> On 2022/10/21 1:45, Stanislav Fomichev wrote:
->>>>> On Wed, Oct 19, 2022 at 6:47 PM shaozhengchao <shaozhengchao@huawei.com> wrote:
->>>>>>
->>>>>>
->>>>>>
->>>>>> On 2022/10/18 0:36, Stanislav Fomichev wrote:
->>>>>>> On Sat, Oct 15, 2022 at 2:16 AM Zhengchao Shao <shaozhengchao@huawei.com> wrote:
->>>>>>>>
->>>>>>>> As [0] see, bpf_prog_test_run_skb() should allow user space to forward
->>>>>>>> 14-bytes packet via BPF_PROG_RUN instead of dropping packet directly.
->>>>>>>> So fix it.
->>>>>>>>
->>>>>>>> 0: https://github.com/cilium/ebpf/commit/a38fb6b5a46ab3b5639ea4d421232a10013596c0
->>>>>>>>
->>>>>>>> Fixes: fd1894224407 ("bpf: Don't redirect packets with invalid pkt_len")
->>>>>>>> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
->>>>>>>> ---
->>>>>>>>      net/bpf/test_run.c | 6 +++---
->>>>>>>>      1 file changed, 3 insertions(+), 3 deletions(-)
->>>>>>>>
->>>>>>>> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
->>>>>>>> index 13d578ce2a09..aa1b49f19ca3 100644
->>>>>>>> --- a/net/bpf/test_run.c
->>>>>>>> +++ b/net/bpf/test_run.c
->>>>>>>> @@ -979,9 +979,6 @@ static int convert___skb_to_skb(struct sk_buff *skb, struct __sk_buff *__skb)
->>>>>>>>      {
->>>>>>>>             struct qdisc_skb_cb *cb = (struct qdisc_skb_cb *)skb->cb;
->>>>>>>>
->>>>>>>> -       if (!skb->len)
->>>>>>>> -               return -EINVAL;
->>>>>>>> -
->>>>>>>>             if (!__skb)
->>>>>>>>                     return 0;
->>>>>>>>
->>>>>>>> @@ -1102,6 +1099,9 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
->>>>>>>>             if (IS_ERR(data))
->>>>>>>>                     return PTR_ERR(data);
->>>>>>>>
->>>>>>>> +       if (size == ETH_HLEN)
->>>>>>>> +               is_l2 = true;
->>>>>>>> +
->>>>>>>
->>>>>>> Don't think this will work? That is_l2 is there to expose proper l2/l3
->>>>>>> skb for specific hooks; we can't suddenly start exposing l2 headers to
->>>>>>> the hooks that don't expect it.
->>>>>>> Does it make sense to start with a small reproducer that triggers the
->>>>>>> issue first? We can have a couple of cases for
->>>>>>> len=0/ETH_HLEN-1/ETH_HLEN+1 and trigger them from the bpf program that
->>>>>>> redirects to different devices (to trigger dev_is_mac_header_xmit).
->>>>>>>
->>>>>>>
->>>>>> Hi Stanislav:
->>>>>>            Thank you for your review. Is_l2 is the flag of a specific
->>>>>> hook. Therefore, do you mean that if skb->len is equal to 0, just
->>>>>> add the length back?
->>>>>
->>>>> Not sure I understand your question. All I'm saying is - you can't
->>>>> flip that flag arbitrarily. This flag depends on the attach point that
->>>>> you're running the prog against. Some attach points expect packets
->>>>> with l2, some expect packets without l2.
->>>>>
->>>>> What about starting with a small reproducer? Does it make sense to
->>>>> create a small selftest that adds net namespace + fq_codel +
->>>>> bpf_prog_test run and do redirect ingress/egress with len
->>>>> 0/1...tcphdr? Because I'm not sure I 100% understand whether it's only
->>>>> len=0 that's problematic or some other combination as well?
->>>>>
->>>> yes, only skb->len = 0 will cause null-ptr-deref issue.
->>>> The following is the process of triggering the problem:
->>>> enqueue a skb:
->>>> fq_codel_enqueue()
->>>>           ...
->>>>           idx = fq_codel_classify()        --->if idx != 0
->>>>           flow = &q->flows[idx];
->>>>           flow_queue_add(flow, skb);       --->add skb to flow[idex]
->>>>           q->backlogs[idx] += qdisc_pkt_len(skb); --->backlogs = 0
->>>>           ...
->>>>           fq_codel_drop()                  --->set sch->limit = 0, always
->>>> drop packets
->>>>                   ...
->>>>                   idx = i                  --->becuase backlogs in every
->>>> flows is 0, so idx = 0
->>>>                   ...
->>>>                   flow = &q->flows[idx];   --->get idx=0 flow
->>>>                   ...
->>>>                   dequeue_head()
->>>>                           skb = flow->head; --->flow->head = NULL
->>>>                           flow->head = skb->next; --->cause null-ptr-deref
->>>> So, if skb->len !=0，fq_codel_drop() could get the correct idx, and
->>>> then skb!=NULL, it will be OK.
->>>> Maybe, I will fix it in fq_codel.
->>>
->>> I think the consensus here is that the stack, in general, doesn't
->>> expect the packets like this. So there are probably more broken things
->>> besides fq_codel. Thus, it's better if we remove the ability to
->>> generate them from the bpf side instead of fixing the individual users
->>> like fq_codel.
->>>
->>>> But, as I know, skb->len = 0 is just invalid packet. I prefer to add the
->>>> length back, like bellow:
->>>>           if (is_l2 || !skb->len)
->>>>                   __skb_push(skb, hh_len);
->>>> is it OK?
->>>
->>> Probably not?
->>>
->>> Looking at the original syzkaller report, prog_type is
->>> BPF_PROG_TYPE_LWT_XMIT which does expect a packet without l2 header.
->>> Can we do something like:
->>>
->>> if (!is_l2 && !skb->len) {
->>>     // append some dummy byte to the skb ?
->>> }
->>>
->>>
->> I pad one byte, and test OK.
->> if (!is_l2 && !skb->len)
->>       __skb_push(skb, 1);
->>
->> Does it look OK to you?
-> 
-> Nope, this will eat a byte out of the l2 header. We need to skb_put
-> and make sure we allocate enough to make that skb_put succeed.
-> 
-> But stepping back a bit: it feels like it's all unnecessary? The only
-> valid use-case of this is probing for the BPF_PROG_TEST_RUN as cilium
-> does. This is mostly about testing, so fixing it in the users seems
-> fair? No real production code is expected to generate these zero-len
-> packets. Or are we concerned that this will leak into stable kernels?
-> 
-> I feel like we are trying to add more complexity here for no apparent reason.
-> 
-I agree with you. users should make sure the correct skb len and
-configurations are passed into kernel. Incorrect configurations should
-be discarded to ensure kernel stability.
-
-Lorenz, Can you modify the user-mode test code?
-
-Zhengchao Shao
