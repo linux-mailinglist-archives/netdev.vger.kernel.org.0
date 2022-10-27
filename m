@@ -2,288 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 598D661044D
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 23:23:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3E79610447
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 23:21:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236761AbiJ0VW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 17:22:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45578 "EHLO
+        id S236317AbiJ0VVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 17:21:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236142AbiJ0VW5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 17:22:57 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E5985B701
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 14:22:56 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id k2so8367016ejr.2
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 14:22:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
-        bh=hayQeMhzcQ5l1Af/BRe7TIDQOJpDWoQq048LwQR67LY=;
-        b=zITe3Ksn8Wlx8nXpYnJjYgrfcZJNS1g+frLueKe6UKXXsjK447wUwCaSqoGFekWca4
-         ri2vti6mSl9Vu0IavrN+HdycrPD1kWnsUtHG3u8lL0zN+TwlC1iaiS9W1w1xig0OMVgc
-         QQYcYZga5mD2iaBAs+y876MswfnRcqiNvXJ7Y=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hayQeMhzcQ5l1Af/BRe7TIDQOJpDWoQq048LwQR67LY=;
-        b=CFahR0ZBcifG670J/uHla2TmsWbDIidl2VWeNL1dUTfd0bXCeiFEry5XmPQxlKe5gc
-         npPFOm713u3UKeVSeX8fGv9Yli+bQFNXg2Kl2Xk42T8JK9X8qLd4/G6E4ji7fXKSG2n6
-         D4mSTw9hr4EvF/BJ4QL5tzChdZHCjRO38fFp+JzOyeeSwv5GRo5D43MouKXPCXUiB/dQ
-         b7jckMXWR+UZ3x7TCBepCzL6zmSrzWOIolf7Y2AHVleCZ7YRB553K3c+nBKw7UwN1HIP
-         lPGg7RIj6Aw00WVZ96MLh6Bfvrz2TYFtfbREB+oMz0v2B9Npwylhdun4B8ckEGkfCMTl
-         Y/8Q==
-X-Gm-Message-State: ACrzQf1mSzFIU6EudPX6+5nn980pGIjf9Yi92NYabvm8mUlVzc2NXMo+
-        BMXUnTJnSK88berTiVnJUkxDAw==
-X-Google-Smtp-Source: AMsMyM6gTnJMg2nqOC1cpt+EJT9iJExlQGophocthCQiQRatZG+V8MiJwuKfhsGH64hYEeEMyxXCeQ==
-X-Received: by 2002:a17:906:da85:b0:741:40a7:d08d with SMTP id xh5-20020a170906da8500b0074140a7d08dmr46179050ejb.263.1666905774834;
-        Thu, 27 Oct 2022 14:22:54 -0700 (PDT)
-Received: from cloudflare.com (79.191.56.44.ipv4.supernova.orange.pl. [79.191.56.44])
-        by smtp.gmail.com with ESMTPSA id f30-20020a170906739e00b0078e05db7005sm1227276ejl.214.2022.10.27.14.22.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Oct 2022 14:22:54 -0700 (PDT)
-References: <20220304081145.2037182-1-wangyufen@huawei.com>
-User-agent: mu4e 1.6.10; emacs 27.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Wang Yufen <wangyufen@huawei.com>, john.fastabend@gmail.com
-Cc:     daniel@iogearbox.net, lmb@cloudflare.com, davem@davemloft.net,
-        bpf@vger.kernel.org, edumazet@google.com, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org, ast@kernel.org,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v3 0/4] bpf, sockmap: Fix memleaks and issues
- of mem charge/uncharge
-Date:   Thu, 27 Oct 2022 23:10:37 +0200
-In-reply-to: <20220304081145.2037182-1-wangyufen@huawei.com>
-Message-ID: <87v8o5gdw2.fsf@cloudflare.com>
+        with ESMTP id S235707AbiJ0VVO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 17:21:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED61458DFD
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 14:21:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 89A486235C
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 21:21:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0DC0C433C1;
+        Thu, 27 Oct 2022 21:21:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666905671;
+        bh=7/9iyXdv01Dp2uYWt0COltnSucifFUnlqkgBC/SoNwo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=LZ+0V/ww+s2OsDvfohlMY+sAW9WOeYNB3Ox+eS6DfqZUUyPlcw/blINq+1knocEoN
+         7j9FLV2mFh3PR2Xg7LothwfaePzErPShjJuuR2LW0wO3isik7jOcYym7X42hfj0000
+         UpSWOWsOJKHplEnB58WD2dnUejMJVZC22Y5ER/Yyi1Iub/27SoTyFJMwucMmjRRaUy
+         i+M9Q6WZwDXhpS8yj/1xNdsOnPnbdmSYWSYdzznvc1b41ZScSGfD+j9ffVCEVN4FB7
+         loYOpIqEsyAd9EEycM9JqpT+Pxb2+9LXYOx541wPD5fTaHspR7ioj+FpQOVZ9jw/Cs
+         0eW+X8Gv2hMSg==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net] netlink: hide validation union fields from kdoc
+Date:   Thu, 27 Oct 2022 14:21:07 -0700
+Message-Id: <20221027212107.2639255-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wang, John,
+Mark the validation fields as private, users shouldn't set
+them directly and they are too complicated to explain in
+a more succinct way (there's already a long explanation
+in the comment above).
 
-On Fri, Mar 04, 2022 at 04:11 PM +08, Wang Yufen wrote:
-> This patchset fixes memleaks and incorrect charge/uncharge memory, these
-> issues cause the following info:
->
-> WARNING: CPU: 0 PID: 9202 at net/core/stream.c:205 sk_stream_kill_queues+0xc8/0xe0
-> Call Trace:
->  <IRQ>
->  inet_csk_destroy_sock+0x55/0x110
->  tcp_rcv_state_process+0xe5f/0xe90
->  ? sk_filter_trim_cap+0x10d/0x230
->  ? tcp_v4_do_rcv+0x161/0x250
->  tcp_v4_do_rcv+0x161/0x250
->  tcp_v4_rcv+0xc3a/0xce0
->  ip_protocol_deliver_rcu+0x3d/0x230
->  ip_local_deliver_finish+0x54/0x60
->  ip_local_deliver+0xfd/0x110
->  ? ip_protocol_deliver_rcu+0x230/0x230
->  ip_rcv+0xd6/0x100
->  ? ip_local_deliver+0x110/0x110
->  __netif_receive_skb_one_core+0x85/0xa0
->  process_backlog+0xa4/0x160
->  __napi_poll+0x29/0x1b0
->  net_rx_action+0x287/0x300
->  __do_softirq+0xff/0x2fc
->  do_softirq+0x79/0x90
->  </IRQ>
->
-> WARNING: CPU: 0 PID: 531 at net/ipv4/af_inet.c:154 inet_sock_destruct+0x175/0x1b0
-> Call Trace:
->  <TASK>
->  __sk_destruct+0x24/0x1f0
->  sk_psock_destroy+0x19b/0x1c0
->  process_one_work+0x1b3/0x3c0
->  ? process_one_work+0x3c0/0x3c0
->  worker_thread+0x30/0x350
->  ? process_one_work+0x3c0/0x3c0
->  kthread+0xe6/0x110
->  ? kthread_complete_and_exit+0x20/0x20
->  ret_from_fork+0x22/0x30
->  </TASK>
->
-> Changes since v2:
-> -Move sk_msg_trim() logic into sk_msg_alloc while -ENOMEM occurs, as
-> Cong Wang suggested.
->
-> Changes since v1:
-> -Update the commit message of patch #2, the error path is from ENOMEM not
-> the ENOSPC.
-> -Simply returning an error code when psock is null, as John Fastabend
-> suggested.
+The strict_start_type field is set directly and has a dedicated
+comment so move that above the "private" section.
 
-This is going to sound a bit weird, but I'm actually observing the
-mentioned warnings with these patches applied, when running
-`test_sockmap` selftests. Without the patch set - all is well.
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ include/net/netlink.h | 31 ++++++++++++++++++-------------
+ 1 file changed, 18 insertions(+), 13 deletions(-)
 
-Bisect went like so:
+diff --git a/include/net/netlink.h b/include/net/netlink.h
+index 4418b1981e31..7db13b3261fc 100644
+--- a/include/net/netlink.h
++++ b/include/net/netlink.h
+@@ -317,19 +317,10 @@ struct nla_policy {
+ 	u8		validation_type;
+ 	u16		len;
+ 	union {
+-		const u32 bitfield32_valid;
+-		const u32 mask;
+-		const char *reject_message;
+-		const struct nla_policy *nested_policy;
+-		struct netlink_range_validation *range;
+-		struct netlink_range_validation_signed *range_signed;
+-		struct {
+-			s16 min, max;
+-			u8 network_byte_order:1;
+-		};
+-		int (*validate)(const struct nlattr *attr,
+-				struct netlink_ext_ack *extack);
+-		/* This entry is special, and used for the attribute at index 0
++		/**
++		 * @strict_start_type: first attribute to validate strictly
++		 *
++		 * This entry is special, and used for the attribute at index 0
+ 		 * only, and specifies special data about the policy, namely it
+ 		 * specifies the "boundary type" where strict length validation
+ 		 * starts for any attribute types >= this value, also, strict
+@@ -348,6 +339,20 @@ struct nla_policy {
+ 		 * was added to enforce strict validation from thereon.
+ 		 */
+ 		u16 strict_start_type;
++
++		/* private: use NLA_POLICY_*() to set */
++		const u32 bitfield32_valid;
++		const u32 mask;
++		const char *reject_message;
++		const struct nla_policy *nested_policy;
++		struct netlink_range_validation *range;
++		struct netlink_range_validation_signed *range_signed;
++		struct {
++			s16 min, max;
++			u8 network_byte_order:1;
++		};
++		int (*validate)(const struct nlattr *attr,
++				struct netlink_ext_ack *extack);
+ 	};
+ };
+ 
+-- 
+2.37.3
 
-broken  [bpf-next] 31af1aa09fb9 ("Merge branch 'bpf: Fixes for kprobe multi on kernel modules'")
-...
-broken  2486ab434b2c ("bpf, sockmap: Fix double uncharge the mem of sk_msg")
-broken  84472b436e76 ("bpf, sockmap: Fix more uncharged while msg has more_data")
-working 9c34e38c4a87 ("bpf, sockmap: Fix memleak in tcp_bpf_sendmsg while sk msg is full")
-working 938d3480b92f ("bpf, sockmap: Fix memleak in sk_psock_queue_msg")
-working [base] d3b351f65bf4 ("selftests/bpf: Fix a clang compilation error for send_signal.c")
-
-At 84472b436e76 ("bpf, sockmap: Fix more uncharged while msg has
-more_data") I'm seeing:
-
-bash-5.1# uname -r
-5.17.0-rc6-01987-g84472b436e76
-bash-5.1# cd tools/testing/selftests/bpf/
-bash-5.1# ./test_sockmap
-# 1/ 6  sockmap::txmsg test passthrough:OK
-# 2/ 6  sockmap::txmsg test redirect:OK
-# 3/ 6  sockmap::txmsg test drop:OK
-# 4/ 6  sockmap::txmsg test ingress redirect:OK
-# 5/ 7  sockmap::txmsg test skb:OK
-# 6/ 8  sockmap::txmsg test apply:OK
-# 7/12  sockmap::txmsg test cork:OK
-[   16.399282] ------------[ cut here ]------------
-[   16.400465] WARNING: CPU: 2 PID: 197 at net/core/stream.c:205 sk_stream_kill_queues+0xd3/0xf0
-[   16.402718] Modules linked in:
-[   16.403504] CPU: 2 PID: 197 Comm: test_sockmap Not tainted 5.17.0-rc6-01987-g84472b436e76 #76
-[   16.404276] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1.fc35 04/01/2014
-[   16.404800] RIP: 0010:sk_stream_kill_queues+0xd3/0xf0
-[   16.405110] Code: 29 5b 5d 31 c0 89 c2 89 c6 89 c7 c3 48 89 df e8 63 db fe ff 8b 83 78 02 00 00 8b b3 30 02 00 00 85 c0 74 d9 0f 0b 85 f6 74 d7 <0f> 0b 5b 5d 31 c0 89 c2 89 c6 89 c7 c3 0f 0b eb 92 66 66 2e 0f 1f
-[   16.406226] RSP: 0018:ffffc90000423d48 EFLAGS: 00010206
-[   16.406545] RAX: 0000000000000000 RBX: ffff888104208000 RCX: 0000000000000000
-[   16.407117] RDX: 0000000000000000 RSI: 0000000000000fc0 RDI: ffff8881042081b8
-[   16.407571] RBP: ffff8881042081b8 R08: 0000000000000000 R09: 0000000000000000
-[   16.407995] R10: 0000000000000000 R11: 0000000000000000 R12: ffff888104208000
-[   16.408413] R13: ffff888102763000 R14: ffff888101b528e0 R15: ffff888104208130
-[   16.408837] FS:  00007f3728652000(0000) GS:ffff88813bd00000(0000) knlGS:0000000000000000
-[   16.409318] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   16.409666] CR2: 00007f3728651f78 CR3: 0000000100872005 CR4: 0000000000370ee0
-[   16.410098] Call Trace:
-[   16.410248]  <TASK>
-[   16.410378]  inet_csk_destroy_sock+0x55/0x110
-[   16.410647]  tcp_rcv_state_process+0xd28/0x1380
-[   16.410934]  ? tcp_v4_do_rcv+0x77/0x2c0
-[   16.411166]  tcp_v4_do_rcv+0x77/0x2c0
-[   16.411388]  __release_sock+0x106/0x130
-[   16.411626]  __tcp_close+0x1a7/0x4e0
-[   16.411844]  tcp_close+0x20/0x70
-[   16.412045]  inet_release+0x3c/0x80
-[   16.412257]  __sock_release+0x3a/0xb0
-[   16.412509]  sock_close+0x14/0x20
-[   16.412770]  __fput+0xa3/0x260
-[   16.413022]  task_work_run+0x59/0xb0
-[   16.413286]  exit_to_user_mode_prepare+0x1b3/0x1c0
-[   16.413665]  syscall_exit_to_user_mode+0x19/0x50
-[   16.414020]  do_syscall_64+0x48/0x90
-[   16.414285]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[   16.414659] RIP: 0033:0x7f3728791eb7
-[   16.414916] Code: ff e8 7d e2 01 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 03 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 41 c3 48 83 ec 18 89 7c 24 0c e8 43 cd f5 ff
-[   16.416286] RSP: 002b:00007ffe6c91bb98 EFLAGS: 00000246 ORIG_RAX: 0000000000000003
-[   16.416841] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00007f3728791eb7
-[   16.417296] RDX: 0000000000000090 RSI: 00007ffe6c91baf0 RDI: 0000000000000019
-[   16.417723] RBP: 00007ffe6c91bbe0 R08: 00007ffe6c91baf0 R09: 00007ffe6c91baf0
-[   16.418178] R10: 00007ffe6c91baf0 R11: 0000000000000246 R12: 00007ffe6c91beb8
-[   16.418669] R13: 000000000040de7f R14: 0000000000471de8 R15: 00007f37288ec000
-[   16.419148]  </TASK>
-[   16.419283] irq event stamp: 135687
-[   16.419492] hardirqs last  enabled at (135695): [<ffffffff810ee6a2>] __up_console_sem+0x52/0x60
-[   16.420065] hardirqs last disabled at (135712): [<ffffffff810ee687>] __up_console_sem+0x37/0x60
-[   16.420606] softirqs last  enabled at (135710): [<ffffffff81078fe1>] irq_exit_rcu+0xe1/0x130
-[   16.421201] softirqs last disabled at (135703): [<ffffffff81078fe1>] irq_exit_rcu+0xe1/0x130
-[   16.421839] ---[ end trace 0000000000000000 ]---
-[   16.422195] ------------[ cut here ]------------
-[   16.422550] WARNING: CPU: 2 PID: 197 at net/ipv4/af_inet.c:154 inet_sock_destruct+0x198/0x1d0
-[   16.423142] Modules linked in:
-[   16.423327] CPU: 2 PID: 197 Comm: test_sockmap Tainted: G        W         5.17.0-rc6-01987-g84472b436e76 #76
-[   16.423908] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1.fc35 04/01/2014
-[   16.424436] RIP: 0010:inet_sock_destruct+0x198/0x1d0
-[   16.424737] Code: ff 49 8b bc 24 68 02 00 00 e8 b4 65 e9 ff 49 8b bc 24 88 00 00 00 5b 41 5c e9 a4 65 e9 ff 41 8b 84 24 30 02 00 00 85 c0 74 ca <0f> 0b eb c6 4c 89 e7 e8 bc 41 e6 ff e9 4d ff ff ff 0f 0b 41 8b 84
-[   16.425858] RSP: 0018:ffffc90000423e40 EFLAGS: 00010206
-[   16.426172] RAX: 0000000000000fc0 RBX: ffff888104208160 RCX: 0000000000000000
-[   16.426593] RDX: 0000000000000000 RSI: 0000000000000fc0 RDI: ffff888104208160
-[   16.427024] RBP: ffff888104208000 R08: 0000000000000000 R09: 0000000000000000
-[   16.427485] R10: 0000000000000000 R11: 0000000000000000 R12: ffff888104208000
-[   16.428016] R13: ffff8881001ce8e0 R14: ffff888103170c30 R15: 0000000000000000
-[   16.428561] FS:  00007f3728652000(0000) GS:ffff88813bd00000(0000) knlGS:0000000000000000
-[   16.429207] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   16.429638] CR2: 00007f3728651f78 CR3: 0000000100872005 CR4: 0000000000370ee0
-[   16.430178] Call Trace:
-[   16.430366]  <TASK>
-[   16.430524]  __sk_destruct+0x23/0x220
-[   16.430753]  inet_release+0x3c/0x80
-[   16.430969]  __sock_release+0x3a/0xb0
-[   16.431189]  sock_close+0x14/0x20
-[   16.431388]  __fput+0xa3/0x260
-[   16.431578]  task_work_run+0x59/0xb0
-[   16.431793]  exit_to_user_mode_prepare+0x1b3/0x1c0
-[   16.432085]  syscall_exit_to_user_mode+0x19/0x50
-[   16.432359]  do_syscall_64+0x48/0x90
-[   16.432578]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[   16.432877] RIP: 0033:0x7f3728791eb7
-[   16.433099] Code: ff e8 7d e2 01 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 03 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 41 c3 48 83 ec 18 89 7c 24 0c e8 43 cd f5 ff
-[   16.434190] RSP: 002b:00007ffe6c91bb98 EFLAGS: 00000246 ORIG_RAX: 0000000000000003
-[   16.434637] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00007f3728791eb7
-[   16.435058] RDX: 0000000000000090 RSI: 00007ffe6c91baf0 RDI: 0000000000000019
-[   16.435476] RBP: 00007ffe6c91bbe0 R08: 00007ffe6c91baf0 R09: 00007ffe6c91baf0
-[   16.435893] R10: 00007ffe6c91baf0 R11: 0000000000000246 R12: 00007ffe6c91beb8
-[   16.436315] R13: 000000000040de7f R14: 0000000000471de8 R15: 00007f37288ec000
-[   16.436741]  </TASK>
-[   16.436876] irq event stamp: 136127
-[   16.437089] hardirqs last  enabled at (136137): [<ffffffff810ee6a2>] __up_console_sem+0x52/0x60
-[   16.437599] hardirqs last disabled at (136144): [<ffffffff810ee687>] __up_console_sem+0x37/0x60
-[   16.438115] softirqs last  enabled at (135830): [<ffffffff81078fe1>] irq_exit_rcu+0xe1/0x130
-[   16.438641] softirqs last disabled at (135817): [<ffffffff81078fe1>] irq_exit_rcu+0xe1/0x130
-[   16.439277] ---[ end trace 0000000000000000 ]---
-# 8/ 3  sockmap::txmsg test hanging corks:OK
-# 9/11  sockmap::txmsg test push_data:OK
-#10/17  sockmap::txmsg test pull-data:OK
-#11/ 9  sockmap::txmsg test pop-data:OK
-#12/ 1  sockmap::txmsg test push/pop data:OK
-#13/ 1  sockmap::txmsg test ingress parser:OK
-#14/ 1  sockmap::txmsg test ingress parser2:OK
-#15/ 6 sockhash::txmsg test passthrough:OK
-#16/ 6 sockhash::txmsg test redirect:OK
-#17/ 6 sockhash::txmsg test drop:OK
-#18/ 6 sockhash::txmsg test ingress redirect:OK
-#19/ 7 sockhash::txmsg test skb:OK
-#20/ 8 sockhash::txmsg test apply:OK
-#21/12 sockhash::txmsg test cork:OK
-#22/ 3 sockhash::txmsg test hanging corks:OK
-#23/11 sockhash::txmsg test push_data:OK
-#24/17 sockhash::txmsg test pull-data:OK
-#25/ 9 sockhash::txmsg test pop-data:OK
-#26/ 1 sockhash::txmsg test push/pop data:OK
-#27/ 1 sockhash::txmsg test ingress parser:OK
-#28/ 1 sockhash::txmsg test ingress parser2:OK
-#29/ 6 sockhash:ktls:txmsg test passthrough:OK
-#30/ 6 sockhash:ktls:txmsg test redirect:OK
-#31/ 6 sockhash:ktls:txmsg test drop:OK
-#32/ 6 sockhash:ktls:txmsg test ingress redirect:OK
-#33/ 7 sockhash:ktls:txmsg test skb:OK
-#34/ 8 sockhash:ktls:txmsg test apply:OK
-#35/12 sockhash:ktls:txmsg test cork:OK
-#36/ 3 sockhash:ktls:txmsg test hanging corks:OK
-#37/11 sockhash:ktls:txmsg test push_data:OK
-#38/17 sockhash:ktls:txmsg test pull-data:OK
-#39/ 9 sockhash:ktls:txmsg test pop-data:OK
-#40/ 1 sockhash:ktls:txmsg test push/pop data:OK
-#41/ 1 sockhash:ktls:txmsg test ingress parser:OK
-#42/ 0 sockhash:ktls:txmsg test ingress parser2:OK
-Pass: 42 Fail: 0
-bash-5.1#
-
-No idea why yet. I will need to dig into what is happening.
-
-Wang, can you please take a look as well?
-
-Thanks,
-Jakub
