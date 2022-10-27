@@ -2,144 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56DFE60F8EB
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 15:21:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7659A60F8F4
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 15:24:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235332AbiJ0NVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 09:21:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39940 "EHLO
+        id S235657AbiJ0NYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 09:24:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235984AbiJ0NVZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 09:21:25 -0400
+        with ESMTP id S235651AbiJ0NYK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 09:24:10 -0400
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B84DF9C20A
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 06:21:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 031D617A016
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 06:24:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=uyBDQ9fwuIGf/NuFeYx4hhmpjAVrylKJcZpwOvpaBSM=; b=qX3kCVXPvWtRui5PpVZTg1FCDr
-        MsiQG1uWXKwJKqrJty3noe5b7aZu6bNff02tyQuPJosqSqpD5rAio74Xb33Ko6MPbxQP2iq51GcUF
-        SzqmKmFkBp/HfDeGWn3GyHtfrZHxN9jFJDVCyILrkk2BXSTVZfickmFGOBQ5XWp/NbPqjsdTPBj/2
-        BCGqe9MFkdj3QdTxpL33koWsa/Aywa787rsmyHqDF87yqXv9ZpVQRiNQB8dd9HntiLW+Ke4fs9dTj
-        q8FA2hm2O00CGK/bQHVc+muTgg3e9m/Ah32pzn660dI+qUUXvIA/QmccRJ9GhWNv3bDTreT91IoAz
-        VjJslfYw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:45928 helo=rmk-PC.armlinux.org.uk)
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Ic5qV7VWLqe4+lahnJxOzORNAlLni3RZGNOdWJ0dyec=; b=SgfKVU45bIsDSc6qM2t+eq5mzz
+        uygqYGqxeA23IDB81kxyy8p3Jol8JbrH7eJaCsAQfITFy1mv9Xs5K+km9oWnp8hSZW6rvlpGAeptr
+        nNFYUBQ6nmV1FwbWjfEoJpmGQQ3HprGPM7sSBkHs5ZkeH/663GzkBS22Sq/utpJorCd5+OK3XzR7K
+        /NnzTLvIjMsHNoyiqJR649acRIBm/9kZAyzKpwlP62VMgOklu+Cbvzg3+oZWz4MirlkSdWuCAyB0p
+        AV6gCLker321KFUrpyXm/wPgL3pNESejKVO2ArmPH2VjVNxleOGO81ww0rL/uD/m8vlXjns5VVNOA
+        4jdS+awA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34974)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1oo2oz-00071x-SX; Thu, 27 Oct 2022 14:21:21 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1oo2oz-00HFJm-AF; Thu, 27 Oct 2022 14:21:21 +0100
-In-Reply-To: <Y1qFvaDlLVM1fHdG@shell.armlinux.org.uk>
-References: <Y1qFvaDlLVM1fHdG@shell.armlinux.org.uk>
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oo2rZ-00072U-Ak; Thu, 27 Oct 2022 14:24:01 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oo2rW-0001aM-9x; Thu, 27 Oct 2022 14:23:58 +0100
+Date:   Thu, 27 Oct 2022 14:23:58 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
 To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
-Subject: [PATCH net-next 2/2] net: sfp: move field definitions along side
- register index
+        Jakub Kicinski <kuba@kernel.org>,
+        Frank Wunderlich <frank-w@public-files.de>
+Cc:     Eric Dumazet <edumazet@google.com>, Felix Fietkau <nbd@nbd.name>,
+        John Crispin <john@phrozen.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Sean Wang <sean.wang@mediatek.com>
+Subject: Re: [PATCH net-next 00/11] net: mtk_eth_soc: improve PCS
+ implementation
+Message-ID: <Y1qGbrPZWNBt/78Z@shell.armlinux.org.uk>
+References: <Y1qDMw+DJLAJHT40@shell.armlinux.org.uk>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1oo2oz-00HFJm-AF@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Thu, 27 Oct 2022 14:21:21 +0100
+In-Reply-To: <Y1qDMw+DJLAJHT40@shell.armlinux.org.uk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        UPPERCASE_50_75 autolearn=no autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Just as we do for the A2h enum, arrange the A0h enum to have the
-field definitions next to their corresponding register index.
+On Thu, Oct 27, 2022 at 02:10:11PM +0100, Russell King (Oracle) wrote:
+> Hi,
+> 
+> As a result of invesigations from Frank Wunderlich, we know a lot more
+> about the Mediatek "SGMII" PCS block, and can implement the PCS support
+> correctly. This series achieves that, and Frank has tested the final
+> result and reports that it works for him. The series could do with
+> further testing by others, but I suspect that is unlikely to happen
+> until it is merged based on past performances with this driver.
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
- include/linux/sfp.h | 27 +++++++++++++++++----------
- 1 file changed, 17 insertions(+), 10 deletions(-)
+I forgot to say, many thanks to Frank for his efforts and patience in
+testing various patches to discover how this PCS works.
 
-diff --git a/include/linux/sfp.h b/include/linux/sfp.h
-index 4e2db155664d..52b98f9666a2 100644
---- a/include/linux/sfp.h
-+++ b/include/linux/sfp.h
-@@ -333,7 +333,10 @@ enum {
- /* SFP EEPROM registers */
- enum {
- 	SFP_PHYS_ID			= 0,
-+
- 	SFP_PHYS_EXT_ID			= 1,
-+	SFP_PHYS_EXT_ID_SFP		= 0x04,
-+
- 	SFP_CONNECTOR			= 2,
- 	SFP_COMPLIANCE			= 3,
- 	SFP_ENCODING			= 11,
-@@ -354,17 +357,8 @@ enum {
- 	SFP_OPTICAL_WAVELENGTH_LSB	= 61,
- 	SFP_CABLE_SPEC			= 60,
- 	SFP_CC_BASE			= 63,
--	SFP_OPTIONS			= 64,	/* 2 bytes, MSB, LSB */
--	SFP_BR_MAX			= 66,
--	SFP_BR_MIN			= 67,
--	SFP_VENDOR_SN			= 68,
--	SFP_DATECODE			= 84,
--	SFP_DIAGMON			= 92,
--	SFP_ENHOPTS			= 93,
--	SFP_SFF8472_COMPLIANCE		= 94,
--	SFP_CC_EXT			= 95,
- 
--	SFP_PHYS_EXT_ID_SFP		= 0x04,
-+	SFP_OPTIONS			= 64,	/* 2 bytes, MSB, LSB */
- 	SFP_OPTIONS_HIGH_POWER_LEVEL	= BIT(13),
- 	SFP_OPTIONS_PAGING_A2		= BIT(12),
- 	SFP_OPTIONS_RETIMER		= BIT(11),
-@@ -378,11 +372,20 @@ enum {
- 	SFP_OPTIONS_TX_FAULT		= BIT(3),
- 	SFP_OPTIONS_LOS_INVERTED	= BIT(2),
- 	SFP_OPTIONS_LOS_NORMAL		= BIT(1),
-+
-+	SFP_BR_MAX			= 66,
-+	SFP_BR_MIN			= 67,
-+	SFP_VENDOR_SN			= 68,
-+	SFP_DATECODE			= 84,
-+
-+	SFP_DIAGMON			= 92,
- 	SFP_DIAGMON_DDM			= BIT(6),
- 	SFP_DIAGMON_INT_CAL		= BIT(5),
- 	SFP_DIAGMON_EXT_CAL		= BIT(4),
- 	SFP_DIAGMON_RXPWR_AVG		= BIT(3),
- 	SFP_DIAGMON_ADDRMODE		= BIT(2),
-+
-+	SFP_ENHOPTS			= 93,
- 	SFP_ENHOPTS_ALARMWARN		= BIT(7),
- 	SFP_ENHOPTS_SOFT_TX_DISABLE	= BIT(6),
- 	SFP_ENHOPTS_SOFT_TX_FAULT	= BIT(5),
-@@ -390,6 +393,8 @@ enum {
- 	SFP_ENHOPTS_SOFT_RATE_SELECT	= BIT(3),
- 	SFP_ENHOPTS_APP_SELECT_SFF8079	= BIT(2),
- 	SFP_ENHOPTS_SOFT_RATE_SFF8431	= BIT(1),
-+
-+	SFP_SFF8472_COMPLIANCE		= 94,
- 	SFP_SFF8472_COMPLIANCE_NONE	= 0x00,
- 	SFP_SFF8472_COMPLIANCE_REV9_3	= 0x01,
- 	SFP_SFF8472_COMPLIANCE_REV9_5	= 0x02,
-@@ -399,6 +404,8 @@ enum {
- 	SFP_SFF8472_COMPLIANCE_REV11_3	= 0x06,
- 	SFP_SFF8472_COMPLIANCE_REV11_4	= 0x07,
- 	SFP_SFF8472_COMPLIANCE_REV12_0	= 0x08,
-+
-+	SFP_CC_EXT			= 95,
- };
- 
- /* SFP Diagnostics */
+> 
+> Briefly, the patches in order:
+> 
+> 1. Add a new helper to get the link timer duration in nanoseconds
+> 2. Add definitions for the newly discovered registers and updates to
+>    bit definitions, including bitmasks for the BMCR, BMSR and two
+>    advertisement registers.
+> 3. Remove unnecessary/unused error handling (functions always returning
+>    zero.)
+> 4. Adding the missing pcs_get_state() implementation.
+> 5. Converting the code to use regmap_update_bits() rather than
+>    open-coding read-modify-write sequences.
+> 6. Adding out-of-band speed and duplex forcing for all non-inband modes
+>    not just the 802.3z link modes the code currently does.
+> 7. Moving the release of the PHY power down to the main pcs_config()
+>    function.
+> 8. Moving the interface speed selection to the main pcs_config()
+>    function.
+> 9. Adding advertisement programming.
+> 10. Adding correct link timer programming using the new helper in the
+>     first patch.
+> 11. Adding support for 802.3z negotiation.
+> 
+> There is one remaining issue - when configuring the PCS for in-band,
+> for some reason the AN restart bit is always set. This should not be
+> necessary, but requires further investigation with the hardware to
+> find out whether it is really necessary. I suspect this was a work
+> around for a previous poor implementation.
+> 
+>  drivers/net/ethernet/mediatek/mtk_eth_soc.h |  13 ++-
+>  drivers/net/ethernet/mediatek/mtk_sgmii.c   | 174 ++++++++++++++++------------
+>  include/linux/phylink.h                     |  24 ++++
+>  3 files changed, 134 insertions(+), 77 deletions(-)
+> 
+> -- 
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+> 
+
 -- 
-2.30.2
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
