@@ -2,869 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E84C60EFEB
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 08:12:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E5A660EFF6
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 08:17:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234520AbiJ0GMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 02:12:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33128 "EHLO
+        id S234036AbiJ0GRM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 02:17:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234456AbiJ0GMF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 02:12:05 -0400
-Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F7443AD6
-        for <netdev@vger.kernel.org>; Wed, 26 Oct 2022 23:11:59 -0700 (PDT)
-X-QQ-mid: bizesmtp87t1666851114tq2040jx
-Received: from wxdbg.localdomain.com ( [183.129.236.74])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 27 Oct 2022 14:11:53 +0800 (CST)
-X-QQ-SSF: 01400000000000H0V000000A0000000
-X-QQ-FEAT: 0vfWcIgh24xy9NT22RNkGa7GoEeBBbsC4IjE6H97WUI1sxb2i/RN+p7YSmoPc
-        WiQmek1eGKUQ5HokLaeS4ykW1QF5lrhc+UW625gGav00dgB61JhRjoeo+EWy61ogXq3wyBm
-        jPB53TRgfzu7wtumnksDi31IVu9wTayAZg/zTNGluNkpOEdEcfGTCLaUdvOT1KNe9QWSU1H
-        lSMpjH+99yGlCNdlng5iFH/bKbKDMUYqz6/Jno6qAdAt2htiXUN2ohWdaaui/O4T96qxH7x
-        0t6zL97GDMyA2tSj2Zu8k9s3nN6K3a9id7u9qynSx1XPG5O89kN/Y0GvgPretndo3sx+9DM
-        CJueQivM/rysAHx6BV/TlysxuaGB6XwBjSXp0EYkAR8ufE9BaRJ3YlmhcXaXUfvKy5FSgil
-        sNaKDvBe2CE=
-X-QQ-GoodBg: 2
-From:   Jiawen Wu <jiawenwu@trustnetic.com>
-To:     netdev@vger.kernel.org
-Cc:     mengyuanlou@net-swift.com, Jiawen Wu <jiawenwu@trustnetic.com>
-Subject: [PATCH net-next v6 3/3] net: txgbe: Set MAC address and register netdev
-Date:   Thu, 27 Oct 2022 14:11:16 +0800
-Message-Id: <20221027061116.683903-4-jiawenwu@trustnetic.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20221027061116.683903-1-jiawenwu@trustnetic.com>
-References: <20221027061116.683903-1-jiawenwu@trustnetic.com>
+        with ESMTP id S233884AbiJ0GRL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 02:17:11 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AAF9ABD6B;
+        Wed, 26 Oct 2022 23:17:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1666851430; x=1698387430;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=b8NA7XnTADLkHS718vT8MkTrqS7aVWY1m10iaC2XyNE=;
+  b=cE7WdZV9sXY2y/DSDjTBdlYRn5R1HAJhNM5DbC8VDRHHoU0ap0KQ+atM
+   cM/hVYbQdGwU8JcfT68cs3+1inFlddO2z8bKek/YLFRFLHHM9ANxqFtyB
+   nzeNUnKJN/kYCzwNlhnB111dbI9aZfj118vUn+JmxnsDm4F275JaXtAsX
+   wBdjORgwZFt+ICrRE1Kcej3/KflrM0pvayrJZwdoxUMSXWHCgXV+WYqWh
+   4evW1T/peCSaVMQjCWbHpPBl6ucsngvct1vgAaCQPIaUIaiHFrcXtc1xh
+   9t6d8JhVEhnOmPiAfWnbNzqoTXSnrlFY5Rn+IQWyWlOTMd/JuFZYsAWTu
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="394455998"
+X-IronPort-AV: E=Sophos;i="5.95,215,1661842800"; 
+   d="scan'208";a="394455998"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2022 23:17:10 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="634781203"
+X-IronPort-AV: E=Sophos;i="5.95,215,1661842800"; 
+   d="scan'208";a="634781203"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by fmsmga007.fm.intel.com with ESMTP; 26 Oct 2022 23:17:10 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 26 Oct 2022 23:17:09 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Wed, 26 Oct 2022 23:17:09 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.168)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Wed, 26 Oct 2022 23:17:08 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dNp8RnDpWTCmgdaavbvCQ8zD/a13x7JpmATSmemDgd4cVWTIZqB0OhVNb6rMcGHbBraM0W9XaDCkDs2BdBBITX8Z1Sk3UykwD8WqVQliQI7eLjKQOKUIglbV6VSHxeS7X72H3CMy+rJBZAm6XENbCB0Jh3alBhAb5fwCasQQ4c5Qlhmm38XHGBznJxw5d4F/p8L7jDxrEZE1XhODtaB0ZTig4ldoUiSoJ4Mjl4zvfs3b5KF0dwid/kRq4insfPozLdWeNoOy7j7ddYU8WrA3L6EwFHOZUWU46vDJiJ9cN3cvLajr+hDkIg8NWtrJFuTYWZYG69Z1jywf6HlyeOFdvg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SZejpWGczoM4ZgJ9xCAzIXc6XTPLNRSfX83oGz9hdZE=;
+ b=RQAtrE7Bjx+gUsETrWVeDA8foWdH/kpJ009mtXT/CgAMOQDFLj9SdDiFkVi5G0eBer8nw87iAqS/6sRCKMHLO0mNnJV8Z/NtLswIw2v9pn+3lXe22BeLECfFfoghNsWlFLz+4efIqgYZhKdkEhUEpe0jIIMf7hALX2gxppq4YNH2x/eG3Ywi/q/nzOMTHvKGWNYLiRPkwZVcODCUssVSQyofYG84Rm/1cLjZ2YxCLbnRHCUU/soAOKHIAL990H5K7qr58pA9w0/OTjR63IlW2aQXSbf12VAPlaVj5x/YtRiYNMLxgPkir/LEQJPhqgWL9mm9h3QwpeYD7L9rpXyINg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from DM8PR11MB5621.namprd11.prod.outlook.com (2603:10b6:8:38::14) by
+ MN0PR11MB6207.namprd11.prod.outlook.com (2603:10b6:208:3c5::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.28; Thu, 27 Oct
+ 2022 06:17:06 +0000
+Received: from DM8PR11MB5621.namprd11.prod.outlook.com
+ ([fe80::977b:a628:9adf:469e]) by DM8PR11MB5621.namprd11.prod.outlook.com
+ ([fe80::977b:a628:9adf:469e%6]) with mapi id 15.20.5746.021; Thu, 27 Oct 2022
+ 06:17:06 +0000
+From:   "Jankowski, Konrad0" <konrad0.jankowski@intel.com>
+To:     "yexingchen116@gmail.com" <yexingchen116@gmail.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>
+CC:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "joe@perches.com" <joe@perches.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        ye xingchen <ye.xingchen@zte.com.cn>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: RE: [Intel-wired-lan] [PATCH linux-next v2] iavf: Replace
+ __FUNCTION__ with __func__
+Thread-Topic: [Intel-wired-lan] [PATCH linux-next v2] iavf: Replace
+ __FUNCTION__ with __func__
+Thread-Index: AQHY48R1Qi+SpmS0Ck+UxZdiu4oWZK4hz8ng
+Date:   Thu, 27 Oct 2022 06:17:06 +0000
+Message-ID: <DM8PR11MB5621427504D14C631C07F458AB339@DM8PR11MB5621.namprd11.prod.outlook.com>
+References: <20221018015204.371685-1-ye.xingchen@zte.com.cn>
+In-Reply-To: <20221018015204.371685-1-ye.xingchen@zte.com.cn>
+Accept-Language: pl-PL, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.6.500.17
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM8PR11MB5621:EE_|MN0PR11MB6207:EE_
+x-ms-office365-filtering-correlation-id: b222b079-fd2c-47c4-2345-08dab7e2df68
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: CaZd6H0tAXenUNvO1sl8Y0LiaaZNcducziVwHrbweYJaoOZV/gPaAM4e77hKelDFi8OkNT/5EMK1y4JG8YTgEne2QSFmp8m1/GNZKWTR9UBNX2pRKWqh+W43MMpCyeEktK1Of4UV3N84eF3TUdrwaCQrHZnK+O2YjRZK8LgWts8GCkVu3UQPKty0SqbLne+lhwIDimEDD86g7P7Bk8Oi08T1t2EIoE1IyIEJYlJ54m3ckKLZMGqRcEYMuHeM52z8Ec/onDBMuFM/ABf9pFEGLCXT3+ieg2qpf9Tm5QpfRkqI4aV8Wumj9oP/1geARwtLgkxgTdrRlEcte8kBgKVY+3aKXt6oRnGzhNdckZz9YjaGnqRhnNb+NdcwiPUdGqnKsp1gv0s3nhMtz6YLgI/R8mcem47k7dLe+gm3UZjHnFW7KCVoMnIWOhPSXbG1aVZ6z/ZWZ/NYRRJTUGYbuMqroMtv7HbeaChzIMGZWJqEg+aDevj1rkeBxsTup771JpC/iF8Trz29/+egCrKZY2Lkhz7XngXkbTkCymFG0tLSaUsylzsUZ/acv7YkXVBAnpjW7qoO0WHDotIPlq0XoRBlQhW8rO+ZHTPyGsS+Dznn+g3WuacJIAQaVSyoQEFrPU3UoD6j0GzsMRLfq1s4BvVRwbRASCw/irIGhQF2wr4EFiC3BzP9d0xga2zYeCZK4eX/DJgklH9aNsJKd+PWIfOWqouwVwmVr2LJPbC8IUed+aAOf1iVmfKYsuPytQqcTFqBd/VzPtf8JVGtCn54rn5LOA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR11MB5621.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(346002)(376002)(136003)(39860400002)(366004)(396003)(451199015)(83380400001)(33656002)(66446008)(8936002)(38100700002)(66556008)(82960400001)(7416002)(38070700005)(66946007)(66476007)(86362001)(5660300002)(76116006)(52536014)(8676002)(4326008)(54906003)(41300700001)(2906002)(6506007)(122000001)(7696005)(53546011)(26005)(110136005)(71200400001)(6636002)(316002)(186003)(478600001)(9686003)(55016003)(64756008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?NRJ9C85MkIH3S76WSFWZTgYGuMCPy9pACF35rfG2Itxc7Npb2SVsIWy0Tmhd?=
+ =?us-ascii?Q?mOrY+pqSqP3I3y5xCD/go9ZJttBCQdyuGBMV6CHiytHBi6zzKrKXxO2xvLgi?=
+ =?us-ascii?Q?KdEHaWjkxAtPVr+JZm3Zfcgr6FJUu9M7lFqbdt2PNOFgP3NGnuR7LDymVI02?=
+ =?us-ascii?Q?xsWLdUT2YDRsd9M1CIQ3i4Qix7KzkIt/BH0ov3wvj1DNwWUUF4sbR4lLWofe?=
+ =?us-ascii?Q?jrHuw/KsiUyvTcqB4wSRekhJ4Q3hGTypOKcGaZn/tthrNheVVbRSReTLiWlA?=
+ =?us-ascii?Q?sE0afMPY60WfrlTtcLsj46kZTpWlj/ASMr6ZIfElbqOQDDCBT+l0GgzRg7l4?=
+ =?us-ascii?Q?oKKcPKyI6QyLPXoeRtelFZEg0QK4HSN4sknhkGU1Loams975hbfT8/4lVGSJ?=
+ =?us-ascii?Q?8WjxHLNVzwhAh8pUruCpLpeZdn5wHQIwDKWYmf3hOF1ll2ZJszbFknREjssY?=
+ =?us-ascii?Q?GvmemYlVqr384LGEfV4HmQAPNXCU1MfkM1seKIzwA8pA0R1Pn1miseOWNuNo?=
+ =?us-ascii?Q?/0jzqA82AveIYsyfIyjulXMuhAnRIHCwPH2M6b28aO0aSC1poAXo+N+P2OSt?=
+ =?us-ascii?Q?xTJ2YFp8RMUma8pktpvDQhKJ6dujsRjKP5eYL/CwyEr9+/izXNCfTTGqwYG9?=
+ =?us-ascii?Q?4lrKViI38739U6mDacdfxgWwvvtTQl1LhEimR/BgPY99GEkMZ7EWS13j1uTJ?=
+ =?us-ascii?Q?/y1BNJzHSDNaWmVv3QggV09NUVbIhoOTPg0pEgmX4EHxBcJKGxkQYkbGThIp?=
+ =?us-ascii?Q?kOVTo8YVXtY5M6GjDKVZhPZHi4P9jw4073YkY6hvvIXfoEfEam19ZIBbF+zV?=
+ =?us-ascii?Q?S4mvK8QxI36RyXeTTPR62O4a53FJT8vse7THBah5J6DuayK5KqpXJbsSJOWt?=
+ =?us-ascii?Q?dX7SOTkkctlJV8X7hmyiXNg3LxvnKEhUtORL/+EfditGl4w/hmLEJ1n+e2LL?=
+ =?us-ascii?Q?kLmgmttHCMNe8ycxm2tsccvcxNCC8HmzmRgaBa8jCqaJQoxVsogAPxDRXL1w?=
+ =?us-ascii?Q?DZjemlBrDd/yqJVBORf+v8KcNs6tXG8QkJU4RgRXdFeKrZkXXb7B4xpwSFFn?=
+ =?us-ascii?Q?6EUwPCIw3Zq8ry/2DoR619fRkU4nbXipp3+1nz5HGEw9KgbN1fpeEscd8mT5?=
+ =?us-ascii?Q?D9Qwca8ide6cZCaTgGsWLj543W98wOYJTwCbcNJf51P6mNttAiCnLZAnx0rg?=
+ =?us-ascii?Q?4VcKetiUObQJVIe8KUK1vd4qTX2urKRwLlNigMz2oNNcIJFqjOxkldA0sGow?=
+ =?us-ascii?Q?yfWfT8tcFi4sxL/dauaKb0GdrWm2Z7M7Pg4DTdJ+k1G6pp+LYZI4d9P/1Kw6?=
+ =?us-ascii?Q?CbJ/87T6VTLebg9GowzJ2HAY0jp50a/fpZ9NAJo0Dmmp/IXPhJDuiJTi4yLy?=
+ =?us-ascii?Q?9qG5glgdkUmIal+weNptZtPkZwzxpKycNjanM6coAVCw6HemrdD9QgQ7gUkp?=
+ =?us-ascii?Q?teBP+NT9CGKLWK5gzINCefwly5fmGBnlucgnRxglHJOg89HiV9nUpkmNJp+e?=
+ =?us-ascii?Q?n8MBSjWMNrwuUrN3X7okhYQczJKFlxBJ7ttq9f+Ulx0v0PKoStj056NqFiLX?=
+ =?us-ascii?Q?CJlepOlfv3XEsn7Tkb88S9FP9ombkAOskkJxUDHf2hIZyh60TyPFCFRyT4Yy?=
+ =?us-ascii?Q?cA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:trustnetic.com:qybglogicsvr:qybglogicsvr5
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR11MB5621.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b222b079-fd2c-47c4-2345-08dab7e2df68
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Oct 2022 06:17:06.4826
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: +g14QR89Gyjjtdn9cKucoR2LuqispS/GFFotGXr8XD8WCMNEWg+XLkpInp0++ToCOYLaI726is+Jmso7X+RGb8J+Qqgye2XabFDQQdyf6tk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR11MB6207
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add MAC address related operations, and register netdev.
 
-Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
----
- drivers/net/ethernet/wangxun/libwx/wx_hw.c    | 231 ++++++++++++++-
- drivers/net/ethernet/wangxun/libwx/wx_hw.h    |   6 +
- drivers/net/ethernet/wangxun/libwx/wx_type.h  |  37 +++
- drivers/net/ethernet/wangxun/txgbe/txgbe.h    |  13 +
- drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c |  13 +
- .../net/ethernet/wangxun/txgbe/txgbe_main.c   | 270 +++++++++++++++++-
- .../net/ethernet/wangxun/txgbe/txgbe_type.h   |   3 +
- 7 files changed, 566 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/wangxun/libwx/wx_hw.c b/drivers/net/ethernet/wangxun/libwx/wx_hw.c
-index 6e2a2d251a09..8dbbac862f27 100644
---- a/drivers/net/ethernet/wangxun/libwx/wx_hw.c
-+++ b/drivers/net/ethernet/wangxun/libwx/wx_hw.c
-@@ -1,6 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0
- /* Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd. */
- 
-+#include <linux/etherdevice.h>
-+#include <linux/if_ether.h>
- #include <linux/iopoll.h>
- #include <linux/pci.h>
- 
-@@ -71,7 +73,230 @@ int wx_check_flash_load(struct wx_hw *hw, u32 check_bit)
- }
- EXPORT_SYMBOL(wx_check_flash_load);
- 
--static void wx_disable_rx(struct wx_hw *wxhw)
-+/**
-+ *  wx_get_mac_addr - Generic get MAC address
-+ *  @wxhw: pointer to hardware structure
-+ *  @mac_addr: Adapter MAC address
-+ *
-+ *  Reads the adapter's MAC address from first Receive Address Register (RAR0)
-+ *  A reset of the adapter must be performed prior to calling this function
-+ *  in order for the MAC address to have been loaded from the EEPROM into RAR0
-+ **/
-+void wx_get_mac_addr(struct wx_hw *wxhw, u8 *mac_addr)
-+{
-+	u32 rar_high;
-+	u32 rar_low;
-+	u16 i;
-+
-+	wr32(wxhw, WX_PSR_MAC_SWC_IDX, 0);
-+	rar_high = rd32(wxhw, WX_PSR_MAC_SWC_AD_H);
-+	rar_low = rd32(wxhw, WX_PSR_MAC_SWC_AD_L);
-+
-+	for (i = 0; i < 2; i++)
-+		mac_addr[i] = (u8)(rar_high >> (1 - i) * 8);
-+
-+	for (i = 0; i < 4; i++)
-+		mac_addr[i + 2] = (u8)(rar_low >> (3 - i) * 8);
-+}
-+EXPORT_SYMBOL(wx_get_mac_addr);
-+
-+/**
-+ *  wx_set_rar - Set Rx address register
-+ *  @wxhw: pointer to hardware structure
-+ *  @index: Receive address register to write
-+ *  @addr: Address to put into receive address register
-+ *  @pools: VMDq "set" or "pool" index
-+ *  @enable_addr: set flag that address is active
-+ *
-+ *  Puts an ethernet address into a receive address register.
-+ **/
-+int wx_set_rar(struct wx_hw *wxhw, u32 index, u8 *addr, u64 pools,
-+	       u32 enable_addr)
-+{
-+	u32 rar_entries = wxhw->mac.num_rar_entries;
-+	u32 rar_low, rar_high;
-+
-+	/* Make sure we are using a valid rar index range */
-+	if (index >= rar_entries) {
-+		wx_err(wxhw, "RAR index %d is out of range.\n", index);
-+		return -EINVAL;
-+	}
-+
-+	/* select the MAC address */
-+	wr32(wxhw, WX_PSR_MAC_SWC_IDX, index);
-+
-+	/* setup VMDq pool mapping */
-+	wr32(wxhw, WX_PSR_MAC_SWC_VM_L, pools & 0xFFFFFFFF);
-+	if (wxhw->mac.type == wx_mac_sp)
-+		wr32(wxhw, WX_PSR_MAC_SWC_VM_H, pools >> 32);
-+
-+	/* HW expects these in little endian so we reverse the byte
-+	 * order from network order (big endian) to little endian
-+	 *
-+	 * Some parts put the VMDq setting in the extra RAH bits,
-+	 * so save everything except the lower 16 bits that hold part
-+	 * of the address and the address valid bit.
-+	 */
-+	rar_low = ((u32)addr[5] |
-+		  ((u32)addr[4] << 8) |
-+		  ((u32)addr[3] << 16) |
-+		  ((u32)addr[2] << 24));
-+	rar_high = ((u32)addr[1] |
-+		   ((u32)addr[0] << 8));
-+	if (enable_addr != 0)
-+		rar_high |= WX_PSR_MAC_SWC_AD_H_AV;
-+
-+	wr32(wxhw, WX_PSR_MAC_SWC_AD_L, rar_low);
-+	wr32m(wxhw, WX_PSR_MAC_SWC_AD_H,
-+	      (WX_PSR_MAC_SWC_AD_H_AD(~0) |
-+	       WX_PSR_MAC_SWC_AD_H_ADTYPE(~0) |
-+	       WX_PSR_MAC_SWC_AD_H_AV),
-+	      rar_high);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(wx_set_rar);
-+
-+/**
-+ *  wx_clear_rar - Remove Rx address register
-+ *  @wxhw: pointer to hardware structure
-+ *  @index: Receive address register to write
-+ *
-+ *  Clears an ethernet address from a receive address register.
-+ **/
-+int wx_clear_rar(struct wx_hw *wxhw, u32 index)
-+{
-+	u32 rar_entries = wxhw->mac.num_rar_entries;
-+
-+	/* Make sure we are using a valid rar index range */
-+	if (index >= rar_entries) {
-+		wx_err(wxhw, "RAR index %d is out of range.\n", index);
-+		return -EINVAL;
-+	}
-+
-+	/* Some parts put the VMDq setting in the extra RAH bits,
-+	 * so save everything except the lower 16 bits that hold part
-+	 * of the address and the address valid bit.
-+	 */
-+	wr32(wxhw, WX_PSR_MAC_SWC_IDX, index);
-+
-+	wr32(wxhw, WX_PSR_MAC_SWC_VM_L, 0);
-+	wr32(wxhw, WX_PSR_MAC_SWC_VM_H, 0);
-+
-+	wr32(wxhw, WX_PSR_MAC_SWC_AD_L, 0);
-+	wr32m(wxhw, WX_PSR_MAC_SWC_AD_H,
-+	      (WX_PSR_MAC_SWC_AD_H_AD(~0) |
-+	       WX_PSR_MAC_SWC_AD_H_ADTYPE(~0) |
-+	       WX_PSR_MAC_SWC_AD_H_AV),
-+	      0);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(wx_clear_rar);
-+
-+/**
-+ *  wx_clear_vmdq - Disassociate a VMDq pool index from a rx address
-+ *  @wxhw: pointer to hardware struct
-+ *  @rar: receive address register index to disassociate
-+ *  @vmdq: VMDq pool index to remove from the rar
-+ **/
-+static int wx_clear_vmdq(struct wx_hw *wxhw, u32 rar, u32 __maybe_unused vmdq)
-+{
-+	u32 rar_entries = wxhw->mac.num_rar_entries;
-+	u32 mpsar_lo, mpsar_hi;
-+
-+	/* Make sure we are using a valid rar index range */
-+	if (rar >= rar_entries) {
-+		wx_err(wxhw, "RAR index %d is out of range.\n", rar);
-+		return -EINVAL;
-+	}
-+
-+	wr32(wxhw, WX_PSR_MAC_SWC_IDX, rar);
-+	mpsar_lo = rd32(wxhw, WX_PSR_MAC_SWC_VM_L);
-+	mpsar_hi = rd32(wxhw, WX_PSR_MAC_SWC_VM_H);
-+
-+	if (!mpsar_lo && !mpsar_hi)
-+		return 0;
-+
-+	/* was that the last pool using this rar? */
-+	if (mpsar_lo == 0 && mpsar_hi == 0 && rar != 0)
-+		wx_clear_rar(wxhw, rar);
-+
-+	return 0;
-+}
-+
-+/**
-+ *  wx_init_uta_tables - Initialize the Unicast Table Array
-+ *  @wxhw: pointer to hardware structure
-+ **/
-+static void wx_init_uta_tables(struct wx_hw *wxhw)
-+{
-+	int i;
-+
-+	wx_dbg(wxhw, " Clearing UTA\n");
-+
-+	for (i = 0; i < 128; i++)
-+		wr32(wxhw, WX_PSR_UC_TBL(i), 0);
-+}
-+
-+/**
-+ *  wx_init_rx_addrs - Initializes receive address filters.
-+ *  @wxhw: pointer to hardware structure
-+ *
-+ *  Places the MAC address in receive address register 0 and clears the rest
-+ *  of the receive address registers. Clears the multicast table. Assumes
-+ *  the receiver is in reset when the routine is called.
-+ **/
-+void wx_init_rx_addrs(struct wx_hw *wxhw)
-+{
-+	u32 rar_entries = wxhw->mac.num_rar_entries;
-+	u32 psrctl;
-+	int i;
-+
-+	/* If the current mac address is valid, assume it is a software override
-+	 * to the permanent address.
-+	 * Otherwise, use the permanent address from the eeprom.
-+	 */
-+	if (!is_valid_ether_addr(wxhw->mac.addr)) {
-+		/* Get the MAC address from the RAR0 for later reference */
-+		wx_get_mac_addr(wxhw, wxhw->mac.addr);
-+		wx_dbg(wxhw, "Keeping Current RAR0 Addr = %pM\n", wxhw->mac.addr);
-+	} else {
-+		/* Setup the receive address. */
-+		wx_dbg(wxhw, "Overriding MAC Address in RAR[0]\n");
-+		wx_dbg(wxhw, "New MAC Addr = %pM\n", wxhw->mac.addr);
-+
-+		wx_set_rar(wxhw, 0, wxhw->mac.addr, 0, WX_PSR_MAC_SWC_AD_H_AV);
-+
-+		if (wxhw->mac.type == wx_mac_sp) {
-+			/* clear VMDq pool/queue selection for RAR 0 */
-+			wx_clear_vmdq(wxhw, 0, WX_CLEAR_VMDQ_ALL);
-+		}
-+	}
-+
-+	/* Zero out the other receive addresses. */
-+	wx_dbg(wxhw, "Clearing RAR[1-%d]\n", rar_entries - 1);
-+	for (i = 1; i < rar_entries; i++) {
-+		wr32(wxhw, WX_PSR_MAC_SWC_IDX, i);
-+		wr32(wxhw, WX_PSR_MAC_SWC_AD_L, 0);
-+		wr32(wxhw, WX_PSR_MAC_SWC_AD_H, 0);
-+	}
-+
-+	/* Clear the MTA */
-+	wxhw->addr_ctrl.mta_in_use = 0;
-+	psrctl = rd32(wxhw, WX_PSR_CTL);
-+	psrctl &= ~(WX_PSR_CTL_MO | WX_PSR_CTL_MFE);
-+	psrctl |= wxhw->mac.mc_filter_type << WX_PSR_CTL_MO_SHIFT;
-+	wr32(wxhw, WX_PSR_CTL, psrctl);
-+	wx_dbg(wxhw, " Clearing MTA\n");
-+	for (i = 0; i < wxhw->mac.mcft_size; i++)
-+		wr32(wxhw, WX_PSR_MC_TBL(i), 0);
-+
-+	wx_init_uta_tables(wxhw);
-+}
-+EXPORT_SYMBOL(wx_init_rx_addrs);
-+
-+void wx_disable_rx(struct wx_hw *wxhw)
- {
- 	u32 pfdtxgswc;
- 	u32 rxctrl;
-@@ -97,6 +322,7 @@ static void wx_disable_rx(struct wx_hw *wxhw)
- 		}
- 	}
- }
-+EXPORT_SYMBOL(wx_disable_rx);
- 
- /**
-  *  wx_disable_pcie_master - Disable PCI-express master access
-@@ -105,7 +331,7 @@ static void wx_disable_rx(struct wx_hw *wxhw)
-  *  Disables PCI-Express master access and verifies there are no pending
-  *  requests.
-  **/
--static int wx_disable_pcie_master(struct wx_hw *wxhw)
-+int wx_disable_pcie_master(struct wx_hw *wxhw)
- {
- 	int status = 0;
- 	u32 val;
-@@ -125,6 +351,7 @@ static int wx_disable_pcie_master(struct wx_hw *wxhw)
- 
- 	return status;
- }
-+EXPORT_SYMBOL(wx_disable_pcie_master);
- 
- /**
-  *  wx_stop_adapter - Generic stop Tx/Rx units
-diff --git a/drivers/net/ethernet/wangxun/libwx/wx_hw.h b/drivers/net/ethernet/wangxun/libwx/wx_hw.h
-index 2c4c4cbbfb46..58a943dc76c1 100644
---- a/drivers/net/ethernet/wangxun/libwx/wx_hw.h
-+++ b/drivers/net/ethernet/wangxun/libwx/wx_hw.h
-@@ -5,6 +5,12 @@
- #define _WX_HW_H_
- 
- int wx_check_flash_load(struct wx_hw *hw, u32 check_bit);
-+void wx_get_mac_addr(struct wx_hw *wxhw, u8 *mac_addr);
-+int wx_set_rar(struct wx_hw *wxhw, u32 index, u8 *addr, u64 pools, u32 enable_addr);
-+int wx_clear_rar(struct wx_hw *wxhw, u32 index);
-+void wx_init_rx_addrs(struct wx_hw *wxhw);
-+void wx_disable_rx(struct wx_hw *wxhw);
-+int wx_disable_pcie_master(struct wx_hw *wxhw);
- int wx_stop_adapter(struct wx_hw *wxhw);
- void wx_reset_misc(struct wx_hw *wxhw);
- int wx_sw_init(struct wx_hw *wxhw);
-diff --git a/drivers/net/ethernet/wangxun/libwx/wx_type.h b/drivers/net/ethernet/wangxun/libwx/wx_type.h
-index 1d8e8a529d7a..790497cec603 100644
---- a/drivers/net/ethernet/wangxun/libwx/wx_type.h
-+++ b/drivers/net/ethernet/wangxun/libwx/wx_type.h
-@@ -51,6 +51,12 @@
- #define WX_TS_ALARM_ST_DALARM        BIT(1)
- #define WX_TS_ALARM_ST_ALARM         BIT(0)
- 
-+/*********************** Transmit DMA registers **************************/
-+/* transmit global control */
-+#define WX_TDM_CTL                   0x18000
-+/* TDM CTL BIT */
-+#define WX_TDM_CTL_TE                BIT(0) /* Transmit Enable */
-+
- /***************************** RDB registers *********************************/
- /* receive packet buffer */
- #define WX_RDB_PB_CTL                0x19000
-@@ -76,6 +82,9 @@
- #define WX_PSR_CTL_MO_SHIFT          5
- #define WX_PSR_CTL_MO                (0x3 << WX_PSR_CTL_MO_SHIFT)
- #define WX_PSR_CTL_TPE               BIT(4)
-+/* mcasst/ucast overflow tbl */
-+#define WX_PSR_MC_TBL(_i)            (0x15200  + ((_i) * 4))
-+#define WX_PSR_UC_TBL(_i)            (0x15400 + ((_i) * 4))
- 
- /* Management */
- #define WX_PSR_MNG_FLEX_SEL          0x1582C
-@@ -87,7 +96,20 @@
- #define WX_PSR_LAN_FLEX_DW_H(_i)     (0x15C04 + ((_i) * 16))
- #define WX_PSR_LAN_FLEX_MSK(_i)      (0x15C08 + ((_i) * 16))
- 
-+/* mac switcher */
-+#define WX_PSR_MAC_SWC_AD_L          0x16200
-+#define WX_PSR_MAC_SWC_AD_H          0x16204
-+#define WX_PSR_MAC_SWC_AD_H_AD(v)       (((v) & 0xFFFF))
-+#define WX_PSR_MAC_SWC_AD_H_ADTYPE(v)   (((v) & 0x1) << 30)
-+#define WX_PSR_MAC_SWC_AD_H_AV       BIT(31)
-+#define WX_PSR_MAC_SWC_VM_L          0x16208
-+#define WX_PSR_MAC_SWC_VM_H          0x1620C
-+#define WX_PSR_MAC_SWC_IDX           0x16210
-+#define WX_CLEAR_VMDQ_ALL            0xFFFFFFFFU
-+
- /************************************* ETH MAC *****************************/
-+#define WX_MAC_TX_CFG                0x11000
-+#define WX_MAC_TX_CFG_TE             BIT(0)
- #define WX_MAC_RX_CFG                0x11004
- #define WX_MAC_RX_CFG_RE             BIT(0)
- #define WX_MAC_RX_CFG_JE             BIT(8)
-@@ -143,16 +165,28 @@ enum wx_mac_type {
- struct wx_mac_info {
- 	enum wx_mac_type type;
- 	bool set_lben;
-+	u8 addr[ETH_ALEN];
-+	u8 perm_addr[ETH_ALEN];
-+	s32 mc_filter_type;
-+	u32 mcft_size;
-+	u32 num_rar_entries;
- 	u32 max_tx_queues;
- 	u32 max_rx_queues;
- 	struct wx_thermal_sensor_data sensor;
- };
- 
-+struct wx_addr_filter_info {
-+	u32 num_mc_addrs;
-+	u32 mta_in_use;
-+	bool user_set_promisc;
-+};
-+
- struct wx_hw {
- 	u8 __iomem *hw_addr;
- 	struct pci_dev *pdev;
- 	struct wx_bus_info bus;
- 	struct wx_mac_info mac;
-+	struct wx_addr_filter_info addr_ctrl;
- 	u16 device_id;
- 	u16 vendor_id;
- 	u16 subsystem_device_id;
-@@ -197,4 +231,7 @@ wr32m(struct wx_hw *wxhw, u32 reg, u32 mask, u32 field)
- #define wx_err(wxhw, fmt, arg...) \
- 	dev_err(&(wxhw)->pdev->dev, fmt, ##arg)
- 
-+#define wx_dbg(wxhw, fmt, arg...) \
-+	dev_dbg(&(wxhw)->pdev->dev, fmt, ##arg)
-+
- #endif /* _WX_TYPE_H_ */
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe.h b/drivers/net/ethernet/wangxun/txgbe/txgbe.h
-index f866d7fa7161..52e350f9a7d9 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe.h
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe.h
-@@ -11,6 +11,18 @@
- 
- #define TXGBE_SP_MAX_TX_QUEUES  128
- #define TXGBE_SP_MAX_RX_QUEUES  128
-+#define TXGBE_SP_RAR_ENTRIES    128
-+#define TXGBE_SP_MC_TBL_SIZE    128
-+
-+struct txgbe_mac_addr {
-+	u8 addr[ETH_ALEN];
-+	u16 state; /* bitmask */
-+	u64 pools;
-+};
-+
-+#define TXGBE_MAC_STATE_DEFAULT         0x1
-+#define TXGBE_MAC_STATE_MODIFIED        0x2
-+#define TXGBE_MAC_STATE_IN_USE          0x4
- 
- /* board specific private data structure */
- struct txgbe_adapter {
-@@ -22,6 +34,7 @@ struct txgbe_adapter {
- 	/* structs defined in txgbe_type.h */
- 	struct txgbe_hw hw;
- 	u16 msg_enable;
-+	struct txgbe_mac_addr *mac_table;
- };
- 
- extern char txgbe_driver_name[];
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c
-index a679db3f2e41..c7c92c0ec561 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c
-@@ -1,6 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0
- /* Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd. */
- 
-+#include <linux/etherdevice.h>
-+#include <linux/if_ether.h>
- #include <linux/string.h>
- #include <linux/iopoll.h>
- #include <linux/types.h>
-@@ -80,6 +82,17 @@ int txgbe_reset_hw(struct txgbe_hw *hw)
- 		return status;
- 
- 	txgbe_reset_misc(hw);
-+
-+	/* Store the permanent mac address */
-+	wx_get_mac_addr(wxhw, wxhw->mac.perm_addr);
-+
-+	/* Store MAC address from RAR0, clear receive address registers, and
-+	 * clear the multicast table.  Also reset num_rar_entries to 128,
-+	 * since we modify this value when programming the SAN MAC address.
-+	 */
-+	wxhw->mac.num_rar_entries = TXGBE_SP_RAR_ENTRIES;
-+	wx_init_rx_addrs(wxhw);
-+
- 	pci_set_master(wxhw->pdev);
- 
- 	return 0;
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-index 409103d5ac2b..adfa4e7d0d52 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-@@ -8,6 +8,7 @@
- #include <linux/string.h>
- #include <linux/aer.h>
- #include <linux/etherdevice.h>
-+#include <net/ip.h>
- 
- #include "../libwx/wx_type.h"
- #include "../libwx/wx_hw.h"
-@@ -72,6 +73,143 @@ static int txgbe_enumerate_functions(struct txgbe_adapter *adapter)
- 	return physfns;
- }
- 
-+static void txgbe_sync_mac_table(struct txgbe_adapter *adapter)
-+{
-+	struct txgbe_hw *hw = &adapter->hw;
-+	struct wx_hw *wxhw = &hw->wxhw;
-+	int i;
-+
-+	for (i = 0; i < wxhw->mac.num_rar_entries; i++) {
-+		if (adapter->mac_table[i].state & TXGBE_MAC_STATE_MODIFIED) {
-+			if (adapter->mac_table[i].state & TXGBE_MAC_STATE_IN_USE) {
-+				wx_set_rar(wxhw, i,
-+					   adapter->mac_table[i].addr,
-+					   adapter->mac_table[i].pools,
-+					   WX_PSR_MAC_SWC_AD_H_AV);
-+			} else {
-+				wx_clear_rar(wxhw, i);
-+			}
-+			adapter->mac_table[i].state &= ~(TXGBE_MAC_STATE_MODIFIED);
-+		}
-+	}
-+}
-+
-+/* this function destroys the first RAR entry */
-+static void txgbe_mac_set_default_filter(struct txgbe_adapter *adapter,
-+					 u8 *addr)
-+{
-+	struct wx_hw *wxhw = &adapter->hw.wxhw;
-+
-+	memcpy(&adapter->mac_table[0].addr, addr, ETH_ALEN);
-+	adapter->mac_table[0].pools = 1ULL;
-+	adapter->mac_table[0].state = (TXGBE_MAC_STATE_DEFAULT |
-+				       TXGBE_MAC_STATE_IN_USE);
-+	wx_set_rar(wxhw, 0, adapter->mac_table[0].addr,
-+		   adapter->mac_table[0].pools,
-+		   WX_PSR_MAC_SWC_AD_H_AV);
-+}
-+
-+static void txgbe_flush_sw_mac_table(struct txgbe_adapter *adapter)
-+{
-+	struct wx_hw *wxhw = &adapter->hw.wxhw;
-+	u32 i;
-+
-+	for (i = 0; i < wxhw->mac.num_rar_entries; i++) {
-+		adapter->mac_table[i].state |= TXGBE_MAC_STATE_MODIFIED;
-+		adapter->mac_table[i].state &= ~TXGBE_MAC_STATE_IN_USE;
-+		memset(adapter->mac_table[i].addr, 0, ETH_ALEN);
-+		adapter->mac_table[i].pools = 0;
-+	}
-+	txgbe_sync_mac_table(adapter);
-+}
-+
-+static int txgbe_del_mac_filter(struct txgbe_adapter *adapter, u8 *addr, u16 pool)
-+{
-+	struct wx_hw *wxhw = &adapter->hw.wxhw;
-+	u32 i;
-+
-+	if (is_zero_ether_addr(addr))
-+		return -EINVAL;
-+
-+	/* search table for addr, if found, set to 0 and sync */
-+	for (i = 0; i < wxhw->mac.num_rar_entries; i++) {
-+		if (ether_addr_equal(addr, adapter->mac_table[i].addr)) {
-+			if (adapter->mac_table[i].pools & (1ULL << pool)) {
-+				adapter->mac_table[i].state |= TXGBE_MAC_STATE_MODIFIED;
-+				adapter->mac_table[i].state &= ~TXGBE_MAC_STATE_IN_USE;
-+				adapter->mac_table[i].pools &= ~(1ULL << pool);
-+				txgbe_sync_mac_table(adapter);
-+			}
-+			return 0;
-+		}
-+
-+		if (adapter->mac_table[i].pools != (1 << pool))
-+			continue;
-+		if (!ether_addr_equal(addr, adapter->mac_table[i].addr))
-+			continue;
-+
-+		adapter->mac_table[i].state |= TXGBE_MAC_STATE_MODIFIED;
-+		adapter->mac_table[i].state &= ~TXGBE_MAC_STATE_IN_USE;
-+		memset(adapter->mac_table[i].addr, 0, ETH_ALEN);
-+		adapter->mac_table[i].pools = 0;
-+		txgbe_sync_mac_table(adapter);
-+		return 0;
-+	}
-+	return -ENOMEM;
-+}
-+
-+static void txgbe_reset(struct txgbe_adapter *adapter)
-+{
-+	struct net_device *netdev = adapter->netdev;
-+	struct txgbe_hw *hw = &adapter->hw;
-+	u8 old_addr[ETH_ALEN];
-+	int err;
-+
-+	err = txgbe_reset_hw(hw);
-+	if (err != 0)
-+		dev_err(&adapter->pdev->dev, "Hardware Error: %d\n", err);
-+
-+	/* do not flush user set addresses */
-+	memcpy(old_addr, &adapter->mac_table[0].addr, netdev->addr_len);
-+	txgbe_flush_sw_mac_table(adapter);
-+	txgbe_mac_set_default_filter(adapter, old_addr);
-+}
-+
-+static void txgbe_disable_device(struct txgbe_adapter *adapter)
-+{
-+	struct net_device *netdev = adapter->netdev;
-+	struct wx_hw *wxhw = &adapter->hw.wxhw;
-+
-+	wx_disable_pcie_master(wxhw);
-+	/* disable receives */
-+	wx_disable_rx(wxhw);
-+
-+	netif_carrier_off(netdev);
-+	netif_tx_disable(netdev);
-+
-+	if (wxhw->bus.func < 2)
-+		wr32m(wxhw, TXGBE_MIS_PRB_CTL, TXGBE_MIS_PRB_CTL_LAN_UP(wxhw->bus.func), 0);
-+	else
-+		dev_err(&adapter->pdev->dev,
-+			"%s: invalid bus lan id %d\n",
-+			__func__, wxhw->bus.func);
-+
-+	if (!(((wxhw->subsystem_device_id & WX_NCSI_MASK) == WX_NCSI_SUP) ||
-+	      ((wxhw->subsystem_device_id & WX_WOL_MASK) == WX_WOL_SUP))) {
-+		/* disable mac transmiter */
-+		wr32m(wxhw, WX_MAC_TX_CFG, WX_MAC_TX_CFG_TE, 0);
-+	}
-+
-+	/* Disable the Tx DMA engine */
-+	wr32m(wxhw, WX_TDM_CTL, WX_TDM_CTL_TE, 0);
-+}
-+
-+static void txgbe_down(struct txgbe_adapter *adapter)
-+{
-+	txgbe_disable_device(adapter);
-+	txgbe_reset(adapter);
-+}
-+
- /**
-  * txgbe_sw_init - Initialize general software structures (struct txgbe_adapter)
-  * @adapter: board private structure to initialize
-@@ -104,8 +242,65 @@ static int txgbe_sw_init(struct txgbe_adapter *adapter)
- 		break;
- 	}
- 
-+	wxhw->mac.num_rar_entries = TXGBE_SP_RAR_ENTRIES;
- 	wxhw->mac.max_tx_queues = TXGBE_SP_MAX_TX_QUEUES;
- 	wxhw->mac.max_rx_queues = TXGBE_SP_MAX_RX_QUEUES;
-+	wxhw->mac.mcft_size = TXGBE_SP_MC_TBL_SIZE;
-+
-+	adapter->mac_table = kcalloc(wxhw->mac.num_rar_entries,
-+				     sizeof(struct txgbe_mac_addr),
-+				     GFP_KERNEL);
-+	if (!adapter->mac_table) {
-+		netif_err(adapter, probe, adapter->netdev,
-+			  "mac_table allocation failed\n");
-+		return -ENOMEM;
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * txgbe_open - Called when a network interface is made active
-+ * @netdev: network interface device structure
-+ *
-+ * Returns 0 on success, negative value on failure
-+ *
-+ * The open entry point is called when a network interface is made
-+ * active by the system (IFF_UP).
-+ **/
-+static int txgbe_open(struct net_device *netdev)
-+{
-+	return 0;
-+}
-+
-+/**
-+ * txgbe_close_suspend - actions necessary to both suspend and close flows
-+ * @adapter: the private adapter struct
-+ *
-+ * This function should contain the necessary work common to both suspending
-+ * and closing of the device.
-+ */
-+static void txgbe_close_suspend(struct txgbe_adapter *adapter)
-+{
-+	txgbe_disable_device(adapter);
-+}
-+
-+/**
-+ * txgbe_close - Disables a network interface
-+ * @netdev: network interface device structure
-+ *
-+ * Returns 0, this is not allowed to fail
-+ *
-+ * The close entry point is called when an interface is de-activated
-+ * by the OS.  The hardware is still under the drivers control, but
-+ * needs to be disabled.  A global MAC reset is issued to stop the
-+ * hardware, and all transmit and receive resources are freed.
-+ **/
-+static int txgbe_close(struct net_device *netdev)
-+{
-+	struct txgbe_adapter *adapter = netdev_priv(netdev);
-+
-+	txgbe_down(adapter);
- 
- 	return 0;
- }
-@@ -117,6 +312,11 @@ static void txgbe_dev_shutdown(struct pci_dev *pdev, bool *enable_wake)
- 
- 	netif_device_detach(netdev);
- 
-+	rtnl_lock();
-+	if (netif_running(netdev))
-+		txgbe_close_suspend(adapter);
-+	rtnl_unlock();
-+
- 	pci_disable_device(pdev);
- }
- 
-@@ -132,6 +332,47 @@ static void txgbe_shutdown(struct pci_dev *pdev)
- 	}
- }
- 
-+static netdev_tx_t txgbe_xmit_frame(struct sk_buff *skb,
-+				    struct net_device *netdev)
-+{
-+	return NETDEV_TX_OK;
-+}
-+
-+/**
-+ * txgbe_set_mac - Change the Ethernet Address of the NIC
-+ * @netdev: network interface device structure
-+ * @p: pointer to an address structure
-+ *
-+ * Returns 0 on success, negative on failure
-+ **/
-+static int txgbe_set_mac(struct net_device *netdev, void *p)
-+{
-+	struct txgbe_adapter *adapter = netdev_priv(netdev);
-+	struct wx_hw *wxhw = &adapter->hw.wxhw;
-+	struct sockaddr *addr = p;
-+	int retval;
-+
-+	retval = eth_prepare_mac_addr_change(netdev, addr);
-+	if (retval)
-+		return retval;
-+
-+	txgbe_del_mac_filter(adapter, wxhw->mac.addr, 0);
-+	eth_hw_addr_set(netdev, addr->sa_data);
-+	memcpy(wxhw->mac.addr, addr->sa_data, netdev->addr_len);
-+
-+	txgbe_mac_set_default_filter(adapter, wxhw->mac.addr);
-+
-+	return 0;
-+}
-+
-+static const struct net_device_ops txgbe_netdev_ops = {
-+	.ndo_open               = txgbe_open,
-+	.ndo_stop               = txgbe_close,
-+	.ndo_start_xmit         = txgbe_xmit_frame,
-+	.ndo_validate_addr      = eth_validate_addr,
-+	.ndo_set_mac_address    = txgbe_set_mac,
-+};
-+
- /**
-  * txgbe_probe - Device Initialization Routine
-  * @pdev: PCI device information struct
-@@ -201,29 +442,36 @@ static int txgbe_probe(struct pci_dev *pdev,
- 		goto err_pci_release_regions;
- 	}
- 
--	strncpy(netdev->name, pci_name(pdev), sizeof(netdev->name) - 1);
-+	netdev->netdev_ops = &txgbe_netdev_ops;
- 
- 	/* setup the private structure */
- 	err = txgbe_sw_init(adapter);
- 	if (err)
--		goto err_pci_release_regions;
-+		goto err_free_mac_table;
- 
- 	/* check if flash load is done after hw power up */
- 	err = wx_check_flash_load(wxhw, TXGBE_SPI_ILDR_STATUS_PERST);
- 	if (err)
--		goto err_pci_release_regions;
-+		goto err_free_mac_table;
- 	err = wx_check_flash_load(wxhw, TXGBE_SPI_ILDR_STATUS_PWRRST);
- 	if (err)
--		goto err_pci_release_regions;
-+		goto err_free_mac_table;
- 
- 	err = txgbe_reset_hw(hw);
- 	if (err) {
- 		dev_err(&pdev->dev, "HW Init failed: %d\n", err);
--		goto err_pci_release_regions;
-+		goto err_free_mac_table;
- 	}
- 
- 	netdev->features |= NETIF_F_HIGHDMA;
- 
-+	eth_hw_addr_set(netdev, wxhw->mac.perm_addr);
-+	txgbe_mac_set_default_filter(adapter, wxhw->mac.perm_addr);
-+
-+	err = register_netdev(netdev);
-+	if (err)
-+		goto err_free_mac_table;
-+
- 	pci_set_drvdata(pdev, adapter);
- 
- 	/* calculate the expected PCIe bandwidth required for optimal
-@@ -240,8 +488,12 @@ static int txgbe_probe(struct pci_dev *pdev,
- 	else
- 		dev_warn(&pdev->dev, "Failed to enumerate PF devices.\n");
- 
-+	netif_info(adapter, probe, netdev, "%pM\n", netdev->dev_addr);
-+
- 	return 0;
- 
-+err_free_mac_table:
-+	kfree(adapter->mac_table);
- err_pci_release_regions:
- 	pci_disable_pcie_error_reporting(pdev);
- 	pci_release_selected_regions(pdev,
-@@ -262,9 +514,17 @@ static int txgbe_probe(struct pci_dev *pdev,
-  **/
- static void txgbe_remove(struct pci_dev *pdev)
- {
-+	struct txgbe_adapter *adapter = pci_get_drvdata(pdev);
-+	struct net_device *netdev;
-+
-+	netdev = adapter->netdev;
-+	unregister_netdev(netdev);
-+
- 	pci_release_selected_regions(pdev,
- 				     pci_select_bars(pdev, IORESOURCE_MEM));
- 
-+	kfree(adapter->mac_table);
-+
- 	pci_disable_pcie_error_reporting(pdev);
- 
- 	pci_disable_device(pdev);
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-index c891b0f07227..4082d3b76709 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-@@ -40,6 +40,9 @@
- #define TXGBE_SP_MPW  1
- 
- /**************** SP Registers ****************************/
-+/* chip control Registers */
-+#define TXGBE_MIS_PRB_CTL                       0x10010
-+#define TXGBE_MIS_PRB_CTL_LAN_UP(_i)            BIT(1 - (_i))
- /* FMGR Registers */
- #define TXGBE_SPI_ILDR_STATUS                   0x10120
- #define TXGBE_SPI_ILDR_STATUS_PERST             BIT(0) /* PCIE_PERST is done */
--- 
-2.27.0
+> -----Original Message-----
+> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
+> yexingchen116@gmail.com
+> Sent: Tuesday, October 18, 2022 3:52 AM
+> To: Brandeburg, Jesse <jesse.brandeburg@intel.com>
+> Cc: intel-wired-lan@lists.osuosl.org; linux-kernel@vger.kernel.org;
+> joe@perches.com; edumazet@google.com; ye xingchen
+> <ye.xingchen@zte.com.cn>; netdev@vger.kernel.org; kuba@kernel.org;
+> pabeni@redhat.com; davem@davemloft.net
+> Subject: [Intel-wired-lan] [PATCH linux-next v2] iavf: Replace __FUNCTION=
+__ with
+> __func__
+>=20
+> From: ye xingchen <ye.xingchen@zte.com.cn>
+>=20
+> __FUNCTION__ exists only for backwards compatibility reasons with old gcc
+> versions. Replace it with __func__.
+>=20
+> Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
+> Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> ---
+> v1 -> v2
+> Fix the message up to use ("message in %s\n", __func__)
+> drivers/net/ethernet/intel/iavf/iavf_main.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c
+> b/drivers/net/ethernet/intel/iavf/iavf_main.c
+> index 3fc572341781..efa2692af577 100644
+> --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
+> +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
 
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
