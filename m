@@ -2,86 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8B2960F616
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 13:20:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2686160F622
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 13:24:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234842AbiJ0LU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 07:20:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34374 "EHLO
+        id S235154AbiJ0LYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 07:24:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234740AbiJ0LUZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 07:20:25 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26F0C37416
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 04:20:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E973ACE25F4
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 11:20:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 61F28C433D7;
-        Thu, 27 Oct 2022 11:20:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666869615;
-        bh=tSFf575/p62mSRMdRQSlvxHLUQVIBmjPvfmHPYDoP78=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=C+J6q1uGmzSBh87FW1xgWz8JAx5jSrB2CtPvxtdQAhf38XC93STbrft4gdrzj2aqh
-         GSb2ncoYuD9v2odr+jnfKcOWMfSO/x0UKXT57m1ZOcS13+R3mEz3V5BW8E2P6IW9mw
-         0PxcACCBQfLAnvMoBj/2jTfFJfLulxk3uKu0MN5VU65UiNA9+Z6e73JpETg5y30F1Z
-         uDZR714PTSI+PTs7OUtuZa5fH2Owv2qlNoXWWqkXAdHfVrYOFGxfxAlTy98On3kjeo
-         iCAY39EAYRqg5em/ctZWNbh/7woAHqq6WMgy4GA8zQdEi8E79d8xGeY5jxYOmgk8/i
-         aMlJqRgoE0Nyw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 48136E270DA;
-        Thu, 27 Oct 2022 11:20:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S233403AbiJ0LYq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 07:24:46 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47386140F9
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 04:24:44 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id n12so3529693eja.11
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 04:24:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=mk55RQ4aT3LbgSxJAAjr7FgI6rC7acvlyBGCaYF+3AA=;
+        b=cHEt4f4lRqvOQnP8ezcKGk2ug27gAIvRqkl/80N/6Y0/2J1UTUSYYUdiVGQM2JmHlL
+         T9EwtV7wEma3mRwWgW6VEUAT0y809PJJHpMf/3kXsnJ4IjvHn+Qa0Aop4fXK76LuNtbw
+         LYNRDS+uD67Eb/8qQiKddX8GXLWZKFQYJ3Mq/6BxFpaurU4KGagrj6prF9EU+kK6CiYF
+         ES6xBamP7zI+byZ9oqwmO6eGWlvarR99nRnRtubZxZHXIMWiBiAvhMlnCFbtSnrxocWY
+         zZH1KkLFUjMUegG7C04aq7b38pL6y/QbSo+imSh3VgBfOOCHeLHeL8XXCGVtCtab7jEJ
+         GYeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=mk55RQ4aT3LbgSxJAAjr7FgI6rC7acvlyBGCaYF+3AA=;
+        b=HsA4mYr8VtFIAyF6Pm1b4dsvCrK9YtumYVmDE4vczFQYx+9l3usZ2bvbBvOcNt61CY
+         B6iJsZE2uyJty5MUgSpir2hx4DNqZWi0kt701qu/gBq8g3T+Gm/703aRD6LBWkDB36EY
+         bTF+4V/9a31GTimxHrg0sYh29ZBmlhroQrtWeqstUO+gDsiCLq0Vv4CJKTJOhOVQrCL9
+         X/mkd190VjhE1ECy0naejXhoBR5jubrPylfx/3wlbNe/p/vSfcIYbPrFEzQSyHj92sUs
+         QS1PaYrmGK4VA+DOQCSJC6F2QTUrvr/AnlS3OWGSGtVKL+gaf6yDF+9DX2ObTMPJDcP6
+         AT7w==
+X-Gm-Message-State: ACrzQf2HA52RwPgLwE/7/EOwDx5m9vpOZWm/SK37og4Nj80DWkB6Mugg
+        gvzHluZPUMtxTBxNrzJERyw=
+X-Google-Smtp-Source: AMsMyM4+UNGAUamX1KCfMaOSeD4u8FZx/SUdtNtQ5qCRp/XWMUqJfTLSaxf36yE21Mx1fx0NxIwreQ==
+X-Received: by 2002:a17:907:3f28:b0:7ad:88f8:7644 with SMTP id hq40-20020a1709073f2800b007ad88f87644mr3654882ejc.738.1666869883378;
+        Thu, 27 Oct 2022 04:24:43 -0700 (PDT)
+Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.gmail.com with ESMTPSA id ek14-20020a056402370e00b00458a03203b1sm818171edb.31.2022.10.27.04.24.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Oct 2022 04:24:42 -0700 (PDT)
+From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH] net: broadcom: bcm4908_enet: update TX stats after actual transmission
+Date:   Thu, 27 Oct 2022 13:24:30 +0200
+Message-Id: <20221027112430.8696-1-zajec5@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: broadcom: bcm4908_enet: use build_skb()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166686961529.9402.9754688232913670518.git-patchwork-notify@kernel.org>
-Date:   Thu, 27 Oct 2022 11:20:15 +0000
-References: <20221025132245.22871-1-zajec5@gmail.com>
-In-Reply-To: <20221025132245.22871-1-zajec5@gmail.com>
-To:     =?utf-8?b?UmFmYcWCIE1pxYJlY2tpIDx6YWplYzVAZ21haWwuY29tPg==?=@ci.codeaurora.org
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com, rafal@milecki.pl
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Rafał Miłecki <rafal@milecki.pl>
 
-This patch was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+Queueing packets doesn't guarantee their transmission. Update TX stats
+after hardware confirms consuming submitted data.
 
-On Tue, 25 Oct 2022 15:22:45 +0200 you wrote:
-> From: Rafał Miłecki <rafal@milecki.pl>
-> 
-> RX code can be more efficient with the build_skb(). Allocating actual
-> SKB around eth packet buffer - right before passing it up - results in
-> a better cache usage.
-> 
-> Without RPS (echo 0 > rps_cpus) BCM4908 NAT masq performance "jumps"
-> between two speeds: ~900 Mbps and 940 Mbps (it's a 4 CPUs SoC). This
-> change bumps the lower speed from 905 Mb/s to 918 Mb/s (tested using
-> single stream iperf 2.0.5 traffic).
-> 
-> [...]
+This also fixes a possible race and NULL dereference.
+bcm4908_enet_start_xmit() could try to access skb after freeing it in
+the bcm4908_enet_poll_tx().
 
-Here is the summary with links:
-  - net: broadcom: bcm4908_enet: use build_skb()
-    https://git.kernel.org/netdev/net-next/c/3a1cc23a75ab
+Reported-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+---
+This fixes a potential NULL dereference. It was never seen in real usage
+though. I'm not sure if it makes this net-next or net material.
+---
+ drivers/net/ethernet/broadcom/bcm4908_enet.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-You are awesome, thank you!
+diff --git a/drivers/net/ethernet/broadcom/bcm4908_enet.c b/drivers/net/ethernet/broadcom/bcm4908_enet.c
+index ca8c86ee44c0..b0aac0bcb060 100644
+--- a/drivers/net/ethernet/broadcom/bcm4908_enet.c
++++ b/drivers/net/ethernet/broadcom/bcm4908_enet.c
+@@ -571,8 +571,6 @@ static netdev_tx_t bcm4908_enet_start_xmit(struct sk_buff *skb, struct net_devic
+ 
+ 	if (++ring->write_idx == ring->length - 1)
+ 		ring->write_idx = 0;
+-	enet->netdev->stats.tx_bytes += skb->len;
+-	enet->netdev->stats.tx_packets++;
+ 
+ 	return NETDEV_TX_OK;
+ }
+@@ -654,6 +652,7 @@ static int bcm4908_enet_poll_tx(struct napi_struct *napi, int weight)
+ 	struct bcm4908_enet_dma_ring_bd *buf_desc;
+ 	struct bcm4908_enet_dma_ring_slot *slot;
+ 	struct device *dev = enet->dev;
++	unsigned int bytes = 0;
+ 	int handled = 0;
+ 
+ 	while (handled < weight && tx_ring->read_idx != tx_ring->write_idx) {
+@@ -664,12 +663,17 @@ static int bcm4908_enet_poll_tx(struct napi_struct *napi, int weight)
+ 
+ 		dma_unmap_single(dev, slot->dma_addr, slot->len, DMA_TO_DEVICE);
+ 		dev_kfree_skb(slot->skb);
+-		if (++tx_ring->read_idx == tx_ring->length)
+-			tx_ring->read_idx = 0;
+ 
+ 		handled++;
++		bytes += slot->len;
++
++		if (++tx_ring->read_idx == tx_ring->length)
++			tx_ring->read_idx = 0;
+ 	}
+ 
++	enet->netdev->stats.tx_packets += handled;
++	enet->netdev->stats.tx_bytes += bytes;
++
+ 	if (handled < weight) {
+ 		napi_complete_done(napi, handled);
+ 		bcm4908_enet_dma_ring_intrs_on(enet, tx_ring);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.34.1
 
