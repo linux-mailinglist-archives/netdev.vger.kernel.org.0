@@ -2,86 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBE4860FB44
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 17:09:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37F4160FB48
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 17:09:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236047AbiJ0PJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 11:09:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56406 "EHLO
+        id S236089AbiJ0PJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 11:09:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235991AbiJ0PIp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 11:08:45 -0400
+        with ESMTP id S236041AbiJ0PJB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 11:09:01 -0400
 Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9069618F247;
-        Thu, 27 Oct 2022 08:08:44 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id CBA39320094A;
-        Thu, 27 Oct 2022 11:08:42 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DA5E18F90C;
+        Thu, 27 Oct 2022 08:08:49 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id E7451320094E;
+        Thu, 27 Oct 2022 11:08:47 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Thu, 27 Oct 2022 11:08:44 -0400
+  by compute3.internal (MEProxy); Thu, 27 Oct 2022 11:08:49 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
          h=cc:cc:content-transfer-encoding:date:date:from:from
         :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm3; t=1666883322; x=
-        1666969722; bh=7hTRJUbc0mXpmE+XscfGSeRmmeMAJ2mNf4rMDCdGLeA=; b=H
-        6M/QY4AJ6FD9hk8sNv6u1fx6saodbMQd9yuetA/4x1YkEeF+mVZs/xeGXVoQhfOl
-        PZlGd0zG+liaB7GpHUceLPhXeKGnnE+c+L59GHjlO8HfFV2mKCSSLc4QZwvf85yh
-        cn/wWTAMhjAzjG3xyP4xXzPWkcpJWiwUttIn7mQiG1js9F+mlziq4roRidZQ2r4k
-        DhQa/YeivzptizBW54jICrw/01swl/EClvhPH0dHs3B/67h8s46W/KTbigMV0bm5
-        yCdsc/nK6X+HNHclMEFOqaa0yPwn37V8T1jWlkHNQrtE+RwfiLdA/YoLbym+vRwM
-        ffH+xa8MQR0LQNw+0ZoEw==
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1666883327; x=
+        1666969727; bh=vC4bjdi+ygr9v5m5Yqm8eJBkV8nUrE46VnfGZgrrnXA=; b=j
+        p/zLFzA/S0Ieb51w4yelPFoj8AEpzTsUAhhfN4HhR5OYrebREObf97AiybkW66mw
+        3EBUMm05890NRADJobcavQS6iuybBjAkWd5Pt/TIgW55bozGpec2+uozbRkru/59
+        4a4PMwTPBx7LPGnOhRn+H0Zgi2m1Kgdh6T2zWhImIenBkhLGZCUfPVlrbAzNuI0m
+        HQ0CY22iwGq7owaQUiWc0+7NTsylTQFwzKb0aalJm5y3+vt8xM8WLxcBbFfIQ2Re
+        AkHaEVjOBSCkn4kWxN0URoBrQ9tXMrzqipczdRj6S91u0ZYZAzn5VCHV7GR+sdYX
+        D6s17/Lq7o1Iyjv+FFEWA==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
         :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
         :message-id:mime-version:references:reply-to:sender:subject
         :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; t=1666883322; x=1666969722; bh=7hTRJUbc0mXpm
-        E+XscfGSeRmmeMAJ2mNf4rMDCdGLeA=; b=nm1vhYWpwpx14TzKIFieQAEHpg3K3
-        vLWS85FLGz9487o7zlDr6+rnAHRZKhaQfM+kAkWG/p4klp+k2k7qY9vP3cv4CvZg
-        hWqoE8tnJoMJ9FvhImjxZIn4ySPNvq6XcaAg1Boex0P5BuaDqejXQfbrQqvZ7F6O
-        FIpDtGYzAVv68opc2WXKFnkQNFdSIB4BYSU5iCYofzui9n3cJy7c9ti51msgKmuC
-        KR5QPlpreRDGVb1A6DIgD7SyZNjdXXTJLNOfQCQ23kJYav8lGJhKeh3cOupuv2Zc
-        XKoaZDXmg6lIywpTyxIuAXyWSo7SVbUBG8axXYSiypW2/jEjfgDoU3qlw==
-X-ME-Sender: <xms:-p5aYwwpmbwC8efATp67goDE5fsilSK8b_n_Chu33lGWb479CJOmNg>
-    <xme:-p5aY0ReHW_57CxKWm4-y2xNtVK9iE1Zb7QjxleYZbPsQQvni4wGo18Ash5QfUDDt
-    DyJQvssCsnNbMkkvK8>
-X-ME-Received: <xmr:-p5aYyWTQojd_GJj7__NfoWvD7ZuA3dt5uZYiZgpZ8gHk_PCCaZ-EVImsnfyX_g3ApaSeVBPUqh4fxwOmXucvpMSrkYtWGW2uNhWSOSpJpDxXkdXiej9GPQ>
+        :x-sasl-enc; s=fm3; t=1666883327; x=1666969727; bh=vC4bjdi+ygr9v
+        5m5Yqm8eJBkV8nUrE46VnfGZgrrnXA=; b=RNSrpmU7GLbZIVCtE1QZW5+WEFrf3
+        Lcu8y7kJ6GVGHl+xqGzuZX6zcb47YYAqw0xQ8nYiwPtx7m6yK3XZ3g5mqrCYzaeq
+        W3Rw/pe1UH7EY6dfFncjA95uox25uaXrCq0TYwPjOCU8IUvVb21D8C+NnjnbflvE
+        gKG1siI+rPUtnXznDP8w86JkAiklEAjOPw5oD1ZY6fjnvbCtARcpXl0zKgZkgo9/
+        MNqaYZH/7UOfPpfgrY36m54a3BedVYvsmizJtEjDEMqLdEi3x2lmsUGCb+lNYX7w
+        L25zKUu53SgBhqpJpF6tMXk/8lkUkFNzip3JOTKObPS1ekWgiuro3XawQ==
+X-ME-Sender: <xms:_p5aYwQQ3Np5jzuzF1IHMvPlxuJ6N-yk-BnVvdc04amBP_tztVuheQ>
+    <xme:_p5aY9yFvGmMvVRC-eK66nMtTNX1dVaI7Y44WZ3i0Fb0PoAxxMwKeL2ClDhKyLcqT
+    jDPxBILpxmbKKCYFqQ>
+X-ME-Received: <xmr:_p5aY93-uIt958-8Vmqqt1N2TorPL5PUt3T5q7TSdXFu0OuRbgFo-CyBzEwwIF_s41dGwFCAqf714g-mGMPIJdvEeIohspsg8M3NcxPHHyfuGR5rKls98aY>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedrtdeggdekfecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
     fjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuvhgvnhcu
     rfgvthgvrhcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrfgrthhtvg
-    hrnhephfeufffgffegtdefhfefueejfefghfelkeetuddvffeigeffuedvjeegudelieel
-    necuffhomhgrihhnpeguvghvihgtvghtrhgvvgdrohhrghenucevlhhushhtvghrufhiii
-    gvpedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehsvhgvnhesshhvvghnphgvthgvrhdr
-    uggvvh
-X-ME-Proxy: <xmx:-p5aY-hQi9UDoqOCslkWB2nJPyDKS_VUDGNKudlynBXdHhzrG4ftWQ>
-    <xmx:-p5aYyCnJRk8kOBq5_sJRvX0mE5L0TA8tg6st1m9TBwtpCaL04zeug>
-    <xmx:-p5aY_KEldsUFvqjySL3YplYs8T23x938-_ybQyxApLLbdmbEQ74Yw>
-    <xmx:-p5aY62BnsNRet642LOhE83w-jmpP4A6TBg9OBJCp0X-lJsttQvKhA>
+    hrnhepjeeiheehkeegvdejhfevkeejgfdutdefhfethedtieffleekieeuudefleekjeeg
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshhvvg
+    hnsehsvhgvnhhpvghtvghrrdguvghv
+X-ME-Proxy: <xmx:_p5aY0B-XpE_wxv7eH6zE8uyx-8PX51d4IQF2A81eBhGjdhqzcq-UA>
+    <xmx:_p5aY5gF7el4waQ--A3uJOZCzUugsKo1huzV08D9Z47hUs5yyE7Drg>
+    <xmx:_p5aYwqO-AWcWLyFSZoSuCCG5276yBUE8YIl7nOkHvjXjXFPjHWgHg>
+    <xmx:_55aY4RSgjMIuKN6QWtZ92PPCoMeEwumv4K6Z237cc_6yGjv4SRGYg>
 Feedback-ID: i51094778:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 27 Oct 2022 11:08:39 -0400 (EDT)
+ 27 Oct 2022 11:08:44 -0400 (EDT)
 From:   Sven Peter <sven@svenpeter.dev>
 To:     Marcel Holtmann <marcel@holtmann.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
 Cc:     Sven Peter <sven@svenpeter.dev>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
         Hector Martin <marcan@marcan.st>,
         Alyssa Rosenzweig <alyssa@rosenzweig.io>,
         asahi@lists.linux.dev, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v4 2/7] dt-bindings: net: Add Broadcom BCM4377 family PCIe Bluetooth
-Date:   Thu, 27 Oct 2022 17:08:17 +0200
-Message-Id: <20221027150822.26120-3-sven@svenpeter.dev>
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 3/7] arm64: dts: apple: t8103: Add Bluetooth controller
+Date:   Thu, 27 Oct 2022 17:08:18 +0200
+Message-Id: <20221027150822.26120-4-sven@svenpeter.dev>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 In-Reply-To: <20221027150822.26120-1-sven@svenpeter.dev>
 References: <20221027150822.26120-1-sven@svenpeter.dev>
@@ -97,118 +95,119 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These chips are combined Wi-Fi/Bluetooth radios which expose a
-PCI subfunction for the Bluetooth part.
-They are found in Apple machines such as the x86 models with the T2
-chip or the arm64 models with the M1 or M2 chips.
+Add bluetooth controller nodes and the required brcm,board-type
+properties to be able to select the correct firmware to all board
+device trees.
 
 Signed-off-by: Sven Peter <sven@svenpeter.dev>
-Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- .../net/bluetooth/brcm,bcm4377-bluetooth.yaml | 81 +++++++++++++++++++
- MAINTAINERS                                   |  1 +
- 2 files changed, 82 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/bluetooth/brcm,bcm4377-bluetooth.yaml
+ arch/arm64/boot/dts/apple/t8103-j274.dts  | 4 ++++
+ arch/arm64/boot/dts/apple/t8103-j293.dts  | 4 ++++
+ arch/arm64/boot/dts/apple/t8103-j313.dts  | 4 ++++
+ arch/arm64/boot/dts/apple/t8103-j456.dts  | 4 ++++
+ arch/arm64/boot/dts/apple/t8103-j457.dts  | 4 ++++
+ arch/arm64/boot/dts/apple/t8103-jxxx.dtsi | 8 ++++++++
+ 6 files changed, 28 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/bluetooth/brcm,bcm4377-bluetooth.yaml b/Documentation/devicetree/bindings/net/bluetooth/brcm,bcm4377-bluetooth.yaml
-new file mode 100644
-index 000000000000..37cb39a3a62e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/bluetooth/brcm,bcm4377-bluetooth.yaml
-@@ -0,0 +1,81 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/bluetooth/brcm,bcm4377-bluetooth.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/arch/arm64/boot/dts/apple/t8103-j274.dts b/arch/arm64/boot/dts/apple/t8103-j274.dts
+index c1f3ba9c39f6..b52ddc409893 100644
+--- a/arch/arm64/boot/dts/apple/t8103-j274.dts
++++ b/arch/arm64/boot/dts/apple/t8103-j274.dts
+@@ -21,6 +21,10 @@ aliases {
+ 	};
+ };
+ 
++&bluetooth0 {
++	brcm,board-type = "apple,atlantisb";
++};
 +
-+title: Broadcom BCM4377 family PCIe Bluetooth Chips
+ &wifi0 {
+ 	brcm,board-type = "apple,atlantisb";
+ };
+diff --git a/arch/arm64/boot/dts/apple/t8103-j293.dts b/arch/arm64/boot/dts/apple/t8103-j293.dts
+index ecb10d237a05..151074109a11 100644
+--- a/arch/arm64/boot/dts/apple/t8103-j293.dts
++++ b/arch/arm64/boot/dts/apple/t8103-j293.dts
+@@ -17,6 +17,10 @@ / {
+ 	model = "Apple MacBook Pro (13-inch, M1, 2020)";
+ };
+ 
++&bluetooth0 {
++	brcm,board-type = "apple,honshu";
++};
 +
-+maintainers:
-+  - Sven Peter <sven@svenpeter.dev>
+ &wifi0 {
+ 	brcm,board-type = "apple,honshu";
+ };
+diff --git a/arch/arm64/boot/dts/apple/t8103-j313.dts b/arch/arm64/boot/dts/apple/t8103-j313.dts
+index df741737b8e6..bc1f865aa790 100644
+--- a/arch/arm64/boot/dts/apple/t8103-j313.dts
++++ b/arch/arm64/boot/dts/apple/t8103-j313.dts
+@@ -17,6 +17,10 @@ / {
+ 	model = "Apple MacBook Air (M1, 2020)";
+ };
+ 
++&bluetooth0 {
++	brcm,board-type = "apple,shikoku";
++};
 +
-+description:
-+  This binding describes Broadcom BCM4377 family PCIe-attached bluetooth chips
-+  usually found in Apple machines. The Wi-Fi part of the chip is described in
-+  bindings/net/wireless/brcm,bcm4329-fmac.yaml.
+ &wifi0 {
+ 	brcm,board-type = "apple,shikoku";
+ };
+diff --git a/arch/arm64/boot/dts/apple/t8103-j456.dts b/arch/arm64/boot/dts/apple/t8103-j456.dts
+index 8c6bf9592510..7ea27456f33c 100644
+--- a/arch/arm64/boot/dts/apple/t8103-j456.dts
++++ b/arch/arm64/boot/dts/apple/t8103-j456.dts
+@@ -21,6 +21,10 @@ aliases {
+ 	};
+ };
+ 
++&bluetooth0 {
++	brcm,board-type = "apple,capri";
++};
 +
-+allOf:
-+  - $ref: bluetooth-controller.yaml#
+ &wifi0 {
+ 	brcm,board-type = "apple,capri";
+ };
+diff --git a/arch/arm64/boot/dts/apple/t8103-j457.dts b/arch/arm64/boot/dts/apple/t8103-j457.dts
+index fe7c0aaf7d62..8ee0ac871426 100644
+--- a/arch/arm64/boot/dts/apple/t8103-j457.dts
++++ b/arch/arm64/boot/dts/apple/t8103-j457.dts
+@@ -21,6 +21,10 @@ aliases {
+ 	};
+ };
+ 
++&bluetooth0 {
++	brcm,board-type = "apple,santorini";
++};
 +
-+properties:
-+  compatible:
-+    enum:
-+      - pci14e4,5fa0 # BCM4377
-+      - pci14e4,5f69 # BCM4378
-+      - pci14e4,5f71 # BCM4387
+ &wifi0 {
+ 	brcm,board-type = "apple,santorini";
+ };
+diff --git a/arch/arm64/boot/dts/apple/t8103-jxxx.dtsi b/arch/arm64/boot/dts/apple/t8103-jxxx.dtsi
+index 3d15b8e2a6c1..cc2e04035763 100644
+--- a/arch/arm64/boot/dts/apple/t8103-jxxx.dtsi
++++ b/arch/arm64/boot/dts/apple/t8103-jxxx.dtsi
+@@ -11,6 +11,7 @@
+ 
+ / {
+ 	aliases {
++		bluetooth0 = &bluetooth0;
+ 		serial0 = &serial0;
+ 		serial2 = &serial2;
+ 		wifi0 = &wifi0;
+@@ -77,4 +78,11 @@ wifi0: network@0,0 {
+ 		local-mac-address = [00 00 00 00 00 00];
+ 		apple,antenna-sku = "XX";
+ 	};
 +
-+  reg:
-+    maxItems: 1
-+
-+  brcm,board-type:
-+    $ref: /schemas/types.yaml#/definitions/string
-+    description: Board type of the Bluetooth chip. This is used to decouple
-+      the overall system board from the Bluetooth module and used to construct
-+      firmware and calibration data filenames.
-+      On Apple platforms, this should be the Apple module-instance codename
-+      prefixed by "apple,", e.g. "apple,atlantisb".
-+    pattern: '^apple,.*'
-+
-+  brcm,taurus-cal-blob:
-+    $ref: /schemas/types.yaml#/definitions/uint8-array
-+    description: A per-device calibration blob for the Bluetooth radio. This
-+      should be filled in by the bootloader from platform configuration
-+      data, if necessary, and will be uploaded to the device.
-+      This blob is used if the chip stepping of the Bluetooth module does not
-+      support beamforming.
-+
-+  brcm,taurus-bf-cal-blob:
-+    $ref: /schemas/types.yaml#/definitions/uint8-array
-+    description: A per-device calibration blob for the Bluetooth radio. This
-+      should be filled in by the bootloader from platform configuration
-+      data, if necessary, and will be uploaded to the device.
-+      This blob is used if the chip stepping of the Bluetooth module supports
-+      beamforming.
-+
-+  local-bd-address: true
-+
-+required:
-+  - compatible
-+  - reg
-+  - local-bd-address
-+  - brcm,board-type
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    pcie@a0000000 {
-+      #address-cells = <3>;
-+      #size-cells = <2>;
-+      reg = <0xa0000000 0x1000000>;
-+      device_type = "pci";
-+      ranges = <0x43000000 0x6 0xa0000000 0xa0000000 0x0 0x20000000>;
-+
-+      bluetooth@0,1 {
-+        compatible = "pci14e4,5f69";
-+        reg = <0x100 0x0 0x0 0x0 0x0>;
-+        brcm,board-type = "apple,honshu";
-+        /* To be filled by the bootloader */
-+        local-bd-address = [00 00 00 00 00 00];
-+      };
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index cf0f18502372..ca45551220f5 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1903,6 +1903,7 @@ F:	Documentation/devicetree/bindings/interrupt-controller/apple,*
- F:	Documentation/devicetree/bindings/iommu/apple,dart.yaml
- F:	Documentation/devicetree/bindings/iommu/apple,sart.yaml
- F:	Documentation/devicetree/bindings/mailbox/apple,mailbox.yaml
-+F:	Documentation/devicetree/bindings/net/bluetooth/brcm,bcm4377-bluetooth.yaml
- F:	Documentation/devicetree/bindings/nvme/apple,nvme-ans.yaml
- F:	Documentation/devicetree/bindings/nvmem/apple,efuses.yaml
- F:	Documentation/devicetree/bindings/pci/apple,pcie.yaml
++	bluetooth0: bluetooth@0,1 {
++		compatible = "pci14e4,5f69";
++		reg = <0x10100 0x0 0x0 0x0 0x0>;
++		/* To be filled by the loader */
++		local-bd-address = [00 00 00 00 00 00];
++	};
+ };
 -- 
 2.25.1
 
