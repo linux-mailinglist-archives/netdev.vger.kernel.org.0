@@ -2,41 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F07860FB53
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 17:09:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA0CD60FB51
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 17:09:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236274AbiJ0PJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 11:09:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56732 "EHLO
+        id S236217AbiJ0PJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 11:09:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236042AbiJ0PJQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 11:09:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16C0518F26C;
-        Thu, 27 Oct 2022 08:09:14 -0700 (PDT)
+        with ESMTP id S236002AbiJ0PJP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 11:09:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B54D918F263;
+        Thu, 27 Oct 2022 08:09:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BADD0B82686;
-        Thu, 27 Oct 2022 15:09:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70659C43470;
-        Thu, 27 Oct 2022 15:09:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4FE3362393;
+        Thu, 27 Oct 2022 15:09:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C4ECC433D6;
+        Thu, 27 Oct 2022 15:09:13 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.96)
         (envelope-from <rostedt@goodmis.org>)
-        id 1oo4Va-00BvUr-1D;
-        Thu, 27 Oct 2022 11:09:26 -0400
-Message-ID: <20221027150926.201144139@goodmis.org>
+        id 1oo4Vc-00BvaW-18;
+        Thu, 27 Oct 2022 11:09:28 -0400
+Message-ID: <20221027150928.182961808@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Thu, 27 Oct 2022 11:05:31 -0400
+Date:   Thu, 27 Oct 2022 11:05:41 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         Stephen Boyd <sboyd@kernel.org>,
         Guenter Roeck <linux@roeck-us.net>,
-        Chas Williams <3chas3@gmail.com>,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: [RFC][PATCH v2 06/31] timers: atm: Use del_timer_shutdown() before freeing timer
+        Karsten Keil <isdn@linux-pingi.de>, netdev@vger.kernel.org
+Subject: [RFC][PATCH v2 16/31] timers: mISDN: Use del_timer_shutdown() before freeing timer
 References: <20221027150525.753064657@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,65 +54,64 @@ Before a timer is freed, del_timer_shutdown() must be called.
 
 Link: https://lore.kernel.org/all/20220407161745.7d6754b3@gandalf.local.home/
 
-Cc: Chas Williams <3chas3@gmail.com>
-Cc: linux-atm-general@lists.sourceforge.net
+Cc: Karsten Keil <isdn@linux-pingi.de>
 Cc: netdev@vger.kernel.org
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- drivers/atm/idt77105.c | 4 ++--
- drivers/atm/idt77252.c | 4 ++--
- drivers/atm/iphase.c   | 2 +-
+ drivers/isdn/hardware/mISDN/hfcmulti.c | 2 +-
+ drivers/isdn/mISDN/l1oip_core.c        | 4 ++--
+ drivers/isdn/mISDN/timerdev.c          | 4 ++--
  3 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/atm/idt77105.c b/drivers/atm/idt77105.c
-index bfca7b8a6f31..2e7806ae251b 100644
---- a/drivers/atm/idt77105.c
-+++ b/drivers/atm/idt77105.c
-@@ -366,8 +366,8 @@ EXPORT_SYMBOL(idt77105_init);
- static void __exit idt77105_exit(void)
- {
- 	/* turn off timers */
--	del_timer_sync(&stats_timer);
--	del_timer_sync(&restart_timer);
-+	del_timer_shutdown(&stats_timer);
-+	del_timer_shutdown(&restart_timer);
- }
+diff --git a/drivers/isdn/hardware/mISDN/hfcmulti.c b/drivers/isdn/hardware/mISDN/hfcmulti.c
+index 4f7eaa17fb27..8a212c17a093 100644
+--- a/drivers/isdn/hardware/mISDN/hfcmulti.c
++++ b/drivers/isdn/hardware/mISDN/hfcmulti.c
+@@ -4544,7 +4544,7 @@ release_port(struct hfc_multi *hc, struct dchannel *dch)
+ 	spin_lock_irqsave(&hc->lock, flags);
  
- module_exit(idt77105_exit);
-diff --git a/drivers/atm/idt77252.c b/drivers/atm/idt77252.c
-index 681cb3786794..fdb1151f1f32 100644
---- a/drivers/atm/idt77252.c
-+++ b/drivers/atm/idt77252.c
-@@ -2213,7 +2213,7 @@ idt77252_init_ubr(struct idt77252_dev *card, struct vc_map *vc,
- 	}
- 	spin_unlock_irqrestore(&vc->lock, flags);
- 	if (est) {
--		del_timer_sync(&est->timer);
-+		del_timer_shutdown(&est->timer);
- 		kfree(est);
+ 	if (dch->timer.function) {
+-		del_timer(&dch->timer);
++		del_timer_shutdown(&dch->timer);
+ 		dch->timer.function = NULL;
  	}
  
-@@ -3752,7 +3752,7 @@ static void __exit idt77252_exit(void)
- 		card = idt77252_chain;
- 		dev = card->atmdev;
- 		idt77252_chain = card->next;
--		del_timer_sync(&card->tst_timer);
-+		del_timer_shutdown(&card->tst_timer);
+diff --git a/drivers/isdn/mISDN/l1oip_core.c b/drivers/isdn/mISDN/l1oip_core.c
+index a77195e378b7..2d4b19e7d48b 100644
+--- a/drivers/isdn/mISDN/l1oip_core.c
++++ b/drivers/isdn/mISDN/l1oip_core.c
+@@ -1236,8 +1236,8 @@ release_card(struct l1oip *hc)
  
- 		if (dev->phy->stop)
- 			dev->phy->stop(dev);
-diff --git a/drivers/atm/iphase.c b/drivers/atm/iphase.c
-index 324148686953..74eed1816f58 100644
---- a/drivers/atm/iphase.c
-+++ b/drivers/atm/iphase.c
-@@ -3280,7 +3280,7 @@ static void __exit ia_module_exit(void)
- {
- 	pci_unregister_driver(&ia_driver);
+ 	hc->shutdown = true;
  
--	del_timer_sync(&ia_timer);
-+	del_timer_shutdown(&ia_timer);
- }
+-	del_timer_sync(&hc->keep_tl);
+-	del_timer_sync(&hc->timeout_tl);
++	del_timer_shutdown(&hc->keep_tl);
++	del_timer_shutdown(&hc->timeout_tl);
  
- module_init(ia_module_init);
+ 	cancel_work_sync(&hc->workq);
+ 
+diff --git a/drivers/isdn/mISDN/timerdev.c b/drivers/isdn/mISDN/timerdev.c
+index abdf36ac3bee..9d69efb8a1bc 100644
+--- a/drivers/isdn/mISDN/timerdev.c
++++ b/drivers/isdn/mISDN/timerdev.c
+@@ -74,7 +74,7 @@ mISDN_close(struct inode *ino, struct file *filep)
+ 	while (!list_empty(list)) {
+ 		timer = list_first_entry(list, struct mISDNtimer, list);
+ 		spin_unlock_irq(&dev->lock);
+-		del_timer_sync(&timer->tl);
++		del_timer_shutdown(&timer->tl);
+ 		spin_lock_irq(&dev->lock);
+ 		/* it might have been moved to ->expired */
+ 		list_del(&timer->list);
+@@ -204,7 +204,7 @@ misdn_del_timer(struct mISDNtimerdev *dev, int id)
+ 			list_del_init(&timer->list);
+ 			timer->id = -1;
+ 			spin_unlock_irq(&dev->lock);
+-			del_timer_sync(&timer->tl);
++			del_timer_shutdown(&timer->tl);
+ 			kfree(timer);
+ 			return id;
+ 		}
 -- 
 2.35.1
