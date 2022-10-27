@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37F4160FB48
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 17:09:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F53260FB52
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 17:09:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236089AbiJ0PJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 11:09:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56716 "EHLO
+        id S236191AbiJ0PJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 11:09:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236041AbiJ0PJB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 11:09:01 -0400
+        with ESMTP id S236081AbiJ0PJC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 11:09:02 -0400
 Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DA5E18F90C;
-        Thu, 27 Oct 2022 08:08:49 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id E7451320094E;
-        Thu, 27 Oct 2022 11:08:47 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5251E18F0F0;
+        Thu, 27 Oct 2022 08:08:55 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id 9C317320094D;
+        Thu, 27 Oct 2022 11:08:53 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Thu, 27 Oct 2022 11:08:49 -0400
+  by compute5.internal (MEProxy); Thu, 27 Oct 2022 11:08:54 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
          h=cc:cc:content-transfer-encoding:date:date:from:from
         :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm3; t=1666883327; x=
-        1666969727; bh=vC4bjdi+ygr9v5m5Yqm8eJBkV8nUrE46VnfGZgrrnXA=; b=j
-        p/zLFzA/S0Ieb51w4yelPFoj8AEpzTsUAhhfN4HhR5OYrebREObf97AiybkW66mw
-        3EBUMm05890NRADJobcavQS6iuybBjAkWd5Pt/TIgW55bozGpec2+uozbRkru/59
-        4a4PMwTPBx7LPGnOhRn+H0Zgi2m1Kgdh6T2zWhImIenBkhLGZCUfPVlrbAzNuI0m
-        HQ0CY22iwGq7owaQUiWc0+7NTsylTQFwzKb0aalJm5y3+vt8xM8WLxcBbFfIQ2Re
-        AkHaEVjOBSCkn4kWxN0URoBrQ9tXMrzqipczdRj6S91u0ZYZAzn5VCHV7GR+sdYX
-        D6s17/Lq7o1Iyjv+FFEWA==
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1666883333; x=
+        1666969733; bh=NsyIxhCuy3NX42H2/3Rfy8Jj+bJmvXH1V0swWErvcpc=; b=a
+        t6BGC8QmN/9Hb6apE4+YvkARHsuJC/Se81aqWzzHBBPAkQ/RN0UQAMpj7FCx/VxJ
+        uOxTrU/wXVsYlxuQGiELaM9g9Zw3kYxMScPNW0/1SwF+Np0lLkkJSOkCyqY0edYp
+        hTuHqNb+OR7GoqFhPYS4H8Fn8tAQxOkTl3d29sxpDkKV3uvkrkebdS2qZd0BVpoz
+        h6lPm4jngA2gaEjMGlEV2hCIEG1zlWNrHX/3Z51ftjLof7JhzKy85MSlcQcPQ+i8
+        gxU5mKWcjRlk6qLRqkoG9VGGhewQbJc4Tm6hX1i3RhYO824kAYsXAmKE6BP0OA8d
+        1FnCSua03/ZZl57PiC9+w==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
         :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
         :message-id:mime-version:references:reply-to:sender:subject
         :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; t=1666883327; x=1666969727; bh=vC4bjdi+ygr9v
-        5m5Yqm8eJBkV8nUrE46VnfGZgrrnXA=; b=RNSrpmU7GLbZIVCtE1QZW5+WEFrf3
-        Lcu8y7kJ6GVGHl+xqGzuZX6zcb47YYAqw0xQ8nYiwPtx7m6yK3XZ3g5mqrCYzaeq
-        W3Rw/pe1UH7EY6dfFncjA95uox25uaXrCq0TYwPjOCU8IUvVb21D8C+NnjnbflvE
-        gKG1siI+rPUtnXznDP8w86JkAiklEAjOPw5oD1ZY6fjnvbCtARcpXl0zKgZkgo9/
-        MNqaYZH/7UOfPpfgrY36m54a3BedVYvsmizJtEjDEMqLdEi3x2lmsUGCb+lNYX7w
-        L25zKUu53SgBhqpJpF6tMXk/8lkUkFNzip3JOTKObPS1ekWgiuro3XawQ==
-X-ME-Sender: <xms:_p5aYwQQ3Np5jzuzF1IHMvPlxuJ6N-yk-BnVvdc04amBP_tztVuheQ>
-    <xme:_p5aY9yFvGmMvVRC-eK66nMtTNX1dVaI7Y44WZ3i0Fb0PoAxxMwKeL2ClDhKyLcqT
-    jDPxBILpxmbKKCYFqQ>
-X-ME-Received: <xmr:_p5aY93-uIt958-8Vmqqt1N2TorPL5PUt3T5q7TSdXFu0OuRbgFo-CyBzEwwIF_s41dGwFCAqf714g-mGMPIJdvEeIohspsg8M3NcxPHHyfuGR5rKls98aY>
+        :x-sasl-enc; s=fm3; t=1666883333; x=1666969733; bh=NsyIxhCuy3NX4
+        2H2/3Rfy8Jj+bJmvXH1V0swWErvcpc=; b=ETVcrVnYu8JGiJ+L+omZhuRcpTqih
+        ifkl4BBiTawa5t27HM2wS2/u1dd2mxD79j/RuCN5vGT/KVKAjZztitpTblllO0fP
+        zaBDBGV3h/Z0z/a2VxuFhHYA/7Fk8ngcS3iea/rElA6WA6nPQlonTZ7EXGKmV1SK
+        uwu8wVxSXCu44V6rSW3TckfUFPtAPoSsG/W71og9GSPfq/Uu4fOTHFl59TW0L03s
+        wtTKOuBXTxd/jXac4VLbSSIYQB3Rn4RTE9wbHuKyadGPwmVanzrGAxU8e8tu7VNk
+        Q+G0xj6BOhzEsOyoIUwChNTLI7QQvSKDch7KbDHDIdeChDtK3mCk1OdCQ==
+X-ME-Sender: <xms:A59aY2ExqCwHjhQHiaDX-Oq18QxxXQ_JaJLRzpIZiTTsasp652jMpw>
+    <xme:A59aY3VIXAvOJbmCsrPF2dKeYxh-xcJg322TdVa1pfRgFbuZFP5CMrns-jEjtcXBC
+    pXLpoN9JSjlCQYVxNc>
+X-ME-Received: <xmr:A59aYwJQoPiy2eFRPe6bR4KGjPuMlEWKwbV56n_uN7_u38I7vVWSKTBIkgqXGzXWr0LTwunb0MT1E9nq4iuljas8ROBqgfH4b3ui0XUu_8L4PNFkoFDhZyE>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedrtdeggdekfecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
@@ -54,13 +54,13 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedrtdeggdekfecutefuodetggdote
     hrnhepjeeiheehkeegvdejhfevkeejgfdutdefhfethedtieffleekieeuudefleekjeeg
     necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshhvvg
     hnsehsvhgvnhhpvghtvghrrdguvghv
-X-ME-Proxy: <xmx:_p5aY0B-XpE_wxv7eH6zE8uyx-8PX51d4IQF2A81eBhGjdhqzcq-UA>
-    <xmx:_p5aY5gF7el4waQ--A3uJOZCzUugsKo1huzV08D9Z47hUs5yyE7Drg>
-    <xmx:_p5aYwqO-AWcWLyFSZoSuCCG5276yBUE8YIl7nOkHvjXjXFPjHWgHg>
-    <xmx:_55aY4RSgjMIuKN6QWtZ92PPCoMeEwumv4K6Z237cc_6yGjv4SRGYg>
+X-ME-Proxy: <xmx:BJ9aYwFJ36YUK1V8SHO1TvUVHee3NaN3OpILsp-RQUFl9Zhp_Kaakw>
+    <xmx:BJ9aY8W_2A_9Dx8Li1tixQAHGI3w6oc3Yc4xcH9UJF5yHXR7O-S6rw>
+    <xmx:BJ9aYzNBF5zF5IlTSMZrChBFXdKQQJilz1Nxrvulj835DUUxKkcLyw>
+    <xmx:BZ9aY4l-VFwFksIaAnQMCeably74NFg9BsKL74iG44kQId8n6nDf4Q>
 Feedback-ID: i51094778:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 27 Oct 2022 11:08:44 -0400 (EDT)
+ 27 Oct 2022 11:08:49 -0400 (EDT)
 From:   Sven Peter <sven@svenpeter.dev>
 To:     Marcel Holtmann <marcel@holtmann.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
@@ -77,9 +77,9 @@ Cc:     Sven Peter <sven@svenpeter.dev>,
         asahi@lists.linux.dev, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 3/7] arm64: dts: apple: t8103: Add Bluetooth controller
-Date:   Thu, 27 Oct 2022 17:08:18 +0200
-Message-Id: <20221027150822.26120-4-sven@svenpeter.dev>
+Subject: [PATCH v4 4/7] Bluetooth: hci_event: Ignore reserved bits in LE Extended Adv Report
+Date:   Thu, 27 Oct 2022 17:08:19 +0200
+Message-Id: <20221027150822.26120-5-sven@svenpeter.dev>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 In-Reply-To: <20221027150822.26120-1-sven@svenpeter.dev>
 References: <20221027150822.26120-1-sven@svenpeter.dev>
@@ -95,119 +95,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add bluetooth controller nodes and the required brcm,board-type
-properties to be able to select the correct firmware to all board
-device trees.
+Broadcom controllers present on Apple Silicon devices use the upper
+8 bits of the event type in the LE Extended Advertising Report for
+the channel on which the frame has been received.
+These bits are reserved according to the Bluetooth spec anyway such that
+we can just drop them to ensure that the advertising results are parsed
+correctly.
+
+The following excerpt from a btmon trace shows a report received on
+channel 37 by these controllers:
+
+> HCI Event: LE Meta Event (0x3e) plen 55
+      LE Extended Advertising Report (0x0d)
+        Num reports: 1
+        Entry 0
+          Event type: 0x2513
+            Props: 0x0013
+              Connectable
+              Scannable
+              Use legacy advertising PDUs
+            Data status: Complete
+            Reserved (0x2500)
+          Legacy PDU Type: Reserved (0x2513)
+          Address type: Public (0x00)
+          Address: XX:XX:XX:XX:XX:XX (Shenzhen Jingxun Software [...])
+          Primary PHY: LE 1M
+          Secondary PHY: No packets
+          SID: no ADI field (0xff)
+          TX power: 127 dBm
+          RSSI: -76 dBm (0xb4)
+          Periodic advertising interval: 0.00 msec (0x0000)
+          Direct address type: Public (0x00)
+          Direct address: 00:00:00:00:00:00 (OUI 00-00-00)
+          Data length: 0x1d
+          [...]
+        Flags: 0x18
+          Simultaneous LE and BR/EDR (Controller)
+          Simultaneous LE and BR/EDR (Host)
+        Company: Harman International Industries, Inc. (87)
+          Data: [...]
+        Service Data (UUID 0xfddf):
+        Name (complete): JBL Flip 5
 
 Signed-off-by: Sven Peter <sven@svenpeter.dev>
 ---
- arch/arm64/boot/dts/apple/t8103-j274.dts  | 4 ++++
- arch/arm64/boot/dts/apple/t8103-j293.dts  | 4 ++++
- arch/arm64/boot/dts/apple/t8103-j313.dts  | 4 ++++
- arch/arm64/boot/dts/apple/t8103-j456.dts  | 4 ++++
- arch/arm64/boot/dts/apple/t8103-j457.dts  | 4 ++++
- arch/arm64/boot/dts/apple/t8103-jxxx.dtsi | 8 ++++++++
- 6 files changed, 28 insertions(+)
+ include/net/bluetooth/hci.h | 1 +
+ net/bluetooth/hci_event.c   | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/apple/t8103-j274.dts b/arch/arm64/boot/dts/apple/t8103-j274.dts
-index c1f3ba9c39f6..b52ddc409893 100644
---- a/arch/arm64/boot/dts/apple/t8103-j274.dts
-+++ b/arch/arm64/boot/dts/apple/t8103-j274.dts
-@@ -21,6 +21,10 @@ aliases {
- 	};
- };
+diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
+index e004ba04a9ae..f4aa7b78a844 100644
+--- a/include/net/bluetooth/hci.h
++++ b/include/net/bluetooth/hci.h
+@@ -2580,6 +2580,7 @@ struct hci_ev_le_conn_complete {
+ #define LE_EXT_ADV_DIRECT_IND		0x0004
+ #define LE_EXT_ADV_SCAN_RSP		0x0008
+ #define LE_EXT_ADV_LEGACY_PDU		0x0010
++#define LE_EXT_ADV_EVT_TYPE_MASK	0x007f
  
-+&bluetooth0 {
-+	brcm,board-type = "apple,atlantisb";
-+};
-+
- &wifi0 {
- 	brcm,board-type = "apple,atlantisb";
- };
-diff --git a/arch/arm64/boot/dts/apple/t8103-j293.dts b/arch/arm64/boot/dts/apple/t8103-j293.dts
-index ecb10d237a05..151074109a11 100644
---- a/arch/arm64/boot/dts/apple/t8103-j293.dts
-+++ b/arch/arm64/boot/dts/apple/t8103-j293.dts
-@@ -17,6 +17,10 @@ / {
- 	model = "Apple MacBook Pro (13-inch, M1, 2020)";
- };
+ #define ADDR_LE_DEV_PUBLIC		0x00
+ #define ADDR_LE_DEV_RANDOM		0x01
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index faca701bce2a..ade2628aae0d 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -6494,7 +6494,7 @@ static void hci_le_ext_adv_report_evt(struct hci_dev *hdev, void *data,
+ 					info->length))
+ 			break;
  
-+&bluetooth0 {
-+	brcm,board-type = "apple,honshu";
-+};
-+
- &wifi0 {
- 	brcm,board-type = "apple,honshu";
- };
-diff --git a/arch/arm64/boot/dts/apple/t8103-j313.dts b/arch/arm64/boot/dts/apple/t8103-j313.dts
-index df741737b8e6..bc1f865aa790 100644
---- a/arch/arm64/boot/dts/apple/t8103-j313.dts
-+++ b/arch/arm64/boot/dts/apple/t8103-j313.dts
-@@ -17,6 +17,10 @@ / {
- 	model = "Apple MacBook Air (M1, 2020)";
- };
- 
-+&bluetooth0 {
-+	brcm,board-type = "apple,shikoku";
-+};
-+
- &wifi0 {
- 	brcm,board-type = "apple,shikoku";
- };
-diff --git a/arch/arm64/boot/dts/apple/t8103-j456.dts b/arch/arm64/boot/dts/apple/t8103-j456.dts
-index 8c6bf9592510..7ea27456f33c 100644
---- a/arch/arm64/boot/dts/apple/t8103-j456.dts
-+++ b/arch/arm64/boot/dts/apple/t8103-j456.dts
-@@ -21,6 +21,10 @@ aliases {
- 	};
- };
- 
-+&bluetooth0 {
-+	brcm,board-type = "apple,capri";
-+};
-+
- &wifi0 {
- 	brcm,board-type = "apple,capri";
- };
-diff --git a/arch/arm64/boot/dts/apple/t8103-j457.dts b/arch/arm64/boot/dts/apple/t8103-j457.dts
-index fe7c0aaf7d62..8ee0ac871426 100644
---- a/arch/arm64/boot/dts/apple/t8103-j457.dts
-+++ b/arch/arm64/boot/dts/apple/t8103-j457.dts
-@@ -21,6 +21,10 @@ aliases {
- 	};
- };
- 
-+&bluetooth0 {
-+	brcm,board-type = "apple,santorini";
-+};
-+
- &wifi0 {
- 	brcm,board-type = "apple,santorini";
- };
-diff --git a/arch/arm64/boot/dts/apple/t8103-jxxx.dtsi b/arch/arm64/boot/dts/apple/t8103-jxxx.dtsi
-index 3d15b8e2a6c1..cc2e04035763 100644
---- a/arch/arm64/boot/dts/apple/t8103-jxxx.dtsi
-+++ b/arch/arm64/boot/dts/apple/t8103-jxxx.dtsi
-@@ -11,6 +11,7 @@
- 
- / {
- 	aliases {
-+		bluetooth0 = &bluetooth0;
- 		serial0 = &serial0;
- 		serial2 = &serial2;
- 		wifi0 = &wifi0;
-@@ -77,4 +78,11 @@ wifi0: network@0,0 {
- 		local-mac-address = [00 00 00 00 00 00];
- 		apple,antenna-sku = "XX";
- 	};
-+
-+	bluetooth0: bluetooth@0,1 {
-+		compatible = "pci14e4,5f69";
-+		reg = <0x10100 0x0 0x0 0x0 0x0>;
-+		/* To be filled by the loader */
-+		local-bd-address = [00 00 00 00 00 00];
-+	};
- };
+-		evt_type = __le16_to_cpu(info->type);
++		evt_type = __le16_to_cpu(info->type) & LE_EXT_ADV_EVT_TYPE_MASK;
+ 		legacy_evt_type = ext_evt_type_to_legacy(hdev, evt_type);
+ 		if (legacy_evt_type != LE_ADV_INVALID) {
+ 			process_adv_report(hdev, legacy_evt_type, &info->bdaddr,
 -- 
 2.25.1
 
