@@ -2,131 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 61ADE60F241
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 10:22:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 376D660F25A
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 10:31:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234953AbiJ0IWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 04:22:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43596 "EHLO
+        id S234730AbiJ0Iby (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 04:31:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234927AbiJ0IWp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 04:22:45 -0400
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 611D61CB0C;
-        Thu, 27 Oct 2022 01:22:43 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.95,217,1661785200"; 
-   d="scan'208";a="140573960"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 27 Oct 2022 17:22:43 +0900
-Received: from localhost.localdomain (unknown [10.226.93.45])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id DCFE24048F22;
-        Thu, 27 Oct 2022 17:22:37 +0900 (JST)
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        linux-renesas-soc@vger.kernel.org
-Subject: [PATCH v3 6/6] can: rcar_canfd: Add has_gerfl_eef to struct rcar_canfd_hw_info
-Date:   Thu, 27 Oct 2022 09:21:58 +0100
-Message-Id: <20221027082158.95895-7-biju.das.jz@bp.renesas.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20221027082158.95895-1-biju.das.jz@bp.renesas.com>
-References: <20221027082158.95895-1-biju.das.jz@bp.renesas.com>
+        with ESMTP id S234791AbiJ0Ibw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 04:31:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D4787FB7
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 01:31:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1666859509;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DJbylP/VQb6N45h3BR6IuxE22Y8+ba+rHJz3XPrzP5o=;
+        b=KoJDaAxWgKJb8i3j4Fv0cHpJ00LEOwtINTUkObOcK/Vh+pH/gYMS4QZVVUSCtNaQpxPiTO
+        OcR0TFkREk0Yn/gkAwBzrNkA/Y5djbUa16qSgWP+DURe0KMyCHrFyEP7j0xywt+yjz8srU
+        cM6ijgT4aIHQugM0u2Uf4fnq6BLGtnA=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-658-TOuI4siOOpGcbbpQ_j2u4g-1; Thu, 27 Oct 2022 04:31:42 -0400
+X-MC-Unique: TOuI4siOOpGcbbpQ_j2u4g-1
+Received: by mail-wr1-f72.google.com with SMTP id p7-20020adfba87000000b0022cc6f805b1so148226wrg.21
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 01:31:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=DJbylP/VQb6N45h3BR6IuxE22Y8+ba+rHJz3XPrzP5o=;
+        b=r9ehhJD63+fFvbHgpmDZoEBrW9GWVonG3UFzZmJLEKUc4F+fREEyivslapQWb2nHc/
+         jPtLa0vQebH222XgFKGneo5G0JqCEeUTSlxuHiOJLESaI69RzkzDkFJUTrzB+G4yaJQn
+         5PdFd+lNW2pdeFMc/fL0TgfODnx7kHtWCt5Sb3Kb5TLAMg9Y/sCOGMzdKF9bzVyQlE4G
+         8RJTPV19oHp9dPC5hKt3cjx6TDPH1mdzpMoBItJF0fGDr8jPW8GtMvrgb1ZgLujtYkNU
+         mPrWlyqGVHO4d/DLbTVGPjn9VZWhk/31QoGvlazS9SpNqI7BKIRTmphnpMMm+lFTvzKL
+         PpHg==
+X-Gm-Message-State: ACrzQf1mXKqBsVXNwi/rs5S6BQLNp3sF6tn5hqKEV6SND9XK8F8zGPZ3
+        bC3IWb6A1XLY07x4YWANxDbZhTnDgioOh8Vv225N0yjIafenKiKpRdp8XvqjJxNyU5AJ3/TzRax
+        oIxBx6LxCKwFYaXax
+X-Received: by 2002:a5d:5410:0:b0:236:fe1:bb74 with SMTP id g16-20020a5d5410000000b002360fe1bb74mr24232524wrv.512.1666859501288;
+        Thu, 27 Oct 2022 01:31:41 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM5Ki4rsccj5ZhVQmjjfa7CN/RrsLL/EX2Q9k+TQCiMSikyJW1Xat8nCFGGrIEg+lm4CRTtyUA==
+X-Received: by 2002:a5d:5410:0:b0:236:fe1:bb74 with SMTP id g16-20020a5d5410000000b002360fe1bb74mr24232508wrv.512.1666859501033;
+        Thu, 27 Oct 2022 01:31:41 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-103-235.dyn.eolo.it. [146.241.103.235])
+        by smtp.gmail.com with ESMTPSA id bs5-20020a056000070500b00236674840e9sm567217wrb.59.2022.10.27.01.31.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Oct 2022 01:31:40 -0700 (PDT)
+Message-ID: <976d76cad07696c822acd44fbd534a614b7f85fc.camel@redhat.com>
+Subject: Re: [PATCH v5 net-next] net: ftmac100: support mtu > 1500
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Sergei Antonov <saproj@gmail.com>, netdev@vger.kernel.org
+Cc:     olteanv@gmail.com, andrew@lunn.ch, kuba@kernel.org,
+        edumazet@google.com, davem@davemloft.net
+Date:   Thu, 27 Oct 2022 10:31:39 +0200
+In-Reply-To: <20221024175823.145894-1-saproj@gmail.com>
+References: <20221024175823.145894-1-saproj@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-R-Car has ECC error flags in global error interrupts whereas it is
-not available on RZ/G2L.
+Hello,
 
-Add has_gerfl_eef to struct rcar_canfd_hw_info so that rcar_canfd_
-global_error() will process ECC errors only for R-Car.
+On Mon, 2022-10-24 at 20:58 +0300, Sergei Antonov wrote:
+> The ftmac100 controller considers packets >1518 (1500 + Ethernet + FCS)
+> FTL (frame too long) and drops them. That is fine with mtu 1500 or less
+> and it saves CPU time. When DSA is present, mtu is bigger (for VLAN
+> tagging) and the controller's built-in behavior is not desired then. We
+> can make the controller deliver FTL packets to the driver by setting
+> FTMAC100_MACCR_RX_FTL. Then we have to check ftmac100_rxdes_frame_length()
+> (packet length sans FCS) on packets marked with FTMAC100_RXDES0_FTL flag.
+> 
+> Check for mtu > 1500 in .ndo_open() and set FTMAC100_MACCR_RX_FTL to let
+> the driver FTL packets. Implement .ndo_change_mtu() and check for
+> mtu > 1500 to set/clear FTMAC100_MACCR_RX_FTL dynamically.
+> 
+> Fixes: 8d77c036b57c ("net: add Faraday FTMAC100 10/100 Ethernet driver")
 
-whilst, this patch fixes the below checkpatch warnings
-  CHECK: Unnecessary parentheses around 'ch == 0'
-  CHECK: Unnecessary parentheses around 'ch == 1'
+For the records, Vladimir explicitly asked you to drop the 'Fixes' tag.
+Such tag makes little sense for a net-next commit, especially when
+referring to an old change - e.g. that did not enter mainline in this
+release cycle.
 
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
----
-v2->v3:
- * No change.
-v1->v2:
- * Replaced info->has_gerfl to gpriv->info->has_gerfl and wrapped
-   the ECC error flag check within single if statement.
----
- drivers/net/can/rcar/rcar_canfd.c | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+Cheers,
 
-diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
-index f8eafb132b39..00242eac377d 100644
---- a/drivers/net/can/rcar/rcar_canfd.c
-+++ b/drivers/net/can/rcar/rcar_canfd.c
-@@ -523,6 +523,7 @@ struct rcar_canfd_hw_info {
- 	/* hardware features */
- 	unsigned shared_global_irqs:1;	/* Has shared global irqs */
- 	unsigned multi_channel_irqs:1;	/* Has multiple channel irqs */
-+	unsigned has_gerfl_eef:1;	/* Has ECC Error Flag */
- };
- 
- /* Channel priv data */
-@@ -596,6 +597,7 @@ static const struct rcar_canfd_hw_info rcar_gen3_hw_info = {
- 	.max_channels = 2,
- 	.postdiv = 2,
- 	.shared_global_irqs = 1,
-+	.has_gerfl_eef = 1,
- };
- 
- static const struct rcar_canfd_hw_info rzg2l_hw_info = {
-@@ -608,6 +610,7 @@ static const struct rcar_canfd_hw_info r8a779a0_hw_info = {
- 	.max_channels = 8,
- 	.postdiv = 2,
- 	.shared_global_irqs = 1,
-+	.has_gerfl_eef = 1,
- };
- 
- /* Helper functions */
-@@ -955,13 +958,15 @@ static void rcar_canfd_global_error(struct net_device *ndev)
- 	u32 ridx = ch + RCANFD_RFFIFO_IDX;
- 
- 	gerfl = rcar_canfd_read(priv->base, RCANFD_GERFL);
--	if ((gerfl & RCANFD_GERFL_EEF0) && (ch == 0)) {
--		netdev_dbg(ndev, "Ch0: ECC Error flag\n");
--		stats->tx_dropped++;
--	}
--	if ((gerfl & RCANFD_GERFL_EEF1) && (ch == 1)) {
--		netdev_dbg(ndev, "Ch1: ECC Error flag\n");
--		stats->tx_dropped++;
-+	if (gpriv->info->has_gerfl_eef) {
-+		if ((gerfl & RCANFD_GERFL_EEF0) && ch == 0) {
-+			netdev_dbg(ndev, "Ch0: ECC Error flag\n");
-+			stats->tx_dropped++;
-+		}
-+		if ((gerfl & RCANFD_GERFL_EEF1) && ch == 1) {
-+			netdev_dbg(ndev, "Ch1: ECC Error flag\n");
-+			stats->tx_dropped++;
-+		}
- 	}
- 	if (gerfl & RCANFD_GERFL_MES) {
- 		sts = rcar_canfd_read(priv->base,
--- 
-2.25.1
+Paolo
 
