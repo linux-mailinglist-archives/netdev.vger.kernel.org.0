@@ -2,45 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 584D060F670
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 13:44:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F365060F66A
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 13:44:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235271AbiJ0LoN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 07:44:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58326 "EHLO
+        id S235334AbiJ0LoK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 07:44:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234911AbiJ0LoE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 07:44:04 -0400
+        with ESMTP id S235068AbiJ0LoF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 07:44:05 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49C6911E446
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 778E911E45D
         for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 04:44:03 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1oo1In-0000dx-PC
+        id 1oo1In-0000eH-Tq
         for netdev@vger.kernel.org; Thu, 27 Oct 2022 13:44:01 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 31AE110B237
+        by bjornoya.blackshift.org (Postfix) with SMTP id 5709410B23A
         for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 11:44:01 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id E33DC10B21B;
-        Thu, 27 Oct 2022 11:43:58 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 5F88610B21E;
+        Thu, 27 Oct 2022 11:43:59 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 439743df;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 02237d31;
         Thu, 27 Oct 2022 11:43:57 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Anssi Hannula <anssi.hannula@bitwise.fi>,
-        Jimmy Assarsson <extja@kvaser.com>, stable@vger.kernel.org,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net 1/4] can: kvaser_usb: Fix possible completions during init_completion
-Date:   Thu, 27 Oct 2022 13:43:53 +0200
-Message-Id: <20221027114356.1939821-2-mkl@pengutronix.de>
+        kernel@pengutronix.de, Biju Das <biju.das.jz@bp.renesas.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>, stable@vger.kernel.org
+Subject: [PATCH net 2/4] can: rcar_canfd: rcar_canfd_handle_global_receive(): fix IRQ storm on global FIFO receive
+Date:   Thu, 27 Oct 2022 13:43:54 +0200
+Message-Id: <20221027114356.1939821-3-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221027114356.1939821-1-mkl@pengutronix.de>
 References: <20221027114356.1939821-1-mkl@pengutronix.de>
@@ -59,83 +58,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Anssi Hannula <anssi.hannula@bitwise.fi>
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-kvaser_usb uses completions to signal when a response event is received
-for outgoing commands.
+We are seeing an IRQ storm on the global receive IRQ line under heavy
+CAN bus load conditions with both CAN channels enabled.
 
-However, it uses init_completion() to reinitialize the start_comp and
-stop_comp completions before sending the start/stop commands.
+Conditions:
 
-In case the device sends the corresponding response just before the
-actual command is sent, complete() may be called concurrently with
-init_completion() which is not safe.
+The global receive IRQ line is shared between can0 and can1, either of
+the channels can trigger interrupt while the other channel's IRQ line
+is disabled (RFIE).
 
-This might be triggerable even with a properly functioning device by
-stopping the interface (CMD_STOP_CHIP) just after it goes bus-off (which
-also causes the driver to send CMD_STOP_CHIP when restart-ms is off),
-but that was not tested.
+When global a receive IRQ interrupt occurs, we mask the interrupt in
+the IRQ handler. Clearing and unmasking of the interrupt is happening
+in rx_poll(). There is a race condition where rx_poll() unmasks the
+interrupt, but the next IRQ handler does not mask the IRQ due to
+NAPIF_STATE_MISSED flag (e.g.: can0 RX FIFO interrupt is disabled and
+can1 is triggering RX interrupt, the delay in rx_poll() processing
+results in setting NAPIF_STATE_MISSED flag) leading to an IRQ storm.
 
-Fix the issue by using reinit_completion() instead.
+This patch fixes the issue by checking IRQ active and enabled before
+handling the IRQ on a particular channel.
 
-Fixes: 080f40a6fa28 ("can: kvaser_usb: Add support for Kvaser CAN/USB devices")
-Tested-by: Jimmy Assarsson <extja@kvaser.com>
-Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
-Signed-off-by: Jimmy Assarsson <extja@kvaser.com>
-Link: https://lore.kernel.org/all/20221010185237.319219-2-extja@kvaser.com
+Fixes: dd3bd23eb438 ("can: rcar_canfd: Add Renesas R-Car CAN FD driver")
+Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Link: https://lore.kernel.org/all/20221025155657.1426948-2-biju.das.jz@bp.renesas.com
 Cc: stable@vger.kernel.org
+[mkl: adjust commit message]
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c | 4 ++--
- drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c  | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/can/rcar/rcar_canfd.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
-index 7b52fda73d82..66f672ea631b 100644
---- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
-+++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
-@@ -1875,7 +1875,7 @@ static int kvaser_usb_hydra_start_chip(struct kvaser_usb_net_priv *priv)
+diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
+index 567620d215f8..ea828c1bd3a1 100644
+--- a/drivers/net/can/rcar/rcar_canfd.c
++++ b/drivers/net/can/rcar/rcar_canfd.c
+@@ -1157,11 +1157,13 @@ static void rcar_canfd_handle_global_receive(struct rcar_canfd_global *gpriv, u3
  {
- 	int err;
+ 	struct rcar_canfd_channel *priv = gpriv->ch[ch];
+ 	u32 ridx = ch + RCANFD_RFFIFO_IDX;
+-	u32 sts;
++	u32 sts, cc;
  
--	init_completion(&priv->start_comp);
-+	reinit_completion(&priv->start_comp);
- 
- 	err = kvaser_usb_hydra_send_simple_cmd(priv->dev, CMD_START_CHIP_REQ,
- 					       priv->channel);
-@@ -1893,7 +1893,7 @@ static int kvaser_usb_hydra_stop_chip(struct kvaser_usb_net_priv *priv)
- {
- 	int err;
- 
--	init_completion(&priv->stop_comp);
-+	reinit_completion(&priv->stop_comp);
- 
- 	/* Make sure we do not report invalid BUS_OFF from CMD_CHIP_STATE_EVENT
- 	 * see comment in kvaser_usb_hydra_update_state()
-diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-index 50f2ac8319ff..19958037720f 100644
---- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-+++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-@@ -1320,7 +1320,7 @@ static int kvaser_usb_leaf_start_chip(struct kvaser_usb_net_priv *priv)
- {
- 	int err;
- 
--	init_completion(&priv->start_comp);
-+	reinit_completion(&priv->start_comp);
- 
- 	err = kvaser_usb_leaf_send_simple_cmd(priv->dev, CMD_START_CHIP,
- 					      priv->channel);
-@@ -1338,7 +1338,7 @@ static int kvaser_usb_leaf_stop_chip(struct kvaser_usb_net_priv *priv)
- {
- 	int err;
- 
--	init_completion(&priv->stop_comp);
-+	reinit_completion(&priv->stop_comp);
- 
- 	err = kvaser_usb_leaf_send_simple_cmd(priv->dev, CMD_STOP_CHIP,
- 					      priv->channel);
-
-base-commit: e2badb4bd33abe13ddc35975bd7f7f8693955a4b
+ 	/* Handle Rx interrupts */
+ 	sts = rcar_canfd_read(priv->base, RCANFD_RFSTS(gpriv, ridx));
+-	if (likely(sts & RCANFD_RFSTS_RFIF)) {
++	cc = rcar_canfd_read(priv->base, RCANFD_RFCC(gpriv, ridx));
++	if (likely(sts & RCANFD_RFSTS_RFIF &&
++		   cc & RCANFD_RFCC_RFIE)) {
+ 		if (napi_schedule_prep(&priv->napi)) {
+ 			/* Disable Rx FIFO interrupts */
+ 			rcar_canfd_clear_bit(priv->base,
 -- 
 2.35.1
 
