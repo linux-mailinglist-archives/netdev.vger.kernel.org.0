@@ -2,81 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD34760F71A
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 14:23:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0CFA60F745
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 14:30:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235236AbiJ0MX1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 08:23:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60600 "EHLO
+        id S235587AbiJ0Mav (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 08:30:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233961AbiJ0MX0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 08:23:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74826134ABD;
-        Thu, 27 Oct 2022 05:23:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CA6A622B8;
-        Thu, 27 Oct 2022 12:23:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF8B0C433C1;
-        Thu, 27 Oct 2022 12:23:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666873404;
-        bh=b54F1RzA3jISI41sdoOkZ9b/ulgf8O2mcJRK3XR/VHE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hNBqV2izcLkLVehQ76m02Qi3PtD+AJci5atzAvMG79eEE3jQW6PZ8ExEHhJPBrrX1
-         U/U3tEXKjP5HTrGjhjxYZK6jgDjTAt+wirLO4jUAE9mt6NFaUK20+Pj0CpcBSDoN1P
-         kTld67UuNFuzqiFy80P86oiiIjXSJhHYQvwnQoMrJarPgxtZQ7ApuxG4Muq2s/K/rG
-         kn83ZKTB6yfjk7jA/rvaVTobZ65n5y/JGKTs0pxDvaU3CdOVC04raAc2ZGPyXYp9aP
-         j+C90ZvvWZKNdcHe8zNhai3Zsq50e3kCgF/dnFNOhOQ0vcoR1pES2tFHhmFzqTWKZd
-         dK3PSU3DSoy0Q==
-Date:   Thu, 27 Oct 2022 15:23:20 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Rohit Nair <rohit.sajan.kumar@oracle.com>
-Cc:     jgg@ziepe.ca, saeedm@nvidia.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, manjunath.b.patil@oracle.com,
-        rama.nichanamatlu@oracle.com,
-        Michael Guralnik <michaelgur@nvidia.com>
-Subject: Re: [External] : Re: [PATCH 1/1] IB/mlx5: Add a signature check to
- received EQEs and CQEs
-Message-ID: <Y1p4OEIWNObQCDoG@unreal>
-References: <20221005174521.63619-1-rohit.sajan.kumar@oracle.com>
- <Y0UYml07lb1I38MQ@unreal>
- <5bab650a-3c0b-cfd2-d6a7-2e39c8474514@oracle.com>
+        with ESMTP id S235225AbiJ0Mal (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 08:30:41 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CCA64DB65
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 05:30:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1666873838; x=1698409838;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=aCj1syVk/jD+A4kLd9xm90pyuP5zqiQwqwtuX20+9OE=;
+  b=RbT4jWidi/YrxZ2gnnQh0nJZ/lQRahM7OsThVKQ2Zu1tXYgWFXTmOD1W
+   WQYqWgJ6fgDyK/KZIF7bDQ5ehFkvIl0cZT7JEFdWtWg1GJ/BdrT3zKyJ5
+   CyepJWtDhNrxYFD+aPAYKeVVUzqjlJuFqYV6AZmRQ/QtUzPr9LZaztjAl
+   lfxbgH3XcLnjcRSxtg1IffdLHtp88d+c+lQRzXE4eWm3D7N1iMPP0RVpH
+   LWrtOvzvkX5KuVhjjuzmArtQyVsfbMUM3/99F97SYLpvg8C1bX04e8Tf9
+   QBQSsWyFhIFxOgVdwgOTzR5GV/OdjMeqTlhL2QdmM45yB6xYRHoZLy5El
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="291511618"
+X-IronPort-AV: E=Sophos;i="5.95,217,1661842800"; 
+   d="scan'208";a="291511618"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 05:30:18 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="774974772"
+X-IronPort-AV: E=Sophos;i="5.95,217,1661842800"; 
+   d="scan'208";a="774974772"
+Received: from sreehari-nuc.iind.intel.com ([10.223.163.48])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 05:30:13 -0700
+From:   Sreehari Kancharla <sreehari.kancharla@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
+        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
+        haijun.liu@mediatek.com, ricardo.martinez@linux.intel.com,
+        andriy.shevchenko@linux.intel.com, dinesh.sharma@intel.com,
+        ilpo.jarvinen@linux.intel.com, moises.veleta@intel.com,
+        sreehari.kancharla@linux.intel.com, sreehari.kancharla@intel.com
+Subject: [PATCH net-next v2 1/2] net: wwan: t7xx: Use needed_headroom instead of hard_header_len
+Date:   Thu, 27 Oct 2022 17:55:09 +0530
+Message-Id: <20221027122510.24982-1-sreehari.kancharla@linux.intel.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5bab650a-3c0b-cfd2-d6a7-2e39c8474514@oracle.com>
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 25, 2022 at 10:44:12AM -0700, Rohit Nair wrote:
-> Hey Leon,
-> 
-> Please find my replies to your comments here below:
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-<...>
+hard_header_len is used by gro_list_prepare() but on Rx, there
+is no header so use needed_headroom instead.
 
-> > 
-> > > This patch does not introduce any significant performance degradations
-> > > and has been tested using qperf.
-> > What does it mean? You made changes in kernel verbs flow, they are not
-> > executed through qperf.
-> We also conducted several extensive performance tests using our test-suite
-> which utilizes rds-stress and also saw no significant performance
-> degrdations in those results.
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Signed-off-by: Sreehari Kancharla <sreehari.kancharla@linux.intel.com>
+Reviewed-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+---
+ drivers/net/wwan/t7xx/t7xx_netdev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-What does it mean "also"? Your change is applicable ONLY for kernel path.
+diff --git a/drivers/net/wwan/t7xx/t7xx_netdev.c b/drivers/net/wwan/t7xx/t7xx_netdev.c
+index f71d3bc3b237..7639846fa3df 100644
+--- a/drivers/net/wwan/t7xx/t7xx_netdev.c
++++ b/drivers/net/wwan/t7xx/t7xx_netdev.c
+@@ -161,7 +161,7 @@ static void t7xx_ccmni_post_stop(struct t7xx_ccmni_ctrl *ctlb)
+ 
+ static void t7xx_ccmni_wwan_setup(struct net_device *dev)
+ {
+-	dev->hard_header_len += sizeof(struct ccci_header);
++	dev->needed_headroom += sizeof(struct ccci_header);
+ 
+ 	dev->mtu = ETH_DATA_LEN;
+ 	dev->max_mtu = CCMNI_MTU_MAX;
+-- 
+2.17.1
 
-Anyway, I'm not keen adding rare debug code to performance critical path.
-
-Thanks
