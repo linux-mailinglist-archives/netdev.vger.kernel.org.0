@@ -2,143 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 95615610428
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 23:12:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C040610424
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 23:12:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237171AbiJ0VMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 17:12:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43262 "EHLO
+        id S237325AbiJ0VMa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 17:12:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236893AbiJ0VM1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 17:12:27 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 550E44D4D3
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 14:11:11 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id o4so4261651wrq.6
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 14:11:11 -0700 (PDT)
+        with ESMTP id S236348AbiJ0VLd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 17:11:33 -0400
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD782A979
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 14:10:20 -0700 (PDT)
+Received: by mail-qk1-x733.google.com with SMTP id l9so2094115qkk.11
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 14:10:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=llYNiJFW58uMYnEOKGzriQ7rsSFiLYdO6s5x7YgEILw=;
-        b=PRKt/9IKypKRZuLOg86jJ4LoLWnaXUby5vJiE7BuuAN4myfaKtx4cgV8WYXUNCGKt+
-         LN7br3YbQcnp1nRAB16qJcRZIiCfHY/iS/iC0ygKzt4DEqtcVlxdODloWdBR9ljrqSoZ
-         07Ixfj9FzkjUyKuwYkf6u7Q8Mv7laUOW4fmK2aax1aaWPmPhYnAXUm5DuPW0sHQtF++n
-         rIRpv6PJzFI+YzO3IvInaQeDAUuXMkwknWM5L5ECJH2pA553DNIgWJFVDjqlcplqhS3R
-         jmiVYzMob7cWonxqv0ww3fMq0/58m0et9oJWYWKwZsw65CEDbl20YKAFYk90jLH8xQch
-         yizA==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=AKE7LY39bknY+Vn90USSAH/VdWTNyhcvC5Api5/jXk0=;
+        b=M8/N10pAjtySxYGACwBM4tAF5NjmCyXAfkMQoO9eqIrpNI449fIXNQAlfz6A8FghfY
+         xYJvfaXDnMuO0vaNdZaFm/h/Av8uqVNd9OedqkLn86d7CsKMBlcsnpmTX9Zd+vusz+82
+         q785tlzxSgcURFwaqdEVh7MsmeQKVhlyLCm2l4HKkTCdB7BUB3pVtyaQgnvHargPlq8g
+         lf135SzQtnI4cQwBEHULfJpx1f2q9Cg6P4fQcUmV4pmupR6EqSW7jRryZZFn9ml5Pvvv
+         ZIbj1rTs0zx5yXKlEWZrszg4FpAg9Wtra7DT9FQ12TRQ8Y7Gjh7E95nC34N8Epm6unsA
+         NvgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=llYNiJFW58uMYnEOKGzriQ7rsSFiLYdO6s5x7YgEILw=;
-        b=wqIxL5R0f70qg4yWa90pnIPyhPJSc7YpDQ/M1YE04Rgua4FMIvE5BQC07z3az4ZNs8
-         ng+BFMkTRj+ZLgOXuIHvvosk3vWeaKds2uuU16VMTTEQvXtTSisqyZGthgyEUI3Eku0r
-         1iM9oLjevGtdNRxR4SC8NmB8JPSboNkjK4skPDflyUD6CsaMk60CgNpakUg6/TLGZ3rj
-         xp77btEUyxOVJFA8Vrua7md0gezSMBffChJnRzEn9cnMYEbwtmVLzB3krSV41Avr/ryu
-         vXsHQgBvG1V+QRYhJLrplNbzIrgOZs0FZ06bxyAlPwsRp6xrj1kQhcCJTqJPTawIPxT6
-         TrWg==
-X-Gm-Message-State: ACrzQf2C19MSqH8rzKavQATwQC4eE7L4vsDHQXiHJirIeCR6xo/2g1aC
-        Mo36J2B8JrE0jkuyarvGj/Q=
-X-Google-Smtp-Source: AMsMyM5HtEdUlKuKsJBQhawbW1qDiwAy4PNOjWAcyDQLG6K6w2gSpAqvdXAxD6GHN03SJIdCtfhfug==
-X-Received: by 2002:a05:6000:184:b0:236:7685:7e6d with SMTP id p4-20020a056000018400b0023676857e6dmr13952285wrx.305.1666905069620;
-        Thu, 27 Oct 2022 14:11:09 -0700 (PDT)
-Received: from ?IPV6:2a01:c23:b8ce:ec00:3539:4fbe:1050:1ad9? (dynamic-2a01-0c23-b8ce-ec00-3539-4fbe-1050-1ad9.c23.pool.telefonica.de. [2a01:c23:b8ce:ec00:3539:4fbe:1050:1ad9])
-        by smtp.googlemail.com with ESMTPSA id c6-20020a5d5286000000b0022ca921dc67sm2015825wrv.88.2022.10.27.14.11.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Oct 2022 14:11:09 -0700 (PDT)
-Message-ID: <67d3de52-54b6-e88f-f9b9-b87790d9c9a0@gmail.com>
-Date:   Thu, 27 Oct 2022 23:09:52 +0200
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=AKE7LY39bknY+Vn90USSAH/VdWTNyhcvC5Api5/jXk0=;
+        b=PQ7nUYU2VvxBD0ydG0KvgO9weFX1IPWmvJeWmdcjrSlljXP1lKlshe16NcsNHPz0qp
+         sHNIwdKYkKHd6LS4vd7syhK6LuU98lkxdu1hcl6yqrZnbnglS47P3f0fpoWyFx9Yo3dF
+         wiWjadjra7Mn0pVZpuFa5hs+UdSYIEFTZkgmhcaH7xvcO9lbKQVcHyQVykh0oTQl6lu6
+         IByDMamOYcxra2OzKT0uoBocuwdis7U5lbTMo+Lcx++f2ybP0OZMLbkORZlpQiOi1IKm
+         KougWQfCXx5qadvoBLkHDpYhlPWt4amBxmxU1DW2jAzplInMIgTz6FsTLCp8WYUOxFrD
+         o0nA==
+X-Gm-Message-State: ACrzQf0qyVoshp9bkXwtjhRKPARNrpWbRvFN7oJTOsK0D9MNbHtjoTHE
+        KgO3XHFWSHSVBrMgQYdSK51StLDXW5PHgw==
+X-Google-Smtp-Source: AMsMyM62VG+mBhQ6VhZSYPPK2Brs4fPZdS3cNRTT+1/5w452twSApO7f9ptS8f3IplMf+vsi4gZRsg==
+X-Received: by 2002:a37:9a43:0:b0:6fa:64:b3be with SMTP id c64-20020a379a43000000b006fa0064b3bemr2545524qke.336.1666905019136;
+        Thu, 27 Oct 2022 14:10:19 -0700 (PDT)
+Received: from willemb.c.googlers.com.com (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
+        by smtp.gmail.com with ESMTPSA id fa13-20020a05622a4ccd00b0039492d503cdsm1425909qtb.51.2022.10.27.14.10.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Oct 2022 14:10:18 -0700 (PDT)
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, vincent.whitchurch@axis.com, cpascoe@google.com,
+        Willem de Bruijn <willemb@google.com>
+Subject: [PATCH net-next] net/packet: add PACKET_FANOUT_FLAG_IGNORE_OUTGOING
+Date:   Thu, 27 Oct 2022 17:10:14 -0400
+Message-Id: <20221027211014.3581513-1-willemdebruijn.kernel@gmail.com>
+X-Mailer: git-send-email 2.38.1.273.g43a17bfeac-goog
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Content-Language: en-US
-To:     Denis Kirjanov <dkirjanov@suse.de>, netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>
-References: <4bca2d92-e966-81d7-d5a6-2c4240194ff4@suse.de>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [net-next] phy: convert to boolean for the mac_managed_pm flag
-In-Reply-To: <4bca2d92-e966-81d7-d5a6-2c4240194ff4@suse.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27.10.2022 17:05, Denis Kirjanov wrote:
-> Signed-off-by: Dennis Kirjanov <dkirjanov@suse.de>
+From: Willem de Bruijn <willemb@google.com>
 
-Commit message is missing.
-It should be "net: phy:" instead of "phy:".
-You state that you convert the flag to boolean but you convert only the users.
+Extend packet socket option PACKET_IGNORE_OUTGOING to fanout groups.
 
-> ---
->  drivers/net/ethernet/freescale/fec_main.c | 2 +-
->  drivers/net/ethernet/realtek/r8169_main.c | 2 +-
->  drivers/net/usb/asix_devices.c            | 4 ++--
+The socket option sets ptype.ignore_outgoing, which makes
+dev_queue_xmit_nit skip the socket.
 
-This should be separate patches.
+When the socket joins a fanout group, the option is not reflected in
+the struct ptype of the group. dev_queue_xmit_nit only tests the
+fanout ptype, so the flag is ignored once a socket joins a
+fanout group.
 
->  3 files changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-> index 98d5cd313fdd..4d38a297ec00 100644
-> --- a/drivers/net/ethernet/freescale/fec_main.c
-> +++ b/drivers/net/ethernet/freescale/fec_main.c
-> @@ -2226,7 +2226,7 @@ static int fec_enet_mii_probe(struct net_device *ndev)
->  	fep->link = 0;
->  	fep->full_duplex = 0;
->  
-> -	phy_dev->mac_managed_pm = 1;
-> +	phy_dev->mac_managed_pm = true;
->  
-Definition is: unsigned mac_managed_pm:1;
-Therefore 1 is the correct value, why assigning a bool to a bitfield member?
+Inheriting the option from a socket would change established behavior.
+Different sockets in the group can set different flags, and can also
+change them at runtime.
 
->  	phy_attached_info(phy_dev);
->  
-> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> index a73d061d9fcb..5bc1181f829b 100644
-> --- a/drivers/net/ethernet/realtek/r8169_main.c
-> +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -5018,7 +5018,7 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
->  		return -EUNATCH;
->  	}
->  
-> -	tp->phydev->mac_managed_pm = 1;
-> +	tp->phydev->mac_managed_pm = true;
->  
->  	phy_support_asym_pause(tp->phydev);
->  
-> diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-> index 11f60d32be82..02941d97d034 100644
-> --- a/drivers/net/usb/asix_devices.c
-> +++ b/drivers/net/usb/asix_devices.c
-> @@ -700,7 +700,7 @@ static int ax88772_init_phy(struct usbnet *dev)
->  	}
->  
->  	phy_suspend(priv->phydev);
-> -	priv->phydev->mac_managed_pm = 1;
-> +	priv->phydev->mac_managed_pm = true;
->  
->  	phy_attached_info(priv->phydev);
->  
-> @@ -720,7 +720,7 @@ static int ax88772_init_phy(struct usbnet *dev)
->  		return -ENODEV;
->  	}
->  
-> -	priv->phydev_int->mac_managed_pm = 1;
-> +	priv->phydev_int->mac_managed_pm = true;
->  	phy_suspend(priv->phydev_int);
->  
->  	return 0;
+Testing in packet_rcv_fanout defeats the purpose of the original
+patch, which is to avoid skb_clone in dev_queue_xmit_nit (esp. for
+MSG_ZEROCOPY packets).
+
+Instead, introduce a new fanout group flag with the same behavior.
+
+Tested with https://github.com/wdebruij/kerneltools/blob/master/tests/test_psock_fanout_ignore_outgoing.c
+
+Signed-off-by: Willem de Bruijn <willemb@google.com>
+---
+ include/uapi/linux/if_packet.h | 1 +
+ net/packet/af_packet.c         | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/include/uapi/linux/if_packet.h b/include/uapi/linux/if_packet.h
+index c07caf7b40db6..a8516b3594a44 100644
+--- a/include/uapi/linux/if_packet.h
++++ b/include/uapi/linux/if_packet.h
+@@ -70,6 +70,7 @@ struct sockaddr_ll {
+ #define PACKET_FANOUT_EBPF		7
+ #define PACKET_FANOUT_FLAG_ROLLOVER	0x1000
+ #define PACKET_FANOUT_FLAG_UNIQUEID	0x2000
++#define PACKET_FANOUT_FLAG_IGNORE_OUTGOING     0x4000
+ #define PACKET_FANOUT_FLAG_DEFRAG	0x8000
+ 
+ struct tpacket_stats {
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index 8c5b3da0c29f6..44f20cf8a0c0e 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -1777,6 +1777,7 @@ static int fanout_add(struct sock *sk, struct fanout_args *args)
+ 		match->prot_hook.af_packet_net = read_pnet(&match->net);
+ 		match->prot_hook.id_match = match_fanout_group;
+ 		match->max_num_members = args->max_num_members;
++		match->prot_hook.ignore_outgoing = type_flags & PACKET_FANOUT_FLAG_IGNORE_OUTGOING;
+ 		list_add(&match->list, &fanout_list);
+ 	}
+ 	err = -EINVAL;
+-- 
+2.38.1.273.g43a17bfeac-goog
 
