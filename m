@@ -2,124 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 215C860F839
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 14:57:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30B2D60F84F
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 15:03:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235283AbiJ0M5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 08:57:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36120 "EHLO
+        id S235668AbiJ0ND0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 09:03:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235156AbiJ0M5J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 08:57:09 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93259169CC5
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 05:57:08 -0700 (PDT)
+        with ESMTP id S235931AbiJ0NDV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 09:03:21 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E969176BAE
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 06:03:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666875428; x=1698411428;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=gSXk+x+L6jiJT5Hvl/8cqO6MR0GWHs3OWrzSJWoiivY=;
-  b=RxDclxwxYxiww4N7zb7YWU7d0qBFgwuq6lGtFy4NTc3ZS9heL6L+RgpH
-   Jg9Q8BwiUfzJjopQiJz+gxX7lrKIUsHRSCmkfrf4pe/sGbQREw3vZEnxy
-   3/z+jusiL2KR93Jj3JWgb206MAFo/tVtgs+SaezCWM+EOrXrlQyYr29iO
-   LyKpcDDBDdEi7cC/L/bRvwBGHGN5hDsYtxf9B1nJfqHb9q4LmU3/2EiMY
-   mOBTV5IRk/Ba/O81c58oxmw3W6JBWIlYY1cku1bvvs90gqHNvuF/qHyPR
-   UTpQNjlTMVoXSgFyFCrWM5p0KsmLN5sFlWK7TRylQxx31Rit5XR3UD/QF
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="287928775"
+  t=1666875797; x=1698411797;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Xlpc6jaNVfpVX3LJT2n1tGLZUiGV2b8Hv3fda8wUumk=;
+  b=nQ98yNEF12if7okToha3QxZK9Dd0b2/IMu3hJxIJ3gX7LrGXRjMpiXSD
+   ua9H9kWp4NjRTkT1XMryxd3DH/BnD77a+LEJWdbex5uMj4Ipb5MhLahbE
+   AL3jOztreb4YM4ihhQzm3ziV+2DoHJX3G0jakK16Mzm/ivxvvfa4j6F0w
+   7dJ25ttxCKJybg3RKrX2b3LbNQl5jE5BCtyt3SyMO7svZJDScw7iuCTW/
+   QuPEm6SQs1neTRIcbD1bagTn8+3KcsdERrAtOkJtflyA7wfRpn0LlLStw
+   wIDkF7Cvewvsy2DXOpPeev54x+NQ6g2NGN0uvntb9KPjULns0qjp5mXrG
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="295624044"
 X-IronPort-AV: E=Sophos;i="5.95,217,1661842800"; 
-   d="scan'208";a="287928775"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 05:57:08 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="877573714"
+   d="scan'208";a="295624044"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 06:03:16 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="583546472"
 X-IronPort-AV: E=Sophos;i="5.95,217,1661842800"; 
-   d="scan'208";a="877573714"
-Received: from kohnenth-mobl.ger.corp.intel.com ([10.251.216.78])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 05:57:04 -0700
-Date:   Thu, 27 Oct 2022 15:57:02 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Sreehari Kancharla <sreehari.kancharla@linux.intel.com>
-cc:     Netdev <netdev@vger.kernel.org>, kuba@kernel.org,
-        davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, ricardo.martinez@linux.intel.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dinesh.sharma@intel.com, moises.veleta@intel.com,
-        sreehari.kancharla@intel.com
-Subject: Re: [PATCH net-next v2 2/2] net: wwan: t7xx: Add NAPI support
-In-Reply-To: <20221027122510.24982-2-sreehari.kancharla@linux.intel.com>
-Message-ID: <a61fb7b1-5f55-9141-3826-495947eb93de@linux.intel.com>
-References: <20221027122510.24982-1-sreehari.kancharla@linux.intel.com> <20221027122510.24982-2-sreehari.kancharla@linux.intel.com>
+   d="scan'208";a="583546472"
+Received: from unknown (HELO fedora.igk.intel.com) ([10.123.220.6])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 06:03:13 -0700
+From:   Michal Wilczynski <michal.wilczynski@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     alexandr.lobakin@intel.com, jacob.e.keller@intel.com,
+        jesse.brandeburg@intel.com, przemyslaw.kitszel@intel.com,
+        anthony.l.nguyen@intel.com, kuba@kernel.org,
+        ecree.xilinx@gmail.com, jiri@resnulli.us,
+        Michal Wilczynski <michal.wilczynski@intel.com>
+Subject: [PATCH net-next v7 0/9] Implement devlink-rate API and extend it
+Date:   Thu, 27 Oct 2022 15:00:40 +0200
+Message-Id: <20221027130049.2418531-1-michal.wilczynski@intel.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-198711065-1666875376=:2917"
-Content-ID: <b8d548f0-a46c-96c3-2348-2378d964b1ff@linux.intel.com>
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+This is a follow up on:
+https://lore.kernel.org/netdev/20221018123543.1210217-1-michal.wilczynski@intel.com/
 
---8323329-198711065-1666875376=:2917
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <ada4798-9d25-35cd-744e-a7db641e31c@linux.intel.com>
+This patch series implements devlink-rate for ice driver. Unfortunately
+current API isn't flexible enough for our use case, so there is a need to
+extend it. Some functions have been introduced to enable the driver to
+export current Tx scheduling configuration.
 
-On Thu, 27 Oct 2022, Sreehari Kancharla wrote:
+In the previous submission I've made a mistake and didn't remove
+internal review comments. To avoid confusion I don't go backwards
+in my versioning and submit it as v7.
 
-> From: Haijun Liu <haijun.liu@mediatek.com>
-> 
-> Replace the work queue based RX flow with a NAPI implementation
-> Remove rx_thread and dpmaif_rxq_work.
-> Enable GRO on RX path.
-> Introduce dummy network device. its responsibility is
->     - Binds one NAPI object for each DL HW queue and acts as
->       the agent of all those network devices.
->     - Use NAPI object to poll DL packets.
->     - Helps to dispatch each packet to the network interface.
-> 
-> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
-> Co-developed-by: Sreehari Kancharla <sreehari.kancharla@linux.intel.com>
-> Signed-off-by: Sreehari Kancharla <sreehari.kancharla@linux.intel.com>
-> Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
-> Acked-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> Acked-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-> --
 
-> +	if (once_more) {
-> +		napi_gro_flush(napi, false);
-> +		work_done = budget;
-> +		t7xx_dpmaif_clr_ip_busy_sts(&rxq->dpmaif_ctrl->hw_info);
-> +	} else if (work_done < budget) {
-> +		napi_complete_done(napi, work_done);
-> +		t7xx_dpmaif_clr_ip_busy_sts(&rxq->dpmaif_ctrl->hw_info);
-> +		t7xx_dpmaif_dlq_unmask_rx_done(&rxq->dpmaif_ctrl->hw_info, rxq->index);
-> +	} else {
-> +		t7xx_dpmaif_clr_ip_busy_sts(&rxq->dpmaif_ctrl->hw_info);
-> +	}
-> +
-> +	t7xx_pci_enable_sleep(rxq->dpmaif_ctrl->t7xx_dev);
-> +	pm_runtime_mark_last_busy(rxq->dpmaif_ctrl->dev);
-> +	pm_runtime_put_noidle(rxq->dpmaif_ctrl->dev);
->  	atomic_set(&rxq->rx_processing, 0);
-> +	return work_done;
+Pasting justification for this series from commit implementing devlink-rate
+in ice driver(that is a part of this series):
 
-A nitpick: I'd put newline prior to return, it's a bit crowded there 
-already.
+There is a need to support modification of Tx scheduler tree, in the
+ice driver. This will allow user to control Tx settings of each node in
+the internal hierarchy of nodes. As a result user will be able to use
+Hierarchy QoS implemented entirely in the hardware.
 
-The patch looks ok to me:
+This patch implemenents devlink-rate API. It also exports initial
+default hierarchy. It's mostly dictated by the fact that the tree
+can't be removed entirely, all we can do is enable the user to modify
+it. For example root node shouldn't ever be removed, also nodes that
+have children are off-limits.
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Example initial tree with 2 VF's:
 
+[root@fedora ~]# devlink port function rate show
+pci/0000:4b:00.0/node_27: type node parent node_26
+pci/0000:4b:00.0/node_26: type node parent node_0
+pci/0000:4b:00.0/node_34: type node parent node_33
+pci/0000:4b:00.0/node_33: type node parent node_32
+pci/0000:4b:00.0/node_32: type node parent node_16
+pci/0000:4b:00.0/node_19: type node parent node_18
+pci/0000:4b:00.0/node_18: type node parent node_17
+pci/0000:4b:00.0/node_17: type node parent node_16
+pci/0000:4b:00.0/node_21: type node parent node_20
+pci/0000:4b:00.0/node_20: type node parent node_3
+pci/0000:4b:00.0/node_14: type node parent node_5
+pci/0000:4b:00.0/node_5: type node parent node_3
+pci/0000:4b:00.0/node_13: type node parent node_4
+pci/0000:4b:00.0/node_12: type node parent node_4
+pci/0000:4b:00.0/node_11: type node parent node_4
+pci/0000:4b:00.0/node_10: type node parent node_4
+pci/0000:4b:00.0/node_9: type node parent node_4
+pci/0000:4b:00.0/node_8: type node parent node_4
+pci/0000:4b:00.0/node_7: type node parent node_4
+pci/0000:4b:00.0/node_6: type node parent node_4
+pci/0000:4b:00.0/node_4: type node parent node_3
+pci/0000:4b:00.0/node_3: type node parent node_16
+pci/0000:4b:00.0/node_16: type node parent node_15
+pci/0000:4b:00.0/node_15: type node parent node_0
+pci/0000:4b:00.0/node_2: type node parent node_1
+pci/0000:4b:00.0/node_1: type node parent node_0
+pci/0000:4b:00.0/node_0: type node
+pci/0000:4b:00.0/1: type leaf parent node_27
+pci/0000:4b:00.0/2: type leaf parent node_27
+
+
+Let me visualize part of the tree:
+
+                        +---------+
+                        |  node_0 |
+                        +---------+
+                             |
+                        +----v----+
+                        | node_26 |
+                        +----+----+
+                             |
+                        +----v----+
+                        | node_27 |
+                        +----+----+
+                             |
+                    |-----------------|
+               +----v----+       +----v----+
+               |   VF 1  |       |   VF 2  |
+               +----+----+       +----+----+
+
+So at this point there is a couple things that can be done.
+For example we could only assign parameters to VF's.
+
+[root@fedora ~]# devlink port function rate set pci/0000:4b:00.0/1 \
+                 tx_max 5Gbps
+
+This would cap the VF 1 BW to 5Gbps.
+
+But let's say you would like to create a completely new branch.
+This can be done like this:
+
+[root@fedora ~]# devlink port function rate add \
+                 pci/0000:4b:00.0/node_custom parent node_0
+[root@fedora ~]# devlink port function rate add \
+                 pci/0000:4b:00.0/node_custom_1 parent node_custom
+[root@fedora ~]# devlink port function rate set \
+                 pci/0000:4b:00.0/1 parent node_custom_1
+
+This creates a completely new branch and reassigns VF 1 to it.
+
+A number of parameters is supported per each node: tx_max, tx_share,
+tx_priority and tx_weight.
+
+
+V7:
+- split into smaller commits
+- paste justification for this series to cover letter
+
+V6:
+- replaced strncpy with strscpy
+- renamed rate_vport -> rate_leaf
+
+V5:
+- removed queue support per community request
+- fix division of 64bit variable with 32bit divisor by using div_u64()
+- remove RDMA, ADQ exlusion as it's not necessary anymore
+- changed how driver exports configuration, as queues are not supported
+  anymore
+- changed IDA to Xarray for unique node identification
+
+
+V4:
+- changed static variable counter to per port IDA to
+  uniquely identify nodes
+
+V3:
+- removed shift macros, since FIELD_PREP is used
+- added static_assert for struct
+- removed unnecessary functions
+- used tab instead of space in define
+
+V2:
+- fixed Alexandr comments
+- refactored code to fix checkpatch issues
+- added mutual exclusion for RDMA, DCB
+
+
+
+Michal Wilczynski (9):
+  devlink: Introduce new parameter 'tx_priority' to devlink-rate
+  devlink: Introduce new parameter 'tx_weight' to devlink-rate
+  devlink: Enable creation of the devlink-rate nodes from the driver
+  devlink: Allow for devlink-rate nodes parent reassignment
+  devlink: Allow to set up parent in devl_rate_leaf_create()
+  devlink: Allow to change priv in devlink-rate from parent_set
+    callbacks
+  ice: Introduce new parameters in ice_sched_node
+  ice: Implement devlink-rate API
+  ice: Prevent ADQ, DCB, RDMA coexistence with Custom Tx scheduler
+
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   4 +-
+ drivers/net/ethernet/intel/ice/ice_common.c   |   3 +
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |   4 +
+ drivers/net/ethernet/intel/ice/ice_devlink.c  | 478 ++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_devlink.h  |   2 +
+ drivers/net/ethernet/intel/ice/ice_idc.c      |   5 +
+ drivers/net/ethernet/intel/ice/ice_repr.c     |  13 +
+ drivers/net/ethernet/intel/ice/ice_sched.c    |  79 ++-
+ drivers/net/ethernet/intel/ice/ice_sched.h    |  25 +
+ drivers/net/ethernet/intel/ice/ice_type.h     |   8 +
+ .../mellanox/mlx5/core/esw/devlink_port.c     |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/esw/qos.c |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/esw/qos.h |   2 +-
+ drivers/net/netdevsim/dev.c                   |  10 +-
+ include/net/devlink.h                         |  21 +-
+ include/uapi/linux/devlink.h                  |   3 +
+ net/core/devlink.c                            | 145 +++++-
+ 17 files changed, 778 insertions(+), 32 deletions(-)
 
 -- 
- i.
---8323329-198711065-1666875376=:2917--
+2.37.2
+
