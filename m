@@ -2,87 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6368F60F6B9
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 14:05:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1857D60F6DC
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 14:10:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235512AbiJ0MFP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 08:05:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54388 "EHLO
+        id S233971AbiJ0MKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 08:10:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235503AbiJ0MFN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 08:05:13 -0400
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1496266F39
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 05:05:06 -0700 (PDT)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-367cd2807f2so11868967b3.1
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 05:05:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=qknsrrbVYmn1Ib/QmtnzvnQ1FotFocWgYawUVExSORc=;
-        b=kDAj/+QzV+GnIAl89MVn+6bsaO43262/lst84N6GLEppFSvsHBzOeLghyWNKT1KPEl
-         eIhI29hvYay1zSC0ExaoOhUO/yRQYAmiEsjcBgRnvtNaM/NvtooZnOBlnqKhdxekYlSQ
-         HEihk43r1nvzJJYf6ZEIDPnHV1mowWHSawP1nH/06wxkhXJH3Z1CSnkKnCuslWa8oPp5
-         DgsvOnhRSy8rueiyaIGJM5onQDSvUUVyqN/2zXDns18EyQH6K9oFKwOD3n7/lbZkViSB
-         hEFnXgkpGgip7CELstT93J478R+tnrrF/GVz3ZfosMdcmtOtuL9U89r31fdECOg4+Q9O
-         Bqew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=qknsrrbVYmn1Ib/QmtnzvnQ1FotFocWgYawUVExSORc=;
-        b=aSuVzzwVLPCwUnkmog95If0sLd2z1dN4BAYFkq67p/Z/7Zj7jHHspP72S2Na+iAhP7
-         myKhkpH1HNlfbdJYAtwsvKpTe1uWMj73V+fOi2qG/4BPrpLB2e114Mh5xe6xvhElDQQl
-         PDLTlFusFTdfI2Q+1z2DrXS09b7xZDj3qx297MTavkH2EfH1jjCUBPc+j5Z19ieiekN3
-         NLs8odUWyYCvcczPz4+JfkCCd+uA9j1HBn/JdPd5oa8BPpC5KiUIjxoAz2d2alsnYNFv
-         D9vaIiP/k73yb3NO78FmDWnJ/4OgTAFH6sjBuWeU/Rp6ItmYlwDFGJAXkxwdhIyAixbl
-         XikQ==
-X-Gm-Message-State: ACrzQf09btrD81jAd8DD3rDaa98uBfxliy9YjzUyKEPr01bUAKWaYV7P
-        IguI5296BCxA97hbPhyUiQA7VBiK+AJb83TdUe66tA==
-X-Google-Smtp-Source: AMsMyM6I8YFZk6yU1HJa7CB4BQnoTdN1q32V2q3kIL4ut/vRUT+zzspyg2RYAuACG1yriwxZ9GpsUaLYvk1FNk4qgPc=
-X-Received: by 2002:a81:7585:0:b0:368:28bd:9932 with SMTP id
- q127-20020a817585000000b0036828bd9932mr35457213ywc.332.1666872305338; Thu, 27
- Oct 2022 05:05:05 -0700 (PDT)
+        with ESMTP id S233867AbiJ0MKs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 08:10:48 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EBE9C770;
+        Thu, 27 Oct 2022 05:10:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=UbrorHxjgzyWbWmyo9e7FtpsOHgSgay7NTrAxgHSw9I=; b=e935+JrxMWPMNbRRtFmmNCi7Gk
+        xrtVCipZvb0R4GUc7qh7uNUErCgajtfzoqYfbO0acfEa1bzhzLGAavJPare0BENmY4sIkqmVwar29
+        GXhTx7QCQfeFhyS+EyaYMhlTwyEWx9xd1xqV7ElOXz8ZVRac868a1KgYqhJ+Ol8bLGSg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oo1hA-000hfO-Kf; Thu, 27 Oct 2022 14:09:12 +0200
+Date:   Thu, 27 Oct 2022 14:09:12 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Camel Guo <camelg@axis.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Camel Guo <Camel.Guo@axis.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Rob Herring <robh@kernel.org>, kernel <kernel@axis.com>
+Subject: Re: [RFC net-next 2/2] net: dsa: Add driver for Maxlinear GSW1XX
+ switch
+Message-ID: <Y1p06HrFMEDP8ud/@lunn.ch>
+References: <20221025135243.4038706-1-camel.guo@axis.com>
+ <20221025135243.4038706-3-camel.guo@axis.com>
+ <d942c724-4520-4a7b-8c36-704032c68a36@linaro.org>
+ <Y1f5HU9crkPGX3SB@lunn.ch>
+ <128467d6-8249-9f25-21a7-777fff9854d9@axis.com>
 MIME-Version: 1.0
-References: <20221026151558.4165020-1-luwei32@huawei.com> <CANn89iJQn5ET3U9cYeiT0ijTkab2tRDBB1YP3Y6oELVq0dj6Zw@mail.gmail.com>
- <CANn89iLcnPAzLZFiCazM_y==33+Zhg=3bGY70ev=5YwDoZw-Vg@mail.gmail.com>
- <fd9abfe4-962e-ceef-5ab8-29e654303343@virtuozzo.com> <CA+XRDbMma1e26HHoYm2pExANACH8n83bE7vB_Gwh3-RZUsOe2g@mail.gmail.com>
- <8083c822-1493-3596-d292-520fb16b113f@huawei.com>
-In-Reply-To: <8083c822-1493-3596-d292-520fb16b113f@huawei.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 27 Oct 2022 05:04:54 -0700
-Message-ID: <CANn89iJ1JVG_H-FAQRg3JdPtNkq2T++K9Xc-mLo_VaUdcp38KA@mail.gmail.com>
-Subject: Re: [PATCH net] tcp: reset tp->sacked_out when sack is enabled
-To:     "luwei (O)" <luwei32@huawei.com>
-Cc:     Pavel Emelyanov <ovzxemul@gmail.com>,
-        "Denis V. Lunev" <den@virtuozzo.com>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, avagin@gmail.com,
-        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <128467d6-8249-9f25-21a7-777fff9854d9@axis.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 27, 2022 at 5:00 AM luwei (O) <luwei32@huawei.com> wrote:
->
+On Thu, Oct 27, 2022 at 08:35:17AM +0200, Camel Guo wrote:
+> On 10/25/22 16:56, Andrew Lunn wrote:
+> > > > +EXPORT_SYMBOL(gsw1xx_shutdown);
+> > > 
+> > > 1. EXPORT_SYMBOL_GPL
+> > > 2. Why do you do it in the first place? It's one driver, no need for
+> > > building two modules. Same applies to other places.
+> > 
+> > At some point, there is likely to be SPI and UART support. The
+> > communication with the chip and the core driver will then be in
+> > separate modules. But i agree this is not needed at the moment when it
+> > is all linked into one.
+> 
+> Do you suggest that currently we put the content of gsw1xx_core.c and
+> gsw1xx_mdio.c into one file and split them later at the time when another
+> management mode (e,g: spi) is added?
 
->
-> thanks, I will send next version
+No, keep them separate. But you can remove the module exports, and
+just link them together at compile time into one module. For forward
+compatibility, call that module gsw1xx_mdio.ko. In the future,
+somebody can then split it apart again, add gsw1xx_spi.ko, and module
+dependencies should cause the gsw1xx_core.ko to be loaded first.
 
-Yeah, what about first agreeing on what the plans are ?
-
-In order to avoid confusion and lkml/netdev bloat, I think you should
-describe why existing checks are not enough.
-
-Since this was probably caught by a fuzzer like syzbot, do you have a repro ?
+     Andrew
