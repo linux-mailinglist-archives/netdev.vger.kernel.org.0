@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D85260F854
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 15:03:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AFFA60F856
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 15:04:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235942AbiJ0ND5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 09:03:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48854 "EHLO
+        id S234965AbiJ0NEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 09:04:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235924AbiJ0NDs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 09:03:48 -0400
+        with ESMTP id S235937AbiJ0NDv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 09:03:51 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 193851781D0
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 06:03:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54F95176BBD
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 06:03:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666875827; x=1698411827;
+  t=1666875831; x=1698411831;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=RYcaXIUZD1y2JKr9V+KLli8WrVj4LXaQaMGB+tGuOaU=;
-  b=a5e/U8ovhwmmtz1Wee7zQtwgwbTn4LgytCupJCEgdJ31WYpFTgWtO5hN
-   uVTNf/4ii3xKA074Oy2BNbKxAZ5jxXDbvX/6LIzAkB9omwbtqyk35t2jW
-   hV1aB4cTOmMG7+MJwjIUo4EBQQl8Uy/rAFmF3a6kOYAkVaXHDzhZT0n7Y
-   146oJep+8wTVszYjZjnab+mjUengDeBQQVChkr7my4dTL928OOdBOFigG
-   4eeFfu0Va5ZRz0cp23ZYqYSnmpLE94tooHK9+N0raMma0F7nYtOd/cIcJ
-   YauIf0RsR0POlsoU/F4IgfutXE5howJ+OJ4DImZiBwmjIU+qmDpV4M7qE
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="394530500"
+  bh=DjBWCQ6VLdVh/SHI0kI16xaIESdt+Wvpn4zBmZJUnu4=;
+  b=A3U3PtIP1SGj5gNQ6FQs1agw6Ak1IrqP6fW3KeX+kkPMRLFl2TD1XKFo
+   yy54lP5cqc/4oAmgKvxm5o8GMnSfee2ZZUkr13VNepFRLXZiOBTKkqY27
+   PKCzddj1FzrR4IDn0pv0vfew7I6INCzhRalpzZMq3e43Suybu1u3zzaxQ
+   MzyoYJR4ZIKkXaCG9AFRiUQmvIID4seLnXCGlbdrk+/oKBKT3KOlDbqPw
+   XwRFKyxDDSWdFYatoaBkEk9ZPUPR58esZNJRoCmuffSlBvLjCKwYACBD1
+   5O3eUcVPvV1tCqGmQDy2J7D1Ff8EMOJgqqHem0y54KEUErbaUg2v1t8Lc
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="394530516"
 X-IronPort-AV: E=Sophos;i="5.95,217,1661842800"; 
-   d="scan'208";a="394530500"
+   d="scan'208,223";a="394530516"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 06:03:46 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="583546638"
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 06:03:51 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="583546646"
 X-IronPort-AV: E=Sophos;i="5.95,217,1661842800"; 
-   d="scan'208";a="583546638"
+   d="scan'208,223";a="583546646"
 Received: from unknown (HELO fedora.igk.intel.com) ([10.123.220.6])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 06:03:44 -0700
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 06:03:48 -0700
 From:   Michal Wilczynski <michal.wilczynski@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     alexandr.lobakin@intel.com, jacob.e.keller@intel.com,
@@ -44,9 +44,9 @@ Cc:     alexandr.lobakin@intel.com, jacob.e.keller@intel.com,
         anthony.l.nguyen@intel.com, kuba@kernel.org,
         ecree.xilinx@gmail.com, jiri@resnulli.us,
         Michal Wilczynski <michal.wilczynski@intel.com>
-Subject: [PATCH net-next v7 5/9] devlink: Allow to set up parent in devl_rate_leaf_create()
-Date:   Thu, 27 Oct 2022 15:00:45 +0200
-Message-Id: <20221027130049.2418531-6-michal.wilczynski@intel.com>
+Subject: [PATCH net-next v7 6/9] devlink: Allow to change priv in devlink-rate from parent_set callbacks
+Date:   Thu, 27 Oct 2022 15:00:46 +0200
+Message-Id: <20221027130049.2418531-7-michal.wilczynski@intel.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20221027130049.2418531-1-michal.wilczynski@intel.com>
 References: <20221027130049.2418531-1-michal.wilczynski@intel.com>
@@ -61,105 +61,148 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently the driver is able to create leaf nodes for the devlink-rate,
-but is unable to set parent for them. This wasn't as issue, before the
-possibility to export hierarchy from the driver. After adding the export
-feature, in order for the driver to supply correct hierarchy, it's
-necessary for it to be able to supply a parent name to
-devl_rate_leaf_create().
+From driver perspective it doesn't make any sense to make any changes to
+the internal HQoS tree if the created node doesn't have a parent. So a
+node created without any parent doesn't have to be initialized in the
+driver. Allow for such scenario by allowing to modify priv in parent_set
+callbacks.
 
-Introduce a new parameter 'parent_name' in devl_rate_leaf_create().
+Change priv_child and priv_parent parameters to double pointers, to
+allow for setting priv during the parent set phase.
 
 Signed-off-by: Michal Wilczynski <michal.wilczynski@intel.com>
 ---
- .../ethernet/mellanox/mlx5/core/esw/devlink_port.c  |  4 ++--
- drivers/net/netdevsim/dev.c                         |  2 +-
- include/net/devlink.h                               |  2 +-
- net/core/devlink.c                                  | 13 ++++++++++++-
- 4 files changed, 16 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c |  4 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/esw/qos.h |  2 +-
+ drivers/net/netdevsim/dev.c                       |  8 ++++----
+ include/net/devlink.h                             |  4 ++--
+ net/core/devlink.c                                | 12 ++++++------
+ 5 files changed, 15 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
-index 9bc7be95db54..084a910bb4e7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
-@@ -91,7 +91,7 @@ int mlx5_esw_offloads_devlink_port_register(struct mlx5_eswitch *esw, u16 vport_
- 	if (err)
- 		goto reg_err;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
+index 4f8a24d84a86..0b55a1e477f3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
+@@ -940,11 +940,11 @@ int mlx5_esw_qos_vport_update_group(struct mlx5_eswitch *esw,
  
--	err = devl_rate_leaf_create(dl_port, vport);
-+	err = devl_rate_leaf_create(dl_port, vport, NULL);
- 	if (err)
- 		goto rate_err;
+ int mlx5_esw_devlink_rate_parent_set(struct devlink_rate *devlink_rate,
+ 				     struct devlink_rate *parent,
+-				     void *priv, void *parent_priv,
++				     void **priv, void *parent_priv,
+ 				     struct netlink_ext_ack *extack)
+ {
+ 	struct mlx5_esw_rate_group *group;
+-	struct mlx5_vport *vport = priv;
++	struct mlx5_vport *vport = *priv;
  
-@@ -160,7 +160,7 @@ int mlx5_esw_devlink_sf_port_register(struct mlx5_eswitch *esw, struct devlink_p
- 	if (err)
- 		return err;
- 
--	err = devl_rate_leaf_create(dl_port, vport);
-+	err = devl_rate_leaf_create(dl_port, vport, NULL);
- 	if (err)
- 		goto rate_err;
+ 	if (!parent)
+ 		return mlx5_esw_qos_vport_update_group(vport->dev->priv.eswitch,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.h b/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.h
+index 0141e9d52037..d3b3ce26883b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.h
+@@ -24,7 +24,7 @@ int mlx5_esw_devlink_rate_node_del(struct devlink_rate *rate_node, void *priv,
+ 				   struct netlink_ext_ack *extack);
+ int mlx5_esw_devlink_rate_parent_set(struct devlink_rate *devlink_rate,
+ 				     struct devlink_rate *parent,
+-				     void *priv, void *parent_priv,
++				     void **priv, void *parent_priv,
+ 				     struct netlink_ext_ack *extack);
+ #endif
  
 diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 794fc0cc73b8..10e5c4de6b02 100644
+index 10e5c4de6b02..f5ae4aed8679 100644
 --- a/drivers/net/netdevsim/dev.c
 +++ b/drivers/net/netdevsim/dev.c
-@@ -1392,7 +1392,7 @@ static int __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_typ
+@@ -1275,10 +1275,10 @@ static int nsim_rate_node_del(struct devlink_rate *node, void *priv,
  
- 	if (nsim_dev_port_is_vf(nsim_dev_port)) {
- 		err = devl_rate_leaf_create(&nsim_dev_port->devlink_port,
--					    nsim_dev_port);
-+					    nsim_dev_port, NULL);
- 		if (err)
- 			goto err_nsim_destroy;
- 	}
+ static int nsim_rate_leaf_parent_set(struct devlink_rate *child,
+ 				     struct devlink_rate *parent,
+-				     void *priv_child, void *priv_parent,
++				     void **priv_child, void *priv_parent,
+ 				     struct netlink_ext_ack *extack)
+ {
+-	struct nsim_dev_port *nsim_dev_port = priv_child;
++	struct nsim_dev_port *nsim_dev_port = *priv_child;
+ 
+ 	if (parent)
+ 		nsim_dev_port->parent_name = parent->name;
+@@ -1289,10 +1289,10 @@ static int nsim_rate_leaf_parent_set(struct devlink_rate *child,
+ 
+ static int nsim_rate_node_parent_set(struct devlink_rate *child,
+ 				     struct devlink_rate *parent,
+-				     void *priv_child, void *priv_parent,
++				     void **priv_child, void *priv_parent,
+ 				     struct netlink_ext_ack *extack)
+ {
+-	struct nsim_rate_node *nsim_node = priv_child;
++	struct nsim_rate_node *nsim_node = *priv_child;
+ 
+ 	if (parent)
+ 		nsim_node->parent_name = parent->name;
 diff --git a/include/net/devlink.h b/include/net/devlink.h
-index facc4cee5d6b..2159643d7718 100644
+index 2159643d7718..37e73dcf2210 100644
 --- a/include/net/devlink.h
 +++ b/include/net/devlink.h
-@@ -1602,7 +1602,7 @@ void devlink_port_attrs_pci_vf_set(struct devlink_port *devlink_port, u32 contro
- void devlink_port_attrs_pci_sf_set(struct devlink_port *devlink_port,
- 				   u32 controller, u16 pf, u32 sf,
- 				   bool external);
--int devl_rate_leaf_create(struct devlink_port *port, void *priv);
-+int devl_rate_leaf_create(struct devlink_port *port, void *priv, char *parent_name);
- int devl_rate_node_create(struct devlink *devlink, void *priv,  char *node_name,
- 			  char *parent_name);
- void devl_rate_leaf_destroy(struct devlink_port *devlink_port);
+@@ -1516,11 +1516,11 @@ struct devlink_ops {
+ 			     struct netlink_ext_ack *extack);
+ 	int (*rate_leaf_parent_set)(struct devlink_rate *child,
+ 				    struct devlink_rate *parent,
+-				    void *priv_child, void *priv_parent,
++				    void **priv_child, void *priv_parent,
+ 				    struct netlink_ext_ack *extack);
+ 	int (*rate_node_parent_set)(struct devlink_rate *child,
+ 				    struct devlink_rate *parent,
+-				    void *priv_child, void *priv_parent,
++				    void **priv_child, void *priv_parent,
+ 				    struct netlink_ext_ack *extack);
+ 	/**
+ 	 * selftests_check() - queries if selftest is supported
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 1e0c1b0376bf..d53da9f9b467 100644
+index d53da9f9b467..3b51e64a25eb 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -10327,10 +10327,11 @@ EXPORT_SYMBOL_GPL(devl_rate_node_create);
-  *
-  * Create devlink rate object of type leaf on provided @devlink_port.
-  */
--int devl_rate_leaf_create(struct devlink_port *devlink_port, void *priv)
-+int devl_rate_leaf_create(struct devlink_port *devlink_port, void *priv, char *parent_name)
- {
- 	struct devlink *devlink = devlink_port->devlink;
- 	struct devlink_rate *devlink_rate;
-+	struct devlink_rate *parent;
+@@ -1880,11 +1880,11 @@ devlink_nl_rate_parent_node_set(struct devlink_rate *devlink_rate,
+ 	if (parent && !len) {
+ 		if (devlink_rate_is_leaf(devlink_rate))
+ 			err = ops->rate_leaf_parent_set(devlink_rate, NULL,
+-							devlink_rate->priv, NULL,
++							&devlink_rate->priv, NULL,
+ 							info->extack);
+ 		else if (devlink_rate_is_node(devlink_rate))
+ 			err = ops->rate_node_parent_set(devlink_rate, NULL,
+-							devlink_rate->priv, NULL,
++							&devlink_rate->priv, NULL,
+ 							info->extack);
+ 		if (err)
+ 			return err;
+@@ -1909,11 +1909,11 @@ devlink_nl_rate_parent_node_set(struct devlink_rate *devlink_rate,
  
- 	devl_assert_locked(devlink_port->devlink);
+ 		if (devlink_rate_is_leaf(devlink_rate))
+ 			err = ops->rate_leaf_parent_set(devlink_rate, parent,
+-							devlink_rate->priv, parent->priv,
++							&devlink_rate->priv, parent->priv,
+ 							info->extack);
+ 		else if (devlink_rate_is_node(devlink_rate))
+ 			err = ops->rate_node_parent_set(devlink_rate, parent,
+-							devlink_rate->priv, parent->priv,
++							&devlink_rate->priv, parent->priv,
+ 							info->extack);
+ 		if (err)
+ 			return err;
+@@ -10408,10 +10408,10 @@ void devl_rate_nodes_destroy(struct devlink *devlink)
  
-@@ -10341,6 +10342,16 @@ int devl_rate_leaf_create(struct devlink_port *devlink_port, void *priv)
- 	if (!devlink_rate)
- 		return -ENOMEM;
- 
-+	if (parent_name) {
-+		parent = devlink_rate_node_get_by_name(devlink, parent_name);
-+		if (IS_ERR(parent)) {
-+			kfree(devlink_rate);
-+			return -ENODEV;
-+		}
-+		devlink_rate->parent = parent;
-+		refcount_inc(&devlink_rate->parent->refcnt);
-+	}
-+
- 	devlink_rate->type = DEVLINK_RATE_TYPE_LEAF;
- 	devlink_rate->devlink = devlink;
- 	devlink_rate->devlink_port = devlink_port;
+ 		refcount_dec(&devlink_rate->parent->refcnt);
+ 		if (devlink_rate_is_leaf(devlink_rate))
+-			ops->rate_leaf_parent_set(devlink_rate, NULL, devlink_rate->priv,
++			ops->rate_leaf_parent_set(devlink_rate, NULL, &devlink_rate->priv,
+ 						  NULL, NULL);
+ 		else if (devlink_rate_is_node(devlink_rate))
+-			ops->rate_node_parent_set(devlink_rate, NULL, devlink_rate->priv,
++			ops->rate_node_parent_set(devlink_rate, NULL, &devlink_rate->priv,
+ 						  NULL, NULL);
+ 	}
+ 	list_for_each_entry_safe(devlink_rate, tmp, &devlink->rate_list, list) {
 -- 
 2.37.2
 
