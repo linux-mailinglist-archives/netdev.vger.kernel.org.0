@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 17BB960F851
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 15:03:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7174860F852
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 15:03:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235941AbiJ0NDk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 09:03:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48586 "EHLO
+        id S235956AbiJ0NDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 09:03:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235937AbiJ0ND3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 09:03:29 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A69A17578F
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 06:03:29 -0700 (PDT)
+        with ESMTP id S235920AbiJ0NDj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 09:03:39 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89322176520
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 06:03:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666875809; x=1698411809;
+  t=1666875818; x=1698411818;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=oyQGhz9ml0Trg0v6y+0U867Phi8AAwkzUUNqYKYsw9I=;
-  b=iZev5UommSo14Zg6UVWHbhxWdccXd0Wey3ywnxaMpxsbrOZf8wBHWxCf
-   9ADXJrHN+Uu4HcD1UJoLmkQc1e7azouirvdw6RXF3rKJtzZ2gV+vnonNK
-   O5jjnqgkdUTQ9PvpM+9lEzGQ/J9psLStIQQ9xBbLi2q1ZdCNHg+xO/Uk1
-   NIGcd2yAvz8xTx9AbqsDG+7jGIBbyv7iCfllrW3BOP5VX/UbQE6Ay4RIi
-   /JKNy6/gyz2fduLndVzdUJZiiUwjZhc7cYfTRYr2h9iv39gbBAZEUFEBn
-   FOe72i/3NvnCV14JrwOzYCn4CWY9sMlONiV+q9C8nacKbEi1VMNDvzI2p
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="295624098"
+  bh=0w2gV+HJLD1wsWUadYvXWk+N0rfdN7uN/waT8NUu67k=;
+  b=B7WH9xK+OkMi9AwC3fEdXu7xNkvyQyYNnvAALTxr7JipzVM/Wy+vPc6w
+   KjFyvinIjeg+4xVIaIguv0/0BDr97GGHKRAD0IfNWw1Q2M7w0a+ccQ/nD
+   n+t1sT0ayNZN7Rcq9k/iuwAdgzlpoWLG4ODgZQNL6edPP4WL7vjWF2r7k
+   pyCXWuuNuTBYIlvMsE/yFHhnzyedzOhQ2BbkQhQD7pi8jFwz4jTfrykw4
+   pnNRQBsSs1mLlK9Yaeu24W1f1YcrlsJMuny1BhWCV7CviOH3bZCcpuY8Z
+   vxhjIdx0XYG/PG5ZMnOaclXJ+NEH+oIIjk+MepNzccUcRywN1NMgbyTO1
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="394530473"
 X-IronPort-AV: E=Sophos;i="5.95,217,1661842800"; 
-   d="scan'208";a="295624098"
+   d="scan'208";a="394530473"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 06:03:28 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="583546532"
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 06:03:38 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="583546618"
 X-IronPort-AV: E=Sophos;i="5.95,217,1661842800"; 
-   d="scan'208";a="583546532"
+   d="scan'208";a="583546618"
 Received: from unknown (HELO fedora.igk.intel.com) ([10.123.220.6])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 06:03:25 -0700
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 06:03:35 -0700
 From:   Michal Wilczynski <michal.wilczynski@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     alexandr.lobakin@intel.com, jacob.e.keller@intel.com,
@@ -44,9 +44,9 @@ Cc:     alexandr.lobakin@intel.com, jacob.e.keller@intel.com,
         anthony.l.nguyen@intel.com, kuba@kernel.org,
         ecree.xilinx@gmail.com, jiri@resnulli.us,
         Michal Wilczynski <michal.wilczynski@intel.com>
-Subject: [PATCH net-next v7 2/9] devlink: Introduce new parameter 'tx_weight' to devlink-rate
-Date:   Thu, 27 Oct 2022 15:00:42 +0200
-Message-Id: <20221027130049.2418531-3-michal.wilczynski@intel.com>
+Subject: [PATCH net-next v7 3/9] devlink: Enable creation of the devlink-rate nodes from the driver
+Date:   Thu, 27 Oct 2022 15:00:43 +0200
+Message-Id: <20221027130049.2418531-4-michal.wilczynski@intel.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20221027130049.2418531-1-michal.wilczynski@intel.com>
 References: <20221027130049.2418531-1-michal.wilczynski@intel.com>
@@ -54,149 +54,108 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To fully utilize offload capabilities of Intel 100G card QoS capabilities
-new parameter 'tx_weight' needs to be introduced. This parameter allows
-for usage of Weighted Fair Queuing arbitration scheme among siblings.
-This arbitration scheme can be used simultaneously with the strict
-priority.
+Intel 100G card internal firmware hierarchy for Hierarchicial QoS is very
+rigid and can't be easily removed. This requires an ability to export
+default hierarchy to allow user to modify it. Currently the driver is
+only able to create the 'leaf' nodes, which usually represent the vport.
+This is not enough for HQoS implemented in Intel hardware.
 
-Introduce new parameter in devlink-rate that will allow for
-configuration of Weighted Fair Queueing.
+Introduce new function devl_rate_node_create() that allows for creation
+of the devlink-rate nodes from the driver.
 
 Signed-off-by: Michal Wilczynski <michal.wilczynski@intel.com>
 ---
- include/net/devlink.h        |  5 +++++
- include/uapi/linux/devlink.h |  2 ++
- net/core/devlink.c           | 31 +++++++++++++++++++++++++++++++
- 3 files changed, 38 insertions(+)
+ include/net/devlink.h |  4 ++++
+ net/core/devlink.c    | 47 +++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 51 insertions(+)
 
 diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 9d2b0c3c4ad3..929cb72ef412 100644
+index 929cb72ef412..facc4cee5d6b 100644
 --- a/include/net/devlink.h
 +++ b/include/net/devlink.h
-@@ -116,6 +116,7 @@ struct devlink_rate {
+@@ -98,6 +98,8 @@ struct devlink_port_attrs {
  	};
- 
- 	u16 tx_priority;
-+	u16 tx_weight;
  };
  
- struct devlink_port {
-@@ -1497,12 +1498,16 @@ struct devlink_ops {
- 				    u64 tx_max, struct netlink_ext_ack *extack);
- 	int (*rate_leaf_tx_priority_set)(struct devlink_rate *devlink_rate, void *priv,
- 					 u64 tx_priority, struct netlink_ext_ack *extack);
-+	int (*rate_leaf_tx_weight_set)(struct devlink_rate *devlink_rate, void *priv,
-+				       u64 tx_weight, struct netlink_ext_ack *extack);
- 	int (*rate_node_tx_share_set)(struct devlink_rate *devlink_rate, void *priv,
- 				      u64 tx_share, struct netlink_ext_ack *extack);
- 	int (*rate_node_tx_max_set)(struct devlink_rate *devlink_rate, void *priv,
- 				    u64 tx_max, struct netlink_ext_ack *extack);
- 	int (*rate_node_tx_priority_set)(struct devlink_rate *devlink_rate, void *priv,
- 					 u64 tx_priority, struct netlink_ext_ack *extack);
-+	int (*rate_node_tx_weight_set)(struct devlink_rate *devlink_rate, void *priv,
-+				       u64 tx_weight, struct netlink_ext_ack *extack);
- 	int (*rate_node_new)(struct devlink_rate *rate_node, void **priv,
- 			     struct netlink_ext_ack *extack);
- 	int (*rate_node_del)(struct devlink_rate *rate_node, void *priv,
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index b3df5bc45ba5..9f3916e02a64 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -608,6 +608,8 @@ enum devlink_attr {
- 	DEVLINK_ATTR_SELFTESTS,			/* nested */
- 
- 	DEVLINK_ATTR_RATE_TX_PRIORITY,		/* u16 */
-+	DEVLINK_ATTR_RATE_TX_WEIGHT,		/* u16 */
++#define DEVLINK_RATE_NAME_MAX_LEN 30
 +
- 	/* add new attributes above here, update the policy in devlink.c */
- 
- 	__DEVLINK_ATTR_MAX,
+ struct devlink_rate {
+ 	struct list_head list;
+ 	enum devlink_rate_type type;
+@@ -1601,6 +1603,8 @@ void devlink_port_attrs_pci_sf_set(struct devlink_port *devlink_port,
+ 				   u32 controller, u16 pf, u32 sf,
+ 				   bool external);
+ int devl_rate_leaf_create(struct devlink_port *port, void *priv);
++int devl_rate_node_create(struct devlink *devlink, void *priv,  char *node_name,
++			  char *parent_name);
+ void devl_rate_leaf_destroy(struct devlink_port *devlink_port);
+ void devl_rate_nodes_destroy(struct devlink *devlink);
+ void devlink_port_linecard_set(struct devlink_port *devlink_port,
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 2586b1307cb4..b97c077cf66e 100644
+index b97c077cf66e..864fa0967b7a 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -1187,6 +1187,11 @@ static int devlink_nl_rate_fill(struct sk_buff *msg,
- 	if (nla_put_u16(msg, DEVLINK_ATTR_RATE_TX_PRIORITY,
- 			devlink_rate->tx_priority))
- 		goto nla_put_failure;
-+
-+	if (nla_put_u16(msg, DEVLINK_ATTR_RATE_TX_WEIGHT,
-+			devlink_rate->tx_weight))
-+		goto nla_put_failure;
-+
- 	if (devlink_rate->parent)
- 		if (nla_put_string(msg, DEVLINK_ATTR_RATE_PARENT_NODE_NAME,
- 				   devlink_rate->parent->name))
-@@ -1928,6 +1933,7 @@ static int devlink_nl_rate_set(struct devlink_rate *devlink_rate,
- 	struct nlattr *nla_parent, **attrs = info->attrs;
- 	int err = -EOPNOTSUPP;
- 	u16 priority;
-+	u16 weight;
- 	u64 rate;
+@@ -10270,6 +10270,53 @@ void devlink_port_attrs_pci_sf_set(struct devlink_port *devlink_port, u32 contro
+ }
+ EXPORT_SYMBOL_GPL(devlink_port_attrs_pci_sf_set);
  
- 	if (attrs[DEVLINK_ATTR_RATE_TX_SHARE]) {
-@@ -1970,6 +1976,20 @@ static int devlink_nl_rate_set(struct devlink_rate *devlink_rate,
- 		devlink_rate->tx_priority = priority;
- 	}
- 
-+	if (attrs[DEVLINK_ATTR_RATE_TX_WEIGHT]) {
-+		weight = nla_get_u16(attrs[DEVLINK_ATTR_RATE_TX_WEIGHT]);
-+		if (devlink_rate_is_leaf(devlink_rate))
-+			err = ops->rate_leaf_tx_weight_set(devlink_rate, devlink_rate->priv,
-+							 weight, info->extack);
-+		else if (devlink_rate_is_node(devlink_rate))
-+			err = ops->rate_node_tx_weight_set(devlink_rate, devlink_rate->priv,
-+							weight, info->extack);
++/**
++ * devl_rate_node_create - create devlink rate node
++ * @devlink: devlink instance
++ * @priv: driver private data
++ * @node_name: name of the resulting node
++ * @parent_name: name of the parent node
++ *
++ * Create devlink rate object of type node
++ */
++int devl_rate_node_create(struct devlink *devlink, void *priv, char *node_name, char *parent_name)
++{
++	struct devlink_rate *rate_node;
++	struct devlink_rate *parent;
 +
-+		if (err)
-+			return err;
-+		devlink_rate->tx_weight = weight;
++	rate_node = devlink_rate_node_get_by_name(devlink, node_name);
++	if (!IS_ERR(rate_node))
++		return -EEXIST;
++
++	rate_node = kzalloc(sizeof(*rate_node), GFP_KERNEL);
++	if (!rate_node)
++		return -ENOMEM;
++
++	if (parent_name) {
++		parent = devlink_rate_node_get_by_name(devlink, parent_name);
++		if (IS_ERR(parent))
++			return -ENODEV;
++		rate_node->parent = parent;
++		refcount_inc(&rate_node->parent->refcnt);
 +	}
 +
- 	nla_parent = attrs[DEVLINK_ATTR_RATE_PARENT_NODE_NAME];
- 	if (nla_parent) {
- 		err = devlink_nl_rate_parent_node_set(devlink_rate, info,
-@@ -2006,6 +2026,11 @@ static bool devlink_rate_set_ops_supported(const struct devlink_ops *ops,
- 					   "TX priority set isn't supported for the leafs");
- 			return false;
- 		}
-+		if (attrs[DEVLINK_ATTR_RATE_TX_WEIGHT] && !ops->rate_leaf_tx_weight_set) {
-+			NL_SET_ERR_MSG_MOD(info->extack,
-+					   "TX weight set isn't supported for the leafs");
-+			return false;
-+		}
- 	} else if (type == DEVLINK_RATE_TYPE_NODE) {
- 		if (attrs[DEVLINK_ATTR_RATE_TX_SHARE] && !ops->rate_node_tx_share_set) {
- 			NL_SET_ERR_MSG_MOD(info->extack, "TX share set isn't supported for the nodes");
-@@ -2025,6 +2050,11 @@ static bool devlink_rate_set_ops_supported(const struct devlink_ops *ops,
- 					   "TX priority set isn't supported for the nodes");
- 			return false;
- 		}
-+		if (attrs[DEVLINK_ATTR_RATE_TX_WEIGHT] && !ops->rate_node_tx_weight_set) {
-+			NL_SET_ERR_MSG_MOD(info->extack,
-+					   "TX weight set isn't supported for the nodes");
-+			return false;
-+		}
- 	} else {
- 		WARN(1, "Unknown type of rate object");
- 		return false;
-@@ -9201,6 +9231,7 @@ static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
- 	[DEVLINK_ATTR_LINECARD_TYPE] = { .type = NLA_NUL_STRING },
- 	[DEVLINK_ATTR_SELFTESTS] = { .type = NLA_NESTED },
- 	[DEVLINK_ATTR_RATE_TX_PRIORITY] = { .type = NLA_U16 },
-+	[DEVLINK_ATTR_RATE_TX_WEIGHT] = { .type = NLA_U16 },
- };
- 
- static const struct genl_small_ops devlink_nl_ops[] = {
++	rate_node->type = DEVLINK_RATE_TYPE_NODE;
++	rate_node->devlink = devlink;
++	rate_node->priv = priv;
++
++	rate_node->name = kzalloc(DEVLINK_RATE_NAME_MAX_LEN, GFP_KERNEL);
++	if (!rate_node->name)
++		return -ENOMEM;
++
++	strscpy(rate_node->name, node_name, DEVLINK_RATE_NAME_MAX_LEN);
++
++	refcount_set(&rate_node->refcnt, 1);
++	list_add(&rate_node->list, &devlink->rate_list);
++	devlink_rate_notify(rate_node, DEVLINK_CMD_RATE_NEW);
++	return 0;
++}
++EXPORT_SYMBOL_GPL(devl_rate_node_create);
++
+ /**
+  * devl_rate_leaf_create - create devlink rate leaf
+  * @devlink_port: devlink port object to create rate object on
 -- 
 2.37.2
 
