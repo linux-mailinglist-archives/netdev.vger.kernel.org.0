@@ -2,261 +2,265 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB3ED60FD37
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 18:35:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CD6060FD3E
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 18:37:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236632AbiJ0Qfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 12:35:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47162 "EHLO
+        id S236612AbiJ0Qho (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 12:37:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236628AbiJ0Qfh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 12:35:37 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16834E850;
-        Thu, 27 Oct 2022 09:35:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666888536; x=1698424536;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=g8JpxJ/7sThIg/BLIJ/mUFG37Ckprmp4RiCF2hAGE4k=;
-  b=XHmorDFR1vZfe3XVIZA8T0S2WMMT8l6dufUT4YXBpVQhZl311hPJja19
-   8yP0R4NrRBoY6tcH1qE+Q8sT1lckNDRvOy6/8wm3yOYFCLrYZn5mrH7Ni
-   edKt+aBJ7+kUK4h5mqHgGFBFAe2fMnQxDzZZKEydwEkAZ839MUOtO/Csj
-   prVki7swDaw5nd6aJlfvEkOawQIGh4hA/7KGjcaOzR6eFw8zFqeqv/SX2
-   gb3LarnbBshoxbFkA1yu/qYoVVSGB1br/kFbgGmBeo6FCt32umaAXGFAS
-   ybecVBA+eD2gRiqN9lkbl5lJqbT2Bk8wIT7jZBNSR5gLj9igoFD6hHwdG
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10513"; a="295683595"
-X-IronPort-AV: E=Sophos;i="5.95,218,1661842800"; 
-   d="scan'208";a="295683595"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 09:35:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10513"; a="757761930"
-X-IronPort-AV: E=Sophos;i="5.95,218,1661842800"; 
-   d="scan'208";a="757761930"
-Received: from lkp-server02.sh.intel.com (HELO b6d29c1a0365) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 27 Oct 2022 09:35:16 -0700
-Received: from kbuild by b6d29c1a0365 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oo5qe-0008zP-0K;
-        Thu, 27 Oct 2022 16:35:16 +0000
-Date:   Fri, 28 Oct 2022 00:34:53 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     ntfs3@lists.linux.dev, netdev@vger.kernel.org,
-        loongarch@lists.linux.dev, linux-mediatek@lists.infradead.org,
-        linux-hwmon@vger.kernel.org, linux-ext4@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-arch@vger.kernel.org,
-        amd-gfx@lists.freedesktop.org,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: [linux-next:master] BUILD SUCCESS WITH WARNING
- ecc4eeb2208ab537a3f3744984cd7f30ac971db8
-Message-ID: <635ab32d.6UouMR1hjiK2K4CL%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        with ESMTP id S235779AbiJ0Qhn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 12:37:43 -0400
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4411017253D
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 09:37:41 -0700 (PDT)
+Received: by mail-il1-x135.google.com with SMTP id o13so1333574ilc.7
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 09:37:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7LWEASsKgUP64ylwmptUWdmfupY1E/J0Cw3DTfsriXQ=;
+        b=Q3GocbXjSAuAh60TyV0Ub1SyNnW9zTwO9PIPJVBoFQkEOvIF7hXneEM4bLaRL7eXd3
+         P3f/HHObHy30UblpMmel9sUFaILJHBT8SWH3KPknoQnWxffkrxpDrV6rurTiCh+VgHkA
+         OsL47TiPDqu3rry6V1bb5neDuAjVYEkRi8X126nUCYxv/3xHZbrNhadU3JKummzB2UAD
+         j/PRkZpthGogxQxNJ8EKtSann/Dl0PdAlkSp/7JX17flR3aFAA9dSbGAcNo6nQTSE1Q+
+         O3NSy/0Uhp5torvw7/6cE28hYsJuO4L/Kq4nHgAF1uMjq2BX3U46pOl8itmYTUKPceDG
+         FPGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=7LWEASsKgUP64ylwmptUWdmfupY1E/J0Cw3DTfsriXQ=;
+        b=wGAdG66zejNLnD5A7qNHQ6ZEedatJcdQL3nNSm8CPKZmFULUrI15TnJ3pyP+PIcXyK
+         7Xeylxygy9jj9Ih0I0tFwtODwoJTWtDuNyIhuYBgfLPfAwGhtEGd2pkm8mL9a2p1yCid
+         D3lMn9hdOsnbq9VecNlZPJ6pfoQgPYPA5JJYq5AJVmlHudj2Da0orSLoyaCnPPOBbqoU
+         xS00XxwboUd7SceGgY7rGrqTioipeaggw6ERzpYYQD7SmMCGFk16OB9d6aVRF+sxS3Ux
+         2/ZeSjOd2YsLAA7uky1BYzsBWcV2y0gsF+TNYUDLoSzftujfnvVSceizpPOlIr8W1tyW
+         LdpA==
+X-Gm-Message-State: ACrzQf2Ykb1/n1+9+SvAdZRzDSJTxCQ3E3gesgzDq5kBzrVMQNJJZnyw
+        5HKtvT4q/mjEKcoDnJbYZMK2aFNPY2RxFxKRIhZQUQ==
+X-Google-Smtp-Source: AMsMyM4MPUzrHFOAqSSCaQJyrhFKA9jCif0uSF89aO/lId8sCn8ZNsltO+/qn3qDp+qqGgM1xCJ7Ae1omZAuR+rWNKw=
+X-Received: by 2002:a05:6e02:1a41:b0:2fa:969d:fcd0 with SMTP id
+ u1-20020a056e021a4100b002fa969dfcd0mr32110522ilv.6.1666888660954; Thu, 27 Oct
+ 2022 09:37:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20221015092448.117563-1-shaozhengchao@huawei.com>
+ <CAKH8qBugSdWHP7mtNxrnLLR+56u_0OCx3xQOkJSV-+RUvDAeNg@mail.gmail.com>
+ <d830980c-4a38-5537-b594-bc5fb86b0acd@huawei.com> <CAKH8qBtyfS0Otpugn7_ZiG5APA_WTKOVAe1wsFfyaxF-03X=5w@mail.gmail.com>
+ <87f67a8c-2fb2-9478-adbb-f55c7a7c94f9@huawei.com> <CAKH8qBsOMxVaemF0Oy=vE1V0vKO8ORUcVGB5YANS3HdKOhVjjw@mail.gmail.com>
+ <7ddbf8f4-2b03-223f-4601-add0f7208855@huawei.com> <CAKH8qBuKVuRKd+fFiXKTiSpoB8ue4YPw1gM+pkGFKAdgNOcpTg@mail.gmail.com>
+ <20e9ea01-1261-6d03-34c9-9b842298487a@huawei.com>
+In-Reply-To: <20e9ea01-1261-6d03-34c9-9b842298487a@huawei.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Thu, 27 Oct 2022 09:37:29 -0700
+Message-ID: <CAKH8qBstDGb3Uf14J5K3VtgZOdHFT1c4u0uUG97NqgA4iZRo+Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: fix issue that packet only contains l2 is dropped
+To:     shaozhengchao <shaozhengchao@huawei.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, haoluo@google.com,
+        jolsa@kernel.org, oss@lmb.io, weiyongjun1@huawei.com,
+        yuehaibing@huawei.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-branch HEAD: ecc4eeb2208ab537a3f3744984cd7f30ac971db8  Add linux-next specific files for 20221027
+On Thu, Oct 27, 2022 at 4:58 AM shaozhengchao <shaozhengchao@huawei.com> wr=
+ote:
+>
+>
+>
+> On 2022/10/25 1:13, Stanislav Fomichev wrote:
+> > On Sat, Oct 22, 2022 at 4:36 AM shaozhengchao <shaozhengchao@huawei.com=
+> wrote:
+> >>
+> >>
+> >>
+> >> On 2022/10/22 2:16, Stanislav Fomichev wrote:
+> >>> On Fri, Oct 21, 2022 at 12:25 AM shaozhengchao <shaozhengchao@huawei.=
+com> wrote:
+> >>>>
+> >>>>
+> >>>>
+> >>>> On 2022/10/21 1:45, Stanislav Fomichev wrote:
+> >>>>> On Wed, Oct 19, 2022 at 6:47 PM shaozhengchao <shaozhengchao@huawei=
+.com> wrote:
+> >>>>>>
+> >>>>>>
+> >>>>>>
+> >>>>>> On 2022/10/18 0:36, Stanislav Fomichev wrote:
+> >>>>>>> On Sat, Oct 15, 2022 at 2:16 AM Zhengchao Shao <shaozhengchao@hua=
+wei.com> wrote:
+> >>>>>>>>
+> >>>>>>>> As [0] see, bpf_prog_test_run_skb() should allow user space to f=
+orward
+> >>>>>>>> 14-bytes packet via BPF_PROG_RUN instead of dropping packet dire=
+ctly.
+> >>>>>>>> So fix it.
+> >>>>>>>>
+> >>>>>>>> 0: https://github.com/cilium/ebpf/commit/a38fb6b5a46ab3b5639ea4d=
+421232a10013596c0
+> >>>>>>>>
+> >>>>>>>> Fixes: fd1894224407 ("bpf: Don't redirect packets with invalid p=
+kt_len")
+> >>>>>>>> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> >>>>>>>> ---
+> >>>>>>>>      net/bpf/test_run.c | 6 +++---
+> >>>>>>>>      1 file changed, 3 insertions(+), 3 deletions(-)
+> >>>>>>>>
+> >>>>>>>> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+> >>>>>>>> index 13d578ce2a09..aa1b49f19ca3 100644
+> >>>>>>>> --- a/net/bpf/test_run.c
+> >>>>>>>> +++ b/net/bpf/test_run.c
+> >>>>>>>> @@ -979,9 +979,6 @@ static int convert___skb_to_skb(struct sk_bu=
+ff *skb, struct __sk_buff *__skb)
+> >>>>>>>>      {
+> >>>>>>>>             struct qdisc_skb_cb *cb =3D (struct qdisc_skb_cb *)s=
+kb->cb;
+> >>>>>>>>
+> >>>>>>>> -       if (!skb->len)
+> >>>>>>>> -               return -EINVAL;
+> >>>>>>>> -
+> >>>>>>>>             if (!__skb)
+> >>>>>>>>                     return 0;
+> >>>>>>>>
+> >>>>>>>> @@ -1102,6 +1099,9 @@ int bpf_prog_test_run_skb(struct bpf_prog =
+*prog, const union bpf_attr *kattr,
+> >>>>>>>>             if (IS_ERR(data))
+> >>>>>>>>                     return PTR_ERR(data);
+> >>>>>>>>
+> >>>>>>>> +       if (size =3D=3D ETH_HLEN)
+> >>>>>>>> +               is_l2 =3D true;
+> >>>>>>>> +
+> >>>>>>>
+> >>>>>>> Don't think this will work? That is_l2 is there to expose proper =
+l2/l3
+> >>>>>>> skb for specific hooks; we can't suddenly start exposing l2 heade=
+rs to
+> >>>>>>> the hooks that don't expect it.
+> >>>>>>> Does it make sense to start with a small reproducer that triggers=
+ the
+> >>>>>>> issue first? We can have a couple of cases for
+> >>>>>>> len=3D0/ETH_HLEN-1/ETH_HLEN+1 and trigger them from the bpf progr=
+am that
+> >>>>>>> redirects to different devices (to trigger dev_is_mac_header_xmit=
+).
+> >>>>>>>
+> >>>>>>>
+> >>>>>> Hi Stanislav:
+> >>>>>>            Thank you for your review. Is_l2 is the flag of a speci=
+fic
+> >>>>>> hook. Therefore, do you mean that if skb->len is equal to 0, just
+> >>>>>> add the length back?
+> >>>>>
+> >>>>> Not sure I understand your question. All I'm saying is - you can't
+> >>>>> flip that flag arbitrarily. This flag depends on the attach point t=
+hat
+> >>>>> you're running the prog against. Some attach points expect packets
+> >>>>> with l2, some expect packets without l2.
+> >>>>>
+> >>>>> What about starting with a small reproducer? Does it make sense to
+> >>>>> create a small selftest that adds net namespace + fq_codel +
+> >>>>> bpf_prog_test run and do redirect ingress/egress with len
+> >>>>> 0/1...tcphdr? Because I'm not sure I 100% understand whether it's o=
+nly
+> >>>>> len=3D0 that's problematic or some other combination as well?
+> >>>>>
+> >>>> yes, only skb->len =3D 0 will cause null-ptr-deref issue.
+> >>>> The following is the process of triggering the problem:
+> >>>> enqueue a skb:
+> >>>> fq_codel_enqueue()
+> >>>>           ...
+> >>>>           idx =3D fq_codel_classify()        --->if idx !=3D 0
+> >>>>           flow =3D &q->flows[idx];
+> >>>>           flow_queue_add(flow, skb);       --->add skb to flow[idex]
+> >>>>           q->backlogs[idx] +=3D qdisc_pkt_len(skb); --->backlogs =3D=
+ 0
+> >>>>           ...
+> >>>>           fq_codel_drop()                  --->set sch->limit =3D 0,=
+ always
+> >>>> drop packets
+> >>>>                   ...
+> >>>>                   idx =3D i                  --->becuase backlogs in=
+ every
+> >>>> flows is 0, so idx =3D 0
+> >>>>                   ...
+> >>>>                   flow =3D &q->flows[idx];   --->get idx=3D0 flow
+> >>>>                   ...
+> >>>>                   dequeue_head()
+> >>>>                           skb =3D flow->head; --->flow->head =3D NUL=
+L
+> >>>>                           flow->head =3D skb->next; --->cause null-p=
+tr-deref
+> >>>> So, if skb->len !=3D0=EF=BC=8Cfq_codel_drop() could get the correct =
+idx, and
+> >>>> then skb!=3DNULL, it will be OK.
+> >>>> Maybe, I will fix it in fq_codel.
+> >>>
+> >>> I think the consensus here is that the stack, in general, doesn't
+> >>> expect the packets like this. So there are probably more broken thing=
+s
+> >>> besides fq_codel. Thus, it's better if we remove the ability to
+> >>> generate them from the bpf side instead of fixing the individual user=
+s
+> >>> like fq_codel.
+> >>>
+> >>>> But, as I know, skb->len =3D 0 is just invalid packet. I prefer to a=
+dd the
+> >>>> length back, like bellow:
+> >>>>           if (is_l2 || !skb->len)
+> >>>>                   __skb_push(skb, hh_len);
+> >>>> is it OK?
+> >>>
+> >>> Probably not?
+> >>>
+> >>> Looking at the original syzkaller report, prog_type is
+> >>> BPF_PROG_TYPE_LWT_XMIT which does expect a packet without l2 header.
+> >>> Can we do something like:
+> >>>
+> >>> if (!is_l2 && !skb->len) {
+> >>>     // append some dummy byte to the skb ?
+> >>> }
+> >>>
+> >>>
+> >> I pad one byte, and test OK.
+> >> if (!is_l2 && !skb->len)
+> >>       __skb_push(skb, 1);
+> >>
+> >> Does it look OK to you?
+> >
+> > Nope, this will eat a byte out of the l2 header. We need to skb_put
+> > and make sure we allocate enough to make that skb_put succeed.
+> >
+> > But stepping back a bit: it feels like it's all unnecessary? The only
+> > valid use-case of this is probing for the BPF_PROG_TEST_RUN as cilium
+> > does. This is mostly about testing, so fixing it in the users seems
+> > fair? No real production code is expected to generate these zero-len
+> > packets. Or are we concerned that this will leak into stable kernels?
+> >
+> > I feel like we are trying to add more complexity here for no apparent r=
+eason.
+> >
+> I agree with you. users should make sure the correct skb len and
+> configurations are passed into kernel. Incorrect configurations should
+> be discarded to ensure kernel stability.
+>
+> Lorenz, Can you modify the user-mode test code?
 
-Warning reports:
-
-https://lore.kernel.org/linux-mm/202210090954.pTR6m6rj-lkp@intel.com
-https://lore.kernel.org/linux-mm/202210111318.mbUfyhps-lkp@intel.com
-https://lore.kernel.org/linux-mm/202210261404.b6UlzG7H-lkp@intel.com
-https://lore.kernel.org/llvm/202210060148.UXBijOcS-lkp@intel.com
-https://lore.kernel.org/oe-kbuild-all/202210270637.Q5Y7FiKJ-lkp@intel.com
-https://lore.kernel.org/oe-kbuild-all/202210271517.snUEnhD0-lkp@intel.com
-https://lore.kernel.org/oe-kbuild-all/202210272129.7rvjxsdk-lkp@intel.com
-
-Warning: (recently discovered and may have been fixed)
-
-arch/loongarch/kernel/traps.c:250 die() warn: variable dereferenced before check 'regs' (see line 244)
-drivers/gpu/drm/amd/amdgpu/../display/dc/dc_dmub_srv.c:615: warning: expecting prototype for setup_subvp_dmub_command(). Prototype was for populate_subvp_cmd_pipe_info() instead
-drivers/hwmon/jc42.c:384 jc42_write() warn: inconsistent returns '&data->update_lock'.
-drivers/net/ethernet/freescale/fman/fman_memac.c:1209 memac_initialization() warn: passing zero to 'PTR_ERR'
-include/asm-generic/div64.h:222:35: warning: comparison of distinct pointer types lacks a cast
-include/asm-generic/div64.h:234:32: warning: right shift count >= width of type [-Wshift-count-overflow]
-lib/zstd/compress/huf_compress.c:460 HUF_getIndex() warn: the 'RANK_POSITION_LOG_BUCKETS_BEGIN' macro might need parens
-
-Unverified Warning (likely false positive, please contact us if interested):
-
-lib/zstd/decompress/zstd_decompress_block.c:1009 ZSTD_execSequence() warn: inconsistent indenting
-lib/zstd/decompress/zstd_decompress_block.c:894 ZSTD_execSequenceEnd() warn: inconsistent indenting
-lib/zstd/decompress/zstd_decompress_block.c:942 ZSTD_execSequenceEndSplitLitBuffer() warn: inconsistent indenting
-lib/zstd/decompress/zstd_decompress_internal.h:206 ZSTD_DCtx_get_bmi2() warn: inconsistent indenting
-
-Warning ids grouped by kconfigs:
-
-gcc_recent_errors
-|-- arc-randconfig-m031-20221025
-|   `-- drivers-net-ethernet-freescale-fman-fman_memac.c-memac_initialization()-warn:passing-zero-to-PTR_ERR
-|-- arm-allmodconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dc_dmub_srv.c:warning:expecting-prototype-for-setup_subvp_dmub_command().-Prototype-was-for-populate_subvp_cmd_pipe_info()-instead
-|-- arm64-randconfig-s041-20221026
-|   |-- fs-ext4-fast_commit.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-int-priv1-got-restricted-__le16-addressable-usertype-fc_len
-|   |-- fs-ext4-fast_commit.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-int-tag-got-restricted-__le16-addressable-usertype-fc_tag
-|   |-- fs-ext4-fast_commit.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-short-usertype-tag-got-restricted-__le16-addressable-usertype-fc_tag
-|   |-- fs-ext4-fast_commit.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-__le16-usertype-fc_len-got-unsigned-short-usertype
-|   |-- fs-ext4-fast_commit.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-__le16-usertype-fc_tag-got-unsigned-short-usertype
-|   |-- fs-ext4-fast_commit.c:sparse:sparse:incorrect-type-in-initializer-(different-base-types)-expected-int-tag-got-restricted-__le16-usertype-fc_tag
-|   `-- fs-ext4-fast_commit.c:sparse:sparse:restricted-__le16-degrades-to-integer
-|-- i386-randconfig-m021
-|   |-- arch-x86-boot-compressed-..-..-..-..-lib-zstd-decompress-zstd_decompress_block.c-ZSTD_execSequence()-warn:inconsistent-indenting
-|   |-- arch-x86-boot-compressed-..-..-..-..-lib-zstd-decompress-zstd_decompress_block.c-ZSTD_execSequenceEnd()-warn:inconsistent-indenting
-|   |-- arch-x86-boot-compressed-..-..-..-..-lib-zstd-decompress-zstd_decompress_block.c-ZSTD_execSequenceEndSplitLitBuffer()-warn:inconsistent-indenting
-|   |-- arch-x86-boot-compressed-..-..-..-..-lib-zstd-decompress-zstd_decompress_internal.h-ZSTD_DCtx_get_bmi2()-warn:inconsistent-indenting
-|   |-- lib-zstd-compress-huf_compress.c-HUF_getIndex()-warn:the-RANK_POSITION_LOG_BUCKETS_BEGIN-macro-might-need-parens
-|   |-- lib-zstd-decompress-zstd_decompress_block.c-ZSTD_execSequence()-warn:inconsistent-indenting
-|   |-- lib-zstd-decompress-zstd_decompress_block.c-ZSTD_execSequenceEnd()-warn:inconsistent-indenting
-|   |-- lib-zstd-decompress-zstd_decompress_block.c-ZSTD_execSequenceEndSplitLitBuffer()-warn:inconsistent-indenting
-|   `-- lib-zstd-decompress-zstd_decompress_internal.h-ZSTD_DCtx_get_bmi2()-warn:inconsistent-indenting
-|-- ia64-randconfig-s052-20221026
-|   |-- fs-ext4-fast_commit.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-int-priv1-got-restricted-__le16-addressable-usertype-fc_len
-|   |-- fs-ext4-fast_commit.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-int-tag-got-restricted-__le16-addressable-usertype-fc_tag
-|   |-- fs-ext4-fast_commit.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-short-usertype-tag-got-restricted-__le16-addressable-usertype-fc_tag
-|   |-- fs-ext4-fast_commit.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-__le16-usertype-fc_len-got-unsigned-short-usertype
-|   |-- fs-ext4-fast_commit.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-__le16-usertype-fc_tag-got-unsigned-short-usertype
-|   |-- fs-ext4-fast_commit.c:sparse:sparse:incorrect-type-in-initializer-(different-base-types)-expected-int-tag-got-restricted-__le16-usertype-fc_tag
-|   `-- fs-ext4-fast_commit.c:sparse:sparse:restricted-__le16-degrades-to-integer
-|-- loongarch-randconfig-m041-20221026
-|   |-- arch-loongarch-kernel-traps.c-die()-warn:variable-dereferenced-before-check-regs-(see-line-)
-|   |-- drivers-hwmon-jc42.c-jc42_write()-warn:inconsistent-returns-data-update_lock-.
-|   |-- lib-zstd-compress-huf_compress.c-HUF_getIndex()-warn:the-RANK_POSITION_LOG_BUCKETS_BEGIN-macro-might-need-parens
-|   |-- lib-zstd-decompress-zstd_decompress_block.c-ZSTD_execSequence()-warn:inconsistent-indenting
-|   |-- lib-zstd-decompress-zstd_decompress_block.c-ZSTD_execSequenceEnd()-warn:inconsistent-indenting
-|   `-- lib-zstd-decompress-zstd_decompress_block.c-ZSTD_execSequenceEndSplitLitBuffer()-warn:inconsistent-indenting
-|-- mips-randconfig-r013-20221027
-|   |-- include-asm-generic-div64.h:warning:comparison-of-distinct-pointer-types-lacks-a-cast
-|   `-- include-asm-generic-div64.h:warning:right-shift-count-width-of-type
-|-- nios2-randconfig-s042-20221026
-|   |-- fs-ext4-fast_commit.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-int-priv1-got-restricted-__le16-addressable-usertype-fc_len
-|   |-- fs-ext4-fast_commit.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-int-tag-got-restricted-__le16-addressable-usertype-fc_tag
-|   |-- fs-ext4-fast_commit.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-short-usertype-tag-got-restricted-__le16-addressable-usertype-fc_tag
-|   |-- fs-ext4-fast_commit.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-__le16-usertype-fc_len-got-unsigned-short-usertype
-|   |-- fs-ext4-fast_commit.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-__le16-usertype-fc_tag-got-unsigned-short-usertype
-|   |-- fs-ext4-fast_commit.c:sparse:sparse:incorrect-type-in-initializer-(different-base-types)-expected-int-tag-got-restricted-__le16-usertype-fc_tag
-|   |-- fs-ext4-fast_commit.c:sparse:sparse:restricted-__le16-degrades-to-integer
-|   |-- fs-ntfs3-index.c:sparse:sparse:restricted-__le32-degrades-to-integer
-|   |-- fs-ntfs3-namei.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-restricted-__le16-const-usertype-s1-got-unsigned-short
-clang_recent_errors
-|-- arm-buildonly-randconfig-r003-20221026
-|   |-- drivers-pinctrl-qcom-pinctrl-lpass-lpi.c:error:call-to-undeclared-function-FIELD_GET-ISO-C99-and-later-do-not-support-implicit-function-declarations
-|   |-- drivers-pinctrl-qcom-pinctrl-lpass-lpi.c:error:call-to-undeclared-function-u32_encode_bits-ISO-C99-and-later-do-not-support-implicit-function-declarations
-|   `-- drivers-pinctrl-qcom-pinctrl-lpass-lpi.c:error:call-to-undeclared-function-u32p_replace_bits-ISO-C99-and-later-do-not-support-implicit-function-declarations
-|-- hexagon-randconfig-r041-20221026
-|   `-- drivers-phy-mediatek-phy-mtk-tphy.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:(unsigned-c
-`-- riscv-randconfig-r001-20221026
-    |-- ld.lld:error:vmlinux.a(kernel-kallsyms.o):(function-get_symbol_pos:.text):relocation-R_RISCV_PCREL_HI20-out-of-range:is-not-in-references-kallsyms_num_syms
-    |-- ld.lld:error:vmlinux.a(kernel-kallsyms.o):(function-get_symbol_pos:.text):relocation-R_RISCV_PCREL_HI20-out-of-range:is-not-in-references-kallsyms_offsets
-    |-- ld.lld:error:vmlinux.a(kernel-kallsyms.o):(function-kallsyms_lookup_name:.text):relocation-R_RISCV_PCREL_HI20-out-of-range:is-not-in-references-kallsyms_num_syms
-    |-- ld.lld:error:vmlinux.a(kernel-kallsyms.o):(function-kallsyms_lookup_name:.text):relocation-R_RISCV_PCREL_HI20-out-of-range:is-not-in-references-kallsyms_offsets
-    |-- ld.lld:error:vmlinux.a(kernel-kallsyms.o):(function-kallsyms_lookup_name:.text):relocation-R_RISCV_PCREL_HI20-out-of-range:is-not-in-references-kallsyms_relative_base
-    |-- ld.lld:error:vmlinux.a(kernel-kallsyms.o):(function-kallsyms_on_each_symbol:.text):relocation-R_RISCV_PCREL_HI20-out-of-range:is-not-in-references-kallsyms_num_syms
-    |-- ld.lld:error:vmlinux.a(kernel-kallsyms.o):(function-kallsyms_on_each_symbol:.text):relocation-R_RISCV_PCREL_HI20-out-of-range:is-not-in-references-kallsyms_offsets
-    `-- ld.lld:error:vmlinux.a(kernel-kallsyms.o):(function-kallsyms_on_each_symbol:.text):relocation-R_RISCV_PCREL_HI20-out-of-range:is-not-in-references-kallsyms_relative_base
-
-elapsed time: 721m
-
-configs tested: 79
-configs skipped: 2
-
-gcc tested configs:
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                              defconfig
-i386                                defconfig
-i386                          randconfig-a014
-i386                          randconfig-a001
-i386                          randconfig-a012
-i386                          randconfig-a003
-x86_64                               rhel-8.3
-x86_64                           rhel-8.3-syz
-i386                          randconfig-a016
-x86_64                           allyesconfig
-x86_64                        randconfig-a002
-powerpc                           allnoconfig
-i386                             allyesconfig
-arm                                 defconfig
-arc                                 defconfig
-arm                              allyesconfig
-x86_64                         rhel-8.3-kunit
-x86_64                        randconfig-a006
-x86_64                        randconfig-a013
-x86_64                          rhel-8.3-func
-x86_64                        randconfig-a011
-i386                          randconfig-a005
-x86_64                        randconfig-a004
-x86_64                    rhel-8.3-kselftests
-powerpc                          allmodconfig
-x86_64                        randconfig-a015
-m68k                             allmodconfig
-x86_64                           rhel-8.3-kvm
-arm64                            allyesconfig
-sh                               allmodconfig
-arc                              allyesconfig
-alpha                               defconfig
-mips                             allyesconfig
-alpha                            allyesconfig
-m68k                             allyesconfig
-riscv                randconfig-r042-20221026
-s390                                defconfig
-s390                             allmodconfig
-arc                  randconfig-r043-20221026
-s390                 randconfig-r044-20221026
-s390                             allyesconfig
-m68k                        m5272c3_defconfig
-sparc                             allnoconfig
-xtensa                    smp_lx200_defconfig
-i386                          randconfig-c001
-m68k                           sun3_defconfig
-powerpc                 canyonlands_defconfig
-m68k                       m5208evb_defconfig
-riscv                               defconfig
-sh                        dreamcast_defconfig
-microblaze                      mmu_defconfig
-m68k                         amcore_defconfig
-openrisc                  or1klitex_defconfig
-mips                         bigsur_defconfig
-sh                             shx3_defconfig
-arm                           h5000_defconfig
-alpha                            alldefconfig
-m68k                          hp300_defconfig
-
-clang tested configs:
-i386                          randconfig-a013
-i386                          randconfig-a011
-i386                          randconfig-a002
-i386                          randconfig-a004
-x86_64                        randconfig-a005
-x86_64                        randconfig-a001
-i386                          randconfig-a015
-x86_64                        randconfig-a003
-x86_64                        randconfig-a012
-i386                          randconfig-a006
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-hexagon              randconfig-r045-20221026
-hexagon              randconfig-r041-20221026
-arm                        mvebu_v5_defconfig
-powerpc                     ppa8548_defconfig
-arm                  colibri_pxa270_defconfig
-powerpc               mpc834x_itxgp_defconfig
-arm                           spitz_defconfig
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Lorenz already fixed it for Cilium. I think the discussion here is
+around other potential users out there.
+Let's wait for them to appear if it is indeed a problem?
