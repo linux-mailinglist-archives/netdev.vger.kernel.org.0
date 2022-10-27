@@ -2,66 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2550760FC20
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 17:38:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEF8F60FC30
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 17:42:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235830AbiJ0PiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 11:38:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54208 "EHLO
+        id S236042AbiJ0PmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 11:42:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235285AbiJ0PiL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 11:38:11 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37544190478
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 08:38:10 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id m14-20020a17090a3f8e00b00212dab39bcdso6879084pjc.0
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 08:38:10 -0700 (PDT)
+        with ESMTP id S235608AbiJ0PmC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 11:42:02 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42BC4C6954;
+        Thu, 27 Oct 2022 08:42:01 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id ud5so5817821ejc.4;
+        Thu, 27 Oct 2022 08:42:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=S/WV8nQflZoCZ/xz241twHN3sZwDyBQuzGyE5xelXyc=;
-        b=qW1f1rZAiJ4O71tkXN5YdMNc8AF6b8rOdNBcj/LzVZEp7SOUefDQyxgG3Wnmvpd3b7
-         WX7fJoH6NA/o2VI7wacOauB7NmZrc8nGfc+F5JMeuS0rjOFQwPOTU5PjfHZB6/e4zx3T
-         BdQDJ8olhQQS7q8f+trKQqQi5jMfRM02X8mk6H+P/ZFIQu1hrXw8/wKdeYbz/t/VBqqR
-         vRvfeEfaFIRfMY4uI4SGOCvkMbQ4jiqB/1R5E0NmJ55uvKQHD3Hly/fa0vuffBt3U/JQ
-         QhNM2sV54c0KvhgCi3NXZgG3Y/bibZwgIF8lO/H/mQaidmVBqsyVkv6/dQQMEVlsdHD1
-         YLkQ==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Foe3NaxZvpwgbIwWLGZVEAQzzIpp6zxIwx25sYmkf4U=;
+        b=XTXK7tjqoiAMq5OJ2BI3Ue+mXD2T4Ihcfep1IxX1JNjE1zfAgKQDWCXBCKTavCasQr
+         CSP6UfEyH0nYnrpeMmLRxDZ3jKL8M2IItTjyk0E28ALTAl4lMT+MCiCRP8YRWCjnUkmC
+         n8htJH9ZrIioOlxyFX1B7sOoa0jZf1afDGy5kzzluyZKK77+2sfJLLUXZ4AUntH+L3LR
+         VNDIfaJ3azos1WX1KbVaYG1ERviugCQozqYxF3Ra3/i9rDXZamra1bBLQHBFKamTK7pl
+         3vVNhwkL/ACt1oKlOZzAF5AweaMErjX1bcGmsKJtcQJFjwjrEA/u6nMY8Ot1dHC3WEB0
+         1wEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=S/WV8nQflZoCZ/xz241twHN3sZwDyBQuzGyE5xelXyc=;
-        b=JYfGANBeCTu3K1vGLQ90lxGg43lm0dRqBsXxJaxkLtWsBMM8X8Q3pZ55ZpWysW38fk
-         5JqlU2tmfYjHPn/Jw6gkRi/nZuvCrdNP5E3Pl4sxHfUw4WK3nfkx83SyagDvNflPt3K6
-         WIwO3byV8+Owtbg8s3K2+L0cyy/ijlLSw7F3IJmcoa260dMJQEgEzefCWraB8VYgMs33
-         tTlP1/9/Ef99FLiqN25UuZC3DhhtorRMJv/CtnGy3M/A4KwjwcTfZ8ACsGZZG5Yv9yZ5
-         FyfAL5wWGkUd6ZRQ2kQXfns3ha0c9kkJ77h3eA0ZU1aJET6n5PR/PqTM7fBTI+9ddN6Q
-         wOlw==
-X-Gm-Message-State: ACrzQf1WIsTnOX/kxEdO7zFdEv/lkyPjfROajlp2pYcO3T5Uc1IHR3KH
-        THPcwNvsVlml3tQylHNh4vlCXvUnOx4auw==
-X-Google-Smtp-Source: AMsMyM6F3kD15GD8DJ0Zj93D3kYGErhZLbMlSYgIit+aTlF1zrxiJoXE8kdy5Y0u3M53hSu3QL2QQw==
-X-Received: by 2002:a17:90a:a415:b0:20a:f813:83a3 with SMTP id y21-20020a17090aa41500b0020af81383a3mr10912817pjp.238.1666885089703;
-        Thu, 27 Oct 2022 08:38:09 -0700 (PDT)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id m3-20020a17090a34c300b0020de216d0f7sm1174821pjf.18.2022.10.27.08.38.09
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Foe3NaxZvpwgbIwWLGZVEAQzzIpp6zxIwx25sYmkf4U=;
+        b=n95Cop2/w08ibnGErYhlnzwiia2Kee2IW8wlS5wgh4CDfKnLqGBK87O6E9MbcB0Uay
+         0uZ0aWcAb2rYXrnBYBV2Kcc4PgpC0yCe8LlsgalROWkd3Zkx+6+HCa9Qz3JKnM6NkYrO
+         7XAlzvlrwFCq4BQF1lPwNfkMV0BQA9bvYpZnuq670tijblGKoYcO5R2C41FTeE1Ht9tM
+         2NlaVIhxGl51TW3PFR+nqPwTQsQpZiAhoXV9lFHP4dYolCtcAmutm46cYwCHXPyu9WQg
+         lgKpeFGsJvVcZTOoZuwD7y2B0ahpP3Ew+rueAceLjngRU4i/iLOkNg8lEFj/GodvJ/LM
+         gMSQ==
+X-Gm-Message-State: ACrzQf2N7z/nMQyTAG2UKCjsy06nhdpOPD5W5Ii8DaJMXrRk4tus2E0F
+        sGVYiGeqYWtD+65EK2zAjdY=
+X-Google-Smtp-Source: AMsMyM6eAhx24hELhlVVAeMi+1qb9jjHHsECANFN/IOPuukLQKFzJF4HGkTq1LAl2rlZTw+eQKjPwQ==
+X-Received: by 2002:a17:907:983:b0:77b:6e40:8435 with SMTP id bf3-20020a170907098300b0077b6e408435mr40638628ejc.570.1666885319692;
+        Thu, 27 Oct 2022 08:41:59 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id p25-20020a056402075900b00457b5ba968csm1166237edy.27.2022.10.27.08.41.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Oct 2022 08:38:09 -0700 (PDT)
-Date:   Thu, 27 Oct 2022 08:38:08 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     mrpre <mrpre@163.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2]fix missing eBPF name
-Message-ID: <20221027083808.3304abd6@hermes.local>
-In-Reply-To: <4079d76a.5b33.184195d2368.Coremail.mrpre@163.com>
-References: <4079d76a.5b33.184195d2368.Coremail.mrpre@163.com>
+        Thu, 27 Oct 2022 08:41:59 -0700 (PDT)
+Date:   Thu, 27 Oct 2022 18:41:56 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Camel Guo <camel.guo@axis.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Rob Herring <robh@kernel.org>,
+        kernel@axis.com
+Subject: Re: [RFC net-next 1/2] dt-bindings: net: dsa: add bindings for GSW
+ Series switches
+Message-ID: <20221027154156.wdi2ka52xwdgm7cj@skbuf>
+References: <20221025135243.4038706-1-camel.guo@axis.com>
+ <20221025135243.4038706-2-camel.guo@axis.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221025135243.4038706-2-camel.guo@axis.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,20 +83,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 27 Oct 2022 20:14:05 +0800 (CST)
-mrpre <mrpre@163.com> wrote:
+Hi Camel,
 
-> Signed-off-by: mrpre <mrpre@163.com>
-> 
-> 
-> 
-> 
-> missing map name when creating a eBPF map
-> 
-> ---
+On Tue, Oct 25, 2022 at 03:52:40PM +0200, Camel Guo wrote:
+> +additionalProperties: true
 
-Makes sense, but this patch is not formatted properly and is missing
-a valid Signed-off-by line.
+I don't think the switch schema should have additionalProperties: true.
+Only shared schemas should. WHat should be here is "unevaluatedProperties: false".
 
-Please follow same style and contribution rules for iproute2
-(see kernel documentation on writing patches).
+> +                port@5 {
+> +                    reg = <5>;
+> +                    label = "cpu";
+
+Please drop label = "cpu" for the CPU port, it is not needed/not parsed.
+
+> +                    ethernet = <&eth0>;
+> +                    phy-mode = "rgmii-id";
+> +
+> +                    fixed-link {
+> +                        speed = <1000>;
+> +                        full-duplex;
+> +                        pause;
+> +                    };
+> +                };
+> +            };
