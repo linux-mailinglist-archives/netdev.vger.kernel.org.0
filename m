@@ -2,98 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D3A460F4E1
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 12:25:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CB9360F562
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 12:36:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234187AbiJ0KZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 06:25:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48896 "EHLO
+        id S235002AbiJ0Kf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 06:35:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234169AbiJ0KZB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 06:25:01 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22D332D742;
-        Thu, 27 Oct 2022 03:24:55 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MyhWM2Vkcz15M45;
-        Thu, 27 Oct 2022 18:19:59 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 27 Oct 2022 18:24:53 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
-        <dsahern@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <herbert@gondor.apana.org.au>
-Subject: [PATCH net] ipv6/gro: fix an out of bounds memory bug in ipv6_gro_receive()
-Date:   Thu, 27 Oct 2022 18:24:49 +0800
-Message-ID: <20221027102449.926410-1-william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S235246AbiJ0Kfz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 06:35:55 -0400
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 930FB3DF12
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 03:35:52 -0700 (PDT)
+Received: by mail-ej1-f44.google.com with SMTP id fy4so3241505ejc.5
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 03:35:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=olcqBqp20ijqPE54YEtnv810clQFjmIdUzlbWquxgtg=;
+        b=IkKGPcsasBLBrtwalV8QFSKUy5sCAo+ej74pAsHzyW0H9XCQrIJsjd/yC+IZ1MaDqN
+         tPpCpRiXM8PZojs+FEbmpTa59EDuUbdHNlTCVBxkzL4c2APemR4Q43w8C00ioKK+o5Tw
+         8sYVmXWwfN1j4eOVPiM7rGOAJPcqka0gFkTmMAKTvqSP9qkp5BtRRcfaVRixGHu26Vf+
+         yMi9RMecfXJ2GMjq3P3Xch6JSR5QITZ/kTr5eTTlUljGeLKJfZz7o2Ob2BiPabS1MbKH
+         C48ZOq9Bk9q8iSLjWCqJdH4ct2d41YTMFvrKOhsNreTl2ETPxfMN+lxli6pejoY3+dvk
+         +fzQ==
+X-Gm-Message-State: ACrzQf3tKe5ulniXz0zbUbDM4v1BbH7D6mOFEBKU7+YvvEJvFg8jDa5B
+        Z3WpXHAnm6Tq82u/9/Wx2TY=
+X-Google-Smtp-Source: AMsMyM4rYnExz0aFrBW9qQ4H4xsy4bm36lWxnSlbkJykRkR4bYDUrHr86IpEEGRGUwvvmAWw/TKtYA==
+X-Received: by 2002:a17:907:75d4:b0:7ad:92da:379a with SMTP id jl20-20020a17090775d400b007ad92da379amr1162099ejc.681.1666866951100;
+        Thu, 27 Oct 2022 03:35:51 -0700 (PDT)
+Received: from [10.100.102.14] (46-116-236-159.bb.netvision.net.il. [46.116.236.159])
+        by smtp.gmail.com with ESMTPSA id cw13-20020a056402228d00b0045bccd8ab83sm791888edb.1.2022.10.27.03.35.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Oct 2022 03:35:50 -0700 (PDT)
+Message-ID: <f62c517e-e25e-ad2f-cf31-cba6639735ad@grimberg.me>
+Date:   Thu, 27 Oct 2022 13:35:48 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH v7 00/23] nvme-tcp receive offloads
+Content-Language: en-US
+To:     Aurelien Aptel <aaptel@nvidia.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, saeedm@nvidia.com, tariqt@nvidia.com,
+        leon@kernel.org, linux-nvme@lists.infradead.org, hch@lst.de,
+        kbusch@kernel.org, axboe@fb.com, chaitanyak@nvidia.com
+Cc:     smalin@nvidia.com, ogerlitz@nvidia.com, yorayz@nvidia.com,
+        borisp@nvidia.com, aurelien.aptel@gmail.com, malin1024@gmail.com
+References: <20221025135958.6242-1-aaptel@nvidia.com>
+From:   Sagi Grimberg <sagi@grimberg.me>
+In-Reply-To: <20221025135958.6242-1-aaptel@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IPv6 packets without NEXTHDR_NONE extension header can make continuous
-__skb_pull() until pskb_may_pull() failed in ipv6_gso_pull_exthdrs().
-That results in a big value of skb_gro_offset(), and after __skb_push()
-in ipv6_gro_receive(), skb->data will less than skb->head, an out of
-bounds memory bug occurs. That will trigger the problem as following:
 
-==================================================================
-BUG: KASAN: use-after-free in eth_type_trans+0x100/0x260
-...
-Call trace:
- dump_backtrace+0xd8/0x130
- show_stack+0x1c/0x50
- dump_stack_lvl+0x64/0x7c
- print_address_description.constprop.0+0xbc/0x2e8
- print_report+0x100/0x1e4
- kasan_report+0x80/0x120
- __asan_load8+0x78/0xa0
- eth_type_trans+0x100/0x260
- napi_gro_frags+0x164/0x550
- tun_get_user+0xda4/0x1270
- tun_chr_write_iter+0x74/0x130
- do_iter_readv_writev+0x130/0x1ec
- do_iter_write+0xbc/0x1e0
- vfs_writev+0x13c/0x26c
+> Hi,
+> 
+> The nvme-tcp receive offloads series v7 was sent to both net-next and
+> nvme.  It is the continuation of v5 which was sent on July 2021
+> https://lore.kernel.org/netdev/20210722110325.371-1-borisp@nvidia.com/ .
+> V7 is now working on a real HW.
+> 
+> The feature will also be presented in netdev this week
+> https://netdevconf.info/0x16/session.html?NVMeTCP-Offload-%E2%80%93-Implementation-and-Performance-Gains
+> 
+> Currently the series is aligned to net-next, please update us if you will prefer otherwise.
+> 
+> Thanks,
+> Shai, Aurelien
 
-Add comparison between skb->data - skb_gro_offset() and skb->head
-and exception handler before __skb_push() to fix the bug.
+Hey Shai & Aurelien
 
-Fixes: 86911732d399 ("gro: Avoid copying headers of unmerged packets")
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
----
- net/ipv6/ip6_offload.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Can you please add in the next time documentation of the limitations
+that this offload has in terms of compatibility? i.e. for example (from
+my own imagination):
+1. bonding/teaming/other-stacking?
+2. TLS (sw/hw)?
+3. any sort of tunneling/overlay?
+4. VF/PF?
+5. any nvme features?
+6. ...
 
-diff --git a/net/ipv6/ip6_offload.c b/net/ipv6/ip6_offload.c
-index 3ee345672849..6659ccf25387 100644
---- a/net/ipv6/ip6_offload.c
-+++ b/net/ipv6/ip6_offload.c
-@@ -237,6 +237,10 @@ INDIRECT_CALLABLE_SCOPE struct sk_buff *ipv6_gro_receive(struct list_head *head,
- 		proto = ipv6_gso_pull_exthdrs(skb, proto);
- 		skb_gro_pull(skb, -skb_transport_offset(skb));
- 		skb_reset_transport_header(skb);
-+		if (unlikely(skb_headroom(skb) < skb_gro_offset(skb))) {
-+			kfree_skb(skb);
-+			return ERR_PTR(-EINPROGRESS);
-+		}
- 		__skb_push(skb, skb_gro_offset(skb));
- 
- 		ops = rcu_dereference(inet6_offloads[proto]);
--- 
-2.25.1
+And what are your plans to address each if at all.
 
+Also, does this have a path to userspace? for example almost all
+of the nvme-tcp targets live in userspace.
+
+I don't think I see in the code any limits like the maximum
+connections that can be offloaded on a single device/port. Can
+you share some details on this?
+
+Thanks.
