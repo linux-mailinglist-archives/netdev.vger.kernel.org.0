@@ -2,52 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C2CE610012
-	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 20:20:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 885EF61001A
+	for <lists+netdev@lfdr.de>; Thu, 27 Oct 2022 20:23:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235256AbiJ0SUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 14:20:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33414 "EHLO
+        id S235638AbiJ0SXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 14:23:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbiJ0SUX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 14:20:23 -0400
+        with ESMTP id S235586AbiJ0SXS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 14:23:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E95BF2CE05
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 11:20:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57DDE4333C;
+        Thu, 27 Oct 2022 11:23:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8583A62440
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 18:20:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D62DBC43470;
-        Thu, 27 Oct 2022 18:20:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EBBFA62418;
+        Thu, 27 Oct 2022 18:23:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27A52C433C1;
+        Thu, 27 Oct 2022 18:23:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666894820;
-        bh=XLyS+vOHpZCYjBimGnwRLuNYarqTnlzkGUhTBduxt38=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=cO9qWEUhVkVIB4QpJNJOr4IdNYIYNOjRdmQKiFNdFiSiL6YVUHk0fKcCYmGU7ytcu
-         twu51bAzuXQrow1xHgLseFIhEKWrTwRfneNDnB+AmeZCrIdDWRA/vWMm74Zr4mfBo7
-         djLf+qAeVV3wHU76axG6UyF0demfeuGx14QOiiKpP8RbFVS2tB5nlxAC3tznNtWv4S
-         PnT4x/nsHkkUldeGfyUT+eoMqJ1tCbZROBIr6pF4eag4WVksRaNo6EJepl9iWS2zNH
-         3bNEHVzTjrprSGJK4Q18Qe3ToGOKje98w3ppns2dXLedy4XVhFqN3serbuS7p7Kj8v
-         V+Xg46BL0h0Og==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BA962E270D9;
-        Thu, 27 Oct 2022 18:20:20 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1666894997;
+        bh=J9JnUfcFNrF4jRVggLXQMWFImgx3+vGRcRHAGD32U30=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NFluZKLyKIgUH4tiiSuCbDJSgZvMDfp4rKckS9qBM5H6eUiAqEZ098aYF22PdqlvK
+         ambl92JayvdEofWQ85XXWNZsd5IHVN9FUF/ut1PQLPBoCRsuuigg0+5oHMwvBWRQ0l
+         MumdJrC2qmKMpdqdASg2h832EzeZUabVnFyEiTL05tsiCX7ruL4IfmUeOGpvyeO7Ay
+         pm0w73XMcAyS5JElOJKso3PNXHN7j5LbD91T9F6aBnHtoqYkW8iT6GQT77NturCWmg
+         gH584ls/GccnYpzkpEuioxGg8u9KqfuwLdsDZ5TLS7TwaGIK+nqemPZNEEG3wTb00S
+         nWrfLCxfNe54Q==
+Date:   Thu, 27 Oct 2022 11:23:16 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 net] net: enetc: survive memory pressure without
+ crashing
+Message-ID: <20221027112316.377ccf10@kernel.org>
+In-Reply-To: <20221027180209.qunyi4bdikbtqfho@skbuf>
+References: <20221026121330.2042989-1-vladimir.oltean@nxp.com>
+        <20221027105824.1c2157a2@kernel.org>
+        <20221027180209.qunyi4bdikbtqfho@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [V4 net 01/15] net/mlx5e: Do not increment ESN when updating IPsec
- ESN state
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166689482076.378.7374777770971119455.git-patchwork-notify@kernel.org>
-Date:   Thu, 27 Oct 2022 18:20:20 +0000
-References: <20221026135153.154807-2-saeed@kernel.org>
-In-Reply-To: <20221026135153.154807-2-saeed@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, saeedm@nvidia.com, netdev@vger.kernel.org,
-        tariqt@nvidia.com, hyonkim@cisco.com, leonro@nvidia.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -57,65 +59,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed, 26 Oct 2022 14:51:39 +0100 you wrote:
-> From: Hyong Youb Kim <hyonkim@cisco.com>
+On Thu, 27 Oct 2022 18:02:09 +0000 Vladimir Oltean wrote:
+> On Thu, Oct 27, 2022 at 10:58:24AM -0700, Jakub Kicinski wrote:
+> > On Wed, 26 Oct 2022 15:13:30 +0300 Vladimir Oltean wrote:  
+> > > To fix this problem, memset the DMA coherent area used for RX buffer
+> > > descriptors in enetc_dma_alloc_bdr(). This makes all BDs be "not ready"
+> > > by default, which makes enetc_clean_rx_ring() exit early from the BD
+> > > processing loop when there is no valid buffer available.  
+> > 
+> > IIRC dma_alloc_coherent() always zeros, and I'd guess there is a cocci
+> > script that checks this judging but the number of "fixes" we got for
+> > this in the past.
+> > 
+> > scripts/coccinelle/api/alloc/zalloc-simple.cocci ?  
 > 
-> An offloaded SA stops receiving after about 2^32 + replay_window
-> packets. For example, when SA reaches <seq-hi 0x1, seq 0x2c>, all
-> subsequent packets get dropped with SA-icv-failure (integrity_failed).
+> Yeah, ok, fair, I guess only the producer/consumer indices were the problem,
+> then. The "junk" I was seeing in the buffer descriptors was the "Ready"
+> bit caused by the hardware thinking it owns all BDs when in fact it
+> owned none of them.
 > 
-> To reproduce the bug:
-> - ConnectX-6 Dx with crypto enabled (FW 22.30.1004)
-> - ipsec.conf:
->   nic-offload = yes
->   replay-window = 32
->   esn = yes
->   salifetime=24h
-> - Run netperf for a long time to send more than 2^32 packets
->   netperf -H <device-under-test> -t TCP_STREAM -l 20000
-> 
-> [...]
+> Is there a chance the patch makes it for this week's PR if I amend it
+> really quick?
 
-Here is the summary with links:
-  - [V4,net,01/15] net/mlx5e: Do not increment ESN when updating IPsec ESN state
-    https://git.kernel.org/netdev/net/c/888be6b279b7
-  - [V4,net,02/15] net/mlx5: Wait for firmware to enable CRS before pci_restore_state
-    https://git.kernel.org/netdev/net/c/212b4d7251c1
-  - [V4,net,03/15] net/mlx5: DR, Fix matcher disconnect error flow
-    https://git.kernel.org/netdev/net/c/4ea9891d6641
-  - [V4,net,04/15] net/mlx5e: Extend SKB room check to include PTP-SQ
-    https://git.kernel.org/netdev/net/c/19b43a432e3e
-  - [V4,net,05/15] net/mlx5e: Update restore chain id for slow path packets
-    https://git.kernel.org/netdev/net/c/8dc47c0527c1
-  - [V4,net,06/15] net/mlx5: ASO, Create the ASO SQ with the correct timestamp format
-    https://git.kernel.org/netdev/net/c/0f3caaa2c6fb
-  - [V4,net,07/15] net/mlx5: Fix possible use-after-free in async command interface
-    https://git.kernel.org/netdev/net/c/bacd22df9514
-  - [V4,net,08/15] net/mlx5e: TC, Reject forwarding from internal port to internal port
-    https://git.kernel.org/netdev/net/c/f382a2413dae
-  - [V4,net,09/15] net/mlx5e: TC, Fix cloned flow attr instance dests are not zeroed
-    https://git.kernel.org/netdev/net/c/94d651739e17
-  - [V4,net,10/15] net/mlx5: Update fw fatal reporter state on PCI handlers successful recover
-    https://git.kernel.org/netdev/net/c/416ef7136319
-  - [V4,net,11/15] net/mlx5: Fix crash during sync firmware reset
-    https://git.kernel.org/netdev/net/c/aefb62a99887
-  - [V4,net,12/15] net/mlx5e: Fix macsec coverity issue at rx sa update
-    https://git.kernel.org/netdev/net/c/d3ecf037569c
-  - [V4,net,13/15] net/mlx5e: Fix macsec rx security association (SA) update/delete
-    https://git.kernel.org/netdev/net/c/74573e38e933
-  - [V4,net,14/15] net/mlx5e: Fix wrong bitwise comparison usage in macsec_fs_rx_add_rule function
-    https://git.kernel.org/netdev/net/c/d550956458a8
-  - [V4,net,15/15] net/mlx5e: Fix macsec sci endianness at rx sa update
-    https://git.kernel.org/netdev/net/c/12ba40ba3dc3
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Yeah, you got 15min :)
