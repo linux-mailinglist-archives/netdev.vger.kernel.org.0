@@ -2,137 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B901A61109E
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 14:07:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A7486110E9
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 14:12:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230218AbiJ1MHY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 08:07:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51582 "EHLO
+        id S229841AbiJ1ML7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 08:11:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230211AbiJ1MHS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 08:07:18 -0400
-Received: from mail-oo1-xc2c.google.com (mail-oo1-xc2c.google.com [IPv6:2607:f8b0:4864:20::c2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20933D73D0
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 05:07:16 -0700 (PDT)
-Received: by mail-oo1-xc2c.google.com with SMTP id v8-20020a4ab688000000b00486ac81143fso743345ooo.1
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 05:07:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=GR+m1s8xk4yO3whnGXXqKJGoS7xpg5Ml4xPbhb4grPw=;
-        b=bVut0nFme1vyw/JHAGuzHzacbw9ymua14F6HHVu6Zo3hLxYdpcoXwuloXpuIRcFl3i
-         N0vsbCxeZLmK/z9KQ5y3uTRFftInf8mX+jhF25fXAW1OoQyk6S5uw3w/3cpEXqYPywIh
-         iHZfpymzPfB7CIOdq3+UebG+TuAGToAs1d29MnzcbjxcYtuzbf0AKjWyTfJKL77YF8fR
-         RnGtvRh+mArBy+DuN2QPi67wHwIAwZLufSf+RXJJzRr4fjlPnJ2jCfKoTUXrOGIAnPNY
-         QVTkpSXgmOnLkwwvIzZe6RCvOcyg1yA9eZMK1/C+IHZlSrNddAmYyJTXISHa8YbIYUmI
-         1kQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=GR+m1s8xk4yO3whnGXXqKJGoS7xpg5Ml4xPbhb4grPw=;
-        b=WbMLsEYn05443QnsbMdWUl/O79tTbnToCBAFbUv3iQL+NXSmICLXebqc3isVJ/hk1j
-         /Hg0qFrG0JYiAwFlKPklPGr2MOWRCN0DrfOcZSAHyeaiqYYHfKI9MUH6SN1nrVQ2l7x7
-         W3Vbw/i79m4pV1+era6PngBEaysSrzefn69istDxP6G3u1p7dzgKcpBvqNoWE1iQ5YtY
-         F0DVlatU+e57UL5ipaL9q7RQigmjnAsXSOkmdkCRx0n2xfzCpo4airJSIkJy3/7BZG0/
-         44HLsfiRB1sQ3NyfY5Wx3VlPkzVDttvwDQISwUQXRqkHXaopRcGtCPx4azhYPjar52fD
-         Y/Sw==
-X-Gm-Message-State: ACrzQf1PMn0pdV+QOPDHcYEI9zGVeQNwcvdNVD1HkQbszYuWByNylsYU
-        JpfIdm+3AR03efbtqIuq1Ns=
-X-Google-Smtp-Source: AMsMyM4U0eZDaURASCKeo++mwpi+3ecNO+tSjbweWWAGmwB1+9gRv9+T3GcM4m9M2VMIIeqpjQik3w==
-X-Received: by 2002:a05:6820:168:b0:480:fd05:4ffd with SMTP id k8-20020a056820016800b00480fd054ffdmr17659113ood.63.1666958836066;
-        Fri, 28 Oct 2022 05:07:16 -0700 (PDT)
-Received: from localhost.localdomain ([2804:14c:485:4b69:4f96:b37f:e49c:a5a1])
-        by smtp.gmail.com with ESMTPSA id er13-20020a056870c88d00b0013669485016sm1445487oab.37.2022.10.28.05.07.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Oct 2022 05:07:15 -0700 (PDT)
-From:   Fabio Estevam <festevam@gmail.com>
-To:     kuba@kernel.org
-Cc:     olteanv@gmail.com, andrew@lunn.ch, netdev@vger.kernel.org,
-        =?UTF-8?q?Steffen=20B=C3=A4tz?= <steffen@innosonix.de>,
-        Fabio Estevam <festevam@gmail.com>
-Subject: [PATCH] net: dsa: mv88e6xxx: Add .port_set_rgmii_delay to 88E6320
-Date:   Fri, 28 Oct 2022 09:06:54 -0300
-Message-Id: <20221028120654.90508-1-festevam@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S230272AbiJ1MLn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 08:11:43 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A02161D3C53
+        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 05:11:38 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1ooOCw-0000cg-M1; Fri, 28 Oct 2022 14:11:30 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 3911210CBA9;
+        Fri, 28 Oct 2022 12:11:29 +0000 (UTC)
+Date:   Fri, 28 Oct 2022 14:11:26 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Ulrich Hecht <uli+renesas@fpond.eu>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH] can: rcar_canfd: Add missing ECC error checks for
+ channels 2-7
+Message-ID: <20221028121126.aigrnf4uph6hsppl@pengutronix.de>
+References: <4edb2ea46cc64d0532a08a924179827481e14b4f.1666951503.git.geert+renesas@glider.be>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ubstobhq47tay4vw"
+Content-Disposition: inline
+In-Reply-To: <4edb2ea46cc64d0532a08a924179827481e14b4f.1666951503.git.geert+renesas@glider.be>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Steffen Bätz <steffen@innosonix.de>
 
-Currently, the port_set_rgmii_delay hook is missing for 88E6320, which
-causes failure to retrieve an IP address via DHCP.
+--ubstobhq47tay4vw
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Add mv88e6320_port_set_rgmii_delay() that allows applying the RGMII
-delay for ports 3 and 4, which are the 10/100/1000 PHYs.
+On 28.10.2022 12:06:45, Geert Uytterhoeven wrote:
+> When introducing support for R-Car V3U, which has 8 instead of 2
+> channels, the ECC error bitmask was extended to take into account the
+> extra channels, but rcar_canfd_global_error() was not updated to act
+> upon the extra bits.
+>=20
+> Replace the RCANFD_GERFL_EEF[01] macros by a new macro that takes the
+> channel number, fixing R-Car V3U while simplifying the code.
+>=20
+> Fixes: 45721c406dcf50d4 ("can: rcar_canfd: Add support for r8a779a0 SoC")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Tested on a i.MX8MN board connected to a 88E6320 switch.
+Added stable on Cc and added to linux-can.
 
-Signed-off-by: Steffen Bätz <steffen@innosonix.de>
-Signed-off-by: Fabio Estevam <festevam@gmail.com>
----
- drivers/net/dsa/mv88e6xxx/chip.c | 1 +
- drivers/net/dsa/mv88e6xxx/port.c | 9 +++++++++
- drivers/net/dsa/mv88e6xxx/port.h | 2 ++
- 3 files changed, 12 insertions(+)
+Marc
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 2479be3a1e35..dc7cbf48bda5 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -5029,6 +5029,7 @@ static const struct mv88e6xxx_ops mv88e6320_ops = {
- 	.phy_write = mv88e6xxx_g2_smi_phy_write,
- 	.port_set_link = mv88e6xxx_port_set_link,
- 	.port_sync_link = mv88e6xxx_port_sync_link,
-+	.port_set_rgmii_delay = mv88e6320_port_set_rgmii_delay,
- 	.port_set_speed_duplex = mv88e6185_port_set_speed_duplex,
- 	.port_tag_remap = mv88e6095_port_tag_remap,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
-diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-index 5c4195c635b0..f79cf716c541 100644
---- a/drivers/net/dsa/mv88e6xxx/port.c
-+++ b/drivers/net/dsa/mv88e6xxx/port.c
-@@ -133,6 +133,15 @@ int mv88e6390_port_set_rgmii_delay(struct mv88e6xxx_chip *chip, int port,
- 	return mv88e6xxx_port_set_rgmii_delay(chip, port, mode);
- }
- 
-+int mv88e6320_port_set_rgmii_delay(struct mv88e6xxx_chip *chip, int port,
-+				   phy_interface_t mode)
-+{
-+	if (port != 2 && port != 5 && port != 6)
-+		return -EOPNOTSUPP;
-+
-+	return mv88e6xxx_port_set_rgmii_delay(chip, port, mode);
-+}
-+
- int mv88e6xxx_port_set_link(struct mv88e6xxx_chip *chip, int port, int link)
- {
- 	u16 reg;
-diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
-index cb04243f37c1..fe8f2085bb0b 100644
---- a/drivers/net/dsa/mv88e6xxx/port.h
-+++ b/drivers/net/dsa/mv88e6xxx/port.h
-@@ -336,6 +336,8 @@ int mv88e6352_port_set_rgmii_delay(struct mv88e6xxx_chip *chip, int port,
- 				   phy_interface_t mode);
- int mv88e6390_port_set_rgmii_delay(struct mv88e6xxx_chip *chip, int port,
- 				   phy_interface_t mode);
-+int mv88e6320_port_set_rgmii_delay(struct mv88e6xxx_chip *chip, int port,
-+				   phy_interface_t mode);
- 
- int mv88e6xxx_port_set_link(struct mv88e6xxx_chip *chip, int port, int link);
- 
--- 
-2.25.1
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
+--ubstobhq47tay4vw
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmNbxuwACgkQrX5LkNig
+013Qfgf/fkqiHPRNYQM2wioOyj/AM8EgMCMraqKrtalSn3zGZ5ZLKiX1KcnmSxdM
+5dSpsWCM90ZckJN3VB6q10Mmu5N0ftC6xB8eK08JCwJqHz3g0ui40mlJtYoJ6g7H
+69K/NjwkeMCM3ANPqHvlSQs/VmdZ9URcnb4MlWMI5dW3QC7QbyFSfR6M42Q0MTzN
+P0CwQugvmMur1D5ZW9h5SndgcHiR1WS3YsdjZwN2S1p7HlZXcp0KLULBqHtmlyAQ
+WJq+fx12rXPihiuGbVKX+dTW5chyV3kaR4sfSVYFU4gxVmTGTvM4bZsUkWuTstGW
+7d9oV1fHbaHzW1+MgcuFl4+aI2Xl9A==
+=SNJZ
+-----END PGP SIGNATURE-----
+
+--ubstobhq47tay4vw--
