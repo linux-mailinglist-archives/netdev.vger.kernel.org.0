@@ -2,68 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90698611D50
-	for <lists+netdev@lfdr.de>; Sat, 29 Oct 2022 00:16:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F5B2611D56
+	for <lists+netdev@lfdr.de>; Sat, 29 Oct 2022 00:17:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230104AbiJ1WQy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 18:16:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50044 "EHLO
+        id S230153AbiJ1WRy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 18:17:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230015AbiJ1WQw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 18:16:52 -0400
-Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90A1C24AE36;
-        Fri, 28 Oct 2022 15:16:50 -0700 (PDT)
-Received: by mail-qv1-xf30.google.com with SMTP id n18so4968055qvt.11;
-        Fri, 28 Oct 2022 15:16:50 -0700 (PDT)
+        with ESMTP id S230163AbiJ1WRv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 18:17:51 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B99AD24C967;
+        Fri, 28 Oct 2022 15:17:48 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id v17so2976259plo.1;
+        Fri, 28 Oct 2022 15:17:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ERWyhTXJWw0g6FYpMVzuwjT5hcLIVbpWXsp+/9eskIE=;
-        b=U4B805hx+7PT9WdBN1PIfS+4FyzPSXzzI4LnaC5SStVVp9SuGHhWhtsxOI4B4WgYqU
-         qmZslWZDVnP6xXVjXalzdTIW1HMczdfm60hlVsCgroyVjt+pz0cgnqwU3hXJK1f3hNm8
-         gaEexrcFyviE2KEs4vo4MmBzV1Jvhw+i6pXLAgcE4c1BYQMr8PAhxsHCehSMtyJMBq2I
-         81pjae/egxmmelHkbWR/PnneaVBtscH3hZSskgdO5OrGXFGWtQoV52a8lWjJI9hXpOZt
-         u3na1l8hJL5vdBueFyEUMy62Yp6pXLdJBGpIHreRDPCu1+NgZniQibwGG6EmuKhSzV6S
-         GsCg==
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=DFO6Rk7Tx4hw0SPw2ANYZShYSilBpAbikYfHtUSUgJ4=;
+        b=Hf6lkoQB117lQRZBQhZ8TavpzliAnVKU4z6Egh7Mj2rRvsRkP3HUz7+M4asMUUm9Qg
+         tbd4W48ncI5tocOxAV1T+M6pFzkFrwRfsNWOA8JdhdT+vwNUhcpAKo14VT23acJ5oT9n
+         w4+N2z39wOqfHnZuptoWHpj84RlSfVHmyvTwIIKkZ7GVFyLKioMLT3RA1bdESVB93amT
+         Aaqg0UCGxo/9IPzTkiA+0ePucVFGJ9P8F5kmkpu4svff97dPXyy/dY+nYkQUS1gzftLv
+         WhvNxedpbjvW9b2GwCGQtVgdxIyn+dk8D/5tr34cRHkwc9wOcpKlwN1OhFi6JBhPw0eM
+         UhnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ERWyhTXJWw0g6FYpMVzuwjT5hcLIVbpWXsp+/9eskIE=;
-        b=dQ8syWG1nPMQJGeg1Wp8pocxvwo+0pyXt4T/fkx6wCACvYzjL60tCLDmc3YtOU4ir5
-         7kfy+ufakVvrvISRgvQqaWXeQSOIyIwzo5s0jbAnUHpFU30cllF3A4dCsLot4FaXeDTq
-         fStg0jx0tUIvG9oZK/WXf3Bg5hQ18ztxOSOE0trGNaajU9r+FrJ9zh1N5ceu19dFI0xc
-         RMcPkey9p5aoLzRHoN0V55Cntb633Iwp+1kqaDTl/ujmkbkzw1ZuSMtjMJNdzUoBU4HM
-         cZfl0kLaPXdLvMnrz+JgpNY6xz6S9G6657b+BbXSIZXp0wb01CZgPfcj91IPWhLI4Wta
-         m3oA==
-X-Gm-Message-State: ACrzQf0O9a336cOU52o2AV/spgJdd9F80itC98rLgauxPe7Ok4gu2KgR
-        6tY97BsnvxH4vWVVxOaE5GHcbaPw7jUmaQ==
-X-Google-Smtp-Source: AMsMyM4kcVsc06fUTIE7CENi+T4+7C4cI0MJd1lSHCgnFGlFr1dHfdvyDXBjQhx+LVZBZ/9k+maWQg==
-X-Received: by 2002:a05:6214:d6e:b0:4b9:692d:c486 with SMTP id 14-20020a0562140d6e00b004b9692dc486mr1482258qvs.104.1666995409332;
-        Fri, 28 Oct 2022 15:16:49 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id b17-20020ac844d1000000b003a4d5fed8c3sm2928320qto.85.2022.10.28.15.16.47
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=DFO6Rk7Tx4hw0SPw2ANYZShYSilBpAbikYfHtUSUgJ4=;
+        b=VF7VD+GndvQmq94F83K1anvriAzrFkwxqOkT8fwwz37OoPqjRttweQmIwKpa91jQUp
+         YNoWkdox+vJLIIpSyApXEE6BONrDRv9koV/Cv9FDFSDQFebDdYxn/eArJgTZRfdOoLQ4
+         GMe9XJBdy9lXQKGxQ07xnz23kinUPlaYBqaLwO0e4nSopsdKj1eaLIFFPX/ROxdH5rbn
+         VrrsZyTyH4UfaUVb1xyA0MGsNplslszdkp78mz5oUMfzGfVWH8YEHmD7KXBZyZACxhPQ
+         2VAPphuDMQgQIako1oGPTYD71E9vZZQ/gT5afz3yhfuaKE18RSZLHyMIkiqX/cyouj6x
+         x0Sw==
+X-Gm-Message-State: ACrzQf3yX/e+voSiWboUDqewgibdMprtCRO7ts6eVDJfa2Um0Wce7u1g
+        7ajNcLOJJNYG9JVBo1U4r+s=
+X-Google-Smtp-Source: AMsMyM7NLVqJGwqqynmjXRDuTkZXRqz6rlO0IH7hXm03TZpnHGovrwAm0ul3aMMH8d7xb7lpT/un6g==
+X-Received: by 2002:a17:902:778f:b0:17f:8347:ff83 with SMTP id o15-20020a170902778f00b0017f8347ff83mr1218994pll.146.1666995468109;
+        Fri, 28 Oct 2022 15:17:48 -0700 (PDT)
+Received: from localhost ([98.97.41.13])
+        by smtp.gmail.com with ESMTPSA id m2-20020a170902db0200b001868ba9a867sm3541528plx.303.2022.10.28.15.17.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Oct 2022 15:16:48 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next] net: systemport: Add support for RDMA overflow statistic counter
-Date:   Fri, 28 Oct 2022 15:16:42 -0700
-Message-Id: <20221028221643.3207713-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 28 Oct 2022 15:17:47 -0700 (PDT)
+Date:   Fri, 28 Oct 2022 15:17:46 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Wang Yufen <wangyufen@huawei.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     john.fastabend@gmail.com, jakub@cloudflare.com
+Message-ID: <635c550a430c6_256e2089c@john.notmuch>
+In-Reply-To: <1666941754-10216-1-git-send-email-wangyufen@huawei.com>
+References: <1666941754-10216-1-git-send-email-wangyufen@huawei.com>
+Subject: RE: [PATCH net] bpf, sockmap: fix the sk->sk_forward_alloc warning of
+ sk_stream_kill_queues()
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -74,97 +73,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RDMA overflows can happen if the Ethernet controller does not have
-enough bandwidth allocated at the memory controller level, report RDMA
-overflows and deal with saturation, similar to the RBUF overflow
-counter.
+Wang Yufen wrote:
+> When running `test_sockmap` selftests, got the following warning:
+> 
+> WARNING: CPU: 2 PID: 197 at net/core/stream.c:205 sk_stream_kill_queues+0xd3/0xf0
+> Call Trace:
+>   <TASK>
+>   inet_csk_destroy_sock+0x55/0x110
+>   tcp_rcv_state_process+0xd28/0x1380
+>   ? tcp_v4_do_rcv+0x77/0x2c0
+>   tcp_v4_do_rcv+0x77/0x2c0
+>   __release_sock+0x106/0x130
+>   __tcp_close+0x1a7/0x4e0
+>   tcp_close+0x20/0x70
+>   inet_release+0x3c/0x80
+>   __sock_release+0x3a/0xb0
+>   sock_close+0x14/0x20
+>   __fput+0xa3/0x260
+>   task_work_run+0x59/0xb0
+>   exit_to_user_mode_prepare+0x1b3/0x1c0
+>   syscall_exit_to_user_mode+0x19/0x50
+>   do_syscall_64+0x48/0x90
+>   entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> The root case is: In commit 84472b436e76 ("bpf, sockmap: Fix more
+> uncharged while msg has more_data") , I used msg->sg.size replace
+> tosend rudely, which break the
+>    if (msg->apply_bytes && msg->apply_bytes < send)
+> scene.
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Change-Id: I718d806832f807e0d578c252810ba88637e5f5b4
----
- drivers/net/ethernet/broadcom/bcmsysport.c | 11 +++++++++++
- drivers/net/ethernet/broadcom/bcmsysport.h | 11 +++++++++++
- 2 files changed, 22 insertions(+)
+Ah nice catch. Feel free to add my ACK on a v2 with small typo fixup.
 
-diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
-index 425d6ccd5413..95449bf034ac 100644
---- a/drivers/net/ethernet/broadcom/bcmsysport.c
-+++ b/drivers/net/ethernet/broadcom/bcmsysport.c
-@@ -295,6 +295,8 @@ static const struct bcm_sysport_stats bcm_sysport_gstrings_stats[] = {
- 	/* RBUF misc statistics */
- 	STAT_RBUF("rbuf_ovflow_cnt", mib.rbuf_ovflow_cnt, RBUF_OVFL_DISC_CNTR),
- 	STAT_RBUF("rbuf_err_cnt", mib.rbuf_err_cnt, RBUF_ERR_PKT_CNTR),
-+	/* RDMA misc statistics */
-+	STAT_RDMA("rdma_ovflow_cnt", mib.rdma_ovflow_cnt, RDMA_OVFL_DISC_CNTR),
- 	STAT_MIB_SOFT("alloc_rx_buff_failed", mib.alloc_rx_buff_failed),
- 	STAT_MIB_SOFT("rx_dma_failed", mib.rx_dma_failed),
- 	STAT_MIB_SOFT("tx_dma_failed", mib.tx_dma_failed),
-@@ -333,6 +335,7 @@ static inline bool bcm_sysport_lite_stat_valid(enum bcm_sysport_stat_type type)
- 	case BCM_SYSPORT_STAT_NETDEV64:
- 	case BCM_SYSPORT_STAT_RXCHK:
- 	case BCM_SYSPORT_STAT_RBUF:
-+	case BCM_SYSPORT_STAT_RDMA:
- 	case BCM_SYSPORT_STAT_SOFT:
- 		return true;
- 	default:
-@@ -436,6 +439,14 @@ static void bcm_sysport_update_mib_counters(struct bcm_sysport_priv *priv)
- 			if (val == ~0)
- 				rbuf_writel(priv, 0, s->reg_offset);
- 			break;
-+		case BCM_SYSPORT_STAT_RDMA:
-+			if (!priv->is_lite)
-+				continue;
-+
-+			val = rdma_readl(priv, s->reg_offset);
-+			if (val == ~0)
-+				rdma_writel(priv, 0, s->reg_offset);
-+			break;
- 		}
- 
- 		j += s->stat_sizeof;
-diff --git a/drivers/net/ethernet/broadcom/bcmsysport.h b/drivers/net/ethernet/broadcom/bcmsysport.h
-index 5af16e5f9ad0..335cf6631db5 100644
---- a/drivers/net/ethernet/broadcom/bcmsysport.h
-+++ b/drivers/net/ethernet/broadcom/bcmsysport.h
-@@ -290,6 +290,7 @@ struct bcm_rsb {
- 
- #define RDMA_WRITE_PTR_HI		0x1010
- #define RDMA_WRITE_PTR_LO		0x1014
-+#define RDMA_OVFL_DISC_CNTR		0x1018
- #define RDMA_PROD_INDEX			0x1018
- #define  RDMA_PROD_INDEX_MASK		0xffff
- 
-@@ -565,6 +566,7 @@ struct bcm_sysport_mib {
- 	u32 rxchk_other_pkt_disc;
- 	u32 rbuf_ovflow_cnt;
- 	u32 rbuf_err_cnt;
-+	u32 rdma_ovflow_cnt;
- 	u32 alloc_rx_buff_failed;
- 	u32 rx_dma_failed;
- 	u32 tx_dma_failed;
-@@ -581,6 +583,7 @@ enum bcm_sysport_stat_type {
- 	BCM_SYSPORT_STAT_RUNT,
- 	BCM_SYSPORT_STAT_RXCHK,
- 	BCM_SYSPORT_STAT_RBUF,
-+	BCM_SYSPORT_STAT_RDMA,
- 	BCM_SYSPORT_STAT_SOFT,
- };
- 
-@@ -627,6 +630,14 @@ enum bcm_sysport_stat_type {
- 	.reg_offset = ofs, \
- }
- 
-+#define STAT_RDMA(str, m, ofs) { \
-+	.stat_string = str, \
-+	.stat_sizeof = sizeof(((struct bcm_sysport_priv *)0)->m), \
-+	.stat_offset = offsetof(struct bcm_sysport_priv, m), \
-+	.type = BCM_SYSPORT_STAT_RDMA, \
-+	.reg_offset = ofs, \
-+}
-+
- /* TX bytes and packets */
- #define NUM_SYSPORT_TXQ_STAT	2
- 
--- 
-2.25.1
+Acked-by: John Fastabend <john.fastabend@gmail.com>
 
+> 
+> Fixes: 84472b436e76 ("bpf, sockmap: Fix more uncharged while msg has more_data")
+> Reported-by: Jakub Sitnicki <jakub@cloudflare.com>
+> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+> ---
+>  net/ipv4/tcp_bpf.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+> index a1626af..38d4735 100644
+> --- a/net/ipv4/tcp_bpf.c
+> +++ b/net/ipv4/tcp_bpf.c
+> @@ -278,7 +278,7 @@ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
+>  {
+>  	bool cork = false, enospc = sk_msg_full(msg);
+>  	struct sock *sk_redir;
+> -	u32 tosend, delta = 0;
+> +	u32 tosend, orgsize, sended, delta = 0;
+>  	u32 eval = __SK_NONE;
+>  	int ret;
+>  
+> @@ -333,10 +333,12 @@ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
+>  			cork = true;
+>  			psock->cork = NULL;
+>  		}
+> -		sk_msg_return(sk, msg, msg->sg.size);
+> +		sk_msg_return(sk, msg, tosend);
+>  		release_sock(sk);
+>  
+> +		orgsize = msg->sg.size;
+>  		ret = tcp_bpf_sendmsg_redir(sk_redir, msg, tosend, flags);
+> +		sended = orgsize - msg->sg.size;
+
+Small english nitpick. Past tense of send is sent so could we make this,
+
+                sent = orgsize - msg->sg.size;
+
+>  
+>  		if (eval == __SK_REDIRECT)
+>  			sock_put(sk_redir);
+> @@ -374,8 +376,8 @@ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
+>  		if (msg &&
+>  		    msg->sg.data[msg->sg.start].page_link &&
+>  		    msg->sg.data[msg->sg.start].length) {
+> -			if (eval == __SK_REDIRECT)
+> -				sk_mem_charge(sk, msg->sg.size);
+> +			if (eval == __SK_REDIRECT && tosend > sended)
+
+Other nit, you could probably omit the 'tosend > sended' check here. Because
+otherwise tosend == sended and the mem_charge of zer is a nop. But OTOH
+its probably ok to keep the check to avoid some extra work.
+
+> +				sk_mem_charge(sk, tosend - sended);
+>  			goto more_data;
+>  		}
+>  	}
+> -- 
+> 1.8.3.1
