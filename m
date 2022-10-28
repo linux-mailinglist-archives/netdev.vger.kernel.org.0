@@ -2,104 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3522361117D
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 14:32:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 805B861119B
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 14:36:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229999AbiJ1McX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 08:32:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52608 "EHLO
+        id S229999AbiJ1Mg2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 08:36:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbiJ1McW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 08:32:22 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C7CF1905F3
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 05:32:22 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1ooOWn-00033C-Kh; Fri, 28 Oct 2022 14:32:01 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 3A7D510CBD3;
-        Fri, 28 Oct 2022 12:31:57 +0000 (UTC)
-Date:   Fri, 28 Oct 2022 14:31:53 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     Zhengchao Shao <shaozhengchao@huawei.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux@rempel-privat.de, weiyongjun1@huawei.com,
-        yuehaibing@huawei.com
-Subject: Re: [PATCH net] can: af_can: fix NULL pointer dereference in
- can_rx_register()
-Message-ID: <20221028123153.ltdwjbtpr2iatsqz@pengutronix.de>
-References: <20221028033342.173528-1-shaozhengchao@huawei.com>
- <d1e728d2-b62f-3646-dd27-8cc36ba7c819@hartkopp.net>
- <20221028074637.3havdrt37qsmbvll@pengutronix.de>
- <773e6b03-c816-5ecb-bd4f-5f214fa347fb@hartkopp.net>
+        with ESMTP id S229571AbiJ1Mg2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 08:36:28 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F0C61BC17D;
+        Fri, 28 Oct 2022 05:36:27 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id v1so6410183wrt.11;
+        Fri, 28 Oct 2022 05:36:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=wycqnBb9yJKDEW3bJJPSC5fzrru3Jf1qAMB2d8ApDxo=;
+        b=gzkjkw5P/S/NQ5bDEx5+kVzA2gyLzAYxK4tR2JIj6cXczSIqSaEzzQU037hVBIL16a
+         PusCBQhOM0J7teGkkkVh3OfznGGF9Q6L5mfyCBXOOH+0GMS3yO0YpeNesuNqCLIYBHdg
+         yea77P70ifuxmvgbVk0Mt6cTVrI6GCNzmDZEva7+vd6a4FzbymsXcWQ2DYwziUvdMZJB
+         i26mvrLzTimZ4TtA6FRC2Y5o3VJPdzlpFfNAIYWW8AevfLJjbQzO1qQtPfKNZiV2ADCZ
+         h75K5qE2lqhTM3RfjQiGMZxhJ0fyavFWeB+cHWGKCemZxtMhbJrdIAcMcSr3p9V9pA+0
+         Xvzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=wycqnBb9yJKDEW3bJJPSC5fzrru3Jf1qAMB2d8ApDxo=;
+        b=0J8Ip/y3TBNSRSCuaAgPz/vR+OE441uJNWkr9KLQHn9ZHOCnAn4aJ9WxYtcjAzDB2W
+         UU+A/J+Mva75wFoXJvt1Lo1Lsa4R7sXw+VOHe9Vm1Yhm+XDqAxetbIS1SZooNErWzSR4
+         Qp6I6JPeB43YEa09Nnd0Enoagnk1K+O6Q06FonaIM1aby/S0LYbcqZw3JdkA8He9Dg1V
+         UPx67Zbq/+PrdqsiUGE10tLlpRo+q4SGcQfWg6x8Ns1s6zDInnuz2WwrsMeHZwiEor6X
+         2UAQzNWaZDyIw18mGVEn6wH+qzo1tyj4oPEPgQKEYFft33kQg2andtAsNK3acobGtZjS
+         s/Kw==
+X-Gm-Message-State: ACrzQf0DATWXs7pTp9S4dJum3TNXM1BX4FrbV9224TIOICwHxEK8aJjd
+        inm+yhUfb3fm00fw6JZBYmc=
+X-Google-Smtp-Source: AMsMyM6EAHFcT3yApGhskQ5vTnRyjDcjeNd3iqGjuID+2QCUVl97vKfRdRAgqE//BMZUHK7ccuYQlQ==
+X-Received: by 2002:a5d:584d:0:b0:230:c250:603e with SMTP id i13-20020a5d584d000000b00230c250603emr34325437wrf.143.1666960585600;
+        Fri, 28 Oct 2022 05:36:25 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id 6-20020a05600c230600b003cf37c5ddc0sm4029403wmo.22.2022.10.28.05.36.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Oct 2022 05:36:25 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: mvneta: Remove unused variable i
+Date:   Fri, 28 Oct 2022 13:36:24 +0100
+Message-Id: <20221028123624.529483-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="qcwpp5t7vsftovkw"
-Content-Disposition: inline
-In-Reply-To: <773e6b03-c816-5ecb-bd4f-5f214fa347fb@hartkopp.net>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Variable i is just being incremented and it's never used anywhere else. The
+variable and the increment are redundant so remove it.
 
---qcwpp5t7vsftovkw
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/net/ethernet/marvell/mvneta.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-On 28.10.2022 13:24:36, Oliver Hartkopp wrote:
-> Didn't have remembered that specific discussion.
->=20
-> Wouldn't we need this check in can_rx_unregister() and maybe
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index ff3e361e06e7..1822796f8498 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -4266,7 +4266,7 @@ static void mvneta_mdio_remove(struct mvneta_port *pp)
+  */
+ static void mvneta_percpu_elect(struct mvneta_port *pp)
+ {
+-	int elected_cpu = 0, max_cpu, cpu, i = 0;
++	int elected_cpu = 0, max_cpu, cpu;
+ 
+ 	/* Use the cpu associated to the rxq when it is online, in all
+ 	 * the other cases, use the cpu 0 which can't be offline.
+@@ -4306,8 +4306,6 @@ static void mvneta_percpu_elect(struct mvneta_port *pp)
+ 		 */
+ 		smp_call_function_single(cpu, mvneta_percpu_unmask_interrupt,
+ 					 pp, true);
+-		i++;
+-
+ 	}
+ };
+ 
+-- 
+2.37.3
 
-The kernel should not call can_rx_unregister() if can_rx_register()
-fails, but on the other hand we check for ARPHRD_CAN here, too.
-
-> can[|fd|xl]_rcv() then too?
->=20
-> As all these functions check for ARPHRD_CAN and later access ml_priv.
-
-Better safe then sorry.
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---qcwpp5t7vsftovkw
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmNby7YACgkQrX5LkNig
-011AwAf9HfNp0x2JzVFVrmhpNGfx871uQTbBXNtvWN3ZxanToxmYqmDP7UOs69Y7
-3IQi+a5GNiKZq/AnAmLjWaUXxroIvQYwxTLx+uFjrzpetdNYhLRxj5OGBih04Lqr
-ZInYrv1PLocMA8Y2lGaYHK5qQKy7zc9Wy2ZwQ3cdfa/NeWTxohHfPXZTjOZyKjLZ
-/cVW5prLT7VUOFasEt3T0UlJ9TaOWttWVYOl29hPklF2jci1lUOqImFNxZWDfT42
-6dD/3U8tjXPDSgJZB4dGar5JiQM1fj1zTC+4V1oVbbYJUx6tUxBBJjzGfqOHq3X+
-1RbzT7drIYKjZE0cgj3N6qk8ckTt1A==
-=o69o
------END PGP SIGNATURE-----
-
---qcwpp5t7vsftovkw--
