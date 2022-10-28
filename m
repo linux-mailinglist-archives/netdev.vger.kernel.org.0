@@ -2,47 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A355610E0A
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 12:01:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78131610DDE
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 11:55:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230107AbiJ1KB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 06:01:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36316 "EHLO
+        id S229752AbiJ1JzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 05:55:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229752AbiJ1KBU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 06:01:20 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F3B52804;
-        Fri, 28 Oct 2022 03:01:13 -0700 (PDT)
-Received: from [141.14.13.43] (g298.RadioFreeInternet.molgen.mpg.de [141.14.13.43])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 870D161EA192A;
-        Fri, 28 Oct 2022 12:01:10 +0200 (CEST)
-Message-ID: <1bd57adb-49f1-3b90-541c-8d3d10963ccb@molgen.mpg.de>
-Date:   Fri, 28 Oct 2022 12:01:10 +0200
+        with ESMTP id S230361AbiJ1Jyi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 05:54:38 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE60731FA3;
+        Fri, 28 Oct 2022 02:54:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1666950846; x=1698486846;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=N9bBxptftSWlVfMu4j8597Q7mUCHeg2rDMNcd+bfnic=;
+  b=y6ODyA5VievUG4DnKE5Uyt+unpsA6g4W4TYzp7AcTDTSccxSVJvUVD/9
+   bmDz+cTseLpv6kyNq/M0uFD4R7THWWAUljsfaN5aiPmDiMra7rwT1SWgu
+   66mVR3YfPRYwIqEFu4eHxQuAoTXJYjG+2g+C9i6zz/bodOr5IJo1o/vIt
+   Km8ZW0d2QpRUwsQ8iNUHZyDiHlLC0oYVijGwc3ZVb9Nb7UfOZH5Fui6BI
+   Vl9RuioQUO0JvfX4lEJCP+I4I67PK+HtjbEVJ0/WT1PjeqH9QRgERv7jx
+   6iprSkMLQ3HpIX59Rzg/ITVG0i0/wIYtYOd3rpYfGI9xlLuuqsAJILPC/
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.95,220,1661842800"; 
+   d="scan'208";a="186674534"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Oct 2022 02:54:04 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Fri, 28 Oct 2022 02:54:03 -0700
+Received: from DEN-LT-70577.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Fri, 28 Oct 2022 02:53:59 -0700
+From:   Daniel Machon <daniel.machon@microchip.com>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <petrm@nvidia.com>,
+        <maxime.chevallier@bootlin.com>, <thomas.petazzoni@bootlin.com>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <lars.povlsen@microchip.com>, <Steen.Hegelund@microchip.com>,
+        <daniel.machon@microchip.com>, <UNGLinuxDriver@microchip.com>,
+        <joe@perches.com>, <linux@armlinux.org.uk>,
+        <horatiu.vultur@microchip.com>, <Julia.Lawall@inria.fr>,
+        <vladimir.oltean@nxp.com>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [PATCH net-next v4 0/6] Add new PCP and APPTRUST attributes to dcbnl
+Date:   Fri, 28 Oct 2022 12:03:14 +0200
+Message-ID: <20221028100320.786984-1-daniel.machon@microchip.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [Intel-wired-lan] [PATCH] e1000e: Fix TX dispatch condition
-Content-Language: en-US
-To:     Akihiko Odaki <akihiko.odaki@daynix.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yuri Benditovich <yuri.benditovich@daynix.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Yan Vugenfirer <yan@daynix.com>,
-        intel-wired-lan@lists.osuosl.org, Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20221013050044.11862-1-akihiko.odaki@daynix.com>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <20221013050044.11862-1-akihiko.odaki@daynix.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -50,66 +66,140 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Akihiko,
+This patch series adds new extension attributes to dcbnl, to support PCP
+prioritization (and thereby hw offloadable pcp-based queue
+classification) and per-selector trust and trust order. Additionally,
+the microchip sparx5 driver has been dcb-enabled to make use of the new
+attributes to offload PCP, DSCP and Default prio to the switch, and
+implement trust order of selectors.
 
+For pre-RFC discussion see:
+https://lore.kernel.org/netdev/Yv9VO1DYAxNduw6A@DEN-LT-70577/
 
-Thank you very much for the patch.
+For RFC series see:
+https://lore.kernel.org/netdev/20220915095757.2861822-1-daniel.machon@microchip.com/
 
-Am 13.10.22 um 07:00 schrieb Akihiko Odaki:
-> e1000_xmit_frame is expected to stop the queue and dispatch frames to
-> hardware if there is not sufficient space for the next frame in the
-> buffer, but sometimes it failed to do so because the estimated maxmium
-> size of frame was wrong. As the consequence, the later invocation of
-> e1000_xmit_frame failed with NETDEV_TX_BUSY, and the frame in the buffer
-> remained forever, resulting in a watchdog failure.
-> 
-> This change fixes the estimated size by making it match with the
-> condition for NETDEV_TX_BUSY. Apparently, the old estimation failed to
-> account for the following lines which determines the space requirement
-> for not causing NETDEV_TX_BUSY:
->> 	/* reserve a descriptor for the offload context */
->> 	if ((mss) || (skb->ip_summed == CHECKSUM_PARTIAL))
->> 		count++;
->> 	count++;
->>
->> 	count += DIV_ROUND_UP(len, adapter->tx_fifo_limit);
+In summary: there currently exist no convenient way to offload per-port
+PCP-based queue classification to hardware. The DCB subsystem offers
+different ways to prioritize through its APP table, but lacks an option
+for PCP. Similarly, there is no way to indicate the notion of trust for
+APP table selectors. This patch series addresses both topics.
 
-I’d just use Markdown syntax, and indent by four spaces without > for 
-citation.
+PCP based queue classification:
+  - 8021Q standardizes the Priority Code Point table (see 6.9.3 of IEEE
+    Std 802.1Q-2018).  This patch series makes it possible, to offload
+    the PCP classification to said table.  The new PCP selector is not a
+    standard part of the APP managed object, therefore it is
+    encapsulated in a new non-std extension attribute.
 
-> This issue was found with http-stress02 test included in Linux Test
-> Project 20220930.
+Selector trust:
+  - ASIC's often has the notion of trust DSCP and trust PCP. The new
+    attribute makes it possible to specify a trust order of app
+    selectors, which drivers can then react on.
 
-So it was reproduced in QEMU? For convenience, it’d be great if you 
-added the QEMU command.
+DCB-enable sparx5 driver:
+ - Now supports offloading of DSCP, PCP and default priority. Only one
+   mapping of protocol:priority is allowed. Consecutive mappings of the
+   same protocol to some new priority, will overwrite the previous. This
+   is to keep a consistent view of the app table and the hardware.
+ - Now supports dscp and pcp trust, by use of the introduced
+   dcbnl_set/getapptrust ops. Sparx5 supports trust orders: [], [dscp],
+   [pcp] and [dscp, pcp]. For now, only DSCP and PCP selectors are
+   supported by the driver, everything else is bounced.
 
-Also, do you know if this is a regression? If so, it’d be great if you 
-added the Fixes: tag.
+Patch #1 introduces a new PCP selector to the APP object, which makes it
+possible to encode PCP and DEI in the app triplet and offload it to the
+PCP table of the ASIC.
 
+Patch #2 Introduces the new extension attributes
+DCB_ATTR_DCB_APP_TRUST_TABLE and DCB_ATTR_DCB_APP_TRUST. Trusted
+selectors are passed in the nested DCB_ATTR_DCB_APP_TRUST_TABLE
+attribute, and assembled into an array of selectors:
 
-Kind regards,
+  u8 selectors[256];
 
-Paul
+where lower indexes has higher precedence.  In the array, selectors are
+stored consecutively, starting from index zero. With a maximum number of
+256 unique selectors, the list has the same maximum size.
 
+Patch #3 Sets up the dcbnl ops hook, and adds support for offloading pcp
+app entries, to the PCP table of the switch.
 
-> Signed-off-by: Akihiko Odaki <akihiko.odaki@daynix.com>
-> ---
->   drivers/net/ethernet/intel/e1000e/netdev.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-> index 321f2a95ae3a..da113f5011e9 100644
-> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
-> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-> @@ -5936,9 +5936,9 @@ static netdev_tx_t e1000_xmit_frame(struct sk_buff *skb,
->   		e1000_tx_queue(tx_ring, tx_flags, count);
->   		/* Make sure there is space in the ring for the next send. */
->   		e1000_maybe_stop_tx(tx_ring,
-> -				    (MAX_SKB_FRAGS *
-> +				    ((MAX_SKB_FRAGS + 1) *
->   				     DIV_ROUND_UP(PAGE_SIZE,
-> -						  adapter->tx_fifo_limit) + 2));
-> +						  adapter->tx_fifo_limit) + 4));
->   
->   		if (!netdev_xmit_more() ||
->   		    netif_xmit_stopped(netdev_get_tx_queue(netdev, 0))) {
+Patch #4 Makes use of the dcbnl_set/getapptrust ops, to set a per-port
+trust order.
+
+Patch #5 Adds support for offloading dscp app entries to the DSCP table
+of the switch.
+
+Patch #6 Adds support for offloading default prio app entries to the
+switch.
+
+================================================================================
+
+RFC v1:
+https://lore.kernel.org/netdev/20220908120442.3069771-1-daniel.machon@microchip.com/
+
+RFC v1 -> RFC v2:
+  - Added new nested attribute type DCB_ATTR_DCB_APP_TRUST_TABLE.
+  - Renamed attributes from DCB_ATTR_IEEE_* to DCB_ATTR_DCB_*.
+  - Renamed ieee_set/getapptrust to dcbnl_set/getapptrust.
+  - Added -EOPNOTSUPP if dcbnl_setapptrust is not set.
+  - Added sanitization of selector array, before passing to driver.
+
+RFC v2 -> (non-RFC) v1:
+  - Added additional check for selector validity.
+  - Fixed a few style errors.
+  - using nla_start_nest() instead of nla_start_nest_no_flag().
+  - Moved DCB_ATTR_DCB_APP_TRUST into new enum.
+  - Added new DCB_ATTR_DCB_APP extension attribute, for non-std selector
+    values.
+  - Added support for offloading dscp, pcp and default prio in the sparx5
+    driver.
+  - Added support for per-selector trust and trust order in the sparx5
+    driver.
+
+v1 -> v2:
+  - Fixed compiler and kdoc warning
+
+v2 -> v3:
+  - Moved back to 255 as PCP selector value.
+  - Fixed return value in dcbnl_app_attr_type_get() to enum.
+  - Modified in dcbnl_app_attr_type_get() dcbnl_app_attr_type_validate() to
+    return directly.
+  - Added nselector check in sparx5_dcb_apptrust_validate().
+  - Added const qualifier to "names" variable in struct sparx5_dcb_apptrust.
+  - Added new SPARX5_DCB config. Fixes issues reported by kernel test robot.
+  
+v3 -> v4:
+  - Added new dcbnl_app_attr_selector_validate() function to validate that
+    app selectors are sent in correct attribute e.g IEEE selectors in
+    DCB_ATTR_IEEE and non-std selectors in DCB_ATTR_DCB.
+  - Modified handling of dcbnl_getapptrust() return value, so that an error is
+    ignored. Instead, added error check on nla_put_u8() and cancelling nest in
+    case of an error. 
+
+Daniel Machon (6):
+  net: dcb: add new pcp selector to app object
+  net: dcb: add new apptrust attribute
+  net: microchip: sparx5: add support for offloading pcp table
+  net: microchip: sparx5: add support for apptrust
+  net: microchip: sparx5: add support for offloading dscp table
+  net: microchip: sparx5: add support for offloading default prio
+
+ drivers/net/ethernet/microchip/sparx5/Kconfig |  10 +
+ .../net/ethernet/microchip/sparx5/Makefile    |   2 +
+ .../ethernet/microchip/sparx5/sparx5_dcb.c    | 293 ++++++++++++++++++
+ .../ethernet/microchip/sparx5/sparx5_main.h   |  11 +
+ .../microchip/sparx5/sparx5_main_regs.h       | 127 +++++++-
+ .../ethernet/microchip/sparx5/sparx5_port.c   |  99 ++++++
+ .../ethernet/microchip/sparx5/sparx5_port.h   |  37 +++
+ .../ethernet/microchip/sparx5/sparx5_qos.c    |   4 +
+ include/net/dcbnl.h                           |   4 +
+ include/uapi/linux/dcbnl.h                    |  16 +
+ net/dcb/dcbnl.c                               | 159 +++++++++-
+ 11 files changed, 753 insertions(+), 9 deletions(-)
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c
+
+-- 
+2.34.1
+
