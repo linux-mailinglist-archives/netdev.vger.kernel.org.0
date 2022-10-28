@@ -2,163 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC6F5610A47
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 08:23:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 693CC610AC6
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 08:55:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229519AbiJ1GXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 02:23:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47886 "EHLO
+        id S229668AbiJ1GzV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 02:55:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbiJ1GXA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 02:23:00 -0400
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F38141B8658;
-        Thu, 27 Oct 2022 23:22:58 -0700 (PDT)
-Message-ID: <31f3aa18-d368-9738-8bb5-857cd5f2c5bf@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1666938177;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PjdyWQHBxlFEAVHsy8KHBXasKBH77ZloY2jBob0cGSo=;
-        b=fIzOSJYKqfCNmFAW/5mh3gmrzWOW0oqCM0LOy7QJynO+iAi/by4YiDk60k6tps9S9BET+x
-        YFr5HJYVFCz4QM+52y79KWf8k4FRAY5wD4PzdoNlm49GykrxhtvczSLjAoQHOcR7qQrNH3
-        G6zCM/qR5I9tnG3gJ7y3A2UOIFCZW/g=
-Date:   Thu, 27 Oct 2022 23:22:51 -0700
+        with ESMTP id S229572AbiJ1GzT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 02:55:19 -0400
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D32D62B26C;
+        Thu, 27 Oct 2022 23:55:14 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.95,220,1661785200"; 
+   d="scan'208";a="138241843"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 28 Oct 2022 15:55:13 +0900
+Received: from localhost.localdomain (unknown [10.166.15.32])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 9D988400C742;
+        Fri, 28 Oct 2022 15:55:13 +0900 (JST)
+From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH v6 0/3] net: ethernet: renesas: Add support for "Ethernet Switch"
+Date:   Fri, 28 Oct 2022 15:54:55 +0900
+Message-Id: <20221028065458.2417293-1-yoshihiro.shimoda.uh@renesas.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Subject: Re: [RFC bpf-next 5/5] selftests/bpf: Test rx_timestamp metadata in
- xskxceiver
-Content-Language: en-US
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Anatoly Burakov <anatoly.burakov@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-References: <20221027200019.4106375-1-sdf@google.com>
- <20221027200019.4106375-6-sdf@google.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-In-Reply-To: <20221027200019.4106375-6-sdf@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=0.4 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/27/22 1:00 PM, Stanislav Fomichev wrote:
-> Example on how the metadata is prepared from the BPF context
-> and consumed by AF_XDP:
-> 
-> - bpf_xdp_metadata_have_rx_timestamp to test whether it's supported;
->    if not, I'm assuming verifier will remove this "if (0)" branch
-> - bpf_xdp_metadata_rx_timestamp returns a _copy_ of metadata;
->    the program has to bpf_xdp_adjust_meta+memcpy it;
->    maybe returning a pointer is better?
-> - af_xdp consumer grabs it from data-<expected_metadata_offset> and
->    makes sure timestamp is not empty
-> - when loading the program, we pass BPF_F_XDP_HAS_METADATA+prog_ifindex
-> 
-> Cc: Martin KaFai Lau <martin.lau@linux.dev>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Willem de Bruijn <willemb@google.com>
-> Cc: Jesper Dangaard Brouer <brouer@redhat.com>
-> Cc: Anatoly Burakov <anatoly.burakov@intel.com>
-> Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
-> Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
-> Cc: Maryam Tahhan <mtahhan@redhat.com>
-> Cc: xdp-hints@xdp-project.net
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> ---
->   .../testing/selftests/bpf/progs/xskxceiver.c  | 22 ++++++++++++++++++
->   tools/testing/selftests/bpf/xskxceiver.c      | 23 ++++++++++++++++++-
->   2 files changed, 44 insertions(+), 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/bpf/progs/xskxceiver.c b/tools/testing/selftests/bpf/progs/xskxceiver.c
-> index b135daddad3a..83c879aa3581 100644
-> --- a/tools/testing/selftests/bpf/progs/xskxceiver.c
-> +++ b/tools/testing/selftests/bpf/progs/xskxceiver.c
-> @@ -12,9 +12,31 @@ struct {
->   	__type(value, __u32);
->   } xsk SEC(".maps");
->   
-> +extern int bpf_xdp_metadata_have_rx_timestamp(struct xdp_md *ctx) __ksym;
-> +extern __u32 bpf_xdp_metadata_rx_timestamp(struct xdp_md *ctx) __ksym;
-> +
->   SEC("xdp")
->   int rx(struct xdp_md *ctx)
->   {
-> +	void *data, *data_meta;
-> +	__u32 rx_timestamp;
-> +	int ret;
-> +
-> +	if (bpf_xdp_metadata_have_rx_timestamp(ctx)) {
-> +		ret = bpf_xdp_adjust_meta(ctx, -(int)sizeof(__u32));
-> +		if (ret != 0)
-> +			return XDP_DROP;
-> +
-> +		data = (void *)(long)ctx->data;
-> +		data_meta = (void *)(long)ctx->data_meta;
-> +
-> +		if (data_meta + sizeof(__u32) > data)
-> +			return XDP_DROP;
-> +
-> +		rx_timestamp = bpf_xdp_metadata_rx_timestamp(ctx);
-> +		__builtin_memcpy(data_meta, &rx_timestamp, sizeof(__u32));
-> +	}
+This patch series is based on next-20221027.
 
-Thanks for the patches.  I took a quick look at patch 1 and 2 but haven't had a 
-chance to look at the implementation details (eg. KF_UNROLL...etc), yet.
+Add initial support for Renesas "Ethernet Switch" device of R-Car S4-8.
+The hardware has features about forwarding for an ethernet switch
+device. But, for now, it acts as ethernet controllers so that any
+forwarding offload features are not supported. So, any switchdev
+header files and DSA framework are not used.
 
-Overall (with the example here) looks promising.  There is a lot of flexibility 
-on whether the xdp prog needs any hint at all, which hint it needs, and how to 
-store it.
+Notes that this driver requires some special settings on marvell10g,
+Especially host mactype and host speed. And, I need further investigation
+to modify the marvell10g driver for upstream. But, the special settings
+are applied, this rswitch driver can work correcfly without any changes
+of this rswitch driver. So, I believe the rswitch driver can go for
+upstream.
 
-> +
->   	return bpf_redirect_map(&xsk, ctx->rx_queue_index, XDP_PASS);
->   }
->   
-> diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
-> index 066bd691db13..ce82c89a432e 100644
-> --- a/tools/testing/selftests/bpf/xskxceiver.c
-> +++ b/tools/testing/selftests/bpf/xskxceiver.c
-> @@ -871,7 +871,9 @@ static bool is_offset_correct(struct xsk_umem_info *umem, struct pkt_stream *pkt
->   static bool is_pkt_valid(struct pkt *pkt, void *buffer, u64 addr, u32 len)
->   {
->   	void *data = xsk_umem__get_data(buffer, addr);
-> +	void *data_meta = data - sizeof(__u32);
->   	struct iphdr *iphdr = (struct iphdr *)(data + sizeof(struct ethhdr));
-> +	__u32 rx_timestamp = 0;
->   
->   	if (!pkt) {
->   		ksft_print_msg("[%s] too many packets received\n", __func__);
-> @@ -907,6 +909,13 @@ static bool is_pkt_valid(struct pkt *pkt, void *buffer, u64 addr, u32 len)
->   		return false;
->   	}
->   
-> +	memcpy(&rx_timestamp, data_meta, sizeof(rx_timestamp));
-> +	if (rx_timestamp == 0) {
-> +		ksft_print_msg("Invalid metadata received: ");
-> +		ksft_print_msg("got %08x, expected != 0\n", rx_timestamp);
-> +		return false;
-> +	}
-> +
->   	return true;
->   }
+Changes from v5:
+https://lore.kernel.org/all/20221027134034.2343230-1-yoshihiro.shimoda.uh@renesas.com/
+ - Add maxItems for the ethernet-port/port/reg property.
 
->   
+Changes from v4:
+https://lore.kernel.org/all/20221019083518.933070-1-yoshihiro.shimoda.uh@renesas.com/
+ - Rebased on next-20221027.
+ - Drop some unneeded properties on the dt-bindings doc.
+ - Change the subject and commit descriptions on the patch [2/3].
+ - Use phylink instead of phylib.
+ - Modify struct rswitch_*_desc to remove similar functions ([gs]et_dptr).
+
+Changes from v3:
+ https://lore.kernel.org/all/20220922052803.3442561-1-yoshihiro.shimoda.uh@renesas.com/
+ - Rebased on next-20221017.
+ - Rename dt-binding file.
+ - Fix a lot of things about dt-binding.
+ - Remove unneeded clocks/resets property.
+ - Fix a lot of things about the rswitch driver.
+ -- Fix a lot of sparse warnings.
+ -- Naming of definitations/variables for readability.
+ -- Add supports for all ports, especially using direct descriptor mode
+    for sending frames from CPU to the specific user port.
+ --- Refactor the initialization sequence to support all ports.
+     (Especially, this is for SERDES which needs all black magic...)
+ - Add protection for multiple registers access in the ptp driver.
+
+Changes from v2:
+ https://lore.kernel.org/all/20220921084745.3355107-1-yoshihiro.shimoda.uh@renesas.com/
+ - Separate patcheas into each subsystem.
+ - Add spin lock protection for multiple registers access in patch [3/3].
+
+Yoshihiro Shimoda (3):
+  dt-bindings: net: renesas: Document Renesas Ethernet Switch
+  net: ethernet: renesas: Add support for "Ethernet Switch"
+  net: ethernet: renesas: rswitch: Add R-Car Gen4 gPTP support
+
+ .../net/renesas,r8a779f0-ether-switch.yaml    |  262 +++
+ drivers/net/ethernet/renesas/Kconfig          |   11 +
+ drivers/net/ethernet/renesas/Makefile         |    4 +
+ drivers/net/ethernet/renesas/rcar_gen4_ptp.c  |  181 ++
+ drivers/net/ethernet/renesas/rcar_gen4_ptp.h  |   72 +
+ drivers/net/ethernet/renesas/rswitch.c        | 1832 +++++++++++++++++
+ drivers/net/ethernet/renesas/rswitch.h        |  973 +++++++++
+ 7 files changed, 3335 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/renesas,r8a779f0-ether-switch.yaml
+ create mode 100644 drivers/net/ethernet/renesas/rcar_gen4_ptp.c
+ create mode 100644 drivers/net/ethernet/renesas/rcar_gen4_ptp.h
+ create mode 100644 drivers/net/ethernet/renesas/rswitch.c
+ create mode 100644 drivers/net/ethernet/renesas/rswitch.h
+
+-- 
+2.25.1
 
