@@ -2,129 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 356B9611212
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 15:00:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46954611274
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 15:14:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230149AbiJ1NAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 09:00:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42796 "EHLO
+        id S230361AbiJ1NOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 09:14:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230161AbiJ1NAU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 09:00:20 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3979356F8
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 06:00:18 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id y4so4799981plb.2
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 06:00:18 -0700 (PDT)
+        with ESMTP id S230403AbiJ1NN6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 09:13:58 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3F981C6BE1;
+        Fri, 28 Oct 2022 06:13:57 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id v28so4578127pfi.12;
+        Fri, 28 Oct 2022 06:13:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=daynix-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=5iJgtqpqiJVn//zhOfDmx7Kv+t48Z9oElzV8cQV4k8Q=;
-        b=OYyI1D0//SYHg7b9sDx9vjzWuMkJE0shNqa2Ap8f/NCqkVLJzjc+VklmLtIPloaXN/
-         bcAk4bSk4VpzlPj13/R1bBnPUM5Qm8iMvZq8utmw3hiV1k1tRJwDYZBeAOJsOVPTm75I
-         CKSRzSfgiTeWhtkm5GuQVZpD+1iTHJp6chiq+v7s0ZFpqU53u4FTWEMoLqUFCnL/KqCl
-         x0nm9C4ORjC47udpZ2tXLPfgAA28yQHwo9lh29uFutgVJ4jdNWR8r4qtc+xVra76ILdX
-         QMwFkn5XQReuxrsDbdnzfuCipMkOxzzpTFJNiNbGt5NWk16rMldf2cpA5MYmxASsmzn9
-         QPOQ==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=RdwGDChygcbuv7ncAXaIEDQUdOkATGiqCP5G7LmTETU=;
+        b=OGV0n8XdxQLrjYQerDgQmrWWTcgpZNfXK7TFxWE2ozN61Bz75q40ALh2STA49sbirq
+         ctYJvbNnH1YINiWgvLPazHGs1BE5Y4KbZmFlQaCxw8rQyTALlQjOqXDYgIZIe61yYgey
+         2e2vHYXseeNq2Qy06WRpBJ2lxWeNNfGRlsmjHFCoggA01gF2CnCOSGQ+r0PuJ5JNjuDH
+         ADd1MuVKCrerCkOC/jUy82iFfRbqbD/0LThpvh/ZmflFcgG1kKCuJj4+8gXhZ+A3q1AJ
+         rNlhQi30/Q6TqyPld9jke1/40q5rVTV8xXxTJ0xMXy3RMX64hrfas0M8SusTWD3MD4IH
+         hCeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=5iJgtqpqiJVn//zhOfDmx7Kv+t48Z9oElzV8cQV4k8Q=;
-        b=XbP0oSN9usPhmFluslGMdAiC35vLE+HhoH9GcAIlzNgthn+dQVS8+4+a72b+eiBEz7
-         HBl16kJTq5kqv+bjExJjHzZsMTGbn1uy/OGbHOdJAT4RuDZrm9EWJJxjFNZeZANkcTxC
-         lcwXa/yLVNCGcuoMt8EYmvTN8Mcwj6yh0FLCDl1bkfeQlh5JJKbQHsboi09B/0Tz5cBU
-         HHL39un+law8P3HvFvMilvR0g6geJDKD1cBRiSYBlIzjkR5mVCGXX1SiLxZUoI6GppJV
-         dpII/P+UsLmXlv2HoPHDqhAqN7DXezc9rix5fO6yOy0PCGin4pFI7w7e8URF+IHe/OqS
-         oIuA==
-X-Gm-Message-State: ACrzQf3E3nx/MVU/ewQl6C6GmPyWuuvFKgg3PTWYjxH2BPph73cE3y/R
-        ADJBz8AEV47l2f58HS8HpTjqIg==
-X-Google-Smtp-Source: AMsMyM7PmTVcA7PMinrbHKlUjxdSN3EiXgN4d3rE8Fu3scAMRdj2UzkM3odDl9Tmj7UjN9XWOSa9DA==
-X-Received: by 2002:a17:902:b90b:b0:186:8a4d:d4b7 with SMTP id bf11-20020a170902b90b00b001868a4dd4b7mr33134131plb.129.1666962015777;
-        Fri, 28 Oct 2022 06:00:15 -0700 (PDT)
-Received: from fedora.flets-east.jp ([2400:4050:c360:8200:8ae8:3c4:c0da:7419])
-        by smtp.gmail.com with ESMTPSA id v19-20020a17090ac91300b002036006d65bsm2512524pjt.39.2022.10.28.06.00.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Oct 2022 06:00:15 -0700 (PDT)
-From:   Akihiko Odaki <akihiko.odaki@daynix.com>
-Cc:     Paul Menzel <pmenzel@molgen.mpg.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Yuri Benditovich <yuri.benditovich@daynix.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Yan Vugenfirer <yan@daynix.com>,
-        intel-wired-lan@lists.osuosl.org, Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Akihiko Odaki <akihiko.odaki@daynix.com>
-Subject: [PATCH v2] e1000e: Fix TX dispatch condition
-Date:   Fri, 28 Oct 2022 22:00:00 +0900
-Message-Id: <20221028130000.7318-1-akihiko.odaki@daynix.com>
-X-Mailer: git-send-email 2.37.3
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=RdwGDChygcbuv7ncAXaIEDQUdOkATGiqCP5G7LmTETU=;
+        b=N93zDmtjf+1y2cylPrJBlX0wi+mwMOUAXZtUL/w11uF3XDSH73C7Ft51bdQVersbMA
+         IyKUllcb/yVq/ZZIP6d6h/NmyM2KT1P93SUUk0sOO//mWSKLD/TO68ixvhG8Fk3DUtJ8
+         EzsXVQas0rTUHLJ5i0NWRwtePGlUSbsmtLpdI+cEJvil181dcvW2YfZmjzAzVy6obWwY
+         VtI7dzx57E8bmfALUsVYHm1hZoxpy42obX9/unJVdMK1nkrR9Bt84m4Kfl+Lk9mahE1q
+         vIX8q45m3tH9GTCatBoiF4VZyaG/sLxKXuzYeopnL7ucqPQRs6nBTU+3/j9NRyLZH1e4
+         8E+w==
+X-Gm-Message-State: ACrzQf3GC1vuE4Zu4bzAeLj9FHPWS1J326Jab6TpfvLExW1ZTgILyGxS
+        Qz33H1kygwjxZ1xkajKff3c=
+X-Google-Smtp-Source: AMsMyM6BnZiyO9TCguQ8TZ5hERm14cu4VDLcsD7/eQBL8RQ6bEu8ReapyTTcyaB9+MvZS5OHyb+JIQ==
+X-Received: by 2002:a05:6a00:14cc:b0:56b:9969:823 with SMTP id w12-20020a056a0014cc00b0056b99690823mr30912145pfu.36.1666962836924;
+        Fri, 28 Oct 2022 06:13:56 -0700 (PDT)
+Received: from [192.168.43.80] (subs03-180-214-233-72.three.co.id. [180.214.233.72])
+        by smtp.gmail.com with ESMTPSA id pj14-20020a17090b4f4e00b00212cf2fe8c3sm12659694pjb.1.2022.10.28.06.13.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 28 Oct 2022 06:13:56 -0700 (PDT)
+Message-ID: <47c2bffb-6bfe-7f5d-0d2d-3cbb99d31019@gmail.com>
+Date:   Fri, 28 Oct 2022 20:13:49 +0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [PATCH 01/15] hamradio: baycom: remove BAYCOM_MAGIC
+To:     =?UTF-8?B?0L3QsNCx?= <nabijaczleweli@nabijaczleweli.xyz>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Federico Vaga <federico.vaga@vaga.pv.it>,
+        Alex Shi <alexs@kernel.org>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Hu Haowen <src.res@email.cn>,
+        Thomas Sailer <t.sailer@alumni.ethz.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        =?UTF-8?Q?Jakub_Kici=c5=84ski?= <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-doc-tw-discuss@lists.sourceforge.net,
+        linux-hams@vger.kernel.org, netdev@vger.kernel.org
+References: <9a453437b5c3b4b1887c1bd84455b0cc3d1c40b2.1666822928.git.nabijaczleweli@nabijaczleweli.xyz>
+Content-Language: en-US
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <9a453437b5c3b4b1887c1bd84455b0cc3d1c40b2.1666822928.git.nabijaczleweli@nabijaczleweli.xyz>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-e1000_xmit_frame is expected to stop the queue and dispatch frames to
-hardware if there is not sufficient space for the next frame in the
-buffer, but sometimes it failed to do so because the estimated maxmium
-size of frame was wrong. As the consequence, the later invocation of
-e1000_xmit_frame failed with NETDEV_TX_BUSY, and the frame in the buffer
-remained forever, resulting in a watchdog failure.
+On 10/27/22 05:42, наб wrote:
+> Since defanging in v2.6.12-rc1 it's set exactly once per port on probe
+> and checked exactly once per port on unload: it's useless. Kill it.
+> 
 
-This change fixes the estimated size by making it match with the
-condition for NETDEV_TX_BUSY. Apparently, the old estimation failed to
-account for the following lines which determines the space requirement
-for not causing NETDEV_TX_BUSY:
-    ```
-    	/* reserve a descriptor for the offload context */
-    	if ((mss) || (skb->ip_summed == CHECKSUM_PARTIAL))
-    		count++;
-    	count++;
+What do you mean by defanging in that release?
 
-    	count += DIV_ROUND_UP(len, adapter->tx_fifo_limit);
-    ```
+Also, s/Kill it/Remove BAYCOM_MAGIC from magic numbers table/ (your
+wording is kinda mature).
 
-This issue was found when running http-stress02 test included in Linux
-Test Project 20220930 on QEMU with the following commandline:
-```
-qemu-system-x86_64 -M q35,accel=kvm -m 8G -smp 8
-	-drive if=virtio,format=raw,file=root.img,file.locking=on
-	-device e1000e,netdev=netdev
-	-netdev tap,script=ifup,downscript=no,id=netdev
-```
+> Notably, magic-number.rst has never had the right value for it with the
+> new-in-2.1.105 network-based driver
+> 
+> Signed-off-by: Ahelenia Ziemiańska <nabijaczleweli@nabijaczleweli.xyz>
+> Ref: https://lore.kernel.org/linux-doc/YyMlovoskUcHLEb7@kroah.com/
 
-Fixes: bc7f75fa9788 ("[E1000E]: New pci-express e1000 driver (currently for ICH9 devices only)")
-Signed-off-by: Akihiko Odaki <akihiko.odaki@daynix.com>
----
- drivers/net/ethernet/intel/e1000e/netdev.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Use Link: tag instead.
 
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index 49e926959ad3..55cf2f62bb30 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -5936,9 +5936,9 @@ static netdev_tx_t e1000_xmit_frame(struct sk_buff *skb,
- 		e1000_tx_queue(tx_ring, tx_flags, count);
- 		/* Make sure there is space in the ring for the next send. */
- 		e1000_maybe_stop_tx(tx_ring,
--				    (MAX_SKB_FRAGS *
-+				    ((MAX_SKB_FRAGS + 1) *
- 				     DIV_ROUND_UP(PAGE_SIZE,
--						  adapter->tx_fifo_limit) + 2));
-+						  adapter->tx_fifo_limit) + 4));
- 
- 		if (!netdev_xmit_more() ||
- 		    netif_xmit_stopped(netdev_get_tx_queue(netdev, 0))) {
+Thanks.
+
 -- 
-2.37.3
+An old man doll... just what I always wanted! - Clara
 
