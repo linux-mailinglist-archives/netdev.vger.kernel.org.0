@@ -2,116 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 232BC6115C0
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 17:22:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E162161161E
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 17:37:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229574AbiJ1PWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 11:22:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50824 "EHLO
+        id S230190AbiJ1Pg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 11:36:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbiJ1PWA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 11:22:00 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C7C860502
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 08:21:59 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id y14so13687907ejd.9
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 08:21:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=+w2aEDOSR+JOX+EJZawq8U1HPGPeLB3ffjYIDo7sCWw=;
-        b=E5ScmcB3Bxr2iIoAlxNT4k0bIEPTnIgAYh0BJ2wGLFxhSd2LB0qMeTYisPZlxTFyhu
-         z70r5l8RD5PYMhq9FSkb8dNdVlFC+dUz1EZjE6S5RIgpxA+mk4A79gq8grQLyvPH7EXD
-         aPdVp9Ec7WfaaLzfZgA0UoeQ7akE0GMcoHfXyocGCNN7AlyCup59ZEZsPQVJhohIU6w3
-         6hwgXlm/dNJ1feULILXRtiSrUsSA96LaT9tU8eBrfTzlsehWFEws/JAzax6hFYYT4TVr
-         bgtwGWiWik2tGQKtlO3LnyPHmwJ4dEmNYvP5DrPsxS1mxir2/e2RbsLhk1dwDcgW9M1J
-         TOAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=+w2aEDOSR+JOX+EJZawq8U1HPGPeLB3ffjYIDo7sCWw=;
-        b=Bo/m0ccxrpN398B31xCBIvxxsP7WVO7QfmAyWk/LynbSTqVGzhvMIrXF02wQDhK7vp
-         fNhDATxNHk+CgalVzIq2AvJJk3WBrpOTbqP5qOL9xZZd7cPX7+pUh1iAlU9N4iEUahPH
-         v/ke/o9tXpM6aqRAioDCqSJHaM88HC1eiYtLZr1ghaw/14bdOKOwlIuK9ThvRRBwlNvu
-         nXpKdzJ34HRGeZSrM2E7mgOD8UKXjy27uygIVPo6JHybbXvqdQibcaLyOMI3eVZRFSUf
-         XXRwB0sfJsWlBzuqu9Q2hqWT9oQDX40s72QosrsmF7n/o5RpA1QCPz8ecvj920NbZ1AT
-         KuTQ==
-X-Gm-Message-State: ACrzQf0hwVIdIpHMPFS6GlR0rqHGGz36Ccpx4AMkHSDQTq012UsNZr4r
-        yPqjBShifuzpxKf/REbesn8VmyHQ/DLWoZHlCRw=
-X-Google-Smtp-Source: AMsMyM5Blcn7NWBL5wZVbLjKPsScctEJZnOuWCouC0Uenm1R1KpYQsAL2/kySRSLpS/jMUqa3T2j77bQbGI75mwB+AA=
-X-Received: by 2002:a17:906:da86:b0:740:7120:c6e6 with SMTP id
- xh6-20020a170906da8600b007407120c6e6mr47141232ejb.44.1666970518011; Fri, 28
- Oct 2022 08:21:58 -0700 (PDT)
+        with ESMTP id S230433AbiJ1PgJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 11:36:09 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E51467A754
+        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 08:35:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1666971358; x=1698507358;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=7H58S/50r9fiyNV2kmUZuZvMsxghKu+VjFi2y0Y8idA=;
+  b=cDgSrLZu+NGcXxUA8UaVCiOE4UZEnW3fViT9zdqOV5xTLFwpaptHi9Nx
+   jscqB56O7IbrdRwSX+6FJDJ6KlY5zeDWJ2JEI7sVTR79UJqnolC7cwiaK
+   awGQ0e8Of/1oSt6NeEW0u8+7/eDMvS3NFqpPqVO9MKdYfqoVn+D9yzrDf
+   +THro/L/bDSRS7tOe8dL+SvuJe2egMQ5w0ao5lUszVu5bPEcvDRxYh+nl
+   51O+35ed2BpEYN65SKvFCZAL1/D2V7FwLgQY7/it9e1LDGvI5cOKk9ox9
+   huJm8iz6Kck/3dTe5eJv33EJVZ4E7m1+/H51NAtluJIkA4rCWcr8U0FIO
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10514"; a="307244575"
+X-IronPort-AV: E=Sophos;i="5.95,221,1661842800"; 
+   d="scan'208";a="307244575"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Oct 2022 08:35:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10514"; a="610778858"
+X-IronPort-AV: E=Sophos;i="5.95,221,1661842800"; 
+   d="scan'208";a="610778858"
+Received: from bswcg005.iind.intel.com ([10.224.174.25])
+  by orsmga006.jf.intel.com with ESMTP; 28 Oct 2022 08:35:34 -0700
+From:   m.chetan.kumar@linux.intel.com
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        m.chetan.kumar@linux.intel.com, linuxwwan@intel.com,
+        linuxwwan_5g@intel.com
+Subject: [PATCH V7 net-next 1/2] net: wwan: t7xx: use union to group port type specific data
+Date:   Fri, 28 Oct 2022 21:04:50 +0530
+Message-Id: <20221028153450.1789279-1-m.chetan.kumar@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20221024175823.145894-1-saproj@gmail.com> <20221027113513.rqraayuo64zxugbs@skbuf>
- <CABikg9z5uuo9qdcuR4p29Y6W=rGBQedUV4GWB2C+6=6APAtTNQ@mail.gmail.com> <20221027185447.kd6sqvf4xrdxis56@skbuf>
-In-Reply-To: <20221027185447.kd6sqvf4xrdxis56@skbuf>
-From:   Sergei Antonov <saproj@gmail.com>
-Date:   Fri, 28 Oct 2022 18:21:46 +0300
-Message-ID: <CABikg9yjX1Zypr4pwp8jgZZsUiNxW1m271RonGK2ojuYjYHJ2A@mail.gmail.com>
-Subject: Re: [PATCH v5 net-next] net: ftmac100: support mtu > 1500
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, pabeni@redhat.com,
-        kuba@kernel.org, edumazet@google.com, davem@davemloft.net
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 27 Oct 2022 at 21:54, Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> On Thu, Oct 27, 2022 at 07:59:11PM +0300, Sergei Antonov wrote:
-> > On Thu, 27 Oct 2022 at 14:35, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > > Does the attached series of 3 patches work for you? I only compile
-> > > tested them.
-> >
-> > I have tested your patches. They fix the problem I have. If they can
-> > make it into mainline Linux - great. Thanks for your help!
->
-> Do you mind submitting these patches yourself, to get a better
-> understanding of the process? You only need to make sure that you
-> preserve the "From:" field (the authorship), and that below the existing
-> Signed-off-by line, you also add yours (to make it clear that the
-> patches authored by me were not submitted by me). Like this:
->
-> | From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> |
-> | bla bla
-> |
-> | Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com> <- same as author
-> | Signed-off-by: Sergei Antonov <saproj@gmail.com> <- patch carried by X
-> | ...etc
-> | when patch is merged, the netdev maintainer adds his own sign off at
-> | the end to indicate that the patch went through his own hands
->
-> I would do the same if I was the one submitting the series; I would add
-> my sign-off to patch 3/3, which has your authorship.
+From: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 
-OK. I will do it.
+Use union inside t7xx_port to group port type specific data members.
 
-> > A remark on 0002-net-ftmac100-report-the-correct-maximum-MTU-of-1500.patch:
-> > I can not make a case for VLAN_ETH_HLEN because it includes 4 bytes
-> > from a switch and ftmac100 is not always used with a switch.
->
-> Why do you think that? What VLAN are you talking about? 802.1Q or
-> 802.1ad? What VLAN ID? Where does it come from, where do you see it?
+Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+Reviewed-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+--
+v7:
+ * No change.
+v5,v6:
+ * Date correction.
+---
+ drivers/net/wwan/t7xx/t7xx_port.h      |  6 +++++-
+ drivers/net/wwan/t7xx/t7xx_port_wwan.c | 16 ++++++++--------
+ 2 files changed, 13 insertions(+), 9 deletions(-)
 
-Patch 2 contains this change:
--       netdev->max_mtu = MAX_PKT_SIZE;
-+       netdev->max_mtu = MAX_PKT_SIZE - VLAN_ETH_HLEN;
+diff --git a/drivers/net/wwan/t7xx/t7xx_port.h b/drivers/net/wwan/t7xx/t7xx_port.h
+index dc4133eb433a..fbc6d724b7c2 100644
+--- a/drivers/net/wwan/t7xx/t7xx_port.h
++++ b/drivers/net/wwan/t7xx/t7xx_port.h
+@@ -99,7 +99,6 @@ struct t7xx_port_conf {
+ struct t7xx_port {
+ 	/* Members not initialized in definition */
+ 	const struct t7xx_port_conf	*port_conf;
+-	struct wwan_port		*wwan_port;
+ 	struct t7xx_pci_dev		*t7xx_dev;
+ 	struct device			*dev;
+ 	u16				seq_nums[2];	/* TX/RX sequence numbers */
+@@ -122,6 +121,11 @@ struct t7xx_port {
+ 	int				rx_length_th;
+ 	bool				chan_enable;
+ 	struct task_struct		*thread;
++	union {
++		struct {
++			struct wwan_port		*wwan_port;
++		} wwan;
++	};
+ };
+ 
+ struct sk_buff *t7xx_port_alloc_skb(int payload);
+diff --git a/drivers/net/wwan/t7xx/t7xx_port_wwan.c b/drivers/net/wwan/t7xx/t7xx_port_wwan.c
+index 33931bfd78fd..24bd21942403 100644
+--- a/drivers/net/wwan/t7xx/t7xx_port_wwan.c
++++ b/drivers/net/wwan/t7xx/t7xx_port_wwan.c
+@@ -109,12 +109,12 @@ static int t7xx_port_wwan_init(struct t7xx_port *port)
+ 
+ static void t7xx_port_wwan_uninit(struct t7xx_port *port)
+ {
+-	if (!port->wwan_port)
++	if (!port->wwan.wwan_port)
+ 		return;
+ 
+ 	port->rx_length_th = 0;
+-	wwan_remove_port(port->wwan_port);
+-	port->wwan_port = NULL;
++	wwan_remove_port(port->wwan.wwan_port);
++	port->wwan.wwan_port = NULL;
+ }
+ 
+ static int t7xx_port_wwan_recv_skb(struct t7xx_port *port, struct sk_buff *skb)
+@@ -129,7 +129,7 @@ static int t7xx_port_wwan_recv_skb(struct t7xx_port *port, struct sk_buff *skb)
+ 		return 0;
+ 	}
+ 
+-	wwan_port_rx(port->wwan_port, skb);
++	wwan_port_rx(port->wwan.wwan_port, skb);
+ 	return 0;
+ }
+ 
+@@ -158,10 +158,10 @@ static void t7xx_port_wwan_md_state_notify(struct t7xx_port *port, unsigned int
+ 	if (state != MD_STATE_READY)
+ 		return;
+ 
+-	if (!port->wwan_port) {
+-		port->wwan_port = wwan_create_port(port->dev, port_conf->port_type,
+-						   &wwan_ops, port);
+-		if (IS_ERR(port->wwan_port))
++	if (!port->wwan.wwan_port) {
++		port->wwan.wwan_port = wwan_create_port(port->dev, port_conf->port_type,
++							&wwan_ops, port);
++		if (IS_ERR(port->wwan.wwan_port))
+ 			dev_err(port->dev, "Unable to create WWWAN port %s", port_conf->name);
+ 	}
+ }
+-- 
+2.34.1
 
-VLAN_ETH_HLEN is equal to 18 which is 6+6+4+2
-It includes 4 bytes of 802.1Q.
-
-> VLAN_ETH_HLEN in patch 2 has nothing to do with a switch.
-
-OK then.
