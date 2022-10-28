@@ -2,68 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E38F61178E
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 18:32:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E05361181E
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 18:51:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229991AbiJ1QcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 12:32:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34202 "EHLO
+        id S230035AbiJ1Qvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 12:51:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229686AbiJ1QcM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 12:32:12 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667311C77DE
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 09:32:11 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id y67so6692011oiy.1
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 09:32:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=zm7L5aMJn3MDw5RXOfPSdbME1yQT4EnJl2D1CRVxl0E=;
-        b=c8XnqL6iW+6ZPJGcYFSkBlkTozFzkYSYFTcGQSub5cbmUjnWSUM+nvuI95TPA1+XGq
-         YNXZl/4Glk0OcK3xmuHo6u9aQm0Gi7NKCMcEVcOkoN7pkIag+rSPEALejCz4MSD0aAwB
-         q5l3KqCwGPygtNw7QMc0X9Dof4D5ea1qa0Nq8CTknl1/N6AUZeVNSa15190F14lUpPwA
-         twVw+2PSV+7SUpsFoqx3/cQinebMAyr7IMb2KM9ILUIl4XadAnUe0/PxRBECPfVR2Hvp
-         ZdL9VCoXXXFQmWgcUnLd5qv5R/EBT5fmJ1r3mFkt9iAUouEttrDPPhdyAr+JLvXK/aBe
-         RNIg==
+        with ESMTP id S230147AbiJ1Qvb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 12:51:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC81176472
+        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 09:50:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1666975834;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=5IEmsMn5Ai8kZg6GndigRvOK7uC/c82ztM+YMzpgCc8=;
+        b=DlbW/7TwFwGvJrtQSWrcPfb/ICP7hM7C9++myUxZik4d025FoiHUg+4XDc8DZHRF6lISH3
+        vtogUwVUbtx3KNH1SR6GtbFYxRnAt+mA7ysWNpLsy4I+vFojQJnxUQ8A+js7eWB8H4qwmt
+        IZ2gh9anrGpetJkp+JQkhV5DdmXc238=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-27-Bh80HkeqPqqyEzKu7hPPFQ-1; Fri, 28 Oct 2022 12:50:33 -0400
+X-MC-Unique: Bh80HkeqPqqyEzKu7hPPFQ-1
+Received: by mail-wm1-f70.google.com with SMTP id p39-20020a05600c1da700b003cf608d10ccso862408wms.5
+        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 09:50:33 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=zm7L5aMJn3MDw5RXOfPSdbME1yQT4EnJl2D1CRVxl0E=;
-        b=yOe85w5miKR17RKHCQVLBhA2i2hHWh6EqZid1Lvxg9UQqkTYwSw7HmgRMUsxvPuXo7
-         D6RXh2n+jlWOBBVVzTAjGZ0aPsMiYC/Co06fyX56u6uxTjPNb8bT87Mc/o87uYjkSY5H
-         yFmYsylT/XqM1QyNUrQv8L2PM1ZxmcboDx3xcXWjAVEnSx9URtEuJ/XrJIdHYSAuWJr7
-         hvqT3sPwbQkSkRaIjOgxAMEKkTORkXukNGJ0yJ/5BkCST2pyIruckr70cRQdX5TwN3he
-         7Wy7jID40pVsDFOyZ9m7vwkPS4ZH0bf+/hiUgZcslxgpbCNk82PGAK80Kp/P5qd/GY7P
-         Zwxg==
-X-Gm-Message-State: ACrzQf2qLyhh47CrgxIzQuuUffkeHyOkWYy71wj/H4IlbF6mV62HtbmQ
-        ivI3wpGmha2Zyek45iJ4I1I=
-X-Google-Smtp-Source: AMsMyM6HpoNYVJTZ7xup975AyVZx+63kTXi1ms1O+Pg+OfTkyk6QNjPQN6Zc4/sOxVboE8CrfLXr1Q==
-X-Received: by 2002:a54:458d:0:b0:359:a896:7581 with SMTP id z13-20020a54458d000000b00359a8967581mr183799oib.22.1666974730675;
-        Fri, 28 Oct 2022 09:32:10 -0700 (PDT)
-Received: from localhost.localdomain ([2804:14c:485:4b69:4f96:b37f:e49c:a5a1])
-        by smtp.gmail.com with ESMTPSA id k20-20020a056870d39400b0012d6f3d370bsm2261958oag.55.2022.10.28.09.32.07
+        bh=5IEmsMn5Ai8kZg6GndigRvOK7uC/c82ztM+YMzpgCc8=;
+        b=dvojue/0RajaoWN0kuPGIReGNXq04rvvGlzYUYMrAztGs7jOA3gfHxJml6pZ1H84nB
+         hSLbERRLfbwCqJdAbgTGkdMC+6JVm7sfatACaVprSZDf04MtN/ipn1HA7HK9OF7CPuhG
+         vEaTPK0+Oh3qAvWE6KOsVd83jC9x28dXB6b9BArBGovmyvZ9Y++ereIKoPZfx79Cq0Cx
+         Dm2wIon6mX4oedukrjYPHMSaZInZWe5ZKrRLBDa88+Q6+yCCjLepDVDH5/3Npbq+NqdZ
+         9EpSigg2FOrsbiWoWOC+SGcngUji+pmynQwPszGItg72QZJZ669dmp4UnnBOLWFh2crS
+         qcHg==
+X-Gm-Message-State: ACrzQf1NUVr2hu0W5bPMu0TWnXr1ljoM3xG5qtQlOq6jyOPyUgIlAC96
+        EzSjH7s8EpccSrRIoWL6O+HY1oDcQ4JPzpuWSBvNE4Mt+IHB0RpIbSklxaKSLoE505UCFbbAAU4
+        VDNMUeubZVvj/CI4oDRcj7WYe2voxgHDeQd9y5ijK0gFMJsFGGvLBkroh8Qrn1lVqViLn
+X-Received: by 2002:a05:600c:1987:b0:3c6:fd37:7776 with SMTP id t7-20020a05600c198700b003c6fd377776mr10502312wmq.72.1666975831988;
+        Fri, 28 Oct 2022 09:50:31 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM74cuRyjaHCpA7r3paScYCbeat6QJjVC7nZ8pVMvM74YpYGxqg32Z6AhcfAnDGNtOCVL0MpSw==
+X-Received: by 2002:a05:600c:1987:b0:3c6:fd37:7776 with SMTP id t7-20020a05600c198700b003c6fd377776mr10502268wmq.72.1666975831554;
+        Fri, 28 Oct 2022 09:50:31 -0700 (PDT)
+Received: from vschneid.remote.csb ([149.71.65.94])
+        by smtp.gmail.com with ESMTPSA id ay31-20020a05600c1e1f00b003cf537ec2efsm5065923wmb.36.2022.10.28.09.50.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Oct 2022 09:32:10 -0700 (PDT)
-From:   Fabio Estevam <festevam@gmail.com>
-To:     kuba@kernel.org
-Cc:     davem@davemloft.net, olteanv@gmail.com, andrew@lunn.ch,
-        netdev@vger.kernel.org,
-        =?UTF-8?q?Steffen=20B=C3=A4tz?= <steffen@innosonix.de>,
-        Fabio Estevam <festevam@denx.de>
-Subject: [PATCH v3 net-next] net: dsa: mv88e6xxx: Add RGMII delay to 88E6320
-Date:   Fri, 28 Oct 2022 13:31:58 -0300
-Message-Id: <20221028163158.198108-1-festevam@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 28 Oct 2022 09:50:30 -0700 (PDT)
+From:   Valentin Schneider <vschneid@redhat.com>
+To:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>
+Subject: [PATCH v6 0/3] sched, net: NUMA-aware CPU spreading interface
+Date:   Fri, 28 Oct 2022 17:49:56 +0100
+Message-Id: <20221028164959.1367250-1-vschneid@redhat.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,93 +95,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Steffen Bätz <steffen@innosonix.de>
+Hi folks,
 
-Currently, the .port_set_rgmii_delay hook is missing for the 88E6320
-family, which causes failure to retrieve an IP address via DHCP.
+Tariq pointed out in [1] that drivers allocating IRQ vectors would benefit
+from having smarter NUMA-awareness (cpumask_local_spread() doesn't quite cut
+it).
 
-Add mv88e6320_port_set_rgmii_delay() that allows applying the RGMII
-delay for ports 2, 5, and 6, which are the only ports that can be used
-in RGMII mode.
+The proposed interface involved an array of CPUs and a temporary cpumask, and
+being my difficult self what I'm proposing here is an interface that doesn't
+require any temporary storage other than some stack variables (at the cost of
+one wild macro).
 
-Tested on a custom i.MX8MN board connected to an 88E6320 switch.
+[1]: https://lore.kernel.org/all/20220728191203.4055-1-tariqt@nvidia.com/
 
-This change also applies safely to the 88E6321 variant.
+Revisions
+=========
 
-The only difference between 88E6320 versus 88E6321 is the temperature
-grade and pinout.
+v5 -> v6
+++++++++
 
-They share exactly the same MDIO register map for ports 2, 5, and 6,
-which are the only ports that can be used in RGMII mode.
+o Simplified iterator macro (Andy)
+o Cleaned up sched_numa_hop_mask (Andy, Yury)
+o Applied Yury's RB tags 
 
-Signed-off-by: Steffen Bätz <steffen@innosonix.de>
-[fabio: Improved commit log and extended it to mv88e6321_ops]
-Signed-off-by: Fabio Estevam <festevam@denx.de>
----
-Changes since v2:
-- Add .port_set_rgmii_delay to mv88e6321_ops as well (Andrew).
-Changes since v1:
-- Improve the commit log by saying that change is also
-valid for the 88E631 chip. (Andrew).
+v4 -> v5
+++++++++
 
- drivers/net/dsa/mv88e6xxx/chip.c | 2 ++
- drivers/net/dsa/mv88e6xxx/port.c | 9 +++++++++
- drivers/net/dsa/mv88e6xxx/port.h | 2 ++
- 3 files changed, 13 insertions(+)
+o Rebased onto 6.1-rc1
+o Ditched the CPU iterator, moved to a cpumask iterator (Yury)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 2479be3a1e35..bf34c942db99 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -5029,6 +5029,7 @@ static const struct mv88e6xxx_ops mv88e6320_ops = {
- 	.phy_write = mv88e6xxx_g2_smi_phy_write,
- 	.port_set_link = mv88e6xxx_port_set_link,
- 	.port_sync_link = mv88e6xxx_port_sync_link,
-+	.port_set_rgmii_delay = mv88e6320_port_set_rgmii_delay,
- 	.port_set_speed_duplex = mv88e6185_port_set_speed_duplex,
- 	.port_tag_remap = mv88e6095_port_tag_remap,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
-@@ -5073,6 +5074,7 @@ static const struct mv88e6xxx_ops mv88e6321_ops = {
- 	.phy_write = mv88e6xxx_g2_smi_phy_write,
- 	.port_set_link = mv88e6xxx_port_set_link,
- 	.port_sync_link = mv88e6xxx_port_sync_link,
-+	.port_set_rgmii_delay = mv88e6320_port_set_rgmii_delay,
- 	.port_set_speed_duplex = mv88e6185_port_set_speed_duplex,
- 	.port_tag_remap = mv88e6095_port_tag_remap,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
-diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-index 5c4195c635b0..f79cf716c541 100644
---- a/drivers/net/dsa/mv88e6xxx/port.c
-+++ b/drivers/net/dsa/mv88e6xxx/port.c
-@@ -133,6 +133,15 @@ int mv88e6390_port_set_rgmii_delay(struct mv88e6xxx_chip *chip, int port,
- 	return mv88e6xxx_port_set_rgmii_delay(chip, port, mode);
- }
- 
-+int mv88e6320_port_set_rgmii_delay(struct mv88e6xxx_chip *chip, int port,
-+				   phy_interface_t mode)
-+{
-+	if (port != 2 && port != 5 && port != 6)
-+		return -EOPNOTSUPP;
-+
-+	return mv88e6xxx_port_set_rgmii_delay(chip, port, mode);
-+}
-+
- int mv88e6xxx_port_set_link(struct mv88e6xxx_chip *chip, int port, int link)
- {
- 	u16 reg;
-diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
-index cb04243f37c1..aec9d4fd20e3 100644
---- a/drivers/net/dsa/mv88e6xxx/port.h
-+++ b/drivers/net/dsa/mv88e6xxx/port.h
-@@ -332,6 +332,8 @@ int mv88e6xxx_port_wait_bit(struct mv88e6xxx_chip *chip, int port, int reg,
- 
- int mv88e6185_port_set_pause(struct mv88e6xxx_chip *chip, int port,
- 			     int pause);
-+int mv88e6320_port_set_rgmii_delay(struct mv88e6xxx_chip *chip, int port,
-+				   phy_interface_t mode);
- int mv88e6352_port_set_rgmii_delay(struct mv88e6xxx_chip *chip, int port,
- 				   phy_interface_t mode);
- int mv88e6390_port_set_rgmii_delay(struct mv88e6xxx_chip *chip, int port,
--- 
-2.25.1
+v3 -> v4
+++++++++
+
+o Rebased on top of Yury's bitmap-for-next
+o Added Tariq's mlx5e patch
+o Made sched_numa_hop_mask() return cpu_online_mask for the NUMA_NO_NODE &&
+  hops=0 case
+
+v2 -> v3
+++++++++
+
+o Added for_each_cpu_and() and for_each_cpu_andnot() tests (Yury)
+o New patches to fix issues raised by running the above
+
+o New patch to use for_each_cpu_andnot() in sched/core.c (Yury)
+
+v1 -> v2
+++++++++
+
+o Split _find_next_bit() @invert into @invert1 and @invert2 (Yury)
+o Rebase onto v6.0-rc1
+
+Cheers,
+Valentin
+
+Tariq Toukan (1):
+  net/mlx5e: Improve remote NUMA preferences used for the IRQ affinity
+    hints
+
+Valentin Schneider (2):
+  sched/topology: Introduce sched_numa_hop_mask()
+  sched/topology: Introduce for_each_numa_hop_mask()
+
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c | 18 +++++++++--
+ include/linux/topology.h                     | 27 +++++++++++++++++
+ kernel/sched/topology.c                      | 32 ++++++++++++++++++++
+ 3 files changed, 75 insertions(+), 2 deletions(-)
+
+--
+2.31.1
 
