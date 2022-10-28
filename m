@@ -2,69 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 805B861119B
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 14:36:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65D056111B3
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 14:40:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229999AbiJ1Mg2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 08:36:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59810 "EHLO
+        id S229819AbiJ1Mkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 08:40:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229571AbiJ1Mg2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 08:36:28 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F0C61BC17D;
-        Fri, 28 Oct 2022 05:36:27 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id v1so6410183wrt.11;
-        Fri, 28 Oct 2022 05:36:27 -0700 (PDT)
+        with ESMTP id S229686AbiJ1Mkv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 08:40:51 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E41F289937
+        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 05:40:50 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id n130so5949148yba.10
+        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 05:40:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=wycqnBb9yJKDEW3bJJPSC5fzrru3Jf1qAMB2d8ApDxo=;
-        b=gzkjkw5P/S/NQ5bDEx5+kVzA2gyLzAYxK4tR2JIj6cXczSIqSaEzzQU037hVBIL16a
-         PusCBQhOM0J7teGkkkVh3OfznGGF9Q6L5mfyCBXOOH+0GMS3yO0YpeNesuNqCLIYBHdg
-         yea77P70ifuxmvgbVk0Mt6cTVrI6GCNzmDZEva7+vd6a4FzbymsXcWQ2DYwziUvdMZJB
-         i26mvrLzTimZ4TtA6FRC2Y5o3VJPdzlpFfNAIYWW8AevfLJjbQzO1qQtPfKNZiV2ADCZ
-         h75K5qE2lqhTM3RfjQiGMZxhJ0fyavFWeB+cHWGKCemZxtMhbJrdIAcMcSr3p9V9pA+0
-         Xvzw==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=d5qpLLU9ealz0k8qQMMTyV56YTc5b0apoIByczFtzmg=;
+        b=eANACC4xiHYJE6fFPT82kV6FN7SzHJX8A02ky39653ph7kxPqSll4DnYeRsW2TGb1L
+         18IyEmaURS2lyHtYp6HRX2doKdjX07Yp9m6lwz4KK5Iao6A/U8h5Y2OzUbH/ZpYkuSsy
+         Z7JmI7RCutczyGWDU2EdHdha5Gkz2GKIe5qsng+V/ibZsjcZvecf0i/XXRsfgn8eQKvU
+         Sw2p8OqXTn6j6BAHfH4KSdaweKinoKk8xYSUGZqcDtJYhpwQ2UoXHiFwEC1VZTpp8/Nb
+         smMe5cNiwqf61UPS6ySf+A33jNMV2HOpu0N1Nxw9ZZKxtPaVZFr1caQ6UiojMXiDP13q
+         ww2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=wycqnBb9yJKDEW3bJJPSC5fzrru3Jf1qAMB2d8ApDxo=;
-        b=0J8Ip/y3TBNSRSCuaAgPz/vR+OE441uJNWkr9KLQHn9ZHOCnAn4aJ9WxYtcjAzDB2W
-         UU+A/J+Mva75wFoXJvt1Lo1Lsa4R7sXw+VOHe9Vm1Yhm+XDqAxetbIS1SZooNErWzSR4
-         Qp6I6JPeB43YEa09Nnd0Enoagnk1K+O6Q06FonaIM1aby/S0LYbcqZw3JdkA8He9Dg1V
-         UPx67Zbq/+PrdqsiUGE10tLlpRo+q4SGcQfWg6x8Ns1s6zDInnuz2WwrsMeHZwiEor6X
-         2UAQzNWaZDyIw18mGVEn6wH+qzo1tyj4oPEPgQKEYFft33kQg2andtAsNK3acobGtZjS
-         s/Kw==
-X-Gm-Message-State: ACrzQf0DATWXs7pTp9S4dJum3TNXM1BX4FrbV9224TIOICwHxEK8aJjd
-        inm+yhUfb3fm00fw6JZBYmc=
-X-Google-Smtp-Source: AMsMyM6EAHFcT3yApGhskQ5vTnRyjDcjeNd3iqGjuID+2QCUVl97vKfRdRAgqE//BMZUHK7ccuYQlQ==
-X-Received: by 2002:a5d:584d:0:b0:230:c250:603e with SMTP id i13-20020a5d584d000000b00230c250603emr34325437wrf.143.1666960585600;
-        Fri, 28 Oct 2022 05:36:25 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id 6-20020a05600c230600b003cf37c5ddc0sm4029403wmo.22.2022.10.28.05.36.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Oct 2022 05:36:25 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: mvneta: Remove unused variable i
-Date:   Fri, 28 Oct 2022 13:36:24 +0100
-Message-Id: <20221028123624.529483-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.37.3
+        bh=d5qpLLU9ealz0k8qQMMTyV56YTc5b0apoIByczFtzmg=;
+        b=ZHhvlUaSzZFekO9cVsO/WEKjBq6wRNZ0FG+c1hgETKJQ/B+68L0qbLClWQqToretAh
+         jjiMpDq1N0o/blrutFQF+z+9vQVLWHFjX3Xhum7uGOtQcnjK3x/aktgkqjXNbO8DJuUF
+         BNqICGvsh2AEahLMILOqmbLS+E0hrdqS/k+O10o2L11PhZtEj9PA7XEMZ0iuYxo1Vrgf
+         EVYcRueTxzA0eY6EgNWzUPswCn0BIABgBTWSTdU4RGHA4mTmJKcDcBr+W8ulqK3dnyi/
+         9FXoVfixD8PI68thdzFbbgGK4aTjNkRIbfy8kkWZ2XS6woQXkS96hxIWu3uQGwdHudMY
+         05+A==
+X-Gm-Message-State: ACrzQf0QlXRGSSBTKORhnU8jG4lDo6fjlquGFxivt9YAqWNSBCi+mfEY
+        o+VvNw82XVZnYs75MEF+59hooOMdTcFISuiTA3KLpA==
+X-Google-Smtp-Source: AMsMyM6fzlWHqOO55M6DkkRJ3hpXgCc9vncKmeY0LuaFkAM9OAG7r1AJq3cjAzhHnAoQuKVck2MYFVhFMORLQZCVJhY=
+X-Received: by 2002:a25:3187:0:b0:6c1:822b:eab1 with SMTP id
+ x129-20020a253187000000b006c1822beab1mr46975206ybx.427.1666960849872; Fri, 28
+ Oct 2022 05:40:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20221027102449.926410-1-william.xuanziyang@huawei.com>
+ <CANn89iJkKJ3-b8vncrxgawWTtaLphYERhVma7+1qgdSEXn8tiQ@mail.gmail.com>
+ <8523b754-992d-0d72-ecd1-4f076e57ebde@huawei.com> <CANn89i+FYGkR5_-C3wp7GdpW=JT8V5LELwMNcHg9Gt6=e877JA@mail.gmail.com>
+ <4ce1a942-db88-3d20-b377-ade9b4fc997d@huawei.com>
+In-Reply-To: <4ce1a942-db88-3d20-b377-ade9b4fc997d@huawei.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 28 Oct 2022 05:40:38 -0700
+Message-ID: <CANn89iLtMK7uRaXJai3-PocJnuOrB5KMS=L=sbF7egUB-d_6UQ@mail.gmail.com>
+Subject: Re: [PATCH net] ipv6/gro: fix an out of bounds memory bug in ipv6_gro_receive()
+To:     "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, herbert@gondor.apana.org.au
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,36 +71,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Variable i is just being incremented and it's never used anywhere else. The
-variable and the increment are redundant so remove it.
+On Fri, Oct 28, 2022 at 3:11 AM Ziyang Xuan (William)
+<william.xuanziyang@huawei.com> wrote:
+> Hi Eric,
+>
+> Thank you for your suggestion.
+>
+> I have analyzed the problem more deeply. The odd IPv6 packet and
+> big packet length value(IPv6 payload length more than 65535)
+> together cause the problem.
+>
+> skb->network_header and skb->transport_header are all u16 type.
+> They would occuer overflow errors during ipv6_gro_receive() processing.
+> That cause the value error for __skb_push(skb, value).
+>
+> So the problem is a bug in tun device.
+>
+> I will combine my previous problem "net: tun: limit first seg size to avoid oversized linearization"
+> together to give the fix patch later.
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/net/ethernet/marvell/mvneta.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index ff3e361e06e7..1822796f8498 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -4266,7 +4266,7 @@ static void mvneta_mdio_remove(struct mvneta_port *pp)
-  */
- static void mvneta_percpu_elect(struct mvneta_port *pp)
- {
--	int elected_cpu = 0, max_cpu, cpu, i = 0;
-+	int elected_cpu = 0, max_cpu, cpu;
- 
- 	/* Use the cpu associated to the rxq when it is online, in all
- 	 * the other cases, use the cpu 0 which can't be offline.
-@@ -4306,8 +4306,6 @@ static void mvneta_percpu_elect(struct mvneta_port *pp)
- 		 */
- 		smp_call_function_single(cpu, mvneta_percpu_unmask_interrupt,
- 					 pp, true);
--		i++;
--
- 	}
- };
- 
--- 
-2.37.3
-
+SGTM, thanks !
