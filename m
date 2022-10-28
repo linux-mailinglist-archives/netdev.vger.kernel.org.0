@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83FD8610DE0
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 11:55:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA754610DE3
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 11:55:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230100AbiJ1JzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 05:55:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37644 "EHLO
+        id S230175AbiJ1JzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 05:55:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230189AbiJ1Jyk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 05:54:40 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56E4F564E5;
-        Fri, 28 Oct 2022 02:54:09 -0700 (PDT)
+        with ESMTP id S230364AbiJ1Jyp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 05:54:45 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 961622613C;
+        Fri, 28 Oct 2022 02:54:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1666950850; x=1698486850;
+  t=1666950865; x=1698486865;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=RFBI8tuTvz+ucc2ePeBr3b1s5rZEYMobdntfK7Y9lqM=;
-  b=VD2ogesMNE+ltSITwslVciBbRRJiVRB3tE1Ic+qBPgT3nxl9+n3xgoU/
-   ulxJjCx69tglhHid31jMDJzO/kVDnZVwPLEBkVRdGk/9F19We5F8itj/R
-   vhun3ZxLyGFYUtwGFxVcLFPG/NI/rlmIC3w3TPaGnDRWzrOrC7xGUamSD
-   6XgwK0bKs8NbdK0F/rzem0Ni/Y6aNiWzSgO70hESVuh48GWFcu9Tvm75F
-   CRzK8UDavbPl3jervaxg1MRSDn5Q60EFrmH9tbfttYRSsGWcLN5/AJDi9
-   /kkugqyDDjz+bBYrhWa6LZx+K+Y3dK3pU3xp0Ut/YU1x3QCNuo6Ppz7sx
-   A==;
+  bh=yuaZtzldNYKAWOQfEZAb5+0OMaFaC28v7Or0OmMKOsY=;
+  b=Ui0V9MPHGQ1s/i0TVNsgTqr6uds5B6g6cLVLS5EAkZhMDimXvyrboXSh
+   cEDj9qQXU2QrI91tIIL4doDxfQ+Kf95l1+zfCGbJBArqBR/bYcGhYBsk2
+   gmNa8KXPS0eQ0IEDsogvIur1EvLUybis9ifecLHCw63jTauXvMXt67jHE
+   Hnkxhmnz4Xhpia2n5m6KoI5EJA/EIdM4XqHFNjHlZiluAwChZtP3fokOd
+   UC2zlScvG+yJonkfKZ+ccLdis+Hp2kEDmBuCqX0hYI/RCbmzQTXiUnALW
+   XwthaBXVuGhhV9ecv5jWdKhuw7KjLgik1K8+sW7eJtKct/7qLTjL4xnUk
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.95,220,1661842800"; 
-   d="scan'208";a="180931131"
+   d="scan'208";a="186674600"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Oct 2022 02:54:09 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Oct 2022 02:54:24 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 28 Oct 2022 02:54:06 -0700
+ 15.1.2507.12; Fri, 28 Oct 2022 02:54:10 -0700
 Received: from DEN-LT-70577.microchip.com (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Fri, 28 Oct 2022 02:54:03 -0700
+ 15.1.2507.12 via Frontend Transport; Fri, 28 Oct 2022 02:54:07 -0700
 From:   Daniel Machon <daniel.machon@microchip.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <petrm@nvidia.com>,
@@ -49,9 +49,9 @@ CC:     <davem@davemloft.net>, <petrm@nvidia.com>,
         <horatiu.vultur@microchip.com>, <Julia.Lawall@inria.fr>,
         <vladimir.oltean@nxp.com>, <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH net-next v4 1/6] net: dcb: add new pcp selector to app object
-Date:   Fri, 28 Oct 2022 12:03:15 +0200
-Message-ID: <20221028100320.786984-2-daniel.machon@microchip.com>
+Subject: [PATCH net-next v4 2/6] net: dcb: add new apptrust attribute
+Date:   Fri, 28 Oct 2022 12:03:16 +0200
+Message-ID: <20221028100320.786984-3-daniel.machon@microchip.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221028100320.786984-1-daniel.machon@microchip.com>
 References: <20221028100320.786984-1-daniel.machon@microchip.com>
@@ -60,188 +60,192 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add new PCP selector for the 8021Qaz APP managed object.
+Add new apptrust extension attributes to the 8021Qaz APP managed object.
 
-As the PCP selector is not part of the 8021Qaz standard, a new non-std
-extension attribute DCB_ATTR_DCB_APP has been introduced. Also two
-helper functions to translate between selector and app attribute type
-has been added. The new selector has been given a value of 255, to
-minimize the risk of future overlap of std- and non-std attributes.
+Two new attributes, DCB_ATTR_DCB_APP_TRUST_TABLE and
+DCB_ATTR_DCB_APP_TRUST, has been added. Trusted selectors are passed in
+the nested attribute DCB_ATTR_DCB_APP_TRUST, in order of precedence.
 
-The new DCB_ATTR_DCB_APP is sent alongside the ieee std attribute in the
-app table. This means that the dcb_app struct can now both contain std-
-and non-std app attributes. Currently there is no overlap between the
-selector values of the two attributes.
-
-The purpose of adding the PCP selector, is to be able to offload
-PCP-based queue classification to the 8021Q Priority Code Point table,
-see 6.9.3 of IEEE Std 802.1Q-2018.
-
-PCP and DEI is encoded in the protocol field as 8*dei+pcp, so that a
-mapping of PCP 2 and DEI 1 to priority 3 is encoded as {255, 10, 3}.
+The new attributes are meant to allow drivers, whose hw supports the
+notion of trust, to be able to set whether a particular app selector is
+trusted - and in which order.
 
 Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
 ---
- include/uapi/linux/dcbnl.h |  6 ++++
- net/dcb/dcbnl.c            | 73 +++++++++++++++++++++++++++++++++++---
- 2 files changed, 75 insertions(+), 4 deletions(-)
+ include/net/dcbnl.h        |  4 ++
+ include/uapi/linux/dcbnl.h | 10 +++++
+ net/dcb/dcbnl.c            | 78 +++++++++++++++++++++++++++++++++++++-
+ 3 files changed, 90 insertions(+), 2 deletions(-)
 
+diff --git a/include/net/dcbnl.h b/include/net/dcbnl.h
+index 2b2d86fb3131..8841ab6c2de7 100644
+--- a/include/net/dcbnl.h
++++ b/include/net/dcbnl.h
+@@ -109,6 +109,10 @@ struct dcbnl_rtnl_ops {
+ 	/* buffer settings */
+ 	int (*dcbnl_getbuffer)(struct net_device *, struct dcbnl_buffer *);
+ 	int (*dcbnl_setbuffer)(struct net_device *, struct dcbnl_buffer *);
++
++	/* apptrust */
++	int (*dcbnl_setapptrust)(struct net_device *, u8 *, int);
++	int (*dcbnl_getapptrust)(struct net_device *, u8 *, int *);
+ };
+ 
+ #endif /* __NET_DCBNL_H__ */
 diff --git a/include/uapi/linux/dcbnl.h b/include/uapi/linux/dcbnl.h
-index a791a94013a6..dc7ef96207ca 100644
+index dc7ef96207ca..9344e3ba5768 100644
 --- a/include/uapi/linux/dcbnl.h
 +++ b/include/uapi/linux/dcbnl.h
-@@ -218,6 +218,9 @@ struct cee_pfc {
- #define IEEE_8021QAZ_APP_SEL_ANY	4
- #define IEEE_8021QAZ_APP_SEL_DSCP       5
- 
-+/* Non-std selector values */
-+#define DCB_APP_SEL_PCP 255
-+
- /* This structure contains the IEEE 802.1Qaz APP managed object. This
-  * object is also used for the CEE std as well.
-  *
-@@ -247,6 +250,8 @@ struct dcb_app {
- 	__u16	protocol;
+@@ -410,6 +410,7 @@ enum dcbnl_attrs {
+  * @DCB_ATTR_IEEE_PEER_ETS: peer ETS configuration - get only
+  * @DCB_ATTR_IEEE_PEER_PFC: peer PFC configuration - get only
+  * @DCB_ATTR_IEEE_PEER_APP: peer APP tlv - get only
++ * @DCB_ATTR_DCB_APP_TRUST_TABLE: selector trust table
+  */
+ enum ieee_attrs {
+ 	DCB_ATTR_IEEE_UNSPEC,
+@@ -423,6 +424,7 @@ enum ieee_attrs {
+ 	DCB_ATTR_IEEE_QCN,
+ 	DCB_ATTR_IEEE_QCN_STATS,
+ 	DCB_ATTR_DCB_BUFFER,
++	DCB_ATTR_DCB_APP_TRUST_TABLE,
+ 	__DCB_ATTR_IEEE_MAX
  };
- 
-+#define IEEE_8021QAZ_APP_SEL_MAX 255
-+
- /**
-  * struct dcb_peer_app_info - APP feature information sent by the peer
-  *
-@@ -425,6 +430,7 @@ enum ieee_attrs {
- enum ieee_attrs_app {
- 	DCB_ATTR_IEEE_APP_UNSPEC,
- 	DCB_ATTR_IEEE_APP,
-+	DCB_ATTR_DCB_APP,
- 	__DCB_ATTR_IEEE_APP_MAX
+ #define DCB_ATTR_IEEE_MAX (__DCB_ATTR_IEEE_MAX - 1)
+@@ -435,6 +437,14 @@ enum ieee_attrs_app {
  };
  #define DCB_ATTR_IEEE_APP_MAX (__DCB_ATTR_IEEE_APP_MAX - 1)
+ 
++enum dcbnl_attrs_apptrust {
++	DCB_ATTR_DCB_APP_TRUST_UNSPEC,
++	DCB_ATTR_DCB_APP_TRUST,
++	__DCB_ATTR_DCB_APP_TRUST_MAX
++};
++
++#define DCB_ATTR_DCB_APP_TRUST_MAX (__DCB_ATTR_DCB_APP_TRUST_MAX - 1)
++
+ /**
+  * enum cee_attrs - CEE DCBX get attributes.
+  *
 diff --git a/net/dcb/dcbnl.c b/net/dcb/dcbnl.c
-index dc4fb699b56c..68e033a459af 100644
+index 68e033a459af..a56f401aeec4 100644
 --- a/net/dcb/dcbnl.c
 +++ b/net/dcb/dcbnl.c
-@@ -179,6 +179,57 @@ static const struct nla_policy dcbnl_featcfg_nest[DCB_FEATCFG_ATTR_MAX + 1] = {
- static LIST_HEAD(dcb_app_list);
- static DEFINE_SPINLOCK(dcb_lock);
+@@ -166,6 +166,7 @@ static const struct nla_policy dcbnl_ieee_policy[DCB_ATTR_IEEE_MAX + 1] = {
+ 	[DCB_ATTR_IEEE_QCN]         = {.len = sizeof(struct ieee_qcn)},
+ 	[DCB_ATTR_IEEE_QCN_STATS]   = {.len = sizeof(struct ieee_qcn_stats)},
+ 	[DCB_ATTR_DCB_BUFFER]       = {.len = sizeof(struct dcbnl_buffer)},
++	[DCB_ATTR_DCB_APP_TRUST_TABLE] = {.type = NLA_NESTED},
+ };
  
-+static enum ieee_attrs_app dcbnl_app_attr_type_get(u8 selector)
-+{
-+	switch (selector) {
-+	case IEEE_8021QAZ_APP_SEL_ETHERTYPE:
-+	case IEEE_8021QAZ_APP_SEL_STREAM:
-+	case IEEE_8021QAZ_APP_SEL_DGRAM:
-+	case IEEE_8021QAZ_APP_SEL_ANY:
-+	case IEEE_8021QAZ_APP_SEL_DSCP:
-+		return DCB_ATTR_IEEE_APP;
-+	case DCB_APP_SEL_PCP:
-+		return DCB_ATTR_DCB_APP;
-+	default:
-+		return DCB_ATTR_IEEE_APP_UNSPEC;
-+	}
-+}
-+
-+static bool dcbnl_app_attr_type_validate(enum ieee_attrs_app type)
-+{
-+	switch (type) {
-+	case DCB_ATTR_IEEE_APP:
-+	case DCB_ATTR_DCB_APP:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
-+static bool dcbnl_app_selector_validate(enum ieee_attrs_app type, u32 selector)
-+{
-+	switch (selector) {
-+	case IEEE_8021QAZ_APP_SEL_ETHERTYPE:
-+	case IEEE_8021QAZ_APP_SEL_STREAM:
-+	case IEEE_8021QAZ_APP_SEL_DGRAM:
-+	case IEEE_8021QAZ_APP_SEL_ANY:
-+	case IEEE_8021QAZ_APP_SEL_DSCP:
-+		/* IEEE std selectors in IEEE std attribute */
-+		if (type == DCB_ATTR_IEEE_APP)
-+			return true;
-+		else
-+			return false;
-+	case DCB_APP_SEL_PCP:
-+		/* Non-std selectors in non-std attribute */
-+		if (type == DCB_ATTR_DCB_APP)
-+			return true;
-+		else
-+			return false;
-+	default:
-+		return false;
-+	}
-+}
-+
- static struct sk_buff *dcbnl_newmsg(int type, u8 cmd, u32 port, u32 seq,
- 				    u32 flags, struct nlmsghdr **nlhp)
+ /* DCB number of traffic classes nested attributes. */
+@@ -1081,9 +1082,9 @@ static int dcbnl_build_peer_app(struct net_device *netdev, struct sk_buff* skb,
+ /* Handle IEEE 802.1Qaz/802.1Qau/802.1Qbb GET commands. */
+ static int dcbnl_ieee_fill(struct sk_buff *skb, struct net_device *netdev)
  {
-@@ -1116,8 +1167,9 @@ static int dcbnl_ieee_fill(struct sk_buff *skb, struct net_device *netdev)
- 	spin_lock_bh(&dcb_lock);
- 	list_for_each_entry(itr, &dcb_app_list, list) {
- 		if (itr->ifindex == netdev->ifindex) {
--			err = nla_put(skb, DCB_ATTR_IEEE_APP, sizeof(itr->app),
--					 &itr->app);
-+			enum ieee_attrs_app type =
-+				dcbnl_app_attr_type_get(itr->app.selector);
-+			err = nla_put(skb, type, sizeof(itr->app), &itr->app);
- 			if (err) {
- 				spin_unlock_bh(&dcb_lock);
- 				return -EMSGSIZE;
-@@ -1493,9 +1545,10 @@ static int dcbnl_ieee_set(struct net_device *netdev, struct nlmsghdr *nlh,
- 		int rem;
+-	struct nlattr *ieee, *app;
+-	struct dcb_app_type *itr;
+ 	const struct dcbnl_rtnl_ops *ops = netdev->dcbnl_ops;
++	struct nlattr *ieee, *app, *apptrust;
++	struct dcb_app_type *itr;
+ 	int dcbx;
+ 	int err;
  
- 		nla_for_each_nested(attr, ieee[DCB_ATTR_IEEE_APP_TABLE], rem) {
-+			enum ieee_attrs_app type = nla_type(attr);
- 			struct dcb_app *app_data;
+@@ -1185,6 +1186,29 @@ static int dcbnl_ieee_fill(struct sk_buff *skb, struct net_device *netdev)
+ 	spin_unlock_bh(&dcb_lock);
+ 	nla_nest_end(skb, app);
  
--			if (nla_type(attr) != DCB_ATTR_IEEE_APP)
-+			if (!dcbnl_app_attr_type_validate(type))
- 				continue;
- 
- 			if (nla_len(attr) < sizeof(struct dcb_app)) {
-@@ -1504,6 +1557,11 @@ static int dcbnl_ieee_set(struct net_device *netdev, struct nlmsghdr *nlh,
- 			}
- 
- 			app_data = nla_data(attr);
++	if (ops->dcbnl_getapptrust) {
++		u8 selectors[IEEE_8021QAZ_APP_SEL_MAX + 1] = {0};
++		int nselectors, i;
 +
-+			if (!dcbnl_app_selector_validate(type,
-+							 app_data->selector))
-+				return -EINVAL;
++		apptrust = nla_nest_start(skb, DCB_ATTR_DCB_APP_TRUST_TABLE);
++		if (!app)
++			return -EMSGSIZE;
 +
- 			if (ops->ieee_setapp)
- 				err = ops->ieee_setapp(netdev, app_data);
- 			else
-@@ -1554,11 +1612,18 @@ static int dcbnl_ieee_del(struct net_device *netdev, struct nlmsghdr *nlh,
- 		int rem;
++		err = ops->dcbnl_getapptrust(netdev, selectors, &nselectors);
++		if (!err) {
++			for (i = 0; i < nselectors; i++) {
++				err = nla_put_u8(skb, DCB_ATTR_DCB_APP_TRUST,
++						 selectors[i]);
++				if (err) {
++					nla_nest_cancel(skb, apptrust);
++					return err;
++				}
++			}
++		}
++
++		nla_nest_end(skb, apptrust);
++	}
++
+ 	/* get peer info if available */
+ 	if (ops->ieee_peer_getets) {
+ 		struct ieee_ets ets;
+@@ -1571,6 +1595,56 @@ static int dcbnl_ieee_set(struct net_device *netdev, struct nlmsghdr *nlh,
+ 		}
+ 	}
  
- 		nla_for_each_nested(attr, ieee[DCB_ATTR_IEEE_APP_TABLE], rem) {
-+			enum ieee_attrs_app type = nla_type(attr);
- 			struct dcb_app *app_data;
- 
--			if (nla_type(attr) != DCB_ATTR_IEEE_APP)
-+			if (!dcbnl_app_attr_type_validate(type))
- 				continue;
++	if (ieee[DCB_ATTR_DCB_APP_TRUST_TABLE]) {
++		u8 selectors[IEEE_8021QAZ_APP_SEL_MAX + 1] = {0};
++		struct nlattr *attr;
++		int nselectors = 0;
++		u8 selector;
++		int rem, i;
 +
- 			app_data = nla_data(attr);
++		if (!ops->dcbnl_setapptrust) {
++			err = -EOPNOTSUPP;
++			goto err;
++		}
 +
-+			if (!dcbnl_app_selector_validate(type,
-+							 app_data->selector))
-+				return -EINVAL;
++		nla_for_each_nested(attr, ieee[DCB_ATTR_DCB_APP_TRUST_TABLE],
++				    rem) {
++			if (nla_type(attr) != DCB_ATTR_DCB_APP_TRUST ||
++			    nla_len(attr) != 1 ||
++			    nselectors >= sizeof(selectors)) {
++				err = -EINVAL;
++				goto err;
++			}
 +
- 			if (ops->ieee_delapp)
- 				err = ops->ieee_delapp(netdev, app_data);
- 			else
++			selector = nla_get_u8(attr);
++			switch (selector) {
++			case IEEE_8021QAZ_APP_SEL_ETHERTYPE:
++			case IEEE_8021QAZ_APP_SEL_STREAM:
++			case IEEE_8021QAZ_APP_SEL_DGRAM:
++			case IEEE_8021QAZ_APP_SEL_ANY:
++			case IEEE_8021QAZ_APP_SEL_DSCP:
++			case DCB_APP_SEL_PCP:
++				break;
++			default:
++				err = -EINVAL;
++				goto err;
++			}
++			/* Duplicate selector ? */
++			for (i = 0; i < nselectors; i++) {
++				if (selectors[i] == selector) {
++					err = -EINVAL;
++					goto err;
++				}
++			}
++
++			selectors[nselectors++] = selector;
++		}
++
++		err = ops->dcbnl_setapptrust(netdev, selectors, nselectors);
++		if (err)
++			goto err;
++	}
++
+ err:
+ 	err = nla_put_u8(skb, DCB_ATTR_IEEE, err);
+ 	dcbnl_ieee_notify(netdev, RTM_SETDCB, DCB_CMD_IEEE_SET, seq, 0);
 -- 
 2.34.1
 
