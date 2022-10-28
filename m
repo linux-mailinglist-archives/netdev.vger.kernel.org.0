@@ -2,71 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9658E6106E7
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 02:37:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0806A6106F6
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 02:50:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235472AbiJ1Ahd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 20:37:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46008 "EHLO
+        id S235011AbiJ1AuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 20:50:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234235AbiJ1Ahb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 20:37:31 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 192ABA287A;
-        Thu, 27 Oct 2022 17:37:31 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id u8-20020a17090a5e4800b002106dcdd4a0so8369775pji.1;
-        Thu, 27 Oct 2022 17:37:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ghCqk+Du9L6funnJsNVXREamebkJ3xs1SyQxjyBeGn0=;
-        b=JCp01FMmUaMZfe4VXq8TGradDanACYmTCc+OqnPNZUCol4WHmP8aX3+WZB1NkNr3XA
-         6VcqUsK2tyS2T88hdD97K0nr0GLDqMq97IMvGB/ZBA/aqUxjorJBfiUjG7lZY8lWYaZL
-         K1BXESNxNdmXBIuCcFdVMrvsgv5lhUBpq8zkTf1lIPYDFyKqIL8Vg1YhBHbmWSMe2Vs6
-         yE22mhP5JPM9UZ2xOq60lVtacrZ1JJ5HY8FaTbULmAw2Xo2vhqFwa7GrrAXHAbYGGRrT
-         s7JQGSeQG+8N1ZhsZrRWV1tW3wfZwH9ZUm8KbBXCSz4T/rVip7yfhGE0WB44WPB+VCGg
-         Wr3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ghCqk+Du9L6funnJsNVXREamebkJ3xs1SyQxjyBeGn0=;
-        b=agFmzIhKyLsiOPK3DvmiSXg/yX1X79BCe2HjKLHYynIKB/2XKRxrETTYv4bnBBpIdf
-         4ICFoWZmp1e310DZ+wgoYpwhvE77148CxPhwC89toTXbcmGzJAZNyLO5BkLLpRatQhlS
-         PY4GKLcDdPiOakTRRRMn2r9yDwocZt7jxh4fdVw9tOauNBOrBpsq6Nbu7DaII5RJZKKz
-         qlq3W1FS/se2tL+bi1saulAweZqjfFTljh+0RhiFDPdB4AAGtW8SWta4lb77bBBVnjwI
-         aE1jAkKngwfGbIoR9ulxV/8AX9wK0hZqdPbBVcXnLopa3vrAilonpEWyAhrF/Z8G6AvS
-         pleQ==
-X-Gm-Message-State: ACrzQf3liBWjGbRJwEeonyboKXqTIIbXZ8nHAtJUKu4jaybj/KEEZoSf
-        pNb6AXK2Lr/c9IJQUOKYoJwLipKULe+TpQ==
-X-Google-Smtp-Source: AMsMyM497LQuq3xY+/2/sfJ80fX2tU4Jn9WmTZor5hp9dYn/is50XtE6TA6ys0nkHJ8I1J8sJ1O0cA==
-X-Received: by 2002:a17:902:d0d3:b0:186:9869:adb5 with SMTP id n19-20020a170902d0d300b001869869adb5mr28051051pln.105.1666917439845;
-        Thu, 27 Oct 2022 17:37:19 -0700 (PDT)
-Received: from localhost.localdomain ([2601:601:9100:9230:37fc:258f:1646:1aea])
-        by smtp.googlemail.com with ESMTPSA id q6-20020a17090a178600b00210c84b8ae5sm1491562pja.35.2022.10.27.17.37.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Oct 2022 17:37:19 -0700 (PDT)
-From:   Shane Parslow <shaneparslow808@gmail.com>
-To:     m.chetan.kumar@intel.com, linuxwwan@intel.com
-Cc:     shaneparslow808@gmail.com, Loic Poulain <loic.poulain@linaro.org>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: wwan: iosm: add rpc interface for xmm modems
-Date:   Thu, 27 Oct 2022 17:31:29 -0700
-Message-Id: <20221028003128.514318-1-shaneparslow808@gmail.com>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S232906AbiJ1AuK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 20:50:10 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A723B732;
+        Thu, 27 Oct 2022 17:50:07 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Mz3jh6j9VzVj98;
+        Fri, 28 Oct 2022 08:45:12 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 28 Oct 2022 08:50:02 +0800
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Fri, 28 Oct
+ 2022 08:50:01 +0800
+Subject: Re: [PATCH V7 net-next 0/6] ethtool: add support to set/get tx
+ copybreak buf size and rx buf len
+To:     Gal Pressman <gal@nvidia.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <mkubecek@suse.cz>,
+        <andrew@lunn.ch>, <amitc@mellanox.com>, <idosch@idosch.org>,
+        <danieller@nvidia.com>, <jesse.brandeburg@intel.com>,
+        <anthony.l.nguyen@intel.com>, <jdike@addtoit.com>,
+        <richard@nod.at>, <anton.ivanov@cambridgegreys.com>,
+        <netanel@amazon.com>, <akiyano@amazon.com>, <gtzalik@amazon.com>,
+        <saeedb@amazon.com>, <chris.snook@gmail.com>,
+        <ulli.kroll@googlemail.com>, <linus.walleij@linaro.org>,
+        <jeroendb@google.com>, <csully@google.com>,
+        <awogbemila@google.com>, <jdmason@kudzu.us>,
+        <rain.1986.08.12@gmail.com>, <zyjzyj2000@gmail.com>,
+        <kys@microsoft.com>, <haiyangz@microsoft.com>, <mst@redhat.com>,
+        <jasowang@redhat.com>, <doshir@vmware.com>,
+        <pv-drivers@vmware.com>, <jwi@linux.ibm.com>,
+        <kgraul@linux.ibm.com>, <hca@linux.ibm.com>, <gor@linux.ibm.com>,
+        <johannes@sipsolutions.net>
+CC:     <netdev@vger.kernel.org>, <lipeng321@huawei.com>,
+        <chenhao288@hisilicon.com>, <linux-s390@vger.kernel.org>
+References: <20211118121245.49842-1-huangguangbin2@huawei.com>
+ <40d6352e-8c6b-404f-8b6a-df1816239ab0@nvidia.com>
+ <4466b159-7476-f833-ec22-ee234b70110b@huawei.com>
+ <e56e1c33-3909-50ec-f116-80b6335e3ddf@nvidia.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <0cf97cc1-1a99-21f6-93ef-e8c2f4c6f03c@huawei.com>
+Date:   Fri, 28 Oct 2022 08:50:00 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+In-Reply-To: <e56e1c33-3909-50ec-f116-80b6335e3ddf@nvidia.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,70 +74,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new iosm wwan port that connects to the modem rpc interface. This
-interface provides a configuration channel, and in the case of the 7360, is
-the only way to configure the modem (as it does not support mbim).
+On 2022/10/27 17:03, Gal Pressman wrote:
+> On 27/10/2022 03:49, Yunsheng Lin wrote:
+>> On 2022/10/26 22:00, Gal Pressman wrote:
+>>> On 18/11/2021 14:12, Guangbin Huang wrote:
+>>>> From: Hao Chen <chenhao288@hisilicon.com>
+>>>>
+>>>> This series add support to set/get tx copybreak buf size and rx buf len via
+>>>> ethtool and hns3 driver implements them.
+>>>>
+>>>> Tx copybreak buf size is used for tx copybreak feature which for small size
+>>>> packet or frag. Use ethtool --get-tunable command to get it, and ethtool
+>>>> --set-tunable command to set it, examples are as follow:
+>>>>
+>>>> 1. set tx spare buf size to 102400:
+>>>> $ ethtool --set-tunable eth1 tx-buf-size 102400
+>>>>
+>>>> 2. get tx spare buf size:
+>>>> $ ethtool --get-tunable eth1 tx-buf-size
+>>>> tx-buf-size: 102400
+>>> Hi Guangbin,
+>>> Can you please clarify the difference between TX copybreak and TX
+>>> copybreak buf size?
+>> Hi Gal,
+>> 'TX copybreak buf size' is the size of buffer allocated to a queue
+>> in order to support copybreak handling when skb->len <= 'TX copybreak',
+>>
+>> see hns3_can_use_tx_bounce() for 'TX copybreak' and
+>> hns3_init_tx_spare_buffer() for 'TX copybreak buf size'.
+> 
+> Thanks Yunsheng!
+> IIUC, there's a single buffer per TX queue, not per TX packet, correct?
 
-The new interface is compatible with existing software, such as
-open_xdatachannel.py from the xmm7360-pci project [1].
+Yes.
 
-[1] https://github.com/xmm7360/xmm7360-pci
+> 
+> One way to implement TX copybreak is using an inline WQE, where the WQE
+> itself serves as the bounce buffer, sounds like 'TX copybreak buf size'
+> cannot be used in such case?
 
-Signed-off-by: Shane Parslow <shaneparslow808@gmail.com>
----
- drivers/net/wwan/iosm/iosm_ipc_chnl_cfg.c | 2 +-
- drivers/net/wwan/wwan_core.c              | 4 ++++
- include/linux/wwan.h                      | 2 ++
- 3 files changed, 7 insertions(+), 1 deletion(-)
+If TX copybreak is using an inline WQE, I suppose 'TX copybreak buf size'
+is not needed.
 
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_chnl_cfg.c b/drivers/net/wwan/iosm/iosm_ipc_chnl_cfg.c
-index 128c999e08bb..91e3e83fc47b 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_chnl_cfg.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_chnl_cfg.c
-@@ -39,7 +39,7 @@ static struct ipc_chnl_cfg modem_cfg[] = {
- 	/* RPC - 0 */
- 	{ IPC_MEM_CTRL_CHL_ID_1, IPC_MEM_PIPE_2, IPC_MEM_PIPE_3,
- 	  IPC_MEM_MAX_TDS_RPC, IPC_MEM_MAX_TDS_RPC,
--	  IPC_MEM_MAX_DL_RPC_BUF_SIZE, WWAN_PORT_UNKNOWN },
-+	  IPC_MEM_MAX_DL_RPC_BUF_SIZE, WWAN_PORT_RPC },
- 	/* IAT0 */
- 	{ IPC_MEM_CTRL_CHL_ID_2, IPC_MEM_PIPE_4, IPC_MEM_PIPE_5,
- 	  IPC_MEM_MAX_TDS_AT, IPC_MEM_MAX_TDS_AT, IPC_MEM_MAX_DL_AT_BUF_SIZE,
-diff --git a/drivers/net/wwan/wwan_core.c b/drivers/net/wwan/wwan_core.c
-index 62e9f7d6c9fe..cf16a2704914 100644
---- a/drivers/net/wwan/wwan_core.c
-+++ b/drivers/net/wwan/wwan_core.c
-@@ -319,6 +319,10 @@ static const struct {
- 		.name = "FIREHOSE",
- 		.devsuf = "firehose",
- 	},
-+	[WWAN_PORT_RPC] = {
-+		.name = "RPC",
-+		.devsuf = "rpc",
-+	},
- };
- 
- static ssize_t type_show(struct device *dev, struct device_attribute *attr,
-diff --git a/include/linux/wwan.h b/include/linux/wwan.h
-index 5ce2acf444fb..3cf2182ad4e9 100644
---- a/include/linux/wwan.h
-+++ b/include/linux/wwan.h
-@@ -15,6 +15,7 @@
-  * @WWAN_PORT_QMI: Qcom modem/MSM interface for modem control
-  * @WWAN_PORT_QCDM: Qcom Modem diagnostic interface
-  * @WWAN_PORT_FIREHOSE: XML based command protocol
-+ * @WWAN_PORT_RPC: Control protocol for Intel XMM modems
-  *
-  * @WWAN_PORT_MAX: Highest supported port types
-  * @WWAN_PORT_UNKNOWN: Special value to indicate an unknown port type
-@@ -26,6 +27,7 @@ enum wwan_port_type {
- 	WWAN_PORT_QMI,
- 	WWAN_PORT_QCDM,
- 	WWAN_PORT_FIREHOSE,
-+	WWAN_PORT_RPC,
- 
- 	/* Add new port types above this line */
- 
--- 
-2.38.1
-
+> .
+> 
