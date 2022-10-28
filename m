@@ -2,560 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CDAD611504
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 16:46:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B116611562
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 17:03:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230520AbiJ1Oqh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 10:46:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37844 "EHLO
+        id S230364AbiJ1PDG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 11:03:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231184AbiJ1OqU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 10:46:20 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB811D3E96;
-        Fri, 28 Oct 2022 07:46:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1666968371; x=1698504371;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=la0a528Ar2lrLzIp7c9zs9Jsisi244bzdpduLi6K3F4=;
-  b=wnmxDEGMSa/RURfTVUMQxhnbZLbtO+B1IwME0IS4owrtDVnWJQuAquvC
-   0KVQW1va1JY4/tfhOrfZXADu+h5TztxWLfuoNgYCEluJDzxkps8e+d4cc
-   h4LuDAc/0TsqHBS68Iw9Kuw8rObMJGnxl8PD/ZVSNFSvxBGwl9F3v6UgX
-   iC5TdLrZBryyc++LItG8K261opp2hHTzhLOrXQBo9MwuhIzVGR6CON3FI
-   y0hVAtMuXFFCQVhVMratNYccVr3LgWeHaZSBBozxYWXfn731WSSPDlPMS
-   a5YvuEus5p/CHu42lGzJb6DMOK91u7Y12miWyyPS4bQN86iZsMmBDA0rp
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.95,221,1661842800"; 
-   d="scan'208";a="184379697"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Oct 2022 07:46:10 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 28 Oct 2022 07:46:09 -0700
-Received: from den-dk-m31857.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Fri, 28 Oct 2022 07:46:05 -0700
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S230094AbiJ1PDE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 11:03:04 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63A68207518;
+        Fri, 28 Oct 2022 08:03:03 -0700 (PDT)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29SEk2tP030888;
+        Fri, 28 Oct 2022 15:02:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : content-type : mime-version; s=corp-2022-7-12;
+ bh=9WFm0z2EpUCWMQy6wDPEGGHP5c7i+yc9iG65dCyBRPM=;
+ b=g4TpnjE1f4jbbHLvvKjKx6PvHcihYvA5D00JSxuVivEVKo3QO012nVA8je0keKRu7Feb
+ dHzq5JaBBI81jMxWf0f8yalOztflZ774LygtiW8yffnMTAbo7CyytFixENWOiFTNXQ0+
+ OmX3HZE5u6hoxvAmRdLoSJ93hvkzH56gGXVk5nTrXFWH4kpQKBdBdksiArk+LQMLZtiI
+ S2s+AGd/jI3ukIgfYZviL5DLUpQJgcEB8zx8SVjhhVakRnMmhf28+bQLA0fPIQCZCE92
+ Zk5ZOA5+WohbtB/Tl+Ppzgt5aVP699DUtW8pYuy7RNyFnQ93eO0JxCMTeR4PQ6ShLQF2 1w== 
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3kfays5cu5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 28 Oct 2022 15:02:37 +0000
+Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 29SDXZ4n026273;
+        Fri, 28 Oct 2022 15:02:35 GMT
+Received: from nam04-bn8-obe.outbound.protection.outlook.com (mail-bn8nam04lp2041.outbound.protection.outlook.com [104.47.74.41])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3kfagr6gd5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 28 Oct 2022 15:02:35 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fFwmUAa0i9MjoNQLIybIjm+UAriHXMox2twmOIHgY3mZBv53r3p5r3tBV+Gmsfpt93YqICH4Gj3cvYeArjJPt1tJqq2dix9BtcsZV5hLeTO8Ri262e6DIbe0Rta7Kgr/pasO6GESaR/240FiyOTniAen5quomBp87PejQKRtU/uqRmx2XOivjtsAE/Dxmg98DWnY2yyDikoIh6ypLr7LabX2ktl+8qtxbv5e5gp2TH2vzX52v5gekT0G1MQXi266fMSs2VUSKZ2Vx2BClq3A2TYwdTW+9TcaW6FEgGxoQPwYUDmWR5fTcxo743ANCyvYY53m+3ADHUjFq5RBWUWcEQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9WFm0z2EpUCWMQy6wDPEGGHP5c7i+yc9iG65dCyBRPM=;
+ b=Qzn93U58NtYVxovwCi/dawSTQqECitD9EK2RWxKyS+lIwVagaBhzZEzBsdNct03mmYJlhQCwAePbnvU8O6Paq5EH7twZB94tG4xa5/ScK56XphFiS8cRs52JhG12wIhwt8OrI3UqFFEQxN3Df8KiQKIv2b+Dpl+V0W5gvg+nfVhQm/wfUxGH97oCQY5NNAy4vuj5LVoU3GP0cvwTAK200YZ0l18KHG0zWwCPR7JnxlR+zL3sR6H7apnWf/5rrObXxr7QHPx3VJtccu2j6dZHaDzCl7TKp8+gHxrKicEagO+E9nNSd5grLGK2MQN2TKvZeo9Umznwrud+IRJojquwyQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9WFm0z2EpUCWMQy6wDPEGGHP5c7i+yc9iG65dCyBRPM=;
+ b=fQiBiOuGjkW57SEt8GFJdk9fQu3rSt/y5xUbr2qY22qLgotMlw4Do5wmntAWkdUbu0iCEGcoAPHdG9YjXLn0uvZvcfNpTSuhi6anpKBDLYeexWEl0XxTOPXYIL5VdSf5Qm2E7P9jOk3ueJ4c5tSI6+0rXI46zYAzqhr8GBPk0jQ=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by DS7PR10MB5040.namprd10.prod.outlook.com
+ (2603:10b6:5:3b0::8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.14; Fri, 28 Oct
+ 2022 15:02:34 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::3809:e335:4589:331e]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::3809:e335:4589:331e%7]) with mapi id 15.20.5769.015; Fri, 28 Oct 2022
+ 15:02:33 +0000
+Date:   Fri, 28 Oct 2022 18:02:24 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Amritha Nambiar <amritha.nambiar@intel.com>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Steen Hegelund <steen.hegelund@microchip.com>,
-        <UNGLinuxDriver@microchip.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        "Casper Andersson" <casper.casan@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Wan Jiabing <wanjiabing@vivo.com>,
-        "Nathan Huckleberry" <nhuck@google.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        "Daniel Machon" <daniel.machon@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH net-next v2 5/5] net: microchip: sparx5: Adding KUNIT tests of key/action values in VCAP API
-Date:   Fri, 28 Oct 2022 16:45:40 +0200
-Message-ID: <20221028144540.3344995-6-steen.hegelund@microchip.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221028144540.3344995-1-steen.hegelund@microchip.com>
-References: <20221028144540.3344995-1-steen.hegelund@microchip.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net-next] ice: Fix off by one in ice_tc_forward_to_queue()
+Message-ID: <Y1vvAJ6jOmKEUZue@kili>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-ClientProxiedBy: ZR0P278CA0078.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:22::11) To MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWHPR1001MB2365:EE_|DS7PR10MB5040:EE_
+X-MS-Office365-Filtering-Correlation-Id: 746d84c8-ea35-47f7-467d-08dab8f57181
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: fTyGymicOGwk7eXdhTPBUPVPtZDgwVvyScJ82p4O6ibNCNgf8Qk/lwLZdGGjacTRwyunI13csocVdwNDGYGtToalRaBIelglWQA+O/JkAZPc3eYhxZO7goPkHT26z1qWDfQGCZpEdv3DmN3sJYRj3YfM0xMIDgJa27DIppo5vnO5eUhgsRDCI3bws775b9vUUUmYN8rpPrpf47QCeuDONLmW/9MO85yqpjEq6FSE7+lfbHLRvrztIXMeeF9nLg7vhJY8nGYvRfJ7oovg7ptJ+ctdR9uqSMhYuTiBPML/Q0R8Jm9/so4klqaAz8uTD5xECWRmVL4yZcI6QsiNnIG8p8KKZAZbv6Ioloz456ays3AJoB0hTm6QEsOGbnBbApYOGRVrbIVb7UbHe2t17yq1HTtbMFofInL53Efm91FeBPkXAq9HIOumdi6LPBP9wKk7P+07taU2kqcsfv8co1sFeP7jvlKdk813J1Worv8Px48YWxhadzUON6VmZeDt+Dx5SAjSvHVtQ3TqHzKmPC1gBIEh1zX5EhbgM4StF61P1+9kk8EKj1PqDiDaJU0I2JqmHFByoymjS+U3fi6Wy7LEHC60oxqz2Er3pI4lrsniOSHPo1RmVPqRnkRMZaikTN8txlSCYfnr6gG/STY1SWaXYB4MS6p+TSjr+3igF3Vs3X69Huk7m1QMl78A59SZYehK33YPnZvd8MdNcb8u5PcA3Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(39860400002)(136003)(366004)(376002)(346002)(396003)(451199015)(6666004)(478600001)(6486002)(38100700002)(33716001)(6506007)(54906003)(316002)(44832011)(26005)(6512007)(9686003)(186003)(83380400001)(110136005)(86362001)(2906002)(8936002)(66476007)(66946007)(41300700001)(4326008)(5660300002)(7416002)(8676002)(66556008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?JH68nHhQRQTiIpp274Ngx7PCaUTuRhiuX92EZN2ldp+g349pl78WSeT3e1zJ?=
+ =?us-ascii?Q?om04Ej0nnIOp54YDTkh8Mnog0JWPdSxSg5MiNJQJ9npBY6JFLx3Ea1pcqkZD?=
+ =?us-ascii?Q?QTQpVCyGAz6RAHTdJuKlwchsLtIlP70RWtBgIT97QioyCDB+JOCn7Qw2i3UO?=
+ =?us-ascii?Q?G/iB5GFmS2uN+5LgUlhneZLiaNVLRemyOiVK/eGF5ZL9sWKeS87gtH9WfPoW?=
+ =?us-ascii?Q?Ljg0vIFKMWIVRbo3dnOkK7an9RUmeiIUdss6uorat5oWtUeOJD0lxdkLAUX4?=
+ =?us-ascii?Q?HKE3SI+Vd+JEqetYzYiwrRBGy44pp91wCATiTyzbYEYyfO7SOIhW6Zjkn0l7?=
+ =?us-ascii?Q?Y0HTAVfReACZVAHSyZvzM249MnSFKQcfwsg8SRzoA9I+9qL75jq1X3s7hlMu?=
+ =?us-ascii?Q?xlOU8ViIAhqlR/xa925N40k3NN0hi4TyZTsqhFyWXRmu2A6TG50e1fxSvsF+?=
+ =?us-ascii?Q?94e9H3d5l4y6HWCPvP8WA5GAwAzPuTaIsiR2bYpa7vRueukqto2aPok/LRQU?=
+ =?us-ascii?Q?10o4TRYOjNYW7kqv7hOxcrsXIDdVfXymkC1e5F02akNvYbK4gf0NoGfa49kK?=
+ =?us-ascii?Q?h2GQYHvT+JDe7s64eCsF/etRkuKH2QGF3FuMJgPPnQhaLVo2ccpez/oRrYA8?=
+ =?us-ascii?Q?8Hvlz8m9An16WQRQL51oj0XrCYBIrPg/pcC8VjmmAJ2HhWRbju1UaaWfAr+v?=
+ =?us-ascii?Q?EG/illnAsTijvlEDCFy3IRA1mXkOmaDayi0L9MwjueCIz/rcQqgxfIA8i8Jn?=
+ =?us-ascii?Q?JrWb3iF5t44cAnEIDWlCjSWoOtkEgxyz38o1Jm9sVwikjCxtQM2E3haWbBdD?=
+ =?us-ascii?Q?taWjDwzYamYGVDPAoDC5I4uhA7WKd3vFOM0XfYkm2//cyY7DNpjD6Qrv46Bd?=
+ =?us-ascii?Q?NvPfTf4Na5T4IEF+aBCQUCEFnHylLLo128P/OMq0QJp/zc+o4eiQMNOhGZTP?=
+ =?us-ascii?Q?BvOTIzwn8fAc8hpso5KFcl52w1w+Osn41xoQg+c0Sj1a29X4yBI8x8Ftg5bw?=
+ =?us-ascii?Q?jshXQT1QC/gKQYG7lI5YqZLlQiic/2AGwzkqLaJkLHJxHoy/s5DWKTV3pSIY?=
+ =?us-ascii?Q?B3wImgLwKqZoxtDqmLtK+rsJuVzXuSX3B4wEuuHftP3MGl7KVEI10Hu0TSBX?=
+ =?us-ascii?Q?dv5iv7KnvpoPScMyj2cZYGqWG0l7WI0Vp7zpV5nyWfEd2aeji+ZpKhjzbLAp?=
+ =?us-ascii?Q?k4I2lKpYERyL1ReCKXxJ5bwXiRpcdes1RwLDE6uN1Bh0flJ7tf18jxjW8GjC?=
+ =?us-ascii?Q?R6Nl+dst1NH2kxVd9PCi/eyKF05gDhSG/dDLQbluvv7cz3vJqrx5f8h9SNh1?=
+ =?us-ascii?Q?mykJ70dpKV6Jxw2XKUWY8mk/v2cnb7FehEtgQan1fwMiL43UO3Di7tKWyaWi?=
+ =?us-ascii?Q?rpApr0Al52pRNV8fGLVSkyaln8NxXAlm7QuUBXauZT8VncNrUt3U4Jtq/KQT?=
+ =?us-ascii?Q?CoODNe9dTOpOrjjbTS8sVSGoYfU/D82Do5TLy6eRx/oU3ndh17K1OMlPweGL?=
+ =?us-ascii?Q?q9IUIqv3suPFdyjZbCQLC0zdrP8rh/iI4QFt3Ojv2JX3rC09m9NFCWNR73yp?=
+ =?us-ascii?Q?sl1Po11BKxGZCgPsz9pOuKfAqkDxip29BDaWdvsNS2/IFsWsNxJS/KjkXfD/?=
+ =?us-ascii?Q?Zg=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 746d84c8-ea35-47f7-467d-08dab8f57181
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Oct 2022 15:02:33.8704
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 52BqiOv8yiiOtb6JaRZQVlcEp8XUMfOyT/Zhs9wvYfLyuQ1ALUTDZVSV36vXAsyPlQO3ccKZLmtcyyNFxYILs6Of+7yPQItmQH20jHVRudg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR10MB5040
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-10-28_07,2022-10-27_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxscore=0 mlxlogscore=999
+ spamscore=0 phishscore=0 bulkscore=0 malwarescore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2210170000
+ definitions=main-2210280093
+X-Proofpoint-ORIG-GUID: Cum0lyIPhE-UoOkhThu0oxNs86uE7IPG
+X-Proofpoint-GUID: Cum0lyIPhE-UoOkhThu0oxNs86uE7IPG
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This tests that the available keyfield and actionfield add methods are
-doing the exepected work: adding the value (and mask) to the
-keyfield/actionfield list item in the rule.
+The > comparison should be >= to prevent reading one element beyond
+the end of the array.
 
-The test also covers the functionality that matches a rule to a keyset.
+The "vsi->num_rxq" is not strictly speaking the number of elements in
+the vsi->rxq_map[] array.  The array has "vsi->alloc_rxq" elements and
+"vsi->num_rxq" is less than or equal to the number of elements in the
+array.  The array is allocated in ice_vsi_alloc_arrays().  It's still
+an off by one but it might not access outside the end of the array.
 
-Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 143b86f346c7 ("ice: Enable RX queue selection using skbedit action")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 ---
- .../ethernet/microchip/vcap/vcap_api_kunit.c  | 447 ++++++++++++++++++
- 1 file changed, 447 insertions(+)
+Applies to net-next.
 
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-index b01a6e5039b0..a8b116493719 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-@@ -22,6 +22,7 @@ static u32 test_init_start;
- static u32 test_init_count;
- static u32 test_hw_counter_id;
- static struct vcap_cache_data test_hw_cache;
-+static struct net_device test_netdev = {};
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.c b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+index faba0f857cd9..95f392ab9670 100644
+--- a/drivers/net/ethernet/intel/ice/ice_tc_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+@@ -1681,7 +1681,7 @@ ice_tc_forward_to_queue(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr,
+ 	struct ice_vsi *ch_vsi = NULL;
+ 	u16 queue = act->rx_queue;
  
- /* Callback used by the VCAP API */
- static enum vcap_keyfield_set test_val_keyset(struct net_device *ndev,
-@@ -904,6 +905,450 @@ static void vcap_api_encode_rule_actionset_test(struct kunit *test)
- 	KUNIT_EXPECT_EQ(test, (u32)0x00000000, actwords[11]);
- }
- 
-+static void vcap_api_rule_add_keyvalue_test(struct kunit *test)
-+{
-+	struct vcap_admin admin = {
-+		.vtype = VCAP_TYPE_IS2,
-+	};
-+	struct vcap_rule_internal ri = {
-+		.admin = &admin,
-+		.data = {
-+			.keyset = VCAP_KFS_NO_VALUE,
-+		},
-+		.vctrl = &test_vctrl,
-+	};
-+	struct vcap_rule *rule = (struct vcap_rule *)&ri;
-+	struct vcap_client_keyfield *kf;
-+	int ret;
-+	struct vcap_u128_key dip = {
-+		.value = {0x17, 0x26, 0x35, 0x44, 0x63, 0x62, 0x71},
-+		.mask = {0xf1, 0xf2, 0xf3, 0xf4, 0x4f, 0x3f, 0x2f, 0x1f},
-+	};
-+	int idx;
-+
-+	INIT_LIST_HEAD(&rule->keyfields);
-+	ret = vcap_rule_add_key_bit(rule, VCAP_KF_LOOKUP_FIRST_IS, VCAP_BIT_0);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	ret = list_empty(&rule->keyfields);
-+	KUNIT_EXPECT_EQ(test, false, ret);
-+	kf = list_first_entry(&rule->keyfields, struct vcap_client_keyfield,
-+			      ctrl.list);
-+	KUNIT_EXPECT_EQ(test, VCAP_KF_LOOKUP_FIRST_IS, kf->ctrl.key);
-+	KUNIT_EXPECT_EQ(test, VCAP_FIELD_BIT, kf->ctrl.type);
-+	KUNIT_EXPECT_EQ(test, 0x0, kf->data.u1.value);
-+	KUNIT_EXPECT_EQ(test, 0x1, kf->data.u1.mask);
-+
-+	INIT_LIST_HEAD(&rule->keyfields);
-+	ret = vcap_rule_add_key_bit(rule, VCAP_KF_LOOKUP_FIRST_IS, VCAP_BIT_1);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	ret = list_empty(&rule->keyfields);
-+	KUNIT_EXPECT_EQ(test, false, ret);
-+	kf = list_first_entry(&rule->keyfields, struct vcap_client_keyfield,
-+			      ctrl.list);
-+	KUNIT_EXPECT_EQ(test, VCAP_KF_LOOKUP_FIRST_IS, kf->ctrl.key);
-+	KUNIT_EXPECT_EQ(test, VCAP_FIELD_BIT, kf->ctrl.type);
-+	KUNIT_EXPECT_EQ(test, 0x1, kf->data.u1.value);
-+	KUNIT_EXPECT_EQ(test, 0x1, kf->data.u1.mask);
-+
-+	INIT_LIST_HEAD(&rule->keyfields);
-+	ret = vcap_rule_add_key_bit(rule, VCAP_KF_LOOKUP_FIRST_IS,
-+				    VCAP_BIT_ANY);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	ret = list_empty(&rule->keyfields);
-+	KUNIT_EXPECT_EQ(test, false, ret);
-+	kf = list_first_entry(&rule->keyfields, struct vcap_client_keyfield,
-+			      ctrl.list);
-+	KUNIT_EXPECT_EQ(test, VCAP_KF_LOOKUP_FIRST_IS, kf->ctrl.key);
-+	KUNIT_EXPECT_EQ(test, VCAP_FIELD_BIT, kf->ctrl.type);
-+	KUNIT_EXPECT_EQ(test, 0x0, kf->data.u1.value);
-+	KUNIT_EXPECT_EQ(test, 0x0, kf->data.u1.mask);
-+
-+	INIT_LIST_HEAD(&rule->keyfields);
-+	ret = vcap_rule_add_key_u32(rule, VCAP_KF_TYPE, 0x98765432, 0xff00ffab);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	ret = list_empty(&rule->keyfields);
-+	KUNIT_EXPECT_EQ(test, false, ret);
-+	kf = list_first_entry(&rule->keyfields, struct vcap_client_keyfield,
-+			      ctrl.list);
-+	KUNIT_EXPECT_EQ(test, VCAP_KF_TYPE, kf->ctrl.key);
-+	KUNIT_EXPECT_EQ(test, VCAP_FIELD_U32, kf->ctrl.type);
-+	KUNIT_EXPECT_EQ(test, 0x98765432, kf->data.u32.value);
-+	KUNIT_EXPECT_EQ(test, 0xff00ffab, kf->data.u32.mask);
-+
-+	INIT_LIST_HEAD(&rule->keyfields);
-+	ret = vcap_rule_add_key_u128(rule, VCAP_KF_L3_IP6_SIP, &dip);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	ret = list_empty(&rule->keyfields);
-+	KUNIT_EXPECT_EQ(test, false, ret);
-+	kf = list_first_entry(&rule->keyfields, struct vcap_client_keyfield,
-+			      ctrl.list);
-+	KUNIT_EXPECT_EQ(test, VCAP_KF_L3_IP6_SIP, kf->ctrl.key);
-+	KUNIT_EXPECT_EQ(test, VCAP_FIELD_U128, kf->ctrl.type);
-+	for (idx = 0; idx < ARRAY_SIZE(dip.value); ++idx)
-+		KUNIT_EXPECT_EQ(test, dip.value[idx], kf->data.u128.value[idx]);
-+	for (idx = 0; idx < ARRAY_SIZE(dip.mask); ++idx)
-+		KUNIT_EXPECT_EQ(test, dip.mask[idx], kf->data.u128.mask[idx]);
-+}
-+
-+static void vcap_api_rule_add_actionvalue_test(struct kunit *test)
-+{
-+	struct vcap_admin admin = {
-+		.vtype = VCAP_TYPE_IS2,
-+	};
-+	struct vcap_rule_internal ri = {
-+		.admin = &admin,
-+		.data = {
-+			.actionset = VCAP_AFS_NO_VALUE,
-+		},
-+	};
-+	struct vcap_rule *rule = (struct vcap_rule *)&ri;
-+	struct vcap_client_actionfield *af;
-+	int ret;
-+
-+	INIT_LIST_HEAD(&rule->actionfields);
-+	ret = vcap_rule_add_action_bit(rule, VCAP_AF_POLICE_ENA, VCAP_BIT_0);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	ret = list_empty(&rule->actionfields);
-+	KUNIT_EXPECT_EQ(test, false, ret);
-+	af = list_first_entry(&rule->actionfields,
-+			      struct vcap_client_actionfield, ctrl.list);
-+	KUNIT_EXPECT_EQ(test, VCAP_AF_POLICE_ENA, af->ctrl.action);
-+	KUNIT_EXPECT_EQ(test, VCAP_FIELD_BIT, af->ctrl.type);
-+	KUNIT_EXPECT_EQ(test, 0x0, af->data.u1.value);
-+
-+	INIT_LIST_HEAD(&rule->actionfields);
-+	ret = vcap_rule_add_action_bit(rule, VCAP_AF_POLICE_ENA, VCAP_BIT_1);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	ret = list_empty(&rule->actionfields);
-+	KUNIT_EXPECT_EQ(test, false, ret);
-+	af = list_first_entry(&rule->actionfields,
-+			      struct vcap_client_actionfield, ctrl.list);
-+	KUNIT_EXPECT_EQ(test, VCAP_AF_POLICE_ENA, af->ctrl.action);
-+	KUNIT_EXPECT_EQ(test, VCAP_FIELD_BIT, af->ctrl.type);
-+	KUNIT_EXPECT_EQ(test, 0x1, af->data.u1.value);
-+
-+	INIT_LIST_HEAD(&rule->actionfields);
-+	ret = vcap_rule_add_action_bit(rule, VCAP_AF_POLICE_ENA, VCAP_BIT_ANY);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	ret = list_empty(&rule->actionfields);
-+	KUNIT_EXPECT_EQ(test, false, ret);
-+	af = list_first_entry(&rule->actionfields,
-+			      struct vcap_client_actionfield, ctrl.list);
-+	KUNIT_EXPECT_EQ(test, VCAP_AF_POLICE_ENA, af->ctrl.action);
-+	KUNIT_EXPECT_EQ(test, VCAP_FIELD_BIT, af->ctrl.type);
-+	KUNIT_EXPECT_EQ(test, 0x0, af->data.u1.value);
-+
-+	INIT_LIST_HEAD(&rule->actionfields);
-+	ret = vcap_rule_add_action_u32(rule, VCAP_AF_TYPE, 0x98765432);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	ret = list_empty(&rule->actionfields);
-+	KUNIT_EXPECT_EQ(test, false, ret);
-+	af = list_first_entry(&rule->actionfields,
-+			      struct vcap_client_actionfield, ctrl.list);
-+	KUNIT_EXPECT_EQ(test, VCAP_AF_TYPE, af->ctrl.action);
-+	KUNIT_EXPECT_EQ(test, VCAP_FIELD_U32, af->ctrl.type);
-+	KUNIT_EXPECT_EQ(test, 0x98765432, af->data.u32.value);
-+
-+	INIT_LIST_HEAD(&rule->actionfields);
-+	ret = vcap_rule_add_action_u32(rule, VCAP_AF_MASK_MODE, 0xaabbccdd);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	ret = list_empty(&rule->actionfields);
-+	KUNIT_EXPECT_EQ(test, false, ret);
-+	af = list_first_entry(&rule->actionfields,
-+			      struct vcap_client_actionfield, ctrl.list);
-+	KUNIT_EXPECT_EQ(test, VCAP_AF_MASK_MODE, af->ctrl.action);
-+	KUNIT_EXPECT_EQ(test, VCAP_FIELD_U32, af->ctrl.type);
-+	KUNIT_EXPECT_EQ(test, 0xaabbccdd, af->data.u32.value);
-+}
-+
-+static void vcap_api_rule_find_keyset_basic_test(struct kunit *test)
-+{
-+	struct vcap_keyset_list matches = {};
-+	struct vcap_admin admin = {
-+		.vtype = VCAP_TYPE_IS2,
-+	};
-+	struct vcap_rule_internal ri = {
-+		.admin = &admin,
-+		.vctrl = &test_vctrl,
-+	};
-+	struct vcap_client_keyfield ckf[] = {
-+		{
-+			.ctrl.key = VCAP_KF_TYPE,
-+		}, {
-+			.ctrl.key = VCAP_KF_LOOKUP_FIRST_IS,
-+		}, {
-+			.ctrl.key = VCAP_KF_IF_IGR_PORT_MASK_L3,
-+		}, {
-+			.ctrl.key = VCAP_KF_IF_IGR_PORT_MASK_RNG,
-+		}, {
-+			.ctrl.key = VCAP_KF_IF_IGR_PORT_MASK,
-+		}, {
-+			.ctrl.key = VCAP_KF_L2_DMAC,
-+		}, {
-+			.ctrl.key = VCAP_KF_ETYPE_LEN_IS,
-+		}, {
-+			.ctrl.key = VCAP_KF_ETYPE,
-+		},
-+	};
-+	int idx;
-+	bool ret;
-+	enum vcap_keyfield_set keysets[10] = {};
-+
-+	matches.keysets = keysets;
-+	matches.max = ARRAY_SIZE(keysets);
-+
-+	INIT_LIST_HEAD(&ri.data.keyfields);
-+	for (idx = 0; idx < ARRAY_SIZE(ckf); idx++)
-+		list_add_tail(&ckf[idx].ctrl.list, &ri.data.keyfields);
-+
-+	ret = vcap_rule_find_keysets(&ri, &matches);
-+
-+	KUNIT_EXPECT_EQ(test, true, ret);
-+	KUNIT_EXPECT_EQ(test, 1, matches.cnt);
-+	KUNIT_EXPECT_EQ(test, VCAP_KFS_MAC_ETYPE, matches.keysets[0]);
-+}
-+
-+static void vcap_api_rule_find_keyset_failed_test(struct kunit *test)
-+{
-+	struct vcap_keyset_list matches = {};
-+	struct vcap_admin admin = {
-+		.vtype = VCAP_TYPE_IS2,
-+	};
-+	struct vcap_rule_internal ri = {
-+		.admin = &admin,
-+		.vctrl = &test_vctrl,
-+	};
-+	struct vcap_client_keyfield ckf[] = {
-+		{
-+			.ctrl.key = VCAP_KF_TYPE,
-+		}, {
-+			.ctrl.key = VCAP_KF_LOOKUP_FIRST_IS,
-+		}, {
-+			.ctrl.key = VCAP_KF_ARP_OPCODE,
-+		}, {
-+			.ctrl.key = VCAP_KF_L3_IP4_SIP,
-+		}, {
-+			.ctrl.key = VCAP_KF_L3_IP4_DIP,
-+		}, {
-+			.ctrl.key = VCAP_KF_8021Q_PCP_CLS,
-+		}, {
-+			.ctrl.key = VCAP_KF_ETYPE_LEN_IS, /* Not with ARP */
-+		}, {
-+			.ctrl.key = VCAP_KF_ETYPE, /* Not with ARP */
-+		},
-+	};
-+	int idx;
-+	bool ret;
-+	enum vcap_keyfield_set keysets[10] = {};
-+
-+	matches.keysets = keysets;
-+	matches.max = ARRAY_SIZE(keysets);
-+
-+	INIT_LIST_HEAD(&ri.data.keyfields);
-+	for (idx = 0; idx < ARRAY_SIZE(ckf); idx++)
-+		list_add_tail(&ckf[idx].ctrl.list, &ri.data.keyfields);
-+
-+	ret = vcap_rule_find_keysets(&ri, &matches);
-+
-+	KUNIT_EXPECT_EQ(test, false, ret);
-+	KUNIT_EXPECT_EQ(test, 0, matches.cnt);
-+	KUNIT_EXPECT_EQ(test, VCAP_KFS_NO_VALUE, matches.keysets[0]);
-+}
-+
-+static void vcap_api_rule_find_keyset_many_test(struct kunit *test)
-+{
-+	struct vcap_keyset_list matches = {};
-+	struct vcap_admin admin = {
-+		.vtype = VCAP_TYPE_IS2,
-+	};
-+	struct vcap_rule_internal ri = {
-+		.admin = &admin,
-+		.vctrl = &test_vctrl,
-+	};
-+	struct vcap_client_keyfield ckf[] = {
-+		{
-+			.ctrl.key = VCAP_KF_TYPE,
-+		}, {
-+			.ctrl.key = VCAP_KF_LOOKUP_FIRST_IS,
-+		}, {
-+			.ctrl.key = VCAP_KF_8021Q_DEI_CLS,
-+		}, {
-+			.ctrl.key = VCAP_KF_8021Q_PCP_CLS,
-+		}, {
-+			.ctrl.key = VCAP_KF_8021Q_VID_CLS,
-+		}, {
-+			.ctrl.key = VCAP_KF_ISDX_CLS,
-+		}, {
-+			.ctrl.key = VCAP_KF_L2_MC_IS,
-+		}, {
-+			.ctrl.key = VCAP_KF_L2_BC_IS,
-+		},
-+	};
-+	int idx;
-+	bool ret;
-+	enum vcap_keyfield_set keysets[10] = {};
-+
-+	matches.keysets = keysets;
-+	matches.max = ARRAY_SIZE(keysets);
-+
-+	INIT_LIST_HEAD(&ri.data.keyfields);
-+	for (idx = 0; idx < ARRAY_SIZE(ckf); idx++)
-+		list_add_tail(&ckf[idx].ctrl.list, &ri.data.keyfields);
-+
-+	ret = vcap_rule_find_keysets(&ri, &matches);
-+
-+	KUNIT_EXPECT_EQ(test, true, ret);
-+	KUNIT_EXPECT_EQ(test, 6, matches.cnt);
-+	KUNIT_EXPECT_EQ(test, VCAP_KFS_ARP, matches.keysets[0]);
-+	KUNIT_EXPECT_EQ(test, VCAP_KFS_IP4_OTHER, matches.keysets[1]);
-+	KUNIT_EXPECT_EQ(test, VCAP_KFS_IP4_TCP_UDP, matches.keysets[2]);
-+	KUNIT_EXPECT_EQ(test, VCAP_KFS_IP6_STD, matches.keysets[3]);
-+	KUNIT_EXPECT_EQ(test, VCAP_KFS_IP_7TUPLE, matches.keysets[4]);
-+	KUNIT_EXPECT_EQ(test, VCAP_KFS_MAC_ETYPE, matches.keysets[5]);
-+}
-+
-+static void vcap_api_encode_rule_test(struct kunit *test)
-+{
-+	/* Data used by VCAP Library callback */
-+	static u32 keydata[32] = {};
-+	static u32 mskdata[32] = {};
-+	static u32 actdata[32] = {};
-+
-+	struct vcap_admin is2_admin = {
-+		.vtype = VCAP_TYPE_IS2,
-+		.first_cid = 10000,
-+		.last_cid = 19999,
-+		.lookups = 4,
-+		.last_valid_addr = 3071,
-+		.first_valid_addr = 0,
-+		.last_used_addr = 800,
-+		.cache = {
-+			.keystream = keydata,
-+			.maskstream = mskdata,
-+			.actionstream = actdata,
-+		},
-+	};
-+	struct vcap_rule *rule = 0;
-+	struct vcap_rule_internal *ri = 0;
-+	int vcap_chain_id = 10005;
-+	enum vcap_user user = VCAP_USER_VCAP_UTIL;
-+	u16 priority = 10;
-+	int id = 100;
-+	int ret;
-+	struct vcap_u48_key smac = {
-+		.value = { 0x88, 0x75, 0x32, 0x34, 0x9e, 0xb1 },
-+		.mask = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff }
-+	};
-+	struct vcap_u48_key dmac = {
-+		.value = { 0x06, 0x05, 0x04, 0x03, 0x02, 0x01 },
-+		.mask = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff }
-+	};
-+	u32 port_mask_rng_value = 0x05;
-+	u32 port_mask_rng_mask = 0x0f;
-+	u32 igr_port_mask_value = 0xffabcd01;
-+	u32 igr_port_mask_mask = ~0;
-+	/* counter is not written yet, so it is not in expwriteaddr */
-+	u32 expwriteaddr[] = {792, 793, 794, 795, 796, 797, 0};
-+	int idx;
-+
-+	vcap_test_api_init(&is2_admin);
-+
-+	/* Allocate the rule */
-+	rule = vcap_alloc_rule(&test_vctrl, &test_netdev, vcap_chain_id, user,
-+			       priority, id);
-+	KUNIT_EXPECT_PTR_NE(test, NULL, rule);
-+	ri = (struct vcap_rule_internal *)rule;
-+
-+	/* Add rule keys */
-+	ret = vcap_rule_add_key_u48(rule, VCAP_KF_L2_DMAC, &dmac);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	ret = vcap_rule_add_key_u48(rule, VCAP_KF_L2_SMAC, &smac);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	ret = vcap_rule_add_key_bit(rule, VCAP_KF_ETYPE_LEN_IS, VCAP_BIT_1);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	/* Cannot add the same field twice */
-+	ret = vcap_rule_add_key_bit(rule, VCAP_KF_ETYPE_LEN_IS, VCAP_BIT_1);
-+	KUNIT_EXPECT_EQ(test, -EINVAL, ret);
-+	ret = vcap_rule_add_key_bit(rule, VCAP_KF_IF_IGR_PORT_MASK_L3,
-+				    VCAP_BIT_ANY);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	ret = vcap_rule_add_key_u32(rule, VCAP_KF_IF_IGR_PORT_MASK_RNG,
-+				    port_mask_rng_value, port_mask_rng_mask);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	ret = vcap_rule_add_key_u32(rule, VCAP_KF_IF_IGR_PORT_MASK,
-+				    igr_port_mask_value, igr_port_mask_mask);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+
-+	/* Add rule actions */
-+	ret = vcap_rule_add_action_bit(rule, VCAP_AF_POLICE_ENA, VCAP_BIT_1);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	ret = vcap_rule_add_action_u32(rule, VCAP_AF_CNT_ID, id);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	ret = vcap_rule_add_action_u32(rule, VCAP_AF_MATCH_ID, 1);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	ret = vcap_rule_add_action_u32(rule, VCAP_AF_MATCH_ID_MASK, 1);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+
-+	/* For now the actionset is hardcoded */
-+	ret = vcap_set_rule_set_actionset(rule, VCAP_AFS_BASE_TYPE);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+
-+	/* Validation with validate keyset callback */
-+	ret = vcap_val_rule(rule, ETH_P_ALL);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	KUNIT_EXPECT_EQ(test, VCAP_KFS_MAC_ETYPE, rule->keyset);
-+	KUNIT_EXPECT_EQ(test, VCAP_AFS_BASE_TYPE, rule->actionset);
-+	KUNIT_EXPECT_EQ(test, 6, ri->size);
-+	KUNIT_EXPECT_EQ(test, 2, ri->keyset_sw_regs);
-+	KUNIT_EXPECT_EQ(test, 4, ri->actionset_sw_regs);
-+
-+	/* Add rule with write callback */
-+	ret = vcap_add_rule(rule);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	KUNIT_EXPECT_EQ(test, 792, is2_admin.last_used_addr);
-+	for (idx = 0; idx < ARRAY_SIZE(expwriteaddr); ++idx)
-+		KUNIT_EXPECT_EQ(test, expwriteaddr[idx], test_updateaddr[idx]);
-+
-+	/* Check that the rule has been added */
-+	ret = list_empty(&is2_admin.rules);
-+	KUNIT_EXPECT_EQ(test, false, ret);
-+	KUNIT_EXPECT_EQ(test, 0, ret);
-+	vcap_free_rule(rule);
-+
-+	/* Check that the rule has been freed: tricky to access since this
-+	 * memory should not be accessible anymore
-+	 */
-+	KUNIT_EXPECT_PTR_NE(test, NULL, rule);
-+	ret = list_empty(&rule->keyfields);
-+	KUNIT_EXPECT_EQ(test, true, ret);
-+	ret = list_empty(&rule->actionfields);
-+	KUNIT_EXPECT_EQ(test, true, ret);
-+}
-+
-+static struct kunit_case vcap_api_full_rule_test_cases[] = {
-+	KUNIT_CASE(vcap_api_rule_find_keyset_basic_test),
-+	KUNIT_CASE(vcap_api_rule_find_keyset_failed_test),
-+	KUNIT_CASE(vcap_api_rule_find_keyset_many_test),
-+	KUNIT_CASE(vcap_api_encode_rule_test),
-+	{}
-+};
-+
-+static struct kunit_suite vcap_api_full_rule_test_suite = {
-+	.name = "VCAP_API_Full_Rule_Testsuite",
-+	.test_cases = vcap_api_full_rule_test_cases,
-+};
-+
-+static struct kunit_case vcap_api_rule_value_test_cases[] = {
-+	KUNIT_CASE(vcap_api_rule_add_keyvalue_test),
-+	KUNIT_CASE(vcap_api_rule_add_actionvalue_test),
-+	{}
-+};
-+
-+static struct kunit_suite vcap_api_rule_value_test_suite = {
-+	.name = "VCAP_API_Rule_Value_Testsuite",
-+	.test_cases = vcap_api_rule_value_test_cases,
-+};
-+
- static struct kunit_case vcap_api_encoding_test_cases[] = {
- 	KUNIT_CASE(vcap_api_set_bit_1_test),
- 	KUNIT_CASE(vcap_api_set_bit_0_test),
-@@ -930,4 +1375,6 @@ static struct kunit_suite vcap_api_encoding_test_suite = {
- 	.test_cases = vcap_api_encoding_test_cases,
- };
- 
-+kunit_test_suite(vcap_api_full_rule_test_suite);
-+kunit_test_suite(vcap_api_rule_value_test_suite);
- kunit_test_suite(vcap_api_encoding_test_suite);
+-	if (queue > vsi->num_rxq) {
++	if (queue >= vsi->num_rxq) {
+ 		NL_SET_ERR_MSG_MOD(fltr->extack,
+ 				   "Unable to add filter because specified queue is invalid");
+ 		return -EINVAL;
 -- 
-2.38.1
+2.35.1
 
