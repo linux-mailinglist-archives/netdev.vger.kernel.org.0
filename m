@@ -2,151 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 649B46113A2
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 15:52:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D05D6113A9
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 15:54:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229686AbiJ1Nw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 09:52:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51840 "EHLO
+        id S229927AbiJ1Nyw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 09:54:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230220AbiJ1NwI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 09:52:08 -0400
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3455B66122
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 06:52:05 -0700 (PDT)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-13bd2aea61bso6401983fac.0
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 06:52:05 -0700 (PDT)
+        with ESMTP id S229808AbiJ1Nyv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 09:54:51 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05E0E201BB;
+        Fri, 28 Oct 2022 06:54:49 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id l6so4786860pjj.0;
+        Fri, 28 Oct 2022 06:54:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=/yycjx9EZfEMmLg6e9jie3OqjuhLySPHM3clyxIkHyk=;
-        b=e0bEgbLsKyKPtHNUePN3190MmWMA02OCfX6Nr9pGLlBlPGCDKebz32iDCVIspgXBL4
-         LOstyYieXmBHMrBtLGyYbvXxuwpCwk2aLRxpDh0Yxfw6JaFhN2QWFSm7CnAfIpzeQfpC
-         n0J2ZcCpRSokgp89M3ycXLJQKNG5NveXDrWZib/o28URg1XUP5pZeGdMO4AIZGtPUKSZ
-         li4y0/5rLW+dijh/8j49n6EVHJMxcJznmHKcuZHMPVejyctoqYRsf6cYlulLhqDE86/B
-         +F5XZ5W/eoM1QaN91dQkW7lJYPq+hFku7hR4bUCdcyfcJY/aJ4f3PpR1SinonW6aQggf
-         Fk+g==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=zAImP6PWJ5WKUhDLfWykBuCXt66Oh0xkfiNtM65y4vc=;
+        b=odgyqA70A3ESvmjUlqp5hpilRZmgvLyLT/NCtcrt8ymsLwCJENdZpKZFuSXCBG+AnY
+         Q86vMciO80RAUc9b91LXgCHhLD3fLj9NKeBiIlI3CATTCHkZLfgLJZx2UwLTBFJk/GME
+         Zk4GvwmIfod3CnXPtr+jRck8cjW2nWNElHM7wK/WyLdpdkH2Xee+QBW02diy9iVkGDVB
+         Oy/a/G9W/aIytmcyDgVJ6d0FwtEwmOeyVnDwRQSfgEzx09p4bt6RxuJXvPo5zxfI/OdC
+         S7YQ4OhwxQQBNs9ySlo2ARuVeNZQzElfeINCyLkgJ4DZAiHDzbL00ZP62fZyiStptrSv
+         CWOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=/yycjx9EZfEMmLg6e9jie3OqjuhLySPHM3clyxIkHyk=;
-        b=45xUuFhnXbVvP6QLBD46aQKub5N+jbQ/XNUsIpQjE0CZXnbrRGbOZHqhknU9xVc4my
-         NltbBcSKLZk4Oeo7rcBCKeZTVKR2MUWtg6QHz9uxM+aXrLKTMj+L+A14Rw/+L98FpYus
-         1sWa+7O2eoQ2SH95bIIPCjXKIZgbdI6e0ftspvCC4epL7JnNnv47btysQuufPNr8r9Fu
-         c96i0Hf6Ajr0AFUA5SHFsK5AFFTNUsW0cYfz/6cd9BlPVxI0kTFfoM74XsgeSmbhnaZx
-         gZYQGqz//InR2TeVsb+dmGPiEGPY0DW/Tja9A16C3f49oNn7tdcRD2ji+iSbO0ZlcyR7
-         YxGw==
-X-Gm-Message-State: ACrzQf0BmNoaVHT1OtuevxaCtxC5IPNS5K6Z5vJL9hZRl9B5vj3LYxqR
-        B+MY22XDrFJajbcuXumUtsAe9kmLSpI=
-X-Google-Smtp-Source: AMsMyM4UZI7XR4lWHrixKz+J2wTaZNYH/fQpes0ubAzLGLx1iXfHJsNCCQP4SXQUqKHdRsGX1H0f0w==
-X-Received: by 2002:a05:6870:538d:b0:136:3cc4:78fa with SMTP id h13-20020a056870538d00b001363cc478famr9462740oan.278.1666965124436;
-        Fri, 28 Oct 2022 06:52:04 -0700 (PDT)
-Received: from localhost.localdomain ([2804:14c:485:4b69:4f96:b37f:e49c:a5a1])
-        by smtp.gmail.com with ESMTPSA id z8-20020a056870e30800b00132f141ef2dsm2097637oad.56.2022.10.28.06.52.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Oct 2022 06:52:03 -0700 (PDT)
-From:   Fabio Estevam <festevam@gmail.com>
-To:     kuba@kernel.org
-Cc:     davem@davemloft.net, olteanv@gmail.com, andrew@lunn.ch,
-        netdev@vger.kernel.org,
-        =?UTF-8?q?Steffen=20B=C3=A4tz?= <steffen@innosonix.de>,
-        Fabio Estevam <festevam@denx.de>
-Subject: [PATCH v2 net-next] net: dsa: mv88e6xxx: Add .port_set_rgmii_delay to 88E6320
-Date:   Fri, 28 Oct 2022 10:51:48 -0300
-Message-Id: <20221028135148.105691-1-festevam@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=zAImP6PWJ5WKUhDLfWykBuCXt66Oh0xkfiNtM65y4vc=;
+        b=hZv8B/BgHin4jnlxKdwVxWzXKHbwa9FkfWawFshAx+yuUFdo4JPiFKO2HeCD/4LChN
+         YGVvTGtb2Zy5DHL3LyUvqRIleSVo4MI8xR/gG7BY2oLJoBx1AP+iwNe/CEpu9Ryk4INs
+         ANu1MlUybiQXZT1VkRYJTkAiYBHVnIstHT3+868vxaNJWU5cuZ1i1MsNyAbE63VOxe8G
+         mZ8QitK2RE1s0oIbW7uxhtOrZUvc+7XlrK08lSXt3JuMZucvzfYh3FJ0fGtMxMN7m/zJ
+         Yz1q2nYy0ExuLDXB6HDe9JPgPL2KZjiXzw9gtB4MdpHcqeJ4aT8kjGa4/J3Q5W5T15Wh
+         Kdug==
+X-Gm-Message-State: ACrzQf07Z1L5qoOhiZthBD620eQKMorUD1U0zk/o4/Jx5VXhkzE70Wv4
+        Eev7PRtB9APlnQpl9SV21lU=
+X-Google-Smtp-Source: AMsMyM7raeSiL0bcANzUkRefG1GBCNbNvX1iZSwHR+qG9H5Nlc3HgW1g9UH/63LhwEBggls+D9Xr9g==
+X-Received: by 2002:a17:902:e74e:b0:186:f3f4:f7fc with SMTP id p14-20020a170902e74e00b00186f3f4f7fcmr6116570plf.130.1666965288563;
+        Fri, 28 Oct 2022 06:54:48 -0700 (PDT)
+Received: from [192.168.43.80] (subs03-180-214-233-72.three.co.id. [180.214.233.72])
+        by smtp.gmail.com with ESMTPSA id 73-20020a62194c000000b00561cf757749sm2869821pfz.183.2022.10.28.06.54.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 28 Oct 2022 06:54:48 -0700 (PDT)
+Message-ID: <9386b19f-dd99-3601-9e87-3056100dfe53@gmail.com>
+Date:   Fri, 28 Oct 2022 20:54:40 +0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [PATCH 11/15] hdlcdrv: remove HDLCDRV_MAGIC
+Content-Language: en-US
+To:     =?UTF-8?B?0L3QsNCx?= <nabijaczleweli@nabijaczleweli.xyz>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Federico Vaga <federico.vaga@vaga.pv.it>,
+        Alex Shi <alexs@kernel.org>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Hu Haowen <src.res@email.cn>,
+        Thomas Sailer <t.sailer@alumni.ethz.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        =?UTF-8?Q?Jakub_Kici=c5=84ski?= <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Kees Cook <keescook@chromium.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc-tw-discuss@lists.sourceforge.net,
+        linux-hams@vger.kernel.org, netdev@vger.kernel.org
+References: <9a453437b5c3b4b1887c1bd84455b0cc3d1c40b2.1666822928.git.nabijaczleweli@nabijaczleweli.xyz>
+ <ad19b20f5867e845a843884bbb0f107e7ea7e11a.1666822928.git.nabijaczleweli@nabijaczleweli.xyz>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <ad19b20f5867e845a843884bbb0f107e7ea7e11a.1666822928.git.nabijaczleweli@nabijaczleweli.xyz>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Steffen Bätz <steffen@innosonix.de>
+On 10/27/22 05:43, наб wrote:
+> We have largely moved away from this approach,
+> and we have better debugging instrumentation nowadays: kill it
+> 
 
-Currently, the port_set_rgmii_delay hook is missing for the 88E6320
-family, which causes failure to retrieve an IP address via DHCP.
+Same reply as [1].
 
-Add mv88e6320_port_set_rgmii_delay() that allows applying the RGMII
-delay for ports 2, 5 and 6, which are the ports only that can be used
-in RGMII mode.
+> Additionally, ~half HDLCDRV_MAGIC checks just early-exit instead
+> of noting the bug, so they're detrimental, if anything
+> 
 
-Tested on a i.MX8MN board connected to an 88E6320 switch.
+"... instead of handling the magic number"?
 
-This change also applies safely to the 88E6321 variant.
+Thanks.
 
-The only difference between 88E6320 versus 88E6321 is temperature grade
-and pinout.
+[1]: https://lore.kernel.org/linux-doc/80c998ec-435f-158c-9b45-4e6844f7861b@gmail.com/
 
-They share exactly the same MDIO register map for ports 2,5 an 6, which
-are the only ports that can be used in RGMII mode. 
-
-Signed-off-by: Steffen Bätz <steffen@innosonix.de>
-Signed-off-by: Fabio Estevam <festevam@denx.de>
----
-Changes since v1:
-- Improve the commit log by saying that change is also
-valid for the 88E631 chip. (Andrew).
-
- drivers/net/dsa/mv88e6xxx/chip.c | 1 +
- drivers/net/dsa/mv88e6xxx/port.c | 9 +++++++++
- drivers/net/dsa/mv88e6xxx/port.h | 2 ++
- 3 files changed, 12 insertions(+)
-
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 2479be3a1e35..dc7cbf48bda5 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -5029,6 +5029,7 @@ static const struct mv88e6xxx_ops mv88e6320_ops = {
- 	.phy_write = mv88e6xxx_g2_smi_phy_write,
- 	.port_set_link = mv88e6xxx_port_set_link,
- 	.port_sync_link = mv88e6xxx_port_sync_link,
-+	.port_set_rgmii_delay = mv88e6320_port_set_rgmii_delay,
- 	.port_set_speed_duplex = mv88e6185_port_set_speed_duplex,
- 	.port_tag_remap = mv88e6095_port_tag_remap,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
-diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-index 5c4195c635b0..f79cf716c541 100644
---- a/drivers/net/dsa/mv88e6xxx/port.c
-+++ b/drivers/net/dsa/mv88e6xxx/port.c
-@@ -133,6 +133,15 @@ int mv88e6390_port_set_rgmii_delay(struct mv88e6xxx_chip *chip, int port,
- 	return mv88e6xxx_port_set_rgmii_delay(chip, port, mode);
- }
- 
-+int mv88e6320_port_set_rgmii_delay(struct mv88e6xxx_chip *chip, int port,
-+				   phy_interface_t mode)
-+{
-+	if (port != 2 && port != 5 && port != 6)
-+		return -EOPNOTSUPP;
-+
-+	return mv88e6xxx_port_set_rgmii_delay(chip, port, mode);
-+}
-+
- int mv88e6xxx_port_set_link(struct mv88e6xxx_chip *chip, int port, int link)
- {
- 	u16 reg;
-diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
-index cb04243f37c1..fe8f2085bb0b 100644
---- a/drivers/net/dsa/mv88e6xxx/port.h
-+++ b/drivers/net/dsa/mv88e6xxx/port.h
-@@ -336,6 +336,8 @@ int mv88e6352_port_set_rgmii_delay(struct mv88e6xxx_chip *chip, int port,
- 				   phy_interface_t mode);
- int mv88e6390_port_set_rgmii_delay(struct mv88e6xxx_chip *chip, int port,
- 				   phy_interface_t mode);
-+int mv88e6320_port_set_rgmii_delay(struct mv88e6xxx_chip *chip, int port,
-+				   phy_interface_t mode);
- 
- int mv88e6xxx_port_set_link(struct mv88e6xxx_chip *chip, int port, int link);
- 
 -- 
-2.25.1
+An old man doll... just what I always wanted! - Clara
 
