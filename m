@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EA4A6108B8
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 05:28:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF6D46108B9
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 05:29:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235944AbiJ1D2g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 23:28:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38580 "EHLO
+        id S235886AbiJ1D25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 23:28:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235951AbiJ1D2c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 23:28:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3609CF869
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 20:28:31 -0700 (PDT)
+        with ESMTP id S234657AbiJ1D2z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 23:28:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7C29B7F57
+        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 20:28:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 950CEB81E57
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 03:28:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2EE9C433D7;
-        Fri, 28 Oct 2022 03:28:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 752AA624E6
+        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 03:28:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82036C433C1;
+        Fri, 28 Oct 2022 03:28:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666927709;
-        bh=4sOKT6YNtM61EKWU5T+rP9I7odmFwcFT97U/6UmgzTc=;
+        s=k20201202; t=1666927733;
+        bh=f9GMMqLcObvTXOVFkNHlPRhLjJgaghJ7MQ8DjpcVouA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KL9hqCOwLua87ktVMZioY+13j8xpcsh7GzrBKO9FuxxRBK7MD3t8x4fx4zG1ca3Fe
-         9PddWjqIBrpIIAjX95sEMwRZft11AXNxWziAuk3wmpnGst5UqaExHIbHKT83hZ39+w
-         lfNlxW3NLyc76ff72kEy1SMm74ut4eXED9oO7zIP1UkHSqdS8ry4UekLbIv6dYHoYz
-         2yYsFDV9hIqdnLKptHpRFpN3kPeXkSrIT9wZmLTeTMTiaeSNp/xOxuTJHh5rJJ8aEc
-         ebd6XkmOcbH8GIpl0p5C+QztHTZeoDonNVjdUfLBNYMov2XDUN0odCuqQ4KMYNZRVz
-         tl/OnIYN1zJpw==
-Date:   Thu, 27 Oct 2022 20:28:27 -0700
+        b=p0QogyzhIwTBVZjfDuezVN0RH/3XPaEH3xLSV326jtIZij/kNUF1AJ2DxWEw0s7k9
+         LAj9+41YLY3EUgMZPtW9oo++l2LQhpucnlLnbqLNJFnZoJXL13Wy6171QPPtuJ/xc2
+         2b1vjf8WP4RRbItrE39BnAwa7ry9TdEb7VrSkW8zrt35yFl1h0MFG4flZSnp71t/5Y
+         zG9p5feRPoupLAlcxRpItKP26qAqQPT0rlU0CwrbX4nHiIsTVbyVl2Nkmfw9zfWSHF
+         afMxPsBYRv2eJM1j2/GwtEvvSzmLh6Bo7TbKMOyIE2yyvtoIeTt6WUlBP8Os+WZyZU
+         Cgdt2bYsIFBdw==
+Date:   Thu, 27 Oct 2022 20:28:52 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Michal Wilczynski <michal.wilczynski@intel.com>
 Cc:     netdev@vger.kernel.org, alexandr.lobakin@intel.com,
         jacob.e.keller@intel.com, jesse.brandeburg@intel.com,
         przemyslaw.kitszel@intel.com, anthony.l.nguyen@intel.com,
         ecree.xilinx@gmail.com, jiri@resnulli.us
-Subject: Re: [PATCH net-next v7 5/9] devlink: Allow to set up parent in
- devl_rate_leaf_create()
-Message-ID: <20221027202827.701a9a68@kernel.org>
-In-Reply-To: <20221027130049.2418531-6-michal.wilczynski@intel.com>
+Subject: Re: [PATCH net-next v7 9/9] ice: Prevent ADQ, DCB, RDMA coexistence
+ with Custom Tx scheduler
+Message-ID: <20221027202852.5be21498@kernel.org>
+In-Reply-To: <20221027130049.2418531-10-michal.wilczynski@intel.com>
 References: <20221027130049.2418531-1-michal.wilczynski@intel.com>
-        <20221027130049.2418531-6-michal.wilczynski@intel.com>
+        <20221027130049.2418531-10-michal.wilczynski@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -56,17 +56,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 27 Oct 2022 15:00:45 +0200 Michal Wilczynski wrote:
-> @@ -10327,10 +10327,11 @@ EXPORT_SYMBOL_GPL(devl_rate_node_create);
->   *
->   * Create devlink rate object of type leaf on provided @devlink_port.
->   */
-> -int devl_rate_leaf_create(struct devlink_port *devlink_port, void *priv)
-> +int devl_rate_leaf_create(struct devlink_port *devlink_port, void *priv, char *parent_name)
->  {
->  	struct devlink *devlink = devlink_port->devlink;
->  	struct devlink_rate *devlink_rate;
-> +	struct devlink_rate *parent;
->  
+On Thu, 27 Oct 2022 15:00:49 +0200 Michal Wilczynski wrote:
+> ADQ, DCB, RDMA might interfere with Custom Tx Scheduler changes that user
+> might introduce using devlink-rate API.
+> 
+> Check if ADQ, DCB, RDMA is active, when user tries to change any setting
+> in exported Tx scheduler tree. If any of those are active block the user
+> from doing so, and log an appropriate message.
 
-net/core/devlink.c:10332: warning: Function parameter or member 'parent_name' not described in 'devl_rate_leaf_create'
+drivers/net/ethernet/intel/ice/ice_devlink.c:727: warning: Excess function parameter 'extack' description in 'ice_enable_custom_tx'
