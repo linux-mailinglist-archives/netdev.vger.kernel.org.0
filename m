@@ -2,68 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93054610B80
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 09:46:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B62C610B94
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 09:50:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230070AbiJ1HqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 03:46:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33592 "EHLO
+        id S229925AbiJ1Hu1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 03:50:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230033AbiJ1HqM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 03:46:12 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30199BEAED
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 00:46:08 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 070FA1883F32;
-        Fri, 28 Oct 2022 07:45:53 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 02E752500015;
-        Fri, 28 Oct 2022 07:45:53 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id EAC609EC0007; Fri, 28 Oct 2022 07:45:52 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S229948AbiJ1HuX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 03:50:23 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C901B6FC47;
+        Fri, 28 Oct 2022 00:50:17 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MzF7s48SxzHvJD;
+        Fri, 28 Oct 2022 15:50:01 +0800 (CST)
+Received: from [10.174.178.66] (10.174.178.66) by
+ dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 28 Oct 2022 15:50:15 +0800
+Message-ID: <5ef42db0-ab89-b852-11a4-292782d143e7@huawei.com>
+Date:   Fri, 28 Oct 2022 15:50:15 +0800
 MIME-Version: 1.0
-Date:   Fri, 28 Oct 2022 09:45:52 +0200
-From:   netdev@kapio-technology.com
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        jiri@nvidia.com, petrm@nvidia.com, ivecera@redhat.com,
-        roopa@nvidia.com, razor@blackwall.org, mlxsw@nvidia.com
-Subject: Re: [RFC PATCH net-next 01/16] bridge: Add MAC Authentication Bypass
- (MAB) support
-In-Reply-To: <20221027225832.2yg4ljivjymuj353@skbuf>
-References: <20221025100024.1287157-1-idosch@nvidia.com>
- <20221025100024.1287157-2-idosch@nvidia.com>
- <20221027225832.2yg4ljivjymuj353@skbuf>
-User-Agent: Gigahost Webmail
-Message-ID: <1a66212fdb43fb8d03fc1e4c7612ad1b@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.2
+Subject: Re: [PATCH net] can: af_can: fix NULL pointer dereference in
+ can_rx_register()
+To:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <mkl@pengutronix.de>, <davem@davemloft.net>, <edumazet@google.com>,
+        <kuba@kernel.org>, <pabeni@redhat.com>
+CC:     <linux@rempel-privat.de>, <weiyongjun1@huawei.com>,
+        <yuehaibing@huawei.com>
+References: <20221028033342.173528-1-shaozhengchao@huawei.com>
+ <d1e728d2-b62f-3646-dd27-8cc36ba7c819@hartkopp.net>
+From:   shaozhengchao <shaozhengchao@huawei.com>
+In-Reply-To: <d1e728d2-b62f-3646-dd27-8cc36ba7c819@hartkopp.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.178.66]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-10-28 00:58, Vladimir Oltean wrote:
 
-> I was going to ask if we should bother to add code to prohibit packets
-> from being forwarded to an FDB entry that was learned as LOCKED, since
-> that FDB entry is more of a "ghost" and not something fully committed?
 
-I think that it is a security flaw if there is any forwarding to 
-BR_FDB_LOCKED
-entries. I can imagine a host behind a locked port with no credentials,
-that gets a BR_FDB_LOCKED entry and has a friend on another non-locked 
-port
-who can now communicate uni-directional to the host with the 
-BR_FDB_LOCKED
-entry. It should not be too hard to create a scheme using UDP packets or
-other for that.
+On 2022/10/28 15:13, Oliver Hartkopp wrote:
+> Hello,
+> 
+> On 28.10.22 05:33, Zhengchao Shao wrote:
+>> It causes NULL pointer dereference when testing as following:
+>> (a) use syscall(__NR_socket, 0x10ul, 3ul, 0) to create netlink socket.
+>> (b) use syscall(__NR_sendmsg, ...) to create bond link device and vxcan
+>>      link device, and bind vxcan device to bond device (can also use
+>>      ifenslave command to bind vxcan device to bond device).
+>> (c) use syscall(__NR_socket, 0x1dul, 3ul, 1) to create CAN socket.
+>> (d) use syscall(__NR_bind, ...) to bind the bond device to CAN socket.
+>>
+>> The bond device invokes the can-raw protocol registration interface to
+>> receive CAN packets. However, ml_priv is not allocated to the dev,
+>> dev_rcv_lists is assigned to NULL in can_rx_register(). In this case,
+>> it will occur the NULL pointer dereference issue.
+> 
+> I can see the problem and see that the patch makes sense for 
+> can_rx_register().
+> 
+> But for me the problem seems to be located in the bonding device.
+> 
+> A CAN interface with dev->type == ARPHRD_CAN *always* has the 
+> dev->ml_priv and dev->ml_priv_type set correctly.
+> 
+> I'm not sure if a bonding device does the right thing by just 'claiming' 
+> to be a CAN device (by setting dev->type to ARPHRD_CAN) but not taking 
+> care of being a CAN device and taking care of ml_priv specifics.
+> 
+> This might also be the case in other ml_priv use cases.
+> 
+> Would it probably make sense to blacklist CAN devices in bonding devices?
+> 
+> Thanks & best regards,
+> Oliver
+> 
+
+Hi Oliver:
+	Thank you for your review. The bond device inherits the type of
+the slave device, but the bond device does not allocate ml_priv. I can
+try to add ARPHRD_CAN to the blocklist of slave_dev. But I was
+wondering, could there be other scenes with the same problem?
+
+Zhengchao Shao
+>>
+>> The following is the stack information:
+>> BUG: kernel NULL pointer dereference, address: 0000000000000008
+>> PGD 122a4067 P4D 122a4067 PUD 1223c067 PMD 0
+>> Oops: 0000 [#1] PREEMPT SMP
+>> RIP: 0010:can_rx_register+0x12d/0x1e0
+>> Call Trace:
+>> <TASK>
+>> raw_enable_filters+0x8d/0x120
+>> raw_enable_allfilters+0x3b/0x130
+>> raw_bind+0x118/0x4f0
+>> __sys_bind+0x163/0x1a0
+>> __x64_sys_bind+0x1e/0x30
+>> do_syscall_64+0x35/0x80
+>> entry_SYSCALL_64_after_hwframe+0x63/0xcd
+>> </TASK>
+>>
+>> Fixes: 4e096a18867a ("net: introduce CAN specific pointer in the 
+>> struct net_device")
+>> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+>> ---
+>>   net/can/af_can.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/net/can/af_can.c b/net/can/af_can.c
+>> index 9503ab10f9b8..ef2697f3ebcb 100644
+>> --- a/net/can/af_can.c
+>> +++ b/net/can/af_can.c
+>> @@ -450,7 +450,7 @@ int can_rx_register(struct net *net, struct 
+>> net_device *dev, canid_t can_id,
+>>       /* insert new receiver  (dev,canid,mask) -> (func,data) */
+>> -    if (dev && dev->type != ARPHRD_CAN)
+>> +    if (dev && (dev->type != ARPHRD_CAN || dev->ml_priv_type != 
+>> ML_PRIV_CAN))
+>>           return -ENODEV;
+>>       if (dev && !net_eq(net, dev_net(dev)))
