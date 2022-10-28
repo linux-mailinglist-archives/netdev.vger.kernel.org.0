@@ -2,92 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E8EE610FAA
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 13:28:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 275B7610FD1
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 13:35:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230290AbiJ1L2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 07:28:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35480 "EHLO
+        id S230075AbiJ1Lfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 07:35:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230267AbiJ1L2C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 07:28:02 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB0831D1AA2
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 04:27:59 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id io19so4589704plb.8
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 04:27:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=0HMbZDfJkzxDt8t6tkGh8qKcf5CzAyAEVlEe8Aizvjo=;
-        b=MdwwOkJj4soIDiFQnRY5ZcG7fTNE1sYEecyOK4Eri4U2qeOuRGSte5OuPGM0p02k5X
-         Xo8QBPvZ6Fj7vZQUWFXp6QWhGbeiKnv6TMvyE5eDcOpNc9eoBJ0lvmnIQU+RNY+lPSNp
-         licnntjq3Za+j1lEmcc7C/0itRAyfAKiwqW3OUYA+tfnhVURQxWHveiyVfPxpl8WKrmS
-         6kjxvYOdBchJdxZ3xoCDSG7kbYkwWQJYr2mpIXCn8baRxaMIJCfwlwbjbvDQ2gyD3uaO
-         0z2hitCOoC++FUHn0rFsRVus/rjVw6TBRm6Fba8ufs6YoHkKQuS/bMJQhayyfIzIcd9p
-         fonQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=0HMbZDfJkzxDt8t6tkGh8qKcf5CzAyAEVlEe8Aizvjo=;
-        b=qh9knNpC2XiHILidb7Nl2m2kzzc/U1YVjWuslPwjnIsuw1dplQ9uv2T1/Sy859H/89
-         f882nTzO2zzgc6NyNsrXw6kxwG9IZ2AU4u4CXekHEyJrwgc2z7v6huMag1g65Dn7WDYI
-         aJG0CihIHz3WcFVy+Btqgvm+q9FRpAeMDN8NNNBAY7EPAw53z8a516iVhZnoV7PmMtZi
-         7ISXo89Uik2torLYIRIn4W7Zor0Au+meBWPjVHgP6lX0VdXYCx8pxmCbO5DyPKO4/TgR
-         eCmAIw79IbsLSJfZnYm5sYBJ52xXlILZHmy9T7SeaQ0K0qGckD+d0wcT4iMaIxh8qyCj
-         qcDg==
-X-Gm-Message-State: ACrzQf0+vitURBS1LSIObnt0KxkvUyyQg21ixMbwtIVSOV/k2zIJZlye
-        ARonvVvPjpKmpnvlK8ID7czt2aXzoug8kILqvRk=
-X-Google-Smtp-Source: AMsMyM6wGoeoywSwu2ZcXcHSD7MKieRZBNRw5frNO9MotUD1mjW19i1E18qKLAB1ei2ni17fvKzcXoKnuw4o+oJ9GO0=
-X-Received: by 2002:a17:902:c944:b0:186:a7d7:c3b with SMTP id
- i4-20020a170902c94400b00186a7d70c3bmr26682111pla.55.1666956479268; Fri, 28
- Oct 2022 04:27:59 -0700 (PDT)
+        with ESMTP id S230106AbiJ1Lff (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 07:35:35 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E81E147D12
+        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 04:35:34 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id DB01F20573;
+        Fri, 28 Oct 2022 13:35:32 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id M-MGKLpdnr_e; Fri, 28 Oct 2022 13:35:32 +0200 (CEST)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 6FDCF204E0;
+        Fri, 28 Oct 2022 13:35:32 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout2.secunet.com (Postfix) with ESMTP id 6744D80004A;
+        Fri, 28 Oct 2022 13:35:32 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 28 Oct 2022 13:35:32 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Fri, 28 Oct
+ 2022 13:35:32 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id C9CE73182D7B; Fri, 28 Oct 2022 13:35:31 +0200 (CEST)
+Date:   Fri, 28 Oct 2022 13:35:31 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Antony Antony <antony.antony@secunet.com>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>, <netdev@vger.kernel.org>,
+        "Tobias Brunner" <tobias@strongswan.org>,
+        Antony Antony <antony@phenome.org>
+Subject: Re: [PATCH ipsec-next v2] xfrm: update x->lastused for every packet
+Message-ID: <20221028113531.GL2602992@gauss3.secunet.de>
+References: <3e201e1156639286e1874ebc29233741b8b2ac54.1657260947.git.antony.antony@secunet.com>
+ <1c3bdbd480bd3018175525a23ba623911fec74e1.1666359531.git.antony.antony@secunet.com>
 MIME-Version: 1.0
-References: <CAOMZO5DJAsj8-m2tEfrHn4xZdK6FE0bZepRZBrSD9=tWSSCNOA@mail.gmail.com>
- <Y1p6ex85pFapxz3s@lunn.ch>
-In-Reply-To: <Y1p6ex85pFapxz3s@lunn.ch>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Fri, 28 Oct 2022 08:27:47 -0300
-Message-ID: <CAOMZO5BYN3ckaLguvK+Xj+dsTet4vSSwsDr6P8J_tG2_-VOniA@mail.gmail.com>
-Subject: Re: Marvell 88E6320 connected to i.MX8MN
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        netdev <netdev@vger.kernel.org>, Marek Vasut <marex@denx.de>,
-        Fabio Estevam <festevam@denx.de>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <1c3bdbd480bd3018175525a23ba623911fec74e1.1666359531.git.antony.antony@secunet.com>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew and Vladimir,
+On Fri, Oct 21, 2022 at 03:42:01PM +0200, Antony Antony wrote:
+> x->lastused was only updated for outgoing mobile IPv6 packet.
+> With this fix update it for every, in and out, packet.
+> 
+> This is useful to check if the a SA is still in use, or when was
+> the last time an SA was used. lastused time of in SA can used
+> to check IPsec path is functional.
+> 
+> Signed-off-by: Antony Antony <antony.antony@secunet.com>
 
-On Thu, Oct 27, 2022 at 9:33 AM Andrew Lunn <andrew@lunn.ch> wrote:
-
-> You have rgmii-id on both the FEC and the CPU port. So in theory you
-> might be getting double the needed delays? The mv88e6xxx driver will
-> apply these delays on the CPU port, but i don't know if the FEC does.
->
-> The other thing i've done wrong in the past with FEC is get the pinmux
-> wrong, so the reference clock was not muxed. Check how the reference
-> clock should used, is it from the switch to the FEC, or the other way
-> around. If the FEC is providing it, is it ticking?
-
-Thanks for your suggestions. It is working now.
-
-mv88e6320_ops misses .port_set_rgmii_delay.
-
-I will submit a fix upstream soon.
-
-Thanks a lot!
-
-Fabio Estevam
+Applied, thanks a lot Antony!
