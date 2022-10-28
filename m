@@ -2,111 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46954611274
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 15:14:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39EAD611235
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 15:04:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230361AbiJ1NOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 09:14:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45470 "EHLO
+        id S230209AbiJ1NEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 09:04:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230403AbiJ1NN6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 09:13:58 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3F981C6BE1;
-        Fri, 28 Oct 2022 06:13:57 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id v28so4578127pfi.12;
-        Fri, 28 Oct 2022 06:13:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=RdwGDChygcbuv7ncAXaIEDQUdOkATGiqCP5G7LmTETU=;
-        b=OGV0n8XdxQLrjYQerDgQmrWWTcgpZNfXK7TFxWE2ozN61Bz75q40ALh2STA49sbirq
-         ctYJvbNnH1YINiWgvLPazHGs1BE5Y4KbZmFlQaCxw8rQyTALlQjOqXDYgIZIe61yYgey
-         2e2vHYXseeNq2Qy06WRpBJ2lxWeNNfGRlsmjHFCoggA01gF2CnCOSGQ+r0PuJ5JNjuDH
-         ADd1MuVKCrerCkOC/jUy82iFfRbqbD/0LThpvh/ZmflFcgG1kKCuJj4+8gXhZ+A3q1AJ
-         rNlhQi30/Q6TqyPld9jke1/40q5rVTV8xXxTJ0xMXy3RMX64hrfas0M8SusTWD3MD4IH
-         hCeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=RdwGDChygcbuv7ncAXaIEDQUdOkATGiqCP5G7LmTETU=;
-        b=N93zDmtjf+1y2cylPrJBlX0wi+mwMOUAXZtUL/w11uF3XDSH73C7Ft51bdQVersbMA
-         IyKUllcb/yVq/ZZIP6d6h/NmyM2KT1P93SUUk0sOO//mWSKLD/TO68ixvhG8Fk3DUtJ8
-         EzsXVQas0rTUHLJ5i0NWRwtePGlUSbsmtLpdI+cEJvil181dcvW2YfZmjzAzVy6obWwY
-         VtI7dzx57E8bmfALUsVYHm1hZoxpy42obX9/unJVdMK1nkrR9Bt84m4Kfl+Lk9mahE1q
-         vIX8q45m3tH9GTCatBoiF4VZyaG/sLxKXuzYeopnL7ucqPQRs6nBTU+3/j9NRyLZH1e4
-         8E+w==
-X-Gm-Message-State: ACrzQf3GC1vuE4Zu4bzAeLj9FHPWS1J326Jab6TpfvLExW1ZTgILyGxS
-        Qz33H1kygwjxZ1xkajKff3c=
-X-Google-Smtp-Source: AMsMyM6BnZiyO9TCguQ8TZ5hERm14cu4VDLcsD7/eQBL8RQ6bEu8ReapyTTcyaB9+MvZS5OHyb+JIQ==
-X-Received: by 2002:a05:6a00:14cc:b0:56b:9969:823 with SMTP id w12-20020a056a0014cc00b0056b99690823mr30912145pfu.36.1666962836924;
-        Fri, 28 Oct 2022 06:13:56 -0700 (PDT)
-Received: from [192.168.43.80] (subs03-180-214-233-72.three.co.id. [180.214.233.72])
-        by smtp.gmail.com with ESMTPSA id pj14-20020a17090b4f4e00b00212cf2fe8c3sm12659694pjb.1.2022.10.28.06.13.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 28 Oct 2022 06:13:56 -0700 (PDT)
-Message-ID: <47c2bffb-6bfe-7f5d-0d2d-3cbb99d31019@gmail.com>
-Date:   Fri, 28 Oct 2022 20:13:49 +0700
+        with ESMTP id S229473AbiJ1NEj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 09:04:39 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F05B1C38;
+        Fri, 28 Oct 2022 06:04:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1666962267; x=1698498267;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=m37ASG6xGqA7+TgX1+ai5MRxe8qrMwTn41pI8n3A7DI=;
+  b=0VUU0838mKgJNR8InRAwaVmkbaTt2hWSpGgwqUf2rS9p6ANjL2Q8lxKS
+   HpT7h09CL9a0JldFaDcc1cxeFv735acahPHCYdz/XgGzg8TlutiDh/YXk
+   ymNw3NAI3yshzp5RJDoEYPLIJweZSYTctvMDZEr42JleE0AGC8pjHTJKe
+   LxYbxahP50cv4hmtlzpjiMDOOY8iBRxisTv9cbABNeFEj8VhBVisA37io
+   Kx8xE8qBkstJMgI/RP5YejDhOgzCLF+TETG3MCFXtA8mvcOJKV1YW0qIU
+   WRZCALKt6W5DJ8b018QGdviUh9BmvEhGdzOY4h/of1cLH4UTo52AJyr0w
+   w==;
+X-IronPort-AV: E=Sophos;i="5.95,221,1661842800"; 
+   d="scan'208";a="180956093"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Oct 2022 06:04:24 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Fri, 28 Oct 2022 06:04:23 -0700
+Received: from DEN-LT-70577.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Fri, 28 Oct 2022 06:04:20 -0700
+From:   Daniel Machon <daniel.machon@microchip.com>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <petrm@nvidia.com>,
+        <maxime.chevallier@bootlin.com>, <thomas.petazzoni@bootlin.com>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <lars.povlsen@microchip.com>, <Steen.Hegelund@microchip.com>,
+        <daniel.machon@microchip.com>, <UNGLinuxDriver@microchip.com>,
+        <joe@perches.com>, <linux@armlinux.org.uk>,
+        <horatiu.vultur@microchip.com>, <Julia.Lawall@inria.fr>,
+        <vladimir.oltean@nxp.com>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [PATCH net-next v5 0/6] Add new PCP and APPTRUST attributes to dcbnl
+Date:   Fri, 28 Oct 2022 15:13:57 +0200
+Message-ID: <20221028131403.1055694-1-daniel.machon@microchip.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [PATCH 01/15] hamradio: baycom: remove BAYCOM_MAGIC
-To:     =?UTF-8?B?0L3QsNCx?= <nabijaczleweli@nabijaczleweli.xyz>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Federico Vaga <federico.vaga@vaga.pv.it>,
-        Alex Shi <alexs@kernel.org>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Hu Haowen <src.res@email.cn>,
-        Thomas Sailer <t.sailer@alumni.ethz.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        =?UTF-8?Q?Jakub_Kici=c5=84ski?= <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-doc-tw-discuss@lists.sourceforge.net,
-        linux-hams@vger.kernel.org, netdev@vger.kernel.org
-References: <9a453437b5c3b4b1887c1bd84455b0cc3d1c40b2.1666822928.git.nabijaczleweli@nabijaczleweli.xyz>
-Content-Language: en-US
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <9a453437b5c3b4b1887c1bd84455b0cc3d1c40b2.1666822928.git.nabijaczleweli@nabijaczleweli.xyz>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/27/22 05:42, наб wrote:
-> Since defanging in v2.6.12-rc1 it's set exactly once per port on probe
-> and checked exactly once per port on unload: it's useless. Kill it.
-> 
+This patch series adds new extension attributes to dcbnl, to support PCP
+prioritization (and thereby hw offloadable pcp-based queue
+classification) and per-selector trust and trust order. Additionally,
+the microchip sparx5 driver has been dcb-enabled to make use of the new
+attributes to offload PCP, DSCP and Default prio to the switch, and
+implement trust order of selectors.
 
-What do you mean by defanging in that release?
+For pre-RFC discussion see:
+https://lore.kernel.org/netdev/Yv9VO1DYAxNduw6A@DEN-LT-70577/
 
-Also, s/Kill it/Remove BAYCOM_MAGIC from magic numbers table/ (your
-wording is kinda mature).
+For RFC series see:
+https://lore.kernel.org/netdev/20220915095757.2861822-1-daniel.machon@microchip.com/
 
-> Notably, magic-number.rst has never had the right value for it with the
-> new-in-2.1.105 network-based driver
-> 
-> Signed-off-by: Ahelenia Ziemiańska <nabijaczleweli@nabijaczleweli.xyz>
-> Ref: https://lore.kernel.org/linux-doc/YyMlovoskUcHLEb7@kroah.com/
+In summary: there currently exist no convenient way to offload per-port
+PCP-based queue classification to hardware. The DCB subsystem offers
+different ways to prioritize through its APP table, but lacks an option
+for PCP. Similarly, there is no way to indicate the notion of trust for
+APP table selectors. This patch series addresses both topics.
 
-Use Link: tag instead.
+PCP based queue classification:
+  - 8021Q standardizes the Priority Code Point table (see 6.9.3 of IEEE
+    Std 802.1Q-2018).  This patch series makes it possible, to offload
+    the PCP classification to said table.  The new PCP selector is not a
+    standard part of the APP managed object, therefore it is
+    encapsulated in a new non-std extension attribute.
 
-Thanks.
+Selector trust:
+  - ASIC's often has the notion of trust DSCP and trust PCP. The new
+    attribute makes it possible to specify a trust order of app
+    selectors, which drivers can then react on.
 
--- 
-An old man doll... just what I always wanted! - Clara
+DCB-enable sparx5 driver:
+ - Now supports offloading of DSCP, PCP and default priority. Only one
+   mapping of protocol:priority is allowed. Consecutive mappings of the
+   same protocol to some new priority, will overwrite the previous. This
+   is to keep a consistent view of the app table and the hardware.
+ - Now supports dscp and pcp trust, by use of the introduced
+   dcbnl_set/getapptrust ops. Sparx5 supports trust orders: [], [dscp],
+   [pcp] and [dscp, pcp]. For now, only DSCP and PCP selectors are
+   supported by the driver, everything else is bounced.
+
+Patch #1 introduces a new PCP selector to the APP object, which makes it
+possible to encode PCP and DEI in the app triplet and offload it to the
+PCP table of the ASIC.
+
+Patch #2 Introduces the new extension attributes
+DCB_ATTR_DCB_APP_TRUST_TABLE and DCB_ATTR_DCB_APP_TRUST. Trusted
+selectors are passed in the nested DCB_ATTR_DCB_APP_TRUST_TABLE
+attribute, and assembled into an array of selectors:
+
+  u8 selectors[256];
+
+where lower indexes has higher precedence.  In the array, selectors are
+stored consecutively, starting from index zero. With a maximum number of
+256 unique selectors, the list has the same maximum size.
+
+Patch #3 Sets up the dcbnl ops hook, and adds support for offloading pcp
+app entries, to the PCP table of the switch.
+
+Patch #4 Makes use of the dcbnl_set/getapptrust ops, to set a per-port
+trust order.
+
+Patch #5 Adds support for offloading dscp app entries to the DSCP table
+of the switch.
+
+Patch #6 Adds support for offloading default prio app entries to the
+switch.
+
+================================================================================
+
+RFC v1:
+https://lore.kernel.org/netdev/20220908120442.3069771-1-daniel.machon@microchip.com/
+
+RFC v1 -> RFC v2:
+  - Added new nested attribute type DCB_ATTR_DCB_APP_TRUST_TABLE.
+  - Renamed attributes from DCB_ATTR_IEEE_* to DCB_ATTR_DCB_*.
+  - Renamed ieee_set/getapptrust to dcbnl_set/getapptrust.
+  - Added -EOPNOTSUPP if dcbnl_setapptrust is not set.
+  - Added sanitization of selector array, before passing to driver.
+
+RFC v2 -> (non-RFC) v1:
+  - Added additional check for selector validity.
+  - Fixed a few style errors.
+  - using nla_start_nest() instead of nla_start_nest_no_flag().
+  - Moved DCB_ATTR_DCB_APP_TRUST into new enum.
+  - Added new DCB_ATTR_DCB_APP extension attribute, for non-std selector
+    values.
+  - Added support for offloading dscp, pcp and default prio in the sparx5
+    driver.
+  - Added support for per-selector trust and trust order in the sparx5
+    driver.
+
+v1 -> v2:
+  - Fixed compiler and kdoc warning
+
+v2 -> v3:
+  - Moved back to 255 as PCP selector value.
+  - Fixed return value in dcbnl_app_attr_type_get() to enum.
+  - Modified in dcbnl_app_attr_type_get() dcbnl_app_attr_type_validate() to
+    return directly.
+  - Added nselector check in sparx5_dcb_apptrust_validate().
+  - Added const qualifier to "names" variable in struct sparx5_dcb_apptrust.
+  - Added new SPARX5_DCB config. Fixes issues reported by kernel test robot.
+
+v3 -> v4:
+  - Added new dcbnl_app_attr_selector_validate() function to validate that
+    app selectors are sent in correct attribute e.g IEEE selectors in
+    DCB_ATTR_IEEE and non-std selectors in DCB_ATTR_DCB.
+  - Modified handling of dcbnl_getapptrust() return value, so that an error is
+    ignored. Instead, added error check on nla_put_u8() and cancelling nest in
+    case of an error.
+
+v4 -> v5:
+  - Rebased on net-next and fixed sparx5 conflicts
+
+Daniel Machon (6):
+  net: dcb: add new pcp selector to app object
+  net: dcb: add new apptrust attribute
+  net: microchip: sparx5: add support for offloading pcp table
+  net: microchip: sparx5: add support for apptrust
+  net: microchip: sparx5: add support for offloading dscp table
+  net: microchip: sparx5: add support for offloading default prio
+
+ drivers/net/ethernet/microchip/sparx5/Kconfig |  10 +
+ .../net/ethernet/microchip/sparx5/Makefile    |   2 +
+ .../ethernet/microchip/sparx5/sparx5_dcb.c    | 293 ++++++++++++++++++
+ .../ethernet/microchip/sparx5/sparx5_main.h   |  11 +
+ .../microchip/sparx5/sparx5_main_regs.h       | 127 +++++++-
+ .../ethernet/microchip/sparx5/sparx5_port.c   |  99 ++++++
+ .../ethernet/microchip/sparx5/sparx5_port.h   |  37 +++
+ .../ethernet/microchip/sparx5/sparx5_qos.c    |   4 +
+ include/net/dcbnl.h                           |   4 +
+ include/uapi/linux/dcbnl.h                    |  16 +
+ net/dcb/dcbnl.c                               | 151 ++++++++-
+ 11 files changed, 746 insertions(+), 8 deletions(-)
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c
+
+--
+2.34.1
 
