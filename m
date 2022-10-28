@@ -2,57 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 49B52611C91
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 23:43:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7790611C90
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 23:43:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230022AbiJ1Vne (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 17:43:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39856 "EHLO
+        id S230008AbiJ1Vng (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 17:43:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230010AbiJ1Vnb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 17:43:31 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3257A24BA90
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 14:43:30 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id y13so5844074pfp.7
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 14:43:30 -0700 (PDT)
+        with ESMTP id S229996AbiJ1Vnd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 17:43:33 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2741124BA8A
+        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 14:43:31 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id b11so5739742pjp.2
+        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 14:43:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Sx0EMO7RuJTo/3Ojp2nIxuOlr6+N1nhbsLyvkyaiQXQ=;
-        b=tThyWqEH+OHSWnyvXVnGVb/RhwKNJAox7Ss2mhO1vSdRKT3Ewr1p0KrR11/iwka97g
-         AiLMqsg0mEuabgBywD/d2wh1f9R0qRd3mQs0FqYWbOQY9HxaCHHZtrsbrUWRFZWsW64h
-         iGs3V597/zcdRu068jxDXK40pzFV1K9lKSx2z6lPRCwVULPx0fPWJigIk5pAIeepHkmL
-         OPAPPRTj2XsThLV1wZLIS9zkYy+/viHeG6K9gNO9wA1MlRI+cAicnc78S7aas1IF0Y1m
-         K8suSyr7Ii3VHFQQm7xB0SdEO4hZWjpWXepl6iImu7sInL19Qus+calIQVHZ6MQHObJw
-         lfbw==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8PHeEQvI03GO1u4arOs5eKGxrrWj+QcJXenB1+d+Ev4=;
+        b=l/6HssGhPRExvh/FxdFaGlFZfok/tFw3IcJbJihU0Wuk8reK2iRnYuAKeLKryPObFk
+         8+myno8kH2k+Mx/mhpfG6lxbkp75xrFHJBDOoc0Hi+nCjGGX5XPhIzioZiLQHdYG7m+Z
+         zH6qRIKT7+DBebh6PfSCHHRhFyJrVib7ADoS1iUOnw26Fx2qSxnkfWZ15xoHpPi+Cfkc
+         uX4D3Uu/y7LbtcBERELE4v/eGWzbk+A791IJM5YqSq27H4KLResQNlvAYGSZxE6iTCWr
+         J4Bj2quMAldC3LRqMQU5FPn24iu+tqiGbbAVHn1An+yZFSmKvu/tseANxOGiRShg+W+1
+         BCrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Sx0EMO7RuJTo/3Ojp2nIxuOlr6+N1nhbsLyvkyaiQXQ=;
-        b=cOWW9IijBnuUII2rpfbWUeqLGLQsoFGveOulPMsHRROf2WN8yv4KtMy7+qH+M3ApW/
-         JG5XOqhEMAu93G/SMZBMnVMnVt2UXa3GO0bu0ZicDPVqgZibwCJisYlv1NkJeV78hhGq
-         EM3mv8VmuPLh3o31UIHRi44wJlMgqFoKAjmdjYzKQcyWiCQPGyQ7+CWJSLqNYQT4dOAj
-         PrJgpcsycuy2+tTbhbStgkTqjwyofmT8fVEU4CF7aenhHgQynhrBVFdeIrJ3jx7gSZi/
-         n3I95/SGHu5QvAT8YEXQTO+Fm+h3h50/jX7iQFdyHCag8qEvukSpUhnk9ztW1oQ/Ko0I
-         x/kQ==
-X-Gm-Message-State: ACrzQf3F8R4LY0AKw9dKTDEKkUbsgG37A4qKBMpfopw5yk0dfIAXM046
-        xiO4mJ2Tw9MnuQd0F2dROERzrcg4su3yOZ0m
-X-Google-Smtp-Source: AMsMyM6eZYvWlRoybNy5poLFi35/6NQyTprjHoq3gnITzXCk+oEQrqkLFODtn8ojUQC64FZtdTxt8w==
-X-Received: by 2002:a65:49c9:0:b0:462:9ce1:3f58 with SMTP id t9-20020a6549c9000000b004629ce13f58mr1389282pgs.200.1666993409506;
-        Fri, 28 Oct 2022 14:43:29 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=8PHeEQvI03GO1u4arOs5eKGxrrWj+QcJXenB1+d+Ev4=;
+        b=A/c+wxgxZSpPAjNCNkUtfYCSJXIHU0yD1+Dwais/77euQelTwPewuJFaxdtloiRLdv
+         c1q1yNMJQ79kOxvICbNo/2H7OA5nQO043G8SZWNNp17bNVkg9e0q1ZQz2tSindJG5zq0
+         qypoyJZNxunXUjW6PHRV7msYSeBbTSkGAWY9wL994uDTicxR8l+5KIIVkBfZaIZ6ByBw
+         cnIjXe9xrNbXPfZHzg+U2ASJh1tokk63QsjuXHjUPDYeQFaiNlbm9b+1Rl+xwNC+l3WO
+         f785Hu4G8ByH62RvJ/cX2EgZRDnNYLKR/F2yBanedLQ8Hk6MbC8PzrIM3Rd2oxb7mvFj
+         z7SQ==
+X-Gm-Message-State: ACrzQf0TLdR9E+doUJrgQ2KA5fpQz/OEwB+bUUeInPJJ/28a7GO1JlRB
+        /y5zIM2QLfBQ075JHm5R4EjS3ovRr7VsG2+k
+X-Google-Smtp-Source: AMsMyM4wS5hwn/wufRJz1ZKOMYhlqyGpKApC1sj47wA7IB3hiL7EojiiEEXM6wBR9vXHu4nvCzSA8w==
+X-Received: by 2002:a17:902:f685:b0:186:fa9c:2fdc with SMTP id l5-20020a170902f68500b00186fa9c2fdcmr1086126plg.25.1666993410580;
+        Fri, 28 Oct 2022 14:43:30 -0700 (PDT)
 Received: from localhost.localdomain ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id u6-20020a17090a1d4600b002130c269b6fsm2993855pju.1.2022.10.28.14.43.28
+        by smtp.gmail.com with ESMTPSA id u6-20020a17090a1d4600b002130c269b6fsm2993855pju.1.2022.10.28.14.43.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Oct 2022 14:43:29 -0700 (PDT)
+        Fri, 28 Oct 2022 14:43:30 -0700 (PDT)
 From:   Jens Axboe <axboe@kernel.dk>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCHSET RFC v2 0/5] Add support for epoll min_wait
-Date:   Fri, 28 Oct 2022 15:43:20 -0600
-Message-Id: <20221028214325.13496-1-axboe@kernel.dk>
+Cc:     Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 1/5] eventpoll: cleanup branches around sleeping for events
+Date:   Fri, 28 Oct 2022 15:43:21 -0600
+Message-Id: <20221028214325.13496-2-axboe@kernel.dk>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20221028214325.13496-1-axboe@kernel.dk>
+References: <20221028214325.13496-1-axboe@kernel.dk>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -65,48 +70,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Rather than have two separate branches here, collapse them into a single
+one instead. No functional changes here, just a cleanup in preparation
+for changes in this area.
 
-tldr - we saw a 6-7% CPU reduction with this patch. See patch 4 for
-full numbers.
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+---
+ fs/eventpoll.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-This adds support for EPOLL_CTL_MIN_WAIT, which allows setting a minimum
-time that epoll_wait() should wait for events on a given epoll context.
-Some justification and numbers are in patch 5, patches 1-4 are really
-just prep patches.
-
-Sending this as an RFC to hash out the API, basically. This is
-obviously a per-context type of operation in this patchset, which isn't
-necessarily ideal for any use case. Questions to be debated:
-
-1) Would we want this to be available through epoll_wait() directly?
-   That would allow this to be done on a per-epoll_wait() basis, rather
-   than be tied to the specific context.
-
-2) If the answer to #1 is yes, would we still want EPOLL_CTL_MIN_WAIT?
-
-I think there are pros and cons to both, and perhaps the answer to both
-is "yes". There are some benefits to doing this at epoll setup time,
-for example - it nicely isolates it to that part rather than needing
-to be done dynamically everytime epoll_wait() is called. This also
-helps the application code, as it can turn off any busy'ness tracking
-based on if the setup accepted EPOLL_CTL_MIN_WAIT or not.
-
-Anyway, tossing this out there as it yielded quite good results in
-some initial testing, we're running more of it. Not a lot of changes
-since v1, but it was posted in the middle of the merge window. Hoping
-to get some more discussion this time around, or at least some...
-
-Also available here:
-
-https://git.kernel.dk/cgit/linux-block/log/?h=epoll-min_ts
-
-Since v1:
-- Split patch 4 a bit, to make the meat of the changes smaller
-- Get rid of EPOLL_DEF_MIN_WAIT
-- Rebase on current -git master
-
+diff --git a/fs/eventpoll.c b/fs/eventpoll.c
+index 52954d4637b5..3061bdde6cba 100644
+--- a/fs/eventpoll.c
++++ b/fs/eventpoll.c
+@@ -1869,14 +1869,15 @@ static int ep_poll(struct eventpoll *ep, struct epoll_event __user *events,
+ 		 * important.
+ 		 */
+ 		eavail = ep_events_available(ep);
+-		if (!eavail)
++		if (!eavail) {
+ 			__add_wait_queue_exclusive(&ep->wq, &wait);
+-
+-		write_unlock_irq(&ep->lock);
+-
+-		if (!eavail)
++			write_unlock_irq(&ep->lock);
+ 			timed_out = !schedule_hrtimeout_range(to, slack,
+ 							      HRTIMER_MODE_ABS);
++		} else {
++			write_unlock_irq(&ep->lock);
++		}
++
+ 		__set_current_state(TASK_RUNNING);
+ 
+ 		/*
 -- 
-Jens Axboe
-
+2.35.1
 
