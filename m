@@ -2,120 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD2376107ED
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 04:25:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E036661082C
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 04:37:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236059AbiJ1CZG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 22:25:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34120 "EHLO
+        id S235656AbiJ1Chq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 22:37:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235346AbiJ1CZE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 22:25:04 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 303225B538
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 19:25:03 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id i3so3626588pfc.11
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 19:25:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=APTR9G8BWySdkiOp7lUNWvcl3daBTmtKOYrPyf2ypdU=;
-        b=aDpGIDN3N493zMcHxu/vuW7OGI9FTfiXynxwrf0XkgsY9yMLC/xrVQny9sFJTCGDgg
-         mApRoRkcbMIT3m9nmgaXQnRzC+BO4vilgdyi1smqEzIBFDMB8VzR0OMphc64vR8QeBdG
-         RrB1a+owtl4AzpYUtisCiM+fxDhVpazi9zajvi01enxsUPju4vZwWgzZJ1okeSdZc7gC
-         6rWmWO+tQDos0DCVIDiLU4L+aD5oK9gbEzMcsRQC5TQNU30hIFbBtvonKGAXAINUaQod
-         YheX+zRo3tthE+ePDMk98cTkj1EJR0uhNU/U6tKYRSEE7oQ/R5Hd1VMDxhxcmU7yzAwP
-         R0yw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=APTR9G8BWySdkiOp7lUNWvcl3daBTmtKOYrPyf2ypdU=;
-        b=wKmDgJqppolP4c/HdEAJs3zyFITxb/jHpy0NwKJFRnBZ3x9We6g/8Mu56nrfm/o6Bd
-         kHOi9TSZ3iJRQMzT+YjAokvNsOEGzPDMsrMSr9WpYhDxMLtNzmze/6rjtoSaJ7PKAEA3
-         5RqeNZZAofW8Ukn9BhQWvmiLO8/QJiCmewaKlo2xEaqzGO09gQD25RXQgDabggAOI//r
-         fa/AqVmh2JvV+ceKMyWxARian6dblfvQqNYEYjjfDmymiaFjA6eKu6JPUNM0sFunqOZb
-         T1dWnjsVoWFXIBzg21HVlT1QwqTtJ4HMIGdV2vp8pzQov0aTjwcDISMDway2T7RKv0HQ
-         MsyQ==
-X-Gm-Message-State: ACrzQf17fedmyLCF2JvjqgV6aW1UVaq+skihJp8Kz2R+aGjNZusuHNWI
-        D7uQui9Mmrwzbgjv9IRDYVYxS8MIcpDwmCEsziTALVGonfU=
-X-Google-Smtp-Source: AMsMyM5nveRv0XMB3Tqec05T/ltpcHJIGx4Rbftqu5IteN5x1+4GJMwz/Yfd8N4x869EOnn1xqYmU1d51q+vLQe3hHA=
-X-Received: by 2002:a17:902:d2cf:b0:17f:7b65:862f with SMTP id
- n15-20020a170902d2cf00b0017f7b65862fmr52270295plc.168.1666923892250; Thu, 27
- Oct 2022 19:24:52 -0700 (PDT)
+        with ESMTP id S236050AbiJ1ChW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 22:37:22 -0400
+X-Greylist: delayed 610 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 27 Oct 2022 19:36:16 PDT
+Received: from mail11.tencent.com (mail11.tencent.com [14.18.178.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AE613B94C;
+        Thu, 27 Oct 2022 19:36:15 -0700 (PDT)
+Received: from EX-SZ021.tencent.com (unknown [10.28.6.73])
+        by mail11.tencent.com (Postfix) with ESMTP id 9A31AFC243;
+        Fri, 28 Oct 2022 10:26:03 +0800 (CST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tencent.com;
+        s=s202002; t=1666923963;
+        bh=mq4xcMZnNEdLW9K1G+htd2EuI3/uCxcOtNBIoBB/1eM=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To;
+        b=OaI6vm+FOf28i6MLGNOw2fXHvhBQYbFhG5ETsmndHRL9kQjcpbfKvYqOnKdcWIIok
+         6m5OEDrOYR0OSXrOHhoxtIPSmEWw8EwZTR48no5ixnMPKAuXFpahRyOufNDgZFjznN
+         Uwqv0vnhlE4m03n8JBC7ObzF4OXp8V13zLnER0O0=
+Received: from EX-SZ044.tencent.com (10.28.6.95) by EX-SZ021.tencent.com
+ (10.28.6.73) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4; Fri, 28 Oct
+ 2022 10:26:03 +0800
+Received: from EX-SZ079.tencent.com (10.28.6.51) by EX-SZ044.tencent.com
+ (10.28.6.95) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4; Fri, 28 Oct
+ 2022 10:26:03 +0800
+Received: from EX-SZ079.tencent.com ([fe80::9139:f467:e23f:e2b7]) by
+ EX-SZ079.tencent.com ([fe80::9139:f467:e23f:e2b7%3]) with mapi id
+ 15.01.2242.008; Fri, 28 Oct 2022 10:26:03 +0800
+From:   =?utf-8?B?aW1hZ2Vkb25nKOiRo+aipum+mSk=?= <imagedong@tencent.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ian Rogers <irogers@google.com>
+CC:     Menglong Dong <menglong8.dong@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        David Ahern <dsahern@kernel.org>,
+        =?utf-8?B?Zmx5aW5ncGVuZyjlva3mtakp?= <flyingpeng@tencent.com>,
+        Dongli Zhang <dongli.zhang@oracle.com>,
+        "robh@kernel.org" <robh@kernel.org>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Vasily Averin <vasily.averin@linux.dev>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [Internet]Re: [PATCH net-next v2] net: skb: export skb drop
+ reaons to user by TRACE_DEFINE_ENUM
+Thread-Topic: [Internet]Re: [PATCH net-next v2] net: skb: export skb drop
+ reaons to user by TRACE_DEFINE_ENUM
+Thread-Index: AQHYvuLAVe6ABTJa/k+UhBq0aJou7K3QZlkAgFHISgCAAANggIAADHUAgAEtAQA=
+Date:   Fri, 28 Oct 2022 02:26:02 +0000
+Message-ID: <82699D69-00C8-4C0B-BEA2-32284EB63B63@tencent.com>
+References: <20220902141715.1038615-1-imagedong@tencent.com>
+ <CANn89iK7Mm4aPpr1-VM5OgicuHrHjo9nm9P9bYgOKKH9yczFzg@mail.gmail.com>
+ <20220905103808.434f6909@gandalf.local.home>
+ <CANn89i+qp=gmhx_1b+=hEiHA7yNGkfh46YPKhUc9GFbtNYBZrA@mail.gmail.com>
+ <20221027114407.6429a809@gandalf.local.home>
+ <CANn89iL7EvdBhZGtxDOATeznLUwVaFm2gf4XCYeMPXE5CR=BTw@mail.gmail.com>
+In-Reply-To: <CANn89iL7EvdBhZGtxDOATeznLUwVaFm2gf4XCYeMPXE5CR=BTw@mail.gmail.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.99.16.15]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <816DBFA9BBEF374DBEAB7D746EB3487D@tencent.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <CAOMZO5DJAsj8-m2tEfrHn4xZdK6FE0bZepRZBrSD9=tWSSCNOA@mail.gmail.com>
- <20221027204135.grfsorkt7fdk6ccp@skbuf>
-In-Reply-To: <20221027204135.grfsorkt7fdk6ccp@skbuf>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Thu, 27 Oct 2022 23:24:40 -0300
-Message-ID: <CAOMZO5ANFe1AH2PqafbHd97G0L=-LnSyHt5VjBKh0EAskm5JBw@mail.gmail.com>
-Subject: Re: Marvell 88E6320 connected to i.MX8MN
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "tharvey@gateworks.com" <tharvey@gateworks.com>,
-        netdev <netdev@vger.kernel.org>, Marek Vasut <marex@denx.de>,
-        Fabio Estevam <festevam@denx.de>
-Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_PASS,T_SPF_HELO_TEMPERROR
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
- Hi Vladimir,
-
-On Thu, Oct 27, 2022 at 5:41 PM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
-
-> Looks like you are missing the Marvell PHY driver; the generic PHY
-> driver gets used. Can you enable CONFIG_MARVELL_PHY?
-
-CONFIG_MARVELL_PHY is already selected.
-
-However, there is no support for 88E6320 in the Marvell PHY driver.
-
-Thanks
-
-
-
-> > device eth0 entered promiscuous mode
-> > DSA: tree 0 setup
-> > ...
-> >
-> > ~# udhcpc -i lan4
-> > udhcpc: started, v1.31.1
-> > [   25.174846] mv88e6085 30be0000.ethernet-1:00 lan4: configuring for
-> > phy/gmii link mode
-> > udhcpc: sending discover
-> > [   27.242123] mv88e6085 30be0000.ethernet-1:00 lan4: Link is Up -
-> > 100Mbps/Full - flow control rx/tx
-> > [   27.251064] IPv6: ADDRCONF(NETDEV_CHANGE): lan4: link becomes ready
-> > udhcpc: sending discover
-> > udhcpc: sending discover
-> > udhcpc: sending discover
-> > ...
-> >
-> > This is my devicetree:
-> > https://pastebin.com/raw/TagQJK2a
-> >
-> > The only way that I can get IP via DHCP to work in the kernel is if
-> > I access the network inside U-Boot first and launch the kernel afterward.
-> >
-> > It looks like U-Boot is doing some configuration that the kernel is missing.
->
-> Yeah, sounds like the Marvell PHY driver could be what's the difference.
->
-> > Does anyone have any suggestions, please?
->
-> If that doesn't work, the next step is to isolate things. Connect a
-> cable to the other switch port, create a bridge, and forward packets
-> between one station and the other. This doesn't involve the CPU port, so
-> you'll learn if the internal PHYs are the problem or the CPU port is.
-> Next step would be to collect ethtool -S lan0, ethtool -S eth0, and post
-> those.
+PiBPbiAyMDIyLzEwLzI4IDAwOjI577yM4oCcRXJpYyBEdW1hemV04oCdPGVkdW1hemV0QGdvb2ds
+ZS5jb20+IHdyaXRlOg0KPiANCj4gT24gVGh1LCBPY3QgMjcsIDIwMjIgYXQgODo0MyBBTSBTdGV2
+ZW4gUm9zdGVkdCA8cm9zdGVkdEBnb29kbWlzLm9yZz4gd3JvdGU6DQo+ID4NCj4gPiBPbiBUaHUs
+IDI3IE9jdCAyMDIyIDA4OjMyOjAyIC0wNzAwDQo+ID4gRXJpYyBEdW1hemV0IDxlZHVtYXpldEBn
+b29nbGUuY29tPiB3cm90ZToNCj4gPg0KPiA+ID4gVGhpcyBzZWVtcyBicm9rZW4gYWdhaW4gKHRy
+aWVkIG9uIGxhdGVzdCBuZXQtbmV4dCB0cmVlKQ0KPiA+ID4NCj4gPiA+IHBlcmYgc2NyaXB0DQo+
+ID4NCj4gPiBEbyB5b3UgYWxzbyBoYXZlIHRoZSBsYXRlc3QgcGVyZiBhbmQgdGhlIGxhdGVzdCBs
+aWJ0cmFjZWV2ZW50IGluc3RhbGxlZD8NCj4gPg0KPiANCj4gSSB0cmllZCBhIG1vcmUgcmVjZW50
+IHBlcmYgYmluYXJ5IHdlIGhhdmUsIGJ1dCBpdCBpcyBhbHNvIG5vdCByaWdodC4NCj4gDQo+IEkg
+Z3Vlc3MgSSB3aWxsIGhhdmUgdG8gcmVxdWVzdCBhIG5ldyBwZXJmIGJpbmFyeSBhdCBHb29nbGUg
+Oi8NCj4gDQoNCkVubm4uLi5JIGp1c3QgaGF2ZSBhIHRyeSwgYW5kIGl0IHNlZW1zIGZpbmU6DQoN
+CnN1ZG8gcGVyZiBzY3JpcHQNCiAgICAgICAgIHN3YXBwZXIgICAgIDAgWzA0OV0gNDAxNDYwLjEz
+ODA3ODogc2tiOmtmcmVlX3NrYjogc2tiYWRkcj0weGZmZmY4ODgxMDc2ZDI0MDAgcHJvdG9jb2w9
+MjA0OCBsb2NhdGlvbj0weGZmZmZmZmZmODFkODY1NDYgcmVhc29uOiBUQ1BfSU5WQUxJRF9TRVFV
+RU5DRQ0KICAgICAgICAgICAgICBuYyA0Mjk0MTggWzAwNl0gNDAxNDY1LjY1MjI4Mjogc2tiOmtm
+cmVlX3NrYjogc2tiYWRkcj0weGZmZmY4ODgxZWE2NmNmMDAgcHJvdG9jb2w9MCBsb2NhdGlvbj0w
+eGZmZmZmZmZmODFlMGI0OGYgcmVhc29uOiBOT1RfU1BFQ0lGSUVEDQogICAgICAgICAgICAgIG5j
+IDQyOTQxOCBbMDA2XSA0MDE0NjUuNjUyMjkzOiBza2I6a2ZyZWVfc2tiOiBza2JhZGRyPTB4ZmZm
+Zjg4ODFlYTY2Y2YwMCBwcm90b2NvbD0wIGxvY2F0aW9uPTB4ZmZmZmZmZmY4MWUwYjQ4ZiByZWFz
+b246IE5PVF9TUEVDSUZJRUQNCiAgICAgICAgICAgICAgbmMgNDI5NDE4IFswMDZdIDQwMTQ2NS42
+NTI1Mzg6IHNrYjprZnJlZV9za2I6IHNrYmFkZHI9MHhmZmZmODg4MTMzYzAxNGU4IHByb3RvY29s
+PTIwNDggbG9jYXRpb249MHhmZmZmZmZmZjgxZDk4M2ExIHJlYXNvbjogTk9fU09DS0VUDQoNClRo
+ZSB2ZXJzaW9uIG9mIHRoZSBwZXJmIEkgdXNlZCBpcyA2LjAuMy0xOg0KDQogIHN1ZG8gYXB0IGlu
+Zm8gbGludXgtcGVyZg0KICBQYWNrYWdlOiBsaW51eC1wZXJmDQogIFZlcnNpb246IDYuMC4zLTEN
+Cg0KDQpUaGFua3MhDQpNZW5nbG9uZyBEb25nDQoNCj4gcGVyZjUgc2NyaXB0DQo+ICAgICAgICAg
+IHN3YXBwZXIgICAgIDAgWzAzMF0gIDQxNDcuNzA0NjA2OiBza2I6a2ZyZWVfc2tiOiBbVU5LTk9X
+TiBFVkVOVF0NCj4gIGt3b3JrZXIvMzA6MS1ldiAgIDMwOCBbMDMwXSAgNDE0Ny43MDQ2MTU6IHNr
+YjprZnJlZV9za2I6IFtVTktOT1dOIEVWRU5UXQ0KPiAgICAgICAgICBzd2FwcGVyICAgICAwIFsw
+MzBdICA0MTQ4LjA0ODE3Mzogc2tiOmtmcmVlX3NrYjogW1VOS05PV04gRVZFTlRdDQo+ICBrd29y
+a2VyLzMwOjEtZXYgICAzMDggWzAzMF0gIDQxNDguMDQ4MTc5OiBza2I6a2ZyZWVfc2tiOiBbVU5L
+Tk9XTiBFVkVOVF0NCj4gICAgICAgICAgc3dhcHBlciAgICAgMCBbMDA4XSAgNDE0OC4wNDg3NzM6
+IHNrYjprZnJlZV9za2I6IFtVTktOT1dOIEVWRU5UXQ0KPiAgICAgICAgICBzd2FwcGVyICAgICAw
+IFswMzBdICA0MTQ4LjExMjI3MTogc2tiOmtmcmVlX3NrYjogW1VOS05PV04gRVZFTlRdDQo+ICBr
+d29ya2VyLzMwOjEtZXYgICAzMDggWzAzMF0gIDQxNDguMTEyMjgwOiBza2I6a2ZyZWVfc2tiOiBb
+VU5LTk9XTiBFVkVOVF0NCj4gICAgICAgICAgc3dhcHBlciAgICAgMCBbMDMwXSAgNDE0OC43MjAx
+NDk6IHNrYjprZnJlZV9za2I6IFtVTktOT1dOIEVWRU5UXQ0KPiAga3dvcmtlci8zMDoxLWV2ICAg
+MzA4IFswMzBdICA0MTQ4LjcyMDE1NTogc2tiOmtmcmVlX3NrYjogW1VOS05PV04gRVZFTlRdDQo+
+ICAgICAgICAgIHN3YXBwZXIgICAgIDAgWzAzMF0gIDQxNDkuMDcyMTQxOiBza2I6a2ZyZWVfc2ti
+OiBbVU5LTk9XTiBFVkVOVF0NCj4gIGt3b3JrZXIvMzA6MS1ldiAgIDMwOCBbMDMwXSAgNDE0OS4w
+NzIxNDk6IHNrYjprZnJlZV9za2I6IFtVTktOT1dOIEVWRU5UXQ0KDQo=
