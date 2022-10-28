@@ -2,225 +2,299 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DE43610737
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 03:24:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CFAA61073C
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 03:27:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234664AbiJ1BX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 21:23:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33028 "EHLO
+        id S235082AbiJ1B1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Oct 2022 21:27:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234719AbiJ1BX4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 21:23:56 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54F4CA98CB;
-        Thu, 27 Oct 2022 18:23:55 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Mz4Z32PWgzHvcW;
-        Fri, 28 Oct 2022 09:23:39 +0800 (CST)
-Received: from [10.174.178.66] (10.174.178.66) by
- dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 28 Oct 2022 09:23:52 +0800
-Message-ID: <690b450c-5024-8e02-dbc7-3d1b974af835@huawei.com>
-Date:   Fri, 28 Oct 2022 09:23:51 +0800
+        with ESMTP id S234664AbiJ1B1X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 21:27:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7448A98E9;
+        Thu, 27 Oct 2022 18:27:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3AA77625AF;
+        Fri, 28 Oct 2022 01:27:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7849C43470;
+        Fri, 28 Oct 2022 01:27:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666920441;
+        bh=4lA8EUMV061NUVE2mYXUtkaSUiI75YYA0uKRElWxl6I=;
+        h=From:To:Cc:Subject:Date:From;
+        b=YZVZ4gyNrnB/MA/o6bnern910SiS2J/OE77bbVNz+6Ne9Npwtem7kPPbdDw9hVrq5
+         dYzSK70A4T2l+t8rrdzRl/fXL5IA8Lz8Mdq9CvWNLlrhZvpxBOjF4aa+6uWDIdUFwH
+         6B1ebgqgyP6i20LPgEKAVwVWK4lj/Z/vFtNChIbr+0CnD5TTXpV+k+RWFbJos19wBU
+         UbhrkAgjx3c86u5WiQrKV+yDKvzK+h5CS4QA6ilRzmOjuu0DmreXOSGMVYzHCWwOXs
+         RFzndEOXe6prk+PTScS+O4Z7Y87CeCli3XGtJ45j/GXkSeAwmVrUtZdAS/0XBSTq1N
+         zg1Gn2Be1xbBQ==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        Jakub Kicinski <kuba@kernel.org>, corbet@lwn.net,
+        michael.chan@broadcom.com, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, huangguangbin2@huawei.com,
+        chenhao288@hisilicon.com, moshet@nvidia.com,
+        linux@rempel-privat.de, linux-doc@vger.kernel.org
+Subject: [PATCH net-next v2] ethtool: linkstate: add a statistic for PHY down events
+Date:   Thu, 27 Oct 2022 18:27:19 -0700
+Message-Id: <20221028012719.2702267-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [PATCH bpf-next] bpf: fix issue that packet only contains l2 is
- dropped
-To:     Stanislav Fomichev <sdf@google.com>
-CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <andrii@kernel.org>, <martin.lau@linux.dev>, <song@kernel.org>,
-        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <haoluo@google.com>, <jolsa@kernel.org>, <oss@lmb.io>,
-        <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>
-References: <20221015092448.117563-1-shaozhengchao@huawei.com>
- <CAKH8qBugSdWHP7mtNxrnLLR+56u_0OCx3xQOkJSV-+RUvDAeNg@mail.gmail.com>
- <d830980c-4a38-5537-b594-bc5fb86b0acd@huawei.com>
- <CAKH8qBtyfS0Otpugn7_ZiG5APA_WTKOVAe1wsFfyaxF-03X=5w@mail.gmail.com>
- <87f67a8c-2fb2-9478-adbb-f55c7a7c94f9@huawei.com>
- <CAKH8qBsOMxVaemF0Oy=vE1V0vKO8ORUcVGB5YANS3HdKOhVjjw@mail.gmail.com>
- <7ddbf8f4-2b03-223f-4601-add0f7208855@huawei.com>
- <CAKH8qBuKVuRKd+fFiXKTiSpoB8ue4YPw1gM+pkGFKAdgNOcpTg@mail.gmail.com>
- <20e9ea01-1261-6d03-34c9-9b842298487a@huawei.com>
- <CAKH8qBstDGb3Uf14J5K3VtgZOdHFT1c4u0uUG97NqgA4iZRo+Q@mail.gmail.com>
-From:   shaozhengchao <shaozhengchao@huawei.com>
-In-Reply-To: <CAKH8qBstDGb3Uf14J5K3VtgZOdHFT1c4u0uUG97NqgA4iZRo+Q@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.178.66]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The previous attempt to augment carrier_down (see Link)
+was not met with much enthusiasm so let's do the simple
+thing of exposing what some devices already maintain.
+Add a common ethtool statistic for link going down.
+Currently users have to maintain per-driver mapping
+to extract the right stat from the vendor-specific ethtool -S
+stats. carrier_down does not fit the bill because it counts
+a lot of software related false positives.
 
+Add the statistic to the extended link state API to steer
+vendors towards implementing all of it.
 
-On 2022/10/28 0:37, Stanislav Fomichev wrote:
-> On Thu, Oct 27, 2022 at 4:58 AM shaozhengchao <shaozhengchao@huawei.com> wrote:
->>
->>
->>
->> On 2022/10/25 1:13, Stanislav Fomichev wrote:
->>> On Sat, Oct 22, 2022 at 4:36 AM shaozhengchao <shaozhengchao@huawei.com> wrote:
->>>>
->>>>
->>>>
->>>> On 2022/10/22 2:16, Stanislav Fomichev wrote:
->>>>> On Fri, Oct 21, 2022 at 12:25 AM shaozhengchao <shaozhengchao@huawei.com> wrote:
->>>>>>
->>>>>>
->>>>>>
->>>>>> On 2022/10/21 1:45, Stanislav Fomichev wrote:
->>>>>>> On Wed, Oct 19, 2022 at 6:47 PM shaozhengchao <shaozhengchao@huawei.com> wrote:
->>>>>>>>
->>>>>>>>
->>>>>>>>
->>>>>>>> On 2022/10/18 0:36, Stanislav Fomichev wrote:
->>>>>>>>> On Sat, Oct 15, 2022 at 2:16 AM Zhengchao Shao <shaozhengchao@huawei.com> wrote:
->>>>>>>>>>
->>>>>>>>>> As [0] see, bpf_prog_test_run_skb() should allow user space to forward
->>>>>>>>>> 14-bytes packet via BPF_PROG_RUN instead of dropping packet directly.
->>>>>>>>>> So fix it.
->>>>>>>>>>
->>>>>>>>>> 0: https://github.com/cilium/ebpf/commit/a38fb6b5a46ab3b5639ea4d421232a10013596c0
->>>>>>>>>>
->>>>>>>>>> Fixes: fd1894224407 ("bpf: Don't redirect packets with invalid pkt_len")
->>>>>>>>>> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
->>>>>>>>>> ---
->>>>>>>>>>       net/bpf/test_run.c | 6 +++---
->>>>>>>>>>       1 file changed, 3 insertions(+), 3 deletions(-)
->>>>>>>>>>
->>>>>>>>>> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
->>>>>>>>>> index 13d578ce2a09..aa1b49f19ca3 100644
->>>>>>>>>> --- a/net/bpf/test_run.c
->>>>>>>>>> +++ b/net/bpf/test_run.c
->>>>>>>>>> @@ -979,9 +979,6 @@ static int convert___skb_to_skb(struct sk_buff *skb, struct __sk_buff *__skb)
->>>>>>>>>>       {
->>>>>>>>>>              struct qdisc_skb_cb *cb = (struct qdisc_skb_cb *)skb->cb;
->>>>>>>>>>
->>>>>>>>>> -       if (!skb->len)
->>>>>>>>>> -               return -EINVAL;
->>>>>>>>>> -
->>>>>>>>>>              if (!__skb)
->>>>>>>>>>                      return 0;
->>>>>>>>>>
->>>>>>>>>> @@ -1102,6 +1099,9 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
->>>>>>>>>>              if (IS_ERR(data))
->>>>>>>>>>                      return PTR_ERR(data);
->>>>>>>>>>
->>>>>>>>>> +       if (size == ETH_HLEN)
->>>>>>>>>> +               is_l2 = true;
->>>>>>>>>> +
->>>>>>>>>
->>>>>>>>> Don't think this will work? That is_l2 is there to expose proper l2/l3
->>>>>>>>> skb for specific hooks; we can't suddenly start exposing l2 headers to
->>>>>>>>> the hooks that don't expect it.
->>>>>>>>> Does it make sense to start with a small reproducer that triggers the
->>>>>>>>> issue first? We can have a couple of cases for
->>>>>>>>> len=0/ETH_HLEN-1/ETH_HLEN+1 and trigger them from the bpf program that
->>>>>>>>> redirects to different devices (to trigger dev_is_mac_header_xmit).
->>>>>>>>>
->>>>>>>>>
->>>>>>>> Hi Stanislav:
->>>>>>>>             Thank you for your review. Is_l2 is the flag of a specific
->>>>>>>> hook. Therefore, do you mean that if skb->len is equal to 0, just
->>>>>>>> add the length back?
->>>>>>>
->>>>>>> Not sure I understand your question. All I'm saying is - you can't
->>>>>>> flip that flag arbitrarily. This flag depends on the attach point that
->>>>>>> you're running the prog against. Some attach points expect packets
->>>>>>> with l2, some expect packets without l2.
->>>>>>>
->>>>>>> What about starting with a small reproducer? Does it make sense to
->>>>>>> create a small selftest that adds net namespace + fq_codel +
->>>>>>> bpf_prog_test run and do redirect ingress/egress with len
->>>>>>> 0/1...tcphdr? Because I'm not sure I 100% understand whether it's only
->>>>>>> len=0 that's problematic or some other combination as well?
->>>>>>>
->>>>>> yes, only skb->len = 0 will cause null-ptr-deref issue.
->>>>>> The following is the process of triggering the problem:
->>>>>> enqueue a skb:
->>>>>> fq_codel_enqueue()
->>>>>>            ...
->>>>>>            idx = fq_codel_classify()        --->if idx != 0
->>>>>>            flow = &q->flows[idx];
->>>>>>            flow_queue_add(flow, skb);       --->add skb to flow[idex]
->>>>>>            q->backlogs[idx] += qdisc_pkt_len(skb); --->backlogs = 0
->>>>>>            ...
->>>>>>            fq_codel_drop()                  --->set sch->limit = 0, always
->>>>>> drop packets
->>>>>>                    ...
->>>>>>                    idx = i                  --->becuase backlogs in every
->>>>>> flows is 0, so idx = 0
->>>>>>                    ...
->>>>>>                    flow = &q->flows[idx];   --->get idx=0 flow
->>>>>>                    ...
->>>>>>                    dequeue_head()
->>>>>>                            skb = flow->head; --->flow->head = NULL
->>>>>>                            flow->head = skb->next; --->cause null-ptr-deref
->>>>>> So, if skb->len !=0，fq_codel_drop() could get the correct idx, and
->>>>>> then skb!=NULL, it will be OK.
->>>>>> Maybe, I will fix it in fq_codel.
->>>>>
->>>>> I think the consensus here is that the stack, in general, doesn't
->>>>> expect the packets like this. So there are probably more broken things
->>>>> besides fq_codel. Thus, it's better if we remove the ability to
->>>>> generate them from the bpf side instead of fixing the individual users
->>>>> like fq_codel.
->>>>>
->>>>>> But, as I know, skb->len = 0 is just invalid packet. I prefer to add the
->>>>>> length back, like bellow:
->>>>>>            if (is_l2 || !skb->len)
->>>>>>                    __skb_push(skb, hh_len);
->>>>>> is it OK?
->>>>>
->>>>> Probably not?
->>>>>
->>>>> Looking at the original syzkaller report, prog_type is
->>>>> BPF_PROG_TYPE_LWT_XMIT which does expect a packet without l2 header.
->>>>> Can we do something like:
->>>>>
->>>>> if (!is_l2 && !skb->len) {
->>>>>      // append some dummy byte to the skb ?
->>>>> }
->>>>>
->>>>>
->>>> I pad one byte, and test OK.
->>>> if (!is_l2 && !skb->len)
->>>>        __skb_push(skb, 1);
->>>>
->>>> Does it look OK to you?
->>>
->>> Nope, this will eat a byte out of the l2 header. We need to skb_put
->>> and make sure we allocate enough to make that skb_put succeed.
->>>
->>> But stepping back a bit: it feels like it's all unnecessary? The only
->>> valid use-case of this is probing for the BPF_PROG_TEST_RUN as cilium
->>> does. This is mostly about testing, so fixing it in the users seems
->>> fair? No real production code is expected to generate these zero-len
->>> packets. Or are we concerned that this will leak into stable kernels?
->>>
->>> I feel like we are trying to add more complexity here for no apparent reason.
->>>
->> I agree with you. users should make sure the correct skb len and
->> configurations are passed into kernel. Incorrect configurations should
->> be discarded to ensure kernel stability.
->>
->> Lorenz, Can you modify the user-mode test code?
-> 
-> Lorenz already fixed it for Cilium. I think the discussion here is
-> around other potential users out there.
-> Let's wait for them to appear if it is indeed a problem?
+Implement for bnxt and all Linux-controlled PHYs. mlx5 and (possibly)
+enic also have a counter for this but I leave the implementation
+to their maintainers.
 
-Currently, Lorenz only does the workaround. Maybe Lorenz still expects 
-to change the value back to 14 bytes?
+Link: https://lore.kernel.org/r/20220520004500.2250674-1-kuba@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+The Linux PHY part is compile-tested only. Could anyone
+(who's not at netdev conf?) help testing it?
+
+v2:
+  - add the support for all Linux-driven PHYs
+  - LinkDownEvents -> link_down_events
+v1: https://lore.kernel.org/all/20221026020948.1913777-1-kuba@kernel.org/
+---
+CC: corbet@lwn.net
+CC: michael.chan@broadcom.com
+CC: andrew@lunn.ch
+CC: hkallweit1@gmail.com
+CC: linux@armlinux.org.uk
+CC: huangguangbin2@huawei.com
+CC: chenhao288@hisilicon.com
+CC: moshet@nvidia.com
+CC: linux@rempel-privat.de
+CC: linux-doc@vger.kernel.org
+---
+ Documentation/networking/ethtool-netlink.rst  |  1 +
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 15 +++++++++++
+ drivers/net/phy/phy.c                         |  1 +
+ include/linux/ethtool.h                       | 14 +++++++++++
+ include/linux/phy.h                           |  3 +++
+ include/uapi/linux/ethtool_netlink.h          |  2 ++
+ net/ethtool/linkstate.c                       | 25 ++++++++++++++++++-
+ 7 files changed, 60 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
+index d578b8bcd8a4..5454aa6c013c 100644
+--- a/Documentation/networking/ethtool-netlink.rst
++++ b/Documentation/networking/ethtool-netlink.rst
+@@ -491,6 +491,7 @@ any attributes.
+   ``ETHTOOL_A_LINKSTATE_SQI_MAX``       u32     Max support SQI value
+   ``ETHTOOL_A_LINKSTATE_EXT_STATE``     u8      link extended state
+   ``ETHTOOL_A_LINKSTATE_EXT_SUBSTATE``  u8      link extended substate
++  ``ETHTOOL_A_LINKSTATE_EXT_DOWN_CNT``  u64     count of link down events
+   ====================================  ======  ============================
+ 
+ For most NIC drivers, the value of ``ETHTOOL_A_LINKSTATE_LINK`` returns
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index cc89e5eabcb9..d8f0351df954 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -4112,6 +4112,20 @@ static void bnxt_get_rmon_stats(struct net_device *dev,
+ 	*ranges = bnxt_rmon_ranges;
+ }
+ 
++static void bnxt_get_link_ext_stats(struct net_device *dev,
++				    struct ethtool_link_ext_stats *stats)
++{
++	struct bnxt *bp = netdev_priv(dev);
++	u64 *rx;
++
++	if (BNXT_VF(bp) || !(bp->flags & BNXT_FLAG_PORT_STATS_EXT))
++		return;
++
++	rx = bp->rx_port_stats_ext.sw_stats;
++	stats->link_down_events =
++		*(rx + BNXT_RX_STATS_EXT_OFFSET(link_down_events));
++}
++
+ void bnxt_ethtool_free(struct bnxt *bp)
+ {
+ 	kfree(bp->test_info);
+@@ -4161,6 +4175,7 @@ const struct ethtool_ops bnxt_ethtool_ops = {
+ 	.get_eeprom             = bnxt_get_eeprom,
+ 	.set_eeprom		= bnxt_set_eeprom,
+ 	.get_link		= bnxt_get_link,
++	.get_link_ext_stats	= bnxt_get_link_ext_stats,
+ 	.get_eee		= bnxt_get_eee,
+ 	.set_eee		= bnxt_set_eee,
+ 	.get_module_info	= bnxt_get_module_info,
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index e741d8aebffe..e5b6cb1a77f9 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -67,6 +67,7 @@ static void phy_link_down(struct phy_device *phydev)
+ {
+ 	phydev->phy_link_change(phydev, false);
+ 	phy_led_trigger_change_speed(phydev);
++	WRITE_ONCE(phydev->link_down_events, phydev->link_down_events + 1);
+ }
+ 
+ static const char *phy_pause_str(struct phy_device *phydev)
+diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
+index 99dc7bfbcd3c..fa8e0d52dd30 100644
+--- a/include/linux/ethtool.h
++++ b/include/linux/ethtool.h
+@@ -125,6 +125,17 @@ struct ethtool_link_ext_state_info {
+ 	};
+ };
+ 
++struct ethtool_link_ext_stats {
++	/* Custom Linux statistic for PHY level link down events.
++	 * In a simpler world it should be equal to netdev->carrier_down_count
++	 * unfortunately netdev also counts local reconfigurations which don't
++	 * actually take the physical link down, not to mention NC-SI which,
++	 * if present, keeps the link up regardless of host state.
++	 * This statistic counts when PHY _actually_ went down, or lost link.
++	 */
++	u64 link_down_events;
++};
++
+ /**
+  * ethtool_rxfh_indir_default - get default value for RX flow hash indirection
+  * @index: Index in RX flow hash indirection table
+@@ -481,6 +492,7 @@ struct ethtool_module_power_mode_params {
+  *	do not attach ext_substate attribute to netlink message). If link_ext_state
+  *	and link_ext_substate are unknown, return -ENODATA. If not implemented,
+  *	link_ext_state and link_ext_substate will not be sent to userspace.
++ * @get_link_ext_stats: Read extra link-related counters.
+  * @get_eeprom_len: Read range of EEPROM addresses for validation of
+  *	@get_eeprom and @set_eeprom requests.
+  *	Returns 0 if device does not support EEPROM access.
+@@ -652,6 +664,8 @@ struct ethtool_ops {
+ 	u32	(*get_link)(struct net_device *);
+ 	int	(*get_link_ext_state)(struct net_device *,
+ 				      struct ethtool_link_ext_state_info *);
++	void	(*get_link_ext_stats)(struct net_device *,
++				      struct ethtool_link_ext_stats *);
+ 	int	(*get_eeprom_len)(struct net_device *);
+ 	int	(*get_eeprom)(struct net_device *,
+ 			      struct ethtool_eeprom *, u8 *);
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index ddf66198f751..9a3752c0c444 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -600,6 +600,7 @@ struct macsec_ops;
+  * @psec: Pointer to Power Sourcing Equipment control struct
+  * @lock:  Mutex for serialization access to PHY
+  * @state_queue: Work queue for state machine
++ * @link_down_events: Number of times link was lost
+  * @shared: Pointer to private data shared by phys in one package
+  * @priv: Pointer to driver private data
+  *
+@@ -723,6 +724,8 @@ struct phy_device {
+ 
+ 	int pma_extable;
+ 
++	unsigned int link_down_events;
++
+ 	void (*phy_link_change)(struct phy_device *phydev, bool up);
+ 	void (*adjust_link)(struct net_device *dev);
+ 
+diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
+index bb57084ac524..8167848983d0 100644
+--- a/include/uapi/linux/ethtool_netlink.h
++++ b/include/uapi/linux/ethtool_netlink.h
+@@ -262,6 +262,8 @@ enum {
+ 	ETHTOOL_A_LINKSTATE_SQI_MAX,		/* u32 */
+ 	ETHTOOL_A_LINKSTATE_EXT_STATE,		/* u8 */
+ 	ETHTOOL_A_LINKSTATE_EXT_SUBSTATE,	/* u8 */
++	ETHTOOL_A_LINKSTATE_PAD,
++	ETHTOOL_A_LINKSTATE_EXT_DOWN_CNT,	/* u64 */
+ 
+ 	/* add new constants above here */
+ 	__ETHTOOL_A_LINKSTATE_CNT,
+diff --git a/net/ethtool/linkstate.c b/net/ethtool/linkstate.c
+index fb676f349455..7276ff752b80 100644
+--- a/net/ethtool/linkstate.c
++++ b/net/ethtool/linkstate.c
+@@ -13,6 +13,7 @@ struct linkstate_reply_data {
+ 	int					link;
+ 	int					sqi;
+ 	int					sqi_max;
++	struct ethtool_link_ext_stats		link_stats;
+ 	bool					link_ext_state_provided;
+ 	struct ethtool_link_ext_state_info	ethtool_link_ext_state_info;
+ };
+@@ -22,7 +23,7 @@ struct linkstate_reply_data {
+ 
+ const struct nla_policy ethnl_linkstate_get_policy[] = {
+ 	[ETHTOOL_A_LINKSTATE_HEADER]		=
+-		NLA_POLICY_NESTED(ethnl_header_policy),
++		NLA_POLICY_NESTED(ethnl_header_policy_stats),
+ };
+ 
+ static int linkstate_get_sqi(struct net_device *dev)
+@@ -107,6 +108,19 @@ static int linkstate_prepare_data(const struct ethnl_req_info *req_base,
+ 			goto out;
+ 	}
+ 
++	ethtool_stats_init((u64 *)&data->link_stats,
++			   sizeof(data->link_stats) / 8);
++
++	if (req_base->flags & ETHTOOL_FLAG_STATS) {
++		if (dev->phydev)
++			data->link_stats.link_down_events =
++				READ_ONCE(dev->phydev->link_down_events);
++
++		if (dev->ethtool_ops->get_link_ext_stats)
++			dev->ethtool_ops->get_link_ext_stats(dev,
++							     &data->link_stats);
++	}
++
+ 	ret = 0;
+ out:
+ 	ethnl_ops_complete(dev);
+@@ -134,6 +148,9 @@ static int linkstate_reply_size(const struct ethnl_req_info *req_base,
+ 	if (data->ethtool_link_ext_state_info.__link_ext_substate)
+ 		len += nla_total_size(sizeof(u8)); /* LINKSTATE_EXT_SUBSTATE */
+ 
++	if (data->link_stats.link_down_events != ETHTOOL_STAT_NOT_SET)
++		len += nla_total_size_64bit(sizeof(u64));
++
+ 	return len;
+ }
+ 
+@@ -166,6 +183,12 @@ static int linkstate_fill_reply(struct sk_buff *skb,
+ 			return -EMSGSIZE;
+ 	}
+ 
++	if (data->link_stats.link_down_events != ETHTOOL_STAT_NOT_SET)
++		if (nla_put_u64_64bit(skb, ETHTOOL_A_LINKSTATE_EXT_DOWN_CNT,
++				      data->link_stats.link_down_events,
++				      ETHTOOL_A_LINKSTATE_PAD))
++			return -EMSGSIZE;
++
+ 	return 0;
+ }
+ 
+-- 
+2.37.3
+
