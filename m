@@ -2,50 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3F3C610F4D
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 13:04:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16F49610F4E
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 13:04:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230138AbiJ1LEo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 07:04:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48870 "EHLO
+        id S230210AbiJ1LEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 07:04:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230012AbiJ1LEi (ORCPT
+        with ESMTP id S230046AbiJ1LEi (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 07:04:38 -0400
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD3A13DF5
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 04:04:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86617167F1
+        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 04:04:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666955076; x=1698491076;
+  t=1666955077; x=1698491077;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=DOvzKUEzTvvetgIygo4tsvS+2zu/7Xi7qffgg1o/AfM=;
-  b=ADpDsWNRTKuPdHXAm6CoUeuDfbtBjcJeJVJvUHoupQfaOq4xHC16EHtG
-   9mdqCZ9hLMz4WGiBAOBUJOQZhOaqYObcYG/92c85/EllHmaKx6JklFi8F
-   7IoEdzvE7adf1QsFAxhbjYppsh5mqSCgoLW6e/4vtgZ3cC/MuXSm79Cv8
-   GNNSERY6TDm2/Q8mJCixcqE6+E+w5AzK/uB1dCvVkFPqXL1BCrJ2pgXsh
-   /RagznJEVEVnsvHlrHQYDbDTLE4QU0/pLWFWXevxUUkqIGOSyb6b+Ly5q
-   RgqIDk5Ru5Jl4XjW/hynPsOEjn/XbpXvXDYhxaFcqGIQHwMJqoSW39oHq
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10513"; a="291766541"
+  bh=l3EBoGq79+SgOS8eaxcLWh6/oUSiV/JnxBBWej8kVBE=;
+  b=mDRI8MDNuw1A0tnMS3+G01QyxrcRKxPNp9uFGC7Z29QnwRHw3+sDFOVi
+   5FB/+QDADYgiIfycRjtf/caUQu9EDL/CnMgktw3gWtSkEmTj4CZGnnUm+
+   ULW/zSJTHSnMOemG273vv0dR/I7QmScQaA3DDdYTWVuS+C3gbafSiDjJs
+   fip7wP90EuCiSizqGLoduOeUNhqRZYWf/ypg5Bhv8/kQVenFA9q/hKGMi
+   gyhJu5MRlcF/B+rqNsqPSMKOuKf2Czx2O3cxFAzUAclAy/CEqNFv/aYa/
+   OUnm7yXi4b6ZtyutSzaEMBFLlzVghmACrAuHsu7JIlg2xFMmF4r9eAGG9
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10513"; a="291766546"
 X-IronPort-AV: E=Sophos;i="5.95,220,1661842800"; 
-   d="scan'208";a="291766541"
+   d="scan'208";a="291766546"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Oct 2022 04:04:34 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10513"; a="701698092"
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Oct 2022 04:04:35 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10513"; a="701698100"
 X-IronPort-AV: E=Sophos;i="5.95,220,1661842800"; 
-   d="scan'208";a="701698092"
+   d="scan'208";a="701698100"
 Received: from jekeller-desk.amr.corp.intel.com ([10.166.241.7])
   by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Oct 2022 04:04:34 -0700
 From:   Jacob Keller <jacob.e.keller@intel.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         David Miller <davem@davemloft.net>
 Cc:     netdev@vger.kernel.org, Jacob Keller <jacob.e.keller@intel.com>,
+        Shirly Ohnona <shirlyo@nvidia.com>,
         Richard Cochran <richardcochran@gmail.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: [PATCH net-next v3 4/9] ptp: mlx4: convert to .adjfine and adjust_by_scaled_ppm
-Date:   Fri, 28 Oct 2022 04:04:15 -0700
-Message-Id: <20221028110420.3451088-5-jacob.e.keller@intel.com>
+        Gal Pressman <gal@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>, Aya Levin <ayal@nvidia.com>
+Subject: [PATCH net-next v3 5/9] ptp: mlx5: convert to .adjfine and adjust_by_scaled_ppm
+Date:   Fri, 28 Oct 2022 04:04:16 -0700
+Message-Id: <20221028110420.3451088-6-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.38.0.83.gd420dda05763
 In-Reply-To: <20221028110420.3451088-1-jacob.e.keller@intel.com>
 References: <20221028110420.3451088-1-jacob.e.keller@intel.com>
@@ -60,77 +63,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The mlx4 implementation of .adjfreq is implemented in terms of a
+The mlx5 implementation of .adjfreq is implemented in terms of a
 straight forward "base * ppb / 1 billion" calculation.
 
-Convert this driver to .adjfine and use adjust_by_scaled_ppm to perform the
-calculation.
+Convert this to the .adjfine interface and use adjust_by_scaled_ppm for the
+calculation  of the new mult value.
+
+Note that the mlx5_ptp_adjfreq_real_time function expects input in terms of
+ppb, so use the scaled_ppm_to_ppb to convert before passing to this
+function.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Tested-by: Shirly Ohnona <shirlyo@nvidia.com>
 Acked-by: Richard Cochran <richardcochran@gmail.com>
-Cc: Tariq Toukan <tariqt@nvidia.com>
+Cc: Gal Pressman <gal@nvidia.com>
+Cc: Saeed Mahameed <saeedm@nvidia.com>
+Cc: Leon Romanovsky <leon@kernel.org>
+Cc: Aya Levin <ayal@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx4/en_clock.c | 29 +++++++------------
- 1 file changed, 11 insertions(+), 18 deletions(-)
+ .../ethernet/mellanox/mlx5/core/lib/clock.c   | 22 +++++--------------
+ 1 file changed, 6 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_clock.c b/drivers/net/ethernet/mellanox/mlx4/en_clock.c
-index 024788549c25..98b5ffb4d729 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_clock.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_clock.c
-@@ -111,34 +111,27 @@ void mlx4_en_ptp_overflow_check(struct mlx4_en_dev *mdev)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
+index d3a9ae80fd30..69cfe60c558a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
+@@ -339,35 +339,25 @@ static int mlx5_ptp_adjfreq_real_time(struct mlx5_core_dev *mdev, s32 freq)
+ 	return mlx5_set_mtutc(mdev, in, sizeof(in));
  }
  
- /**
-- * mlx4_en_phc_adjfreq - adjust the frequency of the hardware clock
-+ * mlx4_en_phc_adjfine - adjust the frequency of the hardware clock
-  * @ptp: ptp clock structure
-- * @delta: Desired frequency change in parts per billion
-+ * @scaled_ppm: Desired frequency change in scaled parts per million
-  *
-- * Adjust the frequency of the PHC cycle counter by the indicated delta from
-- * the base frequency.
-+ * Adjust the frequency of the PHC cycle counter by the indicated scaled_ppm
-+ * from the base frequency.
-+ *
-+ * Scaled parts per million is ppm with a 16-bit binary fractional field.
-  **/
--static int mlx4_en_phc_adjfreq(struct ptp_clock_info *ptp, s32 delta)
-+static int mlx4_en_phc_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+-static int mlx5_ptp_adjfreq(struct ptp_clock_info *ptp, s32 delta)
++static int mlx5_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
  {
--	u64 adj;
--	u32 diff, mult;
--	int neg_adj = 0;
-+	u32 mult;
+ 	struct mlx5_clock *clock = container_of(ptp, struct mlx5_clock, ptp_info);
+ 	struct mlx5_timer *timer = &clock->timer;
+ 	struct mlx5_core_dev *mdev;
  	unsigned long flags;
- 	struct mlx4_en_dev *mdev = container_of(ptp, struct mlx4_en_dev,
- 						ptp_clock_info);
+-	int neg_adj = 0;
+-	u32 diff;
+-	u64 adj;
++	u32 mult;
+ 	int err;
+ 
+ 	mdev = container_of(clock, struct mlx5_core_dev, clock);
+-	err = mlx5_ptp_adjfreq_real_time(mdev, delta);
++	err = mlx5_ptp_adjfreq_real_time(mdev, scaled_ppm_to_ppb(scaled_ppm));
+ 	if (err)
+ 		return err;
  
 -	if (delta < 0) {
 -		neg_adj = 1;
 -		delta = -delta;
 -	}
--	mult = mdev->nominal_c_mult;
--	adj = mult;
+-
+-	adj = timer->nominal_c_mult;
 -	adj *= delta;
 -	diff = div_u64(adj, 1000000000ULL);
-+	mult = (u32)adjust_by_scaled_ppm(mdev->nominal_c_mult, scaled_ppm);
++	mult = (u32)adjust_by_scaled_ppm(timer->nominal_c_mult, scaled_ppm);
  
- 	write_seqlock_irqsave(&mdev->clock_lock, flags);
- 	timecounter_read(&mdev->clock);
--	mdev->cycles.mult = neg_adj ? mult - diff : mult + diff;
-+	mdev->cycles.mult = mult;
- 	write_sequnlock_irqrestore(&mdev->clock_lock, flags);
+ 	write_seqlock_irqsave(&clock->lock, flags);
+ 	timecounter_read(&timer->tc);
+-	timer->cycles.mult = neg_adj ? timer->nominal_c_mult - diff :
+-				       timer->nominal_c_mult + diff;
++	timer->cycles.mult = mult;
+ 	mlx5_update_clock_info_page(mdev);
+ 	write_sequnlock_irqrestore(&clock->lock, flags);
  
- 	return 0;
-@@ -237,7 +230,7 @@ static const struct ptp_clock_info mlx4_en_ptp_clock_info = {
+@@ -697,7 +687,7 @@ static const struct ptp_clock_info mlx5_ptp_clock_info = {
  	.n_per_out	= 0,
  	.n_pins		= 0,
  	.pps		= 0,
--	.adjfreq	= mlx4_en_phc_adjfreq,
-+	.adjfine	= mlx4_en_phc_adjfine,
- 	.adjtime	= mlx4_en_phc_adjtime,
- 	.gettime64	= mlx4_en_phc_gettime,
- 	.settime64	= mlx4_en_phc_settime,
+-	.adjfreq	= mlx5_ptp_adjfreq,
++	.adjfine	= mlx5_ptp_adjfine,
+ 	.adjtime	= mlx5_ptp_adjtime,
+ 	.gettimex64	= mlx5_ptp_gettimex,
+ 	.settime64	= mlx5_ptp_settime,
 -- 
 2.38.0.83.gd420dda05763
 
