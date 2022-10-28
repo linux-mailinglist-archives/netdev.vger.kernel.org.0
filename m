@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8370F611A68
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 20:46:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE7A1611A6A
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 20:46:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230254AbiJ1Sq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 14:46:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38410 "EHLO
+        id S230265AbiJ1Sql (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 14:46:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229587AbiJ1Sq1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 14:46:27 -0400
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B34424473E
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 11:46:26 -0700 (PDT)
-Received: by mail-io1-xd35.google.com with SMTP id y6so2353627iof.9
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 11:46:26 -0700 (PDT)
+        with ESMTP id S230226AbiJ1Sqj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 14:46:39 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76285244C5E
+        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 11:46:29 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id b79so5339034iof.5
+        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 11:46:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Hxm7sQTpDKl9UY4520J3/vp5jchfI3eX96wGKNMDOQs=;
-        b=B4WcZf/oRIkjQLeSHBKGFOty1f5Cfg44oU823gpumf4Yh08/EL8sbaWf1wWbl4DP4k
-         NZq7paMR231hbzbVZi2yMIxsMCH1oJSH42C7n26mGWX1Ggv3Ta6ZhAdzownsUnBDmutE
-         EIiiKDgqEchlSBPNrhSs+fGlc16Q+TBKot8du6YYAfd9YzjuCuR/XmKviA3jHebBNBIC
-         Yj0bCDYZeVNN9OcCsPTgsjO8Tt1R1WGdla2wTLQ2E53V297AUCatAlC0B51hRUq01H/+
-         h09hG8zI/MfH6BRknnTx6iEh/17dQxcU+/UT1dL1ziXYnjPR4kTzJsY3nCDJQwpOkQVY
-         mMQw==
+        bh=aVQrfsCj0EaYjV3S0UqwAeu50/dS1NKsyMUdIHSnM/s=;
+        b=qEkgAsj/QcSREQburHKS+spqzZnET8VrT9NbFaeeVTjD7goyPi+5HPAUk6H+/CkbGO
+         ODhY1VjG1mtzqc4Ya5zJ8yMY0Fs4jyfgt6HcBDuWo3NWkzRi0ViGUAxnCobsk2IdUNTq
+         kfd+Vm2ZlhwG8c9Jqfm96PlRerg7cBcqHB/Ey6KRpgEdLgwl7IsIyC7vr3Lug353gOTo
+         Gwizj/zAoON73kkiR69aaeNX2ymvMHXZmayv4LVB+Jm03R8xKGujy20SEtka3+dHJ1UN
+         u9NzgwCrQd7tuLeSRh2F6eklvtuX5jw4RTxkZ509/sLbUPnRr0g8JrX2FfK8QIKOPlSL
+         gLcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=Hxm7sQTpDKl9UY4520J3/vp5jchfI3eX96wGKNMDOQs=;
-        b=MHTEvgxqylbGqDoMB5jn6bQ0pSO+G/QmVVMV+dhLZxyt3jbPe5RvEY21Le4OxanDHt
-         QsLy7k1IC6H2VLlGAtp5YBi+RBMcjMyfvOkobOoLMuKaC2RyWLcBwy16lbx7/wbfhGzw
-         7hCSnNpLoYCbJMeHK1brnzpJ0Sdymt3IIbOv5uDG9rQarInM/QPw4AaniAmc2H8LsoK0
-         NJkhNSQ+eNCfz/3UFrbCAgLADnLqEby+WheJHbwB9y+lLQ0XiyR8WSN0/WQFL46maRbr
-         qO0f7ufqz0qCcebxK+1Rvnhf6AqOrVDui2/jTOiuThtDa8pXNBzCYET86JmsZRxQUWkz
-         /A8A==
-X-Gm-Message-State: ACrzQf0NYp9XDB5WSuVbIyk6hshvCntqLuq8odcPcT3UT4JnWbEgkYUz
-        jjc7vYiFb0KWRP8rtljkRnqrrzfxKUcEaGi9cKIAFw==
-X-Google-Smtp-Source: AMsMyM4Om9g03TRpDLXEtZ2L2StTMInxaehwT2GQT1L7utLfww8N9Q+e2e0zkjXrZxj6cPmzj+qsf3EGCKeKa0kA4pg=
-X-Received: by 2002:a05:6638:4519:b0:372:c7f1:425b with SMTP id
- bs25-20020a056638451900b00372c7f1425bmr457604jab.106.1666982785511; Fri, 28
- Oct 2022 11:46:25 -0700 (PDT)
+        bh=aVQrfsCj0EaYjV3S0UqwAeu50/dS1NKsyMUdIHSnM/s=;
+        b=sSWpqBB+ud4JcYEqKRweYWQg4ZgjezYGMZnA0fLtoAywK4TzkqIpv/8sDKQPIhf3hY
+         awpyEYVwbIJwiOBpA4I6DeRwllKoiYC1LT/uXRoE3d8f+UCSPwaCfTfxpOFhcP5OfGiM
+         d8qQQmpwbIguCrrRJzi2YcK9olO2rFOfbkOADr47tQcNMlA5auEK53HCLlAzxRAlt6j2
+         l++6Gz5nhjNov6xPCmCYLSH/3wKmwZQlwxvGPFXgRmt3yWX1fb1bFmHZrVXKneLq0bmX
+         AwmIiYd0N/ebM1C6nI24VhUiyhxuQsfmy/yBMfBytU8zd2bccAS+TugNIWzxlGvn7gLC
+         TCFg==
+X-Gm-Message-State: ACrzQf0vVEE55bSU0c3lJEYYej413WRmoLdnWgEKHo2LNPNSYwac6dHv
+        tlbw67crerV3ihLNZ/gFUUN1pG9q9mYhzDQx28oMeA==
+X-Google-Smtp-Source: AMsMyM4U34xFFcPDyDaprpp+LkLtrVocW1uB+sGwbl8D3fbiQD95p8+5lVfAf4aQf5iO4ae7FRQeuxRt1qPsZmXocKA=
+X-Received: by 2002:a6b:e707:0:b0:6bc:8875:4229 with SMTP id
+ b7-20020a6be707000000b006bc88754229mr465828ioh.37.1666982788757; Fri, 28 Oct
+ 2022 11:46:28 -0700 (PDT)
 MIME-Version: 1.0
-References: <20221027200019.4106375-1-sdf@google.com> <20221027200019.4106375-6-sdf@google.com>
- <31f3aa18-d368-9738-8bb5-857cd5f2c5bf@linux.dev> <1885bc0c-1929-53ba-b6f8-ace2393a14df@redhat.com>
-In-Reply-To: <1885bc0c-1929-53ba-b6f8-ace2393a14df@redhat.com>
+References: <20221027200019.4106375-1-sdf@google.com> <20221027200019.4106375-3-sdf@google.com>
+ <1596dd80-246b-80d0-b482-4248691de68e@redhat.com>
+In-Reply-To: <1596dd80-246b-80d0-b482-4248691de68e@redhat.com>
 From:   Stanislav Fomichev <sdf@google.com>
-Date:   Fri, 28 Oct 2022 11:46:14 -0700
-Message-ID: <CAKH8qBt3hNUO0H_C7wYiwBEObGEFPXJCCLfkA=GuGC1CSpn55A@mail.gmail.com>
-Subject: Re: [RFC bpf-next 5/5] selftests/bpf: Test rx_timestamp metadata in xskxceiver
+Date:   Fri, 28 Oct 2022 11:46:17 -0700
+Message-ID: <CAKH8qBsPHFy3E94a7VGXXzoKXL9GMnf=ggT8Ne3EO_uCcgajOA@mail.gmail.com>
+Subject: Re: [RFC bpf-next 2/5] veth: Support rx timestamp metadata for xdp
 To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     Martin KaFai Lau <martin.lau@linux.dev>, brouer@redhat.com,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+Cc:     bpf@vger.kernel.org, brouer@redhat.com, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
         song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
         kpsingh@kernel.org, haoluo@google.com, jolsa@kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
@@ -64,7 +64,7 @@ Cc:     Martin KaFai Lau <martin.lau@linux.dev>, brouer@redhat.com,
         Alexander Lobakin <alexandr.lobakin@intel.com>,
         Magnus Karlsson <magnus.karlsson@gmail.com>,
         Maryam Tahhan <mtahhan@redhat.com>, xdp-hints@xdp-project.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
+        netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
@@ -77,223 +77,157 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 28, 2022 at 3:37 AM Jesper Dangaard Brouer
+On Fri, Oct 28, 2022 at 1:40 AM Jesper Dangaard Brouer
 <jbrouer@redhat.com> wrote:
 >
 >
-> On 28/10/2022 08.22, Martin KaFai Lau wrote:
-> > On 10/27/22 1:00 PM, Stanislav Fomichev wrote:
-> >> Example on how the metadata is prepared from the BPF context
-> >> and consumed by AF_XDP:
-> >>
-> >> - bpf_xdp_metadata_have_rx_timestamp to test whether it's supported;
-> >>    if not, I'm assuming verifier will remove this "if (0)" branch
-> >> - bpf_xdp_metadata_rx_timestamp returns a _copy_ of metadata;
-> >>    the program has to bpf_xdp_adjust_meta+memcpy it;
-> >>    maybe returning a pointer is better?
-> >> - af_xdp consumer grabs it from data-<expected_metadata_offset> and
-> >>    makes sure timestamp is not empty
-> >> - when loading the program, we pass BPF_F_XDP_HAS_METADATA+prog_ifindex
-> >>
-> >> Cc: Martin KaFai Lau <martin.lau@linux.dev>
-> >> Cc: Jakub Kicinski <kuba@kernel.org>
-> >> Cc: Willem de Bruijn <willemb@google.com>
-> >> Cc: Jesper Dangaard Brouer <brouer@redhat.com>
-> >> Cc: Anatoly Burakov <anatoly.burakov@intel.com>
-> >> Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
-> >> Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
-> >> Cc: Maryam Tahhan <mtahhan@redhat.com>
-> >> Cc: xdp-hints@xdp-project.net
-> >> Cc: netdev@vger.kernel.org
-> >> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> >> ---
-> >>   .../testing/selftests/bpf/progs/xskxceiver.c  | 22 ++++++++++++++++++
-> >>   tools/testing/selftests/bpf/xskxceiver.c      | 23 ++++++++++++++++++-
-> >>   2 files changed, 44 insertions(+), 1 deletion(-)
-> >>
-> >> diff --git a/tools/testing/selftests/bpf/progs/xskxceiver.c
-> >> b/tools/testing/selftests/bpf/progs/xskxceiver.c
-> >> index b135daddad3a..83c879aa3581 100644
-> >> --- a/tools/testing/selftests/bpf/progs/xskxceiver.c
-> >> +++ b/tools/testing/selftests/bpf/progs/xskxceiver.c
-> >> @@ -12,9 +12,31 @@ struct {
-> >>       __type(value, __u32);
-> >>   } xsk SEC(".maps");
-> >> +extern int bpf_xdp_metadata_have_rx_timestamp(struct xdp_md *ctx)
-> >> __ksym;
-> >> +extern __u32 bpf_xdp_metadata_rx_timestamp(struct xdp_md *ctx) __ksym;
-> >> +
-> >>   SEC("xdp")
-> >>   int rx(struct xdp_md *ctx)
-> >>   {
-> >> +    void *data, *data_meta;
-> >> +    __u32 rx_timestamp;
-> >> +    int ret;
-> >> +
-> >> +    if (bpf_xdp_metadata_have_rx_timestamp(ctx)) {
->
-> In current veth implementation, bpf_xdp_metadata_have_rx_timestamp()
-> will always return true here.
->
-> In the case of hardware timestamps, not every packet will contain a
-> hardware timestamp.  (See my/Maryam ixgbe patch, where timestamps are
-> read via HW device register, which isn't fast, and HW only support this
-> for timesync protocols like PTP).
->
-> How do you imagine we can extend this?
-
-I'm always returning true for simplicity. In the real world, this
-bytecode will look at the descriptors and return true/false depending
-on whether the info is there or not.
-
-> >> +        ret = bpf_xdp_adjust_meta(ctx, -(int)sizeof(__u32));
->
-> IMHO sizeof() should come from a struct describing data_meta area see:
->
-> https://github.com/xdp-project/bpf-examples/blob/master/AF_XDP-interaction/af_xdp_kern.c#L62
-
-I guess I should've used pointers for the return type instead, something like:
-
-extern __u64 *bpf_xdp_metadata_rx_timestamp(struct xdp_md *ctx) __ksym;
-
-{
-   ...
-    __u64 *rx_timestamp = bpf_xdp_metadata_rx_timestamp(ctx);
-    if (rx_timestamp) {
-        bpf_xdp_adjust_meta(ctx, -(int)sizeof(*rx_timestamp));
-        __builtin_memcpy(data_meta, rx_timestamp, sizeof(*rx_timestamp));
-    }
-}
-
-Does that look better?
-
-> >> +        if (ret != 0)
-> >> +            return XDP_DROP;
-> >> +
-> >> +        data = (void *)(long)ctx->data;
-> >> +        data_meta = (void *)(long)ctx->data_meta;
-> >> +
-> >> +        if (data_meta + sizeof(__u32) > data)
-> >> +            return XDP_DROP;
-> >> +
-> >> +        rx_timestamp = bpf_xdp_metadata_rx_timestamp(ctx);
-> >> +        __builtin_memcpy(data_meta, &rx_timestamp, sizeof(__u32));
->
-> So, this approach first stores hints on some other memory location, and
-> then need to copy over information into data_meta area. That isn't good
-> from a performance perspective.
->
-> My idea is to store it in the final data_meta destination immediately.
-
-This approach doesn't have to store the hints in the other memory
-location. xdp_buff->priv can point to the real hw descriptor and the
-kfunc can have a bytecode that extracts the data from the hw
-descriptors. For this particular RFC, we can think that 'skb' is that
-hw descriptor for veth driver.
-
-> Do notice that in my approach, the existing ethtool config setting and
-> socket options (for timestamps) still apply.  Thus, each individual
-> hardware hint are already configurable. Thus we already have a config
-> interface. I do acknowledge, that in-case a feature is disabled it still
-> takes up space in data_meta areas, but importantly it is NOT stored into
-> the area (for performance reasons).
-
-That should be the case with this rfc as well, isn't it? Worst case
-scenario, that kfunc bytecode can explicitly check ethtool options and
-return false if it's disabled?
-
-> >> +    }
+> On 27/10/2022 22.00, Stanislav Fomichev wrote:
+> > xskxceiver conveniently setups up veth pairs so it seems logical
+> > to use veth as an example for some of the metadata handling.
 > >
-> > Thanks for the patches.  I took a quick look at patch 1 and 2 but
-> > haven't had a chance to look at the implementation details (eg.
-> > KF_UNROLL...etc), yet.
+> > We timestamp skb right when we "receive" it, store its
+> > pointer in xdp_buff->priv and generate BPF bytecode to
+> > reach it from the BPF program.
+> >
+> > This largely follows the idea of "store some queue context in
+> > the xdp_buff/xdp_frame so the metadata can be reached out
+> > from the BPF program".
+> >
+> > Cc: Martin KaFai Lau <martin.lau@linux.dev>
+> > Cc: Jakub Kicinski <kuba@kernel.org>
+> > Cc: Willem de Bruijn <willemb@google.com>
+> > Cc: Jesper Dangaard Brouer <brouer@redhat.com>
+> > Cc: Anatoly Burakov <anatoly.burakov@intel.com>
+> > Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
+> > Cc: Magnus Karlsson <magnus.karlsson@gmail.com>
+> > Cc: Maryam Tahhan <mtahhan@redhat.com>
+> > Cc: xdp-hints@xdp-project.net
+> > Cc: netdev@vger.kernel.org
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > ---
+> >   drivers/net/veth.c | 31 +++++++++++++++++++++++++++++++
+> >   1 file changed, 31 insertions(+)
+> >
+> > diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+> > index 09682ea3354e..35396dd73de0 100644
+> > --- a/drivers/net/veth.c
+> > +++ b/drivers/net/veth.c
+> > @@ -597,6 +597,7 @@ static struct xdp_frame *veth_xdp_rcv_one(struct veth_rq *rq,
+> >
+> >               xdp_convert_frame_to_buff(frame, &xdp);
+> >               xdp.rxq = &rq->xdp_rxq;
+> > +             xdp.priv = NULL;
+>
+> So, why doesn't this supported for normal XDP mode?!?
+> e.g. Where veth gets XDP redirected an xdp_frame.
+
+I wanted to have something simple for the demonstration purposes
+(hence the re-usage of xskxceiver + veth without redirection).
+But also see my cover letter:
+
+Cons:
+- forwarding has to be handled explicitly; the BPF programs have to
+  agree on the metadata layout (IOW, the forwarding program
+  has to be aware of the final AF_XDP consumer metadata layout)
+
+> My main use case (for veth) is to make NIC hardware hints available to
+> containers.  Thus, creating a flexible fast-path via XDP-redirect
+> directly into containers veth device.  (This is e.g. for replacing the
+> inflexible SR-IOV approach with SR-IOV net_devices in the container,
+> with a more cloud friendly approach).
+>
+> How can we extend this approach to handle xdp_frame's from different
+> net_device's ?
+
+ So for this case, your forwarding program will have to call a bunch
+of kfuncs and assemble the metadata.
+It can also put some info about this metadata format. In theory, it
+can even put some external btf-id for the struct that describes the
+layout; or it can use some tlv format.
+And then the final consumer will have to decide what to do with that metadata.
+
+Or do you want xdp->skb conversion to also be transparently handled?
+In this case, the last program will have to convert this to some new
+xdp_hints_skb so the kernel can understand it. We might need some
+extra helpers to signal those, but seems doable?
+
+> >
+> >               act = bpf_prog_run_xdp(xdp_prog, &xdp);
+> >
+> > @@ -820,6 +821,7 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
+> >
+> >       orig_data = xdp.data;
+> >       orig_data_end = xdp.data_end;
+> > +     xdp.priv = skb;
 > >
 >
-> Yes, thanks for the patches, even-though I don't agree with the
-> approach, at-least until my concerns/use-case can be resolved.
-> IMHO the best way to convince people is through code. So, thank you for
-> the effort.  Hopefully we can use some of these ideas and I can also
-> change/adjust my XDP-hints ideas to incorporate some of this :-)
-
-Thank you for the feedback as well, appreciate it!
-Definitely, looking forward to a v2 from you with some more clarity on
-how those btf ids are handled by the bpf/af_xdp side!
-
-> > Overall (with the example here) looks promising.  There is a lot of
-> > flexibility on whether the xdp prog needs any hint at all, which hint it
-> > needs, and how to store it.
+> So, enabling SKB based path only.
+>
+> >       act = bpf_prog_run_xdp(xdp_prog, &xdp);
 > >
->
-> I do see the advantage that XDP prog only populates metadata it needs.
-> But how can we use/access this in __xdp_build_skb_from_frame() ?
-
-I don't think __xdp_build_skb_from_frame is automagically solved by
-either proposal?
-For this proposal, there has to be some expected kernel metadata
-format that bpf programs will prepare and the kernel will understand?
-Think of it like xdp_hints_common from your proposal; the program will
-have to put together xdp_hints_skb into xdp metadata with the parts
-that can be populated into skb by the kernel.
-
-For your btf ids proposal, it seems there has to be some extra kernel
-code to parse all possible driver btf_if formats and copy the
-metadata?
-
-
-
-
-
-> >> +
-> >>       return bpf_redirect_map(&xsk, ctx->rx_queue_index, XDP_PASS);
-> >>   }
-> >> diff --git a/tools/testing/selftests/bpf/xskxceiver.c
-> >> b/tools/testing/selftests/bpf/xskxceiver.c
-> >> index 066bd691db13..ce82c89a432e 100644
-> >> --- a/tools/testing/selftests/bpf/xskxceiver.c
-> >> +++ b/tools/testing/selftests/bpf/xskxceiver.c
-> >> @@ -871,7 +871,9 @@ static bool is_offset_correct(struct xsk_umem_info
-> >> *umem, struct pkt_stream *pkt
-> >>   static bool is_pkt_valid(struct pkt *pkt, void *buffer, u64 addr,
-> >> u32 len)
-> >>   {
-> >>       void *data = xsk_umem__get_data(buffer, addr);
-> >> +    void *data_meta = data - sizeof(__u32);
-> >>       struct iphdr *iphdr = (struct iphdr *)(data + sizeof(struct
-> >> ethhdr));
-> >> +    __u32 rx_timestamp = 0;
-> >>       if (!pkt) {
-> >>           ksft_print_msg("[%s] too many packets received\n", __func__);
-> >> @@ -907,6 +909,13 @@ static bool is_pkt_valid(struct pkt *pkt, void
-> >> *buffer, u64 addr, u32 len)
-> >>           return false;
-> >>       }
-> >> +    memcpy(&rx_timestamp, data_meta, sizeof(rx_timestamp));
->
-> I acknowledge that it is too extensive to add to this patch, but in my
-> AF_XDP-interaction example[1], I'm creating a struct xdp_hints_rx_time
-> that gets BTF exported[1][2] to the userspace application, and userspace
-> decodes the BTF and gets[3] a xsk_btf_member struct for members that
-> simply contains a offset+size to read from.
->
-> [1]
-> https://github.com/xdp-project/bpf-examples/blob/master/AF_XDP-interaction/af_xdp_kern.c#L47-L51
->
-> [2]
-> https://github.com/xdp-project/bpf-examples/blob/master/AF_XDP-interaction/af_xdp_kern.c#L80
->
-> [3]
-> https://github.com/xdp-project/bpf-examples/blob/master/AF_XDP-interaction/af_xdp_user.c#L123-L129
->
-> >> +    if (rx_timestamp == 0) {
-> >> +        ksft_print_msg("Invalid metadata received: ");
-> >> +        ksft_print_msg("got %08x, expected != 0\n", rx_timestamp);
-> >> +        return false;
-> >> +    }
-> >> +
-> >>       return true;
-> >>   }
+> > @@ -936,6 +938,7 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
+> >                       struct sk_buff *skb = ptr;
 > >
+> >                       stats->xdp_bytes += skb->len;
+> > +                     __net_timestamp(skb);
+> >                       skb = veth_xdp_rcv_skb(rq, skb, bq, stats);
+> >                       if (skb) {
+> >                               if (skb_shared(skb) || skb_unclone(skb, GFP_ATOMIC))
+> > @@ -1595,6 +1598,33 @@ static int veth_xdp(struct net_device *dev, struct netdev_bpf *xdp)
+> >       }
+> >   }
+> >
+> > +static int veth_unroll_kfunc(struct bpf_prog *prog, struct bpf_insn *insn)
+> > +{
+> > +     u32 func_id = insn->imm;
+> > +
+> > +     if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_HAVE_RX_TIMESTAMP)) {
+> > +             /* return true; */
+> > +             insn[0] = BPF_MOV64_IMM(BPF_REG_0, 1);
+> > +             return 1;
+> > +     } else if (func_id == xdp_metadata_kfunc_id(XDP_METADATA_KFUNC_RX_TIMESTAMP)) {
+> > +             /* r1 = ((struct xdp_buff *)r1)->priv; [skb] */
+> > +             insn[0] = BPF_LDX_MEM(BPF_DW, BPF_REG_1, BPF_REG_1,
+> > +                                   offsetof(struct xdp_buff, priv));
+> > +             /* if (r1 == NULL) { */
+> > +             insn[1] = BPF_JMP_IMM(BPF_JEQ, BPF_REG_1, 0, 1);
+> > +             /*      return 0; */
+> > +             insn[2] = BPF_MOV64_IMM(BPF_REG_0, 0);
+> > +             /* } else { */
+> > +             /*      return ((struct sk_buff *)r1)->tstamp; */
+> > +             insn[3] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1,
+> > +                                   offsetof(struct sk_buff, tstamp));
 >
-> Looking forward to collaborate :-)
-> --Jesper
+> Just to be clear, this skb->tstamp is a software timestamp, right?
+
+Yes, see above, this is just to showcase how the bpf/af_xdp side will
+look. The 1st patch and the last one are the interesting ones. The
+rest is boring plumbing we can ignore for now.
+
+
+
+
+> > +             /* } */
+> > +             return 4;
+> > +     }
+>
+> I'm slightly concerned with driver developers maintaining BPF-bytecode
+> on a per-driver bases, but I can certainly live with this if BPF
+> maintainers can.
+>
+> > +
+> > +     return 0;
+> > +}
+> > +
+> >   static const struct net_device_ops veth_netdev_ops = {
+> >       .ndo_init            = veth_dev_init,
+> >       .ndo_open            = veth_open,
+> > @@ -1614,6 +1644,7 @@ static const struct net_device_ops veth_netdev_ops = {
+> >       .ndo_bpf                = veth_xdp,
+> >       .ndo_xdp_xmit           = veth_ndo_xdp_xmit,
+> >       .ndo_get_peer_dev       = veth_peer_dev,
+> > +     .ndo_unroll_kfunc       = veth_unroll_kfunc,
+> >   };
+> >
+> >   #define VETH_FEATURES (NETIF_F_SG | NETIF_F_FRAGLIST | NETIF_F_HW_CSUM | \
 >
