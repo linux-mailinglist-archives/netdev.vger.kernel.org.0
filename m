@@ -2,82 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0457610DD7
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 11:54:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A355610E0A
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 12:01:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230333AbiJ1JyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 05:54:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37364 "EHLO
+        id S230107AbiJ1KB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 06:01:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230080AbiJ1Jxv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 05:53:51 -0400
-Received: from symantec4.comsats.net.pk (symantec4.comsats.net.pk [203.124.41.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E70F1CBA8F
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 02:53:06 -0700 (PDT)
-X-AuditID: cb7c291e-7a5ff700000061a5-0d-635b947d654f
-Received: from iesco.comsatshosting.com (Unknown_Domain [210.56.28.12])
-        (using TLS with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        by symantec4.comsats.net.pk (Symantec Messaging Gateway) with SMTP id B6.B7.24997.D749B536; Fri, 28 Oct 2022 13:36:13 +0500 (PKT)
-DomainKey-Signature: a=rsa-sha1; c=nofws; q=dns;
-        d=iesco.com.pk; s=default;
-        h=received:content-type:mime-version:content-transfer-encoding
-          :content-description:subject:to:from:date:reply-to;
-        b=h2GXoNRShM30gRLm+ELAtZVbNAARSI7U7BYGPAd4troV+priqVVOyEXz1dddYAou6
-          Q/pnzI5jHBvSFsF8KNdH3V1q03qRS29P93CSaXBFX+jmr+SgzzLJt5ENNIUOkebgg
-          BQ1TghS1D/PvSwe+KG00CRIFDqvynkA3m3shNcTnE=
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=iesco.com.pk; s=default;
-        h=reply-to:date:from:to:subject:content-description
-          :content-transfer-encoding:mime-version:content-type;
-        bh=wllpc/XfyZmsBCyizquF3lY9v5vVV2E17Wyv7qk2g2g=;
-        b=f/6GKm3WyFaVw6zPWxrEZZmNcF0yTOt7F2/ZlPtxnPdLW5n7R75EwAyL3//hz4USp
-          IN+5LJeV23AYZN5zP2f4hz1xzv4TrLixiLO4kM8Dic+YAdAToPu0GQT9ARxWQ7QK8
-          hOvKT6Fghu3VcLkhkJIcczdH/XbZ+YPnJHYEfYEts=
-Received: from [103.145.253.52] (UnknownHost [103.145.253.52]) by iesco.comsatshosting.com with SMTP;
-   Fri, 28 Oct 2022 14:22:44 +0500
-Message-ID: <B6.B7.24997.D749B536@symantec4.comsats.net.pk>
-Content-Type: text/plain; charset="iso-8859-1"
+        with ESMTP id S229752AbiJ1KBU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 06:01:20 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F3B52804;
+        Fri, 28 Oct 2022 03:01:13 -0700 (PDT)
+Received: from [141.14.13.43] (g298.RadioFreeInternet.molgen.mpg.de [141.14.13.43])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 870D161EA192A;
+        Fri, 28 Oct 2022 12:01:10 +0200 (CEST)
+Message-ID: <1bd57adb-49f1-3b90-541c-8d3d10963ccb@molgen.mpg.de>
+Date:   Fri, 28 Oct 2022 12:01:10 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Description: Mail message body
-Subject: Compliment,
-To:     netdev@vger.kernel.org
-From:   "Wahid Majrooh" <nms-ibs2@iesco.com.pk>
-Date:   Fri, 28 Oct 2022 02:52:17 -0700
-Reply-To: whmjhaf@gmail.com
-X-Brightmail-Tracker: H4sIAAAAAAAAA02Ta0gUURTHuc64jbq3xvF1Wx/UkkKFmiGhFKU9wOpLRRpsQY7ruLu5D5kZ
-        Xz0giKyWMjPtISmKWLT6IdZKkdRaSrA0xFQEe2DaQzNJTMOQ6M7srjtfLvf+zj3/c87/cimC
-        6VqloUxWkeOtrFmrCiQHU6LU8eeqjuu3TI9FpPTUh6eBjHlnzCGgC9yRy5lNRRyfuDM70Pir
-        7ilZUAlKpvof+p8HFjsIoBCdjL7d/kjaQSDF0E4/VHujSyUdSLqZQEuNy4T7ME6grn8/Cfe1
-        KwA5y8YIKR/S29Hwu/ZV0p6gE9BodZXKzYNR791J0s03o/sNP/B9Cu/j0IJdlHAIHYqmKuzy
-        lVBag+ba22QZFR2PWhyTsgxJx6JZx7DMGToSORrLyQqwpkZRrUZRrUZRrcZXrR6QDoCEUguL
-        TdMnJ+htFoEVhQQrJyYU5DsBtvDN2Y0x7aBpkHUBmgJaNcw26fSMP1uEs1zgIOWnDYMn7h3X
-        M6tzbLmlRlYwnuQLzZygDYWLdRjDFZxTaM7XaqCtEdOQFWrligUzJ+I3cwFEETitf/QYTstl
-        S09zvM0t5gKRFKmNgEe3DbMMbWBFLp/jCjjeG82jKPrJo+YBQLs68KohrTYrp0XQvx7XCuY5
-        A1eSZzKL3gSsxP7FU9DKiNxeNAwow4FwZUDZoR8V4AIZlBq3OS/NAYUC1iKYDB7dEPjVjqna
-        S2XNtfCCdJXxQp/ea3CGetTQ2UlQrfLa39aN109DA3hdeGp/TjDyIJoI6GzCCrSkYCy0rsyh
-        CYfpTbjdNYqAVFITBdc3YB6m4L6q3o8xDfbhBw2Bw5JJavxtfHMwMOkmhkEeKI+BYJX0zMEe
-        5tObxob4YUMMlTrJEJEVlYZ0XtZJhniox5BWCTJe6JPSnAeZRFZyVkXHJf7L7Ie+2lfXh+bX
-        pb7J+zMzd8pwqSfMfzCj+uB4y97MtP0qZ+7Nz0Mvfu89fa85+8DIRfXQ4eiB7uUH89/hSMot
-        XXjk48q49HWWI2/FPfEzscW3n1UXBZddC+pLUvHHxu68TE1ZStzgWOxtf/9668Susd0X4PTE
-        1d7yBS0pGNmkTQQvsP8BmG5r11EEAAA=
-X-Spam-Status: No, score=2.7 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FORGED_REPLYTO,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [Intel-wired-lan] [PATCH] e1000e: Fix TX dispatch condition
+Content-Language: en-US
+To:     Akihiko Odaki <akihiko.odaki@daynix.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yuri Benditovich <yuri.benditovich@daynix.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yan Vugenfirer <yan@daynix.com>,
+        intel-wired-lan@lists.osuosl.org, Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20221013050044.11862-1-akihiko.odaki@daynix.com>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <20221013050044.11862-1-akihiko.odaki@daynix.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
-X-Spam-Level: **
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Compliment,
-
-It will be a pleasure to discuss an important issue with you on area of Inv=
-estment. My name is Wahid from Kabul
+Dear Akihiko,
 
 
-Majrooh
+Thank you very much for the patch.
 
+Am 13.10.22 um 07:00 schrieb Akihiko Odaki:
+> e1000_xmit_frame is expected to stop the queue and dispatch frames to
+> hardware if there is not sufficient space for the next frame in the
+> buffer, but sometimes it failed to do so because the estimated maxmium
+> size of frame was wrong. As the consequence, the later invocation of
+> e1000_xmit_frame failed with NETDEV_TX_BUSY, and the frame in the buffer
+> remained forever, resulting in a watchdog failure.
+> 
+> This change fixes the estimated size by making it match with the
+> condition for NETDEV_TX_BUSY. Apparently, the old estimation failed to
+> account for the following lines which determines the space requirement
+> for not causing NETDEV_TX_BUSY:
+>> 	/* reserve a descriptor for the offload context */
+>> 	if ((mss) || (skb->ip_summed == CHECKSUM_PARTIAL))
+>> 		count++;
+>> 	count++;
+>>
+>> 	count += DIV_ROUND_UP(len, adapter->tx_fifo_limit);
+
+I’d just use Markdown syntax, and indent by four spaces without > for 
+citation.
+
+> This issue was found with http-stress02 test included in Linux Test
+> Project 20220930.
+
+So it was reproduced in QEMU? For convenience, it’d be great if you 
+added the QEMU command.
+
+Also, do you know if this is a regression? If so, it’d be great if you 
+added the Fixes: tag.
+
+
+Kind regards,
+
+Paul
+
+
+> Signed-off-by: Akihiko Odaki <akihiko.odaki@daynix.com>
+> ---
+>   drivers/net/ethernet/intel/e1000e/netdev.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+> index 321f2a95ae3a..da113f5011e9 100644
+> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
+> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+> @@ -5936,9 +5936,9 @@ static netdev_tx_t e1000_xmit_frame(struct sk_buff *skb,
+>   		e1000_tx_queue(tx_ring, tx_flags, count);
+>   		/* Make sure there is space in the ring for the next send. */
+>   		e1000_maybe_stop_tx(tx_ring,
+> -				    (MAX_SKB_FRAGS *
+> +				    ((MAX_SKB_FRAGS + 1) *
+>   				     DIV_ROUND_UP(PAGE_SIZE,
+> -						  adapter->tx_fifo_limit) + 2));
+> +						  adapter->tx_fifo_limit) + 4));
+>   
+>   		if (!netdev_xmit_more() ||
+>   		    netif_xmit_stopped(netdev_get_tx_queue(netdev, 0))) {
