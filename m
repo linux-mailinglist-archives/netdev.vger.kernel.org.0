@@ -2,140 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BFBFA610F9F
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 13:25:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CA99610FA0
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 13:26:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230180AbiJ1LZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 07:25:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59446 "EHLO
+        id S230010AbiJ1L03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 07:26:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230220AbiJ1LZE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 07:25:04 -0400
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [81.169.146.166])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75BDB5FF74;
-        Fri, 28 Oct 2022 04:24:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1666956281;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=7v1Lc0mrTAZ3fxIwBDnwQONRBkHRnlphfULEbABarX8=;
-    b=LB6ekYdKq7/Ofq1rabkpWmfX8lhuf6Dva/xPFq3U24g+LNZwqATrd0z+6bU75kfogu
-    BkQQ9mfheepwZmC8zPz/1oqVh5ZNSnobmQmBYa/SIEjj7/gvzRhmL/3f0AYI7mVE8WlV
-    bd+0Xp4RUw6jpFQ8FOKhhS72F6zvwAOUgv+f08SG2YsQ1iWSxPDzMMgQxHVAp7DVWWDL
-    6A4Yr9Wc3Uw/YiXkTUjReUyvR/wYXYz+mkkV1+JQ4Ovu2GTuzaU3o+JeFfXK07svyd/s
-    dSlTxlByAcg4jshnhPsBZZJOkPVvKfDQsCy4T1bS+8Vohec52LXeq0pbBBu50Xpp/y9S
-    KFaQ==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdIrpKytJSr6hfz3Vg=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPV6:2a00:6020:1cfd:d100::923]
-    by smtp.strato.de (RZmta 48.2.1 AUTH)
-    with ESMTPSA id Dde783y9SBOfA4X
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Fri, 28 Oct 2022 13:24:41 +0200 (CEST)
-Message-ID: <773e6b03-c816-5ecb-bd4f-5f214fa347fb@hartkopp.net>
-Date:   Fri, 28 Oct 2022 13:24:36 +0200
+        with ESMTP id S229755AbiJ1L01 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 07:26:27 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C541C2093;
+        Fri, 28 Oct 2022 04:26:26 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 20E1720573;
+        Fri, 28 Oct 2022 13:26:24 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id kGeEpoinJo8B; Fri, 28 Oct 2022 13:26:23 +0200 (CEST)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id A04DF20569;
+        Fri, 28 Oct 2022 13:26:23 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout2.secunet.com (Postfix) with ESMTP id 9A62280004A;
+        Fri, 28 Oct 2022 13:26:23 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 28 Oct 2022 13:26:23 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Fri, 28 Oct
+ 2022 13:26:23 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 078CA3182D7B; Fri, 28 Oct 2022 13:26:23 +0200 (CEST)
+Date:   Fri, 28 Oct 2022 13:26:22 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Eric Dumazet <edumazet@google.com>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Sabrina Dubroca <sd@queasysnail.net>,
+        syzbot <syzbot+1e9af9185d8850e2c2fa@syzkaller.appspotmail.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <pabeni@redhat.com>, <syzkaller-bugs@googlegroups.com>
+Subject: Re: [v3 PATCH] af_key: Fix send_acquire race with pfkey_register
+Message-ID: <20221028112622.GK2602992@gauss3.secunet.de>
+References: <000000000000fd9a4005ebbeac67@google.com>
+ <Y1YeSj2vwPvRAW61@gondor.apana.org.au>
+ <CANn89i+41Whp=ACQo393s_wPx_MtWAZgL9DqG9aoLomN4ddwTg@mail.gmail.com>
+ <Y1YrVGP+5TP7V1/R@gondor.apana.org.au>
+ <Y1Y8oN5xcIoMu+SH@hog>
+ <Y1d8+FdfgtVCaTDS@gondor.apana.org.au>
+ <Y1k4T/rgRz4rkvcl@hog>
+ <Y1n+LM57U3HUHMJa@gondor.apana.org.au>
+ <CANn89iLVRq28iMzjKBovyDvytH1ssW_Tp0AjoUbv74dFg2wXWQ@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: [PATCH net] can: af_can: fix NULL pointer dereference in
- can_rx_register()
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Zhengchao Shao <shaozhengchao@huawei.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux@rempel-privat.de, weiyongjun1@huawei.com,
-        yuehaibing@huawei.com
-References: <20221028033342.173528-1-shaozhengchao@huawei.com>
- <d1e728d2-b62f-3646-dd27-8cc36ba7c819@hartkopp.net>
- <20221028074637.3havdrt37qsmbvll@pengutronix.de>
-Content-Language: en-US
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-In-Reply-To: <20221028074637.3havdrt37qsmbvll@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CANn89iLVRq28iMzjKBovyDvytH1ssW_Tp0AjoUbv74dFg2wXWQ@mail.gmail.com>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 28.10.22 09:46, Marc Kleine-Budde wrote:
-> On 28.10.2022 09:13:09, Oliver Hartkopp wrote:
->> Hello,
->>
->> On 28.10.22 05:33, Zhengchao Shao wrote:
->>> It causes NULL pointer dereference when testing as following:
->>> (a) use syscall(__NR_socket, 0x10ul, 3ul, 0) to create netlink socket.
->>> (b) use syscall(__NR_sendmsg, ...) to create bond link device and vxcan
->>>       link device, and bind vxcan device to bond device (can also use
->>>       ifenslave command to bind vxcan device to bond device).
->>> (c) use syscall(__NR_socket, 0x1dul, 3ul, 1) to create CAN socket.
->>> (d) use syscall(__NR_bind, ...) to bind the bond device to CAN socket.
->>>
->>> The bond device invokes the can-raw protocol registration interface to
->>> receive CAN packets. However, ml_priv is not allocated to the dev,
->>> dev_rcv_lists is assigned to NULL in can_rx_register(). In this case,
->>> it will occur the NULL pointer dereference issue.
->>
->> I can see the problem and see that the patch makes sense for
->> can_rx_register().
->>
->> But for me the problem seems to be located in the bonding device.
->>
->> A CAN interface with dev->type == ARPHRD_CAN *always* has the dev->ml_priv
->> and dev->ml_priv_type set correctly.
->>
->> I'm not sure if a bonding device does the right thing by just 'claiming' to
->> be a CAN device (by setting dev->type to ARPHRD_CAN) but not taking care of
->> being a CAN device and taking care of ml_priv specifics.
->>
->> This might also be the case in other ml_priv use cases.
->>
->> Would it probably make sense to blacklist CAN devices in bonding devices?
+On Wed, Oct 26, 2022 at 08:45:57PM -0700, Eric Dumazet wrote:
+> On Wed, Oct 26, 2022 at 8:42 PM Herbert Xu <herbert@gondor.apana.org.au> wrote:
+> >
+> > On Wed, Oct 26, 2022 at 03:38:23PM +0200, Sabrina Dubroca wrote:
+> > >
+> > > LGTM, thanks.
+> > >
+> > > Reviewed-by: Sabrina Dubroca <sd@queasysnail.net>
+> >
+> > Thanks for the review and comments!
 > 
-> NACK - We had this discussion 2.5 years ago:
+> SGTM, thanks for the fix.
 > 
-> | https://lore.kernel.org/all/00000000000030dddb059c562a3f@google.com
-> | https://lore.kernel.org/all/20200130133046.2047-1-socketcan@hartkopp.net
-> 
-> ...and davem pointed out:
-> 
-> | https://lore.kernel.org/all/20200226.202326.295871777946911500.davem@davemloft.net
-> 
-> On 26.02.2020 20:23:26, David Miller wrote:
-> [...]
->> What I don't get is why the PF_CAN is blindly dereferencing a device
->> assuming what is behind bond_dev->ml_priv.
->>
->> If it assumes a device it access is CAN then it should check the
->> device by comparing the netdev_ops or via some other means.
->>
->> This restriction seems arbitrary.
-> 
-> With the addition of struct net_device::ml_priv_type in 4e096a18867a
-> ("net: introduce CAN specific pointer in the struct net_device"), what
-> davem requested is now possible.
-> 
-> Marc
+> Reviewed-by: Eric Dumazet <edumazet@google.com>
 
-Oh, thanks for the heads up!
-
-Didn't have remembered that specific discussion.
-
-Wouldn't we need this check in can_rx_unregister() and maybe 
-can[|fd|xl]_rcv() then too?
-
-As all these functions check for ARPHRD_CAN and later access ml_priv.
-
-Best regards,
-Oliver
-
+Applied, thanks everyone!
