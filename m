@@ -2,204 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE3FD610F37
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 13:00:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6037610F49
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 13:04:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230188AbiJ1K7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 06:59:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36220 "EHLO
+        id S229995AbiJ1LEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 07:04:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230387AbiJ1K7R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 06:59:17 -0400
-X-Greylist: delayed 166407 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 28 Oct 2022 03:59:15 PDT
-Received: from smtp-out.kfki.hu (smtp-out.kfki.hu [IPv6:2001:738:5001::48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCFE71A1B3C;
-        Fri, 28 Oct 2022 03:59:14 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by smtp2.kfki.hu (Postfix) with ESMTP id 56B3ECC029F;
-        Fri, 28 Oct 2022 12:59:13 +0200 (CEST)
-X-Virus-Scanned: Debian amavisd-new at smtp2.kfki.hu
-Received: from smtp2.kfki.hu ([127.0.0.1])
-        by localhost (smtp2.kfki.hu [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP; Fri, 28 Oct 2022 12:59:10 +0200 (CEST)
-Received: from blackhole.kfki.hu (blackhole.szhk.kfki.hu [148.6.240.2])
-        by smtp2.kfki.hu (Postfix) with ESMTP id 66B8DCC029E;
-        Fri, 28 Oct 2022 12:59:10 +0200 (CEST)
-Received: by blackhole.kfki.hu (Postfix, from userid 1000)
-        id 505633431DF; Fri, 28 Oct 2022 12:59:10 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by blackhole.kfki.hu (Postfix) with ESMTP id 4ECC6343155;
-        Fri, 28 Oct 2022 12:59:10 +0200 (CEST)
-Date:   Fri, 28 Oct 2022 12:59:10 +0200 (CEST)
-From:   Jozsef Kadlecsik <kadlec@netfilter.org>
-To:     David Laight <David.Laight@ACULAB.COM>
-cc:     Daniel Xu <dxu@dxuuu.xyz>, Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
-        "coreteam@netfilter.org" <coreteam@netfilter.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "ppenkov@aviatrix.com" <ppenkov@aviatrix.com>
-Subject: RE: ip_set_hash_netiface
-In-Reply-To: <4a0da0bfe87b4e10a83b97508d3c853e@AcuMS.aculab.com>
-Message-ID: <bc15b193-683b-d2ae-776-22bf5bd65939@netfilter.org>
-References: <9a91603a-7b8f-4c6d-9012-497335e4373b@app.fastmail.com> <7fcf3bbb-95d2-a286-e3a-4d4dd87f713a@netfilter.org> <4a0da0bfe87b4e10a83b97508d3c853e@AcuMS.aculab.com>
+        with ESMTP id S229861AbiJ1LEf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 07:04:35 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F915B495
+        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 04:04:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1666955074; x=1698491074;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=EDa+rBvtiQl/d57HcQumvpplb3EJAE+BSWiTNb2Q+So=;
+  b=agBtOk9DemLNxw8Tn2T8Xe+D1qkL3i1F7L3WUhbhrOtlswmPY4emxesJ
+   od1PG8x2g0wfA4F3XQu8sHpEZkKI0G/rzuBzp513p1v8wv6yZDQgkrNbK
+   dFo+j2k/ZNVFMQ4v4J4IrrinaL1fWXapMOvBX5tBDs1sb4iovQH0UNZMG
+   36OnqikDDHu+tScSX6gwdSP+Yyfb0ZqQbhTTZR+eYVgkHtsG4m8Ftpuz7
+   Fwu/WYau6sKZHjzic+iqKUG/M3ArbJeo8gzTEVt606OHgBGZDbKIbXv3W
+   tuPSFrhotyrpDRnIj78L5Pg0zjMZf9IcuPYu2YwSr3NAU3PC1N+G9smJG
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10513"; a="291766531"
+X-IronPort-AV: E=Sophos;i="5.95,220,1661842800"; 
+   d="scan'208";a="291766531"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Oct 2022 04:04:33 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10513"; a="701698079"
+X-IronPort-AV: E=Sophos;i="5.95,220,1661842800"; 
+   d="scan'208";a="701698079"
+Received: from jekeller-desk.amr.corp.intel.com ([10.166.241.7])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Oct 2022 04:04:31 -0700
+From:   Jacob Keller <jacob.e.keller@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Jacob Keller <jacob.e.keller@intel.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Prashant Sreedharan <prashant@broadcom.com>,
+        Michael Chan <mchan@broadcom.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vivek Thampi <vithampi@vmware.com>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        Jie Wang <wangjie125@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Eran Ben Elisha <eranbe@nvidia.com>,
+        Aya Levin <ayal@nvidia.com>,
+        Cai Huoqing <cai.huoqing@linux.dev>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>, Arnd Bergmann <arnd@arndb.de>
+Subject: [net-next v3 0/9] ptp: convert drivers to .adjfine
+Date:   Fri, 28 Oct 2022 04:04:11 -0700
+Message-Id: <20221028110420.3451088-1-jacob.e.keller@intel.com>
+X-Mailer: git-send-email 2.38.0.83.gd420dda05763
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+Many drivers implementing PTP have not yet migrated to the new .adjfine
+frequency adjustment implementation.
 
-On Fri, 28 Oct 2022, David Laight wrote:
+A handful of these drivers use hardware with a simple increment value which
+is adjusted by multiplying by the adjustment factor and then dividing by
+1 billion. This calculation is very easy to convert to .adjfine, by simply
+updating the divisor.
 
-> From: Jozsef Kadlecsik
-> > Sent: 26 October 2022 13:26
-> > 
-> > On Tue, 25 Oct 2022, Daniel Xu wrote:
-> > 
-> > > I'm following up with our hallway chat yesterday about how ipset
-> > > hash:net,iface can easily OOM.
-> > >
-> > > Here's a quick reproducer (stolen from
-> > > https://bugzilla.kernel.org/show_bug.cgi?id=199107):
-> > >
-> > >         $ ipset create ACL.IN.ALL_PERMIT hash:net,iface hashsize 1048576 timeout 0
-> > >         $ for i in $(seq 0 100); do /sbin/ipset add ACL.IN.ALL_PERMIT 0.0.0.0/0,kaf_$i timeout 0 -
-> > exist; done
-> > >
-> > > This used to cause a NULL ptr deref panic before
-> > > https://github.com/torvalds/linux/commit/2b33d6ffa9e38f344418976b06 .
-> > >
-> > > Now it'll either allocate a huge amount of memory or fail a
-> > > vmalloc():
-> > >
-> > >         [Tue Oct 25 00:13:08 2022] ipset: vmalloc error: size 1073741848, exceeds total pages
-> > >         <...>
-> > >         [Tue Oct 25 00:13:08 2022] Call Trace:
-> > >         [Tue Oct 25 00:13:08 2022]  <TASK>
-> > >         [Tue Oct 25 00:13:08 2022]  dump_stack_lvl+0x48/0x60
-> > >         [Tue Oct 25 00:13:08 2022]  warn_alloc+0x155/0x180
-> > >         [Tue Oct 25 00:13:08 2022]  __vmalloc_node_range+0x72a/0x760
-> > >         [Tue Oct 25 00:13:08 2022]  ? hash_netiface4_add+0x7c0/0xb20
-> > >         [Tue Oct 25 00:13:08 2022]  ? __kmalloc_large_node+0x4a/0x90
-> > >         [Tue Oct 25 00:13:08 2022]  kvmalloc_node+0xa6/0xd0
-> > >         [Tue Oct 25 00:13:08 2022]  ? hash_netiface4_resize+0x99/0x710
-> > >         <...>
-> > >
-> > > Note that this behavior is somewhat documented
-> > > (https://ipset.netfilter.org/ipset.man.html):
-> > >
-> > > >  The internal restriction of the hash:net,iface set type is that the same
-> > > >  network prefix cannot be stored with more than 64 different interfaces
-> > > >  in a single set.
-> > >
-> > > I'm not sure how hard it would be to enforce a limit, but I think it would
-> > > be a bit better to error than allocate many GBs of memory.
-> > 
-> > That's a bug, actually the limit is not enforced in spite of the
-> > documentation. The next patch fixes it and I'm going to submit to Pablo:
-> > 
-> > diff --git a/net/netfilter/ipset/ip_set_hash_gen.h b/net/netfilter/ipset/ip_set_hash_gen.h
-> > index 6e391308431d..3f8853ed32e9 100644
-> > --- a/net/netfilter/ipset/ip_set_hash_gen.h
-> > +++ b/net/netfilter/ipset/ip_set_hash_gen.h
-> > @@ -61,10 +61,6 @@ tune_bucketsize(u8 curr, u32 multi)
-> >  	 */
-> >  	return n > curr && n <= AHASH_MAX_TUNED ? n : curr;
-> >  }
-> > -#define TUNE_BUCKETSIZE(h, multi)	\
-> > -	((h)->bucketsize = tune_bucketsize((h)->bucketsize, multi))
-> > -#else
-> > -#define TUNE_BUCKETSIZE(h, multi)
-> >  #endif
-> > 
-> >  /* A hash bucket */
-> > @@ -936,7 +932,11 @@ mtype_add(struct ip_set *set, void *value, const struct ip_set_ext *ext,
-> >  		goto set_full;
-> >  	/* Create a new slot */
-> >  	if (n->pos >= n->size) {
-> > -		TUNE_BUCKETSIZE(h, multi);
-> > +#ifdef IP_SET_HASH_WITH_MULTI
-> > +		if (h->bucketsize >= AHASH_MAX_TUNED)
-> > +			goto set_full;
-> > +		h->bucketsize = tune_bucketsize(h->bucketsize, multi);
-> > +#endif
-> 
-> AFAICT this is the only call of tune_bucketsize().
-> It is defined just above TUNE_BUCKETSIZE as:
-> static u8
-> tune_bucketsize(u8 curr, u32 multi)
-> {
-> 	u32 n;
-> 
-> 	if (multi < curr)
-> 		return curr;
-> 
-> 	n = curr + AHASH_INIT_SIZE;
-> 	/* Currently, at listing one hash bucket must fit into a message.
-> 	 * Therefore we have a hard limit here.
-> 	 */
-> 	return n > curr && n <= AHASH_MAX_TUNED ? n : curr;
-> }
-> 
-> If I'm reading it correctly this is just:
-> 	return curr >= multi || curr >= 64 ? curr : curr + 2;
+Introduce new helper functions, diff_by_scaled_ppm and adjust_by_scaled_ppm
+which perform the most common calculations used by drivers for this purpose.
 
-Actually, because a new condition was added before calling the function, 
-the whole thing could simply be changed to
+The adjust_by_scaled_ppm takes the base increment and scaled PPM value, and
+calculates the new increment to use.
 
-#ifdef IP_SET_HASH_WITH_MULTI
-          if (h->bucketsize >= AHASH_MAX_TUNED)
-                  goto set_full;
-	  else if (h->bucketsize < multi)
-          	h->bucketsize += AHASH_INIT_SIZE;
-#endif
+A few drivers need the difference and direction rather than a raw increment
+value. The diff_by_scaled_ppm calculates the difference and returns true if
+it should be a subtraction, false otherwise. This most closely aligns with
+existing driver implementations.
 
-I'm going to submit a new patch.
+I previously submitted v1 of this series at [1], and got some feedback only
+on a handful of drivers. In the interest of merging the changes which have
+received feedback, I've dropped the following drivers out of this send:
 
-> (the 'n > curr' test is unconditionally true).
+ * ptp_phc
+ * ptp_ipx46x
+ * tg3
+ * hclge
+ * stmac
+ * cpts
 
-Yes, correct.
+I plan to submit those drivers changes again at a later date. As before,
+there are some drivers which are not trivial to convert to the new helper
+functions. While they may be able to work, their implementation is different
+and I lack the hardware or datasheets to determine what the correct
+implementation would be.
 
-> The extra check is limiting it to 12 (AHASH_MAX_TUNED) not 64.
 
-No, because AHASH_MAX_TUNED is defined to be 64.
+* drivers/net/ethernet/broadcom/bnx2x
+* drivers/net/ethernet/broadcom/bnxt
+* drivers/net/ethernet/cavium/liquidio
+* drivers/net/ethernet/chelsio/cxgb4
+* drivers/net/ethernet/freescale
+* drivers/net/ethernet/qlogic/qed
+* drivers/net/ethernet/qlogic/qede
+* drivers/net/ethernet/sfc
+* drivers/net/ethernet/sfc/siena
+* drivers/net/ethernet/ti/am65-cpts.c
+* drivers/ptp/ptp_dte.c
 
-> Quite why the change makes a significant difference to the validity of 
-> the kvalloc() is another matter. Changing a multiplier from 64 to 12 
-> seems unlikely to be that significant - if it is you wouldn't want to be 
-> multiplying by 12.
+My end goal is to drop the .adjfreq implementation entirely, and to that end
+I plan on modifying these drivers in the future to directly use
+scaled_ppm_to_ppb as the simplest method to convert them.
 
-We are hashing elements into the same bucket and the original code 
-continued to resize the hash without a real limit (expect the memory). The 
-new condition checking the bucket size was critical here.
+Changes since v2:
+* Rebased to allow landing in 6.2
+* Added Richard's Acked-by
 
-> I've not looked what 'multi' is, but I'm sort of surprised it isn't
-> used as the new bucketsize.
+Cc: "K. Y. Srinivasan" <kys@microsoft.com>
+Cc: Haiyang Zhang <haiyangz@microsoft.com>
+Cc: Stephen Hemminger <sthemmin@microsoft.com>
+Cc: Wei Liu <wei.liu@kernel.org>
+Cc: Dexuan Cui <decui@microsoft.com>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Siva Reddy Kallam <siva.kallam@broadcom.com>
+Cc: Prashant Sreedharan <prashant@broadcom.com>
+Cc: Michael Chan <mchan@broadcom.com>
+Cc: Yisen Zhuang <yisen.zhuang@huawei.com>
+Cc: Salil Mehta <salil.mehta@huawei.com>
+Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc: Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc: Tariq Toukan <tariqt@nvidia.com>
+Cc: Saeed Mahameed <saeedm@nvidia.com>
+Cc: Leon Romanovsky <leon@kernel.org>
+Cc: Bryan Whitehead <bryan.whitehead@microchip.com>
+Cc: Sergey Shtylyov <s.shtylyov@omp.ru>
+Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc: Jose Abreu <joabreu@synopsys.com>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: Richard Cochran <richardcochran@gmail.com>
+Cc: Vivek Thampi <vithampi@vmware.com>
+Cc: VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
+Cc: Jie Wang <wangjie125@huawei.com>
+Cc: Jacob Keller <jacob.e.keller@intel.com>
+Cc: Guangbin Huang <huangguangbin2@huawei.com>
+Cc: Eran Ben Elisha <eranbe@nvidia.com>
+Cc: Aya Levin <ayal@nvidia.com>
+Cc: Cai Huoqing <cai.huoqing@linux.dev>
+Cc: Biju Das <biju.das.jz@bp.renesas.com>
+Cc: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc: Phil Edworthy <phil.edworthy@renesas.com>
+Cc: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Wan Jiabing <wanjiabing@vivo.com>
+Cc: Lv Ruyi <lv.ruyi@zte.com.cn>
+Cc: Arnd Bergmann <arnd@arndb.de>
 
-If 'multi' were used as the new size then bucketsize were shrinked. The 
-expected general use case is to build up sets containing attackers and the 
-peaks are common, therefore there's no point to shrink back. The maximal 
-number of elements is defined at set creation time and cannot be added 
-more.
+Jacob Keller (9):
+  ptp: add missing documentation for parameters
+  ptp: introduce helpers to adjust by scaled parts per million
+  drivers: convert unsupported .adjfreq to .adjfine
+  ptp: mlx4: convert to .adjfine and adjust_by_scaled_ppm
+  ptp: mlx5: convert to .adjfine and adjust_by_scaled_ppm
+  ptp: lan743x: remove .adjfreq implementation
+  ptp: lan743x: use diff_by_scaled_ppm in .adjfine implementation
+  ptp: ravb: convert to .adjfine and adjust_by_scaled_ppm
+  ptp: xgbe: convert to .adjfine and adjust_by_scaled_ppm
 
-> Also it doesn't really look right to have lots of static functions
-> in a .h file?
+ drivers/hv/hv_util.c                          |  4 +-
+ drivers/net/ethernet/amd/xgbe/xgbe-ptp.c      | 20 ++-----
+ drivers/net/ethernet/intel/e1000e/ptp.c       | 16 ++----
+ drivers/net/ethernet/intel/i40e/i40e_ptp.c    | 17 ++----
+ drivers/net/ethernet/intel/ice/ice_ptp.c      | 18 +------
+ drivers/net/ethernet/intel/igb/igb_ptp.c      | 18 +------
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c  | 24 ++-------
+ drivers/net/ethernet/mellanox/mlx4/en_clock.c | 29 ++++------
+ .../ethernet/mellanox/mlx5/core/lib/clock.c   | 22 +++-----
+ drivers/net/ethernet/microchip/lan743x_ptp.c  | 54 +++----------------
+ drivers/net/ethernet/renesas/ravb_ptp.c       | 17 ++----
+ drivers/ptp/ptp_kvm_common.c                  |  4 +-
+ drivers/ptp/ptp_vmw.c                         |  4 +-
+ include/linux/ptp_clock_kernel.h              | 53 ++++++++++++++++++
+ 14 files changed, 105 insertions(+), 195 deletions(-)
 
-That .h file is a template to generate the code for all of the individual 
-functions of the different hash types, therefore it contains lot of static 
-function definitions.
 
-Best regards,
-Jozsef
--
-E-mail  : kadlec@blackhole.kfki.hu, kadlecsik.jozsef@wigner.hu
-PGP key : https://wigner.hu/~kadlec/pgp_public_key.txt
-Address : Wigner Research Centre for Physics
-          H-1525 Budapest 114, POB. 49, Hungary
+base-commit: 915b96c52763e2988e6368b538b487a7138b8fa4
+-- 
+2.37.1.394.gc50926e1f488
+
