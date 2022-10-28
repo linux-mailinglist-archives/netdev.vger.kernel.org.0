@@ -2,45 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CEB3561090D
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 05:53:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA685610933
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 06:10:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235872AbiJ1DxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Oct 2022 23:53:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49926 "EHLO
+        id S229549AbiJ1EKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 00:10:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234558AbiJ1DxC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Oct 2022 23:53:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D41FB5FDF
-        for <netdev@vger.kernel.org>; Thu, 27 Oct 2022 20:53:02 -0700 (PDT)
+        with ESMTP id S229520AbiJ1EK1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 00:10:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 427021C937;
+        Thu, 27 Oct 2022 21:10:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EBE77625AF
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 03:53:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C7A6C433B5;
-        Fri, 28 Oct 2022 03:53:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7008EB82868;
+        Fri, 28 Oct 2022 04:10:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 049E3C43470;
+        Fri, 28 Oct 2022 04:10:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666929181;
-        bh=ICJBQjd7d89gzV+vapnRqpEDX/+vfmhR0lLwekLQEVU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=COsrMNvZcbfiMq1izJZ0YA6XAsB95wO7fHEqkWqCSoEGWpQZDMC6lQS7u/Xpxp7wV
-         SkrSE6IQbvv6G5cBi/f2tFtdV4e5LNy87JVUgcDamp6qu2kjcWwVl1G3LMgdLMnptO
-         W1EDTNefRviuqMO/SkQysZtv1ivLcfq3Y1Kz8w7zxZnmPO6Re9yhkl5wqCjoUe/u12
-         xvDUiBVbUYUbdKXYWWM+RwptgOlBwCsDzPvAn11DGbXCXOlbLx3o4emJEg+KGIqihT
-         4fPsckrUH7g5bCAdp8fpuHsGBTcHGjCTP442fTCpKHl7azhdkHygX6o4gsIiaX6sCu
-         Vrmi6BWo5cuIA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next] net: geneve: fix array of flexible structures warnings
-Date:   Thu, 27 Oct 2022 20:52:59 -0700
-Message-Id: <20221028035259.2728736-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.37.3
+        s=k20201202; t=1666930220;
+        bh=ABnJRCnsmqjUk+OIZss6e713oQPwQLlsbLHJskM+WOs=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ghFWmyThLByvmCpP+/g/1Iq4Kc+AOyqngXEQLtRifQ5atQvC+mFY2ttVO6BN1kUU+
+         krDXYMSjGAk+qIgKQ+hiL33CHQ/Ni81CCtgSwBfJyJh4hEYPaVKkNs/15BI/QsVt63
+         gOjBL1yWBt6hL6+clERvpuwKYgaJqT89nRcTV3yU1ZcKJNxAmNr77C/xI3evoJRG/S
+         0viQnArSWJngzAcTRTl/wEX+SDb6GCG5S9t6KQqi9f+FYWCZgukil0imA6SlM6jFTY
+         P4U/bd+KSxedAideT9Bfp7ZH/4M57EAD+G6fR9lvYlNp9aFAT9V5RhuXCmEkUXMl5u
+         dFle3mXkSlpgg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DBF20E270DB;
+        Fri, 28 Oct 2022 04:10:19 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net: dpaa2-eth: Simplify bool conversion
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166693021989.17555.16663776649073557990.git-patchwork-notify@kernel.org>
+Date:   Fri, 28 Oct 2022 04:10:19 +0000
+References: <20221026051824.38730-1-yang.lee@linux.alibaba.com>
+In-Reply-To: <20221026051824.38730-1-yang.lee@linux.alibaba.com>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     ioana.ciornei@nxp.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, abaci@linux.alibaba.com
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -50,28 +56,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-New compilers don't like flexible array of flexible structs:
+Hello:
 
-  include/net/geneve.h:62:34: warning: array of flexible structures
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- include/net/geneve.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Wed, 26 Oct 2022 13:18:24 +0800 you wrote:
+> ./drivers/net/ethernet/freescale/dpaa2/dpaa2-xsk.c:453:42-47: WARNING: conversion to bool not needed here
+> 
+> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=2577
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> ---
+>  drivers/net/ethernet/freescale/dpaa2/dpaa2-xsk.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/geneve.h b/include/net/geneve.h
-index bced0b1d9fe4..5c96827a487e 100644
---- a/include/net/geneve.h
-+++ b/include/net/geneve.h
-@@ -59,7 +59,7 @@ struct genevehdr {
- 	__be16 proto_type;
- 	u8 vni[3];
- 	u8 rsvd2;
--	struct geneve_opt options[];
-+	u8 options[];
- };
- 
- static inline bool netif_is_geneve(const struct net_device *dev)
+Here is the summary with links:
+  - [net-next] net: dpaa2-eth: Simplify bool conversion
+    https://git.kernel.org/netdev/net-next/c/148b811c7797
+
+You are awesome, thank you!
 -- 
-2.37.3
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
