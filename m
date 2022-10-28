@@ -2,245 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67E8D610E39
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 12:16:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C543610E46
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 12:20:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230097AbiJ1KQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 06:16:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37772 "EHLO
+        id S230181AbiJ1KUZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 06:20:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230005AbiJ1KQT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 06:16:19 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9BA3AB03;
-        Fri, 28 Oct 2022 03:16:17 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1ooMPN-0006Rh-6d; Fri, 28 Oct 2022 12:16:13 +0200
-Date:   Fri, 28 Oct 2022 12:16:13 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net-next 1/2] netlink: introduce NLA_POLICY_MAX_BE
-Message-ID: <20221028101613.GC1915@breakpoint.cc>
-References: <20220905100937.11459-1-fw@strlen.de>
- <20220905100937.11459-2-fw@strlen.de>
- <20221027133109.590bd74f@kernel.org>
- <2f528f1a320c55fdc7f3be55095c1f0eacee1032.camel@sipsolutions.net>
- <20221027233500.GA1915@breakpoint.cc>
- <20221027193931.2adce94d@kernel.org>
+        with ESMTP id S230036AbiJ1KUW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 06:20:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 257EE543D4;
+        Fri, 28 Oct 2022 03:20:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED91DB8292F;
+        Fri, 28 Oct 2022 10:20:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8DABCC433D7;
+        Fri, 28 Oct 2022 10:20:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1666952417;
+        bh=OYm9zLdGD8q62vWhGx9/cAa9hxjXMs+1vgWaph6hOpg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=RJHTQVNj+JOa4P9imykkojbhnf5Zcsz6Lnbk1vceGP7xdaP6Z3aj30JeMAN2WVO5R
+         s3BaZERd8JOud5D0CZFwFQM93BvYC+HXxmuPPPfyVbmuNwCqMCgtO1B8K13L3Vwp1b
+         pvDvbKcds6kL30oQ3i4wjj+lMpwnH1FqO8y6qt+ZobjcSiKeSTgPkXmvIOq35MNQmZ
+         EjLZlaYYPx73JX6ksDw56mjzGfYgZQe6c3w+ISUjgCV02wvT3WQwBbw4an7QOkilGk
+         u1FBxPPvBlSJfWW/lN7l7du4I7667NVWVsNT9DQGwuja3Rfai+yBr3725MAa6n+kf2
+         y+9AF1wq08EXA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 72B67C4314C;
+        Fri, 28 Oct 2022 10:20:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221027193931.2adce94d@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next V1 0/2] net: phy: mxl-gpy: Add MDI-X 
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166695241746.31704.11349157920416012770.git-patchwork-notify@kernel.org>
+Date:   Fri, 28 Oct 2022 10:20:17 +0000
+References: <20221026055918.4225-1-Raju.Lakkaraju@microchip.com>
+In-Reply-To: <20221026055918.4225-1-Raju.Lakkaraju@microchip.com>
+To:     Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, lxu@maxlinear.com,
+        hkallweit1@gmail.com, pabeni@redhat.com, edumazet@google.com,
+        linux@armlinux.org.uk, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, Ian.Saturley@microchip.com
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> wrote:
-> On Fri, 28 Oct 2022 01:35:00 +0200 Florian Westphal wrote:
-> > > In fact we could easily just have three extra types NLA_BE16, NLA_BE32
-> > > and NLA_BE64 types without even stealing a bit?  
-> > 
-> > Sure, I can make a patch if there is consensus that new types are the
-> > way to go.
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Wed, 26 Oct 2022 11:29:16 +0530 you wrote:
+> This patch series add the MDI-X feature to GPY211 PHYs and
+> Also Change return type to gpy_update_interface() function
 > 
-> The NLA_BE* idea seems appealing, but if the implementation gets
-> tedious either way works for me.
+> Raju Lakkaraju (2):
+>   net: phy: mxl-gpy: Change gpy_update_interface() function return type
+>   net: phy: mxl-gpy: Add PHY Auto/MDI/MDI-X set driver for GPY211 chips
+> 
+> [...]
 
-Doesn't look too bad.  I plan to do a formal submission once I'm back
-home.
+Here is the summary with links:
+  - [net-next,V1,1/2] net: phy: mxl-gpy: Change gpy_update_interface() function return type
+    https://git.kernel.org/netdev/net-next/c/7a495dde27eb
+  - [net-next,V1,2/2] net: phy: mxl-gpy: Add PHY Auto/MDI/MDI-X set driver for GPY211 chips
+    https://git.kernel.org/netdev/net-next/c/fd8825cd8c6f
 
-diff --git a/include/net/netlink.h b/include/net/netlink.h
-index 4418b1981e31..a843c8eb75cc 100644
---- a/include/net/netlink.h
-+++ b/include/net/netlink.h
-@@ -181,6 +181,8 @@ enum {
- 	NLA_S64,
- 	NLA_BITFIELD32,
- 	NLA_REJECT,
-+	NLA_BE16,
-+	NLA_BE32,
- 	__NLA_TYPE_MAX,
- };
- 
-@@ -231,6 +233,7 @@ enum nla_policy_validation {
-  *    NLA_U32, NLA_U64,
-  *    NLA_S8, NLA_S16,
-  *    NLA_S32, NLA_S64,
-+ *    NLA_BE16, NLA_BE32,
-  *    NLA_MSECS            Leaving the length field zero will verify the
-  *                         given type fits, using it verifies minimum length
-  *                         just like "All other"
-@@ -261,6 +264,8 @@ enum nla_policy_validation {
-  *    NLA_U16,
-  *    NLA_U32,
-  *    NLA_U64,
-+ *    NLA_BE16,
-+ *    NLA_BE32,
-  *    NLA_S8,
-  *    NLA_S16,
-  *    NLA_S32,
-@@ -325,7 +330,6 @@ struct nla_policy {
- 		struct netlink_range_validation_signed *range_signed;
- 		struct {
- 			s16 min, max;
--			u8 network_byte_order:1;
- 		};
- 		int (*validate)(const struct nlattr *attr,
- 				struct netlink_ext_ack *extack);
-@@ -369,6 +373,8 @@ struct nla_policy {
- 	(tp == NLA_U8 || tp == NLA_U16 || tp == NLA_U32 || tp == NLA_U64)
- #define __NLA_IS_SINT_TYPE(tp)						\
- 	(tp == NLA_S8 || tp == NLA_S16 || tp == NLA_S32 || tp == NLA_S64)
-+#define __NLA_IS_BEINT_TYPE(tp)						\
-+	(tp == NLA_BE16 || tp == NLA_BE32)
- 
- #define __NLA_ENSURE(condition) BUILD_BUG_ON_ZERO(!(condition))
- #define NLA_ENSURE_UINT_TYPE(tp)			\
-@@ -382,6 +388,7 @@ struct nla_policy {
- #define NLA_ENSURE_INT_OR_BINARY_TYPE(tp)		\
- 	(__NLA_ENSURE(__NLA_IS_UINT_TYPE(tp) ||		\
- 		      __NLA_IS_SINT_TYPE(tp) ||		\
-+		      __NLA_IS_BEINT_TYPE(tp) ||	\
- 		      tp == NLA_MSECS ||		\
- 		      tp == NLA_BINARY) + tp)
- #define NLA_ENSURE_NO_VALIDATION_PTR(tp)		\
-@@ -389,6 +396,8 @@ struct nla_policy {
- 		      tp != NLA_REJECT &&		\
- 		      tp != NLA_NESTED &&		\
- 		      tp != NLA_NESTED_ARRAY) + tp)
-+#define NLA_ENSURE_BEINT_TYPE(tp)			\
-+	(__NLA_ENSURE(__NLA_IS_BEINT_TYPE(tp)) + tp)
- 
- #define NLA_POLICY_RANGE(tp, _min, _max) {		\
- 	.type = NLA_ENSURE_INT_OR_BINARY_TYPE(tp),	\
-@@ -419,14 +428,6 @@ struct nla_policy {
- 	.type = NLA_ENSURE_INT_OR_BINARY_TYPE(tp),	\
- 	.validation_type = NLA_VALIDATE_MAX,		\
- 	.max = _max,					\
--	.network_byte_order = 0,			\
--}
--
--#define NLA_POLICY_MAX_BE(tp, _max) {			\
--	.type = NLA_ENSURE_UINT_TYPE(tp),		\
--	.validation_type = NLA_VALIDATE_MAX,		\
--	.max = _max,					\
--	.network_byte_order = 1,			\
- }
- 
- #define NLA_POLICY_MASK(tp, _mask) {			\
-diff --git a/lib/nlattr.c b/lib/nlattr.c
-index 40f22b177d69..b67a53e29b8f 100644
---- a/lib/nlattr.c
-+++ b/lib/nlattr.c
-@@ -124,10 +124,12 @@ void nla_get_range_unsigned(const struct nla_policy *pt,
- 		range->max = U8_MAX;
- 		break;
- 	case NLA_U16:
-+	case NLA_BE16:
- 	case NLA_BINARY:
- 		range->max = U16_MAX;
- 		break;
- 	case NLA_U32:
-+	case NLA_BE32:
- 		range->max = U32_MAX;
- 		break;
- 	case NLA_U64:
-@@ -159,31 +161,6 @@ void nla_get_range_unsigned(const struct nla_policy *pt,
- 	}
- }
- 
--static u64 nla_get_attr_bo(const struct nla_policy *pt,
--			   const struct nlattr *nla)
--{
--	switch (pt->type) {
--	case NLA_U16:
--		if (pt->network_byte_order)
--			return ntohs(nla_get_be16(nla));
--
--		return nla_get_u16(nla);
--	case NLA_U32:
--		if (pt->network_byte_order)
--			return ntohl(nla_get_be32(nla));
--
--		return nla_get_u32(nla);
--	case NLA_U64:
--		if (pt->network_byte_order)
--			return be64_to_cpu(nla_get_be64(nla));
--
--		return nla_get_u64(nla);
--	}
--
--	WARN_ON_ONCE(1);
--	return 0;
--}
--
- static int nla_validate_range_unsigned(const struct nla_policy *pt,
- 				       const struct nlattr *nla,
- 				       struct netlink_ext_ack *extack,
-@@ -197,9 +174,13 @@ static int nla_validate_range_unsigned(const struct nla_policy *pt,
- 		value = nla_get_u8(nla);
- 		break;
- 	case NLA_U16:
-+		value = nla_get_u16(nla);
-+		break;
- 	case NLA_U32:
-+		value = nla_get_u32(nla);
-+		break;
- 	case NLA_U64:
--		value = nla_get_attr_bo(pt, nla);
-+		value = nla_get_u64(nla);
- 		break;
- 	case NLA_MSECS:
- 		value = nla_get_u64(nla);
-@@ -207,6 +188,12 @@ static int nla_validate_range_unsigned(const struct nla_policy *pt,
- 	case NLA_BINARY:
- 		value = nla_len(nla);
- 		break;
-+	case NLA_BE16:
-+		value = ntohs(nla_get_be16(nla));
-+		break;
-+	case NLA_BE32:
-+		value = ntohl(nla_get_be32(nla));
-+		break;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -334,6 +321,8 @@ static int nla_validate_int_range(const struct nla_policy *pt,
- 	case NLA_U64:
- 	case NLA_MSECS:
- 	case NLA_BINARY:
-+	case NLA_BE16:
-+	case NLA_BE32:
- 		return nla_validate_range_unsigned(pt, nla, extack, validate);
- 	case NLA_S8:
- 	case NLA_S16:
-diff --git a/net/netfilter/nft_payload.c b/net/netfilter/nft_payload.c
-index 088244f9d838..4edd899aeb9b 100644
---- a/net/netfilter/nft_payload.c
-+++ b/net/netfilter/nft_payload.c
-@@ -173,10 +173,10 @@ static const struct nla_policy nft_payload_policy[NFTA_PAYLOAD_MAX + 1] = {
- 	[NFTA_PAYLOAD_SREG]		= { .type = NLA_U32 },
- 	[NFTA_PAYLOAD_DREG]		= { .type = NLA_U32 },
- 	[NFTA_PAYLOAD_BASE]		= { .type = NLA_U32 },
--	[NFTA_PAYLOAD_OFFSET]		= NLA_POLICY_MAX_BE(NLA_U32, 255),
--	[NFTA_PAYLOAD_LEN]		= NLA_POLICY_MAX_BE(NLA_U32, 255),
-+	[NFTA_PAYLOAD_OFFSET]		= NLA_POLICY_MAX(NLA_BE32, 255),
-+	[NFTA_PAYLOAD_LEN]		= NLA_POLICY_MAX(NLA_BE32, 255),
- 	[NFTA_PAYLOAD_CSUM_TYPE]	= { .type = NLA_U32 },
--	[NFTA_PAYLOAD_CSUM_OFFSET]	= NLA_POLICY_MAX_BE(NLA_U32, 255),
-+	[NFTA_PAYLOAD_CSUM_OFFSET]	= NLA_POLICY_MAX(NLA_BE32, 255),
- 	[NFTA_PAYLOAD_CSUM_FLAGS]	= { .type = NLA_U32 },
- };
- 
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
