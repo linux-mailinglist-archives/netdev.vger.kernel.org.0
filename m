@@ -2,89 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6037610F49
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 13:04:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2586E610F4A
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 13:04:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229995AbiJ1LEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 07:04:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48528 "EHLO
+        id S229893AbiJ1LEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 07:04:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229861AbiJ1LEf (ORCPT
+        with ESMTP id S229910AbiJ1LEf (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 07:04:35 -0400
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F915B495
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 04:04:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67EC7BC94
+        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 04:04:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666955074; x=1698491074;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=EDa+rBvtiQl/d57HcQumvpplb3EJAE+BSWiTNb2Q+So=;
-  b=agBtOk9DemLNxw8Tn2T8Xe+D1qkL3i1F7L3WUhbhrOtlswmPY4emxesJ
-   od1PG8x2g0wfA4F3XQu8sHpEZkKI0G/rzuBzp513p1v8wv6yZDQgkrNbK
-   dFo+j2k/ZNVFMQ4v4J4IrrinaL1fWXapMOvBX5tBDs1sb4iovQH0UNZMG
-   36OnqikDDHu+tScSX6gwdSP+Yyfb0ZqQbhTTZR+eYVgkHtsG4m8Ftpuz7
-   Fwu/WYau6sKZHjzic+iqKUG/M3ArbJeo8gzTEVt606OHgBGZDbKIbXv3W
-   tuPSFrhotyrpDRnIj78L5Pg0zjMZf9IcuPYu2YwSr3NAU3PC1N+G9smJG
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10513"; a="291766531"
+  t=1666955075; x=1698491075;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=+8B+TsH/HoVYY5FCKEkAwLHWNW4Dtk0tGu06ix4r3Cw=;
+  b=FnERxd3oE7fVFqikrVHBs9rYK0RUSb2lNJCcvSo12CFnveB5NIPvoS5H
+   AI0tS8dOeJ+nB4BId73R4UIXDfCRPz6YNBtYzgFBE9/iS2y7bbzBtqcN8
+   D0ZIfxvnfpdeRSDuRvvDQ65gtBeK+j6h8ZasyljbcLEhmIYonckckKz6E
+   +nRiEYvms0IV51MSbJgj/dl1AubiktcN/jT9Iubswntg8hXfRTdFBqd0N
+   cy5maFdsrtb99gQ8YzxfeZADH16X0jRszKWScyc76GDd5KknJUQdBK5V9
+   WTQ6Ztmq0dWEHkEPOks6ryCbeGaXU8gKVM4LXge55HEgeQx4EQ3jZv4H1
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10513"; a="291766534"
 X-IronPort-AV: E=Sophos;i="5.95,220,1661842800"; 
-   d="scan'208";a="291766531"
+   d="scan'208";a="291766534"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Oct 2022 04:04:33 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10513"; a="701698079"
+X-IronPort-AV: E=McAfee;i="6500,9779,10513"; a="701698082"
 X-IronPort-AV: E=Sophos;i="5.95,220,1661842800"; 
-   d="scan'208";a="701698079"
+   d="scan'208";a="701698082"
 Received: from jekeller-desk.amr.corp.intel.com ([10.166.241.7])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Oct 2022 04:04:31 -0700
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Oct 2022 04:04:33 -0700
 From:   Jacob Keller <jacob.e.keller@intel.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         David Miller <davem@davemloft.net>
 Cc:     netdev@vger.kernel.org, Jacob Keller <jacob.e.keller@intel.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Siva Reddy Kallam <siva.kallam@broadcom.com>,
-        Prashant Sreedharan <prashant@broadcom.com>,
-        Michael Chan <mchan@broadcom.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Vivek Thampi <vithampi@vmware.com>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-        Jie Wang <wangjie125@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Eran Ben Elisha <eranbe@nvidia.com>,
-        Aya Levin <ayal@nvidia.com>,
-        Cai Huoqing <cai.huoqing@linux.dev>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Wan Jiabing <wanjiabing@vivo.com>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>, Arnd Bergmann <arnd@arndb.de>
-Subject: [net-next v3 0/9] ptp: convert drivers to .adjfine
-Date:   Fri, 28 Oct 2022 04:04:11 -0700
-Message-Id: <20221028110420.3451088-1-jacob.e.keller@intel.com>
+        Richard Cochran <richardcochran@gmail.com>
+Subject: [PATCH net-next v3 1/9] ptp: add missing documentation for parameters
+Date:   Fri, 28 Oct 2022 04:04:12 -0700
+Message-Id: <20221028110420.3451088-2-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.38.0.83.gd420dda05763
+In-Reply-To: <20221028110420.3451088-1-jacob.e.keller@intel.com>
+References: <20221028110420.3451088-1-jacob.e.keller@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -96,138 +59,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Many drivers implementing PTP have not yet migrated to the new .adjfine
-frequency adjustment implementation.
+The ptp_find_pin_unlocked function and the ptp_system_timestamp structure
+didn't document their parameters and fields. Fix this.
 
-A handful of these drivers use hardware with a simple increment value which
-is adjusted by multiplying by the adjustment factor and then dividing by
-1 billion. This calculation is very easy to convert to .adjfine, by simply
-updating the divisor.
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Acked-by: Richard Cochran <richardcochran@gmail.com>
+---
+ include/linux/ptp_clock_kernel.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Introduce new helper functions, diff_by_scaled_ppm and adjust_by_scaled_ppm
-which perform the most common calculations used by drivers for this purpose.
+diff --git a/include/linux/ptp_clock_kernel.h b/include/linux/ptp_clock_kernel.h
+index 92b44161408e..ad4aaadc2f7a 100644
+--- a/include/linux/ptp_clock_kernel.h
++++ b/include/linux/ptp_clock_kernel.h
+@@ -45,6 +45,8 @@ struct system_device_crosststamp;
+ 
+ /**
+  * struct ptp_system_timestamp - system time corresponding to a PHC timestamp
++ * @pre_ts: system timestamp before capturing PHC
++ * @post_ts: system timestamp after capturing PHC
+  */
+ struct ptp_system_timestamp {
+ 	struct timespec64 pre_ts;
+@@ -316,6 +318,11 @@ int ptp_find_pin(struct ptp_clock *ptp,
+  * should most likely call ptp_find_pin() directly from their
+  * ptp_clock_info::enable() method.
+  *
++* @ptp:    The clock obtained from ptp_clock_register().
++* @func:   One of the ptp_pin_function enumerated values.
++* @chan:   The particular functional channel to find.
++* Return:  Pin index in the range of zero to ptp_clock_caps.n_pins - 1,
++*          or -1 if the auxiliary function cannot be found.
+  */
+ 
+ int ptp_find_pin_unlocked(struct ptp_clock *ptp,
 
-The adjust_by_scaled_ppm takes the base increment and scaled PPM value, and
-calculates the new increment to use.
-
-A few drivers need the difference and direction rather than a raw increment
-value. The diff_by_scaled_ppm calculates the difference and returns true if
-it should be a subtraction, false otherwise. This most closely aligns with
-existing driver implementations.
-
-I previously submitted v1 of this series at [1], and got some feedback only
-on a handful of drivers. In the interest of merging the changes which have
-received feedback, I've dropped the following drivers out of this send:
-
- * ptp_phc
- * ptp_ipx46x
- * tg3
- * hclge
- * stmac
- * cpts
-
-I plan to submit those drivers changes again at a later date. As before,
-there are some drivers which are not trivial to convert to the new helper
-functions. While they may be able to work, their implementation is different
-and I lack the hardware or datasheets to determine what the correct
-implementation would be.
-
-
-* drivers/net/ethernet/broadcom/bnx2x
-* drivers/net/ethernet/broadcom/bnxt
-* drivers/net/ethernet/cavium/liquidio
-* drivers/net/ethernet/chelsio/cxgb4
-* drivers/net/ethernet/freescale
-* drivers/net/ethernet/qlogic/qed
-* drivers/net/ethernet/qlogic/qede
-* drivers/net/ethernet/sfc
-* drivers/net/ethernet/sfc/siena
-* drivers/net/ethernet/ti/am65-cpts.c
-* drivers/ptp/ptp_dte.c
-
-My end goal is to drop the .adjfreq implementation entirely, and to that end
-I plan on modifying these drivers in the future to directly use
-scaled_ppm_to_ppb as the simplest method to convert them.
-
-Changes since v2:
-* Rebased to allow landing in 6.2
-* Added Richard's Acked-by
-
-Cc: "K. Y. Srinivasan" <kys@microsoft.com>
-Cc: Haiyang Zhang <haiyangz@microsoft.com>
-Cc: Stephen Hemminger <sthemmin@microsoft.com>
-Cc: Wei Liu <wei.liu@kernel.org>
-Cc: Dexuan Cui <decui@microsoft.com>
-Cc: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Siva Reddy Kallam <siva.kallam@broadcom.com>
-Cc: Prashant Sreedharan <prashant@broadcom.com>
-Cc: Michael Chan <mchan@broadcom.com>
-Cc: Yisen Zhuang <yisen.zhuang@huawei.com>
-Cc: Salil Mehta <salil.mehta@huawei.com>
-Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Cc: Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc: Tariq Toukan <tariqt@nvidia.com>
-Cc: Saeed Mahameed <saeedm@nvidia.com>
-Cc: Leon Romanovsky <leon@kernel.org>
-Cc: Bryan Whitehead <bryan.whitehead@microchip.com>
-Cc: Sergey Shtylyov <s.shtylyov@omp.ru>
-Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc: Jose Abreu <joabreu@synopsys.com>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: Richard Cochran <richardcochran@gmail.com>
-Cc: Vivek Thampi <vithampi@vmware.com>
-Cc: VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
-Cc: Jie Wang <wangjie125@huawei.com>
-Cc: Jacob Keller <jacob.e.keller@intel.com>
-Cc: Guangbin Huang <huangguangbin2@huawei.com>
-Cc: Eran Ben Elisha <eranbe@nvidia.com>
-Cc: Aya Levin <ayal@nvidia.com>
-Cc: Cai Huoqing <cai.huoqing@linux.dev>
-Cc: Biju Das <biju.das.jz@bp.renesas.com>
-Cc: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc: Phil Edworthy <phil.edworthy@renesas.com>
-Cc: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Wan Jiabing <wanjiabing@vivo.com>
-Cc: Lv Ruyi <lv.ruyi@zte.com.cn>
-Cc: Arnd Bergmann <arnd@arndb.de>
-
-Jacob Keller (9):
-  ptp: add missing documentation for parameters
-  ptp: introduce helpers to adjust by scaled parts per million
-  drivers: convert unsupported .adjfreq to .adjfine
-  ptp: mlx4: convert to .adjfine and adjust_by_scaled_ppm
-  ptp: mlx5: convert to .adjfine and adjust_by_scaled_ppm
-  ptp: lan743x: remove .adjfreq implementation
-  ptp: lan743x: use diff_by_scaled_ppm in .adjfine implementation
-  ptp: ravb: convert to .adjfine and adjust_by_scaled_ppm
-  ptp: xgbe: convert to .adjfine and adjust_by_scaled_ppm
-
- drivers/hv/hv_util.c                          |  4 +-
- drivers/net/ethernet/amd/xgbe/xgbe-ptp.c      | 20 ++-----
- drivers/net/ethernet/intel/e1000e/ptp.c       | 16 ++----
- drivers/net/ethernet/intel/i40e/i40e_ptp.c    | 17 ++----
- drivers/net/ethernet/intel/ice/ice_ptp.c      | 18 +------
- drivers/net/ethernet/intel/igb/igb_ptp.c      | 18 +------
- drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c  | 24 ++-------
- drivers/net/ethernet/mellanox/mlx4/en_clock.c | 29 ++++------
- .../ethernet/mellanox/mlx5/core/lib/clock.c   | 22 +++-----
- drivers/net/ethernet/microchip/lan743x_ptp.c  | 54 +++----------------
- drivers/net/ethernet/renesas/ravb_ptp.c       | 17 ++----
- drivers/ptp/ptp_kvm_common.c                  |  4 +-
- drivers/ptp/ptp_vmw.c                         |  4 +-
- include/linux/ptp_clock_kernel.h              | 53 ++++++++++++++++++
- 14 files changed, 105 insertions(+), 195 deletions(-)
-
-
-base-commit: 915b96c52763e2988e6368b538b487a7138b8fa4
+base-commit: 12dee519d466025fdedced911d0fe81cb7ba29e7
 -- 
-2.37.1.394.gc50926e1f488
+2.38.0.83.gd420dda05763
 
