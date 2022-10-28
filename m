@@ -2,91 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BF42610D76
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 11:40:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0457610DD7
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 11:54:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229500AbiJ1JkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 05:40:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47296 "EHLO
+        id S230333AbiJ1JyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 05:54:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiJ1JkS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 05:40:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85DB44D81A;
-        Fri, 28 Oct 2022 02:40:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 350B9B828C7;
-        Fri, 28 Oct 2022 09:40:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D257EC433D6;
-        Fri, 28 Oct 2022 09:40:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666950014;
-        bh=WRRGcNNCROx1+Z4NlDm9dGYO6hp9XY5M+L6HTZmlWnM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rhC4s7A4uatXGkPPtzjbUtHoVgKJkWEMACi/sXJKoFJuiVgoOnkdOBZ2W1Tsu3DGy
-         mI1M6HsIJsoANBFVaJMDzCLlZcWRvOmOyMA5zpjpg01a/fELZzWWNbJnMowvMk/TgC
-         cNBzDU7Hz+CjPWb8GkQwKLgH2lbFoOWu3yL8ajZfYixrS0V33yJfiRwe7eppUeIarf
-         hHvailWwg0Nbgpcnf1Zs7XBzKMIASfGwlAja0+1MNrQD2oHF76/ZxqAuD3IPzXgcT2
-         LbhO4XwXk93GRKwKL2XYzB6318/wo1AEHjek8MyjcAT3jDdD4roTOzwbX9P9EL7OV0
-         nRoVAVuUnAIBQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B9AC7C4314C;
-        Fri, 28 Oct 2022 09:40:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230080AbiJ1Jxv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 05:53:51 -0400
+Received: from symantec4.comsats.net.pk (symantec4.comsats.net.pk [203.124.41.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E70F1CBA8F
+        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 02:53:06 -0700 (PDT)
+X-AuditID: cb7c291e-7a5ff700000061a5-0d-635b947d654f
+Received: from iesco.comsatshosting.com (Unknown_Domain [210.56.28.12])
+        (using TLS with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        by symantec4.comsats.net.pk (Symantec Messaging Gateway) with SMTP id B6.B7.24997.D749B536; Fri, 28 Oct 2022 13:36:13 +0500 (PKT)
+DomainKey-Signature: a=rsa-sha1; c=nofws; q=dns;
+        d=iesco.com.pk; s=default;
+        h=received:content-type:mime-version:content-transfer-encoding
+          :content-description:subject:to:from:date:reply-to;
+        b=h2GXoNRShM30gRLm+ELAtZVbNAARSI7U7BYGPAd4troV+priqVVOyEXz1dddYAou6
+          Q/pnzI5jHBvSFsF8KNdH3V1q03qRS29P93CSaXBFX+jmr+SgzzLJt5ENNIUOkebgg
+          BQ1TghS1D/PvSwe+KG00CRIFDqvynkA3m3shNcTnE=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=iesco.com.pk; s=default;
+        h=reply-to:date:from:to:subject:content-description
+          :content-transfer-encoding:mime-version:content-type;
+        bh=wllpc/XfyZmsBCyizquF3lY9v5vVV2E17Wyv7qk2g2g=;
+        b=f/6GKm3WyFaVw6zPWxrEZZmNcF0yTOt7F2/ZlPtxnPdLW5n7R75EwAyL3//hz4USp
+          IN+5LJeV23AYZN5zP2f4hz1xzv4TrLixiLO4kM8Dic+YAdAToPu0GQT9ARxWQ7QK8
+          hOvKT6Fghu3VcLkhkJIcczdH/XbZ+YPnJHYEfYEts=
+Received: from [103.145.253.52] (UnknownHost [103.145.253.52]) by iesco.comsatshosting.com with SMTP;
+   Fri, 28 Oct 2022 14:22:44 +0500
+Message-ID: <B6.B7.24997.D749B536@symantec4.comsats.net.pk>
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: dsa: Fix possible memory leaks in dsa_loop_init()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166695001475.8410.5727114306921032694.git-patchwork-notify@kernel.org>
-Date:   Fri, 28 Oct 2022 09:40:14 +0000
-References: <20221026020321.58615-1-chenzhongjin@huawei.com>
-In-Reply-To: <20221026020321.58615-1-chenzhongjin@huawei.com>
-To:     Chen Zhongjin <chenzhongjin@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+Content-Description: Mail message body
+Subject: Compliment,
+To:     netdev@vger.kernel.org
+From:   "Wahid Majrooh" <nms-ibs2@iesco.com.pk>
+Date:   Fri, 28 Oct 2022 02:52:17 -0700
+Reply-To: whmjhaf@gmail.com
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Ta0gUURTHuc64jbq3xvF1Wx/UkkKFmiGhFKU9wOpLRRpsQY7ruLu5D5kZ
+        Xz0giKyWMjPtISmKWLT6IdZKkdRaSrA0xFQEe2DaQzNJTMOQ6M7srjtfLvf+zj3/c87/cimC
+        6VqloUxWkeOtrFmrCiQHU6LU8eeqjuu3TI9FpPTUh6eBjHlnzCGgC9yRy5lNRRyfuDM70Pir
+        7ilZUAlKpvof+p8HFjsIoBCdjL7d/kjaQSDF0E4/VHujSyUdSLqZQEuNy4T7ME6grn8/Cfe1
+        KwA5y8YIKR/S29Hwu/ZV0p6gE9BodZXKzYNR791J0s03o/sNP/B9Cu/j0IJdlHAIHYqmKuzy
+        lVBag+ba22QZFR2PWhyTsgxJx6JZx7DMGToSORrLyQqwpkZRrUZRrUZRrcZXrR6QDoCEUguL
+        TdMnJ+htFoEVhQQrJyYU5DsBtvDN2Y0x7aBpkHUBmgJaNcw26fSMP1uEs1zgIOWnDYMn7h3X
+        M6tzbLmlRlYwnuQLzZygDYWLdRjDFZxTaM7XaqCtEdOQFWrligUzJ+I3cwFEETitf/QYTstl
+        S09zvM0t5gKRFKmNgEe3DbMMbWBFLp/jCjjeG82jKPrJo+YBQLs68KohrTYrp0XQvx7XCuY5
+        A1eSZzKL3gSsxP7FU9DKiNxeNAwow4FwZUDZoR8V4AIZlBq3OS/NAYUC1iKYDB7dEPjVjqna
+        S2XNtfCCdJXxQp/ea3CGetTQ2UlQrfLa39aN109DA3hdeGp/TjDyIJoI6GzCCrSkYCy0rsyh
+        CYfpTbjdNYqAVFITBdc3YB6m4L6q3o8xDfbhBw2Bw5JJavxtfHMwMOkmhkEeKI+BYJX0zMEe
+        5tObxob4YUMMlTrJEJEVlYZ0XtZJhniox5BWCTJe6JPSnAeZRFZyVkXHJf7L7Ie+2lfXh+bX
+        pb7J+zMzd8pwqSfMfzCj+uB4y97MtP0qZ+7Nz0Mvfu89fa85+8DIRfXQ4eiB7uUH89/hSMot
+        XXjk48q49HWWI2/FPfEzscW3n1UXBZddC+pLUvHHxu68TE1ZStzgWOxtf/9668Susd0X4PTE
+        1d7yBS0pGNmkTQQvsP8BmG5r11EEAAA=
+X-Spam-Status: No, score=2.7 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FORGED_REPLYTO,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Level: **
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Compliment,
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+It will be a pleasure to discuss an important issue with you on area of Inv=
+estment. My name is Wahid from Kabul
 
-On Wed, 26 Oct 2022 10:03:21 +0800 you wrote:
-> kmemleak reported memory leaks in dsa_loop_init():
-> 
-> kmemleak: 12 new suspected memory leaks
-> 
-> unreferenced object 0xffff8880138ce000 (size 2048):
->   comm "modprobe", pid 390, jiffies 4295040478 (age 238.976s)
->   backtrace:
->     [<000000006a94f1d5>] kmalloc_trace+0x26/0x60
->     [<00000000a9c44622>] phy_device_create+0x5d/0x970
->     [<00000000d0ee2afc>] get_phy_device+0xf3/0x2b0
->     [<00000000dca0c71f>] __fixed_phy_register.part.0+0x92/0x4e0
->     [<000000008a834798>] fixed_phy_register+0x84/0xb0
->     [<0000000055223fcb>] dsa_loop_init+0xa9/0x116 [dsa_loop]
->     ...
-> 
-> [...]
 
-Here is the summary with links:
-  - net: dsa: Fix possible memory leaks in dsa_loop_init()
-    https://git.kernel.org/netdev/net/c/633efc8b3dc9
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Majrooh
 
