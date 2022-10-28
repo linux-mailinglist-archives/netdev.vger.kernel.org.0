@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93B3E6112C7
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 15:31:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE9646112C8
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 15:31:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230183AbiJ1NbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 09:31:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54008 "EHLO
+        id S229981AbiJ1NbU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 09:31:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230502AbiJ1Nay (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 09:30:54 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E42EC106E16
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 06:30:52 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-368e6c449f2so44048477b3.5
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 06:30:52 -0700 (PDT)
+        with ESMTP id S230321AbiJ1Na4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 09:30:56 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A2D397EDD
+        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 06:30:54 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id h9-20020a25e209000000b006cbc4084f2eso4510610ybe.23
+        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 06:30:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=xf1IqAkHnBlgERzJ+GODqp6iHzNJM3F35pgHGdmZlvk=;
-        b=qRiQu9W8EnDhl8bvngjDr1Gu6Lodccpbx+k94I9pHjNqgzTRiCmWDzoS5ksofOLL2a
-         nkbq+HXMlbLQPdYu8Xbg4ebpEkzfL0zqW0CR6oD8rqZkFGppoCp7e8b9ejWPS2zs7zZt
-         FxGEhj2KL97UfLqgUdmyQQhObF6UbYpvSxX3nmNnxWTHqakcCJ4K5iWj4KWqSlI8XWMM
-         Qr9+TVShkj0LgPZhMGnhJchhBRZ3iGQvPWyn/BdVgUcRqtMhHEoM6wiOVj1fxv+OJnKP
-         TNBPg8xTdICj+B/XI+cMr/R38eODxM+XcIY0n22BEf88gviTCvQnxOPQfn1X8IuhSIc1
-         3rjg==
+        bh=CmPTSo++eaqXQRu2DaBooqOa1NSBcQeByMRnjkGhnxU=;
+        b=l13/AdoDp6ssM2m142NqPMEEysq9+OIvW0gT3TJly6FMeKe9YYans53Vgo9g1KLYVc
+         NL53RShl8Wbni++bOFBijnumPfYOWQwY5XpzS3A6vM94FwWRlYR+/R4QjhIH1ux3KlLn
+         tjwIRCaNdEUC9uPFxpbXK9xplZBF1JXbQN7Gx6F0TmvtSFNDZzNy3MgPxHXIyUfjtupd
+         GOTxpuWhkMrpYgCQ6ZQBCseqm31/kWT5kAvxs68ZsiPPygRAGNAosPPKRmnnyzidgiZ/
+         gJxs5EozWlWiVqWV3gC7gVuJIa3fq0ANp/ORXd7XYEhQVFs7WqISFXi7+/nyWN26EKQq
+         Yjlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=xf1IqAkHnBlgERzJ+GODqp6iHzNJM3F35pgHGdmZlvk=;
-        b=edYoxbtzYQu7c7XqngK6RsTSEoUwkkoLf4iDKL9vUwCnSrw3QTXNRv+El5TDHgwVR5
-         zFJd9FF+OJEBZYS3MqN6q07gGsTjmzdSPBUxlptCkLNzQkH2MnhM70elmukfR7v8N/Wg
-         smgVUyq0RXEgyin+p3pcugb3H1ygT03c+ichWtX7v++PZUs3hjNVUS0JxlpDCgLL5+tE
-         6aii49d1Yw9TuSgm4CSx1Ej9dKUXLVkHXxPphLsOvyTb/fUH+U2nyxg8PewHH20FX/aD
-         IQDPj8AByp7wZHEWyJSRxbYzBIIesNEDLCzEsEZ3MRe2HXpkN02OSzSYO09I3QBYYkYu
-         U1bw==
-X-Gm-Message-State: ACrzQf2GA7elUqhpnyjqiGl38O4nUYU1+LRicOvIT4tDM8kbVicfFHS8
-        pj25v4zCn7UbeE5GlvQheKv5z0dlTVy9fQ==
-X-Google-Smtp-Source: AMsMyM7c/BI5fIYpdi5z9pes6uUeNH+HQkdV8rWOlaKlUOlmPKtmdW0MVscsTB2EQvKwWGmquzXjk16H7yoMYg==
+        bh=CmPTSo++eaqXQRu2DaBooqOa1NSBcQeByMRnjkGhnxU=;
+        b=tCGfg5m762XTDGwTnRtqYrVxmCNWV8T1DE++yBb0AKTrVFfqJNhIras8DbzJrl9Ipq
+         X8/7yCZhH3/pfcWxeX/zk+F3o04XFZEd8xHb8JW4aSu05EUbu40sj18taASXEcwfCL0E
+         j6zDZU/Pjp7fa4ANwzxbFdPPXrfzFWuV69mpKydfyYlDaRB+fGmj83bZHV/ves2x+VZz
+         Sv8XUa+/c7RXTty+cv3qaAo+fCMm57oNrKAwxrmAZ2BJ447fLjX17pCXxWqzMibvJGpW
+         ilr9SPkXVwNviBfnaL5P/pwvJHLo7ESWjcTwJw42MD2Q2uQdf+D1WotQ2Nt3jnb+QSY5
+         tHFw==
+X-Gm-Message-State: ACrzQf2fRPKjEIl3TDIAH76rdWnxHbVSyKCx3k2qNNJBkbKiwEF1lyAo
+        hnJXpCXlEjvbm5Go1mNTe5sJaw+LQWTc8A==
+X-Google-Smtp-Source: AMsMyM4wbXdXoEKcwZ3Qd3Ni+MBbYRF+/ks3E3lOtzJ0izKsHhmvCM6Lu23F3yg/gdeq3Yr+JW53AHj6tlrErw==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a81:6187:0:b0:357:2da6:50c2 with SMTP id
- v129-20020a816187000000b003572da650c2mr1ywb.242.1666963851536; Fri, 28 Oct
- 2022 06:30:51 -0700 (PDT)
-Date:   Fri, 28 Oct 2022 13:30:40 +0000
+ (user=edumazet job=sendgmr) by 2002:a81:4e87:0:b0:368:3422:a62d with SMTP id
+ c129-20020a814e87000000b003683422a62dmr41247871ywb.277.1666963853427; Fri, 28
+ Oct 2022 06:30:53 -0700 (PDT)
+Date:   Fri, 28 Oct 2022 13:30:41 +0000
 In-Reply-To: <20221028133043.2312984-1-edumazet@google.com>
 Mime-Version: 1.0
 References: <20221028133043.2312984-1-edumazet@google.com>
 X-Mailer: git-send-email 2.38.1.273.g43a17bfeac-goog
-Message-ID: <20221028133043.2312984-3-edumazet@google.com>
-Subject: [PATCH net-next 2/5] net: dropreason: propagate drop_reason to skb_release_data()
+Message-ID: <20221028133043.2312984-4-edumazet@google.com>
+Subject: [PATCH net-next 3/5] net: dropreason: add SKB_DROP_REASON_DUP_FRAG
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -69,125 +69,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When an skb with a frag list is consumed, we currently
-pretend all skbs in the frag list were dropped.
-
-In order to fix this, add a @reason argument to skb_release_data()
-and skb_release_all().
+This is used to track when a duplicate segment received by various
+reassembly units is dropped.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/core/skbuff.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ include/net/dropreason.h                |  3 +++
+ net/ipv4/ip_fragment.c                  | 13 +++++++++----
+ net/ipv6/netfilter/nf_conntrack_reasm.c |  2 +-
+ net/ipv6/reassembly.c                   | 13 +++++++++----
+ 4 files changed, 22 insertions(+), 9 deletions(-)
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 7ce797cd121f395062b61b33371fb638f51e8c99..42a35b59fb1e54e2e4c0ab58a6da016cef622653 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -769,7 +769,7 @@ static void skb_free_head(struct sk_buff *skb)
- 	}
- }
- 
--static void skb_release_data(struct sk_buff *skb)
-+static void skb_release_data(struct sk_buff *skb, enum skb_drop_reason reason)
- {
- 	struct skb_shared_info *shinfo = skb_shinfo(skb);
- 	int i;
-@@ -792,7 +792,7 @@ static void skb_release_data(struct sk_buff *skb)
- 
- free_head:
- 	if (shinfo->frag_list)
--		kfree_skb_list(shinfo->frag_list);
-+		kfree_skb_list_reason(shinfo->frag_list, reason);
- 
- 	skb_free_head(skb);
- exit:
-@@ -855,11 +855,11 @@ void skb_release_head_state(struct sk_buff *skb)
- }
- 
- /* Free everything but the sk_buff shell. */
--static void skb_release_all(struct sk_buff *skb)
-+static void skb_release_all(struct sk_buff *skb, enum skb_drop_reason reason)
- {
- 	skb_release_head_state(skb);
- 	if (likely(skb->head))
--		skb_release_data(skb);
-+		skb_release_data(skb, reason);
- }
+diff --git a/include/net/dropreason.h b/include/net/dropreason.h
+index 0bd18c14dae0a570a150c31eeea99fe85bc734b0..602d555a5f8392715ec03f85418ecb98926d0481 100644
+--- a/include/net/dropreason.h
++++ b/include/net/dropreason.h
+@@ -68,6 +68,7 @@
+ 	FN(IP_INADDRERRORS)		\
+ 	FN(IP_INNOROUTES)		\
+ 	FN(PKT_TOO_BIG)			\
++	FN(DUP_FRAG)			\
+ 	FNe(MAX)
  
  /**
-@@ -873,7 +873,7 @@ static void skb_release_all(struct sk_buff *skb)
+@@ -300,6 +301,8 @@ enum skb_drop_reason {
+ 	 * MTU)
+ 	 */
+ 	SKB_DROP_REASON_PKT_TOO_BIG,
++	/** @SKB_DROP_REASON_DUP_FRAG: duplicate fragment */
++	SKB_DROP_REASON_DUP_FRAG,
+ 	/**
+ 	 * @SKB_DROP_REASON_MAX: the maximum of drop reason, which shouldn't be
+ 	 * used as a real 'reason'
+diff --git a/net/ipv4/ip_fragment.c b/net/ipv4/ip_fragment.c
+index fb153569889ecc8541640674880ff03e8c7bf24f..676bd8d259555448457dfd98ce4316c4b549a30a 100644
+--- a/net/ipv4/ip_fragment.c
++++ b/net/ipv4/ip_fragment.c
+@@ -278,10 +278,14 @@ static int ip_frag_queue(struct ipq *qp, struct sk_buff *skb)
+ 	struct net_device *dev;
+ 	unsigned int fragsize;
+ 	int err = -ENOENT;
++	SKB_DR(reason);
+ 	u8 ecn;
  
- void __kfree_skb(struct sk_buff *skb)
- {
--	skb_release_all(skb);
-+	skb_release_all(skb, SKB_DROP_REASON_NOT_SPECIFIED);
- 	kfree_skbmem(skb);
- }
- EXPORT_SYMBOL(__kfree_skb);
-@@ -1056,7 +1056,7 @@ EXPORT_SYMBOL(consume_skb);
- void __consume_stateless_skb(struct sk_buff *skb)
- {
- 	trace_consume_skb(skb);
--	skb_release_data(skb);
-+	skb_release_data(skb, SKB_CONSUMED);
- 	kfree_skbmem(skb);
- }
+-	if (qp->q.flags & INET_FRAG_COMPLETE)
++	/* If reassembly is already done, @skb must be a duplicate frag. */
++	if (qp->q.flags & INET_FRAG_COMPLETE) {
++		SKB_DR_SET(reason, DUP_FRAG);
+ 		goto err;
++	}
  
-@@ -1081,7 +1081,7 @@ static void napi_skb_cache_put(struct sk_buff *skb)
+ 	if (!(IPCB(skb)->flags & IPSKB_FRAG_COMPLETE) &&
+ 	    unlikely(ip_frag_too_far(qp)) &&
+@@ -382,8 +386,9 @@ static int ip_frag_queue(struct ipq *qp, struct sk_buff *skb)
  
- void __kfree_skb_defer(struct sk_buff *skb)
- {
--	skb_release_all(skb);
-+	skb_release_all(skb, SKB_DROP_REASON_NOT_SPECIFIED);
- 	napi_skb_cache_put(skb);
- }
- 
-@@ -1119,7 +1119,7 @@ void napi_consume_skb(struct sk_buff *skb, int budget)
- 		return;
+ insert_error:
+ 	if (err == IPFRAG_DUP) {
+-		kfree_skb(skb);
+-		return -EINVAL;
++		SKB_DR_SET(reason, DUP_FRAG);
++		err = -EINVAL;
++		goto err;
  	}
- 
--	skb_release_all(skb);
-+	skb_release_all(skb, SKB_CONSUMED);
- 	napi_skb_cache_put(skb);
+ 	err = -EINVAL;
+ 	__IP_INC_STATS(net, IPSTATS_MIB_REASM_OVERLAPS);
+@@ -391,7 +396,7 @@ static int ip_frag_queue(struct ipq *qp, struct sk_buff *skb)
+ 	inet_frag_kill(&qp->q);
+ 	__IP_INC_STATS(net, IPSTATS_MIB_REASMFAILS);
+ err:
+-	kfree_skb(skb);
++	kfree_skb_reason(skb, reason);
+ 	return err;
  }
- EXPORT_SYMBOL(napi_consume_skb);
-@@ -1250,7 +1250,7 @@ EXPORT_SYMBOL_GPL(alloc_skb_for_msg);
-  */
- struct sk_buff *skb_morph(struct sk_buff *dst, struct sk_buff *src)
- {
--	skb_release_all(dst);
-+	skb_release_all(dst, SKB_CONSUMED);
- 	return __skb_clone(dst, src);
+ 
+diff --git a/net/ipv6/netfilter/nf_conntrack_reasm.c b/net/ipv6/netfilter/nf_conntrack_reasm.c
+index 38db0064d6613a8472ec2835afdbf80071c1fcc2..d13240f13607bae8833d4e53471c575280ff49dc 100644
+--- a/net/ipv6/netfilter/nf_conntrack_reasm.c
++++ b/net/ipv6/netfilter/nf_conntrack_reasm.c
+@@ -253,7 +253,7 @@ static int nf_ct_frag6_queue(struct frag_queue *fq, struct sk_buff *skb,
+ 	if (err) {
+ 		if (err == IPFRAG_DUP) {
+ 			/* No error for duplicates, pretend they got queued. */
+-			kfree_skb(skb);
++			kfree_skb_reason(skb, SKB_DROP_REASON_DUP_FRAG);
+ 			return -EINPROGRESS;
+ 		}
+ 		goto insert_error;
+diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
+index ff866f2a879e00769b273c22b970740eaebb6d99..5bc8a28e67f944c9e7bead79afa8b80a34b92db9 100644
+--- a/net/ipv6/reassembly.c
++++ b/net/ipv6/reassembly.c
+@@ -112,10 +112,14 @@ static int ip6_frag_queue(struct frag_queue *fq, struct sk_buff *skb,
+ 	struct sk_buff *prev_tail;
+ 	struct net_device *dev;
+ 	int err = -ENOENT;
++	SKB_DR(reason);
+ 	u8 ecn;
+ 
+-	if (fq->q.flags & INET_FRAG_COMPLETE)
++	/* If reassembly is already done, @skb must be a duplicate frag. */
++	if (fq->q.flags & INET_FRAG_COMPLETE) {
++		SKB_DR_SET(reason, DUP_FRAG);
+ 		goto err;
++	}
+ 
+ 	err = -EINVAL;
+ 	offset = ntohs(fhdr->frag_off) & ~0x7;
+@@ -226,8 +230,9 @@ static int ip6_frag_queue(struct frag_queue *fq, struct sk_buff *skb,
+ 
+ insert_error:
+ 	if (err == IPFRAG_DUP) {
+-		kfree_skb(skb);
+-		return -EINVAL;
++		SKB_DR_SET(reason, DUP_FRAG);
++		err = -EINVAL;
++		goto err;
+ 	}
+ 	err = -EINVAL;
+ 	__IP6_INC_STATS(net, ip6_dst_idev(skb_dst(skb)),
+@@ -237,7 +242,7 @@ static int ip6_frag_queue(struct frag_queue *fq, struct sk_buff *skb,
+ 	__IP6_INC_STATS(net, ip6_dst_idev(skb_dst(skb)),
+ 			IPSTATS_MIB_REASMFAILS);
+ err:
+-	kfree_skb(skb);
++	kfree_skb_reason(skb, reason);
+ 	return err;
  }
- EXPORT_SYMBOL_GPL(skb_morph);
-@@ -1873,7 +1873,7 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
- 		if (skb_has_frag_list(skb))
- 			skb_clone_fraglist(skb);
  
--		skb_release_data(skb);
-+		skb_release_data(skb, SKB_CONSUMED);
- 	} else {
- 		skb_free_head(skb);
- 	}
-@@ -6213,7 +6213,7 @@ static int pskb_carve_inside_header(struct sk_buff *skb, const u32 off,
- 			skb_frag_ref(skb, i);
- 		if (skb_has_frag_list(skb))
- 			skb_clone_fraglist(skb);
--		skb_release_data(skb);
-+		skb_release_data(skb, SKB_CONSUMED);
- 	} else {
- 		/* we can reuse existing recount- all we did was
- 		 * relocate values
-@@ -6356,7 +6356,7 @@ static int pskb_carve_inside_nonlinear(struct sk_buff *skb, const u32 off,
- 		kfree(data);
- 		return -ENOMEM;
- 	}
--	skb_release_data(skb);
-+	skb_release_data(skb, SKB_CONSUMED);
- 
- 	skb->head = data;
- 	skb->head_frag = 0;
 -- 
 2.38.1.273.g43a17bfeac-goog
 
