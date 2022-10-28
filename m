@@ -2,119 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE91B611378
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 15:46:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 267DE611399
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 15:51:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230241AbiJ1Nqv convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 28 Oct 2022 09:46:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32924 "EHLO
+        id S229787AbiJ1Nvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 09:51:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231400AbiJ1Nqd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 09:46:33 -0400
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 767761BE424
-        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 06:45:32 -0700 (PDT)
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-96-KHC31jlENvC4OZ7p6aimog-1; Fri, 28 Oct 2022 09:45:30 -0400
-X-MC-Unique: KHC31jlENvC4OZ7p6aimog-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A0FBE803D48;
-        Fri, 28 Oct 2022 13:45:29 +0000 (UTC)
-Received: from p1.redhat.com (unknown [10.39.193.54])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 95C74FD48;
-        Fri, 28 Oct 2022 13:45:28 +0000 (UTC)
-From:   Stefan Assmann <sassmann@kpanic.de>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        patryk.piotrowski@intel.com, sassmann@kpanic.de
-Subject: [PATCH net-next] iavf: check that state transitions happen under lock
-Date:   Fri, 28 Oct 2022 15:45:15 +0200
-Message-Id: <20221028134515.253022-1-sassmann@kpanic.de>
+        with ESMTP id S229689AbiJ1NvL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 09:51:11 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C643DAEA1F;
+        Fri, 28 Oct 2022 06:51:06 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id m6so4881461pfb.0;
+        Fri, 28 Oct 2022 06:51:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=gVR7uLVEIb14+gIUsjABrQEQi2BsRftXIio3cVFwFYQ=;
+        b=mXLZFNyNtymeMlvxGAoMhzfwbQyjIXXXM12ojwNCUV47agltlck9ZxdWTShPILGCsY
+         Ok4eyCLHrcgI7cYTvova61YIGnDsbhuX/RJE6FBKRTDBBl8v6UVyt7ffZapDkrrYeVoK
+         TQZz/dTXzN70mxdy81R03x6s/+TuFsXGg5KnmIdPnnt6JL7/eS0kST4ARj8HfFSvrFGe
+         FGyoANksj/IVaF8tYRYBXPusInU6OA1MmCr645RD0636ynWrmZAZPtAmkHkENzJrX4sS
+         WLITgHitn4SIUWIlxGaZRuuSVM2kZptNwenCN4S6DufjZg7Jc33vFjoqRhOeFZeQkWCI
+         jnjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=gVR7uLVEIb14+gIUsjABrQEQi2BsRftXIio3cVFwFYQ=;
+        b=hFgRNHqFlu0cfV9ViChCZdgcf1t2gzSMGXVIfXyCrT6jn592TZvWp9UZKL1szfO6M5
+         xXocLcqoN9p9YgUictybA/jeV0tjIStzo/Tns30TnqPZgWL3H9CpkRMCP9BDB4pbf7Od
+         uQ99e65Hj0Akl0WftxEWxCmlzKZnq5jUoJ46bcm9+7U5kX7t5XkOlgYXWsdFmhUST2TF
+         ru155IoZcClEzkTguYhMHMfynsfKXh8z5ncl6xaNuc7sXGrBnsRZY1JcD4hsqEVuxa3W
+         /IL9fHFv/fx5ngiOwKlxkGIdJXFryJKNK7aoiubHf03PIYLocyS0TgQfSJbKmhhHG0Xu
+         VmYg==
+X-Gm-Message-State: ACrzQf3rUOAykZDnAqeW6heWU14UvT+nEnSEdPsa+yFGGwUQo5Z3Ae/G
+        5Wov2N0cyNvGhFR4a0QxLA0=
+X-Google-Smtp-Source: AMsMyM6if4CBEcjN2RGRqt4eY19a8v/sOOaQYnzPkWhBOTpAgAtb7eX963Y9r6IJG/vjBS81PVWSGA==
+X-Received: by 2002:a63:7704:0:b0:464:3985:8963 with SMTP id s4-20020a637704000000b0046439858963mr48420258pgc.154.1666965066258;
+        Fri, 28 Oct 2022 06:51:06 -0700 (PDT)
+Received: from [192.168.43.80] (subs03-180-214-233-72.three.co.id. [180.214.233.72])
+        by smtp.gmail.com with ESMTPSA id p18-20020a170902ead200b00176a6ba5969sm3074274pld.98.2022.10.28.06.51.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 28 Oct 2022 06:51:05 -0700 (PDT)
+Message-ID: <61febb47-28a4-3343-081c-4c06b87ba870@gmail.com>
+Date:   Fri, 28 Oct 2022 20:50:59 +0700
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kpanic.de
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252; x-default=true
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [PATCH 01/15] hamradio: baycom: remove BAYCOM_MAGIC
+Content-Language: en-US
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     =?UTF-8?B?0L3QsNCx?= <nabijaczleweli@nabijaczleweli.xyz>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Federico Vaga <federico.vaga@vaga.pv.it>,
+        Alex Shi <alexs@kernel.org>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Hu Haowen <src.res@email.cn>,
+        Thomas Sailer <t.sailer@alumni.ethz.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        =?UTF-8?Q?Jakub_Kici=c5=84ski?= <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-doc-tw-discuss@lists.sourceforge.net,
+        linux-hams@vger.kernel.org, netdev@vger.kernel.org
+References: <9a453437b5c3b4b1887c1bd84455b0cc3d1c40b2.1666822928.git.nabijaczleweli@nabijaczleweli.xyz>
+ <47c2bffb-6bfe-7f5d-0d2d-3cbb99d31019@gmail.com> <Y1vccrsHSnF1QOIb@kadam>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <Y1vccrsHSnF1QOIb@kadam>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a check to make sure crit_lock is being held during every state
-transition and print a warning if that's not the case. For convenience
-a wrapper is added that helps pointing out where the locking is missing.
+On 10/28/22 20:43, Dan Carpenter wrote:
+>>
+>> Also, s/Kill it/Remove BAYCOM_MAGIC from magic numbers table/ (your
+>> wording is kinda mature).
+>>
+> 
+> The kernel has almost 13 thousand kills...
+> 
+> $ git grep -i kill | wc -l
+> 12975
+> $
+> 
+> It's fine.
+> 
 
-Make an exception for iavf_probe() as that is too early in the init
-process and generates a false positive report.
+The word meaning depends on context. In this case, the author means
+removing SOME_MAGIC magic number from the table, one by one until
+the magic number documentation is removed (due to historical cruft).
 
-Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
----
- drivers/net/ethernet/intel/iavf/iavf.h      | 23 +++++++++++++++------
- drivers/net/ethernet/intel/iavf/iavf_main.c |  2 +-
- 2 files changed, 18 insertions(+), 7 deletions(-)
+Thanks.
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
-index 3f6187c16424..28f41bbc9c86 100644
---- a/drivers/net/ethernet/intel/iavf/iavf.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf.h
-@@ -498,19 +498,30 @@ static inline const char *iavf_state_str(enum iavf_state_t state)
- 	}
- }
- 
--static inline void iavf_change_state(struct iavf_adapter *adapter,
--				     enum iavf_state_t state)
-+static inline void __iavf_change_state(struct iavf_adapter *adapter,
-+				       enum iavf_state_t state,
-+				       const char *func,
-+				       int line)
- {
- 	if (adapter->state != state) {
- 		adapter->last_state = adapter->state;
- 		adapter->state = state;
- 	}
--	dev_dbg(&adapter->pdev->dev,
--		"state transition from:%s to:%s\n",
--		iavf_state_str(adapter->last_state),
--		iavf_state_str(adapter->state));
-+	if (mutex_is_locked(&adapter->crit_lock))
-+		dev_dbg(&adapter->pdev->dev, "%s:%d state transition %s to %s\n",
-+			func, line,
-+			iavf_state_str(adapter->last_state),
-+			iavf_state_str(adapter->state));
-+	else
-+		dev_warn(&adapter->pdev->dev, "%s:%d state transition %s to %s without locking!\n",
-+			 func, line,
-+			 iavf_state_str(adapter->last_state),
-+			 iavf_state_str(adapter->state));
- }
- 
-+#define iavf_change_state(adapter, state) \
-+	__iavf_change_state(adapter, state, __func__, __LINE__)
-+
- int iavf_up(struct iavf_adapter *adapter);
- void iavf_down(struct iavf_adapter *adapter);
- int iavf_process_config(struct iavf_adapter *adapter);
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 3fc572341781..bbc0c9f347a7 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -4892,7 +4892,7 @@ static int iavf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	hw->back = adapter;
- 
- 	adapter->msg_enable = BIT(DEFAULT_DEBUG_LEVEL_SHIFT) - 1;
--	iavf_change_state(adapter, __IAVF_STARTUP);
-+	adapter->state = __IAVF_STARTUP;
- 
- 	/* Call save state here because it relies on the adapter struct. */
- 	pci_save_state(pdev);
 -- 
-2.37.3
+An old man doll... just what I always wanted! - Clara
 
