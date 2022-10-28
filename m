@@ -2,170 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CC29610DE8
-	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 11:55:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E39D2610E1F
+	for <lists+netdev@lfdr.de>; Fri, 28 Oct 2022 12:10:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230218AbiJ1JzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 05:55:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48442 "EHLO
+        id S230100AbiJ1KKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 06:10:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230310AbiJ1Jyp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 05:54:45 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCAA065AC;
-        Fri, 28 Oct 2022 02:54:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1666950873; x=1698486873;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=rVdNzdBQO+N6n0DeTiUUzVhpCEMcLGmACZM8CQ8W5rc=;
-  b=aOkEEG7Y29FfRMhpjCLnRr2nta6ITmvQ6s0CW3KffJTs7XjZkMPIF1gF
-   kwTyUaIZgVUpMUpYs84b6/jZU14j31CPJ0GXLRjiC0l9pOaWa+mmRokES
-   oPezExb7Pflk3jlJA785X28Irc8SMm/WR0moVnF2tihVcxpPDO8v63Zdm
-   GIrjPPWuBVznsFd/aV5B99R2+emiQ/9b6xCbdi7w4hknfVzqvbhicw2tT
-   ySCAweBj4AxWBD2hA9H23SU3tGTgMlNt8Fb5LmG+IpxeT0aXE8SNBp7j5
-   QXqh2ovtDkIQXtfjZ4fRql70k9sNe+fYJJwuATgrcI7wxx/wXCL71EpZm
-   g==;
-X-IronPort-AV: E=Sophos;i="5.95,220,1661842800"; 
-   d="scan'208";a="186674645"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Oct 2022 02:54:32 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 28 Oct 2022 02:54:26 -0700
-Received: from DEN-LT-70577.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Fri, 28 Oct 2022 02:54:22 -0700
-From:   Daniel Machon <daniel.machon@microchip.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <petrm@nvidia.com>,
-        <maxime.chevallier@bootlin.com>, <thomas.petazzoni@bootlin.com>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <lars.povlsen@microchip.com>, <Steen.Hegelund@microchip.com>,
-        <daniel.machon@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <joe@perches.com>, <linux@armlinux.org.uk>,
-        <horatiu.vultur@microchip.com>, <Julia.Lawall@inria.fr>,
-        <vladimir.oltean@nxp.com>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH net-next v4 6/6] net: microchip: sparx5: add support for offloading default prio
-Date:   Fri, 28 Oct 2022 12:03:20 +0200
-Message-ID: <20221028100320.786984-7-daniel.machon@microchip.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221028100320.786984-1-daniel.machon@microchip.com>
-References: <20221028100320.786984-1-daniel.machon@microchip.com>
+        with ESMTP id S229551AbiJ1KKh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 06:10:37 -0400
+Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [IPv6:2a02:1800:120:4::f00:13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2374CACA3C
+        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 03:10:33 -0700 (PDT)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed10:53a:31ee:412:433f])
+        by baptiste.telenet-ops.be with bizsmtp
+        id dNAW2800L5LQXpN01NAWpm; Fri, 28 Oct 2022 12:10:31 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1ooMJp-001vO6-Tb; Fri, 28 Oct 2022 12:10:29 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1ooMGN-00GlS3-RV; Fri, 28 Oct 2022 12:06:55 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     Ulrich Hecht <uli+renesas@fpond.eu>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] can: rcar_canfd: Add missing ECC error checks for channels 2-7
+Date:   Fri, 28 Oct 2022 12:06:45 +0200
+Message-Id: <4edb2ea46cc64d0532a08a924179827481e14b4f.1666951503.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for offloading default prio {ETHERTYPE, 0, prio}.
+When introducing support for R-Car V3U, which has 8 instead of 2
+channels, the ECC error bitmask was extended to take into account the
+extra channels, but rcar_canfd_global_error() was not updated to act
+upon the extra bits.
 
-Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
+Replace the RCANFD_GERFL_EEF[01] macros by a new macro that takes the
+channel number, fixing R-Car V3U while simplifying the code.
+
+Fixes: 45721c406dcf50d4 ("can: rcar_canfd: Add support for r8a779a0 SoC")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- .../ethernet/microchip/sparx5/sparx5_dcb.c    | 12 ++++++++++
- .../ethernet/microchip/sparx5/sparx5_port.c   | 23 +++++++++++++++++++
- .../ethernet/microchip/sparx5/sparx5_port.h   |  5 ++++
- 3 files changed, 40 insertions(+)
+Compile-tested only.
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c b/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c
-index 283d5f338e0e..df2374e64b72 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c
-@@ -34,6 +34,13 @@ static int sparx5_dcb_app_validate(struct net_device *dev,
- 	int err = 0;
+This patch conflicts with "[PATCH v3 6/6] can: rcar_canfd: Add
+has_gerfl_eef to struct rcar_canfd_hw_info"[1].  Sorry for that.
+
+[1] https://lore.kernel.org/all/20221027082158.95895-7-biju.das.jz@bp.renesas.com/
+---
+ drivers/net/can/rcar/rcar_canfd.c | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
+index 710bd0e9c3c08c02..7cca9b7507cc6805 100644
+--- a/drivers/net/can/rcar/rcar_canfd.c
++++ b/drivers/net/can/rcar/rcar_canfd.c
+@@ -81,8 +81,7 @@ enum rcanfd_chip_id {
  
- 	switch (app->selector) {
-+	/* Default priority checks */
-+	case IEEE_8021QAZ_APP_SEL_ETHERTYPE:
-+		if (app->protocol != 0)
-+			err = -EINVAL;
-+		else if (app->priority >= SPX5_PRIOS)
-+			err = -ERANGE;
-+		break;
- 	/* Dscp checks */
- 	case IEEE_8021QAZ_APP_SEL_DSCP:
- 		if (app->protocol > 63)
-@@ -122,6 +129,11 @@ static int sparx5_dcb_app_update(struct net_device *dev)
- 	dscp_map = &qos.dscp.map;
- 	pcp_map = &qos.pcp.map;
+ /* RSCFDnCFDGERFL / RSCFDnGERFL */
+ #define RCANFD_GERFL_EEF0_7		GENMASK(23, 16)
+-#define RCANFD_GERFL_EEF1		BIT(17)
+-#define RCANFD_GERFL_EEF0		BIT(16)
++#define RCANFD_GERFL_EEF(ch)		BIT(16 + (ch))
+ #define RCANFD_GERFL_CMPOF		BIT(3)	/* CAN FD only */
+ #define RCANFD_GERFL_THLES		BIT(2)
+ #define RCANFD_GERFL_MES		BIT(1)
+@@ -90,7 +89,7 @@ enum rcanfd_chip_id {
  
-+	/* Get default prio. */
-+	qos.default_prio = dcb_ieee_getapp_default_prio_mask(dev);
-+	if (qos.default_prio)
-+		qos.default_prio = fls(qos.default_prio) - 1;
-+
- 	/* Get dscp ingress mapping */
- 	for (i = 0; i < ARRAY_SIZE(dscp_map->map); i++) {
- 		app_itr.selector = IEEE_8021QAZ_APP_SEL_DSCP;
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_port.c b/drivers/net/ethernet/microchip/sparx5/sparx5_port.c
-index fb5e321c4896..73ebe76d7e50 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_port.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_port.c
-@@ -1151,6 +1151,7 @@ int sparx5_port_qos_set(struct sparx5_port *port,
- {
- 	sparx5_port_qos_dscp_set(port, &qos->dscp);
- 	sparx5_port_qos_pcp_set(port, &qos->pcp);
-+	sparx5_port_qos_default_set(port, qos);
+ #define RCANFD_GERFL_ERR(gpriv, x) \
+ 	((x) & (reg_v3u(gpriv, RCANFD_GERFL_EEF0_7, \
+-			RCANFD_GERFL_EEF0 | RCANFD_GERFL_EEF1) | \
++			RCANFD_GERFL_EEF(0) | RCANFD_GERFL_EEF(1)) | \
+ 		RCANFD_GERFL_MES | \
+ 		((gpriv)->fdmode ? RCANFD_GERFL_CMPOF : 0)))
  
- 	return 0;
- }
-@@ -1220,3 +1221,25 @@ int sparx5_port_qos_dscp_set(const struct sparx5_port *port,
+@@ -936,12 +935,8 @@ static void rcar_canfd_global_error(struct net_device *ndev)
+ 	u32 ridx = ch + RCANFD_RFFIFO_IDX;
  
- 	return 0;
- }
-+
-+int sparx5_port_qos_default_set(const struct sparx5_port *port,
-+				const struct sparx5_port_qos *qos)
-+{
-+	struct sparx5 *sparx5 = port->sparx5;
-+
-+	/* Set default prio and dp level */
-+	spx5_rmw(ANA_CL_QOS_CFG_DEFAULT_QOS_VAL_SET(qos->default_prio) |
-+		 ANA_CL_QOS_CFG_DEFAULT_DP_VAL_SET(0),
-+		 ANA_CL_QOS_CFG_DEFAULT_QOS_VAL |
-+		 ANA_CL_QOS_CFG_DEFAULT_DP_VAL,
-+		 sparx5, ANA_CL_QOS_CFG(port->portno));
-+
-+	/* Set default pcp and dei for untagged frames */
-+	spx5_rmw(ANA_CL_VLAN_CTRL_PORT_PCP_SET(0) |
-+		 ANA_CL_VLAN_CTRL_PORT_DEI_SET(0),
-+		 ANA_CL_VLAN_CTRL_PORT_PCP |
-+		 ANA_CL_VLAN_CTRL_PORT_DEI,
-+		 sparx5, ANA_CL_VLAN_CTRL(port->portno));
-+
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_port.h b/drivers/net/ethernet/microchip/sparx5/sparx5_port.h
-index a0cd53fa3ad0..588eecff59f8 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_port.h
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_port.h
-@@ -114,6 +114,7 @@ struct sparx5_port_qos_dscp {
- struct sparx5_port_qos {
- 	struct sparx5_port_qos_pcp pcp;
- 	struct sparx5_port_qos_dscp dscp;
-+	u8 default_prio;
- };
- 
- int sparx5_port_qos_set(struct sparx5_port *port, struct sparx5_port_qos *qos);
-@@ -123,4 +124,8 @@ int sparx5_port_qos_pcp_set(const struct sparx5_port *port,
- 
- int sparx5_port_qos_dscp_set(const struct sparx5_port *port,
- 			     struct sparx5_port_qos_dscp *qos);
-+
-+int sparx5_port_qos_default_set(const struct sparx5_port *port,
-+				const struct sparx5_port_qos *qos);
-+
- #endif	/* __SPARX5_PORT_H__ */
+ 	gerfl = rcar_canfd_read(priv->base, RCANFD_GERFL);
+-	if ((gerfl & RCANFD_GERFL_EEF0) && (ch == 0)) {
+-		netdev_dbg(ndev, "Ch0: ECC Error flag\n");
+-		stats->tx_dropped++;
+-	}
+-	if ((gerfl & RCANFD_GERFL_EEF1) && (ch == 1)) {
+-		netdev_dbg(ndev, "Ch1: ECC Error flag\n");
++	if (gerfl & RCANFD_GERFL_EEF(ch)) {
++		netdev_dbg(ndev, "Ch%u: ECC Error flag\n", ch);
+ 		stats->tx_dropped++;
+ 	}
+ 	if (gerfl & RCANFD_GERFL_MES) {
 -- 
-2.34.1
+2.25.1
 
