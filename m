@@ -2,120 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 69372612550
-	for <lists+netdev@lfdr.de>; Sat, 29 Oct 2022 22:45:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 690A6612555
+	for <lists+netdev@lfdr.de>; Sat, 29 Oct 2022 22:56:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229587AbiJ2Upw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Oct 2022 16:45:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53634 "EHLO
+        id S229642AbiJ2Uyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Oct 2022 16:54:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiJ2Upv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Oct 2022 16:45:51 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D41EC25EA5;
-        Sat, 29 Oct 2022 13:45:49 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id q1so7592131pgl.11;
-        Sat, 29 Oct 2022 13:45:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=hSH/pzqnHJhmvnpNbViIPrlE7JaKhF2bqCNFXMf0qyI=;
-        b=hZolOdpUebBYpfjmAF3KEiy7Rax6O1IpX0qOeRey0OC3zuO462/AWCuWH4wS2f5ZcZ
-         NjbVUmRe7OYZbvUlxVpgLS9+6tluA9Vo0r0Un/Mlj3YyU3VX+y07wIiwCHNaGcZriuAU
-         D9XuIMkPKJvYVG+hshpDVMLHmIYVMwNLxmFkQoqoA6PUV+MuoENAFprroXoimjXlHAjp
-         ejGeAedSkx7QPQUM0HLVTCU9HZOuw7zGsvc4bfPQ7sy9GrABqwQY4atxpz5hjmgqAtMy
-         0Sd6pgSJHVcNoCSJvalzHka3/Z/thV1tCRGppwKjtprVL3t12Df2tzJM4sGv4J/R4mxE
-         afBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=hSH/pzqnHJhmvnpNbViIPrlE7JaKhF2bqCNFXMf0qyI=;
-        b=eqzkjMH4hPaqHTJbpbIg+IWTS12cUUi3ZQfxVfhXiTQ1v1DsidDDh8iKweI+XLMHpq
-         a+VEEOU2/dL1qmDgGO6J/sZrIRvPRC04fJZYqjuWkaDoF59OCYwOiFdgmK//2nsiVj7x
-         C9nDl09c3hC1nVufJn9ep7/snwwtpkv0/JfUmYrKqlWuerqVe5kl7xypd0sY6OGHYB2Z
-         sYC/rF0b6iXaXr1/NzuH4BdS0N2shRPnMwLQ4rH9Lk880sr+4lGPcw1oQ7tRmgynx0MJ
-         OnbCnqAlcGVhVT/ncDQP2zDqewvDaKbzmFZ2C7KnenXQc64BCupypIT7xkWdVTrswLLd
-         l3Mw==
-X-Gm-Message-State: ACrzQf1XdggBAp6Mi34gSHYGWzIvN5acn7jenqApuYuAHXeqJZurgZzm
-        3abMtk/H3AnBJLudRVUY/bvNTNcghCth5RrB
-X-Google-Smtp-Source: AMsMyM5Q7E0Puhxa79DKWNwU7/JkQpTOgvOA1SwUpbA7XES8QMi4xRRCHPJFxc0/9khH2ouQ2nSczw==
-X-Received: by 2002:a63:6986:0:b0:43c:8417:8dac with SMTP id e128-20020a636986000000b0043c84178dacmr5335735pgc.286.1667076349102;
-        Sat, 29 Oct 2022 13:45:49 -0700 (PDT)
-Received: from uftrace.. ([14.5.161.231])
-        by smtp.gmail.com with ESMTPSA id q42-20020a17090a17ad00b0021282014066sm1461246pja.9.2022.10.29.13.45.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Oct 2022 13:45:48 -0700 (PDT)
-From:   Kang Minchul <tegongkang@gmail.com>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Kang Minchul <tegongkang@gmail.com>
-Subject: [PATCH] net: bluetooth: Use kzalloc instead of kmalloc/memset
-Date:   Sun, 30 Oct 2022 05:45:41 +0900
-Message-Id: <20221029204541.20967-1-tegongkang@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229456AbiJ2Uyp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Oct 2022 16:54:45 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C19C312A99;
+        Sat, 29 Oct 2022 13:54:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=CNjyzWt288CCW6R/x1OIEnm0pp7lSqIe3AQITuIYZAI=;
+        t=1667076882; x=1668286482; b=YNodu80fxKT6g/wTkEsDPtr3DiBzSZkgaxQMtQuaIClB9Sl
+        Yo9J6ElI16mGDFUV66bhiONyBdAay7TD363fxsnTVPBKD5/cvFZ2VtPA1sQYDyXw1Do76zjGLIBZ6
+        byLPFdpXq/o2Pe01N+XDHCOq9uLhqLaAPIM5u+nt5cWtqTUuqNCIq3RW54BVrxaGoloZxk0bR+ils
+        Sgh0p2tAQS3Z6lqUDMXLwNtc2B57O70mfMaV8sJ6gK31tvRLsUWsWy7b7D0Le+YdOdFFG35Rjx8K4
+        wB1DRW8lmpxI3GyrPTgMchM//70Nr8VIggDlzhg7bWNEJgj4YhqtutQg9oIb5kUA==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1oosql-002VYh-2y;
+        Sat, 29 Oct 2022 22:54:40 +0200
+Message-ID: <7193d1bcfcff1ea5eb83558923ada5530c8d3c9f.camel@sipsolutions.net>
+Subject: Re: pull-request: wireless-next-2022-10-28
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>, Kalle Valo <kvalo@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Date:   Sat, 29 Oct 2022 22:54:39 +0200
+In-Reply-To: <20221028183439.2ff16027@kicinski-fedora-PC1C0HJN>
+References: <20221028132943.304ECC433B5@smtp.kernel.org>
+         <20221028183439.2ff16027@kicinski-fedora-PC1C0HJN>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-malware-bazaar: not-scanned
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit replace kmalloc + memset to kzalloc
-for better code readability and simplicity.
+On Fri, 2022-10-28 at 18:34 -0700, Jakub Kicinski wrote:
+> >=20
+> > --- a/net/mac80211/util.c
+> > +++ b/net/mac80211/util.c
+> > @@@ -1506,7 -1648,7 +1650,7 @@@ ieee802_11_parse_elems_full(struct ieee
+> >         const struct element *non_inherit =3D NULL;
+> >         u8 *nontransmitted_profile;
+> >         int nontransmitted_profile_len =3D 0;
+> > -       size_t scratch_len =3D params->len;
+> >  -      size_t scratch_len =3D params->scratch_len ?: 2 * params->len;
+> > ++      size_t scratch_len =3D params->scratch_len ?: 3 * params->len;
+> >=20
+> >         elems =3D kzalloc(sizeof(*elems) + scratch_len, GFP_ATOMIC);
+> >         if (!elems)
+> >=20
+> > [1] https://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-n=
+ext.git/commit/?id=3Ddfd2d876b3fda1790bc0239ba4c6967e25d16e91
+> > [2] https://lore.kernel.org/all/20221020032340.5cf101c0@canb.auug.org.a=
+u/
+>=20
+> Thanks! I only saw one conflict FWIW
+>=20
 
-Following messages are related cocci warnings.
+Hah. Me too, when I tried this to see what the resolution should be. Git
+versions or something?
 
-WARNING: kzalloc should be used for d, instead of kmalloc/memset
-
-Signed-off-by: Kang Minchul <tegongkang@gmail.com>
----
- net/bluetooth/hci_conn.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-index 7a59c4487050..287d313aa312 100644
---- a/net/bluetooth/hci_conn.c
-+++ b/net/bluetooth/hci_conn.c
-@@ -824,11 +824,10 @@ static int hci_le_terminate_big(struct hci_dev *hdev, u8 big, u8 bis)
- 
- 	bt_dev_dbg(hdev, "big 0x%2.2x bis 0x%2.2x", big, bis);
- 
--	d = kmalloc(sizeof(*d), GFP_KERNEL);
-+	d = kzalloc(sizeof(*d), GFP_KERNEL);
- 	if (!d)
- 		return -ENOMEM;
- 
--	memset(d, 0, sizeof(*d));
- 	d->big = big;
- 	d->bis = bis;
- 
-@@ -861,11 +860,10 @@ static int hci_le_big_terminate(struct hci_dev *hdev, u8 big, u16 sync_handle)
- 
- 	bt_dev_dbg(hdev, "big 0x%2.2x sync_handle 0x%4.4x", big, sync_handle);
- 
--	d = kmalloc(sizeof(*d), GFP_KERNEL);
-+	d = kzalloc(sizeof(*d), GFP_KERNEL);
- 	if (!d)
- 		return -ENOMEM;
- 
--	memset(d, 0, sizeof(*d));
- 	d->big = big;
- 	d->sync_handle = sync_handle;
- 
--- 
-2.34.1
-
+johannes
