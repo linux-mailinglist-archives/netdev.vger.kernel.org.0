@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59AE861232E
-	for <lists+netdev@lfdr.de>; Sat, 29 Oct 2022 15:11:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9958612331
+	for <lists+netdev@lfdr.de>; Sat, 29 Oct 2022 15:12:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229935AbiJ2NLm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Oct 2022 09:11:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39376 "EHLO
+        id S229920AbiJ2NMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Oct 2022 09:12:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229741AbiJ2NLf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Oct 2022 09:11:35 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C038E69ED9;
-        Sat, 29 Oct 2022 06:11:22 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id y4so7127583plb.2;
-        Sat, 29 Oct 2022 06:11:22 -0700 (PDT)
+        with ESMTP id S229913AbiJ2NLg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Oct 2022 09:11:36 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B926969F55;
+        Sat, 29 Oct 2022 06:11:26 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id d24so7119258pls.4;
+        Sat, 29 Oct 2022 06:11:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=EJ08uRmM1fk/kBxamD2GYhMoonJypcExaYdhAS5+vYY=;
-        b=gQKasM9QfgTopmhCKxXkRzTulCfogWPr90HNVnkgnOIkOhfqdXLH/Fc3jYFRQ//Ah1
-         jEcGUQGAxoNaJk9Kw5jSJqdsKSbV4nu1R+A4SBTM3lRUDx5VYrPE4T0UlQ8bPT/krtCN
-         FPq7Wt0xrHFx2NpQcAIHdDgs/hTayfP11UBUZnEqz1KnMhZsGO4G1LNpgOB613YGdsW4
-         1fcTyLekvGLTKNz5Ki3x65HyTyu5b8BkkFrLyxiTXsf9nFTwCtJuHjKKtoUUQpWZWwr1
-         /rLEw25C6TE5/Y5MecROd6FvvF7pmBc/uFea+/wMI5E8ZC5uXpoZu7FAHXG7Sb0Hbtts
-         R2Kg==
+        bh=e72HAxh6P1H/A+cQtAP2/BT2cWTj2acR1HBaWNLsTXA=;
+        b=VZh6IoGsSJ9GAYWi9Zk0dr97OxI3Vz3zTfp1PMZvYKSN/yx/b5KS1OVwQt1XtVBqiR
+         O5lt41RqRL89Q+k4OyGmGtIuaoHh7C5MqXVNIqvHorQXpTTMUWXXpG6Qnb24pKS1y1YU
+         2lg18XhZnWrf2tLMQpPuhrYEsF2S6ND6Eyq26EROoGxA3fxi/Ei9YaDqvgz+60An5SRt
+         ltKetpBK2Wu0FUdGgKxhNrSEhL+Z55W9OYnORaOIrZ/JTo1rYX5BhikzFGOvEPHKncds
+         n178NpTfNG+QMppI7dX9Vr4DyWyr256PyJy1qETGe7Na6eJ5pVvx9AI8M44Z91vNz/D6
+         Gv/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=EJ08uRmM1fk/kBxamD2GYhMoonJypcExaYdhAS5+vYY=;
-        b=C9IkDKhv6sorzzCn+PFzwPkpBu9/hw+6mDqUmnPI1ZmqTrOhL7i9Wy31q3e2ep3EoJ
-         WatV3O0RYQXSaur1QFpH/avqkAcGdFa2XDBo0b+9evqUdE4YlzzL4DlFcwlJDBAt8BSJ
-         4HNp30LPNIqggHshpG4z+jYhF6CF66G48GTF4txhlKFjxkGAw8FwOr+npzbLEnzo3etq
-         iKDblmPzuHN5aukgidcgQCXgiil18SVy6D7paDGm7Seag0mfnAJoBtw47ZKSoH6Vj1bk
-         9VTrmcZAWD91n+2ak3phURwWr2zBgiIIf1iWlwPAYJ3Eil1L9QXvA9sHvEmgjATcH0hJ
-         RiMw==
-X-Gm-Message-State: ACrzQf3sb1+lkLYITJNI4Te7emq9KesugY7QVzoHIzHODwqk3YgulyhY
-        OeMz0P5R21ttd+ge4sEDZsoeE01OsdM=
-X-Google-Smtp-Source: AMsMyM5R6pNxRLjYxw2yNEDVPMkwLmqPgIDtbt6yMk7E4UHdwd9eGL3yF3Fy9DvKzcEyG209tfJoeg==
-X-Received: by 2002:a17:902:b598:b0:184:e49d:3042 with SMTP id a24-20020a170902b59800b00184e49d3042mr4361859pls.16.1667049082221;
-        Sat, 29 Oct 2022 06:11:22 -0700 (PDT)
+        bh=e72HAxh6P1H/A+cQtAP2/BT2cWTj2acR1HBaWNLsTXA=;
+        b=QG/5UuezcVQy9cJDxh1/b3EgqXp5Kf8MVFf90QZAQNcKyK/+igNj/Eqk897xtXY1oG
+         SQlOF+mAqf6DAdFMEwOta+W979VVR6d1nu14JuOCrA3hzbl/z6mGjw2ZzF6KY4mAyXpT
+         0fsWlTNHdIx+tya8ZUwCxj0PNGtrsnonsQ5aNQ6aid95FSI+rt2PncAArxChfwN0/aMG
+         4NE6T9mgojgXVkeECRaQCia5cOnsbEko5tv/4p5zbHXg1dcBL77PZw9SmryfLoXvT9lp
+         F3unrT32+XvzB21qAC0gm+fXKi5SEZoUNoHIMDU2YcR91Snyw6ft/Riy2knfl5nwbjpm
+         X1TQ==
+X-Gm-Message-State: ACrzQf2yq5yu5IdZIUneUcQP30g2T+2S1lRHE4lMjGNCA0f38LYS3WDS
+        XkPWqoKpq6ByeM78AQjNBYo=
+X-Google-Smtp-Source: AMsMyM5IfK8MomSFw/Cm2DxK/QnTTJcaBS+TxB/kKEmJilFvMU0LIdbOgUbS5Q551CHTE52LvEE7qw==
+X-Received: by 2002:a17:902:f789:b0:17f:8cb6:7da3 with SMTP id q9-20020a170902f78900b0017f8cb67da3mr4225755pln.167.1667049086249;
+        Sat, 29 Oct 2022 06:11:26 -0700 (PDT)
 Received: from localhost.localdomain ([203.205.141.21])
-        by smtp.gmail.com with ESMTPSA id s7-20020a170902988700b001811a197797sm1244069plp.194.2022.10.29.06.11.18
+        by smtp.gmail.com with ESMTPSA id s7-20020a170902988700b001811a197797sm1244069plp.194.2022.10.29.06.11.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Oct 2022 06:11:21 -0700 (PDT)
+        Sat, 29 Oct 2022 06:11:25 -0700 (PDT)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     edumazet@google.com, kuba@kernel.org
@@ -56,9 +56,9 @@ Cc:     davem@davemloft.net, pabeni@redhat.com, yoshfuji@linux-ipv6.org,
         dsahern@kernel.org, imagedong@tencent.com, kafai@fb.com,
         asml.silence@gmail.com, keescook@chromium.org,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 5/9] net: tcp: store drop reasons in tcp_timewait_state_process()
-Date:   Sat, 29 Oct 2022 21:09:53 +0800
-Message-Id: <20221029130957.1292060-6-imagedong@tencent.com>
+Subject: [PATCH net-next 6/9] net: tcp: store drop reasons in tcp_conn_request()
+Date:   Sat, 29 Oct 2022 21:09:54 +0800
+Message-Id: <20221029130957.1292060-7-imagedong@tencent.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20221029130957.1292060-1-imagedong@tencent.com>
 References: <20221029130957.1292060-1-imagedong@tencent.com>
@@ -76,94 +76,102 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-Store the drop reason to the tcp_skb_cb in tcp_timewait_state_process()
-when the skb is going to be dropped. The new drop reason 'TIMEWAIT' is
-added.
+Store the skb drop reasons to tcp_skb_cb for tcp_conn_request(). When
+the skb should be freed normally, 'TCP_SKB_CB(skb)->drop_reason' will be
+set to SKB_NOT_DROPPED_YET, which means consume_skb() will be called for
+the skb.
+
+Now, we can replace the consume_skb() with try_kfree_skb() in
+tcp_rcv_state_process() if the skb needs to be dropped.
+
+The new drop reasons 'LISTENOVERFLOWS' and 'TCP_REQQFULLDROP' are added,
+which are used for 'accept queue' and 'request queue' full.
 
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
+--
 ---
- include/net/dropreason.h |  7 +++++++
- net/ipv4/tcp_minisocks.c | 15 +++++++++++++--
- 2 files changed, 20 insertions(+), 2 deletions(-)
+ include/net/dropreason.h | 12 ++++++++++++
+ net/ipv4/tcp_input.c     | 11 +++++++++--
+ 2 files changed, 21 insertions(+), 2 deletions(-)
 
 diff --git a/include/net/dropreason.h b/include/net/dropreason.h
-index 0f0edcd5f95f..cbfd88493ef2 100644
+index cbfd88493ef2..633a05c95026 100644
 --- a/include/net/dropreason.h
 +++ b/include/net/dropreason.h
-@@ -69,6 +69,7 @@
- 	FN(IP_INNOROUTES)		\
+@@ -70,6 +70,8 @@
  	FN(PKT_TOO_BIG)			\
  	FN(TCP_PAWSACTIVEREJECTED)	\
-+	FN(TIMEWAIT)			\
+ 	FN(TIMEWAIT)			\
++	FN(LISTENOVERFLOWS)		\
++	FN(TCP_REQQFULLDROP)		\
  	FNe(MAX)
  
  /**
-@@ -305,6 +306,12 @@ enum skb_drop_reason {
- 	 * LINUX_MIB_PAWSACTIVEREJECTED
+@@ -312,6 +314,16 @@ enum skb_drop_reason {
+ 	 * 'SYN' packet
  	 */
- 	SKB_DROP_REASON_TCP_PAWSACTIVEREJECTED,
+ 	SKB_DROP_REASON_TIMEWAIT,
 +	/**
-+	 * @SKB_DROP_REASON_TIMEWAIT: socket is in time-wait state and all
-+	 * packet that received will be treated as 'drop', except a good
-+	 * 'SYN' packet
++	 * @SKB_DROP_REASON_LISTENOVERFLOWS: accept queue of the listen
++	 * socket is full, corresponding to LINUX_MIB_LISTENOVERFLOWS
 +	 */
-+	SKB_DROP_REASON_TIMEWAIT,
++	SKB_DROP_REASON_LISTENOVERFLOWS,
++	/**
++	 * @SKB_DROP_REASON_TCP_REQQFULLDROP: request queue of the listen
++	 * socket is full, corresponding to LINUX_MIB_TCPREQQFULLDROP
++	 */
++	SKB_DROP_REASON_TCP_REQQFULLDROP,
  	/**
  	 * @SKB_DROP_REASON_MAX: the maximum of drop reason, which shouldn't be
  	 * used as a real 'reason'
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index c375f603a16c..e1963394dc4a 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -113,11 +113,16 @@ tcp_timewait_state_process(struct inet_timewait_sock *tw, struct sk_buff *skb,
- 			return tcp_timewait_check_oow_rate_limit(
- 				tw, skb, LINUX_MIB_TCPACKSKIPPEDFINWAIT2);
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index c0e5c4a29a4e..ad088e228b1e 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -6482,7 +6482,9 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
  
--		if (th->rst)
-+		if (th->rst) {
-+			TCP_SKB_DR(skb, TCP_RESET);
- 			goto kill;
+ 			if (!acceptable)
+ 				return 1;
+-			consume_skb(skb);
++
++			reason = TCP_SKB_CB(skb)->drop_reason;
++			try_kfree_skb(skb, reason);
+ 			return 0;
+ 		}
+ 		SKB_DR_SET(reason, TCP_FLAGS);
+@@ -6928,12 +6930,15 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+ 	 */
+ 	if ((syncookies == 2 || inet_csk_reqsk_queue_is_full(sk)) && !isn) {
+ 		want_cookie = tcp_syn_flood_action(sk, rsk_ops->slab_name);
+-		if (!want_cookie)
++		if (!want_cookie) {
++			TCP_SKB_DR(skb, TCP_REQQFULLDROP);
+ 			goto drop;
 +		}
+ 	}
  
--		if (th->syn && !before(TCP_SKB_CB(skb)->seq, tcptw->tw_rcv_nxt))
-+		if (th->syn && !before(TCP_SKB_CB(skb)->seq,
-+				       tcptw->tw_rcv_nxt)) {
-+			TCP_SKB_DR(skb, TCP_FLAGS);
- 			return TCP_TW_RST;
-+		}
+ 	if (sk_acceptq_is_full(sk)) {
+ 		NET_INC_STATS(sock_net(sk), LINUX_MIB_LISTENOVERFLOWS);
++		TCP_SKB_DR(skb, LISTENOVERFLOWS);
+ 		goto drop;
+ 	}
  
- 		/* Dup ACK? */
- 		if (!th->ack ||
-@@ -143,6 +148,9 @@ tcp_timewait_state_process(struct inet_timewait_sock *tw, struct sk_buff *skb,
+@@ -6991,6 +6996,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+ 			 */
+ 			pr_drop_req(req, ntohs(tcp_hdr(skb)->source),
+ 				    rsk_ops->family);
++			TCP_SKB_DR(skb, TCP_REQQFULLDROP);
+ 			goto drop_and_release;
  		}
  
- 		inet_twsk_reschedule(tw, TCP_TIMEWAIT_LEN);
-+
-+		/* skb should be free normally on this case. */
-+		TCP_SKB_CB(skb)->drop_reason = SKB_NOT_DROPPED_YET;
- 		return TCP_TW_ACK;
+@@ -7005,6 +7011,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+ 			inet_rsk(req)->ecn_ok = 0;
  	}
  
-@@ -174,6 +182,7 @@ tcp_timewait_state_process(struct inet_timewait_sock *tw, struct sk_buff *skb,
- 			 * protocol bug yet.
- 			 */
- 			if (!READ_ONCE(twsk_net(tw)->ipv4.sysctl_tcp_rfc1337)) {
-+				TCP_SKB_DR(skb, TCP_RESET);
- kill:
- 				inet_twsk_deschedule_put(tw);
- 				return TCP_TW_SUCCESS;
-@@ -232,9 +241,11 @@ tcp_timewait_state_process(struct inet_timewait_sock *tw, struct sk_buff *skb,
- 		if (paws_reject || th->ack)
- 			inet_twsk_reschedule(tw, TCP_TIMEWAIT_LEN);
- 
-+		TCP_SKB_DR(skb, TIMEWAIT);
- 		return tcp_timewait_check_oow_rate_limit(
- 			tw, skb, LINUX_MIB_TCPACKSKIPPEDTIMEWAIT);
- 	}
-+	TCP_SKB_DR(skb, TCP_RESET);
- 	inet_twsk_put(tw);
- 	return TCP_TW_SUCCESS;
- }
++	TCP_SKB_CB(skb)->drop_reason = SKB_NOT_DROPPED_YET;
+ 	tcp_rsk(req)->snt_isn = isn;
+ 	tcp_rsk(req)->txhash = net_tx_rndhash();
+ 	tcp_rsk(req)->syn_tos = TCP_SKB_CB(skb)->ip_dsfield;
 -- 
 2.37.2
 
