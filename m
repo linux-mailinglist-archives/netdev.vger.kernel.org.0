@@ -2,144 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E9476121AD
-	for <lists+netdev@lfdr.de>; Sat, 29 Oct 2022 11:04:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 715126121F1
+	for <lists+netdev@lfdr.de>; Sat, 29 Oct 2022 11:41:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229636AbiJ2JEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Oct 2022 05:04:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33920 "EHLO
+        id S229482AbiJ2JlJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Oct 2022 05:41:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229562AbiJ2JEk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Oct 2022 05:04:40 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADD65FE5;
-        Sat, 29 Oct 2022 02:04:37 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id f9so6776652pgj.2;
-        Sat, 29 Oct 2022 02:04:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=YRn1A+WL1jPxIpvEG2LgNiWp5qXbKdGgQitgU+8dRwE=;
-        b=h1+/xZhoXaOn0ibpZS2AaI34ufCN+lhYvvnAs8bhvyg3XayXlkprkE6V/1QirCETfV
-         0rvie4kgCL1SEYAYiQnB+Ciy5ZntspLx7eS6iPJ1T/MHRQOYl2V0JBqE1XQCVWFnsrXp
-         tPfmrqR51gTw7VYG9ACaDPZ0TImmal4SoRY7VOcVRXgVnQy8Oa5Xb2bRd/TgzPk1SbWh
-         jxgb+tJF+kI8w7Cs7LVbkomemH9v3vr+vKxgu8Xr6ETgHwAzQq3bv0/x0WLCw9mNdfKO
-         8Fnelh5/HDMpWDv80TGYJgNBg5cGiq298ZLcGKX5beXOnAUiqyDpESjJubOzwg3qc8iT
-         LLGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=YRn1A+WL1jPxIpvEG2LgNiWp5qXbKdGgQitgU+8dRwE=;
-        b=2DBZuUvva+HeTUSNkbY8/Mi8Ylt9m+kTHm0c1Vv5BQEWGivgGwGlSLewVK57NNKPuA
-         7CKVNu4u7aPG4RqEzGKky3BWLNwKylyQQT3gM3B2STEFOaKmXbjSYDDWWC4EFF48Xcls
-         izuqsSLHympTxRa7bkYFNKJNkCsKzR5iZWkwC5DHS0rbldWSfrYhxPIkiC9FlQfLDwEt
-         tyMY4QJS1LtZr6lazLKvw619zLbyEZ7hwyeLfuYJ8KZ4TeNT0L+WjLSPtpdDHgrmUk17
-         UtMnmx3s7k8pQ7hxQQoHPV3VDx4vAOsyi3PpcnYyg8L0kYRh1iaJMbsqxfT19aKdX9uT
-         EPPQ==
-X-Gm-Message-State: ACrzQf2QSIu+KZUVsRjSwsD7BUC1yQkTk7jziiwRV0mneHADlwVviPPB
-        eVRKo17RqsZOOewSZY8iyuY=
-X-Google-Smtp-Source: AMsMyM5lpFX7w4z7uTVjN9rzpM3U9yyj65T1fQtXlWcMfItOZIBNA0dq5cZGD9sP16mrztvpGrzQEg==
-X-Received: by 2002:a05:6a00:78f:b0:56c:8c22:79d6 with SMTP id g15-20020a056a00078f00b0056c8c2279d6mr3569847pfu.16.1667034276648;
-        Sat, 29 Oct 2022 02:04:36 -0700 (PDT)
-Received: from localhost.localdomain ([2601:601:9100:9230:37fc:258f:1646:1aea])
-        by smtp.googlemail.com with ESMTPSA id t4-20020a17090ad50400b002130c269b6fsm683535pju.1.2022.10.29.02.04.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Oct 2022 02:04:35 -0700 (PDT)
-From:   Shane Parslow <shaneparslow808@gmail.com>
-To:     loic.poulain@linaro.org
-Cc:     Shane Parslow <shaneparslow808@gmail.com>,
-        M Chetan Kumar <m.chetan.kumar@intel.com>,
-        Intel Corporation <linuxwwan@intel.com>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2] net: wwan: iosm: add rpc interface for xmm modems
-Date:   Sat, 29 Oct 2022 02:03:56 -0700
-Message-Id: <20221029090355.565200-1-shaneparslow808@gmail.com>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S229441AbiJ2JlI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Oct 2022 05:41:08 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6F311FCF7;
+        Sat, 29 Oct 2022 02:41:06 -0700 (PDT)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MzvYF4W9HzHvRr;
+        Sat, 29 Oct 2022 17:40:49 +0800 (CST)
+Received: from localhost.localdomain (10.175.104.82) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Sat, 29 Oct 2022 17:41:04 +0800
+From:   Ziyang Xuan <william.xuanziyang@huawei.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <peterpenkov96@gmail.com>,
+        <maheshb@google.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <hawk@kernel.org>, <john.fastabend@gmail.com>
+Subject: [PATCH net v2] net: tun: fix bugs for oversize packet when napi frags enabled
+Date:   Sat, 29 Oct 2022 17:41:01 +0800
+Message-ID: <20221029094101.1653855-1-william.xuanziyang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new iosm wwan port that connects to the modem rpc interface. This
-interface provides a configuration channel, and in the case of the 7360, is
-the only way to configure the modem (as it does not support mbim).
+Recently, we got two syzkaller problems because of oversize packet
+when napi frags enabled.
 
-The new interface is compatible with existing software, such as
-open_xdatachannel.py from the xmm7360-pci project [1].
+One of the problems is because the first seg size of the iov_iter
+from user space is very big, it is 2147479538 which is bigger than
+the threshold value for bail out early in __alloc_pages(). And
+skb->pfmemalloc is true, __kmalloc_reserve() would use pfmemalloc
+reserves without __GFP_NOWARN flag. Thus we got a warning as following:
 
-[1] https://github.com/xmm7360/xmm7360-pci
+========================================================
+WARNING: CPU: 1 PID: 17965 at mm/page_alloc.c:5295 __alloc_pages+0x1308/0x16c4 mm/page_alloc.c:5295
+...
+Call trace:
+ __alloc_pages+0x1308/0x16c4 mm/page_alloc.c:5295
+ __alloc_pages_node include/linux/gfp.h:550 [inline]
+ alloc_pages_node include/linux/gfp.h:564 [inline]
+ kmalloc_large_node+0x94/0x350 mm/slub.c:4038
+ __kmalloc_node_track_caller+0x620/0x8e4 mm/slub.c:4545
+ __kmalloc_reserve.constprop.0+0x1e4/0x2b0 net/core/skbuff.c:151
+ pskb_expand_head+0x130/0x8b0 net/core/skbuff.c:1654
+ __skb_grow include/linux/skbuff.h:2779 [inline]
+ tun_napi_alloc_frags+0x144/0x610 drivers/net/tun.c:1477
+ tun_get_user+0x31c/0x2010 drivers/net/tun.c:1835
+ tun_chr_write_iter+0x98/0x100 drivers/net/tun.c:2036
 
-Signed-off-by: Shane Parslow <shaneparslow808@gmail.com>
+The other problem is because odd IPv6 packets without NEXTHDR_NONE
+extension header and have big packet length, it is 2127925 which is
+bigger than ETH_MAX_MTU(65535). After ipv6_gso_pull_exthdrs() in
+ipv6_gro_receive(), network_header offset and transport_header offset
+are all bigger than U16_MAX. That would trigger skb->network_header
+and skb->transport_header overflow error, because they are all '__u16'
+type. Eventually, it would affect the value for __skb_push(skb, value),
+and make it be a big value. After __skb_push() in ipv6_gro_receive(),
+skb->data would less than skb->head, an out of bounds memory bug occurred.
+That would trigger the problem as following:
+
+==================================================================
+BUG: KASAN: use-after-free in eth_type_trans+0x100/0x260
+...
+Call trace:
+ dump_backtrace+0xd8/0x130
+ show_stack+0x1c/0x50
+ dump_stack_lvl+0x64/0x7c
+ print_address_description.constprop.0+0xbc/0x2e8
+ print_report+0x100/0x1e4
+ kasan_report+0x80/0x120
+ __asan_load8+0x78/0xa0
+ eth_type_trans+0x100/0x260
+ napi_gro_frags+0x164/0x550
+ tun_get_user+0xda4/0x1270
+ tun_chr_write_iter+0x74/0x130
+ do_iter_readv_writev+0x130/0x1ec
+ do_iter_write+0xbc/0x1e0
+ vfs_writev+0x13c/0x26c
+
+To fix the problems, restrict the packet size less than
+(ETH_MAX_MTU - NET_SKB_PAD - NET_IP_ALIGN) which has considered reserved
+skb space in napi_alloc_skb() because transport_header is an offset from
+skb->head. Add len check in tun_napi_alloc_frags() simply.
+
+Fixes: 90e33d459407 ("tun: enable napi_gro_frags() for TUN/TAP driver")
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
 ---
- drivers/net/wwan/iosm/iosm_ipc_chnl_cfg.c | 2 +-
- drivers/net/wwan/wwan_core.c              | 4 ++++
- include/linux/wwan.h                      | 2 ++
- 3 files changed, 7 insertions(+), 1 deletion(-)
+v2:
+  - Use (ETH_MAX_MTU - NET_SKB_PAD - NET_IP_ALIGN) instead of ETH_MAX_MTU.
+---
+ drivers/net/tun.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_chnl_cfg.c b/drivers/net/wwan/iosm/iosm_ipc_chnl_cfg.c
-index 128c999e08bb..bcfbc6b3d617 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_chnl_cfg.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_chnl_cfg.c
-@@ -39,7 +39,7 @@ static struct ipc_chnl_cfg modem_cfg[] = {
- 	/* RPC - 0 */
- 	{ IPC_MEM_CTRL_CHL_ID_1, IPC_MEM_PIPE_2, IPC_MEM_PIPE_3,
- 	  IPC_MEM_MAX_TDS_RPC, IPC_MEM_MAX_TDS_RPC,
--	  IPC_MEM_MAX_DL_RPC_BUF_SIZE, WWAN_PORT_UNKNOWN },
-+	  IPC_MEM_MAX_DL_RPC_BUF_SIZE, WWAN_PORT_XMMRPC },
- 	/* IAT0 */
- 	{ IPC_MEM_CTRL_CHL_ID_2, IPC_MEM_PIPE_4, IPC_MEM_PIPE_5,
- 	  IPC_MEM_MAX_TDS_AT, IPC_MEM_MAX_TDS_AT, IPC_MEM_MAX_DL_AT_BUF_SIZE,
-diff --git a/drivers/net/wwan/wwan_core.c b/drivers/net/wwan/wwan_core.c
-index 62e9f7d6c9fe..4988d91d00bb 100644
---- a/drivers/net/wwan/wwan_core.c
-+++ b/drivers/net/wwan/wwan_core.c
-@@ -319,6 +319,10 @@ static const struct {
- 		.name = "FIREHOSE",
- 		.devsuf = "firehose",
- 	},
-+	[WWAN_PORT_XMMRPC] = {
-+		.name = "XMMRPC",
-+		.devsuf = "xmmrpc",
-+	},
- };
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index 27c6d235cbda..946628050f28 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -1459,7 +1459,8 @@ static struct sk_buff *tun_napi_alloc_frags(struct tun_file *tfile,
+ 	int err;
+ 	int i;
  
- static ssize_t type_show(struct device *dev, struct device_attribute *attr,
-diff --git a/include/linux/wwan.h b/include/linux/wwan.h
-index 5ce2acf444fb..24d76500b1cc 100644
---- a/include/linux/wwan.h
-+++ b/include/linux/wwan.h
-@@ -15,6 +15,7 @@
-  * @WWAN_PORT_QMI: Qcom modem/MSM interface for modem control
-  * @WWAN_PORT_QCDM: Qcom Modem diagnostic interface
-  * @WWAN_PORT_FIREHOSE: XML based command protocol
-+ * @WWAN_PORT_XMMRPC: Control protocol for Intel XMM modems
-  *
-  * @WWAN_PORT_MAX: Highest supported port types
-  * @WWAN_PORT_UNKNOWN: Special value to indicate an unknown port type
-@@ -26,6 +27,7 @@ enum wwan_port_type {
- 	WWAN_PORT_QMI,
- 	WWAN_PORT_QCDM,
- 	WWAN_PORT_FIREHOSE,
-+	WWAN_PORT_XMMRPC,
+-	if (it->nr_segs > MAX_SKB_FRAGS + 1)
++	if (it->nr_segs > MAX_SKB_FRAGS + 1 ||
++	    len > (ETH_MAX_MTU - NET_SKB_PAD - NET_IP_ALIGN))
+ 		return ERR_PTR(-EMSGSIZE);
  
- 	/* Add new port types above this line */
- 
+ 	local_bh_disable();
 -- 
-2.38.1
+2.25.1
 
