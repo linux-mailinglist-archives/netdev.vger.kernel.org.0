@@ -2,133 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 715126121F1
-	for <lists+netdev@lfdr.de>; Sat, 29 Oct 2022 11:41:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 106AD612325
+	for <lists+netdev@lfdr.de>; Sat, 29 Oct 2022 15:11:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229482AbiJ2JlJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Oct 2022 05:41:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44100 "EHLO
+        id S229642AbiJ2NLG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Oct 2022 09:11:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiJ2JlI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Oct 2022 05:41:08 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6F311FCF7;
-        Sat, 29 Oct 2022 02:41:06 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MzvYF4W9HzHvRr;
-        Sat, 29 Oct 2022 17:40:49 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Sat, 29 Oct 2022 17:41:04 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <peterpenkov96@gmail.com>,
-        <maheshb@google.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <hawk@kernel.org>, <john.fastabend@gmail.com>
-Subject: [PATCH net v2] net: tun: fix bugs for oversize packet when napi frags enabled
-Date:   Sat, 29 Oct 2022 17:41:01 +0800
-Message-ID: <20221029094101.1653855-1-william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229482AbiJ2NLE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Oct 2022 09:11:04 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B0467159;
+        Sat, 29 Oct 2022 06:11:03 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id m6-20020a17090a5a4600b00212f8dffec9so6775530pji.0;
+        Sat, 29 Oct 2022 06:11:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=A9kU2QGc/0/ct5xSbAsmcvV4JkwDQsSv77UPsHyGLgg=;
+        b=K8MHO0bwXeJg5od0MtZYgwV6otQlasdfjhSkUFzZwwpzrv9ZmWPnvpRm4sG9CPAfq9
+         IjkhYKDMuKHtk/wS3e5yjapgEwJfL7i+p6IVaWXHf8rBXi51Pt+IW3oTTIzrckFEaQ2Z
+         yq9PnSbHTYqbxsfdQJKTnb0FyigiA/5xBNgOCJAn0e+WfpbVriy4LbewgZ3Mc3vZNlA9
+         B0hj8i88RBH3ObhguFzPBibmIfKQ97HjOgHD71VuHskrtBJ1UJlJvLFvbfTnBL+eCNQ0
+         izr4cQIKbodv7Tbs/WTT8rEfD+YIdpWPUPNszqjtt6KcfKxLW2mTp3zrzu0xkU4JEXqz
+         Rr7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=A9kU2QGc/0/ct5xSbAsmcvV4JkwDQsSv77UPsHyGLgg=;
+        b=d5nDXNwzmw7Pvs0M6baIdauqri7nOymkwjY2jrdeYGc3KlrAMNHIqDcSPo1BnfG37z
+         rkFbyjW4s430SikZsftDCRVwOJD+Jin6pEseibE7hbcEbjuZoPCIiYB97Otc3xE1HA90
+         T3FB0WjlNZbgxS2FmO8fTbkq2ohpxfEyMRKkIF7AHDmvvPU0UrT2lT5QlJJvrgn1ei/T
+         a/ZuQC4LD78IdmtsYtA4Ua3YGNKosp8NLspzsjUPZgL8kvCk4fdeMK4ulg6jsB8QJgu7
+         SEsnoqk4ehDMFfLib1W1sc9F/dHEas3+h/Z7T7sI1+GojHG6D23BYPrsqfRnPI+qy2tJ
+         YgQA==
+X-Gm-Message-State: ACrzQf0jASvd6A6LepKlis96tXFfDypx7XC3JbURRCOjo2HFK1DfDoSa
+        1/vAwsFgK7IKCzZngHYr5X4=
+X-Google-Smtp-Source: AMsMyM5BmBBuQ/Lnv7Dw6CSGiN9gP5S97MWakTVvYwc+K1Iqc7Fpuj6o61qPRkDPKoOf54V0V8t4Xw==
+X-Received: by 2002:a17:90a:74cb:b0:213:9b4c:ecc2 with SMTP id p11-20020a17090a74cb00b002139b4cecc2mr4756680pjl.154.1667049062614;
+        Sat, 29 Oct 2022 06:11:02 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.21])
+        by smtp.gmail.com with ESMTPSA id s7-20020a170902988700b001811a197797sm1244069plp.194.2022.10.29.06.10.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 29 Oct 2022 06:11:01 -0700 (PDT)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     edumazet@google.com, kuba@kernel.org
+Cc:     davem@davemloft.net, pabeni@redhat.com, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, imagedong@tencent.com, kafai@fb.com,
+        asml.silence@gmail.com, keescook@chromium.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next 0/9] net: tcp: add skb drop reasons to tcp state process
+Date:   Sat, 29 Oct 2022 21:09:48 +0800
+Message-Id: <20221029130957.1292060-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Recently, we got two syzkaller problems because of oversize packet
-when napi frags enabled.
+From: Menglong Dong <imagedong@tencent.com>
 
-One of the problems is because the first seg size of the iov_iter
-from user space is very big, it is 2147479538 which is bigger than
-the threshold value for bail out early in __alloc_pages(). And
-skb->pfmemalloc is true, __kmalloc_reserve() would use pfmemalloc
-reserves without __GFP_NOWARN flag. Thus we got a warning as following:
+For now, the skb drop reasons have not fully be supported by TCP
+protocol on the code path of TCP connection state change. The function
+call chain is a little complex, which makes it hard to get the reason
+that why skb is dropped.
 
-========================================================
-WARNING: CPU: 1 PID: 17965 at mm/page_alloc.c:5295 __alloc_pages+0x1308/0x16c4 mm/page_alloc.c:5295
-...
-Call trace:
- __alloc_pages+0x1308/0x16c4 mm/page_alloc.c:5295
- __alloc_pages_node include/linux/gfp.h:550 [inline]
- alloc_pages_node include/linux/gfp.h:564 [inline]
- kmalloc_large_node+0x94/0x350 mm/slub.c:4038
- __kmalloc_node_track_caller+0x620/0x8e4 mm/slub.c:4545
- __kmalloc_reserve.constprop.0+0x1e4/0x2b0 net/core/skbuff.c:151
- pskb_expand_head+0x130/0x8b0 net/core/skbuff.c:1654
- __skb_grow include/linux/skbuff.h:2779 [inline]
- tun_napi_alloc_frags+0x144/0x610 drivers/net/tun.c:1477
- tun_get_user+0x31c/0x2010 drivers/net/tun.c:1835
- tun_chr_write_iter+0x98/0x100 drivers/net/tun.c:2036
+However, I have a idea now: store the drop reason in the tcp_skb_cb,
+which means that we need to add a 'drop_reason' field to the struct
+tcp_skb_cb. Luckily, this struct still has 4 bytes spare space for this
+purpose.
 
-The other problem is because odd IPv6 packets without NEXTHDR_NONE
-extension header and have big packet length, it is 2127925 which is
-bigger than ETH_MAX_MTU(65535). After ipv6_gso_pull_exthdrs() in
-ipv6_gro_receive(), network_header offset and transport_header offset
-are all bigger than U16_MAX. That would trigger skb->network_header
-and skb->transport_header overflow error, because they are all '__u16'
-type. Eventually, it would affect the value for __skb_push(skb, value),
-and make it be a big value. After __skb_push() in ipv6_gro_receive(),
-skb->data would less than skb->head, an out of bounds memory bug occurred.
-That would trigger the problem as following:
+In this way, we need only to initialize to 'TCP_SKB_CB(skb)->drop_reason'
+to SKB_DROP_REASON_NOT_SPECIFIED in tcp_v4_rcv()/tcp_v6_rcv(). When the
+skb needs to be dropped, the value of this field should be the drop
+reason or SKB_DROP_REASON_NOT_SPECIFIED. Meanwhile, the value also can be
+SKB_NOT_DROPPED_YET. On such case, try_kfree_skb(), which we add in the
+1th patch, should be called.
 
-==================================================================
-BUG: KASAN: use-after-free in eth_type_trans+0x100/0x260
-...
-Call trace:
- dump_backtrace+0xd8/0x130
- show_stack+0x1c/0x50
- dump_stack_lvl+0x64/0x7c
- print_address_description.constprop.0+0xbc/0x2e8
- print_report+0x100/0x1e4
- kasan_report+0x80/0x120
- __asan_load8+0x78/0xa0
- eth_type_trans+0x100/0x260
- napi_gro_frags+0x164/0x550
- tun_get_user+0xda4/0x1270
- tun_chr_write_iter+0x74/0x130
- do_iter_readv_writev+0x130/0x1ec
- do_iter_write+0xbc/0x1e0
- vfs_writev+0x13c/0x26c
+Hi, Eric, do you like it? In this way, we almost don't need to change the
+exist code, and won't mess the code up.
 
-To fix the problems, restrict the packet size less than
-(ETH_MAX_MTU - NET_SKB_PAD - NET_IP_ALIGN) which has considered reserved
-skb space in napi_alloc_skb() because transport_header is an offset from
-skb->head. Add len check in tun_napi_alloc_frags() simply.
+In this series, the skb drop reasons are added following functions:
 
-Fixes: 90e33d459407 ("tun: enable napi_gro_frags() for TUN/TAP driver")
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
----
-v2:
-  - Use (ETH_MAX_MTU - NET_SKB_PAD - NET_IP_ALIGN) instead of ETH_MAX_MTU.
----
- drivers/net/tun.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+  tcp_rcv_synsent_state_process
+  tcp_timewait_state_process
+  tcp_conn_request
+  tcp_rcv_state_process
 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 27c6d235cbda..946628050f28 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -1459,7 +1459,8 @@ static struct sk_buff *tun_napi_alloc_frags(struct tun_file *tfile,
- 	int err;
- 	int i;
- 
--	if (it->nr_segs > MAX_SKB_FRAGS + 1)
-+	if (it->nr_segs > MAX_SKB_FRAGS + 1 ||
-+	    len > (ETH_MAX_MTU - NET_SKB_PAD - NET_IP_ALIGN))
- 		return ERR_PTR(-EMSGSIZE);
- 
- 	local_bh_disable();
+And following new drop reasons are added:
+
+  SKB_DROP_REASON_TCP_PAWSACTIVEREJECTED
+  SKB_DROP_REASON_TIMEWAIT
+  SKB_DROP_REASON_LISTENOVERFLOWS
+  SKB_DROP_REASON_TCP_REQQFULLDROP
+  SKB_DROP_REASON_TCP_ABORTONDATA
+  SKB_DROP_REASON_TCP_ABORTONLINGER
+  SKB_DROP_REASON_LSM
+
+Menglong Dong (9):
+  net: skb: introduce try_kfree_skb()
+  net: tcp: add 'drop_reason' field to struct tcp_skb_cb
+  net: tcp: use the drop reasons stored in tcp_skb_cb
+  net: tcp: store drop reasons in tcp_rcv_synsent_state_process()
+  net: tcp: store drop reasons in tcp_timewait_state_process()
+  net: tcp: store drop reasons in tcp_conn_request()
+  net: tcp: store drop reasons in tcp_rcv_state_process()
+  net: tcp: store drop reasons in route_req
+  net: tcp: use LINUX_MIB_TCPABORTONLINGER in tcp_rcv_state_process()
+
+ include/linux/skbuff.h   |  9 +++++++++
+ include/net/dropreason.h | 43 ++++++++++++++++++++++++++++++++++++++++
+ include/net/tcp.h        |  3 +++
+ net/ipv4/tcp_input.c     | 29 ++++++++++++++++++++++-----
+ net/ipv4/tcp_ipv4.c      | 26 ++++++++++++++++++++----
+ net/ipv4/tcp_minisocks.c | 15 ++++++++++++--
+ net/ipv6/tcp_ipv6.c      | 31 +++++++++++++++++++++++------
+ 7 files changed, 139 insertions(+), 17 deletions(-)
+
 -- 
-2.25.1
+2.37.2
 
