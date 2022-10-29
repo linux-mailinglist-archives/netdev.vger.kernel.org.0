@@ -2,125 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2614E612101
-	for <lists+netdev@lfdr.de>; Sat, 29 Oct 2022 09:25:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49EFE612105
+	for <lists+netdev@lfdr.de>; Sat, 29 Oct 2022 09:26:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229862AbiJ2HZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Oct 2022 03:25:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46686 "EHLO
+        id S229887AbiJ2H0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Oct 2022 03:26:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbiJ2HZv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Oct 2022 03:25:51 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C39EC8B2E5;
-        Sat, 29 Oct 2022 00:25:50 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MzrRs3rL4zVhqF;
-        Sat, 29 Oct 2022 15:20:57 +0800 (CST)
-Received: from [10.174.179.200] (10.174.179.200) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Sat, 29 Oct 2022 15:25:48 +0800
-Subject: Re: [PATCH net] net: tun: fix bugs for oversize packet when napi
- frags enabled
-To:     Eric Dumazet <edumazet@google.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <peterpenkov96@gmail.com>, <maheshb@google.com>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <hawk@kernel.org>,
-        <john.fastabend@gmail.com>
-References: <20221029033243.1577015-1-william.xuanziyang@huawei.com>
- <CANn89iLUMSHPZw0qNPxfoy3=Ao5JsRB8721L40YO48x9PDjWvQ@mail.gmail.com>
-From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-Message-ID: <f9a94457-0b5a-8d13-4e66-1b3be0a52b02@huawei.com>
-Date:   Sat, 29 Oct 2022 15:25:48 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        with ESMTP id S229445AbiJ2H0J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Oct 2022 03:26:09 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28778C787C
+        for <netdev@vger.kernel.org>; Sat, 29 Oct 2022 00:26:08 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id h2so6666599pgp.4
+        for <netdev@vger.kernel.org>; Sat, 29 Oct 2022 00:26:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=/Yyu0gP5Bb5qvocG8rpAWZtvXtV2KdF5OgX3sx6HcHQ=;
+        b=eKyt9tfG9gweAqhcqLfGjGcVfvk3YhEwQzY5C7ht52aRbjB8RAyYvIT7/RvXrXSPYQ
+         5VQK1mjBMumwUFTjZ8euzvgxSKvtb+xTEDKedZ8JROWflZ1Buz0MpCqbnnixWWrLGvn3
+         +nkZv93pI/RsG4cHaEecJJn0JGUH7/LrgXLJY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=/Yyu0gP5Bb5qvocG8rpAWZtvXtV2KdF5OgX3sx6HcHQ=;
+        b=Fp5Luprtj/d2rREpefoweBTU83/3eIVzAr9Mkw5302WtcNnL4q4+FGJNG4lB235kIS
+         U59p7p1z+z6zZEGmZVk/0bbt8rP0JzGDcuch9iunXS1fVbniX/s4cuq11SsIZr+WBuO9
+         stbYjpPqrK8uughM2JlKHuDfhCD2D15ZD+KrpcSGsfKFUJbdgw5t21TnVdD1LDwqTthu
+         q8Zc2wyrG+L8Wiz9M+63bUEY7ru6eL5T2fgLCEfRoWdJDa6GZUL9Ev3t1tVIbzuVRHdK
+         b5Z92JFvlxXYMn7duIpjT8qzHPk9tEzehK4nZqamiW13sbuBY1Tr0YpSBrE05xpsfdud
+         M1sw==
+X-Gm-Message-State: ACrzQf0jXc4UHmZCfQrSPSmz6k4FVmbqNxQk1rR9G+ls5XEi13UpetBK
+        echxMtD4zWyEHPqZMjb70ROhsCdIOpIVyQ==
+X-Google-Smtp-Source: AMsMyM5H5GaoRCI8ygD2fvAGRfIBNhhHRuNei1zA0uK+T3MYurTYRxSwNAcok7DZJjgMdO4V3gy2Pw==
+X-Received: by 2002:a63:4651:0:b0:43c:1cb7:5c09 with SMTP id v17-20020a634651000000b0043c1cb75c09mr3100964pgk.259.1667028367680;
+        Sat, 29 Oct 2022 00:26:07 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id r1-20020a17090a560100b00212e60c7d9csm499779pjf.41.2022.10.29.00.26.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 29 Oct 2022 00:26:07 -0700 (PDT)
+Date:   Sat, 29 Oct 2022 00:26:06 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Jouni Malinen <j@w1.fi>, Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v2 2/6] hostap: Avoid clashing function prototypes
+Message-ID: <202210290025.15F3F949B9@keescook>
+References: <cover.1666894751.git.gustavoars@kernel.org>
+ <8388b5ed9e729eb9dadec875a7576219e6d61223.1666894751.git.gustavoars@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <CANn89iLUMSHPZw0qNPxfoy3=Ao5JsRB8721L40YO48x9PDjWvQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.200]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8388b5ed9e729eb9dadec875a7576219e6d61223.1666894751.git.gustavoars@kernel.org>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Oct 27, 2022 at 03:18:37PM -0500, Gustavo A. R. Silva wrote:
+> When built with Control Flow Integrity, function prototypes between
+> caller and function declaration must match. These mismatches are visible
+> at compile time with the new -Wcast-function-type-strict in Clang[1].
+> 
+> Fix a total of 42 warnings like these:
+> 
+> ../drivers/net/wireless/intersil/hostap/hostap_ioctl.c:3868:2: warning: cast from 'int (*)(struct net_device *, struct iw_request_info *, char *, char *)' to 'iw_handler' (aka 'int (*)(struct net_device *, struct iw_request_info *, union iwreq_data *, char *)') converts to incompatible function type [-Wcast-function-type-strict]
+>         (iw_handler) prism2_get_name,                   /* SIOCGIWNAME */
+>         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> 
+> The hostap Wireless Extension handler callbacks (iw_handler) use a
+> union for the data argument. Actually use the union and perform explicit
+> member selection in the function body instead of having a function
+> prototype mismatch. There are no resulting binary differences
+> before/after changes.
+> 
+> Link: https://github.com/KSPP/linux/issues/235
+> Link: https://reviews.llvm.org/D134831 [1]
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-> On Fri, Oct 28, 2022 at 8:32 PM Ziyang Xuan
-> <william.xuanziyang@huawei.com> wrote:
->>
->> Recently, we got two syzkaller problems because of oversize packet
->> when napi frags enabled.
->>
->> One of the problems is because the first seg size of the iov_iter
->> from user space is very big, it is 2147479538 which is bigger than
->> the threshold value for bail out early in __alloc_pages(). And
->> skb->pfmemalloc is true, __kmalloc_reserve() would use pfmemalloc
->> reserves without __GFP_NOWARN flag. Thus we got a warning as following:
->>
->> ========================================================
->>
-> 
->> Restrict the packet size less than ETH_MAX_MTU to fix the problems.
->> Add len check in tun_napi_alloc_frags() simply. Athough that makes
->> some kinds of packets payload size slightly smaller than the length
->> allowed by the protocol, for example, ETH_HLEN + sizeof(struct ipv6hdr)
->> smaller when the tun device type is IFF_TAP and the packet is IPv6. But
->> I think that the effect is small and can be ignored.
-> 
-> I am not sure about ETH_MAX_MTU being completely safe.
-> 
-> napi_get_frags() / napi_alloc_skb() is reserving NET_SKB_PAD +
-> NET_IP_ALIGN bytes.
-> 
-> transport_header being an offset from skb->head,
-> we probably want to use (ETH_MAX_MTU - NET_SKB_PAD - NET_IP_ALIGN)
+Looks like prism2_private_handler contents could be uncast? Otherwise,
+yeah, looks good.
 
-Hi Eric,
-
-Thank you for your review. I did not notice the reserved skb space.
-I will fix it in v2 patch.
-
-Thanks.
-> 
-> My objection to your initial patch was that you were using PAGE_SIZE,
-> while Ethernet MTU can easily be ~9000
-> 
-> But 0xFFFF is a bit too much/risky.
-> 
-> Thanks.
-> 
->>
->> Fixes: 90e33d459407 ("tun: enable napi_gro_frags() for TUN/TAP driver")
->> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
->> ---
->>  drivers/net/tun.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
->> index 27c6d235cbda..98d3160fcae2 100644
->> --- a/drivers/net/tun.c
->> +++ b/drivers/net/tun.c
->> @@ -1459,7 +1459,7 @@ static struct sk_buff *tun_napi_alloc_frags(struct tun_file *tfile,
->>         int err;
->>         int i;
->>
->> -       if (it->nr_segs > MAX_SKB_FRAGS + 1)
->> +       if (it->nr_segs > MAX_SKB_FRAGS + 1 || len > ETH_MAX_MTU)
->>                 return ERR_PTR(-EMSGSIZE);
->>
->>         local_bh_disable();
->> --
->> 2.25.1
->>
-> .
-> 
+-- 
+Kees Cook
