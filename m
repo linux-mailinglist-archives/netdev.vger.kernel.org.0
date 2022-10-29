@@ -2,194 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24EEA611F58
-	for <lists+netdev@lfdr.de>; Sat, 29 Oct 2022 04:38:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BF05611FB4
+	for <lists+netdev@lfdr.de>; Sat, 29 Oct 2022 05:17:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229738AbiJ2CiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 22:38:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44642 "EHLO
+        id S229528AbiJ2DRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 23:17:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229678AbiJ2CiW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 22:38:22 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0B4B20F78;
-        Fri, 28 Oct 2022 19:38:20 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Mzk425T5gz15MDD;
-        Sat, 29 Oct 2022 10:33:22 +0800 (CST)
-Received: from [10.174.179.200] (10.174.179.200) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Sat, 29 Oct 2022 10:38:18 +0800
-Subject: Re: [PATCH net] ipv4: fix source address and gateway mismatch under
- multiple default gateways
-To:     Julian Anastasov <ja@ssi.bg>
-CC:     <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-References: <20221026032017.3675060-1-william.xuanziyang@huawei.com>
- <5e0249d-b6e1-44fa-147b-e2af65e56f64@ssi.bg>
-From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-Message-ID: <dd75da01-ef55-cd4f-4e8c-12c6b5cc4ab7@huawei.com>
-Date:   Sat, 29 Oct 2022 10:38:18 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        with ESMTP id S229450AbiJ2DRl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 23:17:41 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D21A29AF95
+        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 20:17:36 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id u6so6386826plq.12
+        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 20:17:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Kd4BB28ylqUVziHfqM61lajVeO2UdyApWimbqI2dNa4=;
+        b=BGguppnicqHjW8WfEUzt0WRt/BtvsQBZ/hFQYeUQt7L0+j5PxnRag2L+5pR7ldJmYU
+         fxSlt+6U+ssbdD6d90ZD3GEEvaArZ9CItsMeiHNkML+W/y/hV8zS7Fu7/Ma2ZBZyGjwF
+         fRFvgWG2IXOYzu8hoN0h3BHns4z72AzKnFWX4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Kd4BB28ylqUVziHfqM61lajVeO2UdyApWimbqI2dNa4=;
+        b=WeIqTwIvwl7Sb3RLet2R2MMmDFcS9xihHu/OTuLuR5HxMr+CbmtA3/t4NSyaa+3j4I
+         BTHcnfeKQjiXaCuWF3ngPCexDZC91+2QJvrK2HZbSGp2oxipTa5dFtW2kVfx80GbdVe5
+         YXlE96IK+ehrrUbs7N3E+ZVrkIHu/Ep0Hh+Q9tB9HQJR1BhWWRVcqu4z1BgcHxDuPfDm
+         +pDrkBy8DYLrfUDmYFowE2a69K9ph2Qb2D5ByEMh5DnE6KQ+6DUG2FoN2OU1dkGNoZ9K
+         J4vSbPafGsEG0gC0MWg+6HKxQCFqCUyj+RGUnoXR+a5EYrWrvgi+DhJrApLnVgSPkw1a
+         EBtg==
+X-Gm-Message-State: ACrzQf2OmQrM0RwYwlnQnBfAalZe6XnYHjkonbYgG09JcvzcmSpIuMCP
+        Yu/bWM7pS0neG7XpdwSzNDS4PQ==
+X-Google-Smtp-Source: AMsMyM5me638ftMDuCR+ussBeXMeJ3H30jUxnuNmVqvD/NnEcnVWySgFAFBzkL8kvpWSPHr7p2FbHg==
+X-Received: by 2002:a17:90b:3803:b0:213:9911:5efd with SMTP id mq3-20020a17090b380300b0021399115efdmr2546152pjb.94.1667013456327;
+        Fri, 28 Oct 2022 20:17:36 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id b12-20020a170903228c00b00186b55e3cd6sm187649plh.133.2022.10.28.20.17.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Oct 2022 20:17:35 -0700 (PDT)
+Date:   Fri, 28 Oct 2022 20:17:34 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     "Ruhl, Michael J" <michael.j.ruhl@intel.com>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] igb: Proactively round up to kmalloc bucket size
+Message-ID: <202210282013.82F28AE92@keescook>
+References: <20221018092340.never.556-kees@kernel.org>
+ <20221018092526.4035344-2-keescook@chromium.org>
 MIME-Version: 1.0
-In-Reply-To: <5e0249d-b6e1-44fa-147b-e2af65e56f64@ssi.bg>
-Content-Type: text/plain; charset="gbk"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.200]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221018092526.4035344-2-keescook@chromium.org>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> 
-> 	Hello,
-> 
-> On Wed, 26 Oct 2022, Ziyang Xuan wrote:
-> 
->> We found a problem that source address doesn't match with selected gateway
->> under multiple default gateways. The reproducer is as following:
->>
->> Setup in client as following:
->>
->> $ ip link add link eth2 dev eth2.71 type vlan id 71
->> $ ip link add link eth2 dev eth2.72 type vlan id 72
->> $ ip addr add 192.168.71.41/24 dev eth2.71
->> $ ip addr add 192.168.72.41/24 dev eth2.72
->> $ ip link set eth2.71 up
->> $ ip link set eth2.72 up
->> $ route add -net default gw 192.168.71.1 dev eth2.71
->> $ route add -net default gw 192.168.72.1 dev eth2.72
-> 
-> 	Second route goes to first position due to the
-> prepend operation for the route add command. That is
-> why 192.168.72.41 is selected.
-> 
->> Add a nameserver configuration in the following file:
->> $ cat /etc/resolv.conf
->> nameserver 8.8.8.8
->>
->> Setup in peer server as following:
->>
->> $ ip link add link eth2 dev eth2.71 type vlan id 71
->> $ ip link add link eth2 dev eth2.72 type vlan id 72
->> $ ip addr add 192.168.71.1/24 dev eth2.71
->> $ ip addr add 192.168.72.1/24 dev eth2.72
->> $ ip link set eth2.71 up
->> $ ip link set eth2.72 up
->>
->> Use the following command trigger DNS packet in client:
->> $ ping www.baidu.com
->>
->> Capture packets with tcpdump in client when ping:
->> $ tcpdump -i eth2 -vne
->> ...
->> 20:30:22.996044 52:54:00:20:23:a9 > 52:54:00:d2:4f:e3, ethertype 802.1Q (0x8100), length 77: vlan 71, p 0, ethertype IPv4, (tos 0x0, ttl 64, id 25407, offset 0, flags [DF], proto UDP (17), length 59)
->>     192.168.72.41.42666 > 8.8.8.8.domain: 58562+ A? www.baidu.com. (31)
->> ...
->>
->> We get the problem that IPv4 saddr "192.168.72.41" do not match with
->> selected VLAN device "eth2.71".
-> 
-> 	The problem could be that source address is selected
-> once and later used as source address in following routing lookups.
-> 
-> 	And your routing rules do not express the restriction that
-> both addresses can not be used for specific route. If you have
-> such restriction which is common, you should use source-specific routes:
+On Tue, Oct 18, 2022 at 02:25:25AM -0700, Kees Cook wrote:
+> In preparation for removing the "silently change allocation size"
+> users of ksize(), explicitly round up all q_vector allocations so that
+> allocations can be correctly compared to ksize().
+>
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-Hi Julian,
+Hi! Any feedback on this part of the patch pair?
 
-Thank you for your quick reply.
+> ---
+>  drivers/net/ethernet/intel/igb/igb_main.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+> index 6256855d0f62..7a3a41dc0276 100644
+> --- a/drivers/net/ethernet/intel/igb/igb_main.c
+> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
+> @@ -1195,7 +1195,7 @@ static int igb_alloc_q_vector(struct igb_adapter *adapter,
+>  		return -ENOMEM;
+>  
+>  	ring_count = txr_count + rxr_count;
+> -	size = struct_size(q_vector, ring, ring_count);
+> +	size = kmalloc_size_roundup(struct_size(q_vector, ring, ring_count));
+>  
+>  	/* allocate q_vector and rings */
+>  	q_vector = adapter->q_vector[v_idx];
 
-Can we make some work to make the restriction "both addresses can not be used for specific route" in code but in consciousness?
+Thanks! :)
 
-Thanks.
+-Kees
 
-> 
-> 1. ip rule to consider table main only for link routes,
-> no default routes here
-> 
-> ip rule add prio 10 table main
-> 
-> 2. source-specific routes:
-> 
-> ip rule add prio 20 from 192.168.71.0/24 table 20
-> ip route append default via 192.168.71.1 dev eth2.71 src 192.168.71.41 table 20
-> ip rule add prio 30 from 192.168.72.0/24 table 30
-> ip route append default via 192.168.72.1 dev eth2.72 src 192.168.72.41 table 30
-> 
-> 3. Store default alternative routes not in table main:
-> ip rule add prio 200 table 200
-> ip route append default via 192.168.71.1 dev eth2.71 src 192.168.71.41 table 200
-> ip route append default via 192.168.72.1 dev eth2.72 src 192.168.72.41 table 200
-> 
-> 	Above routes should work even without specifying prefsrc.
-> 
-> 	As result, table 200 is used only for routing lookups
-> without specific source address, usually for first packet in
-> connection, next packets should hit tables 20/30.
-> 
-> 	You can check https://ja.ssi.bg/dgd-usage.txt for such
-> examples, see under 2. Alternative routes and dead gateway detection
-> 
->> In above scenario, the process does __ip_route_output_key() twice in
->> ip_route_connect(), the two processes have chosen different default gateway,
->> and the last choice is not the best.
->>
->> Add flowi4->saddr and fib_nh_common->nhc_gw.ipv4 matching consideration in
->> fib_select_default() to fix that.
-> 
-> 	Other setups may not have such restriction, they can
-> prefer any gateway in reachable state no matter the saddr.
-> 
->> Fixes: 19baf839ff4a ("[IPV4]: Add LC-Trie FIB lookup algorithm.")
->> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
->> ---
->>  net/ipv4/fib_semantics.c | 6 ++++++
->>  1 file changed, 6 insertions(+)
->>
->> diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
->> index e9a7f70a54df..8bd94875a009 100644
->> --- a/net/ipv4/fib_semantics.c
->> +++ b/net/ipv4/fib_semantics.c
->> @@ -2046,6 +2046,7 @@ static void fib_select_default(const struct flowi4 *flp, struct fib_result *res)
->>  	int order = -1, last_idx = -1;
->>  	struct fib_alias *fa, *fa1 = NULL;
->>  	u32 last_prio = res->fi->fib_priority;
->> +	u8 prefix, max_prefix = 0;
->>  	dscp_t last_dscp = 0;
->>  
->>  	hlist_for_each_entry_rcu(fa, fa_head, fa_list) {
->> @@ -2078,6 +2079,11 @@ static void fib_select_default(const struct flowi4 *flp, struct fib_result *res)
->>  		if (!nhc->nhc_gw_family || nhc->nhc_scope != RT_SCOPE_LINK)
->>  			continue;
->>  
->> +		prefix = __ffs(flp->saddr ^ nhc->nhc_gw.ipv4);
->> +		if (prefix < max_prefix)
->> +			continue;
->> +		max_prefix = max_t(u8, prefix, max_prefix);
->> +
->>  		fib_alias_accessed(fa);
->>  
->>  		if (!fi) {
->> -- 
->> 2.25.1
-> 
-> Regards
-> 
-> --
-> Julian Anastasov <ja@ssi.bg>
-> 
-> 
-> .
-> 
+-- 
+Kees Cook
