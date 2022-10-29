@@ -2,80 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3952C611F35
-	for <lists+netdev@lfdr.de>; Sat, 29 Oct 2022 04:00:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8FCB611F3E
+	for <lists+netdev@lfdr.de>; Sat, 29 Oct 2022 04:04:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229510AbiJ2CAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Oct 2022 22:00:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55098 "EHLO
+        id S229549AbiJ2CEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Oct 2022 22:04:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiJ2CA3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 22:00:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C09D65B52C;
-        Fri, 28 Oct 2022 19:00:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7701BB82DFB;
-        Sat, 29 Oct 2022 02:00:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 17215C433D7;
-        Sat, 29 Oct 2022 02:00:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1667008825;
-        bh=XTNIRd6vh3jcHscZ6c+2LkfJZ1ZmQbs07HUfINZ5c7E=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=UWfJcD1iDk5O/q9yQFFbi7qZ7/bmxvqUsNb2q3Xm9OO0XNXoL8LIaaqMoYMxFnySu
-         MCOb9r8tSHhk7GKevds4T0SDgJAkyznbN9NvXaUnmRM3egaDHOVvH78VS0HoSSP+h7
-         CBeHPb186SILBBj7yQnAQxLfyr5by/joZbLgPwPDQPBhIhBOgQjnl3PkAsha7DkZRc
-         JqjSRUXgPljKoQjZq6aRaB0Jj0qXNyaT8DFgoO6QU8h39MhxEgCNKbRDU+jXJqLsyE
-         lg7zR+yInA3fAk8ILEeihEUJ+/567nQ3EOTCqFfkmYTBd5OtVrqTL967mD+yAIcc4M
-         yNN44bm1kgsBg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E6C11C41672;
-        Sat, 29 Oct 2022 02:00:24 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229379AbiJ2CEh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Oct 2022 22:04:37 -0400
+X-Greylist: delayed 1062 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 28 Oct 2022 19:04:34 PDT
+Received: from mx.treblig.org (mx.treblig.org [46.43.15.161])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25CC2D74
+        for <netdev@vger.kernel.org>; Fri, 28 Oct 2022 19:04:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=treblig.org
+        ; s=bytemarkmx; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:
+        Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=kXrSw5CRFHg3ideg5TbwtiGG5a7qvoQu+xbgIOl14Io=; b=V6QYyT9NL2DX56U/ep+qVZTb+y
+        RDGqbssC2tMRc54A23xrI6W0vwgSLo/8n8thjLVk6lYcSDbVJVR+w1C/s03mv7+z7365ggfn7zuUL
+        cd3Wf/qnOjpYr6o+tqFbUi/hOzdJKfK+8D21q6CWCcNmrlS4wGAM64IiGVSCpMT3/2KH7ALNmsUEj
+        OW2SqeYrUVEQg3Sw6w5zIAeMW7YVxs3zbowb6eDe7BzpypNRVqQKgTrV4VxfucdPNbk0SM0vydhDd
+        gL9OmCHFHdiW7RmtFQzs8/huo8Q5i4vOmfihijHA4YQZANC5BcikXAWzix2rbaRcL6WmSI6gtGYn8
+        ayllSOTg==;
+Received: from localhost ([127.0.0.1] helo=dalek.home.treblig.org)
+        by mx.treblig.org with esmtp (Exim 4.94.2)
+        (envelope-from <linux@treblig.org>)
+        id 1ooavl-00ArpV-As; Sat, 29 Oct 2022 02:46:36 +0100
+From:   linux@treblig.org
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org, linux@treblig.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: core:  inet[46]_pton strlen len types
+Date:   Sat, 29 Oct 2022 02:46:04 +0100
+Message-Id: <20221029014604.114024-1-linux@treblig.org>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: wireless-next-2022-10-28
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166700882494.26130.18123233444739982911.git-patchwork-notify@kernel.org>
-Date:   Sat, 29 Oct 2022 02:00:24 +0000
-References: <20221028132943.304ECC433B5@smtp.kernel.org>
-In-Reply-To: <20221028132943.304ECC433B5@smtp.kernel.org>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: "Dr. David Alan Gilbert" <linux@treblig.org>
 
-This pull request was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+inet[46]_pton check the input length against
+a sane length limit (INET[6]_ADDRSTRLEN), but
+the strlen value gets truncated due to being stored in an int,
+so there's a theoretical potential for a >4G string to pass
+the limit test.
+Use size_t since that's what strlen actually returns.
 
-On Fri, 28 Oct 2022 13:29:43 +0000 (UTC) you wrote:
-> Hi,
-> 
-> here's a pull request to net-next tree, more info below. Please let me know if
-> there are any problems.
-> 
-> Kalle
-> 
-> [...]
+I've had a hunt for callers that could hit this, but
+I've not managed to find anything that doesn't get checked with
+some other limit first; but it's possible that I've missed
+something in the depth of the storage target paths.
 
-Here is the summary with links:
-  - pull-request: wireless-next-2022-10-28
-    https://git.kernel.org/netdev/net-next/c/196dd92a00ff
+Signed-off-by: Dr. David Alan Gilbert <linux@treblig.org>
+---
+ net/core/utils.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-You are awesome, thank you!
+diff --git a/net/core/utils.c b/net/core/utils.c
+index 938495bc1d348..c994e95172acf 100644
+--- a/net/core/utils.c
++++ b/net/core/utils.c
+@@ -302,7 +302,7 @@ static int inet4_pton(const char *src, u16 port_num,
+ 		struct sockaddr_storage *addr)
+ {
+ 	struct sockaddr_in *addr4 = (struct sockaddr_in *)addr;
+-	int srclen = strlen(src);
++	size_t srclen = strlen(src);
+ 
+ 	if (srclen > INET_ADDRSTRLEN)
+ 		return -EINVAL;
+@@ -322,7 +322,7 @@ static int inet6_pton(struct net *net, const char *src, u16 port_num,
+ {
+ 	struct sockaddr_in6 *addr6 = (struct sockaddr_in6 *)addr;
+ 	const char *scope_delim;
+-	int srclen = strlen(src);
++	size_t srclen = strlen(src);
+ 
+ 	if (srclen > INET6_ADDRSTRLEN)
+ 		return -EINVAL;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.37.3
 
