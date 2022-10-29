@@ -2,77 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3EB6612467
-	for <lists+netdev@lfdr.de>; Sat, 29 Oct 2022 18:15:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39372612477
+	for <lists+netdev@lfdr.de>; Sat, 29 Oct 2022 18:44:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229876AbiJ2QPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Oct 2022 12:15:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41752 "EHLO
+        id S229497AbiJ2QoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Oct 2022 12:44:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229819AbiJ2QPD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Oct 2022 12:15:03 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E92F32D1C6;
-        Sat, 29 Oct 2022 09:14:56 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id b185so7239336pfb.9;
-        Sat, 29 Oct 2022 09:14:56 -0700 (PDT)
+        with ESMTP id S229483AbiJ2QoE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Oct 2022 12:44:04 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC03459240
+        for <netdev@vger.kernel.org>; Sat, 29 Oct 2022 09:44:01 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id y69so11984651ede.5
+        for <netdev@vger.kernel.org>; Sat, 29 Oct 2022 09:44:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=DM2gDTEuSTrZsb94GfeomL6St7DNf8vmCw+blJDfVdw=;
-        b=dUaY45dhGT/7CrlWwiraTaTDdOQbSn7qnIzUGLAAnSbdxqi1FcF5ojrJzbuh4aeE/G
-         MBZo67AtQoMOwCFIGWFjIZ4/q/aZhI9kiBg6gtrA4s8q+rs9Vo+maxq1okcAvixsQYyX
-         S83mg6vdtnVIwHt0NBK0BIYzqQeYYosXgHiLZgbLetiP1j+oFT7rDHoblMtQXFrk+zPv
-         wsGzMsI5eK7EblB4aEt9Hj0PSvo9tPA8m7B5HbVCeuj7Uo1JX2sep0MgJchze6VsLmE9
-         5xGPyGrbrIuB4mZIoeUaXWLyrq294aYx1tNAeQkaAprDc7oW1qquiFmNxWLBDmJEAg9a
-         Ylpg==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=YZFOlagQ9Sf5k4b8h5fXlSTI3RS4EygL/ujXOmVMbeY=;
+        b=mwVaD6EN6kMqxiL7CYz3KEl9pL0bSWQBetmgwVOLGu+BJPzsXQXcHqkMDZylD5qBan
+         sh446eG4J0XXcAr2VYy7Ba3V+/xUhmbHAAyYX6GDFHyanBx9dMovZmeZs7xSU4YqZehO
+         PwhlRpn3FVHfAnmvfFUw9tKlGa/NdxLy3NIp3P9fZh7A8pOy7qeCQtAYCnBanULoBtZX
+         HXuxDhuxtFRaF+KGmdvyM3n2R7fQDFm6yy6zkPzWY4PoF5h/DoEewXlBaHgTk4Nox5c7
+         EGif76H0sxbJi02mLwgqv62V0V/N9zDgXd3ZuMDiQN8l4fxw831knidKDC2kKfGVrkLS
+         NxRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=DM2gDTEuSTrZsb94GfeomL6St7DNf8vmCw+blJDfVdw=;
-        b=XyW9M/LwzKFCXEKZwSR5SRKPsnLQZ/WBm9VVzX+cJd/Es2wljtVC6I0EcioC/ZnobM
-         PEs5FBJNjxgIQ1C5r2XEd6e2Edija/JjnuNd7FiS2RVRQzbJOlWaOUBBCKhhX6unacX0
-         qxrbAHS5/UISJZ/FIpg5UeMO7L1OTxnTLV9+kGh+eFSWV9QBwOkQV+21W0TZc8/RKxCh
-         EiAm+y/4nMgtkAks/NNrv1cF8z7iMGEF82jOGSdrDwCa3gi+zR3F17R8PRZH02FLbRgw
-         U5P8TEu8tZiCQDVFLCQv7GNZmOJ5auWoEhFcEAn9FJl0VJeUJJLUiiVr4ZVdJ1vFfg2q
-         PsZA==
-X-Gm-Message-State: ACrzQf1AiRnqthrvCy7XCYBMt6dmFvnIHAMt7/IPPqHChhy9LOSn08nR
-        505VuZpiZ/UHTXR1vHbP7zI=
-X-Google-Smtp-Source: AMsMyM61BaZfXfMlgrnq9rR5Us7D+f16KiQkqmq5v6DGXMs1tiRZymjw0I4ior8mCApL2wOrT2A3BA==
-X-Received: by 2002:a63:4182:0:b0:46f:1263:1f6 with SMTP id o124-20020a634182000000b0046f126301f6mr4537713pga.611.1667060095495;
-        Sat, 29 Oct 2022 09:14:55 -0700 (PDT)
-Received: from localhost ([183.242.254.175])
-        by smtp.gmail.com with ESMTPSA id g4-20020a655804000000b0044e8d66ae05sm1196470pgr.22.2022.10.29.09.14.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Oct 2022 09:14:55 -0700 (PDT)
-From:   Hawkins Jiawei <yin31149@gmail.com>
-To:     syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     johannes@sipsolutions.net, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, 18801353760@163.com,
-        yin31149@gmail.com
-Subject: Re: [syzbot] memory leak in regulatory_hint_core
-Date:   Sun, 30 Oct 2022 00:14:17 +0800
-Message-Id: <20221029161418.2709-1-yin31149@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <0000000000001de5c505ebc9ec59@google.com>
-References: <0000000000001de5c505ebc9ec59@google.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=YZFOlagQ9Sf5k4b8h5fXlSTI3RS4EygL/ujXOmVMbeY=;
+        b=VsHjnpUA/DILCGT90KwiNHdG8BkEbE96DxSN3625qfFOws2Y5xVvXBLU+XQ7Eqv9h+
+         xPPczvtc19BmPTb541evWtZCIVU8MXD0odk8wyokIdrQBGktLc2bfpBqgOxExno8mfBx
+         WwaP4MSkDo5QumOJudKT3vK1RPpGs+lW6AlbHDgNV/pcIAnlOfUdobL0/IvMPxWw2lNW
+         qB5rSFOI9yDGuWRB2S/M0gDmul1kfVt4YFOiTeQ+d2L7aoTy+wP8cObLuWgp0H2cBSPO
+         lzSi21woTIVawXp9xwLBjUM5nCWEhN9EbN+lzZIvk91Y1qAkvpBF2BxBC8l/24aWIHYx
+         HGlw==
+X-Gm-Message-State: ACrzQf0fB36DiepISE/Gf5aOkCiKIA0ZGYavEiVOuElcRhwgapnJhba4
+        kCURElthFoQwHiPI6tCUmnQw/+neGRufxA82/98q2rcsZ64=
+X-Google-Smtp-Source: AMsMyM6ENVeSNGrkSQDwS7zei/PQim5PNDR0Cj58NpLa99MrSUgAzF5dlFk3ZPOCOydEvlVPU/WPA2VG3O+0+UEyg88=
+X-Received: by 2002:a05:6402:b6b:b0:461:b9b2:6d58 with SMTP id
+ cb11-20020a0564020b6b00b00461b9b26d58mr5090047edb.186.1667061839843; Sat, 29
+ Oct 2022 09:43:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20221028201546.1064413-1-shailend@google.com>
+In-Reply-To: <20221028201546.1064413-1-shailend@google.com>
+From:   Shailend Chand <shailend@google.com>
+Date:   Sat, 29 Oct 2022 09:43:48 -0700
+Message-ID: <CANLc=as+Kk5fsdZznkHRMPwUGWSsK=D0FvOC1NhuMNwn2T1TEQ@mail.gmail.com>
+Subject: Re: [PATCH net] gve: Reduce alloc and copy costs in the GQ rx path
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,161 +66,899 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    aae703b02f92 Merge tag 'for-6.1-rc1-tag' of git://git.kern..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=113ed1b4880000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=d2f454d7d3b63980
-> dashboard link: https://syzkaller.appspot.com/bug?extid=232ebdbd36706c965ebf
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=124b8de2880000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12ae6a4a880000
-> 
-> Downloadable assets:
-> disk image: https://storage.googleapis.com/syzbot-assets/a6542869e73f/disk-aae703b0.raw.xz
-> vmlinux: https://storage.googleapis.com/syzbot-assets/1a8ac40b2df8/vmlinux-aae703b0.xz
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com
-> 
-> executing program
-> BUG: memory leak
-> unreferenced object 0xffff8881450a3900 (size 64):
->   comm "swapper/0", pid 1, jiffies 4294937964 (age 66.260s)
->   hex dump (first 32 bytes):
->     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->     ff ff ff ff 00 00 00 00 00 00 00 00 30 30 00 00  ............00..
->   backtrace:
->     [<ffffffff814cf9f0>] kmalloc_trace+0x20/0x90 mm/slab_common.c:1046
->     [<ffffffff84070f62>] kmalloc include/linux/slab.h:576 [inline]
->     [<ffffffff84070f62>] kzalloc include/linux/slab.h:712 [inline]
->     [<ffffffff84070f62>] regulatory_hint_core+0x22/0x60 net/wireless/reg.c:3242
->     [<ffffffff8722bfc1>] regulatory_init_db+0x222/0x2de net/wireless/reg.c:4312
->     [<ffffffff81000fde>] do_one_initcall+0x5e/0x2e0 init/main.c:1303
->     [<ffffffff8718db35>] do_initcall_level init/main.c:1376 [inline]
->     [<ffffffff8718db35>] do_initcalls init/main.c:1392 [inline]
->     [<ffffffff8718db35>] do_basic_setup init/main.c:1411 [inline]
->     [<ffffffff8718db35>] kernel_init_freeable+0x255/0x2cf init/main.c:1631
->     [<ffffffff8460cb9a>] kernel_init+0x1a/0x1c0 init/main.c:1519
->     [<ffffffff8100224f>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
-> 
-> BUG: memory leak
-> unreferenced object 0xffff88810c287f00 (size 256):
->   comm "syz-executor105", pid 3600, jiffies 4294943292 (age 12.990s)
->   hex dump (first 32 bytes):
->     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->   backtrace:
->     [<ffffffff814cf9f0>] kmalloc_trace+0x20/0x90 mm/slab_common.c:1046
->     [<ffffffff839c9e07>] kmalloc include/linux/slab.h:576 [inline]
->     [<ffffffff839c9e07>] kmalloc_array include/linux/slab.h:627 [inline]
->     [<ffffffff839c9e07>] kcalloc include/linux/slab.h:659 [inline]
->     [<ffffffff839c9e07>] tcf_exts_init include/net/pkt_cls.h:250 [inline]
->     [<ffffffff839c9e07>] tcindex_set_parms+0xa7/0xbe0 net/sched/cls_tcindex.c:342
->     [<ffffffff839caa1f>] tcindex_change+0xdf/0x120 net/sched/cls_tcindex.c:553
->     [<ffffffff8394db62>] tc_new_tfilter+0x4f2/0x1100 net/sched/cls_api.c:2147
->     [<ffffffff8389e91c>] rtnetlink_rcv_msg+0x4dc/0x5d0 net/core/rtnetlink.c:6082
->     [<ffffffff839eba67>] netlink_rcv_skb+0x87/0x1d0 net/netlink/af_netlink.c:2540
->     [<ffffffff839eab87>] netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
->     [<ffffffff839eab87>] netlink_unicast+0x397/0x4c0 net/netlink/af_netlink.c:1345
->     [<ffffffff839eb046>] netlink_sendmsg+0x396/0x710 net/netlink/af_netlink.c:1921
->     [<ffffffff8383e796>] sock_sendmsg_nosec net/socket.c:714 [inline]
->     [<ffffffff8383e796>] sock_sendmsg+0x56/0x80 net/socket.c:734
->     [<ffffffff8383eb08>] ____sys_sendmsg+0x178/0x410 net/socket.c:2482
->     [<ffffffff83843678>] ___sys_sendmsg+0xa8/0x110 net/socket.c:2536
->     [<ffffffff838439c5>] __sys_sendmmsg+0x105/0x330 net/socket.c:2622
->     [<ffffffff83843c14>] __do_sys_sendmmsg net/socket.c:2651 [inline]
->     [<ffffffff83843c14>] __se_sys_sendmmsg net/socket.c:2648 [inline]
->     [<ffffffff83843c14>] __x64_sys_sendmmsg+0x24/0x30 net/socket.c:2648
->     [<ffffffff84605fd5>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->     [<ffffffff84605fd5>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->     [<ffffffff84800087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> 
-> BUG: memory leak
-> unreferenced object 0xffff88810c287e00 (size 256):
->   comm "syz-executor105", pid 3600, jiffies 4294943292 (age 12.990s)
->   hex dump (first 32 bytes):
->     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->   backtrace:
->     [<ffffffff814cf9f0>] kmalloc_trace+0x20/0x90 mm/slab_common.c:1046
->     [<ffffffff839c9e07>] kmalloc include/linux/slab.h:576 [inline]
->     [<ffffffff839c9e07>] kmalloc_array include/linux/slab.h:627 [inline]
->     [<ffffffff839c9e07>] kcalloc include/linux/slab.h:659 [inline]
->     [<ffffffff839c9e07>] tcf_exts_init include/net/pkt_cls.h:250 [inline]
->     [<ffffffff839c9e07>] tcindex_set_parms+0xa7/0xbe0 net/sched/cls_tcindex.c:342
->     [<ffffffff839caa1f>] tcindex_change+0xdf/0x120 net/sched/cls_tcindex.c:553
->     [<ffffffff8394db62>] tc_new_tfilter+0x4f2/0x1100 net/sched/cls_api.c:2147
->     [<ffffffff8389e91c>] rtnetlink_rcv_msg+0x4dc/0x5d0 net/core/rtnetlink.c:6082
->     [<ffffffff839eba67>] netlink_rcv_skb+0x87/0x1d0 net/netlink/af_netlink.c:2540
->     [<ffffffff839eab87>] netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
->     [<ffffffff839eab87>] netlink_unicast+0x397/0x4c0 net/netlink/af_netlink.c:1345
->     [<ffffffff839eb046>] netlink_sendmsg+0x396/0x710 net/netlink/af_netlink.c:1921
->     [<ffffffff8383e796>] sock_sendmsg_nosec net/socket.c:714 [inline]
->     [<ffffffff8383e796>] sock_sendmsg+0x56/0x80 net/socket.c:734
->     [<ffffffff8383eb08>] ____sys_sendmsg+0x178/0x410 net/socket.c:2482
->     [<ffffffff83843678>] ___sys_sendmsg+0xa8/0x110 net/socket.c:2536
->     [<ffffffff838439c5>] __sys_sendmmsg+0x105/0x330 net/socket.c:2622
->     [<ffffffff83843c14>] __do_sys_sendmmsg net/socket.c:2651 [inline]
->     [<ffffffff83843c14>] __se_sys_sendmmsg net/socket.c:2648 [inline]
->     [<ffffffff83843c14>] __x64_sys_sendmmsg+0x24/0x30 net/socket.c:2648
->     [<ffffffff84605fd5>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->     [<ffffffff84605fd5>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->     [<ffffffff84800087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> 
-> BUG: memory leak
-> unreferenced object 0xffff88810c1c6d00 (size 256):
->   comm "syz-executor105", pid 3601, jiffies 4294943831 (age 7.600s)
->   hex dump (first 32 bytes):
->     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->   backtrace:
->     [<ffffffff814cf9f0>] kmalloc_trace+0x20/0x90 mm/slab_common.c:1046
->     [<ffffffff839c9e07>] kmalloc include/linux/slab.h:576 [inline]
->     [<ffffffff839c9e07>] kmalloc_array include/linux/slab.h:627 [inline]
->     [<ffffffff839c9e07>] kcalloc include/linux/slab.h:659 [inline]
->     [<ffffffff839c9e07>] tcf_exts_init include/net/pkt_cls.h:250 [inline]
->     [<ffffffff839c9e07>] tcindex_set_parms+0xa7/0xbe0 net/sched/cls_tcindex.c:342
->     [<ffffffff839caa1f>] tcindex_change+0xdf/0x120 net/sched/cls_tcindex.c:553
->     [<ffffffff8394db62>] tc_new_tfilter+0x4f2/0x1100 net/sched/cls_api.c:2147
->     [<ffffffff8389e91c>] rtnetlink_rcv_msg+0x4dc/0x5d0 net/core/rtnetlink.c:6082
->     [<ffffffff839eba67>] netlink_rcv_skb+0x87/0x1d0 net/netlink/af_netlink.c:2540
->     [<ffffffff839eab87>] netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
->     [<ffffffff839eab87>] netlink_unicast+0x397/0x4c0 net/netlink/af_netlink.c:1345
->     [<ffffffff839eb046>] netlink_sendmsg+0x396/0x710 net/netlink/af_netlink.c:1921
->     [<ffffffff8383e796>] sock_sendmsg_nosec net/socket.c:714 [inline]
->     [<ffffffff8383e796>] sock_sendmsg+0x56/0x80 net/socket.c:734
->     [<ffffffff8383eb08>] ____sys_sendmsg+0x178/0x410 net/socket.c:2482
->     [<ffffffff83843678>] ___sys_sendmsg+0xa8/0x110 net/socket.c:2536
->     [<ffffffff838439c5>] __sys_sendmmsg+0x105/0x330 net/socket.c:2622
->     [<ffffffff83843c14>] __do_sys_sendmmsg net/socket.c:2651 [inline]
->     [<ffffffff83843c14>] __se_sys_sendmmsg net/socket.c:2648 [inline]
->     [<ffffffff83843c14>] __x64_sys_sendmmsg+0x24/0x30 net/socket.c:2648
->     [<ffffffff84605fd5>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->     [<ffffffff84605fd5>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->     [<ffffffff84800087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+On Fri, Oct 28, 2022 at 1:15 PM Shailend Chand <shailend@google.com> wrote:
+>
+> Previously, even if just one of the many fragments of a 9k packet
+> required a copy, we'd copy the whole packet into a freshly-allocated
+> 9k-sized linear SKB, and this led to performance issues.
+>
+> By having a pool of pages to copy into, each fragment can be
+> independently handled, leading to a reduced incidence of
+> allocation and copy.
+>
+> Signed-off-by: Shailend Chand <shailend@google.com>
+> ---
+>  drivers/net/ethernet/google/gve/gve.h         |  26 +-
+>  drivers/net/ethernet/google/gve/gve_ethtool.c |   2 +
+>  drivers/net/ethernet/google/gve/gve_rx.c      | 542 ++++++++++--------
+>  drivers/net/ethernet/google/gve/gve_rx_dqo.c  |   2 +-
+>  drivers/net/ethernet/google/gve/gve_utils.c   |  30 +-
+>  drivers/net/ethernet/google/gve/gve_utils.h   |   2 +-
+>  6 files changed, 338 insertions(+), 266 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
+> index 160735484465..5655da9cd236 100644
+> --- a/drivers/net/ethernet/google/gve/gve.h
+> +++ b/drivers/net/ethernet/google/gve/gve.h
+> @@ -60,7 +60,8 @@ struct gve_rx_slot_page_info {
+>         void *page_address;
+>         u32 page_offset; /* offset to write to in page */
+>         int pagecnt_bias; /* expected pagecnt if only the driver has a ref */
+> -       u8 can_flip;
+> +       u16 pad; /* adjustment for rx padding */
+> +       u8 can_flip; /* tracks if the networking stack is using the page */
+>  };
+>
+>  /* A list of pages registered with the device during setup and used by a queue
+> @@ -149,10 +150,17 @@ struct gve_rx_ctx {
+>         /* head and tail of skb chain for the current packet or NULL if none */
+>         struct sk_buff *skb_head;
+>         struct sk_buff *skb_tail;
+> -       u16 total_expected_size;
+> -       u8 expected_frag_cnt;
+> -       u8 curr_frag_cnt;
+> -       u8 reuse_frags;
+> +       u32 total_size;
+> +       u8 frag_cnt;
+> +       bool drop_pkt;
+> +};
+> +
+> +struct gve_rx_cnts {
+> +       u32 ok_pkt_bytes;
+> +       u16 ok_pkt_cnt;
+> +       u16 total_pkt_cnt;
+> +       u16 cont_pkt_cnt;
+> +       u16 desc_err_pkt_cnt;
+>  };
+>
+>  /* Contains datapath state used to represent an RX queue. */
+> @@ -167,6 +175,10 @@ struct gve_rx_ring {
+>                         /* threshold for posting new buffs and descs */
+>                         u32 db_threshold;
+>                         u16 packet_buffer_size;
+> +
+> +                       u32 qpl_copy_pool_mask;
+> +                       u32 qpl_copy_pool_head;
+> +                       struct gve_rx_slot_page_info *qpl_copy_pool;
+>                 };
+>
+>                 /* DQO fields. */
+> @@ -216,7 +228,9 @@ struct gve_rx_ring {
+>         u64 rx_desc_err_dropped_pkt; /* free-running count of packets dropped by descriptor error */
+>         u64 rx_cont_packet_cnt; /* free-running multi-fragment packets received */
+>         u64 rx_frag_flip_cnt; /* free-running count of rx segments where page_flip was used */
+> -       u64 rx_frag_copy_cnt; /* free-running count of rx segments copied into skb linear portion */
+> +       u64 rx_frag_copy_cnt; /* free-running count of rx segments copied */
+> +       u64 rx_frag_alloc_cnt; /* free-running count of rx page allocations */
+> +
+>         u32 q_num; /* queue index */
+>         u32 ntfy_id; /* notification block index */
+>         struct gve_queue_resources *q_resources; /* head and tail pointer idx */
+> diff --git a/drivers/net/ethernet/google/gve/gve_ethtool.c b/drivers/net/ethernet/google/gve/gve_ethtool.c
+> index 7b9a2d9d9624..e7e4ba99c20e 100644
+> --- a/drivers/net/ethernet/google/gve/gve_ethtool.c
+> +++ b/drivers/net/ethernet/google/gve/gve_ethtool.c
+> @@ -45,6 +45,7 @@ static const char gve_gstrings_main_stats[][ETH_GSTRING_LEN] = {
+>  static const char gve_gstrings_rx_stats[][ETH_GSTRING_LEN] = {
+>         "rx_posted_desc[%u]", "rx_completed_desc[%u]", "rx_consumed_desc[%u]", "rx_bytes[%u]",
+>         "rx_cont_packet_cnt[%u]", "rx_frag_flip_cnt[%u]", "rx_frag_copy_cnt[%u]",
+> +       "rx_frag_alloc_cnt[%u]",
+>         "rx_dropped_pkt[%u]", "rx_copybreak_pkt[%u]", "rx_copied_pkt[%u]",
+>         "rx_queue_drop_cnt[%u]", "rx_no_buffers_posted[%u]",
+>         "rx_drops_packet_over_mru[%u]", "rx_drops_invalid_checksum[%u]",
+> @@ -271,6 +272,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
+>                         data[i++] = rx->rx_cont_packet_cnt;
+>                         data[i++] = rx->rx_frag_flip_cnt;
+>                         data[i++] = rx->rx_frag_copy_cnt;
+> +                       data[i++] = rx->rx_frag_alloc_cnt;
+>                         /* rx dropped packets */
+>                         data[i++] = tmp_rx_skb_alloc_fail +
+>                                 tmp_rx_buf_alloc_fail +
+> diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
+> index 021bbf308d68..e2f4494c65fb 100644
+> --- a/drivers/net/ethernet/google/gve/gve_rx.c
+> +++ b/drivers/net/ethernet/google/gve/gve_rx.c
+> @@ -35,6 +35,12 @@ static void gve_rx_unfill_pages(struct gve_priv *priv, struct gve_rx_ring *rx)
+>                                      rx->data.page_info[i].pagecnt_bias - 1);
+>                 gve_unassign_qpl(priv, rx->data.qpl->id);
+>                 rx->data.qpl = NULL;
+> +
+> +               for (i = 0; i < rx->qpl_copy_pool_mask + 1; i++) {
+> +                       page_ref_sub(rx->qpl_copy_pool[i].page,
+> +                                    rx->qpl_copy_pool[i].pagecnt_bias - 1);
+> +                       put_page(rx->qpl_copy_pool[i].page);
+> +               }
+>         }
+>         kvfree(rx->data.page_info);
+>         rx->data.page_info = NULL;
+> @@ -63,6 +69,10 @@ static void gve_rx_free_ring(struct gve_priv *priv, int idx)
+>         dma_free_coherent(dev, bytes, rx->data.data_ring,
+>                           rx->data.data_bus);
+>         rx->data.data_ring = NULL;
+> +
+> +       kvfree(rx->qpl_copy_pool);
+> +       rx->qpl_copy_pool = NULL;
+> +
+>         netif_dbg(priv, drv, priv->dev, "freed rx ring %d\n", idx);
+>  }
+>
+> @@ -101,6 +111,7 @@ static int gve_prefill_rx_pages(struct gve_rx_ring *rx)
+>         u32 slots;
+>         int err;
+>         int i;
+> +       int j;
+>
+>         /* Allocate one page per Rx queue slot. Each page is split into two
+>          * packet buffers, when possible we "page flip" between the two.
+> @@ -135,7 +146,31 @@ static int gve_prefill_rx_pages(struct gve_rx_ring *rx)
+>                         goto alloc_err;
+>         }
+>
+> +       if (!rx->data.raw_addressing) {
+> +               for (j = 0; j < rx->qpl_copy_pool_mask + 1; j++) {
+> +                       struct page *page = alloc_page(GFP_KERNEL);
+> +
+> +                       if (!page)
+> +                               goto alloc_err_qpl;
+> +
+> +                       rx->qpl_copy_pool[j].page = page;
+> +                       rx->qpl_copy_pool[j].page_offset = 0;
+> +                       rx->qpl_copy_pool[j].page_address = page_address(page);
+> +
+> +                       /* The page already has 1 ref. */
+> +                       page_ref_add(page, INT_MAX - 1);
+> +                       rx->qpl_copy_pool[j].pagecnt_bias = INT_MAX;
+> +               }
+> +       }
+> +
+>         return slots;
+> +
+> +alloc_err_qpl:
+> +       while (j--) {
+> +               page_ref_sub(rx->qpl_copy_pool[j].page,
+> +                            rx->qpl_copy_pool[j].pagecnt_bias - 1);
+> +               put_page(rx->qpl_copy_pool[j].page);
+> +       }
+>  alloc_err:
+>         while (i--)
+>                 gve_rx_free_buffer(&priv->pdev->dev,
+> @@ -146,12 +181,11 @@ static int gve_prefill_rx_pages(struct gve_rx_ring *rx)
+>
+>  static void gve_rx_ctx_clear(struct gve_rx_ctx *ctx)
+>  {
+> -       ctx->curr_frag_cnt = 0;
+> -       ctx->total_expected_size = 0;
+> -       ctx->expected_frag_cnt = 0;
+>         ctx->skb_head = NULL;
+>         ctx->skb_tail = NULL;
+> -       ctx->reuse_frags = false;
+> +       ctx->total_size = 0;
+> +       ctx->frag_cnt = 0;
+> +       ctx->drop_pkt = false;
+>  }
+>
+>  static int gve_rx_alloc_ring(struct gve_priv *priv, int idx)
+> @@ -181,10 +215,22 @@ static int gve_rx_alloc_ring(struct gve_priv *priv, int idx)
+>                                                 GFP_KERNEL);
+>         if (!rx->data.data_ring)
+>                 return -ENOMEM;
+> +
+> +       rx->qpl_copy_pool_mask = min_t(u32, U32_MAX, slots * 2) - 1;
+> +       rx->qpl_copy_pool_head = 0;
+> +       rx->qpl_copy_pool = kvcalloc(rx->qpl_copy_pool_mask + 1,
+> +                                    sizeof(rx->qpl_copy_pool[0]),
+> +                                    GFP_KERNEL);
+> +
+> +       if (!rx->qpl_copy_pool) {
+> +               err = -ENOMEM;
+> +               goto abort_with_slots;
+> +       }
+> +
+>         filled_pages = gve_prefill_rx_pages(rx);
+>         if (filled_pages < 0) {
+>                 err = -ENOMEM;
+> -               goto abort_with_slots;
+> +               goto abort_with_copy_pool;
+>         }
+>         rx->fill_cnt = filled_pages;
+>         /* Ensure data ring slots (packet buffers) are visible. */
+> @@ -236,6 +282,9 @@ static int gve_rx_alloc_ring(struct gve_priv *priv, int idx)
+>         rx->q_resources = NULL;
+>  abort_filled:
+>         gve_rx_unfill_pages(priv, rx);
+> +abort_with_copy_pool:
+> +       kvfree(rx->qpl_copy_pool);
+> +       rx->qpl_copy_pool = NULL;
+>  abort_with_slots:
+>         bytes = sizeof(*rx->data.data_ring) * slots;
+>         dma_free_coherent(hdev, bytes, rx->data.data_ring, rx->data.data_bus);
+> @@ -292,30 +341,47 @@ static enum pkt_hash_types gve_rss_type(__be16 pkt_flags)
+>         return PKT_HASH_TYPE_L2;
+>  }
+>
+> -static u16 gve_rx_ctx_padding(struct gve_rx_ctx *ctx)
+> -{
+> -       return (ctx->curr_frag_cnt == 0) ? GVE_RX_PAD : 0;
+> -}
+> -
+>  static struct sk_buff *gve_rx_add_frags(struct napi_struct *napi,
+>                                         struct gve_rx_slot_page_info *page_info,
+>                                         u16 packet_buffer_size, u16 len,
+>                                         struct gve_rx_ctx *ctx)
+>  {
+> -       u32 offset = page_info->page_offset +  gve_rx_ctx_padding(ctx);
+> -       struct sk_buff *skb;
+> +       u32 offset = page_info->page_offset + page_info->pad;
+> +       struct sk_buff *skb = ctx->skb_tail;
+> +       int num_frags = 0;
+>
+> -       if (!ctx->skb_head)
+> -               ctx->skb_head = napi_get_frags(napi);
+> +       if (!skb) {
+> +               skb = napi_get_frags(napi);
+> +               if (unlikely(!skb))
+> +                       return NULL;
+>
+> -       if (unlikely(!ctx->skb_head))
+> -               return NULL;
+> +               ctx->skb_head = skb;
+> +               ctx->skb_tail = skb;
+> +       } else {
+> +               num_frags = skb_shinfo(ctx->skb_tail)->nr_frags;
+> +               if (num_frags == MAX_SKB_FRAGS) {
+> +                       skb = napi_alloc_skb(napi, 0);
+> +                       if (!skb)
+> +                               return NULL;
+> +
+> +                       // We will never chain more than two SKBs: 2 * 16 * 2k > 64k
+> +                       // which is why we do not need to chain by using skb->next
+> +                       skb_shinfo(ctx->skb_tail)->frag_list = skb;
+>
+> -       skb = ctx->skb_head;
+> -       skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags, page_info->page,
+> +                       ctx->skb_tail = skb;
+> +                       num_frags = 0;
+> +               }
+> +       }
+> +
+> +       if (skb != ctx->skb_head) {
+> +               ctx->skb_head->len += len;
+> +               ctx->skb_head->data_len += len;
+> +               ctx->skb_head->truesize += packet_buffer_size;
+> +       }
+> +       skb_add_rx_frag(skb, num_frags, page_info->page,
+>                         offset, len, packet_buffer_size);
+>
+> -       return skb;
+> +       return ctx->skb_head;
+>  }
+>
+>  static void gve_rx_flip_buff(struct gve_rx_slot_page_info *page_info, __be64 *slot_addr)
+> @@ -363,6 +429,92 @@ gve_rx_raw_addressing(struct device *dev, struct net_device *netdev,
+>         return skb;
+>  }
+>
+> +static struct sk_buff *gve_rx_copy_to_pool(struct gve_rx_ring *rx,
+> +                                          struct gve_rx_slot_page_info *page_info,
+> +                                          u16 len, struct napi_struct *napi)
+> +{
+> +       u32 pool_idx = rx->qpl_copy_pool_head & rx->qpl_copy_pool_mask;
+> +       void *src = page_info->page_address + page_info->page_offset;
+> +       struct gve_rx_slot_page_info *copy_page_info;
+> +       struct gve_rx_ctx *ctx = &rx->ctx;
+> +       bool alloc_page = false;
+> +       struct sk_buff *skb;
+> +       void *dst;
+> +
+> +       copy_page_info = &rx->qpl_copy_pool[pool_idx];
+> +       if (!copy_page_info->can_flip) {
+> +               int recycle = gve_rx_can_recycle_buffer(copy_page_info);
+> +
+> +               if (unlikely(recycle < 0)) {
+> +                       gve_schedule_reset(rx->gve);
+> +                       return NULL;
+> +               }
+> +               alloc_page = !recycle;
+> +       }
+> +
+> +       if (alloc_page) {
+> +               struct gve_rx_slot_page_info alloc_page_info;
+> +               struct page *page;
+> +
+> +               /* The least recently used page turned out to be
+> +                * still in use by the kernel. Ignoring it and moving
+> +                * on alleviates head-of-line blocking.
+> +                */
+> +               rx->qpl_copy_pool_head++;
+> +
+> +               page = alloc_page(GFP_ATOMIC);
+> +               if (!page)
+> +                       return NULL;
+> +
+> +               alloc_page_info.page = page;
+> +               alloc_page_info.page_offset = 0;
+> +               alloc_page_info.page_address = page_address(page);
+> +               alloc_page_info.pad = page_info->pad;
+> +
+> +               memcpy(alloc_page_info.page_address, src, page_info->pad + len);
+> +               skb = gve_rx_add_frags(napi, &alloc_page_info,
+> +                                      rx->packet_buffer_size,
+> +                                      len, ctx);
+> +
+> +               u64_stats_update_begin(&rx->statss);
+> +               rx->rx_frag_copy_cnt++;
+> +               rx->rx_frag_alloc_cnt++;
+> +               u64_stats_update_end(&rx->statss);
+> +
+> +               return skb;
+> +       }
+> +
+> +       dst = copy_page_info->page_address + copy_page_info->page_offset;
+> +       memcpy(dst, src, page_info->pad + len);
+> +       copy_page_info->pad = page_info->pad;
+> +
+> +       skb = gve_rx_add_frags(napi, copy_page_info,
+> +                              rx->packet_buffer_size, len, ctx);
+> +       if (unlikely(!skb))
+> +               return NULL;
+> +
+> +       gve_dec_pagecnt_bias(copy_page_info);
+> +       copy_page_info->page_offset += rx->packet_buffer_size;
+> +       copy_page_info->page_offset &= (PAGE_SIZE - 1);
+> +
+> +       if (copy_page_info->can_flip) {
+> +               /* We have used both halves of this copy page, it
+> +                * is time for it to go to the back of the queue.
+> +                */
+> +               copy_page_info->can_flip = false;
+> +               rx->qpl_copy_pool_head++;
+> +               prefetch(rx->qpl_copy_pool[rx->qpl_copy_pool_head & rx->qpl_copy_pool_mask].page);
+> +       } else {
+> +               copy_page_info->can_flip = true;
+> +       }
+> +
+> +       u64_stats_update_begin(&rx->statss);
+> +       rx->rx_frag_copy_cnt++;
+> +       u64_stats_update_end(&rx->statss);
+> +
+> +       return skb;
+> +}
+> +
+>  static struct sk_buff *
+>  gve_rx_qpl(struct device *dev, struct net_device *netdev,
+>            struct gve_rx_ring *rx, struct gve_rx_slot_page_info *page_info,
+> @@ -377,7 +529,7 @@ gve_rx_qpl(struct device *dev, struct net_device *netdev,
+>          * choice is to copy the data out of it so that we can return it to the
+>          * device.
+>          */
+> -       if (ctx->reuse_frags) {
+> +       if (page_info->can_flip) {
+>                 skb = gve_rx_add_frags(napi, page_info, rx->packet_buffer_size, len, ctx);
+>                 /* No point in recycling if we didn't get the skb */
+>                 if (skb) {
+> @@ -386,116 +538,23 @@ gve_rx_qpl(struct device *dev, struct net_device *netdev,
+>                         gve_rx_flip_buff(page_info, &data_slot->qpl_offset);
+>                 }
+>         } else {
+> -               const u16 padding = gve_rx_ctx_padding(ctx);
+> -
+> -               skb = gve_rx_copy(netdev, napi, page_info, len, padding, ctx);
+> -               if (skb) {
+> -                       u64_stats_update_begin(&rx->statss);
+> -                       rx->rx_frag_copy_cnt++;
+> -                       u64_stats_update_end(&rx->statss);
+> -               }
+> +               skb = gve_rx_copy_to_pool(rx, page_info, len, napi);
+>         }
+>         return skb;
+>  }
+>
+> -#define GVE_PKTCONT_BIT_IS_SET(x) (GVE_RXF_PKT_CONT & (x))
+> -static u16 gve_rx_get_fragment_size(struct gve_rx_ctx *ctx, struct gve_rx_desc *desc)
+> -{
+> -       return be16_to_cpu(desc->len) - gve_rx_ctx_padding(ctx);
+> -}
+> -
+> -static bool gve_rx_ctx_init(struct gve_rx_ctx *ctx, struct gve_rx_ring *rx)
+> -{
+> -       bool qpl_mode = !rx->data.raw_addressing, packet_size_error = false;
+> -       bool buffer_error = false, desc_error = false, seqno_error = false;
+> -       struct gve_rx_slot_page_info *page_info;
+> -       struct gve_priv *priv = rx->gve;
+> -       u32 idx = rx->cnt & rx->mask;
+> -       bool reuse_frags, can_flip;
+> -       struct gve_rx_desc *desc;
+> -       u16 packet_size = 0;
+> -       u16 n_frags = 0;
+> -       int recycle;
+> -
+> -       /** In QPL mode, we only flip buffers when all buffers containing the packet
+> -        * can be flipped. RDA can_flip decisions will be made later, per frag.
+> -        */
+> -       can_flip = qpl_mode;
+> -       reuse_frags = can_flip;
+> -       do {
+> -               u16 frag_size;
+> -
+> -               n_frags++;
+> -               desc = &rx->desc.desc_ring[idx];
+> -               desc_error = unlikely(desc->flags_seq & GVE_RXF_ERR) || desc_error;
+> -               if (GVE_SEQNO(desc->flags_seq) != rx->desc.seqno) {
+> -                       seqno_error = true;
+> -                       netdev_warn(priv->dev,
+> -                                   "RX seqno error: want=%d, got=%d, dropping packet and scheduling reset.",
+> -                                   rx->desc.seqno, GVE_SEQNO(desc->flags_seq));
+> -               }
+> -               frag_size = be16_to_cpu(desc->len);
+> -               packet_size += frag_size;
+> -               if (frag_size > rx->packet_buffer_size) {
+> -                       packet_size_error = true;
+> -                       netdev_warn(priv->dev,
+> -                                   "RX fragment error: packet_buffer_size=%d, frag_size=%d, dropping packet.",
+> -                                   rx->packet_buffer_size, be16_to_cpu(desc->len));
+> -               }
+> -               page_info = &rx->data.page_info[idx];
+> -               if (can_flip) {
+> -                       recycle = gve_rx_can_recycle_buffer(page_info);
+> -                       reuse_frags = reuse_frags && recycle > 0;
+> -                       buffer_error = buffer_error || unlikely(recycle < 0);
+> -               }
+> -               idx = (idx + 1) & rx->mask;
+> -               rx->desc.seqno = gve_next_seqno(rx->desc.seqno);
+> -       } while (GVE_PKTCONT_BIT_IS_SET(desc->flags_seq));
+> -
+> -       prefetch(rx->desc.desc_ring + idx);
+> -
+> -       ctx->curr_frag_cnt = 0;
+> -       ctx->total_expected_size = packet_size - GVE_RX_PAD;
+> -       ctx->expected_frag_cnt = n_frags;
+> -       ctx->skb_head = NULL;
+> -       ctx->reuse_frags = reuse_frags;
+> -
+> -       if (ctx->expected_frag_cnt > 1) {
+> -               u64_stats_update_begin(&rx->statss);
+> -               rx->rx_cont_packet_cnt++;
+> -               u64_stats_update_end(&rx->statss);
+> -       }
+> -       if (ctx->total_expected_size > priv->rx_copybreak && !ctx->reuse_frags && qpl_mode) {
+> -               u64_stats_update_begin(&rx->statss);
+> -               rx->rx_copied_pkt++;
+> -               u64_stats_update_end(&rx->statss);
+> -       }
+> -
+> -       if (unlikely(buffer_error || seqno_error || packet_size_error)) {
+> -               gve_schedule_reset(priv);
+> -               return false;
+> -       }
+> -
+> -       if (unlikely(desc_error)) {
+> -               u64_stats_update_begin(&rx->statss);
+> -               rx->rx_desc_err_dropped_pkt++;
+> -               u64_stats_update_end(&rx->statss);
+> -               return false;
+> -       }
+> -       return true;
+> -}
+> -
+>  static struct sk_buff *gve_rx_skb(struct gve_priv *priv, struct gve_rx_ring *rx,
+>                                   struct gve_rx_slot_page_info *page_info, struct napi_struct *napi,
+> -                                 u16 len, union gve_rx_data_slot *data_slot)
+> +                                 u16 len, union gve_rx_data_slot *data_slot,
+> +                                 bool is_only_frag)
+>  {
+>         struct net_device *netdev = priv->dev;
+>         struct gve_rx_ctx *ctx = &rx->ctx;
+>         struct sk_buff *skb = NULL;
+>
+> -       if (len <= priv->rx_copybreak && ctx->expected_frag_cnt == 1) {
+> +       if (len <= priv->rx_copybreak && is_only_frag)  {
+>                 /* Just copy small packets */
+> -               skb = gve_rx_copy(netdev, napi, page_info, len, GVE_RX_PAD, ctx);
+> +               skb = gve_rx_copy(netdev, napi, page_info, len, GVE_RX_PAD);
+>                 if (skb) {
+>                         u64_stats_update_begin(&rx->statss);
+>                         rx->rx_copied_pkt++;
+> @@ -504,29 +563,25 @@ static struct sk_buff *gve_rx_skb(struct gve_priv *priv, struct gve_rx_ring *rx,
+>                         u64_stats_update_end(&rx->statss);
+>                 }
+>         } else {
+> -               if (rx->data.raw_addressing) {
+> -                       int recycle = gve_rx_can_recycle_buffer(page_info);
+> +               int recycle = gve_rx_can_recycle_buffer(page_info);
+>
+> -                       if (unlikely(recycle < 0)) {
+> -                               gve_schedule_reset(priv);
+> -                               return NULL;
+> -                       }
+> -                       page_info->can_flip = recycle;
+> -                       if (page_info->can_flip) {
+> -                               u64_stats_update_begin(&rx->statss);
+> -                               rx->rx_frag_flip_cnt++;
+> -                               u64_stats_update_end(&rx->statss);
+> -                       }
+> +               if (unlikely(recycle < 0)) {
+> +                       gve_schedule_reset(priv);
+> +                       return NULL;
+> +               }
+> +               page_info->can_flip = recycle;
+> +               if (page_info->can_flip) {
+> +                       u64_stats_update_begin(&rx->statss);
+> +                       rx->rx_frag_flip_cnt++;
+> +                       u64_stats_update_end(&rx->statss);
+> +               }
+> +
+> +               if (rx->data.raw_addressing) {
+>                         skb = gve_rx_raw_addressing(&priv->pdev->dev, netdev,
+>                                                     page_info, len, napi,
+>                                                     data_slot,
+>                                                     rx->packet_buffer_size, ctx);
+>                 } else {
+> -                       if (ctx->reuse_frags) {
+> -                               u64_stats_update_begin(&rx->statss);
+> -                               rx->rx_frag_flip_cnt++;
+> -                               u64_stats_update_end(&rx->statss);
+> -                       }
+>                         skb = gve_rx_qpl(&priv->pdev->dev, netdev, rx,
+>                                          page_info, len, napi, data_slot);
+>                 }
+> @@ -534,101 +589,113 @@ static struct sk_buff *gve_rx_skb(struct gve_priv *priv, struct gve_rx_ring *rx,
+>         return skb;
+>  }
+>
+> -static bool gve_rx(struct gve_rx_ring *rx, netdev_features_t feat,
+> -                  u64 *packet_size_bytes, u32 *work_done)
+> +#define GVE_PKTCONT_BIT_IS_SET(x) (GVE_RXF_PKT_CONT & (x))
+> +static void gve_rx(struct gve_rx_ring *rx, netdev_features_t feat,
+> +                  struct gve_rx_desc *desc, u32 idx,
+> +                  struct gve_rx_cnts *cnts)
+>  {
+> +       bool is_last_frag = !GVE_PKTCONT_BIT_IS_SET(desc->flags_seq);
+>         struct gve_rx_slot_page_info *page_info;
+> +       u16 frag_size = be16_to_cpu(desc->len);
+>         struct gve_rx_ctx *ctx = &rx->ctx;
+>         union gve_rx_data_slot *data_slot;
+>         struct gve_priv *priv = rx->gve;
+> -       struct gve_rx_desc *first_desc;
+>         struct sk_buff *skb = NULL;
+> -       struct gve_rx_desc *desc;
+> -       struct napi_struct *napi;
+>         dma_addr_t page_bus;
+> -       u32 work_cnt = 0;
+>         void *va;
+> -       u32 idx;
+> -       u16 len;
+>
+> -       idx = rx->cnt & rx->mask;
+> -       first_desc = &rx->desc.desc_ring[idx];
+> -       desc = first_desc;
+> -       napi = &priv->ntfy_blocks[rx->ntfy_id].napi;
+> +       struct napi_struct *napi = &priv->ntfy_blocks[rx->ntfy_id].napi;
+> +       bool is_first_frag = ctx->frag_cnt == 0;
+>
+> -       if (unlikely(!gve_rx_ctx_init(ctx, rx)))
+> -               goto skb_alloc_fail;
+> +       bool is_only_frag = is_first_frag && is_last_frag;
+>
+> -       while (ctx->curr_frag_cnt < ctx->expected_frag_cnt) {
+> -               /* Prefetch two packet buffers ahead, we will need it soon. */
+> -               page_info = &rx->data.page_info[(idx + 2) & rx->mask];
+> -               va = page_info->page_address + page_info->page_offset;
+> +       if (unlikely(ctx->drop_pkt))
+> +               goto finish_frag;
+>
+> -               prefetch(page_info->page); /* Kernel page struct. */
+> -               prefetch(va);              /* Packet header. */
+> -               prefetch(va + 64);         /* Next cacheline too. */
+> +       if (desc->flags_seq & GVE_RXF_ERR) {
+> +               ctx->drop_pkt = true;
+> +               cnts->desc_err_pkt_cnt++;
+> +               napi_free_frags(napi);
+> +               goto finish_frag;
+> +       }
+>
+> -               len = gve_rx_get_fragment_size(ctx, desc);
+> +       if (unlikely(frag_size > rx->packet_buffer_size)) {
+> +               netdev_warn(priv->dev, "Unexpected frag size %d, can't exceed %d, scheduling reset",
+> +                           frag_size, rx->packet_buffer_size);
+> +               ctx->drop_pkt = true;
+> +               napi_free_frags(napi);
+> +               gve_schedule_reset(rx->gve);
+> +               goto finish_frag;
+> +       }
+>
+> -               page_info = &rx->data.page_info[idx];
+> -               data_slot = &rx->data.data_ring[idx];
+> -               page_bus = rx->data.raw_addressing ?
+> -                          be64_to_cpu(data_slot->addr) - page_info->page_offset :
+> -                          rx->data.qpl->page_buses[idx];
+> -               dma_sync_single_for_cpu(&priv->pdev->dev, page_bus, PAGE_SIZE, DMA_FROM_DEVICE);
+> -
+> -               skb = gve_rx_skb(priv, rx, page_info, napi, len, data_slot);
+> -               if (!skb) {
+> -                       u64_stats_update_begin(&rx->statss);
+> -                       rx->rx_skb_alloc_fail++;
+> -                       u64_stats_update_end(&rx->statss);
+> -                       goto skb_alloc_fail;
+> +       /* Prefetch two packet buffers ahead, we will need it soon. */
+> +       page_info = &rx->data.page_info[(idx + 2) & rx->mask];
+> +       va = page_info->page_address + page_info->page_offset;
+> +       prefetch(page_info->page); /* Kernel page struct. */
+> +       prefetch(va);              /* Packet header. */
+> +       prefetch(va + 64);         /* Next cacheline too. */
+> +
+> +       page_info = &rx->data.page_info[idx];
+> +       data_slot = &rx->data.data_ring[idx];
+> +       page_bus = (rx->data.raw_addressing) ?
+> +               be64_to_cpu(data_slot->addr) - page_info->page_offset :
+> +               rx->data.qpl->page_buses[idx];
+> +       dma_sync_single_for_cpu(&priv->pdev->dev, page_bus,
+> +                               PAGE_SIZE, DMA_FROM_DEVICE);
+> +       page_info->pad = is_first_frag ? GVE_RX_PAD : 0;
+> +       frag_size -= page_info->pad;
+> +
+> +       skb = gve_rx_skb(priv, rx, page_info, napi, frag_size,
+> +                        data_slot, is_only_frag);
+> +       if (!skb) {
+> +               u64_stats_update_begin(&rx->statss);
+> +               rx->rx_skb_alloc_fail++;
+> +               u64_stats_update_end(&rx->statss);
+> +
+> +               napi_free_frags(napi);
+> +               ctx->drop_pkt = true;
+> +               goto finish_frag;
+> +       }
+> +       ctx->total_size += frag_size;
+> +
+> +       if (is_first_frag) {
+> +               if (likely(feat & NETIF_F_RXCSUM)) {
+> +                       /* NIC passes up the partial sum */
+> +                       if (desc->csum)
+> +                               skb->ip_summed = CHECKSUM_COMPLETE;
+> +                       else
+> +                               skb->ip_summed = CHECKSUM_NONE;
+> +                       skb->csum = csum_unfold(desc->csum);
+>                 }
+>
+> -               ctx->curr_frag_cnt++;
+> -               rx->cnt++;
+> -               idx = rx->cnt & rx->mask;
+> -               work_cnt++;
+> -               desc = &rx->desc.desc_ring[idx];
+> +               /* parse flags & pass relevant info up */
+> +               if (likely(feat & NETIF_F_RXHASH) &&
+> +                   gve_needs_rss(desc->flags_seq))
+> +                       skb_set_hash(skb, be32_to_cpu(desc->rss_hash),
+> +                                    gve_rss_type(desc->flags_seq));
+>         }
+>
+> -       if (likely(feat & NETIF_F_RXCSUM)) {
+> -               /* NIC passes up the partial sum */
+> -               if (first_desc->csum)
+> -                       skb->ip_summed = CHECKSUM_COMPLETE;
+> +       if (is_last_frag) {
+> +               skb_record_rx_queue(skb, rx->q_num);
+> +               if (skb_is_nonlinear(skb))
+> +                       napi_gro_frags(napi);
+>                 else
+> -                       skb->ip_summed = CHECKSUM_NONE;
+> -               skb->csum = csum_unfold(first_desc->csum);
+> +                       napi_gro_receive(napi, skb);
+> +               goto finish_ok_pkt;
+>         }
+>
+> -       /* parse flags & pass relevant info up */
+> -       if (likely(feat & NETIF_F_RXHASH) &&
+> -           gve_needs_rss(first_desc->flags_seq))
+> -               skb_set_hash(skb, be32_to_cpu(first_desc->rss_hash),
+> -                            gve_rss_type(first_desc->flags_seq));
+> -
+> -       *packet_size_bytes = skb->len + (skb->protocol ? ETH_HLEN : 0);
+> -       *work_done = work_cnt;
+> -       skb_record_rx_queue(skb, rx->q_num);
+> -       if (skb_is_nonlinear(skb))
+> -               napi_gro_frags(napi);
+> -       else
+> -               napi_gro_receive(napi, skb);
+> -
+> -       gve_rx_ctx_clear(ctx);
+> -       return true;
+> -
+> -skb_alloc_fail:
+> -       if (napi->skb)
+> -               napi_free_frags(napi);
+> -       *packet_size_bytes = 0;
+> -       *work_done = ctx->expected_frag_cnt;
+> -       while (ctx->curr_frag_cnt < ctx->expected_frag_cnt) {
+> -               rx->cnt++;
+> -               ctx->curr_frag_cnt++;
+> +       goto finish_frag;
+> +
+> +finish_ok_pkt:
+> +       cnts->ok_pkt_bytes += ctx->total_size;
+> +       cnts->ok_pkt_cnt++;
+> +finish_frag:
+> +       ctx->frag_cnt++;
+> +       if (is_last_frag) {
+> +               cnts->total_pkt_cnt++;
+> +               cnts->cont_pkt_cnt += (ctx->frag_cnt > 1);
+> +               gve_rx_ctx_clear(ctx);
+>         }
+> -       gve_rx_ctx_clear(ctx);
+> -       return false;
+>  }
+>
+>  bool gve_rx_work_pending(struct gve_rx_ring *rx)
+> @@ -704,36 +771,39 @@ static bool gve_rx_refill_buffers(struct gve_priv *priv, struct gve_rx_ring *rx)
+>  static int gve_clean_rx_done(struct gve_rx_ring *rx, int budget,
+>                              netdev_features_t feat)
+>  {
+> -       u32 work_done = 0, total_packet_cnt = 0, ok_packet_cnt = 0;
+> +       struct gve_rx_ctx *ctx = &rx->ctx;
+>         struct gve_priv *priv = rx->gve;
+> +       struct gve_rx_cnts cnts = {0};
+> +       struct gve_rx_desc *next_desc;
+>         u32 idx = rx->cnt & rx->mask;
+> -       struct gve_rx_desc *desc;
+> -       u64 bytes = 0;
+> +       u32 work_done = 0;
+> +
+> +       struct gve_rx_desc *desc = &rx->desc.desc_ring[idx];
+>
+> -       desc = &rx->desc.desc_ring[idx];
+> +       // Exceed budget only if (and till) the inflight packet is consumed.
+>         while ((GVE_SEQNO(desc->flags_seq) == rx->desc.seqno) &&
+> -              work_done < budget) {
+> -               u64 packet_size_bytes = 0;
+> -               u32 work_cnt = 0;
+> -               bool dropped;
+> -
+> -               netif_info(priv, rx_status, priv->dev,
+> -                          "[%d] idx=%d desc=%p desc->flags_seq=0x%x\n",
+> -                          rx->q_num, idx, desc, desc->flags_seq);
+> -               netif_info(priv, rx_status, priv->dev,
+> -                          "[%d] seqno=%d rx->desc.seqno=%d\n",
+> -                          rx->q_num, GVE_SEQNO(desc->flags_seq),
+> -                          rx->desc.seqno);
+> -
+> -               dropped = !gve_rx(rx, feat, &packet_size_bytes, &work_cnt);
+> -               if (!dropped) {
+> -                       bytes += packet_size_bytes;
+> -                       ok_packet_cnt++;
+> -               }
+> -               total_packet_cnt++;
+> +              (work_done < budget || ctx->frag_cnt)) {
+> +               next_desc = &rx->desc.desc_ring[(idx + 1) & rx->mask];
+> +               prefetch(next_desc);
+> +
+> +               gve_rx(rx, feat, desc, idx, &cnts);
+> +
+> +               rx->cnt++;
+>                 idx = rx->cnt & rx->mask;
+>                 desc = &rx->desc.desc_ring[idx];
+> -               work_done += work_cnt;
+> +               rx->desc.seqno = gve_next_seqno(rx->desc.seqno);
+> +               work_done++;
+> +       }
+> +
+> +       // The device will only send whole packets.
+> +       if (unlikely(ctx->frag_cnt)) {
+> +               struct napi_struct *napi = &priv->ntfy_blocks[rx->ntfy_id].napi;
+> +
+> +               napi_free_frags(napi);
+> +               gve_rx_ctx_clear(&rx->ctx);
+> +               netdev_warn(priv->dev, "Unexpected seq number %d with incomplete packet, expected %d, scheduling reset",
+> +                           GVE_SEQNO(desc->flags_seq), rx->desc.seqno);
+> +               gve_schedule_reset(rx->gve);
+>         }
+>
+>         if (!work_done && rx->fill_cnt - rx->cnt > rx->db_threshold)
+> @@ -741,8 +811,10 @@ static int gve_clean_rx_done(struct gve_rx_ring *rx, int budget,
+>
+>         if (work_done) {
+>                 u64_stats_update_begin(&rx->statss);
+> -               rx->rpackets += ok_packet_cnt;
+> -               rx->rbytes += bytes;
+> +               rx->rpackets += cnts.ok_pkt_cnt;
+> +               rx->rbytes += cnts.ok_pkt_bytes;
+> +               rx->rx_cont_packet_cnt += cnts.cont_pkt_cnt;
+> +               rx->rx_desc_err_dropped_pkt += cnts.desc_err_pkt_cnt;
+>                 u64_stats_update_end(&rx->statss);
+>         }
+>
+> @@ -767,7 +839,7 @@ static int gve_clean_rx_done(struct gve_rx_ring *rx, int budget,
+>         }
+>
+>         gve_rx_write_doorbell(priv, rx);
+> -       return total_packet_cnt;
+> +       return cnts.total_pkt_cnt;
+>  }
+>
+>  int gve_rx_poll(struct gve_notify_block *block, int budget)
+> diff --git a/drivers/net/ethernet/google/gve/gve_rx_dqo.c b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
+> index 2e6461b0ea8b..630f42a3037b 100644
+> --- a/drivers/net/ethernet/google/gve/gve_rx_dqo.c
+> +++ b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
+> @@ -568,7 +568,7 @@ static int gve_rx_dqo(struct napi_struct *napi, struct gve_rx_ring *rx,
+>
+>         if (eop && buf_len <= priv->rx_copybreak) {
+>                 rx->ctx.skb_head = gve_rx_copy(priv->dev, napi,
+> -                                              &buf_state->page_info, buf_len, 0, NULL);
+> +                                              &buf_state->page_info, buf_len, 0);
+>                 if (unlikely(!rx->ctx.skb_head))
+>                         goto error;
+>                 rx->ctx.skb_tail = rx->ctx.skb_head;
+> diff --git a/drivers/net/ethernet/google/gve/gve_utils.c b/drivers/net/ethernet/google/gve/gve_utils.c
+> index d57508bc4307..6ba46adaaee3 100644
+> --- a/drivers/net/ethernet/google/gve/gve_utils.c
+> +++ b/drivers/net/ethernet/google/gve/gve_utils.c
+> @@ -50,34 +50,18 @@ void gve_rx_add_to_block(struct gve_priv *priv, int queue_idx)
+>
+>  struct sk_buff *gve_rx_copy(struct net_device *dev, struct napi_struct *napi,
+>                             struct gve_rx_slot_page_info *page_info, u16 len,
+> -                           u16 padding, struct gve_rx_ctx *ctx)
+> +                           u16 padding)
+>  {
+>         void *va = page_info->page_address + padding + page_info->page_offset;
+> -       int skb_linear_offset = 0;
+> -       bool set_protocol = false;
+>         struct sk_buff *skb;
+>
+> -       if (ctx) {
+> -               if (!ctx->skb_head)
+> -                       ctx->skb_head = napi_alloc_skb(napi, ctx->total_expected_size);
+> -
+> -               if (unlikely(!ctx->skb_head))
+> -                       return NULL;
+> -               skb = ctx->skb_head;
+> -               skb_linear_offset = skb->len;
+> -               set_protocol = ctx->curr_frag_cnt == ctx->expected_frag_cnt - 1;
+> -       } else {
+> -               skb = napi_alloc_skb(napi, len);
+> -
+> -               if (unlikely(!skb))
+> -                       return NULL;
+> -               set_protocol = true;
+> -       }
+> -       __skb_put(skb, len);
+> -       skb_copy_to_linear_data_offset(skb, skb_linear_offset, va, len);
+> +       skb = napi_alloc_skb(napi, len);
+> +       if (unlikely(!skb))
+> +               return NULL;
+>
+> -       if (set_protocol)
+> -               skb->protocol = eth_type_trans(skb, dev);
+> +       __skb_put(skb, len);
+> +       skb_copy_to_linear_data_offset(skb, 0, va, len);
+> +       skb->protocol = eth_type_trans(skb, dev);
+>
+>         return skb;
+>  }
+> diff --git a/drivers/net/ethernet/google/gve/gve_utils.h b/drivers/net/ethernet/google/gve/gve_utils.h
+> index 6d98e69fd3b8..79595940b351 100644
+> --- a/drivers/net/ethernet/google/gve/gve_utils.h
+> +++ b/drivers/net/ethernet/google/gve/gve_utils.h
+> @@ -19,7 +19,7 @@ void gve_rx_add_to_block(struct gve_priv *priv, int queue_idx);
+>
+>  struct sk_buff *gve_rx_copy(struct net_device *dev, struct napi_struct *napi,
+>                             struct gve_rx_slot_page_info *page_info, u16 len,
+> -                           u16 pad, struct gve_rx_ctx *ctx);
+> +                           u16 pad);
+>
+>  /* Decrement pagecnt_bias. Set it back to INT_MAX if it reached zero. */
+>  void gve_dec_pagecnt_bias(struct gve_rx_slot_page_info *page_info);
+> --
+> 2.38.1.273.g43a17bfeac-goog
+>
 
-This bug seems to be related to tcindex_set_parms().
-
-To be more specific, kernel should release the old_r->exts before
-initializing it. Let us test it.
-
-#syz test https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-aae703b02f92bde9264366c545e87cec451de471
-
-diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
-index 1c9eeb98d826..00a6c04a4b42 100644
---- a/net/sched/cls_tcindex.c
-+++ b/net/sched/cls_tcindex.c
-@@ -479,6 +479,7 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
- 	}
- 
- 	if (old_r && old_r != r) {
-+		tcf_exts_destroy(&old_r->exts);
- 		err = tcindex_filter_result_init(old_r, cp, net);
- 		if (err < 0) {
- 			kfree(f);
+Please ignore this patch, it has an incorrect subject prefix "net"
+instead of "net-next".
