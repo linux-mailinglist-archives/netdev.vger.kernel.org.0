@@ -2,217 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9659C6126B1
-	for <lists+netdev@lfdr.de>; Sun, 30 Oct 2022 02:20:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DEA7612797
+	for <lists+netdev@lfdr.de>; Sun, 30 Oct 2022 06:41:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229974AbiJ3AUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Oct 2022 20:20:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41174 "EHLO
+        id S229552AbiJ3FlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Oct 2022 01:41:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229872AbiJ3ATI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Oct 2022 20:19:08 -0400
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 264314F6B2
-        for <netdev@vger.kernel.org>; Sat, 29 Oct 2022 17:18:53 -0700 (PDT)
-Received: by mail-io1-xd2c.google.com with SMTP id c65so4043931iof.1
-        for <netdev@vger.kernel.org>; Sat, 29 Oct 2022 17:18:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cEUlpLn6RuLc4Fo/uPSYCehvdn31euMXFsdMmyCklyk=;
-        b=SgQo6EF4wTm/UBaevZtlQYHMSlg7mAp5S8g0l0XvdCufc9TjYfk8eg50qb7ggL3r0+
-         musLPB0I22VqJZrSvjCgVwVYGvZNf5prBF0zZ+fBVXIMt+a7KjCieF8pGqSQ0qIjzkD1
-         9uoK2iP8Hz4rwvZqYh91jq2MsQrZgCDV9QSIY86oo2k7s0tn2epfkA0nEUHGdYfu/zfl
-         BduYuQWAYUGnfgfS8/cVLUhnmDAONGv97oB772BePT7HsJCs3+D/533siTlS9fhYbDyx
-         7MVOrpcGYlJlDtLeEtoqD6cRmVZ7dEcTAfYSRdiKjgJ2RPFKbAxYhljzKXkSJqIpUI7G
-         zXSA==
+        with ESMTP id S229571AbiJ3FlS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Oct 2022 01:41:18 -0400
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F9632124E
+        for <netdev@vger.kernel.org>; Sat, 29 Oct 2022 22:41:16 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id y10-20020a5d914a000000b00688fa7b2252so6431902ioq.0
+        for <netdev@vger.kernel.org>; Sat, 29 Oct 2022 22:41:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=cEUlpLn6RuLc4Fo/uPSYCehvdn31euMXFsdMmyCklyk=;
-        b=D2iIymH5B4TeNyinJFUmGHMzWkJombjoGGqvokVAfX/eChQ0DzoJpcL+BuNoYj0lB1
-         cvuAKIEAWQpdsnzz5L/Pf6kwnYW8xu7cznRoDasUaf0V5KsqGdsyF6C/54p8r3S4ke2m
-         GlP5UJOU06Eqw0O4w2L4lO6EouUklxtGPeCMoNMBDXBsI9EkwZsaMuTCtco3uw1B14QW
-         vrIwAi9js+xpEqpZyiP4XuvoKCBRiwhplDV2pBg1EIP41r6VL7Me5fNAIGCO4tpZTfXK
-         q/Vxc43ukcDYN8mEcaiI0Hf3MADKMaVWiD9zV8jYsslxC3zFz7JT5xTmq8xKQTXbAmzF
-         TQPQ==
-X-Gm-Message-State: ACrzQf08izzFWFz9aI59YhUC/BNcGKUD1zE5unuFwWnUcoZL/z7RS3sb
-        9zquCBkqnsUpLTb77EpGzTrcN6XCP+9i2Q==
-X-Google-Smtp-Source: AMsMyM5JicI5H6e3IRZLxXLnhj7L4y9fUvtaoryjcSsgFFK+c547ySMaskYTWqNT4deOVsAKiqB/tg==
-X-Received: by 2002:a02:6d15:0:b0:375:3523:b643 with SMTP id m21-20020a026d15000000b003753523b643mr3579915jac.144.1667089132781;
-        Sat, 29 Oct 2022 17:18:52 -0700 (PDT)
-Received: from presto.localdomain ([98.61.227.136])
-        by smtp.gmail.com with ESMTPSA id co20-20020a0566383e1400b00375126ae55fsm1087519jab.58.2022.10.29.17.18.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Oct 2022 17:18:52 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     mka@chromium.org, evgreen@chromium.org, andersson@kernel.org,
-        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
-        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
-        elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 9/9] net: ipa: use a bitmap for enabled endpoints
-Date:   Sat, 29 Oct 2022 19:18:28 -0500
-Message-Id: <20221030001828.754010-10-elder@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221030001828.754010-1-elder@linaro.org>
-References: <20221030001828.754010-1-elder@linaro.org>
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=LMH67DLr37XpWQPukqCW0d3TMkMjMRPPe5mLQsfeTPc=;
+        b=aBjxIPbgIrLez8je6tS9lLFB5BFF2HHyxa2AUTENaSFf1qfM8i2Bwwr12THikseaof
+         AtHJCb6MswOgY5pkxxtvzDF7cPbsnG4JMrcXnklzsOKqigZC9sm+jfLnnomDmyg5eXsc
+         cjkLp3e2aNHg8rJjFFPe2hYVOYmsLYa4MeMq81oXNNOfJwuSbeUVb/Js3vIJZ+Ow0sE6
+         I+jon0riSDlh+xkAU0sciGU+fX/q6Lpo5kTT7P50cr20cPwk/h3OGx9DjwEjZj/8AI26
+         +zY6m8Ru8Qzg6EdNF3kcvzE8kiylgt0Sz2Tyc2R6Nkgk1iI7c/Y8GIcuGqugHWIrIf5i
+         Rq7Q==
+X-Gm-Message-State: ACrzQf1i2RpaCaKGWvm+eW+1ZwWbQd56WzL05+Rsl+nzZfavFtGovH4r
+        hfpBexsEGQs96FUEbijXDNZa46zCKR2PNy6vV0NYd6tuqlM6
+X-Google-Smtp-Source: AMsMyM4Vg/JTXGJ2tlZP/1A9x78LOefhNVYfz+G7wXL5hIJJt/uRM82/OoOhLIQgR8TJN+TmbJzpKwZG0EGK+pa1VLm4ypUCJ96p
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a5d:8913:0:b0:6a4:71b5:8036 with SMTP id
+ b19-20020a5d8913000000b006a471b58036mr3521632ion.171.1667108475731; Sat, 29
+ Oct 2022 22:41:15 -0700 (PDT)
+Date:   Sat, 29 Oct 2022 22:41:15 -0700
+In-Reply-To: <20221029161418.2709-1-yin31149@gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000007fa5c805ec39f00a@google.com>
+Subject: Re: [syzbot] memory leak in regulatory_hint_core
+From:   syzbot <syzbot+232ebdbd36706c965ebf@syzkaller.appspotmail.com>
+To:     18801353760@163.com, davem@davemloft.net, edumazet@google.com,
+        jhs@mojatatu.com, jiri@resnulli.us, johannes@sipsolutions.net,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com, yin31149@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace the 32-bit unsigned used to track enabled endpoints with a
-Linux bitmap, to allow an arbitrary number of endpoints to be
-represented.
+Hello,
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa.h          |  4 ++--
- drivers/net/ipa/ipa_endpoint.c | 28 ++++++++++++++++------------
- 2 files changed, 18 insertions(+), 14 deletions(-)
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+SYZFATAL: executor failed NUM times: executor NUM: exit status NUM
 
-diff --git a/drivers/net/ipa/ipa.h b/drivers/net/ipa/ipa.h
-index f14d1bd34e7e5..5372db58b5bdc 100644
---- a/drivers/net/ipa/ipa.h
-+++ b/drivers/net/ipa/ipa.h
-@@ -67,7 +67,7 @@ struct ipa_interrupt;
-  * @available:		Bitmap of endpoints supported by hardware
-  * @filtered:		Bitmap of endpoints that support filtering
-  * @set_up:		Bitmap of endpoints that are set up for use
-- * @enabled:		Bit mask indicating endpoints enabled
-+ * @enabled:		Bitmap of currently enabled endpoints
-  * @modem_tx_count:	Number of defined modem TX endoints
-  * @endpoint:		Array of endpoint information
-  * @channel_map:	Mapping of GSI channel to IPA endpoint
-@@ -125,7 +125,7 @@ struct ipa {
- 	unsigned long *available;	/* Supported by hardware */
- 	u64 filtered;			/* Support filtering (AP and modem) */
- 	unsigned long *set_up;
--	u32 enabled;
-+	unsigned long *enabled;
- 
- 	u32 modem_tx_count;
- 	struct ipa_endpoint endpoint[IPA_ENDPOINT_MAX];
-diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 564a209f75a0f..ea9ed2da4ff0c 100644
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1666,6 +1666,7 @@ static void ipa_endpoint_program(struct ipa_endpoint *endpoint)
- 
- int ipa_endpoint_enable_one(struct ipa_endpoint *endpoint)
- {
-+	u32 endpoint_id = endpoint->endpoint_id;
- 	struct ipa *ipa = endpoint->ipa;
- 	struct gsi *gsi = &ipa->gsi;
- 	int ret;
-@@ -1675,37 +1676,35 @@ int ipa_endpoint_enable_one(struct ipa_endpoint *endpoint)
- 		dev_err(&ipa->pdev->dev,
- 			"error %d starting %cX channel %u for endpoint %u\n",
- 			ret, endpoint->toward_ipa ? 'T' : 'R',
--			endpoint->channel_id, endpoint->endpoint_id);
-+			endpoint->channel_id, endpoint_id);
- 		return ret;
- 	}
- 
- 	if (!endpoint->toward_ipa) {
--		ipa_interrupt_suspend_enable(ipa->interrupt,
--					     endpoint->endpoint_id);
-+		ipa_interrupt_suspend_enable(ipa->interrupt, endpoint_id);
- 		ipa_endpoint_replenish_enable(endpoint);
- 	}
- 
--	ipa->enabled |= BIT(endpoint->endpoint_id);
-+	__set_bit(endpoint_id, ipa->enabled);
- 
- 	return 0;
- }
- 
- void ipa_endpoint_disable_one(struct ipa_endpoint *endpoint)
- {
--	u32 mask = BIT(endpoint->endpoint_id);
-+	u32 endpoint_id = endpoint->endpoint_id;
- 	struct ipa *ipa = endpoint->ipa;
- 	struct gsi *gsi = &ipa->gsi;
- 	int ret;
- 
--	if (!(ipa->enabled & mask))
-+	if (!test_bit(endpoint_id, ipa->enabled))
- 		return;
- 
--	ipa->enabled ^= mask;
-+	__clear_bit(endpoint_id, endpoint->ipa->enabled);
- 
- 	if (!endpoint->toward_ipa) {
- 		ipa_endpoint_replenish_disable(endpoint);
--		ipa_interrupt_suspend_disable(ipa->interrupt,
--					      endpoint->endpoint_id);
-+		ipa_interrupt_suspend_disable(ipa->interrupt, endpoint_id);
- 	}
- 
- 	/* Note that if stop fails, the channel's state is not well-defined */
-@@ -1713,7 +1712,7 @@ void ipa_endpoint_disable_one(struct ipa_endpoint *endpoint)
- 	if (ret)
- 		dev_err(&ipa->pdev->dev,
- 			"error %d attempting to stop endpoint %u\n", ret,
--			endpoint->endpoint_id);
-+			endpoint_id);
- }
- 
- void ipa_endpoint_suspend_one(struct ipa_endpoint *endpoint)
-@@ -1722,7 +1721,7 @@ void ipa_endpoint_suspend_one(struct ipa_endpoint *endpoint)
- 	struct gsi *gsi = &endpoint->ipa->gsi;
- 	int ret;
- 
--	if (!(endpoint->ipa->enabled & BIT(endpoint->endpoint_id)))
-+	if (!test_bit(endpoint->endpoint_id, endpoint->ipa->enabled))
- 		return;
- 
- 	if (!endpoint->toward_ipa) {
-@@ -1742,7 +1741,7 @@ void ipa_endpoint_resume_one(struct ipa_endpoint *endpoint)
- 	struct gsi *gsi = &endpoint->ipa->gsi;
- 	int ret;
- 
--	if (!(endpoint->ipa->enabled & BIT(endpoint->endpoint_id)))
-+	if (!test_bit(endpoint->endpoint_id, endpoint->ipa->enabled))
- 		return;
- 
- 	if (!endpoint->toward_ipa)
-@@ -1970,8 +1969,10 @@ void ipa_endpoint_exit(struct ipa *ipa)
- 	for_each_set_bit(endpoint_id, ipa->defined, ipa->endpoint_count)
- 		ipa_endpoint_exit_one(&ipa->endpoint[endpoint_id]);
- 
-+	bitmap_free(ipa->enabled);
- 	bitmap_free(ipa->set_up);
- 	bitmap_free(ipa->defined);
-+	ipa->enabled = NULL;
- 	ipa->set_up = NULL;
- 	ipa->defined = NULL;
- 
-@@ -1997,8 +1998,11 @@ int ipa_endpoint_init(struct ipa *ipa, u32 count,
- 	/* Set up the defined endpoint bitmap */
- 	ipa->defined = bitmap_zalloc(ipa->endpoint_count, GFP_KERNEL);
- 	ipa->set_up = bitmap_zalloc(ipa->endpoint_count, GFP_KERNEL);
-+	ipa->enabled = bitmap_zalloc(ipa->endpoint_count, GFP_KERNEL);
- 	if (!ipa->defined || !ipa->set_up) {
- 		dev_err(dev, "unable to allocate endpoint bitmaps\n");
-+		bitmap_free(ipa->set_up);
-+		ipa->set_up = NULL;
- 		bitmap_free(ipa->defined);
- 		ipa->defined = NULL;
- 		return -ENOMEM;
--- 
-2.34.1
+2022/10/30 05:33:05 SYZFATAL: executor failed 11 times: executor 0: exit status 67
+SYZFAIL: wrong response packet
+ (errno 16: Device or resource busy)
+loop exited with status 67
+
+SYZFAIL: wrong response packet
+ (errno 16: Device or resource busy)
+loop exited with status 67
+
+
+Tested on:
+
+commit:         aae703b0 Merge tag 'for-6.1-rc1-tag' of git://git.kern..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+console output: https://syzkaller.appspot.com/x/log.txt?x=12e3a3e2880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d2f454d7d3b63980
+dashboard link: https://syzkaller.appspot.com/bug?extid=232ebdbd36706c965ebf
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=10eb44b6880000
 
