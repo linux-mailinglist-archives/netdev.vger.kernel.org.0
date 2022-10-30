@@ -2,122 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E3383612599
-	for <lists+netdev@lfdr.de>; Sat, 29 Oct 2022 23:41:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C70B3612695
+	for <lists+netdev@lfdr.de>; Sun, 30 Oct 2022 02:18:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229686AbiJ2VlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Oct 2022 17:41:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55020 "EHLO
+        id S229456AbiJ3ASk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Oct 2022 20:18:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229494AbiJ2VlH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Oct 2022 17:41:07 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF300C7;
-        Sat, 29 Oct 2022 14:41:05 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id 3-20020a17090a0f8300b00212d5cd4e5eso12836411pjz.4;
-        Sat, 29 Oct 2022 14:41:05 -0700 (PDT)
+        with ESMTP id S229727AbiJ3ASi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Oct 2022 20:18:38 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F66924BE8
+        for <netdev@vger.kernel.org>; Sat, 29 Oct 2022 17:18:35 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id q142so1320341iod.5
+        for <netdev@vger.kernel.org>; Sat, 29 Oct 2022 17:18:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=/861UoRf3F+2YILewsi3E4Q/g8WnmJGSnP8oXVC9Ulo=;
-        b=Ad6qNuVd703mDsl9h9ZAFsw+rsT5SEsCTchCIKfFP44Xw+gJ4ZfiSGIYWEhlj5L7Sx
-         2tpFfUK8v9ilSz10X4y5m7vL+RN7tmz8XEIySk2o7ZVIxe72uDQTBOP63kf/83y7hpiF
-         bryuzIiGOO3huvQOXoDCZecEV7CTb6OS8uaAhP0NdeAB9vI3Avs1I+3LOwUPf9gTUJg+
-         mdHCwIGiHP2idwSOiSFMdRqSmo0kYVClECsemKd44LEYQn5IzFPe/vZnKqlkQpAIiwnz
-         Y41wH/aOcqn5m0P3Kwji/Bn7zMWI+56Qx6BRfY4d1zonOslZfhsDPIosTEo+fE9YsJfr
-         tSfw==
+        bh=JjHQrp4EVDI8n+t1cgspBMWy1K3NeCgFafwd7Mct33w=;
+        b=vCQsA14K/mjpp2iHhDOvehLXBhPnOJE5yfjbmYukbJmldzsXZg5Ob+hZpg7w4CNk5h
+         2SP6Yn6oKCNVMOtvspxTUWH+6Q+MrUDnrYwcOip8qrCyTkVI+30atqUYKO3XQ6pU0m85
+         il37XGg4p3gGb3YLQ7nq9pi4BaZWZZjEu3aa+8OhiyTWnqF9LbT13Gv3HdVJf8p/jclx
+         +K8EofOj0HrxPmOJNPkFla14pL5l0b2Q2hklgV1TW7lBK2+RJiQEPtVH2BvxlKMeGre4
+         P3VEwq3Vym7GzQ+XZ7hwuxCBxSKFW/r4dk19E91KCCm4SBdJPu+LelMIc78flMJM+SqT
+         Ur0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=/861UoRf3F+2YILewsi3E4Q/g8WnmJGSnP8oXVC9Ulo=;
-        b=cYlIm5XsoBqzmFsI+mS9pG8CWpVupsYvXYWb+L+kzx4yJO1e0htNoJeRQ+Vm9tyXZH
-         SvK/IQtyIpNa1KJt4HeaVzeVSRxX56Aq2obnbS11Wi/tsWwFUFo16X7fMorrvqZ91AyK
-         l5+6biPtZlaXFRo8bvdD3cqTgtzfPS1JaCO69FJB1g3l2PeYYMimFHTmoy8V8Lji4bmS
-         Mz+RwewiKi6d44j64aFAOcbVMFrIxfG+0LuaPUbUS197IQwk6BtWjgO8QVdJ64F1ePjh
-         fbWO9lgLztobzRscVIDfn3YVwNs3uIJ9PN1bC+jQYeXEGeN9gYdqhh2G+NtZkTyeNcRz
-         q5bQ==
-X-Gm-Message-State: ACrzQf1yLhey2/DvQmmU3026rN9tQZhbx1o8U8AxCYM6LV6YkjdIGXIZ
-        1fSuf1ZYLWjR3rjXZvXfrIs=
-X-Google-Smtp-Source: AMsMyM5zxFHvDuRdShgj/syyAjot5EnVw4SXb2fxPU/SarqT3cN7v5lpzmVDLYzSHzuwSS2pclmy7g==
-X-Received: by 2002:a17:90b:2751:b0:20a:e437:a9e8 with SMTP id qi17-20020a17090b275100b0020ae437a9e8mr23139521pjb.181.1667079665307;
-        Sat, 29 Oct 2022 14:41:05 -0700 (PDT)
-Received: from uftrace.. ([14.5.161.231])
-        by smtp.gmail.com with ESMTPSA id 17-20020a17090a19d100b002036006d65bsm1448759pjj.39.2022.10.29.14.41.02
+        bh=JjHQrp4EVDI8n+t1cgspBMWy1K3NeCgFafwd7Mct33w=;
+        b=F2HSP8zAZqQa4gMJU/yN2YbwIN/W6evfwIwVgNT3k886jRlZvEFzafml3218w7GAr9
+         loe4wyJ2eGHCSAZUjVSeIESACwqBzZeo9bWUlHZKBjrP8N4i8vW3BzeYhC1eaQYeiU87
+         ykXd42JIJ1hfiYeYsycpyCqxqmmlosksHpFAkmbN06/oRgtSUrH1CBnkvE23rB1BjuPC
+         40wcHXZBTWrFy6DlrqkOCb98dq58h4iVMDypt3NmLMzp/HHFn0FOHGbhCp7AyEPAlgIl
+         nH7O1L94a6lZT1KmKXwD0elESrclKuvd+MkszXDyfUPyGN51PmZSMr3sfbEWty2eKAHe
+         shyg==
+X-Gm-Message-State: ACrzQf0s2as1AbRbppUdBvR3A15dvzDOCyG7X9a9CMxEDr2KOqxXZEIh
+        9eDf57qgK+U65DMwifx3alOAtQ==
+X-Google-Smtp-Source: AMsMyM69iz8ar9hrTlPrBc/7GyLn4sJGahSZmxtstIe7fbX8B31jkeC3PuHTrP3YZ8V8PSSvFqXbQg==
+X-Received: by 2002:a05:6638:2646:b0:374:f6f6:2e12 with SMTP id n6-20020a056638264600b00374f6f62e12mr3298217jat.182.1667089114811;
+        Sat, 29 Oct 2022 17:18:34 -0700 (PDT)
+Received: from presto.localdomain ([98.61.227.136])
+        by smtp.gmail.com with ESMTPSA id co20-20020a0566383e1400b00375126ae55fsm1087519jab.58.2022.10.29.17.18.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Oct 2022 14:41:04 -0700 (PDT)
-From:   Kang Minchul <tegongkang@gmail.com>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Kang Minchul <tegongkang@gmail.com>
-Subject: [PATCH v2] Bluetooth: Use kzalloc instead of kmalloc/memset
-Date:   Sun, 30 Oct 2022 06:40:58 +0900
-Message-Id: <20221029214058.25159-1-tegongkang@gmail.com>
+        Sat, 29 Oct 2022 17:18:33 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     mka@chromium.org, evgreen@chromium.org, andersson@kernel.org,
+        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
+        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
+        elder@kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/9] net: ipa: support more endpoints
+Date:   Sat, 29 Oct 2022 19:18:19 -0500
+Message-Id: <20221030001828.754010-1-elder@linaro.org>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit replace kmalloc + memset to kzalloc
-for better code readability and simplicity.
+This series adds support for more than 32 IPA endpoints.  To do
+this, five registers whose bits represent endpoint state are
+replicated as needed to represent endpoints beyond 32.  For existing
+platforms, the number of endpoints is never greater than 32, so
+there is just one of each register.  IPA v5.0+ supports more than
+that though; these changes prepare the code for that.
 
-Following messages are related cocci warnings.
+Beyond that, the IPA fields that represent endpoints in a 32-bit
+bitmask are updated to support an arbitrary number of these endpoint
+registers.  (There is one exception, explained in patch 7.)
 
-WARNING: kzalloc should be used for d, instead of kmalloc/memset
+The first two patches are some sort of unrelated cleanups, making
+use of a helper function introduced recently.
 
-Signed-off-by: Kang Minchul <tegongkang@gmail.com>
----
-V1 -> V2: Change subject prefix
+The third and fourth use parameterized functions to determine the
+register offset for registers that represent endpoints.
 
- net/bluetooth/hci_conn.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+The last five convert fields representing endpoints to allow more
+than 32 endpoints to be represented.
 
-diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-index 7a59c4487050..287d313aa312 100644
---- a/net/bluetooth/hci_conn.c
-+++ b/net/bluetooth/hci_conn.c
-@@ -824,11 +824,10 @@ static int hci_le_terminate_big(struct hci_dev *hdev, u8 big, u8 bis)
- 
- 	bt_dev_dbg(hdev, "big 0x%2.2x bis 0x%2.2x", big, bis);
- 
--	d = kmalloc(sizeof(*d), GFP_KERNEL);
-+	d = kzalloc(sizeof(*d), GFP_KERNEL);
- 	if (!d)
- 		return -ENOMEM;
- 
--	memset(d, 0, sizeof(*d));
- 	d->big = big;
- 	d->bis = bis;
- 
-@@ -861,11 +860,10 @@ static int hci_le_big_terminate(struct hci_dev *hdev, u8 big, u16 sync_handle)
- 
- 	bt_dev_dbg(hdev, "big 0x%2.2x sync_handle 0x%4.4x", big, sync_handle);
- 
--	d = kmalloc(sizeof(*d), GFP_KERNEL);
-+	d = kzalloc(sizeof(*d), GFP_KERNEL);
- 	if (!d)
- 		return -ENOMEM;
- 
--	memset(d, 0, sizeof(*d));
- 	d->big = big;
- 	d->sync_handle = sync_handle;
- 
+Signed-off-by: Alex Elder <elder@linaro.org>
+
+Alex Elder (9):
+  net: ipa: reduce arguments to ipa_table_init_add()
+  net: ipa: use ipa_table_mem() in ipa_table_reset_add()
+  net: ipa: add a parameter to aggregation registers
+  net: ipa: add a parameter to suspend registers
+  net: ipa: use a bitmap for defined endpoints
+  net: ipa: use a bitmap for available endpoints
+  net: ipa: support more filtering endpoints
+  net: ipa: use a bitmap for set-up endpoints
+  net: ipa: use a bitmap for enabled endpoints
+
+ drivers/net/ipa/ipa.h                |  26 +++--
+ drivers/net/ipa/ipa_endpoint.c       | 167 +++++++++++++++------------
+ drivers/net/ipa/ipa_endpoint.h       |   2 +-
+ drivers/net/ipa/ipa_interrupt.c      |  34 ++++--
+ drivers/net/ipa/ipa_main.c           |   7 +-
+ drivers/net/ipa/ipa_table.c          |  88 +++++++-------
+ drivers/net/ipa/ipa_table.h          |   6 +-
+ drivers/net/ipa/reg/ipa_reg-v3.1.c   |  13 ++-
+ drivers/net/ipa/reg/ipa_reg-v3.5.1.c |  13 ++-
+ drivers/net/ipa/reg/ipa_reg-v4.11.c  |  13 ++-
+ drivers/net/ipa/reg/ipa_reg-v4.2.c   |  13 ++-
+ drivers/net/ipa/reg/ipa_reg-v4.5.c   |  13 ++-
+ drivers/net/ipa/reg/ipa_reg-v4.9.c   |  13 ++-
+ 13 files changed, 227 insertions(+), 181 deletions(-)
+
 -- 
 2.34.1
 
