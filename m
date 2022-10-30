@@ -2,127 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 809EA612D0D
-	for <lists+netdev@lfdr.de>; Sun, 30 Oct 2022 22:32:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 742EE612D26
+	for <lists+netdev@lfdr.de>; Sun, 30 Oct 2022 23:02:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229870AbiJ3Vcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Oct 2022 17:32:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43746 "EHLO
+        id S229937AbiJ3WCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Oct 2022 18:02:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229913AbiJ3VcG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Oct 2022 17:32:06 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2A6AE47;
-        Sun, 30 Oct 2022 14:32:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1667165525; x=1698701525;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=OdInNG+WtCVFIQyztfsKU1qUG+kc8CesAPbpqzEN/q4=;
-  b=VP1UqK3/E3aV4VHTupjumONAK6a/JbjO7uMI4Ztd7HeFNPv3yFG9k1WF
-   ZutPN3vcwmsN0WUPsbg7jYbRv7rwPIMB7WQfxdPdf0C9Q4iZ4ezIkZYli
-   usntzVljzr2ocC4QKER9afYxjQlfUexET/EXCh2Q67VR5hHZXDrW4DTp1
-   wo1PX4o/2IZR3WZBHfpfMKkm4NfaPHsAB136WRXAI+MBSlnSLkKNWUR8e
-   8C5pSluTWEoJN7rO5Gn4H8oLe4uSSdNxKlBuOeaEXLPBaYMquOjpypHOh
-   xGl25BAJ7JQGLSZp4qfWBw1ncQnd9KDtdeArIfq7NsCMZMOtp25rGcMaP
-   w==;
-X-IronPort-AV: E=Sophos;i="5.95,226,1661842800"; 
-   d="scan'208";a="184552394"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Oct 2022 14:32:04 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Sun, 30 Oct 2022 14:32:03 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Sun, 30 Oct 2022 14:32:01 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <UNGLinuxDriver@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net v2 3/3] net: lan966x: Fix FDMA when MTU is changed
-Date:   Sun, 30 Oct 2022 22:36:36 +0100
-Message-ID: <20221030213636.1031408-4-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.38.0
-In-Reply-To: <20221030213636.1031408-1-horatiu.vultur@microchip.com>
-References: <20221030213636.1031408-1-horatiu.vultur@microchip.com>
+        with ESMTP id S229935AbiJ3WCK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Oct 2022 18:02:10 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66EADBC1D
+        for <netdev@vger.kernel.org>; Sun, 30 Oct 2022 15:02:08 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id 192so9174341pfx.5
+        for <netdev@vger.kernel.org>; Sun, 30 Oct 2022 15:02:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=YnvTZj3WRTCMiadIaA7JlEQv6UZB93c5sPotkpBOzqA=;
+        b=yCQ2f0eDEP4pwEYWwAnTPPDwfcca+KMMARxIMKKecHn//G8uf+5LinlpxM8xgFLmDq
+         VcjRzOTs98rg5Bg/3ZIVYDdkSFgXcgHsQi6m4GzKImAMbLprSh5ACoFrCuoR4Uz+9uPL
+         zAJZa+OVP1ooVpoKPTGoVwtrmDCTl9YVYiBMPKzMA+TetQ6Yy05es++HmQOPZY6U6ZGS
+         lhDwVveCrPUAO11NHwb1iq4jbuu/7SsziXwVrLsTAM/tIh4ExfUT4mcU3UbK70tli3vg
+         OTp2ulz19nCLA302l90iF3lbRloXXVYLhQlCB7FoF7PgzVPoWxVyOlfo/EmA51Jaq3n4
+         vu5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=YnvTZj3WRTCMiadIaA7JlEQv6UZB93c5sPotkpBOzqA=;
+        b=0gdrjMSroaSeRy9Nydu6vvcHs79DEep/s1EvwAUZgtkEaTzuWb+1Uh1ZLfy0laST/Y
+         eo9FSdpnoeVygi3JNn33DwMJTY3WPNG73kCjS5RPAy6uWTZVL8mOsjjkqDphDe2Ix4lE
+         vGR/g6CqzWkxQ38v3vZF7zQmzpzB0c0O1dDLRc0xg081fDaq0s/BX9S4lYqXFXh0Hk6X
+         CFw4f1rXrQREXdSCQx3fNHgd7O1LhbAHz6CY6+LNdrKvefF9BfaYpE5lUsx+wc99nMcm
+         pZwuBdORV9FqEK10Zb9AD8qpu+/FrjPKbreGO7Zgcn8TeMXs/0amyLppTjnY+iQT7cEU
+         y0Ag==
+X-Gm-Message-State: ACrzQf0DAJp+ZuKPbNMFTBuTk3qUibsWpduBDIqhDwlx0gCnmm6MRJAM
+        ny2qJy7ZPUB/1HVV31d4OL/RIwV+vW/V/GiI
+X-Google-Smtp-Source: AMsMyM7/+jfrx8a/RMJDhIncUFZk1LYvVTMQuWScBj91iDM6EWoALXhOU7+2hCvPz83ZvCG5FcrhIQ==
+X-Received: by 2002:a05:6a00:1a04:b0:52a:d4dc:5653 with SMTP id g4-20020a056a001a0400b0052ad4dc5653mr11257698pfv.69.1667167327782;
+        Sun, 30 Oct 2022 15:02:07 -0700 (PDT)
+Received: from localhost.localdomain ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id y3-20020aa79e03000000b0056d73ef41fdsm562852pfq.75.2022.10.30.15.02.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 30 Oct 2022 15:02:07 -0700 (PDT)
+From:   Jens Axboe <axboe@kernel.dk>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCHSET v3 0/5] Add support for epoll min_wait
+Date:   Sun, 30 Oct 2022 16:01:57 -0600
+Message-Id: <20221030220203.31210-1-axboe@kernel.dk>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When MTU is changed, FDMA is required to calculate what is the maximum
-size of the frame that it can received. So it can calculate what is the
-page order needed to allocate for the received frames.
-The first problem was that, when the max MTU was calculated it was
-reading the value from dev and not from HW, so in this way it was
-missing L2 header + the FCS.
-The other problem was that once the skb is created using
-__build_skb_around, it would reserve some space for skb_shared_info.
-So if we received a frame which size is at the limit of the page order
-then the creating will failed because it would not have space to put all
-the data.
+Hi,
 
-Fixes: 2ea1cbac267e ("net: lan966x: Update FDMA to change MTU.")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c | 8 ++++++--
- drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 2 +-
- 2 files changed, 7 insertions(+), 3 deletions(-)
+tldr - we saw a 6-7% CPU reduction with this patch. See patch 6 for
+full numbers.
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-index a42035cec611c..c235edd2b182a 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-@@ -668,12 +668,14 @@ static int lan966x_fdma_get_max_mtu(struct lan966x *lan966x)
- 	int i;
- 
- 	for (i = 0; i < lan966x->num_phys_ports; ++i) {
-+		struct lan966x_port *port;
- 		int mtu;
- 
--		if (!lan966x->ports[i])
-+		port = lan966x->ports[i];
-+		if (!port)
- 			continue;
- 
--		mtu = lan966x->ports[i]->dev->mtu;
-+		mtu = lan_rd(lan966x, DEV_MAC_MAXLEN_CFG(port->chip_port));
- 		if (mtu > max_mtu)
- 			max_mtu = mtu;
- 	}
-@@ -733,6 +735,8 @@ int lan966x_fdma_change_mtu(struct lan966x *lan966x)
- 
- 	max_mtu = lan966x_fdma_get_max_mtu(lan966x);
- 	max_mtu += IFH_LEN * sizeof(u32);
-+	max_mtu += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-+	max_mtu += VLAN_HLEN * 2;
- 
- 	if (round_up(max_mtu, PAGE_SIZE) / PAGE_SIZE - 1 ==
- 	    lan966x->rx.page_order)
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index b3070c3fcad0a..20ee5b28f70a5 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -395,7 +395,7 @@ static int lan966x_port_change_mtu(struct net_device *dev, int new_mtu)
- 
- 	err = lan966x_fdma_change_mtu(lan966x);
- 	if (err) {
--		lan_wr(DEV_MAC_MAXLEN_CFG_MAX_LEN_SET(old_mtu),
-+		lan_wr(DEV_MAC_MAXLEN_CFG_MAX_LEN_SET(LAN966X_HW_MTU(old_mtu)),
- 		       lan966x, DEV_MAC_MAXLEN_CFG(port->chip_port));
- 		dev->mtu = old_mtu;
- 	}
+This adds support for EPOLL_CTL_MIN_WAIT, which allows setting a minimum
+time that epoll_wait() should wait for events on a given epoll context.
+Some justification and numbers are in patch 6, patches 1-5 are really
+just prep patches or cleanups.
+
+Sending this out to get some input on the API, basically. This is
+obviously a per-context type of operation in this patchset, which isn't
+necessarily ideal for any use case. Questions to be debated:
+
+1) Would we want this to be available through epoll_wait() directly?
+   That would allow this to be done on a per-epoll_wait() basis, rather
+   than be tied to the specific context.
+
+2) If the answer to #1 is yes, would we still want EPOLL_CTL_MIN_WAIT?
+
+I think there are pros and cons to both, and perhaps the answer to both is
+"yes". There are some benefits to doing this at epoll setup time, for
+example - it nicely isolates it to that part rather than needing to be
+done dynamically everytime epoll_wait() is called. This also helps the
+application code, as it can turn off any busy'ness tracking based on if
+the setup accepted EPOLL_CTL_MIN_WAIT or not.
+
+Anyway, tossing this out there as it yielded quite good results in some
+initial testing, we're running more of it. Sending out a v3 now since
+someone reported that nonblock issue which is annoying. Hoping to get some
+more discussion this time around, or at least some...
+
+Also available here:
+
+https://git.kernel.dk/cgit/linux-block/log/?h=epoll-min_ts
+
+Since v2:
+- Fix an issue with nonblock event checking (timeout given, 0/0 set)
+- Add another prep patch, getting rid of passing in a known 'false'
+  to ep_busy_loop()
+
 -- 
-2.38.0
+Jens Axboe
+
 
