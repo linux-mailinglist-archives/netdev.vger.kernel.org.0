@@ -2,192 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C7C26129B3
-	for <lists+netdev@lfdr.de>; Sun, 30 Oct 2022 10:47:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E96936129C7
+	for <lists+netdev@lfdr.de>; Sun, 30 Oct 2022 11:00:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229958AbiJ3JrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Oct 2022 05:47:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40956 "EHLO
+        id S229841AbiJ3KAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Oct 2022 06:00:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229968AbiJ3Jq5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Oct 2022 05:46:57 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8154BC85;
-        Sun, 30 Oct 2022 02:46:55 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id y14so22753982ejd.9;
-        Sun, 30 Oct 2022 02:46:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=obRrSEC9n+8zBCgBpw96kYMaGNVQV8zuef943idHvok=;
-        b=bkDrktPRUoRH2kDrZwOeBmMN721dxeuGRo+tkjK4W/ifEw/LgYJjG7NE3sDel4shl6
-         KatLnpKB8El8Kw45BunEbn7dIzNmBvZg0ghKrSOarM4YWStRw8OG0EIigc4Zn7ppyTS8
-         ttbvrkBRzUA318xbWSTp3IQSv8vR7ywN2p5csS0xv4rM0B6ufkTsnHCwQ9dx1Nk3Dm6Z
-         sc2XI1ztKQjUR4z0wtCLTLy/9QPwM9ZEdaYD6FG9YPuHTnk9Fq9bwvNkThyBT8wazCCf
-         tdv4bDmO/s8iyLSdLS+LW7h351RV22qBtPssXcLgmv/l6n6CiuK5mPEkKyM53FVE+oLX
-         rE0A==
+        with ESMTP id S229632AbiJ3KAS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Oct 2022 06:00:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 878CFC77A
+        for <netdev@vger.kernel.org>; Sun, 30 Oct 2022 02:59:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1667123964;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lperXuLkSOUMuSlgJ3I7ALgwdptxb42WxxooK0bP59s=;
+        b=RugE12po8nPLb7LrKrylU8ffHlbSwA7ogY8eNHYkO3R826SKpYNRDSatAemKRzp/zEx5mf
+        VyxJMPXcnIEMKdLuy9hENn6K5DbWVI05eWwBvSTEphYbdxEmDLen2hE20GCnzae1Z2d6xD
+        CoFcmqw8uonw8T3oSSIqYdqHyJRFSLQ=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-396-t1c2feSXMXC_b1P0hS6rnQ-1; Sun, 30 Oct 2022 05:59:21 -0400
+X-MC-Unique: t1c2feSXMXC_b1P0hS6rnQ-1
+Received: by mail-ej1-f69.google.com with SMTP id ho8-20020a1709070e8800b0078db5e53032so4526490ejc.9
+        for <netdev@vger.kernel.org>; Sun, 30 Oct 2022 02:59:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=obRrSEC9n+8zBCgBpw96kYMaGNVQV8zuef943idHvok=;
-        b=BaAATZumwqr1qzzw9F8QqKFaXS1EaCb9Lkxgpc15itpMJs681P+Fd+nxpmFgpWFcsY
-         FRPvPE0lgSs+bPjopn3o40wf6BrI65aJYuRLDITCSw8QmRLfayxGf99Yi9f4I8UOybFe
-         xahMeuI15M01EmmaHN6pgrbboU8kWHn4Y+fStWReBVr047dKE1kP27OosmOBEyeWnBrY
-         YHNCaOCtpLc3G+NK4qZKu8BxN/JhUQoIOUOWC9gaXuuZkZLXgVux4L01iqiyKCZYVGxG
-         nkqki8e8kSGr9u0fr//f2mZpxd+ODujjFDwlHIsAAmuW0glNE9PbuzDCiwCX12HmJP8I
-         cGaQ==
-X-Gm-Message-State: ACrzQf1k6QkDcPKO0IocRrX/ojFXgI0XbrMkPgzFFjqxX8M5nNWKBwil
-        rUcbv9h5QwnoEysc+my0vsv88NyNimv2N2gKE1I=
-X-Google-Smtp-Source: AMsMyM6MucakjelfEpcicY3M08dxi9pMTpxJJhZDzfGYeJI9sxHL3XQ3iKnCDdRUfdbIgyDqBrZTHIVMgb8Avs+Bjhs=
-X-Received: by 2002:a17:907:2c71:b0:79e:8603:72c6 with SMTP id
- ib17-20020a1709072c7100b0079e860372c6mr7629499ejc.172.1667123214149; Sun, 30
- Oct 2022 02:46:54 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=lperXuLkSOUMuSlgJ3I7ALgwdptxb42WxxooK0bP59s=;
+        b=3SskIRCw5xJAW+14Q+E2iRZWci2AxJk+CPS+Pl1WlWhnb1MZ1JDfTdeR8D6uUezbn6
+         UsaaLnl8VDQFb7PELmpEPaeuaZU8FDM/iPpRabwlYkxI9yxKO14u3fWIKT8mTaDVw01U
+         AvwYIeYF7okJrI2BePQiwrDt3afz+fwSPLzU7H4/YHCJwWQDdqdBYWBNoAg1ItjOkmNT
+         vbk+AqcuPNjDphMR7uV17b+iN62bpxHi5xNMrQxyd+kLv5AZghWQvpef4nmEUuJm/MD9
+         GBlPGXy1aCI4uJjNb5qN9a17MyxQ8hizJunUUstgftgEDzsvWf1F4R5JmqwTTs1UlI50
+         HQXg==
+X-Gm-Message-State: ACrzQf1+mDKwDot9us2fyB0I5w4pHtWZklFsXljfYcCOMRKxAO9wLTPM
+        2JdcJUKT6/gVuRCm6ZKIrAWG7Ifao942bq/O/mikssmJyVnXlFbaINbmPO3oOmbbjDt2vwjI5xu
+        NVJFIVhWP6Zc+8gHf
+X-Received: by 2002:a17:907:2c74:b0:7a1:d333:f214 with SMTP id ib20-20020a1709072c7400b007a1d333f214mr7732268ejc.14.1667123960856;
+        Sun, 30 Oct 2022 02:59:20 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM5z9O9q09jz3IsSKd4hMBEsZJIqduETwCbwkmeHNeUBBPFIL1FFy/xhHwXrQ5bCCjaIPnQ2/A==
+X-Received: by 2002:a17:907:2c74:b0:7a1:d333:f214 with SMTP id ib20-20020a1709072c7400b007a1d333f214mr7732248ejc.14.1667123960618;
+        Sun, 30 Oct 2022 02:59:20 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
+        by smtp.gmail.com with ESMTPSA id co6-20020a0564020c0600b00459e3a3f3ddsm1879270edb.79.2022.10.30.02.59.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 30 Oct 2022 02:59:19 -0700 (PDT)
+Message-ID: <0574f6d2-51dd-4962-40fe-9424a19cb3c7@redhat.com>
+Date:   Sun, 30 Oct 2022 10:59:18 +0100
 MIME-Version: 1.0
-From:   Wei Chen <harperchen1110@gmail.com>
-Date:   Sun, 30 Oct 2022 17:46:18 +0800
-Message-ID: <CAO4mrfeiurLJp7tntR88hbEPpXvX_Mf5+h0vx9AwYEPzEwdWzw@mail.gmail.com>
-Subject: BUG: soft lockup in hci_cmd_timeout
-To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.1
+Subject: Re: [PATCH 1/3] Bluetooth: btusb: Fix Chinese CSR dongles again by
+ re-adding ERR_DATA_REPORTING quirk
+To:     Ismael Ferreras Morezuelas <swyterzone@gmail.com>,
+        marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        luiz.von.dentz@intel.com, quic_zijuhu@quicinc.com
+Cc:     linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20221029202454.25651-1-swyterzone@gmail.com>
+Content-Language: en-US, nl
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20221029202454.25651-1-swyterzone@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Linux Developer,
+Hi Ismael,
 
-Recently when using our tool to fuzz kernel, the following crash was triggered:
+On 10/29/22 22:24, Ismael Ferreras Morezuelas wrote:
+> A patch series by a Qualcomm engineer essentially removed my
+> quirk/workaround because they thought it was unnecessary.
+> 
+> It wasn't, and it broke everything again:
+> 
+> https://patchwork.kernel.org/project/netdevbpf/list/?series=661703&archive=both&state=*
+> 
+> He argues that the quirk is not necessary because the code should check if the dongle
+> says if it's supported or not. The problem is that for these Chinese CSR
+> clones they say that it would work, but it's a lie. Take a look:
+> 
+> = New Index: 00:00:00:00:00:00 (Primary,USB,hci0)                              [hci0] 11.272194
+> = Open Index: 00:00:00:00:00:00                                                [hci0] 11.272384
+> < HCI Command: Read Local Version Information (0x04|0x0001) plen 0          #1 [hci0] 11.272400
+>> HCI Event: Command Complete (0x0e) plen 12                                #2
+>> [hci0] 11.276039
+>       Read Local Version Information (0x04|0x0001) ncmd 1
+>         Status: Success (0x00)
+>         HCI version: Bluetooth 5.0 (0x09) - Revision 2064 (0x0810)
+>         LMP version: Bluetooth 5.0 (0x09) - Subversion 8978 (0x2312)
+>         Manufacturer: Cambridge Silicon Radio (10)
+> ...
+> < HCI Command: Read Local Supported Features (0x04|0x0003) plen 0           #5 [hci0] 11.648370
+>> HCI Event: Command Complete (0x0e) plen 68                               #12
+>> [hci0] 11.668030
+>       Read Local Supported Commands (0x04|0x0002) ncmd 1
+>         Status: Success (0x00)
+>         Commands: 163 entries
+>           ...
+>           Read Default Erroneous Data Reporting (Octet 18 - Bit 2)
+>           Write Default Erroneous Data Reporting (Octet 18 - Bit 3)
+>           ...
+> ...
+> < HCI Command: Read Default Erroneous Data Reporting (0x03|0x005a) plen 0  #47 [hci0] 11.748352
+> = Close Index: 00:1A:7D:DA:71:XX                                               [hci0] 13.776824
+> 
+> So bring it back wholesale.
+> 
+> Fixes: 63b1a7dd3 (Bluetooth: hci_sync: Remove HCI_QUIRK_BROKEN_ERR_DATA_REPORTING)
+> Fixes: e168f69008 (Bluetooth: btusb: Remove HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for fake CSR)
+> Fixes: 766ae2422b (Bluetooth: hci_sync: Check LMP feature bit instead of quirk)
+> 
+> Cc: stable@vger.kernel.org
+> Cc: Zijun Hu <quic_zijuhu@quicinc.com>
+> Cc: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+> Cc: Hans de Goede <hdegoede@redhat.com>
+> Tested-by: Ismael Ferreras Morezuelas <swyterzone@gmail.com>
+> Signed-off-by: Ismael Ferreras Morezuelas <swyterzone@gmail.com>
 
-HEAD commit: 64570fbc14f8 Linux 5.15-rc5
-git tree: upstream
-compiler: gcc 8.0.1
-console output:
-https://drive.google.com/file/d/1QJBomAmEMry3gMAxuB7REvmQyarNSfxU/view?usp=share_link
-kernel config: https://drive.google.com/file/d/1uDOeEYgJDcLiSOrx9W8v2bqZ6uOA_55t/view?usp=share_link
+Thank you very much for your continued work on making these
+clones work with Linux!
 
-Unfortunately, I don't have any reproducer for this crash yet.
+The entire series looks good to me:
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: Wei Chen <harperchen1110@gmail.com>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 
-watchdog: BUG: soft lockup - CPU#1 stuck for 173s! [kworker/1:4:2398]
-Modules linked in:
-irq event stamp: 2362
-hardirqs last  enabled at (2361): [<ffffffff81315cf8>] vprintk_emit+0x468/0x4a0
-hardirqs last disabled at (2362): [<ffffffff84bdcc2a>]
-sysvec_apic_timer_interrupt+0xa/0xc0
-softirqs last  enabled at (2350): [<ffffffff83f89ee2>]
-update_defense_level+0x212/0x6f0
-softirqs last disabled at (2348): [<ffffffff83f89cd0>]
-update_defense_level+0x0/0x6f0
-CPU: 1 PID: 2398 Comm: kworker/1:4 Not tainted 5.15.0-rc5 #1
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-rel-1.13.0-48-gd9c812dda519-prebuilt.qemu.org 04/01/2014
-Workqueue: events hci_cmd_timeout
-RIP: 0010:__sanitizer_cov_trace_pc+0x0/0x40
-Code: 7e 31 c0 81 e2 00 01 ff 00 75 10 65 48 8b 04 25 40 70 01 00 48
-8b 80 50 15 00 00 c3 0f 1f 40 00 66 2e 0f 1f 84 00 00 00 00 00 <65> 48
-8b 0c 25 40 70 01 00 bf 02 00 00 00 48 89 ce 4c 8b 04 24 e8
-RSP: 0018:ffffc900029a7cd8 EFLAGS: 00000246
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffff8881245e9b80
-RDX: 0000000000000000 RSI: ffff8881245e9b80 RDI: 0000000000000002
-RBP: ffffc900029a7d10 R08: ffffffff81315b3c R09: 0000000000000000
-R10: 0000000000000007 R11: 0000000000000200 R12: 0000000000000200
-R13: ffffffff8915b208 R14: 000000000000002a R15: ffffc900029a7d40
-FS:  0000000000000000(0000) GS:ffff88813dc00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fd86bad1de0 CR3: 000000001319a000 CR4: 00000000003506e0
-Call Trace:
- vprintk_emit+0x2b2/0x4a0
- vprintk+0x7e/0x90
- _printk+0x5f/0x7b
- bt_err+0x72/0x8e
- hci_cmd_timeout+0x47/0xb0
- process_one_work+0x3fa/0x9f0
- worker_thread+0x42/0x5c0
- kthread+0x1a6/0x1e0
- ret_from_fork+0x1f/0x30
-Sending NMI from CPU 1 to CPUs 0:
-NMI backtrace for cpu 0
-CPU: 0 PID: 1393 Comm: aoe_tx0 Not tainted 5.15.0-rc5 #1
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-rel-1.13.0-48-gd9c812dda519-prebuilt.qemu.org 04/01/2014
-RIP: 0010:debug_object_deactivate+0xa6/0x180
-Code: 4c 89 f7 e8 0c e9 61 02 48 8b 9b 40 7e 2f 89 48 85 db 74 7d 4c
-3b 6b 18 74 7b 48 8b 1b ba 01 00 00 00 48 85 db 74 11 83 c2 01 <4c> 3b
-6b 18 74 65 48 8b 1b 48 85 db 75 ef 39 15 8e 68 50 04 7d 06
-RSP: 0018:ffffc90000003eb0 EFLAGS: 00010002
-RAX: 0000000000000002 RBX: ffff88802e1fbaf0 RCX: 0000000061e44876
-RDX: 0000000000000002 RSI: 0000000000010205 RDI: ffffffff893a65b0
-RBP: ffffc90000003f08 R08: 0000000000000000 R09: 0000000000000001
-R10: ffffffff893a65c8 R11: 0000000000000000 R12: ffffffff85037d20
-R13: ffff88807dc1ada0 R14: ffffffff893a65b0 R15: 7fffffffffffffff
-FS:  0000000000000000(0000) GS:ffff88807dc00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000556e95194b28 CR3: 000000000c690000 CR4: 00000000003506f0
-Call Trace:
- <IRQ>
- __hrtimer_run_queues+0x1ee/0x810
- hrtimer_interrupt+0x12b/0x2c0
- __sysvec_apic_timer_interrupt+0x9c/0x2c0
- sysvec_apic_timer_interrupt+0x99/0xc0
- </IRQ>
- asm_sysvec_apic_timer_interrupt+0x12/0x20
-RIP: 0010:__sanitizer_cov_trace_pc+0x0/0x40
-Code: 7e 31 c0 81 e2 00 01 ff 00 75 10 65 48 8b 04 25 40 70 01 00 48
-8b 80 50 15 00 00 c3 0f 1f 40 00 66 2e 0f 1f 84 00 00 00 00 00 <65> 48
-8b 0c 25 40 70 01 00 bf 02 00 00 00 48 89 ce 4c 8b 04 24 e8
-RSP: 0018:ffffc90005337a38 EFLAGS: 00000246
-RAX: 0000000000000000 RBX: 0000000000000001 RCX: ffff888104dc0000
-RDX: 0000000000000000 RSI: ffff888104dc0000 RDI: 0000000000000002
-RBP: 0000000000000000 R08: ffffffff813136ed R09: 0000000000000000
-R10: 0000000000000007 R11: 0000000000000200 R12: 0000000000000200
-R13: ffffffff86ada1d0 R14: 0000000000000000 R15: 0000000000000000
- console_unlock+0x483/0x880
- vprintk_emit+0x2e0/0x4a0
- dev_vprintk_emit+0x213/0x237
- dev_printk_emit+0x63/0x83
- __netdev_printk+0xcf/0x15b
- netdev_warn+0x75/0x93
- ieee802154_subif_start_xmit.cold.1+0x17/0x26
- dev_hard_start_xmit+0x139/0x5a0
- sch_direct_xmit+0xf9/0x520
- __dev_queue_xmit+0x8bf/0x1af0
- tx+0x54/0xa0
- kthread+0xd2/0x160
- kthread+0x1a6/0x1e0
- ret_from_fork+0x1f/0x30
-rcu: INFO: rcu_preempt self-detected stall on CPU
-rcu: 0-...!: (1 GPs behind) idle=8c9/1/0x4000000000000000
-softirq=148712/148713 fqs=1
-----------------
-Code disassembly (best guess):
-   0: 7e 31                jle    0x33
-   2: c0 81 e2 00 01 ff 00 rolb   $0x0,-0xfeff1e(%rcx)
-   9: 75 10                jne    0x1b
-   b: 65 48 8b 04 25 40 70 mov    %gs:0x17040,%rax
-  12: 01 00
-  14: 48 8b 80 50 15 00 00 mov    0x1550(%rax),%rax
-  1b: c3                    retq
-  1c: 0f 1f 40 00          nopl   0x0(%rax)
-  20: 66 2e 0f 1f 84 00 00 nopw   %cs:0x0(%rax,%rax,1)
-  27: 00 00 00
-* 2a: 65 48 8b 0c 25 40 70 mov    %gs:0x17040,%rcx <-- trapping instruction
-  31: 01 00
-  33: bf 02 00 00 00        mov    $0x2,%edi
-  38: 48 89 ce              mov    %rcx,%rsi
-  3b: 4c 8b 04 24          mov    (%rsp),%r8
-  3f: e8                    .byte 0xe8
+for the series.
 
-Best,
-Wei
+Regards,
+
+Hans
+
+
+> ---
+>  drivers/bluetooth/btusb.c   |  1 +
+>  include/net/bluetooth/hci.h | 11 +++++++++++
+>  net/bluetooth/hci_sync.c    |  9 +++++++--
+>  3 files changed, 19 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+> index 3b269060e91f..1360b2163ec5 100644
+> --- a/drivers/bluetooth/btusb.c
+> +++ b/drivers/bluetooth/btusb.c
+> @@ -2174,6 +2174,7 @@ static int btusb_setup_csr(struct hci_dev *hdev)
+>  		 * without these the controller will lock up.
+>  		 */
+>  		set_bit(HCI_QUIRK_BROKEN_STORED_LINK_KEY, &hdev->quirks);
+> +		set_bit(HCI_QUIRK_BROKEN_ERR_DATA_REPORTING, &hdev->quirks);
+>  		set_bit(HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL, &hdev->quirks);
+>  		set_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks);
+>  
+> diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
+> index e004ba04a9ae..0fe789f6a653 100644
+> --- a/include/net/bluetooth/hci.h
+> +++ b/include/net/bluetooth/hci.h
+> @@ -228,6 +228,17 @@ enum {
+>  	 */
+>  	HCI_QUIRK_VALID_LE_STATES,
+>  
+> +	/* When this quirk is set, then erroneous data reporting
+> +	 * is ignored. This is mainly due to the fact that the HCI
+> +	 * Read Default Erroneous Data Reporting command is advertised,
+> +	 * but not supported; these controllers often reply with unknown
+> +	 * command and tend to lock up randomly. Needing a hard reset.
+> +	 *
+> +	 * This quirk can be set before hci_register_dev is called or
+> +	 * during the hdev->setup vendor callback.
+> +	 */
+> +	HCI_QUIRK_BROKEN_ERR_DATA_REPORTING,
+> +
+>  	/*
+>  	 * When this quirk is set, then the hci_suspend_notifier is not
+>  	 * registered. This is intended for devices which drop completely
+> diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+> index bd9eb713b26b..0a7abc817f10 100644
+> --- a/net/bluetooth/hci_sync.c
+> +++ b/net/bluetooth/hci_sync.c
+> @@ -3798,7 +3798,8 @@ static int hci_read_page_scan_activity_sync(struct hci_dev *hdev)
+>  static int hci_read_def_err_data_reporting_sync(struct hci_dev *hdev)
+>  {
+>  	if (!(hdev->commands[18] & 0x04) ||
+> -	    !(hdev->features[0][6] & LMP_ERR_DATA_REPORTING))
+> +	    !(hdev->features[0][6] & LMP_ERR_DATA_REPORTING) ||
+> +	    test_bit(HCI_QUIRK_BROKEN_ERR_DATA_REPORTING, &hdev->quirks))
+>  		return 0;
+>  
+>  	return __hci_cmd_sync_status(hdev, HCI_OP_READ_DEF_ERR_DATA_REPORTING,
+> @@ -4316,7 +4317,8 @@ static int hci_set_err_data_report_sync(struct hci_dev *hdev)
+>  	bool enabled = hci_dev_test_flag(hdev, HCI_WIDEBAND_SPEECH_ENABLED);
+>  
+>  	if (!(hdev->commands[18] & 0x08) ||
+> -	    !(hdev->features[0][6] & LMP_ERR_DATA_REPORTING))
+> +	    !(hdev->features[0][6] & LMP_ERR_DATA_REPORTING) ||
+> +	    test_bit(HCI_QUIRK_BROKEN_ERR_DATA_REPORTING, &hdev->quirks))
+>  		return 0;
+>  
+>  	if (enabled == hdev->err_data_reporting)
+> @@ -4475,6 +4477,9 @@ static const struct {
+>  	HCI_QUIRK_BROKEN(STORED_LINK_KEY,
+>  			 "HCI Delete Stored Link Key command is advertised, "
+>  			 "but not supported."),
+> +	HCI_QUIRK_BROKEN(ERR_DATA_REPORTING,
+> +			 "HCI Read Default Erroneous Data Reporting command is "
+> +			 "advertised, but not supported."),
+>  	HCI_QUIRK_BROKEN(READ_TRANSMIT_POWER,
+>  			 "HCI Read Transmit Power Level command is advertised, "
+>  			 "but not supported."),
+
