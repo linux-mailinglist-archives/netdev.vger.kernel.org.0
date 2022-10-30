@@ -2,113 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A8E4612AA1
-	for <lists+netdev@lfdr.de>; Sun, 30 Oct 2022 14:00:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6D9B612AC3
+	for <lists+netdev@lfdr.de>; Sun, 30 Oct 2022 14:38:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229841AbiJ3M74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Oct 2022 08:59:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47456 "EHLO
+        id S229763AbiJ3NiK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Oct 2022 09:38:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiJ3M7y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Oct 2022 08:59:54 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2044.outbound.protection.outlook.com [40.107.93.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8C1DE73
-        for <netdev@vger.kernel.org>; Sun, 30 Oct 2022 05:59:53 -0700 (PDT)
+        with ESMTP id S229441AbiJ3NiI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Oct 2022 09:38:08 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2041.outbound.protection.outlook.com [40.107.93.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCFA4DBA
+        for <netdev@vger.kernel.org>; Sun, 30 Oct 2022 06:38:07 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=m8YLdi4VPt64AAiPQSoKrJg1+LN7l013OhGThTc9qd7EKmH+EUgHOddIbjGnWumbJ4Otu8AdYeg8AWhOtO4gBhRFVyhMAJm4UNesGNXacZg6mo429ugKgQnlIIXWaCfBhwy2zmDXzVY5YwFGaLOOxwpkVahj9gGpdUt186/Orn+b/8691D/zatprPsxYKj311yRAhXIl2OeWgxGvnnvWUYqfrGhAZrS2GiC2f0xkek5Iv/uVVLcdT7WsuVAFdjZVckvZXqn9gSVjHGeAFrWlVu2UOcis+vd3p8Cwuh4TB3qk6infXt0tGPhEfhidw+fyC6PtyJMY0+rFN4Jk89/rUQ==
+ b=Jot28GBMqBEQVagXV6zVwbFVpmc2b1SNAYsJS/I7NgPWWUxiBA7/Trtee5Q6fXVFpx92m5LHOdtDzrQ6Kmu3iMRtTusSeXDF5YsYL3bSz4t790Yrq9HsQCR28PI1KQWojv8inTF4//ZeCA0mGuRebUYSHCvi8BUq9cIf3N7Ht5zaPMAeviHHydDMv6Yebz+xNn1gz9BuiHAGwdfc3rvrR2kUkKAXdLHK2UwD0MurzHR+V4m/9fAVtICNIBQLXf6uR04LzNp3474OHG1eN1a0+SPRWeovmoNfvpTZfPvkjZMYBKXircUBDQohEgdnO/y5OCSDf6ssR0N+/Eifw43leg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7ea2su9kifAvJKGZgu0DuQTwFiXnDPirrJJWIxqaH/U=;
- b=k57jnvkqe3VyFk/NRQ9gFxjXl3bUKjcU6ViYw1safHvr27eQhD+FuPtQovUS9Okn9FrO0Fyvs5AKPOGq8ffo7Fh1BDl0455BAWM2wPTJI4WSmlQ+8z0El4ZMSN+41oarlKkAtUvKzwqgytRBMPJ+Jili731IdC433A0ptmkNnxEc8Z4oNTPyJi86y6/ItpCu6WF1kepYvBF6xBrXZEEW75lIeQ222LhURBKviObDqjLaduZ/Gy35XdXzjseeNQDFuLTDn5UwRuxDBWKOZ4w2FQVT8tqKNWlxPIfnehwBgLLIP/Mzeh5xZbHsrGKj6SL0O+U8T5RxqIAY3SdgAlioIQ==
+ bh=1D9cM9onAz54YzDsbRFfESljIIGyiSsd4tW9sP3DBXY=;
+ b=mx8iEHIHNwY5MBWDdYrXhdE8PZg5C7CDDrHGKnkX4shJ5KR3gMb/opuWUz7cSmCh7yLaAStCT8V7G/D8HcC2img28OOS5IoTC6QJzhHeAuHa3o1lgl1ZKS9JOFFmgLxdspzHTTihxlZptnPCWH6MeGYda8migeOk4ymlh/otxZUPw1J4TrSlgnlkjT83Z2XhQxlsVRXX4Hj6WF6DxYidoYeHUOT92dWmIlLZPhvr4rcEY64So2F8uDOzSjn8tzd4swQEbQ5wLZMmHdt1Za14LL+L8DN0DIzUkvF8//ub1IHfNGBDLdRIc4tCg/4C3Vn5kPbs4WeBuNKIjtc4ELKF9g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7ea2su9kifAvJKGZgu0DuQTwFiXnDPirrJJWIxqaH/U=;
- b=DIY77jURE7mWRPNlFIPYHgaR26dZGVeyzHfux+50+9ZvIIQdCRvX8KIPDA/aGe/rBlLVmgf/6STvqyXK2p9S/XmvEui6IzYuT0ZUAVtFHXyE63dg5qlFacjEkx7iwbJJuN7xX91IHMAN4tsGVQ0VxxJlR3sZYwWFiKRKqjWTJc1SZnZi5J0KSqXxkaKyNYaEhkQM+NIYrTBajWPnQs2pA0afkJlqEND3WRcd6XSEXuvfCD6UWzhXEIjLWR2k8NrkTEgFjuehixWHoPF17bA4/eFQPP+iQFCxBhZ0jRW3qjxGsi/wFsb6EJ7Yw5qUQZ1tSGq3ZSMumvMFDd5y1KWWqw==
+ bh=1D9cM9onAz54YzDsbRFfESljIIGyiSsd4tW9sP3DBXY=;
+ b=LHefKPwydWT5hBUcQiN873swL2y+zEHqqv4s5P2FpZdj8/ywl3XGtr7VlSa/9o4fMrVKZYkrikmA2Pw0z6lAZJp0uQm/DeDLMbHamxSmaRqRQJRPHVe+o5sJ5iVkbC4prQB2tDMUUxuc5fZMgIStrTGkneQiNz8ynVukI7Y4stvuLfwxcyKoIXXhLOBgsA6gX+nk6RpETW8tZXPIY1UgujlLmKPd30g9krhBL7tDzgCngkZN8eSSazxtO/76p3mRQ/cEAvxcmsqExFx+ok3r8NiZgF4O/TPjUbzKAcUvIM6mRRfetAuT5+JMFLFWPOM/X9ANiRmwod5sSyROGJm4YA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by IA1PR12MB6331.namprd12.prod.outlook.com (2603:10b6:208:3e3::6) with
+ by SN7PR12MB7106.namprd12.prod.outlook.com (2603:10b6:806:2a1::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.18; Sun, 30 Oct
- 2022 12:59:51 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.16; Sun, 30 Oct
+ 2022 13:38:06 +0000
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::3409:6c36:1a7f:846e]) by CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::3409:6c36:1a7f:846e%4]) with mapi id 15.20.5769.019; Sun, 30 Oct 2022
- 12:59:51 +0000
-Date:   Sun, 30 Oct 2022 14:59:45 +0200
+ 13:38:06 +0000
+Date:   Sun, 30 Oct 2022 15:38:00 +0200
 From:   Ido Schimmel <idosch@nvidia.com>
-To:     netdev@kapio-technology.com
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        jiri@nvidia.com, petrm@nvidia.com, ivecera@redhat.com,
-        roopa@nvidia.com, razor@blackwall.org, mlxsw@nvidia.com
-Subject: Re: [RFC PATCH net-next 01/16] bridge: Add MAC Authentication Bypass
- (MAB) support
-Message-ID: <Y151QSN4sEbARPjN@shredder>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bridge@lists.linux-foundation.org" 
+        <bridge@lists.linux-foundation.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "jiri@nvidia.com" <jiri@nvidia.com>,
+        "petrm@nvidia.com" <petrm@nvidia.com>,
+        "ivecera@redhat.com" <ivecera@redhat.com>,
+        "roopa@nvidia.com" <roopa@nvidia.com>,
+        "razor@blackwall.org" <razor@blackwall.org>,
+        "netdev@kapio-technology.com" <netdev@kapio-technology.com>,
+        "mlxsw@nvidia.com" <mlxsw@nvidia.com>
+Subject: Re: [RFC PATCH net-next 04/16] bridge: switchdev: Allow device
+ drivers to install locked FDB entries
+Message-ID: <Y15+ODGOuyFYxO2B@shredder>
 References: <20221025100024.1287157-1-idosch@nvidia.com>
- <20221025100024.1287157-2-idosch@nvidia.com>
- <20221027225832.2yg4ljivjymuj353@skbuf>
- <1a66212fdb43fb8d03fc1e4c7612ad1b@kapio-technology.com>
+ <20221025100024.1287157-1-idosch@nvidia.com>
+ <20221025100024.1287157-5-idosch@nvidia.com>
+ <20221025100024.1287157-5-idosch@nvidia.com>
+ <20221027232748.cpvpw53pcx7dx2mp@skbuf>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1a66212fdb43fb8d03fc1e4c7612ad1b@kapio-technology.com>
-X-ClientProxiedBy: LO4P123CA0643.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:296::10) To CY5PR12MB6179.namprd12.prod.outlook.com
+In-Reply-To: <20221027232748.cpvpw53pcx7dx2mp@skbuf>
+X-ClientProxiedBy: FR0P281CA0062.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:49::23) To CY5PR12MB6179.namprd12.prod.outlook.com
  (2603:10b6:930:24::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|IA1PR12MB6331:EE_
-X-MS-Office365-Filtering-Correlation-Id: af07c9af-8c69-410e-e8da-08daba76a1fa
+X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|SN7PR12MB7106:EE_
+X-MS-Office365-Filtering-Correlation-Id: f584be06-16eb-4c4e-e967-08daba7bf9b9
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YADZKUZ7I491VRU0roqfUlXjco0NO6xMJv+cCxy8RyzlKHc0RgV32Ihg6yJAOfOt/F0J46sdiEDCZRChi8gZoBm75cfFK/aDt8CRG5gNV2qIQNc/XsII9egc6Y91Nt7B6LpO7n2WcLbiXIssKvFAa0eoelllRjat+V/d6X6MMMz3n0e/pMYFeoF4b+wbUxxGRAkBNmir3n9ASi9oxdo5lyazaTbQP56QCFrhVsEj6g4iq9aoIY77yaRamTk0hSi1szjBBOmtPKrefkyEzywlEzF0QrbTkVFntRg+8oC8+DF1pFSqxpMlILcHNdKdd5qyTv9znIwUjLhJ8mxWWv9k/mIUjb7SNj/hrsZp3pdZzV39CY1uo/KtQ5ayvKAzdfJ3NtmZxTFVpLjmBOWSbDHgn7U+FuyO+mN1syoRycZ6vb9reMNKR7GQYmL80MCarqafTDZDlhKIxbBSVJrpHTf6JMkIZX24DzpOyL97lf9alf0KMTQqklbwuYj2TPT0yl0WrqiwxZ7Yj4HzCA5QueLVMocVdFyyupr5ZqCeW9pQiqucOQ10HjXb4+GIgRya3wMqev+ob6wszR/o8GVNMzeJgL1GlQsde78Qj7GOBK5HLZTmUFhv/TEErhSJr8KxF4rRf0oyKkGKS/iWOIj1wjDG2KmMohpXkZKiI+bBBSq0wTyld2dVVu248+F0mADyM9iQpOnWxpMhPWH3MSaOiUkSjw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(136003)(366004)(39860400002)(346002)(396003)(376002)(451199015)(5660300002)(7416002)(186003)(6486002)(478600001)(53546011)(6506007)(316002)(83380400001)(4326008)(8676002)(66476007)(66556008)(66946007)(6916009)(107886003)(6666004)(86362001)(8936002)(4001150100001)(2906002)(41300700001)(26005)(6512007)(9686003)(33716001)(38100700002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: G8c6BRiTG9yot6rwqnIzUzMSKQz8BiyAC4LgW4QIEmdpYMn3UONgbj4xvKwjHrAhCW0liunPyet5MIfxcIU9BSs+ogxDOVr8Y8MzR/ioYkYHJ2tgcPnHvV6+LfEaOTqFlZoPhPUx0EWqN2tn/6jjgFf1VcKh18ld0ESXR2yyhvBM1AIXO9zfoSTJG4WoYptsIGAeLTRt0yg9hQ/Imih0TS0PqfFFtU6g8RiMWiFe9T9gyV7dTd18GDqtdEtIWeqmy68SHIcK1m/74TKRGbsXuaSy/hTd8eyPFM1C/OUFYwdsYDLCIvRHNEa/an33gNIlB86fbUvbax5q4f5u9Zs5LWK66wAUGeYZPjUqMvyabDDfG7TwF+qPYpwUvthqvBb2vz35Bc8kQf56SG/mt+6ZOVJKR7sS1kqd97k3ZcNAzo/7J2WtCYa7kuk+fqz21Prn5GmT1y9nGiRWWYwg15UXy3KqhbnpxxDQ98EFcHCCECQlIv0D6Chnli7ddow6cr/gGDKhOAiOqSxVZ8AqKGv34Ushky07VJ9VfH9duDyjpSPj7IKr7BNBQc4RanedDAZMC5mz1PlpWipQi2xyE9ynIE5HvQ2XZPK60BzloLpVJdBUwd9l0GrX2eUIqphnPqY8gAZ2aKbZX08qc0jKjlrYYngGQMztjJSxZge+L5gfx+iEB5Oc0AZO+RM++Y6cAw+A7CA4d6cph/h9iZ1OyMMfGO/XsvtNKIET8/lEiavoL6GDeAJONrGruObTfH0v30JgKD2cBE+mxqKyXiPodzYG5Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(346002)(136003)(366004)(376002)(396003)(39860400002)(451199015)(6486002)(38100700002)(478600001)(86362001)(54906003)(6916009)(5660300002)(7416002)(66556008)(66476007)(8676002)(83380400001)(4326008)(6512007)(66946007)(6666004)(8936002)(186003)(316002)(2906002)(33716001)(41300700001)(9686003)(6506007)(26005)(107886003)(67856001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rQDAZ5ugsOXi5mBhjwJUA/OhJC+sMR7sNgypr/uy3IlcXv9mBf3tjEu+woZx?=
- =?us-ascii?Q?fvlf0NsTcnzDSksBbhug6pggdCmtSfSQ6ClT4570Bw5f05n6S4S/8qhTN4RX?=
- =?us-ascii?Q?jM2rjyPNu+kKP4xr0Vr8ELjsegIPw3cgg3Y0opJiuu3rkcHPnpJhSRNmax/i?=
- =?us-ascii?Q?KRCY5rw+P93Bh8nN0OcoQGyQcYnWyy7Lj9dBE5kZj/hADAFjHOpN80jzH9AT?=
- =?us-ascii?Q?Gwv/hwauBOTdP8EWF0VNo8ZzGyH7X17sHcOrOqSKWK/tpc/Q/6rF3ra2YGE3?=
- =?us-ascii?Q?erdBzTDDzAQyXhvVSlyzd6EZl4WqLGiXgAMJ7oZLHDGQ7C1H/nBe3pvSDqub?=
- =?us-ascii?Q?lZGrxZt5+GVWAZga1bmnOwrNIyD+zQI8WQe221CgtLRYvEd0RK3k6yBokwkU?=
- =?us-ascii?Q?+XFo+iLfFB9J9UWPwk/oXd0UgVyxCYEtSwXAyqmmSa1PxqcuShtbUurZtkjo?=
- =?us-ascii?Q?gDXILpJn+KZSuYkn2ez9Zu6c5otvNjQfUx6ek9QwqjKWvaK8r7pgxFAxcmel?=
- =?us-ascii?Q?SOvm+7QYz+mXSWrSBv7CBRpjV+85hENl0C7BWyBAdtSWBrL6/SCmkusWvgUB?=
- =?us-ascii?Q?gMxFBGVsGACInfsu91VAfHll5L0dmDrHyPrOAmz1Jfv+C7fZM9K0F2i/9CVv?=
- =?us-ascii?Q?ohHoUQjT7zmh6iCXD3XoMGRHbzRUC1/GpAj/88CAAtANZAo0R/VaUugucjAO?=
- =?us-ascii?Q?Zvx1b+H+Li5rvsY/119nWQG536ZsK0xVTUgQp+F8Em63bV2grrvcouxLT+w/?=
- =?us-ascii?Q?8EEMDzZEZeqo0p0H3QwRhLXXK9JCS14TrNZ4J7K4zd6dUyvL/a/qU4XKHLBs?=
- =?us-ascii?Q?OMBixG9fHkJRKB9qOgbtjokZY1Ut4RS5NEh919yKSX4s5/y1O4ci16HE9zgL?=
- =?us-ascii?Q?eGW1SRDsSleGdTPR1cXAKjs7N/UFuQx7FiZW2bhbUkFo1bnIsTVnvPPjCLVL?=
- =?us-ascii?Q?3M+869IhFC9mvhohGpd8MacAZMfgYH1PlVZjzr5VGpwC/OeDDAHTTZJt4bdQ?=
- =?us-ascii?Q?aobkOsstJK9NyvhU0/RS1A8StbZJaxz+hc5xNktzh5L2JZAHrfERT+AYazVW?=
- =?us-ascii?Q?n6faIx3m1QVzH12VezXs2ec8OhrYy4FZflkXpNaNTe/J5JZA0NfbgCEVh5sT?=
- =?us-ascii?Q?AuuAvZFi+I10wXeQSK4rhMiOIXokfcgNbxDz+CBkQ4/jjVQwwxJAjNM3/jyS?=
- =?us-ascii?Q?5/JGM+6j0t6eAXIWqFmtO0J+j16dOnKSoP0OWkGZEMvFxjdEP9AZ3/eZzkHC?=
- =?us-ascii?Q?4zurMR0G79SJwFkbug6vnF0/55VXoMjTWW1VXpXLV6S/l96VSwlB0iubtC9H?=
- =?us-ascii?Q?KlBf6UCQKxDYh14EoIaRdeM86BaR2GsHQO1hAf5Brh6MtIOnW2ZK4AoYy+iS?=
- =?us-ascii?Q?A6dPDvHt7xpIcBIGo6rGE+7nYJrr/MrqyLE10a2HEVi3R5euAoSNk5o60SFY?=
- =?us-ascii?Q?ZVOyxazhkX7D5E9aToafwinhgtdrW3xH+xAgwcIO8OL3/wXh/yImhn3Mwcxz?=
- =?us-ascii?Q?MMBrT83zKKBvFtN5mF0gx+NeqwVqFHyTvE2SOwY4ONT2hjUvBBmc77xELAf4?=
- =?us-ascii?Q?XPiNNNB6scdwXLIVO2AInxc6iIs0GraDHRPiE3qi?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?y1KpNTMybkqzs6DcKyUaH8pLhUK2hPrWeujgbF+WnPFe2+7+K4EuS/H8O/7Q?=
+ =?us-ascii?Q?RQwOk9bmP0llEtiysJqO+u6FQHkRdCOvrx3DCnpckzRS3Ujfx/JksmGjyj4c?=
+ =?us-ascii?Q?J/Qm5Vjx4klkxlDeDdZeogqob6F47x3PkHDl1bmOzoBxqTASHQmHVDYAz5jL?=
+ =?us-ascii?Q?bCh+gZZlarG9Q1lJMgSDg6pNX1jNMhcu2JoQKhrG/0UhK9xKL5SC/AXgLLyy?=
+ =?us-ascii?Q?sBUr2hRF59GD3CtKo5b0b8ltTs9CwotmI7AdNPLqGILcwJDI6E9+I+8Lfl87?=
+ =?us-ascii?Q?GAQEg9EusqmgBVDgFJIWTFMSwrxU8tOpyAVQNp2dCbw4n8RQwk+qd6RB6vhf?=
+ =?us-ascii?Q?jXSu2GiA2IiKJCYKrnK9n4DfdHtXHK7xbqcYpxILDt0McbSBuzHr54zKla7A?=
+ =?us-ascii?Q?jMriNAGl6iJWL0mINqJY7+RRD/Beoke0dfmjvZMk3uQEs5eWh7yOLy9Pjquw?=
+ =?us-ascii?Q?yYijhuIrkN/k/infMVQ/qBkzm6xvXPBTak4Ih0oGwbrLMheowRGCidi1eVMV?=
+ =?us-ascii?Q?18BHalDar4ads8mT1F1K60Fd5sQ+CRKU3X8qeB+jBBou8Hd0z0abVdOV/uzZ?=
+ =?us-ascii?Q?5dVPMdNGQdETohGHEpeH6hPT/B9XdK7hu9JbgAPApE2nreOI9MRJJ2Hhg79c?=
+ =?us-ascii?Q?yIw4Mo/SdDsuSM6OVCXGPkEJnbFrbNPCBx4YLYVa7nXAnvYbyhgfBzT339cr?=
+ =?us-ascii?Q?EgHZATtecHZowovV+KkduM1o5myVVOwI/dVuALzk5IwRdZlRBfFD0T8g4E0x?=
+ =?us-ascii?Q?Iqeq8We8sBGyCU611beHjYyTxnujOzvU13fpk6sf3eAXGHEuYbCze9Z0hyDg?=
+ =?us-ascii?Q?Jx42tYWa+WsrpfcqpaVdnYZ2Oc3F6w/B8NLT/TMScYcZIODMxRQJPGN4y+K+?=
+ =?us-ascii?Q?pBdPTUN4haDDohX2lN8j0dUCYFNtI3b8yBoOlalSLHYa0cWk8g8alsv2zX+8?=
+ =?us-ascii?Q?bo28e9lA9dSc2OAMWelvWnunTEfnNo9nJB7Dhhi2nT3uGJMt+ERC/Q2LSV++?=
+ =?us-ascii?Q?sil1oXsxTmlUYgG+c2e5c050naB/6SucXjWjXxOb2UCTUMtWzRtI0qaUbwO+?=
+ =?us-ascii?Q?o4shHUTjbECkWM74u880xGZOSRvE//Aq4QtfkgInBRYBFvwvJrij7GHjyGzQ?=
+ =?us-ascii?Q?YESK8xeYvlQfI5/SVDJ/4pqjn44S3KwDqeB+DMkdUv+W+vWC74syugMlQaYJ?=
+ =?us-ascii?Q?xtOUjAknpzbUbssKi4cOl3hR7vZVj4pCm3B3IVyoEQFS6xwl9h7Sd5Op+B+g?=
+ =?us-ascii?Q?M8r3Km2yta0D1JcAWG257NN6fA1FLJk+QZWgK1C3zO8vm9+OhStxSWno/Okl?=
+ =?us-ascii?Q?ObwVYxZPiDFMpA4GLvdmGcPMp6ZPlnM7BD1iX30ywLbFcrHDAHeNqN5/cJFF?=
+ =?us-ascii?Q?J8Zxk2lbFgCLtaQcwyyiQ9dj+uQ3tzL3QNjFvtn5RcQW8RgFR42O+W1+SE9I?=
+ =?us-ascii?Q?oFtdKtZmhc8b08uxuwa6STLLYyuTRhk51UPo4GzALF3gGSKO5EMIjUTa+f8b?=
+ =?us-ascii?Q?5wEcDM1bLy0zlATtHi4bNVpRH/LZmBmra11SPc7n3zqqeLJ1Biheh1QhrV/i?=
+ =?us-ascii?Q?U658BZtAZ07Xpyk9fuvmN7BmtY3wgYaBeyQHigiJ?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: af07c9af-8c69-410e-e8da-08daba76a1fa
+X-MS-Exchange-CrossTenant-Network-Message-Id: f584be06-16eb-4c4e-e967-08daba7bf9b9
 X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Oct 2022 12:59:51.4079
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Oct 2022 13:38:06.1988
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MFK5z3cX4adhC7ajKBQh3bCGbToLnSpJVNTBVtYeUKDm1ohq1n/sXB8a5NNQM0604gxJuWGdkQbXMohXgM3I+Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6331
+X-MS-Exchange-CrossTenant-UserPrincipalName: IDSM8g9tk4sNwHoiz1x6/+JCr/AJgo3x/n6tclGpH73o7CAFAzeXBx/1bRGEvffyZqDVWhXaEiTBBX/xm6PS5w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7106
 X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -119,25 +129,103 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 28, 2022 at 09:45:52AM +0200, netdev@kapio-technology.com wrote:
-> On 2022-10-28 00:58, Vladimir Oltean wrote:
+On Thu, Oct 27, 2022 at 11:27:48PM +0000, Vladimir Oltean wrote:
+> On Tue, Oct 25, 2022 at 01:00:12PM +0300, Ido Schimmel wrote:
+> > From: "Hans J. Schultz" <netdev@kapio-technology.com>
+> > 
+> > When the bridge is offloaded to hardware, FDB entries are learned and
+> > aged-out by the hardware. Some device drivers synchronize the hardware
+> > and software FDBs by generating switchdev events towards the bridge.
+> > 
+> > When a port is locked, the hardware must not learn autonomously, as
+> > otherwise any host will blindly gain authorization. Instead, the
+> > hardware should generate events regarding hosts that are trying to gain
+> > authorization and their MAC addresses should be notified by the device
+> > driver as locked FDB entries towards the bridge driver.
+> > 
+> > Allow device drivers to notify the bridge driver about such entries by
+> > extending the 'switchdev_notifier_fdb_info' structure with the 'locked'
+> > bit. The bit can only be set by device drivers and not by the bridge
+> > driver.
 > 
-> > I was going to ask if we should bother to add code to prohibit packets
-> > from being forwarded to an FDB entry that was learned as LOCKED, since
-> > that FDB entry is more of a "ghost" and not something fully committed?
+> What prevents a BR_FDB_LOCKED entry learned by the software bridge in
+> br_handle_frame_finish() from being notified to switchdev (as non-BR_FDB_LOCKED,
+> since this is what br_switchdev_fdb_notify() currently hardcodes)?
 > 
-> I think that it is a security flaw if there is any forwarding to
-> BR_FDB_LOCKED
-> entries. I can imagine a host behind a locked port with no credentials,
-> that gets a BR_FDB_LOCKED entry and has a friend on another non-locked port
-> who can now communicate uni-directional to the host with the BR_FDB_LOCKED
-> entry. It should not be too hard to create a scheme using UDP packets or
-> other for that.
+> I think it would be good to reinstate some of the checks in
+> br_switchdev_fdb_notify() like the one removed in commit 2c4eca3ef716
+> ("net: bridge: switchdev: include local flag in FDB notifications"):
+> 
+> 	if (test_bit(BR_FDB_LOCKED, &fdb->flags))
+> 		return;
+> 
+> at least until we need something more complex and somebody on the
+> switchdev chain wants to snoop these addresses for some incredibly odd
+> reason.
 
-User space knows that the MAC is not authorized (otherwise it would have
-cleared the "locked" flag) and can choose to mitigate this corner case
-(or not) by shutting down the port, installing flower filters or doing
-something else entirely. I think it is best to defer such policy
-decisions to user space instead of overloading the "locked" flag with
-more meaning which will likely result in more checks in the fast path
-for a corner case of a use case that is quite obscure to begin with.
+Good idea, will add a check in br_switchdev_fdb_notify().
+
+> 
+> > Prevent a locked entry from being installed if MAB is not enabled on the
+> > bridge port. By placing this check in the bridge driver we avoid the
+> > need to reflect the 'BR_PORT_MAB' flag to device drivers.
+> 
+> So how does the device driver know whether to emit the SWITCHDEV_FDB_ADD_TO_BRIDGE
+> or not, if we don't pass the BR_PORT_MAB bit to it?
+
+At least for Spectrum, no special configuration is required for MAB
+compared to a locked port with learning enabled. Learning notifications
+will always be generated by the device and the driver will report them
+as "locked" entries to the bridge driver, which will decide whether to
+install them or not based on the 'BR_PORT_MAB' flag.
+
+Once we have a driver that needs to differentiate between a locked port
+with learning enabled and a port with MAB enabled, we can start passing
+'BR_PORT_MAB' to drivers. Should be an easy change.
+
+> 
+> > If an entry already exists in the bridge driver, reject the locked entry
+> > if the current entry does not have the "locked" flag set or if it points
+> > to a different port. The same semantics are implemented in the software
+> > data path.
+> > 
+> > Signed-off-by: Hans J. Schultz <netdev@kapio-technology.com>
+> > Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> > ---
+> > diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+> > index 4ce8b8e5ae0b..4c4fda930068 100644
+> > --- a/net/bridge/br_private.h
+> > +++ b/net/bridge/br_private.h
+> > @@ -811,7 +811,7 @@ int br_fdb_sync_static(struct net_bridge *br, struct net_bridge_port *p);
+> >  void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p);
+> >  int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+> >  			      const unsigned char *addr, u16 vid,
+> > -			      bool swdev_notify);
+> > +			      bool locked, bool swdev_notify);
+> >  int br_fdb_external_learn_del(struct net_bridge *br, struct net_bridge_port *p,
+> >  			      const unsigned char *addr, u16 vid,
+> >  			      bool swdev_notify);
+> > diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
+> > index 8f3d76c751dd..6afd4f241474 100644
+> > --- a/net/bridge/br_switchdev.c
+> > +++ b/net/bridge/br_switchdev.c
+> > @@ -136,6 +136,7 @@ static void br_switchdev_fdb_populate(struct net_bridge *br,
+> >  	item->added_by_user = test_bit(BR_FDB_ADDED_BY_USER, &fdb->flags);
+> >  	item->offloaded = test_bit(BR_FDB_OFFLOADED, &fdb->flags);
+> >  	item->is_local = test_bit(BR_FDB_LOCAL, &fdb->flags);
+> > +	item->locked = 0;
+> 
+> 0 or false? A matter of preference, I presume. Anyway, this will only be
+> correct with the extra check mentioned above. Otherwise, a LOCKED entry
+> may be presented as non-LOCKED to switchdev, with potentially unforeseen
+> consequences.
+
+Will change to false.
+
+> 
+> >  	item->info.dev = (!p || item->is_local) ? br->dev : p->dev;
+> >  	item->info.ctx = ctx;
+> >  }
+> > -- 
+> > 2.37.3
+> >
